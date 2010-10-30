@@ -1,0 +1,94 @@
+/**
+ * 
+ */
+package org.molgenis.framework.ui.commands;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+
+import org.apache.log4j.Logger;
+import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.ui.FormModel;
+import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.FormModel.Mode;
+import org.molgenis.framework.ui.html.HtmlInput;
+import org.molgenis.generators.db.JpaMapperGen;
+import org.molgenis.util.CsvWriter;
+import org.molgenis.util.Tuple;
+
+/**
+ * This command downloads the currently selected records as csv
+ *
+ * @param <E>
+ */
+public class DownloadSelectedCommand extends SimpleCommand
+{
+	public static final transient Logger logger = Logger.getLogger(DownloadSelectedCommand.class);
+
+	public DownloadSelectedCommand(String name, FormModel parentScreen)
+	{
+		super(name, parentScreen);
+		this.setLabel("Download selected");
+		this.setIcon("generated-res/img/download.png");
+		this.setDownload(true);
+		this.setMenu("File");
+	}
+
+	@Override
+	public boolean isVisible()
+	{
+		// only show in listview
+		return this.getFormScreen().getMode().equals(Mode.LIST_VIEW);
+	}
+
+	@Override
+	public ScreenModel.Show handleRequest(Database db, Tuple request, PrintWriter csvDownload) throws ParseException, DatabaseException,
+			IOException
+	{
+		logger.debug(this.getName());
+		
+		FormModel view = this.getFormScreen();
+
+		Object ids = request.getObject(FormModel.INPUT_SELECTED);
+		List<String> records = new ArrayList<String>();
+
+		if (ids != null)
+		{
+			if (ids.getClass().equals(Vector.class)) records = (Vector)ids;
+			else
+				records.add(ids.toString());
+		}
+
+		if (records.size() == 0)
+		{
+			csvDownload.println("No records selected.");
+			return ScreenModel.Show.SHOW_MAIN;
+		}
+
+		// watch out, the "IN" operator expects an Object[]
+		db.find(view.getEntityClass(), new CsvWriter(csvDownload),
+				new QueryRule("id", Operator.IN, records));
+		return ScreenModel.Show.SHOW_MAIN;
+	}
+
+	@Override
+	public List<HtmlInput> getActions()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<HtmlInput> getInputs() throws DatabaseException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+}

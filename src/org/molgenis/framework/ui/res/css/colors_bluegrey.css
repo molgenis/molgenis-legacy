@@ -1,0 +1,56 @@
+/** older theme as seen at http://gbicserver1.biol.rug.nl:8080/xgap4exampledatasets */ 
+/** will need to be recoded for new css vars */
+
+/** COLOR 1 DARK - color of title*/
+#header {
+	color: #5C604D;
+}
+
+/** COLOR 1 DARK - shade borders */
+.leftNavigationSelected,.navigationSelected,.formscreen,.form_new,.form_filter,.popup, .form_menu 
+{
+	border-color: #5C604D;
+}
+
+/** COLOR 1 DARK - shade header */
+.leftNavigationSelected,.navigationSelected,.form_header, td.submenuitem:hover {
+	background: #5C604D;
+}
+
+/** COLOR 1 DARK */
+/** COLOR 1 MEDIUM */
+.submenuitem{
+	h: expression(onmouseover=new Function("this.style.backgroundColor='#5C604D'; this.style.color='#fff';"),
+                       onmouseout=new Function("this.style.backgroundColor='#C8CFB4'; this.style.color='black';"));
+}
+
+/** COLOR 1 MEDIUM - highlight*/
+.leftNavigationNotSelected,.navigationNotSelected, .form_menu, .submenuitem   {
+	background: #C8CFB4;
+	color: black;
+}
+
+/** COLOR 1 MEDIUM */
+.form_listrow0 {
+	background: #AFB59D;
+}
+
+/** COLOR 1 LIGHT - highlight background*/
+.formscreen, .form_new, .form_filter, .embedtable, .popup, .form_new,.form_filter {
+	background: #E5E7E1;
+}
+
+/** COLOR 2 DARK */
+.form_listrow1 {
+	background: #9DA3E8;
+}
+
+/** COLOR 2 LIGHT - overall background */
+body,#header,#navigation,#information,#footer {
+	background: #E0E2FF;
+}
+
+/** DEFAULT WHITE - font color*/
+.leftNavigationSelected,.navigationSelected {
+	color: FFFFFF;
+}

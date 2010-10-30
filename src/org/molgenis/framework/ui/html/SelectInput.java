@@ -1,0 +1,140 @@
+/**
+ * File: invengine.screen.form.SelectInput <br>
+ * Copyright: Inventory 2000-2006, GBIC 2005, all rights reserved <br>
+ * Changelog:
+ * <ul>
+ * <li> 2006-03-07, 1.0.0, DI Matthijssen
+ * <li> 2006-05-14; 1.1.0; MA Swertz integration into Inveninge (and major
+ * rewrite)
+ * <li> 2006-05-14; 1.2.0; RA Scheltema major rewrite + cleanup
+ * </ul>
+ */
+
+package org.molgenis.framework.ui.html;
+
+// jdk
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
+
+import org.molgenis.util.ValueLabel;
+
+/**
+ * Input for cross-reference (xref) data. Data will be shown as selection box.
+ */
+public class SelectInput extends HtmlInput
+{
+	private List<ValueLabel> options = new Vector<ValueLabel>();
+	private String targetfield;
+	private String onchange;
+	public SelectInput(String name, Object value)
+	{
+		super(name, value);
+	}
+
+	@Override
+	public String toHtml()
+	{
+		String readonly = (this.isReadonly()) ? " readonly class=\"readonly\" " : "";
+
+		String onchange = (this.onchange != null) ? " onchange=\"" + this.onchange + "\"" : "";
+
+		if (this.isHidden())
+		{
+			StringInput input = new StringInput(this.getName(), super.getValue());
+			input.setLabel(this.getLabel());
+			input.setDescription(this.getDescription());
+			input.setHidden(true);
+			return input.toHtml();
+		}
+
+		StringBuffer optionsHtml = new StringBuffer();
+
+		for (ValueLabel choice : options)
+		{
+			if (super.getValue().equals(choice.getValue().toString()))
+			{
+				optionsHtml.append("\t<option selected value=\"" + choice.getValue() + "\">" + choice.getLabel() + "</option>\n");
+			}
+			else if (!this.isReadonly())
+			{
+				optionsHtml.append("\t<option value=\"" + choice.getValue() + "\">" + choice.getLabel() + "</option>\n");
+			}
+		}
+
+		if (super.getValue().toString().equals(""))
+		{
+			optionsHtml.append("\t<option selected value=\"\"></option>\n");
+			// empty option
+		}
+		else if (!this.isReadonly())
+		{
+			optionsHtml.append("\t<option value=\"\"></option>\n");
+			// empty option
+		}
+		return "<select class=\"" + this.getClazz() + "\" id=\"" + this.getId() + "\" name=\"" + this.getName() + "\" " + readonly + onchange + ">\n" + optionsHtml.toString() + "</select>\n";
+	}
+
+	@Override
+	/**
+	 * Note, this returns the labels of the selected values.
+	 */
+	public String getValue()
+	{
+		StringBuffer result = new StringBuffer();
+		for (ValueLabel choice : options)
+		{
+			if (super.getValue().equals(choice.getValue().toString()))
+			{
+				result.append(choice.getLabel() + " ");
+			}
+		}
+		return result.toString();
+	}
+
+	public List<ValueLabel> getChoices()
+	{
+		return options;
+	}
+
+	public void setOptions( ValueLabel... choices )
+	{
+		this.options = Arrays.asList(choices);
+	}
+
+	public void setOptions( List<ValueLabel> choices )
+	{
+		this.options = choices;
+	}
+
+	public void setOptions( String... choices )
+	{
+		List<ValueLabel> choicePairs = new ArrayList<ValueLabel>();
+		for (String choice : choices)
+		{
+			choicePairs.add(new ValueLabel(choice, choice));
+		}
+		this.setOptions(choicePairs);
+	}
+
+	public String getTargetfield()
+	{
+		return targetfield;
+	}
+
+	public void setTargetfield( String targetfield )
+	{
+		this.targetfield = targetfield;
+	}
+	
+	public String getOnchange()
+	{
+		return this.onchange;
+	}
+	
+	public void setOnchange(String onchange)
+	{
+		this.onchange = onchange;
+	}
+}

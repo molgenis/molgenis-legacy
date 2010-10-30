@@ -1,0 +1,20 @@
+#header {
+	color: maroon;
+}
+
+body,#header,#navigation,#information,#footer,.form_new,.form_filter,.embedtable,.popup
+	{
+	background: #FFFDD2;
+}
+
+.leftNavigationSelected,.navigationSelected,.form_header {
+	background: maroon;
+}
+
+.leftNavigationNotSelected, .navigationNotSelected{
+	background: #DD9E84;
+}
+
+.leftNavigationSelected, .leftNavigationNotSelected, .navigationSelected, .navigationNotSelected, .formscreen, .form_new, .form_filter, .popup  {
+	border-color: maroon;
+}

@@ -1,0 +1,82 @@
+/**
+ * File: invengine.screen.Controller <br>
+ * Copyright: Inventory 2000-2006, GBIC 2005, all rights reserved <br>
+ * Changelog:
+ * <ul>
+ * <li>2005-05-07; 1.0.0; MA Swertz; Creation.
+ * <li>2005-12-02; 1.0.0; RA Scheltema; Moved to the new structure, made the
+ * method reset abstract and added documentation.
+ * <li>2006-5-14; 1.1.0; MA Swertz; refactored to separate controller and view
+ * </ul>
+ */
+
+package org.molgenis.framework.ui;
+
+import java.io.PrintWriter;
+import java.io.Serializable;
+
+import org.molgenis.framework.db.Database;
+import org.molgenis.util.Tuple;
+
+/**
+ * A controller changes the state of a Screen.
+ * 
+ * <p>
+ * The State and Transitions of Screens are seperated between Screen that
+ * contains state of the screen, and ScreenController that implements
+ * transitions. This separation prevends side-effects when generating the HTML
+ * (see templates). It also eases understanding as Screen is reduced to a simple
+ * Bean (that can be hold in a Session) and the Controllers that manipulate it.
+ */
+public interface ScreenController<Screen> extends Serializable
+{
+	/**
+	 * Refresh/reload the screen.
+	 * <p>
+	 * reload() needs to be called when the screen works on external
+	 * data/processes. For example:
+	 * <ul>
+	 * <li>a screen that works on a persistent database needs to requery the
+	 * data on disk in order to show the most recent data.
+	 * <li>a screen that monitors a long running process needs to retrieve the
+	 * most recent progress information
+	 * <li>Etc.
+	 * </ul>
+	 */
+	public void reload(Database db);
+
+	/**
+	 * Handle screen events.
+	 * <p>
+	 * handleRequest() can be called to change a screen, or any resources
+	 * managed by the Screen. Such requests are passed as Tuple, typically with
+	 * the {@link ScreenModel#INPUT_ACTION} that indicates to the Screen what action
+	 * to execute. For example:
+	 * <ul>
+	 * <li>a database backed screen can receive an "delete" action to remove
+	 * data from the database underlying the screen. In this case an underlying
+	 * model is changed too.
+	 * <li>a screen has to show data in a different way, e.g. receives a
+	 * "listview" action showing it as list instead of record-by-record.
+	 * <li>Etc.
+	 * </ul>
+	 * 
+	 * @param request
+	 *        a request
+	 */
+	public void handleRequest( Database db, Tuple request );
+	
+	/**
+	 * Handle a user request (typically implemented in the subclass).
+	 * 
+	 * @param db
+	 * @param request
+	 * @param out additional parameter that allows you to write downloadable output
+	 */
+	public void handleRequest( Database db, Tuple request, PrintWriter out);	
+	
+	/**
+	 * Get the view
+	 */
+	public Templateable getScreen();
+}

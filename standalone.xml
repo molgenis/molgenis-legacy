@@ -1,0 +1,160 @@
+<project name="Standalone" default="package" basedir=".">
+    <description>
+        ANT file to build a standalone molgenis + XGAP
+    </description>
+  <!-- set global properties for this build -->
+  <property name="src" 				location="src"       />
+  <property name="build" 			location="build"     />
+  <property name="dist"  			location="dist"      />
+  <property name="libraries" 		location="lib"       />
+  <property name="myname" 			value="Danny Arends" />
+  <property name="version"          value="3.3.0"        />
+  <property environment="env"/>
+  
+	<target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <echo message="Number of Processors = ${env.NUMBER_OF_PROCESSORS}"/>
+    <echo message="ANT_HOME is set to = ${env.ANT_HOME}"/>
+
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="compile" depends="init" description="compile the Standalone source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <!-- 
+  		<unjar src="lib/abdera-core-0.4.0-incubating.jar" dest="${build}"/>
+  		<unjar src="lib/abdera-extensions-json-0.4.0-incubating.jar" dest="${build}"/>
+  		<unjar src="lib/abdera-extensions-main-0.4.0-incubating.jar" dest="${build}"/>
+  		<unjar src="lib/abdera-i18n-0.4.0-incubating.jar" dest="${build}"/>
+  		<unjar src="lib/abdera-parser-0.4.0-incubating.jar" dest="${build}"/>
+  		<unjar src="lib/aopalliance-1.0.jar" dest="${build}"/>
+  		<unjar src="lib/arq.jar" dest="${build}"/>
+  		<unjar src="lib/asm-2.2.3.jar" dest="${build}"/>
+  		<unjar src="lib/axiom-api-1.2.7.jar" dest="${build}"/>
+  		<unjar src="lib/axiom-impl-1.2.7.jar" dest="${build}"/>
+  		<unjar src="lib/bcprov-jdk15-1.43.jar" dest="${build}"/> 
+  	-->
+	<unjar src="lib/ant-1.6.5.jar" dest="${build}"/>
+	<unjar src="lib/ant-apache-log4j.jar" dest="${build}"/>
+	<unjar src="lib/antlr-2.7.7.jar" dest="${build}"/>
+  	<unjar src="lib/commons-codec-1.3.jar" dest="${build}"/>
+  	<unjar src="lib/commons-collections-3.2.1.jar" dest="${build}"/>
+  	<unjar src="lib/commons-dbcp-1.2.1.jar" dest="${build}"/>
+  	<unjar src="lib/commons-fileupload-1.1.jar" dest="${build}"/>
+  	<unjar src="lib/commons-io-1.3.1.jar" dest="${build}"/>
+  	<unjar src="lib/commons-lang-2.4.jar" dest="${build}"/>
+  	<unjar src="lib/commons-logging-1.1.1.jar" dest="${build}"/>
+  	<unjar src="lib/commons-pool-1.5.2.jar" dest="${build}"/>
+  	<unjar src="lib/concurrent.jar" dest="${build}"/>
+  	<unjar src="lib/cxf-2.2.4.jar" dest="${build}"/>
+  	<unjar src="lib/cxf-manifest.jar" dest="${build}"/>
+  	<unjar src="lib/d2r-server-0.7.jar" dest="${build}"/>
+  	<!-- 
+  		<unjar src="lib/d2rq-0.7.jar" dest="${build}"/> 
+  	  	<unjar src="lib/dom4j-1.6.1.jar" dest="${build}"/>
+  		<unjar src="lib/FastInfoset-1.2.7.jar" dest="${build}"/> 
+  	-->
+  	<unjar src="lib/freemarker.jar" dest="${build}"/>
+  	<!-- 
+  		<unjar src="lib/geronimo-activation_1.1_spec-1.0.2.jar" dest="${build}"/>
+  		<unjar src="lib/geronimo-annotation_1.0_spec-1.1.1.jar" dest="${build}"/>
+  		<unjar src="lib/geronimo-javamail_1.4_spec-1.6.jar" dest="${build}"/>
+  		<unjar src="lib/geronimo-jaxws_2.1_spec-1.0.jar" dest="${build}"/>
+  		<unjar src="lib/geronimo-jms_1.1_spec-1.1.1.jar" dest="${build}"/>
+  		<unjar src="lib/geronimo-servlet_2.5_spec-1.2.jar" dest="${build}"/>
+  		<unjar src="lib/geronimo-stax-api_1.0_spec-1.0.1.jar" dest="${build}"/>
+  		<unjar src="lib/geronimo-ws-metadata_2.0_spec-1.1.2.jar" dest="${build}"/>
+  		<unjar src="lib/hsqldb.jar" dest="${build}"/>
+  		<unjar src="lib/icu4j_3_4.jar" dest="${build}"/> 
+  		<unjar src="lib/iri.jar" dest="${build}"/>
+  	  	<unjar src="lib/jakarta-oro-2.0.8.jar" dest="${build}"/>
+  		<unjar src="lib/javax.mail.jar" dest="${build}"/>
+  	-->
+  	<unjar src="lib/javax.servlet.jar" dest="${build}"/>
+  	<!--
+  		<unjar src="lib/jaxb-api-2.1.jar" dest="${build}"/>
+  		<unjar src="lib/jaxb-impl-2.1.12.jar" dest="${build}"/>
+  		<unjar src="lib/jaxb-xjc-2.1.12.jar" dest="${build}"/>
+  		<unjar src="lib/jaxen-1.1.jar" dest="${build}"/>
+	  	<unjar src="lib/jdom-1.0.jar" dest="${build}"/>
+  		<unjar src="lib/jena.jar" dest="${build}"/> 
+	  	<unjar src="lib/jersey-json-1.1.5.jar" dest="${build}"/>
+  		<unjar src="lib/jettison-1.1.jar" dest="${build}"/>
+  		<unjar src="lib/jetty-6.1.21.jar" dest="${build}"/>
+  		<unjar src="lib/jetty-html-6.1.21.jar" dest="${build}"/>
+  		<unjar src="lib/jetty-plus-6.1.21.jar" dest="${build}"/>
+  		<unjar src="lib/jetty-util-6.1.21.jar" dest="${build}"/>
+	  	<unjar src="lib/jopenid-1.07.jar" dest="${build}"/>
+  		<unjar src="lib/joseki.jar" dest="${build}"/>
+  		<unjar src="lib/jra-1.0-alpha-4.jar" dest="${build}"/>
+  		<unjar src="lib/js-1.7R1.jar" dest="${build}"/>
+  		<unjar src="lib/jta-1.1.jar" dest="${build}"/>
+  	-->
+  	<unjar src="lib/jsr311-api-1.0.jar" dest="${build}"/>
+	<unjar src="lib/json.jar" dest="${build}"/> 
+  	<unjar src="lib/junit-4.8.1.jar" dest="${build}"/>
+  	<unjar src="lib/jxl.jar" dest="${build}"/>
+  	<unjar src="lib/log4j-1.2.15.jar" dest="${build}"/>
+  	<unjar src="lib/mail.jar" dest="${build}"/>
+  	<!--
+  		<unjar src="lib/mysql-connector-java-5.1.2-beta-bin.jar" dest="${build}"/>
+  		<unjar src="lib/neethi-2.0.4.jar" dest="${build}"/>
+  		<unjar src="lib/oro-2.0.8.jar" dest="${build}"/>
+  		<unjar src="lib/postgresql-8.3-603.jdbc4.jar" dest="${build}"/>
+  		<unjar src="lib/saaj-api-1.3.jar" dest="${build}"/>
+  		<unjar src="lib/saaj-impl-1.3.2.jar" dest="${build}"/>
+  	-->
+  	<unjar src="lib/serializer-2.7.1.jar" dest="${build}"/>
+  	<!--
+  		<unjar src="lib/slf4j-api-1.5.8.jar" dest="${build}"/>
+  		<unjar src="lib/slf4j-jdk14-1.5.8.jar" dest="${build}"/>
+  		<unjar src="lib/slf4j-log4j12-1.5.6.jar" dest="${build}"/>
+  	  	<unjar src="lib/smtp.jar" dest="${build}"/>
+  		<unjar src="lib/stax-utils-20060502.jar" dest="${build}"/>
+  	-->
+  	<unjar src="lib/tar.jar" dest="${build}"/>
+	<unjar src="lib/testng.jar" dest="${build}"/> 
+  	<!-- 
+  		<unjar src="lib/velocity-1.5.jar" dest="${build}"/>
+  		<unjar src="lib/velocity-1.6.2.jar" dest="${build}"/>
+  		<unjar src="lib/wsdl4j-1.6.2.jar" dest="${build}"/>
+  		<unjar src="lib/wss4j-1.5.8.jar" dest="${build}"/>
+  		<unjar src="lib/wstx-asl-3.2.8.jar" dest="${build}"/>
+  		<unjar src="lib/xalan-2.7.1.jar" dest="${build}"/> 
+  	-->
+  	<unjar src="lib/xercesImpl.jar" dest="${build}"/>
+  	<!-- 
+  		<unjar src="lib/xml-resolver-1.2.jar" dest="${build}"/>
+  		<unjar src="lib/xmlbeans-2.4.0.jar" dest="${build}"/>
+  		<unjar src="lib/XmlSchema-1.4.5.jar" dest="${build}"/>
+  		<unjar src="lib/xmlsec-1.4.3.jar" dest="${build}"/>
+  	-->
+  	
+  	<javac srcdir="${src}" destdir="${build}" classpath="${build}/" />
+  </target>
+
+  <target name="package" depends="compile" description="Package the distribution" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}"/>
+	<copy todir="${build}">
+    <fileset dir="${src}">
+        <include name="**/*.ftl"/>
+    </fileset>
+	</copy>
+    <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+    <jar jarfile="${dist}/molgenis-3.3.0.jar" basedir="${build}">
+     	 <manifest>
+     	    <attribute name="Built-By" value="${myname}"/>
+     	  </manifest>
+    	</jar>
+  </target>
+
+  <target name="clean"
+        description="clean up" >
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+</project>
