@@ -164,8 +164,7 @@ public class Field
 				case Types.BIT:
 					return BOOL;
 				case Types.TINYINT:
-					//todo: check on length = 1
-					return BOOL;		
+					return INT;		
 				//integer
 				case Types.INTEGER:
 					return INT;
