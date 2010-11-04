@@ -27,6 +27,10 @@ public class HttpServletRequestTuple extends SimpleTuple
 	//naughty hack but we sometimes need this as well for redirects
 	private HttpServletResponse response;
 	
+	//counter for the amount of files in the request
+	private int fileCtr = 0;
+	private String previousFieldName = "";
+	
 	
 	/** errors are logged. */
 	private static final transient Logger logger = Logger.getLogger(HttpServletRequestTuple.class.getSimpleName());
@@ -52,11 +56,13 @@ public class HttpServletRequestTuple extends SimpleTuple
 			try
 			{
 				List multipart = upload.parseRequest(request);
-
-				// get the seperate elements
-				for( int i = 0; i < multipart.size(); i++ )
+				
+				int i;
+				FileItem item;
+				// get the separate elements
+				for( i = 0; i < multipart.size(); i++ )
 				{
-					FileItem item = (FileItem)multipart.get(i);
+					item = (FileItem)multipart.get(i);
 					
 					if( item.isFormField() )
 					{
@@ -69,6 +75,7 @@ public class HttpServletRequestTuple extends SimpleTuple
 					}
 				}
 				//logger.debug("Converted HTTP multipart request into Tuple:"+ this.toString());
+				
 			}
 			catch( Exception e )
 			{
@@ -87,12 +94,35 @@ public class HttpServletRequestTuple extends SimpleTuple
 	}
 
 	private void getAttachedFileValues(FileItem item) throws IOException, Exception
-	{
+	{		
 		// http://jakarta.apache.org/commons/fileupload/using.html
 		if( item.getSize() != 0 )
 		{
 			// copy the file to a tempfile
 			String filename = item.getName();
+			String fileNumber;
+			
+			// handle multiple files in a filefield and multiple filefields in a form
+			if (item.getFieldName().equals(this.previousFieldName))
+			{
+				//increase the filecounter
+				this.fileCtr++;
+				fileNumber = Integer.toString(this.fileCtr);
+				
+			}
+			else
+			{
+				
+				// for backwards compatibility reasons there should not be a filenumber added in the string if there is only 1 file.
+				fileNumber = "";
+				
+				// reset the file counter in case there is more then one file field in the form
+				this.fileCtr = 0;
+				
+			}
+			this.previousFieldName = item.getFieldName();
+			
+			// copy the file to a tempfile
 			String extension = "text"; //default extension
 			if(filename.lastIndexOf('.') > 0)
 			{
@@ -103,10 +133,10 @@ public class HttpServletRequestTuple extends SimpleTuple
 			item.write(uploadedFile);
 
 			// add the file to the tuple
-			this.set(item.getFieldName(), uploadedFile);
+			this.set(item.getFieldName() + fileNumber, uploadedFile);
 			
 			//also add the original filename
-			this.set(item.getFieldName()+"OriginalFileName", filename);
+			this.set(item.getFieldName()+ fileNumber + "OriginalFileName", filename);
 		}
 	}
 
