@@ -476,7 +476,8 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 				  	<#if JavaType(f.xrefField) == "String" >
 				  		values.add((${JavaType(f.xrefField)})ref);
 				  	<#else>
-				  		values.add((${JavaType(f.xrefField)})ref);
+				  		// values.add((${JavaType(f.xrefField)})ref); //TODO remove this line if fix is tested (ASB 2010-11-11)
+				  		values.add(${type(f.xrefField)}.parse${settertype(f.xrefField)}((String)ref));
 				  	</#if>
 				}							
 				this.set${JavaName(f)}( values );			
@@ -490,9 +491,9 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 				if(mrefs != null) for(Object ref: mrefs)
 				{
 					<#if type(f.xrefLabels[label_index]) != "String">
-					values.add(${type(f.xrefLabels[label_index])}.parse${settertype(f.xrefLabels[label_index])}(ref.toString()));
+						values.add(${type(f.xrefLabels[label_index])}.parse${settertype(f.xrefLabels[label_index])}(ref.toString()));
 					<#else>
-					values.add(ref.toString());
+						values.add(ref.toString());
 					</#if>
 				}							
 				this.set${JavaName(f)}_${label}( values );			
