@@ -8,4 +8,3 @@
 2009/04/30 made components of each field type, so that new field types can be added more easily
 menu now has 'position' attribute to force layout to left or top.
 datetime has now choiceboxes for hours, minutes, seconds
-2010/11/11 fixed count when having indirect xref_label joins
