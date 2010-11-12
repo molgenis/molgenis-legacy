@@ -21,7 +21,7 @@ public class DetectOS
 	 * String.startsWith("unix"). See class for more details and casting
 	 * procedure.
 	 */
-	public static String getOS() throws Exception
+	public static String getOS()
 	{
 		String os = System.getProperty("os.name").toLowerCase();
 

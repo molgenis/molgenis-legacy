@@ -46,6 +46,7 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 			BasicDataSource data_src = new BasicDataSource();
 			data_src.setDriverClassName("${db_driver}");
 			data_src.setUsername("${db_user}");
+			data_src.setPassword("${db_password}");
 			data_src.setUrl("${db_uri}"); // a path within the src folder?
 			data_src.setMaxIdle(10);
 			data_src.setMaxWait(1000);

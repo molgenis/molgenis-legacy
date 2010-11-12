@@ -45,6 +45,7 @@ public class MolgenisServletGen extends Generator
 		templateArgs.put("db_driver", options.db_driver);
 		templateArgs.put("db_uri", options.db_uri);
 		templateArgs.put("db_user", options.db_user);
+		templateArgs.put("db_password", options.db_password);
 		
 		templateArgs.put("mail_smtp_protocol", options.mail_smtp_protocol);
 		templateArgs.put("mail_smtp_hostname", options.mail_smtp_hostname);
