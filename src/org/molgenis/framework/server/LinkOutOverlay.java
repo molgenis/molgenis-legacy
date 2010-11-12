@@ -25,12 +25,12 @@ public class LinkOutOverlay
 		String out = in;
 		for (String key : this.mypatterns.keySet()) { 
 			StringBuffer sb = new StringBuffer();
-			System.out.println(key + ".\n");
+			//System.out.println(key + ".\n");
 			Pattern pattern = Pattern.compile(key);
 			Matcher matcher = pattern.matcher(out);
 			
 			while (matcher.find()) {
-				System.out.println( matcher.group() + " at index "+matcher.start()+" and ending at index "+matcher.end()+".\n");
+				//System.out.println( matcher.group() + " at index "+matcher.start()+" and ending at index "+matcher.end()+".\n");
 				matcher.appendReplacement(sb, "\n<a href="+mypatterns.get(key)+matcher.group()+ ">" + matcher.group() + "</a>");
 			}
 			matcher.appendTail(sb);
