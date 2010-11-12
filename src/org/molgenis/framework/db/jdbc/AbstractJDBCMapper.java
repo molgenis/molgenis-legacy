@@ -69,6 +69,9 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 			{
 				superUpdatedRows = getSuperTypeMapper().add(entities);
 			}
+			
+			// resolve foreign keys
+			this.resolveForeignKeys(entities);
 
 			// insert this class in batches
 			for (int i = 0; i < entities.size(); i += BATCH_SIZE)
