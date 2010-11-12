@@ -70,10 +70,9 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 				superUpdatedRows = getSuperTypeMapper().add(entities);
 			}
 			
-			// resolve foreign keys if entity has 'name' fields
-			if(entities.size() > 0 && entities.get(0).getLabelFields().contains("name")){
-				this.resolveForeignKeys(entities);
-			}
+			// attempt to resolve foreign keys by label (ie. 'name')
+			this.resolveForeignKeys(entities);
+				
 			// insert this class in batches
 			for (int i = 0; i < entities.size(); i += BATCH_SIZE)
 			{

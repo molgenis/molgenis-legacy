@@ -194,7 +194,19 @@
 		//resolve foreign key field '${name(f)}' to ${name(f.xrefEntity)}.${name(f.xrefField)} using ${csv(f.xrefLabelNames)})
 		final java.util.Map<String,${JavaType(f.xrefField)}> ${name(f)}_Labels_to_IdMap = new java.util.TreeMap<String,${JavaType(f.xrefField)}>();
 		
-		List<${JavaName(f.xrefEntity)}> ${name(f)}List = getDatabase().find(${JavaName(f.xrefEntity)}.class, ${name(f)}Rules.values().toArray(new QueryRule[${name(f)}Rules.values().size()]));
+		List<${JavaName(f.xrefEntity)}> ${name(f)}List = null;
+		try
+		{
+			${name(f)}List = getDatabase().find(${JavaName(f.xrefEntity)}.class, ${name(f)}Rules.values().toArray(new QueryRule[${name(f)}Rules.values().size()]));
+		}
+		catch(Exception e)
+		{
+			// something went wrong while querying for this entities' name field
+			// we assume it has no such field, which should have been checked earlier ofcourse
+			// regardless, just quit the function now
+			return;
+		}
+	
 		for(${JavaName(f.xrefEntity)} xref :  ${name(f)}List)
 		{
 			String key = "";
