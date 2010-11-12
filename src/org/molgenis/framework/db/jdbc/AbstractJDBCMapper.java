@@ -71,7 +71,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 			}
 			
 			// resolve foreign keys
-			this.resolveForeignKeys(entities);
+			//this.resolveForeignKeys(entities); not allowed, check if entity has a name so this can be done?
 
 			// insert this class in batches
 			for (int i = 0; i < entities.size(); i += BATCH_SIZE)
