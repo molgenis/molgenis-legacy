@@ -82,7 +82,14 @@ import java.io.File;
 			<#assign xref_entity = field.xrefEntity>
 import ${xref_entity.namespace}.${JavaName(xref_entity)};			
 	</#if>	
-</#foreach>	
+</#foreach>
+<#--import all implemented entities-->
+<#if entity.hasImplements()>
+<#list entity.getImplements() as impl_entity>
+import ${impl_entity.namespace}.${JavaName(impl_entity)};
+</#list>
+</#if>	
+ 
 
 /**
  * ${Name(entity)}: ${entity.description}.
