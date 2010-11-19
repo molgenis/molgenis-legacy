@@ -188,6 +188,7 @@ public class MolgenisModelValidator
 							true, null);
 					type_field.setDescription("Subtypes have to be set to allow searching");
 					type_field.setSystem(true);
+					type_field.setHidden(true);
 					e.addField(0, type_field);
 				}
 				e.getField(Field.TYPE_FIELD).setEnumOptions(enumOptions);
@@ -801,6 +802,7 @@ public class MolgenisModelValidator
 						false, false, null);
 				type_field.setDescription("Subtypes of " + entity.getName() + ". Have to be set to allow searching");
 				type_field.setEnumOptions(enumOptions);
+				type_field.setHidden(true);
 				rootAncestor.addField(0, type_field);
 			}
 		}
