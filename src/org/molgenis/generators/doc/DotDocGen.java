@@ -111,13 +111,22 @@ public class DotDocGen extends Generator
 			// }
 			// else
 			// windows
-			{
 				// command flags infile outfile
 				command += "" + GRAPHVIZ_COMMAND_WINDOWS + " -T" + type + " -O \"" + dotFile.getAbsolutePath() + "\"";
+			
+			Process p;
+			String os = System.getProperty("os.name").toLowerCase();
+			
+			if (os.indexOf("windows 9") > -1){
+				p = Runtime.getRuntime().exec(new String[] { "command.com", "/c", command });
+			}else if (os.indexOf("windows") > -1){
+				p = Runtime.getRuntime().exec(new String[] { "cmd.exe", "/c", command });
+			}else{
+				p = Runtime.getRuntime().exec(new String[] { "/bin/sh", "-c", command });
 			}
+			
 			logger.debug("Executing: " + command);
-			Process process = Runtime.getRuntime().exec(command);
-			if(wait)process.waitFor();
+			if(wait)p.waitFor();
 			logger.debug("Data model image was generated succesfully.\nOutput:\n" + result);
 			
 			{
@@ -125,8 +134,15 @@ public class DotDocGen extends Generator
 				command = "" + GRAPHVIZ_COMMAND_WINDOWS + " -Tsvg" + " -O \"" + dotFile.getAbsolutePath() + "\"";
 			}
 			logger.debug("Executing: " + command);
-			process = Runtime.getRuntime().exec(command);
-			if(wait)process.waitFor();
+			
+			if (os.indexOf("windows 9") > -1){
+				p = Runtime.getRuntime().exec(new String[] { "command.com", "/c", command });
+			}else if (os.indexOf("windows") > -1){
+				p = Runtime.getRuntime().exec(new String[] { "cmd.exe", "/c", command });
+			}else{
+				p = Runtime.getRuntime().exec(new String[] { "/bin/sh", "-c", command });
+			}
+			if(wait)p.waitFor();
 			logger.debug("Data model image was generated succesfully.\nOutput:\n" + result);
 			
 			
