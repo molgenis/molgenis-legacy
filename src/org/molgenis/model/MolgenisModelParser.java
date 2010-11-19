@@ -786,7 +786,7 @@ public class MolgenisModelParser
 			if (!key_words.contains(element.getAttributes().item(i).getNodeName()))
 			{
 				throw new MolgenisModelException("attribute '" + element.getAttributes().item(i).getNodeName()
-						+ "' unknown for <module>");
+						+ "' unknown for <module "+element.getAttribute("name")+">");
 			}
 		}
 
