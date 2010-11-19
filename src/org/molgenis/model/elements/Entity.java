@@ -1086,6 +1086,7 @@ public class Entity extends DBSchema implements Record
 			Entity parent_entity = (Entity) getParent().get(this.parents.lastElement());
 			if (parent_entity == null) throw new MolgenisModelException("Superclass " + this.parents.lastElement()
 					+ " unknown for entity " + this.getName());
+			if(parent_entity.getKeys().size() == 0) throw new MolgenisModelException(this.parents.lastElement()+" or the interface it implements doesn't define primary key (unique,int,not null)");
 			result.add(parent_entity.getKeys().firstElement());
 		}
 
