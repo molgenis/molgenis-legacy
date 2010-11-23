@@ -35,16 +35,16 @@ public @interface Option {
 		/** The option always has an argument (-o argument) */
 		REQUIRED_ARGUMENT,
 		/** The option could have an argument (-o -p _or_ -o argument -p) */
-		OPTIONAL_ARGUMENT,
+		OPTIONAL_ARGUMENT
 	};
 
 
 	/** Defines the name of the option. This can be a single character, but als a word. */
-	String name() default "";
+	String name();// default "";
 	/** What type of information is passed with this option, eg: filename, integer, etc. */
-	String param() default "";
+	String param();// default "";
 	/** This is a description of how to use this option. All information can be gathered here. */
 	String usage() default "";
 	/** The type of this option. */
-	Option.Type type() default Option.Type.REQUIRED_ARGUMENT;
+	Option.Type type();// default Option.Type.REQUIRED_ARGUMENT;
 };

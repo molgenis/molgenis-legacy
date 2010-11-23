@@ -495,14 +495,20 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 			{
 				java.util.List<${type(f.xrefLabels[label_index])}> values = new java.util.ArrayList<${type(f.xrefLabels[label_index])}>();
 				java.util.List<Object> mrefs = tuple.getList("${name(f)}_${name(label)}");
-				if(mrefs != null) for(Object ref: mrefs)
-				{
-					<#if type(f.xrefLabels[label_index]) != "String">
-						values.add(${type(f.xrefLabels[label_index])}.parse${settertype(f.xrefLabels[label_index])}(ref.toString()));
+				
+				if(mrefs != null) 
+					for(Object ref: mrefs)
+					{
+					<#if type(f.xrefLabels[label_index]) == "String">
+						<#-- values.add(${type(f.xrefLabels[label_index])}.parse${settertype(f.xrefLabels[label_index])}(ref.toString())); -->
+						String[] refs = ref.toString().split("\\|");
+						for(String r : refs) {
+							values.add(r);	
+						}						
 					<#else>
 						values.add(ref.toString());
 					</#if>
-				}							
+					}							
 				this.set${JavaName(f)}_${label}( values );			
 			}	
 			</#list></#if>					
