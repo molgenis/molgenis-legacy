@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Collection;
 import java.util.List;
 
 import org.molgenis.framework.security.Login;
@@ -437,4 +436,8 @@ public interface Database
 	 * @return entity class
 	 */
 	public Class<Entity> getClassForName(String simpleName);
+
+	/** create query by example */
+	public <E extends Entity> Query<E> queryByExample(E entity);
+
 }

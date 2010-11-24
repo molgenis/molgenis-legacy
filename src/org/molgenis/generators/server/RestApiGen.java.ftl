@@ -123,9 +123,12 @@ public class RestApi
 
 	private Database getDatabase() throws DatabaseException, NamingException
 	{
+		<#if databaseImp = 'jpa'>
+		return new app.JpaDatabase();
+		<#else>
 		//The datasource is created by the servletcontext!				
 		DataSource dataSource = (DataSource)sc.getAttribute("DataSource");
-		return new ${package}.<#if databaseImp = 'jpa'>Jpa<#else>JDBC</#if>Database(dataSource, new File("${db_filepath}"));
-
+		return new ${package}.JDBCDatabase(dataSource, new File("${db_filepath}"));
+		</#if>
 	}
 }

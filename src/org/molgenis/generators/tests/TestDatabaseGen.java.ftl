@@ -16,7 +16,13 @@
 
 package ${package};
 
+<#if databaseImp != 'jpa'>	
 import app.JDBCDatabase;
+<#else>
+import javax.persistence.*;
+import org.molgenis.framework.db.jpa.JpaDatabase;
+import org.molgenis.framework.db.jpa.JpaUtil;
+</#if>
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -60,11 +66,16 @@ public class TestDatabase
 	{
 		try
 		{		
+		<#if databaseImp = 'jpa'>		
+			db = new app.JpaDatabase(true);
+			((JpaDatabase)db).getEntityManager().setFlushMode(FlushModeType.AUTO);
+		<#else>
+		db = new JDBCDatabase("molgenis.test.properties");	
 			//create the database
 			new Molgenis("molgenis.test.properties").updateDb();
-			
 			//get it
-			db = new JDBCDatabase("molgenis.test.properties");			
+			db = new JDBCDatabase("molgenis.test.properties");
+		</#if>			
 		}
 		catch (Exception e)
 		{
@@ -99,11 +110,11 @@ public class TestDatabase
 			${JavaName(entity)} e = new ${JavaName(entity)}();
 			<#list entity.allFields as f><#if !f.auto>
 			<#if f.type == "xref">
-			if(${name(f)}Xrefs.size() > 0) e.set${JavaName(f)}( ${name(f)}Xrefs.get(i).get${JavaName(f.xrefField)}() );
+			if(${name(f)}Xrefs.size() > 0) e.set${JavaName(f)}_Id( ${name(f)}Xrefs.get(i).get${JavaName(f.xrefField)}() );
 			<#elseif f.type == "mref">
 			if(${name(f)}Xrefs.size() > 0)
 			{
-				e.get${JavaName(f)}().add( ${name(f)}Xrefs.get(i).get${JavaName(f.xrefField)}() );
+				e.get${JavaName(f)}_Id().add( ${name(f)}Xrefs.get(i).get${JavaName(f.xrefField)}() );
 				//e.get${JavaName(f)}().add( random(${name(f)}Xrefs).get${JavaName(f.xrefField)}() );
 			}
 			<#elseif f.type=="bool">

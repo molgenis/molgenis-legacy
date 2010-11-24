@@ -217,12 +217,6 @@ public class Lifewise implements Database {
     }
 
     @Override
-    public <E extends Entity> void find(Class<E> entityClass, CsvWriter writer, List<String> fieldsToExport,
-            QueryRule... rules) throws DatabaseException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public <E extends Entity> List<E> findByExample(E example) throws DatabaseException {
         try {
             Query<E> q = (Query<E>) this.query(example.getClass());
@@ -387,4 +381,19 @@ public class Lifewise implements Database {
         // TODO Auto-generated method stub
         return null;
     }
+
+	@Override
+	public <E extends Entity> void find(Class<E> entityClass, CsvWriter writer, List<String> fieldsToExport,
+			QueryRule... rules) throws DatabaseException
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public <E extends Entity> Query<E> queryByExample(E entity)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -105,10 +105,10 @@ public class CsvImportById
 				
 				//redirect outgoing fkeys
 				<#list allFields(entity) as f><#if f.type = "xref">
-				if(object.get${Name(f)}() != null) object.set${Name(f)}(${name(f.xrefEntity)}IdMap.get(object.get${Name(f)}()));
+				if(object.get${Name(f)}() != null) object.set${Name(f)}_Id(${name(f.xrefEntity)}IdMap.get(object.get${Name(f)}()));
 				<#elseif f.type="mref"> 
 				List<${type(f.xrefField)} > ${name(f)}Ids = new ArrayList<${type(f.xrefField)}>();
-				for(${type(f.xrefField)} id: object.get${Name(f)}())
+				for(${type(f.xrefField)} id: object.get${Name(f)}_Id())
 				{
 					${name(f)}Ids.add(${name(f.xrefEntity)}IdMap.get(id));
 				}

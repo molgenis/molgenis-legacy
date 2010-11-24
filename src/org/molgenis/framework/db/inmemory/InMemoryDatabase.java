@@ -301,4 +301,11 @@ public class InMemoryDatabase implements Database
 			throws DatabaseException, ParseException, IOException {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public <E extends Entity> Query<E> queryByExample(E entity)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

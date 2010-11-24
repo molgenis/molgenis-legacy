@@ -64,6 +64,7 @@ public class AddCommand extends SimpleCommand
 		return !this.getFormScreen().isReadonly(); 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public ScreenModel.Show handleRequest(Database db, Tuple request, PrintWriter downloadStream) throws ParseException,
 			DatabaseException, IOException

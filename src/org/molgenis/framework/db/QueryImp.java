@@ -241,5 +241,22 @@ public class QueryImp<E extends Entity> implements Query<E> {
 	public void setDatabase(Database db) {
 		this.database = db;
 	}
-
+	
+	@Override
+	public Query<E> example(Entity example)
+	{
+		for (String field : example.getFields())
+		{
+			if (example.get(field) != null)
+			{
+				if (example.get(field) instanceof List)
+				{
+					if (((List) example.get(field)).size() > 0) this.in(field, (List) example.get(field));
+				}
+				else
+					this.equals(field, example.get(field));
+			}
+		}
+		return this;
+	}	
 }

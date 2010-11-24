@@ -254,4 +254,7 @@ public interface Query<E extends Entity>
 
 	/** Get the database to use for this query*/
 	public abstract Database getDatabase();
+
+	/** Create a query based on the non-null values of an example */
+	public Query<E> example(Entity example);
 }

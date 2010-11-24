@@ -154,7 +154,13 @@ public class ${Name(form.className)}Form extends FormModel<${entity}>
 	<#assign inputtype = Name(field.getType().toString())>
 		//${JavaName(field)}: ${field}
 		{
-			${inputtype}Input input = new ${inputtype}Input("${name(field)}",entity.get${JavaName(field)}());
+		    <#if field.type == "xref" >
+		    	//xref
+				${inputtype}Input input = new ${inputtype}Input("${name(field)}",entity.get${JavaName(field)}_${Name(field.getXrefField())}());
+			<#else>
+				${inputtype}Input input = new ${inputtype}Input("${name(field)}",entity.get${JavaName(field)}());
+			</#if>
+			
 			input.setLabel("${field.label}");
 			input.setDescription("${escapeXml(field.description)}");
 			<#if field.isNillable() && field.type != "file"><#--whether files are filled in is only checked in the db-->

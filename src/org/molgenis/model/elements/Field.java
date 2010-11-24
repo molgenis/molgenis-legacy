@@ -544,6 +544,17 @@ public class Field implements Serializable
 	{
 		return type == Type.XREF_MULTIPLE || type == Type.XREF_SINGLE;
 	}
+	
+	/**
+	 * Returns whether this field is a mref.
+	 * 
+	 * @return Whether this field is a mref.
+	 */	
+	public boolean isMRef() 
+	{
+		return type == Type.XREF_MULTIPLE;
+	}
+	
 
 	/**
 	 * Returns the value the database should set for the field when there is no

@@ -878,4 +878,11 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 				throw new DatabaseException("updateByName failed because of unknown dbAction " + dbAction);
 		}
 	}
+
+	@Override
+	public <E extends Entity> Query<E> queryByExample(E entity)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -41,6 +41,7 @@ public class TestCsvGen extends Generator
 		
 		String packageName = "test";
 		
+		templateArgs.put("databaseImp", options.mapper_implementation.equals(MolgenisOptions.MapperImplementation.JPA) ? "jpa" : "jdbc");
 		templateArgs.put("model", model );
 		templateArgs.put("entities",entityList);
 		templateArgs.put("package", packageName);

@@ -1259,6 +1259,19 @@ public class Entity extends DBSchema implements Record
 		}
 		return count;
 	}
+	
+	public int getNumberOfMrefTo(Entity e) throws MolgenisModelException 
+	{
+		int count = 0;
+		for (Field field : this.getFields())
+		{
+			if(field.isMRef()) {
+				String xrefEntity = field.getXrefEntityName();
+				if (xrefEntity != null && xrefEntity.equals(e.getName())) count++;				
+			}
+		}
+		return count;		
+	}
 
 	public List<String> getXrefLabels() throws MolgenisModelException
 	{

@@ -53,6 +53,8 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 		
 			DataSource dataSource = (DataSource)data_src;
 			return new app.JDBCDatabase(dataSource, new File("attachedfiles"));
+		<#elseif databaseImp = 'jpa'>
+			return new ${package}.JpaDatabase();				
 		<#else>
 			//The datasource is created by the servletcontext!		
 			DataSource dataSource = (DataSource)getServletContext().getAttribute("DataSource");

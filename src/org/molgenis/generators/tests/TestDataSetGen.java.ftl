@@ -16,7 +16,11 @@
 
 package ${package};
 
+<#if databaseImp = 'jpa'>
+import app.JpaDatabase;
+<#else>	
 import app.JDBCDatabase;
+</#if>
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -73,9 +77,9 @@ public class TestDataSet
 			<#list entity.allFields as f><#if !f.auto>
 			//assign field ${f.name}
 			<#if f.type == "xref">
-			if( this.${name(f.xrefEntity)}.size() > 0)
+			if( this.${name(f.xrefEntity)}.size() > 0 && this.${name(f.xrefEntity)}.size() < i)
 			{ 
-				${JavaName(f.xrefEntity)} ref = this.${name(f.xrefEntity)}.get(random(this.${name(f.xrefEntity)}.size()));
+				${JavaName(f.xrefEntity)} ref = this.${name(f.xrefEntity)}.get(i);
 				<#list f.xrefLabelNames as label><#if label != pkey(f.xrefEntity).name >
 				e.set${JavaName(f)}_${label}(ref.get${JavaName(label)}() );
 				</#if></#list>
@@ -87,7 +91,7 @@ public class TestDataSet
 				Set<Integer> indexes = new LinkedHashSet();
 				for(int j = 0; j < mrefSize; j++)
 				{	
-					indexes.add(random(this.${name(f.xrefEntity)}.size()));
+					indexes.add(j < this.${name(f.xrefEntity)}.size() ? j : this.${name(f.xrefEntity)}.size()-1);
 				}
 				<#list f.xrefLabelNames as label><#--FIXME not alway string-->
 				List<${type(f.xrefLabels[label_index])}> ${label}List = new ArrayList<${type(f.xrefLabels[label_index])}>();

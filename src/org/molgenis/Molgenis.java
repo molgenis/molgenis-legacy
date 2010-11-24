@@ -28,6 +28,7 @@ import org.apache.tools.ant.listener.Log4jListener;
 import org.molgenis.MolgenisOptions.MapperImplementation;
 import org.molgenis.generators.DataTypeGen;
 import org.molgenis.generators.Generator;
+import org.molgenis.generators.JpaDataTypeGen;
 import org.molgenis.generators.R.RApiGen;
 import org.molgenis.generators.R.REntityGen;
 import org.molgenis.generators.R.RMatrixGen;
@@ -38,6 +39,8 @@ import org.molgenis.generators.csv.CsvReaderGen;
 import org.molgenis.generators.db.InMemoryDatabaseGen;
 import org.molgenis.generators.db.JDBCDatabaseGen;
 import org.molgenis.generators.db.JDBCMetaDatabaseGen;
+import org.molgenis.generators.db.JpaDatabaseGen;
+import org.molgenis.generators.db.JpaMapperGen;
 import org.molgenis.generators.db.MapperDecoratorGen;
 import org.molgenis.generators.db.MultiqueryMapperGen;
 import org.molgenis.generators.db.PStatementMapperGen;
@@ -190,10 +193,10 @@ public class Molgenis {
 				generators.add(new PStatementMapperGen());
 			} else if (options.mapper_implementation
 					.equals(MapperImplementation.JPA)) {
-				// .add(new JpaDatabaseGen());
-				// generators.add(new JpaDataTypeGen());
-				// generators.add(new JpaDataTypeListenerGen());
-				// generators.add(new JpaMapperGen());
+				 generators.add(new JpaDatabaseGen());
+				 generators.add(new JpaDataTypeGen());
+				 //generators.add(new JpaDataTypeListenerGen());
+				 generators.add(new JpaMapperGen());
 			}
 		}
 		// hsqldb.org

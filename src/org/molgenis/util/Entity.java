@@ -62,6 +62,7 @@ public interface Entity
 	 * Primary key field name
 	 */
 	public String getIdField();
+	public Object getIdValue();
 	
 	/**
 	 * Secondary key field names
@@ -110,7 +111,10 @@ public interface Entity
 	 */
 	public void validate() throws Exception;
 
+
 	Entity create(Tuple tuple) throws ParseException;
 	
+	//for JPA only
+	public String getXrefIdFieldName(String fieldName);
 
 }
