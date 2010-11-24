@@ -78,7 +78,7 @@ public abstract class SimpleModel extends SimpleTree<ScreenModel> implements Scr
 	 */
 	public void reset()
 	{
-		
+
 	}
 
 	public UserInterface getRootScreen()
@@ -159,8 +159,17 @@ public abstract class SimpleModel extends SimpleTree<ScreenModel> implements Scr
 	/**
 	 * @param viewid
 	 */
+	@Override
 	public void setSelected(String viewid)
 	{
+		// check if the path to this is also selected
+		if (this.getParent() != null)
+		{
+			logger.debug("call setselected on parent");
+			this.getParent().setSelected(this.getName());
+		}
+
+		logger.debug("Screen " + this.getName() + " selected " + viewid);
 		this.selectedId = viewid;
 	}
 
@@ -184,7 +193,7 @@ public abstract class SimpleModel extends SimpleTree<ScreenModel> implements Scr
 	}
 
 	/** COMMANDS for on the menu bar. Idea: move to screen? * */
-	public <E extends ScreenCommand>void addCommand(E command)
+	public <E extends ScreenCommand> void addCommand(E command)
 	{
 		// link the command to the screen
 		command.setScreen(this);
@@ -193,8 +202,7 @@ public abstract class SimpleModel extends SimpleTree<ScreenModel> implements Scr
 		// commands must have a unique id
 		if (getCommand(command.getName()) != null)
 		{
-			logger.warn("command with name '" + command.getName()
-					+ "' already exists; replaced");
+			logger.warn("command with name '" + command.getName() + "' already exists; replaced");
 		}
 
 		// create new menu if not exists
@@ -231,27 +239,27 @@ public abstract class SimpleModel extends SimpleTree<ScreenModel> implements Scr
 	@Override
 	public String getCustomHtmlHeaders()
 	{
-//		if (this.getSelected() != null)
-//		{
-//			return this.getSelected().getCustomHtmlHeaders();
-//		}
-//		else
-//		{
-			String result = "";
-			for(ScreenModel m: this.getChildren())
-			{
-				result += m.getCustomHtmlHeaders();
-			}
-			return result;
-	//	}
+		// if (this.getSelected() != null)
+		// {
+		// return this.getSelected().getCustomHtmlHeaders();
+		// }
+		// else
+		// {
+		String result = "";
+		for (ScreenModel m : this.getChildren())
+		{
+			result += m.getCustomHtmlHeaders();
+		}
+		return result;
+		// }
 
 	}
-	
+
 	@Override
 	public String getCustomHtmlBodyOnLoad()
 	{
 		String result = "";
-		for(ScreenModel m: this.getChildren())
+		for (ScreenModel m : this.getChildren())
 		{
 			result += m.getCustomHtmlBodyOnLoad();
 		}

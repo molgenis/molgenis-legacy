@@ -120,27 +120,7 @@ public class FormController<E extends Entity> extends SimpleController
 			}
 			else if (action.equals("filter_add"))
 			{
-				Operator operator = QueryRule.Operator.valueOf(request.getString("__filter_operator"));
-				String value = request.getString("__filter_value");
-				// automatically add LIKE delimiters %
-				if (operator.equals(Operator.LIKE) && !value.contains("%"))
-				{
-					value = "%" + value + "%";
-				}
-				QueryRule rule = new QueryRule(request.getString("__filter_attribute"), operator, value);
-				view.getUserRules().add(rule);
-
-				// reload the filters...
-				pager.resetFilters();
-				for (QueryRule r : view.getUserRules())
-				{
-					pager.addFilter(r);
-				}
-				for (QueryRule r : view.getSystemRules())
-				{
-					pager.addFilter(r);
-				}
-				pager.first(db);
+				this.addFilter(pager, db, request);
 			}
 			else if (action.equals("filter_remove"))
 			{
@@ -159,6 +139,20 @@ public class FormController<E extends Entity> extends SimpleController
 				{
 					pager.addFilter(r);
 				}
+			}
+			else if (action.equals("filter_set"))
+			{
+				// remove all existing filters and than add this as a new one.
+				view.setUserRules(new ArrayList<QueryRule>());
+
+				this.addFilter(pager, db, request);
+
+				// go to this screen if it is not selected
+				if (view.getParent() != null)
+				{
+					view.getParent().setSelected(view.getName());
+				}
+
 			}
 			else if (action.equals("update"))
 			{
@@ -291,6 +285,31 @@ public class FormController<E extends Entity> extends SimpleController
 			e.printStackTrace();
 			logger.error(e);
 		}
+	}
+
+	private void addFilter(DatabasePager pager, Database db, Tuple request) throws DatabaseException
+	{
+		Operator operator = QueryRule.Operator.valueOf(request.getString("__filter_operator"));
+		String value = request.getString("__filter_value");
+		// automatically add LIKE delimiters %
+		if (operator.equals(Operator.LIKE) && !value.contains("%"))
+		{
+			value = "%" + value + "%";
+		}
+		QueryRule rule = new QueryRule(request.getString("__filter_attribute"), operator, value);
+		view.getUserRules().add(rule);
+
+		// reload the filters...
+		pager.resetFilters();
+		for (QueryRule r : view.getUserRules())
+		{
+			pager.addFilter(r);
+		}
+		for (QueryRule r : view.getSystemRules())
+		{
+			pager.addFilter(r);
+		}
+		pager.first(db);
 	}
 
 	// overrides
@@ -604,7 +623,7 @@ public class FormController<E extends Entity> extends SimpleController
 	// null, false);
 	// }
 	// view.getMessages().add(msg);
-	//		
+	//
 	// // **make sure the user sees a record**/
 	// if (msg.isSuccess())
 	// {
@@ -696,7 +715,7 @@ public class FormController<E extends Entity> extends SimpleController
 	//
 	// if (requestTuple.getString("limit").equals("selected"))
 	// {
-	//			
+	//
 	// Object recordsObject = requestTuple.getObject("massUpdate");
 	// List<String> records = new ArrayList<String>();
 	//
@@ -707,7 +726,7 @@ public class FormController<E extends Entity> extends SimpleController
 	// else
 	// records.add(recordsObject.toString());
 	// }
-	//			
+	//
 	// if(records.size() == 0)
 	// {
 	// out.println("No records selected.");

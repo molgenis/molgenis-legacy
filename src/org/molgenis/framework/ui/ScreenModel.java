@@ -153,4 +153,10 @@ public interface ScreenModel extends Serializable, Tree<ScreenModel>, Templateab
 	 * @return email service
 	 */
 	public EmailService getEmailService();
+
+	/**
+	 * Method to select what child should be selected
+	 * @param viewid
+	 */
+	void setSelected(String viewid);
 }
