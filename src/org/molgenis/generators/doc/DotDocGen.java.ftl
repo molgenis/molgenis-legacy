@@ -47,7 +47,7 @@ digraph G {
         ]
 
 /* entities outside modules*/
-<#list entities as entity><#if entities?seq_contains(entity) && !entity.system>
+<#list entities as entity><#if entities?seq_contains(entity) && (!entity.system || rendersystem) && !entity.association>
                "${JavaName(entity)}" [
                 	    style = "filled"
                 	    fillcolor =  "white"
@@ -66,19 +66,21 @@ digraph G {
 
 </#if></#list>
 /*entities inside modules*/
+<#assign colorscheme = "pastel19"/>
 <#assign color = 0>
 <#list model.modules as m>
 <#assign color = color + 1>
+<#if color == 9 ><#assign color = 1/><#assign colorscheme = "set39"/></#if>
 /*        subgraph cluster_${m_index} {
         		rankdir = "TB"
         		pagedir = "TB"
                 label = "${name(m)}"
                 labelloc = bottom
-                colorscheme = pastel19
+                colorscheme = ${colorscheme}
                 fillcolor = ${color}
                 style="filled"*/
 
-<#list m.entities as entity><#if entities?seq_contains(entity)>
+<#list m.entities as entity><#if entities?seq_contains(entity) && (!entity.system || rendersystem) && !entity.association>
                 "${JavaName(entity)}" [
                 	    style = "filled"
                 	    fillcolor =  "${color}"
@@ -92,23 +94,26 @@ digraph G {
 			        	color = "black"
 			        	</#if>
                 
-                        label = "{<#if entity.abstract>Interface:</#if>${JavaName(entity)}<#if entity.hasImplements()>\n implements ${csv(entity.getImplements())}</#if><#if entity.hasAncestor()>\n extends ${name(entity.getAncestor())}</#if>|<#list entity.implementedFields as f><#if !f.system>${name(f)} : ${f.type}<#if f.type=="xref" || f.type="mref">-&gt;${name(f.xrefEntity)}</#if><#if !f.nillable>*</#if>\l</#if></#list>}"
+                        label = "{<#if entity.abstract>Interface:</#if>${JavaName(entity)}<#if entity.hasImplements()>\n implements ${csv(entity.getImplements())}</#if><#if entity.hasAncestor()>\n extends ${entity.getAncestor().getName()}</#if>|<#list entity.implementedFields as f><#if !f.system>${name(f)} : ${f.type}<#if f.type=="xref" || f.type="mref">-&gt;${name(f.xrefEntity)}</#if><#if !f.nillable>*</#if>\l</#if></#list>}"
                 ]
 </#if></#list>
 /*        }  */
 </#list>
 
 /*interface relationships*/
+<#if !skipinterfaces>
         edge [
+                arrowhead = "empty"
                 color = "#808080"
         ]
-<#--list entities as entity>
+<#list entities as entity>
     <#if entity.hasImplements()>
-    	<#list entity.implements as interface><#if entities?seq_contains(interface)>
+    	<#list entity.implements as interface><#if entities?seq_contains(interface) && (!interface.system || rendersystem)>
     	"${JavaName(entity)}" -> "${JavaName(interface)}"
     	</#if></#list>
     </#if>
-</#list-->
+</#list>
+</#if>
 
 /*inheritance relationships*/
         edge [
@@ -116,7 +121,7 @@ digraph G {
                 color = "black"
         ]
 <#list entities as entity>
-	<#if entities?seq_contains(entity) && entity.hasAncestor()>  
+	<#if entities?seq_contains(entity) && entity.hasAncestor() && (!entity.ancestor.system || rendersystem)>  
         "${JavaName(entity)}" -> "${JavaName(entity.ancestor)}"
     </#if>
 </#list>
@@ -127,9 +132,9 @@ digraph G {
                 arrowsize = 0.6
         ]
 <#list entities as entity>
-	<#if !entity.system>
+	<#if !entity.system || rendersystem>
 		<#list entity.fields as f>
-			<#if f.type=="xref">
+			<#if f.type=="xref" && (!f.xrefEntity.system || rendersystem)>
 		"${JavaName(entity)}" -> "${JavaName(f.xrefEntity)}" [
 			headlabel = "<#if f.nillable>0..</#if>1"
 			taillabel = "*"
@@ -151,9 +156,9 @@ digraph G {
 <#-- to check for duplicates -->
 <#assign mref_names = []>
 <#list entities as entity>
-	<#if !entity.system>
+	<#if !entity.system || rendersystem>
 		<#list entity.fields as f >
-			<#if f.type=="mref">	
+			<#if f.type=="mref" && (!f.xrefEntity.system || rendersystem)>	
 		"${JavaName(entity)}" -> "${JavaName(f.xrefEntity)}"[
 			]
 					<#assign mref_names = mref_names + [f.getMrefName()]>
