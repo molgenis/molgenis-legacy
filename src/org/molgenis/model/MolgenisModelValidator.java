@@ -523,7 +523,7 @@ public class MolgenisModelValidator
 									validLabels += label + ", ";
 								}
 								throw new MolgenisModelException("xref label '" + xref_label_name + "' for "
-										+ entityname + "." + fieldname + " is not part a secondary key."
+										+ entityname + "." + fieldname + " is not part a secondary key. Valid labels are "+validLabels
 										+ "\nDid you set a unique=\"true\" or <unique fields=\" ...>?");
 							}
 
