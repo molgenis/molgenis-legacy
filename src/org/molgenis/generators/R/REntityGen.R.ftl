@@ -98,7 +98,7 @@ add.${RName(entity)} <- function(.data_frame=NULL<#list allFields(entity) as f><
 
 
 #remove data.frame of ${JavaName(entity)} or just one row using named arguments.
-remove.${RName(entity)} <- function( .data_frame=NULL<#list pkey_fields as f>, ${RName(f)}=NULL</#list><#list skey_fields as f>, ${RName(f)}=NULL</#list>, .usesession = T )
+remove.${RName(entity)} <- function( .data_frame=NULL<#list pkey_fields as f>, ${RName(f)}=NULL</#list><#list skey_fields as f><#if f.name != PkeyName(entity)>, ${RName(f)}=NULL</#if></#list>, .usesession = T )
 {	
 	#todo: translate to skey to pkey
 	.data_frame = .create.${RName(entity)}(.data_frame, mget(ls(),environment()), .usesession = .usesession)
@@ -106,7 +106,7 @@ remove.${RName(entity)} <- function( .data_frame=NULL<#list pkey_fields as f>, $
 }
 
 <#assign skey_fields = key_fields(skeys(entity))>
-use.${RName(entity)}<-function(${RName(pkey(entity))}=NULL<#list skey_fields as f>, ${RName(f)}=NULL</#list>)
+use.${RName(entity)}<-function(.data_frame=NULL<#list pkey_fields as f>, ${RName(f)}=NULL</#list><#list skey_fields as f><#if f.name != PkeyName(entity)>, ${RName(f)}=NULL</#if></#list>)
 {
 	#add session parameters
     <#list skey_fields as f><#if f.type == "xref">
