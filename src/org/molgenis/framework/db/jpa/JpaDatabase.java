@@ -14,6 +14,7 @@ import javax.persistence.metamodel.EntityType;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.JoinQuery;
+import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryImp;
 import org.molgenis.framework.db.QueryRule;
@@ -25,6 +26,8 @@ import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+
+import sun.font.LayoutPathImpl.EndType;
 
 /**
  * Java Persistence API (JPA) implementation of Database to query relational databases.
@@ -58,7 +61,7 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	private static Map<String, JpaMapper> mappers = new TreeMap<String, JpaMapper>();
 	private EntityManager em = null;
 	/** in transaction */
-	private boolean inTransaction;
+	//private boolean inTransaction;
 	/** login */
 	private Login login;
 
@@ -87,61 +90,48 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> int add(E entity) throws DatabaseException
 	{
+		int count = -1;
 		try
 		{
-			if (!inTransaction) em.getTransaction().begin();
-
-			List<Entity> entities = new ArrayList<Entity>();
-			entities.add(entity);
-			getMapper(entity.getClass().getName()).add(entities, em);
-
-			if (!inTransaction) em.getTransaction().commit();
+			beginTransaction();
+				List<Entity> entities = new ArrayList<Entity>();
+				entities.add(entity);
+				count = add(entities);
+			commitTransaction();
 		}
 		catch (javax.persistence.PersistenceException e)
 		{
-			//logger.error(e.getClass());
-			//e.printStackTrace();
+			rollbackTx();
 			throw new DatabaseException(e.getCause().getMessage());
 		}
-		logger.debug("added 1 " + entity.getClass());
-		return 1;
+		return count;
 	}
 
 	@Override
-	public <E extends Entity> int add(List<E> entities) throws DatabaseException, IOException
+	public <E extends Entity> int add(List<E> entities) throws DatabaseException
 	{
-		if (!inTransaction) {
-			em.getTransaction().begin();
-		}
-
+		int count = -1;
 		try
 		{
-			if(entities != null && entities.size() > 0) {
-				getMapper(entities.get(0).getClass().getName()).add((List<Entity>)entities, em);
-				em.flush();
-			}
+			beginTransaction();
+				if(entities != null && entities.size() > 0) {
+					count = getMapper(entities.get(0).getClass().getName()).add((List<Entity>)entities, em);
+				}
+			commitTransaction();
 		}
 		catch (Exception e)
 		{
-			if (!inTransaction) {
-				em.getTransaction().rollback();
-			}
+			rollbackTx();
 			throw new DatabaseException(e);
 		}
-		if (!inTransaction) {
-			em.getTransaction().commit();
-		}
-		return entities.size();
+
+		return count;
 	}
 
 	@Override
 	public <E extends Entity> int add(final Class<E> klazz, final CsvReader reader, final CsvWriter writer)
 			throws Exception
 	{
-		if (!inTransaction) {
-			em.getTransaction().begin();
-		}
-
 		// batch of entities
 		final List<E> entityBatch = new ArrayList<E>();
 		// counter
@@ -149,59 +139,76 @@ public class JpaDatabase extends AbstractDatabase implements Database
 
 		try
 		{
-			reader.parse(new CsvReaderListener()
-			{
-				@Override
-				public void handleLine(int lineNumber, Tuple tuple) throws Exception
+			beginTransaction();
+				reader.parse(new CsvReaderListener()
 				{
-					E e = klazz.newInstance();
-					e.set(tuple);
-					entityBatch.add(e);
-
-					if (entityBatch.size() > BATCH_SIZE)
+					@Override
+					public void handleLine(int lineNumber, Tuple tuple) throws Exception
 					{
-						for (E entity : entityBatch)
-							em.persist(entity);
-
-						count.set(count.get() + 1);
-						em.flush();
-
-						for (E entity : entityBatch)
-							writer.writeRow(entity);
-
+						E e = klazz.newInstance();
+						e.set(tuple);
+						entityBatch.add(e);
+	
+						if (entityBatch.size() > BATCH_SIZE)
+						{
+							for (E entity : entityBatch)
+								em.persist(entity);
+	
+							count.set(count.get() + 1);
+							em.flush();
+	
+							for (E entity : entityBatch)
+								writer.writeRow(entity);
+	
+						}
 					}
-				}
-			});
+				});			
+			commitTransaction();			
 		}
 		catch (Exception e)
 		{
-			if (!inTransaction) em.getTransaction().rollback();
+			rollbackTx();
 			throw new DatabaseException(e);
 		}
 
-		if (!inTransaction) em.getTransaction().commit();
-
 		return count.get();
 	}
+	
+	private void beginTransaction() throws DatabaseException
+	{
+		if (!inTx()) {
+			beginTx();
+		}					
+	}
+	
+	private void commitTransaction() throws DatabaseException 
+	{
+		if (inTx()) {
+			commitTx();
+		}
+	}
+	
 
 	@Override
 	public void beginTx() throws DatabaseException
 	{
-		try
-		{
-			inTransaction = true;
-			em.getTransaction().begin();			
-		}
-		catch (Exception e)
-		{
+		try {
+			if(em.getTransaction() != null && !em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+		} catch (Exception e) {
 			throw new DatabaseException(e);
 		}
 	}
 
 	@Override
 	public void close() throws DatabaseException
-	{
-		em.close();
+	{ 
+		try {
+			em.close();
+		} catch (Exception e) {
+			throw new DatabaseException(e);
+		}
 	}
 
 	@Override
@@ -209,8 +216,9 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	{
 		try
 		{
-			inTransaction = false;
-			em.getTransaction().commit();
+			if(em.getTransaction() != null && em.getTransaction().isActive()) {
+				em.getTransaction().commit();
+			}
 		}
 		catch (Exception e)
 		{
@@ -337,7 +345,9 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	@Override
 	public boolean inTx()
 	{
-		return inTransaction;
+		if(em.getTransaction() == null)
+			return false;
+		return em.getTransaction().isActive();
 	}
 
 	@Override
@@ -349,89 +359,79 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	@Override
 	public JoinQuery query(List<String> fields) throws DatabaseException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public <E extends Entity> int remove(E entity) throws DatabaseException, IOException
+	public <E extends Entity> int remove(E entity) throws DatabaseException
 	{
-		if (!inTransaction) em.getTransaction().begin();
+		int count = -1;
 		try
 		{
-			Entity entityToRemove = em.find(entity.getClass(), entity.getIdValue());
-			em.remove(entityToRemove);
+			beginTransaction();
+				List<Entity> entities = new ArrayList<Entity>();
+				entities.add(entity);
+				count = remove(entities);
+			commitTransaction();
 		}
 		catch (Exception e)
 		{
+			rollbackTx();
 			throw new DatabaseException(e);
 		}
-		if (!inTransaction) em.getTransaction().commit();
-		return 1;
+		return count;
 	}
 
 	@Override
-	public <E extends Entity> int remove(List<E> entities) throws DatabaseException, IOException
+	public <E extends Entity> int remove(List<E> entities) throws DatabaseException
 	{
-		if (!inTransaction) em.getTransaction().begin();
-		try
-		{
-			for (E entity : entities)
-				em.remove(entity);
-		}
-		catch (Exception e)
-		{
+		int count = -1;
+		try {
+			beginTransaction();
+				count = getMapper(entities.get(0).getClass().getName()).remove((List<Entity>)entities, em);
+			commitTransaction();
+		} catch (Exception e) {
+			rollbackTx();
 			throw new DatabaseException(e);
-		}
-		if (!inTransaction) em.getTransaction().commit();
-		return 1;
+		}		
+		return count;
 	}
 
 	@Override
-	public <E extends Entity> int remove(final Class<E> entityClass, final CsvReader reader) throws DatabaseException,
-			IOException, Exception
+	public <E extends Entity> int remove(final Class<E> entityClass, final CsvReader reader) throws DatabaseException
 	{
-		if (!inTransaction) em.getTransaction().begin();
-
 		// batch of entities
 		final List<E> entityBatch = new ArrayList<E>();
 		// counter
 		final IntegerWrapper count = new IntegerWrapper(0);
 
-		try
-		{
-
-			reader.parse(new CsvReaderListener()
-			{
-
-				@Override
-				public void handleLine(int lineNumber, Tuple tuple) throws Exception
-				{
-					E e = entityClass.newInstance();
-					e.set(tuple);
-					entityBatch.add(e);
-
-					if (entityBatch.size() > BATCH_SIZE)
+		try {
+			beginTransaction();			
+				reader.parse(new CsvReaderListener()
+				{	
+					@Override
+					public void handleLine(int lineNumber, Tuple tuple) throws Exception
 					{
-						for (E entity : entityBatch)
-							em.remove(e);
-
-						count.set(count.get() + 1);
-						em.flush();
+						E e = entityClass.newInstance();
+						e.set(tuple);
+						entityBatch.add(e);
+	
+						if (entityBatch.size() > BATCH_SIZE)
+						{
+							for (E entity : entityBatch)
+								em.remove(e);
+	
+							count.set(count.get() + 1);
+							em.flush();
+						}
 					}
-				}
-			});
-		}
-		catch (Exception e)
-		{
-			if (!inTransaction) em.getTransaction().rollback();
+				});
+			commitTransaction();
+		} catch (Exception e) {
+			rollbackTx();
 			throw new DatabaseException(e);
 		}
-
-		if (!inTransaction) em.getTransaction().commit();
-
 		return count.get();
-
 	}
 
 	@Override
@@ -439,7 +439,9 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	{
 		try
 		{
-			em.getTransaction().rollback();
+			if(em.getTransaction().isActive()) {
+				em.getTransaction().rollback();
+			}
 		}
 		catch (Exception e)
 		{
@@ -463,36 +465,40 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> int update(E entity) throws DatabaseException, IOException
 	{
-		if (!inTransaction) em.getTransaction().begin();
+		int count = -1;
 		try
 		{
-			Entity entityToMerge = em.find(entity.getClass(), entity.getIdValue());
-			em.merge(entityToMerge);
+			beginTransaction();
+			
+			List<Entity> entities = new ArrayList<Entity>();
+			entities.add(entity);
+			count = update(entities);
+			
+			commitTransaction();
 		}
 		catch (Exception e)
 		{
+			rollbackTx();
 			throw new DatabaseException(e);
-		}
-		if (!inTransaction) em.getTransaction().commit();
-		return 1;
+		}		
+		return count;
 	}
 
 	@Override
 	public <E extends Entity> int update(List<E> entities) throws DatabaseException, IOException
 	{
-		if (!inTransaction) em.getTransaction().begin();
 		try
 		{
-			for (E entity : entities) {
-				Entity entityToMerge = em.find(entity.getClass(), entity.getIdValue());
-				em.merge(entityToMerge);
-			}
+			beginTransaction();
+				getMapper(entities.get(0).getClass().getName()).update((List<Entity>)entities, em);
+			commitTransaction();
 		}
 		catch (Exception e)
 		{
+			rollbackTx();
 			throw new DatabaseException(e);
 		}
-		if (!inTransaction) em.getTransaction().commit();
+		
 		return 1;
 	}
 
@@ -500,8 +506,6 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	public <E extends Entity> int update(final Class<E> entityClass, final CsvReader reader) throws DatabaseException,
 			IOException, Exception
 	{
-		if (!inTransaction) em.getTransaction().begin();
-
 		// batch of entities
 		final List<E> entityBatch = new ArrayList<E>();
 		// counter
@@ -509,7 +513,7 @@ public class JpaDatabase extends AbstractDatabase implements Database
 
 		try
 		{
-
+			beginTransaction();
 			reader.parse(new CsvReaderListener()
 			{
 
@@ -530,15 +534,13 @@ public class JpaDatabase extends AbstractDatabase implements Database
 					}
 				}
 			});
+			commitTransaction();
 		}
 		catch (Exception e)
 		{
-			if (!inTransaction) em.getTransaction().rollback();
+			rollbackTx();
 			throw new DatabaseException(e);
 		}
-
-		if (!inTransaction) em.getTransaction().commit();
-
 		return count.get();
 
 	}
@@ -551,12 +553,6 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	
 	protected <E extends Entity> JpaMapper<E> getMapper(String name) {
 		return mappers.get(name);
-	}
-	
-	private Expression<Boolean> queryRuleToCriteria(QueryRule[] rules)
-	{
-		return null;
-		//return JPAQueryGeneratorUtil.createWhere(this.getClass(), this, em, rules);
 	}
 	
 	public void flush()

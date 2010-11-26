@@ -452,7 +452,7 @@ public class FormController<E extends Entity> extends SimpleController
 		ScreenMessage msg = null;
 		Entity entity = view.create();
 		boolean result = false;
-
+	
 		try
 		{
 			db.beginTx();
@@ -470,14 +470,14 @@ public class FormController<E extends Entity> extends SimpleController
 			else
 			{
 				updatedRows = db.add(entity);
-
+	
 			}
 			db.commitTx();
 			msg = new ScreenMessage("ADD SUCCESS: affected " + updatedRows, null, true);
 			result = true;
 			// navigate to newly added record
 			pager.last(db);
-
+	
 		}
 		catch (Exception e)
 		{
@@ -486,14 +486,14 @@ public class FormController<E extends Entity> extends SimpleController
 			result = false;
 		}
 		view.getMessages().add(msg);
-
+	
 		/* make sure the user sees the newly added record(s) */
 		// view.setMode(FormScreen.Mode.RECORD_VIEW);
 		// pager.setLimit(1);
 		pager.resetOrderBy();
 		pager.last(db);
 		// should reset to an order that shows the record on the end
-
+	
 		return result;
 	}
 

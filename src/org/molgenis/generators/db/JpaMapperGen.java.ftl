@@ -235,9 +235,7 @@ public class ${Name(entity)}Mapper implements JpaMapper<${Name(entity)}>
 
         } catch (Exception ex) {
             try {
-				if(em.getTransaction().isActive()) {
-					em.getTransaction().rollback();
-				}
+				em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new DatabaseException("An error occurred attempting to roll back the transaction: "+re.getMessage());
             }
@@ -270,9 +268,7 @@ public class ${Name(entity)}Mapper implements JpaMapper<${Name(entity)}>
 			em.remove(${name(entity)});
 		} catch (Exception ex) {
 			try {
-				if(em.getTransaction().isActive()) {
-					em.getTransaction().rollback();
-				}
+				em.getTransaction().rollback();
 			} catch (Exception re) {
 				throw new DatabaseException("An error occurred attempting to roll back the transaction: "+re.getMessage());
 			}
@@ -353,9 +349,7 @@ public class ${Name(entity)}Mapper implements JpaMapper<${Name(entity)}>
 </#foreach>
 		} catch (Exception ex) {
 			try {
-				if(em.getTransaction().isActive()) {
-					em.getTransaction().rollback();
-				}
+				em.getTransaction().rollback();
 			} catch (Exception re) {
 				throw new DatabaseException("An error occurred attempting to roll back the transaction: " + re.getMessage());
 			}
@@ -417,7 +411,6 @@ public class ${Name(entity)}Mapper implements JpaMapper<${Name(entity)}>
             try {
                 em.getTransaction().rollback();
             } catch (Exception re) {
-            	re.printStackTrace();
                 throw new DatabaseException( "An error occurred attempting to roll back the transaction.");
             }
             throw new DatabaseException(ex);

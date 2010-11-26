@@ -44,6 +44,7 @@ import org.molgenis.generators.db.JpaMapperGen;
 import org.molgenis.generators.db.MapperDecoratorGen;
 import org.molgenis.generators.db.MultiqueryMapperGen;
 import org.molgenis.generators.db.PStatementMapperGen;
+import org.molgenis.generators.db.PersistenceGen;
 import org.molgenis.generators.db.ViewMapperGen;
 import org.molgenis.generators.doc.DotDocGen;
 import org.molgenis.generators.doc.DotDocMinimalGen;
@@ -172,70 +173,78 @@ public class Molgenis {
 		// generators.add(new ViewTypeGen());
 		generators.add(new InMemoryDatabaseGen());
 
-		// DATABASE
-		// mysql.org
-		generators.add(new ViewMapperGen());
-		if (options.db_driver.equals("com.mysql.jdbc.Driver")) {
-			generators.add(new MySqlCreateSubclassPerTableGen());
-			generators.add(new MySqlAlterSubclassPerTableGen());
-			// use multiquery optimization
-			if (options.mapper_implementation
-					.equals(MapperImplementation.MULTIQUERY)) {
-				generators.add(new JDBCDatabaseGen());
-				generators.add(new DataTypeGen());
-				generators.add(new PythonDataTypeGen());
-				generators.add(new MultiqueryMapperGen());
-			} else if (options.mapper_implementation
-					.equals(MapperImplementation.PREPARED_STATEMENT)) {
-				generators.add(new JDBCDatabaseGen());
-				generators.add(new DataTypeGen());
-				generators.add(new PythonDataTypeGen());
-				generators.add(new PStatementMapperGen());
-			} else if (options.mapper_implementation
-					.equals(MapperImplementation.JPA)) {
-				 generators.add(new JpaDatabaseGen());
-				 generators.add(new JpaDataTypeGen());
-				 //generators.add(new JpaDataTypeListenerGen());
-				 generators.add(new JpaMapperGen());
-			}
-		}
-		// hsqldb.org
-		else if (options.db_driver.equals("org.hsqldb.jdbcDriver")) {
-			logger.info("HsqlDB generators ....");
-			generators.add(new JDBCDatabaseGen());
-			generators.add(new DataTypeGen());
-			generators.add(new HSqlCreateSubclassPerTableGen());
-			//generators.add(new MultiqueryMapperGen());
-			generators.add(new PStatementMapperGen());
-		}
-		// postgresql
-		else if (options.db_driver.equals("org.postgresql.Driver")) {
-			generators.add(new PSqlCreateSubclassPerTableGen());
-			generators.add(new PStatementMapperGen());
-		}
-
-		// h2database.com, branch of hsqldb?
-		else if (options.db_driver.equals("org.h2.Driver")) {
-			generators.add(new HSqlCreateSubclassPerTableGen());
-			generators.add(new PStatementMapperGen());
-		}
-		// derby, not functional ignore.
-		else if (options.db_driver
-				.equals("org.apache.derby.jdbc.EmbeddedDriver")) {
-			generators.add(new DerbyCreateSubclassPerTableGen());
+		
+		if(options.mapper_implementation.equals(MapperImplementation.JPA)) {
+			 generators.add(new JpaDatabaseGen());
+			 generators.add(new JpaDataTypeGen());
+			 //generators.add(new JpaDataTypeListenerGen());
+			 generators.add(new JpaMapperGen());
+			 generators.add(new JDBCMetaDatabaseGen());
+			 if(options.generate_persisitence) {
+				 generators.add(new PersistenceGen());
+			 }
 		} else {
-			logger.warn("Unknown database driver " + options.db_driver);
-			// System.exit(-1);
-		}
-		// decorators
-		generators.add(new MapperDecoratorGen());
+			// DATABASE
+			// mysql.org
+			generators.add(new ViewMapperGen());
+			if (options.db_driver.equals("com.mysql.jdbc.Driver")) {
+				generators.add(new MySqlCreateSubclassPerTableGen());
+				generators.add(new MySqlAlterSubclassPerTableGen());
+				// use multiquery optimization
+				if (options.mapper_implementation
+						.equals(MapperImplementation.MULTIQUERY)) {
+					generators.add(new JDBCDatabaseGen());
+					generators.add(new DataTypeGen());
+					generators.add(new PythonDataTypeGen());
+					generators.add(new MultiqueryMapperGen());
+				} else if (options.mapper_implementation
+						.equals(MapperImplementation.PREPARED_STATEMENT)) {
+					generators.add(new JDBCDatabaseGen());
+					generators.add(new DataTypeGen());
+					generators.add(new PythonDataTypeGen());
+					generators.add(new PStatementMapperGen());
+				} 
+			}
+			// hsqldb.org
+			else if (options.db_driver.equals("org.hsqldb.jdbcDriver")) {
+				logger.info("HsqlDB generators ....");
+				generators.add(new JDBCDatabaseGen());
+				generators.add(new DataTypeGen());
+				generators.add(new HSqlCreateSubclassPerTableGen());
+				//generators.add(new MultiqueryMapperGen());
+				generators.add(new PStatementMapperGen());
+			}
+			// postgresql
+			else if (options.db_driver.equals("org.postgresql.Driver")) {
+				generators.add(new PSqlCreateSubclassPerTableGen());
+				generators.add(new PStatementMapperGen());
+			}
 
-		// test
-		generators.add(new JDBCMetaDatabaseGen());
-		// SQL
-		generators.add(new CountPerEntityGen());
-		generators.add(new CountPerTableGen());
-		generators.add(new FillMetadataTablesGen());
+			// h2database.com, branch of hsqldb?
+			else if (options.db_driver.equals("org.h2.Driver")) {
+				generators.add(new HSqlCreateSubclassPerTableGen());
+				generators.add(new PStatementMapperGen());
+			}
+			// derby, not functional ignore.
+			else if (options.db_driver
+					.equals("org.apache.derby.jdbc.EmbeddedDriver")) {
+				generators.add(new DerbyCreateSubclassPerTableGen());
+			} else {
+				logger.warn("Unknown database driver " + options.db_driver);
+				// System.exit(-1);
+			}
+			// decorators
+			generators.add(new MapperDecoratorGen());
+
+			// test
+			generators.add(new JDBCMetaDatabaseGen());
+			// SQL
+			generators.add(new CountPerEntityGen());
+			generators.add(new CountPerTableGen());
+			generators.add(new FillMetadataTablesGen());			
+		}
+		
+
 		
 		if (options.generate_Python.equals("true")){
 			generators.add(new PythonDataTypeGen());

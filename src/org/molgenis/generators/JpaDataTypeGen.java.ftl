@@ -125,8 +125,8 @@ public interface ${JavaName(entity)} extends <#if entity.hasImplements()><#list 
 )
 <#if !entity.hasAncestor() && entity.hasDescendants() >
 @Inheritance(strategy=InheritanceType.JOINED)
+@DiscriminatorColumn(name="__Type", discriminatorType=DiscriminatorType.STRING)
 </#if>
-@XmlRootElement(name="${name(entity)}")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(entity.getAncestor())}<#else>org.molgenis.util.AbstractEntity</#if> <#if entity.hasImplements()>implements<#list entity.getImplements() as i> ${JavaName(i)}<#if i_has_next>,</#if></#list></#if>
 </#if>
@@ -168,7 +168,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
  			<#if isPrimaryKey(field,entity) && !entity.hasAncestor()>
     @Id
     			<#if field.auto = true>
-    @GeneratedValue(strategy = GenerationType.AUTO)   			
+    @GeneratedValue(strategy = GenerationType.IDENTITY)   			
     			</#if>
     		</#if>
 		</#if>	
@@ -180,6 +180,8 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
         <#if field.type == "mref">
 	@ManyToMany(/*cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/)
 	@JoinColumn(name="${SqlName(field)}", insertable=true, updatable=true, nullable=${field.isNillable()?string})
+	@JoinTable(name="${Name(entity)}_${JavaName(field.xrefEntity)}s", 
+			joinColumns=@JoinColumn(name="${JavaName(field.xrefEntity)}s"), inverseJoinColumns=@JoinColumn(name="${Name(entity)}"))	
        	<#elseif field.type == "xref">
     @ManyToOne(/*cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/)
     @JoinColumn(name="${SqlName(field)}"<#if !field.nillable>, nullable=false</#if>)   	
@@ -859,10 +861,11 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		</#if>
 	</#list></#if>
 </#list>
-<#list model.entities as e><#if !e.abstract && !e.isAssociation()>
-	<#list e.implementedFields as f>
-		<#if f.type=="mref" && f.getXrefEntityName() == entity.name>
-			 <#assign multipleXrefs = e.getNumberOfReferencesTo(entity)/>
+<#list model.entities as e>
+	<#if !e.abstract && !e.isAssociation()>
+		<#list e.implementedFields as f>
+			<#if f.type=="mref" && f.getXrefEntityName() == entity.name>
+				<#assign multipleXrefs = e.getNumberOfReferencesTo(entity)/>
 	@ManyToMany(mappedBy="${name(f)}" /*, cascade={CascadeType.REFRESH, CascadeType.MERGE} */)
     private Collection<${Name(f.entity)}> ${name(f.entity)}<#if multipleXrefs &gt; 1 >${Name(f)}</#if>Collection = new ArrayList<${Name(f.entity)}>();
 
@@ -876,10 +879,11 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
     {
     	${name(f.entity)}<#if multipleXrefs &gt; 1 >${Name(f)}</#if>Collection.addAll(collection);
     }	
-		</#if>
-	</#list></#if>
+			</#if>
+		</#list>
+	</#if>
 </#list>
-	
+
 	
 </#if>
 }
