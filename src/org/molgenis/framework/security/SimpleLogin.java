@@ -9,7 +9,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.util.Entity;
 
-public class SimpleLogin implements Login
+public class SimpleLogin<E extends Entity> implements Login<E>
 {
 
 	@Override
@@ -37,12 +37,6 @@ public class SimpleLogin implements Login
 	public <E extends Entity> boolean canWrite(Class<E> entity)
 	{
 		return true;
-	}
-
-	@Override
-	public QueryRule getRowlevelSecurityFilters(Entity entity)
-	{
-		return null;
 	}
 
 	public boolean hasRowEditRights(Entity entity)
@@ -106,5 +100,12 @@ public class SimpleLogin implements Login
 	public <E extends Entity> boolean canRead(Entity entity)
 	{
 		return true;
+	}
+
+	@Override
+	public QueryRule getRowlevelSecurityFilters(Class klazz)
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
