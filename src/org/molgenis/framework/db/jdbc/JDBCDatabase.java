@@ -276,8 +276,7 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 	{
 		// add security filters
 		QueryRule securityRules = null;
-		if(this.getSecurity() != null)
-			securityRules = this.getSecurity().getRowlevelSecurityFilters(klazz);
+		if (this.getSecurity() != null) securityRules = this.getSecurity().getRowlevelSecurityFilters(klazz);
 		if (securityRules != null)
 		{
 			if (rules != null && rules.length > 1)
@@ -695,30 +694,33 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 			// extract its key values and put in map
 			Map<String, Object> keyValues = new LinkedHashMap<String, Object>();
 			boolean incompleteKey = true;
-			
-			//note: we can expect null values in composite keys but need at least one key value.
+
+			// note: we can expect null values in composite keys but need at
+			// least one key value.
 			for (String key : keyNames)
 			{
 				// create a hash that concats all key values into one string
 				combinedKey += ";" + (entity.get(key) == null ? "" : entity.get(key));
-				
-//				if (entity.get(key) == null || entity.get(key).equals(""))
-//				{
-//					if (dbAction.equals(DatabaseAction.UPDATE) || dbAction.equals(DatabaseAction.REMOVE))
-//					{
-//						throw new DatabaseException(
-//						entityName + " is missing key '" + key + "' in line " + entity.toString());
-//					}
-//				}
-				if(entity.get(key) != null)
+
+				// if (entity.get(key) == null || entity.get(key).equals(""))
+				// {
+				// if (dbAction.equals(DatabaseAction.UPDATE) ||
+				// dbAction.equals(DatabaseAction.REMOVE))
+				// {
+				// throw new DatabaseException(
+				// entityName + " is missing key '" + key + "' in line " +
+				// entity.toString());
+				// }
+				// }
+				if (entity.get(key) != null)
 				{
 					incompleteKey = false;
 					keyValues.put(key, entity.get(key));
 				}
 			}
-			//check if we have missing key
+			// check if we have missing key
 			if (incompleteKey) keysMissing = true;
-			
+
 			// add the keys to the index, if exists
 			if (!keysMissing)
 			{
@@ -894,5 +896,10 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 		}
 	}
 
+	public <E extends Entity> Query<E> queryByExample(E entity)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
