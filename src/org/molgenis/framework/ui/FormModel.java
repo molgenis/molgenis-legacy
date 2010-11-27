@@ -787,11 +787,6 @@ public abstract class FormModel<E extends Entity> extends SimpleModel
 			
 		}
 
-		// security filters
-		{
-			QueryRule rule = super.getRootScreen().getLogin().getRowlevelSecurityFilters(this.create());
-			if (rule != null && !rule.equals(new QueryRule())) rules.add(rule);
-		}
 		return rules;
 
 	}

@@ -23,7 +23,7 @@ import org.molgenis.util.Entity;
  * Developers can implement this interface to realize a variety of security
  * schemes.
  */
-public interface Login
+public interface Login<E extends Entity>
 {
 	/**
 	 * Authenticate the user
@@ -124,6 +124,6 @@ public interface Login
 	 * Creates a filter which can be used by find/count to only retrieve those
 	 * records the user/group is allowed to view
 	 */
-	public QueryRule getRowlevelSecurityFilters(Entity entity);
+	public QueryRule getRowlevelSecurityFilters(Class<E> klazz);
 
 }

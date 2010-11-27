@@ -274,6 +274,21 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 	// @Override
 	public <E extends Entity> List<E> find(Class<E> klazz, QueryRule... rules) throws DatabaseException
 	{
+		// add security filters
+		QueryRule securityRules = null;
+		if(this.getSecurity() != null)
+			securityRules = this.getSecurity().getRowlevelSecurityFilters(klazz);
+		if (securityRules != null)
+		{
+			if (rules != null && rules.length > 1)
+			{
+				List<QueryRule> all = new ArrayList<QueryRule>();
+				all.add(securityRules);
+				all.addAll(Arrays.asList(rules));
+				return getMapperFor(klazz).find(all.toArray(new QueryRule[all.size()]));
+			}
+			return getMapperFor(klazz).find(securityRules);
+		}
 		return getMapperFor(klazz).find(rules);
 	}
 
