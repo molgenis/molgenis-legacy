@@ -894,10 +894,5 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 		}
 	}
 
-	@Override
-	public <E extends Entity> Query<E> queryByExample(E entity)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 }
