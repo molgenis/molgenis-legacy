@@ -32,10 +32,6 @@ public class MolgenisOptions
 	{
 		MULTIQUERY("multiquery"), JPA("jpa"), PREPARED_STATEMENT("prepared_statement"), UNKNOWN("unknown");
 
-                MapperImplementation() {
-                    this.tag = "unknown";
-                }
-
 		MapperImplementation(String tag)
 		{
 			this.tag = tag;
@@ -49,9 +45,9 @@ public class MolgenisOptions
 		public static MapperImplementation get(String tag)
 		{
 			if (tag == null) return UNKNOWN;
-			if (tag.equals(MULTIQUERY.tag)) return MULTIQUERY;
-			if (tag.equals(JPA.tag)) return JPA;
-			if (tag.equals(PREPARED_STATEMENT.tag)) return PREPARED_STATEMENT;
+			if (tag.equalsIgnoreCase(MULTIQUERY.tag)) return MULTIQUERY;
+			if (tag.equalsIgnoreCase(JPA.tag)) return JPA;
+			if (tag.equalsIgnoreCase(PREPARED_STATEMENT.tag)) return PREPARED_STATEMENT;
 			return UNKNOWN;
 
 		}
@@ -235,8 +231,10 @@ public class MolgenisOptions
 
 		CmdLineParser parser = new CmdLineParser(this);
 		parser.parse(props);
-		if (props.getProperty("mapper_implementation") != null)
-                    this.mapper_implementation = MapperImplementation.get(props.getProperty("mapper_implementation"));
+		if (props.getProperty("mapper_implementation") != null) {
+			this.mapper_implementation = MapperImplementation.get(props.getProperty("mapper_implementation"));
+		}
+		System.out.println("Mapper implementation molgenis name: " + this.mapper_implementation.name());
 
 		if (new File(propertiesFile).getParentFile() != null)
 		{
