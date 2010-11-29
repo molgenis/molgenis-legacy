@@ -32,6 +32,10 @@ public class MolgenisOptions
 	{
 		MULTIQUERY("multiquery"), JPA("jpa"), PREPARED_STATEMENT("prepared_statement"), UNKNOWN("unknown");
 
+                MapperImplementation() {
+                    this.tag = "unknown";
+                }
+
 		MapperImplementation(String tag)
 		{
 			this.tag = tag;
@@ -231,8 +235,8 @@ public class MolgenisOptions
 
 		CmdLineParser parser = new CmdLineParser(this);
 		parser.parse(props);
-		if (props.getProperty("mapper_implementation") != null) this.mapper_implementation = MapperImplementation
-				.get(props.getProperty("mapper_implementation"));
+		if (props.getProperty("mapper_implementation") != null)
+                    this.mapper_implementation = MapperImplementation.get(props.getProperty("mapper_implementation"));
 
 		if (new File(propertiesFile).getParentFile() != null)
 		{
