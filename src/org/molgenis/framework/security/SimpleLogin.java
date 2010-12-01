@@ -103,7 +103,7 @@ public class SimpleLogin implements Login
 	}
 
 	@Override
-	public QueryRule getRowlevelSecurityFilters(Class klazz)
+	public QueryRule getRowlevelSecurityFilters(Class<? extends Entity> klazz)
 	{
 		// TODO Auto-generated method stub
 		return null;
