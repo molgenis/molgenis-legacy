@@ -121,7 +121,7 @@ public class TestDataSet
 			<#elseif f.type == "long">
 			e.set${JavaName(f)}(i.longValue());
 			<#else>
-			e.set${JavaName(f)}("${entity.name}_${f.name}"+i);
+			e.set${JavaName(f)}("${entity.name?lower_case}_${f.name?lower_case}"+i);
 			</#if></#if></#list>
 			this.${name(entity)}.add(e);
 		}

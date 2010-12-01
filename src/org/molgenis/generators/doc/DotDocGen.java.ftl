@@ -101,7 +101,6 @@ digraph G {
 </#list>
 
 /*interface relationships*/
-<#if !skipinterfaces>
         edge [
                 arrowhead = "empty"
                 color = "#808080"
@@ -113,7 +112,6 @@ digraph G {
     	</#if></#list>
     </#if>
 </#list>
-</#if>
 
 /*inheritance relationships*/
         edge [

@@ -1,4 +1,5 @@
 <#include "GeneratorHelper.ftl">
+<#setting number_format="#"/>
 <#--#####################################################################-->
 <#--                                                                   ##-->
 <#--         START OF THE OUTPUT                                       ##-->
@@ -101,7 +102,7 @@ public class TestDatabase
 		//retrieve xref entity candidates
 <#list entity.allFields as f><#if !f.auto>
 	<#if f.type == "xref" || f.type == "mref">
-		List<${JavaName(f.xrefEntity)}> ${name(f)}Xrefs = db.query(${JavaName(f.xrefEntity)}.class).find();	
+		List<${JavaName(f.xrefEntity)}> ${name(f)}Xrefs = db.query(${JavaName(f.xrefEntity)}.class)<#if f.xrefEntity.hasAncestor()>.eq("__Type",${JavaName(f.xrefEntity)}.class.getSimpleName())</#if>.find();	
 	</#if></#if>
 </#list>		
 
@@ -131,8 +132,10 @@ public class TestDatabase
 			e.set${JavaName(f)}(i);
 			<#elseif f.type == "long">
 			e.set${JavaName(f)}(i.longValue());
+			<#elseif f.type == "string">
+			e.set${JavaName(f)}(truncate("${entity.name?lower_case}_${f.name?lower_case}_"+i, ${f.length}));
 			<#else>
-			e.set${JavaName(f)}("${entity.name}_${f.name}_"+i);
+			e.set${JavaName(f)}("${entity.name?lower_case}_${f.name?lower_case}_"+i);
 			</#if></#if></#list>	
 				
 			entities.add(e);
@@ -199,6 +202,13 @@ public class TestDatabase
 	{
 		Integer index = Long.valueOf(Math.round(Math.random() * (options.length - 1) )).intValue();
 		return options[index];
+	}
+	
+	public String truncate(String value, int length)
+	{
+	   if (value != null && value.length() > length)
+          value = value.substring(0, length);
+       return value;
 	}
 	
 	/*

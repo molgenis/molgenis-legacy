@@ -26,11 +26,13 @@ ${entity.description}
 <#assign attributes = false>
 <#assign inherited_attributes = false>
 <#assign unique_constraints = false>
+<#assign color = "style=\"color:black;\"">
 <#list entity.fields as field>
 <#if field.type == "xref" || field.type=="mref">
 <#assign associations = true>
 <#elseif !field.hidden && !field.system>
 <#assign attributes = true>
+<#assign color = "style=\"color:#333333;\"">
 </#if>
 </#list>
 <#list entity.inheritedFields as field>
@@ -53,7 +55,7 @@ ${field.name},
 <table>	
 <#list entity.fields as field>
 <#if !field.system && field.type != "xref" && field.type != "mref">
-<#assign color = ""/>
+<#assign color = "1"/>
 <#if field.entity.name != entity.name><#assign color = "style=\"color:#333333;\""/></#if>
 <tr>
 <td ${color}>
