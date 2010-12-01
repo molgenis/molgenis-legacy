@@ -234,7 +234,7 @@ public class MolgenisOptions
 		if (props.getProperty("mapper_implementation") != null) {
 			this.mapper_implementation = MapperImplementation.get(props.getProperty("mapper_implementation"));
 		}
-		System.out.println("Mapper implementation molgenis name: " + this.mapper_implementation.name());
+		//System.out.println("Mapper implementation molgenis name: " + this.mapper_implementation.name());
 
 		if (new File(propertiesFile).getParentFile() != null)
 		{

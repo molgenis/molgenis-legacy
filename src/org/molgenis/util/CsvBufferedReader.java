@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
+import java.util.zip.DataFormatException;
 
 import org.apache.log4j.Logger;
 
@@ -110,7 +110,7 @@ public class CsvBufferedReader implements CsvReader
 	}
 
 	// @Override
-	public List<String> colnames() throws Exception
+	public List<String> colnames() throws IOException, DataFormatException
 	{
 		// use cached...
 		if (this.columnnames != null)
@@ -159,7 +159,7 @@ public class CsvBufferedReader implements CsvReader
 			// colnames[0] = ROWNAME_COLUMN;
 		} else if (dataline.length > colnames.length + 1)
 		{
-			throw new Exception("Data has more columns than there are headers (" + dataline.length + ">" + colnames.length
+			throw new DataFormatException("Data has more columns than there are headers (" + dataline.length + ">" + colnames.length
 					+ "). Only the first column may be empty. Check whether you have data separators in your data values");
 		}
 
