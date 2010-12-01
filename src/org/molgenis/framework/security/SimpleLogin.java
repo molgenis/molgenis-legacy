@@ -9,7 +9,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.util.Entity;
 
-public class SimpleLogin<E extends Entity> implements Login<E>
+public class SimpleLogin implements Login
 {
 
 	@Override
@@ -28,13 +28,13 @@ public class SimpleLogin<E extends Entity> implements Login<E>
 	}
 
 	@Override
-	public boolean canRead(Class<E> entity)
+	public boolean canRead(Class<? extends Entity> entity)
 	{
 		return true;
 	}
 
 	@Override
-	public boolean canWrite(Class<E> entity)
+	public boolean canWrite(Class<? extends Entity> entity)
 	{
 		return true;
 	}
@@ -90,7 +90,7 @@ public class SimpleLogin<E extends Entity> implements Login<E>
 
 	// door Martijn erbij gezet 3 juli 2009
 	@Override
-	public boolean canWrite(E entity)
+	public boolean canWrite(Entity entity)
 	{
 		// TODO Auto-generated method stub
 		return true;

@@ -23,7 +23,7 @@ import org.molgenis.util.Entity;
  * Developers can implement this interface to realize a variety of security
  * schemes.
  */
-public interface Login<E extends Entity>
+public interface Login
 {
 	/**
 	 * Authenticate the user
@@ -90,7 +90,7 @@ public interface Login<E extends Entity>
 	 * @throws DatabaseException 
 	 * @throws DatabaseException 
 	 */
-	public boolean canRead(Class<E> entityClass) throws DatabaseException;
+	public boolean canRead(Class<? extends Entity> entityClass) throws DatabaseException;
 	
 	/**
 	 * Indicates whether the user has permissions to read data from this class
@@ -100,7 +100,7 @@ public interface Login<E extends Entity>
 	 * @throws DatabaseException 
 	 * @throws DatabaseException 
 	 */
-	public boolean canRead(E entity) throws DatabaseException;
+	public boolean canRead(Entity entity) throws DatabaseException;
 
 	/**
 	 * Indicates whether the user has permissions to add, update, delete data
@@ -109,7 +109,7 @@ public interface Login<E extends Entity>
 	 * @return editpermission
 	 * @throws DatabaseException 
 	 */
-	public boolean canWrite(Class<E> entityClass) throws DatabaseException;
+	public boolean canWrite(Class<? extends Entity> entityClass) throws DatabaseException;
 	
 	/**
 	 * Indicates whether the user has permissions to add, update, delete this
@@ -118,13 +118,13 @@ public interface Login<E extends Entity>
 	 * @return editpermission
 	 * @throws DatabaseException 
 	 */
-	public boolean canWrite(E entity) throws DatabaseException;
+	public boolean canWrite(Entity entity) throws DatabaseException;
 
 	/**
 	 * Creates a filter which can be used by find/count to only retrieve those
 	 * records the user/group is allowed to view
 	 */
-	public QueryRule getRowlevelSecurityFilters(Class<E> klazz);
+	public QueryRule getRowlevelSecurityFilters(Class<? extends Entity> klazz);
 
 
 }
