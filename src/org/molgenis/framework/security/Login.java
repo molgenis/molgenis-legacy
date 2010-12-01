@@ -90,7 +90,7 @@ public interface Login<E extends Entity>
 	 * @throws DatabaseException 
 	 * @throws DatabaseException 
 	 */
-	public <E extends Entity> boolean canRead(Class<E> entityClass) throws DatabaseException;
+	public boolean canRead(Class<E> entityClass) throws DatabaseException;
 	
 	/**
 	 * Indicates whether the user has permissions to read data from this class
@@ -100,7 +100,7 @@ public interface Login<E extends Entity>
 	 * @throws DatabaseException 
 	 * @throws DatabaseException 
 	 */
-	public <E extends Entity> boolean canRead(Entity entity) throws DatabaseException;
+	public boolean canRead(E entity) throws DatabaseException;
 
 	/**
 	 * Indicates whether the user has permissions to add, update, delete data
@@ -109,8 +109,8 @@ public interface Login<E extends Entity>
 	 * @return editpermission
 	 * @throws DatabaseException 
 	 */
-	public <E extends Entity> boolean canWrite(Class<E> entityClass) throws DatabaseException;
-
+	public boolean canWrite(Class<E> entityClass) throws DatabaseException;
+	
 	/**
 	 * Indicates whether the user has permissions to add, update, delete this
 	 * particular entity instance*
@@ -118,12 +118,13 @@ public interface Login<E extends Entity>
 	 * @return editpermission
 	 * @throws DatabaseException 
 	 */
-	public <E extends Entity> boolean canWrite(E entity) throws DatabaseException;
+	public boolean canWrite(E entity) throws DatabaseException;
 
 	/**
 	 * Creates a filter which can be used by find/count to only retrieve those
 	 * records the user/group is allowed to view
 	 */
 	public QueryRule getRowlevelSecurityFilters(Class<E> klazz);
+
 
 }

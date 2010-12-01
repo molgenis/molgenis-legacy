@@ -28,13 +28,13 @@ public class SimpleLogin<E extends Entity> implements Login<E>
 	}
 
 	@Override
-	public <E extends Entity> boolean canRead(Class<E> entity)
+	public boolean canRead(Class<E> entity)
 	{
 		return true;
 	}
 
 	@Override
-	public <E extends Entity> boolean canWrite(Class<E> entity)
+	public boolean canWrite(Class<E> entity)
 	{
 		return true;
 	}
@@ -90,14 +90,14 @@ public class SimpleLogin<E extends Entity> implements Login<E>
 
 	// door Martijn erbij gezet 3 juli 2009
 	@Override
-	public <E extends Entity> boolean canWrite(E entity)
+	public boolean canWrite(E entity)
 	{
 		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
-	public <E extends Entity> boolean canRead(Entity entity)
+	public boolean canRead(Entity entity)
 	{
 		return true;
 	}
