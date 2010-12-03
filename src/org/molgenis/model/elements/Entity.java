@@ -828,6 +828,21 @@ public class Entity extends DBSchema implements Record
 
 		return results;
 	}
+	
+	public Vector<Field> getImplementedFieldsOf(Field.Type type) throws MolgenisModelException
+	{
+		Vector<Field> results = new Vector<Field>();
+
+		for (Field field : getImplementedFields())
+		{
+			if (field.getType() == type)
+			{
+				results.add(field);
+			}
+		}
+
+		return results;
+	}
 
 	/**
 	 * @throws MolgenisModelException

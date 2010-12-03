@@ -73,7 +73,7 @@ public class DotDocGen extends Generator
 			templateArgs.put("module", module);
 			templateArgs.put("entities", entityList);
 			templateArgs.put("skipinterfaces",false);
-			templateArgs.put("rendersystem",true);
+			templateArgs.put("rendersystem",false);
 			target = new File(this.getDocumentationPath(options) + "/objectmodel-uml-diagram-" + module.getName() + ".dot");
 			apply(templateArgs, template, target);
 

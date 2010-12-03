@@ -131,7 +131,7 @@ digraph G {
         ]
 <#list entities as entity>
 	<#if !entity.system || rendersystem>
-		<#list entity.fields as f>
+		<#list entity.implementedFields as f>
 			<#if f.type=="xref" && (!f.xrefEntity.system || rendersystem)>
 		"${JavaName(entity)}" -> "${JavaName(f.xrefEntity)}" [
 			headlabel = "<#if f.nillable>0..</#if>1"
@@ -155,7 +155,7 @@ digraph G {
 <#assign mref_names = []>
 <#list entities as entity>
 	<#if !entity.system || rendersystem>
-		<#list entity.fields as f >
+		<#list entity.implementedFields as f >
 			<#if f.type=="mref" && (!f.xrefEntity.system || rendersystem)>	
 		"${JavaName(entity)}" -> "${JavaName(f.xrefEntity)}"[
 			]

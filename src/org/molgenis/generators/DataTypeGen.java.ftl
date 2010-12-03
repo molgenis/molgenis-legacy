@@ -131,7 +131,13 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	</#foreach>	
 <#--concrete class has method bodies-->
 <#else>
+	// fieldname constants
+    <#foreach field in entity.getImplementedFields()>
+	public final static String ${field.name?upper_case} = "${field.name}";<#if field.type == "xref"><#list field.xrefLabelNames as label>
+	public final static String ${field.name?upper_case}_${label?upper_case} = "${field.name}_${label}";</#list></#if>
+	</#foreach>
 	// member variables (including setters.getters for interface)
+	
 	<#foreach field in entity.getImplementedFields()>
 	
 	//${field.description}[type=${field.type}]

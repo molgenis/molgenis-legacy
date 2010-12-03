@@ -220,11 +220,12 @@ public class MolgenisModelValidator
 		for (Entity xref_entity_from : model.getEntities())
 		{
 			int linktableid = 0;
-			for (Field xref_field_from : xref_entity_from.getFieldsOf(Field.Type.XREF_MULTIPLE))
+			
+			//iterate through all fields including those inherited from interfaces
+			for (Field xref_field_from : xref_entity_from.getImplementedFieldsOf(Field.Type.XREF_MULTIPLE))
 			{
 				try
 				{
-
 					// retrieve the references to the entity+field
 					Entity xref_entity_to = xref_field_from.getXrefEntity();
 					Field xref_field_to = xref_field_from.getXrefField();
@@ -296,7 +297,7 @@ public class MolgenisModelValidator
 					else
 					{
 						// field is xref_field, does it have label(s)?
-						Field xrefField = mrefEntity.getField(xref_field_to.getName());
+						Field xrefField = mrefEntity.getAllField(xref_field_to.getName());
 
 						// verify xref_label
 						if (xrefField != null)
@@ -447,6 +448,9 @@ public class MolgenisModelValidator
 					if (xref_entity.isAbstract()) throw new MolgenisModelException(
 							"cannot refer to abstract xref entity '" + xref_entity_name + "' from field " + entityname
 									+ "." + fieldname);
+
+					if(entity.isAbstract() && field.getType() == Field.Type.XREF_MULTIPLE) throw new MolgenisModelException(
+							"interfaces cannot have mref therefore remove '"+ entityname + "." + fieldname+"'");
 
 					Field xref_field = xref_entity.getField(xref_field_name);
 
