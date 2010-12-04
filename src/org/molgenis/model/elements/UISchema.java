@@ -264,14 +264,7 @@ public class UISchema extends SimpleTree<UISchema>
 		this.label = label;
 	}
 
-	// private methods
-	private static String buildName(String name, UISchema parent)
-	{
-		if (parent != null)
-			return parent.getName() + "." + name;
-		else
-			return name;
-	}
+	// private methode
 
 	public String getNamespace()
 	{

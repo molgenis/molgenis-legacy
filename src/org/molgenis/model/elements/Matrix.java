@@ -17,6 +17,7 @@ import org.molgenis.model.MolgenisModelException;
 
 public class Matrix extends DBSchema
 {
+	private static final long serialVersionUID = 1L;
 	/** the entity that is wrapped by this matrix */
 	String content_entity;
 	/** field of the entity that points to the container */

@@ -515,8 +515,8 @@ public class Entity extends DBSchema implements Record
 		// first fields of the interfaces
 		for (Entity iface : this.getAllImplements())
 		{
-			Vector<Field> ifaceFields = (Vector<Field>) iface.getAllFields()
-					.clone();
+			Vector<Field> ifaceFields = new Vector<Field>();
+			Collections.copy(ifaceFields, iface.getAllFields());
 			for (Field ifaceField : ifaceFields)
 			{
 				// ifaceField.setEntity(this);
@@ -543,7 +543,7 @@ public class Entity extends DBSchema implements Record
 			}
 		}
 
-		return new Vector(all_fields.values());
+		return new Vector<Field>(all_fields.values());
 	}
 
 	public boolean hasSuperclassField(String fieldname)
@@ -567,8 +567,8 @@ public class Entity extends DBSchema implements Record
 		// second fields of the interfaces
 		for (Entity iface : this.getImplements())
 		{
-			Vector<Field> ifaceFields = (Vector<Field>) iface.getAllFields()
-					.clone();
+			Vector<Field> ifaceFields = new Vector<Field>();
+			Collections.copy(ifaceFields, iface.getAllFields());
 			for (Field ifaceField : ifaceFields)
 			{
 				// ifaceField.setEntity(this);
@@ -599,7 +599,7 @@ public class Entity extends DBSchema implements Record
 		}
 
 		// skip self...
-		return new Vector(all_fields.values());
+		return new Vector<Field>(all_fields.values());
 
 	}
 
@@ -649,7 +649,7 @@ public class Entity extends DBSchema implements Record
 			}
 		}
 
-		return new Vector(all_fields.values());
+		return new Vector<Field>(all_fields.values());
 	}
 
 	public Vector<Field> getAllUpdateFields() throws MolgenisModelException

@@ -1,7 +1,5 @@
 package org.molgenis.model.elements;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Import model

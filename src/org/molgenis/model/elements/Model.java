@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.model.MolgenisModelException;
 
 
@@ -249,7 +248,7 @@ public class Model
 		{
 			if (!element.getName().equals(name)) continue;
 
-			for (Class cl : element.getClass().getInterfaces())
+			for (Class<?> cl : element.getClass().getInterfaces())
 			{
 				if (cl.equals(Record.class)) return (Record) element;
 			}

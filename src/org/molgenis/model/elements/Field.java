@@ -37,7 +37,7 @@ import org.molgenis.util.Tree;
  * @author MA Swertz
  * @version 1.0.0
  */
-public class Field implements Serializable
+public class Field implements Serializable 
 {
 	public final static String TYPE_FIELD = "__Type";
 	public final transient Logger logger = Logger.getLogger(Field.class);
@@ -380,7 +380,7 @@ public class Field implements Serializable
 		{
 			try
 			{
-				DBSchema root = entity.getRoot();
+				//DBSchema root = entity.getRoot();
 
 				return this.getXrefField().getFormatString();
 			}
@@ -781,13 +781,13 @@ public class Field implements Serializable
 		return label_names;
 	}
 
-	public Tree getXrefLabelTree() throws MolgenisModelException
+	public  SimpleTree<SimpleTree<?>> getXrefLabelTree() throws MolgenisModelException
 	{
 		List<String> labels = new ArrayList<String>();
 		for (String label : this.getXrefLabelNames())
 			labels.add(getName() + "_" + label);
 
-		Tree root = new SimpleTree(getName(), null);
+		SimpleTree<SimpleTree<?>> root = new SimpleTree<SimpleTree<?>>(getName(), null);
 		root.setValue(this);
 		this.getXrefLabelTree(labels, root);
 		return root;
@@ -804,7 +804,7 @@ public class Field implements Serializable
 	 * @return tree of paths matching labels.
 	 * @throws MolgenisModelException
 	 */
-	protected void getXrefLabelTree(List<String> labels, Tree parent) throws MolgenisModelException
+	protected void getXrefLabelTree(List<String> labels, SimpleTree<?> parent) throws MolgenisModelException
 	{
 		for (Field f : this.getXrefEntity().getAllFields())
 		{
@@ -814,7 +814,7 @@ public class Field implements Serializable
 			{
 				if (labels.contains(name))
 				{
-					Tree leaf = new SimpleTree(name, parent);
+					Tree<SimpleTree<?>> leaf = new  SimpleTree<SimpleTree<?>>(name, parent);
 					leaf.setValue(f);
 					// break;
 				}
@@ -833,11 +833,11 @@ public class Field implements Serializable
 				if (!f.getXrefEntity().equals(this.getXrefEntity()))
 				{
 
-					Tree<Tree> node = new SimpleTree(name, null);
+					SimpleTree<SimpleTree<?>> node = new  SimpleTree<SimpleTree<?>>(name, null);
 					// get fields from subtree
 					f.getXrefLabelTree(labels, node);
 					// only attach the node if it leads to a label
-					for (Tree child : node.getAllChildren())
+					for ( SimpleTree<?> child : node.getAllChildren())
 					{
 						if (labels.contains(child.getName()))
 						{
@@ -1357,7 +1357,7 @@ public class Field implements Serializable
 		{
 			String knownLabels = "";
 			for (String label : this.allPossibleXrefLabels().keySet())
-				knownLabels += ", label";
+				knownLabels += ", "+label;
 			throw new MolgenisModelException("xref_label '" + xref_label + "'unknown for field "
 					+ this.getEntity().getName() + "." + this.getName() + ". Known labels are " + knownLabels);
 		}
