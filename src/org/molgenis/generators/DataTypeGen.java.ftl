@@ -190,20 +190,28 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	}
 	
 	/**
-	 * Shorthand for db.findById(${JavaName(entity)}.class, id).
-	 */
-	public static ${JavaName(entity)} get(Database db, Object id) throws DatabaseException
-	{
-		return db.findById(${JavaName(entity)}.class, id);
-	}
-	
-	/**
 	 * Shorthand for db.find(${JavaName(entity)}.class, QueryRule ... rules).
 	 */
 	public static List find(Database db, QueryRule ... rules) throws DatabaseException
 	{
 		return db.find(${JavaName(entity)}.class, rules);
 	}
+
+<#foreach key in entity.getKeys()>	
+	/**
+	 * 
+	 */
+	public static ${JavaName(entity)} findBy<#list key.fields as f>${JavaName(f)}</#list>(Database db<#list key.fields as f>, ${type(f)} ${name(f)}</#list>) throws DatabaseException, ParseException
+	{
+		Query<${JavaName(entity)}> q = db.query(${JavaName(entity)}.class);
+		<#list key.fields as f>q.eq(${JavaName(entity)}.${f.name?upper_case}, ${name(f)});</#list>
+		List<${JavaName(entity)}> result = q.find();
+		if(result.size()>0) return result.get(0);
+		else return null;
+	}
+
+</#foreach>
+	
 	
 	//getters and setters
 <#--
@@ -359,6 +367,11 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	 
 	
 	<#elseif type_label="mref">
+	public void set${JavaName(field)}(${type(pkey(field.xrefEntity))} ... ${name(field)})
+	{
+		this.set${JavaName(field)}(java.util.Arrays.asList(${name(field)}));
+	}	
+	
 <#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>	
 	/**
 	 * Get a pretty label for cross reference ${JavaName(field)} to <a href="${JavaName(field.xrefEntity)}.html#${JavaName(field.xrefField)}">${JavaName(field.xrefEntity)}.${JavaName(field.xrefField)}</a>.
@@ -795,6 +808,61 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
         </#if>
     }
 </#if>
+
+//helper methods for chaining
+<#if !entity.abstract><#foreach field in entity.getImplementedFields()>
+<#assign type_label = field.getType().toString()>
+		/**
+		 * Allows you to chain commands like Person.firstName("x").secondName("y");
+		 */
+		public ${JavaName(entity)} ${name(field)}(${type(field)} ${name(field)})
+		{
+			this.set${JavaName(field)}(${name(field)});
+			return this;
+		}
+			
+<#if type_label == "xref">
+<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>
+		/**
+		 * Allows you to chain commands like Person.firstName("x").secondName("y");
+		 */		
+		public ${JavaName(entity)} ${name(field)}_${label}(${type(field.xrefLabels[label_index])} ${name(field)}_${label})
+		{
+			this.set${JavaName(field)}_${label}(${name(field)}_${label});
+			return this;
+		}	
+		
+</#list></#if>			
+<#elseif type_label == "mref">
+		/**
+		 * Allows you to chain commands like Person.firstName("x").secondName("y");
+		 */
+		public ${JavaName(entity)} ${name(field)}(${type(pkey(field.xrefEntity))} ... ${name(field)})
+		{
+			this.set${JavaName(field)}(java.util.Arrays.asList(${name(field)}));
+			return this;
+		}	
+<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>
+		/**
+		 * Allows you to chain commands like Person.firstName("x").secondName("y");
+		 */
+		public ${JavaName(entity)} ${name(field)}_${label}(java.util.List<${type(field.xrefLabels[label_index])}> ${name(field)}_${label})
+		{
+			this.set${JavaName(field)}_${label}(${name(field)}_${label});
+			return this;
+		}
+		
+		/**
+		 * Allows you to chain commands like Person.firstName("x").secondName("y");
+		 */
+		public ${JavaName(entity)} ${name(field)}_${label}(${type(field.xrefLabels[label_index])} ... ${name(field)}_${label})
+		{
+			this.set${JavaName(field)}_${label}(java.util.Arrays.asList(${name(field)}_${label}));
+			return this;
+		}
+</#list></#if>	
+</#if>
+</#foreach></#if>
 
 }
 

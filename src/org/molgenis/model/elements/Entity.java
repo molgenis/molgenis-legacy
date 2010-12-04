@@ -29,7 +29,8 @@ public class Entity extends DBSchema implements Record
 	/** Convenience variable for retrieving the primary key from the keys */
 	public static final int PRIMARY_KEY = 0;
 
-	private static final transient Logger logger = Logger.getLogger(Entity.class.getSimpleName());
+	private static final transient Logger logger = Logger
+			.getLogger(Entity.class.getSimpleName());
 	// member variables
 	/** namespace, e.g. used for package name */
 	private String namespace;
@@ -178,7 +179,8 @@ public class Entity extends DBSchema implements Record
 	 */
 	public boolean isRootAncestor()
 	{
-		return this.getParents().size() == 0 && this.getDescendants().size() > 0;
+		return this.getParents().size() == 0
+				&& this.getDescendants().size() > 0;
 	}
 
 	/**
@@ -241,7 +243,8 @@ public class Entity extends DBSchema implements Record
 	{
 		for (Field f : fields)
 		{
-			if (f.getType() == Field.Type.XREF_MULTIPLE || f.getType() == Field.Type.XREF_SINGLE) return true;
+			if (f.getType() == Field.Type.XREF_MULTIPLE
+					|| f.getType() == Field.Type.XREF_SINGLE) return true;
 		}
 
 		return false;
@@ -352,7 +355,8 @@ public class Entity extends DBSchema implements Record
 			if (element.getClass().equals(Entity.class))
 			{
 				if (((Entity) element).hasAncestor()
-						&& ((Entity) element).getAncestor().getName().equals(this.getName()))
+						&& ((Entity) element).getAncestor().getName().equals(
+								this.getName()))
 				{
 					descendants.add((Entity) element);
 				}
@@ -391,8 +395,9 @@ public class Entity extends DBSchema implements Record
 		for (String iface : this.implements_parents)
 		{
 			Entity iface_entity = (Entity) getParent().get(iface);
-			if (iface_entity == null) throw new MolgenisModelException("interface '" + iface
-					+ "' is undefined for entity " + this.getName());
+			if (iface_entity == null) throw new MolgenisModelException(
+					"interface '" + iface + "' is undefined for entity "
+							+ this.getName());
 			implements_entities.add(iface_entity);
 		}
 		return implements_entities;
@@ -405,8 +410,9 @@ public class Entity extends DBSchema implements Record
 		for (String iface : this.implements_parents)
 		{
 			Entity iface_entity = (Entity) getParent().get(iface);
-			if (iface_entity == null) throw new MolgenisModelException("interface " + iface
-					+ " is undefined in entity " + this.getName());
+			if (iface_entity == null) throw new MolgenisModelException(
+					"interface " + iface + " is undefined in entity "
+							+ this.getName());
 
 			implements_entities.addAll(iface_entity.getAllImplements());
 			implements_entities.add(iface_entity);
@@ -416,7 +422,9 @@ public class Entity extends DBSchema implements Record
 
 	public void setImplements(String... implements_parents)
 	{
-		this.setImplements(new Vector<String>(Arrays.asList(implements_parents)));
+		this
+				.setImplements(new Vector<String>(Arrays
+						.asList(implements_parents)));
 	}
 
 	public void setImplements(Vector<String> implements_parents)
@@ -463,12 +471,13 @@ public class Entity extends DBSchema implements Record
 	 * @throws Exception
 	 *             When a field with the same name is already present.
 	 */
-	public void addField(Integer pos, Field field) throws MolgenisModelException
+	public void addField(Integer pos, Field field)
+			throws MolgenisModelException
 	{
 		if (fields.contains(field))
 		{
-			throw new MolgenisModelException("Duplicate Field with name " + field.getName() + "  in entity "
-					+ this.getName());
+			throw new MolgenisModelException("Duplicate Field with name "
+					+ field.getName() + "  in entity " + this.getName());
 		}
 		if (pos != null) fields.add(pos, field);
 		else
@@ -506,7 +515,8 @@ public class Entity extends DBSchema implements Record
 		// first fields of the interfaces
 		for (Entity iface : this.getAllImplements())
 		{
-			Vector<Field> ifaceFields = (Vector<Field>) iface.getAllFields().clone();
+			Vector<Field> ifaceFields = (Vector<Field>) iface.getAllFields()
+					.clone();
 			for (Field ifaceField : ifaceFields)
 			{
 				// ifaceField.setEntity(this);
@@ -521,7 +531,8 @@ public class Entity extends DBSchema implements Record
 		}
 
 		// clean all abstract entities
-		if (!this.isAbstract()) for (Entry<String, Field> entry : all_fields.entrySet())
+		if (!this.isAbstract()) for (Entry<String, Field> entry : all_fields
+				.entrySet())
 		{
 			if (entry.getValue().getEntity().isAbstract())
 			{
@@ -535,7 +546,8 @@ public class Entity extends DBSchema implements Record
 		return new Vector(all_fields.values());
 	}
 
-	public boolean hasSuperclassField(String fieldname) throws MolgenisModelException
+	public boolean hasSuperclassField(String fieldname)
+			throws MolgenisModelException
 	{
 		Vector<Field> fields = getAncestor().getAllFields();
 		for (Field f : fields)
@@ -555,7 +567,8 @@ public class Entity extends DBSchema implements Record
 		// second fields of the interfaces
 		for (Entity iface : this.getImplements())
 		{
-			Vector<Field> ifaceFields = (Vector<Field>) iface.getAllFields().clone();
+			Vector<Field> ifaceFields = (Vector<Field>) iface.getAllFields()
+					.clone();
 			for (Field ifaceField : ifaceFields)
 			{
 				// ifaceField.setEntity(this);
@@ -573,7 +586,8 @@ public class Entity extends DBSchema implements Record
 		}
 
 		// clean all abstract entities
-		if (!this.isAbstract()) for (Entry<String, Field> entry : all_fields.entrySet())
+		if (!this.isAbstract()) for (Entry<String, Field> entry : all_fields
+				.entrySet())
 		{
 			if (entry.getValue().getEntity().isAbstract())
 			{
@@ -618,12 +632,13 @@ public class Entity extends DBSchema implements Record
 		// third of self...
 		for (Field f : getFields())
 		{
-			if(!all_fields.containsKey(f.getName().toLowerCase()))
-				all_fields.put(f.getName().toLowerCase(), f);
+			if (!all_fields.containsKey(f.getName().toLowerCase())) all_fields
+					.put(f.getName().toLowerCase(), f);
 		}
 
 		// replace all abstract entity references, unless self abstract
-		if (!this.isAbstract()) for (Entry<String, Field> entry : all_fields.entrySet())
+		if (!this.isAbstract()) for (Entry<String, Field> entry : all_fields
+				.entrySet())
 		{
 			if (entry.getValue().getEntity().isAbstract())
 			{
@@ -721,7 +736,8 @@ public class Entity extends DBSchema implements Record
 	/**
 	 * @throws MolgenisModelException
 	 */
-	public Vector<Field> getSystemFields(boolean all) throws MolgenisModelException
+	public Vector<Field> getSystemFields(boolean all)
+			throws MolgenisModelException
 	{
 		Vector<Field> the_fields;
 		Vector<Field> system_fields = new Vector<Field>();
@@ -748,7 +764,8 @@ public class Entity extends DBSchema implements Record
 	 * @return All the non-system fields for the entity.
 	 * @throws MolgenisModelException
 	 */
-	public Vector<Field> getNonSystemFields(boolean all) throws MolgenisModelException
+	public Vector<Field> getNonSystemFields(boolean all)
+			throws MolgenisModelException
 	{
 		Vector<Field> the_fields;
 		Vector<Field> nonsystem_fields = new Vector<Field>();
@@ -775,7 +792,8 @@ public class Entity extends DBSchema implements Record
 		for (Field f : getAllFields())
 		{
 			if (f.getType() != Field.Type.XREF_MULTIPLE
-					&& !(f.getType() == Field.Type.INT && f.isAuto() && f.getEntity() == this))
+					&& !(f.getType() == Field.Type.INT && f.isAuto() && f
+							.getEntity() == this))
 			// TODO: fix automatic fields
 			// MAJOR error, arghhhh!!! &&
 			// !getKeyFields(PRIMARY_KEY).contains(f))
@@ -795,7 +813,8 @@ public class Entity extends DBSchema implements Record
 
 		for (Field f : getFields())
 		{
-			if (f.getType() != Field.Type.XREF_MULTIPLE && !(f.getType() == Field.Type.INT && f.isAuto()))
+			if (f.getType() != Field.Type.XREF_MULTIPLE
+					&& !(f.getType() == Field.Type.INT && f.isAuto()))
 			// TODO: fix automatic fields
 			// MAJOR error, arghhhh!!! &&
 			// !getKeyFields(PRIMARY_KEY).contains(f))
@@ -814,7 +833,8 @@ public class Entity extends DBSchema implements Record
 	 * @return All the fields associated with this entity with the given type.
 	 * @throws MolgenisModelException
 	 */
-	public Vector<Field> getFieldsOf(Field.Type type) throws MolgenisModelException
+	public Vector<Field> getFieldsOf(Field.Type type)
+			throws MolgenisModelException
 	{
 		Vector<Field> results = new Vector<Field>();
 
@@ -828,8 +848,9 @@ public class Entity extends DBSchema implements Record
 
 		return results;
 	}
-	
-	public Vector<Field> getImplementedFieldsOf(Field.Type type) throws MolgenisModelException
+
+	public Vector<Field> getImplementedFieldsOf(Field.Type type)
+			throws MolgenisModelException
 	{
 		Vector<Field> results = new Vector<Field>();
 
@@ -854,7 +875,8 @@ public class Entity extends DBSchema implements Record
 		for (Field field : getImplementedFields())
 		{
 			if (field.isSystem()) continue;
-			if (field.getType() == Field.Type.XREF_SINGLE || field.getType() == Field.Type.XREF_MULTIPLE) xref_fields
+			if (field.getType() == Field.Type.XREF_SINGLE
+					|| field.getType() == Field.Type.XREF_MULTIPLE) xref_fields
 					.add(field);
 		}
 
@@ -1038,7 +1060,8 @@ public class Entity extends DBSchema implements Record
 	 *            The fields that combined form the key.
 	 * @throws MolgenisModelException
 	 */
-	public void addKey(List<String> keys, boolean subclass, String description) throws MolgenisModelException
+	public void addKey(List<String> keys, boolean subclass, String description)
+			throws MolgenisModelException
 	{
 		// for (String key : keys)
 		// {
@@ -1093,16 +1116,26 @@ public class Entity extends DBSchema implements Record
 	 */
 	public Vector<Unique> getKeys() throws MolgenisModelException
 	{
+		if (getName().equals("UseCase"))
+		{
+			System.out.println("foud");
+		}
+
 		Vector<Unique> result = new Vector<Unique>();
 
 		// get primary key from parent
 		if (hasAncestor())
 		{
-			Entity parent_entity = (Entity) getParent().get(this.parents.lastElement());
-			if (parent_entity == null) throw new MolgenisModelException("Superclass " + this.parents.lastElement()
-					+ " unknown for entity " + this.getName());
-			if(parent_entity.getKeys().size() == 0) throw new MolgenisModelException(this.parents.lastElement()+" or the interface it implements doesn't define primary key (unique,int,not null)");
+			Entity parent_entity = (Entity) getParent().get(
+					this.parents.lastElement());
+			if (parent_entity == null) throw new MolgenisModelException(
+					"Superclass " + this.parents.lastElement()
+							+ " unknown for entity " + this.getName());
+			if (parent_entity.getKeys().size() == 0) throw new MolgenisModelException(
+					this.parents.lastElement()
+							+ " or the interface it implements doesn't define primary key (unique,int,not null)");
 			result.add(parent_entity.getKeys().firstElement());
+
 		}
 
 		// get other keys from implements
@@ -1115,12 +1148,21 @@ public class Entity extends DBSchema implements Record
 				{
 					Unique copy = new Unique(u);
 					u.setEntity(this);
-					result.add(u);
+					if (!result.contains(copy))
+					{
+						result.add(copy);
+					}
 				}
 			}
 		}
 		// get local keys
-		result.addAll(unique_fields);
+		for (Unique u : unique_fields)
+		{
+			if (!result.contains(u))
+			{
+				result.add(u);
+			}
+		}
 
 		return result;
 	}
@@ -1132,12 +1174,13 @@ public class Entity extends DBSchema implements Record
 	 * @return The key at the given index.
 	 * @throws MolgenisModelException
 	 */
-	public Unique getKey(int index) throws IndexOutOfBoundsException, MolgenisModelException
+	public Unique getKey(int index) throws IndexOutOfBoundsException,
+			MolgenisModelException
 	{
 		if (index < 0 || index >= unique_fields.size())
 		{
-			throw new IndexOutOfBoundsException("No key was found for entity " + this.getName()
-					+ " at the given index " + index + ".");
+			throw new IndexOutOfBoundsException("No key was found for entity "
+					+ this.getName() + " at the given index " + index + ".");
 		}
 
 		return getKeys().get(index);
@@ -1158,7 +1201,8 @@ public class Entity extends DBSchema implements Record
 		}
 		else
 		{
-			logger.warn("[WARNING]: missing key " + index + " for entity " + this.getName());
+			logger.warn("[WARNING]: missing key " + index + " for entity "
+					+ this.getName());
 		}
 
 		return fields;
@@ -1274,18 +1318,19 @@ public class Entity extends DBSchema implements Record
 		}
 		return count;
 	}
-	
-	public int getNumberOfMrefTo(Entity e) throws MolgenisModelException 
+
+	public int getNumberOfMrefTo(Entity e) throws MolgenisModelException
 	{
 		int count = 0;
 		for (Field field : this.getFields())
 		{
-			if(field.isMRef()) {
+			if (field.isMRef())
+			{
 				String xrefEntity = field.getXrefEntityName();
-				if (xrefEntity != null && xrefEntity.equals(e.getName())) count++;				
+				if (xrefEntity != null && xrefEntity.equals(e.getName())) count++;
 			}
 		}
-		return count;		
+		return count;
 	}
 
 	public List<String> getXrefLabels() throws MolgenisModelException
@@ -1293,8 +1338,9 @@ public class Entity extends DBSchema implements Record
 		// get from super class or interfaces
 		if (xrefLabels == null)
 		{
-			if (this.hasAncestor() && this.getAncestor().getXrefLabels() != null) return this.getAncestor()
-					.getXrefLabels();
+			if (this.hasAncestor()
+					&& this.getAncestor().getXrefLabels() != null) return this
+					.getAncestor().getXrefLabels();
 
 			List<Entity> ifaces = new ArrayList<Entity>(this.getImplements());
 			Collections.reverse(ifaces);
@@ -1334,7 +1380,8 @@ public class Entity extends DBSchema implements Record
 		{
 			if (f.getType().equals(Field.Type.XREF_SINGLE))
 			{
-				if (!f.getXrefEntityName().equals(getName())) result.add(f.getXrefEntity());
+				if (!f.getXrefEntityName().equals(getName())) result.add(f
+						.getXrefEntity());
 			}
 		}
 		return result;
