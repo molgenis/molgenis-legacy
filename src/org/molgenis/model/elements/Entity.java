@@ -515,8 +515,8 @@ public class Entity extends DBSchema implements Record
 		// first fields of the interfaces
 		for (Entity iface : this.getAllImplements())
 		{
-			Vector<Field> ifaceFields = new Vector<Field>();
-			Collections.copy(ifaceFields, iface.getAllFields());
+			Vector<Field> ifaceFields = new Vector<Field>(iface.getAllFields());
+			//Collections.copy(ifaceFields, iface.getAllFields());
 			for (Field ifaceField : ifaceFields)
 			{
 				// ifaceField.setEntity(this);
@@ -567,8 +567,8 @@ public class Entity extends DBSchema implements Record
 		// second fields of the interfaces
 		for (Entity iface : this.getImplements())
 		{
-			Vector<Field> ifaceFields = new Vector<Field>();
-			Collections.copy(ifaceFields, iface.getAllFields());
+			Vector<Field> ifaceFields = new Vector<Field>( iface.getAllFields());
+			//Collections.copy(ifaceFields, iface.getAllFields());
 			for (Field ifaceField : ifaceFields)
 			{
 				// ifaceField.setEntity(this);
