@@ -562,13 +562,13 @@ public class GeneratorHelper
 		{
 			case XREF_SINGLE:
 			{
-				Entity e_ref = field.getXrefEntity();
+				//Entity e_ref = field.getXrefEntity();
 				Field f_ref = field.getXrefField();
 				return getFieldType(model, f_ref);
 			}
 			case XREF_MULTIPLE:
 			{
-				Entity e_ref = field.getXrefEntity();
+				//Entity e_ref = field.getXrefEntity();
 				Field f_ref = field.getXrefField();
 				return getFieldType(model, f_ref);
 			}
@@ -713,7 +713,7 @@ public class GeneratorHelper
 			{
 
 				String fullClassName = f.getXrefEntity().getNamespace() + subPkg
-						+ this.firstToUpper(f.getXrefEntityName())+sfx;
+						+ firstToUpper(f.getXrefEntityName())+sfx;
 				if (!imports.contains(fullClassName))
 				{
 					imports.add(fullClassName);
@@ -738,7 +738,7 @@ public class GeneratorHelper
 		}
 
 		// import self
-		String fullClassName = e.getNamespace() + subPkg + this.firstToUpper(e.getName())+sfx;
+		String fullClassName = e.getNamespace() + subPkg + firstToUpper(e.getName())+sfx;
 		if (!imports.contains(fullClassName))
 		{
 			imports.add(fullClassName);

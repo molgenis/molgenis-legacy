@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
-import org.molgenis.generators.db.JpaMapperGen;
 import org.molgenis.model.elements.Matrix;
 import org.molgenis.model.elements.Model;
 
@@ -31,7 +30,7 @@ public abstract class ForEachMatrixGenerator extends Generator
 {
 	public static final transient Logger logger = Logger.getLogger(ForEachMatrixGenerator.class);
 	
-	private boolean includeAbstract = false;
+	//private boolean includeAbstract = false;
 
 	public ForEachMatrixGenerator()
 	{
@@ -40,7 +39,7 @@ public abstract class ForEachMatrixGenerator extends Generator
 
 	public ForEachMatrixGenerator(boolean includeAbstract)
 	{
-		this.includeAbstract = includeAbstract;
+		//this.includeAbstract = includeAbstract;
 	}
 
 	@Override

@@ -8,7 +8,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.Version;
 import org.molgenis.model.elements.Model;
@@ -141,7 +140,7 @@ public abstract class Generator
 		return ".java";
 	}
 
-	private static transient final Logger logger = Logger.getLogger(Generator.class.getSimpleName());
+	//private static transient final Logger logger = Logger.getLogger(Generator.class.getSimpleName());
 
 	public abstract String getDescription();
 }

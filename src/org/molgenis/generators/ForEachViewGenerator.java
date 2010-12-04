@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
-import org.molgenis.generators.db.JpaMapperGen;
 import org.molgenis.model.elements.Model;
 import org.molgenis.model.elements.View;
 

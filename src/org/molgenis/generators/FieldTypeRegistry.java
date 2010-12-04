@@ -3,7 +3,6 @@ package org.molgenis.generators;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.log4j.Logger;
 import org.molgenis.generators.fieldtypes.AbstractField;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Field;
