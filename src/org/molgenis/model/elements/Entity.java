@@ -1116,11 +1116,6 @@ public class Entity extends DBSchema implements Record
 	 */
 	public Vector<Unique> getKeys() throws MolgenisModelException
 	{
-		if (getName().equals("UseCase"))
-		{
-			System.out.println("foud");
-		}
-
 		Vector<Unique> result = new Vector<Unique>();
 
 		// get primary key from parent
