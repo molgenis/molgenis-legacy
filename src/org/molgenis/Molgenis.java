@@ -112,7 +112,7 @@ public class Molgenis {
 	Model model = null;
 	List<Generator> generators = new ArrayList<Generator>();
 
-	public Molgenis(String propertiesFile, Class... generatorsToUse) throws Exception {
+	public Molgenis(String propertiesFile, Class<? extends Generator>... generatorsToUse) throws Exception {
 		this(new MolgenisOptions(propertiesFile), generatorsToUse);
 	}
 
@@ -126,7 +126,7 @@ public class Molgenis {
 	 * @throws Exception
 	 */
 	public <E extends Generator> Molgenis(MolgenisOptions options,
-			Class<Generator>... generatorsToUse) throws Exception {
+			Class<? extends Generator>... generatorsToUse) throws Exception {
 		this.options = options;
 
 		Logger.getLogger("freemarker.cache").setLevel(Level.INFO);
@@ -323,7 +323,7 @@ public class Molgenis {
 		// clean out generators
 		List<Generator> use = new ArrayList<Generator>();
 		if (generatorsToUse.length > 0) {
-			for (Class<Generator> c : generatorsToUse) {
+			for (Class<? extends Generator> c : generatorsToUse) {
 				use.add(c.newInstance());
 			}
 			generators = use;
@@ -423,11 +423,11 @@ public class Molgenis {
 	 * @return MOLGENIS model
 	 * @throws Exception
 	 */
-	private void parse() throws Exception {
-		MolgenisModel language = new MolgenisModel();
-		model = language.parse(options);
-		logger.debug("\nUsing metamodel:\n" + model);
-	}
+//	private void parse() throws Exception {
+//		MolgenisModel language = new MolgenisModel();
+//		model = language.parse(options);
+//		logger.debug("\nUsing metamodel:\n" + model);
+//	}
 
 	/**
 	 * Load the generated SQL into the database.
@@ -561,7 +561,7 @@ public class Molgenis {
 		}
 
 		// print
-		for (Map.Entry entry : map.entrySet()) {
+		for (Map.Entry<String,String> entry : map.entrySet()) {
 			// create padding
 			String spaces = "";
 			for (int i = entry.getKey().toString().length(); i < padding; i++) {

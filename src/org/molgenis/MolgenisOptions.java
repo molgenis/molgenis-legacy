@@ -4,12 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Properties;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
-
 import org.molgenis.util.cmdline.CmdLineException;
 import org.molgenis.util.cmdline.CmdLineParser;
 import org.molgenis.util.cmdline.Option;
