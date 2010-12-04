@@ -9,7 +9,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
-import org.molgenis.generators.Generator;
 import org.molgenis.generators.sql.MySqlCreateClassPerTableGen;
 import org.molgenis.model.MolgenisModel;
 import org.molgenis.model.elements.Entity;
@@ -36,7 +35,7 @@ public class CsvExportGen extends MySqlCreateClassPerTableGen
 		
 		List<Entity> entityList = model.getEntities();
 		MolgenisModel.sortEntitiesByDependency(entityList,model); //side effect?
-		String packageName = this.getClass().getPackage().toString().substring(Generator.class.getPackage().toString().length());
+		//String packageName = this.getClass().getPackage().toString().substring(Generator.class.getPackage().toString().length());
 
 
 		File target = new File( this.getSourcePath(options) + APP_DIR+"/CsvExport.java" );

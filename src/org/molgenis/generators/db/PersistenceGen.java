@@ -4,14 +4,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.generators.Generator;
-import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Model;
 
 import freemarker.template.Template;

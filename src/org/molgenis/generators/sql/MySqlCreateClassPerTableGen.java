@@ -10,14 +10,12 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.generators.Generator;
-import org.molgenis.generators.db.JpaMapperGen;
 import org.molgenis.model.MolgenisModel;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Model;
 
 import freemarker.template.Template;
 
-@Deprecated
 public class MySqlCreateClassPerTableGen extends Generator
 {
 	public static final transient Logger logger = Logger.getLogger(MySqlCreateClassPerTableGen.class);

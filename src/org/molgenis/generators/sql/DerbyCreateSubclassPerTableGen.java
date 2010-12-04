@@ -7,11 +7,9 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.Map;
 
-import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.generators.Generator;
-import org.molgenis.generators.db.JpaMapperGen;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Model;
 

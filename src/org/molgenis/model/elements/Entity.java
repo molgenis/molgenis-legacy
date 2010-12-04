@@ -1081,18 +1081,6 @@ public class Entity extends DBSchema implements Record
 	{
 		Vector<Unique> all_keys = new Vector<Unique>();
 
-		if (hasImplements())
-		{
-			for (Entity e : getImplements())
-			{
-				Vector<Unique> uniques = e.getAllKeys();
-				// for(Unique u: uniques) for (Field f: u.getFields())
-				// {
-				// f.setEntity(this);
-				// }
-				all_keys.addAll(uniques);
-			}
-		}
 		if (getAncestor() != null)
 		{
 			all_keys.addAll(getAncestor().getAllKeys());
@@ -1118,6 +1106,11 @@ public class Entity extends DBSchema implements Record
 	{
 		Vector<Unique> result = new Vector<Unique>();
 
+		if(getName().equals("Data"))
+		{
+			System.out.println("breakpoint");
+		}
+		
 		// get primary key from parent
 		if (hasAncestor())
 		{

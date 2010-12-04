@@ -8,7 +8,6 @@ import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.Map;
 
-import org.apache.commons.lang.CharUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.generators.Generator;

@@ -1,14 +1,8 @@
 package org.molgenis.generators.doc;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.List;
@@ -17,8 +11,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.generators.Generator;
-import org.molgenis.generators.db.JpaMapperGen;
-import org.molgenis.model.MolgenisModel;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Model;
 import org.molgenis.model.elements.Module;
@@ -95,11 +87,11 @@ public class DotDocGen extends Generator
 	{
 		// write script to disc
 		String command = "";
-		String error = "";
+//		String error = "";
 		String result = "";
-		String output = "";
-		File inputfile = null;
-		File outputfile = null;
+//		String output = "";
+//		File inputfile = null;
+//		File outputfile = null;
 		try
 		{
 
@@ -165,18 +157,18 @@ public class DotDocGen extends Generator
 	}
 
 	/** Helper function to translate streams to strings */
-	private String streamToString(InputStream inputStream) throws IOException
-	{
-		StringBuffer fileContents = new StringBuffer();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-		String line;
-		while ((line = reader.readLine()) != null)
-		{
-			fileContents.append(line + "\n");
-		}
-		reader.close();
-		inputStream.close();
-		return fileContents.toString();
-	}
+//	private String streamToString(InputStream inputStream) throws IOException
+//	{
+//		StringBuffer fileContents = new StringBuffer();
+//		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+//		String line;
+//		while ((line = reader.readLine()) != null)
+//		{
+//			fileContents.append(line + "\n");
+//		}
+//		reader.close();
+//		inputStream.close();
+//		return fileContents.toString();
+//	}
 
 }

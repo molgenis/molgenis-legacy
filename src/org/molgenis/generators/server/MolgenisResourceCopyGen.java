@@ -1,28 +1,17 @@
 package org.molgenis.generators.server;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-
-import java.io.StringReader;
-import java.net.URL;
-import java.nio.channels.Channel;
-import java.nio.channels.FileChannel;
-import java.nio.channels.ReadableByteChannel;
 import java.util.Enumeration;
-import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
 import org.apache.log4j.Logger;
-import org.molgenis.Molgenis;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.ui.MolgenisOriginalStyle;
 import org.molgenis.generators.Generator;
@@ -60,10 +49,10 @@ public class MolgenisResourceCopyGen extends Generator
 			}
 
 			JarFile jar = new JarFile(jarPath);
-			Enumeration entries = jar.entries();
+			Enumeration<JarEntry> entries = jar.entries();
 			while (entries.hasMoreElements())
 			{
-				JarEntry file = (JarEntry) entries.nextElement();
+				JarEntry file = entries.nextElement();
 				if (file.getName().contains(RESOURCE_FOLDER))
 				{
 					if (!file.isDirectory())

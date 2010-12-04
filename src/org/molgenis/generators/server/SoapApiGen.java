@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.generators.Generator;
 import org.molgenis.generators.GeneratorHelper;
-import org.molgenis.generators.db.JpaMapperGen;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Method;
 import org.molgenis.model.elements.Model;

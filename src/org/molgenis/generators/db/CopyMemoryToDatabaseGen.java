@@ -9,8 +9,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
-import org.molgenis.generators.Generator;
-import org.molgenis.generators.csv.CsvImportGen;
 import org.molgenis.generators.sql.MySqlCreateClassPerTableGen;
 import org.molgenis.model.MolgenisModel;
 import org.molgenis.model.elements.Entity;

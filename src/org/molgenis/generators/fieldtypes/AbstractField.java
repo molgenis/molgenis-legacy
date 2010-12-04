@@ -2,7 +2,6 @@ package org.molgenis.generators.fieldtypes;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.molgenis.generators.FieldTypeRegistry;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Entity;

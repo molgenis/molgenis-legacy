@@ -1,9 +1,7 @@
 package org.molgenis.generators.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
-import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Field;
-import org.molgenis.model.elements.Field.Type;
 
 public class XrefField extends AbstractField 
 {	
@@ -16,7 +14,7 @@ public class XrefField extends AbstractField
 	@Override
 	public String getJavaPropertyType() throws MolgenisModelException
 	{
-		Entity e_ref = f.getXrefEntity();
+		//Entity e_ref = f.getXrefEntity();
 		Field f_ref = f.getXrefField();
 		return getFieldType(f_ref).getJavaPropertyType();
 	}
