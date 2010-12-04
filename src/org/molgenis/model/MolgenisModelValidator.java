@@ -219,7 +219,6 @@ public class MolgenisModelValidator
 		// find the multi-ref fields
 		for (Entity xref_entity_from : model.getEntities())
 		{
-			int linktableid = 0;
 			
 			//iterate through all fields including those inherited from interfaces
 			for (Field xref_field_from : xref_entity_from.getImplementedFieldsOf(Field.Type.XREF_MULTIPLE))
@@ -381,7 +380,7 @@ public class MolgenisModelValidator
 			// if the sizes are not equal, then we could not link up all the
 			// entities
 			Vector<Entity> viewentities = new Vector<Entity>();
-			for (Pair p : references)
+			for (Pair<Entity, Entity> p : references)
 			{
 				if (!viewentities.contains(p.getA())) viewentities.add((Entity) p.getA());
 				if (!viewentities.contains(p.getB())) viewentities.add((Entity) p.getB());
@@ -517,7 +516,7 @@ public class MolgenisModelValidator
 						else
 						{
 							// validate the label
-							boolean valid = false;
+
 							if (!xref_label_name.equals(xref_field_name)
 									&& !field.allPossibleXrefLabels().keySet().contains(xref_label_name))
 							{
@@ -533,13 +532,6 @@ public class MolgenisModelValidator
 
 						}
 
-						// if (xref_label.isNillable()) throw new
-						// MolgenisModelException("'" + xref_label_names
-						// + "' cannot be used as xref label for field '" +
-						// entityname + "." + fieldname
-						// + "' because it can be null (nullable='true')");
-
-						// TODO check if the labels are unique
 					}
 
 					if (xref_field.getType().equals(Field.Type.TEXT)) throw new MolgenisModelException("xref field '"
@@ -645,7 +637,7 @@ public class MolgenisModelValidator
 				// if any
 				try
 				{
-					Vector<Field> keys = new Vector<Field>();
+
 					for (Field key : iface.getKeyFields(Entity.PRIMARY_KEY))
 					{
 						// if not already exists
@@ -664,12 +656,10 @@ public class MolgenisModelValidator
 							logger.debug("copy primary key " + field.getName() + " from interface " + iface.getName()
 									+ " to " + entity.getName());
 							entity.addField(field);
-							// entity.addKey(field,
-							// iface.getKeys().get(0).getDescription());
+
 						}
 					}
-					// if (keys.size() > 0) entity.getKeys().add(0, new
-					// Unique(entity,keys, false));
+
 				}
 				catch (Exception e)
 				{
@@ -1117,19 +1107,6 @@ public class MolgenisModelValidator
 		if (string.length() > 0) return string.substring(0, 1).toUpperCase() + string.substring(1);
 		else
 			return " ERROR[STRING EMPTY] ";
-	}
-
-	private static boolean containsOnlyLetters(String name)
-	{
-		for (int i = 0; i < name.length(); i++)
-		{
-			if (!Character.isLetter(name.charAt(i)))
-			{
-
-				return false;
-			}
-		}
-		return true;
 	}
 
 }

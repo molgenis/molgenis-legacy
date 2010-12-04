@@ -1,10 +1,8 @@
 package org.molgenis.model;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -64,7 +62,7 @@ public class MolgenisModel
 		// buble sort
 		int count = 0;
 		int maxcount = entityList.size() * entityList.size();
-		Entity swapCheck = null;
+
 		for (int i = 0; i < entityList.size() - 1; i++)
 		{
 			if (count == maxcount)

@@ -6,7 +6,6 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -468,15 +467,6 @@ public class JDBCModelExtractor
 			logger.error(e);
 			e.printStackTrace();
 			return null;
-		}
-	}
-
-	private static void logResultSet(ResultSet rs) throws SQLException
-	{
-		while (rs.next())
-		{
-			Tuple t = new ResultSetTuple(rs); // logger.debug(rs.get)
-			// logger.debug(t);
 		}
 	}
 

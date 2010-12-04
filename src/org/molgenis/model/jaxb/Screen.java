@@ -2,7 +2,6 @@ package org.molgenis.model.jaxb;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlAccessorType(XmlAccessType.FIELD) //so use fields bypassing get/set
 public class Screen
