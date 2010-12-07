@@ -180,6 +180,32 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	</#list>
 	}
 	
+<#assign numFields = 0/>
+	/**
+	 * Constructor with only the required fields
+	 */
+	public ${JavaName(entity)}(<#list entity.fields as f><#if !f.nillable><#if numFields &gt; 0>,</#if><#assign numFields = numFields + 1>${type(f)} ${name(f)}</#if></#list>)
+	{
+<#list entity.fields as f><#if !f.nillable>
+		this.set${JavaName(f)}(${name(f)});
+</#if></#list>	
+	}
+
+<#if numFields &lt; entity.fields?size>
+   /**
+	 * Constructor with all fields
+	 */
+	public ${JavaName(entity)}(<#list entity.fields as f><#if f_index &gt; 0>,</#if>${type(f)} ${name(f)}</#list>)
+	{
+<#list entity.fields as f>
+		this.set${JavaName(f)}(${name(f)});
+</#list>
+	}
+</#if>
+	
+	
+	
+	
 	//static methods
 	/**
 	 * Shorthand for db.query(${JavaName(entity)}.class).
@@ -807,18 +833,37 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
         return null;
         </#if>
     }
-</#if>
 
-//helper methods for chaining
-<#--
+
+	public static ${JavaName(entity)}Factory create()
+	{
+		return new ${JavaName(entity)}Factory();
+	}
+
+	//helper methods for chaining
+	public static class ${JavaName(entity)}Factory<#if entity.hasAncestor()> extends ${JavaName(entity.getAncestor())}Factory</#if>
+	{
+		private ${JavaName(entity)} object = null;
+	
+		public ${JavaName(entity)}Factory()
+		{
+	 		this.object = new ${JavaName(entity)}();
+		}
+		
+		public ${JavaName(entity)} create()
+		{
+			${JavaName(entity)} copy = object;
+			object = null;
+			return copy;
+		}
 <#if !entity.abstract><#foreach field in entity.getAllFields()>
 <#assign type_label = field.getType().toString()>
 		/**
 		 * Allows you to chain commands like Person.firstName("x").secondName("y");
 		 */
-		public ${JavaName(entity)} ${name(field)}(${type(field)} ${name(field)})
+		public ${JavaName(entity)}Factory ${name(field)}(${type(field)} ${name(field)})
 		{
-			this.set${JavaName(field)}(${name(field)});
+			object.set${JavaName(field)}(${name(field)});
 			return this;
 		}
 			
@@ -827,9 +872,9 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 		/**
 		 * Allows you to chain commands like Person.firstName("x").secondName("y");
 		 */		
-		public ${JavaName(entity)} ${name(field)}_${label}(${type(field.xrefLabels[label_index])} ${name(field)}_${label})
+		public ${JavaName(entity)}Factory ${name(field)}_${label}(${type(field.xrefLabels[label_index])} ${name(field)}_${label})
 		{
-			this.set${JavaName(field)}_${label}(${name(field)}_${label});
+			object.set${JavaName(field)}_${label}(${name(field)}_${label});
 			return this;
 		}	
 		
@@ -838,33 +883,36 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 		/**
 		 * Allows you to chain commands like Person.firstName("x").secondName("y");
 		 */
-		public ${JavaName(entity)} ${name(field)}(${type(pkey(field.xrefEntity))} ... ${name(field)})
+		public ${JavaName(entity)}Factory ${name(field)}(${type(pkey(field.xrefEntity))} ... ${name(field)})
 		{
-			this.set${JavaName(field)}(java.util.Arrays.asList(${name(field)}));
+			object.set${JavaName(field)}(java.util.Arrays.asList(${name(field)}));
 			return this;
 		}	
 <#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>
 		/**
 		 * Allows you to chain commands like Person.firstName("x").secondName("y");
 		 */
-		public ${JavaName(entity)} ${name(field)}_${label}(java.util.List<${type(field.xrefLabels[label_index])}> ${name(field)}_${label})
+		public ${JavaName(entity)}Factory ${name(field)}_${label}(java.util.List<${type(field.xrefLabels[label_index])}> ${name(field)}_${label})
 		{
-			this.set${JavaName(field)}_${label}(${name(field)}_${label});
+			object.set${JavaName(field)}_${label}(${name(field)}_${label});
 			return this;
 		}
 		
 		/**
 		 * Allows you to chain commands like Person.firstName("x").secondName("y");
 		 */
-		public ${JavaName(entity)} ${name(field)}_${label}(${type(field.xrefLabels[label_index])} ... ${name(field)}_${label})
+		public ${JavaName(entity)}Factory ${name(field)}_${label}(${type(field.xrefLabels[label_index])} ... ${name(field)}_${label})
 		{
-			this.set${JavaName(field)}_${label}(java.util.Arrays.asList(${name(field)}_${label}));
+			object.set${JavaName(field)}_${label}(java.util.Arrays.asList(${name(field)}_${label}));
 			return this;
 		}
 </#list></#if>	
 </#if>
 </#foreach></#if>
--->
+}
+</#if>
+
+
 
 }
 
