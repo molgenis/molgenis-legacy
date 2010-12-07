@@ -1106,10 +1106,10 @@ public class Entity extends DBSchema implements Record
 	{
 		Vector<Unique> result = new Vector<Unique>();
 
-		if(getName().equals("Data"))
-		{
-			System.out.println("breakpoint");
-		}
+//		if(getName().equals("Data"))
+//		{
+//			System.out.println("breakpoint");
+//		}
 		
 		// get primary key from parent
 		if (hasAncestor())

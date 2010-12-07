@@ -184,7 +184,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	/**
 	 * Shorthand for db.query(${JavaName(entity)}.class).
 	 */
-	public static Query<<#if entity.hasDescendants()>? extends </#if>${JavaName(entity)}> query(Database db)
+	public static Query<? extends ${JavaName(entity)}> query(Database db)
 	{
 		return db.query(${JavaName(entity)}.class);
 	}
@@ -192,7 +192,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	/**
 	 * Shorthand for db.find(${JavaName(entity)}.class, QueryRule ... rules).
 	 */
-	public static List<<#if entity.hasDescendants()>? extends </#if>${JavaName(entity)}> find(Database db, QueryRule ... rules) throws DatabaseException
+	public static List<? extends ${JavaName(entity)}> find(Database db, QueryRule ... rules) throws DatabaseException
 	{
 		return db.find(${JavaName(entity)}.class, rules);
 	}
@@ -810,6 +810,7 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 </#if>
 
 //helper methods for chaining
+<#--
 <#if !entity.abstract><#foreach field in entity.getAllFields()>
 <#assign type_label = field.getType().toString()>
 		/**
@@ -863,6 +864,7 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 </#list></#if>	
 </#if>
 </#foreach></#if>
+-->
 
 }
 
