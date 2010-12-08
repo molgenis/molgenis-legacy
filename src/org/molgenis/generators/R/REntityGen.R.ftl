@@ -62,8 +62,29 @@
     return(data_frame)
 }
 
-#freely find ${JavaName(entity)} 
-find.${RName(entity)} <- function( <#list allFields(entity) as f><#if f.name == typefield()><#else><#if f.type="xref">${RName(f)}_${RName(f.xrefField)}=NULL<#if f.xrefLabelNames[0] != f.xrefFieldName><#list f.xrefLabelNames as label>, ${RName(f)}_${RName(label)}=NULL</#list></#if><#else>${RName(f)}=NULL</#if> <#if f_has_next>, </#if></#if></#list>, .usesession = T, .verbose=T )
+#freely find ${JavaName(entity)}
+<#assign functionHeader = "function(">
+<#list allFields(entity) as f>
+	<#if f.name != typefield()>
+		<#if f.type="xref">
+			<#assign functionHeader = functionHeader + RName(f) + "_" + RName(f.xrefField) + "=NULL">
+			<#if f.xrefLabelNames[0] != f.xrefFieldName>
+				<#list f.xrefLabelNames as label>
+					<#assign functionHeader = functionHeader + "," + RName(f) + "_" + RName(label) + "=NULL">
+				</#list>
+			</#if>
+		<#else>
+			<#assign functionHeader = functionHeader + RName(f) + "=NULL">
+		</#if>
+		<#if f_has_next>
+			<#assign functionHeader = functionHeader + ",">
+		</#if>
+	</#if>
+</#list>
+<#assign functionHeader = functionHeader + ", .usesession = T, .verbose=T)">
+<#assign functionHeader = functionHeader?replace(",,",",")>
+
+find.${RName(entity)} <- ${functionHeader}
 {
 	#add session parameters
     <#list skey_fields as f><#if f.type == "xref">
