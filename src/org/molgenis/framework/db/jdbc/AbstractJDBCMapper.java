@@ -800,7 +800,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 		List<QueryRule> rules = new ArrayList<QueryRule>();
 		for (QueryRule rule : user_rules)
 		{
-			if (rule.getOperator().equals(Operator.NESTED))
+			if (rule.getOperator() != null && rule.getOperator().equals(Operator.NESTED))
 			{
 				QueryRule r = new QueryRule(this.rewriteRules(db, rule.getNestedRules()));
 				//r.setOr(rule.isOr());

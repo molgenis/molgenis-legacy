@@ -1190,7 +1190,14 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 //			}
 			
 			//create a query on xref_entity
-			Query q = getDatabase().query(xref_entity);
+			Database db = getDatabase();
+			
+			//get the user interface and find the login
+			HttpSession session = request.getSession();
+			ScreenModel molgenis = (UserInterface) session.getAttribute("application");
+			Login login = molgenis.getRootScreen().getLogin();
+			db.setLogin(login);
+			Query q = db.query(xref_entity);
 			
 
 			// create a CustomQuery

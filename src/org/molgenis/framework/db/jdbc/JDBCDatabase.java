@@ -238,7 +238,7 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 	// @Override
 	public <E extends Entity> int count(Class<E> klazz, QueryRule... rules) throws DatabaseException
 	{
-		return getMapperFor(klazz).count(rules);
+		return getMapperFor(klazz).count(addSecurityFilters(klazz,rules));
 	}
 
 	// @Override
@@ -247,6 +247,8 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 		try
 		{
 			Query<E> q = (Query<E>) this.query(example.getClass());
+			//add first security rules
+			q.addRules(this.getSecurity().getRowlevelSecurityFilters(example.getClass()));
 
 			for (String field : example.getFields())
 			{
@@ -275,39 +277,78 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 	public <E extends Entity> List<E> find(Class<E> klazz, QueryRule... rules) throws DatabaseException
 	{
 		// add security filters
+//		QueryRule securityRules = null;
+//		if (this.getSecurity() != null) securityRules = this.getSecurity().getRowlevelSecurityFilters(klazz);
+//		if (securityRules != null)
+//		{
+//			if (rules != null && rules.length > 1)
+//			{
+//				List<QueryRule> all = new ArrayList<QueryRule>();
+//				all.add(securityRules);
+//				all.addAll(Arrays.asList(rules));
+//				return getMapperFor(klazz).find(all.toArray(new QueryRule[all.size()]));
+//			}
+//			return getMapperFor(klazz).find(securityRules);
+//		}
+		return getMapperFor(klazz).find(addSecurityFilters(klazz,rules));
+	}
+	
+	private <E extends Entity> QueryRule[] addSecurityFilters(Class<E> klazz, QueryRule ... rules)
+	{
+		// add security filters
 		QueryRule securityRules = null;
-		if (this.getSecurity() != null) securityRules = this.getSecurity().getRowlevelSecurityFilters(klazz);
+		
+		//if there is a security system, create the security rules
+		if (getSecurity() != null)
+		{
+			securityRules = getSecurity().getRowlevelSecurityFilters(klazz);
+		}
+		//if the security system returned filters then merge with user rules
 		if (securityRules != null)
 		{
+			//if user rules, merge user rules with security rules
 			if (rules != null && rules.length > 1)
 			{
 				List<QueryRule> all = new ArrayList<QueryRule>();
 				all.add(securityRules);
 				all.addAll(Arrays.asList(rules));
-				return getMapperFor(klazz).find(all.toArray(new QueryRule[all.size()]));
+				return all.toArray(new QueryRule[all.size()]);
 			}
-			return getMapperFor(klazz).find(securityRules);
+			//if no user rules than only return security rules
+			else
+			{
+				return new QueryRule[]{securityRules};
+			}
 		}
-		return getMapperFor(klazz).find(rules);
+		//if the security system 
+		else
+		{
+			return rules;
+		}
 	}
 
 	// @Override
 	public <E extends Entity> void find(Class<E> klazz, CsvWriter writer, QueryRule... rules) throws DatabaseException
 	{
-		getMapperFor(klazz).find(writer, rules);
+		getMapperFor(klazz).find(writer, addSecurityFilters(klazz,rules));
 	}
 
 	// @Override
 	public <E extends Entity> void find(Class<E> klazz, CsvWriter writer, List<String> fieldsToExport,
 			QueryRule... rules) throws DatabaseException
 	{
-		getMapperFor(klazz).find(writer, fieldsToExport, rules);
+		getMapperFor(klazz).find(writer, fieldsToExport, addSecurityFilters(klazz,rules));
 	}
 
 	// @Override
 	public <E extends Entity> Query<E> query(Class<E> klazz)
 	{
-		return new QueryImp<E>(this, klazz);
+		Query<E> q = new QueryImp<E>(this, klazz);
+//		if(this.getSecurity().getRowlevelSecurityFilters(klazz) != null)
+//		{
+//			q.addRules(this.getSecurity().getRowlevelSecurityFilters(klazz));
+//		}
+		return q;
 	}
 
 	// @Override
