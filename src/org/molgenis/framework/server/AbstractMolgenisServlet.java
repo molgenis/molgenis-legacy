@@ -710,6 +710,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		try
 		{
 			db = this.getDatabase();
+			db.setLogin(new org.molgenis.framework.security.SimpleLogin());
 
 			PrintWriter out = response.getWriter();
 
