@@ -62,29 +62,26 @@
     return(data_frame)
 }
 
-#freely find ${JavaName(entity)}
-<#assign functionHeader = "function(">
+#freely find ${JavaName(entity)} 
+<@compress single_line=true>
+find.${RName(entity)} <- function(
 <#list allFields(entity) as f>
 	<#if f.name != typefield()>
 		<#if f.type="xref">
-			<#assign functionHeader = functionHeader + RName(f) + "_" + RName(f.xrefField) + "=NULL">
+			${RName(f)}_${RName(f.xrefField)}=NULL
 			<#if f.xrefLabelNames[0] != f.xrefFieldName>
 				<#list f.xrefLabelNames as label>
-					<#assign functionHeader = functionHeader + "," + RName(f) + "_" + RName(label) + "=NULL">
+					, ${RName(f)}_${RName(label)}=NULL
 				</#list>
 			</#if>
 		<#else>
-			<#assign functionHeader = functionHeader + RName(f) + "=NULL">
+			${RName(f)}=NULL
 		</#if>
-		<#if f_has_next>
-			<#assign functionHeader = functionHeader + ",">
-		</#if>
+		,
 	</#if>
 </#list>
-<#assign functionHeader = functionHeader + ", .usesession = T, .verbose=T)">
-<#assign functionHeader = functionHeader?replace(",,",",")>
-
-find.${RName(entity)} <- ${functionHeader}
+.usesession = T, .verbose=T)
+</@compress>
 {
 	#add session parameters
     <#list skey_fields as f><#if f.type == "xref">
