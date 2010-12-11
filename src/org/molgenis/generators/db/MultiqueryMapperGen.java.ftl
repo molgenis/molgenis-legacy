@@ -192,7 +192,7 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 			sql.append(")");
 		}
 		<#-- old: <#list updateFields(entity) as f>-->
-		sql.append(" ON DUPLICATE KEY UPDATE <#list updateFields(entity) as f>${SqlName(f)}=<#if f.isAuto()>LAST_INSERT_ID<#else>VALUES</#if>(${SqlName(f)})<#if f_has_next>,</#if></#list>");
+		sql.append(" ON DUPLICATE KEY UPDATE <#list updateFields(entity) as f>${SqlName(f)}=<#if f.type = "int" && f.isAuto()>LAST_INSERT_ID<#else>VALUES</#if>(${SqlName(f)})<#if f_has_next>,</#if></#list>");
 
 		//execute sql
 		Statement stmt = conn.createStatement();	

@@ -39,6 +39,6 @@ public class StringInput extends HtmlInput
 		if (INJECT_JQUERY && getStyle() != null) attributes += " style=\"" + getStyle() + "\"";
 
 		return "<input type=\"text\" id=\"" + getId() + "\" class=\"" + classAtt + "\" name=\"" + getName()
-				+ "\" value=\"" + getValue() + "\" " + attributes + tabIndex + " />";
+				+ "\" size=\"32\" value=\"" + getValue() + "\" " + attributes + tabIndex + " />";
 	}
 }

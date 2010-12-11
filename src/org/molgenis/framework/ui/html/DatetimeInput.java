@@ -39,7 +39,7 @@ public class DatetimeInput extends HtmlInput
 			return input.toHtml();
 		}
 
-		return "<input type=\"text\" id=\"" + this.getId() + "\" name=\"" + getName() + "\" value=\"" + getValue() + "\" " + readonly + "\" autocomplete=\"off\"/>";
+		return "<input type=\"text\" id=\"" + this.getId() + "\" name=\"" + getName() + "\"  size=\"32\" value=\"" + getValue() + "\" " + readonly + "\" autocomplete=\"off\"/>";
 	}
 
 	public String getValue()
