@@ -804,7 +804,7 @@ public class Field implements Serializable
 	 * @return tree of paths matching labels.
 	 * @throws MolgenisModelException
 	 */
-	protected void getXrefLabelTree(List<String> labels, SimpleTree<?> parent) throws MolgenisModelException
+	protected void getXrefLabelTree(List<String> labels, Tree parent) throws MolgenisModelException
 	{
 		for (Field f : this.getXrefEntity().getAllFields())
 		{
@@ -814,7 +814,7 @@ public class Field implements Serializable
 			{
 				if (labels.contains(name))
 				{
-					Tree<SimpleTree<?>> leaf = new  SimpleTree<SimpleTree<?>>(name, parent);
+					Tree leaf = new SimpleTree(name, parent);
 					leaf.setValue(f);
 					// break;
 				}
@@ -833,11 +833,11 @@ public class Field implements Serializable
 				if (!f.getXrefEntity().equals(this.getXrefEntity()))
 				{
 
-					SimpleTree<SimpleTree<?>> node = new  SimpleTree<SimpleTree<?>>(name, null);
+					Tree<Tree> node = new SimpleTree(name, null);
 					// get fields from subtree
 					f.getXrefLabelTree(labels, node);
 					// only attach the node if it leads to a label
-					for ( SimpleTree<?> child : node.getAllChildren())
+					for (Tree child : node.getAllChildren())
 					{
 						if (labels.contains(child.getName()))
 						{
