@@ -1126,7 +1126,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			//load templates from MOLGENIS
 			ClassTemplateLoader molgenistl = new ClassTemplateLoader(MolgenisOriginalStyle.class, "");
 			//load templates from plugins, can be anywere
-			ClassTemplateLoader plugins = new ClassTemplateLoader(ClassTemplateLoader.class,"");
+			ClassTemplateLoader plugins = new ClassTemplateLoader();
 			
 			// load templates from molgenis 'style' directory
 			/*
