@@ -36,7 +36,7 @@
   		<unjar src="lib/axiom-impl-1.2.7.jar" dest="${build}"/>
   		<unjar src="lib/bcprov-jdk15-1.43.jar" dest="${build}"/> 
   	-->
-	<unjar src="lib/ant-1.6.5.jar" dest="${build}"/>
+	<unjar src="lib/ant-1.8.1.jar" dest="${build}"/>
 	<unjar src="lib/ant-apache-log4j.jar" dest="${build}"/>
 	<unjar src="lib/antlr-2.7.7.jar" dest="${build}"/>
   	<unjar src="lib/commons-codec-1.3.jar" dest="${build}"/>
@@ -96,7 +96,7 @@
   	-->
   	<unjar src="lib/jsr311-api-1.0.jar" dest="${build}"/>
 	<unjar src="lib/json.jar" dest="${build}"/> 
-  	<unjar src="lib/junit-4.8.1.jar" dest="${build}"/>
+  	<unjar src="lib/junit-4.8.2.jar" dest="${build}"/>
   	<unjar src="lib/jxl.jar" dest="${build}"/>
   	<unjar src="lib/log4j-1.2.15.jar" dest="${build}"/>
   	<unjar src="lib/mail.jar" dest="${build}"/>
