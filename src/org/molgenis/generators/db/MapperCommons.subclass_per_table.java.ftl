@@ -53,21 +53,21 @@
 <#assign pathlist = []/>			
 <#list f.xrefLabelTree.getAllChildren(true) as path>
 //${path.name}
-<#if path.value.type != "xref" && !pathlist?seq_contains(path.parent.name)>
-<#assign pathlist = pathlist + [path.parent.name]/>
-<#if !path.parent.parent?exists>
-		   	+" LEFT JOIN ${SqlName(path.value.entity)} AS xref_${path.parent.name} " 
-			+" ON xref_${SqlName(path.parent.name)}.${SqlName(pkey(path.value.entity))} = ${SqlName(f.entity)}.${SqlName(f.name)}"
-<#elseif path.value.entity == path.parent.value.xrefEntity>
-			//linked via ${path.parent.value.entity.name}.${path.parent.value.name}
-			+" LEFT JOIN ${SqlName(path.value.entity)} AS xref_${path.parent.name} " 
-			+" ON xref_${SqlName(path.parent.name)}.${SqlName(pkey(path.value.entity))} = xref_${SqlName(path.parent.parent.name)}.${SqlName(path.parent.value.name)}"
+<#if path.value.type != "xref" && !pathlist?seq_contains(path.getParent().name)>
+<#assign pathlist = pathlist + [path.getParent().name]/>
+<#if !path.getParent().parent?exists>
+		   	+" LEFT JOIN ${SqlName(path.value.entity)} AS xref_${path.getParent().name} " 
+			+" ON xref_${SqlName(path.getParent().name)}.${SqlName(pkey(path.value.entity))} = ${SqlName(f.entity)}.${SqlName(f.name)}"
+<#elseif path.value.entity == path.getParent().value.xrefEntity>
+			//linked via ${path.getParent().value.entity.name}.${path.getParent().value.name}
+			+" LEFT JOIN ${SqlName(path.value.entity)} AS xref_${path.getParent().name} " 
+			+" ON xref_${SqlName(path.getParent().name)}.${SqlName(pkey(path.value.entity))} = xref_${SqlName(path.getParent().parent.name)}.${SqlName(path.getParent().value.name)}"
 <#else>
 			//linked ${path.value.entity.name}.${path.value.name} via superclass	
 			+" LEFT JOIN ${SqlName(path.value.entity)} AS xref_${path.name}"
 			+" ON xref_${SqlName(path.name)}.${SqlName(path.value.name)} = xref_${path.name}.${SqlName(pkey(path.value.entity))}"
-		   	+" LEFT JOIN ${SqlName(path.value.entity)} AS xref_${path.parent.name} " 					
-			+" ON xref_${SqlName(path.parent.name)}.${SqlName(path.parent.value)} = xref_${SqlName(path.parent.parent.name)}.${SqlName(pkey(path.value.entity))}"			
+		   	+" LEFT JOIN ${SqlName(path.value.entity)} AS xref_${path.getParent().name} " 					
+			+" ON xref_${SqlName(path.getParent().name)}.${SqlName(path.getParent().value)} = xref_${SqlName(path.getParent().parent.name)}.${SqlName(pkey(path.value.entity))}"			
 </#if></#if></#list>
 </#list>;
 
@@ -85,21 +85,21 @@
 <#assign pathlist = []/>			
 <#list f.xrefLabelTree.getAllChildren(true) as path>
 //${path.name}
-<#if path.value.type != "xref" && !pathlist?seq_contains(path.parent.name)>
-<#assign pathlist = pathlist + [path.parent.name]/>
-<#if !path.parent.parent?exists>
-		   	+" LEFT JOIN ${SqlName(path.value.entity)} AS xref_${path.parent.name} " 
-			+" ON xref_${SqlName(path.parent.name)}.${SqlName(pkey(path.value.entity))} = ${SqlName(f.entity)}.${SqlName(f.name)}"
-<#elseif path.value.entity == path.parent.value.xrefEntity>
-			//linked via ${path.parent.value.entity.name}.${path.parent.value.name}
-			+" LEFT JOIN ${SqlName(path.value.entity)} AS xref_${path.parent.name} " 
-			+" ON xref_${SqlName(path.parent.name)}.${SqlName(pkey(path.value.entity))} = xref_${SqlName(path.parent.parent.name)}.${SqlName(path.parent.value.name)}"
+<#if path.value.type != "xref" && !pathlist?seq_contains(path.getParent().name)>
+<#assign pathlist = pathlist + [path.getParent().name]/>
+<#if !path.getParent().parent?exists>
+		   	+" LEFT JOIN ${SqlName(path.value.entity)} AS xref_${path.getParent().name} " 
+			+" ON xref_${SqlName(path.getParent().name)}.${SqlName(pkey(path.value.entity))} = ${SqlName(f.entity)}.${SqlName(f.name)}"
+<#elseif path.value.entity == path.getParent().value.xrefEntity>
+			//linked via ${path.getParent().value.entity.name}.${path.getParent().value.name}
+			+" LEFT JOIN ${SqlName(path.value.entity)} AS xref_${path.getParent().name} " 
+			+" ON xref_${SqlName(path.getParent().name)}.${SqlName(pkey(path.value.entity))} = xref_${SqlName(path.getParent().parent.name)}.${SqlName(path.getParent().value.name)}"
 <#else>
 			//linked ${path.value.entity.name}.${path.value.name} via superclass	
 			+" LEFT JOIN ${SqlName(path.value.entity)} AS xref_${path.name}"
 			+" ON xref_${SqlName(path.name)}.${SqlName(path.value.name)} = xref_${path.name}.${SqlName(pkey(path.value.entity))}"
-		   	+" LEFT JOIN ${SqlName(path.value.entity)} AS xref_${path.parent.name} " 					
-			+" ON xref_${SqlName(path.parent.name)}.${SqlName(path.parent.value)} = xref_${SqlName(path.parent.parent.name)}.${SqlName(pkey(path.value.entity))}"			
+		   	+" LEFT JOIN ${SqlName(path.value.entity)} AS xref_${path.getParent().name} " 					
+			+" ON xref_${SqlName(path.getParent().name)}.${SqlName(path.getParent().value)} = xref_${SqlName(path.getParent().parent.name)}.${SqlName(pkey(path.value.entity))}"			
 </#if></#if></#list>
 </#list>;		  	  
 			  
@@ -115,7 +115,7 @@
 		<#list viewFields(entity,"xref") as f>	
 		if("${f.name}_${f.xrefField.name}".equalsIgnoreCase(fieldName)) return "${SqlName(f.entity)}.${SqlName(f)}";	
 		<#list f.xrefLabelTree.getTreeElements()?values as path><#if path.value.type != "xref">
-		if("${path.name}".equalsIgnoreCase(fieldName)) return "xref_${path.parent.name}.${SqlName(path.value.name)}";	
+		if("${path.name}".equalsIgnoreCase(fieldName)) return "xref_${path.getParent().name}.${SqlName(path.value.name)}";	
 		</#if></#list></#list>
 		<#--
 		<#assign xref_entity = f.xrefEntity/> 
