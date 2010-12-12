@@ -37,7 +37,7 @@ import org.molgenis.util.Tree;
  * @author MA Swertz
  * @version 1.0.0
  */
-public class Field implements Serializable 
+public class Field implements Serializable
 {
 	public final static String TYPE_FIELD = "__Type";
 	public final transient Logger logger = Logger.getLogger(Field.class);
@@ -380,7 +380,7 @@ public class Field implements Serializable
 		{
 			try
 			{
-				//DBSchema root = entity.getRoot();
+				DBSchema root = entity.getRoot();
 
 				return this.getXrefField().getFormatString();
 			}
@@ -781,13 +781,13 @@ public class Field implements Serializable
 		return label_names;
 	}
 
-	public  SimpleTree<SimpleTree<?>> getXrefLabelTree() throws MolgenisModelException
+	public Tree getXrefLabelTree() throws MolgenisModelException
 	{
 		List<String> labels = new ArrayList<String>();
 		for (String label : this.getXrefLabelNames())
 			labels.add(getName() + "_" + label);
 
-		SimpleTree<SimpleTree<?>> root = new SimpleTree<SimpleTree<?>>(getName(), null);
+		Tree root = new SimpleTree(getName(), null);
 		root.setValue(this);
 		this.getXrefLabelTree(labels, root);
 		return root;
@@ -1357,7 +1357,7 @@ public class Field implements Serializable
 		{
 			String knownLabels = "";
 			for (String label : this.allPossibleXrefLabels().keySet())
-				knownLabels += ", "+label;
+				knownLabels += ", label";
 			throw new MolgenisModelException("xref_label '" + xref_label + "'unknown for field "
 					+ this.getEntity().getName() + "." + this.getName() + ". Known labels are " + knownLabels);
 		}
