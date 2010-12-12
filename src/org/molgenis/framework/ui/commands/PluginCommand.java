@@ -3,15 +3,16 @@ package org.molgenis.framework.ui.commands;
 import java.util.List;
 
 import org.molgenis.framework.ui.FormModel;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public abstract class PluginCommand extends SimpleCommand
+public abstract class PluginCommand<E extends Entity> extends SimpleCommand<E>
 {
+	private static final long serialVersionUID = 1236057686333854770L;
+
 	/** Constructor */
-	public PluginCommand(String name, FormModel parentScreen)
+	public PluginCommand(String name, FormModel<E> parentScreen)
 	{
 		super(name, parentScreen);
 		this.setMenu("Plugin");

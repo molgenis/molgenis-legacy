@@ -64,7 +64,6 @@ public interface Tuple
 	 * 
 	 * @return number of columns.
 	 */
-	@Deprecated
 	public int getNrColumns();
 
 	/**
@@ -289,20 +288,20 @@ public interface Tuple
 	public java.sql.Timestamp getTimestamp(String columnName) throws ParseException;
 
 	/**
-	 * Retrieves the value of the designated column as List<Object>.
+	 * Retrieves the value of the designated column as List<?>.
 	 * 
 	 * FIXME: make generic?
 	 * 
 	 * @param columnIndex
 	 *            the first column is 1, second is 2, etc, last is
 	 *            getNrColumns()
-	 * @return List<Object> object for the column value. If the value is NULL
+	 * @return List<?> object for the column value. If the value is NULL
 	 *         then the value is null.
 	 */
-	public List<Object> getList(int columnIndex);
+	public List<?> getList(int columnIndex);
 	
 	/**
-	 * Retrieves the value of the designated column as List<Object> by parsing
+	 * Retrieves the value of the designated column as List<?> by parsing
 	 * the underlyingFIXME: make generic?
 	 * 
 	 * @param columnIndex
@@ -310,35 +309,35 @@ public interface Tuple
 	 *            getNrColumns()
 	 * @param sep
 	 *            separator that needs to be used
-	 * @return List<Object> for the column value. If the value is NULL then the
+	 * @return List<?> for the column value. If the value is NULL then the
 	 *         value is null.
 	 */
-	public List<Object> getList(int columnIndex, String sep);
+	public List<?> getList(int columnIndex, String sep);
 
 	/**
-	 * Retrieves the value of the designated column as List<Object>. If the the
+	 * Retrieves the value of the designated column as List<?>. If the the
 	 * value is instanceof String then | is used as separator. Alternatively use @see getList(String columnName, char sep). FIXME: make
 	 * generic?
 	 * 
 	 * @param columnName
 	 *            name of the column.
-	 * @return List<Object> for the column value. If the value is NULL then the
+	 * @return List<?> for the column value. If the value is NULL then the
 	 *         value is null.
 	 */
-	public List<Object> getList(String columnName);
+	public List<?> getList(String columnName);
 
 	/**
-	 * Retrieves the value of the designated column as List<Object> by parsing
+	 * Retrieves the value of the designated column as List<?> by parsing
 	 * the underlyingFIXME: make generic?
 	 * 
 	 * @param columnName
 	 *            name of the column.
 	 * @param sep
 	 *            separator that needs to be used
-	 * @return List<Object> for the column value. If the value is NULL then the
+	 * @return List<?> for the column value. If the value is NULL then the
 	 *         value is null.
 	 */
-	public List<Object> getList(String columnName, String sep);
+	public List<?> getList(String columnName, String sep);
 	
 	/**
 	 * Retrieves the value of the designated column as Set<Object>

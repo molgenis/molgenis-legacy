@@ -12,7 +12,6 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.generators.db.JpaMapperGen;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -22,11 +21,12 @@ import org.molgenis.util.Tuple;
  *
  * @param <E>
  */
-public class DownloadAllCommand extends SimpleCommand
+public class DownloadAllCommand<E extends Entity> extends SimpleCommand<E>
 {
+	private static final long serialVersionUID = -2682113764135477871L;
 	public static final transient Logger logger = Logger.getLogger(DownloadAllCommand.class);
 
-	public DownloadAllCommand(String name, FormModel parentScreen)
+	public DownloadAllCommand(String name, FormModel<E> parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("Download all");
@@ -40,7 +40,7 @@ public class DownloadAllCommand extends SimpleCommand
 	{
 		logger.debug(this.getName());
 
-		FormModel view = this.getFormScreen();
+		FormModel<E> view = this.getFormScreen();
 		db.find(view.getEntityClass(), new CsvWriter(csvDownload), view.getRulesExclLimitOffset());
 
 		return ScreenModel.Show.SHOW_MAIN;

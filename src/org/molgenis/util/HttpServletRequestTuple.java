@@ -55,7 +55,7 @@ public class HttpServletRequestTuple extends SimpleTuple
 			upload.setSizeMax(Long.MAX_VALUE);
 			try
 			{
-				List multipart = upload.parseRequest(request);
+				List<?> multipart = upload.parseRequest(request);
 				
 				int i;
 				FileItem item;
@@ -140,7 +140,7 @@ public class HttpServletRequestTuple extends SimpleTuple
 		}
 	}
 
-	private void getFormFieldValues(List multipart, int i, FileItem item)
+	private void getFormFieldValues(List<?> multipart, int i, FileItem item)
 	{
 		// try to find if there are more of this name
 		String name = item.getFieldName();

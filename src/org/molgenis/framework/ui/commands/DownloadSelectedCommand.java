@@ -19,20 +19,22 @@ import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.generators.db.JpaMapperGen;
 import org.molgenis.util.CsvWriter;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 /**
  * This command downloads the currently selected records as csv
- *
+ * 
  * @param <E>
  */
-public class DownloadSelectedCommand extends SimpleCommand
+public class DownloadSelectedCommand<E extends Entity> extends SimpleCommand<E>
 {
-	public static final transient Logger logger = Logger.getLogger(DownloadSelectedCommand.class);
+	private static final long serialVersionUID = 3619865367653131342L;
+	public static final transient Logger logger = Logger
+			.getLogger(DownloadSelectedCommand.class);
 
-	public DownloadSelectedCommand(String name, FormModel parentScreen)
+	public DownloadSelectedCommand(String name, FormModel<E> parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("Download selected");
@@ -48,22 +50,27 @@ public class DownloadSelectedCommand extends SimpleCommand
 		return this.getFormScreen().getMode().equals(Mode.LIST_VIEW);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, PrintWriter csvDownload) throws ParseException, DatabaseException,
+	public ScreenModel.Show handleRequest(Database db, Tuple request,
+			PrintWriter csvDownload) throws ParseException, DatabaseException,
 			IOException
 	{
 		logger.debug(this.getName());
-		
-		FormModel view = this.getFormScreen();
 
-		Object ids = request.getObject(FormModel.INPUT_SELECTED);
-		List<String> records = new ArrayList<String>();
+		FormModel<E> view = this.getFormScreen();
+
+		Object ids = request.getList(FormModel.INPUT_SELECTED);
+		List<Object> records = new ArrayList<Object>();
 
 		if (ids != null)
 		{
-			if (ids.getClass().equals(Vector.class)) records = (Vector)ids;
+			if (ids.getClass().equals(Vector.class))
+			{
+				records = (List<Object>) ids;
+			}
 			else
-				records.add(ids.toString());
+				records.add(ids);
 		}
 
 		if (records.size() == 0)

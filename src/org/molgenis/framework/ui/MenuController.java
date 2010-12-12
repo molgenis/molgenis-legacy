@@ -18,22 +18,23 @@ import java.io.PrintWriter;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 
 
 
-public class MenuController extends SimpleController
+public class MenuController<E extends Entity> extends SimpleController<E,MenuModel<E>>
 {
 	// member variables
 	/** */
-	private MenuModel view;
+	private MenuModel<E> view;
 	/** */
 	private static final transient Logger logger = Logger.getLogger(MenuController.class.getSimpleName());	
 	/**	 */
 	private static final long serialVersionUID = -7579424157884595183L;
 
-	public MenuController(MenuModel view)
+	public MenuController(MenuModel<E> view)
 	{
 		super(view);
 		this.view = view;
@@ -49,7 +50,7 @@ public class MenuController extends SimpleController
 	public void reload(Database db)
 	{
 		logger.debug("reloading Menu("+view.getName()+")");
-		ScreenModel selected = view.getSelected();
+		ScreenModel<?> selected = view.getSelected();
 		if (selected == null)
 		{
 			logger.error(view.getName() + " has no children");

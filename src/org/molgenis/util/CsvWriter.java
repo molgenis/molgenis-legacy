@@ -2,9 +2,7 @@ package org.molgenis.util;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
@@ -190,9 +188,9 @@ public class CsvWriter
 
 		else
 		{
-			if (object instanceof List)
+			if (object instanceof List<?>)
 			{
-				List list = (List) object;
+				List<?> list = (List<?>) object;
 				for (int i = 0; i < list.size(); i++)
 				{
 					// FIXME, what about escaping???

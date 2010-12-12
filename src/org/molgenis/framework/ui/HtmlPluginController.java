@@ -15,22 +15,22 @@ package org.molgenis.framework.ui;
 
 import java.io.PrintWriter;
 
-import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 
 
 
-public class HtmlPluginController extends SimpleController
+public class HtmlPluginController<E extends Entity> extends SimpleController<E, HtmlPluginModel<E>>
 {
 
 	// member variables
 	/** */
-	private HtmlPluginModel screen;
+	private HtmlPluginModel<E> screen;
 
 	/** */
-	private static final transient Logger logger = Logger.getLogger(HtmlPluginController.class);
+	//private static final transient Logger logger = Logger.getLogger(HtmlPluginController.class);
 	
 	
 	/**
@@ -38,7 +38,7 @@ public class HtmlPluginController extends SimpleController
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public HtmlPluginController(HtmlPluginModel view)
+	public HtmlPluginController(HtmlPluginModel<E> view)
 	{
 		super(view);
 		this.screen = view;
@@ -58,7 +58,7 @@ public class HtmlPluginController extends SimpleController
 
 		// update children (done automatically)
 		// TODO: support more than one object? MS: Maybe, but is complex.
-		for (ScreenModel v : screen.getChildren())
+		for (ScreenModel<?> v : screen.getChildren())
 		{
 			v.getController().reload(db);
 		}

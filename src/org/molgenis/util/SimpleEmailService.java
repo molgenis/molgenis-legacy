@@ -1,6 +1,5 @@
 package org.molgenis.util;
 
-import java.security.Security;
 import java.util.Date;
 import java.util.Properties;
 
@@ -9,8 +8,6 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
-import org.apache.log4j.Logger;
 
 public class SimpleEmailService implements EmailService
 {
@@ -255,6 +252,8 @@ public class SimpleEmailService implements EmailService
 	
 	public static class EmailException extends Exception
 	{
+		private static final long serialVersionUID = -7543170033863810367L;
+
 		public EmailException(String message)
 		{
 			super(message);

@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -75,7 +74,7 @@ public class RScript {
 	 * @param command
 	 * @param args a variable list of arguments
 	 */
-	public void append(String command, String ... args) {
+	public void append(String command, Object ... args) {
 		script.append(String.format(command, args)+ System.getProperty("line.separator"));
 	}
 

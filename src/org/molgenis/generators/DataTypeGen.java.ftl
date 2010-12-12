@@ -553,7 +553,7 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 			if( tuple.getObject("${name(f)}")!= null ) 
 			{
 				java.util.List<${type(f.xrefField)}> values = new java.util.ArrayList<${type(f.xrefField)}>();
-				java.util.List<Object> mrefs = tuple.getList("${name(f)}");
+				java.util.List<?> mrefs = tuple.getList("${name(f)}");
 				if(mrefs != null) for(Object ref: mrefs)
 				{
 				  	<#if JavaType(f.xrefField) == "String" >
@@ -570,7 +570,7 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 			if( tuple.getObject("${name(f)}_${name(label)}")!= null ) 
 			{
 				java.util.List<${type(f.xrefLabels[label_index])}> values = new java.util.ArrayList<${type(f.xrefLabels[label_index])}>();
-				java.util.List<Object> mrefs = tuple.getList("${name(f)}_${name(label)}");
+				java.util.List<?> mrefs = tuple.getList("${name(f)}_${name(label)}");
 				
 				if(mrefs != null) 
 					for(Object ref: mrefs)

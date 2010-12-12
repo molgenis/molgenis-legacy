@@ -112,7 +112,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	 * Instantiate an application with the right root screen and optional file
 	 * path...
 	 */
-	public abstract UserInterface createUserInterface(Login userLogin);
+	public abstract UserInterface<?> createUserInterface(Login userLogin);
 
 	/**
 	 * @return package name of this molgenisvariant.
@@ -415,7 +415,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		HttpSession session = request.getSession();
 		Login userLogin = null;
 		// Get appplication from session (or create one)
-		ScreenModel molgenis = (UserInterface) session.getAttribute("application");
+		ScreenModel<?> molgenis = (UserInterface<?>) session.getAttribute("application");
 		if (molgenis == null)
 		{
 			userLogin = createLogin(db, request);
@@ -430,7 +430,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			molgenis = createUserInterface(userLogin);
 		}
 		// ((UserInterface)molgenis).setDatabase(db);
-		userLogin = ((UserInterface) molgenis).getLogin();
+		userLogin = ((UserInterface<?>) molgenis).getLogin();
 		db.setLogin(userLogin);
 
 		// handle request
@@ -471,8 +471,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			else if (ScreenModel.Show.SHOW_DOWNLOAD.equals(requestTuple.getString(FormModel.INPUT_SHOW)))
 			{
 				// get the screen that will hande the download request
-				ScreenModel screen = molgenis.get(requestTuple.getString(ScreenModel.INPUT_TARGET));
-				ScreenController controller = screen.getController();
+				ScreenModel<?> screen = molgenis.get(requestTuple.getString(ScreenModel.INPUT_TARGET));
+				ScreenController<?,? extends ScreenModel<?>> controller = screen.getController();
 
 				// set the headers for the download
 				response.setContentType("application/x-download");
@@ -536,7 +536,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					// if dialog, only show target
 					if (ScreenModel.Show.SHOW_DIALOG.equals(show))
 					{
-						ScreenModel target = molgenis.get(requestTuple.getString("__target"));
+						ScreenModel<?> target = molgenis.get(requestTuple.getString("__target"));
 						args.put("target", target.getName());
 						args.put("application", target);
 						// args.put("show", "dialogue");
@@ -544,7 +544,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 
 					if (requestTuple.getString("__show").equals("massupdate"))
 					{
-						List<Object> massupdate = requestTuple.getList("massUpdate");
+						List<?> massupdate = requestTuple.getList("massUpdate");
 						// if empty list, create empty list
 						if (massupdate == null) massupdate = new ArrayList<Object>();
 
@@ -678,7 +678,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			logger.info("trying to load R file: " + filename + " from path " + source);
 			if (source.exists())
 			{
-				this.writeURLtoOutput(source.toURL(), out);
+				this.writeURLtoOutput(source.toURI().toURL(), out);
 			}
 			else
 			{
@@ -704,7 +704,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		logger.info("starting download " + request.getPathInfo());
 		long start_time = System.currentTimeMillis();
 
-		HttpSession session = request.getSession();
+		//HttpSession session = request.getSession();
 
 		Database db = null;
 		try
@@ -835,7 +835,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				CsvWriter writer = new CsvWriter(out);
 				// CsvWriter writer = new CsvFileWriter( new
 				// File("c:/testout.txt") );
-				db.find((Class<Entity>) Class.forName(entityName), writer, rulesList.toArray(new QueryRule[rulesList
+				db.find(getClassForName(entityName), writer, rulesList.toArray(new QueryRule[rulesList
 						.size()]));
 			}
 			catch (Exception e)
@@ -857,6 +857,15 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		}
 		logger.info("servlet took: " + (System.currentTimeMillis() - start_time));
 		logger.info("------------");
+	}
+	
+	@SuppressWarnings("unchecked")
+	/*
+	 * No way to do this without warnings.
+	 */
+	private Class<? extends Entity> getClassForName(String entityName) throws ClassNotFoundException
+	{
+		return (Class<? extends Entity>) Class.forName(entityName);
 	}
 
 	public void handleUpload(HttpServletRequest request, HttpServletResponse response)
@@ -892,7 +901,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					out.println("<table><tr><td><label>Data type:</label></td><td><select name=\"" + INPUT_DATATYPE
 							+ "\">");
 
-					for (Class c : this.getDatabase().getEntityClasses())
+					for (Class<? extends Entity> c : this.getDatabase().getEntityClasses())
 					{
 						// write to screen
 						out.println("<option value=\"" + c.getName() + "\">" + c.getName() + "</option>");
@@ -913,18 +922,18 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			// if no data provided, show csv input form
 			else if (requestTuple.getObject(INPUT_DATA) == null && requestTuple.getObject(INPUT_FILE) == null)
 			{
-				try
-				{
-					String clazzName = requestTuple.getString(INPUT_DATATYPE);
-					Class entityClass = Class.forName(clazzName);
-					Entity template = (Entity) entityClass.newInstance();
-				}
-				catch (Exception e)
-				{
-					out.println("Upload failed: " + e.getMessage() + "");
-					e.printStackTrace();
-					throw e;
-				}
+//				try
+//				{
+//					String clazzName = requestTuple.getString(INPUT_DATATYPE);
+//					Class<? extends Entity> entityClass = getClassForName(clazzName);
+//					Entity template = entityClass.newInstance();
+//				}
+//				catch (Exception e)
+//				{
+//					out.println("Upload failed: " + e.getMessage() + "");
+//					e.printStackTrace();
+//					throw e;
+//				}
 			}
 			// process request
 			else
@@ -932,12 +941,12 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				NumberFormat formatter = NumberFormat.getInstance(Locale.US);
 				logger.info("processing add/update/delete");
 				String action = null; // ADD, UPDATE, REMOVE
-				Class entityClass = null;
+				Class<? extends Entity> entityClass = null;
 
 				try
 				{
 					String clazzName = requestTuple.getString(INPUT_DATATYPE);
-					entityClass = Class.forName(clazzName);
+					entityClass = getClassForName(clazzName);
 
 					// get the constants
 					Tuple constants = new SimpleTuple();
@@ -1104,7 +1113,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	 * 
 	 * @throws IOException
 	 */
-	private Configuration getFreemarkerConfiguration(ScreenModel userInterface) throws IOException
+	private Configuration getFreemarkerConfiguration(ScreenModel<?> userInterface) throws IOException
 	{
 
 		Configuration conf = (Configuration) this.getServletContext().getAttribute("freemarker");
@@ -1114,8 +1123,11 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			// set the template loading paths
 			conf.setObjectWrapper(new DefaultObjectWrapper());
 
+			//load templates from MOLGENIS
 			ClassTemplateLoader molgenistl = new ClassTemplateLoader(MolgenisOriginalStyle.class, "");
-			ClassTemplateLoader plugins = new ClassTemplateLoader();
+			//load templates from plugins, can be anywere
+			ClassTemplateLoader plugins = new ClassTemplateLoader(ClassTemplateLoader.class,"");
+			
 			// load templates from molgenis 'style' directory
 			/*
 			 * FileTemplateLoader plugintl; try { File f = new File(
@@ -1136,7 +1148,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			// Walk trought the tree of user interface screens to find out which
 			// template files to autoinclude
 			if (userInterface.getViewTemplate() != null) conf.addAutoInclude(userInterface.getViewTemplate());
-			for (ScreenModel screen : userInterface.getAllChildren())
+			for (ScreenModel<?> screen : userInterface.getAllChildren())
 			{
 				if (screen.getViewTemplate() != null)
 				{
@@ -1170,7 +1182,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			Tuple req = new HttpServletRequestTuple(request);
 			logger.debug("handling XREF request "+req);
 
-			Class xref_entity = Class.forName(req.getString("xref_entity"));
+			Class<? extends Entity> xref_entity = getClassForName(req.getString("xref_entity"));
 			String xref_field = req.getString("xref_field");
 			//get the xref labels from the string
 			List<String> xref_labels = new ArrayList<String>();
@@ -1195,10 +1207,10 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			
 			//get the user interface and find the login
 			HttpSession session = request.getSession();
-			ScreenModel molgenis = (UserInterface) session.getAttribute("application");
+			ScreenModel<?> molgenis = (UserInterface<?>) session.getAttribute("application");
 			Login login = molgenis.getRootScreen().getLogin();
 			db.setLogin(login);
-			Query q = db.query(xref_entity);
+			Query<?> q = db.query(xref_entity);
 			
 
 			// create a CustomQuery
@@ -1215,7 +1227,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			}
 			q.limit(100);
 
-			List<Entity> result = q.find();
+			List<? extends Entity> result = q.find();
 
 			// transform in JSON (JavaScript Object Notation
 

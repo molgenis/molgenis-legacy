@@ -12,6 +12,7 @@ import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.Templateable;
 import org.molgenis.framework.ui.html.HtmlInput;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 /**
@@ -27,7 +28,7 @@ import org.molgenis.util.Tuple;
  * <li>getActions() lists the pushbuttons to be shown</li>
  * </ul>
  */
-public interface ScreenCommand extends Templateable, Serializable
+public interface ScreenCommand<E extends Entity> extends Templateable, Serializable
 {
 	/**
 	 * Retrieve the name of the icon to be shown. No icon will be shown if null.
@@ -100,18 +101,18 @@ public interface ScreenCommand extends Templateable, Serializable
 	/**
 	 * @return The screen this command is a part of
 	 */
-	public ScreenModel getScreen();
+	public ScreenModel<E> getScreen();
 
 	/**
 	 * Helper method to reduce casting
 	 */
-	public FormModel getFormScreen();
+	public FormModel<E> getFormScreen();
 
 	/**
 	 * @param screen
 	 *            The screen this command belongs to
 	 */
-	public void setScreen(ScreenModel screen);
+	public void setScreen(ScreenModel<E> screen);
 
 	/**
 	 * @return true if this command should be shown as a dialog. @see #setDialog

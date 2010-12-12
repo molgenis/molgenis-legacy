@@ -20,12 +20,13 @@ import org.molgenis.util.Tuple;
  *
  * @param <E>
  */
-public class ChangeListLimitCommand extends SimpleCommand
+public class ChangeListLimitCommand<E extends Entity> extends SimpleCommand<E>
 {
+	private static final long serialVersionUID = -8328256342346578115L;
 	//the limit it should change too
 	private int limit = 5;
 
-	public ChangeListLimitCommand(String name, FormModel parentScreen)
+	public ChangeListLimitCommand(String name, FormModel<E> parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("Show %s items");

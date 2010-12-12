@@ -277,7 +277,7 @@ public class TarGz
 			
 			//System.gc(); //MS WINDOWS BUG HACK-AROUND. See also: private static File tarExtract()
 			
-			boolean deleteSucces = dir.delete();
+			//boolean deleteSucces = dir.delete();
 			// //System.out.println("xgapcsvexport deleting: " + dir.getName() +
 			// " -> succes: " + deleteSucces);
 		}
@@ -285,7 +285,7 @@ public class TarGz
 		//System.gc(); //MS WINDOWS BUG HACK-AROUND. See also: private static File tarExtract()
 		
 		// Try to delete the current directory or file (succeeds if empty)
-		boolean deleteSucces = dir.delete();
+		//boolean deleteSucces = dir.delete();
 		// //System.out.println("xgapcsvexport deleting: " + dir.getName() +
 		// " -> succes: " + deleteSucces);
 	}
@@ -310,7 +310,7 @@ public class TarGz
 
 	public static void fileCopy(final File src, File dst, final boolean overwrite) throws IOException, IllegalArgumentException
 	{
-		long startTimer = System.currentTimeMillis();
+		//long startTimer = System.currentTimeMillis();
 		
 		// checks
 		if (!src.isFile() || !src.exists())

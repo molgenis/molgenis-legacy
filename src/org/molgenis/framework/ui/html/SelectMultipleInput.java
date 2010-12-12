@@ -1,5 +1,5 @@
 /**
- * File: invengine.screen.form.SelectInput <br>
+¯§ * File: invengine.screen.form.SelectInput <br>
  * Copyright: Inventory 2000-2006, GBIC 2005, all rights reserved <br>
  * Changelog:
  * <ul>
@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
 import org.molgenis.util.ValueLabel;
 
 /**
@@ -48,8 +47,8 @@ public class SelectMultipleInput extends HtmlInput
 		}
 
 		StringBuffer optionsHtml = new StringBuffer();
-		List values = (List)super.getObject();
-		if(values == null) values = new ArrayList();
+		List<?> values = (List<?>)super.getObject();
+		if(values == null) values = new ArrayList<Object>();
 		List<String> stringValues = new ArrayList<String>();
 		for(Object v: values)
 		{
@@ -87,8 +86,8 @@ public class SelectMultipleInput extends HtmlInput
 	public String getValue()
 	{
 		StringBuffer result = new StringBuffer();
-		List values = (List)super.getObject();
-		if(values == null) values = new ArrayList();
+		List<?> values = (List<?>)super.getObject();
+		if(values == null) values = new ArrayList<Object>();
 		List<String> stringValues = new ArrayList<String>();
 		
 		for(Object v: values)

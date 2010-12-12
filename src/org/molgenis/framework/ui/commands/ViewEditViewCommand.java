@@ -15,9 +15,11 @@ import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class ViewEditViewCommand extends SimpleCommand
+public class ViewEditViewCommand<E extends Entity> extends SimpleCommand<E>
 {
-	public ViewEditViewCommand(String name, FormModel parentScreen)
+	private static final long serialVersionUID = -4074166087593025109L;
+
+	public ViewEditViewCommand(String name, FormModel<E> parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("Edit Record");

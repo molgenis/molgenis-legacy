@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.molgenis.framework.ui.commands.CommandMenu;
 import org.molgenis.framework.ui.commands.ScreenCommand;
 import org.molgenis.util.EmailService;
+import org.molgenis.util.Entity;
 import org.molgenis.util.FileLink;
 import org.molgenis.util.SimpleTree;
 
@@ -32,8 +33,9 @@ import org.molgenis.util.SimpleTree;
  * Base-class for a screen displaying information from the invengine system to
  * the user.
  */
-public abstract class SimpleModel extends SimpleTree<ScreenModel> implements ScreenModel, Serializable
+public abstract class SimpleModel<E extends Entity> extends SimpleTree<ScreenModel<?>> implements ScreenModel<E>, Serializable
 {
+	private static final long serialVersionUID = 3764151203967037515L;
 	// member variables
 	/** Logger */
 	protected final transient Logger logger = Logger.getLogger(this.getClass().getSimpleName());
@@ -44,7 +46,7 @@ public abstract class SimpleModel extends SimpleTree<ScreenModel> implements Scr
 	/** Label to show on top of the screen */
 	private String label;
 	/** The controller that handles requests on this screen */
-	private ScreenController controller;
+	private ScreenController<E,? extends SimpleModel<E>> controller;
 	/** The name of the view to be used. */
 	private String viewName;
 	/** Determines which of the subscreens should be shown */
@@ -54,7 +56,7 @@ public abstract class SimpleModel extends SimpleTree<ScreenModel> implements Scr
 	 * menuitems. Submenu's are not yet supported. Option: make this a class
 	 * structure with special "submenu" commands to allow submenu's.
 	 */
-	private Map<String, CommandMenu> menubar = new LinkedHashMap<String, CommandMenu>();
+	private Map<String, CommandMenu<E>> menubar = new LinkedHashMap<String, CommandMenu<E>>();
 
 	/**
 	 * @param name
@@ -63,7 +65,7 @@ public abstract class SimpleModel extends SimpleTree<ScreenModel> implements Scr
 	 * @param parent
 	 *            The parent of this screen.
 	 */
-	public SimpleModel(String name, ScreenModel parent)
+	public SimpleModel(String name, ScreenModel<?> parent)
 	{
 		super(name, parent);
 
@@ -81,15 +83,15 @@ public abstract class SimpleModel extends SimpleTree<ScreenModel> implements Scr
 
 	}
 
-	public UserInterface getRootScreen()
+	public UserInterface<?> getRootScreen()
 	{
-		return (UserInterface) this.getRoot();
+		return (UserInterface<?>) this.getRoot();
 	}
 
 	@Override
 	public EmailService getEmailService()
 	{
-		return ((UserInterface) this.getRoot()).getEmailService();
+		return ((UserInterface<?>) this.getRoot()).getEmailService();
 	}
 
 	public FileLink getTempFile() throws IOException
@@ -118,12 +120,12 @@ public abstract class SimpleModel extends SimpleTree<ScreenModel> implements Scr
 	 * The controller for this screen. The controller holds all the manipulation
 	 * methods of the screen. (while the screen intself only contains state).
 	 */
-	public ScreenController getController()
+	public ScreenController<E,? extends SimpleModel<E>> getController()
 	{
 		return controller;
 	}
 
-	public void setController(ScreenController controller)
+	public <M extends SimpleModel<E>, C extends ScreenController<E,M>> void setController(C controller)
 	{
 		this.controller = controller;
 	}
@@ -143,7 +145,7 @@ public abstract class SimpleModel extends SimpleTree<ScreenModel> implements Scr
 	 * @return The sub-screen of this menu, which has been selected with the
 	 *         http-request.
 	 */
-	public ScreenModel getSelected()
+	public ScreenModel<?> getSelected()
 	{
 		if (getChild(selectedId) != null)
 		{
@@ -151,7 +153,7 @@ public abstract class SimpleModel extends SimpleTree<ScreenModel> implements Scr
 		}
 		if (getChildren().size() > 0)
 		{
-			if (getChildren().firstElement() instanceof ScreenModel) return getChildren().firstElement();
+			if (getChildren().firstElement() instanceof ScreenModel<?>) return getChildren().firstElement();
 		}
 		return null;
 	}
@@ -178,9 +180,9 @@ public abstract class SimpleModel extends SimpleTree<ScreenModel> implements Scr
 	 *            A sub-screen of this menu.
 	 * @return Whether the given sub-screen has been selected.
 	 */
-	public boolean isSelected(ScreenModel view)
+	public boolean isSelected(ScreenModel<?> view)
 	{
-		ScreenModel selected = getSelected();
+		ScreenModel<?> selected = getSelected();
 
 		if (selected != null && view != null)
 		{
@@ -193,7 +195,7 @@ public abstract class SimpleModel extends SimpleTree<ScreenModel> implements Scr
 	}
 
 	/** COMMANDS for on the menu bar. Idea: move to screen? * */
-	public <E extends ScreenCommand> void addCommand(E command)
+	public <S extends ScreenCommand<E>> void addCommand(S command)
 	{
 		// link the command to the screen
 		command.setScreen(this);
@@ -208,7 +210,7 @@ public abstract class SimpleModel extends SimpleTree<ScreenModel> implements Scr
 		// create new menu if not exists
 		if (menubar.containsKey(command.getMenu()) == false)
 		{
-			menubar.put(command.getMenu(), new CommandMenu(command.getMenu(), this, command.getMenu(), "", ""));
+			menubar.put(command.getMenu(), new CommandMenu<E>(command.getMenu(), this, command.getMenu(), "", ""));
 		}
 
 		// put the command in the menu
@@ -216,16 +218,16 @@ public abstract class SimpleModel extends SimpleTree<ScreenModel> implements Scr
 		this.logger.debug("added action " + command.getName());
 	}
 
-	public ScreenCommand getCommand(String commandID)
+	public ScreenCommand<E> getCommand(String commandID)
 	{
-		for (CommandMenu menu : menubar.values())
+		for (CommandMenu<E> menu : menubar.values())
 		{
 			if (menu.getCommand(commandID) != null) return menu.getCommand(commandID);
 		}
 		return null;
 	}
 
-	public Collection<CommandMenu> getMenus()
+	public Collection<CommandMenu<E>> getMenus()
 	{
 		return menubar.values();
 	}
@@ -246,7 +248,7 @@ public abstract class SimpleModel extends SimpleTree<ScreenModel> implements Scr
 		// else
 		// {
 		String result = "";
-		for (ScreenModel m : this.getChildren())
+		for (ScreenModel<?> m : this.getChildren())
 		{
 			result += m.getCustomHtmlHeaders();
 		}
@@ -259,7 +261,7 @@ public abstract class SimpleModel extends SimpleTree<ScreenModel> implements Scr
 	public String getCustomHtmlBodyOnLoad()
 	{
 		String result = "";
-		for (ScreenModel m : this.getChildren())
+		for (ScreenModel<?> m : this.getChildren())
 		{
 			result += m.getCustomHtmlBodyOnLoad();
 		}

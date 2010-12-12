@@ -31,7 +31,7 @@ public class MrefInput extends HtmlInput
 	// private List<ValueLabel> options = new Vector<ValueLabel>();
 	// The label of the value to show in the box
 	// xrefLabel,values
-	private Map<String, List> valueLabels = new TreeMap<String, List>();
+	private Map<String, List<String>> valueLabels = new TreeMap<String, List<String>>();
 	// what is this?
 	private String targetfield;
 
@@ -51,8 +51,8 @@ public class MrefInput extends HtmlInput
 		// BIG FIXME we have to enable nillable checkin on this one
 		this.setNillable(true);
 
-		List values = (List) super.getObject();
-		if (values == null) values = new ArrayList();
+		List<?> values = (List<?>) super.getObject();
+		if (values == null) values = new ArrayList<Object>();
 
 		// template of an xref dialog
 		XrefInput input = new XrefInput(this.getName(), null);
@@ -70,7 +70,7 @@ public class MrefInput extends HtmlInput
 		{
 			input.setValue(values.get(i));
 
-			String result = "";
+			//String result = "";
 
 			for (String labelName : this.getXrefLabels())
 			{
@@ -190,12 +190,12 @@ public class MrefInput extends HtmlInput
 		this.xrefLabels.add(xrefLabel);
 	}
 
-	public List getValueLabels(String xrefLabelName)
+	public List<String> getValueLabels(String xrefLabelName)
 	{
 		return valueLabels.get(xrefLabelName);
 	}
 
-	public void setValueLabels(String xrefLabelName, List valueLabels)
+	public void setValueLabels(String xrefLabelName, List<String> valueLabels)
 	{
 		this.valueLabels.put(xrefLabelName, valueLabels);
 	}

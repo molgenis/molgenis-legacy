@@ -6,17 +6,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-
-import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.jdbc.ColumnInfo.Type;
-import org.molgenis.util.ResultSetTuple;
 
 public class JDBCConnectionHelper
 {
@@ -249,7 +244,7 @@ public class JDBCConnectionHelper
 	 * @return sql where clause. FIXME: remove the 'withOffset' part?
 	 * @throws DatabaseException
 	 */
-	public static String createWhereSql(JDBCMapper mapper, boolean isNested, boolean withOffset, QueryRule... rules)
+	public static String createWhereSql(JDBCMapper<?> mapper, boolean isNested, boolean withOffset, QueryRule... rules)
 			throws DatabaseException
 	{
 		StringBuffer where_clause = new StringBuffer("");
@@ -302,7 +297,7 @@ public class JDBCConnectionHelper
 				{
 					// only add if nonempty condition???
 					if (rule.getValue() == null
-							|| (rule.getValue() instanceof List && ((List) rule.getValue()).size() == 0)
+							|| (rule.getValue() instanceof List<?> && ((List<?>) rule.getValue()).size() == 0)
 							|| (rule.getValue() instanceof Object[] && ((Object[]) rule.getValue()).length == 0)) throw new DatabaseException(
 							"empty 'in' clause for rule " + rule);
 					{
@@ -323,9 +318,9 @@ public class JDBCConnectionHelper
 						where_clause.append(rule.getField() + " IN(");
 
 						Object[] values = new Object[0];
-						if (rule.getValue() instanceof List)
+						if (rule.getValue() instanceof List<?>)
 						{
-							values = ((List<Object>) rule.getValue()).toArray();
+							values = ((List<?>) rule.getValue()).toArray();
 						}
 						else
 						{
@@ -442,7 +437,7 @@ public class JDBCConnectionHelper
 	}
 
 	/** Helper method for creating a sort clause */
-	private static String createSortSql(JDBCMapper mapper, QueryRule... rules)
+	private static String createSortSql(JDBCMapper<?> mapper, QueryRule... rules)
 	{
 		return createSortSql(mapper, false, rules);
 	}
@@ -466,7 +461,7 @@ public class JDBCConnectionHelper
 	 *            query rules to be translated into sql order by clause.
 	 * @return sql with sort clause
 	 */
-	public static String createSortSql(JDBCMapper mapper, boolean reverseSorting, QueryRule rules[])
+	public static String createSortSql(JDBCMapper<?> mapper, boolean reverseSorting, QueryRule rules[])
 	{
 		// copy parameter into local temp so we can change it
 		Boolean revSort = reverseSorting;

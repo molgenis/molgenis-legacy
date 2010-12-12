@@ -57,7 +57,7 @@ public interface Query<E extends Entity>
 	 *        'new QueryRule(field, Operator.IN, objectList)'
 	 * </pre>
 	 */
-	public abstract Query<E> in( String field, List objectList );		
+	public abstract Query<E> in( String field, List<?> objectList );		
 
 	/**
 	 * Shorthand for

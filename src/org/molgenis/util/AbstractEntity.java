@@ -66,6 +66,7 @@ public abstract class AbstractEntity implements Entity
 		return readonly;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static java.sql.Date string2date(String str) throws ParseException
 	{
 		try

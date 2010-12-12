@@ -183,7 +183,7 @@ public class CsvBufferedReader implements CsvReader
 		return result;
 	}
 
-	public List<Object> getForHeader(String header)
+	public List<?> getForHeader(String header)
 	{
 		// TODO: very simple function, just return a single column in the form
 		// of a list by a header name

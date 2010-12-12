@@ -9,7 +9,7 @@ import java.util.Vector;
  * A tree with uniquely named nodes. Each node in the tree can have a value.
  * Name and parent should be set in constructor.
  */
-public interface Tree<T extends Tree> extends Serializable
+public interface Tree<T> extends Serializable
 {
 	/**
 	 * Retrieve the unique name of this tree element.

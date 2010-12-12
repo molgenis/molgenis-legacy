@@ -16,6 +16,7 @@ package org.molgenis.framework.ui;
 import java.io.Serializable;
 
 import org.molgenis.util.EmailService;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tree;
 
 // jdk
@@ -35,7 +36,7 @@ import org.molgenis.util.Tree;
  * of such screens (i.e., ends up in templates). This helps clear separation of
  * state, logic and presentation.
  */
-public interface ScreenModel extends Serializable, Tree<ScreenModel>, Templateable
+public interface ScreenModel<E extends Entity> extends Serializable, Tree<ScreenModel<?>>, Templateable
 {
 	/**
 	 * Bind parameter name for screen target. This parameter can be used by
@@ -111,7 +112,7 @@ public interface ScreenModel extends Serializable, Tree<ScreenModel>, Templateab
 	 * 
 	 * @return user-interface the root screen of this user interface
 	 */
-	public UserInterface getRootScreen();
+	public UserInterface<?> getRootScreen();
 
 	/**
 	 * Retrieve the database that is used by this screen.
@@ -129,7 +130,7 @@ public interface ScreenModel extends Serializable, Tree<ScreenModel>, Templateab
 	 * 
 	 * @return the ScreenController
 	 */
-	public ScreenController getController();
+	public ScreenController<E,? extends ScreenModel<E>> getController();
 
 	/**
 	 * Set the controller for this screen.
@@ -137,7 +138,7 @@ public interface ScreenModel extends Serializable, Tree<ScreenModel>, Templateab
 	 * @param controller
 	 *            to handle events on this screen
 	 */
-	public void setController(ScreenController controller);
+	public  <M extends SimpleModel<E>, C extends ScreenController<E,M>> void setController(C controller);
 
 	/**
 	 * Method to indicate whether the screen should be shown. E.g. because the

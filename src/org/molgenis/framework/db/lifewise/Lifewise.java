@@ -15,7 +15,6 @@ import java.util.TreeMap;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlrpc.client.XmlRpcClient;
@@ -27,7 +26,6 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryImp;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.db.jdbc.JDBCMapper;
 import org.molgenis.framework.security.Login;
 import org.molgenis.model.elements.Model;
@@ -360,7 +358,7 @@ public class Lifewise implements Database {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public List<Class> getEntityClasses() {
+    public List<Class<? extends Entity>> getEntityClasses() {
         // TODO Auto-generated method stub
         return null;
     }

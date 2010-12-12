@@ -7,7 +7,7 @@ public class ListField extends AbstractField
 	@Override
 	public String getJavaPropertyDefault() throws MolgenisModelException
 	{
-		return "new java.util.ArrayList<Object>()";
+		return "new java.util.ArrayList<?>()";
 	}
 	
 	@Override
@@ -19,7 +19,7 @@ public class ListField extends AbstractField
 	@Override
 	public String getJavaPropertyType()
 	{
-		return "java.util.List<Object>";
+		return "java.util.List<?>";
 	}
 	
 	@Override

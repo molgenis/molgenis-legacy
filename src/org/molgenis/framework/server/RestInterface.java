@@ -98,11 +98,11 @@ public class RestInterface
 				// execute query
 				if (request.getPathInfo().startsWith("/count/"))
 				{
-					if (rulesList != null) db.count((Class<Entity>) Class.forName(entityName), rulesList
+					if (rulesList != null) db.count(getClassForName(entityName), rulesList
 							.toArray(new QueryRule[rulesList.size()]));
 					else
 					{
-						out.println(db.count((Class<Entity>) Class.forName(entityName)));
+						out.println(db.count(getClassForName(entityName)));
 					}
 				}
 				else
@@ -111,11 +111,11 @@ public class RestInterface
 					CsvWriter writer = new CsvWriter(out);
 					// CsvWriter writer = new CsvFileWriter( new
 					// File("c:/testout.txt") );
-					if (rulesList != null) db.find((Class<Entity>) Class.forName(entityName), writer, rulesList
+					if (rulesList != null) db.find(getClassForName(entityName), writer, rulesList
 							.toArray(new QueryRule[rulesList.size()]));
 					else
 					{
-						db.find((Class<Entity>) Class.forName(entityName), writer);
+						db.find(getClassForName(entityName), writer);
 					}
 				}
 			}
@@ -138,6 +138,14 @@ public class RestInterface
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	/*
+	 * No way to do this without warnings.
+	 */
+	private static Class<? extends Entity> getClassForName(String entityName) throws ClassNotFoundException
+	{
+		return (Class<? extends Entity>) Class.forName(entityName);
+	}
 
 
 	private static List<QueryRule> createQueryRulesFromRequest(HttpServletRequest request) throws Exception
@@ -147,7 +155,7 @@ public class RestInterface
 		if (request.getQueryString() != null)
 		{
 			logger.debug("handle find query via http-get: " + request.getQueryString());
-			rulesList = QueryRuleUtil.fromRESTstring(URLDecoder.decode(request.getQueryString()));
+			rulesList = QueryRuleUtil.fromRESTstring(URLDecoder.decode(request.getQueryString(),"UTF-8"));
 		}
 		// use 'post'
 		else
@@ -156,7 +164,7 @@ public class RestInterface
 			String queryString = "";
 			for (String name : requestTuple.getFields())
 			{
-				queryString += URLDecoder.decode(name) + "=" + URLDecoder.decode(requestTuple.getString(name));
+				queryString += URLDecoder.decode(name,"UTF-8") + "=" + URLDecoder.decode(requestTuple.getString(name),"UTF-8");
 			}
 			logger.debug("handle find query via http-post with parameters: " + queryString);
 			rulesList = QueryRuleUtil.fromRESTstring(queryString);

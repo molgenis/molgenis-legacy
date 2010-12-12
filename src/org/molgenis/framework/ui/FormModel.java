@@ -54,7 +54,7 @@ import org.molgenis.util.Tuple;
  * 
  * @param
  */
-public abstract class FormModel<E extends Entity> extends SimpleModel
+public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 {
 	/**
 	 * Parameters to enable links between parent forms and subforms using
@@ -194,10 +194,10 @@ public abstract class FormModel<E extends Entity> extends SimpleModel
 	private static final transient Logger logger = Logger.getLogger(FormModel.class);
 
 	/** List of actions of this screen */
-	private Map<String, ScreenCommand> commands = new LinkedHashMap<String, ScreenCommand>();
+	private Map<String, ScreenCommand<E>> commands = new LinkedHashMap<String, ScreenCommand<E>>();
 
 	/** entity csv reader */
-	private CsvToDatabase csvReader;
+	private CsvToDatabase<E> csvReader;
 
 	/** currently known offset */
 	private int offset;
@@ -221,7 +221,7 @@ public abstract class FormModel<E extends Entity> extends SimpleModel
 	private E current = null;
 
 	/** cache of currently viewable records */
-	private List records = new ArrayList();
+	private List<E> records = new ArrayList<E>();
 
 	/** whether this form can be edited */
 	private boolean readonly;
@@ -236,17 +236,17 @@ public abstract class FormModel<E extends Entity> extends SimpleModel
 	private Vector<ScreenMessage> messages;
 
 	/** Active command (in case of a command with dialog) */
-	private ScreenCommand currentCommand = null;
+	private ScreenCommand<E> currentCommand = null;
 
 	/** columns that are invisible to the user */
 	protected Vector<String> systemHiddenColumns = new Vector<String>();
 	protected Vector<String> userHiddenColumns = new Vector<String>();
 
 	/** Helper object that takes care of database paging */
-	private DatabasePager pager;
+	//private DatabasePager<E> pager;
 
 	/** Here the currently selected is are stored */
-	private List<Object> selectedIds;
+	private List<?> selectedIds;
 	/** Filter of parent form filtering */
 	// TODO make this infer automatically
 	private List<ParentFilter> parentFilters = new ArrayList<ParentFilter>();
@@ -265,7 +265,7 @@ public abstract class FormModel<E extends Entity> extends SimpleModel
 	 * @param parent
 	 * @throws DatabaseException
 	 */
-	public FormModel(String name, ScreenModel parent)
+	public FormModel(String name, ScreenModel<?> parent)
 	{
 		super(name, parent);
 
@@ -287,32 +287,32 @@ public abstract class FormModel<E extends Entity> extends SimpleModel
 		resetSystemHiddenColumns();
 		resetUserHiddenColumns();
 
-		setController(new FormController(this));
+		setController(new FormController<E>(this));
 
 		// add all actions
 		// menu FILE
 
-		// File:Download visible
-		super.addCommand(new DownloadVisibleCommand("download_visible", this));
+ 		// File:Download visible
+		super.addCommand(new DownloadVisibleCommand<E>("download_visible", this));
 
 		// File:Download Selected
-		super.addCommand(new DownloadSelectedCommand("download_selected", this));
+		super.addCommand(new DownloadSelectedCommand<E>("download_selected", this));
 
 		// FILE:Download all
-		super.addCommand(new DownloadAllCommand("download_all", this));
+		super.addCommand(new DownloadAllCommand<E>("download_all", this));
 
 		// File: Add batch
-		super.addCommand(new AddBatchCommand("upload_csv", this));
+		super.addCommand(new AddBatchCommand<E>("upload_csv", this));
 
 		// EDIT MENU
 		// EDIT: Add new record
-		super.addCommand(new AddCommand("edit_new", this));
+		super.addCommand(new AddCommand<E>("edit_new", this));
 
 		// EDIT: Update selected
-		super.addCommand(new EditSelectedCommand("edit_update_selected", this));
+		super.addCommand(new EditSelectedCommand<E>("edit_update_selected", this));
 
 		// EDIT: Remove selected
-		super.addCommand(new RemoveSelectedCommand("edit_remove_selected", this));
+		super.addCommand(new RemoveSelectedCommand<E>("edit_remove_selected", this));
 
 		// menu VIEW
 		// ScreenCommand v2 = new ViewRecordViewCommand("recordview",
@@ -321,35 +321,35 @@ public abstract class FormModel<E extends Entity> extends SimpleModel
 		// super.addCommand("View", v2);
 
 		// v3.setToolbar(true);
-		super.addCommand(new ViewEditViewCommand("editview", this));
-		super.addCommand(new ViewListViewCommand("listview", this));
+		super.addCommand(new ViewEditViewCommand<E>("editview", this));
+		super.addCommand(new ViewListViewCommand<E>("listview", this));
 
-		ChangeListLimitCommand view_5 = new ChangeListLimitCommand("view_5show5", this);
+		ChangeListLimitCommand<E> view_5 = new ChangeListLimitCommand<E>("view_5show5", this);
 		view_5.setLimit(5);
 		super.addCommand(view_5);
 
-		ChangeListLimitCommand view_10 = new ChangeListLimitCommand("view_6show10", this);
+		ChangeListLimitCommand<E> view_10 = new ChangeListLimitCommand<E>("view_6show10", this);
 		view_5.setLimit(10);
 		super.addCommand(view_10);
 
-		ChangeListLimitCommand view_20 = new ChangeListLimitCommand("view_7show20", this);
+		ChangeListLimitCommand<E> view_20 = new ChangeListLimitCommand<E>("view_7show20", this);
 		view_20.setLimit(20);
 		super.addCommand(view_20);
 
-		ChangeListLimitCommand view_50 = new ChangeListLimitCommand("view_8show50", this);
+		ChangeListLimitCommand<E> view_50 = new ChangeListLimitCommand<E>("view_8show50", this);
 		view_50.setLimit(50);
 		super.addCommand(view_50);
 
-		ChangeListLimitCommand view_100 = new ChangeListLimitCommand("view_9show100", this);
+		ChangeListLimitCommand<E> view_100 = new ChangeListLimitCommand<E>("view_9show100", this);
 		view_100.setLimit(100);
 		super.addCommand(view_100);
 
-		ChangeListLimitCommand view_500 = new ChangeListLimitCommand("view_10show500", this);
+		ChangeListLimitCommand<E> view_500 = new ChangeListLimitCommand<E>("view_10show500", this);
 		view_500.setLimit(500);
 		super.addCommand(view_500);
 
 		// add the plugged-in actions
-		for (ScreenCommand command : this.commands.values())
+		for (ScreenCommand<E> command : this.commands.values())
 		{
 			super.addCommand(command);
 		}
@@ -375,13 +375,13 @@ public abstract class FormModel<E extends Entity> extends SimpleModel
 	 * 
 	 * @return vector of commands to be shown on the toolbar
 	 */
-	public Vector<ScreenCommand> getToolbar()
+	public Vector<ScreenCommand<E>> getToolbar()
 	{
-		Vector<ScreenCommand> toolbar = new Vector<ScreenCommand>();
+		Vector<ScreenCommand<E>> toolbar = new Vector<ScreenCommand<E>>();
 
-		for (CommandMenu menu : this.getMenus())
+		for (CommandMenu<E> menu : this.getMenus())
 		{
-			for (ScreenCommand c : menu.getCommands())
+			for (ScreenCommand<E> c : menu.getCommands())
 			{
 				if (c.isToolbar() && c.isVisible())
 				{
@@ -447,20 +447,20 @@ public abstract class FormModel<E extends Entity> extends SimpleModel
 			// set defaults for xrefs
 			for (ParentFilter pf : this.getParentFilters())
 			{
-				FormModel parent = (FormModel) this.get(pf.getParentForm());
-				List<Entity> records = parent.getRecords();
+				FormModel<?> parent = (FormModel<?>) this.get(pf.getParentForm());
+				List<?> records = parent.getRecords();
 				if (records.size() > 0)
 				{
 					// xref only
-					Object value = records.get(0).get(pf.getParentId());
-					if (!(value instanceof List) && value != null)
+					Object value = ((Entity) records.get(0)).get(pf.getParentId());
+					if (!(value instanceof List<?>) && value != null)
 					{
 						entity.set(pf.getXrefToParent(), value);
 					}
 
 					for (String labelName : pf.getParentLabels())
 					{
-						Object label = records.get(0).get(labelName);
+						Object label = ((Entity) records.get(0)).get(labelName);
 						entity.set(pf.getXrefToParent() + "_" + labelName, label);
 					}
 				}
@@ -679,7 +679,7 @@ public abstract class FormModel<E extends Entity> extends SimpleModel
 	 * 
 	 * @param recordlist
 	 */
-	public void setRecords(List recordlist)
+	public void setRecords(List<E> recordlist)
 	{
 		this.records = recordlist;
 	}
@@ -727,8 +727,8 @@ public abstract class FormModel<E extends Entity> extends SimpleModel
 
 			for (ParentFilter pf : this.getParentFilters())
 			{
-				FormModel parent = (FormModel) this.get(pf.getParentForm());
-				List<Entity> records = parent.getRecords();
+				FormModel<?> parent = (FormModel<?>) this.get(pf.getParentForm());
+				List<?> records = parent.getRecords();
 
 				// add filters for xref or mref relationships (if any)
 				// if multiple xrefs apply then the filters are union
@@ -736,11 +736,11 @@ public abstract class FormModel<E extends Entity> extends SimpleModel
 				if (records.size() > 0)
 				{
 
-					Object parentValue = records.get(0).get(pf.getParentId());
+					Object parentValue = ((Entity) records.get(0)).get(pf.getParentId());
 					// mref?
-					if (parentValue instanceof List)
+					if (parentValue instanceof List<?>)
 					{
-						List values = (List) parentValue;
+						List<?> values = (List<?>) parentValue;
 						if (values.size() > 0)
 						{
 							for (int i = 0; i < values.size(); i++)
@@ -846,7 +846,7 @@ public abstract class FormModel<E extends Entity> extends SimpleModel
 	 */
 	@Override
 	// FIXME: this may be problematic?
-	public Vector<ScreenModel> getChildren()
+	public Vector<ScreenModel<?>> getChildren()
 	{
 		if (viewMode.equals(Mode.EDIT_VIEW))
 		{
@@ -854,7 +854,7 @@ public abstract class FormModel<E extends Entity> extends SimpleModel
 		}
 		else
 		{
-			return new Vector<ScreenModel>(); // empty set.
+			return new Vector<ScreenModel<?>>(); // empty set.
 		}
 	}
 
@@ -892,12 +892,12 @@ public abstract class FormModel<E extends Entity> extends SimpleModel
 		return getRootScreen().getLogin();
 	}
 
-	public CsvToDatabase getCsvReader()
+	public CsvToDatabase<E> getCsvReader()
 	{
 		return csvReader;
 	}
 
-	public void setCsvReader(CsvToDatabase csvReader)
+	public void setCsvReader(CsvToDatabase<E> csvReader)
 	{
 		this.csvReader = csvReader;
 	}
@@ -907,32 +907,33 @@ public abstract class FormModel<E extends Entity> extends SimpleModel
 		return this.create().getIdField();
 	}
 
-	public List<ScreenCommand> getCommands()
+	public List<ScreenCommand<E>> getCommands()
 	{
-		return new ArrayList<ScreenCommand>(commands.values());
+		return new ArrayList<ScreenCommand<E>>(commands.values());
 	}
 
-	public ScreenCommand getCurrentCommand()
+	public ScreenCommand<E> getCurrentCommand()
 	{
 		return currentCommand;
 	}
 
-	public void setCurrentCommand(ScreenCommand currentCommand)
+	public void setCurrentCommand(ScreenCommand<E> currentCommand)
 	{
 		this.currentCommand = currentCommand;
 	};
 
-	public DatabasePager getPager()
+	@SuppressWarnings("unchecked")
+	public DatabasePager<E> getPager()
 	{
-		return ((FormController) getController()).getPager();
+		return ((FormController<E>) getController()).getPager();
 	}
 
-	public List<Object> getSelectedIds()
+	public List<?> getSelectedIds()
 	{
 		return selectedIds;
 	}
 
-	public void setSelectedIds(List<Object> selected)
+	public void setSelectedIds(List<?> selected)
 	{
 		this.selectedIds = selected;
 	}

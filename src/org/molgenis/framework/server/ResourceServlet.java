@@ -1,13 +1,11 @@
 package org.molgenis.framework.server;
 
 import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLConnection;
 
-import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -45,7 +43,7 @@ public class ResourceServlet extends HttpServlet
 				// URLConnection conn = file.openConnection();
 				in = new BufferedInputStream(conn.getInputStream());
 
-				String mimetype = new MimetypesFileTypeMap().getContentType(resourcePath);
+				//String mimetype = new MimetypesFileTypeMap().getContentType(resourcePath);
 				//logger.debug("mimetype for " + resourcePath + ": " + mimetype);
 				//response.setContentType(mimetype);
 				response.setHeader("Cache-Control", "max-age=0"); // allow some

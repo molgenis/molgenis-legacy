@@ -12,7 +12,6 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.generators.db.JpaMapperGen;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -20,11 +19,12 @@ import org.molgenis.util.Tuple;
  * This command shows a dialog to edit in batch It therefor uses a custom
  * template
  */
-public class EditSelectedCommand extends SimpleCommand
+public class EditSelectedCommand<E extends Entity> extends SimpleCommand<E>
 {
+	private static final long serialVersionUID = -2996595009523144519L;
 	public static final transient Logger logger = Logger.getLogger(EditSelectedCommand.class);
 
-	public EditSelectedCommand(String name, FormModel parentScreen)
+	public EditSelectedCommand(String name, FormModel<E> parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("Update selected");
@@ -42,7 +42,7 @@ public class EditSelectedCommand extends SimpleCommand
 	@Override
 	public boolean isVisible()
 	{
-		FormModel view = this.getFormScreen();
+		FormModel<E> view = this.getFormScreen();
 		return !view.isReadonly() && view.getMode().equals(Mode.LIST_VIEW);
 	}
 
@@ -54,8 +54,8 @@ public class EditSelectedCommand extends SimpleCommand
 		// check whether in the popup
 		if (request.getString(FormModel.INPUT_SHOW) == null)
 		{
-			FormModel view = this.getFormScreen();
-			List<Object> idList = request.getList(FormModel.INPUT_SELECTED);
+			FormModel<E> view = this.getFormScreen();
+			List<?> idList = request.getList(FormModel.INPUT_SELECTED);
 			for (Object id : idList)
 			{
 				logger.info("mass updating id: " + id);
@@ -66,8 +66,8 @@ public class EditSelectedCommand extends SimpleCommand
 			int row = 0;
 			try
 			{
-				Query<Entity> q = db.query(view.getEntityClass()).in(view.create().getIdField(), idList);
-				List<Entity> entities = q.find();
+				Query<E> q = db.query(view.getEntityClass()).in(view.create().getIdField(), idList);
+				List<E> entities = q.find();
 
 				db.beginTx();
 				for (Entity e : entities)

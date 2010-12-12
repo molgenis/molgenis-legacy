@@ -15,14 +15,15 @@ import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.generators.db.JpaMapperGen;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class ViewListViewCommand extends SimpleCommand
+public class ViewListViewCommand<E extends Entity> extends SimpleCommand<E>
 {
+	private static final long serialVersionUID = -5921987163907171740L;
 	public static final transient Logger logger = Logger.getLogger(ViewListViewCommand.class);
 
-	public ViewListViewCommand(String name, FormModel parentScreen)
+	public ViewListViewCommand(String name, FormModel<E> parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("List Records");

@@ -18,7 +18,7 @@ public class BoolInput extends HtmlInput
 	@Override
 	public String toHtml()
 	{
-		String readonly = ( isReadonly() ? " readonly " : "");
+		//String readonly = ( isReadonly() ? " readonly " : "");
 
 		if( this.isHidden() )
 		{

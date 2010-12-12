@@ -36,7 +36,7 @@ import org.molgenis.util.Tuple;
 /**
  * @param <E>
  */
-public class FormController<E extends Entity> extends SimpleController
+public class FormController<E extends Entity> extends SimpleController<E,FormModel<E>>
 {
 	// member variables
 	/** */
@@ -55,14 +55,14 @@ public class FormController<E extends Entity> extends SimpleController
 	 * @param view
 	 * @throws DatabaseException
 	 */
-	public FormController(FormModel view)
+	public FormController(FormModel<E> view)
 	{
 		super(view);
 		this.view = view;
 		// FIXME: this assumes first column is sortable...
 		try
 		{
-			this.pager = new LimitOffsetPager(view.getEntityClass(), view.create().getFields().firstElement());
+			this.pager = new LimitOffsetPager<E>(view.getEntityClass(), view.create().getFields().firstElement());
 			// this.pager = new PrimaryKeyPager<E>(view.getEntityClass(),
 			// view.getDatabase(), view.create().getIdField());
 
@@ -104,7 +104,7 @@ public class FormController<E extends Entity> extends SimpleController
 			if (view.getSelectedIds() == null) view.setSelectedIds(new ArrayList<Object>());
 
 			// get the current command if any
-			ScreenCommand command = view.getCommand(action);
+			ScreenCommand<E> command = view.getCommand(action);
 
 			if (action == null || action == "")
 			{
@@ -112,7 +112,7 @@ public class FormController<E extends Entity> extends SimpleController
 				return;
 			}
 			// delegate to a command
-			else if (command != null && command instanceof SimpleCommand)
+			else if (command != null && command instanceof SimpleCommand<?>)
 			{
 				logger.debug("delegating to PluginCommand");
 				view.setCurrentCommand(command);
@@ -287,7 +287,7 @@ public class FormController<E extends Entity> extends SimpleController
 		}
 	}
 
-	private void addFilter(DatabasePager pager, Database db, Tuple request) throws DatabaseException
+	private void addFilter(DatabasePager<E> pager, Database db, Tuple request) throws DatabaseException
 	{
 		Operator operator = QueryRule.Operator.valueOf(request.getString("__filter_operator"));
 		String value = request.getString("__filter_value");
@@ -384,10 +384,10 @@ public class FormController<E extends Entity> extends SimpleController
 			// update child views
 			if (view.getMode().equals(Mode.EDIT_VIEW))
 			{
-				for (ScreenModel v : view.getChildren())
+				for (ScreenModel<?> v : view.getChildren())
 				{
 					// only the real screens, not the commands
-					if (v instanceof SimpleModel)
+					if (v instanceof SimpleModel<?>)
 					{
 						v.getController().reload(db);
 					}
@@ -557,7 +557,7 @@ public class FormController<E extends Entity> extends SimpleController
 	public void doXrefselect(Tuple request) throws DatabaseException
 	{
 		// also set the parent menu
-		if (view.getParent() != null && view.getParent() instanceof MenuModel)
+		if (view.getParent() != null && view.getParent() instanceof MenuModel<?>)
 		{
 			// set the filter to select the xref-ed entity
 			pager.resetFilters();
@@ -569,13 +569,13 @@ public class FormController<E extends Entity> extends SimpleController
 			// tell "my" menu to select me
 			Tuple parentRequest = new SimpleTuple();
 			String aChildName = view.getName();
-			ScreenModel aParent = view.getParent();
+			ScreenModel<?> aParent = view.getParent();
 			while (aParent != null)
 			{
-				if (aParent instanceof MenuModel)
+				if (aParent instanceof MenuModel<?>)
 				{
 					parentRequest.set("select", aChildName);
-					MenuController c = (MenuController) aParent.getController();
+					MenuController<?> c = (MenuController<?>) (Object) aParent.getController();
 					c.doSelect(parentRequest);
 				}
 				aChildName = aParent.getName();
@@ -584,7 +584,7 @@ public class FormController<E extends Entity> extends SimpleController
 		}
 	}
 
-	public DatabasePager getPager()
+	public DatabasePager<E> getPager()
 	{
 		return pager;
 	}

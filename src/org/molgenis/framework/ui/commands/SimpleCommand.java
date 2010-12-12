@@ -5,25 +5,24 @@ import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.ScreenModel.Show;
-import org.molgenis.framework.ui.html.HtmlForm;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.generators.db.JpaMapperGen;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 /**
  * Implementation of screen command.
  */
-public abstract class SimpleCommand implements ScreenCommand
+public abstract class SimpleCommand<E extends Entity> implements ScreenCommand<E>
 {		
+	private static final long serialVersionUID = -3289941539731301135L;
+
 	/** Logger */
-	private static final transient Logger logger = Logger.getLogger(SimpleCommand.class.getSimpleName());
+	//private static final transient Logger logger = Logger.getLogger(SimpleCommand.class.getSimpleName());
 
 	/** Internal name of this command (unique within the screen) */
 	private String name;
@@ -38,7 +37,7 @@ public abstract class SimpleCommand implements ScreenCommand
 	private String onClickJavascript;
 	
 	/** The Screen this command is linked to */
-	private ScreenModel screen;	
+	private ScreenModel<E> screen;	
 
 	/** The name of the screen to be target (default: this.screen) */
 	private String targetScreen;
@@ -62,7 +61,7 @@ public abstract class SimpleCommand implements ScreenCommand
 	 *            unique name of the command (within the screen)
 	 * @param parentScreen
 	 */
-	public SimpleCommand(String name, ScreenModel parentScreen)
+	public SimpleCommand(String name, ScreenModel<E> parentScreen)
 	{
 		this.setName(name);
 		this.setScreen(parentScreen);
@@ -204,19 +203,19 @@ public abstract class SimpleCommand implements ScreenCommand
 	}
 
 	@Override
-	public ScreenModel getScreen()
+	public ScreenModel<E> getScreen()
 	{
 		return this.screen;
 	}
 
 	@Override
-	public FormModel<Entity> getFormScreen()
+	public FormModel<E> getFormScreen()
 	{
-		return (FormModel) this.screen;
+		return (FormModel<E>)this.screen;
 	}
 
 	@Override
-	public void setScreen(ScreenModel screen)
+	public void setScreen(ScreenModel<E> screen)
 	{
 		this.screen = screen;
 	}

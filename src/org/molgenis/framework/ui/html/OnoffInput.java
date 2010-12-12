@@ -4,7 +4,6 @@ package org.molgenis.framework.ui.html;
 /**
  * Input for checkbox data.
  */
-@SuppressWarnings("unchecked")
 public class OnoffInput extends HtmlInput
 {
 	private String onValue = "on";

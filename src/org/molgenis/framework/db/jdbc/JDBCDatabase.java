@@ -63,7 +63,7 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 	/** batch size */
 	static final int BATCH_SIZE = 5000;
 	/** List of mappers, mapping entities to a JDBC connection */
-	Map<String, JDBCMapper> mappers = new TreeMap<String, JDBCMapper>();
+	Map<String, JDBCMapper<? extends Entity>> mappers = new TreeMap<String, JDBCMapper<? extends Entity>>();
 	/** The filesource associated to this database: takes care of "file" fields */
 	File fileSource;
 	/** Login object */
@@ -246,7 +246,7 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 	{
 		try
 		{
-			Query<E> q = (Query<E>) this.query(example.getClass());
+			Query<E> q = this.query(getClassForEntity(example));
 			//add first security rules
 			q.addRules(this.getSecurity().getRowlevelSecurityFilters(example.getClass()));
 
@@ -254,9 +254,9 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 			{
 				if (example.get(field) != null)
 				{
-					if (example.get(field) instanceof List)
+					if (example.get(field) instanceof List<?>)
 					{
-						if (((List) example.get(field)).size() > 0) q.in(field, (List) example.get(field));
+						if (((List<?>) example.get(field)).size() > 0) q.in(field, (List<?>) example.get(field));
 					}
 					else
 						q.equals(field, example.get(field));
@@ -440,13 +440,14 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 	 * @return a mapper or a exception
 	 * @throws SQLException
 	 */
+	@SuppressWarnings("unchecked")
 	private <E extends Entity> JDBCMapper<E> getMapperFor(Class<E> klazz) throws DatabaseException
 	{
 		// transform to generic exception
-		JDBCMapper<E> mapper = mappers.get(klazz.getName());
+		JDBCMapper<? extends Entity> mapper = mappers.get(klazz.getName());
 		if (mapper == null) throw new DatabaseException("getMapperFor failed because no mapper available for "
 				+ klazz.getName());
-		return mapper;
+		return (JDBCMapper<E>) mapper;
 	}
 
 	/**
@@ -566,6 +567,7 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 	 * @return a mapper or a exception
 	 * @throws SQLException
 	 */
+	@SuppressWarnings("unchecked")
 	private <E extends Entity> JDBCMapper<E> getMapperFor(List<E> entities) throws DatabaseException
 	{
 		try
@@ -582,15 +584,15 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 	}
 
 	@Override
-	public List<Class> getEntityClasses()
+	public List<Class<? extends Entity>> getEntityClasses()
 	{
 
-		List<Class> classes = new ArrayList<Class>();
+		List<Class<? extends Entity>> classes = new ArrayList<Class<? extends Entity>>();
 		try
 		{
 			for (String klazz : this.getEntityNames())
 			{
-				classes.add(Class.forName(klazz));
+				classes.add(getClassForName(klazz));
 			}
 		}
 		catch (Exception e)
@@ -601,13 +603,19 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 	}
 
 	@Override
-	public Class getClassForName(String name)
+	public Class<? extends Entity> getClassForName(String name)
 	{
-		for (Class c : this.getEntityClasses())
+		for (Class<? extends Entity> c : this.getEntityClasses())
 		{
 			if (c.getSimpleName().toLowerCase().equals(name.toLowerCase())) return c;
 		}
 		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <E extends Entity> Class<E> getClassForEntity(E entity)
+	{
+		return (Class<E>)entity.getClass();
 	}
 
 	public Login getSecurity()
@@ -650,7 +658,7 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 	@Override
 	public <E extends Entity> E findById(Class<E> klazz, Object id) throws DatabaseException
 	{
-		JDBCMapper mapper = getMapperFor(klazz);
+		JDBCMapper<E> mapper = getMapperFor(klazz);
 		List<E> result = (List<E>) mapper.find(new QueryRule(mapper.create().getIdField(), QueryRule.Operator.EQUALS,
 				id));
 		if (result.size() > 0) return result.get(0);
@@ -712,7 +720,7 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 		if (entities.size() == 0) return 0;
 
 		// retrieve entity class and name
-		Class entityClass = entities.get(0).getClass();
+		Class<E> entityClass = getClassForEntity(entities.get(0));
 		String entityName = entityClass.getSimpleName();
 
 		// create maps to store key values and entities
@@ -791,7 +799,7 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 		if (!keysMissing && keyIndex.size() > 0)
 		{
 			newEntities = new ArrayList<E>();
-			Query q = this.query(entities.get(0).getClass());
+			Query<E> q = this.query(getClassForEntity(entities.get(0)));
 
 			// in case of one field key, simply query
 			if (keyNames.length == 1)

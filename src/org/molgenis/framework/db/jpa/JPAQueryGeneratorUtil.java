@@ -3,7 +3,6 @@ package org.molgenis.framework.db.jpa;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -20,11 +19,9 @@ import javax.persistence.metamodel.Metamodel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.model.elements.Field.Type;
-
 import org.molgenis.util.Entity;
 
 /**
@@ -32,23 +29,20 @@ import org.molgenis.util.Entity;
  */
 public class JPAQueryGeneratorUtil {
 
-	private transient static Log logger = LogFactory
-			.getLog("JPAQueryGeneratorUtil");
-
 	public static <IN extends Entity> TypedQuery<IN> createWhere(
-			Class<IN> inputClass, JpaMapper mapper, EntityManager em,
+			Class<IN> inputClass, JpaMapper<IN> mapper, EntityManager em,
 			QueryRule... rules) {
 		return createWhere(inputClass, inputClass, mapper, em, rules);
 	}
 
 	public static <IN extends Entity> TypedQuery<Long> createCount(
-			Class<IN> inputClass, JpaMapper mapper, EntityManager em,
+			Class<IN> inputClass, JpaMapper<IN> mapper, EntityManager em,
 			QueryRule... rules) {
 		return createWhere(inputClass, Long.class, mapper, em, rules);
 	}
 
 	public static <IN extends Entity, OUT> TypedQuery<OUT> createWhere(
-			Class<IN> inputClass, Class<OUT> outputClass, JpaMapper mapper,
+			Class<IN> inputClass, Class<OUT> outputClass, JpaMapper<IN> mapper,
 			EntityManager em, QueryRule... rules) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<OUT> cq = cb.createQuery(outputClass);

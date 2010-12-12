@@ -410,7 +410,7 @@ public interface Database
 	 * 
 	 * @return list of entity classes managed in this database
 	 */
-	public List<Class> getEntityClasses();
+	public List<Class<? extends Entity>> getEntityClasses();
 
 	/**
 	 * Return the security strategy object that takes care of authorization in
@@ -435,7 +435,7 @@ public interface Database
 	 *            of a class without packages.
 	 * @return entity class
 	 */
-	public Class<Entity> getClassForName(String simpleName);
+	public Class<? extends Entity> getClassForName(String simpleName);
 
 	/** create query by example */
 	public <E extends Entity> Query<E> queryByExample(E entity);

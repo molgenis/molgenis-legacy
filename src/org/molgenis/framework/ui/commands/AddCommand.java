@@ -19,9 +19,11 @@ import org.molgenis.util.Tuple;
 /**
  * The command to add a new record
  */
-public class AddCommand extends SimpleCommand
+public class AddCommand<E extends Entity> extends SimpleCommand<E>
 {
-	public AddCommand(String name, FormModel parent)
+	private static final long serialVersionUID = 1512493344265778285L;
+
+	public AddCommand(String name, FormModel<E> parent)
 	{
 		super(name, parent);
 		this.setLabel("Add new record");

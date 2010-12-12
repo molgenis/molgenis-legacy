@@ -1,22 +1,11 @@
 package org.molgenis.util;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import org.apache.xmlbeans.impl.xb.ltgfmt.TestCase.Files;
-import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvReaderListener;
-import org.molgenis.util.CsvStringReader;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
 
 public class CompareCSV {
 	

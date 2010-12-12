@@ -16,6 +16,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 /**
@@ -28,7 +29,7 @@ import org.molgenis.util.Tuple;
  * (see templates). It also eases understanding as Screen is reduced to a simple
  * Bean (that can be hold in a Session) and the Controllers that manipulate it.
  */
-public interface ScreenController<Screen> extends Serializable
+public interface ScreenController<E extends Entity, S extends ScreenModel<E>> extends Serializable
 {
 	/**
 	 * Refresh/reload the screen.

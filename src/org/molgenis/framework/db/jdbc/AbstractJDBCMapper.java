@@ -17,7 +17,6 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.jdbc.ColumnInfo.Type;
-import org.molgenis.framework.security.Login;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.CsvWriter;
@@ -511,7 +510,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 		try
 		{
 			String sql = createCountSql(rules)
-					+ getDatabase().createWhereSql((JDBCMapper) this, false, true,
+					+ JDBCDatabase.createWhereSql(this, false, true,
 							this.rewriteRules(getDatabase(), rules));
 			// + createWhereSql(getMapperFor(klazz), false, true, rules);
 			ResultSet rs = getDatabase().executeQuery(sql);
@@ -753,7 +752,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 	private ResultSet executeSelect(QueryRule... rules) throws DatabaseException, SQLException
 	{
 		String sql = createFindSql()
-				+ getDatabase().createWhereSql((JDBCMapper) this, false, true, this.rewriteRules(getDatabase(), rules));
+				+ JDBCDatabase.createWhereSql((JDBCMapper<?>) this, false, true, this.rewriteRules(getDatabase(), rules));
 
 		// FIXME too complicated
 		for (QueryRule rule : rules)
@@ -761,7 +760,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 			if (rule.getOperator() == Operator.LAST)
 			{
 				sql = "select * from (" + sql + ") as " + this.getClass().getSimpleName().toLowerCase() + " "
-						+ getDatabase().createSortSql(null, true, rules);
+						+ JDBCDatabase.createSortSql(null, true, rules);
 				break;
 			}
 		}

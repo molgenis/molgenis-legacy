@@ -6,10 +6,8 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.DatabaseMapper;
-import org.molgenis.framework.db.jdbc.ColumnInfo;
 import org.molgenis.model.elements.Field.Type;
 import org.molgenis.util.Entity;
 
@@ -17,7 +15,7 @@ import org.molgenis.util.Entity;
  * @author Morris Swertz
  * @author Joris Lops
  */
-public interface JpaMapper<E extends Entity> extends DatabaseMapper
+public interface JpaMapper<E extends Entity> extends DatabaseMapper<E>
 {
 
 	public List<E> findAll(EntityManager em);

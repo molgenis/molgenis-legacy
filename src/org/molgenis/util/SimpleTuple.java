@@ -99,7 +99,7 @@ public class SimpleTuple implements Tuple
 	public List<String> getFields()
 	{
 		// return a copy of the keys
-		return new Vector(this.keys);
+		return new Vector<String>(this.keys);
 	}
 
 	public Object getObject(int column)
@@ -566,7 +566,7 @@ public class SimpleTuple implements Tuple
 		}
 	}
 
-	public List<Object> getList(String column)
+	public List<?> getList(String column)
 	{
 		return this.getList(column, null);
 	}
@@ -582,16 +582,16 @@ public class SimpleTuple implements Tuple
 	}
 
 	@Override
-	public List<Object> getList(String column, String separator)
+	public List<?> getList(String column, String separator)
 	{
 		String sep = separator;
 		if (this.getObject(column) == null)
 		{
 			return null;
 		}
-		else if (this.getObject(column) instanceof List)
+		else if (this.getObject(column) instanceof List<?>)
 		{
-			return (List<Object>) this.getObject(column);
+			return (List<?>) this.getObject(column);
 		}
 		else if (this.getObject(column) instanceof String)
 		{
@@ -613,22 +613,22 @@ public class SimpleTuple implements Tuple
 	}
 
 	@Override
-	public List<Object> getList(int column)
+	public List<?> getList(int column)
 	{
 		return this.getList(column, null);
 	}
 
 	@Override
-	public List<Object> getList(int column, String separator)
+	public List<?> getList(int column, String separator)
 	{
 		String sep = separator;
 		if (this.getObject(column) == null)
 		{
 			return null;
 		}
-		else if (this.getObject(column) instanceof List)
+		else if (this.getObject(column) instanceof List<?>)
 		{
-			return (List<Object>) this.getObject(column);
+			return (List<?>) this.getObject(column);
 		}
 		else if (this.getObject(column) instanceof String)
 		{

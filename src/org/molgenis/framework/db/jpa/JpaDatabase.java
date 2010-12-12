@@ -290,9 +290,9 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	}
 
 	@Override
-	public Class<Entity> getClassForName(String simpleName)
+	public Class<? extends Entity> getClassForName(String simpleName)
 	{
-		for (Class<Entity> c : getEntityClasses())
+		for (Class<? extends Entity> c : getEntityClasses())
 		{
 			if (c.getSimpleName().equalsIgnoreCase(simpleName))
 			{
@@ -303,9 +303,9 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	}
 
 	@Override
-	public List<Class> getEntityClasses()
+	public List<Class<? extends Entity>> getEntityClasses()
 	{
-		List<Class> result = new ArrayList<Class>();
+		List<Class<? extends Entity>> result = new ArrayList<Class<? extends Entity>>();
 		for (EntityType t : em.getMetamodel().getEntities())
 		{
 			result.add(t.getJavaType());

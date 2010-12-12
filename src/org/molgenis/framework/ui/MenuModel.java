@@ -16,6 +16,8 @@ package org.molgenis.framework.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.molgenis.util.Entity;
+
 /**
  * This class describes the functionality needed for a menu-screen. The
  * functionality of this class is used in the scripts generating the html-code
@@ -24,7 +26,7 @@ import java.util.List;
  * @author MA Swertz
  * @version 1.0.0
  */
-public class MenuModel extends SimpleModel
+public class MenuModel<E extends Entity>extends SimpleModel<E>
 {
 	public enum Position
 	{
@@ -52,10 +54,10 @@ public class MenuModel extends SimpleModel
 	 * @param parent
 	 *            The parent of this screen
 	 */
-	public MenuModel(String name, ScreenModel parent)
+	public MenuModel(String name, ScreenModel<E> parent)
 	{
 		super(name, parent);
-		setController(new MenuController(this));
+		setController(new MenuController<E>(this));
 		// macro has exact name as class, but then ending with 'view'.
 		setViewMacro(MenuModel.class.getSimpleName().replace("Model", "View"));
 	}
@@ -87,15 +89,15 @@ public class MenuModel extends SimpleModel
 	/**
 	 * Only return childeren that are not hidden
 	 */
-	public List<ScreenModel> getVisibleChildren()
+	public List<ScreenModel<?>> getVisibleChildren()
 	{
-		List<ScreenModel> subscreens = this.getChildren();
-		List<ScreenModel> result = new ArrayList<ScreenModel>();
+		List<ScreenModel<?>> subscreens = this.getChildren();
+		List<ScreenModel<?>> result = new ArrayList<ScreenModel<?>>();
 
 		// remove hidden children from the list, and also commands
-		for (ScreenModel s : subscreens)
+		for (ScreenModel<?> s : subscreens)
 		{
-			if (this.hiddenScreenNames.indexOf(s.getName()) < 0 && s instanceof SimpleModel && s.isVisible())
+			if (this.hiddenScreenNames.indexOf(s.getName()) < 0 && s instanceof SimpleModel<?> && s.isVisible())
 			{
 				result.add(s);
 			}
@@ -105,10 +107,10 @@ public class MenuModel extends SimpleModel
 	}
 
 	@Override
-	public ScreenModel getSelected()
+	public ScreenModel<?> getSelected()
 	{
 		
-		List<ScreenModel> subscreens = getVisibleChildren();
+		List<ScreenModel<?>> subscreens = getVisibleChildren();
 		if (subscreens.contains(super.getSelected()))
 		{
 			return super.getSelected();

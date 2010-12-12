@@ -16,6 +16,7 @@ import java.io.Serializable;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 
@@ -25,11 +26,11 @@ import org.molgenis.util.Tuple;
  * Base-class for a screen displaying information from the invengine system to
  * the user.
  */
-public abstract class SimpleController<S extends ScreenModel> implements ScreenController<S>,Serializable
+public abstract class SimpleController<E extends Entity, S extends ScreenModel<E>> implements ScreenController<E,S>,Serializable
 {
 	// member variables
 	/** */
-	protected ScreenModel screen;
+	protected ScreenModel<E> screen;
 	/** */
 	protected static final transient Logger logger = Logger.getLogger(SimpleController.class);
 	/** */
@@ -72,7 +73,7 @@ public abstract class SimpleController<S extends ScreenModel> implements ScreenC
 	 */
 	public void doResetChildren()
 	{
-		for (ScreenModel subform : screen.getChildren())
+		for (ScreenModel<?> subform : screen.getChildren())
 		{
 			subform.reset();
 		}

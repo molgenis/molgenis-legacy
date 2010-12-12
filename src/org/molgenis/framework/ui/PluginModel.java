@@ -6,14 +6,16 @@ import java.util.Vector;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.security.Login;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public abstract class PluginModel extends SimpleModel implements ScreenController<PluginModel>
+public abstract class PluginModel<E extends Entity> extends SimpleModel<E> implements ScreenController<E, PluginModel<E>>
 {
+	private static final long serialVersionUID = -6748634936592503575L;
 	/** messages to show to the user */
 	private Vector<ScreenMessage> messages = new Vector<ScreenMessage>();;
 
-	public PluginModel(String name, ScreenModel parent)
+	public PluginModel(String name, ScreenModel<?> parent)
 	{
 		super(name, parent);
 		// label is the last part of the name
@@ -27,7 +29,7 @@ public abstract class PluginModel extends SimpleModel implements ScreenControlle
 	}
 
 	@Override
-	public PluginModel getScreen()
+	public PluginModel<E> getScreen()
 	{
 		return this;
 	}

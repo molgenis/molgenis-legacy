@@ -19,10 +19,8 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
-import org.molgenis.services.PubmedService;
 
 
 /**
@@ -360,7 +358,7 @@ public class ResultSetTuple extends SimpleTuple
 	/**
 	 * @deprecated Unsupported operation for a JDBCTuple
 	 */
-	public List<Object> getList(String columnName)
+	public List<?> getList(String columnName)
 	{
 		throw new UnsupportedOperationException("getList(String) failed: cannot retrieve a list from a "
 				+ this.getClass().getSimpleName() + "!");
@@ -369,7 +367,7 @@ public class ResultSetTuple extends SimpleTuple
 	/**
 	 * @deprecated Unsupported operation for a JDBCTuple
 	 */
-	public List<Object> getList(int columnIndex)
+	public List<?> getList(int columnIndex)
 	{
 		throw new UnsupportedOperationException("getList(int) failed: cannot retrieve a list from a "
 				+ this.getClass().getSimpleName() + "!");

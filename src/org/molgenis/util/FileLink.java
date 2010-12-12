@@ -1,7 +1,6 @@
 package org.molgenis.util;
 
 import java.io.File;
-import java.net.URL;
 
 public class FileLink
 {

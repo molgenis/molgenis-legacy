@@ -32,19 +32,19 @@ import org.molgenis.util.Tuple;
  */
 public class InMemoryDatabase implements Database
 {
-	private Map<Class, Map<Integer, Entity>> db = new LinkedHashMap<Class, Map<Integer, Entity>>();
+	private Map<Class<? extends Entity>, Map<Integer, Entity>> db = new LinkedHashMap<Class<? extends Entity>, Map<Integer, Entity>>();
 	private int autoid = 0;
 	private static transient final Logger logger = Logger.getLogger(InMemoryDatabase.class);
 
 	@Override
 	public <E extends Entity> int add(E entity) throws DatabaseException, IOException {
 		try {
-			Class c = entity.getClass();
+			Class<? extends Entity> c = entity.getClass();
 			if (db.get(c) == null) {
 				db.put(c, new LinkedHashMap<Integer, Entity>());
 			}
 
-			db.get(c).put(autoid++, entity);
+			db.get(c).put(autoid++, (Entity)entity);
 
 			// set autoid unless already set
 			if (entity.get(entity.getIdField()) == null) {
@@ -114,11 +114,11 @@ public class InMemoryDatabase implements Database
 		
 		if (db.get(klazz) == null) return new ArrayList<E>();
 		if (rules.length == 0) {
-			return (ArrayList<E>) new ArrayList(db.get(klazz).values());
+			return getValues(klazz);
 		}
 		else {
 			List<E> result = new ArrayList<E>();
-			for (Entity entity : db.get(klazz).values()) {
+			for (E entity : getValues(klazz)) {
 				boolean match = true;
 
 				for (QueryRule r : rules) {
@@ -130,18 +130,24 @@ public class InMemoryDatabase implements Database
 					}
 				}
 
-				if (match) result.add((E) entity);
+				if (match) result.add(entity);
 
 			}
 			return result;
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <E extends Entity> List<E> getValues(Class<E> klazz)
+	{
+		return (List<E>) db.get(klazz).values();
 	}
 
 	@Override
 	public <E extends Entity> List<E> findByExample(E example) throws DatabaseException {
 		// TODO move to common superclass of JDBC/InMemory/XML database
 		try {
-			Query<E> q = (Query<E>) this.query(example.getClass());
+			Query<E> q = this.query(getClassForEntity(example));
 
 			for (String field : example.getFields()) {
 				if (example.get(field) != null) {
@@ -157,16 +163,23 @@ public class InMemoryDatabase implements Database
 		return null;
 	}
 
+
+	@SuppressWarnings("unchecked")
+	private <E extends Entity> Class<E> getClassForEntity(E entity)
+	{
+		return (Class<E>)entity.getClass();
+	}
+	
 	@Override
-	public List<Class> getEntityClasses() {
-		return new ArrayList<Class>(db.keySet());
+	public List<Class<? extends Entity>> getEntityClasses() {
+		return new ArrayList<Class<? extends Entity>>(db.keySet());
 	}
 
 	@Override
 	public List<String> getEntityNames() {
 		// TODO in common superclass
 		List<String> names = new ArrayList<String>();
-		for (Class c : this.getEntityClasses()) {
+		for (Class<? extends Entity> c : this.getEntityClasses()) {
 			names.add(c.getSimpleName());
 		}
 		return names;
@@ -250,7 +263,7 @@ public class InMemoryDatabase implements Database
 	public String toString() {
 		StringBuffer buff = new StringBuffer();
 		
-		for (Class c : db.keySet()) {
+		for (Class<?> c : db.keySet()) {
 			for (Entity e : db.get(c).values()) {
 				buff.append(e + "\n");
 			}
@@ -258,7 +271,7 @@ public class InMemoryDatabase implements Database
 		
 		buff.append("\nTotals per class: \n");
 		int grandtotal = 0;
-		for (Class c : db.keySet()) {
+		for (Class<?> c : db.keySet()) {
 			buff.append(c.getSimpleName() + ":" + db.get(c).size() + "\n");
 			grandtotal += db.get(c).size();
 		}
@@ -277,7 +290,7 @@ public class InMemoryDatabase implements Database
 	}
 
 	@Override
-	public Class getClassForName(String name) {
+	public Class<? extends Entity> getClassForName(String name) {
 		throw new UnsupportedOperationException();
 	}
 

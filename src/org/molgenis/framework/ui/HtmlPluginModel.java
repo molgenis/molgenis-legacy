@@ -33,17 +33,17 @@ import org.molgenis.util.Entity;
  * @author MA Swertz
  * @version 1.0.0
  */
-public class HtmlPluginModel<E extends Entity> extends SimpleModel
+public class HtmlPluginModel<E extends Entity> extends SimpleModel<E>
 {
 
 	/**
 	 * @param name The name of this menu-screen (must be unique in the tree)
 	 * @param parent The parent of this screen
 	 */
-	public HtmlPluginModel(String name, ScreenModel parent)
+	public HtmlPluginModel(String name, ScreenModel<?> parent)
 	{
 		super(name, parent);	
-		setController(new HtmlPluginController(this));
+		setController(new HtmlPluginController<E>(this));
 		setViewMacro(HtmlPluginModel.class.getSimpleName().replace("Model", "View"));
 	}
 	

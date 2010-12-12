@@ -49,9 +49,9 @@ public interface JDBCMapper<E extends Entity>
 
 	public List<E> find(QueryRule ...rules) throws DatabaseException;
 
-	public void find(CsvWriter writer, QueryRule[] rules) throws DatabaseException;
+	public void find(CsvWriter writer, QueryRule ... rules) throws DatabaseException;
 	
-	public void find(CsvWriter writer, List<String> fieldsToExport, QueryRule[] rules) throws DatabaseException;
+	public void find(CsvWriter writer, List<String> fieldsToExport, QueryRule ... rules) throws DatabaseException;
 
 	public int remove(CsvReader reader) throws DatabaseException;
 

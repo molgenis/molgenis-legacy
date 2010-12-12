@@ -17,15 +17,15 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.generators.db.JpaMapperGen;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class RemoveSelectedCommand extends SimpleCommand
+public class RemoveSelectedCommand<E extends Entity> extends SimpleCommand<E>
 {
+	private static final long serialVersionUID = 4730493886936446817L;
 	public static final transient Logger logger = Logger.getLogger(RemoveSelectedCommand.class);
 
-	public RemoveSelectedCommand(String name, FormModel parentScreen)
+	public RemoveSelectedCommand(String name, FormModel<E> parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("Remove selected");
@@ -45,13 +45,13 @@ public class RemoveSelectedCommand extends SimpleCommand
 	{
 		logger.debug(this.getName());
 		
-		FormModel view = getFormScreen();
+		FormModel<E> view = getFormScreen();
 
 		ScreenMessage msg = null;
 		try
 		{
 			// get ids
-			List<Object> idList = request.getList(FormModel.INPUT_SELECTED);
+			List<?> idList = request.getList(FormModel.INPUT_SELECTED);
 			if (idList == null || idList.size() == 0) throw new Exception("no items selected");
 			for (Object id : idList)
 			{
@@ -59,8 +59,8 @@ public class RemoveSelectedCommand extends SimpleCommand
 			}
 
 			// find selected entities
-			Query<Entity> q = db.query(view.getEntityClass()).in(view.create().getIdField(), idList);
-			List<Entity> selection = q.find();
+			Query<E> q = db.query(view.getEntityClass()).in(view.create().getIdField(), idList);
+			List<E> selection = q.find();
 
 			// delete selected entities
 			db.remove(selection);

@@ -17,7 +17,6 @@ import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.TextInput;
-import org.molgenis.generators.db.JpaMapperGen;
 import org.molgenis.util.CsvStringReader;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -25,11 +24,12 @@ import org.molgenis.util.Tuple;
 /**
  * The command to add in batch/upload csv
  */
-public class AddBatchCommand extends SimpleCommand
+public class AddBatchCommand<E extends Entity> extends SimpleCommand<E>
 {
+	private static final long serialVersionUID = -4067952586340535730L;
 	public static final transient Logger logger = Logger.getLogger(AddBatchCommand.class);
 
-	public AddBatchCommand(String name, FormModel owner)
+	public AddBatchCommand(String name, FormModel<E> owner)
 	{
 		super(name, owner);
 		this.setLabel("Add in batch/upload CSV");
@@ -85,7 +85,7 @@ public class AddBatchCommand extends SimpleCommand
 			ScreenMessage msg = null;
 			try
 			{
-				CsvToDatabase csvReader = this.getFormScreen().getCsvReader();
+				CsvToDatabase<? extends Entity> csvReader = this.getFormScreen().getCsvReader();
 
 				int updatedRows = csvReader.importCsv(db, new CsvStringReader(request
 						.getString("__csvdata")), request, DatabaseAction.ADD);

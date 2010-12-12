@@ -53,7 +53,7 @@ public class QueryImp<E extends Entity> implements Query<E> {
 	}
 
 	@Override
-	public Query<E> in(String field, List values) {
+	public Query<E> in(String field, List<?> values) {
 		if (values.size() > 0) {
 			rules.add(new QueryRule(field, Operator.IN, values.toArray()));
 		}
@@ -249,9 +249,9 @@ public class QueryImp<E extends Entity> implements Query<E> {
 		{
 			if (example.get(field) != null)
 			{
-				if (example.get(field) instanceof List)
+				if (example.get(field) instanceof List<?>)
 				{
-					if (((List) example.get(field)).size() > 0) this.in(field, (List) example.get(field));
+					if (((List<?>) example.get(field)).size() > 0) this.in(field, (List<?>) example.get(field));
 				}
 				else
 					this.equals(field, example.get(field));

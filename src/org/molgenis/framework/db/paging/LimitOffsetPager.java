@@ -2,7 +2,6 @@ package org.molgenis.framework.db.paging;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;

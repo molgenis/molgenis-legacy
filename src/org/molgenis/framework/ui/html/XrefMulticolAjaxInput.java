@@ -13,12 +13,7 @@
 package org.molgenis.framework.ui.html;
 
 // jdk
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
-
-import org.molgenis.util.ValueLabel;
 
 /**
  * Input for cross-reference (xref) data. Data will be shown as a chain of
@@ -51,7 +46,7 @@ public class XrefMulticolAjaxInput extends HtmlInput
 		String labelArr = "{";
 		for (String label : xrefLabelFields)
 		{
-			labelArr += "\"label\",";
+			labelArr += "\""+label+"\",";
 		}
 		labelArr = labelArr.substring(0, labelArr.length() - 1) + "}";
 

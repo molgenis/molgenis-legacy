@@ -553,7 +553,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 			if( tuple.getObject("${name(f)}")!= null ) 
 			{
 				java.util.List<${type(xrefField(model,f))}> values = new java.util.ArrayList<${type(xrefField(model,f))}>();
-				java.util.List<Object> mrefs = tuple.getList("${name(f)}");
+				java.util.List<?> mrefs = tuple.getList("${name(f)}");
 				if(mrefs != null) for(Object ref: mrefs)
 				{
 					if(ref instanceof String)
@@ -568,7 +568,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 			if( tuple.getObject("${name(f)}_${name(label)}")!= null ) 
 			{
 				java.util.List<String> values = new java.util.ArrayList<String>();
-				java.util.List<Object> mrefs = tuple.getList("${name(f)}_${name(label)}");
+				java.util.List<?> mrefs = tuple.getList("${name(f)}_${name(label)}");
 				if(mrefs != null) 
 					for(Object ref: mrefs)
 					{

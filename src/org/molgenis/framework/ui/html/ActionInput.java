@@ -68,7 +68,7 @@ public class ActionInput extends HtmlInput
 		this.setTooltip(type.toString());
 	}
 
-	public ActionInput(Enum select_target)
+	public ActionInput(Type select_target)
 	{
 		this(select_target.toString());
 		this.setLabel(select_target.toString().replace("_"," "));
