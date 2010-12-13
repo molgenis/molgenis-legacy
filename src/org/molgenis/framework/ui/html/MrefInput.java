@@ -31,7 +31,7 @@ public class MrefInput extends HtmlInput
 	// private List<ValueLabel> options = new Vector<ValueLabel>();
 	// The label of the value to show in the box
 	// xrefLabel,values
-	private Map<String, List<String>> valueLabels = new TreeMap<String, List<String>>();
+	private Map<String, List<?>> valueLabels = new TreeMap<String, List<?>>();
 	// what is this?
 	private String targetfield;
 
@@ -190,12 +190,12 @@ public class MrefInput extends HtmlInput
 		this.xrefLabels.add(xrefLabel);
 	}
 
-	public List<String> getValueLabels(String xrefLabelName)
+	public List<?> getValueLabels(String xrefLabelName)
 	{
 		return valueLabels.get(xrefLabelName);
 	}
 
-	public void setValueLabels(String xrefLabelName, List<String> valueLabels)
+	public void setValueLabels(String xrefLabelName, List<?> valueLabels)
 	{
 		this.valueLabels.put(xrefLabelName, valueLabels);
 	}
