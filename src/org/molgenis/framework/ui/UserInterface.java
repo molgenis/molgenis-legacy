@@ -146,7 +146,7 @@ public class UserInterface<E extends Entity> extends SimpleModel<E> implements S
 		ScreenModel<?> target = get(screen);
 		if( target != null)
 		{
-			if(target.getController().equals(this))
+			if(!target.getController().equals(this))
 					target.getController().handleRequest(db, request);
 		}
 		else
