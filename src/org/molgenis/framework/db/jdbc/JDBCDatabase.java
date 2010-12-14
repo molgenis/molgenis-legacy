@@ -592,7 +592,7 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 		{
 			for (String klazz : this.getEntityNames())
 			{
-				classes.add(getClassForName(klazz));
+				classes.add((Class<? extends Entity>) Class.forName(klazz));
 			}
 		}
 		catch (Exception e)
