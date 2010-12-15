@@ -1285,7 +1285,10 @@ public class Entity extends DBSchema implements Record
 
 	public Field getPrimaryKey() throws MolgenisModelException
 	{
-		return this.getAllKeys().get(0).getFields().get(0);
+            if(hasAncestor()) {
+                return getAncestor().getPrimaryKey();
+            }
+            return this.getAllKeys().get(0).getFields().get(0);
 	}
 
 	public void setParents(String[] parents)

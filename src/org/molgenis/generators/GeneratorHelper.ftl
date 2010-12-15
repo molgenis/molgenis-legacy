@@ -237,28 +237,13 @@
 
 
 <#function PkeyName entity>
-	<#foreach field in entity.fields>
-		<#if isPrimaryKey(field, entity)>
-			<#return Name(field)>
-		</#if>>
-	</#foreach>
-	<#return "KEY UNKNOWN FOR "+Name(entity)>
+        <#return Name(entity.getPrimaryKey())>
 </#function>
 <#function pkey entity>
-	<#foreach field in entity.fields>
-		<#if isPrimaryKey(field, entity)>
-			<#return field>
-		</#if>
-	</#foreach>
-	<#return "KEY UNKNOWN FOR "+Name(entity)>
+	<#return entity.getPrimaryKey()>
 </#function>
 <#function pkeyname entity>
-	<#foreach field in entity.fields>
-		<#if isPrimaryKey(field, entity)>
-			<#return name(field)>
-		</#if>
-	</#foreach>
-	<#return "KEY UNKNOWN FOR "+Name(entity)>
+        <#return name(entity.getPrimaryKey())>
 </#function>
 <#function pkeyField entity>
 	<#foreach field in entity.allFields>

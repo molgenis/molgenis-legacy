@@ -21,7 +21,7 @@ public class PersistenceGen extends Generator
 	@Override
 	public String getDescription()
 	{
-		return "Generates one Jpa to talk to the data. Encapsulates Database Mappers to do this.";
+		return "Generates persistence.xml";
 	}
 	
 	@Override

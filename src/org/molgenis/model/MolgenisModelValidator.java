@@ -50,7 +50,7 @@ public class MolgenisModelValidator
 			addInterfaces(model);
 		}
 
-		copyFieldsToSubclassToEnforceConstraints(model);
+		//copyFieldsToSubclassToEnforceConstraints(model);
 
 	}
 	
@@ -687,36 +687,36 @@ public class MolgenisModelValidator
 				}
 
 				// copy primary key from superclass to subclass
-				try
-				{
-					Vector<String> keys = new Vector<String>();
-					for (Field key : parent.getKeyFields(Entity.PRIMARY_KEY))
-					{
-						if (entity.getField(key.getName()) == null)
-						{
-							Field field = new Field(key);
-							field.setEntity(entity);
-							field.setAuto(key.isAuto());
-							field.setNillable(key.isNillable());
-							field.setReadonly(key.isReadOnly());
-
-							field.setSystem(true);
-							field.setXRefVariables(parent.getName(), key.getName(), null);
-							field.setHidden(true);
-
-							entity.addField(field);
-							logger.debug("copy primary key " + field.getName() + " from superclass " + parent.getName()
-									+ " to " + entity.getName());
-							keys.add(field.getName());
-						}
-					}
-					if (keys.size() > 0) entity.getKeys().add(0,
-							new Unique(entity, keys, false, "unique reference to superclass"));
-				}
-				catch (Exception e)
-				{
-					throw new MolgenisModelException(e.getMessage());
-				}
+//				try
+//				{
+//					Vector<String> keys = new Vector<String>();
+//					for (Field key : parent.getKeyFields(Entity.PRIMARY_KEY))
+//					{
+//						if (entity.getField(key.getName()) == null)
+//						{
+//							Field field = new Field(key);
+//							field.setEntity(entity);
+//							field.setAuto(key.isAuto());
+//							field.setNillable(key.isNillable());
+//							field.setReadonly(key.isReadOnly());
+//
+//							field.setSystem(true);
+//							field.setXRefVariables(parent.getName(), key.getName(), null);
+//							field.setHidden(true);
+//
+//							entity.addField(field);
+//							logger.debug("copy primary key " + field.getName() + " from superclass " + parent.getName()
+//									+ " to " + entity.getName());
+//							keys.add(field.getName());
+//						}
+//					}
+//					if (keys.size() > 0) entity.getKeys().add(0,
+//							new Unique(entity, keys, false, "unique reference to superclass"));
+//				}
+//				catch (Exception e)
+//				{
+//					throw new MolgenisModelException(e.getMessage());
+//				}
 			}
 		}
 	}

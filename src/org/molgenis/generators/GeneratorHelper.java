@@ -270,9 +270,13 @@ public class GeneratorHelper
 				// MAJOR error, arghhhh!!! &&
 				// !getKeyFields(PRIMARY_KEY).contains(f))
 				{
+
 					add_fields.add(f);
 				}
 			}
+                        if(e.hasAncestor()) {
+                            add_fields.add(e.getPrimaryKey());
+                        }
 		}
 
 		return add_fields;
@@ -358,6 +362,10 @@ public class GeneratorHelper
 					db_fields.add(f);
 				}
 			}
+
+                        if(e.hasAncestor()) {
+                            db_fields.add(e.getPrimaryKey());
+                        }
 		}
 		// String field_names = "";
 		// for(Field f: db_fields) field_names += f.getName()+" ";

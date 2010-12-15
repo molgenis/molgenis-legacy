@@ -59,7 +59,7 @@ public class FieldAssign
 	 * @throws IllegalArgumentException 
 	 */
 	@SuppressWarnings(
-	{ "unchecked" })
+	{ "unchecked", "empty-statement" })
 	public void assign(final Object obj, final Object value) throws IllegalAccessException, CmdLineException, IllegalArgumentException, InstantiationException
 	{
 		if (obj == null || value == null)
@@ -107,10 +107,16 @@ public class FieldAssign
 		}
 		else
 		{
-
 			// TODO this is a crappy construction ...
 			// TODO we're only able to do Strings in the collection ...
-			if (Collection.class.isInstance(field.getType().newInstance()))
+//                    System.out.println(field.getType().getSimpleName());
+//
+//                    Class iclass = field.getType().getInterfaces()[0];
+//                    if(field.getType(). List) {
+//
+//                    }
+
+                    if (Collection.class.isInstance(field.getType().newInstance()))
 			{
 				Collection<String> collection = (Collection<String>) field.get(obj);
 				for (String v : value.toString().split(","))
@@ -122,7 +128,6 @@ public class FieldAssign
 			{
 				field.set(obj, value);
 			}
-
 		}
 	}
 

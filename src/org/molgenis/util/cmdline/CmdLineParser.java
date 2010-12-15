@@ -278,28 +278,12 @@ public class CmdLineParser
 				}
 
 				FieldAssign field_assign = new FieldAssign(field);
-				try
-				{
-					field_assign.assign(options, result);
-				}
-				catch (IllegalArgumentException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				catch (IllegalAccessException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				catch (InstantiationException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				//throw new CmdLineException("Unhandled situation:\n" + e.toString());
-
+				try {
+                                    field_assign.assign(options, result);
+				} catch (Exception ex) {
+                                    ex.printStackTrace();
+//                                    throw new CmdLineException("Unhandled situation:\n" + ex.toString());
+                                }
 			}
 		}
 	}
