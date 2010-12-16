@@ -497,36 +497,52 @@ public class Entity extends DBSchema implements Record
 	 */
 	public List<Field> getFields() throws MolgenisModelException
 	{
-            return getFields(false);
+		return getFields(false, false, true);
 	}
 
 	/**
 	 * Returns a vector with all the fields associated with this entity.
-	 *
-         * @param required
-         *          if required == true than
-         *              returns only fields that are required (not nillable/null)
-         *          else
-         *              returns all fields
+	 * 
+	 * @param required
+	 *            if required == true than returns only fields that are required
+	 *            (not nillable/null) else returns all fields
+	 * @param
 	 * @return All the fields associated with this entity.
 	 * @throws MolgenisModelException
 	 */
-	public List<Field> getFields(boolean required) throws MolgenisModelException
+	public List<Field> getFields(boolean required, boolean recursive,
+			boolean systemField) throws MolgenisModelException
 	{
-            List<Field> result = new ArrayList<Field>();
-            for(Field f : fields) {
-                if(required) {
-                    if(f.isNillable()) {
-                        result.add(f);
-                    }
-                } else {
-                    result.add(f);
-                }
-            }
-            return result;
+		List<Field> result = new ArrayList<Field>();
+		for (Field f : fields)
+		{
+			if (f.isSystem())
+			{
+				if (systemField)
+				{
+					result.add(f);
+				}
+				//else ignore
+			}
+			else if (f.isNillable())
+			{
+				if(!required)
+				{
+					result.add(f);
+				}
+			}
+			else
+			{
+				result.add(f);
+			}
+		}
+		if (recursive && hasAncestor())
+		{
+			result.addAll(getAncestor().getFields(required, recursive,
+					systemField));
+		}
+		return result;
 	}
-
-
 
 	/**
 	 * Get fields for this entity as well as from the interfaces it implements.
@@ -542,7 +558,7 @@ public class Entity extends DBSchema implements Record
 		for (Entity iface : this.getAllImplements())
 		{
 			Vector<Field> ifaceFields = new Vector<Field>(iface.getAllFields());
-			//Collections.copy(ifaceFields, iface.getAllFields());
+			// Collections.copy(ifaceFields, iface.getAllFields());
 			for (Field ifaceField : ifaceFields)
 			{
 				// ifaceField.setEntity(this);
@@ -593,8 +609,8 @@ public class Entity extends DBSchema implements Record
 		// second fields of the interfaces
 		for (Entity iface : this.getImplements())
 		{
-			Vector<Field> ifaceFields = new Vector<Field>( iface.getAllFields());
-			//Collections.copy(ifaceFields, iface.getAllFields());
+			Vector<Field> ifaceFields = new Vector<Field>(iface.getAllFields());
+			// Collections.copy(ifaceFields, iface.getAllFields());
 			for (Field ifaceField : ifaceFields)
 			{
 				// ifaceField.setEntity(this);
@@ -649,10 +665,10 @@ public class Entity extends DBSchema implements Record
 		// second the fields of the superclass
 		if (getAncestor() != null)
 		{
-                    for (Field f : getAncestor().getAllFields())
-                    {
-                            all_fields.put(f.getName().toLowerCase(), f);
-                    }
+			for (Field f : getAncestor().getAllFields())
+			{
+				all_fields.put(f.getName().toLowerCase(), f);
+			}
 		}
 
 		// third of self...
@@ -934,9 +950,11 @@ public class Entity extends DBSchema implements Record
 	 * @return The field with the given name.
 	 * @throws MolgenisModelException
 	 */
-	public Field getField(String name) throws MolgenisModelException
+
+	public Field getField(String name, boolean required, boolean recursive,
+			boolean systemFields) throws MolgenisModelException
 	{
-		for (Field field : getFields())
+		for (Field field : getFields(required, recursive, systemFields))
 		{
 			if (name.equals(field.getName()))
 			{
@@ -945,6 +963,11 @@ public class Entity extends DBSchema implements Record
 		}
 
 		return null;
+	}
+
+	public Field getField(String name) throws MolgenisModelException
+	{
+		return getField(name, false, false, true);
 	}
 
 	/**
@@ -971,8 +994,6 @@ public class Entity extends DBSchema implements Record
 
 		return null;
 	}
-
-
 
 	// index access methods
 	/**
@@ -1134,11 +1155,11 @@ public class Entity extends DBSchema implements Record
 	{
 		Vector<Unique> result = new Vector<Unique>();
 
-//		if(getName().equals("Data"))
-//		{
-//			System.out.println("breakpoint");
-//		}
-		
+		// if(getName().equals("Data"))
+		// {
+		// System.out.println("breakpoint");
+		// }
+
 		// get primary key from parent
 		if (hasAncestor())
 		{
@@ -1313,10 +1334,11 @@ public class Entity extends DBSchema implements Record
 
 	public Field getPrimaryKey() throws MolgenisModelException
 	{
-            if(hasAncestor()) {
-                return getAncestor().getPrimaryKey();
-            }
-            return this.getAllKeys().get(0).getFields().get(0);
+		if (hasAncestor())
+		{
+			return getAncestor().getPrimaryKey();
+		}
+		return this.getAllKeys().get(0).getFields().get(0);
 	}
 
 	public void setParents(String[] parents)

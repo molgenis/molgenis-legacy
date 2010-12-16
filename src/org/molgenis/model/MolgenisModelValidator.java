@@ -451,9 +451,10 @@ public class MolgenisModelValidator
 					if(entity.isAbstract() && field.getType() == Field.Type.XREF_MULTIPLE) throw new MolgenisModelException(
 							"interfaces cannot have mref therefore remove '"+ entityname + "." + fieldname+"'");
 
-					Field xref_field = xref_entity.getField(xref_field_name);
+					Field xref_field = xref_entity.getField(xref_field_name, false, true,true);
 
-					if (xref_field == null) throw new MolgenisModelException("xref field '" + xref_field_name
+					if (xref_field == null) 
+						throw new MolgenisModelException("xref field '" + xref_field_name
 							+ "' does not exist for field " + entityname + "." + fieldname);
 
 					if (xref_field == null) xref_field = xref_entity.getPrimaryKey();
@@ -663,6 +664,7 @@ public class MolgenisModelValidator
 				}
 				catch (Exception e)
 				{
+					e.printStackTrace();
 					throw new MolgenisModelException(e.getMessage());
 				}
 

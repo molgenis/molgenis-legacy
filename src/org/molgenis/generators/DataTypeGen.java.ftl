@@ -182,25 +182,24 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	
 <#assign numFields = 0/>
 
-<#if entity.getFields()?size &gt; 0>
+
 	/**
 	 * Constructor with only the required fields
 	 */
-	public ${JavaName(entity)}(<#list entity.fields as f><#if !f.nillable><#if numFields &gt; 0>,</#if><#assign numFields = numFields + 1>${type(f)} ${name(f)}</#if></#list>)
+	public ${JavaName(entity)}(<#list entity.getFields(true,true,false) as f><#if f_index &gt; 0>,</#if>${type(f)} ${name(f)}</#list>)
 	{
-<#list entity.fields as f><#if !f.nillable>
+<#list entity.getFields() as f><#if f.nillable && f.name!=typefield()>
 		this.set${JavaName(f)}(${name(f)});
 </#if></#list>	
 	}
-</#if>
 
-<#if numFields &lt; entity.fields?size>
+<#if entity.getFields(true,true,false)?size &lt; entity.getFields(false,true,false)?size>
    /**
 	 * Constructor with all fields
 	 */
-	public ${JavaName(entity)}(<#list entity.fields as f><#if f_index &gt; 0>,</#if>${type(f)} ${name(f)}</#list>)
+	public ${JavaName(entity)}(<#list entity.getFields(false,true,false) as f><#if f_index &gt; 0>,</#if>${type(f)} ${name(f)}</#list>)
 	{
-<#list entity.fields as f>
+<#list entity.getFields(false,true,false) as f>
 		this.set${JavaName(f)}(${name(f)});
 </#list>
 	}
