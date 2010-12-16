@@ -6,7 +6,7 @@
  * <li> 2006-03-07, 1.0.0, DI Matthijssen
  * <li> 2006-05-14; 1.1.0; MA Swertz integration into Inveninge (and major
  * rewrite)
- * <li> 2006-05-14; 1.2.0; RA Scheltema major rewrite + cleanup
+ * <li> 2006-05-14; 1.2ƒ.0; RA Scheltema major rewrite + cleanup
  * </ul>
  */
 

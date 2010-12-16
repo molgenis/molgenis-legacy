@@ -255,7 +255,7 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 						throw new Exception("Import of '${entity.name}' objects failed: cannot find ${JavaName(f.getXrefEntityName())} for <#list f.xrefLabelNames as label><#if label_index &gt; 0> and </#if>${name(f)}_${label}='"+o.get${JavaName(f)}_${label}()+"'</#list>");
 					</#if>
 					}
-					o.set${JavaName(f)}_Id(${name(f)}Keymap.get(key));
+					o.set${JavaName(f)}_${JavaName(f.getXrefField())}(${name(f)}Keymap.get(key));
 				}
 				<#elseif f.type == 'mref'  && f.getXrefLabelNames()[0] != f.getXrefFieldName()>
 				//update mref ${f.name}

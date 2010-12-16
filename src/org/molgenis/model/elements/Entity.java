@@ -495,12 +495,38 @@ public class Entity extends DBSchema implements Record
 	 * @return All the fields associated with this entity.
 	 * @throws MolgenisModelException
 	 */
-	public Vector<Field> getFields() throws MolgenisModelException
+	public List<Field> getFields() throws MolgenisModelException
 	{
-		Vector<Field> f = new Vector<Field>();
-		f.addAll(fields);
-		return f;
+            return getFields(false);
 	}
+
+	/**
+	 * Returns a vector with all the fields associated with this entity.
+	 *
+         * @param required
+         *          if required == true than
+         *              returns only fields that are required (not nillable/null)
+         *          else
+         *              returns all fields
+	 * @return All the fields associated with this entity.
+	 * @throws MolgenisModelException
+	 */
+	public List<Field> getFields(boolean required) throws MolgenisModelException
+	{
+            List<Field> result = new ArrayList<Field>();
+            for(Field f : fields) {
+                if(required) {
+                    if(f.isNillable()) {
+                        result.add(f);
+                    }
+                } else {
+                    result.add(f);
+                }
+            }
+            return result;
+	}
+
+
 
 	/**
 	 * Get fields for this entity as well as from the interfaces it implements.
@@ -623,10 +649,10 @@ public class Entity extends DBSchema implements Record
 		// second the fields of the superclass
 		if (getAncestor() != null)
 		{
-			for (Field f : getAncestor().getAllFields())
-			{
-				all_fields.put(f.getName().toLowerCase(), f);
-			}
+                    for (Field f : getAncestor().getAllFields())
+                    {
+                            all_fields.put(f.getName().toLowerCase(), f);
+                    }
 		}
 
 		// third of self...
@@ -736,11 +762,11 @@ public class Entity extends DBSchema implements Record
 	/**
 	 * @throws MolgenisModelException
 	 */
-	public Vector<Field> getSystemFields(boolean all)
+	public List<Field> getSystemFields(boolean all)
 			throws MolgenisModelException
 	{
-		Vector<Field> the_fields;
-		Vector<Field> system_fields = new Vector<Field>();
+		List<Field> the_fields;
+		List<Field> system_fields = new ArrayList<Field>();
 
 		if (!all) the_fields = getFields();
 		else
@@ -764,11 +790,11 @@ public class Entity extends DBSchema implements Record
 	 * @return All the non-system fields for the entity.
 	 * @throws MolgenisModelException
 	 */
-	public Vector<Field> getNonSystemFields(boolean all)
+	public List<Field> getNonSystemFields(boolean all)
 			throws MolgenisModelException
 	{
-		Vector<Field> the_fields;
-		Vector<Field> nonsystem_fields = new Vector<Field>();
+		List<Field> the_fields;
+		List<Field> nonsystem_fields = new ArrayList<Field>();
 
 		if (!all) the_fields = getFields();
 		else
@@ -945,6 +971,8 @@ public class Entity extends DBSchema implements Record
 
 		return null;
 	}
+
+
 
 	// index access methods
 	/**

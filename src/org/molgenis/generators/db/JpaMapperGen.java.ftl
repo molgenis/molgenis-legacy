@@ -157,8 +157,8 @@ public class ${Name(entity)}Mapper implements JpaMapper<${Name(entity)}>
 				else if (!em.contains(entity.get${JavaName(field)}()) && entity.get${JavaName(field)}().getIdValue() != null)
 					entity.set${JavaName(field)}(em.getReference(${JavaName(field.getXrefEntity())}.class, entity.get${JavaName(field)}().getIdValue()));
 			} else { //object is reference by xref	
-				if(entity.get${JavaName(field)}_Id() != null) {	
-					entity.set${JavaName(field)}((${JavaName(field.getXrefEntity())})em.find(${JavaName(field.getXrefEntity())}.class, entity.get${JavaName(field)}_Id()));
+				if(entity.get${JavaName(field)}_${JavaName(field.getXrefField())}() != null) {
+					entity.set${JavaName(field)}((${JavaName(field.getXrefEntity())})em.find(${JavaName(field.getXrefEntity())}.class, entity.get${JavaName(field)}_${JavaName(field.getXrefField())}()));
 				}
 			}
 	<#elseif type_label == "mref">

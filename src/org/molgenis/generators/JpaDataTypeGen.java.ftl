@@ -421,9 +421,9 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		if(${name(field)} != null) 
 		{
 			List<${type(field.xrefField)}> result = new ArrayList<${type(field.xrefField)}>();
-			for(${JavaName(field.xrefEntity)} xref: ${name(field)})
+			for(${type(field.xrefField)} xref: ${name(field)}_${name(field.xrefField)})
 			{
-				result.add(xref.get${JavaName(field.xrefField)}());
+				result.add(xref);
 			}
 			return result;
 		}
@@ -652,6 +652,8 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	
 	public String toString(boolean verbose)
 	{
+            return "" + getIdValue();
+<#--
 		String result = "${JavaName(entity)}(";
 <#list allFields(entity) as field>
 	<#assign type_label = field.getType().toString()>
@@ -669,6 +671,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 </#list>
 		result += ");";
 		return result;
+-->
 	}
 		
 	@Override

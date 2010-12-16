@@ -181,6 +181,8 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	}
 	
 <#assign numFields = 0/>
+
+<#if entity.getFields()?size &gt; 0>
 	/**
 	 * Constructor with only the required fields
 	 */
@@ -190,6 +192,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		this.set${JavaName(f)}(${name(f)});
 </#if></#list>	
 	}
+</#if>
 
 <#if numFields &lt; entity.fields?size>
    /**

@@ -111,7 +111,7 @@ public class TestDatabase
 			${JavaName(entity)} e = new ${JavaName(entity)}();
 			<#list entity.allFields as f><#if !f.auto>
 			<#if f.type == "xref">
-			if(${name(f)}Xrefs.size() > 0) e.set${JavaName(f)}_Id( ${name(f)}Xrefs.get(i).get${JavaName(f.xrefField)}() );
+			if(${name(f)}Xrefs.size() > 0) e.set${JavaName(f)}_${JavaName(f.getXrefField())}( ${name(f)}Xrefs.get(i).get${JavaName(f.xrefField)}() );
 			<#elseif f.type == "mref">
 			if(${name(f)}Xrefs.size() > 0)
 			{
