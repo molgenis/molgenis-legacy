@@ -50,7 +50,7 @@ public class MolgenisModelValidator
 			addInterfaces(model);
 		}
 
-		//copyFieldsToSubclassToEnforceConstraints(model);
+		copyFieldsToSubclassToEnforceConstraints(model);
 
 	}
 	

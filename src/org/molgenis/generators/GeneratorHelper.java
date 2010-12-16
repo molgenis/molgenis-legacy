@@ -274,9 +274,9 @@ public class GeneratorHelper
 					add_fields.add(f);
 				}
 			}
-                        if(e.hasAncestor()) {
-                            add_fields.add(e.getPrimaryKey());
-                        }
+//                        if(e.hasAncestor()) {
+//                            add_fields.add(e.getPrimaryKey());
+//                        }
 		}
 
 		return add_fields;
@@ -363,9 +363,9 @@ public class GeneratorHelper
 				}
 			}
 
-                        if(e.hasAncestor()) {
-                            db_fields.add(e.getPrimaryKey());
-                        }
+//                        if(e.hasAncestor()) {
+//                            db_fields.add(e.getPrimaryKey());
+//                        }
 		}
 		// String field_names = "";
 		// for(Field f: db_fields) field_names += f.getName()+" ";
