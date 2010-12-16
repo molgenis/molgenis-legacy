@@ -189,7 +189,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	public ${JavaName(entity)}(<#list entity.getFields(true,true,false) as f><#if f_index &gt; 0>,</#if>${type(f)} ${name(f)}</#list>)
 	{
 <#list entity.getFields() as f><#if f.nillable && f.name!=typefield()>
-		this.set${JavaName(f)}(${name(f)});
+		this.set${JavaName(f)}(_${name(f)});
 </#if></#list>	
 	}
 
@@ -200,7 +200,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	public ${JavaName(entity)}(<#list entity.getFields(false,true,false) as f><#if f_index &gt; 0>,</#if>${type(f)} ${name(f)}</#list>)
 	{
 <#list entity.getFields(false,true,false) as f>
-		this.set${JavaName(f)}(${name(f)});
+		this.set${JavaName(f)}(_${name(f)});
 </#list>
 	}
 </#if>
