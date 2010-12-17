@@ -133,7 +133,7 @@ public class TestDatabase
 			<#elseif f.type == "long">
 			e.set${JavaName(f)}(i.longValue());
 			<#elseif f.type == "string">
-			e.set${JavaName(f)}(truncate("${entity.name?lower_case}_${f.name?lower_case}_"+i, ${f.length}));
+			e.set${JavaName(f)}(truncate("${entity.name?lower_case}_${f.name?lower_case}_"+i, ${f.length?c}));
 			<#else>
 			e.set${JavaName(f)}("${entity.name?lower_case}_${f.name?lower_case}_"+i);
 			</#if></#if></#list>	
@@ -207,7 +207,7 @@ public class TestDatabase
 	public String truncate(String value, int length)
 	{
 	   if (value != null && value.length() > length)
-          value = value.substring(0, length);
+          value = value.substring(0, length-1);
        return value;
 	}
 	

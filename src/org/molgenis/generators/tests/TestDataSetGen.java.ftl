@@ -120,6 +120,8 @@ public class TestDataSet
 			e.set${JavaName(f)}(i);
 			<#elseif f.type == "long">
 			e.set${JavaName(f)}(i.longValue());
+			<#elseif f.type == "string">
+			e.set${JavaName(f)}(truncate("${entity.name?lower_case}_${f.name?lower_case}_"+i, ${f.length?c}));			
 			<#else>
 			e.set${JavaName(f)}("${entity.name?lower_case}_${f.name?lower_case}"+i);
 			</#if></#if></#list>
@@ -127,6 +129,13 @@ public class TestDataSet
 		}
 		</#if></#list>
 	}	 
+	
+	public String truncate(String value, int length)
+	{
+	   if (value != null && value.length() > length)
+          value = value.substring(0, length-1);
+       return value;
+	}	
 	 
 	 /** Helper to get random element from a list */
 	private int random(int max)
