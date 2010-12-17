@@ -49,6 +49,7 @@ import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.MolgenisOriginalStyle;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.SimpleModel;
 import org.molgenis.framework.ui.UserInterface;
 import org.molgenis.framework.ui.html.FileInput;
 import org.molgenis.util.CsvFileReader;
@@ -489,7 +490,16 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			// handle normal event and then write the response
 			else
 			{
-
+				//capture select
+				if(requestTuple.getString("select") != null)
+				{
+					//get the screen to be selected
+					ScreenModel<?> toBeSelected = molgenis.get(requestTuple.getString("select"));
+					//select leaf in its parent
+					toBeSelected.getParent().setSelected(requestTuple.getString("select"));
+				}
+				
+				
 				molgenis.getController().handleRequest(db, requestTuple);
 				// handle request
 				molgenis.getController().reload(db); // reload the application
