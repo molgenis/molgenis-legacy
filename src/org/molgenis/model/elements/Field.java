@@ -300,7 +300,7 @@ public class Field implements Serializable
 		this.varchar_length = LENGTH_NOT_SET;
 
 		// xref
-		this.xref_table = "";
+		this.xref_entity = "";
 		this.xref_field = "";
 		this.xref_labels = new ArrayList<String>();
 
@@ -338,7 +338,7 @@ public class Field implements Serializable
 		this.varchar_length = field.varchar_length;
 		this.xref_field = field.xref_field;
 		this.xref_labels = field.xref_labels;
-		this.xref_table = field.xref_table;
+		this.xref_entity = field.xref_entity;
 	}
 
 	// global access methods
@@ -521,15 +521,15 @@ public class Field implements Serializable
 	{
 		if (this.type != Type.XREF_SINGLE) return false;
 
-		if (xref_table.equals(this.name)) return true;
+		if (xref_entity.equals(this.name)) return true;
 
 		DBSchema root = entity.getRoot();
-		Entity e = (Entity) root.get(xref_table);
+		Entity e = (Entity) root.get(xref_entity);
 		for (Field field : e.getAllFields())
 		{
 			if (field.type != Type.XREF_SINGLE) continue;
 
-			if (field.xref_table.equals(this.name)) return true;
+			if (field.xref_entity.equals(this.name)) return true;
 		}
 
 		return false;
@@ -666,7 +666,7 @@ public class Field implements Serializable
 	// xref access methods
 	public void setXRefEntity(String xref_entity)
 	{
-		this.xref_table = xref_entity;
+		this.xref_entity = xref_entity;
 	}
 
 	/**
@@ -693,7 +693,7 @@ public class Field implements Serializable
 		// set.");
 		// }
 
-		this.xref_table = entity;
+		this.xref_entity = entity;
 		this.xref_field = field;
 		this.xref_labels = labels;
 	}
@@ -725,7 +725,7 @@ public class Field implements Serializable
 					+ "' is not a XREF, so xref-table cannot be retrieved.");
 		}
 
-		return this.xref_table;
+		return this.xref_entity;
 
 	}
 
@@ -751,7 +751,7 @@ public class Field implements Serializable
 		Field result = this.getXrefEntity().getAllField(this.getXrefFieldName());
 		if (result == null)
 		{
-			System.out.println("xref_field is not known for field " + getEntity().getName() + "." + getName());
+			throw new MolgenisModelException("xref_field is not known for field " + getEntity().getName() + "." + getName());
 		}
 		return result;
 	}
@@ -1026,8 +1026,15 @@ public class Field implements Serializable
 		// type
 		str += ", type=" + type.tag;
 		if (type == Field.Type.STRING || type == Field.Type.CHAR) str += "[" + varchar_length + "]";
-		else if (type == Field.Type.XREF_SINGLE || type == Field.Type.XREF_MULTIPLE) str += "[" + xref_table + "->"
-				+ xref_field + "]";
+		else if (type == Field.Type.XREF_SINGLE || type == Field.Type.XREF_MULTIPLE) try
+		{
+			str += "[" + this.getXrefEntityName() + "."+this.getXrefFieldName() + "]";
+		}
+		catch (MolgenisModelException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if (type == Field.Type.XREF_MULTIPLE) str += ", mref_name=" + this.mref_name + ", mref_localid="
 				+ this.mref_localid + ", mref_remoteid=" + this.mref_remoteid;
 		if (type == Field.Type.XREF_SINGLE || type == Field.Type.XREF_MULTIPLE) str += ", xref_label="
@@ -1122,7 +1129,7 @@ public class Field implements Serializable
 	 * When this field is of type Type.XREF_SINGLE or Type.XREF_MULTIPLE, this
 	 * is the name of the entity it is referencing.
 	 */
-	private String xref_table;
+	private String xref_entity;
 	/**
 	 * When this field is of type Type.XREF_SINGLE or Type.XREF_MULTIPLE, this
 	 * is the name of the field of the entity it is referencing.
