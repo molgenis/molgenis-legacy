@@ -51,10 +51,9 @@
 </#list>
 	</form>
 </div>
-<#--directly underlying subform in same orientation?-->
-<#--fixme multiple nestings-->
+
 <#assign subscreen = screen.getSelected()/>
-<#if subscreen.getViewName() == "MenuView"  && (subscreen.position == "TOP_LEFT" || subscreen.position == "TOP_RIGHT")>
+<#if subscreen.position?exists  && (subscreen.position == "TOP_LEFT" || subscreen.position == "TOP_RIGHT")>
 <div class="formscreen">
 <div class="form_header" id="${screen.getName()}">
 	<table width="100%">
@@ -67,7 +66,7 @@
 </div>	
 <br>
 <div>
-	<@layout subscreen.getSelected() />
+	<@layout subscreen />
 </div>
 </div>	
 <#--no directly underlying menu-->
