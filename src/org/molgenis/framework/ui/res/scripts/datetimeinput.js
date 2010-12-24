@@ -1,3 +1,5 @@
+// This file should contain a *correctly* working date-time input!!
+
 /* http://www.quirksmode.org/js/events_properties.html
 TODO: use generic targets and events
 var targ;
@@ -17,6 +19,7 @@ function showDateInput(input)
 
 function showDateInput(input, isDatetime)
 {	
+	//alert("clicked");
 	var id = input.name + "_"+input.form.name;
 	
 	//there can be only one so check global dateInput variable
@@ -28,14 +31,17 @@ function showDateInput(input, isDatetime)
 	//if exist, destroy
 	if(document.getElementById(id) != null)
 	{
+		//alert("destroy");
 		var div = document.getElementById(id);
 		div.parentNode.removeChild(div);
+		return;
 	}
 	
 	
 	//if doesn't exist create
 	if(document.getElementById(id) == null)
 	{
+		//alert("create");
 		var myInput = new DateInput(input, isDatetime);
 		myInput.isDatetime = isDatetime;
 		window.dateInputDiv = myInput.calendar;
@@ -45,9 +51,15 @@ function showDateInput(input, isDatetime)
 	{
 		window.dateInputDiv = document.getElementById(id);
 		if(window.dateInputDiv.style.display == "block")
+		{
+			//alert("hide");
 			window.dateInputDiv.style.display= "none";	
+		}
 		else
-			window.dateInputDiv.style.display = "block";	
+		{
+			//alert("block");
+			window.dateInputDiv.style.display = "block";
+		}
 	}	
 }
 /**constructor, to pass parameters*/
@@ -201,8 +213,8 @@ DateInput.prototype = {
 					}
 					else if( e.srcElement.childNodes[0].nodeValue == "")
 					{
-						_this.hideDataInput();
-						_this.input.focus();
+						//_this.hideDataInput();
+						//_this.input.focus();
 						return;
 					}
 					
@@ -229,9 +241,9 @@ DateInput.prototype = {
 					{
 						_this.input.value =  _this.months[_this.currentMonth-1]+" "+_this.currentDay+", "+_this.currentYear;
 					}
-					_this.hideDataInput();
+					//_this.hideDataInput();
 					_this.changeDateInputDays();
-					_this.input.focus();
+					//_this.input.focus();
 				});		
 				this.addEvent(td, "mouseover",function(e)
 				{
@@ -273,13 +285,14 @@ DateInput.prototype = {
 			
 			//add hours input
 			var hoursInput = document.createElement("select");
-			for(i = 0; i< 24; i++) hoursInput.options[i] = this.createOption(i,i,'h');
+			for(i = 0; i< 24; i++) hoursInput.options[i] = _this.createOption(_this.twoDecimal(i),_this.twoDecimal(i),'h');
 			hoursInput.value = _this.twoDecimal(_this.selectedHours);
 			hoursInput.style.minWidth = "0px";
 			this.addEvent(hoursInput , "change", function(e)
 			{				
 				var hours = parseInt(hoursInput.value);	
 				_this.selectedHours = hours;
+				_this.updateTime();
 			});
 			td11_1.appendChild(hoursInput);
 			var sep1 = document.createTextNode(":");
@@ -287,13 +300,14 @@ DateInput.prototype = {
 			
 			//add minutes input
 			var minutesInput = document.createElement("select");
-			for(i = 0; i<= 59; i++) minutesInput.options[i] = this.createOption(i,i,'m');
+			for(i = 0; i<= 59; i++) minutesInput.options[i] = this.createOption(this.twoDecimal(i),_this.twoDecimal(i),'m');
 			minutesInput.value = _this.twoDecimal(_this.selectedMinutes);
 			minutesInput.style.minWidth = "0px";
 			this.addEvent(minutesInput , "change", function(e)
 			{				
 				var minutes = parseInt(minutesInput.value);
 				_this.selectedMinutes = minutes;
+				_this.updateTime();
 			});
 			td11_1.appendChild(minutesInput);
 			var sep2 = document.createTextNode(":");
@@ -301,24 +315,27 @@ DateInput.prototype = {
 			
 			//add seconds input
 			var secondsInput = document.createElement("select");
-			for(i = 0; i<= 59; i++) secondsInput.options[i] = this.createOption(i,i,'s');
+			for(i = 0; i<= 59; i++) secondsInput.options[i] = this.createOption(this.twoDecimal(i),_this.twoDecimal(i),'s');
 			secondsInput.value = _this.twoDecimal(_this.selectedSeconds);
 			secondsInput.style.minWidth = "0px";			
 			this.addEvent(secondsInput , "change", function(e)
 			{
 				var seconds = parseInt(secondsInput.value);		
 				_this.selectedSeconds = seconds;
+				_this.updateTime();
 			});	
 					
 			td11_1.appendChild(secondsInput);
 		}
 		
 		//build close and cancel buttons
+		
 		var row10 = document.createElement("tr");
 		this.tbody.appendChild(row10);
 		var td10_1 = document.createElement("td");
 		td10_1.className="dateinput";
 		row10.appendChild(td10_1);
+		/* remove the cancel option
 		var action_cancel = document.createTextNode("cancel");
 		td10_1.appendChild(action_cancel);
 		this.addEvent(td10_1 , "click", function(e)
@@ -342,6 +359,7 @@ DateInput.prototype = {
 			
 		});	
 		td10_1.appendChild(action_cancel);	
+		*/
 		
 		var td10_2 = document.createElement("td");
 		td10_2.colSpan = 5;
@@ -351,7 +369,7 @@ DateInput.prototype = {
 		td10_3.className="dateinput";
 		td10_3.style.textAlign = "right";
 		row10.appendChild(td10_3);
-		var action_save = document.createTextNode("save");
+		var action_save = document.createTextNode("close");
 		this.addEvent(td10_3 , "click", function(e)
 		{
 			//_this.currentMonth = _this.selectedMonth;
@@ -377,6 +395,24 @@ DateInput.prototype = {
 		
 		this.changeDateInputDays();								
 	},
+	updateTime: function()
+	{
+		//alert("updateTime");
+		if(this.isDatetime)
+		{
+			this.currentHours = this.selectedHours;
+			this.currentMinutes = this.selectedMinutes;
+			this.currentSeconds = this.selectedSeconds;
+			this.input.value =  this.months[this.currentMonth-1]+" "+this.currentDay+", "+this.currentYear+", "+this.twoDecimal(this.currentHours)+":"+this.twoDecimal(this.currentMinutes)+":"+this.twoDecimal(this.currentSeconds);
+		}
+		else
+		{
+			this.input.value =  this.months[this.currentMonth-1]+" "+this.currentDay+", "+this.currentYear;
+		}
+		//this.hideDataInput();
+		this.changeDateInputDays();
+		//this.input.focus();		
+	},
 	twoDecimal: function(value)
 	{
 		var value = String(value);
@@ -385,8 +421,8 @@ DateInput.prototype = {
 	createOption: function(label,value,suffix)
 	{
 		var theOption = new Option;
-		theOption.text = i+suffix;
-		theOption.value = i;
+		theOption.text = label+suffix;
+		theOption.value = value;
 		theOption.style.width = "2em";
 		return theOption;
 	},
@@ -452,7 +488,9 @@ DateInput.prototype = {
 	},
 	hideDataInput: function()
 	{
-		this.calendar.style.display = "none";
+		//alert("hide");
+		//this.calendar.style.display = "none";
+		this.calendar.parentNode.removeChild(this.calendar);
 	},
 	addEvent : function(obj, eventname, func)
 	{
