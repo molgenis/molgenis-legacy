@@ -25,7 +25,7 @@ public class Menu extends UISchema
 {
 	public enum Position
 	{
-		TOP_LEFT("top_left"), TOP_RIGHT("top_right"), LEFT("left"), DEFAULT("default");
+		TOP_LEFT("top_left"), TOP_RIGHT("top_right"), LEFT("left");
 
 		private String tag;
 
@@ -62,6 +62,18 @@ public class Menu extends UISchema
 	
 	public Position getPosition()
 	{
+		//default position is LEFT or the same as the menu above
+		if(position == null)
+		{
+			if(this.getParent() instanceof Menu)
+			{
+				return ((Menu)getParent()).getPosition();
+			}
+			else
+			{
+				return Position.TOP_LEFT;
+			}
+		}
 		return position;
 	}
 
@@ -83,5 +95,5 @@ public class Menu extends UISchema
 	/** Used for serialization purposes. */
 	static final long serialVersionUID = -1842653490799425686L;
 	
-	private Position position = Position.DEFAULT;
+	private Position position = null;
 }

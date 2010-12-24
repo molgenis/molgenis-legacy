@@ -1,5 +1,5 @@
 <#function findFirstNonLeftMenu screen>
-	<#if screen.getSelected().getViewName() == "MenuView" && screen.getSelected().position == "LEFT" >
+	<#if screen.getSelected()?exists && screen.getSelected().position?exists && screen.getSelected().position == "LEFT">
 		<#return findFirstNonLeftMenu(screen.getSelected())>
 	<#else>
 		<#return screen.getSelected()>
@@ -8,7 +8,7 @@
 
 <#macro MenuView screen>
 <!-- layouting Menu '${screen.name}'-->
-<#if screen.position == "LEFT" || (screen.position == "DEFAULT" && !hasParentForm(screen))>
+<#if screen.position == "LEFT">
 <#--left menu is a two column table with left navigation, right the information-->
 <#--nested menus are automatically merged-->
 <#--difficulty is nested menus, then the information should show the selection of subform-->
@@ -34,7 +34,7 @@
 	</td>
 </table>
 
-<#elseif screen.position == "TOP_LEFT" || screen.position == "TOP_RIGHT" || (screen.position == "DEFAULT" && hasParentForm(screen))>
+<#elseif screen.position == "TOP_LEFT" || screen.position == "TOP_RIGHT">
 <#--tabs on top-->
 
 <div id="${screen.getName()}" class="menuscreen" <#if screen.position == "TOP_RIGHT">align="right"</#if>>
@@ -54,7 +54,7 @@
 <#--directly underlying subform in same orientation?-->
 <#--fixme multiple nestings-->
 <#assign subscreen = screen.getSelected()/>
-<#if subscreen.getViewName() == "MenuView"  && (subscreen.position == "TOP_LEFT" || subscreen.position == "TOP_RIGHT" || subscreen.position == "DEFAULT")>
+<#if subscreen.getViewName() == "MenuView"  && (subscreen.position == "TOP_LEFT" || subscreen.position == "TOP_RIGHT")>
 <div class="formscreen">
 <div class="form_header" id="${screen.getName()}">
 	<table width="100%">
@@ -67,7 +67,7 @@
 </div>	
 <br>
 <div>
-	<@layout screen.getSelected() />
+	<@layout subscreen.getSelected() />
 </div>
 </div>	
 <#--no directly underlying menu-->
@@ -90,21 +90,20 @@
 
 <#macro MenuScreenLeft name screen submenu>
 	<#assign selectedItem = screen.getSelected()/>
-    <#if screen.visibleChildren?exists><#list screen.getVisibleChildren() as item>
+    <#if screen.visibleChildren?exists>
+    <#list screen.getVisibleChildren() as item>
 		<#assign __target = screen.getName() />
 		<#assign select = item.getName() />
-		<#if submenu == "true" && item.getParent().getClass().getSuperclass().getSimpleName() == "FormView" && item.getClass().getSuperclass().getSimpleName() == "MenuView">
-			<#--if the item is a menu but the parent is a form then do not render as submenu-->
-		<#elseif item == selectedItem>
+		<#--if the item is a left menu recurse-->
+		<#if item == selectedItem> 
 			<div class="leftNavigationSelected" onClick="document.forms.${name}.__target.value='${__target}';document.forms.${name}.select.value='${select}';document.forms.${name}.submit();">
 			${item.getLabel()}
 			</div>
-			<#--if selected see to render subforms-->
-			<#if item.getChildren()?size &gt; 1>
+			<#if item.position?exists  && (item.position == "LEFT" || item.position == "DEFAULT") && item.getChildren()?size &gt; 1>
 <div class="leftNavigationSubmenu">
 				<@MenuScreenLeft name=name screen=item submenu="true" />
 </div>
-			</#if>
+			</#if>		
 		<#else>
 <div class="leftNavigationNotSelected" onClick="document.forms.${name}.__target.value='${__target}';document.forms.${name}.select.value='${select}';document.forms.${name}.submit();">${item.getLabel()}</div>
 		</#if>
