@@ -108,7 +108,7 @@ public class CsvImportById
 				if(object.get${Name(f)}() != null) object.set${Name(f)}_${JavaName(f.getXrefField())}(${name(f.xrefEntity)}IdMap.get(object.get${Name(f)}()));
 				<#elseif f.type="mref"> 
 				List<${type(f.xrefField)} > ${name(f)}Ids = new ArrayList<${type(f.xrefField)}>();
-				for(${type(f.xrefField)} id: object.get${Name(f)}_Id())
+				for(${type(f.xrefField)} id: object.get${JavaName(f)}_${JavaName(f.xrefField)}())
 				{
 					${name(f)}Ids.add(${name(f.xrefEntity)}IdMap.get(id));
 				}

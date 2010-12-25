@@ -277,7 +277,8 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		return this._${name(field)};
 	}
 	
-	public ${type(field)} get${JavaName(field)}_Id()
+	<#if type_label="xref" || type_label="mref">
+	public ${type(field)} get${JavaName(field)}_${JavaName(field.xrefField)}()
 	{
 		<#if type_label == "xref">
 		if(this._${name(field)}_object != null)
@@ -294,6 +295,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		</#if>
 		return this._${name(field)};
 	}	
+	</#if>
 	
 	
 	/**
