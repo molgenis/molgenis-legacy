@@ -6,18 +6,6 @@ import org.molgenis.util.Entity;
 
 public class SimpleLogin implements Login
 {
-	protected static Login instance = null;
-
-	protected SimpleLogin() {
-	}
-
-	public static Login getInstance()
-	{
-		if (instance == null)
-			instance = new SimpleLogin();
-		
-		return instance;
-	}
 
 	@Override
 	public void reload(Database db)

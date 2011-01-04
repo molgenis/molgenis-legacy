@@ -73,7 +73,7 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 
 	public Login createLogin( Database db, HttpServletRequest request )
 	{
-		return ${loginclass}.getInstance();
+		return new ${loginclass}();
 	}
 
 	public UserInterface createUserInterface( Login userLogin )
