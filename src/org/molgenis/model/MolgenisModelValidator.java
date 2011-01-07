@@ -725,10 +725,6 @@ public class MolgenisModelValidator
 		// validate the extends and implements relations
 		for (Entity entity : model.getEntities())
 		{
-			if(entity.getName().equals("DecimalDataElement"))
-			{
-				System.out.println("breakp");
-			}
 			
 			List<Entity> ifaces = entity.getAllImplements();
 			for (Entity iface : ifaces)
@@ -1108,10 +1104,6 @@ public class MolgenisModelValidator
 				{
 					try
 					{
-						if(e.getName().equals("DecimalDataElement"))
-						{
-							System.out.println("breakpoint");
-						}
 						// correct for uppercase/lowercase typo's
 						Entity xrefEntity = f.getXrefEntity();
 						f.setXRefEntity(xrefEntity.getName());

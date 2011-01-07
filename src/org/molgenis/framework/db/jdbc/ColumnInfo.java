@@ -1,6 +1,5 @@
 package org.molgenis.framework.db.jdbc;
 
-import org.apache.xmlbeans.impl.xb.xsdschema.ListDocument.List;
 
 public class ColumnInfo
 {

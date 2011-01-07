@@ -27,6 +27,12 @@ public class DateInput extends HtmlInput
 		this(name, new java.sql.Date(new java.util.Date().getTime()));
 	}
 	
+	public DateInput(String name, String label)
+	{
+		super(name,null);
+		this.setLabel(label);
+	}
+	
 	public DateInput(String name, Object value)
 	{
 		super(name, value);

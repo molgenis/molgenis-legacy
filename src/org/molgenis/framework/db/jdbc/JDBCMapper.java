@@ -1,24 +1,13 @@
 package org.molgenis.framework.db.jdbc;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.ParseException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.jdbc.ColumnInfo.Type;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 /**
  * Factory for creating SQL statements

@@ -16,6 +16,11 @@ package org.molgenis.framework.ui.html;
  */
 public class TextInput extends HtmlInput
 {
+	public TextInput(String name)
+	{
+		super(name,null);
+	}
+	
 	public TextInput(String name, Object value)
 	{
 		super(name, value);

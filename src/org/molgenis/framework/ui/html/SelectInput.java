@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
+import org.molgenis.util.Entity;
 import org.molgenis.util.ValueLabel;
 
 /**
@@ -28,6 +29,18 @@ public class SelectInput extends HtmlInput
 	private List<ValueLabel> options = new Vector<ValueLabel>();
 	private String targetfield;
 	private String onchange;
+	
+	public SelectInput(String name, String label)
+	{
+		this(name);
+		this.setLabel(label);
+	}
+	
+	public SelectInput(String name)
+	{
+		super(name,null);
+	}
+	
 	public SelectInput(String name, Object value)
 	{
 		super(name, value);
@@ -63,12 +76,12 @@ public class SelectInput extends HtmlInput
 			}
 		}
 
-		if (super.getValue().toString().equals(""))
+		if (super.getValue().toString().equals("") && this.isNillable())
 		{
 			optionsHtml.append("\t<option selected value=\"\"></option>\n");
 			// empty option
 		}
-		else if (!this.isReadonly())
+		else if (!this.isReadonly() && this.isNillable())
 		{
 			optionsHtml.append("\t<option value=\"\"></option>\n");
 			// empty option
@@ -136,5 +149,22 @@ public class SelectInput extends HtmlInput
 	public void setOnchange(String onchange)
 	{
 		this.onchange = onchange;
+	}
+
+	public void addOption(Object value, Object label)
+	{
+		this.getChoices().add(new ValueLabel(value.toString(),label.toString()));
+	}
+	
+	public void setOptions(List<? extends Entity> entities, String valueField, String labelField)
+	{
+		//clear list
+		this.getChoices().clear();
+		
+		//add new values and labels
+		for(Entity e: entities)
+		{
+			this.addOption(e.get(valueField), e.get(labelField));
+		}
 	}
 }

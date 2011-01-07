@@ -3,8 +3,6 @@ package org.molgenis.framework.db.jdbc;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp.BasicDataSource;
-
 public class SimpleDataSourceWrapper extends AbstractDataSourceWrapper
 {
 	DataSource dSource;

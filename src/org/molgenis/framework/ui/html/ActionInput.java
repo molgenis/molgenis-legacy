@@ -51,6 +51,12 @@ public class ActionInput extends HtmlInput
 	{
 		this(name, Type.CUSTOM);
 	}
+	
+	public ActionInput(String name, String label)
+	{
+		this(name, Type.CUSTOM);
+		this.setLabel(label);
+	}
 
 	/**
 	 * Create a new instance of ActionInput.

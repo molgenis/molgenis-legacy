@@ -62,11 +62,11 @@ public class XrefInput extends HtmlInput
 		{
 			optionsHtml.append("\t<option selected value=\""+super.getValue()+"\">"+this.getValue()+"</option>\n");
 		}
-		if (!this.isReadonly())
-		{
-			optionsHtml.append("\t<option value=\"\"></option>\n");
-			// empty option
-		}
+//		else if (!this.isReadonly())
+//		{
+//			optionsHtml.append("\t<option value=\"\"></option>\n");
+//			// empty option
+//		}
 		return "<select id=\"" + this.getId() + "\" name=\"" + this.getName() + "\" " + readonly + ">\n" + optionsHtml.toString() + "</select>\n";
 	}
 

@@ -1,18 +1,13 @@
 package org.molgenis.framework.db.jdbc;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.List;
 
-import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvWriter;
-import org.molgenis.util.Entity;
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.jdbc.ColumnInfo.Type;
+import org.molgenis.util.CsvReader;
+import org.molgenis.util.CsvWriter;
+import org.molgenis.util.Entity;
 
 public class MappingDecorator<E extends Entity> implements JDBCMapper<E>
 {
@@ -54,13 +49,13 @@ public class MappingDecorator<E extends Entity> implements JDBCMapper<E>
 	}
 
 	@Override
-	public List<E> find(QueryRule[] rules) throws DatabaseException
+	public List<E> find(QueryRule ...rules) throws DatabaseException
 	{
 		return mapper.find(rules);
 	}
 
 	@Override
-	public void find(CsvWriter writer, QueryRule[] rules) throws DatabaseException
+	public void find(CsvWriter writer, QueryRule ...rules) throws DatabaseException
 	{
 		mapper.find(writer, rules);
 	}
@@ -110,7 +105,7 @@ public class MappingDecorator<E extends Entity> implements JDBCMapper<E>
 	}
 
 	@Override
-	public void find(CsvWriter writer, List<String> fieldsToExport, QueryRule[] rules) throws DatabaseException
+	public void find(CsvWriter writer, List<String> fieldsToExport, QueryRule ...rules) throws DatabaseException
 	{
 		mapper.find(writer, fieldsToExport, rules);
 	}
