@@ -29,6 +29,8 @@ public class GenericPlugin extends PluginModel
 	private static final long serialVersionUID = 1L;
 	// wrapper of this template
 	private freemarker.template.Configuration cfg = null;
+	// should this Plugin generate a form or not
+	public boolean isForm = true;
 
 	public GenericPlugin(String name, ScreenModel parent)
 	{
@@ -150,6 +152,11 @@ public class GenericPlugin extends PluginModel
 	{
 		// ouch: because we use superclass during generation we solve it like
 		// this. Ouch!
-		return render(this.getClass().getSuperclass().getSimpleName() + ".ftl");
+		return render(this.getViewTemplate());
+	}
+	
+	public boolean renderAsForm()
+	{
+		return this.isForm;
 	}
 }
