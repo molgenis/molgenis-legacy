@@ -234,10 +234,10 @@ public class MolgenisOptions
 		}
 		//System.out.println("Mapper implementation molgenis name: " + this.mapper_implementation.name());
 
-		if (new File(propertiesFile).getParentFile() != null)
-		{
-			this.path = new File(propertiesFile).getParentFile().getAbsolutePath() + "/";
-		}
+//		if (new File(propertiesFile).getParentFile() != null)
+//		{
+//			this.path = new File(propertiesFile).getParentFile().getAbsolutePath() + "/";
+//		}
 		Logger.getLogger(this.getClass().getSimpleName()).debug("parsed properties file.");
 	}
 
