@@ -106,6 +106,8 @@ public class JpaDatabase extends AbstractDatabase implements Database
 		}
 		return count;
 	}
+	
+	static int i = 0;
 
 	@Override
 	public <E extends Entity> int add(List<E> entities) throws DatabaseException
@@ -115,6 +117,7 @@ public class JpaDatabase extends AbstractDatabase implements Database
 		{
 			beginTransaction();
 				if(entities != null && entities.size() > 0) {
+					++i;
 					count = getMapper(entities.get(0).getClass().getName()).add((List<Entity>)entities, em);
 				}
 			commitTransaction();

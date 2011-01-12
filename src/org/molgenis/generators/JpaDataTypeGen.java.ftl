@@ -417,18 +417,16 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	
 	public List<${type(field.xrefField)}> get${JavaName(field)}_${JavaName(field.xrefField)}()
 	{
-		
-		if(${name(field)} != null) 
-		{
+		if(${name(field)} != null && !${name(field)}.isEmpty()) {
 			List<${type(field.xrefField)}> result = new ArrayList<${type(field.xrefField)}>();
-			for(${type(field.xrefField)} xref: ${name(field)}_${name(field.xrefField)})
-			{
+			for(${type(field.xrefField)} xref: ${name(field)}_${name(field.xrefField)}) {
 				result.add(xref);
 			}
 			return result;
-		}
-		else
-		{
+		} else {
+			if(${name(field)}_${name(field.xrefField)} == null) {
+				protocolComponents_id = new ArrayList<Integer>();
+			}		
 			return ${name(field)}_${name(field.xrefField)};
 		}
 	}	
