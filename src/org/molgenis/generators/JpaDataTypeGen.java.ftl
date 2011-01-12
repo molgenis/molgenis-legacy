@@ -425,7 +425,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 			return result;
 		} else {
 			if(${name(field)}_${name(field.xrefField)} == null) {
-				protocolComponents_id = new ArrayList<Integer>();
+				${name(field)}_${name(field.xrefField)} = new ArrayList<Integer>();
 			}		
 			return ${name(field)}_${name(field.xrefField)};
 		}
