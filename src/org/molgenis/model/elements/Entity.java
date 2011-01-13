@@ -175,13 +175,12 @@ public class Entity extends DBSchema implements Record
 	}
 
 	/**
-	 * Returns whether this entry has NO parent
-	 * (Extra condition: 'AND whether it has children' removed.
+	 * Returns whether this entry has NO parent AND whether it has children' removed.
 	 */
 	public boolean isRootAncestor()
 	{
-		return this.getParents().size() == 0;
-				//&& this.getDescendants().size() > 0;
+		return this.getParents().size() == 0
+				&& this.getDescendants().size() > 0;
 	}
 
 	/**

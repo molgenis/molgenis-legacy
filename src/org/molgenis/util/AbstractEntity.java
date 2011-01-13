@@ -4,6 +4,8 @@ import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -86,6 +88,29 @@ public abstract class AbstractEntity implements Entity
 				throw new ParseException("parsing failed: expected date value formatted '" + SimpleTuple.DATEFORMAT+ " or "+SimpleTuple.DATEFORMAT2, 0);
 			}
 		}		
+	}
+	
+	/** Default implementation. Will be overriden if your entity model contains subclasses */
+	public String get__Type()
+	{
+		throw new UnsupportedOperationException();
+	}
+	
+	/** Default implementation. Will be overriden if your entity model contains subclasses */
+	public String get__TypeLabel()
+	{
+		throw new UnsupportedOperationException();
+	}
+	
+	/** Default implementation. Will be overriden if your entity model contains subclasses */
+	public List<ValueLabel> get__TypeOptions()
+	{
+		throw new UnsupportedOperationException();
+	}
+	
+	public void set__Type(String type)
+	{
+		throw new UnsupportedOperationException();
 	}
 	
 	 

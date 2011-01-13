@@ -32,6 +32,12 @@ public class MolgenisModelValidator
 		validateNamesAndReservedWords(model, options);
 		validateExtendsAndImplements(model);
 		
+		if (options.object_relational_mapping
+				.equals(MolgenisOptions.SUBCLASS_PER_TABLE))
+		{
+			addTypeFieldInSubclasses(model);
+		}
+		
 		validateKeys(model);
 		addXrefLabelsToEntities(model);
 		validatePrimaryKeys(model);
@@ -43,12 +49,6 @@ public class MolgenisModelValidator
 		createLinkTablesForMrefs(model);
 		copyDefaultXrefLabels(model);
 		copyDecoratorsToSubclass(model);
-		
-		if (options.object_relational_mapping
-				.equals(MolgenisOptions.SUBCLASS_PER_TABLE))
-		{
-			addTypeFieldInSubclasses(model);
-		}
 
 		if (options.object_relational_mapping
 				.equals(MolgenisOptions.CLASS_PER_TABLE))
