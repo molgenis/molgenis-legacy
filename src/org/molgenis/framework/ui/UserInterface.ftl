@@ -5,7 +5,7 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
 		<title>${application.getLabel()}</title>
-		<!--link rel="shortcut icon" href="generated-res/img/molgenis.ico"-->
+		<link rel="shortcut icon" type="image/x-icon" href="generated-res/img/molgenis.ico" />
 		<script src="generated-res/scripts/jquery.js" type="text/javascript" language="javascript"></script>
 		<script src="generated-res/scripts/jquery.validate.js" type="text/javascript" language="javascript"></script>
 		<script type="text/javascript" language="javascript">
