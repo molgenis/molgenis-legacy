@@ -165,7 +165,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	//constructors
 	public ${JavaName(entity)}()
 	{
-	<#if entity.hasAncestor() || entity.hasDescendants()>
+	<#if entity.isRootAncestor()>
 		//set the type for a new instance
 		set__Type(this.getClass().getSimpleName());
 	</#if>	
