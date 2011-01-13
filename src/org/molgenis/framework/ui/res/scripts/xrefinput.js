@@ -137,8 +137,20 @@ select : function(_this)
 	if(_this.selectInput.options.length > 0)
 	{
 		//alert("clicked option "+ _this.selectInput.options[_this.selectInput.selectedIndex].value);
-		_this.input.options[0].value = _this.selectInput.options[_this.selectInput.selectedIndex].value;
-		_this.input.options[0].text = _this.selectInput.options[_this.selectInput.selectedIndex].text;
+		
+		//remove existing options this.selectInput.options; 
+		for (i = this.input.options.length - 1; i >=0; i--) 
+		{
+			this.input.removeChild(this.selectInput.options[i]);
+		}
+		
+		//create a new option with selected value
+		var option = document.createElement("option");
+		option.value = _this.selectInput.options[_this.selectInput.selectedIndex].value;
+		option.text = _this.selectInput.options[_this.selectInput.selectedIndex].text;
+		this.input.appendChild(option);
+		
+		//hide the search box
 		_this.xrefDiv.style.display = "none";
 	}	
 },
