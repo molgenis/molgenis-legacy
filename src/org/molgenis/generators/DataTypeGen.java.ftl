@@ -564,8 +564,7 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 				  	<#if JavaType(f.xrefField) == "String" >
 				  		values.add((${JavaType(f.xrefField)})ref);
 				  	<#else>
-				  		// values.add((${JavaType(f.xrefField)})ref); //TODO remove this line if fix is tested (ASB 2010-11-11)
-				  		values.add(${type(f.xrefField)}.parse${settertype(f.xrefField)}((String)ref));
+				  		values.add(${type(f.xrefField)}.parse${settertype(f.xrefField)}((ref.toString()));
 				  	</#if>
 				}							
 				this.set${JavaName(f)}( values );			
