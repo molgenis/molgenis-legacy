@@ -22,7 +22,8 @@ public class TarGz
 
 	public static File tarDir(File dir) throws IOException
 	{
-		File archiveLocation = new File(dir.getParentFile() + File.separator + dir.getName() + ".tar.gz");
+		File archiveLocation = new File(dir.getParentFile() + File.separator
+				+ dir.getName() + ".tar.gz");
 
 		boolean unixArchiveFormat = true;
 
@@ -35,8 +36,10 @@ public class TarGz
 
 			try
 			{
-				outStream = new GZIPOutputStream(new FileOutputStream(archiveLocation));
-			} catch (IOException ex)
+				outStream = new GZIPOutputStream(new FileOutputStream(
+						archiveLocation));
+			}
+			catch (IOException ex)
 			{
 				outStream = null;
 				ex.printStackTrace(System.err);
@@ -57,17 +60,21 @@ public class TarGz
 				if (unixArchiveFormat)
 				{
 					entry.setUnixTarFormat();
-				} else
+				}
+				else
 				{
 					entry.setUSTarFormat();
 				}
 				// FIXME: index -1 wanneer verkeerde file sep!
-				entry.setName(entry.getName().substring(entry.getName().lastIndexOf("/") + 1, entry.getName().length()));
+				entry.setName(entry.getName().substring(
+						entry.getName().lastIndexOf("/") + 1,
+						entry.getName().length()));
 
 				// add to tar. just a file, no need for recursion ('false')
 				archive.writeEntry(entry, false);
 
-			} else
+			}
+			else
 			{
 				// entry is a directory, so tar the content :)
 				TarEntry entry = new TarEntry(TarGz.tarDir(file));
@@ -75,12 +82,15 @@ public class TarGz
 				if (unixArchiveFormat)
 				{
 					entry.setUnixTarFormat();
-				} else
+				}
+				else
 				{
 					entry.setUSTarFormat();
 				}
 				// FIXME: index -1 wanneer verkeerde file sep!
-				entry.setName(entry.getName().substring(entry.getName().lastIndexOf("/") + 1, entry.getName().length()));
+				entry.setName(entry.getName().substring(
+						entry.getName().lastIndexOf("/") + 1,
+						entry.getName().length()));
 
 				// write entry (now a tar) to tar
 				archive.writeEntry(entry, false);
@@ -93,7 +103,8 @@ public class TarGz
 			try
 			{
 				archive.closeArchive();
-			} catch (IOException ex)
+			}
+			catch (IOException ex)
 			{
 				ex.printStackTrace(System.err);
 			}
@@ -117,16 +128,19 @@ public class TarGz
 	 * @return
 	 * @throws InvalidHeaderException
 	 * @throws IOException
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
-	private static File tarExtract(File archive, File extractDir, boolean nested, List<File> markedDeleted) throws InvalidHeaderException, IOException, InterruptedException
+	private static File tarExtract(File archive, File extractDir,
+			boolean nested, List<File> markedDeleted)
+			throws InvalidHeaderException, IOException, InterruptedException
 	// private static File tarExtract(File archive, File extractDir, boolean
 	// nested) throws InvalidHeaderException, IOException
 	{
 		if (!extractDir.exists())
 		{
 			extractDir.mkdir();
-		} else
+		}
+		else
 		{
 			recursiveDelete(extractDir);
 			extractDir.mkdir();
@@ -137,7 +151,8 @@ public class TarGz
 		try
 		{
 			inStream = new FileInputStream(archive);
-		} catch (IOException ex)
+		}
+		catch (IOException ex)
 		{
 			inStream = null;
 			ex.printStackTrace(System.err);
@@ -150,7 +165,8 @@ public class TarGz
 			try
 			{
 				inStream = new GZIPInputStream(inStream);
-			} catch (IOException ex)
+			}
+			catch (IOException ex)
 			{
 				inStream = null;
 				ex.printStackTrace(System.err);
@@ -163,9 +179,11 @@ public class TarGz
 
 		for (File tarGzFile : findTarGzFiles(extractDir))
 		{
-			File subDir = new File(extractDir.getAbsolutePath() + File.separator + tarGzFile.getName().replace(".tar.gz", ""));
+			File subDir = new File(extractDir.getAbsolutePath()
+					+ File.separator
+					+ tarGzFile.getName().replace(".tar.gz", ""));
 			markedDeleted.add(tarGzFile);
-			//System.out.println("markedDeleted: " + tarGzFile.getName());
+			// System.out.println("markedDeleted: " + tarGzFile.getName());
 			tarExtract(tarGzFile, subDir, true, markedDeleted);
 			// tarExtract(tarGzFile, subDir, true);
 		}
@@ -174,25 +192,29 @@ public class TarGz
 		// the file. Now it will.
 		if (!nested)
 		{
-			
+
 			System.gc(); // FIXME: MS WINDOWS BUG HACK-AROUND! See
 			// http://forums.sun.com/thread.jspa?threadID=166271
 
 			for (File f : markedDeleted)
 			{
 
-		
-				//System.out.println(f.getAbsolutePath() +", exists? "+f.exists());
+				// System.out.println(f.getAbsolutePath()
+				// +", exists? "+f.exists());
 				boolean delSuccess = f.delete();
-				if(!delSuccess){
+				if (!delSuccess)
+				{
 					Thread.sleep(10);
 					System.gc();
 					delSuccess = f.delete();
-					if(!delSuccess){
-						System.out.println("WARNING could not delete " + f.getAbsolutePath());
+					if (!delSuccess)
+					{
+						System.out.println("WARNING could not delete "
+								+ f.getAbsolutePath());
 					}
 				}
-				//System.out.println(f.getAbsolutePath() +", delete? = " + delSuccess);
+				// System.out.println(f.getAbsolutePath() +", delete? = " +
+				// delSuccess);
 			}
 			// markedDeleted = new ArrayList<File>();
 		}
@@ -210,9 +232,10 @@ public class TarGz
 	 * @return
 	 * @throws InvalidHeaderException
 	 * @throws IOException
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
-	public static File tarExtract(File archive, File extractDir) throws InvalidHeaderException, IOException, InterruptedException
+	public static File tarExtract(File archive, File extractDir)
+			throws InvalidHeaderException, IOException, InterruptedException
 	{
 		// return tarExtract(archive, extractDir, false, new ArrayList<File>());
 		return tarExtract(archive, extractDir, false, new ArrayList<File>());
@@ -233,12 +256,15 @@ public class TarGz
 	 * @return
 	 * @throws InvalidHeaderException
 	 * @throws IOException
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
-	public static File tarExtract(File archive) throws InvalidHeaderException, IOException, InterruptedException
+	public static File tarExtract(File archive) throws InvalidHeaderException,
+			IOException, InterruptedException
 	{
-		String archiveName = archive.getName().substring(0, archive.getName().indexOf("."));
-		File extractDir = new File(System.getProperty("java.io.tmpdir") + File.separator + archiveName + "_extract");
+		String archiveName = archive.getName().substring(0,
+				archive.getName().indexOf("."));
+		File extractDir = new File(System.getProperty("java.io.tmpdir")
+				+ File.separator + archiveName + "_extract");
 		return tarExtract(archive, extractDir);
 	}
 
@@ -262,39 +288,63 @@ public class TarGz
 		return tars;
 	}
 
-	public static void recursiveDelete(File dir)
+	/**
+	 * Recursive delete. Takes a directory as input and traverses all subfolders
+	 * before deleting their content and the directories.
+	 * 
+	 * @param dir
+	 * @throws InterruptedException
+	 */
+	public static void recursiveDelete(File dir) throws InterruptedException
 	{
 		if (dir.isDirectory())
 		{
 			for (File f : dir.listFiles())
 			{
 				recursiveDelete(f);
-				// //System.out.println("deleting: " + f.getName());
 			}
 
-		} else
+		}
+		else
 		{
-			
-			//System.gc(); //MS WINDOWS BUG HACK-AROUND. See also: private static File tarExtract()
-			
-			//boolean deleteSucces = dir.delete();
-			// //System.out.println("xgapcsvexport deleting: " + dir.getName() +
-			// " -> succes: " + deleteSucces);
+			delete(dir, true);
 		}
 
-		//System.gc(); //MS WINDOWS BUG HACK-AROUND. See also: private static File tarExtract()
-		
 		// Try to delete the current directory or file (succeeds if empty)
-		//boolean deleteSucces = dir.delete();
-		// //System.out.println("xgapcsvexport deleting: " + dir.getName() +
-		// " -> succes: " + deleteSucces);
+		delete(dir, false);
 	}
 
 	/**
-	 * Based on: http://www.javalobby.org/java/forums/t17036.html
-	 * Copy source file to destination. If destination is a path then source
-	 * file name is appended. If destination file exists then: overwrite=true -
-	 * destination file is replaced; overwite=false - exception is thrown.
+	 * Helper function to delete a file. Wraps a workaround for ms windows.
+	 * 
+	 * @param f
+	 *            File to be deleted
+	 * @throws InterruptedException
+	 */
+	private static void delete(File f, boolean warn)
+			throws InterruptedException
+	{
+		System.gc(); // hotfixes a known ms windows bug. see:
+		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4715154
+		boolean delSuccess = f.delete();
+		if (!delSuccess)
+		{
+			Thread.sleep(10);
+			System.gc();
+			delSuccess = f.delete();
+			if (!delSuccess && warn)
+			{
+				System.out.println("WARNING: could not delete "
+						+ f.getAbsolutePath());
+			}
+		}
+	}
+
+	/**
+	 * Based on: http://www.javalobby.org/java/forums/t17036.html Copy source
+	 * file to destination. If destination is a path then source file name is
+	 * appended. If destination file exists then: overwrite=true - destination
+	 * file is replaced; overwite=false - exception is thrown.
 	 * 
 	 * @param src
 	 *            source file
@@ -308,16 +358,19 @@ public class TarGz
 	 *                illegal argument
 	 */
 
-	public static void fileCopy(final File src, File dst, final boolean overwrite) throws IOException, IllegalArgumentException
+	public static void fileCopy(final File src, File dst,
+			final boolean overwrite) throws IOException,
+			IllegalArgumentException
 	{
-		//long startTimer = System.currentTimeMillis();
-		
+		long startTimer = System.currentTimeMillis();
+
 		// checks
 		if (!src.isFile() || !src.exists())
 		{
-			throw new IllegalArgumentException("Source file '" + src.getAbsolutePath() + "' not found.");
+			throw new IllegalArgumentException("Source file '"
+					+ src.getAbsolutePath() + "' not found.");
 		}
-		
+
 		if (dst.exists())
 		{
 			if (dst.isDirectory())
@@ -328,12 +381,15 @@ public class TarGz
 			{
 				if (!overwrite)
 				{
-					throw new IllegalArgumentException("Destination file '" + dst.getAbsolutePath() + "' already exists.");
+					throw new IllegalArgumentException("Destination file '"
+							+ dst.getAbsolutePath() + "' already exists.");
 				}
 			}
 			else
 			{
-				throw new IllegalArgumentException("Invalid destination object '" + dst.getAbsolutePath() + "'.");
+				throw new IllegalArgumentException(
+						"Invalid destination object '" + dst.getAbsolutePath()
+								+ "'.");
 			}
 		}
 
@@ -343,7 +399,8 @@ public class TarGz
 		{
 			if (!dstParent.mkdirs())
 			{
-				throw new IOException("Failed to create directory " + dstParent.getAbsolutePath());
+				throw new IOException("Failed to create directory "
+						+ dstParent.getAbsolutePath());
 			}
 		}
 
@@ -359,7 +416,7 @@ public class TarGz
 				int doneCnt = -1;
 				int bufSize = 32768;
 				byte buf[] = new byte[bufSize];
-				
+
 				while ((doneCnt = in.read(buf, 0, bufSize)) >= 0)
 				{
 					if (doneCnt == 0)
@@ -404,14 +461,16 @@ public class TarGz
 
 			finally
 			{ // cleanup
-					in.close();
-					out.close();
-					fis.close();
-					fos.close();
+				in.close();
+				out.close();
+				fis.close();
+				fos.close();
 			}
 		}
 
-		//System.out.println("filecopied " + String.valueOf(src.length() / 1024) + " Kb in " + String.valueOf(System.currentTimeMillis() - startTimer));
+		// System.out.println("filecopied " + String.valueOf(src.length() /
+		// 1024) + " Kb in " + String.valueOf(System.currentTimeMillis() -
+		// startTimer));
 
 	}
 
