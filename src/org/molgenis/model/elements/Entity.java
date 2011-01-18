@@ -513,14 +513,17 @@ public class Entity extends DBSchema implements Record
 	public List<Field> getFields(boolean required, boolean recursive,
 			boolean systemField) throws MolgenisModelException
 	{
-		List<Field> result = new ArrayList<Field>();
+		//use map to ensure we can override fields in subclasses
+		Map<String,Field> result = new LinkedHashMap<String,Field>();
+		
+		//List<Field> result = new ArrayList<Field>();
 		for (Field f : fields)
 		{
 			if (f.isSystem())
 			{
 				if (systemField)
 				{
-					result.add(f);
+					result.put(f.getName(),f);
 				}
 				//else ignore
 			}
@@ -528,20 +531,26 @@ public class Entity extends DBSchema implements Record
 			{
 				if(!required)
 				{
-					result.add(f);
+					result.put(f.getName(),f);
 				}
 			}
 			else
 			{
-				result.add(f);
+				result.put(f.getName(),f);
 			}
 		}
 		if (recursive && hasAncestor())
 		{
-			result.addAll(getAncestor().getFields(required, recursive,
-					systemField));
+			for(Field f: getAncestor().getFields(required, recursive,
+					systemField))
+			{
+				if(!result.containsKey(f.getName()))
+				{
+					result.put(f.getName(),f);
+				}
+			}
 		}
-		return result;
+		return new ArrayList<Field>(result.values());
 	}
 
 	/**
@@ -552,6 +561,7 @@ public class Entity extends DBSchema implements Record
 	 */
 	public Vector<Field> getImplementedFields() throws MolgenisModelException
 	{
+		//use map so we can override fields in subclasses
 		Map<String, Field> all_fields = new LinkedHashMap<String, Field>();
 
 		// first fields of the interfaces
