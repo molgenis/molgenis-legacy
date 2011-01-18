@@ -137,6 +137,10 @@ public class MolgenisResourceCopyGen extends Generator
 			else
 			{
 				// This method is implemented in e1071 Copying a File
+				
+				//remove file first
+				dstDir.delete();
+				//then copy
 				copyFile(srcDir, dstDir);
 			}
 		}
@@ -145,7 +149,6 @@ public class MolgenisResourceCopyGen extends Generator
 	// from almanac
 	public void copyFile(File src, File dst) throws IOException
 	{
-
 		if (!src.getAbsolutePath().contains(".svn") && !dst.exists())
 		{
 			InputStream in = new FileInputStream(src.getAbsolutePath().replace("%20", " "));
