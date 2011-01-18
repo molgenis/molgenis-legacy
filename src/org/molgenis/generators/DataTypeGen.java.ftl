@@ -165,9 +165,11 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	//constructors
 	public ${JavaName(entity)}()
 	{
-	<#if entity.isRootAncestor()>
+	<#if entity.hasDescendants() || entity.hasAncestor()>
 		//set the type for a new instance
 		set__Type(this.getClass().getSimpleName());
+	<#else>
+		super();
 	</#if>	
 	
 	<#list entity.getFields() as f>
@@ -188,6 +190,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	 */
 	public ${JavaName(entity)}(<#list entity.getFields(true,true,false) as f><#if f_index &gt; 0>,</#if>${type(f)} ${name(f)}</#list>)
 	{
+		this();
 <#list entity.getFields(true,true,false) as f>
 		this.set${JavaName(f)}(${name(f)});
 </#list>	
@@ -200,6 +203,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	 */
 	public ${JavaName(entity)}(<#list entity.getFields(false,true,false) as f><#if f_index &gt; 0>,</#if>${type(f)} ${name(f)}</#list>)
 	{
+		this();
 <#list entity.getFields(false,true,false) as f>
 		this.set${JavaName(f)}(${name(f)});
 </#list>
@@ -528,7 +532,6 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 		<#if f.type == "mref">
 			//mrefs can not be directly retrieved
 			//set ${JavaName(f)}			
-		<#--elseif f.name!= typefield() || !entity.hasAncestor()-->
 		<#else>
 			//set ${JavaName(f)}
 			<#if f.type == "nsequence">
@@ -592,7 +595,7 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 				this.set${JavaName(f)}_${label}( values );			
 			}	
 			</#list></#if>					
-		<#elseif f.name != typefield() || !entity.hasAncestor()>
+		<#elseif f.name != typefield()>
 			//set ${JavaName(f)}
 			<#if f.type == "xref">	
 			if( strict || tuple.get${settertype(f)}("${name(f)}_${name(f.xrefField)}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${name(f)}_${name(f.xrefField)}"));		
