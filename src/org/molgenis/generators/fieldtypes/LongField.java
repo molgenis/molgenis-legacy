@@ -27,7 +27,7 @@ public class LongField extends AbstractField
 	@Override
 	public String getMysqlType() throws MolgenisModelException
 	{
-		return "LONG";
+		return "BIGINT";
 	}
 
 	@Override
