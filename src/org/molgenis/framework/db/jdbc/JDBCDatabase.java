@@ -307,7 +307,7 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 		if (securityRules != null)
 		{
 			//if user rules, merge user rules with security rules
-			if (rules != null && rules.length > 1)
+			if (rules != null && rules.length >= 1)
 			{
 				List<QueryRule> all = new ArrayList<QueryRule>();
 				all.add(securityRules);
