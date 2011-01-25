@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.ws.Endpoint;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.cxf.Bus;
 import org.apache.cxf.BusFactory;
 import org.apache.cxf.common.classloader.ClassLoaderUtils;
@@ -49,7 +50,6 @@ import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.MolgenisOriginalStyle;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.SimpleModel;
 import org.molgenis.framework.ui.UserInterface;
 import org.molgenis.framework.ui.html.FileInput;
 import org.molgenis.util.CsvFileReader;
@@ -417,6 +417,13 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		Login userLogin = null;
 		// Get appplication from session (or create one)
 		ScreenModel<?> molgenis = (UserInterface<?>) session.getAttribute("application");
+		
+		//on logout throw whole session away.
+		if(request.getParameter("__action") != null && request.getParameter("__action").equalsIgnoreCase("Logout"))
+		{
+			molgenis = null;
+			session.setAttribute("application",null);
+		}
 		if (molgenis == null)
 		{
 			userLogin = createLogin(db, request);
@@ -1259,7 +1266,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				{
 					//hack
 					if(j > 0) json += "|";
-					json += result.get(i).get(xref_labels.get(j)).toString();
+					json += StringEscapeUtils.escapeJavaScript(result.get(i).get(xref_labels.get(j)).toString());
 				}
 				json += "\"";
 				// logger.debug(result.get(i).get(xref_field) + ":\""
