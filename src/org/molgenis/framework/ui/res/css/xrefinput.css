@@ -13,5 +13,5 @@ div.xrefinput{
 }
 
 .xrefinput select{
-	overflow: scroll;
+	overflow: auto;
 }
