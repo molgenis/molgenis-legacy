@@ -134,6 +134,7 @@ init : function(input, xref_entity, xref_field, xref_labels, xref_filters) {
 /*Copy the current selected item to 'input' and close dialog*/
 select : function(_this)
 {
+	//alert('clicked');
 	if(_this.selectInput.options.length > 0)
 	{
 		//alert("clicked option "+ _this.selectInput.options[_this.selectInput.selectedIndex].value);
@@ -141,13 +142,14 @@ select : function(_this)
 		//remove existing options this.selectInput.options; 
 		for (i = this.input.options.length - 1; i >=0; i--) 
 		{
-			this.input.removeChild(this.selectInput.options[i]);
+			this.input.removeChild(this.input.options[i]);
 		}
 		
 		//create a new option with selected value
 		var option = document.createElement("option");
 		option.value = _this.selectInput.options[_this.selectInput.selectedIndex].value;
 		option.text = _this.selectInput.options[_this.selectInput.selectedIndex].text;
+		option.selected = true;
 		this.input.appendChild(option);
 		
 		//hide the search box
@@ -215,14 +217,12 @@ redrawOptions : function(options) {
 
 		//add the value
 		option.value = i;
+		
+		option.text = options[i];	
 
 		//add option to select box
 		this.selectInput.appendChild(option);
-
-		option.text = options[i];	
 	}
-	
-
 	
 	//resize select to fit
 	this.selectInput.size = options.length <= 10 ? options.length : 10;
