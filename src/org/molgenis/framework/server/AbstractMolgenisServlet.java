@@ -503,7 +503,11 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					//get the screen to be selected
 					ScreenModel<?> toBeSelected = molgenis.get(requestTuple.getString("select"));
 					//select leaf in its parent
-					toBeSelected.getParent().setSelected(requestTuple.getString("select"));
+					try{
+						toBeSelected.getParent().setSelected(requestTuple.getString("select"));
+					}catch(NullPointerException npe){
+						//screen does not exists, ignore request
+					}
 				}
 				
 				
