@@ -1,6 +1,6 @@
 <#include "GeneratorHelper.ftl">
 <#list model.getConcreteEntities() as entity>
-INSERT INTO molgenisentity(name,classname) values ("${JavaName(entity)}","${entity.namespace}.${JavaName(entity)}");
+INSERT INTO MolgenisEntity(name,classname) values ("${JavaName(entity)}","${entity.namespace}.${JavaName(entity)}");
 <#--list entity.fields as field>
 INSERT INTO molgenis_fieldmetadata(entity,name,description) SELECT id, "${name(field)}", "<#if field.description != field.name>${field.description}</#if>" from molgenis_entitymetadata where name="${name(entity)}";
 </#list-->
