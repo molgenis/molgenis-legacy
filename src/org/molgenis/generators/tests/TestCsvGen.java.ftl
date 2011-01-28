@@ -195,4 +195,9 @@ public class TestCsv
 	{
 		//todo: delete testing data
 	}
+	
+    public static void main(String[] args) throws Exception
+	{
+		new TestCsv().testCsv1();
+	}
 }

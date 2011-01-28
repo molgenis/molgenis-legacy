@@ -441,6 +441,12 @@ public class Molgenis {
 	 * @throws CmdLineException
 	 */
 	public void updateDb() throws SQLException, FileNotFoundException,
+	IOException, CmdLineException {
+		updateDb(false);
+	}
+	
+	
+	public void updateDb(boolean filldb) throws SQLException, FileNotFoundException,
 			IOException, CmdLineException {
 		
 		boolean ask = false;
@@ -496,7 +502,7 @@ public class Molgenis {
 				e.printStackTrace();
 			}
 
-			if (StringUtils.isNotEmpty(this.options.getAuthLoginclass()))
+			if (filldb && StringUtils.isNotEmpty(this.options.getAuthLoginclass()))
 			{
 				String insert_metadata_file = options.output_sql + File.separator + "insert_metadata.sql";
 				logger.debug("using file " + insert_metadata_file);

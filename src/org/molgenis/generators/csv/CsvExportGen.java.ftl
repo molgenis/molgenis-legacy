@@ -32,7 +32,7 @@ import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.util.CsvFileWriter;
 
-<#list model.entities as entity><#if !entity.abstract && entity.system==false>
+<#list model.entities as entity><#if !entity.abstract && entity.association==false>
 ${imports(model, entity, "")}
 </#if></#list>
 
@@ -85,7 +85,7 @@ public class CsvExport
 	 */
 	public void exportAll(File directory, Database db, boolean skipAutoId, QueryRule ... rules) throws Exception
 	{				
-		<#list entities as entity><#if !entity.abstract && entity.system==false>
+		<#list entities as entity><#if !entity.abstract && entity.association==false>
 		export${Name(entity)}(db, new File(directory+"/${entity.name?lower_case}.txt"), skipAutoId ? Arrays.asList(new String[]{<#assign first = true><#list entity.allFields as f><#if !(f.type = "int" && f.auto)><#if first><#assign first=false><#else>,</#if><#if f.type="mref" || f.type="xref"><#list f.xrefLabelNames as label>"${f.name}_${label}"<#if label_has_next>,</#if></#list><#else>"${f.name}"</#if></#if></#list>}) : null, rules);		
 		</#if></#list>
 			
@@ -96,7 +96,7 @@ public class CsvExport
 	{				
 		for(List l: entityLists) if(l.size()>0)
 		{
-			<#list entities as entity><#if !entity.abstract && entity.system==false>
+			<#list entities as entity><#if !entity.abstract && entity.association==false>
 			if(l.get(0).getClass().equals(${JavaName(entity)}.class))
 				export${Name(entity)}(l, new File(directory+"/${entity.name?lower_case}.txt"));		
 			</#if></#list>
@@ -129,7 +129,7 @@ public class CsvExport
 		return result;
 	}
 
-<#list entities as entity><#if !entity.abstract && entity.system==false>
+<#list entities as entity><#if !entity.abstract && entity.association==false>
 	/**
 	 *	export ${Name(entity)} to file.
 	 *  @param db the database to export from.
