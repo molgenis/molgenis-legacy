@@ -58,7 +58,7 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	/** BATCH SIZE */
 	private int BATCH_SIZE = 10000;
 
-	private static Map<String, JpaMapper> mappers = new TreeMap<String, JpaMapper>();
+	private static Map<String, Mapper> mappers = new TreeMap<String, Mapper>();
 	private EntityManager em = null;
 	/** in transaction */
 	//private boolean inTransaction;
@@ -548,14 +548,14 @@ public class JpaDatabase extends AbstractDatabase implements Database
 
 	}
 
-	protected static <E extends Entity> void putMapper(Class<E> klazz, JpaMapper<E> mapper)
+	protected static <E extends Entity> void putMapper(Class<E> klazz, Mapper mapper)
 	{		
 		mappers.put(klazz.getName(), mapper);
 		// logger.debug("added mapper for klazz " + klazz.getName());
 	}
 	
 	protected <E extends Entity> JpaMapper<E> getMapper(String name) {
-		return mappers.get(name);
+		return (JpaMapper<E>)mappers.get(name);
 	}
 	
 	public void flush()

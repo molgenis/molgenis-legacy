@@ -506,12 +506,17 @@ public class Entity extends DBSchema implements Record
 	 * @param required
 	 *            if required == true than returns only fields that are required
 	 *            (not nillable/null) else returns all fields
-	 * @param
+	 * @param recursive
+	 * 			  get also field from super classes
+	 * @param systemField 
+	 * 			  system field, like __type and id
+	 * @param implementing
+	 * 			  field that this object implements (also done recusively if recusive = true)
 	 * @return All the fields associated with this entity.
 	 * @throws MolgenisModelException
 	 */
 	public List<Field> getFields(boolean required, boolean recursive,
-			boolean systemField) throws MolgenisModelException
+			boolean systemField, boolean implementing) throws MolgenisModelException
 	{
 		//use map to ensure we can override fields in subclasses
 		Map<String,Field> result = new LinkedHashMap<String,Field>();
@@ -541,8 +546,7 @@ public class Entity extends DBSchema implements Record
 		}
 		if (recursive && hasAncestor())
 		{
-			for(Field f: getAncestor().getFields(required, recursive,
-					systemField))
+			for(Field f: getAncestor().getFields(required, recursive, systemField, implementing))
 			{
 				if(!result.containsKey(f.getName()))
 				{
@@ -550,9 +554,25 @@ public class Entity extends DBSchema implements Record
 				}
 			}
 		}
+		if(implementing) {
+			for(Entity implEntity : this.getImplements()) {
+				for(Field f: implEntity.getFields(required, recursive, systemField, implementing)) {
+					if(!result.containsKey(f.getName()))
+					{
+						result.put(f.getName(),f);
+					}					
+				}
+			}		 
+		}
+		
 		return new ArrayList<Field>(result.values());
 	}
 
+	public List<Field> getFields(boolean required, boolean recursive,
+			boolean systemField) throws MolgenisModelException	{
+		return getFields(required, recursive, systemField, true);
+	}
+	
 	/**
 	 * Get fields for this entity as well as from the interfaces it implements.
 	 * 
@@ -975,6 +995,10 @@ public class Entity extends DBSchema implements Record
 		return null;
 	}
 
+	public Field getFieldRecusive(String name) throws MolgenisModelException{
+		return getField(name, false, true, true);
+	}
+	
 	public Field getField(String name) throws MolgenisModelException
 	{
 		return getField(name, false, false, true);
