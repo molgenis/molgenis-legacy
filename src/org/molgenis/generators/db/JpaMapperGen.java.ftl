@@ -162,14 +162,14 @@ public class ${Name(entity)}Mapper implements JpaMapper<${Name(entity)}>
 				}
 			}
 	<#elseif type_label == "mref">
-	    List<${JavaName(field.getXrefEntity())}> ${name(field)} = entity.get${JavaName(field)}();
+	    List<${JavaName(field.getXrefEntity())}> ${name(field)}List = entity.get${JavaName(field)}();
 	    List<Integer> ${name(field)}Ids = entity.get${JavaName(field)}_Id();
 	    for(Integer ${name(field)}Id : ${name(field)}Ids) {
 		${JavaName(field.getXrefEntity())} ${name(field.getXrefEntity())} = em.getReference(${JavaName(field.getXrefEntity())}.class, ${name(field)}Id);
-		if(!${name(field)}.contains(${name(field.getXrefEntity())}))
-		    ${name(field)}.add(${name(field.getXrefEntity())});
+		if(!${name(field)}List.contains(${name(field.getXrefEntity())}))
+		    ${name(field)}List.add(${name(field.getXrefEntity())});
 	    }
-	    entity.set${JavaName(field)}(${name(field)});
+	    entity.set${JavaName(field)}(${name(field)}List);
 	</#if>
 </#foreach>
 
@@ -315,11 +315,16 @@ public class ${Name(entity)}Mapper implements JpaMapper<${Name(entity)}>
 			if(!em.contains(${name(entity)})) {
 				${name(entity)} = em.merge(${name(entity)});
 			}
-			
-<#list model.entities as e><#if !e.abstract && !e.isAssociation()>
-	<#list e.implementedFields as f>
-		<#if f.type=="xref" && entity.isParent(Name(f.getXrefEntity()))>
-			 <#assign multipleXrefs = e.getNumberOfReferencesTo(entity)/>
+<#--	what does this do? FIXIT		
+<#list model.entities as e>
+	<#if !e.abstract && !e.isAssociation()>
+		<#list e.implementedFields as f>
+			<#if f.type=="xref" && entity.isParent(Name(f.getXrefEntity())) >
+				<#assign multipleXrefs = e.getNumberOfReferencesTo(entity)/>
+			 
+			 //${entity.getName()}
+			 //${Name(f.getXrefEntity())}
+			 
 			if (${fieldName}Old != null && !${fieldName}Old.equals(${fieldName}New)) {
 				${fieldName}Old.get${f.getXrefEntityName()}Collection().remove(${name(entity)});
 				${fieldName}Old = em.merge(${fieldName}Old);
@@ -328,10 +333,13 @@ public class ${Name(entity)}Mapper implements JpaMapper<${Name(entity)}>
 			if (${fieldName}New != null && !${fieldName}New.equals(${fieldName}Old)) {
 				${fieldName}New.get${f.getXrefEntityName()}Collection().add(${name(entity)});
 				${fieldName}New = em.merge(${fieldName}New);
-			}
-		</#if>
-	</#list></#if>
+			}			 
+			
+			</#if>
+		</#list>
+	</#if>
 </#list>			
+-->	
 			
 <#foreach field in entity.getAllFields()>
 	<#assign type_label = field.getType().toString()>

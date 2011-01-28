@@ -141,7 +141,7 @@
 <#function subclasses entity>
 	<#return helper.getSubclasses(entity,model)>
 </#function>
-<#function superclasses entity>
+	<#function superclasses entity>
 	<#return helper.getSuperclasses(entity,model)>
 </#function>
 <#function dbFields entity type="">

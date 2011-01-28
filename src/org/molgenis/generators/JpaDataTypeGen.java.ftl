@@ -99,6 +99,13 @@ import ${e.namespace}.${JavaName(e)};
 	</#list></#if>
 </#list>
 
+<#-- import implementing entities -->
+<#if entity.hasImplements()>
+	<#list entity.getImplements() as impl_entity>
+import ${impl_entity.namespace}.${JavaName(impl_entity)};
+	</#list>
+</#if>
+
 /**
  * ${Name(entity)}: ${entity.description}.
  * @version ${date} 
@@ -322,6 +329,18 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	 */
 	public void set${JavaName(field)}( <#if field.type =="xref">${JavaName(field.xrefEntity)}<#elseif field.type == "mref">List<${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)})
 	{
+		<#-- hack to solve problem with variable hidden in supertype -->
+		<#if entity.hasAncestor()> 
+			<#if entity.getAncestor().getField(field.getName(), false, true, true)?exists>
+				//hack to solve problem with variable hidden in supertype
+				super.set${JavaName(field)}(${name(field)});
+			</#if>
+			<#if entity.getAncestor().getAllField(field.getName())?exists>
+				//2222hack to solve problem with variable hidden in supertype
+				super.set${JavaName(field)}(${name(field)});
+			</#if>
+		</#if>
+		
 		this.${name(field)} = ${name(field)};
 	}			
 			</#if>
