@@ -10,7 +10,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Mapper;
+import org.molgenis.framework.db.DatabaseMapper;
 
 public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
 {
@@ -51,7 +51,7 @@ public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
 	static
 	{
 		<#list model.entities as entity><#if !entity.isAbstract()>
-		putMapper(${entity.namespace}.${Name(entity)}.class, (Mapper)new ${entity.namespace}.db.${Name(entity)}Mapper(null));
+		putMapper(${entity.namespace}.${Name(entity)}.class, (DatabaseMapper)new ${entity.namespace}.db.${Name(entity)}Mapper(null));
 		</#if></#list>	
 	}	
 

@@ -329,6 +329,15 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 				this._${name(field)} = ${default(field)};
 		}
 		<#else>
+		
+		<#-- hack to solve problem with variable hidden in supertype -->
+		<#if entity.hasAncestor() >
+			<#if entity.getAncestor().getField(field.getName(), false, true, true)?? >
+			    //hack to solve problem with variable hidden in supertype
+				super.set${JavaName(field)}(_${name(field)});			
+			</#if>
+		</#if>			
+		
 		this._${name(field)} = _${name(field)};
 		<#if type_label == "xref">
 		//erases the xref object

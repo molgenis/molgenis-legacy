@@ -1,5 +1,5 @@
 /**
-¯§ * File: invengine.screen.form.SelectInput <br>
+ * File: invengine.screen.form.SelectInput <br>
  * Copyright: Inventory 2000-2006, GBIC 2005, all rights reserved <br>
  * Changelog:
  * <ul>

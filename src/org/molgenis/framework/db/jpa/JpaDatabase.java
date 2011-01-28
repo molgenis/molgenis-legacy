@@ -13,6 +13,7 @@ import javax.persistence.metamodel.EntityType;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.DatabaseMapper;
 import org.molgenis.framework.db.JoinQuery;
 import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.Query;
@@ -58,7 +59,7 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	/** BATCH SIZE */
 	private int BATCH_SIZE = 10000;
 
-	private static Map<String, Mapper> mappers = new TreeMap<String, Mapper>();
+	private static Map<String, DatabaseMapper> mappers = new TreeMap<String, DatabaseMapper>();
 	private EntityManager em = null;
 	/** in transaction */
 	//private boolean inTransaction;
@@ -548,7 +549,7 @@ public class JpaDatabase extends AbstractDatabase implements Database
 
 	}
 
-	protected static <E extends Entity> void putMapper(Class<E> klazz, Mapper mapper)
+	protected static <E extends Entity> void putMapper(Class<E> klazz, DatabaseMapper mapper)
 	{		
 		mappers.put(klazz.getName(), mapper);
 		// logger.debug("added mapper for klazz " + klazz.getName());

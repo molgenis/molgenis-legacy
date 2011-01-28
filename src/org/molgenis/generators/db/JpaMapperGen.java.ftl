@@ -78,15 +78,6 @@ import ${e.namespace}.db.*;
 
 public class ${Name(entity)}Mapper implements JpaMapper<${Name(entity)}>
 {
-	//constructors
-	public ${Name(entity)}Mapper() {
-	}
-	
-	//hack to support same constructor as JDBCMapper
-	public ${Name(entity)}Mapper(Object dummy) {
-	}
-
-
 	public ${Name(entity)}Mapper() {}
 
 	@Deprecated
