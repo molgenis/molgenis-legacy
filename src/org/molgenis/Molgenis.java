@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.tools.ant.Project;
@@ -495,6 +496,24 @@ public class Molgenis {
 				e.printStackTrace();
 			}
 
+			if (StringUtils.isNotEmpty(this.options.getAuthLoginclass()))
+			{
+				String insert_metadata_file = options.output_sql + File.separator + "insert_metadata.sql";
+				logger.debug("using file " + insert_metadata_file);
+
+				// READ THE FILE
+				try {
+					BufferedReader in = new BufferedReader(new FileReader(insert_metadata_file));
+					String line;
+					while ((line = in.readLine()) != null) {
+						create_tables_sql += line + "\n";
+					}
+					in.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
 			Statement stmt = conn.createStatement();
 			boolean error = false;
 			logger.info("Updating database....");
