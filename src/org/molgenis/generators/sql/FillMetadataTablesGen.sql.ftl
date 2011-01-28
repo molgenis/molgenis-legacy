@@ -13,13 +13,13 @@ INSERT INTO MolgenisGroup (id) values (1);
 INSERT INTO MolgenisUser (id, password, emailaddress, firstname, lastname, active) values (2, "admin", "", "admin", "admin", true);
 INSERT INTO MolgenisUser (id, password, emailaddress, firstname, lastname, active, superuser) values (3, "anonymous", "", "anonymous", "anonymous", true, true);
 
-INSERT INTO MolgenisRole_allowedToView (MolgenisRole, allowedToView) SELECT 2, id FROM molgenisentity WHERE molgenisentity.name = "MolgenisUser";
-INSERT INTO MolgenisRole_allowedToView (MolgenisRole, allowedToView) SELECT 2, id FROM molgenisentity WHERE molgenisentity.name = "MolgenisGroup";
-INSERT INTO MolgenisRole_allowedToView (MolgenisRole, allowedToView) SELECT 2, id FROM molgenisentity WHERE molgenisentity.name = "MolgenisUserGroupLink";
-INSERT INTO MolgenisRole_allowedToEdit (MolgenisRole, allowedToEdit) SELECT 2, id FROM molgenisentity WHERE molgenisentity.name = "MolgenisUser";
-INSERT INTO MolgenisRole_allowedToEdit (MolgenisRole, allowedToEdit) SELECT 2, id FROM molgenisentity WHERE molgenisentity.name = "MolgenisGroup";
-INSERT INTO MolgenisRole_allowedToEdit (MolgenisRole, allowedToEdit) SELECT 2, id FROM molgenisentity WHERE molgenisentity.name = "MolgenisUserGroupLink";
+INSERT INTO MolgenisRole_allowedToView (MolgenisRole, allowedToView) SELECT 2, id FROM MolgenisEntity WHERE MolgenisEntity.name = "MolgenisUser";
+INSERT INTO MolgenisRole_allowedToView (MolgenisRole, allowedToView) SELECT 2, id FROM MolgenisEntity WHERE MolgenisEntity.name = "MolgenisGroup";
+INSERT INTO MolgenisRole_allowedToView (MolgenisRole, allowedToView) SELECT 2, id FROM MolgenisEntity WHERE MolgenisEntity.name = "MolgenisUserGroupLink";
+INSERT INTO MolgenisRole_allowedToEdit (MolgenisRole, allowedToEdit) SELECT 2, id FROM MolgenisEntity WHERE MolgenisEntity.name = "MolgenisUser";
+INSERT INTO MolgenisRole_allowedToEdit (MolgenisRole, allowedToEdit) SELECT 2, id FROM MolgenisEntity WHERE MolgenisEntity.name = "MolgenisGroup";
+INSERT INTO MolgenisRole_allowedToEdit (MolgenisRole, allowedToEdit) SELECT 2, id FROM MolgenisEntity WHERE MolgenisEntity.name = "MolgenisUserGroupLink";
+INSERT INTO MolgenisRole_allowedToEdit (MolgenisRole, allowedToEdit) SELECT 3, id FROM MolgenisEntity WHERE MolgenisEntity.name = "MolgenisUser"; 
 
-INSERT INTO MolgenisRole_allowedToEdit (MolgenisRole, allowedToEdit) SELECT 3, id FROM molgenisentity WHERE molgenisentity.name = "MolgenisUser"; 
 INSERT INTO MolgenisUserGroupLink (group_, user_) VALUES (1, 2);
 INSERT INTO MolgenisUserGroupLink (group_, user_) VALUES (1, 3);
