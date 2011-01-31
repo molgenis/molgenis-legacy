@@ -10,16 +10,23 @@ INSERT INTO MolgenisRole (__Type, id, name) values ("MolgenisGroup", 1, "system"
 INSERT INTO MolgenisRole (__Type, id, name) values ("MolgenisUser", 2, "admin");
 INSERT INTO MolgenisRole (__Type, id, name) values ("MolgenisUser", 3, "anonymous");
 INSERT INTO MolgenisGroup (id) values (1);
-INSERT INTO MolgenisUser (id, password, emailaddress, firstname, lastname, active) values (2, "admin", "", "admin", "admin", true);
-INSERT INTO MolgenisUser (id, password, emailaddress, firstname, lastname, active, superuser) values (3, "anonymous", "", "anonymous", "anonymous", true, true);
+INSERT INTO MolgenisUser (id, password, emailaddress, firstname, lastname, active, superuser) values (2, "admin", "", "admin", "admin", true, true);
+INSERT INTO MolgenisUser (id, password, emailaddress, firstname, lastname, active) values (3, "anonymous", "", "anonymous", "anonymous", true);
 
-INSERT INTO MolgenisRole_allowedToView (MolgenisRole, allowedToView) SELECT 2, id FROM MolgenisEntity WHERE MolgenisEntity.name = "MolgenisUser";
-INSERT INTO MolgenisRole_allowedToView (MolgenisRole, allowedToView) SELECT 2, id FROM MolgenisEntity WHERE MolgenisEntity.name = "MolgenisGroup";
-INSERT INTO MolgenisRole_allowedToView (MolgenisRole, allowedToView) SELECT 2, id FROM MolgenisEntity WHERE MolgenisEntity.name = "MolgenisUserGroupLink";
-INSERT INTO MolgenisRole_allowedToEdit (MolgenisRole, allowedToEdit) SELECT 2, id FROM MolgenisEntity WHERE MolgenisEntity.name = "MolgenisUser";
-INSERT INTO MolgenisRole_allowedToEdit (MolgenisRole, allowedToEdit) SELECT 2, id FROM MolgenisEntity WHERE MolgenisEntity.name = "MolgenisGroup";
-INSERT INTO MolgenisRole_allowedToEdit (MolgenisRole, allowedToEdit) SELECT 2, id FROM MolgenisEntity WHERE MolgenisEntity.name = "MolgenisUserGroupLink";
-INSERT INTO MolgenisRole_allowedToEdit (MolgenisRole, allowedToEdit) SELECT 3, id FROM MolgenisEntity WHERE MolgenisEntity.name = "MolgenisUser"; 
+INSERT INTO MolgenisPermission (role_, entity, permission) SELECT 2, id, "read" FROM MolgenisEntity WHERE MolgenisEntity.name = "MolgenisUser";
+INSERT INTO MolgenisPermission (role_, entity, permission) SELECT 2, id, "read" FROM MolgenisEntity WHERE MolgenisEntity.name = "MolgenisGroup";
+INSERT INTO MolgenisPermission (role_, entity, permission) SELECT 2, id, "read" FROM MolgenisEntity WHERE MolgenisEntity.name = "MolgenisUserGroupLink";
+INSERT INTO MolgenisPermission (role_, entity, permission) SELECT 2, id, "write" FROM MolgenisEntity WHERE MolgenisEntity.name = "MolgenisUser";
+INSERT INTO MolgenisPermission (role_, entity, permission) SELECT 2, id, "write" FROM MolgenisEntity WHERE MolgenisEntity.name = "MolgenisGroup";
+INSERT INTO MolgenisPermission (role_, entity, permission) SELECT 2, id, "write" FROM MolgenisEntity WHERE MolgenisEntity.name = "MolgenisUserGroupLink";
+INSERT INTO MolgenisPermission (role_, entity, permission) SELECT 3, id, "read" FROM MolgenisEntity WHERE MolgenisEntity.name = "MolgenisUser";
+
+<#assign schema = model.getUserinterface()>
+<#list schema.getChildren() as screen>
+	<#if screen.getClass() == "Form.class">
+		<#-- Add code for readonly="true" -->
+	</#if>
+</#list>
 
 INSERT INTO MolgenisUserGroupLink (group_, user_) VALUES (1, 2);
 INSERT INTO MolgenisUserGroupLink (group_, user_) VALUES (1, 3);
