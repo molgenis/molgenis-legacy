@@ -43,6 +43,7 @@ public class MolgenisModelValidator
 		validatePrimaryKeys(model);
 		validateForeignKeys(model);
 		validateViews(model);
+		validateOveride(model);
 
 		// enhance the model
 		correctXrefCaseSensitivity(model);
@@ -58,6 +59,15 @@ public class MolgenisModelValidator
 
 		copyFieldsToSubclassToEnforceConstraints(model);
 
+	}
+
+	/** Subclasses can override fields of superclasses. This should only be used with caution!
+	 * Only good motivation is to limit xref type.
+	 */
+	public static void validateOveride(Model model)
+	{
+		// TODO 
+		
 	}
 
 	public static void validateUI(Model model, MolgenisOptions options)
