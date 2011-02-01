@@ -164,4 +164,21 @@ public class ActionInput extends HtmlInput
 			return getName();
 		return super.getLabel();
 	}
+
+	public String getIconHtml()
+	{
+		// TODO Auto-generated method stub
+		return "<img src=\""+this.getIcon()+"\"/>";
+	}
+
+	public String toIconHtml()
+	{
+		return "<img class=\"edit_button\" src=\""+getIcon()+"\" title=\""+getLabel()+"\" onClick=\""+this.getJavaScriptAction()+"\">";
+		//<img class="edit_button" src="generated-res/img/recordview.png" title="view record" alt="edit${offset}" onClick="setInput('${screen.name}_form','_self','','${screen.name}','recordview','iframe'); document.forms.${screen.name}_form.__offset.value='${offset}'; document.forms.${screen.name}_form.submit();">${readonly}</label>
+	}
+
+	public String toLinkHtml()
+	{
+		return "<a title=\""+this.getDescription()+"\" onclick=\""+this.getJavaScriptAction()+"\">"+getLabel()+"</a>";
+	}
 }

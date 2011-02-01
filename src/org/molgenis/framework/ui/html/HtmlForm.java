@@ -20,6 +20,8 @@ public class HtmlForm
 	private boolean newRecord = false;
 	/** Inputs */
 	private List<HtmlInput> inputs = new ArrayList<HtmlInput>();
+	/** Actions */
+	private List<ActionInput> actions = new ArrayList<ActionInput>();
 	
 	public HtmlForm()
 	{
@@ -99,5 +101,32 @@ public class HtmlForm
 	public String getEntityName()
 	{
 		return this.getEntity().getClass().getSimpleName();
+	}
+
+	public void addInput(HtmlInput ... inputs)
+	{
+		for(HtmlInput input: inputs)
+		{
+			this.getInputs().add(input);
+		}
+		
+	}
+
+	public List<ActionInput> getActions()
+	{
+		return actions;
+	}
+
+	public void setActions(List<ActionInput> actions)
+	{
+		this.actions = actions;
+	}
+
+	public void addAction(ActionInput ... actions)
+	{
+		for(ActionInput action: actions)
+		{
+			this.getActions().add(action);
+		}
 	}
 }
