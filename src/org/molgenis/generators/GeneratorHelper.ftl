@@ -9,9 +9,9 @@
 </#function>
 <#function SqlName value>
 	<#if value?is_hash>
-		<#return value.getName()>
+		<#return helper.toLower(value.getName())>
 	<#else>
-		<#return value>
+		<#return helper.toLower(value)>
 	</#if>
 </#function>
 <#function RName value>
