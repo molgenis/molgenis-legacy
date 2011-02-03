@@ -84,6 +84,9 @@ public class JDBCMetaDatabase extends Model
 			</#list>
 			${name(entity)}_${name(field)}_field.setEnumOptions(${name(entity)}_${name(field)}_field_enumoptions);
 			</#if>
+			<#if field.defaultValue != ''>
+			${name(entity)}_${name(field)}_field.setDevaultValue("${field.defaultValue}");
+			</#if>
 			<#if field.type == "xref" || field.type == "mref">${name(entity)}_${name(field)}_field.setXRefVariables("${field.xrefEntityName}", "${field.xrefFieldName}",Arrays.asList(new String[]{${csv(field.xrefLabelNames)}}));</#if>
 			${name(entity)}_entity.addField(${name(entity)}_${name(field)}_field);
 			</#if></#list>
