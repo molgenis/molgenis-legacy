@@ -1,0 +1,88 @@
+package org.molgenis.generators.db;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.Map;
+
+import org.molgenis.MolgenisOptions;
+import org.molgenis.generators.ForEachEntityGenerator;
+import org.molgenis.generators.GeneratorHelper;
+import org.molgenis.model.elements.Entity;
+import org.molgenis.model.elements.Model;
+
+import freemarker.template.Template;
+
+public class MapperSecurityDecoratorGen extends ForEachEntityGenerator
+{
+	@Override
+	public String getDescription()
+	{
+		return "(Optional) Generates an authorization decorator.";
+	}
+
+	@Override
+	public String getType()
+	{
+		return "";
+	}
+
+	//@Override
+	public void generate(Model model, MolgenisOptions options) throws Exception
+	{
+		Template template = this.createTemplate(this.getClass().getSimpleName() + getExtension() + ".ftl");
+		Map<String, Object> templateArgs = createTemplateArguments(options);
+
+		// apply generator to each entity
+		for (Entity entity : model.getEntities())
+		{
+			try
+			{
+				if (entity.isAbstract())
+					continue;
+
+				String fullKlazzName = entity.getNamespace() + ".db." + entity.getName() + "SecurityDecorator";
+
+				String packageName = fullKlazzName;
+				if(fullKlazzName.contains("."))
+					packageName = fullKlazzName.substring(0, fullKlazzName.lastIndexOf("."));
+
+				String shortKlazzName = fullKlazzName;
+				if(fullKlazzName.contains("."))
+					shortKlazzName = fullKlazzName.substring(fullKlazzName.lastIndexOf(".") + 1);
+
+				File targetDir = new File(this.getSourcePath(options) + "/" + packageName.replace(".", "/"));
+				targetDir.mkdirs();
+
+				File targetFile = new File(targetDir + "/" + shortKlazzName	+ ".java");
+
+				templateArgs.put("entityClass", entity.getNamespace()+"."+GeneratorHelper.firstToUpper(entity.getName()));
+
+				templateArgs.put("clazzName", shortKlazzName);
+				templateArgs.put("entity", entity);
+				templateArgs.put("model", model);
+				// templateArgs.put("db_driver", options.db_driver);
+				templateArgs.put("template", template.getName());
+				templateArgs.put("file", packageName.replace(".", "/") + "/"
+						+ GeneratorHelper.firstToUpper(entity.getName()) + getType() + getExtension());
+				templateArgs.put("package", packageName);
+
+				OutputStream targetOut = new FileOutputStream(targetFile);
+
+				template.process(templateArgs, new OutputStreamWriter(targetOut));
+				targetOut.close();
+
+				// logger.info("generated " +
+				// targetFile.getAbsolutePath());
+				logger.info("generated " + targetFile);
+			}
+			catch (Exception e)
+			{
+				logger.error("problem generating for " + entity.getName());
+				throw e;
+			}
+		}
+	}
+
+}
