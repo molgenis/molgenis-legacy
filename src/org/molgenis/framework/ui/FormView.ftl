@@ -354,9 +354,9 @@ var molgenis_required = new Array(${required});
 	<td>
 		<label>${offset}. 
 		<#if readonly == "*" >
-			<img class="edit_button" src="generated-res/img/recordview.png" title="view record" alt="edit${offset}" onClick="setInput('${screen.name}_form','_self','','${screen.name}','recordview','iframe'); document.forms.${screen.name}_form.__offset.value='${offset}'; document.forms.${screen.name}_form.submit();">${readonly}</label>
+			<img class="edit_button" src="generated-res/img/recordview.png" title="view record" alt="edit${offset}" onClick="setInput('${screen.name}_form','_self','','${screen.name}','recordview','iframe'); document.forms.${screen.name}_form.__offset.value='${offset?string.computer}'; document.forms.${screen.name}_form.submit();">${readonly}</label>
 		<#else>
-			<img class="edit_button" src="generated-res/img/editview.gif" title="edit record" alt="edit${offset}" onClick="setInput('${screen.name}_form','_self','','${screen.name}','editview','iframe'); document.forms.${screen.name}_form.__offset.value='${offset}'; document.forms.${screen.name}_form.submit();">${readonly}</label>
+			<img class="edit_button" src="generated-res/img/editview.gif" title="edit record" alt="edit${offset}" onClick="setInput('${screen.name}_form','_self','','${screen.name}','editview','iframe'); document.forms.${screen.name}_form.__offset.value='${offset?string.computer}'; document.forms.${screen.name}_form.submit();">${readonly}</label>
 		</#if>
 	</td>
 		<#list record.inputs as input>
