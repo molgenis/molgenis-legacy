@@ -31,6 +31,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.paging.DatabasePager;
 import org.molgenis.framework.security.Login;
+import org.molgenis.framework.security.SimpleLogin;
 import org.molgenis.framework.ui.commands.AddBatchCommand;
 import org.molgenis.framework.ui.commands.AddCommand;
 import org.molgenis.framework.ui.commands.ChangeListLimitCommand;
@@ -838,7 +839,21 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 	 */
 	public boolean isReadonly()
 	{
-		return readonly;
+		// If no "real" auth is used, return value from xml-ui
+		if (this.getSecurity() instanceof SimpleLogin)
+			return this.readonly;
+
+		// Otherwise dynamically return whether form is read-only
+		try
+		{
+			return !this.getSecurity().canWrite(this.create().getClass());
+		}
+		catch (DatabaseException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return true;
 	}
 
 	/**

@@ -68,9 +68,17 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 	{
 		<#list model.entities as entity><#if !entity.isAbstract()>
 			<#if entity.decorator?exists>
-		this.putMapper(${entity.namespace}.${Name(entity)}.class, new ${entity.decorator}(new ${entity.namespace}.db.${Name(entity)}Mapper(this)));	
+				<#if auth_loginclass?ends_with("SimpleLogin")>
+		this.putMapper(${entity.namespace}.${Name(entity)}.class, new ${entity.decorator}(new ${entity.namespace}.db.${Name(entity)}Mapper(this)));
+				<#else>
+		this.putMapper(${entity.namespace}.${Name(entity)}.class, new ${entity.decorator}(new ${entity.namespace}.db.${Name(entity)}SecurityDecorator(new ${entity.namespace}.db.${Name(entity)}Mapper(this))));
+				</#if>	
 			<#else>
+				<#if auth_loginclass?ends_with("SimpleLogin")>
 		this.putMapper(${entity.namespace}.${Name(entity)}.class, new ${entity.namespace}.db.${Name(entity)}Mapper(this));
+				<#else>
+		this.putMapper(${entity.namespace}.${Name(entity)}.class, new ${entity.namespace}.db.${Name(entity)}SecurityDecorator(new ${entity.namespace}.db.${Name(entity)}Mapper(this)));
+				</#if>
 			</#if>
 		</#if></#list>
 	}

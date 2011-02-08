@@ -238,7 +238,7 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 	// @Override
 	public <E extends Entity> int count(Class<E> klazz, QueryRule... rules) throws DatabaseException
 	{
-		return getMapperFor(klazz).count(addSecurityFilters(klazz,rules));
+		return getMapperFor(klazz).count(rules);
 	}
 
 	// @Override
@@ -248,7 +248,7 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 		{
 			Query<E> q = this.query(getClassForEntity(example));
 			//add first security rules
-			q.addRules(this.getSecurity().getRowlevelSecurityFilters(example.getClass()));
+//			q.addRules(this.getSecurity().getRowlevelSecurityFilters(example.getClass()));
 
 			for (String field : example.getFields())
 			{
@@ -290,7 +290,7 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 //			}
 //			return getMapperFor(klazz).find(securityRules);
 //		}
-		return getMapperFor(klazz).find(addSecurityFilters(klazz,rules));
+		return getMapperFor(klazz).find(rules);
 	}
 	
 	private <E extends Entity> QueryRule[] addSecurityFilters(Class<E> klazz, QueryRule ... rules)
@@ -330,14 +330,14 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 	// @Override
 	public <E extends Entity> void find(Class<E> klazz, CsvWriter writer, QueryRule... rules) throws DatabaseException
 	{
-		getMapperFor(klazz).find(writer, addSecurityFilters(klazz,rules));
+		getMapperFor(klazz).find(writer, rules);
 	}
 
 	// @Override
 	public <E extends Entity> void find(Class<E> klazz, CsvWriter writer, List<String> fieldsToExport,
 			QueryRule... rules) throws DatabaseException
 	{
-		getMapperFor(klazz).find(writer, fieldsToExport, addSecurityFilters(klazz,rules));
+		getMapperFor(klazz).find(writer, fieldsToExport, rules);
 	}
 
 	// @Override
@@ -364,7 +364,6 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 	{
 		if (entities.size() > 0)
 		{
-			checkEditPermission(entities);
 			return getMapperFor(entities).add(entities);
 		}
 		return 0;
@@ -389,7 +388,6 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 	{
 		if (entities.size() > 0)
 		{
-			checkEditPermission(entities);
 			return getMapperFor(entities).update(entities);
 		}
 		return 0;
@@ -414,7 +412,6 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 	{
 		if (entities.size() > 0)
 		{
-			checkEditPermission(entities);
 			return getMapperFor(entities).remove(entities);
 		}
 		return 0;
@@ -637,22 +634,6 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 	public Model getMetaData() throws DatabaseException
 	{
 		return metadata;
-	}
-
-	/**
-	 * Verify edit permission for all entities
-	 * 
-	 * @param entities
-	 * @return
-	 * @throws DatabaseException
-	 */
-	private <E extends Entity> void checkEditPermission(List<E> entities) throws DatabaseException
-	{
-		Login security = getSecurity();
-		for (E entity : entities)
-		{
-			if (security != null && !security.canWrite(entity)) throw new DatabaseException("Edit not allowed");
-		}
 	}
 
 	@Override

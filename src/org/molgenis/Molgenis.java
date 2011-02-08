@@ -37,6 +37,7 @@ import org.molgenis.generators.csv.CsvExportGen;
 import org.molgenis.generators.csv.CsvImportByIdGen;
 import org.molgenis.generators.csv.CsvImportGen;
 import org.molgenis.generators.csv.CsvReaderGen;
+import org.molgenis.generators.db.MapperSecurityDecoratorGen;
 import org.molgenis.generators.db.InMemoryDatabaseGen;
 import org.molgenis.generators.db.JDBCDatabaseGen;
 import org.molgenis.generators.db.JDBCMetaDatabaseGen;
@@ -234,6 +235,13 @@ public class Molgenis {
 				logger.warn("Unknown database driver " + options.db_driver);
 				// System.exit(-1);
 			}
+
+			// JDBC authorization
+			if (!options.auth_loginclass.endsWith("SimpleLogin"))
+			{
+				generators.add(new MapperSecurityDecoratorGen());
+			}
+
 			// decorators
 			generators.add(new MapperDecoratorGen());
 
@@ -352,7 +360,7 @@ public class Molgenis {
 		}
 
 		for (final Generator g : generators) {
-			
+
 			g.generate(model, options);
 		}
 		logger.info("Generation completed at " + new Date());
