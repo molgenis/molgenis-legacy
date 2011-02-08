@@ -90,7 +90,9 @@ public class ${clazzName}<E extends ${entityClass}> extends MappingDecorator<E>
 			if (!this.getDatabase().getSecurity().canRead(${entityClass}.class))
 				return 0;
 
-			//TODO: Add row level security rules
+<#if authorizable??>
+			rules = this.addRowLevelSecurityFilters(${entityClass}.CANREAD, rules);
+</#if>
 		}
 		return super.count(rules);
 	}
@@ -103,7 +105,9 @@ public class ${clazzName}<E extends ${entityClass}> extends MappingDecorator<E>
 			if (!this.getDatabase().getSecurity().canRead(${entityClass}.class))
 				return new ArrayList<E>();
 
-			//TODO: Add row level security filters
+<#if authorizable??>
+			rules = this.addRowLevelSecurityFilters(${entityClass}.CANREAD, rules);
+</#if>
 		}
 
 		List<E> result = super.find(rules);
@@ -121,7 +125,9 @@ public class ${clazzName}<E extends ${entityClass}> extends MappingDecorator<E>
 			if (!this.getDatabase().getSecurity().canRead(${entityClass}.class))
 				return;
 
-			//TODO: Add row level security filters
+<#if authorizable??>
+			rules = this.addRowLevelSecurityFilters(${entityClass}.CANREAD, rules);
+</#if>
 		}
 
 		super.find(writer, rules);
@@ -162,12 +168,27 @@ public class ${clazzName}<E extends ${entityClass}> extends MappingDecorator<E>
 		{
 			if (!this.getDatabase().getSecurity().canRead(${entityClass}.class))
 				return;
-			
-			//TODO: Add row level security filters
+
+<#if authorizable??>
+			rules = this.addRowLevelSecurityFilters(${entityClass}.CANREAD, rules);
+</#if>
 		}
 
 		super.find(writer, fieldsToExport, rules);
 		//TODO: Add column level security filters. How???
 	}
-}
 
+<#if authorizable??>
+	//TODO: Move this to Login interface
+	private QueryRule[] addRowLevelSecurityFilters(String permission, QueryRule ...rules)
+	{
+		if (this.getDatabase().getSecurity().isAuthenticated() && this.getDatabase().getSecurity().getUserName().equals("admin"))
+			return rules;
+
+		List<QueryRule> rulesList = new ArrayList<QueryRule>();
+		org.apache.commons.collections.CollectionUtils.addAll(rulesList, rules);
+		rulesList.add(new QueryRule(permission, org.molgenis.framework.db.QueryRule.Operator.EQUALS, this.getDatabase().getSecurity().getUserId()));
+		return rulesList.toArray(new QueryRule[0]);
+	}
+</#if>
+}

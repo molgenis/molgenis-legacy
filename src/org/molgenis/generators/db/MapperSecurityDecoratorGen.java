@@ -68,6 +68,11 @@ public class MapperSecurityDecoratorGen extends ForEachEntityGenerator
 						+ GeneratorHelper.firstToUpper(entity.getName()) + getType() + getExtension());
 				templateArgs.put("package", packageName);
 
+				templateArgs.remove("authorizable");
+				for (Entity e : entity.getAllImplements())
+					if ("Authorizable".equals(e.getName()))
+						templateArgs.put("authorizable", true);
+
 				OutputStream targetOut = new FileOutputStream(targetFile);
 
 				template.process(templateArgs, new OutputStreamWriter(targetOut));
