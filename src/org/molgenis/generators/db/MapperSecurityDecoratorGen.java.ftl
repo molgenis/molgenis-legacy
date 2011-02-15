@@ -36,7 +36,10 @@ public class ${clazzName}<E extends ${entityClass}> extends MappingDecorator<E>
 		{
 			if (!this.getDatabase().getSecurity().canWrite(${entityClass}.class))
 				throw new DatabaseException("No write permission on ${entityClass}");
-			
+
+<#if authorizable??>
+			this.addRowLevelSecurityDefaults(entities);
+</#if>
 			//TODO: Add column level security filters
 		}
 		return super.add(entities);
@@ -49,8 +52,10 @@ public class ${clazzName}<E extends ${entityClass}> extends MappingDecorator<E>
 		{
 			if (!this.getDatabase().getSecurity().canWrite(${entityClass}.class))
 				throw new DatabaseException("No write permission on ${entityClass}");
-			
-			//TODO: Add row level security filters
+
+<#if authorizable??>
+			this.addRowLevelSecurityFilters(entities);
+</#if>
 			//TODO: Add column level security filters
 		}
 		return super.update(entities);
@@ -64,7 +69,9 @@ public class ${clazzName}<E extends ${entityClass}> extends MappingDecorator<E>
 			if (!this.getDatabase().getSecurity().canWrite(${entityClass}.class))
 				throw new DatabaseException("No write permission on ${entityClass}");
 				
-			//TODO: Add row level security filters
+<#if authorizable??>
+			this.addRowLevelSecurityFilters(entities);
+</#if>
 		}
 		return super.remove(entities);
 	}
@@ -189,6 +196,25 @@ public class ${clazzName}<E extends ${entityClass}> extends MappingDecorator<E>
 		org.apache.commons.collections.CollectionUtils.addAll(rulesList, rules);
 		rulesList.add(new QueryRule(permission, org.molgenis.framework.db.QueryRule.Operator.EQUALS, this.getDatabase().getSecurity().getUserId()));
 		return rulesList.toArray(new QueryRule[0]);
+	}
+	
+	private void addRowLevelSecurityFilters(List<E> entities) throws DatabaseException
+	{
+		for (E entity : entities)
+		{
+			if (!(this.getDatabase().getSecurity().canWrite(entity) || entity.getOwns().equals(this.getDatabase().getSecurity().getUserId())))
+			{
+				throw new DatabaseException("No row level write permission on ${entityClass}");
+			}
+		}
+	}
+
+	private void addRowLevelSecurityDefaults(List<E> entities)
+	{
+		for (E entity : entities)
+		{
+			entity.setOwns(this.getDatabase().getSecurity().getUserId());
+		}
 	}
 </#if>
 }
