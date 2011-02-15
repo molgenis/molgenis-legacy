@@ -511,6 +511,7 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 		catch (Exception e)
 		{
 			logger.error("doUpdate(): " + e);
+			e.printStackTrace();
 			msg = new ScreenMessage("UPDATE FAILED: " + e.getMessage(), null, false);
 		}
 		view.getMessages().add(msg);
