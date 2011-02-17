@@ -2,24 +2,27 @@ package org.molgenis.framework.ui.html;
 
 /**
  * The ActionInput defines action buttons.
+ * When clicked, it will result in a new request(__action=&lt;name&gt;)
  */
 public class ActionInput extends HtmlInput
 {
 	public enum Type
 	{
-		//save current record
-		SAVE("Save"), 
-		//cancel current action (closes popup window, refreshes opener window)
-		CANCEL("Cancel"), 
-		//goto next screen
-		NEXT("Next"), 
-		//close current screen
-		CLOSE("Close"), 
-		//automatically close current dialoge
+		/** save current record */
+		SAVE("Save"),
+		/** cancel current action (closes popup window, refreshes opener window) */
+		CANCEL("Cancel"),
+		/** goto next screen */
+		NEXT("Next"),
+		// close current screen
+		CLOSE("Close"),
+		/** automatically close current dialogue */
 		AUTOCLOSE("Autoclose"),
-		//a custom action that requires you to set label, tooltip and javascript yourself
-		CUSTOM(
-				"Set Label, Tooltip, and JavaScriptAction yourself");
+		/**
+		 * Default: a custom action that requires you to set label, tooltip and
+		 * javascript yourself
+		 */
+		CUSTOM("Set Label, Tooltip, and JavaScriptAction yourself");
 
 		private Type(String tag)
 		{
@@ -51,7 +54,12 @@ public class ActionInput extends HtmlInput
 	{
 		this(name, Type.CUSTOM);
 	}
-	
+
+	/**
+	 * Constructor that sets action name and label.
+	 * @param name
+	 * @param label
+	 */
 	public ActionInput(String name, String label)
 	{
 		this(name, Type.CUSTOM);
@@ -77,7 +85,7 @@ public class ActionInput extends HtmlInput
 	public ActionInput(Type select_target)
 	{
 		this(select_target.toString());
-		this.setLabel(select_target.toString().replace("_"," "));
+		this.setLabel(select_target.toString().replace("_", " "));
 	}
 
 	// HtmlInput overloads
@@ -89,31 +97,47 @@ public class ActionInput extends HtmlInput
 		// TODO: apparantly this can be disabled.
 		if (getIcon() != null)
 		{
-			input.append("<img class=\"edit_button\" src=\"" + getIcon() + "\" alt=\"" + getLabel() + "\" onclick=\""
-					+ getJavaScriptAction() + "\" title=\"" + this.getTooltip() + "\" id=\"" + this.getId()
-					+ "\" style=\"" + this.getStyle() + "\" " + tabIndex + " />");
+			input.append("<img class=\"edit_button\" src=\"" + getIcon()
+					+ "\" alt=\"" + getLabel() + "\" onclick=\""
+					+ getJavaScriptAction() + "\" title=\"" + this.getTooltip()
+					+ "\" id=\"" + this.getId() + "\" style=\""
+					+ this.getStyle() + "\" " + tabIndex + " />");
 		}
 		else
 		{
-			input.append("<input type=\"submit\" onclick=\"" + getJavaScriptAction() + "\" title=\""
-					+ this.getTooltip() + "\" id=\"" + this.getId() + "\"" + "value=\"" + this.getLabel()
-					+ "\" style=\"" + this.getStyle() + "\" " + tabIndex + " />");
+			input.append("<input type=\"submit\" onclick=\""
+					+ getJavaScriptAction() + "\" title=\"" + this.getTooltip()
+					+ "\" id=\"" + this.getId() + "\"" + "value=\""
+					+ this.getLabel() + "\" style=\"" + this.getStyle() + "\" "
+					+ tabIndex + " />");
 		}
 
 		return input.toString();
 	}
 
 	// attribute methods
+	/**
+	 * Get the icon that is shown on this button.
+	 */
 	public String getIcon()
 	{
 		return icon;
 	}
 
+	/**
+	 * Set the icon that should be shown on this button
+	 * @param icon relative path from WebContent or classpath.
+	 */
 	public void setIcon(String icon)
 	{
 		this.icon = icon;
 	}
 
+	/**
+	 * Javascript action for this button.
+	 * 
+	 * @return onClick javascript
+	 */
 	public String getJavaScriptAction()
 	{
 		if (JavaScriptAction == null)
@@ -121,13 +145,15 @@ public class ActionInput extends HtmlInput
 			if (this.type == Type.SAVE)
 			{
 				StringBuffer jScript = new StringBuffer();
-				jScript.append("if( validateForm(molgenis_popup,molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+Math.random();} document.forms.molgenis_popup.target = window.opener.name; document.forms.molgenis_popup.submit(); window.close();} else return false;");
+				jScript
+						.append("if( validateForm(molgenis_popup,molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+Math.random();} document.forms.molgenis_popup.target = window.opener.name; document.forms.molgenis_popup.submit(); window.close();} else return false;");
 				return jScript.toString();
 			}
 			else if (this.type == Type.NEXT)
 			{
 				StringBuffer jScript = new StringBuffer();
-				jScript.append("if( validateForm(molgenis_popup,molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+Math.random();} document.forms.molgenis_popup.__show.value='popup'; document.forms.molgenis_popup.submit();} else return false;");
+				jScript
+						.append("if( validateForm(molgenis_popup,molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+Math.random();} document.forms.molgenis_popup.__show.value='popup'; document.forms.molgenis_popup.submit();} else return false;");
 				return jScript.toString();
 			}
 			else if (this.type == Type.CLOSE)
@@ -136,49 +162,67 @@ public class ActionInput extends HtmlInput
 			}
 			else if (this.type == Type.CUSTOM)
 			{
-				return "__action.value = \'"+getName()+"'; return true;";
+				return "__action.value = \'" + getName() + "'; return true;";
 			}
 		}
 		return JavaScriptAction;
 	}
 
+	/**
+	 * Override default javascript 'onClick' action.
+	 * 
+	 * @param javaScriptAction
+	 */
 	public void setJavaScriptAction(String javaScriptAction)
 	{
 		JavaScriptAction = javaScriptAction;
 	}
 
+	/**
+	 * The Type of this action
+	 * @return type
+	 * @see Type
+	 */
 	public Type getType()
 	{
 		return type;
 	}
 
+	/** Set the Type of this action, e.g. SAVE.*/
 	public void setType(Type type)
 	{
 		this.type = type;
 	}
-	
+
 	@Override
 	public String getLabel()
 	{
-		if(super.getLabel() == super.getValue())
-			return getName();
+		if (super.getLabel() == super.getValue()) return getName();
 		return super.getLabel();
 	}
-
+	
+	/** Helper method to produce the html for the icon (&lt;img&gt;)*/
 	public String getIconHtml()
 	{
 		// TODO Auto-generated method stub
-		return "<img src=\""+this.getIcon()+"\"/>";
+		return "<img src=\"" + this.getIcon() + "\"/>";
 	}
 
+	/** Helper method to produce html for the clickable image*/
 	public String toIconHtml()
 	{
-		return "<img class=\"edit_button\" src=\""+getIcon()+"\" title=\""+getLabel()+"\" onClick=\""+this.getJavaScriptAction()+"\">";
-		//<img class="edit_button" src="generated-res/img/recordview.png" title="view record" alt="edit${offset}" onClick="setInput('${screen.name}_form','_self','','${screen.name}','recordview','iframe'); document.forms.${screen.name}_form.__offset.value='${offset}'; document.forms.${screen.name}_form.submit();">${readonly}</label>
+		return "<img class=\"edit_button\" src=\"" + getIcon() + "\" title=\""
+				+ getLabel() + "\" onClick=\"" + this.getJavaScriptAction()
+				+ "\">";
+		// <img class="edit_button" src="generated-res/img/recordview.png"
+		// title="view record" alt="edit${offset}"
+		// onClick="setInput('${screen.name}_form','_self','','${screen.name}','recordview','iframe'); document.forms.${screen.name}_form.__offset.value='${offset}'; document.forms.${screen.name}_form.submit();">${readonly}</label>
 	}
 
+	/** Helper method to render this button as clickable link*/
 	public String toLinkHtml()
 	{
-		return "<a title=\""+this.getDescription()+"\" onclick=\""+this.getJavaScriptAction()+"\">"+getLabel()+"</a>";
+		return "<a title=\"" + this.getDescription() + "\" onclick=\""
+				+ this.getJavaScriptAction() + "\">" + getLabel() + "</a>";
 	}
 }

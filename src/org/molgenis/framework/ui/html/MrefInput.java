@@ -3,10 +3,10 @@
  * Copyright: Inventory 2000-2006, GBIC 2005, all rights reserved <br>
  * Changelog:
  * <ul>
- * <li> 2006-03-07, 1.0.0, DI Matthijssen
- * <li> 2006-05-14; 1.1.0; MA Swertz integration into Inveninge (and major
+ * <li>2006-03-07, 1.0.0, DI Matthijssen
+ * <li>2006-05-14; 1.1.0; MA Swertz integration into Inveninge (and major
  * rewrite)
- * <li> 2006-05-14; 1.2.0; RA Scheltema major rewrite + cleanup
+ * <li>2006-05-14; 1.2.0; RA Scheltema major rewrite + cleanup
  * </ul>
  */
 
@@ -24,7 +24,9 @@ import org.molgenis.framework.server.QueryRuleUtil;
 import org.molgenis.util.Entity;
 
 /**
- * Input for cross-reference (xref) data. Data will be shown as selection box.
+ * Input for many-to-many cross-references (xref) to choose data entities from
+ * the database. Selectable data items will be shown as selection box and are
+ * loaded dynamically via an 'ajax' service.
  */
 public class MrefInput extends HtmlInput
 {
@@ -70,11 +72,12 @@ public class MrefInput extends HtmlInput
 		{
 			input.setValue(values.get(i));
 
-			//String result = "";
+			// String result = "";
 
 			for (String labelName : this.getXrefLabels())
 			{
-				input.setValueLabel(labelName, this.getValueLabels(labelName).get(i));
+				input.setValueLabel(labelName, this.getValueLabels(labelName)
+						.get(i));
 			}
 			input.setId(this.getName() + i);
 			html.append(input.toHtml());
@@ -96,8 +99,8 @@ public class MrefInput extends HtmlInput
 			String buttons = String
 					.format(
 							"<button style=\"\" type=\"button\" onclick=\"mref_addInput('%s','%s','%s','%s','%s',this.parentNode);\">+</button>",
-							getName(), getXrefEntity(), getXrefField(), getXrefLabels().get(0),
-							getXrefFilterRESTString());
+							getName(), getXrefEntity(), getXrefField(),
+							getXrefLabels().get(0), getXrefFilterRESTString());
 			buttons += "<button type=\"button\" onclick=\"mref_removeInput(this.parentNode);\">-</button>";
 
 			return "<div>" + html.toString() + buttons + "</div>";
@@ -113,23 +116,24 @@ public class MrefInput extends HtmlInput
 		String result = "";
 
 		int size = 0;
-		for(String label: this.getXrefLabels())
+		for (String label : this.getXrefLabels())
 		{
-			if(this.getValueLabels(label) != null)
+			if (this.getValueLabels(label) != null)
 			{
 				size = Math.max(size, this.getValueLabels(label).size());
 			}
 		}
-		
-		
+
 		for (int i = 0; i < size; i++)
 		{
 			String valueLabel = "";
 			for (String labelName : this.getXrefLabels())
 			{
-				String value = this.getValueLabels(labelName) != null && i < this.getValueLabels(labelName).size() && this.getValueLabels(labelName).get(i) != null? this.getValueLabels(labelName).get(i).toString() : "";
-				if (valueLabel.toString().equals("")) 
-					valueLabel += value;
+				String value = this.getValueLabels(labelName) != null
+						&& i < this.getValueLabels(labelName).size()
+						&& this.getValueLabels(labelName).get(i) != null ? this
+						.getValueLabels(labelName).get(i).toString() : "";
+				if (valueLabel.toString().equals("")) valueLabel += value;
 				else
 					valueLabel += ":" + value;
 			}

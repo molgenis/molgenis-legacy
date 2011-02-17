@@ -1,10 +1,8 @@
 package org.molgenis.framework.ui.html;
 
 /**
- * HTML input that views files as figures.
- * 
- * @author Morris Swertz
- * 
+ * Input for showing images. Is extension of the FileInput with the difference
+ * that the file value is not a clickable link but a rendered image.
  */
 public class ImageInput extends FileInput
 {
@@ -22,8 +20,10 @@ public class ImageInput extends FileInput
 	@Override
 	public String getValue()
 	{
-		if (super.getValue() != "") return getObject()+"<img src=\"" + super.getObject()
-				+ "\" onclick=\"this.form.__filename.value = '" + super.getValue() + "';this.form.__action.value='"
+		if (super.getValue() != "") return getObject() + "<img src=\""
+				+ super.getObject()
+				+ "\" onclick=\"this.form.__filename.value = '"
+				+ super.getValue() + "';this.form.__action.value='"
 				+ ACTION_DOWNLOAD + "'; return true;\"/>";
 		return super.getValue();
 	}

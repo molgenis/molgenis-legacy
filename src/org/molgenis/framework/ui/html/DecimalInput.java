@@ -1,8 +1,7 @@
 package org.molgenis.framework.ui.html;
 
 /**
- * Input for decimal data.<p>
- * FIXME: add user side checking?
+ * Input for decimal data.
  */
 public class DecimalInput extends StringInput
 {

@@ -21,7 +21,7 @@ import java.util.Vector;
 import org.molgenis.util.ValueLabel;
 
 /**
- * Input for cross-reference (xref) data. Data will be shown as selection box.
+ * (Incomplete) Special input to choose ontology terms from an OntoCat service.
  */
 public class OntologyInput extends HtmlInput
 {

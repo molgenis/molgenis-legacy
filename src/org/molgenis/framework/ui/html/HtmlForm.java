@@ -3,31 +3,41 @@ package org.molgenis.framework.ui.html;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
+/**
+ * (incomplete) Helper for creating forms for entities.
+ */
 public class HtmlForm
 {
-	/** The entity to be shown in this form*/
-	private Entity entity = null;
-	/** Some columns can be hidden, using the name*/
+	/** Some columns can be hidden from view, using the name */
 	private List<String> hiddenColumns = new ArrayList<String>();
-	/** A form may be readonly*/
+	/**
+	 * Some columns may be collapsed by default, but can be unhidden by pushing
+	 * a button
+	 */
+	private List<String> compactView = new ArrayList<String>();
+	/** A form may be readonly */
 	private boolean readonly = false;
-	/** A form may be used to add a new record. This may result in readonly fields, e.g. for autoid.*/
+	/**
+	 * A form may be used to add a new record. This may result in readonly
+	 * fields, e.g. for autoid.
+	 */
 	private boolean newRecord = false;
 	/** Inputs */
 	private List<HtmlInput> inputs = new ArrayList<HtmlInput>();
 	/** Actions */
 	private List<ActionInput> actions = new ArrayList<ActionInput>();
-	
+
 	public HtmlForm()
 	{
-		
+
 	}
-	
+
 	public boolean isNewRecord()
 	{
 		return newRecord;
@@ -45,34 +55,18 @@ public class HtmlForm
 
 	public void setHiddenColumns(List<String> hiddenColumns)
 	{
-		if(hiddenColumns != null)
-			this.hiddenColumns = hiddenColumns;
+		if (hiddenColumns != null) this.hiddenColumns = hiddenColumns;
 	}
 
-	public HtmlForm(Entity entity)
-	{
-		this.entity = entity;
-	}
-	
-	/**Create the inputs to be shown*/
+	/** Create the inputs to be shown */
 	public List<HtmlInput> getInputs()
 	{
 		return this.inputs;
 	}
-	
+
 	public void setInputs(List<HtmlInput> inputs)
 	{
 		this.inputs = inputs;
-	}
-
-	public Entity getEntity()
-	{
-		return entity;
-	}
-
-	public void setEntity(Entity entity)
-	{
-		this.entity = entity;
 	}
 
 	public boolean isReadonly()
@@ -84,32 +78,14 @@ public class HtmlForm
 	{
 		this.readonly = readonly;
 	}
-	
-	/**
-	 * Set the value of a particular input by name.
-	 * @param name
-	 * @param value
-	 * @throws ParseException
-	 */
-	public void set(String name, Object value) throws ParseException
-	{
-		Tuple t = new SimpleTuple();
-		t.set(name,value);
-		this.getEntity().set(t,false);
-	}
-	
-	public String getEntityName()
-	{
-		return this.getEntity().getClass().getSimpleName();
-	}
 
-	public void addInput(HtmlInput ... inputs)
+	public void addInput(HtmlInput... inputs)
 	{
-		for(HtmlInput input: inputs)
+		for (HtmlInput input : inputs)
 		{
 			this.getInputs().add(input);
 		}
-		
+
 	}
 
 	public List<ActionInput> getActions()
@@ -122,11 +98,28 @@ public class HtmlForm
 		this.actions = actions;
 	}
 
-	public void addAction(ActionInput ... actions)
+	public void addAction(ActionInput... actions)
 	{
-		for(ActionInput action: actions)
+		for (ActionInput action : actions)
 		{
 			this.getActions().add(action);
 		}
 	}
+
+	public List<String> getCompactView()
+	{
+		return compactView;
+	}
+
+	/**
+	 * All fields that are not in this list will be marked as 'collapsed' so
+	 * they are not visible unless the button 'details' is pushed
+	 * 
+	 * @param compactView list of field names
+	 */
+	public void setCompactView(List<String> compactView)
+	{
+		this.compactView = compactView;
+	}
+
 }

@@ -1,6 +1,8 @@
 package org.molgenis.framework.ui.html;
 
-
+/**
+ * (Incomplete) Input for formatted sequences.
+ */
 public class NsequenceInput extends TextInput
 {
 

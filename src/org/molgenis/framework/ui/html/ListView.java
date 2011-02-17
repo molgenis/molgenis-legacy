@@ -6,7 +6,7 @@ import java.util.List;
 import org.molgenis.framework.db.QueryRule;
 
 /**
- * The listview shows a list of InputForm (sets of inputs) in an excel like
+ * (in progress) The listview shows a list of InputForm (sets of inputs) in an excel like
  * view:
  * <ul>
  * <li>input labels as column headers
@@ -16,8 +16,6 @@ import org.molgenis.framework.db.QueryRule;
  * <li>if this list isSelectable (default), each row will have checkbox before each row.
  * <li>if this list isReadonly (default) then each row will show only values, otherwise inputs
  * TODO make easier to populate with entity instances.
- * 
- * @author mswertz
  */
 public class ListView extends HtmlInput
 {

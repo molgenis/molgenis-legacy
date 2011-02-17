@@ -1,7 +1,7 @@
 package org.molgenis.framework.ui.html;
 
 /**
- * Input for Long data.
+ * Input for Long integer data.
  */
 public class LongInput extends StringInput
 {

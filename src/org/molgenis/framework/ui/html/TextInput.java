@@ -12,7 +12,7 @@
 package org.molgenis.framework.ui.html;
 
 /**
- * Input to show text data. The data will be shown as textarea.
+ * Input for strings that renders as textarea.
  */
 public class TextInput extends HtmlInput
 {

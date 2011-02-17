@@ -1,7 +1,7 @@
 package org.molgenis.framework.ui.html;
 
 /**
- * Input for varchar data.
+ * Input for string data.
  */
 public class StringInput extends HtmlInput
 {

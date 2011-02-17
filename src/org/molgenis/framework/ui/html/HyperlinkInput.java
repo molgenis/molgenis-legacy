@@ -14,7 +14,6 @@ package org.molgenis.framework.ui.html;
 /**
  * Input for hyperlinks. This will automatically create a hyperlink to outside information.
  */
-
 public class HyperlinkInput extends HtmlInput
 {	
 	public HyperlinkInput(String name, Object value)

@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 /**
- * Input for Date. Depends on javascript to showDateInput().
+ * Input for date. Depends on javascript to showDateInput().
  */
 
 public class DateInput extends HtmlInput

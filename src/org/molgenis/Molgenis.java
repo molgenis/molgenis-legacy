@@ -37,13 +37,13 @@ import org.molgenis.generators.csv.CsvExportGen;
 import org.molgenis.generators.csv.CsvImportByIdGen;
 import org.molgenis.generators.csv.CsvImportGen;
 import org.molgenis.generators.csv.CsvReaderGen;
-import org.molgenis.generators.db.MapperSecurityDecoratorGen;
 import org.molgenis.generators.db.InMemoryDatabaseGen;
 import org.molgenis.generators.db.JDBCDatabaseGen;
 import org.molgenis.generators.db.JDBCMetaDatabaseGen;
 import org.molgenis.generators.db.JpaDatabaseGen;
 import org.molgenis.generators.db.JpaMapperGen;
 import org.molgenis.generators.db.MapperDecoratorGen;
+import org.molgenis.generators.db.MapperSecurityDecoratorGen;
 import org.molgenis.generators.db.MultiqueryMapperGen;
 import org.molgenis.generators.db.PStatementMapperGen;
 import org.molgenis.generators.db.PersistenceGen;
@@ -79,6 +79,7 @@ import org.molgenis.generators.tests.TestCsvGen;
 import org.molgenis.generators.tests.TestDataSetGen;
 import org.molgenis.generators.tests.TestDatabaseGen;
 import org.molgenis.generators.ui.FormScreenGen;
+import org.molgenis.generators.ui.HtmlFormGen;
 import org.molgenis.generators.ui.MenuScreenGen;
 import org.molgenis.generators.ui.PluginScreenFTLTemplateGen;
 import org.molgenis.generators.ui.PluginScreenGen;
@@ -286,7 +287,7 @@ public class Molgenis {
 			logger.info("Skipping R interface ....");
 		}
 		// HTML
-		// generators.add(new HtmlFormGen());
+		generators.add(new HtmlFormGen());
 
 		// ServletContext
 		generators.add(new MolgenisServletContextGen());

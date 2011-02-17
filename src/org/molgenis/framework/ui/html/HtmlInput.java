@@ -3,7 +3,7 @@ package org.molgenis.framework.ui.html;
 import org.apache.commons.lang.StringEscapeUtils;
 
 /**
- * HtmlInput is the base-class for all the html-input classes. 
+ * HtmlInput is the base-class for all the 'toHtml' input classes. 
  */
 public abstract class HtmlInput implements Input
 {
@@ -88,6 +88,7 @@ public abstract class HtmlInput implements Input
 
 	public void setLabel( String label )
 	{
+		assert(label != null);
 		this.label = label;
 	}
 

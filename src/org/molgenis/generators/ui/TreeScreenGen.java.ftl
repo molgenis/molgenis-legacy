@@ -64,6 +64,7 @@ public class ${Name(tree.className)}Tree extends TreeScreen<${entity}>
 		
 <#list tree.getChildren() as subscreen>
 <#assign screentype = Name(subscreen.getType().toString()?lower_case) />
+<#if screentype == "Form"><#assign screentype = "FormModel"/></#if>
 		new ${package}.${subscreen.getCanonicalClassName()}${screentype}(this);
 </#list>		
 	}

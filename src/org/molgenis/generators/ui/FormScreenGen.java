@@ -58,7 +58,7 @@ public class FormScreenGen extends Generator
 				File targetDir = new File( this.getSourcePath(options) + APP_DIR + "/ui/" );
 				targetDir.mkdirs();
 
-				File targetFile = new File( targetDir + "/" + GeneratorHelper.firstToUpper( screen.getClassName() ) + "Form.java" );
+				File targetFile = new File( targetDir + "/" + GeneratorHelper.firstToUpper( screen.getClassName() ) + "FormModel.java" );
 				OutputStream targetOut = new FileOutputStream( targetFile );
 
 				template.process( templateArgs, new OutputStreamWriter( targetOut ) );

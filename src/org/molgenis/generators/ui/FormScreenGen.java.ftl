@@ -41,6 +41,7 @@ import org.molgenis.framework.ui.html.*;
 
 ${imports(model, model.getEntity(entity), "")}
 ${imports(model, model.getEntity(entity), "csv", "CsvReader")}
+${imports(model, model.getEntity(entity), "ui", "Form")}
 
 <#if parent_form?exists>
 //imports parent forms
@@ -51,16 +52,16 @@ import ${xrefentity.getNamespace()}.${Name(xrefentity)};
 /**
  *
  */
-public class ${Name(form.className)}Form extends FormModel<${entity}>
+public class ${Name(form.className)}FormModel extends FormModel<${entity}>
 {
 	private static final long serialVersionUID = 1L;
 	
-	public ${Name(form.className)}Form()
+	public ${Name(form.className)}FormModel()
 	{
 		this(null);
 	}
 	
-	public ${Name(form.className)}Form(ScreenModel parent)
+	public ${Name(form.className)}FormModel(ScreenModel parent)
 	{
 		super( "${form.getVelocityName()}", parent );
 		this.setLabel("${form.label}");
@@ -122,89 +123,20 @@ public class ${Name(form.className)}Form extends FormModel<${entity}>
 
 <#list form.getChildren() as subscreen>
 		<#assign screentype = Name(subscreen.getType().toString()?lower_case) />
+		<#if screentype == "Form"><#assign screentype = "FormModel"/></#if>
 		new ${package}.${JavaName(subscreen)}${screentype}(this);
 </#list>		
 	}
 	
 	@Override
-	public Class<${entity}> getEntityClass()
-	{
-		return ${entity}.class;
-	}
-	
-	@Override
-	public Vector<String> getHeaders()
-	{
-		Vector<String> headers = new Vector<String>();
-<#list form.getRecord().getAllFields() as field>
-		headers.add("${field.getLabel()}");
-</#list>
-		return headers;
-	}	
-	
-	@Override
 	public HtmlForm getInputs(${entity} entity, boolean newrecord)
 	{
-		HtmlForm form = new HtmlForm();
+	
+		${JavaName(entity)}Form form = new ${JavaName(entity)}Form(entity);
 		form.setNewRecord(newrecord);
 		form.setReadonly(isReadonly());
-		
-		List<HtmlInput> inputs = new ArrayList<HtmlInput>();			
-<#list allFields(model.getEntity(entity)) as field>
-	<#assign inputtype = Name(field.getType().toString())>
-		//${JavaName(field)}: ${field}
-		{
-		    <#if field.type == "xref" >
-		    	//xref
-				${inputtype}Input input = new ${inputtype}Input("${name(field)}",entity.get${JavaName(field)}_${Name(field.getXrefField())}());
-			<#else>
-				${inputtype}Input input = new ${inputtype}Input("${name(field)}",entity.get${JavaName(field)}());
-			</#if>
-			
-			input.setLabel("${field.label}");
-			input.setDescription("${escapeXml(field.description)}");
-			<#if field.isNillable() && field.type != "file"><#--whether files are filled in is only checked in the db-->
-			input.setNillable(true);
-			<#else>
-			input.setNillable(false);
-			</#if>		
-			<#if field.length?exists>
-			input.setSize(${field.length?c});
-			</#if>
-			<#if field.readOnly && field.auto>
-			input.setReadonly(true); //automatic fields that are readonly, are also readonly on newrecord
-			<#elseif field.readOnly>
-			if(!newrecord || isReadonly() || entity.isReadonly()) input.setReadonly(true); //readonly if not new record
-			<#else>
-			input.setReadonly( isReadonly() || entity.isReadonly());
-			</#if>
-			<#if inputtype = "Enum">
-			input.setOptions(entity.get${JavaName(field)}Options());
-			</#if>	
-			<#if inputtype = "Xref" || inputtype = "Mref">
-			<#assign xref_entity = field.xrefEntity>
-			input.setXrefEntity("${xref_entity.getNamespace()}.${JavaName(field.xrefEntity)}");
-			input.setXrefField("${name(field.xrefField)}");
-			input.setXrefLabels(Arrays.asList("${csv(field.xrefLabelNames)}".split(",")));
-			//initialize the ${field.xrefEntityName}.${csv(field.xrefLabelNames)} of current record
-			<#if field.xrefLabelNames[0] != field.xrefFieldName>
-				<#list field.xrefLabelNames as label>
-			input.setValueLabel<#if inputtype = "Mref">s</#if>("${label}", entity.get${JavaName(field)}_${label}()); 
-				</#list>
-			<#else>
-			input.setValueLabel<#if inputtype = "Mref">s</#if>("${field.xrefField.name}", entity.get${JavaName(field)}());
-			</#if>
-			</#if>
-			<#if field.hidden || form.hideFields?seq_contains(field.name)>		
-			input.setHidden(<#if (field.auto && field.readOnly) || (field.defaultValue?exists)>true<#else>!newrecord</#if>);
-			</#if>			
-			<#if form.getCompactView()?size &gt; 0 && !form.getCompactView()?seq_contains(field.name)>
-			input.setCollapse(true);
-			</#if>
-			inputs.add(input);
-		}
-</#list>	
-		form.setInputs(inputs);
+		<#if form.hideFields?size &gt; 0>form.setHiddenColumns(Arrays.asList(new String[]{${csvQuoted(form.hideFields)}}));</#if>
+		<#if form.compactView?size &gt; 0>form.setCompactView(Arrays.asList(new String[]{${csvQuoted(form.compactView)}}));</#if>
 		return form;
 	}
 	
@@ -238,6 +170,16 @@ public class ${Name(form.className)}Form extends FormModel<${entity}>
 		this.compactView.add("${field_name}");
 </#list>	
 	}
+	
+	@Override
+	public Class<${entity}> getEntityClass()
+	{
+		return new ${JavaName(entity)}Form().getEntityClass();
+	}
+	
+	@Override
+	public Vector<String> getHeaders()
+	{
+		return new ${JavaName(entity)}Form().getHeaders();
+	}
 }
-
-

@@ -43,6 +43,7 @@ public class ${Name(menu.className)}Menu extends MenuModel
 		//add ui elements
 <#list menu.getChildren() as subscreen>
 <#assign screentype = Name(subscreen.getType().toString()?lower_case) />
+<#if screentype == "Form"><#assign screentype = "FormModel"/></#if>
 		new ${package}.${JavaName(subscreen)}${screentype}(this);
 </#list>			
 	}	

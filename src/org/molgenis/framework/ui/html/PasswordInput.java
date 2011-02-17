@@ -1,7 +1,7 @@
 package org.molgenis.framework.ui.html;
 
 /**
- * Input for passwords. The password will be made unreadible.
+ * Input for passwords. The password will be made unreadible. TODO: sent encoded.
  */
 public class PasswordInput extends HtmlInput
 {

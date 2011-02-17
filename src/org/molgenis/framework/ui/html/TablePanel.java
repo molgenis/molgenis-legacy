@@ -8,14 +8,19 @@ public class TablePanel extends HtmlInput
 {
 	LinkedHashMap<String, HtmlInput> inputs = new LinkedHashMap<String, HtmlInput>();
 
+	public TablePanel()
+	{
+		this(null);
+	}
+	
 	public TablePanel(String name)
 	{
 		super(name,null);
 	}
 	
-	public void add(HtmlInput input)
+	public void add(HtmlInput ... inputs)
 	{
-		this.inputs.put(input.getName(), input);
+		for(HtmlInput input: inputs) this.inputs.put(input.getName(), input);
 	}
 
 	public HtmlInput get(String name)

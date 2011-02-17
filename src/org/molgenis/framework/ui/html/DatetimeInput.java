@@ -16,11 +16,16 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 /**
- * Input for DateTime data. Depends on javascript to showDateInput().
+ * Input for datetime data. Depends on javascript to showDateInput().
  */
 
 public class DatetimeInput extends HtmlInput
 {
+	public DatetimeInput(String name)
+	{
+		super(name,null);
+	}
+	
 	public DatetimeInput(String name, Object value)
 	{
 		super(name, value);

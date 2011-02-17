@@ -16,7 +16,7 @@ package org.molgenis.framework.ui.html;
 import java.util.List;
 
 /**
- * Input for cross-reference (xref) data. Data will be shown as a chain of
+ * (not used???) Input for cross-reference (xref) data. Data will be shown as a chain of
  * selection boxes. Each select box updates the one right next to it on change.
  * The last one is the selection field.
  */

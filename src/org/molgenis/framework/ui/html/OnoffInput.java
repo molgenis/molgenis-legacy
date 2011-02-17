@@ -2,7 +2,7 @@ package org.molgenis.framework.ui.html;
 
 
 /**
- * Input for checkbox data.
+ * Input for checkbox data (yes/no).
  */
 public class OnoffInput extends HtmlInput
 {

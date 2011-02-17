@@ -15,7 +15,7 @@
 	</#if>
 </#function>
 <#function RName value>
-	<#if value?is_hash>
+	<#if value?is_hash> 
 		<#return helper.toLower(value.getName())>
 	<#else>
 		<#return helper.toLower(value)>
@@ -300,6 +300,20 @@
 			<#local result = result + item.name>
 		<#else>
 			<#local result = result +item>
+		</#if>
+	</#list>
+	<#return result>
+</#function>
+<#function csvQuoted items>
+	<#local result = "">
+	<#list items as item>
+		<#if item_index != 0>
+			<#local result =  result + ",">
+		</#if>
+		<#if item?is_hash>
+			<#local result = result + "\""+ item.name +"\"">
+		<#else>
+			<#local result = result + "\"" + item + "\"">
 		</#if>
 	</#list>
 	<#return result>
