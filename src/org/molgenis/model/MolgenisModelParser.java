@@ -983,7 +983,7 @@ public class MolgenisModelParser
 				List<String> compact_fields = new ArrayList<String>();
 				for (String field : fields)
 				{
-					Field f = entity.getField(field);
+					Field f = entity.getAllField(field);
 					if (f == null)
 					{
 						throw new MolgenisModelException("Could not find field '" + field
