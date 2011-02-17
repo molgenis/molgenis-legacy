@@ -194,7 +194,14 @@ public class ${clazzName}<E extends ${entityClass}> extends MappingDecorator<E>
 
 		List<QueryRule> rulesList = new ArrayList<QueryRule>();
 		org.apache.commons.collections.CollectionUtils.addAll(rulesList, rules);
-		rulesList.add(new QueryRule(permission, org.molgenis.framework.db.QueryRule.Operator.EQUALS, this.getDatabase().getSecurity().getUserId()));
+		if (permission.equals(${entityClass}.CANREAD))
+		{
+			QueryRule rule1 = new QueryRule(${entityClass}.CANWRITE, org.molgenis.framework.db.QueryRule.Operator.EQUALS, this.getDatabase().getSecurity().getUserId());
+			QueryRule rule2 = new QueryRule(${entityClass}.CANREAD, org.molgenis.framework.db.QueryRule.Operator.EQUALS, this.getDatabase().getSecurity().getUserId());
+			QueryRule rule4 = new QueryRule(${entityClass}.OWNS, org.molgenis.framework.db.QueryRule.Operator.EQUALS, this.getDatabase().getSecurity().getUserId());
+			QueryRule rule3 = new QueryRule(org.molgenis.framework.db.QueryRule.Operator.OR);
+			rulesList.add(new QueryRule(rule1, rule3, rule2, rule3, rule4));
+		}
 		return rulesList.toArray(new QueryRule[0]);
 	}
 	
