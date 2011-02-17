@@ -11,9 +11,12 @@
 
 package ${package};
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.molgenis.auth.MolgenisUser;
+import org.molgenis.auth.service.MolgenisUserService;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.jdbc.JDBCMapper;
@@ -187,18 +190,31 @@ public class ${clazzName}<E extends ${entityClass}> extends MappingDecorator<E>
 
 <#if authorizable??>
 	//TODO: Move this to Login interface
-	private QueryRule[] addRowLevelSecurityFilters(String permission, QueryRule ...rules)
+	private QueryRule[] addRowLevelSecurityFilters(String permission, QueryRule ...rules) throws DatabaseException
 	{
 		if (this.getDatabase().getSecurity().isAuthenticated() && this.getDatabase().getSecurity().getUserName().equals("admin"))
 			return rules;
+
+		MolgenisUserService service = MolgenisUserService.getInstance(this.getDatabase());
+		MolgenisUser user           = service.findById(this.getDatabase().getSecurity().getUserId());
+		
+		List<Integer> roleIdList;
+		try
+		{
+			roleIdList              = service.findGroupIds(user);
+		}
+		catch (ParseException e)
+		{
+			return rules;
+		}
 
 		List<QueryRule> rulesList = new ArrayList<QueryRule>();
 		org.apache.commons.collections.CollectionUtils.addAll(rulesList, rules);
 		if (permission.equals(${entityClass}.CANREAD))
 		{
-			QueryRule rule1 = new QueryRule(${entityClass}.CANWRITE, org.molgenis.framework.db.QueryRule.Operator.EQUALS, this.getDatabase().getSecurity().getUserId());
-			QueryRule rule2 = new QueryRule(${entityClass}.CANREAD, org.molgenis.framework.db.QueryRule.Operator.EQUALS, this.getDatabase().getSecurity().getUserId());
-			QueryRule rule4 = new QueryRule(${entityClass}.OWNS, org.molgenis.framework.db.QueryRule.Operator.EQUALS, this.getDatabase().getSecurity().getUserId());
+			QueryRule rule1 = new QueryRule(${entityClass}.CANWRITE, org.molgenis.framework.db.QueryRule.Operator.IN, roleIdList);
+			QueryRule rule2 = new QueryRule(${entityClass}.CANREAD, org.molgenis.framework.db.QueryRule.Operator.IN, roleIdList);
+			QueryRule rule4 = new QueryRule(${entityClass}.OWNS, org.molgenis.framework.db.QueryRule.Operator.IN, roleIdList);
 			QueryRule rule3 = new QueryRule(org.molgenis.framework.db.QueryRule.Operator.OR);
 			rulesList.add(new QueryRule(rule1, rule3, rule2, rule3, rule4));
 		}
