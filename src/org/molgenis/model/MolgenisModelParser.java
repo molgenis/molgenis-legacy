@@ -897,18 +897,6 @@ public class MolgenisModelParser
 				}
 			}
 
-			// HIDDEN FIELDS
-			form.setHideFields(new ArrayList<String>());
-			String hide_fields = element.getAttribute("hide_fields");
-			if (hide_fields != null && hide_fields != "")
-			{
-				String[] hiddenFieldArray = hide_fields.split(",");
-				for (String hiddenField : hiddenFieldArray)
-				{
-					form.getHideFields().add(hiddenField.trim());
-				}
-			}
-
 			// SORT
 			String sortby = element.getAttribute("sortby");
 			if (sortby != null && sortby != "")
@@ -975,6 +963,26 @@ public class MolgenisModelParser
 			}
 			form.setRecord((Record) entity);// form.setEntity(entity);
 
+			// HIDDEN FIELDS
+			form.setHideFields(new ArrayList<String>());
+			String hide_fields = element.getAttribute("hide_fields");
+			if (hide_fields != null && hide_fields != "")
+			{
+				String[] hiddenFieldArray = hide_fields.split(",");				
+				for (String field : hiddenFieldArray)
+				{
+					Field f = entity.getAllField(field.trim());
+					if (f == null)
+					{
+						throw new MolgenisModelException("Could not find field '" + field
+								+ "' defined in hide_fields='" + element.getAttribute("hide_fields") + "' in form '"
+								+ form.getName() + "'");
+					}
+					//use name from 'f' to correct for case problems
+					form.getHideFields().add(f.getName());
+				}
+			}
+			
 			// COMPACT_FIELDS
 			if (element.getAttribute("compact_view") != "")
 			{
@@ -990,7 +998,8 @@ public class MolgenisModelParser
 								+ "' defined in compact_view='" + element.getAttribute("compact_view") + "' in form '"
 								+ form.getName() + "'");
 					}
-					compact_fields.add(field);
+					//use name from 'f' to correct for case problems
+					compact_fields.add(f.getName());
 				}
 				form.setCompactView(compact_fields);
 			}
