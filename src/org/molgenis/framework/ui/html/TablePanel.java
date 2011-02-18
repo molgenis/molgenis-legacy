@@ -31,17 +31,23 @@ public class TablePanel extends HtmlInput
 
 	@Override
 	/**
-	 * Each input will rendered with a label and in its own div to enable scripting.
+	 * Each input is rendered with a label and in its own div to enable scripting.
 	 */
 	public String toHtml()
 	{
-		String result = "<table>";
+		String result = "";
 		for (HtmlInput i : this.inputs.values())
 		{
-			result += "<tr><td><label for=\"" + i.getName() + "\">" + i.getLabel()
-					+ "</label></td><td>" + i.toHtml() + (!i.isNillable() ? " *" : "") + "</td></tr>";
+			result += "<div";
+			if (i.getId() != null) {
+				result += (" id=\"" + i.getId() + "\"");
+			}
+			if (i.isHidden()) {
+				result += " style=\"display:none\"";
+			}
+			result += "><label for=\"" + i.getName() + "\">" + i.getLabel()
+					+ "</label>" + i.toHtml() + (!i.isNillable() ? " *" : "") + "</div>";
 		}
-		result += "</table>";
 		return result;
 	}
 

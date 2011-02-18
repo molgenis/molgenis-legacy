@@ -29,7 +29,7 @@ public class RepeatingPanel extends TablePanel
 		removeButton.setJavaScriptAction("this.parentNode.parentNode.removeChild(this.parentNode); return false;");
 
 		// repeating block
-		String repeatableDiv = "<div>" + super.toHtml() + removeButton.toHtml() + "</div>";
+		String repeatableDiv = super.toHtml() + removeButton.toHtml();
 
 		// add button to clone the div
 		ActionInput addButton = new ActionInput(this.getName() + "_add", "Add row", "Add");

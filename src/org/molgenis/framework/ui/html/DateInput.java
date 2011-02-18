@@ -51,7 +51,7 @@ public class DateInput extends HtmlInput
 			return input.toHtml();
 		}
 
-		return "<input type=\"text\" id=\"" + this.getId() + "\" name=\"" + getName() + "\" value=\"" + getValue() + "\" " + readonly + "\" size=\"32\" autocomplete=\"off\"/>";
+		return "<input type=\"text\" id=\"" + this.getId() + "\" name=\"" + this.getName() + "\" value=\"" + this.getValue() + "\" " + readonly + "\" size=\"32\" autocomplete=\"off\"/>";
 	}
 
 	public String getValue()

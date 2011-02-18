@@ -23,7 +23,7 @@ public abstract class HtmlInput implements Input
 	private boolean readonly;
 
 	/** Flag indicating whether this input is hidden ( optional, default false ) */
-	private boolean hidden;
+	protected boolean hidden;
 
 	/** String with a one-line description of the input ( optional ) */
 	private String tooltip;
