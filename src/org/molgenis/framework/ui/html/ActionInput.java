@@ -45,6 +45,9 @@ public class ActionInput extends HtmlInput
 
 	/** JavaScript action */
 	private String JavaScriptAction;
+	
+	/** Text to display on button (normally "value") */
+	private String buttonValue;
 
 	// constructor(s)
 	/**
@@ -64,6 +67,18 @@ public class ActionInput extends HtmlInput
 	{
 		this(name, Type.CUSTOM);
 		this.setLabel(label);
+		this.setButtonValue(label); // override default button value (name) with label
+	}
+	
+	/**
+	 * Constructor that sets action name, label and button value (text to show on button).
+	 * @param name
+	 * @param label
+	 */
+	public ActionInput(String name, String label, String buttonValue)
+	{
+		this(name, label);
+		this.setButtonValue(buttonValue); // override label as button value with explicit button value
 	}
 
 	/**
@@ -80,6 +95,7 @@ public class ActionInput extends HtmlInput
 		this.setType(type);
 		this.setLabel(type.toString());
 		this.setTooltip(type.toString());
+		this.setButtonValue(name); // specific for action buttons
 	}
 
 	public ActionInput(Type select_target)
@@ -108,7 +124,7 @@ public class ActionInput extends HtmlInput
 			input.append("<input type=\"submit\" onclick=\""
 					+ getJavaScriptAction() + "\" title=\"" + this.getTooltip()
 					+ "\" id=\"" + this.getId() + "\"" + "value=\""
-					+ this.getLabel() + "\" style=\"" + this.getStyle() + "\" "
+					+ this.getButtonValue() + "\" style=\"" + this.getStyle() + "\" "
 					+ tabIndex + " />");
 		}
 
@@ -199,6 +215,16 @@ public class ActionInput extends HtmlInput
 	{
 		if (super.getLabel() == super.getValue()) return getName();
 		return super.getLabel();
+	}
+	
+	public String getButtonValue()
+	{
+		return buttonValue;
+	}
+	
+	public void setButtonValue(String buttonValue)
+	{
+		this.buttonValue = buttonValue;
 	}
 	
 	/** Helper method to produce the html for the icon (&lt;img&gt;)*/

@@ -16,37 +16,24 @@ import org.molgenis.framework.ui.html.ActionInput.Type;
  */
 public class RepeatingPanel extends TablePanel
 {
-	public RepeatingPanel(String name)
+	public RepeatingPanel(String name, String label)
 	{
-		super(name);
-	}
-
-	public RepeatingPanel(String name, Object value)
-	{
-		super(name);
-		// TODO Auto-generated constructor stub
+		super(name, label);
 	}
 
 	@Override
 	public String toHtml()
 	{
 		// remove button for each row to remove the div shown above
-		ActionInput removeButton = new ActionInput(this.getName() + "_remove",
-				Type.CUSTOM);
-		removeButton
-				.setJavaScriptAction("this.parentNode.parentNode.removeChild(this.parentNode); return false;");
-		removeButton.setLabel("Remove row");
+		ActionInput removeButton = new ActionInput(this.getName() + "_remove", "Remove row", "Remove");
+		removeButton.setJavaScriptAction("this.parentNode.parentNode.removeChild(this.parentNode); return false;");
 
 		// repeating block
-		String repeatableDiv = "<div>" + super.toHtml() + removeButton.toHtml()
-				+ "</div>";
+		String repeatableDiv = "<div>" + super.toHtml() + removeButton.toHtml() + "</div>";
 
 		// add button to clone the div
-		ActionInput addButton = new ActionInput(this.getName() + "_add",
-				Type.CUSTOM);
-		addButton.setLabel("Add row");
-		addButton
-				.setJavaScriptAction("var div = document.createElement('DIV'); this.parentNode.insertBefore(div,this); div.innerHTML = '"
+		ActionInput addButton = new ActionInput(this.getName() + "_add", "Add row", "Add");
+		addButton.setJavaScriptAction("var div = document.createElement('DIV'); this.parentNode.insertBefore(div,this); div.innerHTML = '"
 						+ StringEscapeUtils.escapeJavaScript(StringEscapeUtils
 								.escapeHtml(repeatableDiv)) + "'; return false");
 

@@ -10,12 +10,13 @@ public class TablePanel extends HtmlInput
 
 	public TablePanel()
 	{
-		this(null);
+		this(null, null);
 	}
 	
-	public TablePanel(String name)
+	public TablePanel(String name, String label)
 	{
-		super(name,null);
+		super(name, label);
+		this.setLabel(label);
 	}
 	
 	public void add(HtmlInput ... inputs)
