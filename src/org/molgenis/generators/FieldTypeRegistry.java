@@ -3,33 +3,33 @@ package org.molgenis.generators;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.molgenis.generators.fieldtypes.AbstractField;
+import org.molgenis.generators.fieldtypes.FieldType;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Field;
 
 /**
  * This class enables generator developers to add new AbstractField variants easily.
  * All particular details for a fieldType are encapsulated in this class. <br>
- * @see AbstractField interface
+ * @see FieldType interface
  * 
  * @author Morris Swertz
  */
 public class FieldTypeRegistry
 {
-	Map<String, AbstractField> types = new TreeMap<String, AbstractField>();
+	Map<String, FieldType> types = new TreeMap<String, FieldType>();
 
-	public void addType(AbstractField ft)
+	public void addType(FieldType ft)
 	{
 		types.put(ft.getClass().getSimpleName().toLowerCase(), ft);
 		ft.setRegistry(this);
 	}
 
-	public AbstractField get(Field f) throws MolgenisModelException
+	public FieldType get(Field f) throws MolgenisModelException
 	{
 		try
 		{
 			String fieldType = f.getType() + "field";
-			AbstractField ft = types.get(fieldType);
+			FieldType ft = types.get(fieldType);
 			ft = ft.getClass().newInstance();
 			ft.setField(f);
 			ft.setRegistry(this);
