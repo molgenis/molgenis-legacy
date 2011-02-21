@@ -61,6 +61,7 @@ import java.util.Locale;
 <#list entity.getImplementedFields() as f>
 	<#if f.type == "mref" || f.type="xref" || f.type="enum">
 import org.molgenis.util.ValueLabel;
+
 		<#if !entity.abstract>
 import java.util.ArrayList;
 </#if>
@@ -81,7 +82,7 @@ import java.io.File;
 	</#if>
 </#list>
 <#--import all xref entities-->
-<#foreach field in entity.getImplementedFields()>
+<#foreach field in entity.getAllFields()>
 	<#assign type_label = field.getType().toString()>
 	<#if type_label == "user" || type_label="xref" || type_label="mref">
 			<#assign xref_entity = field.xrefEntity>
@@ -91,7 +92,7 @@ import ${xref_entity.namespace}.${JavaName(xref_entity)};
 
 <#-- inverse relations -->
 <#list model.entities as e><#if !e.abstract && !e.isAssociation()>
-	<#list e.implementedFields as f>
+	<#list e.allFields as f>
 		<#if (f.type=="xref" || f.type == "mref") && f.getXrefEntityName() == entity.name>
 			 <#assign multipleXrefs = e.getNumberOfReferencesTo(entity)/>
 import ${e.namespace}.${JavaName(e)};	
@@ -167,6 +168,44 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	</#foreach>	
 <#--concrete class has method bodies-->
 <#else>
+	// fieldname constants
+    <#foreach field in entity.getImplementedFields()>
+	public final static String ${field.name?upper_case} = "${field.name}";<#if field.type == "xref"><#list field.xrefLabelNames as label>
+	public final static String ${field.name?upper_case}_${label?upper_case} = "${field.name}_${label}";</#list></#if>
+	</#foreach>
+	
+	//static methods
+	/**
+	 * Shorthand for db.query(${JavaName(entity)}.class).
+	 */
+	public static Query<? extends ${JavaName(entity)}> query(Database db)
+	{
+		return db.query(${JavaName(entity)}.class);
+	}
+	
+	/**
+	 * Shorthand for db.find(${JavaName(entity)}.class, QueryRule ... rules).
+	 */
+	public static List<? extends ${JavaName(entity)}> find(Database db, QueryRule ... rules) throws DatabaseException
+	{
+		return db.find(${JavaName(entity)}.class, rules);
+	}	
+	
+<#foreach key in entity.getAllKeys()>	
+	/**
+	 * 
+	 */
+	public static ${JavaName(entity)} findBy<#list key.fields as f>${JavaName(f)}</#list>(Database db<#list key.fields as f>, ${type(f)} ${name(f)}</#list>) throws DatabaseException, ParseException
+	{
+		Query<${JavaName(entity)}> q = db.query(${JavaName(entity)}.class);
+		<#list key.fields as f>q.eq(${JavaName(entity)}.${f.name?upper_case}, ${name(f)});</#list>
+		List<${JavaName(entity)}> result = q.find();
+		if(result.size()>0) return result.get(0);
+		else return null;
+	}
+
+</#foreach>	
+	
 	// member variables (including setters.getters for interface)
 	<#foreach field in entity.getImplementedFields()>
 	
@@ -227,7 +266,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	private ${type(field.xrefField)} ${name(field)}_${name(field.xrefField)} = null;	
 			<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>
 	@Transient
-	private String ${name(field)}_${label} = null;						
+	private ${type(field.xrefLabels[label_index])} ${name(field)}_${label} = null;						
 			</#list></#if>
 			<#elseif type_label == "mref">
 	@Transient
@@ -258,31 +297,6 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 			</#list>
 		</#if>	
 	</#list>
-	}
-	
-	//static methods
-	/**
-	 * Shorthand for db.query(${JavaName(entity)}.class).
-	 */
-	public static Query query(Database db)
-	{
-		return db.query(${JavaName(entity)}.class);
-	}
-	
-	/**
-	 * Shorthand for db.findById(${JavaName(entity)}.class, id).
-	 */
-	public static ${JavaName(entity)} get(Database db, Object id) throws DatabaseException
-	{
-		return db.findById(${JavaName(entity)}.class, id);
-	}
-	
-	/**
-	 * Shorthand for db.find(${JavaName(entity)}.class, QueryRule ... rules).
-	 */
-	public static List find(Database db, QueryRule ... rules) throws DatabaseException
-	{
-		return db.find(${JavaName(entity)}.class, rules);
 	}
 	
 	//getters and setters
@@ -380,10 +394,15 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	 * This will erase any foreign key objects currently set.
 	 * FIXME: can we autoload the new object?
 	 */
-	public void set${JavaName(field)}_${JavaName(field.xrefField)}(Integer ${name(field)}_${name(field.xrefField)})
+	public void set${JavaName(field)}_${JavaName(field.xrefField)}(${type(field.xrefField)} ${name(field)}_${name(field.xrefField)})
 	{
 		this.${name(field)}_${name(field.xrefField)} = ${name(field)}_${name(field.xrefField)};
 	}	
+
+	public void set${JavaName(field)}(${type(field.xrefField)} ${name(field)}_${name(field.xrefField)})
+	{
+		throw new UnsupportedOperationException();
+	}
 	
 	public ${type(field.xrefField)} get${JavaName(field)}_${JavaName(field.xrefField)}()
 	{
@@ -402,7 +421,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	/**
 	 * Get a pretty label ${label} for cross reference ${JavaName(field)} to ${JavaName(field.xrefEntity)}.${JavaName(field.xrefField)}.
 	 */
-	public String get${JavaName(field)}_${label}()
+	public ${type(field.xrefLabels[label_index])} get${JavaName(field)}_${label}()
 	{		
 		//FIXME should we auto-load based on get${JavaName(field)}()?	
 		if(${name(field)} != null) {
@@ -416,7 +435,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	 * Set a pretty label for cross reference ${JavaName(field)} to <a href="${JavaName(field.xrefEntity)}.html#${JavaName(field.xrefField)}">${JavaName(field.xrefEntity)}.${JavaName(field.xrefField)}</a>.
 	 * Implies set${JavaName(field)}(null) until save
 	 */
-	public void set${JavaName(field)}_${label}(String ${name(field)}_${label})
+	public void set${JavaName(field)}_${label}(${type(field.xrefLabels[label_index])} ${name(field)}_${label})
 	{
 		this.${name(field)}_${label} = ${name(field)}_${label};
 	}		
@@ -424,6 +443,16 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	 
 	
 	<#elseif type_label="mref">
+	public void set${JavaName(field)}_${JavaName(field.xrefField)}(${type(pkey(field.xrefEntity))} ... ${name(field)})
+	{
+		this.set${JavaName(field)}_${JavaName(field.xrefField)}(java.util.Arrays.asList(${name(field)}));
+	}	
+	
+	public void set${JavaName(field)}(${JavaName(field.xrefEntity)} ... ${name(field)})
+	{
+		this.set${JavaName(field)}(java.util.Arrays.asList(${name(field)}));
+	}	
+	
 	/**
 	 * Set foreign key for field ${name(field)}.
 	 * This will erase any foreign key objects currently set.
@@ -454,11 +483,11 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	/**
 	 * Get a pretty label for cross reference ${JavaName(field)} to <a href="${JavaName(field.xrefEntity)}.html#${JavaName(field.xrefField)}">${JavaName(field.xrefEntity)}.${JavaName(field.xrefField)}</a>.
 	 */
-	public java.util.List<String> get${JavaName(field)}_${label}()
+	public java.util.List<${type(field.xrefLabels[label_index])}> get${JavaName(field)}_${label}()
 	{
 		if(this.${name(field)} != null && this.${name(field)}.size() > 0)
 		{
-			java.util.List<String> result = new java.util.ArrayList<String>();
+			java.util.List<${type(field.xrefLabels[label_index])}> result = new java.util.ArrayList<${type(field.xrefLabels[label_index])}>();
 			for(${JavaName(field.xrefEntity)} o: ${name(field)}) result.add(o.get${JavaName(label)}().toString());
 			return java.util.Collections.unmodifiableList(result);
 		}	
@@ -546,7 +575,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 			this.set${JavaName(f)}_${JavaName(f.xrefField)}(tuple.get${settertype(f)}("${name(f)}_${name(f.xrefField)}"));
 			<#if f.xrefLabelNames[0] != f.xrefFieldName><#list f.xrefLabelNames as label>		
 			//set label ${label} for xref field ${JavaName(f)}
-			this.set${JavaName(f)}_${label}(tuple.getString("${name(f)}_${name(label)}"));	
+			this.set${JavaName(f)}_${label}(tuple.get${settertype(f.xrefLabels[label_index])}("${name(f)}_${name(label)}"));	
 			</#list></#if>				
 		<#else>
 			//set ${JavaName(f)}
@@ -609,13 +638,13 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 			if( tuple.get${settertype(f)}("${name(entity)}.${name(f)}_${name(f.xrefField)}") != null) this.set${JavaName(f)}_${JavaName(f.xrefField)}(tuple.get${settertype(f)}("${name(entity)}.${name(f)}_${name(f.xrefField)}"));
 			//alias of xref
 			if( tuple.getObject("${name(f)}") != null) 
-				this.set${JavaName(f)}_${JavaName(f.xrefField)}(tuple.get${settertype(f)}("${name(f)}"));
+				this.set${JavaName(f)}((${JavaName(f.xrefEntity)})tuple.getObject("${name(f)}"));
 			if( tuple.getObject("${name(entity)}.${name(f)}") != null) 
 				this.set${JavaName(f)}_${JavaName(f.xrefField)}(tuple.get${settertype(f)}("${name(entity)}.${name(f)}_${name(f.xrefField)}"));
 			//set label for field ${JavaName(f)}
 			<#if f.xrefLabelNames[0] != f.xrefFieldName><#list f.xrefLabelNames as label>
-			if( strict || tuple.getObject("${name(f)}_${name(label)}") != null) this.set${JavaName(f)}_${label}(tuple.getString("${name(f)}_${name(label)}"));			
-			if( tuple.getObject("${name(entity)}.${name(f)}_${name(label)}") != null ) this.set${JavaName(f)}_${label}(tuple.getString("${name(entity)}.${name(f)}_${name(label)}"));		
+			if( strict || tuple.getObject("${name(f)}_${name(label)}") != null) this.set${JavaName(f)}_${label}(tuple.get${settertype(f.xrefLabels[label_index])}("${name(f)}_${name(label)}"));			
+			if( tuple.getObject("${name(entity)}.${name(f)}_${name(label)}") != null ) this.set${JavaName(f)}_${label}(tuple.get${settertype(f.xrefLabels[label_index])}("${name(entity)}.${name(f)}_${name(label)}"));		
 			</#list></#if>
 			<#elseif f.type == "nsequence">
 			if( strict || tuple.getNSequence("${name(f)}") != null)this.set${JavaName(f)}(tuple.getNSequence("${name(f)}"));
@@ -669,8 +698,6 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	
 	public String toString(boolean verbose)
 	{
-            return "" + getIdValue();
-<#--
 		String result = "${JavaName(entity)}(";
 <#list allFields(entity) as field>
 	<#assign type_label = field.getType().toString()>
@@ -688,7 +715,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 </#list>
 		result += ");";
 		return result;
--->
+
 	}
 		
 	@Override

@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 
+import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
@@ -926,10 +927,9 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 		}
 	}
 
-	public <E extends Entity> Query<E> queryByExample(E entity)
+	@Override
+	public EntityManager getEntityManager()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
-
 }

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.persistence.EntityManager;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -389,9 +390,7 @@ public class Lifewise implements Database {
 	}
 
 	@Override
-	public <E extends Entity> Query<E> queryByExample(E entity)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public EntityManager getEntityManager() {
+		throw new UnsupportedOperationException();
+	}	
 }

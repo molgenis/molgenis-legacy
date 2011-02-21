@@ -77,7 +77,7 @@ public class TestDataSet
 			<#list entity.allFields as f><#if !f.auto>
 			//assign field ${f.name}
 			<#if f.type == "xref">
-			if( this.${name(f.xrefEntity)}.size() > 0 && this.${name(f.xrefEntity)}.size() < i)
+			if( this.${name(f.xrefEntity)}.size() > 0  && i < this.${name(f.xrefEntity)}.size())
 			{ 
 				${JavaName(f.xrefEntity)} ref = this.${name(f.xrefEntity)}.get(i);
 				<#list f.xrefLabelNames as label><#if label != pkey(f.xrefEntity).name >

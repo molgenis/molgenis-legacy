@@ -282,10 +282,9 @@ public abstract class AbstractDatabase implements Database
 		}
 	}
 
-	@Override
-	public <E extends Entity> Query<E> queryByExample(E entity)
+	
+	private <E extends Entity> Query<E> queryByExample(E entity)
 	{
 		return new QueryImp<E>(this, (Class<E>) entity.getClass()).example(entity);
 	}
-
 }

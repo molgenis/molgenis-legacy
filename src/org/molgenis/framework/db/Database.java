@@ -22,6 +22,8 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+
 import org.molgenis.framework.security.Login;
 import org.molgenis.model.elements.Model;
 import org.molgenis.util.CsvReader;
@@ -436,8 +438,11 @@ public interface Database
 	 * @return entity class
 	 */
 	public Class<? extends Entity> getClassForName(String simpleName);
-
-	/** create query by example */
-	public <E extends Entity> Query<E> queryByExample(E entity);
-
+	
+	/**
+	 * Get the entityManager, if JPA isn't supported a UnsupportedOperations exceptions
+	 * is thrown.
+	 * @return EntityManager
+	 */
+	public EntityManager getEntityManager();
 }

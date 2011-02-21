@@ -411,6 +411,11 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	 
 	
 	<#elseif type_label="mref">
+	public void set${JavaName(field)}_${JavaName(field.xrefField)}(${type(pkey(field.xrefEntity))} ... ${name(field)})
+	{
+		this.set${JavaName(field)}(java.util.Arrays.asList(${name(field)}));
+	}		
+	
 	public void set${JavaName(field)}(${type(pkey(field.xrefEntity))} ... ${name(field)})
 	{
 		this.set${JavaName(field)}(java.util.Arrays.asList(${name(field)}));

@@ -8,6 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.JoinQuery;
 import org.molgenis.framework.db.Database;
@@ -316,9 +318,8 @@ public class InMemoryDatabase implements Database
 	}
 
 	@Override
-	public <E extends Entity> Query<E> queryByExample(E entity)
+	public EntityManager getEntityManager()
 	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+		throw new UnsupportedOperationException();
+	}	
 }

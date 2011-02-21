@@ -704,7 +704,8 @@ public class Entity extends DBSchema implements Record
 		// third of self...
 		for (Field f : getFields())
 		{
-			if (!all_fields.containsKey(f.getName().toLowerCase())) all_fields
+			//if (!all_fields.containsKey(f.getName().toLowerCase())) 
+				all_fields
 					.put(f.getName().toLowerCase(), f);
 		}
 
