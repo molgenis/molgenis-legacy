@@ -2,7 +2,7 @@ package org.molgenis.generators.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 
-public class ListField extends AbstractField
+public class ListField extends FieldType
 {
 	@Override
 	public String getJavaPropertyDefault() throws MolgenisModelException

@@ -2,7 +2,7 @@ package org.molgenis.generators.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 
-public class HexaField extends AbstractField
+public class HexaField extends FieldType
 {
 	@Override
 	public String getJavaAssignment(String value) throws MolgenisModelException

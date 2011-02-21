@@ -2,7 +2,7 @@ package org.molgenis.generators.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 
-public class BoolField extends AbstractField
+public class BoolField extends FieldType
 {
 	@Override
 	public String getJavaPropertyType()

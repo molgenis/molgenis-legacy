@@ -8,7 +8,7 @@ import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Field;
 
 /** TODO merge this with the Field framework */
-public abstract class AbstractField
+public abstract class FieldType
 {
 	private FieldTypeRegistry registry;
 	protected Field f;
@@ -18,7 +18,7 @@ public abstract class AbstractField
 		this.registry = registry;
 	}
 	
-	public AbstractField getFieldType(Field f) throws MolgenisModelException
+	public FieldType getFieldType(Field f) throws MolgenisModelException
 	{
 		return registry.get(f);
 	}

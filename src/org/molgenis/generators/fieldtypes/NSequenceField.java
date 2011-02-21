@@ -2,7 +2,7 @@ package org.molgenis.generators.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 
-public class NSequenceField extends AbstractField
+public class NSequenceField extends FieldType
 {
 	@Override
 	public String getJavaPropertyType()

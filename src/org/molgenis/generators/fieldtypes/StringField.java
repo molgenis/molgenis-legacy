@@ -2,7 +2,7 @@ package org.molgenis.generators.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 
-public class StringField extends AbstractField
+public class StringField extends FieldType
 {
 	@Override
 	public String getJavaAssignment(String value) throws MolgenisModelException

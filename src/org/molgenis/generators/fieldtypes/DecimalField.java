@@ -2,7 +2,7 @@ package org.molgenis.generators.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 
-public class DecimalField extends AbstractField
+public class DecimalField extends FieldType
 {
 	@Override
 	public String getJavaPropertyType()

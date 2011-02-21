@@ -2,7 +2,7 @@ package org.molgenis.generators.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 
-public class EnumField extends AbstractField
+public class EnumField extends FieldType
 {
 	@Override
 	public String getJavaPropertyType()

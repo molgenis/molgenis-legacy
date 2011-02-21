@@ -2,7 +2,7 @@ package org.molgenis.generators.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 
-public class HyperlinkField extends AbstractField
+public class HyperlinkField extends FieldType
 {
 	@Override
 	public String getJavaPropertyType()

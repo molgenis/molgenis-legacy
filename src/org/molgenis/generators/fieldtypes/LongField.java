@@ -2,7 +2,7 @@ package org.molgenis.generators.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 
-public class LongField extends AbstractField
+public class LongField extends FieldType
 {
 	@Override
 	public String getJavaPropertyType()

@@ -2,7 +2,7 @@ package org.molgenis.generators.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 
-public class DateTimeField extends AbstractField
+public class DateTimeField extends FieldType
 {
 	@Override
 	public String getJavaPropertyType() throws MolgenisModelException

@@ -2,7 +2,7 @@ package org.molgenis.generators.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 
-public class IntField extends AbstractField
+public class IntField extends FieldType
 {
 	@Override
 	public String getJavaPropertyType() throws MolgenisModelException
