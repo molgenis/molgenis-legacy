@@ -125,7 +125,7 @@ public class CsvWriter
 				writer.print(separator);
 			}
 			//print value
-			writeValue(e.get(col), writer);
+			writeValue(e.get(col));
 
 		}
 		//newline
@@ -155,7 +155,7 @@ public class CsvWriter
 				writer.print(separator);
 			}
 			//print value
-			writeValue(t.getObject(col), writer);
+			writeValue(t.getObject(col));
 		}
 		writer.println();
 		if (count++ % 10000 == 0) logger.debug("wrote tuple to line " + count + ": " + t);
@@ -179,7 +179,7 @@ public class CsvWriter
 	// count + " ");
 	// }
 
-	private void writeValue(Object object, PrintWriter writer)
+	public void writeValue(Object object)
 	{
 		if (object == null)
 		{
@@ -279,5 +279,15 @@ public class CsvWriter
 	public List<String> getHeaders()
 	{
 		return this.headers;
+	}
+
+	public void writeSeparator()
+	{
+		this.writer.print(this.getSeparator());
+	}
+
+	public void writeEndOfLine()
+	{
+		this.writer.println();
 	}
 }
