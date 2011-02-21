@@ -5,6 +5,7 @@ import java.text.ParseException;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Entity;
 
 /**
@@ -99,6 +100,15 @@ public interface Login
 	 * @throws DatabaseException 
 	 */
 	public boolean canRead(Entity entity) throws DatabaseException;
+
+	/**
+	 * Indicates whether the user has permissions to read data from this
+	 * implementation of ScreenModel
+	 * @param screen
+	 * @return read permission
+	 * @throws DatabaseException
+	 */
+	public boolean canRead(ScreenModel<?> screen) throws DatabaseException;
 
 	/**
 	 * Indicates whether the user has permissions to add, update, delete data

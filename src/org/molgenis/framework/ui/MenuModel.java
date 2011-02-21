@@ -16,6 +16,8 @@ package org.molgenis.framework.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.security.Login;
 import org.molgenis.util.Entity;
 
 /**
@@ -106,6 +108,11 @@ public class MenuModel<E extends Entity>extends SimpleModel<E>
 		return result;
 	}
 
+	public Login getSecurity()
+	{
+		return getRootScreen().getLogin();
+	}
+
 	@Override
 	public ScreenModel<?> getSelected()
 	{
@@ -129,9 +136,15 @@ public class MenuModel<E extends Entity>extends SimpleModel<E>
 	@Override
 	public boolean isVisible()
 	{
-		// the menu is visible if one its children is visible.
-		if (this.getVisibleChildren().size() > 0)
-			return true;
+		try
+		{
+			return this.getSecurity().canRead(this);
+		}
+		catch (DatabaseException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return false;
 	}
 

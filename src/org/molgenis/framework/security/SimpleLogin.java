@@ -1,7 +1,9 @@
 package org.molgenis.framework.security;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Entity;
 
 public class SimpleLogin implements Login
@@ -93,6 +95,12 @@ public class SimpleLogin implements Login
 
 	@Override
 	public boolean canRead(Entity entity)
+	{
+		return true;
+	}
+
+	@Override
+	public boolean canRead(ScreenModel<?> screen)
 	{
 		return true;
 	}

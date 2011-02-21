@@ -361,7 +361,7 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 	{
 		try
 		{
-			return this.getSecurity().canRead(this.create().getClass());
+			return this.getSecurity().canRead(this);
 		}
 		catch (DatabaseException e)
 		{
