@@ -15,6 +15,7 @@
 	<#return result>
 </#function>
 digraph G {
+        color = "white"
 		compound = true
 		fontname = "Bitstream Vera Sans"
 		fontsize = 8
