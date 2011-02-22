@@ -76,8 +76,7 @@ digraph G {
         		pagedir = "TB"
                 label = "${name(m)}"
                 labelloc = bottom
-                colorscheme = ${colorscheme}
-                fillcolor = ${color}
+				fillcolor = "white"
                 style="filled"*/
 
 <#list m.entities as entity><#if entities?seq_contains(entity) && (!entity.system || rendersystem) && !entity.association>
