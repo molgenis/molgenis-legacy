@@ -3,6 +3,7 @@ package org.molgenis.fieldtypes;
 import java.util.List;
 
 import org.molgenis.MolgenisFieldTypes;
+import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Field;
@@ -138,4 +139,6 @@ public abstract class FieldType
 		return this.getClass().getSimpleName().replace("Field", "")
 				.toLowerCase();
 	}
+	
+	//public abstract HtmlInput getInput();
 }

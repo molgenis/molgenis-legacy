@@ -1,5 +1,7 @@
 package org.molgenis.fieldtypes;
 
+import org.molgenis.framework.ui.html.DateInput;
+import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.model.MolgenisModelException;
 
 public class DateField extends FieldType
@@ -52,4 +54,10 @@ public class DateField extends FieldType
 	{
 		return "%s";
 	}
+
+//	@Override
+//	public HtmlInput getInput(String name)
+//	{
+//		new DateInput(name);
+//	}
 }
