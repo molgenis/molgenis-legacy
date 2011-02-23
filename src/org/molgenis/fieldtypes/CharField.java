@@ -1,8 +1,8 @@
-package org.molgenis.generators.fieldtypes;
+package org.molgenis.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 
-public class HexaField extends FieldType
+public class CharField extends FieldType
 {
 	@Override
 	public String getJavaAssignment(String value) throws MolgenisModelException
@@ -26,19 +26,25 @@ public class HexaField extends FieldType
 	@Override
 	public String getMysqlType() throws MolgenisModelException
 	{
-		return "VARCHAR(255)";
+		return "CHAR("+f.getVarCharLength()+")";
 	}
 
 	@Override
 	public String getHsqlType() throws MolgenisModelException
 	{
-		return "VARCHAR(255)";
+		return "CHAR("+f.getVarCharLength()+")";
 	}
 	@Override
 	public String getXsdType() throws MolgenisModelException
 	{
 		// TODO Auto-generated method stub
 		return "string";
+	}
+
+	@Override
+	public String getFormatString()
+	{
+		return "%s";
 	}
 
 }

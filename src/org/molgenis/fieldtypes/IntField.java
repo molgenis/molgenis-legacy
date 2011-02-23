@@ -1,20 +1,20 @@
-package org.molgenis.generators.fieldtypes;
+package org.molgenis.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 
-public class BoolField extends FieldType
+public class IntField extends FieldType
 {
 	@Override
-	public String getJavaPropertyType()
+	public String getJavaPropertyType() throws MolgenisModelException
 	{
-		return "Boolean";
+		return "Integer";
 	}
 	
 	@Override
 	public String getJavaAssignment(String value)
 	{
 		if(value == null || value.equals("")) return "null";
-		return ""+Boolean.parseBoolean(value.toString());
+		return ""+Integer.parseInt(value);
 	}
 	
 	@Override
@@ -22,22 +22,32 @@ public class BoolField extends FieldType
 	{
 		return getJavaAssignment(f.getDefaultValue());
 	}
-
+	
 	@Override
 	public String getMysqlType() throws MolgenisModelException
 	{
-		return "BOOL";
+		return "INTEGER";
+	}
+	
+	public String getJavaSetterType() throws MolgenisModelException
+	{
+		return "Int";
 	}
 
 	@Override
 	public String getHsqlType()
 	{
-		return "INTEGER";
+		return "INT";
 	}
-	
 	@Override
 	public String getXsdType()
 	{
-		return "boolean";
+		return "int";
+	}
+
+	@Override
+	public String getFormatString()
+	{
+		return "%d";
 	}
 }

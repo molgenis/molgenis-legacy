@@ -14,6 +14,7 @@ package org.molgenis.model.elements;
 import java.util.List;
 import java.util.Vector;
 
+import org.molgenis.fieldtypes.XrefField;
 import org.molgenis.model.MolgenisModelException;
 
 
@@ -28,6 +29,7 @@ import org.molgenis.model.MolgenisModelException;
  * @author MA Swertz
  * @version 1.0.0
  */
+@Deprecated
 public class View extends DBSchema implements Record
 {
 	// constructor(s)
@@ -155,7 +157,7 @@ public class View extends DBSchema implements Record
 			// check whether e has a reference to this entity
 			for (Field field : e.getAllFields())
 			{
-				if (field.getType() != Field.Type.XREF_SINGLE)
+				if ( !(field.getType() instanceof XrefField) )
 					continue;
 				
 				try {
@@ -167,7 +169,7 @@ public class View extends DBSchema implements Record
 			// check whether this entity has a reference to e
 			for (Field field : entity.getAllFields())
 			{
-				if (field.getType() != Field.Type.XREF_SINGLE)
+				if ( !(field.getType() instanceof XrefField) )
 					continue;
 				
 				try {

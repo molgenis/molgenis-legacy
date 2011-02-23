@@ -1,8 +1,8 @@
-package org.molgenis.generators.fieldtypes;
+package org.molgenis.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 
-public class NSequenceField extends FieldType
+public class HyperlinkField extends FieldType
 {
 	@Override
 	public String getJavaPropertyType()
@@ -13,7 +13,6 @@ public class NSequenceField extends FieldType
 	@Override
 	public String getJavaAssignment(String value)
 	{
-		//FIXME check if it is a valid nsequence
 		if(value == null || value.equals("") ) return "null";
 		return "\""+value+"\"";
 	}
@@ -27,22 +26,24 @@ public class NSequenceField extends FieldType
 	@Override
 	public String getMysqlType() throws MolgenisModelException
 	{
-		return "TEXT";
+		return "VARCHAR(255)";
 	}
 
 	@Override
-	public String getHsqlType() throws MolgenisModelException
+	public String getHsqlType()
 	{
-		// TODO Auto-generated method stub
 		return "TEXT";
 	}
-	
 	@Override
-	public String getXsdType() throws MolgenisModelException
+	public String getXsdType()
 	{
-		// TODO Auto-generated method stub
-		return "text";
+		return "url";
 	}
 
+	@Override
+	public String getFormatString()
+	{
+		return "%s";
+	}
 
 }

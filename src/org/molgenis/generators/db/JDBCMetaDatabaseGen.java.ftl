@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Vector;
 
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.MolgenisFieldTypes;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Model;
 import org.molgenis.model.elements.Field;
@@ -57,7 +58,7 @@ public class JDBCMetaDatabase extends Model
 			${name(entity)}_entity.setImplements(new String[]{${csv(entity.implements)}});</#if><#if entity.hasAncestor()>
 			${name(entity)}_entity.setParents(new String[]{"${entity.getAncestor().name}"});</#if>
 			<#list entity.getFields() as field><#if field.name != typefield()>
-			Field ${name(entity)}_${name(field)}_field = new Field(${name(entity)}_entity, "${field.name}", Field.Type.getType("${field.type}"));
+			Field ${name(entity)}_${name(field)}_field = new Field(${name(entity)}_entity, "${field.name}", MolgenisFieldTypes.getType("${field.type}"));
 			<#if field.auto>
 			${name(entity)}_${name(field)}_field.setAuto(true);
 			</#if>
@@ -84,7 +85,7 @@ public class JDBCMetaDatabase extends Model
 			${name(entity)}_entity.setImplements(new String[]{${csv(entity.implements)}});</#if><#if entity.hasAncestor()>
 			${name(entity)}_entity.setParents(new String[]{"${entity.getAncestor().name}"});</#if>
 			<#list entity.getFields() as field><#if field.name != typefield()>
-			Field ${name(entity)}_${name(field)}_field = new Field(${name(entity)}_entity, "${field.name}", Field.Type.getType("${field.type}"));
+			Field ${name(entity)}_${name(field)}_field = new Field(${name(entity)}_entity, "${field.name}", MolgenisFieldTypes.getType("${field.type}"));
 			<#if field.auto>
 			${name(entity)}_${name(field)}_field.setAuto(true);
 			</#if>

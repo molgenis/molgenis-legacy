@@ -8,10 +8,13 @@ import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
+import org.molgenis.fieldtypes.DecimalField;
+import org.molgenis.fieldtypes.FieldType;
+import org.molgenis.fieldtypes.IntField;
+import org.molgenis.fieldtypes.LongField;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.db.jdbc.ColumnInfo.Type;
 
 public class JDBCConnectionHelper
 {
@@ -442,9 +445,9 @@ public class JDBCConnectionHelper
 		return createSortSql(mapper, false, rules);
 	}
 
-	private static boolean omitQuotes(Type t)
+	private static boolean omitQuotes(FieldType t)
 	{
-		return t == Type.LONG || t == Type.INT || t == Type.DECIMAL;
+		return t instanceof LongField || t instanceof IntField|| t instanceof DecimalField;
 
 	}
 

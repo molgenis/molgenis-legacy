@@ -16,12 +16,14 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.metamodel.Metamodel;
 
-import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.molgenis.fieldtypes.DecimalField;
+import org.molgenis.fieldtypes.FieldType;
+import org.molgenis.fieldtypes.IntField;
+import org.molgenis.fieldtypes.LongField;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.model.elements.Field.Type;
 import org.molgenis.util.Entity;
 
 /**
@@ -462,8 +464,8 @@ public class JPAQueryGeneratorUtil {
 		return createSortSql(mapper, false, rules);
 	}
 
-	private static boolean omitQuotes(Type t) {
-		return t == Type.LONG || t == Type.INT || t == Type.DECIMAL;
+	private static boolean omitQuotes(FieldType t) {
+		return t instanceof LongField || t instanceof IntField || t instanceof DecimalField;
 
 	}
 

@@ -9,24 +9,26 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
+import org.molgenis.MolgenisFieldTypes;
 import org.molgenis.MolgenisOptions;
-import org.molgenis.generators.fieldtypes.BoolField;
-import org.molgenis.generators.fieldtypes.DateField;
-import org.molgenis.generators.fieldtypes.DateTimeField;
-import org.molgenis.generators.fieldtypes.DecimalField;
-import org.molgenis.generators.fieldtypes.EnumField;
-import org.molgenis.generators.fieldtypes.FileField;
-import org.molgenis.generators.fieldtypes.HexaField;
-import org.molgenis.generators.fieldtypes.HyperlinkField;
-import org.molgenis.generators.fieldtypes.ImageField;
-import org.molgenis.generators.fieldtypes.IntField;
-import org.molgenis.generators.fieldtypes.LongField;
-import org.molgenis.generators.fieldtypes.MrefField;
-import org.molgenis.generators.fieldtypes.NSequenceField;
-import org.molgenis.generators.fieldtypes.OnOffField;
-import org.molgenis.generators.fieldtypes.StringField;
-import org.molgenis.generators.fieldtypes.TextField;
-import org.molgenis.generators.fieldtypes.XrefField;
+import org.molgenis.fieldtypes.BoolField;
+import org.molgenis.fieldtypes.DateField;
+import org.molgenis.fieldtypes.DateTimeField;
+import org.molgenis.fieldtypes.DecimalField;
+import org.molgenis.fieldtypes.EnumField;
+import org.molgenis.fieldtypes.FieldType;
+import org.molgenis.fieldtypes.FileField;
+import org.molgenis.fieldtypes.HexaField;
+import org.molgenis.fieldtypes.HyperlinkField;
+import org.molgenis.fieldtypes.ImageField;
+import org.molgenis.fieldtypes.IntField;
+import org.molgenis.fieldtypes.LongField;
+import org.molgenis.fieldtypes.MrefField;
+import org.molgenis.fieldtypes.NSequenceField;
+import org.molgenis.fieldtypes.OnOffField;
+import org.molgenis.fieldtypes.StringField;
+import org.molgenis.fieldtypes.TextField;
+import org.molgenis.fieldtypes.XrefField;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Field;
@@ -40,36 +42,15 @@ import org.molgenis.util.Tuple;
 
 public class GeneratorHelper
 {
-	private static final transient Logger logger = Logger.getLogger(GeneratorHelper.class.getSimpleName());
+	private static final transient Logger logger = Logger
+			.getLogger(GeneratorHelper.class.getSimpleName());
 	MolgenisOptions options;
-	FieldTypeRegistry typeRegistry;
+	MolgenisFieldTypes typeRegistry;
 
 	public GeneratorHelper(MolgenisOptions options)
 	{
 		this.options = options;
-		this.typeRegistry = new FieldTypeRegistry();
-		
-		//add default field types.
-		//TODO make configurable via options so people can add easily add more types
-		
-		typeRegistry.addType(new BoolField());
-		typeRegistry.addType(new DateField());
-		typeRegistry.addType(new DateTimeField());
-		typeRegistry.addType(new DecimalField());
-		typeRegistry.addType(new EnumField());
-		typeRegistry.addType(new FileField());
-		typeRegistry.addType(new ImageField());
-		typeRegistry.addType(new HyperlinkField());
-		//typeRegistry.addType(new ListField());
-		typeRegistry.addType(new LongField());
-		typeRegistry.addType(new MrefField());
-		typeRegistry.addType(new NSequenceField());
-		typeRegistry.addType(new OnOffField());
-		typeRegistry.addType(new StringField());
-		typeRegistry.addType(new TextField());
-		typeRegistry.addType(new XrefField());
-		typeRegistry.addType(new IntField());
-		typeRegistry.addType(new HexaField());
+		this.typeRegistry = new MolgenisFieldTypes();
 
 	}
 
@@ -97,7 +78,8 @@ public class GeneratorHelper
 	public static String firstToLower(String string)
 	{
 		if (string == null) return " NULL ";
-		if(string.length() > 1)	return string.substring(0, 1).toLowerCase() + string.substring(1);
+		if (string.length() > 1) return string.substring(0, 1).toLowerCase()
+				+ string.substring(1);
 		return string;
 	}
 
@@ -132,11 +114,12 @@ public class GeneratorHelper
 	 */
 	public String getType(Field field) throws Exception
 	{
-		if(field == null) return "NULLPOINTER";
+		if (field == null) return "NULLPOINTER";
 		try
 		{
 			return typeRegistry.get(field).getJavaPropertyType();
-		} catch(Exception e)
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 			return "EXCEPTION";
@@ -173,12 +156,13 @@ public class GeneratorHelper
 	{
 		return typeRegistry.get(field).getJavaPropertyDefault();
 	}
-	
-	public String getJavaAssignment(Field field, String value) throws MolgenisModelException
+
+	public String getJavaAssignment(Field field, String value)
+			throws MolgenisModelException
 	{
 		return typeRegistry.get(field).getJavaAssignment(value);
 	}
-	
+
 	/**
 	 * Convert a list of string to comma separated values.
 	 * 
@@ -189,7 +173,7 @@ public class GeneratorHelper
 	{
 		String result = "";
 
-		if(elements != null) for (String str : elements)
+		if (elements != null) for (String str : elements)
 		{
 			result += ((elements.get(0) == str) ? "" : ",") + "'" + str + "'";
 		}
@@ -207,19 +191,18 @@ public class GeneratorHelper
 	 */
 	public String getMysqlType(Model model, Field field) throws Exception
 	{
-		return typeRegistry.get(field).getMysqlType();
+		return MolgenisFieldTypes.get(field).getMysqlType();
 	}
-	
+
 	public String getXsdType(Model model, Field field) throws Exception
 	{
-		return typeRegistry.get(field).getXsdType();
+		return MolgenisFieldTypes.get(field).getXsdType();
 	}
-	
-	
+
 	public String getHsqlType(Field field) throws Exception
 	{
-		Logger.getLogger("TEST").debug("tryiung "+field);
-		return typeRegistry.get(field).getHsqlType();
+		Logger.getLogger("TEST").debug("tryiung " + field);
+		return MolgenisFieldTypes.get(field).getHsqlType();
 	}
 
 	public Vector<Field> getAddFields(Entity e) throws Exception
@@ -236,18 +219,20 @@ public class GeneratorHelper
 	 * @return vector of fields that are not automatic values
 	 * @throws Exception
 	 */
-	public Vector<Field> getAddFields(Entity e, boolean includeKey) throws Exception
+	public Vector<Field> getAddFields(Entity e, boolean includeKey)
+			throws Exception
 	{
 		Vector<Field> add_fields = new Vector<Field>();
 
-		if (options.object_relational_mapping.equals(MolgenisOptions.CLASS_PER_TABLE))
+		if (options.object_relational_mapping
+				.equals(MolgenisOptions.CLASS_PER_TABLE))
 		{
 			for (Field f : getAllFields(e))
 			{
 				// get rid of mref,
 				// get rid of automatic id
 				// get rid of "type" enum field when not root ancestor
-				if (!isMref(f) && (!isAutoId(f, e) || includeKey) )
+				if (!isMref(f) && (!isAutoId(f, e) || includeKey))
 				// TODO: fix automatic fields
 				// MAJOR error, arghhhh!!! &&
 				// !getKeyFields(PRIMARY_KEY).contains(f))
@@ -256,16 +241,18 @@ public class GeneratorHelper
 				}
 			}
 		}
-		else if (options.object_relational_mapping.equals(MolgenisOptions.SUBCLASS_PER_TABLE))
+		else if (options.object_relational_mapping
+				.equals(MolgenisOptions.SUBCLASS_PER_TABLE))
 		{
 			for (Field f : e.getImplementedFields())
 			{
 				// get rid of mref,
 				// get rid of automatic id
 				// get rid of "type" enum field when not root ancestor
-				boolean inheritedField = (f.getEntity().getAncestor() != null && f.getEntity().getAncestor()
-						.getAllFields().contains(f));
-				if (!isMref(f) && (!isAutoId(f, e) || includeKey || inheritedField) )
+				boolean inheritedField = (f.getEntity().getAncestor() != null && f
+						.getEntity().getAncestor().getAllFields().contains(f));
+				if (!isMref(f)
+						&& (!isAutoId(f, e) || includeKey || inheritedField))
 				// TODO: fix automatic fields
 				// MAJOR error, arghhhh!!! &&
 				// !getKeyFields(PRIMARY_KEY).contains(f))
@@ -274,9 +261,9 @@ public class GeneratorHelper
 					add_fields.add(f);
 				}
 			}
-//                        if(e.hasAncestor()) {
-//                            add_fields.add(e.getPrimaryKey());
-//                        }
+			// if(e.hasAncestor()) {
+			// add_fields.add(e.getPrimaryKey());
+			// }
 		}
 
 		return add_fields;
@@ -290,7 +277,7 @@ public class GeneratorHelper
 	 */
 	private boolean isMref(Field f)
 	{
-		return f.getType() == Field.Type.XREF_MULTIPLE;
+		return f.getType() instanceof MrefField;
 	}
 
 	/**
@@ -302,12 +289,13 @@ public class GeneratorHelper
 	 */
 	private boolean isTypeField(Field f, Entity e)
 	{
-		return !e.isRootAncestor() && f.getType() == Field.Type.ENUM && f.getName() == Field.TYPE_FIELD;
+		return !e.isRootAncestor() && f.getType() instanceof EnumField
+				&& f.getName() == Field.TYPE_FIELD;
 	}
 
 	private boolean isAutoId(Field f, Entity e)
 	{
-		return f.getType() == Field.Type.INT && f.isAuto();
+		return f.getType() instanceof IntField && f.isAuto();
 		// SOLVED BY TRIGGERS && f.getEntity() == e;
 	}
 
@@ -322,7 +310,8 @@ public class GeneratorHelper
 
 		for (Field f : e.getAllFields())
 		{
-			if (!all_fields.contains(f) && (type.equals("") || f.getType().toString().equals(type)))
+			if (!all_fields.contains(f)
+					&& (type.equals("") || f.getType().toString().equals(type)))
 			{
 				all_fields.add(f);
 			}
@@ -337,35 +326,43 @@ public class GeneratorHelper
 	public Vector<Field> getDbFields(Entity e, String type) throws Exception
 	{
 		Vector<Field> db_fields = new Vector<Field>();
-		if (options.object_relational_mapping.equals(MolgenisOptions.CLASS_PER_TABLE))
+		if (options.object_relational_mapping
+				.equals(MolgenisOptions.CLASS_PER_TABLE))
 		{
 			Vector<Field> all_fields = getAllFields(e, type);
 
 			for (Field f : all_fields)
 			{
-				if (f.getType() != Field.Type.XREF_MULTIPLE // && (f.getName() != "type" || e.isRootAncestor())
-						&& (type.equals("") || f.getType().toString().equals(type)))
+				if (!(f.getType() instanceof MrefField) // && (f.getName() !=
+														// "type" ||
+														// e.isRootAncestor())
+						&& (type.equals("") || f.getType().toString().equals(
+								type)))
 				{
 					db_fields.add(f);
 				}
 			}
 		}
-		else if (options.object_relational_mapping.equals(MolgenisOptions.SUBCLASS_PER_TABLE))
+		else if (options.object_relational_mapping
+				.equals(MolgenisOptions.SUBCLASS_PER_TABLE))
 		{
 			Vector<Field> local_fields = e.getImplementedFields();
 
 			for (Field f : local_fields)
 			{
-				if (f.getType() != Field.Type.XREF_MULTIPLE //&& (f.getName() != "type" || e.isRootAncestor())
-						&& (type.equals("") || f.getType().toString().equals(type)))
+				if (!(f.getType() instanceof MrefField) // && (f.getName() !=
+														// "type" ||
+														// e.isRootAncestor())
+						&& (type.equals("") || f.getType().toString().equals(
+								type)))
 				{
 					db_fields.add(f);
 				}
 			}
 
-//                        if(e.hasAncestor()) {
-//                            db_fields.add(e.getPrimaryKey());
-//                        }
+			// if(e.hasAncestor()) {
+			// db_fields.add(e.getPrimaryKey());
+			// }
 		}
 		// String field_names = "";
 		// for(Field f: db_fields) field_names += f.getName()+" ";
@@ -389,7 +386,7 @@ public class GeneratorHelper
 
 		for (Field f : all_fields)
 		{
-			if (f.getType() != Field.Type.XREF_MULTIPLE 
+			if (!(f.getType() instanceof MrefField)
 					&& (type.equals("") || f.getType().toString().equals(type)))
 			{
 				view_fields.add(f);
@@ -401,29 +398,35 @@ public class GeneratorHelper
 
 	public Vector<Field> getUpdateFields(Entity e) throws Exception
 	{
-        Vector<Field> all_update_fields = new Vector<Field>();
-        
-        List<Field> fields = null;
-        if(e.getImplementedFields().size() > e.getFields().size()) {
-            fields = e.getImplementedFields();
-        } else {
-            fields = e.getFields();
-        }   
-       
-        for (Field f : fields)
-        {
-            // exclude readonly, unless it is the id or a file filed
-            if (!isMref(f) && !isTypeField(f, e)
-                    && (!f.isReadOnly() || isPrimaryKey(f, e) || f.getType().equals(Field.Type.FILE) || f.getType().equals(Field.Type.IMAGE)))
-            {
-                all_update_fields.add(f);
-            }
-        }
+		Vector<Field> all_update_fields = new Vector<Field>();
 
-        return all_update_fields;
+		List<Field> fields = null;
+		if (e.getImplementedFields().size() > e.getFields().size())
+		{
+			fields = e.getImplementedFields();
+		}
+		else
+		{
+			fields = e.getFields();
+		}
+
+		for (Field f : fields)
+		{
+			// exclude readonly, unless it is the id or a file filed
+			if (!isMref(f)
+					&& !isTypeField(f, e)
+					&& (!f.isReadOnly() || isPrimaryKey(f, e)
+							|| f.getType() instanceof FileField || f.getType() instanceof ImageField))
+			{
+				all_update_fields.add(f);
+			}
+		}
+
+		return all_update_fields;
 	}
 
-	public boolean isPrimaryKey(Field f, Entity e) throws MolgenisModelException
+	public boolean isPrimaryKey(Field f, Entity e)
+			throws MolgenisModelException
 	{
 		return e.getKeyFields(0).contains(f);
 	}
@@ -460,7 +463,8 @@ public class GeneratorHelper
 	 * @return list of unique
 	 * @throws MolgenisModelException
 	 */
-	public Vector<Unique> getSecondaryKeys(Entity e) throws MolgenisModelException
+	public Vector<Unique> getSecondaryKeys(Entity e)
+			throws MolgenisModelException
 	{
 		Vector<Unique> allkeys = getAllKeys(e);
 		Vector<Unique> skeys = new Vector<Unique>();
@@ -475,11 +479,13 @@ public class GeneratorHelper
 	 * Return all secondary key fields. If two secondary keys share a field, its
 	 * only returned once.
 	 * 
-	 * @param keys list of Unique definitions
+	 * @param keys
+	 *            list of Unique definitions
 	 * @return vector of fields that are part of a unique constraint
 	 * @throws MolgenisModelException
 	 */
-	public Vector<Field> getKeyFields(List<Unique> keys) throws MolgenisModelException
+	public Vector<Field> getKeyFields(List<Unique> keys)
+			throws MolgenisModelException
 	{
 		Map<String, Field> result = new LinkedHashMap<String, Field>();
 		for (Unique u : keys)
@@ -495,7 +501,8 @@ public class GeneratorHelper
 		return new Vector<Field>(result.values());
 	}
 
-	public Vector<Field> getSecondaryKeyFields(Entity e) throws MolgenisModelException
+	public Vector<Field> getSecondaryKeyFields(Entity e)
+			throws MolgenisModelException
 	{
 		List<Unique> keys = this.getSecondaryKeys(e);
 		Map<String, Field> result = new LinkedHashMap<String, Field>();
@@ -533,7 +540,8 @@ public class GeneratorHelper
 		Vector<Unique> all_keys = getAllKeys(e);
 		Vector<Unique> table_keys = new Vector<Unique>();
 
-		if (options.object_relational_mapping.equals(MolgenisOptions.SUBCLASS_PER_TABLE))
+		if (options.object_relational_mapping
+				.equals(MolgenisOptions.SUBCLASS_PER_TABLE))
 		{
 
 			for (Unique aKey : all_keys)
@@ -550,7 +558,9 @@ public class GeneratorHelper
 				}
 				if (inTable) table_keys.add(aKey);
 				else
-					logger.warn("key " + aKey + " cannot be enforced on entity " + e.getName() + ": column '" + field
+					logger.warn("key " + aKey
+							+ " cannot be enforced on entity " + e.getName()
+							+ ": column '" + field
 							+ "' is not in the subclass table.");
 			}
 		}
@@ -563,28 +573,20 @@ public class GeneratorHelper
 		return e.getXrefEntity().getField(e.getXrefFieldName());
 	}
 
-	public Field.Type getFieldType(Model model, Field field) throws Exception
+	public FieldType getFieldType(Model model, Field field) throws Exception
 	{
-		Field.Type type = field.getType();
-		switch (type)
+		FieldType type = field.getType();
+		if (type instanceof XrefField || type instanceof MrefField)
 		{
-			case XREF_SINGLE:
-			{
-				//Entity e_ref = field.getXrefEntity();
-				Field f_ref = field.getXrefField();
-				return getFieldType(model, f_ref);
-			}
-			case XREF_MULTIPLE:
-			{
-				//Entity e_ref = field.getXrefEntity();
-				Field f_ref = field.getXrefField();
-				return getFieldType(model, f_ref);
-			}
-			default:
-			{
-				return type;
-			}
+			// Entity e_ref = field.getXrefEntity();
+			Field f_ref = field.getXrefField();
+			return getFieldType(model, f_ref);
 		}
+		else
+		{
+			return type;
+		}
+
 	}
 
 	public List<Entity> getSubclasses(Entity superclass, Model m)
@@ -641,7 +643,7 @@ public class GeneratorHelper
 	public static String pluralize(String singularNoun)
 	{
 		throw new UnsupportedOperationException();
-		//return Pluralizer.getInstance().pluralize(singularNoun);
+		// return Pluralizer.getInstance().pluralize(singularNoun);
 
 		/*
 		 * String pluralNoun = singularNoun;
@@ -689,11 +691,12 @@ public class GeneratorHelper
 		return StringEscapeUtils.escapeXml(nonXml);
 	}
 
-	public String getImports(Model m, Entity e, String subpackage, String suffix) throws MolgenisModelException
+	public String getImports(Model m, Entity e, String subpackage, String suffix)
+			throws MolgenisModelException
 	{
 		String sfx = suffix;
 		String subPkg = subpackage;
-		if(sfx == null) sfx = "";
+		if (sfx == null) sfx = "";
 		if (subPkg != null)
 		{
 			subPkg = subPkg.trim();
@@ -717,51 +720,54 @@ public class GeneratorHelper
 		List<String> imports = new ArrayList<String>();
 		for (Field f : e.getAllFields())
 		{
-			if (f.getType().equals(Field.Type.XREF_SINGLE) || f.getType().equals(Field.Type.XREF_MULTIPLE))
+			if (f.getType() instanceof XrefField
+					|| f.getType() instanceof MrefField)
 			{
 
-				String fullClassName = f.getXrefEntity().getNamespace() + subPkg
-						+ firstToUpper(f.getXrefEntityName())+sfx;
+				String fullClassName = f.getXrefEntity().getNamespace()
+						+ subPkg + firstToUpper(f.getXrefEntityName()) + sfx;
 				if (!imports.contains(fullClassName))
 				{
 					imports.add(fullClassName);
 				}
 			}
-			
-			//import link tables
-//			if (f.getType().equals(Field.Type.XREF_MULTIPLE))
-//			{
-//
-//				Entity linktable = m.getEntity(f.getMrefName());
-//				if(linktable != null)
-//				{
-//				String fullClassName =	linktable.getNamespace() + subPkg
-//						+ this.firstToUpper(linktable.getName())+sfx;
-//				if (!imports.contains(fullClassName))
-//				{
-//					imports.add(fullClassName);
-//				}
-//				}
-//			}			
+
+			// import link tables
+			// if (f.getType().equals(Field.Type.XREF_MULTIPLE))
+			// {
+			//
+			// Entity linktable = m.getEntity(f.getMrefName());
+			// if(linktable != null)
+			// {
+			// String fullClassName = linktable.getNamespace() + subPkg
+			// + this.firstToUpper(linktable.getName())+sfx;
+			// if (!imports.contains(fullClassName))
+			// {
+			// imports.add(fullClassName);
+			// }
+			// }
+			// }
 		}
 
 		// import self
-		String fullClassName = e.getNamespace() + subPkg + firstToUpper(e.getName())+sfx;
+		String fullClassName = e.getNamespace() + subPkg
+				+ firstToUpper(e.getName()) + sfx;
 		if (!imports.contains(fullClassName))
 		{
 			imports.add(fullClassName);
 		}
 
 		// import parents
-//		for(String superclass: e.getParents())
-//		{
-//			Entity parentEntity = m.getEntity(superclass);
-//			fullClassName = parentEntity.getNamespace() + subPkg + this.firstToUpper(parentEntity.getName())+sfx;
-//			if (!imports.contains(fullClassName))
-//			{
-//				imports.add(fullClassName);
-//			}
-//		}
+		// for(String superclass: e.getParents())
+		// {
+		// Entity parentEntity = m.getEntity(superclass);
+		// fullClassName = parentEntity.getNamespace() + subPkg +
+		// this.firstToUpper(parentEntity.getName())+sfx;
+		// if (!imports.contains(fullClassName))
+		// {
+		// imports.add(fullClassName);
+		// }
+		// }
 
 		String result = "";
 		for (String i : imports)
@@ -770,28 +776,30 @@ public class GeneratorHelper
 		}
 		return result;
 	}
-	
+
 	public List<Tuple> loadExampleData(String fileName)
 	{
 		final List<Tuple> result = new ArrayList<Tuple>();
-		
+
 		File dir = new File(this.options.example_data_dir);
-		if(dir.exists())
+		if (dir.exists())
 		{
 			File file = new File(dir.getAbsoluteFile() + "/" + fileName);
-			if(file.exists())
+			if (file.exists())
 			{
 				try
 				{
 					CsvReader reader = new CsvFileReader(file);
-					reader.parse(new CsvReaderListener(){
+					reader.parse(new CsvReaderListener()
+					{
 
 						@Override
-						public void handleLine(int lineNumber, Tuple tuple) throws Exception
+						public void handleLine(int lineNumber, Tuple tuple)
+								throws Exception
 						{
-							result.add(new SimpleTuple(tuple));	
+							result.add(new SimpleTuple(tuple));
 						}
-						
+
 					});
 				}
 				catch (Exception e)
@@ -799,42 +807,42 @@ public class GeneratorHelper
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 			}
-		}		
-		
+		}
+
 		return result;
 	}
-	
+
 	public String renderExampleData(String fileName)
 	{
 		List<Tuple> source = this.loadExampleData(fileName);
 		String result = "";
-		
-		if(source.size() > 0)
+
+		if (source.size() > 0)
 		{
 			List<String> fields = source.get(0).getFields();
-			for(String field: fields)
+			for (String field : fields)
 			{
-				result += field+"\t";
+				result += field + "\t";
 			}
-			//result.substring(result.length());
+			// result.substring(result.length());
 			result += "\n";
-			
-			for(Tuple t: source)
+
+			for (Tuple t : source)
 			{
-				for(String field: fields)
+				for (String field : fields)
 				{
-					result += t.getString(field)+"\t";
+					result += t.getString(field) + "\t";
 				}
-				//result.substring(result.length());
+				// result.substring(result.length());
 				result += "\n";
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	public String getTypeFieldName()
 	{
 		return Field.TYPE_FIELD;

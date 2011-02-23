@@ -1,4 +1,4 @@
-package org.molgenis.generators.fieldtypes;
+package org.molgenis.fieldtypes;
 
 
 public class ImageField extends FileField

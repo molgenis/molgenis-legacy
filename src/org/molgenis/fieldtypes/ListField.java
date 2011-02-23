@@ -1,7 +1,8 @@
-package org.molgenis.generators.fieldtypes;
+package org.molgenis.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 
+@Deprecated
 public class ListField extends FieldType
 {
 	@Override
@@ -44,5 +45,11 @@ public class ListField extends FieldType
 	public String getXsdType()
 	{
 		return "" ;
+	}
+
+	@Override
+	public String getFormatString()
+	{
+		return "";
 	}
 }

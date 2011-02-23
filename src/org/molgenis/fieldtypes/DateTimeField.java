@@ -1,4 +1,4 @@
-package org.molgenis.generators.fieldtypes;
+package org.molgenis.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 
@@ -46,5 +46,11 @@ public class DateTimeField extends FieldType
 	public String getHsqlType()
 	{
 		return "DATETIME";
+	}
+
+	@Override
+	public String getFormatString()
+	{
+		return "%s";
 	}
 }

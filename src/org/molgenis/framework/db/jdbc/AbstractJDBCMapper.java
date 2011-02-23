@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.db.jdbc.ColumnInfo.Type;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.CsvWriter;
@@ -379,7 +379,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 	/**
 	 * Retrieve the type of the field
 	 */
-	public abstract Type getFieldType(String fieldName);
+	public abstract FieldType getFieldType(String fieldName);
 
 	/**
 	 * helper method to set the auto-generated keys

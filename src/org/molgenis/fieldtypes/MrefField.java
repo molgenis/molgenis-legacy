@@ -1,8 +1,16 @@
-package org.molgenis.generators.fieldtypes;
+package org.molgenis.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Field;
 
+/**
+ * Many to many reference.
+ * 
+ * Example MOLGENIS DSL, 
+ * <pre><field name="myfield" type="mref" xref_entity="OtherEntity" xref_field="id" xref_label="name"/>
+ *</pre>
+ * This example would in the UI show a seletion box with 'name' elements.
+ */
 public class MrefField extends FieldType
 {
 	@Override
@@ -54,6 +62,12 @@ public class MrefField extends FieldType
 	public String getXsdType() throws MolgenisModelException
 	{
 		return getFieldType(f.getXrefField()).getXsdType();
+	}
+
+	@Override
+	public String getFormatString()
+	{
+		return "";
 	}
 
 }

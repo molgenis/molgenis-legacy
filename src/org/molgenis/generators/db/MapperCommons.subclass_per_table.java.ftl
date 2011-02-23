@@ -132,19 +132,19 @@
 	}
 	
 	@Override
-	public Type getFieldType(String fieldName)
+	public FieldType getFieldType(String fieldName)
 	{
 		<#list viewFields(entity) as f>
 		<#assign type= f.type>
 		<#if type == "user" || type == "xref" || type == "mref">		
 		<#assign type = f.xrefField.type/>
-		if("${name(f)}".equalsIgnoreCase(fieldName) || "${name(f.entity)}.${name(f)}".equalsIgnoreCase(fieldName)) return Type.${type?upper_case};
-		if("${name(f)}_${name(xref_label)}".equalsIgnoreCase(fieldName) || "${name(f.entity)}.${name(f)}_${name(xref_label)}".equalsIgnoreCase(fieldName)) return Type.STRING;
+		if("${name(f)}".equalsIgnoreCase(fieldName) || "${name(f.entity)}.${name(f)}".equalsIgnoreCase(fieldName)) return MolgenisFieldTypes.getType("${type}");
+		if("${name(f)}_${name(xref_label)}".equalsIgnoreCase(fieldName) || "${name(f.entity)}.${name(f)}_${name(xref_label)}".equalsIgnoreCase(fieldName)) return MolgenisFieldTypes.getType("String");
 		<#else>		
-		if("${name(f)}".equalsIgnoreCase(fieldName) || "${name(f.entity)}.${name(f)}".equalsIgnoreCase(fieldName)) return Type.${type?upper_case};
+		if("${name(f)}".equalsIgnoreCase(fieldName) || "${name(f.entity)}.${name(f)}".equalsIgnoreCase(fieldName)) return MolgenisFieldTypes.getType("${type}");
 		</#if>
 		</#list>
-		return Type.STRING;
+		return MolgenisFieldTypes.getType("String");
 	}		
 	
 	@Override

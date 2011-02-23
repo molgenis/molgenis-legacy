@@ -22,6 +22,12 @@ import java.util.Vector;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+import org.molgenis.fieldtypes.CharField;
+import org.molgenis.fieldtypes.EnumField;
+import org.molgenis.fieldtypes.FieldType;
+import org.molgenis.fieldtypes.MrefField;
+import org.molgenis.fieldtypes.StringField;
+import org.molgenis.fieldtypes.XrefField;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.generators.GeneratorHelper;
 import org.molgenis.model.MolgenisModelException;
@@ -45,175 +51,175 @@ public class Field implements Serializable
 	/**
 	 * Description of the different types of a field.
 	 */
-	public static enum Type
-	{
-		/** Ontology type */
-		ONTOLOGY("ontology", "%s"),
-		/** The type is unknown, this case should raise an exception. */
-		UNKNOWN("unknown", ""),
-		/** The type is a simple boolean. */
-		BOOL("bool", "%d"),
-		/** The type is a simple integer. */
-		INT("int", "%d"),
-		/** The type is a decimal value. */
-		LONG("long", "%d"),
-		/** The type is a decimal value. */
-		DECIMAL("decimal", "%.20g"),
-		/**
-		 * The type is a variable character string. More information can be
-		 * found with the appropriate functions.
-		 */
-		STRING("string", "%s"),
-		/** fixed length */
-		CHAR("char", "%s"),
-		/** The type is free-text. The length of the string is not defined. */
-		TEXT("text", "%s"),
-		/** The type is a date-field. */
-		DATE("date", "%s"),
-		/** */
-		DATETIME("datetime", "%s"),
-		/**
-		 * The type of the field is user, which basically references a hidden
-		 * table.
-		 */
-		USER("user", "%s"),
-		/** The type of the field is file. */
-		FILE("file", "%s"),
-		/** special type of file, namely images */
-		IMAGE("image", "%s"),
-		/** */
-		ENUM("enum", "%s"),
-		/** Reference to another table, which can contain only 1 value. */
-		XREF_SINGLE("xref", ""),
-		/** Reference to another table, which can contain multiple values. */
-		XREF_MULTIPLE("mref", ""),
-		/** hyperlink */
-		HYPERLINK("hyperlink", "%s"),
-		/** Nucleotide sequence */
-		NSEQUENCE("nsequence", "%s"),
-		/** Nucleotide sequence */
-		ONOFF("onoff", "%d"),
-		/** List of values */
-		LIST("list", "%s"),
-		/** Hexadecimal values, now treated as strings*/
-		HEXA("hexa","%s");
-
-		// access
-		/**
-		 * The standard constructor, which binds a string to the
-		 * enumeration-type.
-		 */
-		private Type(String tag, String format_type)
-		{
-			this.tag = tag;
-			this.format_type = format_type;
-		}
-
-		public String toString()
-		{
-			return this.tag;
-		}
-
-		/**
-		 * With this method the enumeration-type can be found based on the given
-		 * int conforming to java.sql.Types
-		 * 
-		 * @param type
-		 *            The string-representation of the type.
-		 * @return The enumeration-type.
-		 */
-		public static Type getType(int type)
-		{
-			switch (type)
-			{
-				case Types.CHAR:
-					return CHAR;
-				case Types.BOOLEAN:
-					return BOOL;
-				case Types.BIT:
-					return BOOL;
-				case Types.INTEGER:
-					return INT;
-				case Types.BIGINT:
-					return LONG;
-				case Types.DOUBLE:
-					return DECIMAL;
-				case Types.VARCHAR:
-					return STRING;
-				case Types.BLOB:
-					return TEXT;
-				case Types.DATE:
-					return DATE;
-				case Types.TIME:
-					return DATETIME;
-				case Types.TIMESTAMP:
-					return DATETIME;
-				default:
-					return UNKNOWN;
-			}
-
-			/*
-			 * public static final int ARRAY 2003 public static final int BIGINT
-			 * -5 public static final int BINARY -2 public static final int BIT
-			 * -7 public static final int BLOB 2004 public static final int
-			 * BOOLEAN 16 public static final int CHAR 1 public static final int
-			 * CLOB 2005 public static final int DATALINK 70 public static final
-			 * int DATE 91 public static final int DECIMAL 3 public static final
-			 * int DISTINCT 2001 public static final int DOUBLE 8 public static
-			 * final int FLOAT 6 public static final int INTEGER 4 public static
-			 * final int JAVA_OBJECT 2000 public static final int LONGNVARCHAR
-			 * -16 public static final int LONGVARBINARY -4 public static final
-			 * int LONGVARCHAR -1 public static final int NCHAR -15 public
-			 * static final int NCLOB 2011 public static final int NULL 0 public
-			 * static final int NUMERIC 2 public static final int NVARCHAR -9
-			 * public static final int OTHER 1111 public static final int REAL 7
-			 * public static final int REF 2006 public static final int ROWID -8
-			 * public static final int SMALLINT 5 public static final int SQLXML
-			 * 2009 public static final int STRUCT 2002 public static final int
-			 * TIME 92 public static final int TIMESTAMP 93 public static final
-			 * int TINYINT -6 public static final int VARBINARY -3 public static
-			 * final int VARCHAR 12
-			 */
-		}
-
-		/**
-		 * With this method the enumeration-type can be found based on the given
-		 * string.
-		 * 
-		 * @param tag
-		 *            The string-representation of the tag.
-		 * @return The enumeration-type.
-		 */
-		public static Type getType(String tag)
-		{
-			if (tag.equals(BOOL.tag)) return BOOL;
-			else if (tag.equals(INT.tag)) return INT;
-			else if (tag.equals(LONG.tag)) return LONG;
-			else if (tag.equals(DECIMAL.tag)) return DECIMAL;
-			else if (tag.equals(STRING.tag)) return STRING;
-			else if (tag.equals(TEXT.tag)) return TEXT;
-			else if (tag.equals(DATE.tag)) return DATE;
-			else if (tag.equals(DATETIME.tag)) return DATETIME;
-			else if (tag.equals(USER.tag)) return USER;
-			else if (tag.equals(FILE.tag)) return FILE;
-			else if (tag.equals(IMAGE.tag)) return IMAGE;
-			else if (tag.equals(ENUM.tag)) return ENUM;
-			else if (tag.equals(XREF_SINGLE.tag)) return XREF_SINGLE;
-			else if (tag.equals(XREF_MULTIPLE.tag)) return XREF_MULTIPLE;
-			else if (tag.equals(HYPERLINK.tag)) return HYPERLINK;
-			else if (tag.equals(NSEQUENCE.tag)) return NSEQUENCE;
-			else if (tag.equals(ONOFF.tag)) return ONOFF;
-			else if (tag.equals(LIST.tag)) return LIST;
-			else if (tag.equals(HEXA.tag)) return HEXA;
-			else
-				return UNKNOWN;
-		}
-
-		/** The string-representation of the enumeration-type. */
-		public final String tag;
-		/** */
-		public final String format_type;
-	};
+//	public static enum Type
+//	{
+//		/** Ontology type */
+//		ONTOLOGY("ontology", "%s"),
+//		/** The type is unknown, this case should raise an exception. */
+//		UNKNOWN("unknown", ""),
+//		/** The type is a simple boolean. */
+//		BOOL("bool", "%d"),
+//		/** The type is a simple integer. */
+//		INT("int", "%d"),
+//		/** The type is a decimal value. */
+//		LONG("long", "%d"),
+//		/** The type is a decimal value. */
+//		DECIMAL("decimal", "%.20g"),
+//		/**
+//		 * The type is a variable character string. More information can be
+//		 * found with the appropriate functions.
+//		 */
+//		STRING("string", "%s"),
+//		/** fixed length */
+//		CHAR("char", "%s"),
+//		/** The type is free-text. The length of the string is not defined. */
+//		TEXT("text", "%s"),
+//		/** The type is a date-field. */
+//		DATE("date", "%s"),
+//		/** */
+//		DATETIME("datetime", "%s"),
+//		/**
+//		 * The type of the field is user, which basically references a hidden
+//		 * table.
+//		 */
+//		USER("user", "%s"),
+//		/** The type of the field is file. */
+//		FILE("file", "%s"),
+//		/** special type of file, namely images */
+//		IMAGE("image", "%s"),
+//		/** */
+//		ENUM("enum", "%s"),
+//		/** Reference to another table, which can contain only 1 value. */
+//		XREF_SINGLE("xref", ""),
+//		/** Reference to another table, which can contain multiple values. */
+//		XREF_MULTIPLE("mref", ""),
+//		/** hyperlink */
+//		HYPERLINK("hyperlink", "%s"),
+//		/** Nucleotide sequence */
+//		NSEQUENCE("nsequence", "%s"),
+//		/** Nucleotide sequence */
+//		ONOFF("onoff", "%d"),
+//		/** List of values */
+//		LIST("list", "%s"),
+//		/** Hexadecimal values, now treated as strings*/
+//		HEXA("hexa","%s");
+//
+//		// access
+//		/**
+//		 * The standard constructor, which binds a string to the
+//		 * enumeration-type.
+//		 */
+//		private Type(String tag, String format_type)
+//		{
+//			this.tag = tag;
+//			this.format_type = format_type;
+//		}
+//
+//		public String toString()
+//		{
+//			return this.tag;
+//		}
+//
+//		/**
+//		 * With this method the enumeration-type can be found based on the given
+//		 * int conforming to java.sql.Types
+//		 * 
+//		 * @param type
+//		 *            The string-representation of the type.
+//		 * @return The enumeration-type.
+//		 */
+//		public static Type getType(int type)
+//		{
+//			switch (type)
+//			{
+//				case Types.CHAR:
+//					return CHAR;
+//				case Types.BOOLEAN:
+//					return BOOL;
+//				case Types.BIT:
+//					return BOOL;
+//				case Types.INTEGER:
+//					return INT;
+//				case Types.BIGINT:
+//					return LONG;
+//				case Types.DOUBLE:
+//					return DECIMAL;
+//				case Types.VARCHAR:
+//					return STRING;
+//				case Types.BLOB:
+//					return TEXT;
+//				case Types.DATE:
+//					return DATE;
+//				case Types.TIME:
+//					return DATETIME;
+//				case Types.TIMESTAMP:
+//					return DATETIME;
+//				default:
+//					return UNKNOWN;
+//			}
+//
+//			/*
+//			 * public static final int ARRAY 2003 public static final int BIGINT
+//			 * -5 public static final int BINARY -2 public static final int BIT
+//			 * -7 public static final int BLOB 2004 public static final int
+//			 * BOOLEAN 16 public static final int CHAR 1 public static final int
+//			 * CLOB 2005 public static final int DATALINK 70 public static final
+//			 * int DATE 91 public static final int DECIMAL 3 public static final
+//			 * int DISTINCT 2001 public static final int DOUBLE 8 public static
+//			 * final int FLOAT 6 public static final int INTEGER 4 public static
+//			 * final int JAVA_OBJECT 2000 public static final int LONGNVARCHAR
+//			 * -16 public static final int LONGVARBINARY -4 public static final
+//			 * int LONGVARCHAR -1 public static final int NCHAR -15 public
+//			 * static final int NCLOB 2011 public static final int NULL 0 public
+//			 * static final int NUMERIC 2 public static final int NVARCHAR -9
+//			 * public static final int OTHER 1111 public static final int REAL 7
+//			 * public static final int REF 2006 public static final int ROWID -8
+//			 * public static final int SMALLINT 5 public static final int SQLXML
+//			 * 2009 public static final int STRUCT 2002 public static final int
+//			 * TIME 92 public static final int TIMESTAMP 93 public static final
+//			 * int TINYINT -6 public static final int VARBINARY -3 public static
+//			 * final int VARCHAR 12
+//			 */
+//		}
+//
+//		/**
+//		 * With this method the enumeration-type can be found based on the given
+//		 * string.
+//		 * 
+//		 * @param tag
+//		 *            The string-representation of the tag.
+//		 * @return The enumeration-type.
+//		 */
+//		public static Type getType(String tag)
+//		{
+//			if (tag.equals(BOOL.tag)) return BOOL;
+//			else if (tag.equals(INT.tag)) return INT;
+//			else if (tag.equals(LONG.tag)) return LONG;
+//			else if (tag.equals(DECIMAL.tag)) return DECIMAL;
+//			else if (tag.equals(STRING.tag)) return STRING;
+//			else if (tag.equals(TEXT.tag)) return TEXT;
+//			else if (tag.equals(DATE.tag)) return DATE;
+//			else if (tag.equals(DATETIME.tag)) return DATETIME;
+//			else if (tag.equals(USER.tag)) return USER;
+//			else if (tag.equals(FILE.tag)) return FILE;
+//			else if (tag.equals(IMAGE.tag)) return IMAGE;
+//			else if (tag.equals(ENUM.tag)) return ENUM;
+//			else if (tag.equals(XREF_SINGLE.tag)) return XREF_SINGLE;
+//			else if (tag.equals(XREF_MULTIPLE.tag)) return XREF_MULTIPLE;
+//			else if (tag.equals(HYPERLINK.tag)) return HYPERLINK;
+//			else if (tag.equals(NSEQUENCE.tag)) return NSEQUENCE;
+//			else if (tag.equals(ONOFF.tag)) return ONOFF;
+//			else if (tag.equals(LIST.tag)) return LIST;
+//			else if (tag.equals(HEXA.tag)) return HEXA;
+//			else
+//				return UNKNOWN;
+//		}
+//
+//		/** The string-representation of the enumeration-type. */
+//		public final String tag;
+//		/** */
+//		public final String format_type;
+//	};
 
 	/**
 	 * 
@@ -253,7 +259,7 @@ public class Field implements Serializable
 	/**
 	 * Empty constructor
 	 */
-	public Field(Entity parent, String name, Type type)
+	public Field(Entity parent, String name, FieldType type)
 	{
 		this(parent, type, name, name, false, false, false, null);
 	}
@@ -279,7 +285,7 @@ public class Field implements Serializable
 	 * @param readonly
 	 *            Indicates whether this field is readonly.
 	 */
-	public Field(Entity parent, Type type, String name, String label, boolean auto, boolean nillable, boolean readonly,
+	public Field(Entity parent, FieldType type, String name, String label, boolean auto, boolean nillable, boolean readonly,
 			String default_value)
 	{
 		this.entity = parent;
@@ -361,7 +367,7 @@ public class Field implements Serializable
 	 * 
 	 * @return The type of this field.
 	 */
-	public Type getType()
+	public FieldType getType()
 	{
 		return this.type;
 	}
@@ -369,14 +375,15 @@ public class Field implements Serializable
 	/**
 	 * @param type
 	 */
-	public void setType(Type type)
+	public void setType(FieldType type)
 	{
 		this.type = type;
 	}
 
 	public String getFormatString()
 	{
-		if (type == Type.XREF_SINGLE || type == Type.XREF_MULTIPLE)
+		//if (type.equals == Type.XREF_SINGLE || type == Type.XREF_MULTIPLE)
+		if (type instanceof XrefField || type instanceof MrefField)
 		{
 			try
 			{
@@ -390,7 +397,7 @@ public class Field implements Serializable
 			}
 		}
 
-		return type.format_type;
+		return type.getFormatString();
 	}
 
 	/**
@@ -510,7 +517,7 @@ public class Field implements Serializable
 	 */
 	public boolean isLocal()
 	{
-		return this.type != Type.XREF_MULTIPLE;
+		return this.type instanceof MrefField;
 	}
 
 	/**
@@ -519,7 +526,7 @@ public class Field implements Serializable
 	 */
 	public boolean isCyclic() throws MolgenisModelException
 	{
-		if (this.type != Type.XREF_SINGLE) return false;
+		if (!(this.type instanceof XrefField)) return false;
 
 		if (xref_entity.equals(this.name)) return true;
 
@@ -527,7 +534,7 @@ public class Field implements Serializable
 		Entity e = (Entity) root.get(xref_entity);
 		for (Field field : e.getAllFields())
 		{
-			if (field.type != Type.XREF_SINGLE) continue;
+			if (!(field.type instanceof XrefField)) continue;
 
 			if (field.xref_entity.equals(this.name)) return true;
 		}
@@ -542,7 +549,7 @@ public class Field implements Serializable
 	 */
 	public boolean isXRef()
 	{
-		return type == Type.XREF_MULTIPLE || type == Type.XREF_SINGLE;
+		return type instanceof XrefField || type instanceof MrefField;
 	}
 	
 	/**
@@ -552,7 +559,7 @@ public class Field implements Serializable
 	 */	
 	public boolean isMRef() 
 	{
-		return type == Type.XREF_MULTIPLE;
+		return type instanceof MrefField;
 	}
 	
 
@@ -614,7 +621,7 @@ public class Field implements Serializable
 	 */
 	public Vector<String> getEnumOptions() throws MolgenisModelException
 	{
-		if (this.type != Type.ENUM)
+		if (!(this.type instanceof EnumField))
 		{
 			throw new MolgenisModelException("Field is not a ENUM, so options cannot be set.");
 		}
@@ -655,7 +662,7 @@ public class Field implements Serializable
 	 */
 	public int getVarCharLength() throws MolgenisModelException
 	{
-		if (this.type != Type.STRING && this.type != Type.CHAR)
+		if (!(this.type instanceof StringField) && !(this.type instanceof CharField))
 		{
 			throw new MolgenisModelException("Field is not a VARCHAR, so length cannot be retrieved.");
 		}
@@ -719,7 +726,7 @@ public class Field implements Serializable
 
 	public String getXrefEntityName() throws MolgenisModelException
 	{
-		if (this.type != Type.XREF_SINGLE && this.type != Type.XREF_MULTIPLE)
+		if (!(this.type instanceof XrefField) && !(this.type instanceof MrefField))
 		{
 			throw new MolgenisModelException("Field '" + this.getEntity().getName() + "." + this.getName()
 					+ "' is not a XREF, so xref-table cannot be retrieved.");
@@ -743,7 +750,7 @@ public class Field implements Serializable
 	public Field getXrefField() throws MolgenisModelException // throws
 	// Exception
 	{
-		if (this.type != Type.XREF_SINGLE && this.type != Type.XREF_MULTIPLE)
+		if ( !(this.type instanceof XrefField) && !(this.type instanceof MrefField) )
 		{
 			throw new MolgenisModelException("Field is not a XREF, so xref-field cannot be retrieved.");
 		}
@@ -810,7 +817,7 @@ public class Field implements Serializable
 		{
 			String name = parent.getName() + "_" + f.getName();
 
-			if (!f.getType().equals(Field.Type.XREF_SINGLE) && !f.getType().equals(Field.Type.XREF_MULTIPLE))
+			if (!(f.getType() instanceof XrefField) && !(f.getType() instanceof MrefField))
 			{
 				if (labels.contains(name))
 				{
@@ -825,7 +832,7 @@ public class Field implements Serializable
 		{
 			String name = parent.getName() + "_" + f.getName();
 			
-			if (f.getType().equals(Field.Type.XREF_SINGLE))
+			if (f.getType() instanceof XrefField)
 			{
 				// check for cyclic relations
 				// FIXME check for indirect cyclic relations or limit nesting
@@ -1024,9 +1031,9 @@ public class Field implements Serializable
 		str += ", name=" + name;
 
 		// type
-		str += ", type=" + type.tag;
-		if (type == Field.Type.STRING || type == Field.Type.CHAR) str += "[" + varchar_length + "]";
-		else if (type == Field.Type.XREF_SINGLE || type == Field.Type.XREF_MULTIPLE) try
+		str += ", type=" + type;
+		if (type instanceof StringField || type instanceof CharField) str += "[" + varchar_length + "]";
+		else if (type instanceof XrefField || type instanceof MrefField) try
 		{
 			str += "[" + this.getXrefEntityName() + "."+this.getXrefFieldName() + "]";
 		}
@@ -1035,9 +1042,9 @@ public class Field implements Serializable
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if (type == Field.Type.XREF_MULTIPLE) str += ", mref_name=" + this.mref_name + ", mref_localid="
+		if (type instanceof MrefField) str += ", mref_name=" + this.mref_name + ", mref_localid="
 				+ this.mref_localid + ", mref_remoteid=" + this.mref_remoteid;
-		if (type == Field.Type.XREF_SINGLE || type == Field.Type.XREF_MULTIPLE) str += ", xref_label="
+		if (type instanceof XrefField || type instanceof MrefField) str += ", xref_label="
 				+ new GeneratorHelper(null).toCsv(this.xref_labels);
 
 		// settings
@@ -1090,7 +1097,7 @@ public class Field implements Serializable
 	private Entity entity;
 
 	/** The type of this field. */
-	private Type type;
+	private FieldType type;
 	/**
 	 * The name of this field, which needs to be unique for the associated
 	 * entity.
@@ -1231,7 +1238,7 @@ public class Field implements Serializable
 
 	public Map<String, List<Field>> allPossibleXrefLabels() throws MolgenisModelException, DatabaseException
 	{
-		if (!this.getType().equals(Field.Type.XREF_SINGLE) && !this.getType().equals(Field.Type.XREF_MULTIPLE)) throw new MolgenisModelException(
+		if (!(this.getType() instanceof XrefField) && !(this.getType() instanceof MrefField)) throw new MolgenisModelException(
 				"asking xref labels for non-xref field");
 
 		Map<String, List<Field>> result = new LinkedHashMap<String, List<Field>>();
@@ -1241,7 +1248,7 @@ public class Field implements Serializable
 			// {
 			for (Field f : key.getFields())
 			{
-				if (f.getType().equals(Field.Type.XREF_SINGLE) || f.getType().equals(Field.Type.XREF_MULTIPLE))
+				if (f.getType() instanceof XrefField || f.getType() instanceof MrefField)
 				{
 					f = getXrefEntity().getAllField(f.getName());
 
@@ -1378,7 +1385,7 @@ public class Field implements Serializable
 			for (Field otherField : getEntity().getAllFields())
 			{
 				// check the the other xref fields
-				if (otherField.getType().equals(Field.Type.XREF_SINGLE) && otherField != this)
+				if (otherField.getType() instanceof XrefField && otherField != this)
 				{
 					// check all the labels of this other field
 					Map<String, List<Field>> all_xref_labels = otherField.allPossibleXrefLabels();
@@ -1406,7 +1413,7 @@ public class Field implements Serializable
 
 	public Integer getLength() throws MolgenisModelException
 	{
-		if (this.getType().equals(Field.Type.STRING)) return this.getVarCharLength();
+		if (this.getType() instanceof StringField) return this.getVarCharLength();
 		return null;
 	}
 

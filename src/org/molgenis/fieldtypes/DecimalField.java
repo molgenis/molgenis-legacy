@@ -1,20 +1,20 @@
-package org.molgenis.generators.fieldtypes;
+package org.molgenis.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 
-public class EnumField extends FieldType
+public class DecimalField extends FieldType
 {
 	@Override
 	public String getJavaPropertyType()
 	{
-		return "String";
+		return "Double";
 	}
-	
+
 	@Override
 	public String getJavaAssignment(String value)
 	{
 		if(value == null || value.equals("") ) return "null";
-		return "\""+value+"\"";
+		return ""+Double.parseDouble(value);
 	}
 	
 	@Override
@@ -22,23 +22,28 @@ public class EnumField extends FieldType
 	{
 		return getJavaAssignment(f.getDefaultValue());
 	}
-
+	
 	@Override
 	public String getMysqlType() throws MolgenisModelException
 	{
-		return "ENUM("+this.toCsv(f.getEnumOptions())+")";
+		return "DECIMAL(65,30)";
 	}
-
 
 	@Override
 	public String getHsqlType()
 	{
-		return "VARCHAR(1024)";
+		return "DOUBLE";
 	}
+	
 	@Override
 	public String getXsdType()
 	{
-		return "string";
+		return "decimal";
 	}
 
+	@Override
+	public String getFormatString()
+	{
+		return "%.20g";
+	}
 }

@@ -1,4 +1,4 @@
-package org.molgenis.generators.fieldtypes;
+package org.molgenis.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Field;
@@ -49,5 +49,11 @@ public class XrefField extends FieldType
 	public String getXsdType() throws MolgenisModelException
 	{
 		return getFieldType(f.getXrefField()).getXsdType();
+	}
+
+	@Override
+	public String getFormatString()
+	{
+		return "";
 	}
 }

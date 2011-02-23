@@ -24,6 +24,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.log4j.Logger;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
+import org.molgenis.MolgenisFieldTypes;
+import org.molgenis.fieldtypes.UnknownField;
 import org.molgenis.model.elements.DBSchema;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Field;
@@ -41,7 +43,7 @@ import org.molgenis.model.elements.Record;
 import org.molgenis.model.elements.Tree;
 import org.molgenis.model.elements.UISchema;
 import org.molgenis.model.elements.View;
-import org.molgenis.model.elements.Field.Type;
+
 import org.molgenis.model.elements.Form.SortOrder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -412,7 +414,7 @@ public class MolgenisModelParser
 		// check exceptions
 		if (type == "") throw new MolgenisModelException("type is missing for field '" + name + "' of entity '"
 				+ entity.getName() + "'");
-		if (Field.Type.getType(type) == Field.Type.UNKNOWN) throw new MolgenisModelException("type '" + type
+		if (MolgenisFieldTypes.getType(type) instanceof UnknownField) throw new MolgenisModelException("type '" + type
 				+ "' unknown for field '" + name + "' of entity '" + entity.getName() + "'");
 		if (name.equals("")) throw new MolgenisModelException("name is missing for field of entity '"
 				+ entity.getName() + "'");
@@ -424,7 +426,7 @@ public class MolgenisModelParser
 						+ "' must have a default value. A field that is not nillable and hidden must have a default value.");
 
 		// construct
-		Field field = new Field(entity, Field.Type.getType(type), name, label, Boolean.parseBoolean(auto), Boolean
+		Field field = new Field(entity, MolgenisFieldTypes.getType(type), name, label, Boolean.parseBoolean(auto), Boolean
 				.parseBoolean(nillable), Boolean.parseBoolean(readonly), default_value);
 		logger.debug("read: " + field.toString());
 
@@ -1137,40 +1139,40 @@ public class MolgenisModelParser
 		}
 	}
 
-	public static void prepareForMetapipe(Model model) throws MolgenisModelException
-	{
-		for (Entity entity : model.getEntities())
-		{
-			Field idfield = new Field(entity, Type.INT, "id", "id", true, false, true, null);
-			try
-			{
-				entity.addField(idfield);
-			}
-			catch (Exception e)
-			{
-				throw new MolgenisModelException("Error in " + entity.getName()
-						+ ": fieldname 'id' is reserved for system");
-			}
-
-			for (Field field : entity.getFields())
-			{
-				if (field.getType() == Type.XREF_MULTIPLE || field.getType() == Type.XREF_SINGLE)
-				{
-					try
-					{
-						field.setXrefLabelNames(Arrays.asList(new String[]
-						{ "id" }));
-					}
-					catch (Exception e)
-					{
-						throw new MolgenisModelException("Error in " + entity.getName() + ": " + e);
-					}
-
-				}
-			}
-			logger.debug(entity.toString());
-		}
-	}
+//	public static void prepareForMetapipe(Model model) throws MolgenisModelException
+//	{
+//		for (Entity entity : model.getEntities())
+//		{
+//			Field idfield = new Field(entity, new , "id", "id", true, false, true, null);
+//			try
+//			{
+//				entity.addField(idfield);
+//			}
+//			catch (Exception e)
+//			{
+//				throw new MolgenisModelException("Error in " + entity.getName()
+//						+ ": fieldname 'id' is reserved for system");
+//			}
+//
+//			for (Field field : entity.getFields())
+//			{
+//				if (field.getType() == Type.XREF_MULTIPLE || field.getType() == Type.XREF_SINGLE)
+//				{
+//					try
+//					{
+//						field.setXrefLabelNames(Arrays.asList(new String[]
+//						{ "id" }));
+//					}
+//					catch (Exception e)
+//					{
+//						throw new MolgenisModelException("Error in " + entity.getName() + ": " + e);
+//					}
+//
+//				}
+//			}
+//			logger.debug(entity.toString());
+//		}
+//	}
 
 	private static String elementValueToString(Element element)
 	{

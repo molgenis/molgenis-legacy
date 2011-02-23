@@ -1,4 +1,4 @@
 /**
  * Helper functions for each field type.
  */
-package org.molgenis.generators.fieldtypes;
+package org.molgenis.fieldtypes;

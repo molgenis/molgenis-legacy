@@ -27,6 +27,23 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.listener.Log4jListener;
 import org.molgenis.MolgenisOptions.MapperImplementation;
+import org.molgenis.fieldtypes.BoolField;
+import org.molgenis.fieldtypes.DateField;
+import org.molgenis.fieldtypes.DateTimeField;
+import org.molgenis.fieldtypes.DecimalField;
+import org.molgenis.fieldtypes.EnumField;
+import org.molgenis.fieldtypes.FileField;
+import org.molgenis.fieldtypes.HexaField;
+import org.molgenis.fieldtypes.HyperlinkField;
+import org.molgenis.fieldtypes.ImageField;
+import org.molgenis.fieldtypes.IntField;
+import org.molgenis.fieldtypes.LongField;
+import org.molgenis.fieldtypes.MrefField;
+import org.molgenis.fieldtypes.NSequenceField;
+import org.molgenis.fieldtypes.OnOffField;
+import org.molgenis.fieldtypes.StringField;
+import org.molgenis.fieldtypes.TextField;
+import org.molgenis.fieldtypes.XrefField;
 import org.molgenis.generators.DataTypeGen;
 import org.molgenis.generators.Generator;
 import org.molgenis.generators.JpaDataTypeGen;
@@ -130,6 +147,8 @@ public class Molgenis {
 	 */
 	public <E extends Generator> Molgenis(MolgenisOptions options,
 			Class<? extends Generator>... generatorsToUse) throws Exception {
+		this.loadFieldTypes();
+		
 		this.options = options;
 
 		Logger.getLogger("freemarker.cache").setLevel(Level.INFO);
@@ -343,6 +362,29 @@ public class Molgenis {
 
 		// parsing model
 		model = MolgenisModel.parse(options);
+	}
+
+	private void loadFieldTypes()
+	{
+		MolgenisFieldTypes.addType(new BoolField());
+		MolgenisFieldTypes.addType(new DateField());
+		MolgenisFieldTypes.addType(new DateTimeField());
+		MolgenisFieldTypes.addType(new DecimalField());
+		MolgenisFieldTypes.addType(new EnumField());
+		MolgenisFieldTypes.addType(new FileField());
+		MolgenisFieldTypes.addType(new ImageField());
+		MolgenisFieldTypes.addType(new HyperlinkField());
+		// FieldTypeRegistry.addType(new ListField());
+		MolgenisFieldTypes.addType(new LongField());
+		MolgenisFieldTypes.addType(new MrefField());
+		MolgenisFieldTypes.addType(new NSequenceField());
+		MolgenisFieldTypes.addType(new OnOffField());
+		MolgenisFieldTypes.addType(new StringField());
+		MolgenisFieldTypes.addType(new TextField());
+		MolgenisFieldTypes.addType(new XrefField());
+		MolgenisFieldTypes.addType(new IntField());
+		MolgenisFieldTypes.addType(new HexaField());
+		
 	}
 
 	/**

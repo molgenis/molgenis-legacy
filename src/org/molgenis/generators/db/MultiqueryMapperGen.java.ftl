@@ -43,7 +43,8 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jdbc.JDBCConnectionHelper;
 import org.molgenis.framework.db.jdbc.AbstractJDBCMapper;
 import org.molgenis.framework.db.jdbc.JDBCMapper;
-import org.molgenis.framework.db.jdbc.ColumnInfo.Type;
+import org.molgenis.MolgenisFieldTypes;
+import org.molgenis.fieldtypes.FieldType;
 
 <#list allFields(entity) as f><#if f.type == "file" || f.type == "image">
 import org.apache.commons.io.FileUtils;

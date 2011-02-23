@@ -1,4 +1,4 @@
-package org.molgenis.generators.fieldtypes;
+package org.molgenis.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 
@@ -45,5 +45,11 @@ public class DateField extends FieldType
 	public String getXsdType()
 	{
 		return "date";
+	}
+
+	@Override
+	public String getFormatString()
+	{
+		return "%s";
 	}
 }

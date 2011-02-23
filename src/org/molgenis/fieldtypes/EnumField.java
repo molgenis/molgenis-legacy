@@ -1,8 +1,8 @@
-package org.molgenis.generators.fieldtypes;
+package org.molgenis.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 
-public class FileField extends FieldType
+public class EnumField extends FieldType
 {
 	@Override
 	public String getJavaPropertyType()
@@ -13,7 +13,7 @@ public class FileField extends FieldType
 	@Override
 	public String getJavaAssignment(String value)
 	{
-		if(value == null || value.equals("")) return "null";
+		if(value == null || value.equals("") ) return "null";
 		return "\""+value+"\"";
 	}
 	
@@ -26,8 +26,9 @@ public class FileField extends FieldType
 	@Override
 	public String getMysqlType() throws MolgenisModelException
 	{
-		return "VARCHAR(1024)";
+		return "ENUM("+this.toCsv(f.getEnumOptions())+")";
 	}
+
 
 	@Override
 	public String getHsqlType()
@@ -37,6 +38,13 @@ public class FileField extends FieldType
 	@Override
 	public String getXsdType()
 	{
-		return "url";
+		return "string";
 	}
+
+	@Override
+	public String getFormatString()
+	{
+		return "%s";
+	}
+
 }

@@ -2,6 +2,7 @@ package org.molgenis.framework.db.jdbc;
 
 import java.util.List;
 
+import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.jdbc.ColumnInfo.Type;
@@ -48,7 +49,7 @@ public interface JDBCMapper<E extends Entity>
 
 	public String getTableFieldName(String field);
 
-	public Type getFieldType(String field);
+	public FieldType getFieldType(String field);
 
 //	/**
 //	 * Helper method for retrieving keys.

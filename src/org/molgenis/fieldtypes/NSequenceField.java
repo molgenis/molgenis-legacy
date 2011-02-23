@@ -1,13 +1,20 @@
-package org.molgenis.generators.fieldtypes;
+package org.molgenis.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 
-public class TextField extends FieldType
+public class NSequenceField extends FieldType
 {
+	@Override
+	public String getJavaPropertyType()
+	{
+		return "String";
+	}
+	
 	@Override
 	public String getJavaAssignment(String value)
 	{
-		if(value == null ||value.equals("") ) return "null";
+		//FIXME check if it is a valid nsequence
+		if(value == null || value.equals("") ) return "null";
 		return "\""+value+"\"";
 	}
 	
@@ -26,8 +33,8 @@ public class TextField extends FieldType
 	@Override
 	public String getHsqlType() throws MolgenisModelException
 	{
-		//these guys don't have TEXT?
-		return "VARCHAR";
+		// TODO Auto-generated method stub
+		return "TEXT";
 	}
 	
 	@Override
@@ -38,9 +45,10 @@ public class TextField extends FieldType
 	}
 
 	@Override
-	public String getJavaPropertyType() throws MolgenisModelException
+	public String getFormatString()
 	{
-		return "String";
+		return "%s";
 	}
+
 
 }

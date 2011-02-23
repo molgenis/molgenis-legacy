@@ -16,6 +16,11 @@ import java.util.Vector;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+import org.molgenis.fieldtypes.FieldType;
+import org.molgenis.fieldtypes.IntField;
+import org.molgenis.fieldtypes.MrefField;
+import org.molgenis.fieldtypes.UserField;
+import org.molgenis.fieldtypes.XrefField;
 import org.molgenis.model.MolgenisModelException;
 
 /**
@@ -243,8 +248,8 @@ public class Entity extends DBSchema implements Record
 	{
 		for (Field f : fields)
 		{
-			if (f.getType() == Field.Type.XREF_MULTIPLE
-					|| f.getType() == Field.Type.XREF_SINGLE) return true;
+			if (f.getType() instanceof MrefField
+					|| f.getType() instanceof XrefField) return true;
 		}
 
 		return false;
@@ -731,7 +736,7 @@ public class Entity extends DBSchema implements Record
 		Vector<Field> all_update_fields = new Vector<Field>();
 		for (Field f : all_fields)
 		{
-			if (!f.getType().equals(Field.Type.XREF_MULTIPLE))
+			if (!(f.getType() instanceof MrefField))
 			{
 				all_update_fields.add(f);
 			}
@@ -753,7 +758,7 @@ public class Entity extends DBSchema implements Record
 
 		for (Field f : getFields())
 		{
-			if (f.getType() != Field.Type.XREF_MULTIPLE)
+			if ( !(f.getType() instanceof MrefField) )
 			{
 				local_fields.add(f);
 			}
@@ -775,7 +780,7 @@ public class Entity extends DBSchema implements Record
 
 		for (Field f : getAllFields())
 		{
-			if (f.getType() != Field.Type.XREF_MULTIPLE)
+			if ( !(f.getType() instanceof MrefField) )
 			{
 				local_fields.add(f);
 			}
@@ -797,7 +802,7 @@ public class Entity extends DBSchema implements Record
 
 		for (Field f : getFields())
 		{
-			if (f.getType() == Field.Type.XREF_MULTIPLE)
+			if (f.getType() instanceof MrefField)
 			{
 				local_fields.add(f);
 			}
@@ -864,8 +869,8 @@ public class Entity extends DBSchema implements Record
 
 		for (Field f : getAllFields())
 		{
-			if (f.getType() != Field.Type.XREF_MULTIPLE
-					&& !(f.getType() == Field.Type.INT && f.isAuto() && f
+			if ( !(f.getType() instanceof XrefField)
+					&& !(f.getType() instanceof IntField && f.isAuto() && f
 							.getEntity() == this))
 			// TODO: fix automatic fields
 			// MAJOR error, arghhhh!!! &&
@@ -886,8 +891,8 @@ public class Entity extends DBSchema implements Record
 
 		for (Field f : getFields())
 		{
-			if (f.getType() != Field.Type.XREF_MULTIPLE
-					&& !(f.getType() == Field.Type.INT && f.isAuto()))
+			if ( !(f.getType() instanceof MrefField)
+					&& !(f.getType() instanceof IntField && f.isAuto()))
 			// TODO: fix automatic fields
 			// MAJOR error, arghhhh!!! &&
 			// !getKeyFields(PRIMARY_KEY).contains(f))
@@ -906,7 +911,7 @@ public class Entity extends DBSchema implements Record
 	 * @return All the fields associated with this entity with the given type.
 	 * @throws MolgenisModelException
 	 */
-	public Vector<Field> getFieldsOf(Field.Type type)
+	public Vector<Field> getFieldsOf(FieldType type)
 			throws MolgenisModelException
 	{
 		Vector<Field> results = new Vector<Field>();
@@ -922,14 +927,14 @@ public class Entity extends DBSchema implements Record
 		return results;
 	}
 
-	public Vector<Field> getImplementedFieldsOf(Field.Type type)
+	public Vector<Field> getImplementedFieldsOf(FieldType type)
 			throws MolgenisModelException
 	{
 		Vector<Field> results = new Vector<Field>();
 
 		for (Field field : getImplementedFields())
 		{
-			if (field.getType() == type)
+			if (field.getType().getClass().equals(type.getClass()))
 			{
 				results.add(field);
 			}
@@ -948,8 +953,8 @@ public class Entity extends DBSchema implements Record
 		for (Field field : getImplementedFields())
 		{
 			if (field.isSystem()) continue;
-			if (field.getType() == Field.Type.XREF_SINGLE
-					|| field.getType() == Field.Type.XREF_MULTIPLE) xref_fields
+			if (field.getType() instanceof XrefField
+					|| field.getType() instanceof MrefField) xref_fields
 					.add(field);
 		}
 
@@ -966,7 +971,7 @@ public class Entity extends DBSchema implements Record
 		for (Field field : getFields())
 		{
 			if (field.isSystem()) continue;
-			if (field.getType() == Field.Type.USER) xref_fields.add(field);
+			if (field.getType() instanceof UserField ) xref_fields.add(field);
 		}
 
 		return xref_fields;
@@ -1454,7 +1459,7 @@ public class Entity extends DBSchema implements Record
 		List<Entity> result = new ArrayList<Entity>();
 		for (Field f : getAllFields())
 		{
-			if (f.getType().equals(Field.Type.XREF_SINGLE))
+			if (f.getType() instanceof XrefField)
 			{
 				if (!f.getXrefEntityName().equals(getName())) result.add(f
 						.getXrefEntity());

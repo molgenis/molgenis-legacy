@@ -8,6 +8,12 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
+import org.molgenis.fieldtypes.EnumField;
+import org.molgenis.fieldtypes.IntField;
+import org.molgenis.fieldtypes.MrefField;
+import org.molgenis.fieldtypes.StringField;
+import org.molgenis.fieldtypes.TextField;
+import org.molgenis.fieldtypes.XrefField;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Field;
@@ -178,8 +184,8 @@ public class MolgenisModelValidator
 		{
 			for (Field f : e.getFields())
 			{
-				if (f.getType().equals(Field.Type.XREF_SINGLE)
-						|| f.getType().equals(Field.Type.XREF_MULTIPLE))
+				if (f.getType() instanceof XrefField
+						|| f.getType() instanceof MrefField)
 				{
 					if (f.getXrefLabelNames().size() > 0
 							&& f.getXrefLabelNames().get(0).equals(
@@ -228,7 +234,7 @@ public class MolgenisModelValidator
 				}
 				if (e.getField(Field.TYPE_FIELD) == null)
 				{
-					Field type_field = new Field(e, Field.Type.ENUM,
+					Field type_field = new Field(e, new EnumField(),
 							Field.TYPE_FIELD, Field.TYPE_FIELD, true, false,
 							true, null);
 					type_field
@@ -270,7 +276,7 @@ public class MolgenisModelValidator
 			// iterate through all fields including those inherited from
 			// interfaces
 			for (Field xref_field_from : xref_entity_from
-					.getImplementedFieldsOf(Field.Type.XREF_MULTIPLE))
+					.getImplementedFieldsOf(new MrefField()))
 			{
 				try
 				{
@@ -309,7 +315,7 @@ public class MolgenisModelValidator
 						mrefEntity.setSystem(true);
 
 						// create id field to ensure ordering
-						Field idField = new Field(mrefEntity, Field.Type.INT,
+						Field idField = new Field(mrefEntity, new IntField(),
 								"autoid", "autoid", true, false, false, null);
 						idField.setHidden(true);
 						idField
@@ -322,7 +328,7 @@ public class MolgenisModelValidator
 						Field field;
 						Vector<String> unique = new Vector<String>();
 
-						field = new Field(mrefEntity, Field.Type.XREF_SINGLE,
+						field = new Field(mrefEntity,new XrefField(),
 								xref_field_from.getMrefRemoteid(), null, false,
 								false, false, null);
 						field.setXRefVariables(xref_entity_to.getName(),
@@ -339,7 +345,7 @@ public class MolgenisModelValidator
 								.getKeyFields(Entity.PRIMARY_KEY))
 						{
 							field = new Field(mrefEntity,
-									Field.Type.XREF_SINGLE, xref_field_from
+									new XrefField(), xref_field_from
 											.getMrefLocalid(), null, false,
 									false, false, null);
 
@@ -416,7 +422,7 @@ public class MolgenisModelValidator
 			{
 				for (Field field : entity.getFields())
 				{
-					if (field.getType() != Field.Type.XREF_SINGLE) continue;
+					if ( !(field.getType() instanceof XrefField) ) continue;
 
 					// get the entity, which is referenced by the field
 					Entity referenced = null;
@@ -487,8 +493,8 @@ public class MolgenisModelValidator
 			for (Field field : entity.getFields())
 			{
 				String fieldname = field.getName();
-				if (field.getType() == Field.Type.XREF_SINGLE
-						|| field.getType() == Field.Type.XREF_MULTIPLE)
+				if (field.getType() instanceof XrefField
+						|| field.getType() instanceof MrefField)
 				{
 
 					String xref_entity_name = field.getXrefEntityName();
@@ -530,7 +536,7 @@ public class MolgenisModelValidator
 					}
 
 					if (entity.isAbstract()
-							&& field.getType() == Field.Type.XREF_MULTIPLE) throw new MolgenisModelException(
+							&& field.getType() instanceof MrefField) throw new MolgenisModelException(
 							"interfaces cannot have mref therefore remove '"
 									+ entityname + "." + fieldname + "'");
 
@@ -638,7 +644,7 @@ public class MolgenisModelValidator
 
 					}
 
-					if (xref_field.getType().equals(Field.Type.TEXT)) throw new MolgenisModelException(
+					if (xref_field.getType() instanceof TextField) throw new MolgenisModelException(
 							"xref field '" + xref_field_name
 									+ "' is of illegal type 'TEXT' for field "
 									+ entityname + "." + fieldname);
@@ -683,7 +689,7 @@ public class MolgenisModelValidator
 			for (Field field : entity.getAllFields())
 			{
 				String fieldname = field.getName();
-				if (field.isAuto() && field.getType() == Field.Type.INT)
+				if (field.isAuto() && field.getType() instanceof IntField)
 				{
 					autocount++;
 
@@ -892,7 +898,7 @@ public class MolgenisModelValidator
 										.getDefaultValue());
 						key_field.setDescription("Primary key field unique in "
 								+ entity.getName() + " and its subclasses.");
-						if (key_field.getType() == Field.Type.STRING) key_field
+						if (key_field.getType() instanceof StringField) key_field
 								.setVarCharLength(key_field.getVarCharLength());
 						rootAncestor.addField(key_field);
 						keyfields_copy.add(key_field.getName());
@@ -923,7 +929,7 @@ public class MolgenisModelValidator
 				{
 					enumOptions.add(subclass.getName());
 				}
-				Field type_field = new Field(rootAncestor, Field.Type.ENUM,
+				Field type_field = new Field(rootAncestor, new EnumField(),
 						Field.TYPE_FIELD, Field.TYPE_FIELD, true, false, false,
 						null);
 				type_field.setDescription("Subtypes of " + entity.getName()
@@ -1025,8 +1031,8 @@ public class MolgenisModelValidator
 							+ " is a reserved JAVA and/or SQL word");
 				}
 
-				if (f.getType().equals(Field.Type.XREF_SINGLE)
-						|| f.getType().equals(Field.Type.XREF_MULTIPLE))
+				if (f.getType() instanceof XrefField
+						|| f.getType() instanceof MrefField)
 				{
 					String xref_entity = f.getXrefEntityName();
 					if (xref_entity != null
@@ -1044,7 +1050,7 @@ public class MolgenisModelValidator
 										+ " is a reserved JAVA and/or SQL word");
 					}
 
-					if (f.getType() == Field.Type.XREF_MULTIPLE)
+					if (f.getType() instanceof MrefField)
 					{
 						// default mref name is entityname+"_"+xreffieldname
 						if (f.getMrefName() == null)
@@ -1111,8 +1117,8 @@ public class MolgenisModelValidator
 			{
 				// f.setName(f.getName().toLowerCase());
 
-				if (f.getType() == Field.Type.XREF_SINGLE
-						|| f.getType() == Field.Type.XREF_MULTIPLE)
+				if (f.getType() instanceof XrefField
+						|| f.getType() instanceof MrefField)
 				{
 					try
 					{

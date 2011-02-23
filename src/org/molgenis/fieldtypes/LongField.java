@@ -1,21 +1,22 @@
-package org.molgenis.generators.fieldtypes;
+package org.molgenis.fieldtypes;
 
 import org.molgenis.model.MolgenisModelException;
 
-public class DecimalField extends FieldType
+public class LongField extends FieldType
 {
 	@Override
 	public String getJavaPropertyType()
 	{
-		return "Double";
+		return "Long";
 	}
 
 	@Override
 	public String getJavaAssignment(String value)
 	{
-		if(value == null || value.equals("") ) return "null";
-		return ""+Double.parseDouble(value);
+		if (value == null || value.equals("") ) return "null";
+		return "" + Long.parseLong(value) + "L";
 	}
+
 	
 	@Override
 	public String getJavaPropertyDefault()
@@ -26,18 +27,24 @@ public class DecimalField extends FieldType
 	@Override
 	public String getMysqlType() throws MolgenisModelException
 	{
-		return "DECIMAL(65,30)";
+		return "BIGINT";
 	}
 
 	@Override
 	public String getHsqlType()
 	{
-		return "DOUBLE";
+		return "LONG";
 	}
-	
 	@Override
 	public String getXsdType()
 	{
-		return "decimal";
+		return "boolean";
 	}
+
+	@Override
+	public String getFormatString()
+	{
+		return "%d";
+	}
+
 }
