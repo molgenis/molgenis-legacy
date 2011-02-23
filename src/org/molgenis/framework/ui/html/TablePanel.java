@@ -49,7 +49,7 @@ public class TablePanel extends HtmlInput
 	{
 		return this.inputs.get(name);
 	}
-
+	
 	@Override
 	/**
 	 * Each input is rendered with a label and in its own div to enable scripting.
@@ -79,13 +79,30 @@ public class TablePanel extends HtmlInput
 	 * @param Tuple request
 	 */
 	public void setValuesFromRequest(Tuple request) {
-		String inputName;
 		Object object;
-		for (HtmlInput input : this.inputs.values()) {
-			inputName = input.getName();
-			object = request.getObject(inputName);
+		List<HtmlInput> inputList = new ArrayList<HtmlInput>();
+		fillList(inputList, this);
+		for (HtmlInput input : inputList) {
+			object = request.getObject(input.getName());
 			if (object != null) {
 				input.setValue(object);
+			}
+		}
+	}
+	
+	/**
+	 * Add to 'inputList' all the inputs that are part of the 'startInput' TablePanel.
+	 * Fully recursive, so nested TablePanels are also taken into account.
+	 * 
+	 * @param List<HtmlInput> inputList
+	 * @param TablePanel startInput
+	 */
+	private void fillList(List<HtmlInput> inputList, TablePanel startInput) {
+		for (HtmlInput input : startInput.inputs.values()) {
+			if (input instanceof TablePanel || input instanceof RepeatingPanel) {
+				fillList(inputList, (TablePanel)input);
+			} else {
+				inputList.add(input);
 			}
 		}
 	}
