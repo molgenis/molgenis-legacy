@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.molgenis.util.Tuple;
+
 public class TablePanel extends HtmlInput
 {
 	LinkedHashMap<String, HtmlInput> inputs = new LinkedHashMap<String, HtmlInput>();
@@ -68,6 +70,24 @@ public class TablePanel extends HtmlInput
 					+ "</label>" + i.toHtml() + (!i.isNillable() ? " *" : "") + "</div>";
 		}
 		return result;
+	}
+	
+	/**
+	 * Tries to set the values of all the inputs in the TablePanel to the
+	 * corresponding ones in the request tuple.
+	 * 
+	 * @param Tuple request
+	 */
+	public void setValuesFromRequest(Tuple request) {
+		String inputName;
+		Object object;
+		for (HtmlInput input : this.inputs.values()) {
+			inputName = input.getName();
+			object = request.getObject(inputName);
+			if (object != null) {
+				input.setValue(object);
+			}
+		}
 	}
 
 }

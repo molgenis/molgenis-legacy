@@ -12,8 +12,12 @@
 package org.molgenis.framework.ui.html;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
+
+import com.ibm.icu.util.Calendar;
 
 /**
  * Input for date. Depends on javascript to showDateInput().
@@ -21,10 +25,11 @@ import java.util.Locale;
 
 public class DateInput extends HtmlInput
 {
-	/** uses default value of today as value*/
+	/** uses default value of today as value
+	 * @throws ParseException */
 	public DateInput(String name)
 	{
-		this(name, new java.sql.Date(new java.util.Date().getTime()));
+		this(name, Calendar.getInstance().getTime());
 	}
 	
 	public DateInput(String name, String label)
@@ -56,10 +61,28 @@ public class DateInput extends HtmlInput
 
 	public String getValue()
 	{
-		if( getObject() == null )
-			return "";
 		DateFormat formatter = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
-		String result = formatter.format(super.getObject());
+		
+		Object dateObject = getObject();
+		if (dateObject == null) {
+			return "";
+		}
+		if (dateObject.equals("")) {
+			return "";
+		}
+		// If it's already a string, return it
+		if (dateObject instanceof String) {
+			return dateObject.toString();
+		}
+		
+		// If it's a Date object, first format and then return
+		String result;
+		try {
+			result = formatter.format(dateObject);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "";
+		}
 		result = result.substring(0, 1).toUpperCase() + result.substring(1);
 		return result;
 	}

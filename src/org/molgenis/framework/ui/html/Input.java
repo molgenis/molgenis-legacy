@@ -58,23 +58,24 @@ public interface Input
 	public abstract void setName( String name );
 
 	/**
-	 * Retrieve the value of this input as object.
+	 * Retrieve the value of this input as an Object.
 	 * 
-	 * @return value
+	 * @return Object value
 	 */
 	public abstract Object getObject();
 
 	/**
-	 * Retrieve the value of this input as String.
+	 * Retrieve the value of this input as a String.
+	 * Note: this name is confusing because setValue() works with an Object.
 	 * 
-	 * @return value
+	 * @return String value
 	 */
 	public abstract String getValue();
 
 	/**
-	 * Set the value of this object
+	 * Set the value of this input as an Object.
 	 * 
-	 * @param value
+	 * @param Object value
 	 */
 	public abstract void setValue( Object value );
 
