@@ -101,19 +101,18 @@ public class SelectInput extends HtmlInput
 
 	@Override
 	/**
-	 * Note, this returns the labels of the selected values.
+	 * Returns the label of the selected value.
 	 */
 	public String getValue()
 	{
-		StringBuffer result = new StringBuffer();
 		for (ValueLabel choice : options)
 		{
 			if (super.getValue().equals(choice.getValue().toString()))
 			{
-				result.append(choice.getLabel() + " ");
+				return choice.getLabel().toString();
 			}
 		}
-		return result.toString();
+		return "";
 	}
 
 	public List<ValueLabel> getChoices()
