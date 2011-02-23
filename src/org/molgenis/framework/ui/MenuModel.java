@@ -136,15 +136,9 @@ public class MenuModel<E extends Entity>extends SimpleModel<E>
 	@Override
 	public boolean isVisible()
 	{
-		try
-		{
-			return this.getSecurity().canRead(this);
-		}
-		catch (DatabaseException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// the menu is visible if one its children is visible.
+		if (this.getVisibleChildren().size() > 0)
+			return true;
 		return false;
 	}
 
