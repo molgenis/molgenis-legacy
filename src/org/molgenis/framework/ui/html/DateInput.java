@@ -14,10 +14,10 @@ package org.molgenis.framework.ui.html;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.Locale;
 
-import com.ibm.icu.util.Calendar;
+
 
 /**
  * Input for date. Depends on javascript to showDateInput().
