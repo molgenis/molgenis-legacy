@@ -68,7 +68,13 @@ public class SelectInput extends HtmlInput
 		}
 
 		StringBuffer optionsHtml = new StringBuffer();
-
+		
+		if ((!this.isReadonly() && this.isNillable()) ||
+			(super.getValue().toString().equals("") && this.isNillable()))
+		{
+			// start with empty option
+			optionsHtml.append("\t<option value=\"\"></option>\n");
+		}
 		for (ValueLabel choice : options)
 		{
 			if (super.getValue().equals(choice.getValue().toString()))
@@ -84,16 +90,6 @@ public class SelectInput extends HtmlInput
 			}
 		}
 
-		if (super.getValue().toString().equals("") && this.isNillable())
-		{
-			optionsHtml.append("\t<option selected value=\"\"></option>\n");
-			// empty option
-		}
-		else if (!this.isReadonly() && this.isNillable())
-		{
-			optionsHtml.append("\t<option value=\"\"></option>\n");
-			// empty option
-		}
 		return "<select class=\"" + this.getClazz() + "\" id=\"" + this.getId()
 				+ "\" name=\"" + this.getName() + "\" " + readonly + onchange
 				+ ">\n" + optionsHtml.toString() + "</select>\n";
@@ -166,6 +162,12 @@ public class SelectInput extends HtmlInput
 				new ValueLabel(value.toString(), label.toString()));
 	}
 
+	/** Set the options for the input
+	 * 
+	 * @param entities list of entities to add as options (values)
+	 * @param valueField field used for identification
+	 * @param labelField field used for label (what shows on the screen)
+	 */
 	public void setOptions(List<? extends Entity> entities, String valueField,
 			String labelField)
 	{

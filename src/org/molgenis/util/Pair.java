@@ -1,6 +1,7 @@
 package org.molgenis.util;
 
 
+
 /**
  * Generic pair to link two objects together. A Pair holds one object of type T and one
  * object of type T2. The pair is the owner of these objects. The basic use
@@ -87,4 +88,19 @@ public class Pair<T, T2>
 	private T a = null;
 	/** Pointer to the second object */
 	private T2 b = null;
+	
+	@Override
+	public boolean equals(Object o)
+	{		
+		Pair<T,T2> that = ((Pair<T,T2>)o);
+		
+		return (this.a.equals(that.a) && this.b.equals(that.b));
+	}
+	
+	@Override
+	public int hashCode() {
+		return a.hashCode() + b.hashCode();
+	}
+	
+	
 }

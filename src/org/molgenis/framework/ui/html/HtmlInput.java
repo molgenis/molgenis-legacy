@@ -102,11 +102,13 @@ public abstract class HtmlInput implements Input
 		this.name = name;
 	}
 
+	//TODO: This *needs* to be renamed to getValue()
 	public Object getObject()
 	{
 		return value;
 	}
 
+	//TODO: This *needs* to be renamed to getValueToString() or removed!!!
 	public String getValue()
 	{
 		if( getObject() == null )

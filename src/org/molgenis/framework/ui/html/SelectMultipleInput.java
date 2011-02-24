@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
+import org.molgenis.util.Entity;
 import org.molgenis.util.ValueLabel;
 
 /**
@@ -27,10 +28,14 @@ public class SelectMultipleInput extends HtmlInput
 {
 	private List<ValueLabel> options = new Vector<ValueLabel>();
 
-	// constructor(s)
-	public SelectMultipleInput(String name, Object value)
+	/**
+	 * 
+	 * @param name Name of the Input
+	 * @param objects list of selected values
+	 */
+	public SelectMultipleInput(String name, List<Object> objects)
 	{
-		super(name, value);
+		super(name, objects);
 	}
 
 	@Override
@@ -55,7 +60,11 @@ public class SelectMultipleInput extends HtmlInput
 		{
 			stringValues.add(v.toString());
 		}
-
+		if (!this.isReadonly() || super.getValue().toString().equals(""))
+		{
+			// start with empty option
+			optionsHtml.append("\t<option value=\"\"></option>\n");
+		}
 		for (ValueLabel choice : options)
 		{
 			if (stringValues.contains(choice.getValue().toString()))
@@ -69,16 +78,6 @@ public class SelectMultipleInput extends HtmlInput
 				optionsHtml.append("\t<option value=\"" + choice.getValue()
 						+ "\">" + choice.getLabel() + "</option>\n");
 			}
-		}
-		if (super.getValue().toString().equals(""))
-		{
-			optionsHtml.append("\t<option selected value=\"\"></option>\n");
-			// empty option
-		}
-		else if (!this.isReadonly())
-		{
-			optionsHtml.append("\t<option value=\"\"></option>\n");
-			// empty option
 		}
 		return "<select id=\"" + this.getId() + "\" multiple name=\""
 				+ this.getName() + "\" " + readonly + " style=\""
@@ -130,6 +129,31 @@ public class SelectMultipleInput extends HtmlInput
 	public void setOptions(List<ValueLabel> choices)
 	{
 		this.options = choices;
+	}
+	
+	/** Set the options for the input
+	 * 
+	 * @param entities list of entities to add as options (values)
+	 * @param valueField field used for identification
+	 * @param labelField field used for label (what shows on the screen)
+	 */
+	public void setOptions(List<? extends Entity> entities, String valueField,
+			String labelField)
+	{
+		// clear list
+		this.getChoices().clear();
+
+		// add new values and labels
+		for (Entity e : entities)
+		{
+			this.addOption(e.get(valueField), e.get(labelField));
+		}
+	}
+	
+	public void addOption(Object value, Object label)
+	{
+		this.getChoices().add(
+				new ValueLabel(value.toString(), label.toString()));
 	}
 
 	public void setOptions(String... choices)
