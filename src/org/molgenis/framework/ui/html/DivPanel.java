@@ -7,20 +7,18 @@ import java.util.List;
 import org.molgenis.util.Tuple;
 
 /*
- * Provides a panel to order your inputs.
- * TODO: this is now exactly the same as the DivPanel; we need to rewrite this
- * so that it uses html tables to order the inputs.
+ * Provides a panel to order your inputs using html div's.
  */
-public class TablePanel extends HtmlInput
+public class DivPanel extends HtmlInput
 {
 	LinkedHashMap<String, HtmlInput> inputs = new LinkedHashMap<String, HtmlInput>();
 
-	public TablePanel()
+	public DivPanel()
 	{
 		this(null, null);
 	}
 	
-	public TablePanel(String name, String label)
+	public DivPanel(String name, String label)
 	{
 		super(name, label);
 		this.setLabel(label);
@@ -104,10 +102,10 @@ public class TablePanel extends HtmlInput
 	 * @param inputList
 	 * @param startInput
 	 */
-	private void fillList(List<HtmlInput> inputList, TablePanel startInput) {
+	private void fillList(List<HtmlInput> inputList, DivPanel startInput) {
 		for (HtmlInput input : startInput.inputs.values()) {
-			if (input instanceof TablePanel || input instanceof RepeatingPanel) {
-				fillList(inputList, (TablePanel)input);
+			if (input instanceof DivPanel || input instanceof RepeatingPanel) {
+				fillList(inputList, (DivPanel)input);
 			} else {
 				inputList.add(input);
 			}

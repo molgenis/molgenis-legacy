@@ -14,7 +14,7 @@ import org.molgenis.framework.ui.html.ActionInput.Type;
  * number of clones (default 0,unlimited respectively) <li>TODO set custom
  * labels to the 'add row' and 'remove row'
  */
-public class RepeatingPanel extends TablePanel
+public class RepeatingPanel extends DivPanel
 {
 	public RepeatingPanel(String name, String label)
 	{

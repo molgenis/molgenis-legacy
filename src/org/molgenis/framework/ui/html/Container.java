@@ -8,10 +8,10 @@ import java.util.Vector;
 import org.molgenis.util.Tuple;
 
 /*
- * @Deprecated This is not a form and this is no longer valid. All plugins that extend from GenericPlugin are already rendered within a real html form. Please use Container instead.
+ * This class functions as the holder, or container, of all UI components and elements within one plugin. All "pieces"
+ * of your UI puzzle should be located within this Container.
  */
-@Deprecated
-public class Form extends LinkedHashMap<String, Input>
+public class Container extends LinkedHashMap<String, Input>
 {
 	private static final long serialVersionUID = -8565170009471766957L;
 
@@ -57,5 +57,13 @@ public class Form extends LinkedHashMap<String, Input>
 			result.add((HtmlInput) this.get(key));
 		}
 		return result;
+	}
+	
+	public String toHtml() {
+		String returnString = "";
+		for (HtmlInput i : this.getInputs()) {
+			returnString += i.toHtml();
+		}
+		return returnString;
 	}
 }
