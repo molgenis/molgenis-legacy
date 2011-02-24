@@ -59,14 +59,16 @@ public class TablePanel extends HtmlInput
 		String result = "";
 		for (HtmlInput i : this.inputs.values())
 		{
-			result += "<div";
+			result += "<div style=\"clear:both; ";
+			if (i.isHidden()) {
+				result += "display:none\"";
+			} else {
+				result += "display:block\"";
+			}
 			if (i.getId() != null) {
 				result += (" id=\"" + i.getId() + "\"");
 			}
-			if (i.isHidden()) {
-				result += " style=\"display:none\"";
-			}
-			result += "><label for=\"" + i.getName() + "\">" + i.getLabel()
+			result += "><label style=\"width:16em;float:left;\" for=\"" + i.getName() + "\">" + i.getLabel()
 					+ "</label>" + i.toHtml() + (!i.isNillable() ? " *" : "") + "</div>";
 		}
 		return result;
@@ -76,7 +78,7 @@ public class TablePanel extends HtmlInput
 	 * Tries to set the values of all the inputs in the TablePanel to the
 	 * corresponding ones in the request tuple.
 	 * 
-	 * @param Tuple request
+	 * @param request
 	 */
 	public void setValuesFromRequest(Tuple request) {
 		Object object;
@@ -94,8 +96,8 @@ public class TablePanel extends HtmlInput
 	 * Add to 'inputList' all the inputs that are part of the 'startInput' TablePanel.
 	 * Fully recursive, so nested TablePanels are also taken into account.
 	 * 
-	 * @param List<HtmlInput> inputList
-	 * @param TablePanel startInput
+	 * @param inputList
+	 * @param startInput
 	 */
 	private void fillList(List<HtmlInput> inputList, TablePanel startInput) {
 		for (HtmlInput input : startInput.inputs.values()) {

@@ -78,6 +78,7 @@ public class ActionInput extends HtmlInput
 	public ActionInput(String name, String label, String buttonValue)
 	{
 		this(name, label);
+		this.setTooltip(buttonValue);
 		this.setButtonValue(buttonValue); // override label as button value with explicit button value
 	}
 

@@ -38,7 +38,7 @@ public class RepeatingPanel extends TablePanel
 								.escapeHtml(repeatableDiv)) + "'; return false");
 
 		// create a div to contain the panel
-		return repeatableDiv + addButton.toHtml();
+		return "<div style=\"clear:both; display:block\">" + repeatableDiv + addButton.toHtml() + "</div>";
 	}
 
 }
