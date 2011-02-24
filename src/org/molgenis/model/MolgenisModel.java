@@ -7,6 +7,8 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
+import org.molgenis.fieldtypes.MrefField;
+import org.molgenis.fieldtypes.XrefField;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Field;
 import org.molgenis.model.elements.Model;
@@ -137,7 +139,7 @@ public class MolgenisModel
 		
 		for (Field field : currentEntity.getAllFields())
 		{
-			if (field.getType().toString().equals("xref"))
+			if (field.getType() instanceof XrefField)
 			{
 				dependencies.add(field.getXrefEntityName()); 
 
@@ -152,7 +154,7 @@ public class MolgenisModel
 					// model.getEntity(field.getXRefEntity()).getParents());
 				}
 			}
-			 if (field.getType().toString() == "mref")
+			 if (field.getType() instanceof MrefField)
 			 {
 			 dependencies.add(field.getXrefEntity().getName()); //mref fields
 			// including super classes
