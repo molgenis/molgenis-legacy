@@ -12,7 +12,7 @@ import org.molgenis.util.Tuple;
  */
 public class Table extends HtmlInput
 {
-	LinkedHashMap<Pair<Integer, Integer>, HtmlInput> cells = new LinkedHashMap<Pair<Integer, Integer>, HtmlInput>();
+	LinkedHashMap<Pair<Integer, Integer>, Object> cells = new LinkedHashMap<Pair<Integer, Integer>, Object>();
 	List<String> cols = new ArrayList<String>();
 	List<String> rows = new ArrayList<String>();
 	
@@ -47,18 +47,10 @@ public class Table extends HtmlInput
 		for (String row : rows) {
 			result += "<tr>";
 			result += ("<th>" + row + "</th>");
-			int colCount = 0;
-			for (String col : cols) {
-				String cellContents = "";
-				if (getCell(colCount, rowCount) != null) {
-					cellContents = getCell(colCount, rowCount).toHtml();
-				}
-				result += ("<td>" + cellContents + "</td>");
-				
-				colCount++;
+			for (int colCount = 0; colCount < cols.size(); colCount++) {
+				result += ("<td>" + getCellString(colCount, rowCount) + "</td>");
 			}
-			result += "</tr>";
-			
+			result += "</tr>";	
 			rowCount++;
 		}
 		
@@ -72,16 +64,35 @@ public class Table extends HtmlInput
 		return cols.size() - 1;
 	}
 	
+	public String removeColumn(int colNr) {
+		return cols.remove(colNr);
+	}
+	
 	public Integer addRow(String rowName) {
 		rows.add(rowName);
 		return rows.size() - 1;
 	}
 	
-	public void setCell(int col, int row, HtmlInput input) {
-		cells.put(new Pair<Integer, Integer>(col, row), input);
+	public String removeRow(int rowNr) {
+		return rows.remove(rowNr);
 	}
 	
-	public HtmlInput getCell(int col, int row) { 
+	public void setCell(int col, int row, Object contents) {
+		cells.put(new Pair<Integer, Integer>(col, row), contents);
+	}
+	
+	public Object getCell(int col, int row) { 
 		return cells.get(new Pair<Integer, Integer>(col, row));
+	}
+	
+	public String getCellString(int col, int row) { 
+		Object o = cells.get(new Pair<Integer, Integer>(col, row));
+		if (o == null) {
+			return "";
+		}
+		if (o instanceof HtmlInput) {
+			return ((HtmlInput) o).toHtml();
+		}
+		return o.toString();
 	}
 }
