@@ -38,7 +38,7 @@ public class Table extends HtmlInput
 		// Print the headers
 		result += "<tr><th></th>";
 		for (String col : cols) {
-			result += ("<th>" + col + "</th>");
+			result += ("<th style=\"border: 1px solid black\">" + col + "</th>");
 		}
 		result += "</tr>";
 		
@@ -46,9 +46,9 @@ public class Table extends HtmlInput
 		int rowCount = 0;
 		for (String row : rows) {
 			result += "<tr>";
-			result += ("<th>" + row + "</th>");
+			result += ("<th style=\"border: 1px solid black\">" + row + "</th>");
 			for (int colCount = 0; colCount < cols.size(); colCount++) {
-				result += ("<td>" + getCellString(colCount, rowCount) + "</td>");
+				result += ("<td style=\"border: 1px solid black\">" + getCellString(colCount, rowCount) + "</td>");
 			}
 			result += "</tr>";	
 			rowCount++;
