@@ -118,7 +118,7 @@ public class XrefInput extends HtmlInput
 
 	@Override
 	/**
-	 * Note, this returns the labels of the selected values.
+	 * Note, this returns the label of the selected value.
 	 */
 	public String getValue()
 	{
