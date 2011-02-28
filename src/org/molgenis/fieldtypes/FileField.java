@@ -1,5 +1,8 @@
 package org.molgenis.fieldtypes;
 
+import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.html.FileInput;
+import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.model.MolgenisModelException;
 
 public class FileField extends FieldType
@@ -44,5 +47,12 @@ public class FileField extends FieldType
 	public String getFormatString()
 	{
 		return "%s";
+	}
+
+	@Override
+	public HtmlInput createInput(String name, String xrefEntityClassName,
+			Database db) throws InstantiationException, IllegalAccessException
+	{
+		return new FileInput(name);
 	}
 }

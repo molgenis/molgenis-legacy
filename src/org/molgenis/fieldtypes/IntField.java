@@ -1,5 +1,8 @@
 package org.molgenis.fieldtypes;
 
+import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.html.HtmlInput;
+import org.molgenis.framework.ui.html.IntInput;
 import org.molgenis.model.MolgenisModelException;
 
 public class IntField extends FieldType
@@ -49,5 +52,12 @@ public class IntField extends FieldType
 	public String getFormatString()
 	{
 		return "%d";
+	}
+
+	@Override
+	public HtmlInput createInput(String name, String xrefEntityClassName,
+			Database db) throws InstantiationException, IllegalAccessException
+	{
+		return new IntInput(name);
 	}
 }

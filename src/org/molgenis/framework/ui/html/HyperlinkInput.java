@@ -18,7 +18,12 @@ public class HyperlinkInput extends HtmlInput
 {	
 	public HyperlinkInput(String name, Object value)
 	{
-		super( name, value );
+		super (name, value);
+	}
+	
+	public HyperlinkInput(String name)
+	{
+		this (name, null);
 	}
 	
 	/**

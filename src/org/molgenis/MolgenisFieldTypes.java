@@ -23,6 +23,8 @@ import org.molgenis.fieldtypes.StringField;
 import org.molgenis.fieldtypes.TextField;
 import org.molgenis.fieldtypes.UnknownField;
 import org.molgenis.fieldtypes.XrefField;
+import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Field;
 
@@ -70,6 +72,11 @@ public class MolgenisFieldTypes
 	{
 		types.put(ft.getClass().getSimpleName().toLowerCase(), ft);
 		// ft.setRegistry();
+	}
+	
+	public static HtmlInput createInput(String type, String name, String xrefEntityClassName, Database db) throws InstantiationException, IllegalAccessException
+	{
+		return getType(type).createInput(name, xrefEntityClassName, db);
 	}
 
 	public static FieldType getType(String name)

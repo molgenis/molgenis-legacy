@@ -1,5 +1,6 @@
 package org.molgenis.fieldtypes;
 
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.model.MolgenisModelException;
@@ -55,9 +56,10 @@ public class DateField extends FieldType
 		return "%s";
 	}
 
-//	@Override
-//	public HtmlInput getInput(String name)
-//	{
-//		new DateInput(name);
-//	}
+	@Override
+	public HtmlInput createInput(String name, String xrefEntityClassName,
+			Database db) throws InstantiationException, IllegalAccessException
+	{
+		return new DateInput(name);
+	}
 }

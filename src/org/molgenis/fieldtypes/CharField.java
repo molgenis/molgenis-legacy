@@ -1,5 +1,8 @@
 package org.molgenis.fieldtypes;
 
+import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.html.HtmlInput;
+import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.model.MolgenisModelException;
 
 public class CharField extends FieldType
@@ -45,6 +48,13 @@ public class CharField extends FieldType
 	public String getFormatString()
 	{
 		return "%s";
+	}
+
+	@Override
+	public HtmlInput createInput(String name, String xrefEntityClassName,
+			Database db) throws InstantiationException, IllegalAccessException
+	{
+		return new StringInput(name);
 	}
 
 }

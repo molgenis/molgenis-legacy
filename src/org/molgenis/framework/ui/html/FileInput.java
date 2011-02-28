@@ -24,6 +24,11 @@ public class FileInput extends HtmlInput
 	{
 		super(name, value);
 	}
+	
+	public FileInput(String name)
+	{
+		this(name, null);
+	}
 
 	@Override
 	public String toHtml()

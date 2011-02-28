@@ -1,5 +1,8 @@
 package org.molgenis.fieldtypes;
 
+import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.html.EnumInput;
+import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.model.MolgenisModelException;
 
 public class EnumField extends FieldType
@@ -45,6 +48,13 @@ public class EnumField extends FieldType
 	public String getFormatString()
 	{
 		return "%s";
+	}
+
+	@Override
+	public HtmlInput createInput(String name, String xrefEntityClassName,
+			Database db) throws InstantiationException, IllegalAccessException
+	{
+		return new EnumInput(name);
 	}
 
 }

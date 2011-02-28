@@ -18,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.molgenis.framework.db.Database;
 import org.molgenis.util.Entity;
 
 /**
@@ -46,6 +47,20 @@ public class XrefInput extends HtmlInput
 	public XrefInput(String name, Object value)
 	{
 		super(name, value);
+	}
+	
+	public XrefInput(String name, String entityName, Database db) throws InstantiationException, IllegalAccessException
+	{
+		this(name, db.getClassForName(entityName));
+	}
+	
+	public XrefInput(String name, Class<? extends Entity> xrefEntityClass) throws InstantiationException, IllegalAccessException
+	{
+		super(name,null);
+		
+		this.setXrefEntity(xrefEntityClass);
+		this.setXrefField(xrefEntityClass.newInstance().getIdField());
+		this.setXrefLabels(xrefEntityClass.newInstance().getLabelFields());
 	}
 
 	@Override

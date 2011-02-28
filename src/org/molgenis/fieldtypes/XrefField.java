@@ -1,5 +1,8 @@
 package org.molgenis.fieldtypes;
 
+import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.html.HtmlInput;
+import org.molgenis.framework.ui.html.XrefInput;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Field;
 
@@ -56,4 +59,15 @@ public class XrefField extends FieldType
 	{
 		return "";
 	}
+
+	@Override
+	public HtmlInput createInput(String name, String xrefEntityClassName,
+			Database db) throws InstantiationException, IllegalAccessException
+	{
+		return new XrefInput(name, xrefEntityClassName, db);
+	}
+
+
+
+	
 }

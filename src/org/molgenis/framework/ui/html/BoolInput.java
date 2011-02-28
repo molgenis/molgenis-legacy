@@ -14,6 +14,11 @@ public class BoolInput extends HtmlInput
 	{
 		super(name, value);
 	}
+	
+	public BoolInput(String name)
+	{
+		super(name, null);
+	}
 
 	@Override
 	public String toHtml()

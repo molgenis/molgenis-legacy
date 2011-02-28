@@ -1,5 +1,8 @@
 package org.molgenis.fieldtypes;
 
+import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.html.DecimalInput;
+import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.model.MolgenisModelException;
 
 public class DecimalField extends FieldType
@@ -45,5 +48,12 @@ public class DecimalField extends FieldType
 	public String getFormatString()
 	{
 		return "%.20g";
+	}
+
+	@Override
+	public HtmlInput createInput(String name, String xrefEntityClassName,
+			Database db) throws InstantiationException, IllegalAccessException
+	{
+		return new DecimalInput(name);
 	}
 }

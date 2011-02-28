@@ -8,7 +8,12 @@ public class LongInput extends StringInput
 
 	public LongInput(String name, Object value)
 	{
-		super( name, value );
+		super (name, value);
+	}
+	
+	public LongInput(String name)
+	{
+		this (name, null);
 	}
 
 }

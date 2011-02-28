@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.server.QueryRuleUtil;
 import org.molgenis.util.Entity;
@@ -46,6 +47,20 @@ public class MrefInput extends HtmlInput
 	{
 		super(name, value);
 	}
+	
+	public MrefInput(String name, String entityName, Database db) throws InstantiationException, IllegalAccessException
+	{
+		this(name, db.getClassForName(entityName));
+	}
+	
+	public MrefInput(String name, Class<? extends Entity> xrefEntityClass) throws InstantiationException, IllegalAccessException
+	{
+		super(name,null);
+		
+		this.setXrefEntity(xrefEntityClass);
+		this.setXrefField(xrefEntityClass.newInstance().getIdField());
+		this.setXrefLabels(xrefEntityClass.newInstance().getLabelFields());
+	}
 
 	@Override
 	public String toHtml()
@@ -57,7 +72,7 @@ public class MrefInput extends HtmlInput
 		if (values == null) values = new ArrayList<Object>();
 
 		// template of an xref dialog
-		XrefInput input = new XrefInput(this.getName(), null);
+		XrefInput input = new XrefInput(this.getName());
 		input.setXrefEntity(this.getXrefEntity());
 		input.setXrefField(this.getXrefField());
 		input.setXrefLabels(this.getXrefLabels());

@@ -12,6 +12,11 @@ public class NsequenceInput extends TextInput
 		super.setWidth(100);
 		super.setHeight(6);
 	}
+	
+	public NsequenceInput(String name)
+	{
+		this(name, null);
+	}
 
 	@Override
 	public String getValue()
