@@ -1,7 +1,7 @@
-<#macro ScreenCommand command>		
-<@molgenis_header />
+<#macro ScreenCommand command>	
+<#--<@molgenis_header />-->
 <#if command.getInputs()?exists >
-<body>
+<#--<body>-->
 <div class="formscreen">
 	<form action="" method="post" enctype="multipart/form-data" name="molgenis_popup">
 	<p class="form_header">${command.label}</p>
@@ -44,10 +44,10 @@ var molgenis_required = new Array(${required});
 </#list>
 	</p>
 	</form>
-</body>
+<#--</body>-->
 <#else>
 	ERROR no command dialog to bee seen
 </#if>
 </div>
-</body>
+<#--</body>-->
 </#macro>
