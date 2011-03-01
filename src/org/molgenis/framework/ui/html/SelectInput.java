@@ -135,6 +135,21 @@ public class SelectInput extends HtmlInput
 		}
 		this.setOptions(choicePairs);
 	}
+	
+	/**
+	 * Set the options for this selectbox using a list of strings
+	 * 
+	 * @param choices List of Strings representing the options for this selectbox
+	 */
+	public void setOptionsFromStringList(List<String> choices)
+	{
+		List<ValueLabel> choicePairs = new ArrayList<ValueLabel>();
+		for (String choice : choices)
+		{
+			choicePairs.add(new ValueLabel(choice, choice));
+		}
+		this.setOptions(choicePairs);
+	}
 
 	public String getTargetfield()
 	{

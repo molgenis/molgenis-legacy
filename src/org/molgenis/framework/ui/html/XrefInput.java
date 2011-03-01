@@ -30,7 +30,6 @@ import org.molgenis.util.Entity;
  */
 public class XrefInput extends HtmlInput
 {
-	// private List<ValueLabel> options = new Vector<ValueLabel>();
 	// The label of the value to show in the box
 	private Map<String, Object> valueLabel = new LinkedHashMap<String, Object>();
 
@@ -118,10 +117,18 @@ public class XrefInput extends HtmlInput
 
 	@Override
 	/**
-	 * Note, this returns the label of the selected value.
+	 * Returns the label of the selected value.
 	 */
 	public String getValue()
 	{
+		/*for (String label : this.xrefLabels)
+		{
+			if (this.valueLabel.get(label) != null) {
+				return this.valueLabel.get(label).toString();
+			}
+		}
+		return "";*/
+		
 		String result = "";
 		for (String label : this.xrefLabels)
 		{
@@ -222,6 +229,7 @@ public class XrefInput extends HtmlInput
 	 */
 	public void setValueLabel(String xrefLabelName, Object valueLabel)
 	{
+		this.valueLabel.clear();
 		this.valueLabel.put(xrefLabelName, valueLabel);
 	}
 
