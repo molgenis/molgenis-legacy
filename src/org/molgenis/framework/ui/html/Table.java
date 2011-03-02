@@ -16,8 +16,8 @@ public class Table extends HtmlInput
 	LinkedHashMap<Pair<Integer, Integer>, String> cellStyles = new LinkedHashMap<Pair<Integer, Integer>, String>();
 	List<String> cols = new ArrayList<String>();
 	List<String> rows = new ArrayList<String>();
-	private String defaultCellStyle = "border: 1px solid black";
-	private String headerCellStyle = "border: 1px solid black; background-color: #5B82A4";
+	private String defaultCellStyle = "border: 1px solid black; padding:2px";
+	private String headerCellStyle = "border: 1px solid black; padding:2px; background-color: #5B82A4";
 	
 	public Table()
 	{
