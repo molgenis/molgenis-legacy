@@ -94,7 +94,7 @@ public class TestCsv
 		//export set1 from memory to dir1
 		File dir1 = new File(dir + "/dir1");
 		dir1.mkdirs();
-		new CsvExport().exportAll(dir1, <#list model.entities as entity>set1.${name(entity)}<#if entity_has_next>,</#if></#list>);
+		new CsvExport().exportAll(dir1<#if model.entities?size gt 0>, <#list model.entities as entity>set1.${name(entity)}<#if entity_has_next>,</#if></#list></#if>);
 	
 		//import dir1 into database
 		new CsvImport().importAll(dir1, db, null);
