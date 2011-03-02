@@ -13,8 +13,11 @@ import org.molgenis.util.Tuple;
 public class Table extends HtmlInput
 {
 	LinkedHashMap<Pair<Integer, Integer>, Object> cells = new LinkedHashMap<Pair<Integer, Integer>, Object>();
+	LinkedHashMap<Pair<Integer, Integer>, String> cellStyles = new LinkedHashMap<Pair<Integer, Integer>, String>();
 	List<String> cols = new ArrayList<String>();
 	List<String> rows = new ArrayList<String>();
+	private String defaultCellStyle = "border: 1px solid black";
+	private String headerCellStyle = "border: 1px solid black; background-color: #5B82A4";
 	
 	public Table()
 	{
@@ -35,26 +38,37 @@ public class Table extends HtmlInput
 	{
 		String result = "<table>";
 		
-		// Print the headers
-		result += "<tr><th></th>";
-		for (String col : cols) {
-			result += ("<th style=\"border: 1px solid black\">" + col + "</th>");
-		}
-		result += "</tr>";
+		result += printHeaders();
 		
-		// Print the rows
 		int rowCount = 0;
 		for (String row : rows) {
-			result += "<tr>";
-			result += ("<th style=\"border: 1px solid black\">" + row + "</th>");
-			for (int colCount = 0; colCount < cols.size(); colCount++) {
-				result += ("<td style=\"border: 1px solid black\">" + getCellString(colCount, rowCount) + "</td>");
-			}
-			result += "</tr>";	
+			result += printRow(row, rowCount);
 			rowCount++;
 		}
 		
 		result += "</table>";
+		
+		return result;
+	}
+	
+	private String printHeaders() {
+		String result = "<tr><th></th>";
+		for (String col : cols) {
+			result += ("<th style=\"" + getHeaderCellStyle() + "\">" + col + "</th>");
+		}
+		result += "</tr>";
+		
+		return result;
+	}
+	
+	private String printRow(String row, int rowCount) {
+		String result = "<tr>";
+		result += ("<th style=\"" + getHeaderCellStyle() + "\">" + row + "</th>");
+		for (int colCount = 0; colCount < cols.size(); colCount++) {
+			result += ("<td style=\"" + getCellStyle(colCount, rowCount) + "\">" + 
+					getCellString(colCount, rowCount) + "</td>");
+		}
+		result += "</tr>";
 		
 		return result;
 	}
@@ -77,14 +91,34 @@ public class Table extends HtmlInput
 		return rows.remove(rowNr);
 	}
 	
+	/**
+	 * Set the contents of the cell at col, row.
+	 * 
+	 * @param col
+	 * @param row
+	 * @param contents
+	 */
 	public void setCell(int col, int row, Object contents) {
 		cells.put(new Pair<Integer, Integer>(col, row), contents);
 	}
 	
+	/**
+	 * Get the contents of the cell at col, row.
+	 * @param col
+	 * @param row
+	 * @return
+	 */
 	public Object getCell(int col, int row) { 
 		return cells.get(new Pair<Integer, Integer>(col, row));
 	}
 	
+	/**
+	 * Get the contents of the cell at col, row as a String.
+	 * 
+	 * @param col
+	 * @param row
+	 * @return
+	 */
 	public String getCellString(int col, int row) { 
 		Object o = cells.get(new Pair<Integer, Integer>(col, row));
 		if (o == null) {
@@ -94,5 +128,62 @@ public class Table extends HtmlInput
 			return ((HtmlInput) o).toHtml();
 		}
 		return o.toString();
+	}
+	
+	/**
+	 * Set the default CSS style parameters for all non-header cells.
+	 * 
+	 * @param defaultCellStyle
+	 */
+	public void setDefaultCellStyle(String defaultCellStyle) {
+		this.defaultCellStyle = defaultCellStyle;
+	}
+	
+	/**
+	 * Set CSS style parameters for the cell at col, row.
+	 * E.g.: setCellStyle(1, 1, "border: 1px")
+	 * 
+	 * @param col
+	 * @param row
+	 * @param cellStyle
+	 */
+	public void setCellStyle(int col, int row, String cellStyle) {
+		cellStyles.put(new Pair<Integer, Integer>(col, row), cellStyle);
+	}
+	
+	/**
+	 * Get the CSS style parameters for the cell at col, row.
+	 * 
+	 * @param col
+	 * @param row
+	 * @return
+	 */
+	public String getCellStyle(int col, int row) { 
+		String style = cellStyles.get(new Pair<Integer, Integer>(col, row));
+		if (style != null) {
+			return style;
+		} else {
+			return defaultCellStyle;
+		}
+	}
+
+	/**
+	 * Set CSS style parameters for all header cells.
+	 * 
+	 * @param headerCellStyle
+	 */
+	public void setHeaderCellStyle(String headerCellStyle)
+	{
+		this.headerCellStyle = headerCellStyle;
+	}
+
+	/**
+	 * Get the CSS style parameters for all header cells.
+	 * 
+	 * @return
+	 */
+	public String getHeaderCellStyle()
+	{
+		return headerCellStyle;
 	}
 }
