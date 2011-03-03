@@ -137,16 +137,16 @@ public class SelectMultipleInput extends HtmlInput
 	 * @param valueField field used for identification
 	 * @param labelField field used for label (what shows on the screen)
 	 */
-	public void setOptions(List<? extends Entity> entities, String valueField,
+	public void setOptions(List<Object> entities, String valueField,
 			String labelField)
 	{
 		// clear list
 		this.getChoices().clear();
 
 		// add new values and labels
-		for (Entity e : entities)
+		for (Object e : entities)
 		{
-			this.addOption(e.get(valueField), e.get(labelField));
+			this.addOption(((Entity) e).get(valueField), ((Entity) e).get(labelField));
 		}
 	}
 	
