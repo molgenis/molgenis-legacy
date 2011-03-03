@@ -24,9 +24,12 @@ INSERT INTO MolgenisEntity(name, type_, classname) values ("${JavaName(entity)}"
 
 <#assign schema = model.getUserinterface()>
 <#list schema.getAllChildren() as screen>
-<#if screen.getType() != "MENU">
+<#if screen.getType() != "MENU" && screen.getType() != "PLUGIN">
 INSERT INTO MolgenisEntity(name, type_, classname) values ("${screen.getName()}${screen.getType()?lower_case?cap_first}Model", "${screen.getType()}", "app.ui.${screen.getName()}${screen.getType()?lower_case?cap_first}Model");
 <#else>
 INSERT INTO MolgenisEntity(name, type_, classname) values ("${screen.getName()}${screen.getType()?lower_case?cap_first}", "${screen.getType()}", "app.ui.${screen.getName()}${screen.getType()?lower_case?cap_first}");
 </#if>
+
 </#list>
+
+INSERT INTO MolgenisPermission (role_, entity, permission) SELECT 3, id, "read" FROM MolgenisEntity WHERE MolgenisEntity.name = 'UserLoginPlugin';
