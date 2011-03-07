@@ -592,7 +592,7 @@ public class Molgenis {
 			}
 
 			if (error) {
-				logger.debug("Errors occured. Make sure you provided sufficient rights! Inside mysql paste the following, assuming your database is called 'molgenis':"
+				logger.debug("Errors occurred. Make sure you provided sufficient rights! Inside mysql paste the following, assuming your database is called 'molgenis':"
 						+ "\ncreate database molgenis; "
 						+ "\ngrant all privileges on molgenis.* to molgenis@localhost "
 						+ "identified by 'molgenis';"
