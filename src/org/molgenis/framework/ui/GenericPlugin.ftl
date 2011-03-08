@@ -20,6 +20,8 @@
 		<p class="errormessage">${message.text}</p>
 			</#if>
 		</#list>
+		 <#-- Hack to immediatly clear the message so it doesn't "stick". -->
+  		${screen.clearMessage()}
 		
 		<div class="screenbody">
 			<div class="screenpadding">	

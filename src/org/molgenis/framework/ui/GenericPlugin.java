@@ -159,4 +159,9 @@ public class GenericPlugin extends PluginModel
 	{
 		return this.isForm;
 	}
+	
+	public void clearMessage()
+    {
+		this.setMessages();
+    }
 }
