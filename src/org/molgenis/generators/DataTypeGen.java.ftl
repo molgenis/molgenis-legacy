@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 <#--import parent class if extends-->
 <#list entity.getImplements() as i>
@@ -151,11 +152,13 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 			<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>
 	private ${type(field.xrefLabels[label_index])} _${name(field)}_${label} = null;						
 			</#list></#if>
+	@XmlTransient
 	private  ${JavaName(field.xrefEntity)} _${name(field)}_object = null;				
 		<#elseif type_label == "mref">
 			<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>
 	private java.util.List<${type(field.xrefLabels[label_index])}> _${name(field)}_${label} = new java.util.ArrayList<${type(field.xrefLabels[label_index])}>();
 			</#list></#if>	
+	@XmlTransient
 	private java.util.List<${JavaName(field.xrefEntity)}> _${name(field)}_objects= new java.util.ArrayList<${JavaName(field.xrefEntity)}>();						
 		<#elseif type_label == "file" || type_label=="image" >
 	private File _${name(field)}_file = null;
@@ -572,10 +575,11 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 		<#assign type_label = f.getType().toString()>
 		<#if f.type == "mref">
 			//set ${JavaName(f)}
-			if( tuple.getObject("${name(f)}")!= null ) 
+			if( tuple.getObject("${name(f)}")!= null || tuple.getObject("${name(entity)}_${name(f)}")!= null) 
 			{
 				java.util.List<${type(f.xrefField)}> values = new java.util.ArrayList<${type(f.xrefField)}>();
 				java.util.List<?> mrefs = tuple.getList("${name(f)}");
+				if(tuple.getObject("${name(entity)}_${name(f)}")!= null) mrefs = tuple.getList("${name(entity)}_${name(f)}");
 				if(mrefs != null) for(Object ref: mrefs)
 				{
 				  	<#if JavaType(f.xrefField) == "String" >
@@ -588,10 +592,11 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 			}
 			<#if f.xrefLabelNames[0] != f.xrefFieldName><#list f.xrefLabelNames as label>
 			//set labels ${label} for mref field ${JavaName(f)}	
-			if( tuple.getObject("${name(f)}_${name(label)}")!= null ) 
+			if( tuple.getObject("${name(f)}_${name(label)}")!= null && tuple.getObject("${name(entity)}_${name(f)}_${name(label)}")!= null) 
 			{
 				java.util.List<${type(f.xrefLabels[label_index])}> values = new java.util.ArrayList<${type(f.xrefLabels[label_index])}>();
 				java.util.List<?> mrefs = tuple.getList("${name(f)}_${name(label)}");
+				if(tuple.getObject("${name(entity)}_${name(f)}_${name(label)}")!= null) mrefs = tuple.getList("${name(entity)}_${name(f)}_${name(label)}");
 				
 				if(mrefs != null) 
 					for(Object ref: mrefs)
@@ -603,7 +608,7 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 							values.add(r);	
 						}						
 					<#else>
-						values.add(ref.toString());
+						values.add(${type(f.xrefField)}.parse${settertype(f.xrefField)}((ref.toString())));
 					</#if>
 					}							
 				this.set${JavaName(f)}_${label}( values );			
@@ -613,28 +618,28 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 			//set ${JavaName(f)}
 			<#if f.type == "xref">	
 			if( strict || tuple.get${settertype(f)}("${name(f)}_${name(f.xrefField)}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${name(f)}_${name(f.xrefField)}"));		
-			if( tuple.get${settertype(f)}("${name(entity)}.${name(f)}_${name(f.xrefField)}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${name(entity)}.${name(f)}_${name(f.xrefField)}"));
+			if( tuple.get${settertype(f)}("${name(entity)}_${name(f)}_${name(f.xrefField)}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${name(entity)}.${name(f)}_${name(f.xrefField)}"));
 			//alias of xref
 			if( tuple.getObject("${name(f)}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${name(f)}"));
-			if( tuple.getObject("${name(entity)}.${name(f)}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${name(entity)}.${name(f)}"));
+			if( tuple.getObject("${name(entity)}_${name(f)}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${name(entity)}.${name(f)}"));
 			//set label for field ${JavaName(f)}
 			<#if f.xrefLabelNames[0] != f.xrefFieldName><#list f.xrefLabelNames as label>
 			if( strict || tuple.getObject("${name(f)}_${name(label)}") != null) this.set${JavaName(f)}_${label}(tuple.get${settertype(f.xrefLabels[label_index])}("${name(f)}_${name(label)}"));			
-			if( tuple.getObject("${name(entity)}.${name(f)}_${name(label)}") != null ) this.set${JavaName(f)}_${label}(tuple.get${settertype(f.xrefLabels[label_index])}("${name(entity)}.${name(f)}_${name(label)}"));		
+			if( tuple.getObject("${name(entity)}_${name(f)}_${name(label)}") != null ) this.set${JavaName(f)}_${label}(tuple.get${settertype(f.xrefLabels[label_index])}("${name(entity)}.${name(f)}_${name(label)}"));		
 			</#list></#if>
 			<#elseif f.type == "nsequence">
 			if( strict || tuple.getNSequence("${name(f)}") != null)this.set${JavaName(f)}(tuple.getNSequence("${name(f)}"));
-			if(tuple.getNSequence("${name(entity)}.${name(f)}") != null) this.set${JavaName(f)}(tuple.getNSequence("${name(entity)}.${name(f)}"));
+			if(tuple.getNSequence("${name(entity)}_${name(f)}") != null) this.set${JavaName(f)}(tuple.getNSequence("${name(entity)}.${name(f)}"));
 			<#elseif f.type == "onoff">
 			if( strict || tuple.getOnoff("${name(f)}") != null) this.set${JavaName(f)}(tuple.getOnoff("${name(f)}"));
-			if( tuple.getOnoff("${name(entity)}.${name(f)}") != null) this.set${JavaName(f)}(tuple.getOnoff("${name(entity)}.${name(f)}"));
+			if( tuple.getOnoff("${name(entity)}_${name(f)}") != null) this.set${JavaName(f)}(tuple.getOnoff("${name(entity)}.${name(f)}"));
 			<#else>
 			if( strict || tuple.get${settertype(f)}("${name(f)}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${name(f)}"));
-			if( tuple.get${settertype(f)}("${name(entity)}.${name(f)}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${name(entity)}.${name(f)}"));
+			if( tuple.get${settertype(f)}("${name(entity)}_${name(f)}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${name(entity)}.${name(f)}"));
 			</#if>
 			<#if f.type == "file" || f.type=="image">
 			this.set${JavaName(f)}AttachedFile(tuple.getFile("filefor_${name(f)}"));
-			if(tuple.getFile("filefor_${name(entity)}.${name(f)}") != null) this.set${JavaName(f)}AttachedFile(tuple.getFile("filefor_${name(entity)}.${name(f)}"));
+			if(tuple.getFile("filefor_${name(entity)}_${name(f)}") != null) this.set${JavaName(f)}AttachedFile(tuple.getFile("filefor_${name(entity)}.${name(f)}"));
 			</#if>						
 		</#if>
 	</#list>
