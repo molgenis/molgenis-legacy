@@ -1295,43 +1295,43 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	// public abstract Object getRestImpl() throws DatabaseException,
 	// NamingException;
 
-	@SuppressWarnings("unchecked")
-	protected void setInterceptors(JAXRSServerFactoryBean bean, ServletConfig servletConfig, String paramName)
-	{
-		String value = servletConfig.getInitParameter(paramName);
-		if (value == null)
-		{
-			return;
-		}
-		String[] values = value.split(" ");
-		List<Interceptor> list = new ArrayList<Interceptor>();
-		for (String interceptorVal : values)
-		{
-			String theValue = interceptorVal.trim();
-			if (theValue.length() != 0)
-			{
-				try
-				{
-					Class<?> intClass = ClassLoaderUtils.loadClass(theValue, CXFNonSpringJaxrsServlet.class);
-					list.add((Interceptor<? extends Message>) intClass.newInstance());
-				}
-				catch (Exception ex)
-				{
-					ex.printStackTrace();
-				}
-			}
-		}
-		if (list.size() > 0)
-		{
-			if ("jaxrs.outInterceptors".equals(paramName))
-			{
-				bean.setOutInterceptors(list);
-			}
-			else
-			{
-				bean.setInInterceptors(list);
-			}
-		}
-	}
+//	@SuppressWarnings("unchecked")
+//	protected void setInterceptors(JAXRSServerFactoryBean bean, ServletConfig servletConfig, String paramName)
+//	{
+//		String value = servletConfig.getInitParameter(paramName);
+//		if (value == null)
+//		{
+//			return;
+//		}
+//		String[] values = value.split(" ");
+//		List<Interceptor> list = new ArrayList<Interceptor>();
+//		for (String interceptorVal : values)
+//		{
+//			String theValue = interceptorVal.trim();
+//			if (theValue.length() != 0)
+//			{
+//				try
+//				{
+//					Class<?> intClass = ClassLoaderUtils.loadClass(theValue, CXFNonSpringJaxrsServlet.class);
+//					list.add((Interceptor<? extends Message>) intClass.newInstance());
+//				}
+//				catch (Exception ex)
+//				{
+//					ex.printStackTrace();
+//				}
+//			}
+//		}
+//		if (list.size() > 0)
+//		{
+//			if ("jaxrs.outInterceptors".equals(paramName))
+//			{
+//				bean.setOutInterceptors(list);
+//			}
+//			else
+//			{
+//				bean.setInInterceptors(list);
+//			}
+//		}
+//	}
 
 }
