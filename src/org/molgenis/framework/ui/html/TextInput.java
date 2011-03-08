@@ -14,57 +14,59 @@ package org.molgenis.framework.ui.html;
 /**
  * Input for strings that renders as textarea.
  */
-public class TextInput extends HtmlInput
+public class TextInput extends StringInput
 {
 	public TextInput(String name)
 	{
-		super(name,null);
+		this(name,null);
 	}
 	
 	public TextInput(String name, Object value)
 	{
 		super(name, value);
-		width = 50;
-		height = 3;
-	}
-
-	public String toHtml()
-	{
-		String readonly = (this.isReadonly()) ? "readonly class=\"readonly\" " : ""; 
-
-		if( this.isHidden() )
-		{
-			StringInput input = new StringInput(this.getName(), this.getValue());
-			input.setLabel(this.getLabel());
-			input.setDescription(this.getDescription());
-			input.setHidden(true);
-			return input.toHtml();
-		}
-		return "<textarea id=\""+this.getId()+"\" name=\""+this.getName()+"\" cols=\""+this.getWidth()+"\" rows=\""+this.getHeight()+"\" "+readonly+" >"+this.getValue()+"</textarea>" +
-				"<script>showTextInput(document.getElementById('"+this.getId()+"'),5,25);</script>";
+		this.setMaxHeight(50);
+		this.setMinHeight(3);
 	}
 	
-	public int width;
+//merged with StringInput
 
-	public int getWidth()
-	{
-		return width;
-	}
-
-	public void setWidth(int width)
-	{
-		this.width = width;
-	}
-	
-	public int height;
-
-	public int getHeight()
-	{
-		return height;
-	}
-
-	public void setHeight(int height)
-	{
-		this.height = height;
-	}
+//	public String toHtml()
+//	{
+//		String readonly = (this.isReadonly()) ? "readonly class=\"readonly\" " : ""; 
+//
+//		if( this.isHidden() )
+//		{
+//			StringInput input = new StringInput(this.getName(), this.getValue());
+//			input.setLabel(this.getLabel());
+//			input.setDescription(this.getDescription());
+//			input.setHidden(true);
+//			return input.toHtml();
+//		}
+//		return "<textarea id=\""+this.getId()+"\" name=\""+this.getName()+"\" cols=\""+this.getWidth()+"\" rows=\""+this.getHeight()+"\" "+readonly+" >"+this.getValue()+"</textarea>" +
+//				"<script>showTextInput(document.getElementById('"+this.getId()+"'),5,25);</script>";
+//	}
+//	
+//	public int width;
+//
+//	public int getWidth()
+//	{
+//		return width;
+//	}
+//
+//	public void setWidth(int width)
+//	{
+//		this.width = width;
+//	}
+//	
+//	public int height;
+//
+//	public int getHeight()
+//	{
+//		return height;
+//	}
+//
+//	public void setHeight(int height)
+//	{
+//		this.height = height;
+//	}
 }
