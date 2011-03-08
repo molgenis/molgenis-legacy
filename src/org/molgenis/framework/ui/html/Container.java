@@ -9,7 +9,7 @@ import org.molgenis.util.Tuple;
 
 /*
  * This class functions as the holder, or container, of all UI components and elements within one plugin. All "pieces"
- * of your UI puzzle should be located within this Container.
+ * of your UI puzzle should be located within a Container.
  */
 public class Container extends LinkedHashMap<String, Input>
 {
@@ -40,12 +40,20 @@ public class Container extends LinkedHashMap<String, Input>
 		return super.get(key);
 	}
 
+	/**
+	 * Tries to set the values of the inputs within this Container
+	 * using parameters in the request with the same names.
+	 * 
+	 * @param t The tuple used to set the values
+	 */
 	public void setAll(Tuple t)
 	{
 		for (String key : t.getFields())
 		{
 			// only sets known fields!
-			if (this.containsKey(key)) this.get(key).setValue(t.getObject(key));
+			if (this.containsKey(key)) {
+				this.get(key).setValue(t.getObject(key));
+			}
 		}
 	}
 
