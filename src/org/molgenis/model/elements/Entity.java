@@ -709,7 +709,10 @@ public class Entity extends DBSchema implements Record
 		// third of self...
 		for (Field f : getFields())
 		{
-			//if (!all_fields.containsKey(f.getName().toLowerCase())) 
+			// TODO:
+			// Find out why the if-statement below was commented out (Joris doens't remember)
+			// Find out if this causes the lock-wait-timeouts on Hudson, as suspected by Joeri and Danny
+			if (!all_fields.containsKey(f.getName().toLowerCase())) 
 				all_fields
 					.put(f.getName().toLowerCase(), f);
 		}
