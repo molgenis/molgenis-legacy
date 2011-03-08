@@ -142,7 +142,9 @@ public class TestDatabase
 		}
 		
 		//add entities and check counts
+		db.beginTx();
 		db.add(entities);
+		db.commitTx();
 		Query<${JavaName(entity)}> q = db.query(${JavaName(entity)}.class)<#if entity.hasAncestor() || entity.hasDescendants()>.eq("${typefield()}",${JavaName(entity)}.class.getSimpleName())</#if>;
 		assertEquals(total, q.count());
 		List<${JavaName(entity)}> entitiesDb = q.sortASC("${pkey(entity).name}").find();
