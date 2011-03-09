@@ -25,9 +25,9 @@ public class StringInput extends HtmlInput
 
 		if( this.isHidden() )
 		{
-			return "<input type=\"hidden\" value=\""+this.getValue()+"\"/>";
+			return "<input name=\""+this.getName()+"\"type=\"hidden\" value=\""+this.getValue()+"\"/>";
 		}
-		return "<textarea id=\""+this.getId()+"\" name=\""+this.getName()+"\" cols=\""+this.getWidth()+"\" rows=\""+this.getHeight()+"\" "+readonly+" >"+this.getValue()+"</textarea>" +
+		return "<textarea id=\""+this.getId()+"\" name=\""+this.getName()+"\"  "+ (this.getSize() != null && this.getSize() > 0 ? "onfocus=\"startcounter(this, "+getSize()+")\" onblur=\"endcounter()\"" : "") +" cols=\""+this.getWidth()+"\" rows=\""+this.getHeight()+"\" "+readonly+" >"+this.getValue()+"</textarea>" +
 				"<script>showTextInput(document.getElementById('"+this.getId()+"'),"+this.getMinHeight()+","+this.getMaxHeight()+");</script>";
 	}
 	
@@ -78,6 +78,9 @@ public class StringInput extends HtmlInput
 	{
 		this.maxHeight = maxHeight;
 	}
+	
+	
+	
 	
 	
 	
