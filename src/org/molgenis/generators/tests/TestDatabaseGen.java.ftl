@@ -115,7 +115,7 @@ public class TestDatabase
 			<#elseif f.type == "mref">
 			if(${name(f)}Xrefs.size() > 0)
 			{
-				e.get${JavaName(f)}_Id().add( ${name(f)}Xrefs.get(i).get${JavaName(f.xrefField)}() );
+				e.get${JavaName(f)}_${JavaName(f.xrefField)}().add( ${name(f)}Xrefs.get(i).get${JavaName(f.xrefField)}() );
 				//e.get${JavaName(f)}().add( random(${name(f)}Xrefs).get${JavaName(f.xrefField)}() );
 			}
 			<#elseif f.type=="bool">
