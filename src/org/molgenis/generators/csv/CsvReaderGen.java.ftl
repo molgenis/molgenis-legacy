@@ -297,7 +297,7 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 					if(breakToNext${JavaName(entity)}){
 						break;
 					}
-					o.set${JavaName(f)}_Id(mrefs);
+					o.set${JavaName(f)}_${JavaName(f.xrefField)}(mrefs);
 				}
 				</#if></#list>
 				break;
