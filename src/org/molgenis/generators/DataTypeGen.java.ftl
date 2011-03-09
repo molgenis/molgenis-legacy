@@ -622,28 +622,28 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 			//set ${JavaName(f)}
 			<#if f.type == "xref">	
 			if( strict || tuple.get${settertype(f)}("${name(f)}_${name(f.xrefField)}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${name(f)}_${name(f.xrefField)}"));		
-			if( tuple.get${settertype(f)}("${name(entity)}_${name(f)}_${name(f.xrefField)}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${name(entity)}.${name(f)}_${name(f.xrefField)}"));
+			if( tuple.get${settertype(f)}("${name(entity)}_${name(f)}_${name(f.xrefField)}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${name(entity)}_${name(f)}_${name(f.xrefField)}"));
 			//alias of xref
 			if( tuple.getObject("${name(f)}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${name(f)}"));
-			if( tuple.getObject("${name(entity)}_${name(f)}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${name(entity)}.${name(f)}"));
+			if( tuple.getObject("${name(entity)}_${name(f)}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${name(entity)}_${name(f)}"));
 			//set label for field ${JavaName(f)}
 			<#if f.xrefLabelNames[0] != f.xrefFieldName><#list f.xrefLabelNames as label>
 			if( strict || tuple.getObject("${name(f)}_${name(label)}") != null) this.set${JavaName(f)}_${label}(tuple.get${settertype(f.xrefLabels[label_index])}("${name(f)}_${name(label)}"));			
-			if( tuple.getObject("${name(entity)}_${name(f)}_${name(label)}") != null ) this.set${JavaName(f)}_${label}(tuple.get${settertype(f.xrefLabels[label_index])}("${name(entity)}.${name(f)}_${name(label)}"));		
+			if( tuple.getObject("${name(entity)}_${name(f)}_${name(label)}") != null ) this.set${JavaName(f)}_${label}(tuple.get${settertype(f.xrefLabels[label_index])}("${name(entity)}_${name(f)}_${name(label)}"));		
 			</#list></#if>
 			<#elseif f.type == "nsequence">
 			if( strict || tuple.getNSequence("${name(f)}") != null)this.set${JavaName(f)}(tuple.getNSequence("${name(f)}"));
-			if(tuple.getNSequence("${name(entity)}_${name(f)}") != null) this.set${JavaName(f)}(tuple.getNSequence("${name(entity)}.${name(f)}"));
+			if(tuple.getNSequence("${name(entity)}_${name(f)}") != null) this.set${JavaName(f)}(tuple.getNSequence("${name(entity)}_${name(f)}"));
 			<#elseif f.type == "onoff">
 			if( strict || tuple.getOnoff("${name(f)}") != null) this.set${JavaName(f)}(tuple.getOnoff("${name(f)}"));
-			if( tuple.getOnoff("${name(entity)}_${name(f)}") != null) this.set${JavaName(f)}(tuple.getOnoff("${name(entity)}.${name(f)}"));
+			if( tuple.getOnoff("${name(entity)}_${name(f)}") != null) this.set${JavaName(f)}(tuple.getOnoff("${name(entity)}_${name(f)}"));
 			<#else>
 			if( strict || tuple.get${settertype(f)}("${name(f)}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${name(f)}"));
-			if( tuple.get${settertype(f)}("${name(entity)}_${name(f)}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${name(entity)}.${name(f)}"));
+			if( tuple.get${settertype(f)}("${name(entity)}_${name(f)}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${name(entity)}_${name(f)}"));
 			</#if>
 			<#if f.type == "file" || f.type=="image">
 			this.set${JavaName(f)}AttachedFile(tuple.getFile("filefor_${name(f)}"));
-			if(tuple.getFile("filefor_${name(entity)}_${name(f)}") != null) this.set${JavaName(f)}AttachedFile(tuple.getFile("filefor_${name(entity)}.${name(f)}"));
+			if(tuple.getFile("filefor_${name(entity)}_${name(f)}") != null) this.set${JavaName(f)}AttachedFile(tuple.getFile("filefor_${name(entity)}_${name(f)}"));
 			</#if>						
 		</#if>
 	</#list>
