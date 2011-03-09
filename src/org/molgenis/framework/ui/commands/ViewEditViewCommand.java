@@ -10,6 +10,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.SimpleModel;
 import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Entity;
@@ -19,7 +20,7 @@ public class ViewEditViewCommand<E extends Entity> extends SimpleCommand<E>
 {
 	private static final long serialVersionUID = -4074166087593025109L;
 
-	public ViewEditViewCommand(String name, FormModel<E> parentScreen)
+	public ViewEditViewCommand(String name, SimpleModel<E> parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("View/Edit Record");

@@ -9,9 +9,9 @@ import java.util.Vector;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.SimpleModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Form;
 import org.molgenis.framework.ui.html.HtmlInput;
@@ -30,7 +30,7 @@ public class AddCommand2<E extends Entity> extends SimpleCommand<E>
 	Vector<ScreenMessage> messages = new Vector<ScreenMessage>();
 	boolean success = false;
 
-	public AddCommand2(String name, FormModel<E> parent)
+	public AddCommand2(String name, SimpleModel<E> parent)
 	{
 		super(name, parent);
 		this.setLabel("Add new record");

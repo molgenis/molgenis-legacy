@@ -8,8 +8,8 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.SimpleModel;
 import org.molgenis.framework.ui.Templateable;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Entity;
@@ -106,7 +106,7 @@ public interface ScreenCommand<E extends Entity> extends Templateable, Serializa
 	/**
 	 * Helper method to reduce casting
 	 */
-	public FormModel<E> getFormScreen();
+	public SimpleModel<E> getFormScreen();
 
 	/**
 	 * @param screen

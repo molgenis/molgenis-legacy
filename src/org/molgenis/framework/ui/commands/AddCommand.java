@@ -11,6 +11,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.SimpleModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Entity;
@@ -23,7 +24,7 @@ public class AddCommand<E extends Entity> extends SimpleCommand<E>
 {
 	private static final long serialVersionUID = 1512493344265778285L;
 
-	public AddCommand(String name, FormModel<E> parent)
+	public AddCommand(String name, SimpleModel<E> parent)
 	{
 		super(name, parent);
 		this.setLabel("Add new record");

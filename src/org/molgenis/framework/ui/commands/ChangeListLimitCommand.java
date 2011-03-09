@@ -8,8 +8,8 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.SimpleModel;
 import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Entity;
@@ -26,7 +26,7 @@ public class ChangeListLimitCommand<E extends Entity> extends SimpleCommand<E>
 	//the limit it should change too
 	private int limit = 5;
 
-	public ChangeListLimitCommand(String name, FormModel<E> parentScreen)
+	public ChangeListLimitCommand(String name, SimpleModel<E> parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("Show %s items");

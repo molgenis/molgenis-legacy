@@ -17,6 +17,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.SimpleModel;
 import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.CsvWriter;
@@ -34,7 +35,7 @@ public class DownloadSelectedCommand<E extends Entity> extends SimpleCommand<E>
 	public static final transient Logger logger = Logger
 			.getLogger(DownloadSelectedCommand.class);
 
-	public DownloadSelectedCommand(String name, FormModel<E> parentScreen)
+	public DownloadSelectedCommand(String name, SimpleModel<E> parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("Download selected");

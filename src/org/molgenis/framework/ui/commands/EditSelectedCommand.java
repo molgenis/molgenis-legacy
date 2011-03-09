@@ -10,6 +10,7 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.SimpleModel;
 import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Entity;
@@ -24,7 +25,7 @@ public class EditSelectedCommand<E extends Entity> extends SimpleCommand<E>
 	private static final long serialVersionUID = -2996595009523144519L;
 	public static final transient Logger logger = Logger.getLogger(EditSelectedCommand.class);
 
-	public EditSelectedCommand(String name, FormModel<E> parentScreen)
+	public EditSelectedCommand(String name, SimpleModel<E> parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("Update selected");
