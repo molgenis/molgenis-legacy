@@ -49,7 +49,9 @@ public class DatetimeInput extends HtmlInput
 
 	public String getValue()
 	{
-		if( getObject() == null )
+		if( super.getObject() == null )
+			return "";
+		if( ((String)super.getObject()).equals("") )
 			return "";
 		DateFormat formatter = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
 		String result = formatter.format(super.getObject());
