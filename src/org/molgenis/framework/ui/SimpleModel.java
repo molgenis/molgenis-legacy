@@ -15,9 +15,11 @@ package org.molgenis.framework.ui;
 // jdk
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.ui.commands.CommandMenu;
@@ -57,6 +59,8 @@ public abstract class SimpleModel<E extends Entity> extends SimpleTree<ScreenMod
 	 * structure with special "submenu" commands to allow submenu's.
 	 */
 	private Map<String, CommandMenu<E>> menubar = new LinkedHashMap<String, CommandMenu<E>>();
+	/** messages to show to the user */
+	private Vector<ScreenMessage> messages = new Vector<ScreenMessage>();
 
 	/**
 	 * @param name
@@ -266,5 +270,28 @@ public abstract class SimpleModel<E extends Entity> extends SimpleTree<ScreenMod
 			result += m.getCustomHtmlBodyOnLoad();
 		}
 		return result;
+	}
+
+	/**
+	 * Messages to inform the user of state changes and succes.
+	 * 
+	 * @param messages
+	 */
+	public void setMessages(Vector<ScreenMessage> messages)
+	{
+		this.messages = messages;
+	}
+
+	public void setMessages(ScreenMessage... messages)
+	{
+		this.messages = new Vector<ScreenMessage>(Arrays.asList(messages));
+	}
+
+	/**
+	 * @return Messages to inform the user of state changes and succes.
+	 */
+	public Vector<ScreenMessage> getMessages()
+	{
+		return this.messages;
 	}
 }

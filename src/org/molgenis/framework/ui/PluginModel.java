@@ -12,9 +12,6 @@ import org.molgenis.util.Tuple;
 public abstract class PluginModel<E extends Entity> extends SimpleModel<E> implements ScreenController<E, PluginModel<E>>
 {
 	private static final long serialVersionUID = -6748634936592503575L;
-	/** messages to show to the user */
-	private Vector<ScreenMessage> messages = new Vector<ScreenMessage>();;
-
 	public PluginModel(String name, ScreenModel<?> parent)
 	{
 		super(name, parent);
@@ -64,31 +61,6 @@ public abstract class PluginModel<E extends Entity> extends SimpleModel<E> imple
 	 * getFreemarker... methods A 'model' of the screen must be provided to be
 	 * used by the.
 	 */
-
-	/**
-	 * Messages to inform the user of state changes and succes.
-	 * 
-	 * @param messages
-	 */
-	public void setMessages(Vector<ScreenMessage> messages)
-	{
-		this.messages = messages;
-	}
-
-	public void setMessages(ScreenMessage... messageArray)
-	{
-		this.messages = new Vector<ScreenMessage>();
-		this.messages.addAll(Arrays.asList(messageArray));
-	}
-
-	
-	/**
-	 * @return Messages to inform the user of state changes and succes.
-	 */
-	public Vector<ScreenMessage> getMessages()
-	{
-		return this.messages;
-	}
 	
 	@Override
 	public boolean isVisible()

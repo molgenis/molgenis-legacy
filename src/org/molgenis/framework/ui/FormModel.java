@@ -16,7 +16,6 @@ package org.molgenis.framework.ui;
 import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -232,9 +231,6 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 
 	/** query filter set by system (invisible to user) */
 	List<QueryRule> systemRules;
-
-	/** messages to show to the user */
-	private Vector<ScreenMessage> messages;
 
 	/** Active command (in case of a command with dialog) */
 	private ScreenCommand<E> currentCommand = null;
@@ -799,29 +795,6 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 	public void setSystemRules(List<QueryRule> systemRules)
 	{
 		this.systemRules = systemRules;
-	}
-
-	/**
-	 * Messages to inform the user of state changes and succes.
-	 * 
-	 * @param messages
-	 */
-	public void setMessages(Vector<ScreenMessage> messages)
-	{
-		this.messages = messages;
-	}
-
-	public void setMessages(ScreenMessage... messages)
-	{
-		this.messages = new Vector<ScreenMessage>(Arrays.asList(messages));
-	}
-
-	/**
-	 * @return Messages to inform the user of state changes and succes.
-	 */
-	public Vector<ScreenMessage> getMessages()
-	{
-		return this.messages;
 	}
 
 	/**

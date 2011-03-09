@@ -14,6 +14,7 @@ package org.molgenis.framework.ui;
 
 // jdk
 import java.io.Serializable;
+import java.util.Vector;
 
 import org.molgenis.util.EmailService;
 import org.molgenis.util.Entity;
@@ -160,4 +161,10 @@ public interface ScreenModel<E extends Entity> extends Serializable, Tree<Screen
 	 * @param viewid
 	 */
 	void setSelected(String viewid);
+
+	/**
+	 * Get the screen messages
+	 * @return
+	 */
+	public Vector<ScreenMessage> getMessages();
 }

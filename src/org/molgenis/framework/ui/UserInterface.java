@@ -235,4 +235,13 @@ public class UserInterface<E extends Entity> extends SimpleModel<E> implements S
 		// TODO Auto-generated method stub
 		
 	}
+
+	public void clearAllMessages()
+	{
+		for(ScreenModel s: this.getAllChildren())
+		{
+				s.getMessages().clear();
+		}
+		
+	}
 }
