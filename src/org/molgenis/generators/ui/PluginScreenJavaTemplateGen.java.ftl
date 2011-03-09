@@ -43,17 +43,25 @@ public class ${clazzName} extends PluginModel
 		//replace example below with yours
 //		try
 //		{
-//		Database db = this.getDatabase();
-//		String action = request.getString("__action");
+//			//start database transaction
+//			db.beginTx();
+//
+//			//get the "__action" parameter from the UI
+//			String action = request.getAction();
 //		
-//		if( action.equals("do_add") )
-//		{
-//			Experiment e = new Experiment();
-//			e.set(request);
-//			db.add(e);
-//		}
+//			if( action.equals("do_add") )
+//			{
+//				Experiment e = new Experiment();
+//				e.set(request);
+//				db.add(e);
+//			}
+//
+//			//commit all database actions above
+//			db.commitTx();
+//
 //		} catch(Exception e)
 //		{
+//			db.rollbackTx();
 //			//e.g. show a message in your form
 //		}
 	}
