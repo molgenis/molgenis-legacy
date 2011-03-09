@@ -1,18 +1,30 @@
 package org.molgenis.util;
 
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * Abstract Entity class that implements common parts for each Entity.
  */
-public abstract class AbstractEntity implements Entity
+@XmlRootElement(name="entity")
+@XmlAccessorType(XmlAccessType.FIELD)
+public abstract class AbstractEntity implements Entity, Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	@XmlTransient
 	private boolean readonly;
 	
 	public void set(String name, Object value) throws ParseException
