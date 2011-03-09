@@ -23,7 +23,6 @@ import org.molgenis.util.Tuple;
 public abstract class EntityForm<E extends Entity> extends HtmlForm
 {
 	private E entity = null;
-	private boolean newrecord = false;
 
 	/** Construct a form based on a new instance of E */
 	public EntityForm()
@@ -78,16 +77,6 @@ public abstract class EntityForm<E extends Entity> extends HtmlForm
 		Tuple t = new SimpleTuple();
 		t.set(name, value);
 		this.getEntity().set(t, false);
-	}
-
-	public boolean isNewrecord()
-	{
-		return newrecord;
-	}
-
-	public void setNewrecord(boolean newrecord)
-	{
-		this.newrecord = newrecord;
 	}
 
 	/**

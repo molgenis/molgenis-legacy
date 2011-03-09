@@ -1,5 +1,12 @@
 package org.molgenis.framework.ui.html;
 
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
+
 import org.apache.commons.lang.StringEscapeUtils;
 
 /**
@@ -113,7 +120,9 @@ public abstract class HtmlInput implements Input
 	{
 		if( getObject() == null )
 			return "";
-		return getObject().toString();
+		
+		//todo: why different from getHtmlValue()??
+		return getObject().toString().replace( "\n","<br>" ).replace( "\r","" ).replace(">", "&gt;").replace("<", "&lt;");
 	}
 
 	public void setValue( Object value )
@@ -218,7 +227,8 @@ public abstract class HtmlInput implements Input
 	
 	public String getHtmlValue()
 	{
-		String value = StringEscapeUtils.escapeXml( this.getValue() ).replace( "\n","<br>" ).replace( "\r","" );
+		String value = null;
+		value = this.getValue().replace( "\n","<br>" ).replace( "\r","" ).replace(">", "&gt;").replace("<", "&lt;");
 		return value;
 	}
 	

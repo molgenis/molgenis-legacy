@@ -35,7 +35,7 @@ public class FileInput extends HtmlInput
 	{		
 		//FIXME how to check not null file uploads
 		this.setNillable(true);
-		String readonly = ( isReadonly() ? " class=\"readonly\" readonly " : "");
+		String readonly = ( isReadonly() ? "readonly class=\"readonly\" readonly " : "");
 		
 		StringInput hidden = new StringInput(this.getName(), super.getValue());
 		hidden.setLabel(this.getLabel());
@@ -47,7 +47,7 @@ public class FileInput extends HtmlInput
 			return hidden.toHtml();
 		}
 		
-		return hidden.toHtml() + "<input type=\"file\" "+readonly+"name=\"filefor_" + getName() + "\" size=\"20\">" + getValue();	
+		return hidden.toHtml() + (isReadonly() ? "<input type=\"file\" "+readonly+"name=\"filefor_" + getName() + "\" size=\"20\">" : "") + getValue();	
 	}
 	
 	/**

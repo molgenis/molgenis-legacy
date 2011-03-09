@@ -105,12 +105,13 @@ public class MrefInput extends HtmlInput
 			// html.append(input.toHtml()+"<br>");
 		}
 
-		if (isHidden())
+		if (isHidden() || isReadonly())
 		{
 			return "<div>" + html.toString() + "</div>";
 		}
 		else
 		{
+			
 			String buttons = String
 					.format(
 							"<button style=\"\" type=\"button\" onclick=\"mref_addInput('%s','%s','%s','%s','%s',this.parentNode);\">+</button>",
