@@ -92,7 +92,9 @@ public class ${JavaName(entity)}Form extends EntityForm<${JavaName(entity)}>
 			<#if field.readOnly && field.auto>
 			input.setReadonly(true); //automatic fields that are readonly, are also readonly on newrecord
 			<#elseif field.readOnly>
-			if(!isNewrecord() || isReadonly() || getEntity().isReadonly()) input.setReadonly(true); //readonly if not new record
+			//FIXME: this should be moved to login?
+			//readonly, except when new record without default, unless whole entity is readonly
+			if( !(isNewRecord() && "".equals(input.getValue())) || getEntity().isReadonly()) input.setReadonly(true); 
 			<#else>
 			input.setReadonly( isReadonly() || getEntity().isReadonly());
 			</#if>
@@ -114,11 +116,11 @@ public class ${JavaName(entity)}Form extends EntityForm<${JavaName(entity)}>
 			</#if>
 			</#if>
 			<#if field.hidden>
-			input.setHidden(<#if (field.auto && field.readOnly) || (field.defaultValue?exists)>true<#else>!isNewrecord()</#if>);
+			input.setHidden(<#if (field.auto && field.readOnly) || (field.defaultValue?exists)>true<#else>!isNewRecord()</#if>);
 			<#else>
 			if(this.getHiddenColumns().contains(input.getName()))
 			{	
-				input.setHidden(<#if (field.auto && field.readOnly) || (field.defaultValue?exists)>true<#else>!isNewrecord()</#if>);
+				input.setHidden(<#if (field.auto && field.readOnly) || (field.defaultValue?exists)>true<#else>!isNewRecord()</#if>);
 			}
 			</#if>
 			if(this.getCompactView().size() > 0 && !this.getCompactView().contains(input.getName()))
