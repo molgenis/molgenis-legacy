@@ -61,6 +61,28 @@ function showDateInput(input, isDatetime)
 			window.dateInputDiv.style.display = "block";
 		}
 	}	
+	
+	//make sure that if somebody clicks outside it is hidden again
+	if(window.dateInputDiv.style.display == "block")
+	{
+		document.onclick = function check(e)
+		{
+			var target = (e && e.target) || (event && event.srcElement);
+			
+			//find out if the click was on the date time input
+			while(target.parentNode)
+			{
+				//alert(target);
+				if (target == window.dateInputDiv || target == input)
+				{
+					return false;
+				}
+				target = target.parentNode;
+			}
+			//if we got here, it was outside the dateinput and we need to hide it
+			window.dateInputDiv.style.display ='none';
+		}
+	}
 }
 /**constructor, to pass parameters*/
 function DateInput(input, isDatetime)

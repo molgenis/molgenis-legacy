@@ -14,7 +14,8 @@ function showXrefInput(input, xref_entity, xref_field, xref_labels, xref_filters
 	}
 
 	//create if not exists
-	if (document.getElementById(id) == null) {
+	if (document.getElementById(id) == null) 
+	{
 		//alert("create"); 
 		var myInput = new XrefInput(input, xref_entity, xref_field, xref_labels, xref_filters);
 		window.xrefInputDiv = myInput.xrefDiv;		
@@ -38,8 +39,31 @@ function showXrefInput(input, xref_entity, xref_field, xref_labels, xref_filters
 			input.blur();			
 			searchbox = xrefInputDiv.getElementsByTagName("input")[0];
 			searchbox.focus();		
+		}
 	}
+	
+		//make sure that if somebody clicks outside it is hidden again
+	if(window.xrefInputDiv.style.display == "block")
+	{
+		document.onclick = function check(e)
+		{
+			var target = (e && e.target) || (event && event.srcElement);
+			
+			//find out if the click was on the date time input
+			while(target.parentNode)
+			{
+				//alert(target);
+				if (target == window.xrefInputDiv || target == input)
+				{
+					return false;
+				}
+				target = target.parentNode;
+			}
+			//if we got here, it was outside the dateinput and we need to hide it
+			window.xrefInputDiv.style.display ='none';
+		}
 	}
+	
 	return myInput;
 }
 

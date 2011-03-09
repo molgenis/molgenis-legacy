@@ -7,19 +7,47 @@ function showDateInput(input)
 	if(window.dateInputDiv &&  window.dateInputDiv.id != id)
 		window.dateInputDiv.style.display = "none"; 
 	
+	//if the element doesn't exist, create it
 	if(document.getElementById(id) == null)
 	{
 		var myInput = new DateInput(input);
 		window.dateInputDiv = myInput.calendar;
 	}
+	//if it does exist ...
 	else
 	{
 		window.dateInputDiv = document.getElementById(id);
+		
+		//if shown, hide it
 		if(window.dateInputDiv.style.display == "block")
 			window.dateInputDiv.style.display= "none";	
+		//otherwise, show it
 		else
-			window.dateInputDiv.style.display = "block";	
+		{
+			window.dateInputDiv.style.display = "block";
+		}
 	}	
+	
+	//make sure that if somebody clicks outside it is hidden again
+	if(window.dateInputDiv.style.display == "block")
+	{
+		document.onclick= function check(e)
+		{
+			var target = (e && e.target) || (event && event.srcElement);
+		
+			//find out if the click was on the date time input
+			while(target.parentNode)
+			{
+				if (target == window.dateInputDiv)
+				{
+					return false
+				}
+				target = target.parentNode
+			}
+			//if we got here, it was outside the dateinput and we need to hide it
+			window.dateInputDiv.style.display ='none';
+		}
+	}
 }
 function DateInput(input)
 {
