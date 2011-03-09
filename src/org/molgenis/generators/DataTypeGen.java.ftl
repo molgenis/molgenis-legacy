@@ -592,7 +592,7 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 			}
 			<#if f.xrefLabelNames[0] != f.xrefFieldName><#list f.xrefLabelNames as label>
 			//set labels ${label} for mref field ${JavaName(f)}	
-			if( tuple.getObject("${name(f)}_${name(label)}")!= null && tuple.getObject("${name(entity)}_${name(f)}_${name(label)}")!= null) 
+			if( tuple.getObject("${name(f)}_${name(label)}")!= null || tuple.getObject("${name(entity)}_${name(f)}_${name(label)}")!= null) 
 			{
 				java.util.List<${type(f.xrefLabels[label_index])}> values = new java.util.ArrayList<${type(f.xrefLabels[label_index])}>();
 				java.util.List<?> mrefs = tuple.getList("${name(f)}_${name(label)}");
