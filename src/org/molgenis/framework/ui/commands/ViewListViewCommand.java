@@ -26,7 +26,7 @@ public class ViewListViewCommand<E extends Entity> extends SimpleCommand<E>
 	public ViewListViewCommand(String name, FormModel<E> parentScreen)
 	{
 		super(name, parentScreen);
-		this.setLabel("List Records");
+		this.setLabel("View List of Records");
 		this.setIcon("generated-res/img/listview.png");
 		this.setMenu("View");
 		this.setToolbar(true);

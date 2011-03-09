@@ -22,9 +22,10 @@ public class ViewEditViewCommand<E extends Entity> extends SimpleCommand<E>
 	public ViewEditViewCommand(String name, FormModel<E> parentScreen)
 	{
 		super(name, parentScreen);
-		this.setLabel("Edit Record");
+		this.setLabel("View/Edit Record");
 		this.setIcon("generated-res/img/editview.gif");
 		this.setMenu("View");
+		this.setToolbar(true);
 	}
 
 	@Override
