@@ -602,6 +602,10 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					freemarkerTemplate.process(args, writer);
 				}
 				writer.close();
+				
+				//done, get rid of screen messages here?
+				((UserInterface)molgenis).clearAllMessages();
+				
 			}
 			// db.commitTx(); DISCUSSION
 		}
