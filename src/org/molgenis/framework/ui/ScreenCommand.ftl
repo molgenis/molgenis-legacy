@@ -21,8 +21,8 @@
 	<#list command.getInputs() as input>
 		<#if !input.isHidden()>
 			<tr>
-				<td title="${input.description}"><label>${input.label}</label></td>
-				<td>${input.toHtml()}<#if !input.isNillable()  && !input.isReadonly()>*</#if></td>
+				<td title="${input.description}"><label>${input.label}<#if !input.isNillable()  && !input.isReadonly()> *</#if></label></td>
+				<td>${input.toHtml()}</td>
 			</tr>
 		<#else>
 			${input.toHtml()}

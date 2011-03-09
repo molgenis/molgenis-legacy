@@ -66,6 +66,11 @@
 		</#if>
 	</#list>
 </div>
+
+	<!--enforce validation-->
+</#macro>
+
+<#macro form_toolbar screen>
 <div align="right">
 		<!--toolbar-->
 		<#list screen.getToolbar() as command>
@@ -89,7 +94,6 @@
 		<input title="fill in search term" type="text" name="__filter_value" onkeypress="if (event.keyCode == 13){setInput('${screen.name}_form','_self','','${screen.name}','filter_add','iframe'); document.forms.${screen.name}_form.submit(); return false;}">					
 		<img class="navigation_button" src="generated-res/img/filter.png" alt="Add filter" onclick="setInput('${screen.name}_form','_self','','${screen.name}','filter_add','iframe'); document.forms.${screen.name}_form.submit();"/>		
 </div>
-	<!--enforce validation-->
 </#macro>
 
 <#macro form_new screen>
@@ -104,8 +108,8 @@
 	<#list screen.getNewRecordForm() as input>
 		<#if !input.isHidden()>
 			<tr>
-				<td title="${input.description}"><label for="${input.name}">${input.label}</label></td>
-				<td>${input.toHtml()}<#if !input.isNillable()  && !input.isReadonly()>*</#if></td>
+				<td title="${input.description}"><label for="${input.name}">${input.label}<#if !input.isNillable()  && !input.isReadonly()> *</#if></label></td>
+				<td>${input.toHtml()}</td>
 			</tr>
 		<#else>
 			${input.toHtml()}
@@ -142,7 +146,7 @@
 		<#if !input.isHidden()>
 			<tr>
 				<td title="${input.description}"><label>${input.label}</label></td>
-				<td>${input.toHtml()}<#if !input.isNillable()  && !input.isReadonly()>*</#if></td>
+				<td>${input.toHtml()}<#if !input.isNillable()  && !input.isReadonly()> *</#if></td>
 			</tr>
 		<#else>
 			${input.toHtml()}
@@ -272,7 +276,7 @@ var molgenis_required = new Array(${required});
 			
 			<#if !input.isHidden()>
 	<tr title="${input.getDescription()}" <#if input.collapse>class="${screen.name}_collapse" </#if>>
-		<td><label>${input.label}</label></td>
+		<td><label>${input.label}<#if !input.isNillable() && !input.isReadonly()> *</#if></label></td>
 				<#if screen.readonly >
 					<#if input.getTarget() != "" && input.getObject()?exists >
 					<td class="link" onClick="setInput('${screen.name}_form','_self','','${input.getTarget()}','xref_select','iframe'); document.forms.${screen.name}_form.attribute.value='${input.getTargetfield()}'; document.forms.${screen.name}_form.operator.value='EQUALS'; document.forms.${screen.name}_form.value.value='${input.getObject()}'; document.forms.${screen.name}_form.submit();">${input.getHtmlValue()}</td>	
@@ -280,7 +284,7 @@ var molgenis_required = new Array(${required});
 		<td><div  class="recordview_datavalue">${input.getValue()?replace('\n','<br>')}&nbsp;</div></td>
 					</#if>
 				<#else>
-		<td>${input.toHtml()}<#if !input.isNillable() && !input.isReadonly()>*</#if></td>
+		<td>${input.toHtml()}</td>
 				</#if>
 	</tr>
 			<#else>
@@ -360,10 +364,10 @@ var molgenis_required = new Array(${required});
 		</#if>
 	</td>
 		<#list record.inputs as input>
-			<#if input.getName()?lower_case == screen.getIdField()?lower_case>					
+			<#if input.getName()?lower_case == screen.getName()?lower_case+"_"+screen.getIdField()?lower_case>			
 	<td><input type="checkbox" name="massUpdate" value="${input.getHtmlValue()}"></td>
 				<#if readonly == "*">
-	<input type="hidden" name="massUpdate_readonly" value="${input.getHtmlValue()}">
+	<td><input type="hidden" name="massUpdate_readonly" value="${input.getHtmlValue()}"></td>
 				</#if>
 			</#if>
 		</#list>
@@ -395,7 +399,7 @@ var molgenis_required = new Array(${required});
 		</tr>
 	</#if>
 	</table>
-	<label>* = this record is readonly.</label>
+	<label> * = this record is readonly.</label>
 </#macro>
 
 <#macro form_upload screen>
@@ -407,7 +411,7 @@ var molgenis_required = new Array(${required});
 		<table>
 		<tr><td colspan="2"><i>Set constants (overrides uploaded data).</i></td></tr>
 		<#list screen.getNewRecordForm() as input>
-		<tr><td><label>${input.label}</label></td><td>${input.toHtml()}</td></tr>
+		<tr><td><label>${input.label}<#if !input.isNillable()  && !input.isReadonly()> *</#if></label></td><td>${input.toHtml()}</td></tr>
 		</#list>
 		<!--<tr><td><br><label>Number of copies: </label></td><td><br><input name="__batchadd" value="1" size="4"/></td></tr>-->		
 		<tr><td colspan="2"><i>Add CSV data.</i></td></tr>					
@@ -461,15 +465,21 @@ var molgenis_required = new Array(${required});
 	<input type="hidden" name="limit">
 	<input type="hidden" name="filter_id" />
 <@form_header screen/>
-	<div class="screenbody">
-		<div class="screenpadding">
-		<#if screen.mode.toString() == "editview">
-<@editview screen />
-		<#else> 
-<@listview screen /> 
-		</#if>
-		</div>
-	</div>
+	<!-- put in table so we can collapse the content panel-->
+	<table width="100%">
+		<tr>
+			<td class="form_collapse" style="width: 12px;"><img src="generated-res/img/minus.png" id="${screen.name}_toggleImage" onclick="javascript:toggleForm('${screen.name}')"/></td>
+			<td id="${screen.name}_contentPanel">
+				<@form_toolbar screen/>
+				<div class="screenbody">
+					<div class="screenpadding">
+					<#if screen.mode.toString() == "editview">
+			<@editview screen />
+					<#else> 
+			<@listview screen /> 
+					</#if>
+					</div>
+				</div>
 </form>
 <!-- subforms -->
 		<#if (screen.mode.toString() == "editview") && screen.count &gt; 0>
@@ -481,5 +491,8 @@ var molgenis_required = new Array(${required});
 		</#if>
 	</#if>
 <!-- end of FormScreen ${screen.getName()}-->
+			</td>
+		</tr>
+	</table>
 </div>
 </#macro>
