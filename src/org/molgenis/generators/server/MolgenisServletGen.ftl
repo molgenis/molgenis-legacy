@@ -94,7 +94,7 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 		
 <#list model.userinterface.children as subscreen>
 <#assign screentype = Name(subscreen.getType().toString()?lower_case) />
-		new ${package}.ui.${JavaName(subscreen)}${screentype}(app);
+		new ${package}.ui.${JavaName(subscreen)}${screentype}<#if screentype == "Form">Model</#if>(app);
 </#list>
 		return app;
 	}
