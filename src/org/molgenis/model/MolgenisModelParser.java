@@ -26,6 +26,7 @@ import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.molgenis.MolgenisFieldTypes;
 import org.molgenis.fieldtypes.UnknownField;
+import org.molgenis.generators.GeneratorHelper;
 import org.molgenis.model.elements.DBSchema;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Field;
@@ -1001,7 +1002,8 @@ public class MolgenisModelParser
 								+ form.getName() + "'");
 					}
 					//use name from 'f' to correct for case problems
-					compact_fields.add(f.getName());
+
+					compact_fields.add(GeneratorHelper.firstToLower(form.getEntity().getName())+"_"+GeneratorHelper.firstToLower(f.getName()));
 				}
 				form.setCompactView(compact_fields);
 			}
