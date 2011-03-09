@@ -49,12 +49,19 @@ public class DatetimeInput extends HtmlInput
 
 	public String getValue()
 	{
-		if( super.getObject() == null )
+		Object dateObject = super.getObject();
+		if (dateObject == null)
 			return "";
-		if( ((String)super.getObject()).equals("") )
+		if (((String)dateObject).equals(""))
 			return "";
+		
+		// If it's already a string, return it
+		if (dateObject instanceof String) {
+			return dateObject.toString();
+		}
+		
 		DateFormat formatter = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
-		String result = formatter.format(super.getObject());
+		String result = formatter.format(dateObject);
 		result = result.substring(0, 1).toUpperCase() + result.substring(1);
 		return result;
 	}
