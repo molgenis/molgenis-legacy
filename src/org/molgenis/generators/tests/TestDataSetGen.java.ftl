@@ -80,9 +80,9 @@ public class TestDataSet
 			if( this.${name(f.xrefEntity)}.size() > 0  && i < this.${name(f.xrefEntity)}.size())
 			{ 
 				${JavaName(f.xrefEntity)} ref = this.${name(f.xrefEntity)}.get(i);
-				<#list f.xrefLabelNames as label><#if label != pkey(f.xrefEntity).name >
-				e.set${JavaName(f)}_${label}(ref.get${JavaName(label)}() );
-				</#if></#list>
+				<#list f.xrefLabelNames as label>
+				e.set${JavaName(f)}_${JavaName(label)}(ref.get${JavaName(label)}() );
+				</#list>
 			}
 			<#elseif f.type == "mref">
 			if( this.${name(f.xrefEntity)}.size() > 0)
@@ -103,7 +103,7 @@ public class TestDataSet
 					</#list>
 				}
 				<#list f.xrefLabelNames as label><#if label != pkey(f.xrefEntity).name >
-				e.set${JavaName(f)}_${label}( ${label}List );
+				e.set${JavaName(f)}_${JavaName(label)}( ${label}List );
 				</#if></#list>
 			}
 			<#elseif f.type=="bool">

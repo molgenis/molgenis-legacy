@@ -180,11 +180,11 @@
 		<#else>
 			//create xref rule filtering on the label ${csv(f.xrefLabelNames)}
 			{
-				QueryRule xrefFilter = new QueryRule("${f.xrefLabelNames[0]}", Operator.EQUALS, object.get${JavaName(f)}_${f.xrefLabelNames[0]}());
-				if(object.get${JavaName(f)}() == null && object.get${JavaName(f)}_${f.xrefLabelNames[0]}()!= null && !${name(f)}Rules.containsKey(object.get${JavaName(f)}_${f.xrefLabelNames[0]}()))
+				QueryRule xrefFilter = new QueryRule("${f.xrefLabelNames[0]}", Operator.EQUALS, object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}());
+				if(object.get${JavaName(f)}() == null && object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}()!= null && !${name(f)}Rules.containsKey(object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}()))
 				{
-					${name(f)}Rules.put(""+object.get${JavaName(f)}_${f.xrefLabelNames[0]}(), xrefFilter);
-					${name(f)}Rules.put(""+object.get${JavaName(f)}_${f.xrefLabelNames[0]}()+"_OR_", new QueryRule(Operator.OR));
+					${name(f)}Rules.put(""+object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}(), xrefFilter);
+					${name(f)}Rules.put(""+object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}()+"_OR_", new QueryRule(Operator.OR));
 				}
 			}
 		</#if>	
@@ -229,7 +229,7 @@
 			{
 				String key = "";
 				<#list f.xrefLabelNames as label>
-				key += 	object.get${JavaName(f)}_${label}();
+				key += 	object.get${JavaName(f)}_${JavaName(label)}();
 				object.set${JavaName(f)}(${name(f)}_Labels_to_IdMap.get(key));
 				</#list>
 			}

@@ -208,10 +208,10 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 		}		
 		<#else>
 		//resolve xref '${name(f)}' from ${name(f.getXrefEntityName())}.${csv(f.getXrefLabelNames())} -> ${name(f.getXrefEntityName())}.${name(f.getXrefFieldName())}
-		for(${JavaName(entity)} o: ${name(entity)}List) <#if f.type == "mref">for(${JavaType(f.xrefLabels[0])} xref_label: o.get${JavaName(f)}_${f.getXrefLabelNames()[0]}())</#if>
+		for(${JavaName(entity)} o: ${name(entity)}List) <#if f.type == "mref">for(${JavaType(f.xrefLabels[0])} xref_label: o.get${JavaName(f)}_${JavaName(f.getXrefLabelNames()[0])}())</#if>
 		{
-			if(<#if f.type == "mref">xref_label<#else>o.get${JavaName(f)}_${f.getXrefLabelNames()[0]}()</#if> != null) 
-				${name(f)}Keymap.put(<#if f.type == "mref">xref_label<#else>o.get${JavaName(f)}_${f.getXrefLabelNames()[0]}()</#if>, null);
+			if(<#if f.type == "mref">xref_label<#else>o.get${JavaName(f)}_${JavaName(f.getXrefLabelNames()[0])}()</#if> != null) 
+				${name(f)}Keymap.put(<#if f.type == "mref">xref_label<#else>o.get${JavaName(f)}_${JavaName(f.getXrefLabelNames()[0])}()</#if>, null);
 		}
 		
 		if(${name(f)}Keymap.size() > 0) 
@@ -231,16 +231,16 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 				<#list allFields(entity) as f>
 				<#if f.type == 'xref'  && f.getXrefLabelNames()[0] != f.getXrefFieldName()>
 				//update xref ${f.name}
-				if(<#list f.xrefLabelNames as label><#if label_index &gt; 0> || </#if>o.get${JavaName(f)}_${label}() != null</#list>) 
+				if(<#list f.xrefLabelNames as label><#if label_index &gt; 0> || </#if>o.get${JavaName(f)}_${JavaName(label)}() != null</#list>) 
 				{
 					<#if f.xrefLabelNames?size &gt; 1>
 					String key = "";
 					<#list f.xrefLabelNames as label>
-					//key.put("${label}", o.get${JavaName(f)}_${label}());
-					key += "|" + o.get${JavaName(f)}_${label}();
+					//key.put("${label}", o.get${JavaName(f)}_${JavaName(label)}());
+					key += "|" + o.get${JavaName(f)}_${JavaName(label)}();
 					</#list>
 					<#else>	
-					${type(f.xrefLabels[0])} key = o.get${JavaName(f)}_${f.xrefLabelNames[0]}();
+					${type(f.xrefLabels[0])} key = o.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}();
 					</#if>
 					if(${name(f)}Keymap.get(key) == null)
 					{
@@ -252,31 +252,31 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 						throw new Exception("Import of '${entity.name}' objects failed: attempting to resolve in-list references, but this is (at the moment) not possible for non-nillable XREF fields");
 						</#if>
 					<#else>
-						throw new Exception("Import of '${entity.name}' objects failed: cannot find ${JavaName(f.getXrefEntityName())} for <#list f.xrefLabelNames as label><#if label_index &gt; 0> and </#if>${name(f)}_${label}='"+o.get${JavaName(f)}_${label}()+"'</#list>");
+						throw new Exception("Import of '${entity.name}' objects failed: cannot find ${JavaName(f.getXrefEntityName())} for <#list f.xrefLabelNames as label><#if label_index &gt; 0> and </#if>${name(f)}_${label}='"+o.get${JavaName(f)}_${JavaName(label)}()+"'</#list>");
 					</#if>
 					}
 					o.set${JavaName(f)}_${JavaName(f.getXrefField())}(${name(f)}Keymap.get(key));
 				}
 				<#elseif f.type == 'mref'  && f.getXrefLabelNames()[0] != f.getXrefFieldName()>
 				//update mref ${f.name}
-				if(<#list f.xrefLabelNames as label><#if label_index &gt; 0> || </#if>o.get${JavaName(f)}_${label}() != null</#list>) 
+				if(<#list f.xrefLabelNames as label><#if label_index &gt; 0> || </#if>o.get${JavaName(f)}_${JavaName(label)}() != null</#list>) 
 				{
 					List<Integer> mrefs = new ArrayList<Integer>();
 					boolean breakToNext${JavaName(entity)} = false;
 
 					int listSize = 0;
 					<#list f.xrefLabelNames as label>
-					if(o.get${JavaName(f)}_${label}() != null) listSize = Math.max(o.get${JavaName(f)}_${label}().size(), listSize);
+					if(o.get${JavaName(f)}_${JavaName(label)}() != null) listSize = Math.max(o.get${JavaName(f)}_${JavaName(label)}().size(), listSize);
 					</#list>
 					for(int i = 0; i < listSize; i++)
 					{
 						<#if f.xrefLabelNames?size &gt; 1>
 						String key = "";
 						<#list f.xrefLabelNames as label>
-						key = key + "|" +(o.get${JavaName(f)}_${label}() != null && i < o.get${JavaName(f)}_${label}().size() ? o.get${JavaName(f)}_${label}().get(i) : "null");
+						key = key + "|" +(o.get${JavaName(f)}_${JavaName(label)}() != null && i < o.get${JavaName(f)}_${label}().size() ? o.get${JavaName(f)}_${label}().get(i) : "null");
 						</#list>
 						<#else>	
-						${JavaType(f.xrefLabels[0])} key = o.get${JavaName(f)}_${f.xrefLabelNames[0]}().get(i);
+						${JavaType(f.xrefLabels[0])} key = o.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}().get(i);
 						</#if>
 						if(${name(f)}Keymap.get(key) == null){
 							<#if entity.name == f.getXrefEntityName()>
@@ -289,7 +289,7 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 								</#if>
 							<#else>
 							logger.error("Import of '${entity.name}' objects failed: "+o);
-							throw new Exception("Import of '${entity.name}' objects failed: cannot find <#list f.xrefLabelNames as label><#if label_index &gt; 0> and </#if>${name(f)}_${label}='"+(o.get${JavaName(f)}_${label}() != null && i < o.get${JavaName(f)}_${label}().size() ? o.get${JavaName(f)}_${label}().get(i) : "null")+"'</#list>");
+							throw new Exception("Import of '${entity.name}' objects failed: cannot find <#list f.xrefLabelNames as label><#if label_index &gt; 0> and </#if>${name(f)}_${label}='"+(o.get${JavaName(f)}_${JavaName(label)}() != null && i < o.get${JavaName(f)}_${JavaName(label)}().size() ? o.get${JavaName(f)}_${JavaName(label)}().get(i) : "null")+"'</#list>");
 							</#if>
 						}
 						mrefs.add(${name(f)}Keymap.get(key));

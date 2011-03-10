@@ -116,13 +116,13 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	public java.util.List<ValueLabel> get${JavaName(field)}Options();
 		<#elseif type_label="xref">			
 			<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>
-	public ${type(field.xrefLabels[label_index])} get${JavaName(field)}_${label}();
-	public void set${JavaName(field)}_${label}(${type(field.xrefLabels[label_index])} ${name(field)}_${label});
+	public ${type(field.xrefLabels[label_index])} get${JavaName(field)}_${JavaName(label)}();
+	public void set${JavaName(field)}_${JavaName(label)}(${type(field.xrefLabels[label_index])} ${name(field)}_${label});
 			</#list></#if>		
 		<#elseif type_label == "mref">	
 			<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>
-	public java.util.List<${type(field.xrefLabels[label_index])}> get${JavaName(field)}_${label}();
-	public void set${JavaName(field)}_${label}(java.util.List<${type(field.xrefLabels[label_index])}> ${name(field)}_${label}List);	
+	public java.util.List<${type(field.xrefLabels[label_index])}> get${JavaName(field)}_${JavaName(label)}();
+	public void set${JavaName(field)}_${JavaName(label)}(java.util.List<${type(field.xrefLabels[label_index])}> ${name(field)}_${label}List);	
 			</#list></#if>						
 		<#elseif type_label == "file" || type_label=="image" >
 	public File get${JavaName(field)}File();
@@ -396,7 +396,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	/**
 	 * Get a pretty label ${label} for cross reference ${JavaName(field)} to ${JavaName(field.xrefEntity)}.${JavaName(field.xrefField)}.
 	 */
-	public ${type(field.xrefLabels[label_index])} get${JavaName(field)}_${label}()
+	public ${type(field.xrefLabels[label_index])} get${JavaName(field)}_${JavaName(label)}()
 	{			
 		return _${name(field)}_${label};
 	}		
@@ -404,7 +404,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	/**
 	 * Set a pretty label for cross reference ${JavaName(field)} to <a href="${JavaName(field.xrefEntity)}.html#${JavaName(field.xrefField)}">${JavaName(field.xrefEntity)}.${JavaName(field.xrefField)}</a>.
 	 */
-	public void set${JavaName(field)}_${label}(${type(field.xrefLabels[label_index])} ${name(field)}_${label})
+	public void set${JavaName(field)}_${JavaName(label)}(${type(field.xrefLabels[label_index])} ${name(field)}_${label})
 	{
 		_${name(field)}_${label} = ${name(field)}_${label};
 		//clear the object cache
@@ -428,7 +428,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	/**
 	 * Get a pretty label for cross reference ${JavaName(field)} to <a href="${JavaName(field.xrefEntity)}.html#${JavaName(field.xrefField)}">${JavaName(field.xrefEntity)}.${JavaName(field.xrefField)}</a>.
 	 */
-	public java.util.List<${type(field.xrefLabels[label_index])}> get${JavaName(field)}_${label}()
+	public java.util.List<${type(field.xrefLabels[label_index])}> get${JavaName(field)}_${JavaName(label)}()
 	{
 		if(this._${name(field)}_objects != null && this._${name(field)}_objects.size() > 0)
 		{
@@ -442,14 +442,14 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	}
 		
 	
-	public void set${JavaName(field)}_${label}(java.util.List<${type(field.xrefLabels[label_index])}> ${name(field)}_${label})
+	public void set${JavaName(field)}_${JavaName(label)}(java.util.List<${type(field.xrefLabels[label_index])}> ${name(field)}_${label})
 	{
 		_${name(field)}_${label} = ${name(field)}_${label};
 		//clear the object cache
 		_${name(field)}_objects = null;
 	}		
 </#list>
-public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field.xrefField)}> ${name(field)}_${name(field.xrefField)})
+	public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field.xrefField)}> ${name(field)}_${name(field.xrefField)})
 	{
 		_${name(field)} = ${name(field)}_${name(field.xrefField)};
 	}
@@ -491,7 +491,7 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 		<#elseif field.type == "xref" || field.type == "mref">
 <#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>	
 		if(name.toLowerCase().equals("${name(field)?lower_case}_${label?lower_case}"))
-			return get${JavaName(field)}_${label}();
+			return get${JavaName(field)}_${JavaName(label)}();
 </#list></#if>			
 		</#if>
 	</#foreach>		
@@ -563,7 +563,7 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 		<#if f.type == "xref">			
 			<#if f.xrefLabelNames[0] != f.xrefFieldName><#list f.xrefLabelNames as label>		
 			//set label ${label} for xref field ${JavaName(f)}
-			this.set${JavaName(f)}_${label}(tuple.get${settertype(f.xrefLabels[label_index])}("${name(f)}_${name(label)}"));	
+			this.set${JavaName(f)}_${JavaName(label)}(tuple.get${settertype(f.xrefLabels[label_index])}("${name(f)}_${name(label)}"));	
 			</#list></#if>			
 		</#if>				
 		</#if>
@@ -615,7 +615,7 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 				  		</#if>						
 					</#if>
 					}							
-				this.set${JavaName(f)}_${label}( values );			
+				this.set${JavaName(f)}_${JavaName(label)}( values );			
 			}	
 			</#list></#if>					
 		<#elseif f.name != typefield()>
@@ -628,8 +628,8 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 			if( tuple.getObject("${name(entity)}_${name(f)}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${name(entity)}_${name(f)}"));
 			//set label for field ${JavaName(f)}
 			<#if f.xrefLabelNames[0] != f.xrefFieldName><#list f.xrefLabelNames as label>
-			if( strict || tuple.getObject("${name(f)}_${name(label)}") != null) this.set${JavaName(f)}_${label}(tuple.get${settertype(f.xrefLabels[label_index])}("${name(f)}_${name(label)}"));			
-			if( tuple.getObject("${name(entity)}_${name(f)}_${name(label)}") != null ) this.set${JavaName(f)}_${label}(tuple.get${settertype(f.xrefLabels[label_index])}("${name(entity)}_${name(f)}_${name(label)}"));		
+			if( strict || tuple.getObject("${name(f)}_${name(label)}") != null) this.set${JavaName(f)}_${JavaName(label)}(tuple.get${settertype(f.xrefLabels[label_index])}("${name(f)}_${name(label)}"));			
+			if( tuple.getObject("${name(entity)}_${name(f)}_${name(label)}") != null ) this.set${JavaName(f)}_${JavaName(label)}(tuple.get${settertype(f.xrefLabels[label_index])}("${name(entity)}_${name(f)}_${name(label)}"));		
 			</#list></#if>
 			<#elseif f.type == "nsequence">
 			if( strict || tuple.getNSequence("${name(f)}") != null)this.set${JavaName(f)}(tuple.getNSequence("${name(f)}"));
@@ -655,11 +655,11 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 			//if a some parts of the secondary key for '${f.name}' are set and some not it will search if it can use another label to complete it
 			//e.g if protocol_name is set, but protocol_investigation_name is not set it will look for investigation_name in the other labels to copy
 			//caveat: it may be left empty on purpose, hence tuple headers should be checked and not null constraints
-			if( (<#list f.xrefLabelNames as label><#if label_index &gt; 0>||</#if> this.get${JavaName(f)}_${label}() == null</#list>) && (<#list f.xrefLabelNames as label><#if label_index &gt; 0>||</#if> this.get${JavaName(f)}_${label}() != null</#list>) )
+			if( (<#list f.xrefLabelNames as label><#if label_index &gt; 0>||</#if> this.get${JavaName(f)}_${JavaName(label)}() == null</#list>) && (<#list f.xrefLabelNames as label><#if label_index &gt; 0>||</#if> this.get${JavaName(f)}_${JavaName(label)}() != null</#list>) )
 			{
 				<#list f.xrefLabelNames as label>
 				//guess the value for ${label} from other labels, if not set to null on purpose in the tuple
-				if( this.get${JavaName(f)}_${label}() == null && !tuple.getFields().contains("${name(f)}_${name(label)}") )
+				if( this.get${JavaName(f)}_${JavaName(label)}() == null && !tuple.getFields().contains("${name(f)}_${name(label)}") )
 				{
 					<#list f.labelsToSameEndpoint(label) as otherLabel>
 						//${otherLabel}
@@ -691,7 +691,7 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 		result+= "${name(field)}='" + get${JavaName(field)}()+"'<#if field_has_next> </#if>";
 			<#if field.type == "xref" || field.type == "mref">
 				<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>
-		result+= " ${name(field)}_${name(label)}='" + get${JavaName(field)}_${label}()+"' ";
+		result+= " ${name(field)}_${name(label)}='" + get${JavaName(field)}_${JavaName(label)}()+"' ";
 				</#list></#if>
 			</#if>
 		</#if>
@@ -712,10 +712,10 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 		//ignoring automatic primary key ${field.name}		
 		<#elseif field.type = "xref" || field.type = "mref">
 		//compare on xref labels if they are set
-		<#if field.xrefLabelNames[0] != field.xrefFieldName>if(<#list field.xrefLabelNames as label>get${JavaName(field)}_${label}() != null <#if label_has_next> && </#if></#list>)
+		<#if field.xrefLabelNames[0] != field.xrefFieldName>if(<#list field.xrefLabelNames as label>get${JavaName(field)}_${JavaName(label)}() != null <#if label_has_next> && </#if></#list>)
 		{
 			<#list field.xrefLabelNames as label>
-			if ( get${JavaName(field)}_${label}() == null ? e.get${JavaName(field)}_${label}()!= null : !get${JavaName(field)}_${label}().equals( e.get${JavaName(field)}_${label}()))
+			if ( get${JavaName(field)}_${JavaName(label)}() == null ? e.get${JavaName(field)}_${JavaName(label)}()!= null : !get${JavaName(field)}_${JavaName(label)}().equals( e.get${JavaName(field)}_${JavaName(label)}()))
 				return false;			
 			</#list>
 		}
@@ -742,7 +742,7 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 		//ignoring automatic primary key ${field.name}		
 		<#elseif field.type = "xref" || field.type = "mref">
 		//hash on xref labels if they are set
-		<#if field.xrefLabelNames[0] != field.xrefFieldName>if(<#list field.xrefLabelNames as label>get${JavaName(field)}_${label}() != null <#if label_has_next> && </#if></#list>)
+		<#if field.xrefLabelNames[0] != field.xrefFieldName>if(<#list field.xrefLabelNames as label>get${JavaName(field)}_${JavaName(label)}() != null <#if label_has_next> && </#if></#list>)
 		{
 			<#list field.xrefLabelNames as label>
 			hash = hash * 31 + (_${name(field)}_${label} == null ? 0 : _${name(field)}_${label}.hashCode());			
@@ -904,7 +904,7 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 		 */		
 		public ${JavaName(entity)}Factory ${name(field)}_${label}(${type(field.xrefLabels[label_index])} ${name(field)}_${label})
 		{
-			object.set${JavaName(field)}_${label}(${name(field)}_${label});
+			object.set${JavaName(field)}_${JavaName(label)}(${name(field)}_${label});
 			return this;
 		}	
 		
@@ -924,7 +924,7 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 		 */
 		public ${JavaName(entity)}Factory ${name(field)}_${label}(java.util.List<${type(field.xrefLabels[label_index])}> ${name(field)}_${label})
 		{
-			object.set${JavaName(field)}_${label}(${name(field)}_${label});
+			object.set${JavaName(field)}_${JavaName(label)}(${name(field)}_${label});
 			return this;
 		}
 		
@@ -933,7 +933,7 @@ public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field
 		 */
 		public ${JavaName(entity)}Factory ${name(field)}_${label}(${type(field.xrefLabels[label_index])} ... ${name(field)}_${label})
 		{
-			object.set${JavaName(field)}_${label}(java.util.Arrays.asList(${name(field)}_${label}));
+			object.set${JavaName(field)}_${JavaName(label)}(java.util.Arrays.asList(${name(field)}_${label}));
 			return this;
 		}
 </#list></#if>	

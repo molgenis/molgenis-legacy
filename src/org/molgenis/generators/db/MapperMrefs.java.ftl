@@ -33,7 +33,7 @@ Common parts for saving multiplicative references (mrefs) to an entity.
 				${name(f)}_${name(mref_remote_field)}_map.get(ref.get${JavaName(mref_local_field)}()).add(ref.get${JavaName(mref_remote_field)}());
 				<#if f.xrefLabelNames[0] != f.xrefFieldName><#list f.xrefLabelNames as label>
 				if(${name(f)}_${label}_map.get(ref.get${JavaName(mref_local_field)}()) == null)	${name(f)}_${label}_map.put(ref.get${JavaName(mref_local_field)}(),new ArrayList<${JavaType(f.xrefLabels[label_index])}>());
-				${name(f)}_${label}_map.get(ref.get${JavaName(mref_local_field)}()).add(ref.get${JavaName(mref_remote_field)}_${label}());
+				${name(f)}_${label}_map.get(ref.get${JavaName(mref_local_field)}()).add(ref.get${JavaName(mref_remote_field)}_${JavaName(label)}());
 				</#list></#if>
 			}
 			
@@ -54,7 +54,7 @@ Common parts for saving multiplicative references (mrefs) to an entity.
 				<#if f.xrefLabelNames[0] != f.xrefFieldName><#list f.xrefLabelNames as label>
 				if(${name(f)}_${label}_map.get(id) != null)
 				{
-					entity.set${JavaName(f)}_${label}(${name(f)}_${label}_map.get(id));
+					entity.set${JavaName(f)}_${JavaName(label)}(${name(f)}_${label}_map.get(id));
 				}
 				</#list></#if>
 </#if></#list>			

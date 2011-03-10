@@ -109,7 +109,7 @@ public class ${JavaName(entity)}Form extends EntityForm<${JavaName(entity)}>
 			//initialize the ${field.xrefEntityName}.${csv(field.xrefLabelNames)} of current record
 			<#if field.xrefLabelNames[0] != field.xrefFieldName>
 				<#list field.xrefLabelNames as label>
-			input.setValueLabel<#if inputtype = "Mref">s</#if>("${label}", getEntity().get${JavaName(field)}_${label}()); 
+			input.setValueLabel<#if inputtype = "Mref">s</#if>("${label}", getEntity().get${JavaName(field)}_${JavaName(label)}()); 
 				</#list>
 			<#else>
 			input.setValueLabel<#if inputtype = "Mref">s</#if>("${field.xrefField.name}", getEntity().get${JavaName(field)}());
