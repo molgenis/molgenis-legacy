@@ -55,7 +55,7 @@ public class CsvImportById
 			db.beginTx();
 						
 			<#list entities as entity><#if !entity.abstract>
-			import${Name(entity)}(db, new File(directory + "/${entity.name?lower_case}.txt"));
+			import${JavaName(entity)}(db, new File(directory + "/${entity.name?lower_case}.txt"));
 			</#if></#list>			
 			
 			// insert back again...
@@ -77,10 +77,10 @@ public class CsvImportById
 	
 <#list entities as entity><#if !entity.abstract >	
 	/**
-	 * Imports ${Name(entity)} from tab/comma delimited File.
-	 * @param ${entity.name}File a tab delimited file with ${Name(entity)} data.
+	 * Imports ${JavaName(entity)} from tab/comma delimited File.
+	 * @param ${entity.name}File a tab delimited file with ${JavaName(entity)} data.
 	 */
-	private static void import${Name(entity)}(Database db, File ${entity.name}File)	throws DatabaseException, IOException, Exception 
+	private static void import${JavaName(entity)}(Database db, File ${entity.name}File)	throws DatabaseException, IOException, Exception 
 	{
 		logger.debug("trying to import "+${entity.name}File);
 		if(	!${entity.name}File.exists() )
@@ -91,21 +91,21 @@ public class CsvImportById
 		{
 			//read ${entity.name} from file
 			CsvReader reader = new CsvFileReader(${entity.name}File);
-			List<${Name(entity)}> ${name(entity)}List = db.toList(${JavaName(entity)}.class, reader, Integer.MAX_VALUE); //should have no limit 
+			List<${JavaName(entity)}> ${name(entity)}List = db.toList(${JavaName(entity)}.class, reader, Integer.MAX_VALUE); //should have no limit 
 			logger.debug("loaded "+${name(entity)}List.size()+" ${entity.name} objects");
 			
 			//redirect incoming and outgoing fkeys
 			List<${pkeyJavaType(entity)}> ${name(entity)}Ids = new ArrayList<${pkeyJavaType(entity)}>(); //also doesn't scale
 			for(int i = 0; i < ${name(entity)}List.size(); i++ ) //sorry, not a real list so need to put back!!
 			{
-				${Name(entity)} object = ${name(entity)}List.get(i);
+				${JavaName(entity)} object = ${name(entity)}List.get(i);
 				
 				//remember index of this id for incoming fkeys
 				${name(entity)}Ids.add(object.get${PkeyName(entity)}()); 
 				
 				//redirect outgoing fkeys
 				<#list allFields(entity) as f><#if f.type = "xref">
-				if(object.get${Name(f)}() != null) object.set${Name(f)}_${JavaName(f.getXrefField())}(${name(f.xrefEntity)}IdMap.get(object.get${Name(f)}()));
+				if(object.get${JavaName(f)}() != null) object.set${JavaName(f)}_${JavaName(f.getXrefField())}(${name(f.xrefEntity)}IdMap.get(object.get${JavaName(f)}()));
 				<#elseif f.type="mref"> 
 				List<${type(f.xrefField)} > ${name(f)}Ids = new ArrayList<${type(f.xrefField)}>();
 				for(${type(f.xrefField)} id: object.get${JavaName(f)}_${JavaName(f.xrefField)}())

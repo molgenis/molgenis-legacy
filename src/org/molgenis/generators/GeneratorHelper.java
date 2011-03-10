@@ -588,6 +588,27 @@ public class GeneratorHelper
 		}
 
 	}
+	
+	/**
+	 * First character to upercase. And also when following "_";
+	 * @param name
+	 * @return
+	 */
+	public static String getJavaName(String name)
+	{
+		if (name == null) return " NULL ";
+		
+		String[] split = name.split("_");
+		String result = "";
+		for(int i = 0; i < split.length; i++)
+		{
+			if(i > 0) result +="_";
+			if(split[i].equals("")) result += "";
+			else result += firstToUpper(split[i]);
+		}
+		
+		return result;
+	}
 
 	public List<Entity> getSubclasses(Entity superclass, Model m)
 	{
@@ -725,7 +746,7 @@ public class GeneratorHelper
 			{
 
 				String fullClassName = f.getXrefEntity().getNamespace()
-						+ subPkg + firstToUpper(f.getXrefEntityName()) + sfx;
+						+ subPkg + getJavaName(f.getXrefEntityName()) + sfx;
 				if (!imports.contains(fullClassName))
 				{
 					imports.add(fullClassName);
@@ -751,7 +772,7 @@ public class GeneratorHelper
 
 		// import self
 		String fullClassName = e.getNamespace() + subPkg
-				+ firstToUpper(e.getName()) + sfx;
+				+ getJavaName(e.getName()) + sfx;
 		if (!imports.contains(fullClassName))
 		{
 			imports.add(fullClassName);

@@ -56,7 +56,7 @@ public class PluginScreenGen extends Generator
 				File targetDir = new File( this.getSourcePath(options) + APP_DIR + "/ui/" );
 				targetDir.mkdirs();
 
-				File targetFile = new File( targetDir + "/" + GeneratorHelper.firstToUpper( screen.getClassName() ) + "Plugin.java" );
+				File targetFile = new File( targetDir + "/" + GeneratorHelper.getJavaName( screen.getClassName() ) + "Plugin.java" );
 				OutputStream targetOut = new FileOutputStream( targetFile );				
 
 				template.process( templateArgs, new OutputStreamWriter( targetOut ) );

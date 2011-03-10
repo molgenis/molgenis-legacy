@@ -22,11 +22,11 @@ import org.molgenis.framework.ui.ScreenModel;
 /**
  *
  */
-public class ${Name(plugin.className)}Plugin extends ${plugin.getPluginType()}
+public class ${JavaName(plugin.className)}Plugin extends ${plugin.getPluginType()}
 {
 	private static final long serialVersionUID = 1L;
 <#if plugin.pluginType == "org.molgenis.framework.screen.plugin.PluginScreen">	
-    public ${Name(plugin.className)}Plugin(ScreenModel parent)
+    public ${JavaName(plugin.className)}Plugin(ScreenModel parent)
 	{
 		super("${plugin.getVelocityName()}", parent);
 		this.setLabel("${plugin.label}");
@@ -38,7 +38,7 @@ public class ${Name(plugin.className)}Plugin extends ${plugin.getPluginType()}
 		</#list>	
 	}
 <#else>
-	public ${Name(plugin.getClassName())}Plugin(ScreenModel parent)
+	public ${JavaName(plugin.getClassName())}Plugin(ScreenModel parent)
 	{
 		super("${plugin.getVelocityName()}", parent);
 		this.setLabel("${plugin.label}");

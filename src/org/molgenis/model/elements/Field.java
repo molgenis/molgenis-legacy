@@ -792,7 +792,7 @@ public class Field implements Serializable
 	{
 		List<String> labels = new ArrayList<String>();
 		for (String label : this.getXrefLabelNames())
-			labels.add(getName() + "_" + label);
+			labels.add(getName() + "_" + GeneratorHelper.firstToUpper(label));
 
 		SimpleTree<SimpleTree<?>> root = new SimpleTree<SimpleTree<?>>(getName(), null);
 		root.setValue(this);
@@ -884,7 +884,7 @@ public class Field implements Serializable
 				Map<String, List<Field>> candidates = this.allPossibleXrefLabels();
 				for (String test : candidates.keySet())
 				{
-					if (test.equals(label))
+					if (test.toLowerCase().equals(label.toLowerCase()))
 					{
 						result.add(candidates.get(test).get(candidates.get(test).size() - 1));
 					}

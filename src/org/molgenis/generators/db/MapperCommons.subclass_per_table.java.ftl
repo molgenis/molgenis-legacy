@@ -167,8 +167,8 @@
 				List<QueryRule> rules = new ArrayList<QueryRule>();
 				String key = "";
 				<#list f.xrefLabelNames as label>
-				rules.add(new QueryRule("${label}", Operator.EQUALS, object.get${JavaName(f)}_${label}()));	
-				key += 	object.get${JavaName(f)}_${label}();
+				rules.add(new QueryRule("${label}", Operator.EQUALS, object.get${JavaName(f)}_${JavaName(label)}()));	
+				key += 	object.get${JavaName(f)}_${JavaName(label)}();
 				</#list>			
 				QueryRule complexRule = new QueryRule(rules);
 				if(!${name(f)}Rules.containsKey(key))

@@ -66,7 +66,7 @@ public abstract class ForEachEntityGenerator extends Generator
 			{
 				if ((!entity.isAbstract() || this.includeAbstract) && (!this.skipSystem() || !entity.isSystem()))
 				{
-					File targetFile = new File(targetDir + "/" + GeneratorHelper.firstToUpper(entity.getName())
+					File targetFile = new File(targetDir + "/" + GeneratorHelper.getJavaName(entity.getName())
 							+ getType() + getExtension());
 					if (!handwritten || !targetFile.exists())
 					{

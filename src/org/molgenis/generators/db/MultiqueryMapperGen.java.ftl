@@ -78,7 +78,7 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 	Logger logger = Logger.getLogger(this.getClass());
 	
 	@Override
-	public int executeAdd(List<${Name(entity)}> entities) throws SQLException, DatabaseException
+	public int executeAdd(List<${JavaName(entity)}> entities) throws SQLException, DatabaseException
 	{	
 		Connection conn = getDatabase().getConnection();
 		//create big mysql query
@@ -135,7 +135,7 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 	}
 
 	@Override
-	public int executeUpdate(List<${Name(entity)}> entities) throws SQLException, DatabaseException
+	public int executeUpdate(List<${JavaName(entity)}> entities) throws SQLException, DatabaseException
 	{
 		Connection conn = getDatabase().getConnection();
 		
@@ -212,7 +212,7 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 	}
 
 	@Override
-	public int executeRemove(List<${Name(entity)}> entities) throws SQLException, DatabaseException
+	public int executeRemove(List<${JavaName(entity)}> entities) throws SQLException, DatabaseException
 	{
 		Connection conn = getDatabase().getConnection();
 		

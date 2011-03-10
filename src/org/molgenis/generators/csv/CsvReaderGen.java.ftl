@@ -166,19 +166,19 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 		Query<${JavaName(f.getXrefEntityName())}> ${name(f)}Query = db.query(${JavaName(f.getXrefEntityName())}.class);
 		for(${JavaName(entity)} o: ${name(entity)}List)
 		{
-			if(<#list f.xrefLabelNames as label>o.get${JavaName(f)}_${label}() != null<#if label_has_next> || </#if></#list>)
+			if(<#list f.xrefLabelNames as label>o.get${JavaName(f)}_${JavaName(label)}() != null<#if label_has_next> || </#if></#list>)
 			{
 				<#if f.type="mref">
 				//mref: get pairs as a list query, assume longest list size
 				int listSize = 0;
 				<#list f.xrefLabelNames as label>
-				if(o.get${JavaName(f)}_${label}() != null) listSize = Math.max(o.get${JavaName(f)}_${label}().size(), listSize);
+				if(o.get${JavaName(f)}_${JavaName(label)}() != null) listSize = Math.max(o.get${JavaName(f)}_${label}().size(), listSize);
 				</#list>
 				for(int i = 0; i < listSize; i++)
 				{
 					//check if list != null, i < size, otherwise 'null'
 					<#list f.xrefLabelNames as label>
-					${name(f)}Query.eq("${label}", o.get${JavaName(f)}_${label}() != null && i < o.get${JavaName(f)}_${label}().size() ? o.get${JavaName(f)}_${label}().get(i) : null);
+					${name(f)}Query.eq("${label}", o.get${JavaName(f)}_${JavaName(label)}() != null && i < o.get${JavaName(f)}_${JavaName(label)}().size() ? o.get${JavaName(f)}_${JavaName(label)}().get(i) : null);
 					<#if label_has_next>
 					${name(f)}Query.and();</#if>
 					</#list>
@@ -187,7 +187,7 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 				<#else>
 				//xref: 
 				<#list f.xrefLabelNames as label>
-				${name(f)}Query.eq("${label}", o.get${JavaName(f)}_${label}());
+				${name(f)}Query.eq("${label}", o.get${JavaName(f)}_${JavaName(label)}());
 				<#if label_has_next>
 				${name(f)}Query.and();</#if>
 				</#list>

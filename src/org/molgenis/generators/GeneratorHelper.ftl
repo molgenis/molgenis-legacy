@@ -2,9 +2,9 @@
 <#--classname is always first to uppercase-->
 <#function JavaName value>
 	<#if value?is_hash>
-		<#return helper.firstToUpper(value.getName())>
+		<#return helper.getJavaName(value.getName())>
 	<#else>
-		<#return helper.firstToUpper(value)>
+		<#return helper.getJavaName(value)>
 	</#if>
 </#function>
 <#function SqlName value>
