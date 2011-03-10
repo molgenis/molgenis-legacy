@@ -52,8 +52,6 @@ public class DatetimeInput extends HtmlInput
 		Object dateObject = super.getObject();
 		if (dateObject == null)
 			return "";
-		if (((String)dateObject).equals(""))
-			return "";
 		
 		// If it's already a string, return it
 		if (dateObject instanceof String) {
