@@ -190,13 +190,13 @@ public interface Database
 	 * database. Joins between entityClasses are automated although explicit
 	 * join rules can also be provided. Status: experimental!
 	 * 
-	 * @param fields
-	 *            passed in format 'entityname.fieldname'
+	 * @param classes
+	 *            list of classes, e.g. Individual.class, Sample.class
 	 * @return query object for custom querying of the list of fields. On this
 	 *         object one can add additional filter rules.
 	 * @throws DatabaseException
 	 */
-	public JoinQuery query(List<String> fields) throws DatabaseException;
+	public JoinQuery join(Class<? extends Entity> ... classes) throws DatabaseException;
 
 	/**
 	 * Find all entities of type entityClass and return them as list. Optionally
@@ -445,4 +445,5 @@ public interface Database
 	 * @return EntityManager
 	 */
 	public EntityManager getEntityManager();
+
 }

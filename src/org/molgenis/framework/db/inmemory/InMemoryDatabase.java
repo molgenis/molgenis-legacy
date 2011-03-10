@@ -36,26 +36,33 @@ public class InMemoryDatabase implements Database
 {
 	private Map<Class<? extends Entity>, Map<Integer, Entity>> db = new LinkedHashMap<Class<? extends Entity>, Map<Integer, Entity>>();
 	private int autoid = 0;
-	private static transient final Logger logger = Logger.getLogger(InMemoryDatabase.class);
+	private static transient final Logger logger = Logger
+			.getLogger(InMemoryDatabase.class);
 
 	@Override
-	public <E extends Entity> int add(E entity) throws DatabaseException, IOException {
-		try {
+	public <E extends Entity> int add(E entity) throws DatabaseException,
+			IOException
+	{
+		try
+		{
 			Class<? extends Entity> c = entity.getClass();
-			if (db.get(c) == null) {
+			if (db.get(c) == null)
+			{
 				db.put(c, new LinkedHashMap<Integer, Entity>());
 			}
 
-			db.get(c).put(autoid++, (Entity)entity);
+			db.get(c).put(autoid++, (Entity) entity);
 
 			// set autoid unless already set
-			if (entity.get(entity.getIdField()) == null) {
+			if (entity.get(entity.getIdField()) == null)
+			{
 				Tuple t = new SimpleTuple();
 				t.set(entity.getIdField(), autoid);
 				entity.set(t, false);
 			}
 		}
-		catch (ParseException e) {
+		catch (ParseException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -64,8 +71,11 @@ public class InMemoryDatabase implements Database
 	}
 
 	@Override
-	public <E extends Entity> int add(List<E> entities) throws DatabaseException, IOException {
-		for (E entity : entities) {
+	public <E extends Entity> int add(List<E> entities)
+			throws DatabaseException, IOException
+	{
+		for (E entity : entities)
+		{
 			// todo need to set autoid to index...
 			this.add(entity);
 		}
@@ -73,61 +83,83 @@ public class InMemoryDatabase implements Database
 	}
 
 	@Override
-	public <E extends Entity> int add(Class<E> klazz, CsvReader reader, CsvWriter writer) throws Exception {
+	public <E extends Entity> int add(Class<E> klazz, CsvReader reader,
+			CsvWriter writer) throws Exception
+	{
 		// TODO solve in superclass
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void beginTx() throws DatabaseException {
+	public void beginTx() throws DatabaseException
+	{
 		throw new UnsupportedOperationException();
 
 	}
 
 	@Override
-	public void close() throws DatabaseException {
+	public void close() throws DatabaseException
+	{
 		throw new UnsupportedOperationException();
 
 	}
 
 	@Override
-	public void commitTx() throws DatabaseException {
+	public void commitTx() throws DatabaseException
+	{
 		throw new UnsupportedOperationException();
 
 	}
 
 	@Override
-	public <E extends Entity> int count(Class<E> klazz, QueryRule... rules) throws DatabaseException {
+	public <E extends Entity> int count(Class<E> klazz, QueryRule... rules)
+			throws DatabaseException
+	{
 		return this.find(klazz, rules).size();
 	}
 
 	@Override
-	public <E extends Entity> void find(Class<E> klazz, CsvWriter writer, QueryRule... rules) throws DatabaseException {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public <E extends Entity> void find(Class<E> klazz, CsvWriter writer, List<String> fieldsToExport, QueryRule... rules) throws DatabaseException {
+	public <E extends Entity> void find(Class<E> klazz, CsvWriter writer,
+			QueryRule... rules) throws DatabaseException
+	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public <E extends Entity> List<E> find(Class<E> klazz, QueryRule... rules) throws DatabaseException {
-		
+	public <E extends Entity> void find(Class<E> klazz, CsvWriter writer,
+			List<String> fieldsToExport, QueryRule... rules)
+			throws DatabaseException
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public <E extends Entity> List<E> find(Class<E> klazz, QueryRule... rules)
+			throws DatabaseException
+	{
+
 		if (db.get(klazz) == null) return new ArrayList<E>();
-		if (rules.length == 0) {
+		if (rules.length == 0)
+		{
 			return getValues(klazz);
 		}
-		else {
+		else
+		{
 			List<E> result = new ArrayList<E>();
-			for (E entity : getValues(klazz)) {
+			for (E entity : getValues(klazz))
+			{
 				boolean match = true;
 
-				for (QueryRule r : rules) {
-					if (!r.getOperator().equals(Operator.EQUALS)) {
-						throw new DatabaseException("Operators other that EQUALS are not yet supported");
+				for (QueryRule r : rules)
+				{
+					if (!r.getOperator().equals(Operator.EQUALS))
+					{
+						throw new DatabaseException(
+								"Operators other that EQUALS are not yet supported");
 					}
-					if (!(entity.get(r.getField()) != null && entity.get(r.getField()).equals(r.getValue()))) {
+					if (!(entity.get(r.getField()) != null && entity.get(
+							r.getField()).equals(r.getValue())))
+					{
 						match = false;
 					}
 				}
@@ -138,7 +170,7 @@ public class InMemoryDatabase implements Database
 			return result;
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private <E extends Entity> List<E> getValues(Class<E> klazz)
 	{
@@ -146,134 +178,166 @@ public class InMemoryDatabase implements Database
 	}
 
 	@Override
-	public <E extends Entity> List<E> findByExample(E example) throws DatabaseException {
+	public <E extends Entity> List<E> findByExample(E example)
+			throws DatabaseException
+	{
 		// TODO move to common superclass of JDBC/InMemory/XML database
-		try {
+		try
+		{
 			Query<E> q = this.query(getClassForEntity(example));
 
-			for (String field : example.getFields()) {
-				if (example.get(field) != null) {
+			for (String field : example.getFields())
+			{
+				if (example.get(field) != null)
+				{
 					q.equals(field, example.get(field));
 				}
 			}
 
 			return q.find();
 		}
-		catch (ParseException pe) {
+		catch (ParseException pe)
+		{
 			logger.warn("Parsing exception occured", pe);
 		}
 		return null;
 	}
 
-
 	@SuppressWarnings("unchecked")
 	private <E extends Entity> Class<E> getClassForEntity(E entity)
 	{
-		return (Class<E>)entity.getClass();
+		return (Class<E>) entity.getClass();
 	}
-	
+
 	@Override
-	public List<Class<? extends Entity>> getEntityClasses() {
+	public List<Class<? extends Entity>> getEntityClasses()
+	{
 		return new ArrayList<Class<? extends Entity>>(db.keySet());
 	}
 
 	@Override
-	public List<String> getEntityNames() {
+	public List<String> getEntityNames()
+	{
 		// TODO in common superclass
 		List<String> names = new ArrayList<String>();
-		for (Class<? extends Entity> c : this.getEntityClasses()) {
+		for (Class<? extends Entity> c : this.getEntityClasses())
+		{
 			names.add(c.getSimpleName());
 		}
 		return names;
 	}
 
 	@Override
-	public File getFilesource() {
+	public File getFilesource()
+	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public boolean inTx() {
+	public boolean inTx()
+	{
 		return true;
 	}
 
 	@Override
-	public <E extends Entity> Query<E> query(Class<E> klazz) {
+	public <E extends Entity> Query<E> query(Class<E> klazz)
+	{
 		// TODO move to common superclass
 		return new QueryImp<E>(this, klazz);
 	}
 
 	@Override
-	public <E extends Entity> int remove(E entity) throws DatabaseException, IOException {
+	public <E extends Entity> int remove(E entity) throws DatabaseException,
+			IOException
+	{
 		List<E> entities = this.findByExample(entity);
 		Entity e;
-		if (entities.size() == 1) {
+		if (entities.size() == 1)
+		{
 			e = entities.get(0);
 			db.get(e.getClass()).remove(e);
 			return 1;
 		}
-		else {
-			logger.warn("remove failed: keys not set so " + entities.size() + " found");
+		else
+		{
+			logger.warn("remove failed: keys not set so " + entities.size()
+					+ " found");
 			return 0;
 		}
 	}
 
 	@Override
-	public <E extends Entity> int remove(List<E> entities) throws DatabaseException, IOException {
+	public <E extends Entity> int remove(List<E> entities)
+			throws DatabaseException, IOException
+	{
 		int count = 0;
-		for (E entity : entities) {
+		for (E entity : entities)
+		{
 			count += this.remove(entity);
 		}
 		return count;
 	}
 
 	@Override
-	public <E extends Entity> int remove(Class<E> klazz, CsvReader reader) throws DatabaseException, IOException,
-			Exception {
+	public <E extends Entity> int remove(Class<E> klazz, CsvReader reader)
+			throws DatabaseException, IOException, Exception
+	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void rollbackTx() throws DatabaseException {
+	public void rollbackTx() throws DatabaseException
+	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public <E extends Entity> List<E> toList(Class<E> klazz, CsvReader reader, int noEntities) throws Exception {
+	public <E extends Entity> List<E> toList(Class<E> klazz, CsvReader reader,
+			int noEntities) throws Exception
+	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public <E extends Entity> int update(E entity) throws DatabaseException, IOException {
+	public <E extends Entity> int update(E entity) throws DatabaseException,
+			IOException
+	{
 		// needs to know primary key for this...and that needs to be set...
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public <E extends Entity> int update(List<E> entities) throws DatabaseException, IOException {
+	public <E extends Entity> int update(List<E> entities)
+			throws DatabaseException, IOException
+	{
 		// needs to know primary key for this...and that needs to be set...
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public <E extends Entity> int update(Class<E> klazz, CsvReader reader) throws DatabaseException, IOException,
-			Exception {
+	public <E extends Entity> int update(Class<E> klazz, CsvReader reader)
+			throws DatabaseException, IOException, Exception
+	{
 		// needs to know primary key for this...and that needs to be set...
 		throw new UnsupportedOperationException();
 	}
 
-	public String toString() {
+	public String toString()
+	{
 		StringBuffer buff = new StringBuffer();
-		
-		for (Class<?> c : db.keySet()) {
-			for (Entity e : db.get(c).values()) {
+
+		for (Class<?> c : db.keySet())
+		{
+			for (Entity e : db.get(c).values())
+			{
 				buff.append(e + "\n");
 			}
 		}
-		
+
 		buff.append("\nTotals per class: \n");
 		int grandtotal = 0;
-		for (Class<?> c : db.keySet()) {
+		for (Class<?> c : db.keySet())
+		{
 			buff.append(c.getSimpleName() + ":" + db.get(c).size() + "\n");
 			grandtotal += db.get(c).size();
 		}
@@ -282,38 +346,47 @@ public class InMemoryDatabase implements Database
 	}
 
 	@Override
-	public Login getSecurity() {
+	public Login getSecurity()
+	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void setLogin(Login login) {
+	public void setLogin(Login login)
+	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Class<? extends Entity> getClassForName(String name) {
+	public Class<? extends Entity> getClassForName(String name)
+	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public JoinQuery query(List<String> fields) {
+	public JoinQuery join(Class<? extends Entity> ... classes) throws DatabaseException
+	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Model getMetaData() throws DatabaseException {
+	public Model getMetaData() throws DatabaseException
+	{
 		throw new UnsupportedOperationException("use a subclass of this class");
 	}
 
 	@Override
-	public <E extends Entity> E findById(Class<E> klazz, Object id) throws DatabaseException {
+	public <E extends Entity> E findById(Class<E> klazz, Object id)
+			throws DatabaseException
+	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public <E extends Entity> int update(List<E> entities, DatabaseAction dbAction, String ... keyName)
-			throws DatabaseException, ParseException, IOException {
+	public <E extends Entity> int update(List<E> entities,
+			DatabaseAction dbAction, String... keyName)
+			throws DatabaseException, ParseException, IOException
+	{
 		throw new UnsupportedOperationException();
 	}
 
@@ -321,5 +394,5 @@ public class InMemoryDatabase implements Database
 	public EntityManager getEntityManager()
 	{
 		throw new UnsupportedOperationException();
-	}	
+	}
 }

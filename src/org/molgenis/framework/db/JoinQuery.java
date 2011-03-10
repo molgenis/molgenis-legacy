@@ -1,314 +1,353 @@
 package org.molgenis.framework.db;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.fieldtypes.XrefField;
 import org.molgenis.framework.db.jdbc.JDBCConnectionHelper;
 import org.molgenis.framework.db.jdbc.JDBCDatabase;
+import org.molgenis.generators.GeneratorHelper;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Tuple;
 
-public class JoinQuery extends QueryImp {
-	
-	private transient static final Logger logger = Logger.getLogger(JoinQuery.class);
-	Map<String, Field> fields = new LinkedHashMap<String, Field>();
+/**
+ * This class allows to add two or classes<Entity> together and get them joined
+ * automatically. Optionally you can define the join rules yourself (and it will
+ * correct if you actually should joined on the superclass). Also it will
+ * automatically join with the superclasses so you get all the colummns.
+ * Optionally, you can use 'findObjects' to get List<Map<Class,Object>> where
+ * each index holds a map with objects of your data. For example:
+ * 
+ * <pre>
+ * // example 1; just paste some random entities
+ * JoinQuery jq1 = new JoinQuery(db, Individual.class, Investigation.class);
+ * 
+ * for (Tuple t : jq1.find())
+ * {
+ * 	System.out.println(t);
+ * }
+ * 
+ * // example 2: add the rule yourself
+ * JoinQuery jq2 = new JoinQuery(db, Individual.class, Investigation.class);
+ * jq2.addJoinRule(new QueryJoinRule(&quot;individual&quot;, &quot;investigation&quot;,
+ * 		&quot;investigation&quot;, &quot;id&quot;));
+ * 
+ * for (Tuple t : jq2.find())
+ * {
+ * 	System.out.println(t);
+ * }
+ * 
+ * //example 3: have the results as objects
+ * JoinQuery jq3 = new JoinQuery(db, Individual.class, Investigation.class);
+ * 
+ * for (Map&lt;Class&lt;? extends org.molgenis.util.Entity&gt;, ? extends org.molgenis.util.Entity&gt; t : jq3
+ * 		.findObjects())
+ * {
+ * 	for (Class k : t.keySet())
+ * 	{
+ * 		System.out.println(k.getSimpleName() + &quot;=&quot; + t.get(k));
+ * 	}
+ * }
+ * </pre>
+ * 
+ */
+public class JoinQuery extends QueryImp
+{
+	private List<Entity> entities = new ArrayList<Entity>();
+	private List<QueryJoinRule> joinRules = new ArrayList<QueryJoinRule>();
+	private Database db = null;
 
-	public JoinQuery(Database db, List<String> fieldnames) throws DatabaseException {
-		
-		this.setDatabase(db);
-		this.setFields(fieldnames);
+	public JoinQuery(Database db,
+			Class<? extends org.molgenis.util.Entity>... entities)
+			throws DatabaseException
+	{
+
+		this.db = db;
+		for (Class<? extends org.molgenis.util.Entity> e : entities)
+		{
+			this.entities.add(db.getMetaData().getEntity(e.getSimpleName()));
+		}
 	}
 
-	private JoinQuery setFields(List<String> fieldnames) throws DatabaseException {
-		for (String f : fieldnames) {
-			try {
-				Field field = getDatabase().getMetaData().findField(f);
-				if (field == null) {
-					throw new DatabaseException("couldn't find " + f);
+	public void addJoinRule(QueryJoinRule rule)
+	{
+		joinRules.add(rule);
+	}
+
+	public List<Map<Class<? extends org.molgenis.util.Entity>, ? extends org.molgenis.util.Entity>> findObjects()
+			throws DatabaseException
+	{
+		List<Map<Class<? extends org.molgenis.util.Entity>, ? extends org.molgenis.util.Entity>> result = new ArrayList<Map<Class<? extends org.molgenis.util.Entity>, ? extends org.molgenis.util.Entity>>();
+		List<Class<? extends org.molgenis.util.Entity>> classes = new ArrayList<Class<? extends org.molgenis.util.Entity>>();
+		for (Entity e : entities)
+		{
+			classes.add((Class<? extends org.molgenis.util.Entity>) db
+					.getClassForName(e.getName()));
+		}
+
+		for (Tuple t : this.find())
+		{
+			Map<Class<? extends org.molgenis.util.Entity>, org.molgenis.util.Entity> row = new LinkedHashMap<Class<? extends org.molgenis.util.Entity>, org.molgenis.util.Entity>();
+			for (Class<? extends org.molgenis.util.Entity> c : classes)
+			{
+				org.molgenis.util.Entity e;
+				try
+				{
+					e = c.newInstance();
+					e.set(t);
 				}
-				this.fields.put(f, field);
-			} catch (MolgenisModelException e) {
+				catch (Exception e1)
+				{
+
+					e1.printStackTrace();
+					throw new DatabaseException(e1.getMessage());
+				}
+
+				row.put(c, e);
+			}
+			result.add(row);
+
+		}
+
+		return result;
+	}
+
+	public List<Tuple> find() throws DatabaseException
+	{
+		List<Tuple> result = null;
+
+		try
+		{
+
+			// get the join paths unless already set, the validate
+			if (joinRules.size() == 0)
+			{
+				this.guessJoinRules();
+			}
+			else
+			{
+				this.validateJoinRules();
+			}
+
+			// if no join rules, fire error
+			if (joinRules.size() < entities.size() - 1)
+			{
+				// throw new DatabaseException("Cannot find join rules");
+			}
+
+			// debug
+			for (QueryRule r : joinRules)
+			{
+				//System.out.println("searching using joinrule: " + r);
+			}
+
+			// add all superclasses and joins necessary
+			this.addSuperClasses();
+
+			for (Entity e : entities)
+			{
+				//System.out.println("adding entity: " + e.getName());
+			}
+
+			for (QueryRule r : joinRules)
+			{
+				//System.out.println("searching using joinrule: " + r);
+			}
+
+			// execute the query
+			// assemble the sql
+			String sql = "SELECT ";
+			for (Entity e : entities)
+
+			{
+
+				for (Field f : e.getAllFields())
+				{
+					sql += f.getEntity().getName()
+							+ "."
+							+ f.getName()
+							+ " as "
+							+ GeneratorHelper.getJavaName(e.getName() + "_"
+									+ f.getName()) + ", ";
+				}
+			}
+			sql = sql.substring(0, sql.length() - 2) + " FROM ";
+			// get rid of trailing ', '
+			for (Entity md : entities)
+			{
+				sql += md.getName() + ", ";
+			}
+			sql = sql.substring(0, sql.length() - 2);
+
+			sql += JDBCConnectionHelper.createWhereSql(null, false, true,
+					joinRules.toArray(new QueryRule[joinRules.size()]));
+
+			return ((JDBCDatabase) db).sql(sql);
+
+		}
+		catch (MolgenisModelException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			throw new DatabaseException(e1.getMessage());
+		}
+	}
+
+	private void addSuperClasses() throws MolgenisModelException
+	{
+		List<Entity> superEntities = new ArrayList<Entity>();
+		for (Entity e : entities)
+		{
+			for (Entity parent : e.getAllAncestors())
+			{
+				if (!superEntities.contains(parent))
+				{
+					superEntities.add(parent);
+					joinRules.add(new QueryJoinRule(e.getName(), e
+							.getPrimaryKey().getName(), parent.getName(),
+							parent.getPrimaryKey().getName()));
+				}
+			}
+		}
+		entities.addAll(superEntities);
+
+	}
+
+	private void validateJoinRules()
+	{
+		// this takes the rules, optionally rewriting it to a superclass
+		for (QueryJoinRule jr : joinRules)
+		{
+			// check one field
+			try
+			{
+				Field f1 = db.getMetaData().getEntity(jr.getEntity1())
+						.getAllField(jr.getField1());
+				Field f2 = db.getMetaData().getEntity(jr.getEntity2())
+						.getAllField(jr.getField2());
+				jr.setEntity1(f1.getEntity().getName());
+				jr.setEntity2(f2.getEntity().getName());
+
+			}
+			catch (MolgenisModelException e)
+			{
+				// TODO Auto-generated catch block
 				e.printStackTrace();
-				throw new DatabaseException(e);
-
 			}
-		}
-		return this;
-	}
-
-	@Override
-	public List<Tuple> find() throws DatabaseException {
-		try {
-			String sql = toFindSql(super.getRules());
-			return ((JDBCDatabase) getDatabase()).sql(sql);
-		} catch (MolgenisModelException e) {
-			e.printStackTrace();
-			throw new DatabaseException(e);
-		}
-	}
-
-	@Override
-	public int count() throws DatabaseException {
-		return ((JDBCDatabase) getDatabase()).sql(toCountSql(), super.getRules()).get(0).getInt(0);
-
-	}
-
-	private String toCountSql() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String toFindSql(QueryRule... ruleArray) throws DatabaseException,
-			MolgenisModelException {
-		if (fields.size() == 0) {
-			throw new DatabaseException("no fields selected");
-		}
-		List<Entity> entities = new ArrayList<Entity>();
-		List<QueryRule> rules = new ArrayList<QueryRule>();
-		if (ruleArray != null) {
-			rules.addAll(Arrays.asList(ruleArray));
-		}
-
-		// cleanup rules to have right names
-		for (QueryRule r : ruleArray) {
-			if (r.getField() != null) {
-				Field f = this.fields.get(r.getField());
-				r.setField(f.getEntity().getName() + "." + f.getName());
-			}
-			if (r.getOperator() == Operator.SORTASC
-					|| r.getOperator() == Operator.SORTDESC) {
-				Field f = this.fields.get(r.getValue());
-				r.setValue(f.getEntity().getName() + "." + f.getName());
+			catch (DatabaseException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 
-		// find the entities
-		for (Field f : fields.values()) {
-			Entity ed = f.getEntity();
-			if (!entities.contains(ed)) {
-				entities.add(ed);
-			}
-		}
+	}
 
-		// find join edges by finding links between entities
-		for (Entity ed1 : entities) {
-			for (Entity ed2 : entities) {
-				if (ed1 != ed2) {
-					for (QueryJoinRule jr : findShortestJoinPath(ed1, ed2)) {
-						if (!rules.contains(jr)) {
-							rules.add(jr);
+	private void guessJoinRules() throws DatabaseException
+	{
+		// find the shortest path between each entity pair in our list
+		for (int i = 0; i < entities.size(); i++)
+		{
+			// get two entities from metadata
+			Entity ed1 = entities.get(i);
+			for (int j = i + 1; j < entities.size(); j++)
+			{
+				Entity ed2 = entities.get(j);
+				//System.out.println("finding path for " + ed1.getName() + " "
+				//		+ ed2.getName());
+				if (ed1 != ed2)
+				{
+					try
+					{
+						List<QueryJoinRule> path1 = findShortestJoinPath(ed1,
+								ed2);
+						List<QueryJoinRule> path2 = findShortestJoinPath(ed2,
+								ed1);
+						if (path1.size() > 0
+								&& (path1.size() < path2.size() || path2.size() == 0))
+						{
+							for (QueryJoinRule jr : path1)
+							{
+								if (!joinRules.contains(jr))
+								{
+									//System.out.println("added joinrule: " + jr);
+									joinRules.add(jr);
+								}
+							}
+						}
+						else
+						{
+							for (QueryJoinRule jr : path2)
+							{
+								if (!joinRules.contains(jr))
+								{
+									//System.out.println("added joinrule: " + jr);
+									joinRules.add(jr);
+								}
+							}
 						}
 					}
-
-					// add join for extends relationship
-					for (Entity extend : ed2.getAllAncestors()) {
-						if (extend.getName().equals(ed1.getName())) {
-							String pkey1 = ed2.getPrimaryKey().getName();
-							String pkey2 = extend.getPrimaryKey().getName();
-
-							rules.add(new QueryJoinRule(ed2.getName(), pkey1,
-									extend.getName(), pkey2));
-						}
+					catch (MolgenisModelException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						throw new DatabaseException(e.getMessage());
 					}
 				}
 			}
 		}
 
-		for (QueryRule r : rules) {
-			if (r instanceof QueryJoinRule) {
-				QueryJoinRule jr = (QueryJoinRule) r;
-				// add intermediate entities
-				if (!entities.contains(getDatabase().getMetaData().getEntity(jr.getA()))) {
-					entities.add(getDatabase().getMetaData().getEntity(jr.getA()));
-				}
-				if (!entities.contains(getDatabase().getMetaData().getEntity(jr.getB()))) {
-					entities.add(getDatabase().getMetaData().getEntity(jr.getB()));
-				}
-			}
-		}
-
-		addRules(rules.toArray(new QueryRule[rules.size()]));
-
-		// naive
-		for (Entity ed1 : entities) {
-			for (Entity ed2 : entities) {
-				if (ed1 != ed2) {
-					// there should be path
-					if (!isConnected(ed1.getName(), ed2.getName(), rules)) {
-						throw new DatabaseException("Entities " + ed1.getName()
-								+ " and " + ed2.getName()
-								+ " could not be joined");
-					}
-				}
-			}
-		}
-
-		// assemble the sql
-		String sql = "SELECT ";
-		for (String fieldLabel : fields.keySet()) {
-			Field f = fields.get(fieldLabel);
-			sql += f.getEntity().getName() + "." + f.getName() + " as '"
-					+ fieldLabel + "', ";
-		}
-		sql = sql.substring(0, sql.length() - 2) + " FROM ";
-		// get rid of trailing ', '
-		for (Entity md : entities) {
-			sql += md.getName() + ", ";
-		}
-		sql = sql.substring(0, sql.length() - 2);
-
-		sql += JDBCConnectionHelper.createWhereSql(null, false, true,
-				rules.toArray(new QueryRule[rules.size()]));
-
-		logger.debug("created custom query: " + sql);
-		return sql;
 	}
 
-	private boolean isConnected(String ed1, String ed2, List<QueryRule> rules) {
-
-		// is connected if the pair is there
-		for (QueryRule r : rules) {
-			if (r instanceof QueryJoinRule) {
-				QueryJoinRule edge = (QueryJoinRule) r;
-				// Logger.getLogger("HAAT").debug("comparing " + edge.getA() +
-				// " " + edge.getB());
-
-				// direct?
-				if (edge.getA().equals(ed1) 
-						&& edge.getB().equals(ed2)) {
-					return true;
-				}
-				if (edge.getB().equals(ed1) 
-						&& edge.getA().equals(ed2)) {
-					return true;
-				}
-				// indirect?
-				if (edge.getA().equals(ed1)
-						&& isConnected(edge.getB(), ed2, rules)) {
-					return true;
-				}
-				if (edge.getA().equals(ed2)
-						&& isConnected(edge.getB(), ed1, rules)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	private List<QueryJoinRule> findShortestJoinPath(Entity e1, Entity e2) throws MolgenisModelException, DatabaseException {
+	private List<QueryJoinRule> findShortestJoinPath(Entity e1, Entity e2)
+			throws MolgenisModelException, DatabaseException
+	{
 		List<QueryJoinRule> shortestPath = new ArrayList<QueryJoinRule>();
-		if (e1.getName().equals(e2.getName())) {
+		if (e1.getName().equals(e2.getName()))
+		{
 			return shortestPath;
 		}
 
-		// direct xref?
-		// todo: mref
-		for (Field fd : e2.getFields()) {
-			// if (fd.getType().equals(Field.Type.XREF_SINGLE))
-			// {
-			// List<QueryJoinRule> path = new ArrayList<QueryJoinRule>();
-			// path.add(new QueryJoinRule(fd.getEntity().getName(),
-			// fd.getName(), fd.getXRefEntity(), fd
-			// .getXRefField()));
-			// // direct path?
-			// if (fd.getXRefEntity().equals(e1.getName()))
-			// {
-			// return path;
-			// }
-			// // cyclic path are not supported
-			// else if (fd.getXRefEntity().equals(e2.getName()))
-			// {
-			// ;
-			// }
-			// else
-			// // indirect path
-			// {
-			// path.addAll(findShortestJoinPath(getDatabase().getMetaData().getEntity(fd.getXRefEntity()),
-			// e1));
-			// if (path.size() < shortestPath.size() || shortestPath.size() ==
-			// 0) shortestPath = path;
-			// }
-			// }
-		}
-		// direct path via inheritance?
-		// add join for extends relationship
-		if (e2.hasAncestor()) {
-			Entity extend = e2.getAncestor();
-			List<QueryJoinRule> path = new ArrayList<QueryJoinRule>();
-			String pkey1 = e2.getKey(0).getFields().get(0).getName();
-			String pkey2 = extend.getKey(0).getFields().get(0).getName();
-
-			path.add(new QueryJoinRule(e2.getName(), pkey1, extend.getName(),
-					pkey2));
-			if (extend.getName().equals(e1.getName())) {
-				return path;
-			} else {
-				path.addAll(findShortestJoinPath(extend, e1));
-				if (path.size() < shortestPath.size()
-						|| shortestPath.size() == 0) {
-					shortestPath = path;
+		// direct path via xref
+		for (Field fd : e1.getAllFields())
+		{
+			if (fd.getType() instanceof XrefField)
+			{
+				//System.out.println("testing " + fd.getEntity().getName() + "."
+				//		+ fd.getName());
+				List<QueryJoinRule> path = new ArrayList<QueryJoinRule>();
+				path.add(new QueryJoinRule(fd.getEntity().getName(), fd
+						.getName(), fd.getXrefEntity().getName(), fd
+						.getXrefField().getName()));
+				// direct pat from e1 to e2 (or its superclass)?
+				if (e2.equals(fd.getXrefEntity())
+						|| e2.getAllAncestors().contains(fd.getXrefEntity()))
+				{
+					//System.out.println("found direct path from " + e1.getName()
+					//		+ " to " + e2.getName());
+					return path;
+				}
+				// cyclic path
+				else if (fd.getXrefEntity().equals(e1.getName()))
+				{
+					;
+				}
+				// indirect path, recurse following the xrefentity
+				else
+				{
+					path.addAll(findShortestJoinPath(fd.getXrefEntity(), e2));
+					if (path.size() < shortestPath.size()
+							|| shortestPath.size() == 0) shortestPath = path;
 				}
 			}
 		}
 
-		for (Field fd : e1.getFields()) {
-			// if (fd.getType().equals(Field.Type.XREF_SINGLE))
-			// {
-			// List<QueryJoinRule> path = new ArrayList<QueryJoinRule>();
-			// path.add(new QueryJoinRule(fd.getEntity().getName(),
-			// fd.getName(), fd.getXRefEntity(), fd
-			// .getXRefField()));
-			// // direct path?
-			// if (fd.getXRefEntity().equals(e2.getName()))
-			// {
-			// return path;
-			// }
-			// // cyclic path
-			// else if (fd.getXRefEntity().equals(e1.getName()))
-			// {
-			// ;
-			// }
-			// // indirect path
-			// else
-			// {
-			// path.addAll(findShortestJoinPath(getDatabase().getMetaData().getEntity(fd.getXRefEntity()),
-			// e2));
-			// if (path.size() < shortestPath.size() || shortestPath.size() ==
-			// 0) shortestPath = path;
-			// }
-			// }
-		}
-		// direct path via inheritance?
-		// add join for extends relationship
-		if (e1.hasAncestor()) {
-			Entity extend = e1.getAncestor();
-
-			List<QueryJoinRule> path = new ArrayList<QueryJoinRule>();
-			String pkey1 = e1.getPrimaryKey().getName();
-			String pkey2 = extend.getPrimaryKey().getName();
-			path.add(new QueryJoinRule(e1.getName(), pkey1, extend.getName(),
-					pkey2));
-			if (extend.getName().equals(e1.getName())) {
-				return path;
-			} else {
-				path.addAll(findShortestJoinPath(extend, e2));
-				if (path.size() < shortestPath.size()
-						|| shortestPath.size() == 0) {
-					shortestPath = path;
-				}
-			}
-		}
-		// Logger.getLogger("HAAT").debug("path " + e1.getName() + " to " +
-		// e2.getName() + ":" + shortestPath.size());
-		if (shortestPath.size() > 1) {
+		if (shortestPath.size() > 1)
+		{
 			// otherwise it was a dead end
 			return shortestPath;
 		}

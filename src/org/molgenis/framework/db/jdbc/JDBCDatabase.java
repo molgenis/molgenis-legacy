@@ -209,7 +209,7 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 		ResultSet rs;
 		try
 		{
-			String allSql = sql + createWhereSql(null, false, true, rules);
+			String allSql = sql + (rules.length > 0 ? createWhereSql(null, false, true, rules) : "");
 			rs = executeQuery(allSql);
 			// transform result set in entity list
 			List<Tuple> tuples = new ArrayList<Tuple>();
@@ -627,9 +627,9 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 	}
 
 	@Override
-	public JoinQuery query(List<String> fields) throws DatabaseException
+	public JoinQuery join(Class<? extends Entity> ... classes) throws DatabaseException
 	{
-		return new JoinQuery(this, fields);
+		return new JoinQuery(this, classes);
 	}
 
 	public Model getMetaData() throws DatabaseException
