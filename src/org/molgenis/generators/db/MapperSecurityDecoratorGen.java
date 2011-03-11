@@ -42,7 +42,8 @@ public class MapperSecurityDecoratorGen extends ForEachEntityGenerator
 				if (entity.isAbstract())
 					continue;
 
-				String fullKlazzName = entity.getNamespace() + ".db." + entity.getName() + "SecurityDecorator";
+				String fullKlazzName = entity.getNamespace() + ".db." + GeneratorHelper.getJavaName(entity.getName()) + 
+					"SecurityDecorator";
 
 				String packageName = fullKlazzName;
 				if(fullKlazzName.contains("."))
@@ -57,21 +58,24 @@ public class MapperSecurityDecoratorGen extends ForEachEntityGenerator
 
 				File targetFile = new File(targetDir + "/" + shortKlazzName	+ ".java");
 
-				templateArgs.put("entityClass", entity.getNamespace()+"."+GeneratorHelper.firstToUpper(entity.getName()));
+				templateArgs.put("entityClass", entity.getNamespace() + "." + 
+						GeneratorHelper.getJavaName(entity.getName()));
 
 				templateArgs.put("clazzName", shortKlazzName);
 				templateArgs.put("entity", entity);
 				templateArgs.put("model", model);
 				// templateArgs.put("db_driver", options.db_driver);
 				templateArgs.put("template", template.getName());
-				templateArgs.put("file", packageName.replace(".", "/") + "/"
-						+ GeneratorHelper.firstToUpper(entity.getName()) + getType() + getExtension());
+				templateArgs.put("file", packageName.replace(".", "/") + "/" + 
+						GeneratorHelper.getJavaName(entity.getName()) + getType() + getExtension());
 				templateArgs.put("package", packageName);
 
 				templateArgs.remove("authorizable");
-				for (Entity e : entity.getAllImplements())
-					if ("Authorizable".equals(e.getName()))
+				for (Entity e : entity.getAllImplements()) {
+					if ("Authorizable".equals(e.getName())) {
 						templateArgs.put("authorizable", true);
+					}
+				}
 
 				OutputStream targetOut = new FileOutputStream(targetFile);
 

@@ -792,7 +792,7 @@ public class Field implements Serializable
 	{
 		List<String> labels = new ArrayList<String>();
 		for (String label : this.getXrefLabelNames())
-			labels.add(getName() + "_" + GeneratorHelper.firstToUpper(label));
+			labels.add(getName() + "_" + GeneratorHelper.getJavaName(label));
 
 		SimpleTree<SimpleTree<?>> root = new SimpleTree<SimpleTree<?>>(getName(), null);
 		root.setValue(this);
@@ -815,7 +815,7 @@ public class Field implements Serializable
 	{
 		for (Field f : this.getXrefEntity().getAllFields())
 		{
-			String name = parent.getName() + "_" + f.getName();
+			String name = parent.getName() + "_" + GeneratorHelper.getJavaName(f.getName());
 
 			if (!(f.getType() instanceof XrefField) && !(f.getType() instanceof MrefField))
 			{

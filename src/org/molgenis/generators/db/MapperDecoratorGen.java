@@ -59,15 +59,15 @@ public class MapperDecoratorGen extends ForEachEntityGenerator
 					// only generate if the file doesn't exist
 					if (!targetFile.exists())
 					{
-						templateArgs.put("entityClass", entity.getNamespace()+"."+GeneratorHelper.firstToUpper(entity.getName()));
-						
+						templateArgs.put("entityClass", entity.getNamespace()+"." + 
+								GeneratorHelper.getJavaName(entity.getName()));
 						templateArgs.put("clazzName", shortKlazzName);
 						templateArgs.put("entity", entity);
 						templateArgs.put("model", model);
 						// templateArgs.put("db_driver", options.db_driver);
 						templateArgs.put("template", template.getName());
 						templateArgs.put("file", packageName.replace(".", "/") + "/"
-								+ GeneratorHelper.firstToUpper(entity.getName()) + getType() + getExtension());
+								+ GeneratorHelper.getJavaName(entity.getName()) + getType() + getExtension());
 						templateArgs.put("package", packageName);
 
 						OutputStream targetOut = new FileOutputStream(targetFile);

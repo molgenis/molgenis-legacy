@@ -52,8 +52,9 @@
 			//label for ${f.name}=${csv(f.xrefLabelNames)}
 <#assign pathlist = []/>			
 <#list f.xrefLabelTree.getAllChildren(true) as path>
-//${path.name}
+//path==${path.name}. type==${path.value.type}.
 <#if path.value.type != "xref" && !pathlist?seq_contains(path.getParent().name)>
+//in if path.value.type != "xref" && !pathlist?seq_contains(path.getParent().name)
 <#assign pathlist = pathlist + [path.getParent().name]/>
 <#if !path.getParent().parent?exists>
 		   	+" LEFT JOIN ${SqlName(path.value.entity)} AS xref_${path.getParent().name} " 
@@ -139,7 +140,13 @@
 		<#if type == "user" || type == "xref" || type == "mref">		
 		<#assign type = f.xrefField.type/>
 		if("${name(f)}".equalsIgnoreCase(fieldName) || "${name(f.entity)}.${name(f)}".equalsIgnoreCase(fieldName)) return MolgenisFieldTypes.getType("${type}");
-		if("${name(f)}_${name(xref_label)}".equalsIgnoreCase(fieldName) || "${name(f.entity)}.${name(f)}_${name(xref_label)}".equalsIgnoreCase(fieldName)) return MolgenisFieldTypes.getType("String");
+		<#list f.xrefLabelNames as xref_label>
+		if("${name(f)}_${name(xref_label)}".equalsIgnoreCase(fieldName) 
+		    || "${name(f.entity)}.${name(f)}_${name(xref_label)}".equalsIgnoreCase(fieldName))
+		{
+			return MolgenisFieldTypes.getType("String");
+		}
+		</#list>
 		<#else>		
 		if("${name(f)}".equalsIgnoreCase(fieldName) || "${name(f.entity)}.${name(f)}".equalsIgnoreCase(fieldName)) return MolgenisFieldTypes.getType("${type}");
 		</#if>
