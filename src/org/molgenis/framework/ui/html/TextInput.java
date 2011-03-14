@@ -13,7 +13,9 @@ package org.molgenis.framework.ui.html;
 
 /**
  * Input for strings that renders as textarea.
+ * Deprecated because merged with StringInput.
  */
+@Deprecated
 public class TextInput extends StringInput
 {
 	public TextInput(String name)
@@ -26,6 +28,11 @@ public class TextInput extends StringInput
 		super(name, value);
 		this.setMaxHeight(50);
 		this.setMinHeight(3);
+	}
+	
+	public String toHtml()
+	{
+		return "TextInput is deprecated.";
 	}
 	
 //merged with StringInput
