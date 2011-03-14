@@ -7,7 +7,7 @@ import java.util.List;
 import org.molgenis.util.Tuple;
 
 /*
- * Provides a panel to order your inputs using html div's.
+ * Provides a panel to order your inputs using html <code>div</code>.
  */
 public class DivPanel extends HtmlInput
 {
@@ -78,7 +78,7 @@ public class DivPanel extends HtmlInput
 	}
 	
 	/**
-	 * Tries to set the values of all the inputs in the TablePanel to the
+	 * Tries to set the values of all the inputs in the DivPanel to the
 	 * corresponding ones in the request tuple.
 	 * 
 	 * @param request
@@ -96,7 +96,7 @@ public class DivPanel extends HtmlInput
 	}
 	
 	/**
-	 * Add to 'inputList' all the inputs that are part of the 'startInput' TablePanel.
+	 * Add to 'inputList' all the inputs that are part of the 'startInput' DivPanel.
 	 * Fully recursive, so nested TablePanels are also taken into account.
 	 * 
 	 * @param inputList

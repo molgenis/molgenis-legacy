@@ -1,26 +1,23 @@
 package org.molgenis.framework.ui.html;
 
-
 import java.util.Vector;
-
 import org.molgenis.util.ValueLabel;
-
-
-
-
 
 /**
  * Input for checkbox data.
  */
-@SuppressWarnings("unchecked")
 public class CheckboxInput extends HtmlInput
 {
-
-	// constructor(s)
+	private Vector<ValueLabel> options = new Vector<ValueLabel>();
+	
 	/**
-	 * ...
+	 * Construct a checkbox input with a name, a label and a description, as well as one or more options and
+	 * a selected value.
 	 * 
 	 * @param name
+	 * @param label
+	 * @param description
+	 * @param options
 	 * @param value
 	 */
 	public CheckboxInput(String name, String label, String description, Vector<ValueLabel> options, Vector<String> value)
@@ -32,10 +29,6 @@ public class CheckboxInput extends HtmlInput
 		this.setReadonly(false);			
 	}
 
-	// HtmlInput overloads
-	/**
-	 * 
-	 */
 	public String toHtml()
 	{
 		if (this.isHidden())
@@ -43,7 +36,8 @@ public class CheckboxInput extends HtmlInput
 			StringInput input = new StringInput(this.getName(), this.getValue());
 			input.setHidden(true);
 			return input.toHtml();
-		}	
+		}
+		
 		StringBuffer optionString = new StringBuffer("");
 		String readonly = ( isReadonly() ? " class=\"readonly\" readonly " : "");
 		String checked;
@@ -53,12 +47,15 @@ public class CheckboxInput extends HtmlInput
 			for (ValueLabel option : options)
 			{
 				checked = ( ((Vector<String>)getObject()).contains(option.getValue().toString()) ? " checked " : "");
-				optionString.append("<input id=\""+this.getId()+"\" type=\"checkbox\" " + readonly + checked  + " name=\"" + this.getName() + "\" value=\"" + option.getValue() + "\">" + option.getLabel() + "<br>\n");
+				optionString.append("<input id=\"" + this.getId() + "\" type=\"checkbox\" " + readonly + checked + 
+						" name=\"" + this.getName() + "\" value=\"" + option.getValue() + "\">" + option.getLabel() + 
+						"<br />\n");
 			}			
 		}
 		else {
 			checked = ( ((Vector<String>)getObject()).contains(this.getName()) ? " checked " : "");
-			optionString.append("<input id=\""+this.getId()+"\" type=\"checkbox\" " + readonly + checked + " name=\"" +  this.getName() + "\">" + this.getLabel());		
+			optionString.append("<input id=\"" + this.getId() + "\" type=\"checkbox\" " + readonly + checked + 
+					" name=\"" +  this.getName() + "\">" + this.getLabel());		
 		}
 		
 		return optionString.toString();
@@ -68,19 +65,18 @@ public class CheckboxInput extends HtmlInput
 	public String getValue()
 	{
 		String value = "";
-		for(ValueLabel i: options)
+		for (ValueLabel i: options)
 		{
-			if(((Vector<String>)getObject()).contains(i.getValue()))
+			if (((Vector<String>)getObject()).contains(i.getValue()))
 			{
-				value += i.getLabel()+", ";
+				value += i.getLabel() + ", ";
 			}
 		}
-		if(value.length() >2)
-			return value.substring(0,value.length() - 2);
+		// remove trailing comma
+		if (value.length() > 2) {
+			return value.substring(0, value.length() - 2);
+		}
 		return value;
 	}
 
-	// data
-	/** */
-	private Vector<ValueLabel> options = new Vector<ValueLabel>();
 }
