@@ -112,11 +112,14 @@
 		<#list viewFields(entity) as f>
 		<#assign type= f.type>
 		if("${f.name}".equalsIgnoreCase(fieldName)) return "${SqlName(f.entity)}.${SqlName(f)}";
+		if("${name(entity)}_${name(f)}".equalsIgnoreCase(fieldName)) return "${SqlName(f.entity)}.${SqlName(f)}";
 		</#list>	
 		<#list viewFields(entity,"xref") as f>	
-		if("${f.name}_${f.xrefField.name}".equalsIgnoreCase(fieldName)) return "${SqlName(f.entity)}.${SqlName(f)}";	
+		if("${f.name}_${f.xrefField.name}".equalsIgnoreCase(fieldName)) return "${SqlName(f.entity)}.${SqlName(f)}";
+		if("${name(entity)}_${name(f)}_${f.xrefField.name}".equalsIgnoreCase(fieldName)) return "${SqlName(f.entity)}.${SqlName(f)}";
 		<#list f.xrefLabelTree.getTreeElements()?values as path><#if path.value.type != "xref">
 		if("${path.name}".equalsIgnoreCase(fieldName)) return "xref_${path.getParent().name}.${SqlName(path.value.name)}";	
+		if("${name(entity)}_${name(path)}".equalsIgnoreCase(fieldName)) return "xref_${path.getParent().name}.${SqlName(path.value.name)}";
 		</#if></#list></#list>
 		<#--
 		<#assign xref_entity = f.xrefEntity/> 
