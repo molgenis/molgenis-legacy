@@ -4,15 +4,15 @@ import java.util.Vector;
 import org.molgenis.util.ValueLabel;
 
 /**
- * Input for checkbox data.
+ * Input for radio button data.
  */
-public class CheckboxInput extends HtmlInput
+public class RadioInput extends HtmlInput
 {
 	private Vector<ValueLabel> options = new Vector<ValueLabel>();
 	
 	/**
-	 * Construct a checkbox input with a name, a label and a description, as well as one or more options and
-	 * zero or more selected values.
+	 * Construct a radio button input with a name, a label and a description, as well as one or more options and
+	 * a selected value.
 	 * 
 	 * @param name
 	 * @param label
@@ -20,7 +20,7 @@ public class CheckboxInput extends HtmlInput
 	 * @param options
 	 * @param value
 	 */
-	public CheckboxInput(String name, String label, String description, Vector<ValueLabel> options, Vector<String> value)
+	public RadioInput(String name, String label, String description, Vector<ValueLabel> options, String value)
 	{
 		super(name, value);
 		super.setLabel(label);
@@ -46,37 +46,19 @@ public class CheckboxInput extends HtmlInput
 		{
 			for (ValueLabel option : options)
 			{
-				checked = ( ((Vector<String>)getObject()).contains(option.getValue().toString()) ? " checked " : "");
-				optionString.append("<input id=\"" + this.getId() + "\" type=\"checkbox\" " + readonly + checked + 
+				checked = this.getValue().equals(option.getValue().toString()) ? " checked " : "";
+				optionString.append("<input id=\"" + this.getId() + "\" type=\"radio\" " + readonly + checked + 
 						" name=\"" + this.getName() + "\" value=\"" + option.getValue() + "\">" + option.getLabel() + 
 						"<br />\n");
 			}			
 		}
 		else {
-			checked = ( ((Vector<String>)getObject()).contains(this.getName()) ? " checked " : "");
-			optionString.append("<input id=\"" + this.getId() + "\" type=\"checkbox\" " + readonly + checked + 
+			checked = this.getValue().equals(this.getName()) ? " checked " : "";
+			optionString.append("<input id=\"" + this.getId() + "\" type=\"radio\" " + readonly + checked + 
 					" name=\"" +  this.getName() + "\">" + this.getLabel());		
 		}
 		
 		return optionString.toString();
-	}
-	
-	@Override
-	public String getValue()
-	{
-		String value = "";
-		for (ValueLabel i: options)
-		{
-			if (((Vector<String>)getObject()).contains(i.getValue()))
-			{
-				value += i.getLabel() + ", ";
-			}
-		}
-		// remove trailing comma
-		if (value.length() > 2) {
-			return value.substring(0, value.length() - 2);
-		}
-		return value;
 	}
 
 }
