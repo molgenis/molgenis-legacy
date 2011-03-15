@@ -40,20 +40,24 @@ public class CheckboxInput extends HtmlInput
 		
 		StringBuffer optionString = new StringBuffer("");
 		String readonly = ( isReadonly() ? " class=\"readonly\" readonly " : "");
-		String checked;
+		String checked = "";
 		
 		if (!(options.isEmpty()))
 		{
 			for (ValueLabel option : options)
 			{
-				checked = ( ((Vector<String>)getObject()).contains(option.getValue().toString()) ? " checked " : "");
+				if (getObject() != null) {
+					checked = ( ((Vector<String>)getObject()).contains(option.getValue().toString()) ? " checked " : "");
+				}
 				optionString.append("<input id=\"" + this.getId() + "\" type=\"checkbox\" " + readonly + checked + 
 						" name=\"" + this.getName() + "\" value=\"" + option.getValue() + "\">" + option.getLabel() + 
 						"<br />\n");
 			}			
 		}
 		else {
-			checked = ( ((Vector<String>)getObject()).contains(this.getName()) ? " checked " : "");
+			if (getObject() != null) {
+				checked = ( ((Vector<String>)getObject()).contains(this.getName()) ? " checked " : "");
+			}
 			optionString.append("<input id=\"" + this.getId() + "\" type=\"checkbox\" " + readonly + checked + 
 					" name=\"" +  this.getName() + "\">" + this.getLabel());		
 		}
