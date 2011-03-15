@@ -257,6 +257,7 @@ public class CsvWriter
 	/** Close the writer */
 	public void close()
 	{
+		writer.flush();
 		writer.close();
 
 	}

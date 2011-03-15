@@ -364,7 +364,7 @@ var molgenis_required = new Array(${required});
 		</#if>
 	</td>
 		<#list record.inputs as input>
-			<#if input.getName()?lower_case == screen.getName()?lower_case+"_"+screen.getIdField()?lower_case>			
+			<#if input.getName() == screen.getIdField()>			
 	<td><input type="checkbox" name="massUpdate" value="${input.getHtmlValue()}"></td>
 				<#if readonly == "*">
 	<td><input type="hidden" name="massUpdate_readonly" value="${input.getHtmlValue()}"></td>

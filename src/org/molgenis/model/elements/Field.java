@@ -49,179 +49,6 @@ public class Field implements Serializable
 	public final transient Logger logger = Logger.getLogger(Field.class);
 
 	/**
-	 * Description of the different types of a field.
-	 */
-//	public static enum Type
-//	{
-//		/** Ontology type */
-//		ONTOLOGY("ontology", "%s"),
-//		/** The type is unknown, this case should raise an exception. */
-//		UNKNOWN("unknown", ""),
-//		/** The type is a simple boolean. */
-//		BOOL("bool", "%d"),
-//		/** The type is a simple integer. */
-//		INT("int", "%d"),
-//		/** The type is a decimal value. */
-//		LONG("long", "%d"),
-//		/** The type is a decimal value. */
-//		DECIMAL("decimal", "%.20g"),
-//		/**
-//		 * The type is a variable character string. More information can be
-//		 * found with the appropriate functions.
-//		 */
-//		STRING("string", "%s"),
-//		/** fixed length */
-//		CHAR("char", "%s"),
-//		/** The type is free-text. The length of the string is not defined. */
-//		TEXT("text", "%s"),
-//		/** The type is a date-field. */
-//		DATE("date", "%s"),
-//		/** */
-//		DATETIME("datetime", "%s"),
-//		/**
-//		 * The type of the field is user, which basically references a hidden
-//		 * table.
-//		 */
-//		USER("user", "%s"),
-//		/** The type of the field is file. */
-//		FILE("file", "%s"),
-//		/** special type of file, namely images */
-//		IMAGE("image", "%s"),
-//		/** */
-//		ENUM("enum", "%s"),
-//		/** Reference to another table, which can contain only 1 value. */
-//		XREF_SINGLE("xref", ""),
-//		/** Reference to another table, which can contain multiple values. */
-//		XREF_MULTIPLE("mref", ""),
-//		/** hyperlink */
-//		HYPERLINK("hyperlink", "%s"),
-//		/** Nucleotide sequence */
-//		NSEQUENCE("nsequence", "%s"),
-//		/** Nucleotide sequence */
-//		ONOFF("onoff", "%d"),
-//		/** List of values */
-//		LIST("list", "%s"),
-//		/** Hexadecimal values, now treated as strings*/
-//		HEXA("hexa","%s");
-//
-//		// access
-//		/**
-//		 * The standard constructor, which binds a string to the
-//		 * enumeration-type.
-//		 */
-//		private Type(String tag, String format_type)
-//		{
-//			this.tag = tag;
-//			this.format_type = format_type;
-//		}
-//
-//		public String toString()
-//		{
-//			return this.tag;
-//		}
-//
-//		/**
-//		 * With this method the enumeration-type can be found based on the given
-//		 * int conforming to java.sql.Types
-//		 * 
-//		 * @param type
-//		 *            The string-representation of the type.
-//		 * @return The enumeration-type.
-//		 */
-//		public static Type getType(int type)
-//		{
-//			switch (type)
-//			{
-//				case Types.CHAR:
-//					return CHAR;
-//				case Types.BOOLEAN:
-//					return BOOL;
-//				case Types.BIT:
-//					return BOOL;
-//				case Types.INTEGER:
-//					return INT;
-//				case Types.BIGINT:
-//					return LONG;
-//				case Types.DOUBLE:
-//					return DECIMAL;
-//				case Types.VARCHAR:
-//					return STRING;
-//				case Types.BLOB:
-//					return TEXT;
-//				case Types.DATE:
-//					return DATE;
-//				case Types.TIME:
-//					return DATETIME;
-//				case Types.TIMESTAMP:
-//					return DATETIME;
-//				default:
-//					return UNKNOWN;
-//			}
-//
-//			/*
-//			 * public static final int ARRAY 2003 public static final int BIGINT
-//			 * -5 public static final int BINARY -2 public static final int BIT
-//			 * -7 public static final int BLOB 2004 public static final int
-//			 * BOOLEAN 16 public static final int CHAR 1 public static final int
-//			 * CLOB 2005 public static final int DATALINK 70 public static final
-//			 * int DATE 91 public static final int DECIMAL 3 public static final
-//			 * int DISTINCT 2001 public static final int DOUBLE 8 public static
-//			 * final int FLOAT 6 public static final int INTEGER 4 public static
-//			 * final int JAVA_OBJECT 2000 public static final int LONGNVARCHAR
-//			 * -16 public static final int LONGVARBINARY -4 public static final
-//			 * int LONGVARCHAR -1 public static final int NCHAR -15 public
-//			 * static final int NCLOB 2011 public static final int NULL 0 public
-//			 * static final int NUMERIC 2 public static final int NVARCHAR -9
-//			 * public static final int OTHER 1111 public static final int REAL 7
-//			 * public static final int REF 2006 public static final int ROWID -8
-//			 * public static final int SMALLINT 5 public static final int SQLXML
-//			 * 2009 public static final int STRUCT 2002 public static final int
-//			 * TIME 92 public static final int TIMESTAMP 93 public static final
-//			 * int TINYINT -6 public static final int VARBINARY -3 public static
-//			 * final int VARCHAR 12
-//			 */
-//		}
-//
-//		/**
-//		 * With this method the enumeration-type can be found based on the given
-//		 * string.
-//		 * 
-//		 * @param tag
-//		 *            The string-representation of the tag.
-//		 * @return The enumeration-type.
-//		 */
-//		public static Type getType(String tag)
-//		{
-//			if (tag.equals(BOOL.tag)) return BOOL;
-//			else if (tag.equals(INT.tag)) return INT;
-//			else if (tag.equals(LONG.tag)) return LONG;
-//			else if (tag.equals(DECIMAL.tag)) return DECIMAL;
-//			else if (tag.equals(STRING.tag)) return STRING;
-//			else if (tag.equals(TEXT.tag)) return TEXT;
-//			else if (tag.equals(DATE.tag)) return DATE;
-//			else if (tag.equals(DATETIME.tag)) return DATETIME;
-//			else if (tag.equals(USER.tag)) return USER;
-//			else if (tag.equals(FILE.tag)) return FILE;
-//			else if (tag.equals(IMAGE.tag)) return IMAGE;
-//			else if (tag.equals(ENUM.tag)) return ENUM;
-//			else if (tag.equals(XREF_SINGLE.tag)) return XREF_SINGLE;
-//			else if (tag.equals(XREF_MULTIPLE.tag)) return XREF_MULTIPLE;
-//			else if (tag.equals(HYPERLINK.tag)) return HYPERLINK;
-//			else if (tag.equals(NSEQUENCE.tag)) return NSEQUENCE;
-//			else if (tag.equals(ONOFF.tag)) return ONOFF;
-//			else if (tag.equals(LIST.tag)) return LIST;
-//			else if (tag.equals(HEXA.tag)) return HEXA;
-//			else
-//				return UNKNOWN;
-//		}
-//
-//		/** The string-representation of the enumeration-type. */
-//		public final String tag;
-//		/** */
-//		public final String format_type;
-//	};
-
-	/**
 	 * 
 	 */
 	public class XRefLabel
@@ -787,6 +614,13 @@ public class Field implements Serializable
 			label_names.add(label.replace(".", "_").replace(this.getXrefEntity() + "_", ""));
 		return label_names;
 	}
+	
+	/**
+	 * Return a tree wich describes the path to xref labels. This allows also to use indirect secondary keys as labels.
+	 * For example: Sample is identified by {name,Investigation.name}. Investigation.name has a path via sample.investigation.
+	 * @return
+	 * @throws MolgenisModelException
+	 */
 
 	public  SimpleTree<SimpleTree<?>> getXrefLabelTree() throws MolgenisModelException
 	{
@@ -1300,58 +1134,6 @@ public class Field implements Serializable
 	}
 
 	/**
-	 * This method returns a map of all possible xref_labels based on the unique
-	 * constraints
-	 */
-	// public static Map<String, List<Field>> allPossibleXrefLabels2(Field
-	// xrefField) throws MolgenisModelException,
-	// DatabaseException
-	// {
-	// // System.out.println("GENERATING xref_labels for " +
-	// // xrefField.getEntity().getName()+"."+xrefField.getName());
-	// Map<String, List<Field>> result = new LinkedHashMap<String,
-	// List<Field>>();
-	// // checking secondary keys
-	// for (Unique unique : xrefField.getXrefEntity().getAllKeys())
-	// if (unique != xrefField.getXrefEntity().getAllKeys().firstElement())
-	// {
-	// for (Field f : unique.getFields())
-	// {
-	// if (f.getType().equals(Field.Type.XREF_SINGLE))
-	// {
-	// // recurse to find subpaths
-	// Map<String, List<Field>> subpaths = f.allPossibleXrefLabels();
-	// for (String subpath : subpaths.keySet())
-	// {
-	// List<Field> path = subpaths.get(subpath);
-	// path.add(0, f);
-	// result.put(f.getName() + "_" + subpath, path);
-	//
-	// // System.out.println("FOUND PATH " + f.getName() +
-	// // "_" + subpath + " for field " + xrefField);
-	// System.out.print("FOUND " + xrefField.getEntity().getName() + "." +
-	// xrefField.getName());
-	// for (Field pathElement : result.get(f.getName() + "_" + subpath))
-	// {
-	// System.out
-	// .print("->" + pathElement.getEntity().getName() + "." +
-	// pathElement.getName());
-	// }
-	// System.out.println();
-	// }
-	// }
-	// else if (!f.getType().equals(Field.Type.XREF_MULTIPLE))
-	// {
-	// List<Field> path = new ArrayList<Field>();
-	// path.add(f);
-	// result.put(f.getName(), path);
-	// }
-	// }
-	// }
-	// return result;
-	// }
-
-	/**
 	 * Helper method to find labels within the same entity that point to the
 	 * same endpoint. E.g. suppose fields protocol_investigation_name maps to
 	 * same entity as investigatio_name
@@ -1361,55 +1143,52 @@ public class Field implements Serializable
 	 * @throws MolgenisModelException
 	 * @throws DatabaseException
 	 */
-	public List<String> labelsToSameEndpoint(String xref_label) throws MolgenisModelException, DatabaseException
-	{
-		List<String> result = new ArrayList<String>();
-
-		// get the endpoint, if any
-		List<Field> pathToEndpoint = this.allPossibleXrefLabels().get(xref_label);
-		if (pathToEndpoint == null)
-		{
-			String knownLabels = "";
-			for (String label : this.allPossibleXrefLabels().keySet())
-				knownLabels += ", "+label;
-			throw new MolgenisModelException("xref_label '" + xref_label + "'unknown for field "
-					+ this.getEntity().getName() + "." + this.getName() + ". Known labels are " + knownLabels);
-		}
-		else
-		{
-			Field endpoint = pathToEndpoint.get(pathToEndpoint.size() - 1);
-			//logger.debug("FINDING OTHER ENDS FOR xref_entity=" + getEntity().getName() + " xref_field="
-			//		+ getName() + " xref_label=" + xref_label + " POINTING TO " + endpoint);
-			//for (Field f : pathToEndpoint)
-			//	System.out.println(f);
-			for (Field otherField : getEntity().getAllFields())
-			{
-				// check the the other xref fields
-				if (otherField.getType() instanceof XrefField && otherField != this)
-				{
-					// check all the labels of this other field
-					Map<String, List<Field>> all_xref_labels = otherField.allPossibleXrefLabels();
-					for (String other_label : all_xref_labels.keySet())
-					{
-						// check endpoint
-						List<Field> pathToOtherEndpoint = all_xref_labels.get(other_label);
-						Field otherEndPoint = pathToOtherEndpoint.get(pathToOtherEndpoint.size() - 1);
-
-						if (endpoint.getName().equals(otherEndPoint.getName())
-								&& endpoint.getEntity().getName().equals(otherEndPoint.getEntity().getName()))
-						{
-							logger.debug("FOUND " + otherEndPoint.getEntity().getName() + "."
-									+ otherEndPoint.getName() + " EQUALS " + endpoint.getEntity().getName() + "."
-									+ endpoint.getName());
-							result.add(otherField.getName().toLowerCase() + "_" + other_label);
-						}
-					}
-				}
-			}
-		}
-
-		return result;
-	}
+//	public List<String> labelsToSameEndpoint(String xref_label) throws MolgenisModelException, DatabaseException
+//	{
+//		List<String> result = new ArrayList<String>();
+//
+//		// get the endpoint, if any
+//		List<Field> pathToEndpoint = this.allPossibleXrefLabels().get(xref_label);
+//		if (pathToEndpoint == null)
+//		{
+//			String knownLabels = "";
+//			for (String label : this.allPossibleXrefLabels().keySet())
+//				knownLabels += ", "+label;
+//			throw new MolgenisModelException("xref_label '" + xref_label + "'unknown for field "
+//					+ this.getEntity().getName() + "." + this.getName() + ". Known labels are " + knownLabels);
+//		}
+//		else
+//		{
+//			Field endpoint = pathToEndpoint.get(pathToEndpoint.size() - 1);
+//
+//			for (Field otherField : getEntity().getAllFields())
+//			{
+//				// check the the other xref fields
+//				if (otherField.getType() instanceof XrefField && otherField != this)
+//				{
+//					// check all the labels of this other field
+//					Map<String, List<Field>> all_xref_labels = otherField.allPossibleXrefLabels();
+//					for (String other_label : all_xref_labels.keySet())
+//					{
+//						// check endpoint
+//						List<Field> pathToOtherEndpoint = all_xref_labels.get(other_label);
+//						Field otherEndPoint = pathToOtherEndpoint.get(pathToOtherEndpoint.size() - 1);
+//
+//						if (endpoint.getName().equals(otherEndPoint.getName())
+//								&& endpoint.getEntity().getName().equals(otherEndPoint.getEntity().getName()))
+//						{
+//							logger.debug("FOUND " + otherEndPoint.getEntity().getName() + "."
+//									+ otherEndPoint.getName() + " EQUALS " + endpoint.getEntity().getName() + "."
+//									+ endpoint.getName());
+//							result.add(otherField.getName().toLowerCase() + "_" + other_label);
+//						}
+//					}
+//				}
+//			}
+//		}
+//
+//		return result;
+//	}
 
 	public Integer getLength() throws MolgenisModelException
 	{

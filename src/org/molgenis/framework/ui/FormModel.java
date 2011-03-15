@@ -892,7 +892,8 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 
 	public String getIdField()
 	{
-		return this.create().getIdField();
+		E object = this.create();
+		return object.getClass().getSimpleName() +"_"+object.getIdField();
 	}
 
 	public List<ScreenCommand<E>> getCommands()
