@@ -18,6 +18,8 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.StringUtils;
@@ -67,11 +69,8 @@ import org.molgenis.generators.db.PersistenceGen;
 import org.molgenis.generators.db.ViewMapperGen;
 import org.molgenis.generators.doc.DotDocGen;
 import org.molgenis.generators.doc.DotDocMinimalGen;
-import org.molgenis.generators.doc.EntityModelDocGen;
 import org.molgenis.generators.doc.FileFormatDocGen;
 import org.molgenis.generators.doc.ObjectModelDocGen;
-import org.molgenis.generators.doc.TableDocGen;
-import org.molgenis.generators.doc.TextUmlGen;
 import org.molgenis.generators.excel.ExcelExportGen;
 import org.molgenis.generators.excel.ExcelImportGen;
 import org.molgenis.generators.excel.ExcelReaderGen;
@@ -171,13 +170,13 @@ public class Molgenis {
 
 		// DOCUMENTATION
 		if (options.generate_doc.equals("true")){
-			generators.add(new TableDocGen());
-			generators.add(new EntityModelDocGen());
+			//not used: generators.add(new TableDocGen());
+			//not used: generators.add(new EntityModelDocGen());
 			generators.add(new DotDocGen());
 			generators.add(new FileFormatDocGen());
 			generators.add(new DotDocMinimalGen());
 			generators.add(new ObjectModelDocGen());
-			generators.add(new TextUmlGen());
+			//not used: generators.add(new TextUmlGen());
 		}else{
 			logger.info("Skipping documentation ....");
 		}
@@ -402,10 +401,35 @@ public class Molgenis {
 			generatedFolder.delete();
 		}
 
+		List<Thread> threads = new ArrayList<Thread>();
 		for (final Generator g : generators) {
-
-			g.generate(model, options);
+			Runnable runnable = new Runnable(){
+				public void run()
+				{
+					try
+					{
+						g.generate(model, options);
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+						System.exit(-1);
+					}		
+				}
+			};
+			//executor.execute(runnable);
+			Thread thread = new Thread(runnable);
+			thread.start();	
+			threads.add(thread);
 		}
+		
+		//wait for all threads to complete
+		for (Thread thread: threads) {
+		    try {
+		       thread.join();
+		    } catch (InterruptedException ignore) {}
+		}
+		
 		logger.info("Generation completed at " + new Date());
 	}
 
