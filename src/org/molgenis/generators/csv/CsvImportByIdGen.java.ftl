@@ -101,7 +101,7 @@ public class CsvImportById
 				${JavaName(entity)} object = ${name(entity)}List.get(i);
 				
 				//remember index of this id for incoming fkeys
-				${name(entity)}Ids.add(object.get${PkeyName(entity)}()); 
+				${name(entity)}Ids.add(object.get${JavaName(PkeyName(entity))}()); 
 				
 				//redirect outgoing fkeys
 				<#list allFields(entity) as f><#if f.type = "xref">
@@ -121,9 +121,9 @@ public class CsvImportById
 			db.add(${name(entity)}List);
 			for(int i = 0; i < ${name(entity)}List.size(); i++)
 			{
-				${name(entity)}IdMap.put(${name(entity)}Ids.get(i), ${name(entity)}List.get(i).get${PkeyName(entity)}());
+				${name(entity)}IdMap.put(${name(entity)}Ids.get(i), ${name(entity)}List.get(i).get${JavaName(PkeyName(entity))}());
 				<#list entity.getAllAncestors() as ancestor>
-				${name(ancestor)}IdMap.put(${name(entity)}Ids.get(i), ${name(entity)}List.get(i).get${PkeyName(entity)}());
+				${name(ancestor)}IdMap.put(${name(entity)}Ids.get(i), ${name(entity)}List.get(i).get${JavaName(PkeyName(entity))}());
 				</#list>
 			}
 		}	 
