@@ -52,16 +52,16 @@ import ${xrefentity.getNamespace()}.${Name(xrefentity)};
 /**
  *
  */
-public class ${Name(form.className)}FormModel extends FormModel<${entity}>
+public class ${JavaName(form.className)}FormModel extends FormModel<${entity}>
 {
 	private static final long serialVersionUID = 1L;
 	
-	public ${Name(form.className)}FormModel()
+	public ${JavaName(form.className)}FormModel()
 	{
 		this(null);
 	}
 	
-	public ${Name(form.className)}FormModel(ScreenModel parent)
+	public ${JavaName(form.className)}FormModel(ScreenModel parent)
 	{
 		super( "${form.getVelocityName()}", parent );
 		this.setLabel("${form.label}");
