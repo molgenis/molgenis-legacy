@@ -30,11 +30,6 @@ public class TextInput extends StringInput
 		this.setMinHeight(3);
 	}
 	
-	public String toHtml()
-	{
-		return "TextInput is deprecated.";
-	}
-	
 //merged with StringInput
 
 //	public String toHtml()
