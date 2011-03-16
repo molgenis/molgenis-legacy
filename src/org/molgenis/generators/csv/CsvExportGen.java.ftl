@@ -137,7 +137,7 @@ public class CsvExport
 	 */
 	public void export${Name(entity)}(Database db, File f, List<String> fieldsToExport, QueryRule ... rules) throws DatabaseException, IOException, ParseException, MolgenisModelException
 	{
-		if(db.count(${Name(entity)}.class<#if entity.hasAncestor() || entity.isRootAncestor()>, new QueryRule("${typefield()}",Operator.EQUALS, "${Name(entity)}")</#if>) > 0)
+		if(db.count(${JavaName(entity)}.class<#if entity.hasAncestor() || entity.isRootAncestor()>, new QueryRule("${typefield()}",Operator.EQUALS, "${Name(entity)}")</#if>) > 0)
 		{
 			
 			Query query = db.query(${JavaName(entity)}.class);
