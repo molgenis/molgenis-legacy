@@ -140,7 +140,7 @@ public class CsvExport
 		if(db.count(${Name(entity)}.class<#if entity.hasAncestor() || entity.isRootAncestor()>, new QueryRule("${typefield()}",Operator.EQUALS, "${Name(entity)}")</#if>) > 0)
 		{
 			
-			Query query = db.query(${Name(entity)}.class);
+			Query query = db.query(${JavaName(entity)}.class);
 			<#if entity.hasAncestor() || entity.isRootAncestor()>QueryRule type = new QueryRule("${typefield()}",Operator.EQUALS, "${Name(entity)}");
 			query.addRules(type);</#if>
 			QueryRule[] newRules = matchQueryRulesToEntity(db.getMetaData().getEntity("${Name(entity)}"), rules);
