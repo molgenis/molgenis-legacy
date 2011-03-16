@@ -5,7 +5,7 @@ Generate Table Data Gateway
 * Associations map onto the hierarchy root
 #####################################################################-->
 <#include "GeneratorHelper.ftl">
-<#assign entity=Name(form.getRecord())>
+<#assign entity=JavaName(form.getRecord())>
 <#--#####################################################################-->
 <#--                                                                   ##-->
 <#--         START OF THE OUTPUT                                       ##-->
