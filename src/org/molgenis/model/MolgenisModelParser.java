@@ -1003,7 +1003,7 @@ public class MolgenisModelParser
 					}
 					//use name from 'f' to correct for case problems
 
-					compact_fields.add(GeneratorHelper.firstToLower(form.getEntity().getName())+"_"+GeneratorHelper.firstToLower(f.getName()));
+					compact_fields.add(form.getEntity().getName()+"_"+f.getName());
 				}
 				form.setCompactView(compact_fields);
 			}
