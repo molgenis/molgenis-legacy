@@ -74,7 +74,7 @@ public class ${JavaName(entity)}Form extends EntityForm<${JavaName(entity)}>
 		{
 		    <#if field.type == "xref" >
 		    	//xref
-				${inputtype}Input input = new ${inputtype}Input("${entity.name}_${field.name}",getEntity().get${JavaName(field)}_${Name(field.getXrefField())}());
+				${inputtype}Input input = new ${inputtype}Input("${entity.name}_${field.name}",getEntity().get${JavaName(field)}_${JavaName(field.getXrefField())}());
 			<#else>
 				${inputtype}Input input = new ${inputtype}Input("${entity.name}_${field.name}",getEntity().get${JavaName(field)}());
 			</#if>
