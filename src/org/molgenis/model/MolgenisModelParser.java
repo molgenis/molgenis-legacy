@@ -1091,12 +1091,13 @@ public class MolgenisModelParser
 
 			// retrieve the document-root
 			Element document_root = document.getDocumentElement();
-			// if (document_root.getAttribute("name") == "" &&
-			// model.getName().equals(""))
-			// {
-			// document_root.setAttribute("name", "molgenis");
-			// }
-			// String modelName = document_root.getAttribute("name");
+			 if (document_root.getAttribute("name") == "" &&
+			 model.getName().equals(""))
+			 {
+			 document_root.setAttribute("name", "molgenis");
+			 }
+			 String modelName = document_root.getAttribute("name");
+			 model.setName(modelName);
 			// FIXME should be solved by using modules
 			// alternatively ui should be in predefined dir anyway...
 
