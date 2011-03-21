@@ -318,6 +318,20 @@
 	</#list>
 	<#return result>
 </#function>
+<#function csvQuoted entity items>
+	<#local result = "">
+	<#list items as item>
+		<#if item_index != 0>
+			<#local result =  result + ",">
+		</#if>
+		<#if item?is_hash>
+			<#local result = result + "\""+ entity +"_"+ item.name +"\"">
+		<#else>
+			<#local result = result + "\"" + entity +"_"+ item + "\"">
+		</#if>
+	</#list>
+	<#return result>
+</#function>
 <#function typefield>
 <#return helper.getTypeFieldName()/>
 </#function>
