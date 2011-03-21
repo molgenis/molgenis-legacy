@@ -27,6 +27,11 @@ public class Entity
 	@XmlAttribute(name="implements")
 	private String _implements = null;
 	
+	@XmlAttribute(name="decorator")
+	private String _decorator = null;
+	
+
+
 	@XmlAttribute(name="abstract")
 	private Boolean _abstract;
 	
@@ -53,6 +58,12 @@ public class Entity
 	public void setName(String name)
 	{
 		this.name = name;
+	}
+	
+	
+	//added function addField for adding field to entity
+	public void addField(Field e){
+		fields.add(e);
 	}
 
 	public List<Field> getFields()
@@ -113,5 +124,15 @@ public class Entity
 	public void setImplements(String _implements)
 	{
 		this._implements = _implements;
+	}
+	
+	public String getDecorator()
+	{
+		return _decorator;
+	}
+
+	public void setDecorator(String _decorator)
+	{
+		this._decorator = _decorator;
 	}
 }

@@ -41,7 +41,13 @@ public class Model
 	{
 		return entities;
 	}
-
+	
+	//added function addEntity to add entity to model
+	public void addEntity(Entity e){
+		entities.add(e);
+	}
+	
+	
 	public void setEntities(List<Entity> entities)
 	{
 		this.entities = entities;
