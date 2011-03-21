@@ -136,7 +136,7 @@ public class ${JavaName(form.className)}FormModel extends FormModel<${entity}>
 		form.setNewRecord(newrecord);
 		form.setReadonly(isReadonly());
 		<#if form.hideFields?size &gt; 0>form.setHiddenColumns(Arrays.asList(new String[]{${csvQuoted(entity, form.hideFields)}}));</#if>
-		<#if form.compactView?size &gt; 0>form.setCompactView(Arrays.asList(new String[]{${csvQuoted(entity, form.compactView)}}));</#if>
+		<#if form.compactView?size &gt; 0>form.setCompactView(Arrays.asList(new String[]{${csvQuoted(form.compactView)}}));</#if>
 		return form;
 	}
 	
