@@ -27,6 +27,7 @@ public class StringInput extends HtmlInput
 	 * To avoid blank rules <br> into the textarea where the xml is being printed,
 	 * the function getValue() from HtmlInput.java is overridden.
 	 */
+	
 	@Override
 	public String getValue()
 	{
