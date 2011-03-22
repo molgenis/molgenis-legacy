@@ -17,7 +17,7 @@ public class Table extends HtmlInput
 	List<String> cols = new ArrayList<String>();
 	List<String> rows = new ArrayList<String>();
 	private String defaultCellStyle = "border: 1px solid black; padding:2px";
-	private String headerCellStyle = "border: 1px solid black; padding:2px; background-color: #5B82A4";
+	private String headerCellStyle = "border: 1px solid black; padding:2px; background-color: #5B82A4; color: white";
 	
 	public Table()
 	{
