@@ -17,6 +17,12 @@ public class Model
 	@XmlAttribute
 	private String name;
 	
+	@XmlAttribute
+	private String label;
+	
+	@XmlAttribute
+	private String version;
+	
 	@XmlElement(name="entity")
 	private List<Entity> entities = new ArrayList<Entity>();
 	
@@ -35,6 +41,26 @@ public class Model
 	public void setName(String name)
 	{
 		this.name = name;
+	}
+	
+	public String getLabel()
+	{
+		return label;
+	}
+
+	public void setLabel(String label)
+	{
+		this.label = label;
+	}
+
+	public String getVersion()
+	{
+		return version;
+	}
+
+	public void setVersion(String version)
+	{
+		this.version = version;
 	}
 
 	public List<Entity> getEntities()
