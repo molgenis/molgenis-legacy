@@ -104,7 +104,7 @@ public class CsvBufferedReaderMultiline implements CsvReader
 		List<String> row = this.getRow(); 
 
 		//parse all other lines and collect first column value
-		while ((row = this.getRow()) != null && !isBlockEnd(row.get(0)))
+		while ((row = this.getRow()) != null && row.size()>0 && !isBlockEnd(row.get(0)))
 		{
 			// get first element
 			result.add(row.get(0));

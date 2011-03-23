@@ -19,6 +19,29 @@ import org.molgenis.util.Tuple;
 public class CsvReaderTest
 {
 	@Test
+	public void testRowNames() throws Exception
+	{
+		String csv = "col1,col2\nval1,val2\nval3,val4";
+
+		CsvReader reader = new CsvStringReader(csv);
+
+		assertEquals(reader.rownames(), Arrays.asList(new String[]
+		{ "val1", "val3" }));
+	}
+	
+	@Test
+	public void testRowNamesMatrix() throws Exception
+	{
+		//so here the headers have one column less than normal data rows
+		String csv = "col1,col2\nrowname1,val1,val2\nrowname2,val3,val4";
+
+		CsvReader reader = new CsvStringReader(csv);
+
+		assertEquals(reader.rownames(), Arrays.asList(new String[]
+		{ "rowname1", "rowname2" }));
+	}
+
+	@Test
 	public void testSimple() throws Exception
 	{
 		String csv = "col1,col2\nval1,val2\nval3,val4";
@@ -54,7 +77,7 @@ public class CsvReaderTest
 	{
 		String csv = "t2col1,t2col2\nval1,\"val2 quoted \"\"test\"\" this\"\nval3,val4";
 
-		CsvReader reader =  new CsvStringReader(csv);
+		CsvReader reader = new CsvStringReader(csv);
 
 		assertEquals(reader.colnames(), Arrays.asList(new String[]
 		{ "t2col1", "t2col2" }));
@@ -73,7 +96,8 @@ public class CsvReaderTest
 		});
 
 		assertEquals(result.get(0).getString("t2col1"), "val1");
-		assertEquals(result.get(0).getString("t2col2"), "val2 quoted \"test\" this");
+		assertEquals(result.get(0).getString("t2col2"),
+				"val2 quoted \"test\" this");
 
 		assertEquals(result.get(1).getString("t2col1"), "val3");
 		assertEquals(result.get(1).getString("t2col2"), "val4");
