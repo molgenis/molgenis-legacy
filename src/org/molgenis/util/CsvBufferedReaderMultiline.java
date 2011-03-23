@@ -201,26 +201,15 @@ public class CsvBufferedReaderMultiline implements CsvReader
 	public int parse(int noElements, List<Integer> rows,
 			CsvReaderListener... listeners) throws Exception
 	{
+		this.reset();
+		
 		List<String> headers = null;
 		List<String> row = null;
 
 		if (hasHeader) headers = colnames();
-
-		// on first call
-		if (!isParsing)
-		{
-			// skip to start
-			goToBlockStart(reader);
-			if (hasHeader) row = this.getRow(); // skip header line
-			this.isParsing = true;
-
-			logger.debug("parsing with separator = '" + separator
-					+ "' and headers =" + headers);
-		}
-		else
-		{
-			logger.debug("restarted parsing with limit " + noElements);
-		}
+		this.reset();
+		this.goToBlockStart(this.reader);
+		if (hasHeader) row = this.getRow();
 
 		// logger.debug("found: " + t.toString());
 		int lineCount = 0;
@@ -428,11 +417,14 @@ public class CsvBufferedReaderMultiline implements CsvReader
 				if (inQuotes) 
 				{
 					//skip escaping of quotes
-					if(chars[i] == this.quoteEscape && chars[i+1] == '"')
+					if(chars[i] == this.quoteEscape && (i+1) < chars.length && chars[i+1] == '"')
 					{
-						//skip this escape and do nothing
+						//escape quote once and skip next
+						currentRecord += chars[i];
+						i++;
+						
 					}
-					//finish current record
+					//finish current record if closing quotes
 					else if(chars[i] == '"')
 					{
 						//skip the quotes but say inQuotes = false
@@ -471,6 +463,10 @@ public class CsvBufferedReaderMultiline implements CsvReader
 			{
 				result.add(currentRecord.trim());
 				break;
+			}
+			else
+			{
+				currentRecord += "\n";
 			}
 		}
 

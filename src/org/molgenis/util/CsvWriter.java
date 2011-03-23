@@ -208,7 +208,8 @@ public class CsvWriter
 			}
 			else
 			{
-				writer.print(StringEscapeUtils.escapeCsv(object.toString().trim().replace("\n", "")));
+				//writer.print(StringEscapeUtils.escapeCsv(object.toString().trim().replace("\n", "")));
+				writer.print(StringEscapeUtils.escapeCsv(object.toString()));
 			}
 		}
 

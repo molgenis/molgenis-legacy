@@ -11,7 +11,7 @@ import java.io.IOException;
  * 
  * @see org.molgenis.util.CsvReader#parse
  */
-public class CsvFileReader extends CsvBufferedReader
+public class CsvFileReader extends CsvBufferedReaderMultiline
 {
 	/** the File that is being read */
 	private File file;

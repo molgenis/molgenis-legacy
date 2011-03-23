@@ -9,7 +9,7 @@ import java.io.StringReader;
  * 
  * @see org.molgenis.util.CsvReader#parse
  */
-public class CsvStringReader extends CsvBufferedReader
+public class CsvStringReader extends CsvBufferedReaderMultiline
 {
 	/** Copy of the string that is being parsed */
 	private String csvString;
