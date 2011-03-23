@@ -11,6 +11,12 @@ import javax.xml.bind.annotation.XmlElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Entity
 {
+	@XmlAttribute
+	private String name;
+	
+	@XmlAttribute
+	private String label;
+	
 	//serializes attributes in reverse order of elements
 	@XmlElement
 	private String description;
@@ -35,10 +41,11 @@ public class Entity
 	@XmlAttribute(name="abstract")
 	private Boolean _abstract;
 	
-	@XmlAttribute
-	private String name;
+
 	
-//HELPER METHODS
+
+
+	//HELPER METHODS
 	public Field getField(String name)
 	{
 		for(Field f: fields)
@@ -60,6 +67,15 @@ public class Entity
 		this.name = name;
 	}
 	
+	public String getLabel()
+	{
+		return label;
+	}
+
+	public void setLabel(String label)
+	{
+		this.label = label;
+	}
 	
 	//added function addField for adding field to entity
 	public void addField(Field e){
