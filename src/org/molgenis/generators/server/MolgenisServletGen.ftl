@@ -109,4 +109,9 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 	{
 		return new ${package}.servlet.SoapApi((Database)getDatabase());
 	}
+	
+	@Override
+	public boolean linkoutOverlay() {
+		return ${linkout_overlay};
+	}
 }

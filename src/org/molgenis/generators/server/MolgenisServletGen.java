@@ -52,6 +52,8 @@ public class MolgenisServletGen extends Generator
 		templateArgs.put("mail_smtp_user", options.mail_smtp_user);
 		templateArgs.put("mail_smtp_password", options.mail_smtp_password);
 		
+		templateArgs.put("linkout_overlay", options.linkout_overlay);
+		
 		OutputStream targetOut = new FileOutputStream( target );
 		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
 		targetOut.close();

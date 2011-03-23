@@ -24,7 +24,6 @@ import java.util.TreeMap;
 import java.util.Vector;
 
 import javax.naming.NamingException;
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,11 +33,6 @@ import javax.xml.ws.Endpoint;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.cxf.Bus;
 import org.apache.cxf.BusFactory;
-import org.apache.cxf.common.classloader.ClassLoaderUtils;
-import org.apache.cxf.interceptor.Interceptor;
-import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
-import org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet;
-import org.apache.cxf.message.Message;
 import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
@@ -102,6 +96,11 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	 */
 	public abstract Database getDatabase() throws DatabaseException, NamingException, FileNotFoundException,
 			IOException;
+	
+	/**
+	 * Applies an optional overlay of your HTML with linkouts for popular identifier to online databases, default is false.
+	 */
+	public abstract boolean linkoutOverlay();
 
 	/**
 	 * Create a Login specific to the security scheme used in this MOLGENIS. You
@@ -585,11 +584,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					args.put("show", "root");
 				}
 				logger.info("applying layout template");
-				
-				// optional overlay of your HTML with linkouts to databases
-				// TODO: make configurable
-				boolean applyOverlayLinkouts = false;
-				if(applyOverlayLinkouts){
+	
+				if(linkoutOverlay()){
 					logger.info("applying linkout overlay");
 					Writer result = new StringWriter();
 					PrintWriter tmpWriter = new PrintWriter(result);

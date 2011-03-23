@@ -175,6 +175,9 @@ public class MolgenisOptions
 	@Option(name = "generate_R", param = "string", type = Option.Type.OPTIONAL_ARGUMENT, usage = "Should R-interface be generated. Default: true.")
 	public String generate_R = "true";
 	
+	@Option(name = "linkout_overlay", param = "string", type = Option.Type.OPTIONAL_ARGUMENT, usage = "Applies an optional overlay of your HTML with linkouts for popular identifier to online databases, default is false.")
+	public String linkout_overlay = "false";
+	
 	@Option(name = "generate_doc", param = "string", type = Option.Type.OPTIONAL_ARGUMENT, usage = "Should documentation be generated. Default: true.")
 	public String generate_doc = "true";
 	
