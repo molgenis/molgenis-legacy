@@ -318,7 +318,7 @@
 	</#list>
 	<#return result>
 </#function>
-<#function csvQuoted entity items>
+<#function csvQuotedEntity entity items>
 	<#local result = "">
 	<#list items as item>
 		<#if item_index != 0>
