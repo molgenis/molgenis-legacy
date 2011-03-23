@@ -47,6 +47,12 @@ public class Model
 		entities.add(e);
 	}
 	
+	//added function addModule to add module to model
+	public void addModule(Module e){
+		modules.add(e);
+	}
+	
+	
 	
 	public void setEntities(List<Entity> entities)
 	{
