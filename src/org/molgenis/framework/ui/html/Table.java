@@ -19,9 +19,9 @@ public class Table extends HtmlInput
 	private String defaultCellStyle = "border: 1px solid black; padding:2px";
 	private String headerCellStyle = "border: 1px solid black; padding:2px; background-color: #5B82A4; color: white";
 	
-	public Table()
+	public Table(String name)
 	{
-		this(null, null);
+		this(name, null);
 	}
 	
 	public Table(String name, String label)
