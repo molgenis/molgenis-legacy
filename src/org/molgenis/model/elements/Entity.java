@@ -1434,7 +1434,17 @@ public class Entity extends DBSchema implements Record
 			}
 
 			List<String> result = new ArrayList<String>();
-			if (this.getKeys().size() > 0)
+			//default to secondary key, e.g. 'name'
+			if (this.getKeys().size() > 1)
+			{
+				for (Field f : this.getKey(1).getFields())
+				{
+					result.add(f.getName());
+				}
+				return result;
+			} 
+			//otherwise primary key, e.g. 'id'
+			else if (this.getKeys().size() > 0)
 			{
 				for (Field f : this.getKey(0).getFields())
 				{
