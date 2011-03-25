@@ -118,11 +118,26 @@ public abstract class HtmlInput implements Input
 	//TODO: This *needs* to be renamed to getValueToString() or removed!!!
 	public String getValue()
 	{
-		if( getObject() == null )
+		return getValue(true);
+	}
+	
+	/**
+	 * Get the value of the input as a String, optionally replacing special characters like \\n and &gt;
+	 * 
+	 * @param replaceSpechialChars
+	 * @return
+	 */
+	public String getValue(boolean replaceSpechialChars) {
+		if( getObject() == null ) {
 			return "";
+		}
 		
 		//todo: why different from getHtmlValue()??
-		return getObject().toString().replace( "\n","<br>" ).replace( "\r","" ).replace(">", "&gt;").replace("<", "&lt;");
+		if (replaceSpechialChars) {
+			return getObject().toString().replace( "\n","<br>" ).replace( "\r","" ).replace(">", "&gt;").replace("<", "&lt;");
+		} else {
+			return getObject().toString();
+		}
 	}
 
 	public void setValue( Object value )

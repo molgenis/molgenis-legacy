@@ -18,7 +18,8 @@ public class TextParagraph extends HtmlInput
 	@Override
 	public String toHtml()
 	{
+		// Don't escape special characters, so user can insert html into the paragraph
 		return "<p id=\"" + getId() + "\" name=\"" + getName() + "\""
-				+ tabIndex + " >" + getValue() + "</p>";
+				+ tabIndex + " >" + getValue(false) + "</p>";
 	}
 }
