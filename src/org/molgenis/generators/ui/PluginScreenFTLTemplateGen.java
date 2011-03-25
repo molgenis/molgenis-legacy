@@ -58,15 +58,15 @@ public class PluginScreenFTLTemplateGen extends Generator
 				File targetFile = new File(this.getHandWrittenPath(options) + "/" + fullKlazzName.replace(".", "/")
 						+ ".ftl");
 				// only generate if the file doesn't exist AND plugin not already on classpath
-				try
-				{
-					Class.forName(fullKlazzName);
-					//if we found it we can stop
-					return;
-				} catch (Exception e)
-				{
-					logger.debug("skipped ftl generation for plugin "+plugin.getName()+" as it is on the classpath");
-				}
+//				try
+//				{
+//					Class.forName(fullKlazzName);
+//					//if we found it we can stop
+//					return;
+//				} catch (Exception e)
+//				{
+//					logger.debug("skipped ftl generation for plugin "+plugin.getName()+" as it is on the classpath");
+//				}
 			
 				
 				
