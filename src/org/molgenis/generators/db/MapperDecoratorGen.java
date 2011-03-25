@@ -57,17 +57,18 @@ public class MapperDecoratorGen extends ForEachEntityGenerator
 					File targetFile = new File(this.getHandWrittenPath(options) + "/" + fullKlazzName.replace(".", "/")
 							+ ".java");
 					// only generate if the file doesn't exist AND not on classpath
-//					try
-//					{
-//						Class.forName(fullKlazzName);
-//						//if we found it we can stop
-//						return;
-//					} catch (Exception e)
-//					{
-//						logger.debug("skipped generation of decorator "+entity.getDecorator()+" as it is on the classpath");
-//					}
+					Class c = null;
+					try
+					{
+						c = Class.forName(fullKlazzName);
+						//return;
+					} catch (ClassNotFoundException e)
+					{
+						logger.error("skipped plugin "+fullKlazzName+" as it is on the classpath");
+					}
+					logger.error("tested classforname on "+fullKlazzName+": "+c);
 				
-					if (!targetFile.exists())
+					if (!targetFile.exists() && c == null)
 					{
 						templateArgs.put("entityClass", entity.getNamespace()+"." + 
 								GeneratorHelper.getJavaName(entity.getName()));

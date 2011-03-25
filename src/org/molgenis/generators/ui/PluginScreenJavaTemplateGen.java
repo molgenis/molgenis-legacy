@@ -61,17 +61,18 @@ public class PluginScreenJavaTemplateGen extends Generator
 				File targetFtl = new File(fullKlazzName.replace(".", "/")
 						+ ".ftl");
 				// only generate if the file doesn't exist AND is not on classpath
-//				try
-//				{
-//					Class c = Class.forName(fullKlazzName);
-//					if(c != null) return;
-//				} catch (Exception e)
-//				{
-//					logger.debug("skipped plugin "+plugin.getName()+" as it is on the classpath");
-//				}
-			
+				Class c = null;
+				try
+				{
+					c = Class.forName(fullKlazzName);
+					//return;
+				} catch (ClassNotFoundException e)
+				{
+					logger.error("skipped plugin "+plugin.getName()+" as it is on the classpath");
+				}
+				logger.error("tested classforname on "+fullKlazzName+": "+c);
 				
-				if (!targetFile.exists())
+				if (!targetFile.exists() && c == null)
 				{
 					templateArgs.put("screen", plugin);
 					templateArgs.put("template", template.getName());
