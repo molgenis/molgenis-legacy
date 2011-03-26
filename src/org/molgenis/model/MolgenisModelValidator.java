@@ -127,12 +127,6 @@ public class MolgenisModelValidator
 		{
 			if (e.getXrefLabels() == null)
 			{
-				// logger.debug("adding default XrefLabel to entity="+e.getName());
-
-				if (e.getName().equals("Data"))
-				{
-					System.out.println("break");
-				}
 				// still empty then construct from secondary key
 				List<String> result = new ArrayList<String>();
 				if (e.getAllKeys().size() > 1)
