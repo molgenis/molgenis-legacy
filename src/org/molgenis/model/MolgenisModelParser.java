@@ -10,6 +10,7 @@
 package org.molgenis.model;
 
 // jdk
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -64,17 +65,21 @@ public class MolgenisModelParser
 	 *            abstract="true"><field name="a" type="....
 	 * @throws MolgenisModelException
 	 */
-	public static Entity parseEntity(Model model, Element element) throws MolgenisModelException
+	public static Entity parseEntity(Model model, Element element)
+			throws MolgenisModelException
 	{
 		// check for illegal words
 		String[] keywords = new String[]
-		{ "name", "label", "extends", "implements", "abstract", "description", "system", "decorator", "xref_label" };
+		{ "name", "label", "extends", "implements", "abstract", "description",
+				"system", "decorator", "xref_label" };
 		List<String> key_words = new ArrayList<String>(Arrays.asList(keywords));
 		for (int i = 0; i < element.getAttributes().getLength(); i++)
 		{
-			if (!key_words.contains(element.getAttributes().item(i).getNodeName()))
+			if (!key_words.contains(element.getAttributes().item(i)
+					.getNodeName()))
 			{
-				throw new MolgenisModelException("attribute '" + element.getAttributes().item(i).getNodeName()
+				throw new MolgenisModelException("attribute '"
+						+ element.getAttributes().item(i).getNodeName()
 						+ "' not allowed for <entity>");
 			}
 		}
@@ -89,8 +94,8 @@ public class MolgenisModelParser
 		}
 
 		// construct
-		Entity entity = new Entity(element.getAttribute("name").trim(), element.getAttribute("label"), model
-				.getDatabase());
+		Entity entity = new Entity(element.getAttribute("name").trim(), element
+				.getAttribute("label"), model.getDatabase());
 		entity.setNamespace(model.getName());
 
 		// add optional properties
@@ -112,11 +117,13 @@ public class MolgenisModelParser
 		String _implements = element.getAttribute("implements");
 		if (_implements != null && !_implements.equals(""))
 		{
-			entity.setImplements(new Vector<String>(Arrays.asList(_implements.split(","))));
+			entity.setImplements(new Vector<String>(Arrays.asList(_implements
+					.split(","))));
 		}
 
 		// ABSTRACT
-		entity.setAbstract(Boolean.parseBoolean(element.getAttribute("abstract")));
+		entity.setAbstract(Boolean.parseBoolean(element
+				.getAttribute("abstract")));
 
 		// SYSTEM
 		entity.setSystem(Boolean.parseBoolean(element.getAttribute("system")));
@@ -145,7 +152,8 @@ public class MolgenisModelParser
 		for (int j = 0; j < elements.getLength(); j++)
 		{
 			// parse the contents, including markup...
-			entity.setDescription(elementValueToString((Element) elements.item(j)));
+			entity.setDescription(elementValueToString((Element) elements
+					.item(j)));
 		}
 
 		// FIELD
@@ -210,15 +218,19 @@ public class MolgenisModelParser
 
 			// description
 			String key_description = null;
-			if (elem.hasAttribute("description")) key_description = elem.getAttribute("description");
+			if (elem.hasAttribute("description")) key_description = elem
+					.getAttribute("description");
 
 			// check if keys
-			if (keys.size() == 0) throw new MolgenisModelException("missing fields on unique of '" + entity.getName()
-					+ "'. Expected <unique fields=\"field1[,field2,..]\" description=\"...\"/>");
+			if (keys.size() == 0) throw new MolgenisModelException(
+					"missing fields on unique of '"
+							+ entity.getName()
+							+ "'. Expected <unique fields=\"field1[,field2,..]\" description=\"...\"/>");
 
 			try
 			{
-				entity.addKey(keys, elem.getAttribute("subclass").equals("true"), key_description);
+				entity.addKey(keys, elem.getAttribute("subclass")
+						.equals("true"), key_description);
 				// might be duplicate key
 			}
 			catch (Exception e)
@@ -239,7 +251,8 @@ public class MolgenisModelParser
 
 				Index index = new Index(elem.getAttribute("name"));
 
-				NodeList indexfield_elements = elem.getElementsByTagName("indexfield");
+				NodeList indexfield_elements = elem
+						.getElementsByTagName("indexfield");
 				for (int l = 0; l < indexfield_elements.getLength(); l++)
 				{
 					elem = (Element) indexfield_elements.item(l);
@@ -250,7 +263,9 @@ public class MolgenisModelParser
 						// System.err.println(String.format(Error.
 						// MISSING_INDEX_FIELD.msg,
 						// elem.getAttribute("name")));
-						throw new MolgenisModelException("Missing index field: " + elem.getAttribute("name"));
+						throw new MolgenisModelException(
+								"Missing index field: "
+										+ elem.getAttribute("name"));
 						// return null;
 					}
 
@@ -284,17 +299,21 @@ public class MolgenisModelParser
 		return entity;
 	}
 
-	public static void parseMatrix(Model model, Element element) throws MolgenisModelException
+	public static void parseMatrix(Model model, Element element)
+			throws MolgenisModelException
 	{
 		// check parameters
 		String[] keywords = new String[]
-		{ "name", "content_entity", "content", "container", "row", "col", "row_entity", "col_entity" };
+		{ "name", "content_entity", "content", "container", "row", "col",
+				"row_entity", "col_entity" };
 		List<String> key_words = new ArrayList<String>(Arrays.asList(keywords));
 		for (int i = 0; i < element.getAttributes().getLength(); i++)
 		{
-			if (!key_words.contains(element.getAttributes().item(i).getNodeName()))
+			if (!key_words.contains(element.getAttributes().item(i)
+					.getNodeName()))
 			{
-				throw new MolgenisModelException("attribute '" + element.getAttributes().item(i).getNodeName()
+				throw new MolgenisModelException("attribute '"
+						+ element.getAttributes().item(i).getNodeName()
 						+ "' unknown for <entity>");
 			}
 		}
@@ -308,7 +327,8 @@ public class MolgenisModelParser
 		}
 
 		// create the matrix object and put it in the model
-		Matrix matrix = new Matrix(element.getAttribute("name"), model.getDatabase());
+		Matrix matrix = new Matrix(element.getAttribute("name"), model
+				.getDatabase());
 		matrix.setCol(element.getAttribute("col"));
 		matrix.setRow(element.getAttribute("row"));
 		matrix.setContentEntity(element.getAttribute("content_entity"));
@@ -320,21 +340,25 @@ public class MolgenisModelParser
 		logger.debug("read: " + matrix.toString());
 	}
 
-	public static void parseField(Entity entity, Element element) throws MolgenisModelException
+	public static void parseField(Entity entity, Element element)
+			throws MolgenisModelException
 	{
 		// check for illegal words
 		String[] keywords = new String[]
-		{ "type", "name", "label", "auto", "nillable", "optional", "readonly", "default", "description", "desc",
-				"unique", "hidden", "length", "index", "enum_options", "default_code", "xref", "xref_entity",
-				"xref_field", "xref_label", "xref_name", "mref_name", "mref_localid", "mref_remoteid", "filter",
-				"filtertype", "filterfield", "filtervalue", "xref_cascade" +
-						"" };
+		{ "type", "name", "label", "auto", "nillable", "optional", "readonly",
+				"default", "description", "desc", "unique", "hidden", "length",
+				"index", "enum_options", "default_code", "xref", "xref_entity",
+				"xref_field", "xref_label", "xref_name", "mref_name",
+				"mref_localid", "mref_remoteid", "filter", "filtertype",
+				"filterfield", "filtervalue", "xref_cascade" + "" };
 		List<String> key_words = new ArrayList<String>(Arrays.asList(keywords));
 		for (int i = 0; i < element.getAttributes().getLength(); i++)
 		{
-			if (!key_words.contains(element.getAttributes().item(i).getNodeName()))
+			if (!key_words.contains(element.getAttributes().item(i)
+					.getNodeName()))
 			{
-				throw new MolgenisModelException("attribute '" + element.getAttributes().item(i).getNodeName()
+				throw new MolgenisModelException("attribute '"
+						+ element.getAttributes().item(i).getNodeName()
 						+ "' not allowed for <field>");
 			}
 		}
@@ -345,7 +369,8 @@ public class MolgenisModelParser
 		String label = element.getAttribute("label");
 		String auto = element.getAttribute("auto");
 		String nillable = element.getAttribute("nillable");
-		if (element.hasAttribute("optional")) nillable = element.getAttribute("optional");
+		if (element.hasAttribute("optional")) nillable = element
+				.getAttribute("optional");
 		String readonly = element.getAttribute("readonly");
 		String default_value = element.getAttribute("default");
 
@@ -356,7 +381,8 @@ public class MolgenisModelParser
 		String hidden = element.getAttribute("hidden");
 		String length = element.getAttribute("length");
 		String index = element.getAttribute("index");
-		String enum_options = element.getAttribute("enum_options").replace('[', ' ').replace(']', ' ').trim();
+		String enum_options = element.getAttribute("enum_options").replace('[',
+				' ').replace(']', ' ').trim();
 		String default_code = element.getAttribute("default_code");
 		// xref and mref
 		String xref_entity = element.getAttribute("xref_entity");
@@ -413,13 +439,17 @@ public class MolgenisModelParser
 		// the value is set, than it is true).
 
 		// check exceptions
-		if (type == "") throw new MolgenisModelException("type is missing for field '" + name + "' of entity '"
-				+ entity.getName() + "'");
-		if (MolgenisFieldTypes.getType(type) instanceof UnknownField) throw new MolgenisModelException("type '" + type
-				+ "' unknown for field '" + name + "' of entity '" + entity.getName() + "'");
-		if (name.equals("")) throw new MolgenisModelException("name is missing for field of entity '"
-				+ entity.getName() + "'");
-		if (hidden.equals("true") && !nillable.equals("true") && (default_value.equals("") && !auto.equals("true"))) throw new MolgenisModelException(
+		if (type == "") throw new MolgenisModelException(
+				"type is missing for field '" + name + "' of entity '"
+						+ entity.getName() + "'");
+		if (MolgenisFieldTypes.getType(type) instanceof UnknownField) throw new MolgenisModelException(
+				"type '" + type + "' unknown for field '" + name
+						+ "' of entity '" + entity.getName() + "'");
+		if (name.equals("")) throw new MolgenisModelException(
+				"name is missing for field of entity '" + entity.getName()
+						+ "'");
+		if (hidden.equals("true") && !nillable.equals("true")
+				&& (default_value.equals("") && !auto.equals("true"))) throw new MolgenisModelException(
 				"field '"
 						+ name
 						+ "' of entity '"
@@ -427,8 +457,10 @@ public class MolgenisModelParser
 						+ "' must have a default value. A field that is not nillable and hidden must have a default value.");
 
 		// construct
-		Field field = new Field(entity, MolgenisFieldTypes.getType(type), name, label, Boolean.parseBoolean(auto), Boolean
-				.parseBoolean(nillable), Boolean.parseBoolean(readonly), default_value);
+		Field field = new Field(entity, MolgenisFieldTypes.getType(type), name,
+				label, Boolean.parseBoolean(auto), Boolean
+						.parseBoolean(nillable),
+				Boolean.parseBoolean(readonly), default_value);
 		logger.debug("read: " + field.toString());
 
 		// add optional properties
@@ -437,14 +469,20 @@ public class MolgenisModelParser
 		if (!default_code.equals("")) field.setDefaultCode(default_code);
 		if (filter.equals("true"))
 		{
-			logger.warn("filter set for field '" + name + "' of entity '" + entity.getName() + "'");
-			logger.warn(filterfield + " " + filtertype + " " + filtervalue);
-			logger.warn(System.currentTimeMillis() + " - filter bool: '" + Boolean.parseBoolean(filter) + "'");
-			if (filtertype == "" || filterfield == "") throw new MolgenisModelException("field '" + name
-					+ "' of entity '" + entity.getName()
-					+ "': when the filter is set to true, the filtertype, filterfield and filtervalue must be set");
-			if (filtervalue == "") logger.warn("no value specified for filter in field '" + name + "' of entity '"
+			logger.warn("filter set for field '" + name + "' of entity '"
 					+ entity.getName() + "'");
+			logger.warn(filterfield + " " + filtertype + " " + filtervalue);
+			logger.warn(System.currentTimeMillis() + " - filter bool: '"
+					+ Boolean.parseBoolean(filter) + "'");
+			if (filtertype == "" || filterfield == "") throw new MolgenisModelException(
+					"field '"
+							+ name
+							+ "' of entity '"
+							+ entity.getName()
+							+ "': when the filter is set to true, the filtertype, filterfield and filtervalue must be set");
+			if (filtervalue == "") logger
+					.warn("no value specified for filter in field '" + name
+							+ "' of entity '" + entity.getName() + "'");
 			field.setFilter(Boolean.parseBoolean(filter));
 			field.setFiltertype(filtertype);
 			field.setFilterfield(filterfield);
@@ -454,7 +492,8 @@ public class MolgenisModelParser
 		// add type dependent properties
 		if (type.equals("string"))
 		{
-			if (!length.equals("")) field.setVarCharLength(Integer.parseInt(length));
+			if (!length.equals("")) field.setVarCharLength(Integer
+					.parseInt(length));
 			else
 				field.setVarCharLength(255);
 		}
@@ -466,8 +505,10 @@ public class MolgenisModelParser
 			{
 				options.add(tokenizer.nextToken().trim());
 			}
-			if (options.size() < 1) throw new MolgenisModelException("enum_options must be ',' delimited for field '"
-					+ field.getName() + "' of entity '" + entity.getName() + "'");
+			if (options.size() < 1) throw new MolgenisModelException(
+					"enum_options must be ',' delimited for field '"
+							+ field.getName() + "' of entity '"
+							+ entity.getName() + "'");
 
 			field.setEnumOptions(options);
 		}
@@ -476,11 +517,13 @@ public class MolgenisModelParser
 			// xref must be defined unless mref_name is set
 			// caveat, can be both ends!!!
 			if (mref_name.equals("") && (xref_entity.equals(""))) throw new MolgenisModelException(
-					"xref_entity must be set for xref field '" + field.getName() + "' of entity '" + entity.getName()
-							+ "'");
+					"xref_entity must be set for xref field '"
+							+ field.getName() + "' of entity '"
+							+ entity.getName() + "'");
 
 			List<String> xref_labels = null;
-			if (xref_label != null) xref_labels = Arrays.asList(xref_label.split(","));
+			if (xref_label != null) xref_labels = Arrays.asList(xref_label
+					.split(","));
 
 			field.setXRefVariables(xref_entity, xref_field, xref_labels);
 
@@ -489,19 +532,25 @@ public class MolgenisModelParser
 			if (type.equals("mref"))
 			{
 				if (!mref_name.equals("")) field.setMrefName(mref_name);
-				if (!mref_localid.equals("")) field.setMrefLocalid(mref_localid);
-				if (!mref_remoteid.equals("")) field.setMrefRemoteid(mref_remoteid);
+				if (!mref_localid.equals("")) field
+						.setMrefLocalid(mref_localid);
+				if (!mref_remoteid.equals("")) field
+						.setMrefRemoteid(mref_remoteid);
 			}
 
 			if (!element.getAttribute("xref_cascade").equals(""))
 			{
-				if (element.getAttribute("xref_cascade").equalsIgnoreCase("true"))
+				if (element.getAttribute("xref_cascade").equalsIgnoreCase(
+						"true"))
 				{
 					field.setXrefCascade(true);
 				}
 				else
 				{
-					throw new MolgenisModelException("Unknown option on xref_cascade: '"+element.getAttribute("xref_cascade")+"'");
+					throw new MolgenisModelException(
+							"Unknown option on xref_cascade: '"
+									+ element.getAttribute("xref_cascade")
+									+ "'");
 				}
 			}
 		}
@@ -513,7 +562,8 @@ public class MolgenisModelParser
 		}
 		catch (Exception e)
 		{
-			throw new MolgenisModelException("duplicate field '" + field.getName() + "' in entity '" + entity.getName()
+			throw new MolgenisModelException("duplicate field '"
+					+ field.getName() + "' in entity '" + entity.getName()
 					+ "'");
 		}
 
@@ -527,8 +577,9 @@ public class MolgenisModelParser
 			}
 			catch (Exception e)
 			{
-				throw new MolgenisModelException("duplicate field '" + field.getName() + "' in entity '"
-						+ entity.getName() + "'");
+				throw new MolgenisModelException("duplicate field '"
+						+ field.getName() + "' in entity '" + entity.getName()
+						+ "'");
 			}
 
 			entity.addIndex(i);
@@ -539,7 +590,8 @@ public class MolgenisModelParser
 
 	}
 
-	public static void parseView(Model model, Element element) throws MolgenisModelException
+	public static void parseView(Model model, Element element)
+			throws MolgenisModelException
 	{
 		// get the attributes
 		String name = element.getAttribute("name");
@@ -547,13 +599,17 @@ public class MolgenisModelParser
 		String entities = element.getAttribute("entities");
 
 		// check properties
-		if (name.equals("")) throw new MolgenisModelException("name is missing for view " + element.toString());
-		if (entities.equals("")) throw new MolgenisModelException("entities is missing for view " + element.toString());
+		if (name.equals("")) throw new MolgenisModelException(
+				"name is missing for view " + element.toString());
+		if (entities.equals("")) throw new MolgenisModelException(
+				"entities is missing for view " + element.toString());
 		if (label.equals("")) label = name;
 
-		List<String> entityList = new ArrayList<String>(Arrays.asList(entities.split(",")));
+		List<String> entityList = new ArrayList<String>(Arrays.asList(entities
+				.split(",")));
 		if (entityList.size() < 2) throw new MolgenisModelException(
-				"a view needs at least 2 entities, define as entities=\"e1,e2\": " + element.toString());
+				"a view needs at least 2 entities, define as entities=\"e1,e2\": "
+						+ element.toString());
 
 		// construct the view
 		View view = new View(name, label, model.getDatabase());
@@ -561,14 +617,16 @@ public class MolgenisModelParser
 		// add the viewentities
 		for (String viewentity : entityList)
 		{
-			if (view.getEntities().contains(viewentity)) throw new MolgenisModelException("view " + name
-					+ " has duplicate viewentity entries (" + viewentity + ")");
+			if (view.getEntities().contains(viewentity)) throw new MolgenisModelException(
+					"view " + name + " has duplicate viewentity entries ("
+							+ viewentity + ")");
 			view.addEntity(viewentity);
 		}
 	}
 
 	// Method parser
-	public static void parseMethod(Model model, Element element) throws MolgenisModelException
+	public static void parseMethod(Model model, Element element)
+			throws MolgenisModelException
 	{
 		// NAME
 		if (element.getAttribute("name") == "")
@@ -579,7 +637,8 @@ public class MolgenisModelParser
 		}
 
 		// construct
-		Method method = new Method(element.getAttribute("name"), model.getMethodSchema());
+		Method method = new Method(element.getAttribute("name"), model
+				.getMethodSchema());
 
 		NodeList nodes = element.getChildNodes();
 		for (int nodeid = 0; nodeid < nodes.getLength(); ++nodeid)
@@ -587,35 +646,43 @@ public class MolgenisModelParser
 			Node node = nodes.item(nodeid);
 			if (node.getNodeType() != Node.ELEMENT_NODE) continue;
 
-			if (((Element) node).getTagName().equals("description")) method.setDescription(((Element) node)
-					.getTextContent().trim());
-			else if (((Element) node).getTagName().equals("parameter")) parseParameter(method, (Element) node);
-			else if (((Element) node).getTagName().equals("return")) parseReturnType(model, method, (Element) node);
-			else if (((Element) node).getTagName().equals("query")) parseQuery(model, method, (Element) node);
+			if (((Element) node).getTagName().equals("description")) method
+					.setDescription(((Element) node).getTextContent().trim());
+			else if (((Element) node).getTagName().equals("parameter")) parseParameter(
+					method, (Element) node);
+			else if (((Element) node).getTagName().equals("return")) parseReturnType(
+					model, method, (Element) node);
+			else if (((Element) node).getTagName().equals("query")) parseQuery(
+					model, method, (Element) node);
 		}
 	}
 
-	public static void parseParameter(Method method, Element element) throws MolgenisModelException
+	public static void parseParameter(Method method, Element element)
+			throws MolgenisModelException
 	{
 		// check properties
 		// NAME
 		if (element.getAttribute("name") == "")
 		{
-			String message = "name is missing for parameter " + element.toString();
+			String message = "name is missing for parameter "
+					+ element.toString();
 			logger.error(message);
 			throw new MolgenisModelException(message);
 		}
 		// TYPE
 		if (element.getAttribute("type") == "")
 		{
-			String message = "type is missing for parameter " + element.toString();
+			String message = "type is missing for parameter "
+					+ element.toString();
 			logger.error(message);
 			throw new MolgenisModelException(message);
 		}
 
 		// construct
-		Parameter parameter = new Parameter(method, Parameter.Type.getType(element.getAttribute("type")), element
-				.getAttribute("name"), element.getAttribute("label"), false, element.getAttribute("default"));
+		Parameter parameter = new Parameter(method, Parameter.Type
+				.getType(element.getAttribute("type")), element
+				.getAttribute("name"), element.getAttribute("label"), false,
+				element.getAttribute("default"));
 
 		try
 		{
@@ -623,18 +690,21 @@ public class MolgenisModelParser
 		}
 		catch (Exception e)
 		{
-			throw new MolgenisModelException("duplicate parameter '" + parameter.getName() + "' in method '"
-					+ method.getName() + "'");
+			throw new MolgenisModelException("duplicate parameter '"
+					+ parameter.getName() + "' in method '" + method.getName()
+					+ "'");
 		}
 	}
 
-	public static void parseReturnType(Model model, Method method, Element element) throws MolgenisModelException
+	public static void parseReturnType(Model model, Method method,
+			Element element) throws MolgenisModelException
 	{
 		// check properties
 		// TYPE
 		if (element.getAttribute("type") == "")
 		{
-			String message = "type is missing for returntype " + element.toString();
+			String message = "type is missing for returntype "
+					+ element.toString();
 			logger.error(message);
 			throw new MolgenisModelException(message);
 		}
@@ -651,13 +721,15 @@ public class MolgenisModelParser
 		}
 	}
 
-	public static void parseQuery(Model model, Method method, Element element) throws MolgenisModelException
+	public static void parseQuery(Model model, Method method, Element element)
+			throws MolgenisModelException
 	{
 		// check properties
 		// TYPE
 		if (element.getAttribute("entity") == "")
 		{
-			String message = "type is missing for returntype " + element.toString();
+			String message = "type is missing for returntype "
+					+ element.toString();
 			logger.error(message);
 			throw new MolgenisModelException(message);
 		}
@@ -673,11 +745,13 @@ public class MolgenisModelParser
 			Node node = nodes.item(nodeid);
 			if (node.getNodeType() != Node.ELEMENT_NODE) continue;
 
-			if (((Element) node).getTagName().equals("rule")) parseQueryRule(model, query, (Element) node);
+			if (((Element) node).getTagName().equals("rule")) parseQueryRule(
+					model, query, (Element) node);
 		}
 	}
 
-	public static void parseQueryRule(Model model, MethodQuery query, Element element) throws MolgenisModelException
+	public static void parseQueryRule(Model model, MethodQuery query,
+			Element element) throws MolgenisModelException
 	{
 		// check properties
 		// TYPE
@@ -689,24 +763,28 @@ public class MolgenisModelParser
 		}
 		if (element.getAttribute("operator") == "")
 		{
-			String message = "type is missing for operator " + element.toString();
+			String message = "type is missing for operator "
+					+ element.toString();
 			logger.error(message);
 			throw new MolgenisModelException(message);
 		}
 		if (element.getAttribute("parameter") == "")
 		{
-			String message = "type is missing for parameter " + element.toString();
+			String message = "type is missing for parameter "
+					+ element.toString();
 			logger.error(message);
 			throw new MolgenisModelException(message);
 		}
 
 		// construct
-		query.addRule(new MethodQuery.Rule(element.getAttribute("field"), element.getAttribute("operator"), element
-				.getAttribute("parameter")));
+		query.addRule(new MethodQuery.Rule(element.getAttribute("field"),
+				element.getAttribute("operator"), element
+						.getAttribute("parameter")));
 	}
 
 	// db parser
-	public static Model parseDbSchema(Vector<String> filenames) throws MolgenisModelException
+	public static Model parseDbSchema(Vector<String> filenames)
+			throws MolgenisModelException
 	{
 		Model model = new Model("molgenis");
 		Document document = null;
@@ -714,16 +792,28 @@ public class MolgenisModelParser
 		// initialize the document
 		for (String filename : filenames)
 		{
+			DocumentBuilder builder = null;
 			try
 			{
-				DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+				builder = DocumentBuilderFactory.newInstance()
+						.newDocumentBuilder();
 				document = builder.parse(filename.trim());
 			}
 			catch (Exception e)
 			{
-				logger.error("parsing of file '" + filename + "' failed.");
-				e.printStackTrace();
-				throw new MolgenisModelException("Parsing of DSL (schema) failed: " + e.getMessage());
+				try
+				{
+					// try to load from classpath
+					document = builder.parse(ClassLoader
+							.getSystemResourceAsStream(filename.trim()));
+				}
+				catch (Exception e2)
+				{
+					logger.error("parsing of file '" + filename + "' failed.");
+					e.printStackTrace();
+					throw new MolgenisModelException(
+							"Parsing of DSL (schema) failed: " + e.getMessage());
+				}
 			}
 			// retrieve the document-root
 			Element document_root = document.getDocumentElement();
@@ -770,7 +860,8 @@ public class MolgenisModelParser
 				}
 				else if (element.getTagName().equals("description"))
 				{
-					model.setDBDescription(model.getDBDescription() + elementValueToString(element));
+					model.setDBDescription(model.getDBDescription()
+							+ elementValueToString(element));
 				}
 			}
 		}
@@ -778,7 +869,8 @@ public class MolgenisModelParser
 		return model;
 	}
 
-	public static void parseModule(Model model, Element element) throws MolgenisModelException
+	public static void parseModule(Model model, Element element)
+			throws MolgenisModelException
 	{
 		// check for illegal words
 		String[] keywords = new String[]
@@ -786,10 +878,13 @@ public class MolgenisModelParser
 		List<String> key_words = new ArrayList<String>(Arrays.asList(keywords));
 		for (int i = 0; i < element.getAttributes().getLength(); i++)
 		{
-			if (!key_words.contains(element.getAttributes().item(i).getNodeName()))
+			if (!key_words.contains(element.getAttributes().item(i)
+					.getNodeName()))
 			{
-				throw new MolgenisModelException("attribute '" + element.getAttributes().item(i).getNodeName()
-						+ "' unknown for <module "+element.getAttribute("name")+">");
+				throw new MolgenisModelException("attribute '"
+						+ element.getAttributes().item(i).getNodeName()
+						+ "' unknown for <module "
+						+ element.getAttribute("name") + ">");
 			}
 		}
 
@@ -803,9 +898,11 @@ public class MolgenisModelParser
 		}
 
 		// construct
-		Module module = new Module(model.getName() + "." + element.getAttribute("name").trim(), model);
+		Module module = new Module(model.getName() + "."
+				+ element.getAttribute("name").trim(), model);
 
-		if (element.getAttribute("label") != "") module.setLabel(element.getAttribute("label"));
+		if (element.getAttribute("label") != "") module.setLabel(element
+				.getAttribute("label"));
 
 		// DESCRIPTION
 		NodeList elements = element.getElementsByTagName("description");
@@ -813,7 +910,8 @@ public class MolgenisModelParser
 		{
 			// parse the contents, including markup...
 			if (elements.item(j).getParentNode().equals(element)) module
-					.setDescription(elementValueToString((Element) elements.item(j)));
+					.setDescription(elementValueToString((Element) elements
+							.item(j)));
 		}
 
 		// ENTITY
@@ -828,7 +926,8 @@ public class MolgenisModelParser
 		}
 	}
 
-	private static void parseUiSchema(Model model, Element element, UISchema parent) throws MolgenisModelException
+	private static void parseUiSchema(Model model, Element element,
+			UISchema parent) throws MolgenisModelException
 	{
 		UISchema new_parent = null;
 
@@ -839,7 +938,9 @@ public class MolgenisModelParser
 		// check required properties
 		if (name == "" && !element.getTagName().equals("form"))
 		{
-			throw new MolgenisModelException("name is missing for subform of screen '" + parent.getName() + "'");
+			throw new MolgenisModelException(
+					"name is missing for subform of screen '"
+							+ parent.getName() + "'");
 		}
 		if (label == "")
 		{
@@ -852,8 +953,9 @@ public class MolgenisModelParser
 			Menu menu = new Menu(name, parent);
 			menu.setLabel(label);
 			menu.setNamespace(namespace);
-			if (element.getAttribute("position") != "") menu.setPosition(Menu.Position.getPosition(element
-					.getAttribute("position")));
+			if (element.getAttribute("position") != "") menu
+					.setPosition(Menu.Position.getPosition(element
+							.getAttribute("position")));
 
 			new_parent = menu;
 		}
@@ -866,19 +968,23 @@ public class MolgenisModelParser
 			new_parent = form;
 
 			// VIEWTYPE
-			if (element.getAttribute("view").equals("record")) element.setAttribute("view", "edit");
+			if (element.getAttribute("view").equals("record")) element
+					.setAttribute("view", "edit");
 			if (element.getAttribute("view").equals(""))
 			{
-				if (element.getChildNodes().getLength() > 0) element.setAttribute("view", "edit");
+				if (element.getChildNodes().getLength() > 0) element
+						.setAttribute("view", "edit");
 				else
 					element.setAttribute("view", "list");
 			}
 			if (Form.ViewType.parseViewType(element.getAttribute("view")) == Form.ViewType.VIEWTYPE_UNKNOWN)
 			{
-				throw new MolgenisModelException("view '" + element.getAttribute("view") + "' unknown for form '"
+				throw new MolgenisModelException("view '"
+						+ element.getAttribute("view") + "' unknown for form '"
 						+ form.getName() + "'");
 			}
-			form.setViewType(Form.ViewType.parseViewType(element.getAttribute("view")));
+			form.setViewType(Form.ViewType.parseViewType(element
+					.getAttribute("view")));
 
 			// LIMIT
 			form.setLimit(10);
@@ -911,11 +1017,13 @@ public class MolgenisModelParser
 			if (sortorder != null && sortorder != "")
 			{
 				if (!sortorder.equalsIgnoreCase(Form.SortOrder.ASC.toString())
-						&& !sortorder.equalsIgnoreCase(Form.SortOrder.DESC.toString()))
+						&& !sortorder.equalsIgnoreCase(Form.SortOrder.DESC
+								.toString()))
 				{
 					throw new MolgenisModelException(
-							"sortorder can only be 'asc' or 'desc'. Parser found <form name=\"" + form.getName()
-									+ "\" sortorder=\"" + sortorder + "\"");
+							"sortorder can only be 'asc' or 'desc'. Parser found <form name=\""
+									+ form.getName() + "\" sortorder=\""
+									+ sortorder + "\"");
 				}
 				else
 				{
@@ -930,17 +1038,21 @@ public class MolgenisModelParser
 			{
 				if (element.getAttribute("filterfield") == "")
 				{
-					throw new MolgenisModelException("filterfield is missing for subform of screen '"
-							+ parent.getName() + "'");
+					throw new MolgenisModelException(
+							"filterfield is missing for subform of screen '"
+									+ parent.getName() + "'");
 				}
 				if (element.getAttribute("filtertype") == "")
 				{
-					throw new MolgenisModelException("filtertype is missing for subform of screen '" + parent.getName()
-							+ "'");
+					throw new MolgenisModelException(
+							"filtertype is missing for subform of screen '"
+									+ parent.getName() + "'");
 				}
 				if (element.getAttribute("filtervalue") == "")
 				{
-					logger.warn("filtervalue is missing for subform of screen '" + parent.getName() + "'");
+					logger
+							.warn("filtervalue is missing for subform of screen '"
+									+ parent.getName() + "'");
 				}
 				form.setFilter(true);
 				form.setFilterfield(element.getAttribute("filterfield"));
@@ -958,11 +1070,14 @@ public class MolgenisModelParser
 
 			// ENTITY
 			// TODO: whould have expected this in the constructor!
-			Entity entity = (Entity) model.getDatabase().getChild(element.getAttribute("entity"));
+			Entity entity = (Entity) model.getDatabase().getChild(
+					element.getAttribute("entity"));
 			if (entity == null)
 			{
-				throw new MolgenisModelException("Could not find the specified entity '"
-						+ element.getAttribute("entity") + "' for form '" + form.getName() + "'");
+				throw new MolgenisModelException(
+						"Could not find the specified entity '"
+								+ element.getAttribute("entity")
+								+ "' for form '" + form.getName() + "'");
 			}
 			form.setRecord((Record) entity);// form.setEntity(entity);
 
@@ -971,25 +1086,28 @@ public class MolgenisModelParser
 			String hide_fields = element.getAttribute("hide_fields");
 			if (hide_fields != null && hide_fields != "")
 			{
-				String[] hiddenFieldArray = hide_fields.split(",");				
+				String[] hiddenFieldArray = hide_fields.split(",");
 				for (String field : hiddenFieldArray)
 				{
 					Field f = entity.getAllField(field.trim());
 					if (f == null)
 					{
-						throw new MolgenisModelException("Could not find field '" + field
-								+ "' defined in hide_fields='" + element.getAttribute("hide_fields") + "' in form '"
-								+ form.getName() + "'");
+						throw new MolgenisModelException(
+								"Could not find field '" + field
+										+ "' defined in hide_fields='"
+										+ element.getAttribute("hide_fields")
+										+ "' in form '" + form.getName() + "'");
 					}
-					//use name from 'f' to correct for case problems
+					// use name from 'f' to correct for case problems
 					form.getHideFields().add(f.getName());
 				}
 			}
-			
+
 			// COMPACT_FIELDS
 			if (element.getAttribute("compact_view") != "")
 			{
-				String[] fields = element.getAttribute("compact_view").split(",");
+				String[] fields = element.getAttribute("compact_view").split(
+						",");
 				// check if the fields are there
 				List<String> compact_fields = new ArrayList<String>();
 				for (String field : fields)
@@ -997,13 +1115,16 @@ public class MolgenisModelParser
 					Field f = entity.getAllField(field);
 					if (f == null)
 					{
-						throw new MolgenisModelException("Could not find field '" + field
-								+ "' defined in compact_view='" + element.getAttribute("compact_view") + "' in form '"
-								+ form.getName() + "'");
+						throw new MolgenisModelException(
+								"Could not find field '" + field
+										+ "' defined in compact_view='"
+										+ element.getAttribute("compact_view")
+										+ "' in form '" + form.getName() + "'");
 					}
-					//use name from 'f' to correct for case problems
+					// use name from 'f' to correct for case problems
 
-					compact_fields.add(form.getEntity().getName()+"_"+f.getName());
+					compact_fields.add(form.getEntity().getName() + "_"
+							+ f.getName());
 				}
 				form.setCompactView(compact_fields);
 			}
@@ -1018,8 +1139,10 @@ public class MolgenisModelParser
 			if (element.getAttribute("labelfield") == "") throw new MolgenisModelException(
 					"labelfield is missing for tree screen '" + name + "'");
 
-			Tree tree = new Tree(name, parent, element.getAttribute("parentfield"), element.getAttribute("idfield"),
-					element.getAttribute("labelfield"));
+			Tree tree = new Tree(name, parent, element
+					.getAttribute("parentfield"), element
+					.getAttribute("idfield"), element
+					.getAttribute("labelfield"));
 			tree.setLabel(label);
 			tree.setNamespace(namespace);
 			new_parent = tree;
@@ -1034,18 +1157,22 @@ public class MolgenisModelParser
 
 			// ENTITY
 			// TODO: whould have expected this in the constructor!
-			DBSchema entity = model.getDatabase().getChild(element.getAttribute("entity"));
+			DBSchema entity = model.getDatabase().getChild(
+					element.getAttribute("entity"));
 			if (entity == null)
 			{
-				throw new MolgenisModelException("Could not find the specified entity '"
-						+ element.getAttribute("entity") + "'");
+				throw new MolgenisModelException(
+						"Could not find the specified entity '"
+								+ element.getAttribute("entity") + "'");
 			}
 			tree.setRecord((Record) entity);
 		}
 		else if (element.getTagName().equals("plugin"))
 		{
-			if (element.getAttribute("type") == "") throw new MolgenisModelException("plugin has no name");
-			Plugin plugin = new Plugin(name, parent, element.getAttribute("type"));
+			if (element.getAttribute("type") == "") throw new MolgenisModelException(
+					"plugin has no name");
+			Plugin plugin = new Plugin(name, parent, element
+					.getAttribute("type"));
 			plugin.setLabel(label);
 			plugin.setNamespace(namespace);
 			new_parent = plugin;
@@ -1076,108 +1203,129 @@ public class MolgenisModelParser
 		}
 	}
 
-	public static Model parseUiSchema(String filename, Model model) throws MolgenisModelException
+	public static Model parseUiSchema(String filename, Model model)
+			throws MolgenisModelException
 	{
 		logger.debug("parsing ui file: " + filename);
 		if (filename == null || filename.equals("")) return model;
 
+		Document document = null;
+		DocumentBuilder builder = null;
 		try
 		{
-
 			// initialize the document
-			Document document = null;
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			document = builder.parse(filename);
-
-			// retrieve the document-root
-			Element document_root = document.getDocumentElement();
-			if (document_root.getAttribute("name") == "" && model.getName().equals(""))
-			 {
-				 document_root.setAttribute("name", "molgenis");
-			 }
-			 String modelName = document_root.getAttribute("name");
-			 model.setName(modelName);
-			 
-			 String label = document_root.getAttribute("label");
-			 if(!"".equals(label)) model.setLabel(label);
-			// FIXME should be solved by using modules
-			// alternatively ui should be in predefined dir anyway...
-
-			// set the package name for the UI
-			// model.setName("ui");
-
-			// retrieve the children
-			NodeList children = document_root.getChildNodes();
-
-			// Menu main = new Menu("main", model.getUserinterface());
-			// main.setLabel("main");
-			// main.setNamespace(model.getName());
-			for (int i = 0; i < children.getLength(); i++)
-			{
-				Node child = children.item(i);
-
-				if (child.getNodeType() != Node.ELEMENT_NODE) continue;
-				try
-				{
-					// root must be menu
-					if (child.getNodeName().equals("form") || child.getNodeName().equals("plugin"))
-					{
-						parseUiSchema(model, (Element) child, model.getUserinterface());
-					}
-					else if (child.getNodeName().equals("menu"))
-					{
-						parseUiSchema(model, (Element) child, model.getUserinterface());
-					}
-					// }
-				}
-				catch (Exception e)
-				{
-					throw new MolgenisModelException(e.getMessage());
-				}
-
-			}
-			return model;
 		}
 		catch (Exception e)
 		{
-			throw new MolgenisModelException("Parsing of DSL (ui) failed: " + e.getMessage());
+			try
+			{
+				// try to load from classpath
+				document = builder.parse(ClassLoader
+						.getSystemResourceAsStream(filename.trim()));
+			}
+			catch (Exception e2)
+			{
+				logger.error("parsing of file '" + filename + "' failed.");
+				e.printStackTrace();
+				throw new MolgenisModelException("Parsing of DSL (ui) failed: "
+						+ e.getMessage());
+			}
 		}
+
+		// retrieve the document-root
+		Element document_root = document.getDocumentElement();
+		if (document_root.getAttribute("name") == ""
+				&& model.getName().equals(""))
+		{
+			document_root.setAttribute("name", "molgenis");
+		}
+		String modelName = document_root.getAttribute("name");
+		model.setName(modelName);
+
+		String label = document_root.getAttribute("label");
+		if (!"".equals(label)) model.setLabel(label);
+		// FIXME should be solved by using modules
+		// alternatively ui should be in predefined dir anyway...
+
+		// set the package name for the UI
+		// model.setName("ui");
+
+		// retrieve the children
+		NodeList children = document_root.getChildNodes();
+
+		// Menu main = new Menu("main", model.getUserinterface());
+		// main.setLabel("main");
+		// main.setNamespace(model.getName());
+		for (int i = 0; i < children.getLength(); i++)
+		{
+			Node child = children.item(i);
+
+			if (child.getNodeType() != Node.ELEMENT_NODE) continue;
+			try
+			{
+				// root must be menu
+				if (child.getNodeName().equals("form")
+						|| child.getNodeName().equals("plugin"))
+				{
+					parseUiSchema(model, (Element) child, model
+							.getUserinterface());
+				}
+				else if (child.getNodeName().equals("menu"))
+				{
+					parseUiSchema(model, (Element) child, model
+							.getUserinterface());
+				}
+				// }
+			}
+			catch (Exception e)
+			{
+				throw new MolgenisModelException(e.getMessage());
+			}
+
+		}
+		return model;
 	}
 
-//	public static void prepareForMetapipe(Model model) throws MolgenisModelException
-//	{
-//		for (Entity entity : model.getEntities())
-//		{
-//			Field idfield = new Field(entity, new , "id", "id", true, false, true, null);
-//			try
-//			{
-//				entity.addField(idfield);
-//			}
-//			catch (Exception e)
-//			{
-//				throw new MolgenisModelException("Error in " + entity.getName()
-//						+ ": fieldname 'id' is reserved for system");
-//			}
-//
-//			for (Field field : entity.getFields())
-//			{
-//				if (field.getType() == Type.XREF_MULTIPLE || field.getType() == Type.XREF_SINGLE)
-//				{
-//					try
-//					{
-//						field.setXrefLabelNames(Arrays.asList(new String[]
-//						{ "id" }));
-//					}
-//					catch (Exception e)
-//					{
-//						throw new MolgenisModelException("Error in " + entity.getName() + ": " + e);
-//					}
-//
-//				}
-//			}
-//			logger.debug(entity.toString());
-//		}
-//	}
+	// public static void prepareForMetapipe(Model model) throws
+	// MolgenisModelException
+	// {
+	// for (Entity entity : model.getEntities())
+	// {
+	// Field idfield = new Field(entity, new , "id", "id", true, false, true,
+	// null);
+	// try
+	// {
+	// entity.addField(idfield);
+	// }
+	// catch (Exception e)
+	// {
+	// throw new MolgenisModelException("Error in " + entity.getName()
+	// + ": fieldname 'id' is reserved for system");
+	// }
+	//
+	// for (Field field : entity.getFields())
+	// {
+	// if (field.getType() == Type.XREF_MULTIPLE || field.getType() ==
+	// Type.XREF_SINGLE)
+	// {
+	// try
+	// {
+	// field.setXrefLabelNames(Arrays.asList(new String[]
+	// { "id" }));
+	// }
+	// catch (Exception e)
+	// {
+	// throw new MolgenisModelException("Error in " + entity.getName() + ": " +
+	// e);
+	// }
+	//
+	// }
+	// }
+	// logger.debug(entity.toString());
+	// }
+	// }
 
 	private static String elementValueToString(Element element)
 	{
@@ -1207,7 +1355,8 @@ public class MolgenisModelParser
 		return xml;
 	}
 
-	private static final transient Logger logger = Logger.getLogger(MolgenisModelParser.class.getName());
+	private static final transient Logger logger = Logger
+			.getLogger(MolgenisModelParser.class.getName());
 
 	// old processor
 	// public static Model parseProcessors( String filename, Model model )
