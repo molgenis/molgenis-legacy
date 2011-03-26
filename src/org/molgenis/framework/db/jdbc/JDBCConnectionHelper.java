@@ -127,7 +127,7 @@ public class JDBCConnectionHelper
 			if (connection == null || connection.isClosed())
 			{
 				openconnections++;
-				logger.debug(this + "opened database connection, connectioncount=" + openconnections);
+				logger.debug(this + "opened database connection, connectioncount=" + openconnections +" real count: "+this.source.countOpenConnections());
 				connection = source.getConnection();
 				connection.setAutoCommit(true); // restore default
 			}

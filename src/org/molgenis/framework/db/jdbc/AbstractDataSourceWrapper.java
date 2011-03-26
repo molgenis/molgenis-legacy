@@ -40,6 +40,15 @@ public abstract class AbstractDataSourceWrapper implements DataSourceWrapper
 		return "UNKNOWN";
 	}
 	
+	public int countOpenConnections() throws NamingException
+	{
+		if(this.getDataSource() instanceof org.apache.commons.dbcp.BasicDataSource)
+		{
+			return ((org.apache.commons.dbcp.BasicDataSource)this.getDataSource()).getNumActive();
+		}
+		logger.debug(getDataSource().getClass());
+		return 0;
+	}
 	
 	protected abstract DataSource getDataSource() throws NamingException;
 }
