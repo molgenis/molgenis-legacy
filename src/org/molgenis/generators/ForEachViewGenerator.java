@@ -45,12 +45,13 @@ public abstract class ForEachViewGenerator extends Generator
 		String packageName = this.getClass().getPackage().toString().substring(
 				Generator.class.getPackage().toString().length());
 		File targetDir = new File(this.getSourcePath(options) + model.getName().replace(".","/") + packageName.replace(".", "/"));
-		targetDir.mkdirs();
+
 
 		// apply generator to each entity
 		for( View view : model.getViews() )
 		{
-
+			targetDir.mkdirs();
+			
 			File targetFile = new File(targetDir + "/" + GeneratorHelper.firstToUpper(view.getName()) + getType()
 					+ getExtension());
 			// logger.debug("trying to generated "+targetFile);

@@ -60,8 +60,6 @@ public abstract class ForEachEntityGenerator extends Generator
 			if (handwritten)
 				targetDir = new File(this.getHandWrittenPath(options) + packageName.replace(".", "/"));
 
-			targetDir.mkdirs();
-
 			try
 			{
 				if ((!entity.isAbstract() || this.includeAbstract) && (!this.skipSystem() || !entity.isSystem()))
@@ -70,7 +68,8 @@ public abstract class ForEachEntityGenerator extends Generator
 							+ getType() + getExtension());
 					if (!handwritten || !targetFile.exists())
 					{
-
+						targetDir.mkdirs();
+						
 						// logger.debug("trying to generated "+targetFile);
 						templateArgs.put("entity", entity);
 						templateArgs.put("model", model);

@@ -52,12 +52,12 @@ public abstract class ForEachMatrixGenerator extends Generator
 		String packageName = this.getClass().getPackage().toString().substring(
 				Generator.class.getPackage().toString().length());
 		File targetDir = new File(getSourcePath(options) + model.getName().replace(".","/") + packageName.replace(".", "/"));
-		targetDir.mkdirs();
 
 		// apply generator to each matrix
 		for( Matrix matrix : model.getMatrices() )
 		{
-
+			targetDir.mkdirs();
+			
 			File targetFile = new File(targetDir + "/" + GeneratorHelper.firstToUpper(matrix.getName()) + getType()
 					+ getExtension());
 
