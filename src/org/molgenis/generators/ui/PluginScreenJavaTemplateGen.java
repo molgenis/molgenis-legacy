@@ -52,9 +52,6 @@ public class PluginScreenJavaTemplateGen extends Generator
 				if (fullKlazzName.contains("."))
 					shortKlazzName = fullKlazzName.substring(fullKlazzName.lastIndexOf(".") + 1);
 
-				File targetDir = new File(this.getHandWrittenPath(options) + "/" + packageName.replace(".", "/"));
-				targetDir.mkdirs();
-
 				File targetFile = new File(this.getHandWrittenPath(options) + "/" + fullKlazzName.replace(".", "/")
 						+ ".java");
 				
@@ -74,6 +71,9 @@ public class PluginScreenJavaTemplateGen extends Generator
 				
 				if (!targetFile.exists() && c == null)
 				{
+					File targetDir = new File(this.getHandWrittenPath(options) + "/" + packageName.replace(".", "/"));
+					targetDir.mkdirs();
+					
 					templateArgs.put("screen", plugin);
 					templateArgs.put("template", template.getName());
 					templateArgs.put("clazzName", shortKlazzName);					

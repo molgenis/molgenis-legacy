@@ -52,9 +52,6 @@ public class PluginScreenFTLTemplateGen extends Generator
 				if (fullKlazzName.contains("."))
 					shortKlazzName = fullKlazzName.substring(fullKlazzName.lastIndexOf(".") + 1);
 
-				File targetDir = new File(this.getHandWrittenPath(options) + "/" + packageName.replace(".", "/"));
-				targetDir.mkdirs();
-
 				File targetFile = new File(this.getHandWrittenPath(options) + "/" + fullKlazzName.replace(".", "/")
 						+ ".ftl");
 				// only generate if the file doesn't exist AND plugin not already on classpath
@@ -73,6 +70,9 @@ public class PluginScreenFTLTemplateGen extends Generator
 				
 				if (!targetFile.exists() && c == null)
 				{
+					File targetDir = new File(this.getHandWrittenPath(options) + "/" + packageName.replace(".", "/"));
+					targetDir.mkdirs();
+					
 					templateArgs.put("screen", plugin);
 					templateArgs.put("template", template.getName());
 					templateArgs.put("clazzName", shortKlazzName);					
