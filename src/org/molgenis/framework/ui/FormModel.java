@@ -218,7 +218,7 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 	Mode viewMode;
 
 	/** remember the current record we are editing */
-	private E current = null;
+	//private E current = null;
 
 	/** cache of currently viewable records */
 	private List<E> records = new ArrayList<E>();
@@ -497,7 +497,7 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 	public HtmlForm getNewRecordForm() throws DatabaseException
 	{
 		E entity = this.create();
-		if (current != null) entity = current;
+		//if (current != null) entity = current;
 		return getInputs(entity, true);
 	}
 
@@ -939,12 +939,13 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 
 	public E getCurrent()
 	{
-		return current;
+		if(this.getRecords() != null && this.getRecords().size() > 0) return this.getRecords().get(0);
+		return null;
 	}
-
-	public void setCurrent(E current)
-	{
-		this.current = current;
-	}
+//
+//	public void setCurrent(E current)
+//	{
+//		this.current = current;
+//	}
 
 }
