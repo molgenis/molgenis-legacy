@@ -102,4 +102,33 @@ public class CsvReaderTest
 		assertEquals(result.get(1).getString("t2col1"), "val3");
 		assertEquals(result.get(1).getString("t2col2"), "val4");
 	}
+	
+	@Test
+	public void testMultiline() throws Exception
+	{
+		String csv = 
+				"t2col1,t2col2\n" +
+				"val1,\"val2 \n" +
+				"newline and \"\"quotes\"\" work\"\n" +
+				"val3,val4";
+
+		CsvReader reader = new CsvStringReader(csv);
+		final List<Tuple> rows = new ArrayList<Tuple>();
+		reader.parse(new CsvReaderListener()
+		{
+			@Override
+			public void handleLine(int lineNumber, Tuple tuple)
+					throws Exception
+			{
+				rows.add(tuple);
+			}
+		});
+
+		assertEquals(rows.get(0).getString("t2col1"), "val1");
+		assertEquals(rows.get(0).getString("t2col2"),
+				"val2 \nnewline and \"quotes\" work");
+
+		assertEquals(rows.get(1).getString("t2col1"), "val3");
+		assertEquals(rows.get(1).getString("t2col2"), "val4");
+	}
 }
