@@ -1,0 +1,140 @@
+<html>
+<head>
+
+
+</head>
+<body>
+<form method="post" enctype="multipart/form-data" name="myform"
+	id="myform" action="">
+<table>
+	<tr>
+		<td><label for="species">Species:</label></td>
+		<td><select class="null" id="species" name="species">
+			<option value="80">Brown rat</option>
+			<option value="76">European groundsquirrel</option>
+			<option value="79">Gray mouse lemur</option>
+			<option value="77">House mouse</option>
+			<option value="78">Siberian hamster</option>
+			<option value="75">Syrian hamster</option>
+		</select></td>
+	</tr>
+	<tr>
+		<td><label for="sex">Sex:</label></td>
+		<td><select class="null" id="sex" name="sex">
+			<option value="73">Female</option>
+			<option value="72">Male</option>
+			<option value="74">UnknownSex</option>
+		</select></td>
+	</tr>
+	<tr>
+		<td><label for="animaltype">Animald type:</label></td>
+		<td><select class="null" id="animaltype" name="animaltype"
+			onchange="if(this.value == 'B. Transgeen dier'){document.getElementById('geneinput').style.display = ''; alert('show')} else {document.getElementById('geneinput').style.display = 'none'; alert('hide'); }">
+			<option value="A. Gewoon dier">1 (A. Gewoon dier)</option>
+			<option value="B. Transgeen dier">2 (B. Transgeen dier)</option>
+			<option value="C. Wildvang">3 (C. Wildvang)</option>
+			<option value="D. Biotoop">4 (D. Biotoop)</option>
+		</select></td>
+	</tr>
+	<tr>
+		<td><label for="source">Source:</label></td>
+		<td><select class="null" id="source" name="source">
+			<option value="83">Harlan</option>
+			<option value="88">Max-Planck-Institut fuer
+			Verhaltensfysiologie</option>
+			<option value="89">Unknown source UK</option>
+			<option value="87">Wilde fauna</option>
+		</select></td>
+	</tr>
+	<tr>
+		<td><label for="background">Background:</label></td>
+		<td><select class="null" id="background" name="background">
+			<option value="82">C57black6J</option>
+			<option value="81">CD1</option>
+			<option selected value=""></option>
+		</select></td>
+	</tr>
+	<tr id="geneinput" style="border: solid thin red; display:none;">
+		<td><label for="geneinput">geneinput</label></td>
+		<td>
+		<div>
+		<table>
+			<tr>
+				<td><label for="gene">Gene:</label></td>
+				<td><select class="null" id="gene" name="gene">
+					<option value="Cry1">Cry1</option>
+					<option value="Cry2">Cry2</option>
+					<option value="Per1">Per1</option>
+					<option value="Per2">Per2</option>
+					<option selected value=""></option>
+				</select></td>
+			</tr>
+			<tr>
+				<td><label for="genestate">Gene state:</label></td>
+				<td><select class="null" id="genestate" name="genestate">
+					<option value="+/+">+/+</option>
+					<option value="+/-">+/-</option>
+					<option value="-/-">-/-</option>
+					<option selected value=""></option>
+				</select></td>
+			</tr>
+		</table>
+		<input type="submit"
+			onclick="this.parentNode.parentNode.removeChild(this.parentNode); return false;"
+			title="Set Label, Tooltip, and JavaScriptAction yourself"
+			id="geneinput_remove" value="Remove row" style="" ></input>
+		</div>
+		<input type="submit"
+			onclick="var div = document.createElement('DIV'); this.parentNode.insertBefore(div,this); div.innerHTML = '&lt;b&gt;hello&lt;/b&gt;'; return false"
+			title="Set Label, Tooltip, and JavaScriptAction yourself"
+			id="geneinput_add" value="Add row" style="" ></input>
+		</td>
+	</tr>
+	<tr>
+		<td><label for="birthdate">Date of birth (if known):</label></td>
+		<td><input type="text" id="birthdate" name="birthdate"
+			value="December 26, 2010" onclick="showDateInput(this) " size="32"
+			autocomplete="off" /></td>
+	</tr>
+	<tr>
+		<td><label for="entrydate">Date of entry (weaning,
+		hatching, brought in):</label></td>
+		<td><input type="text" id="entrydate" name="entrydate"
+			value="December 26, 2010" onclick="showDateInput(this) " size="32"
+			autocomplete="off" /></td>
+	</tr>
+	<tr>
+		<td><label for="customname">Custom name base (if
+		desired):</label></td>
+		<td><input type="text" id="customname" class="" name="customname"
+			size="32" value="" /></td>
+	</tr>
+	<tr>
+		<td><label for="startnumber">Custom name start number:</label></td>
+		<td><input type="text" id="startnumber" class=""
+			name="startnumber" size="32" value="" /></td>
+	</tr>
+	<tr>
+		<td><label for="numberofanimals">Number of animals:</label></td>
+		<td><input type="text" id="numberofanimals" class=""
+			name="numberofanimals" size="32" value="" /></td>
+	</tr>
+	<tr>
+		<td><label for="actor">Actor:</label></td>
+		<td><select class="null" id="actor" name="actor">
+			<option value="1">System</option>
+			<option value="2">Test</option>
+		</select></td>
+	</tr>
+</table>
+
+
+<input type="submit"
+	onclick="__action.value = 'addAnimal'; return true;"
+	title="Set Label, Tooltip, and JavaScriptAction yourself"
+	id="addAnimal" value="Add" style="" /></form>
+
+</body>
+
+
+</html>

@@ -1,0 +1,777 @@
+<molgenis name="gscf_test">
+    <entity name="assay">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="external_assayid" unique="true"/>
+        <field name="mod_id" type="int"/>
+        <!--  <field name="module_id" type="int"/> -->
+        <field name="name"/>
+        <field name="parent_id" type="int"/>
+        <field name="template_id" type="int" nillable="true"/>
+        <field name="assays_idx" type="int" nillable="true"/>
+    </entity>
+    <entity name="assay_module">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="name"/>
+        <field name="platform"/>
+        <field name="url"/>
+    </entity>
+    <entity name="assay_sample">
+        <field name="assay_samples_id" type="int" nillable="true" unique="true"/>
+        <field name="sample_id" type="int" nillable="true"/>
+    </entity>
+    <entity name="assay_template_boolean_fields">
+        <field name="assay_id" type="int" nillable="true" unique="true"/>
+        <field name="template_boolean_fields_boolean" type="bool" nillable="true"/>
+        <field name="template_boolean_fields_idx" nillable="true"/>
+        <field name="template_boolean_fields_elt" type="bool"/>
+    </entity>
+    <entity name="assay_template_date_fields">
+        <field name="assay_id" type="int" nillable="true" unique="true"/>
+        <field name="template_date_fields_date" type="datetime" nillable="true"/>
+        <field name="template_date_fields_idx" nillable="true"/>
+        <field name="template_date_fields_elt" type="datetime"/>
+    </entity>
+    <entity name="assay_template_double_fields">
+        <field name="assay_id" type="int" nillable="true" unique="true"/>
+        <field name="template_double_fields_double" type="decimal" nillable="true"/>
+        <field name="template_double_fields_idx" nillable="true"/>
+        <field name="template_double_fields_elt" type="decimal"/>
+    </entity>
+    <entity name="assay_template_field">
+        <field name="assay_system_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="template_field_id" type="int" nillable="true"/>
+    </entity>
+    <entity name="assay_template_file_fields">
+        <field name="assay_id" type="int" nillable="true" unique="true"/>
+        <field name="template_file_fields_string" nillable="true"/>
+        <field name="template_file_fields_idx" nillable="true"/>
+        <field name="template_file_fields_elt"/>
+    </entity>
+    <entity name="assay_template_int_fields">
+        <field name="assay_id" type="int" nillable="true" unique="true"/>
+        <field name="template_int_fields_int" type="int" nillable="true"/>
+        <field name="template_int_fields_idx" nillable="true"/>
+        <field name="template_int_fields_elt" type="int"/>
+    </entity>
+    <entity name="assay_template_module_fields">
+        <field name="assay_template_module_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="assay_module_id" type="int" nillable="true"/>
+        <field name="template_module_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="assay_template_rel_time_fields">
+        <field name="assay_id" type="int" nillable="true" unique="true"/>
+        <field name="template_rel_time_fields_int" type="int" nillable="true"/>
+        <field name="template_rel_time_fields_idx" nillable="true"/>
+        <field name="template_rel_time_fields_elt" type="int"/>
+    </entity>
+    <entity name="assay_template_string_fields">
+        <field name="assay_id" type="int" nillable="true" unique="true"/>
+        <field name="template_string_fields_string" nillable="true"/>
+        <field name="template_string_fields_idx" nillable="true"/>
+        <field name="template_string_fields_elt"/>
+    </entity>
+    <entity name="assay_template_string_list_fields">
+        <field name="assay_template_string_list_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="template_field_list_item_id" type="int" nillable="true"/>
+        <field name="template_string_list_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="assay_template_template_fields">
+        <field name="assay_template_template_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="template_id" type="int" nillable="true"/>
+        <field name="template_template_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="assay_template_term_fields">
+        <field name="assay_template_term_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="term_id" type="int" nillable="true"/>
+        <field name="template_term_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="assay_template_text_fields">
+        <field name="assay_id" type="int" nillable="true" unique="true"/>
+        <field name="template_text_fields_string" type="text" nillable="true"/>
+        <field name="template_text_fields_idx" nillable="true"/>
+        <field name="template_text_fields_elt" type="text"/>
+    </entity>
+    <entity name="clinical_assay">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="sop" nillable="true"/>
+        <field name="applied_method" nillable="true"/>
+        <field name="approved" type="bool"/>
+        <field name="name"/>
+        <field name="reference" nillable="true"/>
+    </entity>
+    <entity name="clinical_assay_clinical_measurement">
+        <field name="clinical_assay_measurements_id" type="int" nillable="true" unique="true"/>
+        <field name="clinical_measurement_id" type="int" nillable="true"/>
+    </entity>
+    <entity name="clinical_assay_instance">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="assay_id" type="int"/>
+    </entity>
+    <entity name="clinical_float_data">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="assay_id" type="int"/>
+        <field name="measurement_id" type="int"/>
+        <field name="sample"/>
+        <field name="value" type="decimal"/>
+    </entity>
+    <entity name="clinical_string_data">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="assayid" type="int"/>
+        <field name="measurement_id" type="int"/>
+        <field name="sampleid" type="int"/>
+        <field name="value" type="decimal"/>
+    </entity>
+    <entity name="encrypted_data">
+        <field name="id" length="32" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="data_item" type="text" length="512"/>
+    </entity>
+    <entity name="event">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="end_time" type="int"/>
+        <field name="parent_id" type="int"/>
+        <field name="start_time" type="int"/>
+        <field name="template_id" type="int" nillable="true"/>
+        <field name="events_idx" type="int" nillable="true"/>
+    </entity>
+    <entity name="event_group">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="name"/>
+        <field name="parent_id" type="int"/>
+        <field name="event_groups_idx" type="int" nillable="true"/>
+        <unique fields="parent_id,name"/>
+    </entity>
+    <entity name="event_group_event">
+        <field name="event_group_events_id" type="int" nillable="true" unique="true"/>
+        <field name="event_id" type="int" nillable="true"/>
+    </entity>
+    <entity name="event_group_sampling_event">
+        <field name="event_group_sampling_events_id" type="int" nillable="true" unique="true"/>
+        <field name="sampling_event_id" type="int" nillable="true"/>
+    </entity>
+    <entity name="event_group_subject">
+        <field name="event_group_subjects_id" type="int" nillable="true" unique="true"/>
+        <field name="subject_id" type="int" nillable="true"/>
+    </entity>
+    <entity name="event_template_boolean_fields">
+        <field name="event_id" type="int" nillable="true" unique="true"/>
+        <field name="template_boolean_fields_boolean" type="bool" nillable="true"/>
+        <field name="template_boolean_fields_idx" nillable="true"/>
+        <field name="template_boolean_fields_elt" type="bool"/>
+    </entity>
+    <entity name="event_template_date_fields">
+        <field name="event_id" type="int" nillable="true" unique="true"/>
+        <field name="template_date_fields_date" type="datetime" nillable="true"/>
+        <field name="template_date_fields_idx" nillable="true"/>
+        <field name="template_date_fields_elt" type="datetime"/>
+    </entity>
+    <entity name="event_template_double_fields">
+        <field name="event_id" type="int" nillable="true" unique="true"/>
+        <field name="template_double_fields_double" type="decimal" nillable="true"/>
+        <field name="template_double_fields_idx" nillable="true"/>
+        <field name="template_double_fields_elt" type="decimal"/>
+    </entity>
+    <entity name="event_template_field">
+        <field name="event_system_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="template_field_id" type="int" nillable="true"/>
+    </entity>
+    <entity name="event_template_file_fields">
+        <field name="event_id" type="int" nillable="true" unique="true"/>
+        <field name="template_file_fields_string" nillable="true"/>
+        <field name="template_file_fields_idx" nillable="true"/>
+        <field name="template_file_fields_elt"/>
+    </entity>
+    <entity name="event_template_int_fields">
+        <field name="event_id" type="int" nillable="true" unique="true"/>
+        <field name="template_int_fields_int" type="int" nillable="true"/>
+        <field name="template_int_fields_idx" nillable="true"/>
+        <field name="template_int_fields_elt" type="int"/>
+    </entity>
+    <entity name="event_template_module_fields">
+        <field name="event_template_module_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="assay_module_id" type="int" nillable="true"/>
+        <field name="template_module_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="event_template_rel_time_fields">
+        <field name="event_id" type="int" nillable="true" unique="true"/>
+        <field name="template_rel_time_fields_int" type="int" nillable="true"/>
+        <field name="template_rel_time_fields_idx" nillable="true"/>
+        <field name="template_rel_time_fields_elt" type="int"/>
+    </entity>
+    <entity name="event_template_string_fields">
+        <field name="event_id" type="int" nillable="true" unique="true"/>
+        <field name="template_string_fields_string" nillable="true"/>
+        <field name="template_string_fields_idx" nillable="true"/>
+        <field name="template_string_fields_elt"/>
+    </entity>
+    <entity name="event_template_string_list_fields">
+        <field name="event_template_string_list_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="template_field_list_item_id" type="int" nillable="true"/>
+        <field name="template_string_list_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="event_template_template_fields">
+        <field name="event_template_template_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="template_id" type="int" nillable="true"/>
+        <field name="template_template_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="event_template_term_fields">
+        <field name="event_template_term_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="term_id" type="int" nillable="true"/>
+        <field name="template_term_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="event_template_text_fields">
+        <field name="event_id" type="int" nillable="true" unique="true"/>
+        <field name="template_text_fields_string" type="text" nillable="true"/>
+        <field name="template_text_fields_idx" nillable="true"/>
+        <field name="template_text_fields_elt" type="text"/>
+    </entity>
+    <entity name="feature_base">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="name"/>
+        <field name="type"/>
+        <field name="unit"/>
+        <!-- <field name="class"/> -->
+        <field name="correction_method" nillable="true"/>
+        <field name="detectable_limit" type="decimal" nillable="true"/>
+        <field name="in_serum" type="bool" nillable="true"/>
+        <field name="is_drug" type="bool" nillable="true"/>
+        <field name="is_intake" type="bool" nillable="true"/>
+        <field name="reference_values" nillable="true"/>
+    </entity>
+    <entity name="feature_base_term">
+        <field name="feature_base_compound_id" type="int" nillable="true" unique="true"/>
+        <field name="term_id" type="int" nillable="true"/>
+        <field name="feature_base_disease_id" type="int" nillable="true"/>
+        <field name="feature_base_drug_id" type="int" nillable="true"/>
+        <field name="feature_base_enzyme_id" type="int" nillable="true"/>
+        <field name="feature_base_metabolite_id" type="int" nillable="true"/>
+        <field name="feature_base_organism_part_id" type="int" nillable="true"/>
+    </entity>
+    <entity name="import_cell">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="mappingcolumn_id" type="int"/>
+        <field name="value"/>
+    </entity>
+    <entity name="import_mapping">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+    </entity>
+    <entity name="import_mapping_mapping_column">
+        <field name="import_mapping_columns_id" type="int" nillable="true" unique="true"/>
+        <field name="mapping_column_id" type="int" nillable="true"/>
+    </entity>
+    <entity name="import_record">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+    </entity>
+    <entity name="import_record_import_cell">
+        <field name="import_record_importcells_id" type="int" nillable="true" unique="true"/>
+        <field name="import_cell_id" type="int" nillable="true"/>
+    </entity>
+    <entity name="mapping_column">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="dontimport" type="bool"/>
+        <field name="identifier" type="bool"/>
+        <!-- <field name="index" type="int"/> -->
+        <field name="idx" type="int"/>
+        <field name="name" unique="true"/>
+        <field name="property"/>
+        <field name="value"/>
+    </entity>
+    <entity name="ontology">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="description"/>
+        <field name="name"/>
+        <field name="ncbo_id" type="int" unique="true"/>
+        <field name="ncbo_versioned_id" type="int"/>
+        <field name="url"/>
+        <field name="version_number"/>
+    </entity>
+    <entity name="person">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="address" nillable="true"/>
+        <field name="email" nillable="true"/>
+        <field name="fax" nillable="true"/>
+        <field name="first_name" nillable="true"/>
+        <field name="gender" nillable="true"/>
+        <field name="initials" nillable="true"/>
+        <field name="last_name" nillable="true"/>
+        <field name="mobile" nillable="true"/>
+        <field name="phone" nillable="true"/>
+        <field name="prefix" nillable="true"/>
+        <field name="title" nillable="true"/>
+    </entity>
+    <entity name="person_affiliation">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="department"/>
+        <field name="institute"/>
+    </entity>
+    <entity name="person_person_affiliation">
+        <field name="person_affiliations_id" type="int" nillable="true" unique="true"/>
+        <field name="person_affiliation_id" type="int" nillable="true"/>
+    </entity>
+    <entity name="person_role">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="name"/>
+    </entity>
+    <entity name="publication">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="doi" nillable="true"/>
+        <field name="authors_list" nillable="true"/>
+        <field name="comments" nillable="true"/>
+        <field name="pub_medid" nillable="true"/>
+        <field name="title"/>
+    </entity>
+    <entity name="registration_code">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="date_created" type="datetime"/>
+        <field name="expiry_date" type="datetime"/>
+        <field name="token"/>
+        <field name="user_id" type="int"/>
+    </entity>
+    <entity name="rel_time">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="value" type="int"/>
+    </entity>
+    <entity name="sample">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="material_id" type="int" nillable="true"/>
+        <field name="name"/>
+        <field name="parent_id" type="int"/>
+        <field name="parent_event_id" type="int" nillable="true"/>
+        <field name="parent_event_group_id" type="int" nillable="true"/>
+        <field name="parent_subject_id" type="int" nillable="true"/>
+        <field name="template_id" type="int" nillable="true"/>
+        <field name="samples_idx" type="int" nillable="true"/>
+        <unique fields="parent_id,name"/>
+    </entity>
+    <entity name="sample_template_boolean_fields">
+        <field name="sample_id" type="int" nillable="true" unique="true"/>
+        <field name="template_boolean_fields_boolean" type="bool" nillable="true"/>
+        <field name="template_boolean_fields_idx" nillable="true"/>
+        <field name="template_boolean_fields_elt" type="bool"/>
+    </entity>
+    <entity name="sample_template_date_fields">
+        <field name="sample_id" type="int" nillable="true" unique="true"/>
+        <field name="template_date_fields_date" type="datetime" nillable="true"/>
+        <field name="template_date_fields_idx" nillable="true"/>
+        <field name="template_date_fields_elt" type="datetime"/>
+    </entity>
+    <entity name="sample_template_double_fields">
+        <field name="sample_id" type="int" nillable="true" unique="true"/>
+        <field name="template_double_fields_double" type="decimal" nillable="true"/>
+        <field name="template_double_fields_idx" nillable="true"/>
+        <field name="template_double_fields_elt" type="decimal"/>
+    </entity>
+    <entity name="sample_template_field">
+        <field name="sample_system_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="template_field_id" type="int" nillable="true"/>
+    </entity>
+    <entity name="sample_template_file_fields">
+        <field name="sample_id" type="int" nillable="true" unique="true"/>
+        <field name="template_file_fields_string" nillable="true"/>
+        <field name="template_file_fields_idx" nillable="true"/>
+        <field name="template_file_fields_elt"/>
+    </entity>
+    <entity name="sample_template_int_fields">
+        <field name="sample_id" type="int" nillable="true" unique="true"/>
+        <field name="template_int_fields_int" type="int" nillable="true"/>
+        <field name="template_int_fields_idx" nillable="true"/>
+        <field name="template_int_fields_elt" type="int"/>
+    </entity>
+    <entity name="sample_template_module_fields">
+        <field name="sample_template_module_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="assay_module_id" type="int" nillable="true"/>
+        <field name="template_module_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="sample_template_rel_time_fields">
+        <field name="sample_id" type="int" nillable="true" unique="true"/>
+        <field name="template_rel_time_fields_int" type="int" nillable="true"/>
+        <field name="template_rel_time_fields_idx" nillable="true"/>
+        <field name="template_rel_time_fields_elt" type="int"/>
+    </entity>
+    <entity name="sample_template_string_fields">
+        <field name="sample_id" type="int" nillable="true" unique="true"/>
+        <field name="template_string_fields_string" nillable="true"/>
+        <field name="template_string_fields_idx" nillable="true"/>
+        <field name="template_string_fields_elt"/>
+    </entity>
+    <entity name="sample_template_string_list_fields">
+        <field name="sample_template_string_list_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="template_field_list_item_id" type="int" nillable="true"/>
+        <field name="template_string_list_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="sample_template_template_fields">
+        <field name="sample_template_template_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="template_id" type="int" nillable="true"/>
+        <field name="template_template_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="sample_template_term_fields">
+        <field name="sample_template_term_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="term_id" type="int" nillable="true"/>
+        <field name="template_term_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="sample_template_text_fields">
+        <field name="sample_id" type="int" nillable="true" unique="true"/>
+        <field name="template_text_fields_string" type="text" nillable="true"/>
+        <field name="template_text_fields_idx" nillable="true"/>
+        <field name="template_text_fields_elt" type="text"/>
+    </entity>
+    <entity name="sampling_event">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="duration" type="int"/>
+        <field name="parent_id" type="int"/>
+        <field name="sample_template_id" type="int"/>
+        <field name="start_time" type="int"/>
+        <field name="template_id" type="int" nillable="true"/>
+        <field name="sampling_events_idx" type="int" nillable="true"/>
+    </entity>
+    <entity name="sampling_event_template_boolean_fields">
+        <field name="sampling_event_id" type="int" nillable="true" unique="true"/>
+        <field name="template_boolean_fields_boolean" type="bool" nillable="true"/>
+        <field name="template_boolean_fields_idx" nillable="true"/>
+        <field name="template_boolean_fields_elt" type="bool"/>
+    </entity>
+    <entity name="sampling_event_template_date_fields">
+        <field name="sampling_event_id" type="int" nillable="true" unique="true"/>
+        <field name="template_date_fields_date" type="datetime" nillable="true"/>
+        <field name="template_date_fields_idx" nillable="true"/>
+        <field name="template_date_fields_elt" type="datetime"/>
+    </entity>
+    <entity name="sampling_event_template_double_fields">
+        <field name="sampling_event_id" type="int" nillable="true" unique="true"/>
+        <field name="template_double_fields_double" type="decimal" nillable="true"/>
+        <field name="template_double_fields_idx" nillable="true"/>
+        <field name="template_double_fields_elt" type="decimal"/>
+    </entity>
+    <entity name="sampling_event_template_field">
+        <field name="sampling_event_system_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="template_field_id" type="int" nillable="true"/>
+    </entity>
+    <entity name="sampling_event_template_file_fields">
+        <field name="sampling_event_id" type="int" nillable="true" unique="true"/>
+        <field name="template_file_fields_string" nillable="true"/>
+        <field name="template_file_fields_idx" nillable="true"/>
+        <field name="template_file_fields_elt"/>
+    </entity>
+    <entity name="sampling_event_template_int_fields">
+        <field name="sampling_event_id" type="int" nillable="true" unique="true"/>
+        <field name="template_int_fields_int" type="int" nillable="true"/>
+        <field name="template_int_fields_idx" nillable="true"/>
+        <field name="template_int_fields_elt" type="int"/>
+    </entity>
+    <entity name="sampling_event_template_module_fields">
+        <field name="sampling_event_template_module_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="assay_module_id" type="int" nillable="true"/>
+        <field name="template_module_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="sampling_event_template_rel_time_fields">
+        <field name="sampling_event_id" type="int" nillable="true" unique="true"/>
+        <field name="template_rel_time_fields_int" type="int" nillable="true"/>
+        <field name="template_rel_time_fields_idx" nillable="true"/>
+        <field name="template_rel_time_fields_elt" type="int"/>
+    </entity>
+    <entity name="sampling_event_template_string_fields">
+        <field name="sampling_event_id" type="int" nillable="true" unique="true"/>
+        <field name="template_string_fields_string" nillable="true"/>
+        <field name="template_string_fields_idx" nillable="true"/>
+        <field name="template_string_fields_elt"/>
+    </entity>
+    <entity name="sampling_event_template_string_list_fields">
+        <field name="sampling_event_template_string_list_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="template_field_list_item_id" type="int" nillable="true"/>
+        <field name="template_string_list_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="sampling_event_template_template_fields">
+        <field name="sampling_event_template_template_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="template_id" type="int" nillable="true"/>
+        <field name="template_template_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="sampling_event_template_term_fields">
+        <field name="sampling_event_template_term_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="term_id" type="int" nillable="true"/>
+        <field name="template_term_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="sampling_event_template_text_fields">
+        <field name="sampling_event_id" type="int" nillable="true" unique="true"/>
+        <field name="template_text_fields_string" type="text" nillable="true"/>
+        <field name="template_text_fields_idx" nillable="true"/>
+        <field name="template_text_fields_elt" type="text"/>
+    </entity>
+    <entity name="sec_role">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="authority" unique="true"/>
+    </entity>
+    <entity name="sec_user">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="account_expired" type="bool"/>
+        <field name="account_locked" type="bool"/>
+        <field name="admin_confirmed" type="bool"/>
+        <field name="date_created" type="datetime"/>
+        <field name="email"/>
+        <field name="password"/>
+        <field name="password_expired" type="bool"/>
+        <field name="user_confirmed" type="bool"/>
+        <field name="username" unique="true"/>
+    </entity>
+    <entity name="sec_user_sec_role">
+        <field name="sec_role_id" type="int"/>
+        <field name="sec_user_id" type="int"/>
+        <unique fields="sec_role_id,sec_user_id"/>
+    </entity>
+    <entity name="session_authenticated_user">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="consumer"/>
+        <field name="expiry_date" type="datetime"/>
+        <field name="sec_user_id" type="int"/>
+        <field name="token"/>
+    </entity>
+    <entity name="study">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="code" unique="true"/>
+        <field name="date_created" type="datetime"/>
+        <field name="last_updated" type="datetime"/>
+        <field name="owner_id" type="int" nillable="true"/>
+        <field name="publicstudy" type="bool"/>
+        <field name="published" type="bool"/>
+        <field name="start_date" type="datetime"/>
+        <field name="template_id" type="int" nillable="true"/>
+        <field name="title"/>
+    </entity>
+    <entity name="study_person">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="parent_id" type="int"/>
+        <field name="person_id" type="int"/>
+        <field name="role_id" type="int"/>
+    </entity>
+    <entity name="study_publication">
+        <field name="study_publications_id" type="int" nillable="true" unique="true"/>
+        <field name="publication_id" type="int" nillable="true"/>
+    </entity>
+    <entity name="study_sec_user">
+        <field name="study_readers_id" type="int" nillable="true" unique="true"/>
+        <field name="sec_user_id" type="int" nillable="true"/>
+        <field name="study_writers_id" type="int" nillable="true"/>
+    </entity>
+    <entity name="study_template_boolean_fields">
+        <field name="study_id" type="int" nillable="true" unique="true"/>
+        <field name="template_boolean_fields_boolean" type="bool" nillable="true"/>
+        <field name="template_boolean_fields_idx" nillable="true"/>
+        <field name="template_boolean_fields_elt" type="bool"/>
+    </entity>
+    <entity name="study_template_date_fields">
+        <field name="study_id" type="int" nillable="true" unique="true"/>
+        <field name="template_date_fields_date" type="datetime" nillable="true"/>
+        <field name="template_date_fields_idx" nillable="true"/>
+        <field name="template_date_fields_elt" type="datetime"/>
+    </entity>
+    <entity name="study_template_double_fields">
+        <field name="study_id" type="int" nillable="true" unique="true"/>
+        <field name="template_double_fields_double" type="decimal" nillable="true"/>
+        <field name="template_double_fields_idx" nillable="true"/>
+        <field name="template_double_fields_elt" type="decimal"/>
+    </entity>
+    <entity name="study_template_field">
+        <field name="study_system_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="template_field_id" type="int" nillable="true"/>
+    </entity>
+    <entity name="study_template_file_fields">
+        <field name="study_id" type="int" nillable="true" unique="true"/>
+        <field name="template_file_fields_string" nillable="true"/>
+        <field name="template_file_fields_idx" nillable="true"/>
+        <field name="template_file_fields_elt"/>
+    </entity>
+    <entity name="study_template_int_fields">
+        <field name="study_id" type="int" nillable="true" unique="true"/>
+        <field name="template_int_fields_int" type="int" nillable="true"/>
+        <field name="template_int_fields_idx" nillable="true"/>
+        <field name="template_int_fields_elt" type="int"/>
+    </entity>
+    <entity name="study_template_module_fields">
+        <field name="study_template_module_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="assay_module_id" type="int" nillable="true"/>
+        <field name="template_module_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="study_template_rel_time_fields">
+        <field name="study_id" type="int" nillable="true" unique="true"/>
+        <field name="template_rel_time_fields_int" type="int" nillable="true"/>
+        <field name="template_rel_time_fields_idx" nillable="true"/>
+        <field name="template_rel_time_fields_elt" type="int"/>
+    </entity>
+    <entity name="study_template_string_fields">
+        <field name="study_id" type="int" nillable="true" unique="true"/>
+        <field name="template_string_fields_string" nillable="true"/>
+        <field name="template_string_fields_idx" nillable="true"/>
+        <field name="template_string_fields_elt"/>
+    </entity>
+    <entity name="study_template_string_list_fields">
+        <field name="study_template_string_list_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="template_field_list_item_id" type="int" nillable="true"/>
+        <field name="template_string_list_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="study_template_template_fields">
+        <field name="study_template_template_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="template_id" type="int" nillable="true"/>
+        <field name="template_template_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="study_template_term_fields">
+        <field name="study_template_term_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="term_id" type="int" nillable="true"/>
+        <field name="template_term_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="study_template_text_fields">
+        <field name="study_id" type="int" nillable="true" unique="true"/>
+        <field name="template_text_fields_string" type="text" nillable="true"/>
+        <field name="template_text_fields_idx" nillable="true"/>
+        <field name="template_text_fields_elt" type="text"/>
+    </entity>
+    <entity name="subject">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="subjectname"/>
+        <field name="parent_id" type="int"/>
+        <field name="species_id" type="int"/>
+        <field name="template_id" type="int" nillable="true"/>
+        <field name="subjects_idx" type="int" nillable="true"/>
+        <unique fields="parent_id,subjectname"/>
+    </entity>
+    <entity name="subject_template_boolean_fields">
+        <field name="subject_id" type="int" nillable="true" unique="true"/>
+        <field name="template_boolean_fields_boolean" type="bool" nillable="true"/>
+        <field name="template_boolean_fields_idx" nillable="true"/>
+        <field name="template_boolean_fields_elt" type="bool"/>
+    </entity>
+    <entity name="subject_template_date_fields">
+        <field name="subject_id" type="int" nillable="true" unique="true"/>
+        <field name="template_date_fields_date" type="datetime" nillable="true"/>
+        <field name="template_date_fields_idx" nillable="true"/>
+        <field name="template_date_fields_elt" type="datetime"/>
+    </entity>
+    <entity name="subject_template_double_fields">
+        <field name="subject_id" type="int" nillable="true" unique="true"/>
+        <field name="template_double_fields_double" type="decimal" nillable="true"/>
+        <field name="template_double_fields_idx" nillable="true"/>
+        <field name="template_double_fields_elt" type="decimal"/>
+    </entity>
+    <entity name="subject_template_field">
+        <field name="subject_system_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="template_field_id" type="int" nillable="true"/>
+    </entity>
+    <entity name="subject_template_file_fields">
+        <field name="subject_id" type="int" nillable="true" unique="true"/>
+        <field name="template_file_fields_string" nillable="true"/>
+        <field name="template_file_fields_idx" nillable="true"/>
+        <field name="template_file_fields_elt"/>
+    </entity>
+    <entity name="subject_template_int_fields">
+        <field name="subject_id" type="int" nillable="true" unique="true"/>
+        <field name="template_int_fields_int" type="int" nillable="true"/>
+        <field name="template_int_fields_idx" nillable="true"/>
+        <field name="template_int_fields_elt" type="int"/>
+    </entity>
+    <entity name="subject_template_module_fields">
+        <field name="subject_template_module_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="assay_module_id" type="int" nillable="true"/>
+        <field name="template_module_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="subject_template_rel_time_fields">
+        <field name="subject_id" type="int" nillable="true" unique="true"/>
+        <field name="template_rel_time_fields_int" type="int" nillable="true"/>
+        <field name="template_rel_time_fields_idx" nillable="true"/>
+        <field name="template_rel_time_fields_elt" type="int"/>
+    </entity>
+    <entity name="subject_template_string_fields">
+        <field name="subject_id" type="int" nillable="true" unique="true"/>
+        <field name="template_string_fields_string" nillable="true"/>
+        <field name="template_string_fields_idx" nillable="true"/>
+        <field name="template_string_fields_elt"/>
+    </entity>
+    <entity name="subject_template_string_list_fields">
+        <field name="subject_template_string_list_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="template_field_list_item_id" type="int" nillable="true"/>
+        <field name="template_string_list_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="subject_template_template_fields">
+        <field name="subject_template_template_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="template_id" type="int" nillable="true"/>
+        <field name="template_template_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="subject_template_term_fields">
+        <field name="subject_template_term_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="term_id" type="int" nillable="true"/>
+        <field name="template_term_fields_idx" nillable="true"/>
+    </entity>
+    <entity name="subject_template_text_fields">
+        <field name="subject_id" type="int" nillable="true" unique="true"/>
+        <field name="template_text_fields_string" type="text" nillable="true"/>
+        <field name="template_text_fields_idx" nillable="true"/>
+        <field name="template_text_fields_elt" type="text"/>
+    </entity>
+    <entity name="template">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="description" nillable="true"/>
+        <field name="entity"/>
+        <field name="name"/>
+        <field name="owner_id" type="int" nillable="true"/>
+    </entity>
+    <entity name="template_field">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="templatefieldcomment" type="text" nillable="true"/>
+        <field name="templatefieldentity"/>
+        <field name="templatefieldname"/>
+        <field name="preferred_identifier" type="bool"/>
+        <field name="required" type="bool"/>
+        <field name="templatefieldtype"/>
+        <field name="templatefieldunit" nillable="true"/>
+    </entity>
+    <entity name="template_field_list_item">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="templatefieldlistitemname"/>
+        <field name="parent_id" type="int"/>
+        <field name="list_entries_idx" type="int" nillable="true"/>
+    </entity>
+    <entity name="template_field_ontology">
+        <field name="template_field_ontologies_id" type="int" nillable="true" unique="true"/>
+        <field name="ontology_id" type="int" nillable="true"/>
+    </entity>
+    <entity name="template_template_field">
+        <field name="template_fields_id" type="int" nillable="true" unique="true"/>
+        <field name="template_field_id" type="int" nillable="true"/>
+        <field name="fields_idx" type="int" nillable="true"/>
+    </entity>
+    <entity name="term">
+        <field name="id" type="int" auto="true" unique="true"/>
+        <field name="version" type="int"/>
+        <field name="accession" unique="true"/>
+        <field name="name"/>
+        <field name="ontology_id" type="int"/>
+        <unique fields="ontology_id,name"/>
+    </entity>
+</molgenis>

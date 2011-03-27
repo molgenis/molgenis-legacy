@@ -1,0 +1,87 @@
+<molgenis name="org.molgenis" label="Molgenis Compute Framework (MCF) Test">
+	<module name="compute" label="MCF 0.3 prototype">
+		<!--
+			DISCUSSION: we added ComputeFeature, ComputeElement and ComputeValue
+			for understandability. But I think we don't need them (and actually
+			we are better off without: we don't care about ComputeFeature as we
+			want to be able to use any feature; we don't care about ComputeValue
+			as we want any ObservedValue, and ComputeElement is just as
+			WorkflowElement. Possibly we want ComputeWorkflow so we can validate
+			if all elements are ComputeProtocols). Proposal, move the remaining
+			stuff to protocol.xml.
+			
+			WHO WROTE THIS ??? 
+			Can compute application have a name? 
+		-->
+		<description>Molgenis compute framework that extends the molgenis
+			protocol framework adding the computational details</description>
+		<entity name="ComputeProtocol" extends="Protocol">
+			<description>
+				Executable definitions of computational 'protocols' of analysis. For
+				example: bwa-align. Therefore the Protocol class is extended:
+				<ul>
+					<li>
+						<b>script</b>
+						: Each operation is defined in a wrapping, that is, a
+						parameterizable description of the computation in Freemarker or R
+						(depends on interpeter). The parameters are defined via the
+						features of the protocol.
+					</li>
+					<li>
+						<b>interpreter</b>
+						: When this protocol is 'applied', the parameters are merged with
+						the freemarker script to produce an executable analysis which is
+						then interpreted by the chosen interpreter, currently in either
+						bash, R or python.
+					</li>
+				</ul>
+			</description>
+			<field name="scriptTemplate" type="text"
+				description="Commandline or (template of) an script, e.g. in R. Templating engine is freemarker." />
+			<field name="interpreter" type="enum" enum_options="[bash,R,Python]"
+				description="the interpreter used to run this command. For example 'shellTemplate'" />
+			<!-- discussion: rename Features to Inputs and Outputs -->
+			<field name="Inputs" type="mref" xref_entity="ComputeFeature"
+				label="Inputs" nillable="true"
+				description="Shadows Protocol.Features (copy):The features that can be observed using this protocol. For example 'length' or 'rs123534' or 'probe123'. Also protocol parameters are considered observable features as they are important to the interpretation of the observed values." />
+			<field name="Outputs" type="mref" xref_entity="ComputeFeature"
+				nillable="true"
+				description="Shadows Protocol.Features (copy):The features that can be observed using this protocol. For example 'length' or 'rs123534' or 'probe123'. Also protocol parameters are considered observable features as they are important to the interpretation of the observed values." />
+		</entity>
+		<entity name="ComputeFeature" extends="Measurement">
+			<description>Parameter are the inputs or outputs into an
+				ComputeProtocol. It reuses all of ObservableFeature to define the
+				type of the parameters. It extends ObserveableFeature with the
+				marking whether the parameter is input, output or both.
+			</description>
+			<field name="iterateOver" type="boolean" default="false"
+				description="Use this parameter to iterate over the values in this parameter. Only holds for 'range' and 'list' value types. TODO: support list/range types." />
+			<field name="defaultValue" type="text" nillable="true"
+				description="the value of the parameter for Jobs" />
+		</entity>
+		<entity name="ComputeApplication" extends="ProtocolApplication">
+			<description>A protocolApplication that reports the scheduling or
+				application of running a ComputeProtocol. Discussion: how to tie
+				this closer to the data?</description>
+			<field name="StartTime" auto="true" nillable="false" type="datetime"
+				description="Datatime when the job was started." />
+			<field name="ComputeResource" type="enum"
+				enum_options="[local, cluster, gridgain, cloud, image]" default="local"
+				description="The compute backend used" />
+			<field name="protocol" type="xref" xref_entity="ComputeProtocol"
+				description="Reference to the protocol this ProtocolApplication is an application of. Shadows ProtocolApplication.protocol." />
+			<field name="PreviousSteps" type="mref" xref_entity="ComputeApplication"
+				description="To keep track of calculation dependencies == workflow; Note: can be changed at runtime" />
+			<field name="script" nillable="true" type="text"
+				description="The actual command to be sent to the cluster, is a
+			filled in version of the one define in the ComputeProtocol, depending on the interpreter (e.g. R gets values prepended, bash gets freemarker template applied" />
+			<field name="StatusCode" nillable="false" type="int" default="0"
+				description="Status code of this subjob.
+			Currently: 0: start, 1: submit, 2: error, 3: succes" />
+			<field name="StatusText" nillable="false" type="varchar"
+				default="no status" length="127" description="Status text of this subjob." />
+			<field name="StatusProgress" nillable="true" type="int"
+				description="Percentage done." default="0" />
+		</entity>
+	</module>
+</molgenis>

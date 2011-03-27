@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="org.molgenis">
+	<module name="auth">
+		<entity name="MolgenisRole" system="true">
+			<field name="id" type="autoid" />
+			<field name="name" unique="true" />
+			<field name="allowedToView" type="mref" xref_field="MolgenisEntity.id" xref_label="name" />
+			<field name="allowedToEdit" type="mref" xref_field="MolgenisEntity.id" xref_label="name" />
+			<field name="viewAll" type="bool" default="false" />
+			<field name="superuser" type="bool" default="false" />
+		</entity>
+
+		<entity name="MolgenisUserGroup" extends="MolgenisRole" system="true">
+			<field name="members" type="mref" xref_field="MolgenisUser.id" xref_label="name" />
+		</entity>
+
+		<entity name="MolgenisUser" extends="MolgenisRole" system="true">
+			<description>Anyone who can login</description>
+			<field name="password" type="string" description="big fixme: password type" />
+			<field name="emailaddress" type="string" />
+			<field name="activationCode" type="string"
+				description="Used as alternative authentication mechanism to verify user email and/or if user has lost password."
+				nillable="true" />
+			<field name="active" type="bool" default="false"
+				description="Boolean to indicate if this account can be used to login" />
+			<field name="title" type="string" nillable="true" />
+			<field name="lastname" type="string" />
+			<field name="firstname" type="string" />
+			<field name="institute" type="string" nillable="true" />
+			<field name="department" type="string" nillable="true" />
+			<field name="position" type="string" nillable="true" />
+			<field name="city" type="string" nillable="true" />
+			<field name="country" type="string" nillable="true" />
+			<!-- todo: profile: picture, field, address, zip, timezone, flag to set public email, website, other details -->
+		</entity>
+		<entity name="MolgenisEntity" system="true">
+			<description> Referenceable catalog of entity names, used for persistent state</description>
+			<field name="id" type="autoid" hidden="true" />
+			<field name="name" unique="true" description="name of the data type" />
+			<field name="className" description="Full name of the data type" />
+		</entity>
+		<!--
+		<entity name="GroupReadInterface" abstract="true" system="true">
+			<description>This class can be used if you need row level security. </description>
+		</entity> 
+		<entity name="versionable">
+			<description>Keep track on who edited the data and when. We always show the last in the user interface.</description>
+		</entity>
+		-->
+	</module>
+</molgenis>

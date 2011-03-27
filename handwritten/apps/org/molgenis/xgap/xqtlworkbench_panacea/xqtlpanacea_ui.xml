@@ -1,0 +1,88 @@
+<molgenis name="gcc" label="Panacea xQTL workbench">
+	<plugin name="molgenis_header" type="plugins.cluster.demo.xqtlpanaceaheader.MolgenisHeader" />
+	<menu name="main">
+	
+		<plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.xqtlpanaceaheader.HomePage" />
+	
+		<plugin label="Search" name="SimpleDbSearch" type="plugin.search.SimpleWholeDatabaseSearch" /> 
+	
+		<plugin    label="Import data" name="QTLWizard" type="plugins.xgapwizard.QTLDataSetWizard" />
+	
+		<!--menu label="Import new data" name="ImporterWizards">
+				<plugin label="Import definitions" name="DefImport" type="plugins.genericwizard.GenericWizard" />
+				<plugin label="Import data matrices" name="DataImport" type="plugins.xgapwizard.XgapWizard" />
+		</menu-->
+
+		<plugin label="Run QTL mapping" name="Cluster" type="plugins.cluster.ClusterPlugin" />
+		
+		<plugin label="Plot pathways" name="KeggPathway" type="plugins.kegg.PathwayPlugin" />
+		
+		<form label="Explore investigations" name="Investigations" entity="Investigation" compact_view="name">
+			<menu name="InvestigationMenu">
+			<plugin name="Overview" type="plugins.investigationoverview.InvestigationOverviewPlugin" />
+				<menu name="BasicAnnotations" label="Basic annotations">
+					<form name="Individuals" entity="Individual" />
+					<form name="Panels" entity="Panel" />
+					<form name="Chromosomes" entity="Chromosome" />
+					<form name="Markers" entity="Marker" />
+					<form name="Genes" entity="Gene" />
+					<form name="ClassicalPhenotypes" entity="ClassicalPhenotype" />
+				</menu>
+				<menu name="AdvancedAnnotations" label="Advanced annotations">
+					<form name="DerivedTraits" entity="DerivedTrait" />
+					<form name="Factors" entity="Factor" />
+					<form name="MassPeaks" entity="MassPeak" />
+					<form name="Metabolites" entity="Metabolite" />
+					<form name="Probes" entity="Probe" />
+					<form name="Samples" entity="Sample" />
+					<form name="Spots" entity="Spot" />
+				</menu>
+				<form name="Datas" label="Experimental data" entity="Data" compact_view="name">
+					<menu name="Select">
+						<plugin name="Manager" type="plugins.matrix.manager.MatrixManager" />
+						<plugin name="Heatmap" type="plugins.matrix.heatmap.MatrixHeatmap" />
+						<plugin name="Rplot" type="plugins.rplot.RplotPlugin" />
+						<plugin name="Inspector" type="plugins.matrix.inspector.MatrixInspector" />
+						<plugin name="MatrixAdmin" label="Delete storage" type="plugins.matrix.admin.MatrixAdmin" />
+					</menu>
+				</form>
+				<form name="Files" entity="InvestigationFile">
+					<plugin name="Viewer" type="plugins.molgenisfile.MolgenisFileManager" />
+				</form>
+				<menu name="Other">
+					<form name="Species" entity="Species" />
+					<form name="OntologyTerms" entity="OntologyTerm" />
+				</menu>
+			</menu>
+		</form>
+
+		<form name="RScripts" label="Add new QTL tools" entity="RScript">
+			<plugin name="RViewer" type="plugins.molgenisfile.MolgenisFileManager" />
+			<plugin label="Help" name="AddNewToolsHelp" type="plugins.cluster.addnewtoolshelp"/>
+		</form>
+
+		<menu label="Admin and settings" name="Admin">
+			<form name="Analysis" label="Add new analysis" entity="Analysis" />
+			
+			<form name="ParameterSets" label="Configure parameters" entity="ParameterSet">
+				<form name="ParameterNames" entity="ParameterName">
+					<form name="ParameterValues" entity="ParameterValue" />
+				</form>
+			</form>
+
+			<form name="DataSets" label="Configure datasets" entity="DataSet">
+				<form name="DataNames" entity="DataName">
+					<form name="DataValues" entity="DataValue" />
+				</form>
+			</form>
+			<plugin label="Storage settings" name="Settings" type="plugins.system.settings.Settings" />
+			<plugin label="Install R packages" name="DependencyManager" type="plugins.cluster.demo.dependencymanager.DependencyManager" />
+			<menu name="OtherAdmin" label="Other">
+				<plugin name="ExcelWizard" type="plugins.genericwizard.GenericWizard" />
+				<plugin name="DuplicateRemover" type="plugins.help.duplicates.DuplicatesPlugin" />
+				<plugin name="KeggConverter" type="plugins.keggplugin.KeggToolsPlugin" />
+			</menu>
+		</menu>
+	</menu>
+
+</molgenis>

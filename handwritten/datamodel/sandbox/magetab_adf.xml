@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<molgenis name="magetab">
+	<module name="adf">
+		<description> This package models Array Design Format (ADF) - defining
+			each array type used. An ADF file describes the design of an array,
+			e.g., what sequence is located at each position on an array and what
+			the annotation of this sequence is. If the investigation uses arrays
+			for which a description has been previously provided, such as a
+			standard commercial array, cross-references to entries in a public
+			repository (e.g., an ArrayExpress accession number) can be included
+			instead of explicit array descriptions.</description>
+		<entity name="DesignElement" extends="ObservableFeature">
+			<description>
+				Artificial class for modeling purposes. Acts as the generalization
+				of any property of an ArrayDesign such as Reporter and Feature. The
+				Nearest FuGE equivalent is DimensionElement but an Array specific
+				extension was needed.
+				<br />
+				There is no direct equivalent of DesignElement in FuGE.
+			</description>
+			<field name="ArrayDesign" type="xref" xref_entity="ArrayDesign"
+				description="ArrayDesign this element is a part of" />
+			<unique fields="name" />
+		</entity>
+		<entity name="ArrayDesign" implements="Nameable">
+			<description>
+				The ArrayDesign is used to represent the information about e.g. a
+				microarray. The attributes are required to fulfill the MIAME
+				conditions regarding surface type, polymer type etc and an
+				association to ProtocolApplication is used to describe the details
+				of Array production typically for self made rather than commercial
+				arrays. The ArrayDesign is a high level object. ArrayDesign has
+				associations to Features, Reporters and CompositeElements
+				(previously called CompositeSequences in MAGE-OM 1.0) which describe
+				layout of the ArrayDesign. ArrayDesign is only required for Array
+				based experiments which use a traditional type microarray where
+				layout and relationships of probes are important to detect layout
+				effects.
+				<br />
+				There is no direct equivalent of ArrayDesign in FuGE, Protocol
+				and/or Equipment is likely the nearest map as an Array specific
+				extension was needed.
+			</description>
+			<!--
+				Alex: Although There is an "Array Design Name" field in the header
+				of ADF files we shouldn't have a field with name="Name" here because
+				it conflicts with the "Name" field in Identifiable. We are using
+				ArrayDesignName instead
+			-->
+			<field name="ArrayDesignName" type="text" nillable="true" />
+			<field name="Version" type="text" nillable="true" />
+			<field name="Provider" type="xref" xref_entity="Person"
+				nillable="true" />
+			<field name="printingProtocol" type="xref" xref_entity="Protocol"
+				nillable="true" />
+			<field name="SurfaceType" type="xref" xref_entity="OntologyTerm"
+				nillable="true" />
+			<field name="SequencePolymerType" type="xref" xref_entity="OntologyTerm"
+				nillable="true" />
+			<field name="TechnologyType" type="xref" xref_entity="OntologyTerm"
+				nillable="true" />
+			<field name="SubstrateType" type="xref" xref_entity="OntologyTerm"
+				nillable="true" />
+			<!-- - Added by Alex -->
+			<field name="term" type="xref" xref_entity="OntologyTerm" />
+			<!-- Comment can be removed??? -->
+			<field name="Comment" type="text" nillable="true" />
+			<unique fields="Name" />
+		</entity>
+		<entity name="ArrayFeature" extends="DesignElement">
+			<description>
+				Feature represents the location of some material deposited at a
+				specific place on an array. Feature has coordinates - BlockColumn,
+				BlockRow, Column, Row. This concept is described in ArrayExpress
+				documentation
+				<a href="http://www.ebi.ac.uk/miamexpress/help/adf/">http://www.ebi.ac.uk/miamexpress/help /adf/</a>
+				and an example of a correctly formatted ADF can be seen in the
+				MAGE-TAB specification v1.0 document. See MAGE-TAB specification for
+				detailed examples.
+			</description>
+			<field name="BlockCol" type="int" />
+			<field name="BlockRow" type="int" />
+			<field name="Col" type="int" />
+			<field name="Row" type="int" />
+			<field name="Reporter" type="xref" xref_entity="Reporter" />
+		</entity>
+		<entity name="ReporterGroup" extends="DesignElement">
+			<description>Enables the grouping of reporters, e.g. to be 'control'
+				or 'experimental'.</description>
+		</entity>
+		<entity name="Reporter" extends="DesignElement">
+			<description>Reporter represents biological information about what
+				the Array Design is designed to detect. Multiple Features can be
+				associated with a Reporter, for example if the Array is spotted in
+				duplicate. Reporters have database entries which are represented
+				generically as OntologyTerms in the MAGE-TAB 1.1. See MAGE-TAB
+				specification for detailed examples.</description>
+			<field name="Sequence" type="text" />
+			<field name="ControlType" type="mref" xref_entity="OntologyTerm" />
+			<field name="DatabaseEntry" label="Reporter Database Entry"
+				type="mref" xref_entity="OntologyTerm"  />
+			<field name="reporterGroup" label="Reporter Group" type="mref"
+				xref_entity="ReporterGroup" />
+		</entity>
+		<entity name="CompositeElement" label="Composite Element"
+			extends="DesignElement">
+			<description>CompositeElement is used to facilitate cases where many
+				to many mappings between Feature and Reporter are required. For
+				example a single gene may have many alternative splice forms using
+				different exons and the many-to-many relationships can be used to
+				encode this. For simple 1:1 Feature-Reporter cases CompositeElement
+				is not needed. See the MAGE-TAB specification for detailed examples.
+			</description>
+			<field name="Reporters" type="mref" xref_entity="Reporter" />
+			<field name="DatabaseEntry" label="Composite Element Database Entry"
+				type="mref" xref_entity="OntologyTerm" />
+			<!-- Alex 10/5/2010 -->
+			<field name="Comments" label="Comments" type="mref" xref_entity="NameValueType"
+				/>
+		</entity>
+	</module>
+</molgenis>

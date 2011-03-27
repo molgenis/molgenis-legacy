@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="handwritten/apps"/>
+	<classpathentry kind="src" path="generated/sql"/>
+	<classpathentry kind="src" path="generated/java"/>
+	<classpathentry kind="src" path="handwritten/datamodel"/>
+	<classpathentry kind="src" path="handwritten/webserver"/>
+	<classpathentry kind="src" path="handwritten/java"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/charts4j-1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/jaxrpc.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/keggapi.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/lucene-core-3.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/lucene-highlighter-3.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/mindterm.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/mydas-1.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/ontoCAT_v0.9.5.3.jar"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/molgenis"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/spssw-1.66.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/iText-5.0.6.jar"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v6.0"/>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>

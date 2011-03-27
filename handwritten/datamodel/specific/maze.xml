@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="org.molgenis">
+	<module name="maze">
+		<description>A set of addon tables needed for the mazeexperiment
+			plugin</description>
+	<entity name="MazeData">
+			<description>The table conatining the raw data coming from the maze
+				data acquisition program.</description>
+			<field name="id" type="autoid" />
+			<field name="pcid" type="int" />
+			<field name="unitid" type="int" />
+			<field name="year" type="int" />
+			<field name="month" type="int" />
+			<field name="day" type="int" />
+			<field name="hour" type="int" />
+			<field name="minute" type="int" />
+			<field name="second" type="int" />
+			<field name="milisecond" type="int" />
+			<field name="port0" type="int" />
+			<field name="port1" type="int" />
+			<field name="port2" type="int" />
+			<field name="port3" type="int" />
+			<field name="port4" type="int" />
+			<field name="port5" type="int" />
+			<field name="conversiontype" type="xref" xref_entity="ConversionTypeLookup"
+				xref_field="id" xref_label="conversiontypelabel" />
+			<unique fields="pcid,unitid,year,month,day,hour,minute,second,milisecond" />
+		</entity>
+
+		<entity name="ChannelMapping">
+			<description>The table containing the the layout of the datachannels
+			</description>
+			<field name="id" type="autoid" />
+			<field name="channelnumber" type="int" unique="true" />
+			<field name="pcnumber" type="int" />
+			<field name="unitnumber" type="int" />
+			<field name="portnumber" type="int" />
+			<field name="bitnumber" type="int" />
+			<field name="remarks" type="text" nillable="true" />
+			<unique fields="pcnumber,unitnumber,portnumber,bitnumber" />
+		</entity>
+
+		<entity name="ConversionTypeLookup">
+			<description>The available dataconversion types</description>
+			<field name="id" type="autoid" />
+			<field name="conversiontypelabel" type="varchar" length="45"
+				unique="true" />
+			<field name="description" type="text" />
+		</entity>
+
+		<entity name="BinaryChannelData">
+			<description>The table containing the converted data</description>
+			<field name="id" type="autoid" />
+			<field name="timestamp" type="datetime" />
+			<field name="rowid" type="xref" xref_field="MazeData.id" nillable="true"/>
+			<!-- MOLGENIS cannot deail with xrefs that have no xref_label unless it is nillable (than it is ignored in tests) -->
+			<field name="channelid" type="xref" xref_field="ChannelMapping.id"
+				xref_label="channelnumber" />
+			<field name="switchstate" type="int" />
+		</entity>
+	</module>
+</molgenis>

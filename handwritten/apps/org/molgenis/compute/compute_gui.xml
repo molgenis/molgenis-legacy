@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+		DOCTYPE molgenis PUBLIC "MOLGENIS 1.0"
+		"http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd"
+	-->
+<molgenis name="compute" label="Compute Testing">
+	<plugin name="molgenis_header" type="plugins.header.ComputeHeader" />
+
+	<menu name="mainmenu" position="left" startswith="WelcomeScreen">
+
+		<plugin name="ComputeWelcomeScreen" type="org.molgenis.compute.WelcomePlugin"
+			label="Welcome" />
+		<menu name="Targets">
+			<form name="Individuals" entity="Individual" />
+			<!--
+				compact_view="Name"
+			-->
+			>
+			<form name="Panels" entity="Panel" />
+			<form name="Samples" entity="Sample" />
+			<form name="Lanes" entity="Lane" />
+		</menu>
+		<form name="ComputeProtocols" entity="ComputeProtocol"
+			hide_fields="Investigation,ontologyReference,TargetFilter,Contact,ProtocolType"
+			viewtype="record">
+			<form name="ComputeFeatures" entity="ComputeFeature"
+				hide_fields="Investigation,ontologyReference,temporal"
+				viewtype="list" />
+		</form>
+		<form name="Workflows" entity="Workflow" viewtype="record"
+			hide_fields="Investigation,ontologyReference,ProtocolType,TargetFilter">
+			<form name="WorkflowElements" entity="WorkflowElement" viewtype="record">
+				<form name="WorkflowElementParameters" entity="WorkflowElementParameter"
+					viewtype="list"/>
+				</form>
+			</form>
+			<!--
+				<form name="CreateComputeApplication" label="Select pipeline to run"
+				entity="Workflow" viewtype="record"
+				hide_fields="description,Investigation,ontologyReference,ProtocolType,TargetFilter,Contact,Features"
+				>
+			-->
+			<menu name="SelectPipeline" label="Select pipeline to run">
+				<plugin name="ComputePlugin" label="Choose pipeline to run"
+					type="org.molgenis.compute.ComputePlugin" />
+			</menu>
+			<!--  </form>-->
+			<form name="ComputeApplications" entity="ComputeApplication"
+				viewtype="record" hide_fields="Investigation,Performer,ontologyReference">
+				<form name="ObservedValues" entity="ObservedValue" viewtype="list"
+					hide_fields="ontologyReference,relation" />
+			</form>
+			<menu name="Console">
+				<plugin name="console" type="org.molgenis.compute.ConsolePlugin" />
+			</menu>
+			<menu name="Admin">
+				<form name="AllComputeProtocols" entity="ComputeProtocol"
+					viewtype="list" />
+				<form name="AllComputeFeatures" entity="ComputeFeature"
+					viewtype="list" />
+				<!--<form name="Allworkflows" entity="Workflow" viewtype="record" />-->
+				<form name="AllElement" entity="WorkflowElement" viewtype="list" />
+				<form name="AllComputeApplications" entity="ComputeApplication"
+					viewtype="record" />
+				<form name="AllObservedValues" entity="ObservedValue" viewtype="list" />
+			</menu>
+			<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard"
+				label="Excel Import" />
+			<plugin name="GenericExport"
+				type="plugins.archiveexportimport.ArchiveExportImportPlugin" label="Excel export" />
+	</menu>
+</molgenis>

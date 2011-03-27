@@ -1,0 +1,20 @@
+<molgenis name="ngs" label="Next Generation Sequencing Workbench">
+	<plugin name="molgenis_header" type="plugins.header.MolgenisHeader" />
+	<menu name="main" position="left">
+		<form name="Investigations" entity="Investigation">
+			<menu name="InvestigationMenu">
+				<form name="Features" entity="ObservableFeature" />
+				<form name="Samples" entity="Sample">
+					<form name="ValuesPerSample" entity="ObservedValue" hide_fields="ontologyReference,id,relation"/>
+				</form>
+				<form name="Libraries" entity="Library" />
+				<form name="Flowcells" entity="Flowcell" />
+				<form name="Lanes" entity="Lane">
+					<form name="ValuesPerLane" entity="ObservedValue"  hide_fields="OntologyReference,Id,Relation"/>
+				</form>
+				<form name="AllObservedValues" entity="ObservedValue" />
+			</menu>
+		</form>
+		<plugin name="ExcelImport" type="plugins.genericwizard.GenericWizard"/>
+	</menu>
+</molgenis>

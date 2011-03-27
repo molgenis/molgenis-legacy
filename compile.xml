@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="gcc" default="GCC compile" basedir=".">
+	
+	<property name="build.dir" value="build"/>
+	<property name="molgenis.dir" value="../molgenis" />
+	<path id="molgenis.classpath">
+		<pathelement location="${build.dir}" />
+		<fileset dir="../molgenis/lib">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="WebContent/WEB-INF/lib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	
+	<target name="Clean" description="Removes build folder content" >
+    	<delete includeEmptyDirs="true">
+ 			<fileset dir="${build.dir}" includes="**/*" defaultexcludes="yes"/>
+		</delete>
+ 	 </target>
+	
+	<!-- taken from build.xml -->
+	<target name="Molgenis compile" depends="Clean" description="Compile MOLGENIS from source">
+		<!-- check if the molgenis project is where it is to be expected, in ../molgenis/ -->
+		<condition property="dir.exists">
+			<available file="${molgenis.dir}" type="dir" />
+		</condition>
+		<!-- check if molgenis is compiled into ../molgenis/bin, otherwise compile now -->
+		<javac srcdir="${molgenis.dir}/src" destdir="${build.dir}" nowarn="on">
+			<classpath refid="molgenis.classpath" />
+		</javac>
+		<copy todir="${build.dir}">
+			<fileset dir="${molgenis.dir}/src" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico,**/*.js,**/*.css,**/*.jpg,**/*.png,**/*.gif,**/*.ftl" />
+		</copy>
+	</target>
+	
+	<target name="GCC generate" depends="Molgenis compile" description="Generate the complete GCC project">
+	<!-- run generator with this properties file -->
+		<java classname="org.molgenis.Molgenis" fork="yes" failonerror="true">
+			<classpath refid="molgenis.classpath" />
+			<arg value="handwritten/properties/gcc.properties" />
+		</java>
+	</target>
+	
+	<target name="GCC compile" depends="GCC generate" description="Compile the complete GCC project">
+		<!-- compile the generated results, use fork to run it with its own memory settings -->
+		<javac fork="true" srcdir="generated/java:handwritten/java:generated/sql" destdir="${build.dir}" nowarn="on" memoryinitialsize="256m" memorymaximumsize="512m">
+			<classpath refid="molgenis.classpath" />
+		</javac>
+		<!-- copy resources like properties files -->
+		<copy todir="${build.dir}">
+			<fileset dir="generated/java" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
+			<fileset dir="handwritten/java" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
+			<fileset dir="generated/sql" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
+		</copy>
+	</target>
+	
+
+	
+	<target name="xQTL generate" depends="Molgenis compile" description="Generate xQTL workbench">
+		<!-- run generator with this properties file -->
+		<java classname="org.molgenis.Molgenis" fork="yes" failonerror="true">
+			<classpath refid="molgenis.classpath" />
+			<arg value="handwritten/properties/clusterdemo.properties" />
+		</java>
+	</target>
+	
+	
+	
+	<target name="xQTL compile" depends="xQTL generate" description="Compile xQTL workbench">
+	
+	</target>
+</project>

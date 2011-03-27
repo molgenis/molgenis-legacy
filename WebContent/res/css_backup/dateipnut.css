@@ -1,0 +1,20 @@
+/*DATE*/
+div.dateinput{
+	padding: 0px;
+	margin: 0px;
+	z-index: 10;
+	display: none;
+	position: absolute;
+	background: white;
+	border: solid #999 1px;
+}
+th.dateinput{
+	font: menu;	
+	background: lightgrey;
+}
+
+td.dateinput {
+	font: menu;
+	padding-left: 5px;
+	padding-right: 5px;
+}

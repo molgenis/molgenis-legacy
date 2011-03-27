@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+		DOCTYPE molgenis PUBLIC "MOLGENIS 1.0"
+		"http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd"
+	-->
+
+<molgenis name="animaldb" label="AnimalDB">
+
+	<plugin name="AnimalDBHeader" type="plugins.header.AnimalDBHeader" />
+
+	<menu name="mainmenu" position="left" startswith="WelcomeScreen">
+
+		<plugin name="AnimalDBWelcomeScreen" type="plugins.welcome.AnimalDBWelcomeScreenPlugin"
+			label="Welcome" />
+			
+		<plugin name="News" type="plugins.news.News" label="News"/>
+			
+		<plugin name="PreFillDatabase" type="plugins.fillanimaldb.PreFillDatabasePlugin"
+			label="Load required data" />
+			
+		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Login"/>
+
+		<menu name="systemmenu" position="left" label="System">
+			<menu name="tablemenu" position="left" label="Content tables">
+				<form name="ontology" entity="Ontology" view="list" label="Ontologies" />
+				<form name="ontologyterm" entity="OntologyTerm" view="list" label="Ontology terms" />
+				<form name="code" entity="Code" view="list" label="Code table" />
+				<form name="individual" entity="Individual" view="list" label="Individuals" />
+				<form name="panel" entity="Panel" view="list" label="Panels" />
+				<form name="location" entity="Location" view="list" label="Locations" />
+				<form name="measurement" entity="Measurement" view="list" label="Measurements" />
+				<form name="protocol" entity="Protocol" view="list" label="Protocols" />
+				<form name="protocolapplication" entity="ProtocolApplication" view="list" label="Protocol applications" />
+				<form name="observedvalue" entity="ObservedValue" view="list" label="Observed values" />
+				<form name="news" entity="MolgenisNews" view="list" label="News items" />
+			</menu>
+			<menu name="usermanagement" position="left" label="Permission tables" >
+				<form name="MolgenisUser" entity="MolgenisUser" view="list" label="Users"/>
+				<form name="MolgenisGroup" entity="MolgenisGroup" view="list" label="Groups"/>
+				<form name="MolgenisUserGroupLink" entity="MolgenisUserGroupLink" view="list" label="Users in groups"/>
+				<form name="MolgenisEntity" entity="MolgenisEntity" view="list" label="Entities"/>
+				<form name="MolgenisPermission" entity="MolgenisPermission" view="list" label="Permissions"/>
+			</menu>
+			<plugin name="PermissionManagementPlugin" 
+				type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin"
+				label="Permission management" />
+			<plugin name="FillDatabase" type="plugins.fillanimaldb.FillDatabasePlugin"
+				label="Load legacy data" />
+			<plugin name="CascadingDeleteAnimals" type="plugins.system.CascadingDeleteAnimalsPlugin"
+				label="Delete targets" />
+			<plugin name="SetCustomLabelFeature" type="plugins.system.SetCustomLabelFeaturePlugin"
+				label="Set custom label feature" />
+		</menu>
+		
+		<menu name="batches" position="left" label="Batches">	
+			<form name="ManageBatches" entity="MolgenisBatch" label="Batches" />
+			<form name="ManageBatchEntities" entity="MolgenisBatchEntity" label="Batch entities" />
+			<plugin name="Batch" type="plugins.batch.BatchPlugin"
+				label="Batch management" />
+			<plugin name="BatchView" type="plugins.batch.BatchViewPlugin"
+				label="Batch viewer" />
+		</menu>
+		
+		<menu name="animalmenu" position="left" label="Animals">
+			<plugin name="AddAnimal" type="plugins.animal.AddAnimalPlugin"
+				label="Bring in animals" />		
+			<menu name="breedingmodule" position="left" label="Breeding">
+				<plugin name="ManageParentgroups" type="plugins.breedingplugin.ManageParentgroups"
+					label="Manage parent groups" />
+				<plugin name="ManageLitters" type="plugins.breedingplugin.ManageLitters"
+					label="Manage litters" />
+			</menu>
+			<plugin name="RemAnimal" type="plugins.animal.RemAnimalPlugin"
+				label="Remove animals" />
+			<plugin name="PrintLabels" type="plugins.output.PrintLabelPlugin"
+				label="Make (cage) labels" />
+		</menu>
+		
+		<plugin name="AddSpecialGroup" type="plugins.specialgroups.AddSpecialGroupPlugin"
+			label="Groups" />
+		
+		<menu name="locationmenu" position="left" label="Locations">
+			<plugin name="AddLocation" type="plugins.location.AddLocationPlugin"
+				label="Add locations" />
+			<plugin name="LocationInfo" type="plugins.location.LocationInfoPlugin"
+				label="Location info" />
+		</menu>
+
+		<menu name="protocolmenu" position="left" label="Protocols">
+			<plugin name="ApplyProtocol" type="plugins.protocol.ApplyProtocolPlugin"
+				label="Apply protocol" />
+			<plugin name="EditProtocol" type="plugins.protocol.EditProtocolPlugin"
+				label="Edit protocol application" />
+			<!-- <plugin name="ApplyProtocolOld" type="plugins.protocol.ApplyProtocolPluginOld"
+				label="Apply protocol (old)" /> -->
+			<plugin name="ListPlugin" type="plugins.listplugin.ListPlugin"
+				label="Matrix" />
+			<plugin name="EventViewer" type="plugins.protocol.EventViewerPlugin"
+				label="Timeline" />
+			<!-- <plugin name="ListPlugin2" type="plugins.listplugin.ListPlugin2"
+                label="ExtJs listplugin" /> -->
+		</menu>
+		
+		<menu name="projectmenu" position="left" label="DEC (sub)projects">
+			<plugin name="DecStatus" type="plugins.projectportal.DecStatus"
+				label="DEC status portal" />
+			<plugin name="AddProject" type="plugins.experiments.ShowDecProjects"
+				label="Manage DEC projects" />
+			<plugin name="AddSubproject" type="plugins.experiments.ShowDecSubprojects"
+				label="Manage DEC subprojects" />
+			<plugin name="AnimalsInSubprojects" type="plugins.experiments.ShowAnimalsInSubprojects"
+				label="Manage animals in DEC subprojects" />
+		</menu>
+		
+		<plugin name="YearlyReportModule" type="plugins.report.YearlyReportModule"
+			label="Yearly report" />
+
+		<menu name="searchmenu" position="left" label="Search">
+			<plugin name="SimpleDbSearch" label="Simple search" type="plugin.search.SimpleWholeDatabaseSearch" />
+	        <menu name="indexmenu" position="left" label="Index search">
+		       	<plugin name="DBIndex" label="DB index" type="plugins.LuceneIndex.DBIndexPlugin" />
+				<plugin name="OntoCatIndexPlugin" label="OntoCAT index" type="plugins.LuceneIndex.OntoCatIndexPlugin" /> 
+				<plugin name="AdminIndex" label="Admin indices" type="plugins.LuceneIndex.AdminIndexes" />
+			</menu>
+		</menu>
+		
+		<!-- 
+		<menu name="maze" position="left" label="Manage maze experiment">
+			<form name="raw_data" entity="MazeData" view="list" label="raw maze data" />
+			<menu name="maze_data_management" position="left" label="data management" >
+				<plugin name="importrawdata" type="plugins.animaldb.mazeexperiment.rawdataimporter" label="import raw data files" />
+				<plugin name="convertrawswitchdata" type="plugins.animaldb.mazeexperiment.rawdataconverter" label="convert switch data" />
+			</menu>
+			<plugin name="plotActogram" type="plugins.animaldb.mazeexperiment.plotActogram" label="plot actogram" />
+			<form name="channels" entity="ChannelMapping" view="list" label="channels" />
+			<form name="switchevents" entity="BinaryChannelData" view="list" label="switchevents" />
+			<form name="conversiontypelookup" entity="ConversionTypeLookup" view="list" label="conversion types" />
+		</menu>
+		 -->
+	       
+	</menu>
+
+</molgenis>

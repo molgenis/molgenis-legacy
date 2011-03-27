@@ -1,0 +1,490 @@
+/* Date:        February 10, 2011
+ * Template:	PluginScreenJavaTemplateGen.java.ftl
+ * generator:   org.molgenis.generators.ui.PluginScreenJavaTemplateGen 3.3.3
+ * 
+ * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
+ */
+
+package plugins.xgapwizard;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import matrix.implementations.binary.BinaryDataMatrixWriter;
+
+import org.molgenis.cluster.DataName;
+import org.molgenis.cluster.DataSet;
+import org.molgenis.cluster.DataValue;
+import org.molgenis.data.Data;
+import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Query;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.organization.Investigation;
+import org.molgenis.pheno.ObservationElement;
+import org.molgenis.util.CsvFileReader;
+import org.molgenis.util.CsvReaderListener;
+import org.molgenis.util.Tuple;
+import org.molgenis.xgap.Chromosome;
+import org.molgenis.xgap.Marker;
+
+public class QTLDataSetWizard extends PluginModel
+{
+
+	public QTLDataSetWizard(String name, ScreenModel parent)
+	{
+		super(name, parent);
+	}
+
+	@Override
+	public String getViewName()
+	{
+		return "plugins_xgapwizard_QTLDataSetWizard";
+	}
+
+	private QTLDataSetWizardModel model = new QTLDataSetWizardModel();
+
+	public QTLDataSetWizardModel getModel()
+	{
+		return model;
+	}
+
+	@Override
+	public String getViewTemplate()
+	{
+		return "plugins/xgapwizard/QTLDataSetWizard.ftl";
+	}
+
+	/**
+	 * Handlerequest. Handles 4 inputs: select investigation, upload geno,
+	 * upload pheno, and upload map. Calls helper functions accordingly.
+	 */
+	@Override
+	public void handleRequest(Database db, Tuple request)
+	{
+		try
+		{
+
+			if (request.getInt("invSelect") != null)
+			{
+				this.model.setSelectedInv(request.getInt("invSelect"));
+			}
+
+			String action = request.getString("__action");
+
+			if (action.equals("uploadGeno"))
+			{
+				uploadData("Geno", request, db);
+
+			}
+			else if (action.equals("uploadPheno"))
+			{
+				uploadData("Pheno", request, db);
+
+			}
+			else if (action.equals("uploadMap"))
+			{
+
+				File mapFile = request.getFile("mapFile");
+
+				if (mapFile == null)
+				{
+					throw new FileNotFoundException("No file selected");
+				}
+
+				parseMapAndAddToDb(mapFile, db, request.getInt("invSelect"));
+
+				this.setMessages(new ScreenMessage("Map file parsed and markers/chromosomes added to database", true));
+			}
+			else
+			{
+				throw new Exception("Unknown request action: " + action);
+			}
+		}
+		catch (Exception e)
+		{
+			if (db.inTx())
+			{
+				try
+				{
+					db.rollbackTx();
+				}
+				catch (DatabaseException e1)
+				{
+					System.out.println("SEVERE ERROR: DB ROLLBACK FAILURE");
+					e1.printStackTrace();
+				}
+			}
+			e.printStackTrace();
+			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
+		}
+	}
+
+	/**
+	 * Reload. Get a fresh list of investigation and print a message if this
+	 * fails
+	 */
+	@Override
+	public void reload(Database db)
+	{
+		try
+		{
+			List<Investigation> invList = db.find(Investigation.class);
+			this.model.setInvestigations(invList);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
+		}
+	}
+
+	@Override
+	public boolean isVisible()
+	{
+		return true;
+	}
+
+	/**
+	 * Helper function to clear screen messages
+	 */
+	public void clearMessage()
+	{
+		this.setMessages();
+	}
+
+	/**
+	 * Helper funtion to upload either Genotypes or Phenotypes ('type' = "Geno"
+	 * or "Pheno" to the database) from a file into a datamatrix
+	 * 
+	 * @param type
+	 * @param request
+	 * @param db
+	 * @throws Exception
+	 */
+	private void uploadData(String type, Tuple request, Database db) throws Exception
+	{
+		File file = request.getFile(type + "File");
+
+		if (file == null)
+		{
+			throw new FileNotFoundException("No file selected");
+		}
+
+		// make 'Data' set for this genotype matrix
+		String originalFileName = request.getString(type + "FileOriginalfilename").substring(0,
+				request.getString(type + "FileOriginalfilename").indexOf("."));
+		int invSelect = request.getInt("invSelect");
+
+		Data data = null;
+		if (type.equals("Geno"))
+		{
+			data = makeGenoData(db, originalFileName, invSelect);
+		}
+		if (type.equals("Pheno"))
+		{
+			data = makePhenoData(db, originalFileName, invSelect);
+		}
+
+		db.beginTx();
+
+		// add data definition
+		db.add(data);
+
+		// make binary matrix and upload into db
+		new BinaryDataMatrixWriter(data, file, db);
+
+		// tag matrix as Rqtl_data -> genotypes
+		tagMatrix("Rqtl_data", type.toLowerCase() + "types", data, db);
+
+		db.commitTx();
+
+		this.setMessages(new ScreenMessage(type + "types succesfully uploaded as '" + data.getName()
+				+ "' and tagged for QTL analysis", true));
+	}
+
+	/**
+	 * Helper function to parse a 'map' file and add the needed
+	 * markers/chromosomes to the database
+	 * 
+	 * @param mapFile
+	 * @param db
+	 * @param invId
+	 * @throws Exception
+	 */
+	private void parseMapAndAddToDb(File mapFile, Database db, int invId) throws Exception
+	{
+		// required columns that we expect in the file
+		String[] required = new String[]
+		{ "name", "chr", "cm" };
+
+		// instantiate CsvFileReader to handle the file
+		CsvFileReader csvFile = new CsvFileReader(mapFile);
+		List<String> colNames = csvFile.colnames();
+
+		// do checks if all column names are in order
+		if (colNames.size() != required.length)
+		{
+			throw new Exception("Your files has " + colNames.size() + " columns, this needs to be " + required.length);
+		}
+		for (String req : required)
+		{
+			if (!colNames.contains(req))
+			{
+				throw new Exception("Missing column: " + req);
+			}
+		}
+
+		// get the values from the CSV
+		final List<Tuple> values = new ArrayList<Tuple>();
+		csvFile.parse(new CsvReaderListener()
+		{
+			public void handleLine(int line_number, Tuple tuple)
+			{
+				values.add(tuple);
+			}
+		});
+
+		// get the selected investigation
+		Investigation inv = db.find(Investigation.class, new QueryRule("id", Operator.EQUALS, invId)).get(0);
+
+		List<String> markersInDb = getMarkerNamesFromDb(db, inv.getId());
+		HashMap<String, Chromosome> chromoInDb = getChromosomesFromDb(db, inv.getId());
+
+		// iterate over tuples then convert to markers and chromosomes
+		// needed for the import don't add markers that already exist!
+		// (=cm info) but do map to existing chromosomes (=no further
+		// info)
+		List<Marker> markers = new ArrayList<Marker>();
+		List<String> markerNames = new ArrayList<String>();
+		// List<Chromosome> chromo = new ArrayList<Chromosome>();
+		// List<String> chromoNames = new ArrayList<String>();
+
+		HashMap<String, Chromosome> chromoToBeAdded = new HashMap<String, Chromosome>();
+		for (Tuple t : values)
+		{
+
+			// get the values in their correct type
+			String name = t.getString("name");
+			int chr = t.getInt("chr");
+			double cm = t.getDouble("cm");
+
+			// CHROMOSOMES
+			// get or make chromosome object
+			Chromosome chromosome = null;
+			String chromoName = "chr" + chr;
+			if (chromoInDb.keySet().contains(chromoName))
+			{
+				// get existing chromosome, but check if the ordernumber
+				// matches!
+				chromosome = chromoInDb.get(chromoName);
+				if (chromosome.getOrderNr().intValue() != chr)
+				{
+					throw new Exception("Trying use existing chromosome 'chr" + chr + "' for input '" + chr
+							+ "', but the ordernumbers (" + chromosome.getOrderNr().intValue() + " vs. " + chr
+							+ ") are different! Change the annotation or upload an updated file.");
+				}
+			}
+			else
+			{
+				// if not exist, make new one and add to list of names to
+				// 'remember' and only add once to list of chromo needed in db
+				if (!chromoToBeAdded.keySet().contains(chromoName))
+				{
+					chromosome = new Chromosome();
+					chromosome.setName(chromoName);
+					chromosome.setOrderNr(chr);
+					chromosome.setIsAutosomal(true);
+					chromosome.setInvestigation(inv);
+					chromoToBeAdded.put(chromoName, chromosome);
+					//add chromo to db right now, so the ID of the object is set!
+					db.add(chromosome);
+				}
+				else
+				{
+					// if we made one already, refer to this one
+					chromosome = chromoToBeAdded.get(chromoName);
+				}
+			}
+
+			// MARKERS
+			// check for duplicates in the list
+			if (markerNames.contains(name))
+			{
+				throw new Exception("Duplicate marker name '" + name + "' in your map");
+			}
+			else
+			{
+				markerNames.add(name);
+			}
+
+			// check for duplicates in db
+			if (markersInDb.contains(name))
+			{
+				throw new Exception("There is already a marker named '" + name + "' present in this investigation");
+			}
+
+			// create new marker and add to list
+			Marker m = new Marker();
+			m.setInvestigation(inv);
+			m.setName(name);
+			m.setChromosome(chromosome);
+			m.setCM(cm);
+
+			// add to list
+			markers.add(m);
+		}
+
+		// add markers to database
+		db.add(markers);
+	}
+
+	/**
+	 * Helper funtion to get a map of name-object for all Chromosomes for this
+	 * investigation
+	 * 
+	 * @param db
+	 * @param investigationId
+	 * @return
+	 * @throws DatabaseException
+	 */
+	private HashMap<String, Chromosome> getChromosomesFromDb(Database db, int investigationId) throws DatabaseException
+	{
+		QueryRule q = new QueryRule("investigation", Operator.EQUALS, investigationId);
+		List<Chromosome> chromo = db.find(Chromosome.class, q);
+		HashMap<String, Chromosome> chromoHash = new HashMap<String, Chromosome>();
+		for (Chromosome c : chromo)
+		{
+			chromoHash.put(c.getName(), c);
+		}
+		return chromoHash;
+	}
+
+	/**
+	 * Helper function to get the marker names from the database
+	 * 
+	 * @param db
+	 * @param investigationId
+	 * @return
+	 * @throws DatabaseException
+	 */
+	private List<String> getMarkerNamesFromDb(Database db, int investigationId) throws DatabaseException
+	{
+		QueryRule q = new QueryRule("investigation", Operator.EQUALS, investigationId);
+		List<Marker> markers = db.find(Marker.class, q);
+		List<String> names = new ArrayList<String>();
+		for (Marker m : markers)
+		{
+			names.add(m.getName());
+		}
+		return names;
+	}
+
+	/**
+	 * Helper function to create a phenotype 'Data' set object
+	 * 
+	 * @param db
+	 * @param originalFileName
+	 * @param invSelect
+	 * @return
+	 * @throws DatabaseException
+	 * @throws IOException
+	 * @throws ParseException 
+	 */
+	private Data makePhenoData(Database db, String originalFileName, int invSelect) throws DatabaseException,
+			IOException, ParseException
+	{
+		Data phenoData = new Data();
+		ObservationElement feature  = ObservationElement.findByNameInvestigation(db, "Phenotypes_matrix", invSelect);
+		if(feature == null)
+		{
+			feature = new ObservationElement();
+			feature.setName("Phenotypes_matrix");
+			feature.setInvestigation(invSelect);
+			db.add(feature);
+		}
+		phenoData.setFeature(feature);
+		phenoData.setTarget(feature);
+		phenoData.setName(originalFileName);
+		phenoData.setFeatureType("Individual");
+		phenoData.setTargetType("ClassicalPhenotype");
+		phenoData.setValueType("Decimal");
+		phenoData.setStorage("Binary");
+		Investigation inv = db.find(Investigation.class, new QueryRule("id", Operator.EQUALS, invSelect)).get(0);
+		phenoData.setInvestigation(inv);
+		phenoData.setInvestigation_Name(inv.getName());
+		return phenoData;
+	}
+
+	/**
+	 * Helper function to create a genotype 'Data' set object
+	 * 
+	 * @param db
+	 * @param originalFileName
+	 * @param invSelect
+	 * @return
+	 * @throws DatabaseException
+	 * @throws IOException
+	 * @throws ParseException 
+	 */
+	private Data makeGenoData(Database db, String originalFileName, int invSelect) throws DatabaseException,
+			IOException, ParseException
+	{
+		Data genoData = new Data();
+		ObservationElement feature  = ObservationElement.findByNameInvestigation(db, "Genotypes_matrix", invSelect);
+		if(feature == null)
+		{
+			feature = new ObservationElement();
+			feature.setName("Genotypes_matrix");
+			feature.setInvestigation(invSelect);
+			db.add(feature);
+		}
+		genoData.setFeature(feature);
+		genoData.setTarget(feature);
+		genoData.setName(originalFileName);
+		genoData.setFeatureType("Individual");
+		genoData.setTargetType("Marker");
+		genoData.setValueType("Text");
+		genoData.setStorage("Binary");
+		Investigation inv = Investigation.findById(db, invSelect);
+		genoData.setInvestigation(inv);
+		genoData.setInvestigation_Name(inv.getName());
+		return genoData;
+	}
+
+	/**
+	 * Helper funtion to tag an existing datamatrix with a specific dataValue,
+	 * eg Rqtl genotypes
+	 * 
+	 * @param dataSet
+	 * @param dataName
+	 * @param dataValue
+	 * @param db
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 * @throws IOException
+	 */
+	private void tagMatrix(String dataSet, String dataName, Data dataValue, Database db) throws DatabaseException,
+			ParseException, IOException
+	{
+		DataSet dsRef = db.find(DataSet.class, new QueryRule("name", Operator.EQUALS, dataSet)).get(0);
+		Query<DataName> q = db.query(DataName.class);
+		q.addRules(new QueryRule("name", Operator.EQUALS, dataName));
+		q.addRules(new QueryRule("dataset", Operator.EQUALS, dsRef.getId()));
+		DataName dnRef = q.find().get(0);
+		DataValue dv = new DataValue();
+		dv.setDataName(dnRef);
+		dv.setValue(dataValue);
+		dv.setName(dataValue.getInvestigation_Name() + "_" + dataValue.getName());
+		db.add(dv);
+	}
+}

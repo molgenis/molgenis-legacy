@@ -1,0 +1,49 @@
+#addeventform {
+	/*width:36em;*/
+	border:0px;
+	padding:1em;
+}
+
+.row {
+	display:block;
+	clear:both;
+	margin-top:1em;
+	height:2em;
+	padding-top:1em;
+}
+
+label {
+	width:16em;
+	float:left;
+}
+
+select.selectbox {
+	width:16em;
+}
+
+input.textbox {
+	width:16em;
+}
+
+em {
+	padding-left:1em;
+}
+
+input.addbutton {
+	/*float:left;*/
+	padding: 0.5em 1em;
+	border:2px solid #5B82A4;
+	background-color:#5B82A4;
+	color:white;
+	font-size:1em;
+	font-weight:bold;
+}
+
+input.addbutton:hover {
+	color:black;
+	background-color:#BDCDDA;
+}
+
+a.linked {
+	color:black;
+}

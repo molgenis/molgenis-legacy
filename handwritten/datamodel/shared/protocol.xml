@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="org.molgenis">
+	<module name="protocol">
+		<description>This package is a merger of FUGE, XGAP, MAGE-TAB and
+			Pheno-OM classes dealing with protocols. Discussion: are protocols
+			study specific, i.e., are they InvestigationElements?</description>
+		<entity name="Protocol" implements="InvestigationElement">
+			<description>
+				The Protocol class defines parameterizable descriptions of methods;
+				each protocol has a unique name within an Study. Each
+				ProtocolApplication can define the ObservableFeatures it can
+				observe. Also the protocol parameters can be modeled using
+				ObservableFeatures (Users are expected to 'tag' the observeable
+				feature by setting ObserveableFeature type as 'ProtocolParameter'.
+				Examples of protocols are: SOP for blood pressure measurement used
+				by UK biobank, or 'R/qtl' as protocol for statistical analysis.
+				Protocol is a high level object that represents the details of
+				protocols used during the investigation. The uses of Protocols to
+				process BioMaterials and Data are referenced by ProtocolApplication
+				(in the SDRF part of the format). Protocol has an association to
+				OntologyTerm to represent the type of protocol. Protocols are
+				associated with Hardware, Software and Parameters used in the
+				Protocol. An example from ArrayExpress is E-MTAB-506
+				<a
+					href="ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/TABM/E-TABM-506/E-TABM-506.idf.txt">
+					ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/TABM/E-TABM-506/E-TABM-506.idf.txt.
+				</a>
+				<br />
+				The FUGE equivalent to Protocol is FuGE::Protocol.
+				<br />
+				The Protocol class maps to FuGE/XGAP/MageTab Protocol, but in
+				contrast to FuGE it is not required to extend protocol before use.
+				The Protocol class also maps to METABASE:Form (note that components
+				are solved during METABASE:Visit which can be nested). Has no
+				equivalent in PaGE.
+			</description>
+			<field name="ProtocolType" type="xref" xref_entity="OntologyTerm"
+				nillable="true"
+				description="annotation of the protocol to a well-defined ontological class." />
+			<field name="description" type="text" nillable="true"
+				description="Description, or reference to a description, of the protocol" />
+			<field name="Features" type="mref" xref_entity="ObservableFeature" 
+				nillable="true"
+				description="The features that can be observed using this protocol. For example 'length' or 'rs123534' or 'probe123'. Also protocol parameters are considered observable features as they are important to the interpretation of the observed values." />
+			
+			<!-- TODO/discussion: does the field below work? -->
+			<field name="TargetFilter" type="string" nillable="true"
+				description="Expression that filters the InvestigationElements that can be targetted using this protocol. This helps the user to only select from targets that matter when setting observedvalues. For example: type='individual' AND species = 'human'" />
+			
+			<field name="Contact" type="xref" nillable="true" xref_entity="Person"
+				description="TODO Check if there can be multiple contacts." />
+			
+			<!-- TODO/discussion: add the fields below? -->
+			<!-- 
+			<field name="targettypeAllowedForApplication" type="xref" xref_entity="MolgenisEntity"
+				description="Subclass of ObservationTarget (Individual, Panel or Location) that
+					this Protocol can only be applied to (example: a Protocol 'SetSpecies' can only 
+					be applied to Panels)" 
+				nillable="true" label="ObservationTarget type allowed for application" />
+			<field name="panelLabelAllowedForApplication" type="string"
+				description="Label that must have been applied to the Panel that
+					this Protocol can be applied to (example: a Protocol 'SetSpecies' can only 
+					be applied to Panels labeled as 'Species')" 
+				nillable="true" label="Panel label allowed for application" />
+			 -->
+			 
+		</entity>
+		<entity name="ProtocolApplication" implements="InvestigationElement">
+			<description>
+				A ProtocolApplication class defines the actual action of observation
+				by refering to a protocol and optional ParameterValues. The name
+				field can be used to label applications with a human understandeable
+				tag. For example: the action of blood pressure measurement on 1000
+				individuals, using a particular protocol, resulting in 1000
+				associated observed values. If desired, protocols can be shared
+				between Studys; in those cases one should simply refer to a protocol
+				in another Study.
+				<br />
+				ProtocolApplications are used in MAGE-TAB format to reference to
+				protocols used, with optionally use of certain protocol parameter
+				values. For example, a Source may be transformed into a Labeled
+				Extract by the subsequent application of a Extraction and Labeling
+				protocol. ProtocolApplication is associated with and Edge that links
+				input/output, e.g. Source to Labeled Extract. The order of the
+				application of protocols can be set in order to be able to
+				reconstruct the left-to-right order of protocol references in
+				MAGE-TAB format. The FuGE equivalent to ProtocolApplication is
+				FuGE:ProtocolApplication, however input/output is modeled using
+				Edge.
+				<br />
+				The ProtocolApplication class maps to FuGE/XGAP ProtocolApplication,
+				but in FuGE ProtocolApplications can take Material or Data (or both)
+				as input and produce Material or Data (or both) as output. Similar
+				to PaGE.ObservationMethod. Maps to METABASE:Visit (also note that
+				METABASE:PlannedVisit allows for planning of protocol applications;
+				this is outside scope for this model?).
+			</description>
+			<field auto="true" name="time" type="datetime"
+				description="time when the protocol was applied." />
+			<field name="protocol" type="xref" xref_entity="Protocol"
+				description="Reference to the protocol that is being used." />
+			<field name="Performer" type="mref" xref_entity="Person"
+				nillable="true" />
+		</entity>
+		<entity name="ProtocolDocument" extends="MolgenisFile">
+			<field name="protocol" type="xref" xref_entity="Protocol" />
+		</entity>
+		<entity name="Workflow" extends="Protocol" implements="Identifiable,Nameable">
+			<description>A workflow is a plan to execute a series of subprotocols
+				in a particular order. Each workflow elements is another protocol as
+				refered to via WorkflowElement. Because Workflow extends Protocol,
+				workflows can be nested just as any other protocol.</description>
+			<unique fields="name" />
+		</entity>
+		<entity name="WorkflowElement" implements="Nameable" xref_label="name">
+			<description>Elements of a workflow are references to protocols. The
+				whole workflow is a directed graph with each element pointing to the
+				previousSteps that the current workflow element depends on.
+			</description>
+			<field name="Workflow" type="mref" xref_entity="Workflow" xref_label="name"
+				description="Workflow this element is part of" />
+			<field name="protocol" type="xref" xref_entity="Protocol"
+				description="Protocol to be used at this workflow step" />
+			<field name="PreviousSteps" type="mref" xref_entity="WorkflowElement" nillable="true"
+				description="Previous steps that need to be done before this protocol can be executed." />
+			<field name="ExecutionTime" nillable="true" type="text"
+				description="Predicted execution time" default="23:59:00" />
+			<unique fields="name" />
+			<!-- field name="Defaults" type="mref" xref_entity="ObservedValue" nillable="true"
+				description="Default values of compute protocol features, which should be defined on workflow element level" /-->
+			<unique fields="name" />
+		</entity>
+		<entity name="WorkflowElementParameter" extends="ObservedValue">
+			<field name="WorkflowElement" type="xref" xref_entity="WorkflowElement" description="To attach a parameter to a WorkflowElement"/>
+		</entity>
+				<!--
+			DISCUSSION: we added ComputeFeature, ComputeElement and ComputeValue
+			for understandability. But I think we don't need them (and actually
+			we are better off without: we don't care about ComputeFeature as we
+			want to be able to use any feature; we don't care about ComputeValue
+			as we want any ObservedValue, and ComputeElement is just as
+			WorkflowElement. Possibly we want ComputeWorkflow so we can validate
+			if all elements are ComputeProtocols). Proposal, move the remaining
+			stuff to protocol.xml.
+		-->
+		<description>Molgenis compute framework that extends the molgenis
+			protocol framework adding the computational details</description>
+		<entity name="ComputeProtocol" extends="Protocol">
+			<description>
+				Executable definitions of computational 'protocols' of analysis. For
+				example: bwa-align. Therefore the Protocol class is extended:
+				<ul>
+					<li>
+						<b>script</b>
+						: Each operation is defined in a wrapping, that is, a
+						parameterizable description of the computation in Freemarker or R
+						(depends on interpeter). The parameters are defined via the
+						features of the protocol.
+					</li>
+					<li>
+						<b>interpreter</b>
+						: When this protocol is 'applied', the parameters are merged with
+						the freemarker script to produce an executable analysis which is
+						then interpreted by the chosen interpreter, currently in either
+						bash, R or python.
+					</li>
+				</ul>
+			</description>
+			<field name="scriptTemplate" type="text"
+				description="Commandline or (template of) an script, e.g. in R. Templating engine is freemarker." />
+			<field name="interpreter" type="enum" enum_options="[bash,R,Python]"
+				description="the interpreter used to run this command. For example 'shellTemplate'" />
+			<!-- discussion: rename Features to Inputs and Outputs -->
+			<field name="Inputs" type="mref" xref_entity="ComputeFeature"
+				label="Inputs" nillable="true"
+				description="Shadows Protocol.Features (copy):The features that can be observed using this protocol. For example 'length' or 'rs123534' or 'probe123'. Also protocol parameters are considered observable features as they are important to the interpretation of the observed values." />
+			<field name="Outputs" type="mref" xref_entity="ComputeFeature"
+				nillable="true"
+				description="Shadows Protocol.Features (copy):The features that can be observed using this protocol. For example 'length' or 'rs123534' or 'probe123'. Also protocol parameters are considered observable features as they are important to the interpretation of the observed values." />
+			<field name="ComputationalTime" nillable="true" type="text" description="the passage of time from the start to the completion of a task" />	
+		</entity>
+		<entity name="ComputeFeature" extends="Measurement">
+			<description>Parameter are the inputs or outputs into an
+				ComputeProtocol. It reuses all of ObservableFeature to define the
+				type of the parameters. It extends ObserveableFeature with the
+				marking whether the parameter is input, output or both.
+			</description>
+			<field name="iterateOver" type="boolean" default="false"
+				description="Use this parameter to iterate over the values in this parameter. Only holds for 'range' and 'list' value types. TODO: support list/range types." />
+			<field name="defaultValue" type="text" nillable="true"
+				description="the value of the parameter for Jobs" />
+			<field name="isUser" type="boolean" default="false" 
+				description="Define if this feature is interesting for user (otherwise, hide it by default)" />
+		</entity>
+		<entity name="ComputeApplication" extends="ProtocolApplication">
+			<description>A protocolApplication that reports the scheduling or
+				application of running a ComputeProtocol. Discussion: how to tie
+				this closer to the data?</description>
+			<field name="StartTime" auto="true" nillable="false" type="datetime"
+				description="Datatime when the job was started." />
+			<field name="ComputeResource" type="enum"
+				enum_options="[local, cluster, gridgain, cloud, image]" default="local"
+				description="The compute backend used" />
+			<field name="protocol" type="xref" xref_entity="Protocol"
+				description="Reference to the protocol this ProtocolApplication is an application of. Shadows ProtocolApplication.protocol." />
+			<field name="PreviousSteps" type="mref" xref_entity="ComputeApplication" nillable="true"
+				description="To keep track of calculation dependencies == workflow; Note: can be changed at runtime" />
+			<field name="script" nillable="true" type="text"
+				description="The actual command to be sent to the cluster, is a
+			filled in version of the one define in the ComputeProtocol, depending on the interpreter (e.g. R gets values prepended, bash gets freemarker template applied" />
+			<field name="StatusCode" nillable="false" type="int" default="0"
+				description="Status code of this subjob.
+			Currently: 0: start, 1: submit, 2: error, 3: succes" />
+			<field name="StatusText" nillable="false" type="varchar"
+				default="no status" length="127" description="Status text of this subjob." />
+			<field name="StatusProgress" nillable="true" type="int"
+				description="Percentage done." default="0" />
+		</entity>
+	</module>
+</molgenis>

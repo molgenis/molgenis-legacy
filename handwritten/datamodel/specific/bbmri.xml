@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="org.molgenis" label="Catalog of Dutch Biobank">
+
+	<module name="bbmri" label="Catalog of Dutch Biobank">
+		<entity name="BiobankCategory" extends="OntologyTerm">
+			<description>This is the categories of the entries commonly written in the xls file in the first column with bold letters</description> 
+		</entity>
+		<entity name="BiodataType" extends="OntologyTerm">
+			<description>This is the column  GWA data n= , GWA platform , GWA comments </description> 
+		</entity>
+		<entity name="Biobank" extends="Investigation" label="Cohort" >
+			<description>Describes one biobank cohort</description>
+			<field name="name" nillable="true" description="the name of the biobank [in investigation the name is unique]"/>
+			<field name="Acronym" nillable="true" description="Acronym for this biobank" label="Acronym" />
+			<field name="Institutes" nillable="true" type="mref" xref_label="name" xref_entity="Institute" mref_name="BiobankInstitute"  description="Institute that are custodian of this biobank (found in xls as Institutions)" /> 
+		</entity>
+		<entity name="BiobankPanel" extends="Panel">
+			<description>This is the xls column current n= , and the  column Biodata from the xls is included in the fields . </description> 
+			<!--  added in order to hide it ! hide_fields word on fields that have nillable=true<field name="Species" label="Species" type="xref" xref_entity="Species" xref_field="id" xref_label="name" nillable="true" description="Reference to the species this chromosome belongs to." />-->
+			<!-- <field name="name" type="xref" label ="topic" xref_field="Investigation.name" xref_label="name" /> -->
+			<!-- <field name="topic" type="mref" xref_entity="ObservationElement" xref_label="name" mref_label="BiobankPanelTopic"/> -->
+			
+			<field name="Category" type="string"  description="A. Core Biobanks, DNA available, B. Supporting biobanks (DNA not yet available)"/> 
+			<field name="SubCategory" type="xref" xref_entity="BiobankCategory" description="For example: Population, development, birth and growth"/>
+			<field name="Coordinators" type="mref" xref_entity="Person" mref_name="BiobankContact" description="One or more contact persons for this biobank"/>
+			<field name="Size" label="Current n=" nillable="true" description="Current n= in xls"/>
+			<field name="Biodata" type="xref" nillable="true" xref_entity="BiodataType" description="Biodata in xls"/>
+			<field name="GwaDataNum" label="GWA data n=" type="string" nillable="true" description="GWA data n="/>
+			<field name="GwaPlatform" label="GWA platform" type="string" nillable="true" description="GWA platform in xls"/>
+			<field name="GwaComments" label="GWA comments" type="text" nillable="true"/>
+			<field name="GeneralComments" label="General comments" type="text" nillable="true"/>
+			<field name="Publications" label="Publications" type="text" nillable="true" />
+		</entity>
+	</module>
+</molgenis>
+

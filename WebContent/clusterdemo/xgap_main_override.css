@@ -1,0 +1,16 @@
+
+#container {
+	/* width: 900px; */
+	/* text-align: center; */
+	align: center;
+}
+
+.wizardfoldout {
+	display: none;
+	position: relative;
+	margin: 0;
+	font: menu;
+	border-style: outset;
+	border-width: 0px;
+	width: 700px;
+}

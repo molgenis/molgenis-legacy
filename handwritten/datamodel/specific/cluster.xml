@@ -1,0 +1,109 @@
+<molgenis name="org.molgenis">
+	<module name="cluster">
+		<description>Cluster calculation tables.</description>
+		<entity name="Job" implements="Identifiable">
+			<field name="OutputDataName" nillable="false" type="varchar"
+				length="127" description="Name of the matrix that will be written" />
+			<field name="Timestamp" nillable="false" type="varchar"
+				description="Datatime when the job was started." />
+			<field name="Analysis" type="xref" nillable="false"
+				xref_entity="Analysis" xref_field="id" xref_label="name" />
+			<field name="ComputeResource" type="enum" enum_options="[local, cluster, cloud, image]" default="local"/>
+			<unique fields="OutputDataName" description="OutputDataName is unique" />
+		</entity>
+		<entity name="Subjob" implements="Identifiable">
+			<field name="Job" type="xref" nillable="false" xref_entity="Job"
+				xref_field="id" xref_label="OutputDataName"
+				description="Reference to the job this subjob belongs to." />
+			<field name="StatusCode" nillable="false" type="int"
+				description="Status code of this subjob." />
+			<field name="StatusText" nillable="false" type="varchar"
+				length="127" description="Status text of this subjob." />
+			<field name="StatusProgress" nillable="true" type="int"
+				description="Percentage done." />
+			<field name="Nr" nillable="false" type="int"
+				description="Number of this subjob within the job." />
+		</entity>
+		<entity name="Analysis" implements="Nameable">
+			<field name="Description" nillable="true" type="varchar"
+				length="127" description="Optional description of this type of analysis." />
+			<field name="ParameterSet" type="xref" nillable="false"
+				xref_entity="ParameterSet" xref_field="id" xref_label="name" />
+			<field name="DataSet" type="xref" nillable="false" xref_entity="DataSet"
+				xref_field="id" xref_label="name" />
+			<field name="TargetFunctionName" nillable="false" type="varchar"
+				length="127"
+				description="The function used to start a specific type of analysis on the cluster." />
+			<unique fields="name" description="Name is unique" />
+		</entity>
+		<entity name="ParameterSet" implements="Nameable">
+			<unique fields="name" description="Name is unique" />
+		</entity>
+		<entity name="ParameterName" implements="Nameable">
+			<field name="ParameterSet" type="xref" nillable="false"
+				xref_entity="ParameterSet" xref_field="id" xref_label="name" />
+			<unique fields="name,ParameterSet" description="Name is unique within a ParameterSet" />
+		</entity>
+		<entity name="ParameterValue" implements="Nameable">
+			<field name="ParameterName" type="xref" nillable="false"
+				xref_entity="ParameterName" xref_field="id" xref_label="name" />
+			<field name="Value" nillable="false" type="varchar" length="127"
+				description="Possible value of this parameter." />
+			<unique fields="name,ParameterName" description="Name is unique within a ParameterName" />
+		</entity>
+		<entity name="DataSet" implements="Nameable">
+			<unique fields="name" description="Name is unique" />
+		</entity>
+		<entity name="DataName" implements="Nameable">
+			<field name="DataSet" type="xref" nillable="false" xref_entity="DataSet"
+				xref_field="id" xref_label="name" />
+			<unique fields="name,DataSet" description="Name is unique within a dataset" />
+		</entity>
+		<entity name="DataValue" implements="Nameable">
+			<field name="DataName" type="xref" nillable="false"
+				xref_entity="DataName" xref_field="id" xref_label="name" />
+			<field name="Value" type="xref" nillable="false" xref_entity="Data"
+				xref_field="id" xref_label="name" description="Possible reference of this Data." />
+			<unique fields="name,DataName" description="Name is unique within a DataName" />
+		</entity>
+		<entity name="SelectedParameter" implements="Identifiable">
+			<field name="Job" type="xref" nillable="false" xref_entity="Job"
+				xref_field="id" xref_label="OutputDataName" />
+			<field name="ParameterName" nillable="false" type="varchar"
+				length="127" description="Copied name of this parameter." />
+			<field name="ParameterValue" nillable="false" type="varchar"
+				length="127" description="Copied value of this parameter." />
+		</entity>
+		<entity name="SelectedData" implements="Identifiable">
+			<field name="Job" type="xref" nillable="false" xref_entity="Job"
+				xref_field="id" xref_label="OutputDataName" />
+			<field name="DataName" nillable="false" type="varchar" length="127"
+				description="Copied name of this Data" />
+			<field name="DataValue" nillable="false" type="varchar" length="127"
+				description="Copied referenced name of this Data" />
+		</entity>
+		
+		<entity name="RScript" extends="InvestigationFile">
+			<description>
+			Proof of concept to show users can add scripts to database, to be replaced later with more generic version from compute model.
+			</description>
+		</entity>
+		
+		<!--entity name="ImageProvenance" extends="Provenance">
+		<description>Unused at the moment</description>
+			<field name="Image" type="xref"
+				xref_entity="Image" xref_field="id"
+				xref_label="name"
+				description="Reference to the Image this provenance belongs to." />
+		</entity-->
+		
+		<!--entity name="DataProvenance" extends="Provenance">
+		<description>Unused at the moment</description>
+			<field name="Data" type="xref"
+				xref_entity="Data" xref_field="id"
+				xref_label="name"
+				description="Reference to the Data this provenance belongs to." />
+		</entity-->
+	
+	</module>
+</molgenis>

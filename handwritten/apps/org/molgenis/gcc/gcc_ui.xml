@@ -1,0 +1,7 @@
+<molgenis name="molgenis-apps">
+	<plugin name="molgenis_header" type="plugins.header.MolgenisHeader" />
+	<menu name="main" position="left">
+		<!-- empty gui so no elements can collide with project elements -->
+		<form name="Investigations" entity="Investigation" />
+	</menu>
+</molgenis>
