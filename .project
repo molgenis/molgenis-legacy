@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>gcc</name>
+	<name>molgenis_apps</name>
 	<comment></comment>
 	<projects>
 		<project>molgenis3_2</project>
