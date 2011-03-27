@@ -53,6 +53,7 @@ public class ScreenMessage
 	 */
 	public String getText()
 	{
+		if(message == null) return "Unknown error";
 		return message;
 	}
 	
