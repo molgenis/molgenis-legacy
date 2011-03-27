@@ -300,7 +300,7 @@ var molgenis_required = new Array(${required});
 <#--show collapse button if collapsed items-->
 <#list record.inputs as input>
 	<#if input.collapse><tr><td colspan="2"><script>toggleCssClass("${screen.name}_collapse");</script>
-	<input type="button" onClick="toggleCssClass('${screen.name}_collapse'); if(this.value == 'Hide additional fields') this.value='Show additional fields'; else this.value='Hide additional fields'" value="Show additional fields"/></td></tr><#break/></#if>
+	<input type="button" onClick="toggleCssClass('${screen.name}_collapse'); if(this.value == 'Hide details') this.value='Show details'; else this.value='Hide additional fields'" value="Show additional fields"/></td></tr><#break/></#if>
 </#list>		
 </table></td><td  class="edit_button_area">
 <#if readonly != "true">
