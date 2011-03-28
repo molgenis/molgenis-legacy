@@ -1,12 +1,9 @@
 package regressiontest.cluster;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.util.TarGz;
-
-import com.ice.tar.InvalidHeaderException;
 
 import plugins.archiveexportimport.ArchiveExportImportPlugin;
 import plugins.archiveexportimport.XgapCsvImport;

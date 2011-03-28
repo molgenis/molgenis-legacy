@@ -4,18 +4,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
 
 public class ToolParser
 {
@@ -23,7 +17,7 @@ public class ToolParser
 	{
 		File dir = new File("D:/Development/molgenis3_3/galaxy/tools/");
 
-		Map<String, Integer> nodeStats = new LinkedHashMap<String, Integer>();
+		//Map<String, Integer> nodeStats = new LinkedHashMap<String, Integer>();
 		for (File f : getFilesRecursive(dir))
 		{
 			try

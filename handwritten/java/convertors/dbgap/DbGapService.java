@@ -3,11 +3,8 @@ package convertors.dbgap;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -225,7 +222,7 @@ public class DbGapService
 		{
 			File cachedFile = new File(fileCache.getAbsolutePath() +"\\" + new File(new File(r.url.getFile()).getName()));
 			if(!cachedFile.exists()) downloadFile(r.url, cachedFile);
-			url = cachedFile.toURL();
+			url = cachedFile.toURI().toURL();
 			
 		}
 		JAXBContext jaxbContext = JAXBContext.newInstance("convertors.dbgap.jaxb.var_report");
@@ -241,7 +238,7 @@ public class DbGapService
 		{
 			File cachedFile = new File(fileCache.getAbsolutePath() +"\\" + new File(new File(d.url.getFile()).getName()));
 			if(!cachedFile.exists()) downloadFile(d.url, cachedFile);
-			url = cachedFile.toURL();
+			url = cachedFile.toURI().toURL();
 		}
 		JAXBContext jaxbContext = JAXBContext.newInstance("convertors.dbgap.jaxb.data_dict");
 		Unmarshaller m = jaxbContext.createUnmarshaller();
