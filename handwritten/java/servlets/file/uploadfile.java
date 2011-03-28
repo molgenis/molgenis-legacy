@@ -4,25 +4,22 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
-import filehandling.generic.PerformUpload;
-
-
 import app.JDBCDatabase;
+import filehandling.generic.PerformUpload;
 
 public class uploadfile extends app.servlet.MolgenisServlet
 {
 	private static final long serialVersionUID = 8579428014673624684L;
-	private static Logger logger = Logger.getLogger(uploadfile.class);
+	//TODO: Danny: unused, but i guess we do want to use it
+	//private static Logger logger = Logger.getLogger(uploadfile.class);
 
 	/**
 	 * File upload service. Callable by Curl, RCurl, and other post services.

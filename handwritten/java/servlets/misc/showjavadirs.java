@@ -7,14 +7,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
-
 public class showjavadirs extends app.servlet.MolgenisServlet
 {
 	private static final long serialVersionUID = 8579428014673624684L;
-	private static Logger logger = Logger.getLogger(showjavadirs.class);
+	
+	//TODO: Danny: unused, but i guess we do want to use it
+	//private static Logger logger = Logger.getLogger(showjavadirs.class);
 
 	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{

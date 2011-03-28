@@ -12,15 +12,11 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 
-	
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.molgenis.data.Data;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.util.HttpServletRequestTuple;
@@ -84,7 +80,8 @@ public class DownloadSpSSFile extends app.servlet.MolgenisServlet
 			Tuple req = new HttpServletRequestTuple(request);  //the HttpServletRequestTuple should be defined in another servlet ? In ordert to actually return the matrix contents .  
 			//Get the requested id from the user & and get data from DB 
 			int matrixId = req.getInt("id");
-			QueryRule q = new QueryRule("id", Operator.EQUALS, matrixId);
+			//TODO: Danny OLD code ??
+			/*QueryRule q = */new QueryRule("id", Operator.EQUALS, matrixId);
 			//Data data = db.find(Data.class, q).get(0);
 			content += "TEST write in spss file .";
 			
@@ -128,16 +125,17 @@ public class DownloadSpSSFile extends app.servlet.MolgenisServlet
 		return usage;
 	}
 
-
-	private void exportToSpss(Object matrix, PrintWriter out) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private Object getMatrix() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//TODO: Danny:  Unused functions ??
+//
+//	private void exportToSpss(Object matrix, PrintWriter out) {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//
+//	private Object getMatrix() {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 	
 	
 	
