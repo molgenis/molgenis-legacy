@@ -11,12 +11,15 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+
 
 import decorators.NameConvention;
 
-public class NamingPlugin extends PluginModel {
+public class NamingPlugin extends PluginModel<Entity> {
 
+	private static final long serialVersionUID = -5003817917974881648L;
 	public String input;
 	public String output;
 	//public String unique;
@@ -46,7 +49,7 @@ public class NamingPlugin extends PluginModel {
 //		this.unique = unique;
 //	}
 
-	public NamingPlugin(String name, ScreenModel parent) {
+	public NamingPlugin(String name, ScreenModel<Entity> parent) {
 		super(name, parent);
 	}
 

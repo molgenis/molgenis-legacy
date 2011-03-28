@@ -10,11 +10,17 @@ package plugins.help.importing;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class ImportingHelp extends PluginModel
+
+
+public class ImportingHelp extends PluginModel<Entity>
 {
-	public ImportingHelp(String name, ScreenModel parent)
+
+	private static final long serialVersionUID = -2745398225198604899L;
+
+	public ImportingHelp(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

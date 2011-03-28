@@ -10,11 +10,14 @@ package plugins.help.general;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class GeneralHelpPlugin extends PluginModel {
+public class GeneralHelpPlugin extends PluginModel<Entity> {
 
-	public GeneralHelpPlugin(String name, ScreenModel parent) {
+	private static final long serialVersionUID = 6154765418901893635L;
+
+	public GeneralHelpPlugin(String name, ScreenModel<Entity> parent) {
 		super(name, parent);
 	}
 

@@ -13,12 +13,14 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import decorators.NameConvention;
 
-public class DuplicatesPlugin extends PluginModel {
+public class DuplicatesPlugin extends PluginModel<Entity> {
 
+	private static final long serialVersionUID = 3285351881759871383L;
 	public String input;
 	public String output;
 
@@ -48,7 +50,7 @@ public class DuplicatesPlugin extends PluginModel {
 	// this.unique = unique;
 	// }
 
-	public DuplicatesPlugin(String name, ScreenModel parent) {
+	public DuplicatesPlugin(String name, ScreenModel<Entity> parent) {
 		super(name, parent);
 	}
 
