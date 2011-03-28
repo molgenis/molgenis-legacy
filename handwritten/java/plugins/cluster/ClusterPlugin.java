@@ -65,7 +65,7 @@ import filehandling.generic.MolgenisFileHandler;
  * @author joerivandervelde
  * 
  */
-public class ClusterPlugin extends PluginModel
+public class ClusterPlugin extends PluginModel<Entity>
 {
 
 	private static final long serialVersionUID = -3695891745215105075L;
@@ -74,7 +74,7 @@ public class ClusterPlugin extends PluginModel
 	private ComputationResource cr = null;
 	private DataMatrixHandler dmh = null;
 
-	public ClusterPlugin(String name, ScreenModel parent)
+	public ClusterPlugin(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

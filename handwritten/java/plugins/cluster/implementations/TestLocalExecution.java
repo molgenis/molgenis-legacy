@@ -26,6 +26,7 @@ public class TestLocalExecution
 		Command command2 = new Command("dir", true, false, true);
 
 		lc.executeCommand(command);
+		lc.executeCommand(command2);
 
 	}
 

@@ -11,11 +11,12 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class ScriptManager extends PluginModel
+public class ScriptManager extends PluginModel<Entity>
 {
-
+	private static final long serialVersionUID = 1502796634143996989L;
 	private ScriptManagerModel model = new ScriptManagerModel();
 
 	public ScriptManagerModel getModel()
@@ -23,7 +24,7 @@ public class ScriptManager extends PluginModel
 		return this.model;
 	}
 
-	public ScriptManager(String name, ScreenModel parent)
+	public ScriptManager(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
@@ -52,7 +53,7 @@ public class ScriptManager extends PluginModel
 		try
 		{
 
-			String action = request.getString("__action");
+			request.getString("__action");
 
 		
 			

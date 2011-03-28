@@ -3,7 +3,6 @@ package plugins.cluster.interfaces;
 import java.util.List;
 
 import plugins.cluster.helper.Command;
-import plugins.cluster.helper.LoginSettings;
 
 /**
  * Interface describing the behaviour of a 'computation resource'

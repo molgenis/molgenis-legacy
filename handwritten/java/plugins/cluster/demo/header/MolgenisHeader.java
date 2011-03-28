@@ -10,6 +10,7 @@ package plugins.cluster.demo.header;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 /**
@@ -19,9 +20,11 @@ import org.molgenis.util.Tuple;
  * 
  * @author Morris Swertz
  */
-public class MolgenisHeader extends PluginModel
+public class MolgenisHeader extends PluginModel<Entity>
 {
-	public MolgenisHeader(String name, ScreenModel parent)
+	private static final long serialVersionUID = 6155556950170399575L;
+
+	public MolgenisHeader(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

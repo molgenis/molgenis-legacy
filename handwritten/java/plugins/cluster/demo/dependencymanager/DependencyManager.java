@@ -12,23 +12,25 @@ import java.io.File;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import filehandling.generic.MolgenisFileHandler;
 
 import plugins.cluster.implementations.LocalComputationResource;
 
-public class DependencyManager extends PluginModel
+public class DependencyManager extends PluginModel<Entity>
 {
-
+	private static final long serialVersionUID = 3728283831751229340L;
 	private DependencyManagerModel model = new DependencyManagerModel();
+	private File usrHomeLibs;
 
 	public DependencyManagerModel getModel()
 	{
 		return this.model;
 	}
 
-	public DependencyManager(String name, ScreenModel parent)
+	public DependencyManager(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
@@ -55,13 +57,13 @@ public class DependencyManager extends PluginModel
 			String action = request.getString("__action");
 
 			LocalComputationResource lcr = null;
-			File usrHomeLibs = null;
+			setUsrHomeLibs(null);
 			
 			if(action.startsWith("install")){
 				MolgenisFileHandler xlfh = new MolgenisFileHandler(db);
 				lcr = new LocalComputationResource(xlfh);
-				usrHomeLibs = new File(System.getProperty("user.home")
-						+ File.separator + "libs");
+				setUsrHomeLibs(new File(System.getProperty("user.home")
+						+ File.separator + "libs"));
 			}
 			
 			if (action.equals("installQtl"))
@@ -145,5 +147,13 @@ public class DependencyManager extends PluginModel
 		// e.g.
 		// if(!this.getLogin().hasEditPermission(myEntity)) return false;
 		return true;
+	}
+
+	public void setUsrHomeLibs(File usrHomeLibs) {
+		this.usrHomeLibs = usrHomeLibs;
+	}
+
+	public File getUsrHomeLibs() {
+		return usrHomeLibs;
 	}
 }

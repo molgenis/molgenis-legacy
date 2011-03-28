@@ -129,7 +129,7 @@ public final class BasicClient extends WindowAdapter
             frame.addWindowListener(this);
 
             frame.pack();
-            frame.show();
+            frame.setVisible(true);
 
             /*
              * Prompt for where to connect to

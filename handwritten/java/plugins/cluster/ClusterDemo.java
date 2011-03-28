@@ -10,11 +10,14 @@ package plugins.cluster;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class ClusterDemo extends PluginModel
+public class ClusterDemo extends PluginModel<Entity>
 {
-	public ClusterDemo(String name, ScreenModel parent)
+	private static final long serialVersionUID = -4502130993471029441L;
+
+	public ClusterDemo(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
