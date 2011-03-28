@@ -1,4 +1,4 @@
-<molgenis name="gcc" label="Panacea xQTL workbench">
+<molgenis name="molgenis_apps" label="Panacea xQTL workbench">
 	<plugin name="molgenis_header" type="plugins.cluster.demo.xqtlpanaceaheader.MolgenisHeader" />
 	<menu name="main">
 	

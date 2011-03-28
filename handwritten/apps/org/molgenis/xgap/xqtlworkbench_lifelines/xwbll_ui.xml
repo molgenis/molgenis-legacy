@@ -1,4 +1,4 @@
-<molgenis name="gcc" label="LifeLines xQTL workbench">
+<molgenis name="molgenis_apps" label="LifeLines xQTL workbench">
 	<plugin name="molgenis_header" type="plugins.cluster.demo.xwbllheader.MolgenisHeader" />
 	<menu name="main">
 	

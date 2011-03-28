@@ -1,4 +1,4 @@
-<molgenis name="gcc" label="XGAP 1.5 prototype">
+<molgenis name="molgenis_apps" label="XGAP 1.5 prototype">
 	<plugin name="molgenis_header" type="plugins.header.xgap.MolgenisHeader" />
 	<menu name="main" position="left">
 	
