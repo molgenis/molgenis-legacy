@@ -13,7 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -30,11 +29,12 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.ProtocolApplication;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import commonservice.CommonService;
 
-public class ManageParentgroups extends PluginModel
+public class ManageParentgroups extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 203412348106990472L;
 	private List<Integer> motherIdList = new ArrayList<Integer>();
@@ -50,7 +50,7 @@ public class ManageParentgroups extends PluginModel
 	private List<ObservationTarget> sourceList;
 	private int source;
 	
-	public ManageParentgroups(String name, ScreenModel parent)
+	public ManageParentgroups(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
