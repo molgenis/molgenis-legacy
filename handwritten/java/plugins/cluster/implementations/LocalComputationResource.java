@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.util.DetectOS;
-import org.testng.internal.Utils;
 
 import plugins.cluster.helper.Command;
 import plugins.cluster.interfaces.ComputationResource;

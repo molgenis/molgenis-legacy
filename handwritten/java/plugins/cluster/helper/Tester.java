@@ -1,13 +1,8 @@
 package plugins.cluster.helper;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import org.molgenis.framework.db.DatabaseException;
-
-import filehandling.generic.MolgenisFileHandler;
 import plugins.cluster.implementations.LocalComputationResource;
 import app.JDBCDatabase;
+import filehandling.generic.MolgenisFileHandler;
 
 public class Tester {
 

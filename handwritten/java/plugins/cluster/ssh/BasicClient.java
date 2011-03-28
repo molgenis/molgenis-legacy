@@ -1,42 +1,36 @@
 package plugins.cluster.ssh;
 
-import java.util.Properties;
+import java.awt.BorderLayout;
+import java.awt.Frame;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Properties;
 
-import java.awt.*;
-import java.awt.event.*;
-
+import com.mindbright.gui.AWTConvenience;
 import com.mindbright.jca.security.SecureRandom;
-
-import com.mindbright.ssh2.SSH2Transport;
-import com.mindbright.ssh2.SSH2SimpleClient;
 import com.mindbright.ssh2.SSH2ConsoleRemote;
-import com.mindbright.ssh2.SSH2Preferences;
-import com.mindbright.ssh2.SSH2TerminalAdapterImpl;
-import com.mindbright.ssh2.SSH2StreamFilterFactory;
-import com.mindbright.ssh2.SSH2StreamSniffer;
 import com.mindbright.ssh2.SSH2FTPProxyFilter;
 import com.mindbright.ssh2.SSH2HostKeyVerifier;
-import com.mindbright.ssh2.SSH2Authenticator;
-import com.mindbright.ssh2.SSH2AuthPassword;
-import com.mindbright.ssh2.SSH2AuthKbdInteract;
 import com.mindbright.ssh2.SSH2Interactor;
+import com.mindbright.ssh2.SSH2Preferences;
+import com.mindbright.ssh2.SSH2SimpleClient;
+import com.mindbright.ssh2.SSH2StreamFilterFactory;
+import com.mindbright.ssh2.SSH2StreamSniffer;
+import com.mindbright.ssh2.SSH2TerminalAdapterImpl;
+import com.mindbright.ssh2.SSH2Transport;
 import com.mindbright.ssh2.SSH2UserCancelException;
-
-import com.mindbright.terminal.TerminalWin;
+import com.mindbright.terminal.GlobalClipboard;
+import com.mindbright.terminal.LineReaderTerminal;
 import com.mindbright.terminal.TerminalFrameTitle;
 import com.mindbright.terminal.TerminalMenuHandler;
 import com.mindbright.terminal.TerminalMenuHandlerFull;
 import com.mindbright.terminal.TerminalMenuListener;
-import com.mindbright.terminal.LineReaderTerminal;
-import com.mindbright.terminal.GlobalClipboard;
-
-import com.mindbright.gui.AWTConvenience;
-
-import com.mindbright.util.SecureRandomAndPad;
+import com.mindbright.terminal.TerminalWin;
 import com.mindbright.util.RandomSeed;
+import com.mindbright.util.SecureRandomAndPad;
 import com.mindbright.util.Util;
 
 /**

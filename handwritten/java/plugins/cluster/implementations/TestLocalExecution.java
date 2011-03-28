@@ -1,12 +1,6 @@
 package plugins.cluster.implementations;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import org.molgenis.framework.db.DatabaseException;
-
 import plugins.cluster.helper.Command;
-
 import app.JDBCDatabase;
 import filehandling.generic.MolgenisFileHandler;
 
