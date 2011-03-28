@@ -10,8 +10,6 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.util.ValueLabel;
 
-import app.JDBCMetaDatabase;
-
 import decorators.NameConvention;
 import filehandling.generic.BasicFileHandler.XGAPStorageException;
 import filehandling.generic.MolgenisFileHandler.TypeUnknownException;

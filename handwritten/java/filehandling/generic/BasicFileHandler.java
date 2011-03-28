@@ -5,12 +5,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.regex.Pattern;
-
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.util.DetectOS;
-import org.molgenis.util.Tuple;
 
 import plugins.system.settings.Settings;
 import plugins.system.settings.TableUtil;
@@ -128,12 +125,12 @@ public class BasicFileHandler
 	public static void main(String args[]) throws Exception
 	{
 		Database db = new JDBCDatabase("xgap.properties");
-		BasicFileHandler sfh = new BasicFileHandler(db);
+		/*BasicFileHandler sfh = */new BasicFileHandler(db);
 		// System.out.println(sfh.getValidatedFileStorageLocationToFile().getAbsolutePath());
 
 		// ie..
 
-		File storageDir = new BasicFileHandler(db).getFileStorageRoot();
+		/*File storageDir = */new BasicFileHandler(db).getFileStorageRoot();
 	}
 
 	public class XGAPStorageException extends Exception

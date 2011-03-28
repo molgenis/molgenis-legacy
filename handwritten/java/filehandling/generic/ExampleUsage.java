@@ -1,7 +1,5 @@
 package filehandling.generic;
 
-import java.io.File;
-
 import org.molgenis.core.MolgenisFile;
 import org.molgenis.framework.db.Database;
 
@@ -26,7 +24,7 @@ public class ExampleUsage
 		MolgenisFile myMolgenisFile = db.find(MolgenisFile.class).get(0);
 		
 		//perform actions with this MolgenisFile through the handler
-		File myRealFile = mfh.getFile(myMolgenisFile);
+		/*File myRealFile = */mfh.getFile(myMolgenisFile);
 
 		
 	}
