@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import matrix.AbstractDataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
-import org.apache.log4j.Logger;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
@@ -23,7 +22,9 @@ import app.JDBCDatabase;
 public class getmatrixinfo extends app.servlet.MolgenisServlet {
 
 	private static final long serialVersionUID = -6004240016846336249L;
-	private static Logger logger = Logger.getLogger(getmatrixinfo.class);
+	
+	//TODO: Danny: unused, but i guess we do want to use it
+	//private static Logger logger = Logger.getLogger(getmatrixinfo.class);
 	
 	private DataMatrixHandler dmh;
 
@@ -33,7 +34,7 @@ public class getmatrixinfo extends app.servlet.MolgenisServlet {
 		boolean databaseIsAvailable = false;
 		boolean setupSuccess = false;
 		JDBCDatabase db = null;
-		AbstractDataMatrixInstance instance = null;
+		AbstractDataMatrixInstance<Object> instance = null;
 		
 		try {
 			db = (JDBCDatabase) this.getDatabase();
