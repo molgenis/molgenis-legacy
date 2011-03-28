@@ -4,7 +4,7 @@
 		"http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd"
 	-->
 
-<molgenis name="animaldb" label="AnimalDB">
+<molgenis name="molgenis_apps" label="AnimalDB">
 
 	<plugin name="AnimalDBHeader" type="plugins.header.AnimalDBHeader" />
 

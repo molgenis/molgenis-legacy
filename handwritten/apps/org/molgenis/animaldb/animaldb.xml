@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!-- Set Molgenis name and nice label for the AnimalDB application -->
-
-<molgenis name="AnimalDB" label="AnimalDB">
-</molgenis>

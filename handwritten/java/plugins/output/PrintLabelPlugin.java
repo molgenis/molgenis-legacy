@@ -24,6 +24,8 @@ import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.TextParagraph;
 import org.molgenis.util.Tuple;
 
+import app.servlet.MolgenisServlet;
+
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
@@ -65,9 +67,10 @@ public class PrintLabelPlugin extends GenericPlugin
 	}
 
 	private File createPdf(String filename) throws FileNotFoundException, DocumentException {
-		File pdfFile = new File(filename);
+		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+		File pdfFile =  new File(tmpDir.getAbsolutePath() + File.separatorChar + filename);
 		Document document = new Document();
-        PdfWriter.getInstance(document, new FileOutputStream(pdfFile.getAbsoluteFile()));
+        PdfWriter.getInstance(document, new FileOutputStream(pdfFile));
         document.open();
         document.add(new Paragraph("Hello World!"));
         document.close();
@@ -75,7 +78,7 @@ public class PrintLabelPlugin extends GenericPlugin
 	}
 	
 	private void servePdf(File pdfFile) {
-		text = new TextParagraph("pdfFilename", "<a href=\"" + pdfFile.getAbsoluteFile() + "\">Download pdf</a>");
+		text = new TextParagraph("pdfFilename", "<a href=\"tmpfile/" + pdfFile.getName() + "\">Download pdf</a>");
 		container.add(text);
 	}
 
