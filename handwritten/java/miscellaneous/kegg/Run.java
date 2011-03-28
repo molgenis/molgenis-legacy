@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 
 import javax.xml.rpc.ServiceException;
 
-import org.apache.log4j.Logger;
+import org.apache.log4j.LogManager;
 
 public class Run
 {
@@ -16,7 +16,8 @@ public class Run
 	 */
 	public static void main(String[] args) throws RemoteException, ServiceException
 	{
-		Logger.shutdown();
+		//NOTE: Removed a warning logger.shutdown is wrong see: http://logging.apache.org/log4j/1.2/apidocs/deprecated-list.html
+		LogManager.shutdown();
 
 		String sourceOrganism = "sce";
 		String targetOrganism = "hsa";

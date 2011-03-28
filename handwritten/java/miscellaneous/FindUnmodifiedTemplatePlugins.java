@@ -2,7 +2,6 @@ package miscellaneous;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
@@ -46,7 +45,8 @@ public class FindUnmodifiedTemplatePlugins
 				// see if dir has 3 files: 1 ftl, 1 java and 1 .svn
 				if (f.list().length == 3)
 				{
-					ArrayList<String> fileNames = new ArrayList<String>();
+					//TODO: Danny: Old code ? please remove
+					//ArrayList<String> fileNames = new ArrayList<String>();
 					boolean ftlFile = false;
 					boolean javaFile = false;
 					for (String fname : f.list())
@@ -116,10 +116,11 @@ public class FindUnmodifiedTemplatePlugins
 	{
 		LineNumberReader lineCounter = new LineNumberReader(new InputStreamReader(new FileInputStream(f)));
 
-		String nextLine = null;
-		while ((nextLine = lineCounter.readLine()) != null)
+		//String nextLine = null;
+		while ((lineCounter.readLine()) != null)
 		{
-			if (nextLine == null) break;
+			//TODO: Danny: People please check if my fix is OK, in my mind this code is never reached
+			//if (nextLine == null) break;
 		}
 
 		return lineCounter.getLineNumber();

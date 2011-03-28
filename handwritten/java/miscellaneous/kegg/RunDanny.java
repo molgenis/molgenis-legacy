@@ -4,10 +4,7 @@ import java.rmi.RemoteException;
 
 import javax.xml.rpc.ServiceException;
 
-import org.apache.log4j.Logger;
-
-import keggapi.KEGGLocator;
-import keggapi.KEGGPortType;
+import org.apache.log4j.LogManager;
 
 public class RunDanny
 {
@@ -19,7 +16,7 @@ public class RunDanny
 	 */
 	public static void main(String[] args) throws RemoteException, ServiceException
 	{
-		Logger.shutdown();
+		LogManager.shutdown();
 		// path:eco00020
 
 		String sourceOrganism = "hsa";
