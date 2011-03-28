@@ -10,11 +10,17 @@ package plugins.options;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class Options extends PluginModel
+
+
+public class Options extends PluginModel<Entity>
 {
-	public Options(String name, ScreenModel parent)
+
+	private static final long serialVersionUID = 5339333313840521741L;
+
+	public Options(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
