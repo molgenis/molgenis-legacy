@@ -30,7 +30,7 @@ public class CGIServlet extends Servlet {
 	private static final long serialVersionUID = 1L;
 	String[][] extensions = new String[][]{
 			{"pl","cgi","php","php3","py"},
-			{"perl -X","perl -X","php -c php.ini -f","php -c php.ini -f","python -u"}
+			{"perl -X ","perl -X ","php -c php.ini -f ","php -c php.ini -f ","python -u "}
 	};
 	String mainpage = "index.cgi";
 	

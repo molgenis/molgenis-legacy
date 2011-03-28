@@ -28,6 +28,7 @@ public abstract class Servlet extends HttpServlet{
 	private String charSet;
 	static final String BYTES_UNIT = "bytes";
 	private static boolean logenabled = false;
+	private String website_root_path = "websites";
 	
 	public Servlet(){
 		setCharSet("UTF8");
@@ -53,7 +54,7 @@ public abstract class Servlet extends HttpServlet{
 	
 	protected void serveFile(HttpServletRequest req, HttpServletResponse res, boolean headOnly, File file)throws IOException {
 		if (isLogenabled()) {
-			Utils.console("Getting " + file);
+			Utils.console("Getting: " + file);
 			Enumeration<?> enh = req.getHeaderNames();
 			while (enh.hasMoreElements()) {
 				String hn = (String) enh.nextElement();
@@ -171,5 +172,13 @@ public abstract class Servlet extends HttpServlet{
 
 	public boolean isUseCompression() {
 		return useCompression;
+	}
+	
+	public void setLocal_path(String website_root_path) {
+		this.website_root_path = website_root_path;
+	}
+
+	public String getLocal_path() {
+		return website_root_path;
 	}
 }

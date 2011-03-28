@@ -50,7 +50,13 @@ public class FileServlet extends Servlet {
 		}
 		setUseCompression(System.getProperty(DEF_USE_COMPRESSION) != null);
 	}
-
+	
+	// / Constructor.
+	public FileServlet(String path) {
+		this();
+		setLocal_path(getLocal_path() + "/" + path);
+	}
+	
 	// / Returns a string containing information about the author, version, and
 	// copyright of the servlet.
 	public String getServletInfo() {
@@ -74,11 +80,14 @@ public class FileServlet extends Servlet {
 		}
 		req.setCharacterEncoding(getCharSet());
 		String path = Utils.canonicalizePath(req.getPathInfo());
+		if(!getLocal_path().equals("")){
+			path = getLocal_path() + "/" + path;
+		}
 		dispatchPathname(req, res, headOnly, path);
 	}
 
 	private void dispatchPathname(HttpServletRequest req, HttpServletResponse res, boolean headOnly, String path) throws IOException {
-		String filename = req.getPathTranslated() != null ? req.getPathTranslated().replace('/', File.separatorChar) : "";
+		String filename = path != null ? path.replace('/', File.separatorChar) : "";
 		File file = new File(filename);
 		if (isLogenabled()) Utils.console("retrieving '" + filename + "' for path " + path);
 		if (file.exists()) {

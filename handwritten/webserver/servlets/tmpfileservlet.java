@@ -9,9 +9,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import javax.activation.MimetypesFileTypeMap;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,7 +22,7 @@ import app.servlet.MolgenisServlet;
  * This is servlet is used when serving from a Jar file in the Mortbay server.
  * Using tomcat the static serving is left to the container.
  */
-public class tmpfileservlet extends HttpServlet
+public class tmpfileservlet extends Servlet
 {
 	private static final long serialVersionUID = 8579428014673624684L;
 	private static Logger logger = Logger.getLogger(tmpfileservlet.class);
@@ -42,9 +40,6 @@ public class tmpfileservlet extends HttpServlet
 		{
 			InputStream in = null;
 			
-			//servlet context bied een TMP directory
-			ServletContext sc = this.getServletContext();
-			
 			//get filename from used URL, so this is the only 'parameter'
 			String urlBase = MolgenisServlet.getMolgenisVariantID() + "/tmpfile/";
 			String urlFile = url.substring(urlBase.length()); 
@@ -52,7 +47,7 @@ public class tmpfileservlet extends HttpServlet
 			File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 			File filePath =  new File(tmpDir.getAbsolutePath() + File.separatorChar + urlFile);
 			
-			URL localURL = filePath.toURL();
+			URL localURL = filePath.toURI().toURL();
 			URLConnection conn = localURL.openConnection();
 
 			in = new BufferedInputStream(conn.getInputStream());
