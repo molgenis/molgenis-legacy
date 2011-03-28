@@ -2,8 +2,6 @@ package org.molgenis.lifelines;
 
 
 import org.molgenis.Molgenis;
-import org.molgenis.auth.MolgenisUser;
-import org.molgenis.framework.db.Database;
 
 import app.JDBCDatabase;
 
@@ -15,7 +13,8 @@ public class lifelinesUpdateDatabase
 		new Molgenis("handwritten/apps/org/molgenis/lifelines/lifelines.molgenis.properties").updateDb(true);
 		
 		//loader
-		Database db = new JDBCDatabase("handwritten/apps/org/molgenis/lifelines/lifelines.molgenis.properties");
+		//TODO: Danny old code ? please remove then
+		/*Database db =*/new JDBCDatabase("handwritten/apps/org/molgenis/lifelines/lifelines.molgenis.properties");
 		
 		//MolgenisUser u = new MolgenisUser();
 		//u.setName("admin");
