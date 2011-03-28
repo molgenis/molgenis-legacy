@@ -22,8 +22,10 @@ import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.Table;
 import org.molgenis.pheno.ObservationTarget;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
+
 
 public class BatchPlugin extends GenericPlugin {
 
@@ -34,7 +36,7 @@ public class BatchPlugin extends GenericPlugin {
     private int batchId;
     private Map<Integer, String> targetMap;
 
-    public BatchPlugin(String name, ScreenModel parent)
+    public BatchPlugin(String name, ScreenModel<Entity> parent)
     {
     	super(name, parent);
     	this.service   = new BatchService();

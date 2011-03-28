@@ -7,11 +7,10 @@
 
 package plugins.batch;
 
-import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.html.Container;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 public class BatchViewPlugin extends GenericPlugin
@@ -20,10 +19,11 @@ public class BatchViewPlugin extends GenericPlugin
     private String action = "init";
     private BatchContainer batchContainer = null;
     private BatchService service;
-    private static transient Logger logger = Logger.getLogger(BatchViewPlugin.class);
+    //TODO: Danny: If unused, please remove
+    //private static transient Logger logger = Logger.getLogger(BatchViewPlugin.class);
     private BatchViewUi ui = new BatchViewUi();
 
-    public BatchViewPlugin(String name, ScreenModel parent)
+    public BatchViewPlugin(String name, ScreenModel<Entity> parent)
     {
 		super(name, parent);
 		service = new BatchService();

@@ -8,7 +8,6 @@ package plugins.batch;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.molgenis.batch.MolgenisBatch;
 import org.molgenis.batch.MolgenisBatchEntity;
 import org.molgenis.framework.db.Database;
@@ -17,12 +16,11 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.pheno.ObservationTarget;
 
-import plugins.ngs.samplerviewer.SampleViewer;
-
 class BatchService {
 
     private Database db;
-    private static transient Logger logger = Logger.getLogger(BatchService.class);
+    //TODO: Danny: If unused, please remove
+    //private static transient Logger logger = Logger.getLogger(BatchService.class);
     
     public BatchService() {
     }

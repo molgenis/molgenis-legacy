@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.molgenis.batch.MolgenisBatchEntity;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.pheno.ObservationTarget;
 
 class Batch {
