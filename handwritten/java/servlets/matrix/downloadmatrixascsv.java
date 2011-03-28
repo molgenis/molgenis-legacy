@@ -7,7 +7,6 @@ import java.io.PrintStream;
 import java.util.List;
 
 import javax.servlet.ServletException;
-import javax.servlet.SingleThreadModel;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,7 +27,7 @@ import app.JDBCDatabase;
  * This is servlet is used when serving from a Jar file in the Mortbay server.
  * Using tomcat the static serving is left to the container.
  */
-public class downloadmatrixascsv extends app.servlet.MolgenisServlet implements SingleThreadModel
+public class downloadmatrixascsv extends app.servlet.MolgenisServlet
 {
 	private static final long serialVersionUID = 8579428014673624684L;
 	private static Logger logger = Logger.getLogger(downloadmatrixascsv.class);
@@ -69,7 +68,7 @@ public class downloadmatrixascsv extends app.servlet.MolgenisServlet implements 
 				QueryRule q = new QueryRule("id", Operator.EQUALS, matrixId);
 				Data data = db.find(Data.class, q).get(0);
 				DataMatrixHandler dmh = new DataMatrixHandler(db);
-				AbstractDataMatrixInstance instance = dmh.createInstance(data);
+				AbstractDataMatrixInstance<Object> instance = dmh.createInstance(data);
 
 				if (req.getString("download").equals("all"))
 				{
