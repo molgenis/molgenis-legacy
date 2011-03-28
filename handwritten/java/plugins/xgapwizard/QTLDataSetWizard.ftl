@@ -32,9 +32,11 @@
 <br>
 	<i>Into investigation:</i>
 	<select name = "invSelect">
-	<#list model.investigations as i>
-		<option value="${i.id?c}" <#if model.selectedInv?exists && model.selectedInv == i.id>SELECTED</#if>>${i.name}</option>
-	</#list>
+	<#if model.investigations?exists>
+		<#list model.investigations as i>
+			<option value="${i.id?c}" <#if model.selectedInv?exists && model.selectedInv == i.id>SELECTED</#if>>${i.name}</option>
+		</#list>
+	</#if>
 	</select>
 	
 	<br>
