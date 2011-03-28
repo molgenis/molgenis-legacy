@@ -1,16 +1,8 @@
 package matrix.test.converters;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.zip.DataFormatException;
-
-import javax.naming.NamingException;
-
-import org.molgenis.framework.db.DatabaseException;
 
 import matrix.general.CsvToBin;
-import matrix.general.VerifyCsvException;
 
 public class CsvToBinTest
 {

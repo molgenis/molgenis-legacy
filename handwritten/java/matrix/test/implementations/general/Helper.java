@@ -229,7 +229,7 @@ public class Helper
 	 * @throws DatabaseException
 	 * @throws MatrixReadException
 	 */
-	public MemoryDataMatrixInstance createAndWriteRandomMemoryMatrix(File inputMatrixDir, Data data, Database db,
+	public MemoryDataMatrixInstance<Object> createAndWriteRandomMemoryMatrix(File inputMatrixDir, Data data, Database db,
 			int totalRows, int totalCols, int maxStringLength, boolean sparse, boolean fixedTextLength)
 			throws IOException, DatabaseException, MatrixReadException
 	{
@@ -330,7 +330,7 @@ public class Helper
 		
 		out.close();
 		
-		MemoryDataMatrixInstance mm = new MemoryDataMatrixInstance(rowNames, colNames, elements);
+		MemoryDataMatrixInstance<Object> mm = new MemoryDataMatrixInstance<Object>(rowNames, colNames, elements);
 		mm.changeDataName(data.getName());
 
 		return mm;

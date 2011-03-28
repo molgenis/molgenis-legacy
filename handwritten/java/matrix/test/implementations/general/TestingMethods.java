@@ -16,7 +16,7 @@ import decorators.NameConvention;
 
 public class TestingMethods
 {
-	public static boolean parseToPlainAndCompare(Logger logger, AbstractDataMatrixInstance m, Data description, File inputMatrixDir, String method,
+	public static boolean parseToPlainAndCompare(Logger logger, AbstractDataMatrixInstance<Object> m, Data description, File inputMatrixDir, String method,
 			boolean fileWrite, boolean simpleOutput) throws Exception
 	{
 		long start = System.currentTimeMillis();
@@ -41,7 +41,7 @@ public class TestingMethods
 		if (method.substring(0, 9).equals("submatrix"))
 		{
 
-			AbstractDataMatrixInstance newMatrix = null;
+			AbstractDataMatrixInstance<Object> newMatrix = null;
 
 			if (method.equals("submatrixbyindexlist"))
 			{
@@ -207,7 +207,7 @@ public class TestingMethods
 		return filesAreEqual;
 	}
 
-	public static int readSpeed_elementbyindex(Logger logger, AbstractDataMatrixInstance m, Data description, File inputMatrixDir) throws Exception
+	public static int readSpeed_elementbyindex(Logger logger, AbstractDataMatrixInstance<Object> m, Data description, File inputMatrixDir) throws Exception
 	{
 		long start = System.currentTimeMillis();
 		int rows = m.getNumberOfRows();
@@ -217,7 +217,8 @@ public class TestingMethods
 			for (int col = 0; col < cols; col++)
 			{
 				// bm.get(row, col);
-				Object o = m.getElement(row, col);
+				//TODO: Danny: Unused ?
+				/*Object o = */m.getElement(row, col);
 			}
 		}
 		long end = System.currentTimeMillis();
@@ -227,7 +228,7 @@ public class TestingMethods
 		return elementsPerSec;
 	}
 
-	public static int readSpeed_rowbyindex(Logger logger, AbstractDataMatrixInstance m, Data description, File inputMatrixDir)
+	public static int readSpeed_rowbyindex(Logger logger, AbstractDataMatrixInstance<Object> m, Data description, File inputMatrixDir)
 			throws Exception
 	{
 		long start = System.currentTimeMillis();
@@ -235,7 +236,8 @@ public class TestingMethods
 		for (int row = 0; row < rows; row++)
 		{
 			// bm.row(row);
-			Object[] o = m.getRow(row);
+			//TODO: Danny: Unused ?
+			/*Object[] o = */m.getRow(row);
 		}
 		long end = System.currentTimeMillis();
 		long time = (end - start);
@@ -244,7 +246,7 @@ public class TestingMethods
 		return elementsPerSec;
 	}
 
-	public static int readSpeed_colbyindex(Logger logger, AbstractDataMatrixInstance m, Data description, File inputMatrixDir)
+	public static int readSpeed_colbyindex(Logger logger, AbstractDataMatrixInstance<Object> m, Data description, File inputMatrixDir)
 			throws Exception
 	{
 		long start = System.currentTimeMillis();
@@ -252,7 +254,8 @@ public class TestingMethods
 		for (int col = 0; col < cols; col++)
 		{
 			// bm.col(col);
-			Object[] o = m.getCol(col);
+			//TODO: Danny: Unused ?
+			/*Object[] o = */m.getCol(col);
 		}
 		long end = System.currentTimeMillis();
 		long time = (end - start);
@@ -261,7 +264,7 @@ public class TestingMethods
 		return elementsPerSec;
 	}
 
-	public static int readSpeed_submatrixbyindexlist(Logger logger, AbstractDataMatrixInstance m, Data description, File inputMatrixDir)
+	public static int readSpeed_submatrixbyindexlist(Logger logger, AbstractDataMatrixInstance<Object> m, Data description, File inputMatrixDir)
 			throws Exception
 	{
 		long start = System.currentTimeMillis();
@@ -286,7 +289,7 @@ public class TestingMethods
 		return elementsPerSec;
 	}
 
-	public static int readSpeed_submatrixbyindexoffset(Logger logger, AbstractDataMatrixInstance m, Data description, File inputMatrixDir)
+	public static int readSpeed_submatrixbyindexoffset(Logger logger, AbstractDataMatrixInstance<Object> m, Data description, File inputMatrixDir)
 			throws Exception
 	{
 		long start = System.currentTimeMillis();
@@ -310,7 +313,7 @@ public class TestingMethods
 		bfw.write(write + "\n");
 	}
 
-	public static void simplePrint(Logger logger, AbstractDataMatrixInstance m, Data description, long time, String method)
+	public static void simplePrint(Logger logger, AbstractDataMatrixInstance<Object> m, Data description, long time, String method)
 	{
 		int elementsPerSec = (int) ((m.getNumberOfCols() * m.getNumberOfRows()) / (time / 1000.0));
 		logger.info("readSpeed_" + method + " (" + description.getValueType() + "): " + time + " ms. ("

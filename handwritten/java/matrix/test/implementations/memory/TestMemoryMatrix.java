@@ -62,7 +62,7 @@ public class TestMemoryMatrix extends TestCase
 		//we never write the matrices to this storage though :)
 		h.prepareDatabaseAndFiles("Database", matrixDimension1, matrixDimension2, maxTextLength, fixedTextLength, sparse);
 
-		List<MemoryDataMatrixInstance> mmList = new ArrayList<MemoryDataMatrixInstance>();
+		List<MemoryDataMatrixInstance<Object>> mmList = new ArrayList<MemoryDataMatrixInstance<Object>>();
 
 		for (Data data : h.getDataList())
 		{
@@ -86,7 +86,7 @@ public class TestMemoryMatrix extends TestCase
 						"submatrixbyindexoffset", "submatrixbynameoffset" };
 
 			}
-			for (MemoryDataMatrixInstance mm : mmList)
+			for (MemoryDataMatrixInstance<Object> mm : mmList)
 			{
 				for (String method : methods)
 				{
@@ -100,7 +100,7 @@ public class TestMemoryMatrix extends TestCase
 		{
 
 			logger.info("Performance tests..");
-			for (MemoryDataMatrixInstance mm : mmList)
+			for (MemoryDataMatrixInstance<Object> mm : mmList)
 			{
 				if (!skipPerElement)
 				{

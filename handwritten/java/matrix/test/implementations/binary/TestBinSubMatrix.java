@@ -29,7 +29,7 @@ public class TestBinSubMatrix {
 			int halfCols = bm.getNumberOfCols()/2;
 			int halfRows = bm.getNumberOfRows()/2;
 			
-			AbstractDataMatrixInstance sub = bm.getSubMatrixByOffset(0, halfRows, 0, halfCols);
+			AbstractDataMatrixInstance<Object> sub = bm.getSubMatrixByOffset(0, halfRows, 0, halfCols);
 			
 			List<String> originalComplete = bm.getColNames();
 			List<String> originalHalf = bm.getColNames().subList(0, halfCols);

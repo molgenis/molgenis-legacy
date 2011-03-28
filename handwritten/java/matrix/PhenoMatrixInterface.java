@@ -1,9 +1,7 @@
 package matrix;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -14,7 +12,6 @@ import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
-import jxl.write.WriteException;
 
 import org.apache.log4j.Logger;
 import org.molgenis.util.CsvWriter;

@@ -80,7 +80,7 @@ public class AbstractDataMatrixQueries
 			}
 		}
 
-		AbstractDataMatrixInstance res = dm.getSubMatrix(rowNames, colNames);
+		AbstractDataMatrixInstance<Object> res = dm.getSubMatrix(rowNames, colNames);
 		return res;
 	}
 	
