@@ -10,11 +10,17 @@ package plugins.commandprompt;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class CommandPrompt extends PluginModel
+
+
+public class CommandPrompt extends PluginModel<Entity>
 {
-	public CommandPrompt(String name, ScreenModel parent)
+
+	private static final long serialVersionUID = -5332940261351601260L;
+
+	public CommandPrompt(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
