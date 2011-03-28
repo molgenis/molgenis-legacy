@@ -2,7 +2,6 @@ package org.molgenis.gcc;
 
 
 import org.molgenis.Molgenis;
-import org.molgenis.generators.JpaDataTypeGen;
 
 public class GccGenerate
 {
