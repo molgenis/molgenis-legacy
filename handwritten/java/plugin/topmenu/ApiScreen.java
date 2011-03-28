@@ -7,8 +7,6 @@
 
 package plugin.topmenu;	
 
-import java.util.List;
-
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenModel;

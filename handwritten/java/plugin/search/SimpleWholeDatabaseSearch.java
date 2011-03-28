@@ -24,6 +24,8 @@ import app.JDBCMetaDatabase;
 
 public class SimpleWholeDatabaseSearch extends PluginModel
 {
+	private static final long serialVersionUID = 4004696283997492221L;
+
 	public SimpleWholeDatabaseSearch(String name, ScreenModel parent)
 	{
 		super(name, parent);

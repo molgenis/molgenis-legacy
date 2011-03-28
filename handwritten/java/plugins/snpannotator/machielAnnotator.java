@@ -13,7 +13,6 @@ import app.JDBCDatabase;
 public class machielAnnotator {
 
 	// SNP data
-	private String Chromosome = "";
 	private int location = -1;
 	private String consequence_type = "";
 	private String allele = "";
@@ -45,7 +44,7 @@ public class machielAnnotator {
 		for(String z : y)
 		{
 			System.out.println("SNP: " + z);
-			machielAnnotator m = new machielAnnotator(z);
+			new machielAnnotator(z);
 		}
 	}
 	

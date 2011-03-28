@@ -2,8 +2,6 @@ package plugin.search;
 
 import java.util.List;
 
-import org.molgenis.model.elements.Entity;
-
 public class SimpleWholeDatabaseSearchModel
 {
 
