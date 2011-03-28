@@ -20,10 +20,15 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class AllObservations extends PluginModel
+
+
+public class AllObservations extends PluginModel<Entity>
 {
+
+	private static final long serialVersionUID = 4656566870431483076L;
 	List<String> features = new ArrayList<String>();
 	List<String> targets = new ArrayList<String>();
 	Map<String,String> values = new LinkedHashMap<String,String>();
@@ -45,7 +50,7 @@ public class AllObservations extends PluginModel
 		return val;
 	}
 	
-	public AllObservations(String name, ScreenModel parent)
+	public AllObservations(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
@@ -86,7 +91,9 @@ public class AllObservations extends PluginModel
 	@Override
 	public void reload(Database db)
 	{
-		//parent is a menu, parent above that is Investigatoin screen
+		//parent is a menu, parent above that is Investigation screen
+		//TODO: Danny: This is a code smell, Can we reload in such a way that the parent from the parent is not an Investigation??
+		//This assumes implicit knowledge about Molgenis which shouldn't be part of a plugin, and we only use the ID of the parent
 		Investigation parent = ((FormModel<Investigation>)getParent().getParent()).getRecords().get(0);
 		try
 		{
