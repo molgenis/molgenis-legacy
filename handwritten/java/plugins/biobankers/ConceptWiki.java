@@ -10,11 +10,14 @@ package plugins.biobankers;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class ConceptWiki extends PluginModel
+public class ConceptWiki extends PluginModel<Entity>
 {
-	public ConceptWiki(String name, ScreenModel parent)
+	private static final long serialVersionUID = -1267112728037749224L;
+
+	public ConceptWiki(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
