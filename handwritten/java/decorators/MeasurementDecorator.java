@@ -16,7 +16,6 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jdbc.JDBCMapper;
 import org.molgenis.framework.db.jdbc.MappingDecorator;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.Protocol_Features;
 

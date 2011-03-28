@@ -37,6 +37,7 @@ import filehandling.generic.MolgenisFileHandler;
 public class MolgenisFileDecorator<E extends MolgenisFile> extends MappingDecorator<E>
 {
 
+	//TODO: Danny Parameterize the JDBCMapper object <Object> ??
 	public MolgenisFileDecorator(JDBCMapper generatedMapper)
 	{
 		super(generatedMapper);

@@ -16,6 +16,7 @@ import org.molgenis.framework.db.jdbc.MappingDecorator;
 public class DBIndexUpdateDecorator<E extends org.molgenis.bbmri.Biobank> extends MappingDecorator<E>
 {
 	//JDBCMapper is the generate thing
+	//TODO: Danny Parameterize the JDBCMapper object <Object> ??
 	public DBIndexUpdateDecorator(JDBCMapper generatedMapper)
 	{
 		super(generatedMapper);

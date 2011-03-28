@@ -7,7 +7,6 @@
 
 package decorators;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +22,7 @@ import org.molgenis.framework.db.jdbc.MappingDecorator;
 public class DataDecorator<E extends org.molgenis.data.Data> extends MappingDecorator<E>
 {
 	// JDBCMapper is the generate thing
+	//TODO: Danny Parameterize the JDBCMapper object <Object> ??
 	public DataDecorator(JDBCMapper generatedMapper)
 	{
 		super(generatedMapper);
