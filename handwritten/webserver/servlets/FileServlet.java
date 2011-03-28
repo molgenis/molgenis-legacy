@@ -87,7 +87,7 @@ public class FileServlet extends Servlet {
 	}
 
 	private void dispatchPathname(HttpServletRequest req, HttpServletResponse res, boolean headOnly, String path) throws IOException {
-		String filename = path != null ? path.replace('/', File.separatorChar) : "";
+		String filename = req.getPathTranslated() != null ? req.getPathTranslated().replace('/', File.separatorChar) : "";
 		File file = new File(filename);
 		if (isLogenabled()) Utils.console("retrieving '" + filename + "' for path " + path);
 		if (file.exists()) {
