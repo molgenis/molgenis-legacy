@@ -185,7 +185,7 @@ public class Param implements Input
 	}
 
 	//TODO: Danny Eclipse tells me this is wrong: We should extend the XMLAdapter, Type it and add 
-	//the Marshal and unMarshal function implementations
+	//the Marshal and unMarshal function implementations: http://weblogs.java.net/blog/kohsuke/archive/2005/09/using_jaxb_20s.html
 	public static class ParamLabelAdapter implements XmlJavaTypeAdapter
 	{
 

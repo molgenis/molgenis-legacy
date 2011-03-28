@@ -27,6 +27,8 @@ public class HapMapParser
 		// speciesFile(filePath, xgapDir.getAbsolutePath());
 	}
 
+	//TODO: Danny: Use the function and then remove the warning suppression
+	@SuppressWarnings("unused")
 	private void speciesFile(String filePath, String xgapDir) throws IOException
 	{
 		List<String> file = new ArrayList<String>();

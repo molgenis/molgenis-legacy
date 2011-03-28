@@ -1,18 +1,15 @@
 package convertors;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
-import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.CsvToDatabase.ImportResult;
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
-import org.molgenis.util.cmdline.CmdLineException;
+import org.molgenis.framework.db.DatabaseException;
 
 import app.CsvImport;
 import app.JDBCDatabase;
