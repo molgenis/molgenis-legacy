@@ -44,7 +44,8 @@ public class ToolParser
 		return (Tool)unmarshaller.unmarshal(xml);
 	}
 	
-	
+	//TODO: Danny: Use the function and then remove the warning suppression
+	@SuppressWarnings("unused")
 	private static String toString(Tool model) throws JAXBException
 	{
 		// save to xml (FIXME: now print only)

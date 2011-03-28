@@ -184,18 +184,20 @@ public class Param implements Input
 		return String.format("Param(name='%s', type='%s', label='%s', numerical='%s', optional='%s', format='%s', size='%s', data_ref='%s', multiple='%s', help='%s', from_file='%s', value='%s', hierarchy='%s'%s)", name, type, getLabel(), numerical, optional, format, size, data_ref, multiple, help, from_file, value,hierarchy,result);
 	}
 
+	//TODO: Danny Eclipse tells me this is wrong: We should extend the XMLAdapter, Type it and add 
+	//the Marshal and unMarshal function implementations
 	public static class ParamLabelAdapter implements XmlJavaTypeAdapter
 	{
 
 		@Override
-		public Class type()
+		public Class<?> type()
 		{
 			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
-		public Class<? extends XmlAdapter> value()
+		public Class<? extends XmlAdapter<?,?>> value()
 		{
 			// TODO Auto-generated method stub
 			return null;
