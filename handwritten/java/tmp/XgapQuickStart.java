@@ -12,7 +12,8 @@ public class XgapQuickStart
 	{
 		JDBCDatabase db = new JDBCDatabase("xgap.properties");
 
-		ArrayList<String> result = new DataLoader().load(db);
+		new DataLoader();
+		ArrayList<String> result = DataLoader.load(db);
 		for (String s : result)
 		{
 			System.out.println(s);
