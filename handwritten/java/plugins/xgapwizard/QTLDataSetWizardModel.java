@@ -1,6 +1,5 @@
 package plugins.xgapwizard;
 
-import java.util.HashMap;
 import java.util.List;
 
 import org.molgenis.organization.Investigation;

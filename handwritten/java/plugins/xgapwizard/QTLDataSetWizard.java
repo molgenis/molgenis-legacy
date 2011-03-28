@@ -33,14 +33,16 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReaderListener;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.Chromosome;
 import org.molgenis.xgap.Marker;
 
-public class QTLDataSetWizard extends PluginModel
+public class QTLDataSetWizard extends PluginModel<Entity>
 {
+	private static final long serialVersionUID = -1810993111211947419L;
 
-	public QTLDataSetWizard(String name, ScreenModel parent)
+	public QTLDataSetWizard(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

@@ -28,10 +28,13 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class MatrixWizard extends PluginModel
+public class MatrixWizard extends PluginModel<Entity>
 {
+	private static final long serialVersionUID = -1928168826559410284L;
+
 	private DataMatrixHandler dmh = null;
 	
 	private MatrixWizardModel model = new MatrixWizardModel();
@@ -41,7 +44,7 @@ public class MatrixWizard extends PluginModel
 		return model;
 	}
 
-	public MatrixWizard(String name, ScreenModel parent)
+	public MatrixWizard(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
