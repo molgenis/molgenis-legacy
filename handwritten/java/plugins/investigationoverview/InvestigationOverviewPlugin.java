@@ -23,14 +23,16 @@ import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.model.elements.DBSchema;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservationElement;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.InvestigationFile;
 
 import app.JDBCMetaDatabase;
 
-public class InvestigationOverviewPlugin extends PluginModel
+public class InvestigationOverviewPlugin extends PluginModel<Entity>
 {
 
+	private static final long serialVersionUID = -7068554327138233108L;
 	private InvestigationOverviewModel model = new InvestigationOverviewModel();
 
 	public InvestigationOverviewModel getModel()
@@ -38,7 +40,7 @@ public class InvestigationOverviewPlugin extends PluginModel
 		return model;
 	}
 
-	public InvestigationOverviewPlugin(String name, ScreenModel parent)
+	public InvestigationOverviewPlugin(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
@@ -131,12 +133,12 @@ public class InvestigationOverviewPlugin extends PluginModel
 				this.model.setShowAllOther(false);
 			}
 
-			FormModel<Investigation> theParent = (FormModel) this.getParent().getParent();
+			FormModel<Investigation> theParent = (FormModel<Investigation>) this.getParent().getParent();
 			Investigation inv = ((Investigation) theParent.getRecords().get(0));
 
 			this.model.setSelectedInv(inv);
-
-			Map<String, Integer> counts = new HashMap<String, Integer>();
+			//TODO: Danny: old code ??? if yes please remove
+			/*Map<String, Integer> counts = new HashMap<String, Integer>();*/
 			QueryRule thisInv = new QueryRule("investigation", Operator.EQUALS, inv.getId());
 
 			List<ObservationElement> ofList = db.find(ObservationElement.class, thisInv);

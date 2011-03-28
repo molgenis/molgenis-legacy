@@ -10,11 +10,15 @@ package plugins.kegg;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class PathwayPlugin extends PluginModel
+public class PathwayPlugin extends PluginModel<Entity>
 {
-	public PathwayPlugin(String name, ScreenModel parent)
+
+	private static final long serialVersionUID = 8089911096873509267L;
+
+	public PathwayPlugin(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
