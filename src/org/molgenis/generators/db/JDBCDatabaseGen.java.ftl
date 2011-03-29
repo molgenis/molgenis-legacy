@@ -30,6 +30,8 @@ import org.molgenis.model.elements.Model;
 
 public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 {
+	private JDBCMetaDatabase metaData = null;
+
 	public JDBCDatabase(DataSource data_src, File file_source) throws DatabaseException
 	{
 		this(new SimpleDataSourceWrapper(data_src), file_source);
@@ -87,6 +89,11 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 	@Override
 	public Model getMetaData() throws DatabaseException
 	{
-		return new JDBCMetaDatabase();
+		//load on demand.
+		//nb: the JDBCMetaDatabase must be made much faster which is done in the generator
+		//because now it is still validating which it shouldn't
+		if(metaData == null)
+			metaData = new JDBCMetaDatabase();
+		return metaData;
 	}
 }
