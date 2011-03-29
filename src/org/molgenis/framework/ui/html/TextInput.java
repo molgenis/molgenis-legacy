@@ -15,7 +15,6 @@ package org.molgenis.framework.ui.html;
  * Input for strings that renders as textarea.
  * Deprecated because merged with StringInput.
  */
-@Deprecated
 public class TextInput extends StringInput
 {
 	public TextInput(String name)
