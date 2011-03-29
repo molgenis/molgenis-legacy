@@ -3,13 +3,9 @@ package org.molgenis.mutation.service;
 import java.text.ParseException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
-import org.molgenis.framework.db.jdbc.JDBCConnectionHelper;
-
-
 import org.molgenis.mutation.MutationPhenotype;
 import org.molgenis.mutation.PhenotypeDetails;
 import org.molgenis.mutation.vo.PhenotypeSearchCriteriaVO;
@@ -20,7 +16,8 @@ public class PhenotypeService
 {
 	private static PhenotypeService phenotypeService = null;
 	private JDBCDatabase db                          = null;
-	private static final transient Logger logger     = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());
+	//TODO:Danny: Use or loose
+	/*private static final transient Logger logger     = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());*/
 	
 	// private constructor, use singleton instance
 	private PhenotypeService(Database db)

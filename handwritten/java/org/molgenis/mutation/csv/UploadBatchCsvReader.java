@@ -27,6 +27,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvReaderListener;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import org.molgenis.mutation.E_M;
@@ -48,7 +49,7 @@ import org.molgenis.submission.Submission;
 /**
  * Reads UploadBatch from a delimited (csv) file, resolving xrefs to ids where needed, that is the tricky bit ;-)
  */
-public class UploadBatchCsvReader extends CsvToDatabase
+public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 {
 	public static final transient Logger logger = Logger.getLogger(UploadBatchCsvReader.class);
 	
@@ -82,7 +83,8 @@ public class UploadBatchCsvReader extends CsvToDatabase
 		db.add(submission);
 
 		//cache for objects to be imported from file (in batch)
-		final List<PatientSummaryVO> patientList = new ArrayList<PatientSummaryVO>(BATCH_SIZE);
+		//TODO: Danny: Use or loose
+		/*final List<PatientSummaryVO> patientList = */new ArrayList<PatientSummaryVO>(BATCH_SIZE);
 		//wrapper to count
 		final IntegerWrapper total = new IntegerWrapper(0);
 		reader.setMissingValues(missingValues);

@@ -242,12 +242,13 @@ public class ExonService
 			throw new RESyntaxException("Invalid mutation notation: " + position);
 	}
 
-	private List<Exon> findExonsByNumber(Integer number) throws DatabaseException
-	{
-		Exon search = new Exon();
-		search.setNumber(number);
-		return this.db.findByExample(search);
-	}
+	//TODO:Danny: Use or loose
+//	private List<Exon> findExonsByNumber(Integer number) throws DatabaseException
+//	{
+//		Exon search = new Exon();
+//		search.setNumber(number);
+//		return this.db.findByExample(search);
+//	}
 
 	public List<Exon> findExonsByProteinDomainId(Integer proteinDomainId, Boolean noIntrons) throws DatabaseException, ParseException
 	{
@@ -271,13 +272,14 @@ public class ExonService
 		return this.db.query(Exon.class).sortDESC(Exon.GDNA_POSITION).find();
 	}
 
-	private List<Exon> findExonsByIsIntron(Boolean isIntron) throws DatabaseException, ParseException
-	{
-		Query<Exon> query =
-			this.db.query(Exon.class).equals(Exon.ISINTRON, isIntron).sortDESC(Exon.GDNA_POSITION);
-
-		return query.find();
-	}
+	//TODO:Danny: Use or loose
+//	private List<Exon> findExonsByIsIntron(Boolean isIntron) throws DatabaseException, ParseException
+//	{
+//		Query<Exon> query =
+//			this.db.query(Exon.class).equals(Exon.ISINTRON, isIntron).sortDESC(Exon.GDNA_POSITION);
+//
+//		return query.find();
+//	}
 
 	/**
 	 * Get exons and/or introns depending on flag noIntrons
@@ -285,15 +287,16 @@ public class ExonService
 	 * @return exons
 	 * @throws Exception
 	 */
-	private List<Exon> getExons(Boolean noIntrons) throws Exception
-	{
-		Query<Exon> query =
-			this.db.query(Exon.class)
-			.sortDESC(Exon.GDNA_POSITION);
-		if (noIntrons)
-			query.equals(Exon.ISINTRON, false);
-		return query.find();
-	}
+	//TODO:Danny: Use or loose
+//	private List<Exon> getExons(Boolean noIntrons) throws Exception
+//	{
+//		Query<Exon> query =
+//			this.db.query(Exon.class)
+//			.sortDESC(Exon.GDNA_POSITION);
+//		if (noIntrons)
+//			query.equals(Exon.ISINTRON, false);
+//		return query.find();
+//	}
 
 	/**
 	 * Get the amino acid sequence of a given exon

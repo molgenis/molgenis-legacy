@@ -14,43 +14,40 @@ import javax.xml.bind.JAXBException;
 import jxl.Workbook;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.Logger;
+import org.molgenis.auth.MolgenisUser;
+import org.molgenis.core.OntologyTerm;
+import org.molgenis.core.Publication;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
-import org.molgenis.framework.db.Database.DatabaseAction;
-import org.molgenis.framework.db.jdbc.JDBCConnectionHelper;
-import org.molgenis.services.PubmedService;
-import org.molgenis.services.pubmed.PubmedArticle;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
-
-
-import app.JDBCDatabase;
-import org.molgenis.auth.MolgenisUser;
-
 import org.molgenis.mutation.Antibody;
 import org.molgenis.mutation.E_M;
 import org.molgenis.mutation.I_F;
 import org.molgenis.mutation.Mutation;
-import org.molgenis.mutation.Patient;
 import org.molgenis.mutation.MutationPhenotype;
+import org.molgenis.mutation.Patient;
 import org.molgenis.mutation.PhenotypeDetails;
 import org.molgenis.mutation.excel.UploadBatchExcelReader;
 import org.molgenis.mutation.util.PatientComparator;
 import org.molgenis.mutation.util.PatientSummaryVOComparator;
 import org.molgenis.mutation.vo.PatientSearchCriteriaVO;
 import org.molgenis.mutation.vo.PatientSummaryVO;
-import org.molgenis.core.OntologyTerm;
-import org.molgenis.core.Publication;
+import org.molgenis.services.PubmedService;
+import org.molgenis.services.pubmed.PubmedArticle;
 import org.molgenis.submission.Submission;
+import org.molgenis.util.SimpleTuple;
+import org.molgenis.util.Tuple;
+
+import app.JDBCDatabase;
 
 public class PatientService
 {
 	private JDBCDatabase db                          = null;
 	private static PatientService patientService     = null;
 	private HashMap<Integer, PatientSummaryVO> cache = new HashMap<Integer, PatientSummaryVO>();
-	private static final transient Logger logger     = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());
+	//TODO:Danny: Use or loose
+	/*	private static final transient Logger logger     = 	Logger.getLogger(JDBCConnectionHelper.class.getSimpleName()); */
 
 	// private constructor, use singleton instance
 	private PatientService(Database db)
@@ -302,7 +299,8 @@ public class PatientService
 			// Insert patient and set primary key
 			if (patientSummaryVO.getPatient().getPhenotype() != null)
 			{
-				int count = this.db.add(patientSummaryVO.getPatient());
+				//TODO:Danny: Use or loose
+				/*int count = */this.db.add(patientSummaryVO.getPatient());
 
 				List<Patient> patients = this.db.findByExample(patientSummaryVO.getPatient());
 				if (patients.size() == 1)
@@ -385,7 +383,8 @@ public class PatientService
 				List<Integer> pubmedIds              = new ArrayList<Integer>();
 				pubmedIds.add(publication.getPubmedID_Id());
 				List<PubmedArticle> articles         = pubmedService.getPubmedArticlesForIds(pubmedIds);
-				PubmedArticle article                = articles.get(0);
+				//TODO:Danny: Use or loose
+				/*PubmedArticle article                = */articles.get(0);
 			}
 		}
 	}

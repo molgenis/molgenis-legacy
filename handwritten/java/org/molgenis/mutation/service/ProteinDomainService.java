@@ -4,24 +4,22 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.jdbc.JDBCConnectionHelper;
-
-
-import app.JDBCDatabase;
 import org.molgenis.mutation.Exon;
 import org.molgenis.mutation.Exon_ProteinDomain;
 import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.ProteinDomain;
 import org.molgenis.mutation.vo.ProteinDomainSummaryVO;
 
+import app.JDBCDatabase;
+
 public class ProteinDomainService
 {
 	private JDBCDatabase db                           = null;
 	private static ProteinDomainService domainService = null;
-	private static final transient Logger logger      = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());
+	//TODO:Danny: Use or loose
+	/*private static final transient Logger logger      = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());*/
 
 	// private constructor, use singleton instance
 	private ProteinDomainService(Database db)

@@ -23,9 +23,8 @@ import jxl.Sheet;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Database.DatabaseAction;
-import org.molgenis.framework.security.Login;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.mutation.csv.UploadBatchCsvReader;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.SimpleTuple;
