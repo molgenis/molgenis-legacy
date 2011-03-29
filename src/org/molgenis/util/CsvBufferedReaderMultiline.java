@@ -201,13 +201,13 @@ public class CsvBufferedReaderMultiline implements CsvReader
 	public int parse(int noElements, List<Integer> rows,
 			CsvReaderListener... listeners) throws Exception
 	{
-		this.reset();
+		//this.reset();
 		
 		List<String> headers = null;
 		List<String> row = null;
 
 		if (hasHeader) headers = colnames();
-		this.reset();
+		// this.reset();
 		this.goToBlockStart(this.reader);
 		if (hasHeader) row = this.getRow();
 
