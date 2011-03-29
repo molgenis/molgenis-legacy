@@ -79,6 +79,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	public static String INPUT_SUBMIT = "submit_input";
 	/** indicating wether uploads should return added data */
 	public static String INPUT_SILENT = "data_silent";
+	/** save the database */
+	private Database db;
 
 	// get logger
 	protected final transient Logger logger = Logger.getLogger(this.getClass().getSimpleName());
@@ -398,12 +400,14 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	{
 		// get database session (note: this shouldn't be in the tomcat
 		// session!!!
-		Database db = null;
+		//Database db = null;
 		try
 		{
-			db = getDatabase();
-			// db.beginTx(); DISCUSSION
-			logger.info("created database " + db);
+			if(db == null){
+				db = getDatabase();
+				// db.beginTx(); DISCUSSION
+				logger.info("created database " + db);
+			}
 		}
 		catch (Exception e)
 		{
