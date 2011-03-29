@@ -12,7 +12,6 @@ package org.molgenis.model.elements;
 
 // jdk
 import java.io.Serializable;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;

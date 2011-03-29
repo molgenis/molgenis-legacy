@@ -105,7 +105,7 @@ public class MolgenisModelValidator
 				}
 				else
 				{
-					if (field.isNillable() == false && !field.isAuto()
+					if (!	form.getReadOnly() && field.isNillable() == false && !field.isAuto()
 							&& field.getDefaultValue().equals(""))
 					{
 						throw new MolgenisModelException(

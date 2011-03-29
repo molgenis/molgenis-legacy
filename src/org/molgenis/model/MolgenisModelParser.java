@@ -10,7 +10,6 @@
 package org.molgenis.model;
 
 // jdk
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -27,7 +26,6 @@ import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.molgenis.MolgenisFieldTypes;
 import org.molgenis.fieldtypes.UnknownField;
-import org.molgenis.generators.GeneratorHelper;
 import org.molgenis.model.elements.DBSchema;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Field;
@@ -45,7 +43,6 @@ import org.molgenis.model.elements.Record;
 import org.molgenis.model.elements.Tree;
 import org.molgenis.model.elements.UISchema;
 import org.molgenis.model.elements.View;
-
 import org.molgenis.model.elements.Form.SortOrder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
