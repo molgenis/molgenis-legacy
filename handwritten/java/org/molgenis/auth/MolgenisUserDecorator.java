@@ -20,7 +20,7 @@ import org.molgenis.framework.db.jdbc.JDBCMapper;
 public class MolgenisUserDecorator<E extends org.molgenis.auth.MolgenisUser> extends MappingDecorator<E>
 {
 	//JDBCMapper is the generate thing
-	public MolgenisUserDecorator(JDBCMapper generatedMapper)
+	public MolgenisUserDecorator(JDBCMapper<E> generatedMapper)
 	{
 		super(generatedMapper);
 	}
