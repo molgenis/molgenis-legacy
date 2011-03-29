@@ -50,6 +50,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 		return database;
 	}
 
+	@SuppressWarnings("unchecked")
 	public int add(List<E> entities) throws DatabaseException
 	{
 		int updatedRows = 0;
@@ -149,6 +150,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 		return rowsAffected;
 	}
 
+	@SuppressWarnings("unchecked")
 	public int update(List<E> entities) throws DatabaseException
 	{
 		int updatedRows = 0;
@@ -224,6 +226,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 		return rowsAffected;
 	}
 
+	@SuppressWarnings("unchecked")
 	public int remove(List<E> entities) throws DatabaseException
 	{
 		int updatedRows = 0;

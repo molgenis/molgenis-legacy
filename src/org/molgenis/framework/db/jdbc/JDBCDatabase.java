@@ -319,41 +319,41 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 		return getMapperFor(klazz).find(rules);
 	}
 
-	private <E extends Entity> QueryRule[] addSecurityFilters(Class<E> klazz,
-			QueryRule... rules)
-	{
-		// add security filters
-		QueryRule securityRules = null;
-
-		// if there is a security system, create the security rules
-		if (getSecurity() != null)
-		{
-			securityRules = getSecurity().getRowlevelSecurityFilters(klazz);
-		}
-		// if the security system returned filters then merge with user rules
-		if (securityRules != null)
-		{
-			// if user rules, merge user rules with security rules
-			if (rules != null && rules.length >= 1)
-			{
-				List<QueryRule> all = new ArrayList<QueryRule>();
-				all.add(securityRules);
-				all.addAll(Arrays.asList(rules));
-				return all.toArray(new QueryRule[all.size()]);
-			}
-			// if no user rules than only return security rules
-			else
-			{
-				return new QueryRule[]
-				{ securityRules };
-			}
-		}
-		// if the security system
-		else
-		{
-			return rules;
-		}
-	}
+//	private <E extends Entity> QueryRule[] addSecurityFilters(Class<E> klazz,
+//			QueryRule... rules)
+//	{
+//		// add security filters
+//		QueryRule securityRules = null;
+//
+//		// if there is a security system, create the security rules
+//		if (getSecurity() != null)
+//		{
+//			securityRules = getSecurity().getRowlevelSecurityFilters(klazz);
+//		}
+//		// if the security system returned filters then merge with user rules
+//		if (securityRules != null)
+//		{
+//			// if user rules, merge user rules with security rules
+//			if (rules != null && rules.length >= 1)
+//			{
+//				List<QueryRule> all = new ArrayList<QueryRule>();
+//				all.add(securityRules);
+//				all.addAll(Arrays.asList(rules));
+//				return all.toArray(new QueryRule[all.size()]);
+//			}
+//			// if no user rules than only return security rules
+//			else
+//			{
+//				return new QueryRule[]
+//				{ securityRules };
+//			}
+//		}
+//		// if the security system
+//		else
+//		{
+//			return rules;
+//		}
+//	}
 
 	// @Override
 	public <E extends Entity> void find(Class<E> klazz, CsvWriter writer,
@@ -625,6 +625,7 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Class<? extends Entity>> getEntityClasses()
 	{
