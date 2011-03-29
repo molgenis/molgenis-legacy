@@ -5,7 +5,6 @@ import java.util.List;
 import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.jdbc.ColumnInfo.Type;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;

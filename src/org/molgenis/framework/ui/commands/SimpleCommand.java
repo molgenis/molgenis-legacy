@@ -9,7 +9,6 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.SimpleModel;
 import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Entity;

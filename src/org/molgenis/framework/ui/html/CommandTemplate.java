@@ -7,11 +7,10 @@ import java.util.Vector;
 
 import org.molgenis.util.Tuple;
 
-/*
- * @Deprecated This is not a form and this is no longer valid. All plugins that extend from GenericPlugin are already rendered within a real html form. Please use Container instead.
+/**
+ * This class is used by commands as template. It must be replaced by 'container' at some point.
  */
-@Deprecated
-public class Form extends LinkedHashMap<String, Input>
+public class CommandTemplate extends LinkedHashMap<String, Input>
 {
 	private static final long serialVersionUID = -8565170009471766957L;
 

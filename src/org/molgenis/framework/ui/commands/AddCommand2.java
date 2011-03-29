@@ -13,7 +13,7 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.SimpleModel;
 import org.molgenis.framework.ui.html.ActionInput;
-import org.molgenis.framework.ui.html.Form;
+import org.molgenis.framework.ui.html.CommandTemplate;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
@@ -41,7 +41,7 @@ public class AddCommand2<E extends Entity> extends SimpleCommand<E>
 	@Override
 	public List<HtmlInput> getInputs() throws DatabaseException
 	{
-		Form f = new Form();
+		CommandTemplate f = new CommandTemplate();
 		f.addAll(this.getFormScreen().getNewRecordForm().getInputs());		
 		f.setAll(previousRequest);
 		return f.getInputs();
