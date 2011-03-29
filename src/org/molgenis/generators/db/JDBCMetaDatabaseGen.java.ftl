@@ -53,10 +53,12 @@ public class JDBCMetaDatabase extends Model
 		try
 		{
 			<#list entities as entity><#if entity.abstract>
+			//INTERFACE ${entity.name}
 			Entity ${name(entity)}_entity = new Entity("${entity.name}",this.getDatabase());
 			${name(entity)}_entity.setAbstract(true);<#if entity.hasImplements()>
 			${name(entity)}_entity.setImplements(new String[]{${csv(entity.implements)}});</#if><#if entity.hasAncestor()>
 			${name(entity)}_entity.setParents(new String[]{"${entity.getAncestor().name}"});</#if>
+			<#if entity.xrefLabels?exists>${name(entity)}_entity.setXrefLabels(Arrays.asList(new String[]{${csv(entity.xrefLabels)}}));</#if>
 			<#list entity.getFields() as field><#if field.name != typefield()>
 			Field ${name(entity)}_${name(field)}_field = new Field(${name(entity)}_entity, "${field.name}", MolgenisFieldTypes.getType("${field.type}"));
 			<#if field.auto>
@@ -81,9 +83,11 @@ public class JDBCMetaDatabase extends Model
 			</#list></#if></#list>
 			
 			<#list entities as entity><#if !entity.abstract && !entity.association>
+			//ENTITY ${entity.name}
 			Entity ${name(entity)}_entity = new Entity("${entity.name}",this.getDatabase());<#if entity.hasImplements()>
 			${name(entity)}_entity.setImplements(new String[]{${csv(entity.implements)}});</#if><#if entity.hasAncestor()>
 			${name(entity)}_entity.setParents(new String[]{"${entity.getAncestor().name}"});</#if>
+			<#if entity.xrefLabels?exists>${name(entity)}_entity.setXrefLabels(Arrays.asList(new String[]{${csv(entity.xrefLabels)}}));</#if>			
 			<#list entity.getFields() as field><#if field.name != typefield()>
 			Field ${name(entity)}_${name(field)}_field = new Field(${name(entity)}_entity, "${field.name}", MolgenisFieldTypes.getType("${field.type}"));
 			<#if field.auto>
@@ -105,11 +109,13 @@ public class JDBCMetaDatabase extends Model
 			</#if></#list>
 			<#list entity.keys as key>
 			${name(entity)}_entity.addKey(Arrays.asList(new String[]{${csv(key.fields)}}),<#if key.isSubclass()>true<#else>false</#if>,"");
-			</#list></#if></#list>
+			</#list></#if>
+			//END OF ENTITY ${entity.name}
+			</#list>
 			
-			
-			new MolgenisModelValidator();
-			MolgenisModelValidator.validate(this, new MolgenisOptions());
+			//disabled validation, this means above must be perfect!
+			//new MolgenisModelValidator();
+			//MolgenisModelValidator.validate(this, new MolgenisOptions());
 
 		} catch (MolgenisModelException e)
 		{
