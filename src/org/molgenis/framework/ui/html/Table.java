@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.molgenis.util.Pair;
-import org.molgenis.util.Tuple;
 
 /*
  * Provides an html table with input components in the cells.

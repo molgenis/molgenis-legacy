@@ -13,8 +13,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import freemarker.cache.ClassTemplateLoader;
@@ -23,7 +22,7 @@ import freemarker.cache.TemplateLoader;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Template;
 
-public class GenericPlugin extends PluginModel
+public class GenericPlugin extends PluginModel<Entity>
 {
 	//serialization id
 	private static final long serialVersionUID = 1L;
@@ -32,7 +31,7 @@ public class GenericPlugin extends PluginModel
 	// should this Plugin generate a form or not
 	public boolean isForm = true;
 
-	public GenericPlugin(String name, ScreenModel parent)
+	public GenericPlugin(String name, ScreenModel<?> parent)
 	{
 		super(name, parent);
 	}

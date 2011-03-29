@@ -16,7 +16,6 @@ package org.molgenis.framework.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.security.Login;
 import org.molgenis.util.Entity;
 

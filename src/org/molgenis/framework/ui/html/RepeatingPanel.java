@@ -1,7 +1,6 @@
 package org.molgenis.framework.ui.html;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.molgenis.framework.ui.html.ActionInput.Type;
 
 /**
  * Extension of TablePanel that comes with a [+] and [-] button so one can

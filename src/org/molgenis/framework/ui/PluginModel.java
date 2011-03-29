@@ -1,8 +1,6 @@
 package org.molgenis.framework.ui;
 
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.Vector;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.security.Login;
