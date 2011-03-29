@@ -58,7 +58,7 @@ public class PluginScreenJavaTemplateGen extends Generator
 				File targetFtl = new File(fullKlazzName.replace(".", "/")
 						+ ".ftl");
 				// only generate if the file doesn't exist AND is not on classpath
-				Class c = null;
+				Class<?> c = null;
 				try
 				{
 					c = Class.forName(fullKlazzName);

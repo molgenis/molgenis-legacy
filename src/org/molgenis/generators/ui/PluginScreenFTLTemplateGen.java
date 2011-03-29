@@ -55,7 +55,7 @@ public class PluginScreenFTLTemplateGen extends Generator
 				File targetFile = new File(this.getHandWrittenPath(options) + "/" + fullKlazzName.replace(".", "/")
 						+ ".ftl");
 				// only generate if the file doesn't exist AND plugin not already on classpath
-				Class c = null;
+				Class<?> c = null;
 				try
 				{
 					c = Class.forName(fullKlazzName);

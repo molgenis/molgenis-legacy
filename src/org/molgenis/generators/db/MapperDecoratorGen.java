@@ -54,7 +54,7 @@ public class MapperDecoratorGen extends ForEachEntityGenerator
 					File targetFile = new File(this.getHandWrittenPath(options) + "/" + fullKlazzName.replace(".", "/")
 							+ ".java");
 					// only generate if the file doesn't exist AND not on classpath
-					Class c = null;
+					Class<?> c = null;
 					try
 					{
 						c = Class.forName(fullKlazzName);

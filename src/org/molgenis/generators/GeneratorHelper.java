@@ -11,23 +11,12 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisFieldTypes;
 import org.molgenis.MolgenisOptions;
-import org.molgenis.fieldtypes.BoolField;
-import org.molgenis.fieldtypes.DateField;
-import org.molgenis.fieldtypes.DateTimeField;
-import org.molgenis.fieldtypes.DecimalField;
 import org.molgenis.fieldtypes.EnumField;
 import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.fieldtypes.FileField;
-import org.molgenis.fieldtypes.HexaField;
-import org.molgenis.fieldtypes.HyperlinkField;
 import org.molgenis.fieldtypes.ImageField;
 import org.molgenis.fieldtypes.IntField;
-import org.molgenis.fieldtypes.LongField;
 import org.molgenis.fieldtypes.MrefField;
-import org.molgenis.fieldtypes.NSequenceField;
-import org.molgenis.fieldtypes.OnOffField;
-import org.molgenis.fieldtypes.StringField;
-import org.molgenis.fieldtypes.TextField;
 import org.molgenis.fieldtypes.XrefField;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Entity;
@@ -45,12 +34,12 @@ public class GeneratorHelper
 	private static final transient Logger logger = Logger
 			.getLogger(GeneratorHelper.class.getSimpleName());
 	MolgenisOptions options;
-	MolgenisFieldTypes typeRegistry;
+	//MolgenisFieldTypes typeRegistry;
 
 	public GeneratorHelper(MolgenisOptions options)
 	{
 		this.options = options;
-		this.typeRegistry = new MolgenisFieldTypes();
+		//this.typeRegistry = new MolgenisFieldTypes();
 
 	}
 
@@ -117,7 +106,7 @@ public class GeneratorHelper
 		if (field == null) return "NULLPOINTER";
 		try
 		{
-			return typeRegistry.get(field).getJavaPropertyType();
+			return MolgenisFieldTypes.get(field).getJavaPropertyType();
 		}
 		catch (Exception e)
 		{
@@ -136,7 +125,7 @@ public class GeneratorHelper
 	 */
 	public String getSetType(Model model, Field field) throws Exception
 	{
-		return typeRegistry.get(field).getJavaSetterType();
+		return MolgenisFieldTypes.get(field).getJavaSetterType();
 	}
 
 	/**
@@ -154,13 +143,13 @@ public class GeneratorHelper
 	 */
 	public String getDefault(Model model, Field field) throws Exception
 	{
-		return typeRegistry.get(field).getJavaPropertyDefault();
+		return MolgenisFieldTypes.get(field).getJavaPropertyDefault();
 	}
 
 	public String getJavaAssignment(Field field, String value)
 			throws MolgenisModelException
 	{
-		return typeRegistry.get(field).getJavaAssignment(value);
+		return MolgenisFieldTypes.get(field).getJavaAssignment(value);
 	}
 
 	/**
