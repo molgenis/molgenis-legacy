@@ -6,10 +6,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.util.Tuple;
+
+import app.JDBCDatabase;
 
 public class TableUtil {
 
@@ -156,28 +156,4 @@ public class TableUtil {
 			return "error";
 		}
 	}
-	
-	private void exampleUse() throws Exception{
-		String systemTableName = "systemsettings_090527PBDB00QCGEXP4G";
-		String fileDirField = "filedirpath";
-		
-		Database db_ = new JDBCDatabase(new MolgenisOptions("xgap.properties"));
-		JDBCDatabase db = (JDBCDatabase) db_;	
-		
-		System.out.println(TableUtil.hasTable(db, systemTableName));
-
-		System.out.println(TableUtil.addSystemSettingsTable(db, systemTableName, fileDirField) ? "success" : "fail");
-		
-		System.out.println(TableUtil.hasTable(db, systemTableName));
-		
-		TableUtil.insertInTable(db, systemTableName, fileDirField, "Users/joerivandervelde/Data/xgap");
-		
-		Object o = TableUtil.getFromTable(db, systemTableName, fileDirField);
-		System.out.println(o.toString());
-		
-		System.out.println(TableUtil.removeTable(db, systemTableName) ? "success" : "fail");
-		
-		System.out.println(TableUtil.hasTable(db, systemTableName));
-	}
-
 }

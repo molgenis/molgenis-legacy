@@ -22,7 +22,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import app.servlet.MolgenisServlet;
 
 /**Use seperate servlet because of the custom R script that needs to be added*/
-public class RApiServlet extends HttpServlet
+public class RApiServlet extends app.servlet.MolgenisServlet
 {
 	private static final long serialVersionUID = 1L;
 
@@ -85,10 +85,10 @@ public class RApiServlet extends HttpServlet
 			
 			// quick addition for demo purposes
 			s +=("#loading user defined scripts\n");
-			MolgenisServlet ms = new MolgenisServlet();
+			//MolgenisServlet ms = new MolgenisServlet();
 			try
 			{
-				List<RScript> scripts = ms.getDatabase().find(RScript.class);
+				List<RScript> scripts = this.getDatabase().find(RScript.class);
 				for(RScript script : scripts){
 					s +=("source(\""+rSource+"userscripts/"+script.getName()+".R\")\n");
 				}
@@ -104,14 +104,14 @@ public class RApiServlet extends HttpServlet
 			
 			// quick addition for demo purposes
 		}else if(filename.startsWith("userscripts/")){
-			MolgenisServlet ms = new MolgenisServlet();
+			//MolgenisServlet ms = new MolgenisServlet();
 			try
 			{
 				String name = filename.substring(12, filename.length()-2);
 				Utils.console("getting '"+name+".r'");
 				QueryRule q = new QueryRule("name", Operator.EQUALS, name);
-				RScript script = ms.getDatabase().find(RScript.class, q).get(0);
-				MolgenisFileHandler mfh = new MolgenisFileHandler(ms.getDatabase());
+				RScript script = this.getDatabase().find(RScript.class, q).get(0);
+				MolgenisFileHandler mfh = new MolgenisFileHandler(this.getDatabase());
 				File source = mfh.getFile(script);
 				Utils.console("printing file: '"+source.getAbsolutePath()+"'");
 				String str = this.printUserScript(source.toURI().toURL(), "", name);
