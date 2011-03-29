@@ -60,7 +60,7 @@ import org.molgenis.util.Tuple;
  * }
  * </pre>
  */
-public class JDBCDatabase extends JDBCConnectionHelper implements Database
+public abstract class JDBCDatabase extends JDBCConnectionHelper implements Database
 {
 	/** batch size */
 	static final int BATCH_SIZE = 5000;
@@ -73,8 +73,6 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 	/** Logger for this database */
 	private static final transient Logger logger = Logger
 			.getLogger(JDBCDatabase.class.getSimpleName());
-	/** metadata */
-	Model metadata;
 
 	/**
 	 * Construct a JDBCDatabase to query relational database.
@@ -85,12 +83,10 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 	 *            File directory where file attachements can be stored.
 	 * @throws DatabaseException
 	 */
-	public JDBCDatabase(DataSource data_src, File file_source, Model metadata)
+	public JDBCDatabase(DataSource data_src, File file_source)
 			throws DatabaseException
 	{
 		super(new SimpleDataSourceWrapper(data_src));
-
-		this.metadata = metadata;
 
 		// optional: requires a fileSource
 		if (file_source == null) logger
@@ -98,12 +94,9 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 		this.fileSource = file_source;
 	}
 
-	public JDBCDatabase(DataSourceWrapper data_src, File file_source,
-			Model metadata) throws DatabaseException
+	public JDBCDatabase(DataSourceWrapper data_src, File file_source) throws DatabaseException
 	{
 		super(data_src);
-
-		this.metadata = metadata;
 
 		// optional: requires a fileSource
 		if (file_source == null) logger
@@ -160,10 +153,9 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 
 	}
 
-	public JDBCDatabase(String propertiesFilePath, Model metadata)
+	public JDBCDatabase(String propertiesFilePath)
 			throws FileNotFoundException, IOException
 	{
-		this.metadata = metadata;
 
 		Properties p = new Properties();
 		try
@@ -676,11 +668,6 @@ public class JDBCDatabase extends JDBCConnectionHelper implements Database
 			throws DatabaseException
 	{
 		return new JoinQuery(this, classes);
-	}
-
-	public Model getMetaData() throws DatabaseException
-	{
-		return metadata;
 	}
 
 	@Override

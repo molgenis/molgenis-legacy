@@ -26,6 +26,7 @@ import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jdbc.DataSourceWrapper;
 import org.molgenis.framework.db.jdbc.SimpleDataSourceWrapper;
+import org.molgenis.model.elements.Model;
 
 public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 {
@@ -36,7 +37,7 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 
 	public JDBCDatabase(DataSourceWrapper data_src, File file_src) throws DatabaseException
 	{
-		super(data_src, file_src, new JDBCMetaDatabase());
+		super(data_src, file_src);
 		this.setup();
 	}
 
@@ -60,7 +61,7 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 
 	public JDBCDatabase(String propertiesFilePath) throws FileNotFoundException, IOException, DatabaseException
 	{
-		super(propertiesFilePath, new JDBCMetaDatabase());
+		super(propertiesFilePath);
 		this.setup();
 	}
 	
@@ -81,5 +82,11 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 				</#if>
 			</#if>
 		</#if></#list>
+	}
+	
+	@Override
+	public Model getMetaData() throws DatabaseException
+	{
+		return new JDBCMetaDatabase();
 	}
 }
