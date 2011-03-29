@@ -600,7 +600,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				writer.close();
 				
 				//done, get rid of screen messages here?
-				((UserInterface)molgenis).clearAllMessages();
+				((UserInterface<?>)molgenis).clearAllMessages();
 				
 			}
 			// db.commitTx(); DISCUSSION
@@ -1134,6 +1134,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	 * 
 	 * @throws IOException
 	 */
+	@SuppressWarnings("deprecation")
 	private Configuration getFreemarkerConfiguration(ScreenModel<?> userInterface) throws IOException
 	{
 
