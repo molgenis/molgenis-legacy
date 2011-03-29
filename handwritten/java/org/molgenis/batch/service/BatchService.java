@@ -114,7 +114,8 @@ public class BatchService {
     	{
     		ObservationTarget target = this.db.findById(ObservationTarget.class, targetId);
         	
-        	List<OntologyTerm> terms = this.db.query(OntologyTerm.class).equals(OntologyTerm.NAME, target.getClass().toString()).find();
+    		//TODO: Danny use or loose
+        	/*List<OntologyTerm> terms = */this.db.query(OntologyTerm.class).equals(OntologyTerm.NAME, target.getClass().toString()).find();
         	
 //        	if (terms.size() != 1)
 //        		throw new DatabaseException("No OntologyTerm found for " + target.getClass().toString());

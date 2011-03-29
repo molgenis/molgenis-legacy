@@ -7,6 +7,8 @@ import org.molgenis.framework.ui.html.SelectInput;
 
 public class BatchSelectForm extends Container
 {
+	private static final long serialVersionUID = 2981894698803529746L;
+
 	public BatchSelectForm()
 	{
 		SelectInput batches      = new SelectInput("batches");

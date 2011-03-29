@@ -4,10 +4,11 @@ import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.Table;
-import org.molgenis.framework.ui.html.TablePanel;
 
 public class BatchEntitySelectForm extends Container
 {
+	private static final long serialVersionUID = -7977107343517018710L;
+
 	public BatchEntitySelectForm()
 	{
 		Table entitiesDbTable;

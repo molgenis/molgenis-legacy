@@ -7,14 +7,19 @@
 
 package org.molgenis.batch.ui;
 
+
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class AnimalDBHeader extends PluginModel
+public class AnimalDBHeader extends PluginModel<Entity>
 {
-	public AnimalDBHeader(String name, ScreenModel parent)
+
+	private static final long serialVersionUID = 1489108528638869730L;
+
+	public AnimalDBHeader(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
