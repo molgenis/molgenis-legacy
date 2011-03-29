@@ -1,8 +1,6 @@
 package plugins.archiveexportimport;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,9 +9,6 @@ import jxl.write.WritableCellFormat;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 
-import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.QueryRule;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;

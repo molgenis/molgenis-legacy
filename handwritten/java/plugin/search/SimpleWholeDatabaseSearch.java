@@ -7,7 +7,6 @@
 
 package plugin.search;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -17,16 +16,16 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.model.elements.Entity;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import app.JDBCMetaDatabase;
 
-public class SimpleWholeDatabaseSearch extends PluginModel
+public class SimpleWholeDatabaseSearch extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 4004696283997492221L;
 
-	public SimpleWholeDatabaseSearch(String name, ScreenModel parent)
+	public SimpleWholeDatabaseSearch(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
@@ -61,7 +60,8 @@ public class SimpleWholeDatabaseSearch extends PluginModel
 			{
 				String action = request.getString("__action");
 
-				File file = null;
+				//TODO: Danny: Use or loose
+				//File file = null;
 
 				if (action.equals("doSearch"))
 				{
@@ -90,12 +90,12 @@ public class SimpleWholeDatabaseSearch extends PluginModel
 		}
 	}
 
-	private List<org.molgenis.util.Entity> search(String searchThis, Database db) throws DatabaseException
+	private List<Entity> search(String searchThis, Database db) throws DatabaseException
 	{
 		List<org.molgenis.util.Entity> res = new ArrayList<org.molgenis.util.Entity>();
-		Vector<Entity> eList = metadb.getEntities();
+		Vector<org.molgenis.model.elements.Entity> eList = metadb.getEntities();
 
-		for (Entity eClass : eList)
+		for (org.molgenis.model.elements.Entity eClass : eList)
 		{
 			if (!eClass.isAbstract() && !eClass.isSystem())
 			{

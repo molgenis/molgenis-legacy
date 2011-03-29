@@ -23,7 +23,7 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MappingDeco
 {
 	// JDBCMapper is the generate thing
 	//TODO: Danny Parameterize the JDBCMapper object <Object> ??
-	public DataDecorator(JDBCMapper generatedMapper)
+	public DataDecorator(JDBCMapper<E> generatedMapper)
 	{
 		super(generatedMapper);
 	}

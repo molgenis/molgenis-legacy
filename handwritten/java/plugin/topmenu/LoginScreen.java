@@ -8,25 +8,26 @@
 package plugin.topmenu;
 
 import java.util.List;
-import java.util.UUID;
 
-//import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
-import org.molgenis.framework.ui.html.Form;
+import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.PasswordInput;
 import org.molgenis.framework.ui.html.StringInput;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 //import plugin.login.DatabaseLogin;
 
-public class LoginScreen extends PluginModel
+public class LoginScreen extends PluginModel<Entity>
 {
+
+	private static final long serialVersionUID = 4180722803810720253L;
+
 	public enum State
 	{
 		Signup, Register, Activate, Login, Edit_profile, Save_profile, Logout, Forgot_your_password, Cancel
@@ -34,7 +35,7 @@ public class LoginScreen extends PluginModel
 
 	State state = State.Login;
 
-	public LoginScreen(String name, ScreenModel parent)
+	public LoginScreen(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
@@ -227,7 +228,7 @@ public class LoginScreen extends PluginModel
 
 	public List<HtmlInput> getInputs()
 	{
-		Form f = new Form();
+		Container f = new Container();
 
 		// workflow:
 		// login -> logout -> edit_profile -> save_profile -> cancel -> logout

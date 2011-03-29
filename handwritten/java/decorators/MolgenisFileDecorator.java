@@ -38,7 +38,7 @@ public class MolgenisFileDecorator<E extends MolgenisFile> extends MappingDecora
 {
 
 	//TODO: Danny Parameterize the JDBCMapper object <Object> ??
-	public MolgenisFileDecorator(JDBCMapper generatedMapper)
+	public MolgenisFileDecorator(JDBCMapper<E> generatedMapper)
 	{
 		super(generatedMapper);
 	}

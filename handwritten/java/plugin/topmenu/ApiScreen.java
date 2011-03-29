@@ -10,12 +10,16 @@ package plugin.topmenu;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 
-public class ApiScreen extends PluginModel
+public class ApiScreen extends PluginModel<Entity>
 {
-	public ApiScreen(String name, ScreenModel parent)
+
+	private static final long serialVersionUID = 1099318728134574732L;
+
+	public ApiScreen(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

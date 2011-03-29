@@ -18,7 +18,7 @@ public class NameableDecorator<E extends Nameable> extends MappingDecorator<E>
 {
 	//JDBCMapper is the generate thing
 	//TODO: Danny Parameterize the JDBCMapper object <Object> ??
-	public NameableDecorator(JDBCMapper generatedMapper)
+	public NameableDecorator(JDBCMapper<E> generatedMapper)
 	{
 		super(generatedMapper);
 	}

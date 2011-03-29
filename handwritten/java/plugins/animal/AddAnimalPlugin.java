@@ -28,14 +28,13 @@ import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.IntInput;
 import org.molgenis.framework.ui.html.RepeatingPanel;
 import org.molgenis.framework.ui.html.SelectInput;
-import org.molgenis.framework.ui.html.StringInput;
-import org.molgenis.framework.ui.html.TablePanel;
 import org.molgenis.framework.ui.html.TextLineInput;
 import org.molgenis.pheno.Code;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.ProtocolApplication;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import commonservice.CommonService;
@@ -70,7 +69,7 @@ public class AddAnimalPlugin extends GenericPlugin
 	// subpanel to conditionally show the custom name questions (base, start number)
 	public DivPanel customNamePanel = null;
 
-	public AddAnimalPlugin(String name, ScreenModel parent)
+	public AddAnimalPlugin(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

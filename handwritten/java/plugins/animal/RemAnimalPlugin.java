@@ -8,8 +8,6 @@
 package plugins.animal;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -23,14 +21,14 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.pheno.Code;
-import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.ProtocolApplication;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import commonservice.CommonService;
 
-public class RemAnimalPlugin extends PluginModel
+public class RemAnimalPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 6730055654508843657L;
 	private List<Integer> animalIdList;
@@ -38,7 +36,7 @@ public class RemAnimalPlugin extends PluginModel
 	private List<Code> removalCodeList;
 	private CommonService ct = CommonService.getInstance();
 
-	public RemAnimalPlugin(String name, ScreenModel parent)
+	public RemAnimalPlugin(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

@@ -16,14 +16,16 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.organization.Investigation;
+import org.molgenis.util.Entity;
 import org.molgenis.util.TarGz;
 import org.molgenis.util.Tuple;
 
 import decorators.NameConvention;
 
-public class ArchiveExportImportPlugin extends PluginModel
+public class ArchiveExportImportPlugin extends PluginModel<Entity>
 {
 
+	private static final long serialVersionUID = 7547760015212593700L;
 	private String tmpFileName;
 	private String selectedInvestigation;
 	private List<Investigation> investigationList = new ArrayList<Investigation>();
@@ -71,7 +73,7 @@ public class ArchiveExportImportPlugin extends PluginModel
 		this.tmpFileName = tmpFileName;
 	}
 
-	public ArchiveExportImportPlugin(String name, ScreenModel parent)
+	public ArchiveExportImportPlugin(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
