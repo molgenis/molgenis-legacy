@@ -15,17 +15,20 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.mutation.service.MutationEmailService;
 import org.molgenis.util.EmailService;
+import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleEmailService.EmailException;
 import org.molgenis.util.Tuple;
 
 
-public class Contact extends PluginModel
+public class Contact extends PluginModel<Entity>
 {
+
+	private static final long serialVersionUID = 1708473767804277235L;
 	private static String EMAIL_TO  = "p.c.van.den.akker@medgen.umcg.nl"; // TODO: read from MolgenisOptions
 	private String action           = "init";
 	private ContactForm contactForm = new ContactForm();
 
-	public Contact(String name, ScreenModel parent)
+	public Contact(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
