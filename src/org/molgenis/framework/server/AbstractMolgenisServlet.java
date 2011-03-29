@@ -398,9 +398,12 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	public void handleGUIrequest(HttpServletRequest request, HttpServletResponse response) throws IOException,
 			DatabaseException
 	{
-		// get database session (note: this shouldn't be in the tomcat
-		// session!!!
-		//Database db = null;
+		// get database session (note: this shouldn't be in the tomcat session!!!
+		// can't keep the db alive? resetting everytime seems expensive?
+		// when not nulled, causes:
+		// SEVERE: IOException while loading persisted sessions: java.io.WriteAbortedException: writing aborted; java.io.NotSerializableException: app.JDBCMetaDatabase
+		// and later the app freezes.. why?
+		Database db = null;
 		try
 		{
 			if(db == null){
