@@ -15,7 +15,6 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
@@ -23,11 +22,6 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
-import org.molgenis.util.Tuple;
-import org.molgenis.util.ValueLabel;
-
-//import plugin.ui.Sub;
-
 import org.molgenis.mutation.Exon;
 import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.MutationPhenotype;
@@ -46,13 +40,17 @@ import org.molgenis.mutation.vo.ProteinDomainSummaryVO;
 import org.molgenis.mutation.vo.QueryParametersVO;
 import org.molgenis.mutation.vo.SearchPluginVO;
 import org.molgenis.news.service.NewsService;
+import org.molgenis.util.Entity;
+import org.molgenis.util.Tuple;
+import org.molgenis.util.ValueLabel;
 
 
 
-public class SearchPlugin extends PluginModel
+public class SearchPlugin extends PluginModel<Entity>
 {
 //	private String action = "init";
 
+	private static final long serialVersionUID = 651270609185006020L;
 	private ExonService exonService;
 	private MutationService mutationService;
 	private PatientService patientService;
@@ -66,7 +64,7 @@ public class SearchPlugin extends PluginModel
 	private MutationSearchCriteriaVO mutationSearchCriteriaVO = new MutationSearchCriteriaVO();
 	private PatientSearchCriteriaVO patientSearchCriteriaVO   = new PatientSearchCriteriaVO();
 
-	public SearchPlugin(String name, ScreenModel parent)
+	public SearchPlugin(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 		//new Sub(this.getName() + "_sub1", this);

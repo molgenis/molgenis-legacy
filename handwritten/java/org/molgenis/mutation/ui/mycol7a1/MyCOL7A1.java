@@ -9,26 +9,27 @@ package org.molgenis.mutation.ui.mycol7a1;
 
 import java.util.List;
 
-import org.molgenis.auth.service.MolgenisUserException;
-import org.molgenis.auth.service.MolgenisUserService;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.mutation.service.PatientService;
 import org.molgenis.mutation.ui.LimitOffsetPager;
 import org.molgenis.mutation.vo.MyCOL7A1VO;
 import org.molgenis.mutation.vo.PatientSearchCriteriaVO;
 import org.molgenis.mutation.vo.PatientSummaryVO;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class MyCOL7A1 extends PluginModel
+public class MyCOL7A1 extends PluginModel<Entity>
 {
+
+	private static final long serialVersionUID = -623854680198101512L;
 	private String action         = "init";
 	private MyCOL7A1VO myCOL7A1VO = new MyCOL7A1VO();
 //	private LimitOffsetPager<PatientSummaryVO> pager;
 
-	public MyCOL7A1(String name, ScreenModel parent)
+	public MyCOL7A1(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

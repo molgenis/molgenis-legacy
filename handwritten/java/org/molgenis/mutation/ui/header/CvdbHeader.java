@@ -10,11 +10,15 @@ package org.molgenis.mutation.ui.header;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class CvdbHeader extends PluginModel
+public class CvdbHeader extends PluginModel<Entity>
 {
-	public CvdbHeader(String name, ScreenModel parent)
+
+	private static final long serialVersionUID = 1329727341597553652L;
+
+	public CvdbHeader(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

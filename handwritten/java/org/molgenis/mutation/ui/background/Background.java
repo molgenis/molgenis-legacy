@@ -13,16 +13,19 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.mutation.service.MutationService;
 import org.molgenis.mutation.service.PatientService;
 import org.molgenis.mutation.vo.BackgroundSummaryVO;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 
-public class Background extends PluginModel
+public class Background extends PluginModel<Entity>
 {
+
+	private static final long serialVersionUID = -5551425852519199587L;
 	private MutationService mutationService;
 	private PatientService patientService;
 	private BackgroundSummaryVO backgroundSummaryVO;
 
-	public Background(String name, ScreenModel parent)
+	public Background(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

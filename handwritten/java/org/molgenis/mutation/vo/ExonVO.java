@@ -4,6 +4,8 @@ import org.molgenis.mutation.Exon;
 
 public class ExonVO extends Exon
 {
+
+	private static final long serialVersionUID = 5133514447846461160L;
 	private Integer numFullAminoAcids;
 	private Integer numPartAminoAcids;
 	private String nuclSequence;

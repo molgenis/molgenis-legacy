@@ -6,6 +6,9 @@ import org.molgenis.framework.ui.html.HiddenInput;
 
 public class BackToSimpleSearchForm extends Container
 {
+
+	private static final long serialVersionUID = -7444772264399270099L;
+
 	public BackToSimpleSearchForm()
 	{
 		this.add(new HiddenInput("__target", ""));

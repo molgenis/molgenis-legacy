@@ -12,6 +12,9 @@ import org.molgenis.util.ValueLabel;
 
 public class MutationForm extends Container
 {
+
+	private static final long serialVersionUID = -651326161501134671L;
+
 	public MutationForm()
 	{
 		Vector<ValueLabel> conservedaaOptions = new Vector<ValueLabel>();

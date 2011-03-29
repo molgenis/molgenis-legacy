@@ -6,6 +6,9 @@ import org.molgenis.framework.ui.html.SelectInput;
 
 public class ShowMutationForm extends Container
 {
+
+	private static final long serialVersionUID = -931119415365641653L;
+
 	public ShowMutationForm()
 	{
 		this.add(new HiddenInput("__target", ""));

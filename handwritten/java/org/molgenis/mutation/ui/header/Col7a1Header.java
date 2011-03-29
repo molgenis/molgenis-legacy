@@ -10,11 +10,14 @@ package org.molgenis.mutation.ui.header;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class Col7a1Header extends PluginModel
+public class Col7a1Header extends PluginModel<Entity>
 {
-	public Col7a1Header(String name, ScreenModel parent)
+	private static final long serialVersionUID = 5933871906981851063L;
+
+	public Col7a1Header(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

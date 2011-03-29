@@ -23,41 +23,40 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.molgenis.core.Publication;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.html.SelectInput;
-import org.molgenis.framework.ui.html.StringInput;
-import org.molgenis.util.EmailService;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
-import org.molgenis.util.ValueLabel;
-
-
-
 import org.molgenis.mutation.E_M;
 import org.molgenis.mutation.Exon;
-import org.molgenis.mutation.MutationGene;
 import org.molgenis.mutation.I_F;
 import org.molgenis.mutation.Mutation;
-import org.molgenis.mutation.Patient;
+import org.molgenis.mutation.MutationGene;
 import org.molgenis.mutation.MutationPhenotype;
+import org.molgenis.mutation.Patient;
 import org.molgenis.mutation.PhenotypeDetails;
 import org.molgenis.mutation.service.ExonService;
+import org.molgenis.mutation.service.MutationEmailService;
 import org.molgenis.mutation.service.MutationService;
 import org.molgenis.mutation.service.PatientService;
 import org.molgenis.mutation.service.PhenotypeService;
-import org.molgenis.mutation.service.MutationEmailService;
 import org.molgenis.mutation.ui.upload.form.MutationForm;
 import org.molgenis.mutation.ui.upload.form.PatientForm;
 import org.molgenis.mutation.vo.MutationUploadVO;
 import org.molgenis.mutation.vo.PatientSummaryVO;
-import org.molgenis.core.Publication;
+import org.molgenis.util.EmailService;
+import org.molgenis.util.Entity;
+import org.molgenis.util.HttpServletRequestTuple;
+import org.molgenis.util.Tuple;
+import org.molgenis.util.ValueLabel;
 
-public class Upload extends PluginModel
+public class Upload extends PluginModel<Entity>
 {
+
+	private static final long serialVersionUID = -3499931124766785979L;
 	private static final transient Logger logger = Logger.getLogger(Upload.class.getSimpleName());
 	private String action = "newBatch";
 	private ExonService exonService;
@@ -73,7 +72,7 @@ public class Upload extends PluginModel
 
 //	private UploadPatient uploadPatient = new UploadPatient();
 
-	public Upload(String name, ScreenModel parent)
+	public Upload(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

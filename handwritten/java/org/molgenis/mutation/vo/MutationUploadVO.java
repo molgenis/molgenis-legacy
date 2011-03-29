@@ -1,6 +1,5 @@
 package org.molgenis.mutation.vo;
 
-import org.apache.log4j.Logger;
 import org.apache.regexp.RESyntaxException;
 import org.molgenis.mutation.Exon;
 import org.molgenis.mutation.Mutation;
@@ -10,7 +9,8 @@ import org.molgenis.util.ValueLabel;
 
 public class MutationUploadVO
 {
-	private static final transient Logger logger = Logger.getLogger(MutationUploadVO.class.getSimpleName());
+	//TODO: Danny: Use or loose
+	/*private static final transient Logger logger = Logger.getLogger(MutationUploadVO.class.getSimpleName());*/
 	private Mutation mutation;
 	private Exon exon;
 	private MutationGene gene;

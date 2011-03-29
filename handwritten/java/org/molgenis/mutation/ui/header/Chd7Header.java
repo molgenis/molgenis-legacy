@@ -10,11 +10,15 @@ package org.molgenis.mutation.ui.header;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class Chd7Header extends PluginModel
+public class Chd7Header extends PluginModel<Entity>
 {
-	public Chd7Header(String name, ScreenModel parent)
+
+	private static final long serialVersionUID = 6224612078995632056L;
+
+	public Chd7Header(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

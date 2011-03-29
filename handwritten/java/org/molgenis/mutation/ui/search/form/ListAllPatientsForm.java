@@ -6,6 +6,8 @@ import org.molgenis.framework.ui.html.HiddenInput;
 
 public class ListAllPatientsForm extends Container
 {
+	private static final long serialVersionUID = 5684517266605366403L;
+
 	public ListAllPatientsForm()
 	{
 		this.add(new HiddenInput("__target", ""));

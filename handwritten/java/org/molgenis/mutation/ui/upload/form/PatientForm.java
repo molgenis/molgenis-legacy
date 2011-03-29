@@ -10,6 +10,9 @@ import org.molgenis.util.ValueLabel;
 
 public class PatientForm extends Container
 {
+
+	private static final long serialVersionUID = -3532250380061297220L;
+
 	public PatientForm()
 	{
 		this.add(new StringInput("age"));

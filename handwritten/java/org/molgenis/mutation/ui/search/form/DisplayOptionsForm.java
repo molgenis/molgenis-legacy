@@ -10,6 +10,9 @@ import org.molgenis.util.ValueLabel;
 
 public class DisplayOptionsForm extends Container
 {
+
+	private static final long serialVersionUID = 7252019727191110005L;
+
 	public DisplayOptionsForm()
 	{
 		this.add(new HiddenInput("__target", ""));

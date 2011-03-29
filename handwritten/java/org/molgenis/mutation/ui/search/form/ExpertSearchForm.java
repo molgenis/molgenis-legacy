@@ -8,6 +8,9 @@ import org.molgenis.framework.ui.html.TextLineInput;
 
 public class ExpertSearchForm extends Container
 {
+
+	private static final long serialVersionUID = -6880726573479157651L;
+
 	public ExpertSearchForm()
 	{
 		this.add(new HiddenInput("__target", ""));

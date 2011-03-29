@@ -6,6 +6,9 @@ import org.molgenis.framework.ui.html.HiddenInput;
 
 public class ToExpertSearchForm extends Container
 {
+
+	private static final long serialVersionUID = 7232792460068760022L;
+
 	public ToExpertSearchForm()
 	{
 		this.add(new HiddenInput("__target", ""));
