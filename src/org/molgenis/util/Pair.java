@@ -89,6 +89,7 @@ public class Pair<T, T2>
 	/** Pointer to the second object */
 	private T2 b = null;
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean equals(Object o)
 	{		

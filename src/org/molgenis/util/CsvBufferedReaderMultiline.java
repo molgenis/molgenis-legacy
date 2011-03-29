@@ -50,7 +50,7 @@ public class CsvBufferedReaderMultiline implements CsvReader
 	private char separator = 0;
 
 	/** boolean indicating the parser is working */
-	private boolean isParsing = false;
+	//private boolean isParsing = false;
 
 	/** boolean indicating that the resource parsed has headers... */
 	private boolean hasHeader = true;
@@ -301,7 +301,7 @@ public class CsvBufferedReaderMultiline implements CsvReader
 		{
 			if(firstRow)
 			{	
-				result.append("\""+result+"\"");
+				result.append("\""+s+"\"");
 				firstRow = false;
 			}
 			else
@@ -526,7 +526,7 @@ public class CsvBufferedReaderMultiline implements CsvReader
 	public void reset() throws IOException
 	{
 		this.columnnames = null; // force to read colnames also!
-		this.isParsing = false;
+		//this.isParsing = false;
 	}
 
 	@Override

@@ -59,7 +59,7 @@ public class FieldAssign
 	 * @throws IllegalArgumentException 
 	 */
 	@SuppressWarnings(
-	{ "unchecked", "empty-statement" })
+	{ "unchecked" })
 	public void assign(final Object obj, final Object value) throws IllegalAccessException, CmdLineException, IllegalArgumentException, InstantiationException
 	{
 		if (obj == null || value == null)

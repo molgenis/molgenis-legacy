@@ -362,7 +362,7 @@ public class TarGz
 			final boolean overwrite) throws IOException,
 			IllegalArgumentException
 	{
-		long startTimer = System.currentTimeMillis();
+		//long startTimer = System.currentTimeMillis();
 
 		// checks
 		if (!src.isFile() || !src.exists())
