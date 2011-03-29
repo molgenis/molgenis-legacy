@@ -20,25 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.molgenis.MolgenisOptions;
-import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.security.Login;
-import org.molgenis.framework.security.SimpleLogin;
-import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.html.ActionInput;
-import org.molgenis.framework.ui.html.Container;
-import org.molgenis.framework.ui.html.Form;
-import org.molgenis.framework.ui.html.TablePanel;
-import org.molgenis.util.EmailService;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
-
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.auth.OpenIdLogin;
-import org.molgenis.auth.service.AuthorizationEmailService;
 import org.molgenis.auth.service.MolgenisUserException;
 import org.molgenis.auth.service.MolgenisUserService;
 import org.molgenis.auth.ui.form.DatabaseAuthenticationForm;
@@ -46,22 +29,37 @@ import org.molgenis.auth.ui.form.ForgotForm;
 import org.molgenis.auth.ui.form.OpenIdAuthenticationForm;
 import org.molgenis.auth.ui.form.RegistrationForm;
 import org.molgenis.auth.ui.form.UserAreaForm;
-import org.molgenis.auth.util.PasswordHasher;
 import org.molgenis.auth.vo.MolgenisUserSearchCriteriaVO;
 import org.molgenis.auth.vo.UserLoginVO;
+import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.security.SimpleLogin;
+import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.html.ActionInput;
+import org.molgenis.framework.ui.html.Container;
+import org.molgenis.framework.ui.html.TablePanel;
+import org.molgenis.util.Entity;
+import org.molgenis.util.HttpServletRequestTuple;
+import org.molgenis.util.Tuple;
 
 /**
  * This screen shows a login box, or if someone is already logged in, the user
  * information and a logout button.
  */
-public class UserLogin extends PluginModel
+public class UserLogin extends PluginModel<Entity>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3084964114182861171L;
 	private String action           = "init";
 	private MolgenisUserService userService;
 	private String mailCurator;
 	private UserLoginVO userLoginVO = new UserLoginVO();
 
-	public UserLogin(String name, ScreenModel parent)
+	public UserLogin(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
@@ -308,7 +306,9 @@ public class UserLogin extends PluginModel
     		}
     		
     		MolgenisUser user = users.get(0);
-    		String email = user.getEmailaddress();
+    		//TODO: Danny: Use or loose
+    		//TODO: Danny Is this a bug ??, we ask the user.email but don't use it to send the email ?
+    		/*String email = */user.getEmailaddress();
   
     		String newPassword = UUID.randomUUID().toString().substring(0, 8);
     		user.setPassword(newPassword);
@@ -487,5 +487,13 @@ public class UserLogin extends PluginModel
 			return "Login";
 		}
 		return super.getLabel();
+	}
+
+	public void setMailCurator(String mailCurator) {
+		this.mailCurator = mailCurator;
+	}
+
+	public String getMailCurator() {
+		return mailCurator;
 	}
 }

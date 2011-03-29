@@ -8,6 +8,9 @@ import org.molgenis.framework.ui.html.TextLineInput;
 
 public class UserAreaForm extends Container
 {
+
+	private static final long serialVersionUID = 763688886819665003L;
+
 	public UserAreaForm()
 	{
 		TablePanel passwordGroup        = new TablePanel("login", null);

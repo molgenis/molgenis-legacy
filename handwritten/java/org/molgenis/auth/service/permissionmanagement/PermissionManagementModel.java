@@ -11,7 +11,6 @@
 package org.molgenis.auth.service.permissionmanagement;
 
 import org.molgenis.auth.MolgenisRole;
-import org.molgenis.auth.MolgenisUser;
 
 public class PermissionManagementModel {
 

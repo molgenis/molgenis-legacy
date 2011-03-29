@@ -6,6 +6,9 @@ import org.molgenis.framework.ui.html.TextLineInput;
 
 public class ForgotForm extends Container
 {
+
+	private static final long serialVersionUID = -5681991905559537806L;
+
 	public ForgotForm()
 	{
 		TextLineInput usernameInput    = new TextLineInput("username");

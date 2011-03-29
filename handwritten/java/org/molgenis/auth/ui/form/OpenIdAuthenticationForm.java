@@ -4,6 +4,9 @@ import org.molgenis.framework.ui.html.ActionInput;
 
 public class OpenIdAuthenticationForm extends DatabaseAuthenticationForm
 {
+
+	private static final long serialVersionUID = 5869739460333081182L;
+
 	public OpenIdAuthenticationForm()
 	{
 		super();

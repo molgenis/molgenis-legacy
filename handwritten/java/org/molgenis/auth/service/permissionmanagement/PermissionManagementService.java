@@ -13,7 +13,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.molgenis.auth.MolgenisEntity;
 import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.auth.MolgenisRole;
@@ -23,7 +22,6 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.db.jdbc.JDBCConnectionHelper;
 
 import app.JDBCDatabase;
 
@@ -31,7 +29,8 @@ public class PermissionManagementService {
 
     	private JDBCDatabase db = null;
 	private static PermissionManagementService permissionManagementService = null;
-	private static final transient Logger logger = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());
+	//TODO: Danny: Use or loose
+	//private static final transient Logger logger = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());
 
 	// private constructor, use singleton instance
 	private PermissionManagementService(Database db)

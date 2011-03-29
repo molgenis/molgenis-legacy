@@ -8,27 +8,24 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Query;
-import org.molgenis.framework.db.jdbc.JDBCConnectionHelper;
-
-import app.JDBCDatabase;
-
 import org.molgenis.auth.MolgenisRole;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.auth.MolgenisUserGroupLink;
-import org.molgenis.auth.service.MolgenisUserException;
 import org.molgenis.auth.util.PasswordHasher;
 import org.molgenis.auth.vo.MolgenisUserSearchCriteriaVO;
+import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Query;
+
+import app.JDBCDatabase;
 
 
 public class MolgenisUserService
 {
 	private JDBCDatabase db                                = null;
 	private static MolgenisUserService molgenisUserService = null;
-	private static final transient Logger logger = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());
+	//TODO: Danny: Use or loose
+	//private static final transient Logger logger = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());
 
 	// private constructor, use singleton instance
 	private MolgenisUserService(Database db)

@@ -11,7 +11,6 @@
 package org.molgenis.auth.service.permissionmanagement;
 
 import java.text.ParseException;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.molgenis.auth.MolgenisPermission;
@@ -21,16 +20,17 @@ import org.molgenis.framework.security.SimpleLogin;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class PermissionManagementPlugin extends PluginModel {
+public class PermissionManagementPlugin extends PluginModel<Entity> {
 
     private static final long serialVersionUID = -9150476614594665384L;
     private PermissionManagementModel model;
     private PermissionManagementService service;
     private static Logger logger = Logger.getLogger(PermissionManagementPlugin.class);
 
-    public PermissionManagementPlugin(String name, ScreenModel parent) {
+    public PermissionManagementPlugin(String name, ScreenModel<Entity> parent) {
 		super(name, parent);
 		model = new PermissionManagementModel();
     }

@@ -7,6 +7,9 @@ import org.molgenis.framework.ui.html.TextLineInput;
 
 public class DatabaseAuthenticationForm extends Container
 {
+
+	private static final long serialVersionUID = 798533925465868923L;
+
 	public DatabaseAuthenticationForm()
 	{
 		TextLineInput usernameInput   = new TextLineInput("username");

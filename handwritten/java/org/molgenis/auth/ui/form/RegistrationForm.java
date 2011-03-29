@@ -7,6 +7,9 @@ import org.molgenis.framework.ui.html.TextLineInput;
 
 public class RegistrationForm extends Container
 {
+
+	private static final long serialVersionUID = 6138000170604718395L;
+
 	public RegistrationForm()
 	{
 		TextLineInput usernameInput    = new TextLineInput("username");

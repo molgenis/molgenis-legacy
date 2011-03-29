@@ -17,9 +17,6 @@ import org.expressme.openid.OpenIdException;
 import org.expressme.openid.OpenIdManager;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.security.Login;
-
-import org.molgenis.auth.MolgenisUser;
 
 /**
  * OpenIdLogin is a DatabaseLogin that authenticates via OpenId
