@@ -14,6 +14,7 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
+import org.molgenis.framework.ui.html.CommandTemplate;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.PasswordInput;
@@ -228,7 +229,7 @@ public class LoginScreen extends PluginModel<Entity>
 
 	public List<HtmlInput> getInputs()
 	{
-		Container f = new Container();
+		CommandTemplate f = new CommandTemplate();
 
 		// workflow:
 		// login -> logout -> edit_profile -> save_profile -> cancel -> logout
