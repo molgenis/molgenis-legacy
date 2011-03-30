@@ -8,19 +8,24 @@
 package plugins.header;
 
 import org.molgenis.auth.DatabaseLogin;
-import org.molgenis.auth.vo.UserLoginVO;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 
 
-public class BbmriHeader extends PluginModel
+
+public class BbmriHeader extends PluginModel<Entity>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5516712543692105018L;
 	private String userLogin = new String();
 	
-	public BbmriHeader(String name, ScreenModel parent)
+	public BbmriHeader(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
@@ -40,8 +45,9 @@ public class BbmriHeader extends PluginModel
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-		
-		String action = request.getString("__action");
+		//TODO: Please Un fuck your code this is not normal to do please see:
+		//
+		/*String action = */request.getString("__action");
 		if ("doLogout".equals(request.getAction())) {
 				getLogin().logout();
 			
