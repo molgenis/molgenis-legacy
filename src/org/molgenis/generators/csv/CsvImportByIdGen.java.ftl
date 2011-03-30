@@ -29,9 +29,11 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvFileReader;
 
-<#list model.entities as entity><#if !entity.abstract>
-${imports(model, entity, "")}
-</#if></#list>
+<#list entities as entity>
+	<#if !entity.abstract>
+	import ${entity.namespace}.${JavaName(entity)};
+	</#if>
+</#list>
 
 
 public class CsvImportById
