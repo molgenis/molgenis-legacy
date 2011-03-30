@@ -17,24 +17,24 @@
 package ${package};
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+//import java.io.IOException;
+//import java.util.ArrayList;
+//import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+//import java.util.Map;
+//import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
-import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.QueryRule.Operator;
+//import org.molgenis.framework.db.DatabaseException;
+//import org.molgenis.framework.db.QueryRule;
+//import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.util.Tuple;
-import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.CsvReaderListener;
-import org.molgenis.util.SimpleTuple;
+import org.molgenis.util.*;
+//import org.molgenis.util.CsvFileReader;
+//import org.molgenis.util.CsvReaderListener;
+//import org.molgenis.util.SimpleTuple;
 
 import org.molgenis.framework.db.CsvToDatabase.ImportResult;
 

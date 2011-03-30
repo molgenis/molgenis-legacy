@@ -30,11 +30,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-//Unused: import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.*;
 
 <#--import parent class if extends-->
 <#list entity.getImplements() as i>
