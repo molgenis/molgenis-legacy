@@ -29,7 +29,6 @@ import org.molgenis.util.Tuple;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.ResultSetTuple;
 import java.text.ParseException;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;

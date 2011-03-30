@@ -25,7 +25,6 @@ import org.molgenis.util.Tuple;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.ResultSetTuple;
 import java.text.ParseException;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
@@ -35,7 +34,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+//Unused: import javax.xml.bind.annotation.XmlTransient;
 
 <#--import parent class if extends-->
 <#list entity.getImplements() as i>
@@ -132,6 +131,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	</#foreach>	
 <#--concrete class has method bodies-->
 <#else>
+	private static final long serialVersionUID = 1L;
 	// fieldname constants
     <#foreach field in entity.getImplementedFields()>
 	public final static String ${field.name?upper_case} = "${field.name}";<#if field.type == "xref"><#list field.xrefLabelNames as label>
