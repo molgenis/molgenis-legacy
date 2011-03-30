@@ -140,6 +140,30 @@
 			<field name="dilated_cardiomyopathy" type="enum" enum_options="[yes,no,unknown]"
 				default="unknown" description="" label="Dilated cardiomyopathy" />
 			<field name="other" nillable="true" description="" label="" />
+			<!-- Fields specific for CHD7 -->
+			<field name="coloboma" type="enum" enum_options="[yes,no,unknown]"
+				default="unknown" description="" label="Coloboma" />
+			<field name="congenital_heart_defect" type="enum" enum_options="[yes,no,unknown]"
+				default="unknown" description="" label="Congenital heart defect" />
+			<field name="clp" type="enum" enum_options="[yes,no,unknown]"
+				default="unknown" description="" label="CLP" />
+			<field name="choanal_anomaly" type="enum" enum_options="[yes,no,unknown]"
+				default="unknown" description="" label="Choanal anomaly" />
+			<field name="mental_retardation" type="enum" enum_options="[yes,no,unknown]"
+				default="unknown" description="" label="Mental retardation" />
+			<field name="genital_hypoplasia" type="enum" enum_options="[yes,no,unknown]"
+				default="unknown" description="" label="Genital hypoplasia" />
+			<field name="external_ear_anomaly" type="enum" enum_options="[yes,no,unknown]"
+				default="unknown" description="" label="External ear anomaly" />
+			<field name="semicircular_canal_anomaly" type="enum"
+				enum_options="[yes,no,unknown]" default="unknown" description=""
+				label="Semicircular canal anomaly" />
+			<field name="hearing_loss" type="enum" enum_options="[yes,no,unknown]"
+				default="unknown" description="" label="Hearing loss" />
+			<field name="te_anomaly" type="enum" enum_options="[yes,no,unknown]"
+				default="unknown" description="" label="TE anomaly" />
+			<field name="cn_dysfunction" type="enum" enum_options="[yes,no,unknown]"
+				default="unknown" description="" label="CN dysfunction" />
 		</entity>
 		<entity name="Patient" extends="Individual" implements="submittable">
 		<!-- For now: extends Individual. 
