@@ -31,8 +31,7 @@ public class TextLineInput extends HtmlInput
 
 		if (this.isHidden())
 		{
-			return "<input type=\"hidden\" id=\"" + getId() + "\" name=\"" + getName() + "\" value=\"" + getValue()
-					+ "\" />";
+			return "<input type=\"hidden\" id=\"" + getId() + "\" name=\"" + getName() + "\" value=\"" + getValue() + "\">";
 		}
 
 		String attributes = "";
