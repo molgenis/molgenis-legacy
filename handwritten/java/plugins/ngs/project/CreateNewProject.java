@@ -13,29 +13,25 @@ package plugins.ngs.project;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.ngs.NgsPerson;
+import org.molgenis.ngs.NgsSample;
 import org.molgenis.ngs.Project;
-import org.molgenis.ngs.ProjectWorkflow;
 import org.molgenis.organization.Institute;
 import org.molgenis.organization.Investigation;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
-import org.molgenis.ngs.NgsSample;
-import org.testng.collections.Lists;
 
 import commonservice.CommonService;
 
-public class CreateNewProject extends PluginModel
+public class CreateNewProject extends PluginModel<Entity>
 {
 
     private static final long serialVersionUID = 543108839792335414L;
@@ -47,7 +43,7 @@ public class CreateNewProject extends PluginModel
     private Database db;
 
 
-    public CreateNewProject(String name, ScreenModel parent)
+    public CreateNewProject(String name, ScreenModel<Entity> parent)
     {
 	super(name, parent);
 	ct = CommonService.getInstance();

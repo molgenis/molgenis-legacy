@@ -18,6 +18,7 @@ import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.HtmlTools;
 import org.molgenis.util.Tuple;
 
@@ -26,9 +27,12 @@ import app.servlet.MolgenisServlet;
 import filehandling.generic.MolgenisFileHandler;
 import filehandling.generic.PerformUpload;
 
-public class MolgenisFileManager extends PluginModel
+public class MolgenisFileManager extends PluginModel<Entity>
 {
-	public MolgenisFileManager(String name, ScreenModel parent)
+
+	private static final long serialVersionUID = 7832540415673199206L;
+
+	public MolgenisFileManager(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
@@ -110,7 +114,7 @@ public class MolgenisFileManager extends PluginModel
 
 		try
 		{
-			FormModel theParent = (FormModel) this.getParent();
+			FormModel<Entity> theParent = (FormModel<Entity>) this.getParent();
 			MolgenisFile molgenisFile = (MolgenisFile) theParent.getRecords().get(0);
 
 			this.model.setMolgenisFile(molgenisFile);

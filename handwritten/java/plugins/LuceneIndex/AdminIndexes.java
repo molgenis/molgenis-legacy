@@ -26,24 +26,12 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.util.Version;
-import org.molgenis.bbmri.Biobank;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.organization.InvestigationElement;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
-
-//import pheno.system.InvestigationElement;
-//import gcc.system.InvestigationElement; 
-//import plugin.LuceneIndex.LuceneConfiguration;
-//import org.molgenis.core.InvestigationElement;
-//import org.molgenis.system.InvestigationElement;
-import org.molgenis.system.*;
-
-import com.hp.hpl.jena.vocabulary.DB;
-
-import plugins.LuceneIndex.LuceneConfiguration;
 
 import uk.ac.ebi.ontocat.Ontology;
 import uk.ac.ebi.ontocat.OntologyService;
@@ -52,7 +40,7 @@ import uk.ac.ebi.ontocat.OntologyTerm;
 import uk.ac.ebi.ontocat.file.FileOntologyService;
 
 
-public class AdminIndexes extends PluginModel
+public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 {
 	/**
 	 * 
@@ -97,7 +85,7 @@ public class AdminIndexes extends PluginModel
 	}
 	
 	
-	public AdminIndexes(String name, ScreenModel parent)
+	public AdminIndexes(String name, ScreenModel<org.molgenis.util.Entity> parent)
 	{
 		super(name, parent);
 	}
@@ -293,6 +281,7 @@ public class AdminIndexes extends PluginModel
 				Document document1 = null;
 				document1 = new Document(); 
 				
+				// FIX ME Is this owkay ?
 				Class<? extends Entity> aClass =  (Class<? extends Entity>) entities.getClass();
 				
 				System.out.println("AddDBIndexRecors" + aClass);

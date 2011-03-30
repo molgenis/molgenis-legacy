@@ -17,12 +17,7 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.protocol.Workflow;
 import org.testng.collections.Lists;
 
-import commonservice.CommonService;
-
 public class CreateNewProjectModel {
-
-
-
     private Project project;
     private NgsPerson person;
     private Institute institute;

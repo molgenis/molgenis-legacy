@@ -7,28 +7,23 @@
  */
 package plugins.ngs.samplerviewer;
 
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.ngs.NgsSample;
 import org.molgenis.ngs.Project;
-import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
-
-import plugins.ngs.project.CreateNewProjectModel;
 
 import commonservice.CommonService;
 
-public class SampleViewer extends PluginModel {
+public class SampleViewer extends PluginModel<Entity> {
 
     private static final long serialVersionUID = 4613044793132206269L;
     private static transient Logger logger = Logger.getLogger(SampleViewer.class);
@@ -36,7 +31,7 @@ public class SampleViewer extends PluginModel {
     private Database db;
     private SampleViewerModel model;
 
-    public SampleViewer(String name, ScreenModel parent)
+    public SampleViewer(String name, ScreenModel<Entity> parent)
     {
 	super(name, parent);
 	model = new SampleViewerModel();

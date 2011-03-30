@@ -17,11 +17,12 @@ import org.molgenis.ngs.NgsSample;
 import org.molgenis.ngs.Project;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.WorkflowElement;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import commonservice.CommonService;
 
-public class Workflow extends PluginModel {
+public class Workflow extends PluginModel<Entity> {
 
     private static final long serialVersionUID = 2647518452673854028L;
     private static transient Logger logger = Logger.getLogger(Workflow.class);
@@ -35,7 +36,7 @@ public class Workflow extends PluginModel {
      * @param name
      * @param parent
      */
-    public Workflow(String name, ScreenModel parent)
+    public Workflow(String name, ScreenModel<Entity> parent)
     {
 	super(name, parent);
 	model = new WorkflowModel();

@@ -26,7 +26,7 @@ import org.apache.lucene.util.Version;
  */
 public class PorterStemAnalyzer extends Analyzer
 {
-	private Set stopSet;
+	private Set<Object> stopSet;
 	  public PorterStemAnalyzer() {
 	    this(STOP_WORDS);
 	  }

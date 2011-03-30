@@ -50,7 +50,7 @@ import org.molgenis.util.Tuple;
  */
 
 
-public class DBIndexPlugin extends PluginModel
+public class DBIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 {
 	private static final long serialVersionUID = 71L;
 	private String Status = "";
@@ -75,7 +75,7 @@ public class DBIndexPlugin extends PluginModel
 		OntologiesForExpansion = ontologies;
 	}
 	
-	public DBIndexPlugin(String name, ScreenModel parent)
+	public DBIndexPlugin(String name, ScreenModel<org.molgenis.util.Entity> parent)
 	{
 		super(name, parent);
 	}
@@ -422,7 +422,8 @@ public class DBIndexPlugin extends PluginModel
 					
 					if (document.getField("id")!= null) {
 						String id  = document.getField("id").stringValue();
-						int aInt = Integer.parseInt(id);
+						// TODO Danny Use or Loose
+						/*int aInt = */Integer.parseInt(id);
 					
 						//result += "<td> <a href=http://localhost:8080/pheno/molgenis.do?__target=main&select=Biobank&__action=filter_set&__filter_attribute=id&__filter_operator=EQUALS&__filter_value="+id+">" + fieldName + "</a><br/></td>";	
 						if (!fieldnames.contains(fieldName)) fieldnames.add(fieldName);

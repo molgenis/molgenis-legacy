@@ -54,7 +54,7 @@ import uk.ac.ebi.ontocat.file.FileOntologyService;
  * @param ONTOLOGIES_DIRECTORY - the directory, where the ontologies are stored
  */
 
-public class OntoCatIndexPlugin extends PluginModel
+public class OntoCatIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 {
 	private static final long serialVersionUID = 71L;
 	private String Status = "";
@@ -103,7 +103,7 @@ public class OntoCatIndexPlugin extends PluginModel
 		"<script src=\"Prototype/prototype.js\" language=\"javascript\"></script>\n" ;
 	}
 	
-	public OntoCatIndexPlugin(String name, ScreenModel parent)
+	public OntoCatIndexPlugin(String name, ScreenModel<org.molgenis.util.Entity> parent)
 	{
 		super(name, parent);
 	}

@@ -16,6 +16,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import uk.ac.ebi.ontocat.Ontology;
@@ -24,7 +25,7 @@ import uk.ac.ebi.ontocat.ols.OlsOntologyService;
 import app.JDBCDatabase;
 import decorators.NameConvention;
 
-public class OntocatBrowserPlugin extends PluginModel {
+public class OntocatBrowserPlugin extends PluginModel<Entity> {
 	/**
 	 * EbiOlsBrowserPlugin
 	 */
@@ -56,7 +57,7 @@ public class OntocatBrowserPlugin extends PluginModel {
 	// Base URL for EBI lookups
 	String lookupURI = "http://www.ebi.ac.uk/ontology-lookup/?termId=";
 
-	public OntocatBrowserPlugin(String name, ScreenModel parent) {
+	public OntocatBrowserPlugin(String name, ScreenModel<Entity> parent) {
 		super(name, parent);
 
 		// Try to make connections to the database and the webservice
@@ -553,7 +554,7 @@ public class OntocatBrowserPlugin extends PluginModel {
 						map.put(key, concatVal);
 					}
 				}
-				for (Iterator i = map.keySet().iterator(); i.hasNext();) {
+				for (Iterator<String> i = map.keySet().iterator(); i.hasNext();) {
 					String key = (String) i.next();
 					String add = key + ": " + map.get(key);
 					if (add.equals("definition: null")) {
@@ -578,7 +579,7 @@ public class OntocatBrowserPlugin extends PluginModel {
 						concatVal = concatVal.substring(0, concatVal.length()-2);
 						map.put(key, concatVal);
 				}
-				for (Iterator i = map.keySet().iterator(); i.hasNext();) {
+				for (Iterator<String> i = map.keySet().iterator(); i.hasNext();) {
 					String key = (String) i.next();
 					if (map.get(key).split(":").length == 2 && map.get(key).length() < 15) {
 						// Probably 'hyperlinkable'
@@ -598,7 +599,7 @@ public class OntocatBrowserPlugin extends PluginModel {
 				for(uk.ac.ebi.ontocat.OntologyTerm o : on2){
 					map.put(o.getAccession(), o.getLabel());
 				}
-				for (Iterator i = map.keySet().iterator(); i.hasNext();) {
+				for (Iterator<String> i = map.keySet().iterator(); i.hasNext();) {
 					String key = (String) i.next();
 					parents.add(map.get(key) + " [" + makeLookupHyperlink(key) + "]");
 				}
@@ -619,7 +620,7 @@ public class OntocatBrowserPlugin extends PluginModel {
 					map.put(key, concatVal);
 				}
 	
-				for (Iterator i = map.keySet().iterator(); i.hasNext();) {
+				for (Iterator<String> i = map.keySet().iterator(); i.hasNext();) {
 					String key = (String) i.next();
 					relations.add(makeLookupHyperlink(key) + " " + map.get(key) + " <i>this</i>");
 				}
@@ -722,7 +723,7 @@ public class OntocatBrowserPlugin extends PluginModel {
 				concatVal = concatVal.substring(0, concatVal.length()-2);
 				map.put(key, concatVal);
 			}
-			for (Iterator i = map.keySet().iterator(); i.hasNext();) {
+			for (Iterator<String> i = map.keySet().iterator(); i.hasNext();) {
 				String key = (String) i.next();
 				String add = key + ": " + map.get(key);
 				if (add.equals("definition: null")) {
@@ -747,7 +748,7 @@ public class OntocatBrowserPlugin extends PluginModel {
 					map.put(key, concatVal);
 			}
 			
-			for (Iterator i = map.keySet().iterator(); i.hasNext();) {
+			for (Iterator<String> i = map.keySet().iterator(); i.hasNext();) {
 				String key = (String) i.next();
 				// 15 is arbitrary, probably 'hyperlinkable'
 				if (map.get(key).split(":").length == 2 && map.get(key).length() < 15) {
@@ -767,7 +768,7 @@ public class OntocatBrowserPlugin extends PluginModel {
 			for(uk.ac.ebi.ontocat.OntologyTerm o : on2){
 				map.put(o.getAccession(), o.getLabel());
 			}
-			for (Iterator i = map.keySet().iterator(); i.hasNext();) {
+			for (Iterator<String> i = map.keySet().iterator(); i.hasNext();) {
 				String key = (String) i.next();
 				parents.add(map.get(key) + " [" + makeLookupHyperlink(key) + "]");
 			}
@@ -788,7 +789,7 @@ public class OntocatBrowserPlugin extends PluginModel {
 					map.put(key, concatVal);
 			}
 			
-			for (Iterator i = map.keySet().iterator(); i.hasNext();) {
+			for (Iterator<String> i = map.keySet().iterator(); i.hasNext();) {
 				String key = (String) i.next();
 				relations.add(makeLookupHyperlink(key) + " " + map.get(key) + " <i>this</i>");
 			}
@@ -934,10 +935,11 @@ public class OntocatBrowserPlugin extends PluginModel {
 		return newItemId;
 	}
 
-	@SuppressWarnings("unchecked")
+
 	private boolean BrowseForth(boolean rootTerm, boolean lastTerm) {
 		String bt = screenModel.getSelectedBrowserTerm();
-		String ot = screenModel.getSelectedOntology();
+		//TODO: Danny: Use or Loose
+		/*String ot = */screenModel.getSelectedOntology();
 		logger.info("BrowseForth() : called");
 
 		boolean keepGoing = true;
@@ -1112,168 +1114,168 @@ public class OntocatBrowserPlugin extends PluginModel {
 		return keepGoing;
 	}
 
-	@SuppressWarnings("unchecked")
-	private boolean BrowseForthOLD(boolean rootTerm, boolean lastTerm) {
-		logger.info("BrowseForth() : called");
-		boolean keepGoing = true;
-		try {
-			LinkedHashMap<String, String> map;
-			if (rootTerm == true) {
-				//map = new LinkedHashMap<String, String>(qs.getRootTerms(screenModel.getSelectedBrowserTerm()));
-				map = new LinkedHashMap<String, String>();
-				List<uk.ac.ebi.ontocat.OntologyTerm> on2 = os.getRootTerms(screenModel.getSelectedBrowserTerm());
-				for(uk.ac.ebi.ontocat.OntologyTerm o : on2){
-					map.put(o.getAccession(), o.getLabel());
-				}
-				
-			} else {
-				map = new LinkedHashMap<String, String>();
-			}
-
-			if (map.size() == 0) {
-				//map = new LinkedHashMap<String, String>(qs.getTermChildren(screenModel.getSelectedBrowserTerm(), screenModel.getSelectedOntology(), 1, new int[] { 2 }));
-				
-				map = new LinkedHashMap<String, String>();
-				List<uk.ac.ebi.ontocat.OntologyTerm> on2 = os.getChildren(os.getTerm(screenModel.getSelectedBrowserTerm()));
-				for(uk.ac.ebi.ontocat.OntologyTerm o : on2){
-					map.put(o.getAccession(), o.getLabel());
-				}
-				
-				logger.debug("'" + screenModel.getSelectedBrowserTerm() + "' has children " + map.size());
-
-				// get the relationships
-				//Map<String, String> relations = qs.getTermRelations(screenModel.getSelectedBrowserTerm(), screenModel.getSelectedOntology());
-				Map<String, String> relations = new LinkedHashMap<String, String>();
-				Map<String, List<String>> os1 = os.getRelations(os.getTerm(screenModel.getSelectedBrowserTerm()));
-				for(String key : os1.keySet()){
-						List<String> valArr = os1.get(key);
-						String concatVal = "";
-						for(String subVal : valArr){
-							concatVal += subVal + ", ";
-						}
-						concatVal = concatVal.substring(0, concatVal.length()-2);
-						relations.put(key, concatVal);
-				}
-				
-				
-				
-				
-				
-				for (String key : relations.keySet()) {
-					logger.debug(key + ":" + relations.get(key));
-				}
-
-				if (map.size() != 0) {
-
-					String parentName;
-					if (nameCache.containsKey(screenModel.getSelectedBrowserTerm())) {
-						parentName = nameCache.get(screenModel.getSelectedBrowserTerm());
-					} else {
-						
-					//	parentName = qs.getTermById(screenModel.getSelectedBrowserTerm(), screenModel.getSelectedOntology());
-						parentName = os.getTerm(screenModel.getSelectedBrowserTerm()).getLabel();
-						
-						nameCache.put(screenModel.getSelectedBrowserTerm(), parentName);
-					}
-
-					try {
-						screenModel.setPath(browserTerms.get(parentName + seper + screenModel.getSelectedBrowserTerm()).getPath(" / "));
-					} catch (NullPointerException e) {
-						logger.error("ELEMENT " + parentName + seper + screenModel.getSelectedBrowserTerm() + " NOT PRESENT IN TREE");
-
-						// morris doet moeilijk
-						for (OntologyTree element : browserTerms.getAllChildren()) {
-							// if(element.getName().contains(screenModel.
-							// getSelectedBrowserTerm()))
-							// {
-							// logger.debug("huh?");
-							logger.debug(element.getName());
-							// }
-						}
-
-						keepGoing = false;
-						screenModel.setMessage(new ScreenMessage("Building tree from search term failed: element \"" + parentName + " (" + screenModel.getSelectedBrowserTerm()
-								+ ")\" not assigned as child by webservice.", false));
-					}
-
-					if (keepGoing == true) {
-
-						for (String key : map.keySet()) {
-
-							if (browserTerms.get(map.get(key) + seper + key + seper + "DONTSHOW") != null) {
-								browserTerms.get(map.get(key) + seper + key + seper + "DONTSHOW").setName(map.get(key) + seper + key);
-							} else {
-
-								OntologyTree child = new OntologyTree("" + id++, browserTerms.get(parentName + seper + screenModel.getSelectedBrowserTerm()));
-								child.setName(map.get(key) + seper + key);
-							}
-						}
-
-						screenModel.setBrowserTerms(FlattenTree());
-						screenModel.setBrowserTermsState(newBrowserTermState(screenModel.getBrowserTerms()));
-
-						screenModel.setMessage(new ScreenMessage("Term children retrieved.", true));
-					}
-				} else {
-					// if this map is empty to, the term has no children
-					// normally do nothing, but now we want to modify the
-					// 'state' of this term so it does not display a
-					// [+] button anymore
-
-					if (!childlessTerms.contains(screenModel.getSelectedBrowserTerm())) {
-						childlessTerms.add(screenModel.getSelectedBrowserTerm());
-					}
-					screenModel.setBrowserTermsState(newBrowserTermState(screenModel.getBrowserTerms()));
-
-					screenModel.setMessage(new ScreenMessage("Term discovered to be childless.", true));
-
-					if (rootTerm == true) {
-						screenModel.setMessage(new ScreenMessage("Root term is childless. Please reset OLS Browser.", false));
-					}
-
-					if (lastTerm == false) {
-						keepGoing = false;
-						logger.error("NOT LAST TERM - BUT NO CHILDREN FOUND FOR " + screenModel.getSelectedBrowserTerm());
-						screenModel.setMessage(new ScreenMessage("Building tree from search term error: No children found for term " + screenModel.getSelectedBrowserTerm()
-								+ ", but it is not the last element of a path.", false));
-					}
-
-				}
-			} else {
-				// Looks a bit dangerous but should be okay
-				screenModel.setSelectedOntology(screenModel.getSelectedBrowserTerm());
-
-				browserTerms = new OntologyTree("" + id++, browserTerms.get(seper + "newOntologyTree"));
-				browserTerms.setName(screenModel.getSelectedBrowserTerm() + seper + screenModel.getSelectedBrowserTerm());
-
-				// String parentName = qs.getTermById(screenModel
-				// .getSelectedBrowserTerm(), screenModel
-				// .getSelectedOntology());
-
-				for (String key : map.keySet()) {
-
-					OntologyTree child = new OntologyTree("" + id++,
-					// browserTerms.get(parentName + seper
-							browserTerms.get(screenModel.getSelectedBrowserTerm() + seper + screenModel.getSelectedBrowserTerm()));
-					child.setName(map.get(key) + seper + key);
-				}
-
-				screenModel.setSearchSpace("this");
-
-				screenModel.setPath(browserTerms.get(
-				// parentName + seper
-						screenModel.getSelectedBrowserTerm() + seper + screenModel.getSelectedBrowserTerm()).getPath(" / "));
-
-				screenModel.setBrowserTerms(FlattenTree());
-				screenModel.setBrowserTermsState(newBrowserTermState(screenModel.getBrowserTerms()));
-
-				screenModel.setMessage(new ScreenMessage("Ontology root term accessed.", true));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return keepGoing;
-	}
+//TODO: Danny: Use or loose
+//	private boolean BrowseForthOLD(boolean rootTerm, boolean lastTerm) {
+//		logger.info("BrowseForth() : called");
+//		boolean keepGoing = true;
+//		try {
+//			LinkedHashMap<String, String> map;
+//			if (rootTerm == true) {
+//				//map = new LinkedHashMap<String, String>(qs.getRootTerms(screenModel.getSelectedBrowserTerm()));
+//				map = new LinkedHashMap<String, String>();
+//				List<uk.ac.ebi.ontocat.OntologyTerm> on2 = os.getRootTerms(screenModel.getSelectedBrowserTerm());
+//				for(uk.ac.ebi.ontocat.OntologyTerm o : on2){
+//					map.put(o.getAccession(), o.getLabel());
+//				}
+//				
+//			} else {
+//				map = new LinkedHashMap<String, String>();
+//			}
+//
+//			if (map.size() == 0) {
+//				//map = new LinkedHashMap<String, String>(qs.getTermChildren(screenModel.getSelectedBrowserTerm(), screenModel.getSelectedOntology(), 1, new int[] { 2 }));
+//				
+//				map = new LinkedHashMap<String, String>();
+//				List<uk.ac.ebi.ontocat.OntologyTerm> on2 = os.getChildren(os.getTerm(screenModel.getSelectedBrowserTerm()));
+//				for(uk.ac.ebi.ontocat.OntologyTerm o : on2){
+//					map.put(o.getAccession(), o.getLabel());
+//				}
+//				
+//				logger.debug("'" + screenModel.getSelectedBrowserTerm() + "' has children " + map.size());
+//
+//				// get the relationships
+//				//Map<String, String> relations = qs.getTermRelations(screenModel.getSelectedBrowserTerm(), screenModel.getSelectedOntology());
+//				Map<String, String> relations = new LinkedHashMap<String, String>();
+//				Map<String, List<String>> os1 = os.getRelations(os.getTerm(screenModel.getSelectedBrowserTerm()));
+//				for(String key : os1.keySet()){
+//						List<String> valArr = os1.get(key);
+//						String concatVal = "";
+//						for(String subVal : valArr){
+//							concatVal += subVal + ", ";
+//						}
+//						concatVal = concatVal.substring(0, concatVal.length()-2);
+//						relations.put(key, concatVal);
+//				}
+//				
+//				
+//				
+//				
+//				
+//				for (String key : relations.keySet()) {
+//					logger.debug(key + ":" + relations.get(key));
+//				}
+//
+//				if (map.size() != 0) {
+//
+//					String parentName;
+//					if (nameCache.containsKey(screenModel.getSelectedBrowserTerm())) {
+//						parentName = nameCache.get(screenModel.getSelectedBrowserTerm());
+//					} else {
+//						
+//					//	parentName = qs.getTermById(screenModel.getSelectedBrowserTerm(), screenModel.getSelectedOntology());
+//						parentName = os.getTerm(screenModel.getSelectedBrowserTerm()).getLabel();
+//						
+//						nameCache.put(screenModel.getSelectedBrowserTerm(), parentName);
+//					}
+//
+//					try {
+//						screenModel.setPath(browserTerms.get(parentName + seper + screenModel.getSelectedBrowserTerm()).getPath(" / "));
+//					} catch (NullPointerException e) {
+//						logger.error("ELEMENT " + parentName + seper + screenModel.getSelectedBrowserTerm() + " NOT PRESENT IN TREE");
+//
+//						// morris doet moeilijk
+//						for (OntologyTree element : browserTerms.getAllChildren()) {
+//							// if(element.getName().contains(screenModel.
+//							// getSelectedBrowserTerm()))
+//							// {
+//							// logger.debug("huh?");
+//							logger.debug(element.getName());
+//							// }
+//						}
+//
+//						keepGoing = false;
+//						screenModel.setMessage(new ScreenMessage("Building tree from search term failed: element \"" + parentName + " (" + screenModel.getSelectedBrowserTerm()
+//								+ ")\" not assigned as child by webservice.", false));
+//					}
+//
+//					if (keepGoing == true) {
+//
+//						for (String key : map.keySet()) {
+//
+//							if (browserTerms.get(map.get(key) + seper + key + seper + "DONTSHOW") != null) {
+//								browserTerms.get(map.get(key) + seper + key + seper + "DONTSHOW").setName(map.get(key) + seper + key);
+//							} else {
+//
+//								OntologyTree child = new OntologyTree("" + id++, browserTerms.get(parentName + seper + screenModel.getSelectedBrowserTerm()));
+//								child.setName(map.get(key) + seper + key);
+//							}
+//						}
+//
+//						screenModel.setBrowserTerms(FlattenTree());
+//						screenModel.setBrowserTermsState(newBrowserTermState(screenModel.getBrowserTerms()));
+//
+//						screenModel.setMessage(new ScreenMessage("Term children retrieved.", true));
+//					}
+//				} else {
+//					// if this map is empty to, the term has no children
+//					// normally do nothing, but now we want to modify the
+//					// 'state' of this term so it does not display a
+//					// [+] button anymore
+//
+//					if (!childlessTerms.contains(screenModel.getSelectedBrowserTerm())) {
+//						childlessTerms.add(screenModel.getSelectedBrowserTerm());
+//					}
+//					screenModel.setBrowserTermsState(newBrowserTermState(screenModel.getBrowserTerms()));
+//
+//					screenModel.setMessage(new ScreenMessage("Term discovered to be childless.", true));
+//
+//					if (rootTerm == true) {
+//						screenModel.setMessage(new ScreenMessage("Root term is childless. Please reset OLS Browser.", false));
+//					}
+//
+//					if (lastTerm == false) {
+//						keepGoing = false;
+//						logger.error("NOT LAST TERM - BUT NO CHILDREN FOUND FOR " + screenModel.getSelectedBrowserTerm());
+//						screenModel.setMessage(new ScreenMessage("Building tree from search term error: No children found for term " + screenModel.getSelectedBrowserTerm()
+//								+ ", but it is not the last element of a path.", false));
+//					}
+//
+//				}
+//			} else {
+//				// Looks a bit dangerous but should be okay
+//				screenModel.setSelectedOntology(screenModel.getSelectedBrowserTerm());
+//
+//				browserTerms = new OntologyTree("" + id++, browserTerms.get(seper + "newOntologyTree"));
+//				browserTerms.setName(screenModel.getSelectedBrowserTerm() + seper + screenModel.getSelectedBrowserTerm());
+//
+//				// String parentName = qs.getTermById(screenModel
+//				// .getSelectedBrowserTerm(), screenModel
+//				// .getSelectedOntology());
+//
+//				for (String key : map.keySet()) {
+//
+//					OntologyTree child = new OntologyTree("" + id++,
+//					// browserTerms.get(parentName + seper
+//							browserTerms.get(screenModel.getSelectedBrowserTerm() + seper + screenModel.getSelectedBrowserTerm()));
+//					child.setName(map.get(key) + seper + key);
+//				}
+//
+//				screenModel.setSearchSpace("this");
+//
+//				screenModel.setPath(browserTerms.get(
+//				// parentName + seper
+//						screenModel.getSelectedBrowserTerm() + seper + screenModel.getSelectedBrowserTerm()).getPath(" / "));
+//
+//				screenModel.setBrowserTerms(FlattenTree());
+//				screenModel.setBrowserTermsState(newBrowserTermState(screenModel.getBrowserTerms()));
+//
+//				screenModel.setMessage(new ScreenMessage("Ontology root term accessed.", true));
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return keepGoing;
+//	}
 
 	private LinkedHashMap<String, String> newBrowserTermState(LinkedHashMap<String, String> flattenTree) {
 		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();

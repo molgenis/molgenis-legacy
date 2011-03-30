@@ -25,10 +25,11 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.maze.BinaryChannelData;
 import org.molgenis.maze.ChannelMapping;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 
-public class plotActogram extends PluginModel
+public class plotActogram extends PluginModel<Entity>
 {
 	/**
 	 * 
@@ -120,7 +121,7 @@ public class plotActogram extends PluginModel
 		return serialVersionUID;
 	}
 
-	public plotActogram(String name, ScreenModel parent)
+	public plotActogram(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
@@ -205,7 +206,8 @@ public class plotActogram extends PluginModel
 				Calendar c = Calendar.getInstance();
 				Calendar c2 = Calendar.getInstance();
 				Calendar c3 = Calendar.getInstance();
-				Calendar plotYaxisDate = Calendar.getInstance();
+				//TODO: Danny: Use or Loose
+				/*Calendar plotYaxisDate = */Calendar.getInstance();
 				//Calendar c4 = Calendar.getInstance();
 
 				int startyear = 0;

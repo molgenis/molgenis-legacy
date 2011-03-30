@@ -26,9 +26,10 @@ import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.maze.MazeData;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReaderListener;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class rawdataimporter extends PluginModel
+public class rawdataimporter extends PluginModel<Entity>
 {
 	/**
 	 * @author A.S. Boerema
@@ -200,7 +201,7 @@ public class rawdataimporter extends PluginModel
 		}
 	}
 
-	public rawdataimporter(String name, ScreenModel parent)
+	public rawdataimporter(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

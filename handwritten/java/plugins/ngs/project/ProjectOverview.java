@@ -13,13 +13,14 @@ package plugins.ngs.project;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class ProjectOverview extends PluginModel
+public class ProjectOverview extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 5185429713136257187L;
 
-	public ProjectOverview(String name, ScreenModel parent)
+	public ProjectOverview(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

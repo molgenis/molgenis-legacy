@@ -17,7 +17,8 @@ public class TestLuceneConfFilePathClass {
 	
 	public static void main(String[] args) {
 		//System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaa" + (new File("LuceneIndexConfiguration.properties").getAbsolutePath()));
-		TestLuceneConfFilePathClass myTestLuceneConfFilePathClass = new TestLuceneConfFilePathClass();
+		//TODO Danny: Use or loose
+		/*TestLuceneConfFilePathClass myTestLuceneConfFilePathClass = */new TestLuceneConfFilePathClass();
 	}
 
 }
