@@ -8,7 +8,7 @@
 		<entity name="BiodataType" extends="OntologyTerm">
 			<description>This is the column  GWA data n= , GWA platform , GWA comments </description> 
 		</entity>
-		<entity name="Biobank" extends="Investigation" label="Cohort" >
+		<entity name="Biobank" extends="Investigation">
 			<description>Describes one biobank cohort</description>
 			<field name="name" nillable="true"  description="the name of the biobank [in investigation the name is unique]"/>
 			<field name="Acronym" nillable="true" description="Acronym for this biobank" label="Acronym" />
@@ -19,9 +19,8 @@
 			<!--  added in order to hide it ! hide_fields word on fields that have nillable=true<field name="Species" label="Species" type="xref" xref_entity="Species" xref_field="id" xref_label="name" nillable="true" description="Reference to the species this chromosome belongs to." />-->
 			<!-- <field name="name" type="xref" label ="topic" xref_field="Investigation.name" xref_label="name" /> -->
 			<!-- <field name="topic" type="mref" xref_entity="ObservationElement" xref_label="name" mref_label="BiobankPanelTopic"/> -->
-			<field name="topic" nillable="true" description="This is the originnaly topic imported from the xls file."/>
-		    <field name="BiobankPanelName" nillable="true" description="this is the name "/>
-			
+			<field name="Topic" nillable="true" description="This is the originaly topic imported from the xls file."/>
+		    <field name="BiobankPanelName" nillable="true" description="This is the name of the Panel"/>
 			<field name="Category" type="string"  description="A. Core Biobanks, DNA available, B. Supporting biobanks (DNA not yet available)"/> 
 			<field name="SubCategory" type="xref" xref_entity="BiobankCategory" description="For example: Population, development, birth and growth"/>
 			<field name="Coordinators" type="mref" xref_entity="Person" mref_name="BiobankContact" description="One or more contact persons for this biobank"/>
