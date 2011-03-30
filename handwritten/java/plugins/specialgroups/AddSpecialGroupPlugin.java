@@ -19,19 +19,19 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import commonservice.CommonService;
 
-public class AddSpecialGroupPlugin extends PluginModel
+public class AddSpecialGroupPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 3656718805951479631L;
 	private List<String> labelList = new ArrayList<String>();
 	private CommonService ct = CommonService.getInstance();
 	
-	public AddSpecialGroupPlugin(String name, ScreenModel parent)
+	public AddSpecialGroupPlugin(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

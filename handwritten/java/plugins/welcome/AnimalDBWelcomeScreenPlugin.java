@@ -10,13 +10,14 @@ package plugins.welcome;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class AnimalDBWelcomeScreenPlugin extends PluginModel
+public class AnimalDBWelcomeScreenPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -5861419875983400033L;
 
-	public AnimalDBWelcomeScreenPlugin(String name, ScreenModel parent)
+	public AnimalDBWelcomeScreenPlugin(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

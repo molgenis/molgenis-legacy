@@ -7,29 +7,26 @@
 
 package plugins.system;
 
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservableFeature;
-import org.molgenis.pheno.ObservationTarget;
-import org.molgenis.protocol.ProtocolApplication;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import commonservice.CommonService;
 
-public class SetCustomLabelFeaturePlugin extends PluginModel
+public class SetCustomLabelFeaturePlugin extends PluginModel<Entity>
 {
+	private static final long serialVersionUID = -1520685442003195465L;
+	
 	private CommonService ct = CommonService.getInstance();
 	private List<Measurement> measurementList;
 	
-	public SetCustomLabelFeaturePlugin(String name, ScreenModel parent)
+	public SetCustomLabelFeaturePlugin(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

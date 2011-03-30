@@ -24,18 +24,19 @@ import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.ProtocolApplication;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import commonservice.CommonService;
 
-public class CascadingDeleteAnimalsPlugin extends PluginModel
+public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -366762636959036651L;
 	private CommonService ct = CommonService.getInstance();
 	private List<Integer> targetIdList;
 	private Map<Integer, String> targetMap;
 
-	public CascadingDeleteAnimalsPlugin(String name, ScreenModel parent)
+	public CascadingDeleteAnimalsPlugin(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
