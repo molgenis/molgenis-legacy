@@ -81,15 +81,20 @@ public class FileServlet extends Servlet {
 		req.setCharacterEncoding(getCharSet());
 		String path = Utils.canonicalizePath(req.getPathInfo());
 		if(!getLocal_path().equals("")){
-			path = getLocal_path() + "/" + path;
+			if(path!=null){
+				path = getLocal_path() + "/" + path;
+			}else{
+				path = getLocal_path() + "/";
+			}
+			
 		}
 		dispatchPathname(req, res, headOnly, path);
 	}
 
 	private void dispatchPathname(HttpServletRequest req, HttpServletResponse res, boolean headOnly, String path) throws IOException {
-		String filename = req.getPathTranslated() != null ? req.getPathTranslated().replace('/', File.separatorChar) : "";
+		String filename = req.getPathTranslated() != null ? req.getPathTranslated().replace('/', File.separatorChar) : path+"/";
 		File file = new File(filename);
-		if (isLogenabled()) Utils.console("retrieving '" + filename + "' for path " + path);
+		if (isLogenabled()) Utils.console("retrieving '" + filename + "' for path " + req.getPathTranslated() + "<->" +  path);
 		if (file.exists()) {
 			if (!file.isDirectory()){
 				serveFile(req, res, headOnly, file);

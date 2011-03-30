@@ -1749,7 +1749,6 @@ public class Webserver implements ServletContext, Serializable {
 					uriLen = ((Integer) os[1]).intValue();
 					runServlet((HttpServlet) os[0]);
 				} else {
-					Utils.console("Testing:" + registry.get(reqUriPath).length + "->" + os[1]);
 					problem("No servlet found for serving " + reqUriPath, SC_BAD_REQUEST);
 				}
 			} finally {
