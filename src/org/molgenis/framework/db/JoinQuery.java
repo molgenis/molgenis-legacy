@@ -118,7 +118,7 @@ public class JoinQuery extends QueryImp
 
 	public List<Tuple> find() throws DatabaseException
 	{
-		List<Tuple> result = null;
+		//List<Tuple> result = null;
 
 		try
 		{
@@ -140,23 +140,23 @@ public class JoinQuery extends QueryImp
 			}
 
 			// debug
-			for (QueryRule r : joinRules)
-			{
-				//System.out.println("searching using joinrule: " + r);
-			}
+//			for (QueryRule r : joinRules)
+//			{
+//				//System.out.println("searching using joinrule: " + r);
+//			}
 
 			// add all superclasses and joins necessary
 			this.addSuperClasses();
 
-			for (Entity e : entities)
-			{
-				//System.out.println("adding entity: " + e.getName());
-			}
-
-			for (QueryRule r : joinRules)
-			{
-				//System.out.println("searching using joinrule: " + r);
-			}
+//			for (Entity e : entities)
+//			{
+//				//System.out.println("adding entity: " + e.getName());
+//			}
+//
+//			for (QueryRule r : joinRules)
+//			{
+//				//System.out.println("searching using joinrule: " + r);
+//			}
 
 			// execute the query
 			// assemble the sql
