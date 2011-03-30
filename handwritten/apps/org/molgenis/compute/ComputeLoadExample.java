@@ -253,8 +253,6 @@ public class ComputeLoadExample
 		catch (Exception e)
 		{
 			db.rollbackTx();
-			
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

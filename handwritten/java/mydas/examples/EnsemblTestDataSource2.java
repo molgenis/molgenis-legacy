@@ -42,13 +42,10 @@ public class EnsemblTestDataSource2 implements RangeHandlingAnnotationDataSource
 		try {
 			ensembl = new EnsemblTestManager2();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (DatabaseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

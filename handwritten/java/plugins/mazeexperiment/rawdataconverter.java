@@ -12,11 +12,12 @@ package plugins.mazeexperiment;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 
 
-public class rawdataconverter extends PluginModel
+public class rawdataconverter extends PluginModel<Entity>
 {
 	
 	/**
@@ -54,7 +55,7 @@ public class rawdataconverter extends PluginModel
 		this.dbval = dbval;
 	}
 
-	public rawdataconverter(String name, ScreenModel parent)
+	public rawdataconverter(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
@@ -111,7 +112,6 @@ public class rawdataconverter extends PluginModel
 			
 			}			
 			catch (Exception e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			}
 		}

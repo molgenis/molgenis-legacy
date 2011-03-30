@@ -211,7 +211,6 @@ public class MatrixBean extends PagableDataModel<String> {
 		       faces.responseComplete();    
 				
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}			
 	}

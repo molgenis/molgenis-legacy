@@ -30,11 +30,16 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class LifelinesDataImport extends PluginModel
+
+public class LifelinesDataImport extends PluginModel<Entity>
 {
-	public LifelinesDataImport(String name, ScreenModel parent)
+
+	private static final long serialVersionUID = -4524281787934817724L;
+
+	public LifelinesDataImport(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
@@ -152,7 +157,8 @@ public class LifelinesDataImport extends PluginModel
 									ov.setTime(new Date());
 									
 									Measurement feature = features[i];
-									String type = feature.getDataType();
+									//TODO: Danny: Use or Loose
+									/*String type = */feature.getDataType();
 								
 									String value = values[i].trim();
 									if(value.isEmpty()) {
@@ -199,16 +205,12 @@ public class LifelinesDataImport extends PluginModel
 				
 				
 			} catch (DatabaseException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			

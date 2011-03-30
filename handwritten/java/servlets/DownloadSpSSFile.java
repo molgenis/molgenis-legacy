@@ -90,10 +90,7 @@ public class DownloadSpSSFile extends app.servlet.MolgenisServlet
 			p.flush();
 			p.close();
 
-
-			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

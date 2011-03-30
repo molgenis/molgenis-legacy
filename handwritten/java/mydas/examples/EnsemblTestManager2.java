@@ -222,7 +222,6 @@ public class EnsemblTestManager2 {
 				//NOTE: Danny: Use or loose
 				/*DasComponentFeature geneDas = */this.getGene(gene.getIdField(),gene.getBpStart().intValue(),gene.getBpEnd().intValue(),segment);
 			} catch (DatabaseException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			

@@ -207,10 +207,8 @@
 //			} catch (DatabaseException e) {
 //				e.printStackTrace();
 //			}catch (IOException e) {
-//				// TODO Auto-generated catch block
 //				e.printStackTrace();
 //			} catch (BiffException e) {
-//				// TODO Auto-generated catch block
 //				e.printStackTrace();
 //			}			
 //			System.out.println("END");
@@ -240,10 +238,8 @@
 //			try {
 //				db.add(code);
 //			} catch (DatabaseException e) {
-//				// TODO Auto-generated catch block
 //				e.printStackTrace();
 //			} catch (IOException e) {
-//				// TODO Auto-generated catch block
 //				e.printStackTrace();
 //			}
 //			//em.persist(code);

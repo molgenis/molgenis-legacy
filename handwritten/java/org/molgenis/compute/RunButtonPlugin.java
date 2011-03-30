@@ -53,7 +53,7 @@ public class RunButtonPlugin extends PluginModel
 		try {
 			currentOperation = db.findById(Operation.class, ae.getProtocol());
 		} catch (DatabaseException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		
@@ -64,7 +64,6 @@ public class RunButtonPlugin extends PluginModel
 			try {
 				currentInputParameter = db.findById(Parameter.class, currentInputParameterID);
 			} catch (DatabaseException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -81,7 +80,6 @@ public class RunButtonPlugin extends PluginModel
 			try {
 				currentOutputParameter = db.findById(Parameter.class, currentOutputParameterID);
 			} catch (DatabaseException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -209,7 +207,6 @@ public class RunButtonPlugin extends PluginModel
 //			try {
 //				executeWorkflowElement(currentWorkflowElement, db, executedWorkflowElements, insertedComputeFeatures, scriptTemplates);
 //			} catch (DatabaseException e) {
-//				// TODO Auto-generated catch block
 //				e.printStackTrace();
 //			}
 			
@@ -221,7 +218,6 @@ public class RunButtonPlugin extends PluginModel
 //				try {
 //					currentComputeFeature = db.findById(ComputeFeature.class, insertedComputeFeature.intValue());
 //				} catch (DatabaseException e) {
-//					// TODO Auto-generated catch block
 //					e.printStackTrace();
 //				}
 //				this.stuffToShow += "<input type=\"text\" name=\"" + currentComputeFeature.getName() + "\" /></br>" ;

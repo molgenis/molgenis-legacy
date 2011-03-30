@@ -72,7 +72,6 @@ public class ApplyProtocolQuicklyOld extends PluginModel
 		}
 		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 
 			try
@@ -81,7 +80,6 @@ public class ApplyProtocolQuicklyOld extends PluginModel
 			}
 			catch (DatabaseException e1)
 			{
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 

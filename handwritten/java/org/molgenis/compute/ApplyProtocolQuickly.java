@@ -117,7 +117,6 @@ public class ApplyProtocolQuickly extends GenericPlugin
 			}
 			catch (DatabaseException e1)
 			{
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			e.printStackTrace();

@@ -99,7 +99,6 @@ public class MyCOL7A1 extends PluginModel<Entity>
 		}
 		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

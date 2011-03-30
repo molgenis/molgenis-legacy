@@ -36,7 +36,6 @@ public class DBMatrix<T> implements PagableMatrix<T, Column, Integer> {
 		try {
 			db = new JpaDatabase();
 		} catch (DatabaseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

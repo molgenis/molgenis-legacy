@@ -10,7 +10,6 @@ package plugins.investigationoverview;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
@@ -132,7 +131,7 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 			{
 				this.model.setShowAllOther(false);
 			}
-
+			//TODO: Danny: Code smell ??? getparent().getparent() ?
 			FormModel<Investigation> theParent = (FormModel<Investigation>) this.getParent().getParent();
 			Investigation inv = ((Investigation) theParent.getRecords().get(0));
 

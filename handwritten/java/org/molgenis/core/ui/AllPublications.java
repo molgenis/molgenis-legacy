@@ -56,7 +56,6 @@ public class AllPublications extends PluginModel<Entity>
 		}
 		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

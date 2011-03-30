@@ -92,7 +92,6 @@ public class MolgenisUserDecorator<E extends org.molgenis.auth.MolgenisUser> ext
 		}
 		catch (NoSuchAlgorithmException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

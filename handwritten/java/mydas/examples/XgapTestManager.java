@@ -40,13 +40,10 @@ public class XgapTestManager {
 			db = new JDBCDatabase(new MolgenisOptions("xgap.properties"));
 			
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (CmdLineException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();		
 		}
 		
@@ -124,7 +121,6 @@ public class XgapTestManager {
 				}
 			}
 		} catch (DatabaseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -153,7 +149,6 @@ public class XgapTestManager {
 				}
 			}
 		} catch (DatabaseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
 		return segments;
@@ -171,7 +166,6 @@ public class XgapTestManager {
 			try {
 				count = db.count(Gene.class);
 			} catch (DatabaseException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}		
