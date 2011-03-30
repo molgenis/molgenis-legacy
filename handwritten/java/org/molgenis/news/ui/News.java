@@ -16,17 +16,20 @@ import org.molgenis.news.service.NewsService;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class News extends PluginModel
+public class News extends PluginModel<Entity>
 {
+
+	private static final long serialVersionUID = -7677999897948691120L;
 	private static final int NUM_NEWS = 5; // how many news to be shown in right box?
 	private String action = "init";
 	private NewsService newsService;
 	private List<MolgenisNews> news = new ArrayList<MolgenisNews>();
 	private MolgenisNews newsItem;
 
-	public News(String name, ScreenModel parent)
+	public News(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
@@ -105,5 +108,9 @@ public class News extends PluginModel
 	public MolgenisNews getNewsItem()
 	{
 		return this.newsItem;
+	}
+
+	public static int getNumNews() {
+		return NUM_NEWS;
 	}
 }

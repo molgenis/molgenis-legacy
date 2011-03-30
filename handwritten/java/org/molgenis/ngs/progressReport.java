@@ -10,11 +10,17 @@ package org.molgenis.ngs;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class progressReport extends PluginModel
+public class progressReport extends PluginModel<Entity>
 {
-	public progressReport(String name, ScreenModel parent)
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8753791789889671967L;
+
+	public progressReport(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

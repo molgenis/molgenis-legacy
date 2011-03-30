@@ -17,7 +17,7 @@ import org.molgenis.framework.db.jdbc.MappingDecorator;
 public class MolgenisFileDecorator<E extends MolgenisFile> extends MappingDecorator<E>
 {
 	//JDBCMapper is the generate thing
-	public MolgenisFileDecorator(JDBCMapper generatedMapper)
+	public MolgenisFileDecorator(JDBCMapper<E> generatedMapper)
 	{
 		super(generatedMapper);
 	}

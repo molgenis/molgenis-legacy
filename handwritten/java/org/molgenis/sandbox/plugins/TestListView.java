@@ -7,13 +7,12 @@
 
 package org.molgenis.sandbox.plugins;
 
-import java.util.List;
-
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ListView;
 import org.molgenis.organization.Investigation;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 /**
@@ -25,9 +24,11 @@ import org.molgenis.util.Tuple;
  */
 public class TestListView extends GenericPlugin
 {
+
+	private static final long serialVersionUID = -3119343430895743631L;
 	ListView listView = null;
 
-	public TestListView(String name, ScreenModel parent)
+	public TestListView(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
@@ -63,7 +64,8 @@ public class TestListView extends GenericPlugin
 	{
 		try
 		{
-			List<Investigation> investigations = db.find(Investigation.class);
+			//TODO: Danny: use or loose
+			/*List<Investigation> investigations = */db.find(Investigation.class);
 
 			// borrow form builder from generated form (need to make trivial and configurable)
 //			InvestigationForm f = new InvestigationForm();
