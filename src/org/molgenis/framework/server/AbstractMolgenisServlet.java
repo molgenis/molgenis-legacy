@@ -740,7 +740,6 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		// setup the output-stream
 		response.setBufferSize(10000);
 		response.setContentType("text/html; charset=UTF-8");
-		System.out.println("asdasdasdasd");
 		logger.info("starting download " + request.getPathInfo());
 		long start_time = System.currentTimeMillis();
 
