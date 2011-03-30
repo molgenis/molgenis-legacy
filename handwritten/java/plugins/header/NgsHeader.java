@@ -10,11 +10,17 @@ package plugins.header;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class NgsHeader extends PluginModel
+
+
+public class NgsHeader extends PluginModel<Entity>
 {
-	public NgsHeader(String name, ScreenModel parent)
+
+	private static final long serialVersionUID = -5865482389576304698L;
+
+	public NgsHeader(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

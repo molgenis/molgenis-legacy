@@ -10,7 +10,9 @@ package plugins.header;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+
 
 /**
  * A simple plugin to create the header of the MOLGENIS application. This
@@ -19,9 +21,12 @@ import org.molgenis.util.Tuple;
  * 
  * @author Morris Swertz
  */
-public class AnimalDBHeader extends PluginModel
+public class AnimalDBHeader extends PluginModel<Entity>
 {
-	public AnimalDBHeader(String name, ScreenModel parent)
+
+	private static final long serialVersionUID = 4701628601897969977L;
+
+	public AnimalDBHeader(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
