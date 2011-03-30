@@ -10,11 +10,15 @@ package plugins.welcome;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class ComputeWelcomeScreenPlugin extends PluginModel
+public class ComputeWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>
 {
-	public ComputeWelcomeScreenPlugin(String name, ScreenModel parent)
+
+	private static final long serialVersionUID = -3673798034980916768L;
+
+	public ComputeWelcomeScreenPlugin(String name, ScreenModel<E> parent)
 	{
 		super(name, parent);
 	}

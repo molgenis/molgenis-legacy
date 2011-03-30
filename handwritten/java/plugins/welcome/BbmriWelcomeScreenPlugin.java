@@ -10,11 +10,15 @@ package plugins.welcome;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class BbmriWelcomeScreenPlugin extends PluginModel
+public class BbmriWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>
 {
-	public BbmriWelcomeScreenPlugin(String name, ScreenModel parent)
+
+	private static final long serialVersionUID = -2848815736940818733L;
+
+	public BbmriWelcomeScreenPlugin(String name, ScreenModel<E> parent)
 	{
 		super(name, parent);
 	}

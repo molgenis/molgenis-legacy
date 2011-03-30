@@ -9,20 +9,21 @@ import jxl.common.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import commonservice.CommonService;
 
 import plugins.fillngsdb.FillNgsDatabase;
 
-public class NGSWelcomeScreenPlugin extends PluginModel {
+public class NGSWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>{
 
 	private static final long serialVersionUID = 1918194427035294724L;
 	private FillNgsDatabase fill;
 	private static final transient Logger logger = Logger.getLogger(NGSWelcomeScreenPlugin.class);
 
 	
-	public NGSWelcomeScreenPlugin(String name, ScreenModel parent) {
+	public NGSWelcomeScreenPlugin(String name, ScreenModel<E> parent) {
 		super(name, parent);
 		
 		

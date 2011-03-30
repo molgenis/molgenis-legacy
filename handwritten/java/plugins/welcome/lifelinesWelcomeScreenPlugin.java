@@ -10,16 +10,15 @@ package plugins.welcome;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class lifelinesWelcomeScreenPlugin extends PluginModel
+public class lifelinesWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>
 {
-	/**
-	 * 
-	 */
+	//TODO Change to generated serialVersionUID
 	private static final long serialVersionUID = 1L;
 
-	public lifelinesWelcomeScreenPlugin(String name, ScreenModel parent)
+	public lifelinesWelcomeScreenPlugin(String name, ScreenModel<E> parent)
 	{
 		super(name, parent);
 	}
