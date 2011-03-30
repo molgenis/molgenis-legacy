@@ -260,7 +260,7 @@ public class Field
 	{
 		this.type = type;
 	}
-
+	
 	public String getDescription()
 	{
 		return description;

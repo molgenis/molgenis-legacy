@@ -36,15 +36,9 @@ public class Entity
 	@XmlAttribute(name="decorator")
 	private String _decorator = null;
 	
-
-
 	@XmlAttribute(name="abstract")
 	private Boolean _abstract;
 	
-
-	
-
-
 	//HELPER METHODS
 	public Field getField(String name)
 	{
