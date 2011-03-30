@@ -263,7 +263,6 @@ public class JpaDatabase extends AbstractDatabase implements Database
 		}
 		catch (NoSuchMethodException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// List<E> result = JPAQueryGeneratorUtil.createWhere(entityClass,

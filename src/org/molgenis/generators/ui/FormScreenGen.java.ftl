@@ -77,7 +77,6 @@ public class ${JavaName(form.className)}FormModel extends FormModel<${entity}>
 		}
 		catch (DatabaseException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		</#if>	

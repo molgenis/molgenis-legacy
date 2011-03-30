@@ -872,7 +872,6 @@ public class Field implements Serializable
 		}
 		catch (MolgenisModelException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		if (type instanceof MrefField) str += ", mref_name=" + this.mref_name + ", mref_localid="

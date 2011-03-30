@@ -32,7 +32,6 @@ public abstract class AbstractDataSourceWrapper implements DataSourceWrapper
 		}
 		catch (NamingException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

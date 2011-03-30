@@ -17,10 +17,7 @@ public class ConnectionUtil
 			Connection conn = DriverManager.getConnection(options.db_uri.trim(), options.db_user.trim(),
 					options.db_password.trim());
 			return conn;
-		}
-		catch (Exception e)
-		{
-			// TODO Auto-generated catch block
+		}catch (Exception e){
 			e.printStackTrace();
 		}
 		return null;
@@ -33,10 +30,7 @@ public class ConnectionUtil
 			Connection conn = DriverManager.getConnection(p.getProperty("db_uri").trim(), p.getProperty("db_user")
 					.trim(), p.getProperty("db_password").trim());
 			return conn;
-		}
-		catch (Exception e)
-		{
-			// TODO Auto-generated catch block
+		}catch (Exception e){
 			e.printStackTrace();
 		}
 		return null;		

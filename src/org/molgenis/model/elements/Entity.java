@@ -205,7 +205,6 @@ public class Entity extends DBSchema implements Record
 		// }
 		// catch (MolgenisModelException e)
 		// {
-		// // TODO Auto-generated catch block
 		// e.printStackTrace();
 		// }
 		// }

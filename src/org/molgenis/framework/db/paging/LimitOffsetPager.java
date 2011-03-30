@@ -66,12 +66,10 @@ public class LimitOffsetPager<E extends Entity> extends AbstractPager<E>
 		}
 		catch (InstantiationException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (IllegalAccessException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		reloadCount(db, q.getRules());

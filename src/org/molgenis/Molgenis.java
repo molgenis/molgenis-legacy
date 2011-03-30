@@ -119,7 +119,6 @@ public class Molgenis {
 			}
 			new Molgenis(args[0]).generate();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

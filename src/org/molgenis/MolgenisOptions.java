@@ -277,12 +277,10 @@ public class MolgenisOptions
 		}
 		catch (NullPointerException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (CmdLineException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

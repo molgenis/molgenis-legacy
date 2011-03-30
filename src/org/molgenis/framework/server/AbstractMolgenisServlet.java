@@ -135,12 +135,10 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (ServletException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -154,12 +152,10 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (ServletException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -173,12 +169,10 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (ServletException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -191,12 +185,10 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (ServletException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -257,12 +249,10 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		}
 		catch (DatabaseException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (NamingException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

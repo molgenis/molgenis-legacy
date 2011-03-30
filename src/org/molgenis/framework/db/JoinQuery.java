@@ -191,7 +191,6 @@ public class JoinQuery extends QueryImp
 		}
 		catch (MolgenisModelException e1)
 		{
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			throw new DatabaseException(e1.getMessage());
 		}
@@ -235,12 +234,10 @@ public class JoinQuery extends QueryImp
 			}
 			catch (MolgenisModelException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			catch (DatabaseException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -293,7 +290,6 @@ public class JoinQuery extends QueryImp
 					}
 					catch (MolgenisModelException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 						throw new DatabaseException(e.getMessage());
 					}

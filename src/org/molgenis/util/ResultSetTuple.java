@@ -383,7 +383,6 @@ public class ResultSetTuple extends SimpleTuple
 		}
 		catch (SQLException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
