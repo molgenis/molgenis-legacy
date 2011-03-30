@@ -19,10 +19,11 @@ import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.Entity;
 
 import commonservice.CommonService;
 
-public class ListPlugin2 extends PluginModel {
+public class ListPlugin2 extends PluginModel<Entity> {
 	private static final long serialVersionUID = -7341276676642021364L;
 	private List<ObservationTarget> targetList;
 	private List<Measurement> featureList;
@@ -30,7 +31,7 @@ public class ListPlugin2 extends PluginModel {
 	private boolean firstTime = true;
 	private CommonService ct = CommonService.getInstance();
 
-	public ListPlugin2(String name, ScreenModel parent) {
+	public ListPlugin2(String name, ScreenModel<Entity> parent) {
 		super(name, parent);
 	}
 	
@@ -90,7 +91,6 @@ public class ListPlugin2 extends PluginModel {
 				Calendar calendar = Calendar.getInstance();
 				Date now = calendar.getTime();
 				int investigationId = ct.getInvestigationId("AnimalDB");
-				int actorId = ct.getActorId(this.getLogin().getUserId());
 				String groupName;
 				int groupId;
 				

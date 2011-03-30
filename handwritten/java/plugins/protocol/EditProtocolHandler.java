@@ -3,22 +3,15 @@ package plugins.protocol;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import org.apache.log4j.Logger;
-import org.molgenis.batch.MolgenisBatch;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
-
-import plugins.ngs.samplerviewer.SampleViewer;
-
-import com.ibm.icu.util.Calendar;
 
 class EditProtocolHandler {
 

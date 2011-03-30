@@ -13,6 +13,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 public class EditProtocolPlugin extends GenericPlugin
@@ -24,7 +25,7 @@ public class EditProtocolPlugin extends GenericPlugin
 	private EditProtocolHandler handler;
 	private EditProtocolUI ui;
 	    
-	public EditProtocolPlugin(String name, ScreenModel parent)
+	public EditProtocolPlugin(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 		

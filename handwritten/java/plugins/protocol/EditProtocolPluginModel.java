@@ -15,7 +15,6 @@ public class EditProtocolPluginModel {
 	
 	private List<Integer> featuresIdList = new ArrayList<Integer>();
 	private List<Integer> targetsIdList = new ArrayList<Integer>();
-	private List<String> targetList = new ArrayList<String>();
 	private int protocolId;
 	private int protocolApplicationId;
 	private Map<Integer, String> targetMap;

@@ -10,7 +10,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.molgenis.auth.MolgenisEntity;
 import org.molgenis.core.Ontology;
-import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
@@ -50,20 +49,6 @@ public class FillAnimalDB {
 		Logger logger = Logger.getLogger("FillAnimalDB");
 		logger.info("Start filling the database with factory defaults for AnimalDB.");
 		
-		// Add ontology terms for typing of targets
-		OntologyTerm animalTerm = new OntologyTerm();
-		animalTerm.setName(CommonService.ANIMAL);
-		db.add(animalTerm);
-		OntologyTerm groupTerm = new OntologyTerm();
-		groupTerm.setName(CommonService.GROUP);
-		db.add(groupTerm);
-		OntologyTerm locationTerm = new OntologyTerm();
-		locationTerm.setName(CommonService.LOCATION);
-		db.add(locationTerm);
-		OntologyTerm actorTerm = new OntologyTerm();
-		actorTerm.setName(CommonService.ACTOR);
-		db.add(actorTerm);
-		
 		// Make investigation 'AnimalDB'
 		logger.info("Create investigation 'AnimalDB'");
 		Investigation inv = new Investigation();
@@ -102,7 +87,7 @@ public class FillAnimalDB {
 		ct.makeMeasurement(invid, "Father", targetlinkUnitId, individual, null, false, "xref", "To link a parent-group to an animal that may be a father.");
 		ct.makeMeasurement(invid, "Mother", targetlinkUnitId, individual, null, false, "xref", "To link a parent-group to an animal that may be a mother.");
 		ct.makeMeasurement(invid, "Certain", booleanUnitId, null, null, false, "bool", "To indicate whether the parenthood of an animal regarding a parent-group is certain.");
-		ct.makeMeasurement(invid, "Group", targetlinkUnitId, panel, null, false, "xref", "To add a target to a group.");
+		ct.makeMeasurement(invid, "Group", targetlinkUnitId, panel, null, false, "xref", "To add a target to a panel.");
 		ct.makeMeasurement(invid, "Parentgroup", targetlinkUnitId, panel, "Parentgroup", false, "xref", "To link a litter to a parent-group.");
 		ct.makeMeasurement(invid, "DateOfBirth", datetimeUnitId, null, null, true, "datetime", "To set a target's or a litter's date of birth.");
 		ct.makeMeasurement(invid, "Size", numberUnitId, null, null, true, "int", "To set the size of a target-group, for instance a litter.");

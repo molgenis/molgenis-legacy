@@ -15,18 +15,19 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.pheno.ObservationTarget;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import commonservice.CommonService;
 
-public class LocationInfoPlugin extends PluginModel
+public class LocationInfoPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 6637437260773077373L;
 	private List<ObservationTarget> locationList;
 	private int selectedLocation; // not used at the moment
 	private CommonService ct = CommonService.getInstance();
 	
-	public LocationInfoPlugin(String name, ScreenModel parent)
+	public LocationInfoPlugin(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

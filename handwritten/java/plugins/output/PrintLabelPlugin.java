@@ -10,21 +10,16 @@ package plugins.output;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.TextParagraph;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
-
-import app.servlet.MolgenisServlet;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -39,7 +34,7 @@ public class PrintLabelPlugin extends GenericPlugin
 	private ActionInput printButton;
 	private TextParagraph text;
 
-	public PrintLabelPlugin(String name, ScreenModel parent)
+	public PrintLabelPlugin(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

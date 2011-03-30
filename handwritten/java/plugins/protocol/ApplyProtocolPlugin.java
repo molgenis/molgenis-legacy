@@ -13,6 +13,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 public class ApplyProtocolPlugin extends GenericPlugin
@@ -23,7 +24,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
     private ApplyProtocolHandler handler;
     private ApplyProtocolUI ui;
 
-    public ApplyProtocolPlugin(String name, ScreenModel parent)
+    public ApplyProtocolPlugin(String name, ScreenModel<Entity> parent)
     {
 		super(name, parent);
 	

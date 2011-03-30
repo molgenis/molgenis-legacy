@@ -61,9 +61,8 @@ public class CommonService
 {
 	public static final String ANIMAL = "Animal";
 	public static final String ACTIVE = "Active";
-	public static final String ACTOR = "Actor";
 	public static final String LOCATION = "Location";
-	public static final String GROUP = "Group";
+	public static final String PANEL = "Panel";
 
 	private static Database db;
 	private static int protAppCounter = 0;
@@ -426,7 +425,7 @@ public class CommonService
 			ParseException, IOException
 	{
 		// First, check is target is already in this Panel
-		int featureid = getMeasurementId(GROUP);
+		int featureid = getMeasurementId("Group");
 		Query<ObservedValue> q = db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureid));
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
@@ -435,7 +434,7 @@ public class CommonService
 		List<ObservedValue> valueList = q.find();
 		
 		if (valueList.size() == 0) {
-			int protocolId = getProtocolId("Set" + GROUP);
+			int protocolId = getProtocolId("SetGroup");
 			ProtocolApplication app = createProtocolApplication(investigationId, protocolId);
 			db.add(app);
 			return createObservedValue(investigationId, app.getId(), tmpDate, null, featureid, targetid, null, groupid);
@@ -461,7 +460,7 @@ public class CommonService
 		ObservationTarget actorToAdd = new ObservationTarget();
 		actorToAdd.setName(actorName);
 		actorToAdd.setInvestigation_Id(investigationId);
-		actorToAdd.setOntologyReference_Name(ACTOR);
+		//actorToAdd.setOntologyReference_Name(ACTOR);
 		db.add(actorToAdd);
 		return actorToAdd.getId();
 	}

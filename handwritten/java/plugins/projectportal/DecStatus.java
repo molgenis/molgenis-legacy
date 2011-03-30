@@ -19,25 +19,26 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.html.Table;
 import org.molgenis.framework.ui.html.TablePanel;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import com.ibm.icu.util.Calendar;
-
 import commonservice.CommonService;
 
 public class DecStatus extends GenericPlugin
 {
+	private static final long serialVersionUID = -8647856553529155758L;
+	
 	private TablePanel tablePanel = null;
 	private CommonService cq = CommonService.getInstance();
 	private Database db = null;
 	
-	public DecStatus(String name, ScreenModel parent)
+	public DecStatus(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

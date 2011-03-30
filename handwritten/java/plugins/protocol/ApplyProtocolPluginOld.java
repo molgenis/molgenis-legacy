@@ -10,7 +10,6 @@ package plugins.protocol;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -30,12 +29,13 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import commonservice.CommonService;
 
 @Deprecated
-public class ApplyProtocolPluginOld extends PluginModel {
+public class ApplyProtocolPluginOld extends PluginModel<Entity> {
 
 	private static final long serialVersionUID = 783393812835980181L;
 	private List<Protocol> protocolList;
@@ -45,7 +45,7 @@ public class ApplyProtocolPluginOld extends PluginModel {
 	private Map<Integer, String> targetMap;
 	private CommonService ct = CommonService.getInstance();
 	
-	public ApplyProtocolPluginOld(String name, ScreenModel parent)
+	public ApplyProtocolPluginOld(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
@@ -124,11 +124,8 @@ public class ApplyProtocolPluginOld extends PluginModel {
 			
 			if (action.equals("addEvent")) {
 				SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
-				Calendar calendar = Calendar.getInstance();
-				Date now = calendar.getTime();
 				int eventCounter = 0;
 				int animalCounter = 0;
-				int actorid = ct.getActorId(this.getLogin().getUserId());
 				int protocolId = request.getInt("eventtype");
 				boolean sepval = false;
 				if (request.getBool("sepvaltoggle") != null) {

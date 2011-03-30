@@ -14,10 +14,11 @@ import java.util.List;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 
-public class YearlyReportModule extends PluginModel
+public class YearlyReportModule extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -9028427140087603225L;
 	private AnimalDBReport report = null;
@@ -38,7 +39,7 @@ public class YearlyReportModule extends PluginModel
 		this.report = report;
 	}
 
-	public YearlyReportModule(String name, ScreenModel parent)
+	public YearlyReportModule(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 		Calendar calendar = Calendar.getInstance();

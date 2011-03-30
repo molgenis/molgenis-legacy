@@ -19,23 +19,23 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import app.servlet.MolgenisServlet;
 
 import commonservice.CommonService;
 
-public class ListPlugin extends PluginModel {
+public class ListPlugin extends PluginModel<Entity> {
 	private static final long serialVersionUID = -7341276676642021364L;
 	private List<Measurement> featureList;
 	private List<Panel> groupList = new ArrayList<Panel>();
 	private boolean firstTime = true;
 	private CommonService ct = CommonService.getInstance();
 
-	public ListPlugin(String name, ScreenModel parent) {
+	public ListPlugin(String name, ScreenModel<Entity> parent) {
 		super(name, parent);
 	}
 	

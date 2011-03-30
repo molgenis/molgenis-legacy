@@ -14,19 +14,19 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.pheno.ObservationTarget;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import commonservice.CommonService;
 
-public class EventViewerPlugin extends PluginModel
+public class EventViewerPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 8804579908239186037L;
 	private List<Integer> targetIdList;
 	private Map<Integer, String> targetMap;
 	private CommonService ct = CommonService.getInstance();
 	
-	public EventViewerPlugin(String name, ScreenModel parent)
+	public EventViewerPlugin(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
