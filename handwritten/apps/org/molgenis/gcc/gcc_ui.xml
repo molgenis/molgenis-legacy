@@ -1,4 +1,4 @@
-<molgenis name="molgenis-apps">
+<molgenis name="molgenis_apps">
 	<plugin name="molgenis_header" type="plugins.header.MolgenisHeader" />
 	<menu name="main" position="left">
 		<!-- empty gui so no elements can collide with project elements -->
