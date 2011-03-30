@@ -6,10 +6,10 @@
 <molgenis name="chd7">
 	<plugin name="MolgenisHeader" type="org.molgenis.mutation.ui.header.Chd7Header"/>
 	<menu name="View" startswith="SearchPlugin">
-		<plugin name="SearchPlugin" type="plugin.search.SearchPlugin" label="Search">
+		<plugin name="SearchPlugin" type="org.molgenis.mutation.ui.search.SearchPlugin" label="Search">
 			<!--<plugin name="Sub" type="plugin.ui.Sub" label="Sub"/>-->
 		</plugin>
-		<plugin name="UploadPlugin" type="plugin.upload.Upload" label="Submit data"/>
+		<plugin name="UploadPlugin" type="org.molgenis.mutation.ui.upload.Upload" label="Submit data"/>
 		<plugin name="Contact" type="org.molgenis.feedback.ui.Contact" label="Contact"/>
 		<plugin name="Publications" type="org.molgenis.core.ui.AllPublications" label="References"/>
 		<plugin name="Background" type="org.molgenis.mutation.ui.background.Background" label="Background"/>
