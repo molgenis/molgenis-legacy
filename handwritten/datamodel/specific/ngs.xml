@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<molgenis name="org.molgenis"  label="Next Generation Sequencing Workbench" depends="core,xgap,contact,system">
+<molgenis name="org.molgenis" label="Next Generation Sequencing Workbench"
+	depends="core,xgap,contact,system">
 	<module name="ngs">
 		<description>Extension to XGAP to support Next Gen Sequencing projects
 			using the Illumina platform.</description>
@@ -18,10 +19,10 @@
 			<field name="labworker_id" type="xref" xref_entity="NgsPerson"
 				nillable="true" description="Lab technician in charge of project"
 				xref_label="id" unique="false" />
-			<field name="customer" type="xref" xref_entity="NgsPerson" nillable="false" 
-			description="Customer/Organization for a Project"/>
-			<field name="workflow" type="xref" xref_entity="Workflow" nillable="false" 
-			description="Project Workflow"/>
+			<field name="customer" type="xref" xref_entity="NgsPerson"
+				nillable="false" description="Customer/Organization for a Project" />
+			<field name="workflow" type="xref" xref_entity="Workflow"
+				nillable="false" description="Project Workflow" />
 			<unique fields="name,contractcode" />
 		</entity>
 		<entity name="Flowcell" extends="ObservationTarget" xref_label="name">
@@ -34,36 +35,39 @@
 				number, etc</description>
 			<field name="sampletype" type="enum" default="dna"
 				enum_options="[dna,rna]" auto="false" nillable="false"
-				description="Type of sample (dna/rna). Will become ontologyReference" unique="false" />
-			<field name="origin" type="xref" xref_field="Species.id" nillable="true"
-				description="Origin of the sample (i.e. duck, pig, human)" unique="false" />
+				description="Type of sample (dna/rna). Will become ontologyReference"
+				unique="false" />
+			<!--
+				this should not be here but defined in the sample! field
+				name="origin" type="xref" xref_field="Species.id" nillable="true"
+				description="Origin of the sample (i.e. duck, pig, human)"
+				unique="false" /
+			-->
 			<field name="fragmentlength" type="int" auto="false" readonly="true"
-				nillable="true" description="Length of the sample fragment" unique="false" />
+				nillable="true" description="Length of the sample fragments" unique="false" />
 			<field name="description" type="text" auto="false" readonly="true"
 				nillable="true" description="Description/Notes about the sample"
 				unique="false" />
 			<field name="Samples" type="mref" xref_field="Sample.id"
-				description="One or more samples this library was prepared from" />
+				description="One sample, or a pool of samples, from which this library was prepared" />
 		</entity>
 		<entity name="Lane" extends="ObservationTarget">
 			<description> A lane is one lane on the Illumina Genome Analyzer
 			</description>
 			<field name="Flowcell" type="xref" xref_entity="Flowcell"
 				description="The flowcell to which this lane belongs" />
-			<field name="LaneNumber" type="int"
+			<field name="LaneNumber" type="enum" enum_options="[L1,L2,L3,L4,L5,L6,L7,L8]"
 				description="The lane number that is unique within a flow cell. Typically in range 1-8" />
 			<field name="Library" type="xref" xref_entity="Library"
 				description="The library which is measured in this lane" />
 			<field name="readlength" type="int" nillable="true"
 				description="Length of the reads measured on the machine" />
-			<unique fields="FlowCell,LaneNumber" />
+			<unique fields="FlowCell,LaneNumber" description="Lane number is unique per flowcell" />
 		</entity>
-				<entity name="NgsSample" extends="Sample">
+		<entity name="NgsSample" extends="Sample">
 			<description> This extended investigation provides extra fields for
-				saving
-				information of the customer, such as their address, telephone
-				number, etc
-			</description>
+				saving information of the customer, such as their address, telephone
+				number, etc</description>
 			<field name="sampletype" type="enum" default="dna"
 				enum_options="[dna,rna]" auto="false" nillable="false"
 				description="Type of sample (dna/rna)" unique="false" />
@@ -90,9 +94,7 @@
 		<entity name="ProjectWorkflow" label="Project Workflow"
 			implements="Identifiable">
 			<description> A project workflow describes the protocol applications
-				that exist
-				for a given project, per sample. 
-			</description>
+				that exist for a given project, per sample.</description>
 			<field name="workflow" type="xref" xref_entity="Workflow"
 				description="Reference to the workflow" />
 			<field name="project" type="xref" xref_entity="Project"
@@ -101,11 +103,9 @@
 				description="Reference to the sample which will follow the protocol" />
 		</entity>
 		<entity name="NgsPerson" extends="Person">
-			<description> An ngs person </description>
+			<description> An ngs person</description>
 			<field name="labworker" nillable="true" type="boolean"
 				description="Indicate whether the contact is a labworker" />
 		</entity>
-		
-		
 	</module>
 </molgenis>

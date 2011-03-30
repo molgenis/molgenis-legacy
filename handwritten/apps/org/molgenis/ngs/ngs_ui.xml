@@ -1,20 +1,35 @@
 <molgenis name="ngs" label="Next Generation Sequencing Workbench">
+	<description>Simple workbench to work with Illumina NGS data. Samples
+		are delivered as part of Investigations, optionally registering the
+		contacts for this investigation. Within an NGS facility these samples
+		will be processed into libraries. These libraries will subsequently be
+		measured on the illumina flowcell, each library into one lane. Along
+		the way a lot of 'Features' will be measured that result in
+		ObservedValues that need to be attached to samples, libraries, or
+		lanes respectively. This user interface provides a minimal way to do
+		this.</description>
 	<plugin name="molgenis_header" type="plugins.header.MolgenisHeader" />
 	<menu name="main" position="left">
-		<form name="Investigations" entity="Investigation">
-			<menu name="InvestigationMenu">
-				<form name="Features" entity="ObservableFeature" />
-				<form name="Samples" entity="Sample">
-					<form name="ValuesPerSample" entity="ObservedValue" hide_fields="ontologyReference,id,relation"/>
+		<form name="Investigations" entity="Investigation" hide_fields="id,start,end,accession">
+			<menu name="InvestigationMenu" label="Projects">
+				<form name="Samples" entity="Sample" hide_fields="id,investigation,ontologyReference">
+					<form name="ValuesPerSample" entity="ObservedValue"
+						hide_fields="ontologyReference,id,relation" />
 				</form>
-				<form name="Libraries" entity="Library" />
-				<form name="Flowcells" entity="Flowcell" />
-				<form name="Lanes" entity="Lane">
-					<form name="ValuesPerLane" entity="ObservedValue"  hide_fields="OntologyReference,Id,Relation"/>
-				</form>
-				<form name="AllObservedValues" entity="ObservedValue" />
 			</menu>
 		</form>
-		<plugin name="ExcelImport" type="plugins.genericwizard.GenericWizard"/>
+		<form name="Libraries" entity="Library" hide_fields="id,investigation,ontologyReference">
+			<form name="ValuesPerLibrary" entity="ObservedValue"
+				hide_fields="ontologyReference,id,relation" />
+		</form>
+		<form name="Flowcells" entity="Flowcell" hide_fields="id,investigation,ontologyReference">
+			<form name="Lanes" entity="Lane" hide_fields="id,investigation,ontologyReference">
+				<form name="ValuesPerLane" entity="ObservedValue"
+					hide_fields="ontologyReference,id,relation" />
+			</form>
+		</form>
+		<form name="Contacts" entity="Person" compact_view="FirstName,MidInitials,LastName" hide_fields="id"/>
+		<form name="Features" entity="ObservableFeature"  hide_fields="id,investigation,ontologyReference"/>
+		<plugin name="ExcelImport" type="plugins.genericwizard.GenericWizard" />
 	</menu>
 </molgenis>
