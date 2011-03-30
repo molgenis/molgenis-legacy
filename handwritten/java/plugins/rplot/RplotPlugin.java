@@ -19,13 +19,14 @@ import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class RplotPlugin extends PluginModel
+public class RplotPlugin<E extends Entity> extends PluginModel<E>
 {
 
+	private static final long serialVersionUID = 2598093872153856022L;
 	private DataMatrixHandler dmh = null;
-	
 	private RplotPluginModel model = new RplotPluginModel();
 
 	public RplotPluginModel getModel()
@@ -38,7 +39,7 @@ public class RplotPlugin extends PluginModel
 		this.setMessages();
 	}
 
-	public RplotPlugin(String name, ScreenModel parent)
+	public RplotPlugin(String name, ScreenModel<E> parent)
 	{
 		super(name, parent);
 	}
@@ -171,7 +172,7 @@ public class RplotPlugin extends PluginModel
 
 		try
 		{
-			FormModel<Data> theParent = (FormModel) this.getParent().getParent();
+			FormModel<Data> theParent = (FormModel<Data>) this.getParent().getParent();
 			Data newSelectedData = ((Data) theParent.getRecords().get(0));
 			
 			if(dmh == null){

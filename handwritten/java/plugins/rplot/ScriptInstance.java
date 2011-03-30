@@ -1,7 +1,6 @@
 package plugins.rplot;
 
 import java.io.File;
-import java.util.List;
 
 import org.molgenis.util.RScript;
 import org.molgenis.util.RScriptException;

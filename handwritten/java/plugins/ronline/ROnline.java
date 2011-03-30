@@ -15,10 +15,11 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class ROnline extends PluginModel {
-
+public class ROnline<E extends Entity> extends PluginModel<E> {
+	private static final long serialVersionUID = -4016852670578378111L;
 	private ROnlineModel model = new ROnlineModel();
 	long timeOut = 60;
 
@@ -26,7 +27,7 @@ public class ROnline extends PluginModel {
 		return model;
 	}
 
-	public ROnline(String name, ScreenModel parent) {
+	public ROnline(String name, ScreenModel<E> parent) {
 		super(name, parent);
 	}
 
