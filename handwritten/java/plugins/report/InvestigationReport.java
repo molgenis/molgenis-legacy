@@ -76,7 +76,7 @@ public class InvestigationReport extends PluginModel<Entity>
 		List<String> targetNames = new ArrayList<String>();
 		try
 		{
-			//FIXME Code smell
+			//FIXME Code smell shouldn't this be a static function, seeing as everyone uses it in their plugins
 			FormModel<Investigation> parentForm = (FormModel<Investigation>)getParent().getParent();
 			selectedInvestigation = parentForm.getRecords().get(0);
 			
