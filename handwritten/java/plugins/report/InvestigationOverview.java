@@ -19,12 +19,16 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+
 
 import app.JDBCDatabase;
 
-public class InvestigationOverview extends PluginModel
+public class InvestigationOverview extends PluginModel<Entity>
 {
+
+	private static final long serialVersionUID = -3994512440239645094L;
 
 	public enum Action
 	{
@@ -44,7 +48,7 @@ public class InvestigationOverview extends PluginModel
 	List<String> targets = new ArrayList<String>();
 	Map<String, String> values = new LinkedHashMap<String, String>();
 
-	public InvestigationOverview(String name, ScreenModel parent)
+	public InvestigationOverview(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

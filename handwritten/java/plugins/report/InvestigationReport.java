@@ -21,11 +21,19 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 
-public class InvestigationReport extends PluginModel
+
+
+public class InvestigationReport extends PluginModel<Entity>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4913176206503894738L;
+
 	// selected investigation (in Select_Investigation mode)
 	Investigation selectedInvestigation = null;
 
@@ -34,7 +42,7 @@ public class InvestigationReport extends PluginModel
 	List<ObservationTarget> targets = new ArrayList<ObservationTarget>();
 	Map<String, String> values = new LinkedHashMap<String, String>();
 
-	public InvestigationReport(String name, ScreenModel parent)
+	public InvestigationReport(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
@@ -68,6 +76,7 @@ public class InvestigationReport extends PluginModel
 		List<String> targetNames = new ArrayList<String>();
 		try
 		{
+			//FIXME Code smell
 			FormModel<Investigation> parentForm = (FormModel<Investigation>)getParent().getParent();
 			selectedInvestigation = parentForm.getRecords().get(0);
 			

@@ -9,26 +9,28 @@ package plugins.richwizard;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.model.MolgenisModel;
-import org.molgenis.model.elements.Entity;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservationElement;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
 import app.JDBCMetaDatabase;
 
-public class RichWizard extends PluginModel
+public class RichWizard extends PluginModel<Entity>
 {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4843859850681009925L;
 	private RichWizardModel model = new RichWizardModel();
 	private JDBCMetaDatabase metadb;
 
@@ -37,7 +39,7 @@ public class RichWizard extends PluginModel
 		return model;
 	}
 
-	public RichWizard(String name, ScreenModel parent)
+	public RichWizard(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
@@ -99,7 +101,8 @@ public class RichWizard extends PluginModel
 
 					List<org.molgenis.model.elements.Entity> entities = new ArrayList<org.molgenis.model.elements.Entity>();
 					List<String> entityNames = new ArrayList<String>();
-					HashMap<String, Vector<org.molgenis.model.elements.Field>> selectedDataTypes = new HashMap<String, Vector<org.molgenis.model.elements.Field>>();
+					//TODO Use or Loose
+					//HashMap<String, Vector<org.molgenis.model.elements.Field>> selectedDataTypes = new HashMap<String, Vector<org.molgenis.model.elements.Field>>();
 					for (String dt : this.model.getDataTypes())
 					{
 						if (request.getString("dt_" + dt) != null)
@@ -117,10 +120,10 @@ public class RichWizard extends PluginModel
 					ArrayList<String> uniqueAncestorsOfEntities = new ArrayList<String>();
 
 					// check every entity in the import selection
-					for (Entity entity : entities)
+					for (org.molgenis.model.elements.Entity entity : entities)
 					{
 						// get the ancestors for this entity
-						for (Entity ancestor : entity.getAllAncestors())
+						for (org.molgenis.model.elements.Entity ancestor : entity.getAllAncestors())
 						{
 							if (!uniqueAncestorsOfEntities.contains(ancestor.getName()))
 							{
