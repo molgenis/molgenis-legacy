@@ -10,11 +10,15 @@ package plugins.contact;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class BbmriContactPlugin extends PluginModel
+public class BbmriContactPlugin extends PluginModel<Entity>
 {
-	public BbmriContactPlugin(String name, ScreenModel parent)
+
+	private static final long serialVersionUID = -6143910771849972946L;
+
+	public BbmriContactPlugin(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

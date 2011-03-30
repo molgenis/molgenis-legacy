@@ -48,7 +48,8 @@ public class ResetClusterDbServlet extends app.servlet.MolgenisServlet {
 		}
 		
 		if(resetSuccess){
-			ArrayList<String> result = new DataLoader().load(db);
+			new DataLoader();
+			ArrayList<String> result = DataLoader.load(db);
 			for(String s : result){
 				out.println(s);
 			}

@@ -10,14 +10,17 @@ package plugins.emptydb;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import app.JDBCDatabase;
 
-public class EmptyDbPlugin extends PluginModel
+public class EmptyDbPlugin extends PluginModel<Entity>
 {
 
-	public EmptyDbPlugin(String name, ScreenModel parent)
+	private static final long serialVersionUID = 1511261755841429645L;
+
+	public EmptyDbPlugin(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}
