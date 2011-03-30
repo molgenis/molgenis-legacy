@@ -70,7 +70,8 @@ public class Model
 	
 	//added function addEntity to add entity to model
 	public void addEntity(Entity e){
-		entities.add(e);
+		this.entities.add(e);
+		System.out.println("MODEL has now " + entities.size());
 	}
 	
 	//added function addModule to add module to model
@@ -94,6 +95,31 @@ public class Model
 		}
 		
 		return null;
+	}
+	
+	public Module getModule(String name)
+	{
+		for (Module module : modules)
+		{
+			if (module.getName().toLowerCase().equals(name.toLowerCase()))
+				return module;
+		}
+		
+		return null;
+	}
+	
+	public void removeModule(String name)
+	{
+		for(int i = 0; i < modules.size(); i++){
+			if (modules
+					.get(i)
+					.getName().toLowerCase()
+					.equals(name
+							.toLowerCase())){
+				modules
+				.remove(i);
+			}
+		}
 	}
 
 	public synchronized List<Screen> getScreens()

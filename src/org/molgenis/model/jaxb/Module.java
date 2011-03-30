@@ -35,5 +35,11 @@ public class Module
 	public synchronized void setEntities(List<Entity> entities)
 	{
 		this.entities = entities;
+	}
+
+	public void addEntity(Entity e)
+	{
+		this.entities.add(e);
+		System.out.println("MODULE has now " + entities.size());
 	}	
 }
