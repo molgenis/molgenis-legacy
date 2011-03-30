@@ -50,7 +50,7 @@ public class HyperlinkInput extends HtmlInput
 
 		if (this.isHidden())
 		{
-			StringInput input = new StringInput(this.getName(), this.getValue());
+			StringInput input = new StringInput(this.getName(), super.getValue());
 			input.setLabel(this.getLabel());
 			input.setDescription(this.getDescription());				
 			input.setHidden(true);
