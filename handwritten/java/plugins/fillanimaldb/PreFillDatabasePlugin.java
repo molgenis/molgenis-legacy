@@ -7,21 +7,20 @@
 
 package plugins.fillanimaldb;
 
-import org.molgenis.Molgenis;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
+import plugins.emptydb.emptyDatabase;
 import app.JDBCDatabase;
 
-import plugins.emptydb.emptyDatabase;
-
-public class PreFillDatabasePlugin extends PluginModel
+public class PreFillDatabasePlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -1778222062030349381L;
 
-	public PreFillDatabasePlugin(String name, ScreenModel parent)
+	public PreFillDatabasePlugin(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

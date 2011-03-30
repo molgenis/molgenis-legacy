@@ -27,11 +27,12 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.ProtocolApplication;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import commonservice.CommonService;
 
-public class ShowAnimalsInSubprojects extends PluginModel
+public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 5429577464896082058L;
 	private List<Panel> subprojectList;
@@ -51,7 +52,7 @@ public class ShowAnimalsInSubprojects extends PluginModel
 	private ObservationTarget subproject;
 	private List<Panel> groupList = new ArrayList<Panel>();
 
-	public ShowAnimalsInSubprojects(String name, ScreenModel parent)
+	public ShowAnimalsInSubprojects(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

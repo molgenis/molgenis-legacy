@@ -11,7 +11,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -23,15 +22,15 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.pheno.Code;
-import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.ProtocolApplication;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import commonservice.CommonService;
 
-public class ShowDecSubprojects extends PluginModel
+public class ShowDecSubprojects extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 6863037294184185044L;
 	private List<DecSubproject> experimentList = new ArrayList<DecSubproject>();
@@ -48,7 +47,7 @@ public class ShowDecSubprojects extends PluginModel
 	private List<Code> animalEndStatusCodeList;
 	private List<Panel> decApplicationList;
 	
-	public ShowDecSubprojects(String name, ScreenModel parent)
+	public ShowDecSubprojects(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

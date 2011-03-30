@@ -70,7 +70,8 @@ public class LoadAnimalDB
 				ObservationTarget newAnimal = ct.createIndividual(invid, "animal" + oldanimalid);
 				db.add(newAnimal);
 				int newanimalid = newAnimal.getId();
-				int actorid = ct.getObservationTargetId("admin");
+				//TODO: Danny: Use or loose
+				/*int actorid = */ct.getObservationTargetId("admin");
 				
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
@@ -235,8 +236,8 @@ public class LoadAnimalDB
 				Date now = calendar.getTime();
 
 				int invid = ct.getInvestigationId("AnimalDB");
-
-				int actorid = ct.getObservationTargetId("admin");
+				//TODO: Danny: Use or loose
+				/*int actorid =*/ ct.getObservationTargetId("admin");
 
 				int oldlocationid = tuple.getInt("locationid");
 				String name = tuple.getString("name");
@@ -279,8 +280,8 @@ public class LoadAnimalDB
 				Date now = calendar.getTime();
 
 				int invid = ct.getInvestigationId("AnimalDB");
-
-				int actorid = ct.getObservationTargetId("admin");
+				//TODO: Danny: Use or loose
+				/*int actorid = */ct.getObservationTargetId("admin");
 				
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
@@ -440,8 +441,8 @@ public class LoadAnimalDB
 				Date now = calendar.getTime();
 
 				int invid = ct.getInvestigationId("AnimalDB");
-
-				int actorid = ct.getObservationTargetId("admin");
+				//TODO: Danny: Use or loose
+				/*int actorid = */ct.getObservationTargetId("admin");
 				
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
@@ -599,8 +600,8 @@ public class LoadAnimalDB
 				Date now = calendar.getTime();
 
 				int invid = ct.getInvestigationId("AnimalDB");
-
-				int actorid = ct.getObservationTargetId("admin");
+				//TODO: Danny: Use or loose
+				/*int actorid = */ct.getObservationTargetId("admin");
 				
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
@@ -710,11 +711,12 @@ public class LoadAnimalDB
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
 				Calendar calendar = Calendar.getInstance();
-				Date now = calendar.getTime();
+				//TODO: Danny: Use or loose
+				/*Date now = */calendar.getTime();
 
 				int invid = ct.getInvestigationId("AnimalDB");
-
-				int actorid = ct.getObservationTargetId("admin");
+				//TODO: Danny: Use or loose
+				/*int actorid = */ct.getObservationTargetId("admin");
 
 				// experimentid
 				int newexpid = 0;
@@ -923,8 +925,8 @@ public class LoadAnimalDB
 				Date now = calendar.getTime();
 
 				int invid = ct.getInvestigationId("AnimalDB");
-
-				int actorid = ct.getObservationTargetId("admin");
+				//TODO: Danny: Use or loose
+				/*int actorid = */ct.getObservationTargetId("admin");
 
 				// Name
 				String name = tuple.getString("name");
@@ -959,7 +961,8 @@ public class LoadAnimalDB
 				Date now = calendar.getTime();
 
 				int invid = ct.getInvestigationId("AnimalDB");
-				int actorid = ct.getObservationTargetId("admin");
+				//TODO: Danny: Use or loose
+				/*int actorid =*/ct.getObservationTargetId("admin");
 
 				// oldanimalid --> new animalid
 				int newanimalid = 0;
@@ -1000,7 +1003,8 @@ public class LoadAnimalDB
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
 				int invid = ct.getInvestigationId("AnimalDB");
-				int actorid = ct.getObservationTargetId("admin");
+				//TODO: Danny: Use or loose
+				/*int actorid = */ct.getObservationTargetId("admin");
 				
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
