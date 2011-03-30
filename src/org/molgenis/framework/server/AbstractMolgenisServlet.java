@@ -740,20 +740,20 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		// setup the output-stream
 		response.setBufferSize(10000);
 		response.setContentType("text/html; charset=UTF-8");
-
+		System.out.println("asdasdasdasd");
 		logger.info("starting download " + request.getPathInfo());
 		long start_time = System.currentTimeMillis();
 
 		//HttpSession session = request.getSession();
-
+		PrintWriter out = null;
+		try{
+			out = response.getWriter();
+		}catch (IOException e){	e.printStackTrace(); }
 		Database db = null;
 		try
 		{
 			db = this.getDatabase();
 			db.setLogin(new org.molgenis.framework.security.SimpleLogin());
-
-			PrintWriter out = response.getWriter();
-
 			try
 			{
 
@@ -878,14 +878,12 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				db.find(getClassForName(entityName), writer, rulesList.toArray(new QueryRule[rulesList
 						.size()]));
 			}
-			catch (Exception e)
-			{
-				out.println(e + "<br>");
-				e.printStackTrace();
-				throw e;
+			catch (Exception e){
+				out.println("<div class='errormessage'>"+ e.getMessage() +"</div>");
+				//e.printStackTrace();
+				//throw e;
 			}
-			finally
-			{
+			finally{
 				db.close();
 			}
 
@@ -893,6 +891,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		}
 		catch (Exception e)
 		{
+			out.println("<div class='errormessage'>No database available to query: "+e.getMessage()+"</div>");
 			logger.error(e);
 		}
 		logger.info("servlet took: " + (System.currentTimeMillis() - start_time));
