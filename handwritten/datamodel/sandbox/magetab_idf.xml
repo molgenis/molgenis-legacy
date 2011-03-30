@@ -111,8 +111,6 @@
 				xref_entity="OntologyTerm" nillable="true" />
 			<field name="NormalizationTypes" label="Normalization Type(s)"
 				type="mref" xref_entity="OntologyTerm" nillable="true" />
-			<field name="Persons" type="mref" xref_entity="Person"
-				nillable="true" />
 			<field name="Protocols" type="mref" xref_entity="Protocol"
 				nillable="true" />
 			<field name="Publications" type="mref" xref_entity="Publication"
