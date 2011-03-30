@@ -79,8 +79,6 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	public static String INPUT_SUBMIT = "submit_input";
 	/** indicating wether uploads should return added data */
 	public static String INPUT_SILENT = "data_silent";
-	/** save the database */
-	private Database db;
 
 	// get logger
 	protected final transient Logger logger = Logger.getLogger(this.getClass().getSimpleName());
@@ -398,19 +396,14 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	public void handleGUIrequest(HttpServletRequest request, HttpServletResponse response) throws IOException,
 			DatabaseException
 	{
-		// get database session (note: this shouldn't be in the tomcat session!!!
-		// can't keep the db alive? resetting everytime seems expensive?
-		// when not nulled, causes:
-		// SEVERE: IOException while loading persisted sessions: java.io.WriteAbortedException: writing aborted; java.io.NotSerializableException: app.JDBCMetaDatabase
-		// and later the app freezes.. why?
+		// get database session (note: this shouldn't be in the tomcat
+		// session!!!
 		Database db = null;
 		try
 		{
-			if(db == null){
-				db = getDatabase();
-				// db.beginTx(); DISCUSSION
-				logger.info("created database " + db);
-			}
+			db = getDatabase();
+			// db.beginTx(); DISCUSSION
+			logger.info("created database " + db);
 		}
 		catch (Exception e)
 		{
