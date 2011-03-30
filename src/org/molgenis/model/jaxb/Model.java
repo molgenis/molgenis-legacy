@@ -71,7 +71,6 @@ public class Model
 	//added function addEntity to add entity to model
 	public void addEntity(Entity e){
 		this.entities.add(e);
-		System.out.println("MODEL has now " + entities.size());
 	}
 	
 	//added function addModule to add module to model
@@ -93,9 +92,31 @@ public class Model
 			if (entity.getName().toLowerCase().equals(name.toLowerCase()))
 				return entity;
 		}
-		
 		return null;
 	}
+	
+	/** find entity across local entities, and the ones contained in modules
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public Entity findEntity(String name){
+		for (Entity entity : entities)
+		{
+			if (entity.getName().toLowerCase().equals(name.toLowerCase()))
+				return entity;
+		}
+		
+		for(Module module : modules){
+			for (Entity entity : module.getEntities())
+			{
+				if (entity.getName().toLowerCase().equals(name.toLowerCase()))
+					return entity;
+			}
+		}
+		return null;
+	}
+	
 	
 	public Module getModule(String name)
 	{

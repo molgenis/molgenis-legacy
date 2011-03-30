@@ -40,6 +40,15 @@ public class Module
 	public void addEntity(Entity e)
 	{
 		this.entities.add(e);
-		System.out.println("MODULE has now " + entities.size());
-	}	
+	}
+	
+	public Entity getEntity(String name)
+	{
+		for (Entity entity : entities)
+		{
+			if (entity.getName().toLowerCase().equals(name.toLowerCase()))
+				return entity;
+		}
+		return null;
+	}
 }
