@@ -10,17 +10,15 @@ import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 
-import app.JDBCDatabase;
-
 public class NewsService
 {
-	private static NewsService newsService       = null;
-	private JDBCDatabase db                      = null;
+	private static NewsService newsService = null;
+	private Database db                    = null;
 	
 	// private constructor, use singleton instance
 	private NewsService(Database db)
 	{
-		this.db = (JDBCDatabase) db;
+		this.db = db;
 	}
 	
 	public static NewsService getInstance(Database db)
