@@ -45,13 +45,8 @@ public class BbmriHeader extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-		//TODO: Please Un fuck your code this is not normal to do please see:
-		//
-		/*String action = */request.getString("__action");
 		if ("doLogout".equals(request.getAction())) {
 				getLogin().logout();
-			
-			
 		}
 
 	}
