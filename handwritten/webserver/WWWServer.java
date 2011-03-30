@@ -27,7 +27,7 @@ public class WWWServer extends Webserver implements Runnable
 		HashMap<String, String> autoMapping = new GetServlets().getServletLocations();
 		for (String key : autoMapping.keySet())
 		{
-		//	addServlet(var + "/" + key, autoMapping.get(key));
+			addServlet(var + "/" + key, autoMapping.get(key));
 		}
 
 		// Serving molgenis, API's, CGI, static files, tmp files
