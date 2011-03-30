@@ -257,19 +257,27 @@ class ApplyProtocolHandler {
 		model.setProtocolId(Integer.parseInt(protocol.toString()));
 		
 		// Get targets
-		List<?> targetList = request.getList("Targets");
-		model.setTargetList((List<String>)targetList);
-		if (targetList != null) {
-			fullTargetList.addAll((List<String>)targetList);
+		List<?> targetListObject = request.getList("Targets");
+		if (targetListObject != null) {
+			for (Object o : targetListObject) {
+				String tmpString = (String)o;
+				model.getTargetList().add(tmpString);
+				fullTargetList.add(tmpString);
+			}
 		}
 		
 		// Get batches
-		List<?> batchesList = request.getList("Batches");
-		model.setBatchesList((List<String>)batchesList);
+		List<?> batchesListObject = request.getList("Batches");
+		if (batchesListObject != null) {
+			for (Object o : batchesListObject) {
+				String tmpString = (String)o;
+				model.getBatchesList().add(tmpString);
+			}
+		}
 		
 		// Get targets from batches and add them to the full target list
-		if (batchesList != null) {
-			for (Object o : batchesList) {
+		if (model.getBatchesList() != null) {
+			for (Object o : model.getBatchesList()) {
 			    Integer id = Integer.parseInt((String)o);
 			    fullTargetList.addAll(service.getTargetsFromBatch(id));
 			}

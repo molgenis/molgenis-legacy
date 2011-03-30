@@ -216,10 +216,10 @@ public class ApplyProtocolUI {
     	newOrEditButtons = new RadioInput("NewOrEdit", "", 
 				"Indicate whether you want to fill in new values or edit existing ones.", 
 				options, value);
-    	// Make radio buttons readonly when application name is not AnimalDB
-    	if (!app.servlet.MolgenisServlet.getMolgenisVariantID().equals("animaldb")) {
-    		newOrEditButtons.setReadonly(true);
-    	}
+    	// TODO? Make radio buttons readonly when application name is not AnimalDB
+//    	if (!app.servlet.MolgenisServlet.getMolgenisVariantID().equals("molgenis_apps")) {
+//    		newOrEditButtons.setReadonly(true);
+//    	}
 		protocolDiv.add(newOrEditButtons);
 	}
     
@@ -231,10 +231,10 @@ public class ApplyProtocolUI {
     	options.add(new ValueLabel("Time", "Show date-time fields with values"));
     	timeBox = new CheckboxInput("TimeBox", "", "Indicate whether you want date-time fields next to the values", 
     			options, null);
-    	// Make checkbox readonly when application name is not AnimalDB
-    	if (!app.servlet.MolgenisServlet.getMolgenisVariantID().equals("animaldb")) {
-    		timeBox.setReadonly(true);
-    	}
+    	// TODO? Make checkbox readonly when application name is not AnimalDB
+//    	if (!app.servlet.MolgenisServlet.getMolgenisVariantID().equals("molgenis_apps")) {
+//    		timeBox.setReadonly(true);
+//    	}
     	protocolDiv.add(new TextParagraph("", "")); // gives empty <p></p>
 		protocolDiv.add(timeBox);
     }
