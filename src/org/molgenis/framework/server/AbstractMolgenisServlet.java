@@ -399,16 +399,25 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		// get database session (note: this shouldn't be in the tomcat
 		// session!!!
 		Database db = null;
+		boolean dbAvailable = false;
+		String dbErrorMessage = null;
 		try
 		{
 			db = getDatabase();
 			// db.beginTx(); DISCUSSION
-			logger.info("created database " + db);
+
+			if(db != null){
+				dbAvailable = true;
+				logger.info("created database " + db);
+			}else{
+				dbErrorMessage = "database is NULL";
+			}
 		}
 		catch (Exception e)
 		{
 			logger.error("database creation failed: " + e);
-			throw new DatabaseException(e);
+			//throw new DatabaseException(e);
+			dbErrorMessage = e.getMessage();
 		}
 
 		// login/logout
@@ -438,7 +447,10 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		}
 		// ((UserInterface)molgenis).setDatabase(db);
 		userLogin = ((UserInterface<?>) molgenis).getLogin();
-		db.setLogin(userLogin);
+		
+		if(dbAvailable){
+			db.setLogin(userLogin);
+		}
 
 		// handle request
 		try
@@ -536,6 +548,13 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				Map<String, Object> args = new TreeMap<String, Object>();
 				args.put("title", molgenis.getLabel());
 				args.put("application", molgenis);
+				
+				if(dbAvailable){
+					args.put("applicationHtmlError", "");
+				}else{
+					args.put("applicationHtmlError", "<p class=\"errormessage\">Database creation error: "+dbErrorMessage+"</p>");
+				}
+				
 				// args.put("username", userLogin.getUserName());
 				
 				

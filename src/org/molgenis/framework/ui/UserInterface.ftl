@@ -30,6 +30,7 @@
 		${application.getCustomHtmlHeaders()}
 	</head>
 	<body onload="RecoverScroll.init();${application.getCustomHtmlBodyOnLoad()}">
+	${applicationHtmlError}
 </#macro>
 
 <#macro molgenis_footer>
