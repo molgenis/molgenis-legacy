@@ -41,8 +41,9 @@ public class EnsemblTestManager2 {
 		method = new DasMethod("not_recorded", "not_recorded", "ECO:0000037");
 
 		connection = null;
-		String userName = "anonymous";
-		String password = "";
+		//TODO: Danny: Use or loose
+		/*String userName = "anonymous";
+		String password = "";*/
 		//String url = "jdbc:mysql://ensembldb.ensembl.org:5306/homo_sapiens_core_56_37a";
 		db = new JDBCDatabase("xgap.properties");
 		
@@ -218,7 +219,8 @@ public class EnsemblTestManager2 {
 			try {
 				gene = db.findById(Gene.class, featureId);
 				DasAnnotatedSegment segment = this.getSegment(segments, gene.getChromosome_Name());
-				DasComponentFeature geneDas = this.getGene(gene.getIdField(),gene.getBpStart().intValue(),gene.getBpEnd().intValue(),segment);
+				//NOTE: Danny: Use or loose
+				/*DasComponentFeature geneDas = */this.getGene(gene.getIdField(),gene.getBpStart().intValue(),gene.getBpEnd().intValue(),segment);
 			} catch (DatabaseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

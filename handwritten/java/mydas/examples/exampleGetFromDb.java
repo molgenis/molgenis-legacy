@@ -22,7 +22,8 @@ public class exampleGetFromDb {
 		JDBCDatabase db = new JDBCDatabase("xgap.properties");
 		
 		List<Gene> genes = db.find(Gene.class);
-		Gene g = genes.get(0);
+		//TODO: Danny: Use or loose (perhaps the entire main ??)
+		/*Gene g = */genes.get(0);
 		//System.out.println(g.);
 
 	}
