@@ -1,12 +1,6 @@
 package plugins.system.diagnostics;
 
-import java.io.File;
-
-import app.ImportWizardExcelPrognosis;
-
+//TODO DELETE ?
 public class DiagnosticsModel {
-
-	
-	
 
 }

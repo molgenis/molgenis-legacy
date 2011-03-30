@@ -9,16 +9,13 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.RScript;
 import org.molgenis.util.Tuple;
 
-public class RInterpreterPlugin<E extends Entity> extends PluginModel
+public class RInterpreterPlugin<E extends Entity> extends PluginModel<E>
 {
 
-	private static final String	PACKAGE						= "xgap4human";
-
 	private static final long		serialVersionUID	= 8092415619774443643L;
-
 	private RInterpreterModel		screenModel				= new RInterpreterModel();
 
-	public RInterpreterPlugin(String name, ScreenModel parent)
+	public RInterpreterPlugin(String name, ScreenModel<E> parent)
 	{
 		super(name, parent);
 	}
@@ -184,14 +181,14 @@ public class RInterpreterPlugin<E extends Entity> extends PluginModel
 		screenModel.setInput(input);
 	}
 
-	private void interpret(Tuple request)
-	{
-
-		// r.append("a <- 1+1");
-		// r.append("b <- 1+2");
-		// r.append("file <- "+ File.createTempFile("mytest","png"));
-		// r.execute();
-	}
+//	private void interpret(Tuple request)
+//	{
+//
+//		// r.append("a <- 1+1");
+//		// r.append("b <- 1+2");
+//		// r.append("file <- "+ File.createTempFile("mytest","png"));
+//		// r.execute();
+//	}
 
 	@Override
 	public void reload(Database db)

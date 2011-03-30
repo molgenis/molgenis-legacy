@@ -6,6 +6,7 @@ import java.util.Properties;
 
 public class ComputeJobImp implements ComputeJob {
 
+	private static final long serialVersionUID = 2178787788340086891L;
 	private String commandLine;
 	private ResultData data;
 	private String id;

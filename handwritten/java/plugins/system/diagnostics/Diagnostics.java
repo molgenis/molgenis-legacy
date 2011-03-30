@@ -7,28 +7,25 @@
 
 package plugins.system.diagnostics;
 
-import java.io.File;
 import java.io.PrintWriter;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.util.SimpleTuple;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import app.ExcelImport;
-import app.ImportWizardExcelPrognosis;
+public class Diagnostics<E extends Entity> extends PluginModel<E> {
 
-public class Diagnostics extends PluginModel {
-
+	private static final long serialVersionUID = 2351186912680699440L;
 	private DiagnosticsModel model = new DiagnosticsModel();
 
 	public DiagnosticsModel getModel() {
 		return model;
 	}
 
-	public Diagnostics(String name, ScreenModel parent) {
+	public Diagnostics(String name, ScreenModel<E> parent) {
 		super(name, parent);
 	}
 

@@ -6,7 +6,9 @@ import java.io.Serializable;
 //data to be transfered from the remote node
 public class ResultData implements Serializable
 {
-    private String outString = null;
+
+	private static final long serialVersionUID = 415179597431377866L;
+	private String outString = null;
     private String errString = null;
     private byte[] data = null;
 

@@ -21,11 +21,13 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.DetectOS;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 
-public class Settings extends PluginModel {
+public class Settings<E extends Entity> extends PluginModel<E> {
 
+	private static final long serialVersionUID = 4037475429590054858L;
 	private SettingsModel model = new SettingsModel();
 	public static String systemTableName = "systemsettings_090527PBDB00QCGEXP4G";
 	public static String fileDirField = "filedirpath";
@@ -36,7 +38,7 @@ public class Settings extends PluginModel {
 		return model;
 	}
 
-	public Settings(String name, ScreenModel parent) {
+	public Settings(String name, ScreenModel<E> parent) {
 		super(name, parent);
 	}
 

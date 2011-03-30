@@ -8,27 +8,18 @@
 package plugins.SPSSAdmin;
 
 
-import java.io.*;
-import com.pmstation.spss.*;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.List;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletResponse;
-
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import com.pmstation.spss.SPSSWriter;
-
-public class SPSSExport extends PluginModel 
+public class SPSSExport<E extends Entity> extends PluginModel<E>
 {
-	public SPSSExport(String name, ScreenModel parent)
+
+	private static final long serialVersionUID = -3120615290212884466L;
+
+	public SPSSExport(String name, ScreenModel<E> parent)
 	{
 		super(name, parent);
 	}
@@ -80,7 +71,7 @@ public class SPSSExport extends PluginModel
 		}
 
 	
-	private void exportToSpss(Object matrix, ServletOutputStream out) {
+//	private void exportToSpss(Object matrix, ServletOutputStream out) {
 //
 //		 try {
 //			/** Create Spss file 
@@ -169,12 +160,12 @@ public class SPSSExport extends PluginModel
 //		       out.close();
 //		     
 		   
-	}
+//	}
 
-	private Object getMatrix() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	private Object getMatrix() {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 
 	

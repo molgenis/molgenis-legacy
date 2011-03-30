@@ -51,10 +51,10 @@ public class SimpleComputeManager implements ComputeManager {
 	@Override
 	public void start() {
 		//loop through list and start jobs that are not yet started
-		for(ComputeJob c: allJobs.values())
-		{
-			
-		}
+//		for(ComputeJob c: allJobs.values())
+//		{
+//			
+//		}
 	}
 
 }

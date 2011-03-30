@@ -3,8 +3,6 @@ package plugins.tool.computeframework;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
-import java.util.Observable;
-import java.util.concurrent.Callable;
 
 /**
  * An atomic unit of computation that can be run using the ComputeService backend
