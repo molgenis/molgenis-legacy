@@ -10,11 +10,16 @@ package plugins.genotypedata;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class GenotypeData extends PluginModel
+
+public class GenotypeData extends PluginModel<Entity>
 {
-	public GenotypeData(String name, ScreenModel parent)
+
+	private static final long serialVersionUID = -6215275790783203045L;
+
+	public GenotypeData(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
 	}

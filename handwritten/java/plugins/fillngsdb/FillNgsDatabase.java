@@ -11,7 +11,6 @@ package plugins.fillngsdb;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import jxl.common.Logger;
@@ -19,8 +18,6 @@ import jxl.common.Logger;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.organization.Investigation;
-import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.protocol.WorkflowElement;
 

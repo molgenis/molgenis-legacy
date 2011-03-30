@@ -14,21 +14,25 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
+
+
 
 import app.ExcelImport;
 import app.ImportWizardExcelPrognosis;
 
-public class GenericWizard extends PluginModel {
+public class GenericWizard extends PluginModel<Entity> {
 
+	private static final long serialVersionUID = -6011550003937663086L;
 	private GenericWizardModel model = new GenericWizardModel();
 
 	public GenericWizardModel getModel() {
 		return model;
 	}
 
-	public GenericWizard(String name, ScreenModel parent) {
+	public GenericWizard(String name, ScreenModel<Entity> parent) {
 		super(name, parent);
 	}
 
