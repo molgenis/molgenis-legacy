@@ -13,7 +13,7 @@
 			<form name="BiobankCohorts" entity="BiobankPanel" hide_fields="Species,ontologyReference,Individuals,description,Individuals,Species,PanelType,FounderPanels"/>	</form> 
 		    <form name="BiobankCohorts" entity="BiobankPanel" hide_fields="Individuals,description,ontologyReference,Species,PanelType,FounderPanels" compact_view="name"/>
 		 --> 	
-		 	<form name="Cohorts" entity="BiobankPanel"	label="Biobanks" hide_fields="description,Species,Individuals,PanelType,FounderPanels,ontologyReference"/>
+		 	<form name="Cohorts" entity="BiobankPanel"	label="Biobanks" hide_fields="id,BiobankPanelName,description,Species,Individuals,PanelType,FounderPanels,ontologyReference"/>
 		<!-- 
 			<form name="Coordinators" entity="Person" view="list" sortby="LastName"/>
 			<form name="Institutions" entity="Institute" view="list"/>	
