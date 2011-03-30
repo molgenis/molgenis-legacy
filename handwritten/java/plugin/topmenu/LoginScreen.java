@@ -15,7 +15,6 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.CommandTemplate;
-import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.PasswordInput;
 import org.molgenis.framework.ui.html.StringInput;
