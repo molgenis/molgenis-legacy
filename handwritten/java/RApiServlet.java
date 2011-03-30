@@ -92,16 +92,16 @@ public class RApiServlet extends app.servlet.MolgenisServlet
 				for(RScript script : scripts){
 					s +=("source(\""+rSource+"userscripts/"+script.getName()+".R\")\n");
 				}
+				s +=("\n");
+				s +=("#connect to the server\n");
+				s +=("MOLGENIS.connect(\"" + server + "\")\n");
 			}
 			catch (Exception e)
 			{
-				throw new IOException(e);
+				s =("#No database connection available to handle R-api");
+				//throw new IOException(e);
 			}
-			
-			s +=("\n");
-			s +=("#connect to the server\n");
-			s +=("MOLGENIS.connect(\"" + server + "\")\n");
-			
+		
 			// quick addition for demo purposes
 		}else if(filename.startsWith("userscripts/")){
 			//MolgenisServlet ms = new MolgenisServlet();
