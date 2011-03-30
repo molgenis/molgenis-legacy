@@ -10,7 +10,7 @@
 		</entity>
 		<entity name="Biobank" extends="Investigation" label="Cohort" >
 			<description>Describes one biobank cohort</description>
-			<field name="name" nillable="true" label="topic" description="the name of the biobank [in investigation the name is unique]"/>
+			<field name="name" nillable="true"  description="the name of the biobank [in investigation the name is unique]"/>
 			<field name="Acronym" nillable="true" description="Acronym for this biobank" label="Acronym" />
 			<field name="Institutes" nillable="true" type="mref" xref_label="name" xref_entity="Institute" mref_name="BiobankInstitute"  description="Institute that are custodian of this biobank (found in xls as Institutions)" /> 
 		</entity>
@@ -19,8 +19,8 @@
 			<!--  added in order to hide it ! hide_fields word on fields that have nillable=true<field name="Species" label="Species" type="xref" xref_entity="Species" xref_field="id" xref_label="name" nillable="true" description="Reference to the species this chromosome belongs to." />-->
 			<!-- <field name="name" type="xref" label ="topic" xref_field="Investigation.name" xref_label="name" /> -->
 			<!-- <field name="topic" type="mref" xref_entity="ObservationElement" xref_label="name" mref_label="BiobankPanelTopic"/> -->
-			<field name="topic" nillable="true" description=""/>
-		    <field name="BiobankPanelName" nillable="true" description=""/>
+			<field name="topic" nillable="true" description="This is the originnaly topic imported from the xls file."/>
+		    <field name="BiobankPanelName" nillable="true" description="this is the name "/>
 			
 			<field name="Category" type="string"  description="A. Core Biobanks, DNA available, B. Supporting biobanks (DNA not yet available)"/> 
 			<field name="SubCategory" type="xref" xref_entity="BiobankCategory" description="For example: Population, development, birth and growth"/>
