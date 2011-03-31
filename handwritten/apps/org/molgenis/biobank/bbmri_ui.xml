@@ -1,45 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- TEST TEST DOCTYPE molgenis PUBLIC "MOLGENIS 1.0" "http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd" -->
+	<!--
+		TEST TEST DOCTYPE molgenis PUBLIC "MOLGENIS 1.0"
+		"http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd"
+	-->
 <molgenis name="biobank" label="Catalog of Dutch Biobank">
-
-	<plugin name="MolgenisHeader" type="plugins.header.BbmriHeader"/>
-
+	<plugin name="MolgenisHeader" type="plugins.header.BbmriHeader" />
 	<menu name="main" position="left" startswith="WelcomeScreen">
-		<plugin name="BbmriWelcomeScreen" type="plugins.welcome.BbmriWelcomeScreenPlugin" label="Welcome"/>
-		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Login"/>
-		<menu name="DataViews" label="Biobanks Overview">  
-		<!-- 
-			<form name="Biobanks" entity="Biobank" hide_fields="start,end,accession,description">
-			<form name="BiobankCohorts" entity="BiobankPanel" hide_fields="Species,ontologyReference,Individuals,description,Individuals,Species,PanelType,FounderPanels"/>	</form> 
-		    <form name="BiobankCohorts" entity="BiobankPanel" hide_fields="Individuals,description,ontologyReference,Species,PanelType,FounderPanels" compact_view="name"/>
-		 --> 	
-		 	<form name="Cohorts" entity="BiobankPanel"	label="Biobanks" hide_fields="id,BiobankPanelName,description,Species,Individuals,PanelType,FounderPanels,ontologyReference"/>
-		<!-- 
-			<form name="Coordinators" entity="Person" view="list" sortby="LastName"/>
-			<form name="Institutions" entity="Institute" view="list"/>	
-		 -->
-		</menu>		 
-		<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard"  label="Batch Upload"/>
+		<plugin name="BbmriWelcomeScreen" type="plugins.welcome.BbmriWelcomeScreenPlugin"
+			label="Welcome" />
+		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin"
+			label="Login" />
+		<form name="Cohorts" entity="BiobankPanel" label="Biobanks"
+			hide_fields="id,description,Species,Individuals,PanelType,FounderPanels,ontologyReference" />
+		<form name="Coordinators" entity="Person" view="list"
+			sortby="LastName" />
+		<form name="Institutes" entity="Institute" view="list" />
+		<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard"
+			label="Batch Upload" />
 		<menu name="Admin">
-			<form name="BiobankCategory" sortby="name" view="list" entity="BiobankCategory"/>
-			<form name="BiodataTypes" entity="BiodataType"/>
-			<!-- <form name="Ontologies" entity="Ontology"/>-->
-			<!-- <form name="OntologyTerms" entity="OntologyTerm"/>  -->
-			<plugin name="Settings" type="plugins.system.settings.Settings"/>
+			<form name="Categories" sortby="name" view="list" entity="BiobankCategory" />
+			<form name="DataTypes" entity="BiobankDataType" />
+			<form name="Topics" entity="BiobankTopic" />
+			<plugin name="Settings" type="plugins.system.settings.Settings" />
 			<menu name="usermanagement" position="left" label="User management">
-				<form name="MolgenisUser" entity="MolgenisUser" label="User"/>
-				<form name="MolgenisGroup" entity="MolgenisGroup" label="Group"/>
-				<form name="MolgenisEntity" entity="MolgenisEntity" label="Entity"/>
-				<form name="MolgenisPermission" entity="MolgenisPermission" label="Permission"/>
+				<form name="MolgenisUser" entity="MolgenisUser" label="User" />
+				<form name="MolgenisGroup" entity="MolgenisGroup" label="Group" />
+				<form name="MolgenisEntity" entity="MolgenisEntity" label="Entity" />
+				<form name="MolgenisPermission" entity="MolgenisPermission"
+					label="Permission" />
 			</menu>
 		</menu>
-
 		<menu name="submenu" position="left" label="Index powered Search">
-			<plugin name="DBIndex" label="DB Index" type="plugins.LuceneIndex.DBIndexPlugin"/>
-			<plugin name="OntoCatIndexPlugin" label="OntoCAT Index" type="plugins.LuceneIndex.OntoCatIndexPlugin"/>
-			<plugin name="AdminIndex" label="Admin Indexes" type="plugins.LuceneIndex.AdminIndexes"/>
+			<plugin name="DBIndex" label="DB Index"
+				type="plugins.LuceneIndex.DBIndexPlugin" />
+			<plugin name="OntoCatIndexPlugin" label="OntoCAT Index"
+				type="plugins.LuceneIndex.OntoCatIndexPlugin" />
+			<plugin name="AdminIndex" label="Admin Indexes"
+				type="plugins.LuceneIndex.AdminIndexes" />
 		</menu>
-		
-		<plugin name="BbmriContact" type="plugins.contact.BbmriContactPlugin" label="Contact"/>
+		<plugin name="BbmriContact" type="plugins.contact.BbmriContactPlugin"
+			label="Contact" />
 	</menu>
 </molgenis>

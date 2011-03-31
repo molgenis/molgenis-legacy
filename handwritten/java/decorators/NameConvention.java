@@ -180,7 +180,8 @@ public class NameConvention
 	 */
 	public static void validateEntityName(String name) throws DatabaseException
 	{
-		String pattern = "([a-zA-Z0-9_\\s\\-:])";;
+		//pattern for bbmri ([a-zA-Z0-9_\\s\\-:.(),;\\+])
+		String pattern = "([<>/a-zA-Z0-9_\\s\\-:.(),;\\+])";
 		try {
 			String fileName = new File(NameConvention.class.getResource("pattern").getFile().replace("%20", " ")).getAbsolutePath();
 			Scanner scanner = new Scanner(new FileInputStream(fileName));

@@ -51,7 +51,8 @@
 			<field name="tollFreePhone" nillable="true" type="string"
 				description="A toll free phone number for the Contact, including suitable area codes." />
 		</entity>
-		<entity name="Person" implements="Contact" xref_label="FirstName,MidInitials,LastName">
+		<entity name="Person" implements="Contact" xref_label="LastName">
+			<!-- we may want to add a 'screen name' to use as xref_label -->
 			<description>
 				Person represents one or more people involved with an Investigation.
 				This may include authors on a paper, lab personnel or PIs. Person
@@ -72,6 +73,7 @@
 			<field name="FirstName" label="First Name" nillable="true" />
 			<field name="MidInitials" label="Mid Initials" nillable="true" />
 			<field name="LastName" label="Last Name" />
+			<field name="Title" label="Title" nillable="true" description="An academic title, e.g. Prof.dr, PhD" />
 			<field name="Affiliation" type="xref" xref_entity="Institute"
 				nillable="true" />
 			<field name="Roles" type="mref" xref_field="OntologyTerm.id"
