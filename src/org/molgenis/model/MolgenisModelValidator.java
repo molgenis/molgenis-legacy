@@ -939,7 +939,7 @@ public class MolgenisModelValidator
 	{
 		logger.debug("check for JAVA and SQL reserved words...");
 		List<String> keywords = new ArrayList<String>();
-		keywords.addAll(Arrays.asList(MOLGENIS_KEYWORDS));
+		//keywords.addAll(Arrays.asList(MOLGENIS_KEYWORDS));
 		keywords.addAll(Arrays.asList(JAVA_KEYWORDS));
 		keywords.addAll(Arrays.asList(JAVASCRIPT_KEYWORDS));
 		if (options.db_driver.contains("mysql")) keywords.addAll(Arrays
