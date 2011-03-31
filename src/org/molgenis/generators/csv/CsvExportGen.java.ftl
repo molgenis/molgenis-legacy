@@ -30,6 +30,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Entity;
+import org.molgenis.model.elements.Field;
 import org.molgenis.util.CsvFileWriter;
 
 
@@ -97,7 +98,7 @@ public class CsvExport
 	
 	public void exportAll(File directory, List ... entityLists) throws Exception
 	{				
-		for(List l: entityLists) if(l.size()>0)
+		for(List<? extends Entity> l: entityLists) if(l.size()>0)
 		{
 			<#list entities as entity><#if !entity.abstract && entity.association==false>
 			if(l.get(0).getClass().equals(${JavaName(entity)}.class))
@@ -143,7 +144,7 @@ public class CsvExport
 		if(db.count(${JavaName(entity)}.class<#if entity.hasAncestor() || entity.isRootAncestor()>, new QueryRule("${typefield()}",Operator.EQUALS, "${Name(entity)}")</#if>) > 0)
 		{
 			
-			Query query = db.query(${JavaName(entity)}.class);
+			Query<${JavaName(entity)}> query = db.query(${JavaName(entity)}.class);
 			<#if entity.hasAncestor() || entity.isRootAncestor()>QueryRule type = new QueryRule("${typefield()}",Operator.EQUALS, "${Name(entity)}");
 			query.addRules(type);</#if>
 			QueryRule[] newRules = matchQueryRulesToEntity(db.getMetaData().getEntity("${Name(entity)}"), rules);
@@ -158,19 +159,19 @@ public class CsvExport
 		}
 	}
 	
-	public void export${Name(entity)}(List<${JavaName(entity)}> entities, File file) throws IOException
+	public void export${Name(entity)}(List<? extends Entity> entities, File file) throws IOException, MolgenisModelException
 	{
 		if(entities.size()>0)
 		{
 			//filter nulls
-			List<String> fields = entities.get(0).getFields();
+			List<Field> fields = entities.get(0).getFields();
 			List<String> notNulls = new ArrayList<String>();
 			
-			for(String f: fields)
+			for(Field f: fields)
 			{
-				for(${JavaName(entity)} e: entities)
+				for(Entity e: entities)
 				{
-					if(e.get(f) != null) notNulls.add(f);
+					if(e.get(f.getName()) != null) notNulls.add(f.getName());
 					break;
 				}
 			}			
@@ -178,9 +179,9 @@ public class CsvExport
 			//write
 			CsvFileWriter ${name(entity)}Writer = new CsvFileWriter(file, notNulls);
 			${name(entity)}Writer.writeHeader();
-			for(${JavaName(entity)} e: entities)
+			for(Entity e: entities)
 			{
-				${name(entity)}Writer.writeRow(e);
+				${name(entity)}Writer.writeRow((org.molgenis.util.Entity)e);
 			}
 			${name(entity)}Writer.close();
 		}
