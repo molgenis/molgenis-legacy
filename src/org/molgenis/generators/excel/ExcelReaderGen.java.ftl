@@ -42,7 +42,7 @@ import ${entity.namespace}.csv.${JavaName(entity)}CsvReader;
 /**
  * Reads ${JavaName(entity)} from Excel file.
  */
-public class ${JavaName(entity)}ExcelReader<${JavaName(entity)}>
+public class ${JavaName(entity)}ExcelReader
 {
 	public static final transient Logger logger = Logger.getLogger(${JavaName(entity)}ExcelReader.class);
 			

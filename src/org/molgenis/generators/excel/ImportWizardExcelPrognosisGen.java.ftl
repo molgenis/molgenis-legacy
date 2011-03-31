@@ -62,7 +62,7 @@ public class ImportWizardExcelPrognosis {
 			if (lowercasedSheetNames.contains("${entity.name?lower_case}")) {
 				String originalSheetname = lowerToOriginalName.get("${entity.name?lower_case}");
 				Sheet sheet = workbook.getSheet(originalSheetname);
-				${JavaName(entity)}ExcelReader<${JavaName(entity)}> excelReader = new ${JavaName(entity)}ExcelReader<${JavaName(entity)}>();
+				${JavaName(entity)}ExcelReader excelReader = new ${JavaName(entity)}ExcelReader();
 				List<String> allHeaders = excelReader.getNonEmptyHeaders(sheet);
 				${JavaName(entity)} entity = new ${JavaName(entity)}();
 				headersToMaps(originalSheetname, allHeaders, entity.getFields());

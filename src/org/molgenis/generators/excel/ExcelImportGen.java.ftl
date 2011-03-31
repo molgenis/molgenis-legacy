@@ -88,7 +88,7 @@ public class ExcelImport
 					try {
 						int count = 0;
 						if(sheetNames.contains("${entity.name?lower_case}")){
-							count = new ${JavaName(entity)}ExcelReader<Object>().importSheet(db, workbook.getSheet(sheetNames.indexOf("${entity.name?lower_case}")), defaults, dbAction, missingValue);
+							count = new ${JavaName(entity)}ExcelReader().importSheet(db, workbook.getSheet(sheetNames.indexOf("${entity.name?lower_case}")), defaults, dbAction, missingValue);
 						}
 						result.getProgressLog().add("${entity.name?lower_case}");
 						result.getMessages().put("${entity.name?lower_case}", "evaluated "+count+" ${entity.name?lower_case} elements");
@@ -109,7 +109,7 @@ public class ExcelImport
 					try {
 						int count = 0;
 						if(sheetNames.contains("${entity.name?lower_case}")){
-							count = new ${JavaName(entity)}ExcelReader<Object>().importSheet(db, workbook.getSheet(sheetNames.indexOf("${entity.name?lower_case}")), defaults, dbAction, missingValue);
+							count = new ${JavaName(entity)}ExcelReader().importSheet(db, workbook.getSheet(sheetNames.indexOf("${entity.name?lower_case}")), defaults, dbAction, missingValue);
 						}
 						result.getProgressLog().add("${entity.name?lower_case}");
 						result.getMessages().put("${entity.name?lower_case}",  "evaluated "+count+" ${entity.name?lower_case} elements");
