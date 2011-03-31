@@ -213,13 +213,11 @@ public class Molgenis {
 						.equals(MapperImplementation.MULTIQUERY)) {
 					generators.add(new JDBCDatabaseGen());
 					generators.add(new DataTypeGen());
-					generators.add(new PythonDataTypeGen());
 					generators.add(new MultiqueryMapperGen());
 				} else if (options.mapper_implementation
 						.equals(MapperImplementation.PREPARED_STATEMENT)) {
 					generators.add(new JDBCDatabaseGen());
 					generators.add(new DataTypeGen());
-					generators.add(new PythonDataTypeGen());
 					generators.add(new PStatementMapperGen());
 				} 
 			}
