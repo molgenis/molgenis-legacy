@@ -29,7 +29,7 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.model.MolgenisModelException;
-import org.molgenis.model.elements.Entity;
+import org.molgenis.util.Entity;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.CsvFileWriter;
 
@@ -98,7 +98,7 @@ public class CsvExport
 	
 	public void exportAll(File directory, List ... entityLists) throws Exception
 	{				
-		for(List<? extends Entity> l: entityLists) if(l.size()>0)
+		for(List<? extends org.molgenis.model.elements.Entity> l: entityLists) if(l.size()>0)
 		{
 			<#list entities as entity><#if !entity.abstract && entity.association==false>
 			if(l.get(0).getClass().equals(${JavaName(entity)}.class))
@@ -109,7 +109,7 @@ public class CsvExport
 		logger.debug("done");
 	}
 	
-		private QueryRule[] matchQueryRulesToEntity(Entity e, QueryRule ... rules) throws MolgenisModelException
+		private QueryRule[] matchQueryRulesToEntity(org.molgenis.model.elements.Entity e, QueryRule ... rules) throws MolgenisModelException
 	{
 		ArrayList<QueryRule> tmpResult = new ArrayList<QueryRule>();
 		for(QueryRule q : rules){
@@ -159,7 +159,7 @@ public class CsvExport
 		}
 	}
 	
-	public void export${Name(entity)}(List<? extends Entity> entities, File file) throws IOException, MolgenisModelException
+	public void export${Name(entity)}(List<? extends org.molgenis.model.elements.Entity> entities, File file) throws IOException, MolgenisModelException
 	{
 		if(entities.size()>0)
 		{
@@ -169,7 +169,7 @@ public class CsvExport
 			
 			for(Field f: fields)
 			{
-				for(Entity e: entities)
+				for(org.molgenis.model.elements.Entity e: entities)
 				{
 					if(e.get(f.getName()) != null) notNulls.add(f.getName());
 					break;
@@ -179,7 +179,7 @@ public class CsvExport
 			//write
 			CsvFileWriter ${name(entity)}Writer = new CsvFileWriter(file, notNulls);
 			${name(entity)}Writer.writeHeader();
-			for(Entity e: entities)
+			for(org.molgenis.model.elements.Entity e: entities)
 			{
 				${name(entity)}Writer.writeRow((org.molgenis.util.Entity)e);
 			}
