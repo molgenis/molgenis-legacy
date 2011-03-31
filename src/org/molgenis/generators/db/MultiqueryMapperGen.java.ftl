@@ -22,16 +22,10 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.LinkedHashSet;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
@@ -40,7 +34,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.jdbc.JDBCConnectionHelper;
+//import org.molgenis.framework.db.jdbc.JDBCConnectionHelper;
 import org.molgenis.framework.db.jdbc.AbstractJDBCMapper;
 import org.molgenis.framework.db.jdbc.JDBCMapper;
 import org.molgenis.MolgenisFieldTypes;
