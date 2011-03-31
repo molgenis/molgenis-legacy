@@ -104,7 +104,6 @@ ${field.xrefEntity.name} (<#if field.nillable>0<#else>1</#if>..n)</#if>
 <#if key.description?exists>${key.description}<#elseif key.fields?size &gt; 1>The combination of fields ${csv(key.fields)} is unique within an ${entity.name}<#else>Field ${csv(key.fields)} is unique within an ${entity.name}</#if>.
 </td></tr>
 </#list>
-</p>
 </table>
 </#if>
 </#macro>
