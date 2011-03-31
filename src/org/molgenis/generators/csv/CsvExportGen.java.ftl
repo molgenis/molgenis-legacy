@@ -30,7 +30,6 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.util.Entity;
-import org.molgenis.model.elements.Field;
 import org.molgenis.util.CsvFileWriter;
 
 
@@ -98,7 +97,7 @@ public class CsvExport
 	
 	public void exportAll(File directory, List ... entityLists) throws Exception
 	{				
-		for(List<? extends org.molgenis.model.elements.Entity> l: entityLists) if(l.size()>0)
+		for(List<? extends Entity> l: entityLists) if(l.size()>0)
 		{
 			<#list entities as entity><#if !entity.abstract && entity.association==false>
 			if(l.get(0).getClass().equals(${JavaName(entity)}.class))
@@ -159,19 +158,19 @@ public class CsvExport
 		}
 	}
 	
-	public void export${Name(entity)}(List<? extends org.molgenis.model.elements.Entity> entities, File file) throws IOException, MolgenisModelException
+	public void export${Name(entity)}(List<? extends Entity> entities, File file) throws IOException, MolgenisModelException
 	{
 		if(entities.size()>0)
 		{
 			//filter nulls
-			List<Field> fields = entities.get(0).getFields();
+			List<String> fields = entities.get(0).getFields();
 			List<String> notNulls = new ArrayList<String>();
 			
-			for(Field f: fields)
+			for(String f: fields)
 			{
-				for(org.molgenis.model.elements.Entity e: entities)
+				for(Entity e: entities)
 				{
-					if(e.get(f.getName()) != null) notNulls.add(f.getName());
+					if(e.get(f) != null) notNulls.add(f);
 					break;
 				}
 			}			
@@ -179,7 +178,7 @@ public class CsvExport
 			//write
 			CsvFileWriter ${name(entity)}Writer = new CsvFileWriter(file, notNulls);
 			${name(entity)}Writer.writeHeader();
-			for(org.molgenis.model.elements.Entity e: entities)
+			for(Entity e: entities)
 			{
 				${name(entity)}Writer.writeRow((org.molgenis.util.Entity)e);
 			}
