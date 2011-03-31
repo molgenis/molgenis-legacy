@@ -55,7 +55,7 @@ import ${entity.namespace}.${JavaName(entity)};
  */
 public class TestDataSet
 {
-	private static Database db;
+	//private static Database db;
 	public static final transient Logger logger = Logger.getLogger(TestCsv.class);
 	DateFormat dateFormat = new SimpleDateFormat(SimpleTuple.DATEFORMAT, Locale.US);
 	DateFormat dateTimeFormat = new SimpleDateFormat(SimpleTuple.DATETIMEFORMAT, Locale.US);	 
@@ -88,7 +88,7 @@ public class TestDataSet
 			if( this.${name(f.xrefEntity)}.size() > 0)
 			{
 				//get a set of unique entity indexes
-				Set<Integer> indexes = new LinkedHashSet();
+				Set<Integer> indexes = new LinkedHashSet<Integer>();
 				for(int j = 0; j < mrefSize; j++)
 				{	
 					indexes.add(j < this.${name(f.xrefEntity)}.size() ? j : this.${name(f.xrefEntity)}.size()-1);
