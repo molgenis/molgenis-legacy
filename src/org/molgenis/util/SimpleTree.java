@@ -26,7 +26,7 @@ import java.util.Vector;
  * Impl
  */
 @SuppressWarnings("unchecked")
-public class SimpleTree<T extends Tree<T>> implements Tree<T>,Serializable
+public class SimpleTree<T extends Tree> implements Tree<T>,Serializable
 {
 	/** Unique name of this element */
 	private String name;
@@ -125,7 +125,7 @@ public class SimpleTree<T extends Tree<T>> implements Tree<T>,Serializable
 			}
 		}
 		// should keep all children, so merge with parent map
-		for (String ckey : treeElements.keySet())
+		for (Object ckey : treeElements.keySet())
 		{
 			if (!parent.getTreeElements().containsValue(treeElements.get(ckey)))
 			{
@@ -210,7 +210,7 @@ public class SimpleTree<T extends Tree<T>> implements Tree<T>,Serializable
 			{
 				indent += "    ";
 			}
-			for (Tree<T> element: getChildren())
+			for (Tree element: getChildren())
 			{
 				str += "\n" + indent + element.toString(true, level + 1) + ",";
 			}
