@@ -10,7 +10,7 @@
 	{
 <#if entity.hasAncestor()>
 		//${JavaName(entity)} is a subclass of ${JavaName(entity.getAncestor())}
-		return (JDBCMapper) new ${JavaName(entity.getAncestor())}Mapper(this.getDatabase());
+		return (JDBCMapper<#if entity.hasAncestor()><${JavaName(entity.getAncestor())}><#else><${JavaName(entity)}></#if>) new ${JavaName(entity.getAncestor())}Mapper(this.getDatabase());
 <#else>
 		//${JavaName(entity)} has no superclass
 		return null;
