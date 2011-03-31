@@ -32,9 +32,12 @@ import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.util.CsvFileWriter;
 
-<#list model.entities as entity><#if !entity.abstract && entity.association==false>
-${imports(model, entity, "")}
-</#if></#list>
+
+<#list entities as entity>
+	<#if !entity.abstract && entity.association==false>
+	import ${entity.namespace}.${JavaName(entity)};
+	</#if>
+</#list>
 
 public class CsvExport
 {
