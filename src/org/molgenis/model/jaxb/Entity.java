@@ -75,6 +75,10 @@ public class Entity
 	public void addField(Field e){
 		fields.add(e);
 	}
+	
+	public void removeField(int index){
+		fields.remove(index);
+	}
 
 	public List<Field> getFields()
 	{
