@@ -67,7 +67,7 @@ public class FieldAssign
 			throw new CmdLineException("The parameters obj and value cannot be null.");
 		}
 
-		final Class c = field.getType();
+		final Class<?> c = field.getType();
 		if (c.isPrimitive())
 		{
 			String name = c.getSimpleName();
