@@ -542,8 +542,7 @@ public class MolgenisModelValidator
 									+ "' does not exist for field "
 									+ entityname + "." + fieldname);
 
-					if (xref_field == null) xref_field = xref_entity
-							.getPrimaryKey();
+					//if (xref_field == null) xref_field = xref_entity.getPrimaryKey();
 					// throw new MolgenisModelException("xref field '" +
 					// xref_field_name
 					// + "' does not exist for field " + entityname + "." +
