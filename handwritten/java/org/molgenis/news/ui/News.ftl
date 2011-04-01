@@ -1,9 +1,15 @@
 <#macro org_molgenis_news_ui_News screen>
+<#if show == "popup">
+		<@molgenis_header />
+<div class="formscreen">
+<div class="form_header" id="SearchPlugin">News</div>
+<div class="screenpadding">
+<#else>
 	<div class="formscreen">
 		<div class="form_header" id="${screen.name}">
 		${screen.label}
 		</div>
-		<#--messages-->
+
 		<#list screen.getMessages() as message>
 			<#if message.success>
 		<p class="successmessage">${message.text}</p>
@@ -13,10 +19,12 @@
 		</#list>
 		<div class="screenbody">
 			<div class="screenpadding">	
+</#if>
+
+
+
 <#--begin your plugin-->
-Updates of the database, both user features and insertion of new data, will be announced on this page. All news items are stored in the news archive. 
-<hr/>
-<br/>
+${screen.title}
 <#if screen.action == "entry">
 
 <#assign newsItem = screen.newsItem>
@@ -24,7 +32,7 @@ Updates of the database, both user features and insertion of new data, will be a
 <p class="news_subtitle">${newsItem.getSubtitle()}</p>
 <p>${newsItem.getText()}</p>
 <p>${newsItem.getDate()}</p>
-<p><a href="molgenis.do?__target=NewsPlugin&__action=all">All News</a></p>
+<p><a href="molgenis.do?__target=NewsPlugin&select=NewsPlugin&__action=all">All News</a></p>
 
 <#else>
 
@@ -33,9 +41,12 @@ Updates of the database, both user features and insertion of new data, will be a
 <div class="news_title">${newsItem.getTitle()}</div>
 <div class="news_subtitle">${newsItem.getSubtitle()}</div>
 <div>${newsItem.getDate()}</div>
-<div><a href="molgenis.do?__target=${screen.name}&__action=entry&id=${newsItem.getId()}">More</a></div>
+<div><a href="molgenis.do?__target=${screen.name}&select=NewsPlugin&__action=entry&id=${newsItem.getId()}" target="_parent">More</a></div>
 <br/><br/>
 </#list>
+<#if screen.action == "top">
+<p align="center"><a href="molgenis.do?__target=NewsPlugin&select=NewsPlugin&__action=all" target="_parent">All News</a></p>
+</#if>
 </div>
 
 </#if>
@@ -52,7 +63,11 @@ Updates of the database, both user features and insertion of new data, will be a
 </div>
 </td>
 -->
+
 			</div>
 		</div>
 	</div>
+<#if show == "popup">
+		<@molgenis_footer />
+</#if>
 </#macro>

@@ -26,6 +26,7 @@ public class News extends PluginModel<Entity>
 	private static final int NUM_NEWS = 5; // how many news to be shown in right box?
 	private String action = "init";
 	private NewsService newsService;
+	private String title  = "";
 	private List<MolgenisNews> news = new ArrayList<MolgenisNews>();
 	private MolgenisNews newsItem;
 
@@ -57,10 +58,17 @@ public class News extends PluginModel<Entity>
 
 			if ("entry".equals(this.action))
 			{
+				this.title    = "Updates of the database, both user features and insertion of new data, will be announced on this page. All news items are stored in the news archive.<hr/><br/>";
 				this.newsItem = this.newsService.getNewsById(request.getInt("id"));
+			}
+			else if ("top".equals(this.action))
+			{
+				this.title    = "";
+				this.news     = this.newsService.getAllNews(NUM_NEWS);
 			}
 			else if ("all".equals(this.action))
 			{
+				this.title    = "Updates of the database, both user features and insertion of new data, will be announced on this page. All news items are stored in the news archive.<hr/><br/>";
 				this.news     = this.newsService.getAllNews();
 			}
 			else
@@ -81,7 +89,11 @@ public class News extends PluginModel<Entity>
 		this.newsService = NewsService.getInstance(db);
 		try
 		{
-			this.news = this.newsService.getAllNews(); // News.NUM_NEWS
+			if ("init".equals(this.action))
+			{
+				this.title    = "Updates of the database, both user features and insertion of new data, will be announced on this page. All news items are stored in the news archive.<hr/><br/>";
+				this.news = this.newsService.getAllNews(); // News.NUM_NEWS
+			}
 		}
 		catch (Exception e)
 		{
@@ -98,6 +110,11 @@ public class News extends PluginModel<Entity>
 	public String getAction()
 	{
 		return this.action;
+	}
+
+	public String getTitle()
+	{
+		return this.title;
 	}
 
 	public List<MolgenisNews> getNews()
