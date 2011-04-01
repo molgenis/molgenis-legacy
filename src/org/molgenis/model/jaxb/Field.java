@@ -44,7 +44,7 @@ public class Field
 	@XmlAttribute
 	private Boolean nillable = null;
 	@XmlAttribute
-	private Boolean readOnly = null;
+	private Boolean readonly = null;
 		
 	@XmlAttribute
 	private Type type;
@@ -345,14 +345,14 @@ public class Field
 		this.unique = unique;
 	}
 	
-	public Boolean getReadOnly()
+	public Boolean getReadonly()
 	{
-		return readOnly;
+		return readonly;
 	}
 
-	public void setReadOnly(Boolean readOnly)
+	public void setReadonly(Boolean readonly)
 	{
-		this.readOnly = readOnly;
+		this.readonly = readonly;
 	}
 
 	public String getXRefName() {
