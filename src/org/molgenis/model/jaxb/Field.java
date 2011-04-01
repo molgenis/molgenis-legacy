@@ -43,13 +43,18 @@ public class Field
 	private Boolean auto = null;
 	@XmlAttribute
 	private Boolean nillable = null;
-	
+	@XmlAttribute
+	private Boolean readOnly = null;
+		
 	@XmlAttribute
 	private Type type;
 	
 	@XmlAttribute
 	private String name;
-		
+	
+	@XmlAttribute
+	private String label;
+
 	/**
 	 * Description of the different types of a field.
 	 */
@@ -251,6 +256,16 @@ public class Field
 		this.name = name;
 	}
 	
+	public String getLabel()
+	{
+		return label;
+	}
+
+	public void setLabel(String label)
+	{
+		this.label = label;
+	}
+	
 	public Type getType()
 	{
 		return type;
@@ -328,6 +343,16 @@ public class Field
 
 	public void setUnique(Boolean unique) {
 		this.unique = unique;
+	}
+	
+	public Boolean getReadOnly()
+	{
+		return readOnly;
+	}
+
+	public void setReadOnly(Boolean readOnly)
+	{
+		this.readOnly = readOnly;
 	}
 
 	public String getXRefName() {
