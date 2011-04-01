@@ -71,12 +71,20 @@ public class TestDatabase
 			db = new app.JpaDatabase(true);
 			((JpaDatabase)db).getEntityManager().setFlushMode(FlushModeType.AUTO);
 		<#else>
-		db = new JDBCDatabase("molgenis.test.properties");	
+			<#if db_mode?exists && db_mode = 'standalone'>
+			db = new JDBCDatabase("molgenis.testhsql.properties");	
+			//create the database
+			new Molgenis("molgenis.testhsql.properties").updateDb();
+			//get it
+			db = new JDBCDatabase("molgenis.testhsql.properties");
+			<#else>
+			db = new JDBCDatabase("molgenis.test.properties");	
 			//create the database
 			new Molgenis("molgenis.test.properties").updateDb();
 			//get it
 			db = new JDBCDatabase("molgenis.test.properties");
-		</#if>			
+			</#if>
+		</#if>	
 		}
 		catch (Exception e)
 		{
