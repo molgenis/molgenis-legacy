@@ -66,6 +66,8 @@ import org.molgenis.framework.db.jdbc.ColumnInfo;
 import org.molgenis.framework.db.jdbc.JDBCMapper;
 import org.molgenis.framework.db.jdbc.ColumnInfo.Type;
 import org.molgenis.util.ValueLabel;
+import org.molgenis.MolgenisFieldTypes;
+import org.molgenis.fieldtypes.FieldType;
 
 <#list allFields(entity) as f><#if f.type == "file">
 import org.apache.commons.io.FileUtils;
@@ -79,6 +81,7 @@ import org.apache.commons.io.FileUtils;
 import ${entity.getNamespace()}.${JavaName(entity)};
 <#if entity.hasAncestor()>
 import ${entity.getAncestor().getNamespace()}.${JavaName(entity.getAncestor())};
+import ${entity.getAncestor().getNamespace()}.db.${JavaName(entity.getAncestor())}Mapper;
 </#if>
 <#list allFields(entity) as f>
 	<#if f.type=="xref" || f.type=="mref">
