@@ -1,7 +1,7 @@
 <#-- table for search options to the left, news to the right -->
 <table width="100%">
 <tr>
-<td>
+<td valign="top">
 
 <#if !queryParametersVO.expertSearch>
 <#assign form      = vo.simpleSearchForm>
@@ -135,6 +135,9 @@ Click anywhere on this schematic representation of the COL7A1 gene to graphicall
 
 </td>
 <td class="news_box">
+<iframe src="molgenis.do?__target=NewsPlugin&select=NewsPlugin&__action=top&__show=popup" width="350" height="800" name="News" scrolling="no" marginheight="0" marginwidth="0" frameborder="0">
+</iframe>
+<#--
 <div class="formscreen">
 <div class="form_header" id="SearchPlugin">News</div>
 <div class="screenpadding">
@@ -148,5 +151,6 @@ Click anywhere on this schematic representation of the COL7A1 gene to graphicall
 <div align="center"><a href="molgenis.do?__target=NewsPlugin&select=NewsPlugin&__action=all">All News</a></div>
 </div>
 </div>
+-->
 </td>
 </table>
