@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-	<!--
-		 DOCTYPE molgenis PUBLIC "MOLGENIS 1.0"
-		"http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd"
-	-->
+<!-- DOCTYPE molgenis PUBLIC "MOLGENIS 1.0" "http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd" -->
 <molgenis name="biobank" label="Catalog of Dutch Biobanks">
 	<plugin name="MolgenisHeader" type="plugins.header.BbmriHeader" />
 	<menu name="main" position="left" startswith="WelcomeScreen">
-		<plugin name="BbmriWelcomeScreen" type="plugins.welcome.BbmriWelcomeScreenPlugin" label="Welcome" />
-		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Login" />
-		<form name="Cohorts" entity="BiobankPanel" label="Biobanks" hide_fields="id,description,Species,Individuals,PanelType,FounderPanels,ontologyReference" />
-		<form name="Coordinators" entity="Person" view="list" sortby="LastName" />
-		<form name="Institutes" entity="Institute" view="list" />
-		<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard" label="Batch Upload" />
+		<plugin name="BbmriWelcomeScreen" type="plugins.welcome.BbmriWelcomeScreenPlugin"
+			label="Welcome" />
+		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin"
+			label="Login" />
+		<form name="Cohorts" entity="BiobankPanel" label="Cohorts"
+			hide_fields="id,description,Species,Individuals,PanelType,FounderPanels,ontologyReference" />
 		<menu name="Admin">
+			<form name="Biobanks" entity="Biobank" view="list" />
+			<form name="Coordinators" entity="Person" view="list" sortby="LastName" />
+			<form name="Institutes" entity="Institute" view="list" />
 			<form name="Categories" sortby="name" view="list" entity="BiobankCategory" />
 			<form name="DataTypes" entity="BiobankDataType" />
 			<form name="Topics" entity="BiobankTopic" />
@@ -21,17 +21,26 @@
 				<form name="MolgenisUser" entity="MolgenisUser" label="User" />
 				<form name="MolgenisGroup" entity="MolgenisGroup" label="Group" />
 				<form name="MolgenisEntity" entity="MolgenisEntity" label="Entity" />
-				<form name="MolgenisPermission" entity="MolgenisPermission" label="Permission" />
+				<form name="MolgenisPermission" entity="MolgenisPermission"
+					label="Permission" />
 			</menu>
-			<plugin name="GenerateN3andRDF" type="plugins.mapping.GenerateN3andRDF" label="Mapping"/>
+					<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard"
+			label="Batch Upload" />
+			<plugin name="GenerateN3andRDF" type="plugins.mapping.GenerateN3andRDF"
+				label="Mapping" />
 		</menu>
 		<menu name="submenu" position="left" label="Index powered Search">
-			<plugin name="DBIndex" label="DB Index" type="plugins.LuceneIndex.DBIndexPlugin" />
-			<plugin name="OntoCatIndexPlugin" label="OntoCAT Index" type="plugins.LuceneIndex.OntoCatIndexPlugin" />
-			<plugin name="AdminIndex" label="Admin Indexes" type="plugins.LuceneIndex.AdminIndexes" />
+			<plugin name="DBIndex" label="DB Index"
+				type="plugins.LuceneIndex.DBIndexPlugin" />
+			<plugin name="OntoCatIndexPlugin" label="OntoCAT Index"
+				type="plugins.LuceneIndex.OntoCatIndexPlugin" />
+			<plugin name="AdminIndex" label="Admin Indexes"
+				type="plugins.LuceneIndex.AdminIndexes" />
 		</menu>
-		<plugin name="BbmriContact" type="plugins.contact.BbmriContactPlugin" label="Contact" />
-		<plugin name="BbmriHelp" type="plugins.help.BbmriHelpPlugin" label="Help" visible ="false"/>
-		
+		<plugin name="BbmriContact" type="plugins.contact.BbmriContactPlugin"
+			label="Contact" />
+		<plugin name="BbmriHelp" type="plugins.help.BbmriHelpPlugin"
+			label="Help" visible="false" />
+
 	</menu>
 </molgenis>
