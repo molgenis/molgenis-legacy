@@ -928,284 +928,306 @@ public class MolgenisModelParser
 	{
 		UISchema new_parent = null;
 
-		String name = element.getAttribute("name").trim();
-		String namespace = model.getName();
-		String label = element.getAttribute("label");
-
-		// check required properties
-		if (name == "" && !element.getTagName().equals("form"))
+		if (element.getTagName().equals("include"))
 		{
-			throw new MolgenisModelException(
-					"name is missing for subform of screen '"
-							+ parent.getName() + "'");
-		}
-		if (label == "")
-		{
-			label = name;
-		}
-
-		// add this element to the meta-model
-		if (element.getTagName().equals("menu"))
-		{
-			Menu menu = new Menu(name, parent);
-			menu.setLabel(label);
-			menu.setNamespace(namespace);
-			if (element.getAttribute("position") != "") menu
-					.setPosition(Menu.Position.getPosition(element
-							.getAttribute("position")));
-
-			new_parent = menu;
-		}
-		else if (element.getTagName().equals("form"))
-		{
-			if (name.equals("")) name = element.getAttribute("entity");
-			Form form = new Form(name, parent);
-			form.setLabel(label);
-			form.setNamespace(namespace);
-			new_parent = form;
-
-			// VIEWTYPE
-			if (element.getAttribute("view").equals("record")) element
-					.setAttribute("view", "edit");
-			if (element.getAttribute("view").equals(""))
+			String fileName = element.getAttribute("file");
+			if (fileName == null) throw new MolgenisModelException(
+					"include failed: no file attribute set");
+			try
 			{
-				if (element.getChildNodes().getLength() > 0) element
-						.setAttribute("view", "edit");
-				else
-					element.setAttribute("view", "list");
+				parseUiSchema(fileName, model);
 			}
-			if (Form.ViewType.parseViewType(element.getAttribute("view")) == Form.ViewType.VIEWTYPE_UNKNOWN)
+			catch (Exception e)
 			{
-				throw new MolgenisModelException("view '"
-						+ element.getAttribute("view") + "' unknown for form '"
-						+ form.getName() + "'");
-			}
-			form.setViewType(Form.ViewType.parseViewType(element
-					.getAttribute("view")));
-
-			// LIMIT
-			form.setLimit(10);
-			String limit = element.getAttribute("limit");
-			if (limit != null && limit != "")
-			{
-				form.setLimit(Integer.parseInt(limit));
-			}
-
-			// ACTIONS
-			form.setCommands(new ArrayList<String>());
-			String commands = element.getAttribute("commands");
-			if (commands != null && commands != "")
-			{
-				String[] commandArray = commands.split(",");
-				for (String command : commandArray)
-				{
-					form.getCommands().add(command.trim());
-				}
-			}
-
-			// SORT
-			String sortby = element.getAttribute("sortby");
-			if (sortby != null && sortby != "")
-			{
-				// TODO ensure valid sort field
-				form.setSortby(sortby);
-			}
-			String sortorder = element.getAttribute("sortorder");
-			if (sortorder != null && sortorder != "")
-			{
-				if (!sortorder.equalsIgnoreCase(Form.SortOrder.ASC.toString())
-						&& !sortorder.equalsIgnoreCase(Form.SortOrder.DESC
-								.toString()))
-				{
-					throw new MolgenisModelException(
-							"sortorder can only be 'asc' or 'desc'. Parser found <form name=\""
-									+ form.getName() + "\" sortorder=\""
-									+ sortorder + "\"");
-				}
-				else
-				{
-
-					form.setSortorder(SortOrder.parse(sortorder));
-				}
-			}
-
-			// FILTER
-			String filter = element.getAttribute("filter");
-			if (filter != null && filter.equals("true"))
-			{
-				if (element.getAttribute("filterfield") == "")
-				{
-					throw new MolgenisModelException(
-							"filterfield is missing for subform of screen '"
-									+ parent.getName() + "'");
-				}
-				if (element.getAttribute("filtertype") == "")
-				{
-					throw new MolgenisModelException(
-							"filtertype is missing for subform of screen '"
-									+ parent.getName() + "'");
-				}
-				if (element.getAttribute("filtervalue") == "")
-				{
-					logger
-							.warn("filtervalue is missing for subform of screen '"
-									+ parent.getName() + "'");
-				}
-				form.setFilter(true);
-				form.setFilterfield(element.getAttribute("filterfield"));
-				form.setFiltertype(element.getAttribute("filtertype"));
-				form.setFiltervalue(element.getAttribute("filtervalue"));
-			}
-
-			// READONLY
-			form.setReadOnly(false);
-			String readonly = element.getAttribute("readonly");
-			if (readonly != null)
-			{
-				form.setReadOnly(Boolean.parseBoolean(readonly));
-			}
-
-			// ENTITY
-			// TODO: whould have expected this in the constructor!
-			Entity entity = (Entity) model.getDatabase().getChild(
-					element.getAttribute("entity"));
-			if (entity == null)
-			{
-				throw new MolgenisModelException(
-						"Could not find the specified entity '"
-								+ element.getAttribute("entity")
-								+ "' for form '" + form.getName() + "'");
-			}
-			form.setRecord((Record) entity);// form.setEntity(entity);
-
-			// HIDDEN FIELDS
-			form.setHideFields(new ArrayList<String>());
-			String hide_fields = element.getAttribute("hide_fields");
-			if (hide_fields != null && hide_fields != "")
-			{
-				String[] hiddenFieldArray = hide_fields.split(",");
-				for (String field : hiddenFieldArray)
-				{
-					Field f = entity.getAllField(field.trim());
-					if (f == null)
-					{
-						throw new MolgenisModelException(
-								"Could not find field '" + field
-										+ "' defined in hide_fields='"
-										+ element.getAttribute("hide_fields")
-										+ "' in form '" + form.getName() + "'");
-					}
-					// use name from 'f' to correct for case problems
-					form.getHideFields().add(f.getName());
-				}
-			}
-
-			// COMPACT_FIELDS
-			if (element.getAttribute("compact_view") != "")
-			{
-				String[] fields = element.getAttribute("compact_view").split(
-						",");
-				// check if the fields are there
-				List<String> compact_fields = new ArrayList<String>();
-				for (String field : fields)
-				{
-					Field f = entity.getAllField(field);
-					if (f == null)
-					{
-						throw new MolgenisModelException(
-								"Could not find field '" + field
-										+ "' defined in compact_view='"
-										+ element.getAttribute("compact_view")
-										+ "' in form '" + form.getName() + "'");
-					}
-					// use name from 'f' to correct for case problems
-
-					compact_fields.add(form.getEntity().getName() + "_"
-							+ f.getName());
-				}
-				form.setCompactView(compact_fields);
+				throw new MolgenisModelException("include failed: "+e.getMessage());
 			}
 		}
-		else if (element.getTagName().equals("tree"))
+		else
 		{
+
+			String name = element.getAttribute("name").trim();
+			String namespace = model.getName();
+			String label = element.getAttribute("label");
+
 			// check required properties
-			if (element.getAttribute("parentfield") == "") throw new MolgenisModelException(
-					"parentfield is missing for tree screen '" + name + "'");
-			if (element.getAttribute("idfield") == "") throw new MolgenisModelException(
-					"idfield is missing for tree screen '" + name + "'");
-			if (element.getAttribute("labelfield") == "") throw new MolgenisModelException(
-					"labelfield is missing for tree screen '" + name + "'");
-
-			Tree tree = new Tree(name, parent, element
-					.getAttribute("parentfield"), element
-					.getAttribute("idfield"), element
-					.getAttribute("labelfield"));
-			tree.setLabel(label);
-			tree.setNamespace(namespace);
-			new_parent = tree;
-
-			// READONLY
-			tree.setReadOnly(true);
-			String readonly = element.getAttribute("readonly");
-			if (readonly != null)
-			{
-				tree.setReadOnly(Boolean.parseBoolean(readonly));
-			}
-
-			// ENTITY
-			// TODO: whould have expected this in the constructor!
-			DBSchema entity = model.getDatabase().getChild(
-					element.getAttribute("entity"));
-			if (entity == null)
+			if (name == "" && !element.getTagName().equals("form"))
 			{
 				throw new MolgenisModelException(
-						"Could not find the specified entity '"
-								+ element.getAttribute("entity") + "'");
+						"name is missing for subform of screen '"
+								+ parent.getName() + "'");
 			}
-			tree.setRecord((Record) entity);
-		}
-		else if (element.getTagName().equals("plugin"))
-		{
-			if (element.getAttribute("type") == "") throw new MolgenisModelException(
-					"plugin has no name");
-			Plugin plugin = new Plugin(name, parent, element
-					.getAttribute("type"));
-			plugin.setLabel(label);
-			plugin.setNamespace(namespace);
-			new_parent = plugin;
-
-			// READONLY
-			plugin.setReadOnly(false);
-			String readonly = element.getAttribute("readonly");
-			if (readonly != null)
+			if (label == "")
 			{
-				plugin.setReadOnly(Boolean.parseBoolean(readonly));
+				label = name;
 			}
-		}
-		/*
-		 * else { // this is the unexpected throw new Exception("Encountered
-		 * unknown element: " + element.getTagName()); }
-		 */
 
-		// recurse the children
-		NodeList children = element.getChildNodes();
+			// add this element to the meta-model
+			if (element.getTagName().equals("menu"))
+			{
+				Menu menu = new Menu(name, parent);
+				menu.setLabel(label);
+				menu.setNamespace(namespace);
+				if (element.getAttribute("position") != "") menu
+						.setPosition(Menu.Position.getPosition(element
+								.getAttribute("position")));
 
-		for (int i = 0; i < children.getLength(); i++)
-		{
-			Node child = children.item(i);
+				new_parent = menu;
+			}
+			else if (element.getTagName().equals("form"))
+			{
+				if (name.equals("")) name = element.getAttribute("entity");
+				Form form = new Form(name, parent);
+				form.setLabel(label);
+				form.setNamespace(namespace);
+				new_parent = form;
 
-			if (child.getNodeType() != Node.ELEMENT_NODE) continue;
+				// VIEWTYPE
+				if (element.getAttribute("view").equals("record")) element
+						.setAttribute("view", "edit");
+				if (element.getAttribute("view").equals(""))
+				{
+					if (element.getChildNodes().getLength() > 0) element
+							.setAttribute("view", "edit");
+					else
+						element.setAttribute("view", "list");
+				}
+				if (Form.ViewType.parseViewType(element.getAttribute("view")) == Form.ViewType.VIEWTYPE_UNKNOWN)
+				{
+					throw new MolgenisModelException("view '"
+							+ element.getAttribute("view")
+							+ "' unknown for form '" + form.getName() + "'");
+				}
+				form.setViewType(Form.ViewType.parseViewType(element
+						.getAttribute("view")));
 
-			parseUiSchema(model, (Element) child, new_parent);
+				// LIMIT
+				form.setLimit(10);
+				String limit = element.getAttribute("limit");
+				if (limit != null && limit != "")
+				{
+					form.setLimit(Integer.parseInt(limit));
+				}
+
+				// ACTIONS
+				form.setCommands(new ArrayList<String>());
+				String commands = element.getAttribute("commands");
+				if (commands != null && commands != "")
+				{
+					String[] commandArray = commands.split(",");
+					for (String command : commandArray)
+					{
+						form.getCommands().add(command.trim());
+					}
+				}
+
+				// SORT
+				String sortby = element.getAttribute("sortby");
+				if (sortby != null && sortby != "")
+				{
+					// TODO ensure valid sort field
+					form.setSortby(sortby);
+				}
+				String sortorder = element.getAttribute("sortorder");
+				if (sortorder != null && sortorder != "")
+				{
+					if (!sortorder.equalsIgnoreCase(Form.SortOrder.ASC
+							.toString())
+							&& !sortorder.equalsIgnoreCase(Form.SortOrder.DESC
+									.toString()))
+					{
+						throw new MolgenisModelException(
+								"sortorder can only be 'asc' or 'desc'. Parser found <form name=\""
+										+ form.getName() + "\" sortorder=\""
+										+ sortorder + "\"");
+					}
+					else
+					{
+
+						form.setSortorder(SortOrder.parse(sortorder));
+					}
+				}
+
+				// FILTER
+				String filter = element.getAttribute("filter");
+				if (filter != null && filter.equals("true"))
+				{
+					if (element.getAttribute("filterfield") == "")
+					{
+						throw new MolgenisModelException(
+								"filterfield is missing for subform of screen '"
+										+ parent.getName() + "'");
+					}
+					if (element.getAttribute("filtertype") == "")
+					{
+						throw new MolgenisModelException(
+								"filtertype is missing for subform of screen '"
+										+ parent.getName() + "'");
+					}
+					if (element.getAttribute("filtervalue") == "")
+					{
+						logger
+								.warn("filtervalue is missing for subform of screen '"
+										+ parent.getName() + "'");
+					}
+					form.setFilter(true);
+					form.setFilterfield(element.getAttribute("filterfield"));
+					form.setFiltertype(element.getAttribute("filtertype"));
+					form.setFiltervalue(element.getAttribute("filtervalue"));
+				}
+
+				// READONLY
+				form.setReadOnly(false);
+				String readonly = element.getAttribute("readonly");
+				if (readonly != null)
+				{
+					form.setReadOnly(Boolean.parseBoolean(readonly));
+				}
+
+				// ENTITY
+				// TODO: whould have expected this in the constructor!
+				Entity entity = (Entity) model.getDatabase().getChild(
+						element.getAttribute("entity"));
+				if (entity == null)
+				{
+					throw new MolgenisModelException(
+							"Could not find the specified entity '"
+									+ element.getAttribute("entity")
+									+ "' for form '" + form.getName() + "'");
+				}
+				form.setRecord((Record) entity);// form.setEntity(entity);
+
+				// HIDDEN FIELDS
+				form.setHideFields(new ArrayList<String>());
+				String hide_fields = element.getAttribute("hide_fields");
+				if (hide_fields != null && hide_fields != "")
+				{
+					String[] hiddenFieldArray = hide_fields.split(",");
+					for (String field : hiddenFieldArray)
+					{
+						Field f = entity.getAllField(field.trim());
+						if (f == null)
+						{
+							throw new MolgenisModelException(
+									"Could not find field '"
+											+ field
+											+ "' defined in hide_fields='"
+											+ element
+													.getAttribute("hide_fields")
+											+ "' in form '" + form.getName()
+											+ "'");
+						}
+						// use name from 'f' to correct for case problems
+						form.getHideFields().add(f.getName());
+					}
+				}
+
+				// COMPACT_FIELDS
+				if (element.getAttribute("compact_view") != "")
+				{
+					String[] fields = element.getAttribute("compact_view")
+							.split(",");
+					// check if the fields are there
+					List<String> compact_fields = new ArrayList<String>();
+					for (String field : fields)
+					{
+						Field f = entity.getAllField(field);
+						if (f == null)
+						{
+							throw new MolgenisModelException(
+									"Could not find field '"
+											+ field
+											+ "' defined in compact_view='"
+											+ element
+													.getAttribute("compact_view")
+											+ "' in form '" + form.getName()
+											+ "'");
+						}
+						// use name from 'f' to correct for case problems
+
+						compact_fields.add(form.getEntity().getName() + "_"
+								+ f.getName());
+					}
+					form.setCompactView(compact_fields);
+				}
+			}
+			else if (element.getTagName().equals("tree"))
+			{
+				// check required properties
+				if (element.getAttribute("parentfield") == "") throw new MolgenisModelException(
+						"parentfield is missing for tree screen '" + name + "'");
+				if (element.getAttribute("idfield") == "") throw new MolgenisModelException(
+						"idfield is missing for tree screen '" + name + "'");
+				if (element.getAttribute("labelfield") == "") throw new MolgenisModelException(
+						"labelfield is missing for tree screen '" + name + "'");
+
+				Tree tree = new Tree(name, parent, element
+						.getAttribute("parentfield"), element
+						.getAttribute("idfield"), element
+						.getAttribute("labelfield"));
+				tree.setLabel(label);
+				tree.setNamespace(namespace);
+				new_parent = tree;
+
+				// READONLY
+				tree.setReadOnly(true);
+				String readonly = element.getAttribute("readonly");
+				if (readonly != null)
+				{
+					tree.setReadOnly(Boolean.parseBoolean(readonly));
+				}
+
+				// ENTITY
+				// TODO: whould have expected this in the constructor!
+				DBSchema entity = model.getDatabase().getChild(
+						element.getAttribute("entity"));
+				if (entity == null)
+				{
+					throw new MolgenisModelException(
+							"Could not find the specified entity '"
+									+ element.getAttribute("entity") + "'");
+				}
+				tree.setRecord((Record) entity);
+			}
+			else if (element.getTagName().equals("plugin"))
+			{
+				if (element.getAttribute("type") == "") throw new MolgenisModelException(
+						"plugin has no name");
+				Plugin plugin = new Plugin(name, parent, element
+						.getAttribute("type"));
+				plugin.setLabel(label);
+				plugin.setNamespace(namespace);
+				new_parent = plugin;
+
+				// READONLY
+				plugin.setReadOnly(false);
+				String readonly = element.getAttribute("readonly");
+				if (readonly != null)
+				{
+					plugin.setReadOnly(Boolean.parseBoolean(readonly));
+				}
+			}
+			/*
+			 * else { // this is the unexpected throw new Exception("Encountered
+			 * unknown element: " + element.getTagName()); }
+			 */
+
+			// recurse the children
+			NodeList children = element.getChildNodes();
+
+			for (int i = 0; i < children.getLength(); i++)
+			{
+				Node child = children.item(i);
+
+				if (child.getNodeType() != Node.ELEMENT_NODE) continue;
+
+				parseUiSchema(model, (Element) child, new_parent);
+			}
 		}
 	}
 
-	public static Model parseUiSchema(String filename, Model model)
+	private static Document parseXmlFile(String filename)
 			throws MolgenisModelException
 	{
-		logger.debug("parsing ui file: " + filename);
-		if (filename == null || filename.equals("")) return model;
-
 		Document document = null;
 		DocumentBuilder builder = null;
 		try
@@ -1230,6 +1252,16 @@ public class MolgenisModelParser
 						+ e.getMessage());
 			}
 		}
+		return document;
+	}
+
+	public static Model parseUiSchema(String filename, Model model)
+			throws MolgenisModelException
+	{
+		logger.debug("parsing ui file: " + filename);
+		if (filename == null || filename.equals("")) return model;
+
+		Document document = parseXmlFile(filename);
 
 		// retrieve the document-root
 		Element document_root = document.getDocumentElement();
@@ -1273,6 +1305,10 @@ public class MolgenisModelParser
 				{
 					parseUiSchema(model, (Element) child, model
 							.getUserinterface());
+				}
+				else if (child.getNodeName().equals("include"))
+				{
+
 				}
 				// }
 			}
