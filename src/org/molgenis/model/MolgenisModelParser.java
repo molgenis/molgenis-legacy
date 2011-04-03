@@ -935,11 +935,35 @@ public class MolgenisModelParser
 					"include failed: no file attribute set");
 			try
 			{
-				parseUiSchema(fileName, model);
+				Document document_root = parseXmlFile(fileName);
+				// include all its elements, ignore the root node
+				NodeList rootChildren = document_root.getChildNodes();
+				for (int i = 0; i < rootChildren.getLength(); i++)
+				{
+					NodeList children = rootChildren.item(i).getChildNodes();
+					for (int j = 0; j < children.getLength(); j++)
+					{
+						Node child = children.item(j);
+						if (child.getNodeType() != Node.ELEMENT_NODE) continue;
+						try
+						{
+
+							parseUiSchema(model, (Element) child, parent);
+
+						}
+						catch (Exception e)
+						{
+							throw new MolgenisModelException(e.getMessage());
+						}
+
+					}
+				}
+
 			}
 			catch (Exception e)
 			{
-				throw new MolgenisModelException("include failed: "+e.getMessage());
+				throw new MolgenisModelException("include failed: "
+						+ e.getMessage());
 			}
 		}
 		else
@@ -1306,10 +1330,7 @@ public class MolgenisModelParser
 					parseUiSchema(model, (Element) child, model
 							.getUserinterface());
 				}
-				else if (child.getNodeName().equals("include"))
-				{
 
-				}
 				// }
 			}
 			catch (Exception e)
@@ -1320,45 +1341,6 @@ public class MolgenisModelParser
 		}
 		return model;
 	}
-
-	// public static void prepareForMetapipe(Model model) throws
-	// MolgenisModelException
-	// {
-	// for (Entity entity : model.getEntities())
-	// {
-	// Field idfield = new Field(entity, new , "id", "id", true, false, true,
-	// null);
-	// try
-	// {
-	// entity.addField(idfield);
-	// }
-	// catch (Exception e)
-	// {
-	// throw new MolgenisModelException("Error in " + entity.getName()
-	// + ": fieldname 'id' is reserved for system");
-	// }
-	//
-	// for (Field field : entity.getFields())
-	// {
-	// if (field.getType() == Type.XREF_MULTIPLE || field.getType() ==
-	// Type.XREF_SINGLE)
-	// {
-	// try
-	// {
-	// field.setXrefLabelNames(Arrays.asList(new String[]
-	// { "id" }));
-	// }
-	// catch (Exception e)
-	// {
-	// throw new MolgenisModelException("Error in " + entity.getName() + ": " +
-	// e);
-	// }
-	//
-	// }
-	// }
-	// logger.debug(entity.toString());
-	// }
-	// }
 
 	private static String elementValueToString(Element element)
 	{
@@ -1389,155 +1371,5 @@ public class MolgenisModelParser
 
 	private static final transient Logger logger = Logger
 			.getLogger(MolgenisModelParser.class.getName());
-
-	// old processor
-	// public static Model parseProcessors( String filename, Model model )
-	// throws MolgenisLanguageException
-	// {
-	// Document document = null;
-	//
-	// // initialize the document
-	// try
-	// {
-	// DocumentBuilder builder =
-	// DocumentBuilderFactory.newInstance().newDocumentBuilder();
-	// document = builder.parse(filename);
-	// }
-	// catch( Exception e )
-	// {
-	// throw new MolgenisLanguageException("Parsing of DSL (schema) failed: " +
-	// e.getMessage());
-	// }
-	//
-	// // retrieve the document-root
-	// Element document_root = document.getDocumentElement();
-	// if( document_root.getAttribute("name") == "" )
-	// {
-	// document_root.setAttribute("name", "molgenis");
-	// }
-	//
-	// String modelName = document_root.getAttribute("name");
-	//
-	// model = new Model(modelName);
-	// logger.debug("read: " + model);
-	//
-	// // retrieve the children
-	// NodeList children = document_root.getChildNodes();
-	//
-	// for( int i = 0; i < children.getLength(); i++ )
-	// {
-	// Node child = children.item(i);
-	//
-	// if( child.getNodeType() != Node.ELEMENT_NODE )
-	// continue;
-	//
-	// Element element = (Element)child;
-	// if( element.getTagName().equals("methods") )
-	// {
-	// parseMethod(model, element);
-	// }
-	// }
-	//
-	// return model;
-	// }
-	// public static void parseProcessor( Model model, Element element ) throws
-	// MolgenisLanguageException
-	// {
-	// // check properties
-	// // NAME
-	// if( element.getAttribute("name") == "" )
-	// {
-	// String message = "name is missing for processor " + element.toString();
-	// logger.error(message);
-	// throw new MolgenisLanguageException(message);
-	// }
-	//
-	// // construct
-	// Processor processor = new Processor(element.getAttribute("name"),
-	// model.getProcessing());
-	//
-	// // add children
-	// // DATASET
-	// NodeList elements = element.getElementsByTagName("dataset");
-	// for( int j = 0; j < elements.getLength(); j++ )
-	// {
-	// Element elem = (Element)elements.item(j);
-	// parseDataset(processor, elem);
-	// }
-	//
-	// // METHOD
-	// elements = element.getElementsByTagName("method");
-	// for( int j = 0; j < elements.getLength(); j++ )
-	// {
-	// Element elem = (Element)elements.item(j);
-	// parseMethod(processor, elem);
-	// }
-	//
-	// // done
-	// logger.debug("read: " + processor.toString());
-	// }
-	//
-	// public static void parseDataset( Processor processor, Element element )
-	// throws MolgenisLanguageException
-	// {
-	// // check properties
-	// // NAME
-	// if( element.getAttribute("name") == "" )
-	// {
-	// String message = "name is missing for dataset " + element.toString();
-	// logger.error(message);
-	// throw new MolgenisLanguageException(message);
-	// }
-	// // ENTITY
-	// if( element.getAttribute("entity") == "" )
-	// {
-	// String message = "entity is missing for dataset " + element.toString();
-	// logger.error(message);
-	// throw new MolgenisLanguageException(message);
-	// }
-	//
-	// // construct
-	// Dataset dataset = new Dataset(element.getAttribute("name"),
-	// element.getAttribute("entity"));
-	//
-	// try
-	// {
-	// processor.addDataset(dataset);
-	// }
-	// catch( Exception e )
-	// {
-	// throw new MolgenisLanguageException("duplicate dataset '" +
-	// dataset.getName() + "' in processor '"
-	// + processor.getName() + "'");
-	// }
-	// }
-	//
-	// public static void parseMethod( Processor processor, Element element )
-	// throws MolgenisLanguageException
-	// {
-	// // check properties
-	// // NAME
-	// if( element.getAttribute("name") == "" )
-	// {
-	// String message = "name is missing for processor " + element.toString();
-	// logger.error(message);
-	// throw new MolgenisLanguageException(message);
-	// }
-	//
-	// // construct
-	// Method method = new Method(element.getAttribute("name"), processor);
-	//
-	// // add children
-	// // PARAM
-	// NodeList elements = element.getElementsByTagName("param");
-	// for( int j = 0; j < elements.getLength(); j++ )
-	// {
-	// Element elem = (Element)elements.item(j);
-	// parseParameter(method, elem);
-	// }
-	//
-	// // done
-	// logger.debug("read: " + method.toString());
-	// }
 
 }
