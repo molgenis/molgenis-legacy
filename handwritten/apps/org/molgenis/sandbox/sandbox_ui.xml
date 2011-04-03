@@ -1,7 +1,10 @@
 <molgenis name="ngs" label="Sandbox for testing small things :-)">
 	<plugin name="molgenis_header" type="plugins.header.MolgenisHeader" />
-	<menu name="main" position="left">
-		<form name="Investigations" entity="Investigation" />
+	<menu name="sandboxmain" position="left">
+		<form name="Investigations" entity="Investigation">
+			<plugin name="TestEmbedVaadin" type="org.molgenis.sandbox.plugins.VaadinPlugin" />
+		</form>
 		<plugin name="TestListView" type="org.molgenis.sandbox.plugins.TestListView" />
+		<include file="org/molgenis/sandbox/component_ui.xml" />
 	</menu>
 </molgenis>

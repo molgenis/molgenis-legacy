@@ -19,5 +19,8 @@
 	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/spssw-1.66.jar"/>
 	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/iText-5.0.6.jar"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v6.0"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/vaadin-6.5.2.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/vaadin-externallayout-0.5.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

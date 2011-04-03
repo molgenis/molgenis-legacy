@@ -264,4 +264,29 @@
 		<extension>json</extension>
 		<mime-type>application/json</mime-type>
 	</mime-mapping>
+	
+	
+	<context-param>
+		<description>Vaadin production mode</description>
+		<param-name>productionMode</param-name>
+		<param-value>false</param-value>
+	</context-param>
+	<!-- vaadin, one app + standard path... -->
+	<servlet>
+		<servlet-name>Vaadin</servlet-name>
+		<servlet-class>com.vaadin.terminal.gwt.server.ApplicationServlet</servlet-class>
+		<init-param>
+			<description>Vaadin application class to start</description>
+			<param-name>application</param-name>
+			<param-value>org.molgenis.sandbox.plugins.VaadinHelloWorld</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Vaadin</servlet-name>
+		<url-pattern>/vaadin-apps/helloworld/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+        <servlet-name>Vaadin</servlet-name>
+        <url-pattern>/VAADIN/*</url-pattern>
+    </servlet-mapping>
 </web-app>
