@@ -127,8 +127,8 @@ public class JDBCConnectionHelper
 			if (connection == null || connection.isClosed())
 			{
 				openconnections++;
-				logger.debug(this + "opened database connection, connectioncount=" + openconnections +" real count: "+this.source.countOpenConnections());
 				connection = source.getConnection();
+				logger.debug(this + "opened database connection, connectioncount=" + openconnections +", count in pool: "+this.source.countOpenConnections()+"/"+source.getMaxActive());
 				connection.setAutoCommit(true); // restore default
 			}
 			return connection;
@@ -161,7 +161,7 @@ public class JDBCConnectionHelper
 					if (!connection.isClosed()) connection.close();
 					connection = null;
 					openconnections--;
-					logger.debug(this + "closed connection back to pool, connectioncount=" + openconnections);
+					logger.debug(this + "closed connection back to pool, connectioncount=" + openconnections+", open connections in pool: "+source.countOpenConnections()+"/"+source.getMaxActive());
 				}
 				catch (Exception sqle)
 				{

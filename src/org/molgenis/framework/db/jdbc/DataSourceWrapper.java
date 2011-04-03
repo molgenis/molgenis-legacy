@@ -13,6 +13,8 @@ public interface DataSourceWrapper
 
 	public int countOpenConnections() throws NamingException;
 
+	int getMaxActive() throws NamingException;
+
 	//public String getDriverClassName() throws NamingException;
 	
 	//public int getNumActive();
