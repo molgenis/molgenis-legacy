@@ -95,7 +95,7 @@
 				duplicate. Reporters have database entries which are represented
 				generically as OntologyTerms in the MAGE-TAB 1.1. See MAGE-TAB
 				specification for detailed examples.</description>
-			<field name="Sequence" type="text" />
+			<field name="ReporterSequence" type="text" />
 			<field name="ControlType" type="mref" xref_entity="OntologyTerm" />
 			<field name="DatabaseEntry" label="Reporter Database Entry"
 				type="mref" xref_entity="OntologyTerm"  />

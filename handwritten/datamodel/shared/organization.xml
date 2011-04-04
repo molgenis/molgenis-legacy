@@ -11,8 +11,8 @@
 				ObservedValues), and optionally actions (Protocols,
 				ProtoclApplications). 'Invetigation' maps to standard XGAP/FuGE
 				Investigation, MAGE-TAB Experiment and METABASE:Study.</description>
-			<field nillable="true" name="start" type="datetime" description="The start point of the study." auto="true" />
-			<field nillable="true" auto="false" name="end" type="datetime"
+			<field nillable="true" name="startDate" type="datetime" description="The start point of the study." auto="true" />
+			<field nillable="true" auto="false" name="endDate" type="datetime"
 				description="The end point of the study." />
 			<field name="contacts" type="mref" xref_entity="Person"
 				nillable="true" />	

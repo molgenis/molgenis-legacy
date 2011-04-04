@@ -67,7 +67,7 @@
 			<field name="Gene" label="Gene" type="xref" xref_entity="Gene"
 				xref_field="id" xref_label="name" nillable="true"
 				description="The gene that produces this protein" />
-			<field name="Sequence" label="Sequence" type="text" nillable="true"
+			<field name="AminoSequence" label="Sequence" type="text" nillable="true"
 				description="The aminoacid sequence." />
 			<field name="Mass" label="Mass" type="decimal" nillable="true"
 				description="The mass of this metabolite" />

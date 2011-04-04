@@ -205,7 +205,7 @@
 				description="Reference to the protocol this ProtocolApplication is an application of. Shadows ProtocolApplication.protocol." />
 			<field name="PreviousSteps" type="mref" xref_entity="ComputeApplication" nillable="true"
 				description="To keep track of calculation dependencies == workflow; Note: can be changed at runtime" />
-			<field name="script" nillable="true" type="text"
+			<field name="ComputeScript" nillable="true" type="text"
 				description="The actual command to be sent to the cluster, is a
 			filled in version of the one define in the ComputeProtocol, depending on the interpreter (e.g. R gets values prepended, bash gets freemarker template applied" />
 			<field name="StatusCode" nillable="false" type="int" default="0"
