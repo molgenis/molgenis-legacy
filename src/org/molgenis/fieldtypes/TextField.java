@@ -59,4 +59,10 @@ public class TextField extends FieldType
 		return new TextInput(name);
 	}
 
+	@Override
+	public String getCppPropertyType() throws MolgenisModelException
+	{
+		return "char*";
+	}
+
 }

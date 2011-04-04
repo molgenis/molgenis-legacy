@@ -56,4 +56,10 @@ public class BoolField extends FieldType
 	{
 		return new BoolInput(name);
 	}
+
+	@Override
+	public String getCppPropertyType() throws MolgenisModelException
+	{
+		return "bool";
+	}
 }

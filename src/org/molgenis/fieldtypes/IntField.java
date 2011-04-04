@@ -60,4 +60,10 @@ public class IntField extends FieldType
 	{
 		return new IntInput(name);
 	}
+
+	@Override
+	public String getCppPropertyType() throws MolgenisModelException
+	{
+		return "int";
+	}
 }

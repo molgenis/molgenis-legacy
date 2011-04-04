@@ -60,5 +60,11 @@ public class NSequenceField extends FieldType
 		return new NsequenceInput(name);
 	}
 
+	@Override
+	public String getCppPropertyType() throws MolgenisModelException
+	{
+		return getJavaAssignment(f.getDefaultValue());
+	}
+
 
 }

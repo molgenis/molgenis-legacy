@@ -57,4 +57,10 @@ public class EnumField extends FieldType
 		return new EnumInput(name);
 	}
 
+	@Override
+	public String getCppPropertyType() throws MolgenisModelException
+	{
+		return "string";
+	}
+
 }

@@ -56,4 +56,10 @@ public class HexaField extends FieldType
 		return new HexaInput(name);
 	}
 
+	@Override
+	public String getCppPropertyType() throws MolgenisModelException
+	{
+		return "char[255]";
+	}
+
 }

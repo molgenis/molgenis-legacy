@@ -62,6 +62,14 @@ public abstract class FieldType
 	 * @throws MolgenisModelException
 	 */
 	abstract public String getJavaPropertyType() throws MolgenisModelException;
+	
+	/**
+	 * Product the Java type of this field type. Default: "String".
+	 * 
+	 * @return type in java code
+	 * @throws MolgenisModelException
+	 */
+	abstract public String getCppPropertyType() throws MolgenisModelException;
 
 	/**
 	 * Produce a valid Java snippet to set the default of a field, using the

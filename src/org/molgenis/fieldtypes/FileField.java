@@ -55,4 +55,10 @@ public class FileField extends FieldType
 	{
 		return new FileInput(name);
 	}
+
+	@Override
+	public String getCppPropertyType() throws MolgenisModelException
+	{
+		return "char[1024]";
+	}
 }

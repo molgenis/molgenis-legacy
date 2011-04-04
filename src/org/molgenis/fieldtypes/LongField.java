@@ -57,4 +57,10 @@ public class LongField extends FieldType
 		return new LongInput(name);
 	}
 
+	@Override
+	public String getCppPropertyType() throws MolgenisModelException
+	{
+		return "long";
+	}
+
 }

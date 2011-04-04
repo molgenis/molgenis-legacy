@@ -56,4 +56,11 @@ public class HyperlinkField extends FieldType
 		return new HyperlinkInput(name);
 	}
 
+	@Override
+	public String getCppPropertyType() throws MolgenisModelException
+	{
+		// TODO Auto-generated method stub
+		return "char[255]";
+	}
+
 }

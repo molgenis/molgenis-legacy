@@ -62,4 +62,10 @@ public class DateField extends FieldType
 	{
 		return new DateInput(name);
 	}
+
+	@Override
+	public String getCppPropertyType() throws MolgenisModelException
+	{
+		return "Date";
+	}
 }

@@ -67,6 +67,13 @@ public class XrefField extends FieldType
 		return new XrefInput(name, xrefEntityClassName, db);
 	}
 
+	@Override
+	public String getCppPropertyType() throws MolgenisModelException
+	{
+		Field f_ref = f.getXrefField();
+		return getFieldType(f_ref).getCppPropertyType();
+	}
+
 
 
 	

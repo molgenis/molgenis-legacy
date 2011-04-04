@@ -64,4 +64,10 @@ public class ListField extends FieldType
 	{
 		throw new InstantiationException("Class deprecated, will not return input.");
 	}
+
+	@Override
+	public String getCppPropertyType() throws MolgenisModelException
+	{
+		return "std::vector<Entity>";
+	}
 }

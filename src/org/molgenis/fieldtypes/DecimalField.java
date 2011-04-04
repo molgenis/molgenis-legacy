@@ -56,4 +56,10 @@ public class DecimalField extends FieldType
 	{
 		return new DecimalInput(name);
 	}
+
+	@Override
+	public String getCppPropertyType() throws MolgenisModelException
+	{
+		return "double";
+	}
 }
