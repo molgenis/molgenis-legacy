@@ -30,17 +30,19 @@ Dystrophic epidermolysis bullosa is a heritable blistering disorder that is caus
 <p>
 Fine et al. (2008) describe the clinical subtypes of DEB and the clinical and molecular features that are part of DEB. In this database, the phenotypic consensus classification as published by Fine et al. is used (table 1).
 </p>
-Table 1. Dystrophic EB subtypes (adapted from Fine et al., 2008)
+Table 1. Dystrophic EB subtypes (modified from Fine et al., 2008)
 <table class="listtable">
 <caption align="bottom">* Rare variants in italic type.<br/>** Previously called RDEB, Hallopeau-Siemens.</caption>
-<tr class="tableheader"><th>Type</th><th>Subtype*</th><th>Number of patients in database</th></tr>
-<tr class="form_listrow1"><td rowspan="6">DDEB</td><td>DDEB, generalized (DDEB-gen)</td><td>${backgroundSummaryVO.getPhenotypeCount("DDEB-gen")}</td></tr>
+<tr class="tableheader"><th>Type</th><th>Subtype*</th><th>Number of patients</th></tr>
+<tr class="form_listrow1"><td rowspan="7">DDEB</td><td>DDEB, generalized (DDEB-gen)</td><td>${backgroundSummaryVO.getPhenotypeCount("DDEB-gen")}</td></tr>
 <tr class="form_listrow0"><td><i>DDEB, acral (DDEB-ac)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("DDEB-ac")}</td></tr>
 <tr class="form_listrow1"><td><i>DDEB, pretibial (DDEB-Pt)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("DDEB-Pt")}</td></tr>
 <tr class="form_listrow0"><td><i>DDEB, pruriginosa (DDEB-Pr)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("DDEB-Pr")}</td></tr>
 <tr class="form_listrow1"><td><i>DDEB, nails only (DDEB-na)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("DDEB-na")}</td></tr>
 <tr class="form_listrow0"><td><i>DDEB, bullous dermolysis of the newborn (DDEB-BDN)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("DDEB-BDN")}</td></tr>
-<tr class="form_listrow1"><td rowspan="8" class="form_listrow0">RDEB</td><td>RDEB, severe generalized (RDEB-sev gen)**</td><td>${backgroundSummaryVO.getPhenotypeCount("RDEB-sev gen")}</td></tr>
+<tr class="form_listrow1"><td><i>DDEB, unknown (DDEB-u)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("DDEB-u")}</td></tr>
+<tr class="form_listrow0"><td>DEB</td><td><i>DEB, unknown (DEB-u)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("DEB-u")}</td></tr>
+<tr class="form_listrow1"><td rowspan="9">RDEB</td><td>RDEB, severe generalized (RDEB-sev gen)**</td><td>${backgroundSummaryVO.getPhenotypeCount("RDEB-sev gen")}</td></tr>
 <tr class="form_listrow0"><td>RDEB, generalized other (RDEB-O)</td><td>${backgroundSummaryVO.getPhenotypeCount("RDEB-O")}</td></tr>
 <tr class="form_listrow1"><td><i>RDEB, acral (RDEB-ac)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("RDEB-ac")}</td></tr>
 <tr class="form_listrow0"><td><i>RDEB, inversa (RDEB-i)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("RDEB-i")}</td></tr>
@@ -48,6 +50,7 @@ Table 1. Dystrophic EB subtypes (adapted from Fine et al., 2008)
 <tr class="form_listrow0"><td><i>RDEB, pruriginosa (RDEB-Pr)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("RDEB-Pr")}</td></tr>
 <tr class="form_listrow1"><td><i>RDEB, centripetalis (RDEB-Ce)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("RDEB-Ce")}</td></tr>
 <tr class="form_listrow0"><td><i>RDEB, bullous dermolysis of the newborn (RDEB-BDN)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("RDEB-BDN")}</td></tr>
+<tr class="form_listrow1"><td><i>RDEB, unknown (RDEB-u)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("RDEB-u")}</td></tr>
 </table>
 <h3>About the data</h3>
 <p>
