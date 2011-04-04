@@ -8,13 +8,14 @@
 	<p><a href="http://www.bbmri.nl/">
 		<img src="res/img/bbmri.png" height="70px" align="left" style="vertical-align: bottom;"/> </a>
 		&nbsp;${application.getLabel()}
+		<br/><font size="2" face="Verdana">&nbsp;&nbsp;&nbsp;Biobanking and Biomolecular Research Infrastructure
 	</p>
 </div>
 <div align="right" style="color: maroon; font: 12px Arial;margin-right: 10px;">
-   		${screen.setUserLogin()}
-   		${screen.getUserLogin()}
-     <!-- <form>  <input type="submit" value="Logout" onclick="__action.value='doLogout';return true;"/><br /><br /><br /> </form> --> 		
-   | <!--<a href="about.html">About</a>  | <a href="generated-doc/objectmodel.html">Object model</a>  |--> 
+   	${screen.setUserLogin()}
+   	${screen.getUserLogin()}
+   	<!--|  <a href="/molgenis.do?__target=main&select=BbmriHelp"> Help </a> |  -->
+    | <!--<a href="about.html">About</a>  | <a href="generated-doc/objectmodel.html">Object model</a>  |--> 
      <a href="generated-doc/fileformat.html">Exchange format</a> | 
      <a href="api/R">R-project API</a> | 
      <a href="api/find">HTTP API</a> | 

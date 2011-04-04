@@ -70,20 +70,13 @@ public class BbmriHeader extends PluginModel<Entity>
 	public void Logout() {
 		if (this.getLogin().isAuthenticated()) {
 			getLogin().logout();
-		}
-		
+		}	
 	}
 	
 	public void setUserLogin() {
-		//System.out.println(this.getLogin().isAuthenticated());
 		if (this.getLogin().isAuthenticated()) {
-
-			//this.userLogin = "<a href='http://vm7.target.rug.nl/bbmri_gcc/molgenis.do?__target=main&select=UserLogin'>" + "Welcome " +  ((DatabaseLogin)this.getLogin()).getFullUserName() + "</a>";
-			//this.userLogin += "<a href='http://vm7.target.rug.nl/bbmri_gcc/molgenis.do?__target=MolgenisHeader&select=UserLogin&__action=doLogout'>" + " | Exit " + "</a>";		
-
 			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Welcome " + ((DatabaseLogin)this.getLogin()).getFullUserName() + "</a>";
-			this.userLogin += "<a href='molgenis.do?__target=MolgenisHeader&select=UserLogin&__action=doLogout'>" + " | Exit " + "</a>";		
-
+			this.userLogin += "<a href='molgenis.do?__target=MolgenisHeader&select=UserLogin&__action=doLogout'>" + " | Exit " + "</a>";
 		} else {
 			//this.userLogin = "<a href='http://vm7.target.rug.nl/bbmri_gcc/molgenis.do?__target=main&select=UserLogin'>" + "Login" + "</a>";
 			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Login" + "</a>";
