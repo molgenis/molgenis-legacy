@@ -20,18 +20,23 @@
 		<p class="errormessage">${message.text}</p>
 			</#if>
 		</#list>
-		
 		<div class="screenbody">
 			<div class="screenpadding">	
-
 			<h1> Contact </h1>
-			
-			<p> This is a beta system and we want to improve the user interface still a lot including an advanced search option. Also now everybody can edit everything which we are now making more finegrained.</p>
-			<ul><li>For more information concerning the biobank, please contact Margreet Brandsma . </li>
+			<p> This is a beta system and we want to improve the user interface still a lot including an advanced search option. 
+			Also now everybody can edit everything which we are now making more finegrained.</p>
+			<ul><li>
+					Bij vragen of opmerkingen kunt u contact opnemen met BBMRI-NL door te emailen of bellen naar <br/>
+					Margreet Brandsma, programmamanager<br/>
+					m.brandsma@bbmri.nl<br/>
+					071 - 5269412<br/>
+					ma, di, wo bereikbaar<br/><br/><br/>
+					Margot Heesakker - Heintz<br/>
+					m.heesakker@bbmri.nl<br/>
+					071 - 5268498<br/>
+					di, wo, vr bereikbaar<br/><br/>
+			 </li>
 			<li>For more information about the application, please report any ideas, suggestions, bugs to <a href="mailto:m.a.swertz@rug.nl">m.a.swertz AT rug.nl</a>  </p></li>
-			
-			<li><p>This system was developed by the NBIC Biobanking platform, BBMRI-NL bioinformatics rainbow hosted at the Coordination Center, UMCG, and in collaboration with GEN2PHEN,
-			LifeLines and the European Bionformatics Institute regarding data model and tools. It was generated using MOLGENIS.</p></li>
 			</ul>
 			</div>
 		</div>
