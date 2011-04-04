@@ -128,7 +128,7 @@ public class DatabaseLogin implements Login, Serializable {
 
 			password                 = md5.toMD5(password); // encode password
 
-			List<MolgenisUser> users = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, name).eq(MolgenisUser.PASSWORD, password).eq(MolgenisUser.ACTIVE, true).find();
+			List<MolgenisUser> users = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, name).eq(MolgenisUser.PASSWORD_, password).eq(MolgenisUser.ACTIVE, true).find();
 
 			if (users.size() == 1 && name.equals(users.get(0).getName()) && password.equals(users.get(0).getPassword()))
 			{
@@ -207,7 +207,7 @@ public class DatabaseLogin implements Login, Serializable {
 		
 		List<Integer> roleIdList             = service.findGroupIds(role);
 		List<MolgenisPermission> permissions = db.query(MolgenisPermission.class).in(MolgenisPermission.ROLE_, roleIdList).find();
-		
+
 		for (MolgenisPermission permission : permissions)
 		{
 			if ("read".equals(permission.getPermission()))

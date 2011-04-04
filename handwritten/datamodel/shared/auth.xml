@@ -21,7 +21,7 @@
 		
 		<entity name="MolgenisUser" extends="MolgenisRole" decorator="org.molgenis.auth.MolgenisUserDecorator" system="true">
 			<description>Anyone who can login</description>
-			<field name="password" type="string" description="big fixme: password type" />
+			<field name="password_" type="string" description="big fixme: password type" />
 			<field name="emailaddress" type="string" />
 			<field name="activationCode" type="string"
 				description="Used as alternative authentication mechanism to verify user email and/or if user has lost password."
@@ -33,7 +33,7 @@
 			<field name="firstname" type="string" />
 			<field name="institute" type="string" nillable="true" />
 			<field name="department" type="string" nillable="true" />
-			<field name="position" type="string" nillable="true" />
+			<field name="position_" type="string" nillable="true" />
 			<field name="city" type="string" nillable="true" />
 			<field name="country" type="string" nillable="true" />
 			<field name="superuser" type="bool" default="false" />
