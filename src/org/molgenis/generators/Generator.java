@@ -104,6 +104,11 @@ public abstract class Generator
 		return options.output_python;
 	}
 	
+	public String getCPPSourcePath(MolgenisOptions options)
+	{
+		return options.output_cpp;
+	}
+	
 	public String getHandWrittenPath(MolgenisOptions options)
 	{
 		return options.output_hand;
