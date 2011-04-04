@@ -23,7 +23,7 @@ ADD_DEFINITIONS(-Wall)
 add_executable(${EXECNAME} 
   main.cpp
   <#list model.entities as entity>
-  ${entity.namespace}..${JavaName(entity)}.cpp;
+  ${entity.namespace}/${JavaName(entity)}.cpp;
   </#list>
 )
 
