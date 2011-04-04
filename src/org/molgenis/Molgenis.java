@@ -50,6 +50,8 @@ import org.molgenis.generators.JpaDataTypeGen;
 import org.molgenis.generators.R.RApiGen;
 import org.molgenis.generators.R.REntityGen;
 import org.molgenis.generators.R.RMatrixGen;
+import org.molgenis.generators.cpp.IncludePerEntityGen;
+import org.molgenis.generators.cpp.SourcePerEntityGen;
 import org.molgenis.generators.csv.CsvExportGen;
 import org.molgenis.generators.csv.CsvImportByIdGen;
 import org.molgenis.generators.csv.CsvImportGen;
@@ -158,6 +160,9 @@ public class Molgenis {
 		if (!options.output_python.endsWith("/")) {
 			options.output_python = options.output_python + "/";
 		}
+		if (!options.output_cpp.endsWith("/")) {
+			options.output_cpp = options.output_cpp + "/";
+		}
 		if (!options.output_hand.endsWith("/")) {
 			options.output_hand = options.output_hand + "/";
 		}
@@ -176,6 +181,11 @@ public class Molgenis {
 			//not used: generators.add(new TextUmlGen());
 		}else{
 			logger.info("Skipping documentation ....");
+		}
+		
+		if(options.generate_cpp){
+			generators.add(new IncludePerEntityGen());
+			generators.add(new SourcePerEntityGen());
 		}
 
 		// TESTS

@@ -200,6 +200,12 @@ public class MolgenisOptions
 	public String path = "";
 	@Option(name = "db_mode", param = "string", type = Option.Type.OPTIONAL_ARGUMENT, usage = "Which mode should the molgenisServlet use when contacting the dabase. Default: servlet.")
 	public String db_mode = "servlet";
+	
+	@Option(name = "output_cpp", param = "filename", type = Option.Type.REQUIRED_ARGUMENT, usage = "Output-directory for the generated CPP classes.")
+	public String output_cpp = "generated/cpp";
+	
+	@Option(name = "generate_cpp", param = "", type = Option.Type.OPTIONAL_ARGUMENT, usage = "Generate CPP. Default: false")
+	public boolean generate_cpp = false;
 
 
 	/**
