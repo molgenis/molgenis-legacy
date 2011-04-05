@@ -93,10 +93,9 @@ public class GenerateN3andRDF extends PluginModel
 				    "PREFIX dc: <http://purl.org/dc/elements/1.1/>" +
 				    "PREFIX foaf: <http://xmlns.com/foaf/0.1/>" +
 				    "SELECT ?Investigation ?Investigation_name WHERE {" +
-				    "    ?Investigation_name dc:Investigation.name ? . " +
-				    "    ?paper dc:creator ?author ." +
-				    "    ?author foaf:name ?authorName ." +
+				    "    ?Investigation_name dc:Investigation.name 'Hippocrates' . " +
 				    "}";
+				
 				com.hp.hpl.jena.query.Query q = QueryFactory.create(sparql); 
 				ResultSet rs = QueryExecutionFactory.create(q, m).execSelect();
 				while (rs.hasNext()) {
