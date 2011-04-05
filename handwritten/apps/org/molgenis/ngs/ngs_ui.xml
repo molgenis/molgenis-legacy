@@ -10,7 +10,7 @@
 		this.</description>
 	<plugin name="molgenis_header" type="plugins.header.MolgenisHeader" />
 	<menu name="main" position="left">
-		<form name="Investigations" entity="Investigation" hide_fields="id,start,end,accession">
+		<form name="Investigations" entity="Investigation" hide_fields="id,accession">
 			<menu name="InvestigationMenu" label="Projects">
 				<form name="Samples" entity="Sample" hide_fields="id,ontologyReference">
 					<form name="ValuesPerSample" entity="ObservedValue"
