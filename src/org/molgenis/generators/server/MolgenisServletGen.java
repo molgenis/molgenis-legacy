@@ -46,11 +46,12 @@ public class MolgenisServletGen extends Generator
 		templateArgs.put("db_user", options.db_user);
 		templateArgs.put("db_password", options.db_password);
 		
+		templateArgs.put("mail_smtp_from", options.mail_smtp_from);
 		templateArgs.put("mail_smtp_protocol", options.mail_smtp_protocol);
 		templateArgs.put("mail_smtp_hostname", options.mail_smtp_hostname);
 		templateArgs.put("mail_smtp_port", options.mail_smtp_port);
 		templateArgs.put("mail_smtp_user", options.mail_smtp_user);
-		templateArgs.put("mail_smtp_password", options.mail_smtp_password);
+		templateArgs.put("mail_smtp_au", options.mail_smtp_au);
 		
 		templateArgs.put("linkout_overlay", options.linkout_overlay);
 		

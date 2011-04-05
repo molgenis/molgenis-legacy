@@ -26,6 +26,7 @@ import org.molgenis.framework.ui.UserInterface;
 import org.molgenis.framework.server.AbstractMolgenisServlet;
 
 import org.molgenis.util.EmailService;
+import org.molgenis.util.HtmlTools;
 import org.molgenis.util.SimpleEmailService;
 
 <#if db_mode = 'standalone'>
@@ -82,13 +83,14 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 		app.setLabel("${model.label}");
 		app.setVersion("${version}");
 		
-<#if mail_smtp_protocol?exists>
+<#if mail_smtp_from?exists && mail_smtp_au?exists>
 		EmailService service = new SimpleEmailService();
+		service.setSmtpFromAddress("${mail_smtp_from}");	
 		service.setSmtpProtocol("${mail_smtp_protocol}");
 		service.setSmtpHostname("${mail_smtp_hostname}");
 		service.setSmtpPort(${mail_smtp_port});
 		service.setSmtpUser("${mail_smtp_user}");
-		service.setSmtpPassword("${mail_smtp_password}");	
+		service.setSmtpAu("${mail_smtp_au}");	
 		app.setEmailService(service);
 </#if>
 		
