@@ -25,9 +25,13 @@ public class emptyDatabase {
 	 * @throws Exception
 	 */
 	public emptyDatabase(JDBCDatabase db, boolean insertMetadata) throws Exception {
+		System.out.println("start running create_tables.sql");
 		empty(db, "../../create_tables.sql");
+		System.out.println("done running create_tables.sql");
 		if (insertMetadata == true) {
+			System.out.println("start running insert_metadata.sql");
 			empty(db, "../../insert_metadata.sql");
+			System.out.println("done running insert_metadata.sql");
 		}
 	}
 

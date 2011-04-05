@@ -5,6 +5,6 @@ public class XqtlPanaceaUpdateDatabase
 {
 	public static void main(String[] args) throws Exception
 	{
-		new Molgenis("handwritten/apps/org/molgenis/xgap/xqtlworkbench_panacea/xqtlpanacea.properties").updateDb();
+		new Molgenis("handwritten/apps/org/molgenis/xgap/xqtlworkbench_panacea/xqtlpanacea.properties").updateDb(true);
 	}
 }
