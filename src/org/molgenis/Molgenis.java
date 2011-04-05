@@ -50,7 +50,9 @@ import org.molgenis.generators.JpaDataTypeGen;
 import org.molgenis.generators.R.RApiGen;
 import org.molgenis.generators.R.REntityGen;
 import org.molgenis.generators.R.RMatrixGen;
+import org.molgenis.generators.cpp.CPPMainGen;
 import org.molgenis.generators.cpp.IncludePerEntityGen;
+import org.molgenis.generators.cpp.MakeFileGen;
 import org.molgenis.generators.cpp.SourcePerEntityGen;
 import org.molgenis.generators.csv.CsvExportGen;
 import org.molgenis.generators.csv.CsvImportByIdGen;
@@ -186,6 +188,8 @@ public class Molgenis {
 		if(options.generate_cpp){
 			generators.add(new IncludePerEntityGen());
 			generators.add(new SourcePerEntityGen());
+			generators.add(new CPPMainGen());
+			generators.add(new MakeFileGen());
 		}
 
 		// TESTS
