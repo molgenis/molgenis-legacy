@@ -223,7 +223,7 @@ public class SimpleEmailService implements EmailService
 	/* (non-Javadoc)
 	 * @see org.molgenis.util.email.EmailService#setSmtpAuthPassword(java.lang.String)
 	 */
-	public void setSmtpAu(String au)
+	public void setSmtpAu(String smtpAu)
 	{
 		this.smtpAu = smtpAu;
 	}
