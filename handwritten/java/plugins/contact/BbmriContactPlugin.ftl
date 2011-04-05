@@ -28,11 +28,11 @@
 			<ul><li>
 					Bij vragen of opmerkingen kunt u contact opnemen met BBMRI-NL door te emailen of bellen naar <br/>
 					Margreet Brandsma, programmamanager<br/>
-					m.brandsma@bbmri.nl<br/>
+					<a href="mailto:m.brandsma@bbmri.nl">m.brandsma AT bbmri.nl</a><br/>
 					071 - 5269412<br/>
 					ma, di, wo bereikbaar<br/><br/><br/>
 					Margot Heesakker - Heintz<br/>
-					m.heesakker@bbmri.nl<br/>
+					<a href="mailto:m.heesakker@bbmri.nl">m.heesakker AT bbmri.nl</a><br/>
 					071 - 5268498<br/>
 					di, wo, vr bereikbaar<br/><br/>
 			 </li>
