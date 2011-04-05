@@ -16,7 +16,7 @@ import filehandling.generic.MolgenisFileHandler;
 public class DataLoader
 {
 
-	public static ArrayList<String> load(JDBCDatabase db)
+	public static ArrayList<String> load(JDBCDatabase db, boolean resetDbWhenApplicable)
 	{
 		ArrayList<String> result = new ArrayList<String>();
 
@@ -67,7 +67,11 @@ public class DataLoader
 			result.add("Starting to load datamodel / reset db..");
 			try
 			{
-				new emptyDatabase(db, false);
+				if(resetDbWhenApplicable){
+					new emptyDatabase(db, true);
+				}else{
+					result.add("Not executing database reset, already done? Continuing..");
+				}
 				loadDataModel = true;
 				result.add("Success");
 			}
@@ -130,7 +134,7 @@ public class DataLoader
 	public static void main(String[] args) throws Exception
 	{
 		JDBCDatabase db = new JDBCDatabase("xgap.properties");
-		ArrayList<String> result = DataLoader.load(db);
+		ArrayList<String> result = DataLoader.load(db, true);
 		for (String s : result)
 		{
 			System.out.println(s);

@@ -65,7 +65,7 @@ public class resetdatabase_loadexampledata extends app.servlet.MolgenisServlet
 					// ignore this and continue to load SQL
 				}
 				out.print("Now resetting datamodel/database.\n");
-				new emptyDatabase((JDBCDatabase) db, false);
+				new emptyDatabase((JDBCDatabase) db, true);
 				out.print("Reset datamodel success. Continuing to load example data.\n");
 				resetSuccess = true;
 			}
@@ -79,8 +79,7 @@ public class resetdatabase_loadexampledata extends app.servlet.MolgenisServlet
 
 		if (resetSuccess)
 		{
-			new DataLoader();
-			ArrayList<String> result = DataLoader.load(db);
+			ArrayList<String> result = DataLoader.load(db, false);
 			for (String s : result)
 			{
 				out.println(s);

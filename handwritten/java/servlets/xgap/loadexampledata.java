@@ -44,7 +44,7 @@ public class loadexampledata extends app.servlet.MolgenisServlet
 		if (databaseIsAvailable)
 		{
 			new DataLoader();
-			ArrayList<String> result = DataLoader.load(db);
+			ArrayList<String> result = DataLoader.load(db, false);
 			for (String s : result)
 			{
 				out.println(s);
