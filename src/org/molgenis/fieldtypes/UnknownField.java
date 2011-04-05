@@ -63,7 +63,7 @@ public class UnknownField extends FieldType
 	@Override
 	public String getCppPropertyType() throws MolgenisModelException
 	{
-		return null;
+		return "void*";
 	}
 
 }

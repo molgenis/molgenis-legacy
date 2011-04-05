@@ -60,7 +60,7 @@ public class CharField extends FieldType
 	@Override
 	public String getCppPropertyType() throws MolgenisModelException
 	{
-		return "char["+f.getVarCharLength()+"]";
+		return "string";
 	}
 
 }

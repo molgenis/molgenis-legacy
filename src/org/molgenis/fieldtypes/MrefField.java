@@ -84,7 +84,7 @@ public class MrefField extends FieldType
 	public String getCppPropertyType() throws MolgenisModelException
 	{
 		Field f_ref = f.getXrefField();
-		return "std::vector<"+getFieldType(f_ref).getJavaPropertyType()+">";
+		return "vector<"+getFieldType(f_ref).getCppPropertyType()+">";
 	}
 
 }

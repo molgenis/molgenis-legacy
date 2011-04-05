@@ -59,7 +59,7 @@ public class HexaField extends FieldType
 	@Override
 	public String getCppPropertyType() throws MolgenisModelException
 	{
-		return "char[255]";
+		return "string";
 	}
 
 }

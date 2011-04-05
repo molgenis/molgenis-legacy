@@ -68,6 +68,6 @@ public class ListField extends FieldType
 	@Override
 	public String getCppPropertyType() throws MolgenisModelException
 	{
-		return "std::vector<Entity>";
+		return "vector<Entity>";
 	}
 }

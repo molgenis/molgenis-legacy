@@ -66,6 +66,6 @@ public class DateField extends FieldType
 	@Override
 	public String getCppPropertyType() throws MolgenisModelException
 	{
-		return "Date";
+		return "time_t";
 	}
 }

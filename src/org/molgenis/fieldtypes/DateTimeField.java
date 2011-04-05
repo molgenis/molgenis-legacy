@@ -68,6 +68,6 @@ public class DateTimeField extends FieldType
 	public String getCppPropertyType() throws MolgenisModelException
 	{
 		// TODO Auto-generated method stub
-		return "DateTime";
+		return "time_t";
 	}
 }

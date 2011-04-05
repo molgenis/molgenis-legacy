@@ -59,6 +59,6 @@ public class FileField extends FieldType
 	@Override
 	public String getCppPropertyType() throws MolgenisModelException
 	{
-		return "char[1024]";
+		return "string";
 	}
 }
