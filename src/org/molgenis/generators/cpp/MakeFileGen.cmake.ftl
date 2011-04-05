@@ -17,7 +17,7 @@
 cmake_minimum_required(VERSION 2.8)
 SET(EXECNAME MolgenisCPP)
 
-INCLUDE_DIRECTORIES( "C:/Program Files/Java/jdk1.6.0_24/include" "C:/Program Files/Java/jdk1.6.0_24/include/win32" )
+INCLUDE_DIRECTORIES( "." "C:/Program Files/Java/jdk1.6.0_24/include" "C:/Program Files/Java/jdk1.6.0_24/include/win32" )
 LINK_DIRECTORIES( "C:/Program Files/Java/jdk1.6.0_24/lib" )
 ADD_DEFINITIONS(-Wall)
 

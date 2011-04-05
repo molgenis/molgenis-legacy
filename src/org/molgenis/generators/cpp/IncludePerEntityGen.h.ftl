@@ -19,24 +19,30 @@
 	#include <cstdlib>
 	#include <cstdio>
 	#include <string>
+	#include <cstring>
 	#include <vector>
 	#include <jni.h>
+	<#if entity.hasAncestor()>
+	#include "./${entity.getAncestor().getNamespace()?replace(".","/")}/${CPPName(entity.getAncestor())}.h"
+	</#if>
 	using namespace std;
 	
   
   /**
    * \brief ${CPPName(entity)}<br>
-   *
+   * This class contains the implementation of ${CPPName(entity)}
+   * It provides 2 constructors both call init to have the java class mapped in the JVM environment
+   * For each field getters and setters are provided, setting the CPP state of the object
+   * Call the save() function to save the object in the data
    * bugs: none found<br>
    */  
-  class ${CPPName(entity)}{
+  class ${CPPName(entity)}<#if entity.hasAncestor()> : public ${CPPName(entity.getAncestor())}</#if>{
   public:
   	${CPPName(entity)}(JNIEnv* env);
-  	~${CPPName(entity)}();
   	${CPPName(entity)}(JNIEnv* env<#foreach field in entity.getImplementedFields()>, ${CPPType(field)} ${CPPName(field)}</#foreach>);
+  	~${CPPName(entity)}();
   	void init(JNIEnv* env);
-  	jobject New${CPPName(entity)}();
-  	jobject Get(char* name);
+  	jobject Java();
   	<#foreach field in entity.getImplementedFields()>
   	
   	${CPPType(field)} get${CPPName(field)}(void);

@@ -15,11 +15,12 @@
  
 #include "${CPPName(entity)}.h"
 
-${CPPName(entity)}::${CPPName(entity)}(JNIEnv* env){
+${CPPName(entity)}::${CPPName(entity)}(JNIEnv* env)<#if entity.hasAncestor()> : ${CPPName(entity.getAncestor())}(env)</#if>{
 	init(env);
 }
 
-${CPPName(entity)}::${CPPName(entity)}(JNIEnv* env<#foreach field in entity.getImplementedFields()>, ${CPPType(field)} ${CPPName(field)}</#foreach>){
+${CPPName(entity)}::${CPPName(entity)}(JNIEnv* env<#foreach field in entity.getImplementedFields()>, ${CPPType(field)} ${CPPName(field)}</#foreach>)<#if entity.hasAncestor()> : ${CPPName(entity.getAncestor())}(env)</#if>{
+
 	init(env);
 	<#foreach field in entity.getImplementedFields()>
 	this->${CPPName(field)} = ${CPPName(field)};
@@ -31,13 +32,26 @@ void ${CPPName(entity)}::init(JNIEnv* env){
 	this->clsC = env->FindClass("${entity.namespace?replace(".","/")}/${CPPName(entity)}");
 	if(clsC != NULL){
     	//Get constructor ID for ${CPPName(entity)}
-    	printf("\nFound: ${entity.namespace}.${CPPName(entity)} class\n");
-    	coID = env->GetMethodID(clsC, "<init>", "(V)V");
-    	findByIdID = env->GetMethodID(clsC, "findByID", "(I)L${package?replace(".cpp","")}.${JavaName(entity)}");
-  		findByNameID = env->GetMethodID(clsC, "findByName", "(Ljava.lang.String)L${package?replace(".cpp","")}.${JavaName(entity)}");
+    	printf("Found: ${entity.namespace}.${CPPName(entity)} class\n");
+    	coID = env->GetMethodID(clsC, "<init>", "()V");
+    	//findByIdID = env->GetMethodID(clsC, "findByID", "(I)L${package?replace(".cpp","")}.${JavaName(entity)}");
   	}else{
-    	printf("\nUnable to find the ${entity.namespace}.${CPPName(entity)} class\n");
+    	printf("Unable to find the ${entity.namespace}.${CPPName(entity)} class\n");
   	}
+}
+
+jobject ${CPPName(entity)}::Java(){
+  jobject temp = env->NewObject(this->clsC, this->coID); 
+  if (env->ExceptionOccurred()) {
+   	env->ExceptionDescribe();
+  }else{
+    printf("Java class object ${entity.namespace}.${CPPName(entity)} created\n");
+  }
+  return temp;
+}
+
+${CPPName(entity)}::~${CPPName(entity)}(){
+	//Compiler TODO: Figure out if I need manually to call the entity.hasAncestor
 }
 
 <#foreach field in entity.getImplementedFields()>
