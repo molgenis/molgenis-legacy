@@ -152,25 +152,28 @@ public class MolgenisOptions
 //	@Option(name = "compile", param = "c", type = Option.Type.NO_ARGUMENT, usage = "This switch makes the factory also compile (usefull outside IDE).")
 //	public boolean compile = false;
 	
+	/** email adress used to send emails with */
+	@Option(name = "mail_smtp_from", param = "mail_smtp_from", type = Option.Type.OPTIONAL_ARGUMENT, usage = "Sets the email adress used to send emails from. Default: null")
+	public String mail_smtp_from = "";
+	
 	/** email protocol to be used. For example: smtp or asmpt */
-	@Option(name = "mail_smtp_protocol", param = "mail_smtp_protocol", type = Option.Type.OPTIONAL_ARGUMENT, usage = "Sets the email protocol, either smtp, smtps or null. Default: null meaning email disabled")
-	public String mail_smtp_protocol = "smtp";
+	@Option(name = "mail_smtp_protocol", param = "mail_smtp_protocol", type = Option.Type.OPTIONAL_ARGUMENT, usage = "Sets the email protocol, either smtp, smtps or null. Default: smtps")
+	public String mail_smtp_protocol = "smtps";
 	
 	/** email server name. For example: localhost */
-	@Option(name = "mail_smtp_hostname", param = "mail_smtp_hostname", type = Option.Type.OPTIONAL_ARGUMENT, usage = "SMTP host server. Default: localhost")
-	public String mail_smtp_hostname = "localhost";
+	@Option(name = "mail_smtp_hostname", param = "mail_smtp_hostname", type = Option.Type.OPTIONAL_ARGUMENT, usage = "SMTP host server. Default: gmail")
+	public String mail_smtp_hostname = "smtp.gmail.com";
 	
 	/** email server port. For example: 25 */
-	@Option(name = "mail_smtp_port", param = "mail_smtp_port", type = Option.Type.OPTIONAL_ARGUMENT, usage = "SMTP host server port. Default: 25")
-	public String mail_smtp_port = "25";
+	@Option(name = "mail_smtp_port", param = "mail_smtp_port", type = Option.Type.OPTIONAL_ARGUMENT, usage = "SMTP host server port. Default: 465")
+	public String mail_smtp_port = "465";
 	
 	/** email user name. Keep empty for anonymous */
-	@Option(name = "mail_smtp_user", param = "mail_smtp_user", type = Option.Type.OPTIONAL_ARGUMENT, usage = "SMTP user for authenticated emailing. Default: null.")
-	public String mail_smtp_user = "";
+	@Option(name = "mail_smtp_user", param = "mail_smtp_user", type = Option.Type.OPTIONAL_ARGUMENT, usage = "SMTP user for authenticated emailing. Default: molgenis.")
+	public String mail_smtp_user = "molgenis";
 	
-	/** email user password */
-	@Option(name = "mail_smtp_password", param = "mail_smtp_password", type = Option.Type.OPTIONAL_ARGUMENT, usage = "SMTP user for authenticated emailing. Default: null.")
-	public String mail_smtp_password = "";
+	@Option(name = "mail_smtp_au", param = "mail_smtp_au", type = Option.Type.OPTIONAL_ARGUMENT, usage = "SMTP auth. Default: null")
+	public String mail_smtp_au = "";
 	
 	@Option(name = "generate_R", param = "string", type = Option.Type.OPTIONAL_ARGUMENT, usage = "Should R-interface be generated. Default: true.")
 	public String generate_R = "true";
@@ -184,8 +187,8 @@ public class MolgenisOptions
 	@Option(name = "generate_csv", param = "string", type = Option.Type.OPTIONAL_ARGUMENT, usage = "Should CsvReaders be generated. Default: true.")
 	public String generate_csv = "true";
 	
-	@Option(name = "generate_Python", param = "string", type = Option.Type.OPTIONAL_ARGUMENT, usage = "Should Python-interface be generated. Default: true.")
-	public String generate_Python = "true";
+	@Option(name = "generate_Python", param = "string", type = Option.Type.OPTIONAL_ARGUMENT, usage = "Should Python-interface be generated. Default: false.")
+	public String generate_Python = "false";
 	
 	@Option(name = "generate_tests", param = "string", type = Option.Type.OPTIONAL_ARGUMENT, usage = "Should run-time testing be generated. Default: true.")
 	public String generate_tests = "true";
@@ -206,7 +209,6 @@ public class MolgenisOptions
 	
 	@Option(name = "generate_cpp", param = "", type = Option.Type.OPTIONAL_ARGUMENT, usage = "Generate CPP. Default: false")
 	public boolean generate_cpp = false;
-
 
 	/**
 	 * Initialize with the defaults
