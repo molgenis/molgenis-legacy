@@ -180,7 +180,7 @@ public class ConverterLifeLinesPheno {
 		code.getFeature().add(feature.getId());
 
 		// code.setFeature(feature);
-		code.setCode(value);
+		code.setCode_String(value);
 		code.setDescription(cells[6].getContents().trim());
 		codes.put(value, code);
 	}

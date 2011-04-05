@@ -105,7 +105,7 @@ public class ComputeLoadExample
 			wf1_e1_run1.setName("wf1_e1_run1");
 			wf1_e1_run1.setProtocol(e2.getProtocol());
 			wf1_e1_run1.setTime(new Date());
-			wf1_e1_run1.setScript("beagle chr1 file1beagle.map > result1beagle.imputed");
+			wf1_e1_run1.setComputeScript("beagle chr1 file1beagle.map > result1beagle.imputed");
 			
 			db.add(wf1_e1_run1);
 			
@@ -114,7 +114,7 @@ public class ComputeLoadExample
 			wf1_e2_run1.setProtocol(e2.getProtocol());
 		    wf1_e2_run1.setPreviousSteps_Id(wf1_e1_run1.getId());
 		    wf1_e2_run1.setTime(new Date());
-		    wf1_e2_run1.setScript("impute chr1 file1impute.map > result1impute.imputed");
+		    wf1_e2_run1.setComputeScript("impute chr1 file1impute.map > result1impute.imputed");
 		    
 		    db.add(wf1_e2_run1);
 		    
@@ -179,7 +179,7 @@ public class ComputeLoadExample
 			wf1_e1_run2.setName("wf1_e1_run2");
 			wf1_e1_run2.setProtocol(e2.getProtocol());
 			wf1_e1_run2.setTime(new Date());
-			wf1_e1_run2.setScript("beagle chr2 file2beagle.map > result2beagle.imputed");
+			wf1_e1_run2.setComputeScript("beagle chr2 file2beagle.map > result2beagle.imputed");
 			db.add(wf1_e1_run2);
 			
 			ComputeApplication wf1_e2_run2 = new ComputeApplication();
@@ -187,7 +187,7 @@ public class ComputeLoadExample
 			wf1_e2_run2.setProtocol(e2.getProtocol());
 		    wf1_e2_run2.setPreviousSteps_Id(wf1_e1_run2.getId());
 		    wf1_e2_run2.setTime(new Date());
-		    wf1_e1_run1.setScript("impute chr2 file2impute.map > result2impute.imputed");
+		    wf1_e1_run1.setComputeScript("impute chr2 file2impute.map > result2impute.imputed");
 		    db.add(wf1_e2_run2);
 		    
 		    //set the values

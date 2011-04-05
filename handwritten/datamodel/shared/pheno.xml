@@ -120,7 +120,7 @@
 				METABASE::Code</description>
 			<field name="feature" type="mref" xref_entity="ObservableFeature"
 				description="The feature for which these codes where defined." />
-			<field name="code" type="string"
+			<field name="code_string" type="string"
 				description="The code used to represent this term. For example: { '1'-'male', '2'-'female'}" />
 			<field name="description" type="text"
 				description="Description of the code.

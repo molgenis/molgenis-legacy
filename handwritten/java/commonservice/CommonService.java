@@ -1120,7 +1120,7 @@ public class CommonService
 			throws DatabaseException, ParseException, IOException
 	{
 		Code newCode = new Code();
-		newCode.setCode(code);
+		newCode.setCode_String(code);
 		newCode.setDescription(desc);
 		List<Integer> locFeatIdList = new ArrayList<Integer>();
 		locFeatIdList.add(getMeasurementId(feat));

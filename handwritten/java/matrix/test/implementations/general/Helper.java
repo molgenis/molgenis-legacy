@@ -165,7 +165,7 @@ public class Helper
 	{
 		Investigation inv = new Investigation();
 		inv.setName("testStudy");
-		inv.setStart(new Date());
+		inv.setStartDate(new Date());
 		return inv;
 	}
 

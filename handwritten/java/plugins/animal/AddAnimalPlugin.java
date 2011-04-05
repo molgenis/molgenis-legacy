@@ -411,7 +411,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		int featureId = ct.getMeasurementId("AnimalType");
 		for (Code c : db.query(Code.class).eq("feature", featureId).find())
 		{
-			animaltype.addOption(c.getDescription(), c.getCode() + " ("
+			animaltype.addOption(c.getDescription(), c.getCode_String() + " ("
 					+ c.getDescription() + ")");
 		}
 		animaltype.setOnchange("showHideGenotypeDiv(this.value);");

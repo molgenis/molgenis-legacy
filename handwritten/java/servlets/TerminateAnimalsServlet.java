@@ -62,7 +62,7 @@ public class TerminateAnimalsServlet extends app.servlet.MolgenisServlet {
 					out.print("<label for='discomfort'>Actual discomfort:</label>");
 					out.print("<select name='discomfort' id='discomfort'>");
 					for (Code code : codeList) {
-						out.print("<option value='" + code.getDescription() + "'>" + code.getCode() + " (" + code.getDescription() + ")" + "</option>");
+						out.print("<option value='" + code.getDescription() + "'>" + code.getCode_String() + " (" + code.getDescription() + ")" + "</option>");
 					}
 					out.print("</select>");
 					out.print("</div>");
@@ -76,7 +76,7 @@ public class TerminateAnimalsServlet extends app.servlet.MolgenisServlet {
 					out.print("<label for='endstatus'>Actual animal end status:</label>");
 					out.print("<select name='endstatus' id='endstatus'>");
 					for (Code code : codeList) {
-						out.print("<option value='" + code.getDescription() + "'>" + code.getCode() + " (" + code.getDescription() + ")" + "</option>");
+						out.print("<option value='" + code.getDescription() + "'>" + code.getCode_String() + " (" + code.getDescription() + ")" + "</option>");
 					}
 					out.print("</select>");
 					out.print("</div>");

@@ -136,7 +136,7 @@ public class AddEventMenuServlet extends app.servlet.MolgenisServlet {
 							if (codeValues) {
 								out.print("<select name='value" + animalNumber + "_" + valueNr + "' id='value" + animalNumber + "_" + valueNr + "'>");
 								for (Code code : codeList) {
-									out.print("<option value='" + code.getDescription() + "'>" + code.getCode() + " (" + code.getDescription() + ")" + "</option>");
+									out.print("<option value='" + code.getDescription() + "'>" + code.getCode_String() + " (" + code.getDescription() + ")" + "</option>");
 								}
 								out.print("</select>");
 							} else {
