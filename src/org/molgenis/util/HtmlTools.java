@@ -85,6 +85,67 @@ public class HtmlTools
 		enc = enc.substring(0, enc.length() - 1);
 		return enc;
 	}
+	
+	/**
+	 * Helper function to convert any string into URL-safe encoding.
+	 * Output string is less easy to translate back to the original.
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public static String toSafeUrlStringO_b_f(String input)
+	{
+		if(input.length() == 0){
+			return "";
+		}
+		String enc = "";
+		for (char c : input.toCharArray())
+		{
+			enc += (int) (Math.pow((c), 2) - Math.pow(10, 4)) + ".";
+		}
+		enc = enc.substring(0, enc.length() - 1);
+		return enc;
+	}
+	
+	/**
+	 * Helper function to convert an URL-safe string (passed from eg. a REST
+	 * interface) back to the original string. Input string passes an
+	 * extra translation step.
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public static String fromSafeUrlStringO_b_f(String input)
+	{
+		String dec = "";
+		for (String nr : input.split("\\."))
+		{
+			int i = (int) Math.sqrt(Integer.parseInt(nr) + Math.pow(10, 4));
+			char c = (char) i;
+			dec += c;
+		}
+		return dec;
+	}
+	
+	/**
+	 * Helper function to convert any string into URL-safe encoding.
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public static String toSafeUrlStringObv(String input)
+	{
+		if(input.length() == 0){
+			return "";
+		}
+		String enc = "";
+		for (char c : input.toCharArray())
+		{
+			enc +=((int)(Math.pow((c), 2)-4321))+ ".";
+		}
+		enc = enc.substring(0, enc.length() - 1);
+		return enc;
+	}
 
 	/**
 	 * Helper function to convert an URL-safe string (passed from eg. a REST
