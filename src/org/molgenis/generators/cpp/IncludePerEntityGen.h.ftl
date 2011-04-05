@@ -13,13 +13,16 @@
  * THIS FILE HAS BEEN GENERATED, PLEASE DO NOT EDIT!
  */
 
-#include <stdio.h>
-#include <jni.h>
-#include <string.h>
-
 #ifndef ${BLOCKName(entity)}_H_
   #define ${BLOCKName(entity)}_H_
-
+	
+	#include <cstdlib>
+	#include <cstdio>
+	#include <string>
+	#include <vector>
+	#include <jni.h>
+	using namespace std;
+	
   
   /**
    * \brief ${CPPName(entity)}<br>

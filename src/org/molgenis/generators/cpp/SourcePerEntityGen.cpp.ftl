@@ -21,8 +21,8 @@ ${CPPName(entity)}::${CPPName(entity)}(JNIEnv* env){
 	if(clsC != NULL){
     	//Get constructor ID for ${CPPName(entity)}
     	coID = env->GetMethodID(clsC, "<init>", "(V)V");
-    	findByIdID = env->GetMethodID(clsC, "findByID", "(I)L${package}.${JavaName(entity)}");
-  		findByNameID = env->GetMethodID(clsC, "findByName", "(Ljava.lang.String)L${package}.${JavaName(entity)}");
+    	findByIdID = env->GetMethodID(clsC, "findByID", "(I)L${package?replace(".cpp","")}.${JavaName(entity)}");
+  		findByNameID = env->GetMethodID(clsC, "findByName", "(Ljava.lang.String)L${package?replace(".cpp","")}.${JavaName(entity)}");
     	getID = env->GetMethodID(clsC, "get", "(Ljava.lang.String)Ljava.lang.Object");
   	}else{
     	printf("\nUnable to find the requested class\n");     
@@ -30,7 +30,7 @@ ${CPPName(entity)}::${CPPName(entity)}(JNIEnv* env){
 }
 
 ${CPPName(entity)}::${CPPName(entity)}(JNIEnv* env<#foreach field in entity.getImplementedFields()>, ${CPPType(field)} ${CPPName(field)}</#foreach>){
-	this(env);
+	${CPPName(entity)}(env);
 	<#foreach field in entity.getImplementedFields()>
 	this->${CPPName(field)} = ${CPPName(field)};
 	</#foreach>
