@@ -37,19 +37,20 @@ public class SimpleEmailService implements EmailService
 	private String smtpHostname = "localhost";
 	private Integer smtpPort = 25;
 	private String smtpUser = null;
-	private String smtpPassword = null;
+	private String smtpAu = null;
 	private String smtpProtocol = "smtps";
 	
-	/* (non-Javadoc)
-	 * @see org.molgenis.util.email.EmailService#sendEmail(java.lang.String, java.lang.String, java.lang.String)
+	/**
+	 * Send an email.
+	 * @param subject
+	 * @param body
+	 * @param toEmail
+	 * @param deObf
+	 * @return
+	 * @throws EmailException
 	 */
-	/* (non-Javadoc)
-	 * @see org.molgenis.util.email.EmailService#email(java.lang.String, java.lang.String, java.lang.String)
-	 */
-	public boolean email(String subject, String body, String toEmail) throws EmailException
+	public boolean email(String subject, String body, String toEmail, boolean deObf) throws EmailException
 	{
-		//Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
-
 		//put in config
 		Properties props = new Properties();
 		props.put("mail.transport.protocol", smtpProtocol);	
@@ -68,7 +69,7 @@ public class SimpleEmailService implements EmailService
 			message.saveChanges();
 
 			Transport transport = session.getTransport();
-			transport.connect(smtpHostname, smtpPort, smtpUser, smtpPassword);
+			transport.connect(smtpHostname, smtpPort, smtpUser, (deObf ? HtmlTools.fromSafeUrlStringO_b_f(smtpAu) : smtpAu));
 			transport.sendMessage(message, message.getRecipients(Message.RecipientType.TO));
 			transport.close();
 			return true;
@@ -78,6 +79,17 @@ public class SimpleEmailService implements EmailService
 			e.printStackTrace();
 			throw new EmailException(e);
 		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.molgenis.util.email.EmailService#sendEmail(java.lang.String, java.lang.String, java.lang.String)
+	 */
+	/* (non-Javadoc)
+	 * @see org.molgenis.util.email.EmailService#email(java.lang.String, java.lang.String, java.lang.String)
+	 */
+	public boolean email(String subject, String body, String toEmail) throws EmailException
+	{
+		return email(subject, body, toEmail, false);
 	}
 	
 	/* (non-Javadoc)
@@ -194,9 +206,9 @@ public class SimpleEmailService implements EmailService
 	/* (non-Javadoc)
 	 * @see org.molgenis.util.email.EmailService#getSmtpAuthPassword()
 	 */
-	public String getSmtpAuthPassword()
+	public String getSmtpAu()
 	{
-		return smtpPassword;
+		return smtpAu;
 	}
 
 	/* (non-Javadoc)
@@ -211,9 +223,9 @@ public class SimpleEmailService implements EmailService
 	/* (non-Javadoc)
 	 * @see org.molgenis.util.email.EmailService#setSmtpAuthPassword(java.lang.String)
 	 */
-	public void setSmtpPassword(String smtpPassword)
+	public void setSmtpAu(String au)
 	{
-		this.smtpPassword = smtpPassword;
+		this.smtpAu = smtpAu;
 	}
 
 	/* (non-Javadoc)

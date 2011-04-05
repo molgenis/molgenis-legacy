@@ -15,6 +15,8 @@ public interface EmailService
 	 */
 	public abstract void setSmtpFromAddress(String smtpFromAddress);
 
+	public boolean email(String subject, String body, String toEmail, boolean deObf) throws EmailException;
+	
 	/* (non-Javadoc)
 	 * @see org.molgenis.util.email.EmailService#sendEmail(java.lang.String, java.lang.String, java.lang.String)
 	 */
@@ -95,7 +97,7 @@ public interface EmailService
 	/* (non-Javadoc)
 	 * @see org.molgenis.util.email.EmailService#getSmtpAuthPassword()
 	 */
-	public abstract String getSmtpAuthPassword();
+	public abstract String getSmtpAu();
 
 	/* (non-Javadoc)
 	 * @see org.molgenis.util.email.EmailServer#setSmtpAuthPassword(java.lang.String)
@@ -106,7 +108,7 @@ public interface EmailService
 	/* (non-Javadoc)
 	 * @see org.molgenis.util.email.EmailService#setSmtpAuthPassword(java.lang.String)
 	 */
-	public abstract void setSmtpPassword(String smtpAuthPassword);
+	public abstract void setSmtpAu(String smtpAu);
 
 	/* (non-Javadoc)
 	 * @see org.molgenis.util.email.EmailServer#getSmtpProtocol()
