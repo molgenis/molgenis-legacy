@@ -16,6 +16,17 @@
 #include "${CPPName(entity)}.h"
 
 ${CPPName(entity)}::${CPPName(entity)}(JNIEnv* env){
+	init(env);
+}
+
+${CPPName(entity)}::${CPPName(entity)}(JNIEnv* env<#foreach field in entity.getImplementedFields()>, ${CPPType(field)} ${CPPName(field)}</#foreach>){
+	init(env);
+	<#foreach field in entity.getImplementedFields()>
+	this->${CPPName(field)} = ${CPPName(field)};
+	</#foreach>
+}
+
+void ${CPPName(entity)}::init(JNIEnv* env){
 	this->env=env;
 	this->clsC = env->FindClass("${CPPName(entity)}");
 	if(clsC != NULL){
@@ -27,13 +38,6 @@ ${CPPName(entity)}::${CPPName(entity)}(JNIEnv* env){
   	}else{
     	printf("\nUnable to find the requested class\n");     
   	}
-}
-
-${CPPName(entity)}::${CPPName(entity)}(JNIEnv* env<#foreach field in entity.getImplementedFields()>, ${CPPType(field)} ${CPPName(field)}</#foreach>){
-	${CPPName(entity)}(env);
-	<#foreach field in entity.getImplementedFields()>
-	this->${CPPName(field)} = ${CPPName(field)};
-	</#foreach>
 }
 
 <#foreach field in entity.getImplementedFields()>

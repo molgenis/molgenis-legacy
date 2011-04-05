@@ -34,6 +34,7 @@
   	${CPPName(entity)}(JNIEnv* env);
   	~${CPPName(entity)}();
   	${CPPName(entity)}(JNIEnv* env<#foreach field in entity.getImplementedFields()>, ${CPPType(field)} ${CPPName(field)}</#foreach>);
+  	void init(JNIEnv* env);
   	jobject New${CPPName(entity)}();
   	jobject Get(char* name);
   	<#foreach field in entity.getImplementedFields()>
