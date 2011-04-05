@@ -124,6 +124,7 @@ public class UserLogin extends PluginModel<Entity>
 		{
 			this.getMessages().add(new ScreenMessage(e.getMessage(), false));
 			// If adding user failed, go back to Register screen:
+			e.printStackTrace();
 			if ("AddUser".equals(this.action)) {
 				this.action = "Register";
 			}
@@ -217,13 +218,15 @@ public class UserLogin extends PluginModel<Entity>
 			emailContents += "Please visit the following URL in order to activate your account:\n";
 			emailContents += activationURL + "\n\n";
 			emailContents += "If you have not requested an account please ignore this mail.";
-			this.getEmailService().setSmtpFromAddress("molgenis@gmail.com");
-			this.getEmailService().email("Your registration request", emailContents, user.getEmailaddress());
+			
+			//assuming: 'encoded' p.w. (setting deObf = true)
+			this.getEmailService().email("Your registration request", emailContents, user.getEmailaddress(), true);
 			
 			this.getMessages().add(new ScreenMessage("Adding user successful - check your e-mail for activation instructions", true));
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
 			throw new DatabaseException("Adding user failed: " + e.getMessage());
 		} finally {
 		    this.getLogin().logout();
@@ -268,7 +271,7 @@ public class UserLogin extends PluginModel<Entity>
 //			user.getTitle() + " " + user.getFirstname() + " " + user.getLastname() + 
 //			", " + user.getPosition() + " at the department " + user.getDepartment() +
 //			" of " + user.getInstitute() + ".";
-//			this.getEmailService().email("New user", emailContents, "p.c.van.den.akker@medgen.umcg.nl");
+//			this.getEmailService().email("New user", emailContents, "p.c.van.den.akker@medgen.umcg.nl", true);
 		}
 		catch (Exception e)
 		{
@@ -320,8 +323,8 @@ public class UserLogin extends PluginModel<Entity>
     		emailContents += "Note: we strongly recommend you reset your password after log-in!";
     		// TODO: make this mandatory (password that was sent is valid only once)
 
-    		this.getEmailService().setSmtpFromAddress("molgenis@gmail.com");
-    		this.getEmailService().email("Your new password request", emailContents, user.getEmailaddress());
+    		//assuming: 'encoded' p.w. (setting deObf = true)
+    		this.getEmailService().email("Your new password request", emailContents, user.getEmailaddress(), true);
     		
     		this.getMessages().add(new ScreenMessage("Sending new password successful", true));
 		}

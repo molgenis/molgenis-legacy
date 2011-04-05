@@ -39,7 +39,6 @@ import org.molgenis.mutation.MutationPhenotype;
 import org.molgenis.mutation.Patient;
 import org.molgenis.mutation.PhenotypeDetails;
 import org.molgenis.mutation.service.ExonService;
-import org.molgenis.mutation.service.MutationEmailService;
 import org.molgenis.mutation.service.MutationService;
 import org.molgenis.mutation.service.PatientService;
 import org.molgenis.mutation.service.PhenotypeService;
@@ -47,7 +46,6 @@ import org.molgenis.mutation.ui.upload.form.MutationForm;
 import org.molgenis.mutation.ui.upload.form.PatientForm;
 import org.molgenis.mutation.vo.MutationUploadVO;
 import org.molgenis.mutation.vo.PatientSummaryVO;
-import org.molgenis.util.EmailService;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
@@ -163,9 +161,9 @@ public class Upload extends PluginModel<Entity>
 			HttpServletRequestTuple rt = (HttpServletRequestTuple) request;
 			String uploadPath = "http://vm7.target.rug.nl" + rt.getRequest().getContextPath() + "/res/upload/" + destName;
 			
-			EmailService service = new MutationEmailService();
 			String emailContents = "New data upload: " + uploadPath + "\n User: " + this.getLogin().getUserName() + "\n";
-			service.email("New data upload for COL7A1", emailContents, "p.c.van.den.akker@medgen.umcg.nl");
+			//assuming: 'encoded' p.w. (setting deObf = true)
+			this.getEmailService().email("New data upload for COL7A1", emailContents, "p.c.van.den.akker@medgen.umcg.nl", true);
 //			service.email("New data upload for COL7A1", emailContents, "robert.wagner42@gmail.com");
 			this.getMessages().add(new ScreenMessage("Thank you for your submission. Your data has been successfully emailed to us.", true));
 		}
@@ -184,9 +182,9 @@ public class Upload extends PluginModel<Entity>
 			//TODO: Insert and mark as uncurated
 //			this.patientService.insert(this.patientSummaryVO);
 			
-			EmailService service = new MutationEmailService();
 			String emailContents = "New patient upload:\n" + this.patientSummaryVO.toString() + "\nUser: " + this.getLogin().getUserName() + "\n";
-			service.email("New patient upload for COL7A1", emailContents, "p.c.van.den.akker@medgen.umcg.nl");
+			//assuming: 'encoded' p.w. (setting deObf = true)
+			this.getEmailService().email("New patient upload for COL7A1", emailContents, "p.c.van.den.akker@medgen.umcg.nl", true);
 //			service.email("New patient upload for COL7A1", emailContents, "robert.wagner42@gmail.com");
 
 			this.getMessages().add(new ScreenMessage("Patient successfully inserted", true));
@@ -222,9 +220,9 @@ public class Upload extends PluginModel<Entity>
 			else if (this.referer == 2)
 				this.patientSummaryVO.setMutation2(this.mutationUploadVO.getMutation());
 			
-			EmailService service = new MutationEmailService();
 			String emailContents = "New mutation upload:\n" + this.mutationUploadVO.toString() + "\nUser: " + this.getLogin().getUserName() + "\n";
-			service.email("New mutation upload for COL7A1", emailContents, "p.c.van.den.akker@medgen.umcg.nl");
+			//assuming: 'encoded' p.w. (setting deObf = true)
+			this.getEmailService().email("New mutation upload for COL7A1", emailContents, "p.c.van.den.akker@medgen.umcg.nl", true);
 //			service.email("New mutation upload for COL7A1", emailContents, "robert.wagner42@gmail.com");
 
 			this.getMessages().add(new ScreenMessage("Mutation successfully inserted", true));

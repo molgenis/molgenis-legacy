@@ -13,7 +13,6 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.html.Container;
-import org.molgenis.mutation.service.MutationEmailService;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleEmailService.EmailException;
@@ -62,15 +61,14 @@ public class Contact extends PluginModel<Entity>
 					throw new IllegalArgumentException("Please enter an email address.");
 				if (StringUtils.isEmpty(request.getString("comments")))
 					throw new IllegalArgumentException("Please enter your comments.");
-
-				EmailService service = new MutationEmailService();
 					
 				String emailContents = "New comment via the contact form:\n" +
 					"Name: " + request.getString("name") + "\n"+
 					"Email: " + request.getString("email") + "\n" +
 					"Comments: " + request.getString("comments") + "\n";
 
-				service.email("New comment on COL7A1", emailContents, EMAIL_TO);
+				//assuming: 'encoded' p.w. (setting deObf = true)
+				this.getEmailService().email("New comment on COL7A1", emailContents, EMAIL_TO, true);
 				this.getMessages().add(new ScreenMessage("Your comment has been successfully sent.", true));
 			}
 		}

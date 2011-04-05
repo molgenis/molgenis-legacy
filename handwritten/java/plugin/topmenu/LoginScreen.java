@@ -172,7 +172,7 @@ public class LoginScreen extends PluginModel<Entity>
 					+ "\">"
 					+ url
 					+ "</a> to activate your account. Notice that this hyperlink may be spread over multiple lines.\n\nRegards,\nthe system administrators.";
-			this.getEmailService().email("Account activation MOLGENIS", emailBody, email);
+			this.getEmailService().email("Account activation MOLGENIS", emailBody, email, true);
 
 			// finally add user including activiation code
 			MolgenisUser newUser = new MolgenisUser();
