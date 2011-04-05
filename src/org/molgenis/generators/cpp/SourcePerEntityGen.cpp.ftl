@@ -28,15 +28,15 @@ ${CPPName(entity)}::${CPPName(entity)}(JNIEnv* env<#foreach field in entity.getI
 
 void ${CPPName(entity)}::init(JNIEnv* env){
 	this->env=env;
-	this->clsC = env->FindClass("${CPPName(entity)}");
+	this->clsC = env->FindClass("${entity.namespace?replace(".","/")}/${CPPName(entity)}");
 	if(clsC != NULL){
     	//Get constructor ID for ${CPPName(entity)}
+    	printf("\nFound: ${entity.namespace}.${CPPName(entity)} class\n");
     	coID = env->GetMethodID(clsC, "<init>", "(V)V");
     	findByIdID = env->GetMethodID(clsC, "findByID", "(I)L${package?replace(".cpp","")}.${JavaName(entity)}");
   		findByNameID = env->GetMethodID(clsC, "findByName", "(Ljava.lang.String)L${package?replace(".cpp","")}.${JavaName(entity)}");
-    	getID = env->GetMethodID(clsC, "get", "(Ljava.lang.String)Ljava.lang.Object");
   	}else{
-    	printf("\nUnable to find the requested class\n");     
+    	printf("\nUnable to find the ${entity.namespace}.${CPPName(entity)} class\n");
   	}
 }
 

@@ -40,6 +40,7 @@ public class CPPMainGen extends ForEachEntityGenerator
 		
 		templateArgs.put("model", model );
 		templateArgs.put("entities",entityList);
+		templateArgs.put("UserHome",System.getProperty("user.dir").toString());
 		OutputStream targetOut = new FileOutputStream( target );
 		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
 		targetOut.close();

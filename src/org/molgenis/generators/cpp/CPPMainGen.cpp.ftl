@@ -30,7 +30,7 @@ JNIEnv* create_vm(JavaVM** jvm) {
   JNIEnv* env;
   JavaVMInitArgs vm_args;
   JavaVMOption options;
-  options.optionString = (char*) "-Djava.class.path=."; 	//Path to the java source code
+  options.optionString = (char*) "-Djava.class.path=${UserHome?replace("\\","/")}/build/classes"; 	//Path to the java source code
   vm_args.version = JNI_VERSION_1_6; 						//JDK version. This indicates version 1.6
   vm_args.nOptions = 1;
   vm_args.options = &options;
@@ -46,9 +46,11 @@ int main(int argc, char* argv[]){
   JNIEnv* env;
   JavaVM* jvm;
   env = create_vm(&jvm);
-  if (env == NULL){
-    return 1;
-  }else{
+  if(!(env == NULL)){
+    <#list model.entities as entity>
+  	${JavaName(entity)}* test${entity_index} = new ${JavaName(entity)}(env);
+  	</#list>
 	//TODO Add your own code  
   }
+  jvm->DestroyJavaVM();
 }   
