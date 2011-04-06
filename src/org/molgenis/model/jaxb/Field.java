@@ -16,43 +16,57 @@ public class Field
 	
 	//jaxb orders properties in reverse order :-s
 	@XmlAttribute(name="mref_remoteid")
-	private String mref_remoteid;		
+	private String mref_remoteid;	
+	
 	@XmlAttribute(name="mref_localid")
 	private String mref_localid;
+	
 	@XmlAttribute(name="mref_name")
-	private String mref_name;	
+	private String mref_name;
+	
 	@XmlAttribute(name="xref_field")
 	private String xref_field;
+	
 	@XmlAttribute(name="xref_entity")
 	private String xref_entity;
+	
 	@XmlAttribute(name="xref_name")
 	private String xref_name;
+	
 	@XmlAttribute(name="xref_label")
 	private String xref_label;
-	@XmlAttribute
+	
+	@XmlAttribute(name="unique")
 	private Boolean unique;
-	@XmlAttribute
+	
+	@XmlAttribute(name="length")
 	private Integer length;	
+	
 	@XmlAttribute(name="default")
 	private String defaultValue;
-	@XmlAttribute
+	
+	@XmlAttribute(name="description")
 	private String description;
-	@XmlAttribute
+	
+	@XmlAttribute(name="enum_options")
 	private String enum_options;
-	@XmlAttribute
+	
+	@XmlAttribute(name="auto")
 	private Boolean auto = null;
-	@XmlAttribute
+	
+	@XmlAttribute(name="nillable")
 	private Boolean nillable = null;
-	@XmlAttribute
+	
+	@XmlAttribute(name="readonly")
 	private Boolean readonly = null;
 		
-	@XmlAttribute
+	@XmlAttribute(name="type")
 	private Type type;
 	
-	@XmlAttribute
+	@XmlAttribute(name="name")
 	private String name;
 	
-	@XmlAttribute
+	@XmlAttribute(name="label")
 	private String label;
 
 	/**
