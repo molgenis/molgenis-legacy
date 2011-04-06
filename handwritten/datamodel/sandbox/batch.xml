@@ -8,7 +8,7 @@
 				description="description field" />
 			<field name="query" type="text" nillable="true"
 				description="description field" />
-			<field name="user" type="xref" xref_entity="MolgenisUser" nillable="false"/>
+			<field name="molgenisUser" type="xref" xref_entity="MolgenisUser" nillable="false"/>
 			<unique fields="name"></unique>
 		</entity>
 		<entity name="MolgenisBatchEntity" implements="Identifiable,Nameable">

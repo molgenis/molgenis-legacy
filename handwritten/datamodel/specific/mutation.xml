@@ -246,7 +246,7 @@
 			<description>Part of an exon that has its codon changed.</description>
 			<field name="identifier" nillable="false" readonly="true"
 				description="Automatically generated external identifier" unique="true" />
-			<field name="position" default="0"
+			<field name="mutationPosition" default="0"
 				description="Position of the mutation including intron positions, e.g. 1234+5"
 				label="Position" />
 			<field name="cdna_position" type="number" default="0"
