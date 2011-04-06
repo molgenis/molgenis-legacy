@@ -79,6 +79,8 @@ public class TestCsv
 		<#if databaseImp = 'jpa'>		
 		db = new app.JpaDatabase(true);
 		((JpaDatabase)db).getEntityManager().setFlushMode(FlushModeType.AUTO);
+		<#elseif db_mode="standalone">
+		db = new JDBCDatabase("molgenis.testhsql.properties");	
 		<#else>
 		db = new JDBCDatabase("molgenis.test.properties");	
 		new Molgenis("molgenis.test.properties").updateDb();
@@ -112,6 +114,8 @@ public class TestCsv
 		//clean database
 		<#if databaseImp = 'jpa'>
 			JpaUtil.dropAndCreateTables( ((JpaDatabase)db).getEntityManager() );
+		<#elseif db_mode="standalone">
+			db = new JDBCDatabase("molgenis.testhsql.properties");				
 		<#else>
 			new Molgenis("molgenis.test.properties").updateDb();
 		</#if>
@@ -132,6 +136,8 @@ public class TestCsv
 		//clean database
 		<#if databaseImp = 'jpa'>
 			JpaUtil.dropAndCreateTables( ((JpaDatabase)db).getEntityManager() );
+		<#elseif db_mode="standalone">
+			db = new JDBCDatabase("molgenis.testhsql.properties");	
 		<#else>
 			new Molgenis("molgenis.test.properties").updateDb();
 		</#if>

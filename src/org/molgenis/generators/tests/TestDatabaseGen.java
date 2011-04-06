@@ -43,6 +43,7 @@ public class TestDatabaseGen extends Generator
 		
 		templateArgs.put("databaseImp", options.mapper_implementation.equals(MolgenisOptions.MapperImplementation.JPA) ? "jpa" : "jdbc");		
 		templateArgs.put("model", model );
+		templateArgs.put("db_mode", options.db_mode );
 		templateArgs.put("entities",entityList);
 		templateArgs.put("package", packageName);
 		
