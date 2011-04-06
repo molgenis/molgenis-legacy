@@ -41,6 +41,7 @@ public class JDBCDatabaseGen extends Generator
 		templateArgs.put("entities",entityList);
 		templateArgs.put("package", APP_DIR);
 		templateArgs.put("auth_loginclass", options.auth_loginclass);
+		templateArgs.put("decorator_overriders", options.decorator_overriders);
 		OutputStream targetOut = new FileOutputStream( target );
 		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
 		targetOut.close();
