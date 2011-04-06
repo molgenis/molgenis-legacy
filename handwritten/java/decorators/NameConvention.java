@@ -75,13 +75,13 @@ public class NameConvention
 	 * underscores. Then removes any heading numerals. A DatabaseException is
 	 * thrown if the final output has length 0. Eg. "123name" becomes "name",
 	 * "x123nAmE" stays "x123nAmE", and "@#23" becomes "", which will throw an
-	 * exception. FIXME: Not an inverse of 'validateEntityName' at the moment.
+	 * exception. This is the inverse of 'validateEntityNameStrict'.
 	 * 
 	 * @param name
 	 * @return
 	 * @throws Exception
 	 */
-	public static String escapeEntityName(String name) throws DatabaseException
+	public static String escapeEntityNameStrict(String name) throws DatabaseException
 	{
 		// trim whitespace
 		name = name.trim();
@@ -169,11 +169,8 @@ public class NameConvention
 	}
 
 	/**
-	 * Validates an entity name, so that they can be used in contexts such as
-	 * programming environments where strict names are needed. Throws a
-	 * DatabaseException when this name is empty or untrimmed, or if other
-	 * characters than alphabetics, numerals, underscore, non-break space, dash,
-	 * or colon are used.
+	 * Validates an entity name, checking that only characters
+	 * from the set [<>/a-zA-Z0-9_\\s\\-:.(),;\\+] are used.
 	 * 
 	 * @param name
 	 * @throws DatabaseException
@@ -210,7 +207,7 @@ public class NameConvention
 			if (!m2.matches())
 			{
 				throw new DatabaseException("Illegal character (" + s + ") in name '" + name
-						+ "'. Use only allowed characters. Default: a-z, A-Z, 0-9, underscore, non-breaking space, dash or colon.");
+						+ "'. Use only allowed characters from the set " + pattern);
 			}
 		}
 	}
@@ -225,7 +222,7 @@ public class NameConvention
 	 * @param name
 	 * @throws DatabaseException
 	 */
-	public static void validateEntityName_ORIGINAL(String name) throws DatabaseException
+	public static void validateEntityNameStrict(String name) throws DatabaseException
 	{
 		if (name.length() == 0)
 		{
@@ -274,6 +271,23 @@ public class NameConvention
 		{
 			String name = i.getName();
 			NameConvention.validateEntityName(name);
+		}
+	}
+	
+	/**
+	 * Validate names of Entities by wrapping
+	 * NameConvention.validateEntityNameStrict(name)
+	 * 
+	 * @param <E>
+	 * @param entities
+	 * @throws DatabaseException
+	 */
+	public static <E extends Nameable> void validateEntityNamesStrict(List<E> entities) throws DatabaseException
+	{
+		for (E i : entities)
+		{
+			String name = i.getName();
+			NameConvention.validateEntityNameStrict(name);
 		}
 	}
 }
