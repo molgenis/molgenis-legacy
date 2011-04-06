@@ -10,12 +10,14 @@
 		<form name="Cohorts" entity="BiobankPanel" label="Cohorts"
 			hide_fields="id,description,Species,Individuals,PanelType,FounderPanels,ontologyReference" />
 		<menu name="Admin">
-			<form name="Biobanks" entity="Biobank" view="list" />
-			<form name="Coordinators" entity="Person" view="list" sortby="LastName" />
-			<form name="Institutes" entity="Institute" view="list" />
-			<form name="Categories" sortby="name" view="list" entity="BiobankCategory" />
-			<form name="DataTypes" entity="BiobankDataType" />
-			<form name="Topics" entity="BiobankTopic" />
+		    <menu name="DataViews">
+				<form name="Biobanks" entity="Biobank" view="list" />
+				<form name="Coordinators" entity="Person" view="list" sortby="LastName" />
+				<form name="Institutes" entity="Institute" view="list" />
+				<form name="Categories" sortby="name" view="list" entity="BiobankCategory" />
+				<form name="DataTypes" entity="BiobankDataType" />
+				<form name="Topics" entity="BiobankTopic" />
+			</menu>
 			<plugin name="Settings" type="plugins.system.settings.Settings" />
 			<menu name="usermanagement" position="left" label="User management">
 				<form name="MolgenisUser" entity="MolgenisUser" label="User" />
