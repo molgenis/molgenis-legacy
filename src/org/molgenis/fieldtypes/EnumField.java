@@ -62,5 +62,11 @@ public class EnumField extends FieldType
 	{
 		return "string";
 	}
+	
+	@Override
+	public String getCppJavaPropertyType()
+	{
+		return "Ljava/lang/String;";
+	}
 
 }

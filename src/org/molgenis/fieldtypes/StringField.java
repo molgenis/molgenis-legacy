@@ -61,5 +61,11 @@ public class StringField extends FieldType
 	{
 		return "string";
 	}
+	
+	@Override
+	public String getCppJavaPropertyType()
+	{
+		return "Ljava/lang/String;";
+	}
 
 }

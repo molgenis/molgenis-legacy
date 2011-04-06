@@ -61,4 +61,10 @@ public class FileField extends FieldType
 	{
 		return "string";
 	}
+	
+	@Override
+	public String getCppJavaPropertyType()
+	{
+		return "Ljava/lang/String;";
+	}
 }

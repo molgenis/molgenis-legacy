@@ -86,5 +86,12 @@ public class MrefField extends FieldType
 		Field f_ref = f.getXrefField();
 		return "vector<"+getFieldType(f_ref).getCppPropertyType()+">";
 	}
+	
+	@Override
+	public String getCppJavaPropertyType() throws MolgenisModelException
+	{
+		Field f_ref = f.getXrefField();
+		return "Ljava.util.ArrayList<"+getFieldType(f_ref).getCppJavaPropertyType()+">";
+	}
 
 }

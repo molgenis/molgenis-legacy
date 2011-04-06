@@ -70,4 +70,10 @@ public class ListField extends FieldType
 	{
 		return "vector<Entity>";
 	}
+	
+	@Override
+	public String getCppJavaPropertyType()
+	{
+		return "Ljava.util.ArrayList<?>;";
+	}
 }

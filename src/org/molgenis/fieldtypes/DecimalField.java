@@ -58,6 +58,12 @@ public class DecimalField extends FieldType
 	}
 
 	@Override
+	public String getCppJavaPropertyType()
+	{
+		return "Ljava/lang/Double;";
+	}
+
+	@Override
 	public String getCppPropertyType() throws MolgenisModelException
 	{
 		return "double";

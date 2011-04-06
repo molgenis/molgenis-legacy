@@ -65,5 +65,11 @@ public class UnknownField extends FieldType
 	{
 		return "void*";
 	}
+	
+	@Override
+	public String getCppJavaPropertyType()
+	{
+		return "";
+	}
 
 }

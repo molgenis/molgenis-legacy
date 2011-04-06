@@ -62,5 +62,11 @@ public class LongField extends FieldType
 	{
 		return "long";
 	}
+	
+	@Override
+	public String getCppJavaPropertyType()
+	{
+		return "Ljava/lang/Long;";
+	}
 
 }

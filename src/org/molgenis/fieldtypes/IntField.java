@@ -66,4 +66,10 @@ public class IntField extends FieldType
 	{
 		return "int";
 	}
+	
+	@Override
+	public String getCppJavaPropertyType()
+	{
+		return "Ljava/lang/Integer;";
+	}
 }

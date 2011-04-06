@@ -150,4 +150,6 @@ public abstract class FieldType
 	}
 
 	public abstract HtmlInput createInput(String name, String xrefEntityClassName, Database db) throws InstantiationException, IllegalAccessException;
+
+	public abstract String getCppJavaPropertyType() throws MolgenisModelException;
 }

@@ -63,7 +63,13 @@ public class NSequenceField extends FieldType
 	@Override
 	public String getCppPropertyType() throws MolgenisModelException
 	{
-		return getJavaAssignment(f.getDefaultValue());
+		return "string";
+	}
+
+	@Override
+	public String getCppJavaPropertyType()
+	{
+		return "Ljava/lang/String;";
 	}
 
 

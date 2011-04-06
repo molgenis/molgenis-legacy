@@ -68,4 +68,10 @@ public class DateField extends FieldType
 	{
 		return "time_t";
 	}
+	
+	@Override
+	public String getCppJavaPropertyType()
+	{
+		return "Ljava/sql/Date;";
+	}
 }

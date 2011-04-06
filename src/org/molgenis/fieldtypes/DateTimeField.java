@@ -70,4 +70,10 @@ public class DateTimeField extends FieldType
 		// TODO Auto-generated method stub
 		return "time_t";
 	}
+	
+	@Override
+	public String getCppJavaPropertyType()
+	{
+		return "Ljava.sql.Timestamp;";
+	}
 }
