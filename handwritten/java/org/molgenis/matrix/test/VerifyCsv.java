@@ -217,11 +217,13 @@ public class VerifyCsv
 
 		for (String colName : colNames.subList(1, colNames.size()))
 		{
-			NameConvention.validateEntityName(colName);
+			//FIXME: the strict should only be applied when application is an XGAP
+			NameConvention.validateEntityNameStrict(colName);
 		}
 		for (String rowName : rowNames)
 		{
-			NameConvention.validateEntityName(rowName);
+			//FIXME: the strict should only be applied when application is an XGAP
+			NameConvention.validateEntityNameStrict(rowName);
 		}
 	}
 }

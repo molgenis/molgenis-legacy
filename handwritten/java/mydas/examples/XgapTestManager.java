@@ -35,17 +35,13 @@ public class XgapTestManager {
 		types = new ArrayList<DasType>();
 		types.add(geneType);
 		method = new DasMethod("not_recorded", "not_recorded", "ECO:0000037");
+		
 		// Create database
 		try {
 			db = new JDBCDatabase(new MolgenisOptions("xgap.properties"));
-			
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (CmdLineException e) {
-			e.printStackTrace();		
-		}
+		} catch (Exception e) {
+			throw new DataSourceException(e.toString());
+		} 
 		
 		
 		

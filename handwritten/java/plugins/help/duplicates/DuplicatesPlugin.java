@@ -111,7 +111,7 @@ public class DuplicatesPlugin extends PluginModel<Entity> {
 							s = s.trim();
 							try
 							{
-								s = NameConvention.escapeEntityName(s);
+								s = NameConvention.escapeEntityNameStrict(s);
 							}
 							catch (DatabaseException e)
 							{

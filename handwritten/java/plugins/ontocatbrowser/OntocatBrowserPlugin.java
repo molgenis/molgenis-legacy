@@ -902,7 +902,7 @@ public class OntocatBrowserPlugin extends PluginModel<Entity> {
 					// Create and add OntologyTerm.
 					OntologyTerm ot = new OntologyTerm();
 
-					ot.setName(NameConvention.escapeEntityName(term));
+					ot.setName(NameConvention.escapeEntityNameStrict(term));
 					//ot.setName(term);
 					ot.setTermAccession(termAccession);
 					ot.setTermPath(screenModel.getExplored().getPath());

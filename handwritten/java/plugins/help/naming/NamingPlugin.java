@@ -78,7 +78,7 @@ public class NamingPlugin extends PluginModel<Entity> {
 					output = "";
 					for (String s : split) {
 						try {
-							String escape = NameConvention.escapeEntityName(s);
+							String escape = NameConvention.escapeEntityNameStrict(s);
 							if(escape.length() == 0){
 								output += "INVALID NAME: ALL CHARACTERS ARE ESCAPED\n";
 							}else{

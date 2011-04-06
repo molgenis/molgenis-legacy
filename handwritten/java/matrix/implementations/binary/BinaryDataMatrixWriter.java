@@ -169,8 +169,9 @@ public class BinaryDataMatrixWriter
 		d.setFeatureType(colType);
 		d.setValueType(valType);
 		
-		NameConvention.validateEntityName(dataName);
-		NameConvention.validateEntityName(invName);
+		//FIXME: strict should only be applied when application is an XGAP
+		NameConvention.validateEntityNameStrict(dataName);
+		NameConvention.validateEntityNameStrict(invName);
 		
 		System.out.println("'Data' object created..");
 		

@@ -27,7 +27,7 @@ public class LoadDbGap
 	static Logger logger = Logger.getLogger(LoadDbGap.class);
 	public static List<String> errors = new ArrayList<String>();
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws DatabaseException
 	{
 		MolgenisOptions options = null;
 		try

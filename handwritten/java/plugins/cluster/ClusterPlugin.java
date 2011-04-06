@@ -245,12 +245,12 @@ public class ClusterPlugin extends PluginModel<Entity>
 
 		Date timestamp = new Date();
 		String putativeName = request.getString("outputDataName");
-		putativeName = NameConvention.escapeEntityName(putativeName);
+		putativeName = NameConvention.escapeEntityNameStrict(putativeName);
 
 		System.out.println("checking name: " + putativeName);
 		if (HelperFunctions.checkIfNameExists(db, putativeName))
 		{
-			putativeName = NameConvention.escapeEntityName(putativeName + " at "
+			putativeName = NameConvention.escapeEntityNameStrict(putativeName + " at "
 					+ HelperFunctions.dateTimeToMysqlFormat(timestamp));
 		}
 
@@ -410,7 +410,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 				}
 
 				// NOT VARIABLE
-				toServer += "name = '" + NameConvention.escapeEntityName(startedJob.getOutputDataName()) + "',";
+				toServer += "name = '" + NameConvention.escapeEntityNameStrict(startedJob.getOutputDataName()) + "',";
 				// FIXME
 				toServer += "investigation = '" + inv.getName() + "',";
 				toServer += "totalitems = '" + totalitems + "',";
