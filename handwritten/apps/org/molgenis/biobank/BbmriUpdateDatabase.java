@@ -2,6 +2,8 @@ package org.molgenis.biobank;
 
 
 import org.molgenis.Molgenis;
+import org.molgenis.auth.MolgenisUser;
+
 import app.JDBCDatabase;
 
 
@@ -11,20 +13,19 @@ public class BbmriUpdateDatabase
 	{
 		new Molgenis("handwritten/apps/org/molgenis/biobank/bbmri.molgenis.properties").updateDb(true);
 		
-		//loader
-		//TODO: Danny old code ? please remove then
-		/*Database db = */new JDBCDatabase("handwritten/apps/org/molgenis/biobank/bbmri.molgenis.properties");
+		JDBCDatabase db = new JDBCDatabase("handwritten/apps/org/molgenis/biobank/bbmri.molgenis.properties");
 		
-//		MolgenisUser u = new MolgenisUser();
-//		u.setName("admin");
-//		u.setPassword("admin");
-//		u.setSuperuser(true);
-//		u.setFirstname("Despoina");
-//		u.setLastname("Antonakaki");
-//		u.setEmailaddress("antonakd@gmail.com");
-//		
-//		db.add(u);
 		
-		//do batch import
+		MolgenisUser u = new MolgenisUser();
+		u.setName("bbmri");
+		u.setPassword("bbmri");
+		u.setSuperuser(true);
+		u.setFirstname("Margreet");
+		u.setLastname(" Brandsma");
+		u.setEmailaddress("m.brandsma@bbmri.nl");
+		
+		db.add(u);
+		
+		//TODO : do batch import
 	}
 }
