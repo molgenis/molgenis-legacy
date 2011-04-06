@@ -37,6 +37,8 @@ import filehandling.generic.MolgenisFileHandler;
 public class MolgenisFileDecorator<E extends MolgenisFile> extends MappingDecorator<E>
 {
 
+	protected boolean strict = false;
+	
 	//TODO: Danny Parameterize the JDBCMapper object <Object> ??
 	public MolgenisFileDecorator(JDBCMapper<E> generatedMapper)
 	{
@@ -52,7 +54,11 @@ public class MolgenisFileDecorator<E extends MolgenisFile> extends MappingDecora
 		// later on we will escape the entity name to filename and do uniqueness
 		// checks. this means file can have 'pretty' names in the database but
 		// are simple on the filesystem
-		NameConvention.validateEntityNames(entities);
+		if(strict){
+			NameConvention.validateEntityNamesStrict(entities);
+		}else{
+			NameConvention.validateEntityNames(entities);
+		}
 
 		// Check file extensions according to regular filename rules
 		for (MolgenisFile mf : entities)

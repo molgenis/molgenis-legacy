@@ -16,6 +16,9 @@ import org.molgenis.framework.db.jdbc.MappingDecorator;
 
 public class NameableDecorator<E extends Nameable> extends MappingDecorator<E>
 {
+	
+	protected boolean strict = false;
+	
 	//JDBCMapper is the generate thing
 	//TODO: Danny Parameterize the JDBCMapper object <Object> ??
 	public NameableDecorator(JDBCMapper<E> generatedMapper)
@@ -26,7 +29,11 @@ public class NameableDecorator<E extends Nameable> extends MappingDecorator<E>
 	@Override
 	public int add(List<E> entities) throws DatabaseException
 	{
-		NameConvention.validateEntityNames(entities);
+		if(strict){
+			NameConvention.validateEntityNamesStrict(entities);
+		}else{
+			NameConvention.validateEntityNames(entities);
+		}
 		
 		int count = super.add(entities);
 
@@ -36,7 +43,11 @@ public class NameableDecorator<E extends Nameable> extends MappingDecorator<E>
 	@Override
 	public int update(List<E> entities) throws DatabaseException
 	{
-		NameConvention.validateEntityNames(entities);
+		if(strict){
+			NameConvention.validateEntityNamesStrict(entities);
+		}else{
+			NameConvention.validateEntityNames(entities);
+		}
 		
 		int count = super.update(entities);
 
