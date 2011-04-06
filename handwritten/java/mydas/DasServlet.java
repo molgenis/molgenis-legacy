@@ -7,12 +7,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
 public class DasServlet extends app.servlet.MolgenisServlet
 {
 	private static final long serialVersionUID = 8579428014673624684L;
-	private static Logger logger = Logger.getLogger(DasServlet.class);
+	//private static Logger logger = Logger.getLogger(DasServlet.class);
 
 	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{

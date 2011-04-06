@@ -35,7 +35,7 @@ class BatchService {
      * @throws DatabaseException
      */
     public List<MolgenisBatch> findAllBatches(int userId) throws DatabaseException {
-    	return db.find(MolgenisBatch.class, new QueryRule(MolgenisBatch.USER, Operator.EQUALS, userId));
+    	return db.find(MolgenisBatch.class, new QueryRule(MolgenisBatch.MOLGENISUSER, Operator.EQUALS, userId));
     }
 
     /** Finds entities given a batch id

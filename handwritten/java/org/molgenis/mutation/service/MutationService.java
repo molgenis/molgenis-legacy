@@ -444,7 +444,7 @@ public class MutationService
 
 //				logger.debug(">>> position==" + position + ", deletion==" + deletion + ", insertion==" + insertion);
 
-				mutationUploadVO.getMutation().setPosition(position[0]);
+				mutationUploadVO.getMutation().setMutationPosition(position[0]);
 				if (position.length == 2)
 					mutationUploadVO.getMutation().setLength(Integer.valueOf(position[1]) - Integer.valueOf(position[0]) + 1);
 				else if (StringUtils.isNotEmpty(deletion))
@@ -465,7 +465,7 @@ public class MutationService
 				String deletion   = reDeletion.getParen(2);
 				
 				mutationUploadVO.getMutation().setEvent("deletion");
-				mutationUploadVO.getMutation().setPosition(position[0]);
+				mutationUploadVO.getMutation().setMutationPosition(position[0]);
 				if (position.length == 2)
 					mutationUploadVO.getMutation().setLength(Integer.valueOf(position[1]) - Integer.valueOf(position[0]) + 1);
 				else if (StringUtils.isNotEmpty(deletion))
@@ -492,7 +492,7 @@ public class MutationService
 				String duplication = reDuplication.getParen(2);
 				
 				mutationUploadVO.getMutation().setEvent("duplication");
-				mutationUploadVO.getMutation().setPosition(position[0]);
+				mutationUploadVO.getMutation().setMutationPosition(position[0]);
 				if (position.length == 2)
 					mutationUploadVO.getMutation().setLength(Integer.valueOf(position[1]) - Integer.valueOf(position[0]) + 1);
 				else if (StringUtils.isNotEmpty(duplication))
@@ -518,14 +518,14 @@ public class MutationService
 				String[] position = reInsertion.getParen(1).split("_");
 				String insertion  = reInsertion.getParen(2);
 				mutationUploadVO.getMutation().setEvent("insertion");
-				mutationUploadVO.getMutation().setPosition(position[0]);
+				mutationUploadVO.getMutation().setMutationPosition(position[0]);
 				mutationUploadVO.getMutation().setLength(insertion.length());
 				mutationUploadVO.getMutation().setNtchange(insertion);
 			}
 			else if (reSubstitution.match(cdnaNotation))
 			{
 				mutationUploadVO.getMutation().setEvent("point mutation");
-				mutationUploadVO.getMutation().setPosition(reSubstitution.getParen(1));
+				mutationUploadVO.getMutation().setMutationPosition(reSubstitution.getParen(1));
 				mutationUploadVO.getMutation().setLength(reSubstitution.getParen(2).length());
 				mutationUploadVO.getMutation().setNtchange(reSubstitution.getParen(3));
 			}
@@ -536,7 +536,7 @@ public class MutationService
 
 	public void assignValuesFromPosition(MutationUploadVO mutationUploadVO) throws DatabaseException, ParseException, RESyntaxException
 	{
-		if (StringUtils.isEmpty(mutationUploadVO.getMutation().getPosition()) || "0".equals(mutationUploadVO.getMutation().getPosition()))
+		if (StringUtils.isEmpty(mutationUploadVO.getMutation().getMutationPosition()) || "0".equals(mutationUploadVO.getMutation().getMutationPosition()))
 			return;
 		
 		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "COL7A1").find().get(0);
@@ -551,8 +551,8 @@ public class MutationService
 
 		// find corresponding exon
 		ExonSearchCriteriaVO criteria = new ExonSearchCriteriaVO();
-		criteria.setPosition(mutationUploadVO.getMutation().getPosition());
-		if (mutationUploadVO.getMutation().getPosition().indexOf("+") > -1 || mutationUploadVO.getMutation().getPosition().indexOf("-") > -1)
+		criteria.setPosition(mutationUploadVO.getMutation().getMutationPosition());
+		if (mutationUploadVO.getMutation().getMutationPosition().indexOf("+") > -1 || mutationUploadVO.getMutation().getMutationPosition().indexOf("-") > -1)
 			criteria.setIsIntron(true);
 		else
 			criteria.setIsIntron(false);
@@ -567,8 +567,8 @@ public class MutationService
 
 		mutationUploadVO.setExon(exon);
 		mutationUploadVO.getMutation().setExon(exon); // this is crap, use navigable objects
-		mutationUploadVO.getMutation().setCdna_Position(SequenceUtils.getCDNAPosition(mutationUploadVO.getMutation().getPosition()));
-		mutationUploadVO.getMutation().setGdna_Position(SequenceUtils.getGDNAPosition(mutationUploadVO.getMutation().getPosition(), exon));
+		mutationUploadVO.getMutation().setCdna_Position(SequenceUtils.getCDNAPosition(mutationUploadVO.getMutation().getMutationPosition()));
+		mutationUploadVO.getMutation().setGdna_Position(SequenceUtils.getGDNAPosition(mutationUploadVO.getMutation().getMutationPosition(), exon));
 
 		int mutationStart        = mutationUploadVO.getGene().getBpStart().intValue() - mutationUploadVO.getMutation().getGdna_Position();
 		

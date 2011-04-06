@@ -31,7 +31,7 @@ public class BatchService {
     
     public List<MolgenisBatch> getBatches(int userId) throws DatabaseException, ParseException
     {
-    	return db.query(MolgenisBatch.class).eq(MolgenisBatch.USER, userId).find();
+    	return db.query(MolgenisBatch.class).eq(MolgenisBatch.MOLGENISUSER, userId).find();
     }
     
     public MolgenisBatch getBatch(int batchId) throws DatabaseException

@@ -209,7 +209,7 @@ public class MutationUploadVO
 	public void assignCdna_notation() throws RESyntaxException
 	{
 		if (this.getMutation().getLength() != null)
-			this.getMutation().setCdna_Notation("c." + this.getNotation(this.getMutation().getPosition()));
+			this.getMutation().setCdna_Notation("c." + this.getNotation(this.getMutation().getMutationPosition()));
 		else
 			this.getMutation().setCdna_Notation("");
 	}
@@ -253,7 +253,7 @@ public class MutationUploadVO
 	{
 		return
 		"Gene: " + this.getGene().getId() + "\n" +
-		"Position: " + this.getMutation().getPosition() + "\n" +
+		"Position: " + this.getMutation().getMutationPosition() + "\n" +
 		"Nucleotide: " + this.getNt() + "\n" +
 		"Event: " + this.getMutation().getEvent() + "\n" +
 		"Conserved AA: " + this.getMutation().getConservedAA() + "\n" +

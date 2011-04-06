@@ -333,7 +333,7 @@ public class Upload extends PluginModel<Entity>
 
 		this.mutationForm.get("gene").setValue("COL7A1");
 		this.mutationForm.get("refseq").setValue("NM_000094.3");
-		this.mutationForm.get("position").setValue(this.mutationUploadVO.getMutation().getPosition());
+		this.mutationForm.get("position").setValue(this.mutationUploadVO.getMutation().getMutationPosition());
 		this.mutationForm.get("nt").setValue(this.mutationUploadVO.getNt());
 		((SelectInput) this.mutationForm.get("event")).setOptions(new Mutation().getEventOptions());
 		((SelectInput) this.mutationForm.get("event")).setOnchange("toggleForm(this.value);"); //TODO: Unhack this
@@ -346,7 +346,7 @@ public class Upload extends PluginModel<Entity>
 		this.mutationForm.get("reportedsnp").setValue(snpValue);
 		((SelectInput) this.mutationForm.get("inheritance")).setOptions(new Mutation().getInheritanceOptions());
 		this.mutationForm.get("inheritance").setValue(this.mutationUploadVO.getMutation().getInheritance());
-		this.mutationForm.get("readonly_pos").setValue(this.mutationUploadVO.getMutation().getPosition());
+		this.mutationForm.get("readonly_pos").setValue(this.mutationUploadVO.getMutation().getMutationPosition());
 		((SelectInput) this.mutationForm.get("exon")).setOptions(exonOptions);
 		if (this.mutationUploadVO.getExon() != null)
 			this.mutationForm.get("exon").setValue(this.mutationUploadVO.getExon().getId());
@@ -565,9 +565,9 @@ public class Upload extends PluginModel<Entity>
 			this.mutationUploadVO.getMutation().setPopulation(request.getString("population"));
 
 		if (StringUtils.isNotEmpty(request.getString("position")))
-			this.mutationUploadVO.getMutation().setPosition(request.getString("position"));
+			this.mutationUploadVO.getMutation().setMutationPosition(request.getString("position"));
 		else
-			this.mutationUploadVO.getMutation().setPosition("");
+			this.mutationUploadVO.getMutation().setMutationPosition("");
 			//throw new Exception("Please enter the position.");
 
 		if (StringUtils.isNotEmpty(request.getString("reportedsnp")))
