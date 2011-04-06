@@ -19,13 +19,14 @@
 #include <string>
 #include <vector>
 #include <jni.h>
+#include "MolgenisServer.h"
 <#list model.entities as entity>
 #include "${entity.namespace?replace(".", "/")}/${JavaName(entity)}.h"
 </#list>
 
 using namespace std;
 
-char* classpath = (char*)"-Djava.class.path=${UserHome}/build/classes;${UserHome?replace("_apps","")}/bin";
+char* classpath = (char*)"-Djava.class.path=${UserHome}/build/classes;${UserHome?replace("_apps","")}/bin;${UserHome?replace("_apps","")}/build;";
 
 JNIEnv* create_vm(JavaVM** jvm) {
   JNIEnv* env;
@@ -49,9 +50,14 @@ int main(int argc, char* argv[]){
   JavaVM* jvm;
   env = create_vm(&jvm);
   if(!(env == NULL)){
+    MolgenisServer* s = new MolgenisServer(env);
+  	s->Java();
+  	s->getDatabase();
     <#list model.entities as entity>
+    <#if !entity.abstract>
   	${JavaName(entity)}* test${entity_index} = new ${JavaName(entity)}(env);
   	test${entity_index}->Java();
+  	</#if>
   	</#list>
 	//TODO Add your own code  
   }

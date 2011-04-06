@@ -15,6 +15,9 @@
 <#function CPPType field>
 	<#return helper.getCppType(field)>
 </#function>
+<#function CPPJavaType field>
+	<#return helper.getCppJavaType(field)>
+</#function>
 <#function JavaName value>
 	<#if value?is_hash>
 		<#return helper.getJavaName(value.getName())>

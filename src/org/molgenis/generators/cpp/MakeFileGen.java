@@ -41,6 +41,7 @@ public class MakeFileGen extends MySqlCreateClassPerTableGen
 		templateArgs.put("model", model );
 		templateArgs.put("entities",entityList);
 		templateArgs.put("JavaHome",System.getProperty("java.home").toString());
+		templateArgs.put("UserHome",System.getProperty("user.dir").replace("\\", "/").toString());
 		templateArgs.put("EXECNAME","${EXECNAME}".toString());
 		templateArgs.put("EXECUTABLE","${EXECUTABLE}".toString());
 		OutputStream targetOut = new FileOutputStream( target );

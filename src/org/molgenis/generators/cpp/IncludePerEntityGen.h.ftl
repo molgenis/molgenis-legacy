@@ -20,6 +20,7 @@
 	#include <cstdio>
 	#include <string>
 	#include <cstring>
+	#include <iostream>
 	#include <vector>
 	#include <jni.h>
 	<#if entity.hasAncestor()>
@@ -40,9 +41,13 @@
   public:
   	${CPPName(entity)}(JNIEnv* env);
   	${CPPName(entity)}(JNIEnv* env<#foreach field in entity.getImplementedFields()>, ${CPPType(field)} ${CPPName(field)}</#foreach>);
+  	void check(JNIEnv* env, string message, bool verbose);
   	~${CPPName(entity)}();
   	void init(JNIEnv* env);
   	jobject Java();
+  	jobject query(jobject db);
+  	jobject find(jobject db);
+  	
   	<#foreach field in entity.getImplementedFields()>
   	
   	${CPPType(field)} get${CPPName(field)}(void);
@@ -52,14 +57,17 @@
   protected:
   	JNIEnv*     env;
   	jclass      clsC;
+  	jobject 	obj;
   	jmethodID   coID;
-  	jmethodID   findByIdID;
-  	jmethodID   findByNameID;
-  	jmethodID   getID;
-  private:
+  	jmethodID   queryID;
+  	jmethodID   findID;
+  	
   	<#foreach field in entity.getImplementedFields()>
-  	${CPPType(field)} ${CPPName(field)};
+  	jmethodID   get${CPPName(field)}ID;
+  	jmethodID   set${CPPName(field)}ID;
   	</#foreach>
+  private:
+  	bool 		verbose;
   };
   
   

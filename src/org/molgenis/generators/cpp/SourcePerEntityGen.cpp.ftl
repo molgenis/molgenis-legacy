@@ -20,33 +20,60 @@ ${CPPName(entity)}::${CPPName(entity)}(JNIEnv* env)<#if entity.hasAncestor()> : 
 }
 
 ${CPPName(entity)}::${CPPName(entity)}(JNIEnv* env<#foreach field in entity.getImplementedFields()>, ${CPPType(field)} ${CPPName(field)}</#foreach>)<#if entity.hasAncestor()> : ${CPPName(entity.getAncestor())}(env)</#if>{
-
 	init(env);
 	<#foreach field in entity.getImplementedFields()>
-	this->${CPPName(field)} = ${CPPName(field)};
+	set${CPPName(field)}(${CPPName(field)});
 	</#foreach>
 }
 
 void ${CPPName(entity)}::init(JNIEnv* env){
+	this->verbose = false;
 	this->env=env;
 	this->clsC = env->FindClass("${entity.namespace?replace(".","/")}/${CPPName(entity)}");
 	if(clsC != NULL){
-    	//Get constructor ID for ${CPPName(entity)}
-    	printf("Found: ${entity.namespace}.${CPPName(entity)} class\n");
-    	coID = env->GetMethodID(clsC, "<init>", "()V");
-    	//findByIdID = env->GetMethodID(clsC, "findByID", "(I)L${package?replace(".cpp","")}.${JavaName(entity)}");
+    	cout << "Found: ${entity.namespace}.${CPPName(entity)}" << endl;
+    	this->coID = env->GetMethodID(this->clsC, "<init>", "()V");
+    	check(env,"Mapped: ${entity.namespace}.${CPPName(entity)} Constructor",verbose);
+    	this->obj = env->NewObject(this->clsC, this->coID);
+      	check(env,"Created: ${entity.namespace}.${CPPName(entity)}",verbose);
+      	
+      	this->queryID = env->GetStaticMethodID(this->clsC, "query", "(Lorg/molgenis/framework/db/Database;)Lorg/molgenis/framework/db/Query;");
+    	check(env,"Mapped: ${entity.namespace}.${CPPName(entity)} QUERY",verbose);
+    	this->findID = env->GetStaticMethodID(this->clsC, "find", "(Lorg/molgenis/framework/db/Database;[Lorg/molgenis/framework/db/QueryRule;)Ljava/util/List;");
+    	check(env,"Mapped: ${entity.namespace}.${CPPName(entity)} FIND",verbose);
+    	
+    	<#foreach field in entity.getImplementedFields()>
+    	this->get${CPPName(field)}ID = env->GetMethodID(this->clsC, "get${CPPName(field)}", "()${CPPJavaType(field)}");
+    	check(env,"Mapped: ${entity.namespace}.${CPPName(entity)}.get${CPPName(field)}()",verbose);
+    	this->set${CPPName(field)}ID = env->GetMethodID(this->clsC, "set${CPPName(field)}", "(${CPPJavaType(field)})V");
+    	check(env,"Mapped: ${entity.namespace}.${CPPName(entity)}.set${CPPName(field)}(${CPPJavaType(field)})",verbose);
+    	</#foreach>
   	}else{
-    	printf("Unable to find the ${entity.namespace}.${CPPName(entity)} class\n");
+  	  cout << "No such class: ${entity.namespace}.${CPPName(entity)} class" << endl;
   	}
 }
 
 jobject ${CPPName(entity)}::Java(){
-  jobject temp = env->NewObject(this->clsC, this->coID); 
+  return this->obj;
+}
+
+void ${CPPName(entity)}::check(JNIEnv* env, string message, bool verbose){
   if (env->ExceptionOccurred()) {
-   	env->ExceptionDescribe();
+	env->ExceptionDescribe();
   }else{
-    printf("Java class object ${entity.namespace}.${CPPName(entity)} created\n");
+  	if(verbose)	cout << message << endl;
   }
+}
+
+jobject ${CPPName(entity)}::query(jobject db){
+  jobject temp =  env->CallStaticObjectMethod(this->clsC,queryID, db);
+  check(env,"Method called: query of ${entity.namespace}.${CPPName(entity)}",verbose);
+  return temp;
+}
+
+jobject ${CPPName(entity)}::find(jobject db){
+  jobject temp =  env->CallStaticObjectMethod(this->clsC,findID, db);
+  check(env,"Method called: find of ${entity.namespace}.${CPPName(entity)}",verbose);
   return temp;
 }
 
@@ -54,13 +81,34 @@ ${CPPName(entity)}::~${CPPName(entity)}(){
 	//Compiler TODO: Figure out if I need manually to call the entity.hasAncestor
 }
 
+
 <#foreach field in entity.getImplementedFields()>
   	
 ${CPPType(field)} ${CPPName(entity)}::get${CPPName(field)}(void){
-	return this->${CPPName(field)};
+	${CPPType(field)} r;
+	<#if ( CPPType(field) == "string") >
+	jboolean blnIsCopy;
+	r = env->GetStringUTFChars((jstring)env->CallObjectMethod(this->obj,get${CPPName(field)}ID),&blnIsCopy);
+	<#elseif (CPPType(field) == "bool")>
+	r = (${CPPType(field)})env->CallBooleanMethod(this->obj,get${CPPName(field)}ID);
+	<#elseif (CPPType(field) == "double")>
+	r = (${CPPType(field)})env->CallDoubleMethod(this->obj,get${CPPName(field)}ID);
+	<#elseif (CPPType(field) == "int")>
+	r = (${CPPType(field)})env->CallIntMethod(this->obj,get${CPPName(field)}ID);
+	<#elseif (CPPType(field) == "vector<int>")>
+	jintArray javaArray = (jintArray)env->CallObjectMethod(this->obj,get${CPPName(field)}ID);
+	jint nitems = env->GetArrayLength(javaArray);
+	cout << "Found:" << nitems << "in array" << endl;
+	for(int x=0;x<nitems;x++){
+	  r.push_back((int)(*env->GetIntArrayElements(javaArray, 0)));
+	}
+	<#else>
+	r = (${CPPType(field)})env->CallObjectMethod(this->obj,get${CPPName(field)}ID);
+	</#if>
+	return r;
 }
 
 void ${CPPName(entity)}::set${CPPName(field)}(${CPPType(field)} in){
-	this->${CPPName(field)}=in;
+	env->CallObjectMethod(this->obj,set${CPPName(field)}ID);
 }
 </#foreach>
