@@ -74,6 +74,6 @@ public class ListField extends FieldType
 	@Override
 	public String getCppJavaPropertyType()
 	{
-		return "Ljava.util.ArrayList<?>;";
+		return "Ljava/util/List;";
 	}
 }
