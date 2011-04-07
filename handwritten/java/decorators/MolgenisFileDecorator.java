@@ -133,7 +133,8 @@ public class MolgenisFileDecorator<E extends MolgenisFile> extends MappingDecora
 	@Override
 	public int update(List<E> entities) throws DatabaseException
 	{
-
+		boolean dbAlreadyInTx = this.getDatabase().inTx();
+		
 		genericAddUpdateChecks(entities);
 
 		// make sure the names within the imported list are allowed in
@@ -205,7 +206,9 @@ public class MolgenisFileDecorator<E extends MolgenisFile> extends MappingDecora
 						// skip rest of the function
 					}
 
-					this.getDatabase().beginTx();
+					if(!dbAlreadyInTx){
+						this.getDatabase().beginTx();
+					}
 					
 					if (oldFile != null)
 					{
@@ -237,14 +240,16 @@ public class MolgenisFileDecorator<E extends MolgenisFile> extends MappingDecora
 					super.update(entities.subList(count, count + 1));
 
 					// commit and count
-					this.getDatabase().commitTx();
+					if(!dbAlreadyInTx){
+						this.getDatabase().commitTx();
+					}
+					
 					count++;
 					
 				}
 				catch (Exception e)
 				{
-					if (this.getDatabase().inTx())
-					{
+					if(!dbAlreadyInTx){
 						this.getDatabase().rollbackTx();
 					}
 					throw new DatabaseException(e.getMessage());
@@ -258,11 +263,17 @@ public class MolgenisFileDecorator<E extends MolgenisFile> extends MappingDecora
 	@Override
 	public int remove(List<E> entities) throws DatabaseException
 	{
+		boolean dbAlreadyInTx = this.getDatabase().inTx();
+		
 		// find backend file, and if exists, delete
 		int count = 0;
 		for (MolgenisFile mf : entities)
 		{
-			this.getDatabase().beginTx();
+			
+			if(!dbAlreadyInTx){
+				this.getDatabase().beginTx();
+			}
+					
 			try
 			{
 				try
@@ -288,13 +299,18 @@ public class MolgenisFileDecorator<E extends MolgenisFile> extends MappingDecora
 				super.remove(entities.subList(count, count + 1));
 
 				// commit and count
-				this.getDatabase().commitTx();
+				if(!dbAlreadyInTx){
+					this.getDatabase().commitTx();
+				}
+				
 				count++;
 
 			}
 			catch (Exception e)
 			{
-				this.getDatabase().rollbackTx();
+				if(!dbAlreadyInTx){
+					this.getDatabase().rollbackTx();
+				}
 				throw new DatabaseException(e.getMessage());
 			}
 		}
