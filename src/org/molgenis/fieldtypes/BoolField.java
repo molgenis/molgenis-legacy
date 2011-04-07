@@ -67,6 +67,6 @@ public class BoolField extends FieldType
 	public String getCppJavaPropertyType()
 	{
 		// TODO Auto-generated method stub
-		return "Ljava/lang/Boolean";
+		return "Ljava/lang/Boolean;";
 	}
 }

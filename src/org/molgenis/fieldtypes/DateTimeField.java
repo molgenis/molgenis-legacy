@@ -74,6 +74,6 @@ public class DateTimeField extends FieldType
 	@Override
 	public String getCppJavaPropertyType()
 	{
-		return "Ljava.sql.Timestamp;";
+		return "Ljava/util/Date;";
 	}
 }
