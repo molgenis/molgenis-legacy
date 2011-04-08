@@ -30,8 +30,10 @@
 	<h3>Help getting rid of duplicates</h3>
 	[explanation]
 	
-	Here, you can paste lists of strings and [explanation]
-	<br>
+	Here, you can paste lists of strings and [explanation]<br><br>
+	<h2><font color="red">Please disable linkout_overlay, or the example and possibly your inputs (if ID's) will get mangled</font></h2>
+	<br><br>
+	
 	<table>
 		<tr>
 			<td>
