@@ -6,7 +6,7 @@
 	
 		<plugin label="Login" name="UserLogin" type="org.molgenis.auth.ui.UserLogin" />
 	
-		<menu name="Auth" label="Auth">			
+		<menu name="Auth" label="Auth">
 			<plugin name="PermissionManagementPlugin" type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin"/>
 			<menu name="Management">
 				<form name="MolgenisUser" entity="MolgenisUser"/>
@@ -19,6 +19,8 @@
 			</menu>
 		</menu>
 	
+		<plugin label="Search" name="SimpleDbSearch" type="plugin.search.SimpleWholeDatabaseSearch" /> 
+	
 		<plugin label="Import data" name="QTLWizard" type="plugins.xgapwizard.QTLDataSetWizard" />
 	
 		<!--menu label="Import new data" name="ImporterWizards">
@@ -30,6 +32,8 @@
 		<plugin label="Compute" name="Compute" type="plugins.lltmp.Compute" />
 
 		<plugin label="Run QTL mapping" name="Cluster" type="plugins.cluster.ClusterPlugin" />
+		
+		<plugin label="Plot pathways" name="KeggPathway" type="plugins.kegg.PathwayPlugin" />
 		
 		<form label="Explore investigations" name="Investigations" entity="Investigation" compact_view="name">
 			<menu name="InvestigationMenu">
@@ -51,7 +55,7 @@
 					<form name="Samples" entity="Sample" />
 					<form name="Spots" entity="Spot" />
 				</menu>
-				<form name="Data" label="Experimental data" entity="Data" compact_view="name">
+				<form name="Datas" label="Experimental data" entity="Data" compact_view="name">
 					<menu name="Select">
 						<plugin name="Manager" type="plugins.matrix.manager.MatrixManager" />
 						<plugin name="Heatmap" type="plugins.matrix.heatmap.MatrixHeatmap" />
@@ -76,6 +80,16 @@
 		</form>
 
 		<menu label="Admin and settings" name="Admin">
+		
+			<menu label="Batches" name="batches">	
+				<form name="ManageBatches" entity="MolgenisBatch" label="Batches" />
+				<form name="ManageBatchEntities" entity="MolgenisBatchEntity" label="Batch entities" />
+				<plugin name="Batch" type="plugins.batch.BatchPlugin"
+					label="Batch management" />
+				<plugin name="BatchView" type="plugins.batch.BatchViewPlugin"
+					label="Batch viewer" />
+			</menu>
+		
 			<form name="Analysis" label="Add new analysis" entity="Analysis" />
 			
 			<form name="ParameterSets" label="Configure parameters" entity="ParameterSet">
@@ -95,6 +109,7 @@
 			<menu name="OtherAdmin" label="Other">
 				<plugin name="ExcelWizard" type="plugins.genericwizard.GenericWizard" />
 				<plugin name="DuplicateRemover" type="plugins.help.duplicates.DuplicatesPlugin" />
+				<plugin name="KeggConverter" type="plugins.keggplugin.KeggToolsPlugin" />
 			</menu>
 		</menu>
 	</menu>

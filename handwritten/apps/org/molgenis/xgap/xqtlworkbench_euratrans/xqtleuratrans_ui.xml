@@ -33,7 +33,7 @@
 					<form name="Samples" entity="Sample" />
 					<form name="Spots" entity="Spot" />
 				</menu>
-				<form name="Data" label="Experimental data" entity="Data" compact_view="name">
+				<form name="Datas" label="Experimental data" entity="Data" compact_view="name">
 					<menu name="Select">
 						<plugin name="Manager" type="plugins.matrix.manager.MatrixManager" />
 						<plugin name="Heatmap" type="plugins.matrix.heatmap.MatrixHeatmap" />
@@ -76,6 +76,7 @@
 			<menu name="OtherAdmin" label="Other">
 				<plugin name="ExcelWizard" type="plugins.genericwizard.GenericWizard" />
 				<plugin name="DuplicateRemover" type="plugins.help.duplicates.DuplicatesPlugin" />
+				<plugin name="KeggConverter" type="plugins.keggplugin.KeggToolsPlugin" />
 			</menu>
 		</menu>
 	</menu>

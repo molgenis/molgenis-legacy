@@ -4,8 +4,9 @@
 	
 		<plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.xqtlpanaceaheader.HomePage" />
 
+		<plugin label="Login" name="UserLogin" type="org.molgenis.auth.ui.UserLogin" />
+	
 		<menu name="Auth" label="Auth">
-			<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Login"/>
 			<plugin name="PermissionManagementPlugin" type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin"/>
 			<menu name="Management">
 				<form name="MolgenisUser" entity="MolgenisUser"/>
@@ -99,6 +100,7 @@
 					<form name="DataValues" entity="DataValue" />
 				</form>
 			</form>
+			<plugin label="Database settings" name="DatabaseSettings" type="plugins.system.database.Settings" />
 			<plugin label="Storage settings" name="Settings" type="plugins.system.settings.Settings" />
 			<plugin label="Install R packages" name="DependencyManager" type="plugins.cluster.demo.dependencymanager.DependencyManager" />
 			<menu name="OtherAdmin" label="Other">
