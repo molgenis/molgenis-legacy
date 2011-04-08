@@ -4,12 +4,15 @@
 	
 		<plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.ClusterDemo" />
 	
-		<plugin name="QTLWizard" label="Import data" type="plugins.xgapwizard.QTLDataSetWizard" />
+		<plugin label="Import data" name="QTLWizard" type="plugins.xgapwizard.QTLDataSetWizard" />
 	
 		<!--menu label="Import new data" name="ImporterWizards">
 				<plugin label="Import definitions" name="DefImport" type="plugins.genericwizard.GenericWizard" />
 				<plugin label="Import data matrices" name="DataImport" type="plugins.xgapwizard.XgapWizard" />
 		</menu-->
+		
+		<plugin label="Browse data" name="DataViewer" type="plugins.lltmp.DataViewer" />
+		<plugin name="Compute framework" label="Compute" type="plugins.lltmp.Compute" />
 
 		<plugin label="Run QTL mapping" name="Cluster" type="plugins.cluster.ClusterPlugin" />
 		
