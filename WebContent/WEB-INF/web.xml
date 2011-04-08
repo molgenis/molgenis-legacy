@@ -163,12 +163,12 @@
 		<url-pattern>/taskreporter</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>ResetAndLoadExampleData</servlet-name>
+		<servlet-name>ResetDataseLoadExampleData</servlet-name>
 		<servlet-class>servlets.xgap.resetdatabase_loadexampledata</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>ResetAndLoadExampleData</servlet-name>
-		<url-pattern>/resetdatabase_loadexampledata</url-pattern>
+		<servlet-name>ResetDataseLoadExampleData</servlet-name>
+		<url-pattern>/resetdatabase_loadexampledata_4EE1D7A3E73C504183B69F7D20108853</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>LoadExampleData</servlet-name>
@@ -176,7 +176,15 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>LoadExampleData</servlet-name>
-		<url-pattern>/loadexampledata</url-pattern>
+		<url-pattern>/loadexampledata_4EE1D7A3E73C504183B69F7D20108853</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>ResetDatabase</servlet-name>
+		<servlet-class>servlets.xgap.resetdatabase</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ResetDatabase</servlet-name>
+		<url-pattern>/resetdatabase_4EE1D7A3E73C504183B69F7D20108853</url-pattern>
 	</servlet-mapping>
 
 	<!-- ############### -->
