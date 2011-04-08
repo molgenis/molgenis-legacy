@@ -23,7 +23,7 @@ public class loadexampledata extends app.servlet.MolgenisServlet
 	{
 
 		boolean databaseIsAvailable = false;
-		// boolean databaseIsEmpty = false;
+		//boolean resetSuccess = false;
 		JDBCDatabase db = null;
 
 		PrintWriter out = response.getWriter();
@@ -43,7 +43,6 @@ public class loadexampledata extends app.servlet.MolgenisServlet
 
 		if (databaseIsAvailable)
 		{
-			new DataLoader();
 			ArrayList<String> result = DataLoader.load(db, false);
 			for (String s : result)
 			{

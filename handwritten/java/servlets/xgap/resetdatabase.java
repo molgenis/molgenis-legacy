@@ -16,10 +16,10 @@ import plugins.emptydb.emptyDatabase;
 import regressiontest.cluster.DataLoader;
 import app.JDBCDatabase;
 
-public class resetdatabase_loadexampledata extends app.servlet.MolgenisServlet
+public class resetdatabase extends app.servlet.MolgenisServlet
 {
 
-	private static final long serialVersionUID = -6004840016845633449L;
+	private static final long serialVersionUID = -6004248764368336249L;
 
 	// private static Logger logger =
 	// Logger.getLogger(LoadDatamodelServlet.class);
@@ -28,7 +28,7 @@ public class resetdatabase_loadexampledata extends app.servlet.MolgenisServlet
 	{
 
 		boolean databaseIsAvailable = false;
-		boolean resetSuccess = false;
+		//boolean resetSuccess = false;
 		JDBCDatabase db = null;
 
 		PrintWriter out = response.getWriter();
@@ -66,23 +66,14 @@ public class resetdatabase_loadexampledata extends app.servlet.MolgenisServlet
 				}
 				out.print("Now resetting datamodel/database.\n");
 				new emptyDatabase((JDBCDatabase) db, true);
-				out.print("Reset datamodel success. Continuing to load example data.\n");
-				resetSuccess = true;
+				out.print("Reset datamodel success.\n");
+				//resetSuccess = true;
 			}
 			catch (Exception e)
 			{
 				out.print("Error while trying to overwrite datamodel.");
 				out.print("\n\n");
 				e.printStackTrace(out);
-			}
-		}
-
-		if (resetSuccess)
-		{
-			ArrayList<String> result = DataLoader.load(db, false);
-			for (String s : result)
-			{
-				out.println(s);
 			}
 		}
 
