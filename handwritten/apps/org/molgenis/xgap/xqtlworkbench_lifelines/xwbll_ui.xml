@@ -4,6 +4,21 @@
 	
 		<plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.ClusterDemo" />
 	
+		<plugin label="Login" name="UserLogin" type="org.molgenis.auth.ui.UserLogin" />
+	
+		<menu name="Auth" label="Auth">			
+			<plugin name="PermissionManagementPlugin" type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin"/>
+			<menu name="Management">
+				<form name="MolgenisUser" entity="MolgenisUser"/>
+				<form name="MolgenisGroup" entity="MolgenisGroup"/>
+				<form name="MolgenisUserGroupLink" entity="MolgenisUserGroupLink"/>
+				<form name="MolgenisEntity" entity="MolgenisEntity" view="list" label="Entities"/>
+				<form name="MolgenisPermission" entity="MolgenisPermission"/>
+				<form name="TestClass" entity="TestClass"/>
+				<form name="TestClass2" entity="TestClass2"/>
+			</menu>
+		</menu>
+	
 		<plugin label="Import data" name="QTLWizard" type="plugins.xgapwizard.QTLDataSetWizard" />
 	
 		<!--menu label="Import new data" name="ImporterWizards">
@@ -12,7 +27,7 @@
 		</menu-->
 		
 		<plugin label="Browse data" name="DataViewer" type="plugins.lltmp.DataViewer" />
-		<plugin name="Compute framework" label="Compute" type="plugins.lltmp.Compute" />
+		<plugin label="Compute" name="Compute" type="plugins.lltmp.Compute" />
 
 		<plugin label="Run QTL mapping" name="Cluster" type="plugins.cluster.ClusterPlugin" />
 		
@@ -74,6 +89,7 @@
 					<form name="DataValues" entity="DataValue" />
 				</form>
 			</form>
+			<plugin label="Database settings" name="DatabaseSettings" type="plugins.system.database.Settings" />
 			<plugin label="Storage settings" name="Settings" type="plugins.system.settings.Settings" />
 			<plugin label="Install R packages" name="DependencyManager" type="plugins.cluster.demo.dependencymanager.DependencyManager" />
 			<menu name="OtherAdmin" label="Other">
