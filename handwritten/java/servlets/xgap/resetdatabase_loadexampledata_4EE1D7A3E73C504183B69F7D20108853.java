@@ -16,7 +16,7 @@ import plugins.emptydb.emptyDatabase;
 import regressiontest.cluster.DataLoader;
 import app.JDBCDatabase;
 
-public class resetdatabase_loadexampledata extends app.servlet.MolgenisServlet
+public class resetdatabase_loadexampledata_4EE1D7A3E73C504183B69F7D20108853 extends app.servlet.MolgenisServlet
 {
 
 	private static final long serialVersionUID = -6004840016845633449L;

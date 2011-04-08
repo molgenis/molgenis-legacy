@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import regressiontest.cluster.DataLoader;
 import app.JDBCDatabase;
 
-public class loadexampledata extends app.servlet.MolgenisServlet
+public class loadexampledata_4EE1D7A3E73C504183B69F7D20108853 extends app.servlet.MolgenisServlet
 {
 
 	private static final long serialVersionUID = -6004240016846336249L;
