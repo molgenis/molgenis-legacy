@@ -1,6 +1,7 @@
 package org.molgenis.xgap.xqtlworkbench_standalone;
 
 import java.io.File;
+import java.text.ParseException;
 
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -8,6 +9,7 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.organization.Investigation;
 
 public class TestDatabase {
 	
@@ -23,5 +25,12 @@ public class TestDatabase {
 		
 			DataSource dataSource = (DataSource)data_src;
 			return new app.JDBCDatabase(dataSource, new File("attachedfiles"));
+	}
+	
+	public static void main(String[] args) throws DatabaseException, NamingException, ParseException{
+		TestDatabase t = new TestDatabase();
+		Database db = t.getDatabase();
+		Investigation i = new Investigation();
+		i.findById(db, 0);
 	}
 }
