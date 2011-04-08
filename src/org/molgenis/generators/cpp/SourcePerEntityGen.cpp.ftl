@@ -39,7 +39,7 @@ void ${CPPName(entity)}::init(JNIEnv* env){
       	
       	this->queryID = env->GetStaticMethodID(this->clsC, "query", "(Lorg/molgenis/framework/db/Database;)Lorg/molgenis/framework/db/Query;");
     	check(env,"Mapped: ${entity.namespace}.${CPPName(entity)} QUERY",verbose);
-    	this->findID = env->GetStaticMethodID(this->clsC, "find", "(Lorg/molgenis/framework/db/Database;[Lorg/molgenis/framework/db/QueryRule;)Ljava/util/List;");
+    	this->findID = env->GetStaticMethodID(this->clsC, "findByName", "(Lorg/molgenis/framework/db/Database;Ljava/lang/String;)L${entity.namespace?replace(".","/")}/${CPPName(entity)};");
     	check(env,"Mapped: ${entity.namespace}.${CPPName(entity)} FIND",verbose);
     	
     	<#foreach field in entity.getImplementedFields()>
@@ -71,8 +71,8 @@ jobject ${CPPName(entity)}::query(jobject db){
   return temp;
 }
 
-jobject ${CPPName(entity)}::find(jobject db){
-  jobject temp =  env->CallStaticObjectMethod(this->clsC,findID, db);
+jobject ${CPPName(entity)}::findByName(jobject db, char* name){
+  jobject temp =  env->CallStaticObjectMethod(this->clsC,findID, db, env->NewStringUTF(name));
   check(env,"Method called: find of ${entity.namespace}.${CPPName(entity)}",verbose);
   return temp;
 }

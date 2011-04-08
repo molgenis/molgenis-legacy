@@ -44,12 +44,11 @@
   	<unjar src="lib/commons-dbcp-1.2.1.jar" dest="${build}"/>
   	<unjar src="lib/commons-fileupload-1.1.jar" dest="${build}"/>
   	<unjar src="lib/commons-io-1.3.1.jar" dest="${build}"/>
-  	<unjar src="lib/commons-lang-2.4.jar" dest="${build}"/>
   	<unjar src="lib/commons-logging-1.1.1.jar" dest="${build}"/>
+  	<unjar src="lib/commons-lang-2.5.jar" dest="${build}"/>
   	<unjar src="lib/commons-pool-1.5.2.jar" dest="${build}"/>
+  	<unjar src="lib/cxf-2.3.3.jar" dest="${build}"/>
   	<unjar src="lib/concurrent.jar" dest="${build}"/>
-  	<unjar src="lib/cxf-2.2.4.jar" dest="${build}"/>
-  	<unjar src="lib/cxf-manifest.jar" dest="${build}"/>
   	<unjar src="lib/d2r-server-0.7.jar" dest="${build}"/>
   	<!-- 
   		<unjar src="lib/d2rq-0.7.jar" dest="${build}"/> 
@@ -67,7 +66,7 @@
   		<unjar src="lib/geronimo-servlet_2.5_spec-1.2.jar" dest="${build}"/>
   		<unjar src="lib/geronimo-stax-api_1.0_spec-1.0.1.jar" dest="${build}"/>
   		<unjar src="lib/geronimo-ws-metadata_2.0_spec-1.1.2.jar" dest="${build}"/>
-  		<unjar src="lib/hsqldb.jar" dest="${build}"/>
+  		--><unjar src="lib/hsqldb.jar" dest="${build}"/><!--
   		<unjar src="lib/icu4j_3_4.jar" dest="${build}"/> 
   		<unjar src="lib/iri.jar" dest="${build}"/>
   	  	<unjar src="lib/jakarta-oro-2.0.8.jar" dest="${build}"/>
@@ -94,7 +93,6 @@
   		<unjar src="lib/js-1.7R1.jar" dest="${build}"/>
   		<unjar src="lib/jta-1.1.jar" dest="${build}"/>
   	-->
-  	<unjar src="lib/jsr311-api-1.0.jar" dest="${build}"/>
 	<unjar src="lib/json.jar" dest="${build}"/> 
   	<unjar src="lib/junit-4.8.2.jar" dest="${build}"/>
   	<unjar src="lib/jxl.jar" dest="${build}"/>
@@ -117,7 +115,7 @@
   		<unjar src="lib/stax-utils-20060502.jar" dest="${build}"/>
   	-->
   	<unjar src="lib/tar.jar" dest="${build}"/>
-	<unjar src="lib/testng.jar" dest="${build}"/>
+	<unjar src="lib/testng-5.14.10.jar" dest="${build}"/>
 	 
   	<!-- 
   		<unjar src="lib/velocity-1.5.jar" dest="${build}"/>

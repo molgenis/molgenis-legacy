@@ -46,7 +46,7 @@
   	void init(JNIEnv* env);
   	jobject Java();
   	jobject query(jobject db);
-  	jobject find(jobject db);
+  	jobject findByName(jobject db, char* name);
   	
   	<#foreach field in entity.getImplementedFields()>
   	

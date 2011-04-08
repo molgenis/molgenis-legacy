@@ -93,11 +93,6 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/eclipselink-jpa-modelgen_2.1.1.v20100817-r8050.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/eclipselink.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
