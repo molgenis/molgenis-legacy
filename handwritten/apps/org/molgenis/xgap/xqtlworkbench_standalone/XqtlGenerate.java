@@ -4,6 +4,8 @@ package org.molgenis.xgap.xqtlworkbench_standalone;
 import java.io.File;
 
 import org.molgenis.Molgenis;
+import org.molgenis.generators.Generator;
+import org.molgenis.generators.cpp.CPPCassette;
 
 public class XqtlGenerate
 {
