@@ -39,17 +39,23 @@
    */  
   class ${CPPName(entity)}<#if entity.hasAncestor()> : public ${CPPName(entity.getAncestor())}</#if>{
   public:
+  	//Constructors
   	${CPPName(entity)}(JNIEnv* env);
+  	${CPPName(entity)}(JNIEnv* env, jobject obj);
   	${CPPName(entity)}(JNIEnv* env<#foreach field in entity.getImplementedFields()>, ${CPPType(field)} ${CPPName(field)}</#foreach>);
-  	void check(JNIEnv* env, string message, bool verbose);
+  	
+  	
+  	jobject getJava();
+  	
   	~${CPPName(entity)}();
-  	void init(JNIEnv* env);
-  	jobject Java();
-  	jobject query(jobject db);
-  	jobject findByName(jobject db, char* name);
   	
+  	//Molgenis provides us with the following functions 
+  	jobjectArray find(jobject db);
+  	jobject findByName(jobject db, string name);
+  	jobject findById(jobject db, string id);
+  	
+  	//Getters and Setters wrapping the JNI
   	<#foreach field in entity.getImplementedFields()>
-  	
   	${CPPType(field)} get${CPPName(field)}(void);
   	void set${CPPName(field)}(${CPPType(field)} in);
   	</#foreach>
@@ -59,14 +65,17 @@
   	jclass      clsC;
   	jobject 	obj;
   	jmethodID   coID;
-  	jmethodID   queryID;
   	jmethodID   findID;
+  	jmethodID   findByNameID;
+  	jmethodID   findByIdID;
   	
   	<#foreach field in entity.getImplementedFields()>
   	jmethodID   get${CPPName(field)}ID;
   	jmethodID   set${CPPName(field)}ID;
   	</#foreach>
   private:
+  	void 		init(JNIEnv* env,jobject obj);
+  	void 		check(JNIEnv* env, string message, bool verbose);
   	bool 		verbose;
   };
   

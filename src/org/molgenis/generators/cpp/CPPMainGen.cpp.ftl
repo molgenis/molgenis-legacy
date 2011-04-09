@@ -48,8 +48,8 @@ JNIEnv* create_vm(JavaVM** jvm) {
 void test_mappings(JNIEnv* env){
     <#list model.entities as entity>
     <#if !entity.abstract>
-  	${JavaName(entity)}* test${entity_index} = new ${JavaName(entity)}(env);
-  	test${entity_index}->Java();
+  	//${JavaName(entity)}* test${entity_index} = 
+  	new ${JavaName(entity)}(env);
   	</#if>
   	</#list>
 }
@@ -60,11 +60,11 @@ int main(int argc, char* argv[]){
   env = create_vm(&jvm);
   if(!(env == NULL)){
     MolgenisServer* servlet = new MolgenisServer(env);
-  	servlet->Java();
   	jobject db = servlet->getDatabase();
   	Investigation* investigation = new Investigation(env);
-  	investigation->Java();
-    jobject inv = investigation->findByName(db,"dfsfdsdfsdfsdf");
+    investigation->findByName(db,"dfsfdsdfsdfsdf");
+    investigation->findById(db,"1");
+    investigation->find(db);
   }
   jvm->DestroyJavaVM();
 }   

@@ -16,17 +16,21 @@
 #include "${CPPName(entity)}.h"
 
 ${CPPName(entity)}::${CPPName(entity)}(JNIEnv* env)<#if entity.hasAncestor()> : ${CPPName(entity.getAncestor())}(env)</#if>{
-	init(env);
+	init(env,NULL);
+}
+
+${CPPName(entity)}::${CPPName(entity)}(JNIEnv* env, jobject obj)<#if entity.hasAncestor()> : ${CPPName(entity.getAncestor())}(env)</#if>{
+	init(env,obj);
 }
 
 ${CPPName(entity)}::${CPPName(entity)}(JNIEnv* env<#foreach field in entity.getImplementedFields()>, ${CPPType(field)} ${CPPName(field)}</#foreach>)<#if entity.hasAncestor()> : ${CPPName(entity.getAncestor())}(env)</#if>{
-	init(env);
+	init(env,NULL);
 	<#foreach field in entity.getImplementedFields()>
 	set${CPPName(field)}(${CPPName(field)});
 	</#foreach>
 }
 
-void ${CPPName(entity)}::init(JNIEnv* env){
+void ${CPPName(entity)}::init(JNIEnv* env,jobject obj){
 	this->verbose = false;
 	this->env=env;
 	this->clsC = env->FindClass("${entity.namespace?replace(".","/")}/${CPPName(entity)}");
@@ -37,10 +41,12 @@ void ${CPPName(entity)}::init(JNIEnv* env){
     	this->obj = env->NewObject(this->clsC, this->coID);
       	check(env,"Created: ${entity.namespace}.${CPPName(entity)}",verbose);
       	
-      	this->queryID = env->GetStaticMethodID(this->clsC, "query", "(Lorg/molgenis/framework/db/Database;)Lorg/molgenis/framework/db/Query;");
+      	this->findID = env->GetStaticMethodID(this->clsC, "find", "(Lorg/molgenis/framework/db/Database;[Lorg/molgenis/framework/db/QueryRule;)Ljava/util/List;");
     	check(env,"Mapped: ${entity.namespace}.${CPPName(entity)} QUERY",verbose);
-    	this->findID = env->GetStaticMethodID(this->clsC, "findByName", "(Lorg/molgenis/framework/db/Database;Ljava/lang/String;)L${entity.namespace?replace(".","/")}/${CPPName(entity)};");
-    	check(env,"Mapped: ${entity.namespace}.${CPPName(entity)} FIND",verbose);
+    	this->findByNameID = env->GetStaticMethodID(this->clsC, "findByName", "(Lorg/molgenis/framework/db/Database;Ljava/lang/String;)L${entity.namespace?replace(".","/")}/${CPPName(entity)};");
+    	check(env,"Mapped: ${entity.namespace}.${CPPName(entity)} findByName",verbose);
+    	this->findByIdID = env->GetStaticMethodID(this->clsC, "findById", "(Lorg/molgenis/framework/db/Database;Ljava/lang/Integer;)L${entity.namespace?replace(".","/")}/${CPPName(entity)};");
+    	check(env,"Mapped: ${entity.namespace}.${CPPName(entity)} findByName",verbose);
     	
     	<#foreach field in entity.getImplementedFields()>
     	this->get${CPPName(field)}ID = env->GetMethodID(this->clsC, "get${CPPName(field)}", "()${CPPJavaType(field)}");
@@ -48,12 +54,18 @@ void ${CPPName(entity)}::init(JNIEnv* env){
     	this->set${CPPName(field)}ID = env->GetMethodID(this->clsC, "set${CPPName(field)}", "(${CPPJavaType(field)})V");
     	check(env,"Mapped: ${entity.namespace}.${CPPName(entity)}.set${CPPName(field)}(${CPPJavaType(field)})",verbose);
     	</#foreach>
+    	if(obj == NULL){
+    		this->obj = env->NewObject(this->clsC, this->coID);
+    	}else{
+    		this->obj = obj;
+    	}
+    	check(env,"Constructed object: ${entity.namespace}.${CPPName(entity)}",verbose);
   	}else{
   	  cout << "No such class: ${entity.namespace}.${CPPName(entity)} class" << endl;
   	}
 }
 
-jobject ${CPPName(entity)}::Java(){
+jobject ${CPPName(entity)}::getJava(){
   return this->obj;
 }
 
@@ -65,15 +77,23 @@ void ${CPPName(entity)}::check(JNIEnv* env, string message, bool verbose){
   }
 }
 
-jobject ${CPPName(entity)}::query(jobject db){
-  jobject temp =  env->CallStaticObjectMethod(this->clsC,queryID, db);
+jobjectArray ${CPPName(entity)}::find(jobject db){
+  jobjectArray temp =  (jobjectArray)env->CallStaticObjectMethod(this->clsC,findID, db, NULL);
   check(env,"Method called: query of ${entity.namespace}.${CPPName(entity)}",verbose);
   return temp;
 }
 
-jobject ${CPPName(entity)}::findByName(jobject db, char* name){
-  jobject temp =  env->CallStaticObjectMethod(this->clsC,findID, db, env->NewStringUTF(name));
-  check(env,"Method called: find of ${entity.namespace}.${CPPName(entity)}",verbose);
+jobject ${CPPName(entity)}::findByName(jobject db, string name){
+  jobject temp =  env->CallStaticObjectMethod(this->clsC,findByNameID, db, env->NewStringUTF(name.c_str()));
+  if(temp != NULL) this->obj = temp;
+  check(env,"Method called: ${entity.namespace}.${CPPName(entity)}.findByName()",verbose);
+  return temp;
+}
+
+jobject ${CPPName(entity)}::findById(jobject db, string id){
+  jobject temp =  env->CallStaticObjectMethod(this->clsC,findByIdID, db, env->NewStringUTF(id.c_str()));
+  if(temp != NULL) this->obj = temp;
+  check(env,"Method called: ${entity.namespace}.${CPPName(entity)}.findById()",verbose);
   return temp;
 }
 
