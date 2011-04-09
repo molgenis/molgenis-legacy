@@ -15,7 +15,7 @@ MolgenisServer::MolgenisServer(JNIEnv* env){
 
 void MolgenisServer::init(JNIEnv* env){
 	this->env=env;
-	this->clsC = env->FindClass("org/molgenis/xgap/xqtlworkbench_standalone/TestDatabase");
+	this->clsC = env->FindClass("app/servlet/MolgenisServlet");
 	if(clsC != NULL){
       cout << "Found: TestDatabase" << endl;
       this->coID = env->GetMethodID(clsC, "<init>", "()V");
