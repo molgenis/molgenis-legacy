@@ -213,6 +213,30 @@ public class MolgenisOptions
 	
 	@Option(name = "generate_cpp", param = "", type = Option.Type.OPTIONAL_ARGUMENT, usage = "Generate CPP. Default: false")
 	public boolean generate_cpp = false;
+	
+	@Option(name = "generate_imdb", param = "", type = Option.Type.OPTIONAL_ARGUMENT, usage = "Generate the in memory database classes. Default: true")
+	public boolean generate_imdb = true;
+	
+	@Option(name = "generate_sql", param = "", type = Option.Type.OPTIONAL_ARGUMENT, usage = "Generate any SQL related classes. Default: true")
+	public boolean generate_sql = true;
+	
+	@Option(name = "copy_resources", param = "", type = Option.Type.OPTIONAL_ARGUMENT, usage = "Copy resources to generated-res. Default: true")
+	public boolean copy_resources = true;
+	
+	@Option(name = "generate_html", param = "", type = Option.Type.OPTIONAL_ARGUMENT, usage = "generate HTML. Default: true")
+	public boolean generate_html = true;
+
+	@Option(name = "generate_rdf", param = "", type = Option.Type.OPTIONAL_ARGUMENT, usage = "generate the RDF API. Default: true")
+	public boolean generate_rdf =true;
+	
+	@Option(name = "generate_rest", param = "", type = Option.Type.OPTIONAL_ARGUMENT, usage = "generate the REST API. Default: true")
+	public boolean generate_rest=true;
+	
+	@Option(name = "generate_soap", param = "", type = Option.Type.OPTIONAL_ARGUMENT, usage = "generate the SOAP API. Default: true")
+	public boolean generate_soap=true;
+	
+	@Option(name = "generate_plugins", param = "", type = Option.Type.OPTIONAL_ARGUMENT, usage = "generate the Molgenis plugin API API. Default: true")
+	public boolean generate_plugins=true;
 
 	/**
 	 * Initialize with the defaults
