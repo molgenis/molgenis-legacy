@@ -320,7 +320,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 	/**
 	 * Maps to another mapping strategy for superclasses
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public abstract JDBCMapper getSuperTypeMapper();
 
 	/**

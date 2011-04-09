@@ -29,7 +29,6 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryImp;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.security.Login;
-import org.molgenis.model.elements.Model;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
@@ -605,6 +604,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	{
 		try
 		{
+			@SuppressWarnings("rawtypes")
 			Class klazz = entities.get(0).getClass();
 			return getMapperFor(klazz);
 		}
