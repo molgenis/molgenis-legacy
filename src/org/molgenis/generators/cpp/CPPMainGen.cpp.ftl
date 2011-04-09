@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 #include <jni.h>
-#include "MolgenisServer.h"
+#include "MolgenisServlet.h"
 <#list model.entities as entity>
 #include "${entity.namespace?replace(".", "/")}/${JavaName(entity)}.h"
 </#list>
@@ -59,7 +59,7 @@ int main(int argc, char* argv[]){
   JavaVM* jvm;
   env = create_vm(&jvm);
   if(!(env == NULL)){
-    MolgenisServer* servlet = new MolgenisServer(env);
+    MolgenisServlet* servlet = new MolgenisServlet(env);
   	jobject db = servlet->getDatabase();
   	Investigation* investigation = new Investigation(env);
     investigation->findByName(db,"dfsfdsdfsdfsdf");

@@ -23,7 +23,7 @@ ADD_DEFINITIONS(-Wall)
 
 add_executable(${EXECNAME} 
   main.cpp
-  ${UserHome}/handwritten/cpp/MolgenisServer.cpp
+  ${UserHome}/handwritten/cpp/MolgenisServlet.cpp
   <#list model.entities as entity>
   ${entity.namespace?replace(".", "/")}/${JavaName(entity)}.cpp;
   </#list>
