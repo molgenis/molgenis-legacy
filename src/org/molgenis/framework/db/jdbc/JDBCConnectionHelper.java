@@ -252,6 +252,7 @@ public class JDBCConnectionHelper
 	{
 		StringBuffer where_clause = new StringBuffer("");
 		QueryRule previousRule = new QueryRule(Operator.AND);
+		if(rules != null){
 		for (QueryRule r : rules)
 		{
 			//logger.debug(r);
@@ -433,7 +434,7 @@ public class JDBCConnectionHelper
 				previousRule = null;
 			}
 		}
-
+		}
 		String result = where_clause.toString();
 		if (!isNested && where_clause.length() > 0) result = " WHERE " + result;
 		return result + createSortSql(mapper, rules) + createLimitSql(withOffset, rules);
@@ -467,6 +468,8 @@ public class JDBCConnectionHelper
 	public static String createSortSql(JDBCMapper<?> mapper, boolean reverseSorting, QueryRule rules[])
 	{
 		// copy parameter into local temp so we can change it
+		String sort_clause = "";
+		if(rules != null){
 		Boolean revSort = reverseSorting;
 		for (QueryRule rule : rules)
 		{
@@ -477,7 +480,7 @@ public class JDBCConnectionHelper
 			}
 		}
 
-		String sort_clause = "";
+		
 		for (QueryRule r : rules)
 		{
 			QueryRule rule = new QueryRule(r); // copy because of sideeffects
@@ -495,6 +498,7 @@ public class JDBCConnectionHelper
 				if (mapper != null) rule.setValue(mapper.getTableFieldName(rule.getValue().toString()));
 				sort_clause += rule.getValue().toString() + " DESC,";
 			}
+		}
 		}
 		if (sort_clause.length() > 0) return " ORDER BY " + sort_clause.substring(0, sort_clause.lastIndexOf(","));
 		return sort_clause;
@@ -514,6 +518,7 @@ public class JDBCConnectionHelper
 	{
 		String limit_clause = "";
 		String offset_clause = "";
+		if(rules != null){
 		for (QueryRule rule : rules)
 		{
 			// limit clause
@@ -525,6 +530,7 @@ public class JDBCConnectionHelper
 			{
 				offset_clause = " OFFSET " + rule.getValue();
 			}
+		}
 		}
 		if (withOffset || offset_clause.equals("")) return limit_clause + offset_clause;
 		return "";

@@ -757,15 +757,16 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 	{
 		String sql = createFindSql()
 				+ JDBCDatabase.createWhereSql((JDBCMapper<?>) this, false, true, this.rewriteRules(getDatabase(), rules));
-
+		if(rules != null){
 		// FIXME too complicated
-		for (QueryRule rule : rules)
-		{
-			if (rule.getOperator() == Operator.LAST)
+			for (QueryRule rule : rules)
 			{
-				sql = "select * from (" + sql + ") as " + this.getClass().getSimpleName().toLowerCase() + " "
-						+ JDBCDatabase.createSortSql(null, true, rules);
-				break;
+				if (rule.getOperator() == Operator.LAST)
+				{
+					sql = "select * from (" + sql + ") as " + this.getClass().getSimpleName().toLowerCase() + " "
+							+ JDBCDatabase.createSortSql(null, true, rules);
+					break;
+				}
 			}
 		}
 		// execute the query
@@ -784,8 +785,10 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 	 */
 	protected QueryRule[] rewriteRules(Database db, QueryRule... user_rules) throws DatabaseException
 	{
+		if(user_rules == null) return null;
 		List<QueryRule> rules = this.rewriteRules(db, Arrays.asList(user_rules));
 		return rules.toArray(new QueryRule[rules.size()]);
+		
 	}
 
 	/**
