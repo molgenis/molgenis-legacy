@@ -5,6 +5,6 @@ public class XWBLLUpdateDatabase
 {
 	public static void main(String[] args) throws Exception
 	{
-		new Molgenis("handwritten/apps/org/molgenis/xgap/xqtlworkbench_lifelines/xwbll.properties").updateDb();
+		new Molgenis("handwritten/apps/org/molgenis/xgap/xqtlworkbench_lifelines/xwbll.properties").updateDb(true);
 	}
 }

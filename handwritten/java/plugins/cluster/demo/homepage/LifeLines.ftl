@@ -30,6 +30,25 @@
 <table width="700px">
 	<tr>
 		<td align="center" colspan="7" >
+			<table style="background: #FFFFFF;" cellpadding="10" cellspacing="10" border="2" width="700px">
+				<tr>
+					<td align="center">
+						<img src="clusterdemo/logos/targetlogo.jpg" width="90px" height="50px" alt="logo Target"><br />
+					
+						<img src="clusterdemo/logos/molgenis_logo.png" width="75px" height="50px" alt="logo Molgenis">
+						<img src="clusterdemo/logos/xgap_logo.png" width="75px" height="50px" alt="logo XGAP">
+						<img src="clusterdemo/logos/gcc_logo.png" width="300px" height="50px" alt="logo GCC"><br />
+						
+						<img src="clusterdemo/logos/rug_logo.png" width="150px" height="50px" alt="logo RUG">
+						<img src="clusterdemo/logos/umcg_logo.png" width="150px" height="50px" alt="logo UMCG">
+						<img src="clusterdemo/logos/cbsg_logo.png" width="150px" height="50px" alt="logo CBSG">
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" colspan="7" >
 			<div style="height: 20px">&nbsp;</div>
 			<div align="left">
 			<h2>LifeLines Research Platform</h2>
@@ -127,26 +146,10 @@
 	<tr>
 		<td align="center" colspan="7" >
 			<div style="height: 50px">&nbsp;</div>
+			<font size=1>(c) 2009-2011 GCC-GBIC Groningen</font>
 		</td>
 	</tr>
-	<tr>
-		<td align="center" colspan="7" >
-			<table style="background: #FFFFFF;" cellpadding="10" cellspacing="10" border="2" width="700px">
-				<tr>
-					<td align="center">
-						<img src="clusterdemo/logos/molgenis_logo.png" width="75px" height="50px" alt="logo Molgenis">
-						<img src="clusterdemo/logos/xgap_logo.png" width="75px" height="50px" alt="logo XGAP">
-						<img src="clusterdemo/logos/gcc_logo.png" width="300px" height="50px" alt="logo GCC"><br>
-						
-						<img src="clusterdemo/logos/rug_logo.png" width="150px" height="50px" alt="logo RUG">
-						<img src="clusterdemo/logos/umcg_logo.png" width="150px" height="50px" alt="logo UMCG">
-						<img src="clusterdemo/logos/cbsg_logo.png" width="150px" height="50px" alt="logo CBSG">
-					</td>
-				</tr>
-			</table>
-			<font size=1>(c) 2009-2010 GBIC Groningen</font>
-		</td>
-	</tr>
+	
 </table>
 </div>
 	

@@ -25,7 +25,7 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->	
 
-<iframe src="http://vm7.target.rug.nl/compute" width="100%" height="800">
+<iframe src="http://vm7.target.rug.nl/compute1" width="100%" height="800">
   <p>ERROR</p>
 </iframe>
 	
