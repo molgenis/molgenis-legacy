@@ -203,12 +203,14 @@ public class KeggToolsPlugin extends PluginModel<Entity>
 		// }
 	}
 
-	@Override
+    @Override
 	public boolean isVisible()
 	{
-		// you can use this to hide this plugin, e.g. based on user rights.
-		// e.g.
-		// if(!this.getLogin().hasEditPermission(myEntity)) return false;
-		return true;
+		//you can use this to hide this plugin, e.g. based on user rights.
+		if (this.getLogin().isAuthenticated()){
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
