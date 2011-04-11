@@ -2,22 +2,9 @@
 	<plugin name="molgenis_header" type="plugins.cluster.demo.xwbllheader.MolgenisHeader" />
 	<menu name="main">
 	
-		<plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.ClusterDemo" />
+		<plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.homepage.LifeLines" />
 	
 		<plugin label="Login" name="UserLogin" type="org.molgenis.auth.ui.UserLogin" />
-	
-		<menu name="Auth" label="Auth">
-			<plugin name="PermissionManagementPlugin" type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin"/>
-			<menu name="Management">
-				<form name="MolgenisUser" entity="MolgenisUser"/>
-				<form name="MolgenisGroup" entity="MolgenisGroup"/>
-				<form name="MolgenisUserGroupLink" entity="MolgenisUserGroupLink"/>
-				<form name="MolgenisEntity" entity="MolgenisEntity" view="list" label="Entities"/>
-				<form name="MolgenisPermission" entity="MolgenisPermission"/>
-				<form name="TestClass" entity="TestClass"/>
-				<form name="TestClass2" entity="TestClass2"/>
-			</menu>
-		</menu>
 	
 		<plugin label="Search" name="SimpleDbSearch" type="plugin.search.SimpleWholeDatabaseSearch" /> 
 	
@@ -29,11 +16,11 @@
 		</menu-->
 		
 		<plugin label="Browse data" name="DataViewer" type="plugins.lltmp.DataViewer" />
-		<plugin label="Compute" name="Compute" type="plugins.lltmp.Compute" />
-
-		<plugin label="Run QTL mapping" name="Cluster" type="plugins.cluster.ClusterPlugin" />
 		
-		<plugin label="Plot pathways" name="KeggPathway" type="plugins.kegg.PathwayPlugin" />
+		<menu name="Compute">
+			<plugin label="Compute" name="AdvancedCompute" type="plugins.lltmp.Compute" />
+			<plugin label="Run QTL mapping" name="Cluster" type="plugins.cluster.ClusterPlugin" />
+		</menu>
 		
 		<form label="Explore investigations" name="Investigations" entity="Investigation" compact_view="name">
 			<menu name="InvestigationMenu">
@@ -74,13 +61,19 @@
 			</menu>
 		</form>
 
-		<form name="RScripts" label="Add new QTL tools" entity="RScript">
-			<plugin name="RViewer" type="plugins.molgenisfile.MolgenisFileManager" />
-			<plugin label="Help" name="AddNewToolsHelp" type="plugins.cluster.addnewtoolshelp"/>
-		</form>
-
 		<menu label="Admin and settings" name="Admin">
-		
+			<menu name="Auth" label="Auth">
+				<plugin name="PermissionManagementPlugin" type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin"/>
+				<menu name="Management">
+					<form name="MolgenisUser" entity="MolgenisUser"/>
+					<form name="MolgenisGroup" entity="MolgenisGroup"/>
+					<form name="MolgenisUserGroupLink" entity="MolgenisUserGroupLink"/>
+					<form name="MolgenisEntity" entity="MolgenisEntity" view="list" label="Entities"/>
+					<form name="MolgenisPermission" entity="MolgenisPermission"/>
+					<form name="TestClass" entity="TestClass"/>
+					<form name="TestClass2" entity="TestClass2"/>
+				</menu>
+			</menu>
 			<menu label="Batches" name="batches">	
 				<form name="ManageBatches" entity="MolgenisBatch" label="Batches" />
 				<form name="ManageBatchEntities" entity="MolgenisBatchEntity" label="Batch entities" />
@@ -89,6 +82,11 @@
 				<plugin name="BatchView" type="plugins.batch.BatchViewPlugin"
 					label="Batch viewer" />
 			</menu>
+		
+			<form name="RScripts" label="Add new QTL tools" entity="RScript">
+				<plugin name="RViewer" type="plugins.molgenisfile.MolgenisFileManager" />
+				<plugin label="Help" name="AddNewToolsHelp" type="plugins.cluster.addnewtoolshelp"/>
+			</form>
 		
 			<form name="Analysis" label="Add new analysis" entity="Analysis" />
 			
@@ -110,6 +108,7 @@
 				<plugin name="ExcelWizard" type="plugins.genericwizard.GenericWizard" />
 				<plugin name="DuplicateRemover" type="plugins.help.duplicates.DuplicatesPlugin" />
 				<plugin name="KeggConverter" type="plugins.keggplugin.KeggToolsPlugin" />
+				<plugin label="Plot pathways" name="KeggPathway" type="plugins.kegg.PathwayPlugin" />
 			</menu>
 		</menu>
 	</menu>

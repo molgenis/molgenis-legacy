@@ -10,7 +10,7 @@
 
 <div id="sample_div" style="background-image:url(clusterdemo/bg/lifelinesbanner125pdark.png); width: 900px; height: 125px; line-height:7.5em;">
 <font style="color: white; font-family: verdana,arial,sans-serif; font-weight: bold; letter-spacing: 0.15em; font-size: xx-large; font-variant: small-caps">
-&nbsp;LifeLines xQTL workbench</font>
+&nbsp;LifeLines Research Platform</font>
 </div>
 
 <!-- url broken for DJTJWS-->
