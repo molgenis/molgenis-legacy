@@ -115,6 +115,6 @@ public class SimpleLogin implements Login
 	public String getRedirect()
 	{
 		// TODO Auto-generated method stub
-		return "";
+		return null;
 	}
 }
