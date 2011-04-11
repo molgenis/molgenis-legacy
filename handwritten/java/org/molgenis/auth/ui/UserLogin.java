@@ -179,6 +179,22 @@ public class UserLogin extends PluginModel<Entity>
 				this.getRootScreen().setLogin(getLogin());
 			else
 				throw new DatabaseException("Login failed: username or password unknown");
+			
+			HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
+			HttpServletRequest httpRequest   = rt.getRequest();
+			HttpServletResponse httpResponse = rt.getResponse();
+
+			
+			try {
+				if (StringUtils.isNotEmpty(getLogin().getRedirect()))
+				{
+					String redirectURL = httpRequest.getRequestURL() + "?__target=main" + "&select=" +getLogin().getRedirect();
+					httpResponse.sendRedirect(redirectURL);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else {
 			throw new DatabaseException("Login failed: username or password empty");
 		}

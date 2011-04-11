@@ -53,6 +53,8 @@ public class DatabaseLogin implements Login, Serializable {
 	Map<String, Permission> executeMap = new TreeMap<String, Permission>();
 	Map<String, Permission> ownMap     = new TreeMap<String, Permission>();
 
+	protected String redirect;
+
 	Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
 	public DatabaseLogin() {
@@ -66,6 +68,12 @@ public class DatabaseLogin implements Login, Serializable {
 	public DatabaseLogin(Database db)
 	{
 		this.login(db, "anonymous", "anonymous");
+	}
+	
+	public DatabaseLogin(Database db, String redirect)
+	{
+		this(db);
+		this.redirect = redirect;
 	}
 
 	/**
@@ -433,6 +441,11 @@ public class DatabaseLogin implements Login, Serializable {
 			return true;
 
 		return false;
+	}
+
+	public String getRedirect()
+	{
+		return this.redirect;
 	}
 
 	/** Helper method to check if an entity is implementing the authorizable interface,

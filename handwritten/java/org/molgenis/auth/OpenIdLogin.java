@@ -41,8 +41,14 @@ public class OpenIdLogin extends DatabaseLogin
 
     public OpenIdLogin(Database db)
     {
-	this.login(db, "anonymous", "anonymous");
+    	this.login(db, "anonymous", "anonymous");
     }
+
+    public OpenIdLogin(Database db, String redirect)
+	{
+		this(db);
+		this.redirect = redirect;
+	}
 
     /**
      * 
