@@ -144,6 +144,10 @@ public class MolgenisOptions
 	@Option(name = "auth_loginclass", param = "auth_loginclass", type = Option.Type.REQUIRED_ARGUMENT, usage = "Expert option.")
 	public String auth_loginclass = "org.molgenis.framework.security.SimpleLogin";
 
+	/** Name of form/plugin to redirect to after login */
+	@Option(name = "auth_redirect", param = "auth_redirect", type = Option.Type.OPTIONAL_ARGUMENT, usage = "Expert option.")
+	public String auth_redirect = "";
+
 	// @Option(name = "force_lowercase_names", param = "force_lowercase_names",
 	// type = Option.Type.REQUIRED_ARGUMENT, usage =
 	// "Expert option. Wether all names should be converted to lowercase. Default: true"

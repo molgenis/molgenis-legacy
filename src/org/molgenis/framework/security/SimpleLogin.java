@@ -110,4 +110,11 @@ public class SimpleLogin implements Login
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public String getRedirect()
+	{
+		// TODO Auto-generated method stub
+		return "";
+	}
 }

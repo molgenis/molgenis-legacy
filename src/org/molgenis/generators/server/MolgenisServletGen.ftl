@@ -74,7 +74,7 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 
 	public Login createLogin( Database db, HttpServletRequest request )
 	{
-		return new ${loginclass}(<#if loginclass != 'org.molgenis.framework.security.SimpleLogin'>db</#if>);
+		return new ${loginclass}(<#if loginclass != 'org.molgenis.framework.security.SimpleLogin'>db, "${loginredirect}"</#if>);
 	}
 
 	public UserInterface createUserInterface( Login userLogin )

@@ -134,5 +134,9 @@ public interface Login
 	 */
 	public QueryRule getRowlevelSecurityFilters(Class<? extends Entity> klazz);
 
-
+	/**
+	 * Get name of form/plugin to redirect to after login
+	 * @return name of form/plugin
+	 */
+	public String getRedirect();
 }
