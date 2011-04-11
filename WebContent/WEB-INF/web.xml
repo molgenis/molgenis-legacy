@@ -164,7 +164,7 @@
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>ResetDataseLoadExampleData</servlet-name>
-		<servlet-class>servlets.xgap.resetdatabase_loadexampledata</servlet-class>
+		<servlet-class>servlets.xgap.resetdatabase_loadexampledata_4EE1D7A3E73C504183B69F7D20108853</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ResetDataseLoadExampleData</servlet-name>
@@ -172,7 +172,7 @@
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>LoadExampleData</servlet-name>
-		<servlet-class>servlets.xgap.loadexampledata</servlet-class>
+		<servlet-class>servlets.xgap.loadexampledata_4EE1D7A3E73C504183B69F7D20108853</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>LoadExampleData</servlet-name>
@@ -180,7 +180,7 @@
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>ResetDatabase</servlet-name>
-		<servlet-class>servlets.xgap.resetdatabase</servlet-class>
+		<servlet-class>servlets.xgap.resetdatabase_4EE1D7A3E73C504183B69F7D20108853</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ResetDatabase</servlet-name>
