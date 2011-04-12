@@ -23,21 +23,33 @@
 		
 <#--begin your plugin-->
 <div align="center">
-<div style="height: 10px;">&nbsp;</div>
 <table width="700px">
 	<tr>
 		<td align="center" colspan="7" >
-			<div style="height: 20px">&nbsp;</div>
 			<div align="left">
-			<h2>xQTL workbench</h2>
-			Features: 
+			<!-- <font style='font-size:24px; font-weight:bold;'>xQTL workbench</font>--><br><br>
+			Welcome to the xQTL workbench, a platform for the storage and analysis of genetic and phenotype data.<br> 
+			
+			For manuals and	more information, see <a href="http://www.xgap.org/wiki/xQTLDemo">xQTL workbench wiki</a>.<br><br> xQTL workbench aims to provide the following features: 
 			<ul>
-			 <li>Extensible database for genetics data</li>
-			 <li>High performance xQTL analysis</li>
-			 <li>Extensible computation interface</li>
-			 <ul><li>Run predefined analysis</li>
-			         <li>Create and manage your own analysis</li>
-				</ul></li>
+				<li>Available as an <b>'In-House tool'</b> or usable in a <b>collaborative setting</b> via web interfaces</li>
+				<li><b>Customizable database</b> for genetics/phenotype data using software generators</li>
+			 	<li>High performance xQTL analysis</li>
+				<li>Three levels of users:
+					<ul>
+						<li><b>Biologists</b> - Running analysis</li>
+			        	<li><b>Bio-informaticians</b> - Adding new analysis and tools</li>
+					 	<li><b>Administrators</b> - Checks for the infrastructure guys</li>
+					</ul>
+					And user management to data and analysis tools
+				</li>
+			 	<li>Extensible computation interface</li>
+			 	<ul>
+			 		<li>Biologists can run <b>pre-defined analysis</b></li>
+			     	<li>Bio-informaticians can <b>add their own (R) analysis</b></li>
+			     	<li>Manage previous analysis and their settings</li>
+			 	</ul>
+			 </li>
 			 <li>Automatic annotation of identifiers
 			     <ul><li>A Thaliana: AT3G1000 At1g10000 At5G20000</li>
 			         <li>C. Elegans: WBGene00000083</li>
@@ -45,18 +57,18 @@
 					 <li>KEGG: K06560 K00134 K29897</li>
 				</ul>
 			</li>
-			
+			<li>Build using the <b>software generation</b> allowing for easy tailoring to your needs</li>
 			</ul>
 			</div>
-			<div style="height: 50px">&nbsp;</div>
+			<div style="height: 10px">&nbsp;</div>
 		</td>
 	</tr>
 	<tr>
-		<td align="center" onClick="document.forms.main.__target.value='main';document.forms.main.select.value='Cluster';document.forms.main.submit();">
+		<td valign="top" align="center" onClick="document.forms.main.__target.value='main';document.forms.main.select.value='Cluster';document.forms.main.submit();">
 			<table bgcolor="#BBBBBB" cellpadding="10" cellspacing="10" border="2" width="160px">
 				<tr>
 					<td align="center">
-						<font style='font-size:15px; font-weight:bold;'>Run</font> mapping
+						<font style='font-size:15px; font-weight:bold;'>Run</font> <font style='font-size:15px;'>QTL mapping</font>
 					</td>
 				</tr>
 			</table>
@@ -69,7 +81,7 @@
 				<tr>
 
 					<td align="center">
-						<font style='font-size:15px; font-weight:bold;'>Browse</font> data
+						<font style='font-size:15px; font-weight:bold;'>Browse</font> <font style='font-size:15px;'>data</font>
 					</td>
 				</tr>
 			</table>
@@ -82,7 +94,7 @@
 
 				<tr>
 					<td align="center">
-						<font style='font-size:15px; font-weight:bold;'>Import</font> data
+						<font style='font-size:15px; font-weight:bold;'>Import</font> <font style='font-size:15px;'>data</font>
 					</td>
 				</tr>
 			</table>
@@ -94,7 +106,7 @@
 			<table  bgcolor="#BBBBBB" cellpadding="10" cellspacing="10" border="2" width="160px">
 				<tr>
 					<td align="center">
-						<font style='font-size:15px; font-weight:bold;'>Add</font> tools
+						<font style='font-size:15px; font-weight:bold;'>Add</font> <font style='font-size:15px;'>analysis</font>
 					</td>
 				</tr>
 			</table>
@@ -103,20 +115,16 @@
 	</tr>
 	
 	<tr>
-		<td colspan="7">
-			For manuals and more information, see <a href="http://www.xgap.org/wiki/xQTLDemo">xQTL demo wiki</a>
-		</td>
-	</tr>
-	
-	<tr>
 		<td colspan="7" width="675">
-			<div style="height: 50px">&nbsp;</div>
+			<div style="height: 20px">&nbsp;</div>
 		
 			References:
 			<br><br>
 			<a href="http://www.ncbi.nlm.nih.gov/pubmed/20214801">XGAP: a uniform and extensible data model and software platform for genotype and phenotype experiments.</a> Swertz MA, Velde KJ, Tesson BM, Scheltema RA, Arends D, Vera G, Alberts R, Dijkstra M, Schofield P, Schughart K, Hancock JM, Smedley D, Wolstencroft K, Goble C, de Brock EO, Jones AR, Parkinson HE; Coordination of Mouse Informatics Resources (CASIMIR); Genotype-To-Phenotype (GEN2PHEN) Consortiums, Jansen RC.
 			<br><br>
 			<a href="http://www.ncbi.nlm.nih.gov/pubmed/12724300">R/qtl: QTL mapping in experimental crosses.</a> Broman KW, Wu H, Sen S, Churchill GA.
+			<br><br>
+			<a href="http://bioinformatics.oxfordjournals.org/content/early/2010/10/21/bioinformatics.btq565.abstract">R/qtl: high throughput Multiple QTL mapping.</a> Danny Arends, Pjotr Prins, Ritsert C. Jansen and Karl W. Broman
 			<br><br>
 			<a href="http://www.ncbi.nlm.nih.gov/pubmed/15059831">Molecular Genetics Information System (MOLGENIS): alternatives in developing local experimental genomics databases.</a> Swertz MA, De Brock EO, Van Hijum SA, De Jong A, Buist G, Baerends RJ, Kok J, Kuipers OP, Jansen RC.
 		</td>

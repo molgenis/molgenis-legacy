@@ -9,12 +9,20 @@
 <div style="height:10px;">&nbsp;</div>
 
 <div id="sample_div" style="background-image:url(clusterdemo/bg/bc_fog4.png); width: 900px; height: 125px; line-height:7.5em;">
-<font style="color: white; font-family: verdana,arial,sans-serif; font-weight: bold; letter-spacing: 0.15em; font-size: xx-large; font-variant: small-caps">
+<font style="color: white; font-family: verdana,arial,sans-serif; font-weight: bold; letter-spacing: 0.25em; font-size:50px; font-variant: small-caps">
 &nbsp;xQTL workbench</font>
 </div>
 
 <!-- url broken for DJTJWS-->
-<div align="right"><font style="color: white;"><a href="api/R/">r api</a></font></div>
+<div align="right">
+	<font style="font-size:10px;">
+		| <a href="api/REST/">JSON api</a> |
+		<a href="api/SOAP/">SOAP api</a> | 
+		<a href="api/R/">R api</a> | 
+		<a href="api/REST/">REST api</a> | 
+		  
+	</font>
+</div>
 
 
 
