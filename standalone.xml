@@ -4,12 +4,14 @@
         ANT file to build a standalone MOLGENIS + GCC
     </description>
   <!-- set global properties for this build -->
-  <property name="src" 				location="handwritten"       />
-  <property name="build" 			location="build"     />
-  <property name="dist"  			location="dist"      />
-  <property name="libraries" 		location="lib"       />
-  <property name="myname" 			value="Danny Arends" />
-  <property name="version"          value="3.3.0"        />
+  <property name="molgenis_build"   location="../molgenis/build" 	/>
+  <property name="molgenis_dist"   location="../molgenis/dist" 	/>
+  <property name="src" 				location="handwritten"        	/>
+  <property name="build" 			location="tmp"     			/>
+  <property name="dist"  			location="dist"      			/>
+  <property name="libraries" 		location="lib"       			/>
+  <property name="myname" 			value="Danny Arends" 			/>
+  <property name="version"          value="3.3.0"        			/>
   <property environment="env"/>
   
 	<target name="init">
@@ -24,42 +26,91 @@
 
   <target name="unjar" depends="init" description="compile the Standalone source " >
     <!-- Compile the java code from ${src} into ${build} -->
-	<unjar src="lib/molgenis-3.3.0.jar" dest="${build}"/>
-	<unjar src="WebContent/WEB-INF/lib/axis.jar" dest="${build}"/>
-	<unjar src="WebContent/WEB-INF/lib/axis-ant.jar" dest="${build}"/>
-	<unjar src="WebContent/WEB-INF/lib/commons-discovery-0.4.jar" dest="${build}"/>
-	<unjar src="WebContent/WEB-INF/lib/commons-math-1.2.jar" dest="${build}"/>
-	<unjar src="WebContent/WEB-INF/lib/j2ssh-core-0.2.9.jar" dest="${build}"/>
-	<unjar src="WebContent/WEB-INF/lib/jaxrpc.jar" dest="${build}"/>
-	<unjar src="WebContent/WEB-INF/lib/jcommon-1.0.16.jar" dest="${build}"/>
-	<unjar src="WebContent/WEB-INF/lib/jfreechart-1.0.13.jar" dest="${build}"/>
-	<unjar src="WebContent/WEB-INF/lib/jopenid-1.07.jar" dest="${build}"/>
-	<unjar src="WebContent/WEB-INF/lib/keggapi.jar" dest="${build}"/>
-	<unjar src="WebContent/WEB-INF/lib/limpopo-1.0-alpha-18092009.jar" dest="${build}"/>
-	<unjar src="WebContent/WEB-INF/lib/mindterm.jar" dest="${build}"/>
-	<unjar src="WebContent/WEB-INF/lib/mydas-1.6.0.jar" dest="${build}"/>
-	<unjar src="WebContent/WEB-INF/lib/ols-client.jar" dest="${build}"/>
-	<unjar src="WebContent/WEB-INF/lib/ontoCAT_v0.8.jar" dest="${build}"/>
-	<unjar src="WebContent/WEB-INF/lib/oscache-2.4.jar" dest="${build}"/>
-	<unjar src="WebContent/WEB-INF/lib/sam-1.16.jar" dest="${build}"/>
-	<unjar src="WebContent/WEB-INF/lib/sshfactory.jar" dest="${build}"/>
-	<unjar src="WebContent/WEB-INF/lib/xpp3-1.1.3.4.C.jar" dest="${build}"/>	
+  	<!-- Joeri -->
+  	<unjar src="WebContent/WEB-INF/lib/jaxrpc.jar" dest="${build}"/>
+  	<unjar src="WebContent/WEB-INF/lib/axis.jar" dest="${build}"/> <!-- ???? UNlinked but used in Generated CODE -->
+  	<unjar src="WebContent/WEB-INF/lib/keggapi.jar" dest="${build}"/>
+  	<unjar src="WebContent/WEB-INF/lib/mydas-1.6.0.jar" dest="${build}"/>
+  	<unjar src="WebContent/WEB-INF/lib/mindterm.jar" dest="${build}"/>
+  	<unjar src="WebContent/WEB-INF/lib/ontoCAT_v0.9.5.3.jar" dest="${build}"/>	
+  	<!-- Erik -->
+  	<unjar src="WebContent/WEB-INF/lib/charts4j-1.2.jar" dest="${build}"/>
+  	<unjar src="WebContent/WEB-INF/lib/jopenid-1.07.jar" dest="${build}"/>
+  	<unjar src="WebContent/WEB-INF/lib/iText-5.0.6.jar" dest="${build}"/>
+  	<!-- Despoina -->
+  	<unjar src="WebContent/WEB-INF/lib/lucene-core-3.0.2.jar" dest="${build}"/>
+  	<unjar src="WebContent/WEB-INF/lib/lucene-highlighter-3.0.1.jar" dest="${build}"/>
+  	<unjar src="WebContent/WEB-INF/lib/spssw-1.66.jar" dest="${build}"/>
+
+  	
+  	<!-- Unknown and NOT DOCUMENTED -->
+  	<unjar src="WebContent/WEB-INF/lib/vaadin-6.5.2.jar" dest="${build}"/>
+  	<unjar src="WebContent/WEB-INF/lib/vaadin-externallayout-0.5.jar" dest="${build}"/>
+  	
+  	<!-- <unjar src="WebContent/WEB-INF/lib/axis.jar" dest="${build}"/>	-->
+	<!-- unjar src="WebContent/WEB-INF/lib/axis-ant.jar" dest="${build}"/ -->
+  	<!-- <unjar src="WebContent/WEB-INF/lib/commons-discovery-0.4.jar" dest="${build}"/>	-->
+	<!-- unjar src="WebContent/WEB-INF/lib/commons-math-1.2.jar" dest="${build}"/ -->
+	<!--unjar src="WebContent/WEB-INF/lib/j2ssh-core-0.2.9.jar" dest="${build}"/-->
+  	<!-- 	-->
+	<!-- <unjar src="WebContent/WEB-INF/lib/jcommon-1.0.16.jar" dest="${build}"/>	-->
+	<!-- <unjar src="WebContent/WEB-INF/lib/jfreechart-1.0.13.jar" dest="${build}"/>	-->
+	<!-- 	-->
+	<!-- <unjar src="WebContent/WEB-INF/lib/keggapi.jar" dest="${build}"/>	-->
+	<!-- <unjar src="WebContent/WEB-INF/lib/limpopo-1.0-alpha-18092009.jar" dest="${build}"/>	-->
+	<!-- 	-->
+	<!-- 	-->
+	<!-- <unjar src="WebContent/WEB-INF/lib/ols-client.jar" dest="${build}"/>	-->
+	<!-- <unjar src="WebContent/WEB-INF/lib/ontoCAT_v0.8.jar" dest="${build}"/>	-->
+	<!-- <unjar src="WebContent/WEB-INF/lib/oscache-2.4.jar" dest="${build}"/>	-->
+	<!-- <unjar src="WebContent/WEB-INF/lib/sam-1.16.jar" dest="${build}"/>	-->
+	<!-- <unjar src="WebContent/WEB-INF/lib/sshfactory.jar" dest="${build}"/>	-->
+	<!-- <unjar src="WebContent/WEB-INF/lib/xpp3-1.1.3.4.C.jar" dest="${build}"/>	-->
 </target>
   <target name="compile" depends="unjar" description="compile the Standalone source " >				
-  	<javac srcdir="${src};generated/" destdir="${build}" classpath="${build}/" />
+  	<javac srcdir="${src}/apps;${src}/java;${src}/webserver;generated/" destdir="${build}" classpath="${build}/;${molgenis_build}/" />
   </target>
 
   <target name="package" depends="compile" description="Package the distribution" >
     <!-- Create the distribution directory -->
     <mkdir dir="${dist}"/>
+	<copy todir="${build}">
+    <fileset dir="${src}/apps">
+        <include name="**/*.ftl"/>
+    </fileset>
+	</copy>
+  	<copy todir="${build}">
+  	    <fileset dir="${src}/java">
+  	        <include name="**/*.ftl"/>
+  	    </fileset>
+  	</copy>
+  	<copy todir="${build}">
+  	    <fileset dir="${src}/webserver">
+  	        <include name="**/mime.*"/>
+  	    </fileset>
+  	</copy>
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
     <jar jarfile="${dist}/gcc.jar" basedir="${build}">
      	 <manifest>
      	    <attribute name="Built-By" value="${myname}"/>
-     	    <!-- attribute name="Main-Class" value="matrix.general.CsvToBin"/ -->
+     	    <attribute name="Main-Class" value="RunStandalone"/>
+     	 	<attribute name="Class-Path" value="molgenis-3.3.0.jar"/>
      	  </manifest>
     	</jar>
   </target>
+	
+	  <target name="strip" depends="package" description="Strip the package" >
+	    <java jar="lib/proguard.jar" fork="true" failonerror="true">
+	      <arg line="-injars ${dist}/gcc.jar"/>
+	      <arg line="-outjars ${dist}/gcc_small.jar"/>
+	      <arg line="-libraryjars c:/Progra~1/Java/jdk1.6.0_14/jre/lib/rt.jar;${molgenis_dist}/molgenis-3.3.0.jar"/>
+		  <arg line="-keep public class RunStandalone{public static void main(java.lang.String[]);}"/>
+		  <arg line="-keep public class webserver.BasicAcceptor"/>
+		  <arg line="-keep public class webserver.servlets.**"/>
+		  <arg line="-dontoptimize -dontobfuscate -dontpreverify"/>
+		</java>
+	    <delete dir="${build}"/>
+	  </target>
 
   <target name="clean"
         description="clean up" >
