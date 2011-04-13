@@ -11,7 +11,7 @@ public class XqtlGenerate
 {
 	
 	  static public boolean deleteDirectory(File path) {
-		    if( path.exists() ) {
+		  if( path.exists() && !path.toString().contains(".svn") ) {
 		      File[] files = path.listFiles();
 		      for(int i=0; i<files.length; i++) {
 		         if(files[i].isDirectory()) {
