@@ -1,5 +1,7 @@
 package regressiontest.matrixquery;
 
+import java.io.File;
+
 import junit.framework.TestCase;
 import matrix.AbstractDataMatrixInstance;
 import matrix.general.DataMatrixHandler;
@@ -11,7 +13,6 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 
 import regressiontest.matrixquery.help.DB;
-import regressiontest.matrixquery.help.ExpectedOutput;
 import app.JDBCDatabase;
 
 /**
@@ -31,10 +32,10 @@ public class RunTestMatrixQuery extends TestCase {
 	AbstractDataMatrixInstance<Object> baseMatrix = null;
 	
 	public RunTestMatrixQuery() throws Exception{
-		db = new JDBCDatabase("xgap.test.properties");
+		db = new JDBCDatabase("handwritten/apps/org/molgenis/xgap/xgap.test.properties");
 		assertTrue(Helper.storageDirsAreAvailable(db));
-		assertTrue(DB.removeFuMetadata(db));
-		assertTrue(new DB().importFuData(db));
+		assertTrue(DB.removeData(db));
+		assertTrue(new DB().importExampleData(db));
 		Data data = db.find(Data.class).get(0);
 		DataMatrixHandler dmh = new DataMatrixHandler(db);
 		baseMatrix = dmh.createInstance(data);
@@ -46,7 +47,11 @@ public class RunTestMatrixQuery extends TestCase {
 		QueryRule or = new QueryRule(Operator.OR);
 		QueryRule q2 = new QueryRule("name", Operator.EQUALS, "Methylthiopentyl");
 		AbstractDataMatrixInstance<Object> testMatrix = baseMatrix.getSubMatrixFilterByRowEntityValues(db, q1, or, q2);
-//		assertEquals(ExpectedOutput.filterByRowEntityValues, testMatrix.toString());
+		
+		File testAgainstFile = new File(this.getClass().getResource("help/expectedoutput/filterbyrowentityvalues").getFile().replace("%20", " "));
+		String testAgainst = Helper.readFileToString(testAgainstFile);
+		
+		assertEquals(testAgainst, testMatrix.toString());
 	}
 	
 	@Test
@@ -55,7 +60,11 @@ public class RunTestMatrixQuery extends TestCase {
 		QueryRule or = new QueryRule(Operator.OR);
 		QueryRule q2 = new QueryRule("name", Operator.EQUALS, "X193");
 		AbstractDataMatrixInstance<Object> testMatrix = baseMatrix.getSubMatrixFilterByColEntityValues(db, q1, or, q2);
-//		assertEquals(ExpectedOutput.filterByColEntityValues, testMatrix.toString());
+	
+		File testAgainstFile = new File(this.getClass().getResource("help/expectedoutput/filterbycolentityvalues").getFile().replace("%20", " "));
+		String testAgainst = Helper.readFileToString(testAgainstFile);
+		
+		assertEquals(testAgainst, testMatrix.toString());
 	}
 	
 	@Test
@@ -63,14 +72,22 @@ public class RunTestMatrixQuery extends TestCase {
 		QueryRule q1 = new QueryRule("Butenyl", Operator.GREATER, "10000");
 		AbstractDataMatrixInstance testMatrix = baseMatrix.getSubMatrixFilterByRowMatrixValues(q1);
 		System.out.println(testMatrix.toString());
-//		assertEquals(ExpectedOutput.filterByRowMatrixValues, testMatrix.toString());
+
+		File testAgainstFile = new File(this.getClass().getResource("help/expectedoutput/filterbyrowmatrixvalues").getFile().replace("%20", " "));
+		String testAgainst = Helper.readFileToString(testAgainstFile);
+		
+		assertEquals(testAgainst, testMatrix.toString());
 	}
 	
 	@Test
 	public void testSubMatrixFilterByColMatrixValues() throws Exception{
 		QueryRule q1 = new QueryRule("X10", Operator.GREATER, "1000");
 		AbstractDataMatrixInstance testMatrix = baseMatrix.getSubMatrixFilterByColMatrixValues(q1);
-//		assertEquals(ExpectedOutput.filterByColMatrixValues, testMatrix.toString());
+
+		File testAgainstFile = new File(this.getClass().getResource("help/expectedoutput/filterbycolmatrixvalues").getFile().replace("%20", " "));
+		String testAgainst = Helper.readFileToString(testAgainstFile);
+		
+		assertEquals(testAgainst, testMatrix.toString());
 	}
 	
 

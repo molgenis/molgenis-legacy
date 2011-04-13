@@ -1,7 +1,10 @@
 package matrix.test.implementations.general;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -42,10 +45,10 @@ public class Helper
 	private Database db = null;
 	private List<String> uniqueNames = new ArrayList<String>();
 	private Logger logger = Logger.getLogger(getClass().getSimpleName());
-	
+
 	private List<Data> dataList;
 	private File inputFilesDir;
-	
+
 	public List<Data> getDataList()
 	{
 		return dataList;
@@ -56,11 +59,13 @@ public class Helper
 		return inputFilesDir;
 	}
 
-	public Helper(Database db){
+	public Helper(Database db)
+	{
 		this.db = db;
 	}
-	
-	private Data getTestTextData(Investigation inv, DerivedTrait feature, Panel target, String rowType, String colType, String source)
+
+	private Data getTestTextData(Investigation inv, DerivedTrait feature, Panel target, String rowType, String colType,
+			String source)
 	{
 		Data d = new Data();
 		d.setName("testTextData");
@@ -74,9 +79,11 @@ public class Helper
 		d.setTarget(target);
 		return d;
 	}
-	
-	public void prepareDatabaseAndFiles(String storage, int matrixDimension1, int matrixDimension2, int maxTextLength, boolean fixedTextLength, boolean sparse) throws DatabaseException, IOException, InterruptedException{
-			// new emptyDatabase(db);
+
+	public void prepareDatabaseAndFiles(String storage, int matrixDimension1, int matrixDimension2, int maxTextLength,
+			boolean fixedTextLength, boolean sparse) throws DatabaseException, IOException, InterruptedException
+	{
+		// new emptyDatabase(db);
 		db.remove(db.find(TextDataElement.class));
 		db.remove(db.find(DecimalDataElement.class));
 		db.remove(db.find(Marker.class));
@@ -96,7 +103,7 @@ public class Helper
 		List<Marker> marList = getRandomMarkers(inv, matrixDimension2);
 		db.add(indList);
 		db.add(marList);
-		
+
 		logger.info("Creating feature annotations for matrices");
 		DerivedTrait textFeature = new DerivedTrait();
 		textFeature.setName("test_text_data_feature");
@@ -104,11 +111,12 @@ public class Helper
 		DerivedTrait decimalFeature = new DerivedTrait();
 		decimalFeature.setName("test_decimal_data_feature");
 		db.add(decimalFeature);
-		
+
 		logger.info("Loading panel ontologies");
 		new XgapLoadPanelTypes(db);
-		OntologyTerm panelType = db.find(OntologyTerm.class, new QueryRule("definition", Operator.EQUALS, "other")).get(0);
-		
+		OntologyTerm panelType = db.find(OntologyTerm.class, new QueryRule("definition", Operator.EQUALS, "other"))
+				.get(0);
+
 		logger.info("Creating panel as matrix 'target'");
 		Panel p = new Panel();
 		p.setName("panel_name");
@@ -120,9 +128,9 @@ public class Helper
 		dataList.add(getTestTextData(inv, textFeature, p, "Individual", "Marker", storage));
 		dataList.add(getTestDecimalData(inv, decimalFeature, p, "Marker", "Individual", storage));
 		db.add(dataList);
-		
+
 		this.dataList = dataList;
-		
+
 		logger.info("Creating or refreshing input directory to hold data matrices files..");
 		File inputFilesDir = new File(System.getProperty("java.io.tmpdir") + File.separator
 				+ NameConvention.escapeFileName(inv.getName()) + "_datamatrices");
@@ -139,14 +147,15 @@ public class Helper
 		logger.info("Randomizing data matrix filling and adding data files to input directory..");
 		for (Data data : dataList)
 		{
-			createAndWriteRandomMatrix(inputFilesDir, data, db, matrixDimension2, matrixDimension1,
-					maxTextLength, sparse, fixedTextLength);
+			createAndWriteRandomMatrix(inputFilesDir, data, db, matrixDimension2, matrixDimension1, maxTextLength,
+					sparse, fixedTextLength);
 		}
-		
+
 		this.inputFilesDir = inputFilesDir;
 	}
 
-	private Data getTestDecimalData(Investigation inv, DerivedTrait feature, Panel target, String rowType, String colType, String source)
+	private Data getTestDecimalData(Investigation inv, DerivedTrait feature, Panel target, String rowType,
+			String colType, String source)
 	{
 		Data d = new Data();
 		d.setName("testDecimalData");
@@ -229,19 +238,19 @@ public class Helper
 	 * @throws DatabaseException
 	 * @throws MatrixReadException
 	 */
-	public MemoryDataMatrixInstance<Object> createAndWriteRandomMemoryMatrix(File inputMatrixDir, Data data, Database db,
-			int totalRows, int totalCols, int maxStringLength, boolean sparse, boolean fixedTextLength)
+	public MemoryDataMatrixInstance<Object> createAndWriteRandomMemoryMatrix(File inputMatrixDir, Data data,
+			Database db, int totalRows, int totalCols, int maxStringLength, boolean sparse, boolean fixedTextLength)
 			throws IOException, DatabaseException, MatrixReadException
 	{
 		File res = new File(inputMatrixDir.getAbsolutePath() + File.separator
 				+ NameConvention.escapeFileName(data.getName()) + ".txt");
-		
+
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(res)));
-		
+
 		List<String> colNames = new ArrayList<String>();
 		List<String> rowNames = new ArrayList<String>();
 
-		Object[][] elements =null;
+		Object[][] elements = null;
 
 		List<? extends Entity> colList = db.find(db.getClassForName(data.getFeatureType()));
 		List<? extends Entity> rowList = db.find(db.getClassForName(data.getTargetType()));
@@ -254,7 +263,7 @@ public class Helper
 
 		out.write("\n");
 		out.flush();
-		
+
 		for (Entity e : rowList)
 		{
 			rowNames.add(e.get("name").toString());
@@ -327,18 +336,17 @@ public class Helper
 				out.flush();
 			}
 		}
-		
+
 		out.close();
-		
+
 		MemoryDataMatrixInstance<Object> mm = new MemoryDataMatrixInstance<Object>(rowNames, colNames, elements);
 		mm.changeDataName(data.getName());
 
 		return mm;
 	}
 
-	private File createAndWriteRandomMatrix(File inputMatrixDir, Data data, Database db, int totalRows,
-			int totalCols, int maxStringLength, boolean sparse, boolean fixedTextLength) throws IOException,
-			DatabaseException
+	private File createAndWriteRandomMatrix(File inputMatrixDir, Data data, Database db, int totalRows, int totalCols,
+			int maxStringLength, boolean sparse, boolean fixedTextLength) throws IOException, DatabaseException
 	{
 		File res = new File(inputMatrixDir.getAbsolutePath() + File.separator
 				+ NameConvention.escapeFileName(data.getName()) + ".txt");
@@ -510,7 +518,7 @@ public class Helper
 		}
 		System.out.print(vals.substring(0, vals.length() - 2) + ")\n");
 	}
-	
+
 	private List<Individual> getRandomIndividuals(Investigation inv, int amount)
 	{
 		List<Individual> indList = new ArrayList<Individual>();
@@ -553,6 +561,17 @@ public class Helper
 			}
 		}
 		return marList;
+	}
+
+	public static String readFileToString(File file) throws FileNotFoundException, Exception
+	{
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		String res = "";
+		String line;
+		while ((line = br.readLine()) != null){
+			res += line+"\n";
+		}
+		return res;
 	}
 
 	public static boolean storageDirsAreAvailable(Database db) throws Exception

@@ -280,46 +280,15 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 	{
 		return rowNames;
 	}
-
-	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowEntityValues(JDBCDatabase db, QueryRule... rules)
-			throws Exception
+	
+	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowEntityValues(JDBCDatabase db, QueryRule... rules) throws Exception
 	{
-		List<String> colNames = this.getColNames();
-		// 1. query on row type entities
-		Query q = db.query(db.getClassForName(this.getData().getTargetType()));
-		// 2. entities must be present in row names
-		q.addRules(new QueryRule("name", Operator.IN, this.getRowNames()));
-		// 3. now add other rules
-		q.addRules(rules);
-		List<Nameable> subRow = q.find();
-		List<String> rowNames = new ArrayList<String>();
-		for (Nameable i : subRow)
-		{
-			rowNames.add(i.getName());
-		}
-		AbstractDataMatrixInstance res = this.getSubMatrix(rowNames, colNames);
-		return res;
+		return AbstractDataMatrixQueries.getSubMatrixFilterByRowEntityValues((AbstractDataMatrixInstance<Object>) this, db, rules);
 	}
 
-	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByColEntityValues(JDBCDatabase db, QueryRule... rules)
-			throws Exception
+	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByColEntityValues(JDBCDatabase db, QueryRule... rules) throws Exception
 	{
-		List<String> rowNames = this.getRowNames();
-		// 1. query on column type entities
-		Query q = db.query(db.getClassForName(this.getData().getFeatureType()));
-		// 2. entities must be present in column names
-		q.addRules(new QueryRule("name", Operator.IN, this.getColNames()));
-		// 3. now add other rules
-		q.addRules(rules);
-		List<Nameable> subCol = q.find();
-		List<String> colNames = new ArrayList<String>();
-		for (Nameable i : subCol)
-		{
-			colNames.add(i.getName());
-			System.out.println("ADDED: " + i.getName());
-		}
-		AbstractDataMatrixInstance res = this.getSubMatrix(rowNames, colNames);
-		return res;
+		return AbstractDataMatrixQueries.getSubMatrixFilterByColEntityValues((AbstractDataMatrixInstance<Object>) this, db, rules);
 	}
 
 	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowMatrixValues(QueryRule... rules) throws Exception
@@ -329,7 +298,7 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 
 	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByColMatrixValues(QueryRule... rules) throws Exception
 	{
-		throw new Exception("Unimplemented.");
+		return AbstractDataMatrixQueries.getSubMatrixFilterByColMatrixValues((AbstractDataMatrixInstance<Object>) this, rules);
 	}
 
 	public AbstractDataMatrixInstance<Object> getMatrixSortByRowEntityValues(boolean asc) throws Exception
