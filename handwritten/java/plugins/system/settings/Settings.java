@@ -30,6 +30,10 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 	private static final long serialVersionUID = 4037475429590054858L;
 	private SettingsModel model = new SettingsModel();
 	public static String systemTableName = "XGAPsettings_090527PBDB00QCGEXP4G";
+	//public static String systemTableName = "XGAPsettings_090527PBDB00QCGEXP4G";
+	// joeri: first of all, this name is quite arbitrary :)
+	// secondly, if you change it, also update the usage in the documentation (use Find)
+	// thirdly, having this hacky 'off the grid' table might be very bad, so updates here are not useful
 	public static String fileDirField = "filedirpath";
 	public static String verifiedField = "verified";
 	private static Pattern MsWindowsDrive = Pattern.compile("^([a-zA-Z]:\\\\)(.+)");
@@ -96,10 +100,12 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 		else{
 			System.out.println("DetectOS.getOS() = " + DetectOS.getOS());
 			if(DetectOS.getOS().startsWith("windows")){
-//			WTF: MAC nerds Always throw an exception for windows				
+//				WTF: MAC nerds Always throw an exception for windows				
 //				throw new Exception(
 //				"Drive designation not used (eg. 'C:&#92;data') but your OS seems to be a Windows variant.");
-	
+//	joeri: this exception is here is helpful, why comment it out? non-windows drive on a windows system..
+				throw new Exception(
+				"Drive designation not used (eg. 'C:&#92;data') but your OS seems to be a Windows variant.");
 			}
 			if(!value.startsWith(File.separator)){
 				value = File.separator + value;
