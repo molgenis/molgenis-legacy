@@ -71,6 +71,10 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 			//return new ${package}.JDBCDatabase(dataSource, new File("${db_filepath}"));
 		</#if>
 	}
+	
+	public static String getDBDriver(){
+		return "${db_driver}";
+	}
 
 	public Login createLogin( Database db, HttpServletRequest request )
 	{
