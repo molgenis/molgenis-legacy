@@ -5,8 +5,6 @@ import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 
-import org.molgenis.MolgenisOptions;
-
 import app.servlet.MolgenisServlet;
 
 public class RunStandalone extends JFrame{
