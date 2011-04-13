@@ -26,6 +26,8 @@ public class RepeatingPanel extends DivPanel
 		// remove button for each row to remove the div shown above
 		ActionInput removeButton = new ActionInput(this.getName() + "_remove", "Remove row", "Remove");
 		removeButton.setJavaScriptAction("this.parentNode.parentNode.removeChild(this.parentNode); return false;");
+		if (!this.isNillable())
+			removeButton.setJavaScriptAction("if (" + this.getName() + "_remove.length == undefined) { return false; } " + removeButton.getJavaScriptAction());
 
 		// repeating block
 		String repeatableDiv = super.toHtml() + removeButton.toHtml();
@@ -35,6 +37,10 @@ public class RepeatingPanel extends DivPanel
 		addButton.setJavaScriptAction("var div = document.createElement('DIV'); this.parentNode.insertBefore(div,this); div.innerHTML = '"
 						+ StringEscapeUtils.escapeJavaScript(StringEscapeUtils
 								.escapeHtml(repeatableDiv)) + "'; return false");
+//		if (!this.isNillable())
+//		{
+//			addButton.setJavaScriptAction(this.getName() + "_remove.style.display = 'block'; " + addButton.getJavaScriptAction());
+//		}
 
 		// create a div to contain the panel
 		return "<div style=\"clear:both; display:block\">" + repeatableDiv + addButton.toHtml() + "</div>";
