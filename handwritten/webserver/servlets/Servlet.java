@@ -27,7 +27,7 @@ public abstract class Servlet extends HttpServlet{
 	private boolean useCompression;
 	private String charSet;
 	static final String BYTES_UNIT = "bytes";
-	private static boolean logenabled = false;
+	private static boolean logenabled = true;
 	private String website_root_path = "WebContent";
 	
 	public Servlet(){

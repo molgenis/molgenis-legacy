@@ -29,7 +29,7 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 
 	private static final long serialVersionUID = 4037475429590054858L;
 	private SettingsModel model = new SettingsModel();
-	public static String systemTableName = "systemsettings_090527PBDB00QCGEXP4G";
+	public static String systemTableName = "XGAPsettings_090527PBDB00QCGEXP4G";
 	public static String fileDirField = "filedirpath";
 	public static String verifiedField = "verified";
 	private static Pattern MsWindowsDrive = Pattern.compile("^([a-zA-Z]:\\\\)(.+)");
@@ -96,8 +96,9 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 		else{
 			System.out.println("DetectOS.getOS() = " + DetectOS.getOS());
 			if(DetectOS.getOS().startsWith("windows")){
-				throw new Exception(
-				"Drive designation not used (eg. 'C:&#92;data') but your OS seems to be a Windows variant.");
+//			WTF: MAC nerds Always throw an exception for windows				
+//				throw new Exception(
+//				"Drive designation not used (eg. 'C:&#92;data') but your OS seems to be a Windows variant.");
 	
 			}
 			if(!value.startsWith(File.separator)){
@@ -148,8 +149,7 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 							}
 						}
 
-					} else if (this.model.getHasSystemSettingsTable().equals(
-							"false")) {
+					} else if (this.model.getHasSystemSettingsTable().equals("false")) {
 						
 						System.out.println("false");
 						
@@ -179,8 +179,7 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 						System.out.println("ERROR!");
 					}
 
-				} else if (request.getString("__action").equals(
-						"deleteFileDirPath")) {
+				} else if (request.getString("__action").equals("deleteFileDirPath")) {
 					boolean success = TableUtil
 							.removeTable(db, systemTableName);
 					if (!success) {
@@ -189,12 +188,10 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 					
 					resetModel();
 					
-				} else if (request.getString("__action").equals(
-						"testDirLocValid")) {
+				} else if (request.getString("__action").equals("testDirLocValid")) {
 					System.out.println("*** testDirLocValid");
 					if (this.model.getHasSystemSettingsTable().equals("true")) {
-						Object o = TableUtil.getFromTable(db, systemTableName,
-								fileDirField);
+						Object o = TableUtil.getFromTable(db, systemTableName,	fileDirField);
 						if (o != null) {
 							
 //							File base = new File("");
@@ -344,8 +341,7 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 	public void reload(Database db) {
 
 		try{
-		this.model.setHasSystemSettingsTable(TableUtil.hasTable(db,
-				systemTableName));
+		this.model.setHasSystemSettingsTable(TableUtil.hasTable(db, systemTableName));
 		
 		this.model.setVerified(false);
 

@@ -4,10 +4,10 @@ import org.molgenis.framework.ui.html.Container;
 
 public class UserLoginVO
 {
-	private Container authenticationForm;
-	private Container userAreaForm;
-	private Container registrationForm;
-	private Container forgotForm;
+	private Container authenticationForm= new Container();
+	private Container userAreaForm = new Container();
+	private Container registrationForm = new Container();
+	private Container forgotForm= new Container();
 
 	public Container getAuthenticationForm() {
 		return authenticationForm;

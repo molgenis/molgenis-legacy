@@ -492,10 +492,9 @@ public class UserLogin extends PluginModel<Entity>
 	@Override
 	public boolean isVisible()
 	{
-//		if (getLogin() instanceof SimpleLogin)
-//			return false;
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		///DANNY: This is wrong the login screen should always be visible !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		if (getLogin() instanceof SimpleLogin)
+			return false;
+
 		return true;
 	}
 

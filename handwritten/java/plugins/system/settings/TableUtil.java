@@ -1,5 +1,7 @@
 package plugins.system.settings;
 
+import generic.Utils;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -10,6 +12,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.util.Tuple;
 
 import app.JDBCDatabase;
+import app.servlet.MolgenisServlet;
 
 public class TableUtil {
 
@@ -43,14 +46,18 @@ public class TableUtil {
 	}
 
 	public static boolean addSystemSettingsTable(JDBCDatabase db, String tableName, String fieldName) {
+		Utils.console("!!!!!!!!!!!!!!!!!!!");
 		boolean success = false;
 		Statement stmt = null;
 		Connection conn = null;
 		try {
 			conn = db.getConnection();
 			stmt = conn.createStatement();
-			stmt.execute("CREATE TABLE " + tableName
-					+ " ("+fieldName+" VARCHAR(255), verified BOOL DEFAULT 0);");
+			if(MolgenisServlet.getDBDriver().contains("hsql")){
+			stmt.execute("CREATE TABLE " + tableName + " ("+fieldName+" VARCHAR(255), verified BOOLEAN DEFAULT 0);");
+			}else{
+				stmt.execute("CREATE TABLE " + tableName + " ("+fieldName+" VARCHAR(255), verified BOOL DEFAULT 0);");
+			}
 			success = true;
 			JDBCDatabase.closeStatement(stmt);
 			db.close();
@@ -141,10 +148,21 @@ public class TableUtil {
 
 	public static String hasTable(JDBCDatabase db, String tableName) {
 		try {
-			List<Tuple> res = db.sql("show tables");
+			
+			List<Tuple> res = null;
+			//List<Tuple> res = db.sql("SHOW tables;");
+			if(MolgenisServlet.getDBDriver().contains("hsql")){
+				res = db.sql("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.SYSTEM_COLUMNS WHERE TABLE_NAME NOT LIKE 'SYSTEM_%'");
+			}else{
+				res = db.sql("SHOW tables;");
+			}
 			List<String> tableNames = new ArrayList<String>(res.size());
 			for (Tuple t : res) {
-				tableNames.add(t.getString(1).toLowerCase());
+				tableNames.add(t.getString(0).toLowerCase());
+			}
+			
+			for (String s : tableNames) {
+				System.out.println(s);
 			}
 			if (tableNames.contains(tableName.toLowerCase())) {
 				return "true";
