@@ -14,7 +14,7 @@ public class LoadInvestigationFromDirectory
 	{
 		String directory = "C:/work/workspace_web/molgenis4phenotype/data/Europhenome";
 
-		Database db = new JDBCDatabase("C:/work/workspace_web/gcc/handwritten/apps/org/molgenis/pheno/pheno.properties");
+		Database db = new JDBCDatabase("C:/work/workspace_web/molgenis_apps/handwritten/apps/org/molgenis/pheno/pheno.properties");
 		CsvImport.importAll(new File(directory), db, new SimpleTuple());
 	}
 }
