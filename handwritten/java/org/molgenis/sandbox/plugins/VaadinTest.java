@@ -206,12 +206,12 @@ public class VaadinTest extends Application {
 			for (int i=0; i<investigationID.size(); i++) {
 				Object id = ic.addItem();
 			        
-				value = investigationID.get(i).getStartDate().toString();
-				if (value != null) ic.getContainerProperty(id, "Cohort").setValue(value);
-				value =  investigationID.get(i).get__Type().toString();	
-				if (value != null) ic.getContainerProperty(id, "Investigation").setValue(value);
-				value = investigationID.get(i).getStartDate().toString();
-	            if (value != null) ic.getContainerProperty(id, "Date").setValue(value);
+				if ((value = investigationID.get(i).getStartDate().toString()) != null) ic.getContainerProperty(id, "Cohort").setValue(value);
+				//if ((value = investigationID.get(i).get__Type().toString())!= null) ic.getContainerProperty(id, "Investigation").setValue(value);
+	            //if ((value = investigationID.get(i).getStartDate().toString()) != null) ic.getContainerProperty(id, "Date").setValue(value);
+	            
+				if ((value = Biobank.get(i).getName()) != null) ic.getContainerProperty(id, "Biobank name - Cohort").setValue(value);
+
 	            
 	            System.out.println("Description>>>>>"+investigationID.get(i).getDescription());
 	           
