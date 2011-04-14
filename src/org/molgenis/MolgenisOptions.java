@@ -144,9 +144,12 @@ public class MolgenisOptions
 	@Option(name = "auth_loginclass", param = "auth_loginclass", type = Option.Type.REQUIRED_ARGUMENT, usage = "Expert option.")
 	public String auth_loginclass = "org.molgenis.framework.security.SimpleLogin";
 
-	/** Name of form/plugin to redirect to after login */
-	@Option(name = "auth_redirect", param = "auth_redirect", type = Option.Type.OPTIONAL_ARGUMENT, usage = "Get name of form/plugin to redirect to after login. Default: null")
-	public String auth_redirect = null;
+//WHOEVER ADDED this option SHOULD EMAIL ME ON: Danny.Arends@gmail.com
+//IF you don't know how to specify options PLEASE DON'T !!!! This is causing null pointer exceptions everyWHERE !!!!!
+	
+//	/** Name of form/plugin to redirect to after login */
+//	@Option(name = "auth_redirect", param = "auth_redirect", type = Option.Type.OPTIONAL_ARGUMENT, usage = "Get name of form/plugin to redirect to after login. Default: null")
+//	public String auth_redirect = null;
 
 	// @Option(name = "force_lowercase_names", param = "force_lowercase_names",
 	// type = Option.Type.REQUIRED_ARGUMENT, usage =
