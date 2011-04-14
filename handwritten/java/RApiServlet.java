@@ -77,9 +77,13 @@ public class RApiServlet extends app.servlet.MolgenisServlet
 			s +=("#load cluster calculation scripts\n");
 			
 			File[] listing =  new File((this.getClass().getResource("plugins/cluster/R/ClusterJobs/R")).getFile()).listFiles();
-			for(File f : listing){
-				s +=("source(\""+rSource+"plugins/cluster/R/ClusterJobs/R/"+f.getName()+"\")\n");
-				
+			if (listing != null) {
+				for (File f : listing){
+					s +=("source(\""+rSource+"plugins/cluster/R/ClusterJobs/R/"+f.getName()+"\")\n");
+					
+				}
+			} else {
+				s =("#No R files seem available; did you generate R?");
 			}
 			s +=("\n");
 			
@@ -98,7 +102,7 @@ public class RApiServlet extends app.servlet.MolgenisServlet
 			}
 			catch (Exception e)
 			{
-				s =("#No database connection available to handle R-api");
+				s += "#No database connection available to handle R-api";
 				//throw new IOException(e);
 			}
 		
