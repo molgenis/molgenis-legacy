@@ -385,6 +385,10 @@ public class Webserver implements ServletContext, Serializable {
 	public boolean isRunning() {
 		return running;
 	}
+	
+	public void shutdown() {
+		running = false;
+	}
 
 	protected transient Acceptor acceptor;
 
