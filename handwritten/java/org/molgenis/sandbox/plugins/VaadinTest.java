@@ -307,7 +307,7 @@ public class VaadinTest extends Application {
 	private static IndexedContainer FillBBMRIData(Database db, CommonService ct) {
 		
         IndexedContainer ic = new IndexedContainer();
-
+        String value;
 		
         for (String p : BBMRIFields) {
             ic.addContainerProperty(p, String.class, "");
@@ -323,15 +323,21 @@ public class VaadinTest extends Application {
 			for (int i=0; i<invList.size(); i++) {
 				Object id = ic.addItem();
 			        
-	            //ic.getContainerProperty(id, "Cohort").setValue(invList.get(i).getDescription());
+				value = invList.get(i).getStartDate().toString();
+				if (value != null) ic.getContainerProperty(id, "Cohort").setValue(value);
+				value =  invList.get(i).get__Type().toString();	
+				if (value != null) ic.getContainerProperty(id, "Investigation").setValue(value);
+				value = invList.get(i).getStartDate().toString();
+	            if (value != null) ic.getContainerProperty(id, "Date").setValue(value);
+	            
 	            System.out.println("Description>>>>>"+invList.get(i).getDescription());
 	           
 
 	            //ic.getContainerProperty(id, "Topic").setValue(invList.get(i).get__Type());
 		        // ic.getContainerProperty(id, "Category").setValue(invList.get(0).getName());
 
-	            System.out.println(">>>>>"+invList.get(0).getDescription());
-	            System.out.println(">>>>>"+invList.get(0).get__Type());
+	            System.out.println(">>>>>"+invList.get(i).getDescription());
+	            System.out.println(">>>>>"+invList.get(i).get__Type());
 	            System.out.println(">>>>>"+invList.get(i).getStartDate());
 	            System.out.println(">>>>>"+invList.get(i).getEndDate());
 	            System.out.println(">>>>>"+invList.get(i).getContacts_LastName());
