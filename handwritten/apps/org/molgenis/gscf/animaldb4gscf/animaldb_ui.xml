@@ -9,13 +9,13 @@
 	<plugin name="AnimalDBHeader" type="plugins.header.AnimalDBHeader" />
 
 	<menu name="mainmenu" position="left" startswith="WelcomeScreen">
-
-		<plugin name="AnimalDBWelcomeScreen" type="plugins.welcome.AnimalDBWelcomeScreenPlugin"
-			label="Welcome" />
 			
 		<form name="Investigations" label="Browse investigations" entity="Investigation" compact_view="name">
 				<form name="Individuals" entity="Individual" />
 		</form>
+		
+		<plugin name="PreFillDatabase" type="plugins.fillanimaldb.PreFillDatabasePlugin"
+			label="Load required data" />
 
 	</menu>
 
