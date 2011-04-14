@@ -8,7 +8,7 @@ public class AnimalDBGenerate
 	public static void main(String[] args) throws Exception
 	{
 		Logger logger = Logger.getLogger("AnimalDBGenerate");
-		new Molgenis("handwritten/apps/org/molgenis/animaldb/animaldb.properties").generate();
+		new Molgenis("handwritten/apps/org/molgenis/gscf/animaldb4gscf/animaldb.properties").generate();
 		logger.info("AnimalDB generated successfully!");
 	}
 }
