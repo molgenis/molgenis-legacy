@@ -6,7 +6,7 @@
 
 <molgenis name="molgenis_apps" label="AnimalDB">
 
-	<plugin name="AnimalDBHeader" type="plugins.header.AnimalDBHeader" />
+	<plugin name="AnimalDBHeader" type="plugins.header.AnimalDb4GscfHeader" />
 
 	<menu name="mainmenu" position="left" startswith="WelcomeScreen">
 			
