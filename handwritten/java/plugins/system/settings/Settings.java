@@ -7,6 +7,8 @@
 
 package plugins.system.settings;
 
+import generic.Utils;
+
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -58,18 +60,13 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 
 	@Override
 	public void handleRequest(Database db, Tuple request) {
-
 		System.out.println("*** request:\n" + request.toString());
-
-		System.out.println("*** handleRequest WRAPPER __action: "
-				+ request.getString("__action"));
+		System.out.println("*** handleRequest WRAPPER __action: " + request.getString("__action"));
 		this.handleRequest(db, request, null);
 	}
 
 	@Override
-	public boolean isVisible()
-	{
-		//you can use this to hide this plugin, e.g. based on user rights.
+	public boolean isVisible(){
 		if (this.getLogin().isAuthenticated()){
 			return true;
 		} else {
@@ -90,22 +87,19 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 			//matched a drive letter + :\ combination, ie. C:\
 			//so MS WINDOWS OS
 			//do not add an additional seperator!
-			System.out.println("m matches");
 			System.out.println("DetectOS.getOS() = " + DetectOS.getOS());
 			if(!DetectOS.getOS().startsWith("windows")){
-				throw new Exception(
-				"Drive designation used but your OS does not seem to be a Windows variant.");
+				throw new Exception("Drive designation used but your OS does not seem to be a Windows variant.");
 			}
-		}
-		else{
+		}else{
 			System.out.println("DetectOS.getOS() = " + DetectOS.getOS());
 			if(DetectOS.getOS().startsWith("windows")){
 //				WTF: MAC nerds Always throw an exception for windows				
 //				throw new Exception(
 //				"Drive designation not used (eg. 'C:&#92;data') but your OS seems to be a Windows variant.");
 //	joeri: this exception is here is helpful, why comment it out? non-windows drive on a windows system..
-				throw new Exception(
-				"Drive designation not used (eg. 'C:&#92;data') but your OS seems to be a Windows variant.");
+				
+				throw new Exception("Drive designation not used (eg. 'C:&#92;data') but your OS seems to be a Windows variant.");
 			}
 			if(!value.startsWith(File.separator)){
 				value = File.separator + value;
@@ -116,66 +110,40 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 	public void handleRequest(Database db, Tuple request, PrintWriter out) {
 		if (request.getString("__action") != null) {
 
-			System.out.println("*** handleRequest __action: "
-					+ request.getString("__action"));
-
+			System.out.println("*** handleRequest __action: " + request.getString("__action"));
 			try {
-
 				if (request.getString("__action").equals("setFileDirPath")) {
-
 					resetModel();
 					System.out.println("resetModel");
-					
+
 					if (this.model.getHasSystemSettingsTable().equals("true")) {
 						
 						System.out.println("true");
-						
 						String value = request.getString("fileDirPath");
-						
-						if(value == null || value.equals("") || value.equals("null")){
-							throw new Exception(
-									"Empty path not allowed");
-						}
+						if(value == null || value.equals("") || value.equals("null")) throw new Exception("Empty path not allowed");
 						
 						OsSpecificStuff(value);
-
-						Object o = TableUtil.getFromTable(db, systemTableName,
-								fileDirField);
+						Object o = TableUtil.getFromTable(db, systemTableName, fileDirField);
 
 						if (o != null) {
-							throw new Exception(
-									"Could not write field in system table: already present.");
-
+							throw new Exception("Could not write field in system table: already present.");
 						} else {
-							boolean success = TableUtil.insertInTable(db,
-									systemTableName, fileDirField, value);
-							if (!success) {
-								throw new Exception(
-										"Could not write field in system table.");
-							}
+							boolean success = TableUtil.insertInTable(db,systemTableName, fileDirField, value);
+							if (!success) throw new Exception("Could not write field in system table.");
 						}
-
-					} else if (this.model.getHasSystemSettingsTable().equals("false")) {
+					} else if (model.getHasSystemSettingsTable().equals("false")) {
+						System.out.println("getHasSystemSettingsTable: False");
 						
-						System.out.println("false");
-						
-						boolean success = TableUtil.addSystemSettingsTable(db,
-								systemTableName, fileDirField);
-						if (!success) {
-							throw new Exception("Could not add system table.");
-						}
+						boolean success = TableUtil.addSystemSettingsTable(db, systemTableName, fileDirField);
+						if (!success) throw new Exception("Could not add system table.");
 
 						String value = request.getString("fileDirPath");
 						
 						if(value == null || value.equals("") || value.equals("null")){
-							throw new Exception(
-									"Empty path not allowed");
+							throw new Exception("Empty path not allowed");
 						}
-						
 						OsSpecificStuff(value);
-						
-						success = TableUtil.insertInTable(db, systemTableName,
-								fileDirField, value);
+						success = TableUtil.insertInTable(db, systemTableName, fileDirField, value);
 						if (!success) {
 							throw new Exception(
 									"Could not write field in system table.");
@@ -186,8 +154,7 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 					}
 
 				} else if (request.getString("__action").equals("deleteFileDirPath")) {
-					boolean success = TableUtil
-							.removeTable(db, systemTableName);
+					boolean success = TableUtil.removeTable(db, systemTableName);
 					if (!success) {
 						throw new Exception("Remove failed");
 					}
@@ -242,21 +209,11 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 						throw new Exception("No system table");
 					}
 
-				} else if (request.getString("__action").equals(
-						"testDirRwValid")) {
+				} else if (request.getString("__action").equals("testDirRwValid")) {
 					System.out.println("*** testDirRwValid");
 					if (this.model.getHasSystemSettingsTable().equals("true")) {
-						Object o = TableUtil.getFromTable(db, systemTableName,
-								fileDirField);
+						Object o = TableUtil.getFromTable(db, systemTableName, fileDirField);
 						if (o != null) {
-							
-//							File base = new File("");
-//							int a = base.getAbsolutePath().split(File.separator).length - 2;
-//							String goback = "";
-//							for(int i = 0; i < a; i++){
-//								goback+=File.separator+"..";
-//							}
-//							//String path = "/Users/joerivandervelde";
 							String path = o.toString();
 							
 							File f = null;
@@ -265,58 +222,48 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 							}else{
 								f = new File(File.separator + path);
 							}
-							
-							//String filePath = goback + File.separator + path;
-							
-							
-							
 							if (f.exists()) {
-								File tmp = new File(f.getAbsolutePath()
-										+ File.separator + "tmp.txt");
+								File tmp = new File(f.getAbsolutePath() + File.separator + "tmp.txt");
 								boolean createSuccess = tmp.createNewFile();
 								if(createSuccess){
 									System.out.println("*** created " + tmp.getAbsolutePath());
-								FileOutputStream fos = new FileOutputStream(tmp);
-								DataOutputStream dos = new DataOutputStream(fos);
-								dos.writeChars("test");
-								dos.close();
-								fos.close();
+									FileOutputStream fos = new FileOutputStream(tmp);
+									DataOutputStream dos = new DataOutputStream(fos);
+									dos.writeChars("test");
+									dos.close();
+									fos.close();
 								
-								boolean deleteSuccess = tmp.delete();
-								if(deleteSuccess){
-									this.model.setRwDirSuccess("success");
-								}else{
-									this.model.setRwDirSuccess("fail");
-									throw new Exception("Could not delete file");
-								}
-								
-								}else{
-									this.model.setRwDirSuccess("fail");
-									throw new Exception("Could not write to file");
-								}
-								
-							} else {
+									boolean deleteSuccess = tmp.delete();
+									if(deleteSuccess){
+										this.model.setRwDirSuccess("success");
+									}else{
+										this.model.setRwDirSuccess("fail");
+										throw new Exception("Could not delete file");
+									}
+							}else{
 								this.model.setRwDirSuccess("fail");
-								throw new Exception("Path does not exist");
+								throw new Exception("Could not write to file");
 							}
-						}else{
+						} else {
 							this.model.setRwDirSuccess("fail");
-							throw new Exception("No field in system table");
+							throw new Exception("Path does not exist");
 						}
 					}else{
 						this.model.setRwDirSuccess("fail");
-						throw new Exception("No system table");
+						throw new Exception("No field in system table");
 					}
+				}else{
+					this.model.setRwDirSuccess("fail");
+					throw new Exception("No system table");
 				}
-
-				this.setMessages();
-			} catch (Exception e) {
-				e.printStackTrace();
-				this.setMessages(new ScreenMessage(e.getMessage() != null ? e
-						.getMessage() : "null", false));
 			}
+			this.setMessages();
+		} catch (Exception e) {
+			e.printStackTrace();
+			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 		}
 	}
+}
 	
 	private boolean folderExists(String path){
 		File f = new File(path);
@@ -347,68 +294,48 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 	public void reload(Database db) {
 
 		try{
-		this.model.setHasSystemSettingsTable(TableUtil.hasTable(db, systemTableName));
-		
-		this.model.setVerified(false);
-
-		if (this.model.getHasSystemSettingsTable().equals("true")) {
-			Object o = TableUtil
-					.getFromTable(db, systemTableName, fileDirField);
-			if (o != null) {
-				String dir = o.toString();
-				if (this.model.getKeyValsFromSettingsTable() == null) {
-					HashMap<String, String> keyVals = new HashMap<String, String>();
-					keyVals.put(fileDirField, dir);
-					this.model.setKeyValsFromSettingsTable(keyVals);
+			model.setHasSystemSettingsTable(TableUtil.hasTable(db, systemTableName));
+			model.setVerified(false);
+			if (this.model.getHasSystemSettingsTable().equals("true")) {
+				Object o = TableUtil.getFromTable(db, systemTableName, fileDirField);
+				if (o != null) {
+					String dir = o.toString();
+					if (this.model.getKeyValsFromSettingsTable() == null) {
+						HashMap<String, String> keyVals = new HashMap<String, String>();
+						keyVals.put(fileDirField, dir);
+						this.model.setKeyValsFromSettingsTable(keyVals);
+					} else {
+						this.model.getKeyValsFromSettingsTable().put(fileDirField,dir);
+					}
+					model.setFolderExists(folderExists(dir));
+					if(model.getFolderExists())	model.setFolderHasContent(folderHasContent(dir));
+					if(model.getMkDirSuccess() != null && model.getRwDirSuccess() != null && (model.getMkDirSuccess().equals("success") || model.getMkDirSuccess().equals("exists")) && model.getRwDirSuccess().equals("success")){
+						//TableUtil.insertInTable(db, systemTableName, "verified", "1");
+						System.out.println("*** UPDATING!!");
+						boolean success = TableUtil.updateInTable(db, systemTableName, verifiedField, "1", fileDirField+"='"+dir+"'");
+						if (!success) throw new Exception("Could not update system table.");
+					}
 				} else {
-					this.model.getKeyValsFromSettingsTable().put(fileDirField,
-							dir);
-				}
-				
-				this.model.setFolderExists(folderExists(dir));
-				if(this.model.getFolderExists()){
-					this.model.setFolderHasContent(folderHasContent(dir));
-				}
-				
-				if(model.getMkDirSuccess() != null && model.getRwDirSuccess() != null && (model.getMkDirSuccess().equals("success") || model.getMkDirSuccess().equals("exists")) && model.getRwDirSuccess().equals("success")){
-					//TableUtil.insertInTable(db, systemTableName, "verified", "1");
-					System.out.println("*** UPDATING!!");
-					boolean success = TableUtil.updateInTable(db, systemTableName, verifiedField, "1", fileDirField+"='"+dir+"'");
-					if (!success) {
-						throw new Exception("Could not update system table.");
+					if (this.model.getKeyValsFromSettingsTable() == null) {
+						HashMap<String, String> keyVals = new HashMap<String, String>();
+						keyVals.put(fileDirField, "NULL");
+						model.setKeyValsFromSettingsTable(keyVals);
+					} else {
+						model.getKeyValsFromSettingsTable().put(fileDirField, "NULL");
 					}
 				}
+				o = TableUtil.getFromTable(db, systemTableName, verifiedField);
+				if(o != null){
+					if(o.toString().equals("true"))	model.setVerified(true);
+				}
+			}else{
+				Utils.console("No system table trying to create one ???");
 				
-			} else {
-				if (this.model.getKeyValsFromSettingsTable() == null) {
-					HashMap<String, String> keyVals = new HashMap<String, String>();
-					keyVals.put(fileDirField, "NULL");
-					this.model.setKeyValsFromSettingsTable(keyVals);
-				} else {
-					this.model.getKeyValsFromSettingsTable().put(fileDirField,
-							"NULL");
-				}
 			}
-			
-			o = TableUtil.getFromTable(db, systemTableName, verifiedField);
-			
-			if(o != null){
-				//System.out.println(o + " and "+ o.toString());
-				if(o.toString().equals("true")){
-					this.model.setVerified(true);
-				}
-			}
-			
-		}
-		
-		
-		
 		}catch(Exception e){
 			e.printStackTrace();
-			this.setMessages(new ScreenMessage(e.getMessage() != null ? e
-					.getMessage() : "null", false));
+			setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 		}
-
 	}
 
 }
