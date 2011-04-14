@@ -22,6 +22,7 @@
 
 		<menu name="systemmenu" position="left" label="System">
 			<menu name="tablemenu" position="left" label="Content tables">
+				<form name="investigation" entity="Investigation" view="list" label="Investigations" />
 				<form name="ontology" entity="Ontology" view="list" label="Ontologies" />
 				<form name="ontologyterm" entity="OntologyTerm" view="list" label="Ontology terms" />
 				<form name="code" entity="Code" view="list" label="Code table" />
