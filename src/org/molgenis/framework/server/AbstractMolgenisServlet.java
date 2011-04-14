@@ -395,7 +395,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		{
 			db = getDatabase();
 			// db.beginTx(); DISCUSSION
-
+			System.err.println("???" + db);
 			if(db != null){
 				dbAvailable = true;
 				logger.info("created database " + db);
@@ -405,7 +405,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		}
 		catch (Exception e)
 		{
-			logger.error("database creation failed: " + e);
+			logger.error("Database creation failed: " + e.getMessage());
+			e.printStackTrace();
 			//throw new DatabaseException(e);
 			dbErrorMessage = e.getMessage();
 		}
