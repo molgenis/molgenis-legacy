@@ -68,7 +68,7 @@ public class RunStandalone extends JFrame implements MouseListener{
 		g2d.draw3DRect(129, 84, 42, 22, true);
 		g2d.setColor(Color.GREEN);
 		g2d.drawString("START",131,100);
-		if(webserverthread.isAlive()){
+		if(webserverthread != null && webserverthread.isAlive()){
 			g2d.setColor(Color.GREEN);
 		}else{
 			g2d.setColor(Color.RED);
