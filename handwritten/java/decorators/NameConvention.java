@@ -180,12 +180,17 @@ public class NameConvention
 		//pattern for bbmri ([a-zA-Z0-9_\\s\\-:.(),;\\+])
 		String pattern = "([<>/a-zA-Z0-9_\\s\\-:.(),;\\+])";
 		try {
+			//what happens here????
+			//where is the file 'pattern'?
 			String fileName = new File(NameConvention.class.getResource("pattern").getFile().replace("%20", " ")).getAbsolutePath();
+			//why is a Scanner constructed around this file?
 			Scanner scanner = new Scanner(new FileInputStream(fileName));
 			if (scanner.hasNext() == true) {
+				//why is pattern overwritten with the next token of the scanner?
 				pattern = scanner.next();
 			}
 		} catch (Exception e) {
+			//when is an exception thrown, and why is it ignored?
 			;
 		}
 		
