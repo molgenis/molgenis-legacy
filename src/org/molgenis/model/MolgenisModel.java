@@ -24,7 +24,7 @@ public class MolgenisModel
 		try
 		{
 			logger.info("parsing db-schema from " + options.model_database);
-			Vector<String> db_files = options.model_database;
+			ArrayList<String> db_files = options.model_database;
 			for (int i = 0; i < db_files.size(); i++)
 				db_files.set(i, options.path + db_files.get(i));
 
