@@ -8,18 +8,16 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.Expression;
 import javax.persistence.metamodel.EntityType;
 
+import org.molgenis.framework.db.CsvToDatabase.IntegerWrapper;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.DatabaseMapper;
 import org.molgenis.framework.db.JoinQuery;
-import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryImp;
 import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.CsvToDatabase.IntegerWrapper;
 import org.molgenis.framework.security.Login;
 import org.molgenis.model.elements.Model;
 import org.molgenis.util.CsvReader;
@@ -27,8 +25,6 @@ import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
-
-import sun.font.LayoutPathImpl.EndType;
 
 /**
  * Java Persistence API (JPA) implementation of Database to query relational
