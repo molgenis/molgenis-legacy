@@ -13,6 +13,7 @@ package org.molgenis.util.cmdline;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -215,8 +216,11 @@ public class CmdLineParser
 						result = nxt_option;
 					}
 
-					FieldAssign field_assign = new FieldAssign(field);
-					field_assign.assign(options, result);
+					//FieldAssign field_assign = new FieldAssign(field);
+					//field_assign.assign(options, result);
+					
+					assign(opt,result,field);
+					
 				}
 				catch (Exception e)
 				{
@@ -226,6 +230,73 @@ public class CmdLineParser
 
 			prevfield = field;
 		}
+	}
+	
+	/**
+	 * Helper function to assign value to field given an Option. Wraps assignToField() and does error/warning throws.
+	 * @param opt
+	 * @param result
+	 * @param field
+	 * @throws CmdLineException
+	 */
+	private void assign(Option opt, String result, Field field) throws CmdLineException{
+		if(!assignToField(opt,result,field)){
+			if(opt.type() == Option.Type.REQUIRED_ARGUMENT)
+			{
+				throw new CmdLineException("Error in REQUIRED_ARGUMENT: " + opt.toString() + " for value: " + result);
+			}else
+			{
+				System.err.println("Error in OPTIONAL_ARGUMENT: " + opt.toString() + " for value: " + result);
+				System.err.println("Sleeping for 5 secs..");
+				try{Thread.sleep(5000);}catch (InterruptedException e){}
+			}
+		}
+	}
+	
+	/**
+	 * Assigns the actual value to the field. Wrapped by assign()
+	 * @param opt
+	 * @param result
+	 * @param field
+	 * @return
+	 * @throws CmdLineException
+	 */
+	private boolean assignToField(Option opt, String result, Field field) throws CmdLineException{
+		try {
+			switch (opt.param()) {
+	            case BOOLEAN: field.set(options, Boolean.parseBoolean(result));
+	            break;
+	            case INTEGER: field.set(options, Integer.parseInt(result));
+	            break;
+	            case DOUBLE: field.set(options, Double.parseDouble(result));
+	            break;
+	            case STRING: field.set(options, result); //don't need to parse String
+	            break;
+	            case COLLECTION:
+	            	//NOTE: We are aware of the unchecked cast, but that what you get when you play with runtime objects
+	            	@SuppressWarnings("unchecked")
+					ArrayList<String> collection = (ArrayList<String>) field.get(options);
+					for (String v : result.toString().split(",")){
+						collection.add(v);
+					}
+	            break;
+	            case FILEPATH: field.set(options, result); //TODO: check if valid filepath? check if file exists?
+	            break;
+	            case DIRPATH: field.set(options, result.endsWith("/")?result:result+"/"); //TODO: check OK? other checks needed?
+	            break;
+	            case PASSWORD : field.set(options, result); // special behaviour wanted?
+	            break;
+	            case CLASS: field.set(options, result); //TODO check if valid class name (eg. just [a-z] and .) and/or or check if class exists?
+	            break; 
+	            
+	            //if unrecognized: apply default of setting value without parsing or checks
+	            default: field.set(options, result);
+	            break;
+			}
+		} catch (Exception ex) {
+            throw new CmdLineException("Bad cast when trying to read options:\n" + ex.toString());
+		}
+		return true;
 	}
 
 	/**
@@ -277,13 +348,16 @@ public class CmdLineParser
 					result = property.getValue().toString().trim();
 				}
 
-				FieldAssign field_assign = new FieldAssign(field);
-				try {
-                                    field_assign.assign(options, result);
-				} catch (Exception ex) {
-                                    ex.printStackTrace();
-//                                    throw new CmdLineException("Unhandled situation:\n" + ex.toString());
-                                }
+				//FieldAssign field_assign = new FieldAssign(field);
+				
+				assign(opt,result,field);
+				
+//				try {
+//                                    field_assign.assign(options, result);
+//				} catch (Exception ex) {
+//                                    ex.printStackTrace();
+////                                    throw new CmdLineException("Unhandled situation:\n" + ex.toString());
+//                                }
 			}
 		}
 	}
@@ -407,7 +481,7 @@ public class CmdLineParser
 			{
 				for (int i = 0; i < taglength - option.name().length(); ++i)
 					stream.print(' ');
-				stream.println(tagopen + option.param() + tagclose);
+				stream.println(tagopen + option.param().toString() + tagclose);
 			}
 			else
 				stream.println();
