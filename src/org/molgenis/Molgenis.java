@@ -170,7 +170,7 @@ public class Molgenis {
 		if(options.copy_resources) generators.add(new MolgenisResourceCopyGen());
 
 		// DOCUMENTATION
-		if (options.generate_doc.equals("true")){
+		if (options.generate_doc){
 			//not used: generators.add(new TableDocGen());
 			//not used: generators.add(new EntityModelDocGen());
 			generators.add(new DotDocGen());
@@ -185,7 +185,7 @@ public class Molgenis {
 		if(options.generate_cpp) generators.add(new CPPCassette());
 
 		// TESTS
-		if (options.generate_tests.equals("true")){
+		if (options.generate_tests){
 			generators.add(new TestDatabaseGen());
 			generators.add(new TestCsvGen());
 			generators.add(new TestDataSetGen());
@@ -277,7 +277,7 @@ public class Molgenis {
 		}
 
 		
-		if (options.generate_Python.equals("true")){
+		if (options.generate_Python){
 			generators.add(new PythonDataTypeGen());
 		}else{
 			logger.info("Skipping Python interface ....");
@@ -285,7 +285,7 @@ public class Molgenis {
 		// generators.add(new HsqlDbGen());
 
 		// CSV
-		if (options.generate_csv.equals("true")){
+		if (options.generate_csv){
 			generators.add(new CsvReaderGen());
 			generators.add(new CsvImportByIdGen());
 			generators.add(new CsvExportGen());
@@ -300,7 +300,7 @@ public class Molgenis {
 		// generators.add(new XmlMapperGen());
 
 		// R
-		if (options.generate_R.equals("true")){
+		if (options.generate_R){
 			generators.add(new REntityGen());
 			generators.add(new RMatrixGen());
 			generators.add(new RApiGen());
@@ -308,7 +308,7 @@ public class Molgenis {
 			logger.info("Skipping R interface ....");
 		}
 		// SCREEN
-		if (options.generate_MolgenisServlet.equals("true")){
+		if (options.generate_MolgenisServlet){
 			// SERVER SETTINGS
 			generators.add(new MolgenisServletContextGen());
 			generators.add(new MolgenisContextListenerGen());
@@ -321,7 +321,6 @@ public class Molgenis {
 		// HTML
 		if (options.generate_html){
 			generators.add(new HtmlFormGen());
-	
 			generators.add(new FormScreenGen());
 			generators.add(new MenuScreenGen());
 			generators.add(new TreeScreenGen());
@@ -359,11 +358,18 @@ public class Molgenis {
 		}
 		
 		// Excel
-		if (options.generate_ExcelImport.equals("true")){
+		if (options.generate_ExcelImport){
 			generators.add(new ExcelReaderGen());
 			generators.add(new ExcelImportGen());
 			generators.add(new ExcelExportGen());
 			generators.add(new ImportWizardExcelPrognosisGen());
+			if(!options.generate_csv){
+				logger.info("Automatically including the CSV importers needed for Excel import");
+				generators.add(new CsvReaderGen());
+				generators.add(new CsvImportByIdGen());
+				generators.add(new CsvExportGen());
+				generators.add(new CsvImportGen());
+			}
 		}else{
 			logger.info("Skipping Excel importer ....");
 		}
