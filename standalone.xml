@@ -88,14 +88,12 @@
   		<unjar src="lib/jaxb-xjc-2.1.12.jar" dest="${build}"/>
   		<unjar src="lib/jaxen-1.1.jar" dest="${build}"/>
 	  	<unjar src="lib/jdom-1.0.jar" dest="${build}"/>
-  		
 	  	<unjar src="lib/jersey-json-1.1.5.jar" dest="${build}"/>
   		<unjar src="lib/jettison-1.1.jar" dest="${build}"/>
   		<unjar src="lib/jetty-6.1.21.jar" dest="${build}"/>
   		<unjar src="lib/jetty-html-6.1.21.jar" dest="${build}"/>
   		<unjar src="lib/jetty-plus-6.1.21.jar" dest="${build}"/>
   		<unjar src="lib/jetty-util-6.1.21.jar" dest="${build}"/>
-	  	
   		<unjar src="lib/joseki.jar" dest="${build}"/>
   		<unjar src="lib/jra-1.0-alpha-4.jar" dest="${build}"/>
   		<unjar src="lib/js-1.7R1.jar" dest="${build}"/>
@@ -112,17 +110,13 @@
   		<unjar src="lib/stax-utils-20060502.jar" dest="${build}"/>
   		<unjar src="lib/velocity-1.5.jar" dest="${build}"/>
   		<unjar src="lib/velocity-1.6.2.jar" dest="${build}"/>
-  		
   		<unjar src="lib/wss4j-1.5.8.jar" dest="${build}"/>
   		<unjar src="lib/wstx-asl-3.2.8.jar" dest="${build}"/>
   		<unjar src="lib/xml-resolver-1.2.jar" dest="${build}"/>
   		<unjar src="lib/XmlSchema-1.4.5.jar" dest="${build}"/>
   		<unjar src="lib/xmlsec-1.4.3.jar" dest="${build}"/>
   	-->
-  	
-  	
-
-  	
+  	  	
   	<!-- Used By applications: -->
   	<unjar src="lib/arq.jar" dest="${build}"/> 
   	<unjar src="lib/jena.jar" dest="${build}"/> 
