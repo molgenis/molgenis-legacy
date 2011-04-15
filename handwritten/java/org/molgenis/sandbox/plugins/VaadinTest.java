@@ -12,7 +12,9 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.organization.Person;
 
 import app.JDBCDatabase;
-import app.ui.CoordinatorsFormModel;
+import app.servlet.MolgenisServlet;
+//joeri: missing import
+//import app.ui.CoordinatorsFormModel;
 
 import com.vaadin.Application;
 import com.vaadin.data.Property;
@@ -57,6 +59,10 @@ public class VaadinTest extends Application {
 			
 			//TODO : we can do better that this !
 			this.db = new JDBCDatabase("/Users/despoina/Documents/GCC_workspace/molgenis_apps/handwritten/apps/org/molgenis/biobank/bbmri.molgenis.properties");
+			
+			//joeri: try using:
+			Database db = new MolgenisServlet().getDatabase();
+			
 			ct = CommonService.getInstance();
 			ct.setDatabase(this.db);
 			BBMRIData = FillBBMRIData(this.db, ct);
@@ -210,9 +216,10 @@ public class VaadinTest extends Application {
 			
 			//List  <CoordinatorsFormModel> Coordinators = db.query(CoordinatorsFormModel.class).find();
 
-			//experiment 
-			java.lang.reflect.Field[] Coordinators =  CoordinatorsFormModel.class.getDeclaredFields(); 
-			System.out.println(">>>>>>>>>>>" + Coordinators.getClass().getName());
+			//experiment
+			//joeri: missing import
+			//java.lang.reflect.Field[] Coordinators =  CoordinatorsFormModel.class.getDeclaredFields(); 
+			//System.out.println(">>>>>>>>>>>" + Coordinators.getClass().getName());
 			
 			//TODO : Is iteration for investigation right for all entities? What about BiobankPanel? 
 			for (int i=0; i<investigationID.size(); i++) {
