@@ -9,6 +9,7 @@ import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.organization.Institute;
 import org.molgenis.organization.Investigation;
+import org.molgenis.organization.Person;
 
 import app.JDBCDatabase;
 import app.ui.CoordinatorsFormModel;
@@ -39,7 +40,7 @@ public class VaadinTest extends Application {
 	//TODO : we can do better that this !
 	private static String[] BBMRIFields = {"id","Cohort", "Category", "SubCategory", "Topic", "Institutes", "Coordinators", "Current n=", "Biodata", 
 															"GWA data n=", "GWA platform", "GWA comments", "General comments", "Publications"}; 
-	private static String[] BBMRIvisibleCols = new String[] {"id","Cohort", "Category", "SubCategory", "Institutes", "Topic","General comments"};
+	private static String[] BBMRIvisibleCols = new String[] {"id","Cohort", "Category", "SubCategory", "Coordinators", "Institutes", "Topic","General comments"};
 	
 	private static Table InvestigationData = new Table();
     private static Form InvestigationEditor = new Form();
@@ -203,6 +204,10 @@ public class VaadinTest extends Application {
 			List <BiobankPanel> BiobankPanel = db.query(BiobankPanel.class).find();
 			List <OntologyTerm> Category = db.query(OntologyTerm.class).find();
 			
+			//List <CoordinatorsFormModel> Coordinators =  (List<CoordinatorsFormModel>) CoordinatorsFormModel.class.getDeclaredFields(); 
+
+			List <Person> Person = db.query(Person.class).find();
+			
 			//List  <CoordinatorsFormModel> Coordinators = db.query(CoordinatorsFormModel.class).find();
 
 			//experiment 
@@ -214,16 +219,15 @@ public class VaadinTest extends Application {
 				Object id = ic.addItem();
 			        
 				
-
-				if ((value = BiobankPanel.get(i).getName()) != null) ic.getContainerProperty(id, "id").setValue(value);
-				if ((value = Biobank.get(i).getName()) != null) ic.getContainerProperty(id, "Cohort").setValue(value);
-				if ((value = Category.get(i).getName()) != null) ic.getContainerProperty(id, "Category").setValue(value); //TODO : this is not a join query. In molgenis this is fixed by xrefs
 				
-				if ((value = BiobankPanel.get(i).getGeneralComments()) != null) ic.getContainerProperty(id, "General comments").setValue(value);
+				if ((value = BiobankPanel.get(i).getName()) != null) 					ic.getContainerProperty(id, "id").setValue(value);
+				if ((value = Biobank.get(i).getName()) != null) 							ic.getContainerProperty(id, "Cohort").setValue(value);
+				if ((value = Category.get(i).getName()) != null) 							ic.getContainerProperty(id, "Category").setValue(value); //TODO : this is not a join query. In molgenis this is fixed by xrefs
+				if ((value = BiobankPanel.get(i).getGeneralComments()) != null) 	ic.getContainerProperty(id, "General comments").setValue(value);
+				if ((value = Institute.get(i).getName())!=null ) 							ic.getContainerProperty(id,"Institutes").setValue(value); //TODO : this is not a join query .In molgenis this is fixed by xrefs
+				if ((value = Person.get(i).getLastName())!=null)							ic.getContainerProperty(id,"Coordinators").setValue(value); //TODO : this is not a join query .In molgenis this is fixed by xrefs
 
-				if ((value=Institute.get(i).getName())!=null ) ic.getContainerProperty(id,"Institutes").setValue(value); //TODO : this is not a join query .In molgenis this is fixed by xrefs
 
-				if ((value=Institute.get(i).getName())!=null ) ic.getContainerProperty(id,"Institutes").setValue(value); //TODO : this is not a join query .In molgenis this is fixed by xrefs
 				
 			}
 			
