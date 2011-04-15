@@ -99,7 +99,7 @@ System file directory path:<br>
 <br><br>
 
 Set your file directory path:<br>
-<input type="text" size="30" style="border:2px solid black; color:blue; display:inline; font-size:medium; font-family: Courier, 'Courier New', monospace" id="inputBox" name="fileDirPath" value="/data/xgap" onkeypress="if(window.event.keyCode==13){document.forms.${screen.name}.__action.value = 'setFileDirPath';}">
+<input type="text" size="30" style="border:2px solid black; color:blue; display:inline; font-size:medium; font-family: Courier, 'Courier New', monospace" id="inputBox" name="fileDirPath" value="./data" onkeypress="if(window.event.keyCode==13){document.forms.${screen.name}.__action.value = 'setFileDirPath';}">
 
 <input type="submit" value="Set path" onclick="document.forms.${screen.name}.__action.value = 'setFileDirPath'; document.forms.${screen.name}.submit();"/>
 

@@ -31,7 +31,7 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 
 	private static final long serialVersionUID = 4037475429590054858L;
 	private SettingsModel model = new SettingsModel();
-	public static String systemTableName = "XGAPsettings_090527PBDB00QCGEXP4G";
+	public static String systemTableName = "storagedirsettings_090527PBDB00QCGEXP4G";
 	//public static String systemTableName = "XGAPsettings_090527PBDB00QCGEXP4G";
 	// joeri: first of all, this name is quite arbitrary :)
 	// secondly, if you change it, also update the usage in the documentation (use Find)
@@ -81,30 +81,18 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 		model.setFolderHasContent(null);
 	}
 
-	private void OsSpecificStuff(String value) throws Exception{
-		Matcher m = MsWindowsDrive.matcher(value);
-		if(m.matches()){
-			//matched a drive letter + :\ combination, ie. C:\
-			//so MS WINDOWS OS
-			//do not add an additional seperator!
-			System.out.println("DetectOS.getOS() = " + DetectOS.getOS());
-			if(!DetectOS.getOS().startsWith("windows")){
-				throw new Exception("Drive designation used but your OS does not seem to be a Windows variant.");
-			}
-		}else{
-			System.out.println("DetectOS.getOS() = " + DetectOS.getOS());
-			if(DetectOS.getOS().startsWith("windows")){
-//				WTF: MAC nerds Always throw an exception for windows				
-//				throw new Exception(
-//				"Drive designation not used (eg. 'C:&#92;data') but your OS seems to be a Windows variant.");
-//	joeri: this exception is here is helpful, why comment it out? non-windows drive on a windows system..
-				
-				throw new Exception("Drive designation not used (eg. 'C:&#92;data') but your OS seems to be a Windows variant.");
-			}
-			if(!value.startsWith(File.separator)){
-				value = File.separator + value;
-			}
+	/**
+	 * If OS is unix like, and path does not start with
+	 * a separator, add separator in front of the path
+	 * @param path
+	 * @return
+	 * @throws Exception
+	 */
+	private String addSepIfneeded(String path) throws Exception{
+		if(!DetectOS.getOS().startsWith("windows") && !path.startsWith(File.separator)){
+				path = File.separator + path;
 		}
+		return path;
 	}
 	
 	public void handleRequest(Database db, Tuple request, PrintWriter out) {
@@ -122,7 +110,7 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 						String value = request.getString("fileDirPath");
 						if(value == null || value.equals("") || value.equals("null")) throw new Exception("Empty path not allowed");
 						
-						OsSpecificStuff(value);
+						value = addSepIfneeded(value);
 						Object o = TableUtil.getFromTable(db, systemTableName, fileDirField);
 
 						if (o != null) {
@@ -142,7 +130,7 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 						if(value == null || value.equals("") || value.equals("null")){
 							throw new Exception("Empty path not allowed");
 						}
-						OsSpecificStuff(value);
+						value = addSepIfneeded(value);
 						success = TableUtil.insertInTable(db, systemTableName, fileDirField, value);
 						if (!success) {
 							throw new Exception(
@@ -166,19 +154,6 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 					if (this.model.getHasSystemSettingsTable().equals("true")) {
 						Object o = TableUtil.getFromTable(db, systemTableName,	fileDirField);
 						if (o != null) {
-							
-//							File base = new File("");
-//							int a = base.getAbsolutePath().split(File.separator).length - 2;
-//							String goback = "";
-//							for(int i = 0; i < a; i++){
-//								goback+="/..";
-//							}
-//							//String path = "/Users/joerivandervelde";
-//							String path = o.toString();
-//							
-//							String filePath = goback + path;
-//							
-//							File f = new File(filePath);
 							
 							String path = o.toString();
 							
