@@ -25,7 +25,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jdbc.DataSourceWrapper;
 import org.molgenis.framework.db.jdbc.SimpleDataSourceWrapper;
 import org.molgenis.model.elements.Model;
-<#if decorator_overriders?exists>import org.molgenis.framework.db.jdbc.JDBCMapper;
+<#if decorator_overriders != ''>import org.molgenis.framework.db.jdbc.JDBCMapper;
 import org.molgenis.framework.db.jdbc.MappingDecorator;
 import org.apache.log4j.Logger;
 import java.lang.reflect.Constructor;</#if>
@@ -33,7 +33,7 @@ import java.lang.reflect.Constructor;</#if>
 public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 {
 	private JDBCMetaDatabase metaData = null;
-	<#if decorator_overriders?exists>private Logger logger = Logger.getLogger(JDBCDatabase.class.getSimpleName());</#if>
+	<#if decorator_overriders != ''>private Logger logger = Logger.getLogger(JDBCDatabase.class.getSimpleName());</#if>
 
 	public JDBCDatabase(DataSource data_src, File file_source) throws DatabaseException
 	{
@@ -44,35 +44,35 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 	{
 		super(data_src, file_src);
 		this.setup();
-		<#if decorator_overriders?exists>this.overrideDecorators();</#if>
+		<#if decorator_overriders != ''>this.overrideDecorators();</#if>
 	}
 
 	public JDBCDatabase(Properties p) throws DatabaseException
 	{
 		super(p);
 		this.setup();
-		<#if decorator_overriders?exists>this.overrideDecorators();</#if>
+		<#if decorator_overriders != ''>this.overrideDecorators();</#if>
 	}
 	
 	public JDBCDatabase(MolgenisOptions options) throws DatabaseException
 	{
 		super(options);
 		this.setup();
-		<#if decorator_overriders?exists>this.overrideDecorators();</#if>
+		<#if decorator_overriders != ''>this.overrideDecorators();</#if>
 	}
 	
 	public JDBCDatabase() throws DatabaseException
 	{
 		super(new MolgenisOptions());
 		this.setup();
-		<#if decorator_overriders?exists>this.overrideDecorators();</#if>
+		<#if decorator_overriders != ''>this.overrideDecorators();</#if>
 	}
 
 	public JDBCDatabase(String propertiesFilePath) throws FileNotFoundException, IOException, DatabaseException
 	{
 		super(propertiesFilePath);
 		this.setup();
-		<#if decorator_overriders?exists>this.overrideDecorators();</#if>
+		<#if decorator_overriders != ''>this.overrideDecorators();</#if>
 	}
 	
 	private void setup()
@@ -94,7 +94,7 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 		</#if></#list>
 	}
 	
-	<#if decorator_overriders?exists>/**
+	<#if decorator_overriders != ''>/**
 	 * Dynamically overrides decorators. Uses the 'decorator_overriders' molgenis option
 	 * to get a build folder, and then maps the names of those classes to the names of
 	 * existing decorators. When there is a match, put the overriding decorator in the
