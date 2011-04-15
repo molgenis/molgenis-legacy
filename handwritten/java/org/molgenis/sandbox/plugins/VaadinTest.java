@@ -11,6 +11,7 @@ import org.molgenis.organization.Institute;
 import org.molgenis.organization.Investigation;
 
 import app.JDBCDatabase;
+import app.ui.CoordinatorsFormModel;
 
 import com.vaadin.Application;
 import com.vaadin.data.Property;
@@ -38,7 +39,7 @@ public class VaadinTest extends Application {
 	//TODO : we can do better that this !
 	private static String[] BBMRIFields = {"id","Cohort", "Category", "SubCategory", "Topic", "Institutes", "Coordinators", "Current n=", "Biodata", 
 															"GWA data n=", "GWA platform", "GWA comments", "General comments", "Publications"}; 
-	private static String[] BBMRIvisibleCols = new String[] {"id","Cohort", "Category", "SubCategory", "Topic","General comments"};
+	private static String[] BBMRIvisibleCols = new String[] {"id","Cohort", "Category", "SubCategory", "Institutes", "Topic","General comments"};
 	
 	private static Table InvestigationData = new Table();
     private static Form InvestigationEditor = new Form();
@@ -198,11 +199,17 @@ public class VaadinTest extends Application {
 		try {
 			List <Biobank> Biobank = db.query(Biobank.class).find();
 			List<Investigation> investigationID   = db.query(Investigation.class).find();
-			List <Institute> institute = db.query(Institute.class).find();
+			List <Institute> Institute = db.query(Institute.class).find();
 			List <BiobankPanel> BiobankPanel = db.query(BiobankPanel.class).find();
 			List <OntologyTerm> Category = db.query(OntologyTerm.class).find();
 			
+			//List  <CoordinatorsFormModel> Coordinators = db.query(CoordinatorsFormModel.class).find();
+
+			//experiment 
+			java.lang.reflect.Field[] Coordinators =  CoordinatorsFormModel.class.getDeclaredFields(); 
+			System.out.println(">>>>>>>>>>>" + Coordinators.getClass().getName());
 			
+			//TODO : Is iteration for investigation right for all entities? What about BiobankPanel? 
 			for (int i=0; i<investigationID.size(); i++) {
 				Object id = ic.addItem();
 			        
@@ -210,28 +217,13 @@ public class VaadinTest extends Application {
 
 				if ((value = BiobankPanel.get(i).getName()) != null) ic.getContainerProperty(id, "id").setValue(value);
 				if ((value = Biobank.get(i).getName()) != null) ic.getContainerProperty(id, "Cohort").setValue(value);
-				if ((value = Category.get(i).getName()) != null) ic.getContainerProperty(id, "Category").setValue(value);
+				if ((value = Category.get(i).getName()) != null) ic.getContainerProperty(id, "Category").setValue(value); //TODO : this is not a join query. In molgenis this is fixed by xrefs
 				
 				if ((value = BiobankPanel.get(i).getGeneralComments()) != null) ic.getContainerProperty(id, "General comments").setValue(value);
 
-				
+				if ((value=Institute.get(i).getName())!=null ) ic.getContainerProperty(id,"Institutes").setValue(value); //TODO : this is not a join query .In molgenis this is fixed by xrefs
 
-				//if ((value = investigationID.get(i).getStartDate().toString()) != null) ic.getContainerProperty(id, "Cohort").setValue(value);
-				//if ((value = investigationID.get(i).get__Type().toString())!= null) ic.getContainerProperty(id, "Investigation").setValue(value);
-	            //if ((value = investigationID.get(i).getStartDate().toString()) != null) ic.getContainerProperty(id, "Date").setValue(value);
-	            
-	            
-	            System.out.println("Description>>>>>"+investigationID.get(i).getDescription());
-	           
-
-	            //ic.getContainerProperty(id, "Topic").setValue(invList.get(i).get__Type());
-		        // ic.getContainerProperty(id, "Category").setValue(invList.get(0).getName());
-
-	            System.out.println(">>>>>"+investigationID.get(i).getDescription());
-	            System.out.println(">>>>>"+investigationID.get(i).get__Type());
-	            System.out.println(">>>>>"+investigationID.get(i).getStartDate());
-	            System.out.println(">>>>>"+investigationID.get(i).getEndDate());
-	            System.out.println(">>>>>"+investigationID.get(i).getContacts_LastName());
+				if ((value=Institute.get(i).getName())!=null ) ic.getContainerProperty(id,"Institutes").setValue(value); //TODO : this is not a join query .In molgenis this is fixed by xrefs
 				
 			}
 			
