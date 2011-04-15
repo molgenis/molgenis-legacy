@@ -780,7 +780,7 @@ public class MolgenisModelParser
 	}
 
 	// db parser
-	public static Model parseDbSchema(Vector<String> filenames)
+	public static Model parseDbSchema(ArrayList<String> filenames)
 			throws MolgenisModelException
 	{
 		Model model = new Model("molgenis");
