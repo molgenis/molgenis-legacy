@@ -37,12 +37,24 @@ public @interface Option {
 		/** The option could have an argument (-o -p _or_ -o argument -p) */
 		OPTIONAL_ARGUMENT
 	};
+	
+	public enum Param{
+		BOOLEAN,
+		INTEGER,
+		DOUBLE,
+		STRING,
+		COLLECTION,
+		FILEPATH,
+		DIRPATH,
+		PASSWORD,
+		CLASS
+	};
 
 
 	/** Defines the name of the option. This can be a single character, but als a word. */
 	String name();// default "";
 	/** What type of information is passed with this option, eg: filename, integer, etc. */
-	String param();// default "";
+	Param param();// default "";
 	/** This is a description of how to use this option. All information can be gathered here. */
 	String usage() default "";
 	/** The type of this option. */
