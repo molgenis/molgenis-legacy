@@ -28,7 +28,8 @@ import org.molgenis.model.elements.Model;
 <#if decorator_overriders != ''>import org.molgenis.framework.db.jdbc.JDBCMapper;
 import org.molgenis.framework.db.jdbc.MappingDecorator;
 import org.apache.log4j.Logger;
-import java.lang.reflect.Constructor;</#if>
+import java.lang.reflect.Constructor;
+import java.net.URL;</#if>
 
 public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 {
@@ -102,11 +103,26 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 	 */
 	private void overrideDecorators() throws DatabaseException
 	{
-		File decoratorOverrideFolder = new File(this.getClass().getResource("../${decorator_overriders?replace('.','/')}").getFile().replace("%20", " "));
-
+	
+		URL decoratorOverrideURL = this.getClass().getResource("../${decorator_overriders?replace('.','/')}");
+		
+		File decoratorOverrideFolder = null;
+		
+		if(decoratorOverrideURL != null){
+			decoratorOverrideFolder = new File(decoratorOverrideURL.getFile().replace("%20", " "));
+		}else{
+			logger.error("Decorator override location '${decorator_overriders}' could not be loaded. Skipping override..");
+			System.err.println("Decorator override location '${decorator_overriders}' could not be loaded. Skipping override..");
+			return;
+		}
+		
 		if(!decoratorOverrideFolder.exists()){
-			logger.error("Decorator override folder '${decorator_overriders}' does not exist.");
-			throw new DatabaseException("Decorator override folder '${decorator_overriders}' does not exist.");
+			logger.error("Decorator override folder '${decorator_overriders}' does not exist. Skipping override..");
+			System.err.println("Decorator override folder '${decorator_overriders}' does not exist. Skipping override..");
+			return;
+		}else{
+		 	logger.info("Decorator override folder '${decorator_overriders}' found.");
+			System.out.println("Decorator override folder '${decorator_overriders}'found.");
 		}
 		
 		for(File classFile : decoratorOverrideFolder.listFiles()){
