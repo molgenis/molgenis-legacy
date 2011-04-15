@@ -115,20 +115,6 @@
   	    </fileset>
   	</copy>
   </target>
-	
-	  <target name="strip" description="Strip the package" >
-	    <java jar="lib/proguard.jar" fork="true" failonerror="true">
-	      <jvmarg line="-Xmx1024m"/>
-	      <arg line="-injars ${dist}/molgenis-3.3.0.jar"/>
-	      <arg line="-outjars ${dist}/molgenis_small.jar"/>
-	      <arg line="-libraryjars c:/Progra~1/Java/jdk1.6.0_24/jre/lib/rt.jar;C:/Progra~1/Java/jdk1.6.0_24/jre/lib/jsse.jar;C:/Progra~1/Java/jdk1.6.0_24/lib/tools.jar"/>
-		  <arg line="-keep public class org.molgenis.**"/>
-	      <arg line="-keep public class org.hsqldb.**"/>
-          <arg line="-keep public class freemarker.**"/>
-		  <arg line="-dontoptimize -dontobfuscate -dontpreverify -dontskipnonpubliclibraryclassmembers"/>
-		</java>
-	    <delete dir="${build}"/>
-	  </target>
 
   <target name="clean"
         description="clean up" >
