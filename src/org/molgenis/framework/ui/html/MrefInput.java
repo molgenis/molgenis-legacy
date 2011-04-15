@@ -107,7 +107,7 @@ public class MrefInput extends HtmlInput
 
 		if (isHidden() || isReadonly())
 		{
-			return "<div>" + html.toString() + "</div>";
+			return "<div id=\"" + getName() +  "\">" + html.toString() + "</div>";
 		}
 		else
 		{
@@ -119,7 +119,7 @@ public class MrefInput extends HtmlInput
 							getXrefLabels().get(0), getXrefFilterRESTString());
 			buttons += "<button type=\"button\" onclick=\"mref_removeInput(this.parentNode);\">-</button>";
 
-			return "<div>" + html.toString() + buttons + "</div>";
+			return "<div id=\"" + getName() +  "\">" + html.toString() + buttons + "</div>";
 		}
 	}
 
