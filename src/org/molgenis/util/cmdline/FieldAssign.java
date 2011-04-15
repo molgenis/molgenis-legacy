@@ -17,7 +17,10 @@ import java.lang.reflect.*;
  * 
  * @author RA Scheltema
  * @version 1.0.0
+ * 
+ * DEPRECATED AS OF April 15th 2011. Not longer needed due to assign() in org.molgenis.util.cmdline.CmdLineParser.
  */
+@Deprecated
 public class FieldAssign
 {
 	// constructor / destructor
