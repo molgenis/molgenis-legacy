@@ -305,9 +305,8 @@ public class FillNgsDatabase {
 			dATailing.add("dA tailing temp");
 			ct.addProtocol(
 					"dA tailing sequencing prep",
-					"dA-tailing (incorporate a non-templated dAMP on the 3« end of a blunt DNA fragment)",
+					"dA-tailing (incorporate a non-templated dAMP on the 3' end of a blunt DNA fragment)",
 					dATailing);
-
 			List<String> ligase = new ArrayList<String>();
 			ligase.add("ligase time");
 			ligase.add("ligase temp");
