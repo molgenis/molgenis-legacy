@@ -78,8 +78,8 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 
 	public Login createLogin( Database db, HttpServletRequest request )
 	{
-	<#if loginredirect?exists>
-		return new ${loginclass}(<#if loginclass != 'org.molgenis.framework.security.SimpleLogin'>db, "${loginredirect}"</#if>);
+	<#if auth_redirect != ''>
+		return new ${loginclass}(<#if loginclass != 'org.molgenis.framework.security.SimpleLogin'>db, "${auth_redirect}"</#if>);
 	<#else>
 		return new ${loginclass}(<#if loginclass != 'org.molgenis.framework.security.SimpleLogin'>db</#if>);
 	</#if>
@@ -91,7 +91,7 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 		app.setLabel("${model.label}");
 		app.setVersion("${version}");
 		
-<#if mail_smtp_from?exists && mail_smtp_au?exists>
+<#if mail_smtp_user != '' && mail_smtp_au != ''>
 		EmailService service = new SimpleEmailService();
 		service.setSmtpFromAddress("${mail_smtp_from}");	
 		service.setSmtpProtocol("${mail_smtp_protocol}");
@@ -122,6 +122,6 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 	
 	@Override
 	public boolean linkoutOverlay() {
-		return ${linkout_overlay};
+		return ${linkout_overlay?string};
 	}
 }

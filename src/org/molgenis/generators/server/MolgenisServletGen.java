@@ -39,8 +39,7 @@ public class MolgenisServletGen extends Generator
 		templateArgs.put("package", APP_DIR);		
 		templateArgs.put("db_filepath", options.db_filepath);
 		templateArgs.put("loginclass", options.auth_loginclass);
-		//DANNY: Wrong options DONT USE !!!!
-		//templateArgs.put("loginredirect", options.auth_redirect);
+		templateArgs.put("auth_redirect", options.auth_redirect);
 		templateArgs.put("databaseImp", options.mapper_implementation.equals(MolgenisOptions.MapperImplementation.JPA) ? "jpa" : "jdbc");
 		templateArgs.put("db_mode", options.db_mode);
 		templateArgs.put("db_driver", options.db_driver);
