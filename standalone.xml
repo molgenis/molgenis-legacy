@@ -27,25 +27,25 @@
   <target name="unjar" depends="init" description="compile the Standalone source " >
     <!-- Compile the java code from ${src} into ${build} -->
   	<!-- Joeri -->
-  	<unjar src="WebContent/WEB-INF/lib/jaxrpc.jar" dest="${build}"/>
-  	<unjar src="WebContent/WEB-INF/lib/axis.jar" dest="${build}"/> <!-- ???? UNlinked but used in Generated CODE -->
-  	<unjar src="WebContent/WEB-INF/lib/keggapi.jar" dest="${build}"/>
-  	<unjar src="WebContent/WEB-INF/lib/mydas-1.6.0.jar" dest="${build}"/>
-  	<unjar src="WebContent/WEB-INF/lib/mindterm.jar" dest="${build}"/>
-  	<unjar src="WebContent/WEB-INF/lib/ontoCAT_v0.9.5.3.jar" dest="${build}"/>	
+  	<unjar src="WebContent/WEB-INF/lib/jaxrpc.jar" dest="${build}" overwrite="false"/>
+  	<unjar src="WebContent/WEB-INF/lib/axis.jar" dest="${build}" overwrite="false"/> <!-- ???? UNlinked but used in Generated CODE -->
+  	<unjar src="WebContent/WEB-INF/lib/keggapi.jar" dest="${build}" overwrite="false"/>
+  	<unjar src="WebContent/WEB-INF/lib/mydas-1.6.0.jar" dest="${build}" overwrite="false"/>
+  	<unjar src="WebContent/WEB-INF/lib/mindterm.jar" dest="${build}" overwrite="false"/>
+  	<unjar src="WebContent/WEB-INF/lib/ontoCAT_v0.9.5.3.jar" dest="${build}" overwrite="false"/>	
   	<!-- Erik -->
-  	<unjar src="WebContent/WEB-INF/lib/charts4j-1.2.jar" dest="${build}"/>
-  	<unjar src="WebContent/WEB-INF/lib/jopenid-1.07.jar" dest="${build}"/>
-  	<unjar src="WebContent/WEB-INF/lib/iText-5.0.6.jar" dest="${build}"/>
+  	<unjar src="WebContent/WEB-INF/lib/charts4j-1.2.jar" dest="${build}" overwrite="false"/>
+  	<unjar src="WebContent/WEB-INF/lib/jopenid-1.07.jar" dest="${build}" overwrite="false"/>
+  	<unjar src="WebContent/WEB-INF/lib/iText-5.0.6.jar" dest="${build}" overwrite="false"/>
   	<!-- Despoina -->
-  	<unjar src="WebContent/WEB-INF/lib/lucene-core-3.0.2.jar" dest="${build}"/>
-  	<unjar src="WebContent/WEB-INF/lib/lucene-highlighter-3.0.1.jar" dest="${build}"/>
-  	<unjar src="WebContent/WEB-INF/lib/spssw-1.66.jar" dest="${build}"/>
+  	<unjar src="WebContent/WEB-INF/lib/lucene-core-3.0.2.jar" dest="${build}" overwrite="false"/>
+  	<unjar src="WebContent/WEB-INF/lib/lucene-highlighter-3.0.1.jar" dest="${build}" overwrite="false"/>
+  	<unjar src="WebContent/WEB-INF/lib/spssw-1.66.jar" dest="${build}" overwrite="false"/>
 
   	
   	<!-- Unknown and NOT DOCUMENTED -->
-  	<unjar src="WebContent/WEB-INF/lib/vaadin-6.5.2.jar" dest="${build}"/>
-  	<unjar src="WebContent/WEB-INF/lib/vaadin-externallayout-0.5.jar" dest="${build}"/>
+  	<unjar src="WebContent/WEB-INF/lib/vaadin-6.5.2.jar" dest="${build}" overwrite="false"/>
+  	<unjar src="WebContent/WEB-INF/lib/vaadin-externallayout-0.5.jar" dest="${build}" overwrite="false"/>
   	
   	<!-- <unjar src="WebContent/WEB-INF/lib/axis.jar" dest="${build}"/>	-->
 	<!-- unjar src="WebContent/WEB-INF/lib/axis-ant.jar" dest="${build}"/ -->
@@ -116,16 +116,16 @@
   	</copy>
   </target>
 	
-	  <target name="strip" depends="package" description="Strip the package" >
+	  <target name="strip" description="Strip the package" >
 	    <java jar="lib/proguard.jar" fork="true" failonerror="true">
-	      <arg line="-injars ${dist}/gcc.jar"/>
-	      <arg line="-outjars ${dist}/gcc_small.jar"/>
-	      <arg line="-libraryjars c:/Progra~1/Java/jdk1.6.0_14/jre/lib/rt.jar;${molgenis_dist}/molgenis-3.3.0.jar"/>
-		  <arg line="-keep public class RunStandalone{public static void main(java.lang.String[]);}"/>
-		  <arg line="-keep public class webserver.BasicAcceptor"/>
-		  <arg line="-keep public class webserver.servlets.**"/>
-	      <arg line="-keep public class webserver.servlets.**"/>
-		  <arg line="-dontoptimize -dontobfuscate -dontpreverify"/>
+	      <jvmarg line="-Xmx1024m"/>
+	      <arg line="-injars ${dist}/molgenis-3.3.0.jar"/>
+	      <arg line="-outjars ${dist}/molgenis_small.jar"/>
+	      <arg line="-libraryjars c:/Progra~1/Java/jdk1.6.0_24/jre/lib/rt.jar;C:/Progra~1/Java/jdk1.6.0_24/jre/lib/jsse.jar;C:/Progra~1/Java/jdk1.6.0_24/lib/tools.jar"/>
+		  <arg line="-keep public class org.molgenis.**"/>
+	      <arg line="-keep public class org.hsqldb.**"/>
+          <arg line="-keep public class freemarker.**"/>
+		  <arg line="-dontoptimize -dontobfuscate -dontpreverify -dontskipnonpubliclibraryclassmembers"/>
 		</java>
 	    <delete dir="${build}"/>
 	  </target>
