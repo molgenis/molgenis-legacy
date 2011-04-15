@@ -994,7 +994,7 @@ public class OntocatBrowserPlugin extends PluginModel<Entity> {
 
 
 					// er zijn net zoveel (of meer!) relaties als childs,
-					// situatie is oké, voer 'standaardcode' uit
+					// situatie is ok, voer 'standaardcode' uit
 					logger.debug("relation size = " + relations.size());
 					logger.debug("children size = " + children.size());
 					if (relations.size() >= children.size()) {
