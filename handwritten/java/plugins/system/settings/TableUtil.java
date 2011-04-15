@@ -160,10 +160,6 @@ public class TableUtil {
 			for (Tuple t : res) {
 				tableNames.add(t.getString(0).toLowerCase());
 			}
-			
-			for (String s : tableNames) {
-				System.out.println(s);
-			}
 			if (tableNames.contains(tableName.toLowerCase())) {
 				return "true";
 			} else {
