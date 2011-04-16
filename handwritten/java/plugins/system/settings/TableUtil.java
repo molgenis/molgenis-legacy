@@ -158,7 +158,11 @@ public class TableUtil {
 			}
 			List<String> tableNames = new ArrayList<String>(res.size());
 			for (Tuple t : res) {
-				tableNames.add(t.getString(0).toLowerCase());
+				if(MolgenisServlet.getDBDriver().contains("hsql")){
+					tableNames.add(t.getString(0).toLowerCase());
+				}else{
+					tableNames.add(t.getString(1).toLowerCase());
+				}
 			}
 			if (tableNames.contains(tableName.toLowerCase())) {
 				return "true";
