@@ -24,7 +24,7 @@ public class RequestHandler {
 		else if (action.equals("changeSubmatrixSize")) {
 			screenModel.getBrowser().update();
 		}
-		else if (action.equals("applyFilters")) {
+		else if (action.startsWith("filter")) {
 			screenModel.getBrowser().applyFilters(request);
 			//TODO: Save filters in screenModel !!
 		}

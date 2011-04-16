@@ -13,155 +13,119 @@ import app.JDBCDatabase;
 public class AbstractDataMatrixQueries
 {
 
+	/**
+	 * Apply filters (query rules) to the values of a matrix, to get a new
+	 * subset matrix back. The 'field' specifies the row name where the filter is
+	 * applied. And as expected: The 'operator' is the comparator, and 'value'
+	 * is the point of reference.
+	 * 
+	 * @param dm
+	 * @param rules
+	 * @return AbstractDataMatrixInstance
+	 * @throws Exception
+	 */
 	public static AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowMatrixValues(
-			AbstractDataMatrixInstance<Object> dm, QueryRule... rules) throws Exception
+			AbstractDataMatrixInstance<Object> dm, QueryRule[] rules) throws Exception
 	{
+		checkQueryRules(dm, rules);
 
-		// do checks. can be made generic. (moved to helper function)
-		for (QueryRule rule : rules)
-		{
-			if (!dm.getRowNames().contains(rule.getField()))
-			{
-				throw new Exception("QueryRule invalid: no row named '" + rule.getField() + "'");
-			}
-			if (dm.getData().getValueType().equals("Decimal"))
-			{
-				// TODO: support all!
-				if (!(rule.getOperator() == Operator.LESS || rule.getOperator() == Operator.GREATER))
-				{
-					throw new Exception("QueryRule invalid: operator not supported for decimal values");
-				}
-			}
-			else if (dm.getData().getValueType().equals("Text"))
-			{
-				// TODO: support all!
-				if (!(rule.getOperator() == Operator.EQUALS))
-				{
-					throw new Exception("QueryRule invalid: operator not supported for text values");
-				}
-			}
-			else
-			{
-				throw new Exception("Unknown valuetype: " + dm.getData().getValueType());
-			}
-		}
-
-		// get row/colnames
+		// colNames is the resultset we want to get
+		List<String> colNames = null;
 		List<String> rowNames = dm.getRowNames();
-		List<String> colNames = new ArrayList<String>();
 
+		// iterate over queryrules
 		for (QueryRule rule : rules)
 		{
+			List<String> result = null;
 			if (dm.getData().getValueType().equals("Decimal"))
 			{
 				double value = Double.parseDouble(rule.getValue().toString());
-				colNames = select(dm.getRow(rule.getField()), value, rule.getOperator(), dm.getColNames());
+				result = selectUsingDecimal(dm.getRow(rule.getField()), value, rule.getOperator(), dm.getColNames());
 			}
 			else
 			{
-				throw new Exception("Unsupported getValueType TEXT");
+				String value = rule.getValue().toString();
+				result = selectUsingText(dm.getRow(rule.getField()), value, rule.getOperator(), dm.getColNames());
+			}
+
+			if (colNames == null)
+			{
+				// first queryrule being applied, store results in colnames
+				colNames = result;
+			}
+			else
+			{
+				// consecutively: basically, applying an AND operator here
+				// by removing result from colnames.. so OR not supported
+				colNames.removeAll(result);
+			}
+
+			if (colNames.size() == 0)
+			{
+				throw new Exception("No colnames in resultset, empty matrix!");
 			}
 		}
 
 		AbstractDataMatrixInstance<Object> res = dm.getSubMatrix(rowNames, colNames);
+
 		return res;
 	}
 
-	private static List<String> select(Object[] rowVals, double value, Operator op, List<String> colNames)
-			throws Exception
-	{
-		List<String> colNamesResult = new ArrayList<String>();
-		for (int i = 0; i < rowVals.length; i++)
-		{
-			if (rowVals[i] != null)
-			{
-				boolean add = false;
-				if (op == Operator.GREATER)
-				{
-					if (Double.parseDouble(rowVals[i].toString()) > value)
-					{
-						add = true;
-					}
-				}
-				else if (op == Operator.LESS)
-				{
-					if (Double.parseDouble(rowVals[i].toString()) < value)
-					{
-						add = true;
-					}
-				}
-				else if (op == Operator.GREATER_EQUAL)
-				{
-					if (Double.parseDouble(rowVals[i].toString()) >= value)
-					{
-						add = true;
-					}
-				}
-				else if (op == Operator.LESS_EQUAL)
-				{
-					if (Double.parseDouble(rowVals[i].toString()) <= value)
-					{
-						add = true;
-					}
-				}
-				else if (op == Operator.EQUALS)
-				{
-					if (Double.parseDouble(rowVals[i].toString()) == value)
-					{
-						add = true;
-					}
-				}
-				else
-				{
-					throw new Exception("Unsupported operation: " + op.toString());
-				}
-
-				if (add == true)
-				{
-					colNamesResult.add(colNames.get(i));
-				}
-			}
-		}
-		return colNamesResult;
-	}
-
 	/**
-	 * TODO: duplicate code with ROW version!!!!
-	 * @param abstractDataMatrixInstance
+	 * Apply filters (query rules) to the values of a matrix, to get a new
+	 * subset matrix back. The 'field' specifies the column name where the filter is
+	 * applied. And as expected: The 'operator' is the comparator, and 'value'
+	 * is the point of reference.
+	 * 
+	 * @param dm
 	 * @param rules
-	 * @return
-	 * @throws Exception 
+	 * @return AbstractDataMatrixInstance
+	 * @throws Exception
 	 */
 	public static AbstractDataMatrixInstance<Object> getSubMatrixFilterByColMatrixValues(
 			AbstractDataMatrixInstance<Object> dm, QueryRule[] rules) throws Exception
 	{
-		// do checks. can be made generic. (moved to helper function)
-		for (QueryRule rule : rules)
-		{
-			if (!dm.getColNames().contains(rule.getField()))
-			{
-				throw new Exception("QueryRule invalid: no column named '" + rule.getField() + "'");
-			}
-		}
+		checkQueryRules(dm, rules);
 
-		// get row/colnames
+		// rowNames is the resultset we want to get
 		List<String> colNames = dm.getColNames();
-		List<String> rowNames = new ArrayList<String>();
+		List<String> rowNames = null;
 
+		// iterate over queryrules
 		for (QueryRule rule : rules)
 		{
+			List<String> result = null;
 			if (dm.getData().getValueType().equals("Decimal"))
 			{
 				double value = Double.parseDouble(rule.getValue().toString());
-				rowNames = select(dm.getCol(rule.getField()), value, rule.getOperator(), dm.getRowNames());
+				result = selectUsingDecimal(dm.getCol(rule.getField()), value, rule.getOperator(), dm.getRowNames());
 			}
 			else
 			{
-				throw new Exception("Unsupported getValueType TEXT");
+				String value = rule.getValue().toString();
+				result = selectUsingText(dm.getCol(rule.getField()), value, rule.getOperator(), dm.getRowNames());
+			}
+
+			if (rowNames == null)
+			{
+				// first queryrule being applied, store results in rownames
+				rowNames = result;
+			}
+			else
+			{
+				// consecutively: basically, applying an AND operator here
+				// by removing result from rownames.. so OR not supported
+				rowNames.removeAll(result);
+			}
+
+			if (rowNames.size() == 0)
+			{
+				throw new Exception("No rownames in resultset, empty matrix!");
 			}
 		}
 
 		AbstractDataMatrixInstance<Object> res = dm.getSubMatrix(rowNames, colNames);
+
 		return res;
 	}
 
@@ -206,57 +170,116 @@ public class AbstractDataMatrixQueries
 		return res;
 	}
 
-	// EQUALS - decimal + text
-	/** 'field' in 'value' (value being a list). */
-	// IN
-	/** 'field' less-than 'value' */
-	// LESS
-	/** 'field' equal-or-less-than 'value' */
-	// LESS_EQUAL
-	/** 'field' greater-than 'value' */
-	// GREATER
-	/** 'field' equal-or-greater-than 'value' */
-	// GREATER_EQUAL
-	/** 'field' equal to '%value%' (% is a wildcard) */
-	// LIKE
-	/** 'field' not-equal to 'value' */
-	// NOT
-	/**
-	 * limit results to 'value' elements (value being an int). The paramater
-	 * 'field' is ommitted.
-	 */
-	// LIMIT
-	/**
-	 * show results from value-th element (value being an int offset starting
-	 * from 1. The paramater 'field' is ommitted.
-	 */
-	// OFFSET
-	/**
-	 * order the result by 'field', ascending. The parameter 'value' is
-	 * ommitted.
-	 */
-	// SORTASC
-	/**
-	 * order the result by 'field', descending. The parameter 'value' is
-	 * ommitted.
-	 */
-	// SORTDESC
-	/**
-	 * AND operation
-	 */
-	// AND
-	/**
-	 * OR operation
-	 */
-	// OR
-	/**
-	 * indicates that 'value' is a nested array of QueryRule. The parameter
-	 * 'field' is ommitted.
-	 */
-	// NESTED
-	/** show the last elements from the list, so LIMIT from the end */
-	// LAST
-	/** enables the joining of two fields; value is a fieldname */
-	// JOIN
+	private static List<String> selectUsingText(Object[] values, String value, Operator op, List<String> dimNames)
+			throws Exception
+	{
+		List<String> resultNames = new ArrayList<String>();
+		for (int i = 0; i < values.length; i++)
+		{
+			if (values[i] != null)
+			{
+				boolean add = false;
+				if (op == Operator.EQUALS)
+				{
+					if (values[i].toString().equals(value))
+					{
+						add = true;
+					}
+				}
+
+				else
+				{
+					throw new Exception("Unsupported operation: " + op.toString());
+				}
+
+				if (add == true)
+				{
+					resultNames.add(dimNames.get(i));
+				}
+			}
+		}
+		return resultNames;
+	}
+
+	private static List<String> selectUsingDecimal(Object[] values, double value, Operator op, List<String> dimNames)
+			throws Exception
+	{
+		List<String> resultNames = new ArrayList<String>();
+		for (int i = 0; i < values.length; i++)
+		{
+			if (values[i] != null)
+			{
+				boolean add = false;
+				if (op == Operator.GREATER)
+				{
+					if (Double.parseDouble(values[i].toString()) > value)
+					{
+						add = true;
+					}
+				}
+				else if (op == Operator.LESS)
+				{
+					if (Double.parseDouble(values[i].toString()) < value)
+					{
+						add = true;
+					}
+				}
+				else if (op == Operator.GREATER_EQUAL)
+				{
+					if (Double.parseDouble(values[i].toString()) >= value)
+					{
+						add = true;
+					}
+				}
+				else if (op == Operator.LESS_EQUAL)
+				{
+					if (Double.parseDouble(values[i].toString()) <= value)
+					{
+						add = true;
+					}
+				}
+				else if (op == Operator.EQUALS)
+				{
+					if (Double.parseDouble(values[i].toString()) == value)
+					{
+						add = true;
+					}
+				}
+				else
+				{
+					throw new Exception("Unsupported operation: " + op.toString());
+				}
+
+				if (add == true)
+				{
+					resultNames.add(dimNames.get(i));
+				}
+			}
+		}
+		return resultNames;
+	}
+
+	private static void checkQueryRules(AbstractDataMatrixInstance<Object> dm, QueryRule... rules) throws Exception
+	{
+		for (QueryRule rule : rules)
+		{
+			if (rule.getField() == null)
+			{
+				throw new Exception("QueryRule invalid: field is null");
+			}
+			if (!dm.getColNames().contains(rule.getField()))
+			{
+				throw new Exception("QueryRule invalid: no column named '" + rule.getField() + "'");
+			}
+			if (rule.getValue() == null)
+			{
+				throw new Exception("QueryRule invalid: value is null");
+			}
+			if (rule.getOperator() == null)
+			{
+				throw new Exception("QueryRule invalid: operator is null");
+			}
+		}
+	}
 
 }

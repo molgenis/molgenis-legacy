@@ -74,8 +74,8 @@ public class Browser
 		AbstractDataMatrixInstance<Object> subMatrix = model.getInstance().getSubMatrixByOffset(model.getRowStart(),
 				nRows, model.getColStart(), nCols);
 		model.setSubMatrix(subMatrix);
-		System.out.println("*** submatrix updated, cols: " + subMatrix.getNumberOfCols() + ", rows: "
-				+ subMatrix.getNumberOfRows() + ", first element: " + subMatrix.getElement(0, 0));
+		//System.out.println("*** submatrix updated, cols: " + subMatrix.getNumberOfCols() + ", rows: "
+		//		+ subMatrix.getNumberOfRows() + ", first element: " + subMatrix.getElement(0, 0));
 	}
 
 	private void moveActionFollowup() throws Exception
@@ -92,7 +92,7 @@ public class Browser
 	 * width setting increase past the edge, the horizontal window would move
 	 * out of range. The colStop is verified, but this is based on colStart
 	 * which can be wrong at that point. Same goes for horizontal move actions
-	 * under inverse conditions. These functions fix it.
+	 * under inverse conditions. This function compensates.
 	 */
 	private void verifyColStart()
 	{
@@ -109,6 +109,13 @@ public class Browser
 		}
 	}
 
+	/**
+	 * On horizontal move actions at the bottom edge of the matrix combined with a
+	 * height setting increase past the edge, the vertical window would move
+	 * out of range. The rowStop is verified, but this is based on rowStart
+	 * which can be wrong at that point. Same goes for vertical move actions
+	 * under inverse conditions. This function compensates.
+	 */
 	private void verifyRowStart()
 	{
 		if (model.getRowStart() + model.getHeight() > model.getRowMax())
@@ -143,6 +150,13 @@ public class Browser
 		}
 	}
 
+	/**
+	 * Determine value for row stop. If height is smaller than maximum row
+	 * value, the stop position is the current row position plus the height.
+	 * If the maximum row value is equal ('perfect fit') or smaller ('window
+	 * cut-off') than the height, the stop position is the maximum possible value
+	 * for row instead.
+	 */
 	private void determineRowStop()
 	{
 		if (model.getHeight() < model.getRowMax())
@@ -178,6 +192,11 @@ public class Browser
 		moveActionFollowup();
 	}
 
+	/**
+	 * Moves viewed sub matrix to the left. The step size is subtracted from the
+	 * current column position. If this new column position is less than 0, it
+	 * is set to 0 instead.
+	 */
 	public void moveLeft() throws Exception
 	{
 		model
@@ -201,6 +220,11 @@ public class Browser
 		moveActionFollowup();
 	}
 
+	/**
+	 * Moves viewed sub matrix upwards. The step size is subtracted from the
+	 * current row position. If this new row position is less than 0, it
+	 * is set to 0 instead.
+	 */
 	public void moveUp() throws Exception
 	{
 		model
@@ -247,12 +271,30 @@ public class Browser
 		moveActionFollowup();
 	}
 
+	/**
+	 * Apply filters to values in the matrix to either
+	 * the whole matrix or current visible matrix.
+	 * 
+	 * @param request
+	 * @throws Exception
+	 */
 	public void applyFilters(Tuple request) throws Exception
 	{
-		// get the current submatrix (view)
-		AbstractDataMatrixInstance<Object> subMatrix = this.getModel().getSubMatrix();
 		
-		List<String> colNames = subMatrix.getColNames();
+		AbstractDataMatrixInstance<Object> filterMatrix = null;
+		
+		if(request.getString("__action").equals("filterVisible")){
+			// get the current submatrix (view)
+			filterMatrix = this.getModel().getSubMatrix();
+		}
+		else if(request.getString("__action").equals("filterAll")){
+			// get the original complete matrix
+			filterMatrix = this.getModel().getInstance();
+		}else{
+			//unrecognized filter?
+		}
+		
+		List<String> colNames = filterMatrix.getColNames();
 		for (String colName : colNames)
 		{
 			Integer filterValue = request.getInt("FILTER_VALUE_COL_" + colName);
@@ -260,21 +302,13 @@ public class Browser
 			{
 				System.out.println("value for colName " + colName + ": " + filterValue);
 				String filterOperator = request.getString("FILTER_OPERATOR_COL_" + colName);
-				if (filterOperator.equals("GT"))
-				{
-					QueryRule q = new QueryRule(colName, Operator.GREATER, filterValue);
-					subMatrix = subMatrix.getSubMatrixFilterByColMatrixValues(q);
-					this.model.setSubMatrix(subMatrix);
-				}
-				else if (filterOperator.equals("GE"))
-				{
-					// etc
-					//TODO
-				}
+				QueryRule q = new QueryRule(colName, Operator.valueOf(filterOperator), filterValue);
+				filterMatrix = filterMatrix.getSubMatrixFilterByColMatrixValues(q);
+				this.model.setSubMatrix(filterMatrix);	
 			}
 		}
 		
-		List<String> rowNames = subMatrix.getRowNames();
+		List<String> rowNames = filterMatrix.getRowNames();
 		for (String rowName : rowNames)
 		{
 			Integer filterValue = request.getInt("FILTER_VALUE_ROW_" + rowName);
@@ -282,23 +316,19 @@ public class Browser
 			{
 				System.out.println("value for rowName " + rowName + ": " + filterValue);
 				String filterOperator = request.getString("FILTER_OPERATOR_ROW_" + rowName);
-				if (filterOperator.equals("GT"))
-				{
-					QueryRule q = new QueryRule(rowName, Operator.GREATER, filterValue);
-					subMatrix = subMatrix.getSubMatrixFilterByRowMatrixValues(q);
-					this.model.setSubMatrix(subMatrix);
-				}
-				else if (filterOperator.equals("GE"))
-				{
-					// etc
-					//TODO
-				}
+				QueryRule q = new QueryRule(rowName, Operator.valueOf(filterOperator), filterValue);
+				filterMatrix = filterMatrix.getSubMatrixFilterByRowMatrixValues(q);
+				this.model.setSubMatrix(filterMatrix);
 			}
 		}
 		
-		//TODO: Okay??
 		model.setWidth(this.model.getSubMatrix().getNumberOfCols());
 		model.setHeight(this.model.getSubMatrix().getNumberOfRows());
+		
+		verifyColStart();
+		verifyRowStart();
+		determineColStop();
+		determineRowStop();
 	}
 
 }
