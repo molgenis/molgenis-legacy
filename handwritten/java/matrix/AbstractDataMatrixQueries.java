@@ -27,7 +27,7 @@ public class AbstractDataMatrixQueries
 	public static AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowMatrixValues(
 			AbstractDataMatrixInstance<Object> dm, QueryRule[] rules) throws Exception
 	{
-		checkQueryRules(dm, rules);
+		checkQueryRules(dm, false, rules);
 
 		// colNames is the resultset we want to get
 		List<String> colNames = null;
@@ -85,7 +85,7 @@ public class AbstractDataMatrixQueries
 	public static AbstractDataMatrixInstance<Object> getSubMatrixFilterByColMatrixValues(
 			AbstractDataMatrixInstance<Object> dm, QueryRule[] rules) throws Exception
 	{
-		checkQueryRules(dm, rules);
+		checkQueryRules(dm, true, rules);
 
 		// rowNames is the resultset we want to get
 		List<String> colNames = dm.getColNames();
@@ -259,17 +259,13 @@ public class AbstractDataMatrixQueries
 		return resultNames;
 	}
 
-	private static void checkQueryRules(AbstractDataMatrixInstance<Object> dm, QueryRule... rules) throws Exception
+	private static void checkQueryRules(AbstractDataMatrixInstance<Object> dm, boolean appliedOnColumns, QueryRule... rules) throws Exception
 	{
 		for (QueryRule rule : rules)
 		{
 			if (rule.getField() == null)
 			{
 				throw new Exception("QueryRule invalid: field is null");
-			}
-			if (!dm.getColNames().contains(rule.getField()))
-			{
-				throw new Exception("QueryRule invalid: no column named '" + rule.getField() + "'");
 			}
 			if (rule.getValue() == null)
 			{
@@ -278,6 +274,14 @@ public class AbstractDataMatrixQueries
 			if (rule.getOperator() == null)
 			{
 				throw new Exception("QueryRule invalid: operator is null");
+			}
+			if (appliedOnColumns && !dm.getColNames().contains(rule.getField()))
+			{
+				throw new Exception("QueryRule invalid: no column named '" + rule.getField() + "'");
+			}
+			if (!appliedOnColumns && !dm.getRowNames().contains(rule.getField()))
+			{
+				throw new Exception("QueryRule invalid: no row named '" + rule.getField() + "'");
 			}
 		}
 	}

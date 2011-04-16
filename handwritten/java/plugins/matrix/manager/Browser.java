@@ -297,7 +297,7 @@ public class Browser
 		List<String> colNames = filterMatrix.getColNames();
 		for (String colName : colNames)
 		{
-			Integer filterValue = request.getInt("FILTER_VALUE_COL_" + colName);
+			Object filterValue = request.getObject("FILTER_VALUE_COL_" + colName);
 			if (filterValue != null)
 			{
 				System.out.println("value for colName " + colName + ": " + filterValue);
@@ -311,7 +311,7 @@ public class Browser
 		List<String> rowNames = filterMatrix.getRowNames();
 		for (String rowName : rowNames)
 		{
-			Integer filterValue = request.getInt("FILTER_VALUE_ROW_" + rowName);
+			Object filterValue = request.getObject("FILTER_VALUE_ROW_" + rowName);
 			if (filterValue != null)
 			{
 				System.out.println("value for rowName " + rowName + ": " + filterValue);
