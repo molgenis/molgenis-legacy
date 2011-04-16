@@ -101,8 +101,8 @@ public class MolgenisOptions
 	@Option(name = "db_user", param = Option.Param.STRING, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Username for the database. Default: ''")
 	public String db_user = "";
 	
-	/** Folder with overrides for decorators */
-	@Option(name = "decorator_overriders", param = Option.Param.DIRPATH, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Points to an application package with overriding classes for entity decorators, mapped by name. Default: ''")
+	/** Class folder with overrides for decorators */
+	@Option(name = "decorator_overriders", param = Option.Param.CLASS, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Points to an application package with overriding classes for entity decorators, mapped by name. Default: ''")
 	public String decorator_overriders = "";
 
 	/** Database user password */
