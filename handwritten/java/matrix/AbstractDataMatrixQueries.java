@@ -125,11 +125,44 @@ public class AbstractDataMatrixQueries
 		return colNamesResult;
 	}
 
+	/**
+	 * TODO: duplicate code with ROW version!!!!
+	 * @param abstractDataMatrixInstance
+	 * @param rules
+	 * @return
+	 * @throws Exception 
+	 */
 	public static AbstractDataMatrixInstance<Object> getSubMatrixFilterByColMatrixValues(
-			AbstractDataMatrixInstance<Object> abstractDataMatrixInstance, QueryRule[] rules)
+			AbstractDataMatrixInstance<Object> dm, QueryRule[] rules) throws Exception
 	{
-		// TODO Auto-generated method stub
-		return null;
+		// do checks. can be made generic. (moved to helper function)
+		for (QueryRule rule : rules)
+		{
+			if (!dm.getColNames().contains(rule.getField()))
+			{
+				throw new Exception("QueryRule invalid: no column named '" + rule.getField() + "'");
+			}
+		}
+
+		// get row/colnames
+		List<String> colNames = dm.getColNames();
+		List<String> rowNames = new ArrayList<String>();
+
+		for (QueryRule rule : rules)
+		{
+			if (dm.getData().getValueType().equals("Decimal"))
+			{
+				double value = Double.parseDouble(rule.getValue().toString());
+				rowNames = select(dm.getCol(rule.getField()), value, rule.getOperator(), dm.getRowNames());
+			}
+			else
+			{
+				throw new Exception("Unsupported getValueType TEXT");
+			}
+		}
+
+		AbstractDataMatrixInstance<Object> res = dm.getSubMatrix(rowNames, colNames);
+		return res;
 	}
 
 	public static AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowEntityValues(

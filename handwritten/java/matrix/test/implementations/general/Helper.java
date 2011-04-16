@@ -339,7 +339,7 @@ public class Helper
 
 		out.close();
 
-		MemoryDataMatrixInstance<Object> mm = new MemoryDataMatrixInstance<Object>(rowNames, colNames, elements);
+		MemoryDataMatrixInstance<Object> mm = new MemoryDataMatrixInstance<Object>(rowNames, colNames, elements, data);
 		mm.changeDataName(data.getName());
 
 		return mm;

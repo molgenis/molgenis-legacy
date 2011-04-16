@@ -2,11 +2,14 @@ package plugins.matrix.manager;
 
 import java.io.PrintWriter;
 
+import org.molgenis.util.Tuple;
+
 
 
 public class RequestHandler {
 	
-	public static void handle(MatrixManagerModel screenModel, String action, PrintWriter out) throws Exception {
+	public static void handle(MatrixManagerModel screenModel, Tuple request, PrintWriter out) throws Exception {
+		String action = request.getString("__action");
 		if (action.equals("download_visible")) {
 			screenModel.getBrowser().getModel().getSubMatrix().writeToCsvWriter(out);
 			//FIXME: close 'out'?
@@ -20,6 +23,10 @@ public class RequestHandler {
 		}
 		else if (action.equals("changeSubmatrixSize")) {
 			screenModel.getBrowser().update();
+		}
+		else if (action.equals("applyFilters")) {
+			screenModel.getBrowser().applyFilters(request);
+			//TODO: Save filters in screenModel !!
 		}
 		else if (action.equals("moveRight")) {
 			screenModel.getBrowser().moveRight();

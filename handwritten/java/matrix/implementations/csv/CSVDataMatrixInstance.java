@@ -180,7 +180,7 @@ public class CSVDataMatrixInstance extends AbstractDataMatrixInstance
 				colNames.add(this.getColNames().get(colIndex).toString());
 			}
 			
-			result = new MemoryDataMatrixInstance(rowNames, colNames, elements);
+			result = new MemoryDataMatrixInstance(rowNames, colNames, elements, this.getData());
 			return result;
 	}
 
@@ -226,7 +226,7 @@ public class CSVDataMatrixInstance extends AbstractDataMatrixInstance
 			List<String> rowNames = getRowNames().subList(row, row + nRows);
 			List<String> colNames = getColNames().subList(col, col + nCols);
 			
-			result = new MemoryDataMatrixInstance(rowNames, colNames, elements);
+			result = new MemoryDataMatrixInstance(rowNames, colNames, elements, this.getData());
 			return result;
 	}
 	

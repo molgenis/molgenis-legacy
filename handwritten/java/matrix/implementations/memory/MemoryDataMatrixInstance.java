@@ -21,8 +21,8 @@ public class MemoryDataMatrixInstance<E> extends AbstractDataMatrixInstance<E>
 {
 	// matrix of row,col
 	E[][] values;
-
-	public MemoryDataMatrixInstance(List<String> rownames, List<String> colnames, E[][] values) throws MatrixReadException
+	
+	public MemoryDataMatrixInstance(List<String> rownames, List<String> colnames, E[][] values, Data data) throws MatrixReadException
 	{
 		// checks
 		if (rownames.size() != values.length) throw new MatrixReadException(
@@ -36,8 +36,10 @@ public class MemoryDataMatrixInstance<E> extends AbstractDataMatrixInstance<E>
 			i++;
 		}
 
-		Data tmp = new Data();
-		tmp.setName("nameless_memorymatrix");
+		if(data == null){
+			data = new Data();
+			data.setName("nameless_memorymatrix");
+		}
 
 		// configure
 		this.setColNames(colnames);
@@ -45,7 +47,7 @@ public class MemoryDataMatrixInstance<E> extends AbstractDataMatrixInstance<E>
 		this.setNumberOfCols(colnames.size());
 		this.setNumberOfRows(rownames.size());
 		this.values = values;
-		this.setData(tmp);
+		this.setData(data);
 	}
 
 	public void changeDataName(String name)
@@ -122,7 +124,7 @@ public class MemoryDataMatrixInstance<E> extends AbstractDataMatrixInstance<E>
 				elements[rowIndex][colIndex] = allAlements[rowIndex][colIndex];
 			}
 		}
-		return new MemoryDataMatrixInstance(rows, cols, elements);
+		return new MemoryDataMatrixInstance(rows, cols, elements, this.getData());
 	}
 
 	@Override
@@ -144,7 +146,7 @@ public class MemoryDataMatrixInstance<E> extends AbstractDataMatrixInstance<E>
 			cols.add(this.getColNames().get(colIndices[colIndicesIndex]));
 		}
 		
-		return new MemoryDataMatrixInstance(rows, cols, elements);
+		return new MemoryDataMatrixInstance(rows, cols, elements, this.getData());
 	}
 
 	@Override

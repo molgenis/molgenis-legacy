@@ -304,7 +304,7 @@ public class MatrixHeatmap extends PluginModel
 			}
 		}
 
-		AbstractDataMatrixInstance heatMatrix = new MemoryDataMatrixInstance(oldSubMatrix.getRowNames(), oldSubMatrix.getColNames(), newVals);
+		AbstractDataMatrixInstance heatMatrix = new MemoryDataMatrixInstance(oldSubMatrix.getRowNames(), oldSubMatrix.getColNames(), newVals, this.getModel().getSelectedData());
 
 		this.model.setHeatMatrix(heatMatrix);
 		this.model.setLowestVal(lowestVal);

@@ -99,6 +99,7 @@
 					<tr><td><font class="fontColor">Width</font></td><td><input type="text" name="width" value="${browser.width?c}" size="1"></td></tr>
 					<tr><td><font class="fontColor">Height</font></td><td><input type="text" name="height" value="${browser.height?c}" size="1"></td></tr>
 					<tr><td><input type="submit" value="Change" onclick="document.forms.${screen.name}.__action.value = 'changeSubmatrixSize'; document.forms.${screen.name}.submit();"></td></tr>
+					<tr><td><input type="submit" value="Filter" onclick="document.forms.${screen.name}.__action.value = 'applyFilters'; document.forms.${screen.name}.submit();"></td></tr>
 				</table>
 			</td>
 			<td>
@@ -118,9 +119,15 @@
 			<td colspan="2">
 				<table class="tableBorder">
 					<tr>
-						<td></td>
+						<td></td><td></td>
 						<#list browser.subMatrix.colNames as n>
 							<td class="matrixTableCell colorOfTitle" onmouseover="return overlib(escape('${model.overlibText[n]}', CAPTION, '${n}'))" onmouseout="return nd();"><b>${n}</b></td>
+						</#list>
+					</tr>
+					<tr>
+						<td></td><td></td>
+						<#list browser.subMatrix.colNames as n>
+							<td><nobr><select name="FILTER_OPERATOR_COL_${n}"><option value="GT">GT</option><option value="GE">GE</option><option value="EQ">EQ</option><option value="LT">LT</option><option value="LE">LE</option></select><input type="text" size="4" name="FILTER_VALUE_COL_${n}"></input></nobr></td>
 						</#list>
 					</tr>
 					<#list browser.subMatrix.rowNames as n> 
@@ -128,15 +135,18 @@
 							<td class="matrixTableCell colorOfTitle">
 								<div style="display: inline;text-align:center;" onmouseover="return overlib(escape('${model.overlibText[n]}', CAPTION, '${n}'))" onmouseout="return nd();"><b>${n}</b></div>
 							</td>
+
+							<td><nobr><select name="FILTER_OPERATOR_ROW_${n}"><option value="GT">GT</option><option value="GE">GE</option><option value="EQ">EQ</option><option value="LT">LT</option><option value="LE">LE</option></select><input type="text" size="4" name="FILTER_VALUE_ROW_${n}"></input></nobr></td>
+							
 							<#assign x = browser.subMatrix.numberOfCols>
 							<#list 0..x-1 as i>								
 					  			<#if browser.subMatrix.elements[n_index][i]?exists>
 						  			<#if model.selectedData.valuetype == "Decimal">
 						  				<#assign val = browser.subMatrix.elements[n_index][i]>
 						  				<#if n_index%2==0>
-						  					<td class="matrixTableCell matrixRowColor1">${val}</td>
+						  					<td class="matrixTableCell matrixRowColor1">${val?c}</td>
 						  				<#else>
-						  					<td class="matrixTableCell matrixRowColor0">${val}</td>
+						  					<td class="matrixTableCell matrixRowColor0">${val?c}</td>
 						  				</#if>
 						  			<#else>
 						  				<#if browser.subMatrix.elements[n_index][i] != "">

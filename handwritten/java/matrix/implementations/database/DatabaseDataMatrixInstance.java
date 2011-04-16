@@ -216,7 +216,7 @@ public class DatabaseDataMatrixInstance extends AbstractDataMatrixInstance
 			}
 		}
 		rs.close();
-		return new MemoryDataMatrixInstance(this.getRowNames(), this.getColNames(), data);
+		return new MemoryDataMatrixInstance(this.getRowNames(), this.getColNames(), data, this.getData());
 	}
 
 	@Override
@@ -248,7 +248,7 @@ public class DatabaseDataMatrixInstance extends AbstractDataMatrixInstance
 		rs.close();
 
 		return new MemoryDataMatrixInstance(this.getRowNames().subList(row, row + rows), this.getColNames().subList(
-				col, col + cols), data);
+				col, col + cols), data, this.getData());
 	}
 
 	@Override

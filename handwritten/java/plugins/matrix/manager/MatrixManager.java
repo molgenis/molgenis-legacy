@@ -100,7 +100,7 @@ public class MatrixManager extends PluginModel
 					this.model.getBrowser().getModel().setWidth(width);
 					this.model.getBrowser().getModel().setHeight(height);
 
-					RequestHandler.handle(this.model, request.getString("__action"), out);
+					RequestHandler.handle(this.model, request, out);
 				}
 
 				this.setMessages();

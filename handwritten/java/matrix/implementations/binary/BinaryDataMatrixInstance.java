@@ -378,7 +378,7 @@ public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance {
 			colNames.add(this.getColNames().get(colIndex).toString());
 		}
 
-		result = new MemoryDataMatrixInstance(rowNames, colNames, elements);
+		result = new MemoryDataMatrixInstance(rowNames, colNames, elements, this.getData());
 
 		raf.close();
 
@@ -477,7 +477,7 @@ public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance {
 		List<String> rowNames = getRowNames().subList(row, row + nrows);
 		List<String> colNames = getColNames().subList(col, col + ncols);
 
-		result = new MemoryDataMatrixInstance(rowNames, colNames, elements);
+		result = new MemoryDataMatrixInstance(rowNames, colNames, elements, this.getData());
 
 		raf.close();
 		return result;

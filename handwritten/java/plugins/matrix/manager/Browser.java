@@ -1,9 +1,14 @@
 package plugins.matrix.manager;
 
+import java.util.List;
+
 import matrix.AbstractDataMatrixInstance;
 
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.util.Tuple;
 
 public class Browser
 {
@@ -66,8 +71,8 @@ public class Browser
 		int nCols = model.getColStop() - model.getColStart();
 
 		// create and set submatrix
-		AbstractDataMatrixInstance<Object> subMatrix = model.getInstance().getSubMatrixByOffset(model.getRowStart(), nRows, model.getColStart(),
-				nCols);
+		AbstractDataMatrixInstance<Object> subMatrix = model.getInstance().getSubMatrixByOffset(model.getRowStart(),
+				nRows, model.getColStart(), nCols);
 		model.setSubMatrix(subMatrix);
 		System.out.println("*** submatrix updated, cols: " + subMatrix.getNumberOfCols() + ", rows: "
 				+ subMatrix.getNumberOfRows() + ", first element: " + subMatrix.getElement(0, 0));
@@ -240,6 +245,60 @@ public class Browser
 	public void update() throws Exception
 	{
 		moveActionFollowup();
+	}
+
+	public void applyFilters(Tuple request) throws Exception
+	{
+		// get the current submatrix (view)
+		AbstractDataMatrixInstance<Object> subMatrix = this.getModel().getSubMatrix();
+		
+		List<String> colNames = subMatrix.getColNames();
+		for (String colName : colNames)
+		{
+			Integer filterValue = request.getInt("FILTER_VALUE_COL_" + colName);
+			if (filterValue != null)
+			{
+				System.out.println("value for colName " + colName + ": " + filterValue);
+				String filterOperator = request.getString("FILTER_OPERATOR_COL_" + colName);
+				if (filterOperator.equals("GT"))
+				{
+					QueryRule q = new QueryRule(colName, Operator.GREATER, filterValue);
+					subMatrix = subMatrix.getSubMatrixFilterByColMatrixValues(q);
+					this.model.setSubMatrix(subMatrix);
+				}
+				else if (filterOperator.equals("GE"))
+				{
+					// etc
+					//TODO
+				}
+			}
+		}
+		
+		List<String> rowNames = subMatrix.getRowNames();
+		for (String rowName : rowNames)
+		{
+			Integer filterValue = request.getInt("FILTER_VALUE_ROW_" + rowName);
+			if (filterValue != null)
+			{
+				System.out.println("value for rowName " + rowName + ": " + filterValue);
+				String filterOperator = request.getString("FILTER_OPERATOR_ROW_" + rowName);
+				if (filterOperator.equals("GT"))
+				{
+					QueryRule q = new QueryRule(rowName, Operator.GREATER, filterValue);
+					subMatrix = subMatrix.getSubMatrixFilterByRowMatrixValues(q);
+					this.model.setSubMatrix(subMatrix);
+				}
+				else if (filterOperator.equals("GE"))
+				{
+					// etc
+					//TODO
+				}
+			}
+		}
+		
+		//TODO: Okay??
+		model.setWidth(this.model.getSubMatrix().getNumberOfCols());
+		model.setHeight(this.model.getSubMatrix().getNumberOfRows());
 	}
 
 }
