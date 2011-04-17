@@ -42,7 +42,7 @@ public class SourcePerEntityGen extends ForEachEntityGenerator
 		{
 			// calculate package from its own package
 			String packageName = entity.getNamespace().toLowerCase() + this.getClass().getPackage().toString().substring(Generator.class.getPackage().toString().length());
-			File targetDir = new File(this.getSourcePath(options) + packageName.replace(".", "/").replace("/cpp", ""));
+			File targetDir = new File((this.getSourcePath(options).endsWith("/")?this.getSourcePath(options):this.getSourcePath(options)+"/") + packageName.replace(".", "/").replace("/cpp", ""));
 			try{
 				File targetFile = new File(targetDir + "/" + GeneratorHelper.getJavaName(entity.getName()) + getExtension());
 				targetDir.mkdirs();
