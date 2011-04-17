@@ -9,7 +9,7 @@
 <#-- Generate a table for each concrete class (so, not abstract) -->
 <#list entities as entity>
 	<#if !entity.isAbstract()>
-	DROP TABLE ${SqlName(entity)} IF EXISTS;
+	DROP TABLE ${SqlName(entity)} IF EXISTS CASCADE;
 	CREATE CACHED TABLE ${SqlName(entity)} (
 	<#list dbFields(entity) as f>
 		<#if f_index != 0>, </#if><@compress single_line=true>
