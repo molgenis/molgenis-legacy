@@ -99,7 +99,7 @@
      	 <manifest>
      	    <attribute name="Built-By" value="${myname}"/>
      	    <attribute name="Main-Class" value="RunStandalone"/>
-     	 	<attribute name="Class-Path" value=".;molgenis-3.3.0.jar"/>
+     	 	<attribute name="Class-Path" value="molgenis-3.3.0.jar"/>
      	  </manifest>
     </jar>
   	<copy todir="${dist}/WebContent">
@@ -111,6 +111,12 @@
   	</copy>
   	<copy todir="${dist}/hsqldb">
   	    <fileset dir="hsqldb">
+  	    	<exclude name="**/.svn/*"/>
+  	        <include name="**/*.*"/>
+  	    </fileset>
+  	</copy>
+  	<copy todir="${dist}/">
+  	    <fileset dir="handwritten/standalone">
   	        <include name="**/*.*"/>
   	    </fileset>
   	</copy>
