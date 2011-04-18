@@ -3,8 +3,8 @@
 <title>MOLGENIS load page</title>
 <script language="JavaScript">
 <!--
-//url to move to is path + "/molgenid.do"
-var sURL = unescape(window.location.pathname) + "/molgenis.do";
+//url to move to is path (without any trailing /) + "/molgenis.do"
+var sURL = unescape(window.location.pathname).replace(/\/$/, '') + "/molgenis.do";
 
 function doLoad()
 {
@@ -18,6 +18,7 @@ function refresh()
     //  entry in the visitor's history.  It is provided for
     //  those browsers that only support JavaScript 1.0.
     //
+    //alert(sURL);
     window.location.href = sURL;
 }
 //-->

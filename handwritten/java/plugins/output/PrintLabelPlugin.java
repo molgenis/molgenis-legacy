@@ -63,7 +63,7 @@ public class PrintLabelPlugin extends GenericPlugin
 
 	private File createPdf(String filename) throws FileNotFoundException, DocumentException {
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-		File pdfFile =  new File(tmpDir.getAbsolutePath() + File.separatorChar + filename);
+		File pdfFile = new File(tmpDir.getAbsolutePath() + File.separatorChar + filename);
 		Document document = new Document();
         PdfWriter.getInstance(document, new FileOutputStream(pdfFile));
         document.open();
