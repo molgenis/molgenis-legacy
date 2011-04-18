@@ -1,3 +1,5 @@
+import generic.Utils;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -17,10 +19,10 @@ public class GetServlets
 	{
 		URL decoratorOverrideURL = getClass().getResource("/servlets");
 		
-		File decoratorOverrideFolder = null;
+		URL decoratorOverrideFolder = null;
 		
 		if(decoratorOverrideURL != null){
-			decoratorOverrideFolder = new File(decoratorOverrideURL.getFile().replace("%20", " "));
+			decoratorOverrideFolder = new URL("file://" + decoratorOverrideURL.getFile().replace("%20", " "));
 			System.out.println("Servlet location '"+decoratorOverrideFolder+"' loaded.");
 			servletLocations = recurseDir(decoratorOverrideFolder);
 		}else{
@@ -29,11 +31,12 @@ public class GetServlets
 		}
 	}
 
-	public HashMap<String,String> recurseDir(File f) throws IOException
+	public HashMap<String,String> recurseDir(URL u) throws IOException
 	{
+		File f = new File(u.getPath());
 		if (f.isDirectory()){
-			
 			for (File file : f.listFiles())	{
+				Utils.log("Found: servlet file ? " + f.getAbsolutePath(),System.err);
 				String servletLocation = servletBasePath;
 				if (file.getName().endsWith(".java") || file.getName().endsWith(".class")){
 					String filename = file.getName();
@@ -48,14 +51,15 @@ public class GetServlets
 					if(servletLocations.containsKey(servletName)){
 						throw new IOException("Duplicate servlet: " + servletName);
 					}
-					
+					Utils.console(servletLocation + (application.equals("")?"":application + ".") + servletName);
 					servletLocations.put(servletName, servletLocation + (application.equals("")?"":application + ".") + servletName);
 				}
-				if (file.isDirectory())
-				{
-					recurseDir(file);
+				if (file.isDirectory()){
+					recurseDir(file.toURL());
 				}
 			}
+		}else{
+			Utils.log("Not a directory: " + f.isDirectory() +" "+ f.isFile(),System.err);
 		}
 		return servletLocations;
 	}
