@@ -18,12 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-
-
-
-
 /**
- * Impl
+ * Implementation of a simple tree
  */
 @SuppressWarnings("unchecked")
 public class SimpleTree<T extends Tree> implements Tree<T>,Serializable
