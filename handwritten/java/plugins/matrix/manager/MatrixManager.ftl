@@ -128,7 +128,7 @@
 					<tr>
 						<td></td><td></td>
 						<#list browser.subMatrix.colNames as n>
-							<td><nobr><select name="FILTER_OPERATOR_COL_${n}"><#if model.selectedData.valuetype == "Decimal"><option value="GREATER">GT</option><option value="GREATER_EQUAL">GE</option><option value="LESS">LT</option><option value="LESS_EQUAL">LE</option></#if><option value="EQUALS">EQ</option></select><input type="text" size="4" name="FILTER_VALUE_COL_${n}"></input></nobr></td>
+							<td><nobr><select name="FILTER_OPERATOR_COL_${n}"><#if model.selectedData.valuetype == "Decimal"><option value="GREATER">&gt;</option><option value="GREATER_EQUAL">&gt;=</option><option value="LESS">&lt;</option><option value="LESS_EQUAL">&lt;=</option></#if><option value="EQUALS">==</option></select><input type="text" size="4" name="FILTER_VALUE_COL_${n}"></input></nobr></td>
 						</#list>
 					</tr>
 					<#list browser.subMatrix.rowNames as n> 
@@ -137,7 +137,7 @@
 								<div style="display: inline;text-align:center;" onmouseover="return overlib(escape('${model.overlibText[n]}', CAPTION, '${n}'))" onmouseout="return nd();"><b>${n}</b></div>
 							</td>
 
-							<td><nobr><select name="FILTER_OPERATOR_ROW_${n}"><#if model.selectedData.valuetype == "Decimal"><option value="GREATER">GT</option><option value="GREATER_EQUAL">GE</option><option value="LESS">LT</option><option value="LESS_EQUAL">LE</option></#if><option value="EQUALS">EQ</option></select><input type="text" size="4" name="FILTER_VALUE_ROW_${n}"></input></nobr></td>
+							<td><nobr><select name="FILTER_OPERATOR_ROW_${n}"><#if model.selectedData.valuetype == "Decimal"><option value="GREATER">&gt;</option><option value="GREATER_EQUAL">&gt;=</option><option value="LESS">&lt;</option><option value="LESS_EQUAL">&lt;=</option></#if><option value="EQUALS">==</option></select><input type="text" size="4" name="FILTER_VALUE_ROW_${n}"></input></nobr></td>
 							
 							<#assign x = browser.subMatrix.numberOfCols>
 							<#list 0..x-1 as i>								
