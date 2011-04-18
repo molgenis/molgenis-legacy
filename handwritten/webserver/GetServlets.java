@@ -1,13 +1,11 @@
-import generic.Utils;
-
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 
 public class GetServlets
 {
 	private HashMap<String,String> servletLocations = new HashMap<String,String>();
-	private File servletDir = new File("handwritten"+File.separator+"java"+File.separator+"servlets");
 	private String servletBasePath = "servlets.";
 
 	public HashMap<String, String> getServletLocations()
@@ -17,33 +15,41 @@ public class GetServlets
 
 	public GetServlets() throws IOException
 	{
-		this.servletLocations = recurseDir(servletDir);
+		URL decoratorOverrideURL = getClass().getResource("/servlets");
+		
+		File decoratorOverrideFolder = null;
+		
+		if(decoratorOverrideURL != null){
+			decoratorOverrideFolder = new File(decoratorOverrideURL.getFile().replace("%20", " "));
+			System.out.println("Servlet location '"+decoratorOverrideFolder+"' loaded.");
+			servletLocations = recurseDir(decoratorOverrideFolder);
+		}else{
+			System.err.println("Servlet location '/servlets' could not be loaded.");
+			return;
+		}
 	}
 
 	public HashMap<String,String> recurseDir(File f) throws IOException
 	{
-		if (f.isDirectory())
-		{
-			for (File file : f.listFiles())
-			{
-				if (file.getName().endsWith(".java"))
-				{
-					String servletName = file.getName().substring(0, file.getName().length()-5);
-				
-					//getting servlet location - start with the base path
-					String servletLocation = servletBasePath;
+		if (f.isDirectory()){
+			
+			for (File file : f.listFiles())	{
+				String servletLocation = servletBasePath;
+				if (file.getName().endsWith(".java") || file.getName().endsWith(".class")){
+					String filename = file.getName();
+					String servletName = filename.substring(0,filename.indexOf("."));
+					String fullname = file.getAbsolutePath();
+					String application = fullname.substring(fullname.indexOf(servletBasePath.replace(".",""))+(servletBasePath.length()-1),fullname.lastIndexOf(File.separator));
 					
-					//add servlet name - using absolute path because of package nesting
-					servletLocation += file.getAbsolutePath().substring(servletDir.getAbsolutePath().length()+1, file.getAbsolutePath().length());
-				
-					//remove '.java' and replace '/' leftover from getting absolute path with '.'
-					servletLocation = servletLocation.substring(0, servletLocation.length()-5).replace(File.separator, ".");
+					application = application.replace(File.separator, ".");
+					if(application.equals(File.separator)) application = "";
+					if(application.startsWith(".")) application = application.substring(1);
 					
 					if(servletLocations.containsKey(servletName)){
 						throw new IOException("Duplicate servlet: " + servletName);
 					}
-					Utils.log(servletLocation,System.err);
-					servletLocations.put(servletName, servletLocation);
+					
+					servletLocations.put(servletName, servletLocation + (application.equals("")?"":application + ".") + servletName);
 				}
 				if (file.isDirectory())
 				{
