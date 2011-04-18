@@ -1,15 +1,9 @@
-// 
-
 package org.molgenis.util.cmdline;
 
-// jdk
 import java.lang.annotation.Target;
 import java.lang.annotation.Retention;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.RetentionPolicy;
-
-
-
 
 /**
  * This annotation type helps to describe a single commandline option. With it
