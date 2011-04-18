@@ -95,7 +95,7 @@
   	    </fileset>
   	</copy>
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-    <jar jarfile="${dist}/gcc.jar" basedir="${build}">
+    <jar jarfile="${dist}/Application.jar" basedir="${build}" update="false">
      	 <manifest>
      	    <attribute name="Built-By" value="${myname}"/>
      	    <attribute name="Main-Class" value="RunStandalone"/>

@@ -25,8 +25,7 @@ public class WWWServer extends Webserver implements Runnable
 
 		// Serving all servlets in handwritten/java/servlets
 		HashMap<String, String> autoMapping = new GetServlets().getServletLocations();
-		for (String key : autoMapping.keySet())
-		{
+		for (String key : autoMapping.keySet())	{
 			addServlet(var + "/" + key, autoMapping.get(key));
 		}
 

@@ -3,7 +3,10 @@ import generic.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+
+import org.molgenis.xgap.xqtlworkbench_standalone.JarClass;
 
 public class GetServlets
 {
@@ -17,12 +20,12 @@ public class GetServlets
 
 	public GetServlets() throws IOException
 	{
-		URL decoratorOverrideURL = getClass().getResource("/servlets");
+		URL decoratorOverrideURL = getClass().getResource("servlets");
 		
-		URL decoratorOverrideFolder = null;
+		File decoratorOverrideFolder = null;
 		
 		if(decoratorOverrideURL != null){
-			decoratorOverrideFolder = new URL("file://" + decoratorOverrideURL.getFile().replace("%20", " "));
+			decoratorOverrideFolder = new File(decoratorOverrideURL.getFile().replace("%20", " "));
 			System.out.println("Servlet location '"+decoratorOverrideFolder+"' loaded.");
 			servletLocations = recurseDir(decoratorOverrideFolder);
 		}else{
@@ -31,9 +34,8 @@ public class GetServlets
 		}
 	}
 
-	public HashMap<String,String> recurseDir(URL u) throws IOException
+	public HashMap<String,String> recurseDir(File f) throws IOException
 	{
-		File f = new File(u.getPath());
 		if (f.isDirectory()){
 			for (File file : f.listFiles())	{
 				Utils.log("Found: servlet file ? " + f.getAbsolutePath(),System.err);
@@ -55,11 +57,22 @@ public class GetServlets
 					servletLocations.put(servletName, servletLocation + (application.equals("")?"":application + ".") + servletName);
 				}
 				if (file.isDirectory()){
-					recurseDir(file.toURL());
+					recurseDir(file);
 				}
 			}
 		}else{
 			Utils.log("Not a directory: " + f.isDirectory() +" "+ f.isFile(),System.err);
+			try {
+				ArrayList<String> c = JarClass.getClassesFromJARFile("Application.jar","servlets");
+				for(String s : c){
+					Utils.console(s);
+					s = s.replace("class ", "");
+					String servletName = s.substring(s.lastIndexOf(".")+1);
+					servletLocations.put(servletName, s);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		return servletLocations;
 	}
