@@ -90,7 +90,6 @@ public class MrefField extends FieldType
 	@Override
 	public String getCppJavaPropertyType() throws MolgenisModelException
 	{
-		Field f_ref = f.getXrefField();
 		return "Ljava/util/List;";
 	}
 
