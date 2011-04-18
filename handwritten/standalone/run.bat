@@ -1,1 +1,1 @@
-java -jar gcc.jar
+java -jar Application.jar
