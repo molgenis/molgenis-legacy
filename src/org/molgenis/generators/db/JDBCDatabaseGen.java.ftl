@@ -20,16 +20,21 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 import javax.sql.DataSource;
+
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jdbc.DataSourceWrapper;
 import org.molgenis.framework.db.jdbc.SimpleDataSourceWrapper;
 import org.molgenis.model.elements.Model;
-<#if decorator_overriders != ''>import org.molgenis.framework.db.jdbc.JDBCMapper;
+<#if decorator_overriders != ''>
+import org.molgenis.framework.db.jdbc.JDBCMapper;
 import org.molgenis.framework.db.jdbc.MappingDecorator;
 import org.apache.log4j.Logger;
 import java.lang.reflect.Constructor;
-import java.net.URL;</#if>
+import java.net.URL;
+import java.util.ArrayList;
+import org.molgenis.xgap.xqtlworkbench_standalone.JarClass;
+</#if>
 
 public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 {
@@ -113,7 +118,34 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 		}else{
 			logger.error("Decorator override location '${decorator_overriders}' could not be loaded. Skipping override..");
 			System.err.println("Decorator override location '${decorator_overriders}' could not be loaded. Skipping override..");
-			return;
+			//Were in a jar
+			try {
+				ArrayList<String> c = JarClass.getClassesFromJARFile("Application.jar","org/molgenis/xgap/decoratoroverriders");
+				for(String s : c){
+					s = s.substring(s.lastIndexOf(".")+1);
+					System.out.println(s);
+					<#list model.entities as entity><#if !entity.isAbstract()><#if entity.decorator?exists>
+					if("${entity.decorator}".substring("${entity.decorator}".lastIndexOf(".")+1).equals(s)){
+						System.out.println("${entity.decorator} overwritten for ${JavaName(entity)} entity.");
+						try{
+							Constructor constr = Class.forName("${decorator_overriders}." + s).getDeclaredConstructor(JDBCMapper.class);
+							MappingDecorator mapdec = (MappingDecorator) constr.newInstance(new ${entity.namespace}.db.${JavaName(entity)}Mapper(this));
+							<#if auth_loginclass?ends_with("SimpleLogin")>
+								this.putMapper(${entity.namespace}.${JavaName(entity)}.class, mapdec);
+							<#else>
+								this.putMapper(${entity.namespace}.${JavaName(entity)}.class, new ${entity.decorator}(new ${entity.namespace}.db.${JavaName(entity)}SecurityDecorator(mapdec)));
+							</#if>	
+						}catch(Exception e){
+							e.printStackTrace();
+							throw new DatabaseException(e);
+						}
+					}
+					</#if></#if></#list>
+				}
+				return;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
 		if(!decoratorOverrideFolder.exists()){
