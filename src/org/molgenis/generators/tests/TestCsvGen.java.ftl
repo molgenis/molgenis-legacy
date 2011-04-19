@@ -43,8 +43,8 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.DatabaseException;
 
 import static  org.testng.AssertJUnit.*;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 <#list model.entities as entity>
@@ -72,19 +72,46 @@ public class TestCsv
 	DateFormat dateFormat = new SimpleDateFormat(SimpleTuple.DATEFORMAT, Locale.US);
 	DateFormat dateTimeFormat = new SimpleDateFormat(SimpleTuple.DATETIMEFORMAT, Locale.US);	 
 	
+<#if databaseImp = 'jpa'>		
+	@BeforeTest
+	public static void oneTimeSetUp()   
+	{
+		try
+		{		
+			db = new app.JpaDatabase(JpaUtil.createTables());
+			((JpaDatabase)db).getEntityManager().setFlushMode(FlushModeType.AUTO);
+			//JpaUtil.dropAndCreateTables(db.getEntityManager());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		logger.info("Database created");
+	}
+	@AfterTest
+	public static void destory() {
+		JpaUtil.dropDatabase(db.getEntityManager());
+	}	
+<#else>
+	@BeforeTest
+	public static void oneTimeSetUp()   
+	{
+		try
+		{		
+			db = new app.JDBCDatabase("molgenis.test.properties");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		logger.info("Database created");
+	}
+</#if>		
+	
 	@Test
 	public void testCsv1()  throws Exception
 	{
-		//create database
-		<#if databaseImp = 'jpa'>		
-		db = new app.JpaDatabase(true);
-		((JpaDatabase)db).getEntityManager().setFlushMode(FlushModeType.AUTO);
-		<#elseif db_mode="standalone">
-		db = new JDBCDatabase("molgenis.testhsql.properties");	
-		<#else>
-		db = new JDBCDatabase("molgenis.test.properties");	
-		new Molgenis("molgenis.test.properties").updateDb();
-		</#if>
+
 		
 		//create tem working directory
 		File dir = File.createTempFile("molgenis","");		
@@ -113,9 +140,7 @@ public class TestCsv
 	
 		//clean database
 		<#if databaseImp = 'jpa'>
-			JpaUtil.dropAndCreateTables( ((JpaDatabase)db).getEntityManager() );
-		<#elseif db_mode="standalone">
-			db = new JDBCDatabase("molgenis.testhsql.properties");				
+			db = new app.JpaDatabase(JpaUtil.dropAndCreateTables( ((JpaDatabase)db).getEntityManager() ));
 		<#else>
 			new Molgenis("molgenis.test.properties").updateDb();
 		</#if>
@@ -135,9 +160,7 @@ public class TestCsv
 		
 		//clean database
 		<#if databaseImp = 'jpa'>
-			JpaUtil.dropAndCreateTables( ((JpaDatabase)db).getEntityManager() );
-		<#elseif db_mode="standalone">
-			db = new JDBCDatabase("molgenis.testhsql.properties");	
+			db = new app.JpaDatabase(JpaUtil.dropAndCreateTables( ((JpaDatabase)db).getEntityManager() ));
 		<#else>
 			new Molgenis("molgenis.test.properties").updateDb();
 		</#if>
@@ -194,12 +217,6 @@ public class TestCsv
 			}
 		}
 		return true;
-	}
-	
-	@AfterClass
-	public static void onTimeCleanUp()
-	{
-		//todo: delete testing data
 	}
 	
     public static void main(String[] args) throws Exception

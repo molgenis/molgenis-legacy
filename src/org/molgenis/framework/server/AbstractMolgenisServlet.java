@@ -611,7 +611,6 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				
 				//done, get rid of screen messages here?
 				((UserInterface<?>)molgenis).clearAllMessages();
-				
 			}
 			// db.commitTx(); DISCUSSION
 		}

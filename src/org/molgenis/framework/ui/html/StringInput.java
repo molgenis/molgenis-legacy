@@ -19,25 +19,6 @@ public class StringInput extends HtmlInput
 		this.setMaxHeight(25);
 	}
 
-	//TODO Danny: Add another constructor to set width and height in the initialization
-	//And thus minWidth and minHeight
-	
-	
-	/**
-	 * To avoid blank rules <br> into the textarea where the xml is being printed,
-	 * the function getValue() from HtmlInput.java is overridden.
-	 */
-	
-	@Override
-	public String getValue()
-	{
-		if( getObject() == null )
-			return "";
-		
-		//todo: why different from getHtmlValue()??
-		return getObject().toString();
-	}
-	
 	public String toHtml()
 	{
 		String readonly = (this.isReadonly()) ? "readonly class=\"readonly\" " : ""; 

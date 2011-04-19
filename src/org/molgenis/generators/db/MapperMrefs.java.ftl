@@ -29,10 +29,10 @@ Common parts for saving multiplicative references (mrefs) to an entity.
 			
 			for(${JavaName(mref_entity)} ref: ${name(f)}_mrefs)
 			{
-				if(${name(f)}_${name(mref_remote_field)}_map.get(ref.get${JavaName(mref_local_field)}()) == null) ${name(f)}_${name(mref_remote_field)}_map.put(ref.get${JavaName(mref_local_field)}(),new ArrayList<${pkeyJavaType(f.xrefEntity)}>()); 
-				${name(f)}_${name(mref_remote_field)}_map.get(ref.get${JavaName(mref_local_field)}()).add(ref.get${JavaName(mref_remote_field)}());
+				if(${name(f)}_${name(mref_remote_field)}_map.get(ref.get${JavaName(mref_local_field)}()) == null) ${name(f)}_${name(mref_remote_field)}_map.put(ref.get${JavaName(mref_local_field)}_${JavaName(pkey(f.xrefEntity))}(),new ArrayList<${pkeyJavaType(f.xrefEntity)}>()); 
+				${name(f)}_${name(mref_remote_field)}_map.get(ref.get${JavaName(mref_local_field)}()).add(ref.get${JavaName(mref_remote_field)}_${JavaName(pkey(f.xrefEntity))}());
 				<#if f.xrefLabelNames[0] != f.xrefFieldName><#list f.xrefLabelNames as label>
-				if(${name(f)}_${label}_map.get(ref.get${JavaName(mref_local_field)}()) == null)	${name(f)}_${label}_map.put(ref.get${JavaName(mref_local_field)}(),new ArrayList<${JavaType(f.xrefLabels[label_index])}>());
+				if(${name(f)}_${label}_map.get(ref.get${JavaName(mref_local_field)}()) == null)	${name(f)}_${label}_map.put(ref.get${JavaName(mref_local_field)}_${JavaName(pkey(f.xrefEntity))}(),new ArrayList<${JavaType(f.xrefLabels[label_index])}>());
 				${name(f)}_${label}_map.get(ref.get${JavaName(mref_local_field)}()).add(ref.get${JavaName(mref_remote_field)}_${JavaName(label)}());
 				</#list></#if>
 			}
@@ -49,7 +49,7 @@ Common parts for saving multiplicative references (mrefs) to an entity.
 <#assign mref_local_field = f.mrefLocalid/>	
 				if(${name(f)}_${name(mref_remote_field)}_map.get(id) != null)
 				{
-					entity.set${JavaName(f)}(${name(f)}_${name(mref_remote_field)}_map.get(id));
+					entity.set${JavaName(f)}_${JavaName(pkey(f.xrefEntity))}(${name(f)}_${name(mref_remote_field)}_map.get(id));
 				}
 				<#if f.xrefLabelNames[0] != f.xrefFieldName><#list f.xrefLabelNames as label>
 				if(${name(f)}_${label}_map.get(id) != null)
@@ -135,8 +135,8 @@ Common parts for saving multiplicative references (mrefs) to an entity.
 <#assign mref_remote_field = f.mrefRemoteid/>
 <#assign mref_local_field = f.mrefLocalid/>		
 			//remove duplicates using Set
-			entity.set${JavaName(f)}(new ArrayList<Integer>(new LinkedHashSet<Integer>(entity.get${JavaName(f)}())));
-			for(${pkeyJavaType(f.xrefEntity)} id: entity.get${JavaName(f)}())
+			entity.set${JavaName(f)}(new ArrayList(new LinkedHashSet(entity.get${JavaName(f)}())));
+			for(${pkeyJavaType(f.xrefEntity)} id: entity.get${JavaName(f)}_${JavaName(pkey(f.xrefEntity))}())
 			{
 				${JavaName(mref_entity)} new_mref = new ${JavaName(mref_entity)}();
 				new_mref.set${JavaName(mref_local_field )}( entity.get${JavaName(pkey(entity))}() );

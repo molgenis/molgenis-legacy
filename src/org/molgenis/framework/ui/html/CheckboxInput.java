@@ -47,7 +47,7 @@ public class CheckboxInput extends HtmlInput
 			for (ValueLabel option : options)
 			{
 				if (getObject() != null) {
-					checked = ( getObjectAsVector().contains(option.getValue().toString()) ? " checked " : "");
+					checked = ( ((Vector<String>)getObject()).contains(option.getValue().toString()) ? " checked " : "");
 				}
 				optionString.append("<input id=\"" + this.getId() + "\" type=\"checkbox\" " + readonly + checked + 
 						" name=\"" + this.getName() + "\" value=\"" + option.getValue() + "\">" + option.getLabel() + 
@@ -56,7 +56,7 @@ public class CheckboxInput extends HtmlInput
 		}
 		else {
 			if (getObject() != null) {
-				checked = ( getObjectAsVector().contains(this.getName()) ? " checked " : "");
+				checked = ( ((Vector<String>)getObject()).contains(this.getName()) ? " checked " : "");
 			}
 			optionString.append("<input id=\"" + this.getId() + "\" type=\"checkbox\" " + readonly + checked + 
 					" name=\"" +  this.getName() + "\">" + this.getLabel());		
@@ -65,19 +65,13 @@ public class CheckboxInput extends HtmlInput
 		return optionString.toString();
 	}
 	
-	@SuppressWarnings("unchecked")
-	private Vector<String> getObjectAsVector()
-	{
-		return (Vector<String>)getObject();
-	}
-	
 	@Override
 	public String getValue()
 	{
 		String value = "";
 		for (ValueLabel i: options)
 		{
-			if (getObjectAsVector().contains(i.getValue()))
+			if (((Vector<String>)getObject()).contains(i.getValue()))
 			{
 				value += i.getLabel() + ", ";
 			}

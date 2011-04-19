@@ -53,7 +53,9 @@ public class MolgenisModelValidator
 
 		// enhance the model
 		correctXrefCaseSensitivity(model);
-		createLinkTablesForMrefs(model);
+//		if(!options.mapper_implementation.equals(MolgenisOptions.MapperImplementation.JPA)) {
+			createLinkTablesForMrefs(model);
+//		}
 		copyDefaultXrefLabels(model);
 		copyDecoratorsToSubclass(model);
 

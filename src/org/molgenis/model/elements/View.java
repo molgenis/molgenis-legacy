@@ -29,6 +29,7 @@ import org.molgenis.model.MolgenisModelException;
  * @author MA Swertz
  * @version 1.0.0
  */
+@Deprecated
 public class View extends DBSchema implements Record
 {
 	// constructor(s)

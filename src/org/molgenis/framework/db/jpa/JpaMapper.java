@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import org.molgenis.fieldtypes.FieldType;
+
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.DatabaseMapper;
 import org.molgenis.util.Entity;
@@ -61,7 +61,7 @@ public interface JpaMapper<E extends Entity> extends DatabaseMapper<E>
 	 */
 	public boolean saveFileAttachements(List<E> entities, File dir) throws IOException;
 	
-	public FieldType getFieldType(String field);
+	public org.molgenis.framework.db.jdbc.ColumnInfo.Type getFieldType(String field);
 	
 	public String getTableFieldName(String field);
 	

@@ -28,7 +28,6 @@ import org.molgenis.util.Tuple;
  * Factory for creating SQL statements
  * 
  * @author Morris Swertz
- * @author Joris Lops
  * 
  */
 public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper<E>

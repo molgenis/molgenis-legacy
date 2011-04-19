@@ -101,7 +101,7 @@ public class MappingDecorator<E extends Entity> implements JDBCMapper<E>
 	@Override
 	public E create()
 	{
-		return mapper.create();
+		return (E) mapper.create();
 	}
 
 	@Override

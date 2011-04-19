@@ -18,7 +18,7 @@ public class JpaMapperGen extends ForEachEntityGenerator
 	@Override
 	public String getType()
 	{
-		return "Mapper";
+		return "JpaMapper";
 	}
 
 }

@@ -25,6 +25,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.util.Entity;
+import org.molgenis.framework.db.jdbc.ColumnInfo.Type;
 
 /**
  * @author jorislops
@@ -464,9 +465,8 @@ public class JPAQueryGeneratorUtil {
 		return createSortSql(mapper, false, rules);
 	}
 
-	private static boolean omitQuotes(FieldType t) {
-		return t instanceof LongField || t instanceof IntField || t instanceof DecimalField;
-
+	private static boolean omitQuotes(Type t) {
+		return t.equals(Type.LONG) || t.equals(Type.INT) || t.equals(Type.DECIMAL);
 	}
 
 	/**

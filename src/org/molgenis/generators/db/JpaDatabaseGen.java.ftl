@@ -48,20 +48,28 @@ public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
 		}		
 	}
 	
-	static
+	public void initMappers(EntityManager em)
 	{
 		<#list model.entities as entity><#if !entity.isAbstract()>
-		putMapper(${entity.namespace}.${Name(entity)}.class, (DatabaseMapper)new ${entity.namespace}.db.${Name(entity)}Mapper(null));
+		putMapper(${entity.namespace}.${JavaName(entity)}.class, new ${entity.namespace}.db.${JavaName(entity)}JpaMapper(em));
 		</#if></#list>	
 	}	
 
 	public JpaDatabase() throws DatabaseException
 	{
 		super(EMFactory.createEntityManager(), new JDBCMetaDatabase());
+		initMappers(super.getEntityManager());
 	}
+	
+	public JpaDatabase(EntityManager em) throws DatabaseException {
+		super(em, new JDBCMetaDatabase());
+		initMappers(super.getEntityManager());
+	}
+	
 	
 	public JpaDatabase(String persistenceUnit) throws DatabaseException {
 		super(EMFactory.createEntityManager(persistenceUnit), new JDBCMetaDatabase());
+		initMappers(super.getEntityManager());
 	}
 	
 	public JpaDatabase(boolean testDatabase) throws DatabaseException {
@@ -71,5 +79,6 @@ public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
 		} else {
 			super.setEntityManager(EMFactory.createEntityManager());
 		}
+		initMappers(super.getEntityManager());
 	}
 }

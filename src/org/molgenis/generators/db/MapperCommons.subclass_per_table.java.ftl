@@ -271,7 +271,7 @@
 			if (mref_mapping_entities.size() > 0)
 			{
 				List<${JavaType(pkey(entity))}> mref_ids = new ArrayList<${JavaType(pkey(entity))}>();
-				for (${JavaName(field.getMrefName())} mref : mref_mapping_entities) mref_ids.add(mref.get${JavaName(field.mrefLocalid)}());
+				for (${JavaName(field.getMrefName())} mref : mref_mapping_entities) mref_ids.add(mref.get${JavaName(field.mrefLocalid)}_${JavaName(pkey(field.xrefEntity))}());
 				return new QueryRule("${SqlName(pkey(entity))}", Operator.IN, mref_ids);
 			}		
 			else
@@ -290,7 +290,7 @@
 			if (mref_mapping_entities.size() > 0)
 			{
 				List<${JavaType(pkey(entity))}> mref_ids = new ArrayList<${JavaType(pkey(entity))}>();
-				for (${JavaName(field.getMrefName())} mref : mref_mapping_entities) mref_ids.add(mref.get${JavaName(field.mrefLocalid)}());
+				for (${JavaName(field.getMrefName())} mref : mref_mapping_entities) mref_ids.add(mref.get${JavaName(field.mrefLocalid)}_${JavaName(pkey(entity))}());
 				return new QueryRule("${SqlName(pkey(entity))}", Operator.IN, mref_ids);
 			}		
 			else

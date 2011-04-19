@@ -11,7 +11,28 @@ import org.eclipse.persistence.tools.schemaframework.DefaultTableGenerator;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
 
 public class JpaUtil {
-	public static void dropAndCreateTables(EntityManager em) {
+	
+	public static EntityManager createTables() {
+		Persistence.createEntityManagerFactory("molgenis_test").getCache().evictAll();
+		Persistence.createEntityManagerFactory("molgenis_test").close();
+		
+		EntityManagerFactoryImpl emfi = (EntityManagerFactoryImpl) Persistence.createEntityManagerFactory("molgenis_test");
+		EntityManagerImpl emi = (EntityManagerImpl) emfi.createEntityManager();
+		
+		Session session = emi.getServerSession();
+		DefaultTableGenerator dtg = new DefaultTableGenerator(emi.getActiveSession().getProject());
+		TableCreator tc = dtg.generateDefaultTableCreator();
+		//tc.dropTables((DatabaseSession) session);
+		tc.createTables((DatabaseSession)session);
+		return emi;
+	}
+	
+	public static EntityManager dropAndCreateTables(EntityManager em) {
+		em.clear();
+		em.close();
+		Persistence.createEntityManagerFactory("molgenis_test").getCache().evictAll();
+		Persistence.createEntityManagerFactory("molgenis_test").close();
+		
 		EntityManagerFactoryImpl emfi = (EntityManagerFactoryImpl) Persistence.createEntityManagerFactory("molgenis_test");
 		EntityManagerImpl emi = (EntityManagerImpl) emfi.createEntityManager();
 		
@@ -19,6 +40,23 @@ public class JpaUtil {
 		DefaultTableGenerator dtg = new DefaultTableGenerator(emi.getActiveSession().getProject());
 		TableCreator tc = dtg.generateDefaultTableCreator();
 		tc.dropTables((DatabaseSession) session);
-		tc.createTables((DatabaseSession)session);		
+		tc.createTables((DatabaseSession)session);
+		return emi;
+	}
+	
+	public static void dropDatabase(EntityManager em) {
+		em.clear();
+		em.close();
+		Persistence.createEntityManagerFactory("molgenis_test").getCache().evictAll();
+		Persistence.createEntityManagerFactory("molgenis_test").close();
+		EntityManagerFactoryImpl emfi = (EntityManagerFactoryImpl) Persistence.createEntityManagerFactory("molgenis_test");
+		EntityManagerImpl emi = (EntityManagerImpl) emfi.createEntityManager();
+		
+		Session session = emi.getServerSession();
+		DefaultTableGenerator dtg = new DefaultTableGenerator(emi.getActiveSession().getProject());
+		TableCreator tc = dtg.generateDefaultTableCreator();
+		tc.dropTables((DatabaseSession) session);
+
+		emfi.close();
 	}
 }

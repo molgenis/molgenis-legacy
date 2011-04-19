@@ -24,8 +24,7 @@ import java.util.ArrayList;
 
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jpa.JpaMapper;
-import org.molgenis.model.elements.Field.Type;
-//import org.molgenis.framework.db.jdbc.ColumnInfo.Type;
+import org.molgenis.framework.db.jdbc.ColumnInfo.Type;
 
 <#list allFields(entity) as f><#if f.type == "file">
 import org.apache.commons.io.FileUtils;
@@ -60,7 +59,7 @@ import java.text.ParseException;
 	<#if type_label == "user" || type_label="xref" || type_label="mref">
 			<#assign xref_entity = field.xrefEntity>
 import ${xref_entity.namespace}.${JavaName(xref_entity)};
-import ${xref_entity.namespace}.db.${JavaName(xref_entity)}Mapper;			
+import ${xref_entity.namespace}.db.${JavaName(xref_entity)}JpaMapper;			
 	</#if>	
 </#foreach>
 
@@ -76,58 +75,68 @@ import ${e.namespace}.db.*;
 	</#list></#if>
 </#list>
 
-public class ${Name(entity)}Mapper implements JpaMapper<${Name(entity)}>
+public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity)}>
 {
-	public ${Name(entity)}Mapper() {}
+	private EntityManager em;
+
+	public ${JavaName(entity)}JpaMapper() {}
+
+	public ${JavaName(entity)}JpaMapper(EntityManager em) {
+		this.em = em;
+	}
 
 	@Deprecated
-	public ${Name(entity)}Mapper(Database db) {}
+	public ${JavaName(entity)}JpaMapper(Database db) {}
+
+	public void setEntityManager(EntityManager em) {
+		this.em = em;
+	}
 
 
 	@Override
-	public List<${Name(entity)}> findAll(EntityManager em) {
-		List<${Name(entity)}> result =
-			(List<${Name(entity)}>)em.createNamedQuery("${Name(entity)}.findAll")
+	public List<${JavaName(entity)}> findAll() {
+		List<${JavaName(entity)}> result =
+			(List<${JavaName(entity)}>)em.createNamedQuery("${JavaName(entity)}.findAll")
 									.getResultList();
 		return result;
 	}
 
 	@Override
-	public List<${Name(entity)}> find(String qlWhereClause, Integer limit, Integer offset, EntityManager em) {
-		String ql = "SELECT ${name(entity)} FROM ${Name(entity)} ${name(entity)} " + qlWhereClause;
+	public List<${JavaName(entity)}> find(String qlWhereClause, Integer limit, Integer offset) {
+		String ql = "SELECT ${name(entity)} FROM ${JavaName(entity)} ${name(entity)} " + qlWhereClause;
 		
 		if(offset != null && limit != null) {
-			return (List<${Name(entity)}>)em
+			return (List<${JavaName(entity)}>)em
 							.createQuery(ql)
 							.setFirstResult(offset)
 							.setMaxResults(limit)
 							.getResultList();
 		} else if(offset != null) {
-			return (List<${Name(entity)}>)em
+			return (List<${JavaName(entity)}>)em
 							.createQuery(ql)
 							.setFirstResult(offset)
 							.getResultList(); 
 		} else if(limit != null) {
-			return (List<${Name(entity)}>)em
+			return (List<${JavaName(entity)}>)em
 							.createQuery(ql)
 							.setMaxResults(limit)
 							.getResultList();
 		} else { 
-			return (List<${Name(entity)}>)em
+			return (List<${JavaName(entity)}>)em
 							.createQuery(ql)
 							.getResultList();		
 		}
 	}
 
 	@Override
-	public int count(String qlWhereClause, EntityManager em)
+	public int count(String qlWhereClause)
 	{
-		final String QUERY_COUNT = "SELECT count(${name(entity)}) FROM ${Name(entity)} ${name(entity)} ";
+		final String QUERY_COUNT = "SELECT count(${name(entity)}) FROM ${JavaName(entity)} ${name(entity)} ";
 	
 		Long result = new Long(-1);
 
 		if(qlWhereClause == null || qlWhereClause.trim().equals("")) {
-			result = (Long)em.createNamedQuery("${Name(entity)}.count")
+			result = (Long)em.createNamedQuery("${JavaName(entity)}.count")
 								.getSingleResult();
 		} else {
 			String qlQuery = QUERY_COUNT + qlWhereClause;
@@ -140,7 +149,7 @@ public class ${Name(entity)}Mapper implements JpaMapper<${Name(entity)}>
 	/** This method first saves the objects that are being refered to by entity, 
 	then the entity itself and 
 	finally the objects that refer to this object*/
-    public void create(${Name(entity)} entity, EntityManager em) throws DatabaseException {
+    public void create(${JavaName(entity)} entity) throws DatabaseException {
         try {
 //			em.persist(entity);
 
@@ -152,7 +161,7 @@ public class ${Name(entity)}Mapper implements JpaMapper<${Name(entity)}>
 			{
 				//if object has been added as xref, but not yet stored (has no id) -> add the refered object
 				if(entity.get${JavaName(field)}().getIdValue() == null)
-					new ${JavaName(field.getXrefEntity())}Mapper().create(entity.get${JavaName(field)}(), em);
+					new ${JavaName(field.getXrefEntity())}JpaMapper(em).create(entity.get${JavaName(field)}());
 				//if object has id (so is stored) but not in this em -> retrieve proper reference reference
 				else if (!em.contains(entity.get${JavaName(field)}()) && entity.get${JavaName(field)}().getIdValue() != null)
 					entity.set${JavaName(field)}(em.getReference(${JavaName(field.getXrefEntity())}.class, entity.get${JavaName(field)}().getIdValue()));
@@ -200,7 +209,7 @@ public class ${Name(entity)}Mapper implements JpaMapper<${Name(entity)}>
 						if(${name(entityName)}.get${Name(f)}().getIdValue() == null) {
 							${name(entityName)}.set${Name(f)}(entity);
 						}
-						new ${Name(f.entity)}Mapper().create(${name(entityName)}, em);
+						new ${Name(f.entity)}JpaMapper(em).create(${name(entityName)});
 					} else {
 						//check if the object realy exists!
 						${Name(f.entity)} db${Name(entityName)} = em.getReference(${name(entityName)}.getClass(), ${name(entityName)}.getIdValue());
@@ -215,15 +224,15 @@ public class ${Name(entity)}Mapper implements JpaMapper<${Name(entity)}>
             if (entity.get${entityName}Collection() != null) {
 				for(${entityType} ${name(entityName)} : entity.get${entityName}Collection())
 				{
-					${Name(entity)} old${Name(entity)}Collection = ${name(entityName)}.get${Name(f)}();
-					if(!old${Name(entity)}Collection.getIdValue().equals(entity.getIdValue()))
+					${JavaName(entity)} old${JavaName(entity)}Collection = ${name(entityName)}.get${Name(f)}();
+					if(!old${JavaName(entity)}Collection.getIdValue().equals(entity.getIdValue()))
 					{
 						${name(entityName)}.set${Name(f)}(entity);
 						${name(entityName)} = em.merge(${name(entityName)});
-						if(old${Name(entity)}Collection != null)
+						if(old${JavaName(entity)}Collection != null)
 						{
-							old${Name(entity)}Collection.get${entityName}Collection().remove(${name(entityName)});
-							old${Name(entity)}Collection = em.merge(old${Name(entity)}Collection);
+							old${JavaName(entity)}Collection.get${entityName}Collection().remove(${name(entityName)});
+							old${JavaName(entity)}Collection = em.merge(old${JavaName(entity)}Collection);
 						}
 					}
 				}
@@ -243,10 +252,10 @@ public class ${Name(entity)}Mapper implements JpaMapper<${Name(entity)}>
         }
     }
 
-	public void destroy(${Name(entity)} ${name(entity)}, EntityManager em) throws DatabaseException {
+	public void destroy(${JavaName(entity)} ${name(entity)}, EntityManager em) throws DatabaseException {
 		try {
 			try {
-				${name(entity)} = em.getReference(${Name(entity)}.class, ${name(entity)}.getIdValue());
+				${name(entity)} = em.getReference(${JavaName(entity)}.class, ${name(entity)}.getIdValue());
 			} catch (EntityNotFoundException enfe) {
 				throw new DatabaseException("The ${name(entity)} with id " + ${name(entity)}.getIdField().toString() + " no longer exists: " + enfe.getMessage());
 			}
@@ -277,11 +286,11 @@ public class ${Name(entity)}Mapper implements JpaMapper<${Name(entity)}>
 	}
 
 
-	public void edit(${Name(entity)} ${name(entity)}, EntityManager em) throws DatabaseException {
+	public void edit(${JavaName(entity)} ${name(entity)}) throws DatabaseException {
 		try {
 
 			//Fixme: getReference??
-			${Name(entity)} persistent${Name(entity)} = em.find(${Name(entity)}.class, ${name(entity)}.getIdValue());
+			${JavaName(entity)} persistent${JavaName(entity)} = em.find(${JavaName(entity)}.class, ${name(entity)}.getIdValue());
 
 
 
@@ -300,12 +309,12 @@ public class ${Name(entity)}Mapper implements JpaMapper<${Name(entity)}>
 			<#assign fieldName = fieldName + Name(field) />
 			
 			//${numRef}
-			${Name(field.getXrefEntity())} ${fieldName}Old = persistent${Name(entity)}.get${Name(field)}();
-			${Name(field.getXrefEntity())} ${fieldName}New = ${name(entity)}.get${Name(field)}();
+			${JavaName(field.getXrefEntity())} ${fieldName}Old = persistent${JavaName(entity)}.get${JavaName(field)}();
+			${JavaName(field.getXrefEntity())} ${fieldName}New = ${name(entity)}.get${JavaName(field)}();
 
 			if (${fieldName}New != null) {
 				${fieldName}New = em.getReference(${fieldName}New.getClass(), ${fieldName}New.getIdValue());
-				${name(entity)}.set${Name(field)}(${fieldName}New);
+				${name(entity)}.set${JavaName(field)}(${fieldName}New);
 			} else { //object is reference by xref		
 				${name(entity)}.set${JavaName(field)}((${JavaName(field.getXrefEntity())})em.find(${JavaName(field.getXrefEntity())}.class, ${name(entity)}.get${JavaName(field)}_${JavaName(field.xrefField)}()));
 			}
@@ -366,13 +375,13 @@ public class ${Name(entity)}Mapper implements JpaMapper<${Name(entity)}>
 	}
 
 	@Override
-	public int add(List<${Name(entity)}> entities, EntityManager em) throws DatabaseException
+	public int add(List<${JavaName(entity)}> entities) throws DatabaseException
 	{	
 		int count = 0;
 		
 		try {
-			for (${Name(entity)} ${name(entity)} : entities) {
-				create(${name(entity)}, em);
+			for (${JavaName(entity)} ${name(entity)} : entities) {
+				create(${name(entity)});
 				++count;
 			}
 		} catch (Exception ex) {
@@ -387,12 +396,12 @@ public class ${Name(entity)}Mapper implements JpaMapper<${Name(entity)}>
 	}
 
 	@Override
-	public int update(List<${Name(entity)}> entities, EntityManager em) throws DatabaseException
+	public int update(List<${JavaName(entity)}> entities) throws DatabaseException
 	{
 		int count = 0;
 		try {
-			for (${Name(entity)} ${name(entity)} : entities) {
-				edit(${name(entity)}, em);
+			for (${JavaName(entity)} ${name(entity)} : entities) {
+				edit(${name(entity)});
 				++count;
 			}
 		} catch (Exception ex) {
@@ -407,11 +416,11 @@ public class ${Name(entity)}Mapper implements JpaMapper<${Name(entity)}>
 	}
 
 	@Override
-	public int remove(List<${Name(entity)}> entities, EntityManager em) throws DatabaseException
+	public int remove(List<${JavaName(entity)}> entities) throws DatabaseException
 	{
 		int count = 0;		
 		try {
-			for (${Name(entity)} ${name(entity)} : entities) {
+			for (${JavaName(entity)} ${name(entity)} : entities) {
 				destroy(${name(entity)}, em);
 				++count;
 			}
@@ -438,6 +447,10 @@ public class ${Name(entity)}Mapper implements JpaMapper<${Name(entity)}>
 	@Override
 	public Type getFieldType(String fieldName)
 	{
+		if(fieldName.indexOf('.') != -1) {
+			fieldName = fieldName.substring(fieldName.indexOf('.')+1); 
+		}	
+	
 		<#list viewFields(entity) as f>
 		<#assign type= f.type>
 		<#if type == "user" || type == "xref" || type == "mref">		
@@ -455,31 +468,30 @@ public class ${Name(entity)}Mapper implements JpaMapper<${Name(entity)}>
 	@Override
 	public String getTableFieldName(String fieldName)
 	{
-
 		<#list viewFields(entity) as f>
 		<#assign type= f.type>
-			<#if type == "xref"> 
-				if("${name(f)}".equalsIgnoreCase(fieldName)) return "${name(f)}.${name(f.getXrefField())}";
-			<#else>
-				if("${name(f)}".equalsIgnoreCase(fieldName)) return "${name(f)}";
-			</#if>
+		if("${f.name}".equalsIgnoreCase(fieldName)) return "${SqlName(f)}";
+		if("${entity.name}_${f.name}".equalsIgnoreCase(fieldName)) return "${SqlName(f)}";
 		</#list>	
-		<#list viewFields(entity,"xref") as f>		
-		
-		<#assign xref_entity = f.getXrefEntity()/> 
-		<#assign xref_field = f.getXrefField()/>
+		<#list viewFields(entity,"xref") as f>	
+		if("${f.name}_${f.xrefField.name}".equalsIgnoreCase(fieldName)) return "${SqlName(f)}";
+		if("${entity.name}_${f.name}_${f.xrefField.name}".equalsIgnoreCase(fieldName)) return "${SqlName(f)}";
+		<#list f.xrefLabelTree.getTreeElements()?values as path><#if path.value.type != "xref">
+		if("${path.name}".equalsIgnoreCase(fieldName)) return "${path.getParent().name}.${SqlName(path.value.name)}";	
+		if("${entity.name}_${path.name}".equalsIgnoreCase(fieldName)) return "${path.getParent().name}.${SqlName(path.value.name)}";
+		</#if></#list></#list>
 		<#--
-		<#assign xref_label = xref_entity.getAllField(f.getXRefLabelString()) /> -->
-		
-		
+		<#assign xref_entity = f.xrefEntity/> 
+		<#assign xref_field = f.xrefField/>
 		//alias for query on id field of xref entity
-		if("${name(f)}_${name(xref_field)}".equalsIgnoreCase(fieldName)) return "${name(f)}";
-		<#--
-		//alias for query on label of the xref entity
-		if("${name(f)}_${name(xref_label)}".equalsIgnoreCase(fieldName)) return "xref${f_index}.${name(xref_label)}"; -->
-		</#list>		 
-		 		
-		return JPAQueryGeneratorUtil.convertToJpaFieldName(fieldName);
+		if("${name(f)}_${name(xref_field)}".equalsIgnoreCase(fieldName)) return "${SqlName(f)}";
+		//alias(es) for query on label of the xref entity
+			<#list f.xrefLabelNames as label>
+		if("${name(f)}_${name(label)}".equalsIgnoreCase(fieldName)) return "xref_${label}.${SqlName(label)}";
+			</#list>
+		</#list>
+		-->		  		
+		return fieldName;
 	}
 
 //Generated by MapperCommons.subclass_per_table.java.ftl

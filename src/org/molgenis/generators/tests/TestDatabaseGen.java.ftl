@@ -43,8 +43,8 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.DatabaseException;
 
 import static  org.testng.AssertJUnit.*;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 <#list model.entities as entity>
@@ -62,14 +62,15 @@ public class TestDatabase
 	/*
 	 * Create a database to use
 	 */
-	@BeforeClass
+	@BeforeTest
 	public static void oneTimeSetUp()   
 	{
 		try
 		{		
 		<#if databaseImp = 'jpa'>		
-			db = new app.JpaDatabase(true);
+			db = new app.JpaDatabase(JpaUtil.createTables());
 			((JpaDatabase)db).getEntityManager().setFlushMode(FlushModeType.AUTO);
+			//JpaUtil.dropAndCreateTables(db.getEntityManager());
 		<#else>
 			<#if db_mode = 'standalone'>
 			//db = new JDBCDatabase("molgenis.testhsql.properties");	
@@ -92,7 +93,12 @@ public class TestDatabase
 		}
 		logger.info("Database created");
 	}
-		
+<#if databaseImp = 'jpa'>		
+	@AfterTest
+	public static void destory() {
+		JpaUtil.dropDatabase(db.getEntityManager());
+	}	
+</#if>		
 		
 <#list entities as entity><#if !entity.abstract && !entity.association>
 <#assign dependson = entity.getDependencies()/>
@@ -148,29 +154,31 @@ public class TestDatabase
 				
 			entities.add(e);
 		}
-		
+
+			
 		//add entities and check counts
 		db.add(entities);
 		Query<${JavaName(entity)}> q = db.query(${JavaName(entity)}.class)<#if entity.hasAncestor() || entity.hasDescendants()>.eq("${typefield()}",${JavaName(entity)}.class.getSimpleName())</#if>;
 		assertEquals(total, q.count());
 		List<${JavaName(entity)}> entitiesDb = q.sortASC("${pkey(entity).name}").find();
 		assertEquals(total, entitiesDb.size());
-		
+<#if databaseImp != 'jpa'>		
 		//compare entities against insert (assumes sorting by id)
 		for(int i = 0; i < total; i++)
 		{
 			assertNotNull(entities.get(i).get${JavaName(pkey(entity))}());
-<#list entity.allFields as f><#if pkey(entity).name != f.name && !f.auto><#if f.type == "date">
+	<#list entity.allFields as f><#if pkey(entity).name != f.name && !f.auto><#if f.type == "date">
 			//check formatted because of milliseconds rounding
 			assertEquals(dateFormat.format(entities.get(i).get${JavaName(f)}()), dateFormat.format(entitiesDb.get(i).get${JavaName(f)}()));
-<#elseif f.type == "datetime">
+	<#elseif f.type == "datetime">
 			//check formatted because of milliseconds rounding
 			assertEquals(dateTimeFormat.format(entities.get(i).get${JavaName(f)}()),dateTimeFormat.format(entitiesDb.get(i).get${JavaName(f)}()));
-<#else>
+	<#else>
 			assertEquals(entities.get(i).get${JavaName(f)}(), entitiesDb.get(i).get${JavaName(f)}());
-</#if>
-</#if></#list>		
+	</#if>
+	</#if></#list>		
 		}	
+</#if>
 		
 		//test the query capabilities by finding on all fields
 		for(${JavaName(entity)} entity: entitiesDb)
@@ -219,16 +227,6 @@ public class TestDatabase
        return value;
 	}
 	
-	/*
-	 * Cleanup all database stuff
-	 */
-	 @AfterClass
-     public static void oneTimeTearDown() throws DatabaseException, IOException, ParseException
-	 {
-<#--list entities?reverse as entity><#if !entity.abstract>
-		db.remove(db.query(${JavaName(entity)}.class).find());
-</#if></#list-->	 
-	 }
 	 
 	 
 }

@@ -31,6 +31,7 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 
 import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlTransient;
 
 <#--import parent class if extends-->
 <#list entity.getImplements() as i>

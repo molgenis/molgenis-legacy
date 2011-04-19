@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.fieldtypes.IntField;
 import org.molgenis.fieldtypes.MrefField;
+import org.molgenis.fieldtypes.UserField;
 import org.molgenis.fieldtypes.XrefField;
 import org.molgenis.model.MolgenisModelException;
 
@@ -179,8 +180,7 @@ public class Entity extends DBSchema implements Record
 	}
 
 	/**
-	 * Returns whether this entry has NO parent AND whether it has children'
-	 * removed.
+	 * Returns whether this entry has NO parent AND whether it has children' removed.
 	 */
 	public boolean isRootAncestor()
 	{
@@ -206,6 +206,7 @@ public class Entity extends DBSchema implements Record
 		// }
 		// catch (MolgenisModelException e)
 		// {
+		// // TODO Auto-generated catch block
 		// e.printStackTrace();
 		// }
 		// }
@@ -511,80 +512,72 @@ public class Entity extends DBSchema implements Record
 	 *            if required == true than returns only fields that are required
 	 *            (not nillable/null) else returns all fields
 	 * @param recursive
-	 *            get also field from super classes
-	 * @param systemField
-	 *            system field, like __type and id
+	 * 			  get also field from super classes
+	 * @param systemField 
+	 * 			  system field, like __type and id
 	 * @param implementing
-	 *            field that this object implements (also done recusively if
-	 *            recusive = true)
+	 * 			  field that this object implements (also done recusively if recusive = true)
 	 * @return All the fields associated with this entity.
 	 * @throws MolgenisModelException
 	 */
 	public List<Field> getFields(boolean required, boolean recursive,
-			boolean systemField, boolean implementing)
-			throws MolgenisModelException
+			boolean systemField, boolean implementing) throws MolgenisModelException
 	{
-		// use map to ensure we can override fields in subclasses
-		Map<String, Field> result = new LinkedHashMap<String, Field>();
-
-		// List<Field> result = new ArrayList<Field>();
+		//use map to ensure we can override fields in subclasses
+		Map<String,Field> result = new LinkedHashMap<String,Field>();
+		
+		//List<Field> result = new ArrayList<Field>();
 		for (Field f : fields)
 		{
 			if (f.isSystem())
 			{
 				if (systemField)
 				{
-					result.put(f.getName(), f);
+					result.put(f.getName(),f);
 				}
-				// else ignore
+				//else ignore
 			}
 			else if (f.isNillable())
 			{
-				if (!required)
+				if(!required)
 				{
-					result.put(f.getName(), f);
+					result.put(f.getName(),f);
 				}
 			}
 			else
 			{
-				result.put(f.getName(), f);
+				result.put(f.getName(),f);
 			}
 		}
 		if (recursive && hasAncestor())
 		{
-			for (Field f : getAncestor().getFields(required, recursive,
-					systemField, implementing))
+			for(Field f: getAncestor().getFields(required, recursive, systemField, implementing))
 			{
-				if (!result.containsKey(f.getName()))
+				if(!result.containsKey(f.getName()))
 				{
-					result.put(f.getName(), f);
+					result.put(f.getName(),f);
 				}
 			}
 		}
-		if (implementing)
-		{
-			for (Entity implEntity : this.getImplements())
-			{
-				for (Field f : implEntity.getFields(required, recursive,
-						systemField, implementing))
-				{
-					if (!result.containsKey(f.getName()))
+		if(implementing) {
+			for(Entity implEntity : this.getImplements()) {
+				for(Field f: implEntity.getFields(required, recursive, systemField, implementing)) {
+					if(!result.containsKey(f.getName()))
 					{
-						result.put(f.getName(), f);
-					}
+						result.put(f.getName(),f);
+					}					
 				}
-			}
+			}		 
 		}
-
+		
 		return new ArrayList<Field>(result.values());
 	}
 
 	public List<Field> getFields(boolean required, boolean recursive,
-			boolean systemField) throws MolgenisModelException
-	{
+			boolean systemField) throws MolgenisModelException	{
 		return getFields(required, recursive, systemField, true);
 	}
-
+	
 	/**
 	 * Get fields for this entity as well as from the interfaces it implements.
 	 * 
@@ -593,7 +586,7 @@ public class Entity extends DBSchema implements Record
 	 */
 	public Vector<Field> getImplementedFields() throws MolgenisModelException
 	{
-		// use map so we can override fields in subclasses
+		//use map so we can override fields in subclasses
 		Map<String, Field> all_fields = new LinkedHashMap<String, Field>();
 
 		// first fields of the interfaces
@@ -717,12 +710,11 @@ public class Entity extends DBSchema implements Record
 		for (Field f : getFields())
 		{
 			// TODO:
-			// Find out why the if-statement below is commented out (Joris
-			// doens't remember)
-			// We found out that it does NOT cause the lock-wait-timeouts on
-			// Hudson, as suspected by Joeri and Danny
-			// if (!all_fields.containsKey(f.getName().toLowerCase()))
-			all_fields.put(f.getName().toLowerCase(), f);
+			// Find out why the if-statement below is commented out (Joris doens't remember)
+			// We found out that it does NOT cause the lock-wait-timeouts on Hudson, as suspected by Joeri and Danny
+			//if (!all_fields.containsKey(f.getName().toLowerCase())) 
+				all_fields
+					.put(f.getName().toLowerCase(), f);
 		}
 
 		// replace all abstract entity references, unless self abstract
@@ -769,7 +761,7 @@ public class Entity extends DBSchema implements Record
 
 		for (Field f : getFields())
 		{
-			if (!(f.getType() instanceof MrefField))
+			if ( !(f.getType() instanceof MrefField) )
 			{
 				local_fields.add(f);
 			}
@@ -791,7 +783,7 @@ public class Entity extends DBSchema implements Record
 
 		for (Field f : getAllFields())
 		{
-			if (!(f.getType() instanceof MrefField))
+			if ( !(f.getType() instanceof MrefField) )
 			{
 				local_fields.add(f);
 			}
@@ -880,7 +872,7 @@ public class Entity extends DBSchema implements Record
 
 		for (Field f : getAllFields())
 		{
-			if (!(f.getType() instanceof XrefField)
+			if ( !(f.getType() instanceof XrefField)
 					&& !(f.getType() instanceof IntField && f.isAuto() && f
 							.getEntity() == this))
 			// TODO: fix automatic fields
@@ -902,7 +894,7 @@ public class Entity extends DBSchema implements Record
 
 		for (Field f : getFields())
 		{
-			if (!(f.getType() instanceof MrefField)
+			if ( !(f.getType() instanceof MrefField)
 					&& !(f.getType() instanceof IntField && f.isAuto()))
 			// TODO: fix automatic fields
 			// MAJOR error, arghhhh!!! &&
@@ -982,8 +974,7 @@ public class Entity extends DBSchema implements Record
 		for (Field field : getFields())
 		{
 			if (field.isSystem()) continue;
-			// if (field.getType() instanceof UserField )
-			// xref_fields.add(field);
+			if (field.getType() instanceof UserField ) xref_fields.add(field);
 		}
 
 		return xref_fields;
@@ -1013,11 +1004,10 @@ public class Entity extends DBSchema implements Record
 		return null;
 	}
 
-	public Field getFieldRecusive(String name) throws MolgenisModelException
-	{
+	public Field getFieldRecusive(String name) throws MolgenisModelException{
 		return getField(name, false, true, true);
 	}
-
+	
 	public Field getField(String name) throws MolgenisModelException
 	{
 		return getField(name, false, false, true);
@@ -1444,27 +1434,7 @@ public class Entity extends DBSchema implements Record
 			}
 
 			List<String> result = new ArrayList<String>();
-			// default to secondary key, e.g. 'name'
-			if (this.getKeys().size() > 1)
-			{
-				for (Field f : this.getKey(1).getFields())
-				{
-					if (f.getType() instanceof XrefField)
-					{
-						for(String label: f.getXrefEntity().getXrefLabels())
-						{
-							result.add(f.getName()+"_"+label);
-						}
-					}
-					else
-					{
-						result.add(f.getName());
-					}
-				}
-				return result;
-			}
-			// otherwise primary key, e.g. 'id'
-			else if (this.getKeys().size() > 0)
+			if (this.getKeys().size() > 0)
 			{
 				for (Field f : this.getKey(0).getFields())
 				{
