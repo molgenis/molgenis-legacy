@@ -82,6 +82,7 @@ import org.molgenis.generators.server.MolgenisServletGen;
 import org.molgenis.generators.server.RdfApiGen;
 import org.molgenis.generators.server.RestApiGen;
 import org.molgenis.generators.server.SoapApiGen;
+import org.molgenis.generators.server.UsedMolgenisOptionsGen;
 import org.molgenis.generators.sql.CountPerEntityGen;
 import org.molgenis.generators.sql.CountPerTableGen;
 import org.molgenis.generators.sql.DerbyCreateSubclassPerTableGen;
@@ -165,6 +166,9 @@ public class Molgenis {
 		if (!options.output_hand.endsWith("/")) {
 			options.output_hand = options.output_hand + "/";
 		}
+		
+		//USED MOLGENIS OPTIONS
+		generators.add(new UsedMolgenisOptionsGen());
 
 		// COPY resources
 		if(options.copy_resources) generators.add(new MolgenisResourceCopyGen());
