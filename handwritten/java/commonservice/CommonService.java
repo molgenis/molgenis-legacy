@@ -162,6 +162,20 @@ public class CommonService
 	{
 		return db.findById(ObservationTarget.class, targetId);
 	}
+	
+	/**
+	 * Retrieve an individual by id
+	 * 
+	 * @param individualId the id to look for
+	 * @return an Individual entity with Id individualId
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 */
+	public Individual getIndividualById(int individualId)
+			throws DatabaseException, ParseException
+	{
+		return db.findById(Individual.class, individualId);
+	}
 
 	/**
 	 * Get the Id of a given ObservationTarget, searching by name
