@@ -17,8 +17,18 @@ import org.molgenis.MolgenisOptions;
 
 public class UsedMolgenisOptions extends MolgenisOptions
 {
-	private static final long serialVersionUID = 8564678947243535356L;
+	private static final long serialVersionUID = 345675892563442346L;
 
+	/**
+	 * Generated constructor for MolgenisOptions, setting the options used
+	 * when the application was generated to a MolgenisOptions object.
+	 * 
+	 * Example usage:
+	 * 
+	 * UsedMolgenisOptions o = new UsedMolgenisOptions();
+	 * System.out.println(o.db_driver);
+	 * System.out.println(o.generate_doc);
+	 */
 	public UsedMolgenisOptions(){
 	<#list options.optionsAsMap?keys as key>
 		<#if options.optionsAsMap[key]?is_enumerable>
@@ -28,7 +38,7 @@ public class UsedMolgenisOptions extends MolgenisOptions
 		<#elseif options.optionsAsMap[key]?is_number>
 			this.${key} = ${options.optionsAsMap[key]};
 		<#elseif key == 'mapper_implementation'>
-			this.${key} = MapperImplementation.valueOf("${options.optionsAsMap[key]}");
+			this.${key} = MapperImplementation.get("${options.optionsAsMap[key]}");
 		<#elseif options.optionsAsMap[key]?is_string>
 			this.${key} = "${options.optionsAsMap[key]}";
 		<#else>
