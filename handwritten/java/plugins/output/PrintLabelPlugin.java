@@ -34,7 +34,6 @@ import org.molgenis.util.Tuple;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -61,23 +60,29 @@ public class PrintLabelPlugin extends GenericPlugin
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-		try
-		{
+		try {
 			String action = request.getString("__action");
 			
-			if( action.equals("Print") )
-			{
+			if (action.equals("Print")) {
 				handlePrintRequest(request);
 			}
-		} catch(Exception e)
-		{
+		} catch(Exception e) {
 			e.printStackTrace();
 			if (e.getMessage() != null) {
 				this.getMessages().add(new ScreenMessage(e.getMessage(), false));
 			}
 		}
 	}
-
+	
+	/**
+	 * When the user presses 'Print', make a pdf with labels for the desired animals and features.
+	 * 
+	 * @param request
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 * @throws FileNotFoundException
+	 * @throws DocumentException
+	 */
 	private void handlePrintRequest(Tuple request) throws DatabaseException, ParseException, FileNotFoundException, DocumentException {
 		List<Individual> individualList = getIndividualsFromUi(request);
 		List<Integer> measurementIdList = getMeasurementsFromUi(request);
@@ -86,9 +91,28 @@ public class PrintLabelPlugin extends GenericPlugin
 		File pdfFile = new File(tmpDir.getAbsolutePath() + File.separatorChar + "cagelabels.pdf");
 		Document document = new Document();
         PdfWriter.getInstance(document, new FileOutputStream(pdfFile));
+        
         document.open();
-		
-        PdfPTable table = new PdfPTable(2);
+        PdfPTable table = makeLabels(individualList, measurementIdList);
+        document.add(table);
+        document.close();
+        
+        text = new TextParagraph("pdfFilename", "<a href=\"tmpfile/" + pdfFile.getName() + "\">Download pdf</a>");
+		text.setLabel("");
+		// text is added to panel on reload()
+	}
+	
+	/**
+	 * Make the actual labels.
+	 * 
+	 * @param individualList
+	 * @param measurementIdList
+	 * @return A PdfPTable with all the labels
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 */
+	private PdfPTable makeLabels(List<Individual> individualList, List<Integer> measurementIdList) throws DatabaseException, ParseException {
+		PdfPTable table = new PdfPTable(2);
         
         for (Individual ind : individualList) {
         	PdfPCell newCell = new PdfPCell();
@@ -114,15 +138,17 @@ public class PrintLabelPlugin extends GenericPlugin
         	table.addCell("");
         }
         
-        document.add(table);
-	     
-        document.close();
-        
-        text = new TextParagraph("pdfFilename", "<a href=\"tmpfile/" + pdfFile.getName() + "\">Download pdf</a>");
-		text.setLabel("");
-		// text is added to panel on reload()
+        return table;
 	}
 	
+	/**
+	 * Get the animals (Individuals) selected by the user.
+	 * 
+	 * @param request
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 */
 	private List<Individual> getIndividualsFromUi(Tuple request) throws DatabaseException, ParseException {
 		List<Individual> individualList = new ArrayList<Individual>();
 		List<?> targetListObject = request.getList("Targets");
@@ -135,6 +161,14 @@ public class PrintLabelPlugin extends GenericPlugin
 		return individualList;
 	}
 	
+	/**
+	 * Get the features (Measurements) selected by the user.
+	 * 
+	 * @param request
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 */
 	private List<Integer> getMeasurementsFromUi(Tuple request) throws DatabaseException, ParseException {
 		List<Integer> measurementList = new ArrayList<Integer>();
 		List<?> featureListObject = request.getList("Features");
@@ -161,6 +195,9 @@ public class PrintLabelPlugin extends GenericPlugin
 		initScreen();
 	}
 	
+	/**
+	 * Initialize the UI. If already a pdf has been generated, show a link to that.
+	 */
 	public void initScreen() {
 		container = new Container();
 		panel = new DivPanel("PrintLabelPluginDivPanel", null);
@@ -192,8 +229,8 @@ public class PrintLabelPlugin extends GenericPlugin
 		}
 	}
 	
-	 /** Create a select box with ObservationTargets grabbed from the database
-     * 
+	 /** 
+     * Create a select box with Individuals grabbed from the database.
      */
     public void makeTargetsSelect() {
 		try {
@@ -209,6 +246,9 @@ public class PrintLabelPlugin extends GenericPlugin
 		}
     }
     
+    /**
+     * Create a select box with Measurements grabbed from the database.
+     */
     private void makeFeaturesSelect() {
     	try {
 			features = new SelectMultipleInput("Features", null);
@@ -223,13 +263,16 @@ public class PrintLabelPlugin extends GenericPlugin
 		}
 	}
     
+    /**
+     * Create the Print button.
+     */
     private void makePrintButton() {
 		printButton = new ActionInput("Print", "", "Print");
 		panel.add(printButton);
 	}
     
     /**
-     * Get the custom label (if available) or name for the ObservationTarget with id 'id'
+     * Get the custom label (if available) or name for the ObservationTarget with id 'id'.
      * 
      * @param id
      * @return
