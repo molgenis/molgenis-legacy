@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -248,6 +251,32 @@ public class MolgenisOptions
 	public MolgenisOptions()
 	{
 
+	}
+	
+	/**
+	 * Get the options as a map, used in the UsedMolgenisOptionsGen.ftl template
+	 * @return
+	 * @throws Exception
+	 */
+	public Map<String, Object> getOptionsAsMap() throws Exception{
+		HashMap<String, Object> result = new HashMap<String, Object>();
+		// use reflection to get the Fields
+		Field[] fields = this.getClass().getDeclaredFields();
+		
+		for (int i = 0; i < fields.length; i++)
+		{
+			// only include the annotated fields
+			if (fields[i].isAnnotationPresent(Option.class))
+			{
+				Option opt = fields[i].getAnnotation(Option.class);
+				if (opt.param() == Option.Param.PASSWORD){
+					result.put(opt.name(), "xxxxxx");
+				}else{
+					result.put(opt.name(), fields[i].get(this));
+				}
+			}
+		}
+		return result;
 	}
 
 	/**
