@@ -36,50 +36,37 @@ public class Chd7Header extends PluginModel<Entity>
 	}
 
 	@Override
+	public String getCustomHtmlHeaders()
+	{
+		String cssFormat = "<link rel=\"stylesheet\" style=\"text/css\" type=\"text/css\" href=\"%s\">\n";
+		String jsFormat = "<script src=\"%s\" type=\"text/javascript\" language=\"javascript\"></script>";
+		String headers = "";
+		
+//		cp res/css/colors.css generated-res/css
+//		cp res/css/data.css generated-res/css
+//		cp res/css/main.css generated-res/css
+//		cp res/css/menu.css generated-res/css
+//		cp res/scripts/all.js generated-res/scripts
+//		cp res/img/*.jpg generated-res/img
+		
+		headers += String.format(cssFormat, "res/css/col7a1/colors.css");
+		headers += String.format(cssFormat, "res/css/col7a1/data.css");
+		//headers += String.format(cssFormat, "res/css/main.css");
+		//headers += String.format(cssFormat, "res/css/menu.css");
+		headers += String.format(jsFormat, "res/scripts/all.js");
+		
+		return headers;
+	}
+	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-		//replace example below with yours
-//		try
-//		{
-//			//start database transaction
-//			db.beginTx();
-//
-//			//get the "__action" parameter from the UI
-//			String action = request.getAction();
-//		
-//			if( action.equals("do_add") )
-//			{
-//				Experiment e = new Experiment();
-//				e.set(request);
-//				db.add(e);
-//			}
-//
-//			//commit all database actions above
-//			db.commitTx();
-//
-//		} catch(Exception e)
-//		{
-//			db.rollbackTx();
-//			//e.g. show a message in your form
-//		}
+		//nothing to do here
 	}
 
 	@Override
 	public void reload(Database db)
 	{
-//		try
-//		{
-//			Database db = this.getDatabase();
-//			Query q = db.query(Experiment.class);
-//			q.like("name", "test");
-//			List<Experiment> recentExperiments = q.find();
-//			
-//			//do something
-//		}
-//		catch(Exception e)
-//		{
-//			//...
-//		}
+		//nothing to do here
 	}
 	
 	@Override
