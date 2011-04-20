@@ -530,7 +530,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 	{
 		List<Command> commands = new ArrayList<Command>();
 
-		if (OS.startsWith("windows"))
+		if (OS.startsWith("windows") && !computeResource.equals("cluster"))
 		{
 
 			// runmijJOBID.R
@@ -550,14 +550,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 			commands.add(new Command("echo run_cluster_new_new(" + toServer + ") >> runmij" + jobId + ".R", false,
 					false, true));
 			commands.add(new Command("echo q('no') >> runmij" + jobId + ".R", false, false, true));
-
-			if (computeResource.equals("cluster"))
-			{
-				// there is no PBS for windows!!
-			}
-		}
-		else
-		{
+		}else{
 			// runmijJOBID.R
 			commands.add(new Command("echo \"rm(list=ls())\" > runmij" + jobId + ".R", false, false, true));
 			if (computeResource.equals("local"))
@@ -608,7 +601,8 @@ public class ClusterPlugin extends PluginModel<Entity>
 				commands.add(new Command("echo \"#PBS -l nodes=1\" >> runmij" + jobId + ".sh", false, false, false));
 				commands.add(new Command("echo \"#PBS -l walltime=01:30:00\" >> runmij" + jobId + ".sh", false, false,
 						false));
-				commands.add(new Command("echo \"cd $home\" >> runmij" + jobId + ".sh", false, false, false));
+				//TODO Figure out how to in the new way
+				//commands.add(new Command("echo \"cd $home\" >> runmij" + jobId + ".sh", false, false, false));
 				commands.add(new Command("echo \"R CMD BATCH runmij" + jobId + ".R\" >> runmij" + jobId + ".sh", false,
 						false, false));
 			}
