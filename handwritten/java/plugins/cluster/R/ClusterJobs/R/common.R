@@ -81,12 +81,12 @@ getparameter <- function(searchterm,jobparams){unlist(lapply(jobparams,function(
 tryloadlibs <- function(lib="qtl", libraryloc, qtlfile){
   cat("error <- FALSE\n",sep="",file=qtlfile,append=TRUE)
   cat("tryCatch({","\n",sep="",file=qtlfile,append=TRUE)
-  cat("library(qtl,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=TRUE)
+  cat("library(",lib,",lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=TRUE)
   cat("}, error = function(ex) { error <<- TRUE; cat('unable to load from lib.loc\\n')})\n",sep="",file=qtlfile,append=TRUE)
   cat("if(error){\n",sep="",file=qtlfile,append=TRUE)
   cat("error <- FALSE\n",sep="",file=qtlfile,append=TRUE)
   cat("tryCatch({","\n",sep="",file=qtlfile,append=TRUE)
-  cat("library(qtl)","\n",sep="",file=qtlfile,append=TRUE)
+  cat("library(",lib,")","\n",sep="",file=qtlfile,append=TRUE)
   cat("}, error = function(ex) { report(-1,'unable to load library')})\n",sep="",file=qtlfile,append=TRUE)
   cat("}\n",sep="",file=qtlfile,append=TRUE)
 }
