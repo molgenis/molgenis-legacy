@@ -1,12 +1,14 @@
 package org.molgenis.mutation.vo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-public class ExonSearchCriteriaVO
+public class ExonSearchCriteriaVO implements Serializable
 {
+	private static final long serialVersionUID = 2057260719455042747L;
 	Integer cdnaPosition;
 	Integer gdnaPosition;
 	Integer exonId;
@@ -14,6 +16,7 @@ public class ExonSearchCriteriaVO
 	Integer number;
 	Integer proteinDomainId;
 	Boolean isIntron;
+	String orientation;
 
 	public Integer getCdnaPosition() {
 		return cdnaPosition;
@@ -56,6 +59,12 @@ public class ExonSearchCriteriaVO
 	}
 	public void setIsIntron(Boolean isIntron) {
 		this.isIntron = isIntron;
+	}
+	public String getOrientation() {
+		return orientation;
+	}
+	public void setOrientation(String orientation) {
+		this.orientation = orientation;
 	}
 	public String toString()
 	{

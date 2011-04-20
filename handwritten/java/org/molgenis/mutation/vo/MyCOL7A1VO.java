@@ -1,10 +1,13 @@
 package org.molgenis.mutation.vo;
 
+import java.io.Serializable;
+
 import org.molgenis.framework.security.Login;
 import org.molgenis.mutation.ui.LimitOffsetPager;
 
-public class MyCOL7A1VO
+public class MyCOL7A1VO implements Serializable
 {
+	private static final long serialVersionUID = -3073733890811273701L;
 	private Login login;
 	private LimitOffsetPager<PatientSummaryVO> pager;
 

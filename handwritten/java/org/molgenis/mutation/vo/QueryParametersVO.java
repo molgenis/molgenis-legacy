@@ -1,12 +1,17 @@
 package org.molgenis.mutation.vo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-public class QueryParametersVO
+public class QueryParametersVO implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1381420122055698282L;
 	private Boolean expertSearch    = false;
 	private Integer mutationId      = 0;
 	private String mutationName     = "";

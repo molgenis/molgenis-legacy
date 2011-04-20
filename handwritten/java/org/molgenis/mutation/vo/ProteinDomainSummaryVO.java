@@ -1,12 +1,14 @@
 package org.molgenis.mutation.vo;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.molgenis.mutation.Exon;
 import org.molgenis.mutation.ProteinDomain;
 
-public class ProteinDomainSummaryVO
+public class ProteinDomainSummaryVO implements Serializable
 {
+	private static final long serialVersionUID = -4365982338471188950L;
 	private ProteinDomain proteinDomain;
 	private List<Exon> exons;
 	private List<Exon> allExons;

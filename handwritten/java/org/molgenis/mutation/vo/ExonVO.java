@@ -1,10 +1,11 @@
 package org.molgenis.mutation.vo;
 
+import java.io.Serializable;
+
 import org.molgenis.mutation.Exon;
 
-public class ExonVO extends Exon
+public class ExonVO extends Exon implements Serializable
 {
-
 	private static final long serialVersionUID = 5133514447846461160L;
 	private Integer numFullAminoAcids;
 	private Integer numPartAminoAcids;

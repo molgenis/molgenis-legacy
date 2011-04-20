@@ -9,8 +9,11 @@
 
 package org.molgenis.mutation.vo;
 
-public class GeneVO
+import java.io.Serializable;
+
+public class GeneVO implements Serializable
 {
+	private static final long serialVersionUID = 8448620183887771179L;
 	private Integer _id = null;
 	private String _name = null;
 	private String _chromosome = null;

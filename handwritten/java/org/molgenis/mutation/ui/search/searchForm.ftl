@@ -32,7 +32,7 @@ Search by typing any search term in the search field, like cDNA (e.g. "3G>T") or
 	${form.__target}
 	${form.__action}
 	<td>Enter search term:</td>
-	<td>${form.term}&nbsp;<a href="molgenis.do?__target=${screen.name}&__action=init&expertSearch=1">Advanced Search</a></td>
+	<td>${form.term}&nbsp;<a href="molgenis.do?__target=${screen.name}&select=${screen.name}&__action=init&expertSearch=1">Advanced Search</a></td>
 </tr>
 <tr>
 	<td></td>
@@ -47,7 +47,7 @@ Search by typing any search term in the search field, like cDNA (e.g. "3G>T") or
 <#else>
 <#assign form = vo.expertSearchForm>
 <#assign back = vo.toSimpleSearchForm>
-<#assign show = vo.showMutationForm>
+<#assign muta = vo.showMutationForm>
 <!--<form method="post">${back.__target}${back.__action}${back.expertSearch}${back.submit}</form>-->
 <h3>Advanced search page</h3>
 <p>
@@ -56,6 +56,7 @@ Perform a more advanced search on the COL7A1 mutation database. If you enter or 
 <table cellpadding="4" cellspacing="4">
 <form action="molgenis.do#results" method="post" name="AdvSearch">
 ${form.__target}
+${form.select}
 ${form.__action}
 ${form.expertSearch}
 <tr><td>Variation: </td><td>${form.variation}</td><td>Nucleotide No: </td><td>${form.nuclno}</td></tr>
@@ -66,13 +67,14 @@ ${form.expertSearch}
 <td colspan="4" align="center">${form.findMutations}&nbsp;<input type="reset" name="reset" value="Reset">&nbsp;<input type="button" name="clear" value="Clear" onclick="clearForm(document.forms.AdvSearch);"></td></tr>
 </form>
 <form action="molgenis.do#results" method="post">
-${show.__target}
-${show.__action}
-${show.expertSearch}
-<tr><td colspan="2"></td><td align="right">or</td><td>${show.mid}</td><td colspan="2"></td></tr>
+${muta.__target}
+${muta.select}
+${muta.__action}
+${muta.expertSearch}
+<tr><td colspan="2"></td><td align="right">or</td><td>${muta.mid}</td><td colspan="2"></td></tr>
 </form>
 </table>
-[<a href="molgenis.do?__target=${screen.name}&__action=init&expertSearch=0">Back to simple search</a>]
+[<a href="molgenis.do?__target=${screen.name}&select=${screen.name}&__action=init&expertSearch=0">Back to simple search</a>]
 </#if>
 <#--
 	
@@ -85,42 +87,31 @@ Click anywhere on this schematic representation of the COL7A1 gene to graphicall
 </p>
 <br/>
 <p>
-<div style="overflow-x: auto; margin-right: 10p;">
-<table>
+<div class="scrollable">
+<table cellpadding="0" cellspacing="0" width="1%">
 <tr>
-	<td colspan="4">
-		<table cellpadding="0" cellspacing="0">
-		<tr>
-<#list vo.proteinDomainList as proteinDomainSummaryVO>
+<#assign gb = screen.MBrowseVO>
+<#list gb.proteinDomainList as proteinDomainSummaryVO>
 	<#assign exons = proteinDomainSummaryVO.exons>
 	<#if exons?size &gt; 0>
-		<#assign firstExon = exons?first>
-		<#assign lastExon  = exons?last>
-			<td align="center" valign="bottom">${proteinDomainSummaryVO.proteinDomain.getName()} (exon ${firstExon.getNumber()}-${lastExon.getNumber()})</td>
+	<td align="center" valign="bottom" colspan="${exons?size}" width="1%">${proteinDomainSummaryVO.proteinDomain.getName()} (exon ${exons?first.getNumber()} - ${exons?last.getNumber()})</td>
 	</#if>
 </#list>
-		</tr>
-		<tr>
-<#list vo.proteinDomainList as proteinDomainSummaryVO>
-	<#if proteinDomainSummaryVO.proteinDomain.getName() == 'Triple helix domain'>
-		<#assign imgsrc = "protdom0.png">
+</tr>
+<tr>
+<#assign numDomains = 0>
+<#list gb.proteinDomainList as proteinDomainSummaryVO>
+	<#if numDomains % 2 == 0>
+		<#assign colour = "#d95a14">
 	<#else>
-		<#assign imgsrc = "protdom1.png">
-	</#if>
-			<td>
-				<table border="0" cellpadding="0" cellspacing="0"><tr>
+		<#assign colour = "#6dcbfe">
+	</#if>		
 	<#assign exons = proteinDomainSummaryVO.exons>
-	<#assign i = 1>
 	<#list exons as exon>
-					<td class="exonbox"><a href="molgenis.do?__target=${screen.name}&__action=showProteinDomain&domain_id=${proteinDomainSummaryVO.proteinDomain.getId()?c}&snpbool=1#exon${exon.getId()?c}"><img src="res/img/col7a1/${imgsrc}" width="${exon.getLength() / 10}" height="26px" alt="${exon.getName()}" title="${exon.getName()}"></a></td>
-		<#assign i = i + 1>
+	<td align="left"><div style="background-color: ${colour}; display: block; width: ${exon.getLength() / 10}px; height: 26px;"><a style="display: block; height: 100%; width: 100%;" href="molgenis.do?__target=${screen.name}&select=${screen.name}&__action=showProteinDomain&domain_id=${proteinDomainSummaryVO.proteinDomain.getId()?c}&snpbool=1#exon${exon.getId()?c}" alt="${exon.getName()}" title="${exon.getName()}"></a></div></td>
 	</#list>
-				</tr></table>
-			</td>
+<#assign numDomains = numDomains + 1>
 </#list>
-		</tr>
-		</table>
-	</td>
 </tr>
 </table>
 </div>
@@ -135,22 +126,7 @@ Click anywhere on this schematic representation of the COL7A1 gene to graphicall
 
 </td>
 <td class="news_box">
-<iframe src="molgenis.do?__target=NewsPlugin&select=NewsPlugin&__action=top&__show=popup" width="350" height="800" name="News" scrolling="no" marginheight="0" marginwidth="0" frameborder="0">
-</iframe>
-<#--
-<div class="formscreen">
-<div class="form_header" id="SearchPlugin">News</div>
-<div class="screenpadding">
-<#list vo.news as newsItem>
-<div class="news_title">${newsItem.getTitle()}</div>
-<div class="news_subtitle">${newsItem.getSubtitle()}</div>
-<div>${newsItem.getDate()}</div>
-<div><a href="molgenis.do?__target=NewsPlugin&select=NewsPlugin&__action=entry&id=${newsItem.getId()}">More</a></div>
-<br/><br/>
-</#list>
-<div align="center"><a href="molgenis.do?__target=NewsPlugin&select=NewsPlugin&__action=all">All News</a></div>
-</div>
-</div>
--->
+<@layout screen.getChild("NewsBar")/>
 </td>
+</tr>
 </table>

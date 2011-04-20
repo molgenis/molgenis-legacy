@@ -1,5 +1,6 @@
 package org.molgenis.mutation.vo;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.molgenis.core.Publication;
@@ -7,9 +8,11 @@ import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.MutationPhenotype;
 import org.molgenis.mutation.ProteinDomain;
 
-public class MutationSummaryVO
+public class MutationSummaryVO implements Serializable
 {
+	private static final long serialVersionUID = 6822471461546986166L;
 	private Mutation mutation;
+	private String niceNotation;
 	private String codonChange;
 	private List<PatientSummaryVO> patients;
 	private List<MutationPhenotype> phenotypes;
@@ -27,6 +30,12 @@ public class MutationSummaryVO
 	}
 	public void setMutation(Mutation mutation) {
 		this.mutation = mutation;
+	}
+	public String getNiceNotation() {
+		return niceNotation;
+	}
+	public void setNiceNotation(String niceNotation) {
+		this.niceNotation = niceNotation;
 	}
 	public String getCodonChange() {
 		return codonChange;

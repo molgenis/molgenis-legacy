@@ -1,12 +1,14 @@
 package org.molgenis.mutation.vo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-public class MutationSearchCriteriaVO
+public class MutationSearchCriteriaVO implements Serializable
 {
+	private static final long serialVersionUID = -399485639945935744L;
 	Integer cdnaPosition;
 	Integer codonChangeNumber;
 	Integer codonNumber;

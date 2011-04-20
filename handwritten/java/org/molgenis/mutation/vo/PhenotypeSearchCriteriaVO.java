@@ -1,7 +1,10 @@
 package org.molgenis.mutation.vo;
 
-public class PhenotypeSearchCriteriaVO
+import java.io.Serializable;
+
+public class PhenotypeSearchCriteriaVO implements Serializable
 {
+	private static final long serialVersionUID = 1321046268960970013L;
 	Integer phenotypeId;
 	String name;
 

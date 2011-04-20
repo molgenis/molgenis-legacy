@@ -1,5 +1,6 @@
 package org.molgenis.mutation.vo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,8 +15,9 @@ import org.molgenis.mutation.Patient;
 import org.molgenis.mutation.PhenotypeDetails;
 import org.molgenis.submission.Submission;
 
-public class PatientSummaryVO
+public class PatientSummaryVO implements Serializable
 {
+	private static final long serialVersionUID = -8983436185205230071L;
 	Patient patient;
 	Mutation mutation1;
 	Mutation mutation2;

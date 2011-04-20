@@ -1,12 +1,14 @@
 package org.molgenis.mutation.vo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-public class PatientSearchCriteriaVO
+public class PatientSearchCriteriaVO implements Serializable
 {
+	private static final long serialVersionUID = -8296063132415520100L;
 	String pid;
 	Integer mutationId;
 	String mid;

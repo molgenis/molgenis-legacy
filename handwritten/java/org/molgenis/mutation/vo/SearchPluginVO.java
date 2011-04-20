@@ -1,9 +1,11 @@
 package org.molgenis.mutation.vo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.molgenis.mutation.MutationGene;
 import org.molgenis.mutation.PhenotypeDetails;
 import org.molgenis.mutation.ui.LimitOffsetPager;
 import org.molgenis.mutation.ui.search.form.DisplayOptionsForm;
@@ -17,8 +19,9 @@ import org.molgenis.mutation.ui.search.form.ToSimpleSearchForm;
 import org.molgenis.news.MolgenisNews;
 
 
-public class SearchPluginVO
+public class SearchPluginVO implements Serializable
 {
+	private static final long serialVersionUID = 8321193926556324386L;
 	private String action = "init";
 	private String header;
 	private int numPatients;
@@ -38,6 +41,7 @@ public class SearchPluginVO
 	private PatientSearchCriteriaVO patientSearchCriteriaVO   = new PatientSearchCriteriaVO();
 	private QueryParametersVO queryParametersVO               = new QueryParametersVO();
 
+	private MutationGene gene;
 	private ExonSummaryVO exonSummaryVO;
 	private MutationSummaryVO mutationSummaryVO;
 	private List<MutationSummaryVO> mutationSummaryVOs        = new ArrayList<MutationSummaryVO>();
@@ -221,6 +225,14 @@ public class SearchPluginVO
 	public void setQueryParametersVO(QueryParametersVO queryParametersVO)
 	{
 		this.queryParametersVO = queryParametersVO;
+	}
+
+	public void setGene(MutationGene gene) {
+		this.gene = gene;
+	}
+
+	public MutationGene getGene() {
+		return gene;
 	}
 
 	public ExonSummaryVO getExonSummaryVO()

@@ -1,4 +1,7 @@
-<#macro org_molgenis_mutation_ui_search_SearchPlugin screen>
+<#macro org_molgenis_mutation_ui_search_Chd7Search screen>
+<#if show == "popup">
+		<@molgenis_header />
+</#if>
 <!-- this shows a title and border -->
 	<div class="formscreen">
 		<div class="form_header" id="${screen.getName()}">
@@ -30,17 +33,12 @@
 
 <#if vo.action?starts_with("showProteinDomain")>
 
-	<#include "mbrowse.ftl">
-
+	<#include "proteinDomain.ftl">
 	<#include "mutations.ftl">
 
 <#elseif vo.action?starts_with("showExon")>
 
 	<#include "exon.ftl">
-
-	<#include "mbrowse.ftl">
-
-	<#include "mutations.ftl">
 
 <#elseif vo.action?starts_with("showMutation")>
 
@@ -52,7 +50,7 @@
 
 <#elseif vo.action?starts_with("showPhenotypeDetails")>
 
-	<#include "phenotypedetails.ftl">
+	<#include "chd7phenotypedetails.ftl">
 
 <#elseif vo.action?starts_with("findMutationsByTerm")>
 
@@ -93,4 +91,7 @@
 			</div>
 		</div>
 	</div>
+<#if show == "popup">
+		<@molgenis_footer />
+</#if>
 </#macro>

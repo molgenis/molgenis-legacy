@@ -1,9 +1,11 @@
 package org.molgenis.mutation.vo;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class BackgroundSummaryVO
+public class BackgroundSummaryVO implements Serializable
 {
+	private static final long serialVersionUID = -3470506757761180549L;
 	private int numMutations;
 	private int numMutationsUnpub;
 	private int numPatients;

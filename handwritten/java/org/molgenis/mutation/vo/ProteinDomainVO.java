@@ -1,8 +1,11 @@
 package org.molgenis.mutation.vo;
 
+import java.io.Serializable;
 
-public class ProteinDomainVO
+
+public class ProteinDomainVO implements Serializable
 {
+	private static final long serialVersionUID = 1519684534566190066L;
 	private Integer _id = null;
 	private String _name = null;
 	private String _superDomain = null;
