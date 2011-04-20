@@ -1,5 +1,6 @@
 package org.molgenis.mutation.service;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.jdbc.JDBCConnectionHelper;
 import org.molgenis.util.Tuple;
-
+import org.molgenis.xgap.Gene;
 
 import app.JDBCDatabase;
 
@@ -23,8 +24,9 @@ import org.molgenis.mutation.util.SequenceUtils;
 import org.molgenis.mutation.vo.ExonSearchCriteriaVO;
 import org.molgenis.mutation.vo.ExonSummaryVO;
 
-public class ExonService
+public class ExonService implements Serializable
 {
+	private static final long serialVersionUID   = -6713716877840714621L;
 	private static ExonService exonService       = null;
 	private JDBCDatabase db                      = null;
 	private static final transient Logger logger = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());
@@ -104,7 +106,7 @@ public class ExonService
 				throw new RESyntaxException("Invalid mutation notation: " + criteria.getPosition());
 		}
 		if (criteria.getProteinDomainId() != null)
-			query = query.equals(Exon.PROTEINDOMAIN, criteria.getProteinDomainId()).sortDESC("gdna_position");
+			query = query.equals(Exon.PROTEINDOMAIN, criteria.getProteinDomainId()).sortASC("gdna_position");
 		if (criteria.getIsIntron() != null)
 			query = query.equals(Exon.ISINTRON, criteria.getIsIntron() ? 1 : 0); // TODO: remove db specific!!!!
 
@@ -113,65 +115,108 @@ public class ExonService
 		return this.toExonSummaryVOList(exons);
 	}
 
-	public Exon findPrevExon(ExonSearchCriteriaVO criteria) throws DatabaseException, ParseException
+	public Exon findFirstExon(ExonSearchCriteriaVO criteria) throws DatabaseException, ParseException
 	{
+		if (criteria.getGdnaPosition() == null)
+			return null;
+
 		Query<Exon> query = this.db.query(Exon.class);
 
-		if (criteria.getGdnaPosition() != null)
-			query = query.gt(Exon.GDNA_POSITION, criteria.getGdnaPosition());
 		if (criteria.getIsIntron() != null)
 			query = query.equals(Exon.ISINTRON, criteria.getIsIntron());
 		
-		List<Exon> exons = query.sortASC(Exon.GDNA_POSITION).limit(1).find();
+		if ("F".equals(criteria.getOrientation()))
+			query = query.sortASC(Exon.GDNA_POSITION);
+		else if ("R".equals(criteria.getOrientation()))
+			query = query.sortDESC(Exon.GDNA_POSITION);
+		else
+			return null;
+
+		List<Exon> exons = query.limit(1).find();
 		
 		if (exons.size() > 0)
 			return exons.get(0);
 		else
 			return null;
-		/*
-		if (!showIntrons)
-			query = query.equals("isIntron", false);
-		List<Exon> exons = query.gt("gdna_position", exon.getGdna_position()).sortASC("gdna_position").limit(1).find();
+	}
 
+	public Exon findPrevExon(ExonSearchCriteriaVO criteria) throws DatabaseException, ParseException
+	{
+		if (criteria.getGdnaPosition() == null)
+			return null;
+
+		Query<Exon> query = this.db.query(Exon.class);
+
+		if (criteria.getIsIntron() != null)
+			query = query.equals(Exon.ISINTRON, criteria.getIsIntron());
+		
+		if ("F".equals(criteria.getOrientation()))
+			query = query.lt(Exon.GDNA_POSITION, criteria.getGdnaPosition()).sortDESC(Exon.GDNA_POSITION);
+		else if ("R".equals(criteria.getOrientation()))
+			query = query.gt(Exon.GDNA_POSITION, criteria.getGdnaPosition()).sortASC(Exon.GDNA_POSITION);
+		else
+			return null;
+		
+		List<Exon> exons = query.limit(1).find();
+		
 		if (exons.size() > 0)
 			return exons.get(0);
 		else
-			return exon;
-		*/
+			return null;
 	}
 
 	public Exon findNextExon(ExonSearchCriteriaVO criteria) throws DatabaseException, ParseException
 	{
+		if (criteria.getGdnaPosition() == null)
+			return null;
+
 		Query<Exon> query = this.db.query(Exon.class);
-		
-		if (criteria.getGdnaPosition() != null)
-			query = query.lt(Exon.GDNA_POSITION, criteria.getGdnaPosition());
+
 		if (criteria.getIsIntron() != null)
 			query = query.equals(Exon.ISINTRON, criteria.getIsIntron());
-		
-		List<Exon> exons = query.sortDESC(Exon.GDNA_POSITION).limit(1).find();
+
+		if ("F".equals(criteria.getOrientation()))
+			query = query.gt(Exon.GDNA_POSITION, criteria.getGdnaPosition()).sortASC(Exon.GDNA_POSITION);
+		else if ("R".equals(criteria.getOrientation()))
+			query = query.lt(Exon.GDNA_POSITION, criteria.getGdnaPosition()).sortDESC(Exon.GDNA_POSITION);
+		else
+			return null;
+
+		List<Exon> exons = query.limit(1).find();
 		
 		if (exons.size() > 0)
 			return exons.get(0);
 		else
 			return null;
-		
-		/*
-		if (!showIntrons)
-			query = query.equals("isIntron", false);
-		List<Exon> exons = query.lt("gdna_position", exon.getGdna_position()).sortDESC("gdna_position").limit(1).find();
+	}
 
+	public Exon findLastExon(ExonSearchCriteriaVO criteria) throws DatabaseException, ParseException
+	{
+		if (criteria.getGdnaPosition() == null)
+			return null;
+
+		Query<Exon> query = this.db.query(Exon.class);
+
+		if (criteria.getIsIntron() != null)
+			query = query.equals(Exon.ISINTRON, criteria.getIsIntron());
+		
+		if ("F".equals(criteria.getOrientation()))
+			query = query.sortDESC(Exon.GDNA_POSITION);
+		else if ("R".equals(criteria.getOrientation()))
+			query = query.sortASC(Exon.GDNA_POSITION);
+		else
+			return null;
+
+		List<Exon> exons = query.limit(1).find();
+		
 		if (exons.size() > 0)
 			return exons.get(0);
 		else
-			return exon;
-		*/
+			return null;
 	}
 
 	private ExonSummaryVO toExonSummaryVO(Exon exon) throws DatabaseException, ParseException
 	{
-		List<Exon> allExons         = this.getAllExons();
-
 		ExonSummaryVO exonSummaryVO = new ExonSummaryVO();
 		exonSummaryVO.setExon(exon);
 		exonSummaryVO.setNumFullAminoAcids(this.getNumFullAminoAcids(exon));
@@ -182,11 +227,29 @@ public class ExonService
 		exonSummaryVO.setNuclSequenceFlankRight(this.getNuclSequenceFlankRight(exon));
 		exonSummaryVO.setNuclSequence(this.getNuclSequence(exon));
 		exonSummaryVO.setAaSequence(this.getAaSequence(exon));
-		exonSummaryVO.setFirstExon(allExons.get(0));
-		//exonSummaryVO.setPrevExon(this.findPrevExon(exon, true)); //showIntrons
-		//exonSummaryVO.setNextExon(this.findNextExon(exon, true)); //showIntrons
-		exonSummaryVO.setLastExon(allExons.get(allExons.size() - 1));
 		
+		Gene gene = this.db.findById(Gene.class, exon.getGene_Id());
+
+		ExonSearchCriteriaVO firstExonCriteria = new ExonSearchCriteriaVO();
+		firstExonCriteria.setGdnaPosition(exonSummaryVO.getExon().getGdna_Position());
+		firstExonCriteria.setOrientation(gene.getOrientation());
+		exonSummaryVO.setFirstExon(exonService.findFirstExon(firstExonCriteria));
+
+		ExonSearchCriteriaVO prevExonCriteria = new ExonSearchCriteriaVO();
+		prevExonCriteria.setGdnaPosition(exonSummaryVO.getExon().getGdna_Position());
+		prevExonCriteria.setOrientation(gene.getOrientation());
+		exonSummaryVO.setPrevExon(exonService.findPrevExon(prevExonCriteria));
+		
+		ExonSearchCriteriaVO nextExonCriteria = new ExonSearchCriteriaVO();
+		nextExonCriteria.setGdnaPosition(exonSummaryVO.getExon().getGdna_Position());
+		nextExonCriteria.setOrientation(gene.getOrientation());
+		exonSummaryVO.setNextExon(exonService.findNextExon(nextExonCriteria));
+
+		ExonSearchCriteriaVO lastExonCriteria = new ExonSearchCriteriaVO();
+		lastExonCriteria.setGdnaPosition(exonSummaryVO.getExon().getGdna_Position());
+		lastExonCriteria.setOrientation(gene.getOrientation());
+		exonSummaryVO.setLastExon(exonService.findLastExon(lastExonCriteria));
+
 		return exonSummaryVO;
 	}
 
@@ -250,12 +313,13 @@ public class ExonService
 //		return this.db.findByExample(search);
 //	}
 
+
 	public List<Exon> findExonsByProteinDomainId(Integer proteinDomainId, Boolean noIntrons) throws DatabaseException, ParseException
 	{
 		Query<Exon> query =
 			this.db.query(Exon.class)
 			.equals(Exon.PROTEINDOMAIN, proteinDomainId)
-			.sortDESC(Exon.GDNA_POSITION);
+			.sortASC(Exon.GDNA_POSITION);
 		if (noIntrons)
 			query.equals(Exon.ISINTRON, false);
 		return query.find();
@@ -269,7 +333,7 @@ public class ExonService
 	 */
 	public List<Exon> getAllExons() throws DatabaseException, ParseException
 	{
-		return this.db.query(Exon.class).sortDESC(Exon.GDNA_POSITION).find();
+		return this.db.query(Exon.class).sortASC(Exon.GDNA_POSITION).find();
 	}
 
 	//TODO:Danny: Use or loose
@@ -349,7 +413,7 @@ public class ExonService
 	 */
 	private String getNuclSequence(Exon exon) throws DatabaseException
 	{
-		MutationGene gene   = this.db.findById(MutationGene.class, exon.getGene());
+		MutationGene gene     = this.db.findById(MutationGene.class, exon.getGene());
 		Integer gdnaStart = Math.abs(exon.getGdna_Position() - gene.getBpStart().intValue());
 		Integer gdnaEnd   = gdnaStart + exon.getLength();
 		return StringUtils.substring(gene.getSeq(), gdnaStart, gdnaEnd);

@@ -1,7 +1,10 @@
 package org.molgenis.mutation.service;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
@@ -12,19 +15,16 @@ import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.ProteinDomain;
 import org.molgenis.mutation.vo.ProteinDomainSummaryVO;
 
-import app.JDBCDatabase;
-
-public class ProteinDomainService
+public class ProteinDomainService implements Serializable
 {
-	private JDBCDatabase db                           = null;
+	private static final long serialVersionUID        = -9009198952894773375L;
+	private Database db                               = null;
 	private static ProteinDomainService domainService = null;
-	//TODO:Danny: Use or loose
-	/*private static final transient Logger logger      = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());*/
 
 	// private constructor, use singleton instance
 	private ProteinDomainService(Database db)
 	{
-		this.db = (JDBCDatabase) db;
+		this.db = db;
 	}
 	
 	public static ProteinDomainService getInstance(Database db)
@@ -50,17 +50,6 @@ public class ProteinDomainService
 		ProteinDomain proteinDomain = this.db.findById(ProteinDomain.class, proteinDomainId);
 		return proteinDomain;
 	}
-
-//	/**
-//	 * Find a protein domain by its id
-//	 * @param id
-//	 * @return protein domain
-//	 * @throws Exception
-//	 */
-//	public ProteinDomain findProteinDomain(Integer id) throws Exception
-//	{
-//		return this.db.findById(ProteinDomain.class, id);
-//	}
 
 	/**
 	 * Find a protein domain by its id
@@ -92,9 +81,7 @@ public class ProteinDomainService
 		
 		ExonService exonService = ExonService.getInstance(this.db);
 		proteinDomainSummaryVO.setExons(exonService.findExonsByProteinDomainId(proteinDomain.getId(), noIntrons));
-//		proteinDomainSummaryVO.setExons(exonService.findExonsByProteinDomainId(null, noIntrons));
-		proteinDomainSummaryVO.setAllExons(exonService.getAllExons());
-		
+
 		return proteinDomainSummaryVO;
 	}
 	
@@ -106,5 +93,26 @@ public class ProteinDomainService
 			result.add(this.toProteinDomainSummaryVO(proteinDomain, true));
 		
 		return result;
+	}
+
+	public void reverseExons(List<ProteinDomainSummaryVO> proteinDomainList)
+	{
+		System.out.println(">>> Reversing exons.");
+		Iterator<ProteinDomainSummaryVO> it = proteinDomainList.iterator();
+		while (it.hasNext())
+		{
+			ProteinDomainSummaryVO proteinDomainSummaryVO = it.next();
+			this.reverseExons(proteinDomainSummaryVO);
+//			Collections.reverse(proteinDomainSummaryVO.getAllExons());
+//			System.out.println(">>> inside: exons==" + proteinDomainSummaryVO.getExons());
+//			Collections.reverse(proteinDomainSummaryVO.getExons());
+//			System.out.println(">>> inside: exons==" + proteinDomainSummaryVO.getExons());
+		}
+	}
+	
+	public void reverseExons(ProteinDomainSummaryVO proteinDomainSummaryVO)
+	{
+//		Collections.reverse(proteinDomainSummaryVO.getAllExons());
+		Collections.reverse(proteinDomainSummaryVO.getExons());
 	}
 }

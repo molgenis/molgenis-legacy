@@ -1,6 +1,7 @@
 package org.molgenis.mutation.service;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -10,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.regexp.RE;
@@ -42,8 +44,9 @@ import org.molgenis.mutation.vo.PatientSearchCriteriaVO;
 import org.molgenis.mutation.vo.PatientSummaryVO;
 import org.molgenis.core.Publication;
 
-public class MutationService
+public class MutationService implements Serializable
 {
+	private static final long serialVersionUID        = -5234460093223923754L;
 	private JDBCDatabase db                           = null;
 	private static MutationService mutationService    = null;
 	private HashMap<Integer, MutationSummaryVO> cache = new HashMap<Integer, MutationSummaryVO>();
@@ -192,6 +195,10 @@ public class MutationService
 
 		MutationSummaryVO mutationSummaryVO       = new MutationSummaryVO();
 		mutationSummaryVO.setMutation(mutation);
+		if (StringUtils.isNotEmpty(mutation.getAa_Notation()))
+			mutationSummaryVO.setNiceNotation(mutation.getCdna_Notation() + " (" + mutation.getAa_Notation() + ")");
+		else
+			mutationSummaryVO.setNiceNotation(mutation.getCdna_Notation());
 		mutationSummaryVO.setCodonChange(this.getCodonChange(mutation));
 		mutationSummaryVO.setProteinDomain(proteinDomain);
 		mutationSummaryVO.setFirstMutation(allMutations.get(0));
@@ -205,8 +212,8 @@ public class MutationService
 
 		mutationSummaryVO.setPatients(patientSummaryVOs);
 		
-		HashMap<Integer, MutationPhenotype> phenotypeHash     = new HashMap<Integer, MutationPhenotype>();
-		HashMap<Integer, Publication> publicationHash = new HashMap<Integer, Publication>();
+		HashMap<Integer, MutationPhenotype> phenotypeHash = new HashMap<Integer, MutationPhenotype>();
+		HashMap<Integer, Publication> publicationHash     = new HashMap<Integer, Publication>();
 		for (PatientSummaryVO patientSummaryVO : patientSummaryVOs)
 		{
 			if (patientSummaryVO.getPhenotype() != null)
@@ -309,6 +316,10 @@ public class MutationService
 	public Integer getMaxIdentifier() throws DatabaseException, ParseException
 	{
 		List<Mutation> mutations = this.db.query(Mutation.class).find();
+		
+		if (CollectionUtils.isEmpty(mutations))
+			return 0;
+
 		Collections.sort(mutations, new MutationComparator());
 		return Integer.valueOf(mutations.get(mutations.size() - 1).getIdentifier().substring(1));
 	}
@@ -539,7 +550,8 @@ public class MutationService
 		if (StringUtils.isEmpty(mutationUploadVO.getMutation().getMutationPosition()) || "0".equals(mutationUploadVO.getMutation().getMutationPosition()))
 			return;
 		
-		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "COL7A1").find().get(0);
+//		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "COL7A1").find().get(0);
+		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "CHD7").find().get(0);
 		mutationUploadVO.setGene(gene);
 		mutationUploadVO.getMutation().setGene(gene);
 
@@ -570,7 +582,11 @@ public class MutationService
 		mutationUploadVO.getMutation().setCdna_Position(SequenceUtils.getCDNAPosition(mutationUploadVO.getMutation().getMutationPosition()));
 		mutationUploadVO.getMutation().setGdna_Position(SequenceUtils.getGDNAPosition(mutationUploadVO.getMutation().getMutationPosition(), exon));
 
-		int mutationStart        = mutationUploadVO.getGene().getBpStart().intValue() - mutationUploadVO.getMutation().getGdna_Position();
+		int mutationStart;
+		if ("F".equals(mutationUploadVO.getGene().getOrientation()))
+			mutationStart = mutationUploadVO.getMutation().getGdna_Position() - mutationUploadVO.getGene().getBpStart().intValue();
+		else
+			mutationStart = mutationUploadVO.getGene().getBpStart().intValue() - mutationUploadVO.getMutation().getGdna_Position();
 		
 		if (mutationUploadVO.getMutation().getLength() == null)
 			mutationUploadVO.getMutation().setLength(1); // default value
@@ -682,7 +698,8 @@ public class MutationService
 	{
 		// set default gene
 
-		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "COL7A1").find().get(0);
+//		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "COL7A1").find().get(0);
+		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "CHD7").find().get(0);
 
 		mutationUploadVO.setGene(gene);
 		mutationUploadVO.getMutation().setGene(gene);
@@ -690,11 +707,8 @@ public class MutationService
 		mutationUploadVO.getMutation().setEvent("NA");
 	}
 
-
-//	
-//	//TODO: Move to GeneService
-//	public Gene findGeneById(Integer id) throws DatabaseException
-//	{
-//		return this.db.findById(Gene.class, id);
-//	}
+	public int getNumMutations() throws DatabaseException
+	{
+		return this.db.count(Mutation.class);
+	}
 }

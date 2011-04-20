@@ -2,6 +2,7 @@ package org.molgenis.mutation.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import javax.xml.bind.JAXBException;
 import jxl.Workbook;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.core.Publication;
@@ -30,7 +32,6 @@ import org.molgenis.mutation.Patient;
 import org.molgenis.mutation.PhenotypeDetails;
 import org.molgenis.mutation.excel.UploadBatchExcelReader;
 import org.molgenis.mutation.util.PatientComparator;
-import org.molgenis.mutation.util.PatientSummaryVOComparator;
 import org.molgenis.mutation.vo.PatientSearchCriteriaVO;
 import org.molgenis.mutation.vo.PatientSummaryVO;
 import org.molgenis.services.PubmedService;
@@ -41,13 +42,12 @@ import org.molgenis.util.Tuple;
 
 import app.JDBCDatabase;
 
-public class PatientService
+public class PatientService implements Serializable
 {
+	private static final long serialVersionUID       = -5343468595949980106L;
 	private JDBCDatabase db                          = null;
 	private static PatientService patientService     = null;
 	private HashMap<Integer, PatientSummaryVO> cache = new HashMap<Integer, PatientSummaryVO>();
-	//TODO:Danny: Use or loose
-	/*	private static final transient Logger logger     = 	Logger.getLogger(JDBCConnectionHelper.class.getSimpleName()); */
 
 	// private constructor, use singleton instance
 	private PatientService(Database db)
@@ -97,6 +97,7 @@ public class PatientService
 				submissionIds.add(submission.getId());
 			query = query.in(Patient.SUBMISSION, submissionIds);
 		}
+		query = query.sortASC(Patient.IDENTIFIER);
 
 		if (query.getRules().length > 0)
 			return this.toPatientSummaryVOList(query.find());
@@ -110,42 +111,19 @@ public class PatientService
 		return this.toPatientSummaryVO(this.db.findById(Patient.class, id));
 	}
 
-//	public PatientSummaryVO findPatientByIdentifier(String identifier) throws Exception
-//	{
-////		Patient example = new Patient();
-////		example.setIdentifier(identifier);
-////		example.setConsent(null);
-//		return this.toPatientSummaryVO(this.db.query(Patient.class).equals("identifier", identifier).find().get(0)); // safe because identifier is unique
-////		return this.toPatientSummaryVO(this.db.findByExample(example).get(0)); // safe because identifier is unique
-//	}
-
-//	public List<PatientSummaryVO> findPatientsByMutationId(Integer mutationId) throws DatabaseException, ParseException
-//	{
-//		return this.toPatientSummaryVOList(this.db.query(Patient.class).equals("mutation1", mutationId).or().equals("mutation2", mutationId).find());
-//	}
-//
-//	public List<Patient> findPatientsByMutationId(Integer mutation1Id, Integer mutation2Id) throws Exception
-//	{
-//		List<Patient> patients = new ArrayList<Patient>();
-//		patients.addAll(this.db.query(Patient.class).equals("mutation1", mutation1Id).equals("mutation2", mutation2Id).find());
-//		patients.addAll(this.db.query(Patient.class).equals("mutation2", mutation1Id).equals("mutation1", mutation2Id).find());
-//		return patients;
-//	}
-
-	/**
-	 * Get all patients.
-	 * @return all patients
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-	public List<Patient> getAllPatients() throws DatabaseException, ParseException
-	{
-		return this.db.query(Patient.class).find();
-	}
-
 	public List<PatientSummaryVO> getAllPatientSummaries() throws DatabaseException, ParseException
 	{
-		return this.toPatientSummaryVOList(this.db.query(Patient.class).find());
+		return this.toPatientSummaryVOList(this.db.query(Patient.class).sortASC(Patient.IDENTIFIER).find());
+	}
+
+	/**
+	 * Get number of patients in the database
+	 * @return number of patients
+	 * @throws DatabaseException 
+	 */
+	public int getNumPatients() throws DatabaseException
+	{
+		return this.db.count(Patient.class);
 	}
 
 	/**
@@ -156,7 +134,6 @@ public class PatientService
 	 */
 	public int getNumUnpublishedPatients() throws DatabaseException, ParseException
 	{
-//		return this.db.query(Patient.class).equals("publications", null).count();
 		//TODO: Outer join is faster, but is syntax standardized?
 		return this.db.sql("SELECT DISTINCT id FROM Patient WHERE NOT EXISTS (SELECT id FROM Patient_publications WHERE Patient.id = Patient_publications.Patient)").size();
 	}
@@ -170,34 +147,13 @@ public class PatientService
 	public Integer getMaxIdentifier() throws DatabaseException, ParseException
 	{
 		List<Patient> patients = this.db.query(Patient.class).find();
+		
+		if (CollectionUtils.isEmpty(patients))
+			return 0;
+
 		Collections.sort(patients, new PatientComparator());
 		return Integer.valueOf(patients.get(patients.size() - 1).getIdentifier().substring(1));
 	}
-
-	public List<PatientSummaryVO> find(MolgenisUser user) throws DatabaseException, ParseException
-	{
-		return null;
-//		Query<Patient> query         = this.db.query(Patient.class);
-//		SubmissionAuthorization auth = new SubmissionAuthorization();
-//		List<Patient> patients       = (List<Patient>) auth.doAs(user, new Patient(), query);
-//		return this.toPatientSummaryVOList(patients);
-	}
-
-	/**
-	 * Find the highest patient number
-	 * @return highest patient number
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-//	public Integer findHighestNumber() throws DatabaseException, ParseException
-//	{
-//		List<Patient> patients = this.db.query(Patient.class).sortDESC("number_").limit(1).find();
-//		
-//		if (patients.size() == 1)
-//			return patients.get(0).getNumber_();
-//		else
-//			return 0;
-//	}
 
 	/**
 	 * Insert batch of patients. To be refactored.
@@ -306,20 +262,20 @@ public class PatientService
 				if (patients.size() == 1)
 					patientSummaryVO.setPatient(patients.get(0));
 
-				// Add IF
-				if (patientSummaryVO.getIf_() != null)
-				{
-					patientSummaryVO.getIf_().setAntibody(this.db.query(Antibody.class).equals(Antibody.NAME, patientSummaryVO.getIf_().getAntibody_Name()).find().get(0));
-					patientSummaryVO.getIf_().setPatient(patientSummaryVO.getPatient());
-					this.db.add(patientSummaryVO.getIf_());
-				}
-
-				// Add EM
-				if (patientSummaryVO.getEm_() != null)
-				{
-					patientSummaryVO.getEm_().setPatient(patientSummaryVO.getPatient());
-					this.db.add(patientSummaryVO.getEm_());
-				}
+//				// Add IF
+//				if (patientSummaryVO.getIf_() != null)
+//				{
+//					patientSummaryVO.getIf_().setAntibody(this.db.query(Antibody.class).equals(Antibody.NAME, patientSummaryVO.getIf_().getAntibody_Name()).find().get(0));
+//					patientSummaryVO.getIf_().setPatient(patientSummaryVO.getPatient());
+//					this.db.add(patientSummaryVO.getIf_());
+//				}
+//
+//				// Add EM
+//				if (patientSummaryVO.getEm_() != null)
+//				{
+//					patientSummaryVO.getEm_().setPatient(patientSummaryVO.getPatient());
+//					this.db.add(patientSummaryVO.getEm_());
+//				}
 				
 //				// Add publications
 //				if (patientSummaryVO.getPublications() != null)
@@ -369,7 +325,8 @@ public class PatientService
 
 		// set default phenotype
 
-		MutationPhenotype phenotype = this.db.query(MutationPhenotype.class).equals(MutationPhenotype.NAME, "DEB-u").find().get(0);
+//		MutationPhenotype phenotype = this.db.query(MutationPhenotype.class).equals(MutationPhenotype.NAME, "DEB-u").find().get(0);
+		MutationPhenotype phenotype = this.db.query(MutationPhenotype.class).equals(MutationPhenotype.NAME, "Unknown").find().get(0);
 
 		patientSummaryVO.setPhenotype(phenotype);
 
@@ -443,7 +400,7 @@ public class PatientService
 
 		for (Patient patient : patients)
 			result.add(this.toPatientSummaryVO(patient));
-		Collections.sort(result, new PatientSummaryVOComparator());
+
 		return result;
 	}
 

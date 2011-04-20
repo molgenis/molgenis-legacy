@@ -1,5 +1,6 @@
 package org.molgenis.mutation.service;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.util.List;
 
@@ -12,8 +13,9 @@ import org.molgenis.mutation.vo.PhenotypeSearchCriteriaVO;
 
 import app.JDBCDatabase;
 
-public class PhenotypeService
+public class PhenotypeService implements Serializable
 {
+	private static final long serialVersionUID       = -476712719557155269L;
 	private static PhenotypeService phenotypeService = null;
 	private JDBCDatabase db                          = null;
 	//TODO:Danny: Use or loose
