@@ -15,7 +15,6 @@ import javax.xml.bind.JAXBException;
 import jxl.Workbook;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.core.Publication;
@@ -262,20 +261,20 @@ public class PatientService implements Serializable
 				if (patients.size() == 1)
 					patientSummaryVO.setPatient(patients.get(0));
 
-//				// Add IF
-//				if (patientSummaryVO.getIf_() != null)
-//				{
-//					patientSummaryVO.getIf_().setAntibody(this.db.query(Antibody.class).equals(Antibody.NAME, patientSummaryVO.getIf_().getAntibody_Name()).find().get(0));
-//					patientSummaryVO.getIf_().setPatient(patientSummaryVO.getPatient());
-//					this.db.add(patientSummaryVO.getIf_());
-//				}
-//
-//				// Add EM
-//				if (patientSummaryVO.getEm_() != null)
-//				{
-//					patientSummaryVO.getEm_().setPatient(patientSummaryVO.getPatient());
-//					this.db.add(patientSummaryVO.getEm_());
-//				}
+				// Add IF
+				if (patientSummaryVO.getIf_() != null)
+				{
+					patientSummaryVO.getIf_().setAntibody(this.db.query(Antibody.class).equals(Antibody.NAME, patientSummaryVO.getIf_().getAntibody_Name()).find().get(0));
+					patientSummaryVO.getIf_().setPatient(patientSummaryVO.getPatient());
+					this.db.add(patientSummaryVO.getIf_());
+				}
+
+				// Add EM
+				if (patientSummaryVO.getEm_() != null)
+				{
+					patientSummaryVO.getEm_().setPatient(patientSummaryVO.getPatient());
+					this.db.add(patientSummaryVO.getEm_());
+				}
 				
 //				// Add publications
 //				if (patientSummaryVO.getPublications() != null)
