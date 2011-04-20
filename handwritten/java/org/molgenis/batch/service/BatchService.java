@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.molgenis.batch.MolgenisBatch;
 import org.molgenis.batch.MolgenisBatchEntity;
@@ -130,11 +129,7 @@ public class BatchService {
     	this.db.commitTx();
     }
     
-    public List<Integer> getAllObservationTargetIds() throws DatabaseException, ParseException {
-		return cq.getAllObservationTargetIds(null, false);
-	}
-	
-	public Map<Integer, String> getObservationTargetNames(List<Integer> idList) throws DatabaseException, ParseException {
-		return cq.getObservationTargetNames(idList);
-	}
+    public String getTargetLabel(int targetId) throws DatabaseException, ParseException {
+    	return cq.getObservationTargetLabel(targetId);
+    }
 }

@@ -8,7 +8,6 @@
 package plugins.protocol;
 
 import java.util.List;
-import java.util.Map;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
@@ -23,7 +22,6 @@ public class EventViewerPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 8804579908239186037L;
 	private List<Integer> targetIdList;
-	private Map<Integer, String> targetMap;
 	private CommonService ct = CommonService.getInstance();
 	
 	public EventViewerPlugin(String name, ScreenModel<Entity> parent)
@@ -62,9 +60,9 @@ public class EventViewerPlugin extends PluginModel<Entity>
 	}
 	
 	public String getTargetName(Integer id) {
-		if (targetMap.get(id) != null) {
-			return targetMap.get(id);
-		} else {
+		try {
+			return ct.getObservationTargetLabel(id);
+		} catch (Exception e) {
 			return id.toString();
 		}
 	}
@@ -95,7 +93,6 @@ public class EventViewerPlugin extends PluginModel<Entity>
 		// Populate target list
 		try {
 			this.setTargetIdList(ct.getAllObservationTargetIds(null, false));
-			this.targetMap = ct.getObservationTargetNames(this.targetIdList);
 		} catch (Exception e) {
 			e.printStackTrace();
 			this.getMessages().clear();

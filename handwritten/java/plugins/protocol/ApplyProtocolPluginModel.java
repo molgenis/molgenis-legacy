@@ -9,7 +9,6 @@ package plugins.protocol;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class ApplyProtocolPluginModel {
 
@@ -19,7 +18,6 @@ public class ApplyProtocolPluginModel {
 	private List<String> fullTargetList = new ArrayList<String>();
 	private List<String> batchesList = new ArrayList<String>();
 	private int protocolId;
-	private Map<Integer, String> targetMap;
 	private boolean newProtocolApplication = false;
 	private boolean timeInfo = false;
 	
@@ -45,14 +43,6 @@ public class ApplyProtocolPluginModel {
 
 	public int getProtocolId() {
 	    return protocolId;
-	}
-
-	public void setTargetMap(Map<Integer, String> targetMap) {
-	    this.targetMap = targetMap;
-	}
-
-	public Map<Integer, String> getTargetMap() {
-	    return targetMap;
 	}
 
 	public void setNewProtocolApplication(boolean newProtocolApplication) {

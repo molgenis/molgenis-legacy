@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -34,8 +33,7 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 	private static final long serialVersionUID = -366762636959036651L;
 	private CommonService ct = CommonService.getInstance();
 	private List<Integer> targetIdList;
-	private Map<Integer, String> targetMap;
-
+	
 	public CascadingDeleteAnimalsPlugin(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
@@ -70,9 +68,9 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 	}
 	
 	public String getTargetName(Integer id) {
-		if (targetMap.get(id) != null) {
-			return targetMap.get(id);
-		} else {
+		try {
+			return ct.getObservationTargetLabel(id);
+		} catch (Exception e) {
 			return id.toString();
 		}
 	}
@@ -168,7 +166,6 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 		try
 		{
 			this.setTargetIdList(ct.getAllObservationTargetIds(null, false));
-			this.targetMap = ct.getObservationTargetNames(this.targetIdList);
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (e.getMessage() != null) {

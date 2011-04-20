@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
 import org.molgenis.batch.MolgenisBatch;
@@ -34,27 +33,12 @@ public class BatchPlugin extends GenericPlugin {
     private BatchService service;
     private String action = "init";
     private int batchId;
-    private Map<Integer, String> targetMap;
 
     public BatchPlugin(String name, ScreenModel<Entity> parent)
     {
     	super(name, parent);
     	this.service   = new BatchService();
     }
-    
-    /**
-	 * Get the custom label (if available) or name for the ObservationTarget with id 'id'
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public String getTargetName(Integer id) {
-		if (targetMap != null && targetMap.get(id) != null) {
-			return targetMap.get(id);
-		} else {
-			return id.toString();
-		}
-	}
 
     @Override
     public void reload(Database db)
@@ -65,9 +49,6 @@ public class BatchPlugin extends GenericPlugin {
     		{
     			service.setDatabase(db);
     			this.populateBatchSelectForm();
-    			
-    			List<Integer> allTargetIdList = service.getAllObservationTargetIds();
-    			targetMap = service.getObservationTargetNames(allTargetIdList);
     		}
     		catch (Exception e)
     		{
@@ -188,7 +169,7 @@ public class BatchPlugin extends GenericPlugin {
     		CheckboxInput checkbox     = new CheckboxInput("addId", "", "", options, new Vector<String>());
    
     		table.setCell(0, i, checkbox);
-    		table.setCell(1, i, this.getTargetName(target.getId()));
+    		table.setCell(1, i, service.getTargetLabel(target.getId()));
     	}
 
     	for (int i = 0; i < entities.size(); i++)
@@ -203,7 +184,7 @@ public class BatchPlugin extends GenericPlugin {
     		CheckboxInput checkbox     = new CheckboxInput("removeId", "", "", options, new Vector<String>());
    
     		table.setCell(0, i, checkbox);
-    		table.setCell(1, i, this.getTargetName(entity.getObjectId()));
+    		table.setCell(1, i, service.getTargetLabel(entity.getObjectId()));
     	}
 
     	this.container = batchEntitySelectForm;

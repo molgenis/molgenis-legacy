@@ -13,7 +13,6 @@ import java.io.FileOutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -50,8 +49,7 @@ public class PrintLabelPlugin extends GenericPlugin
 	private ActionInput printButton;
 	private TextParagraph text = null;
 	private CommonService cs = CommonService.getInstance();
-	private Map<Integer, String> targetMap;
-
+	
 	public PrintLabelPlugin(String name, ScreenModel<Entity> parent)
 	{
 		super(name, parent);
@@ -185,13 +183,6 @@ public class PrintLabelPlugin extends GenericPlugin
 	{
 		cs.setDatabase(db);
 		
-		try {
-		    List<Integer> allTargetIdList = cs.getAllObservationTargetIds("Individual", true);
-		    targetMap = cs.getObservationTargetNames(allTargetIdList);
-		} catch (Exception e) {
-		    // Something went wrong, targetMap will remain null but getTargetName() can handle this
-		}
-		
 		initScreen();
 	}
 	
@@ -278,10 +269,10 @@ public class PrintLabelPlugin extends GenericPlugin
      * @return
      */
     public String getTargetName(Integer id) {
-		if (targetMap != null && targetMap.get(id) != null) {
-		    return targetMap.get(id);
-		} else {
-		    return id.toString();
+    	try {
+			return cs.getObservationTargetLabel(id);
+		} catch (Exception e) {
+			return id.toString();
 		}
     }
 }

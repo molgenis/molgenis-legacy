@@ -7,8 +7,6 @@
 
 package plugins.protocol;
 
-import java.util.List;
-
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -79,13 +77,6 @@ public class ApplyProtocolPlugin extends GenericPlugin
     public void reload(Database db)
     {
 		service.setDatabase(db);
-	
-		try {
-		    List<Integer> allTargetIdList = service.getAllObservationTargetIds();			
-		    model.setTargetMap(service.getObservationTargetNames(allTargetIdList));
-		} catch (Exception e) {
-		    // Something went wrong, targetMap will remain null but getTargetName() can handle this
-		}
 	
 		// Only first time:
 		if (ui.getProtocolApplicationContainer() == null) {

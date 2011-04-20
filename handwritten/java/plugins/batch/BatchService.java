@@ -16,17 +16,19 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.pheno.ObservationTarget;
 
+import commonservice.CommonService;
+
 class BatchService {
 
     private Database db;
-    //TODO: Danny: If unused, please remove
-    //private static transient Logger logger = Logger.getLogger(BatchService.class);
+    private CommonService cs = CommonService.getInstance();
     
     public BatchService() {
     }
     
     public void setDatabase(Database db) {
     	this.db = db;
+    	cs.setDatabase(db);
     }
     /** Finds batches given a user id
      * 
@@ -51,6 +53,14 @@ class BatchService {
     public ObservationTarget findObservationTarget(Integer objectId) throws DatabaseException {
     	return db.findById(ObservationTarget.class, objectId);
     }
+
+	public Object getTargetLabel(Integer id) {
+		try {
+			return cs.getObservationTargetLabel(id);
+		} catch (Exception e) {
+			return id.toString();
+		}
+	}
     
   
 }

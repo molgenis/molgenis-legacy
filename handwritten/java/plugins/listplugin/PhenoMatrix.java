@@ -4,7 +4,6 @@ import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -115,13 +114,6 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 	public List<Integer> search(String term, boolean limitVal) {
 		boolean hit;
 		List<Integer> returnList = new ArrayList<Integer>();
-		// Get custom labels (or names, if there are none) for the targets
-		Map<Integer, String> targetMap = null;
-		try {
-			targetMap = cq.getObservationTargetNames(targetIdList);
-		} catch (Exception e) {
-			//
-		}
 		
 		// Split search term
 		String[] terms = term.split("\\sOR\\s");
@@ -129,16 +121,16 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 			hit = false;
 			for (String currentTerm : terms) {
 				// First, search in target label. If match, go to next.
-				if (targetMap != null) {
-					if (targetMap.get(targetIdList.get(tid)).contains(currentTerm)) {
+				try {
+					if (cq.getObservationTargetLabel(targetIdList.get(tid)).contains(currentTerm)) {
 						returnList.add(tid);
 					}
-				} else {
-					// On failure to get target label map (unlikely!), use normal names instead
+				} catch (Exception e) {
 					if (targetList.get(tid).getName().contains(currentTerm)) {
 						returnList.add(tid);
 					}
 				}
+				
 				for (Measurement feat : featureList) {
 					int fid = allFeatureList.indexOf(feat);
 					ObservedValue[] valArray = data[tid][fid];
@@ -178,13 +170,6 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 	
 	public List<Integer> filterColumn(int colNr, String term, boolean limitVal) {
 		List<Integer> returnList = new ArrayList<Integer>();
-		// Get custom labels (or names, if there are none) for the targets
-		Map<Integer, String> targetMap = null;
-		try {
-			targetMap = cq.getObservationTargetNames(targetIdList);
-		} catch (Exception e) {
-			//
-		}
 		
 		// Split filter terms
 		String[] terms = term.split("\\sOR\\s");
@@ -192,12 +177,11 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 			for (String currentTerm : terms) {
 				if (colNr == 0) {
 					// First, search in target label. If match, go to next.
-					if (targetMap != null) {
-						if (targetMap.get(targetIdList.get(tid)).contains(currentTerm)) {
+					try {
+						if (cq.getObservationTargetLabel(targetIdList.get(tid)).contains(currentTerm)) {
 							returnList.add(tid);
 						}
-					} else {
-						// On failure to get target label map (unlikely!), use normal names instead
+					} catch (Exception e) {
 						if (targetList.get(tid).getName().contains(currentTerm)) {
 							returnList.add(tid);
 						}
@@ -326,9 +310,8 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 		
 		try {
 			// Get custom labels (or names, if there are none) for the targets
-			Map<Integer, String> targetMap = cq.getObservationTargetNames(idList);
 			for (int i = 0; i < idx.length; i++) {
-				returnData[i] = targetMap.get(targetIdList.get(idx[i]));
+				returnData[i] = cq.getObservationTargetLabel(targetIdList.get(idx[i]));
 			}
 		} catch (Exception e) {
 			// On failure (unlikely!), use normal names instead

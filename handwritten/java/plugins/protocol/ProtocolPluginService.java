@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.molgenis.auth.MolgenisEntity;
 import org.molgenis.batch.MolgenisBatch;
@@ -182,10 +181,6 @@ public class ProtocolPluginService {
     	return cq.getAllObservationTargetIds(null, false);
     }
 
-    Map<Integer, String> getObservationTargetNames(List<Integer> idList) throws DatabaseException, ParseException {
-    	return cq.getObservationTargetNames(idList);
-    }
-
 	public List<Integer> getObservationTargetsInProtocolApplication(
 			int protocolApplicationId) throws DatabaseException, ParseException {
 		
@@ -232,6 +227,10 @@ public class ProtocolPluginService {
 		} catch (Exception e) {
 			return new ArrayList<Panel>();
 		}
+	}
+
+	public String getObservationTargetLabel(Integer id) throws DatabaseException, ParseException {
+		return cq.getObservationTargetLabel(id);
 	}
 
 }

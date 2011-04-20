@@ -11,7 +11,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
@@ -32,7 +31,6 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 6730055654508843657L;
 	private List<Integer> animalIdList;
-	private Map<Integer, String> animalMap;
 	private List<Code> removalCodeList;
 	private CommonService ct = CommonService.getInstance();
 
@@ -72,9 +70,9 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 	}
 	
 	public String getAnimalName(Integer id) {
-		if (animalMap.get(id) != null) {
-			return animalMap.get(id);
-		} else {
+		try {
+			return ct.getObservationTargetLabel(id);
+		} catch (Exception e) {
 			return id.toString();
 		}
 	}
@@ -202,7 +200,6 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 		try {
 			// Populate animal list
 			this.setAnimalIdList(ct.getAllObservationTargetIds("Individual", true));
-			this.animalMap = ct.getObservationTargetNames(this.animalIdList);
 			
 			// Populate removal code list
 			this.setRemovalCodeList(ct.getAllCodesForFeature("Removal"));

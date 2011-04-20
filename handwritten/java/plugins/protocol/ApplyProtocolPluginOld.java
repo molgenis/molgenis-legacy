@@ -7,17 +7,14 @@
 
 package plugins.protocol;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
@@ -42,7 +39,6 @@ public class ApplyProtocolPluginOld extends PluginModel<Entity> {
 	private List<Integer> targetIdList;
 	private List<Integer> selectedTargetIdList = new ArrayList<Integer>();
 	private List<ObservationTarget> groupList;
-	private Map<Integer, String> targetMap;
 	private CommonService ct = CommonService.getInstance();
 	
 	public ApplyProtocolPluginOld(String name, ScreenModel<Entity> parent)
@@ -79,16 +75,10 @@ public class ApplyProtocolPluginOld extends PluginModel<Entity> {
 		this.selectedTargetIdList = selectedTargetIdList;
 	}
 	
-	private void setTargetMap() throws DatabaseException, ParseException {
-		List<Integer> tmpList = new ArrayList<Integer>(targetIdList);
-		tmpList.addAll(selectedTargetIdList);
-		this.targetMap = ct.getObservationTargetNames(tmpList);
-	}
-	
 	public String getTargetName(Integer id) {
-		if (targetMap.get(id) != null) {
-			return targetMap.get(id);
-		} else {
+		try {
+			return ct.getObservationTargetLabel(id);
+		} catch (Exception e) {
 			return id.toString();
 		}
 	}
@@ -198,7 +188,6 @@ public class ApplyProtocolPluginOld extends PluginModel<Entity> {
     					this.selectedTargetIdList.add(animalId);
                     }
                 }
-                this.setTargetMap();
                 this.getMessages().clear();
 				this.setMessages(new ScreenMessage("Individual succesfully added", true));
 			}
@@ -233,7 +222,6 @@ public class ApplyProtocolPluginOld extends PluginModel<Entity> {
 	                	this.selectedTargetIdList.add(animalId);
 	                }
                 }
-                this.setTargetMap();
                 this.getMessages().clear();
 				this.setMessages(new ScreenMessage("Group succesfully added", true));
 			}
@@ -249,14 +237,12 @@ public class ApplyProtocolPluginOld extends PluginModel<Entity> {
                 }
                
             	this.selectedTargetIdList.removeAll(idList);
-            	this.setTargetMap();
             	this.getMessages().clear();
 				this.setMessages(new ScreenMessage("Individual succesfully removed", true));
 			}
 			
 			if (action.equals("remAll")) {
                 this.selectedTargetIdList.clear();
-                this.setTargetMap();
                 this.getMessages().clear();
 				this.setMessages(new ScreenMessage("All targets succesfully removed", true));
 			}
@@ -279,7 +265,6 @@ public class ApplyProtocolPluginOld extends PluginModel<Entity> {
 			this.setProtocolList(ct.getAllProtocolsSorted("name", "ASC"));
 			// Populate target ID list
 			this.setTargetIdList(ct.getAllObservationTargetIds(null, false));
-			this.setTargetMap();
 			// Populate animal group list
 			List<Integer> groupIdList = ct.getAllObservationTargetIds("Group", false);
 			this.setGroupList(ct.getObservationTargets(groupIdList));

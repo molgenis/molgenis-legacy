@@ -71,7 +71,7 @@ public class BatchViewPlugin extends GenericPlugin
 				    batchContainer.updateBatches();
 				}
 				
-				ui.updateBatchView(batchContainer);
+				ui.updateBatchView(batchContainer, service);
 		    } catch (Exception e) {
 		    	e.printStackTrace();
 		    }

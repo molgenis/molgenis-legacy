@@ -13,7 +13,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
@@ -39,7 +38,6 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 	private List<Integer> allAnimalIdList;
 	private List<Integer> animalRemoveIdList = new ArrayList<Integer>();
 	private List<Integer> animalIdList = new ArrayList<Integer>();
-	private Map<Integer, String> animalMap;
 	private List<Code> expectedDiscomfortCodeList;
 	private List<Code> painManagementCodeList;
 	private List<Code> anaesthesiaCodeList;
@@ -165,9 +163,9 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 	}
 	
 	public String getAnimalName(Integer id) {
-		if (animalMap.get(id) != null) {
-			return animalMap.get(id);
-		} else {
+		try {
+			return ct.getObservationTargetLabel(id);
+		} catch (Exception e) {
 			return id.toString();
 		}
 	}
@@ -583,7 +581,6 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 			
 			// Populate list of all animals
 			allAnimalIdList = ct.getAllObservationTargetIds("Individual", true);			
-			this.animalMap = ct.getObservationTargetNames(this.allAnimalIdList);
 			
 			// Populate pain management code list
 			this.setPainManagementCodeList(ct.getAllCodesForFeature("PainManagement"));

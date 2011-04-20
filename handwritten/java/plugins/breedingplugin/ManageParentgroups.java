@@ -15,7 +15,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -38,10 +37,8 @@ public class ManageParentgroups extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 203412348106990472L;
 	private List<Integer> motherIdList = new ArrayList<Integer>();
-	private Map<Integer, String> motherMap;
 	private List<Integer> selectedMotherIdList = new ArrayList<Integer>();
 	private List<Integer> fatherIdList = new ArrayList<Integer>();
-	private Map<Integer, String> fatherMap;
 	private List<Integer> selectedFatherIdList = new ArrayList<Integer>();
 	private CommonService ct = CommonService.getInstance();
 	private SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
@@ -95,14 +92,10 @@ public class ManageParentgroups extends PluginModel<Entity>
 	}
 	
 	public String getAnimalName(Integer id) {
-		if (motherMap.get(id) != null) {
-			return motherMap.get(id);
-		} else {
-			if (fatherMap.get(id) != null) {
-				return fatherMap.get(id);
-			} else {
-				return id.toString();
-			}
+		try {
+			return ct.getObservationTargetLabel(id);
+		} catch (Exception e) {
+			return id.toString();
 		}
 	}
 	
@@ -301,10 +294,8 @@ public class ManageParentgroups extends PluginModel<Entity>
 		try {
 			// Populate mother list
 			motherIdList = populateParentList(db, "Female");
-			this.motherMap = ct.getObservationTargetNames(this.motherIdList);
 			// Populate father list
 			fatherIdList = populateParentList(db, "Male");
-			this.fatherMap = ct.getObservationTargetNames(this.fatherIdList);
 			// Populate source list
 			// All source types pertaining to "Eigen fok binnen uw organisatorische werkeenheid"
 			sourceList = new ArrayList<ObservationTarget>();

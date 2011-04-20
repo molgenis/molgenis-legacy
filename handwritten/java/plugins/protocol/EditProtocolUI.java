@@ -393,10 +393,10 @@ public class EditProtocolUI {
      * @return
      */
     public String getTargetName(Integer id) {
-		if (model.getTargetMap() != null && model.getTargetMap().get(id) != null) {
-		    return model.getTargetMap().get(id);
-		} else {
-		    return id.toString();
+    	try {
+			return service.getObservationTargetLabel(id);
+		} catch (Exception e) {
+			return id.toString();
 		}
     }
     

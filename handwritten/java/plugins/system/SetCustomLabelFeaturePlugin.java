@@ -89,9 +89,7 @@ public class SetCustomLabelFeaturePlugin extends PluginModel<Entity>
 			}
 		} catch(Exception e) {
 			this.getMessages().clear();
-			if (e.getMessage() != null) {
-				this.getMessages().add(new ScreenMessage("Error - label not set", false));
-			}
+			this.getMessages().add(new ScreenMessage("Error - label not set", false));
 			e.printStackTrace();
 		}
 	}

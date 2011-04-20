@@ -69,6 +69,7 @@ public class CommonService
 	private boolean isFilled = false; //for fill database query
 	private transient Logger logger = Logger.getLogger(CommonService.class);
 	private static int customNameFeatureId = -1;
+	private static Map<Integer, String> observationTargetNameMap = null;
 	
 	// --- Stuff for Singleton design pattern
 	private static CommonService instance = null;
@@ -92,19 +93,24 @@ public class CommonService
 
 	/**
 	 * Sets the id of the ObservableFeature the user has chosen as custom name for the
-	 * ObservationTargets.
+	 * ObservationTargets, and then makes a map of ObservationTargets and their names/labels.
+	 * 
+	 * @throws ParseException 
+	 * @throws DatabaseException 
 	 */
-	public void setCustomNameFeatureId(int customNameFeatureId) {
+	public void setCustomNameFeatureId(int customNameFeatureId) throws DatabaseException, ParseException {
 		CommonService.customNameFeatureId = customNameFeatureId;
+		makeObservationTargetNameMap();
 	}
-
+	
 	/**
 	 * Returns the id of the ObservableFeature the user has chosen as custom name for the
-	 * ObservationTargets. Returns -1 if no ObservableFeature was set.
-	 * @return int
+	 * ObservationTargets, or -1 if none was set.
+	 * 
+	 * @return
 	 */
 	public int getCustomNameFeatureId() {
-		return customNameFeatureId;
+		return CommonService.customNameFeatureId;
 	}
 	
 	/**
@@ -307,45 +313,78 @@ public class CommonService
 		}
 	}
 	
-	/** Makes a map of target ID's and names. The names are retrieved using the feature name specified.
+	/**
+	 * Get the name or -if existent- custom label for the ObservationTarget.
 	 * 
-	 * @param idList : the ID's of the targets
-	 * @param customIdFeatureName : the name of the feature to use as a name
-	 * @return Map<Integer, String>
+	 * @param targetId
+	 * @return
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public Map<Integer, String> getObservationTargetNames(List<Integer> idList) 
-	throws DatabaseException, ParseException {
-		Map<Integer, String> returnMap = new HashMap<Integer, String>();
-		List<ObservationTarget> targetList;
+	public String getObservationTargetLabel(int targetId) throws DatabaseException, ParseException {
+		if (observationTargetNameMap == null) {
+			return getObservationTargetById(targetId).getName();
+		}
+		if (observationTargetNameMap.get(targetId) != null) {
+			return observationTargetNameMap.get(targetId);
+		}
+		return getObservationTargetById(targetId).getName();
+	}
+	
+	/** 
+	 * Returns a list of Individuals belonging to the ID's provided.
+	 * Returns an empty list when no ID's are passed.
+	 * 
+	 * @param idList : the ID's of the desired Individuals
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 */
+	public List<Individual> getIndividuals(List<Integer> idList) throws DatabaseException, ParseException {
+		if (idList.size() > 0) {
+			Query<Individual> targetQuery = db.query(Individual.class);
+			targetQuery.addRules(new QueryRule(Individual.ID, Operator.IN, idList));
+			return targetQuery.find();
+		} else {
+		    return new ArrayList<Individual>();
+		}
+	}
+	
+	/** Makes a map of all ObservationTarget id's and names. 
+	 * The names are retrieved using the feature name specified, or -if no feature is specified-
+	 * the normal database name is taken.
+	 * 
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 */
+	public void makeObservationTargetNameMap() throws DatabaseException, ParseException {
+		observationTargetNameMap = new HashMap<Integer, String>();
+		List<Integer> targetIdList = new ArrayList<Integer>();
 		// First fill with standard names
 		try {
-			targetList = getObservationTargets(idList);
+			targetIdList = getAllObservationTargetIds(null, false);
 		} catch (DatabaseException e) {
-			// ID list was empty, so return empty map
-			return returnMap;
+			// targetIdList will remain empty
 		}
-		for (ObservationTarget target : targetList) {
-			returnMap.put(target.getId(), target.getName());
+		for (Integer targetId : targetIdList) {
+			observationTargetNameMap.put(targetId, getObservationTargetById(targetId).getName());
 		}
 		// Then overwrite with custom names, if existing
 		if (CommonService.customNameFeatureId != -1) {
 			Query<ObservedValue> valueQuery = db.query(ObservedValue.class);
 			valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, CommonService.customNameFeatureId));
-			valueQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, idList));
+			valueQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, targetIdList));
 			List<ObservedValue> valueList = valueQuery.find();
 			for (ObservedValue value : valueList) {
 				if (value.getValue() != null) {
 					// We have a String value that we can use
-					returnMap.put(value.getTarget_Id(), value.getValue());
+					observationTargetNameMap.put(value.getTarget_Id(), value.getValue());
 				} else {
 					// No value, so use relation
-					returnMap.put(value.getTarget_Id(), value.getRelation_Name());
+					observationTargetNameMap.put(value.getTarget_Id(), value.getRelation_Name());
 				}
 			}
 		}
-		return returnMap;
 	}
 
 	/**
