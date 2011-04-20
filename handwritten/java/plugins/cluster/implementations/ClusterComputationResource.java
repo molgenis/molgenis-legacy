@@ -1,5 +1,7 @@
 package plugins.cluster.implementations;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +9,7 @@ import java.util.Properties;
 
 import com.mindbright.jca.security.SecureRandom;
 import com.mindbright.ssh2.SSH2ConsoleRemote;
+import com.mindbright.ssh2.SSH2HostKeyVerifier;
 import com.mindbright.ssh2.SSH2Preferences;
 import com.mindbright.ssh2.SSH2SimpleClient;
 import com.mindbright.ssh2.SSH2Transport;
@@ -25,6 +28,7 @@ import plugins.cluster.interfaces.ComputationResource;
  */
 public class ClusterComputationResource implements ComputationResource
 {
+	private boolean verbose = true;
 
 	public ClusterComputationResource(LoginSettings ls){
 		this.ls = ls;
@@ -56,8 +60,12 @@ public class ClusterComputationResource implements ComputationResource
 	 */
 	public List<String> executeCommands(List<Command> commands) throws Exception
 	{
+		SSH2Transport      transport;
+	    SSH2SimpleClient   sshclient;
+	    SSH2ConsoleRemote  console;
+	    Properties         props = new Properties();
 		ArrayList<String> results = new ArrayList<String>(); //TODO: put results in
-
+		RandomSeed seed = new RandomSeed();
 		String host = ls.host;
 		int port = getPort(ls.port);
 		String user = ls.user;
@@ -65,28 +73,34 @@ public class ClusterComputationResource implements ComputationResource
 
 		port = Util.getPort(host, port);
 		host = Util.getHost(host);
+		SSH2Preferences prefs = new SSH2Preferences(props);
+        SecureRandomAndPad secureRandom = new SecureRandomAndPad(new SecureRandom(seed.getBytesBlocking(20, false)));
 
-		SSH2Preferences prefs = new SSH2Preferences(new Properties());
-
-		SecureRandomAndPad secureRandom = new SecureRandomAndPad(new SecureRandom(new RandomSeed().getBytesBlocking(20,
-				false)));
-
-		SSH2Transport transport = new SSH2Transport(new Socket(host, port), prefs, secureRandom);
-
-		
-		SSH2SimpleClient client = new SSH2SimpleClient(transport, user, pw);
-
-		SSH2ConsoleRemote console = new SSH2ConsoleRemote(client.getConnection());
-		
-		for (Command command : commands)
-		{
-			console.command(command.getCommand());
-			System.out.println("executing: "+ command.getCommand());
+        /*
+         * Open the TCP connection to the server and create the
+         * SSH2Transport object. No traffic will be sent yet.
+         */
+        transport = new SSH2Transport(new Socket(host, port), prefs, secureRandom);
+        String fingerprint = props.getProperty("fingerprint." + host + "." + port);
+        if(fingerprint != null) {
+            transport.setEventHandler(new SSH2HostKeyVerifier(fingerprint));
+        }
+        sshclient = new SSH2SimpleClient(transport, user, pw);
+        console = new SSH2ConsoleRemote(sshclient.getConnection());
+		for (Command cmd : commands){
+			console.command(cmd.getCommand());
+			System.out.println("executing: "+ cmd.getCommand());
+	        if(verbose){
+	        	for (;;) {
+	        		BufferedReader in = new BufferedReader(new InputStreamReader(console.getStdOut()));
+	        		String line = in.readLine();
+	        		if (line == null) break;
+	        		System.out.println(line);
+	         	}
+	        }
 			Thread.sleep(100);
 		}
-		
 		console.close();
-
 		return results;
 	}
 
