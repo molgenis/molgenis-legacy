@@ -29,7 +29,7 @@
 
 <#assign pager = vo.pager>
 <h4><a name="result">Submitted patients (${vo.pager.count})</a></h4>
-<#include "../../../../../plugin/search/patients.ftl">
+<#include "../search/patients.ftl">
 	
 <#--end of your plugin-->	
 			</div>
