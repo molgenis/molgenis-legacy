@@ -6,8 +6,8 @@
 <molgenis name="col7a1">
 	<plugin name="MolgenisHeader" type="org.molgenis.mutation.ui.header.Col7a1Header"/>
 	<menu name="View" startswith="SearchPlugin">
-		<plugin name="SearchPlugin" type="org.molgenis.mutation.ui.search.SearchPlugin" label="Search">
-			<!--<plugin name="Sub" type="plugin.ui.Sub" label="Sub"/>-->
+		<plugin name="SearchPlugin" type="org.molgenis.mutation.ui.search.Col7a1Search" label="Search">
+			<plugin name="NewsBar" type="org.molgenis.news.ui.News" label="News"/>
 		</plugin>
 		<plugin name="UploadPlugin" type="org.molgenis.mutation.ui.upload.Upload" label="Submit data"/>
 		<plugin name="Contact" type="org.molgenis.feedback.ui.Contact" label="Contact"/>

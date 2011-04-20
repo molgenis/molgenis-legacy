@@ -23,11 +23,11 @@ public class News extends PluginModel<Entity>
 {
 
 	private static final long serialVersionUID = -7677999897948691120L;
-	private static final int NUM_NEWS = 5; // how many news to be shown in right box?
-	private String action = "init";
+	private static final int NUM_NEWS          = 5; // how many news to be shown in right box?
+	private String action                      = "init";
 	private NewsService newsService;
-	private String title  = "";
-	private List<MolgenisNews> news = new ArrayList<MolgenisNews>();
+	private String title                       = "";
+	private List<MolgenisNews> news            = new ArrayList<MolgenisNews>();
 	private MolgenisNews newsItem;
 
 	public News(String name, ScreenModel<Entity> parent)
@@ -89,10 +89,16 @@ public class News extends PluginModel<Entity>
 		this.newsService = NewsService.getInstance(db);
 		try
 		{
+			if (!"View".equals(this.getParent().getName()))
+			{
+				this.action = "top";
+				this.title  = "";
+				this.news   = this.newsService.getAllNews(News.NUM_NEWS);
+			}
 			if ("init".equals(this.action))
 			{
-				this.title    = "Updates of the database, both user features and insertion of new data, will be announced on this page. All news items are stored in the news archive.<hr/><br/>";
-				this.news = this.newsService.getAllNews(); // News.NUM_NEWS
+				this.title = "Updates of the database, both user features and insertion of new data, will be announced on this page. All news items are stored in the news archive.<hr/><br/>";
+				this.news  = this.newsService.getAllNews();
 			}
 		}
 		catch (Exception e)

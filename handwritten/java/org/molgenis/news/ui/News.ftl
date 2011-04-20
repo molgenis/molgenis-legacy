@@ -41,7 +41,7 @@ ${screen.title}
 <div class="news_title">${newsItem.getTitle()}</div>
 <div class="news_subtitle">${newsItem.getSubtitle()}</div>
 <div>${newsItem.getDate()}</div>
-<div><a href="molgenis.do?__target=${screen.name}&select=NewsPlugin&__action=entry&id=${newsItem.getId()}" target="_parent">More</a></div>
+<div><a href="molgenis.do?__target=NewsPlugin&select=NewsPlugin&__action=entry&id=${newsItem.getId()}" target="_parent">More</a></div>
 <br/><br/>
 </#list>
 <#if screen.action == "top">
