@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.ArrayList;
-import org.molgenis.xgap.xqtlworkbench_standalone.JarClass;
+import org.molgenis.util.JarClass;
 </#if>
 
 public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
