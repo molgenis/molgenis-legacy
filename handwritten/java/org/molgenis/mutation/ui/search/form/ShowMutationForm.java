@@ -12,6 +12,7 @@ public class ShowMutationForm extends Container
 	public ShowMutationForm()
 	{
 		this.add(new HiddenInput("__target", ""));
+		this.add(new HiddenInput("select", ""));
 		this.add(new HiddenInput("__action", "showMutation"));
 		this.add(new HiddenInput("expertSearch", "1"));
 		this.add(new SelectInput("mid", ""));

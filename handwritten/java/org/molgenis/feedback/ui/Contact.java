@@ -110,6 +110,7 @@ public class Contact extends PluginModel<Entity>
 
 	private void populateContactForm()
 	{
+		this.contactForm.get("select").setValue(this.getScreen().getName());
 		this.contactForm.get("__target").setValue(this.getScreen().getName());
 	}
 }

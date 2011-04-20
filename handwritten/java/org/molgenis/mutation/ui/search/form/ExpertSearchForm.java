@@ -14,6 +14,7 @@ public class ExpertSearchForm extends Container
 	public ExpertSearchForm()
 	{
 		this.add(new HiddenInput("__target", ""));
+		this.add(new HiddenInput("select", ""));
 		this.add(new HiddenInput("__action", "findMutations"));
 		this.add(new HiddenInput("expertSearch", "1"));
 		this.add(new TextLineInput("variation"));

@@ -15,6 +15,7 @@ public class ContactForm extends Container
 
 	public ContactForm()
 	{
+		this.add(new HiddenInput("select", ""));
 		this.add(new HiddenInput("__target", ""));
 		this.add(new HiddenInput("__action", "send"));
 		this.add(new TextLineInput("name"));

@@ -24,6 +24,7 @@
 If you have any comments, questions or suggestions to improve The COL7A1 mutation database, please do not hesitate to contact us. Please enter your name, a valid email address and your message and press "submit". We will reply shortly.
 </p>
 <table>
+${form.select}
 ${form.__action}
 ${form.__target}
 <tr><td>Name *</td><td>${form.name}</td></tr>

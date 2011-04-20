@@ -11,6 +11,7 @@ public class ListAllPatientsForm extends Container
 	public ListAllPatientsForm()
 	{
 		this.add(new HiddenInput("__target", ""));
+		this.add(new HiddenInput("select", ""));
 		this.add(new HiddenInput("__action", "listAllPatients"));
 		this.add(new ActionInput("listAllPatients"));
 		((ActionInput) this.get("listAllPatients")).setLabel("Display all patients");

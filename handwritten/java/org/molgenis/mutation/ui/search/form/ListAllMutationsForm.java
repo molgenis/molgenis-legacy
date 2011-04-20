@@ -12,6 +12,7 @@ public class ListAllMutationsForm extends Container
 	public ListAllMutationsForm()
 	{
 		this.add(new HiddenInput("__target", ""));
+		this.add(new HiddenInput("select", ""));
 		this.add(new HiddenInput("__action", "listAllMutations"));
 		this.add(new ActionInput("listAllMutations"));
 		((ActionInput) this.get("listAllMutations")).setLabel("Display all mutations");
