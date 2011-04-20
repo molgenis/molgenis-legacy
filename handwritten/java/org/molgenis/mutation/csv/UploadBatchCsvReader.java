@@ -96,7 +96,6 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 			public void handleLine(int lineNo, Tuple tuple) throws Exception
 			{
 				//parse object, setting defaults and values from file
-
 //				if (lineNo > 5) return;
 				PatientSummaryVO patientSummaryVO = new PatientSummaryVO();
 				
@@ -118,7 +117,8 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 					mutationService.assignValuesFromNotation(mutationUploadVO1);
 					if (StringUtils.isNotEmpty(tuple.getString("Protein change_1")))
 						mutationUploadVO1.getMutation().setAa_Notation("p." + tuple.getString("Protein change_1"));
-					mutationUploadVO1.getMutation().setConsequence(ObjectUtils.toString(tuple.getString("Consequence_1"), ""));
+					if (StringUtils.isNotEmpty(tuple.getString("Consequence_1")))
+						mutationUploadVO1.getMutation().setConsequence(ObjectUtils.toString(tuple.getString("Consequence_1"), ""));
 					mutationUploadVO1.getMutation().setInheritance(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Inheritance_1")), ""));
 					
 					MutationSearchCriteriaVO criteria = new MutationSearchCriteriaVO();
@@ -154,7 +154,8 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 						mutationService.assignValuesFromNotation(mutationUploadVO2);
 						if (StringUtils.isNotEmpty(tuple.getString("Protein change_2")))
 							mutationUploadVO2.getMutation().setAa_Notation("p." + tuple.getString("Protein change_2"));
-						mutationUploadVO2.getMutation().setConsequence(ObjectUtils.toString(tuple.getString("Consequence_2"), ""));
+						if (StringUtils.isNotEmpty(tuple.getString("Consequence_1")))
+							mutationUploadVO2.getMutation().setConsequence(ObjectUtils.toString(tuple.getString("Consequence_2"), ""));
 						mutationUploadVO2.getMutation().setInheritance(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Inheritance_2")), ""));
 
 						MutationSearchCriteriaVO criteria = new MutationSearchCriteriaVO();
@@ -178,6 +179,7 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 				patientSummaryVO.getPhenotype().setSubtype(StringUtils.lowerCase(tuple.getString("Phenotype Subtype")));
 				
 				patientSummaryVO.setPhenotypeDetails(new PhenotypeDetails());
+
 				patientSummaryVO.getPhenotypeDetails().setLocation(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Location")), "unknown"));
 				patientSummaryVO.getPhenotypeDetails().setBlistering(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Blistering")), "unknown"));
 				patientSummaryVO.getPhenotypeDetails().setHands(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Hands")), "unknown"));
@@ -205,6 +207,20 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 				patientSummaryVO.getPhenotypeDetails().setAnemia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Anaemia")), "unknown"));
 				patientSummaryVO.getPhenotypeDetails().setRenal_Failure(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Renal failure")), "unknown"));
 				patientSummaryVO.getPhenotypeDetails().setDilated_Cardiomyopathy(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Dilated cardiomyopathy")), "unknown"));
+
+				patientSummaryVO.getPhenotypeDetails().setColoboma(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Coloboma")), "unknown"));
+				patientSummaryVO.getPhenotypeDetails().setCongenital_Heart_Defect(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Congenital heart defect")), "unknown"));
+				patientSummaryVO.getPhenotypeDetails().setClp(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("C(L)P")), "unknown"));
+				patientSummaryVO.getPhenotypeDetails().setChoanal_Anomaly(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Choanal anomaly")), "unknown"));
+				patientSummaryVO.getPhenotypeDetails().setMental_Retardation(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Mental retardation")), "unknown"));
+				patientSummaryVO.getPhenotypeDetails().setGrowth_Retardation(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Growth retardation")), "unknown"));
+				patientSummaryVO.getPhenotypeDetails().setGenital_Hypoplasia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Genital hypoplasia")), "unknown"));
+				patientSummaryVO.getPhenotypeDetails().setExternal_Ear_Anomaly(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("External ear anomaly")), "unknown"));
+				patientSummaryVO.getPhenotypeDetails().setSemicircular_Canal_Anomaly(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Semicircular canal anomaly")), "unknown"));
+				patientSummaryVO.getPhenotypeDetails().setHearing_Loss(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Hearing loss")), "unknown"));
+				patientSummaryVO.getPhenotypeDetails().setTe_Anomaly(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("TE anomaly")), "unknown"));
+				patientSummaryVO.getPhenotypeDetails().setCn_Dysfunction(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("CN dysfunction")), "unknown"));
+
 //				for (String field : patientSummaryVO.getPhenotypeDetails().getFields(true))
 //				{
 //					if ("".equals(patientSummaryVO.getPhenotypeDetails().get(field)))
