@@ -125,6 +125,44 @@ public class GeneratorHelper
 			return "EXCEPTION";
 		}
 	}
+	
+	/**
+	 * Get the cpp type for a field.
+	 * 
+	 * @return the java type or UKNOWN
+	 */
+	public String getCppType(Field field) throws Exception
+	{
+		if (field == null) return "void*";
+		try
+		{
+			return MolgenisFieldTypes.get(field).getCppPropertyType();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return "EXCEPTION";
+		}
+	}
+	
+	/**
+	 * Get the cpp type for a field.
+	 * 
+	 * @return the java type or UKNOWN
+	 */
+	public String getCppJavaType(Field field) throws Exception
+	{
+		if (field == null) return "Ljava/lang/NULL;";
+		try
+		{
+			return MolgenisFieldTypes.get(field).getCppJavaPropertyType();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return "EXCEPTION";
+		}
+	}
 
 	/**
 	 * Java setter type of the field, e.g. getString() returns "String".
