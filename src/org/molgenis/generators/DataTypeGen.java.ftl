@@ -445,12 +445,12 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		//clear the object cache
 		_${name(field)}_objects = null;
 	}		
-</#list>
+</#list></#if>
+
 	public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field.xrefField)}> ${name(field)}_${name(field.xrefField)})
 	{
 		_${name(field)} = ${name(field)}_${name(field.xrefField)};
 	}
-</#if>		
 	
 	<#elseif type_label == "file"  || type_label=="image" >
 	/**
