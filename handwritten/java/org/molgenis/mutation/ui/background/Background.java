@@ -55,9 +55,9 @@ public class Background extends PluginModel<Entity>
 			this.mutationService     = MutationService.getInstance(db);
 			this.patientService      = PatientService.getInstance(db);
 			this.backgroundSummaryVO = new BackgroundSummaryVO();
-			this.backgroundSummaryVO.setNumMutations(this.mutationService.getAllMutations().size());
+			this.backgroundSummaryVO.setNumMutations(this.mutationService.getNumMutations());
 			this.backgroundSummaryVO.setNumMutationsUnpub(this.mutationService.getNumUnpublishedMutations());
-			this.backgroundSummaryVO.setNumPatients(this.patientService.getAllPatients().size());
+			this.backgroundSummaryVO.setNumPatients(this.patientService.getNumPatients());
 			this.backgroundSummaryVO.setNumPatientsUnpub(this.patientService.getNumUnpublishedPatients());
 			this.backgroundSummaryVO.setPhenotypeCountHash(this.patientService.getPhenotypeCounts());
 		}
