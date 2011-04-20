@@ -13,7 +13,8 @@ public class AddExampleData
 {
 	public AddExampleData(Database db) throws Exception
 	{
-		File tarFu = new File(this.getClass().getResource("../csv/tar/gcc_xqtl.tar.gz").getFile());
+		File tarFu = new File("./data/xqtlwb/gcc_xqtl.tar.gz");
+
 		File extractDir = TarGz.tarExtract(tarFu);
 
 		if (ArchiveExportImportPlugin.isExcelFormatXGAPArchive(extractDir))

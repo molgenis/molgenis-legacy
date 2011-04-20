@@ -6,7 +6,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.molgenis.xgap.xqtlworkbench_standalone.JarClass;
+import org.molgenis.util.JarClass;
 
 public class GetServlets
 {
