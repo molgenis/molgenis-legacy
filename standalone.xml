@@ -109,6 +109,11 @@
   	        <include name="**/*.*"/>
   	    </fileset>
   	</copy>
+  	<copy todir="${dist}/Data">
+  	    <fileset dir="Data">
+  	    	<include name="**/*.*"/>
+  	    </fileset>
+  	</copy>
   	<copy todir="${dist}/hsqldb">
   	    <fileset dir="hsqldb">
   	    	<exclude name="**/.svn/*"/>
@@ -122,8 +127,7 @@
   	</copy>
   </target>
 
-  <target name="clean"
-        description="clean up" >
+  <target name="clean" description="clean up" >
     <!-- Delete the ${build} and ${dist} directory trees -->
     <delete dir="${build}"/>
     <delete dir="${dist}"/>
