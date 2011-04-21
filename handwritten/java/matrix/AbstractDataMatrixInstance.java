@@ -299,7 +299,6 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByColMatrixValues(QueryRule... rules) throws Exception
 	{
 		return AbstractDataMatrixQueries.getSubMatrixFilterByColMatrixValues((AbstractDataMatrixInstance<Object>) this, rules);
-		// do checks. can be made generic. (moved to helper function)
 	}
 
 	public AbstractDataMatrixInstance<Object> getMatrixSortByRowEntityValues(boolean asc) throws Exception

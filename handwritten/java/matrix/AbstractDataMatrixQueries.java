@@ -170,7 +170,7 @@ public class AbstractDataMatrixQueries
 		return res;
 	}
 
-	private static List<String> selectUsingText(Object[] values, String value, Operator op, List<String> dimNames)
+	public static List<String> selectUsingText(Object[] values, String value, Operator op, List<String> dimNames)
 			throws Exception
 	{
 		List<String> resultNames = new ArrayList<String>();
@@ -201,7 +201,7 @@ public class AbstractDataMatrixQueries
 		return resultNames;
 	}
 
-	private static List<String> selectUsingDecimal(Object[] values, double value, Operator op, List<String> dimNames)
+	public static List<String> selectUsingDecimal(Object[] values, double value, Operator op, List<String> dimNames)
 			throws Exception
 	{
 		List<String> resultNames = new ArrayList<String>();
