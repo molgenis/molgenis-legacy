@@ -82,9 +82,11 @@ public class VaadinPlugin extends PluginModel
 	public boolean isVisible()
 	{
 		//you can use this to hide this plugin, e.g. based on user rights.
-		//e.g.
-		//if(!this.getLogin().hasEditPermission(myEntity)) return false;
-		return true;
+		if (this.getLogin().isAuthenticated()){
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	@Override
