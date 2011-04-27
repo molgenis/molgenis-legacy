@@ -498,4 +498,5 @@ public class AddAnimalPlugin extends GenericPlugin
 	{
 		return this.tablePanel.toHtml();
 	}
+	
 }
