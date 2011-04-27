@@ -153,7 +153,7 @@ public class SampleViewer extends PluginModel<Entity> {
     @Override
     public boolean isVisible()
     {
-	return true;
+    	return true;
     }
     
     /** Clear screen messages

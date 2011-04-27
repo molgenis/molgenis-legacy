@@ -210,16 +210,6 @@ public class PrintLabelPlugin extends GenericPlugin
 		return container.toHtml();
 	}
 	
-	@Override
-	public boolean isVisible()
-	{
-		if (this.getLogin().isAuthenticated()){
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
 	 /** 
      * Create a select box with Individuals grabbed from the database.
      */

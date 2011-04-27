@@ -279,13 +279,4 @@ public class ApplyProtocolPluginOld extends PluginModel<Entity> {
 		}
 	}
 	
-	@Override
-	public boolean isVisible()
-	{
-		if (this.getLogin().isAuthenticated()){
-			return true;
-		} else {
-			return false;
-		}
-	}
 }

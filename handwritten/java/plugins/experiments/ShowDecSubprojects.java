@@ -561,17 +561,4 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 		}
 	}
 	
-	@Override
-	public boolean isVisible()
-	{
-		//you can use this to hide this plugin, e.g. based on user rights.
-		//e.g.
-		//if(!this.getLogin().hasEditPermission(myEntity)) return false;
-		if(this.getLogin().isAuthenticated()){
-			return true;
-		}else
-		{
-			return false;
-		}
-	}
 }

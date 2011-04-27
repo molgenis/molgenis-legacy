@@ -44,16 +44,6 @@ public class DecStatus extends GenericPlugin
 	}
 	
 	@Override
-	public boolean isVisible()
-	{
-		if (this.getLogin().isAuthenticated()){
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
 		//replace example below with yours

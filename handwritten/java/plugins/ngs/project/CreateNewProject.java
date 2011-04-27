@@ -310,11 +310,11 @@ public class CreateNewProject extends PluginModel<Entity>
     @Override
     public boolean isVisible()
     {
-	return true;
+    	return true;
     }
 
     public void clearMessage()
     {
-	this.setMessages();
+    	this.setMessages();
     }
 }

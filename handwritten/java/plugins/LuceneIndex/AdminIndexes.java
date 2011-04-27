@@ -33,7 +33,7 @@ import org.molgenis.organization.InvestigationElement;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import app.ui.CoordinatorsFormModel;
+//import app.ui.CoordinatorsFormModel;
 
 import uk.ac.ebi.ontocat.Ontology;
 import uk.ac.ebi.ontocat.OntologyService;
@@ -354,21 +354,6 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 	public void reload(Database db){
 		this.setStatus("");
 
-	}
-	
-	@Override
-	public boolean isVisible()
-	{
-		//you can use this to hide this plugin, e.g. based on user rights.
-		//e.g.
-		//if(!this.getLogin().hasEditPermission(myEntity)) return false;
-		if(this.getLogin().isAuthenticated()){
-			return true;
-		}else
-		{
-			return false;
-		}
-		
 	}
 	
 	public void setStatus(String status) {

@@ -79,17 +79,6 @@ public class VaadinPlugin extends PluginModel
 	}
 	
 	@Override
-	public boolean isVisible()
-	{
-		//you can use this to hide this plugin, e.g. based on user rights.
-		if (this.getLogin().isAuthenticated()){
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	@Override
 	public String getCustomHtmlHeaders()
 	{
 		String divId = "vaadin_helloworld";

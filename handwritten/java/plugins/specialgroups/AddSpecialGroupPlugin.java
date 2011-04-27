@@ -129,14 +129,4 @@ public class AddSpecialGroupPlugin extends PluginModel<Entity>
 		}
 	}
 	
-	@Override
-	public boolean isVisible()
-	{
-		//you can use this to hide this plugin, e.g. based on user rights.
-		if (this.getLogin().isAuthenticated()) {
-			return true;
-		} else {
-			return false;
-		}
-	}
 }

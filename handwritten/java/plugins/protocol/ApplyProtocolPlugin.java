@@ -84,16 +84,6 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		}
     }
 
-    @Override
-    public boolean isVisible()
-    {
-		if (this.getLogin().isAuthenticated()){
-		    return true;
-		} else {
-		    return false;
-		}
-    }
-
     public String render()
     {
     	return ui.getProtocolApplicationContainer().toHtml();

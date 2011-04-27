@@ -103,15 +103,6 @@ public class MyCOL7A1 extends PluginModel<Entity>
 		}
 	}
 	
-	@Override
-	public boolean isVisible()
-	{
-		if (getLogin().isAuthenticated())
-			return true;
-		else
-			return false;
-	}
-	
 	public MyCOL7A1VO getMyCOL7A1VO()
 	{
 		return this.myCOL7A1VO;

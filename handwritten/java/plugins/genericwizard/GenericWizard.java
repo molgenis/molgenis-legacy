@@ -59,16 +59,6 @@ public class GenericWizard extends PluginModel<Entity> {
 		this.handleRequest(db, request, null);
 	}
 
-	@Override
-	public boolean isVisible() {
-		//you can use this to hide this plugin, e.g. based on user rights.
-		if (this.getLogin().isAuthenticated()){
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	public void handleRequest(Database db, Tuple request, PrintWriter out) {
 		if (request.getString("__action") != null) {
 

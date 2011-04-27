@@ -65,15 +65,6 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 		this.handleRequest(db, request, null);
 	}
 
-	@Override
-	public boolean isVisible(){
-		if (this.getLogin().isAuthenticated()){
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
 	private void resetModel(){
 		model.setMkDirSuccess(null);
 		model.setRwDirSuccess(null);

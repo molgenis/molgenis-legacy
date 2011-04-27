@@ -115,12 +115,4 @@ public class GenerateN3andRDF extends PluginModel
 
 	}
 	
-	@Override
-	public boolean isVisible()
-	{
-		//you can use this to hide this plugin, e.g. based on user rights.
-		//e.g.
-		if(!this.getLogin().isAuthenticated()) return false;
-		else return true;
-	}
 }

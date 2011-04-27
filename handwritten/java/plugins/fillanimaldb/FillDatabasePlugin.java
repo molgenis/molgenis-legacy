@@ -133,20 +133,4 @@ public class FillDatabasePlugin extends PluginModel<Entity>
 //		}
 	}
 	
-	@Override
-	public boolean isVisible()
-	{
-		//you can use this to hide this plugin, e.g. based on user rights.
-		try 
-		{
-			if (this.getLogin().isAuthenticated()) {
-				return true;
-			} else {
-				return false;
-			}
-		} catch (Exception e) {
-			// Authenticated but no user name, so probably debug user
-			return true;
-		}
-	}
 }

@@ -88,15 +88,6 @@ public class EditProtocolPlugin extends GenericPlugin
 		}
 	}
 	
-	@Override
-	public boolean isVisible()
-	{
-		if (this.getLogin().isAuthenticated()){
-		    return true;
-		} else {
-		    return false;
-		}
-	}
 	
 	 public String render()
     {
