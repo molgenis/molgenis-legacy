@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -31,31 +32,8 @@ public class MolgenisOptions
 	 */
 	public enum MapperImplementation
 	{
-		MULTIQUERY("multiquery"), JPA("jpa"), PREPARED_STATEMENT("prepared_statement"), UNKNOWN("unknown");
-
-		MapperImplementation(String tag)
-		{
-			this.tag = tag;
-		}
-
-		public String toString()
-		{
-			return this.tag;
-		}
-
-		public static MapperImplementation get(String tag)
-		{
-			if (tag == null) return UNKNOWN;
-			if (tag.equalsIgnoreCase(MULTIQUERY.tag)) return MULTIQUERY;
-			if (tag.equalsIgnoreCase(JPA.tag)) return JPA;
-			if (tag.equalsIgnoreCase(PREPARED_STATEMENT.tag)) return PREPARED_STATEMENT;
-			return UNKNOWN;
-
-		}
-
-		/** The string-representation of the enumeration-type. */
-		public final String tag;
-	};
+		MULTIQUERY, JPA, PREPARED_STATEMENT, UNKNOWN
+	}
 
 	/** relative paths to the data model XML files. Discussion: is COLLECTION good enough here? */
 	@Option(name = "model_database", param = Option.Param.COLLECTION, type = Option.Type.REQUIRED_ARGUMENT, usage = "File with data structure specification (in MOLGENIS DSL). Default: new ArrayList<String>()")
@@ -129,7 +107,7 @@ public class MolgenisOptions
 	public String object_relational_mapping = SUBCLASS_PER_TABLE;
 	
 	/** Advanced option: Type of mapper implementation */
-	@Option(name = "mapper_implementation", param = Option.Param.STRING, type = Option.Type.NO_ARGUMENT, usage = "Expert option: Choosing wether multiquery is used instead of prepared statements. Default: MULTIQUERY")
+	@Option(name = "mapper_implementation", param = Option.Param.ENUM, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Expert option: Choosing wether multiquery is used instead of prepared statements. Default: MULTIQUERY")
 	public MapperImplementation mapper_implementation = MapperImplementation.MULTIQUERY;
 	
 	/** DISCUSSION: Still used? Add good description here. Fixed typo (persisitence -> persistence), also description is vague, added true/false to the sentence.. */
@@ -311,9 +289,6 @@ public class MolgenisOptions
 
 		CmdLineParser parser = new CmdLineParser(this);
 		parser.parse(props);
-		if (props.getProperty("mapper_implementation") != null) {
-			this.mapper_implementation = MapperImplementation.get(props.getProperty("mapper_implementation"));
-		}
 		//System.out.println("Mapper implementation molgenis name: " + this.mapper_implementation.name());
 
 //		if (new File(propertiesFile).getParentFile() != null)

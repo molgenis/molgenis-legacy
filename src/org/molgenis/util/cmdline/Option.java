@@ -41,7 +41,8 @@ public @interface Option {
 		FILEPATH,
 		DIRPATH,
 		PASSWORD,
-		CLASS
+		CLASS,
+		ENUM
 	};
 
 

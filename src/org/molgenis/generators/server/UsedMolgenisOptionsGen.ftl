@@ -38,7 +38,7 @@ public class UsedMolgenisOptions extends MolgenisOptions
 		<#elseif options.optionsAsMap[key]?is_number>
 			this.${key} = ${options.optionsAsMap[key]};
 		<#elseif key == 'mapper_implementation'>
-			this.${key} = MapperImplementation.get("${options.optionsAsMap[key]}");
+			this.${key} = MapperImplementation.valueOf("${options.optionsAsMap[key]}");
 		<#elseif options.optionsAsMap[key]?is_string>
 			this.${key} = "${options.optionsAsMap[key]}";
 		<#else>

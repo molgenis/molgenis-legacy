@@ -27,7 +27,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
-//import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.DatabaseException;
 //import org.molgenis.framework.db.QueryRule;
 //import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.util.Tuple;
@@ -93,7 +93,7 @@ public class CsvImport
 	public static ImportResult importAll(File directory, Database db, Tuple defaults, List<String> components, DatabaseAction dbAction, String missingValue, boolean useDbTransaction) throws Exception
 	{
 		ImportResult result = new ImportResult();
-		boolean intransaction = false;
+		//boolean intransaction = false;
 		try
 		{
 			if (useDbTransaction)
@@ -102,7 +102,8 @@ public class CsvImport
 				{
 					db.beginTx();
 				}else{
-					intransaction = true; //throw new DatabaseException("Cannot continue CsvImport: database already in transaction.");
+					//intransaction = true; 
+					throw new DatabaseException("Cannot continue CsvImport: database already in transaction.");
 				}
 			}
 						
@@ -146,10 +147,10 @@ public class CsvImport
 			if (useDbTransaction)
 			{
 				logger.debug("commiting transactions...");
-				if (db.inTx() && intransaction){
+				if (db.inTx() /*&& intransaction*/){
 					db.commitTx();
 				}else{
-					//throw new DatabaseException("Cannot commit CsvImport: database not in transaction.");
+					throw new DatabaseException("Cannot commit CsvImport: database not in transaction.");
 				}
 			}
 		}
@@ -158,7 +159,7 @@ public class CsvImport
 			logger.error("Import failed: " + e.getMessage());
 			if (useDbTransaction)
 			{
-				if (db.inTx() && intransaction){
+				if (db.inTx() /*&& intransaction*/){
 					logger.debug("Db in transaction, rolling back...");
 					db.rollbackTx();
 				}else{

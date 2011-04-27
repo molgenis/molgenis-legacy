@@ -11,6 +11,7 @@ package org.molgenis.util.cmdline;
 
 // jdk
 import java.io.PrintStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -19,6 +20,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+
+import org.molgenis.MolgenisOptions.MapperImplementation;
 
 /**
  * This class defines the commandline options parser. Based on a class filled
@@ -288,6 +291,11 @@ public class CmdLineParser
 	            break;
 	            case CLASS: field.set(options, result); //TODO check if valid class name (eg. just [a-z] and .) and/or or check if class exists?
 	            break; 
+	            
+	            case ENUM: 
+                        System.out.println(field);                        
+                        field.set(options, Enum.valueOf((Class<Enum>) field.getType(), result));
+	            break;
 	            
 	            //if unrecognized: apply default of setting value without parsing or checks
 	            default: field.set(options, result);
