@@ -16,7 +16,6 @@ import org.apache.log4j.Logger;
 import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.security.SimpleLogin;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
@@ -67,8 +66,8 @@ public class PermissionManagementPlugin extends PluginModel<Entity> {
     		}
     			
     	} catch (Exception e) {
-	    logger.error("Error  occurred", e);
-	    this.setMessages(new ScreenMessage(e != null ? e.getMessage() : "null", false));
+		    logger.error("Error occurred: ", e);
+		    this.setMessages(new ScreenMessage(e != null ? e.getMessage() : "null", false));
     	}
     }
 
@@ -80,11 +79,15 @@ public class PermissionManagementPlugin extends PluginModel<Entity> {
      * @throws ParseException
      */
     private MolgenisPermission updatePermission(Tuple request) throws DatabaseException, ParseException {
-	MolgenisPermission perm = service.findPermission(model.getPermId());
-	perm.setEntity(Integer.parseInt(request.getString("entity")));
-	perm.setRole(Integer.parseInt(request.getString("role")));
-	perm.setPermission(request.getString("permission"));
-	return perm;
+		if (request.getString("entity") != null) {
+			MolgenisPermission perm = new MolgenisPermission();
+			perm.setEntity(Integer.parseInt(request.getString("entity")));
+			perm.setRole(Integer.parseInt(request.getString("role")));
+			perm.setPermission(request.getString("permission"));
+			return perm;
+		} else {
+			throw new DatabaseException("Cannot update permission: no entity set");
+		}
     }
 
     /** Insert (add) a permission based on request
@@ -92,41 +95,43 @@ public class PermissionManagementPlugin extends PluginModel<Entity> {
      * @param request
      * @return
      */
-    public MolgenisPermission addPermission(Tuple request) {
-	MolgenisPermission perm = new MolgenisPermission();
-	perm.setEntity(Integer.parseInt(request.getString("entity")));
-	perm.setRole(Integer.parseInt(request.getString("role")));
-	perm.setPermission(request.getString("permission"));
-	return perm;
-	
+    public MolgenisPermission addPermission(Tuple request) throws DatabaseException {
+		if (request.getString("entity") != null) {
+			MolgenisPermission perm = new MolgenisPermission();
+			perm.setEntity(Integer.parseInt(request.getString("entity")));
+			perm.setRole(Integer.parseInt(request.getString("role")));
+			perm.setPermission(request.getString("permission"));
+			return perm;
+		} else {
+			throw new DatabaseException("Cannot add permission: no entity set");
+		}
     }
 
     @Override
     public void reload(Database db) {
-	service = PermissionManagementService.getInstance(db);
-	try {
-	    model.setRole(service.findRole((db.getSecurity().getUserId())));
-	} catch (Exception e) {
-	    //TODO: add logger  + screen message
-	} 
-	
+		service = PermissionManagementService.getInstance(db);
+		try {
+		    model.setRole(service.findRole((db.getSecurity().getUserId())));
+		} catch (Exception e) {
+		    //TODO: add logger + screen message
+		}
     }
     
     public PermissionManagementModel getModel() {
-	return this.model;
+    	return this.model;
     }  
     
     public PermissionManagementService getService() {
-	return service;
+    	return service;
     }
 
     public void setService(PermissionManagementService service) {
-	this.service = service;
+    	this.service = service;
     }
 
     public void clearMessage()
     {
-	this.setMessages();
+    	this.setMessages();
     }
 
     @Override

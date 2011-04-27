@@ -27,11 +27,9 @@ import app.JDBCDatabase;
 
 public class PermissionManagementService {
 
-    	private JDBCDatabase db = null;
+    private JDBCDatabase db = null;
 	private static PermissionManagementService permissionManagementService = null;
-	//TODO: Danny: Use or loose
-	//private static final transient Logger logger = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());
-
+	
 	// private constructor, use singleton instance
 	private PermissionManagementService(Database db)
 	{
@@ -45,8 +43,9 @@ public class PermissionManagementService {
 	 */
 	public static PermissionManagementService getInstance(Database db)
 	{
-		if (permissionManagementService == null)
+		if (permissionManagementService == null) {
 		    permissionManagementService = new PermissionManagementService(db);
+		}
 		
 		return permissionManagementService;
 	}
@@ -61,8 +60,7 @@ public class PermissionManagementService {
 	 */
 	public List<MolgenisPermission> findPermissions(Integer id) throws DatabaseException, ParseException {
 	    Query<MolgenisPermission> q = db.query(MolgenisPermission.class);
-	    q.addRules(new QueryRule(MolgenisPermission.ROLE_, Operator.EQUALS,
-		    id));
+	    q.addRules(new QueryRule(MolgenisPermission.ROLE_, Operator.EQUALS, id));
 	    return q.find();
 	}
 	
@@ -77,14 +75,13 @@ public class PermissionManagementService {
 	 */
 	public MolgenisPermission findPermissions(Integer roleId, Integer entityId) throws DatabaseException, ParseException {
 	    Query<MolgenisPermission> q = db.query(MolgenisPermission.class);
-	    q.addRules(new QueryRule(MolgenisPermission.ROLE_, Operator.EQUALS,
-		    roleId));
-	    q.addRules(new QueryRule(MolgenisPermission.ENTITY, Operator.EQUALS,
-		    entityId));
-	    if(q.find() != null)
-		return q.find().get(0);
-	    else
-		return null;
+	    q.addRules(new QueryRule(MolgenisPermission.ROLE_, Operator.EQUALS, roleId));
+	    q.addRules(new QueryRule(MolgenisPermission.ENTITY, Operator.EQUALS, entityId));
+	    if (q.find() != null) {
+	    	return q.find().get(0);
+	    } else {
+	    	return null;
+	    }
 	}
 	
 	/** Given a role id, entity id, and a permission type, check to see whether a MolgenisPermission exists
@@ -98,17 +95,15 @@ public class PermissionManagementService {
 	 */
 	public MolgenisPermission findPermissions(Integer roleId, Integer entityId, String permType) throws DatabaseException, ParseException {
 	    Query<MolgenisPermission> q = db.query(MolgenisPermission.class);
-	    q.addRules(new QueryRule(MolgenisPermission.ROLE_, Operator.EQUALS,
-		    roleId));
-	    q.addRules(new QueryRule(MolgenisPermission.ENTITY, Operator.EQUALS,
-		    entityId));
-	    q.addRules(new QueryRule(MolgenisPermission.PERMISSION, Operator.EQUALS,
-		    permType));
+	    q.addRules(new QueryRule(MolgenisPermission.ROLE_, Operator.EQUALS, roleId));
+	    q.addRules(new QueryRule(MolgenisPermission.ENTITY, Operator.EQUALS, entityId));
+	    q.addRules(new QueryRule(MolgenisPermission.PERMISSION, Operator.EQUALS, permType));
 	    
-	    if(!q.find().isEmpty())
-		return q.find().get(0);
-	    else
-		return null;
+	    if (!q.find().isEmpty()) {
+	    	return q.find().get(0);
+	    } else {
+	    	return null;
+	    }
 	}
 	
 	/** Given a role id and a permission type (i.e. READ, WRITE, EXECUTE, or OWN), return a list
@@ -122,10 +117,8 @@ public class PermissionManagementService {
 	 */
 	public List<MolgenisPermission> findPermissions(Integer roleId, String permType) throws DatabaseException, ParseException {
 	    Query<MolgenisPermission> q = db.query(MolgenisPermission.class);
-	    q.addRules(new QueryRule(MolgenisPermission.ROLE_, Operator.EQUALS,
-		    roleId));
-	    q.addRules(new QueryRule(MolgenisPermission.PERMISSION, Operator.EQUALS,
-		    permType));
+	    q.addRules(new QueryRule(MolgenisPermission.ROLE_, Operator.EQUALS, roleId));
+	    q.addRules(new QueryRule(MolgenisPermission.PERMISSION, Operator.EQUALS, permType));
 	    return q.find();
 	}
 	
@@ -142,22 +135,17 @@ public class PermissionManagementService {
 	    List<MolgenisPermission> entities = new ArrayList<MolgenisPermission>(); 
 	    List<MolgenisPermission> perms = findPermissions(roleId, "own");
 	    
-	    
 	    for(MolgenisPermission m : perms) {
-		Query<MolgenisPermission> q = db.query(MolgenisPermission.class);
-		    q.addRules(new QueryRule(MolgenisPermission.ENTITY, Operator.EQUALS,
-			    m.getEntity()));
+	    	Query<MolgenisPermission> q = db.query(MolgenisPermission.class);
+		    q.addRules(new QueryRule(MolgenisPermission.ENTITY, Operator.EQUALS, m.getEntity()));
 		    if(!includeOwnership) {
-			q.addRules(new QueryRule(MolgenisPermission.PERMISSION, Operator.NOT,
-				    "own"));
+		    	q.addRules(new QueryRule(MolgenisPermission.PERMISSION, Operator.NOT, "own"));
 		    }
 		    entities.addAll(q.find());
 	    }
 	    
 	    return entities;
 	}
-	
-	
 	
 	/** Given a role id and an entity id, return a list of MolgenisPermissions for all users, where the given roleId
 	 * owns the entity in the matched MolgenisPermissions (and only the entity passed in).
@@ -173,9 +161,8 @@ public class PermissionManagementService {
 	    MolgenisPermission perm = findPermissions(roleId, entityId, "own");
 	    
 	    if(perm != null) {
-		Query<MolgenisPermission> q = db.query(MolgenisPermission.class);
-		    q.addRules(new QueryRule(MolgenisPermission.ENTITY, Operator.EQUALS,
-			    perm.getEntity()));
+	    	Query<MolgenisPermission> q = db.query(MolgenisPermission.class);
+		    q.addRules(new QueryRule(MolgenisPermission.ENTITY, Operator.EQUALS, perm.getEntity()));
 		    return q.find();
 	    }
 	    return new ArrayList<MolgenisPermission>();
@@ -190,12 +177,12 @@ public class PermissionManagementService {
 	 */
 	public MolgenisPermission findPermission(Integer id) throws DatabaseException, ParseException {
 	    Query<MolgenisPermission> q = db.query(MolgenisPermission.class);
-	    q.addRules(new QueryRule(MolgenisPermission.ID, Operator.EQUALS,
-		    id));
-	    if(!q.find().isEmpty())
-		return q.find().get(0);
-	    else
-		return null;
+	    q.addRules(new QueryRule(MolgenisPermission.ID, Operator.EQUALS, id));
+	    if (!q.find().isEmpty()) {
+	    	return q.find().get(0);
+	    } else {
+	    	return null;
+	    }
 	}
 	
 	/** Updates a given MolgenisPermission iff the given user is owner on that entity
@@ -209,15 +196,13 @@ public class PermissionManagementService {
 	 */
 	public void update(Integer userId, MolgenisPermission mp) throws DatabaseException, ParseException, IOException {
 	    
-	    if (exists(mp))
-		throw new DatabaseException("This permission already exists");
 	    MolgenisPermission perm = findPermissions(userId, mp.getEntity_Id(), "own");
 	    MolgenisUser user = (MolgenisUser)findRole(userId);
 	    if (perm != null || user.getSuperuser()) {
-		db.update(mp);
+	    	db.update(mp);
+	    } else {
+	    	throw new DatabaseException("Sorry, you have insufficient rights to update this permission");
 	    }
-	    else
-		throw new DatabaseException("Sorry, you have insufficient rights to update this permission");
 	 }
 	
 	/** Inserts a given MolgenisPermission iff the given user is owner on the entity for whom a permission is
@@ -233,18 +218,17 @@ public class PermissionManagementService {
 	 * 
 	 */
 	public void insert(Integer userId, MolgenisPermission mp) throws DatabaseException, ParseException, IOException {
-	    if(exists(mp))
-		throw new DatabaseException("This permission already exists");
+	    if (exists(mp)) {
+	    	throw new DatabaseException("This permission already exists");
+	    }
 	    
 	    MolgenisPermission perm = findPermissions(userId, mp.getEntity_Id(), "own");
 	    MolgenisUser user = (MolgenisUser)findRole(userId);
 	    if (perm != null || user.getSuperuser()) {
-		db.add(mp);
+	    	db.add(mp);
+	    } else {
+	    	throw new DatabaseException("Sorry, you have insufficient rights to add this permission");
 	    }
-	    else
-		throw new DatabaseException("Sorry, you have insufficient rights to add this permission");
-	 
-	   
 	}
 	
 	/** Check to see if a given permission exists
@@ -264,9 +248,10 @@ public class PermissionManagementService {
 		    mp.getRole()));
 	    
 	    if(!q.find().isEmpty()) {
-		return true;
-	    } else
-		return false;
+	    	return true;
+	    } else {
+	    	return false;
+	    }
 	}
 	
 	/** Find a MolgenisUser
@@ -280,10 +265,11 @@ public class PermissionManagementService {
 	    Query<MolgenisRole> q = db.query(MolgenisRole.class);
 	    q.addRules(new QueryRule(MolgenisRole.ID, Operator.EQUALS,
 		    id));
-	    if(!q.find().isEmpty())
-		return q.find().get(0);
-	    else
-		throw new DatabaseException("Role with id " + id + " was not found.");
+	    if(!q.find().isEmpty()) {
+	    	return q.find().get(0);
+	    } else {
+	    	throw new DatabaseException("Role with id " + id + " was not found.");
+	    }
 	}
 	
 	/** Find a MolgenisEntity by id
@@ -295,12 +281,12 @@ public class PermissionManagementService {
 	 */
 	public MolgenisEntity findEntity(Integer id) throws DatabaseException, ParseException {
 	    Query<MolgenisEntity> q = db.query(MolgenisEntity.class);
-	    q.addRules(new QueryRule(MolgenisEntity.ID, Operator.EQUALS,
-		    id));
-	    if(!q.find().isEmpty())
-		return q.find().get(0);
-	    else
-		throw new DatabaseException("Entity with id " + id + " was not found.");
+	    q.addRules(new QueryRule(MolgenisEntity.ID, Operator.EQUALS, id));
+	    if(!q.find().isEmpty()) {
+	    	return q.find().get(0);
+	    } else {
+	    	throw new DatabaseException("Entity with id " + id + " was not found.");
+	    }
 	} 
 	
 	/** Find all Molgenis Users
@@ -343,11 +329,10 @@ public class PermissionManagementService {
 	    MolgenisPermission ownPerm = findPermissions(roleId, perm.getEntity_Id(), "own");
 	    
 	    if (ownPerm != null) {
-		db.remove(perm);
+	    	db.remove(perm);
+	    } else {
+	    	throw new DatabaseException("Sorry, you have insufficient rights to remove this permission");
 	    }
-	    else
-		throw new DatabaseException("Sorry, you have insufficient rights to remove this permission");
-	 
 	}
 
 }
