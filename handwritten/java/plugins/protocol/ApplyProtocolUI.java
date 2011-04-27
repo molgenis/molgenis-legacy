@@ -166,6 +166,7 @@ public class ApplyProtocolUI {
 	    protocolDiv.add(protocols);
 
 	} catch(Exception e) {
+		e.printStackTrace();
 	    logger.error("An error occurred while retrieving protocols from the database", e);
 	}
 
@@ -184,6 +185,7 @@ public class ApplyProtocolUI {
 		    protocolDiv.add(targets);
 	
 		} catch(Exception e) {
+			e.printStackTrace();
 		    logger.error("An error occurred while retrieving targets from the database", e);
 		}
     }
@@ -201,6 +203,7 @@ public class ApplyProtocolUI {
 		    protocolDiv.add(batches);
 	
 		} catch(Exception e) {
+			e.printStackTrace();
 		    logger.error("An error occurred while retrieving batches from the database", e);
 		}
     }

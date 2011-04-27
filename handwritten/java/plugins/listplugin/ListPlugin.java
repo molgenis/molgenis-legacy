@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
@@ -32,7 +33,6 @@ public class ListPlugin extends PluginModel<Entity> {
 	private static final long serialVersionUID = -7341276676642021364L;
 	private List<Measurement> featureList;
 	private List<Panel> groupList = new ArrayList<Panel>();
-	private boolean firstTime = true;
 	private CommonService ct = CommonService.getInstance();
 
 	public ListPlugin(String name, ScreenModel<Entity> parent) {
@@ -122,10 +122,6 @@ public class ListPlugin extends PluginModel<Entity> {
 	}
 	
 	public void reload(Database db) {
-		if (firstTime) {
-			firstTime = false;
-			ct.setDatabase(db);
-		}
 		
 		// Reset servlet
 		try {
@@ -134,25 +130,22 @@ public class ListPlugin extends PluginModel<Entity> {
 			URLConnection servletConn = servletURL.openConnection();
 			servletConn.getContent();
 		} catch (Exception e) {
-			;
+			//
 		}
 			
 		try {
-			// Populate feature list
-			this.setFeatureList(ct.getAllMeasurementsSorted(Measurement.NAME, "ASC"));
-		} catch (Exception e) {
-			e.printStackTrace();
-			if (e.getMessage() != null) {
-				this.setMessages(new ScreenMessage("Something went wrong while loading measurement list: " + e.getMessage(), false));
+			// Populate measurement list
+			List<Measurement> featList = ct.getAllMeasurementsSorted(Measurement.NAME, "ASC");
+			if (featList.size() > 0) {
+				this.setFeatureList(featList);
+			} else {
+				throw new DatabaseException("Something went wrong while loading Measurement list");
 			}
-		}
 		
-		try {
 			// Populate group list
 			groupList = ct.getAllMarkedPanels("Selection");
 		} catch (Exception e) {
-			// Getting groups doesn't work, probably because 'TypeOfGroup' feature doesn't exist,
-			// but we ignore that for now.
+			this.setMessages(new ScreenMessage(e.getMessage(), false));
 		}
 	}
 

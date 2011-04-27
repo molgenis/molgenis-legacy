@@ -51,6 +51,9 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 		featureIdList = new ArrayList<Integer>();
 		allFeatureList = db.query(Measurement.class).find();
 		totalNrOfFeatures = allFeatureList.size();
+		if (totalNrOfFeatures == 0) {
+			throw new DatabaseException("No features found in database");
+		}
 		nrOfTargets = targetList.size();
 		nrOfFeatures = 0;
 		data = new ObservedValue[nrOfTargets][totalNrOfFeatures][];

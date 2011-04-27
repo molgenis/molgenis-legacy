@@ -91,14 +91,17 @@ public class EventViewerPlugin extends PluginModel<Entity>
 		ct.setDatabase(db);
 		
 		// Populate target list
+		List<Integer> idList = null;
 		try {
-			this.setTargetIdList(ct.getAllObservationTargetIds(null, false));
+			idList = ct.getAllObservationTargetIds(null, false);
 		} catch (Exception e) {
 			e.printStackTrace();
-			this.getMessages().clear();
-			if (e.getMessage() != null) {
-				this.getMessages().add(new ScreenMessage(e.getMessage(), false));
-			}
+			this.setMessages(new ScreenMessage("Something went wrong while loading target list", false));
+		}
+		if (idList != null && idList.size() > 0) {
+			this.setTargetIdList(idList);
+		} else {
+			this.setMessages(new ScreenMessage("No targets found in database", false));
 		}
 	}
 	

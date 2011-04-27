@@ -148,10 +148,10 @@ public class CommonService
 		q.addRules(new QueryRule(Investigation.NAME, Operator.EQUALS, invName));
 		List<Investigation> invList = q.find();
 		
-		if(invList.get(0) != null) {
+		if (invList.size() > 0) {
 		    return invList.get(0).getId();
 		} else
-		    throw new DatabaseException("There was no investigation matching name " + invName);
+		    throw new DatabaseException("No investigation can be found matching name: " + invName);
 	}
 	
 
@@ -994,13 +994,14 @@ public class CommonService
 	public int getMeasurementId(String measurementName) throws DatabaseException,
 			ParseException
 	{
-		Query<ObservableFeature> q = db.query(ObservableFeature.class);
-		q.eq(ObservableFeature.NAME, measurementName);
-		if(q.find() != null) 
-		    return q.find().get(0).getId();
+		Query<Measurement> q = db.query(Measurement.class);
+		q.eq(Measurement.NAME, measurementName);
+		List<Measurement> featList = q.find();
+		if (featList.size() > 0) 
+		    return featList.get(0).getId();
 		else
-		    throw new DatabaseException("Measurement id could be found for" +
-			    " measurement with name" + measurementName);
+		    throw new DatabaseException("Id could be found for" +
+			    " Measurement with name: " + measurementName);
 	}
 
 

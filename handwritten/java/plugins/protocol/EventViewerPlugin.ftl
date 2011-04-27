@@ -25,32 +25,20 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->	
 
-<div id="addeventform">
-
 <div id="animalselect" class="row">
-<label for="animal">Target:</label>
-<select name="animal" id="animal" class="selectbox" onchange="getMatrix(this);">
-	<option value="0">&nbsp;</option>
-	<#list screen.targetIdList as targetId>
-		<#assign name = screen.getTargetName(targetId)>
-		<option value="${targetId}">${name}</option>
-	</#list>
-</select>
+	<label for="animal">Target:</label>
+	<select name="animal" id="animal" class="selectbox" onchange="getMatrix(this);">
+		<option value="0">&nbsp;</option>
+		<#list screen.targetIdList as targetId>
+			<#assign name = screen.getTargetName(targetId)>
+			<option value="${targetId}">${name}</option>
+		</#list>
+	</select>
 </div>
 
 <div id="matrix">
 <!-- This box is filled dynamically by the ViewEventsServlet (Ajax-style) -->
 </div>
-
-</div>
-
-<#if screen.success?exists>
-  <#if screen.success == 1>
-	<p>Event successfully added!</p>
-  <#elseif screen.success == -1>
-	<p>Oops... something went wrong! Event has not been recorded.</p>
-  </#if>
-</#if>
 
 <#--<input name="myinput" value="${screen.getMyValue()}">
 <input type="submit" value="Change name" onclick="__action.value='do_myaction';return true;"/-->

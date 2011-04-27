@@ -224,34 +224,32 @@ public class PrintLabelPlugin extends GenericPlugin
      * Create a select box with Individuals grabbed from the database.
      */
     public void makeTargetsSelect() {
+    	targets = new SelectMultipleInput("Targets", null);
+	    targets.setLabel("Select animal(s):");
 		try {
-			targets = new SelectMultipleInput("Targets", null);
-		    targets.setLabel("Select animal(s):");
 		    for (Integer animalId : cs.getAllObservationTargetIds("Individual", true)) {
 		    	targets.addOption(animalId, getTargetName(animalId));
 		    }
-		    panel.add(targets);
-	
 		} catch(Exception e) {
-		    logger.error("An error occurred while retrieving targets from the database", e);
+		    this.setMessages(new ScreenMessage("An error occurred while retrieving animals from the database", false));
 		}
+		panel.add(targets);
     }
     
     /**
      * Create a select box with Measurements grabbed from the database.
      */
     private void makeFeaturesSelect() {
+    	features = new SelectMultipleInput("Features", null);
+		features.setLabel("Select feature(s):");
     	try {
-			features = new SelectMultipleInput("Features", null);
-			features.setLabel("Select feature(s):");
 		    for (Measurement feature : cs.getAllMeasurementsSorted(Measurement.NAME, "ASC")) {
 		    	features.addOption(feature.getId(), feature.getName());
 		    }
-		    panel.add(features);
-	
 		} catch(Exception e) {
-		    logger.error("An error occurred while retrieving features from the database", e);
+			this.setMessages(new ScreenMessage("An error occurred while retrieving features from the database", false));
 		}
+		panel.add(features);
 	}
     
     /**
