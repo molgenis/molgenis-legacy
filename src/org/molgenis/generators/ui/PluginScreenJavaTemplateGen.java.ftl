@@ -87,9 +87,7 @@ public class ${clazzName} extends PluginModel
 	@Override
 	public boolean isVisible()
 	{
-		//you can use this to hide this plugin, e.g. based on user rights.
-		//e.g.
-		//if(!this.getLogin().hasEditPermission(myEntity)) return false;
-		return true;
+		// you can use this to override authentication-based visibility of the plugin
+		// e.g.: return true;
 	}
 }

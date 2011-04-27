@@ -89,13 +89,18 @@ public class GenericPlugin extends PluginModel<Entity>
 		// }
 	}
 
+	/**
+	 * Show plugin or not, depending on whether the user is authenticated.
+	 * Note: at the moment you can still override this method in your plugin to bypass security (evil).
+	 */
 	@Override
 	public boolean isVisible()
 	{
-		// you can use this to hide this plugin, e.g. based on user rights.
-		// e.g.
-		// if(!this.getLogin().hasEditPermission(myEntity)) return false;
-		return true;
+		if (this.getLogin().isAuthenticated()){
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public String render(String templatePath)

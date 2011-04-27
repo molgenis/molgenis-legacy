@@ -52,18 +52,19 @@ public abstract class PluginModel<E extends Entity> extends SimpleModel<E> imple
 	{
 		this.handleRequest(db, request);
 	}
-
-	/**
-	 * A plugin is actually a model-view-controller structure. The extension of
-	 * plugin is the controller. The freemarker template is the view, see
-	 * getFreemarker... methods A 'model' of the screen must be provided to be
-	 * used by the.
-	 */
 	
+	/**
+	 * Show plugin or not, depending on whether the user is authenticated.
+	 * Note: at the moment you can still override this method in your plugin to bypass security (evil).
+	 */
 	@Override
 	public boolean isVisible()
 	{
-		return Boolean.TRUE;
+		if (this.getLogin().isAuthenticated()){
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
