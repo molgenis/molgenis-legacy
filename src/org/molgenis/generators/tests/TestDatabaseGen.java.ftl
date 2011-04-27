@@ -73,17 +73,11 @@ public class TestDatabase
 			//JpaUtil.dropAndCreateTables(db.getEntityManager());
 		<#else>
 			<#if db_mode = 'standalone'>
-			//db = new JDBCDatabase("molgenis.testhsql.properties");	
-			//create the database
-			//new Molgenis("molgenis.testhsql.properties").updateDb();
-			//get it
 			db = new JDBCDatabase("molgenis.testhsql.properties");
 			<#else>
 			db = new JDBCDatabase("molgenis.test.properties");	
 			//create the database
 			new Molgenis("molgenis.test.properties").updateDb();
-			//get it
-			db = new JDBCDatabase("molgenis.test.properties");
 			</#if>
 		</#if>	
 		}

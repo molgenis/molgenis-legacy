@@ -99,6 +99,7 @@ public class TestCsv
 		try
 		{		
 			db = new app.JDBCDatabase("molgenis.test.properties");
+			new Molgenis("molgenis.test.properties").updateDb();
 		}
 		catch (Exception e)
 		{
