@@ -91,14 +91,14 @@ Limit values to most recent one:
 
 <div id='buttons_part' style='border:1px solid; margin:10px; padding:10px; float:left'>
 	<input type="hidden" name="saveselection" id="saveselection" />
-	Add visible selection to preset panel:
-	<select id="groupname" name="groupname">
-		<#list screen.groupList as group>
-			<option value="${group.name}">${group.name}</option>
+	Add visible selection to Batch:
+	<select id="batch" name="batch">
+		<#list screen.batchList as batch>
+			<option value="${batch.id}">${batch.name}</option>
 		</#list>
 	</select>
-	<br />Or, save as new preset panel with name: <input type="text" name="newgroupname" id="newgroupname" class="textbox" />
-	<br /><input type='submit' class='addbutton' value='Apply' onclick="var targetNames = fnMakeGroup(); saveselection.value = targetNames; __action.value='saveGroup'" />
+	<br />Or, save as new Batch with name: <input type="text" name="newbatchname" id="newbatchname" class="textbox" />
+	<br /><input type='submit' class='addbutton' value='Apply' onclick="var targetNames = fnMakeGroup(); saveselection.value = targetNames; __action.value='saveBatch'" />
 </div>
 <div style='clear:left'>
 	<!-- Bogus div so previous div remains within the page limits -->

@@ -10,18 +10,16 @@ package plugins.listplugin;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
+import org.molgenis.batch.MolgenisBatch;
+import org.molgenis.batch.MolgenisBatchEntity;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservedValue;
-import org.molgenis.pheno.Panel;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -32,7 +30,7 @@ import commonservice.CommonService;
 public class ListPlugin extends PluginModel<Entity> {
 	private static final long serialVersionUID = -7341276676642021364L;
 	private List<Measurement> featureList;
-	private List<Panel> groupList = new ArrayList<Panel>();
+	private List<MolgenisBatch> batchList = new ArrayList<MolgenisBatch>();
 	private CommonService ct = CommonService.getInstance();
 
 	public ListPlugin(String name, ScreenModel<Entity> parent) {
@@ -71,47 +69,44 @@ public class ListPlugin extends PluginModel<Entity> {
 		this.featureList = featureList;
 	}
 	
-	// Group list related methods:
-	public List<Panel> getGroupList() {
-		return groupList;
+	// Batch related methods:
+	public List<MolgenisBatch> getBatchList() {
+		return batchList;
 	}
 
-	public void setGroupList(List<Panel> groupList) {
-		this.groupList = groupList;
+	public void setGroupList(List<MolgenisBatch> batchList) {
+		this.batchList = batchList;
 	}
 
 	public void handleRequest(Database db, Tuple request) {
 		try {
 			String action = request.getString("__action");
-			if (action.equals("saveGroup")) {
-				// Init lists that we can later add to the DB at once
-				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
-				
-				Calendar calendar = Calendar.getInstance();
-				Date now = calendar.getTime();
-				int investigationId = ct.getInvestigationId("AnimalDB");
-				String groupName;
-				int groupId;
-				if (request.getString("newgroupname") != null) {
-					groupName = request.getString("newgroupname");
-					groupId = ct.makePanel(investigationId, groupName);
-					int protocolId = ct.getProtocolId("SetTypeOfGroup");
-					int measurementId = ct.getMeasurementId("TypeOfGroup");
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(investigationId, 
-							now, null, protocolId, measurementId, groupId, "Selection", 0));
+			if (action.equals("saveBatch")) {
+				int batchId;
+				// Make or get Batch
+				if (request.getString("newbatchname") != null) {
+					String batchName = request.getString("newbatchname");
+					MolgenisBatch newBatch = new MolgenisBatch();
+					newBatch.setName(batchName);
+					newBatch.setMolgenisUser(this.getLogin().getUserId());
+					db.add(newBatch);
+					batchId = newBatch.getId();
 				} else {
-					groupName = request.getString("groupname");
-					groupId = ct.getObservationTargetId(groupName);
+					batchId = request.getInt("batch");
 				}
+				// Add visible targets to Batch
 				List<?> nameList = request.getList("saveselection", ",");
 				for (Object o : nameList) {
 					int animalId = ct.getObservationTargetId(o.toString());
-					valuesToAddList.add(ct.addObservationTargetToPanel(investigationId, animalId, now, groupId));
-					// ct function checks if animal is already in group
+					MolgenisBatchEntity newBatchEntity = new MolgenisBatchEntity();
+					newBatchEntity.setName(o.toString());
+					newBatchEntity.setBatch(batchId);
+					newBatchEntity.setObjectId(animalId);
+					db.add(newBatchEntity);
 				}
 				
-				// Add everything to DB
-				db.add(valuesToAddList);
+				this.setMessages(new ScreenMessage("Batch saved successfully", true));
+				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -142,8 +137,8 @@ public class ListPlugin extends PluginModel<Entity> {
 				throw new DatabaseException("Something went wrong while loading Measurement list");
 			}
 		
-			// Populate group list
-			groupList = ct.getAllMarkedPanels("Selection");
+			// Populate Batch list
+			batchList = ct.getAllBatches();
 		} catch (Exception e) {
 			this.setMessages(new ScreenMessage(e.getMessage(), false));
 		}
