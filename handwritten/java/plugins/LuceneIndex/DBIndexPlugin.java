@@ -43,6 +43,9 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.model.MolgenisModelException;
+import org.molgenis.model.elements.Field;
+import org.molgenis.model.elements.Entity;
 import org.molgenis.util.Tuple;
 
 /*
@@ -207,7 +210,10 @@ public class DBIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 		
 	}
 
-	
+	/**
+	 * For all DB tables , for all entities in each field ,  call search to search each field. 
+	 * @param db
+	 */
 	public void search(Database db, String[] ResultHeaders ){
 		int hits = 0;
 
@@ -274,7 +280,6 @@ public class DBIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 			for(Class<Entity> aClass: db.getEntityClasses()) {	
 					for(Entity e: (List<Entity>)db.find(aClass)) {
 						String dbtable  = aClass.getName();
-				
 						
 						for(String fieldName: e.getFields()) {		
 							if (e.get(fieldName) != null) {
@@ -287,31 +292,29 @@ public class DBIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 		}
 		* 
 		*/	
-	  
-		Properties configFile = new Properties();
-		LuceneConfiguration LC = new LuceneConfiguration();
-		String numberOfFields = LC.GetLuceneConfiguration("NUM_OF_FIELDS");
+	      
+			List <String> dbfields = new ArrayList<String>();
+	    		
+	    		try {
+					for(Entity entity : db.getMetaData().getEntities()) {
+						for(Field f : entity.getFields()) {
+							System.out.println(">>>>>> db entities " + f.getName());
+							if (!dbfields.contains(f.getName())) 	dbfields.add(f.getName());
 
-		
-		try {
-			configFile.load(new FileInputStream(LC.getINDX()));
-		} catch (IOException e) {
-				e.printStackTrace();
-		}
-
-		
-		int num = Integer.parseInt(numberOfFields);
-	    for (int i=1; i<=num; i++) {
-
-	    	String tmp = DB_FIELD + i;
-	    	String dbfield = configFile.getProperty(tmp); 
-			dbfield = removeChar(dbfield,'"');
-	    	
-			System.out.println("Variable loaded from configuration file   -   " + dbfield +"  ");
-			hits += this.SearchAllDBFieldIndex(db, dbfield);
-	    }
-	  
+						}
+					}
+				} catch (DatabaseException e) {
+					e.printStackTrace();
+				} catch (MolgenisModelException e) {
+					e.printStackTrace();
+				}
+	    		
 			
+			for (int i=0; i<dbfields.size(); i++) {
+				hits += this.SearchAllDBFieldIndex(db, dbfields.get(i));
+			}
+			
+	    	
 		result += "</table>";
 		result += "<p>Number of hits   : " + hits;
 		//if (hits==0) result = "<p>No records found in db index for the term " + this.getInputToken() + "</p>";
