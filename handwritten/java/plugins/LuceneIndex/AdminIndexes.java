@@ -33,6 +33,8 @@ import org.molgenis.organization.InvestigationElement;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
+import app.ui.CoordinatorsFormModel;
+
 import uk.ac.ebi.ontocat.Ontology;
 import uk.ac.ebi.ontocat.OntologyService;
 import uk.ac.ebi.ontocat.OntologyServiceException;
@@ -87,6 +89,7 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 	
 	public AdminIndexes(String name, ScreenModel<org.molgenis.util.Entity> parent)
 	{
+		
 		super(name, parent);
 	}
 
@@ -164,10 +167,8 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 			LuceneConfiguration LC = new LuceneConfiguration();
 			file = new File(LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"));
 			
-			//analyzer = new StandardAnalyzer(Version.LUCENE_30);
 			analyzer = new PorterStemAnalyzer();
 			//analyzer = new StandardAnalyzer(Version.LUCENE_30);
-			// You can use public StandardAnalyzer(Version matchVersion, File stopwords) throws IOException adding a STOP WORD file
 			writer = new IndexWriter( FSDirectory.open(file), analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
 			
 			String fullText = null ;
@@ -247,20 +248,12 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
         /**
          * reopen the index in order to add new db record
          */
-    	//Biobank(id='null' name='test' investigation='null'  investigation_name='null' ontologyReference='null'  ontologyReference_name='null' __Type='Biobank' individuals='[]'  
-    	// individuals_name='[]' species='null'  species_name='null' panelType='1'  panelType_name='null' founderPanels='[]'  founderPanels_name='[]' acronym='null' institutes='[]' 
-    	//institutes_name='[]' publications='[]' category='1'  category_name='null' type='support' contacts='[]' topics='[]'  topics_name='[]' materials='[]'  materials_name='[]' 
-    	//size='null' lastUpdate='2010-12-13' description='null');]
+    	
     	
 		IndexWriter writer=null;
-		//StandardAnalyzer analyzer = null;
 		PorterStemAnalyzer analyzer = null;
 		File file = null; 
 
-		//Entity e = db.getEntityClasses()
-		//for(Entity e: (List<Entity>)db.find(aClass)) {
-
-    	
 			System.out.println("Start updating index ... ");
 			/**
 			 * get a reference to index directory file
@@ -268,30 +261,27 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 			
 			LuceneConfiguration LC = new LuceneConfiguration();
 			file = new File(LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"));
-			
+
+			// Either  public StandardAnalyzer(Version matchVersion, File stopwords) can be used in order to add a STOP WORD file
 			//analyzer = new StandardAnalyzer(Version.LUCENE_30);
 			analyzer = new PorterStemAnalyzer();
-			//analyzer = new StandardAnalyzer(Version.LUCENE_30);
-			// You can use public StandardAnalyzer(Version matchVersion, File stopwords) throws IOException adding a STOP WORD file
 			try {
-				writer = new IndexWriter( FSDirectory.open(file), analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-			
-
-				String fullText = null ;
-				Document document1 = null;
-				document1 = new Document(); 
+					writer = new IndexWriter( FSDirectory.open(file), analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
 				
-				// FIX ME Is this owkay ?
-				Class<? extends Entity> aClass =  (Class<? extends Entity>) entities.getClass();
+	
+					String fullText = null ;
+					Document document1 = null;
+					document1 = new Document(); 
+					
+					Class<? extends Entity> aClass =  (Class<? extends Entity>) entities.getClass();
+					
+					System.out.println("AddDBIndexRecors" + aClass);
 				
-				System.out.println("AddDBIndexRecors" + aClass);
-				
-				//Entity aClass = "Biobank"; //todo: the classname is in the beginning of the entity  - extract it
-				fullText  = aClass.getName();  
-				
-				ListIterator<E> l  = entities.listIterator();
-				
-				while (l.hasNext()) {
+					fullText  = aClass.getName();  
+					
+					ListIterator<E> l  = entities.listIterator();
+					
+					while (l.hasNext()) {
 				
 				}
 				//The entities are in the form : [elementData][0][_gwaPlatform]
@@ -362,6 +352,7 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 	
 	@Override
 	public void reload(Database db){
+		this.setStatus("");
 
 	}
 	
@@ -416,7 +407,6 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 		deleteDirContents( indexDir, 0, msWin);
 		
 	   	
-		//this.setStatus("<h4>Produces from DeleteLuceneIndex "+ LC.getINDX()+"</h4>");
 		this.setStatus("<h4>Contents of index directory  "+ indexDir + " deleted </h4>");
 
 	}
@@ -519,8 +509,6 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 		//browse to  the index directory
 		deleteDirContents( OntoIndexDir, 0, msWin);
 		
-	   	
-		//this.setStatus("<h4>Produces from DeleteLuceneIndex "+ LC.getINDX()+"</h4>");
 		this.setStatus("<h4>Contents of index directory  "+ OntoIndexDir + " deleted </h4>");
 
 
@@ -585,11 +573,9 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 			       String expansion = "";
 			       
 			       syns = os.getSynonyms(term);
-			       //System.out.println("syns:\n" + syns);
 			       for (String s : syns){
 			    	   if (term.getLabel().toLowerCase() != s){ //if it doesn't already exists 
 				    	   s = "\"" + s.toLowerCase() + "\"";
-				    	   //System.out.println("syns: " + s);
 				    	   if (! expansion.contains(s))
 				    		   expansion += ";" + s;
 			    	   }
@@ -597,12 +583,10 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 		
 			       children = os.getChildren(term);
 			       for (OntologyTerm t : children){
-			        //System.out.println("children: " + t);
 			    	   String t_str = "\"" + t.getLabel().toLowerCase() + "\"";
 			    	   if (! expansion.contains(t_str))
 			    		   expansion += ";" + t_str;
 			        }
-			        //System.out.println("expansion: " + expansion.trim());	
 			        Field expansionField = new Field("expansion", expansion.trim(),Field.Store.YES, Field.Index.NO);
 			        document.add(expansionField);
 			            
