@@ -3,6 +3,7 @@ package org.molgenis.framework.ui;
 import java.io.PrintWriter;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.security.Login;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -61,10 +62,15 @@ public abstract class PluginModel<E extends Entity> extends SimpleModel<E> imple
 	public boolean isVisible()
 	{
 		if (this.getLogin().isAuthenticated()){
-			return true;
-		} else {
-			return false;
+			try {
+				if (this.getLogin().canRead(this)) {
+					return true;
+				}
+			} catch (DatabaseException e) {
+				e.printStackTrace();
+			}
 		}
+		return false;
 	}
 
 	@Override
