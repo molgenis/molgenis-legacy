@@ -84,10 +84,10 @@ public class ${clazzName} extends PluginModel
 //		}
 	}
 	
-	@Override
-	public boolean isVisible()
-	{
-		// you can use this to override authentication-based visibility of the plugin
-		// e.g.: return true;
-	}
+//	@Override
+//	public boolean isVisible()
+//	{
+//		// you can use this to override authentication-based visibility of the plugin
+//		return true;
+//	}
 }
