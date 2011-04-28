@@ -1,8 +1,7 @@
 /* Date:        November 30, 2010
- * Template:	PluginScreenJavaTemplateGen.java.ftl
- * generator:   org.molgenis.generators.ui.PluginScreenJavaTemplateGen 3.3.3
+ *
  * 
- * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
+ *   Despoina Antonakaki <D.Antonakaki@rug.nl>
  */
 
 package plugins.LuceneIndex;
@@ -32,8 +31,6 @@ import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.organization.InvestigationElement;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
-
-//import app.ui.CoordinatorsFormModel;
 
 import uk.ac.ebi.ontocat.Ontology;
 import uk.ac.ebi.ontocat.OntologyService;
@@ -109,12 +106,19 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 	public void handleRequest(Database db, Tuple request)
 	{
 		
-		LuceneConfiguration LC = new LuceneConfiguration();
+		//LuceneConfiguration LC = new LuceneConfiguration();
 
 		if ("CreateLuceneIndex".equals(request.getAction())) {
 			
-			if  (!this.DirectoryhasContents(LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"))) {
-				this.setStatus("<h4> Index already exists in " + LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY")  + "</h4>" ) ;
+			String tmp =  System.getProperty("java.io.tmpdir");
+			System.setProperty("java.io.tmpdir.indexdir", tmp + "indexdir/");
+			String IndexDir = System.getProperty("java.io.tmpdir.indexdir");
+			System.out.println(">>>>>>>>>Index created in tmp directory >>>>>>>>" + IndexDir);
+			
+			//if  (!this.DirectoryhasContents(LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"))) {
+			if  (!this.DirectoryhasContents(IndexDir)) {
+				//this.setStatus("<h4> Index already exists in " + LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY")  + "</h4>" ) ;
+				this.setStatus("<h4> Index already exists in " + IndexDir  + "</h4>" ) ;
 
 			} else {
 				this.CreateLuceneIndex(db);
@@ -131,8 +135,15 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 		 *  and the input is p.setInputToken("cystic lung disease"); 
 		 * */
 		if ("CreateOntocatLuceneIndex".equals(request.getAction())) {
-			if  (!this.DirectoryhasContents(LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY"))) {
-				this.setStatus("<h4> Index on Ontocat already created in directory " + LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY") + "</h4>");
+			String tmp =  System.getProperty("java.io.tmpdir");
+			System.setProperty("java.io.tmpdir.OntocatIndexdir", tmp + "OntocatIndexdir/");
+			String OntocatIndexdir = System.getProperty("java.io.tmpdir.OntocatIndexdir");
+			System.out.println(">>>>>>>>>Index created in tmp directory >>>>>>>>" + OntocatIndexdir);
+			
+			//if  (!this.DirectoryhasContents(LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY"))) {
+			if  (!this.DirectoryhasContents(OntocatIndexdir)) {
+				//this.setStatus("<h4> Index on Ontocat already created in directory " + LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY") + "</h4>");
+				this.setStatus("<h4> Index on Ontocat already created in directory " + OntocatIndexdir + "</h4>");
 			} 
 			else {
 					try {
@@ -157,6 +168,10 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 		PorterStemAnalyzer analyzer = null;
 		File file = null; 
 
+		String tmp =  System.getProperty("java.io.tmpdir");
+		System.setProperty("java.io.tmpdir.Indexdir", tmp + "Indexdir/");
+		String Indexdir = System.getProperty("java.io.tmpdir.Indexdir");
+		System.out.println(">>>>>>>>>Index created in tmp directory >>>>>>>>" + Indexdir);
 		
 		try{
 			System.out.println("Start indexing ... ");
@@ -164,8 +179,9 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 			 * get a reference to index directory file
 			 */
 			
-			LuceneConfiguration LC = new LuceneConfiguration();
-			file = new File(LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"));
+			//LuceneConfiguration LC = new LuceneConfiguration();
+			//file = new File(LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"));
+			file = new File(Indexdir);
 			
 			analyzer = new PorterStemAnalyzer();
 			//analyzer = new StandardAnalyzer(Version.LUCENE_30);
@@ -183,7 +199,6 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 					
 					//System.out.println("[DEBUG]"+fullText);
 					
-					//TRICK
 					for(String fieldName: e.getFields()) {
 	
 						Field ClassName = new Field("className", aClass.getName().toString(), Field.Store.YES, Field.Index.ANALYZED);
@@ -193,7 +208,6 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 						
 						if (e.get(fieldName) != null) {
 							
-							//search works with Field.index.ANALYZED
 							Field InsertFieldValue = new Field(fieldName, e.get(fieldName).toString(), Field.Store.YES, Field.Index.ANALYZED);
 							
 							if(e instanceof InvestigationElement)
@@ -250,17 +264,26 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
          */
     	
     	
+    	
 		IndexWriter writer=null;
 		PorterStemAnalyzer analyzer = null;
 		File file = null; 
+
+		String tmp =  System.getProperty("java.io.tmpdir");
+		System.setProperty("java.io.tmpdir.Indexdir", tmp + "Indexdir/");
+		String Indexdir = System.getProperty("java.io.tmpdir.Indexdir");
+		System.out.println(">>>>>>>>>Index created in tmp directory >>>>>>>>" + Indexdir);
+
+
 
 			System.out.println("Start updating index ... ");
 			/**
 			 * get a reference to index directory file
 			 */
 			
-			LuceneConfiguration LC = new LuceneConfiguration();
-			file = new File(LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"));
+			//LuceneConfiguration LC = new LuceneConfiguration();
+			//file = new File(LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"));
+			file = new File(Indexdir);
 
 			// Either  public StandardAnalyzer(Version matchVersion, File stopwords) can be used in order to add a STOP WORD file
 			//analyzer = new StandardAnalyzer(Version.LUCENE_30);
@@ -345,8 +368,16 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 			e.printStackTrace();	
 		}		
 		LuceneConfiguration LC = new LuceneConfiguration();
+
+		String tmp =  System.getProperty("java.io.tmpdir");
+		System.setProperty("java.io.tmpdir.Indexdir", tmp + "Indexdir/");
+		String Indexdir = System.getProperty("java.io.tmpdir.Indexdir");
+		System.out.println(">>>>>>>>>Index created in tmp directory >>>>>>>>" + Indexdir);
+
 		
-		this.setStatus("<h4>Finished indexing. Index created in </h4>" + LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"));
+		//this.setStatus("<h4>Finished indexing. Index created in </h4>" + LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"));
+		this.setStatus("<h4>Finished indexing. Index created in </h4>" + Indexdir );
+
 	}
 
 	
@@ -378,21 +409,29 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 	 */
 	public void DeleteLuceneIndex() {
 		String msWin;
-		String indexDir;
+		//String indexDir;
+		
+		String tmp =  System.getProperty("java.io.tmpdir");
+		System.setProperty("java.io.tmpdir.Indexdir", tmp + "Indexdir/");
+		String Indexdir = System.getProperty("java.io.tmpdir.Indexdir");
+		System.out.println(">>>>>>>>>Index created in tmp directory >>>>>>>>" + Indexdir);
 		
 		LuceneConfiguration LC = new LuceneConfiguration();
-		System.out.println("coming from deleteLuceneIndex" + (LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY")));
-		
-		msWin = LC.GetLuceneConfiguration("msWin");
-		indexDir = LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY");
+		//System.out.println("coming from deleteLuceneIndex" + (LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY")));
+		System.out.println("coming from deleteLuceneIndex" + Indexdir);
 
-		this.setStatus("<h4>About to delete the contents of the DB index "+ indexDir +"</h4>");
+		msWin = LC.GetLuceneConfiguration("msWin");
+		//indexDir = LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY");
+
+		//this.setStatus("<h4>About to delete the contents of the DB index "+ indexDir +"</h4>");
+		this.setStatus("<h4>About to delete the contents of the DB index "+ Indexdir +"</h4>");
 
 		//browse to  the index directory
-		deleteDirContents( indexDir, 0, msWin);
-		
+		//deleteDirContents( indexDir, 0, msWin);
+		deleteDirContents( Indexdir, 0, msWin);
 	   	
-		this.setStatus("<h4>Contents of index directory  "+ indexDir + " deleted </h4>");
+		//this.setStatus("<h4>Contents of index directory  "+ indexDir + " deleted </h4>");
+		this.setStatus("<h4>Contents of index directory  "+ Indexdir + " deleted </h4>");
 
 	}
 	
@@ -481,21 +520,31 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 	 */
 	public void DeleteOntocatIndex() {
 		String msWin;
-		String OntoIndexDir;
+		//String OntoIndexDir;
+		
+		String tmp =  System.getProperty("java.io.tmpdir");
+		System.setProperty("java.io.tmpdir.OntocatIndexdir", tmp + "OntocatIndexdir/");
+		String OntocatIndexdir = System.getProperty("java.io.tmpdir.OntocatIndexdir");
+		System.out.println(">>>>>>>>>Index created in tmp directory >>>>>>>>" + OntocatIndexdir);
+
 		
 		LuceneConfiguration LC = new LuceneConfiguration();
-		System.out.println("coming from deleteOntocatIndex" + (LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY")));
+		//System.out.println("coming from deleteOntocatIndex" + (LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY")));
+		System.out.println("coming from deleteOntocatIndex" + OntocatIndexdir );
+
 		
 		msWin = LC.GetLuceneConfiguration("msWin");
-		OntoIndexDir = LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY");
+		//OntoIndexDir = LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY");
 
-		this.setStatus("<h4>About to delete the contents of the Ontocat index "+ OntoIndexDir +"</h4>");
+		//this.setStatus("<h4>About to delete the contents of the Ontocat index "+ OntoIndexDir +"</h4>");
+		this.setStatus("<h4>About to delete the contents of the Ontocat index "+ OntocatIndexdir +"</h4>");
 
 		//browse to  the index directory
-		deleteDirContents( OntoIndexDir, 0, msWin);
+		//deleteDirContents( OntoIndexDir, 0, msWin);
+		deleteDirContents( OntocatIndexdir, 0, msWin);
 		
-		this.setStatus("<h4>Contents of index directory  "+ OntoIndexDir + " deleted </h4>");
-
+		//this.setStatus("<h4>Contents of index directory  "+ OntoIndexDir + " deleted </h4>");
+		this.setStatus("<h4>Contents of index directory  "+ OntocatIndexdir + " deleted </h4>");
 
 	}
 	
@@ -516,11 +565,20 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 	   IndexWriter writer=null;
 	   StandardAnalyzer analyzer = null;
 	   File file = null;
+	   
+	   String tmp =  System.getProperty("java.io.tmpdir");
+	   System.setProperty("java.io.tmpdir.OntocatIndexdir", tmp + "OntocatIndexdir/");
+	   String OntocatIndexdir = System.getProperty("java.io.tmpdir.OntocatIndexdir");
+	   System.out.println(">>>>>>>>>Index created in tmp directory >>>>>>>>" + OntocatIndexdir);
+	   
 	   try {
 		   System.out.println("Start Indexing Ontocat results") ;
-		   this.setStatus("Starting indexing Ontocat results in " + LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY"));
+		  // this.setStatus("Starting indexing Ontocat results in " + LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY"));
+		   this.setStatus("Starting indexing Ontocat results in " + OntocatIndexdir );
 	
-		   file = new File(LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY"));
+		   //file = new File(LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY"));
+		   file = new File(OntocatIndexdir);
+
 		   analyzer = new StandardAnalyzer(Version.LUCENE_30);
 		   writer = new IndexWriter(FSDirectory.open(file), analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
 		    
