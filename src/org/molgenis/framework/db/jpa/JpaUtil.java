@@ -27,9 +27,15 @@ public class JpaUtil {
 		return emi;
 	}
 	
+	public static EntityManager dropAndCreateTables() {
+		return dropAndCreateTables(null);
+	}
+	
 	public static EntityManager dropAndCreateTables(EntityManager em) {
-		em.clear();
-		em.close();
+		if(em != null) {
+			em.clear();
+			em.close();
+		}
 		Persistence.createEntityManagerFactory("molgenis_test").getCache().evictAll();
 		Persistence.createEntityManagerFactory("molgenis_test").close();
 		

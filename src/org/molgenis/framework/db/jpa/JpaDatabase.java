@@ -116,14 +116,16 @@ public class JpaDatabase extends AbstractDatabase implements Database
 		int count = -1;
 		try
 		{
+                        boolean commit = inTx();
 			beginTransaction();
 			if (entities != null && entities.size() > 0)
 			{
 				++i;
 				count = getMapper(entities.get(0).getClass().getName()).add(
-						(List<Entity>) entities, em);
+						(List<Entity>) entities);
 			}
-			commitTransaction();
+                        if(!commit)
+                            commitTransaction();
 		}
 		catch (Exception e)
 		{
@@ -367,8 +369,10 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	@Override
 	public boolean inTx()
 	{
-		if (em.getTransaction() == null) return false;
-		return em.getTransaction().isActive();
+		if (em.getTransaction() == null) 
+                    return false;
+		
+                return em.getTransaction().isActive();
 	}
 
 	@Override
@@ -412,7 +416,7 @@ public class JpaDatabase extends AbstractDatabase implements Database
 		{
 			beginTransaction();
 			count = getMapper(entities.get(0).getClass().getName()).remove(
-					(List<Entity>) entities, em);
+					(List<Entity>) entities);
 			commitTransaction();
 		}
 		catch (Exception e)
@@ -526,7 +530,7 @@ public class JpaDatabase extends AbstractDatabase implements Database
 		{
 			beginTransaction();
 			getMapper(entities.get(0).getClass().getName()).update(
-					(List<Entity>) entities, em);
+					(List<Entity>) entities);
 			commitTransaction();
 		}
 		catch (Exception e)

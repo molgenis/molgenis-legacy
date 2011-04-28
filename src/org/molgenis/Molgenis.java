@@ -210,6 +210,7 @@ public class Molgenis {
 				 //generators.add(new JpaDataTypeListenerGen());
 				 generators.add(new JpaMapperGen());
 				 generators.add(new JDBCMetaDatabaseGen());
+//				 generators.add(new JDBCDatabaseGen());
 				 if(options.generate_persistence) {
 					 generators.add(new PersistenceGen());
 				 }

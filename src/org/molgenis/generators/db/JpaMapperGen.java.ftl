@@ -85,8 +85,8 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 		this.em = em;
 	}
 
-	@Deprecated
-	public ${JavaName(entity)}JpaMapper(Database db) {}
+//	@Deprecated
+//	public ${JavaName(entity)}JpaMapper(Database db) {}
 
 	public void setEntityManager(EntityManager em) {
 		this.em = em;
@@ -96,7 +96,7 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 	@Override
 	public List<${JavaName(entity)}> findAll() {
 		List<${JavaName(entity)}> result =
-			(List<${JavaName(entity)}>)em.createNamedQuery("${JavaName(entity)}.findAll")
+			(List<${JavaName(entity)}>)em.createNamedQuery("${JavaName(entity)}.findAll", ${JavaName(entity)}.class)
 									.getResultList();
 		return result;
 	}
@@ -104,28 +104,14 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 	@Override
 	public List<${JavaName(entity)}> find(String qlWhereClause, Integer limit, Integer offset) {
 		String ql = "SELECT ${name(entity)} FROM ${JavaName(entity)} ${name(entity)} " + qlWhereClause;
-		
-		if(offset != null && limit != null) {
-			return (List<${JavaName(entity)}>)em
-							.createQuery(ql)
-							.setFirstResult(offset)
-							.setMaxResults(limit)
-							.getResultList();
-		} else if(offset != null) {
-			return (List<${JavaName(entity)}>)em
-							.createQuery(ql)
-							.setFirstResult(offset)
-							.getResultList(); 
-		} else if(limit != null) {
-			return (List<${JavaName(entity)}>)em
-							.createQuery(ql)
-							.setMaxResults(limit)
-							.getResultList();
-		} else { 
-			return (List<${JavaName(entity)}>)em
-							.createQuery(ql)
-							.getResultList();		
+		TypedQuery<${JavaName(entity)}> query = em.createQuery(ql, ${JavaName(entity)}.class);
+		if(offset != null) {
+			query.setFirstResult(offset);
 		}
+		if(limit != null) {
+			query.setMaxResults(limit);
+		}
+		return query.getResultList();		
 	}
 
 	@Override

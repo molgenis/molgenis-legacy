@@ -17,10 +17,12 @@ import org.molgenis.util.Entity;
  */
 public interface JpaMapper<E extends Entity> extends DatabaseMapper<E>
 {
-
-	public List<E> findAll(EntityManager em);
-	public List<E> find(String jpaQlWhereClause, Integer limit, Integer offset, EntityManager em);
-	public int count(String jpaQlWhereClause, EntityManager em);
+	/** Create a new instance */
+	public E create();
+	
+	public List<E> findAll();
+	public List<E> find(String jpaQlWhereClause, Integer limit, Integer offset);
+	public int count(String jpaQlWhereClause);
 //        public int count(EntityManager em, QueryRule... rules);
 
 	/**
@@ -32,17 +34,17 @@ public interface JpaMapper<E extends Entity> extends DatabaseMapper<E>
 	 * maps {@link org.molgenis.framework.Database#add(List)}
 	 * @throws DatabaseException 
 	 */
-	public int add(List<E> entities, EntityManager em) throws DatabaseException;
+	public int add(List<E> entities) throws DatabaseException;
 
 	/**
 	 * maps {@link org.molgenis.framework.Database#update(List)}
 	 */
-	public int update(List<E> entities, EntityManager em) throws DatabaseException;
+	public int update(List<E> entities) throws DatabaseException;
 
 	/**
 	 * maps {@link org.molgenis.framework.Database#remove(List)}
 	 */
-	public int remove(List<E> entities, EntityManager em) throws DatabaseException;
+	public int remove(List<E> entities) throws DatabaseException;
 
 	/**
 	 * helper method to prepares file for saving.
@@ -65,6 +67,5 @@ public interface JpaMapper<E extends Entity> extends DatabaseMapper<E>
 	
 	public String getTableFieldName(String field);
 	
-	/** Create a new instance */
-	public E create();
+
 }

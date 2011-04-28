@@ -21,7 +21,7 @@
 	<persistence-unit name="molgenis_test" transaction-type="RESOURCE_LOCAL">
 	    <exclude-unlisted-classes>false</exclude-unlisted-classes>
 	    <properties>
-	      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/molgenis_test?innodb_autoinc_lock_mode=2"/>
+	      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/test_molgenis_test?innodb_autoinc_lock_mode=2"/>
 	      <property name="javax.persistence.jdbc.password" value="molgenis"/>
 	      <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
 	      <property name="javax.persistence.jdbc.user" value="molgenis"/>
