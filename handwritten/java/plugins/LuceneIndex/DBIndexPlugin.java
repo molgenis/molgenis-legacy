@@ -11,12 +11,12 @@ package plugins.LuceneIndex;
 
 
 import java.io.File;
-import java.io.FileInputStream;
+//import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
+//import java.util.Properties;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
@@ -150,9 +150,13 @@ public class DBIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 		
 		if ("SearchLuceneIndex".equals(request.getAction())) {
 			// check if the index has been created, one way is to create a boolean value , or check if the index directory contains an index .
-			this.DirectoryhasContents(LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"));
-
-			if (!this.DirectoryhasContents(LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"))) {	
+			String tmp =  System.getProperty("java.io.tmpdir");
+			System.setProperty("java.io.tmpdir.indexdir", tmp + "indexdir/");
+			String IndexDir = System.getProperty("java.io.tmpdir.indexdir");
+			System.out.println(">>>>>>>>>system>>>>>>>>>" + IndexDir);
+			
+			//if (!this.DirectoryhasContents(LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"))) {	
+			if (!this.DirectoryhasContents(IndexDir)) {	
 				this.setInputToken(request.getString("InputToken").trim());
 				this.SearchAllDBTablesIndex(db);
 				
@@ -168,6 +172,10 @@ public class DBIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 		}
 			
 		if ("ExpandQuery".equals(request.getAction())){
+			
+			String tmp =  System.getProperty("java.io.tmpdir");
+			System.setProperty("java.io.tmpdir.indexdir", tmp + "indexdir/");
+			System.out.println(">>>>>>>>>system>>>>>>>>>" + System.getProperty("java.io.tmpdir.indexdir"));
 			
 			if (useOntologies.compareTo("\"false\"") ==  0){
 				this.setStatus("<h3> You cannot use expand query option. Please adjust your configuration file to include ontologies.</h3>");
@@ -339,12 +347,21 @@ public class DBIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 	 */
 	public int SearchAllDBFieldIndex(Database db, String fieldName) {
 
-		LuceneConfiguration LC = new LuceneConfiguration();
+		//LuceneConfiguration LC = new LuceneConfiguration();
 
+		String tmp =  System.getProperty("java.io.tmpdir");
+		System.setProperty("java.io.tmpdir.indexdir", tmp + "indexdir/");
+		String IndexDir = System.getProperty("java.io.tmpdir.indexdir");
+		System.out.println(">>>>>>>>>system>>>>>>>>>" + IndexDir);
+		
 
 		String userQuery = this.getInputToken();
-		this.setStatus("Starting search for " + userQuery + " (all)index in " + LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"));
-		System.out.println("Starting search for " + userQuery + " (all)index in " + LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"));
+		//this.setStatus("Starting search for " + userQuery + " (all)index in " + LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"));
+		//System.out.println("Starting search for " + userQuery + " (all)index in " + LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"));
+		
+		this.setStatus("Starting search for " + userQuery + " (all)index in " + IndexDir );
+		System.out.println("Starting search for " + userQuery + " (all)index in " + IndexDir);
+		
 		
 		IndexReader reader = null;
 		//StandardAnalyzer analyzer = null;
@@ -362,7 +379,9 @@ public class DBIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 		try {
 			analyzer = new PorterStemAnalyzer();
 			//Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
-			File file = new File(LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"));
+			File file  = new File(IndexDir) ;
+			//File file = new File(LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"));
+			
 			reader = IndexReader.open(FSDirectory.open(file), true);
 			searcher = new IndexSearcher(reader);
 			Searchable[] indexes = new IndexSearcher[1];
