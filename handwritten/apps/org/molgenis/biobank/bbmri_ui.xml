@@ -5,7 +5,7 @@
 	<menu name="main" position="left" startswith="WelcomeScreen">
 		<plugin name="BbmriWelcomeScreen" type="plugins.welcome.BbmriWelcomeScreenPlugin" label="Welcome" />
 		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Login" />
-		<form name="Cohorts" entity="BiobankPanel" label="Biobanks"	hide_fields="id,description,Species,Individuals,PanelType,FounderPanels,ontologyReference" />
+		<form name="Cohorts" entity="BiobankPanel" label="Biobank Overview"	hide_fields="id,description,Species,Individuals,PanelType,FounderPanels,ontologyReference" />
 		<menu name="Admin">
 		    <menu name="DataViews">
 				<!-- <form name="Biobanks" entity="Biobank" view="list" /> -->
