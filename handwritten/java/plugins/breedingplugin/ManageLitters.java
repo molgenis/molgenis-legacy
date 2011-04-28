@@ -163,7 +163,7 @@ public class ManageLitters extends PluginModel<Entity>
 	}
 	
 	public String getCustomNameFeature() throws DatabaseException, ParseException {
-		int featureId = ct.getCustomNameFeatureId();
+		int featureId = ct.getCustomNameFeatureId(this.getLogin().getUserId());
 		if (featureId == -1) {
 			return null;
 		} else {

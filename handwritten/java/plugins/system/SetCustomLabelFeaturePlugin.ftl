@@ -34,7 +34,7 @@
 	<select name="feature" id="feature" class="selectbox">
 		<option value="-1">name</option>
 		<#list screen.measurementList as measurement>
-			<option value="${measurement.id}">${measurement.name}</option>
+			<option value="${measurement.id?string.computer}">${measurement.name}</option>
 		</#list>
 	</select>
 </div>

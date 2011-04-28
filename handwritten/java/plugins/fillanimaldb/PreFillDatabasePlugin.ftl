@@ -25,8 +25,8 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->	
 
-<h1>Pre-fill the empty database with factory defaults, needed to make the system run</h1>
-<em>Caution: all the existing database items will be removed first!</em>
+<h1>Pre-fill database with factory defaults, needed to make the system run</h1>
+<em>Caution: all existing database items will be removed first!</em>
 
 <div id='buttons_part1' class='row'>
 	<input type='submit' class='addbutton' value='Pre-fill database' onclick="__action.value='fillDB'" />

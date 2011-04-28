@@ -9,6 +9,7 @@ package plugins.system;
 
 import java.util.List;
 
+import org.molgenis.animaldb.CustomLabelFeature;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -57,7 +58,8 @@ public class SetCustomLabelFeaturePlugin extends PluginModel<Entity>
 	}
 	
 	public String getCurrentLabel() {
-		int featureId = ct.getCustomNameFeatureId();
+		int userId = this.getLogin().getUserId();
+		int featureId = ct.getCustomNameFeatureId(userId);
 		if (featureId == -1) {
 			return "name";
 		}
@@ -75,17 +77,36 @@ public class SetCustomLabelFeaturePlugin extends PluginModel<Entity>
 		try
 		{
 			String action = request.getString("__action");
+			int userId = this.getLogin().getUserId();
 			
 			if (action.equals("setLabel")) {
-				String featureIdString = request.getString("feature");
-				if (featureIdString != null && !featureIdString.equals("") && !featureIdString.equals("0")) {
-					featureIdString.replace(".", "");
-					featureIdString.replace(",", "");
-					ct.setCustomNameFeatureId(Integer.parseInt(featureIdString));
-					
-					this.getMessages().clear();
-					this.getMessages().add(new ScreenMessage("Label successfully set", true));
+				int featureId = request.getInt("feature");
+				if (featureId != -1) {
+					CustomLabelFeature entry;
+					// check if user already has a feature set
+					List<CustomLabelFeature> featList = db.query(CustomLabelFeature.class).eq(CustomLabelFeature.USERID, userId).find();
+					if (featList.size() > 0) {
+						entry = featList.get(0);
+						entry.setFeatureId(featureId);
+						db.update(entry);
+					} else {
+						entry = new CustomLabelFeature();
+						entry.setUserId(userId);
+						entry.setFeatureId(featureId);
+						db.add(entry);
+					}
+				} else {
+					List<CustomLabelFeature> featList = db.query(CustomLabelFeature.class).eq(CustomLabelFeature.USERID, userId).find();
+					if (featList.size() > 0) {
+						CustomLabelFeature entry = featList.get(0);
+						db.remove(entry);
+					}
 				}
+				
+				ct.makeObservationTargetNameMap(userId);
+				
+				this.getMessages().clear();
+				this.getMessages().add(new ScreenMessage("Label successfully set", true));
 			}
 		} catch(Exception e) {
 			this.getMessages().clear();

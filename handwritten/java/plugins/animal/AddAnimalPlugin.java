@@ -250,7 +250,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		// Check if a custom name feature is set
 		String customNameFeature = null;
 		int jMax = 8;
-		int customNameFeatureId = ct.getCustomNameFeatureId();
+		int customNameFeatureId = ct.getCustomNameFeatureId(this.getLogin().getUserId());
 		if (customNameFeatureId != -1) {
 			customNameFeature = ct.getMeasurementById(customNameFeatureId).getName();
 			jMax = 9;
@@ -457,7 +457,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		entrydate.setNillable(false);
 		
 		customNamePanel = null;
-		int customNameFeatureId = ct.getCustomNameFeatureId();
+		int customNameFeatureId = ct.getCustomNameFeatureId(this.getLogin().getUserId());
 		if (customNameFeatureId != -1) {
 			// Only show custom name panel when the user has selected a custom name feature
 			

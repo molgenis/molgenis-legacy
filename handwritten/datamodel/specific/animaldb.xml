@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE molgenis PUBLIC "MOLGENIS 1.0" "http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd" -->
+<molgenis name="org.molgenis">
+	<module name="animaldb">
+		<entity name="CustomLabelFeature">
+			<description>Stores the features users use to custom-label their targets.</description>
+			<field name="id" type="autoid" description="automatically generated id" />
+			<field name="userId" type="xref" xref_entity="MolgenisUser" nillable="false" unique="true" />
+			<field name="featureId" type="xref" xref_entity="Measurement" nillable="false" />
+		</entity>
+	</module>
+</molgenis>

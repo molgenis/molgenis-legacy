@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.molgenis.animaldb.CustomLabelFeature;
 import org.molgenis.auth.MolgenisEntity;
 import org.molgenis.batch.MolgenisBatch;
 import org.molgenis.core.OntologyTerm;
@@ -68,7 +69,6 @@ public class CommonService
 	private static int protAppCounter = 0;
 	private boolean isFilled = false; //for fill database query
 	private transient Logger logger = Logger.getLogger(CommonService.class);
-	private static int customNameFeatureId = -1;
 	private static Map<Integer, String> observationTargetNameMap = null;
 	
 	// --- Stuff for Singleton design pattern
@@ -90,27 +90,26 @@ public class CommonService
 	{
 	    CommonService.db = db;
 	}
-
-	/**
-	 * Sets the id of the ObservableFeature the user has chosen as custom name for the
-	 * ObservationTargets, and then makes a map of ObservationTargets and their names/labels.
-	 * 
-	 * @throws ParseException 
-	 * @throws DatabaseException 
-	 */
-	public void setCustomNameFeatureId(int customNameFeatureId) throws DatabaseException, ParseException {
-		CommonService.customNameFeatureId = customNameFeatureId;
-		makeObservationTargetNameMap();
-	}
 	
 	/**
 	 * Returns the id of the ObservableFeature the user has chosen as custom name for the
 	 * ObservationTargets, or -1 if none was set.
 	 * 
+	 * @param userId
 	 * @return
 	 */
-	public int getCustomNameFeatureId() {
-		return CommonService.customNameFeatureId;
+	public int getCustomNameFeatureId(int userId) {
+		List<CustomLabelFeature> featList;
+		try {
+			featList = db.query(CustomLabelFeature.class).eq(CustomLabelFeature.USERID, userId).find();
+		} catch (Exception e) {
+			return -1;
+		}
+		if (featList.size() > 0) {
+			return featList.get(0).getFeatureId();
+		} else {
+			return -1;
+		}
 	}
 	
 	/**
@@ -357,7 +356,10 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public void makeObservationTargetNameMap() throws DatabaseException, ParseException {
+	public void makeObservationTargetNameMap(int userId) throws DatabaseException, ParseException {
+		
+		int customNameFeatureId = getCustomNameFeatureId(userId);
+		
 		observationTargetNameMap = new HashMap<Integer, String>();
 		List<Integer> targetIdList = new ArrayList<Integer>();
 		// First fill with standard names
@@ -370,9 +372,9 @@ public class CommonService
 			observationTargetNameMap.put(targetId, getObservationTargetById(targetId).getName());
 		}
 		// Then overwrite with custom names, if existing
-		if (CommonService.customNameFeatureId != -1) {
+		if (customNameFeatureId != -1) {
 			Query<ObservedValue> valueQuery = db.query(ObservedValue.class);
-			valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, CommonService.customNameFeatureId));
+			valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, customNameFeatureId));
 			valueQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, targetIdList));
 			List<ObservedValue> valueList = valueQuery.find();
 			for (ObservedValue value : valueList) {
