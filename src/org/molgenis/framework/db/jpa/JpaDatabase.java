@@ -94,10 +94,10 @@ public class JpaDatabase extends AbstractDatabase implements Database
 		try
 		{
 			beginTransaction();
-			List<Entity> entities = new ArrayList<Entity>();
-			entities.add(entity);
-			count = add(entities);
-			commitTransaction();
+				List<Entity> entities = new ArrayList<Entity>();
+				entities.add(entity);
+				count = add(entities);
+            commitTransaction();
 		}
 		catch (javax.persistence.PersistenceException e)
 		{
@@ -116,16 +116,14 @@ public class JpaDatabase extends AbstractDatabase implements Database
 		int count = -1;
 		try
 		{
-                        boolean commit = inTx();
 			beginTransaction();
-			if (entities != null && entities.size() > 0)
-			{
-				++i;
-				count = getMapper(entities.get(0).getClass().getName()).add(
-						(List<Entity>) entities);
-			}
-                        if(!commit)
-                            commitTransaction();
+				if (entities != null && entities.size() > 0)
+				{
+					++i;
+					count = getMapper(entities.get(0).getClass().getName()).add(
+							(List<Entity>) entities);
+				}
+				commitTransaction();
 		}
 		catch (Exception e)
 		{
@@ -172,7 +170,7 @@ public class JpaDatabase extends AbstractDatabase implements Database
 					}
 				}
 			});
-			commitTransaction();
+            commitTransaction();
 		}
 		catch (Exception e)
 		{
@@ -183,24 +181,38 @@ public class JpaDatabase extends AbstractDatabase implements Database
 		return count.get();
 	}
 
-	private void beginTransaction() throws DatabaseException
+	private int transactionCount = 0;
+	
+	@Override
+	public void beginTx() throws DatabaseException
 	{
-		if (!inTx())
-		{
-			beginTx();
-		}
-	}
-
-	private void commitTransaction() throws DatabaseException
-	{
-		if (inTx())
-		{
-			commitTx();
-		}
+            if(transactionCount == 0) {
+                beginTransaction();
+            }
+            ++transactionCount;          
+//		++transactionCount;
+//		if (!inTx())
+//		{
+//			beginTransaction();
+//		}
 	}
 
 	@Override
-	public void beginTx() throws DatabaseException
+	public void commitTx() throws DatabaseException
+	{
+		--transactionCount;
+		if(transactionCount == 0) {
+			commitTransaction();
+		}
+		
+//		if(!localTransaction) {
+//			commitTx();
+//		} else if (inTx()) {
+//			commitTx();
+//		}
+	}
+
+	private void beginTransaction() throws DatabaseException
 	{
 		try
 		{
@@ -228,8 +240,7 @@ public class JpaDatabase extends AbstractDatabase implements Database
 		}
 	}
 
-	@Override
-	public void commitTx() throws DatabaseException
+	private void commitTransaction() throws DatabaseException
 	{
 		try
 		{
@@ -369,10 +380,14 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	@Override
 	public boolean inTx()
 	{
-		if (em.getTransaction() == null) 
-                    return false;
+		if(transactionCount == 0)
+			return false;
+		return true;
 		
-                return em.getTransaction().isActive();
+//		if (em.getTransaction() == null) 
+//                    return false;
+//		
+//        return em.getTransaction().isActive();
 	}
 
 	@Override
@@ -397,7 +412,7 @@ public class JpaDatabase extends AbstractDatabase implements Database
 			List<Entity> entities = new ArrayList<Entity>();
 			entities.add(entity);
 			count = remove(entities);
-			commitTransaction();
+            commitTransaction();			
 		}
 		catch (Exception e)
 		{
@@ -416,7 +431,7 @@ public class JpaDatabase extends AbstractDatabase implements Database
 		{
 			beginTransaction();
 			count = getMapper(entities.get(0).getClass().getName()).remove(
-					(List<Entity>) entities);
+					(List<Entity>) entities);		
 			commitTransaction();
 		}
 		catch (Exception e)
@@ -459,7 +474,6 @@ public class JpaDatabase extends AbstractDatabase implements Database
 					}
 				}
 			});
-			commitTransaction();
 		}
 		catch (Exception e)
 		{

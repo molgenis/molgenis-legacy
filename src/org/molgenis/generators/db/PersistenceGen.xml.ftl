@@ -25,7 +25,7 @@
 	      <property name="javax.persistence.jdbc.password" value="molgenis"/>
 	      <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
 	      <property name="javax.persistence.jdbc.user" value="molgenis"/>
-	      <property name="eclipselink.logging.level" value="FINE"/>
+	      <property name="eclipselink.logging.level" value="SEVERE"/>
 	      
 <!--	      <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
 
