@@ -3,17 +3,15 @@ package plugins.fillanimaldb;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Query;
-import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.security.Login;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
@@ -44,162 +42,74 @@ public class LoadUliDb
 
 	public void populateAnimal(String filename) throws Exception
 	{
+		final int speciesId = ct.getObservationTargetId("House mouse");
+		final SimpleDateFormat sdf = new SimpleDateFormat("d-M-yyyy H:mm:ss", Locale.US);
+		final SimpleDateFormat sdfMolgenis = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
+		final Calendar calendar = Calendar.getInstance();
+		
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
 		reader.parse(new CsvReaderListener()
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
-				Calendar calendar = Calendar.getInstance();
 				Date now = calendar.getTime();
-
 				
-
-				String oldanimalid = tuple.getString("animalid");
-				String oldanimalcustomid = tuple.getString("customid");
-				//String name = tuple.getString("customid");
-				String weandate = tuple.getString("weandate");
-				if (weandate.equals("NULL")) weandate = null;
-				//String status = tuple.getString("status");
-				String oldsex = tuple.getString("sex");
-				int oldspecies = tuple.getInt("species");
-				String background = tuple.getString("background");
-				int source = tuple.getInt("source");
-				//String partgroup = tuple.getString("participantgroup");
-				String remarks = tuple.getString("remarks");
-				String oldlocid = tuple.getString("location");
-				String oldlitterid = tuple.getString("litter");
-
-				ObservationTarget newAnimal = ct.createIndividual(invid, "animal" + oldanimalid, login.getUserId());
-				db.add(newAnimal);
-				int newanimalid = newAnimal.getId();
-
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
 				
-				// 'Active'
+				// Tiernummer -> make new animal + CustomId
+				String oldAnimalId = tuple.getString("Tiernummer");
+				ObservationTarget newAnimal;
+				if (ct.getObservationTargetId("animal" + oldAnimalId) == -1) { // check if one with this name already exists
+					newAnimal = ct.createIndividual(invid, "animal" + oldAnimalId, login.getUserId());
+				} else {
+					newAnimal = ct.createIndividual(invid, "animal" + oldAnimalId + "_dup", login.getUserId());
+				}
+				db.add(newAnimal);
+				int newAnimalId = newAnimal.getId();
+				int protocolId = ct.getProtocolId("SetCustomId");
+				int measurementId = ct.getMeasurementId("CustomId");
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+						protocolId, measurementId, newAnimalId, oldAnimalId, 0));
 				
-				// AnimalType
-				int protocolId = ct.getProtocolId("SetAnimalType");
-				int measurementId = ct.getMeasurementId("AnimalType");
-				String animalType = "A. Gewoon dier"; // safe assumption that this holds for all animals in OldADB
+				// laufende Nr -> OldUliDbId
+				protocolId = ct.getProtocolId("SetOldUliDbId");
+				measurementId = ct.getMeasurementId("OldUliDbId");
+				String oldUliDbId = tuple.getString("laufende Nr");
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-						protocolId, measurementId, newanimalid, animalType, 0));
-
-				// OldAnimalDBID
-				protocolId = ct.getProtocolId("SetOldAnimalDBAnimalID");
-				measurementId = ct.getMeasurementId("OldAnimalDBAnimalID");
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-						protocolId, measurementId, newanimalid, oldanimalid, 0));
-
-				// OldAnimalDB customID
-				protocolId = ct.getProtocolId("SetOldAnimalDBAnimalCustomID");
-				measurementId = ct.getMeasurementId("OldAnimalDBAnimalCustomID");
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-						protocolId, measurementId, newanimalid, oldanimalcustomid, 0));
+						protocolId, measurementId, newAnimalId, oldUliDbId, 0));
 				
-				// Sex
-				int sexlink = 0;
-				if (oldsex.equals("M")) {
-					sexlink = ct.getObservationTargetId("Male");
-				}
-				if (oldsex.equals("F")) {
-					sexlink = ct.getObservationTargetId("Female");
-				}
-				if (oldsex.equals("U")) {
-					sexlink = ct.getObservationTargetId("UnknownSex");
-				}
-				protocolId = ct.getProtocolId("SetSex");
-				measurementId = ct.getMeasurementId("Sex");
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-						protocolId, measurementId, newanimalid, null, sexlink));
-
-				// Species
-				int specieslink = 0;
-				if (oldspecies == 1) {
-					specieslink = ct.getObservationTargetId("Syrian hamster");
-				}
-				if (oldspecies == 2) {
-					specieslink = ct.getObservationTargetId("European groundsquirrel");
-				}
-				if (oldspecies == 3) {
-					specieslink = ct.getObservationTargetId("House mouse");
-				}
-				if (oldspecies == 4) {
-					specieslink = ct.getObservationTargetId("Siberian hamster");
-				}
-				if (oldspecies == 5) {
-					specieslink = ct.getObservationTargetId("Gray mouse lemur");
-				}
-				if (oldspecies == 6) {
-					specieslink = ct.getObservationTargetId("Brown rat");
-				}
+				// Tierkategorie -> Species (always Mus musculus)
 				protocolId = ct.getProtocolId("SetSpecies");
 				measurementId = ct.getMeasurementId("Species");
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-						protocolId, measurementId, newanimalid, null, specieslink));
-
-				// Background
-				int backgroundlink = 0;
-				if (!background.equals("NULL")) {
-					if (background.equals("1")) {
-						backgroundlink = ct.getObservationTargetId("CD1");
-					}
-					if (background.equals("2")) {
-						backgroundlink = ct.getObservationTargetId("C57black6J");
-					}
+						protocolId, measurementId, newAnimalId, null, speciesId));
+				
+				// Eingangsdatum, Abgangsdatum and Status -> Active + start and end time
+				String startDateString = tuple.getString("Eingangsdatum");
+				Date startDate = null;
+				if (startDateString != null) {
+					startDate = sdf.parse(startDateString);
 				}
-				protocolId = ct.getProtocolId("SetBackground");
-				measurementId = ct.getMeasurementId("Background");
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-						protocolId, measurementId, newanimalid, null, backgroundlink));
-
-				// Source
-				int newsource = 0;
-				if (source == 1) {
-					newsource = ct.getObservationTargetId("Harlan");
+				String endDateString = tuple.getString("Abgangsdatum");
+				Date endDate = null;
+				if (endDateString != null) {
+					endDate = sdf.parse(endDateString);
 				}
-				if (source == 2) {
-					newsource = ct.getObservationTargetId("Kweek chronobiologie");
+				// TODO: Abgangsdatum is often empty
+				String state = tuple.getString("Status");
+				if (state.equals("lebt")) {
+					state = "Alive";
+				} else {
+					state = "Dead";
 				}
-				if (source == 3) {
-					newsource = ct.getObservationTargetId("Kweek gedragsbiologie");
-				}
-				if (source == 4) {
-					newsource = ct.getObservationTargetId("Kweek dierfysiologie");
-				}
-				protocolId = ct.getProtocolId("SetSource");
-				measurementId = ct.getMeasurementId("Source");
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-						protocolId, measurementId, newanimalid, null, newsource));
-
-				// Location
-				if (!oldlocid.equals("NULL")) {
-					Query<ObservedValue> q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, "OldAnimalDBAnimalID"));
-					q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, oldlocid));
-					List<ObservedValue> valueList = q.find();
-					Iterator<ObservedValue> valueIt = valueList.iterator();
-					while (valueIt.hasNext())
-					{
-						// Check that the target is a Location, since there are also Animals with OldAnimalDB ID's
-						int newlocid = valueIt.next().getTarget_Id();
-						ObservationTarget tmpTarget = ct.getObservationTargetById(newlocid);
-						if (tmpTarget.getOntologyReference_Name().equals("Location")) {
-							protocolId = ct.getProtocolId("SetLocation");
-							measurementId = ct.getMeasurementId("Location");
-							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, 
-									now, null, protocolId, measurementId, newanimalid, null, newlocid));
-							break;
-						}
-					}
-				}
-
-				// OldAnimalDBRemarks
-				protocolId = ct.getProtocolId("SetOldAnimalDBRemarks");
-				measurementId = ct.getMeasurementId("OldAnimalDBRemarks");
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-						protocolId, measurementId, newanimalid, remarks, 0));
+				protocolId = ct.getProtocolId("SetActive");
+				measurementId = ct.getMeasurementId("Active");
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, startDate, endDate, 
+						protocolId, measurementId, newAnimalId, state, 0));
+				
+				// TODO ...
 				
 				// Add everything to DB
 				db.add(valuesToAddList);
@@ -227,6 +137,23 @@ public class LoadUliDb
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
+				Calendar calendar = Calendar.getInstance();
+				Date now = calendar.getTime();
+				
+				String lineName = tuple.getString("Linie");
+				// Make line panel
+				int lineId = ct.makePanel(invid, lineName, login.getUserId());
+				// Label it as line using the (Set)TypeOfGroup protocol and feature
+				int featureId = ct.getMeasurementId("TypeOfGroup");
+				int protocolId = ct.getProtocolId("SetTypeOfGroup");
+				db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, protocolId, featureId, lineId, 
+						"Line", 0));
+				// Set the source of the line (always 'Kweek moleculaire neurobiologie')
+				featureId = ct.getMeasurementId("Source");
+				protocolId = ct.getProtocolId("SetSource");
+				int sourceId = ct.getObservationTargetId("Kweek moleculaire neurobiologie");
+				db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, protocolId, featureId, lineId, 
+						null, sourceId));
 			}
 		});
 	}
