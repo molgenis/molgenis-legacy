@@ -54,13 +54,6 @@
 			<field name="permission" type="enum" enum_options="[read,write,own]"/>
 			<!-- no use case for 'execute' so don't use it -->
 		</entity>
-		<entity name="Authorizable" abstract="true">
-			<description>Interface for row level security</description>
-			<field name="canRead" type="xref" xref_field="MolgenisRole.id" xref_label="name" nillable="true"/>
-			<field name="canWrite" type="xref" xref_field="MolgenisRole.id" xref_label="name" nillable="true"/>
-			<!-- NO USE CASE FOR IT SO DON'T USE AS IT CONFUSES AS DEMO SHOWWED field name="canExecute" type="xref" xref_field="MolgenisRole.id" xref_label="name" nillable="true"/-->
-			<field name="owns" type="xref" xref_field="MolgenisRole.id" xref_label="name"/>
-		</entity>
 		<entity name="TestClass" implements="Authorizable">
 			<field name="id" type="autoid"/>
 			<field name="testField"/>
@@ -77,5 +70,6 @@
 			<description>Keep track on who edited the data and when. We always show the last in the user interface.</description>
 		</entity>
 		-->
+		<!-- 29-4 ER: moved Authorizable interface to separate xml so people can choose to have it or not -->
 	</module>
 </molgenis>

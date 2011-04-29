@@ -79,7 +79,7 @@ public class AddLocationPlugin extends PluginModel<Entity>
 				
 				// Make and add location
 				int invid = ct.getInvestigationId("AnimalDB");
-				int locid = ct.makeLocation(invid, name);
+				int locid = ct.makeLocation(invid, name, this.getLogin().getUserId());
 				if (slocid > 0) {
 					int protocolId = ct.getProtocolId("SetSublocationOf");
 					int measurementId = ct.getMeasurementId("Location");

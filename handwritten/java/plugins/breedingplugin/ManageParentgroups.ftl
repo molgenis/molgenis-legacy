@@ -38,7 +38,7 @@
 			<#if screen.selectedMotherIdList?exists>
 				<#list screen.selectedMotherIdList as selectedMotherId>
 					<#assign name = screen.getAnimalName(selectedMotherId)>
-					<option value='${selectedMotherId}'>${name}</option>
+					<option value='${selectedMotherId?string.computer}'>${name}</option>
 				</#list>
 			</#if>
 			</select>
@@ -49,7 +49,7 @@
 			<#if screen.motherIdList?exists>
 				<#list screen.motherIdList as motherId>
 					<#assign name = screen.getAnimalName(motherId)>
-					<option value='${motherId}'>${name}</option>
+					<option value='${motherId?string.computer}'>${name}</option>
 				</#list>
 			</#if>
 			</select>
@@ -67,7 +67,7 @@
 			<#if screen.selectedFatherIdList?exists>
 				<#list screen.selectedFatherIdList as selectedFatherId>
 					<#assign name = screen.getAnimalName(selectedFatherId)>
-					<option value='${selectedFatherId}'>${name}</option>
+					<option value='${selectedFatherId?string.computer}'>${name}</option>
 				</#list>
 			</#if>
 			</select>
@@ -78,7 +78,7 @@
 			<#if screen.fatherIdList?exists>
 				<#list screen.fatherIdList as fatherId>
 					<#assign name = screen.getAnimalName(fatherId)>
-					<option value='${fatherId}'>${name}</option>
+					<option value='${fatherId?string.computer}'>${name}</option>
 				</#list>
 			</#if>
 			</select>
@@ -88,13 +88,13 @@
 		</div>
 	</div>
 	
-	<!-- Source -->
-	<div id="sourceselect" class="row" style='clear:left'>
-		<label for="source">Breeding source:</label>
-		<select name="source" id="source" class="selectbox">
-			<#if screen.sourceList??>
-				<#list screen.sourceList as source>
-					<option value="${source.id}" <#if source.id == screen.source>selected="selected"</#if>>${source.name}</option>
+	<!-- Line -->
+	<div id="lineselect" class="row" style='clear:left'>
+		<label for="line">Breeding line:</label>
+		<select name="line" id="line" class="selectbox">
+			<#if screen.lineList??>
+				<#list screen.lineList as line>
+					<option value="${line.id?string.computer}" <#if line.id == screen.line>selected="selected"</#if>>${line.name}</option>
 				</#list>
 			</#if>
 		</select>

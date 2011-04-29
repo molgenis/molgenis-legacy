@@ -80,7 +80,7 @@ public class AddSpecialGroupPlugin extends PluginModel<Entity>
 					label = request.getString("label");
 				}
 				
-				int groupid = ct.makePanel(invid, name);
+				int groupid = ct.makePanel(invid, name, this.getLogin().getUserId());
 				if (label != null && !label.equals("0")) {
 					int protocolId = ct.getProtocolId("SetTypeOfGroup");
 					int measurementId = ct.getMeasurementId("TypeOfGroup");

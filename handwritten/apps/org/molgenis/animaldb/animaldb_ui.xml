@@ -35,16 +35,15 @@
 				<form name="observedvalue" entity="ObservedValue" view="list" label="Observed values" />
 				<form name="news" entity="MolgenisNews" view="list" label="News items" />
 			</menu>
-			<menu name="usermanagement" position="left" label="Permission tables" >
+			<menu name="usermanagement" position="left" label="Permission menu" >
 				<form name="MolgenisUser" entity="MolgenisUser" view="list" label="Users"/>
 				<form name="MolgenisGroup" entity="MolgenisGroup" view="list" label="Groups"/>
 				<form name="MolgenisUserGroupLink" entity="MolgenisUserGroupLink" view="list" label="Users in groups"/>
 				<form name="MolgenisEntity" entity="MolgenisEntity" view="list" label="Entities"/>
 				<form name="MolgenisPermission" entity="MolgenisPermission" view="list" label="Permissions"/>
+				<plugin name="PermissionManagementPlugin" type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin"
+					label="Permission management" />
 			</menu>
-			<plugin name="PermissionManagementPlugin" 
-				type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin"
-				label="Permission management" />
 			<plugin name="FillDatabase" type="plugins.fillanimaldb.FillDatabasePlugin"
 				label="Load legacy data" />
 			<plugin name="CascadingDeleteAnimals" type="plugins.system.CascadingDeleteAnimalsPlugin"
@@ -66,6 +65,8 @@
 			<plugin name="AddAnimal" type="plugins.animal.AddAnimalPlugin"
 				label="Bring in animals" />		
 			<menu name="breedingmodule" position="left" label="Breeding">
+				<plugin name="ManageLines" type="plugins.breedingplugin.ManageLines"
+					label="Manage breeding lines" />
 				<plugin name="ManageParentgroups" type="plugins.breedingplugin.ManageParentgroups"
 					label="Manage parent groups" />
 				<plugin name="ManageLitters" type="plugins.breedingplugin.ManageLitters"

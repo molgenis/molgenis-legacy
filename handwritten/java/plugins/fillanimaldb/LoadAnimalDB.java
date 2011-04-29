@@ -16,6 +16,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.security.Login;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.ProtocolApplication;
@@ -31,10 +32,12 @@ public class LoadAnimalDB
 {
 	private Database db;
 	private CommonService ct;
+	private Login login;
 
-	public LoadAnimalDB(Database db) throws Exception
+	public LoadAnimalDB(Database db, Login login) throws Exception
 	{
 		this.db = (JDBCDatabase) db;
+		this.login = login;
 		ct = CommonService.getInstance();
 		ct.setDatabase(this.db);
 	}
@@ -67,7 +70,7 @@ public class LoadAnimalDB
 				String oldlocid = tuple.getString("location");
 				String oldlitterid = tuple.getString("litter");
 
-				ObservationTarget newAnimal = ct.createIndividual(invid, "animal" + oldanimalid);
+				ObservationTarget newAnimal = ct.createIndividual(invid, "animal" + oldanimalid, login.getUserId());
 				db.add(newAnimal);
 				int newanimalid = newAnimal.getId();
 
@@ -240,7 +243,7 @@ public class LoadAnimalDB
 				String inloc = tuple.getString("inlocation");
 
 				// Make location and set OldAnimalDBLocationID
-				int locationId = ct.makeLocation(invid, name);
+				int locationId = ct.makeLocation(invid, name, login.getUserId());
 				int protocolId = ct.getProtocolId("SetOldAnimalDBLocationID");
 				int featureId = ct.getMeasurementId("OldAnimalDBLocationID");
 				db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
@@ -282,7 +285,7 @@ public class LoadAnimalDB
 
 				// Name
 				String name = tuple.getString("customlitterid");
-				int litterid = ct.makePanel(invid, name);
+				int litterid = ct.makePanel(invid, name, login.getUserId());
 				int protocolId = ct.getProtocolId("SetTypeOfGroup");
 				int measurementId = ct.getMeasurementId("TypeOfGroup");
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
@@ -306,7 +309,7 @@ public class LoadAnimalDB
 				}
 
 				// Parentgroup
-				int parentgroupid = ct.makePanel(invid, "Parentgroup" + litterid);
+				int parentgroupid = ct.makePanel(invid, "Parentgroup" + litterid, login.getUserId());
 				protocolId = ct.getProtocolId("SetTypeOfGroup");
 				measurementId = ct.getMeasurementId("TypeOfGroup");
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
@@ -441,7 +444,7 @@ public class LoadAnimalDB
 
 				// Name
 				String name = tuple.getString("title");
-				int expid = ct.makePanel(invid, name);
+				int expid = ct.makePanel(invid, name, login.getUserId());
 				int protocolId = ct.getProtocolId("SetTypeOfGroup");
 				int measurementId = ct.getMeasurementId("TypeOfGroup");
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
@@ -598,7 +601,7 @@ public class LoadAnimalDB
 
 				// Name
 				String name = tuple.getString("projecttitle");
-				int decappid = ct.makePanel(invid, "DEC Project: " + name);
+				int decappid = ct.makePanel(invid, "DEC Project: " + name, login.getUserId());
 				int protocolId = ct.getProtocolId("SetTypeOfGroup");
 				int measurementId = ct.getMeasurementId("TypeOfGroup");
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
@@ -914,7 +917,7 @@ public class LoadAnimalDB
 				String name = tuple.getString("name");
 
 				// add the group in the newAnimaldb
-				int groupId = ct.makePanel(invid, name);
+				int groupId = ct.makePanel(invid, name, login.getUserId());
 				int protocolId = ct.getProtocolId("SetTypeOfGroup");
 				int measurementId = ct.getMeasurementId("TypeOfGroup");
 				db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 

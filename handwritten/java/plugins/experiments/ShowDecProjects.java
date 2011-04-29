@@ -178,7 +178,7 @@ public class ShowDecProjects extends PluginModel<Entity>
 				int projectId;
 				if (listId == 0) {
 					// Make new DEC project
-					projectId = ct.makePanel(investigationId, name);
+					projectId = ct.makePanel(investigationId, name, this.getLogin().getUserId());
 					int protocolId = ct.getProtocolId("SetTypeOfGroup");
 					int measurementId = ct.getMeasurementId("TypeOfGroup");
 					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(investigationId, 

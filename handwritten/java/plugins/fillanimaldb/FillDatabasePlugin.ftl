@@ -25,8 +25,48 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->	
 
-<h1>Load database tables from the old version of AnimalDB</h1>
+<h1>Load data from legacy systems</h1>
 <em>Caution: this might interfere with existing database items!</em>
+
+<div>
+    <br />
+    <hr />
+    <br />
+</div>
+
+<h2>Molecular Neurobiology (Uli Eisel group)</h2>
+
+<div id="ulilinetablediv" class="row">
+	<label for="ulilinetable">'Linie' (Line) table CSV export file:</label>
+	<input type="file" name="ulilinetable" id="ulilinetable" class="textbox" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<input type='submit' class='addbutton' value='Load lines from old version' onclick="__action.value='loadUliLines'" />
+</div>
+
+<div id="uligenetablediv" class="row">
+	<label for="uligenetable">'Gen' (Gene) table CSV export file:</label>
+	<input type="file" name="uligenetable" id="uligenetable" class="textbox" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<input type='submit' class='addbutton' value='Load genes from old version' onclick="__action.value='loadUliGenes'" />
+</div>
+
+<div id="ulibackgroundtablediv" class="row">
+	<label for="ulibackgroundtable">'GenetischerHintergrund' (Background) table CSV export file:</label>
+	<input type="file" name="ulibackgroundtable" id="ulibackgroundtable" class="textbox" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<input type='submit' class='addbutton' value='Load backgrounds from old version' onclick="__action.value='loadUliBackgrounds'" />
+</div>
+
+<div id="ulianimaltablediv" class="row">
+	<label for="ulianimaltable">'Tierdetails' (Animal) table CSV export file:</label>
+	<input type="file" name="ulianimaltable" id="ulianimaltable" class="textbox" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<input type='submit' class='addbutton' value='Load animals from old version' onclick="__action.value='loadUliAnimals'" />
+</div>
+
+<div>
+    <br />
+    <hr />
+    <br />
+</div>
+
+<h2>Old AnimalDB (Ate Boerema)</h2>
 
 <div id="animaltablediv" class="row">
 	<label for="animaltable">Animal table CSV export file:</label>
@@ -44,12 +84,6 @@
 	<label for="littertable">Litter table CSV export file:</label>
 	<input type="file" name="littertable" id="littertable" class="textbox" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<input type='submit' class='addbutton' value='Load litters from old version' onclick="__action.value='loadLitters'" />
-</div>
-
-<div>
-    <br />
-    <hr />
-    <br />
 </div>
 
 <div id="experimenttablediv" class="row">
@@ -70,12 +104,6 @@
 	<input type='submit' class='addbutton' value='Load animals in DEC subprojects from old version' onclick="__action.value='loadAnimalsInExperiments'" />
 </div>
 
-<div>
-    <br />
-    <hr />
-    <br />
-</div>
-
 <div id="loadpresetsdiv" class="row">
 	<label for="presettable">Presets table CSV export file:</label>
 	<input type="file" name="presettable" id="presettable" class="textbox" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -86,12 +114,6 @@
     <label for="presetanimaltable">Presetanimals table CSV export file:</label>
     <input type="file" name="presetanimaltable" id="presetanimaltable" class="textbox" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <input type='submit' class='addbutton' value='Add the preset animals from the old version to targetgroups' onclick="__action.value='loadPresetAnimals'" />
-</div>
-
-<div>
-    <br />
-    <hr />
-    <br />
 </div>
 
 <div id="loadeventsdiv" class="row">

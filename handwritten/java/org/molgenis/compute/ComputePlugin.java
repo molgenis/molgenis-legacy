@@ -1,23 +1,31 @@
 package org.molgenis.compute;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.GenericPlugin;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.html.*;
-import org.molgenis.pheno.Individual;
+import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.html.ActionInput;
+import org.molgenis.framework.ui.html.LabelInput;
+import org.molgenis.framework.ui.html.StringInput;
+import org.molgenis.framework.ui.html.TablePanel;
+import org.molgenis.framework.ui.html.XrefInput;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.protocol.*;
+import org.molgenis.protocol.ComputeApplication;
+import org.molgenis.protocol.ComputeFeature;
+import org.molgenis.protocol.ComputeProtocol;
+import org.molgenis.protocol.Protocol;
+import org.molgenis.protocol.Workflow;
+import org.molgenis.protocol.WorkflowElement;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.text.SimpleDateFormat;
 
 
 public class ComputePlugin extends GenericPlugin
@@ -65,7 +73,7 @@ public class ComputePlugin extends GenericPlugin
     }
 
 
-    public ComputePlugin(String name, ScreenModel parent)
+    public ComputePlugin(String name, ScreenModel<Entity> parent)
     {
         super(name, parent);
     }
@@ -178,7 +186,10 @@ public class ComputePlugin extends GenericPlugin
             db.beginTx();
 
 
-            ObservationTarget target = new ObservationTarget("SVETLANA", 1);
+            ObservationTarget target = new ObservationTarget();
+            target.setName("SVETLANA");
+            target.setId(1);
+            
             ComputeApplication app = new ComputeApplication();
 
             Calendar cal = Calendar.getInstance();
@@ -250,7 +261,7 @@ public class ComputePlugin extends GenericPlugin
 
             List<WorkflowElement> workflowElements = db.query(WorkflowElement.class).equals(WorkflowElement.WORKFLOW, currentWorkflow.getId()).find();
 
-            List<Protocol> protocols = null;
+            //List<Protocol> protocols = null;
 
             for (int i = 0; i < workflowElements.size(); i++)
             {

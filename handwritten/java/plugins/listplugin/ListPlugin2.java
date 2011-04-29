@@ -99,7 +99,7 @@ public class ListPlugin2 extends PluginModel<Entity> {
 				
 				if (request.getString("newgroupname") != null) {
 					groupName = request.getString("newgroupname");
-					groupId = ct.makePanel(investigationId, groupName);
+					groupId = ct.makePanel(investigationId, groupName, this.getLogin().getUserId());
 					int protocolId = ct.getProtocolId("SetTypeOfGroup");
 					int measurementId = ct.getMeasurementId("TypeOfGroup");
 					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(investigationId, 

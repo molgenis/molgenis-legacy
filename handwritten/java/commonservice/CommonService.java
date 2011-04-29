@@ -186,14 +186,21 @@ public class CommonService
 	 * Get the Id of a given ObservationTarget, searching by name
 	 * 
 	 * @param targetName the name of the ObservationTarget element to look for
-	 * @return an integer matching the id of the ObservationTarget element
-	 * @throws DatabaseException
-	 * @throws ParseException
+	 * @return an integer matching the id of the ObservationTarget element, or -1 if none was found
 	 */
 	public int getObservationTargetId(String targetName)
-			throws DatabaseException, ParseException
 	{
-		return ObservationTarget.findByName(db, targetName).getId();
+		ObservationTarget tmpTarget;
+		try {
+			tmpTarget = ObservationTarget.findByName(db, targetName);
+		} catch (Exception e) {
+			return -1;
+		}
+		if (tmpTarget != null) {
+			return tmpTarget.getId();
+		} else {
+			return -1;
+		}
 	}
 
 	/**
@@ -205,12 +212,13 @@ public class CommonService
 	 * @throws ParseException
 	 * @throws IOException
 	 */
-	public Individual createIndividual(int investigationId, String individualName) throws DatabaseException,
+	public Individual createIndividual(int investigationId, String individualName, int userId) throws DatabaseException,
 			ParseException, IOException
 	{
 		Individual newInd = new Individual();
 		newInd.setInvestigation_Id(investigationId);
 		newInd.setName(individualName); // placeholder
+		newInd.setOwns(userId);
 		return newInd;
 	}
 
@@ -399,12 +407,13 @@ public class CommonService
 	 * @throws ParseException
 	 * @throws IOException
 	 */
-	public int makeLocation(int investigationId, String locationName)
+	public int makeLocation(int investigationId, String locationName, int userId)
 			throws DatabaseException, ParseException, IOException
 	{
 		Location locationToAdd = new Location();
 		locationToAdd.setName(locationName);
 		locationToAdd.setInvestigation(investigationId);
+		locationToAdd.setOwns(userId);
 		db.add(locationToAdd);
 		return locationToAdd.getId();
 	}
@@ -419,12 +428,13 @@ public class CommonService
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	public int makePanel(int investigationId, String panelName)
+	public int makePanel(int investigationId, String panelName, int userId)
 			throws DatabaseException, IOException, ParseException
 	{
 		Panel newGroup = new Panel();
 		newGroup.setName(panelName);
 		newGroup.setInvestigation(investigationId);
+		newGroup.setOwns(userId);
 		db.add(newGroup);
 		return newGroup.getId();
 	}
@@ -1142,7 +1152,7 @@ public class CommonService
 	 */
 	public int makeMeasurement(int investigationId, String name, int unitId,
 			MolgenisEntity targettypeAllowedForRelation, String panelLabelAllowedForRelation,
-			boolean temporal, String dataType, String description)
+			boolean temporal, String dataType, String description, int userId)
 	throws DatabaseException, IOException, ParseException
 	{
 		Measurement newFeat = new Measurement();
@@ -1158,6 +1168,7 @@ public class CommonService
 		newFeat.setTemporal(temporal);
 		newFeat.setDataType(dataType);
 		newFeat.setDescription(description);
+		newFeat.setOwns(userId);
 		db.add(newFeat);
 		return newFeat.getId();
 	}

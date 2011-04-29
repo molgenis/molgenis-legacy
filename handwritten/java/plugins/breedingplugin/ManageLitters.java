@@ -233,7 +233,7 @@ public class ManageLitters extends PluginModel<Entity>
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
 				
 				// Make group
-				int litterid = ct.makePanel(invid, litterName);
+				int litterid = ct.makePanel(invid, litterName, this.getLogin().getUserId());
 				// Mark group as a litter
 				int protocolId = ct.getProtocolId("SetTypeOfGroup");
 				int measurementId = ct.getMeasurementId("TypeOfGroup");
@@ -265,12 +265,12 @@ public class ManageLitters extends PluginModel<Entity>
 				measurementId = ct.getMeasurementId("Certain");
 				valuesToAddList.add(ct.createObservedValue(invid, eventid, eventDate, null, measurementId, litterid, 
 						valueString, 0));
-				// Source (take from parent group)
-				protocolId = ct.getProtocolId("SetSource");
+				// Get Source via Line
 				measurementId = ct.getMeasurementId("Source");
-				int sourceId;
 				try {
-					sourceId = ct.getMostRecentValueAsXref(selectedParentgroup, measurementId);
+					int lineId = ct.getMostRecentValueAsXref(selectedParentgroup, ct.getMeasurementId("Line"));
+					int sourceId = ct.getMostRecentValueAsXref(lineId, measurementId);
+					protocolId = ct.getProtocolId("SetSource");
 					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, 
 						eventDate, null, protocolId, measurementId, litterid, null, sourceId));
 				} catch(Exception e) {
@@ -366,7 +366,7 @@ public class ManageLitters extends PluginModel<Entity>
 				
 				// Link animals to litter and set wean dates etc.
 				for (int animalNumber = 0; animalNumber < weanSize; animalNumber++) {
-					ObservationTarget animalToAdd = ct.createIndividual(investigationId, "animal_" + weanDate + "_" + animalNumber);
+					ObservationTarget animalToAdd = ct.createIndividual(investigationId, "animal_" + weanDate + "_" + animalNumber, this.getLogin().getUserId());
 					animalsToAddList.add(animalToAdd);
 				}
 				db.add(animalsToAddList);

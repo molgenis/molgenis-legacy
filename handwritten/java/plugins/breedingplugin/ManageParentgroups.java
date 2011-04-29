@@ -24,7 +24,6 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.ProtocolApplication;
@@ -44,8 +43,8 @@ public class ManageParentgroups extends PluginModel<Entity>
 	private SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
 	private String groupName = "";
 	private String datetime = "";
-	private List<ObservationTarget> sourceList;
-	private int source;
+	private List<Panel> lineList;
+	private int line;
 	
 	public ManageParentgroups(String name, ScreenModel<Entity> parent)
 	{
@@ -113,20 +112,20 @@ public class ManageParentgroups extends PluginModel<Entity>
 		this.datetime = datetime;
 	}
 
-	public void setSource(int source) {
-		this.source = source;
+	public void setLine(int line) {
+		this.line = line;
 	}
 
-	public int getSource() {
-		return source;
+	public int getLine() {
+		return line;
 	}
 
-	public List<ObservationTarget> getSourceList() {
-		return sourceList;
+	public List<Panel> getLineList() {
+		return lineList;
 	}
 
-	public void setSourceList(List<ObservationTarget> sourceList) {
-		this.sourceList = sourceList;
+	public void setLineList(List<Panel> lineList) {
+		this.lineList = lineList;
 	}
 
 	@Override
@@ -182,10 +181,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 	private void setUserFields(Tuple request) throws DatabaseException, ParseException {
 		setDatetime(request.getString("datetime"));
 		setGroupName(request.getString("groupname"));
-		String sourceIdString = request.getString("source");
-		sourceIdString = sourceIdString.replace(".", "");
-		sourceIdString = sourceIdString.replace(",", "");
-		setSource(Integer.parseInt(sourceIdString));
+		setLine(request.getInt("line"));
 	}
 
 	@Override
@@ -207,7 +203,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 				setUserFields(request);
 				Date eventDate = sdf.parse(datetime);	
 				// Make group
-				int groupid = ct.makePanel(invid, groupName);
+				int groupid = ct.makePanel(invid, groupName, this.getLogin().getUserId());
 				// Mark group as parent group using a special event
 				int protocolId = ct.getProtocolId("SetTypeOfGroup");
 				int measurementId = ct.getMeasurementId("TypeOfGroup");
@@ -218,11 +214,11 @@ public class ManageParentgroups extends PluginModel<Entity>
 						"valuemothercertain", groupid, eventDate);
 				AddParents(db, this.selectedFatherIdList, "SetFather", "eventfather", "Father", "valuefather", 
 						"valuefathercertain", groupid, eventDate);
-				// Set source
-				protocolId = ct.getProtocolId("SetSource");
-				measurementId = ct.getMeasurementId("Source");
-				db.add(ct.createObservedValueWithProtocolApplication(invid, eventDate, null, 
-						protocolId, measurementId, groupid, null, source));
+				// Set line
+				protocolId = ct.getProtocolId("SetLine");
+				measurementId = ct.getMeasurementId("Line");
+				db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+						protocolId, measurementId, groupid, null, line));
 				
 				this.getMessages().clear();
 				this.getMessages().add(new ScreenMessage("Parentgroup succesfully added", true));
@@ -230,9 +226,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			
 			if (action.equals("addIndMother")) {
 				setUserFields(request);
-				String tmpString = request.getString("ind_mother").replace(".", "");
-				tmpString = tmpString.replace(",", "");
-				int motherId = Integer.parseInt(tmpString); 
+				int motherId = request.getInt("ind_mother");
 				if (!this.selectedMotherIdList.contains(motherId)) {
 					this.selectedMotherIdList.add(motherId);
 				}
@@ -240,17 +234,13 @@ public class ManageParentgroups extends PluginModel<Entity>
 			
 			if (action.equals("remIndMother")) {
 				setUserFields(request);
-				String tmpString = request.getString("mother").replace(".", "");
-				tmpString = tmpString.replace(",", "");
-				int motherId = Integer.parseInt(tmpString);
+				int motherId = request.getInt("mother");
 				this.selectedMotherIdList.remove(motherId);
 			}
 			
 			if (action.equals("addIndFather")) {
 				setUserFields(request);
-				String tmpString = request.getString("ind_father").replace(".", "");
-				tmpString = tmpString.replace(",", "");
-				int fatherId = Integer.parseInt(tmpString);
+				int fatherId = request.getInt("ind_father");
 				if (!this.selectedFatherIdList.contains(fatherId)) {
 					this.selectedFatherIdList.add(fatherId);
 				}
@@ -258,9 +248,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			
 			if (action.equals("remIndFather")) {
 				setUserFields(request);
-				String tmpString = request.getString("father").replace(".", "");
-				tmpString = tmpString.replace(",", "");
-				int fatherId = Integer.parseInt(tmpString);
+				int fatherId = request.getInt("father");
 				this.selectedFatherIdList.remove(fatherId);
 			}
 		} catch (Exception e) {
@@ -296,24 +284,8 @@ public class ManageParentgroups extends PluginModel<Entity>
 			motherIdList = populateParentList(db, "Female");
 			// Populate father list
 			fatherIdList = populateParentList(db, "Male");
-			// Populate source list
-			// All source types pertaining to "Eigen fok binnen uw organisatorische werkeenheid"
-			sourceList = new ArrayList<ObservationTarget>();
-			List<Panel> tmpSourceList = ct.getAllMarkedPanels("Source");
-			for (Panel tmpSource : tmpSourceList) {
-				int featid = ct.getMeasurementId("SourceType");
-				Query<ObservedValue> sourceTypeQuery = db.query(ObservedValue.class);
-				sourceTypeQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, tmpSource.getId()));
-				sourceTypeQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
-				List<ObservedValue> sourceTypeValueList = sourceTypeQuery.find();
-				if (sourceTypeValueList.size() > 0)
-				{
-					String sourcetype = sourceTypeValueList.get(0).getValue();
-					if (sourcetype.equals("Eigen fok binnen uw organisatorische werkeenheid")) {
-						sourceList.add(tmpSource);
-					}
-				}
-			}
+			// Populate line list
+			lineList = ct.getAllMarkedPanels("Line");
 			
 		} catch (Exception e) {
 			this.getMessages().clear();

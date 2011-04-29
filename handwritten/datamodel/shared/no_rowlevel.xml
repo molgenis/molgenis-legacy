@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="org.molgenis" label="Molgenis Auth Test Suite">
+	<module name="auth">
+		<entity name="Authorizable" abstract="true">
+			<description>Almost empty interface so users can still use Pheno model, where ObservationElement
+				implements Authorizable, without being bothered by row-level security.</description>
+			<field name="canRead" type="xref" xref_field="MolgenisRole.id" xref_label="name" nillable="true"
+				hidden="true" description="You can ignore this field and leave it empty. It is here so code
+				dependent on the full Authorizable interface still compiles when the empty one is chosen."/>
+			<field name="canWrite" type="xref" xref_field="MolgenisRole.id" xref_label="name" nillable="true"
+				hidden="true" description="You can ignore this field and leave it empty. It is here so code
+				dependent on the full Authorizable interface still compiles when the empty one is chosen."/>
+			<field name="owns" type="xref" xref_field="MolgenisRole.id" xref_label="name" nillable="true"
+				hidden="true" description="You can ignore this field and leave it empty. It is here so code
+				dependent on the full Authorizable interface still compiles when the empty one is chosen."/>
+		</entity>
+	</module>
+</molgenis>

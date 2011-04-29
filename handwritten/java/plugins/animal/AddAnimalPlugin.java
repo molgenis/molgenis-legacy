@@ -242,7 +242,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		int i;
 		for (i = 1; i <= nrOfAnimals; i++) {
 			// Make and add animal
-			ObservationTarget newAnimal = ct.createIndividual(invid, "animal_" + now + "_" + i);
+			ObservationTarget newAnimal = ct.createIndividual(invid, "animal_" + now + "_" + i, this.getLogin().getUserId());
 			animalsToAddList.add(newAnimal);
 		}
 		db.add(animalsToAddList);
