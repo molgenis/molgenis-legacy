@@ -38,6 +38,8 @@ public class UISchema extends SimpleTree<UISchema>
 	
 	private String namespace;
 	
+	private String group;
+	
 	// constructor(s)
 	/**
 	 * The standard constructor, which links the object in the tree (with the
@@ -173,6 +175,16 @@ public class UISchema extends SimpleTree<UISchema>
 		}
 		return menus;
 	}
+	
+	public ArrayList<String> getAllUniqueGroups(){
+		ArrayList<String> res = new ArrayList<String>();
+		for(UISchema schema : getAllChildren()){
+			if(schema.getGroup() != null && !res.contains(schema.getGroup()) && !schema.getGroup().equals("admin") && !schema.getGroup().equals("anonymous")){
+				res.add(schema.getGroup());
+			}
+		}
+		return res;
+	}
 
 	public List<Form> getAllForms()
 	{
@@ -275,5 +287,19 @@ public class UISchema extends SimpleTree<UISchema>
 	{
 		this.namespace = namespace;
 	}
+
+	public String getGroup()
+	{
+		return group;
+	}
+
+	public void setGroup(String group)
+	{
+		this.group = group;
+	}
+	
+//	public String getNearestParentRole(){
+//		TODO role inheritance?
+//	}
 	
 }

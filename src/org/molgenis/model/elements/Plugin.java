@@ -73,6 +73,15 @@ public class Plugin extends UISchema
 	{
 		this.readonly = readonly;
 	}
+	
+	public String toString()
+	{
+		if(getRecord() != null){
+			return String.format("Plugin(name=%s, entity=%s, group=%s)", getName(), getRecord().getName(), getGroup());
+		}else{
+			return String.format("Plugin(name=%s, group=%s)", getName(), getGroup());
+		}
+	}
 
 	/**
 	 * 

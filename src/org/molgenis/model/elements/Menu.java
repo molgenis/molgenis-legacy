@@ -81,6 +81,11 @@ public class Menu extends UISchema
 	{
 		this.position = position;
 	}
+	
+	public String toString()
+	{	
+		return String.format("Menu(name=%s, group=%s)", getName(), getGroup());
+	}
 
 	//
 	/**

@@ -972,6 +972,8 @@ public class MolgenisModelParser
 			String name = element.getAttribute("name").trim();
 			String namespace = model.getName();
 			String label = element.getAttribute("label");
+			
+			String group = element.getAttribute("group");
 
 			// check required properties
 			if (name == "" && !element.getTagName().equals("form"))
@@ -984,12 +986,18 @@ public class MolgenisModelParser
 			{
 				label = name;
 			}
+			
+			if(group.equals("")){
+				group = null; //TODO: Discuss with Erik/Morris/Robert!
+			}
+			
 
 			// add this element to the meta-model
 			if (element.getTagName().equals("menu"))
 			{
 				Menu menu = new Menu(name, parent);
 				menu.setLabel(label);
+				menu.setGroup(group);
 				menu.setNamespace(namespace);
 				if (element.getAttribute("position") != "") menu
 						.setPosition(Menu.Position.getPosition(element
@@ -1002,6 +1010,7 @@ public class MolgenisModelParser
 				if (name.equals("")) name = element.getAttribute("entity");
 				Form form = new Form(name, parent);
 				form.setLabel(label);
+				form.setGroup(group);
 				form.setNamespace(namespace);
 				new_parent = form;
 
@@ -1189,6 +1198,7 @@ public class MolgenisModelParser
 						.getAttribute("idfield"), element
 						.getAttribute("labelfield"));
 				tree.setLabel(label);
+				tree.setGroup(group);
 				tree.setNamespace(namespace);
 				new_parent = tree;
 
@@ -1219,6 +1229,7 @@ public class MolgenisModelParser
 				Plugin plugin = new Plugin(name, parent, element
 						.getAttribute("type"));
 				plugin.setLabel(label);
+				plugin.setGroup(group);
 				plugin.setNamespace(namespace);
 				new_parent = plugin;
 
@@ -1319,16 +1330,12 @@ public class MolgenisModelParser
 			try
 			{
 				// root must be menu
-				if (child.getNodeName().equals("form")
-						|| child.getNodeName().equals("plugin"))
+				if (child.getNodeName().equals("form") || child.getNodeName().equals("plugin") || child.getNodeName().equals("menu"))
 				{
 					parseUiSchema(model, (Element) child, model
 							.getUserinterface());
-				}
-				else if (child.getNodeName().equals("menu"))
-				{
-					parseUiSchema(model, (Element) child, model
-							.getUserinterface());
+				}else{
+					throw new MolgenisModelException("Unrecognized element: " + child.getNodeName());
 				}
 
 				// }

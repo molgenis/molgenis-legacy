@@ -368,7 +368,7 @@ public class Form extends UISchema
 			commands += command + ",";
 		String sortby = "";
 		if (this.sortby != null) sortby = "sortby=" + this.sortby;
-		return String.format("Form(name=%s, entity=%s, commands=%s,%s)", getName(), getRecord().getName(), commands,
+		return String.format("Form(name=%s, entity=%s, group=%s, commands=%s,%s)", getName(), getRecord().getName(), getGroup(), commands,
 				sortby);
 	}
 
