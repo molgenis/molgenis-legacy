@@ -86,7 +86,6 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 	
 	public AdminIndexes(String name, ScreenModel<org.molgenis.util.Entity> parent)
 	{
-		
 		super(name, parent);
 	}
 
@@ -109,7 +108,7 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 		//LuceneConfiguration LC = new LuceneConfiguration();
 
 		if ("CreateLuceneIndex".equals(request.getAction())) {
-			
+
 			String tmp =  System.getProperty("java.io.tmpdir");
 			System.setProperty("java.io.tmpdir.indexdir", tmp + "indexdir/");
 			String IndexDir = System.getProperty("java.io.tmpdir.indexdir");
@@ -121,11 +120,11 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 				this.setStatus("<h4> Index already exists in " + IndexDir  + "</h4>" ) ;
 
 			} else {
-				this.CreateLuceneIndex(db);
+				this.createIndex(db);
 			}		
 		}
 		if ("DeleteLuceneIndex".equals(request.getAction())) {
-			this.DeleteLuceneIndex();
+			this.deleteIndex();
 		}
 		
 		/** Unfortunately most of the times this option is not successful through the UI 
@@ -134,6 +133,7 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 		 *  	ontologies.add("Human Disease"); and 	ontologies.add("NCI Thesaurus");
 		 *  and the input is p.setInputToken("cystic lung disease"); 
 		 * */
+		
 		if ("CreateOntocatLuceneIndex".equals(request.getAction())) {
 			String tmp =  System.getProperty("java.io.tmpdir");
 			System.setProperty("java.io.tmpdir.OntocatIndexdir", tmp + "OntocatIndexdir/");
@@ -161,7 +161,7 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 	}
 
 	
-	public void buildIndexAllTables(Database db) throws Exception {
+	public void buildIndex(Database db) throws Exception {
 		
 		IndexWriter writer=null;
 		//StandardAnalyzer analyzer = null;
@@ -360,14 +360,14 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
     }
     
 		
-	public void CreateLuceneIndex(Database db) {
+	public void createIndex(Database db) {
 		this.setStatus("Start indexing ");
 		try {
-			this.buildIndexAllTables(db);
+			this.buildIndex(db);
 		} catch (Exception e) {
 			e.printStackTrace();	
 		}		
-		LuceneConfiguration LC = new LuceneConfiguration();
+		//LuceneConfiguration LC = new LuceneConfiguration();
 
 		String tmp =  System.getProperty("java.io.tmpdir");
 		System.setProperty("java.io.tmpdir.Indexdir", tmp + "Indexdir/");
@@ -407,7 +407,7 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 	 * The function deletes the DB index . The path is retrieved through LuceneConfiguration index . 
 	 * The variable in LuceneIndexConfiguration files defines if the program runs at mac or pc, in order to use the proper directory separators.  
 	 */
-	public void DeleteLuceneIndex() {
+	public void deleteIndex() {
 		String msWin;
 		//String indexDir;
 		
