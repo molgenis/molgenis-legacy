@@ -137,16 +137,12 @@ public class DBIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 			
 			if (ontologies.isEmpty()){
 				System.out.println("[Ontologies] is empty");
-				this.setStatus("<h4>Choose the ontologies to use for query expansion</h4>");
-			
-				
+				this.setStatus("<h4>Choose the ontologies to use for query expansion</h4>");		
 			}
 			
 			setOntologiesForExpansion(ontologies);
 			System.out.println("Ontologies : " + ontologies);
 		}
-		
-		
 		
 		if ("SearchLuceneIndex".equals(request.getAction())) {
 			// check if the index has been created, one way is to create a boolean value , or check if the index directory contains an index .
@@ -158,17 +154,14 @@ public class DBIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 			//if (!this.DirectoryhasContents(LC.GetLuceneConfiguration("LUCENE_INDEX_DIRECTORY"))) {	
 			if (!this.DirectoryhasContents(IndexDir)) {	
 				this.setInputToken(request.getString("InputToken").trim());
-				this.SearchAllDBTablesIndex(db);
+				this.searchIndex(db);
 				
 			} else {
 				this.setStatus("<h4> Cannot search for  " + request.getString("InputToken") + "  Please create index first.</h4> ");
 			}
 			
-
 			this.SaveUseCase(request.getString("InputToken").trim(), db, "Simple");
 			this.setInputToken("");
-
-
 		}
 			
 		if ("ExpandQuery".equals(request.getAction())){
@@ -185,7 +178,6 @@ public class DBIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 			}
 			
 		}
-		
 		
 	}
 	
@@ -249,7 +241,7 @@ public class DBIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 		
 	
 		for (int i=0; i<dbfields.size(); i++) {
-			hits += this.SearchAllDBFieldIndex(db, dbfields.get(i));
+			hits += this.searchIndex(db, dbfields.get(i));
 		}
 	
 		result += "</table>";
@@ -265,7 +257,7 @@ public class DBIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 	 * @param db
 	 */
 
-	public void SearchAllDBTablesIndex(Database db) {
+	public void searchIndex(Database db) {
 		int hits = 0;
 
 		result =  "<p><table width=\"100%\" border=\"2\" bordercolor=\"#BDCDDA\" cellspacing=\"3\" cellpadding=\"3\"><tr>" +
@@ -313,7 +305,7 @@ public class DBIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 	    		
 			
 			for (int i=0; i<dbfields.size(); i++) {
-				hits += this.SearchAllDBFieldIndex(db, dbfields.get(i));
+				hits += this.searchIndex(db, dbfields.get(i));
 			}
 			
 	    	
@@ -345,7 +337,7 @@ public class DBIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 	 * @param result
 	 * @return
 	 */
-	public int SearchAllDBFieldIndex(Database db, String fieldName) {
+	public int searchIndex(Database db, String fieldName) {
 
 		//LuceneConfiguration LC = new LuceneConfiguration();
 
@@ -613,7 +605,7 @@ public class DBIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 			
 			this.setInputToken(res);
 		}
-		this.SearchAllDBTablesIndex(db);
+		this.searchIndex(db);
 		this.SaveUseCase(getInputToken(), db, "Expanded");
 		this.setInputToken("");
 
