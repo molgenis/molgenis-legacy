@@ -240,10 +240,10 @@ run_cluster_new_new <- function(name="test", investigation="ClusterDemo", totali
   
 }
 
-
-
+#time execution of executing 1 trait
 est_runtime_new_new <- function(njobs=1, ntraits=1, dbpath = "", num_per_run=1, jobid=1, job, investigation, jobparams=list(c("map","scanall"),c("method","hk"),c("model","normal")), libraryloc="~/libs"){
   cat("Debug: Gonna call user function for est time: ",paste("est_",job,sep="")," \n")
+  s <- proc.time()
   cat("Debug:  est time: ",dbpath," \n")
   cat("Debug:  est time: ",jobid," \n")
   cat("Debug:  est time: ",libraryloc," \n")
@@ -267,12 +267,10 @@ est_runtime_new_new <- function(njobs=1, ntraits=1, dbpath = "", num_per_run=1, 
   tryCatch(do.call(paste("run_",job,sep=""),list(dbpath=dbpath, subjob=0, item=1, jobid=jobid, outname="something", myanalysisfile=myanalysisfile, jobparams=jobparams, investigationname=investigation, libraryloc=libraryloc))
       ,error = function(e){cat(e[[1]],"\n");report(dbpath,jobid,x,-1,"GeneratingESTTIMEfile")}
   )
-	#time execution of executing 1 trait
-	s <- proc.time()
 	system(paste("R CMD BATCH ./run",jobid,"/ESTtime.R",sep=""))
 	e <- proc.time()
 	#Add some for security
-	EST <- ((num_per_run)*((e[3]-s[3])+10))+300 
+	EST <- ((num_per_run)*((e[3]-s[3])*1.5)) 
 	ESTtime <- sprintf("%02.f:%02.f:%02.f",EST %/% 3600, (EST%%3600) %/% 60, round(EST%%60, digits = 0))
 	if(EST >  864000){
 		report(dbpath,jobid,0,-1,"JobsTooLong")
