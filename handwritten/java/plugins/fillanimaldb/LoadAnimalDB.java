@@ -329,7 +329,7 @@ public class LoadAnimalDB
 					int featureId = ct.getMeasurementId("OldAnimalDBAnimalID");
 					Query<ObservedValue> q = db.query(ObservedValue.class);
 					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
-					q.addRules(new QueryRule("value", Operator.EQUALS, motherid));
+					q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, motherid));
 					List<ObservedValue> valueList = q.find();
 					ObservedValue tmpValue = valueList.get(0);
 					int newmotherid = tmpValue.getTarget_Id();

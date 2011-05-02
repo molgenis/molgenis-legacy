@@ -2,6 +2,7 @@ package convertors;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,10 @@ public class ConvertMpdToPheno
 		
 		CsvExport export = new CsvExport();
 		export.exportAll(new File(outputDir), projects, strains, animals, measurements, values);
+		
+		//CsvImport importer = new CsvImport();
+		//Database db = null;
+		//importer.importAll(db,projects, strains);
 	}
 
 	// containers for the mpd data
@@ -238,11 +243,15 @@ public class ConvertMpdToPheno
 			v.setValue(tuple.getString(name));
 			values.add(v);
 		}
+		
+		
 	}
 
 	/*
 	 * Helper method for loading a set of features.
 	 */
+	
+	
 	private void addObservableFeatures(String... featureNames)
 	{
 		// NB if Java had named parameters this code would not be needed.
