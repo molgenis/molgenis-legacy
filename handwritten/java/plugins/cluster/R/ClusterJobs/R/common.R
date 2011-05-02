@@ -270,7 +270,8 @@ est_runtime_new_new <- function(njobs=1, ntraits=1, dbpath = "", num_per_run=1, 
 	system(paste("R CMD BATCH ./run",jobid,"/ESTtime.R",sep=""))
 	e <- proc.time()
 	#Add some for security
-	EST <- ((num_per_run)*((e[3]-s[3])*1.5)) 
+	EST <- ((num_per_run)*((e[3]-s[3])+60))*2
+  cat("!!!" , (e[3]-s[3]), ((num_per_run)*((e[3]-s[3])*1.5)),"\n")
 	ESTtime <- sprintf("%02.f:%02.f:%02.f",EST %/% 3600, (EST%%3600) %/% 60, round(EST%%60, digits = 0))
 	if(EST >  864000){
 		report(dbpath,jobid,0,-1,"JobsTooLong")
