@@ -6,7 +6,7 @@
 
 		<plugin label="Login" name="UserLogin" type="org.molgenis.auth.ui.UserLogin" />
 	
-		<menu name="Auth" label="Auth">
+		<menu name="Auth" label="Auth" group="admin">
 			<plugin name="PermissionManagementPlugin" type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin"/>
 			<menu name="Management">
 				<form name="MolgenisUser" entity="MolgenisUser"/>
@@ -19,20 +19,20 @@
 			</menu>
 		</menu>
 	
-		<plugin label="Search" name="SimpleDbSearch" type="plugin.search.SimpleWholeDatabaseSearch" /> 
+		<plugin label="Search" name="SimpleDbSearch" type="plugin.search.SimpleWholeDatabaseSearch" group="biologist" /> 
 	
-		<plugin label="Import data" name="QTLWizard" type="plugins.xgapwizard.QTLDataSetWizard" />
+		<plugin label="Import data" name="QTLWizard" type="plugins.xgapwizard.QTLDataSetWizard" group="biologist"/>
 	
 		<!--menu label="Import new data" name="ImporterWizards">
 				<plugin label="Import definitions" name="DefImport" type="plugins.genericwizard.GenericWizard" />
 				<plugin label="Import data matrices" name="DataImport" type="plugins.xgapwizard.XgapWizard" />
 		</menu-->
 		
-		<plugin label="Run QTL mapping" name="Cluster" type="plugins.cluster.ClusterPlugin" />
+		<plugin label="Run QTL mapping" name="Cluster" type="plugins.cluster.ClusterPlugin" group="biologist" />
 		
-		<plugin label="Plot pathways" name="KeggPathway" type="plugins.kegg.PathwayPlugin" />
+		<!-- plugin label="Plot pathways" name="KeggPathway" type="plugins.kegg.PathwayPlugin"  /-->
 		
-		<form label="Explore investigations" name="Investigations" entity="Investigation" compact_view="name">
+		<form label="Explore investigations" name="Investigations" entity="Investigation" compact_view="name" group="biologist">
 			<menu name="InvestigationMenu">
 			<plugin name="Overview" type="plugins.investigationoverview.InvestigationOverviewPlugin" />
 				<menu name="BasicAnnotations" label="Basic annotations">
@@ -71,13 +71,23 @@
 			</menu>
 		</form>
 
-		<form name="RScripts" label="Add new QTL tools" entity="RScript">
+		<form name="RScripts" label="Add new QTL tools" entity="RScript" group="bioinformatician">
 			<plugin name="RViewer" type="plugins.molgenisfile.MolgenisFileManager" />
-			<plugin label="Help" name="AddNewToolsHelp" type="plugins.cluster.addnewtoolshelp"/>
+			<plugin label="Help" name="AddNewToolsHelp" type="plugins.cluster.addnewtoolshelp" />
+			<form name="Analysis" label="Add new analysis" entity="Analysis" />
+			<form name="ParameterSets" label="Configure parameters" entity="ParameterSet">
+				<form name="ParameterNames" entity="ParameterName">
+					<form name="ParameterValues" entity="ParameterValue" />
+				</form>
+			</form>
+			<form name="DataSets" label="Configure datasets" entity="DataSet">
+				<form name="DataNames" entity="DataName">
+					<form name="DataValues" entity="DataValue" />
+				</form>
+			</form>
 		</form>
 
-		<menu label="Admin and settings" name="Admin">
-		
+		<menu label="Admin and settings" name="Admin" group="admin">
 			<menu label="Batches" name="batches">	
 				<form name="ManageBatches" entity="MolgenisBatch" label="Batches" />
 				<form name="ManageBatchEntities" entity="MolgenisBatchEntity" label="Batch entities" />
@@ -87,19 +97,6 @@
 					label="Batch viewer" />
 			</menu>
 		
-			<form name="Analysis" label="Add new analysis" entity="Analysis" />
-			
-			<form name="ParameterSets" label="Configure parameters" entity="ParameterSet">
-				<form name="ParameterNames" entity="ParameterName">
-					<form name="ParameterValues" entity="ParameterValue" />
-				</form>
-			</form>
-
-			<form name="DataSets" label="Configure datasets" entity="DataSet">
-				<form name="DataNames" entity="DataName">
-					<form name="DataValues" entity="DataValue" />
-				</form>
-			</form>
 			<plugin label="Database settings" name="DatabaseSettings" type="plugins.system.database.Settings" />
 			<plugin label="Storage settings" name="Settings" type="plugins.system.settings.Settings" />
 			<plugin label="Install R packages" name="DependencyManager" type="plugins.cluster.demo.dependencymanager.DependencyManager" />
