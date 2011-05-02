@@ -59,6 +59,9 @@ public class OntoCatIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 	private static final long serialVersionUID = 71L;
 	private String Status = "";
 	private String InputToken = "lung disease";
+	
+	String OntocatIndexDir = System.getProperty("java.io.tmpdir.ontocatIndexdir");
+	
 	//
 //	static final String LUCENE_ONTOINDEX_DIRECTORY = "/Users/despoina/Documents/molgenis4phenotypeWorkspace/molgenis4phenotype/OntocatIndex";
 //    static final String ONTOLOGIES_DIRECTORY = "/Users/despoina/Documents/workspace/biobank_search/ontologies/";
@@ -75,16 +78,14 @@ public class OntoCatIndexPlugin extends PluginModel<org.molgenis.util.Entity>
         put(LC.GetLuceneConfiguration("ONTOLOGIES_DIRECTORY") + "human-phenotype-ontology_v1294.obo", "Human Phenotype Ontology");
         put(LC.GetLuceneConfiguration("ONTOLOGIES_DIRECTORY") + "human_disease_v1.251.obo", "Human Disease");
  		put(LC.GetLuceneConfiguration("ONTOLOGIES_DIRECTORY") + "Thesaurus_10_03.owl", "NCI Thesaurus");
- 		put(LC.GetLuceneConfiguration("ONTOLOGIES_DIRECTORY") + "mesh.obo", "MeSH");
+ 		put(LC.GetLuceneConfiguration("ONTOLOGIES_DIRECTORY") + "/mesh.obo", "MeSH");
 	}};
 
 
 	public static void main(String[] args) throws Exception
 	{
-		
 		OntoCatIndexPlugin p = new OntoCatIndexPlugin("x",null);
 		
-
 		p.buildIndexOntocat();
 		List<String> ontologies = new ArrayList<String>();
 		//ontologies.add("Human Phenotype Ontology");
@@ -124,11 +125,16 @@ public class OntoCatIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-		LuceneConfiguration LC = new LuceneConfiguration();
+		//LuceneConfiguration LC = new LuceneConfiguration();
 
+		String tmp =  System.getProperty("java.io.tmpdir");
+		System.setProperty("java.io.tmpdir.ontocatIndexdir", tmp + "ontocatIndexdir/");
+		OntocatIndexDir = System.getProperty("java.io.tmpdir.ontocatIndexdir");
+		System.out.println(">>>>>>>>>system>>>>>>>>>" + OntocatIndexDir);
 		
 		if ("SearchOntocatLuceneIndex".equals(request.getAction())) {
-			if (!this.DirectoryhasContents(LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY"))) {		
+			//if (!this.DirectoryhasContents(LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY"))) {		
+			if (!this.DirectoryhasContents(OntocatIndexDir)) {		
 				try {
 					this.setInputToken(request.getString("InputToken"));
 					this.setStatus("<h4> Starting search for  " + request.getString("InputToken") + "  in Ontocat index.</h4> ");
@@ -157,22 +163,26 @@ public class OntoCatIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 	 */
 	public void DeleteOntocatIndex() {
 		String msWin;
-		String OntoIndexDir;
+	
+		String tmp =  System.getProperty("java.io.tmpdir");
+		System.setProperty("java.io.tmpdir.ontocatIndexdir", tmp + "ontocatIndexdir/");
+		OntocatIndexDir = System.getProperty("java.io.tmpdir.ontocatIndexdir");
+		System.out.println(">>>>>>>>>system>>>>>>>>>" + OntocatIndexDir);
 		
 		LuceneConfiguration LC = new LuceneConfiguration();
-		System.out.println("coming from deleteOntocatIndex" + (LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY")));
+		System.out.println("coming from deleteOntocatIndex" +  OntocatIndexDir );
 		
 		msWin = LC.GetLuceneConfiguration("msWin");
-		OntoIndexDir = LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY");
+		//OntoIndexDir = LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY");
 
-		this.setStatus("<h4>About to delete the contents of the Ontocat index "+ OntoIndexDir +"</h4>");
+		this.setStatus("<h4>About to delete the contents of the Ontocat index "+ OntocatIndexDir +"</h4>");
 
 		//browse to  the index directory
-		deleteDirContents( OntoIndexDir, 0, msWin);
+		deleteDirContents( OntocatIndexDir, 0, msWin);
 		
 	   	
 		//this.setStatus("<h4>Produces from DeleteLuceneIndex "+ LC.getINDX()+"</h4>");
-		this.setStatus("<h4>Contents of index directory  "+ OntoIndexDir + " deleted </h4>");
+		this.setStatus("<h4>Contents of index directory  "+ OntocatIndexDir + " deleted </h4>");
 
 
 	}
@@ -238,8 +248,13 @@ public class OntoCatIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 		TopScoreDocCollector collector = null;
 		Query query2 = null;
 		ScoreDoc[] hits = null;
-		LuceneConfiguration LC = new LuceneConfiguration();
+		//LuceneConfiguration LC = new LuceneConfiguration();
 
+		String tmp =  System.getProperty("java.io.tmpdir");
+		System.setProperty("java.io.tmpdir.ontocatIndexdir", tmp + "ontocatIndexdir/");
+		OntocatIndexDir = System.getProperty("java.io.tmpdir.ontocatIndexdir");
+		System.out.println(">>>>>>>>>system>>>>>>>>>" + OntocatIndexDir);
+		
 		String resultsTable="";
 		String res = "";
 		
@@ -253,7 +268,8 @@ public class OntoCatIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 		List<String> result = new ArrayList<String>();
 		try {
 			query = query.toLowerCase();
-			File file  = new File(LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY"));	
+			//File file  = new File(LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY"));	
+			File file  = new File(OntocatIndexDir);
 			
 			reader = IndexReader.open(FSDirectory.open(file), true);
 			say("query="+ query);
@@ -358,16 +374,24 @@ public class OntoCatIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 	    /**An IndexWriter creates and maintains an index.
 	    * analyzer isn't used
 	    */
-	   LuceneConfiguration LC = new LuceneConfiguration();
+	   //LuceneConfiguration LC = new LuceneConfiguration();
 	 
 	   IndexWriter writer=null;
 	   StandardAnalyzer analyzer = null;
 	   File file = null;
+	   
+	   String tmp =  System.getProperty("java.io.tmpdir");
+	   System.setProperty("java.io.tmpdir.ontocatIndexdir", tmp + "ontocatIndexdir/");
+	   OntocatIndexDir = System.getProperty("java.io.tmpdir.ontocatIndexdir");
+	   System.out.println(">>>>>>>>>system>>>>>>>>>" + OntocatIndexDir);
+		
 	   try {
 		   System.out.println("Start Indexing Ontocat results") ;
-		   this.setStatus("Starting indexing Ontocat results in " + LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY"));
-	
-		   file = new File(LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY"));
+		  // this.setStatus("Starting indexing Ontocat results in " + LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY"));
+		   this.setStatus("Starting indexing Ontocat results in " + OntocatIndexDir);
+		   
+		   //file = new File(LC.GetLuceneConfiguration("LUCENE_ONTOINDEX_DIRECTORY"));
+		   file = new File(OntocatIndexDir);
 		   analyzer = new StandardAnalyzer(Version.LUCENE_30);
 		   writer = new IndexWriter(FSDirectory.open(file), analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
 		    
