@@ -16,6 +16,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.metamodel.Metamodel;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
 import org.molgenis.fieldtypes.DecimalField;
 import org.molgenis.fieldtypes.FieldType;
@@ -24,6 +25,7 @@ import org.molgenis.fieldtypes.LongField;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.util.AbstractEntity;
 import org.molgenis.util.Entity;
 import org.molgenis.framework.db.jdbc.ColumnInfo.Type;
 
@@ -119,12 +121,13 @@ public class JPAQueryGeneratorUtil {
 												.toUpperCase()
 										+ attributeName.substring(1,
 												attributeName.length());
-
-								Method m = rule.getValue().getClass()
-										.getMethod(methodName);
-								Object value = m.invoke(rule.getValue());
+//								methodName = StringUtils.chomp(methodName, "_");
+//								Method m = root.getJavaType().getMethod(methodName);
+//								Object value = m.invoke(rule.getValue());
+								Object tmp = root.get(attributeName);
+								tmp.toString();
 								predicate = cb.equal(root.get(attributeName),
-										value);
+										rule.getValue());
 							} catch (Exception ex) {
 								LogFactory.getLog(
 										JPAQueryGeneratorUtil.class.getName())
@@ -226,15 +229,18 @@ public class JPAQueryGeneratorUtil {
 						List<String> list = new ArrayList<String>();
 
 						for (int i = 0; i < values.length; i++) {
-							if (mapper != null
-									&& omitQuotes(mapper.getFieldType(rule
-											.getField()))) {
+							if (mapper != null && omitQuotes(mapper.getFieldType(rule.getField()))) {
 								list.add(escapeSql(values[i]));
 							} else {
 								list.add(escapeSql(values[i]));
 							}
 						}
-						predicate = root.get(attributeName).in(list);
+				
+						Object tmp2 = root.get(attributeName);
+						tmp2.toString();
+						Object tmp3 = root.get(attributeName).get("id");
+						tmp3.toString();
+						predicate = root.get(attributeName).get("id").in(list);
 						break;
 					}
 					// make a where clause from the predicate
@@ -423,7 +429,13 @@ public class JPAQueryGeneratorUtil {
 					}
 					if (Boolean.TRUE.equals(rule.getValue())) rule.setValue("1");
 					if (Boolean.FALSE.equals(rule.getValue())) rule.setValue("0");
-					Object value = rule.getValue() == null ? "NULL" : escapeSql(rule.getValue());
+					
+					Object value = null;
+					if(rule.getValue() instanceof AbstractEntity) {
+						value = ((AbstractEntity)rule.getValue()).getIdValue().toString();
+					} else {
+						value = rule.getValue() == null ? "NULL" : escapeSql(rule.getValue());
+					}
 
 					if (!value.equals("NULL") && rule.getOperator() == Operator.LIKE
 							&& (mapper == null || !omitQuotes(mapper.getFieldType(rule.getField()))))
@@ -571,32 +583,40 @@ public class JPAQueryGeneratorUtil {
 		createLimitSql(withOffset, rules, limitOffset);
 		return query.toString();
 	}	
-	
+
 	public static <E extends Entity> List<E> createQuery(JpaDatabase db, Class<E> entityClass, QueryRule...rules) throws DatabaseException {
-        Integer[] limitOffset = new Integer[2];
+		EntityManager em = db.getEntityManager();
     	JpaMapper<E> mapper = (JpaMapper<E>)db.getMapper(entityClass.getName());
-        String ql = JPAQueryGeneratorUtil.createQueryString(false, entityClass, mapper, false, false, limitOffset, rules);
-        
-        EntityManager em = db.getEntityManager();
-        if(limitOffset[0] == null && limitOffset[1] == null) {
-        	return em.createQuery(ql, entityClass)
-                    .getResultList();
-        } else if(limitOffset[0] != null && limitOffset[1] != null) {
-        	return em.createQuery(ql, entityClass)
-			.setFirstResult(limitOffset[1])
-			.setMaxResults(limitOffset[0])
-			.getResultList();        
-    	} else if(limitOffset[0] != null && limitOffset[1] == null) {
-        	return em.createQuery(ql, entityClass)
-        			.setMaxResults(limitOffset[0])
-    				.getResultList();        	
-    	} else if(limitOffset[0] == null && limitOffset[1] != null) {
-    		return em.createQuery(ql, entityClass)
-					.setFirstResult(limitOffset[1])
-					.getResultList();
-    	}
-        return null;
+    	
+    	TypedQuery<E> query = createWhere(entityClass, mapper, em, rules);
+        return query.getResultList();
 	}
+	
+//	public static <E extends Entity> List<E> createQuery(JpaDatabase db, Class<E> entityClass, QueryRule...rules) throws DatabaseException {
+//        Integer[] limitOffset = new Integer[2];
+//    	JpaMapper<E> mapper = (JpaMapper<E>)db.getMapper(entityClass.getName());
+//        String ql = JPAQueryGeneratorUtil.createQueryString(false, entityClass, mapper, false, false, limitOffset, rules);
+//        
+//        EntityManager em = db.getEntityManager();
+//        if(limitOffset[0] == null && limitOffset[1] == null) {
+//        	return em.createQuery(ql, entityClass)
+//                    .getResultList();
+//        } else if(limitOffset[0] != null && limitOffset[1] != null) {
+//        	return em.createQuery(ql, entityClass)
+//			.setFirstResult(limitOffset[1])
+//			.setMaxResults(limitOffset[0])
+//			.getResultList();        
+//    	} else if(limitOffset[0] != null && limitOffset[1] == null) {
+//        	return em.createQuery(ql, entityClass)
+//        			.setMaxResults(limitOffset[0])
+//    				.getResultList();        	
+//    	} else if(limitOffset[0] == null && limitOffset[1] != null) {
+//    		return em.createQuery(ql, entityClass)
+//					.setFirstResult(limitOffset[1])
+//					.getResultList();
+//    	}
+//        return null;
+//	}
 
 	@SuppressWarnings("unchecked")
 	public static <E extends Entity> int createCountQuery(JpaDatabase db, Class<E> entityClass, QueryRule...rules) throws DatabaseException {
