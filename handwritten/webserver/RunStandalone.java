@@ -31,10 +31,11 @@ public class RunStandalone extends JFrame implements MouseListener{
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	    setVisible(true);
 	    addMouseListener(this);
+	    irc = new IRCHandler();
 	    web = new WWWServer();
 	    webserverthread = new Thread(web);
 	    webserverthread.start();
-	    irc = new IRCHandler();
+
 	}
 	
 	public void paint(Graphics g) {

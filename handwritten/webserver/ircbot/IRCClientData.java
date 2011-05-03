@@ -26,7 +26,7 @@ public class IRCClientData{
 	}
 
 	public String getFullName() {
-		return getMyname()+"_"+getMyid();
+		return myname + "_" + getMyid();
 	}
 
 	public String getMyname() {

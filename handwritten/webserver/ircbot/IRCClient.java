@@ -26,13 +26,26 @@ public class IRCClient extends PircBot {
     	}
     }
     
-    protected  void	onPart(String channel, String sender, String login, String hostname){
-    	System.out.println(sender + " leaving / left " + channel);
+    protected void onNotice(String sourceNick, String sourceLogin, String sourceHostname, String target, String notice){
+    	System.out.println(sourceNick + " gave us a notice:" + notice);
+    }
+    
+    protected void onQuit(String sourceNick, String sourceLogin, String sourceHostname, String reason){
+    	removeClient(sourceNick);
+    }
+    
+    public void removeClient(String sender){
+    	System.out.println(sender + " leaving / left ");
 		for(int x =0; x < other_clients.size();x++){
 			if(other_clients.get(x).getFullName().equals(sender)){
 				other_clients.remove(x);
+				System.out.println("Found in clients and removed: " + sender);
 			}
 		}
+    }
+    
+    protected  void	onPart(String channel, String sender, String login, String hostname){
+    	removeClient(sender);
     }
     
     public void onPrivateMessage(String sender, String login, String hostname, String message){
@@ -47,8 +60,8 @@ public class IRCClient extends PircBot {
     		try{
 		    	String[] t = message.split(";");
 		    	if(!client_know(Integer.parseInt(t[0]))){
-		    		other_clients.add(new IRCClientData(t[1],sender,Integer.parseInt(t[0]),t[2]));
-		    		System.out.println("New client: "+t[1]+" since " + t[2]);
+		    		other_clients.add(new IRCClientData(t[1],sender.split("_")[0],Integer.parseInt(t[0]),t[2]));
+		    		System.out.println("New client: "+sender+ " from "+t[1]+" since " + t[2]);
 		    	}
 	    	}catch(Exception e){
 	    		System.err.println("msg: " + message + " not a client connecting");
