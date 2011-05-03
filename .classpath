@@ -22,5 +22,6 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/vaadin-6.5.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/vaadin-externallayout-0.5.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/pircbot.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
