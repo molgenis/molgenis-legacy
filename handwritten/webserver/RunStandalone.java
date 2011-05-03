@@ -31,7 +31,24 @@ public class RunStandalone extends JFrame implements MouseListener{
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	    setVisible(true);
 	    addMouseListener(this);
-	    irc = new IRCHandler();
+	    
+	    Runnable runnable = new Runnable(){
+			public void run()
+			{
+				try
+				{
+					 irc = new IRCHandler();
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					System.exit(-1);
+				}		
+			}
+		};
+		Thread thread = new Thread(runnable);
+		thread.start();	
+	    
 	    web = new WWWServer();
 	    webserverthread = new Thread(web);
 	    webserverthread.start();
