@@ -29,7 +29,7 @@ INSERT INTO MolgenisEntity(name, type_, classname) values ('${JavaName(entity)}'
 
 <#assign schema = model.getUserinterface()>
 <#list schema.getAllChildren() as screen>
-<#-- DO YOU MEAN... if screen.getType() != "FORM" ?? -->
+<#-- DO YOU MEAN... if screen.getType() == "FORM" ?? -->
 <#if screen.getType() != "MENU" && screen.getType() != "PLUGIN">
 INSERT INTO MolgenisEntity(name, type_, classname) values ('${screen.getName()}${screen.getType()?lower_case?cap_first}Model', '${screen.getType()}', 'app.ui.${screen.getName()}${screen.getType()?lower_case?cap_first}Model');
 <#else>
@@ -42,6 +42,11 @@ INSERT INTO MolgenisPermission (role_, entity, permission) SELECT 3, id, 'read' 
 
 <#list schema.getAllChildren() as screen>
 	<#if screen.getGroup()?exists>
-<#-- WORK IN PROGRESS: INSERT INTO MolgenisPermission (role_, entity, permission) SELECT (SELECT id FROM MolgenisRole WHERE name = '${screen.getGroup()}'), id, 'write' FROM MolgenisEntity WHERE MolgenisEntity.name = '${screen.getName()}'; -->
+	<#-- DO YOU MEAN... if screen.getType() == "FORM" ?? -->
+		<#if screen.getType() != "MENU" && screen.getType() != "PLUGIN">
+INSERT INTO MolgenisPermission (role_, entity, permission) SELECT (SELECT id FROM MolgenisRole WHERE name = '${screen.getGroup()}'), id, 'write' FROM MolgenisEntity WHERE MolgenisEntity.name = '${screen.getName()}${screen.getType()?lower_case?cap_first}Model';
+		<#else>
+INSERT INTO MolgenisPermission (role_, entity, permission) SELECT (SELECT id FROM MolgenisRole WHERE name = '${screen.getGroup()}'), id, 'write' FROM MolgenisEntity WHERE MolgenisEntity.name = '${screen.getName()}${screen.getType()?lower_case?cap_first}';
+		</#if>
 	</#if>
 </#list>
