@@ -4,12 +4,15 @@ import java.util.ArrayList;
 
 import org.jibble.pircbot.NickAlreadyInUseException;
 
-public class IRCHandler {
+public class IRCHandler implements Runnable{
 	private IRCClient ircclient;
 	private static String default_name = "MWorkBOT";
 	private static String default_channel = "molgenis_apps";
 	private static String default_irc_host = "irc.freenode.net";
-	
+	String name;
+	int id;
+	String channel;
+	boolean verbose;
 	public IRCHandler(){
 		this(default_name,(int)(Math.random()*1000),default_channel,false);
 	}
@@ -22,8 +25,11 @@ public class IRCHandler {
 		this(default_name,id,default_channel,verbose);
 	}
 	
-	public IRCHandler(String name,int id, String channel, boolean verbose){
-		connect(name,id,channel,verbose);
+	public IRCHandler(String n,int i, String c, boolean v){
+		name=n;
+		id=i;
+		channel=c;
+		verbose=v;
 	}
 	
 	
@@ -57,5 +63,11 @@ public class IRCHandler {
 	
 	public static void main(String[] args) throws Exception {
 		new IRCHandler((int)(Math.random()*1000),false);
+	}
+
+	@Override
+	public void run()
+	{
+		connect(name,id,channel,verbose);
 	}
 }
