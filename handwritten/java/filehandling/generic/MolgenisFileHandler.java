@@ -46,9 +46,10 @@ public class MolgenisFileHandler extends BasicFileHandler
 	 * @throws TypeUnknownException
 	 * @throws XGAPStorageException
 	 * @throws IOException
+	 * @throws DatabaseException 
 	 * @throws Exception
 	 */
-	public File getStorageDirFor(String type) throws TypeUnknownException, XGAPStorageException, IOException
+	public File getStorageDirFor(String type) throws TypeUnknownException, XGAPStorageException, IOException, DatabaseException
 	{
 		// lowercase 'type' for directory usage
 		type = type.toLowerCase();

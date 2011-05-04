@@ -7,6 +7,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.util.DetectOS;
 
 import plugins.system.settings.Settings;
@@ -28,7 +29,7 @@ public class BasicFileHandler
 		this.db = db;
 	}
 
-	private URI getURIStorageRoot() throws XGAPStorageException, UnsupportedEncodingException
+	private URI getURIStorageRoot() throws XGAPStorageException, UnsupportedEncodingException, DatabaseException
 	{
 		URI res = null;
 		if (TableUtil.hasTable(db, Settings.systemTableName).equals("true"))
@@ -87,9 +88,10 @@ public class BasicFileHandler
 	 * @return
 	 * @throws XGAPStorageException
 	 * @throws UnsupportedEncodingException
+	 * @throws DatabaseException 
 	 * @throws Exception
 	 */
-	public File getFileStorage() throws UnsupportedEncodingException, XGAPStorageException
+	public File getFileStorage() throws UnsupportedEncodingException, XGAPStorageException, DatabaseException
 	{
 		File storage = getFileStorageRoot();
 		String deploy = MolgenisServlet.getMolgenisVariantID();
@@ -102,9 +104,10 @@ public class BasicFileHandler
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 * @throws XGAPStorageException
+	 * @throws DatabaseException 
 	 * @throws Exception
 	 */
-	private File getFileStorageRoot() throws UnsupportedEncodingException, XGAPStorageException
+	private File getFileStorageRoot() throws UnsupportedEncodingException, XGAPStorageException, DatabaseException
 	{
 		URI loc = getURIStorageRoot();
 		// System.out.println("loc = " + loc.toString());

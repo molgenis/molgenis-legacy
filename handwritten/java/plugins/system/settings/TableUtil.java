@@ -1,176 +1,129 @@
 package plugins.system.settings;
 
-import generic.Utils;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.util.Tuple;
 
 import app.JDBCDatabase;
-import app.servlet.MolgenisServlet;
 
+/**
+ * Low-level helper functions for simple database actions, outside the regular generated API.
+ * Used for special tables which should not be touched normally.
+ * @author joerivandervelde
+ *
+ */
 public class TableUtil {
 
-	public static boolean removeTable(Database db, String tableName)
-			throws Exception {
-		JDBCDatabase db_ = (JDBCDatabase) db;
-		return removeTable(db_, tableName);
+	/**
+	 * Drop a table with this name.
+	 * @param db
+	 * @param tableName
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public static boolean removeTable(Database db, String tableName) throws DatabaseException {
+		JDBCDatabase db_ = (JDBCDatabase)db;
+		return db_.executeSql("DROP TABLE " + tableName + ";");
 	}
 
-	public static boolean removeTable(JDBCDatabase db, String tableName) {
-		boolean success = false;
-		Statement stmt = null;
-		Connection conn = null;
-		try {
-			conn = db.getConnection();
-			stmt = conn.createStatement();
-			stmt.execute("DROP TABLE " + tableName + ";");
-			success = true;
-			JDBCDatabase.closeStatement(stmt);
-			db.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} 
-		return success;
+	/**
+	 * Specific function. Add the system settings table with this name, plus a bool field for a setting.
+	 * @param db
+	 * @param tableName
+	 * @param fieldName
+	 * @return
+	 */
+	public static boolean addSystemSettingsTable(Database db, String tableName, String fieldName) {
+		JDBCDatabase db_ = (JDBCDatabase)db;
+		return db_.executeSql("CREATE TABLE " + tableName + " ("+fieldName+" VARCHAR(255), verified BOOLEAN DEFAULT 0);");
 	}
 
-	public static boolean addSystemSettingsTable(Database db, String tableName, String fieldName)
-			throws Exception {
-		JDBCDatabase db_ = (JDBCDatabase) db;
-		return addSystemSettingsTable(db_, tableName, fieldName);
-	}
-
-	public static boolean addSystemSettingsTable(JDBCDatabase db, String tableName, String fieldName) {
-		Utils.console("!!!!!!!!!!!!!!!!!!!");
-		boolean success = false;
-		Statement stmt = null;
-		Connection conn = null;
-		try {
-			conn = db.getConnection();
-			stmt = conn.createStatement();
-			if(MolgenisServlet.getDBDriver().contains("hsql")){
-			stmt.execute("CREATE TABLE " + tableName + " ("+fieldName+" VARCHAR(255), verified BOOLEAN DEFAULT 0);");
-			}else{
-				stmt.execute("CREATE TABLE " + tableName + " ("+fieldName+" VARCHAR(255), verified BOOL DEFAULT 0);");
-			}
-			success = true;
-			JDBCDatabase.closeStatement(stmt);
-			db.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} 
-		return success;
-	}
-	
+	/**
+	 * Update a field with a new value in a table. Also uses a WHERE clause which is specially escaped to accomodate file paths.
+	 * @param db
+	 * @param tableName
+	 * @param fieldName
+	 * @param value
+	 * @param where
+	 * @return
+	 */
 	public static boolean updateInTable(Database db, String tableName, String fieldName, String value, String where){
-		JDBCDatabase db_ = (JDBCDatabase) db;
-		return updateInTable(db_, tableName, fieldName, value, where);
+		JDBCDatabase db_ = (JDBCDatabase)db;
+		return db_.executeSql("UPDATE " + tableName + " SET " + fieldName + "=" + value + " WHERE "+where.replace("\\", "\\\\")+";");
 	}
-		
-	public static boolean updateInTable(JDBCDatabase db, String tableName, String fieldName, String value, String where){
-		boolean success = false;
-		Statement stmt = null;
-		Connection conn = null;
-		try {
-			conn = db.getConnection();
-			stmt = conn.createStatement();
-			System.out.println("UPDATE " + tableName + " SET " + fieldName + "=" + value + " WHERE "+where.replace("\\", "\\\\")+";");
-			stmt.execute("UPDATE " + tableName + " SET " + fieldName + "=" + value + " WHERE "+where.replace("\\", "\\\\")+";");
-			success = true;
-			JDBCDatabase.closeStatement(stmt);
-			db.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} 
-		return success;
-	}
-	
+
+
+	/**
+	 * Insert a value for a field in a table.
+	 * @param db
+	 * @param tableName
+	 * @param fieldName
+	 * @param value
+	 * @return
+	 */
 	public static boolean insertInTable(Database db, String tableName, String fieldName, String value){
-		JDBCDatabase db_ = (JDBCDatabase) db;
-		return insertInTable(db_, tableName, fieldName, value);
-	}
-
-	public static boolean insertInTable(JDBCDatabase db, String tableName, String fieldName, String value){
-		boolean success = false;
-		Statement stmt = null;
-		Connection conn = null;
-		try {
-			conn = db.getConnection();
-			stmt = conn.createStatement();
-			stmt.execute("INSERT INTO " + tableName + " (" + fieldName + ") values ('" + value.replace("\\", "\\\\") + "');");
-			success = true;
-			JDBCDatabase.closeStatement(stmt);
-			db.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} 
-		return success;
+		JDBCDatabase db_ = (JDBCDatabase)db;
+		return db_.executeSql("INSERT INTO " + tableName + " (" + fieldName + ") values ('" + value.replace("\\", "\\\\") + "');");
 	}
 	
-	public static Object getFromTable(Database db, String tableName, String fieldName) {
-		JDBCDatabase db_ = (JDBCDatabase) db;
-		return getFromTable(db_, tableName, fieldName);
+	/**
+	 * Get a setting (value) from a field in a table. Only retrieves if resultset is 1.
+	 * @param db
+	 * @param tableName
+	 * @param fieldName
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public static Object getFromTable(Database db, String tableName, String fieldName) throws DatabaseException {
+		System.out.println("** getFromTable CALLED!: tablname = "+ tableName + " field = " + fieldName);
+		JDBCDatabase db_ = (JDBCDatabase)db;
+		List<Tuple> res = db_.sql("SELECT " + fieldName + " FROM " + tableName + ";");
+		System.out.println("** RES: " + res.toString());
+		if(res.size() > 1){
+			throw new DatabaseException("More than one result");
+		}
+		System.out.println("** returning: " + res.get(0).getObject(0));
+		return res.get(0).getObject(0);
 	}
-	public static Object getFromTable(JDBCDatabase db, String tableName, String fieldName) {
-		Object res = null;
-		Statement stmt = null;
-		Connection conn = null;
-		try {
-			conn = db.getConnection();
-			stmt = conn.createStatement();
-			stmt.execute("SELECT " + fieldName + " FROM " + tableName + ";");
-			ResultSet rs = stmt.getResultSet();
-			boolean pass = false;
-			while(rs.next()){
-				if(pass != false){
-					throw new Exception("More than one result");
-				}
-				res = rs.getObject(1);
-				pass = true;
-			}
-			JDBCDatabase.closeStatement(stmt);
-			db.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} 
-		return res;
-	}
-
+	
+	/**
+	 * Find out if the database has a table with this name.
+	 * @param db
+	 * @param tableName
+	 * @return
+	 */
 	public static String hasTable(Database db, String tableName) {
-		JDBCDatabase db_ = (JDBCDatabase) db;
-		return hasTable(db_, tableName);
-	}
-
-	public static String hasTable(JDBCDatabase db, String tableName) {
 		try {
-			
+			JDBCDatabase db_ = (JDBCDatabase)db;
 			List<Tuple> res = null;
-			//List<Tuple> res = db.sql("SHOW tables;");
-			if(MolgenisServlet.getDBDriver().contains("hsql")){
-				res = db.sql("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.SYSTEM_COLUMNS WHERE TABLE_NAME NOT LIKE 'SYSTEM_%'");
+			if(db_.getSource().getDriverClassName().contains("hsql")){
+				System.out.println("db.getSource().getDriverClassName() " + db_.getSource().getDriverClassName());
+				res = db_.sql("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.SYSTEM_COLUMNS WHERE TABLE_NAME NOT LIKE 'SYSTEM_%';");
 			}else{
-				res = db.sql("SHOW tables;");
+				System.out.println("db.getSource().getDriverClassName() " + db_.getSource().getDriverClassName());
+				res = db_.sql("SHOW tables;");
 			}
 			List<String> tableNames = new ArrayList<String>(res.size());
 			for (Tuple t : res) {
-				if(MolgenisServlet.getDBDriver().contains("hsql")){
+				if(db_.getSource().getDriverClassName().contains("hsql")){
 					tableNames.add(t.getString(0).toLowerCase());
 				}else{
 					tableNames.add(t.getString(1).toLowerCase());
 				}
 			}
 			if (tableNames.contains(tableName.toLowerCase())) {
+				System.out.println("** TRUE");
 				return "true";
 			} else {
+				System.out.println("** VALS");
 				return "false";
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			System.out.println("** ERROR");
 			return "error";
 		}
 	}

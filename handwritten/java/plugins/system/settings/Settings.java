@@ -292,7 +292,7 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 				}
 				o = TableUtil.getFromTable(db, systemTableName, verifiedField);
 				if(o != null){
-					if(o.toString().equals("true"))	model.setVerified(true);
+					if(o.toString().equals("1"))	model.setVerified(true);
 				}
 			}else{
 				Utils.console("No system table trying to create one ???");
