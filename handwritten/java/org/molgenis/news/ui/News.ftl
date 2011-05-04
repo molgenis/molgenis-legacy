@@ -31,7 +31,7 @@ ${screen.title}
 <p class="news_title">${newsItem.getTitle()}</p>
 <p class="news_subtitle">${newsItem.getSubtitle()}</p>
 <p>${newsItem.getText()}</p>
-<p>${newsItem.getDate()}</p>
+<p>${newsItem.getDate()?date}</p>
 <p><a href="molgenis.do?__target=NewsPlugin&select=NewsPlugin&__action=all">All News</a></p>
 
 <#else>
@@ -40,7 +40,7 @@ ${screen.title}
 <#list screen.news as newsItem>
 <div class="news_title">${newsItem.getTitle()}</div>
 <div class="news_subtitle">${newsItem.getSubtitle()}</div>
-<div>${newsItem.getDate()}</div>
+<div>${newsItem.getDate()?date}</div>
 <div><a href="molgenis.do?__target=NewsPlugin&select=NewsPlugin&__action=entry&id=${newsItem.getId()}" target="_parent">More</a></div>
 <br/><br/>
 </#list>
