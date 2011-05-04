@@ -76,7 +76,7 @@ public class FillDatabasePlugin extends PluginModel<Entity>
 				myLoadUliDb.populateAnimal(filename);
 				myLoadUliDb.populateProtocolApplication();
 				myLoadUliDb.populateValue(filename);
-				//myLoadUliDb.parseParentRelations(filename);
+				myLoadUliDb.parseParentRelations(filename);
 				myLoadUliDb.writeToDb();
 			}
 			

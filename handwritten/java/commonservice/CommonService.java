@@ -438,6 +438,26 @@ public class CommonService
 		db.add(newGroup);
 		return newGroup.getId();
 	}
+	
+	/**
+	 * Creates a Panel but does NOT add it to the database.
+	 * 
+	 * @param investigationId
+	 * @param panelName
+	 * @return
+	 * @throws DatabaseException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
+	public Panel createPanel(int investigationId, String panelName, int userId)
+			throws DatabaseException, IOException, ParseException
+	{
+		Panel newGroup = new Panel();
+		newGroup.setName(panelName);
+		newGroup.setInvestigation(investigationId);
+		newGroup.setOwns(userId);
+		return newGroup;
+	}
 
 	/**
 	 * Returns a list of all Panels that have been given a certain mark
@@ -671,7 +691,7 @@ public class CommonService
 	
 	/**
 	 * Creates an ObservedValue with the given parameters, but does NOT add it to the database.
-	 * Uses target and protocol names to link, so those do not have to have been added to the
+	 * Uses target, protocol and relation names to link, so those do not have to have been added to the
 	 * DB already.
 	 * 
 	 * @param investigationId
@@ -689,7 +709,7 @@ public class CommonService
 	 */
 	public ObservedValue createObservedValue(int investigationId, String protappName,
 			Date starttime, Date endtime, int featureId,
-			String subjectTargetName, String valueString, int targetRef)
+			String subjectTargetName, String valueString, String targetName)
 			throws DatabaseException, IOException, ParseException
 	{
 		ObservedValue newValue = new ObservedValue();
@@ -699,8 +719,8 @@ public class CommonService
 		newValue.setTime(starttime);
 		newValue.setEndtime(endtime);
 		newValue.setTarget_Name(subjectTargetName);
-		if (targetRef != 0) {
-			newValue.setRelation(targetRef);
+		if (targetName != null) {
+			newValue.setRelation_Name(targetName);
 		} else {
 			newValue.setValue(valueString);
 		}

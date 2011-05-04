@@ -19,6 +19,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.security.Login;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReaderListener;
@@ -38,6 +39,7 @@ public class ConvertUliDbToPheno
 	final List<Individual> animalsToAddList;
 	final List<String> animalNames;
 	final List<ObservedValue> valuesToAddList;
+	final List<Panel> panelsToAddList;
 
 	public ConvertUliDbToPheno(Database db, Login login) throws Exception
 	{
@@ -51,25 +53,15 @@ public class ConvertUliDbToPheno
 		animalsToAddList = new ArrayList<Individual>();
 		animalNames = new ArrayList<String>();
 		valuesToAddList = new ArrayList<ObservedValue>();
+		panelsToAddList = new ArrayList<Panel>();
 	}
 	
 	public void writeToDb() {
-		// Add everything to DB
 		try {
-			int nrOfProtAppsAdded = db.add(protocolAppsToAddList);
-			logger.info(nrOfProtAppsAdded + " protocol applications added");
-			int nrOfAnimalsAdded = db.add(animalsToAddList);
-			logger.info(nrOfAnimalsAdded + " animals (and superclass items) added");
-			int nrOfValuesAdded = db.add(valuesToAddList);
-			logger.info(nrOfValuesAdded + " values added");
-			/*for (ObservedValue v : valuesToAddList) {
-				try {
-					db.add(v);
-				} catch (Exception e) {
-					logger.error("Writing to DB failed: " + e.getMessage());
-					e.printStackTrace();
-				}
-			}*/
+			db.add(protocolAppsToAddList);
+			db.add(animalsToAddList);
+			db.add(panelsToAddList);
+			db.add(valuesToAddList);
 		} catch (Exception e) {
 			logger.error("Writing to DB failed: " + e.getMessage());
 			e.printStackTrace();
@@ -121,6 +113,13 @@ public class ConvertUliDbToPheno
 		final int earmarkProtocolId = ct.getProtocolId("SetEarmark");
 		final int genotypeProtocolId = ct.getProtocolId("SetGenotype");
 		final int backgroundProtocolId = ct.getProtocolId("SetBackground");
+		// Protocols for parent relations:
+		final int typeOfGroupProtocolId = ct.getProtocolId("SetTypeOfGroup");
+		final int motherProtocolId = ct.getProtocolId("SetMother");
+		final int fatherProtocolId = ct.getProtocolId("SetFather");
+		final int lineProtocolId = ct.getProtocolId("SetLine");
+		final int parentgroupProtocolId = ct.getProtocolId("SetParentgroup");
+		final int litterProtocolId = ct.getProtocolId("SetLitter");
 		
 		// Make protocol apps for each protocol and add them to the list
 		
@@ -168,11 +167,29 @@ public class ConvertUliDbToPheno
 		
 		ProtocolApplication backgroundApp = ct.createProtocolApplication(invid, backgroundProtocolId);
 		protocolAppsToAddList.add(backgroundApp);
+		
+		ProtocolApplication typeOfGroupApp = ct.createProtocolApplication(invid, typeOfGroupProtocolId);
+		protocolAppsToAddList.add(typeOfGroupApp);
+		
+		ProtocolApplication motherApp = ct.createProtocolApplication(invid, motherProtocolId);
+		protocolAppsToAddList.add(motherApp);
+		
+		ProtocolApplication fatherApp = ct.createProtocolApplication(invid, fatherProtocolId);
+		protocolAppsToAddList.add(fatherApp);
+		
+		ProtocolApplication lineApp = ct.createProtocolApplication(invid, lineProtocolId);
+		protocolAppsToAddList.add(lineApp);
+		
+		ProtocolApplication parentgroupApp = ct.createProtocolApplication(invid, parentgroupProtocolId);
+		protocolAppsToAddList.add(parentgroupApp);
+		
+		ProtocolApplication litterApp = ct.createProtocolApplication(invid, litterProtocolId);
+		protocolAppsToAddList.add(litterApp);
 	}
 	
 	public void populateValue(String filename) throws Exception
 	{
-		final int speciesId = ct.getObservationTargetId("House mouse");
+		final String speciesName = "House mouse";
 		final int invid = ct.getInvestigationId("AnimalDB");
 		final SimpleDateFormat sdf = new SimpleDateFormat("d-M-yyyy H:mm", Locale.US);
 		final Calendar calendar = Calendar.getInstance();
@@ -209,16 +226,16 @@ public class ConvertUliDbToPheno
 				// Tiernummer -> CustomId
 				String oldAnimalId = tuple.getString("Tiernummer");
 				valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(0).getName(), now, 
-						null, customIdMeasurementId, newAnimal.getName(), oldAnimalId, 0));
+						null, customIdMeasurementId, newAnimal.getName(), oldAnimalId, null));
 				
 				// laufende Nr -> OldUliDbId
 				String oldUliDbId = tuple.getString("laufende Nr");
 				valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(1).getName(), now, 
-						null, oldUliDbIdMeasurementId, newAnimal.getName(), oldUliDbId, 0));
+						null, oldUliDbIdMeasurementId, newAnimal.getName(), oldUliDbId, null));
 				
 				// Tierkategorie -> Species (always Mus musculus)
 				valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(2).getName(), now, 
-						null, speciesMeasurementId, newAnimal.getName(), null, speciesId));
+						null, speciesMeasurementId, newAnimal.getName(), null, speciesName));
 				
 				// Eingangsdatum, Abgangsdatum and Status -> Active + start and end time
 				String startDateString = tuple.getString("Eingangsdatum");
@@ -240,28 +257,28 @@ public class ConvertUliDbToPheno
 						state = "Dead";
 					}
 					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(3).getName(), 
-							startDate, endDate, activeMeasurementId, newAnimal.getName(), state, 0));
+							startDate, endDate, activeMeasurementId, newAnimal.getName(), state, null));
 				}
 				
 				// Herkunft -> Source
 				Integer uliSourceId = tuple.getInt("Herkunft");
 				if (uliSourceId != null) {
-					int sourceId = 0;
+					String sourceName = null;
 					if (uliSourceId == 51 || uliSourceId == 52) {
 						// 51: Zucht- oder Liefereinrichtung innerhalb Deutschlands, die für ihre Tätigkeit eine Erlaubnis nach § 11 Abs. 1 Satz 1 Nr. 1 des Tierschutzgesetzes erhalten hat
 						// 52: andere amtlich registrierte oder zugelassene Einrichtung innerhalb der EU
 						// --> SourceType for both: Van EU-lid-staten
-						sourceId = ct.getObservationTargetId("UliEisel51and52");
+						sourceName = "UliEisel51and52";
 					}
 					if (uliSourceId == 55) {
 						// 55: Switserland
 						// --> SourceType: Andere herkomst
-						sourceId = ct.getObservationTargetId("UliEisel55");
+						sourceName = "UliEisel55";
 					}
 					if (uliSourceId != 0) {
 						valuesToAddList.add(ct.createObservedValue(invid, 
 								protocolAppsToAddList.get(4).getName(), now, null, sourceMeasurementId, 
-								newAnimal.getName(), null, sourceId));
+								newAnimal.getName(), null, sourceName));
 					}
 				}
 				
@@ -269,21 +286,22 @@ public class ConvertUliDbToPheno
 				String kuerzel = tuple.getString("Kürzel");
 				if (kuerzel != null) {
 					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(5).getName(), 
-							now, null, oldUliDbKuerzelMeasurementId, newAnimal.getName(), kuerzel, 0));
+							now, null, oldUliDbKuerzelMeasurementId, newAnimal.getName(), kuerzel, null));
 				}
 				
 				// Bemerkungen -> Remark
 				String remark = tuple.getString("Bemerkungen");
 				if (remark != null) {
 					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(6).getName(), 
-							now, null, remarkMeasurementId, newAnimal.getName(), remark, 0));
+							now, null, remarkMeasurementId, newAnimal.getName(), remark, null));
 				}
 				
 				// Aktenzeichen -> OldUliDbAktenzeichen
 				String aktenzeichen = tuple.getString("Aktenzeichen");
 				if (aktenzeichen != null) {
 					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(7).getName(), 
-							now, null, oldUliDbAktenzeichenMeasurementId, newAnimal.getName(), aktenzeichen, 0));
+							now, null, oldUliDbAktenzeichenMeasurementId, newAnimal.getName(), aktenzeichen, 
+							null));
 				}
 				
 				// Experimentator -> OldUliDbExperimentator
@@ -291,7 +309,7 @@ public class ConvertUliDbToPheno
 				if (experimentator != null) {
 					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(8).getName(), 
 							now, null, oldUliDbExperimentatorMeasurementId, newAnimal.getName(), 
-							experimentator, 0));
+							experimentator, null));
 				}
 				
 				// Tierschutzrecht -> OldUliDbTierschutzrecht
@@ -302,34 +320,34 @@ public class ConvertUliDbToPheno
 				if (tierschutzrecht != null) {;
 					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(9).getName(), 
 							now, null, oldUliDbTierschutzrechtMeasurementId, newAnimal.getName(), 
-							tierschutzrecht, 0));
+							tierschutzrecht, null));
 				}
 				
 				// BeschrGeschlecht -> Sex
 				String sex = tuple.getString("BeschrGeschlecht");
 				if (sex != null) {
-					int sexId;
+					String sexName;
 					if (sex.equals("w")) {
-						sexId = ct.getObservationTargetId("Female");
+						sexName = "Female";
 					} else {
-						sexId = ct.getObservationTargetId("Male");
+						sexName = "Male";
 					}
 					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(10).getName(), 
-							now, null, sexMeasurementId, newAnimal.getName(), null, sexId));
+							now, null, sexMeasurementId, newAnimal.getName(), null, sexName));
 				}
 				
 				// Farbe -> Color
 				String color = tuple.getString("Farbe");
 				if (color != null) {
 					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(11).getName(), 
-							now, null, colorMeasurementId, newAnimal.getName(), color, 0));
+							now, null, colorMeasurementId, newAnimal.getName(), color, null));
 				}
 				
 				// Ohrmarkierung1 -> Earmark
 				String earmark = tuple.getString("Ohrmarkierung1");
 				if (earmark != null) {
 					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(12).getName(), 
-							now, null, earmarkMeasurementId, newAnimal.getName(), earmark, 0));
+							now, null, earmarkMeasurementId, newAnimal.getName(), earmark, null));
 				}
 				
 				// Gen and tg -> Gene and GeneState (in a SetGenotype protocol application)
@@ -337,20 +355,17 @@ public class ConvertUliDbToPheno
 				String geneState = tuple.getString("tg");
 				if (gene != null && geneState != null) {
 					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(13).getName(), 
-							now, null, geneMeasurementId, newAnimal.getName(), gene, 0));
+							now, null, geneMeasurementId, newAnimal.getName(), gene, null));
 					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(13).getName(), 
-							now, null, geneStateMeasurementId, newAnimal.getName(), geneState, 0));
+							now, null, geneStateMeasurementId, newAnimal.getName(), geneState, null));
 				}
 				
 				// gen Hintergrund-Tier -> Background
 				String background = tuple.getString("gen Hintergrund-Tier");
 				if (background != null) {
-					int bkgId = ct.getObservationTargetId(background);
-					if (bkgId != -1) {
-						valuesToAddList.add(ct.createObservedValue(invid, 
+					valuesToAddList.add(ct.createObservedValue(invid, 
 								protocolAppsToAddList.get(14).getName(), now, null, backgroundMeasurementId, 
-								newAnimal.getName(), null, bkgId));
-					}
+								newAnimal.getName(), null, background));
 				}
 			}
 		});
@@ -361,19 +376,13 @@ public class ConvertUliDbToPheno
 	{
 		final int invid = ct.getInvestigationId("AnimalDB");
 		final Calendar calendar = Calendar.getInstance();
-		// Lots of Measurements and Protocols we want to retrieve only once:
+		// Measurements we want to retrieve only once:
 		final int oldUliDbIdFeatureId = ct.getMeasurementId("OldUliDbId");
-		final int typeOfGroupProtocolId = ct.getProtocolId("SetTypeOfGroup");
 		final int typeOfGroupMeasurementId = ct.getMeasurementId("TypeOfGroup");
-		final int motherProtocolId = ct.getProtocolId("SetMother");
 		final int motherMeasurementId = ct.getMeasurementId("Mother");
-		final int fatherProtocolId = ct.getProtocolId("SetFather");
 		final int fatherMeasurementId = ct.getMeasurementId("Father");
-		final int lineProtocolId = ct.getProtocolId("SetLine");
 		final int lineMeasurementId = ct.getMeasurementId("Line");
-		final int parentgroupProtocolId = ct.getProtocolId("SetParentgroup");
 		final int parentgroupMeasurementId = ct.getMeasurementId("Parentgroup");
-		final int litterProtocolId = ct.getProtocolId("SetLitter");
 		final int litterMeasurementId = ct.getMeasurementId("Litter");
 		
 		File file = new File(filename);
@@ -386,90 +395,81 @@ public class ConvertUliDbToPheno
 				
 				Date now = calendar.getTime();
 				
-				// Init lists that we can later add to the DB at once
-				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
-				
-				// laufende Nr -> OldUliDbId -> animal ID
-				String oldUliDbId = tuple.getString("laufende Nr");
-				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, oldUliDbIdFeatureId));
-				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, oldUliDbId));
-				List<ObservedValue> valueList = q.find();
-				ObservedValue tmpValue = valueList.get(0);
-				int animalId = tmpValue.getTarget_Id();
-				
-				// Linie -> Line
-				String line = tuple.getString("Linie");
+				Individual newAnimal = animalsToAddList.get(line_number - 1);
 				
 				// Mutter-Nr -> Mother
-				List<Integer> motherIdList = new ArrayList<Integer>();
+				List<String> motherList = new ArrayList<String>();
 				String motherIdsString = tuple.getString("Mutter-Nr");
-				motherIdsString.replace(" ", "");
-				String[] motherIds = motherIdsString.split(",");
+				String[] motherIds = motherIdsString.split(",\\s");
 				for (String motherIdString : motherIds) {
 					int oldMotherId = Integer.parseInt(motherIdString);
 					// Find corresponding animal
-					q = db.query(ObservedValue.class);
+					Query<ObservedValue> q = db.query(ObservedValue.class);
 					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, oldUliDbIdFeatureId));
 					q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, oldMotherId));
-					valueList = q.find();
-					tmpValue = valueList.get(0);
-					motherIdList.add(tmpValue.getTarget_Id());
+					List<ObservedValue> valueList = q.find();
+					if (valueList.size() > 0) {
+						ObservedValue tmpValue = valueList.get(0);
+						motherList.add(tmpValue.getTarget_Name());
+					}
 				}
 				
 				// Vater-Nr -> Father
-				List<Integer> fatherIdList = new ArrayList<Integer>();
+				List<String> fatherList = new ArrayList<String>();
 				String fatherIdsString = tuple.getString("Vater-Nr");
-				fatherIdsString.replace(" ", "");
-				String[] fatherIds = fatherIdsString.split(",");
+				String[] fatherIds = fatherIdsString.split(",\\s");
 				for (String fatherIdString : fatherIds) {
 					int oldFatherId = Integer.parseInt(fatherIdString);
 					// Find corresponding animal
-					q = db.query(ObservedValue.class);
+					Query<ObservedValue> q = db.query(ObservedValue.class);
 					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, oldUliDbIdFeatureId));
 					q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, oldFatherId));
-					valueList = q.find();
-					tmpValue = valueList.get(0);
-					fatherIdList.add(tmpValue.getTarget_Id());
+					List<ObservedValue> valueList = q.find();
+					if (valueList.size() > 0) {
+						ObservedValue tmpValue = valueList.get(0);
+						fatherList.add(tmpValue.getTarget_Name());
+					}
 				}
 				
 				// Create a parentgroup
-				int groupId = ct.makePanel(invid, "OldUliDbParentgroup" + line_number, login.getUserId());
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-						typeOfGroupProtocolId, typeOfGroupMeasurementId, groupId, "Parentgroup", 0));
+				String parentgroupName = "OldUliDbParentgroup" + line_number;
+				panelsToAddList.add(ct.createPanel(invid, parentgroupName, login.getUserId()));
+				valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(15).getName(), 
+						now, null, typeOfGroupMeasurementId, parentgroupName, "Parentgroup", null));
 				
 				// Link parent(s) to parentgroup
-				for (int motherId : motherIdList) {
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-							motherProtocolId, motherMeasurementId, groupId, null, motherId));
+				for (String motherName : motherList) {
+					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(16).getName(), 
+							now, null, motherMeasurementId, parentgroupName, null, motherName));
 				}
-				for (int fatherId : fatherIdList) {
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-							fatherProtocolId, fatherMeasurementId, groupId, null, fatherId));
+				for (String fatherName : fatherList) {
+					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(17).getName(), 
+							now, null, fatherMeasurementId, parentgroupName, null, fatherName));
 				}
 				
-				// Set line of parentgroup
+				// Set line (Linie) of parentgroup
+				String line = tuple.getString("Linie");
 				if (line != null) {
-					int lineId = ct.getObservationTargetId(line);
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-							lineProtocolId, lineMeasurementId, groupId, null, lineId));
+					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(18).getName(), 
+							now, null, lineMeasurementId, parentgroupName, null, line));
 				}
 				
 				// Make a litter
-				int litterId = ct.makePanel(invid, "OldUliDbParentgroup" + line_number, login.getUserId());
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-						typeOfGroupProtocolId, typeOfGroupMeasurementId, litterId, "Litter", 0));
+				String litterName = "OldUliDbLitter" + line_number;
+				panelsToAddList.add(ct.createPanel(invid, litterName, login.getUserId()));
+				valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(15).getName(), 
+						now, null, typeOfGroupMeasurementId, litterName, "Litter", null));
 				
 				// Link litter to parentgroup
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, 
-						null, parentgroupProtocolId, parentgroupMeasurementId, litterId, null, groupId));
+				valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(19).getName(), 
+						now, null, parentgroupMeasurementId, litterName, null, parentgroupName));
 				
 				// Link animal to litter
 				// TODO: now we make a litter for each animal, although multiple animals may be from the
 				// same litter. However, we cannot know this for sure, since no litter information is
 				// stored in the old Uli Eisel DB. How do we solve this?
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, 
-						null, litterProtocolId, litterMeasurementId, animalId, null, litterId));
+				valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(20).getName(), 
+						now, null, litterMeasurementId, newAnimal.getName(), null, litterName));
 			}
 		});
 	}
