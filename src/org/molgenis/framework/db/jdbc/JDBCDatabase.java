@@ -207,6 +207,29 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	/**
 	 * Only use when really needed!
 	 * 
+	 * Executes SQL using stmt.execute(), allowing data manipulation statements but does not return a ResultSet.
+	 * 
+	 * @param sql
+	 * @return
+	 */
+	public boolean executeSql(String sql){
+		boolean success = false;
+		Statement stmt = null;
+		try {
+			stmt = getConnection().createStatement();
+			stmt.execute(sql);
+			success = true;
+			JDBCDatabase.closeStatement(stmt);
+			closeConnection();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		return success;
+	}
+	
+	/**
+	 * Only use when really needed!
+	 * 
 	 * @throws DatabaseException
 	 */
 	public List<Tuple> sql(String sql, QueryRule... rules)

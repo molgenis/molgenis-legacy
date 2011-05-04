@@ -139,6 +139,10 @@ public class JDBCConnectionHelper
 			throw new DatabaseException(sqle);
 		}
 	}
+	
+	public DataSourceWrapper getSource(){
+		return source;
+	}
 
 	/**
 	 * close the connection (if not in transaction)
