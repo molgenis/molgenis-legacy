@@ -20,4 +20,10 @@ public interface ComputationResource
 	
 	public List<String> executeCommands(List<Command> commands) throws Exception;
 	
+	public void addResultLine(String line);
+	public void addErrorLine(String line);
+	
+	public String getResultLine();
+	public String getErrorLine();
+	
 }
