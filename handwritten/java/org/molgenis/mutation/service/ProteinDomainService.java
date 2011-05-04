@@ -45,9 +45,8 @@ public class ProteinDomainService implements Serializable
 	 */
 	public ProteinDomain findProteinDomain(Mutation mutation) throws DatabaseException, ParseException
 	{
-		Exon exon                   = this.db.findById(Exon.class, mutation.getExon());
-		Integer proteinDomainId     = this.db.query(Exon_ProteinDomain.class).equals(Exon_ProteinDomain.EXON, exon.getId()).find().get(0).getProteinDomain_Id();
-		ProteinDomain proteinDomain = this.db.findById(ProteinDomain.class, proteinDomainId);
+		Exon exon                   = this.db.findById(Exon.class, mutation.getExon_Id());
+		ProteinDomain proteinDomain = this.db.findById(ProteinDomain.class, exon.getProteinDomain_Id().get(0));
 		return proteinDomain;
 	}
 
