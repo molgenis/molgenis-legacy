@@ -13,7 +13,7 @@ public class TestLocalExecution
 	 */
 	public static void main(String[] args) throws Exception
 	{
-		JDBCDatabase db = new JDBCDatabase("xgap.properties");
+		JDBCDatabase db = new JDBCDatabase("handwritten/apps/org/molgenis/xgap/xqtlworkbench_standalone/xqtl.properties");
 		MolgenisFileHandler xf = new MolgenisFileHandler(db);
 		LocalComputationResource lc = new LocalComputationResource(xf);
 
@@ -25,7 +25,7 @@ public class TestLocalExecution
 		// C:\Users\Joeri\AppData\Local\Temp\ && dir)
 		Command command2 = new Command("dir", true, false, true);
 
-		lc.executeCommand(command);
+		System.out.print(lc.executeCommand(command));
 		lc.executeCommand(command2);
 
 	}

@@ -29,7 +29,30 @@ import plugins.cluster.interfaces.ComputationResource;
 public class ClusterComputationResource implements ComputationResource
 {
 	private boolean verbose = true;
+	private String res;
+	private String err;
+	
+	@Override
+	public void addResultLine(String line){
+		res += line + "\n";
+	}
+	
+	@Override
+	public void addErrorLine(String line){
+		err += line + "\n";
+	}
+	
+	@Override
+	public String getResultLine() {
+		return res;
+	}
 
+	@Override
+	public String getErrorLine() {
+		return err;
+	}
+	
+	
 	public ClusterComputationResource(LoginSettings ls){
 		this.ls = ls;
 	}
@@ -44,11 +67,9 @@ public class ClusterComputationResource implements ComputationResource
 
 		List<Command> commands = new ArrayList<Command>();
 
-		// delete it
-		commands = new ArrayList<Command>();
 		commands.add(new Command("rm -rf ~/runmij" + jobId + ".*", true, false, false));
 		commands.add(new Command("rm -rf ~/run" + jobId, true, false, false));
-		this.executeCommands(commands);
+		executeCommands(commands);
 
 		return true;
 	}
@@ -76,10 +97,6 @@ public class ClusterComputationResource implements ComputationResource
 		SSH2Preferences prefs = new SSH2Preferences(props);
         SecureRandomAndPad secureRandom = new SecureRandomAndPad(new SecureRandom(seed.getBytesBlocking(20, false)));
 
-        /*
-         * Open the TCP connection to the server and create the
-         * SSH2Transport object. No traffic will be sent yet.
-         */
         transport = new SSH2Transport(new Socket(host, port), prefs, secureRandom);
         String fingerprint = props.getProperty("fingerprint." + host + "." + port);
         if(fingerprint != null) {
@@ -90,13 +107,14 @@ public class ClusterComputationResource implements ComputationResource
 		for (Command cmd : commands){
 			console.command(cmd.getCommand());
 			System.out.println("executing: "+ cmd.getCommand());
-	        if(verbose){
-	        	for (;;) {
-	        		BufferedReader in = new BufferedReader(new InputStreamReader(console.getStdOut()));
-	        		String line = in.readLine();
-	        		if (line == null) break;
+			BufferedReader in = new BufferedReader(new InputStreamReader(console.getStdOut()));
+			String line;
+	        while ((line = in.readLine()) != null) {
+	        	if(verbose){
 	        		System.out.println(line);
 	         	}
+	        	addResultLine(line);
+	        	results.add(line);
 	        }
 			Thread.sleep(100);
 		}

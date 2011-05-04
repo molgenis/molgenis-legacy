@@ -1,11 +1,7 @@
 package plugins.cluster.implementations;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,21 +20,37 @@ public class LocalComputationResource implements ComputationResource {
 	
 	MolgenisFileHandler xlfh;
 	String defaultRepos = "http://cran.xl-mirror.nl/";
-
+	private String res;
+	private String err;
+	
 	public LocalComputationResource(MolgenisFileHandler xlfh) {
 		this.xlfh = xlfh;
+	}
+	
+	@Override
+	public void addResultLine(String line){
+		res += line + "\n";
+	}
+	
+	@Override
+	public void addErrorLine(String line){
+		err += line + "\n";
+	}
+	
+	@Override
+	public String getResultLine() {
+		return res;
+	}
+
+	@Override
+	public String getErrorLine() {
+		return err;
 	}
 
 	@Override
 	public boolean cleanupJob(int jobId) throws Exception {
-		
 		List<Command> commands = new ArrayList<Command>();
-		
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-
-		// delete it
-		commands = new ArrayList<Command>();
-		
 		String OS = DetectOS.getOS();
 		
 		if(OS.startsWith("unix") || OS.equals("mac")){
@@ -49,24 +61,21 @@ public class LocalComputationResource implements ComputationResource {
 			commands.add(new Command("del /f /s /q "+tmpDir.getAbsolutePath()+"\\run" + jobId, true, false, false));
 			commands.add(new Command("rd /s /q "+tmpDir.getAbsolutePath()+"\\run" + jobId, true, false, false));
 		}
-		this.executeCommands(commands);
-		
-		return false;
+		if(!executeCommands(commands).equals("")){
+			return true;
+		}else{
+			return false;
+		}
 	}
 
-//	@Override
-//	public void executeSimpleCommand(String command) throws Exception {
-//		String OS = DetectOS.getOS();
-//		execute(command, OS, true);
-//	}
-	
 	@Override
 	public List<String> executeCommands(List<Command> commands) throws Exception
 	{
 		String OS = DetectOS.getOS();
 		ArrayList<String> res = new ArrayList<String>();
 		for (Command command : commands) {
-			res.add(executeOSDependantCommand(command, OS));
+			executeOSDependantCommand(command, OS);
+			res.add(this.getResultLine());
 			Thread.sleep(100);
 		}
 		return res;
@@ -74,106 +83,50 @@ public class LocalComputationResource implements ComputationResource {
 
 	@Override
 	public String executeCommand(Command command) throws Exception {
-		String OS = DetectOS.getOS();
-		String res = executeOSDependantCommand(command, OS);
-		return res;
+		if(executeOSDependantCommand(command, DetectOS.getOS())){
+			return getResultLine();
+		}else{
+			return getErrorLine();
+		}
 	}
 	
-	
-
-	private String executeOSDependantCommand(Command command, String OS)
-			throws IOException {
-
-		String res = ""; // TODO: put results in!
-
+	private boolean executeOSDependantCommand(Command command, String OS) throws IOException {
 		String commandString = command.getCommand();
-		
-		//evil!
-//		if(command.isTmpDirExecute()){
-//			String browseToTmpDir = "cd " + System.getProperty("java.io.tmpdir");
-//			commandString = browseToTmpDir +" && "+ commandString;
-//		}
-		
 		System.out.println("EXECUTING: " + commandString);
-		
 		Process p = null;
-		
-	//	System.out.println("cd " +  System.getProperty("java.io.tmpdir"));
-		
-		// for unix, unixlike, mac
+		this.res="";
+		this.err="";
+
 		if (OS.startsWith("unix") || OS.equals("mac")) {
-			p = Runtime.getRuntime().exec(
-					new String[] { "/bin/sh", "-c", commandString });
+			p = Runtime.getRuntime().exec( new String[] { "/bin/sh", "-c", commandString });
 		} else if (OS.equals("windows")) {
-			p = Runtime.getRuntime().exec(
-					new String[] { "cmd.exe", "/c", commandString });
+			p = Runtime.getRuntime().exec( new String[] { "cmd.exe", "/c", commandString });
 		} else if (OS.equals("windowslegacy")) {
-			p = Runtime.getRuntime().exec(
-					new String[] { "command.com", "/c", commandString });
+			p = Runtime.getRuntime().exec( new String[] { "command.com", "/c", commandString });
 		}
+		StreamGobbler errorGobbler = new StreamGobbler(p.getErrorStream(), "ERROR", this);
+		StreamGobbler outputGobbler = new StreamGobbler(p.getInputStream(), "OUTPUT",this);
 
-		if (command.isWaitFor() && (OS.startsWith("unix") || OS.equals("mac"))) {
-			InputStream in = p.getInputStream();
-			BufferedInputStream buf = new BufferedInputStream(in);
-			InputStreamReader inread = new InputStreamReader(buf);
-			BufferedReader bufferedreader = new BufferedReader(inread);
+		errorGobbler.start();
+		outputGobbler.start();
 
-			// Read the ls output
-			String line;
-			while ((line = bufferedreader.readLine()) != null) {
-				System.out.println(line);
-			}
-
-			// Check for ls failure
+		if(command.isWaitFor()){
 			try {
 				if (p.waitFor() != 0) {
 					System.err.println("exit value = " + p.exitValue());
+					return false;
 				}
 			} catch (InterruptedException e) {
 				System.err.println(e);
-			} finally {
-				// Close the InputStream
-				bufferedreader.close();
-				inread.close();
-				buf.close();
-				in.close();
+				return false;
 			}
-			// must always "wait" for windows
-		} else if (OS.startsWith("windows")) {
-
-			StreamGobbler errorGobbler = new StreamGobbler(p.getErrorStream(),
-					"ERROR");
-
-			// any output?
-			StreamGobbler outputGobbler = new StreamGobbler(p.getInputStream(),
-					"OUTPUT");
-
-			// kick them off
-			errorGobbler.start();
-			outputGobbler.start();
-
-			// any error???
-			if(command.isWaitFor()){
-				try {
-					if (p.waitFor() != 0) {
-						System.err.println("exit value = " + p.exitValue());
-					}
-				} catch (InterruptedException e) {
-					System.err.println(e);
-				}
-			}
-		} else {
-			System.out.println("Not waiting for process '" + command
-					+ "' on OS " + OS);
 		}
-		return res;
+		return true;
 	}
 
-	private void installBiocPackage(String pkg, File usrHomeLibs,
-			String OS) throws IOException{
+	private void installBiocPackage(String pkg, File usrHomeLibs, String OS) throws IOException{
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-		File tmpFile = new File(tmpDir.getAbsoluteFile() + File.separator
-				+ "tmpRfile_" + System.nanoTime() + ".R");
+		File tmpFile = new File(tmpDir.getAbsoluteFile() + File.separator + "tmpRfile_" + System.nanoTime() + ".R");
 		String cmd;
 		
 		if(OS.startsWith("windows")){
@@ -190,12 +143,11 @@ public class LocalComputationResource implements ComputationResource {
 		tmpFile.delete();
 	}
 	
-	private void installRPackage(String pkg, String repos, File usrHomeLibs,
-			String OS) throws Exception {
-
+	private void installRPackage(String pkg, String repos, File usrHomeLibs, String OS) throws Exception {
+		System.out.println("Going to install: " + pkg);
+		
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-		File tmpFile = new File(tmpDir.getAbsoluteFile() + File.separator
-				+ "tmpRfile_" + System.nanoTime() + ".R");
+		File tmpFile = new File(tmpDir.getAbsoluteFile() + File.separator + "tmpRfile_" + System.nanoTime() + ".R");
 		
 		String cmd;
 		
@@ -209,10 +161,16 @@ public class LocalComputationResource implements ComputationResource {
 			+ "\\\"\\)\\;q\\(\\\"no\\\"\\) > " + tmpFile.getAbsolutePath();
 		}
 				
-		executeOSDependantCommand(new Command(cmd, true, false, false), OS);
-		executeOSDependantCommand(new Command("R CMD BATCH " + tmpFile.getAbsolutePath(), true, false, false), OS);
+		if(!executeOSDependantCommand(new Command(cmd, true, false, false), OS)){
+			System.err.println("No install file could be generated");
+			return;
+		}
+		if(!executeOSDependantCommand(new Command("R CMD BATCH " + tmpFile.getAbsolutePath(), true, false, false), OS)){
+			System.err.println("Instalation of "+pkg+" failed");
+			return;
+		}
 		tmpFile.delete();
-
+		System.out.println("Done installing " + pkg);
 	}
 	
 	private String msWindowsSafePath(String path){
@@ -220,15 +178,13 @@ public class LocalComputationResource implements ComputationResource {
 		res = "\"" + res + "\"";
 		return res;
 	}
-	
-	
+		
 	/**
 	 * Convenience method for external use
 	 * @throws Exception
 	 */
 	public void installQtl() throws Exception{
-		File usrHomeLibs = new File(System.getProperty("user.home")
-				+ File.separator + "libs");
+		File usrHomeLibs = new File(System.getProperty("user.home")	+ File.separator + "libs");
 		String OS = DetectOS.getOS();
 		installRPackage("qtl", defaultRepos, usrHomeLibs, OS);
 	}
@@ -238,8 +194,7 @@ public class LocalComputationResource implements ComputationResource {
 	 * @throws Exception
 	 */
 	public void installRCurl() throws Exception{
-		File usrHomeLibs = new File(System.getProperty("user.home")
-				+ File.separator + "libs");
+		File usrHomeLibs = new File(System.getProperty("user.home")	+ File.separator + "libs");
 		String OS = DetectOS.getOS();
 		installBiocPackage("RCurl", usrHomeLibs, OS);
 	}
@@ -249,49 +204,25 @@ public class LocalComputationResource implements ComputationResource {
 	 * @throws Exception
 	 */
 	public void installBitops() throws Exception{
-		File usrHomeLibs = new File(System.getProperty("user.home")
-				+ File.separator + "libs");
+		File usrHomeLibs = new File(System.getProperty("user.home")	+ File.separator + "libs");
 		String OS = DetectOS.getOS();
 		installRPackage("bitops", defaultRepos, usrHomeLibs, OS);
 	}
 	
-	/**
-	 * Convenience method for external use
-	 * NO LONGER NEEDED - files are sourced in R api
-	 * @throws Exception
-	 */
-	@Deprecated
-	public void installClusterJobs() throws Exception{
-		File usrHomeLibs = new File(System.getProperty("user.home")
-				+ File.separator + "libs");
-		String OS = DetectOS.getOS();
-		File xgapRsources = new File(this.getClass().getResource("../R")
-				.getFile());
-		executeOSDependantCommand(new Command("R CMD INSTALL " + xgapRsources.getAbsolutePath()
-				+ File.separator + "ClusterJobs --library="
-				+ msWindowsSafePath(usrHomeLibs.getAbsolutePath()) + " --vanilla", true, false, false), OS);
-	}
-
 	@Override
 	public boolean installDependencies() throws Exception {
+		File usrHomeLibs = new File(System.getProperty("user.home")	+ File.separator + "libs");
+		File xgapRsources = new File(this.getClass().getResource("../R").getFile());
 
-		File usrHomeLibs = new File(System.getProperty("user.home")
-				+ File.separator + "libs");
-		File xgapRsources = new File(this.getClass().getResource("../R")
-				.getFile());
-
-		System.out.println("user home libs = " + usrHomeLibs.getAbsolutePath());
+		System.out.println("User home libs = " + usrHomeLibs.getAbsolutePath());
+		System.out.println("XGAP resources = " + xgapRsources.getAbsolutePath());
 
 		boolean installBitops = false;
 		boolean installQtl = false;
 		boolean installRCurl = false;
-		File bitopsDir = new File(usrHomeLibs.getAbsolutePath()
-				+ File.separator + "bitops");
-		File qtlDir = new File(usrHomeLibs.getAbsolutePath()
-				+ File.separator + "qtl");
-		File rcurlDir = new File(usrHomeLibs.getAbsolutePath()
-				+ File.separator + "RCurl");
-
+		File bitopsDir = new File(usrHomeLibs.getAbsolutePath()	+ File.separator + "bitops");
+		File qtlDir = new File(usrHomeLibs.getAbsolutePath() + File.separator + "qtl");
+		File rcurlDir = new File(usrHomeLibs.getAbsolutePath() + File.separator + "RCurl");
 
 		if (!usrHomeLibs.exists()) {
 			usrHomeLibs.mkdir();
@@ -299,57 +230,30 @@ public class LocalComputationResource implements ComputationResource {
 			installQtl = true;
 			installRCurl = true;
 		} else {
-			System.out.println("bitopdir = " + bitopsDir.getAbsolutePath());
-			if (!bitopsDir.exists()) {
-				installBitops = true;
-			}
-
-			if (!qtlDir.exists()) {
-				installQtl = true;
-			}
-			if (!rcurlDir.exists()) {
-				installRCurl = true;
-			}
+			System.out.println("Location of bitops = " + bitopsDir.getAbsolutePath());
+			System.out.println("Location of R/qtl = " + qtlDir.getAbsolutePath());
+			System.out.println("Location of R/Curl = " + rcurlDir.getAbsolutePath());
+			if (!bitopsDir.exists()) installBitops = true;
+			if (!qtlDir.exists()) installQtl = true;
+			if (!rcurlDir.exists()) installRCurl = true;
 		}
 
 		String OS = DetectOS.getOS();
-
-		System.out.println("starting installation...");
+		System.out.println("Starting installation on " + OS + "...");
 
 		if (installBitops) {
 			installRPackage("bitops", defaultRepos, usrHomeLibs, OS);
-			System.out.println("done installing bitops");
 		}
 
 		if (installRCurl) {
-//			if (OS.startsWith("windows")) {
-//				installRPackage("RCurl", rcurlWindowsRepos, usrHomeLibs, OS);
-//				System.out.println("done installing RCurl");
-//			} else {
-//				installRPackage("RCurl", defaultRepos, usrHomeLibs, OS);
-//				System.out.println("done installing RCurl");
-//			}
-			
 			installBiocPackage("RCurl", usrHomeLibs, OS);
-			System.out.println("done installing RCurl");
-
 		}
 
 		if (installQtl) {
 			installRPackage("qtl", defaultRepos, usrHomeLibs, OS);
-			System.out.println("done installing qtl");
 		}
 
-		// we ALWAYS reinstall Clusterjobs because this is our own custom code
-		// and subject to bugfixes. notice the source is not compiled.
-		// execute("cd " + xgapRsources.getAbsolutePath() + " && ");
-		// '--library=" + usrHomeLibs.getAbsolutePath() +"'", OS, true);
-		// System.out.println("done ClusterJobs");
-
-		
-		//if OS == unix
-		//nogmaals lib check
-		//if missing libs:
+		//Again we check for missing libraries, and install then using tar.gz packages
 		if(OS.startsWith("unix") || OS.equals("mac")){
 			if (!bitopsDir.exists()) {
 				executeOSDependantCommand(new Command("R CMD INSTALL " + xgapRsources.getAbsolutePath()
@@ -372,21 +276,8 @@ public class LocalComputationResource implements ComputationResource {
 
 			}
 		}
-		
-		executeOSDependantCommand(new Command("R CMD INSTALL " + xgapRsources.getAbsolutePath()
-				+ File.separator + "ClusterJobs --library="
-				+ msWindowsSafePath(usrHomeLibs.getAbsolutePath()) + " --vanilla", true, false, false), OS);
-		
-
-		// installRPackage("ClusterJobs",
-		// xgapRsources.getAbsolutePath().replace("\\", "/"),usrHomeLibs, OS);
-		System.out.println("done ClusterJobs");
-
-		System.out.println("...finished installation");
-
+		System.out.println("Finished local installation of R-packages");
 		return true;
 	}
-
-
 
 }
