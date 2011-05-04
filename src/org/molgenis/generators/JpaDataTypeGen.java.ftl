@@ -232,11 +232,11 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	@ManyToMany(/*cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/)
 	@JoinColumn(name="${SqlName(field)}", insertable=true, updatable=true, nullable=${field.isNillable()?string})
 			<#if multipleXrefs &gt; 1>
-	@JoinTable(name="${Name(entity)}_${JavaName(field)}", 
-			joinColumns=@JoinColumn(name="${JavaName(field.xrefEntity)}s"), inverseJoinColumns=@JoinColumn(name="${Name(entity)}"))
+	@JoinTable(name="${Name(entity)}_${SqlName(field)}", 
+			joinColumns=@JoinColumn(name="${Name(entity)}"), inverseJoinColumns=@JoinColumn(name="${SqlName(field)}"))
 			<#else> 
-	@JoinTable(name="${Name(entity)}_${JavaName(field.xrefEntity)}s", 
-			joinColumns=@JoinColumn(name="${JavaName(field.xrefEntity)}s"), inverseJoinColumns=@JoinColumn(name="${Name(entity)}"))			
+	@JoinTable(name="${Name(entity)}_${SqlName(field)}", 
+			joinColumns=@JoinColumn(name="${Name(entity)}"), inverseJoinColumns=@JoinColumn(name="${SqlName(field)}"))			
 			</#if>			
        	<#elseif field.type == "xref">
     @ManyToOne(/*cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/)
@@ -477,9 +477,11 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	{
 		if(${name(field)} != null && !${name(field)}.isEmpty()) {
 			List<${type(field.xrefField)}> result = new ArrayList<${type(field.xrefField)}>();
-			for(${type(field.xrefField)} xref: ${name(field)}_${name(field.xrefField)}) {
-				result.add(xref);
-			}
+//			for(${type(field.xrefField)} xref: ${name(field)}_${name(field.xrefField)}) {
+//				result.add(xref);
+//			}
+			for (int i = 0; i < ${name(field)}.size(); i++)
+				result.add(${name(field)}.get(i).getId());
 			return result;
 		} else {
 			if(${name(field)}_${name(field.xrefField)} == null) {
@@ -855,6 +857,11 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
     public String getXrefIdFieldName(String fieldName) {
         <#list allFields(entity) as field>
         	<#if field.type = 'xref' >
+        if (fieldName.equalsIgnoreCase("${name(field)}")) {
+            return "${name(field.getXrefEntity().getPrimaryKey())}";
+        }
+        	</#if>
+                <#if field.type = 'mref' >
         if (fieldName.equalsIgnoreCase("${name(field)}")) {
             return "${name(field.getXrefEntity().getPrimaryKey())}";
         }
