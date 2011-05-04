@@ -12,8 +12,7 @@ public class Tester {
 	 */
 	public static void main(String[] args) throws Exception {
 		JDBCDatabase db = new JDBCDatabase("xgap.properties");
-		MolgenisFileHandler xlfh = new MolgenisFileHandler(db);
-		LocalComputationResource lc = new LocalComputationResource(xlfh);
+		LocalComputationResource lc = new LocalComputationResource();
 
 		String out = lc.executeCommand(new Command("ls"));
 		

@@ -14,8 +14,7 @@ public class TestLocalExecution
 	public static void main(String[] args) throws Exception
 	{
 		JDBCDatabase db = new JDBCDatabase("handwritten/apps/org/molgenis/xgap/xqtlworkbench_standalone/xqtl.properties");
-		MolgenisFileHandler xf = new MolgenisFileHandler(db);
-		LocalComputationResource lc = new LocalComputationResource(xf);
+		LocalComputationResource lc = new LocalComputationResource();
 
 		// project dir
 		Command command = new Command("dir", true, false, false);

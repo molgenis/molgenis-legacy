@@ -18,14 +18,10 @@ import filehandling.generic.MolgenisFileHandler;
  */
 public class LocalComputationResource implements ComputationResource {
 	
-	MolgenisFileHandler xlfh;
+
 	String defaultRepos = "http://cran.xl-mirror.nl/";
 	private String res;
 	private String err;
-	
-	public LocalComputationResource(MolgenisFileHandler xlfh) {
-		this.xlfh = xlfh;
-	}
 	
 	@Override
 	public void addResultLine(String line){
@@ -90,7 +86,7 @@ public class LocalComputationResource implements ComputationResource {
 		}
 	}
 	
-	private boolean executeOSDependantCommand(Command command, String OS) throws IOException {
+	public boolean executeOSDependantCommand(Command command, String OS) throws IOException {
 		String commandString = command.getCommand();
 		System.out.println("EXECUTING: " + commandString);
 		Process p = null;

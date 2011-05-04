@@ -60,8 +60,7 @@ public class DependencyManager extends PluginModel<Entity>
 			setUsrHomeLibs(null);
 			
 			if(action.startsWith("install")){
-				MolgenisFileHandler xlfh = new MolgenisFileHandler(db);
-				lcr = new LocalComputationResource(xlfh);
+				lcr = new LocalComputationResource();
 				setUsrHomeLibs(new File(System.getProperty("user.home")
 						+ File.separator + "libs"));
 			}

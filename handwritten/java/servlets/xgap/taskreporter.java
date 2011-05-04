@@ -94,8 +94,7 @@ public class taskreporter extends app.servlet.MolgenisServlet
 				{
 					cList.add(new Command("R CMD BATCH ./run" + jobID + "/subjob" + x + ".R", false, false, true));
 				}
-				MolgenisFileHandler xf = new MolgenisFileHandler(db);
-				ComputationResource cr = new LocalComputationResource(xf);
+				ComputationResource cr = new LocalComputationResource();
 				cr.executeCommands(cList);
 			}
 

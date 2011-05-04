@@ -31,8 +31,7 @@ public class UploadTest
 		// get database, filehandler, and computeresource to handle commandline
 		// calls
 		JDBCDatabase db = new JDBCDatabase("handwritten/apps/org/molgenis/xgap/xgap.properties");
-		MolgenisFileHandler xf = new MolgenisFileHandler(db);
-		LocalComputationResource lc = new LocalComputationResource(xf);
+		LocalComputationResource lc = new LocalComputationResource();
 
 		// names and type of files we want to upload
 		String[] names = new String[]

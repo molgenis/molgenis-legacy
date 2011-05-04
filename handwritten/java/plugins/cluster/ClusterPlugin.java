@@ -200,7 +200,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 
 		if (parent.getComputeResource().equals("local"))
 		{
-			cr = new LocalComputationResource(new MolgenisFileHandler(db));
+			cr = new LocalComputationResource();
 			// commands.add(new Command("R CMD BATCH ./run" + sj.getJob() +
 			// "/run"+sj.getNr()+".R", false, false));
 			command = new Command("R CMD BATCH ./run" + sj.getJob() + "/subjob" + sj.getNr() + ".R", false, false, true);
@@ -451,7 +451,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 				// submit R job that will distribute the subjobs
 				if (startedJob.getComputeResource().equals("local"))
 				{
-					cr = new LocalComputationResource(new MolgenisFileHandler(db));
+					cr = new LocalComputationResource();
 					commands.add(new Command("R CMD BATCH runmij" + jobId + ".R", false, false, true));
 				}
 				else if ((startedJob.getComputeResource().equals("cluster")))
