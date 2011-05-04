@@ -34,7 +34,7 @@
 <td><a href="molgenis.do?__target=${screen.name}&__action=showMutation&mid=${mutationSummaryVO.mutation.getIdentifier()}#results">${mutationSummaryVO.mutation.getIdentifier()}</a></td>
 <td>${mutationSummaryVO.mutation.getCdna_Notation()}</td>
 <td>${mutationSummaryVO.mutation.getAa_Notation()}</td>
-<td><a href="molgenis.do?__target=${screen.name}&__action=showExon&exon_id=${mutationSummaryVO.mutation.getExon()}#results">${mutationSummaryVO.mutation.getExon_Name()}</a></td>
+<td><a href="molgenis.do?__target=${screen.name}&__action=showExon&exon_id=${mutationSummaryVO.mutation.getExon_Id()}#results">${mutationSummaryVO.mutation.getExon_Name()}</a></td>
 <td>${mutationSummaryVO.mutation.getConsequence()}</td>
 <td>${mutationSummaryVO.mutation.getInheritance()}</td>
 <#--
@@ -68,6 +68,7 @@
 </tr>
 <#list mutationSummaryVO.patients as patientSummaryVO>
 <#assign secondMutation = "empty">
+<!-- KOZZER: mut1==${patientSummaryVO.mutation1}, mut2==${patientSummaryVO.mutation2} -->
 <#if patientSummaryVO.mutation1.getId() == mutationSummaryVO.mutation.getId()>
 	<#if patientSummaryVO.mutation2??>
 		<#assign secondMutation = patientSummaryVO.mutation2>

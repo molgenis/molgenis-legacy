@@ -16,7 +16,7 @@
 <tr class="form_listrow0"><th>First affected codon number</th><td><#if mutationSummaryVO.mutation.getAa_Position()??>${mutationSummaryVO.mutation.getAa_Position()?c}</#if></td></tr>
 <tr class="form_listrow1"><th>Codon change</th><td>${mutationSummaryVO.codonChange}</td></tr>
 <tr class="form_listrow0"><th>Protein change</th><td>${mutationSummaryVO.mutation.getAa_Notation()}</td></tr>
-<tr class="form_listrow1"><th>Exon/intron</th><td><a href="molgenis.do?__target=${screen.name}&__action=showExon&exon_id=${mutationSummaryVO.mutation.getExon()}#results">${mutationSummaryVO.mutation.getExon_Name()}</a></td></tr>
+<tr class="form_listrow1"><th>Exon/intron</th><td><a href="molgenis.do?__target=${screen.name}&__action=showExon&exon_id=${mutationSummaryVO.mutation.getExon_Id()}#results">${mutationSummaryVO.mutation.getExon_Name()}</a></td></tr>
 <tr class="form_listrow0"><th>Protein domain</th><td>${mutationSummaryVO.proteinDomain.getName()}</td></tr>
 <tr class="form_listrow1"><th>Consequence</th><td>${mutationSummaryVO.mutation.getConsequence()}</td></tr>
 <tr class="form_listrow0"><th>Type of mutation</th><td>${mutationSummaryVO.mutation.getType()}</td></tr>
