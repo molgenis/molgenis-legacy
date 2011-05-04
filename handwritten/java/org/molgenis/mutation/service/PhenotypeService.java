@@ -11,20 +11,16 @@ import org.molgenis.mutation.MutationPhenotype;
 import org.molgenis.mutation.PhenotypeDetails;
 import org.molgenis.mutation.vo.PhenotypeSearchCriteriaVO;
 
-import app.JDBCDatabase;
-
 public class PhenotypeService implements Serializable
 {
 	private static final long serialVersionUID       = -476712719557155269L;
 	private static PhenotypeService phenotypeService = null;
-	private JDBCDatabase db                          = null;
-	//TODO:Danny: Use or loose
-	/*private static final transient Logger logger     = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());*/
+	private Database db                              = null;
 	
 	// private constructor, use singleton instance
 	private PhenotypeService(Database db)
 	{
-		this.db = (JDBCDatabase) db;
+		this.db = db;
 	}
 	
 	public static PhenotypeService getInstance(Database db)
