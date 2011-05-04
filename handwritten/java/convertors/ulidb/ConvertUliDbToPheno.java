@@ -356,6 +356,7 @@ public class ConvertUliDbToPheno
 		});
 	}
 	
+	// TODO: rewrite using lists!
 	public void parseParentRelations(String filename) throws Exception
 	{
 		final int invid = ct.getInvestigationId("AnimalDB");
