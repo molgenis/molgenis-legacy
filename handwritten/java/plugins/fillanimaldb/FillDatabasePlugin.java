@@ -14,6 +14,8 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
+import convertors.ulidb.ConvertUliDbToPheno;
+
 public class FillDatabasePlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -5634663322794444817L;
@@ -49,30 +51,33 @@ public class FillDatabasePlugin extends PluginModel<Entity>
 			if( action.equals("loadUliBackgrounds") )
 			{
 				String filename = request.getString("ulibackgroundtable");
-				LoadUliDb myLoadUliDb = new LoadUliDb(db, this.getLogin());
+				ConvertUliDbToPheno myLoadUliDb = new ConvertUliDbToPheno(db, this.getLogin());
 				myLoadUliDb.populateBackground(filename);
 			}
 			
 			if( action.equals("loadUliGenes") )
 			{
 				String filename = request.getString("uligenetable");
-				LoadUliDb myLoadUliDb = new LoadUliDb(db, this.getLogin());
+				ConvertUliDbToPheno myLoadUliDb = new ConvertUliDbToPheno(db, this.getLogin());
 				myLoadUliDb.populateGene(filename);
 			}
 			
 			if( action.equals("loadUliLines") )
 			{
 				String filename = request.getString("ulilinetable");
-				LoadUliDb myLoadUliDb = new LoadUliDb(db, this.getLogin());
+				ConvertUliDbToPheno myLoadUliDb = new ConvertUliDbToPheno(db, this.getLogin());
 				myLoadUliDb.populateLine(filename);
 			}
 			
 			if( action.equals("loadUliAnimals") )
 			{
 				String filename = request.getString("ulianimaltable");
-				LoadUliDb myLoadUliDb = new LoadUliDb(db, this.getLogin());
+				ConvertUliDbToPheno myLoadUliDb = new ConvertUliDbToPheno(db, this.getLogin());
 				myLoadUliDb.populateAnimal(filename);
-				myLoadUliDb.parseParentRelations(filename);
+				myLoadUliDb.populateProtocolApplication();
+				myLoadUliDb.populateValue(filename);
+				//myLoadUliDb.parseParentRelations(filename);
+				myLoadUliDb.writeToDb();
 			}
 			
 			if( action.equals("loadAnimals") )

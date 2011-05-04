@@ -670,6 +670,44 @@ public class CommonService
 	}
 	
 	/**
+	 * Creates an ObservedValue with the given parameters, but does NOT add it to the database.
+	 * Uses target and protocol names to link, so those do not have to have been added to the
+	 * DB already.
+	 * 
+	 * @param investigationId
+	 * @param protappid
+	 * @param starttime
+	 * @param endtime
+	 * @param featureid
+	 * @param subjectTargetId
+	 * @param valueString
+	 * @param targetRef
+	 * @return ObservedValue
+	 * @throws DatabaseException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
+	public ObservedValue createObservedValue(int investigationId, String protappName,
+			Date starttime, Date endtime, int featureId,
+			String subjectTargetName, String valueString, int targetRef)
+			throws DatabaseException, IOException, ParseException
+	{
+		ObservedValue newValue = new ObservedValue();
+		newValue.setInvestigation(investigationId);
+		newValue.setProtocolApplication_Name(protappName);
+		newValue.setFeature(featureId);
+		newValue.setTime(starttime);
+		newValue.setEndtime(endtime);
+		newValue.setTarget_Name(subjectTargetName);
+		if (targetRef != 0) {
+			newValue.setRelation(targetRef);
+		} else {
+			newValue.setValue(valueString);
+		}
+		return newValue;
+	}
+	
+	/**
 	 * First makes a ProtocolApplication and adds it to the Database.
 	 * Then creates an ObservedValue with the given parameters and a link to the ProtocolApplication just made,
 	 * but does NOT add it to the database.

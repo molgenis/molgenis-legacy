@@ -12,10 +12,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -269,16 +267,9 @@ public class AddAnimalPlugin extends GenericPlugin
 		if (customNameFeature != null) {
 			protocolIdList.add(ct.getProtocolId("Set" + customNameFeature));
 		}
-		Map<ObservationTarget, List<ProtocolApplication>> appsPerAnimalMap = new LinkedHashMap<ObservationTarget, List<ProtocolApplication>>();
-		ProtocolApplication newApp;
-		for (ObservationTarget animal : animalsToAddList) {
-			ArrayList<ProtocolApplication> appList = new ArrayList<ProtocolApplication>();
-			for (int j = 0; j < jMax; j++) {
-				newApp = ct.createProtocolApplication(invid, protocolIdList.get(j));
-				appList.add(newApp);
-				appsToAddList.add(newApp);
-			}
-			appsPerAnimalMap.put(animal, appList);
+		for (int j = 0; j < jMax; j++) {
+			ProtocolApplication newApp = ct.createProtocolApplication(invid, protocolIdList.get(j));
+			appsToAddList.add(newApp);
 		}
 		db.add(appsToAddList);
 		
@@ -298,31 +289,30 @@ public class AddAnimalPlugin extends GenericPlugin
 		}
 		for (ObservationTarget animal : animalsToAddList) {
 			int animalid = animal.getId();
-			List<ProtocolApplication> appList = appsPerAnimalMap.get(animal);
 			
 			// Set Active, with (start)time = entrydate and endtime = null
-			ProtocolApplication app = appList.get(0);
+			ProtocolApplication app = appsToAddList.get(0);
 	 		valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
 	 				featureIdList.get(0), animalid, "Alive", 0));
 			// Set species
-	 		app = appList.get(1);
+	 		app = appsToAddList.get(1);
 	 		valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
 	 				featureIdList.get(1), animalid, null, speciesId));
 			// Set sex
-	 		app = appList.get(2);
+	 		app = appsToAddList.get(2);
 	 		valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
 	 				featureIdList.get(2), animalid, null, sexId));
 			// Set animaltype
-	 		app = appList.get(3);
+	 		app = appsToAddList.get(3);
 			valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate,  null, 
 					featureIdList.get(3), animalid, animalType, 0));
 			// Set source
-			app = appList.get(4);
+			app = appsToAddList.get(4);
 	 		valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
 	 				featureIdList.get(4), animalid, null, sourceId));
 			// Set background
 			if (backgroundId != 0) {
-				app = appList.get(5);
+				app = appsToAddList.get(5);
 				valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
 						featureIdList.get(5), animalid, null, backgroundId));
 			}
@@ -331,7 +321,7 @@ public class AddAnimalPlugin extends GenericPlugin
 			for (String gene : geneList) {
 				String geneState = genestateList.get(index);
 				// Make protocol application
-				app = appList.get(6);
+				app = appsToAddList.get(6);
 				valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
 						featureIdList.get(6), animalid, gene, 0));
 				valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
@@ -340,14 +330,14 @@ public class AddAnimalPlugin extends GenericPlugin
 			}
 			// Set birthdate
 			if (birthDate != null) {
-				app = appList.get(7);
+				app = appsToAddList.get(7);
 				SimpleDateFormat sdfDb = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 				valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
 						featureIdList.get(8), animalid, sdfDb.format(birthDate), 0));
 			}
 			// Set custom name/ID
 			if (customNameFeature != null && customName != null) {
-				app = appList.get(8);
+				app = appsToAddList.get(8);
 				valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
 						featureIdList.get(9), animalid, customName + customNumber, 0));
 				customNumber++;

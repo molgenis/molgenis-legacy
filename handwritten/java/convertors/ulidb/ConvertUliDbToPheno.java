@@ -1,4 +1,4 @@
-package plugins.fillanimaldb;
+package convertors.ulidb;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,8 +17,9 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.security.Login;
-import org.molgenis.pheno.ObservationTarget;
+import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
@@ -27,59 +28,170 @@ import app.JDBCDatabase;
 
 import commonservice.CommonService;
 
-public class LoadUliDb
+public class ConvertUliDbToPheno
 {
 	private Database db;
 	private CommonService ct;
 	private Login login;
 	private Logger logger;
+	final List<ProtocolApplication> protocolAppsToAddList;
+	final List<Individual> animalsToAddList;
+	final List<String> animalNames;
+	final List<ObservedValue> valuesToAddList;
 
-	public LoadUliDb(Database db, Login login) throws Exception
+	public ConvertUliDbToPheno(Database db, Login login) throws Exception
 	{
 		this.db = (JDBCDatabase) db;
 		this.login = login;
 		ct = CommonService.getInstance();
 		ct.setDatabase(this.db);
 		logger = Logger.getLogger("LoadUliDb");
+		// Init lists that we can later add to the DB at once
+		protocolAppsToAddList = new ArrayList<ProtocolApplication>();
+		animalsToAddList = new ArrayList<Individual>();
+		animalNames = new ArrayList<String>();
+		valuesToAddList = new ArrayList<ObservedValue>();
+	}
+	
+	public void writeToDb() {
+		// Add everything to DB
+		try {
+			int nrOfProtAppsAdded = db.add(protocolAppsToAddList);
+			logger.info(nrOfProtAppsAdded + " protocol applications added");
+			int nrOfAnimalsAdded = db.add(animalsToAddList);
+			logger.info(nrOfAnimalsAdded + " animals (and superclass items) added");
+			int nrOfValuesAdded = db.add(valuesToAddList);
+			logger.info(nrOfValuesAdded + " values added");
+			/*for (ObservedValue v : valuesToAddList) {
+				try {
+					db.add(v);
+				} catch (Exception e) {
+					logger.error("Writing to DB failed: " + e.getMessage());
+					e.printStackTrace();
+				}
+			}*/
+		} catch (Exception e) {
+			logger.error("Writing to DB failed: " + e.getMessage());
+			e.printStackTrace();
+		}
 	}
 
 	public void populateAnimal(String filename) throws Exception
 	{
+		final int userId = login.getUserId();
+		final int invid = ct.getInvestigationId("AnimalDB");
+		
+		File file = new File(filename);
+		CsvFileReader reader = new CsvFileReader(file);
+		reader.parse(new CsvReaderListener()
+		{
+			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
+			{
+				logger.info("Parsing line: " + line_number);
+				
+				// laufende Nr -> make new animal
+				String oldAnimalId = tuple.getString("laufende Nr");
+				String animalName = "animal" + oldAnimalId;
+				while (animalNames.contains(animalName)) { // make sure we have a unique name
+					animalName += "_dup";
+				}
+				animalNames.add(animalName);
+				Individual newAnimal = ct.createIndividual(invid, animalName, userId);
+				animalsToAddList.add(newAnimal);
+			}
+		});
+	}
+	
+	public void populateProtocolApplication() throws Exception
+	{
+		final int invid = ct.getInvestigationId("AnimalDB");
+		// Protocols we want to retrieve only once:
+		final int customIdProtocolId = ct.getProtocolId("SetCustomId");
+		final int oldUliDbIdProtocolId = ct.getProtocolId("SetOldUliDbId");
+		final int speciesProtocolId = ct.getProtocolId("SetSpecies");
+		final int activeProtocolId = ct.getProtocolId("SetActive");
+		final int sourceProtocolId = ct.getProtocolId("SetSource");
+		final int oldUliDbKuerzelProtocolId = ct.getProtocolId("SetOldUliDbKuerzel");
+		final int remarkProtocolId = ct.getProtocolId("SetRemark");
+		final int oldUliDbAktenzeichenProtocolId = ct.getProtocolId("SetOldUliDbAktenzeichen");
+		final int oldUliDbExperimentatorProtocolId = ct.getProtocolId("SetOldUliDbExperimentator");
+		final int oldUliDbTierschutzrechtProtocolId = ct.getProtocolId("SetOldUliDbTierschutzrecht");
+		final int sexProtocolId = ct.getProtocolId("SetSex");
+		final int colorProtocolId = ct.getProtocolId("SetColor");
+		final int earmarkProtocolId = ct.getProtocolId("SetEarmark");
+		final int genotypeProtocolId = ct.getProtocolId("SetGenotype");
+		final int backgroundProtocolId = ct.getProtocolId("SetBackground");
+		
+		// Make protocol apps for each protocol and add them to the list
+		
+		ProtocolApplication customIdApp = ct.createProtocolApplication(invid, customIdProtocolId);
+		protocolAppsToAddList.add(customIdApp);
+		
+		ProtocolApplication oldUliDbIdApp = ct.createProtocolApplication(invid, oldUliDbIdProtocolId);
+		protocolAppsToAddList.add(oldUliDbIdApp);
+		
+		ProtocolApplication speciesApp = ct.createProtocolApplication(invid, speciesProtocolId);
+		protocolAppsToAddList.add(speciesApp);
+		
+		ProtocolApplication activeApp = ct.createProtocolApplication(invid, activeProtocolId);
+		protocolAppsToAddList.add(activeApp);
+		
+		ProtocolApplication sourceApp = ct.createProtocolApplication(invid, sourceProtocolId);
+		protocolAppsToAddList.add(sourceApp);
+		
+		ProtocolApplication oldUliDbKuerzelApp = ct.createProtocolApplication(invid, oldUliDbKuerzelProtocolId);
+		protocolAppsToAddList.add(oldUliDbKuerzelApp);
+		
+		ProtocolApplication remarkApp = ct.createProtocolApplication(invid, remarkProtocolId);
+		protocolAppsToAddList.add(remarkApp);
+		
+		ProtocolApplication oldUliDbAktenzeichenApp = ct.createProtocolApplication(invid, oldUliDbAktenzeichenProtocolId);
+		protocolAppsToAddList.add(oldUliDbAktenzeichenApp);
+		
+		ProtocolApplication oldUliDbExperimentatorApp = ct.createProtocolApplication(invid, oldUliDbExperimentatorProtocolId);
+		protocolAppsToAddList.add(oldUliDbExperimentatorApp);
+		
+		ProtocolApplication oldUliDbTierschutzrechtApp = ct.createProtocolApplication(invid, oldUliDbTierschutzrechtProtocolId);
+		protocolAppsToAddList.add(oldUliDbTierschutzrechtApp);
+		
+		ProtocolApplication sexApp = ct.createProtocolApplication(invid, sexProtocolId);
+		protocolAppsToAddList.add(sexApp);
+		
+		ProtocolApplication colorApp = ct.createProtocolApplication(invid, colorProtocolId);
+		protocolAppsToAddList.add(colorApp);
+		
+		ProtocolApplication earmarkApp = ct.createProtocolApplication(invid, earmarkProtocolId);
+		protocolAppsToAddList.add(earmarkApp);
+		
+		ProtocolApplication genotypeApp = ct.createProtocolApplication(invid, genotypeProtocolId);
+		protocolAppsToAddList.add(genotypeApp);
+		
+		ProtocolApplication backgroundApp = ct.createProtocolApplication(invid, backgroundProtocolId);
+		protocolAppsToAddList.add(backgroundApp);
+	}
+	
+	public void populateValue(String filename) throws Exception
+	{
 		final int speciesId = ct.getObservationTargetId("House mouse");
 		final int invid = ct.getInvestigationId("AnimalDB");
-		final SimpleDateFormat sdf = new SimpleDateFormat("d-M-yyyy H:mm:ss", Locale.US);
+		final SimpleDateFormat sdf = new SimpleDateFormat("d-M-yyyy H:mm", Locale.US);
 		final Calendar calendar = Calendar.getInstance();
-		// Lots of Measurements and Protocols we want to retrieve only once:
-		final int customIdProtocolId = ct.getProtocolId("SetCustomId");
+		// Measurements we want to retrieve only once:
 		final int customIdMeasurementId = ct.getMeasurementId("CustomId");
-		final int oldUliDbIdProtocolId = ct.getProtocolId("SetOldUliDbId");
 		final int oldUliDbIdMeasurementId = ct.getMeasurementId("OldUliDbId");
-		final int speciesProtocolId = ct.getProtocolId("SetSpecies");
 		final int speciesMeasurementId = ct.getMeasurementId("Species");
-		final int activeProtocolId = ct.getProtocolId("SetActive");
 		final int activeMeasurementId = ct.getMeasurementId("Active");
-		final int sourceProtocolId = ct.getProtocolId("SetSource");
 		final int sourceMeasurementId = ct.getMeasurementId("Source");
-		final int oldUliDbKuerzelProtocolId = ct.getProtocolId("SetOldUliDbKuerzel");
 		final int oldUliDbKuerzelMeasurementId = ct.getMeasurementId("OldUliDbKuerzel");
-		final int remarkProtocolId = ct.getProtocolId("SetRemark");
 		final int remarkMeasurementId = ct.getMeasurementId("Remark");
-		final int oldUliDbAktenzeichenProtocolId = ct.getProtocolId("SetOldUliDbAktenzeichen");
 		final int oldUliDbAktenzeichenMeasurementId = ct.getMeasurementId("OldUliDbAktenzeichen");
-		final int oldUliDbExperimentatorProtocolId = ct.getProtocolId("SetOldUliDbExperimentator");
 		final int oldUliDbExperimentatorMeasurementId = ct.getMeasurementId("OldUliDbExperimentator");
-		final int oldUliDbTierschutzrechtProtocolId = ct.getProtocolId("SetOldUliDbTierschutzrecht");
 		final int oldUliDbTierschutzrechtMeasurementId = ct.getMeasurementId("OldUliDbTierschutzrecht");
-		final int sexProtocolId = ct.getProtocolId("SetSex");
 		final int sexMeasurementId = ct.getMeasurementId("Sex");
-		final int colorProtocolId = ct.getProtocolId("SetColor");
 		final int colorMeasurementId = ct.getMeasurementId("Color");
-		final int earmarkProtocolId = ct.getProtocolId("SetEarmark");
 		final int earmarkMeasurementId = ct.getMeasurementId("Earmark");
-		final int genotypeProtocolId = ct.getProtocolId("SetGenotype");
 		final int geneMeasurementId = ct.getMeasurementId("Gene");
 		final int geneStateMeasurementId = ct.getMeasurementId("GeneState");
-		final int backgroundProtocolId = ct.getProtocolId("SetBackground");
 		final int backgroundMeasurementId = ct.getMeasurementId("Background");
 		
 		File file = new File(filename);
@@ -92,30 +204,21 @@ public class LoadUliDb
 				
 				Date now = calendar.getTime();
 				
-				// Init lists that we can later add to the DB at once
-				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
+				Individual newAnimal = animalsToAddList.get(line_number - 1);
 				
-				// Tiernummer -> make new animal + CustomId
+				// Tiernummer -> CustomId
 				String oldAnimalId = tuple.getString("Tiernummer");
-				String animalName = "animal" + oldAnimalId;
-				ObservationTarget newAnimal;
-				while (ct.getObservationTargetId(animalName) != -1) { // check if one with this name already exists
-					animalName += "_dup";
-				}
-				newAnimal = ct.createIndividual(invid, animalName, login.getUserId());
-				db.add(newAnimal);
-				int newAnimalId = newAnimal.getId();
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-						customIdProtocolId, customIdMeasurementId, newAnimalId, oldAnimalId, 0));
+				valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(0).getName(), now, 
+						null, customIdMeasurementId, newAnimal.getName(), oldAnimalId, 0));
 				
 				// laufende Nr -> OldUliDbId
 				String oldUliDbId = tuple.getString("laufende Nr");
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-						oldUliDbIdProtocolId, oldUliDbIdMeasurementId, newAnimalId, oldUliDbId, 0));
+				valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(1).getName(), now, 
+						null, oldUliDbIdMeasurementId, newAnimal.getName(), oldUliDbId, 0));
 				
 				// Tierkategorie -> Species (always Mus musculus)
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-						speciesProtocolId, speciesMeasurementId, newAnimalId, null, speciesId));
+				valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(2).getName(), now, 
+						null, speciesMeasurementId, newAnimal.getName(), null, speciesId));
 				
 				// Eingangsdatum, Abgangsdatum and Status -> Active + start and end time
 				String startDateString = tuple.getString("Eingangsdatum");
@@ -136,8 +239,8 @@ public class LoadUliDb
 					} else {
 						state = "Dead";
 					}
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, startDate, endDate, 
-							activeProtocolId, activeMeasurementId, newAnimalId, state, 0));
+					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(3).getName(), 
+							startDate, endDate, activeMeasurementId, newAnimal.getName(), state, 0));
 				}
 				
 				// Herkunft -> Source
@@ -156,38 +259,38 @@ public class LoadUliDb
 						sourceId = ct.getObservationTargetId("UliEisel55");
 					}
 					if (uliSourceId != 0) {
-						valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-								sourceProtocolId, sourceMeasurementId, newAnimalId, null, sourceId));
+						valuesToAddList.add(ct.createObservedValue(invid, 
+								protocolAppsToAddList.get(4).getName(), now, null, sourceMeasurementId, 
+								newAnimal.getName(), null, sourceId));
 					}
 				}
 				
 				// Kürzel -> OldUliDbKuerzel
 				String kuerzel = tuple.getString("Kürzel");
 				if (kuerzel != null) {
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-							oldUliDbKuerzelProtocolId, oldUliDbKuerzelMeasurementId, newAnimalId, kuerzel, 0));
+					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(5).getName(), 
+							now, null, oldUliDbKuerzelMeasurementId, newAnimal.getName(), kuerzel, 0));
 				}
 				
 				// Bemerkungen -> Remark
 				String remark = tuple.getString("Bemerkungen");
 				if (remark != null) {
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-							remarkProtocolId, remarkMeasurementId, newAnimalId, remark, 0));
+					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(6).getName(), 
+							now, null, remarkMeasurementId, newAnimal.getName(), remark, 0));
 				}
 				
 				// Aktenzeichen -> OldUliDbAktenzeichen
 				String aktenzeichen = tuple.getString("Aktenzeichen");
 				if (aktenzeichen != null) {
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-							oldUliDbAktenzeichenProtocolId, oldUliDbAktenzeichenMeasurementId, newAnimalId, 
-							aktenzeichen, 0));
+					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(7).getName(), 
+							now, null, oldUliDbAktenzeichenMeasurementId, newAnimal.getName(), aktenzeichen, 0));
 				}
 				
 				// Experimentator -> OldUliDbExperimentator
 				String experimentator = tuple.getString("Experimentator");
 				if (experimentator != null) {
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-							oldUliDbExperimentatorProtocolId, oldUliDbExperimentatorMeasurementId, newAnimalId, 
+					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(8).getName(), 
+							now, null, oldUliDbExperimentatorMeasurementId, newAnimal.getName(), 
 							experimentator, 0));
 				}
 				
@@ -197,9 +300,9 @@ public class LoadUliDb
 				// For now, store in OldUliDbTierschutzrecht.
 				String tierschutzrecht = tuple.getString("Tierschutzrecht");
 				if (tierschutzrecht != null) {;
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-							oldUliDbTierschutzrechtProtocolId, oldUliDbTierschutzrechtMeasurementId, 
-							newAnimalId, tierschutzrecht, 0));
+					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(9).getName(), 
+							now, null, oldUliDbTierschutzrechtMeasurementId, newAnimal.getName(), 
+							tierschutzrecht, 0));
 				}
 				
 				// BeschrGeschlecht -> Sex
@@ -211,32 +314,32 @@ public class LoadUliDb
 					} else {
 						sexId = ct.getObservationTargetId("Male");
 					}
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-							sexProtocolId, sexMeasurementId, newAnimalId, null, sexId));
+					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(10).getName(), 
+							now, null, sexMeasurementId, newAnimal.getName(), null, sexId));
 				}
 				
 				// Farbe -> Color
 				String color = tuple.getString("Farbe");
 				if (color != null) {
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-							colorProtocolId, colorMeasurementId, newAnimalId, color, 0));
+					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(11).getName(), 
+							now, null, colorMeasurementId, newAnimal.getName(), color, 0));
 				}
 				
 				// Ohrmarkierung1 -> Earmark
 				String earmark = tuple.getString("Ohrmarkierung1");
 				if (earmark != null) {
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-							earmarkProtocolId, earmarkMeasurementId, newAnimalId, earmark, 0));
+					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(12).getName(), 
+							now, null, earmarkMeasurementId, newAnimal.getName(), earmark, 0));
 				}
 				
 				// Gen and tg -> Gene and GeneState (in a SetGenotype protocol application)
 				String gene = tuple.getString("Gen");
 				String geneState = tuple.getString("tg");
 				if (gene != null && geneState != null) {
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-							genotypeProtocolId, geneMeasurementId, newAnimalId, gene, 0));
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-							genotypeProtocolId, geneStateMeasurementId, newAnimalId, geneState, 0));
+					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(13).getName(), 
+							now, null, geneMeasurementId, newAnimal.getName(), gene, 0));
+					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(13).getName(), 
+							now, null, geneStateMeasurementId, newAnimal.getName(), geneState, 0));
 				}
 				
 				// gen Hintergrund-Tier -> Background
@@ -244,13 +347,11 @@ public class LoadUliDb
 				if (background != null) {
 					int bkgId = ct.getObservationTargetId(background);
 					if (bkgId != -1) {
-						valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-								backgroundProtocolId, backgroundMeasurementId, newAnimalId, null, bkgId));
+						valuesToAddList.add(ct.createObservedValue(invid, 
+								protocolAppsToAddList.get(14).getName(), now, null, backgroundMeasurementId, 
+								newAnimal.getName(), null, bkgId));
 					}
 				}
-				
-				// Add everything to DB
-				db.add(valuesToAddList);
 			}
 		});
 	}
@@ -303,7 +404,7 @@ public class LoadUliDb
 				List<Integer> motherIdList = new ArrayList<Integer>();
 				String motherIdsString = tuple.getString("Mutter-Nr");
 				motherIdsString.replace(" ", "");
-				String[] motherIds = motherIdsString.split("/,/");
+				String[] motherIds = motherIdsString.split(",");
 				for (String motherIdString : motherIds) {
 					int oldMotherId = Integer.parseInt(motherIdString);
 					// Find corresponding animal
@@ -319,7 +420,7 @@ public class LoadUliDb
 				List<Integer> fatherIdList = new ArrayList<Integer>();
 				String fatherIdsString = tuple.getString("Vater-Nr");
 				fatherIdsString.replace(" ", "");
-				String[] fatherIds = fatherIdsString.split("/,/");
+				String[] fatherIds = fatherIdsString.split(",");
 				for (String fatherIdString : fatherIds) {
 					int oldFatherId = Integer.parseInt(fatherIdString);
 					// Find corresponding animal
@@ -368,9 +469,6 @@ public class LoadUliDb
 				// stored in the old Uli Eisel DB. How do we solve this?
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, 
 						null, litterProtocolId, litterMeasurementId, animalId, null, litterId));
-
-				// Add everything to DB
-				db.add(valuesToAddList);
 			}
 		});
 	}
