@@ -73,6 +73,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 	private DatabaseJobManager djm = null;
 	private ComputationResource cr = null;
 	private DataMatrixHandler dmh = null;
+	private ClusterPluginModel model = new ClusterPluginModel();
 
 	public ClusterPlugin(String name, ScreenModel<Entity> parent)
 	{
@@ -95,21 +96,15 @@ public class ClusterPlugin extends PluginModel<Entity>
 	public String getCustomHtmlHeaders()
 	{
 		String refresh = null;
-		if (this.getModel().getRefreshRate().equals("off"))
-		{
+		if (this.getModel().getRefreshRate().equals("off")){
 			refresh = "";
-		}
-		else
-		{
+		}else{
 			refresh = "\n<meta http-equiv=\"refresh\" content=\"" + this.getModel().getRefreshRate() + "\">";
 		}
 		return "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>" + refresh;
 	}
 
-	private ClusterPluginModel model = new ClusterPluginModel();
-
-	public ClusterPluginModel getModel()
-	{
+	public ClusterPluginModel getModel(){
 		return model;
 	}
 

@@ -103,7 +103,7 @@
 	</tr>
 	<tr>
 		<td>
-			Number of subjobs (limited to 50):
+			Select # of sub jobs (limited to 50):
 		</td>
 		<td>
 			<select name="nJobs">
@@ -115,11 +115,17 @@
 				<option value="20">20</option>
 				<option value="25">25</option>
 				<option value="50">50</option>
-				<!--option value="100">100</option>
-				<option value="150">150</option>
-				<option value="200">200</option>
-				<option value="250">250</option-->
 			</select>
+			<#if model.selectedComputeResource == "cluster">
+			or choose a queue
+			<select name="clusterQueue">
+				<option value="jobs" SELECTED># of sub jobs</option>
+				<option value="short">short queue</option>
+				<option value="nodes">normal queue</option>
+				<option value="nodeslong">long queue</option>
+				<option value="quadlong">long queue (Quad Cores)</option>
+			</select>
+			</#if>
 		</td>
 	</tr>
 	<#if model.selectedComputeResource == "cluster" || model.selectedComputeResource == "cloud">
@@ -183,29 +189,44 @@
 <b>Step 2</b><br>
 <br>
 
-Select input data:<br>
+Select input data:<br><br>
 <table>
+<tr>
+<td><b>Name</b></td><td><b>Option</b></td><td><b>Split by</b></td></tr>
+</tr>
 <#list model.datanames as d_n>
 <tr>
 <td>
 ${d_n.getName()}:
 </td>
 <td>
+
 	<#--select name="dataNameID${d_n.getId()}"-->
 	<select name="${d_n.getName()}">
 		<#list model.datavalues as d_v>
+			<#if d_v.getValue()??>
 			<#if d_v.dataname == d_n.getId()>
 				<#--option value="dataValueID${d_v.getId()}">${d_v.getName()}</option-->
 				<option value="${d_v.getValue()?c}">${d_v.getName()}</option>
 			</#if>
+			</#if>
 		</#list>
 	</select>
+</td>
+<td>
+	<#if d_n.getName() == "phenotypes">
+	<INPUT id="iterator" type="radio" value="${d_n.getName()}_r" name="itteratorGroup">rows
+	<INPUT id="iterator" type="radio" value="${d_n.getName()}_c" name="itteratorGroup" CHECKED>cols<BR>
+	<#else>
+	<INPUT id="iterator" type="radio" value="${d_n.getName()}_r" name="itteratorGroup">rows
+	<INPUT id="iterator" type="radio" value="${d_n.getName()}_c" name="itteratorGroup">cols<BR>
+	</#if>
 </td>
 </tr>
 </#list>
 </table>
 <br>
-Select parameters:<br>
+Select parameters:<br><br>
 <table>
 <#list model.parameternames as p_n>
 <tr><td>
