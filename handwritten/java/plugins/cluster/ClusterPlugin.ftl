@@ -71,6 +71,7 @@
 		<td>
 			<input type="radio" name="computeResource" value="local" checked>Local<br>
 			<input type="radio" name="computeResource" value="cluster">Cluster<br>
+			<input type="radio" DISABLED name="computeResource" value="bot">IRC BOT network<br>
 			<input type="radio" DISABLED name="computeResource" value="cloud">Cloud<br>
 			<input type="radio" DISABLED name="computeResource" value="image">Image
 		</td>

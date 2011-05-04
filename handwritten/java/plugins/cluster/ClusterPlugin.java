@@ -51,6 +51,7 @@ import plugins.cluster.demo.Millipede;
 import plugins.cluster.helper.Command;
 import plugins.cluster.helper.HelperFunctions;
 import plugins.cluster.helper.LoginSettings;
+import plugins.cluster.implementations.BotNetworkComputationResource;
 import plugins.cluster.implementations.ClusterComputationResource;
 import plugins.cluster.implementations.DatabaseJobManager;
 import plugins.cluster.implementations.LocalComputationResource;
@@ -463,6 +464,10 @@ public class ClusterPlugin extends PluginModel<Entity>
 					cr = new ClusterComputationResource(this.getModel().getLs());
 
 					commands.add(new Command("nohup qsub runmij" + jobId + ".sh &", false, false, true));
+				}else if ((startedJob.getComputeResource().equals("bot")))
+				{
+					cr = new BotNetworkComputationResource();
+					commands.add(new Command("R CMD BATCH runmij" + jobId + ".R", false, false, true));
 				}
 				else if ((startedJob.getComputeResource().equals("cloud")))
 				{
