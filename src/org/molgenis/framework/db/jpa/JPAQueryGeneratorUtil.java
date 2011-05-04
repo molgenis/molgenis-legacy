@@ -1,5 +1,7 @@
 package org.molgenis.framework.db.jpa;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,10 +83,11 @@ public class JPAQueryGeneratorUtil {
 		Predicate whereClause = null;
 		List<Order> orders = new ArrayList<Order>();
 
+		QueryRule prevRule = null;
 		for (QueryRule r : rules) {
 			QueryRule rule = new QueryRule(r);
 			if (mapper != null) {
-				rule.setField(mapper.getTableFieldName(rule.getField()));
+				//rule.setField(mapper.getTableFieldName(rule.getField()));
 				String attributeName = rule.getField();
 
 				Operator operator = rule.getOperator();
@@ -136,22 +139,23 @@ public class JPAQueryGeneratorUtil {
 						} else {
 							try {
 
-								if (attributeName.matches("[^_]+_[^_]+")) {
-									String[] split = attributeName.split("_");
-									String xrefAttribute = split[0];
-									String xrefTargetAttribute = split[1];
-
-									Entity entity = (Entity) root.getJavaType()
-											.newInstance();
-									String xrefAttribtename = entity
-											.getXrefIdFieldName(xrefAttribute);
-									// it's a xref
-									Join join = root.join(xrefAttribute);
-									Expression attribute = join
-											.get(xrefTargetAttribute);
-									Object value = rule.getValue();
-									predicate = cb.equal(attribute, value);
-								} else if (root.get(attributeName)
+//								if (attributeName.matches("[^_]+_[^_]+")) {
+//									String[] split = attributeName.split("_");
+//									String xrefAttribute = split[0];
+//									String xrefTargetAttribute = split[1];
+//
+//									Entity entity = (Entity) root.getJavaType()
+//											.newInstance();
+//									String xrefAttribtename = entity
+//											.getXrefIdFieldName(xrefAttribute);
+//									// it's a xref
+//									Join join = root.join(xrefAttribute);
+//									Expression attribute = join
+//											.get(xrefTargetAttribute);
+//									Object value = rule.getValue();
+//									predicate = cb.equal(attribute, value);
+//								} else
+									if (root.get(attributeName)
 										.getJavaType().newInstance() instanceof Entity) {
 									Entity entity = (Entity) root.getJavaType()
 											.newInstance();
@@ -181,7 +185,7 @@ public class JPAQueryGeneratorUtil {
 								// xref of the object).
 								ex.printStackTrace();
 								// throw new DatabaseException(ex);
-							}
+							}                                     
 						}
 						break;
 					case NOT:
@@ -236,11 +240,15 @@ public class JPAQueryGeneratorUtil {
 							}
 						}
 				
-						Object tmp2 = root.get(attributeName);
-						tmp2.toString();
-						Object tmp3 = root.get(attributeName).get("id");
-						tmp3.toString();
-						predicate = root.get(attributeName).get("id").in(list);
+                                                Class attrClass = root.get(attributeName).getJavaType();
+                                                //pseudo code: if(Attribute instanceof AbstractEntity)
+                                                if(AbstractEntity.class.isAssignableFrom(root.get(attributeName).getJavaType())) {
+                                                    Field idField = getIdField(attrClass);
+                                                    predicate = root.get(attributeName).get(idField.getName()).in(list);
+                                                } else {
+                                                    predicate = root.get(attributeName).in(list);    
+                                                }
+						
 						break;
 					}
 					// make a where clause from the predicate
@@ -248,7 +256,8 @@ public class JPAQueryGeneratorUtil {
 						// assert predicate != null : rule.getOperator();
 
 						if (predicate != null) {
-							if (rule.getOperator().equals(Operator.OR)) {
+//							if (rule.getOperator().equals(Operator.OR)) {
+							if (prevRule != null && prevRule.getOperator().equals(Operator.OR)) {
 								whereClause = cb.or(whereClause, predicate);
 							} else {
 								whereClause = cb.and(whereClause, predicate);
@@ -262,6 +271,7 @@ public class JPAQueryGeneratorUtil {
 				// }
 
 			}
+			prevRule = rule;
 		}
 		if (orders.size() > 0) {
 			cq.orderBy(orders);
@@ -271,6 +281,15 @@ public class JPAQueryGeneratorUtil {
 		}
 		return limitOffset;
 	}
+        
+        private static Field getIdField(Class entity) {
+            for(Field f : entity.getDeclaredFields()) {                
+                Annotation annotation = f.getAnnotation(javax.persistence.Id.class);
+                if(annotation != null)
+                    return f;
+            }
+            return null;
+        }
 
 	private static String createWhereSql(JpaMapper mapper, boolean isNested,
 			boolean withOffset, QueryRule... rules)
