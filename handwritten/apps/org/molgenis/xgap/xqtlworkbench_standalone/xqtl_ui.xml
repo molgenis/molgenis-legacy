@@ -1,39 +1,36 @@
 <molgenis name="molgenis_apps" label="xQTL workbench">
 	<plugin name="molgenis_header" type="plugins.cluster.demo.header.MolgenisHeader" />
 	<menu name="main">
-	
+	<menu label="Welcome &amp; Login" name="Welcome">
 		<plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.ClusterDemo" />
-
 		<plugin label="Login" name="UserLogin" type="org.molgenis.auth.ui.UserLogin" />
-	
-		<menu name="Auth" label="Auth" group="admin">
-			<plugin name="PermissionManagementPlugin" type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin"/>
-			<menu name="Management">
-				<form name="MolgenisUser" entity="MolgenisUser"/>
-				<form name="MolgenisGroup" entity="MolgenisGroup"/>
-				<form name="MolgenisUserGroupLink" entity="MolgenisUserGroupLink"/>
-				<form name="MolgenisEntity" entity="MolgenisEntity" view="list" label="Entities"/>
-				<form name="MolgenisPermission" entity="MolgenisPermission"/>
-				<form name="TestClass" entity="TestClass"/>
-				<form name="TestClass2" entity="TestClass2"/>
-			</menu>
-		</menu>
-	
-		<plugin label="Search" name="SimpleDbSearch" type="plugin.search.SimpleWholeDatabaseSearch" group="biologist" /> 
-	
-		<plugin label="Import data" name="QTLWizard" type="plugins.xgapwizard.QTLDataSetWizard" group="biologist"/>
-	
-		<!--menu label="Import new data" name="ImporterWizards">
-				<plugin label="Import definitions" name="DefImport" type="plugins.genericwizard.GenericWizard" />
-				<plugin label="Import data matrices" name="DataImport" type="plugins.xgapwizard.XgapWizard" />
-		</menu-->
+	</menu>
 		
-		<plugin label="Run QTL mapping" name="Cluster" type="plugins.cluster.ClusterPlugin" group="biologist" />
+	<plugin name="BotResource" type="plugins.botresource.BotResource"/>
+
+	<plugin label="Import data" name="QTLWizard" type="plugins.xgapwizard.QTLDataSetWizard" group="biologist"/>
+	
+	<form name="RScripts" label="Add new analyses" entity="RScript" group="bioinformatician">
+		<plugin name="RViewer" type="plugins.molgenisfile.MolgenisFileManager" />
+		<plugin label="Help" name="AddNewToolsHelp" type="plugins.cluster.addnewtoolshelp" />
+		<form name="Analysis" label="Add new analysis" entity="Analysis" />
+		<form name="ParameterSets" label="Configure parameters" entity="ParameterSet">
+			<form name="ParameterNames" entity="ParameterName">
+				<form name="ParameterValues" entity="ParameterValue" />
+			</form>
+		</form>
+		<form name="DataSets" label="Configure datasets" entity="DataSet">
+			<form name="DataNames" entity="DataName">
+			<form name="DataValues" entity="DataValue" />
+		</form>
+		</form>
+	</form>
 		
-		<!-- plugin label="Plot pathways" name="KeggPathway" type="plugins.kegg.PathwayPlugin"  /-->
-		
-		<form label="Explore investigations" name="Investigations" entity="Investigation" compact_view="name" group="biologist">
+	<plugin label="Perform analyses" name="Cluster" type="plugins.cluster.ClusterPlugin" group="biologist" />
+	
+	<form label="Explore data" name="Investigations" entity="Investigation" compact_view="name" group="biologist">
 			<menu name="InvestigationMenu">
+			<plugin label="Search data" name="SimpleDbSearch" type="plugin.search.SimpleWholeDatabaseSearch" group="biologist" /> 
 			<plugin name="Overview" type="plugins.investigationoverview.InvestigationOverviewPlugin" />
 				<menu name="BasicAnnotations" label="Basic annotations">
 					<form name="Individuals" entity="Individual" />
@@ -71,23 +68,9 @@
 			</menu>
 		</form>
 
-		<form name="RScripts" label="Add new QTL tools" entity="RScript" group="bioinformatician">
-			<plugin name="RViewer" type="plugins.molgenisfile.MolgenisFileManager" />
-			<plugin label="Help" name="AddNewToolsHelp" type="plugins.cluster.addnewtoolshelp" />
-			<form name="Analysis" label="Add new analysis" entity="Analysis" />
-			<form name="ParameterSets" label="Configure parameters" entity="ParameterSet">
-				<form name="ParameterNames" entity="ParameterName">
-					<form name="ParameterValues" entity="ParameterValue" />
-				</form>
-			</form>
-			<form name="DataSets" label="Configure datasets" entity="DataSet">
-				<form name="DataNames" entity="DataName">
-					<form name="DataValues" entity="DataValue" />
-				</form>
-			</form>
-		</form>
 
-		<menu label="Admin and settings" name="Admin" group="admin">
+
+		<menu label="Admin &amp; settings" name="Admin" group="admin">
 			<menu label="Batches" name="batches">	
 				<form name="ManageBatches" entity="MolgenisBatch" label="Batches" />
 				<form name="ManageBatchEntities" entity="MolgenisBatchEntity" label="Batch entities" />
@@ -96,7 +79,18 @@
 				<plugin name="BatchView" type="plugins.batch.BatchViewPlugin"
 					label="Batch viewer" />
 			</menu>
-		
+			<menu name="Auth" label="Auth" group="admin">
+				<plugin name="PermissionManagementPlugin" type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin"/>
+				<menu name="Management">
+					<form name="MolgenisUser" entity="MolgenisUser"/>
+					<form name="MolgenisGroup" entity="MolgenisGroup"/>
+					<form name="MolgenisUserGroupLink" entity="MolgenisUserGroupLink"/>
+					<form name="MolgenisEntity" entity="MolgenisEntity" view="list" label="Entities"/>
+					<form name="MolgenisPermission" entity="MolgenisPermission"/>
+					<form name="TestClass" entity="TestClass"/>
+					<form name="TestClass2" entity="TestClass2"/>
+				</menu>
+			</menu>
 			<plugin label="Database settings" name="DatabaseSettings" type="plugins.system.database.Settings" />
 			<plugin label="Storage settings" name="Settings" type="plugins.system.settings.Settings" />
 			<plugin label="Install R packages" name="DependencyManager" type="plugins.cluster.demo.dependencymanager.DependencyManager" />
@@ -107,5 +101,4 @@
 			</menu>
 		</menu>
 	</menu>
-
 </molgenis>
