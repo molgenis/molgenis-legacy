@@ -72,7 +72,11 @@ public class FillDatabasePlugin extends PluginModel<Entity>
 			if( action.equals("loadUliAnimals") )
 			{
 				String filename = request.getString("ulianimaltable");
+				//String filename = "C:/Documents and Settings/Administrator/workspace/molgenis_apps/data/AnimalDB/legacy/20110429_UliEisel/Tierdetails.csv";
 				ConvertUliDbToPheno myLoadUliDb = new ConvertUliDbToPheno(db, this.getLogin());
+				//myLoadUliDb.populateLine("C:/Documents and Settings/Administrator/workspace/molgenis_apps/data/AnimalDB/legacy/20110429_UliEisel/Linie.csv");
+				//myLoadUliDb.populateGene("C:/Documents and Settings/Administrator/workspace/molgenis_apps/data/AnimalDB/legacy/20110429_UliEisel/Gen.csv");
+				//myLoadUliDb.populateBackground("C:/Documents and Settings/Administrator/workspace/molgenis_apps/data/AnimalDB/legacy/20110429_UliEisel/GenetischerHintergrund.csv");
 				myLoadUliDb.populateAnimal(filename);
 				myLoadUliDb.populateProtocolApplication();
 				myLoadUliDb.populateValue(filename);

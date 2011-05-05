@@ -159,6 +159,8 @@ public class FillAnimalDB {
 		ct.makeMeasurement(invid, "OldUliDbTierschutzrecht", stringUnitId, null, null, false, "string", "To set an animal's 'Tierschutzrecht' (~ DEC subproject Goal) in the old Uli Eisel DB.", login.getUserId());
 		ct.makeMeasurement(invid, "Color", stringUnitId, null, null, false, "string", "To set an animal's color.", login.getUserId());
 		ct.makeMeasurement(invid, "Earmark", stringUnitId, null, null, false, "string", "To set an animal's earmark.", login.getUserId());
+		ct.makeMeasurement(invid, "OldUliDbMotherInfo", stringUnitId, null, null, false, "string", "To set an animal's mother info in the old Uli Eisel DB.", login.getUserId());
+		ct.makeMeasurement(invid, "OldUliDbFatherInfo", stringUnitId, null, null, false, "string", "To set an animal's father info in the old Uli Eisel DB.", login.getUserId());
 		
 		logger.info("Add codes");
 		// Codes for SourceType

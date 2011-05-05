@@ -1,9 +1,6 @@
 package decorators;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.List;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -178,21 +175,7 @@ public class NameConvention
 	public static void validateEntityName(String name) throws DatabaseException
 	{
 		//pattern for bbmri ([a-zA-Z0-9_\\s\\-:.(),;\\+])
-		String pattern = "([<>/a-zA-Z0-9_\\s\\-:.(),;\\+])";
-		try {
-			//what happens here????
-			//where is the file 'pattern'?
-			String fileName = new File(NameConvention.class.getResource("pattern").getFile().replace("%20", " ")).getAbsolutePath();
-			//why is a Scanner constructed around this file?
-			Scanner scanner = new Scanner(new FileInputStream(fileName));
-			if (scanner.hasNext() == true) {
-				//why is pattern overwritten with the next token of the scanner?
-				pattern = scanner.next();
-			}
-		} catch (Exception e) {
-			//when is an exception thrown, and why is it ignored?
-			;
-		}
+		String pattern = "([<>/a-zA-Z0-9_\\s\\-:.(),;\\+\\*])";
 		
 		if (name.length() == 0)
 		{
