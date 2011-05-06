@@ -221,6 +221,28 @@ public class CommonService
 		newInd.setOwns(userId);
 		return newInd;
 	}
+	
+	/**
+	 * Creates an Individual but does NOT add it to the database.
+	 * Uses Investigation and User Names so it can be used with lists.
+	 * 
+	 * @param investigationName
+	 * @param individualName
+	 * @param userName
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 * @throws IOException
+	 */
+	public Individual createIndividual(String investigationName, String individualName, String userName) throws DatabaseException,
+			ParseException, IOException
+	{
+		Individual newInd = new Individual();
+		newInd.setInvestigation_Name(investigationName);
+		newInd.setName(individualName); // placeholder
+		newInd.setOwns_Name(userName);
+		return newInd;
+	}
 
 	/**
 	 * Return a list of all observation targets of a certain type. If desired,
@@ -458,6 +480,28 @@ public class CommonService
 		newGroup.setOwns(userId);
 		return newGroup;
 	}
+	
+	/**
+	 * Creates a Panel but does NOT add it to the database.
+	 * Uses Investigation and User Names so it can be used with lists.
+	 * 
+	 * @param investigationName
+	 * @param panelName
+	 * @param userName
+	 * @return
+	 * @throws DatabaseException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
+	public Panel createPanel(String investigationName, String panelName, String userName)
+			throws DatabaseException, IOException, ParseException
+	{
+		Panel newGroup = new Panel();
+		newGroup.setName(panelName);
+		newGroup.setInvestigation_Name(investigationName);
+		newGroup.setOwns_Name(userName);
+		return newGroup;
+	}
 
 	/**
 	 * Returns a list of all Panels that have been given a certain mark
@@ -596,6 +640,30 @@ public class CommonService
 	}
 	
 	/**
+	 * Makes a new application of the given protocol
+	 * but does NOT add it to the database.
+	 * Uses Investigation and Protocol Names so it can be used with lists.
+	 * 
+	 * @param investigationName
+	 * @param protocolName
+	 * @return
+	 * @throws ParseException
+	 * @throws DatabaseException
+	 * @throws IOException
+	 */
+	public ProtocolApplication createProtocolApplication(String investigationName, String protocolName) throws ParseException,
+			DatabaseException, IOException
+	{
+		Date now = Calendar.getInstance().getTime();
+		ProtocolApplication pa = new ProtocolApplication();
+		pa.setInvestigation_Name(investigationName);
+		pa.setName(protocolName + "_" + protAppCounter++ + "_" + now.toString()); // strange but unique name
+		pa.setProtocol_Name(protocolName);
+		pa.setTime(now);
+		return pa;
+	}
+	
+	/**
 	 * Makes a new ProtocolApplication, adds it to the database and return its id.
 	 * 
 	 * @param investigationId
@@ -691,8 +759,8 @@ public class CommonService
 	
 	/**
 	 * Creates an ObservedValue with the given parameters, but does NOT add it to the database.
-	 * Uses target, protocol and relation names to link, so those do not have to have been added to the
-	 * DB already.
+	 * Uses investigation, feature, target, protocol application and relation names to link, 
+	 * so those do not have to have been added to the DB already.
 	 * 
 	 * @param investigationId
 	 * @param protappid
@@ -707,15 +775,15 @@ public class CommonService
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	public ObservedValue createObservedValue(int investigationId, String protappName,
-			Date starttime, Date endtime, int featureId,
+	public ObservedValue createObservedValue(String investigationName, String protappName,
+			Date starttime, Date endtime, String featureName,
 			String subjectTargetName, String valueString, String targetName)
 			throws DatabaseException, IOException, ParseException
 	{
 		ObservedValue newValue = new ObservedValue();
-		newValue.setInvestigation(investigationId);
+		newValue.setInvestigation_Name(investigationName);
 		newValue.setProtocolApplication_Name(protappName);
-		newValue.setFeature(featureId);
+		newValue.setFeature_Name(featureName);
 		newValue.setTime(starttime);
 		newValue.setEndtime(endtime);
 		newValue.setTarget_Name(subjectTargetName);

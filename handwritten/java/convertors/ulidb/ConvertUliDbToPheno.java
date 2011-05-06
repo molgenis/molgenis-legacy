@@ -34,29 +34,41 @@ public class ConvertUliDbToPheno
 	private CommonService ct;
 	private Login login;
 	private Logger logger;
-	final List<ProtocolApplication> protocolAppsToAddList;
-	final List<Individual> animalsToAddList;
-	final List<String> animalNames;
-	final List<ObservedValue> valuesToAddList;
-	final List<Panel> panelsToAddList;
-	final Map<String, String> oldUliDbIdMap;
-	final Map<String, String> customIdMap;
+	private String userName;
+	private String invName;
+	private List<ProtocolApplication> protocolAppsToAddList;
+	private List<Individual> animalsToAddList;
+	private List<String> animalNames;
+	private List<ObservedValue> valuesToAddList;
+	private List<Panel> panelsToAddList;
+	private Map<String, String> oldUliDbIdMap;
+	private Map<String, String> customIdMap;
+	private Map<String, String> appMap;
+	private Calendar calendar;
 
 	public ConvertUliDbToPheno(Database db, Login login) throws Exception
 	{
+		calendar = Calendar.getInstance();
+		
 		this.db = (JDBCDatabase) db;
 		this.login = login;
 		ct = CommonService.getInstance();
 		ct.setDatabase(this.db);
 		logger = Logger.getLogger("LoadUliDb");
+		
+		userName = login.getUserName();
+		invName = "UliEisel";
+		
 		// Init lists that we can later add to the DB at once
 		protocolAppsToAddList = new ArrayList<ProtocolApplication>();
 		animalsToAddList = new ArrayList<Individual>();
 		animalNames = new ArrayList<String>();
 		valuesToAddList = new ArrayList<ObservedValue>();
 		panelsToAddList = new ArrayList<Panel>();
+		
 		oldUliDbIdMap = new HashMap<String, String>();
 		customIdMap = new HashMap<String, String>();
+		appMap = new HashMap<String, String>();
 	}
 	
 	public void writeToDb() {
@@ -66,24 +78,19 @@ public class ConvertUliDbToPheno
 			db.add(panelsToAddList);
 			db.add(valuesToAddList);
 		} catch (Exception e) {
-			logger.error("Writing animal info to DB failed: " + e.getMessage());
+			logger.error("Writing to DB failed: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
 	
 	public void populateAnimal(String filename) throws Exception
 	{
-		final int userId = login.getUserId();
-		final int invid = ct.getInvestigationId("AnimalDB");
-		
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
 		reader.parse(new CsvReaderListener()
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
-				logger.info("Parsing line: " + line_number);
-				
 				// laufende Nr -> make new animal
 				String oldAnimalId = tuple.getString("laufende Nr");
 				String animalName = "animal" + oldAnimalId;
@@ -91,7 +98,7 @@ public class ConvertUliDbToPheno
 					animalName += "_dup";
 				}
 				animalNames.add(animalName);
-				Individual newAnimal = ct.createIndividual(invid, animalName, userId);
+				Individual newAnimal = ct.createIndividual(invName, animalName, userName);
 				animalsToAddList.add(newAnimal);
 			}
 		});
@@ -99,128 +106,35 @@ public class ConvertUliDbToPheno
 	
 	public void populateProtocolApplication() throws Exception
 	{
-		final int invid = ct.getInvestigationId("AnimalDB");
-		// Protocols we want to retrieve only once:
-		final int customIdProtocolId = ct.getProtocolId("SetCustomId");
-		final int oldUliDbIdProtocolId = ct.getProtocolId("SetOldUliDbId");
-		final int speciesProtocolId = ct.getProtocolId("SetSpecies");
-		final int activeProtocolId = ct.getProtocolId("SetActive");
-		final int sourceProtocolId = ct.getProtocolId("SetSource");
-		final int oldUliDbKuerzelProtocolId = ct.getProtocolId("SetOldUliDbKuerzel");
-		final int remarkProtocolId = ct.getProtocolId("SetRemark");
-		final int oldUliDbAktenzeichenProtocolId = ct.getProtocolId("SetOldUliDbAktenzeichen");
-		final int oldUliDbExperimentatorProtocolId = ct.getProtocolId("SetOldUliDbExperimentator");
-		final int oldUliDbTierschutzrechtProtocolId = ct.getProtocolId("SetOldUliDbTierschutzrecht");
-		final int sexProtocolId = ct.getProtocolId("SetSex");
-		final int colorProtocolId = ct.getProtocolId("SetColor");
-		final int earmarkProtocolId = ct.getProtocolId("SetEarmark");
-		final int genotypeProtocolId = ct.getProtocolId("SetGenotype");
-		final int backgroundProtocolId = ct.getProtocolId("SetBackground");
-		// Protocols for parent relations:
-		final int oldUliDbMotherInfoProtocolId = ct.getProtocolId("SetOldUliDbMotherInfo");
-		final int oldUliDbFatherInfoProtocolId = ct.getProtocolId("SetOldUliDbFatherInfo");
-		final int typeOfGroupProtocolId = ct.getProtocolId("SetTypeOfGroup");
-		final int motherProtocolId = ct.getProtocolId("SetMother");
-		final int fatherProtocolId = ct.getProtocolId("SetFather");
-		final int lineProtocolId = ct.getProtocolId("SetLine");
-		final int parentgroupProtocolId = ct.getProtocolId("SetParentgroup");
-		final int litterProtocolId = ct.getProtocolId("SetLitter");
-		
-		// Make protocol apps for each protocol and add them to the list
-		
-		ProtocolApplication customIdApp = ct.createProtocolApplication(invid, customIdProtocolId);
-		protocolAppsToAddList.add(customIdApp); // 0
-		
-		ProtocolApplication oldUliDbIdApp = ct.createProtocolApplication(invid, oldUliDbIdProtocolId);
-		protocolAppsToAddList.add(oldUliDbIdApp); // 1
-		
-		ProtocolApplication speciesApp = ct.createProtocolApplication(invid, speciesProtocolId);
-		protocolAppsToAddList.add(speciesApp); // 2
-		
-		ProtocolApplication activeApp = ct.createProtocolApplication(invid, activeProtocolId);
-		protocolAppsToAddList.add(activeApp); // 3
-		
-		ProtocolApplication sourceApp = ct.createProtocolApplication(invid, sourceProtocolId);
-		protocolAppsToAddList.add(sourceApp); // 4
-		
-		ProtocolApplication oldUliDbKuerzelApp = ct.createProtocolApplication(invid, oldUliDbKuerzelProtocolId);
-		protocolAppsToAddList.add(oldUliDbKuerzelApp); // 5
-		
-		ProtocolApplication remarkApp = ct.createProtocolApplication(invid, remarkProtocolId);
-		protocolAppsToAddList.add(remarkApp); // 6
-		
-		ProtocolApplication oldUliDbAktenzeichenApp = ct.createProtocolApplication(invid, oldUliDbAktenzeichenProtocolId);
-		protocolAppsToAddList.add(oldUliDbAktenzeichenApp); // 7
-		
-		ProtocolApplication oldUliDbExperimentatorApp = ct.createProtocolApplication(invid, oldUliDbExperimentatorProtocolId);
-		protocolAppsToAddList.add(oldUliDbExperimentatorApp); // 8
-		
-		ProtocolApplication oldUliDbTierschutzrechtApp = ct.createProtocolApplication(invid, oldUliDbTierschutzrechtProtocolId);
-		protocolAppsToAddList.add(oldUliDbTierschutzrechtApp); // 9
-		
-		ProtocolApplication sexApp = ct.createProtocolApplication(invid, sexProtocolId);
-		protocolAppsToAddList.add(sexApp); // 10
-		
-		ProtocolApplication colorApp = ct.createProtocolApplication(invid, colorProtocolId);
-		protocolAppsToAddList.add(colorApp); // 11
-		
-		ProtocolApplication earmarkApp = ct.createProtocolApplication(invid, earmarkProtocolId);
-		protocolAppsToAddList.add(earmarkApp); // 12
-		
-		ProtocolApplication genotypeApp = ct.createProtocolApplication(invid, genotypeProtocolId);
-		protocolAppsToAddList.add(genotypeApp); // 13
-		
-		ProtocolApplication backgroundApp = ct.createProtocolApplication(invid, backgroundProtocolId);
-		protocolAppsToAddList.add(backgroundApp); // 14
-		
-		ProtocolApplication oldUliDbMotherInfoApp = ct.createProtocolApplication(invid, oldUliDbMotherInfoProtocolId);
-		protocolAppsToAddList.add(oldUliDbMotherInfoApp); // 15
-		
-		ProtocolApplication oldUliDbFatherInfoApp = ct.createProtocolApplication(invid, oldUliDbFatherInfoProtocolId);
-		protocolAppsToAddList.add(oldUliDbFatherInfoApp); // 16
-		
-		ProtocolApplication typeOfGroupApp = ct.createProtocolApplication(invid, typeOfGroupProtocolId);
-		protocolAppsToAddList.add(typeOfGroupApp); // 17
-		
-		ProtocolApplication motherApp = ct.createProtocolApplication(invid, motherProtocolId);
-		protocolAppsToAddList.add(motherApp); // 18
-		
-		ProtocolApplication fatherApp = ct.createProtocolApplication(invid, fatherProtocolId);
-		protocolAppsToAddList.add(fatherApp); // 19
-		
-		ProtocolApplication lineApp = ct.createProtocolApplication(invid, lineProtocolId);
-		protocolAppsToAddList.add(lineApp); // 20
-		
-		ProtocolApplication parentgroupApp = ct.createProtocolApplication(invid, parentgroupProtocolId);
-		protocolAppsToAddList.add(parentgroupApp); // 21
-		
-		ProtocolApplication litterApp = ct.createProtocolApplication(invid, litterProtocolId);
-		protocolAppsToAddList.add(litterApp); // 22
+		makeProtocolApplication("SetCustomID");
+		makeProtocolApplication("SetOldUliDbId");
+		makeProtocolApplication("SetSpecies");
+		makeProtocolApplication("SetActive");
+		makeProtocolApplication("SetSource");
+		makeProtocolApplication("SetOldUliDbKuerzel");
+		makeProtocolApplication("SetRemark");
+		makeProtocolApplication("SetOldUliDbAktenzeichen");
+		makeProtocolApplication("SetOldUliDbExperimentator");
+		makeProtocolApplication("SetOldUliDbTierschutzrecht");
+		makeProtocolApplication("SetSex");
+		makeProtocolApplication("SetColor");
+		makeProtocolApplication("SetEarmark");
+		makeProtocolApplication("SetGenotype");
+		makeProtocolApplication("SetBackground");
+		makeProtocolApplication("SetOldUliDbMotherInfo");
+		makeProtocolApplication("SetOldUliDbFatherInfo");
+		makeProtocolApplication("SetTypeOfGroup");
+		makeProtocolApplication("SetMother");
+		makeProtocolApplication("SetFather");
+		makeProtocolApplication("SetLine");
+		makeProtocolApplication("SetParentgroup");
+		makeProtocolApplication("SetLitter");
 	}
 	
 	public void populateValue(String filename) throws Exception
 	{
 		final String speciesName = "House mouse";
-		final int invid = ct.getInvestigationId("AnimalDB");
 		final SimpleDateFormat sdf = new SimpleDateFormat("d-M-yyyy H:mm", Locale.US);
-		final Calendar calendar = Calendar.getInstance();
-		// Measurements we want to retrieve only once:
-		final int customIdMeasurementId = ct.getMeasurementId("CustomId");
-		final int oldUliDbIdMeasurementId = ct.getMeasurementId("OldUliDbId");
-		final int speciesMeasurementId = ct.getMeasurementId("Species");
-		final int activeMeasurementId = ct.getMeasurementId("Active");
-		final int sourceMeasurementId = ct.getMeasurementId("Source");
-		final int oldUliDbKuerzelMeasurementId = ct.getMeasurementId("OldUliDbKuerzel");
-		final int remarkMeasurementId = ct.getMeasurementId("Remark");
-		final int oldUliDbAktenzeichenMeasurementId = ct.getMeasurementId("OldUliDbAktenzeichen");
-		final int oldUliDbExperimentatorMeasurementId = ct.getMeasurementId("OldUliDbExperimentator");
-		final int oldUliDbTierschutzrechtMeasurementId = ct.getMeasurementId("OldUliDbTierschutzrecht");
-		final int sexMeasurementId = ct.getMeasurementId("Sex");
-		final int colorMeasurementId = ct.getMeasurementId("Color");
-		final int earmarkMeasurementId = ct.getMeasurementId("Earmark");
-		final int geneMeasurementId = ct.getMeasurementId("Gene");
-		final int geneStateMeasurementId = ct.getMeasurementId("GeneState");
-		final int backgroundMeasurementId = ct.getMeasurementId("Background");
 		
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
@@ -228,27 +142,25 @@ public class ConvertUliDbToPheno
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
-				logger.info("Parsing line: " + line_number);
-				
 				Date now = calendar.getTime();
 				
 				String newAnimalName = animalsToAddList.get(line_number - 1).getName();
 				
 				// Tiernummer -> CustomId
 				String oldAnimalId = tuple.getString("Tiernummer");
-				valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(0).getName(), now, 
-						null, customIdMeasurementId, newAnimalName, oldAnimalId, null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetCustomID"), now, 
+						null, "CustomID", newAnimalName, oldAnimalId, null));
 				customIdMap.put(oldAnimalId, newAnimalName);
 				
 				// laufende Nr -> OldUliDbId
 				String oldUliDbId = tuple.getString("laufende Nr");
-				valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(1).getName(), now, 
-						null, oldUliDbIdMeasurementId, newAnimalName, oldUliDbId, null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbId"), now, 
+						null, "OldUliDbId", newAnimalName, oldUliDbId, null));
 				oldUliDbIdMap.put(oldUliDbId, newAnimalName);
 				
 				// Tierkategorie -> Species (always Mus musculus)
-				valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(2).getName(), now, 
-						null, speciesMeasurementId, newAnimalName, null, speciesName));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSpecies"), now, 
+						null, "Species", newAnimalName, null, speciesName));
 				
 				// Eingangsdatum, Abgangsdatum and Status -> Active + start and end time
 				String startDateString = tuple.getString("Eingangsdatum");
@@ -269,8 +181,8 @@ public class ConvertUliDbToPheno
 					} else {
 						state = "Dead";
 					}
-					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(3).getName(), 
-							startDate, endDate, activeMeasurementId, newAnimalName, state, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), 
+							startDate, endDate, "Active", newAnimalName, state, null));
 				}
 				
 				// Herkunft -> Source
@@ -289,40 +201,37 @@ public class ConvertUliDbToPheno
 						sourceName = "UliEisel55";
 					}
 					if (uliSourceId != 0) {
-						valuesToAddList.add(ct.createObservedValue(invid, 
-								protocolAppsToAddList.get(4).getName(), now, null, sourceMeasurementId, 
-								newAnimalName, null, sourceName));
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), now, null, 
+								"Source", newAnimalName, null, sourceName));
 					}
 				}
 				
 				// Kürzel -> OldUliDbKuerzel
 				String kuerzel = tuple.getString("Kürzel");
 				if (kuerzel != null) {
-					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(5).getName(), 
-							now, null, oldUliDbKuerzelMeasurementId, newAnimalName, kuerzel, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbKuerzel"), 
+							now, null, "OldUliDbKuerzel", newAnimalName, kuerzel, null));
 				}
 				
 				// Bemerkungen -> Remark
 				String remark = tuple.getString("Bemerkungen");
 				if (remark != null) {
-					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(6).getName(), 
-							now, null, remarkMeasurementId, newAnimalName, remark, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetRemark"), 
+							now, null, "Remark", newAnimalName, remark, null));
 				}
 				
 				// Aktenzeichen -> OldUliDbAktenzeichen
 				String aktenzeichen = tuple.getString("Aktenzeichen");
 				if (aktenzeichen != null) {
-					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(7).getName(), 
-							now, null, oldUliDbAktenzeichenMeasurementId, newAnimalName, aktenzeichen, 
-							null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbAktenzeichen"), 
+							now, null, "OldUliDbAktenzeichen", newAnimalName, aktenzeichen, null));
 				}
 				
 				// Experimentator -> OldUliDbExperimentator
 				String experimentator = tuple.getString("Experimentator");
 				if (experimentator != null) {
-					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(8).getName(), 
-							now, null, oldUliDbExperimentatorMeasurementId, newAnimalName, 
-							experimentator, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbExperimentator"), 
+							now, null, "OldUliDbExperimentator", newAnimalName, experimentator, null));
 				}
 				
 				// Tierschutzrecht -> OldUliDbTierschutzrecht
@@ -331,9 +240,8 @@ public class ConvertUliDbToPheno
 				// For now, store in OldUliDbTierschutzrecht.
 				String tierschutzrecht = tuple.getString("Tierschutzrecht");
 				if (tierschutzrecht != null) {;
-					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(9).getName(), 
-							now, null, oldUliDbTierschutzrechtMeasurementId, newAnimalName, 
-							tierschutzrecht, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbTierschutzrecht"), 
+							now, null, "OldUliDbTierschutzrecht", newAnimalName, tierschutzrecht, null));
 				}
 				
 				// BeschrGeschlecht -> Sex
@@ -345,67 +253,52 @@ public class ConvertUliDbToPheno
 					} else {
 						sexName = "Male";
 					}
-					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(10).getName(), 
-							now, null, sexMeasurementId, newAnimalName, null, sexName));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSex"), 
+							now, null, "Sex", newAnimalName, null, sexName));
 				}
 				
 				// Farbe -> Color
 				String color = tuple.getString("Farbe");
 				if (color != null) {
-					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(11).getName(), 
-							now, null, colorMeasurementId, newAnimalName, color, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetColor"), 
+							now, null, "Color", newAnimalName, color, null));
 				}
 				
 				// Ohrmarkierung1 -> Earmark
 				String earmark = tuple.getString("Ohrmarkierung1");
 				if (earmark != null) {
-					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(12).getName(), 
-							now, null, earmarkMeasurementId, newAnimalName, earmark, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetEarmark"), 
+							now, null, "Earmark", newAnimalName, earmark, null));
 				}
 				
 				// Gen and tg -> Gene and GeneState (in a SetGenotype protocol application)
 				String gene = tuple.getString("Gen");
 				String geneState = tuple.getString("tg");
 				if (gene != null && geneState != null) {
-					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(13).getName(), 
-							now, null, geneMeasurementId, newAnimalName, gene, null));
-					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(13).getName(), 
-							now, null, geneStateMeasurementId, newAnimalName, geneState, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGeneName"), 
+							now, null, "GeneName", newAnimalName, gene, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGeneState"), 
+							now, null, "GeneState", newAnimalName, geneState, null));
 				}
 				
 				// gen Hintergrund-Tier -> Background
 				String background = tuple.getString("gen Hintergrund-Tier");
 				if (background != null) {
-					valuesToAddList.add(ct.createObservedValue(invid, 
-								protocolAppsToAddList.get(14).getName(), now, null, backgroundMeasurementId, 
-								newAnimalName, null, background));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetBackground"), 
+							now, null, "Background", newAnimalName, null, background));
 				}
 			}
 		});
 	}
 	
 	public void parseParentRelations(String filename) throws Exception
-	{
-		final int invid = ct.getInvestigationId("AnimalDB");
-		final Calendar calendar = Calendar.getInstance();
-		// Measurements we want to retrieve only once:
-		final int oldUliDbMotherInfoMeasurementId = ct.getMeasurementId("OldUliDbMotherInfo");
-		final int oldUliDbFatherInfoMeasurementId = ct.getMeasurementId("OldUliDbFatherInfo");
-		final int typeOfGroupMeasurementId = ct.getMeasurementId("TypeOfGroup");
-		final int motherMeasurementId = ct.getMeasurementId("Mother");
-		final int fatherMeasurementId = ct.getMeasurementId("Father");
-		final int lineMeasurementId = ct.getMeasurementId("Line");
-		final int parentgroupMeasurementId = ct.getMeasurementId("Parentgroup");
-		final int litterMeasurementId = ct.getMeasurementId("Litter");
-		
+	{	
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
 		reader.parse(new CsvReaderListener()
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
-				logger.info("Parsing line: " + line_number);
-				
 				Date now = calendar.getTime();
 				
 				String newAnimalName = animalsToAddList.get(line_number - 1).getName();
@@ -415,12 +308,11 @@ public class ConvertUliDbToPheno
 				String motherIdsString = tuple.getString("Mutter-Nr");
 				if (motherIdsString != null) {
 					// First, store literal value
-					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(15).getName(), 
-							now, null, oldUliDbMotherInfoMeasurementId, newAnimalName, motherIdsString, 
-							null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbMotherInfo"), 
+							now, null, "OldUliDbMotherInfo", newAnimalName, motherIdsString, null));
 					for (Integer oldMotherId : SplitParentIdsString(motherIdsString)) {
 						// Find corresponding animal
-						// If 5 digits, it's a laufende Nr (OldUliDbId); if fewer, it's a Tiernummer (CustomId)
+						// If 5 digits, it's a laufende Nr (OldUliDbId); if fewer, it's a Tiernummer (CustomID)
 						String motherName = null;
 						if (oldMotherId.toString().length() == 5) {
 							motherName = oldUliDbIdMap.get(oldMotherId.toString());
@@ -438,9 +330,8 @@ public class ConvertUliDbToPheno
 				String fatherIdsString = tuple.getString("Vater-Nr");
 				if (fatherIdsString != null) {
 					// First, store literal value
-					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(16).getName(), 
-							now, null, oldUliDbFatherInfoMeasurementId, newAnimalName, fatherIdsString, 
-							null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbFatherInfo"), 
+							now, null, "OldUliDbFatherInfo", newAnimalName, fatherIdsString, null));
 					for (Integer oldFatherId : SplitParentIdsString(fatherIdsString)) {
 						// Find corresponding animal
 						// If 5 digits, it's a laufende Nr (OldUliDbId); if fewer, it's a Tiernummer (CustomId)
@@ -458,50 +349,50 @@ public class ConvertUliDbToPheno
 				
 				// Create a parentgroup
 				String parentgroupName = "OldUliDbParentgroup_" + newAnimalName;
-				panelsToAddList.add(ct.createPanel(invid, parentgroupName, login.getUserId()));
-				valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(17).getName(), 
-						now, null, typeOfGroupMeasurementId, parentgroupName, "Parentgroup", null));
+				panelsToAddList.add(ct.createPanel(invName, parentgroupName, userName));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), 
+						now, null, "TypeOfGroup", parentgroupName, "Parentgroup", null));
 				
 				// Link parent(s) to parentgroup
 				for (String motherName : motherList) {
-					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(18).getName(), 
-							now, null, motherMeasurementId, parentgroupName, null, motherName));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetMother"), 
+							now, null, "Mother", parentgroupName, null, motherName));
 				}
 				for (String fatherName : fatherList) {
-					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(19).getName(), 
-							now, null, fatherMeasurementId, parentgroupName, null, fatherName));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetFather"), 
+							now, null, "Father", parentgroupName, null, fatherName));
 				}
 				
 				// Set line (Linie) of parentgroup
 				String line = tuple.getString("Linie");
 				if (line != null) {
-					valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(20).getName(), 
-							now, null, lineMeasurementId, parentgroupName, null, line));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
+							now, null, "Line", parentgroupName, null, line));
 				}
 				
 				// Make a litter
 				String litterName = "OldUliDbLitter_" + newAnimalName;
-				panelsToAddList.add(ct.createPanel(invid, litterName, login.getUserId()));
-				valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(17).getName(), 
-						now, null, typeOfGroupMeasurementId, litterName, "Litter", null));
+				panelsToAddList.add(ct.createPanel(invName, litterName, userName));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), 
+						now, null, "TypeOfGroup", litterName, "Litter", null));
 				
 				// Link litter to parentgroup
-				valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(21).getName(), 
-						now, null, parentgroupMeasurementId, litterName, null, parentgroupName));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroup"), 
+						now, null, "Parentgroup", litterName, null, parentgroupName));
 				
 				// Link animal to litter
 				// TODO: now we make a litter for each animal, although multiple animals may be from the
 				// same litter. However, we cannot know this for sure, since no litter information is
 				// stored in the old Uli Eisel DB. How do we solve this?
-				valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(22).getName(), 
-						now, null, litterMeasurementId, newAnimalName, null, litterName));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLitter"), 
+						now, null, "Litter", newAnimalName, null, litterName));
 			}
 		});
 	}
 	
 	public void populateLine(String filename) throws Exception
 	{
-		final int invid = ct.getInvestigationId("AnimalDB");
+		final int invid = ct.getInvestigationId(invName);
 		
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
@@ -538,9 +429,9 @@ public class ConvertUliDbToPheno
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
-				// Every gene becomes a code for the 'Gene' feature
+				// Every gene becomes a code for the 'GeneName' feature
 				String geneName = tuple.getString("Gen");
-				ct.makeCode(geneName, geneName, "Gene");
+				ct.makeCode(geneName, geneName, "Genename");
 			}
 		});
 	}
@@ -549,7 +440,7 @@ public class ConvertUliDbToPheno
 	{
 		final int featureId = ct.getMeasurementId("TypeOfGroup");
 		final int protocolId = ct.getProtocolId("SetTypeOfGroup");
-		final int invid = ct.getInvestigationId("AnimalDB");
+		final int invid = ct.getInvestigationId(invName);
 		
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
@@ -602,5 +493,11 @@ public class ConvertUliDbToPheno
 			}
 		}
 		return idsList;
+	}
+	
+	public void makeProtocolApplication(String protocolName) throws ParseException, DatabaseException, IOException {
+		ProtocolApplication app = ct.createProtocolApplication(invName, protocolName);
+		protocolAppsToAddList.add(app);
+		appMap.put(protocolName, app.getName());
 	}
 }

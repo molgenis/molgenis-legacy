@@ -281,7 +281,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		featureIdList.add(ct.getMeasurementId("AnimalType"));
 		featureIdList.add(ct.getMeasurementId("Source"));
 		featureIdList.add(ct.getMeasurementId("Background"));
-		featureIdList.add(ct.getMeasurementId("Gene"));
+		featureIdList.add(ct.getMeasurementId("GeneName"));
 		featureIdList.add(ct.getMeasurementId("GeneState"));
 		featureIdList.add(ct.getMeasurementId("DateOfBirth"));
 		if (customNameFeature != null) {
@@ -421,7 +421,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		
 		gene = new SelectInput("gene");
 		gene.setLabel("Gene:");
-		for (String option : ct.getAllCodesForFeatureAsStrings("Gene"))
+		for (String option : ct.getAllCodesForFeatureAsStrings("GeneName"))
 		{
 			gene.addOption(option, option);
 		}

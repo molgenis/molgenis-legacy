@@ -49,12 +49,15 @@ public class FillAnimalDB {
 		Logger logger = Logger.getLogger("FillAnimalDB");
 		logger.info("Start filling the database with factory defaults for AnimalDB.");
 		
-		// Make investigation 'AnimalDB'
-		logger.info("Create investigation 'AnimalDB'");
+		// Make investigations
+		logger.info("Create investigations");
 		Investigation inv = new Investigation();
 		inv.setName("AnimalDB");
 		db.add(inv);
 		int invid = ct.getInvestigationId("AnimalDB");
+		inv = new Investigation();
+		inv.setName("UliEisel");
+		db.add(inv);
 		
 		// Make ontology 'Units'
 		logger.info("Add ontology entries");
@@ -132,7 +135,7 @@ public class FillAnimalDB {
 		ct.makeMeasurement(invid, "ActualAnimalEndStatus", stringUnitId, null, null, false, "string", "To set the actual end status of an animal in an experiment.", login.getUserId());
 		ct.makeMeasurement(invid, "Experiment", targetlinkUnitId, panel, "Experiment", false, "xref", "To link an animal to a DEC subproject (experiment).", login.getUserId());
 		ct.makeMeasurement(invid, "FromExperiment", targetlinkUnitId, panel, "Experiment", false, "xref", "To remove an animal from a DEC subproject (experiment).", login.getUserId());
-		ct.makeMeasurement(invid, "Gene", stringUnitId, null, null, false, "string", "The name of a gene that may or may not be present in an animal.", login.getUserId());
+		ct.makeMeasurement(invid, "GeneName", stringUnitId, null, null, false, "string", "The name of a gene that may or may not be present in an animal.", login.getUserId());
 		ct.makeMeasurement(invid, "GeneState", stringUnitId, null, null, false, "string", "To indicate whether an animal is homo- or heterozygous for a gene.", login.getUserId());
 		ct.makeMeasurement(invid, "VWASpecies", stringUnitId, null, null, false, "string", "To give a species the name the VWA uses for it.", login.getUserId());
 		ct.makeMeasurement(invid, "LatinSpecies", stringUnitId, null, null, false, "string", "To give a species its scientific (Latin) name.", login.getUserId());
@@ -305,10 +308,10 @@ public class FillAnimalDB {
 		ct.makeCode("3", "C. Wildvang", "AnimalType");
 		ct.makeCode("4", "D. Biotoop", "AnimalType");
 		// Codes for Gene
-		ct.makeCode("Cry1", "Cry1", "Gene");
-		ct.makeCode("Cry2", "Cry2", "Gene");
-		ct.makeCode("Per1", "Per1", "Gene");
-		ct.makeCode("Per2", "Per2", "Gene");
+		ct.makeCode("Cry1", "Cry1", "GeneName");
+		ct.makeCode("Cry2", "Cry2", "GeneName");
+		ct.makeCode("Per1", "Per1", "GeneName");
+		ct.makeCode("Per2", "Per2", "GeneName");
 		// Codes for GeneState
 		ct.makeCode("0", "-/-", "GeneState");
 		ct.makeCode("1", "+/-", "GeneState");
@@ -442,7 +445,7 @@ public class FillAnimalDB {
 		ct.makeProtocol(invid, "AnimalFromSubproject", "To remove an animal from an experiment.", locFeatIdList);
 		// Protocol SetGenotype
 		locFeatIdList = new ArrayList<Integer>();
-		locFeatIdList.add(ct.getMeasurementId("Gene"));
+		locFeatIdList.add(ct.getMeasurementId("GeneName"));
 		locFeatIdList.add(ct.getMeasurementId("GeneState"));
 		ct.makeProtocol(invid, "SetGenotype", "To set part (one gene) of an animal's genotype.", locFeatIdList);
 		
