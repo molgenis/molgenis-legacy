@@ -8,13 +8,13 @@
 package org.molgenis.sandbox.plugins;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Tuple;
 
 public class VaadinPlugin extends PluginModel
 {
-	public VaadinPlugin(String name, ScreenModel parent)
+	public VaadinPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

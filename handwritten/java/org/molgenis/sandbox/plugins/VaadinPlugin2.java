@@ -8,9 +8,8 @@
 package org.molgenis.sandbox.plugins;
 
 import org.molgenis.framework.db.Database;
-
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Tuple;
 
 public class VaadinPlugin2 extends PluginModel
@@ -19,7 +18,7 @@ public class VaadinPlugin2 extends PluginModel
 	private static final long serialVersionUID = 1L;
 	private String Status = "";
 	
-	public VaadinPlugin2(String name, ScreenModel parent)
+	public VaadinPlugin2(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 		this.setStatus("This is a test of Vaadin");

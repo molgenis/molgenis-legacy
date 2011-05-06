@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Tuple;
 
 public class ShowResultsScreen extends PluginModel
@@ -19,7 +19,7 @@ public class ShowResultsScreen extends PluginModel
 	private String indXCondLink;			// Individuals per Condition
 	private String indXSlideLink;			// Individuals per Slide
 	
-	public ShowResultsScreen(String name, ScreenModel parent)
+	public ShowResultsScreen(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

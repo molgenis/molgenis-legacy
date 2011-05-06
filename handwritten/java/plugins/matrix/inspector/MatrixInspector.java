@@ -15,8 +15,8 @@ import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Tuple;
 
 import plugins.matrix.manager.Browser;
@@ -25,7 +25,7 @@ import plugins.matrix.manager.MatrixManager;
 public class MatrixInspector extends PluginModel
 {
 
-	private MatrixInspectorModel model = new MatrixInspectorModel();
+	private MatrixInspectorModel model = new MatrixInspectorModel(this);
 	private DataMatrixHandler dmh = null;
 
 	public MatrixInspectorModel getModel()
@@ -33,7 +33,7 @@ public class MatrixInspector extends PluginModel
 		return model;
 	}
 
-	public MatrixInspector(String name, ScreenModel parent)
+	public MatrixInspector(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

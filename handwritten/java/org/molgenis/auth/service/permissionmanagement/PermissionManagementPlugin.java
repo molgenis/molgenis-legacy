@@ -17,6 +17,7 @@ import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Entity;
@@ -29,9 +30,9 @@ public class PermissionManagementPlugin extends PluginModel<Entity> {
     private PermissionManagementService service;
     private static Logger logger = Logger.getLogger(PermissionManagementPlugin.class);
 
-    public PermissionManagementPlugin(String name, ScreenModel<Entity> parent) {
+    public PermissionManagementPlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
-		model = new PermissionManagementModel();
+		this.setModel( new PermissionManagementModel(this) );
     }
 
     @Override

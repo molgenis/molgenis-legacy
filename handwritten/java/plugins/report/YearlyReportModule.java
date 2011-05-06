@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.util.Entity;
@@ -39,7 +40,7 @@ public class YearlyReportModule extends PluginModel<Entity>
 		this.report = report;
 	}
 
-	public YearlyReportModule(String name, ScreenModel<Entity> parent)
+	public YearlyReportModule(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 		Calendar calendar = Calendar.getInstance();

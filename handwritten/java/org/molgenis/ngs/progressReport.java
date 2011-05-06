@@ -8,8 +8,8 @@
 package org.molgenis.ngs;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -20,7 +20,7 @@ public class progressReport extends PluginModel<Entity>
 	 */
 	private static final long serialVersionUID = 8753791789889671967L;
 
-	public progressReport(String name, ScreenModel<Entity> parent)
+	public progressReport(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

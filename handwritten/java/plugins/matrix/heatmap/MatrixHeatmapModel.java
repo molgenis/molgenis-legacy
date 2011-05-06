@@ -1,10 +1,17 @@
 package plugins.matrix.heatmap;
 
+import org.molgenis.framework.ui.ScreenController;
+
 import matrix.AbstractDataMatrixInstance;
 import plugins.matrix.manager.MatrixManagerModel;
 
 public class MatrixHeatmapModel extends MatrixManagerModel{
 
+	public MatrixHeatmapModel(ScreenController controller)
+	{
+		super(controller);
+		// TODO Auto-generated constructor stub
+	}
 	private Double lowestVal;
 	private Double highestVal;
 	private RGB start;

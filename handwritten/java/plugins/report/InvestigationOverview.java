@@ -15,13 +15,12 @@ import java.util.Map;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
-
 
 import app.JDBCDatabase;
 
@@ -48,7 +47,7 @@ public class InvestigationOverview extends PluginModel<Entity>
 	List<String> targets = new ArrayList<String>();
 	Map<String, String> values = new LinkedHashMap<String, String>();
 
-	public InvestigationOverview(String name, ScreenModel<Entity> parent)
+	public InvestigationOverview(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

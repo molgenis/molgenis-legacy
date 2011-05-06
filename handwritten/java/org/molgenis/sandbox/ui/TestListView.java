@@ -5,14 +5,13 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package org.molgenis.sandbox.plugins;
+package org.molgenis.sandbox.ui;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.GenericPlugin;
-import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.ListView;
 import org.molgenis.organization.Investigation;
-import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 /**
@@ -28,7 +27,7 @@ public class TestListView extends GenericPlugin
 	private static final long serialVersionUID = -3119343430895743631L;
 	ListView listView = null;
 
-	public TestListView(String name, ScreenModel<Entity> parent)
+	public TestListView(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

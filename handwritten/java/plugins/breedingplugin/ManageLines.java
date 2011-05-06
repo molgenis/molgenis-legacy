@@ -16,6 +16,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
@@ -37,7 +38,7 @@ public class ManageLines extends PluginModel<Entity>
 	private int source;
 	private List<ObservationTarget> sourceList;
 
-	public ManageLines(String name, ScreenModel<Entity> parent)
+	public ManageLines(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

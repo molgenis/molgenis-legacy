@@ -3,7 +3,16 @@ package plugins.system.settings;
 import java.io.File;
 import java.util.HashMap;
 
-public class SettingsModel {
+import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.SimpleScreenModel;
+
+public class SettingsModel extends SimpleScreenModel {
+
+	public SettingsModel(ScreenController controller)
+	{
+		super(controller);
+		// TODO Auto-generated constructor stub
+	}
 
 	String hasSystemSettingsTable;
 	HashMap<String, String> keyValsFromSettingsTable;
@@ -78,6 +87,13 @@ public class SettingsModel {
 
 	public void setRwDirSuccess(String rwDirSuccess) {
 		this.rwDirSuccess = rwDirSuccess;
+	}
+
+	@Override
+	public boolean isVisible()
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 	

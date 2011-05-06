@@ -4,11 +4,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.SimpleScreenModel;
 import org.molgenis.organization.Investigation;
 
-public class RichWizardModel {
+public class RichWizardModel extends SimpleScreenModel {
 
 	
+	public RichWizardModel(ScreenController controller)
+	{
+		super(controller);
+		// TODO Auto-generated constructor stub
+	}
+
 	private String state;
 	private List<String> dataTypes;
 	private List<Investigation> investigations;
@@ -99,6 +107,13 @@ public class RichWizardModel {
 	public void setDataTypes(List<String> dataTypes)
 	{
 		this.dataTypes = dataTypes;
+	}
+
+	@Override
+	public boolean isVisible()
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 	

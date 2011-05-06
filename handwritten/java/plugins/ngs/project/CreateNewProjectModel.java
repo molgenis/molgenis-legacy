@@ -10,6 +10,8 @@ package plugins.ngs.project;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.SimpleScreenModel;
 import org.molgenis.ngs.NgsPerson;
 import org.molgenis.ngs.Project;
 import org.molgenis.organization.Institute;
@@ -17,8 +19,14 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.protocol.Workflow;
 import org.testng.collections.Lists;
 
-public class CreateNewProjectModel {
-    private Project project;
+public class CreateNewProjectModel extends SimpleScreenModel {
+    public CreateNewProjectModel(ScreenController controller)
+	{
+		super(controller);
+		// TODO Auto-generated constructor stub
+	}
+
+	private Project project;
     private NgsPerson person;
     private Institute institute;
     private List<NgsPerson> labworkers = Lists.newArrayList();
@@ -111,4 +119,11 @@ public class CreateNewProjectModel {
     public Investigation getInvest() {
 	return invest;
     }
+
+	@Override
+	public boolean isVisible()
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

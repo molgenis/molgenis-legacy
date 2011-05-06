@@ -9,7 +9,7 @@ package plugins.topmenu;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -18,7 +18,7 @@ public class DocumentationScreen<E extends Entity> extends PluginModel<E>
 
 	private static final long serialVersionUID = 1656818775544613107L;
 
-	public DocumentationScreen(String name, ScreenModel<E> parent)
+	public DocumentationScreen(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

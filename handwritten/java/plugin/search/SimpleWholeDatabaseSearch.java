@@ -14,6 +14,7 @@ import java.util.Vector;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Entity;
@@ -25,12 +26,12 @@ public class SimpleWholeDatabaseSearch extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 4004696283997492221L;
 
-	public SimpleWholeDatabaseSearch(String name, ScreenModel<Entity> parent)
+	public SimpleWholeDatabaseSearch(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
 
-	private SimpleWholeDatabaseSearchModel model = new SimpleWholeDatabaseSearchModel();
+	private SimpleWholeDatabaseSearchModel model = new SimpleWholeDatabaseSearchModel(null);
 
 	JDBCMetaDatabase metadb;
 

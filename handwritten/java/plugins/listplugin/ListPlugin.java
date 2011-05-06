@@ -17,6 +17,7 @@ import org.molgenis.batch.MolgenisBatchEntity;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.pheno.Measurement;
@@ -33,7 +34,7 @@ public class ListPlugin extends PluginModel<Entity> {
 	private List<MolgenisBatch> batchList = new ArrayList<MolgenisBatch>();
 	private CommonService ct = CommonService.getInstance();
 
-	public ListPlugin(String name, ScreenModel<Entity> parent) {
+	public ListPlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
 	}
 	

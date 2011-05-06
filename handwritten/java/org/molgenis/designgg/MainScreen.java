@@ -2,11 +2,10 @@ package org.molgenis.designgg;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.UserInterface;
 import org.molgenis.util.Tuple;
 
 public class MainScreen extends PluginModel
@@ -22,7 +21,7 @@ public class MainScreen extends PluginModel
 	private ShowResultsScreen screen3;
 	private int autoRefresh;
 
-	public MainScreen(String string, ScreenModel parent)
+	public MainScreen(String string, ScreenController<?> parent)
 	{
 		super("Main", parent);
 		

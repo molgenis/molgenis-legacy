@@ -13,6 +13,7 @@ import miscellaneous.kegg.KEGGTools;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -22,7 +23,7 @@ public class KeggToolsPlugin extends PluginModel<Entity>
 
 	private static final long serialVersionUID = 4365180891730331426L;
 
-	public KeggToolsPlugin(String name, ScreenModel<Entity> parent)
+	public KeggToolsPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

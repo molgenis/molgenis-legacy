@@ -19,8 +19,8 @@ import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.ngs.NgsPerson;
 import org.molgenis.ngs.NgsSample;
 import org.molgenis.ngs.Project;
@@ -43,11 +43,11 @@ public class CreateNewProject extends PluginModel<Entity>
     private Database db;
 
 
-    public CreateNewProject(String name, ScreenModel<Entity> parent)
+    public CreateNewProject(String name, ScreenController<?> parent)
     {
 	super(name, parent);
 	ct = CommonService.getInstance();
-	model = new CreateNewProjectModel();
+	model = new CreateNewProjectModel(this);
     }
 
     public CreateNewProjectModel getModel() {

@@ -8,8 +8,8 @@
 package org.molgenis.mutation.ui.header;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -18,7 +18,7 @@ public class Chd7Header extends PluginModel<Entity>
 
 	private static final long serialVersionUID = 6224612078995632056L;
 
-	public Chd7Header(String name, ScreenModel<Entity> parent)
+	public Chd7Header(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

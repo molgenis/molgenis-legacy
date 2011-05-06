@@ -9,14 +9,13 @@ package org.molgenis.feedback.ui;
 
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.Container;
-import org.molgenis.util.EmailService;
 import org.molgenis.util.Entity;
-import org.molgenis.util.SimpleEmailService.EmailException;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.SimpleEmailService.EmailException;
 
 
 public class Contact extends PluginModel<Entity>
@@ -27,7 +26,7 @@ public class Contact extends PluginModel<Entity>
 	private String action           = "init";
 	private ContactForm contactForm = new ContactForm();
 
-	public Contact(String name, ScreenModel<Entity> parent)
+	public Contact(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

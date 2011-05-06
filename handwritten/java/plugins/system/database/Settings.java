@@ -8,13 +8,13 @@
 package plugins.system.database;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Tuple;
 
 public class Settings extends PluginModel
 {
-	public Settings(String name, ScreenModel parent)
+	public Settings(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

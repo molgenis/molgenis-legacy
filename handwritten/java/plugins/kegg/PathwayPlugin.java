@@ -8,8 +8,8 @@
 package plugins.kegg;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -18,7 +18,7 @@ public class PathwayPlugin extends PluginModel<Entity>
 
 	private static final long serialVersionUID = 8089911096873509267L;
 
-	public PathwayPlugin(String name, ScreenModel<Entity> parent)
+	public PathwayPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

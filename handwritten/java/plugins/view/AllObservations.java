@@ -17,7 +17,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
@@ -50,7 +50,7 @@ public class AllObservations extends PluginModel<Entity>
 		return val;
 	}
 	
-	public AllObservations(String name, ScreenModel<Entity> parent)
+	public AllObservations(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

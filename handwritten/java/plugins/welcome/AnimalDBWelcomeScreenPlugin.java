@@ -8,6 +8,7 @@
 package plugins.welcome;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.util.Entity;
@@ -17,7 +18,7 @@ public class AnimalDBWelcomeScreenPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -5861419875983400033L;
 
-	public AnimalDBWelcomeScreenPlugin(String name, ScreenModel<Entity> parent)
+	public AnimalDBWelcomeScreenPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

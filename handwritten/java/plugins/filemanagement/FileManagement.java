@@ -8,9 +8,8 @@
 package plugins.filemanagement;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
-
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -19,7 +18,7 @@ public class FileManagement extends PluginModel<Entity>
 
 	private static final long serialVersionUID = 2527897143576623076L;
 
-	public FileManagement(String name, ScreenModel<Entity> parent)
+	public FileManagement(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

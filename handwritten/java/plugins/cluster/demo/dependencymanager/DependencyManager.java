@@ -11,18 +11,16 @@ import java.io.File;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
-
-import filehandling.generic.MolgenisFileHandler;
 
 import plugins.cluster.implementations.LocalComputationResource;
 
 public class DependencyManager extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 3728283831751229340L;
-	private DependencyManagerModel model = new DependencyManagerModel();
+	private DependencyManagerModel model = new DependencyManagerModel(this);
 	private File usrHomeLibs;
 
 	public DependencyManagerModel getModel()
@@ -30,7 +28,7 @@ public class DependencyManager extends PluginModel<Entity>
 		return this.model;
 	}
 
-	public DependencyManager(String name, ScreenModel<Entity> parent)
+	public DependencyManager(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

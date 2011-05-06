@@ -2,10 +2,18 @@ package plugins.xgapwizard;
 
 import java.util.List;
 
+import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.SimpleScreenModel;
 import org.molgenis.organization.Investigation;
 
-public class QTLDataSetWizardModel
+public class QTLDataSetWizardModel extends SimpleScreenModel
 {
+	public QTLDataSetWizardModel(ScreenController controller)
+	{
+		super(controller);
+		// TODO Auto-generated constructor stub
+	}
+
 	private Integer selectedInv;
 	private List<Investigation> investigations;
 
@@ -27,6 +35,13 @@ public class QTLDataSetWizardModel
 	public void setInvestigations(List<Investigation> investigations)
 	{
 		this.investigations = investigations;
+	}
+
+	@Override
+	public boolean isVisible()
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

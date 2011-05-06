@@ -27,7 +27,7 @@ import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.util.Version;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.organization.InvestigationElement;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -84,7 +84,7 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
 	}
 	
 	
-	public AdminIndexes(String name, ScreenModel<org.molgenis.util.Entity> parent)
+	public AdminIndexes(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

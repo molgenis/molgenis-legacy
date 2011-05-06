@@ -14,12 +14,12 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.util.Tuple;
 import org.molgenis.util.Entity;
+import org.molgenis.util.Tuple;
 
 import commonservice.CommonService;
 
@@ -31,7 +31,7 @@ public class ListPlugin2 extends PluginModel<Entity> {
 	private boolean firstTime = true;
 	private CommonService ct = CommonService.getInstance();
 
-	public ListPlugin2(String name, ScreenModel<Entity> parent) {
+	public ListPlugin2(String name, ScreenController<?> parent) {
 		super(name, parent);
 	}
 	

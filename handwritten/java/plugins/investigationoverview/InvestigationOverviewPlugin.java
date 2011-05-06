@@ -17,8 +17,8 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.model.elements.DBSchema;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservationElement;
@@ -32,14 +32,14 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 {
 
 	private static final long serialVersionUID = -7068554327138233108L;
-	private InvestigationOverviewModel model = new InvestigationOverviewModel();
+	private InvestigationOverviewModel model = new InvestigationOverviewModel(null);
 
 	public InvestigationOverviewModel getModel()
 	{
 		return model;
 	}
 
-	public InvestigationOverviewPlugin(String name, ScreenModel<Entity> parent)
+	public InvestigationOverviewPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

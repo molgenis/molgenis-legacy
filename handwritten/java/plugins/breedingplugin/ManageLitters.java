@@ -21,6 +21,7 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.pheno.ObservationTarget;
@@ -53,7 +54,7 @@ public class ManageLitters extends PluginModel<Entity>
 	private String customName = null;
 	private int customNumber = -1;
 
-	public ManageLitters(String name, ScreenModel<Entity> parent)
+	public ManageLitters(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

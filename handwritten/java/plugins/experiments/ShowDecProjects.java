@@ -16,8 +16,8 @@ import java.util.Locale;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
@@ -36,7 +36,7 @@ public class ShowDecProjects extends PluginModel<Entity>
 	private String action = "init";
 	private int listId = 0;
 	
-	public ShowDecProjects(String name, ScreenModel<Entity> parent)
+	public ShowDecProjects(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

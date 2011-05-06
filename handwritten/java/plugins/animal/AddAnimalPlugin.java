@@ -18,8 +18,8 @@ import java.util.Locale;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.GenericPlugin;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.DivPanel;
@@ -32,7 +32,6 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.ProtocolApplication;
-import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import commonservice.CommonService;
@@ -67,7 +66,7 @@ public class AddAnimalPlugin extends GenericPlugin
 	// subpanel to conditionally show the custom name questions (base, start number)
 	public DivPanel customNamePanel = null;
 
-	public AddAnimalPlugin(String name, ScreenModel<Entity> parent)
+	public AddAnimalPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

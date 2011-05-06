@@ -8,8 +8,8 @@
 package plugins.cluster.demo.xwbllheader;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -26,7 +26,7 @@ public class MolgenisHeader extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -8210616687815863944L;
 
-	public MolgenisHeader(String name, ScreenModel<Entity> parent)
+	public MolgenisHeader(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

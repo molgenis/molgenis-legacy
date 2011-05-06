@@ -19,8 +19,8 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.pheno.Code;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
@@ -47,7 +47,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	private List<Code> animalEndStatusCodeList;
 	private List<Panel> decApplicationList;
 	
-	public ShowDecSubprojects(String name, ScreenModel<Entity> parent)
+	public ShowDecSubprojects(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

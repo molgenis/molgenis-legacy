@@ -7,14 +7,14 @@ package plugins.welcome;
 import jxl.common.Logger;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import commonservice.CommonService;
-
 import plugins.fillngsdb.FillNgsDatabase;
+
+import commonservice.CommonService;
 
 public class NGSWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>{
 
@@ -23,7 +23,7 @@ public class NGSWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>{
 	private static final transient Logger logger = Logger.getLogger(NGSWelcomeScreenPlugin.class);
 
 	
-	public NGSWelcomeScreenPlugin(String name, ScreenModel<E> parent) {
+	public NGSWelcomeScreenPlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
 		
 		

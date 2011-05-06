@@ -13,7 +13,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.CsvStringReader;
@@ -56,7 +56,7 @@ public class CalculateDesignScreen extends PluginModel
 	LocalComputationResource cmd = null;
 	private String rScript; // The R script used
 
-	public CalculateDesignScreen(String name, ScreenModel parent)
+	public CalculateDesignScreen(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 		setController(this); // using itself as controller.

@@ -9,6 +9,7 @@ package plugins.protocol;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.GenericPlugin;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Entity;
@@ -22,7 +23,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
     private ApplyProtocolHandler handler;
     private ApplyProtocolUI ui;
 
-    public ApplyProtocolPlugin(String name, ScreenModel<Entity> parent)
+    public ApplyProtocolPlugin(String name, ScreenController<?> parent)
     {
 		super(name, parent);
 	

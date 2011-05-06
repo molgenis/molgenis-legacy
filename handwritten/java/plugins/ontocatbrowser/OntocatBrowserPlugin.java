@@ -14,6 +14,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Entity;
@@ -30,7 +31,7 @@ public class OntocatBrowserPlugin extends PluginModel<Entity> {
 	 * EbiOlsBrowserPlugin
 	 */
 	private static final long serialVersionUID = 8092415619774443643L;
-	private OntocatBrowserModel screenModel = new OntocatBrowserModel();
+	private OntocatBrowserModel screenModel = new OntocatBrowserModel(this);
 
 	// Database
 	//JDBCDatabase db;
@@ -57,7 +58,7 @@ public class OntocatBrowserPlugin extends PluginModel<Entity> {
 	// Base URL for EBI lookups
 	String lookupURI = "http://www.ebi.ac.uk/ontology-lookup/?termId=";
 
-	public OntocatBrowserPlugin(String name, ScreenModel<Entity> parent) {
+	public OntocatBrowserPlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
 
 		// Try to make connections to the database and the webservice

@@ -8,8 +8,8 @@
 package org.molgenis.mutation.ui.background;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.mutation.service.MutationService;
 import org.molgenis.mutation.service.PatientService;
 import org.molgenis.mutation.vo.BackgroundSummaryVO;
@@ -25,7 +25,7 @@ public class Background extends PluginModel<Entity>
 	private PatientService patientService;
 	private BackgroundSummaryVO backgroundSummaryVO;
 
-	public Background(String name, ScreenModel<Entity> parent)
+	public Background(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

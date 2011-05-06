@@ -9,7 +9,7 @@ package plugins.emptydb;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -20,7 +20,7 @@ public class EmptyDbPlugin extends PluginModel<Entity>
 
 	private static final long serialVersionUID = 1511261755841429645L;
 
-	public EmptyDbPlugin(String name, ScreenModel<Entity> parent)
+	public EmptyDbPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

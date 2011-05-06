@@ -8,13 +8,14 @@
 package plugins.botresource;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.util.Tuple;
 
 public class BotResource extends PluginModel
 {
-	public BotResource(String name, ScreenModel parent)
+	public BotResource(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

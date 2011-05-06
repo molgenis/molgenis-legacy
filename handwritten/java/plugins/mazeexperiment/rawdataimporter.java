@@ -21,8 +21,8 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.maze.MazeData;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReaderListener;
@@ -201,7 +201,7 @@ public class rawdataimporter extends PluginModel<Entity>
 		}
 	}
 
-	public rawdataimporter(String name, ScreenModel<Entity> parent)
+	public rawdataimporter(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

@@ -22,8 +22,8 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
@@ -39,7 +39,7 @@ public class LifelinesDataImport extends PluginModel<Entity>
 
 	private static final long serialVersionUID = -4524281787934817724L;
 
-	public LifelinesDataImport(String name, ScreenModel<Entity> parent)
+	public LifelinesDataImport(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

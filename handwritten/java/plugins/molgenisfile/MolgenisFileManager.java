@@ -16,8 +16,8 @@ import org.molgenis.core.MolgenisFile;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HtmlTools;
 import org.molgenis.util.Tuple;
@@ -32,12 +32,12 @@ public class MolgenisFileManager extends PluginModel<Entity>
 
 	private static final long serialVersionUID = 7832540415673199206L;
 
-	public MolgenisFileManager(String name, ScreenModel<Entity> parent)
+	public MolgenisFileManager(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
 
-	private MolgenisFileManagerModel model = new MolgenisFileManagerModel();
+	private MolgenisFileManagerModel model = new MolgenisFileManagerModel(this);
 
 	public MolgenisFileManagerModel getModel()
 	{

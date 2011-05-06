@@ -12,8 +12,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.ngs.NgsSample;
 import org.molgenis.ngs.Project;
 import org.molgenis.pheno.ObservedValue;
@@ -31,10 +31,10 @@ public class SampleViewer extends PluginModel<Entity> {
     private Database db;
     private SampleViewerModel model;
 
-    public SampleViewer(String name, ScreenModel<Entity> parent)
+    public SampleViewer(String name, ScreenController<?> parent)
     {
 	super(name, parent);
-	model = new SampleViewerModel();
+	model = new SampleViewerModel(this);
 	model.setCommonQueries(CommonService.getInstance());
     }
 

@@ -17,6 +17,7 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.pheno.Code;
@@ -34,7 +35,7 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 	private List<Code> removalCodeList;
 	private CommonService ct = CommonService.getInstance();
 
-	public RemAnimalPlugin(String name, ScreenModel<Entity> parent)
+	public RemAnimalPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

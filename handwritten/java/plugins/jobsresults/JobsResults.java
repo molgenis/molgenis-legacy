@@ -8,8 +8,8 @@
 package plugins.jobsresults;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -17,7 +17,7 @@ public class JobsResults extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 6740963349762666231L;
 
-	public JobsResults(String name, ScreenModel<Entity> parent)
+	public JobsResults(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

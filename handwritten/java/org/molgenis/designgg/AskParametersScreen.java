@@ -4,7 +4,7 @@ import java.io.File;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.Tuple;
@@ -26,7 +26,7 @@ public class AskParametersScreen extends PluginModel
 	private boolean bReady2Go = false;
 	private String argMissing = null;
 
-	public AskParametersScreen(String name, ScreenModel parent)
+	public AskParametersScreen(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

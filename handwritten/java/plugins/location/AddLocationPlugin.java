@@ -14,8 +14,8 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -29,7 +29,7 @@ public class AddLocationPlugin extends PluginModel<Entity>
 	private int selectedLocation; // not used at the moment
 	private CommonService ct = CommonService.getInstance();
 	
-	public AddLocationPlugin(String name, ScreenModel<Entity> parent)
+	public AddLocationPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

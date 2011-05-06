@@ -8,8 +8,8 @@
 package plugins.ngs.batch;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -18,7 +18,7 @@ public class BatchOverview extends PluginModel<Entity>
 	
 	private static final long serialVersionUID = -3494764477327084320L;
 
-	public BatchOverview(String name, ScreenModel<Entity> parent)
+	public BatchOverview(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

@@ -11,8 +11,9 @@
 package org.molgenis.auth.service.permissionmanagement;
 
 import org.molgenis.auth.MolgenisRole;
+import org.molgenis.framework.ui.EasyPluginModel;
 
-public class PermissionManagementModel {
+public class PermissionManagementModel extends EasyPluginModel{
 
 	//Danny: This was crashing freemarker, if we can't reach the database we 
 	//still need to have a default role so we don't blow up the template
@@ -20,8 +21,8 @@ public class PermissionManagementModel {
     private String action = "init";
     private int permId = 0;
     
-    public PermissionManagementModel() {
-	
+    public PermissionManagementModel(PermissionManagementPlugin controller) {
+    	super(controller);
     }
 
     public void setRole(MolgenisRole molgenisRole) {

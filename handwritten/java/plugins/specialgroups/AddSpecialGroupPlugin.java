@@ -17,8 +17,8 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -31,7 +31,7 @@ public class AddSpecialGroupPlugin extends PluginModel<Entity>
 	private List<String> labelList = new ArrayList<String>();
 	private CommonService ct = CommonService.getInstance();
 	
-	public AddSpecialGroupPlugin(String name, ScreenModel<Entity> parent)
+	public AddSpecialGroupPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

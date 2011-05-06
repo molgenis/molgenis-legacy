@@ -29,15 +29,13 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopScoreDocCollector;
-//import org.apache.lucene.search.Weight;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Tuple;
 
-import plugins.LuceneIndex.LuceneConfiguration;
 import uk.ac.ebi.ontocat.Ontology;
 import uk.ac.ebi.ontocat.OntologyService;
 import uk.ac.ebi.ontocat.OntologyServiceException;
@@ -104,7 +102,7 @@ public class OntoCatIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 		"<script src=\"Prototype/prototype.js\" language=\"javascript\"></script>\n" ;
 	}
 	
-	public OntoCatIndexPlugin(String name, ScreenModel<org.molgenis.util.Entity> parent)
+	public OntoCatIndexPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

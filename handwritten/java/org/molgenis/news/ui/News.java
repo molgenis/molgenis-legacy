@@ -10,12 +10,11 @@ package org.molgenis.news.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.news.MolgenisNews;
 import org.molgenis.news.service.NewsService;
-
-import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -30,7 +29,7 @@ public class News extends PluginModel<Entity>
 	private List<MolgenisNews> news            = new ArrayList<MolgenisNews>();
 	private MolgenisNews newsItem;
 
-	public News(String name, ScreenModel<Entity> parent)
+	public News(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

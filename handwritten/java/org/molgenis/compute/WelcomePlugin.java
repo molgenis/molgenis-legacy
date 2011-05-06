@@ -8,13 +8,13 @@
 package org.molgenis.compute;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Tuple;
 
 public class WelcomePlugin extends PluginModel
 {
-	public WelcomePlugin(String name, ScreenModel parent)
+	public WelcomePlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

@@ -2,8 +2,17 @@ package plugins.ronline;
 
 import java.util.List;
 
-public class ROnlineModel {
+import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.SimpleScreenModel;
 
+public class ROnlineModel extends SimpleScreenModel {
+
+
+	public ROnlineModel(ScreenController controller)
+	{
+		super(controller);
+		// TODO Auto-generated constructor stub
+	}
 
 	String test;
 	String loc;
@@ -44,6 +53,13 @@ public class ROnlineModel {
 
 	public void setLoc(String loc) {
 		this.loc = loc;
+	}
+
+	@Override
+	public boolean isVisible()
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 	

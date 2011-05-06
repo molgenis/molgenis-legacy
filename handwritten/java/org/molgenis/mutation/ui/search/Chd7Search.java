@@ -7,14 +7,13 @@
 
 package org.molgenis.mutation.ui.search;
 
-import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.util.Entity;
+import org.molgenis.framework.ui.ScreenController;
 
 public class Chd7Search extends SearchPlugin
 {
 	private static final long serialVersionUID = 4159412082076885902L;
 
-	public Chd7Search(String name, ScreenModel<Entity> parent)
+	public Chd7Search(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 		this.GENENAME = "CHD7";

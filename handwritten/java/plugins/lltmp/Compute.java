@@ -8,13 +8,14 @@
 package plugins.lltmp;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.util.Tuple;
 
 public class Compute extends PluginModel
 {
-	public Compute(String name, ScreenModel parent)
+	public Compute(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

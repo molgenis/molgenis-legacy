@@ -18,8 +18,8 @@ import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Tuple;
 
 public class MatrixManager extends PluginModel
@@ -27,14 +27,14 @@ public class MatrixManager extends PluginModel
 
 	private DataMatrixHandler dmh = null;
 	
-	private MatrixManagerModel model = new MatrixManagerModel();
+	private MatrixManagerModel model = new MatrixManagerModel(this);
 
 	public MatrixManagerModel getModel()
 	{
 		return model;
 	}
 
-	public MatrixManager(String name, ScreenModel parent)
+	public MatrixManager(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

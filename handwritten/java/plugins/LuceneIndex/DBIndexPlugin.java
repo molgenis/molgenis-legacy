@@ -11,12 +11,10 @@ package plugins.LuceneIndex;
 
 
 import java.io.File;
-//import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-//import java.util.Properties;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
@@ -42,10 +40,10 @@ import org.molgenis.core.UseCase;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.model.MolgenisModelException;
-import org.molgenis.model.elements.Field;
 import org.molgenis.model.elements.Entity;
+import org.molgenis.model.elements.Field;
 import org.molgenis.util.Tuple;
 
 /*
@@ -78,7 +76,7 @@ public class DBIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 		OntologiesForExpansion = ontologies;
 	}
 	
-	public DBIndexPlugin(String name, ScreenModel<org.molgenis.util.Entity> parent)
+	public DBIndexPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

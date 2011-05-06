@@ -5,11 +5,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.molgenis.core.OntologyTerm;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.SimpleScreenModel;
 import org.molgenis.organization.Investigation;
 
-public class OntocatBrowserModel {
+public class OntocatBrowserModel extends SimpleScreenModel {
 
+	public OntocatBrowserModel(ScreenController controller)
+	{
+		super(controller);
+		// TODO Auto-generated constructor stub
+	}
 	String path;
 	List<OntologyTerm> storedTerms;
 	LinkedHashMap<String, String> browserTerms;
@@ -140,5 +147,11 @@ public class OntocatBrowserModel {
 	}
 	public void setMessage(ScreenMessage message) {
 		this.message = message;
+	}
+	@Override
+	public boolean isVisible()
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

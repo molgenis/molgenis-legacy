@@ -11,8 +11,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.ngs.NgsSample;
 import org.molgenis.ngs.Project;
 import org.molgenis.pheno.ObservedValue;
@@ -36,10 +36,10 @@ public class Workflow extends PluginModel<Entity> {
      * @param name
      * @param parent
      */
-    public Workflow(String name, ScreenModel<Entity> parent)
+    public Workflow(String name, ScreenController<?> parent)
     {
 	super(name, parent);
-	model = new WorkflowModel();
+	model = new WorkflowModel(this);
 	this.model.setCommonQueries(CommonService.getInstance());
 	
     }

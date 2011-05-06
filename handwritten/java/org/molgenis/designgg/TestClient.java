@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.molgenis.framework.ui.UserInterface;
+import org.molgenis.framework.ui.ApplicationController;
 
 
 public class TestClient {
@@ -30,7 +30,7 @@ public class TestClient {
         try {
         	String name = "designGG";
 					
-        	UserInterface ui = new UserInterface(null);
+        	ApplicationController ui = new ApplicationController(null);
         	CalculateDesignScreen s = new CalculateDesignScreen("test",ui);
 			
 			List<String> rscript = new ArrayList<String>();

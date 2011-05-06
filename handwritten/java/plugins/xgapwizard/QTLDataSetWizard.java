@@ -27,8 +27,8 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.util.CsvFileReader;
@@ -42,7 +42,7 @@ public class QTLDataSetWizard extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -1810993111211947419L;
 
-	public QTLDataSetWizard(String name, ScreenModel<Entity> parent)
+	public QTLDataSetWizard(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
@@ -53,7 +53,7 @@ public class QTLDataSetWizard extends PluginModel<Entity>
 		return "plugins_xgapwizard_QTLDataSetWizard";
 	}
 
-	private QTLDataSetWizardModel model = new QTLDataSetWizardModel();
+	private QTLDataSetWizardModel model = new QTLDataSetWizardModel(this);
 
 	public QTLDataSetWizardModel getModel()
 	{

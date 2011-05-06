@@ -2,8 +2,6 @@ package org.molgenis.designgg;
 
 import org.apache.log4j.Logger;
 import org.molgenis.Molgenis;
-import org.molgenis.generators.server.MolgenisServletGen;
-import org.molgenis.generators.ui.PluginScreenGen;
 
 public class DesignGGGenerate
 {

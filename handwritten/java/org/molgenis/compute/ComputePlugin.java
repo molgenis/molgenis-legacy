@@ -9,8 +9,8 @@ import java.util.List;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.GenericPlugin;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.LabelInput;
 import org.molgenis.framework.ui.html.StringInput;
@@ -24,7 +24,6 @@ import org.molgenis.protocol.ComputeProtocol;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.protocol.WorkflowElement;
-import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 
@@ -73,7 +72,7 @@ public class ComputePlugin extends GenericPlugin
     }
 
 
-    public ComputePlugin(String name, ScreenModel<Entity> parent)
+    public ComputePlugin(String name, ScreenController<?> parent)
     {
         super(name, parent);
     }

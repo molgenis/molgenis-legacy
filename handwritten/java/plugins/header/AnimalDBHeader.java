@@ -8,6 +8,7 @@
 package plugins.header;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.util.Entity;
@@ -26,7 +27,7 @@ public class AnimalDBHeader extends PluginModel<Entity>
 
 	private static final long serialVersionUID = 4701628601897969977L;
 
-	public AnimalDBHeader(String name, ScreenModel<Entity> parent)
+	public AnimalDBHeader(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

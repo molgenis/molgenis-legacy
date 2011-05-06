@@ -27,7 +27,7 @@ public class RplotPlugin<E extends Entity> extends PluginModel<E>
 
 	private static final long serialVersionUID = 2598093872153856022L;
 	private DataMatrixHandler dmh = null;
-	private RplotPluginModel model = new RplotPluginModel();
+	private RplotPluginModel model = new RplotPluginModel(this);
 
 	public RplotPluginModel getModel()
 	{
@@ -39,9 +39,9 @@ public class RplotPlugin<E extends Entity> extends PluginModel<E>
 		this.setMessages();
 	}
 
-	public RplotPlugin(String name, ScreenModel<E> parent)
+	public RplotPlugin(String name, ScreenModel parent)
 	{
-		super(name, parent);
+		super(name, parent.getController());
 	}
 
 	@Override

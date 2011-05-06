@@ -2,9 +2,18 @@ package plugins.genericwizard;
 
 import java.io.File;
 
+import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.SimpleScreenModel;
+
 import app.ImportWizardExcelPrognosis;
 
-public class GenericWizardModel {
+public class GenericWizardModel extends SimpleScreenModel {
+
+	public GenericWizardModel(ScreenController controller)
+	{
+		super(controller);
+		// TODO Auto-generated constructor stub
+	}
 
 	String whichScreen;
 	File currentFile;
@@ -41,6 +50,13 @@ public class GenericWizardModel {
 
 	public void setImportSuccess(boolean importSuccess) {
 		this.importSuccess = importSuccess;
+	}
+
+	@Override
+	public boolean isVisible()
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 

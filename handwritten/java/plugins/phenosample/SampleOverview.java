@@ -8,8 +8,8 @@
 package plugins.phenosample;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -17,7 +17,7 @@ public class SampleOverview extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -6168056150407653311L;
 
-	public SampleOverview(String name, ScreenModel<Entity> parent)
+	public SampleOverview(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

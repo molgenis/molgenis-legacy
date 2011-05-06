@@ -9,6 +9,7 @@ package plugins.batch;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.GenericPlugin;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -23,7 +24,7 @@ public class BatchViewPlugin extends GenericPlugin
     //private static transient Logger logger = Logger.getLogger(BatchViewPlugin.class);
     private BatchViewUi ui = new BatchViewUi();
 
-    public BatchViewPlugin(String name, ScreenModel<Entity> parent)
+    public BatchViewPlugin(String name, ScreenController<?> parent)
     {
 		super(name, parent);
 		service = new BatchService();

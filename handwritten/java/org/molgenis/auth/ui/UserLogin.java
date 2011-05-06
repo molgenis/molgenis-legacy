@@ -35,6 +35,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.security.SimpleLogin;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
@@ -59,7 +60,7 @@ public class UserLogin extends PluginModel<Entity>
 	private String mailCurator;
 	private UserLoginVO userLoginVO = new UserLoginVO();
 
-	public UserLogin(String name, ScreenModel<Entity> parent)
+	public UserLogin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

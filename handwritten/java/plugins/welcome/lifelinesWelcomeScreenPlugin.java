@@ -8,8 +8,8 @@
 package plugins.welcome;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -18,7 +18,7 @@ public class lifelinesWelcomeScreenPlugin<E extends Entity> extends PluginModel<
 	//TODO Change to generated serialVersionUID
 	private static final long serialVersionUID = 1L;
 
-	public lifelinesWelcomeScreenPlugin(String name, ScreenModel<E> parent)
+	public lifelinesWelcomeScreenPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

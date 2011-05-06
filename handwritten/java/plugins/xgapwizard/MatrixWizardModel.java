@@ -2,7 +2,16 @@ package plugins.xgapwizard;
 
 import java.util.List;
 
-public class MatrixWizardModel {
+import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.SimpleScreenModel;
+
+public class MatrixWizardModel extends SimpleScreenModel {
+
+	public MatrixWizardModel(ScreenController controller)
+	{
+		super(controller);
+		// TODO Auto-generated constructor stub
+	}
 
 	private List<DataInfo> dataInfo;
 	private boolean showVerified;
@@ -38,6 +47,13 @@ public class MatrixWizardModel {
 	public void setShowVerified(boolean showVerified)
 	{
 		this.showVerified = showVerified;
+	}
+
+	@Override
+	public boolean isVisible()
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 	

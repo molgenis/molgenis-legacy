@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.pheno.ObservationTarget;
@@ -27,7 +28,7 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 	private int selectedLocation; // not used at the moment
 	private CommonService ct = CommonService.getInstance();
 	
-	public LocationInfoPlugin(String name, ScreenModel<Entity> parent)
+	public LocationInfoPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

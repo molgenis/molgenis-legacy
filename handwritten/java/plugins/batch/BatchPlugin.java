@@ -14,6 +14,7 @@ import org.molgenis.batch.ui.form.BatchSelectForm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.GenericPlugin;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.CheckboxInput;
 import org.molgenis.framework.ui.html.Container;
@@ -34,7 +35,7 @@ public class BatchPlugin extends GenericPlugin {
     private String action = "init";
     private int batchId;
 
-    public BatchPlugin(String name, ScreenModel<Entity> parent)
+    public BatchPlugin(String name, ScreenController<?> parent)
     {
     	super(name, parent);
     	this.service   = new BatchService();

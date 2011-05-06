@@ -13,11 +13,11 @@ public class RInterpreterPlugin<E extends Entity> extends PluginModel<E>
 {
 
 	private static final long		serialVersionUID	= 8092415619774443643L;
-	private RInterpreterModel		screenModel				= new RInterpreterModel();
+	private RInterpreterModel		screenModel				= new RInterpreterModel(this);
 
-	public RInterpreterPlugin(String name, ScreenModel<E> parent)
+	public RInterpreterPlugin(String name, ScreenModel parent)
 	{
-		super(name, parent);
+		super(name, parent.getController());
 	}
 
 	@Override

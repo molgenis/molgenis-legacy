@@ -15,14 +15,14 @@ import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Tuple;
 
 public class MatrixAdmin extends PluginModel
 {
 
-	private MatrixAdminModel model = new MatrixAdminModel();
+	private MatrixAdminModel model = new MatrixAdminModel(this);
 	private DataMatrixHandler dmh = null;
 
 	public MatrixAdminModel getModel()
@@ -30,7 +30,7 @@ public class MatrixAdmin extends PluginModel
 		return model;
 	}
 
-	public MatrixAdmin(String name, ScreenModel parent)
+	public MatrixAdmin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

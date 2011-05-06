@@ -19,6 +19,7 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.pheno.Code;
@@ -50,7 +51,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 	private ObservationTarget subproject;
 	private List<Panel> groupList = new ArrayList<Panel>();
 
-	public ShowAnimalsInSubprojects(String name, ScreenModel<Entity> parent)
+	public ShowAnimalsInSubprojects(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

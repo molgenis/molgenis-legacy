@@ -22,7 +22,7 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.maze.BinaryChannelData;
 import org.molgenis.maze.ChannelMapping;
 import org.molgenis.util.Entity;
@@ -121,7 +121,7 @@ public class plotActogram extends PluginModel<Entity>
 		return serialVersionUID;
 	}
 
-	public plotActogram(String name, ScreenModel<Entity> parent)
+	public plotActogram(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

@@ -7,14 +7,13 @@
 
 package org.molgenis.mutation.ui.search;
 
-import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.util.Entity;
+import org.molgenis.framework.ui.ScreenController;
 
 public class Col7a1Search extends SearchPlugin
 {
 	private static final long serialVersionUID = 1162846311691838788L;
 
-	public Col7a1Search(String name, ScreenModel<Entity> parent)
+	public Col7a1Search(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 		this.GENENAME = "COL7A1";

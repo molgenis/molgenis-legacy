@@ -20,15 +20,15 @@ import org.molgenis.util.Tuple;
 
 public class ROnline<E extends Entity> extends PluginModel<E> {
 	private static final long serialVersionUID = -4016852670578378111L;
-	private ROnlineModel model = new ROnlineModel();
+	private ROnlineModel model = new ROnlineModel(this);
 	long timeOut = 60;
 
 	public ROnlineModel getModel() {
 		return model;
 	}
 
-	public ROnline(String name, ScreenModel<E> parent) {
-		super(name, parent);
+	public ROnline(String name, ScreenModel parent) {
+		super(name, parent.getController());
 	}
 
 	@Override

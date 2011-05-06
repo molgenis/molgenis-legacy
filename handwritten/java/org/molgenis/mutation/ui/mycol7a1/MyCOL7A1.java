@@ -11,8 +11,8 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.mutation.service.PatientService;
 import org.molgenis.mutation.ui.LimitOffsetPager;
 import org.molgenis.mutation.vo.MyCOL7A1VO;
@@ -29,7 +29,7 @@ public class MyCOL7A1 extends PluginModel<Entity>
 	private MyCOL7A1VO myCOL7A1VO = new MyCOL7A1VO();
 //	private LimitOffsetPager<PatientSummaryVO> pager;
 
-	public MyCOL7A1(String name, ScreenModel<Entity> parent)
+	public MyCOL7A1(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

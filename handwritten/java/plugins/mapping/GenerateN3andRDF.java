@@ -7,19 +7,14 @@
 
 package plugins.mapping;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Tuple;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.graph.query.Query;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -31,13 +26,13 @@ import com.itextpdf.text.pdf.hyphenation.TernaryTree.Iterator;
 
 import de.fuberlin.wiwiss.d2rq.GraphD2RQ;
 import de.fuberlin.wiwiss.d2rq.ModelD2RQ;
-import de.fuberlin.wiwiss.d2rq.vocab.D2RQ;
 import de.fuberlin.wiwiss.d2rq.map.Mapping;
 import de.fuberlin.wiwiss.d2rq.mapgen.MappingGenerator;
+import de.fuberlin.wiwiss.d2rq.vocab.D2RQ;
 
 public class GenerateN3andRDF extends PluginModel
 {
-	public GenerateN3andRDF(String name, ScreenModel parent)
+	public GenerateN3andRDF(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

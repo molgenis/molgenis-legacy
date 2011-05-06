@@ -14,8 +14,8 @@ import java.util.List;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.TextInput;
 import org.molgenis.framework.ui.html.XrefInput;
@@ -28,7 +28,7 @@ public class ApplyProtocolQuicklyOld extends PluginModel
 	String helloTo = "world";
 	Individual currentIndividual = null;
 
-	public ApplyProtocolQuicklyOld(String name, ScreenModel parent)
+	public ApplyProtocolQuicklyOld(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

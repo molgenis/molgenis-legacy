@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -50,7 +50,7 @@ public class DuplicatesPlugin extends PluginModel<Entity> {
 	// this.unique = unique;
 	// }
 
-	public DuplicatesPlugin(String name, ScreenModel<Entity> parent) {
+	public DuplicatesPlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
 	}
 

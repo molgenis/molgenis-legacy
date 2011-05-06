@@ -8,13 +8,13 @@
 package org.molgenis.mutation.ui.background;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Tuple;
 
 public class Chd7Background extends PluginModel
 {
-	public Chd7Background(String name, ScreenModel parent)
+	public Chd7Background(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

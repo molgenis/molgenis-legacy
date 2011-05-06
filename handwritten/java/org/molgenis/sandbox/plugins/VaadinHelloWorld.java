@@ -3,7 +3,7 @@ package org.molgenis.sandbox.plugins;
 import javax.servlet.http.HttpSession;
 
 import org.molgenis.framework.ui.FormModel;
-import org.molgenis.framework.ui.UserInterface;
+import org.molgenis.framework.ui.ApplicationController;
 import org.molgenis.organization.Investigation;
 
 import com.vaadin.Application;
@@ -36,7 +36,7 @@ public class VaadinHelloWorld extends Application
 		//todo: to really integrate we must have access to MOLGENIS user interface elements.
 		WebApplicationContext context = (WebApplicationContext) getContext();
 		HttpSession session = context.getHttpSession();
-		UserInterface<?> molgenis = (UserInterface<?>) session.getAttribute("application");
+		ApplicationController molgenis = (ApplicationController) session.getAttribute("application");
 
 		Window mainWindow = new Window("My first Vaadin Application");
 		this.setMainWindow(mainWindow);

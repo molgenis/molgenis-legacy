@@ -19,8 +19,8 @@ import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Tuple;
 
 import plugins.matrix.manager.Browser;
@@ -30,7 +30,7 @@ import plugins.matrix.manager.OverlibText;
 public class MatrixHeatmap extends PluginModel
 {
 
-	private MatrixHeatmapModel model = new MatrixHeatmapModel();
+	private MatrixHeatmapModel model = new MatrixHeatmapModel(this);
 	private DataMatrixHandler dmh = null;
 
 	public MatrixHeatmapModel getModel()
@@ -38,7 +38,7 @@ public class MatrixHeatmap extends PluginModel
 		return model;
 	}
 
-	public MatrixHeatmap(String name, ScreenModel parent)
+	public MatrixHeatmap(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

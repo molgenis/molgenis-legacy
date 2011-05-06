@@ -8,6 +8,7 @@
 package plugins.biobankers;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.util.Entity;
@@ -17,7 +18,7 @@ public class ConceptWiki extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -1267112728037749224L;
 
-	public ConceptWiki(String name, ScreenModel<Entity> parent)
+	public ConceptWiki(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

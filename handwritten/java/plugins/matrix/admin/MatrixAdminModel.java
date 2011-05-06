@@ -1,10 +1,17 @@
 package plugins.matrix.admin;
 
 import org.molgenis.data.Data;
+import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.SimpleScreenModel;
 
 
-public class MatrixAdminModel {
+public class MatrixAdminModel extends SimpleScreenModel {
 
+	public MatrixAdminModel(ScreenController controller)
+	{
+		super(controller);
+		// TODO Auto-generated constructor stub
+	}
 	private Data selectedData;
 	private boolean hasBackend;
 	
@@ -23,6 +30,12 @@ public class MatrixAdminModel {
 	public void setHasBackend(boolean hasBackend)
 	{
 		this.hasBackend = hasBackend;
+	}
+	@Override
+	public boolean isVisible()
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

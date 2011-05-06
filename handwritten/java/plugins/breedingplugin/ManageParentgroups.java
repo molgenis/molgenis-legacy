@@ -22,6 +22,7 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.pheno.ObservedValue;
@@ -46,7 +47,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 	private List<Panel> lineList;
 	private int line;
 	
-	public ManageParentgroups(String name, ScreenModel<Entity> parent)
+	public ManageParentgroups(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

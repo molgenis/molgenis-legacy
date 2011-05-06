@@ -9,22 +9,22 @@ package plugins.cluster.scriptmanager;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 public class ScriptManager extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 1502796634143996989L;
-	private ScriptManagerModel model = new ScriptManagerModel();
+	private ScriptManagerModel model = new ScriptManagerModel(null);
 
 	public ScriptManagerModel getModel()
 	{
 		return this.model;
 	}
 
-	public ScriptManager(String name, ScreenModel<Entity> parent)
+	public ScriptManager(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

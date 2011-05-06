@@ -8,19 +8,15 @@
 package org.molgenis.compute;
 
 
-import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.ui.FormModel;
-import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.pheno.ObservedValue;
-import org.molgenis.protocol.Protocol;
-import org.molgenis.protocol.WorkflowElement;
-import org.molgenis.util.Tuple;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.FormModel;
+import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.protocol.WorkflowElement;
+import org.molgenis.util.Tuple;
 
 public class RunButtonPlugin extends PluginModel
 {
@@ -28,7 +24,7 @@ public class RunButtonPlugin extends PluginModel
 	WorkflowElement startingWorkflowElement = null;
 	String nameOfCurrentJob = "";
 	
-	public RunButtonPlugin(String name, ScreenModel parent)
+	public RunButtonPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

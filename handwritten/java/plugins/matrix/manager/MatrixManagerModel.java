@@ -3,9 +3,16 @@ package plugins.matrix.manager;
 import java.util.Map;
 
 import org.molgenis.data.Data;
+import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.SimpleScreenModel;
 
-public class MatrixManagerModel {
+public class MatrixManagerModel extends SimpleScreenModel {
 
+	public MatrixManagerModel(ScreenController controller)
+	{
+		super(controller);
+		// TODO Auto-generated constructor stub
+	}
 	private Data selectedData;
 	private Browser browser;
 	
@@ -70,6 +77,12 @@ public class MatrixManagerModel {
 	}
 	public void setOverlibText(Map<String, String> overlibText) {
 		this.overlibText = overlibText;
+	}
+	@Override
+	public boolean isVisible()
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 	

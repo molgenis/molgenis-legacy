@@ -12,6 +12,7 @@ import java.util.List;
 import org.molgenis.animaldb.CustomLabelFeature;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.pheno.Measurement;
@@ -27,7 +28,7 @@ public class SetCustomLabelFeaturePlugin extends PluginModel<Entity>
 	private CommonService ct = CommonService.getInstance();
 	private List<Measurement> measurementList;
 	
-	public SetCustomLabelFeaturePlugin(String name, ScreenModel<Entity> parent)
+	public SetCustomLabelFeaturePlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

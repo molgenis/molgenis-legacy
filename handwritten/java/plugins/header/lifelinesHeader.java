@@ -8,8 +8,8 @@
 package plugins.header;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -20,7 +20,7 @@ public class lifelinesHeader extends PluginModel<Entity>
 	//TODO replace by generated one
 	private static final long serialVersionUID = 1L;
 
-	public lifelinesHeader(String name, ScreenModel<Entity> parent)
+	public lifelinesHeader(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

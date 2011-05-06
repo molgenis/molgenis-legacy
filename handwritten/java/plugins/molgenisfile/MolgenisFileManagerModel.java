@@ -1,9 +1,17 @@
 package plugins.molgenisfile;
 
 import org.molgenis.core.MolgenisFile;
+import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.SimpleScreenModel;
 
-public class MolgenisFileManagerModel
+public class MolgenisFileManagerModel extends SimpleScreenModel
 {
+
+	public MolgenisFileManagerModel(ScreenController controller)
+	{
+		super(controller);
+		// TODO Auto-generated constructor stub
+	}
 
 	private MolgenisFile molgenisFile;
 	private String db_path;
@@ -61,6 +69,13 @@ public class MolgenisFileManagerModel
 	public void setMolgenisFile(MolgenisFile molgenisFile)
 	{
 		this.molgenisFile = molgenisFile;
+	}
+
+	@Override
+	public boolean isVisible()
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

@@ -8,8 +8,8 @@
 package plugins.genotypedata;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -19,7 +19,7 @@ public class GenotypeData extends PluginModel<Entity>
 
 	private static final long serialVersionUID = -6215275790783203045L;
 
-	public GenotypeData(String name, ScreenModel<Entity> parent)
+	public GenotypeData(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

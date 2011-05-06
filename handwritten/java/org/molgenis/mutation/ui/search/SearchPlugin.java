@@ -20,8 +20,8 @@ import org.apache.regexp.RESyntaxException;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.mutation.Exon;
@@ -66,7 +66,7 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 	private MutationSearchCriteriaVO mutationSearchCriteriaVO = new MutationSearchCriteriaVO();
 	private PatientSearchCriteriaVO patientSearchCriteriaVO   = new PatientSearchCriteriaVO();
 
-	public SearchPlugin(String name, ScreenModel<Entity> parent)
+	public SearchPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 		//new Sub(this.getName() + "_sub1", this);
@@ -363,8 +363,8 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 //				this.getMessages().add(new ScreenMessage(el.toString(), false));
 		}
 		
-		for (ScreenModel<?> child : this.getChildren())
-			child.getController().handleRequest(db, request);
+		for (ScreenController<?> child : this.getController().getChildren())
+			child.handleRequest(db, request);
 	}
 
 	private void handleShowProteinDomain(Tuple request) throws Exception
@@ -465,8 +465,16 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 				logger.error(el.toString());
 		}
 		
-		for (ScreenModel<?> child : this.getChildren())
-			child.getController().reload(db);
+		for (ScreenController<?> child : this.getChildren())
+			try
+			{
+				child.reload(db);
+			}
+			catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
 	
 	@Override

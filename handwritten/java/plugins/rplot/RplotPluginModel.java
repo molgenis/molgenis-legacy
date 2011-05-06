@@ -6,8 +6,15 @@ import java.util.List;
 import matrix.AbstractDataMatrixInstance;
 
 import org.molgenis.data.Data;
+import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.SimpleScreenModel;
 
-public class RplotPluginModel {
+public class RplotPluginModel extends SimpleScreenModel {
+	public RplotPluginModel(ScreenController controller)
+	{
+		super(controller);
+		// TODO Auto-generated constructor stub
+	}
 	private List<String> matrixRows = new ArrayList<String>();
 	private List<String> matrixCols = new ArrayList<String>();
 	private Data selectedData;
@@ -104,6 +111,12 @@ public class RplotPluginModel {
 	public void setSelectedPlotType(String selectedPlotType)
 	{
 		this.selectedPlotType = selectedPlotType;
+	}
+	@Override
+	public boolean isVisible()
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 	

@@ -14,14 +14,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.DetectOS;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -30,7 +28,7 @@ import org.molgenis.util.Tuple;
 public class Settings<E extends Entity> extends PluginModel<E> {
 
 	private static final long serialVersionUID = 4037475429590054858L;
-	private SettingsModel model = new SettingsModel();
+	private SettingsModel model = new SettingsModel(this);
 	public static String systemTableName = "storagedirsettings_090527PBDB00QCGEXP4G";
 	//public static String systemTableName = "XGAPsettings_090527PBDB00QCGEXP4G";
 	// joeri: first of all, this name is quite arbitrary :)
@@ -44,7 +42,7 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 		return model;
 	}
 
-	public Settings(String name, ScreenModel<E> parent) {
+	public Settings(String name, ScreenController<?> parent) {
 		super(name, parent);
 	}
 

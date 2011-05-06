@@ -8,8 +8,8 @@
 package plugins.header;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -19,7 +19,7 @@ public class PhenoHeader extends PluginModel<Entity>
 
 	private static final long serialVersionUID = -4584366047710052650L;
 
-	public PhenoHeader(String name, ScreenModel<Entity> parent)
+	public PhenoHeader(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

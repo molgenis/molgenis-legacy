@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Entity;
@@ -24,7 +25,7 @@ public class EventViewerPlugin extends PluginModel<Entity>
 	private List<Integer> targetIdList;
 	private CommonService ct = CommonService.getInstance();
 	
-	public EventViewerPlugin(String name, ScreenModel<Entity> parent)
+	public EventViewerPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

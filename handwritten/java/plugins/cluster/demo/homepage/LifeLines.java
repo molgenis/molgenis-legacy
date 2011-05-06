@@ -8,13 +8,13 @@
 package plugins.cluster.demo.homepage;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Tuple;
 
 public class LifeLines extends PluginModel
 {
-	public LifeLines(String name, ScreenModel parent)
+	public LifeLines(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

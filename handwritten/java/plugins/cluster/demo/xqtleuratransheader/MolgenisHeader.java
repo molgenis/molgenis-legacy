@@ -8,8 +8,8 @@
 package plugins.cluster.demo.xqtleuratransheader;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -26,7 +26,7 @@ public class MolgenisHeader extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -7512376324040766332L;
 
-	public MolgenisHeader(String name, ScreenModel<Entity> parent)
+	public MolgenisHeader(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

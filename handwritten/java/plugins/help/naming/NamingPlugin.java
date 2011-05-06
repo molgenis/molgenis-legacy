@@ -10,10 +10,9 @@ package plugins.help.naming;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
-
 
 import decorators.NameConvention;
 
@@ -49,7 +48,7 @@ public class NamingPlugin extends PluginModel<Entity> {
 //		this.unique = unique;
 //	}
 
-	public NamingPlugin(String name, ScreenModel<Entity> parent) {
+	public NamingPlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
 	}
 

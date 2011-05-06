@@ -37,15 +37,13 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.util.DetectOS;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HtmlTools;
 import org.molgenis.util.Tuple;
-
-import app.servlet.MolgenisServlet;
 
 import plugins.cluster.demo.Millipede;
 import plugins.cluster.helper.Command;
@@ -56,8 +54,8 @@ import plugins.cluster.implementations.ClusterComputationResource;
 import plugins.cluster.implementations.DatabaseJobManager;
 import plugins.cluster.implementations.LocalComputationResource;
 import plugins.cluster.interfaces.ComputationResource;
+import app.servlet.MolgenisServlet;
 import decorators.NameConvention;
-import filehandling.generic.MolgenisFileHandler;
 
 
 /**
@@ -74,9 +72,9 @@ public class ClusterPlugin extends PluginModel<Entity>
 	private DatabaseJobManager djm = null;
 	private ComputationResource cr = null;
 	private DataMatrixHandler dmh = null;
-	private ClusterPluginModel model = new ClusterPluginModel();
+	private ClusterPluginModel model = new ClusterPluginModel(this);
 
-	public ClusterPlugin(String name, ScreenModel<Entity> parent)
+	public ClusterPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

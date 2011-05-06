@@ -15,8 +15,8 @@ import java.util.Map;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
@@ -42,7 +42,7 @@ public class InvestigationReport extends PluginModel<Entity>
 	List<ObservationTarget> targets = new ArrayList<ObservationTarget>();
 	Map<String, String> values = new LinkedHashMap<String, String>();
 
-	public InvestigationReport(String name, ScreenModel<Entity> parent)
+	public InvestigationReport(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

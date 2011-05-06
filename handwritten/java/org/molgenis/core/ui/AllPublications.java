@@ -9,12 +9,11 @@ package org.molgenis.core.ui;
 
 import java.util.List;
 
-
 import org.molgenis.core.service.PublicationService;
 import org.molgenis.core.vo.PublicationVO;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -24,7 +23,7 @@ public class AllPublications extends PluginModel<Entity>
 	private static final long serialVersionUID = -5252927756111530842L;
 	private List<PublicationVO> publications;
 
-	public AllPublications(String name, ScreenModel<Entity> parent)
+	public AllPublications(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

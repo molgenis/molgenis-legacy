@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.SimpleScreenModel;
 import org.molgenis.ngs.NgsSample;
 import org.molgenis.ngs.Project;
 import org.molgenis.pheno.ObservableFeature;
@@ -17,9 +19,15 @@ import org.molgenis.protocol.Protocol;
 
 import commonservice.CommonService;
 
-public class SampleViewerModel {
+public class SampleViewerModel extends SimpleScreenModel {
 
-    private List<NgsSample> samples = new ArrayList<NgsSample>();
+    public SampleViewerModel(ScreenController controller)
+	{
+		super(controller);
+		// TODO Auto-generated constructor stub
+	}
+
+	private List<NgsSample> samples = new ArrayList<NgsSample>();
     private List<ObservableFeature> features = new ArrayList<ObservableFeature>();
     private List<Project> projects = new ArrayList<Project>();
     private List<Protocol> protocols = new ArrayList<Protocol>();
@@ -113,6 +121,13 @@ public class SampleViewerModel {
 	valuesBySample = cq.getObservedValueBySampleAndFeatures(sampleId, features);
 	return valuesBySample;
     }
+
+	@Override
+	public boolean isVisible()
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
 
 
 }

@@ -17,6 +17,7 @@ import java.util.List;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.GenericPlugin;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
@@ -50,7 +51,7 @@ public class PrintLabelPlugin extends GenericPlugin
 	private TextParagraph text = null;
 	private CommonService cs = CommonService.getInstance();
 	
-	public PrintLabelPlugin(String name, ScreenModel<Entity> parent)
+	public PrintLabelPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

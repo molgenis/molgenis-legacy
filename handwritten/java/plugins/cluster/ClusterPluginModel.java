@@ -12,6 +12,8 @@ import org.molgenis.cluster.ParameterName;
 import org.molgenis.cluster.ParameterValue;
 import org.molgenis.cluster.Subjob;
 import org.molgenis.data.Data;
+import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.SimpleScreenModel;
 
 import plugins.cluster.helper.LoginSettings;
 
@@ -20,9 +22,14 @@ import plugins.cluster.helper.LoginSettings;
  * @author joerivandervelde
  *
  */
-public class ClusterPluginModel
+public class ClusterPluginModel extends SimpleScreenModel
 {
 	
+	public ClusterPluginModel(ScreenController controller)
+	{
+		super(controller);
+		// TODO Auto-generated constructor stub
+	}
 	String deployName;
 	
 	int maxSubjobs;
@@ -184,6 +191,12 @@ public class ClusterPluginModel
 	public void setDatavalues(List<DataValue> datavalues)
 	{
 		this.datavalues = datavalues;
+	}
+	@Override
+	public boolean isVisible()
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 	

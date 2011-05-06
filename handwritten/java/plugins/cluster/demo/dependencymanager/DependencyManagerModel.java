@@ -1,8 +1,15 @@
 package plugins.cluster.demo.dependencymanager;
 
-public class DependencyManagerModel
-{
+import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.SimpleScreenModel;
 
+public class DependencyManagerModel extends SimpleScreenModel
+{
+	public DependencyManagerModel(ScreenController controller)
+	{
+		super(controller);
+		// TODO Auto-generated constructor stub
+	}
 	private Boolean rqtl;
 	private Boolean bitops;
 	private Boolean rcurl;
@@ -40,6 +47,12 @@ public class DependencyManagerModel
 	public void setClusterjobs(Boolean clusterjobs)
 	{
 		this.clusterjobs = clusterjobs;
+	}
+	@Override
+	public boolean isVisible()
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 	

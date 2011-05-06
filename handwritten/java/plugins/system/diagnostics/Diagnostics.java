@@ -11,21 +11,21 @@ import java.io.PrintWriter;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 public class Diagnostics<E extends Entity> extends PluginModel<E> {
 
 	private static final long serialVersionUID = 2351186912680699440L;
-	private DiagnosticsModel model = new DiagnosticsModel();
+	private DiagnosticsModel model = new DiagnosticsModel(this);
 
 	public DiagnosticsModel getModel() {
 		return model;
 	}
 
-	public Diagnostics(String name, ScreenModel<E> parent) {
+	public Diagnostics(String name, ScreenController<?> parent) {
 		super(name, parent);
 	}
 

@@ -27,8 +27,8 @@ import org.molgenis.core.Publication;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.mutation.E_M;
 import org.molgenis.mutation.Exon;
@@ -70,7 +70,7 @@ public class Upload extends PluginModel<Entity>
 
 //	private UploadPatient uploadPatient = new UploadPatient();
 
-	public Upload(String name, ScreenModel<Entity> parent)
+	public Upload(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

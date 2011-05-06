@@ -8,8 +8,8 @@
 package plugin.welcome;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -18,7 +18,7 @@ public class WelcomeScreenPlugin extends PluginModel<Entity>
 
 	private static final long serialVersionUID = 252474570615053692L;
 
-	public WelcomeScreenPlugin(String name, ScreenModel<Entity> parent)
+	public WelcomeScreenPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

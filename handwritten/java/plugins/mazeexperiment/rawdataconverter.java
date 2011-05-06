@@ -10,8 +10,8 @@ package plugins.mazeexperiment;
 
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -55,7 +55,7 @@ public class rawdataconverter extends PluginModel<Entity>
 		this.dbval = dbval;
 	}
 
-	public rawdataconverter(String name, ScreenModel<Entity> parent)
+	public rawdataconverter(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

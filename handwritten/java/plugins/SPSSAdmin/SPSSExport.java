@@ -19,9 +19,9 @@ public class SPSSExport<E extends Entity> extends PluginModel<E>
 
 	private static final long serialVersionUID = -3120615290212884466L;
 
-	public SPSSExport(String name, ScreenModel<E> parent)
+	public SPSSExport(String name, ScreenModel parent)
 	{
-		super(name, parent);
+		super(name, parent.getController());
 	}
 
 	@Override

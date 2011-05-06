@@ -13,8 +13,8 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.model.MolgenisModel;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservationElement;
@@ -31,7 +31,7 @@ public class RichWizard extends PluginModel<Entity>
 	 * 
 	 */
 	private static final long serialVersionUID = 4843859850681009925L;
-	private RichWizardModel model = new RichWizardModel();
+	private RichWizardModel model = new RichWizardModel(this);
 	private JDBCMetaDatabase metadb;
 
 	public RichWizardModel getModel()
@@ -39,7 +39,7 @@ public class RichWizard extends PluginModel<Entity>
 		return model;
 	}
 
-	public RichWizard(String name, ScreenModel<Entity> parent)
+	public RichWizard(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

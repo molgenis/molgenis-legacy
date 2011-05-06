@@ -8,8 +8,8 @@
 package org.molgenis.mutation.ui.header;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -17,7 +17,7 @@ public class Col7a1Header extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 5933871906981851063L;
 
-	public Col7a1Header(String name, ScreenModel<Entity> parent)
+	public Col7a1Header(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
