@@ -15,6 +15,7 @@ import org.molgenis.framework.db.CsvToDatabase.IntegerWrapper;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.DatabaseMapper;
+import org.molgenis.framework.db.FileSourceHelper;
 import org.molgenis.framework.db.JoinQuery;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryImp;
@@ -625,5 +626,11 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	public List executeSQLQuery(String sqlQuery)
 	{
 		return em.createNativeQuery(sqlQuery).getResultList();
+	}
+	
+	@Override
+	public FileSourceHelper getFileSourceHelper() throws Exception
+	{
+		throw new UnsupportedOperationException();
 	}
 }

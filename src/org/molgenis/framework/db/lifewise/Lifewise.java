@@ -22,6 +22,7 @@ import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.FileSourceHelper;
 import org.molgenis.framework.db.JoinQuery;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryImp;
@@ -519,6 +520,12 @@ public class Lifewise implements Database
 
 	@Override
 	public EntityManager getEntityManager()
+	{
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public FileSourceHelper getFileSourceHelper() throws Exception
 	{
 		throw new UnsupportedOperationException();
 	}

@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
+import org.molgenis.framework.db.FileSourceHelper;
 import org.molgenis.framework.db.JoinQuery;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -392,6 +393,12 @@ public class InMemoryDatabase implements Database
 
 	@Override
 	public EntityManager getEntityManager()
+	{
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public FileSourceHelper getFileSourceHelper() throws Exception
 	{
 		throw new UnsupportedOperationException();
 	}

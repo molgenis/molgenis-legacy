@@ -13,20 +13,15 @@
 package ${package}.servlet;
 
 import java.io.File;
-
-import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
-
 import org.molgenis.framework.security.Login;
-
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.ApplicationController;
+import org.molgenis.framework.ui.UserInterface;
 import org.molgenis.framework.server.AbstractMolgenisServlet;
-
+import ${package}.<#if databaseImp = 'jpa'>Jpa<#else>JDBC</#if>Database;
 import org.molgenis.util.EmailService;
-import org.molgenis.util.HtmlTools;
 import org.molgenis.util.SimpleEmailService;
 <#if generate_BOT>
 import java.io.IOException;
@@ -35,7 +30,6 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import generic.JavaCompiler;
 import generic.JavaCompiler.CompileUnit;
 </#if>
@@ -47,11 +41,14 @@ import org.molgenis.framework.db.jdbc.JndiDataSourceWrapper;
 
 public class MolgenisServlet extends AbstractMolgenisServlet
 {
-	/** */
-	private static final long serialVersionUID = 3141439968743510237L;
-	/** */
 
-	public Database getDatabase() throws DatabaseException, NamingException
+	private static final long serialVersionUID = 3141439968743510237L;
+	
+	public MolgenisServlet(){
+		this.usedOptions = new UsedMolgenisOptions();
+	}
+
+	public Database getDatabase() throws Exception
 	{
 		<#if db_mode = 'standalone'>
 			BasicDataSource data_src = new BasicDataSource();
@@ -63,22 +60,19 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 			data_src.setMaxWait(1000);
 		
 			DataSource dataSource = (DataSource)data_src;
-			return new app.JDBCDatabase(dataSource, new File("attachedfiles"));
+			JDBCDatabase db = new ${package}.JDBCDatabase(dataSource, new File("${db_filepath}"));
+			db.getFileSourceHelper().setVariantId("${model.name}");
+			return db;
 		<#elseif databaseImp = 'jpa'>
-			return new ${package}.JpaDatabase();				
+			JpaDatabase db = new ${package}.JpaDatabase();
+			db.getFileSourceHelper().setVariantId("${model.name}");
+			return db;			
 		<#else>
-			//The datasource is created by the servletcontext!		
+			//The datasource is created by the servletcontext	
 			DataSource dataSource = (DataSource)getServletContext().getAttribute("DataSource");
-			return new ${package}.<#if databaseImp = 'jpa'>Jpa<#else>JDBC</#if>Database(dataSource, new File("${db_filepath}"));
-		
-			//TOMCAT
-			//String jndiName = "java:comp/env/jdbc/molgenisdb";
-			//JndiDataSourceWrapper source = new JndiDataSourceWrapper(jndiName);
-			//return new ${package}.JDBCDatabase(source, new File("${db_filepath}"));
-		
-			//GLASSFISH
-			//DataSource dataSource = (DataSource)getServletContext().getAttribute("DataSource");
-			//return new ${package}.JDBCDatabase(dataSource, new File("${db_filepath}"));
+			<#if databaseImp = 'jpa'>Jpa<#else>JDBC</#if>Database db = new ${package}.<#if databaseImp = 'jpa'>Jpa<#else>JDBC</#if>Database(dataSource, new File("${db_filepath}"));
+			db.getFileSourceHelper().setVariantId("${model.name}");
+			return db;
 		</#if>
 	}
 	
@@ -110,10 +104,6 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 	}
 
 	</#if>
-	
-	public static String getDBDriver(){
-		return "${db_driver}";
-	}
 
 	public Login createLogin( Database db, HttpServletRequest request )
 	{
@@ -124,11 +114,11 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 	</#if>
 	}
 
-	public ApplicationController createUserInterface( Login userLogin )
+	public UserInterface createUserInterface( Login userLogin )
 	{
-		ApplicationController app = new ApplicationController( userLogin);
-		app.getModel().setLabel("${model.label}");
-		app.getModel().setVersion("${version}");
+		UserInterface app = new UserInterface( userLogin);
+		app.setLabel("${model.label}");
+		app.setVersion("${version}");
 		
 <#if mail_smtp_user != '' && mail_smtp_au != ''>
 		EmailService service = new SimpleEmailService();
@@ -143,7 +133,7 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 		
 <#list model.userinterface.children as subscreen>
 <#assign screentype = Name(subscreen.getType().toString()?lower_case) />
-		new ${package}.ui.${JavaName(subscreen)}${screentype}<#if screentype == "Form">Controller</#if>(app);
+		new ${package}.ui.${JavaName(subscreen)}${screentype}<#if screentype == "Form">Model</#if>(app);
 </#list>
 		return app;
 	}
@@ -154,13 +144,9 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 	}	
 	
 	@Override
-	public Object getSoapImpl() throws DatabaseException, NamingException
+	public Object getSoapImpl() throws Exception
 	{
 		return new ${package}.servlet.SoapApi((Database)getDatabase());
 	}
-	
-	@Override
-	public boolean linkoutOverlay() {
-		return ${linkout_overlay?string};
-	}
+
 }
