@@ -115,20 +115,8 @@ Directory has contents?
 </font>
 
 <br><br>
-Try mkdir and test if this directory is a valid file path on the system:
-
-<input type="submit" value="Test dir" onclick="document.forms.${screen.name}.__action.value = 'testDirLocValid'; document.forms.${screen.name}.submit();"/>
-
-<br>
-
-Results: 
-<font style="font-size:medium; font-family: Courier, 'Courier New', monospace">
-	<#if model.mkDirSuccess?exists><#if model.mkDirSuccess == "success" || model.mkDirSuccess == "exists"><font style="color: green">${model.mkDirSuccess}</font><#else><font style="color: red">${model.mkDirSuccess}</font></#if><#else><font style="color: red">N/A</font></#if>
-</font>
-
-
-<br><br>
-Test if XGAP is allowed to write and read files from this directory:
+Try mkdir and test if this directory is a valid file path on the system,<br>
+and test if app is allowed to write and read files from this directory:
 
 <input type="submit" value="Test dir" onclick="document.forms.${screen.name}.__action.value = 'testDirRwValid'; document.forms.${screen.name}.submit();"/>
 
@@ -141,7 +129,7 @@ Results:
 
 <br><br>
 
-Total verification status: 
+Verification status: 
 <font style="font-size:medium; font-family: Courier, 'Courier New', monospace">
 	<#if model.verified?exists><#if model.verified == true><font style="color: green">VERIFIED</font><#else><font style="color: red">UNVERIFIED</font></#if><#else><font style="color: red">N/A</font></#if>
 </font>
