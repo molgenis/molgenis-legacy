@@ -9,17 +9,15 @@ import org.molgenis.core.vo.PublicationVO;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 
-import app.JDBCDatabase;
-
 public class PublicationService
 {
-	private JDBCDatabase db                              = null;
+	private Database db                                  = null;
 	private static PublicationService publicationService = null;
 
 	// private constructor, use singleton instance
 	private PublicationService(Database db)
 	{
-		this.db = (JDBCDatabase) db;
+		this.db = db;
 	}
 	
 	public static PublicationService getInstance(Database db)
