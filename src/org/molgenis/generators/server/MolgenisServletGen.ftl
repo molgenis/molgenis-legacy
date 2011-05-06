@@ -28,7 +28,9 @@ import org.molgenis.framework.server.AbstractMolgenisServlet;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.HtmlTools;
 import org.molgenis.util.SimpleEmailService;
-
+<#if generate_BOT>
+import ircbot.IRCHandler;
+</#if>
 <#if db_mode = 'standalone'>
 import org.apache.commons.dbcp.BasicDataSource;
 <#else>
@@ -71,6 +73,23 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 			//return new ${package}.JDBCDatabase(dataSource, new File("${db_filepath}"));
 		</#if>
 	}
+	
+	<#if generate_BOT>
+
+	public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
+		ServletConfig s = getServletConfig();
+		IRCHandler bot;
+		if((bot = (IRCHandler) s.getServletContext().getAttribute("bot")) == null){
+			s.getServletContext().setAttribute("bot", bot = new IRCHandler());
+			new Thread(bot).start();
+			System.err.println("Started a bot");
+		}else{
+			System.err.println("Found the bot");
+		}
+		super.service(request, response);
+	}
+
+	</#if>
 	
 	public static String getDBDriver(){
 		return "${db_driver}";

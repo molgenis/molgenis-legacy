@@ -152,6 +152,9 @@ public class MolgenisOptions
 	@Option(name = "generate_R", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Should R-interface be generated. Default: true.")
 	public boolean generate_R = true;
 	
+	@Option(name = "generate_BOT", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Should BOT be generated. Default: true.")
+	public boolean generate_BOT = false;
+	
 	@Option(name = "linkout_overlay", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Applies an optional overlay of your HTML with linkouts for popular identifier to online databases. Default: false")
 	public boolean linkout_overlay = false;
 	
