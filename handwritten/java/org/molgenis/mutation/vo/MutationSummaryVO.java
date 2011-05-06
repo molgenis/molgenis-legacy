@@ -16,6 +16,7 @@ public class MutationSummaryVO implements Serializable
 	private String codonChange;
 	private List<PatientSummaryVO> patients;
 	private List<MutationPhenotype> phenotypes;
+	private String pubmedURL;
 	private List<Publication> publications;
 	private ProteinDomain proteinDomain;
 	private Mutation firstMutation;
@@ -54,6 +55,12 @@ public class MutationSummaryVO implements Serializable
 	}
 	public void setPhenotypes(List<MutationPhenotype> phenotypes) {
 		this.phenotypes = phenotypes;
+	}
+	public String getPubmedURL() {
+	    return pubmedURL;
+	}
+	public void setPubmedURL(String pubmedURL) {
+	    this.pubmedURL = pubmedURL;
 	}
 	public List<Publication> getPublications() {
 		return publications;

@@ -18,16 +18,17 @@ import org.molgenis.submission.Submission;
 public class PatientSummaryVO implements Serializable
 {
 	private static final long serialVersionUID = -8983436185205230071L;
-	Patient patient;
-	Mutation mutation1;
-	Mutation mutation2;
-	MutationPhenotype phenotype;
-	PhenotypeDetails phenotypeDetails;
-	List<Publication> publications;
-	Submission submission;
-	MolgenisUser submitter;
-	I_F if_;
-	E_M em_;
+	private Patient patient;
+	private Mutation mutation1;
+	private Mutation mutation2;
+	private MutationPhenotype phenotype;
+	private PhenotypeDetails phenotypeDetails;
+	private String pubmedURL;
+	private List<Publication> publications;
+	private Submission submission;
+	private MolgenisUser submitter;
+	private I_F if_;
+	private E_M em_;
 
 	public PatientSummaryVO()
 	{
@@ -72,6 +73,12 @@ public class PatientSummaryVO implements Serializable
 	}
 	public void setPhenotypeDetails(PhenotypeDetails phenotypeDetails) {
 		this.phenotypeDetails = phenotypeDetails;
+	}
+	public String getPubmedURL() {
+	    return pubmedURL;
+	}
+	public void setPubmedURL(String pubmedURL) {
+	    this.pubmedURL = pubmedURL;
 	}
 	public List<Publication> getPublications() {
 		return publications;
