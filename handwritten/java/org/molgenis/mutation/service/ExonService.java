@@ -16,6 +16,8 @@ import org.molgenis.framework.db.jdbc.JDBCConnectionHelper;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.Gene;
 
+import app.JDBCDatabase;
+
 import org.molgenis.mutation.Exon;
 import org.molgenis.mutation.MutationGene;
 import org.molgenis.mutation.util.SequenceUtils;
@@ -26,13 +28,13 @@ public class ExonService implements Serializable
 {
 	private static final long serialVersionUID   = -6713716877840714621L;
 	private static ExonService exonService       = null;
-	private Database db                          = null;
+	private JDBCDatabase db                      = null;
 	private static final transient Logger logger = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());
 	
 	// private constructor, use singleton instance
 	private ExonService(Database db)
 	{
-		this.db =db;
+		this.db = (JDBCDatabase) db;
 	}
 	
 	public static ExonService getInstance(Database db)
@@ -263,24 +265,16 @@ public class ExonService implements Serializable
 
 	private Integer findExonIdByCdna_position(Integer cdna_position) throws DatabaseException
 	{
-//		List<Tuple> result = this.db.sql(String.format("SELECT id FROM Exon WHERE cdna_position <= %d AND %d <= cdna_position + length - 1", cdna_position, cdna_position));
-//		// Should be only one result if exons have been entered correctly
-//		return result.get(0).getInt("id");
-		
-		
-		javax.persistence.Query q = this.db.getEntityManager().createNativeQuery(String.format("SELECT id FROM Exon WHERE cdna_position <= %d AND %d <= cdna_position + length - 1", cdna_position, cdna_position));
-		return (Integer) q.getSingleResult();
+		List<Tuple> result = this.db.sql(String.format("SELECT id FROM Exon WHERE cdna_position <= %d AND %d <= cdna_position + length - 1", cdna_position, cdna_position));
+		// Should be only one result if exons have been entered correctly
+		return result.get(0).getInt("id");
 	}
 
 	private Integer findExonIdByGdna_position(Integer gdna_position) throws DatabaseException
 	{
-//		List<Tuple> result = this.db.sql(String.format("SELECT id FROM Exon WHERE (gdna_position - length) <= %d AND %d <= gdna_position", gdna_position, gdna_position));
-//		// Should be only one result if exons and introns have been entered correctly
-//		return result.get(0).getInt("id");
-		
-		
-		javax.persistence.Query q = this.db.getEntityManager().createNativeQuery(String.format("SELECT id FROM Exon WHERE (gdna_position - length) <= %d AND %d <= gdna_position", gdna_position, gdna_position));
-		return (Integer) q.getSingleResult();
+		List<Tuple> result = this.db.sql(String.format("SELECT id FROM Exon WHERE (gdna_position - length) <= %d AND %d <= gdna_position", gdna_position, gdna_position));
+		// Should be only one result if exons and introns have been entered correctly
+		return result.get(0).getInt("id");
 	}
 
 	public Integer findExonIdByPosition(String position) throws DatabaseException, RESyntaxException
@@ -380,7 +374,7 @@ public class ExonService implements Serializable
 		if (exon.getIsIntron())
 			return "";
 
-		MutationGene gene   = this.db.findById(MutationGene.class, exon.getGene_Id());
+		MutationGene gene   = this.db.findById(MutationGene.class, exon.getGene());
 		Integer cdnaStart = Math.abs(exon.getCdna_Position() - 1);
 		Integer cdnaEnd   = cdnaStart + exon.getLength();
 		
@@ -419,7 +413,7 @@ public class ExonService implements Serializable
 	 */
 	private String getNuclSequence(Exon exon) throws DatabaseException
 	{
-		MutationGene gene     = this.db.findById(MutationGene.class, exon.getGene_Id());
+		MutationGene gene     = this.db.findById(MutationGene.class, exon.getGene());
 		Integer gdnaStart = Math.abs(exon.getGdna_Position() - gene.getBpStart().intValue());
 		Integer gdnaEnd   = gdnaStart + exon.getLength();
 		return StringUtils.substring(gene.getSeq(), gdnaStart, gdnaEnd);
@@ -433,7 +427,7 @@ public class ExonService implements Serializable
 	 */
 	private String getNuclSequenceFlankLeft(Exon exon) throws DatabaseException
 	{
-		MutationGene gene    = this.db.findById(MutationGene.class, exon.getGene_Id());
+		MutationGene gene    = this.db.findById(MutationGene.class, exon.getGene());
 		Integer gdnaStart  = Math.abs(exon.getGdna_Position() - gene.getBpStart().intValue());
 		Integer flankEnd   = Math.abs(gdnaStart);
 		Integer flankStart = Math.abs(flankEnd - 10);
@@ -452,7 +446,7 @@ public class ExonService implements Serializable
 	 */
 	private String getNuclSequenceFlankRight(Exon exon) throws DatabaseException
 	{
-		MutationGene gene    = this.db.findById(MutationGene.class, exon.getGene_Id());
+		MutationGene gene    = this.db.findById(MutationGene.class, exon.getGene());
 		Integer gdnaStart  = Math.abs(exon.getGdna_Position() - gene.getBpStart().intValue());
 		Integer gdnaEnd    = gdnaStart + exon.getLength();
 		Integer flankStart = gdnaEnd;
