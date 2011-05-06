@@ -154,7 +154,7 @@ public class CsvBufferedReaderMultiline implements CsvReader
 			result.add("");
 		}
 		// if first element is nameless, assume first column header
-		else if (colnames.get(0).length() == 0)
+		else if (colnames.size() > 0 && colnames.get(0).length() == 0)
 		{
 			// colnames[0] = ROWNAME_COLUMN;
 		}
