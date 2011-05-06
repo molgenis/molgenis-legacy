@@ -83,7 +83,7 @@
 <td>+ <a href="molgenis.do?__target=${screen.name}&__action=showMutation&mid=${secondMutation.getIdentifier()}">${secondMutation.getIdentifier()}</a></td>
 <td>${secondMutation.getCdna_Notation()}</td>
 <td>${secondMutation.getAa_Notation()}</td>
-<td><a href="molgenis.do?__target=${screen.name}&__action=showExon&exon_id=${secondMutation.getExon()}&snpbool=1">${secondMutation.getExon_Name()}</a></td>
+<td><a href="molgenis.do?__target=${screen.name}&__action=showExon&exon_id=${secondMutation.getExon_Id()}&snpbool=1">${secondMutation.getExon_Name()}</a></td>
 <td>${secondMutation.getConsequence()}</td>
 <td>${secondMutation.getInheritance()}</td>
 <#else>
@@ -102,7 +102,7 @@
 <td colspan="3">
 <#if patientSummaryVO.publications?? && patientSummaryVO.publications?size &gt; 0>
 <#list patientSummaryVO.publications as publication>
-<a href="${publication.getPubmedID_Name()}" target="_new">${publication.getTitle()}</a></br>
+<a href="${patientSummaryVO.pubmedURL}${publication.getPubmedID_Name()}" target="_new">${publication.getTitle()}</a></br>
 </#list><#--<a href="${patientSummaryVO.publication.pdf}" target="_new"><img src="generated-res/img/pdf.gif"></a>-->
 <#elseif patientSummaryVO.submitter??>
 Unpublished<br/>

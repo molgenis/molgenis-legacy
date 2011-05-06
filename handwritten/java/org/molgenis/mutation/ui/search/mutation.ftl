@@ -24,8 +24,8 @@
 <tr class="form_listrow0"><th>Reported as SNP?</th><td><#if mutationSummaryVO.mutation.getReportedSNP()??>${mutationSummaryVO.mutation.getReportedSNP()?string("yes", "no")}</#if></td></tr>
 <tr class="form_listrow1"><th>Pathogenicity</th><td>${mutationSummaryVO.mutation.getPathogenicity()}</td></tr>
 <tr class="form_listrow0"><th>Found in number of patients</th><td><a href="molgenis.do?__target=${screen.name}&__action=findPatients&mid=${mutationSummaryVO.mutation.getIdentifier()}#results">${mutationSummaryVO.patients?size}</a></td></tr>
-<tr class="form_listrow1"><th>Phenotypes associated with mutation</th><td><#list mutationSummaryVO.phenotypes as phenotype>${phenotype.getName()}<br/></#list></td></tr>
-<tr class="form_listrow0"><th>References</th><td><#list mutationSummaryVO.publications as publication><a href="${publication.getPubmedID_Name()}" target="_new">${publication.getTitle()}</a><#--<a href="${publication.pdf}" target="_new"><img src="res/img/pdf.gif"></a>--><br/></#list></td></tr>
+<tr class="form_listrow1"><th>Phenotypes associated with mutation</th><td><#list mutationSummaryVO.phenotypes as phenotype>${phenotype.getMajortype()}, ${phenotype.getSubtype()}<br/></#list></td></tr>
+<tr class="form_listrow0"><th>References</th><td><#list mutationSummaryVO.publications as publication><a href="${mutationSummaryVO.pubmedURL}${publication.getPubmedID_Name()}" target="_new">${publication.getTitle()}</a><#--<a href="${publication.pdf}" target="_new"><img src="res/img/pdf.gif"></a>--><br/></#list></td></tr>
 <#--
 <tr class="form_listrow0"><th>Conserved amino acid?</th><td><#if mutationSummaryVO.mutation.conservedAA??>${mutationSummaryVO.mutation.conservedAA?string("yes", "no")}</#if></td></tr>
 <tr class="form_listrow1"><th>Predicted effect on splicing?</th><td><#if mutationSummaryVO.mutation.effectOnSplicing??>${mutationSummaryVO.mutation.effectOnSplicing?string("yes", "no")}</#if></td></tr>

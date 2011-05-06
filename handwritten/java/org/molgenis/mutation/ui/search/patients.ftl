@@ -70,7 +70,7 @@
 <td rowspan="2">
 <#if patientSummaryVO.publications?? && patientSummaryVO.publications?size &gt; 0>
 <#list patientSummaryVO.publications as publication>
-	<a href="${publication.getPubmedID_Name()}" target="_new">${publication.getTitle()}</a><br/>
+	<a href="${patientSummaryVO.pubmedURL}${publication.getPubmedID_Name()}" target="_new">${publication.getTitle()}</a><br/>
 </#list>
 <#elseif patientSummaryVO.submitter??>
 Unpublished<br/>
