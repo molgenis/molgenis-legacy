@@ -1,4 +1,5 @@
 <#include "GeneratorHelper.ftl">
+SET WRITE_DELAY FALSE;
 INSERT INTO MolgenisRole (__Type, id, name) values ('MolgenisGroup', 1, 'system');
 INSERT INTO MolgenisRole (__Type, id, name) values ('MolgenisUser', 2, 'admin');
 INSERT INTO MolgenisRole (__Type, id, name) values ('MolgenisUser', 3, 'anonymous');
@@ -22,11 +23,9 @@ INSERT INTO MolgenisPermission (role_, entity, permission) SELECT 2, id, "write"
 INSERT INTO MolgenisPermission (role_, entity, permission) SELECT 2, id, "write" FROM MolgenisEntity WHERE MolgenisEntity.name = 'MolgenisUserGroupLink';
 INSERT INTO MolgenisPermission (role_, entity, permission) SELECT 3, id, "read" FROM MolgenisEntity WHERE MolgenisEntity.name = 'MolgenisUser';
 -->
-
 <#list model.getConcreteEntities() as entity>
 INSERT INTO MolgenisEntity(name, type_, classname) values ('${JavaName(entity)}', 'ENTITY', '${entity.namespace}.${JavaName(entity)}');
 </#list>
-
 <#assign schema = model.getUserinterface()>
 <#list schema.getAllChildren() as screen>
 <#-- DO YOU MEAN... if screen.getType() == "FORM" ?? -->
@@ -35,11 +34,8 @@ INSERT INTO MolgenisEntity(name, type_, classname) values ('${screen.getName()}$
 <#else>
 INSERT INTO MolgenisEntity(name, type_, classname) values ('${screen.getName()}${screen.getType()?lower_case?cap_first}', '${screen.getType()}', 'app.ui.${screen.getName()}${screen.getType()?lower_case?cap_first}');
 </#if>
-
 </#list>
-
 INSERT INTO MolgenisPermission (role_, entity, permission) SELECT 3, id, 'read' FROM MolgenisEntity WHERE MolgenisEntity.name = 'UserLoginPlugin';
-
 <#list schema.getAllChildren() as screen>
 	<#if screen.getGroup()?exists>
 	<#-- DO YOU MEAN... if screen.getType() == "FORM" ?? -->
