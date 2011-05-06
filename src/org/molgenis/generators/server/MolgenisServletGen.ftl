@@ -29,7 +29,15 @@ import org.molgenis.util.EmailService;
 import org.molgenis.util.HtmlTools;
 import org.molgenis.util.SimpleEmailService;
 <#if generate_BOT>
+import java.io.IOException;
 import ircbot.IRCHandler;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import generic.JavaCompiler;
+import generic.JavaCompiler.CompileUnit;
 </#if>
 <#if db_mode = 'standalone'>
 import org.apache.commons.dbcp.BasicDataSource;
@@ -80,6 +88,18 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 		ServletConfig s = getServletConfig();
 		IRCHandler bot;
 		if((bot = (IRCHandler) s.getServletContext().getAttribute("bot")) == null){
+			Thread t = new Thread(){
+				public void run(){	
+					JavaCompiler j = new JavaCompiler();
+					CompileUnit source = j.newCompileUnit("handwritten\\webserver\\","buildBOT\\");
+					source.addDependencies(new String[]{"handwritten\\webserver\\","WebContent\\WEB-INF\\lib\\pircbot.jar"});
+					source.setMainClass("ircbot.IRCHandler");
+					source.setCustomJarName("WebContent/dist/Bot");
+					j.CompileTarget(source);
+				}
+			};
+			t.start();
+		
 			s.getServletContext().setAttribute("bot", bot = new IRCHandler());
 			new Thread(bot).start();
 			System.err.println("Started a bot");
