@@ -23,6 +23,9 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.jdbc.JDBCConnectionHelper;
 
+
+import app.JDBCDatabase;
+
 import org.molgenis.mutation.Exon;
 import org.molgenis.mutation.Exon_ProteinDomain;
 import org.molgenis.mutation.MutationGene;
@@ -40,12 +43,11 @@ import org.molgenis.mutation.vo.MutationUploadVO;
 import org.molgenis.mutation.vo.PatientSearchCriteriaVO;
 import org.molgenis.mutation.vo.PatientSummaryVO;
 import org.molgenis.core.Publication;
-import org.molgenis.core.service.PublicationService;
 
 public class MutationService implements Serializable
 {
 	private static final long serialVersionUID        = -5234460093223923754L;
-	private Database db                               = null;
+	private JDBCDatabase db                           = null;
 	private static MutationService mutationService    = null;
 	private HashMap<Integer, MutationSummaryVO> cache = new HashMap<Integer, MutationSummaryVO>();
 	private static final transient Logger logger      = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());
@@ -53,7 +55,7 @@ public class MutationService implements Serializable
 	// private constructor, use singleton instance
 	private MutationService(Database db)
 	{
-		this.db = db;
+		this.db = (JDBCDatabase) db;
 	}
 	
 	public static MutationService getInstance(Database db)
@@ -141,17 +143,11 @@ public class MutationService implements Serializable
 		if (criteria.getProteinDomainId() != null)
 		{
 			//TODO: add proper join capability
-//			List<Exon_ProteinDomain> epds = this.db.query(Exon_ProteinDomain.class).equals(Exon_ProteinDomain.PROTEINDOMAIN, criteria.getProteinDomainId()).find();
-//			//List<Tuple> epds      = this.db.sql(String.format("SELECT Exon FROM Exon_proteinDomain WHERE proteinDomain = %d", criteria.getProteinDomainId()));
-//			List<Integer> exonIds = new ArrayList<Integer>();
-//			for (Exon_ProteinDomain epd : epds)
-//				exonIds.add(epd.getExon_Id());
-//			if (exonIds.size() > 0)
-//				query = query.in(Mutation.EXON, exonIds);
-			List<Exon> exons = this.db.query(Exon.class).equals(Exon.PROTEINDOMAIN, criteria.getProteinDomainId()).find();
+			List<Exon_ProteinDomain> epds = this.db.query(Exon_ProteinDomain.class).equals(Exon_ProteinDomain.PROTEINDOMAIN, criteria.getProteinDomainId()).find();
+			//List<Tuple> epds      = this.db.sql(String.format("SELECT Exon FROM Exon_proteinDomain WHERE proteinDomain = %d", criteria.getProteinDomainId()));
 			List<Integer> exonIds = new ArrayList<Integer>();
-			for (Exon exon : exons)
-				exonIds.add(exon.getId());
+			for (Exon_ProteinDomain epd : epds)
+				exonIds.add(epd.getExon_Id());
 			if (exonIds.size() > 0)
 				query = query.in(Mutation.EXON, exonIds);
 		}
@@ -215,8 +211,6 @@ public class MutationService implements Serializable
 		List<PatientSummaryVO> patientSummaryVOs  = patientService.findPatients(criteria);
 
 		mutationSummaryVO.setPatients(patientSummaryVOs);
-
-		mutationSummaryVO.setPubmedURL(PublicationService.PUBMED_URL);
 		
 		HashMap<Integer, MutationPhenotype> phenotypeHash = new HashMap<Integer, MutationPhenotype>();
 		HashMap<Integer, Publication> publicationHash     = new HashMap<Integer, Publication>();
@@ -241,7 +235,7 @@ public class MutationService implements Serializable
 
 //		Mutation codonMutation                    = new Mutation();
 //		codonMutation.setCdna_position(mutation.getCdna_position());
-		Exon exon = this.db.findById(Exon.class, mutation.getExon_Id());
+		Exon exon = this.db.findById(Exon.class, mutation.getExon());
 		if (!exon.getIsIntron())
 			mutationSummaryVO.setCodonMutations(this.db.query(Mutation.class).equals(Mutation.AA_POSITION, mutation.getAa_Position()).find());
 
@@ -309,13 +303,8 @@ public class MutationService implements Serializable
 	 */
 	public int getNumUnpublishedMutations() throws DatabaseException
 	{
-//		//TODO: Outer join is faster, but is syntax standardized?
-//		return this.db.sql("SELECT DISTINCT id FROM Mutation WHERE NOT EXISTS (SELECT id FROM Patient, Patient_publications WHERE Patient.id = Patient_publications.Patient AND (Patient.Mutation1 = Mutation.id OR Patient.Mutation2 = Mutation.id))").size();
-		
-		
-		
-		javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT COUNT(id) FROM Mutation WHERE NOT EXISTS (SELECT id FROM Patient, Patient_publications WHERE Patient.id = Patient_publications.Patient AND (Patient.Mutation1 = Mutation.id OR Patient.Mutation2 = Mutation.id))");
-		return ((Long)q.getSingleResult()).intValue();
+		//TODO: Outer join is faster, but is syntax standardized?
+		return this.db.sql("SELECT DISTINCT id FROM Mutation WHERE NOT EXISTS (SELECT id FROM Patient, Patient_publications WHERE Patient.id = Patient_publications.Patient AND (Patient.Mutation1 = Mutation.id OR Patient.Mutation2 = Mutation.id))").size();
 	}
 
 	/**
@@ -354,17 +343,13 @@ public class MutationService implements Serializable
 	 */
 	public List<String> getConsequences() throws SQLException, DatabaseException
 	{
-//		ArrayList<String> consequences = new ArrayList<String>();
-//		
-//		ResultSet rs = db.executeQuery("SELECT DISTINCT consequence FROM Mutation", (QueryRule[]) null);
-//		while (rs.next())
-//			consequences.add(rs.getString(1));
-//
-//		return consequences;
+		ArrayList<String> consequences = new ArrayList<String>();
 		
-		
-		javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT DISTINCT consequence FROM Mutation");
-		return q.getResultList();
+		ResultSet rs = db.executeQuery("SELECT DISTINCT consequence FROM Mutation", (QueryRule[]) null);
+		while (rs.next())
+			consequences.add(rs.getString(1));
+
+		return consequences;
 	}
 
 	/**
@@ -376,17 +361,13 @@ public class MutationService implements Serializable
 	 */
 	public List<String> getMutationTypes() throws SQLException, DatabaseException
 	{
-//		ArrayList<String> types = new ArrayList<String>();
-//
-//		ResultSet rs = db.executeQuery("SELECT DISTINCT type_ FROM Mutation", (QueryRule[]) null);
-//		while (rs.next())
-//			types.add(rs.getString(1));
-//
-//		return types;
-		
-		
-		javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT DISTINCT type_ FROM Mutation");
-		return q.getResultList();
+		ArrayList<String> types = new ArrayList<String>();
+
+		ResultSet rs = db.executeQuery("SELECT DISTINCT type_ FROM Mutation", (QueryRule[]) null);
+		while (rs.next())
+			types.add(rs.getString(1));
+
+		return types;
 	}
 
 	/**
@@ -443,7 +424,7 @@ public class MutationService implements Serializable
 		if (mutation.getAa_Position() == null || mutation.getAa_Position() == 0 || StringUtils.isEmpty(mutation.getCodonchange()))
 			return "";
 
-		MutationGene gene = this.db.findById(MutationGene.class, mutation.getGene_Id());
+		MutationGene gene = this.db.findById(MutationGene.class, mutation.getGene());
 		String splicedSeq = SequenceUtils.splice(gene.getSeq());
 		return SequenceUtils.getCodon(splicedSeq, mutation.getAa_Position()) + ">" + mutation.getCodonchange();
 	}
