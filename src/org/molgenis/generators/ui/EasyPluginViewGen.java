@@ -62,9 +62,9 @@ public class EasyPluginViewGen extends Generator
 					//return;
 				} catch (Exception e)
 				{
-					logger.error("skipped plugin "+plugin.getName()+" as it is on the classpath");
+					logger.debug("skipped plugin "+plugin.getName()+" as it is on the classpath");
 				}
-				logger.error("tested classforname on "+fullKlazzName+": "+c);
+				logger.debug("tested classforname on "+fullKlazzName+": "+c);
 			
 				
 				
@@ -88,7 +88,7 @@ public class EasyPluginViewGen extends Generator
 				}
 				else
 				{
-					logger.warn("Skipped because exists: " + targetFile);
+					logger.debug("Skipped because exists: " + targetFile);
 				}
 			}
 			

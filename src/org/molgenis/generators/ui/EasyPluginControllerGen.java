@@ -65,9 +65,9 @@ public class EasyPluginControllerGen extends Generator
 					//return;
 				} catch (ClassNotFoundException e)
 				{
-					logger.error("skipped plugin "+plugin.getName()+" as it is on the classpath");
+					logger.debug("skipped plugin "+plugin.getName()+" as it is on the classpath");
 				}
-				logger.error("tested classforname on "+fullKlazzName+": "+c);
+				logger.debug("tested classforname on "+fullKlazzName+": "+c);
 				
 				if (!targetFile.exists() && c == null)
 				{
