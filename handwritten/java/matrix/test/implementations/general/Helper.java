@@ -576,7 +576,11 @@ public class Helper
 
 	public static boolean storageDirsAreAvailable(Database db) throws Exception
 	{
-		return new MolgenisFileHandler(db).hasFileStorage();
+		if(true)
+			throw new RuntimeException("COMMENTED OUT UNCOMPILING CODE");
+
+		//return new MolgenisFileHandler(db).hasFileStorage();
+		return false;
 
 	}
 }

@@ -7,14 +7,13 @@
 
 package plugins.system.settings;
 
-import java.io.File;
 import java.io.PrintWriter;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.FileSourceHelper;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -24,11 +23,14 @@ public class Settings<E extends Entity> extends PluginModel<E> {
 	private static final long serialVersionUID = 4037475429590054858L;
 	private FileSourceHelper model;
 
-	public FileSourceHelper getModel() {
+	public FileSourceHelper getModel2() {
+		if(true)
+			throw new RuntimeException("CHANGED METHOD NAME BECAUSE OF INCOMPATILITY WITH super.getModel()");
+
 		return model;
 	}
 
-	public Settings(String name, ScreenModel<E> parent) {
+	public Settings(String name, ScreenController<?> parent) {
 		super(name, parent);
 	}
 

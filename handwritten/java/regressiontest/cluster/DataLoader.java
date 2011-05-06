@@ -27,8 +27,10 @@ public class DataLoader
 		try
 		{
 			MolgenisFileHandler xfh = new MolgenisFileHandler(db);
-			File storage = xfh.getFileStorage();
-			result.add("Storage location found. Path: " + storage.getAbsolutePath());
+			if(true)
+				throw new RuntimeException("COMMENTED OUT UNCOMPILING CODE");
+			//File storage = xfh.getFileStorage();
+			//result.add("Storage location found. Path: " + storage.getAbsolutePath());
 		}
 		catch (Exception e)
 		{

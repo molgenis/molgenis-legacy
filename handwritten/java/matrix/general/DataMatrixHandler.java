@@ -26,8 +26,6 @@ import org.molgenis.util.ValueLabel;
 
 import app.JDBCDatabase;
 import filehandling.generic.MolgenisFileHandler;
-import filehandling.generic.BasicFileHandler.XGAPStorageException;
-import filehandling.generic.MolgenisFileHandler.TypeUnknownException;
 
 public class DataMatrixHandler extends MolgenisFileHandler
 {
@@ -99,14 +97,10 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * then remove source, then remove 'Data'.
 	 * 
 	 * @param dm
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 * @throws TypeUnknownException
+	 * @throws Exception 
 	 * @throws XGAPStorageException
-	 * @throws IOException
 	 */
-	public void deleteDataMatrix(Data dm) throws DatabaseException, ParseException, TypeUnknownException,
-			XGAPStorageException, IOException
+	public void deleteDataMatrix(Data dm) throws Exception
 	{
 		try
 		{
@@ -124,14 +118,10 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * MolgenisFile subclass. (ie. 'Binary', 'CSV')
 	 * 
 	 * @param dm
-	 * @throws IOException
+	 * @throws Exception 
 	 * @throws XGAPStorageException
-	 * @throws TypeUnknownException
-	 * @throws ParseException
-	 * @throws DatabaseException
 	 */
-	public void deleteDataMatrixSource(Data dm) throws DatabaseException, ParseException, TypeUnknownException,
-			XGAPStorageException, IOException
+	public void deleteDataMatrixSource(Data dm) throws Exception
 	{
 		String verifiedSource = findSource(dm);
 
@@ -169,15 +159,10 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * 
 	 * @param data
 	 * @return
-	 * @throws FileNotFoundException
-	 * @throws TypeUnknownException
+	 * @throws Exception 
 	 * @throws XGAPStorageException
-	 * @throws IOException
-	 * @throws DatabaseException
-	 * @throws ParseException
 	 */
-	public boolean hasSource(Data data) throws FileNotFoundException, TypeUnknownException, XGAPStorageException,
-			IOException, DatabaseException, ParseException
+	public boolean hasSource(Data data) throws Exception
 	{
 		if (data.getStorage().equals("Database"))
 		{
@@ -203,14 +188,10 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * @param data
 	 * @param source
 	 * @return
-	 * @throws DatabaseException
-	 * @throws TypeUnknownException
+	 * @throws Exception 
 	 * @throws XGAPStorageException
-	 * @throws IOException
-	 * @throws ParseException
 	 */
-	public boolean isDataStoredIn(Data data, String source) throws DatabaseException, TypeUnknownException,
-			XGAPStorageException, IOException, ParseException
+	public boolean isDataStoredIn(Data data, String source) throws Exception
 	{
 		ArrayList<String> options = new ArrayList<String>();
 		for (ValueLabel option : data.getStorageOptions())
@@ -345,14 +326,10 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * 
 	 * @param data
 	 * @return
-	 * @throws FileNotFoundException
-	 * @throws TypeUnknownException
+	 * @throws Exception 
 	 * @throws XGAPStorageException
-	 * @throws IOException
-	 * @throws DatabaseException
 	 */
-	public File findSourceFile(Data data) throws FileNotFoundException, TypeUnknownException, XGAPStorageException,
-			IOException, DatabaseException
+	public File findSourceFile(Data data) throws Exception
 	{
 		List<? extends Entity> mfSubclasses = this.getDb().find(
 				this.getDb().getClassForName(data.getStorage() + "DataMatrix"));
@@ -378,14 +355,10 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * 
 	 * @param data
 	 * @return
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 * @throws TypeUnknownException
+	 * @throws Exception 
 	 * @throws XGAPStorageException
-	 * @throws IOException
 	 */
-	public String findSource(Data data) throws DatabaseException, ParseException, TypeUnknownException,
-			XGAPStorageException, IOException
+	public String findSource(Data data) throws Exception
 	{
 		
 		ArrayList<String> options = new ArrayList<String>();
@@ -404,8 +377,7 @@ public class DataMatrixHandler extends MolgenisFileHandler
 		return "null";
 	}
 
-	public static void main(String[] args) throws FileNotFoundException, IOException, DatabaseException,
-			TypeUnknownException, XGAPStorageException, ParseException
+	public static void main(String[] args) throws Exception
 	{
 		Database db = new JDBCDatabase("gcc.properties");
 		DataMatrixHandler mh = new DataMatrixHandler(db);
