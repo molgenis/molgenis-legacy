@@ -16,7 +16,7 @@ public class PermissionManagementModel {
 
 	//Danny: This was crashing freemarker, if we can't reach the database we 
 	//still need to have a default role so we don't blow up the template
-    private MolgenisRole role = new MolgenisRole(999,"unk");
+    private MolgenisRole role = new MolgenisRole();
     private String action = "init";
     private int permId = 0;
     
