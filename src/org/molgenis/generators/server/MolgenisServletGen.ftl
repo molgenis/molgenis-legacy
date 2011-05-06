@@ -114,11 +114,11 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 	</#if>
 	}
 
-	public UserInterface createUserInterface( Login userLogin )
+	public ApplicationController createUserInterface( Login userLogin )
 	{
-		UserInterface app = new UserInterface( userLogin);
-		app.setLabel("${model.label}");
-		app.setVersion("${version}");
+		ApplicationController app = new ApplicationController( userLogin);
+		app.getModel().setLabel("${model.label}");
+		app.getModel().setVersion("${version}");
 		
 <#if mail_smtp_user != '' && mail_smtp_au != ''>
 		EmailService service = new SimpleEmailService();
@@ -133,7 +133,7 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 		
 <#list model.userinterface.children as subscreen>
 <#assign screentype = Name(subscreen.getType().toString()?lower_case) />
-		new ${package}.ui.${JavaName(subscreen)}${screentype}<#if screentype == "Form">Model</#if>(app);
+		new ${package}.ui.${JavaName(subscreen)}${screentype}<#if screentype == "Form">Controller</#if>(app);
 </#list>
 		return app;
 	}
