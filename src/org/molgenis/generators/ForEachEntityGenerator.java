@@ -75,7 +75,7 @@ public abstract class ForEachEntityGenerator extends Generator
 						templateArgs.put("model", model);
 						templateArgs.put("db_driver", options.db_driver);
 						templateArgs.put("template", template.getName());
-						templateArgs.put("file", targetDir + "/" + GeneratorHelper.firstToUpper(entity.getName())
+						templateArgs.put("file", targetDir + "/" + GeneratorHelper.getJavaName(entity.getName())
 								+ getType() + getExtension());
 						templateArgs.put("package", packageName);
 
