@@ -14,6 +14,8 @@ public class PublicationService
 	private Database db                                  = null;
 	private static PublicationService publicationService = null;
 
+	public static final String PUBMED_URL                = "http://www.ncbi.nlm.nih.gov/pubmed/";
+
 	// private constructor, use singleton instance
 	private PublicationService(Database db)
 	{
@@ -47,7 +49,7 @@ public class PublicationService
 	{
 		PublicationVO publicationVO = new PublicationVO();
 		publicationVO.setName(publication.getName());
-		publicationVO.setPubmed("http://www.ncbi.nlm.nih.gov/pubmed/" + publication.getPubmedID_Name());
+		publicationVO.setPubmed(PublicationService.PUBMED_URL + publication.getPubmedID_Name());
 		publicationVO.setStatus(publication.getStatus_Name());
 		publicationVO.setTitle(publication.getName());
 		
