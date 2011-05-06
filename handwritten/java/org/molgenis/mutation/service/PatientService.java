@@ -1,24 +1,14 @@
 package org.molgenis.mutation.service;
 
-import app.JpaDatabase;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 
 import javax.xml.bind.JAXBException;
 
@@ -28,12 +18,10 @@ import org.apache.commons.collections.CollectionUtils;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.core.Publication;
-import org.molgenis.core.service.PublicationService;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
-import org.molgenis.framework.db.jpa.JPAQueryGeneratorUtil;
 import org.molgenis.mutation.Antibody;
 import org.molgenis.mutation.E_M;
 import org.molgenis.mutation.I_F;
@@ -41,7 +29,6 @@ import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.MutationPhenotype;
 import org.molgenis.mutation.Patient;
 import org.molgenis.mutation.PhenotypeDetails;
-import org.molgenis.mutation.db.PatientJpaMapper;
 import org.molgenis.mutation.excel.UploadBatchExcelReader;
 import org.molgenis.mutation.util.PatientComparator;
 import org.molgenis.mutation.vo.PatientSearchCriteriaVO;
@@ -52,17 +39,19 @@ import org.molgenis.submission.Submission;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
+import app.JDBCDatabase;
+
 public class PatientService implements Serializable
 {
-        private static final long serialVersionUID       = -5343468595949980106L;
-	private Database db                              = null;
+	private static final long serialVersionUID       = -5343468595949980106L;
+	private JDBCDatabase db                          = null;
 	private static PatientService patientService     = null;
 	private HashMap<Integer, PatientSummaryVO> cache = new HashMap<Integer, PatientSummaryVO>();
 
 	// private constructor, use singleton instance
 	private PatientService(Database db)
 	{
-		this.db = db;
+		this.db = (JDBCDatabase) db;
 	}
 	
 	public static PatientService getInstance(Database db)
@@ -80,10 +69,7 @@ public class PatientService implements Serializable
 		if (criteria.getPid() != null)
 			query = query.equals(Patient.IDENTIFIER, criteria.getPid());
 		if (criteria.getMutationId() != null)
-		{
-			Mutation mutation = this.db.findById(Mutation.class, criteria.getMutationId());
-			query = query.equals(Patient.MUTATION1, mutation).or().equals(Patient.MUTATION2, mutation);
-		}
+			query = query.equals(Patient.MUTATION1, criteria.getMutationId()).or().equals(Patient.MUTATION2, criteria.getMutationId());
 		if (criteria.getMid() != null)
 		{
 			List<Mutation> mutations = this.db.query(Mutation.class).equals(Mutation.IDENTIFIER, criteria.getMid()).find();
@@ -95,7 +81,7 @@ public class PatientService implements Serializable
 		}
 		if (criteria.getConsent() != null)
 			if (criteria.getConsent())
-				query = query.in(Patient.CONSENT, Arrays.asList(new String[] { "publication", "yes" }));
+				query = query.equals(Patient.CONSENT, "publication").or().equals(Patient.CONSENT, "yes");
 			else
 				query = query.equals(Patient.CONSENT, "no");
 		if (criteria.getSubmissionId() != null)
@@ -147,12 +133,8 @@ public class PatientService implements Serializable
 	 */
 	public int getNumUnpublishedPatients() throws DatabaseException, ParseException
 	{
-//		//TODO: Outer join is faster, but is syntax standardized?
-//		return this.db.sql("SELECT DISTINCT id FROM Patient WHERE NOT EXISTS (SELECT id FROM Patient_publications WHERE Patient.id = Patient_publications.Patient)").size();
-		
-		
-		javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT COUNT(id) FROM Patient WHERE NOT EXISTS (SELECT id FROM Patient_publications WHERE Patient.id = Patient_publications.Patient)");
-		return Integer.valueOf(q.getSingleResult().toString());
+		//TODO: Outer join is faster, but is syntax standardized?
+		return this.db.sql("SELECT DISTINCT id FROM Patient WHERE NOT EXISTS (SELECT id FROM Patient_publications WHERE Patient.id = Patient_publications.Patient)").size();
 	}
 
 	/**
@@ -266,7 +248,7 @@ public class PatientService implements Serializable
 						publicationIds.add(this.db.query(Publication.class).equals(Publication.PUBMEDID_NAME, publication.getPubmedID_Name()).find().get(0).getId());
 					}
 				}
-				patientSummaryVO.getPatient().setPublications_Id(publicationIds);
+				patientSummaryVO.getPatient().setPublications(publicationIds);
 			}
 
 			// Insert patient and set primary key
@@ -370,23 +352,23 @@ public class PatientService implements Serializable
 
 		PatientSummaryVO patientSummaryVO = new PatientSummaryVO();
 		patientSummaryVO.setPatient(patient);
-		patientSummaryVO.setMutation1(this.db.findById(Mutation.class, patient.getMutation1_Id()));
-		patientSummaryVO.setMutation2(this.db.findById(Mutation.class, patient.getMutation2_Id()));
-		patientSummaryVO.setPhenotype(this.db.findById(MutationPhenotype.class, patient.getPhenotype_Id()));
+		patientSummaryVO.setMutation1(this.db.findById(Mutation.class, patient.getMutation1()));
+		patientSummaryVO.setMutation2(this.db.findById(Mutation.class, patient.getMutation2()));
+		patientSummaryVO.setPhenotype(this.db.findById(MutationPhenotype.class, patient.getPhenotype()));
 		if (!"no".equals(patient.getConsent()))
-			patientSummaryVO.setPhenotypeDetails(this.db.findById(PhenotypeDetails.class, patient.getPhenotype_Details_Id()));
+			patientSummaryVO.setPhenotypeDetails(this.db.findById(PhenotypeDetails.class, patient.getPhenotype_Details()));
 		
-		patientSummaryVO.setPubmedURL(PublicationService.PUBMED_URL);
-
-		if (CollectionUtils.isNotEmpty(patient.getPublications_Id()))
+		if (CollectionUtils.isNotEmpty(patient.getPublications()))
 		{
-			List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPublications_Id()).find();
+			List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPublications()).find();
+			for (Publication publication : publications)
+				publication.setPubmedID_Name("http://www.ncbi.nlm.nih.gov/pubmed/" + publication.getPubmedID_Name());
 			patientSummaryVO.setPublications(publications);
 		}
 		
-		Submission submission  = this.db.findById(Submission.class, patient.getSubmission_Id());
+		Submission submission  = this.db.findById(Submission.class, patient.getSubmission());
 		patientSummaryVO.setSubmission(submission);
-		MolgenisUser submitter = this.db.findById(MolgenisUser.class, submission.getSubmitters_Id().get(0));
+		MolgenisUser submitter = this.db.findById(MolgenisUser.class, submission.getSubmitters().get(0));
 		patientSummaryVO.setSubmitter(submitter);
 		
 		List<I_F> if_s = this.db.query(I_F.class).equals(I_F.PATIENT, patient.getId()).find();
@@ -423,69 +405,13 @@ public class PatientService implements Serializable
 
 	public HashMap<String, Integer> getPhenotypeCounts() throws DatabaseException
 	{
-//		List<Tuple> counts              = this.db.sql("SELECT p.name, COUNT(i.id) FROM MutationPhenotype p LEFT OUTER JOIN Patient i ON (p.id = i.phenotype) GROUP BY p.name");
-//		HashMap<String, Integer> result = new HashMap<String, Integer>();
-//		
-//		for (Tuple entry : counts)
-//		{
-//			result.put(entry.getString(0), entry.getInt(1));
-//		}
-//		return result;
+		List<Tuple> counts              = this.db.sql("SELECT p.name, COUNT(i.id) FROM MutationPhenotype p LEFT OUTER JOIN Patient i ON (p.id = i.phenotype) GROUP BY p.name");
+		HashMap<String, Integer> result = new HashMap<String, Integer>();
 		
-		
-		String sql = "SELECT p.name, COUNT(i.id) FROM MutationPhenotype p LEFT OUTER JOIN Patient i ON (p.id = i.phenotype) GROUP BY p.name";
-			
-		List<Object[]> counts           = this.db.getEntityManager().createNativeQuery(sql).getResultList();
-        HashMap<String, Integer> result = new HashMap<String, Integer>();
-        for (Object[] entry : counts)
-        {
-                result.put((String) entry[0], Integer.valueOf(entry[1].toString()));
-        }
-        return result;
+		for (Tuple entry : counts)
+		{
+			result.put(entry.getString(0), entry.getInt(1));
+		}
+		return result;
 	}
-        
-        public static void main(String[] args)
-        {
-        try {
-	    
-                        EntityManager em = Persistence.createEntityManagerFactory("molgenis").createEntityManager();
-                        Database db = new JpaDatabase(em);
-			
-//			Patient p = db.getEntityManager().find(Patient.class, 1);
-//			p.toString();
-//			
-                        
-                        
-                        
-                        
-//			String sql = "SELECT p.name, COUNT(i.id) FROM MutationPhenotype p LEFT OUTER JOIN Patient i ON (p.id = i.phenotype) GROUP BY p.name";
-//			
-//			List<Object[]> counts           = db.getEntityManager().createNativeQuery(sql).getResultList();
-//			HashMap<String, Long> result = new HashMap<String, Long>();
-//			for (Object[] entry : counts)
-//			{
-//				result.put((String) entry[0], (Long) entry[1]);
-//			}
-//			result.toString();
-			
-			Mutation mutation = db.findById(Mutation.class, 819);
-			Query query = db.query(Patient.class);
-			query = query.equals(Patient.MUTATION1, mutation).or().equals(Patient.MUTATION2, mutation);
-			
-			
-			TypedQuery<Patient> tq = 
-			JPAQueryGeneratorUtil.createQuery(Patient.class, new PatientJpaMapper() , em, query.getRules());
-			
-                        Mutation m = em.find(Mutation.class, 819);
-                        
-                        CriteriaBuilder cb       = em.getCriteriaBuilder();
-                        CriteriaQuery<Patient> c = cb.createQuery(Patient.class);
-                        Root<Patient> p          = c.from(Patient.class);
-                        c.where(cb.or(cb.equal(p.get("mutation1"), m), cb.equal(p.get("mutation2"), m)));
-                        List<Patient> patients = em.createQuery(c).getResultList();
-                        patients.toString();
-        } catch (DatabaseException ex) {
-            Logger.getLogger(PatientService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        }
 }
