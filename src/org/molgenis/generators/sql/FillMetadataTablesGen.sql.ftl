@@ -1,5 +1,7 @@
 <#include "GeneratorHelper.ftl">
+<#if db_mode = 'standalone'>
 SET WRITE_DELAY FALSE;
+</#if>
 INSERT INTO MolgenisRole (__Type, id, name) values ('MolgenisGroup', 1, 'system');
 INSERT INTO MolgenisRole (__Type, id, name) values ('MolgenisUser', 2, 'admin');
 INSERT INTO MolgenisRole (__Type, id, name) values ('MolgenisUser', 3, 'anonymous');
