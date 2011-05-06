@@ -54,7 +54,7 @@ import org.molgenis.util.Tuple;
  * 
  * @param
  */
-public abstract class FormModel<E extends Entity> extends SimpleModel<E>
+public class FormModel<E extends Entity> extends SimpleScreenModel
 {
 	/**
 	 * Parameters to enable links between parent forms and subforms using
@@ -119,48 +119,17 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 		}
 	}
 
-	// ABSTRACT METHODS, varied per entity
-	/**
-	 * Abstract method to build the inputs for each row. The result will be a
-	 * set of inputs that can be put on the form screen.
-	 * 
-	 * @param entity
-	 * @param newrecord
-	 * @throws ParseException
-	 */
-	public abstract HtmlForm getInputs(E entity, boolean newrecord);
+
 
 	public List<HtmlInput> getInputs()
 	{
-		return getInputs((E) create(), true).getInputs();
+		return getController().getInputs((E) create(), true).getInputs();
 	}
 
 	public List<HtmlInput> getInputs(E entity)
 	{
-		return getInputs(entity, false).getInputs();
+		return getController().getInputs(entity, false).getInputs();
 	}
-
-	/**
-	 * Provides the class of the entitites managed by this form. Note: Java
-	 * erases the specific type of E, therefore we cannot say E.newInstance();
-	 */
-	public abstract Class<E> getEntityClass();
-
-	/**
-	 * Default settings for hidden columns
-	 */
-	public abstract void resetSystemHiddenColumns();
-
-	/**
-	 * Default settings for compact columns
-	 */
-	public abstract void resetCompactView();
-
-	/**
-	 * Helper function that translates xref field name into its label (for
-	 * showing that in the UI).
-	 */
-	public abstract String getSearchField(String fieldName);
 
 	/** Alternative view modes */
 	public static enum Mode
@@ -194,7 +163,7 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 	private static final transient Logger logger = Logger.getLogger(FormModel.class);
 
 	/** List of actions of this screen */
-	private Map<String, ScreenCommand<E>> commands = new LinkedHashMap<String, ScreenCommand<E>>();
+	private Map<String, ScreenCommand> commands = new LinkedHashMap<String, ScreenCommand>();
 
 	/** entity csv reader */
 	private CsvToDatabase<E> csvReader;
@@ -233,10 +202,10 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 	List<QueryRule> systemRules;
 
 	/** Active command (in case of a command with dialog) */
-	private ScreenCommand<E> currentCommand = null;
+	private ScreenCommand currentCommand = null;
 
 	/** columns that are invisible to the user */
-	protected Vector<String> systemHiddenColumns = new Vector<String>();
+	private Vector<String> systemHiddenColumns = new Vector<String>();
 	protected Vector<String> userHiddenColumns = new Vector<String>();
 
 	/** Helper object that takes care of database paging */
@@ -249,7 +218,7 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 	private List<ParentFilter> parentFilters = new ArrayList<ParentFilter>();
 
 	/* which fields are shown in compact view */
-	protected List<String> compactView = new ArrayList<String>();
+	private List<String> compactView = new ArrayList<String>();
 
 	/** */
 	private static final long serialVersionUID = 8048540994925740038L;
@@ -262,12 +231,12 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 	 * @param parent
 	 * @throws DatabaseException
 	 */
-	public FormModel(String name, ScreenModel<?> parent)
+	public FormModel(FormController<E> controller)
 	{
-		super(name, parent);
+		super(controller);
 
 		// set defaults
-		setViewMacro(FormModel.class.getSimpleName().replace("Model", "View"));
+
 		setUserRules(new ArrayList<QueryRule>());
 		setSystemRules(new ArrayList<QueryRule>());
 		setLimit(5);
@@ -281,72 +250,68 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 		setMode(Mode.LIST_VIEW);
 		setMessages(new Vector<ScreenMessage>());
 		setReadonly(false);
-		resetSystemHiddenColumns();
-		resetUserHiddenColumns();
-
-		setController(new FormController<E>(this));
 
 		// add all actions
 		// menu FILE
 
  		// File:Download visible
-		super.addCommand(new DownloadVisibleCommand<E>("download_visible", this));
+		super.addCommand(new DownloadVisibleCommand("download_visible", this.getController()));
 
 		// File:Download Selected
-		super.addCommand(new DownloadSelectedCommand<E>("download_selected", this));
+		super.addCommand(new DownloadSelectedCommand("download_selected", this.getController()));
 
 		// FILE:Download all
-		super.addCommand(new DownloadAllCommand<E>("download_all", this));
+		super.addCommand(new DownloadAllCommand("download_all", this.getController()));
 
 		// File: Add batch
-		super.addCommand(new AddBatchCommand<E>("upload_csv", this));
+		super.addCommand(new AddBatchCommand("upload_csv", this.getController()));
 
 		// EDIT MENU
 		// EDIT: Add new record
-		super.addCommand(new AddCommand<E>("edit_new", this));
+		super.addCommand(new AddCommand("edit_new", this.getController()));
 
 		// EDIT: Update selected
-		super.addCommand(new EditSelectedCommand<E>("edit_update_selected", this));
+		super.addCommand(new EditSelectedCommand("edit_update_selected", this.getController()));
 
 		// EDIT: Remove selected
-		super.addCommand(new RemoveSelectedCommand<E>("edit_remove_selected", this));
+		super.addCommand(new RemoveSelectedCommand("edit_remove_selected", this.getController()));
 
 		// menu VIEW
 		// ScreenCommand v2 = new ViewRecordViewCommand("recordview",
-		// this);
+		// this.getController());
 		// v2.setToolbar(true);
 		// super.addCommand("View", v2);
 
 		// v3.setToolbar(true);
-		super.addCommand(new ViewEditViewCommand<E>("editview", this));
-		super.addCommand(new ViewListViewCommand<E>("listview", this));
+		super.addCommand(new ViewEditViewCommand("editview", this.getController()));
+		super.addCommand(new ViewListViewCommand("listview", this.getController()));
 
-		ChangeListLimitCommand<E> view_5 = new ChangeListLimitCommand<E>("view_5show5", this);
+		ChangeListLimitCommand view_5 = new ChangeListLimitCommand("view_5show5", this.getController());
 		view_5.setLimit(5);
 		super.addCommand(view_5);
 
-		ChangeListLimitCommand<E> view_10 = new ChangeListLimitCommand<E>("view_6show10", this);
+		ChangeListLimitCommand view_10 = new ChangeListLimitCommand("view_6show10", this.getController());
 		view_5.setLimit(10);
 		super.addCommand(view_10);
 
-		ChangeListLimitCommand<E> view_20 = new ChangeListLimitCommand<E>("view_7show20", this);
+		ChangeListLimitCommand view_20 = new ChangeListLimitCommand("view_7show20", this.getController());
 		view_20.setLimit(20);
 		super.addCommand(view_20);
 
-		ChangeListLimitCommand<E> view_50 = new ChangeListLimitCommand<E>("view_8show50", this);
+		ChangeListLimitCommand view_50 = new ChangeListLimitCommand("view_8show50", this.getController());
 		view_50.setLimit(50);
 		super.addCommand(view_50);
 
-		ChangeListLimitCommand<E> view_100 = new ChangeListLimitCommand<E>("view_9show100", this);
+		ChangeListLimitCommand view_100 = new ChangeListLimitCommand("view_9show100", this.getController());
 		view_100.setLimit(100);
 		super.addCommand(view_100);
 
-		ChangeListLimitCommand<E> view_500 = new ChangeListLimitCommand<E>("view_10show500", this);
+		ChangeListLimitCommand view_500 = new ChangeListLimitCommand("view_10show500", this.getController());
 		view_500.setLimit(500);
 		super.addCommand(view_500);
 
 		// add the plugged-in actions
-		for (ScreenCommand<E> command : this.commands.values())
+		for (ScreenCommand command : this.commands.values())
 		{
 			super.addCommand(command);
 		}
@@ -372,13 +337,13 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 	 * 
 	 * @return vector of commands to be shown on the toolbar
 	 */
-	public Vector<ScreenCommand<E>> getToolbar()
+	public Vector<ScreenCommand> getToolbar()
 	{
-		Vector<ScreenCommand<E>> toolbar = new Vector<ScreenCommand<E>>();
+		Vector<ScreenCommand> toolbar = new Vector<ScreenCommand>();
 
-		for (CommandMenu<E> menu : this.getMenus())
+		for (CommandMenu menu : this.getMenus())
 		{
-			for (ScreenCommand<E> c : menu.getCommands())
+			for (ScreenCommand c : menu.getCommands())
 			{
 				if (c.isToolbar() && c.isVisible())
 				{
@@ -439,12 +404,12 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 	{
 		try
 		{
-			E entity = getEntityClass().newInstance();
+			E entity = getController().getEntityClass().newInstance();
 
 			// set defaults for xrefs
 			for (ParentFilter pf : this.getParentFilters())
 			{
-				FormModel<?> parent = (FormModel<?>) this.get(pf.getParentForm());
+				FormModel<?> parent = (FormModel<?>) this.getController().get(pf.getParentForm()).getModel();
 				List<?> records = parent.getRecords();
 				if (records.size() > 0)
 				{
@@ -468,7 +433,7 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 		catch (Exception e)
 		{
 			// should never happen
-			logger.error("failed to create class " + getEntityClass() + ": " + e);
+			logger.error("failed to create class " + getController().getEntityClass() + ": " + e);
 			e.printStackTrace();
 		}
 		return null;
@@ -482,7 +447,7 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 	public Vector<String> getHeaders()
 	{
 		Vector<String> headers = new Vector<String>();
-		for (HtmlInput input : getInputs(this.create(), true).getInputs())
+		for (HtmlInput input : getController().getInputs(this.create(), true).getInputs())
 		{
 			headers.add(input.getLabel());
 		}
@@ -498,7 +463,7 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 	{
 		E entity = this.create();
 		//if (current != null) entity = current;
-		return getInputs(entity, true);
+		return getController().getInputs(entity, true);
 	}
 
 	/**
@@ -516,7 +481,7 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 		{
 			for (E entity : getRecords())
 			{
-				HtmlForm record = getInputs(entity, false);
+				HtmlForm record = getController().getInputs(entity, false);
 				record.setReadonly(!getSecurity().canWrite(entity));
 				records.add(record);
 			}
@@ -544,7 +509,7 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 		for (HtmlInput input : this.getNewRecordForm().getInputs())
 		{
 			// getSearchFields maps xref and mref field to their label
-			String fieldName = getSearchField(input.getName());
+			String fieldName = getController().getSearchField(input.getName());
 			nameLabelMap.put(fieldName, input.getLabel());
 		}
 
@@ -724,7 +689,7 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 
 			for (ParentFilter pf : this.getParentFilters())
 			{
-				FormModel<?> parent = (FormModel<?>) this.get(pf.getParentForm());
+				FormModel<?> parent = (FormModel<?>) this.getController().get(pf.getParentForm()).getModel();
 				List<?> records = parent.getRecords();
 
 				// add filters for xref or mref relationships (if any)
@@ -832,19 +797,19 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 	/**
 	 * Override getChildren to only return selected elements.
 	 */
-	@Override
-	// FIXME: this may be problematic?
-	public Vector<ScreenModel<?>> getChildren()
-	{
-		if (viewMode.equals(Mode.EDIT_VIEW))
-		{
-			return super.getChildren();
-		}
-		else
-		{
-			return new Vector<ScreenModel<?>>(); // empty set.
-		}
-	}
+//	@Override
+//	// FIXME: this may be problematic?
+//	public Vector<ScreenModel<?>> getChildren()
+//	{
+//		if (viewMode.equals(Mode.EDIT_VIEW))
+//		{
+//			return super.getChildren();
+//		}
+//		else
+//		{
+//			return new Vector<ScreenModel<?>>(); // empty set.
+//		}
+//	}
 
 	@Deprecated
 	public File getDownloadFile(Database db, Tuple requestTuple)
@@ -877,7 +842,7 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 
 	public Login getSecurity()
 	{
-		return getRootScreen().getLogin();
+		return getController().getApplicationController().getLogin();
 	}
 
 	public CsvToDatabase<E> getCsvReader()
@@ -896,17 +861,17 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 		return object.getClass().getSimpleName() +"_"+object.getIdField();
 	}
 
-	public List<ScreenCommand<E>> getCommands()
+	public List<ScreenCommand> getCommands()
 	{
-		return new ArrayList<ScreenCommand<E>>(commands.values());
+		return new ArrayList<ScreenCommand>(commands.values());
 	}
 
-	public ScreenCommand<E> getCurrentCommand()
+	public ScreenCommand getCurrentCommand()
 	{
 		return currentCommand;
 	}
 
-	public void setCurrentCommand(ScreenCommand<E> currentCommand)
+	public void setCurrentCommand(ScreenCommand currentCommand)
 	{
 		this.currentCommand = currentCommand;
 	};
@@ -947,5 +912,33 @@ public abstract class FormModel<E extends Entity> extends SimpleModel<E>
 //	{
 //		this.current = current;
 //	}
+	
+	public FormController<E> getController()
+	{
+		return (FormController<E>) super.getController();
+	}
 
+	public void setCompactView(List<String> compactView)
+	{
+		this.compactView = compactView;
+	}
+
+	public List<String> getCompactView()
+	{
+		return compactView;
+	}
+
+	public void setSystemHiddenColumns(Vector<String> systemHiddenColumns)
+	{
+		this.systemHiddenColumns = systemHiddenColumns;
+	}
+
+	/**
+	 * Helper function that translates xref field name into its label (for
+	 * showing that in the UI).
+	 */
+	public String getSearchField(String fieldName)
+	{
+		return this.getController().getSearchField(fieldName);
+	}
 }

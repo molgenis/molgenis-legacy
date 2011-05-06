@@ -15,6 +15,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 
@@ -24,7 +25,7 @@ import java.util.Locale;
  */
 
 public class DateInput extends HtmlInput
-{
+{	
 	/** uses default value of today as value
 	 * @throws ParseException */
 	public DateInput(String name)
@@ -38,14 +39,32 @@ public class DateInput extends HtmlInput
 		this.setLabel(label);
 	}
 	
+	public DateInput(String name, String label, Object value)
+	{
+		super(name,value);
+		this.setLabel(label);
+	}
+	
 	public DateInput(String name, Object value)
 	{
 		super(name, value);
 	}
 
+	public DateInput(String name, String label, Date value, boolean nillable, boolean readonly)
+	{
+		super(name,value);
+		if(label != null && !label.equals("null")) this.setLabel(label);
+		this.setReadonly(readonly);
+		this.setNillable(nillable);
+	}
+
 	// tohtml
 	public String toHtml()
 	{
+//		if(true)
+//		{
+//			return toJquery();
+//		}
 
 		String readonly = ( isReadonly() ? " class=\"readonly\" readonly " : "onclick=\"showDateInput(this) " + "");
 
@@ -85,5 +104,14 @@ public class DateInput extends HtmlInput
 		}
 		result = result.substring(0, 1).toUpperCase() + result.substring(1);
 		return result;
+	}
+	
+	public String toJquery()
+	{
+		String options = "";
+		if (this.isReadonly()) options += "disabled:true";
+		return   "<div type=\"text\" id=\""+this.getName()+"\"></div><script>"+
+			    "$(\"#"+this.getName()+"\").datepicker({"+options+"});</script>";
+
 	}
 }

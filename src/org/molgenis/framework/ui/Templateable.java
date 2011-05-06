@@ -11,11 +11,11 @@ public interface Templateable
 	 * implementation, this must be the name of a macro in the template. It is
 	 * good practice to let this macro having the same name as the class.
 	 * 
-	 * @see #getViewTemplate()
+	 * @see #getTemplate()
 	 * 
 	 * @return a generic name of the layout to be used
 	 */
-	public String getViewName();
+	public String getMacro();
 
 	/**
 	 * Retrieve the path of the template file containing the view(s) of the
@@ -25,11 +25,11 @@ public interface Templateable
 	 * used for loading. If null, it is ignored by the template loading
 	 * mechanism.
 	 * 
-	 * {@link #getViewName()}
+	 * {@link #getMacro()}
 	 * 
 	 * @return path of the template file.
 	 */
-	public String getViewTemplate();
+	public String getTemplate();
 
 	/**
 	 * This enables plugin developers to add their custom css or javascript (or

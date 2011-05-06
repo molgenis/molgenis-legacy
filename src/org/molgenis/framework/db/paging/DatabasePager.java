@@ -178,6 +178,11 @@ public interface DatabasePager<E extends Entity> extends Serializable
 	 * @throws DatabaseException 
 	 */
 	public abstract int getCount(Database db) throws DatabaseException;
+	
+	/**
+	 * Retrieve the current number of entities in the database, without reloading the database.
+	 */
+	public abstract int getCount();
 
 	/**
 	 * Retrieve the current page as based on offset and limit, that is, entity[offset | offset >= 0 && offset < limit] until entity[offset+limit || count]

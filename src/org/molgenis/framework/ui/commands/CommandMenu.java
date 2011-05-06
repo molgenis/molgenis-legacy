@@ -7,22 +7,22 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.Templateable;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.util.Entity;
 
 
-public class CommandMenu<E extends Entity> extends SimpleCommand<E>
+public class CommandMenu extends SimpleCommand
 {
 	private static final long serialVersionUID = 7869046696648113688L;
 
 	public static final transient Logger logger = Logger.getLogger(CommandMenu.class);
 
 	/** menu items with order as entered*/
-	private Map<String,ScreenCommand<E>> menu_items = new LinkedHashMap<String,ScreenCommand<E>>();
+	private Map<String,ScreenCommand> menu_items = new LinkedHashMap<String,ScreenCommand>();
 
-	public CommandMenu(String id, ScreenModel<E> screen, String label, String icon, String action)
+	public CommandMenu(String id, ScreenController<?>  screen, String label, String icon, String action)
 	{
 		super( id, screen );
 		this.setLabel(label);
@@ -41,7 +41,7 @@ public class CommandMenu<E extends Entity> extends SimpleCommand<E>
 	 * Add a menu item.
 	 * @param command
 	 */
-	public void addCommand( ScreenCommand<E> command )
+	public void addCommand( ScreenCommand command )
 	{
 		if(menu_items.containsKey(command.getName()))
 		{
@@ -54,7 +54,7 @@ public class CommandMenu<E extends Entity> extends SimpleCommand<E>
 	 * Return the values as list.
 	 *
 	 */
-	public Collection<ScreenCommand<E>> getCommands()
+	public Collection<ScreenCommand> getCommands()
 	{
 		//Logger.getLogger("test").debug("returning commands "+menu_items.values().size());
 		return menu_items.values();
@@ -64,7 +64,7 @@ public class CommandMenu<E extends Entity> extends SimpleCommand<E>
 	 * Find a specific command.
 	 * @param name
 	 */
-	public ScreenCommand<E> getCommand( String name )
+	public ScreenCommand getCommand( String name )
 	{
 		return menu_items.get(name);
 	}

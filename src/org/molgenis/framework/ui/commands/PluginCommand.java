@@ -2,17 +2,17 @@ package org.molgenis.framework.ui.commands;
 
 import java.util.List;
 
-import org.molgenis.framework.ui.SimpleModel;
+import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.SimpleScreenModel;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public abstract class PluginCommand<E extends Entity> extends SimpleCommand<E>
+public abstract class PluginCommand extends SimpleCommand
 {
 	private static final long serialVersionUID = 1236057686333854770L;
 
 	/** Constructor */
-	public PluginCommand(String name, SimpleModel<E> parentScreen)
+	public PluginCommand(String name, ScreenController<?>  parentScreen)
 	{
 		super(name, parentScreen);
 		this.setMenu("Plugin");
@@ -29,7 +29,7 @@ public abstract class PluginCommand<E extends Entity> extends SimpleCommand<E>
 	 */
 	public abstract void handleRequest(Tuple request);
 
-	public abstract String getViewName();
+	public abstract String getMacro();
 
-	public abstract String getViewTemplate();
+	public abstract String getTemplate();
 }

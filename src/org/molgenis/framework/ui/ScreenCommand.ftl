@@ -1,11 +1,10 @@
-<#macro ScreenCommand command>	
 <#--<@molgenis_header />-->
-<#if command.getInputs()?exists >
+<#if model.inputs?exists >
 <#--<body>-->
 <div class="formscreen">
 	<form action="" method="post" enctype="multipart/form-data" name="molgenis_popup">
-	<p class="form_header">${command.label}</p>
-	<#if command.messages?exists><#list command.getMessages() as message>
+	<p class="form_header">${model.label}</p>
+	<#if model.messages?exists><#list model.getMessages() as message>
 		<#if message.success>
 	<p class="successmessage">${message.text}</p>
 		<#else>
@@ -13,12 +12,12 @@
 		</#if>
 	</#list></#if>	
 	<table>
-			<input type="hidden" name="__target" value="${command.screen.name}"/>
-			<input type="hidden" name="__action" value="${command.name}"/> 
+			<input type="hidden" name="__target" value="${model.target}"/>
+			<input type="hidden" name="__action" value="${model.name}"/> 
 			<input type="hidden" name="__show"/> 
 	<#assign requiredcount = 0 />
 	<#assign required = "" />
-	<#list command.getInputs() as input>
+	<#list model.getInputs() as input>
 		<#if !input.isHidden()>
 			<tr>
 				<td title="${input.description}"><label>${input.label}<#if !input.isNillable()  && !input.isReadonly()> *</#if></label></td>
@@ -39,15 +38,12 @@ var molgenis_required = new Array(${required});
 </script>
 	</table>
 	<p align="right">
-<#list command.getActions() as input>
+<#list model.getActions() as input>
 	${input.toHtml()}
 </#list>
 	</p>
 	</form>
 <#--</body>-->
-<#else>
-	ERROR no command dialog to bee seen
 </#if>
 </div>
 <#--</body>-->
-</#macro>

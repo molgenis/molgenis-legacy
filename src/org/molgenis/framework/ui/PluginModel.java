@@ -1,33 +1,120 @@
 package org.molgenis.framework.ui;
 
 import java.io.PrintWriter;
+import java.util.Vector;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.security.Login;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public abstract class PluginModel<E extends Entity> extends SimpleModel<E> implements ScreenController<E, PluginModel<E>>
+public abstract class PluginModel<E extends Entity> extends
+		SimpleScreenController<ScreenModel> implements ScreenModel
 {
 	private static final long serialVersionUID = -6748634936592503575L;
-	public PluginModel(String name, ScreenModel<?> parent)
+	private String label;
+	private String selected;
+	private Vector<ScreenMessage> messages = new Vector<ScreenMessage>();
+
+	public PluginModel(String name, ScreenController<?> parent)
 	{
-		super(name, parent);
+		super(name, null, parent);
 		// label is the last part of the name
-		this.setController(this);
-		this.setLabel(this.getName().substring(this.getName().lastIndexOf("_") + 1));
+		this.setModel(this);
+		this.setLabel(this.getName().substring(
+				this.getName().lastIndexOf("_") + 1));
 	}
 
 	public Login getLogin()
 	{
-		return this.getRootScreen().getLogin();
+		return this.getApplicationController().getLogin();
 	}
 
 	@Override
-	public PluginModel<E> getScreen()
+	public void handleRequest(Database db, Tuple request, PrintWriter out)
+	{
+		this.handleRequest(db, request);
+	}
+
+	/**
+	 * A plugin is actually a model-view-controller structure. The extension of
+	 * plugin is the controller. The freemarker template is the view, see
+	 * getFreemarker... methods A 'model' of the screen must be provided to be
+	 * used by the.
+	 */
+
+	@Override
+	public boolean isVisible()
+	{
+		return Boolean.TRUE;
+	}
+
+	@Override
+	public ScreenController<? extends ScreenModel> getController()
 	{
 		return this;
+	}
+
+	@Override
+	public String getLabel()
+	{
+		return label;
+	}
+
+	@Override
+	public void setLabel(String label)
+	{
+		this.label = label;
+	}
+
+	@Override
+	public void setMessages(Vector<ScreenMessage> messages)
+	{
+		this.messages = messages;
+	}
+
+	@Override
+	public void setMessages(ScreenMessage... messages)
+	{
+		Vector<ScreenMessage> messageVector = new Vector<ScreenMessage>();
+		for (ScreenMessage m : messages)
+			messageVector.add(m);
+		this.messages = messageVector;
+	}
+
+	@Override
+	public Vector<ScreenMessage> getMessages()
+	{
+		return messages;
+	}
+
+	@Override
+	public void setController(ScreenController<?> controller)
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setSelected(String viewid)
+	{
+		this.selected = viewid;
+	}
+
+	@Override
+	public ScreenModel getSelected()
+	{
+		if (this.getChildren().size() > 0)
+		{
+			if (get(this.selected) == null)
+			{
+				return this.getChildren().firstElement().getModel();
+			}
+			else
+			{
+				return get(this.selected).getModel();
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -49,33 +136,52 @@ public abstract class PluginModel<E extends Entity> extends SimpleModel<E> imple
 	public abstract String getViewName();
 
 	@Override
-	public void handleRequest(Database db, Tuple request, PrintWriter out)
+	public abstract void handleRequest(Database db, Tuple request);
+
+	@Override
+	public abstract void reload(Database db);
+
+	@Override
+	public void reset()
 	{
-		this.handleRequest(db, request);
+
 	}
+
 	
 	/**
 	 * Show plugin or not, depending on whether the user is authenticated.
 	 * Note: at the moment you can still override this method in your plugin to bypass security (evil).
 	 */
 	@Override
-	public boolean isVisible()
+	public String getCustomHtmlBodyOnLoad()
 	{
-		if (this.getLogin().isAuthenticated()){
-			try {
-				if (this.getLogin().canRead(this)) {
-					return true;
-				}
-			} catch (DatabaseException e) {
-				e.printStackTrace();
-			}
-		}
-		return false;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	@Override
-	public abstract void handleRequest(Database db, Tuple request);
+	@Deprecated
+	// will be removed
+	public ScreenController getScreen()
+	{
+		return getController();
+	}
 
-	@Override
-	public abstract void reload(Database db);
+	@Deprecated
+	// will be removed
+	public ApplicationController getRootScreen()
+	{
+		return this.getApplicationController();
+	}
+	
+	/** Shorthand for setMessages(new ScreenMessage("success message",true)); */
+	public void setSuccess(String message)
+	{
+		this.setMessages(new ScreenMessage(message,true));
+	}
+	
+	/** Shorthand for setMessages(new ScreenMessage("succes message",false)); */
+	public void setError(String message)
+	{
+		this.setMessages(new ScreenMessage(message,false));
+	}
 }

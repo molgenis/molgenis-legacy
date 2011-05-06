@@ -10,8 +10,9 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.SimpleModel;
+import org.molgenis.framework.ui.SimpleScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Entity;
@@ -20,11 +21,11 @@ import org.molgenis.util.Tuple;
 /**
  * The command to add a new record
  */
-public class AddCommand<E extends Entity> extends SimpleCommand<E>
+public class AddCommand<E extends Entity> extends SimpleCommand
 {
 	private static final long serialVersionUID = 1512493344265778285L;
 
-	public AddCommand(String name, SimpleModel<E> parent)
+	public AddCommand(String name, ScreenController<?>  parent)
 	{
 		super(name, parent);
 		this.setLabel("Add new record");
@@ -74,7 +75,7 @@ public class AddCommand<E extends Entity> extends SimpleCommand<E>
 		if (request.getString(FormModel.INPUT_SHOW) == null)
 		{
 			// delegate to the form controller
-			((FormController) this.getScreen().getController()).doAdd(db, request);
+			((FormController<E>) this.getController()).doAdd(db, request);
 		}
 		return ScreenModel.Show.SHOW_MAIN;
 	}

@@ -1,5 +1,5 @@
 /**
- * {@link org.molgenis.framework.ui.ScreenModel} framework for showing a graphical {@link org.molgenis.framework.ui.UserInterface} to the user.
+ * {@link org.molgenis.framework.ui.ScreenModel} framework for showing a graphical {@link org.molgenis.framework.ui.ApplicationController} to the user.
  * <p>
  * With {@link org.molgenis.framework.ui.ScreenModel}s you can assemble a graphical user interface:
  * <ol>

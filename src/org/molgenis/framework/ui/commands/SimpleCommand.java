@@ -8,17 +8,17 @@ import java.util.List;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.FormModel;
+import org.molgenis.framework.ui.FreemarkerView;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.SimpleModel;
-import org.molgenis.framework.ui.ScreenModel.Show;
+import org.molgenis.framework.ui.SimpleScreenModel;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 /**
  * Implementation of screen command.
  */
-public abstract class SimpleCommand<E extends Entity> implements ScreenCommand<E>
+public abstract class SimpleCommand extends SimpleScreenModel implements ScreenCommand
 {		
 	private static final long serialVersionUID = -3289941539731301135L;
 
@@ -38,7 +38,7 @@ public abstract class SimpleCommand<E extends Entity> implements ScreenCommand<E
 	private String onClickJavascript;
 	
 	/** The Screen this command is linked to */
-	private ScreenModel<E> screen;	
+	private ScreenController<? extends ScreenModel> screenController;	
 
 	/** The name of the screen to be target (default: this.screen) */
 	private String targetScreen;
@@ -60,12 +60,12 @@ public abstract class SimpleCommand<E extends Entity> implements ScreenCommand<E
 	 * 
 	 * @param name
 	 *            unique name of the command (within the screen)
-	 * @param parentScreen
+	 * @param parentController
 	 */
-	public SimpleCommand(String name, ScreenModel<E> parentScreen)
+	public SimpleCommand(String name, ScreenController<?> parentController)
 	{
+		super(parentController);
 		this.setName(name);
-		this.setScreen(parentScreen);
 	}
 
 	/**
@@ -82,11 +82,11 @@ public abstract class SimpleCommand<E extends Entity> implements ScreenCommand<E
 			jScript.append("if( window.name == '' ){ window.name = 'molgenis'+Math.random();}");
 
 			// default target screen is 'self'
-			jScript.append("document.forms." + this.getScreen().getName() + "_form." + FormModel.INPUT_TARGET
-					+ ".value='" + this.getScreen().getName() + "';");
+			jScript.append("document.forms." + this.getController().getName() + "_form." + FormModel.INPUT_TARGET
+					+ ".value='" + this.getController().getName() + "';");
 
 			// default action handler is also 'self'
-			jScript.append("document.forms." + this.getScreen().getName() + "_form." + FormModel.INPUT_ACTION
+			jScript.append("document.forms." + this.getController().getName() + "_form." + FormModel.INPUT_ACTION
 					+ ".value='" + getName() + "';");
 
 			// in case of dialog make a popup
@@ -100,12 +100,12 @@ public abstract class SimpleCommand<E extends Entity> implements ScreenCommand<E
 								+ "','height=800,width=600,location=no,status=no,menubar=no,directories=no,toolbar=no,resizable=yes,scrollbars=yes');");
 
 				// make this new screen the target of this form
-				jScript.append("document.forms." + this.getScreen().getName() + "_form.target='" + "molgenis_"
+				jScript.append("document.forms." + this.getController().getName() + "_form.target='" + "molgenis_"
 						+ this.getName() + "';");
 
 				// set the 'show' parameter to 'popup' so the server knows to
 				// show only this dialog
-				jScript.append("document.forms." + this.getScreen().getName() + "_form." + FormModel.INPUT_SHOW
+				jScript.append("document.forms." + this.getController().getName() + "_form." + FormModel.INPUT_SHOW
 						+ ".value='" + ScreenModel.Show.SHOW_DIALOG + "';");
 			}
 
@@ -113,7 +113,7 @@ public abstract class SimpleCommand<E extends Entity> implements ScreenCommand<E
 			else if (this.isDownload())
 			{
 				// tell molgenis to download
-				jScript.append("document.forms." + this.getScreen().getName() + "_form." + FormModel.INPUT_SHOW
+				jScript.append("document.forms." + this.getController().getName() + "_form." + FormModel.INPUT_SHOW
 						+ ".value='" + ScreenModel.Show.SHOW_DOWNLOAD + "';");
 			}
 
@@ -121,13 +121,13 @@ public abstract class SimpleCommand<E extends Entity> implements ScreenCommand<E
 			else
 			{
 				// make this this action target current window
-				jScript.append("document.forms." + this.getScreen().getName() + "_form.target=window.name;");
+				jScript.append("document.forms." + this.getController().getName() + "_form.target=window.name;");
 
-				jScript.append("document.forms." + this.getScreen().getName() + "_form." + FormModel.INPUT_SHOW
+				jScript.append("document.forms." + this.getController().getName() + "_form." + FormModel.INPUT_SHOW
 						+ ".value='" + ScreenModel.Show.SHOW_MAIN + "';");
 			}
 
-			jScript.append("document.forms." + this.getScreen().getName() + "_form.submit();");
+			jScript.append("document.forms." + this.getController().getName() + "_form.submit();");
 
 			// make popup on front
 			if (this.isDialog())
@@ -198,27 +198,27 @@ public abstract class SimpleCommand<E extends Entity> implements ScreenCommand<E
 	}
 
 	@Override
-	public void setTarget(String target)
+	public void setTargetController(String target)
 	{
 		this.targetScreen = target;
 	}
 
 	@Override
-	public ScreenModel<E> getScreen()
+	public ScreenController<? extends ScreenModel> getController()
 	{
-		return this.screen;
+		return this.screenController;
 	}
 
 	@Override
-	public FormModel<E> getFormScreen()
+	public FormModel<?> getFormScreen()
 	{
-		return (FormModel<E>)this.screen;
+		return (FormModel<?>) this.screenController.getModel();
 	}
 
 	@Override
-	public void setScreen(ScreenModel<E> screen)
+	public void setController(ScreenController<? extends ScreenModel> controller)
 	{
-		this.screen = screen;
+		this.screenController = controller;
 	}
 
 	@Override
@@ -284,13 +284,13 @@ public abstract class SimpleCommand<E extends Entity> implements ScreenCommand<E
 	/**
 	 * Default view name = 'SimpleCommand'
 	 */
-	public String getViewName()
+	public String getMacro()
 	{
 		return ScreenCommand.class.getSimpleName();
 	}
 
 	@Override
-	public String getViewTemplate()
+	public String getTemplate()
 	{
 		return null;
 	}
@@ -312,4 +312,12 @@ public abstract class SimpleCommand<E extends Entity> implements ScreenCommand<E
 	{
 		return "";
 	}
+	
+	@Override
+	public String render()
+	{
+		return new FreemarkerView("ScreenCommand.ftl", this).render();
+	}
+	
+	
 }

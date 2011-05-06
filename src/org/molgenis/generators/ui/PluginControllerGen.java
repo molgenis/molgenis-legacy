@@ -10,23 +10,23 @@ import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.generators.Generator;
 import org.molgenis.generators.GeneratorHelper;
-import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Form;
 import org.molgenis.model.elements.Model;
+import org.molgenis.model.elements.Plugin;
 import org.molgenis.model.elements.UISchema;
+
 
 import freemarker.template.Template;
 
-public class FormScreenGen extends Generator
+public class PluginControllerGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(FormScreenGen.class);
+	public static final transient Logger logger = Logger.getLogger(PluginControllerGen.class);
 
 	@Override
 	public String getDescription()
 	{
-		return "Generates form screens.";
+		return "Generates plugin screens (linking to hand-written code).";
 	}
-	
 	
 	@Override
 	public void generate(Model model, MolgenisOptions options) throws Exception
@@ -41,11 +41,10 @@ public class FormScreenGen extends Generator
 		
 		for(UISchema screen: schema.getChildren())
 		{
-			if(screen.getClass() == Form.class)
+			if(screen.getClass() == Plugin.class)
 			{
-				
-				templateArgs.put( "form", screen );
-				((Entity) ((Form)screen).getRecord()).getAllFields().firstElement();
+
+				templateArgs.put( "plugin", screen );
 				
 
 				UISchema parent = screen.getParent();
@@ -58,13 +57,13 @@ public class FormScreenGen extends Generator
 				File targetDir = new File( this.getSourcePath(options) + APP_DIR + "/ui/" );
 				targetDir.mkdirs();
 
-				File targetFile = new File( targetDir + "/" + GeneratorHelper.getJavaName( screen.getClassName() ) + "FormModel.java" );
-				OutputStream targetOut = new FileOutputStream( targetFile );
+				File targetFile = new File( targetDir + "/" + GeneratorHelper.getJavaName( screen.getClassName() ) + "Plugin.java" );
+				OutputStream targetOut = new FileOutputStream( targetFile );				
 
 				template.process( templateArgs, new OutputStreamWriter( targetOut ) );
 				targetOut.close();
 
-				logger.info("generated " + targetFile);				
+				logger.info("generated " + targetFile.getAbsolutePath().substring(options.output_src.length()));					
 			}
 
 			//get children

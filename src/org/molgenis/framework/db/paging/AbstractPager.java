@@ -89,6 +89,13 @@ public abstract class AbstractPager<E extends Entity> implements DatabasePager<E
 	}
 	
 	@Override
+	public int getCount()
+	{
+		return count;
+	}
+	
+	
+	@Override
 	public List<E> getPage(Database db) throws DatabaseException
 	{
 		this.refresh(db);

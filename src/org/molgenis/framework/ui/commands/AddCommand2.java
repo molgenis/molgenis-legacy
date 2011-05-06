@@ -9,9 +9,10 @@ import java.util.Vector;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.SimpleModel;
+import org.molgenis.framework.ui.SimpleScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.CommandTemplate;
 import org.molgenis.framework.ui.html.HtmlInput;
@@ -23,14 +24,14 @@ import org.molgenis.util.Tuple;
  * The command to add a new record. If the add has an error, the user gets the
  * screen again.
  */
-public class AddCommand2<E extends Entity> extends SimpleCommand<E>
+public class AddCommand2<E extends Entity> extends SimpleCommand
 {
 	private static final long serialVersionUID = -8509177499350778624L;
 	Tuple previousRequest = new SimpleTuple();
 	Vector<ScreenMessage> messages = new Vector<ScreenMessage>();
 	boolean success = false;
 
-	public AddCommand2(String name, SimpleModel<E> parent)
+	public AddCommand2(String name, ScreenController<?>  parent)
 	{
 		super(name, parent);
 		this.setLabel("Add new record");

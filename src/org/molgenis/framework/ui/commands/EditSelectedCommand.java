@@ -8,9 +8,10 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.ui.FormModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.SimpleModel;
+import org.molgenis.framework.ui.SimpleScreenModel;
 import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Entity;
@@ -20,12 +21,12 @@ import org.molgenis.util.Tuple;
  * This command shows a dialog to edit in batch It therefor uses a custom
  * template
  */
-public class EditSelectedCommand<E extends Entity> extends SimpleCommand<E>
+public class EditSelectedCommand extends SimpleCommand
 {
 	private static final long serialVersionUID = -2996595009523144519L;
 	public static final transient Logger logger = Logger.getLogger(EditSelectedCommand.class);
 
-	public EditSelectedCommand(String name, SimpleModel<E> parentScreen)
+	public EditSelectedCommand(String name, ScreenController<?>  parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("Update selected");
@@ -35,7 +36,7 @@ public class EditSelectedCommand<E extends Entity> extends SimpleCommand<E>
 	}
 
 	@Override
-	public String getViewName()
+	public String getMacro()
 	{
 		return "form_massupdate";
 	}
@@ -43,7 +44,7 @@ public class EditSelectedCommand<E extends Entity> extends SimpleCommand<E>
 	@Override
 	public boolean isVisible()
 	{
-		FormModel<E> view = this.getFormScreen();
+		FormModel<? extends Entity> view = this.getFormScreen();
 		return !view.isReadonly() && view.getMode().equals(Mode.LIST_VIEW);
 	}
 
@@ -55,7 +56,7 @@ public class EditSelectedCommand<E extends Entity> extends SimpleCommand<E>
 		// check whether in the popup
 		if (request.getString(FormModel.INPUT_SHOW) == null)
 		{
-			FormModel<E> view = this.getFormScreen();
+			FormModel<? extends Entity> view = this.getFormScreen();
 			List<?> idList = request.getList(FormModel.INPUT_SELECTED);
 			for (Object id : idList)
 			{
@@ -67,8 +68,8 @@ public class EditSelectedCommand<E extends Entity> extends SimpleCommand<E>
 			int row = 0;
 			try
 			{
-				Query<E> q = db.query(view.getEntityClass()).in(view.create().getIdField(), idList);
-				List<E> entities = q.find();
+				Query<? extends Entity> q = db.query(view.getController().getEntityClass()).in(view.create().getIdField(), idList);
+				List<? extends Entity> entities = q.find();
 
 				db.beginTx();
 				for (Entity e : entities)

@@ -12,8 +12,8 @@ import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.FormModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.SimpleModel;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
@@ -25,12 +25,12 @@ import org.molgenis.util.Tuple;
  *
  * @param <E>
  */
-public class DownloadVisibleCommand<E extends Entity> extends SimpleCommand<E>
+public class DownloadVisibleCommand extends SimpleCommand
 {
 	private static final long serialVersionUID = -6279819301321361448L;
 	public static final transient Logger logger = Logger.getLogger(DownloadVisibleCommand.class);
 
-	public DownloadVisibleCommand(String name, SimpleModel<E> parentScreen)
+	public DownloadVisibleCommand(String name, ScreenController<?>  parentScreen)
 	{
 		super(name, parentScreen);
 		this.setDownload(true);
@@ -45,8 +45,8 @@ public class DownloadVisibleCommand<E extends Entity> extends SimpleCommand<E>
 	{
 		logger.debug(this.getName());
 
-		FormModel<E> view = this.getFormScreen();
-		List<E> records = view.getRecords();
+		FormModel<?> view = this.getFormScreen();
+		List<? extends Entity> records = view.getRecords();
 		CsvWriter writer = new CsvWriter(csvDownload, view.create().getFields());
 		writer.writeHeader();
 		for (Entity e : records)

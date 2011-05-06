@@ -99,7 +99,7 @@ public class SimpleLogin implements Login
 	}
 
 	@Override
-	public boolean canRead(ScreenModel<?> screen)
+	public boolean canRead(ScreenModel screen)
 	{
 		return true;
 	}

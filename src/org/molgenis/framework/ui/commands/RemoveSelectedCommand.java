@@ -13,20 +13,21 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.ui.FormModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.SimpleModel;
+import org.molgenis.framework.ui.SimpleScreenModel;
 import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class RemoveSelectedCommand<E extends Entity> extends SimpleCommand<E>
+public class RemoveSelectedCommand extends SimpleCommand
 {
 	private static final long serialVersionUID = 4730493886936446817L;
 	public static final transient Logger logger = Logger.getLogger(RemoveSelectedCommand.class);
 
-	public RemoveSelectedCommand(String name, SimpleModel<E> parentScreen)
+	public RemoveSelectedCommand(String name, ScreenController<?>  parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("Remove selected");
@@ -46,7 +47,7 @@ public class RemoveSelectedCommand<E extends Entity> extends SimpleCommand<E>
 	{
 		logger.debug(this.getName());
 		
-		FormModel<E> view = getFormScreen();
+		FormModel<? extends Entity> view = getFormScreen();
 
 		ScreenMessage msg = null;
 		try
@@ -60,8 +61,8 @@ public class RemoveSelectedCommand<E extends Entity> extends SimpleCommand<E>
 			}
 
 			// find selected entities
-			Query<E> q = db.query(view.getEntityClass()).in(view.create().getIdField(), idList);
-			List<E> selection = q.find();
+			Query<? extends Entity> q = db.query(view.getController().getEntityClass()).in(view.create().getIdField(), idList);
+			List<? extends Entity> selection = q.find();
 
 			// delete selected entities
 			db.remove(selection);

@@ -29,6 +29,7 @@ import org.molgenis.framework.db.paging.LimitOffsetPager;
 import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.commands.ScreenCommand;
 import org.molgenis.framework.ui.commands.SimpleCommand;
+import org.molgenis.framework.ui.html.HtmlForm;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
@@ -36,14 +37,11 @@ import org.molgenis.util.Tuple;
 /**
  * @param <E>
  */
-public class FormController<E extends Entity> extends SimpleController<E,FormModel<E>>
+public abstract class FormController<E extends Entity> extends SimpleScreenController<FormModel<E>>
 {
 	// member variables
 	/** */
 	private static final transient Logger logger = Logger.getLogger(FormController.class.getSimpleName());
-
-	/** The view where this is the controller for */
-	protected FormModel<E> view;
 
 	/** Helper object that takes care of database paging */
 	protected DatabasePager<E> pager;
@@ -52,24 +50,31 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 
 	// constructor
 	/**
-	 * @param view
+	 * @param model
 	 * @throws DatabaseException
 	 */
-	public FormController(FormModel<E> view)
+	public FormController(String name, ScreenController<?> parent)
 	{
-		super(view);
-		this.view = view;
+		super(name, null, parent);
+		this.setModel(new FormModel<E>(this));
+		this.setView(new FreemarkerView("FormView.ftl", getModel()));
+		
+		FormModel<E> model = getModel();
+		resetSystemHiddenColumns();
+		model.resetUserHiddenColumns();
+		
+		//setViewMacro(FormModel.class.getSimpleName().replace("Model", "View"));
 		// FIXME: this assumes first column is sortable...
 		try
 		{
-			this.pager = new LimitOffsetPager<E>(view.getEntityClass(), view.create().getFields().firstElement());
+			this.pager = new LimitOffsetPager<E>(getEntityClass(), model.create().getFields().firstElement());
 			// this.pager = new PrimaryKeyPager<E>(view.getEntityClass(),
 			// view.getDatabase(), view.create().getIdField());
 
 			// copy default sort from view
-			pager.setOrderByField(view.getSort());
-			pager.setOrderByOperator(view.getSortMode());
-			pager.setLimit(view.getLimit());
+			pager.setOrderByField(model.getSort());
+			pager.setOrderByOperator(model.getSortMode());
+			pager.setLimit(model.getLimit());
 
 		}
 		catch (DatabaseException e)
@@ -91,20 +96,21 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 		logger.debug("handleRequest(" + request + ")");
 
 		// clear the old messages
-		view.setMessages(new Vector<ScreenMessage>()); // clear messsages
+		FormModel<E> model = getModel();
+		model.setMessages(new Vector<ScreenMessage>()); // clear messsages
 
 		try
 		{
 			String action = request.getString(FormModel.INPUT_ACTION);
 
 			// get the selected ids into the screen list (if any)
-			view.setSelectedIds(request.getList(FormModel.INPUT_SELECTED));
+			model.setSelectedIds(request.getList(FormModel.INPUT_SELECTED));
 
 			// if none selected, make empty list
-			if (view.getSelectedIds() == null) view.setSelectedIds(new ArrayList<Object>());
+			if (model.getSelectedIds() == null) model.setSelectedIds(new ArrayList<Object>());
 
 			// get the current command if any
-			ScreenCommand<E> command = view.getCommand(action);
+			ScreenCommand command = model.getCommand(action);
 
 			if (action == null || action == "")
 			{
@@ -112,10 +118,10 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 				return;
 			}
 			// delegate to a command
-			else if (command != null && command instanceof SimpleCommand<?>)
+			else if (command != null && command instanceof SimpleCommand)
 			{
 				logger.debug("delegating to PluginCommand");
-				view.setCurrentCommand(command);
+				model.setCurrentCommand(command);
 				command.handleRequest(db, request, out);
 			}
 			else if (action.equals("filter_add"))
@@ -127,15 +133,15 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 				int index = request.getInt("filter_id");
 				// watch out not to remove system level filters!
 				// pager.removeFilter(index + this.systemRules.size() - 1);
-				view.getUserRules().remove(index);
+				model.getUserRules().remove(index);
 
 				// reset the filters...
 				pager.resetFilters();
-				for (QueryRule r : view.getUserRules())
+				for (QueryRule r : model.getUserRules())
 				{
 					pager.addFilter(r);
 				}
-				for (QueryRule r : view.getSystemRules())
+				for (QueryRule r : model.getSystemRules())
 				{
 					pager.addFilter(r);
 				}
@@ -143,14 +149,14 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 			else if (action.equals("filter_set"))
 			{
 				// remove all existing filters and than add this as a new one.
-				view.setUserRules(new ArrayList<QueryRule>());
+				model.setUserRules(new ArrayList<QueryRule>());
 
 				this.addFilter(pager, db, request);
 
 				// go to this screen if it is not selected
-				if (view.getParent() != null)
+				if (getParent() != null)
 				{
-					view.getParent().setSelected(view.getName());
+					getParent().setSelected(model.getName());
 				}
 
 			}
@@ -184,7 +190,7 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 			}
 			else if (action.equals("sort"))
 			{
-				String attribute = view.getSearchField(request.getString("__sortattribute"));
+				String attribute = getSearchField(request.getString("__sortattribute"));
 
 				if (pager.getOrderByField().equals(attribute))
 				{
@@ -211,20 +217,20 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 			}
 			else if (action.equals("hideColumn"))
 			{
-				Vector<String> UserHiddencols = view.getUserHiddenColumns();
+				Vector<String> UserHiddencols = model.getUserHiddenColumns();
 				String attribute = request.getString("attribute");
 
 				if (!UserHiddencols.contains(attribute)) UserHiddencols.add(attribute);
-				view.setUserHiddenColumns(UserHiddencols);
+				model.setUserHiddenColumns(UserHiddencols);
 
 			}
 			else if (action.equals("showColumn"))
 			{
-				Vector<String> UserHiddencols = view.getUserHiddenColumns();
+				Vector<String> UserHiddencols = model.getUserHiddenColumns();
 				String attribute = request.getString("attribute");
 
 				if (UserHiddencols.contains(attribute)) UserHiddencols.remove(attribute);
-				view.setUserHiddenColumns(UserHiddencols);
+				model.setUserHiddenColumns(UserHiddencols);
 			}
 			// ACTIONS BELOW HAVE BEEN MOVED TO 'form.command' package
 			// else if (action.equals("createMassupdate"))
@@ -289,6 +295,8 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 
 	private void addFilter(DatabasePager<E> pager, Database db, Tuple request) throws DatabaseException
 	{
+		FormModel<E> model = getModel();
+		
 		Operator operator = QueryRule.Operator.valueOf(request.getString("__filter_operator"));
 		String value = request.getString("__filter_value");
 		// automatically add LIKE delimiters %
@@ -297,15 +305,15 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 			value = "%" + value + "%";
 		}
 		QueryRule rule = new QueryRule(request.getString("__filter_attribute"), operator, value);
-		view.getUserRules().add(rule);
+		model.getUserRules().add(rule);
 
 		// reload the filters...
 		pager.resetFilters();
-		for (QueryRule r : view.getUserRules())
+		for (QueryRule r : model.getUserRules())
 		{
 			pager.addFilter(r);
 		}
-		for (QueryRule r : view.getSystemRules())
+		for (QueryRule r : model.getSystemRules())
 		{
 			pager.addFilter(r);
 		}
@@ -317,6 +325,7 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 	public void reload(Database db)
 	{
 		logger.info("reloading...");
+		FormModel<E> model = getModel();
 
 		// FIXME
 		try
@@ -327,9 +336,9 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 			pager.setDirty(true);
 
 			// check whether the parent has changed and then reset
-			List<QueryRule> newSystemRules = view.getSystemRules();
+			List<QueryRule> newSystemRules = model.getSystemRules();
 
-			if (!newSystemRules.equals(view.getSystemRules()))
+			if (!newSystemRules.equals(model.getSystemRules()))
 			{
 				// remember old user filters
 				// List<QueryRule> oldRules = Arrays.asList(pager.getFilters());
@@ -339,9 +348,9 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 					pager.addFilter(rule);
 				}
 
-				view.setSystemRules(newSystemRules);
+				model.setSystemRules(newSystemRules);
 
-				for (QueryRule rule : view.getUserRules())
+				for (QueryRule rule : model.getUserRules())
 				{
 					pager.addFilter(rule);
 				}
@@ -351,12 +360,12 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 			// if (view.getMode().equals(Mode.EDIT_VIEW) && !view.isReadonly())
 			// view.setMode(Mode.RECORD_VIEW);
 
-			if (view.getMode().equals(Mode.EDIT_VIEW)) pager.setLimit(1);
+			if (model.getMode().equals(Mode.EDIT_VIEW)) pager.setLimit(1);
 			else
-				pager.setLimit(view.getLimit());
+				pager.setLimit(model.getLimit());
 
 			// refresh pager and options
-			if (view.isReadonly())
+			if (model.isReadonly())
 			// view.getDatabase().cacheXrefOptions(view.getEntityClass());
 			pager.refresh(db);
 
@@ -364,12 +373,12 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 
 			// set readonly records
 			// view.setRecords( pager.getPage() );
-			view.setRecords(this.getData(db));
-			view.setCount(pager.getCount(db));
+			model.setRecords(this.getData(db));
+			model.setCount(pager.getCount(db));
 
-			view.setOffset(pager.getOffset());
-			view.setSort(pager.getOrderByField());
-			view.setSortMode(pager.getOrderByOperator());
+			model.setOffset(pager.getOffset());
+			model.setSort(pager.getOrderByField());
+			model.setSortMode(pager.getOrderByOperator());
 
 			// show filters without system level filters
 			// FIXME make simpler
@@ -382,14 +391,14 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 			// allRules.size()));
 
 			// update child views
-			if (view.getMode().equals(Mode.EDIT_VIEW))
+			if (model.getMode().equals(Mode.EDIT_VIEW))
 			{
-				for (ScreenModel<?> v : view.getChildren())
+				for (ScreenController<?> c : this.getChildren())
 				{
 					// only the real screens, not the commands
-					if (v instanceof SimpleModel<?>)
+					if (c instanceof SimpleScreenController<?>)
 					{
-						v.getController().reload(db);
+						c.reload(db);
 					}
 				}
 			}
@@ -411,10 +420,11 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 	public List<E> getData(Database db) throws DatabaseException
 	{
 		// TODO: move the row level security to the entitymapper...
+		FormModel<E> model = getModel();
 
 		// set form level rights
-		boolean formReadonly = view.isReadonly() || !view.getSecurity().canWrite(view.create().getClass());
-		view.setReadonly(formReadonly);
+		boolean formReadonly = model.isReadonly() || !model.getSecurity().canWrite(model.create().getClass());
+		model.setReadonly(formReadonly);
 
 		// load the rows
 		List<E> visibleRecords = new ArrayList<E>();
@@ -426,7 +436,7 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 
 		for (E record : allRecords)
 		{
-			boolean rowReadonly = formReadonly || !view.getSecurity().canWrite(record.getClass());
+			boolean rowReadonly = formReadonly || !model.getSecurity().canWrite(record.getClass());
 
 			if (rowReadonly) record.setReadonly(true);
 			// else
@@ -450,7 +460,7 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 	public boolean doAdd(Database db, Tuple request) throws ParseException, DatabaseException, IOException
 	{
 		ScreenMessage msg = null;
-		Entity entity = view.create();
+		Entity entity = getModel().create();
 		boolean result = false;
 	
 		try
@@ -485,7 +495,7 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 			msg = new ScreenMessage("ADD FAILED: " + e.getMessage(), null, false);
 			result = false;
 		}
-		view.getMessages().add(msg);
+		getModel().getMessages().add(msg);
 	
 		/* make sure the user sees the newly added record(s) */
 		// view.setMode(FormScreen.Mode.RECORD_VIEW);
@@ -500,7 +510,7 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 	// helper method
 	protected void doUpdate(Database db, Tuple request) throws DatabaseException, IOException, ParseException
 	{
-		Entity entity = view.create();
+		Entity entity = getModel().create();
 		ScreenMessage msg = null;
 		try
 		{
@@ -514,7 +524,7 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 			e.printStackTrace();
 			msg = new ScreenMessage("UPDATE FAILED: " + e.getMessage(), null, false);
 		}
-		view.getMessages().add(msg);
+		getModel().getMessages().add(msg);
 		if (msg.isSuccess())
 		{
 			pager.setDirty(true);
@@ -525,7 +535,7 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 	// helper method
 	protected void doRemove(Database db, Tuple request) throws DatabaseException, ParseException, IOException
 	{
-		Entity entity = view.create();
+		Entity entity = getModel().create();
 		ScreenMessage msg = null;
 		try
 		{
@@ -539,7 +549,7 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 		{
 			msg = new ScreenMessage("REMOVE FAILED: " + e.getMessage(), null, false);
 		}
-		view.getMessages().add(msg);
+		getModel().getMessages().add(msg);
 
 		// **make sure the user sees a record**/
 		if (msg.isSuccess())
@@ -558,25 +568,25 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 	public void doXrefselect(Tuple request) throws DatabaseException
 	{
 		// also set the parent menu
-		if (view.getParent() != null && view.getParent() instanceof MenuModel<?>)
+		if (getParent() != null && getParent() instanceof MenuController)
 		{
 			// set the filter to select the xref-ed entity
 			pager.resetFilters();
-			view.setUserRules(new ArrayList<QueryRule>());
+			getModel().setUserRules(new ArrayList<QueryRule>());
 			QueryRule rule = new QueryRule(request.getString("attribute"), QueryRule.Operator.valueOf(request
 					.getString("operator")), request.getString("value"));
 			pager.addFilter(rule);
 
 			// tell "my" menu to select me
 			Tuple parentRequest = new SimpleTuple();
-			String aChildName = view.getName();
-			ScreenModel<?> aParent = view.getParent();
+			String aChildName = getModel().getName();
+			ScreenController<?> aParent = getParent();
 			while (aParent != null)
 			{
-				if (aParent instanceof MenuModel<?>)
+				if (aParent instanceof MenuModel)
 				{
 					parentRequest.set("select", aChildName);
-					MenuController<?> c = (MenuController<?>) (Object) aParent.getController();
+					MenuController c = (MenuController) (Object) aParent;
 					c.doSelect(parentRequest);
 				}
 				aChildName = aParent.getName();
@@ -758,4 +768,40 @@ public class FormController<E extends Entity> extends SimpleController<E,FormMod
 	// view.getRules());
 	// }
 	// }
+	
+	
+	/**
+	 * Provides the class of the entitites managed by this form. Note: Java
+	 * erases the specific type of E, therefore we cannot say E.newInstance();
+	 */
+	public abstract Class<E> getEntityClass();
+
+	/**
+	 * Default settings for hidden columns
+	 */
+	public abstract void resetSystemHiddenColumns();
+
+	/**
+	 * Default settings for compact columns
+	 */
+	public abstract void resetCompactView();
+	
+	// ABSTRACT METHODS, varied per entity
+	/**
+	 * Abstract method to build the inputs for each row. The result will be a
+	 * set of inputs that can be put on the form screen.
+	 * 
+	 * @param entity
+	 * @param newrecord
+	 * @throws ParseException
+	 */
+	public abstract HtmlForm getInputs(E entity, boolean newrecord);
+
+	public abstract Vector<String> getHeaders();
+	
+	/**
+	 * Helper function that translates xref field name into its label (for
+	 * showing that in the UI).
+	 */
+	public abstract String getSearchField(String fieldName);
 }

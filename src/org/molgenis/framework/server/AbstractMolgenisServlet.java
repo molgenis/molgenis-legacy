@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -41,10 +39,9 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.security.Login;
 import org.molgenis.framework.ui.FormModel;
-import org.molgenis.framework.ui.MolgenisOriginalStyle;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.UserInterface;
+import org.molgenis.framework.ui.ApplicationController;
 import org.molgenis.framework.ui.html.FileInput;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvStringReader;
@@ -53,13 +50,6 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
-
-import freemarker.cache.ClassTemplateLoader;
-import freemarker.cache.MultiTemplateLoader;
-import freemarker.cache.TemplateLoader;
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.Template;
 
 /**
  * Abstract MOLGENIS servlet. Implement abstract methods to get it to work.
@@ -81,7 +71,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	public static String INPUT_SILENT = "data_silent";
 
 	// get logger
-	protected final transient Logger logger = Logger.getLogger(this.getClass().getSimpleName());
+	protected final transient Logger logger = Logger.getLogger(this.getClass()
+			.getSimpleName());
 
 	private static final long serialVersionUID = 3141439968743510237L;
 	// whether cxf is already loaded
@@ -94,11 +85,12 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	public abstract Database getDatabase() throws DatabaseException, NamingException, FileNotFoundException,
-			IOException;
-	
+	public abstract Database getDatabase() throws DatabaseException,
+			NamingException, FileNotFoundException, IOException;
+
 	/**
-	 * Applies an optional overlay of your HTML with linkouts for popular identifier to online databases, default is false.
+	 * Applies an optional overlay of your HTML with linkouts for popular
+	 * identifier to online databases, default is false.
 	 */
 	public abstract boolean linkoutOverlay();
 
@@ -112,7 +104,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	 * Instantiate an application with the right root screen and optional file
 	 * path...
 	 */
-	public abstract UserInterface<?> createUserInterface(Login userLogin);
+	public abstract ApplicationController createUserInterface(Login userLogin);
 
 	/**
 	 * @return package name of this molgenisvariant.
@@ -124,7 +116,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	 * @throws NamingException
 	 * @throws DatabaseException
 	 */
-	public abstract Object getSoapImpl() throws DatabaseException, NamingException;
+	public abstract Object getSoapImpl() throws DatabaseException,
+			NamingException;
 
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -161,7 +154,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	}
 
 	@Override
-	public void doDelete(HttpServletRequest request, HttpServletResponse response)
+	public void doDelete(HttpServletRequest request,
+			HttpServletResponse response)
 	{
 		try
 		{
@@ -199,7 +193,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	 * 
 	 * @throws ServletException
 	 */
-	public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
+	public void service(HttpServletRequest request, HttpServletResponse response)
+			throws IOException, ServletException
 	{
 		// time the service
 		long startTime = System.currentTimeMillis();
@@ -257,11 +252,13 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		}
 
 		// end timing the service
-		logger.info("service completed in " + (System.currentTimeMillis() - startTime) + " milliseconds");
+		logger.info("service completed in "
+				+ (System.currentTimeMillis() - startTime) + " milliseconds");
 		logger.info("------------------------------");
 	}
 
-	private void handleDownloadFile(HttpServletRequest request, HttpServletResponse response) throws IOException
+	private void handleDownloadFile(HttpServletRequest request,
+			HttpServletResponse response) throws IOException
 	{
 		// setup the output-stream
 		response.setBufferSize(10000);
@@ -269,7 +266,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 
 		// get the relative path
 		String filename = request.getRequestURI().substring(
-				request.getServletPath().length() + request.getContextPath().length());
+				request.getServletPath().length()
+						+ request.getContextPath().length());
 		logger.debug("THEFILETODOWNLOAD: " + filename);
 
 		String tempDir = System.getProperty("java.io.tmpdir");
@@ -299,8 +297,9 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		}
 	}
 
-	private void handleSOAPrequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-			IOException, DatabaseException, NamingException
+	private void handleSOAPrequest(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException,
+			DatabaseException, NamingException
 	{
 		// delegate to CXF servlet
 		// load the bus if needed
@@ -383,8 +382,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 
 	}
 
-	public void handleGUIrequest(HttpServletRequest request, HttpServletResponse response) throws IOException,
-			DatabaseException
+	public void handleGUIrequest(HttpServletRequest request,
+			HttpServletResponse response) throws IOException, DatabaseException
 	{
 		// get database session (note: this shouldn't be in the tomcat
 		// session!!!
@@ -396,10 +395,13 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			db = getDatabase();
 			// db.beginTx(); DISCUSSION
 			System.err.println("???" + db);
-			if(db != null){
+			if (db != null)
+			{
 				dbAvailable = true;
 				logger.info("created database " + db);
-			}else{
+			}
+			else
+			{
 				dbErrorMessage = "database is NULL";
 			}
 		}
@@ -407,7 +409,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		{
 			logger.error("Database creation failed: " + e.getMessage());
 			e.printStackTrace();
-			//throw new DatabaseException(e);
+			// throw new DatabaseException(e);
 			dbErrorMessage = e.getMessage();
 		}
 
@@ -415,21 +417,25 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		HttpSession session = request.getSession();
 		Login userLogin = null;
 		// Get appplication from session (or create one)
-		ScreenModel<?> molgenis = (UserInterface<?>) session.getAttribute("application");
-		
-		//on logout throw whole session away.
-		if(request.getParameter("__action") != null && request.getParameter("__action").equalsIgnoreCase("Logout"))
+		ApplicationController molgenis = (ApplicationController) session
+				.getAttribute("application");
+
+		// on logout throw whole session away.
+		if (request.getParameter("__action") != null
+				&& request.getParameter("__action").equalsIgnoreCase("Logout"))
 		{
 			molgenis = null;
-			session.setAttribute("application",null);
+			session.setAttribute("application", null);
 		}
 		if (molgenis == null)
 		{
 			userLogin = createLogin(db, request);
 			if ((!userLogin.isAuthenticated() && userLogin.isLoginRequired())
-					|| (request.getParameter("logout") != null && !session.isNew()))
+					|| (request.getParameter("logout") != null && !session
+							.isNew()))
 			{
-				response.setHeader("WWW-Authenticate", "BASIC realm=\"MOLGENIS\"");
+				response.setHeader("WWW-Authenticate",
+						"BASIC realm=\"MOLGENIS\"");
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 				session.invalidate();
 				return;
@@ -437,9 +443,10 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			molgenis = createUserInterface(userLogin);
 		}
 		// ((UserInterface)molgenis).setDatabase(db);
-		userLogin = ((UserInterface<?>) molgenis).getLogin();
-		
-		if(dbAvailable){
+		userLogin = ((ApplicationController) molgenis).getLogin();
+
+		if (dbAvailable)
+		{
 			db.setLogin(userLogin);
 		}
 
@@ -450,21 +457,29 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 
 			// action == download an attached file
 			// FIXME move to form controllers handlerequest...
-			if (FileInput.ACTION_DOWNLOAD.equals(requestTuple.getString(ScreenModel.INPUT_ACTION)))
+			if (FileInput.ACTION_DOWNLOAD.equals(requestTuple
+					.getString(ScreenModel.INPUT_ACTION)))
 			{
 				logger.info(requestTuple);
 
-				File file = new File(db.getFilesource() + "/"
-						+ requestTuple.getString(FileInput.INPUT_CURRENT_DOWNLOAD));
+				File file = new File(db.getFilesource()
+						+ "/"
+						+ requestTuple
+								.getString(FileInput.INPUT_CURRENT_DOWNLOAD));
 
 				FileInputStream filestream = new FileInputStream(file);
 
 				response.setContentType("application/x-download");
 				response.setContentLength((int) file.length());
-				response.setHeader("Content-Disposition", "attachment; filename="
-						+ requestTuple.getString(FileInput.INPUT_CURRENT_DOWNLOAD));
+				response
+						.setHeader(
+								"Content-Disposition",
+								"attachment; filename="
+										+ requestTuple
+												.getString(FileInput.INPUT_CURRENT_DOWNLOAD));
 
-				BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
+				BufferedOutputStream out = new BufferedOutputStream(response
+						.getOutputStream());
 				byte[] buffer = new byte[1024];
 				int bytes_read;
 				while ((bytes_read = filestream.read(buffer)) != -1)
@@ -478,16 +493,18 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 
 			// action == download, but now in a standard way, handled by
 			// controller
-			else if (ScreenModel.Show.SHOW_DOWNLOAD.equals(requestTuple.getString(FormModel.INPUT_SHOW)))
+			else if (ScreenModel.Show.SHOW_DOWNLOAD.equals(requestTuple
+					.getString(FormModel.INPUT_SHOW)))
 			{
 				// get the screen that will hande the download request
-				ScreenModel<?> screen = molgenis.get(requestTuple.getString(ScreenModel.INPUT_TARGET));
-				ScreenController<?,? extends ScreenModel<?>> controller = screen.getController();
+				ScreenController<? extends ScreenModel> controller = molgenis
+						.get(requestTuple.getString(ScreenModel.INPUT_TARGET));
 
 				// set the headers for the download
 				response.setContentType("application/x-download");
-				response.setHeader("Content-Disposition", "attachment; filename=" + screen.getName().toLowerCase()
-						+ ".txt");
+				response.setHeader("Content-Disposition",
+						"attachment; filename="
+								+ controller.getName().toLowerCase() + ".txt");
 
 				// let the handleRequest produce the content
 				PrintWriter out = new PrintWriter(response.getOutputStream());
@@ -499,24 +516,29 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			// handle normal event and then write the response
 			else
 			{
-				//capture select
-				if(requestTuple.getString("select") != null)
+				// capture select
+				if (requestTuple.getString("select") != null)
 				{
-					//get the screen to be selected
-					ScreenModel<?> toBeSelected = molgenis.get(requestTuple.getString("select"));
-					//select leaf in its parent
-					try{
-						toBeSelected.getParent().setSelected(requestTuple.getString("select"));
-					}catch(NullPointerException npe){
-						//screen does not exists, ignore request
+					// get the screen to be selected
+					ScreenController<?> toBeSelected = molgenis
+							.get(requestTuple.getString("select"));
+					// select leaf in its parent
+					try
+					{
+						toBeSelected.getParent().setSelected(
+								requestTuple.getString("select"));
+					}
+					catch (NullPointerException npe)
+					{
+						// screen does not exists, ignore request
 					}
 				}
-				
-				
-				molgenis.getController().handleRequest(db, requestTuple);
+
+				molgenis.handleRequest(db, requestTuple);
 				// handle request
-				molgenis.getController().reload(db); // reload the application
-				logger.debug("reloaded " + molgenis.getName() + " screen, rendering...");
+				molgenis.reload(db); // reload the application
+				logger.debug("reloaded " + molgenis.getName()
+						+ " screen, rendering...");
 
 				// ((UserInterface)molgenis).getDatabase().close();
 				// ((UserInterface)molgenis).setDatabase(null);
@@ -527,90 +549,166 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				response.setContentType("text/html");
 				// response.setBufferSize(10000);
 				PrintWriter writer = response.getWriter();
+				
+				//TODO set application errors (should not be necessary anymore?)
+//				if (dbAvailable)
+//				{
+//					args.put("applicationHtmlError", "");
+//				}
+//				else
+//				{
+//					args.put("applicationHtmlError",
+//							"<p class=\"errormessage\">Database creation error: "
+//									+ dbErrorMessage + "</p>");
+//				}
+
 
 				// Render result
-				logger.info("create template");
-				String templatefile = "Main.ftl";
-
-				// Create a freemarker template
-				logger.debug("trying to process template '" + templatefile + "'");
-				Configuration freemarkerConf = this.getFreemarkerConfiguration(molgenis);
-				Template freemarkerTemplate = freemarkerConf.getTemplate(templatefile);
-				Map<String, Object> args = new TreeMap<String, Object>();
-				args.put("title", molgenis.getLabel());
-				args.put("application", molgenis);
-				
-				if(dbAvailable){
-					args.put("applicationHtmlError", "");
-				}else{
-					args.put("applicationHtmlError", "<p class=\"errormessage\">Database creation error: "+dbErrorMessage+"</p>");
-				}
-				
-				// args.put("username", userLogin.getUserName());
-				
-				
-				/**
-				 * Work in progress: mechanism to pass REST calls to underlying screens (ie. plugins! much needed!)
-				for(int i = 0; i < requestTuple.size(); i ++){
-					args.put(requestTuple.getFields().get(i), requestTuple.getString(i));
-					//System.out.println("**** putting: " + requestTuple.getFields().get(i) + " TO " + requestTuple.getString(i));
-				}
-				*/
-
-				// FIXME complex screen handling
-				String show = requestTuple.getString(FormModel.INPUT_SHOW);
-				if (show != null)
+				String show = requestTuple
+				.getString(FormModel.INPUT_SHOW);
+				if (ScreenModel.Show.SHOW_DIALOG.equals(show))
 				{
-					args.put("show", requestTuple.getString("__show"));
-
-					// if dialog, only show target
-					if (ScreenModel.Show.SHOW_DIALOG.equals(show))
-					{
-						ScreenModel<?> target = molgenis.get(requestTuple.getString("__target"));
-						args.put("target", target.getName());
-						args.put("application", target);
-						// args.put("show", "dialogue");
-					}
-
-					if (requestTuple.getString("__show").equals("massupdate"))
-					{
-						List<?> massupdate = requestTuple.getList("massUpdate");
-						// if empty list, create empty list
-						if (massupdate == null) massupdate = new ArrayList<Object>();
-
-						Vector<String> massupdate_updateable = new Vector<String>();
-						Vector<String> massupdate_readonly = getVector(requestTuple.getObject("massUpdate_readonly"));
-
-						for (Object id : massupdate)
-						{
-							if (!massupdate_readonly.contains(id)) massupdate_updateable.add(id.toString());
-						}
-
-						args.put("massupdate", massupdate_updateable);
-					}
+					molgenis.getModel().setShow(show);
+					ScreenController<?> target = molgenis.get(requestTuple
+							.getString("__target"));
+					molgenis.getModel().setTarget(target);
+					writer.write(molgenis.render());
+				}
+				else if ("massupdate".equals(show))
+				{
+					molgenis.getModel().setShow("show");
+					writer.write(molgenis.render());
+					
+//					List<?> massupdate = requestTuple
+//							.getList("massUpdate");
+//					// if empty list, create empty list
+//					if (massupdate == null) massupdate = new ArrayList<Object>();
+//
+//					Vector<String> massupdate_updateable = new Vector<String>();
+//					Vector<String> massupdate_readonly = getVector(requestTuple
+//							.getObject("massUpdate_readonly"));
+//
+//					for (Object id : massupdate)
+//					{
+//						if (!massupdate_readonly.contains(id)) massupdate_updateable
+//								.add(id.toString());
+//					}
+//
+//					args.put("massupdate", massupdate_updateable);
 				}
 				else
 				{
-					args.put("show", "root");
+					molgenis.getModel().setShow("root");
+					writer.write(molgenis.render());
 				}
-				logger.info("applying layout template");
-	
-				if(linkoutOverlay()){
-					logger.info("applying linkout overlay");
-					Writer result = new StringWriter();
-					PrintWriter tmpWriter = new PrintWriter(result);
-					freemarkerTemplate.process(args, tmpWriter);
-					String templated = result.toString();
-					LinkOutOverlay linker = new LinkOutOverlay();
-					String afterOverlay = linker.addlinkouts(templated);
-					writer.write(afterOverlay);
-				}else{
-					freemarkerTemplate.process(args, writer);
-				}
-				writer.close();
 				
-				//done, get rid of screen messages here?
-				((UserInterface<?>)molgenis).clearAllMessages();
+				
+
+//				if (false)
+//				{
+//					logger.info("create template");
+//					String templatefile = "Main.ftl";
+//
+//					// Create a freemarker template
+//					logger.debug("trying to process template '" + templatefile
+//							+ "'");
+//					Configuration freemarkerConf = this
+//							.getFreemarkerConfiguration(molgenis);
+//					Template freemarkerTemplate = freemarkerConf
+//							.getTemplate(templatefile);
+//					Map<String, Object> args = new TreeMap<String, Object>();
+//					args.put("title", molgenis.getLabel());
+//					args.put("application", molgenis);
+//					args.put("widgetfactory", new WidgetFactory());
+//
+//					if (dbAvailable)
+//					{
+//						args.put("applicationHtmlError", "");
+//					}
+//					else
+//					{
+//						args.put("applicationHtmlError",
+//								"<p class=\"errormessage\">Database creation error: "
+//										+ dbErrorMessage + "</p>");
+//					}
+
+					// args.put("username", userLogin.getUserName());
+
+					/**
+					 * Work in progress: mechanism to pass REST calls to
+					 * underlying screens (ie. plugins! much needed!) for(int i
+					 * = 0; i < requestTuple.size(); i ++){
+					 * args.put(requestTuple.getFields().get(i),
+					 * requestTuple.getString(i));
+					 * //System.out.println("**** putting: " +
+					 * requestTuple.getFields().get(i) + " TO " +
+					 * requestTuple.getString(i)); }
+					 */
+
+					// FIXME complex screen handling
+//					String show = requestTuple
+//							.getString(FormModel.INPUT_SHOW);
+//					if (show != null)
+//					{
+//						args.put("show", requestTuple.getString("__show"));
+//
+//						// if dialog, only show target
+//						if (ScreenModel.Show.SHOW_DIALOG.equals(show))
+//						{
+//							ScreenModel<?> target = molgenis.get(requestTuple
+//									.getString("__target"));
+//							args.put("target", target.getName());
+//							args.put("application", target);
+//							// args.put("show", "dialogue");
+//						}
+//
+//						if (requestTuple.getString("__show").equals(
+//								"massupdate"))
+//						{
+//							List<?> massupdate = requestTuple
+//									.getList("massUpdate");
+//							// if empty list, create empty list
+//							if (massupdate == null) massupdate = new ArrayList<Object>();
+//
+//							Vector<String> massupdate_updateable = new Vector<String>();
+//							Vector<String> massupdate_readonly = getVector(requestTuple
+//									.getObject("massUpdate_readonly"));
+//
+//							for (Object id : massupdate)
+//							{
+//								if (!massupdate_readonly.contains(id)) massupdate_updateable
+//										.add(id.toString());
+//							}
+//
+//							args.put("massupdate", massupdate_updateable);
+//						}
+//					}
+//					else
+//					{
+//						args.put("show", "root");
+//					}
+//					logger.info("applying layout template");
+
+//					if (linkoutOverlay())
+//					{
+//						logger.info("applying linkout overlay");
+//						Writer result = new StringWriter();
+//						PrintWriter tmpWriter = new PrintWriter(result);
+//						freemarkerTemplate.process(args, tmpWriter);
+//						String templated = result.toString();
+//						LinkOutOverlay linker = new LinkOutOverlay();
+//						String afterOverlay = linker.addlinkouts(templated);
+//						writer.write(afterOverlay);
+//					}
+//					else
+//					{
+//						freemarkerTemplate.process(args, writer);
+//					}
+//				}
+				writer.close();
+
+				// done, get rid of screen messages here?
+				((ApplicationController) molgenis).clearAllMessages();
 			}
 			// db.commitTx(); DISCUSSION
 		}
@@ -632,12 +730,14 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	 * @param response
 	 * @throws IOException
 	 */
-	public void handleRAPIrequest(HttpServletRequest request, HttpServletResponse response) throws IOException
+	public void handleRAPIrequest(HttpServletRequest request,
+			HttpServletResponse response) throws IOException
 	{
 		PrintWriter out = response.getWriter();
 
 		String filename = request.getRequestURI().substring(
-				request.getServletPath().length() + request.getContextPath().length());
+				request.getServletPath().length()
+						+ request.getContextPath().length());
 		logger.info("getting file: " + filename);
 		logger.info("url: " + request.getRequestURL());
 		logger.info("port: " + request.getLocalPort());
@@ -655,16 +755,18 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			// String server =
 			// this.getMolgenisHostName()+request.getContextPath();
 			String localName = request.getLocalName();
-			if(localName.equals("0.0.0.0")) localName = "localhost";
-			String server = "http://" + localName + ":" + request.getLocalPort()
-					+ request.getContextPath();
+			if (localName.equals("0.0.0.0")) localName = "localhost";
+			String server = "http://" + localName + ":"
+					+ request.getLocalPort() + request.getContextPath();
 			String rSource = server + "/api/R/";
 			// getRequestURL omits port!
-			out.println("#step1: (first time only) install RCurl package from omegahat or bioconductor, i.e. <br>");
+			out
+					.println("#step1: (first time only) install RCurl package from omegahat or bioconductor, i.e. <br>");
 			out.println("#source(\"http://bioconductor.org/biocLite.R\")<br>");
 			out.println("#biocLite(\"RCurl\")<br>");
 			out.println();
-			out.println("#step2: source this file to use the MOLGENIS R interface, i.e. <br>");
+			out
+					.println("#step2: source this file to use the MOLGENIS R interface, i.e. <br>");
 			out.println("#source(\"" + rSource + "\")<br>");
 			out.println();
 			out.println("molgenispath <- paste(\"" + rSource + "\")");
@@ -695,8 +797,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			filename = filename.replace(".", "/");
 			filename = filename.substring(0, filename.length() - 2) + ".R";
 			// map to hard drive, minus path papp/servlet
-			File root = new File(this.getClass().getResource("source.R").getFile()).getParentFile().getParentFile()
-					.getParentFile();
+			File root = new File(this.getClass().getResource("source.R")
+					.getFile()).getParentFile().getParentFile().getParentFile();
 
 			if (filename.equals("source.R"))
 			{
@@ -705,7 +807,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			File source = new File(root.getAbsolutePath() + "/" + filename);
 
 			// up to root of app
-			logger.info("trying to load R file: " + filename + " from path " + source);
+			logger.info("trying to load R file: " + filename + " from path "
+					+ source);
 			if (source.exists())
 			{
 				this.writeURLtoOutput(source.toURI().toURL(), out);
@@ -725,7 +828,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	 * @param request
 	 * @param response
 	 */
-	public void handleDownload(HttpServletRequest request, HttpServletResponse response)
+	public void handleDownload(HttpServletRequest request,
+			HttpServletResponse response)
 	{
 		// setup the output-stream
 		response.setBufferSize(10000);
@@ -733,11 +837,16 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		logger.info("starting download " + request.getPathInfo());
 		long start_time = System.currentTimeMillis();
 
-		//HttpSession session = request.getSession();
+		// HttpSession session = request.getSession();
 		PrintWriter out = null;
-		try{
+		try
+		{
 			out = response.getWriter();
-		}catch (IOException e){	e.printStackTrace(); }
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 		Database db = null;
 		try
 		{
@@ -747,7 +856,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			{
 
 				// check whether a class is chosen
-				if (request.getPathInfo() == null || request.getPathInfo().equals("/find"))
+				if (request.getPathInfo() == null
+						|| request.getPathInfo().equals("/find"))
 				{
 					logger.debug("show 'choose entity' dialogue");
 					out.println("<html><body>");
@@ -756,10 +866,13 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					for (String className : db.getEntityNames())
 					{
 
-						if (request.getPathInfo() == null) out.println("<a href=\"find/" + className
-								+ "?__showQueryDialogue=true\">" + className + "</a><br>");
+						if (request.getPathInfo() == null) out
+								.println("<a href=\"find/" + className
+										+ "?__showQueryDialogue=true\">"
+										+ className + "</a><br>");
 						else
-							out.println("<a href=\"" + className + "\">" + className + "</a><br>");
+							out.println("<a href=\"" + className + "\">"
+									+ className + "</a><br>");
 					}
 
 					out.println("</body></html>");
@@ -770,7 +883,9 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				String entityName = request.getPathInfo().substring(1);
 
 				// check whether a querystring has to build
-				if (request.getQueryString() != null && request.getQueryString().equals("__showQueryDialogue=true"))
+				if (request.getQueryString() != null
+						&& request.getQueryString().equals(
+								"__showQueryDialogue=true"))
 				{
 					logger.debug("show 'set filters' dialogue");
 					out.println("<html><body><form>");
@@ -779,18 +894,29 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 									+ entityName
 									+ "' data. (<a href=\"../api/find\">back</a>)<br><br> Here you can have to set at least one filter:<br>");
 					out.println("<table>");
-					for (String field : ((Entity) Class.forName(entityName).newInstance()).getFields())
+					for (String field : ((Entity) Class.forName(entityName)
+							.newInstance()).getFields())
 					{
-						out.println("<tr><td>" + field + "</td><td>=</td><td><input name=\"" + field
+						out.println("<tr><td>" + field
+								+ "</td><td>=</td><td><input name=\"" + field
 								+ "\" type=\"text\"></td><tr/>");
 					}
 					out.println("</table>");
-					out.println("<SCRIPT>" + "function createFilterURL(fields)" + "{	" + "	var query = '';"
-							+ "	var count = 0;" + "	for (i = 0; i < fields.length; i++) " + "	{"
-							+ "		if (fields[i].value != '' && fields[i].name != '__submitbutton')" + "		{"
-							+ "			if(count > 0)" + "				query +='&';"
-							+ "			query += fields[i].name + '=' + fields[i].value;" + "			count++;" + "		}" + "	}"
-							+ "	return query" + "}" + "</SCRIPT>");
+					out
+							.println("<SCRIPT>"
+									+ "function createFilterURL(fields)"
+									+ "{	"
+									+ "	var query = '';"
+									+ "	var count = 0;"
+									+ "	for (i = 0; i < fields.length; i++) "
+									+ "	{"
+									+ "		if (fields[i].value != '' && fields[i].name != '__submitbutton')"
+									+ "		{"
+									+ "			if(count > 0)"
+									+ "				query +='&';"
+									+ "			query += fields[i].name + '=' + fields[i].value;"
+									+ "			count++;" + "		}" + "	}"
+									+ "	return query" + "}" + "</SCRIPT>");
 
 					// with security break out.println( "<input
 					// name=\"__submitbutton\" type=\"submit\" value=\"download
@@ -803,8 +929,10 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					out
 							.println("<input name=\"__submitbutton\" type=\"submit\" value=\"download tab delimited file\" onclick=\""
 									+ "window.location.href = 'http://' + window.location.host + window.location.pathname + '?'+createFilterURL(this.form.elements);\"><br>");
-					out.println("TIP: notice how the url is bookmarkeable for future downloads!");
-					out.println("TIP: click 'save as...' and name it as '.txt' file.");
+					out
+							.println("TIP: notice how the url is bookmarkeable for future downloads!");
+					out
+							.println("TIP: click 'save as...' and name it as '.txt' file.");
 					out.println("</form></body></html>");
 					return;
 				}
@@ -815,7 +943,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				// use get
 				if (request.getQueryString() != null)
 				{
-					logger.debug("handle find query via http-get: " + request.getQueryString());
+					logger.debug("handle find query via http-get: "
+							+ request.getQueryString());
 					String[] ruleStrings = request.getQueryString().split("&");
 
 					for (String rule : ruleStrings)
@@ -829,14 +958,21 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 						}
 						else if (ruleElements[1].startsWith("["))
 						{
-							ruleElements[1] = ruleElements[1].replace("%20", " ");
-							String[] values = ruleElements[1].substring(1, ruleElements[1].indexOf("]")).split(",");
-							rulesList.add(new QueryRule(ruleElements[0], QueryRule.Operator.IN, values));
+							ruleElements[1] = ruleElements[1].replace("%20",
+									" ");
+							String[] values = ruleElements[1].substring(1,
+									ruleElements[1].indexOf("]")).split(",");
+							rulesList.add(new QueryRule(ruleElements[0],
+									QueryRule.Operator.IN, values));
 						}
 						else
 						{
-							if (ruleElements[1] != "" && !"__submitbutton".equals(ruleElements[0])) rulesList
-									.add(new QueryRule(ruleElements[0], QueryRule.Operator.EQUALS, ruleElements[1]));
+							if (ruleElements[1] != ""
+									&& !"__submitbutton"
+											.equals(ruleElements[0])) rulesList
+									.add(new QueryRule(ruleElements[0],
+											QueryRule.Operator.EQUALS,
+											ruleElements[1]));
 						}
 					}
 				}
@@ -844,18 +980,26 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				else
 				{
 					Tuple requestTuple = new HttpServletRequestTuple(request);
-					logger.debug("handle find query via http-post with parameters: " + requestTuple.getFields());
+					logger
+							.debug("handle find query via http-post with parameters: "
+									+ requestTuple.getFields());
 					for (String name : requestTuple.getFields())
 					{
 						if (requestTuple.getString(name).startsWith("["))
 						{
-							String[] values = requestTuple.getString(name).substring(1,
-									requestTuple.getString(name).indexOf("]")).split(",");
-							rulesList.add(new QueryRule(name, QueryRule.Operator.IN, values));
+							String[] values = requestTuple.getString(name)
+									.substring(
+											1,
+											requestTuple.getString(name)
+													.indexOf("]")).split(",");
+							rulesList.add(new QueryRule(name,
+									QueryRule.Operator.IN, values));
 						}
 						else
 						{
-							rulesList.add(new QueryRule(name, QueryRule.Operator.EQUALS, requestTuple.getString(name)));
+							rulesList.add(new QueryRule(name,
+									QueryRule.Operator.EQUALS, requestTuple
+											.getString(name)));
 						}
 					}
 				}
@@ -864,15 +1008,18 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				CsvWriter writer = new CsvWriter(out);
 				// CsvWriter writer = new CsvFileWriter( new
 				// File("c:/testout.txt") );
-				db.find(getClassForName(entityName), writer, rulesList.toArray(new QueryRule[rulesList
-						.size()]));
+				db.find(getClassForName(entityName), writer, rulesList
+						.toArray(new QueryRule[rulesList.size()]));
 			}
-			catch (Exception e){
-				out.println("<div class='errormessage'>"+ e.getMessage() +"</div>");
-				//e.printStackTrace();
-				//throw e;
+			catch (Exception e)
+			{
+				out.println("<div class='errormessage'>" + e.getMessage()
+						+ "</div>");
+				// e.printStackTrace();
+				// throw e;
 			}
-			finally{
+			finally
+			{
 				db.close();
 			}
 
@@ -880,23 +1027,28 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		}
 		catch (Exception e)
 		{
-			out.println("<div class='errormessage'>No database available to query: "+e.getMessage()+"</div>");
+			out
+					.println("<div class='errormessage'>No database available to query: "
+							+ e.getMessage() + "</div>");
 			logger.error(e);
 		}
-		logger.info("servlet took: " + (System.currentTimeMillis() - start_time));
+		logger.info("servlet took: "
+				+ (System.currentTimeMillis() - start_time));
 		logger.info("------------");
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	/*
 	 * No way to do this without warnings.
 	 */
-	private Class<? extends Entity> getClassForName(String entityName) throws ClassNotFoundException
+	private Class<? extends Entity> getClassForName(String entityName)
+			throws ClassNotFoundException
 	{
 		return (Class<? extends Entity>) Class.forName(entityName);
 	}
 
-	public void handleUpload(HttpServletRequest request, HttpServletResponse response)
+	public void handleUpload(HttpServletRequest request,
+			HttpServletResponse response)
 	{
 		// setup the output-stream
 		response.setBufferSize(10000);
@@ -923,20 +1075,26 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			{
 				try
 				{
-					out.println("<html><body><form method=\"post\" enctype=\"multipart/form-data\">");
+					out
+							.println("<html><body><form method=\"post\" enctype=\"multipart/form-data\">");
 					out.println("<h1>Data upload (step 1)</h1>");
 					out.println("Choose your data type.");
-					out.println("<table><tr><td><label>Data type:</label></td><td><select name=\"" + INPUT_DATATYPE
-							+ "\">");
+					out
+							.println("<table><tr><td><label>Data type:</label></td><td><select name=\""
+									+ INPUT_DATATYPE + "\">");
 
-					for (Class<? extends Entity> c : this.getDatabase().getEntityClasses())
+					for (Class<? extends Entity> c : this.getDatabase()
+							.getEntityClasses())
 					{
 						// write to screen
-						out.println("<option value=\"" + c.getName() + "\">" + c.getName() + "</option>");
+						out.println("<option value=\"" + c.getName() + "\">"
+								+ c.getName() + "</option>");
 					}
 					out.println("</select></td></tr>");
-					out.println("<tr><td></td><td><input type=\"submit\" name=\"" + INPUT_SUBMIT
-							+ "\" value=\"Submit\"></td></tr>");
+					out
+							.println("<tr><td></td><td><input type=\"submit\" name=\""
+									+ INPUT_SUBMIT
+									+ "\" value=\"Submit\"></td></tr>");
 					out.println("</table></form></body></html>");
 				}
 				catch (Exception e)
@@ -948,20 +1106,22 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 
 			}
 			// if no data provided, show csv input form
-			else if (requestTuple.getObject(INPUT_DATA) == null && requestTuple.getObject(INPUT_FILE) == null)
+			else if (requestTuple.getObject(INPUT_DATA) == null
+					&& requestTuple.getObject(INPUT_FILE) == null)
 			{
-//				try
-//				{
-//					String clazzName = requestTuple.getString(INPUT_DATATYPE);
-//					Class<? extends Entity> entityClass = getClassForName(clazzName);
-//					Entity template = entityClass.newInstance();
-//				}
-//				catch (Exception e)
-//				{
-//					out.println("Upload failed: " + e.getMessage() + "");
-//					e.printStackTrace();
-//					throw e;
-//				}
+				// try
+				// {
+				// String clazzName = requestTuple.getString(INPUT_DATATYPE);
+				// Class<? extends Entity> entityClass =
+				// getClassForName(clazzName);
+				// Entity template = entityClass.newInstance();
+				// }
+				// catch (Exception e)
+				// {
+				// out.println("Upload failed: " + e.getMessage() + "");
+				// e.printStackTrace();
+				// throw e;
+				// }
 			}
 			// process request
 			else
@@ -980,11 +1140,14 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					Tuple constants = new SimpleTuple();
 					for (String column : requestTuple.getFields())
 					{
-						if (!column.equals(INPUT_DATATYPE) && !column.equals(INPUT_DATA)
-								&& !column.equals(INPUT_ACTION) && !column.equals(INPUT_SUBMIT)
+						if (!column.equals(INPUT_DATATYPE)
+								&& !column.equals(INPUT_DATA)
+								&& !column.equals(INPUT_ACTION)
+								&& !column.equals(INPUT_SUBMIT)
 								&& !requestTuple.getString(column).equals(""))
 						{
-							constants.set(column, requestTuple.getObject(column));
+							constants.set(column, requestTuple
+									.getObject(column));
 						}
 					}
 					action = requestTuple.getString(INPUT_ACTION);
@@ -1001,8 +1164,10 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					if (action.equals("ADD"))
 					{
 						File temp = File.createTempFile("molgenis", "tab");
-						CsvWriter writer = new CsvWriter(new PrintWriter(new BufferedWriter(new FileWriter(temp))));
-						if (requestTuple.getObject(INPUT_SILENT) != null && requestTuple.getBool(INPUT_SILENT) == true)
+						CsvWriter writer = new CsvWriter(new PrintWriter(
+								new BufferedWriter(new FileWriter(temp))));
+						if (requestTuple.getObject(INPUT_SILENT) != null
+								&& requestTuple.getBool(INPUT_SILENT) == true)
 						{
 							writer.close();
 							writer = null;
@@ -1013,25 +1178,31 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 						if (requestTuple.getObject(INPUT_DATA) != null)
 						{
 							logger.info("processing textarea upload...");
-							nRowsChanged = db.add(entityClass, new CsvStringReader(requestTuple.getString(INPUT_DATA)),
-									writer);
+							nRowsChanged = db.add(entityClass,
+									new CsvStringReader(requestTuple
+											.getString(INPUT_DATA)), writer);
 						}
 						else if (requestTuple.getObject(INPUT_FILE) != null)
 						{
 							logger.info("processing file upload...");
-							nRowsChanged = db.add(entityClass, new CsvFileReader(requestTuple.getFile(INPUT_FILE)),
-									writer);
+							nRowsChanged = db.add(entityClass,
+									new CsvFileReader(requestTuple
+											.getFile(INPUT_FILE)), writer);
 						}
 						else
 						{
-							logger.error("no input data or input file provided.");
-							out.print("ERROR: no input data or input file provided.");
+							logger
+									.error("no input data or input file provided.");
+							out
+									.print("ERROR: no input data or input file provided.");
 						}
-						out.print("Uploaded " + formatter.format(nRowsChanged) + " rows of "
-								+ entityClass.getCanonicalName() + "\n");
+						out.print("Uploaded " + formatter.format(nRowsChanged)
+								+ " rows of " + entityClass.getCanonicalName()
+								+ "\n");
 
 						if (writer != null) writer.close();
-						BufferedReader reader = new BufferedReader(new FileReader(temp));
+						BufferedReader reader = new BufferedReader(
+								new FileReader(temp));
 						String line = null;
 						while ((line = reader.readLine()) != null)
 						{
@@ -1043,15 +1214,22 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					{
 						if (requestTuple.getObject(INPUT_DATA) != null)
 						{
-							nRowsChanged = db.update(entityClass, new CsvStringReader(requestTuple
-									.getString(INPUT_DATA)));
-							out.print("Updated " + formatter.format(nRowsChanged) + " rows of "
+							nRowsChanged = db.update(entityClass,
+									new CsvStringReader(requestTuple
+											.getString(INPUT_DATA)));
+							out.print("Updated "
+									+ formatter.format(nRowsChanged)
+									+ " rows of "
 									+ entityClass.getCanonicalName() + "\n");
 						}
 						else if (requestTuple.getObject(INPUT_FILE) != null)
 						{
-							nRowsChanged = db.update(entityClass, new CsvFileReader(requestTuple.getFile(INPUT_FILE)));
-							out.print("Updated " + formatter.format(nRowsChanged) + " rows of "
+							nRowsChanged = db.update(entityClass,
+									new CsvFileReader(requestTuple
+											.getFile(INPUT_FILE)));
+							out.print("Updated "
+									+ formatter.format(nRowsChanged)
+									+ " rows of "
 									+ entityClass.getCanonicalName() + "\n");
 						}
 					}
@@ -1059,15 +1237,22 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					{
 						if (requestTuple.getObject(INPUT_DATA) != null)
 						{
-							nRowsChanged = db.remove(entityClass, new CsvStringReader(requestTuple
-									.getString(INPUT_DATA)));
-							out.print("Removed " + formatter.format(nRowsChanged) + " rows of "
+							nRowsChanged = db.remove(entityClass,
+									new CsvStringReader(requestTuple
+											.getString(INPUT_DATA)));
+							out.print("Removed "
+									+ formatter.format(nRowsChanged)
+									+ " rows of "
 									+ entityClass.getCanonicalName() + "\n");
 						}
 						else if (requestTuple.getObject(INPUT_FILE) != null)
 						{
-							nRowsChanged = db.remove(entityClass, new CsvFileReader(requestTuple.getFile(INPUT_FILE)));
-							out.print("Removed " + formatter.format(nRowsChanged) + " rows of "
+							nRowsChanged = db.remove(entityClass,
+									new CsvFileReader(requestTuple
+											.getFile(INPUT_FILE)));
+							out.print("Removed "
+									+ formatter.format(nRowsChanged)
+									+ " rows of "
 									+ entityClass.getCanonicalName() + "\n");
 						}
 					}
@@ -1078,7 +1263,9 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				}
 				catch (Exception e)
 				{
-					out.print("Failed to " + action + " " + entityClass.getName() + ": " + e.getMessage() + "");
+					out.print("Failed to " + action + " "
+							+ entityClass.getName() + ": " + e.getMessage()
+							+ "");
 					e.printStackTrace();
 					throw e;
 				}
@@ -1092,7 +1279,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			logger.error(e);
 			e.printStackTrace();
 		}
-		logger.info("servlet took: " + (System.currentTimeMillis() - start_time) + " ms");
+		logger.info("servlet took: "
+				+ (System.currentTimeMillis() - start_time) + " ms");
 		logger.info("------------");
 	}
 
@@ -1125,9 +1313,11 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	 * @param out
 	 * @throws IOException
 	 */
-	private void writeURLtoOutput(URL source, PrintWriter out) throws IOException
+	private void writeURLtoOutput(URL source, PrintWriter out)
+			throws IOException
 	{
-		BufferedReader reader = new BufferedReader(new InputStreamReader(source.openStream()));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(source
+				.openStream()));
 		String sourceLine;
 		while ((sourceLine = reader.readLine()) != null)
 		{
@@ -1141,59 +1331,64 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	 * 
 	 * @throws IOException
 	 */
-	@SuppressWarnings("deprecation")
-	private Configuration getFreemarkerConfiguration(ScreenModel<?> userInterface) throws IOException
-	{
+	// @SuppressWarnings("deprecation")
+	// private Configuration getFreemarkerConfiguration(ScreenController<?,?>
+	// userInterface) throws IOException
+	// {
+	//
+	// Configuration conf = (Configuration)
+	// this.getServletContext().getAttribute("freemarker");
+	// if (conf == null)
+	// {
+	// conf = new Configuration();
+	// // set the template loading paths
+	// conf.setObjectWrapper(new DefaultObjectWrapper());
+	//
+	// //load templates from MOLGENIS
+	// ClassTemplateLoader molgenistl = new
+	// ClassTemplateLoader(MolgenisOriginalStyle.class, "");
+	// //load templates from plugins, can be anywere
+	// ClassTemplateLoader plugins = new ClassTemplateLoader();
+	//			
+	// // load templates from molgenis 'style' directory
+	// /*
+	// * FileTemplateLoader plugintl; try { File f = new File(
+	// * this.getServletContext().getRealPath( ("target/classes")));
+	// * if(!f.exists()) throw new IOException(); plugintl = new
+	// * FileTemplateLoader( f ); logger.debug("path target/classes does
+	// * exist???"); } catch(IOException e) {
+	// * logger.error("getFreemarkerConfiguration failed: path to
+	// * target/classes doesn't exist"); throw e; }
+	// */
+	// // load templates from the classpath (typically used for plugins)
+	// TemplateLoader[] loaders = new TemplateLoader[]
+	// { molgenistl, plugins };
+	// MultiTemplateLoader mtl = new MultiTemplateLoader(loaders);
+	// conf.setTemplateLoader(mtl);
+	// // bring them all together as multiple loaders in freemarker
+	//
+	// // Walk trought the tree of user interface screens to find out which
+	// // template files to autoinclude
+	// if (userInterface.getTemplate() != null)
+	// conf.addAutoInclude(userInterface.getTemplate());
+	// for (ScreenController<?,?> screen : userInterface.getAllChildren())
+	// {
+	// if (screen.getTemplate() != null)
+	// {
+	// String path = screen.getTemplate();
+	// logger.debug("loading plugin template '" + path + "'");
+	// conf.addAutoInclude(path);
+	// }
+	// }
+	//
+	// this.getServletContext().setAttribute("freemarker", conf);
+	// }
+	//
+	// return conf;
+	// }
 
-		Configuration conf = (Configuration) this.getServletContext().getAttribute("freemarker");
-		if (conf == null)
-		{
-			conf = new Configuration();
-			// set the template loading paths
-			conf.setObjectWrapper(new DefaultObjectWrapper());
-
-			//load templates from MOLGENIS
-			ClassTemplateLoader molgenistl = new ClassTemplateLoader(MolgenisOriginalStyle.class, "");
-			//load templates from plugins, can be anywere
-			ClassTemplateLoader plugins = new ClassTemplateLoader();
-			
-			// load templates from molgenis 'style' directory
-			/*
-			 * FileTemplateLoader plugintl; try { File f = new File(
-			 * this.getServletContext().getRealPath( ("target/classes")));
-			 * if(!f.exists()) throw new IOException(); plugintl = new
-			 * FileTemplateLoader( f ); logger.debug("path target/classes does
-			 * exist???"); } catch(IOException e) {
-			 * logger.error("getFreemarkerConfiguration failed: path to
-			 * target/classes doesn't exist"); throw e; }
-			 */
-			// load templates from the classpath (typically used for plugins)
-			TemplateLoader[] loaders = new TemplateLoader[]
-			{ molgenistl, plugins };
-			MultiTemplateLoader mtl = new MultiTemplateLoader(loaders);
-			conf.setTemplateLoader(mtl);
-			// bring them all together as multiple loaders in freemarker
-
-			// Walk trought the tree of user interface screens to find out which
-			// template files to autoinclude
-			if (userInterface.getViewTemplate() != null) conf.addAutoInclude(userInterface.getViewTemplate());
-			for (ScreenModel<?> screen : userInterface.getAllChildren())
-			{
-				if (screen.getViewTemplate() != null)
-				{
-					String path = screen.getViewTemplate();
-					logger.debug("loading plugin template '" + path + "'");
-					conf.addAutoInclude(path);
-				}
-			}
-
-			this.getServletContext().setAttribute("freemarker", conf);
-		}
-
-		return conf;
-	}
-
-	public void handleXREFrequest(HttpServletRequest request, HttpServletResponse response) throws ServletException
+	public void handleXREFrequest(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException
 	{
 		try
 		{
@@ -1209,42 +1404,45 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			// .../xref/find?entity=xxx&field=zzz&filter=aaaa
 
 			Tuple req = new HttpServletRequestTuple(request);
-			logger.debug("handling XREF request "+req);
+			logger.debug("handling XREF request " + req);
 
-			Class<? extends Entity> xref_entity = getClassForName(req.getString("xref_entity"));
+			Class<? extends Entity> xref_entity = getClassForName(req
+					.getString("xref_entity"));
 			String xref_field = req.getString("xref_field");
-			//get the xref labels from the string
+			// get the xref labels from the string
 			List<String> xref_labels = new ArrayList<String>();
 			for (String label : req.getString("xref_label").split(","))
 			{
 				xref_labels.add(label.toString());
 			}
 
-			//List<QueryRule> xref_filters = QueryRuleUtil.fromRESTstring(req.getString("xref_filters"));
+			// List<QueryRule> xref_filters =
+			// QueryRuleUtil.fromRESTstring(req.getString("xref_filters"));
 			String xref_label_search = req.getString("xref_label_search");
 
-			logger.debug(xref_entity + " " + xref_field + " " + xref_labels + " " + xref_label_search);
-			//List<String> queryFields = new ArrayList<String>();
-			//queryFields.add(xref_field);
-//			for (String xref_label : xref_labels)
-//			{
-//				queryFields.add(xref_label);
-//			}
-			
-			//create a query on xref_entity
+			logger.debug(xref_entity + " " + xref_field + " " + xref_labels
+					+ " " + xref_label_search);
+			// List<String> queryFields = new ArrayList<String>();
+			// queryFields.add(xref_field);
+			// for (String xref_label : xref_labels)
+			// {
+			// queryFields.add(xref_label);
+			// }
+
+			// create a query on xref_entity
 			Database db = getDatabase();
-			
-			//get the user interface and find the login
+
+			// get the user interface and find the login
 			HttpSession session = request.getSession();
-			ScreenModel<?> molgenis = (UserInterface<?>) session.getAttribute("application");
-			Login login = molgenis.getRootScreen().getLogin();
+			ScreenController<?>molgenis = (ApplicationController) session
+					.getAttribute("application");
+			Login login = molgenis.getApplicationController().getLogin();
 			db.setLogin(login);
 			Query<?> q = db.query(xref_entity);
-			
 
 			// create a CustomQuery
-//			JoinQuery q = getDatabase().query(queryFields);
-//			//q.addRules(xref_filters);
+			// JoinQuery q = getDatabase().query(queryFields);
+			// //q.addRules(xref_filters);
 			if (xref_label_search != null && xref_label_search != "")
 			{
 				for (String xref_label : xref_labels)
@@ -1264,31 +1462,32 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			for (int i = 0; i < result.size(); i++)
 			{
 				// logger.debug("using: " + result.get(i));
-				if (i > 0) 
+				if (i > 0)
 				{
 					json += ",";
 
 				}
-				
-				//write the xref key as set in xref_field
+
+				// write the xref key as set in xref_field
 				json += result.get(i).get(xref_field).toString() + ":\"";
-				
-				//write the label(s) as set in xref_label
+
+				// write the label(s) as set in xref_label
 				for (int j = 0; j < xref_labels.size(); j++)
 				{
-					//hack
-					if(j > 0) json += "|";
-					json += StringEscapeUtils.escapeJavaScript(result.get(i).get(xref_labels.get(j)).toString());
+					// hack
+					if (j > 0) json += "|";
+					json += StringEscapeUtils.escapeJavaScript(result.get(i)
+							.get(xref_labels.get(j)).toString());
 				}
 				json += "\"";
 				// logger.debug(result.get(i).get(xref_field) + ":\""
 				// + result.get(i).get(xref_label) + "\"");
 			}
 			json += "}";
-			
+
 			logger.debug(json);
-			
-			//write out
+
+			// write out
 			PrintWriter out = response.getWriter();
 			out.print(json);
 			out.close();
@@ -1303,43 +1502,45 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	// public abstract Object getRestImpl() throws DatabaseException,
 	// NamingException;
 
-//	@SuppressWarnings("unchecked")
-//	protected void setInterceptors(JAXRSServerFactoryBean bean, ServletConfig servletConfig, String paramName)
-//	{
-//		String value = servletConfig.getInitParameter(paramName);
-//		if (value == null)
-//		{
-//			return;
-//		}
-//		String[] values = value.split(" ");
-//		List<Interceptor> list = new ArrayList<Interceptor>();
-//		for (String interceptorVal : values)
-//		{
-//			String theValue = interceptorVal.trim();
-//			if (theValue.length() != 0)
-//			{
-//				try
-//				{
-//					Class<?> intClass = ClassLoaderUtils.loadClass(theValue, CXFNonSpringJaxrsServlet.class);
-//					list.add((Interceptor<? extends Message>) intClass.newInstance());
-//				}
-//				catch (Exception ex)
-//				{
-//					ex.printStackTrace();
-//				}
-//			}
-//		}
-//		if (list.size() > 0)
-//		{
-//			if ("jaxrs.outInterceptors".equals(paramName))
-//			{
-//				bean.setOutInterceptors(list);
-//			}
-//			else
-//			{
-//				bean.setInInterceptors(list);
-//			}
-//		}
-//	}
+	// @SuppressWarnings("unchecked")
+	// protected void setInterceptors(JAXRSServerFactoryBean bean, ServletConfig
+	// servletConfig, String paramName)
+	// {
+	// String value = servletConfig.getInitParameter(paramName);
+	// if (value == null)
+	// {
+	// return;
+	// }
+	// String[] values = value.split(" ");
+	// List<Interceptor> list = new ArrayList<Interceptor>();
+	// for (String interceptorVal : values)
+	// {
+	// String theValue = interceptorVal.trim();
+	// if (theValue.length() != 0)
+	// {
+	// try
+	// {
+	// Class<?> intClass = ClassLoaderUtils.loadClass(theValue,
+	// CXFNonSpringJaxrsServlet.class);
+	// list.add((Interceptor<? extends Message>) intClass.newInstance());
+	// }
+	// catch (Exception ex)
+	// {
+	// ex.printStackTrace();
+	// }
+	// }
+	// }
+	// if (list.size() > 0)
+	// {
+	// if ("jaxrs.outInterceptors".equals(paramName))
+	// {
+	// bean.setOutInterceptors(list);
+	// }
+	// else
+	// {
+	// bean.setInInterceptors(list);
+	// }
+	// }
+	// }
 
 }

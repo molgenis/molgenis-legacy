@@ -10,23 +10,24 @@ import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.generators.Generator;
 import org.molgenis.generators.GeneratorHelper;
+import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Form;
 import org.molgenis.model.elements.Model;
-import org.molgenis.model.elements.Tree;
 import org.molgenis.model.elements.UISchema;
 
 import freemarker.template.Template;
 
-public class TreeScreenGen extends Generator
+public class FormControllerGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(TreeScreenGen.class);
+	public static final transient Logger logger = Logger.getLogger(FormControllerGen.class);
 
 	@Override
 	public String getDescription()
 	{
-		return "Generates Tree screens.";
+		return "Generates form screens.";
 	}
-		
+	
+	
 	@Override
 	public void generate(Model model, MolgenisOptions options) throws Exception
 	{
@@ -40,29 +41,24 @@ public class TreeScreenGen extends Generator
 		
 		for(UISchema screen: schema.getChildren())
 		{
-			if(screen.getClass() == Tree.class)
+			if(screen.getClass() == Form.class)
 			{
 				
-				templateArgs.put( "tree", screen );
+				templateArgs.put( "form", screen );
+				((Entity) ((Form)screen).getRecord()).getAllFields().firstElement();
 				
 
 				UISchema parent = screen.getParent();
 				while (parent!=null && !parent.getClass().equals(Form.class)) //gets the parent form
 					parent = parent.getParent();
-				
 				templateArgs.put( "parent_form", parent);
 				templateArgs.put( "model", model );
-				templateArgs.put( "package", model.getName().toLowerCase() + ".screen" );
-				//templateArgs.put("trees", ((Tree) schema).getTrees());
-				//templateArgs.put("subscreens", schema.getChildren());
-				templateArgs.put("parentfield", ((Tree) screen).getParentField());
-				templateArgs.put("idfield", ((Tree) screen).getIdField());
-				templateArgs.put("labelfield", ((Tree) screen).getLabelField());				
+				templateArgs.put( "package", APP_DIR + ".ui" );
 				
-				File targetDir = new File( this.getSourcePath(options) + screen.getNamespace().replace(".","/").toLowerCase() + "/ui/"+ screen.getPathName() );
+				File targetDir = new File( this.getSourcePath(options) + APP_DIR + "/ui/" );
 				targetDir.mkdirs();
 
-				File targetFile = new File( targetDir + "/" + GeneratorHelper.firstToUpper( screen.getClassName() ) + "Tree.java" );
+				File targetFile = new File( targetDir + "/" + GeneratorHelper.getJavaName( screen.getClassName() ) + "FormController.java" );
 				OutputStream targetOut = new FileOutputStream( targetFile );
 
 				template.process( templateArgs, new OutputStreamWriter( targetOut ) );

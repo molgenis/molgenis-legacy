@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -31,9 +32,14 @@ public class GenericPlugin extends PluginModel<Entity>
 	// should this Plugin generate a form or not
 	public boolean isForm = true;
 
-	public GenericPlugin(String name, ScreenModel<?> parent)
+	public GenericPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
+	}
+
+	public GenericPlugin(String name, ScreenModel parent)
+	{
+		this(name, parent.getController());
 	}
 
 	@Override
@@ -87,6 +93,21 @@ public class GenericPlugin extends PluginModel<Entity>
 		// {
 		// //...
 		// }
+	}
+
+	@Override
+	public boolean isVisible()
+	{
+		if (this.getLogin().isAuthenticated()){
+			try {
+				if (this.getLogin().canRead(this)) {
+					return true;
+				}
+			} catch (DatabaseException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
 	}
 
 	public String render(String templatePath)
@@ -154,4 +175,11 @@ public class GenericPlugin extends PluginModel<Entity>
     {
 		this.setMessages();
     }
+
+	@Override
+	public void reset()
+	{
+		// TODO Auto-generated method stub
+		
+	}
 }

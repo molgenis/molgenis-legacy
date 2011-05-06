@@ -1,3 +1,4 @@
+<#include "Layout.ftl"/>
 <#macro form_header screen> 
 <div class="form_header" id="${screen.getName()}">
 	<table width="100%">
@@ -426,27 +427,27 @@ var molgenis_required = new Array(${required});
 </body>
 </#macro>
 
-<#macro FormView screen>
 	<#if show == "popup">
-		<@molgenis_header />
+		<@molgenis_header screen/>
 		<#--@form_popup screen/-->
-		<@layout screen.getCurrentCommand()/>
+		${screen.getCurrentCommand().render()}
 		<@molgenis_footer />	
 	<#elseif show == "newrecord">
-		<@molgenis_header />
+		<@molgenis_header screen/>
 		<@form_new screen/>
 		<@molgenis_footer />
 	<#elseif show == "upload">
-		<@molgenis_header />
+		<@molgenis_header screen/>
 		<@form_upload screen/>
 		<@molgenis_footer />
 	<#elseif show == "filterrecord">
-		<@molgenis_header />
+		<@molgenis_header screen/>
 		<@form_filter screen/>
 		<@molgenis_footer />
 	<#elseif show == "massupdate">
-		<@molgenis_header />
-		<@form_massupdate screen=screen massupdate=massupdate />
+		<@molgenis_header screen/>
+		MASSUPDATE
+		<@form_massupdate screen=screen.getCurrentCommand() massupdate=massupdate />
 		<@molgenis_footer />
 	<#else>
 <!--FormScreen ${screen.getName()}-->
@@ -495,4 +496,3 @@ var molgenis_required = new Array(${required});
 		</tr>
 	</table>
 </div>
-</#macro>

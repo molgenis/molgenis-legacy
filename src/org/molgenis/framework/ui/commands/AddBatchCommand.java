@@ -12,9 +12,9 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.ui.FormModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.SimpleModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.TextInput;
@@ -25,12 +25,12 @@ import org.molgenis.util.Tuple;
 /**
  * The command to add in batch/upload csv
  */
-public class AddBatchCommand<E extends Entity> extends SimpleCommand<E>
+public class AddBatchCommand<E extends Entity> extends SimpleCommand
 {
 	private static final long serialVersionUID = -4067952586340535730L;
 	public static final transient Logger logger = Logger.getLogger(AddBatchCommand.class);
 
-	public AddBatchCommand(String name, SimpleModel<E> owner)
+	public AddBatchCommand(String name, ScreenController<?> owner)
 	{
 		super(name, owner);
 		this.setLabel("Add in batch/upload CSV");

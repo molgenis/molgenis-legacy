@@ -22,26 +22,16 @@ import org.molgenis.util.Tuple;
 
 
 
-public class HtmlPluginController<E extends Entity> extends SimpleController<E, HtmlPluginModel<E>>
-{
-
-	// member variables
-	/** */
-	private HtmlPluginModel<E> screen;
-
-	/** */
-	//private static final transient Logger logger = Logger.getLogger(HtmlPluginController.class);
-	
-	
+public class HtmlPluginController<E extends Entity> extends SimpleScreenController<HtmlPluginModel<E>>
+{	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public HtmlPluginController(HtmlPluginModel<E> view)
+	public HtmlPluginController(String name, HtmlPluginModel<E> model, ScreenController<?> parent)
 	{
-		super(view);
-		this.screen = view;
+		super(name, model, parent);
 	}
 
 	// Controller overrides
@@ -58,9 +48,18 @@ public class HtmlPluginController<E extends Entity> extends SimpleController<E, 
 
 		// update children (done automatically)
 		// TODO: support more than one object? MS: Maybe, but is complex.
-		for (ScreenModel<?> v : screen.getChildren())
+		for (ScreenController<?> c : getChildren())
 		{
-			v.getController().reload(db);
+			try
+			{
+				c.reload(db);
+			}
+			catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				c.getModel().getMessages().add(new ScreenMessage("relaod failed: "+e.getMessage(),false));
+			}
 		}
 	}
 

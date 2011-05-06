@@ -37,7 +37,7 @@ import org.molgenis.util.Tree;
  * of such screens (i.e., ends up in templates). This helps clear separation of
  * state, logic and presentation.
  */
-public interface ScreenModel<E extends Entity> extends Serializable, Tree<ScreenModel<?>>, Templateable
+public interface ScreenModel extends Serializable
 {
 	/**
 	 * Bind parameter name for screen target. This parameter can be used by
@@ -109,13 +109,6 @@ public interface ScreenModel<E extends Entity> extends Serializable, Tree<Screen
 	public String getLabel();
 
 	/**
-	 * Get the user interface this screen is part of.
-	 * 
-	 * @return user-interface the root screen of this user interface
-	 */
-	public UserInterface<?> getRootScreen();
-
-	/**
 	 * Retrieve the database that is used by this screen.
 	 * <p>
 	 * QUESTION: this seems to specific!
@@ -131,7 +124,7 @@ public interface ScreenModel<E extends Entity> extends Serializable, Tree<Screen
 	 * 
 	 * @return the ScreenController
 	 */
-	public ScreenController<E,? extends ScreenModel<E>> getController();
+	public ScreenController<?> getController();
 
 	/**
 	 * Set the controller for this screen.
@@ -139,7 +132,7 @@ public interface ScreenModel<E extends Entity> extends Serializable, Tree<Screen
 	 * @param controller
 	 *            to handle events on this screen
 	 */
-	public  <M extends SimpleModel<E>, C extends ScreenController<E,M>> void setController(C controller);
+	public void setController(ScreenController<?> controller);
 
 	/**
 	 * Method to indicate whether the screen should be shown. E.g. because the
@@ -150,21 +143,29 @@ public interface ScreenModel<E extends Entity> extends Serializable, Tree<Screen
 	public boolean isVisible();
 
 	/**
-	 * Get access to the emailservice.
-	 * 
-	 * @return email service
-	 */
-	public EmailService getEmailService();
-
-	/**
-	 * Method to select what child should be selected
-	 * @param viewid
-	 */
-	void setSelected(String viewid);
-
-	/**
 	 * Get the screen messages
 	 * @return
 	 */
 	public Vector<ScreenMessage> getMessages();
+
+	/**
+	 * Get selected other models to be shown. 
+	 * This is a shorthand for getController().getSelected().getModel();
+	 * @return
+	 */
+	public ScreenModel getSelected();
+
+	/**
+	 * Set the screen messages
+	 * @param messages
+	 */
+	public void setMessages(Vector<ScreenMessage> messages);
+	
+	public void setMessages(ScreenMessage ... messages);
+	
+	/** Shorthand for setMessages(new ScreenMessage("success message",true)); */
+	public void setSuccess(String message);
+	
+	/** Shorthand for setMessages(new ScreenMessage("succes message",false)); */
+	public void setError(String message);
 }

@@ -10,8 +10,9 @@ import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.FormModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.SimpleModel;
+import org.molgenis.framework.ui.SimpleScreenModel;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
@@ -22,12 +23,12 @@ import org.molgenis.util.Tuple;
  *
  * @param <E>
  */
-public class DownloadAllCommand<E extends Entity> extends SimpleCommand<E>
+public class DownloadAllCommand<E extends Entity> extends SimpleCommand
 {
 	private static final long serialVersionUID = -2682113764135477871L;
 	public static final transient Logger logger = Logger.getLogger(DownloadAllCommand.class);
 
-	public DownloadAllCommand(String name, SimpleModel<E> parentScreen)
+	public DownloadAllCommand(String name, ScreenController<?>  parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("Download all");
@@ -41,8 +42,8 @@ public class DownloadAllCommand<E extends Entity> extends SimpleCommand<E>
 	{
 		logger.debug(this.getName());
 
-		FormModel<E> view = this.getFormScreen();
-		db.find(view.getEntityClass(), new CsvWriter(csvDownload), view.getRulesExclLimitOffset());
+		FormModel<? extends Entity> view = this.getFormScreen();
+		db.find(view.getController().getEntityClass(), new CsvWriter(csvDownload), view.getRulesExclLimitOffset());
 
 		return ScreenModel.Show.SHOW_MAIN;
 	}

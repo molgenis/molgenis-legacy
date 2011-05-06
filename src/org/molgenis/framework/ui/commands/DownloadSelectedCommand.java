@@ -16,8 +16,9 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.FormModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.SimpleModel;
+import org.molgenis.framework.ui.SimpleScreenModel;
 import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.CsvWriter;
@@ -29,13 +30,13 @@ import org.molgenis.util.Tuple;
  * 
  * @param <E>
  */
-public class DownloadSelectedCommand<E extends Entity> extends SimpleCommand<E>
+public class DownloadSelectedCommand<E extends Entity> extends SimpleCommand
 {
 	private static final long serialVersionUID = 3619865367653131342L;
 	public static final transient Logger logger = Logger
 			.getLogger(DownloadSelectedCommand.class);
 
-	public DownloadSelectedCommand(String name, SimpleModel<E> parentScreen)
+	public DownloadSelectedCommand(String name, ScreenController<?>  parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("Download selected");
@@ -59,7 +60,7 @@ public class DownloadSelectedCommand<E extends Entity> extends SimpleCommand<E>
 	{
 		logger.debug(this.getName());
 
-		FormModel<E> view = this.getFormScreen();
+		FormModel<?> view = this.getFormScreen();
 
 		Object ids = request.getList(FormModel.INPUT_SELECTED);
 		List<Object> records = new ArrayList<Object>();
@@ -81,7 +82,7 @@ public class DownloadSelectedCommand<E extends Entity> extends SimpleCommand<E>
 		}
 
 		// watch out, the "IN" operator expects an Object[]
-		db.find(view.getEntityClass(), new CsvWriter(csvDownload),
+		db.find(view.getController().getEntityClass(), new CsvWriter(csvDownload),
 				new QueryRule("id", Operator.IN, records));
 		return ScreenModel.Show.SHOW_MAIN;
 	}

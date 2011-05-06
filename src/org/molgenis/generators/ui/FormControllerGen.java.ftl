@@ -34,8 +34,10 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.QueryRule;
 
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FormController;
+import org.molgenis.framework.ui.FormModel.ParentFilter;
 import org.molgenis.framework.ui.html.*;
 
 
@@ -52,20 +54,20 @@ import ${xrefentity.getNamespace()}.${Name(xrefentity)};
 /**
  *
  */
-public class ${JavaName(form.className)}FormModel extends FormModel<${entity}>
+public class ${JavaName(form.className)}FormController extends FormController<${entity}>
 {
 	private static final long serialVersionUID = 1L;
 	
-	public ${JavaName(form.className)}FormModel()
+	public ${JavaName(form.className)}FormController()
 	{
 		this(null);
 	}
 	
-	public ${JavaName(form.className)}FormModel(ScreenModel parent)
+	public ${JavaName(form.className)}FormController(ScreenController<?> parent)
 	{
 		super( "${form.getVelocityName()}", parent );
-		this.setLabel("${form.label}");
-		this.setLimit(${form.limit});
+		getModel().setLabel("${form.label}");
+		getModel().setLimit(${form.limit});
 
 		<#if form.sortby?exists>
 		//sort is a bit hacky awaiting redesign of the Form classes
@@ -80,8 +82,8 @@ public class ${JavaName(form.className)}FormModel extends FormModel<${entity}>
 			e.printStackTrace();
 		}
 		</#if>	
-		this.setMode(FormModel.Mode.${form.viewType});
-		this.setCsvReader(new ${entity}CsvReader());
+		getModel().setMode(FormModel.Mode.${form.viewType});
+		getModel().setCsvReader(new ${entity}CsvReader());
 
 <#-- parent form filtering -->
 <#assign parent_xref = false>		
@@ -94,7 +96,7 @@ public class ${JavaName(form.className)}FormModel extends FormModel<${entity}>
 		<#list superclasses(parent_form.getRecord()) as parent_entity>
 			<#if parent_entity.getName() == field.xrefEntityName>
 		//filter on <#if field.getType() == "mref">ANY </#if>subform_entity.${name(field)} == parentform_entity.${name(field.xrefField)}
-		this.getParentFilters().add(new ParentFilter("${parent_form.name}","${SqlName(field.xrefField)}",Arrays.asList("${csv(field.xrefLabelNames)}".split(",")),"${SqlName(name(field))}"));
+		getModel().getParentFilters().add(new ParentFilter("${parent_form.name}","${SqlName(field.xrefField)}",Arrays.asList("${csv(field.xrefLabelNames)}".split(",")),"${SqlName(name(field))}"));
 			</#if>
 		</#list>
 	</#if>
@@ -107,22 +109,22 @@ public class ${JavaName(form.className)}FormModel extends FormModel<${entity}>
 		<#list superclasses(form.getRecord()) as subform_entity>
 			<#if subform_entity.getName() == field.xrefEntityName>
 		//filter on subform_entity.${name(field.xrefField)} == <#if field.getType() == "mref">ANY </#if> parentform_entity.${name(field)}
-		this.getParentFilters().add(new ParentFilter("${parent_form.name}","${SqlName(name(field))}",Arrays.asList("${csv(field.xrefLabelNames)}".split(",")),"${SqlName(field.xrefField)}"));		
+		getModel().getParentFilters().add(new ParentFilter("${parent_form.name}","${SqlName(name(field))}",Arrays.asList("${csv(field.xrefLabelNames)}".split(",")),"${SqlName(field.xrefField)}"));		
 			</#if>
 		</#list>
 	</#if>
 </#list>
 </#if>	
 <#list form.commands as command>
-		this.addCommand(new ${command}(this));
+		getModel().addCommand(new ${command}(this));
 </#list>		
 <#if form.readOnly>
-		this.setReadonly(true);
+		getModel().setReadonly(true);
 </#if>
 
 <#list form.getChildren() as subscreen>
 		<#assign screentype = Name(subscreen.getType().toString()?lower_case) />
-		<#if screentype == "Form"><#assign screentype = "FormModel"/></#if>
+		<#if screentype == "Form"><#assign screentype = "FormController"/></#if>
 		new ${package}.${JavaName(subscreen)}${screentype}(this);
 </#list>		
 	}
@@ -133,7 +135,7 @@ public class ${JavaName(form.className)}FormModel extends FormModel<${entity}>
 	
 		${JavaName(entity)}Form form = new ${JavaName(entity)}Form(entity);
 		form.setNewRecord(newrecord);
-		form.setReadonly(isReadonly());
+		form.setReadonly(getModel().isReadonly());
 		<#if form.hideFields?size &gt; 0>form.setHiddenColumns(Arrays.asList(new String[]{${csvQuotedEntity(entity, form.hideFields)}}));</#if>
 		<#if form.compactView?size &gt; 0>form.setCompactView(Arrays.asList(new String[]{${csvQuoted(form.compactView)}}));</#if>
 		return form;
@@ -141,11 +143,13 @@ public class ${JavaName(form.className)}FormModel extends FormModel<${entity}>
 	
 	public void resetSystemHiddenColumns()
 	{
+		Vector<String> systemHiddenColumns = new Vector<String>();
 <#list form.getRecord().getAllFields() as field>
 	<#if field.isHidden() || field.hidden>
-		this.systemHiddenColumns.add("${name(field)}");
+		systemHiddenColumns.add("${name(field)}");
 	</#if>
 </#list>
+        getModel().setSystemHiddenColumns(systemHiddenColumns);
 	}
 
 	@Override	
@@ -164,10 +168,11 @@ public class ${JavaName(form.className)}FormModel extends FormModel<${entity}>
 	@Override
 	public void resetCompactView()
 	{
-		this.compactView = new ArrayList<String>();
+		ArrayList<String> compactView = new ArrayList<String>();
 <#list form.getCompactView() as field_name>
-		this.compactView.add("${field_name}");
+		compactView.add("${field_name}");
 </#list>	
+        getModel().setCompactView(compactView);
 	}
 	
 	@Override

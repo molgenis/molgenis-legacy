@@ -9,18 +9,18 @@ import java.util.List;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.FormModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.SimpleModel;
+import org.molgenis.framework.ui.SimpleScreenModel;
 import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class ViewEditViewCommand<E extends Entity> extends SimpleCommand<E>
+public class ViewEditViewCommand extends SimpleCommand
 {
 	private static final long serialVersionUID = -4074166087593025109L;
 
-	public ViewEditViewCommand(String name, SimpleModel<E> parentScreen)
+	public ViewEditViewCommand(String name, ScreenController<?>  parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("View/Edit Record");

@@ -13,10 +13,10 @@
 
 package org.molgenis.framework.ui;
 
+//jdk
 import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.framework.security.Login;
 import org.molgenis.util.Entity;
 
 /**
@@ -25,9 +25,9 @@ import org.molgenis.util.Entity;
  * for this screen-variant.
  * 
  * @author MA Swertz
- * @version 1.0.0
+ * @version 2.0.0
  */
-public class MenuModel<E extends Entity>extends SimpleModel<E>
+public class MenuModel extends SimpleScreenModel
 {
 	public enum Position
 	{
@@ -55,12 +55,9 @@ public class MenuModel<E extends Entity>extends SimpleModel<E>
 	 * @param parent
 	 *            The parent of this screen
 	 */
-	public MenuModel(String name, ScreenModel<E> parent)
+	public MenuModel(ScreenController<MenuModel> controller)
 	{
-		super(name, parent);
-		setController(new MenuController<E>(this));
-		// macro has exact name as class, but then ending with 'view'.
-		setViewMacro(MenuModel.class.getSimpleName().replace("Model", "View"));
+		super(controller);
 	}
 
 	/**
@@ -71,7 +68,7 @@ public class MenuModel<E extends Entity>extends SimpleModel<E>
 	 */
 	public void hide(String name)
 	{
-		if (this.get(name) != null)
+		if (this.getController().get(name) != null)
 			hiddenScreenNames.add(name);
 
 	}
@@ -90,33 +87,32 @@ public class MenuModel<E extends Entity>extends SimpleModel<E>
 	/**
 	 * Only return childeren that are not hidden
 	 */
-	public List<ScreenModel<?>> getVisibleChildren()
+	public List<ScreenModel> getVisibleChildren()
 	{
-		List<ScreenModel<?>> subscreens = this.getChildren();
-		List<ScreenModel<?>> result = new ArrayList<ScreenModel<?>>();
+		List<ScreenController<? extends ScreenModel>> subscreens = this.getController().getChildren();
+		List<ScreenModel> result = new ArrayList<ScreenModel>();
 
 		// remove hidden children from the list, and also commands
-		for (ScreenModel<?> s : subscreens)
+		for (ScreenController<?> s : subscreens)
 		{
-			if (this.hiddenScreenNames.indexOf(s.getName()) < 0 && s instanceof SimpleModel<?> && s.isVisible())
+			if (this.hiddenScreenNames.indexOf(s.getName()) < 0 && s instanceof ScreenController<?> && s.getModel().isVisible())
 			{
-				result.add(s);
+				result.add(s.getModel());
 			}
 		}
 
 		return result;
 	}
 
-	public Login getSecurity()
-	{
-		return getRootScreen().getLogin();
-	}
+//	public Login getSecurity()
+//	{
+//		return getController().getRootController().getLogin();
+//	}
 
-	@Override
-	public ScreenModel<?> getSelected()
+	public ScreenModel getSelected()
 	{
 		
-		List<ScreenModel<?>> subscreens = getVisibleChildren();
+		List<ScreenModel> subscreens = getVisibleChildren();
 		if (subscreens.contains(super.getSelected()))
 		{
 			return super.getSelected();
@@ -150,24 +146,6 @@ public class MenuModel<E extends Entity>extends SimpleModel<E>
 	{
 		this.position = position;
 	}
-
-	public String getCustomHtmlHeaders()
-	{
-		if (this.getSelected() != null)
-		{
-			return this.getSelected().getCustomHtmlHeaders();
-		}
-		return "";
-	}
-	
-	public String getCustomHtmlBodyOnLoad()
-	{
-		if (this.getSelected() != null)
-		{
-			return this.getSelected().getCustomHtmlBodyOnLoad();
-		}
-		return "";
-	}
 	
 	@Override
 	public void reset()
@@ -176,9 +154,5 @@ public class MenuModel<E extends Entity>extends SimpleModel<E>
 		
 	}
 
-	@Override
-	public String getViewTemplate()
-	{
-		return null;
-	}
+
 }

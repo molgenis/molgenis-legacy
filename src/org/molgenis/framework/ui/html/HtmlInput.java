@@ -3,13 +3,13 @@ package org.molgenis.framework.ui.html;
 import org.apache.commons.lang.StringEscapeUtils;
 
 /**
- * HtmlInput is the base-class for all the 'toHtml' input classes. 
+ * HtmlInput is the base-class for all the 'toHtml' input classes.
  */
 public abstract class HtmlInput implements Input
 {
 	/** Constant indicating use of JQUERY */
 	public static boolean INJECT_JQUERY = true;
-	
+
 	/** The name of the input */
 	private String name;
 
@@ -19,7 +19,10 @@ public abstract class HtmlInput implements Input
 	/** The label of the input. Defaults to 'name'. */
 	private String label;
 
-	/** Flag indicating whether this input is readonly ( optional, default false ) */
+	/**
+	 * Flag indicating whether this input is readonly ( optional, default false
+	 * )
+	 */
 	private boolean readonly;
 
 	/** Flag indicating whether this input is hidden ( optional, default false ) */
@@ -36,7 +39,7 @@ public abstract class HtmlInput implements Input
 
 	/** variable for make-up */
 	private String style;
-	
+
 	/** variable to validate size */
 	private Integer size;
 
@@ -48,10 +51,10 @@ public abstract class HtmlInput implements Input
 
 	/** required form field */
 	private boolean nillable = true;
-	
+
 	/** indicate if this input should be hidden in 'compact' view */
 	private boolean collapse = false;
-	
+
 	protected String tabIndex = "";
 
 	/**
@@ -59,17 +62,22 @@ public abstract class HtmlInput implements Input
 	 * html-input.
 	 * 
 	 * @param name
-	 *        The name of the html-input.
+	 *            The name of the html-input.
 	 * @param value
-	 *        The value of the html-input.
+	 *            The value of the html-input.
 	 */
 	public HtmlInput(String name, Object value)
 	{
-		this.setName( name );
-		this.setLabel( name );
-		this.setDescription( name );
-		this.setId( name );
-		this.setValue( value );
+		this.setName(name);
+		this.setLabel(name);
+		this.setDescription(name);
+		this.setId(name);
+		this.setValue(value);
+	}
+
+	public HtmlInput()
+	{
+		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -83,12 +91,13 @@ public abstract class HtmlInput implements Input
 
 	public String getLabel()
 	{
-		return label;
+		if (label != null) return label;
+		return name;
 	}
 
-	public void setLabel( String label )
+	public void setLabel(String label)
 	{
-		assert(label != null);
+		assert (label != null);
 		this.label = label;
 	}
 
@@ -97,43 +106,50 @@ public abstract class HtmlInput implements Input
 		return name;
 	}
 
-	public void setName( String name )
+	public void setName(String name)
 	{
 		this.name = name;
 	}
 
-	//TODO: This *needs* to be renamed to getValue()
+	// TODO: This *needs* to be renamed to getValue()
 	public Object getObject()
 	{
 		return value;
 	}
 
-	//TODO: This *needs* to be renamed to getValueToString() or removed!!!
+	// TODO: This *needs* to be renamed to getValueToString() or removed!!!
 	public String getValue()
 	{
 		return getValue(true);
 	}
-	
+
 	/**
-	 * Get the value of the input as a String, optionally replacing special characters like \\n and &gt;
+	 * Get the value of the input as a String, optionally replacing special
+	 * characters like \\n and &gt;
 	 * 
 	 * @param replaceSpechialChars
 	 * @return
 	 */
-	public String getValue(boolean replaceSpechialChars) {
-		if( getObject() == null ) {
+	public String getValue(boolean replaceSpechialChars)
+	{
+		if (getObject() == null)
+		{
 			return "";
 		}
-		
-		//todo: why different from getHtmlValue()??
-		if (replaceSpechialChars) {
-			return getObject().toString().replace( "\n","<br>" ).replace( "\r","" ).replace(">", "&gt;").replace("<", "&lt;");
-		} else {
+
+		// todo: why different from getHtmlValue()??
+		if (replaceSpechialChars)
+		{
+			return getObject().toString().replace("\n", "<br>").replace("\r",
+					"").replace(">", "&gt;").replace("<", "&lt;");
+		}
+		else
+		{
 			return getObject().toString();
 		}
 	}
 
-	public void setValue( Object value )
+	public void setValue(Object value)
 	{
 		this.value = value;
 	}
@@ -143,7 +159,7 @@ public abstract class HtmlInput implements Input
 		return readonly;
 	}
 
-	public void setReadonly( boolean readonly )
+	public void setReadonly(boolean readonly)
 	{
 		this.readonly = readonly;
 	}
@@ -153,7 +169,7 @@ public abstract class HtmlInput implements Input
 		return hidden;
 	}
 
-	public void setHidden( boolean hidden )
+	public void setHidden(boolean hidden)
 	{
 		this.hidden = hidden;
 	}
@@ -163,7 +179,7 @@ public abstract class HtmlInput implements Input
 		return id;
 	}
 
-	public void setId( String id )
+	public void setId(String id)
 	{
 		this.id = id;
 	}
@@ -172,7 +188,7 @@ public abstract class HtmlInput implements Input
 	{
 		return this.clazz;
 	}
-	
+
 	public void setClazz(String clazz)
 	{
 		this.clazz = clazz;
@@ -183,7 +199,7 @@ public abstract class HtmlInput implements Input
 		return style;
 	}
 
-	public void setStyle( String style )
+	public void setStyle(String style)
 	{
 		this.style = style;
 	}
@@ -193,7 +209,7 @@ public abstract class HtmlInput implements Input
 		return tooltip;
 	}
 
-	public void setTooltip( String tooltip )
+	public void setTooltip(String tooltip)
 	{
 		this.tooltip = tooltip;
 	}
@@ -203,7 +219,7 @@ public abstract class HtmlInput implements Input
 		return target.replace(".", "_");
 	}
 
-	public void setTarget( String target )
+	public void setTarget(String target)
 	{
 		this.target = target.replace(".", "_");
 	}
@@ -213,7 +229,7 @@ public abstract class HtmlInput implements Input
 		return description;
 	}
 
-	public void setDescription( String description )
+	public void setDescription(String description)
 	{
 		this.description = description;
 	}
@@ -223,29 +239,31 @@ public abstract class HtmlInput implements Input
 		return nillable;
 	}
 
-	public void setNillable( boolean required )
+	public void setNillable(boolean required)
 	{
 		this.nillable = required;
 	}
 
 	public String getHtmlValue(int maxLength)
 	{
-		return this.getHtmlValue().substring( 0, 100 );
+		return this.getHtmlValue().substring(0, 100);
 	}
-	
+
 	public String getHtmlValue()
 	{
 		String value = null;
-		value = this.getValue().replace( "\n","<br>" ).replace( "\r","" ).replace(">", "&gt;").replace("<", "&lt;");
+		value = this.getValue().replace("\n", "<br>").replace("\r", "")
+				.replace(">", "&gt;").replace("<", "&lt;");
 		return value;
 	}
-	
+
 	public String getJavaScriptValue()
 	{
-		String value = StringEscapeUtils.escapeXml( StringEscapeUtils.escapeJavaScript( this.getValue() ) );
+		String value = StringEscapeUtils.escapeXml(StringEscapeUtils
+				.escapeJavaScript(this.getValue()));
 		return value;
 	}
-	
+
 	public boolean isCollapse()
 	{
 		return collapse;
@@ -260,7 +278,7 @@ public abstract class HtmlInput implements Input
 	{
 		return this.toHtml();
 	}
-	
+
 	public String getHtml()
 	{
 		return toHtml();
@@ -275,8 +293,9 @@ public abstract class HtmlInput implements Input
 	{
 		this.size = size;
 	}
-	
-	public void setTabIndex(int tabidx) {
+
+	public void setTabIndex(int tabidx)
+	{
 		tabIndex = " tabindex=" + Integer.toString(tabidx);
 	}
 }

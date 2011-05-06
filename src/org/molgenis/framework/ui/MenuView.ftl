@@ -1,3 +1,4 @@
+<#include "Layout.ftl"/>
 <#function findFirstNonLeftMenu screen>
 	<#if screen.getSelected()?exists && screen.getSelected().position?exists && screen.getSelected().position == "LEFT">
 		<#return findFirstNonLeftMenu(screen.getSelected())>
@@ -6,7 +7,49 @@
 	</#if>
 </#function>
 
-<#macro MenuView screen>
+<#--get the first selected item that is not a menu-->
+<#function MenuScreenLeftSelectedItem screen>
+	<#assign selectedItem = screen.getSelected()/>
+	<#if selectedItem.getClass().getSuperclass().getSimpleName() == "MenuView">
+		<#return selectedItem.getSelected()>
+	<#else>
+		<#return selectedItem>
+	</#if>
+</#function>
+
+<#macro MenuScreenLeft name screen submenu>
+	<#assign selectedItem = screen.getSelected()/>
+    <#if screen.visibleChildren?exists>
+    <#list screen.getVisibleChildren() as item>
+		<#assign __target = screen.getName() />
+		<#assign select = item.getName() />
+		<#--if the item is a left menu recurse-->
+		<#if item == selectedItem> 
+			<div class="leftNavigationSelected" onClick="document.forms.${name}.__target.value='${__target}';document.forms.${name}.select.value='${select}';document.forms.${name}.submit();">
+			${item.getLabel()}
+			</div>
+			<#if item.position?exists  && (item.position == "LEFT" || item.position == "DEFAULT") && item.getChildren()?size &gt; 1>
+<div class="leftNavigationSubmenu">
+				<@MenuScreenLeft name=name screen=item submenu="true" />
+</div>
+			</#if>		
+		<#else>
+<div class="leftNavigationNotSelected" onClick="document.forms.${name}.__target.value='${__target}';document.forms.${name}.select.value='${select}';document.forms.${name}.submit();">${item.getLabel()}</div>
+		</#if>
+	</#list></#if>
+</#macro>
+
+<#function hasParentForm screen>
+	<#if screen.getParent()?exists>
+		<#if screen.getParent().getClass().getSuperclass().getSimpleName() != "MenuView">
+			<#return true/>
+		<#else>
+			<#return hasParentForm(screen.getParent())/>
+		</#if>
+	</#if>
+	<#return false>
+</#function>
+
 <!-- layouting Menu '${screen.name}'-->
 <#if screen.position == "LEFT">
 <#--left menu is a two column table with left navigation, right the information-->
@@ -24,7 +67,7 @@
 		</form>	
 	</td>
 	<td valign="top" width="100%">
-		<@layout findFirstNonLeftMenu(screen) />
+		<@layout findFirstNonLeftMenu(screen)/>
 	
 		<#--if screen.getSelected().getViewName() == "MenuView" >
 			<@layout screen.getSelected().getSelected() />
@@ -75,47 +118,3 @@
 </#if>
 
 </#if>
-</#macro>
-
-<#--get the first selected item that is not a menu-->
-<#function MenuScreenLeftSelectedItem screen>
-	<#assign selectedItem = screen.getSelected()/>
-	<#if selectedItem.getClass().getSuperclass().getSimpleName() == "MenuView">
-		<#return selectedItem.getSelected()>
-	<#else>
-		<#return selectedItem>
-	</#if>
-</#function>
-
-<#macro MenuScreenLeft name screen submenu>
-	<#assign selectedItem = screen.getSelected()/>
-    <#if screen.visibleChildren?exists>
-    <#list screen.getVisibleChildren() as item>
-		<#assign __target = screen.getName() />
-		<#assign select = item.getName() />
-		<#--if the item is a left menu recurse-->
-		<#if item == selectedItem> 
-			<div class="leftNavigationSelected" onClick="document.forms.${name}.__target.value='${__target}';document.forms.${name}.select.value='${select}';document.forms.${name}.submit();">
-			${item.getLabel()}
-			</div>
-			<#if item.position?exists  && (item.position == "LEFT" || item.position == "DEFAULT") && item.getChildren()?size &gt; 1>
-<div class="leftNavigationSubmenu">
-				<@MenuScreenLeft name=name screen=item submenu="true" />
-</div>
-			</#if>		
-		<#else>
-<div class="leftNavigationNotSelected" onClick="document.forms.${name}.__target.value='${__target}';document.forms.${name}.select.value='${select}';document.forms.${name}.submit();">${item.getLabel()}</div>
-		</#if>
-	</#list></#if>
-</#macro>
-
-<#function hasParentForm screen>
-	<#if screen.getParent()?exists>
-		<#if screen.getParent().getClass().getSuperclass().getSimpleName() != "MenuView">
-			<#return true/>
-		<#else>
-			<#return hasParentForm(screen.getParent())/>
-		</#if>
-	</#if>
-	<#return false>
-</#function>

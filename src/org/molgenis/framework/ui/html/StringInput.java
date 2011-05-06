@@ -5,6 +5,14 @@ package org.molgenis.framework.ui.html;
  */
 public class StringInput extends HtmlInput
 {
+	public StringInput(String name, String label, String value, boolean nillable, boolean readonly)
+	{
+		this(name,value);
+		this.setLabel(label);
+		this.setNillable(nillable);
+		this.setReadonly(readonly);
+	}
+	
 	public StringInput(String name)
 	{
 		this(name,null);

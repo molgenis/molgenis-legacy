@@ -53,13 +53,21 @@ public class XrefInput extends HtmlInput
 		this(name, db.getClassForName(entityName));
 	}
 	
-	public XrefInput(String name, Class<? extends Entity> xrefEntityClass) throws InstantiationException, IllegalAccessException
+	public XrefInput(String name, Class<? extends Entity> xrefEntityClass)
 	{
 		super(name,null);
 		
-		this.setXrefEntity(xrefEntityClass);
-		this.setXrefField(xrefEntityClass.newInstance().getIdField());
-		this.setXrefLabels(xrefEntityClass.newInstance().getLabelFields());
+		try
+		{
+			this.setXrefField(xrefEntityClass.newInstance().getIdField());
+			this.setXrefLabels(xrefEntityClass.newInstance().getLabelFields());
+			this.setXrefEntity(xrefEntityClass);
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override

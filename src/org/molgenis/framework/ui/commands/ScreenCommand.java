@@ -8,11 +8,11 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.ui.FormModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.SimpleModel;
 import org.molgenis.framework.ui.Templateable;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 /**
@@ -28,7 +28,7 @@ import org.molgenis.util.Tuple;
  * <li>getActions() lists the pushbuttons to be shown</li>
  * </ul>
  */
-public interface ScreenCommand<E extends Entity> extends Templateable, Serializable
+public interface ScreenCommand extends Templateable, Serializable, ScreenModel
 {
 	/**
 	 * Retrieve the name of the icon to be shown. No icon will be shown if null.
@@ -96,23 +96,23 @@ public interface ScreenCommand<E extends Entity> extends Templateable, Serializa
 	 *            Unique name of the target screen that should handle this
 	 *            command
 	 */
-	public void setTarget(String target);
+	public void setTargetController(String target);
 
 	/**
 	 * @return The screen this command is a part of
 	 */
-	public ScreenModel<E> getScreen();
+	public ScreenController<?> getController();
 
 	/**
 	 * Helper method to reduce casting
 	 */
-	public SimpleModel<E> getFormScreen();
+	public FormModel<?> getFormScreen();
 
 	/**
 	 * @param screen
 	 *            The screen this command belongs to
 	 */
-	public void setScreen(ScreenModel<E> screen);
+	public void setController(ScreenController<?> screen);
 
 	/**
 	 * @return true if this command should be shown as a dialog. @see #setDialog
@@ -204,19 +204,24 @@ public interface ScreenCommand<E extends Entity> extends Templateable, Serializa
 	 * @return the layout macro to be used if this command has a dialog.
 	 *         Defaults to the default layout showing inputs and actions.
 	 */
-	public String getViewName();
+	public String getMacro();
 
 	/**
 	 * @return the layout macro to be used if this command has a dialog.
 	 *         Defaults to the default layout template for commands,
 	 *         ScreenCommand.ftl
 	 */
-	public String getViewTemplate();
+	public String getTemplate();
 
 	/**
 	 * 
 	 * @return false if this command should be hidden
 	 */
 	public boolean isVisible();
+	
+	/**
+	 * Render this command plugin 
+	 */
+	public String render();
 
 }

@@ -17,7 +17,9 @@
 
 package ${package};
 
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.util.Entity;
 
 /**
  *
@@ -26,10 +28,11 @@ public class ${JavaName(plugin.className)}Plugin extends ${plugin.getPluginType(
 {
 	private static final long serialVersionUID = 1L;
 <#if plugin.pluginType == "org.molgenis.framework.screen.plugin.PluginScreen">	
-    public ${JavaName(plugin.className)}Plugin(ScreenModel parent)
+    public ${JavaName(plugin.className)}Plugin(ScreenController<?>  parent)
 	{
 		super("${plugin.getVelocityName()}", parent);
-		this.setLabel("${plugin.label}");
+		
+		getModel().setLabel("${plugin.label}");
 		
 		<#list plugin.getChildren() as subscreen>
 		<#assign screentype = Name(subscreen.getType().toString()?lower_case) />
@@ -38,10 +41,11 @@ public class ${JavaName(plugin.className)}Plugin extends ${plugin.getPluginType(
 		</#list>	
 	}
 <#else>
-	public ${JavaName(plugin.getClassName())}Plugin(ScreenModel parent)
+	public ${JavaName(plugin.getClassName())}Plugin(ScreenController<?> parent)
 	{
 		super("${plugin.getVelocityName()}", parent);
-		this.setLabel("${plugin.label}");
+		
+		getModel().setLabel("${plugin.label}");
 		
 		<#list plugin.getChildren() as subscreen>
 		<#assign screentype = Name(subscreen.getType().toString()?lower_case) />

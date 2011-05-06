@@ -108,7 +108,7 @@ public interface Login
 	 * @return read permission
 	 * @throws DatabaseException
 	 */
-	public boolean canRead(ScreenModel<?> screen) throws DatabaseException;
+	public boolean canRead(ScreenModel screen) throws DatabaseException;
 
 	/**
 	 * Indicates whether the user has permissions to add, update, delete data

@@ -24,26 +24,28 @@ Generate Table Data Gateway
 
 package ${package};
 
-import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.MenuModel;
+import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.MenuController;
 import org.molgenis.framework.ui.MenuModel;
 
 /**
  *
  */
-public class ${Name(menu.className)}Menu extends MenuModel
+public class ${Name(menu.className)}Menu extends MenuController
 {
 	private static final long serialVersionUID = 1L;
 	
-	public ${Name(menu.className)}Menu (ScreenModel parent)
+	public ${Name(menu.className)}Menu (ScreenController<?> parent)
 	{
 		super( "${menu.getVelocityName()}", parent );
-		this.setLabel("${menu.label}");
-		this.setPosition(Position.${menu.position?upper_case});
+		getModel().setLabel("${menu.label}");
+		getModel().setPosition(MenuModel.Position.${menu.position?upper_case});
 		
 		//add ui elements
 <#list menu.getChildren() as subscreen>
 <#assign screentype = Name(subscreen.getType().toString()?lower_case) />
-<#if screentype == "Form"><#assign screentype = "FormModel"/></#if>
+<#if screentype == "Form"><#assign screentype = "FormController"/></#if>
 		new ${package}.${JavaName(subscreen)}${screentype}(this);
 </#list>			
 	}	

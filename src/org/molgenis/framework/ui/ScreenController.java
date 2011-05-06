@@ -12,15 +12,18 @@
 
 package org.molgenis.framework.ui;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.util.Entity;
+import org.molgenis.util.EmailService;
+import org.molgenis.util.FileLink;
+import org.molgenis.util.Tree;
 import org.molgenis.util.Tuple;
 
 /**
- * A controller changes the state of a Screen.
+ * A controller changes the state of a ScreenModel.
  * 
  * <p>
  * The State and Transitions of Screens are seperated between Screen that
@@ -29,10 +32,10 @@ import org.molgenis.util.Tuple;
  * (see templates). It also eases understanding as Screen is reduced to a simple
  * Bean (that can be hold in a Session) and the Controllers that manipulate it.
  */
-public interface ScreenController<E extends Entity, S extends ScreenModel<E>> extends Serializable
+public interface ScreenController<MODEL extends ScreenModel> extends Serializable, Tree<ScreenController<?>>
 {
 	/**
-	 * Refresh/reload the screen.
+	 * Refresh/reload the model.
 	 * <p>
 	 * reload() needs to be called when the screen works on external
 	 * data/processes. For example:
@@ -43,8 +46,11 @@ public interface ScreenController<E extends Entity, S extends ScreenModel<E>> ex
 	 * most recent progress information
 	 * <li>Etc.
 	 * </ul>
+	 * @throws Exception 
+	 * @throws Exception 
+	 * @throws Exception 
 	 */
-	public void reload(Database db);
+	public void reload(Database db) throws Exception;
 
 	/**
 	 * Handle screen events.
@@ -79,5 +85,53 @@ public interface ScreenController<E extends Entity, S extends ScreenModel<E>> ex
 	/**
 	 * Get the view
 	 */
-	public Templateable getScreen();
+	//public Templateable getScreen();
+	
+	/** Get the model for this controller 
+	 */
+	public MODEL getModel();
+	
+	/**
+	 * Get the view for this controller
+	 * @return
+	 */
+	public ScreenView getView();
+	
+	/**
+	 * Get access to the emailservice.
+	 * 
+	 * @return email service
+	 */
+	public EmailService getEmailService();
+	
+
+	/**
+	 * Get the user interface this screen is part of.
+	 * 
+	 * @return user-interface the root screen of this user interface
+	 */
+	public ApplicationController getApplicationController();
+
+	public FileLink getTempFile() throws IOException;
+
+	String render();
+
+	String getCustomHtmlHeaders();
+	
+	String getCustomHtmlBodyOnLoad();	
+	
+	/**
+	 * Method to select what child should be selected
+	 * @param viewid
+	 */
+	void setSelected(String viewid);
+
+	@Deprecated
+	String getViewTemplate();
+
+	@Deprecated
+	public String getLabel();
+
+	ScreenModel getSelected();
+
 }

@@ -96,13 +96,13 @@ import org.molgenis.generators.sql.PSqlCreateSubclassPerTableGen;
 import org.molgenis.generators.tests.TestCsvGen;
 import org.molgenis.generators.tests.TestDataSetGen;
 import org.molgenis.generators.tests.TestDatabaseGen;
-import org.molgenis.generators.ui.FormScreenGen;
+import org.molgenis.generators.ui.FormControllerGen;
 import org.molgenis.generators.ui.HtmlFormGen;
-import org.molgenis.generators.ui.MenuScreenGen;
-import org.molgenis.generators.ui.PluginScreenFTLTemplateGen;
-import org.molgenis.generators.ui.PluginScreenGen;
-import org.molgenis.generators.ui.PluginScreenJavaTemplateGen;
-import org.molgenis.generators.ui.TreeScreenGen;
+import org.molgenis.generators.ui.MenuControllerGen;
+import org.molgenis.generators.ui.EasyPluginControllerGen;
+import org.molgenis.generators.ui.EasyPluginModelGen;
+import org.molgenis.generators.ui.EasyPluginViewGen;
+import org.molgenis.generators.ui.PluginControllerGen;
 import org.molgenis.model.MolgenisModel;
 import org.molgenis.model.elements.Model;
 import org.molgenis.util.cmdline.CmdLineException;
@@ -210,7 +210,6 @@ public class Molgenis {
 				 //generators.add(new JpaDataTypeListenerGen());
 				 generators.add(new JpaMapperGen());
 				 generators.add(new JDBCMetaDatabaseGen());
-//				 generators.add(new JDBCDatabaseGen());
 				 if(options.generate_persistence) {
 					 generators.add(new PersistenceGen());
 				 }
@@ -328,18 +327,22 @@ public class Molgenis {
 		// HTML
 		if (options.generate_html){
 			generators.add(new HtmlFormGen());
-			generators.add(new FormScreenGen());
-			generators.add(new MenuScreenGen());
-			generators.add(new TreeScreenGen());
+			generators.add(new FormControllerGen());
+			generators.add(new MenuControllerGen());
 		}else{
 			logger.info("Skipping HTML (HTML,Form,Menu,Tree) ....");
 		}
 
 		// SCREEN PLUGIN
 		if (options.generate_plugins){
-			generators.add(new PluginScreenGen());
-			generators.add(new PluginScreenFTLTemplateGen());
-			generators.add(new PluginScreenJavaTemplateGen());
+			//generators.add(new PluginControllerGen());
+			//generators.add(new PluginScreenFTLTemplateGen());
+			//generators.add(new PluginScreenJavaTemplateGen());
+			
+			generators.add(new PluginControllerGen());
+			generators.add(new EasyPluginViewGen());
+			generators.add(new EasyPluginControllerGen());
+			generators.add(new EasyPluginModelGen());
 		}else{
 			logger.info("Skipping generation of plugins ....");
 		}

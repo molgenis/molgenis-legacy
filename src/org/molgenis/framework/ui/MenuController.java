@@ -18,26 +18,18 @@ import java.io.PrintWriter;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
-import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-
-
-
-public class MenuController<E extends Entity> extends SimpleController<E,MenuModel<E>>
+public class MenuController extends SimpleScreenController<MenuModel>
 {
-	// member variables
-	/** */
-	private MenuModel<E> view;
-	/** */
 	private static final transient Logger logger = Logger.getLogger(MenuController.class.getSimpleName());	
-	/**	 */
 	private static final long serialVersionUID = -7579424157884595183L;
 
-	public MenuController(MenuModel<E> view)
+	public MenuController(String name, ScreenController<?> parent)
 	{
-		super(view);
-		this.view = view;
+		super(name, null, parent);
+		this.setModel(new MenuModel(this));
+		this.setView(new FreemarkerView("MenuView.ftl", getModel()));
 	}
 
 	@Override
@@ -49,14 +41,22 @@ public class MenuController<E extends Entity> extends SimpleController<E,MenuMod
 	@Override
 	public void reload(Database db)
 	{
-		logger.debug("reloading Menu("+view.getName()+")");
-		ScreenModel<?> selected = view.getSelected();
+		logger.debug("reloading Menu("+getModel().getName()+")");
+		ScreenModel selected = getModel().getSelected();
 		if (selected == null)
 		{
-			logger.error(view.getName() + " has no children");
+			logger.error(getModel().getName() + " has no children");
 			return;
 		}
-		selected.getController().reload(db);
+		try
+		{
+			selected.getController().reload(db);
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	// access methods
@@ -69,7 +69,7 @@ public class MenuController<E extends Entity> extends SimpleController<E,MenuMod
 	{
 		if (request.getString("select") != null)
 		{
-			view.setSelected(request.getString("select"));
+			setSelected(request.getString("select"));
 			return true;
 		}
 		else
@@ -82,5 +82,10 @@ public class MenuController<E extends Entity> extends SimpleController<E,MenuMod
 	public void handleRequest(Database db, Tuple request, PrintWriter out) {
 		this.handleRequest(db, request);
 		
+	}
+	
+	public MenuModel getModel()
+	{
+		return super.getModel();
 	}
 }

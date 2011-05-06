@@ -20,19 +20,19 @@ public class Version
 	 * The major part of the version, which is changed for major interface
 	 * changes
 	 */
-	public static final int MAJOR = 3;
+	public static final int MAJOR = 4;
 
 	/**
 	 * The minor part of the version, which is changed when interfaces have been
 	 * added
 	 */
-	public static final int MINOR = 3;
+	public static final int MINOR = 0;
 
 	/** The maintenance part of the version, which is changed for bug-fixes */
-	public static final int MAINTENANCE = 3;
+	public static final int MAINTENANCE = 0;
 	
 	/** Flag to indicate that this is a testing release*/
-	public static final boolean TESTING = false;
+	public static final boolean TESTING = true;
 
 
 	// static access methods
