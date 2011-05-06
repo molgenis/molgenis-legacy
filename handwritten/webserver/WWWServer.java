@@ -38,6 +38,7 @@ public class WWWServer extends Webserver implements Runnable
 		addServlet(var + "/cgi-bin", "servlets.CGIServlet");
 		addServlet(var + "/tmpfile/", "servlets.tmpfileservlet");
 		addServlet(var + "/", "servlets.FileServlet");
+		addServlet(var + "/bot", "servlets.BotServlet");
 	}
 
 	public void run()

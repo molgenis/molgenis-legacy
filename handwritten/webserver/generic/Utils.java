@@ -1,3 +1,25 @@
+/*
+#
+# Utils.java
+#
+# copyright (c) 2009-2010, Danny Arends
+# last modified Dec, 2010
+# first written Dec, 2010
+#
+#     This program is free software; you can redistribute it and/or
+#     modify it under the terms of the GNU General Public License,
+#     version 3, as published by the Free Software Foundation.
+# 
+#     This program is distributed in the hope that it will be useful,
+#     but without any warranty; without even the implied warranty of
+#     merchantability or fitness for a particular purpose.  See the GNU
+#     General Public License, version 3, for more details.
+# 
+#     A copy of the GNU General Public License, version 3, is available
+#     at http://www.r-project.org/Licenses/GPL-3
+#
+*/
+
 package generic;
 
 import java.io.File;
@@ -25,8 +47,51 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+import javax.swing.JFrame;
+import javax.swing.JTextArea;
+
+/**
+ * \brief Utils Generic utilities class<br>
+ *
+ * This class contains generic function
+ * bugs: none found<br>
+ */
 public class Utils{
-	// / Returns a date string formatted in Unix ls style - if it's within
+	
+	static public String printDoubleArray(double[] d){
+		String t="";
+		for(double v : d){
+			t+= v + " "; 
+		}
+		return t;
+	}
+	
+	public static void idle(long time){
+		try {
+			Thread.sleep(time);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public static String firstLetterUpperCase(String someString){
+		return someString.substring(0,1).toUpperCase() + someString.substring(1);
+	}
+	
+	public static String firstLetterLowerCase(String someString){
+		return someString.substring(0,1).toLowerCase() + someString.substring(1);
+	}
+	
+	public static int offsetByComment(String[] items){
+		int offset=0;
+		if(items.length==0) return -1;
+		while(offset < items.length && (items[offset].equals("") || items[offset].startsWith("#"))){
+			offset++;
+		}
+		return offset;
+	}
+	
+	/// Returns a date string formatted in Unix ls style - if it's within
 	// six months of now, Mmm dd hh:ss, else Mmm dd yyyy.
 	static final SimpleDateFormat shortfmt = new SimpleDateFormat("MMM dd HH:mm");
 
@@ -39,7 +104,9 @@ public class Utils{
 	public static final Class<?>[] EMPTY_CLASSES = {};
 
 	public static final Object[] EMPTY_OBJECTS = {};
-
+	
+	public static JTextArea guireporter=null;
+	
 	public static final Enumeration<?> EMPTY_ENUMERATION = new Enumeration<Object>() {
 		public boolean hasMoreElements() {
 			return false;
@@ -59,6 +126,9 @@ public class Utils{
 	public static void log(String message,PrintStream out) {
 		Date date = new Date();
 		out.println("[" + date.toString() + "] " + message);
+		if(guireporter!=null ){
+			guireporter.setText("[" + date.toString() + "] " + message + "\n" + guireporter.getText());
+		}
 	}
 
 	public static void log(String message, Throwable throwable) {
@@ -83,6 +153,11 @@ public class Utils{
 			return shortfmt.format(date);
 		else
 			return longfmt.format(date);
+	}
+	
+	public static void addJFrameReporter(JFrame to){
+		guireporter = new JTextArea();
+		to.add(guireporter);
 	}
 
 	public static Hashtable<String, Object> parseQueryString(String query, String encoding) {
@@ -646,14 +721,11 @@ public class Utils{
 	/**
 	 * base 64 encoding, string converted to bytes using specified encoding
 	 * 
-	 * @param String
-	 *            <val>_s</val> original string to encode
-	 * @param String
-	 *            encoding, can be null, then iso-8859-1 used
+	 * @param _s original string to encode
+	 * @param _enc can be null, then iso-8859-1 used
 	 * @return String result of encoding as iso-8859-1 string<br>
 	 *         return null in case of invalid encoding or original string null
-	 * @exception no
-	 *                exceptions
+	 * @exception no exceptions
 	 */
 	public final static String base64Encode(String _s, String _enc) {
 		if (_s == null)
@@ -671,10 +743,7 @@ public class Utils{
 	/**
 	 * base 64 encoding, array of bytes converted to bytes using specified encoding
 	 * 
-	 * @param String
-	 *            <val>_s</val> original string to encode
-	 * @param String
-	 *            encoding, can be null, then iso-8859-1 used
+	 * @param _bytes byte array to encode to string base64
 	 * @return String result of encoding as iso-8859-1 string<br>
 	 * 
 	 * @exception <code>NullPointerException</code> if input parameter is null
@@ -720,7 +789,8 @@ public class Utils{
 	}
 
 	/**
-	 * Translates a Base64 value to either its 6-bit reconstruction value or a negative number indicating some other meaning.
+	 * Translates a Base64 value to either its 6-bit reconstruction value or a negative number 
+	 * indicating some other meaning.
 	 */
 	protected final static byte[] DECODABET = { -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal 0 - 8
 			-5, -5, // Whitespace: Tab and Linefeed
@@ -764,10 +834,8 @@ public class Utils{
 	/**
 	 * base 64 decoding
 	 * 
-	 * @param encoded
-	 *            string
-	 * @param encoding
-	 *            used to get string bytes
+	 * @param _s String to decode
+	 * @param _enc Encoding used to get string bytes
 	 * @return result of encoding, or null if encoding invalid or string null, or string is invalid base 64 encoding
 	 */
 	public final static String base64Decode(String _s, String _enc) {
@@ -1064,8 +1132,8 @@ public class Utils{
 		/**
 		 * Creates a thread pool not queued with max number of threads defined in properties or DEF_MAX_POOLED_THREAD = 20
 		 * 
-		 * @param Properties
-		 *            where property THREADSINPOOL gives max threads Note if THREADSINPOOL not integers, or negative then DEF_MAX_POOLED_THREAD used
+		 * @param properties where property THREADSINPOOL gives max threads Note if THREADSINPOOL not integers, or negative then DEF_MAX_POOLED_THREAD used
+		 * @param threadfactory threadfactory to use
 		 */
 		public ThreadPool(Properties properties, ThreadFactory threadfactory) {
 			try {
@@ -1083,8 +1151,7 @@ public class Utils{
 		/**
 		 * Assigns a new value for max threads
 		 * 
-		 * @param int
-		 *            new value of max threads, can't be less than 2, but can be 0 If current number threads exceed the value, then extra thread will be
+		 * @param newSize new value of max threads, can't be less than 2, but can be 0 If current number threads exceed the value, then extra thread will be
 		 *            discarded gracefully
 		 */
 		public void setMaxThreads(int newSize) {
@@ -1104,8 +1171,7 @@ public class Utils{
 		/**
 		 * Takes a new task for execution by a threads in pool will wait until free threads if number of threads reached max
 		 * 
-		 * @param Runnable
-		 *            task for execution
+		 * @param runnable Task for execution
 		 */
 		public void executeThread(Runnable runnable) {
 			PooledThread pt = null;
@@ -1270,10 +1336,8 @@ public class Utils{
 		/**
 		 * base 64 decoding
 		 * 
-		 * @param encoded
-		 *            string
-		 * @param encoding
-		 *            used to get string bytes
+		 * @param _s string to encode
+		 * @param _enc encoding used to get string bytes
 		 * @return result of encoding, or null if encoding invalid or string null, or string is invalid base 64 encoding
 		 */
 		public final static String base64Decode(String _s, String _enc) {
@@ -1362,6 +1426,4 @@ public class Utils{
 			return emptyBuffer;
 		}
 	}
-	
-	
 }

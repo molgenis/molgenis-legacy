@@ -36,6 +36,7 @@ public class IRCHandler implements Runnable{
 	private static String default_name = "MWorkBOT";
 	private static String default_channel = "molgenis_apps";
 	private static String default_irc_host = "irc.freenode.net";
+	
 	String name;
 	int id;
 	String channel;
@@ -58,8 +59,7 @@ public class IRCHandler implements Runnable{
 		channel=c;
 		verbose=v;
 	}
-	
-	
+		
 	boolean connect(String name, int id, String channel,boolean verbose){
 		ircclient = new IRCClient(name,id);
 		ircclient.setVerbose(verbose);
@@ -84,17 +84,17 @@ public class IRCHandler implements Runnable{
 	
 	public void printHosts(ArrayList<IRCClientData> clients){
 		for(IRCClientData c : clients){
-			System.out.println(c.getMyIDString());
+			System.out.println(c.getIDString());
 		}
 	}
 	
 	public static void main(String[] args) throws Exception {
-		new IRCHandler((int)(Math.random()*1000),false);
+		IRCHandler h = new IRCHandler((int)(Math.random()*1000),false);
+		new Thread(h).start();
 	}
 
 	@Override
-	public void run()
-	{
+	public void run(){
 		connect(name,id,channel,verbose);
 	}
 }

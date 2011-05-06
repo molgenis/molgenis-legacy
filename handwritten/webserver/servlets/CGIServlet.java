@@ -98,7 +98,7 @@ public class CGIServlet extends Servlet {
 			Utils.log("Interpretation of " + file.getAbsolutePath() + " didn't finish correctly",System.err);
 		}
 		OutputStream o = res.getOutputStream();
-		tempstring = "" + myCommandExe.res;
+		tempstring = "" + myCommandExe.getResult();
 		boolean contenttype = false;
 		for(String s : tempstring.split("\n")){
 			if(s != null && !s.equals("")){

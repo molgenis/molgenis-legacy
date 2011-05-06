@@ -19,8 +19,8 @@ public class RunStandalone extends JFrame implements MouseListener{
 	private static final long serialVersionUID = -4617569886547354084L;
 	JTextArea output;
 	WWWServer web;
-	IRCHandler irc;
-	Thread webserverthread;
+	static Thread webserverthread;
+	static IRCHandler botentry = new IRCHandler();
 	OpenBrowser browser = new OpenBrowser();
 	String title =  MolgenisServlet.getMolgenisVariantID() + " powered by Molgenis Webserver";
 	final String url = "http://localhost:" + WWWServer.DEF_PORT + "/" + MolgenisServlet.getMolgenisVariantID();
@@ -32,8 +32,9 @@ public class RunStandalone extends JFrame implements MouseListener{
 	    setVisible(true);
 	    addMouseListener(this);
 		
-		new Thread(irc = new IRCHandler()).start();
 	    (webserverthread = new Thread(web = new WWWServer())).start();
+		web.setAttribute("bot", botentry);
+		new Thread(botentry).start();
 	}
 	
 	public void paint(Graphics g) {
