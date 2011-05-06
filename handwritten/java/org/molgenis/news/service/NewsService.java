@@ -31,30 +31,12 @@ public class NewsService
 	
 	public List<MolgenisNews> getAllNews() throws DatabaseException, ParseException
 	{
-		List<MolgenisNews> result = new ArrayList<MolgenisNews>();
-		List<MolgenisNews> news   = db.query(MolgenisNews.class).sortDESC("date_").find();
-
-		for (MolgenisNews newsItem : news)
-		{
-			newsItem.setText(StringUtils.abbreviate(newsItem.getText(), 50));
-			result.add(newsItem);
-		}
-		return result;
+		return db.query(MolgenisNews.class).sortDESC("date_").find();
 	}
 	
 	public List<MolgenisNews> getAllNews(int limit) throws DatabaseException, ParseException
 	{
-		List<MolgenisNews> result = new ArrayList<MolgenisNews>();
-		List<MolgenisNews> news   = db.query(MolgenisNews.class).sortDESC("date_").find();
-		int toIndex               = (limit > news.size() ? news.size() : limit);
-
-		for (MolgenisNews newsItem : news.subList(0, toIndex))
-		{
-			newsItem.setText(StringUtils.abbreviate(newsItem.getText(), 50));
-			result.add(newsItem);
-		}
-		
-		return result;
+		return db.query(MolgenisNews.class).sortDESC("date_").limit(limit).find();
 	}
 	
 	public MolgenisNews getNewsById(Integer id) throws DatabaseException
