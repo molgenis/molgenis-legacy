@@ -9,7 +9,7 @@ package org.molgenis.compute;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.GenericPlugin;
-import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.TablePanel;
@@ -20,7 +20,7 @@ public class RunButtonPlugin3 extends GenericPlugin
 	//in complicated cases, put this in seperate 'Model' object, in MVC terms
 	String hello = "world";
 	
-	public RunButtonPlugin3(String name, ScreenModel parent)
+	public RunButtonPlugin3(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

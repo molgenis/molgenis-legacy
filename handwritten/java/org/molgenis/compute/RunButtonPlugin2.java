@@ -9,7 +9,7 @@ package org.molgenis.compute;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.GenericPlugin;
-import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.util.Tuple;
 
@@ -22,7 +22,7 @@ public class RunButtonPlugin2 extends GenericPlugin
 	ActionInput aButton = new ActionInput("doRun");
 	
 	//this methods links your plugin to the rest of the application
-	public RunButtonPlugin2(String name, ScreenModel parent)
+	public RunButtonPlugin2(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

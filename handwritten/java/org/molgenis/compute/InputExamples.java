@@ -9,8 +9,8 @@ package org.molgenis.compute;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.GenericPlugin;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.DatetimeInput;
@@ -26,7 +26,7 @@ public class InputExamples extends GenericPlugin
 	TablePanel view = new TablePanel("myTablePanel", null);
 	Tuple previousRequest = new SimpleTuple();
 
-	public InputExamples(String name, ScreenModel parent)
+	public InputExamples(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

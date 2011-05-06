@@ -12,8 +12,8 @@ import java.util.List;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.GenericPlugin;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.TablePanel;
 import org.molgenis.framework.ui.html.TextInput;
@@ -27,7 +27,7 @@ public class ApplyProtocolQuickly extends GenericPlugin
 	// the one we say hello to
 	Individual currentIndividual = null;
 
-	public ApplyProtocolQuickly(String name, ScreenModel parent)
+	public ApplyProtocolQuickly(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
