@@ -37,11 +37,6 @@ public class GenericPlugin extends PluginModel<Entity>
 		super(name, parent);
 	}
 
-	public GenericPlugin(String name, ScreenModel parent)
-	{
-		this(name, parent.getController());
-	}
-
 	@Override
 	public String getViewName()
 	{
