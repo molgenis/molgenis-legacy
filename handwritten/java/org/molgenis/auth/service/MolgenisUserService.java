@@ -22,7 +22,7 @@ import app.JDBCDatabase;
 
 public class MolgenisUserService
 {
-	private JDBCDatabase db                                = null;
+	private Database db                                    = null;
 	private static MolgenisUserService molgenisUserService = null;
 	//TODO: Danny: Use or loose
 	//private static final transient Logger logger = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());
@@ -30,7 +30,7 @@ public class MolgenisUserService
 	// private constructor, use singleton instance
 	private MolgenisUserService(Database db)
 	{
-		this.db = (JDBCDatabase) db;
+		this.db = db;
 	}
 	
 	/**
