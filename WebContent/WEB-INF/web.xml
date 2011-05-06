@@ -74,6 +74,17 @@
 	</servlet-mapping>
 
 	<!-- ############### -->
+	<!-- Bot servlets -->
+	<!-- ############### -->
+	<servlet>
+		<servlet-name>BotServlet</servlet-name>
+		<servlet-class>servlets.BotServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BotServlet</servlet-name>
+		<url-pattern>/bot</url-pattern>
+	</servlet-mapping>
+	<!-- ############### -->
 	<!-- Matrix servlets -->
 	<!-- ############### -->
 	<servlet>
