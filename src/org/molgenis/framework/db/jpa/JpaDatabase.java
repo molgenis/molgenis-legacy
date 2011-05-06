@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.persistence.metamodel.EntityType;
 
 import org.molgenis.framework.db.CsvToDatabase.IntegerWrapper;
@@ -259,7 +260,9 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	public <E extends Entity> int count(Class<E> entityClass,
 			QueryRule... rules) throws DatabaseException
 	{
-		return JPAQueryGeneratorUtil.createCountQuery(this, entityClass, rules);
+	    TypedQuery<Long> query = JPAQueryGeneratorUtil.createCount(entityClass, (JpaMapper<E>)getMapper(entityClass.getName()), em, rules);
+	    Long result = query.getSingleResult();
+	    return result.intValue();
 	}
 
 	@Override
@@ -304,7 +307,8 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	public <E extends Entity> List<E> find(Class<E> entityClass,
 			QueryRule... rules) throws DatabaseException
 	{
-		return JPAQueryGeneratorUtil.createQuery(this, entityClass, rules);
+	    TypedQuery<E> query = JPAQueryGeneratorUtil.createQuery(entityClass, (JpaMapper<E>)getMapper(entityClass.getName()), em, rules);
+	    return query.getResultList();
 	}
 
 	@Override
