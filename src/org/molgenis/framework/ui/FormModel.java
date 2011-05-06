@@ -70,7 +70,8 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		private List<String> parentLabels;
 		private String xrefToParent;
 
-		public ParentFilter(String parentForm, String parentId, List<String> parentLabel, String xrefToParent)
+		public ParentFilter(String parentForm, String parentId,
+				List<String> parentLabel, String xrefToParent)
 		{
 			this.parentForm = parentForm;
 			this.parentId = parentId;
@@ -119,8 +120,6 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		}
 	}
 
-
-
 	public List<HtmlInput> getInputs()
 	{
 		return getController().getInputs((E) create(), true).getInputs();
@@ -160,7 +159,8 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	public static final String ACTION_DOWNLOAD = "download";
 
 	// PROPERTIES (default initialization is done in reset!)
-	private static final transient Logger logger = Logger.getLogger(FormModel.class);
+	private static final transient Logger logger = Logger
+			.getLogger(FormModel.class);
 
 	/** List of actions of this screen */
 	private Map<String, ScreenCommand> commands = new LinkedHashMap<String, ScreenCommand>();
@@ -187,7 +187,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	Mode viewMode;
 
 	/** remember the current record we are editing */
-	//private E current = null;
+	// private E current = null;
 
 	/** cache of currently viewable records */
 	private List<E> records = new ArrayList<E>();
@@ -209,7 +209,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	protected Vector<String> userHiddenColumns = new Vector<String>();
 
 	/** Helper object that takes care of database paging */
-	//private DatabasePager<E> pager;
+	// private DatabasePager<E> pager;
 
 	/** Here the currently selected is are stored */
 	private List<?> selectedIds;
@@ -254,27 +254,34 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		// add all actions
 		// menu FILE
 
- 		// File:Download visible
-		super.addCommand(new DownloadVisibleCommand("download_visible", this.getController()));
+		// File:Download visible
+		super.addCommand(new DownloadVisibleCommand("download_visible", this
+				.getController()));
 
 		// File:Download Selected
-		super.addCommand(new DownloadSelectedCommand("download_selected", this.getController()));
+		super.addCommand(new DownloadSelectedCommand("download_selected", this
+				.getController()));
 
 		// FILE:Download all
-		super.addCommand(new DownloadAllCommand("download_all", this.getController()));
+		super.addCommand(new DownloadAllCommand("download_all", this
+				.getController()));
 
 		// File: Add batch
-		super.addCommand(new AddBatchCommand("upload_csv", this.getController()));
+		super
+				.addCommand(new AddBatchCommand("upload_csv", this
+						.getController()));
 
 		// EDIT MENU
 		// EDIT: Add new record
 		super.addCommand(new AddCommand("edit_new", this.getController()));
 
 		// EDIT: Update selected
-		super.addCommand(new EditSelectedCommand("edit_update_selected", this.getController()));
+		super.addCommand(new EditSelectedCommand("edit_update_selected", this
+				.getController()));
 
 		// EDIT: Remove selected
-		super.addCommand(new RemoveSelectedCommand("edit_remove_selected", this.getController()));
+		super.addCommand(new RemoveSelectedCommand("edit_remove_selected", this
+				.getController()));
 
 		// menu VIEW
 		// ScreenCommand v2 = new ViewRecordViewCommand("recordview",
@@ -283,30 +290,38 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		// super.addCommand("View", v2);
 
 		// v3.setToolbar(true);
-		super.addCommand(new ViewEditViewCommand("editview", this.getController()));
-		super.addCommand(new ViewListViewCommand("listview", this.getController()));
+		super.addCommand(new ViewEditViewCommand("editview", this
+				.getController()));
+		super.addCommand(new ViewListViewCommand("listview", this
+				.getController()));
 
-		ChangeListLimitCommand view_5 = new ChangeListLimitCommand("view_5show5", this.getController());
+		ChangeListLimitCommand view_5 = new ChangeListLimitCommand(
+				"view_5show5", this.getController());
 		view_5.setLimit(5);
 		super.addCommand(view_5);
 
-		ChangeListLimitCommand view_10 = new ChangeListLimitCommand("view_6show10", this.getController());
+		ChangeListLimitCommand view_10 = new ChangeListLimitCommand(
+				"view_6show10", this.getController());
 		view_5.setLimit(10);
 		super.addCommand(view_10);
 
-		ChangeListLimitCommand view_20 = new ChangeListLimitCommand("view_7show20", this.getController());
+		ChangeListLimitCommand view_20 = new ChangeListLimitCommand(
+				"view_7show20", this.getController());
 		view_20.setLimit(20);
 		super.addCommand(view_20);
 
-		ChangeListLimitCommand view_50 = new ChangeListLimitCommand("view_8show50", this.getController());
+		ChangeListLimitCommand view_50 = new ChangeListLimitCommand(
+				"view_8show50", this.getController());
 		view_50.setLimit(50);
 		super.addCommand(view_50);
 
-		ChangeListLimitCommand view_100 = new ChangeListLimitCommand("view_9show100", this.getController());
+		ChangeListLimitCommand view_100 = new ChangeListLimitCommand(
+				"view_9show100", this.getController());
 		view_100.setLimit(100);
 		super.addCommand(view_100);
 
-		ChangeListLimitCommand view_500 = new ChangeListLimitCommand("view_10show500", this.getController());
+		ChangeListLimitCommand view_500 = new ChangeListLimitCommand(
+				"view_10show500", this.getController());
 		view_500.setLimit(500);
 		super.addCommand(view_500);
 
@@ -388,11 +403,15 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		rules.addAll(this.getUserRules());
 		if (includingLimitOffset)
 		{
-			if (this.limit > 0) rules.add(new QueryRule(QueryRule.Operator.LIMIT, this.limit));
-			if (this.offset > 0) rules.add(new QueryRule(QueryRule.Operator.OFFSET, this.offset));
+			if (this.limit > 0) rules.add(new QueryRule(
+					QueryRule.Operator.LIMIT, this.limit));
+			if (this.offset > 0) rules.add(new QueryRule(
+					QueryRule.Operator.OFFSET, this.offset));
 		}
-		if (this.sortby != "") rules.add(new QueryRule(this.sortMode, this.sortby));
-		logger.debug("rules.size: " + rules.size() + "=" + this.getSystemRules().size() + "+"
+		if (this.sortby != "") rules.add(new QueryRule(this.sortMode,
+				this.sortby));
+		logger.debug("rules.size: " + rules.size() + "="
+				+ this.getSystemRules().size() + "+"
 				+ this.getUserRules().size());
 		return rules.toArray(new QueryRule[rules.size()]);
 	}
@@ -409,12 +428,14 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 			// set defaults for xrefs
 			for (ParentFilter pf : this.getParentFilters())
 			{
-				FormModel<?> parent = (FormModel<?>) this.getController().get(pf.getParentForm()).getModel();
+				FormModel<?> parent = (FormModel<?>) this.getController().get(
+						pf.getParentForm()).getModel();
 				List<?> records = parent.getRecords();
 				if (records.size() > 0)
 				{
 					// xref only
-					Object value = ((Entity) records.get(0)).get(pf.getParentId());
+					Object value = ((Entity) records.get(0)).get(pf
+							.getParentId());
 					if (!(value instanceof List<?>) && value != null)
 					{
 						entity.set(pf.getXrefToParent(), value);
@@ -423,7 +444,8 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 					for (String labelName : pf.getParentLabels())
 					{
 						Object label = ((Entity) records.get(0)).get(labelName);
-						entity.set(pf.getXrefToParent() + "_" + labelName, label);
+						entity.set(pf.getXrefToParent() + "_" + labelName,
+								label);
 					}
 				}
 			}
@@ -433,7 +455,8 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		catch (Exception e)
 		{
 			// should never happen
-			logger.error("failed to create class " + getController().getEntityClass() + ": " + e);
+			logger.error("failed to create class "
+					+ getController().getEntityClass() + ": " + e);
 			e.printStackTrace();
 		}
 		return null;
@@ -447,7 +470,8 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	public Vector<String> getHeaders()
 	{
 		Vector<String> headers = new Vector<String>();
-		for (HtmlInput input : getController().getInputs(this.create(), true).getInputs())
+		for (HtmlInput input : getController().getInputs(this.create(), true)
+				.getInputs())
 		{
 			headers.add(input.getLabel());
 		}
@@ -462,7 +486,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	public HtmlForm getNewRecordForm() throws DatabaseException
 	{
 		E entity = this.create();
-		//if (current != null) entity = current;
+		// if (current != null) entity = current;
 		return getController().getInputs(entity, true);
 	}
 
@@ -518,7 +542,8 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 			String field = rule.getField();
 			String label = "";
 			if (field != null) label = nameLabelMap.get(field);
-			filters.add(label + " " + rule.getOperator().toString() + " " + rule.getValue());
+			filters.add(label + " " + rule.getOperator().toString() + " "
+					+ rule.getValue());
 		}
 
 		return filters;
@@ -683,13 +708,15 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		List<QueryRule> rules = new ArrayList<QueryRule>();
 
 		// parent filters
-		if (this.getParentFilters() != null && this.getParentFilters().size() > 0)
+		if (this.getParentFilters() != null
+				&& this.getParentFilters().size() > 0)
 		{
 			List<QueryRule> xref_filters = new ArrayList<QueryRule>();
 
 			for (ParentFilter pf : this.getParentFilters())
 			{
-				FormModel<?> parent = (FormModel<?>) this.getController().get(pf.getParentForm()).getModel();
+				FormModel<?> parent = (FormModel<?>) this.getController().get(
+						pf.getParentForm()).getModel();
 				List<?> records = parent.getRecords();
 
 				// add filters for xref or mref relationships (if any)
@@ -698,7 +725,8 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 				if (records.size() > 0)
 				{
 
-					Object parentValue = ((Entity) records.get(0)).get(pf.getParentId());
+					Object parentValue = ((Entity) records.get(0)).get(pf
+							.getParentId());
 					// mref?
 					if (parentValue instanceof List<?>)
 					{
@@ -707,9 +735,12 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 						{
 							for (int i = 0; i < values.size(); i++)
 							{
-								QueryRule rule = new QueryRule(pf.getXrefToParent(), QueryRule.Operator.EQUALS, values
-										.get(i));
-								if(xref_filters.size() > 0) xref_filters.add(new QueryRule(Operator.OR));
+								QueryRule rule = new QueryRule(pf
+										.getXrefToParent(),
+										QueryRule.Operator.EQUALS, values
+												.get(i));
+								if (xref_filters.size() > 0) xref_filters
+										.add(new QueryRule(Operator.OR));
 								xref_filters.add(rule);
 							}
 						}
@@ -717,36 +748,43 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 						// impossible condition
 						else
 						{
-							QueryRule rule = new QueryRule(pf.getXrefToParent(), QueryRule.Operator.EQUALS,
+							QueryRule rule = new QueryRule(
+									pf.getXrefToParent(),
+									QueryRule.Operator.EQUALS,
 									Integer.MIN_VALUE);
-							if(xref_filters.size() > 0) xref_filters.add(new QueryRule(Operator.OR));
+							if (xref_filters.size() > 0) xref_filters
+									.add(new QueryRule(Operator.OR));
 							xref_filters.add(rule);
-							
+
 						}
 					}
 					// xref
 					else if (parentValue != null)
 					{
-						QueryRule rule = new QueryRule(pf.getXrefToParent(), QueryRule.Operator.EQUALS, parentValue);
-						if (xref_filters.size() > 0) xref_filters.add(new QueryRule(Operator.OR));
+						QueryRule rule = new QueryRule(pf.getXrefToParent(),
+								QueryRule.Operator.EQUALS, parentValue);
+						if (xref_filters.size() > 0) xref_filters
+								.add(new QueryRule(Operator.OR));
 						xref_filters.add(rule);
 
 					}
-//					else
-//					{
-//						QueryRule rule = new QueryRule(pf.getXrefToParent(), QueryRule.Operator.EQUALS,
-//								Integer.MIN_VALUE);
-//						if (xref_filters.size() > 0) xref_filters.add(new QueryRule(Operator.OR));
-//						xref_filters.add(rule);
-//
-//					}
+					// else
+					// {
+					// QueryRule rule = new QueryRule(pf.getXrefToParent(),
+					// QueryRule.Operator.EQUALS,
+					// Integer.MIN_VALUE);
+					// if (xref_filters.size() > 0) xref_filters.add(new
+					// QueryRule(Operator.OR));
+					// xref_filters.add(rule);
+					//
+					// }
 				}
 			}
 			// put it all in one clause, e.g. (xref1 = 0 OR xref1 = 1 OR xref2=3
 			// ....)
-			if(rules.size()>0) rules.add(new QueryRule(Operator.OR));
+			if (rules.size() > 0) rules.add(new QueryRule(Operator.OR));
 			rules.add(new QueryRule(xref_filters));
-			
+
 		}
 
 		return rules;
@@ -778,8 +816,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	public boolean isReadonly()
 	{
 		// If no "real" auth is used, return value from xml-ui
-		if (this.getSecurity() instanceof SimpleLogin)
-			return this.readonly;
+		if (this.getSecurity() instanceof SimpleLogin) return this.readonly;
 
 		// Otherwise dynamically return whether form is read-only
 		try
@@ -797,25 +834,35 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	/**
 	 * Override getChildren to only return selected elements.
 	 */
-//	@Override
-//	// FIXME: this may be problematic?
-//	public Vector<ScreenModel<?>> getChildren()
-//	{
-//		if (viewMode.equals(Mode.EDIT_VIEW))
-//		{
-//			return super.getChildren();
-//		}
-//		else
-//		{
-//			return new Vector<ScreenModel<?>>(); // empty set.
-//		}
-//	}
+	// @Override
+	// // FIXME: this may be problematic?
+	// public Vector<ScreenModel<?>> getChildren()
+	// {
+	// if (viewMode.equals(Mode.EDIT_VIEW))
+	// {
+	// return super.getChildren();
+	// }
+	// else
+	// {
+	// return new Vector<ScreenModel<?>>(); // empty set.
+	// }
+	// }
 
 	@Deprecated
 	public File getDownloadFile(Database db, Tuple requestTuple)
 	{
-		String file = db.getFilesource() + requestTuple.getString(FileInput.INPUT_CURRENT_DOWNLOAD);
-		logger.error("file to download: " + file);
+		String file = null;
+		try
+		{
+			file = db.getFilesource()
+					+ requestTuple.getString(FileInput.INPUT_CURRENT_DOWNLOAD);
+			logger.error("file to download: " + file);
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return new File(file);
 	}
 
@@ -858,7 +905,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	public String getIdField()
 	{
 		E object = this.create();
-		return object.getClass().getSimpleName() +"_"+object.getIdField();
+		return object.getClass().getSimpleName() + "_" + object.getIdField();
 	}
 
 	public List<ScreenCommand> getCommands()
@@ -904,15 +951,17 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 
 	public E getCurrent()
 	{
-		if(this.getRecords() != null && this.getRecords().size() > 0) return this.getRecords().get(0);
+		if (this.getRecords() != null && this.getRecords().size() > 0) return this
+				.getRecords().get(0);
 		return null;
 	}
-//
-//	public void setCurrent(E current)
-//	{
-//		this.current = current;
-//	}
-	
+
+	//
+	// public void setCurrent(E current)
+	// {
+	// this.current = current;
+	// }
+
 	public FormController<E> getController()
 	{
 		return (FormController<E>) super.getController();
