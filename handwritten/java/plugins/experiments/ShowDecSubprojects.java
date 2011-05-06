@@ -485,7 +485,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				Date now = calendar.getTime();
 				featureId = ct.getMeasurementId("Experiment");
 				// Make list of ID's of all animals that are alive
-				List<Integer> aliveAnimalIdList = ct.getAllObservationTargetIds("Animal", true);
+				List<Integer> aliveAnimalIdList = ct.getAllObservationTargetIds("Individual", true);
 				int nrOfAnimals = 0;
 				if (aliveAnimalIdList.size() > 0) {
 					Query<ObservedValue> q = db.query(ObservedValue.class);

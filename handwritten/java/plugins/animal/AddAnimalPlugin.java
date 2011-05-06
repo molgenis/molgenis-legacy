@@ -117,7 +117,6 @@ public class AddAnimalPlugin extends GenericPlugin
 				e1.printStackTrace();
 			}
 			e.printStackTrace();
-			this.getMessages().clear();
 			if (e.getMessage() != null) {
 				this.getMessages().add(new ScreenMessage(e.getMessage(), false));
 			}

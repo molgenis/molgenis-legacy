@@ -128,14 +128,6 @@ public class ShowDecProjects extends PluginModel<Entity>
 					throw(new Exception("No DEC number given - project not added"));
 				}
 				
-				// DEC applicant
-				String decapplicantIdString = "";
-				if (request.getString("decapplicant") != null) {
-					decapplicantIdString = request.getString("decapplicant");
-					decapplicantIdString.replace(".", "");
-					decapplicantIdString.replace(",", "");
-				}
-				
 				// DEC application PDF
 				String decapplicationpdf = null;
 				if (request.getString("decapplicationpdf") != null && !request.getString("decapplicationpdf").equals("")) {
@@ -198,9 +190,6 @@ public class ShowDecProjects extends PluginModel<Entity>
 				int measurementId = ct.getMeasurementId("DecNr");
 				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, starttime, 
 						endtime, measurementId, projectId, decnumber, 0));
-				measurementId = ct.getMeasurementId("DecApplicantId");
-				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, starttime, 
-						endtime, measurementId, projectId, decapplicantIdString, 0));
 				if (decapplicationpdf != null) {
 					measurementId = ct.getMeasurementId("DecApplicationPdf");
 					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, starttime, 

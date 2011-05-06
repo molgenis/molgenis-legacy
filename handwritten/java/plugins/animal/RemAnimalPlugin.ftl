@@ -33,7 +33,7 @@
 	<option value="0">&nbsp;</option>
 	<#list screen.animalIdList as animalId>
 		<#assign name = screen.getAnimalName(animalId)>
-		<option value="${animalId}">${name}</option>
+		<option value="${animalId?string.computer}">${name}</option>
 	</#list>
 </select>
 </div>
