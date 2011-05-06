@@ -33,6 +33,7 @@ import org.apache.cxf.Bus;
 import org.apache.cxf.BusFactory;
 import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
 import org.apache.log4j.Logger;
+import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
@@ -77,6 +78,9 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	private static final long serialVersionUID = 3141439968743510237L;
 	// whether cxf is already loaded
 	private boolean cxfLoaded = false;
+	
+	//the used molgenisoptions, set by generated MolgenisServlet
+	protected MolgenisOptions usedOptions = null;
 
 	/**
 	 * You can override this method for alternative loading strategies.
@@ -85,14 +89,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	public abstract Database getDatabase() throws DatabaseException,
-			NamingException, FileNotFoundException, IOException;
-
-	/**
-	 * Applies an optional overlay of your HTML with linkouts for popular
-	 * identifier to online databases, default is false.
-	 */
-	public abstract boolean linkoutOverlay();
+	public abstract Database getDatabase() throws Exception;
 
 	/**
 	 * Create a Login specific to the security scheme used in this MOLGENIS. You
@@ -116,8 +113,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	 * @throws NamingException
 	 * @throws DatabaseException
 	 */
-	public abstract Object getSoapImpl() throws DatabaseException,
-			NamingException;
+	public abstract Object getSoapImpl() throws Exception;
 
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -250,6 +246,10 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		{
 			e.printStackTrace();
 		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 
 		// end timing the service
 		logger.info("service completed in "
@@ -297,9 +297,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		}
 	}
 
-	private void handleSOAPrequest(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException,
-			DatabaseException, NamingException
+	private void handleSOAPrequest(HttpServletRequest request, HttpServletResponse response) throws Exception
 	{
 		// delegate to CXF servlet
 		// load the bus if needed
@@ -709,6 +707,31 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 
 				// done, get rid of screen messages here?
 				((ApplicationController) molgenis).clearAllMessages();
+				
+				//TODO THIS USED TO BE HERE.. PLEASE REVIEW!!
+//				args.put("massupdate", massupdate_updateable);
+//					}
+//				}
+//				else
+//				{
+//					args.put("show", "root");
+//				}
+//				logger.info("applying layout template");
+//	
+//				if(usedOptions.linkout_overlay){
+//					logger.info("applying linkout overlay");
+//					Writer result = new StringWriter();
+//					PrintWriter tmpWriter = new PrintWriter(result);
+//					freemarkerTemplate.process(args, tmpWriter);
+//					String templated = result.toString();
+//					LinkOutOverlay linker = new LinkOutOverlay();
+//					String afterOverlay = linker.addlinkouts(templated);
+//					writer.write(afterOverlay);
+//				}else{
+//					freemarkerTemplate.process(args, writer);
+//				}
+//				writer.close();
+				//END OF 'USED TO BE HERE' BLOCK
 			}
 			// db.commitTx(); DISCUSSION
 		}
