@@ -18,7 +18,6 @@ import javax.sql.DataSource;
 import org.molgenis.framework.security.Login;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ApplicationController;
-import org.molgenis.framework.ui.UserInterface;
 import org.molgenis.framework.server.AbstractMolgenisServlet;
 import ${package}.<#if databaseImp = 'jpa'>Jpa<#else>JDBC</#if>Database;
 import org.molgenis.util.EmailService;
