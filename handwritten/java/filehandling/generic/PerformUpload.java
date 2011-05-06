@@ -11,7 +11,6 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.util.ValueLabel;
 
 import decorators.NameConvention;
-import filehandling.generic.BasicFileHandler.XGAPStorageException;
 import filehandling.generic.MolgenisFileHandler.TypeUnknownException;
 
 public class PerformUpload
@@ -25,13 +24,10 @@ public class PerformUpload
 	 * @param db
 	 * @param mf
 	 * @param content
-	 * @throws TypeUnknownException
+	 * @throws Exception 
 	 * @throws XGAPStorageException
-	 * @throws IOException
-	 * @throws DatabaseException
 	 */
-	public static void doUpload(Database db, MolgenisFile mf, File content) throws TypeUnknownException,
-			XGAPStorageException, IOException, DatabaseException
+	public static void doUpload(Database db, MolgenisFile mf, File content) throws Exception
 	{
 		File storageForFileType = new MolgenisFileHandler(db).getStorageDirFor(mf.get__Type());
 

@@ -11,11 +11,12 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.db.jdbc.JDBCFileSourceHelper;
 import org.molgenis.util.ValueLabel;
 
 import decorators.NameConvention;
 
-public class MolgenisFileHandler extends BasicFileHandler
+public class MolgenisFileHandler extends JDBCFileSourceHelper
 {
 
 	public MolgenisFileHandler(Database db)
@@ -43,13 +44,10 @@ public class MolgenisFileHandler extends BasicFileHandler
 	 * 
 	 * @param type
 	 * @return
-	 * @throws TypeUnknownException
-	 * @throws XGAPStorageException
-	 * @throws IOException
-	 * @throws DatabaseException 
+	 * @throws Exception 
 	 * @throws Exception
 	 */
-	public File getStorageDirFor(String type) throws TypeUnknownException, XGAPStorageException, IOException, DatabaseException
+	public File getStorageDirFor(String type) throws Exception
 	{
 		// lowercase 'type' for directory usage
 		type = type.toLowerCase();
@@ -69,7 +67,7 @@ public class MolgenisFileHandler extends BasicFileHandler
 		}
 
 		// create pointer to storage location, try to mkdir if not exists
-		File storageDir = getFileStorage();
+		File storageDir = getFilesource();
 		File typeStorageDir = new File(storageDir.getAbsolutePath() + File.separator + type);
 		if (!typeStorageDir.exists())
 		{
@@ -88,15 +86,9 @@ public class MolgenisFileHandler extends BasicFileHandler
 	 * take care of deleting the file by removing the MolgenisFile.
 	 * 
 	 * @param mf
-	 * @throws FileNotFoundException
-	 * @throws DatabaseException
-	 * @throws InterruptedException
-	 * @throws TypeUnknownException
-	 * @throws XGAPStorageException
-	 * @throws IOException
+	 * @throws Exception 
 	 */
-	public void deleteFile(MolgenisFile mf) throws FileNotFoundException, DatabaseException, InterruptedException,
-			TypeUnknownException, XGAPStorageException, IOException
+	public void deleteFile(MolgenisFile mf) throws Exception
 	{
 		File theFile = getFile(mf);
 		if (!theFile.exists())
@@ -126,13 +118,9 @@ public class MolgenisFileHandler extends BasicFileHandler
 	 * @param db
 	 * @param mf
 	 * @return
-	 * @throws TypeUnknownException
-	 * @throws XGAPStorageException
-	 * @throws IOException
-	 * @throws DatabaseException
+	 * @throws Exception 
 	 */
-	public File getFile(MolgenisFile mf) throws TypeUnknownException, XGAPStorageException, IOException,
-			DatabaseException, FileNotFoundException
+	public File getFile(MolgenisFile mf) throws Exception
 	{
 		File typeStorage = getStorageDirFor(mf.get__Type().toLowerCase());
 		File dataSource = new File(typeStorage.getAbsolutePath() + File.separator
@@ -150,17 +138,12 @@ public class MolgenisFileHandler extends BasicFileHandler
 	 * 
 	 * @param name
 	 * @return
-	 * @throws TypeUnknownException
-	 * @throws XGAPStorageException
-	 * @throws IOException
-	 * @throws DatabaseException
-	 * @throws FileNotFoundException
+	 * @throws Exception 
 	 */
-	public File getFile(String name) throws TypeUnknownException, XGAPStorageException, IOException, DatabaseException,
-			FileNotFoundException
+	public File getFile(String name) throws Exception
 	{
 		QueryRule q = new QueryRule("name", Operator.EQUALS, name);
-		List<MolgenisFile> mfList = db.find(MolgenisFile.class, q);
+		List<MolgenisFile> mfList = getDb().find(MolgenisFile.class, q);
 
 		if (mfList.size() == 0)
 		{
@@ -178,14 +161,10 @@ public class MolgenisFileHandler extends BasicFileHandler
 	 * @param db
 	 * @param mf
 	 * @return
-	 * @throws IOException
-	 * @throws XGAPStorageException
-	 * @throws TypeUnknownException
-	 * @throws DatabaseException
+	 * @throws Exception 
 	 * @throws Exception
 	 */
-	public String findFile(MolgenisFile mf) throws TypeUnknownException, XGAPStorageException, IOException,
-			DatabaseException
+	public String findFile(MolgenisFile mf) throws Exception
 	{
 		// get all possible options and iterate through the possible directories
 		List<ValueLabel> fileTypes = mf.get__TypeOptions();
