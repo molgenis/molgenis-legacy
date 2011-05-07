@@ -58,7 +58,8 @@ public class EasyPluginViewGen extends Generator
 				Class<?> c = null;
 				try
 				{
-					c = Class.forName(fullKlazzName+"Controller");
+					//check if plugin controller exist, then assume user is already happy and don't need templates.
+					c = Class.forName(fullKlazzName);
 					//return;
 				} catch (Exception e)
 				{

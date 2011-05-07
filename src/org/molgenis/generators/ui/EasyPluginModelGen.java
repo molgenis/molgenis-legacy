@@ -61,7 +61,8 @@ public class EasyPluginModelGen extends Generator
 				Class<?> c = null;
 				try
 				{
-					c = Class.forName(fullKlazzName+"Model");
+					//check if plugin controller exist, then assume user is already happy and don't need templates.
+					c = Class.forName(fullKlazzName);
 					//return;
 				} catch (ClassNotFoundException e)
 				{
