@@ -10,6 +10,7 @@ package plugins.fillgids;
 import java.io.File;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
 
@@ -25,7 +26,7 @@ public class FillDatabasePlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -5634663322794444817L;
 
-	public FillDatabasePlugin(String name, ScreenModel<Entity> parent)
+	public FillDatabasePlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

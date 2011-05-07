@@ -17,8 +17,8 @@ import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -39,9 +39,9 @@ public class RplotPlugin<E extends Entity> extends PluginModel<E>
 		this.setMessages();
 	}
 
-	public RplotPlugin(String name, ScreenModel parent)
+	public RplotPlugin(String name, ScreenController<?> parent)
 	{
-		super(name, parent.getController());
+		super(name, parent);
 	}
 
 	@Override
