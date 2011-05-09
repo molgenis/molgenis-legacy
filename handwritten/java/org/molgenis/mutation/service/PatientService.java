@@ -1,14 +1,24 @@
 package org.molgenis.mutation.service;
 
+import app.JpaDatabase;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import javax.xml.bind.JAXBException;
 
@@ -18,10 +28,12 @@ import org.apache.commons.collections.CollectionUtils;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.core.Publication;
+import org.molgenis.core.service.PublicationService;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
+import org.molgenis.framework.db.jpa.JPAQueryGeneratorUtil;
 import org.molgenis.mutation.Antibody;
 import org.molgenis.mutation.E_M;
 import org.molgenis.mutation.I_F;
@@ -29,6 +41,7 @@ import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.MutationPhenotype;
 import org.molgenis.mutation.Patient;
 import org.molgenis.mutation.PhenotypeDetails;
+import org.molgenis.mutation.db.PatientJpaMapper;
 import org.molgenis.mutation.excel.UploadBatchExcelReader;
 import org.molgenis.mutation.util.PatientComparator;
 import org.molgenis.mutation.vo.PatientSearchCriteriaVO;
@@ -39,243 +52,238 @@ import org.molgenis.submission.Submission;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
-import app.JDBCDatabase;
+public class PatientService implements Serializable {
 
-public class PatientService implements Serializable
-{
-	private static final long serialVersionUID       = -5343468595949980106L;
-	private JDBCDatabase db                          = null;
-	private static PatientService patientService     = null;
-	private HashMap<Integer, PatientSummaryVO> cache = new HashMap<Integer, PatientSummaryVO>();
+    private static final long serialVersionUID = -5343468595949980106L;
+    private Database db = null;
+    private static PatientService patientService = null;
+    private HashMap<Integer, PatientSummaryVO> cache = new HashMap<Integer, PatientSummaryVO>();
 
-	// private constructor, use singleton instance
-	private PatientService(Database db)
-	{
-		this.db = (JDBCDatabase) db;
-	}
-	
-	public static PatientService getInstance(Database db)
-	{
-		if (patientService == null)
-			patientService = new PatientService(db);
-		
-		return patientService;
+    // private constructor, use singleton instance
+    private PatientService(Database db) {
+	this.db = db;
+    }
+
+    public static PatientService getInstance(Database db) {
+	if (patientService == null) {
+	    patientService = new PatientService(db);
 	}
 
-	public List<PatientSummaryVO> findPatients(PatientSearchCriteriaVO criteria) throws DatabaseException, java.text.ParseException
+	return patientService;
+    }
+
+    public List<PatientSummaryVO> findPatients(PatientSearchCriteriaVO criteria) throws DatabaseException, java.text.ParseException {
+	Query<Patient> query = this.db.query(Patient.class);
+
+	if (criteria.getPid() != null) {
+	    query = query.equals(Patient.IDENTIFIER, criteria.getPid());
+	}
+	if (criteria.getMutationId() != null) {
+	    Mutation mutation = this.db.findById(Mutation.class, criteria.getMutationId());
+	    query = query.equals(Patient.MUTATION1, mutation).or().equals(Patient.MUTATION2, mutation);
+	}
+	if (criteria.getMid() != null) {
+	    List<Mutation> mutations = this.db.query(Mutation.class).equals(Mutation.IDENTIFIER, criteria.getMid()).find();
+	    if (mutations.size() == 1) {
+		Integer mutationId = mutations.get(0).getId();
+		query = query.equals(Patient.MUTATION1, mutationId).or().equals(Patient.MUTATION2, mutationId);
+	    }
+	}
+	if (criteria.getConsent() != null) {
+	    if (criteria.getConsent()) {
+		query = query.in(Patient.CONSENT, Arrays.asList(new String[]{"publication", "yes"}));
+	    } else {
+		query = query.equals(Patient.CONSENT, "no");
+	    }
+	}
+	if (criteria.getSubmissionId() != null) {
+	    query = query.equals(Patient.SUBMISSION, criteria.getSubmissionId());
+	}
+	if (criteria.getUserId() != null) {
+	    List<Submission> submissions = this.db.query(Submission.class).equals(Submission.SUBMITTERS, criteria.getUserId()).find();
+	    List<Integer> submissionIds = new ArrayList<Integer>();
+	    for (Submission submission : submissions) {
+		submissionIds.add(submission.getId());
+	    }
+	    query = query.in(Patient.SUBMISSION, submissionIds);
+	}
+	query = query.sortASC(Patient.IDENTIFIER);
+
+	if (query.getRules().length > 0) {
+	    return this.toPatientSummaryVOList(query.find());
+	} else // Return an empty list, if query is "empty". find() would return all objects.
 	{
-		Query<Patient> query = this.db.query(Patient.class);
+	    return new ArrayList<PatientSummaryVO>();
+	}
+    }
 
-		if (criteria.getPid() != null)
-			query = query.equals(Patient.IDENTIFIER, criteria.getPid());
-		if (criteria.getMutationId() != null)
-			query = query.equals(Patient.MUTATION1, criteria.getMutationId()).or().equals(Patient.MUTATION2, criteria.getMutationId());
-		if (criteria.getMid() != null)
-		{
-			List<Mutation> mutations = this.db.query(Mutation.class).equals(Mutation.IDENTIFIER, criteria.getMid()).find();
-			if (mutations.size() == 1)
-			{
-				Integer mutationId = mutations.get(0).getId();
-				query              = query.equals(Patient.MUTATION1, mutationId).or().equals(Patient.MUTATION2, mutationId);
-			}
-		}
-		if (criteria.getConsent() != null)
-			if (criteria.getConsent())
-				query = query.equals(Patient.CONSENT, "publication").or().equals(Patient.CONSENT, "yes");
-			else
-				query = query.equals(Patient.CONSENT, "no");
-		if (criteria.getSubmissionId() != null)
-		{
-			query = query.equals(Patient.SUBMISSION, criteria.getSubmissionId());
-		}
-		if (criteria.getUserId() != null)
-		{
-			List<Submission> submissions = this.db.query(Submission.class).equals(Submission.SUBMITTERS, criteria.getUserId()).find();
-			List<Integer> submissionIds  = new ArrayList<Integer>();
-			for (Submission submission : submissions)
-				submissionIds.add(submission.getId());
-			query = query.in(Patient.SUBMISSION, submissionIds);
-		}
-		query = query.sortASC(Patient.IDENTIFIER);
+    public PatientSummaryVO findPatientById(Integer id) throws Exception {
+	return this.toPatientSummaryVO(this.db.findById(Patient.class, id));
+    }
 
-		if (query.getRules().length > 0)
-			return this.toPatientSummaryVOList(query.find());
-		else
-			// Return an empty list, if query is "empty". find() would return all objects.
-			return new ArrayList<PatientSummaryVO>();
+    public List<PatientSummaryVO> getAllPatientSummaries() throws DatabaseException, ParseException {
+	return this.toPatientSummaryVOList(this.db.query(Patient.class).sortASC(Patient.IDENTIFIER).find());
+    }
+
+    /**
+     * Get number of patients in the database
+     * @return number of patients
+     * @throws DatabaseException 
+     */
+    public int getNumPatients() throws DatabaseException {
+	return this.db.count(Patient.class);
+    }
+
+    /**
+     * Get number of unpublished patients.
+     * @return number of unpublished patients
+     * @throws DatabaseException
+     * @throws ParseException 
+     */
+    public int getNumUnpublishedPatients() throws DatabaseException, ParseException {
+//		//TODO: Outer join is faster, but is syntax standardized?
+//		return this.db.sql("SELECT DISTINCT id FROM Patient WHERE NOT EXISTS (SELECT id FROM Patient_publications WHERE Patient.id = Patient_publications.Patient)").size();
+
+
+	javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT COUNT(id) FROM Patient WHERE NOT EXISTS (SELECT id FROM Patient_publications WHERE Patient.id = Patient_publications.Patient)");
+	return Integer.valueOf(q.getSingleResult().toString());
+    }
+
+    /**
+     * Get the biggest identifier without the leading 'P'
+     * @return biggest identifier without the leading 'P'
+     * @throws DatabaseException
+     * @throws ParseException
+     */
+    public Integer getMaxIdentifier() throws DatabaseException, ParseException {
+	List<Patient> patients = this.db.query(Patient.class).find();
+
+	if (CollectionUtils.isEmpty(patients)) {
+	    return 0;
 	}
 
-	public PatientSummaryVO findPatientById(Integer id) throws Exception
-	{
-		return this.toPatientSummaryVO(this.db.findById(Patient.class, id));
+	Collections.sort(patients, new PatientComparator());
+	return Integer.valueOf(patients.get(patients.size() - 1).getIdentifier().substring(1));
+    }
+
+    /**
+     * Insert batch of patients. To be refactored.
+     * @param file
+     * @return number of patients inserted
+     * @throws Exception
+     */
+    public int insertBatch(File file) throws Exception {
+	try {
+	    db.beginTx();
+	    Workbook workbook = Workbook.getWorkbook(file);
+	    int count = new UploadBatchExcelReader().importSheet(db, workbook.getSheet("Patients"), new SimpleTuple(), DatabaseAction.ADD_IGNORE_EXISTING, "");
+	    db.commitTx();
+	    return count;
+	} catch (Exception e) {
+	    db.rollbackTx();
+	    throw e;
+	}
+    }
+
+    /**
+     * Insert patient and set primary key
+     * @param patient
+     * @return number of patients inserted
+     * @throws Exception
+     */
+    public int insert(PatientSummaryVO patientSummaryVO) throws Exception {
+	if (patientSummaryVO == null) {
+	    return 0;
 	}
 
-	public List<PatientSummaryVO> getAllPatientSummaries() throws DatabaseException, ParseException
-	{
-		return this.toPatientSummaryVOList(this.db.query(Patient.class).sortASC(Patient.IDENTIFIER).find());
-	}
-
-	/**
-	 * Get number of patients in the database
-	 * @return number of patients
-	 * @throws DatabaseException 
-	 */
-	public int getNumPatients() throws DatabaseException
-	{
-		return this.db.count(Patient.class);
-	}
-
-	/**
-	 * Get number of unpublished patients.
-	 * @return number of unpublished patients
-	 * @throws DatabaseException
-	 * @throws ParseException 
-	 */
-	public int getNumUnpublishedPatients() throws DatabaseException, ParseException
-	{
-		//TODO: Outer join is faster, but is syntax standardized?
-		return this.db.sql("SELECT DISTINCT id FROM Patient WHERE NOT EXISTS (SELECT id FROM Patient_publications WHERE Patient.id = Patient_publications.Patient)").size();
-	}
-
-	/**
-	 * Get the biggest identifier without the leading 'P'
-	 * @return biggest identifier without the leading 'P'
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-	public Integer getMaxIdentifier() throws DatabaseException, ParseException
-	{
-		List<Patient> patients = this.db.query(Patient.class).find();
-		
-		if (CollectionUtils.isEmpty(patients))
-			return 0;
-
-		Collections.sort(patients, new PatientComparator());
-		return Integer.valueOf(patients.get(patients.size() - 1).getIdentifier().substring(1));
-	}
-
-	/**
-	 * Insert batch of patients. To be refactored.
-	 * @param file
-	 * @return number of patients inserted
-	 * @throws Exception
-	 */
-	public int insertBatch(File file) throws Exception
-	{
-		try
-		{
-			db.beginTx();
-			Workbook workbook = Workbook.getWorkbook(file);
-			int count = new UploadBatchExcelReader().importSheet(db, workbook.getSheet("Patients"), new SimpleTuple(), DatabaseAction.ADD_IGNORE_EXISTING, "");
-			db.commitTx();
-			return count;
-		}
-		catch (Exception e)
-		{
-			db.rollbackTx();
-			throw e;
-		}
-	}
-
-	/**
-	 * Insert patient and set primary key
-	 * @param patient
-	 * @return number of patients inserted
-	 * @throws Exception
-	 */
-	public int insert(PatientSummaryVO patientSummaryVO) throws Exception
-	{
-		if (patientSummaryVO == null)
-			return 0;
-
-		try
-		{
+	try {
 
 //			db.beginTx();
 
-			// submissions are never inserted via patients, just select newest by date
-			List<Submission> submissions = this.db.query(Submission.class).equals(Submission.DATE_, patientSummaryVO.getSubmission().getDate()).sortDESC("id").find();
-			
-			if (submissions.size() > 0)
-				patientSummaryVO.getPatient().setSubmission(submissions.get(0));
+	    // submissions are never inserted via patients, just select newest by date
+	    List<Submission> submissions = this.db.query(Submission.class).equals(Submission.DATE_, patientSummaryVO.getSubmission().getDate()).sortDESC("id").find();
 
-			// mutations are never inserted via patients, just select
-			List<Mutation> mutations1 = this.db.findByExample(patientSummaryVO.getMutation1());
-			
-			if (mutations1.size() == 1)
-				patientSummaryVO.getPatient().setMutation1(mutations1.get(0));
-			
-			List<Mutation> mutations2 = this.db.findByExample(patientSummaryVO.getMutation2());
-			
-			if (mutations2.size() == 1)
-				patientSummaryVO.getPatient().setMutation2(mutations2.get(0));
+	    if (submissions.size() > 0) {
+		patientSummaryVO.getPatient().setSubmission(submissions.get(0));
+	    }
 
-			// phenotypes are never inserted via patients, just select
+	    // mutations are never inserted via patients, just select
+	    List<Mutation> mutations1 = this.db.findByExample(patientSummaryVO.getMutation1());
+
+	    if (mutations1.size() == 1) {
+		patientSummaryVO.getPatient().setMutation1(mutations1.get(0));
+	    }
+
+	    List<Mutation> mutations2 = this.db.findByExample(patientSummaryVO.getMutation2());
+
+	    if (mutations2.size() == 1) {
+		patientSummaryVO.getPatient().setMutation2(mutations2.get(0));
+	    }
+
+	    // phenotypes are never inserted via patients, just select
 //			List<Phenotype> phenotypes = this.db.query(Phenotype.class).equals("name", patientSummaryVO.getPhenotype().getName()).find();
-			List<MutationPhenotype> phenotypes = this.db.findByExample(patientSummaryVO.getPhenotype());
+	    List<MutationPhenotype> phenotypes = this.db.findByExample(patientSummaryVO.getPhenotype());
 
-			if (phenotypes.size() == 1)
-				patientSummaryVO.getPatient().setPhenotype(phenotypes.get(0));
+	    if (phenotypes.size() == 1) {
+		patientSummaryVO.getPatient().setPhenotype(phenotypes.get(0));
+	    }
 
-			// Insert PhenotypeDetails
-			this.db.add(patientSummaryVO.getPhenotypeDetails());
-			List<PhenotypeDetails> phenotypeDetails = this.db.findByExample(patientSummaryVO.getPhenotypeDetails());
-			if (phenotypeDetails.size() > 0)
-				patientSummaryVO.getPatient().setPhenotype_Details(phenotypeDetails.get(0));
+	    // Insert PhenotypeDetails
+	    this.db.add(patientSummaryVO.getPhenotypeDetails());
+	    List<PhenotypeDetails> phenotypeDetails = this.db.findByExample(patientSummaryVO.getPhenotypeDetails());
+	    if (phenotypeDetails.size() > 0) {
+		patientSummaryVO.getPatient().setPhenotype_Details(phenotypeDetails.get(0));
+	    }
 
-			// Insert Publications
-			if (CollectionUtils.isNotEmpty(patientSummaryVO.getPublications()))
-			{
-				List<Integer> publicationIds = new ArrayList<Integer>();
+	    // Insert Publications
+	    if (CollectionUtils.isNotEmpty(patientSummaryVO.getPublications())) {
+		List<Integer> publicationIds = new ArrayList<Integer>();
 
-				for (Publication publication : patientSummaryVO.getPublications())
-				{
-					if (publication.getPubmedID_Name() == null)
-						continue;
+		for (Publication publication : patientSummaryVO.getPublications()) {
+		    if (publication.getPubmedID_Name() == null) {
+			continue;
+		    }
 
-					List<Publication> publications = this.db.query(Publication.class).equals(Publication.PUBMEDID_NAME, publication.getPubmedID_Name()).find();
+		    List<Publication> publications = this.db.query(Publication.class).equals(Publication.PUBMEDID_NAME, publication.getPubmedID_Name()).find();
 
-					if (publications.size() > 0)
-						publicationIds.add(publications.get(0).getId());
-					else
-					{
-						OntologyTerm ontologyTerm = new OntologyTerm();
-						ontologyTerm.setName(publication.getPubmedID_Name());
-						this.db.add(ontologyTerm);
-						ontologyTerm = this.db.query(OntologyTerm.class).equals(OntologyTerm.NAME, publication.getPubmedID_Name()).find().get(0);
-						publication.setPubmedID(ontologyTerm);
-						this.db.add(publication);
-						publicationIds.add(this.db.query(Publication.class).equals(Publication.PUBMEDID_NAME, publication.getPubmedID_Name()).find().get(0).getId());
-					}
-				}
-				patientSummaryVO.getPatient().setPublications(publicationIds);
-			}
+		    if (publications.size() > 0) {
+			publicationIds.add(publications.get(0).getId());
+		    } else {
+			OntologyTerm ontologyTerm = new OntologyTerm();
+			ontologyTerm.setName(publication.getPubmedID_Name());
+			this.db.add(ontologyTerm);
+			ontologyTerm = this.db.query(OntologyTerm.class).equals(OntologyTerm.NAME, publication.getPubmedID_Name()).find().get(0);
+			publication.setPubmedID(ontologyTerm);
+			this.db.add(publication);
+			publicationIds.add(this.db.query(Publication.class).equals(Publication.PUBMEDID_NAME, publication.getPubmedID_Name()).find().get(0).getId());
+		    }
+		}
+		patientSummaryVO.getPatient().setPublications_Id(publicationIds);
+	    }
 
-			// Insert patient and set primary key
-			if (patientSummaryVO.getPatient().getPhenotype() != null)
-			{
-				//TODO:Danny: Use or loose
-				/*int count = */this.db.add(patientSummaryVO.getPatient());
+	    // Insert patient and set primary key
+	    if (patientSummaryVO.getPatient().getPhenotype() != null) {
+		//TODO:Danny: Use or loose
+				/*int count = */		this.db.add(patientSummaryVO.getPatient());
 
-				List<Patient> patients = this.db.findByExample(patientSummaryVO.getPatient());
-				if (patients.size() == 1)
-					patientSummaryVO.setPatient(patients.get(0));
+		List<Patient> patients = this.db.findByExample(patientSummaryVO.getPatient());
+		if (patients.size() == 1) {
+		    patientSummaryVO.setPatient(patients.get(0));
+		}
 
-				// Add IF
-				if (patientSummaryVO.getIf_() != null)
-				{
-					patientSummaryVO.getIf_().setAntibody(this.db.query(Antibody.class).equals(Antibody.NAME, patientSummaryVO.getIf_().getAntibody_Name()).find().get(0));
-					patientSummaryVO.getIf_().setPatient(patientSummaryVO.getPatient());
-					this.db.add(patientSummaryVO.getIf_());
-				}
+		// Add IF
+		if (patientSummaryVO.getIf_() != null) {
+		    patientSummaryVO.getIf_().setAntibody(this.db.query(Antibody.class).equals(Antibody.NAME, patientSummaryVO.getIf_().getAntibody_Name()).find().get(0));
+		    patientSummaryVO.getIf_().setPatient(patientSummaryVO.getPatient());
+		    this.db.add(patientSummaryVO.getIf_());
+		}
 
-				// Add EM
-				if (patientSummaryVO.getEm_() != null)
-				{
-					patientSummaryVO.getEm_().setPatient(patientSummaryVO.getPatient());
-					this.db.add(patientSummaryVO.getEm_());
-				}
-				
+		// Add EM
+		if (patientSummaryVO.getEm_() != null) {
+		    patientSummaryVO.getEm_().setPatient(patientSummaryVO.getPatient());
+		    this.db.add(patientSummaryVO.getEm_());
+		}
+
 //				// Add publications
 //				if (patientSummaryVO.getPublications() != null)
 //					for (Publication publication : patientSummaryVO.getPublications())
@@ -298,22 +306,19 @@ public class PatientService implements Serializable
 //						
 //						this.db.add(patient_publication);
 //					}
-			}
+	    }
 //			db.commitTx();
 
-			return 1; //count
-		
-		}
-		catch (Exception e)
-		{
-//			db.rollbackTx();
-			throw e;
-		}
-	}
+	    return 1; //count
 
-	public void setDefaults(PatientSummaryVO patientSummaryVO) throws DatabaseException, ParseException, MalformedURLException, JAXBException, IOException
-	{
-		// set default mutations
+	} catch (Exception e) {
+//			db.rollbackTx();
+	    throw e;
+	}
+    }
+
+    public void setDefaults(PatientSummaryVO patientSummaryVO) throws DatabaseException, ParseException, MalformedURLException, JAXBException, IOException {
+	// set default mutations
 
 //		Mutation nf = new Mutation();
 //		nf.setCdna_notation("NF");
@@ -322,96 +327,107 @@ public class PatientService implements Serializable
 //		patientSummaryVO.setMutation1(nf);
 //		patientSummaryVO.setMutation2(nf);
 
-		// set default phenotype
+	// set default phenotype
 
 //		MutationPhenotype phenotype = this.db.query(MutationPhenotype.class).equals(MutationPhenotype.NAME, "DEB-u").find().get(0);
-		MutationPhenotype phenotype = this.db.query(MutationPhenotype.class).equals(MutationPhenotype.NAME, "Unknown").find().get(0);
+	MutationPhenotype phenotype = this.db.query(MutationPhenotype.class).equals(MutationPhenotype.NAME, "Unknown").find().get(0);
 
-		patientSummaryVO.setPhenotype(phenotype);
+	patientSummaryVO.setPhenotype(phenotype);
 
-		// set default Pubmed values based on given PubMed ID (if any)
+	// set default Pubmed values based on given PubMed ID (if any)
 
-		if (CollectionUtils.isNotEmpty(patientSummaryVO.getPublications()))
-		{
-			for (Publication publication : patientSummaryVO.getPublications())
-			{
-				PubmedService pubmedService          = new PubmedService();
-				List<Integer> pubmedIds              = new ArrayList<Integer>();
-				pubmedIds.add(publication.getPubmedID_Id());
-				List<PubmedArticle> articles         = pubmedService.getPubmedArticlesForIds(pubmedIds);
-				//TODO:Danny: Use or loose
-				/*PubmedArticle article                = */articles.get(0);
-			}
-		}
+	if (CollectionUtils.isNotEmpty(patientSummaryVO.getPublications())) {
+	    for (Publication publication : patientSummaryVO.getPublications()) {
+		PubmedService pubmedService = new PubmedService();
+		List<Integer> pubmedIds = new ArrayList<Integer>();
+		pubmedIds.add(publication.getPubmedID_Id());
+		List<PubmedArticle> articles = pubmedService.getPubmedArticlesForIds(pubmedIds);
+		//TODO:Danny: Use or loose
+				/*PubmedArticle article                = */		articles.get(0);
+	    }
+	}
+    }
+
+    private PatientSummaryVO toPatientSummaryVO(Patient patient) throws DatabaseException, ParseException {
+	if (this.cache.containsKey(patient.getId())) {
+	    return this.cache.get(patient.getId());
 	}
 
-	private PatientSummaryVO toPatientSummaryVO(Patient patient) throws DatabaseException, ParseException
-	{
-		if (this.cache.containsKey(patient.getId()))
-			return this.cache.get(patient.getId());
+	PatientSummaryVO patientSummaryVO = new PatientSummaryVO();
+	patientSummaryVO.setPatient(patient);
+	patientSummaryVO.setMutation1(this.db.findById(Mutation.class, patient.getMutation1_Id()));
+	patientSummaryVO.setMutation2(this.db.findById(Mutation.class, patient.getMutation2_Id()));
+	patientSummaryVO.setPhenotype(this.db.findById(MutationPhenotype.class, patient.getPhenotype_Id()));
+	if (!"no".equals(patient.getConsent())) {
+	    patientSummaryVO.setPhenotypeDetails(this.db.findById(PhenotypeDetails.class, patient.getPhenotype_Details_Id()));
+	}
 
-		PatientSummaryVO patientSummaryVO = new PatientSummaryVO();
-		patientSummaryVO.setPatient(patient);
-		patientSummaryVO.setMutation1(this.db.findById(Mutation.class, patient.getMutation1()));
-		patientSummaryVO.setMutation2(this.db.findById(Mutation.class, patient.getMutation2()));
-		patientSummaryVO.setPhenotype(this.db.findById(MutationPhenotype.class, patient.getPhenotype()));
-		if (!"no".equals(patient.getConsent()))
-			patientSummaryVO.setPhenotypeDetails(this.db.findById(PhenotypeDetails.class, patient.getPhenotype_Details()));
-		
-		if (CollectionUtils.isNotEmpty(patient.getPublications()))
-		{
-			List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPublications()).find();
-			for (Publication publication : publications)
-				publication.setPubmedID_Name("http://www.ncbi.nlm.nih.gov/pubmed/" + publication.getPubmedID_Name());
-			patientSummaryVO.setPublications(publications);
-		}
-		
-		Submission submission  = this.db.findById(Submission.class, patient.getSubmission());
-		patientSummaryVO.setSubmission(submission);
-		MolgenisUser submitter = this.db.findById(MolgenisUser.class, submission.getSubmitters().get(0));
-		patientSummaryVO.setSubmitter(submitter);
-		
-		List<I_F> if_s = this.db.query(I_F.class).equals(I_F.PATIENT, patient.getId()).find();
+	patientSummaryVO.setPubmedURL(PublicationService.PUBMED_URL);
+
+	if (CollectionUtils.isNotEmpty(patient.getPublications_Id())) {
+	    List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPublications_Id()).find();
+	    patientSummaryVO.setPublications(publications);
+	}
+
+	Submission submission = this.db.findById(Submission.class, patient.getSubmission_Id());
+	patientSummaryVO.setSubmission(submission);
+	MolgenisUser submitter = this.db.findById(MolgenisUser.class, submission.getSubmitters_Id().get(0));
+	patientSummaryVO.setSubmitter(submitter);
+
+	List<I_F> if_s = this.db.query(I_F.class).equals(I_F.PATIENT, patient.getId()).find();
 //		I_F if_ = new I_F();
 //		if_.setPatient(patient);
 //		List<I_F> if_s = this.db.findByExample(if_);
-		if (if_s.size() > 0)
-			patientSummaryVO.setIf_(if_s.get(0));
-		
-		List<E_M> em_s = this.db.query(E_M.class).equals(E_M.PATIENT, patient.getId()).find();
+	if (if_s.size() > 0) {
+	    patientSummaryVO.setIf_(if_s.get(0));
+	}
+
+	List<E_M> em_s = this.db.query(E_M.class).equals(E_M.PATIENT, patient.getId()).find();
 //		E_M em_ = new E_M();
 //		em_.setPatient(patient);
 //		List<E_M> em_s = this.db.findByExample(em_);
-		if (em_s.size() > 0)
-			patientSummaryVO.setEm_(em_s.get(0));
-		
+	if (em_s.size() > 0) {
+	    patientSummaryVO.setEm_(em_s.get(0));
+	}
+
 //		logger.debug(">>> toPatientSummaryVO: mut1==" + patientSummaryVO.getMutation1() + ", mut2==" + patientSummaryVO.getMutation2());
-		
-		// cache value
-		this.cache.put(patient.getId(), patientSummaryVO);
 
-		return patientSummaryVO;
+	// cache value
+	this.cache.put(patient.getId(), patientSummaryVO);
+
+	return patientSummaryVO;
+    }
+
+    private List<PatientSummaryVO> toPatientSummaryVOList(List<Patient> patients) throws DatabaseException, ParseException {
+	List<PatientSummaryVO> result = new ArrayList<PatientSummaryVO>();
+
+	for (Patient patient : patients) {
+	    result.add(this.toPatientSummaryVO(patient));
 	}
+
+	return result;
+    }
+
+    public HashMap<String, Integer> getPhenotypeCounts() throws DatabaseException {
+//		List<Tuple> counts              = this.db.sql("SELECT p.name, COUNT(i.id) FROM MutationPhenotype p LEFT OUTER JOIN Patient i ON (p.id = i.phenotype) GROUP BY p.name");
+//		HashMap<String, Integer> result = new HashMap<String, Integer>();
+//		
+//		for (Tuple entry : counts)
+//		{
+//			result.put(entry.getString(0), entry.getInt(1));
+//		}
+//		return result;
+
+
+	String sql = "SELECT p.name, COUNT(i.id) FROM MutationPhenotype p LEFT OUTER JOIN Patient i ON (p.id = i.phenotype) GROUP BY p.name";
+
 	
-	private List<PatientSummaryVO> toPatientSummaryVOList(List<Patient> patients) throws DatabaseException, ParseException
-	{
-		List<PatientSummaryVO> result = new ArrayList<PatientSummaryVO>();
-
-		for (Patient patient : patients)
-			result.add(this.toPatientSummaryVO(patient));
-
-		return result;
+	
+	List<Object[]> counts = this.db.getEntityManager().createNativeQuery(sql).getResultList();
+	HashMap<String, Integer> result = new HashMap<String, Integer>();
+	for (Object[] entry : counts) {
+	    result.put((String) entry[0], Integer.valueOf(entry[1].toString()));
 	}
-
-	public HashMap<String, Integer> getPhenotypeCounts() throws DatabaseException
-	{
-		List<Tuple> counts              = this.db.sql("SELECT p.name, COUNT(i.id) FROM MutationPhenotype p LEFT OUTER JOIN Patient i ON (p.id = i.phenotype) GROUP BY p.name");
-		HashMap<String, Integer> result = new HashMap<String, Integer>();
-		
-		for (Tuple entry : counts)
-		{
-			result.put(entry.getString(0), entry.getInt(1));
-		}
-		return result;
-	}
+	return result;
+    }
 }
