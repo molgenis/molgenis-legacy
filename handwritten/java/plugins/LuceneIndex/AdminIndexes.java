@@ -258,7 +258,7 @@ public class AdminIndexes extends PluginModel<org.molgenis.util.Entity>
      * Add one document to the Lucene index
 	 * @param <E>
      */
-    public static <E extends org.molgenis.bbmri.Biobank> void AddDBIndexRecord(List<E> entities ){
+    public static <E extends org.molgenis.bbmri.Biobank> void updateIndex(List<E> entities ){
         /**
          * reopen the index in order to add new db record
          */
