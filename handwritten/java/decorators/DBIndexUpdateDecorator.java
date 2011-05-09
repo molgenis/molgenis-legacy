@@ -38,11 +38,11 @@ public class DBIndexUpdateDecorator<E extends org.molgenis.bbmri.Biobank> extend
 		System.out.println("**************Coming from DBIndexUpdateDecorator");
 		System.out.println(entities);
 
-		//plugins.LuceneIndex.AdminIndexes.AddDBIndexRecord(entities);
+		//plugins.LuceneIndex.AdminIndexes.updateIndex(entities);
 
 		
 		//disabled because path breaks on server.
-		//plugins.LuceneIndex.AdminIndexes.AddDBIndexRecord(entities);
+		//plugins.LuceneIndex.AdminIndexes.updateIndex(entities);
 
 		// here we call the standard 'add'
 		int count = super.add(entities);
