@@ -114,6 +114,14 @@ public class SequenceUtils
 		return "???";
 	}
 
+	public static String toAminoAcid3(String code1)
+	{
+		for (AminoAcid aminoAcid : AminoAcid.values())
+			if (aminoAcid.getCode_1().equals(code1))
+				return aminoAcid.getCode_3();
+		return "???";
+	}
+
 	/**
 	 * Get the number of amino acids in given sequence, excluding the ones only partially present
 	 * @param sequence
@@ -333,21 +341,33 @@ public class SequenceUtils
 	 * @return gDNA position
 	 * @throws RESyntaxException
 	 */
-	public static Integer getGDNAPosition(String position, Exon exon) throws RESyntaxException //Integer gDNAPositionStart, Integer cDNAPositionStart)
+	public static Integer getGDNAPosition(String position, Exon exon, String orientation) throws RESyntaxException //Integer gDNAPositionStart, Integer cDNAPositionStart)
 	{
 		RE reExon   = new RE("^(\\d+)$");
 		RE reIntron = new RE("^(\\d+)([+-])(\\d+)$");
 
 		if (reExon.match(position))
-			// exon.gDNA - (mutation.cDNA - exon.cDNA)
-			return Math.abs(exon.getGdna_Position() - (Integer.valueOf(reExon.getParen(1)) - exon.getCdna_Position()));
+			if ("R".equals(orientation))
+				// exon.gDNA - (mutation.cDNA - exon.cDNA)
+				return Math.abs(exon.getGdna_Position() - (Integer.valueOf(reExon.getParen(1)) - exon.getCdna_Position()));
+			else
+				// exon.gDNA + (mutation.cDNA - exon.cDNA)
+				return Math.abs(exon.getGdna_Position() + (Integer.valueOf(reExon.getParen(1)) - exon.getCdna_Position()));
 		else if (reIntron.match(position))
 			if (reIntron.getParen(2).equals("+"))
-				// intron.gdnaPos + 1 (back to exon) - difference ('+' means downstream)
-				return Math.abs(exon.getGdna_Position() + 1 - Integer.valueOf(reIntron.getParen(3)));
+				if ("R".equals(orientation))
+					// intron.gdnaPos + 1 (back to exon) - difference ('+' means downstream)
+					return Math.abs(exon.getGdna_Position() + 1 - Integer.valueOf(reIntron.getParen(3)));
+				else
+					// intron.gdnaPos - 1 (start at last position of exon) + difference ('+' means upstream)
+					return Math.abs(exon.getGdna_Position() - 1 + Integer.valueOf(reIntron.getParen(3)));
 			else
-				// intron.gdnaPos - intron.length + difference ('-' means upstream)
-				return Math.abs(exon.getGdna_Position() - exon.getLength() + Integer.valueOf(reIntron.getParen(3)));
+				if ("R".equals(orientation))
+					// intron.gdnaPos - intron.length + difference ('-' means upstream)
+					return Math.abs(exon.getGdna_Position() - exon.getLength() + Integer.valueOf(reIntron.getParen(3)));
+				else
+					// intron.gdnaPos - difference ('-' means downstream)
+					return Math.abs(exon.getGdna_Position() - exon.getLength() + Integer.valueOf(reIntron.getParen(3)));
 		else
 			throw new RESyntaxException("Invalid position notation: " + position);
 	}
