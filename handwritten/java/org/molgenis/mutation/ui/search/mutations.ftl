@@ -68,7 +68,6 @@
 </tr>
 <#list mutationSummaryVO.patients as patientSummaryVO>
 <#assign secondMutation = "empty">
-<!-- KOZZER: mut1==${patientSummaryVO.mutation1}, mut2==${patientSummaryVO.mutation2} -->
 <#if patientSummaryVO.mutation1.getId() == mutationSummaryVO.mutation.getId()>
 	<#if patientSummaryVO.mutation2??>
 		<#assign secondMutation = patientSummaryVO.mutation2>
