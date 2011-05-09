@@ -16,7 +16,7 @@ import commonservice.CommonService;
 
 public class VWAReport4 extends AnimalDBReport
 {
-	private String[][] matrix;
+	private String[][] matrix = null;
 	List<String> speciesList = new ArrayList<String>();
 	private String type;
 
@@ -81,6 +81,7 @@ public class VWAReport4 extends AnimalDBReport
 				q = db.query(ObservedValue.class);
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
 				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
+				q.addRules(new QueryRule(ObservedValue.TIME, Operator.NOT, null));
 				q.sortDESC(ObservedValue.TIME);
 				valueList = q.find();
 				if (valueList.size() > 0)
@@ -116,7 +117,7 @@ public class VWAReport4 extends AnimalDBReport
 				else
 				{
 					// Don't consider animals that have no  'Active' values
-					warningsList.add("Target " + targetid + " has no 'Active' value(s)");
+					warningsList.add("Animal with ID " + targetid + " has no 'Active' value(s), not counted in report");
 					continue;
 				}
 
@@ -160,7 +161,7 @@ public class VWAReport4 extends AnimalDBReport
 							}
 						}
 					} else {
-						warningsList.add("Target " + targetid + " has no Source");
+						warningsList.add("Animal with ID " + targetid + " has no Source");
 					}
 				}
 
@@ -212,8 +213,8 @@ public class VWAReport4 extends AnimalDBReport
 								if (endstatus.equals("C. Na einde proef in leven gelaten"))
 									outColumn = 11;
 							} else {
-								warningsList.add("0 or more than 1 end statuses found for target " + targetid +
-										" in experiment " + experimentId);
+								warningsList.add("0 or more than 1 end statuses found for animal with ID " + targetid +
+										" in experiment with ID " + experimentId);
 							}
 						} else {
 							// No experiments found in the current year, so list as 'dood voor de proef'
@@ -237,7 +238,7 @@ public class VWAReport4 extends AnimalDBReport
 						if (removal.equals("levend afgevoerd gereg. onderzoeksinstelling EU")) outColumn = 14;
 						if (removal.equals("levend afgevoerd andere bestemming")) outColumn = 15;
 					} else if (removalValueList.size() > 1) {
-						warningsList.add("Animal " + targetid + " has multiple removal events.");
+						warningsList.add("Animal with ID " + targetid + " has multiple removal events");
 					}
 				}
 
@@ -405,7 +406,7 @@ public class VWAReport4 extends AnimalDBReport
 						rowList.set(vwaIndex, tmpRow);
 					}
 				} else {
-					warningsList.add("Target " + targetid + " has no Species");
+					warningsList.add("Animal with ID " + targetid + " has no Species");
 				}
 			} // end of loop through all animals
 
@@ -479,23 +480,29 @@ public class VWAReport4 extends AnimalDBReport
 		output += "<td style='padding:5px; border-right-width:2px'>levend afgevoerd<br />andere bestemming</td>";
 		output += "<td style='padding:5px'>aanwezig op 31 dec. " + year + "</td>";
 		output += "</tr>";
-		for (int idx = 0; idx < speciesList.size(); idx++)
-		{
-			output += "<tr>";
-			String preMarkup = "";
-			String postMarkup = "";
-			if (matrix[idx][nrCol].equals("1")) {
-				preMarkup = "<strong>";
-				postMarkup = "<strong>";
-			}
-			for (int col = 1; col <= nrCol; col++)
+		
+		if (matrix != null) {
+			for (int idx = 0; idx < speciesList.size(); idx++)
 			{
-				output += "<td  style='padding:5px";
-				if (col == 2 || col == 10 || col == 17) output += " ; border-right-width:2px";
-				output += ("'>" + preMarkup + matrix[idx][col - 1] + postMarkup + "</td>");
+				output += "<tr>";
+				String preMarkup = "";
+				String postMarkup = "";
+				if (matrix[idx][nrCol].equals("1")) {
+					preMarkup = "<strong>";
+					postMarkup = "<strong>";
+				}
+				for (int col = 1; col <= nrCol; col++)
+				{
+					output += "<td  style='padding:5px";
+					if (col == 2 || col == 10 || col == 17) output += " ; border-right-width:2px";
+					output += ("'>" + preMarkup + matrix[idx][col - 1] + postMarkup + "</td>");
+				}
+				output += "</tr>";
 			}
-			output += "</tr>";
+		} else {
+			warningsList.add("No report data generated!");
 		}
+		
 		output += "</table>";
 		
 		// Warnings

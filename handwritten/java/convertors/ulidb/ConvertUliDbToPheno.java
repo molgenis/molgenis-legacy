@@ -109,6 +109,7 @@ public class ConvertUliDbToPheno
 		makeProtocolApplication("SetCustomID");
 		makeProtocolApplication("SetOldUliDbId");
 		makeProtocolApplication("SetSpecies");
+		makeProtocolApplication("SetAnimalType");
 		makeProtocolApplication("SetActive");
 		makeProtocolApplication("SetSource");
 		makeProtocolApplication("SetOldUliDbKuerzel");
@@ -135,6 +136,7 @@ public class ConvertUliDbToPheno
 	{
 		final String speciesName = "House mouse";
 		final SimpleDateFormat sdf = new SimpleDateFormat("d-M-yyyy H:mm", Locale.US);
+		final SimpleDateFormat sdfMolgenis = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
 		
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
@@ -162,18 +164,28 @@ public class ConvertUliDbToPheno
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSpecies"), now, 
 						null, "Species", newAnimalName, null, speciesName));
 				
-				// Eingangsdatum, Abgangsdatum and Status -> Active + start and end time
+				// AnimalType (always "B. Transgeen dier")
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetAnimalType"), now, 
+						null, "AnimalType", newAnimalName, "B. Transgeen dier", null));
+				
+				// Eingangsdatum, Abgangsdatum and Status ->
+				// DateOfBirth, DeathDate and Active + start and end time
 				String startDateString = tuple.getString("Eingangsdatum");
 				Date startDate = null;
 				if (startDateString != null) {
 					startDate = sdf.parse(startDateString);
+					String dateOfBirth = sdfMolgenis.format(startDate);
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), 
+							startDate, null, "DateOfBirth", newAnimalName, dateOfBirth, null));
 				}
 				String endDateString = tuple.getString("Abgangsdatum");
 				Date endDate = null;
 				if (endDateString != null) {
 					endDate = sdf.parse(endDateString);
+					String dateOfDeath = sdfMolgenis.format(endDate);
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDeathDate"), 
+							startDate, null, "DeathDate", newAnimalName, dateOfDeath, null));
 				}
-				// TODO: Abgangsdatum is often empty
 				String state = tuple.getString("Status");
 				if (state != null) {
 					if (state.equals("lebt")) {
@@ -293,6 +305,8 @@ public class ConvertUliDbToPheno
 	
 	public void parseParentRelations(String filename) throws Exception
 	{	
+		final Map<String, String> litterMap = new HashMap<String, String>();
+		
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
 		reader.parse(new CsvReaderListener()
@@ -302,6 +316,9 @@ public class ConvertUliDbToPheno
 				Date now = calendar.getTime();
 				
 				String newAnimalName = animalsToAddList.get(line_number - 1).getName();
+				
+				// Eingangsdatum -> DateOfBirth
+				String birthDate = tuple.getString("Eingangsdatum");
 				
 				// Mutter-Nr -> Mother
 				List<String> motherList = new ArrayList<String>();
@@ -347,45 +364,62 @@ public class ConvertUliDbToPheno
 					}
 				}
 				
-				// Create a parentgroup
-				String parentgroupName = "OldUliDbParentgroup_" + newAnimalName;
-				panelsToAddList.add(ct.createPanel(invName, parentgroupName, userName));
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), 
-						now, null, "TypeOfGroup", parentgroupName, "Parentgroup", null));
+				// Put date of birth, mother info and father info into one string and chack if we've
+				// seen this combination before
+				String litterInfo = birthDate + motherList.toString() + fatherList.toString();
+				if (litterMap.containsKey(litterInfo)) {
+					
+					// This combination of birth date and parents has  been seen before,
+					// so retrieve litter and link animal directly to it
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLitter"), 
+							now, null, "Litter", newAnimalName, null, litterMap.get(litterInfo)));
+					
+				} else {
+					
+					// This combination of birth date and parents has not been seen before,
+					// so start a new parentgroup and litter
 				
-				// Link parent(s) to parentgroup
-				for (String motherName : motherList) {
-					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetMother"), 
-							now, null, "Mother", parentgroupName, null, motherName));
+					// Create a parentgroup
+					String parentgroupName = "OldUliDbParentgroup_" + newAnimalName;
+					panelsToAddList.add(ct.createPanel(invName, parentgroupName, userName));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), 
+							now, null, "TypeOfGroup", parentgroupName, "Parentgroup", null));
+					
+					// Link parent(s) to parentgroup
+					for (String motherName : motherList) {
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetMother"), 
+								now, null, "Mother", parentgroupName, null, motherName));
+					}
+					for (String fatherName : fatherList) {
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetFather"), 
+								now, null, "Father", parentgroupName, null, fatherName));
+					}
+					
+					// Set line (Linie) of parentgroup
+					String line = tuple.getString("Linie");
+					if (line != null) {
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
+								now, null, "Line", parentgroupName, null, line));
+					}
+					
+					// Make a litter
+					String litterName = "OldUliDbLitter_" + newAnimalName;
+					panelsToAddList.add(ct.createPanel(invName, litterName, userName));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), 
+							now, null, "TypeOfGroup", litterName, "Litter", null));
+					
+					// Link litter to parentgroup
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroup"), 
+							now, null, "Parentgroup", litterName, null, parentgroupName));
+					
+					// Link animal to litter
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLitter"), 
+							now, null, "Litter", newAnimalName, null, litterName));
+					
+					// Add litter to hashmap for reuse with siblings of this animal
+					litterMap.put(litterInfo, litterName);
+				
 				}
-				for (String fatherName : fatherList) {
-					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetFather"), 
-							now, null, "Father", parentgroupName, null, fatherName));
-				}
-				
-				// Set line (Linie) of parentgroup
-				String line = tuple.getString("Linie");
-				if (line != null) {
-					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
-							now, null, "Line", parentgroupName, null, line));
-				}
-				
-				// Make a litter
-				String litterName = "OldUliDbLitter_" + newAnimalName;
-				panelsToAddList.add(ct.createPanel(invName, litterName, userName));
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), 
-						now, null, "TypeOfGroup", litterName, "Litter", null));
-				
-				// Link litter to parentgroup
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroup"), 
-						now, null, "Parentgroup", litterName, null, parentgroupName));
-				
-				// Link animal to litter
-				// TODO: now we make a litter for each animal, although multiple animals may be from the
-				// same litter. However, we cannot know this for sure, since no litter information is
-				// stored in the old Uli Eisel DB. How do we solve this?
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLitter"), 
-						now, null, "Litter", newAnimalName, null, litterName));
 			}
 		});
 	}
