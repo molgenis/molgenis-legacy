@@ -10,8 +10,8 @@
  * Template:	${template}
  * generator:   ${generator} ${version}
  *
- * Using "subclass per table" strategy (MultiQueryMapper)
- *
+ * Jpa Entity Mapper, helper to add, delete and update entities
+ * 
  * THIS FILE HAS BEEN GENERATED, PLEASE DO NOT EDIT!
  */
 
