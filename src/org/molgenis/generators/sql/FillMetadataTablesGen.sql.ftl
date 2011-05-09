@@ -1,5 +1,5 @@
 <#include "GeneratorHelper.ftl">
-<#if db_mode = 'standalone'>
+<#if db_driver?contains('hsql')>
 SET WRITE_DELAY FALSE;
 </#if>
 INSERT INTO MolgenisRole (__Type, id, name) values ('MolgenisGroup', 1, 'system');

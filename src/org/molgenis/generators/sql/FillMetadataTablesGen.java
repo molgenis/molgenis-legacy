@@ -37,7 +37,7 @@ public class FillMetadataTablesGen extends Generator
 		
 		templateArgs.put( "model", model );
 		templateArgs.put("package", model.getName().toLowerCase() + packageName);
-		templateArgs.put("db_mode", options.db_mode);
+		templateArgs.put("db_driver", options.db_driver);
 		OutputStream targetOut = new FileOutputStream( target );
 		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
 		targetOut.close();
