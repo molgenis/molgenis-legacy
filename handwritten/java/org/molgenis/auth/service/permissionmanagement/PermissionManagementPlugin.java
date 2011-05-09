@@ -32,19 +32,19 @@ public class PermissionManagementPlugin extends PluginModel<Entity> {
 
     public PermissionManagementPlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
-		this.setModel( new PermissionManagementModel(this) );
+		this.model = new PermissionManagementModel(this);
     }
 
     @Override
     public String getViewName()
     {
-	return "org_molgenis_auth_service_permissionmanagement_PermissionManagementPlugin";
+    	return "org_molgenis_auth_service_permissionmanagement_PermissionManagementPlugin";
     }
 
     @Override
     public String getViewTemplate()
     {
-	return "org/molgenis/auth/service/permissionmanagement/PermissionManagementPlugin.ftl";
+    	return "org/molgenis/auth/service/permissionmanagement/PermissionManagementPlugin.ftl";
     }
 
     @Override
