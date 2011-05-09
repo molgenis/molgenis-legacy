@@ -28,7 +28,7 @@
 			<input type="submit" value="Build Index" onclick="__action.value='CreateLuceneIndex';return true;"/><br /><br />
 		    <input type="submit" value ="Delete DB Index" onclick="if (confirm('You are about to delete the index. Are you sure you want to proceed?')) { __action.value='DeleteLuceneIndex';return true; } else { return false; }" />
 		<h2> Administration OntoCAT Index</h2>
-		<!--because of memory cost , this has to be done from server. 	
+		<!--because of memory cost , this has to be done from server. 	-->	
 		
 		<input type="text" name="InputToken" value="<#if screen.getInputToken()?exists>${screen.getInputToken()} </#if>"" onkeydown="if (event.keyCode==13)__action.value='SearchLuceneIndex';return true;"/><br /><br />
 				<#if screen.useOntologies?exists>
@@ -63,7 +63,7 @@
 			<input type="submit" value="Build Ontocat Index" onclick="__action.value='CreateOntocatLuceneIndex';return true;"/><br /><br />
 			<input type="submit" value ="Delete ONTOcat Index" onclick="if (confirm('You are about to delete the index. Are you sure you want to proceed?')) { __action.value='DeleteOntocatIndex';return true; } else { return false; }" />
 			
-		-->	
+		
 		
 			<p> <ul><li> The creation of OntoCAT index requires extra memory. This has to be done from server  - run as separate application (with VM argument -Xms512M -Xmx512M)</li></ul></p> 
 			
