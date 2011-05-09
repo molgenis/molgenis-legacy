@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.util.Vector;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.security.Login;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -43,10 +44,23 @@ public abstract class PluginModel<E extends Entity> extends
 	 * used by the.
 	 */
 
+	/**
+	 * Show plugin or not, depending on whether the user is authenticated.
+	 * Note: at the moment you can still override this method in your plugin to bypass security (evil).
+	 */
 	@Override
 	public boolean isVisible()
 	{
-		return Boolean.TRUE;
+		if (this.getLogin().isAuthenticated()){
+			try {
+				if (this.getLogin().canRead(this)) {
+					return true;
+				}
+			} catch (DatabaseException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -147,11 +161,6 @@ public abstract class PluginModel<E extends Entity> extends
 
 	}
 
-	
-	/**
-	 * Show plugin or not, depending on whether the user is authenticated.
-	 * Note: at the moment you can still override this method in your plugin to bypass security (evil).
-	 */
 	@Override
 	public String getCustomHtmlBodyOnLoad()
 	{
