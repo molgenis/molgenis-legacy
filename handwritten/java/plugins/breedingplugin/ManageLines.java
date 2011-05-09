@@ -98,7 +98,7 @@ public class ManageLines extends PluginModel<Entity>
 	public void reload(Database db)
 	{
 		cs.setDatabase(db);
-		cs.makeObservationTargetNameMap(this.getLogin().getUserId());
+		cs.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
 		
 		try {
 			// Populate source list

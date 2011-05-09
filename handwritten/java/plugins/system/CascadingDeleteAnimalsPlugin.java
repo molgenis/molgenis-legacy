@@ -162,7 +162,7 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 	public void reload(Database db)
 	{
 		ct.setDatabase(db);
-		ct.makeObservationTargetNameMap(this.getLogin().getUserId());
+		ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
 
 		try
 		{

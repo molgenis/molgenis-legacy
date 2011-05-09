@@ -337,7 +337,7 @@ public class ManageLitters extends PluginModel<Entity>
 				motherQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, measurementId));
 				List<ObservedValue> motherValueList = motherQuery.find();
 				if (motherValueList.size() > 0) {
-					int motherId = motherValueList.get(0).getTarget_Id();
+					int motherId = motherValueList.get(0).getTarget();
 					measurementId = ct.getMeasurementId("Species");
 					speciesId = ct.getMostRecentValueAsXref(motherId, measurementId);
 					measurementId = ct.getMeasurementId("AnimalType");
@@ -444,7 +444,7 @@ public class ManageLitters extends PluginModel<Entity>
 	public void reload(Database db)
 	{	
 		ct.setDatabase(db);
-		ct.makeObservationTargetNameMap(this.getLogin().getUserId());
+		ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
 		
 		try {
 			// Populate litter list
@@ -462,13 +462,25 @@ public class ManageLitters extends PluginModel<Entity>
 					litterToAdd.setId(tmpLitter.getId());
 					// Name
 					litterToAdd.setName(tmpLitter.getName());
+					// Parentgroup
+					String parentgroup = null;
+					featid = ct.getMeasurementId("Parentgroup");
+					q = db.query(ObservedValue.class);
+					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
+					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, tmpLitter.getId()));
+					List<ObservedValue> valueList = q.find();
+					if (valueList.size() > 0) {
+						int parentgroupId = valueList.get(0).getRelation();
+						parentgroup = ct.getObservationTargetById(parentgroupId).getName();
+					}
+					litterToAdd.setParentgroup(parentgroup);
 					// Birthdate
 					String birthDate = null;
 					featid = ct.getMeasurementId("DateOfBirth");
 					q = db.query(ObservedValue.class);
 					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
 					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, tmpLitter.getId()));
-					List<ObservedValue> valueList = q.find();
+					valueList = q.find();
 					if (valueList.size() > 0) {
 						birthDate = valueList.get(0).getValue();
 					}

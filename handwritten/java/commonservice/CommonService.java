@@ -389,9 +389,9 @@ public class CommonService
 	 * the normal database name is taken.
 	 * To improve performance, does not make a map if one already exists.
 	 */
-	public void makeObservationTargetNameMap(int userId) {
+	public void makeObservationTargetNameMap(int userId, boolean force) {
 		
-		if (observationTargetNameMap != null) {
+		if (observationTargetNameMap != null && force == false) {
 			return;
 		}
 		

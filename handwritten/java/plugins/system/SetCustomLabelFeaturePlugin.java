@@ -14,7 +14,6 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -104,7 +103,7 @@ public class SetCustomLabelFeaturePlugin extends PluginModel<Entity>
 					}
 				}
 				
-				ct.makeObservationTargetNameMap(userId);
+				ct.makeObservationTargetNameMap(userId, true);
 				
 				this.getMessages().clear();
 				this.getMessages().add(new ScreenMessage("Label successfully set", true));

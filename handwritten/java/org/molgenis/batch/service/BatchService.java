@@ -26,7 +26,7 @@ public class BatchService {
     {
     	this.db = db;
     	cq.setDatabase(db);
-    	cq.makeObservationTargetNameMap(userId);
+    	cq.makeObservationTargetNameMap(userId, false);
     }
     
     public List<MolgenisBatch> getBatches(int userId) throws DatabaseException, ParseException

@@ -89,7 +89,7 @@ public class EventViewerPlugin extends PluginModel<Entity>
 	public void reload(Database db)
 	{
 		ct.setDatabase(db);
-		ct.makeObservationTargetNameMap(this.getLogin().getUserId());
+		ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
 		
 		// Populate target list
 		List<Integer> idList = null;

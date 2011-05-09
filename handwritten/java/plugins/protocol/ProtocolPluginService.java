@@ -40,7 +40,7 @@ public class ProtocolPluginService {
     public void setDatabase(Database db, int userId) {
 		this.db = db;
 		cq.setDatabase(db);
-		cq.makeObservationTargetNameMap(userId);
+		cq.makeObservationTargetNameMap(userId, false);
     }
 
     public Database getDatabase() {

@@ -29,22 +29,27 @@
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=AddLitter">Add</a></p>
 
-	<table cellpadding="10" cellspacing="2" border="1">
-	<tr>
-		<th>Name</th><th>Birthdate</th><th>Size</th><th>Size approximate?</th><th></th>
-	</tr>
 	<#if screen.litterList?exists>
-		<#list screen.litterList as litter>
-			<tr>
-				<td style='padding:5px'>${litter.name}</td>
-				<td style='padding:5px'>${litter.birthDate}</td>
-				<td style='padding:5px'>${litter.size}</td>
-				<td style='padding:5px'>${litter.isSizeApproximate}</td>
-				<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=ShowWean&id=${litter.id}">Wean</a></td>
-			</tr>
-		</#list>
+		<#if screen.litterList?size gt 0>
+			<table cellpadding="10" cellspacing="2" border="1">
+				<tr>
+					<th>Name</th><th>Parentgroup</th><th>Birthdate</th><th>Size</th><th>Size approximate?</th><th></th>
+				</tr>
+			<#list screen.litterList as litter>
+				<tr>
+					<td style='padding:5px'>${litter.name}</td>
+					<td style='padding:5px'>${litter.parentgroup}</td>
+					<td style='padding:5px'>${litter.birthDate}</td>
+					<td style='padding:5px'>${litter.size}</td>
+					<td style='padding:5px'>${litter.isSizeApproximate}</td>
+					<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=ShowWean&id=${litter.id}">Wean</a></td>
+				</tr>
+			</#list>
+			</table>
+		<#else>
+			<p>There are currently no litters that have not been weaned yet.</p>
+		</#if>
 	</#if>
-	</table>
 
 <#elseif screen.action == "AddLitter">
 

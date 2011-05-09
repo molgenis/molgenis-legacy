@@ -82,7 +82,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		try
 		{
 			ct.setDatabase(db);
-			ct.makeObservationTargetNameMap(this.getLogin().getUserId());
+			ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
 			
 			//if (tablePanel == null) {
 				populateTablePanel(db);

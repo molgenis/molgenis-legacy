@@ -210,7 +210,7 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 								valueToCheck = currentValue.getRelation_Name();
 							}
 							// The test itself:
-							if (valueToCheck.contains(currentTerm)) {
+							if (valueToCheck != null && valueToCheck.contains(currentTerm)) {
 								returnList.add(tid);
 								break;
 							}

@@ -13,6 +13,7 @@ public class Litter {
 	private int size;
 	private String isSizeApproximate;
 	private int weanSize;
+	private String parentgroup;
 	private SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
 	
 	public void setId(int id) {
@@ -63,5 +64,13 @@ public class Litter {
 	}
 	public int getWeanSize() {
 		return weanSize;
+	}
+	public void setParentgroup(String parentgroup) {
+		this.parentgroup = parentgroup;
+	}
+	
+	public String getParentgroup() {
+		if (parentgroup == null) return "";
+		return parentgroup;
 	}
 }

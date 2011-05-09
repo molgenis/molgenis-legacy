@@ -181,7 +181,7 @@ public class PrintLabelPlugin extends GenericPlugin
 	public void reload(Database db)
 	{
 		cs.setDatabase(db);
-		cs.makeObservationTargetNameMap(this.getLogin().getUserId());
+		cs.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
 		
 		initScreen();
 	}

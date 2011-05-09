@@ -128,7 +128,7 @@ public class ListPlugin2 extends PluginModel<Entity> {
 		if (firstTime) {
 			firstTime = false;
 			ct.setDatabase(db);
-			ct.makeObservationTargetNameMap(this.getLogin().getUserId());
+			ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
 		}
 		
 		// Reset servlet

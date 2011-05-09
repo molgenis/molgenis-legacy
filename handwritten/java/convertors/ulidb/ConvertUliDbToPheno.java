@@ -56,7 +56,7 @@ public class ConvertUliDbToPheno
 		this.login = login;
 		ct = CommonService.getInstance();
 		ct.setDatabase(this.db);
-		ct.makeObservationTargetNameMap(login.getUserId());
+		ct.makeObservationTargetNameMap(login.getUserId(), false);
 		logger = Logger.getLogger("LoadUliDb");
 		
 		userName = login.getUserName();
@@ -397,11 +397,11 @@ public class ConvertUliDbToPheno
 					// Link parent(s) to parentgroup
 					for (String motherName : motherList) {
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetMother"), 
-								now, null, "Mother", parentgroupName, null, motherName));
+								now, null, "Mother", motherName, null, parentgroupName));
 					}
 					for (String fatherName : fatherList) {
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetFather"), 
-								now, null, "Father", parentgroupName, null, fatherName));
+								now, null, "Father", fatherName, null, parentgroupName));
 					}
 					
 					// Set line (Linie) of parentgroup
