@@ -9,12 +9,16 @@ package plugins.help;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.util.Tuple;
 
 public class BbmriHelpPlugin extends PluginModel
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public BbmriHelpPlugin(String name, ScreenController parent)
 	{
 		super(name, parent);
