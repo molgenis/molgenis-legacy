@@ -64,7 +64,6 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 			return db;
 		<#elseif databaseImp = 'jpa'>
 			JpaDatabase db = new ${package}.JpaDatabase();
-			db.getFileSourceHelper().setVariantId("${model.name}");
 			return db;			
 		<#else>
 			//The datasource is created by the servletcontext	

@@ -107,12 +107,6 @@ public class JPAQueryGeneratorUtil {
 
 				if (rule.getValue() instanceof Entity) {
 				    try {
-					String methodName = "get"
-						+ attributeName.substring(0, 1).toUpperCase()
-						+ attributeName.substring(1,
-						attributeName.length());
-					Object tmp = root.get(attributeName);
-					tmp.toString();
 					predicate = cb.equal(root.get(attributeName),
 						rule.getValue());
 				    } catch (Exception ex) {
