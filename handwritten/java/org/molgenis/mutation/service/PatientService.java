@@ -1,6 +1,6 @@
 package org.molgenis.mutation.service;
 
-import app.JpaDatabase;
+//import app.JpaDatabase;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -41,7 +41,7 @@ import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.MutationPhenotype;
 import org.molgenis.mutation.Patient;
 import org.molgenis.mutation.PhenotypeDetails;
-import org.molgenis.mutation.db.PatientJpaMapper;
+//import org.molgenis.mutation.db.PatientJpaMapper;
 import org.molgenis.mutation.excel.UploadBatchExcelReader;
 import org.molgenis.mutation.util.PatientComparator;
 import org.molgenis.mutation.vo.PatientSearchCriteriaVO;
