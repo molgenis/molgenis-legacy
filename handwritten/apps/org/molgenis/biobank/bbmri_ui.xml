@@ -31,8 +31,8 @@
 			<plugin name="OntoCatIndexPlugin" label="OntoCAT Index" type="plugins.LuceneIndex.OntoCatIndexPlugin" />
 			<plugin name="AdminIndex" label="Admin Indexes"	type="plugins.LuceneIndex.AdminIndexes" />
 		</menu>
+		<plugin name="BbmriHelp" type="plugins.help.BbmriHelpPlugin" label="Help"  />
 		<plugin name="BbmriContact" type="plugins.contact.BbmriContactPlugin" label="Contact" />
-		<plugin name="BbmriHelp" type="plugins.help.BbmriHelpPlugin" label="Help" visible="false" />
 
 	</menu>
 </molgenis>
