@@ -17,69 +17,86 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
+import app.servlet.MolgenisServlet;
 
-public class Settings<E extends Entity> extends PluginModel<E> {
+public class Settings<E extends Entity> extends PluginModel<E>
+{
 
 	private static final long serialVersionUID = 4037475429590054858L;
 	private FileSourceHelper model;
 
-	public FileSourceHelper getModel2() {
-		if(true)
-			throw new RuntimeException("CHANGED METHOD NAME BECAUSE OF INCOMPATILITY WITH super.getModel()");
-
+	public FileSourceHelper getVO()
+	{
 		return model;
 	}
 
-	public Settings(String name, ScreenController<?> parent) {
+	public Settings(String name, ScreenController<?> parent)
+	{
 		super(name, parent);
 	}
 
 	@Override
-	public String getViewName() {
+	public String getViewName()
+	{
 		return "Settings";
 	}
 
 	@Override
-	public String getViewTemplate() {
+	public String getViewTemplate()
+	{
 		return "plugins/system/settings/Settings.ftl";
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) {
+	public void handleRequest(Database db, Tuple request)
+	{
 		this.handleRequest(db, request, null);
 	}
-	
-	public void handleRequest(Database db, Tuple request, PrintWriter out) {
-		if (request.getString("__action") != null) {
 
-			System.out.println("*** handleRequest __action: " + request.getString("__action"));
-			try {
-				if (request.getString("__action").equals("setFileDirPath")) {
+	public void handleRequest(Database db, Tuple request, PrintWriter out)
+	{
+		if (request.getString("__action") != null)
+		{
+
+			try
+			{
+				if (request.getString("__action").equals("setFileDirPath"))
+				{
 					db.getFileSourceHelper().setFilesource(request.getString("fileDirPath"));
-				} else if (request.getString("__action").equals("deleteFileDirPath")) {
+				}
+				else if (request.getString("__action").equals("deleteFileDirPath"))
+				{
 					db.getFileSourceHelper().deleteFilesource();
-					
-				} else if (request.getString("__action").equals("testDirRwValid")) {
+				}
+				else if (request.getString("__action").equals("validate"))
+				{
 					db.getFileSourceHelper().validateFileSource();
+				}
+				this.setMessages();
 			}
-			this.setMessages();
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
+			}
 		}
 	}
-}
 
-	public void clearMessage() {
+	public void clearMessage()
+	{
 		this.setMessages();
 	}
 
 	@Override
-	public void reload(Database db) {
-		try{
-			db.getFileSourceHelper().validateFileSource();
+	public void reload(Database db)
+	{
+		try
+		{
 			model = db.getFileSourceHelper();
-		}catch(Exception e){
+			model.hasValidFileSource();
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 			setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 		}

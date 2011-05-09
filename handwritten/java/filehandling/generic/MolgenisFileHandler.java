@@ -14,14 +14,17 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.jdbc.JDBCFileSourceHelper;
 import org.molgenis.util.ValueLabel;
 
+import app.servlet.MolgenisServlet;
+
 import decorators.NameConvention;
 
 public class MolgenisFileHandler extends JDBCFileSourceHelper
 {
-
+	
 	public MolgenisFileHandler(Database db)
 	{
 		super(db);
+		setVariantId(MolgenisServlet.getMolgenisVariantID());
 	}
 
 	/**

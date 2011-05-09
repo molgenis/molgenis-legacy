@@ -1,5 +1,5 @@
 <#macro Settings screen>
-<#assign model = screen.model>
+<#assign model = screen.VO>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -75,16 +75,12 @@ System database table status:<br>
 System file directory path:<br>
 <font style="font-size:medium; font-family: Courier, 'Courier New', monospace">
 <#if model.hasSystemSettingsTable == "true">
-	<#if model.keyValsFromSettingsTable?exists>
-		<#list model.keyValsFromSettingsTable?keys as key>
-			<#--${key} = -->
-			<#if model.keyValsFromSettingsTable[key] == "NULL">
-					<font style="color: red">NULL</font>
-			<#else>
-				<font style="color: blue">${model.keyValsFromSettingsTable[key]}</font>
-			</#if>
-		</#list>
+	<#if model.getFilesource()?exists>
+		<font style="color: blue">${model.getFilesource().getAbsolutePath()}</font>
+	<#else>
+		<font style="color: red">NULL</font>
 	</#if>
+	
 <#elseif model.hasSystemSettingsTable == "false">
 	<font style="color: red">N/A</font>
 <#else>
@@ -98,7 +94,7 @@ System file directory path:<br>
 
 <br><br>
 
-Set your file directory path:<br>
+Set your file directory root path:<br>
 <input type="text" size="30" style="border:2px solid black; color:blue; display:inline; font-size:medium; font-family: Courier, 'Courier New', monospace" id="inputBox" name="fileDirPath" value="./data" onkeypress="if(window.event.keyCode==13){document.forms.${screen.name}.__action.value = 'setFileDirPath';}">
 
 <input type="submit" value="Set path" onclick="document.forms.${screen.name}.__action.value = 'setFileDirPath'; document.forms.${screen.name}.submit();"/>
@@ -115,23 +111,17 @@ Directory has contents?
 </font>
 
 <br><br>
-Try mkdir and test if this directory is a valid file path on the system,<br>
-and test if app is allowed to write and read files from this directory:
-
-<input type="submit" value="Test dir" onclick="document.forms.${screen.name}.__action.value = 'testDirRwValid'; document.forms.${screen.name}.submit();"/>
-
-<br>
-
-Results: 
-<font style="font-size:medium; font-family: Courier, 'Courier New', monospace">
-	<#if model.rwDirSuccess?exists><#if model.rwDirSuccess == "success"><font style="color: green">${model.rwDirSuccess}</font><#else><font style="color: red">${model.rwDirSuccess}</font></#if><#else><font style="color: red">N/A</font></#if>
-</font>
+Press 'validate' to Find out if this directory is a valid file path on the system,
+attempt to create folders if the path does not exist,
+and test if app is allowed to write and read files from this directory.
+<br><br>
+<input type="submit" value="Validate" onclick="document.forms.${screen.name}.__action.value = 'validate'; document.forms.${screen.name}.submit();"/>
 
 <br><br>
 
-Verification status: 
+Validation status: 
 <font style="font-size:medium; font-family: Courier, 'Courier New', monospace">
-	<#if model.verified?exists><#if model.verified == true><font style="color: green">VERIFIED</font><#else><font style="color: red">UNVERIFIED</font></#if><#else><font style="color: red">N/A</font></#if>
+	<#if model.verified?exists><#if model.verified == true><font style="color: green">VALIDATED</font><#else><font style="color: red">UNVALIDATED</font></#if><#else><font style="color: red">N/A</font></#if>
 </font>
 
 

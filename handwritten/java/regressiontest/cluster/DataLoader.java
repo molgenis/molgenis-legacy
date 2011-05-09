@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.data.Data;
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.organization.Investigation;
@@ -26,15 +27,13 @@ public class DataLoader
 		// check storage location
 		try
 		{
-			MolgenisFileHandler xfh = new MolgenisFileHandler(db);
-			if(true)
-				throw new RuntimeException("COMMENTED OUT UNCOMPILING CODE");
-			//File storage = xfh.getFileStorage();
-			//result.add("Storage location found. Path: " + storage.getAbsolutePath());
+			File storage = db.getFileSourceHelper().getFilesource(true);
+			result.add("Storage location found. Path: " + storage.getAbsolutePath());
 		}
 		catch (Exception e)
 		{
-			result.add("Storage location is not set or invalid. Please use the system settings plugin to assign one.");
+			result.add("Storage location is not set or invalid. Please use the system settings plugin to assign one. Exception: " + e.getMessage());
+			e.printStackTrace();
 			return result;
 		}
 
