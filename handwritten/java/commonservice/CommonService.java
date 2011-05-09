@@ -75,7 +75,6 @@ public class CommonService
 	private static CommonService instance = null;
 	
 	private CommonService() {
-		
 	}
 	
 	public static CommonService getInstance() {
@@ -99,6 +98,11 @@ public class CommonService
 	 * @return
 	 */
 	public int getCustomNameFeatureId(int userId) {
+		
+		if (userId == -1) {
+			return -1;
+		}
+		
 		List<CustomLabelFeature> featList;
 		try {
 			featList = db.query(CustomLabelFeature.class).eq(CustomLabelFeature.USERID, userId).find();
@@ -306,8 +310,7 @@ public class CommonService
 	 */
 	public List<ObservationTarget> getAllObservationTargets() {
 		try {
-		    List<ObservationTarget> targets = db.find(ObservationTarget.class);
-		    return targets;
+		    return db.find(ObservationTarget.class);
 		} catch(DatabaseException dbe) {
 		    return new ArrayList<ObservationTarget>();
 		}
@@ -352,7 +355,8 @@ public class CommonService
 	 */
 	public String getObservationTargetLabel(int targetId) throws DatabaseException, ParseException {
 		if (observationTargetNameMap == null) {
-			return getObservationTargetById(targetId).getName();
+			throw new DatabaseException("Target label map not initialized");
+			//return getObservationTargetById(targetId).getName();
 		}
 		if (observationTargetNameMap.get(targetId) != null) {
 			return observationTargetNameMap.get(targetId);
@@ -379,42 +383,55 @@ public class CommonService
 		}
 	}
 	
-	/** Makes a map of all ObservationTarget id's and names. 
+	/** 
+	 * Makes a map of all ObservationTarget id's and names. 
 	 * The names are retrieved using the feature name specified, or -if no feature is specified-
 	 * the normal database name is taken.
-	 * 
-	 * @throws DatabaseException
-	 * @throws ParseException
+	 * To improve performance, does not make a map if one already exists.
 	 */
-	public void makeObservationTargetNameMap(int userId) throws DatabaseException, ParseException {
+	public void makeObservationTargetNameMap(int userId) {
 		
-		int customNameFeatureId = getCustomNameFeatureId(userId);
+		if (observationTargetNameMap != null) {
+			return;
+		}
 		
 		observationTargetNameMap = new HashMap<Integer, String>();
-		List<Integer> targetIdList = new ArrayList<Integer>();
+		List<ObservationTarget> targetList = new ArrayList<ObservationTarget>();
 		// First fill with standard names
 		try {
-			targetIdList = getAllObservationTargetIds(null, false);
-		} catch (DatabaseException e) {
-			// targetIdList will remain empty
+			targetList = getAllObservationTargets();
+		} catch (Exception e) {
+			// targetList will remain empty
+			return;
 		}
-		for (Integer targetId : targetIdList) {
-			observationTargetNameMap.put(targetId, getObservationTargetById(targetId).getName());
+		for (ObservationTarget target : targetList) {
+			try {
+				observationTargetNameMap.put(target.getId(), target.getName());
+			} catch (Exception e) {
+				// no name found, so put ID as name
+				observationTargetNameMap.put(target.getId(), target.getId().toString());
+			}
 		}
+		
 		// Then overwrite with custom names, if existing
+		int customNameFeatureId = getCustomNameFeatureId(userId);
 		if (customNameFeatureId != -1) {
-			Query<ObservedValue> valueQuery = db.query(ObservedValue.class);
-			valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, customNameFeatureId));
-			valueQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, targetIdList));
-			List<ObservedValue> valueList = valueQuery.find();
-			for (ObservedValue value : valueList) {
-				if (value.getValue() != null) {
-					// We have a String value that we can use
-					observationTargetNameMap.put(value.getTarget_Id(), value.getValue());
-				} else {
-					// No value, so use relation
-					observationTargetNameMap.put(value.getTarget_Id(), value.getRelation_Name());
+			try {
+				Query<ObservedValue> valueQuery = db.query(ObservedValue.class);
+				valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, customNameFeatureId));
+				valueQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, getAllObservationTargetIds(null, false)));
+				List<ObservedValue> valueList = valueQuery.find();
+				for (ObservedValue value : valueList) {
+					if (value.getValue() != null) {
+						// We have a String value that we can use
+						observationTargetNameMap.put(value.getTarget_Id(), value.getValue());
+					} else {
+						// No value, so use relation
+						observationTargetNameMap.put(value.getTarget_Id(), value.getRelation_Name());
+					}
 				}
+			} catch (Exception e) {
+				// No fancy names then...
 			}
 		}
 	}
@@ -515,26 +532,20 @@ public class CommonService
 	// TODO: think of what to do with species, sexes, sources etc.
 	// Do we want to keep using the 'TypeOfGroup' Measurement or do we want to use Pheno
 	// entities like Species etc.
-	public List<Panel> getAllMarkedPanels(String mark)
+	public List<ObservationTarget> getAllMarkedPanels(String mark)
 			throws DatabaseException, ParseException
 	{
-		List<Panel> returnList = new ArrayList<Panel>();
-		List<Panel> panelList = db.find(Panel.class);
+		List<Integer> panelIdList = new ArrayList<Integer>();
 
-		int featureid = getMeasurementId("TypeOfGroup");
-
-		for (Panel tmpPanel : panelList) {
-			Query<ObservedValue> valueQuery = db.query(ObservedValue.class);
-			valueQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, tmpPanel.getId()));
-			valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureid));
-			valueQuery.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, mark));
-			List<ObservedValue> valueList = valueQuery.find();
-			if (valueList.size() > 0) {
-				returnList.add(tmpPanel);
-			}
+		Query<ObservedValue> valueQuery = db.query(ObservedValue.class);
+		valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, getMeasurementId("TypeOfGroup")));
+		valueQuery.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, mark));
+		List<ObservedValue> valueList = valueQuery.find();
+		for (ObservedValue value : valueList) {
+			panelIdList.add(value.getTarget());
 		}
 
-		return returnList;
+		return getObservationTargets(panelIdList);
 	}
 
 	/**

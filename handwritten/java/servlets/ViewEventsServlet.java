@@ -2,7 +2,6 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -44,46 +43,30 @@ public class ViewEventsServlet extends app.servlet.MolgenisServlet {
 			} else {
 				List<ObservedValue> valList = db.find(ObservedValue.class, new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 				if (!valList.isEmpty()) {
-					Iterator<ObservedValue> valIterator = valList.iterator();
 					out.print("<table class='listtable'>");
-					out.print("<tr class='form_listrow1'>");
-					// Print headers
-					while (valIterator.hasNext()) {
+					int rowCount = 0;
+					for (ObservedValue currentValue : valList) {
 						// Get the corresponding event (type):
-						ObservedValue currentValue = valIterator.next();
-						int eventId = currentValue.getProtocolApplication_Id();
+						int eventId = currentValue.getProtocolApplication();
 						ProtocolApplication currentEvent = ct.getProtocolApplicationById(eventId);
+						if (rowCount % 2 == 0) {
+							out.print("<tr class='form_listrow0'>");
+						} else {
+							out.print("<tr class='form_listrow1'>");
+						}
+						// Protocol name and app dates
 						out.print("<td>" + currentEvent.getProtocol_Name() + "<br />");
 						if (currentValue.getTime() != null) out.print(" Valid from " + currentValue.getTime().toString());
 						if (currentValue.getEndtime() != null) out.print(" through " + currentValue.getEndtime().toString());
 						out.print("</td>");
-					}
-					out.print("</tr>");
-
-					String currentValueContents = "";
-
-					// Print feature names
-					out.print("<tr class='form_listrow0'>");
-					valIterator = valList.iterator();
-					while (valIterator.hasNext()) {
-						ObservedValue currentValue = valIterator.next();
-						currentValueContents = currentValue.getFeature_Name();
-						if (currentValueContents == null) {
-							currentValueContents = "";
-						}
-						out.print("<td>" + currentValueContents + "</td>");
-					}
-					out.print("</tr>");
-
-					// Print contents
-					out.print("<tr class='form_listrow1'>");
-					valIterator = valList.iterator();
-					while (valIterator.hasNext()) {
-						ObservedValue currentValue = valIterator.next();
-
-						if (currentValue.getFeature_Name() != null) {
-							// Get the real value:
-							currentValueContents = currentValue.getValue();
+						// Feature name
+						String featureName = currentValue.getFeature_Name();
+						if (featureName == null) {
+							out.print("<td></td><td></td>");
+						} else {
+							out.print("<td>" + featureName + "</td>");
+							// The actual value
+							String currentValueContents = "";
 							// Find out what the unit is:
 							int featureId = currentValue.getFeature_Id();
 							Measurement currentFeature = ct.getMeasurementById(featureId);
@@ -94,14 +77,16 @@ public class ViewEventsServlet extends app.servlet.MolgenisServlet {
 									int targetId = currentValue.getRelation_Id();
 									currentValueContents = "Value (Target id " + targetId + ") no longer in database";
 								}
+							} else {
+								currentValueContents = currentValue.getValue();
 							}
-						} else {
-							currentValueContents = "";
+							out.print("<td>" + currentValueContents + "</td>");
 						}
-
-						out.print("<td>" + currentValueContents + "</td>");
+						
+						out.print("</tr>");
+						
+						rowCount++;
 					}
-					out.print("</tr>");
 					out.print("</table>");
 				}
 			}
@@ -110,7 +95,7 @@ public class ViewEventsServlet extends app.servlet.MolgenisServlet {
 
 			logger.info("serving " + request.getRequestURI());
 		} catch (Exception e) {
-			e.printStackTrace(out);
+			e.printStackTrace();
 		} finally {
 			out.close();
 		}

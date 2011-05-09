@@ -22,8 +22,8 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.pheno.Code;
+import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -45,7 +45,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	private List<Code> anaesthesiaCodeList;
 	private List<Code> painManagementCodeList;
 	private List<Code> animalEndStatusCodeList;
-	private List<Panel> decApplicationList;
+	private List<ObservationTarget> decApplicationList;
 	
 	public ShowDecSubprojects(String name, ScreenController<?> parent)
 	{
@@ -167,11 +167,11 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 		return animalEndStatusCodeList;
 	}
 
-	public void setDecApplicationList(List<Panel> decApplicationList) {
+	public void setDecApplicationList(List<ObservationTarget> decApplicationList) {
 		this.decApplicationList = decApplicationList;
 	}
 
-	public List<Panel> getDecApplicationList() {
+	public List<ObservationTarget> getDecApplicationList() {
 		return decApplicationList;
 	}
 
@@ -430,9 +430,9 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 		// Populate experiments list
 		experimentList.clear();
 		try {
-			List<Panel> expList = ct.getAllMarkedPanels("Experiment");
+			List<ObservationTarget> expList = ct.getAllMarkedPanels("Experiment");
 			int pos = 1;
-			for (Panel currentExp : expList) {
+			for (ObservationTarget currentExp : expList) {
 				String name = currentExp.getName();
 				
 				int featureId = ct.getMeasurementId("ExperimentNr");

@@ -26,9 +26,10 @@ class BatchService {
     public BatchService() {
     }
     
-    public void setDatabase(Database db) {
+    public void setDatabase(Database db, int userId) {
     	this.db = db;
     	cs.setDatabase(db);
+    	cs.makeObservationTargetNameMap(userId);
     }
     /** Finds batches given a user id
      * 

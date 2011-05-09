@@ -62,7 +62,7 @@ public class BatchViewPlugin extends GenericPlugin
     @Override
     public void reload(Database db)
     {
-		service.setDatabase(db);
+		service.setDatabase(db, this.getLogin().getUserId());
 	
 		if ("init".equals(this.action)) {
 		    try {

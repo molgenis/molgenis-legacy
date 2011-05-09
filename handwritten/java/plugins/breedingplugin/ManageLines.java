@@ -16,13 +16,11 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.pheno.Panel;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -100,13 +98,14 @@ public class ManageLines extends PluginModel<Entity>
 	public void reload(Database db)
 	{
 		cs.setDatabase(db);
+		cs.makeObservationTargetNameMap(this.getLogin().getUserId());
 		
 		try {
 			// Populate source list
 			// All source types pertaining to "Eigen fok binnen uw organisatorische werkeenheid"
 			sourceList = new ArrayList<ObservationTarget>();
-			List<Panel> tmpSourceList = cs.getAllMarkedPanels("Source");
-			for (Panel tmpSource : tmpSourceList) {
+			List<ObservationTarget> tmpSourceList = cs.getAllMarkedPanels("Source");
+			for (ObservationTarget tmpSource : tmpSourceList) {
 				int featid = cs.getMeasurementId("SourceType");
 				Query<ObservedValue> sourceTypeQuery = db.query(ObservedValue.class);
 				sourceTypeQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, tmpSource.getId()));

@@ -19,7 +19,6 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DivPanel;
@@ -28,7 +27,6 @@ import org.molgenis.framework.ui.html.TextParagraph;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import com.itextpdf.text.Document;
@@ -183,6 +181,7 @@ public class PrintLabelPlugin extends GenericPlugin
 	public void reload(Database db)
 	{
 		cs.setDatabase(db);
+		cs.makeObservationTargetNameMap(this.getLogin().getUserId());
 		
 		initScreen();
 	}

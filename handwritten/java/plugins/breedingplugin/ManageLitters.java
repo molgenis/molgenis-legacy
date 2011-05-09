@@ -23,21 +23,18 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
-
 
 import commonservice.CommonService;
 
 public class ManageLitters extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 7608670026855241487L;
-	private List<Panel> parentgroupList;
+	private List<ObservationTarget> parentgroupList;
 	private List<Litter> litterList = new ArrayList<Litter>();
 	private int selectedParentgroup;
 	private int litter;
@@ -77,10 +74,10 @@ public class ManageLitters extends PluginModel<Entity>
 	}
 	
 	// Parent group list related methods:
-	public List<Panel> getParentgroupList() {
+	public List<ObservationTarget> getParentgroupList() {
 		return parentgroupList;
 	}
-	public void setParentgroupList(List<Panel> parentgroupList) {
+	public void setParentgroupList(List<ObservationTarget> parentgroupList) {
 		this.parentgroupList = parentgroupList;
 	}
 	
@@ -447,12 +444,13 @@ public class ManageLitters extends PluginModel<Entity>
 	public void reload(Database db)
 	{	
 		ct.setDatabase(db);
+		ct.makeObservationTargetNameMap(this.getLogin().getUserId());
 		
 		try {
 			// Populate litter list
 			litterList.clear();
-			List<Panel> tmpLitterList = ct.getAllMarkedPanels("Litter");
-			for (Panel tmpLitter : tmpLitterList) {
+			List<ObservationTarget> tmpLitterList = ct.getAllMarkedPanels("Litter");
+			for (ObservationTarget tmpLitter : tmpLitterList) {
 				// Check if no wean date set
 				int featid = ct.getMeasurementId("WeanDate");
 				Query<ObservedValue> q = db.query(ObservedValue.class);

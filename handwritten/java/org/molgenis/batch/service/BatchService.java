@@ -22,10 +22,11 @@ public class BatchService {
     private Database db;
     private CommonService cq = CommonService.getInstance();
     
-    public void setDatabase(Database db)
+    public void setDatabase(Database db, int userId)
     {
     	this.db = db;
     	cq.setDatabase(db);
+    	cq.makeObservationTargetNameMap(userId);
     }
     
     public List<MolgenisBatch> getBatches(int userId) throws DatabaseException, ParseException

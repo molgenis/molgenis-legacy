@@ -21,8 +21,8 @@ import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.Table;
 import org.molgenis.framework.ui.html.TextParagraph;
 import org.molgenis.framework.ui.html.XrefInput;
+import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.ValueLabel;
@@ -106,8 +106,8 @@ public class EditProtocolUI {
 			if (panelLabel != null) {
 				// If there's only a subset of labeled Panels allowed for this Measurement, show a selectbox with those
 				valueInput = new SelectInput(col + "_" + row);
-				List<Panel> panelList = service.getLabeledPanels(panelLabel);
-				for (Panel p : panelList) {
+				List<ObservationTarget> panelList = service.getLabeledPanels(panelLabel);
+				for (ObservationTarget p : panelList) {
 					((SelectInput) valueInput).addOption(p.getId(), p.getName());
 				}
 			} else {

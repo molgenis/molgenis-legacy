@@ -10,8 +10,8 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.pheno.Panel;
 
 import commonservice.CommonService;
 
@@ -39,8 +39,8 @@ public class VWAReport5 extends AnimalDBReport {
 			String endOfYearString = (year + 1) + "-01-01 00:00:00";
 			Date endOfYear = sdf.parse(endOfYearString);
 			
-			List<Panel> decappList = ct.getAllMarkedPanels("DecApplication");
-			for (Panel d : decappList) {
+			List<ObservationTarget> decappList = ct.getAllMarkedPanels("DecApplication");
+			for (ObservationTarget d : decappList) {
 				// Check if the DEC application was (partly) in this year
 				Date startOfDec = null;
 				int MeasurementId = ct.getMeasurementId("StartDate");

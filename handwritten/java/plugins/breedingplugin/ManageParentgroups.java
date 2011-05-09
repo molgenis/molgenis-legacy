@@ -24,9 +24,8 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -44,7 +43,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 	private SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
 	private String groupName = "";
 	private String datetime = "";
-	private List<Panel> lineList;
+	private List<ObservationTarget> lineList;
 	private int line;
 	
 	public ManageParentgroups(String name, ScreenController<?> parent)
@@ -121,11 +120,11 @@ public class ManageParentgroups extends PluginModel<Entity>
 		return line;
 	}
 
-	public List<Panel> getLineList() {
+	public List<ObservationTarget> getLineList() {
 		return lineList;
 	}
 
-	public void setLineList(List<Panel> lineList) {
+	public void setLineList(List<ObservationTarget> lineList) {
 		this.lineList = lineList;
 	}
 
@@ -279,6 +278,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 	public void reload(Database db)
 	{
 		ct.setDatabase(db);
+		ct.makeObservationTargetNameMap(this.getLogin().getUserId());
 		
 		try {
 			// Populate mother list

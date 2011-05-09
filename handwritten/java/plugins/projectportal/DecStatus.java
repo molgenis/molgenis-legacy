@@ -23,7 +23,6 @@ import org.molgenis.framework.ui.html.Table;
 import org.molgenis.framework.ui.html.TablePanel;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.pheno.Panel;
 import org.molgenis.util.Tuple;
 
 import com.ibm.icu.util.Calendar;
@@ -103,8 +102,8 @@ public class DecStatus extends GenericPlugin
 		
 		try {
 			int rowCount = 0;
-			List<Panel> decList = cq.getAllMarkedPanels("DecApplication");
-			for (Panel decApp : decList) {
+			List<ObservationTarget> decList = cq.getAllMarkedPanels("DecApplication");
+			for (ObservationTarget decApp : decList) {
 				rowCount = addStatusRows(decApp, statusTable, rowCount);
 			}
 		} catch (Exception e) {
@@ -149,8 +148,8 @@ public class DecStatus extends GenericPlugin
 		featureId = cq.getMeasurementId("EndDate");
 		statusTable.setCell(1, rowCount, cq.getMostRecentValueAsString(decId, featureId));
 		
-		List<Panel> expList = cq.getAllMarkedPanels("Experiment");
-		for (Panel subproject : expList) {
+		List<ObservationTarget> expList = cq.getAllMarkedPanels("Experiment");
+		for (ObservationTarget subproject : expList) {
 			int subprojectId = subproject.getId();
 			
 			// Take only Subprojects that belong to the current DEC

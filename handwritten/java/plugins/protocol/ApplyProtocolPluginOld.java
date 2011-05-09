@@ -259,6 +259,7 @@ public class ApplyProtocolPluginOld extends PluginModel<Entity> {
 	public void reload(Database db)
 	{
 		ct.setDatabase(db);
+		ct.makeObservationTargetNameMap(this.getLogin().getUserId());
 		
 		try {
 			// Populate protocol list

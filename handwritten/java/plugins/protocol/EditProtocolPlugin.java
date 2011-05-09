@@ -11,8 +11,6 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 public class EditProtocolPlugin extends GenericPlugin
@@ -81,7 +79,7 @@ public class EditProtocolPlugin extends GenericPlugin
 	@Override
 	public void reload(Database db)
 	{
-		service.setDatabase(db);
+		service.setDatabase(db, this.getLogin().getUserId());
 	
 		// Only first time:
 		if (ui.getProtocolApplicationContainer() == null) {

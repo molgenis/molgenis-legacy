@@ -21,11 +21,9 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.pheno.Code;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -35,7 +33,7 @@ import commonservice.CommonService;
 public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 5429577464896082058L;
-	private List<Panel> subprojectList;
+	private List<ObservationTarget> subprojectList;
 	private List<Integer> allAnimalIdList;
 	private List<Integer> animalRemoveIdList = new ArrayList<Integer>();
 	private List<Integer> animalIdList = new ArrayList<Integer>();
@@ -49,7 +47,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 	private String action = "init";
 	private ObservationTarget animalToAddOrRemove;
 	private ObservationTarget subproject;
-	private List<Panel> groupList = new ArrayList<Panel>();
+	private List<ObservationTarget> groupList = new ArrayList<ObservationTarget>();
 
 	public ShowAnimalsInSubprojects(String name, ScreenController<?> parent)
 	{
@@ -133,12 +131,12 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 		return anaesthesiaCodeList;
 	}
 
-	public List<Panel> getSubprojectList()
+	public List<ObservationTarget> getSubprojectList()
 	{
 		return subprojectList;
 	}
 
-	public void setSubprojectList(List<Panel> subprojectList)
+	public void setSubprojectList(List<ObservationTarget> subprojectList)
 	{
 		this.subprojectList = subprojectList;
 	}
@@ -199,11 +197,11 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 		return subproject;
 	}
 	
-	public void setGroupList(List<Panel> groupList) {
+	public void setGroupList(List<ObservationTarget> groupList) {
 		this.groupList = groupList;
 	}
 
-	public List<Panel> getGroupList() {
+	public List<ObservationTarget> getGroupList() {
 		return groupList;
 	}
 
@@ -571,6 +569,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 	public void reload(Database db)
 	{
 		ct.setDatabase(db);
+		ct.makeObservationTargetNameMap(this.getLogin().getUserId());
 
 		try
 		{

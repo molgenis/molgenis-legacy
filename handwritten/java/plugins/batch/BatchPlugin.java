@@ -15,14 +15,12 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.CheckboxInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.Table;
 import org.molgenis.pheno.ObservationTarget;
-import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
@@ -48,7 +46,7 @@ public class BatchPlugin extends GenericPlugin {
     	{
     		try
     		{
-    			service.setDatabase(db);
+    			service.setDatabase(db, this.getLogin().getUserId());
     			this.populateBatchSelectForm();
     		}
     		catch (Exception e)

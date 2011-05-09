@@ -20,7 +20,6 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -234,9 +233,9 @@ public class ShowDecProjects extends PluginModel<Entity>
 		try {
 			// Populate DEC projects list
 			decappList.clear();
-			List<Panel> decList = ct.getAllMarkedPanels("DecApplication");
+			List<ObservationTarget> decList = ct.getAllMarkedPanels("DecApplication");
 			int pos = 1;
-			for (Panel currentDec : decList) {
+			for (ObservationTarget currentDec : decList) {
 				String name = currentDec.getName();
 				
 				DecProject tmpDec = new DecProject();

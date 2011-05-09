@@ -23,7 +23,6 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
 
@@ -38,9 +37,10 @@ public class ProtocolPluginService {
     	cq = CommonService.getInstance();
     }
 
-    public void setDatabase(Database db) {
+    public void setDatabase(Database db, int userId) {
 		this.db = db;
 		cq.setDatabase(db);
+		cq.makeObservationTargetNameMap(userId);
     }
 
     public Database getDatabase() {
@@ -221,11 +221,11 @@ public class ProtocolPluginService {
 	 * @param panelLabel
 	 * @return
 	 */
-	public List<Panel> getLabeledPanels(String panelLabel) {
+	public List<ObservationTarget> getLabeledPanels(String panelLabel) {
 		try {
 			return cq.getAllMarkedPanels(panelLabel);
 		} catch (Exception e) {
-			return new ArrayList<Panel>();
+			return new ArrayList<ObservationTarget>();
 		}
 	}
 

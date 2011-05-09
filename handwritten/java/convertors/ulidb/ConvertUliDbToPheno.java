@@ -45,6 +45,8 @@ public class ConvertUliDbToPheno
 	private Map<String, String> customIdMap;
 	private Map<String, String> appMap;
 	private Calendar calendar;
+	private SimpleDateFormat sdf = new SimpleDateFormat("d-M-yyyy H:mm", Locale.US);
+	private SimpleDateFormat sdfMolgenis = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
 
 	public ConvertUliDbToPheno(Database db, Login login) throws Exception
 	{
@@ -54,6 +56,7 @@ public class ConvertUliDbToPheno
 		this.login = login;
 		ct = CommonService.getInstance();
 		ct.setDatabase(this.db);
+		ct.makeObservationTargetNameMap(login.getUserId());
 		logger = Logger.getLogger("LoadUliDb");
 		
 		userName = login.getUserName();
@@ -111,6 +114,8 @@ public class ConvertUliDbToPheno
 		makeProtocolApplication("SetSpecies");
 		makeProtocolApplication("SetAnimalType");
 		makeProtocolApplication("SetActive");
+		makeProtocolApplication("SetDateOfBirth");
+		makeProtocolApplication("SetDeathDate");
 		makeProtocolApplication("SetSource");
 		makeProtocolApplication("SetOldUliDbKuerzel");
 		makeProtocolApplication("SetRemark");
@@ -130,13 +135,12 @@ public class ConvertUliDbToPheno
 		makeProtocolApplication("SetLine");
 		makeProtocolApplication("SetParentgroup");
 		makeProtocolApplication("SetLitter");
+		makeProtocolApplication("SetWeanDate");
 	}
 	
 	public void populateValue(String filename) throws Exception
 	{
 		final String speciesName = "House mouse";
-		final SimpleDateFormat sdf = new SimpleDateFormat("d-M-yyyy H:mm", Locale.US);
-		final SimpleDateFormat sdfMolgenis = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
 		
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
@@ -287,9 +291,9 @@ public class ConvertUliDbToPheno
 				String gene = tuple.getString("Gen");
 				String geneState = tuple.getString("tg");
 				if (gene != null && geneState != null) {
-					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGeneName"), 
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype"), 
 							now, null, "GeneName", newAnimalName, gene, null));
-					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGeneState"), 
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype"), 
 							now, null, "GeneState", newAnimalName, geneState, null));
 				}
 				
@@ -318,7 +322,12 @@ public class ConvertUliDbToPheno
 				String newAnimalName = animalsToAddList.get(line_number - 1).getName();
 				
 				// Eingangsdatum -> DateOfBirth
-				String birthDate = tuple.getString("Eingangsdatum");
+				String birthDateString = tuple.getString("Eingangsdatum");
+				String weanDate = null;
+				if (birthDateString != null) {
+					Date birthDate = sdf.parse(birthDateString);
+					weanDate = sdfMolgenis.format(birthDate);
+				}
 				
 				// Mutter-Nr -> Mother
 				List<String> motherList = new ArrayList<String>();
@@ -366,7 +375,7 @@ public class ConvertUliDbToPheno
 				
 				// Put date of birth, mother info and father info into one string and chack if we've
 				// seen this combination before
-				String litterInfo = birthDate + motherList.toString() + fatherList.toString();
+				String litterInfo = birthDateString + motherList.toString() + fatherList.toString();
 				if (litterMap.containsKey(litterInfo)) {
 					
 					// This combination of birth date and parents has  been seen before,
@@ -402,11 +411,13 @@ public class ConvertUliDbToPheno
 								now, null, "Line", parentgroupName, null, line));
 					}
 					
-					// Make a litter
+					// Make a litter and set wean date
 					String litterName = "OldUliDbLitter_" + newAnimalName;
 					panelsToAddList.add(ct.createPanel(invName, litterName, userName));
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), 
 							now, null, "TypeOfGroup", litterName, "Litter", null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanDate"), 
+							now, null, "WeanDate", litterName, weanDate, null));
 					
 					// Link litter to parentgroup
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroup"), 

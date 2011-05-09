@@ -30,7 +30,6 @@ import org.molgenis.framework.ui.html.TextLineInput;
 import org.molgenis.pheno.Code;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Tuple;
 
@@ -83,6 +82,8 @@ public class AddAnimalPlugin extends GenericPlugin
 		try
 		{
 			ct.setDatabase(db);
+			ct.makeObservationTargetNameMap(this.getLogin().getUserId());
+			
 			//if (tablePanel == null) {
 				populateTablePanel(db);
 			//}
@@ -374,14 +375,12 @@ public class AddAnimalPlugin extends GenericPlugin
 		// which is taken care of in the Breeding Module
 		source = new SelectInput("source");
 		source.setLabel("Source:");
-		List<Panel> tmpSourceList = ct.getAllMarkedPanels("Source");
-		for (Panel tmpSource : tmpSourceList)
+		List<ObservationTarget> tmpSourceList = ct.getAllMarkedPanels("Source");
+		for (ObservationTarget tmpSource : tmpSourceList)
 		{
 			int featureId = ct.getMeasurementId("SourceType");
-			List<ObservedValue> sourceTypeValueList = db.query(
-					ObservedValue.class).eq(ObservedValue.TARGET,
-					tmpSource.getId()).eq(ObservedValue.FEATURE, featureId)
-					.find();
+			List<ObservedValue> sourceTypeValueList = db.query(ObservedValue.class).eq(ObservedValue.TARGET,
+					tmpSource.getId()).eq(ObservedValue.FEATURE, featureId).find();
 			if (sourceTypeValueList.size() > 0)
 			{
 				String sourcetype = sourceTypeValueList.get(0).getValue();
