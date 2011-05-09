@@ -22,7 +22,7 @@ public class JDBCFileSourceHelper implements FileSourceHelper
 	private String variantId;
 	
 	private String hasSystemSettingsTable;
-	private HashMap<String, String> keyValsFromSettingsTable;
+//	private HashMap<String, String> keyValsFromSettingsTable;
 	private String mkDirSuccess;
 	private String rwDirSuccess;
 	private File fileDir;
@@ -37,6 +37,7 @@ public class JDBCFileSourceHelper implements FileSourceHelper
 	public JDBCFileSourceHelper(Database db)
 	{
 		this.db = db;
+		hasSystemSettingsTable = TableUtil.hasTable(db, systemTableName);
 	}
 
 	public void setFilesource(String filesource) throws Exception
@@ -64,8 +65,6 @@ public class JDBCFileSourceHelper implements FileSourceHelper
 		}
 		else if (hasSystemSettingsTable.equals("false"))
 		{
-			System.out.println("getHasSystemSettingsTable: False");
-
 			boolean success = TableUtil.addSystemSettingsTable(db, systemTableName, fileDirField);
 			if (!success) throw new DatabaseException("Could not add system table.");
 
@@ -78,6 +77,9 @@ public class JDBCFileSourceHelper implements FileSourceHelper
 			if (!success)
 			{
 				throw new DatabaseException("Could not write field in system table.");
+			}else{
+				hasSystemSettingsTable = "true";
+				
 			}
 
 		}
@@ -87,12 +89,20 @@ public class JDBCFileSourceHelper implements FileSourceHelper
 		}
 
 	}
-
+	
 	public File getFilesource() throws Exception
 	{
-		File storage = getFileStorageRoot();
+		return getFilesource(false);
+	}
+	
+	public File getFilesource(boolean mustBeValid) throws Exception
+	{
+		File storage = getFileStorageRoot(mustBeValid);
 		if(this.variantId == null){
 			throw new Exception("Variant ID (app name) not set.");
+		}
+		if(storage == null){
+			throw new Exception("No retrievable or valid storage present.");
 		}
 		return new File(storage.getAbsolutePath() + File.separator + this.variantId);
 	}
@@ -104,6 +114,7 @@ public class JDBCFileSourceHelper implements FileSourceHelper
 			throw new Exception("Remove failed");
 		}
 		reset();
+		hasSystemSettingsTable = "false";
 	}
 
 	public void validateFileSource() throws Exception
@@ -126,8 +137,6 @@ public class JDBCFileSourceHelper implements FileSourceHelper
 				{
 					f = new File(File.separator + path);
 				}
-
-				System.out.println("*** file ref " + f.getAbsolutePath());
 
 				if (f.exists())
 				{
@@ -178,7 +187,6 @@ public class JDBCFileSourceHelper implements FileSourceHelper
 					boolean createSuccess = tmp.createNewFile();
 					if (createSuccess)
 					{
-						System.out.println("*** created " + tmp.getAbsolutePath());
 						FileOutputStream fos = new FileOutputStream(tmp);
 						DataOutputStream dos = new DataOutputStream(fos);
 						dos.writeChars("test");
@@ -236,21 +244,14 @@ public class JDBCFileSourceHelper implements FileSourceHelper
 			if (o != null)
 			{
 				String dir = o.toString();
-				if (keyValsFromSettingsTable == null)
-				{
-					HashMap<String, String> keyVals = new HashMap<String, String>();
-					keyVals.put(fileDirField, dir);
-					keyValsFromSettingsTable = keyVals;
-				}
-				else
-				{
-					keyValsFromSettingsTable.put(fileDirField, dir);
-				}
 				folderExists = folderExists(dir);
 				if (folderExists)
 				{
 					folderHasContent = folderHasContent(dir);
 				}
+				
+				//TODO: run validateFileSource() here on-the-fly?
+				
 				if (mkDirSuccess != null && rwDirSuccess != null
 						&& (mkDirSuccess.equals("success") || mkDirSuccess.equals("exists"))
 						&& rwDirSuccess.equals("success"))
@@ -261,19 +262,6 @@ public class JDBCFileSourceHelper implements FileSourceHelper
 					{
 						throw new DatabaseException("Could not update system table.");
 					}
-				}
-			}
-			else
-			{
-				if (keyValsFromSettingsTable == null)
-				{
-					HashMap<String, String> keyVals = new HashMap<String, String>();
-					keyVals.put(fileDirField, "NULL");
-					keyValsFromSettingsTable = keyVals;
-				}
-				else
-				{
-					keyValsFromSettingsTable.put(fileDirField, "NULL");
 				}
 			}
 			o = TableUtil.getFromTable(db, systemTableName, verifiedField);
@@ -322,9 +310,12 @@ public class JDBCFileSourceHelper implements FileSourceHelper
 	 * @throws DatabaseException 
 	 * @throws Exception
 	 */
-	private File getFileStorageRoot() throws UnsupportedEncodingException, DatabaseException
+	private File getFileStorageRoot(boolean mustBeValid) throws UnsupportedEncodingException, DatabaseException
 	{
-		URI loc = getURIStorageRoot();
+		URI loc = getURIStorageRoot(mustBeValid);
+		if(loc == null){
+			return null;
+		}
 		String decodedURI = URLDecoder.decode(loc.toString(), "UTF-8");
 		File f = new File(decodedURI.toString());
 		return f;
@@ -368,7 +359,7 @@ public class JDBCFileSourceHelper implements FileSourceHelper
 		return false;
 	}
 
-	private URI getURIStorageRoot() throws UnsupportedEncodingException, DatabaseException
+	private URI getURIStorageRoot(boolean mustBeValid) throws UnsupportedEncodingException, DatabaseException
 	{
 		URI res = null;
 		if (TableUtil.hasTable(db, systemTableName).equals("true"))
@@ -382,7 +373,7 @@ public class JDBCFileSourceHelper implements FileSourceHelper
 				if (o != null)
 				{
 					// if the file directory has been verified
-					if (o.toString().equals("true"))
+					if (!mustBeValid || (mustBeValid && o.toString().equals("1")))
 					{
 						// for non Windows OS's
 						if (!DetectOS.getOS().startsWith("windows"))
@@ -403,11 +394,6 @@ public class JDBCFileSourceHelper implements FileSourceHelper
 		return res;
 	}
 
-	public HashMap<String, String> getKeyValsFromSettingsTable()
-	{
-		return keyValsFromSettingsTable;
-	}
-
 	public Boolean getVerified()
 	{
 		return verified;
@@ -426,15 +412,21 @@ public class JDBCFileSourceHelper implements FileSourceHelper
 	public Database getDb(){
 		return db;
 	}
-
-//	public File getFileDir()
-//	{
-//		return fileDir;
-//	}
+	
+	public String getHasSystemSettingsTable()
+	{
+		return hasSystemSettingsTable;
+	}
 
 	public Boolean getFolderHasContent()
 	{
 		return folderHasContent;
 	}
+
+	public Boolean getFolderExists()
+	{
+		return folderExists;
+	}
+	
 
 }

@@ -1,7 +1,6 @@
 package org.molgenis.framework.db;
 
 import java.io.File;
-import java.util.HashMap;
 
 public interface FileSourceHelper
 {
@@ -24,7 +23,7 @@ public interface FileSourceHelper
 	 * @return
 	 * @throws Exception
 	 */
-	public abstract File getFilesource() throws Exception;
+	public abstract File getFilesource(boolean mustBeValid) throws Exception;
 
 	/**
 	 * Remove the path to the file directory that this database uses to store
@@ -66,11 +65,6 @@ public interface FileSourceHelper
 	/**
 	 * Getter for file source admin plugin.
 	 */
-	public abstract HashMap<String, String> getKeyValsFromSettingsTable();
-
-	/**
-	 * Getter for file source admin plugin.
-	 */
 	public abstract Boolean getVerified();
 
 	/**
@@ -92,5 +86,10 @@ public interface FileSourceHelper
 	 * Getter for file source admin plugin.
 	 */
 	public abstract Boolean getFolderHasContent();
+	
+	/**
+	 * Getter for file source admin plugin.
+	 */
+	public String getHasSystemSettingsTable();
 
 }
