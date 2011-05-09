@@ -20,30 +20,30 @@ package ${package};
 
 public class ${JavaName(entity)}EntityListener {
 //    @javax.persistence.PrePersist
-//    public void prePersist(Object entity) {
+//    public void prePersist(${JavaName(entity)} entity) {
 //    }
 //
 //    @javax.persistence.PostPersist
-//    public void postPersist(Object entity) {
+//    public void postPersist(${JavaName(entity)} entity) {
 //    }
 //
 //    @javax.persistence.PreUpdate
-//    public void preUpdate(Object entity) {
+//    public void preUpdate(${JavaName(entity)} entity) {
 //    }
 //
 //    @javax.persistence.PostUpdate
-//    public void postUpdate(Object entity) {
+//    public void postUpdate(${JavaName(entity)} entity) {
 //    }
 //
 //    @javax.persistence.PreRemove
-//    public void preRemove(Object entity) {
+//    public void preRemove(${JavaName(entity)} entity) {
 //    }
 //
 //    @javax.persistence.PostRemove
-//    public void postRemove(Object entity) {
+//    public void postRemove(${JavaName(entity)} entity) {
 //    }
 //
 //    @javax.persistence.PostLoad
-//    public void postLoad(Object entity) {
+//    public void postLoad(${JavaName(entity)} entity) {
 //    }
 }

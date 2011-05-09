@@ -139,6 +139,7 @@ public interface ${JavaName(entity)} extends <#if entity.hasImplements()><#list 
 		</#if>
 	</#if>
 @XmlAccessorType(XmlAccessType.FIELD)
+@EntityListeners({${package}.db.${JavaName(entity)}EntityListener.class})
 public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(entity.getAncestor())}<#else>org.molgenis.util.AbstractEntity</#if> <#if entity.hasImplements()>implements<#list entity.getImplements() as i> ${JavaName(i)}<#if i_has_next>,</#if></#list></#if>
 </#if>
 {
@@ -211,7 +212,11 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	
 	// member variables (including setters.getters for interface)
 	<#foreach field in entity.getImplementedFields()>
-	
+	<#if field.isNillable()>
+	@Null
+	<#else>
+	@NotNull
+	</#if>
 	//${field.description}[type=${field.type}]
 	<#if !isPrimaryKey(field,entity) || !entity.hasAncestor()>
  			<#if isPrimaryKey(field,entity) && !entity.hasAncestor()>
