@@ -19,20 +19,18 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 public class PermissionManagementPlugin extends PluginModel<Entity> {
 
     private static final long serialVersionUID = -9150476614594665384L;
-    private PermissionManagementModel model;
+    private PermissionManagementModel varmodel;
     private PermissionManagementService service;
     private static Logger logger = Logger.getLogger(PermissionManagementPlugin.class);
 
     public PermissionManagementPlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
-		this.model = new PermissionManagementModel(this);
     }
 
     @Override
@@ -50,19 +48,19 @@ public class PermissionManagementPlugin extends PluginModel<Entity> {
     @Override
     public void handleRequest(Database db, Tuple request) {
     	try {
-    		model.setAction(request.getAction());
+    		varmodel.setAction(request.getAction());
     		
-    		if (model.getAction().equals("AddEdit")) {
-    		    model.setPermId(request.getInt("id"));
-    		} else if (model.getAction().equals("Remove")) {
-    		    model.setPermId(request.getInt("id"));
-    		    service.remove(model.getRole().getId(), model.getPermId());
+    		if (varmodel.getAction().equals("AddEdit")) {
+    			varmodel.setPermId(request.getInt("id"));
+    		} else if (varmodel.getAction().equals("Remove")) {
+    			varmodel.setPermId(request.getInt("id"));
+    		    service.remove(varmodel.getRole().getId(), varmodel.getPermId());
     		    this.setMessages(new ScreenMessage("Removal successful", true));
-    		} else if (model.getAction().equals("AddPerm")) {
-    		    service.insert(model.getRole().getId(), addPermission(request));
+    		} else if (varmodel.getAction().equals("AddPerm")) {
+    		    service.insert(varmodel.getRole().getId(), addPermission(request));
     		    this.setMessages(new ScreenMessage("Adding successful", true));
-    		} else if (model.getAction().equals("UpdatePerm")){
-    		    service.update(model.getRole().getId(), updatePermission(request));
+    		} else if (varmodel.getAction().equals("UpdatePerm")){
+    		    service.update(varmodel.getRole().getId(), updatePermission(request));
     		    this.setMessages(new ScreenMessage("Update successful", true));
     		}
     			
@@ -111,15 +109,16 @@ public class PermissionManagementPlugin extends PluginModel<Entity> {
     @Override
     public void reload(Database db) {
 		service = PermissionManagementService.getInstance(db);
+		varmodel = new PermissionManagementModel();
 		try {
-		    model.setRole(service.findRole((db.getSecurity().getUserId())));
+			varmodel.setRole(service.findRole((db.getSecurity().getUserId())));
 		} catch (Exception e) {
 		    //TODO: add logger + screen message
 		}
     }
     
-    public PermissionManagementModel getModel() {
-    	return this.model;
+    public PermissionManagementModel getVarmodel() {
+    	return this.varmodel;
     }  
     
     public PermissionManagementService getService() {
@@ -133,6 +132,12 @@ public class PermissionManagementPlugin extends PluginModel<Entity> {
     public void clearMessage()
     {
     	this.setMessages();
+    }
+    
+    @Override
+    public boolean isVisible() {
+    	// Show this one always!
+    	return true;
     }
 
 }

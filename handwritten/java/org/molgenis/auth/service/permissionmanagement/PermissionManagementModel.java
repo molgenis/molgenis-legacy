@@ -11,26 +11,26 @@
 package org.molgenis.auth.service.permissionmanagement;
 
 import org.molgenis.auth.MolgenisRole;
-import org.molgenis.framework.ui.EasyPluginModel;
 
-public class PermissionManagementModel extends EasyPluginModel{
+/**
+ * This is a class that Jessica introduced to keep permission management variables in.
+ * It is not to be confused with PermissionManagementPluginModel, which is the model
+ * class for the MVC structure that Morris introduced on May 7th 2011.
+ */
+public class PermissionManagementModel {
 
 	//Danny: This was crashing freemarker, if we can't reach the database we 
 	//still need to have a default role so we don't blow up the template
     private MolgenisRole role = new MolgenisRole();
     private String action = "init";
     private int permId = 0;
-    
-    public PermissionManagementModel(PermissionManagementPlugin controller) {
-    	super(controller);
-    }
 
     public void setRole(MolgenisRole molgenisRole) {
-	this.role = molgenisRole;
+    	this.role = molgenisRole;
     }
 
     public MolgenisRole getRole() {
-	return role;
+    	return role;
     }
 
 	public void setAction(String action) {

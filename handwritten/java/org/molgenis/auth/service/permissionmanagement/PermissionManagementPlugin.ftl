@@ -19,9 +19,9 @@
 		<#-- Hack to immediatly clear the message so it doesn't "stick". -->
 		${screen.clearMessage()}
 		
-<#if screen.model?exists>
+<#if screen.varmodel?exists>
 	<#assign modelExists = true>
-	<#assign model = screen.model>
+	<#assign model = screen.varmodel>
 	<#assign service = screen.service>
 <#else>
 	No model. An error has occurred.
