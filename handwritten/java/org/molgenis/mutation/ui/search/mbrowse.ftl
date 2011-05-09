@@ -78,12 +78,11 @@
 
 <div class="scrollable">
 <pre>
-<#-- for Orientation == "R" -->
+<#if exonSummaryVO.orientation == "R">
 ${exonSummaryVO.nuclSequenceFlankLeft}<span class="seq"><#list exonSummaryVO.exon.getGdna_Position()..exonSummaryVO.exon.getGdna_Position() - exonSummaryVO.exon.getLength() + 1 as i><#assign hasMutation = 0><#list mutationSummaryVOs as mutationSummaryVO><#assign tooltip = mutationSummaryVO.getNiceNotation()><#if mutationSummaryVO.mutation.getGdna_Position() == i><#assign hasMutation = 1><span class="mut"><a class="mut" href="molgenis.do?__target=${screen.name}&select=${screen.name}&__action=showMutation&mid=${mutationSummaryVO.mutation.getIdentifier()}#results" alt="${tooltip}" title="${tooltip}"><#break></#if></#list>${exonSummaryVO.nuclSequence?substring(exonSummaryVO.exon.getGdna_Position() - i, exonSummaryVO.exon.getGdna_Position() - i + 1)}<#if hasMutation == 1></a></span></#if></#list></span>${exonSummaryVO.nuclSequenceFlankRight}
-<#-- for Orientation == "F" -->
-<#--
-${exonSummaryVO.nuclSequenceFlankLeft}<span class="seq"><#list 0..exonSummaryVO.exon.getLength() - 1 as i><#assign hasMutation = 0><#list mutationSummaryVOs as mutationSummaryVO><#assign tooltip = mutationSummaryVO.getNiceNotation()><#if mutationSummaryVO.mutation.getGdna_Position() == i><#assign hasMutation = 1><span class="mut"><a class="mut" href="molgenis.do?__target=${screen.name}&select=${screen.name}&__action=showMutation&mid=${mutationSummaryVO.mutation.getIdentifier()}#results" alt="${tooltip}" title="${tooltip}"><#break></#if></#list>${exonSummaryVO.nuclSequence?substring(i, i + 1)}<#if hasMutation == 1></a></span></#if></#list></span>${exonSummaryVO.nuclSequenceFlankRight}
--->
+<#else>
+${exonSummaryVO.nuclSequenceFlankLeft}<span class="seq"><#list exonSummaryVO.exon.getGdna_Position()..exonSummaryVO.exon.getGdna_Position() + exonSummaryVO.exon.getLength() - 1 as i><#assign hasMutation = 0><#list mutationSummaryVOs as mutationSummaryVO><#assign tooltip = mutationSummaryVO.getNiceNotation()><#if mutationSummaryVO.mutation.getGdna_Position() == i><#assign hasMutation = 1><span class="mut"><a class="mut" href="molgenis.do?__target=${screen.name}&select=${screen.name}&__action=showMutation&mid=${mutationSummaryVO.mutation.getIdentifier()}#results" alt="${tooltip}" title="${tooltip}"><#break></#if></#list>${exonSummaryVO.nuclSequence?substring(i - exonSummaryVO.exon.getGdna_Position(), i - exonSummaryVO.exon.getGdna_Position() + 1)}<#if hasMutation == 1></a></span></#if></#list></span>${exonSummaryVO.nuclSequenceFlankRight}
+</#if>
 <#if !exonSummaryVO.exon.getIsIntron()><#list 1..exonSummaryVO.nuclSequenceFlankLeft?length as i> </#list><span class="seq">${exonSummaryVO.aaSequence}</span></#if>
 <#if !exonSummaryVO.exon.getIsIntron()><#list 1..exonSummaryVO.nuclSequenceFlankLeft?length as i> </#list><span>${searchPluginUtils.printBaseNumbers(exonSummaryVO.exon)}</span></#if>
 </pre>

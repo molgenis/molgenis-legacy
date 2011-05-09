@@ -8,6 +8,7 @@ public class ExonSummaryVO implements Serializable
 {
 	private static final long serialVersionUID = 419557906940623900L;
 	Exon exon;
+	String orientation;
 	Integer numFullAminoAcids;
 	Integer numPartAminoAcids;
 	Integer numGlyXYRepeats;
@@ -26,6 +27,12 @@ public class ExonSummaryVO implements Serializable
 	}
 	public void setExon(Exon exon) {
 		this.exon = exon;
+	}
+	public String getOrientation() {
+		return orientation;
+	}
+	public void setOrientation(String orientation) {
+		this.orientation = orientation;
 	}
 	public Integer getNumFullAminoAcids() {
 		return numFullAminoAcids;

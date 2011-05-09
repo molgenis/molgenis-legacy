@@ -228,6 +228,8 @@ public class ExonService implements Serializable
 		
 		Gene gene = this.db.findById(Gene.class, exon.getGene_Id());
 
+		exonSummaryVO.setOrientation(gene.getOrientation());
+
 		ExonSearchCriteriaVO firstExonCriteria = new ExonSearchCriteriaVO();
 		firstExonCriteria.setGdnaPosition(exonSummaryVO.getExon().getGdna_Position());
 		firstExonCriteria.setOrientation(gene.getOrientation());
