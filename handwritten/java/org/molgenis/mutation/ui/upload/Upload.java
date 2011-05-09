@@ -51,11 +51,12 @@ import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
-public class Upload extends PluginModel<Entity>
+public abstract class Upload extends PluginModel<Entity>
 {
 
-	private static final long serialVersionUID = -3499931124766785979L;
+	private static final long serialVersionUID   = -3499931124766785979L;
 	private static final transient Logger logger = Logger.getLogger(Upload.class.getSimpleName());
+	protected String GENENAME;
 	private String action = "newBatch";
 	private ExonService exonService;
 	private MutationService mutationService;
@@ -195,7 +196,7 @@ public class Upload extends PluginModel<Entity>
 
 	private void handleMutation(Database db, Tuple request) throws Exception
 	{
-		this.toMutationUploadVO(db, request);
+		this.toMutationUploadVO(request);
 
 		if (this.action.equals("newMutation"))
 		{
@@ -331,7 +332,7 @@ public class Upload extends PluginModel<Entity>
 		for (Exon exon : this.exonService.getAllExons())
 			exonOptions.add(new ValueLabel(exon.getId(), exon.getName()));
 
-		this.mutationForm.get("gene").setValue("COL7A1");
+		this.mutationForm.get("gene").setValue(this.GENENAME);
 		this.mutationForm.get("refseq").setValue("NM_000094.3");
 		this.mutationForm.get("position").setValue(this.mutationUploadVO.getMutation().getMutationPosition());
 		this.mutationForm.get("nt").setValue(this.mutationUploadVO.getNt());
@@ -519,7 +520,7 @@ public class Upload extends PluginModel<Entity>
 		return patientSummaryVO;
 	}
 
-	private void toMutationUploadVO(Database db, Tuple request)
+	private void toMutationUploadVO(Tuple request)
 	{
 		if (StringUtils.isNotEmpty(request.getString("referer")))
 			this.referer = request.getInt("referer");
@@ -596,8 +597,11 @@ public class Upload extends PluginModel<Entity>
 		try
 		{
 			if (mutationUploadVO == null)
+			{
 				this.initMutationUploadVO();
-			
+				this.mutationUploadVO.setGene(db.query(MutationGene.class).equals(MutationGene.NAME, this.GENENAME).find().get(0));
+			}
+
 			if (patientSummaryVO == null)
 				this.initPatientSummaryVO();
 		}
