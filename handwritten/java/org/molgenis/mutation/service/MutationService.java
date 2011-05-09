@@ -2,7 +2,6 @@ package org.molgenis.mutation.service;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -20,11 +19,9 @@ import org.apache.regexp.RESyntaxException;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
-import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.jdbc.JDBCConnectionHelper;
 
 import org.molgenis.mutation.Exon;
-import org.molgenis.mutation.Exon_ProteinDomain;
 import org.molgenis.mutation.MutationGene;
 import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.Patient;
@@ -599,7 +596,7 @@ public class MutationService implements Serializable
 		mutationUploadVO.setExon(exon);
 		mutationUploadVO.getMutation().setExon(exon); // this is crap, use navigable objects
 		mutationUploadVO.getMutation().setCdna_Position(SequenceUtils.getCDNAPosition(mutationUploadVO.getMutation().getMutationPosition()));
-		mutationUploadVO.getMutation().setGdna_Position(SequenceUtils.getGDNAPosition(mutationUploadVO.getMutation().getMutationPosition(), exon));
+		mutationUploadVO.getMutation().setGdna_Position(SequenceUtils.getGDNAPosition(mutationUploadVO.getMutation().getMutationPosition(), exon, gene.getOrientation()));
 
 		int mutationStart;
 		if ("F".equals(mutationUploadVO.getGene().getOrientation()))
