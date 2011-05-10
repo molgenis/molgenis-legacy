@@ -170,8 +170,11 @@ public class CsvExport
 			{
 				for(Entity e: entities)
 				{
-					if(e.get(f) != null) notNulls.add(f);
-					break;
+					if(e.get(f) != null)
+					{
+						notNulls.add(f);
+						break;
+					}
 				}
 			}			
 			
