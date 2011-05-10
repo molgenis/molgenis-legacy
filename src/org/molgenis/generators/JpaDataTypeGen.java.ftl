@@ -34,6 +34,8 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -212,11 +214,6 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	
 	// member variables (including setters.getters for interface)
 	<#foreach field in entity.getImplementedFields()>
-	<#if field.isNillable()>
-	@Null
-	<#else>
-	@NotNull
-	</#if>
 	//${field.description}[type=${field.type}]
 	<#if !isPrimaryKey(field,entity) || !entity.hasAncestor()>
  			<#if isPrimaryKey(field,entity) && !entity.hasAncestor()>
@@ -266,9 +263,15 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		<#assign type_label = field.getType().toString()>
 			<#if isPrimaryKey(field,entity)>
 				<#if !entity.hasAncestor()>
+	@NotNull
 	private <#if field.type="xref">${JavaName(field.xrefEntity)}<#elseif field.type="mref">List<${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)} = <#if field.type == "mref">new ArrayList<${JavaName(field.xrefEntity)}>()<#else> ${default(field)}</#if>;				
 				</#if>
 			<#else>
+				<#if field.isNillable()>
+	@Null
+				<#else>
+	@NotNull
+				</#if>
 	private <#if field.type="xref">${JavaName(field.xrefEntity)}<#elseif field.type="mref">List<${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)} = <#if field.type == "mref">new ArrayList<${JavaName(field.xrefEntity)}>()<#else> ${default(field)}</#if>;
 			</#if>
 		<#if type_label == "enum">
