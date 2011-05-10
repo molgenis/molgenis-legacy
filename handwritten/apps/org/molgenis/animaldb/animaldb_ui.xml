@@ -65,6 +65,8 @@
 			<plugin name="AddAnimal" type="plugins.animal.AddAnimalPlugin"
 				label="Bring in animals" />		
 			<menu name="breedingmodule" position="left" label="Breeding">
+				<plugin name="ViewFamily" type="plugins.breedingplugin.ViewFamily"
+					label="Family info" />
 				<plugin name="ManageLines" type="plugins.breedingplugin.ManageLines"
 					label="Manage breeding lines" />
 				<plugin name="ManageParentgroups" type="plugins.breedingplugin.ManageParentgroups"
