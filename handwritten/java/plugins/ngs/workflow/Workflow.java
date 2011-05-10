@@ -155,7 +155,7 @@ public class Workflow extends PluginModel<Entity> {
 	    
 	    NgsSample samp = model.getCommonQueries().getSampleByName(sampleName);
 	    WorkflowElement element = model.getCommonQueries().getWorkflowElement(samp.getWorkflowElement_Name());
-	    model.setFeatures(model.getCommonQueries().getObservableFeaturesByProtocol(element.getProtocol_Id()));
+	    model.setFeatures(model.getCommonQueries().getMeasurementsByProtocol(element.getProtocol_Id()));
 	    model.setCurrentProtocol(model.getCommonQueries().getProtocolById(element.getProtocol_Id()));
 	    model.setValuesBySample(model.getSample().getId(), model.getFeatures());
 	    model.setWorkflowElements(model.getCommonQueries().getCandidateWorkflowElements(model.getSample().getWorkflowElement_Id()));

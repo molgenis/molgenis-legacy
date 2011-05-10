@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import org.molgenis.animaldb.CustomLabelFeature;
 import org.molgenis.auth.MolgenisEntity;
 import org.molgenis.batch.MolgenisBatch;
+import org.molgenis.batch.MolgenisBatchEntity;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -84,6 +85,10 @@ public class CommonService
 		return instance;
 	}
 	// ---
+	
+	public Database getDatabase() {
+		return db;
+	}
 	
 	public void setDatabase(Database db)
 	{
@@ -159,7 +164,7 @@ public class CommonService
 	
 
 	/**
-	 * Retrieve an observation target by id
+	 * Retrieve an observation target by id. Gives back null if not found.
 	 * 
 	 * @param targetId the id to look for
 	 * @return an ObservationTarget entity with Id targetId
@@ -325,6 +330,31 @@ public class CommonService
 		    return new ArrayList<MolgenisBatch>();
 		}
 	}
+	
+	/**
+	 * Get the ID's of all targets in the batch as strings.
+	 * 
+	 * @param id : id of the batch
+	 * @return
+	 */
+	public List<String> getTargetsFromBatch(int id) {
+		List<String> returnList = new ArrayList<String>();
+		Query<MolgenisBatchEntity> q = db.query(MolgenisBatchEntity.class);
+		q.addRules(new QueryRule(MolgenisBatchEntity.BATCH, Operator.EQUALS, id));
+		// TODO: check if type is ObservationTarget? Is type stored anyway?
+		
+		try {
+			List<MolgenisBatchEntity> entities = q.find();
+		
+			for(MolgenisBatchEntity m : entities) {
+			    returnList.add(db.findById(ObservationTarget.class, m.getObjectId()).getId().toString());
+			}
+		} catch (Exception e) {
+			// Do nothing, return empty list
+		}
+	
+		return returnList;
+    }
 	
 	/** 
 	 * Returns a list of ObservationTargets belonging to the ID's provided.
@@ -1206,25 +1236,24 @@ public class CommonService
 	}
 
 	/**
-	 * Returns a list of all ObservableFeatures for a Protocol
+	 * Returns a list of all Measurements for a Protocol
 	 * 
 	 * @param protocolId
 	 * @return
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<ObservableFeature> getObservableFeaturesByProtocol(
-			int protocolId) throws DatabaseException, ParseException {
+	public List<Measurement> getMeasurementsByProtocol(int protocolId) throws DatabaseException, ParseException {
 		
 		Query<Protocol> q = db.query(Protocol.class);
 		q.eq(Protocol.ID, protocolId);
 		List<Protocol> protocols = q.find();
 
-		List<ObservableFeature> features = new ArrayList<ObservableFeature>();
+		List<Measurement> features = new ArrayList<Measurement>();
 		if (!protocols.isEmpty()) { 
 		    List<Integer> featureIds = protocols.get(0).getFeatures_Id();
 		    for (Integer i : featureIds) {
-				Query<ObservableFeature> r = db.query(ObservableFeature.class);
+				Query<Measurement> r = db.query(Measurement.class);
 				r.eq(ObservableFeature.ID, i);
 				features.addAll(r.find());
 		    }
@@ -1609,20 +1638,17 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<ObservedValue> getObservedValueBySampleAndFeatures(
-			int sampleId, List<ObservableFeature> features)
+	public List<ObservedValue> getObservedValueBySampleAndFeatures(int sampleId, List<Measurement> features)
 			throws DatabaseException, ParseException
 	{
 
 		List<ObservedValue> values = new ArrayList<ObservedValue>();
 
-		for (ObservableFeature f : features)
+		for (Measurement f : features)
 		{ // for each feature, find value
 			Query<ObservedValue> q = db.query(ObservedValue.class);
-			q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS,
-					sampleId));
-			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, f
-					.getId()));
+			q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, sampleId));
+			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, f.getId()));
 
 			if (q.find().isEmpty())
 			{ // if value doesnt exist, create new one
@@ -1643,7 +1669,9 @@ public class CommonService
 		return values;
 	}
 	
-	/** TODO: Change name and clean up to make above method more generic
+	/** 
+	 * TODO: Change name and clean up to make this method more generic
+	 * 
 	 * Returns all observed values for a given sample and list of features.
 	 * NOTE: Creates a default "" value if observedValue doesn't exist yet for
 	 * given feature and sample. This created default does not link to a
@@ -1655,29 +1683,27 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<ObservedValue> getObservedValueByTargetAndFeatures(
-			int sampleId, List<Integer> features)
+	public List<ObservedValue> getObservedValueByTargetAndFeatures(int targetId, List<Measurement> measurements)
 			throws DatabaseException, ParseException
 	{
 
 		List<ObservedValue> values = new ArrayList<ObservedValue>();
 
-		for (Integer i : features)
+		for (Measurement m : measurements)
 		{ // for each feature, find value
 			Query<ObservedValue> q = db.query(ObservedValue.class);
-			q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS,
-					sampleId));
-			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, i));
+			q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetId));
+			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, m.getId()));
 			List<ObservedValue> vals = q.find();
 			
 			if (vals.isEmpty())
 			{ // if value doesn't exist, create new one
 				ObservedValue newOV = new ObservedValue();
-				newOV.setFeature(i);
+				newOV.setFeature(m.getId());
 				newOV.setValue("");
 				// don't set relation, as that can then never be reset to null
-				newOV.setTarget(sampleId);
-				newOV.setInvestigation(this.getObservationTargetById(sampleId).getInvestigation_Id());
+				newOV.setTarget(targetId);
+				newOV.setInvestigation(this.getObservationTargetById(targetId).getInvestigation_Id());
 				values.add(newOV);
 			}
 			else
@@ -1993,6 +2019,20 @@ public class CommonService
 		}
 		else
 		    return s.find().get(0);
+	}
+	
+	/**
+	 * Get the name of the given MolgenisEntity. Returns null if it doesn't exist.
+	 * 
+	 * @param entityId
+	 * @return
+	 */
+	public String getEntityName(int entityId) {
+		try {
+			return db.findById(MolgenisEntity.class, entityId).getName();
+		} catch (DatabaseException e) {
+			return null;
+		}
 	}
 
 }

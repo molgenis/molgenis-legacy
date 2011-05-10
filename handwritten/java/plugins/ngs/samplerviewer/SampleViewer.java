@@ -93,29 +93,28 @@ public class SampleViewer extends PluginModel<Entity> {
      * @param sampleName The sample whose data we want to fill the matrix with
      */
     public void setSampleMatrix(String projectName, int protocolId) {
-	try {
-	    
- 	    if (!projectName.equals("")) {
-		model.setSamples(model.getCommonQueries().getAllSamplesForProject(projectName));
-	    } else {
-		model.setSamples(model.getCommonQueries().getAllSamples());
-	    }
-	    
-	    if (protocolId > 0) {
-		model.setProtocolName(model.getCommonQueries().getProtocolById(protocolId).getName());
-		model.setFeatures(model.getCommonQueries().getObservableFeaturesByProtocol(protocolId));
-	    } else {
-		model.setFeatures(model.getCommonQueries().getAllObservableFeatures());
-		model.setProtocolName("");
-	    }
-	} catch (Exception e) {
-
-	    String msg = "A problem occured while setting the sample matrix";
-	    logger.error(msg, e);
-	    this.setMessages(new ScreenMessage(msg != null ? msg : "null", false));
-
-	}
-
+		try {
+		    
+	 	    if (!projectName.equals("")) {
+	 	    	model.setSamples(model.getCommonQueries().getAllSamplesForProject(projectName));
+		    } else {
+		    	model.setSamples(model.getCommonQueries().getAllSamples());
+		    }
+		    
+		    if (protocolId > 0) {
+				model.setProtocolName(model.getCommonQueries().getProtocolById(protocolId).getName());
+				model.setFeatures(model.getCommonQueries().getMeasurementsByProtocol(protocolId));
+		    } else {
+				model.setFeatures(model.getCommonQueries().getAllMeasurements());
+				model.setProtocolName("");
+		    }
+		} catch (Exception e) {
+	
+		    String msg = "A problem occured while setting the sample matrix";
+		    logger.error(msg, e);
+		    this.setMessages(new ScreenMessage(msg != null ? msg : "null", false));
+	
+		}
     }
 
 

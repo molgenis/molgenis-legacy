@@ -90,17 +90,17 @@
 				label="Location info" />
 		</menu>
 
-		<menu name="protocolmenu" position="left" label="Protocols">
+		<menu name="valuemenu" position="left" label="Values">
 			<plugin name="ApplyProtocol" type="plugins.protocol.ApplyProtocolPlugin"
-				label="Apply protocol" />
-			<plugin name="EditProtocol" type="plugins.protocol.EditProtocolPlugin"
-				label="Edit protocol application" />
+				label="Make/edit values" />
+			<!-- <plugin name="EditProtocol" type="plugins.protocol.EditProtocolPlugin"
+				label="Edit protocol application" /> -->
 			<!-- <plugin name="ApplyProtocolOld" type="plugins.protocol.ApplyProtocolPluginOld"
 				label="Apply protocol (old)" /> -->
 			<plugin name="ListPlugin" type="plugins.listplugin.ListPlugin"
-				label="Matrix" />
+				label="View value matrix" />
 			<plugin name="EventViewer" type="plugins.protocol.EventViewerPlugin"
-				label="Timeline" />
+				label="View value timeline" />
 			<!-- <plugin name="ListPlugin2" type="plugins.listplugin.ListPlugin2"
                 label="ExtJs listplugin" /> -->
 		</menu>

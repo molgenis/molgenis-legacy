@@ -82,7 +82,7 @@ public class PrintLabelPlugin extends GenericPlugin
 	 */
 	private void handlePrintRequest(Tuple request) throws DatabaseException, ParseException, FileNotFoundException, DocumentException {
 		List<Individual> individualList = getIndividualsFromUi(request);
-		List<Integer> measurementIdList = getMeasurementsFromUi(request);
+		List<Measurement> measurementList = getMeasurementsFromUi(request);
 		
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 		File pdfFile = new File(tmpDir.getAbsolutePath() + File.separatorChar + "cagelabels.pdf");
@@ -90,7 +90,7 @@ public class PrintLabelPlugin extends GenericPlugin
         PdfWriter.getInstance(document, new FileOutputStream(pdfFile));
         
         document.open();
-        PdfPTable table = makeLabels(individualList, measurementIdList);
+        PdfPTable table = makeLabels(individualList, measurementList);
         document.add(table);
         document.close();
         
@@ -108,7 +108,7 @@ public class PrintLabelPlugin extends GenericPlugin
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	private PdfPTable makeLabels(List<Individual> individualList, List<Integer> measurementIdList) throws DatabaseException, ParseException {
+	private PdfPTable makeLabels(List<Individual> individualList, List<Measurement> measurementList) throws DatabaseException, ParseException {
 		PdfPTable table = new PdfPTable(2);
         
         for (Individual ind : individualList) {
@@ -116,7 +116,7 @@ public class PrintLabelPlugin extends GenericPlugin
         	newCell.addElement(new Paragraph("Database ID: " + ind.getId().toString()));
         	newCell.addElement(new Paragraph("Database name: " + ind.getName()));
         	
-        	List<ObservedValue> valueList = cs.getObservedValueByTargetAndFeatures(ind.getId(), measurementIdList);
+        	List<ObservedValue> valueList = cs.getObservedValueByTargetAndFeatures(ind.getId(), measurementList);
         	for (ObservedValue value : valueList) {
         		String featName = cs.getMeasurementById(value.getFeature()).getName();
         		String actualValue;
@@ -166,12 +166,13 @@ public class PrintLabelPlugin extends GenericPlugin
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	private List<Integer> getMeasurementsFromUi(Tuple request) throws DatabaseException, ParseException {
-		List<Integer> measurementList = new ArrayList<Integer>();
+	private List<Measurement> getMeasurementsFromUi(Tuple request) throws DatabaseException, ParseException {
+		List<Measurement> measurementList = new ArrayList<Measurement>();
 		List<?> featureListObject = request.getList("Features");
 		if (featureListObject != null) {
 			for (Object o : featureListObject) {
-				measurementList.add(Integer.parseInt((String)o));
+				int measurementId = Integer.parseInt((String)o);
+				measurementList.add(cs.getMeasurementById(measurementId));
 			}
 		}
 		return measurementList;

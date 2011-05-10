@@ -27,6 +27,7 @@ import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.ValueLabel;
 
+@Deprecated
 public class EditProtocolUI {
     
     private Container protocolApplicationContainer = null;
@@ -351,7 +352,7 @@ public class EditProtocolUI {
 		    	List<ObservedValue> values = null;
 		    	if (!model.isNewProtocolApplication()) {
 		    		values = service.getObservedValuesByTargetAndFeatures(
-		    				model.getTargetsIdList().get(row - 1), model.getFeaturesIdList());
+		    				model.getTargetsIdList().get(row - 1), model.getFeaturesList());
 		    	}
 		
 				for (int col = 0; col < sizeFeatures; col++) {

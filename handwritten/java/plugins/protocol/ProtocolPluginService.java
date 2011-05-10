@@ -28,6 +28,7 @@ import org.molgenis.protocol.ProtocolApplication;
 
 import commonservice.CommonService;
 
+@Deprecated
 public class ProtocolPluginService {
 
     private Database db;
@@ -104,7 +105,7 @@ public class ProtocolPluginService {
      * @throws DatabaseException
      * @throws ParseException
      */
-    public List<ObservedValue> getObservedValuesByTargetAndFeatures(int targetId, List<Integer> features) throws DatabaseException, ParseException {
+    public List<ObservedValue> getObservedValuesByTargetAndFeatures(int targetId, List<Measurement> features) throws DatabaseException, ParseException {
     	return cq.getObservedValueByTargetAndFeatures(targetId, features);
     }
     

@@ -13,6 +13,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Tuple;
 
+@Deprecated
 public class EditProtocolPlugin extends GenericPlugin
 {
 	private static final long serialVersionUID = -2268653119902060076L;

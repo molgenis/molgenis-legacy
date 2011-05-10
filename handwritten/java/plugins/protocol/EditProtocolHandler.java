@@ -13,12 +13,13 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
 
+@Deprecated
 class EditProtocolHandler {
 
 	private ProtocolPluginService service;
     private EditProtocolPluginModel model;
     private EditProtocolUI ui;
-    private static transient Logger logger = Logger.getLogger(ApplyProtocolHandler.class);
+    private static transient Logger logger = Logger.getLogger(EditProtocolHandler.class);
 
     public EditProtocolHandler(EditProtocolPluginModel model, EditProtocolUI ui, ProtocolPluginService service) {
 		this.service = service;
@@ -47,7 +48,7 @@ class EditProtocolHandler {
 		    	// TODO: if user selected "new values", don't retrieve existing values
 		    	// but make only new ones
 				List<ObservedValue> originalValues = service.getObservedValuesByTargetAndFeatures(
-					model.getTargetsIdList().get(row - 1), model.getFeaturesIdList());
+					model.getTargetsIdList().get(row - 1), model.getFeaturesList());
 		
 				int sizeFeatures = model.getFeaturesIdList().size();
 				for (int col = 0; col < sizeFeatures; col++) {

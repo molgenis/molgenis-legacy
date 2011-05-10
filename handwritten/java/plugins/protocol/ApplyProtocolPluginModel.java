@@ -10,9 +10,11 @@ package plugins.protocol;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.molgenis.pheno.Measurement;
+
 public class ApplyProtocolPluginModel {
 
-	private List<Integer> featuresIdList = new ArrayList<Integer>();
+	private List<Measurement> featuresList = new ArrayList<Measurement>();
 	private List<Integer> targetsIdList = new ArrayList<Integer>();
 	private List<String> targetList = new ArrayList<String>();
 	private List<String> fullTargetList = new ArrayList<String>();
@@ -25,12 +27,12 @@ public class ApplyProtocolPluginModel {
 		
 	}
 
-	public void setFeaturesIdList(List<Integer> featuresIdList) {
-		this.featuresIdList = featuresIdList;
+	public void setFeaturesList(List<Measurement> featuresList) {
+		this.featuresList = featuresList;
 	}
 
-	public List<Integer> getFeaturesIdList() {
-		return featuresIdList;
+	public List<Measurement> getFeaturesList() {
+		return featuresList;
 	}
 
 	public List<Integer> getTargetsIdList() {

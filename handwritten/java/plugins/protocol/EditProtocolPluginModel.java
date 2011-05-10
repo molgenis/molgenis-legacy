@@ -7,9 +7,16 @@
  */
 package plugins.protocol;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.pheno.Measurement;
+
+import commonservice.CommonService;
+
+@Deprecated
 public class EditProtocolPluginModel {
 	
 	private List<Integer> featuresIdList = new ArrayList<Integer>();
@@ -18,6 +25,7 @@ public class EditProtocolPluginModel {
 	private int protocolApplicationId;
 	private boolean newProtocolApplication = false;
 	private boolean timeInfo = false;
+	private CommonService cs = CommonService.getInstance();
 	
 	public EditProtocolPluginModel() {
 		
@@ -69,5 +77,13 @@ public class EditProtocolPluginModel {
 
 	public boolean isTimeInfo() {
 		return timeInfo;
+	}
+
+	public List<Measurement> getFeaturesList() throws DatabaseException, ParseException {
+		List<Measurement> returnList = new ArrayList<Measurement>();
+		for (Integer id : featuresIdList) {
+			returnList.add(cs.getMeasurementById(id));
+		}
+		return returnList;
 	}
 }

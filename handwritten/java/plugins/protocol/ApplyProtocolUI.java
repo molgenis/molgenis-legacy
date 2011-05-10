@@ -24,10 +24,13 @@ import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.Table;
 import org.molgenis.framework.ui.html.TextParagraph;
 import org.molgenis.framework.ui.html.XrefInput;
+import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.ValueLabel;
+
+import commonservice.CommonService;
 
 public class ApplyProtocolUI {
     
@@ -42,13 +45,12 @@ public class ApplyProtocolUI {
     private CheckboxInput timeBox;
     
     private ApplyProtocolPluginModel model;
-    private ProtocolPluginService service;
+    private CommonService cs = CommonService.getInstance();
     
     private static transient Logger logger = Logger.getLogger(ApplyProtocolUI.class);
 
-    public ApplyProtocolUI(ApplyProtocolPluginModel model, ProtocolPluginService service) {
+    public ApplyProtocolUI(ApplyProtocolPluginModel model) {
 		this.model = model;
-		this.service = service;
     }
     
     public void initScreen() {
@@ -82,43 +84,43 @@ public class ApplyProtocolUI {
     private HtmlInput makeInput(int featureNr, int col, int row, ObservedValue value) throws Exception {
     	
 		HtmlInput valueInput;
-		int featureId = model.getFeaturesIdList().get(featureNr);
+		Measurement feature = model.getFeaturesList().get(featureNr);
 	
 		// Get the metadata to create the input
 		
 		// Data type
-		String dataType = service.getMeasurement(featureId).getDataType();
+		String dataType = feature.getDataType();
 		if( MolgenisFieldTypes.getType(dataType) instanceof UnknownField ) {
 		    throw new Exception("Fieldtype " + dataType + "' is unknown in MOLGENIS");
 		}
 		
 		// Target type allowed for relation
 		String observationTargetType = "ObservationTarget";
-		if (service.getMeasurement(featureId).getTargettypeAllowedForRelation() != null) {
-			int entityId = service.getMeasurement(featureId).getTargettypeAllowedForRelation();
-			observationTargetType = service.getEntityName(entityId);
+		if (feature.getTargettypeAllowedForRelation() != null) {
+			int entityId = feature.getTargettypeAllowedForRelation();
+			observationTargetType = cs.getEntityName(entityId);
 		}
 		
 		// Panel label for relation
-		String panelLabel = service.getMeasurement(featureId).getPanelLabelAllowedForRelation();
+		String panelLabel = feature.getPanelLabelAllowedForRelation();
 		
 		// Make the appropriate input
-		if (dataType.equals("string") && service.getCodesForMeasurement(featureId).size() > 0) {
+		if (dataType.equals("string") && cs.getAllCodesForFeature(feature.getName()).size() > 0) {
 		    // If there are codes for this Measurement, show a selectbox with those
 		    valueInput = new SelectInput(col + "_" + row);
-		    ((SelectInput)valueInput).setOptionsFromStringList(service.getCodesForMeasurement(featureId));
+		    ((SelectInput)valueInput).setOptionsFromStringList(cs.getAllCodesForFeatureAsStrings(feature.getName()));
 		} else {
 			if (panelLabel != null) {
 				// If there's only a subset of labeled Panels allowed for this Measurement, show a selectbox with those
 				valueInput = new SelectInput(col + "_" + row);
-				List<ObservationTarget> panelList = service.getLabeledPanels(panelLabel);
+				List<ObservationTarget> panelList = cs.getAllMarkedPanels(panelLabel);
 				for (ObservationTarget p : panelList) {
 					((SelectInput)valueInput).addOption(p.getId(), p.getName());
 				}
 			} else {
 				// Normally, show the input belonging to the data type
 				valueInput = MolgenisFieldTypes.createInput(dataType, col + "_" + row, observationTargetType,
-		    		service.getDatabase());
+		    		cs.getDatabase());
 				if (dataType.equals("string")) {
 					((StringInput)valueInput).setWidth(20);
 				}
@@ -137,7 +139,7 @@ public class ApplyProtocolUI {
 			    	// Because this involves an xref box, set the value and label of the selected option
 			    	// Note: cannot use getRelation_name() because, in case of apply defaults, value
 			    	// is not in the database and mapper methods do not work
-			    	((XrefInput) valueInput).setValueLabel("name", service.getObservationTarget(value.getRelation()).getName());
+			    	((XrefInput) valueInput).setValueLabel("name", cs.getObservationTargetById(value.getRelation()).getName());
 		    	}
 		    }
 		}
@@ -161,7 +163,7 @@ public class ApplyProtocolUI {
 	try {
 	    protocols = new SelectInput("Protocols");
 	    protocols.setLabel("Choose Protocol:");
-	    protocols.setOptions(service.getProtocols(), Protocol.ID, Protocol.NAME);
+	    protocols.setOptions(cs.getAllProtocols(), Protocol.ID, Protocol.NAME);
 	    protocolDiv.add(protocols);
 
 	} catch(Exception e) {
@@ -178,7 +180,7 @@ public class ApplyProtocolUI {
 		try {
 		    targets = new SelectMultipleInput("Targets", null);
 		    targets.setLabel("Choose Targets:");
-		    for (ObservationTarget o : service.getTargets()) {
+		    for (ObservationTarget o : cs.getAllObservationTargets()) {
 		    	targets.addOption(o.getId(), this.getTargetName(o.getId()));
 		    }
 		    protocolDiv.add(targets);
@@ -196,7 +198,7 @@ public class ApplyProtocolUI {
 		try {
 		    batches = new SelectMultipleInput("Batches", null);
 		    batches.setLabel("Choose Batches:");
-		    for (MolgenisBatch o : service.getBatches()) {
+		    for (MolgenisBatch o : cs.getAllBatches()) {
 		    	batches.addOption(o.getId(), o.getName());
 		    }
 		    protocolDiv.add(batches);
@@ -298,9 +300,9 @@ public class ApplyProtocolUI {
      * @throws ParseException
      */
     public void makeColumns() throws DatabaseException, ParseException {
-		model.setFeaturesIdList(service.getObservableFeaturesInProtocol(model.getProtocolId()));
-		for (Integer mId : model.getFeaturesIdList()) {
-		    String measurementName = service.getMeasurement(mId).getName();
+		model.setFeaturesList(cs.getMeasurementsByProtocol(model.getProtocolId()));
+		for (Measurement m : model.getFeaturesList()) {
+			String measurementName = m.getName();
 		    valueTable.addColumn(measurementName);
 		    if (model.isTimeInfo()) {
 		    	 valueTable.addColumn(measurementName + " start");
@@ -334,7 +336,7 @@ public class ApplyProtocolUI {
 		try {
 		    DivPanel div;
 		    // First row contains default input boxes
-		    int sizeFeatures = model.getFeaturesIdList().size();
+		    int sizeFeatures = model.getFeaturesList().size();
 		    for (int col = 0; col < sizeFeatures; col++) {
 		    	int colNrInTable = col;
 				if (model.isTimeInfo()) {
@@ -376,8 +378,8 @@ public class ApplyProtocolUI {
 		    	
 		    	List<ObservedValue> values = null;
 		    	if (!model.isNewProtocolApplication()) {
-		    		values = service.getObservedValuesByTargetAndFeatures(
-		    				model.getTargetsIdList().get(row - 1), model.getFeaturesIdList());
+		    		values = cs.getObservedValueByTargetAndFeatures(
+		    				model.getTargetsIdList().get(row - 1), model.getFeaturesList());
 		    	}
 		
 				for (int col = 0; col < sizeFeatures; col++) {
@@ -420,7 +422,7 @@ public class ApplyProtocolUI {
      */
     public String getTargetName(Integer id) {
     	try {
-			return service.getObservationTargetLabel(id);
+			return cs.getObservationTargetLabel(id);
 		} catch (Exception e) {
 			return id.toString();
 		}
@@ -491,7 +493,7 @@ public class ApplyProtocolUI {
     	if (valueTable.getCell(col, row) instanceof XrefInput) {
     		try {
     			int targetId = Integer.parseInt(value.toString());
-				((XrefInput) input).setValueLabel("name", service.getObservationTarget(targetId).getName());
+				((XrefInput) input).setValueLabel("name", cs.getObservationTargetById(targetId).getName());
 			} catch (Exception e) {
 				// Do nothing, no value will be set
 			}
