@@ -18,6 +18,7 @@
 package ${package};
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 
 <#if !entity.abstract>
 import java.util.Vector;
@@ -214,6 +215,14 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	
 	// member variables (including setters.getters for interface)
 	<#foreach field in entity.getImplementedFields()>
+	<#if field.type == "string" && field.size?exists>
+	@Size(field.size)
+	</#if> 
+
+	<#if field.annotations?exists>
+	${field.annotations}
+	</#if>
+
 	//${field.description}[type=${field.type}]
 	<#if !isPrimaryKey(field,entity) || !entity.hasAncestor()>
  			<#if isPrimaryKey(field,entity) && !entity.hasAncestor()>
@@ -230,7 +239,6 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
     	</#if>
         <#if field.type == "mref">
 			<#assign multipleXrefs = entity.getNumberOfReferencesTo(field.xrefEntity)/>
-			        
 	@ManyToMany(/*cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/)
 	@JoinColumn(name="${SqlName(field)}", insertable=true, updatable=true, nullable=${field.isNillable()?string})
 			<#if multipleXrefs &gt; 1>
