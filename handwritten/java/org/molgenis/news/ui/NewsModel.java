@@ -7,32 +7,62 @@
 
 package org.molgenis.news.ui;
 
-import java.util.Date;
+import java.util.List;
 
 import org.molgenis.framework.ui.EasyPluginModel;
+import org.molgenis.news.MolgenisNews;
 
-/**
- * NewsModel takes care of all state and it can have helper methods to query the database.
- * It should not contain layout or application logic which are solved in View and Controller.
- * @See org.molgenis.framework.ui.ScreenController for available services.
- */
 public class NewsModel extends EasyPluginModel
 {
-	//a system veriable that is needed by tomcat
-	private static final long serialVersionUID = 1L;
-	//this string can be referenced from NewsView.ftl template as ${model.helloWorld}
-	public String helloWorld = "hello World";
-	//this date can be referenced from NewsView.ftl template as ${model.date}
-	public Date date = new Date();
-	
-	//another example, you can also use getInvestigations() and setInvestigations(...)
-	//public List<Investigation> investigations = new ArrayList<Investigation>();
+	private static final long serialVersionUID = 1L; //a system veriable that is needed by tomcat
+	protected final int NUM_NEWS               = 5; // how many news to be shown in "top news" mode?
+	private String action                      = "init";
+	private List<MolgenisNews> allNews;
+	private List<MolgenisNews> topNews;
+	private MolgenisNews newsItem;
 
 	public NewsModel(News controller)
 	{
-		//each Model can access the controller to notify it when needed.
 		super(controller);
 	}
+
+	public List<MolgenisNews> getAllNews()
+	{
+		return allNews;
+	}
+
+	public void setAllNews(List<MolgenisNews> news)
+	{
+		this.allNews = news;
+	}
+
+	public List<MolgenisNews> getTopNews()
+	{
+		return topNews;
+	}
+
+	public void setTopNews(List<MolgenisNews> topNews)
+	{
+		this.topNews = topNews;
+	}
+
+	public MolgenisNews getNewsItem()
+	{
+		return newsItem;
+	}
+
+	public void setNewsItem(MolgenisNews newsItem)
+	{
+		this.newsItem = newsItem;
+	}
+
+	public String getAction()
+	{
+		return this.action;
+	}
 	
-	
+	public void setAction(String action)
+	{
+		this.action = action;
+	}
 }

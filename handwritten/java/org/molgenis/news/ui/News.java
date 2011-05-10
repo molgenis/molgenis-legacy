@@ -7,132 +7,52 @@
 
 package org.molgenis.news.ui;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.text.ParseException;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.news.MolgenisNews;
 import org.molgenis.news.service.NewsService;
-import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class News extends PluginModel<Entity>
+public class News extends EasyPluginController<NewsModel>
 {
-
 	private static final long serialVersionUID = -7677999897948691120L;
-	private static final int NUM_NEWS          = 5; // how many news to be shown in right box?
-	private String action                      = "init";
-	private NewsService newsService;
-	private String title                       = "";
-	private List<MolgenisNews> news            = new ArrayList<MolgenisNews>();
-	private MolgenisNews newsItem;
 
 	public News(String name, ScreenController<?> parent)
 	{
-		super(name, parent);
+		super(name, null, parent);
+		this.setModel(new NewsModel(this));
+		this.setView(new FreemarkerView("News.ftl", getModel()));
 	}
 
-	@Override
-	public String getViewName()
+	public void entry(Database db, Tuple request) throws DatabaseException
 	{
-		return "org_molgenis_news_ui_News";
+		this.getModel().setAction(request.getAction());
+		NewsService service = NewsService.getInstance(db);
+		this.getModel().setNewsItem(service.getNewsById(request.getInt("id")));
 	}
 
-	@Override
-	public String getViewTemplate()
+	public void top(Database db, Tuple request)
 	{
-		return "org/molgenis/news/ui/News.ftl";
-	}
-
-	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
-		this.reload(db);
-
-		try
-		{
-			this.action = request.getAction();
-
-			if ("entry".equals(this.action))
-			{
-				this.title    = "Updates of the database, both user features and insertion of new data, will be announced on this page. All news items are stored in the news archive.<hr/><br/>";
-				this.newsItem = this.newsService.getNewsById(request.getInt("id"));
-			}
-			else if ("top".equals(this.action))
-			{
-				this.title    = "";
-				this.news     = this.newsService.getAllNews(NUM_NEWS);
-			}
-			else if ("all".equals(this.action))
-			{
-				this.title    = "Updates of the database, both user features and insertion of new data, will be announced on this page. All news items are stored in the news archive.<hr/><br/>";
-				this.news     = this.newsService.getAllNews();
-			}
-			else
-			{
-				this.action   = "init";
-				this.reload(db);
-			}
-		}
-		catch(Exception e)
-		{
-			logger.error(e.toString());
-		}
-	}
-
-	@Override
-	public void reload(Database db)
-	{
-		this.newsService = NewsService.getInstance(db);
-		try
-		{
-			if (!"View".equals(this.getParent().getName()))
-			{
-				this.action = "top";
-				this.title  = "";
-				this.news   = this.newsService.getAllNews(News.NUM_NEWS);
-			}
-			if ("init".equals(this.action))
-			{
-				this.title = "Updates of the database, both user features and insertion of new data, will be announced on this page. All news items are stored in the news archive.<hr/><br/>";
-				this.news  = this.newsService.getAllNews();
-			}
-		}
-		catch (Exception e)
-		{
-			logger.error(e.toString());
-		}
+		this.getModel().setAction(request.getAction());
+		// rest will be done by reload()
 	}
 	
+	public void all(Database db, Tuple request) throws DatabaseException, ParseException
+	{
+		this.getModel().setAction(request.getAction());
+		NewsService service = NewsService.getInstance(db);
+		this.getModel().setAllNews(service.getAllNews());
+	}
+
 	@Override
-	public boolean isVisible()
+	public void reload(Database db) throws DatabaseException, ParseException
 	{
-		return true;
-	}
-	
-	public String getAction()
-	{
-		return this.action;
-	}
-
-	public String getTitle()
-	{
-		return this.title;
-	}
-
-	public List<MolgenisNews> getNews()
-	{
-		return this.news;
-	}
-	
-	public MolgenisNews getNewsItem()
-	{
-		return this.newsItem;
-	}
-
-	public static int getNumNews() {
-		return NUM_NEWS;
+		// default is to load a predefined number of the newest news
+		NewsService service = NewsService.getInstance(db);
+		this.getModel().setTopNews(service.getAllNews(this.getModel().NUM_NEWS));
 	}
 }
