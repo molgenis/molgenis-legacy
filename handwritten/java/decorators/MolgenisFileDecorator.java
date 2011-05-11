@@ -281,7 +281,7 @@ public class MolgenisFileDecorator<E extends MolgenisFile> extends MappingDecora
 					// attempt delete, only catch FileNotFound (this is okay)
 					MolgenisFileHandler mfh = new MolgenisFileHandler(this.getDatabase());
 					mfh.deleteFile(mf);
-					System.out.println("Deleted MolgenisFile: " + mf.toString());
+					//System.out.println("Deleted MolgenisFile: " + mf.toString());
 				}
 				catch (FileNotFoundException fnfe)
 				{
@@ -291,8 +291,9 @@ public class MolgenisFileDecorator<E extends MolgenisFile> extends MappingDecora
 					// caught here ofcourse (eg. DatabaseException,
 					// InterruptedException, TypeUnknownException,
 					// XGAPStorageException, IOException)
-					System.out.println("Trying to delete '" + mf.getName()
-							+ "', but file not found. Exception caught: " + fnfe.getMessage());
+					
+					//System.out.println("Trying to delete '" + mf.getName()
+					//		+ "', but file not found. Exception caught: " + fnfe.getMessage());
 				}
 
 				// update record for just this file

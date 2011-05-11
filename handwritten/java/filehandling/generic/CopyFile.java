@@ -30,7 +30,7 @@ public class CopyFile {
 	public static Long copyFile(File srcFile, File destFile)
 		throws IOException {
 		
-		System.out.println("Copying " + srcFile.getAbsolutePath() + " to " + destFile.getAbsolutePath());
+		//System.out.println("Copying " + srcFile.getAbsolutePath() + " to " + destFile.getAbsolutePath());
 		
 		if (!srcFile.exists())
 		{
@@ -61,7 +61,7 @@ public class CopyFile {
 		in.close();
 		if (clock) {
 			millis = System.currentTimeMillis() - millis;
-			System.out.println("File copied in " + (millis/1000L) + " seconds");
+			//System.out.println("File copied in " + (millis/1000L) + " seconds");
 		}
 		if (verify) {
 			return new Long(checksum.getValue());

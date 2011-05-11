@@ -294,7 +294,7 @@ public class BinaryDataMatrixWriter
 				dos.write(textElementLenghts);
 			}
 		}
-		System.out.println("Writing elements..");
+		logger.info("Writing elements..");
 		// writing the actual elements
 		if (data.getValueType().equals("Text"))
 		{

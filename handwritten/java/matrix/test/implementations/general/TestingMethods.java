@@ -216,9 +216,7 @@ public class TestingMethods
 		{
 			for (int col = 0; col < cols; col++)
 			{
-				// bm.get(row, col);
-				//TODO: Danny: Unused ?
-				/*Object o = */m.getElement(row, col);
+				m.getElement(row, col);
 			}
 		}
 		long end = System.currentTimeMillis();
@@ -235,9 +233,7 @@ public class TestingMethods
 		int rows = m.getNumberOfRows();
 		for (int row = 0; row < rows; row++)
 		{
-			// bm.row(row);
-			//TODO: Danny: Unused ?
-			/*Object[] o = */m.getRow(row);
+			m.getRow(row);
 		}
 		long end = System.currentTimeMillis();
 		long time = (end - start);
@@ -253,9 +249,7 @@ public class TestingMethods
 		int cols = m.getNumberOfCols();
 		for (int col = 0; col < cols; col++)
 		{
-			// bm.col(col);
-			//TODO: Danny: Unused ?
-			/*Object[] o = */m.getCol(col);
+			m.getCol(col);
 		}
 		long end = System.currentTimeMillis();
 		long time = (end - start);

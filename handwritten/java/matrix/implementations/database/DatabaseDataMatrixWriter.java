@@ -27,7 +27,6 @@ public class DatabaseDataMatrixWriter
 	 */
 	public DatabaseDataMatrixWriter(Data dataMatrix, File inputFile, Database db) throws Exception
 	{
-		System.out.println("DatabaseDataMatrixWriterFromTmpFile wrapper called");
 		List<File> inputFiles = new ArrayList<File>();
 		List<Data> dataList = new ArrayList<Data>();
 		inputFiles.add(inputFile);
@@ -37,7 +36,6 @@ public class DatabaseDataMatrixWriter
 
 	public DatabaseDataMatrixWriter(Data dataMatrix, File inputFile, Database db, boolean testMode) throws Exception
 	{
-		System.out.println("DatabaseMatrixWriter simple wrapper called");
 		List<File> inputFiles = new ArrayList<File>();
 		List<Data> dataList = new ArrayList<Data>();
 		inputFiles.add(inputFile);
@@ -47,7 +45,6 @@ public class DatabaseDataMatrixWriter
 
 	public DatabaseDataMatrixWriter(List<Data> dataList, File inputDir, Database db, boolean testMode) throws Exception
 	{
-		System.out.println("DatabaseMatrixWriter fileDir wrapper called");
 		List<File> inputFiles = new ArrayList<File>();
 		for (File input : inputDir.listFiles())
 		{
@@ -70,9 +67,6 @@ public class DatabaseDataMatrixWriter
 	public DatabaseDataMatrixWriter(List<Data> dataList, List<File> inputFiles, Database db, boolean testMode,
 			boolean fromTmpFile) throws Exception
 	{
-
-		System.out.println("DatabaseMatrixWriter called");
-
 		int index = 0;
 		for (Data dataMatrix : dataList)
 		{
@@ -97,7 +91,7 @@ public class DatabaseDataMatrixWriter
 				logger.info(outcome);
 				if (!testMode)
 				{
-					System.out.println("DatabaseMatrixWriter db.commitTx()");
+					logger.info("DatabaseMatrixWriter db.commitTx()");
 					db.commitTx();
 				}
 				else

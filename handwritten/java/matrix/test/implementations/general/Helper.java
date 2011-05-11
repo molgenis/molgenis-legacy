@@ -271,6 +271,7 @@ public class Helper
 
 		if (data.getValueType().equals("Decimal"))
 		{
+			//decimal data
 			elements = new Object[totalRows][totalCols];
 			for (int i = 0; i < totalRows; i++)
 			{
@@ -304,7 +305,7 @@ public class Helper
 		}
 		else
 		{
-			// for decimal, swap row with col dimension size
+			// for text data, swap row with col dimension size
 			elements = new Object[totalCols][totalRows];
 			for (int i = 0; i < totalCols; i++)
 			{
@@ -340,7 +341,6 @@ public class Helper
 		out.close();
 
 		MemoryDataMatrixInstance<Object> mm = new MemoryDataMatrixInstance<Object>(rowNames, colNames, elements, data);
-		mm.changeDataName(data.getName());
 
 		return mm;
 	}
@@ -365,6 +365,7 @@ public class Helper
 
 		if (data.getValueType().equals("Decimal"))
 		{
+			//decimal data
 			for (int i = 0; i < totalRows; i++)
 			{
 				out.write(rowList.get(i).get("name").toString());
@@ -392,7 +393,7 @@ public class Helper
 		}
 		else
 		{
-			// for decimal, swap row with col dimension size
+			// for text data, swap row with col dimension size
 			for (int i = 0; i < totalCols; i++)
 			{
 				out.write(rowList.get(i).get("name").toString());
@@ -428,17 +429,17 @@ public class Helper
 			boolean fixedTextLength, boolean sparse, boolean runRegressionTests, boolean runPerformanceTests,
 			boolean skipPerElement)
 	{
-		System.out.println("###############################");
-		System.out.println("Test" + source + "Matrix starting with settings:");
-		System.out.println("* matrixDimension1 = " + matrixDimension1);
-		System.out.println("* matrixDimension2 = " + matrixDimension2);
-		System.out.println("* maxTextLength = " + maxTextLength);
-		System.out.println("* fixedTextLength = " + fixedTextLength);
-		System.out.println("* sparse = " + sparse);
-		System.out.println("* runRegressionTests = " + runRegressionTests);
-		System.out.println("* runPerformanceTests = " + runPerformanceTests);
-		System.out.println("* skipPerElement = " + skipPerElement);
-		System.out.println("###############################");
+		System.out.println("##################################################");
+		System.out.println("## Test" + source + "Matrix" + "\tstarting with settings: ##");
+		System.out.println("##################################################");
+		System.out.println("matrixDimension1 <- " + matrixDimension1);
+		System.out.println("matrixDimension2 <- " + matrixDimension2);
+		System.out.println("maxTextLength <- " + maxTextLength);
+		System.out.println("fixedTextLength <- " + Boolean.toString(fixedTextLength).toUpperCase());
+		System.out.println("sparse <- " + Boolean.toString(sparse).toUpperCase());
+		System.out.println("runRegressionTests <- " + Boolean.toString(runRegressionTests).toUpperCase());
+		System.out.println("runPerformanceTests <- " + Boolean.toString(runPerformanceTests).toUpperCase());
+		System.out.println("skipPerElement <- " + Boolean.toString(skipPerElement).toUpperCase());
 	}
 
 	public static void printForR(TestMatrix tm)
@@ -577,5 +578,92 @@ public class Helper
 	public static boolean storageDirsAreAvailable(Database db) throws Exception
 	{
 		return db.getFileSourceHelper().getFilesource(true) != null ? true : false;
+	}
+
+	public long timeMemoryMatrixCreation(Data data, Database db, int totalRows, int totalCols, int maxStringLength, boolean sparse, boolean fixedTextLength) throws DatabaseException, MatrixReadException
+	{
+		long storeTimerStart = System.currentTimeMillis();
+		
+		List<String> colNames = new ArrayList<String>();
+		List<String> rowNames = new ArrayList<String>();
+
+		Object[][] elements = null;
+
+		List<? extends Entity> colList = db.find(db.getClassForName(data.getFeatureType()));
+		List<? extends Entity> rowList = db.find(db.getClassForName(data.getTargetType()));
+		
+		for (Entity e : colList)
+		{
+			colNames.add(e.get("name").toString());
+		}
+		
+		for (Entity e : rowList)
+		{
+			rowNames.add(e.get("name").toString());
+		}
+
+		if (data.getValueType().equals("Decimal"))
+		{
+			//decimal data
+			elements = new Object[totalRows][totalCols];
+			for (int i = 0; i < totalRows; i++)
+			{
+				for (int j = 0; j < totalCols; j++)
+				{
+					if (sparse)
+					{
+						if (Util.getRandomBoolean() == true)
+						{
+							double rand = Util.getRandomDouble();
+							elements[i][j] = rand;
+						}
+						else
+						{
+							elements[i][j] = null;
+						}
+					}
+					else
+					{
+						double rand = Util.getRandomDouble();
+						elements[i][j] = rand;
+					}
+				}
+			}
+		}
+		else
+		{
+			// for text data, swap row with col dimension size
+			elements = new Object[totalCols][totalRows];
+			for (int i = 0; i < totalCols; i++)
+			{
+				for (int j = 0; j < totalRows; j++)
+				{
+					if (sparse)
+					{
+						if (Util.getRandomBoolean() == true)
+						{
+							String rand = Util.getRandomString(maxStringLength, fixedTextLength);
+							elements[i][j] = rand;
+						}
+						else
+						{
+							elements[i][j] = null;
+						}
+					}
+					else
+					{
+						String rand = Util.getRandomString(maxStringLength, fixedTextLength);
+						elements[i][j] = rand;
+					}
+				}
+			}
+		}
+		
+		//new MemoryDataMatrixInstance<Object>(rowNames, colNames, elements, data);
+		
+		long storeTimerStop = System.currentTimeMillis();
+		long time = storeTimerStop - storeTimerStart;
+			
+		return time;
 	}
 }

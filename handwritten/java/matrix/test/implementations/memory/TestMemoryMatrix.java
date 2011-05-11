@@ -61,15 +61,20 @@ public class TestMemoryMatrix extends TestCase
 		//set storage of elements to 'Database' because there is no 'Memory'
 		//we never write the matrices to this storage though :)
 		h.prepareDatabaseAndFiles("Database", matrixDimension1, matrixDimension2, maxTextLength, fixedTextLength, sparse);
-
+		
 		List<MemoryDataMatrixInstance<Object>> mmList = new ArrayList<MemoryDataMatrixInstance<Object>>();
 
+		long totalWriteTime = 0l;
 		for (Data data : h.getDataList())
 		{
-			//MemoryMatrix mm = (MemoryMatrix) new CreateInstance(db, data).getInstance();
 			mmList.add(h.createAndWriteRandomMemoryMatrix(h.getInputFilesDir(), data, db, matrixDimension2, matrixDimension1,
 					maxTextLength, sparse, fixedTextLength));
+			totalWriteTime += h.timeMemoryMatrixCreation(data, db, matrixDimension1, matrixDimension2, maxTextLength, sparse, fixedTextLength);
 		}
+		int elems = ((matrixDimension1 * matrixDimension2) * 2);
+		int elemsec = (int) ((elems) / (totalWriteTime / 1000.0));
+		
+		this.performanceResults.put("Write", elemsec);
 
 		if (runRegressionTests)
 		{

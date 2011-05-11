@@ -31,21 +31,6 @@ public class DataElementImportByFile
 	private final static int BATCH_SIZE = 10000;
 	private Database db = null;
 
-	// PrintWriter logfile;
-
-	// public DataElementImportByFile(Data selectedMatrix, File dataElements,
-	// JDBCDatabase db, boolean addNewDataObject, boolean allowAdding,
-	// boolean onlyHead) throws Exception
-	// {
-	// // logfile = new PrintWriter(new BufferedWriter(new
-	// //
-	// FileWriter("D:/data/xgapdata/logs/"+selectedMatrix.getName()+"-logfile.txt")));
-	// ImportByFile(dataElements, selectedMatrix, addNewDataObject, allowAdding,
-	// onlyHead);
-	// // logfile.flush();
-	// // logfile.close();
-	// }
-
 	public DataElementImportByFile(Database db)
 	{
 		this.db = db;
@@ -67,12 +52,9 @@ public class DataElementImportByFile
 
 			addedInvestigationElements = "";
 
-			// logfile.write("Dimensionelement status:\n");
-
 			// Extract row/col names needed from file
 			CsvFileReader csvFile = new CsvFileReader(file);
 
-			// List<Integer> rowIds = getIds(selectedMatrix, "row", csvFile);
 			// note that the first colname is empty because it is above the
 			// rownames
 			final List<String> colNames = csvFile.colnames();
@@ -111,8 +93,6 @@ public class DataElementImportByFile
 			Class rowClass = null;
 			if (selectedMatrix.getTargetType().equals("AUTO_DETECT"))
 			{
-				// logger.debug("getTargetType().equals(AUTO_DETECT)");
-
 				// get first row element, query db and find the type
 				// FIXME: does ObservationTarget work for this ?
 				ObservationTarget firstRowElem = null;
@@ -143,8 +123,7 @@ public class DataElementImportByFile
 				selectedMatrix.setValueType(probeFirstFileElement(file));
 			}
 
-			// TODO: add check whether it already exists in the db? is this
-			// allowed?
+			// TODO: add check whether it already exists in the db? is this allowed?
 			if (addNewDataObject)
 			{
 				if (db.find(Data.class, new QueryRule("name", Operator.EQUALS, selectedMatrix.getName()),
@@ -179,19 +158,10 @@ public class DataElementImportByFile
 				}
 			}
 
-			System.out.println("feature Class = " + colClass.getCanonicalName());
-			System.out.println("target Class = " + rowClass.getCanonicalName());
-
 			final Map<String, Integer> colIds = getDimensionIds(allowAdding, selectedMatrix, colClass, colNames
 					.subList(1, colNames.size()));
 
 			final Map<String, Integer> rowIds = getDimensionIds(allowAdding, selectedMatrix, rowClass, rowNames);
-
-			// //logger.debug("rowIds: " + rowIds);
-			// //logger.debug("colIds size: " + colIds.size() + "\ncolNames: " +
-			// colNames.size());
-			// //logger.debug("rowIds size: " + rowIds.size() + "\nrowNames: " +
-			// rowNames.size());
 
 			// ADD DATA elements
 			final List<TextDataElement> tde = new ArrayList<TextDataElement>();
@@ -215,26 +185,6 @@ public class DataElementImportByFile
 						{
 							// //logger.debug("creating TextDataElement");
 							TextDataElement e = new TextDataElement();
-
-							// System.out.println("target: " +
-							// rowNames.get(row_index.getValue()).toLowerCase()
-							// + ", id = " + rowIds.get(
-							// rowNames.get(row_index.getValue()).toLowerCase()));
-							// System.out.println("feature: " +
-							// colNames.get(column_index).toLowerCase() +
-							// ", id = " +
-							// colIds.get(colNames.get(column_index).toLowerCase()));
-							//						
-							// for(ObservableFeature f :
-							// db.find(ObservableFeature.class)){
-							// System.out.println("ObservableFeature in db: " +
-							// f.toString());
-							// }
-							// for(ObservationTarget f :
-							// db.find(ObservationTarget.class)){
-							// System.out.println("ObservationTarget in db: " +
-							// f.toString());
-							// }
 							e.setInvestigation(inv);
 							e.setTarget(rowIds.get(rowNames.get(row_index.getValue()).toLowerCase()));
 							e.setFeature(colIds.get(colNames.get(column_index).toLowerCase()));
@@ -257,26 +207,6 @@ public class DataElementImportByFile
 						{
 							// //logger.debug("creating DecimalDataElement");
 							DecimalDataElement e = new DecimalDataElement();
-
-							// System.out.println("target: " +
-							// rowNames.get(row_index.getValue()).toLowerCase()
-							// + ", id = " + rowIds.get(
-							// rowNames.get(row_index.getValue()).toLowerCase()));
-							// System.out.println("feature: " +
-							// colNames.get(column_index).toLowerCase() +
-							// ", id = " +
-							// colIds.get(colNames.get(column_index).toLowerCase()));
-							//						
-							// for(ObservableFeature f :
-							// db.find(ObservableFeature.class)){
-							// System.out.println("ObservableFeature in db: " +
-							// f.toString());
-							// }
-							// for(ObservationTarget f :
-							// db.find(ObservationTarget.class)){
-							// System.out.println("ObservationTarget in db: " +
-							// f.toString());
-							// }
 							e.setInvestigation(inv);
 							e.setTarget(rowIds.get(rowNames.get(row_index.getValue()).toLowerCase()));
 							e.setFeature(colIds.get(colNames.get(column_index).toLowerCase()));
@@ -293,10 +223,6 @@ public class DataElementImportByFile
 								dde.clear();
 							}
 
-						}
-						else
-						{
-							// angst
 						}
 					}
 
@@ -421,28 +347,12 @@ public class DataElementImportByFile
 				presentNames.add(rawPresentName.getName().toLowerCase());
 			}
 
-			// logfile.write("\tNeedednames size = " +
-			// batchCopyNeededNames.size() + "\n");
-			// logfile.write("\tPresentnames size = " + presentNames.size() +
-			// "\n");
-
-			// logfile.write("\tMissing elements ("+(batchCopyNeededNames.size()-presentNames.size())+"):\n");
-
 			// find the difference to see which names are absent
 			for (String needed : batchCopyNeededNames)
 			{
 				if (!presentNames.contains(needed.toLowerCase()))
 				{
 					absentNames.add(needed);
-					System.out.println("*** need: " + needed);
-					// logfile.write("\t\t"+needed+"\n");
-					// //logger.debug(needed + " absent");
-					// ("FOUND ABSENT "+ needed + " "+
-					// presentNames);
-				}
-				else
-				{
-					// //logger.debug(needed + " present");
 				}
 			}
 
@@ -463,28 +373,13 @@ public class DataElementImportByFile
 				{
 					db.add(absentObjects);
 					addedInvestigationElements = createMissingElements(absentObjects);
-					// //logger.debug("added " + absentObjects.size() +
-					// " absent objects");
+					//logger.debug("added " + absentObjects.size() + absent objects");
 					absentObjects.clear();
 				}
 				else
 				{
-					// //logger.debug("List of absent objects:");
-					// for(Nameable ident : absentObjects){
-					// System.out.print(ident.getName() + ", ");
-					// }
-					// db.rollbackTx();
-					// //logger.debug("absentObjects (0) = " +
-					// absentObjects.get(0));
-
-					// throw new
-					// DatabaseException("Missing InvestigationElements but adding is NOT allowed. Details:"
-					// + makeDIV("Missing InvestigationElements",
-					// createMissingElements(absentObjects)));
-
 					throw new DatabaseException("Missing InvestigationElements: "
-							+ createMissingElements(absentObjects));
-
+					+ createMissingElements(absentObjects));
 				}
 			}
 		}
@@ -499,25 +394,7 @@ public class DataElementImportByFile
 		}
 		else if (absentObjects.size() != 0 && allowAdding == false)
 		{
-			// throw new
-			// DatabaseException("Missing InvestigationElements but adding is NOT allowed. Details:"
-			// + makeDIV("Missing InvestigationElements",
-			// createMissingElements(absentObjects)));
-
 			throw new DatabaseException("Missing InvestigationElements: " + createMissingElements(absentObjects));
-
-			// //logger.debug("List of absent objects:");
-			// for(Nameable ident : absentObjects){
-			// System.out.print(ident.getName() + ", ");
-			// }
-			// db.rollbackTx();
-			// throw new
-			// DatabaseException("Absent InvestigationElements are found but adding is NOT allowed.");
-
-		}
-		else
-		{
-			// absentObjects.size() is empty, so it doesn matter
 		}
 
 		// Now get all IDs needed and return them
