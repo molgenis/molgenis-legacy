@@ -2,6 +2,7 @@ package org.molgenis.mutation.service;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -19,7 +20,10 @@ import org.apache.regexp.RESyntaxException;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
+import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.jdbc.JDBCConnectionHelper;
+import org.molgenis.framework.db.jdbc.JDBCDatabase;
+import org.molgenis.framework.db.jpa.JpaDatabase;
 
 import org.molgenis.mutation.Exon;
 import org.molgenis.mutation.MutationGene;
@@ -300,22 +304,6 @@ public class MutationService implements Serializable
 	}
 
 	/**
-	 * Get number of unpublished mutations.
-	 * @return number of unpublished mutations
-	 * @throws DatabaseException
-	 */
-	public int getNumUnpublishedMutations() throws DatabaseException
-	{
-//		//TODO: Outer join is faster, but is syntax standardized?
-//		return this.db.sql("SELECT DISTINCT id FROM Mutation WHERE NOT EXISTS (SELECT id FROM Patient, Patient_publications WHERE Patient.id = Patient_publications.Patient AND (Patient.Mutation1 = Mutation.id OR Patient.Mutation2 = Mutation.id))").size();
-		
-		
-		
-		javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT COUNT(id) FROM Mutation WHERE NOT EXISTS (SELECT id FROM Patient, Patient_publications WHERE Patient.id = Patient_publications.Patient AND (Patient.Mutation1 = Mutation.id OR Patient.Mutation2 = Mutation.id))");
-		return ((Long)q.getSingleResult()).intValue();
-	}
-
-	/**
 	 * Get the biggest identifier without the leading 'P'
 	 * @return biggest identifier without the leading 'P'
 	 * @throws DatabaseException
@@ -351,17 +339,23 @@ public class MutationService implements Serializable
 	 */
 	public List<String> getConsequences() throws SQLException, DatabaseException
 	{
-//		ArrayList<String> consequences = new ArrayList<String>();
-//		
-//		ResultSet rs = db.executeQuery("SELECT DISTINCT consequence FROM Mutation", (QueryRule[]) null);
-//		while (rs.next())
-//			consequences.add(rs.getString(1));
-//
-//		return consequences;
+		if (this.db instanceof JDBCDatabase)
+		{
+			ArrayList<String> consequences = new ArrayList<String>();
 		
-		
-		javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT DISTINCT consequence FROM Mutation");
-		return q.getResultList();
+			ResultSet rs = ((JDBCDatabase) this.db).executeQuery("SELECT DISTINCT consequence FROM Mutation", (QueryRule[]) null);
+			while (rs.next())
+				consequences.add(rs.getString(1));
+
+			return consequences;
+		}
+		else if (this.db instanceof JpaDatabase)
+		{
+			javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT DISTINCT consequence FROM Mutation");
+			return q.getResultList();
+		}
+		else
+			throw new DatabaseException("Unsupported database mapper");
 	}
 
 	/**
@@ -369,21 +363,26 @@ public class MutationService implements Serializable
 	 * @return mutation types
 	 * @throws DatabaseException 
 	 * @throws SQLException 
-	 * @throws Exception
 	 */
 	public List<String> getMutationTypes() throws SQLException, DatabaseException
 	{
-//		ArrayList<String> types = new ArrayList<String>();
-//
-//		ResultSet rs = db.executeQuery("SELECT DISTINCT type_ FROM Mutation", (QueryRule[]) null);
-//		while (rs.next())
-//			types.add(rs.getString(1));
-//
-//		return types;
-		
-		
-		javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT DISTINCT type_ FROM Mutation");
-		return q.getResultList();
+		if (this.db instanceof JDBCDatabase)
+		{
+			ArrayList<String> types = new ArrayList<String>();
+
+			ResultSet rs            = ((JDBCDatabase) this.db).executeQuery("SELECT DISTINCT type_ FROM Mutation", (QueryRule[]) null);
+			while (rs.next())
+				types.add(rs.getString(1));
+
+			return types;
+		}
+		else if (this.db instanceof JpaDatabase)
+		{
+			javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT DISTINCT type_ FROM Mutation");
+			return q.getResultList();
+		}
+		else
+			throw new DatabaseException("Unsupported database mapper");
 	}
 
 	/**
