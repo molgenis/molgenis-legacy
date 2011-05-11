@@ -37,32 +37,9 @@
 <td><a href="molgenis.do?__target=${screen.name}&__action=showExon&exon_id=${mutationSummaryVO.mutation.getExon_Id()}#results">${mutationSummaryVO.mutation.getExon_Name()}</a></td>
 <td>${mutationSummaryVO.mutation.getConsequence()}</td>
 <td>${mutationSummaryVO.mutation.getInheritance()}</td>
-<#--
-<td><a href="molgenis.do?__target=${screen.name}&__action=showProteinDomain&domain_id=${mutationSummaryVO.proteinDomain.id?c}#exon${mutationSummaryVO.mutation.exon}">${mutationSummaryVO.proteinDomain.name}</a></td>
-<td><#if mutationSummaryVO.mutation.reportedSNP??>${mutationSummaryVO.mutation.reportedSNP?string("yes", "no")}</#if></td>
--->
 <td></td>
 <td></td>
 </tr>
-
-
-
-
-
-<#--
-<#if mutationSummaryVOs?size == 1>
-	<#assign imgSrc     = "res/close.png">
-	<#assign display    = "table-row-group">
-<#else>
-	<#assign imgSrc     = "res/open.png">
-	<#assign display    = "none">
-</#if>
-<tbody id="mut${mutationSummaryVO.mutation.id?c}" style="display:${display}">
--->
-
-
-
-
 
 <tr class="tableheader">
 </tr>
@@ -102,7 +79,7 @@
 <#if patientSummaryVO.publications?? && patientSummaryVO.publications?size &gt; 0>
 <#list patientSummaryVO.publications as publication>
 <a href="${patientSummaryVO.pubmedURL}${publication.getPubmedID_Name()}" target="_new">${publication.getTitle()}</a></br>
-</#list><#--<a href="${patientSummaryVO.publication.pdf}" target="_new"><img src="generated-res/img/pdf.gif"></a>-->
+</#list>
 <#elseif patientSummaryVO.submitter??>
 Unpublished<br/>
 ${patientSummaryVO.submitter.getDepartment()}, ${patientSummaryVO.submitter.getInstitute()}, ${patientSummaryVO.submitter.getCity()}, ${patientSummaryVO.submitter.getCountry()}
@@ -110,26 +87,6 @@ ${patientSummaryVO.submitter.getDepartment()}, ${patientSummaryVO.submitter.getI
 </td>
 </tr>
 </#list>
-
-
-
-
-
-<#--
-</tbody>
-
-<tr class="second_mutation">
-<td colspan="11">
-<img id="mutimg${mutationSummaryVO.mutation.id?c}" src="${imgSrc}" onclick="toggleTr('mut${mutationSummaryVO.mutation.id?c}', 'mutimg${mutationSummaryVO.mutation.id?c}');">
-Show/hide associated phenotypes
-</td>
-</tr>
--->
-
-
-
-
-
 </#list>
 </table>
 </p>
