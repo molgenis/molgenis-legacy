@@ -23,17 +23,15 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 
-import app.JDBCDatabase;
-
 public class PermissionManagementService {
 
-    private JDBCDatabase db = null;
+    private Database db                                                    = null;
 	private static PermissionManagementService permissionManagementService = null;
 	
 	// private constructor, use singleton instance
 	private PermissionManagementService(Database db)
 	{
-		this.db = (JDBCDatabase) db;
+		this.db = db;
 	}
 	
 	/**

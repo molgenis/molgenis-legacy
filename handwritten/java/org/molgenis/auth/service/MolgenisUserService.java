@@ -17,9 +17,6 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 
-import app.JDBCDatabase;
-
-
 public class MolgenisUserService
 {
 	private Database db                                    = null;
