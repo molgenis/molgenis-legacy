@@ -2,7 +2,6 @@ package matrix.general;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,19 +24,23 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.ValueLabel;
 
 import app.JDBCDatabase;
+import app.servlet.MolgenisServlet;
 import filehandling.generic.MolgenisFileHandler;
 
+/**
+ * Class to handle the coupling of 'Data' objects and storage of the actual data
+ * values
+ * 
+ * @author joerivandervelde
+ * 
+ */
 public class DataMatrixHandler extends MolgenisFileHandler
 {
 
-	// private MolgenisFileHandler mfh = null;
-	// private Database db = null;
-
 	public DataMatrixHandler(Database db)
 	{
-		// this.db = db;
-		// this.mfh = new MolgenisFileHandler(db);
 		super(db);
+		this.setVariantId(MolgenisServlet.getMolgenisVariantID());
 	}
 
 	/**
@@ -50,12 +53,7 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 */
 	public AbstractDataMatrixInstance<Object> createInstance(Data data) throws Exception
 	{
-
-		// get the MolgenisFile that belongs to this matrix
-
-		// MolgenisFileHandler mfh = new MolgenisFileHandler(db);
 		AbstractDataMatrixInstance<Object> instance = null;
-
 		File source = null;
 
 		if (data.getStorage().equals("Database"))
@@ -64,27 +62,22 @@ public class DataMatrixHandler extends MolgenisFileHandler
 		}
 		else
 		{
-
 			source = findSourceFile(data);
-
 			if (source == null)
 			{
 				throw new FileNotFoundException("No MolgenisFile found referring to DataMatrix '" + data.getName()
 						+ "'");
 			}
-
 			if (data.getStorage().equals("Binary"))
 			{
 				instance = new BinaryDataMatrixInstance(source);
 			}
-
 			if (data.getStorage().equals("CSV"))
 			{
 				instance = new CSVDataMatrixInstance(data, source);
 			}
 		}
 		return instance;
-
 	}
 
 	/**
@@ -97,7 +90,7 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * then remove source, then remove 'Data'.
 	 * 
 	 * @param dm
-	 * @throws Exception 
+	 * @throws Exception
 	 * @throws XGAPStorageException
 	 */
 	public void deleteDataMatrix(Data dm) throws Exception
@@ -118,7 +111,7 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * MolgenisFile subclass. (ie. 'Binary', 'CSV')
 	 * 
 	 * @param dm
-	 * @throws Exception 
+	 * @throws Exception
 	 * @throws XGAPStorageException
 	 */
 	public void deleteDataMatrixSource(Data dm) throws Exception
@@ -159,7 +152,7 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * 
 	 * @param data
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 * @throws XGAPStorageException
 	 */
 	public boolean hasSource(Data data) throws Exception
@@ -188,7 +181,7 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * @param data
 	 * @param source
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 * @throws XGAPStorageException
 	 */
 	public boolean isDataStoredIn(Data data, String source) throws Exception
@@ -215,7 +208,7 @@ public class DataMatrixHandler extends MolgenisFileHandler
 			List<? extends Entity> test = this.getDb().find(this.getDb().getClassForName(matrixSource));
 			for (Entity e : test)
 			{
-				//used to be: if ((e.get("data_name").toString()).equals(data.getName()))
+				// used to be: if ((e.get("data_name").toString()).equals(data.getName()))
 				if (new Integer(e.get("data").toString()).intValue() == data.getId().intValue())
 				{
 					try
@@ -310,7 +303,6 @@ public class DataMatrixHandler extends MolgenisFileHandler
 		List<? extends Entity> test = this.getDb().find(this.getDb().getClassForName(matrixSource));
 		for (Entity e : test)
 		{
-			System.out.println("looking at: " +e.toString());
 			if (Integer.valueOf(e.get("data").toString()).intValue() == dm.getId().intValue())
 			{
 				QueryRule mfId = new QueryRule("id", Operator.EQUALS, e.get(e.getIdField()));
@@ -326,20 +318,16 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * 
 	 * @param data
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 * @throws XGAPStorageException
 	 */
 	public File findSourceFile(Data data) throws Exception
 	{
 		List<? extends Entity> mfSubclasses = this.getDb().find(
 				this.getDb().getClassForName(data.getStorage() + "DataMatrix"));
-
-		System.out.println("DMH, mfSubclasses for " + data.getStorage() + "DataMatrix" + " = " + mfSubclasses.size());
-
 		for (Entity e : mfSubclasses)
 		{
-			System.out.println("e = " + e);
-			//used to be: if ((e.get("data_name").toString()).equals(data.getName()))
+			// used to be: if ((e.get("data_name").toString()).equals(data.getName()))
 			if (new Integer(e.get("data").toString()).intValue() == data.getId().intValue())
 			{
 				return this.getFile(e.get("name").toString());
@@ -355,12 +343,11 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * 
 	 * @param data
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 * @throws XGAPStorageException
 	 */
 	public String findSource(Data data) throws Exception
 	{
-		
 		ArrayList<String> options = new ArrayList<String>();
 		for (ValueLabel option : data.getStorageOptions())
 		{
@@ -377,13 +364,17 @@ public class DataMatrixHandler extends MolgenisFileHandler
 		return "null";
 	}
 
+	/**
+	 * Example usage
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception
 	{
 		Database db = new JDBCDatabase("gcc.properties");
 		DataMatrixHandler mh = new DataMatrixHandler(db);
-
 		Data dm = db.find(Data.class).get(0);
-
 		mh.isDataStoredIn(dm, "Binary");
 	}
 
