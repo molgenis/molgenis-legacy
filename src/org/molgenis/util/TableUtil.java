@@ -76,14 +76,11 @@ public class TableUtil {
 	 * @throws DatabaseException
 	 */
 	public static Object getFromTable(Database db, String tableName, String fieldName) throws DatabaseException {
-		System.out.println("** getFromTable CALLED!: tablname = "+ tableName + " field = " + fieldName);
 		JDBCDatabase db_ = (JDBCDatabase)db;
 		List<Tuple> res = db_.sql("SELECT " + fieldName + " FROM " + tableName + ";");
-		System.out.println("** RES: " + res.toString());
 		if(res.size() > 1){
 			throw new DatabaseException("More than one result");
 		}
-		System.out.println("** returning: " + res.get(0).getObject(0));
 		return res.get(0).getObject(0);
 	}
 	
@@ -98,10 +95,8 @@ public class TableUtil {
 			JDBCDatabase db_ = (JDBCDatabase)db;
 			List<Tuple> res = null;
 			if(db_.getSource().getDriverClassName().contains("hsql")){
-				System.out.println("db.getSource().getDriverClassName() " + db_.getSource().getDriverClassName());
 				res = db_.sql("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.SYSTEM_COLUMNS WHERE TABLE_NAME NOT LIKE 'SYSTEM_%';");
 			}else{
-				System.out.println("db.getSource().getDriverClassName() " + db_.getSource().getDriverClassName());
 				res = db_.sql("SHOW tables;");
 			}
 			List<String> tableNames = new ArrayList<String>(res.size());
@@ -113,15 +108,12 @@ public class TableUtil {
 				}
 			}
 			if (tableNames.contains(tableName.toLowerCase())) {
-				System.out.println("** TRUE");
 				return "true";
 			} else {
-				System.out.println("** VALS");
 				return "false";
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("** ERROR");
 			return "error";
 		}
 	}
