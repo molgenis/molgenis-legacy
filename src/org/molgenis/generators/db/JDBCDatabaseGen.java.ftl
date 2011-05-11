@@ -117,16 +117,14 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 			decoratorOverrideFolder = new File(decoratorOverrideURL.getFile().replace("%20", " "));
 		}else{
 			logger.error("Decorator override location '${decorator_overriders}' could not be loaded. Skipping override..");
-			System.err.println("Decorator override location '${decorator_overriders}' could not be loaded. Skipping override..");
 			//Were in a jar
 			try {
 				ArrayList<String> c = JarClass.getClassesFromJARFile("Application.jar","org/molgenis/xgap/decoratoroverriders");
 				for(String s : c){
 					s = s.substring(s.lastIndexOf(".")+1);
-					System.out.println(s);
 					<#list model.entities as entity><#if !entity.isAbstract()><#if entity.decorator?exists>
 					if("${entity.decorator}".substring("${entity.decorator}".lastIndexOf(".")+1).equals(s)){
-						System.out.println("${entity.decorator} overwritten for ${JavaName(entity)} entity.");
+						logger.info("${entity.decorator} overwritten for ${JavaName(entity)} entity.");
 						try{
 							Constructor constr = Class.forName("${decorator_overriders}." + s).getDeclaredConstructor(JDBCMapper.class);
 							MappingDecorator mapdec = (MappingDecorator) constr.newInstance(new ${entity.namespace}.db.${JavaName(entity)}Mapper(this));
@@ -150,11 +148,9 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 		
 		if(!decoratorOverrideFolder.exists()){
 			logger.error("Decorator override folder '${decorator_overriders}' does not exist. Skipping override..");
-			System.err.println("Decorator override folder '${decorator_overriders}' does not exist. Skipping override..");
 			return;
 		}else{
 		 	logger.info("Decorator override folder '${decorator_overriders}' found.");
-			System.out.println("Decorator override folder '${decorator_overriders}'found.");
 		}
 		
 		for(File classFile : decoratorOverrideFolder.listFiles()){
