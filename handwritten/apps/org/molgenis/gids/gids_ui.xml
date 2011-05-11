@@ -14,13 +14,13 @@
 		    
 	        <menu name="ProjectMenu">
 	        	
-		       	<form name="individuals" entity="ObservationTarget" view="list" label="Observation targets" />
+		       	<form name="individuals" entity="Individual" view="list" label="Observation targets" />
 				<form name="measurement" entity="Measurement" view="list" label="Measurements" />
 				<form name="observedvalue" entity="ObservedValue" view="list" label="Observed values" />	
 	
 	        </menu>
 	        <!--<plugin name="ListPlugin" type="plugins.listplugin.ListPlugin" label="Matrix" />-->
-	        <plugin label="Import data" name="DefImport" type="plugins.genericwizard.GenericWizard" />
+	        <!--<plugin label="Import data" name="DefImport" type="plugins.genericwizard.GenericWizard" />-->
 	    </form> 
 	     
     </menu>

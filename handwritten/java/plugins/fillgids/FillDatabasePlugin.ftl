@@ -35,11 +35,43 @@
 </div>
 
 <h2>GIDS</h2>
-<div id="loaddirectorydiv" class="row">
-<label for="loadingdirectories">Choose your directory with the files:</label>
-	<input type="text" name="loadingdirectories" id="loadingdirectories" class="textbox" value="/Users/roankanninga/Documents/NewMolgenis/molgenis_apps/handwritten/java/convertors/gids/importFiles" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<input type='submit' class='addbutton' value='Loading' onclick="loadingdirectories.getText()" />
+
+<div id="readInvestigations" class="row">
+<label for="readinv">Choose your directory with the investigation files:</label>
+
+	<input style="margin-right:50px" type="file" name="readinv" id="readinv"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<input type='submit' class='addbutton' value='load investigations' onclick="__action.value='loadinv'" />
 </div>
+
+<div id="readIndividuals" class="row">
+	<label for="readind">Choose your directory with the individual files:</label>
+	<input style="margin-right:50px" type="file" name="readind" id="readind"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<input type='submit' class='addbutton' value='load individuals' onclick="__action.value='loadind'" />
+</div>
+
+<div id="readMeasurement" class="row">
+	<label for="readmeas">Choose your directory with the measurement files:</label>&nbsp;&nbsp;&nbsp;
+	<input type="file" name="readmeas" id="readmeas" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<input type='submit' class='addbutton' value='load measurement' onclick="__action.value='loadmeas'" />
+</div>
+
+<div id="readValues" class="row">
+	<label for="readval">Choose your directory with the observedvalues files:</label>
+	<input type="file" name="readval" id="readval"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<input type='submit' class='addbutton' value='load values' onclick="__action.value='loadval'" />
+</div>
+
+<div id="submitbutton" class="row">
+	<label for="submittie">Load the files into the database: </label>
+	<input type='submit' name='submittie' class='addbutton' value='load files into db' onclick="__action.value='loadAll'" />
+</div>
+
+<div id="deleteAllFromDatabase" class="row">
+	<label for="loadingdirectories">Choose your directory with the files:</label>
+	<input type='submit' class='addbutton' value='deleteDB' onclick="__action.value='deleteDB'" />
+</div>
+
+
 
 <#--<div id="ulilinetablediv" class="row">
 	<label for="ulilinetable">'Linie' (Line) table CSV export file:</label>

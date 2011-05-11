@@ -8,23 +8,40 @@
 package plugins.fillgids;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
 
+import org.molgenis.Molgenis;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.gids.GidsUpdateDatabase;
 
+import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
+import plugins.emptydb.emptyDatabase;
+import plugins.fillanimaldb.FillAnimalDB;
+
 import app.CsvImport;
+import app.JDBCDatabase;
 
 import convertors.ulidb.ConvertUliDbToPheno;
 
 public class FillDatabasePlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -5634663322794444817L;
+	
+	private File roanDir;
+	
 
 	public FillDatabasePlugin(String name, ScreenController<?> parent)
 	{
@@ -52,60 +69,129 @@ public class FillDatabasePlugin extends PluginModel<Entity>
 	public void handleRequest(Database db, Tuple request)
 	{
 		
-			
 		
-		try {
-			String folder = request.getString("loadingdirectories");
-			File dir = new File(folder);
-						
-			//logger.info("measurement: "+filename);
-			CsvImport.importAll(dir, db, null);
-				
-			
-			/*
-			
-			if( action.equals("loadUliBackgrounds") )
-			{
-				String filename = request.getString("ulibackgroundtable");
-				ConvertUliDbToPheno myLoadUliDb = new ConvertUliDbToPheno(db, this.getLogin());
-				myLoadUliDb.populateBackground(filename);
-			}
-			
-			if( action.equals("loadUliGenes") )
-			{
-				String filename = request.getString("uligenetable");
-				ConvertUliDbToPheno myLoadUliDb = new ConvertUliDbToPheno(db, this.getLogin());
-				myLoadUliDb.populateGene(filename);
-			}
-			
-			if( action.equals("loadUliLines") )
-			{
-				String filename = request.getString("ulilinetable");
-				ConvertUliDbToPheno myLoadUliDb = new ConvertUliDbToPheno(db, this.getLogin());
-				myLoadUliDb.populateLine(filename);
-			}
-			
-			if( action.equals("loadUliAnimals") )
-			{
-				String filename = request.getString("ulianimaltable");
-				ConvertUliDbToPheno myLoadUliDb = new ConvertUliDbToPheno(db, this.getLogin());
-				myLoadUliDb.populateAnimal(filename);
-				myLoadUliDb.populateProtocolApplication();
-				myLoadUliDb.populateValue(filename);
-				myLoadUliDb.parseParentRelations(filename);
-				myLoadUliDb.writeToDb();
-			}
-			*/
-			
-		} catch(Exception e) {
-			e.printStackTrace();
-			//e.g. show a message in your form
+		
+		String action = request.getString("__action");
+		
+		/*
+		if (action.equals("deleteDB") ){
+			try {
+				new emptyDatabase((JDBCDatabase) db, true);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
 		}
+		*/
+		
+		if(action.equals("loadinv")){
+			logger.info("##################################");
+		//	String filename = request.getString("readinv");
+			File bla = request.getFile("readinv");
+			
+			File moveBla = new File(roanDir + File.separator + bla.getName());
+			//move the file
+			boolean moveSuccess = bla.renameTo(moveBla);
+			if(!moveSuccess){
+				logger.error("MOVE readinv PHAIL");
+				//error oid... gaat vaak fout onder windoos!!!! java bug!!
+			}
+			
+			String originalName = request.getString("readinvOriginalFileName");
+			boolean renameSuccess = moveBla.renameTo(new File(roanDir + File.separator + originalName));
+			
+			if(!renameSuccess){
+				logger.error("RENAME readinv PHAIL");
+				//error oid... gaat vaak fout onder windoos!!!! java bug!!
+			}
+		
+			
+		//	logger.info("****** loadinv" + filename);
+		
+			
+		}
+		
+		
+		if(action.equals("loadind")){
+			File bla = request.getFile("readind");
+			File moveBla = new File(roanDir + File.separator + bla.getName());
+			//move the file
+			boolean moveSuccess = bla.renameTo(moveBla);
+			if(!moveSuccess){
+				logger.error("MOVE readind PHAIL");
+				//error oid... gaat vaak fout onder windoos!!!! java bug!!
+			}
+			
+			String originalName = request.getString("readindOriginalFileName");
+			boolean renameSuccess = moveBla.renameTo(new File(roanDir + File.separator + originalName));
+			
+			if(!renameSuccess){
+				logger.error("RENAME readind PHAIL");
+				//error oid... gaat vaak fout onder windoos!!!! java bug!!
+			}
+		
+			
+		}
+		if(action.equals("loadmeas")){
+			File bla = request.getFile("readmeas");
+			File moveBla = new File(roanDir + File.separator + bla.getName());
+			//move the file
+			boolean moveSuccess = bla.renameTo(moveBla);
+			if(!moveSuccess){
+				logger.error("MOVE readmeas PHAIL");
+				//error oid... gaat vaak fout onder windoos!!!! java bug!!
+			}
+			
+			String originalName = request.getString("readmeasOriginalFileName");
+			boolean renameSuccess = moveBla.renameTo(new File(roanDir + File.separator + originalName));
+			
+			if(!renameSuccess){
+				logger.error("RENAME readmeas PHAIL");
+				//error oid... gaat vaak fout onder windoos!!!! java bug!!
+			}
+		
+			
+		}
+		if(action.equals("loadval")){
+			File bla = request.getFile("readval");
+			File moveBla = new File(roanDir + File.separator + bla.getName());
+			//move the file
+			boolean moveSuccess = bla.renameTo(moveBla);
+			if(!moveSuccess){
+				logger.error("MOVE readval PHAIL");
+				//error oid... gaat vaak fout onder windoos!!!! java bug!!
+			}
+			
+			String originalName = request.getString("readvalOriginalFileName");
+			boolean renameSuccess = moveBla.renameTo(new File(roanDir + File.separator + originalName));
+			
+			if(!renameSuccess){
+				logger.error("RENAME readval PHAIL");
+				//error oid... gaat vaak fout onder windoos!!!! java bug!!
+			}
+			
+		}
+		if(action.equals("loadAll")){
+			
+			try {
+				CsvImport.importAll(roanDir, db, null);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 	}
 
 	@Override
 	public void reload(Database db)
 	{
+		if(roanDir == null){
+		 roanDir = new File(System.getProperty("java.io.tmpdir") + File.separator + "roan_"+System.nanoTime());
+		 boolean success = roanDir.mkdir();
+		 if(!success){
+			 //message of error of zoiets
+		 }
+		}
 //		try
 //		{
 //			Database db = this.getDatabase();

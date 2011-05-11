@@ -45,6 +45,9 @@ public class ConvertGidsToPheno
 		CsvExport export = new CsvExport();
 		//File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 		File tmpDir = new File("/Users/roankanninga/Documents/NewMolgenis/molgenis_apps/handwritten/java/convertors/gids/importFiles");
+		
+		System.out.println("individualsList size = " + individualsList.size());
+		
 		export.exportAll(tmpDir, individualsList, measurementsList, valuesList, investigationList);
 	}
 
@@ -77,15 +80,19 @@ public class ConvertGidsToPheno
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
-				logger.info("Parsing line: " + line_number);
+				//logger.info("Parsing line: " + line_number);
 				
 				String gidsId = tuple.getString("id_individual");
+				String mother_Name = tuple.getString("id_mother");
+				String father_Name = tuple.getString("id_father");
 				
 				if (!namesSeen.contains(gidsId)) {
 					namesSeen.add(gidsId);
 					Individual newIndividual = new Individual();
 					newIndividual.setName(gidsId);
 					newIndividual.setInvestigation_Name("CeliacSprue");
+					newIndividual.setMother_Name(mother_Name);					
+					newIndividual.setFather_Name(father_Name);	
 					individualsList.add(newIndividual);
 				}
 			}
@@ -96,7 +103,7 @@ public class ConvertGidsToPheno
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
 		for (String header : reader.colnames()) {
-			if (!header.equals("id_individual")) {
+			if (!header.equals("id_individual") && !header.equals("id_mother") && !header.equals("id_father")) {
 				Measurement measurement = new Measurement();
 				measurement.setName(header);
 				measurement.setInvestigation_Name("CeliacSprue");
@@ -115,7 +122,7 @@ public class ConvertGidsToPheno
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
-				logger.info("Parsing line: " + line_number);
+				//logger.info("Parsing line: " + line_number);
 				
 				String targetName = tuple.getString("id_individual");
 				
@@ -183,7 +190,9 @@ public class ConvertGidsToPheno
 					String featureName = m.getName();	
 					String value = tuple.getString(featureName);
 					
-					
+					//if(value.contains("'")){
+					//	value = value.replace("'", "");
+					//}
 					ObservedValue newValue = new ObservedValue();
 					newValue.setFeature_Name(featureName);
 					newValue.setTarget_Name(targetName);
