@@ -31,6 +31,8 @@ public class PermissionManagementPlugin extends PluginModel<Entity> {
 
     public PermissionManagementPlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
+		
+		varmodel = new PermissionManagementModel();
     }
 
     @Override
@@ -108,17 +110,17 @@ public class PermissionManagementPlugin extends PluginModel<Entity> {
 
     @Override
     public void reload(Database db) {
-		service = PermissionManagementService.getInstance(db);
-		varmodel = new PermissionManagementModel();
+    	service = PermissionManagementService.getInstance(db);
 		try {
 			varmodel.setRole(service.findRole((db.getSecurity().getUserId())));
 		} catch (Exception e) {
+			e.printStackTrace();
 		    //TODO: add logger + screen message
 		}
     }
     
     public PermissionManagementModel getVarmodel() {
-    	return this.varmodel;
+    	return varmodel;
     }  
     
     public PermissionManagementService getService() {

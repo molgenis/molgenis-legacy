@@ -53,10 +53,12 @@ public class FillAnimalDB {
 		logger.info("Create investigations");
 		Investigation inv = new Investigation();
 		inv.setName("AnimalDB");
+		inv.setOwns_Name("admin");
 		db.add(inv);
 		int invid = ct.getInvestigationId("AnimalDB");
 		inv = new Investigation();
 		inv.setName("UliEisel");
+		inv.setOwns_Name("admin");
 		db.add(inv);
 		
 		// Make ontology 'Units'

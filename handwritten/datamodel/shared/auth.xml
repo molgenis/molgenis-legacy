@@ -43,7 +43,7 @@
 			<description>Referenceable catalog of entity names, menus, forms and plugins.</description>
 			<field name="id" type="autoid" hidden="true" />
 			<field name="name" description="Name of the entity" />
-			<field name="type_" description="Type of the entity."/>
+			<field name="type_" description="Type of the entity"/>
 			<field name="className" unique="true" description="Full name of the entity" />
 			<unique fields="name,type_"/>
 		</entity>

@@ -31,6 +31,8 @@
 		<div class="screenbody">
 			<div class="screenpadding">
 
+<#if modelExists == true>
+
 <#if model.action == "AddEdit">
 
 <form method="post" enctype="multipart/form-data" name="${screen.name}">
@@ -161,75 +163,75 @@
 
 <div style="float:left; margin-right:50px">
 
-<h2>User ${model.getRole().getName()}'s permissions</h2>
+	<h2>User ${model.getRole().getName()}'s permissions</h2>
 
-<table cellpadding="1" cellspacing="1" border="1" class="display" id="listtable">
-
-<#--Creates a top row with labels-->
-	<tr>
-		<th style="color:darkblue;font-weight:bold;padding:5px">Entity</th> 
-		<th style="color:darkblue;font-weight:bold;padding:5px">Level</th>
-	</tr>
-
-<#--Creates row with the actual permissions-->	
-
-<#list service.findPermissions(model.getRole().getId()) as perm>
-	<#assign entity = service.findEntity(perm.getEntity())>
-	<tr>
-		<td style="padding:5px">${entity.name}</td> 
-		<td style="padding:5px">${perm.getPermission()}</td>
-	</tr>
-</#list>
-
-</table>
-
-</div>
-
-<div style="float:right">
-
-<h2>Permission for entities owned by user<br />${model.getRole().getName()}</h2>
-
-<table cellpadding="1" cellspacing="1" border="1" class="display" id="listtable2">
-
-<#--Creates a top row with labels-->
-	<tr>
-		<th style="color:darkblue;font-weight:bold;padding:5px">User/group</th> 
-		<th style="color:darkblue;font-weight:bold;padding:5px">Entity</th> 
-		<th style="color:darkblue;font-weight:bold;padding:5px">Level</th>
-		<th colspan="2" style="color:darkblue;font-weight:bold;padding:5px"></th>
-	</tr>
-
-<#--Creates row with the actual permissions-->	
-
-<#list service.findUserPermissions(model.getRole().getId(), false) as perm>
-	<#assign user = service.findRole(perm.getRole_())>
-	<#assign entity = service.findEntity(perm.getEntity())>
-	<tr>
-		<td style="padding:5px">${user.name}</td> 
-		<td style="padding:5px">${entity.name}</td> 
-		<td style="padding:5px">${perm.getPermission()}</td>
-		<td style="padding:5px">
-			<a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=${perm.getId()}">Modify</a>
-		</td>
-		<td style="padding:5px">
-			<a href="molgenis.do?__target=${screen.name}&__action=Remove&id=${perm.getId()}">Remove</a>
-		</td>
-	</tr>
-</#list>
-
-</table>
-
-<p>
-	<a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=0">Add</a>
-</p>
+	<table cellpadding="1" cellspacing="1" border="1" class="display" id="listtable">
+	
+	<#--Creates a top row with labels-->
+		<tr>
+			<th style="color:darkblue;font-weight:bold;padding:5px">Entity</th> 
+			<th style="color:darkblue;font-weight:bold;padding:5px">Level</th>
+		</tr>
+	
+	<#--Creates row with the actual permissions-->	
+	
+	<#list service.findPermissions(model.getRole().getId()) as perm>
+		<#assign entity = service.findEntity(perm.getEntity())>
+		<tr>
+			<td style="padding:5px">${entity.name}</td> 
+			<td style="padding:5px">${perm.getPermission()}</td>
+		</tr>
+	</#list>
+	
+	</table>
 
 </div>
 
-<div style="clear:left; clear:right">
+<div style="float:left">
+
+	<h2>Permission for entities owned by user<br />${model.getRole().getName()}</h2>
+	
+	<table cellpadding="1" cellspacing="1" border="1" class="display" id="listtable2">
+	
+	<#--Creates a top row with labels-->
+		<tr>
+			<th style="color:darkblue;font-weight:bold;padding:5px">User/group</th> 
+			<th style="color:darkblue;font-weight:bold;padding:5px">Entity</th> 
+			<th style="color:darkblue;font-weight:bold;padding:5px">Level</th>
+			<th colspan="2" style="color:darkblue;font-weight:bold;padding:5px"></th>
+		</tr>
+	
+	<#--Creates row with the actual permissions-->	
+	
+	<#list service.findUserPermissions(model.getRole().getId(), false) as perm>
+		<#assign user = service.findRole(perm.getRole_())>
+		<#assign entity = service.findEntity(perm.getEntity())>
+		<tr>
+			<td style="padding:5px">${user.name}</td> 
+			<td style="padding:5px">${entity.name}</td> 
+			<td style="padding:5px">${perm.getPermission()}</td>
+			<td style="padding:5px">
+				<a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=${perm.getId()}">Modify</a>
+			</td>
+			<td style="padding:5px">
+				<a href="molgenis.do?__target=${screen.name}&__action=Remove&id=${perm.getId()}">Remove</a>
+			</td>
+		</tr>
+	</#list>
+	
+	</table>
+	
+	<p>
+		<a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=0">Add</a>
+	</p>
+
+</div>
+
+<div style="clear:both">
 </div>
 
 </#if>
-
+</#if>
 			</div>
 		</div>
 	</div>

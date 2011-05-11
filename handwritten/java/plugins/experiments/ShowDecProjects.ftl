@@ -57,7 +57,7 @@
 		<#list screen.decApplicantList as decApplicant>
 			<option 
 			<#if currentDecProject??><#if currentDecProject.decApplicantName = decApplicant.name>selected="selected"</#if></#if>
-			value="${decApplicant.id}">${decApplicant.name}</option>
+			value="${decApplicant.id?string.computer}">${decApplicant.name}</option>
 		</#list>
 	</select>
 	</div>
