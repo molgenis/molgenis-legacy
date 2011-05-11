@@ -1,7 +1,5 @@
 package matrix.test.implementations;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -17,21 +15,23 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 
-import app.JDBCDatabase;
+import app.servlet.MolgenisServlet;
 
 /**
  * Test data matrix import and export across all backends, all retrieval functions,
  * data types, and most dimensions, transpositions, sparsities, and text length variation.
  * 
+ * !! WARNING !!
+ * Running the test might DELETE records and files from the current database.
+ *
  * To run the test:
  * - Generate test XGAP (apps/org/molgenis/xgap/XgapTestGenerate)
  * - Update test database (apps/org/molgenis/xgap/XgapUpdateTestDatabase)
  * - Set storage directory:
  * -- Either in the GUI (has validation):
  *		Menu 'Admin and settings', tab 'Settings' and follow instructions.
- * -- Or by inserting mysql (no validation, you have to be sure):
+ * -- Or by inserting SQL (no validation, you have to be sure):
  *		NOTE! Replace 'YOURDIRECTORY' with your storage dir, e.g. 'data/test' for unix like or 'C:\data\test' for windows like.
 		use test_xgap_1_5;
 		create table systemsettings_090527PBDB00QCGEXP4G (filedirpath VARCHAR(255), verified BOOL DEFAULT 0);
@@ -46,8 +46,8 @@ public class RunTestMatrix extends TestCase {
 	private TestMatrix tm;
 	private Database db;
 	
-	public RunTestMatrix(Params params) throws FileNotFoundException, IOException, DatabaseException {
-		db = new JDBCDatabase("handwritten/apps/org/molgenis/xgap/xgap.test.properties");
+	public RunTestMatrix(Params params) throws Exception {
+		db = new MolgenisServlet().getDatabase();
 		tm = new TestMatrix(db, params);
 	}
 
