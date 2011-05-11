@@ -419,8 +419,8 @@ public class PatientService implements Serializable
 		PatientSummaryVO patientSummaryVO = new PatientSummaryVO();
 		patientSummaryVO.setPatient(patient);
 
-		if (this.db instanceof JDBCDatabase)
-		{
+//		if (this.db instanceof JDBCDatabase)
+//		{
 			patientSummaryVO.setMutation1(this.db.findById(Mutation.class, patient.getMutation1_Id()));
 			patientSummaryVO.setMutation2(this.db.findById(Mutation.class, patient.getMutation2_Id()));
 			patientSummaryVO.setPhenotype(this.db.findById(MutationPhenotype.class, patient.getPhenotype_Id()));
@@ -447,30 +447,30 @@ public class PatientService implements Serializable
 			List<E_M> em_s = this.db.query(E_M.class).equals(E_M.PATIENT, patient.getId()).find();
 			if (em_s.size() > 0)
 				patientSummaryVO.setEm_(em_s.get(0));
-		}
-		else if (this.db instanceof JpaDatabase)
-		{
-			patientSummaryVO.setMutation1(patient.getMutation1());
-			patientSummaryVO.setMutation2(patient.getMutation2());
-			patientSummaryVO.setPhenotype(patient.getPhenotype());
-			if (!"no".equals(patient.getConsent()))
-				patientSummaryVO.setPhenotypeDetails(patient.getPhenotype_Details());
-
-			patientSummaryVO.setPubmedURL(PublicationService.PUBMED_URL);
-
-			patientSummaryVO.setPublications(patient.getPublications());
-
-			patientSummaryVO.setSubmission(patient.getSubmission());
-			patientSummaryVO.setSubmitter(patient.getSubmission().getSubmitters().get(0));
-
-			if (patient.getI_FCollection().size() > 0)
-				patientSummaryVO.setIf_(patient.getI_FCollection().toArray(new I_F[0])[0]);
-
-			if (patient.getE_MCollection().size() > 0)
-				patientSummaryVO.setEm_(patient.getE_MCollection().toArray(new E_M[0])[0]);
-		}
-		else
-			throw new DatabaseException("Unsupported database mapper");
+//		}
+//		else if (this.db instanceof JpaDatabase)
+//		{
+//			patientSummaryVO.setMutation1(patient.getMutation1());
+//			patientSummaryVO.setMutation2(patient.getMutation2());
+//			patientSummaryVO.setPhenotype(patient.getPhenotype());
+//			if (!"no".equals(patient.getConsent()))
+//				patientSummaryVO.setPhenotypeDetails(patient.getPhenotype_Details());
+//
+//			patientSummaryVO.setPubmedURL(PublicationService.PUBMED_URL);
+//
+//			patientSummaryVO.setPublications(patient.getPublications());
+//
+//			patientSummaryVO.setSubmission(patient.getSubmission());
+//			patientSummaryVO.setSubmitter(patient.getSubmission().getSubmitters().get(0));
+//
+//			if (patient.getI_FCollection().size() > 0)
+//				patientSummaryVO.setIf_(patient.getI_FCollection().toArray(new I_F[0])[0]);
+//
+//			if (patient.getE_MCollection().size() > 0)
+//				patientSummaryVO.setEm_(patient.getE_MCollection().toArray(new E_M[0])[0]);
+//		}
+//		else
+//			throw new DatabaseException("Unsupported database mapper");
 
 		// cache value
 		this.cache.put(patient.getId(), patientSummaryVO);
