@@ -253,6 +253,8 @@ public class rawdataimporter extends PluginModel<Entity>
 					msg = new ScreenMessage("You did not enter a filename",null,false);
 				} else {
 
+					//FIXME: you sure this is not OriginalFileName  ?
+					
 					this.fileNames.add(0,request.getString("mazedatafile"));
 					this.origFileNames.add(0,request.getString("mazedatafileOriginalfilename"));
 
