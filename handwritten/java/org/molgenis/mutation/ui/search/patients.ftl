@@ -18,15 +18,6 @@
 <p>
 <table class="listtable" cellpadding="4">
 
-<#--
-<tr class="tableheader">
-<th colspan="3">Patient</th>
-<th colspan="4">First Mutation</th>
-<th colspan="4">Second Mutation</th>
-<th></th>
-</tr>
--->
-
 <tr class="tableheader">
 <th>No.</th>
 <th>Patient ID</th>
@@ -36,24 +27,20 @@
 <th>Protein change</th>
 <th>Exon</th>
 <th>Consequence</th>
-
-<#--
-<th>cDNA change</th>
-<th>Protein change</th>
-<th>Exon</th>
-<th>Consequence</th>
--->
-
 <th>Reference</th>
 </tr>
+
+<#assign count = 0>
 <#list patientSummaryVOs as patientSummaryVO>
-<#if patientSummaryVOs?seq_index_of(patientSummaryVO) % 2 == 0>
+
+<#assign count = count + 1>
+<#if count % 2 == 1>
 	<#assign clazz = "form_listrow1">
 <#else>
 	<#assign clazz = "form_listrow0">
 </#if>
 <tr class="${clazz}">
-<td rowspan="2">${pager.offset + patientSummaryVOs?seq_index_of(patientSummaryVO) + 1}</td>
+<td rowspan="2">${pager.offset + count}</td>
 <td rowspan="2"><a href="molgenis.do?__target=${screen.name}&__action=showPatient&pid=${patientSummaryVO.patient.getIdentifier()}#results">${patientSummaryVO.patient.getIdentifier()}</a></td>
 <td rowspan="2">${patientSummaryVO.phenotype.getMajortype()}, ${patientSummaryVO.phenotype.getSubtype()}</td>
 <td>First Mutation</td>
@@ -61,12 +48,6 @@
 <td>${patientSummaryVO.mutation1.getAa_Notation()}</td>
 <td>${patientSummaryVO.mutation1.getExon_Name()}</td>
 <td>${patientSummaryVO.mutation1.getConsequence()}</td>
-<#--
-<td><#if patientSummaryVO.mutation2??><a href="molgenis.do?__target=${screen.name}&__action=showMutation&mid=${patientSummaryVO.mutation2.identifier}">${patientSummaryVO.mutation2.cdna_notation}</a></#if></td>
-<td><#if patientSummaryVO.mutation2??>${patientSummaryVO.mutation2.aa_notation}</#if></td>
-<td><#if patientSummaryVO.mutation2??>${patientSummaryVO.mutation2.exon_name}</#if></td>
-<td><#if patientSummaryVO.mutation2??>${patientSummaryVO.mutation2.consequence}</#if></td>
--->
 <td rowspan="2">
 <#if patientSummaryVO.publications?? && patientSummaryVO.publications?size &gt; 0>
 <#list patientSummaryVO.publications as publication>
@@ -89,6 +70,7 @@ ${patientSummaryVO.submitter.getDepartment()}, ${patientSummaryVO.submitter.getI
 <td colspan="4">${patientSummaryVO.patient.getMutation2remark()}</td>
 </#if>
 </tr>
+
 </#list>
 </table>
 </p>
