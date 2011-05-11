@@ -1,4 +1,4 @@
-package convertors;
+package convertors.dbgap;
 
 import java.io.File;
 import java.util.ArrayList;

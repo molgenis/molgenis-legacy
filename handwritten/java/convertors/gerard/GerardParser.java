@@ -1,4 +1,4 @@
-package convertors;
+package convertors.gerard;
 
 import java.io.BufferedWriter;
 import java.io.File;

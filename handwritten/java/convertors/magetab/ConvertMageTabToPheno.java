@@ -1,4 +1,4 @@
-package convertors;
+package convertors.magetab;
 
 import java.io.File;
 import java.io.FileNotFoundException;

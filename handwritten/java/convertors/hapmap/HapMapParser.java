@@ -1,4 +1,4 @@
-package convertors;
+package convertors.hapmap;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
