@@ -30,18 +30,15 @@ import org.molgenis.auth.ui.form.OpenIdAuthenticationForm;
 import org.molgenis.auth.ui.form.RegistrationForm;
 import org.molgenis.auth.ui.form.UserAreaForm;
 import org.molgenis.auth.vo.MolgenisUserSearchCriteriaVO;
-import org.molgenis.auth.vo.UserLoginVO;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.security.SimpleLogin;
-import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.TablePanel;
-import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
@@ -49,96 +46,21 @@ import org.molgenis.util.Tuple;
  * This screen shows a login box, or if someone is already logged in, the user
  * information and a logout button.
  */
-public class UserLogin extends PluginModel<Entity>
+public class UserLogin extends EasyPluginController<UserLoginModel>
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -3084964114182861171L;
-	private String action           = "init";
-	private MolgenisUserService userService;
-	private String mailCurator;
-	private UserLoginVO userLoginVO = new UserLoginVO();
 
 	public UserLogin(String name, ScreenController<?> parent)
 	{
-		super(name, parent);
+		super(name, null, parent);
+		this.setModel(new UserLoginModel(this));
+		this.setView(new FreemarkerView("UserLogin.ftl", getModel()));
 	}
 
-	@Override
-	public String getViewName()
+	public void Login(Database db, Tuple request) throws DatabaseException, IOException
 	{
-		return "org_molgenis_auth_ui_UserLogin";
-	}
+		this.getModel().setAction("Login");
 
-	@Override
-	public String getViewTemplate()
-	{
-		return "org/molgenis/auth/ui/UserLogin.ftl";
-	}
-
-	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
-		try
-		{
-			// reset messages
-			this.setMessages();
-
-			this.action = request.getAction();
-
-			if ("Login".equals(this.action))
-			{
-				this.handleLoginRequest(db, request);
-			}
-			else if ("Logout".equals(this.action))
-			{
-				this.getLogin().logout();
-				this.getLogin().reload(db);
-			}
-			else if ("Register".equals(this.action))
-			{
-				//nop
-			}
-			else if ("AddUser".equals(this.action))
-			{
-				this.handleAddRequest(db, request);
-			}
-			else if ("ChgUser".equals(this.action))
-			{
-				this.handleChangeUserRequest(db, request);
-			}
-			else if ("Forgot".equals(this.action))
-			{
-				//nop
-			}
-			else if ("Activate".equals(this.action))
-			{
-				this.handleActivateRequest(db, request);
-			}
-			else if ("sendPassword".equals(this.action))
-			{
-				this.handleForgotPasswordRequest(db, request);
-			}
-		}
-		catch (Exception e)
-		{
-			this.getMessages().add(new ScreenMessage(e.getMessage(), false));
-			// If adding user failed, go back to Register screen:
-			e.printStackTrace();
-			if ("AddUser".equals(this.action)) {
-				this.action = "Register";
-			}
-		}
-	}
-
-	public UserLoginVO getUserLoginVO()
-	{
-		return this.userLoginVO;
-	}
-
-	private void handleLoginRequest(Database db, Tuple request) throws DatabaseException
-	{
 		if ("Google".equals(request.getString("op")) || "Yahoo".equalsIgnoreCase(request.getString("op")) || "authenticated".equals(request.getString("op")))
 		{
 			try
@@ -150,19 +72,19 @@ public class UserLogin extends PluginModel<Entity>
 				// get the http response that is used in this handleRequest
 				HttpServletResponse httpResponse = rt.getResponse();
 
-				String returnURL = httpRequest.getRequestURL() + "?__target=" + this.getScreen().getName() + "&__action=" + request.getAction() + "&op=authenticated";
+				String returnURL = httpRequest.getRequestURL() + "?__target=" + this.getName() + "&__action=" + request.getAction() + "&op=authenticated";
 
-				if (!(getLogin() instanceof OpenIdLogin))
+				if (!(this.getApplicationController().getLogin() instanceof OpenIdLogin))
 					throw new Exception("Wrong parameter.");
 
-				((OpenIdLogin) getLogin()).authenticate(db, httpRequest, httpResponse, returnURL, request.getString("op"));
+				((OpenIdLogin) this.getApplicationController().getLogin()).authenticate(db, httpRequest, httpResponse, returnURL, request.getString("op"));
 
 //				this.getDatabaseUser(db);
 
 				// login.authRequest(request.getString("name"));
 				// login.verifyResponse();
 				
-				getLogin().reload(db);
+				this.getApplicationController().getLogin().reload(db);
 			}
 			catch (Exception e)
 			{
@@ -174,48 +96,54 @@ public class UserLogin extends PluginModel<Entity>
 			String username = request.getString("username");
 			String password = request.getString("password");
 
-			boolean loggedIn = getLogin().login(db, username, password);
+			boolean loggedIn = this.getApplicationController().getLogin().login(db, username, password);
 
-			if (loggedIn)
-				this.getRootScreen().setLogin(getLogin());
-			else
+			if (!loggedIn)
 				throw new DatabaseException("Login failed: username or password unknown");
 			
 			HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
 			HttpServletRequest httpRequest   = rt.getRequest();
 			HttpServletResponse httpResponse = rt.getResponse();
 
-			
-			try {
-				if (StringUtils.isNotEmpty(getLogin().getRedirect()))
-				{
-					String redirectURL = httpRequest.getRequestURL() + "?__target=main" + "&select=" +getLogin().getRedirect();
-					httpResponse.sendRedirect(redirectURL);
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if (StringUtils.isNotEmpty(this.getApplicationController().getLogin().getRedirect()))
+			{
+				String redirectURL = httpRequest.getRequestURL() + "?__target=main" + "&select=" + this.getApplicationController().getLogin().getRedirect();
+				httpResponse.sendRedirect(redirectURL);
 			}
 		} else {
 			throw new DatabaseException("Login failed: username or password empty");
 		}
 	}
 
-	private void handleAddRequest(Database db, Tuple request) throws DatabaseException
+	public void Logout(Database db, Tuple request) throws DatabaseException, ParseException
 	{
+		this.getModel().setAction("Logout");
+		this.getApplicationController().getLogin().logout();
+		this.getApplicationController().getLogin().reload(db);
+	}
+
+	public void Register(Database db, Tuple request)
+	{
+		this.getModel().setAction("Register");
+	}
+
+	public void AddUser(Database db, Tuple request) throws DatabaseException
+	{
+		this.getModel().setAction("AddUser");
+
 		try
 		{
-			if (this.getLogin().isAuthenticated())
+			if (this.getApplicationController().getLogin().isAuthenticated())
 			{
 				 // if logged in, log out first
-				this.getLogin().logout();
+				this.getApplicationController().getLogin().logout();
 			}
 			
 			// login as admin
 			// (a bit evil but less so than giving anonymous write-rights on the
 			// MolgenisUser table)
-			this.getLogin().login(db, "admin", "admin");
-			this.getLogin().reload(db);
+			this.getApplicationController().getLogin().login(db, "admin", "admin");
+			this.getApplicationController().getLogin().reload(db);
 			
 			MolgenisUserService userService = MolgenisUserService.getInstance(db);
 			MolgenisUser user               = this.toMolgenisUser(request);
@@ -228,10 +156,10 @@ public class UserLogin extends PluginModel<Entity>
 			// Email the user
 			String activationURL =
 				httpRequest.getRequestURL().toString() +
-				"?__target=" + this.getScreen().getName() +
-				"&select=" + this.getScreen().getName() +
+				"?__target=" + this.getName() +
+				"&select=" + this.getName() +
 				"&__action=Activate&actCode=" + user.getActivationCode();
-			String emailContents = "Somebody, probably you, requested a user account for " + this.getRootScreen().getLabel() + ".\n";
+			String emailContents = "Somebody, probably you, requested a user account for " + this.getRoot().getLabel() + ".\n";
 			emailContents += "Please visit the following URL in order to activate your account:\n";
 			emailContents += activationURL + "\n\n";
 			emailContents += "If you have not requested an account please ignore this mail.";
@@ -239,33 +167,38 @@ public class UserLogin extends PluginModel<Entity>
 			//assuming: 'encoded' p.w. (setting deObf = true)
 			this.getEmailService().email("Your registration request", emailContents, user.getEmailaddress(), true);
 			
-			this.getMessages().add(new ScreenMessage("Adding user successful - check your e-mail for activation instructions", true));
+			this.getModel().getMessages().add(new ScreenMessage("Adding user successful - check your e-mail for activation instructions", true));
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
+			this.getModel().setAction("Register");
 			throw new DatabaseException("Adding user failed: " + e.getMessage());
-		} finally {
-		    this.getLogin().logout();
+		}
+		finally
+		{
+			this.getApplicationController().getLogin().logout();
 		}
 	}
 
-	private void handleActivateRequest(Database db, Tuple request)
+	public void Activate(Database db, Tuple request)
 	{
+		this.getModel().setAction("Activate");
+
 	    try
 		{
 		
-    		if (this.getLogin().isAuthenticated())
+    		if (this.getApplicationController().getLogin().isAuthenticated())
     		{
     			 // if logged in, log out first
-    			this.getLogin().logout();
+    			this.getApplicationController().getLogin().logout();
     		}
     		
     		// login as admin
     		// (a bit evil but less so than giving anonymous write-rights on the
     		// MolgenisUser table)
-    		this.getLogin().login(db, "admin", "admin");
-    		this.getLogin().reload(db);
+    		this.getApplicationController().getLogin().login(db, "admin", "admin");
+    		this.getApplicationController().getLogin().reload(db);
 
 			MolgenisUserSearchCriteriaVO criteria = new MolgenisUserSearchCriteriaVO();
 			criteria.setActivationCode(request.getString("actCode"));
@@ -280,7 +213,7 @@ public class UserLogin extends PluginModel<Entity>
 			user.setActive(true);
 			userService.update(user);
 
-			this.getMessages().add(new ScreenMessage("Activation successful", true));
+			this.getModel().getMessages().add(new ScreenMessage("Activation successful", true));
 
 			// Email the curator
 			// TODO: Where to get admin/curator address from?
@@ -293,49 +226,48 @@ public class UserLogin extends PluginModel<Entity>
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			this.getMessages().add(new ScreenMessage("Activation failed", false));
-		} finally {
-		    this.getLogin().logout();
+			this.getModel().getMessages().add(new ScreenMessage("Activation failed", false));
+		}
+		finally
+		{
+			this.getApplicationController().getLogin().logout();
 		}
 	}
 	
-	private void handleForgotPasswordRequest(Database db, Tuple request)
+	public void sendPassword(Database db, Tuple request)
 	{
 	    try
 		{
-    		if (this.getLogin().isAuthenticated())
+    		if (this.getApplicationController().getLogin().isAuthenticated())
     		{
     			 // if logged in, log out first
-    			this.getLogin().logout();
+    			this.getApplicationController().getLogin().logout();
     		}
     		
     		// login as admin
     		// (a bit evil but less so than giving anonymous write-rights on the
     		// MolgenisUser table)
-    		this.getLogin().login(db, "admin", "admin");
-    		this.getLogin().reload(db);
+    		this.getApplicationController().getLogin().login(db, "admin", "admin");
+    		this.getApplicationController().getLogin().reload(db);
 
     		MolgenisUserSearchCriteriaVO criteria = new MolgenisUserSearchCriteriaVO();
     		criteria.setName(request.getString("username"));
 
     		MolgenisUserService userService = MolgenisUserService.getInstance(db);
-    		List<MolgenisUser> users = userService.find(criteria);
+    		List<MolgenisUser> users        = userService.find(criteria);
 		
     		if (users.size() != 1) {
     			throw new MolgenisUserException("No user found with this username.");
     		}
     		
-    		MolgenisUser user = users.get(0);
-    		//TODO: Danny: Use or loose
-    		//TODO: Danny Is this a bug ??, we ask the user.email but don't use it to send the email ?
-    		/*String email = */user.getEmailaddress();
+    		MolgenisUser user  = users.get(0);
   
     		String newPassword = UUID.randomUUID().toString().substring(0, 8);
     		user.setPassword(newPassword);
-    		this.userService.update(user);
+    		userService.update(user);
 
     		String emailContents = "Somebody, probably you, requested a new password for " + 
-    		this.getRootScreen().getLabel() + ".\n";
+    		this.getRoot().getLabel() + ".\n";
     		emailContents += "The new password is: " + newPassword + "\n";
     		emailContents += "Note: we strongly recommend you reset your password after log-in!";
     		// TODO: make this mandatory (password that was sent is valid only once)
@@ -343,19 +275,23 @@ public class UserLogin extends PluginModel<Entity>
     		//assuming: 'encoded' p.w. (setting deObf = true)
     		this.getEmailService().email("Your new password request", emailContents, user.getEmailaddress(), true);
     		
-    		this.getMessages().add(new ScreenMessage("Sending new password successful", true));
+    		this.getModel().getMessages().add(new ScreenMessage("Sending new password successful", true));
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			this.getMessages().add(new ScreenMessage("Sending new password failed", false));
-		} finally {
-		    this.getLogin().logout();
+			this.getModel().getMessages().add(new ScreenMessage("Sending new password failed", false));
+		}
+		finally
+		{
+			this.getApplicationController().getLogin().logout();
 		}
 	}
 
-	private void handleChangeUserRequest(Database db, Tuple request) throws NoSuchAlgorithmException, MolgenisUserException, DatabaseException, ParseException, IOException
+	public void ChgUser(Database db, Tuple request) throws NoSuchAlgorithmException, MolgenisUserException, DatabaseException, ParseException, IOException
 	{
+		this.getModel().setAction("ChgUser");
+
 		MolgenisUserService userService = MolgenisUserService.getInstance(db);
 
 		if (StringUtils.isNotEmpty(request.getString("oldpwd")) || StringUtils.isNotEmpty(request.getString("newpwd")) || StringUtils.isNotEmpty(request.getString("newpwd2")))
@@ -364,17 +300,22 @@ public class UserLogin extends PluginModel<Entity>
 			String newPwd1 = request.getString("newpwd");
 			String newPwd2 = request.getString("newpwd2");
 
-			userService.checkPassword(this.getLogin().getUserName(), oldPwd, newPwd1, newPwd2);
+			userService.checkPassword(this.getApplicationController().getLogin().getUserName(), oldPwd, newPwd1, newPwd2);
 		}
 
-		MolgenisUser user = this.userService.findById(this.getLogin().getUserId());
+		MolgenisUser user = userService.findById(this.getApplicationController().getLogin().getUserId());
 		this.toMolgenisUser(request, user);
-		this.userService.update(user);
+		userService.update(user);
 
-		this.getMessages().add(new ScreenMessage("Changes successfully applied", true));
+		this.getModel().getMessages().add(new ScreenMessage("Changes successfully applied", true));
 	}
 
-	private MolgenisUser toMolgenisUser(Tuple request) throws MolgenisUserException, NoSuchAlgorithmException
+	public void Forgot(Database db, Tuple request)
+	{
+		this.getModel().setAction("Forgot");
+	}
+	
+	private MolgenisUser toMolgenisUser(Tuple request) throws MolgenisUserException
 	{
 		MolgenisUser user  = new MolgenisUser();
 
@@ -428,35 +369,35 @@ public class UserLogin extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
-		this.userService = MolgenisUserService.getInstance(db);
 		this.populateAuthenticationForm();
-		this.populateUserAreaForm();
+		this.populateUserAreaForm(db);
 		this.populateRegistrationForm();
 		this.populateForgotForm();
 	}
 
 	private void populateAuthenticationForm()
 	{
-		if (getLogin() instanceof OpenIdLogin)
+		if (this.getApplicationController().getLogin() instanceof OpenIdLogin)
 		{
 			Container form = new OpenIdAuthenticationForm();
-			((ActionInput) form.get("google")).setJavaScriptAction("document.forms." + this.getScreen().getName() + ".op.value='Google';document.forms." + this.getScreen().getName() + ".submit();");
-			((ActionInput) form.get("yahoo")).setJavaScriptAction("document.forms." + this.getScreen().getName() + ".op.value='Yahoo';document.forms." + this.getScreen().getName() + ".submit();");
-			this.userLoginVO.setAuthenticationForm(form);
+			((ActionInput) form.get("google")).setJavaScriptAction("document.forms." + this.getName() + ".op.value='Google';document.forms." + this.getName() + ".submit();");
+			((ActionInput) form.get("yahoo")).setJavaScriptAction("document.forms." + this.getName() + ".op.value='Yahoo';document.forms." + this.getName() + ".submit();");
+			this.getModel().setAuthenticationForm(form);
 		}
 		else
 		{
-			this.userLoginVO.setAuthenticationForm(new DatabaseAuthenticationForm());
+			this.getModel().setAuthenticationForm(new DatabaseAuthenticationForm());
 		}
 	}
 
-	private void populateUserAreaForm()
+	private void populateUserAreaForm(Database db)
 	{
 		try
 		{
-			MolgenisUser user         = this.userService.findById(this.getLogin().getUserId());
+			MolgenisUserService userService = MolgenisUserService.getInstance(db);
+			MolgenisUser user               = userService.findById(this.getApplicationController().getLogin().getUserId());
 			
-			UserAreaForm userAreaForm = new UserAreaForm();
+			UserAreaForm userAreaForm       = new UserAreaForm();
 			((TablePanel) userAreaForm.get("personal")).get("emailaddress").setValue(user.getEmailaddress());
 			((TablePanel) userAreaForm.get("personal")).get("title").setValue(user.getTitle());
 			((TablePanel) userAreaForm.get("personal")).get("firstname").setValue(user.getFirstname());
@@ -467,53 +408,21 @@ public class UserLogin extends PluginModel<Entity>
 			((TablePanel) userAreaForm.get("personal")).get("city").setValue(user.getCity());
 			((TablePanel) userAreaForm.get("personal")).get("country").setValue(user.getCountry());
 			
-			this.userLoginVO.setUserAreaForm(userAreaForm);
+			this.getModel().setUserAreaForm(userAreaForm);
 		}
 		catch (Exception e)
 		{
-			//TODO: What to do here?
+			this.getModel().setUserAreaForm(new UserAreaForm());
 		}
 	}
 
 	private void populateRegistrationForm()
 	{
-		this.userLoginVO.setRegistrationForm(new RegistrationForm());
+		this.getModel().setRegistrationForm(new RegistrationForm());
 	}
 	
 	private void populateForgotForm()
 	{
-		this.userLoginVO.setForgotForm(new ForgotForm());
-	}
-
-	public String getAction()
-	{
-		return this.action;
-	}
-
-	@Override
-	public boolean isVisible()
-	{
-		if (getLogin() instanceof SimpleLogin)
-			return false;
-
-		return true;
-	}
-
-	@Override
-	public String getLabel()
-	{
-		if (!getLogin().isAuthenticated())
-		{
-			return "Login";
-		}
-		return super.getLabel();
-	}
-
-	public void setMailCurator(String mailCurator) {
-		this.mailCurator = mailCurator;
-	}
-
-	public String getMailCurator() {
-		return mailCurator;
+		this.getModel().setForgotForm(new ForgotForm());
 	}
 }

@@ -7,32 +7,76 @@
 
 package org.molgenis.auth.ui;
 
-import java.util.Date;
-
+import org.molgenis.framework.security.SimpleLogin;
 import org.molgenis.framework.ui.EasyPluginModel;
+import org.molgenis.framework.ui.html.Container;
 
-/**
- * UserLoginModel takes care of all state and it can have helper methods to query the database.
- * It should not contain layout or application logic which are solved in View and Controller.
- * @See org.molgenis.framework.ui.ScreenController for available services.
- */
 public class UserLoginModel extends EasyPluginModel
 {
-	//a system veriable that is needed by tomcat
 	private static final long serialVersionUID = 1L;
-	//this string can be referenced from UserLoginView.ftl template as ${model.helloWorld}
-	public String helloWorld = "hello World";
-	//this date can be referenced from UserLoginView.ftl template as ${model.date}
-	public Date date = new Date();
-	
-	//another example, you can also use getInvestigations() and setInvestigations(...)
-	//public List<Investigation> investigations = new ArrayList<Investigation>();
+
+	private String mailCurator;
+	private String action                      = "init";
+	private Container authenticationForm       = new Container();
+	private Container userAreaForm             = new Container();
+	private Container registrationForm         = new Container();
+	private Container forgotForm               = new Container();
 
 	public UserLoginModel(UserLogin controller)
 	{
-		//each Model can access the controller to notify it when needed.
 		super(controller);
 	}
-	
-	
+	public String getMailCurator() {
+		return mailCurator;
+	}
+	public void setMailCurator(String mailCurator) {
+		this.mailCurator = mailCurator;
+	}
+	public String getAction() {
+		return action;
+	}
+	public void setAction(String action) {
+		this.action = action;
+	}
+	public Container getAuthenticationForm() {
+		return authenticationForm;
+	}
+	public void setAuthenticationForm(Container authenticationForm) {
+		this.authenticationForm = authenticationForm;
+	}
+	public Container getUserAreaForm() {
+		return userAreaForm;
+	}
+	public void setUserAreaForm(Container userAreaForm) {
+		this.userAreaForm = userAreaForm;
+	}
+	public Container getRegistrationForm() {
+		return registrationForm;
+	}
+	public void setRegistrationForm(Container registrationForm) {
+		this.registrationForm = registrationForm;
+	}
+	public void setForgotForm(Container forgotForm) {
+		this.forgotForm = forgotForm;
+	}
+	public Container getForgotForm() {
+		return forgotForm;
+	}
+	@Override
+	public String getLabel()
+	{
+		if (!this.getController().getApplicationController().getLogin().isAuthenticated())
+		{
+			return "Login";
+		}
+		return super.getLabel();
+	}
+	@Override
+	public boolean isVisible()
+	{
+		if (this.getController().getApplicationController().getLogin() instanceof SimpleLogin)
+			return false;
+
+		return true;
+	}
 }

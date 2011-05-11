@@ -1,11 +1,11 @@
-Logged in as <b>${login.userName}</b> ${vo.authenticationForm.logout}
+Logged in as <b>${login.userName}</b> ${model.authenticationForm.logout}
 
 <h4>Login information</h4>
 
-${vo.userAreaForm.login}
+${model.userAreaForm.login}
 
 <h4>Personal information</h4>
 
-${vo.userAreaForm.personal}
+${model.userAreaForm.personal}
 
-${vo.userAreaForm.ChgUser}
+${model.userAreaForm.ChgUser}

@@ -1,4 +1,4 @@
-<#assign form = vo.registrationForm>
+<#assign form = model.registrationForm>
 <h2>Register as a new user</h2>
 <h3>Login details</h3>
 <table>

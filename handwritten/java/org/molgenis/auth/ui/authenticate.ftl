@@ -1,4 +1,4 @@
-<#assign form = vo.authenticationForm>
+<#assign form = model.authenticationForm>
 <table width="300px">
 <tr>
 <td>
