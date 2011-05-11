@@ -8,33 +8,14 @@
 package plugins.fillgids;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
 
-import org.molgenis.Molgenis;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.gids.GidsUpdateDatabase;
-
-import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.CsvReader;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import plugins.emptydb.emptyDatabase;
-import plugins.fillanimaldb.FillAnimalDB;
-
 import app.CsvImport;
-import app.JDBCDatabase;
-
-import convertors.ulidb.ConvertUliDbToPheno;
 
 public class FillDatabasePlugin extends PluginModel<Entity>
 {
