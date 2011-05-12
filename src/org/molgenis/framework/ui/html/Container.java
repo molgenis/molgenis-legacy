@@ -5,13 +5,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Vector;
 
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.util.Tuple;
 
-/*
+/**
  * This class functions as the holder, or container, of all UI components and elements within one plugin. All "pieces"
  * of your UI puzzle should be located within a Container.
  */
-public class Container extends LinkedHashMap<String, Input>
+public class Container extends LinkedHashMap<String, Input> implements ScreenView
 {
 	private static final long serialVersionUID = -8565170009471766957L;
 
@@ -73,5 +74,17 @@ public class Container extends LinkedHashMap<String, Input>
 			returnString += i.toHtml();
 		}
 		return returnString;
+	}
+
+	@Override
+	public String getCustomHtmlHeaders()
+	{
+		return null;
+	}
+
+	@Override
+	public String render()
+	{
+		return this.toHtml();
 	}
 }

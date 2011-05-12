@@ -25,7 +25,6 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.ui.commands.CommandMenu;
 import org.molgenis.framework.ui.commands.ScreenCommand;
-import org.molgenis.util.Entity;
 
 /**
  * Base-class for a screen displaying information from the invengine system to

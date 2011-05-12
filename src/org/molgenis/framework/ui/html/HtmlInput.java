@@ -1,6 +1,7 @@
 package org.molgenis.framework.ui.html;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.molgenis.framework.ui.ScreenView;
 
 /**
  * HtmlInput is the base-class for all the 'toHtml' input classes.
@@ -297,5 +298,16 @@ public abstract class HtmlInput implements Input
 	public void setTabIndex(int tabidx)
 	{
 		tabIndex = " tabindex=" + Integer.toString(tabidx);
+	}
+	
+	public String render()
+	{
+		return this.toHtml();
+	}
+	
+	public String getCustomHtmlHeaders()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

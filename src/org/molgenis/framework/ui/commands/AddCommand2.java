@@ -12,7 +12,6 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.SimpleScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.CommandTemplate;
 import org.molgenis.framework.ui.html.HtmlInput;

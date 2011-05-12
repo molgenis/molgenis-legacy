@@ -3,6 +3,7 @@ package org.molgenis.framework.ui;
 /**
  * Contains the parameters needed for freemarker template application.
  */
+@Deprecated
 public interface Templateable
 {
 	/**
@@ -15,6 +16,7 @@ public interface Templateable
 	 * 
 	 * @return a generic name of the layout to be used
 	 */
+	@Deprecated
 	public String getMacro();
 
 	/**

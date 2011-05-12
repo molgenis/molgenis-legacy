@@ -15,14 +15,25 @@ import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
 
-public class FreemarkerView implements ScreenView
+/**
+ * FreemarkerView uses a Freemarker template to render the user interface. The Freemarker template will get as parameters:
+ * <ol>
+ * <li>application - result of model.getController().getApplicationController().getModel()
+ * <li>model - result of getModel()
+ * <li>screen - deprecated, synonym of model
+ * <li>viewhelper - all kinds of helper methods
+ * <li>show - parameter influencing whole app or only one screen rendering
+ * </ol>
+ * @see http://www.freemarker.org
+ */
+public class FreemarkerView extends SimpleScreenView
 {
 	
 	// wrapper of this template
 	private freemarker.template.Configuration cfg = null;
 	private String templatePath; 
-	private ScreenModel model;
 	private transient Logger logger = Logger.getLogger(this.getClass());
+	private ScreenModel model;
 	
 	public FreemarkerView(String templatePath, ScreenModel model)
 	{
@@ -79,11 +90,11 @@ public class FreemarkerView implements ScreenView
 			templateArgs.put("application", model.getController().getApplicationController().getModel());
 			templateArgs.put("screen", model);
 			templateArgs.put("model", model);
-			templateArgs.put("widgetfactory", new MolgenisWidgetFactory());
+			templateArgs.put("widgetfactory", new ScreenViewHelper());
 			templateArgs.put("show", model.getController().getApplicationController().getModel().getShow());
 
 			// merge template
-			cfg.addAutoInclude("MolgenisWidgets.ftl");
+			cfg.addAutoInclude("ScreenViewHelper.ftl");
 			Template template = cfg.getTemplate(templatePath);
 			StringWriter writer = new StringWriter();
 			template.process(templateArgs, writer);
@@ -106,5 +117,11 @@ public class FreemarkerView implements ScreenView
 			return sw.toString().replace("\n", "<br/>");
 
 		}
+	}
+
+	@Override
+	public String getCustomHtmlHeaders()
+	{
+		return model.getController().getCustomHtmlHeaders();
 	}
 }
