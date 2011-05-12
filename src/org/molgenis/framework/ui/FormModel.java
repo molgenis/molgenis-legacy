@@ -337,7 +337,8 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	{
 		try
 		{
-			return this.getSecurity().canRead(this);
+			// 'this' is always org.molgenis.framework.ui.FormModel, so how do we get the actual FormController here??
+			return this.getSecurity().canRead(this.getController());
 		}
 		catch (DatabaseException e)
 		{
