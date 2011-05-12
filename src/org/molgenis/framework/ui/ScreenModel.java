@@ -16,10 +16,6 @@ package org.molgenis.framework.ui;
 import java.io.Serializable;
 import java.util.Vector;
 
-import org.molgenis.util.EmailService;
-import org.molgenis.util.Entity;
-import org.molgenis.util.Tree;
-
 // jdk
 
 /**

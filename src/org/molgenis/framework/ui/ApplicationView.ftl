@@ -1,5 +1,4 @@
 <#include "ScreenCommand.ftl">
-<#include "MolgenisWidgets.ftl">
 <#include "Layout.ftl"/>
 <#-- start with the 'main' screen, which is called 'application'-->
 

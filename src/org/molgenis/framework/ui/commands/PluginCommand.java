@@ -3,7 +3,6 @@ package org.molgenis.framework.ui.commands;
 import java.util.List;
 
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.SimpleScreenModel;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Tuple;
 

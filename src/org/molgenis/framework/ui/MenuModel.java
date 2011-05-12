@@ -17,8 +17,6 @@ package org.molgenis.framework.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.util.Entity;
-
 /**
  * This class describes the functionality needed for a menu-screen. The
  * functionality of this class is used in the scripts generating the html-code

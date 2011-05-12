@@ -6,7 +6,7 @@ import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.StringInput;
 
-public class MolgenisWidgetFactory
+public class ScreenViewHelper
 {
 	public DateInput date(String name, String label, Date value, boolean nillable, boolean readonly)
 	{

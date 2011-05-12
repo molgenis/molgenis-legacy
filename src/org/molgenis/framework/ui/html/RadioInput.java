@@ -1,6 +1,7 @@
 package org.molgenis.framework.ui.html;
 
 import java.util.Vector;
+
 import org.molgenis.util.ValueLabel;
 
 /**
