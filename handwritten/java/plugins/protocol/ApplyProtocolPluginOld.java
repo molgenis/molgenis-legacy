@@ -134,7 +134,7 @@ public class ApplyProtocolPluginOld extends PluginModel<Entity> {
 					}
 					
 					// First, make the event
-					int invid = ct.getInvestigationId("AnimalDB");
+					int invid = ct.getUserInvestigationId(this.getLogin().getUserId());
 					ProtocolApplication app = ct.createProtocolApplication(invid, protocolId);
 					db.add(app);
 					int eventid = app.getId();

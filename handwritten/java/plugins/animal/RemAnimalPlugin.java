@@ -131,7 +131,7 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 					endstatus = request.getString("endstatus");
 				}
 				
-				int investigationId = ct.getInvestigationId("AnimalDB");
+				int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
 				
 				// Set 'Removal' feature
 				int protocolId = ct.getProtocolId("SetRemoval");

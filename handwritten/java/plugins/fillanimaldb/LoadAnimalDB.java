@@ -17,6 +17,7 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.security.Login;
+import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.ProtocolApplication;
@@ -33,6 +34,7 @@ public class LoadAnimalDB
 	private Database db;
 	private CommonService ct;
 	private Login login;
+	private int invid;
 
 	public LoadAnimalDB(Database db, Login login) throws Exception
 	{
@@ -40,6 +42,12 @@ public class LoadAnimalDB
 		this.login = login;
 		ct = CommonService.getInstance();
 		ct.setDatabase(this.db);
+		
+		Investigation newInv = new Investigation();
+		newInv.setName("AnimalDB");
+		newInv.setOwns(login.getUserId());
+		db.add(newInv);
+		invid = newInv.getId();
 	}
 
 	public void populateAnimal(String filename) throws Exception
@@ -52,8 +60,6 @@ public class LoadAnimalDB
 			{
 				Calendar calendar = Calendar.getInstance();
 				Date now = calendar.getTime();
-
-				int invid = ct.getInvestigationId("AnimalDB");
 
 				String oldanimalid = tuple.getString("animalid");
 				String oldanimalcustomid = tuple.getString("customid");
@@ -236,8 +242,6 @@ public class LoadAnimalDB
 				Calendar calendar = Calendar.getInstance();
 				Date now = calendar.getTime();
 
-				int invid = ct.getInvestigationId("AnimalDB");
-				
 				int oldlocationid = tuple.getInt("locationid");
 				String name = tuple.getString("name");
 				String inloc = tuple.getString("inlocation");
@@ -278,8 +282,6 @@ public class LoadAnimalDB
 				Calendar calendar = Calendar.getInstance();
 				Date now = calendar.getTime();
 
-				int invid = ct.getInvestigationId("AnimalDB");
-				
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
 
@@ -437,8 +439,6 @@ public class LoadAnimalDB
 				Calendar calendar = Calendar.getInstance();
 				Date now = calendar.getTime();
 
-				int invid = ct.getInvestigationId("AnimalDB");
-				
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
 
@@ -594,8 +594,6 @@ public class LoadAnimalDB
 				Calendar calendar = Calendar.getInstance();
 				Date now = calendar.getTime();
 
-				int invid = ct.getInvestigationId("AnimalDB");
-				
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
 
@@ -703,8 +701,6 @@ public class LoadAnimalDB
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
-				int invid = ct.getInvestigationId("AnimalDB");
-				
 				// experimentid
 				int newexpid = 0;
 				String oldexpid = tuple.getString("experimentid");
@@ -911,8 +907,6 @@ public class LoadAnimalDB
 				Calendar calendar = Calendar.getInstance();
 				Date now = calendar.getTime();
 
-				int invid = ct.getInvestigationId("AnimalDB");
-				
 				// Name
 				String name = tuple.getString("name");
 
@@ -945,8 +939,6 @@ public class LoadAnimalDB
 				Calendar calendar = Calendar.getInstance();
 				Date now = calendar.getTime();
 
-				int invid = ct.getInvestigationId("AnimalDB");
-				
 				// oldanimalid --> new animalid
 				int newanimalid = 0;
 				String oldanimalid = tuple.getString("animalid");
@@ -985,8 +977,6 @@ public class LoadAnimalDB
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
-				int invid = ct.getInvestigationId("AnimalDB");
-				
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
 

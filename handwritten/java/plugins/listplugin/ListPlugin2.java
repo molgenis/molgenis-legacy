@@ -90,7 +90,7 @@ public class ListPlugin2 extends PluginModel<Entity> {
 			if (action.equals("saveGroup")) {
 				Calendar calendar = Calendar.getInstance();
 				Date now = calendar.getTime();
-				int investigationId = ct.getInvestigationId("AnimalDB");
+				int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
 				String groupName;
 				int groupId;
 				

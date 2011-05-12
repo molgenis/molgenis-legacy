@@ -142,7 +142,8 @@ public class CommonService
 	}
 
 	/**
-	 * Retrieve an investigation id based on an investigation name
+	 * Retrieve an investigation id based on an investigation name.
+	 * Returns -1 if none found.
 	 * 
 	 * @param invName investigation name
 	 * @return id of the investigation
@@ -158,8 +159,31 @@ public class CommonService
 		
 		if (invList.size() > 0) {
 		    return invList.get(0).getId();
-		} else
-		    throw new DatabaseException("No investigation can be found matching name: " + invName);
+		} else {
+		    return -1;
+		}
+	}
+	
+	/**
+	 * Gets the ID of the investigation owned by the user with ID 'userId'.
+	 * Assumption: a user only owns one investigation.
+	 * If they own none, an exception is thrown. If they own multiple, only the first one is returned.
+	 * 
+	 * @param userId
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 */
+	public int getUserInvestigationId(int userId) throws DatabaseException, ParseException {
+		Query<Investigation> q = db.query(Investigation.class);
+		q.addRules(new QueryRule(Investigation.OWNS, Operator.EQUALS, userId));
+		List<Investigation> invList = q.find();
+		
+		if (invList.size() > 0) {
+		    return invList.get(0).getId();
+		} else {
+		    throw new DatabaseException("No investigation can be found for user with ID: " + userId);
+		}
 	}
 	
 
@@ -306,6 +330,22 @@ public class CommonService
 			typeIdList.retainAll(activeIdList);
 			return typeIdList;
 		}
+	}
+	
+	/**
+	 * Returns all ObservedValues for the given Measurement ID,
+	 * sorted descending on 'time'.
+	 * 
+	 * @param measurementId
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 */
+	public List<ObservedValue> getAllObservedValues(int measurementId) throws DatabaseException, ParseException {
+		Query<ObservedValue> q = db.query(ObservedValue.class);
+		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, measurementId));
+		q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
+		return q.find();
 	}
 	
 	/** Returns all ObservationTargets currently in the database

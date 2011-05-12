@@ -66,7 +66,7 @@ public class AddSpecialGroupPlugin extends PluginModel<Entity>
 	public void handleRequest(Database db, Tuple request)
 	{
 		try {
-			int invid = ct.getInvestigationId("AnimalDB");
+			int invid = ct.getUserInvestigationId(this.getLogin().getUserId());
 			String action = request.getString("__action");
 			if (action.equals("addSpecialGroup")) {
 				// Get values from form

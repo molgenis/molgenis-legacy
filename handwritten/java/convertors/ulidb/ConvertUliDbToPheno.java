@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.security.Login;
+import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
@@ -60,7 +61,15 @@ public class ConvertUliDbToPheno
 		logger = Logger.getLogger("LoadUliDb");
 		
 		userName = login.getUserName();
+		
+		// If needed, make investigation
 		invName = "UliEisel";
+		if (ct.getInvestigationId(invName) == -1) {
+			Investigation newInv = new Investigation();
+			newInv.setName(invName);
+			newInv.setOwns_Name(userName);
+			db.add(newInv);
+		}
 		
 		// Init lists that we can later add to the DB at once
 		protocolAppsToAddList = new ArrayList<ProtocolApplication>();

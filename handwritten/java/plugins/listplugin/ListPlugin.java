@@ -19,7 +19,6 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;

@@ -144,7 +144,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			String featureName, String valueName, String valueCertainName, int parentgroupid, Date tmpDate) 
 	throws DatabaseException, ParseException, IOException {
 		int eventCounter = 0;
-		int invid = ct.getInvestigationId("AnimalDB");
+		int invid = ct.getUserInvestigationId(this.getLogin().getUserId());
 		int protocolId = ct.getProtocolId(protocolName);
 		
 		// Init lists that we can later add to the DB at once
@@ -191,7 +191,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			Calendar calendar = Calendar.getInstance();
 			Date now = calendar.getTime();
 			
-			int invid = ct.getInvestigationId("AnimalDB");
+			int invid = ct.getUserInvestigationId(this.getLogin().getUserId());
 			
 			String action = request.getString("__action");
 			

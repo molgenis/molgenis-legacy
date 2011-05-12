@@ -49,17 +49,13 @@ public class FillAnimalDB {
 		Logger logger = Logger.getLogger("FillAnimalDB");
 		logger.info("Start filling the database with factory defaults for AnimalDB.");
 		
-		// Make investigations
-		logger.info("Create investigations");
+		// Make investigation
+		logger.info("Create investigation");
 		Investigation inv = new Investigation();
-		inv.setName("AnimalDB");
-		inv.setOwns_Name("admin");
+		inv.setName("System");
+		inv.setOwns(login.getUserId());
 		db.add(inv);
-		int invid = ct.getInvestigationId("AnimalDB");
-		inv = new Investigation();
-		inv.setName("UliEisel");
-		inv.setOwns_Name("admin");
-		db.add(inv);
+		int invid = inv.getId();
 		
 		// Make ontology 'Units'
 		logger.info("Add ontology entries");

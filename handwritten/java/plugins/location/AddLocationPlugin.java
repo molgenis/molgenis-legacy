@@ -78,7 +78,7 @@ public class AddLocationPlugin extends PluginModel<Entity>
 				Date now = calendar.getTime();
 				
 				// Make and add location
-				int invid = ct.getInvestigationId("AnimalDB");
+				int invid = ct.getUserInvestigationId(this.getLogin().getUserId());
 				int locid = ct.makeLocation(invid, name, this.getLogin().getUserId());
 				if (slocid > 0) {
 					int protocolId = ct.getProtocolId("SetSublocationOf");

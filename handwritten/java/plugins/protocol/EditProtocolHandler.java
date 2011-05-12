@@ -32,7 +32,9 @@ class EditProtocolHandler {
     	DateFormat formatter = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
     	
 		try {
-			// TODO: fix more nicely
+			// Retrieving the investigation ID is done in a nicer way in the ApplyProtocolPlugin,
+			// but we cannot use the same code here since we don't have access to CommonService
+			// and the login object. Leave this because this class is deprecated anyhow.
 			int investigationId;
 			if (service.getObservationTarget(model.getTargetsIdList().get(0)) != null) {
 				investigationId = service.getObservationTarget(model.getTargetsIdList().get(0)).getInvestigation();

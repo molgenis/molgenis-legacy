@@ -226,7 +226,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		}
 		
 		// Investigation
-		int invid = ct.getInvestigationId("AnimalDB");
+		int invid = ct.getUserInvestigationId(this.getLogin().getUserId());
 		
 		db.beginTx();
 		

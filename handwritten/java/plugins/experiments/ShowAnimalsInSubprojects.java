@@ -317,7 +317,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 						value.setEndtime(subProjectRemovalDatetime);
 						db.update(value);
 						
-						int investigationId = ct.getInvestigationId("AnimalDB");
+						int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
 						
 						// If applicable, end status Active and set Death date
 						if (endstatus.equals("A. Dood in het kader van de proef") || endstatus.equals("B. Gedood na beeindiging van de proef")) {
@@ -521,7 +521,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 					}
 					
 					// Make 'AnimalInSubproject' protocol application and add values
-					int investigationId = ct.getInvestigationId("AnimalDB");
+					int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
 					int protocolId = ct.getProtocolId("AnimalInSubproject");
 					ProtocolApplication app = ct.createProtocolApplication(investigationId, protocolId);
 					db.add(app);

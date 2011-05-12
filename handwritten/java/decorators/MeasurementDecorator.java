@@ -23,7 +23,7 @@ import commonservice.CommonService;
 
 public class MeasurementDecorator<E extends Measurement> extends MappingDecorator<E> {
 	private CommonService ct = CommonService.getInstance();
-	Logger logger  = Logger.getLogger("Measurementdecorator");
+	Logger logger  = Logger.getLogger("MeasurementDecorator");
 	
 	// JDBCMapper is the generate thing
 	public MeasurementDecorator(JDBCMapper<E> generatedMapper) {
@@ -40,16 +40,21 @@ public class MeasurementDecorator<E extends Measurement> extends MappingDecorato
 			// Add corresponding event type
 			featureName = e.getName();
 			protocolName = "Set" + featureName;
-			int etId, featId, invid;
+			int etId, featId;
+			int invId = -1;
+			
+			// Dirty trick to prevent Protocols from being made when calling from Hudson test:
 			try {
-				invid = ct.getInvestigationId("AnimalDB");
+				invId = ct.getInvestigationId("System");
 			} catch (Exception e1) {
-				//invid = -1;
-				// Dirty trick to prevent Protocols from being made when calling from Hudson test:
+				// In Hudson, there are no Investigations present in the DB, so the exception is
+				// thrown and then we happily return true so the test will not fail
 				return true;
 			}
+			
 			try {
-				etId = ct.makeProtocol(invid, protocolName);
+				// Auto-generated protocols will be linked to the always present System investigation
+				etId = ct.makeProtocol(invId, protocolName);
 			} catch (Exception e2) {
 				return false;
 			}

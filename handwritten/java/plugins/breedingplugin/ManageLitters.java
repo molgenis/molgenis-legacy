@@ -211,7 +211,7 @@ public class ManageLitters extends PluginModel<Entity>
 			Calendar calendar = Calendar.getInstance();
 			Date now = calendar.getTime();
 			
-			int invid = ct.getInvestigationId("AnimalDB");
+			int invid = ct.getUserInvestigationId(this.getLogin().getUserId());
 			
 			this.action = request.getString("__action");
 			
@@ -295,7 +295,6 @@ public class ManageLitters extends PluginModel<Entity>
 			if (action.equals("Wean")) {
 				setUserFields(request, true);
 				Date weanDate = sdf.parse(weandatetime);	
-				int investigationId = ct.getInvestigationId("AnimalDB");
 				
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
@@ -364,7 +363,7 @@ public class ManageLitters extends PluginModel<Entity>
 				
 				// Link animals to litter and set wean dates etc.
 				for (int animalNumber = 0; animalNumber < weanSize; animalNumber++) {
-					ObservationTarget animalToAdd = ct.createIndividual(investigationId, "animal_" + weanDate + "_" + animalNumber, this.getLogin().getUserId());
+					ObservationTarget animalToAdd = ct.createIndividual(invid, "animal_" + weanDate + "_" + animalNumber, this.getLogin().getUserId());
 					animalsToAddList.add(animalToAdd);
 				}
 				db.add(animalsToAddList);

@@ -104,14 +104,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
     	DateFormat formatter = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
     	
 		try {
-			// TODO: fix more nicely
-			int investigationId;
-			if (cs.getObservationTargetById(model.getTargetsIdList().get(0)) != null) {
-				investigationId = cs.getObservationTargetById(model.getTargetsIdList().get(0)).getInvestigation();
-			} else {
-				investigationId = cs.getInvestigationId("AnimalDB");
-			}
-			
+			int investigationId = cs.getUserInvestigationId(this.getLogin().getUserId());;
 		    int paId = cs.makeProtocolApplication(investigationId, model.getProtocolId());
 		    int sizeTargets = model.getFullTargetList().size();
 	

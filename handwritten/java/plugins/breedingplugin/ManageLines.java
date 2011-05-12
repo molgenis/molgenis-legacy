@@ -67,7 +67,7 @@ public class ManageLines extends PluginModel<Entity>
 				Date now = Calendar.getInstance().getTime();
 				this.setLineName(request.getString("lineName"));
 				// Make group
-				int invid = cs.getInvestigationId("AnimalDB");
+				int invid = cs.getUserInvestigationId(this.getLogin().getUserId());
 				int groupid = cs.makePanel(invid, lineName, this.getLogin().getUserId());
 				// Mark group as Line using a special event
 				int protocolId = cs.getProtocolId("SetTypeOfGroup");

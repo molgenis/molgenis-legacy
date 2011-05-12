@@ -7,11 +7,7 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Query;
-import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 
 import commonservice.CommonService;
@@ -19,15 +15,14 @@ import commonservice.CommonService;
 public class PhenoMatrix extends Matrix<ObservedValue> {
 
 	private Database db = null;
-	private List<ObservationTarget> targetList;
 	private List<Integer> targetIdList;
 	private List<Measurement> featureList;
 	private List<Integer> featureIdList;
-	private List<Measurement> allFeatureList;
+	private List<Measurement> allMeasurementList;
 	private ObservedValue[][][] data;
 	private int nrOfTargets;
 	private int nrOfFeatures;
-	private int totalNrOfFeatures;
+	private int totalNrOfMeasurements;
 	private CommonService cq = CommonService.getInstance();
 	
 	public Database getDatabase() {
@@ -38,52 +33,45 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 		this.db = db;
 		cq.setDatabase(db);
 		
-		Query<ObservationTarget> q = db.query(ObservationTarget.class);
-		if (!targetType.equals("All")) {
-			q.addRules(new QueryRule(ObservationTarget.__TYPE, Operator.EQUALS, targetType));
+		if (targetType.equals("All")) {
+			targetType = null;
 		}
-		targetList = q.find();
-		targetIdList = new ArrayList<Integer>();
-		for (ObservationTarget target : targetList) {
-			targetIdList.add(target.getId());
-		}
+		targetIdList = cq.getAllObservationTargetIds(targetType, false);
+		nrOfTargets = targetIdList.size();
+		
 		featureList = new ArrayList<Measurement>();
 		featureIdList = new ArrayList<Integer>();
-		allFeatureList = db.query(Measurement.class).find();
-		totalNrOfFeatures = allFeatureList.size();
-		if (totalNrOfFeatures == 0) {
-			throw new DatabaseException("No features found in database");
+		allMeasurementList = cq.getAllMeasurements();
+		totalNrOfMeasurements = allMeasurementList.size();
+		if (totalNrOfMeasurements == 0) {
+			throw new DatabaseException("No measurements found in database");
 		}
-		nrOfTargets = targetList.size();
 		nrOfFeatures = 0;
-		data = new ObservedValue[nrOfTargets][totalNrOfFeatures][];
+		
+		data = new ObservedValue[nrOfTargets][totalNrOfMeasurements][];
 	}
 	
 	public int addRemFeature(int featureId) throws DatabaseException, ParseException {
-		Query<Measurement> q = db.query(Measurement.class);
-		q.addRules(new QueryRule("id", Operator.EQUALS, featureId));
-		List<Measurement> featList = q.find();
-		Measurement feat = featList.get(0);
+		Measurement meas = cq.getMeasurementById(featureId);
 		if (featureIdList.contains(featureId)) {
-			int colNr = remCol(feat);
+			int colNr = remCol(meas);
 			return colNr;
 		} else {
-			addCol(feat);
+			addCol(meas);
 			return -1;
 		}
 	}
 	
-	public void addCol(Measurement feat) throws DatabaseException, ParseException {
+	public void addCol(Measurement meas) throws DatabaseException, ParseException {
+		int measurementId = meas.getId();
+		
 		nrOfFeatures++;
-		featureIdList.add(feat.getId());
-		featureList.add(feat);
-		Integer[][] size = new Integer[nrOfTargets][totalNrOfFeatures];
-		int colNr = allFeatureList.indexOf(feat);
+		featureIdList.add(measurementId);
+		featureList.add(meas);
+		Integer[][] size = new Integer[nrOfTargets][totalNrOfMeasurements];
+		int colNr = allMeasurementList.indexOf(meas);
 		List<Integer> seenTargetLocs = new ArrayList<Integer>();
-		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, feat.getId()));
-		q.addRules(new QueryRule(Operator.SORTDESC, "time"));
-		List<ObservedValue> valueList = q.find();
+		List<ObservedValue> valueList = cq.getAllObservedValues(measurementId);
 		if (valueList != null && valueList.size() > 0) {
 			for (ObservedValue value : valueList) {
 				int targetLoc = targetIdList.indexOf(value.getTarget());
@@ -104,7 +92,7 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 	
 	public int remCol(Measurement feat) {
 		int colNr = featureList.indexOf(feat) + 1;
-		int featNr = allFeatureList.indexOf(feat);
+		int featNr = allMeasurementList.indexOf(feat);
 		featureList.remove(feat);
 		featureIdList.remove(feat.getId());
 		for (int t = 0; t < nrOfTargets; t++) {
@@ -120,7 +108,7 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 		
 		// Split search term
 		String[] terms = term.split("\\sOR\\s");
-		for (int tid = 0; tid < targetList.size(); tid++) {
+		for (int tid = 0; tid < targetIdList.size(); tid++) {
 			hit = false;
 			for (String currentTerm : terms) {
 				// First, search in target label. If match, go to next.
@@ -129,13 +117,11 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 						returnList.add(tid);
 					}
 				} catch (Exception e) {
-					if (targetList.get(tid).getName().contains(currentTerm)) {
-						returnList.add(tid);
-					}
+					// Impossible, ignore for now
 				}
 				
 				for (Measurement feat : featureList) {
-					int fid = allFeatureList.indexOf(feat);
+					int fid = allMeasurementList.indexOf(feat);
 					ObservedValue[] valArray = data[tid][fid];
 					if (valArray == null) {
 						continue;
@@ -176,7 +162,7 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 		
 		// Split filter terms
 		String[] terms = term.split("\\sOR\\s");
-		for (int tid = 0; tid < targetList.size(); tid++) {
+		for (int tid = 0; tid < targetIdList.size(); tid++) {
 			for (String currentTerm : terms) {
 				if (colNr == 0) {
 					// First, search in target label. If match, go to next.
@@ -185,13 +171,11 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 							returnList.add(tid);
 						}
 					} catch (Exception e) {
-						if (targetList.get(tid).getName().contains(currentTerm)) {
-							returnList.add(tid);
-						}
+						// Impossible, ignore for now
 					}
 				} else {
 					Measurement feat = featureList.get(colNr - 1);
-					int fid = allFeatureList.indexOf(feat);
+					int fid = allMeasurementList.indexOf(feat);
 					ObservedValue[] valArray = data[tid][fid];
 					if (valArray == null) {
 						continue;
@@ -264,7 +248,7 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 			int rpos = 0;
 			for (int j = 0; j < nrOfFeatures; j++) {
 				Measurement feat = featureList.get(j);
-				int fpos = allFeatureList.indexOf(feat);
+				int fpos = allMeasurementList.indexOf(feat);
 				returnData[i][rpos] = data[rowIndices[i]][fpos];
 				rpos++;
 			}
@@ -287,7 +271,7 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 	}
 
 	public int getTotalNrOfFeatures() {
-		return totalNrOfFeatures;
+		return totalNrOfMeasurements;
 	}
 
 	public int getNrOfFeatures() {
@@ -304,7 +288,7 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 		
 		// Get ID's for targets that are to be shown
 		for (int i = 0; i < idx.length; i++) {
-			if (idx[i] < nrOfTargets && targetList.get(idx[i]) != null) {
+			if (idx[i] < nrOfTargets && targetIdList.get(idx[i]) != null) {
 				idList.add(targetIdList.get(idx[i]));
 			} else {
 				break;
@@ -317,10 +301,7 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 				returnData[i] = cq.getObservationTargetLabel(targetIdList.get(idx[i]));
 			}
 		} catch (Exception e) {
-			// On failure (unlikely!), use normal names instead
-			for (int i = 0; i < idx.length; i++) {
-				returnData[i] = targetList.get(idx[i]).getName();
-			}
+			// Impossible, ignore for now
 		}
 		
 		return returnData;
@@ -328,7 +309,7 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 	
 	public List<Integer> getAllIndices() {
 		List<Integer> returnList = new ArrayList<Integer>();
-		for (int tid = 0; tid < targetList.size(); tid++) {
+		for (int tid = 0; tid < nrOfTargets; tid++) {
 			returnList.add(tid);
 		}
 		return returnList;
