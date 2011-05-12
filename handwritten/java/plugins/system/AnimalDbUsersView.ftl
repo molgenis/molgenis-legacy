@@ -59,11 +59,17 @@
 
 <div id="investigationdiv" class="row">
 	<label for="investigation">Investigation:</label>
-	<select name="investigation" id="investigation"> 
+	<select name="investigation" id="investigation">
+		<option value="0">New (specify name below)...</option>
 		<#list screen.investigations as investigation>
 			<option value="${investigation.id?string.computer}">${investigation.name}</option>
 		</#list>
 	</select>
+</div>
+
+<div id="newinvdiv" class="row">
+	<label for="newinv">New investigation name (if applicable):</label>
+	<input type="text" name="newinv" id="newinv" class="textbox" />
 </div>
 
 <div id='buttons_part' class='row'>

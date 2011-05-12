@@ -152,19 +152,30 @@ public class AnimalDbUsers extends PluginModel<Entity>
 				Investigation chosenInv;
 				if (request.getInt("investigation") != null) {
 					int invId = request.getInt("investigation");
-					Query<Investigation> q = db.query(Investigation.class);
-					q.addRules(new QueryRule(Investigation.ID, Operator.EQUALS, invId));
-					List<Investigation> invList = q.find();
-					if (invList.size() == 1) {
-						chosenInv = invList.get(0);
+					if (invId == 0) {
+						String newinv = request.getString("newinv");
+						if (newinv == null) {
+							throw new Exception("No name given for new investigation");
+						}
+						chosenInv = new Investigation();
+						chosenInv.setName(newinv);
+						db.add(chosenInv); // owner is now defaulted to the one logged in!
+						
 					} else {
-						throw new Exception("No (valid) investigation chosen");
+						Query<Investigation> q = db.query(Investigation.class);
+						q.addRules(new QueryRule(Investigation.ID, Operator.EQUALS, invId));
+						List<Investigation> invList = q.find();
+						if (invList.size() == 1) {
+							chosenInv = invList.get(0);
+						} else {
+							throw new Exception("No (valid) investigation chosen");
+						}
 					}
+					chosenInv.setOwns(userId);
+					db.update(chosenInv);
 				} else {
 					throw new Exception("No (valid) investigation chosen");
 				}
-				chosenInv.setOwns(userId);
-				db.update(chosenInv);
 				
 				// Give rights on entities, forms, menus and plugins
 				List<MolgenisPermission> permList = new ArrayList<MolgenisPermission>();

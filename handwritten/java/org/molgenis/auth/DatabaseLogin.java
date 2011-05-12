@@ -427,7 +427,7 @@ public class DatabaseLogin implements Login, Serializable {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean canRead(ScreenModel screen)
+	public boolean canRead(org.molgenis.framework.ui.ScreenController<?> screen)
 	{
 		if (this.isAuthenticated() && this.user.getSuperuser())
 			return true;
