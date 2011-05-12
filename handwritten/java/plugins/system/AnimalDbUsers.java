@@ -215,7 +215,7 @@ public class AnimalDbUsers extends PluginModel<Entity>
 				permList.add(makePermission(db, userId, "write","app.ui.CascadingDeleteAnimalsPlugin"));
 				permList.add(makePermission(db, userId, "write","app.ui.SetCustomLabelFeaturePlugin"));
 				permList.add(makePermission(db, userId, "write","app.ui.batchesMenu"));
-				permList.add(makePermission(db, userId, "write","app.ui.ManageBatchesFormModel"));
+				permList.add(makePermission(db, userId, "write","app.ui.ManageBatchesFormController"));
 				permList.add(makePermission(db, userId, "write","app.ui.BatchPlugin"));
 				permList.add(makePermission(db, userId, "write","app.ui.BatchViewPlugin"));
 				permList.add(makePermission(db, userId, "write","app.ui.animalmenuMenu"));
