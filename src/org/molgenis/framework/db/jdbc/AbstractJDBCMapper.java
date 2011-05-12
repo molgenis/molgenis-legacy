@@ -809,7 +809,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 			{
 				QueryRule r = new QueryRule(this.rewriteRules(db, rule.getNestedRules()));
 				//r.setOr(rule.isOr());
-				rules.add(new QueryRule(Operator.OR));
+				//rules.add(new QueryRule(Operator.AND));
 				rules.add(r);
 			}
 			else
