@@ -29,14 +29,15 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 		return db;
 	}
 	
-	public void init(Database db, String targetType) throws DatabaseException, ParseException {
+	public void init(Database db, String targetType, int userId) throws DatabaseException, ParseException {
 		this.db = db;
 		cq.setDatabase(db);
 		
 		if (targetType.equals("All")) {
 			targetType = null;
 		}
-		targetIdList = cq.getAllObservationTargetIds(targetType, false);
+		int investigationId = cq.getUserInvestigationId(userId);
+		targetIdList = cq.getAllObservationTargetIds(targetType, false, investigationId);
 		nrOfTargets = targetIdList.size();
 		
 		featureList = new ArrayList<Measurement>();
@@ -276,6 +277,10 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 
 	public int getNrOfFeatures() {
 		return nrOfFeatures;
+	}
+	
+	public int getNrOfTargets() {
+		return nrOfTargets;
 	}
 	
 	public List<Measurement> getFeatureList() {

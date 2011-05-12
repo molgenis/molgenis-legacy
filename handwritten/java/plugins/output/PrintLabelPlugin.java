@@ -218,7 +218,8 @@ public class PrintLabelPlugin extends GenericPlugin
     	targets = new SelectMultipleInput("Targets", null);
 	    targets.setLabel("Select animal(s):");
 		try {
-		    for (Integer animalId : cs.getAllObservationTargetIds("Individual", true)) {
+			int investigationId = cs.getUserInvestigationId(this.getLogin().getUserId());
+		    for (Integer animalId : cs.getAllObservationTargetIds("Individual", true, investigationId)) {
 		    	targets.addOption(animalId, getTargetName(animalId));
 		    }
 		} catch(Exception e) {

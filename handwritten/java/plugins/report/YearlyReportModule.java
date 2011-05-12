@@ -69,20 +69,22 @@ public class YearlyReportModule extends PluginModel<Entity>
 	
 	private void makeReport(Database db) {
 		
+		int userId = this.getLogin().getUserId();
+		
 		if (form.equals("4A")) {
-			report = new VWAReport4(db);
+			report = new VWAReport4(db, userId);
 			report.makeReport(year, "A");
 		}
 		if (form.equals("4B")) {
-			report = new VWAReport4(db);
+			report = new VWAReport4(db, userId);
 			report.makeReport(year, "B");
 		}
 		if (form.equals("4C")) {
-			report = new VWAReport4(db);
+			report = new VWAReport4(db, userId);
 			report.makeReport(year, "C");
 		}
 		if (form.equals("5")) {
-			report = new VWAReport5(db);
+			report = new VWAReport5(db, userId);
 			report.makeReport(year, "");
 		}
 	}

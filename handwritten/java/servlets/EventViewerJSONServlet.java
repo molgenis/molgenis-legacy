@@ -31,6 +31,7 @@ public class EventViewerJSONServlet extends app.servlet.MolgenisServlet {
 	private static int storedTargetLength;
 	private static String storedTargetType = "All";
 	private static int totalNrOfFeatures = 0;
+	private static int userId;
 
 	public void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -74,9 +75,12 @@ public class EventViewerJSONServlet extends app.servlet.MolgenisServlet {
 			 * 
 			 */
 			
+			// Get user ID
+			userId = req.getInt("userId");
+			
 			Database db = getDatabase();
 			if (pm.getDatabase() == null) {
-				pm.init(db, storedTargetType);
+				pm.init(db, storedTargetType, userId);
 				totalNrOfFeatures = pm.getTotalNrOfFeatures();
 			}
 			
@@ -87,19 +91,14 @@ public class EventViewerJSONServlet extends app.servlet.MolgenisServlet {
 					targetTypeChanged = true;
 					storedTargetType = req.getString("targetType");
 					// Reinit matrix
-					pm.init(db, storedTargetType);
+					pm.init(db, storedTargetType, userId);
 					totalNrOfFeatures = pm.getTotalNrOfFeatures();
 				}
 			}
 			
 			// Standard params
 			String echo = req.getString("sEcho");
-			int totalSize;
-			if (storedTargetType.equals("All")) {
-				totalSize = db.count(ObservationTarget.class);
-			} else {
-				totalSize = db.count(ObservationTarget.class, new QueryRule(ObservationTarget.__TYPE, Operator.EQUALS, storedTargetType));
-			}
+			int totalSize = pm.getNrOfTargets();
 			int displaySize = totalSize;
 			int start = req.getInt("iDisplayStart");
 			int length = req.getInt("iDisplayLength");

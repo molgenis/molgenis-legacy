@@ -180,7 +180,8 @@ public class ApplyProtocolUI {
 		try {
 		    targets = new SelectMultipleInput("Targets", null);
 		    targets.setLabel("Choose Targets:");
-		    for (ObservationTarget o : cs.getAllObservationTargets()) {
+		    int investigationId = cs.getUserInvestigationId(model.getUserId());
+		    for (ObservationTarget o : cs.getAllObservationTargets(investigationId)) {
 		    	targets.addOption(o.getId(), this.getTargetName(o.getId()));
 		    }
 		    protocolDiv.add(targets);

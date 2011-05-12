@@ -38,6 +38,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		super(name, parent);
 	
 		model = new ApplyProtocolPluginModel();
+		model.setUserId(this.getLogin().getUserId());
 		ui = new ApplyProtocolUI(model);
     }
 
@@ -85,11 +86,14 @@ public class ApplyProtocolPlugin extends GenericPlugin
     @Override
     public void reload(Database db)
     {
+    	int userId = this.getLogin().getUserId();
+    	
 		cs.setDatabase(db);
-		cs.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
+		cs.makeObservationTargetNameMap(userId, false);
 	
-		// Only first time:
-		if (ui.getProtocolApplicationContainer() == null) {
+		// Only first time or if user changed:
+		if (ui.getProtocolApplicationContainer() == null || userId != model.getUserId()) {
+			model.setUserId(userId);
 		    ui.initScreen();
 		}
     }

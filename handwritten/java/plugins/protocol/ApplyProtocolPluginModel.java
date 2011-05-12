@@ -22,9 +22,9 @@ public class ApplyProtocolPluginModel {
 	private int protocolId;
 	private boolean newProtocolApplication = false;
 	private boolean timeInfo = false;
+	private int userId;
 	
 	public ApplyProtocolPluginModel() {
-		
 	}
 
 	public void setFeaturesList(List<Measurement> featuresList) {
@@ -85,5 +85,13 @@ public class ApplyProtocolPluginModel {
 
 	public List<String> getFullTargetList() {
 		return fullTargetList;
+	}
+
+	public void setUserId(int userId) {
+		this.userId = userId;
+	}
+
+	public int getUserId() {
+		return userId;
 	}
 }

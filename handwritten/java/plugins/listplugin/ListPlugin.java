@@ -143,5 +143,9 @@ public class ListPlugin extends PluginModel<Entity> {
 			this.setMessages(new ScreenMessage(e.getMessage(), false));
 		}
 	}
+	
+	public int getUserId() {
+		return this.getLogin().getUserId();
+	}
 
 }

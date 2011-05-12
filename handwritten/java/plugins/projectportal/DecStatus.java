@@ -170,6 +170,7 @@ public class DecStatus extends GenericPlugin
 				statusTable.setCell(4, rowCount, cq.getMostRecentValueAsString(subprojectId, featureId));
 				
 				// Calculate numbers of animals alive/used/total
+				int investigationId = cq.getUserInvestigationId(this.getLogin().getUserId());
 				int nrOfAnimalsAlive = 0;
 				int nrOfAnimalsRemoved = 0;
 				int nrOfAnimalsTotal = 0;
@@ -177,7 +178,8 @@ public class DecStatus extends GenericPlugin
 				budgetCum += budget;
 				Date now = Calendar.getInstance().getTime();
 				featureId = cq.getMeasurementId("Experiment");
-				List<Integer> aliveAnimalIdList = cq.getAllObservationTargetIds("Individual", true);
+				List<Integer> aliveAnimalIdList = cq.getAllObservationTargetIds("Individual", true, 
+						investigationId);
 				if (aliveAnimalIdList.size() > 0) {
 					Query<ObservedValue> q = db.query(ObservedValue.class);
 					q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, subprojectId));
@@ -188,7 +190,8 @@ public class DecStatus extends GenericPlugin
 					nrOfAnimalsAlive = q.count();
 				}
 				nrOfAnimalsAliveCum += nrOfAnimalsAlive;
-				List<Integer> totalAnimalIdList = cq.getAllObservationTargetIds("Individual", false);
+				List<Integer> totalAnimalIdList = cq.getAllObservationTargetIds("Individual", false, 
+						investigationId);
 				if (totalAnimalIdList.size() > 0) {
 					Query<ObservedValue> q = db.query(ObservedValue.class);
 					q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, subprojectId));

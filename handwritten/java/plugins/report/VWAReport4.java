@@ -19,9 +19,11 @@ public class VWAReport4 extends AnimalDBReport
 	private String[][] matrix = null;
 	List<String> speciesList = new ArrayList<String>();
 	private String type;
+	private int userId;
 
-	public VWAReport4(Database db)
+	public VWAReport4(Database db, int userId)
 	{
+		this.userId = userId;
 		this.db = db;
 		ct = CommonService.getInstance();
 		ct.setDatabase(db);
@@ -46,7 +48,8 @@ public class VWAReport4 extends AnimalDBReport
 			ArrayList<ArrayList<Integer>> rowList = new ArrayList<ArrayList<Integer>>();
 
 			// Go through all animals
-			List<Integer> targetIdList = ct.getAllObservationTargetIds("Individual", false);
+			int investigationId = ct.getUserInvestigationId(userId);
+			List<Integer> targetIdList = ct.getAllObservationTargetIds("Individual", false, investigationId);
 			for (Integer targetid : targetIdList)
 			{
 				// Check AnimalType

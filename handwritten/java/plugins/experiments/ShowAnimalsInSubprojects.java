@@ -580,7 +580,8 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 			setGroupList(ct.getAllMarkedPanels("Selection"));
 			
 			// Populate list of all animals
-			allAnimalIdList = ct.getAllObservationTargetIds("Individual", true);			
+			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
+			allAnimalIdList = ct.getAllObservationTargetIds("Individual", true, investigationId);			
 			
 			// Populate pain management code list
 			this.setPainManagementCodeList(ct.getAllCodesForFeature("PainManagement"));

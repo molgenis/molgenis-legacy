@@ -138,7 +138,8 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 		
 			if (action.equals("removeAllAnimals"))
 			{
-				List<Integer> animalIdList = ct.getAllObservationTargetIds("Individual", false);
+				int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
+				List<Integer> animalIdList = ct.getAllObservationTargetIds("Individual", false, investigationId);
 				List<ObservationTarget> allAnimalList = ct.getObservationTargets(animalIdList);
 				for (ObservationTarget animal : allAnimalList) {
 					removeValues(db, ct, animal.getId(), protocolApplicationList);
@@ -166,7 +167,8 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 
 		try
 		{
-			this.setTargetIdList(ct.getAllObservationTargetIds(null, false));
+			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
+			this.setTargetIdList(ct.getAllObservationTargetIds(null, false, investigationId));
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (e.getMessage() != null) {

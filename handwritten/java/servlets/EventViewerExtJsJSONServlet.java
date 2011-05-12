@@ -29,6 +29,7 @@ public class EventViewerExtJsJSONServlet extends app.servlet.MolgenisServlet {
 	//private static int storedTargetLength;
 	private static String storedTargetType = "Animal";
 	//private static int totalNrOfFeatures = 0;
+	private static int userId;
 
 	public void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -58,7 +59,7 @@ public class EventViewerExtJsJSONServlet extends app.servlet.MolgenisServlet {
 			Database db = getDatabase();
 			ct.setDatabase(db);
 			if (pm.getDatabase() == null) {
-				pm.init(db, storedTargetType);
+				pm.init(db, storedTargetType, userId);
 				//totalNrOfFeatures = pm.getTotalNrOfFeatures();
 			}
 			

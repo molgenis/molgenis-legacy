@@ -19,8 +19,10 @@ public class VWAReport5 extends AnimalDBReport {
 	
 	private ArrayList<ArrayList<String>> matrix = new ArrayList<ArrayList<String>>();
 	private List<Integer> nrOfAnimalList = new ArrayList<Integer>();
+	private int userId;
 	
-	public VWAReport5(Database db) {
+	public VWAReport5(Database db, int userId) {
+		this.userId = userId;
 		this.db = db;
 		ct = CommonService.getInstance();
 		ct.setDatabase(db);

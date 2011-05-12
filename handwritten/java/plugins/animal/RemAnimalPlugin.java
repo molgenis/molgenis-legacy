@@ -200,7 +200,8 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 
 		try {
 			// Populate animal list
-			this.setAnimalIdList(ct.getAllObservationTargetIds("Individual", true));
+			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
+			this.setAnimalIdList(ct.getAllObservationTargetIds("Individual", true, investigationId));
 			
 			// Populate removal code list
 			this.setRemovalCodeList(ct.getAllCodesForFeature("Removal"));

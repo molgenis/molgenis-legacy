@@ -278,8 +278,8 @@ public class CommonService
 	}
 
 	/**
-	 * Return a list of all observation targets of a certain type. If desired,
-	 * filtered down to only the currently active ones.
+	 * Return a list of all observation targets of a certain type in the Investigation with ID investigationId.
+	 * If desired, filtered down to only the currently active ones.
 	 * 
 	 * @param type
 	 *            : observation target type (Animal, Actor, Group, Location) to filter on, may be null
@@ -289,12 +289,14 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<Integer> getAllObservationTargetIds(String type, boolean isActive) 
+	public List<Integer> getAllObservationTargetIds(String type, boolean isActive, int investigationId) 
 	throws DatabaseException, ParseException
 	{
 		List<Integer> returnList = new ArrayList<Integer>();
 		if (isActive == false) {
 			Query<ObservationTarget> targetQuery = db.query(ObservationTarget.class);
+			targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION, Operator.EQUALS, 
+					investigationId));
 			if (type != null) {
 				targetQuery.addRules(new QueryRule(ObservationTarget.__TYPE, Operator.EQUALS, 
 						type));
@@ -310,6 +312,7 @@ public class CommonService
 			Query<ObservedValue> valueQuery = db.query(ObservedValue.class);
 			valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
 			valueQuery.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
+			valueQuery.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.EQUALS, investigationId));
 			List<ObservedValue> valueList = valueQuery.find();
 			List<Integer> activeIdList = new ArrayList<Integer>();
 			for (ObservedValue value : valueList) {
@@ -319,6 +322,8 @@ public class CommonService
 			List<Integer> typeIdList = new ArrayList<Integer>();
 			if (type != null) {
 				Query<ObservationTarget> targetQuery = db.query(ObservationTarget.class);
+				targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION, Operator.EQUALS, 
+						investigationId));
 				targetQuery.addRules(new QueryRule(ObservationTarget.__TYPE, Operator.EQUALS, 
 						type));
 				List<ObservationTarget> targetList = targetQuery.find();
@@ -348,15 +353,15 @@ public class CommonService
 		return q.find();
 	}
 	
-	/** Returns all ObservationTargets currently in the database
+	/** Returns all ObservationTargets in the Investigation with ID investigationId
 	 * 
 	 * @return list of observation targets
 	 * @throws DatabaseException 
 	 */
-	public List<ObservationTarget> getAllObservationTargets() {
+	public List<ObservationTarget> getAllObservationTargets(int investigationId) {
 		try {
-		    return db.find(ObservationTarget.class);
-		} catch(DatabaseException dbe) {
+		    return db.query(ObservationTarget.class).eq(ObservationTarget.INVESTIGATION, investigationId).find();
+		} catch (Exception e) {
 		    return new ArrayList<ObservationTarget>();
 		}
 		
@@ -465,11 +470,18 @@ public class CommonService
 			return;
 		}
 		
+		int investigationId;
+		try {
+			investigationId = getUserInvestigationId(userId);
+		} catch (Exception e) {
+			return;
+		}
+		
 		observationTargetNameMap = new HashMap<Integer, String>();
 		List<ObservationTarget> targetList = new ArrayList<ObservationTarget>();
 		// First fill with standard names
 		try {
-			targetList = getAllObservationTargets();
+			targetList = getAllObservationTargets(investigationId);
 		} catch (Exception e) {
 			// targetList will remain empty
 			return;
@@ -488,8 +500,10 @@ public class CommonService
 		if (customNameFeatureId != -1) {
 			try {
 				Query<ObservedValue> valueQuery = db.query(ObservedValue.class);
-				valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, customNameFeatureId));
-				valueQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, getAllObservationTargetIds(null, false)));
+				valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, 
+						customNameFeatureId));
+				valueQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, 
+						getAllObservationTargetIds(null, false, investigationId)));
 				List<ObservedValue> valueList = valueQuery.find();
 				for (ObservedValue value : valueList) {
 					if (value.getValue() != null) {

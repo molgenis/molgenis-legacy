@@ -25,6 +25,8 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->
 
+<input type="hidden" name="userId" id="userId" value="${screen.userId}" />
+
 <div id="togglesdiv">
 Show date-time info with values:
 <input type="checkbox" id="datetimetoggle" name="datetimetoggle" value="datetime" onclick="fnReloadTable()" />
@@ -126,6 +128,7 @@ var oTable = jQuery('#listtable').dataTable(
 		aoData.push( { "name": "printValInfo", "value": document.getElementById('datetimetoggle').checked } );
 		aoData.push( { "name": "limitVal", "value": document.getElementById('limitvaltoggle').checked } );
 		aoData.push( { "name": "targetType", "value": document.getElementById('targettype').value } );
+		aoData.push( { "name": "userId", "value": document.getElementById('userId').value } );
 		jQuery.getJSON( sSource, aoData, function (json) {
 			storedDisplayStart = json.iDisplayStart;
 			storedDisplayLength = json.iDisplayLength;
@@ -161,6 +164,7 @@ function fnAddRemFeature(sId) {
 			aoData.push( { "name": "printValInfo", "value": document.getElementById('datetimetoggle').checked } );
 			aoData.push( { "name": "limitVal", "value": document.getElementById('limitvaltoggle').checked } );
 			aoData.push( { "name": "targetType", "value": document.getElementById('targettype').value } );
+			aoData.push( { "name": "userId", "value": document.getElementById('userId').value } );
 			aoData.splice(3, 1, { "name": "iDisplayStart", "value": storedDisplayStart });
 			oSettings._iDisplayStart = storedDisplayStart;
 			aoData.splice(4, 1, { "name": "iDisplayLength", "value": storedDisplayLength });
@@ -202,6 +206,7 @@ function fnAddRemFeature(sId) {
 			aoData.push( { "name": "printValInfo", "value": document.getElementById('datetimetoggle').checked } );
 			aoData.push( { "name": "limitVal", "value": document.getElementById('limitvaltoggle').checked } );
 			aoData.push( { "name": "targetType", "value": document.getElementById('targettype').value } );
+			aoData.push( { "name": "userId", "value": document.getElementById('userId').value } );
 			jQuery.getJSON( sSource, aoData, function (json) {
 				storedDisplayStart = json.iDisplayStart;
 				storedDisplayLength = json.iDisplayLength;
@@ -222,6 +227,7 @@ function fnReloadTable() {
 		aoData.push( { "name": "printValInfo", "value": document.getElementById('datetimetoggle').checked } );
 		aoData.push( { "name": "limitVal", "value": document.getElementById('limitvaltoggle').checked } );
 		aoData.push( { "name": "targetType", "value": document.getElementById('targettype').value } );
+		aoData.push( { "name": "userId", "value": document.getElementById('userId').value } );
 		// These lines are why all this code is here, we do not want the table to lose its paging info at every update:
 		aoData.splice(3, 1, { "name": "iDisplayStart", "value": storedDisplayStart });
 		oSettings._iDisplayStart = storedDisplayStart;
@@ -262,6 +268,7 @@ function fnReloadTable() {
 		aoData.push( { "name": "printValInfo", "value": document.getElementById('datetimetoggle').checked } );
 		aoData.push( { "name": "limitVal", "value": document.getElementById('limitvaltoggle').checked } );
 		aoData.push( { "name": "targetType", "value": document.getElementById('targettype').value } );
+		aoData.push( { "name": "userId", "value": document.getElementById('userId').value } );
 		jQuery.getJSON( sSource, aoData, function (json) {
 			storedDisplayStart = json.iDisplayStart;
 			storedDisplayLength = json.iDisplayLength;

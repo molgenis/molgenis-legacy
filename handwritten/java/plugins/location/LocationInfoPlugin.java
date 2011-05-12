@@ -93,7 +93,8 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 		
 		// Populate location list
 		try {
-			List<Integer> locationIdList = ct.getAllObservationTargetIds("Location", false);
+			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
+			List<Integer> locationIdList = ct.getAllObservationTargetIds("Location", false, investigationId);
 			if (locationIdList.size() > 0) {
 				this.locationList = ct.getObservationTargets(locationIdList);
 			} else {

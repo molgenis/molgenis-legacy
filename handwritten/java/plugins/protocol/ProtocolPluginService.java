@@ -33,12 +33,14 @@ public class ProtocolPluginService {
 
     private Database db;
     private CommonService cq;
+    private int userId;
 
     public ProtocolPluginService() {
     	cq = CommonService.getInstance();
     }
 
     public void setDatabase(Database db, int userId) {
+    	this.userId = userId;
 		this.db = db;
 		cq.setDatabase(db);
 		cq.makeObservationTargetNameMap(userId, false);
@@ -65,8 +67,8 @@ public class ProtocolPluginService {
      * 
      * @return
      */
-    public List<ObservationTarget> getTargets() {
-    	return cq.getAllObservationTargets();
+    public List<ObservationTarget> getTargets(int investigationId) {
+    	return cq.getAllObservationTargets(investigationId);
     }
 
     /**
@@ -179,7 +181,8 @@ public class ProtocolPluginService {
     }
 
     public List<Integer> getAllObservationTargetIds() throws DatabaseException, ParseException {
-    	return cq.getAllObservationTargetIds(null, false);
+    	int investigationId = cq.getUserInvestigationId(userId);
+    	return cq.getAllObservationTargetIds(null, false, investigationId);
     }
 
 	public List<Integer> getObservationTargetsInProtocolApplication(

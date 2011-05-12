@@ -262,12 +262,13 @@ public class ApplyProtocolPluginOld extends PluginModel<Entity> {
 		ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
 		
 		try {
+			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
 			// Populate protocol list
 			this.setProtocolList(ct.getAllProtocolsSorted("name", "ASC"));
 			// Populate target ID list
-			this.setTargetIdList(ct.getAllObservationTargetIds(null, false));
+			this.setTargetIdList(ct.getAllObservationTargetIds(null, false, investigationId));
 			// Populate animal group list
-			List<Integer> groupIdList = ct.getAllObservationTargetIds("Group", false);
+			List<Integer> groupIdList = ct.getAllObservationTargetIds("Group", false, investigationId);
 			this.setGroupList(ct.getObservationTargets(groupIdList));
 		} catch (Exception e) {
 			this.getMessages().clear();
