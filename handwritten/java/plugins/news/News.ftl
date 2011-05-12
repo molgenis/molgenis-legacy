@@ -39,8 +39,8 @@ Updates of the database, both user features and insertion of new data, will be a
 <div>
 <h3>${newsItem.getTitle()}</h3>
 <h4>${newsItem.getSubtitle()}</h4>
-<p>${newsItem.getText_()}</p>
-<#if newsItem.getDate_()??><p>${newsItem.getDate_()}</p></#if>
+<p>${newsItem.getText()}</p>
+<#if newsItem.getDate_()??><p>${newsItem.getDate()}</p></#if>
 <p>[<a href="molgenis.do?__target=${screen.name}">Back</a>]</p>
 </div>
 </td>
@@ -52,8 +52,8 @@ Updates of the database, both user features and insertion of new data, will be a
 <#list screen.news as newsItem>
 <h3>${newsItem.getTitle()}</h3>
 <h4>${newsItem.getSubtitle()}</h4>
-<p>${newsItem.getText_()} [<a href="molgenis.do?__target=${screen.name}&__action=entry&id=${newsItem.getId()}">more</a>]</p>
-<#if newsItem.getDate_()??><p>${newsItem.getDate_()}</p></#if>
+<p>${newsItem.getText()} [<a href="molgenis.do?__target=${screen.name}&__action=entry&id=${newsItem.getId()}">more</a>]</p>
+<#if newsItem.getDate()??><p>${newsItem.getDate()}</p></#if>
 <br/><br/>
 </#list>
 </div>
@@ -67,8 +67,8 @@ Updates of the database, both user features and insertion of new data, will be a
 <#list screen.news as newsItem>
 <h3>${newsItem.getTitle()}</h3>
 <h4>${newsItem.getSubtitle()}</h4>
-<p>${newsItem.getText_()} [<a href="molgenis.do?__target=${screen.name}&__action=entry&id=${newsItem.getId()}">more</a>]</p>
-<#if newsItem.getDate_()??><p>${newsItem.getDate_()}</p></#if>
+<p>${newsItem.getText()} [<a href="molgenis.do?__target=${screen.name}&__action=entry&id=${newsItem.getId()}">more</a>]</p>
+<#if newsItem.getDate()??><p>${newsItem.getDate()}</p></#if>
 <br/><br/>
 </#list>
 </div>
