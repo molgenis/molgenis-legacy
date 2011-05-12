@@ -10,6 +10,7 @@ import matrix.test.implementations.general.TestMatrix;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -69,6 +70,11 @@ public class RunTestMatrix extends TestCase {
 				{ new Params(5, 100, 127,	true,	true,	true,	false,	true) }
 				};
 		return Arrays.asList(data);
+	}
+	
+	@BeforeClass
+	public static void print(){
+		Helper.printEmptyRLists();
 	}
 
 	@Before

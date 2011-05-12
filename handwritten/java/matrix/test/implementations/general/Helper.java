@@ -432,6 +432,14 @@ public class Helper
 		System.out.println("##################################################");
 		System.out.println("## Test" + source + "Matrix" + "\tstarting with settings: ##");
 		System.out.println("##################################################");
+//		System.out.println("matrixDimension1 <- c(matrixDimension1, " + matrixDimension1 + ")");
+//		System.out.println("matrixDimension2 <- c(matrixDimension2, " + matrixDimension2 + ")");
+//		System.out.println("maxTextLength <- c(maxTextLength, " + maxTextLength + ")");
+//		System.out.println("fixedTextLength <- c(fixedTextLength, " + Boolean.toString(fixedTextLength).toUpperCase() + ")");
+//		System.out.println("sparse <- c(sparse, " + Boolean.toString(sparse).toUpperCase() + ")");
+//		System.out.println("runRegressionTests <- c(runRegressionTests, " + Boolean.toString(runRegressionTests).toUpperCase() + ")");
+//		System.out.println("runPerformanceTests <- c(runPerformanceTests, " + Boolean.toString(runPerformanceTests).toUpperCase() + ")");
+//		System.out.println("skipPerElement <- c(skipPerElement, " + Boolean.toString(skipPerElement).toUpperCase() + ")");
 		System.out.println("matrixDimension1 <- " + matrixDimension1);
 		System.out.println("matrixDimension2 <- " + matrixDimension2);
 		System.out.println("maxTextLength <- " + maxTextLength);
@@ -511,7 +519,7 @@ public class Helper
 		{
 			results = tm.getMemoryPerformanceResults();
 		}
-		System.out.print(rParamName + " <- c(");
+		System.out.print(rParamName + " <- c(" + key.replace("Text", "T").replace("Decimal", "D")+"_"+source+", ");
 		String vals = "";
 		for (HashMap<String, Integer> hm : results)
 		{
@@ -665,5 +673,32 @@ public class Helper
 		long time = storeTimerStop - storeTimerStart;
 			
 		return time;
+	}
+	
+	//helper function to have empty lists of test results to append to..
+	//does NOT work for 'per element testing' !!
+	public static void printEmptyRLists(){
+		
+//		System.out.println("matrixDimension1 <- c()");
+//		System.out.println("matrixDimension2 <- c()");
+//		System.out.println("maxTextLength <- c()");
+//		System.out.println("fixedTextLength <- c()");
+//		System.out.println("sparse <- c()");
+//		System.out.println("runRegressionTests <- c()");
+//		System.out.println("runPerformanceTests <- c()");
+//		System.out.println("skipPerElement <- c()");
+		
+		String[] sourceTypes = new String[]{"bin", "db", "file", "memory"};
+		String[] dataTypes = new String[]{"T", "D"};
+		String[] testTypes = new String[]{"row", "col", "sublist", "suboffs"};
+		for(String sourceType : sourceTypes){
+		System.out.println("Write_"+sourceType+" <- c()");
+			for(String dataType : dataTypes){
+				for(String testType : testTypes){
+					System.out.println(dataType+"_"+testType+"_"+sourceType+" <- c()");
+				}
+			}
+		
+		}
 	}
 }
