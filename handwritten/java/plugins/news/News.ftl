@@ -40,7 +40,7 @@ Updates of the database, both user features and insertion of new data, will be a
 <h3>${newsItem.getTitle()}</h3>
 <h4>${newsItem.getSubtitle()}</h4>
 <p>${newsItem.getText()}</p>
-<#if newsItem.getDate_()??><p>${newsItem.getDate()}</p></#if>
+<#if newsItem.getDate()??><p>${newsItem.getDate()}</p></#if>
 <p>[<a href="molgenis.do?__target=${screen.name}">Back</a>]</p>
 </div>
 </td>
