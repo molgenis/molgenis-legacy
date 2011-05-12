@@ -1,7 +1,7 @@
 <#macro plugin_search_SimpleWholeDatabaseSearch screen>
-<#if screen.model?exists>
+<#if screen.myModel?exists>
 	<#assign modelExists = true>
-	<#assign model = screen.model>
+	<#assign model = screen.myModel>
 <#else>
 	No model. An error has occurred.
 	<#assign modelExists = false>

@@ -31,13 +31,18 @@ public class SimpleWholeDatabaseSearch extends PluginModel<Entity>
 		super(name, parent);
 	}
 
-	private SimpleWholeDatabaseSearchModel model = new SimpleWholeDatabaseSearchModel(null);
+	private SimpleWholeDatabaseSearchModel model = new SimpleWholeDatabaseSearchModel();
 
 	JDBCMetaDatabase metadb;
 
-	public SimpleWholeDatabaseSearchModel getModel()
+	public SimpleWholeDatabaseSearchModel getMyModel()
 	{
 		return model;
+	}
+	
+	public String getCustomHtmlHeaders()
+	{
+		return "";
 	}
 
 	@Override
