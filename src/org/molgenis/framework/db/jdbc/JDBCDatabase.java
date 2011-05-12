@@ -222,6 +222,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	 * @return
 	 */
 	public boolean executeSql(String sql){
+		logger.info("stmt.execute("+sql+")");
 		boolean success = false;
 		Statement stmt = null;
 		try {

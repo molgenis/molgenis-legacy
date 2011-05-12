@@ -18,7 +18,7 @@ import org.molgenis.util.TableUtil;
 public class JDBCFileSourceHelper implements FileSourceHelper
 {
 
-	private Database db;
+	private JDBCDatabase db;
 	private String variantId;
 	
 	private String hasSystemSettingsTable;
@@ -36,7 +36,7 @@ public class JDBCFileSourceHelper implements FileSourceHelper
 
 	public JDBCFileSourceHelper(Database db)
 	{
-		this.db = db;
+		this.db = (JDBCDatabase) db;
 		hasSystemSettingsTable = TableUtil.hasTable(db, systemTableName);
 	}
 
@@ -267,10 +267,19 @@ public class JDBCFileSourceHelper implements FileSourceHelper
 			o = TableUtil.getFromTable(db, systemTableName, verifiedField);
 			if (o != null)
 			{
-				if (o.toString().equals("1"))
+				if (db.getSource().getDriverClassName().contains("hsql")){
+					if(o.toString().equals("true")){
+						verified = true;
+						return true;
+					}
+				}else{
+					if(o.toString().equals("1")){
+						verified = true;
+						return true;
+					}
+				}		
 				{
-					verified = true;
-					return true;
+					
 				}
 			}
 		}
@@ -372,8 +381,9 @@ public class JDBCFileSourceHelper implements FileSourceHelper
 				o = TableUtil.getFromTable(db, systemTableName, verifiedField);
 				if (o != null)
 				{
+					boolean hsqlDriver = db.getSource().getDriverClassName().contains("hsql");
 					// if the file directory has been verified
-					if (!mustBeValid || (mustBeValid && o.toString().equals("1")))
+					if (!mustBeValid || (mustBeValid && ((hsqlDriver && o.toString().equals("true")) || (!hsqlDriver && o.toString().equals("1")))))
 					{
 						// for non Windows OS's
 						if (!DetectOS.getOS().startsWith("windows"))
