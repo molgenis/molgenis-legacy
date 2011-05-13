@@ -8,8 +8,11 @@
 	
 	<menu name="mainmenu" position="left">
 		<plugin name="WelcomeScreen" type="plugins.welcome.GidsWelcomeScreenPlugin" label="Welcome"/>
-		<plugin name="FillDatabase" type="plugins.fillgids.FillDatabasePlugin" label="Load legacy data" />
 		<!--<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Login"/>-->
+		<menu name="ImportData" label="Import Data">
+			<plugin name="ConvertDataIntoPheno" type="plugins.convertergids.ConvertDataIntoPhenoPlugin" label="Convert data"/>
+			<plugin name="FillDatabase" type="plugins.fillgids.FillDatabasePlugin" label="Load data" />
+		</menu>	
 	    <form entity="Investigation" name="investigation">
 		    
 	        <menu name="ProjectMenu">

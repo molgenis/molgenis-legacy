@@ -10,10 +10,13 @@ package plugins.fillgids;
 import java.io.File;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+
+import plugins.emptydb.emptyDatabase;
 
 import app.CsvImport;
 
@@ -54,15 +57,15 @@ public class FillDatabasePlugin extends PluginModel<Entity>
 		
 		String action = request.getString("__action");
 		
-		/*
+		
 		if (action.equals("deleteDB") ){
 			try {
-				new emptyDatabase((JDBCDatabase) db, true);
+				new emptyDatabase((app.JDBCDatabase) db, true);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}	
 		}
-		*/
+		
 		
 		if(action.equals("loadinv")){
 			logger.info("##################################");

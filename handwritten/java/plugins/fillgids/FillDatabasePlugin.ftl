@@ -25,7 +25,7 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->	
 
-<h1>Load data from legacy systems</h1>
+<h1>Import data</h1>
 <em>Caution: this might interfere with existing database items!</em>
 
 <div>
@@ -35,6 +35,10 @@
 </div>
 
 <h2>GIDS</h2>
+
+<div id="deleteAllFromDatabase" class="row">
+	<input type='submit' class='addbutton' value='deleteDB' onclick="__action.value='deleteDB'" />
+</div>
 
 <div id="readInvestigations" class="row">
 <label for="readinv">Choose your directory with the investigation files:</label>
@@ -66,10 +70,7 @@
 	<input type='submit' name='submittie' class='addbutton' value='load files into db' onclick="__action.value='loadAll'" />
 </div>
 
-<div id="deleteAllFromDatabase" class="row">
-	<label for="loadingdirectories">Choose your directory with the files:</label>
-	<input type='submit' class='addbutton' value='deleteDB' onclick="__action.value='deleteDB'" />
-</div>
+
 
 
 

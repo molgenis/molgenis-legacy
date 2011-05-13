@@ -24,27 +24,26 @@ import app.JDBCDatabase;
 public class ConvertGidsToPheno
 {
 	private Logger logger;
-	static final List<Individual> individualsList  = new ArrayList<Individual>();
-	static final List<Measurement> measurementsList  = new ArrayList<Measurement>();
-	static final List<ObservedValue> valuesList  = new ArrayList<ObservedValue>();
-	static final List<Investigation> investigationList = new ArrayList<Investigation>();
+	final List<Individual> individualsList  = new ArrayList<Individual>();
+	final List<Measurement> measurementsList  = new ArrayList<Measurement>();
+	final List<ObservedValue> valuesList  = new ArrayList<ObservedValue>();
+	final List<Investigation> investigationList = new ArrayList<Investigation>();
+	private String invName;
 	
 	
-	
-	public static void main(String[] args) throws Exception
-	{
+	public void converter(String filename,String outputDir, String invName) throws Exception{
 		
 		//String filename = "C:/Documents and Settings/Administrator/workspace/molgenis_apps/handwritten/java/convertors/gids/export_CeliacSprue_for_PhenoModel.csv";
-		String filename = "/Users/roankanninga/Documents/NewMolgenis/molgenis_apps/handwritten/java/convertors/gids/export_CeliacSprue_for_PhenoModel.csv";
-		ConvertGidsToPheno conv = new ConvertGidsToPheno();
-		conv.populateInvestigations();
-		conv.populateIndividual(filename);
-		conv.populateMeasurement(filename);
-		conv.populateValue(filename);
 		
+		ConvertGidsToPheno conv = new ConvertGidsToPheno();
+		conv.makeInvestigation(invName);
+		//conv.populateIndividual(filename,invName);
+		conv.populateMeasurement(filename,invName);
+		conv.populateValue(filename,invName);
+		this.invName = invName;
 		CsvExport export = new CsvExport();
 		//File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-		File tmpDir = new File("/Users/roankanninga/Documents/NewMolgenis/molgenis_apps/handwritten/java/convertors/gids/importFiles");
+		File tmpDir = new File(outputDir);
 		
 		System.out.println("individualsList size = " + individualsList.size());
 		
@@ -55,8 +54,9 @@ public class ConvertGidsToPheno
 	{
 		logger = Logger.getLogger("ConvertGidsToPheno");
 	}
-
+	/*
 	public void populateInvestigations(){
+		
 		String [] listOfInvestigations = {"CeliacSprue", "PreventCD", "IBD", "COPD", "GODDAF", "SLE"};
 		
 		for(String invName: listOfInvestigations){
@@ -64,9 +64,11 @@ public class ConvertGidsToPheno
 		}
 		
 	}
+	*/
 	public Investigation makeInvestigation(String invName){
 		Investigation newInvest = new Investigation();
 		newInvest.setName(invName);
+		logger.info("#########################  makeInvestigation    " + invName );
 		return newInvest;
 	}
 	
@@ -90,7 +92,7 @@ public class ConvertGidsToPheno
 					namesSeen.add(gidsId);
 					Individual newIndividual = new Individual();
 					newIndividual.setName(gidsId);
-					newIndividual.setInvestigation_Name("CeliacSprue");
+					newIndividual.setInvestigation_Name(invName);
 					newIndividual.setMother_Name(mother_Name);					
 					newIndividual.setFather_Name(father_Name);	
 					individualsList.add(newIndividual);
@@ -99,22 +101,25 @@ public class ConvertGidsToPheno
 		});
 	}
 	
-	public void populateMeasurement(String filename) throws Exception {
+	public void populateMeasurement(String filename, String invName) throws Exception {
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
 		for (String header : reader.colnames()) {
 			if (!header.equals("id_individual") && !header.equals("id_mother") && !header.equals("id_father")) {
 				Measurement measurement = new Measurement();
 				measurement.setName(header);
-				measurement.setInvestigation_Name("CeliacSprue");
+				measurement.setInvestigation_Name(invName);
 				measurementsList.add(measurement);
 			}
 		}
 	}
 	
+	public String getInvestigation(){
+		return invName;
+	}
 	
 	
-	public void populateValue(String filename) throws Exception
+	public void populateValue(String filename, String invName) throws Exception
 	{
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
