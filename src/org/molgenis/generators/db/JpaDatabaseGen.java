@@ -43,6 +43,7 @@ public class JpaDatabaseGen extends Generator
 		templateArgs.put("entities",entityList);
 		String packageName = model.getName().toLowerCase();
 		templateArgs.put("package", packageName);
+		templateArgs.put("auth_loginclass", options.auth_loginclass);
 		OutputStream targetOut = new FileOutputStream( target );
 		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
 		targetOut.close();
