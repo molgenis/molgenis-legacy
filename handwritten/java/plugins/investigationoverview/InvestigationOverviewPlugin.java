@@ -15,6 +15,7 @@ import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -32,9 +33,9 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 {
 
 	private static final long serialVersionUID = -7068554327138233108L;
-	private InvestigationOverviewModel model = new InvestigationOverviewModel(null);
+	private InvestigationOverviewModel model = new InvestigationOverviewModel();
 
-	public InvestigationOverviewModel getModel()
+	public InvestigationOverviewModel getMyModel()
 	{
 		return model;
 	}
@@ -131,13 +132,14 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 			{
 				this.model.setShowAllOther(false);
 			}
-			//TODO: Danny: Code smell ??? getparent().getparent() ?
-			FormModel<Investigation> theParent = (FormModel<Investigation>) this.getParent().getParent();
-			Investigation inv = ((Investigation) theParent.getRecords().get(0));
+
+			ScreenController<?> parentController = (ScreenController<?>) this.getParent().getParent();
+			FormModel<Investigation> parentForm = (FormModel<Investigation>) ((FormController)parentController).getModel();
+			Investigation inv = parentForm.getRecords().get(0);
+			
+			System.out.println("Investigation inv = " + inv.toString());
 
 			this.model.setSelectedInv(inv);
-			//TODO: Danny: old code ??? if yes please remove
-			/*Map<String, Integer> counts = new HashMap<String, Integer>();*/
 			QueryRule thisInv = new QueryRule("investigation", Operator.EQUALS, inv.getId());
 
 			List<ObservationElement> ofList = db.find(ObservationElement.class, thisInv);
@@ -167,6 +169,7 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 			for (String key : annotationTypeAndNr.keySet())
 			{
 				annotationWithLinks.put(key + " (" + annotationTypeAndNr.get(key) + ")", "?select=" + key + "s");
+				System.out.println("annotationWithLinks.put: " + key + " (" + annotationTypeAndNr.get(key) + ") <- " + "?select=" + key + "s");
 			}
 
 			this.model.setAnnotationList(annotationWithLinks);

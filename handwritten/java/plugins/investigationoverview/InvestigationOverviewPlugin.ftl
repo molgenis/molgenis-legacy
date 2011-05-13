@@ -5,7 +5,7 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
 -->
 <#macro plugins_investigationoverview_InvestigationOverviewPlugin screen>
-<#assign model = screen.model>
+<#assign model = screen.myModel>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -54,6 +54,7 @@
 		<td colspan="2">There are no annotations.</td>
 	<#else>
 		<#list model.annotationList?keys as a>
+		DEBUG: A = ${a}
 			<td>
 			<#--if a?starts_with("Data")>
 				<a href="?select=Data">${blueSquare} ${a}</a>

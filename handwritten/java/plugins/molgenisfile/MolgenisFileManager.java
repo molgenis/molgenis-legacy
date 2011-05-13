@@ -13,7 +13,9 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 
 import org.molgenis.core.MolgenisFile;
+import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -37,9 +39,9 @@ public class MolgenisFileManager extends PluginModel<Entity>
 		super(name, parent);
 	}
 
-	private MolgenisFileManagerModel model = new MolgenisFileManagerModel(this);
+	private MolgenisFileManagerModel model = new MolgenisFileManagerModel();
 
-	public MolgenisFileManagerModel getModel()
+	public MolgenisFileManagerModel getMyModel()
 	{
 		return model;
 	}
@@ -114,8 +116,10 @@ public class MolgenisFileManager extends PluginModel<Entity>
 
 		try
 		{
-			FormModel<Entity> theParent = (FormModel<Entity>) this.getParent();
-			MolgenisFile molgenisFile = (MolgenisFile) theParent.getRecords().get(0);
+			
+			ScreenController<?> parentController = (ScreenController<?>) this.getParent();
+			FormModel<MolgenisFile> parentForm = (FormModel<MolgenisFile>) ((FormController)parentController).getModel();
+			MolgenisFile molgenisFile = parentForm.getRecords().get(0);
 
 			this.model.setMolgenisFile(molgenisFile);
 

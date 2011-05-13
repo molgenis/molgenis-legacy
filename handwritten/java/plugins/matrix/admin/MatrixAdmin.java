@@ -13,6 +13,7 @@ import matrix.general.DataMatrixHandler;
 
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -22,10 +23,10 @@ import org.molgenis.util.Tuple;
 public class MatrixAdmin extends PluginModel
 {
 
-	private MatrixAdminModel model = new MatrixAdminModel(this);
+	private MatrixAdminModel model = new MatrixAdminModel();
 	private DataMatrixHandler dmh = null;
 
-	public MatrixAdminModel getModel()
+	public MatrixAdminModel getMyModel()
 	{
 		return model;
 	}
@@ -102,8 +103,9 @@ public class MatrixAdmin extends PluginModel
 	public void reload(Database db)
 	{
 
-		FormModel<Data> theParent = (FormModel) this.getParent().getParent();
-		Data data = (Data) theParent.getRecords().get(0);
+		ScreenController<?> parentController = (ScreenController<?>) this.getParent().getParent();
+		FormModel<Data> parentForm = (FormModel<Data>) ((FormController)parentController).getModel();
+		Data data = parentForm.getRecords().get(0);
 		
 		if(dmh == null){
 			dmh = new DataMatrixHandler(db);

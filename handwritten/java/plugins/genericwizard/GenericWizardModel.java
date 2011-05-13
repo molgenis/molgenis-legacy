@@ -7,13 +7,7 @@ import org.molgenis.framework.ui.SimpleScreenModel;
 
 import app.ImportWizardExcelPrognosis;
 
-public class GenericWizardModel extends SimpleScreenModel {
-
-	public GenericWizardModel(ScreenController controller)
-	{
-		super(controller);
-		// TODO Auto-generated constructor stub
-	}
+public class GenericWizardModel {
 
 	String whichScreen;
 	File currentFile;
@@ -51,17 +45,5 @@ public class GenericWizardModel extends SimpleScreenModel {
 	public void setImportSuccess(boolean importSuccess) {
 		this.importSuccess = importSuccess;
 	}
-
-	@Override
-	public boolean isVisible()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
-	
-	
-	
 
 }

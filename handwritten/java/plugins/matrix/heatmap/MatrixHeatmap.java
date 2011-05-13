@@ -17,6 +17,7 @@ import matrix.implementations.memory.MemoryDataMatrixInstance;
 
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -30,10 +31,10 @@ import plugins.matrix.manager.OverlibText;
 public class MatrixHeatmap extends PluginModel
 {
 
-	private MatrixHeatmapModel model = new MatrixHeatmapModel(this);
+	private MatrixHeatmapModel model = new MatrixHeatmapModel();
 	private DataMatrixHandler dmh = null;
 
-	public MatrixHeatmapModel getModel()
+	public MatrixHeatmapModel getMyModel()
 	{
 		return model;
 	}
@@ -299,12 +300,12 @@ public class MatrixHeatmap extends PluginModel
 					newVals[rowIndex][colIndex] = oldVals[rowIndex][colIndex] + 1;
 
 					newVals[rowIndex][colIndex] = getHeatmapHTML(oldVals[rowIndex][colIndex], highestVal, lowestVal,
-							this.model.getStart(), this.getModel().getStop());
+							this.model.getStart(), this.getMyModel().getStop());
 				}
 			}
 		}
 
-		AbstractDataMatrixInstance heatMatrix = new MemoryDataMatrixInstance(oldSubMatrix.getRowNames(), oldSubMatrix.getColNames(), newVals, this.getModel().getSelectedData());
+		AbstractDataMatrixInstance heatMatrix = new MemoryDataMatrixInstance(oldSubMatrix.getRowNames(), oldSubMatrix.getColNames(), newVals, this.getMyModel().getSelectedData());
 
 		this.model.setHeatMatrix(heatMatrix);
 		this.model.setLowestVal(lowestVal);
@@ -358,8 +359,9 @@ public class MatrixHeatmap extends PluginModel
 		// TODO: create refresh button
 		// TODO: review this 'core' logic carefully :)
 
-		FormModel<Data> theParent = (FormModel) this.getParent().getParent();
-		Data data = (Data) theParent.getRecords().get(0);
+		ScreenController<?> parentController = (ScreenController<?>) this.getParent().getParent();
+		FormModel<Data> parentForm = (FormModel<Data>) ((FormController)parentController).getModel();
+		Data data = parentForm.getRecords().get(0);
 
 		try
 		{

@@ -13,6 +13,7 @@ import matrix.general.DataMatrixHandler;
 
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -25,10 +26,10 @@ import plugins.matrix.manager.MatrixManager;
 public class MatrixInspector extends PluginModel
 {
 
-	private MatrixInspectorModel model = new MatrixInspectorModel(this);
+	private MatrixInspectorModel model = new MatrixInspectorModel();
 	private DataMatrixHandler dmh = null;
 
-	public MatrixInspectorModel getModel()
+	public MatrixInspectorModel getMyModel()
 	{
 		return model;
 	}
@@ -103,8 +104,9 @@ public class MatrixInspector extends PluginModel
 			dmh = new DataMatrixHandler(db);
 		}
 		
-		FormModel<Data> theParent = (FormModel) this.getParent().getParent();
-		Data data = (Data) theParent.getRecords().get(0);
+		ScreenController<?> parentController = (ScreenController<?>) this.getParent().getParent();
+		FormModel<Data> parentForm = (FormModel<Data>) ((FormController)parentController).getModel();
+		Data data = parentForm.getRecords().get(0);
 
 		try
 		{

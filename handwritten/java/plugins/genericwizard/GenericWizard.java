@@ -24,9 +24,9 @@ import app.ImportWizardExcelPrognosis;
 public class GenericWizard extends PluginModel<Entity> {
 
 	private static final long serialVersionUID = -6011550003937663086L;
-	private GenericWizardModel model = new GenericWizardModel(null);
+	private GenericWizardModel model = new GenericWizardModel();
 
-	public GenericWizardModel getModel() {
+	public GenericWizardModel getMyModel() {
 		return model;
 	}
 

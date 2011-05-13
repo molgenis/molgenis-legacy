@@ -5,13 +5,8 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.SimpleScreenModel;
 
 
-public class MatrixAdminModel extends SimpleScreenModel {
+public class MatrixAdminModel{
 
-	public MatrixAdminModel(ScreenController controller)
-	{
-		super(controller);
-		// TODO Auto-generated constructor stub
-	}
 	private Data selectedData;
 	private boolean hasBackend;
 	
@@ -30,12 +25,6 @@ public class MatrixAdminModel extends SimpleScreenModel {
 	public void setHasBackend(boolean hasBackend)
 	{
 		this.hasBackend = hasBackend;
-	}
-	@Override
-	public boolean isVisible()
-	{
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 }

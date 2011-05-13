@@ -55,7 +55,7 @@ public class QTLDataSetWizard extends PluginModel<Entity>
 
 	private QTLDataSetWizardModel model = new QTLDataSetWizardModel(this);
 
-	public QTLDataSetWizardModel getModel()
+	public QTLDataSetWizardModel getMyModel()
 	{
 		return model;
 	}

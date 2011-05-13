@@ -1,22 +1,13 @@
 package plugins.investigationoverview;
 
 import java.util.HashMap;
-
-import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.SimpleScreenModel;
 import org.molgenis.organization.Investigation;
 
-public class InvestigationOverviewModel extends SimpleScreenModel{
-	
-	public InvestigationOverviewModel(ScreenController controller)
-	{
-		super(controller);
-		// TODO Auto-generated constructor stub
-	}
+public class InvestigationOverviewModel{
 
 	private Investigation selectedInv;
 
-	private HashMap<String, String> AnnotationList;
+	private HashMap<String, String> annotationList;
 	
 	private HashMap<String,String> expList;
 	
@@ -40,12 +31,12 @@ public class InvestigationOverviewModel extends SimpleScreenModel{
 
 	public HashMap<String, String> getAnnotationList()
 	{
-		return AnnotationList;
+		return annotationList;
 	}
 
 	public void setAnnotationList(HashMap<String, String> annotationList)
 	{
-		AnnotationList = annotationList;
+		this.annotationList = annotationList;
 	}
 
 	public HashMap<String, String> getOtherList()
@@ -97,14 +88,6 @@ public class InvestigationOverviewModel extends SimpleScreenModel{
 	{
 		this.expList = expList;
 	}
-
-	@Override
-	public boolean isVisible()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	
 
 }

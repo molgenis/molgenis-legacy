@@ -16,6 +16,7 @@ import matrix.general.Importer;
 
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -27,9 +28,9 @@ public class MatrixManager extends PluginModel
 
 	private DataMatrixHandler dmh = null;
 	
-	private MatrixManagerModel model = new MatrixManagerModel(this);
+	private MatrixManagerModel model = new MatrixManagerModel();
 
-	public MatrixManagerModel getModel()
+	public MatrixManagerModel getMyModel()
 	{
 		return model;
 	}
@@ -201,9 +202,11 @@ public class MatrixManager extends PluginModel
 		// TODO: create refresh button
 		// TODO: review this 'core' logic carefully :)
 
-		FormModel<Data> theParent = (FormModel) this.getParent().getParent();
-		Data data = (Data) theParent.getRecords().get(0);
+		ScreenController<?> parentController = (ScreenController<?>) this.getParent().getParent();
+		FormModel<Data> parentForm = (FormModel<Data>) ((FormController)parentController).getModel();
+		Data data = parentForm.getRecords().get(0);
 
+		  
 		try
 		{
 			

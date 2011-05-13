@@ -20,10 +20,10 @@ import plugins.cluster.implementations.LocalComputationResource;
 public class DependencyManager extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 3728283831751229340L;
-	private DependencyManagerModel model = new DependencyManagerModel(this);
+	private DependencyManagerModel model = new DependencyManagerModel();
 	private File usrHomeLibs;
 
-	public DependencyManagerModel getModel()
+	public DependencyManagerModel getMyModel()
 	{
 		return this.model;
 	}

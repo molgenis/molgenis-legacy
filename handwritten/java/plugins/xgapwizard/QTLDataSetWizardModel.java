@@ -37,11 +37,5 @@ public class QTLDataSetWizardModel extends SimpleScreenModel
 		this.investigations = investigations;
 	}
 
-	@Override
-	public boolean isVisible()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
 
 }

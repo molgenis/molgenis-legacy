@@ -1,5 +1,5 @@
 <#macro plugins_cluster_demo_dependencymanager_DependencyManager screen>
-<#assign model = screen.model>
+<#assign model = screen.myModel>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
