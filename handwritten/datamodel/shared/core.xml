@@ -66,8 +66,8 @@
 				can be validated against the referenced ontology. The subclasses and
 				their associations are based on the Ontology Definition Model,
 				ad/2005-04-13, submitted to the OMG as a response to RFP
-				ad/2003-03-40, Copyright Â© 2005 DSTC Pty Ltd. Copyright Â© 2005 IBM
-				Copyright Â© 2005 Sandpiper Software, Inc under the standard OMG
+				ad/2003-03-40, Copyright 2005 DSTC Pty Ltd. Copyright 2005 IBM
+				Copyright 2005 Sandpiper Software, Inc under the standard OMG
 				license terms. 
 			</description>
 			<field auto="false" name="ontology" type="xref" nillable="true"
