@@ -101,10 +101,11 @@ public class ManageLines extends PluginModel<Entity>
 		cs.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
 		
 		try {
+			int investigationId = cs.getUserInvestigationId(this.getLogin().getUserId());
 			// Populate source list
 			// All source types pertaining to "Eigen fok binnen uw organisatorische werkeenheid"
 			sourceList = new ArrayList<ObservationTarget>();
-			List<ObservationTarget> tmpSourceList = cs.getAllMarkedPanels("Source");
+			List<ObservationTarget> tmpSourceList = cs.getAllMarkedPanels("Source", investigationId);
 			for (ObservationTarget tmpSource : tmpSourceList) {
 				int featid = cs.getMeasurementId("SourceType");
 				Query<ObservedValue> sourceTypeQuery = db.query(ObservedValue.class);

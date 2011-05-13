@@ -111,9 +111,10 @@ public class ApplyProtocolUI {
 		    ((SelectInput)valueInput).setOptionsFromStringList(cs.getAllCodesForFeatureAsStrings(feature.getName()));
 		} else {
 			if (panelLabel != null) {
+				int investigationId = cs.getUserInvestigationId(model.getUserId());
 				// If there's only a subset of labeled Panels allowed for this Measurement, show a selectbox with those
 				valueInput = new SelectInput(col + "_" + row);
-				List<ObservationTarget> panelList = cs.getAllMarkedPanels(panelLabel);
+				List<ObservationTarget> panelList = cs.getAllMarkedPanels(panelLabel, investigationId);
 				for (ObservationTarget p : panelList) {
 					((SelectInput)valueInput).addOption(p.getId(), p.getName());
 				}

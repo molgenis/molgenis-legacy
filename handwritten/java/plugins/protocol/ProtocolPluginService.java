@@ -228,7 +228,8 @@ public class ProtocolPluginService {
 	 */
 	public List<ObservationTarget> getLabeledPanels(String panelLabel) {
 		try {
-			return cq.getAllMarkedPanels(panelLabel);
+			int investigationId = cq.getUserInvestigationId(userId);
+			return cq.getAllMarkedPanels(panelLabel, investigationId);
 		} catch (Exception e) {
 			return new ArrayList<ObservationTarget>();
 		}

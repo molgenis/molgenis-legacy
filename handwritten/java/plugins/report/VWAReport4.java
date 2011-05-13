@@ -54,10 +54,9 @@ public class VWAReport4 extends AnimalDBReport
 			{
 				// Check AnimalType
 				String animalType = "";
-				int featid = ct.getMeasurementId("AnimalType");
 				Query<ObservedValue> q = db.query(ObservedValue.class);
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
-				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "AnimalType"));
 				List<ObservedValue> valueList = q.find();
 				if (valueList.size() > 0)
 				{
@@ -80,10 +79,9 @@ public class VWAReport4 extends AnimalDBReport
 				// Get Active value and check (start)time + endtime
 				boolean activeEndOfPrevYear = false;
 				boolean activeEndOfThisYear = false;
-				featid = ct.getMeasurementId("Active");
 				q = db.query(ObservedValue.class);
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
-				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Active"));
 				q.addRules(new QueryRule(ObservedValue.TIME, Operator.NOT, null));
 				q.sortDESC(ObservedValue.TIME);
 				valueList = q.find();
@@ -128,18 +126,16 @@ public class VWAReport4 extends AnimalDBReport
 				int inColumn = -1;
 				if (activeEndOfPrevYear == false)
 				{
-					featid = ct.getMeasurementId("Source");
 					q = db.query(ObservedValue.class);
 					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
-					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
+					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Source"));
 					valueList = q.find();
 					if (valueList.size() > 0)
 					{
 						int sourceid = valueList.get(0).getRelation_Id();
-						featid = ct.getMeasurementId("SourceType");
 						q = db.query(ObservedValue.class);
 						q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, sourceid));
-						q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
+						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "SourceType"));
 						valueList = q.find();
 						if (valueList.size() > 0)
 						{
@@ -173,19 +169,17 @@ public class VWAReport4 extends AnimalDBReport
 				if (activeEndOfThisYear == false)
 				{
 					// Not in an experiment at all - ever?
-					featid = ct.getMeasurementId("Experiment");
 					q = db.query(ObservedValue.class);
 					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
-					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
+					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 					if (q.count() == 0) {
 						// List as 'dood voor de proef'
 						outColumn = 9;
 					} else {
 						// Died while in or after experiment this year?
-						featid = ct.getMeasurementId("Experiment");
 						q = db.query(ObservedValue.class);
 						q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
-						q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
+						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 						q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.GREATER_EQUAL, startOfYearString));
 						q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.LESS, endOfYearString));
 						q.sortDESC(ObservedValue.ENDTIME); // make sure most recent experiment is on top
@@ -193,17 +187,15 @@ public class VWAReport4 extends AnimalDBReport
 						if (subprojectValueList.size() > 0) {
 							// find 'FromExperiment' value for most recently ended experiment
 							int experimentId = subprojectValueList.get(0).getRelation_Id();
-							featid = ct.getMeasurementId("FromExperiment");
 							q = db.query(ObservedValue.class);
 							q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
-							q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
+							q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "FromExperiment"));
 							q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, experimentId));
 							List<ObservedValue> fromSubprojectValueList = q.find(); // safe assumption: contains only one value
 							int protocolApplicationId = fromSubprojectValueList.get(0).getProtocolApplication_Id();
-							featid = ct.getMeasurementId("ActualAnimalEndStatus");
 							q = db.query(ObservedValue.class);
 							q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
-							q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
+							q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "ActualAnimalEndStatus"));
 							q.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, protocolApplicationId));
 							List<ObservedValue> endstatusValueList = q.find();
 							if (endstatusValueList.size() == 1) {
@@ -226,10 +218,9 @@ public class VWAReport4 extends AnimalDBReport
 					}
 
 					// Handle 'afgevoerde' animals (col 14-17)
-					featid = ct.getMeasurementId("Removal");
 					q = db.query(ObservedValue.class);
 					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
-					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
+					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Removal"));
 					q.addRules(new QueryRule(ObservedValue.TIME, Operator.GREATER_EQUAL, startOfYearString));
 					q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS, endOfYearString));
 					List<ObservedValue> removalValueList = q.find();
@@ -246,30 +237,27 @@ public class VWAReport4 extends AnimalDBReport
 				}
 
 				// Get species and store values in the corresponding "bin"
-				featid = ct.getMeasurementId("Species");
 				q = db.query(ObservedValue.class);
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
-				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Species"));
 				valueList = q.find();
 				if (valueList.size() > 0)
 				{
 					// Get VWA species
 					String vwaSpecies = "";
 					int normalSpeciesId = valueList.get(0).getRelation_Id();
-					int featureId = ct.getMeasurementId("VWASpecies");
 					Query<ObservedValue> vwaSpeciesQuery = db.query(ObservedValue.class);
 					vwaSpeciesQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, normalSpeciesId));
-					vwaSpeciesQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
+					vwaSpeciesQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "VWASpecies"));
 					List<ObservedValue> vwaSpeciesValueList = vwaSpeciesQuery.find();
 					if (vwaSpeciesValueList.size() == 1) {
 						vwaSpecies = vwaSpeciesValueList.get(0).getValue();
 					}
 					// Get scientific (Latin) species
 					String latinSpecies = "";
-					featureId = ct.getMeasurementId("LatinSpecies");
 					Query<ObservedValue> latinSpeciesQuery = db.query(ObservedValue.class);
 					latinSpeciesQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, normalSpeciesId));
-					latinSpeciesQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
+					latinSpeciesQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "LatinSpecies"));
 					List<ObservedValue> latinSpeciesValueList = latinSpeciesQuery.find();
 					if (latinSpeciesValueList.size() == 1) {
 						latinSpecies = latinSpeciesValueList.get(0).getValue();

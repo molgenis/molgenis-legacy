@@ -446,9 +446,10 @@ public class ManageLitters extends PluginModel<Entity>
 		ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
 		
 		try {
+			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
 			// Populate litter list
 			litterList.clear();
-			List<ObservationTarget> tmpLitterList = ct.getAllMarkedPanels("Litter");
+			List<ObservationTarget> tmpLitterList = ct.getAllMarkedPanels("Litter", investigationId);
 			for (ObservationTarget tmpLitter : tmpLitterList) {
 				// Check if no wean date set
 				int featid = ct.getMeasurementId("WeanDate");
@@ -514,7 +515,7 @@ public class ManageLitters extends PluginModel<Entity>
 			}
 			
 			// Populate parent group list
-			this.setParentgroupList(ct.getAllMarkedPanels("Parentgroup"));
+			this.setParentgroupList(ct.getAllMarkedPanels("Parentgroup", investigationId));
 			
 		} catch (Exception e) {
 			if (e.getMessage() != null) {

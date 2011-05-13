@@ -260,12 +260,13 @@ public class ManageParentgroups extends PluginModel<Entity>
 		}
 	}
 	
-	public List<Integer> populateParentList(Database db, String sex) throws DatabaseException, ParseException {
-		int featid = ct.getMeasurementId("Sex");
-		int sexid = ct.getObservationTargetId(sex);
+	public List<Integer> populateParentList(Database db, String sexName, int investigationId) 
+		throws DatabaseException, ParseException {
+		
 		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
-		q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, sexid));
+		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Sex"));
+		q.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, sexName));
+		q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.EQUALS, investigationId));
 		List<ObservedValue> valueList = q.find();
 		List<Integer> parentIdList = new ArrayList<Integer>();
 		for (ObservedValue value : valueList) {
@@ -281,12 +282,13 @@ public class ManageParentgroups extends PluginModel<Entity>
 		ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
 		
 		try {
+			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
 			// Populate mother list
-			motherIdList = populateParentList(db, "Female");
+			motherIdList = populateParentList(db, "Female", investigationId);
 			// Populate father list
-			fatherIdList = populateParentList(db, "Male");
+			fatherIdList = populateParentList(db, "Male", investigationId);
 			// Populate line list
-			lineList = ct.getAllMarkedPanels("Line");
+			lineList = ct.getAllMarkedPanels("Line", investigationId);
 			
 		} catch (Exception e) {
 			this.getMessages().clear();

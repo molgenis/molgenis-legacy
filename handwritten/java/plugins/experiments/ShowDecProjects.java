@@ -158,7 +158,7 @@ public class ShowDecProjects extends PluginModel<Entity>
 				}
 				
 				// Some variables we need later on
-				int investigationId = ct.getInvestigationId("AnimalDB");
+				int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
 				Calendar myCal = Calendar.getInstance();
 				Date now = myCal.getTime();
 				
@@ -231,9 +231,10 @@ public class ShowDecProjects extends PluginModel<Entity>
 		ct.setDatabase(db);
 		
 		try {
+			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
 			// Populate DEC projects list
 			decappList.clear();
-			List<ObservationTarget> decList = ct.getAllMarkedPanels("DecApplication");
+			List<ObservationTarget> decList = ct.getAllMarkedPanels("DecApplication", investigationId);
 			int pos = 1;
 			for (ObservationTarget currentDec : decList) {
 				String name = currentDec.getName();

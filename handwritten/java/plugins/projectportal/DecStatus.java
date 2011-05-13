@@ -101,8 +101,10 @@ public class DecStatus extends GenericPlugin
 		statusTable.addColumn("Status");
 		
 		try {
+			int investigationId = cq.getUserInvestigationId(this.getLogin().getUserId());
+			
 			int rowCount = 0;
-			List<ObservationTarget> decList = cq.getAllMarkedPanels("DecApplication");
+			List<ObservationTarget> decList = cq.getAllMarkedPanels("DecApplication", investigationId);
 			for (ObservationTarget decApp : decList) {
 				rowCount = addStatusRows(decApp, statusTable, rowCount);
 			}
@@ -138,6 +140,8 @@ public class DecStatus extends GenericPlugin
 		
 		int decId = decApp.getId();
 		
+		int investigationId = cq.getUserInvestigationId(this.getLogin().getUserId());
+		
 		int featureId = cq.getMeasurementId("DecNr");
 		String decNr = cq.getMostRecentValueAsString(decId, featureId);
 		statusTable.addRow(decNr);
@@ -148,7 +152,7 @@ public class DecStatus extends GenericPlugin
 		featureId = cq.getMeasurementId("EndDate");
 		statusTable.setCell(1, rowCount, cq.getMostRecentValueAsString(decId, featureId));
 		
-		List<ObservationTarget> expList = cq.getAllMarkedPanels("Experiment");
+		List<ObservationTarget> expList = cq.getAllMarkedPanels("Experiment", investigationId);
 		for (ObservationTarget subproject : expList) {
 			int subprojectId = subproject.getId();
 			
@@ -170,7 +174,6 @@ public class DecStatus extends GenericPlugin
 				statusTable.setCell(4, rowCount, cq.getMostRecentValueAsString(subprojectId, featureId));
 				
 				// Calculate numbers of animals alive/used/total
-				int investigationId = cq.getUserInvestigationId(this.getLogin().getUserId());
 				int nrOfAnimalsAlive = 0;
 				int nrOfAnimalsRemoved = 0;
 				int nrOfAnimalsTotal = 0;

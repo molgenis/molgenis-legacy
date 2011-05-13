@@ -353,6 +353,9 @@ public class AddAnimalPlugin extends GenericPlugin
 	}
 	
 	private void populateTablePanel(Database db) throws DatabaseException, ParseException {
+		
+		int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
+		
 		// panel for all elements
 		tablePanel = new DivPanel(this.getName() + "panel", null);
 
@@ -360,14 +363,14 @@ public class AddAnimalPlugin extends GenericPlugin
 		// DISCUSSION: why is this not ontology???
 		species = new SelectInput("species");
 		species.setLabel("Species:");
-		species.setOptions(ct.getAllMarkedPanels("Species"), "id", "name");
+		species.setOptions(ct.getAllMarkedPanels("Species", investigationId), "id", "name");
 		species.setNillable(false);
 
 		// Populate sexes list
 		// DISCUSSION: why is this not ontology???
 		sex = new SelectInput("sex");
 		sex.setLabel("Sex:");
-		sex.setOptions(ct.getAllMarkedPanels("Sex"), "id", "name");
+		sex.setOptions(ct.getAllMarkedPanels("Sex", investigationId), "id", "name");
 		sex.setNillable(false);
 
 		// Populate source list
@@ -375,7 +378,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		// which is taken care of in the Breeding Module
 		source = new SelectInput("source");
 		source.setLabel("Source:");
-		List<ObservationTarget> tmpSourceList = ct.getAllMarkedPanels("Source");
+		List<ObservationTarget> tmpSourceList = ct.getAllMarkedPanels("Source", investigationId);
 		for (ObservationTarget tmpSource : tmpSourceList)
 		{
 			int featureId = ct.getMeasurementId("SourceType");
@@ -395,8 +398,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		// Populate animaltype list
 		animaltype = new SelectInput("animaltype");
 		animaltype.setLabel("Animal type:");
-		int featureId = ct.getMeasurementId("AnimalType");
-		for (Code c : db.query(Code.class).eq("feature", featureId).find())
+		for (Code c : ct.getAllCodesForFeature("AnimalType"))
 		{
 			animaltype.addOption(c.getDescription(), c.getCode_String() + " ("
 					+ c.getDescription() + ")");
@@ -411,7 +413,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		
 		background = new SelectInput("background");
 		background.setLabel("Background:");
-		background.setOptions(ct.getAllMarkedPanels("Background"), "id", "name");
+		background.setOptions(ct.getAllMarkedPanels("Background", investigationId), "id", "name");
 		gmoPanel.add(background);
 		
 		genePanel = new RepeatingPanel("geneinput", "GMO information:");
@@ -448,7 +450,8 @@ public class AddAnimalPlugin extends GenericPlugin
 		if (customNameFeatureId != -1) {
 			// Only show custom name panel when the user has selected a custom name feature
 			
-			customNamePanel = new DivPanel("CustomName", ct.getMeasurementById(customNameFeatureId).getName() + ":");
+			customNamePanel = new DivPanel("CustomName", ct.getMeasurementById(customNameFeatureId).getName() + 
+					":");
 		
 			customname = new TextLineInput("customname");
 			customname.setLabel("Base:");

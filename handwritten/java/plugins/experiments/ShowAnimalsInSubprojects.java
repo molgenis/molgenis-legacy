@@ -573,14 +573,15 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 
 		try
 		{
+			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
+			
 			// Populate DEC subproject list
-			this.setSubprojectList(ct.getAllMarkedPanels("Experiment"));
+			this.setSubprojectList(ct.getAllMarkedPanels("Experiment", investigationId));
 			
 			// Populate group list
-			setGroupList(ct.getAllMarkedPanels("Selection"));
+			setGroupList(ct.getAllMarkedPanels("Selection", investigationId));
 			
 			// Populate list of all animals
-			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
 			allAnimalIdList = ct.getAllObservationTargetIds("Individual", true, investigationId);			
 			
 			// Populate pain management code list

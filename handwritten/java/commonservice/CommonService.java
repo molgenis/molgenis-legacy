@@ -616,7 +616,7 @@ public class CommonService
 	// TODO: think of what to do with species, sexes, sources etc.
 	// Do we want to keep using the 'TypeOfGroup' Measurement or do we want to use Pheno
 	// entities like Species etc.
-	public List<ObservationTarget> getAllMarkedPanels(String mark)
+	public List<ObservationTarget> getAllMarkedPanels(String mark, int investigationId)
 			throws DatabaseException, ParseException
 	{
 		List<Integer> panelIdList = new ArrayList<Integer>();
@@ -624,6 +624,10 @@ public class CommonService
 		Query<ObservedValue> valueQuery = db.query(ObservedValue.class);
 		valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, getMeasurementId("TypeOfGroup")));
 		valueQuery.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, mark));
+		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.EQUALS, investigationId);
+		QueryRule qr2 = new QueryRule(Operator.OR);
+		QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
+		valueQuery.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
 		List<ObservedValue> valueList = valueQuery.find();
 		for (ObservedValue value : valueList) {
 			panelIdList.add(value.getTarget());
