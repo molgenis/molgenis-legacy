@@ -112,7 +112,7 @@ public class ${JavaName(entity)}Form extends EntityForm<${JavaName(entity)}>
 			input.setValueLabel<#if inputtype = "Mref">s</#if>("${label}", getEntity().get${JavaName(field)}_${JavaName(label)}()); 
 				</#list>
 			<#else>
-			input.setValueLabel<#if inputtype = "Mref">s</#if>("${field.xrefField.name}", getEntity().get${JavaName(field)}());
+			input.setValueLabel<#if inputtype = "Mref">s</#if>("${field.xrefField.name}", getEntity().get${JavaName(field)}_${JavaName(field.getXrefField())}());
 			</#if>
 			</#if>
 			<#if field.hidden>
