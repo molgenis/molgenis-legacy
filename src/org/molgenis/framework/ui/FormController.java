@@ -30,6 +30,8 @@ import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.commands.ScreenCommand;
 import org.molgenis.framework.ui.commands.SimpleCommand;
 import org.molgenis.framework.ui.html.HtmlForm;
+import org.molgenis.model.MolgenisModelException;
+import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
@@ -293,7 +295,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		}
 	}
 
-	private void addFilter(DatabasePager<E> pager, Database db, Tuple request) throws DatabaseException
+	private void addFilter(DatabasePager<E> pager, Database db, Tuple request) throws DatabaseException, MolgenisModelException
 	{
 		FormModel<E> model = getModel();
 		
@@ -304,8 +306,31 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		{
 			value = "%" + value + "%";
 		}
-		QueryRule rule = new QueryRule(request.getString("__filter_attribute"), operator, value);
-		model.getUserRules().add(rule);
+		
+		
+		if (request.getString("__filter_attribute").equals("all"))  {
+			// 1 - get the possible fields for the entity that were looking at
+			org.molgenis.model.elements.Entity eType = db.getMetaData().getEntity("BiobankPanel"); //TODO
+			QueryRule rule = new QueryRule(Operator.OR);
+			
+		     //  2  - iterate fields and build the queryrules - if field != "__Type"
+					for (Field field : eType.getFields()) {
+						System.out.println("*** FIELD NAME : " + field.getName().toLowerCase());
+						if (!field.getName().equals("__Type") ) {
+							QueryRule fieldRule = new QueryRule(field.getName().toLowerCase(), operator, value);
+							System.out.println("*** QUERYRULE : " + fieldRule.toString());
+							model.getUserRules().add(fieldRule);
+							model.getUserRules().add(rule);
+						}
+					}
+		}else if (request.getString("__filter_attribute").equals("searchIndex"))  {
+			//TODO:   plugins.LuceneIndex.DBIndexPlugin.searchIndex()
+		}
+		else{
+			System.out.println("*** ELSE : ");
+			QueryRule rule = new QueryRule(request.getString("__filter_attribute"), operator, value);
+			model.getUserRules().add(rule);
+		}
 
 		// reload the filters...
 		pager.resetFilters();

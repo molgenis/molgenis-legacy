@@ -82,6 +82,8 @@
 		<#list screen.getNewRecordForm().inputs as input><#if !input.hidden>
 			<option value="${screen.getSearchField(input.name)}">${input.label}</option>
 		</#if></#list>
+			<option value="all">All fields</option>
+			<option value="searchIndex">Search Index</option>
 		</select>
 		<select title="choose search operator" name="__filter_operator">
 			<option value="EQUALS">=</option>
