@@ -309,8 +309,9 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		
 		
 		if (request.getString("__filter_attribute").equals("all"))  {
+			String entityName = request.getString("__target");
 			// 1 - get the possible fields for the entity that were looking at
-			org.molgenis.model.elements.Entity eType = db.getMetaData().getEntity("BiobankPanel"); //TODO
+			org.molgenis.model.elements.Entity eType = db.getMetaData().getEntity(entityName);
 			QueryRule rule = new QueryRule(Operator.OR);
 			
 		     //  2  - iterate fields and build the queryrules - if field != "__Type"
