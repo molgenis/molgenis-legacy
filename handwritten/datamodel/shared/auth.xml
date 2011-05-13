@@ -54,6 +54,7 @@
 			<field name="permission" type="enum" enum_options="[read,write,own]"/>
 			<!-- no use case for 'execute' so don't use it -->
 		</entity>
+		<!--
 		<entity name="TestClass" implements="Authorizable">
 			<field name="id" type="autoid"/>
 			<field name="testField"/>
@@ -62,6 +63,7 @@
 			<field name="id" type="autoid"/>
 			<field name="testField"/>
 		</entity>
+		-->
 		<!--
 		<entity name="GroupReadInterface" abstract="true" system="true">
 			<description>This class can be used if you need row level security. </description>
