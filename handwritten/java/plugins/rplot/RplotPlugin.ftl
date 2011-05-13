@@ -5,7 +5,7 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
 -->
 <#macro RplotPlugin screen>
-<#assign model = screen.model>
+<#assign model = screen.myModel>
 
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">

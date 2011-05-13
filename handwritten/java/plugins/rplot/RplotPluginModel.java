@@ -9,12 +9,8 @@ import org.molgenis.data.Data;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.SimpleScreenModel;
 
-public class RplotPluginModel extends SimpleScreenModel {
-	public RplotPluginModel(ScreenController controller)
-	{
-		super(controller);
-		// TODO Auto-generated constructor stub
-	}
+public class RplotPluginModel{
+
 	private List<String> matrixRows = new ArrayList<String>();
 	private List<String> matrixCols = new ArrayList<String>();
 	private Data selectedData;
@@ -112,13 +108,5 @@ public class RplotPluginModel extends SimpleScreenModel {
 	{
 		this.selectedPlotType = selectedPlotType;
 	}
-	@Override
-	public boolean isVisible()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
-	
 	
 }

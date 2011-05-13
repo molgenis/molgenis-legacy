@@ -72,7 +72,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 	private DatabaseJobManager djm = null;
 	private ComputationResource cr = null;
 	private DataMatrixHandler dmh = null;
-	private ClusterPluginModel model = new ClusterPluginModel(this);
+	private ClusterPluginModel model = new ClusterPluginModel();
 
 	public ClusterPlugin(String name, ScreenController<?> parent)
 	{
@@ -95,15 +95,15 @@ public class ClusterPlugin extends PluginModel<Entity>
 	public String getCustomHtmlHeaders()
 	{
 		String refresh = null;
-		if (this.getModel().getRefreshRate().equals("off")){
+		if (this.getMyModel().getRefreshRate().equals("off")){
 			refresh = "";
 		}else{
-			refresh = "\n<meta http-equiv=\"refresh\" content=\"" + this.getModel().getRefreshRate() + "\">";
+			refresh = "\n<meta http-equiv=\"refresh\" content=\"" + this.getMyModel().getRefreshRate() + "\">";
 		}
 		return "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>" + refresh;
 	}
 
-	public ClusterPluginModel getModel(){
+	public ClusterPluginModel getMyModel(){
 		return model;
 	}
 
@@ -172,7 +172,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 			}
 			if (action.equals("changeRefresh"))
 			{
-				this.getModel().setRefreshRate(request.getString("chosenRefresh"));
+				this.getMyModel().setRefreshRate(request.getString("chosenRefresh"));
 			}
 		}
 		catch (Exception e)
@@ -252,7 +252,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 
 		job.setTimestamp(HelperFunctions.dateTimeToMysqlFormat(timestamp));
 		job.setAnalysis(request.getInt("selectedAnalysis"));
-		job.setComputeResource(this.getModel().getSelectedComputeResource());
+		job.setComputeResource(this.getMyModel().getSelectedComputeResource());
 
 		model.setCandidateJob(job);
 	}
@@ -454,12 +454,12 @@ public class ClusterPlugin extends PluginModel<Entity>
 				}
 				else if ((startedJob.getComputeResource().equals("cluster")))
 				{
-					if (this.getModel().getLs().getUser() == null)
+					if (this.getMyModel().getLs().getUser() == null)
 					{
-						this.getModel().getLs().setUser(Millipede.z);
-						this.getModel().getLs().setPassword(Millipede.k);
+						this.getMyModel().getLs().setUser(Millipede.z);
+						this.getMyModel().getLs().setPassword(Millipede.k);
 					}
-					cr = new ClusterComputationResource(this.getModel().getLs());
+					cr = new ClusterComputationResource(this.getMyModel().getLs());
 
 					commands.add(new Command("nohup qsub runmij" + jobId + ".sh &", false, false, true));
 				}else if ((startedJob.getComputeResource().equals("bot")))

@@ -1,6 +1,5 @@
 import generic.OpenBrowser;
 import generic.Utils;
-
 import ircbot.IRCHandler;
 
 import java.awt.Color;
@@ -13,7 +12,10 @@ import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 
+import org.molgenis.MolgenisOptions;
+
 import app.servlet.MolgenisServlet;
+import app.servlet.UsedMolgenisOptions;
 
 public class RunStandalone extends JFrame implements MouseListener{
 	private static final long serialVersionUID = -4617569886547354084L;
@@ -21,6 +23,7 @@ public class RunStandalone extends JFrame implements MouseListener{
 	WWWServer web;
 	static Thread webserverthread;
 	static IRCHandler botentry = new IRCHandler();
+	MolgenisOptions usedOptions = new UsedMolgenisOptions();
 	OpenBrowser browser = new OpenBrowser();
 	String title =  MolgenisServlet.getMolgenisVariantID() + " powered by Molgenis Webserver";
 	final String url = "http://localhost:" + WWWServer.DEF_PORT + "/" + MolgenisServlet.getMolgenisVariantID();
@@ -33,8 +36,10 @@ public class RunStandalone extends JFrame implements MouseListener{
 	    addMouseListener(this);
 		
 	    (webserverthread = new Thread(web = new WWWServer())).start();
-		web.setAttribute("bot", botentry);
-		new Thread(botentry).start();
+	    if(usedOptions.generate_BOT){
+	    	web.setAttribute("bot", botentry);
+			new Thread(botentry).start();
+	    }
 	}
 	
 	public void paint(Graphics g) {

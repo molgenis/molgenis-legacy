@@ -22,14 +22,9 @@ import plugins.cluster.helper.LoginSettings;
  * @author joerivandervelde
  *
  */
-public class ClusterPluginModel extends SimpleScreenModel
+public class ClusterPluginModel
 {
 	
-	public ClusterPluginModel(ScreenController controller)
-	{
-		super(controller);
-		// TODO Auto-generated constructor stub
-	}
 	String deployName;
 	
 	int maxSubjobs;
@@ -192,15 +187,5 @@ public class ClusterPluginModel extends SimpleScreenModel
 	{
 		this.datavalues = datavalues;
 	}
-	@Override
-	public boolean isVisible()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
-	
-	
-	
 
 }

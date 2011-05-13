@@ -13,8 +13,10 @@ import java.io.PrintWriter;
 import matrix.AbstractDataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
+import org.molgenis.core.MolgenisFile;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -27,9 +29,9 @@ public class RplotPlugin<E extends Entity> extends PluginModel<E>
 
 	private static final long serialVersionUID = 2598093872153856022L;
 	private DataMatrixHandler dmh = null;
-	private RplotPluginModel model = new RplotPluginModel(this);
+	private RplotPluginModel model = new RplotPluginModel();
 
-	public RplotPluginModel getModel()
+	public RplotPluginModel getMyModel()
 	{
 		return model;
 	}
@@ -172,8 +174,13 @@ public class RplotPlugin<E extends Entity> extends PluginModel<E>
 
 		try
 		{
-			FormModel<Data> theParent = (FormModel<Data>) this.getParent().getParent();
-			Data newSelectedData = ((Data) theParent.getRecords().get(0));
+			//FormModel<Data> theParent = (FormModel<Data>) this.getParent().getParent();
+			//Data newSelectedData = ((Data) theParent.getRecords().get(0));
+			
+			ScreenController<?> parentController = (ScreenController<?>) this.getParent().getParent();
+			FormModel<Data> parentForm = (FormModel<Data>) ((FormController)parentController).getModel();
+			Data newSelectedData = parentForm.getRecords().get(0);
+
 			
 			if(dmh == null){
 				dmh = new DataMatrixHandler(db);

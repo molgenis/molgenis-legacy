@@ -76,7 +76,7 @@
 	<#elseif model.molgenisFile.extension == 'xxx'>
 		<#-- make more exceptions to view certain file extensions here-->
 	<#else>
-		<iframe width="750px" height="600px" src="downloadfile?name=${model.molgenisFile.name}">
+		<iframe width="750px" height="600px" src="downloadfile?name=${model.molgenisFile.name}"></iframe>
 	</#if>
 <#else>
 	No file found. Please upload it here.<br>
