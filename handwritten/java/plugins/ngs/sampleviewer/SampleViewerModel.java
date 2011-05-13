@@ -2,7 +2,7 @@
  * @author Jessica Lundberg
  * @date 20 Jan, 2011
  */
-package plugins.ngs.samplerviewer;
+package plugins.ngs.sampleviewer;
 
 import java.text.ParseException;
 import java.util.ArrayList;

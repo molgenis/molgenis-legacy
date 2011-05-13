@@ -5,7 +5,7 @@
  * This is the plugin class for the Sample Viewer (aka Matrix Viewer) and displays a matrix of samples with 
  * their features and the values. Has various filtering options. 
  */
-package plugins.ngs.samplerviewer;
+package plugins.ngs.sampleviewer;
 
 import java.util.List;
 
