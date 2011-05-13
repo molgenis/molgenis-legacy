@@ -8,38 +8,19 @@
 package plugins.convertergids;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.Molgenis;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.gids.GidsUpdateDatabase;
-
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.organization.Investigation;
-import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.CsvReader;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import plugins.emptydb.emptyDatabase;
-import plugins.fillanimaldb.FillAnimalDB;
-
-import app.CsvImport;
-import app.JDBCDatabase;
-
 import convertors.gids.ConvertGidsToPheno;
-import convertors.ulidb.ConvertUliDbToPheno;
 
 public class ConvertDataIntoPhenoPlugin extends PluginModel<Entity>
 {
