@@ -8,7 +8,6 @@
 package plugins.protocol;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,7 +15,6 @@ import java.util.List;
 import java.util.Locale;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -38,7 +36,11 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		super(name, parent);
 	
 		model = new ApplyProtocolPluginModel();
-		model.setUserId(this.getLogin().getUserId());
+		try {
+			model.setUserAndInvestigationId(this.getLogin().getUserId());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		ui = new ApplyProtocolUI(model);
     }
 
@@ -90,11 +92,17 @@ public class ApplyProtocolPlugin extends GenericPlugin
     	
 		cs.setDatabase(db);
 		cs.makeObservationTargetNameMap(userId, false);
+		
+		model.setCommonService(cs);
 	
 		// Only first time or if user changed:
-		if (ui.getProtocolApplicationContainer() == null || userId != model.getUserId()) {
-			model.setUserId(userId);
-		    ui.initScreen();
+		try {
+			if (ui.getProtocolApplicationContainer() == null || userId != model.getUserId()) {
+				model.setUserAndInvestigationId(userId);
+			    ui.initScreen();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
     }
 
@@ -132,8 +140,8 @@ public class ApplyProtocolPlugin extends GenericPlugin
 				    String dataType = measurement.getDataType();
 				    String oldValue = "";
 				    if (dataType.equals("xref")) {
-						if (originalObservedValue.getRelation() != null) {
-							oldValue = originalObservedValue.getRelation().toString();
+						if (originalObservedValue.getRelation_Name() != null) {
+							oldValue = originalObservedValue.getRelation_Name();
 						}
 				    } else {
 				    	oldValue = originalObservedValue.getValue();
@@ -163,7 +171,8 @@ public class ApplyProtocolPlugin extends GenericPlugin
 				    // Compare, and update if necessary
 				    if (!oldValue.equals(newValue) || oldStartTime != startTime || oldEndTime != endTime) {
 						if (dataType.equals("xref")) {
-						    originalObservedValue.setRelation(Integer.parseInt(newValue));
+							originalObservedValue.setRelation_Id(null);
+						    originalObservedValue.setRelation_Name(newValue);
 						    originalObservedValue.setValue(null);
 						} else {
 						    originalObservedValue.setValue(newValue);
@@ -173,7 +182,9 @@ public class ApplyProtocolPlugin extends GenericPlugin
 						originalObservedValue.setProtocolApplication(paId);
 			
 						try {
-						    db.update(originalObservedValue); // TODO: add to batch list and add later
+						    db.add(originalObservedValue);
+						    // TODO: add to batch list and add later
+						    // TODO: do update when user has chosen 'Edit existing'
 						} catch(Exception e) {
 						    e.printStackTrace();
 						    logger.error("An exception occurred while updating ObservedValue " + 
@@ -186,7 +197,8 @@ public class ApplyProtocolPlugin extends GenericPlugin
 						// so after 'Apply' reset these boxes to the original values, so we can be sure
 						// they reflect what the user entered
 						if (dataType.equals("xref")) {
-						    originalObservedValue.setRelation(Integer.parseInt(oldValue));
+							originalObservedValue.setRelation_Id(null);
+						    originalObservedValue.setRelation_Name(oldValue);
 						    originalObservedValue.setValue(null);
 						} else {
 						    originalObservedValue.setValue(oldValue);
@@ -244,7 +256,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		    ObservedValue newValue = new ObservedValue();
 		    // Put value in appropriate field
 		    if (dataType.equals("xref")) {
-		    	newValue.setRelation(request.getInt(colNrInTable + "_0"));
+		    	newValue.setRelation_Name(request.getString(colNrInTable + "_0"));
 		    } else {
 		    	newValue.setValue(request.getString(colNrInTable + "_0"));
 		    }
@@ -289,7 +301,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		ObservedValue newValue = new ObservedValue();
 		// Put value in appropriate field
 		if (dataType.equals("xref")) {
-		    newValue.setRelation(request.getInt(col + "_0"));
+		    newValue.setRelation_Name(request.getString(col + "_0"));
 		} else {
 		    newValue.setValue(request.getString(col + "_0"));
 		}
@@ -310,8 +322,6 @@ public class ApplyProtocolPlugin extends GenericPlugin
      * 
      * @param db
      * @param request
-     * @throws ParseException 
-     * @throws DatabaseException 
      */
     ScreenMessage handleSelect(Tuple request)
     {
@@ -323,6 +333,13 @@ public class ApplyProtocolPlugin extends GenericPlugin
 			return new ScreenMessage("No protocol selected", false);
 		}
 		model.setProtocolId(Integer.parseInt(protocol.toString()));
+		// Set some feature info only once
+		try {
+			model.setFeaturesLists(cs.getMeasurementsByProtocol(model.getProtocolId()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ScreenMessage("Error: could not retrieve measurements for chosen protocol", false);
+		}
 		
 		// Get targets
 		List<?> targetListObject = request.getList("Targets");

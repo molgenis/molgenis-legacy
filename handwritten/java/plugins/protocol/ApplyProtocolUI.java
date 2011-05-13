@@ -95,33 +95,28 @@ public class ApplyProtocolUI {
 		}
 		
 		// Target type allowed for relation
-		String observationTargetType = "ObservationTarget";
-		if (feature.getTargettypeAllowedForRelation() != null) {
-			int entityId = feature.getTargettypeAllowedForRelation();
-			observationTargetType = cs.getEntityName(entityId);
-		}
+		String observationTargetType = model.getTargettypeAllowedForRelation(feature);
 		
 		// Panel label for relation
 		String panelLabel = feature.getPanelLabelAllowedForRelation();
 		
 		// Make the appropriate input
-		if (dataType.equals("string") && cs.getAllCodesForFeature(feature.getName()).size() > 0) {
+		if (dataType.equals("string") && model.getAllCodesForFeature(feature).size() > 0) {
 		    // If there are codes for this Measurement, show a selectbox with those
 		    valueInput = new SelectInput(col + "_" + row);
-		    ((SelectInput)valueInput).setOptionsFromStringList(cs.getAllCodesForFeatureAsStrings(feature.getName()));
+		    ((SelectInput)valueInput).setOptionsFromStringList(model.getAllCodesForFeatureAsStrings(feature));
 		} else {
 			if (panelLabel != null) {
-				int investigationId = cs.getUserInvestigationId(model.getUserId());
 				// If there's only a subset of labeled Panels allowed for this Measurement, show a selectbox with those
 				valueInput = new SelectInput(col + "_" + row);
-				List<ObservationTarget> panelList = cs.getAllMarkedPanels(panelLabel, investigationId);
+				List<ObservationTarget> panelList = model.getAllPanelsForFeature(feature);
 				for (ObservationTarget p : panelList) {
-					((SelectInput)valueInput).addOption(p.getId(), p.getName());
+					((SelectInput)valueInput).addOption(p.getName(), p.getName());
 				}
 			} else {
 				// Normally, show the input belonging to the data type
 				valueInput = MolgenisFieldTypes.createInput(dataType, col + "_" + row, observationTargetType,
-		    		cs.getDatabase());
+		    		model.getDatabase());
 				if (dataType.equals("string")) {
 					((StringInput)valueInput).setWidth(20);
 				}
@@ -133,14 +128,12 @@ public class ApplyProtocolUI {
 		    if (value.getValue() != null) {
 		    	// If there's a literal string value, use that...
 		    	valueInput.setValue(value.getValue());
-		    } else if (value.getRelation() != null) {
+		    } else if (value.getRelation_Name() != null) {
 		    	// Otherwise it must be a relation, so use the xref id as a value...
-		    	valueInput.setValue(value.getRelation().toString());
+		    	valueInput.setValue(value.getRelation_Name());
 		    	if (panelLabel == null) { // If a panel label was set, valueInput has been turned into a selectbox and we cannot do the statement below
 			    	// Because this involves an xref box, set the value and label of the selected option
-			    	// Note: cannot use getRelation_name() because, in case of apply defaults, value
-			    	// is not in the database and mapper methods do not work
-			    	((XrefInput) valueInput).setValueLabel("name", cs.getObservationTargetById(value.getRelation()).getName());
+			    	((XrefInput) valueInput).setValueLabel("name", value.getRelation_Name());
 		    	}
 		    }
 		}
@@ -302,7 +295,6 @@ public class ApplyProtocolUI {
      * @throws ParseException
      */
     public void makeColumns() throws DatabaseException, ParseException {
-		model.setFeaturesList(cs.getMeasurementsByProtocol(model.getProtocolId()));
 		for (Measurement m : model.getFeaturesList()) {
 			String measurementName = m.getName();
 		    valueTable.addColumn(measurementName);
