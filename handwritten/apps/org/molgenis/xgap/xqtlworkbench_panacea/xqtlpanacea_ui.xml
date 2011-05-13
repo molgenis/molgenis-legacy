@@ -34,7 +34,7 @@
 		
 		<form label="Explore investigations" name="Investigations" entity="Investigation" compact_view="name" group="biologist">
 			<menu name="InvestigationMenu">
-			<plugin name="Overview" type="plugins.investigationoverview.InvestigationOverviewPlugin" />
+			<!--broken, can't seem to fix it.. plugin name="Overview" type="plugins.investigationoverview.InvestigationOverviewPlugin" /-->
 				<menu name="BasicAnnotations" label="Basic annotations">
 					<form name="Individuals" entity="Individual" />
 					<form name="Panels" entity="Panel" />
