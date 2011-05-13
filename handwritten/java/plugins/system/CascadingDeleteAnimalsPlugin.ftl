@@ -32,7 +32,7 @@
 	<select name="target" id="target" size='20' multiple='multiple'>
 		<#list screen.targetIdList as targetId>
 			<#assign name = screen.getTargetName(targetId)>
-			<option value="${targetId}">${name}</option>
+			<option value="${targetId?string.computer}">${name}</option>
 		</#list>
 	</select>
 	</div>

@@ -34,58 +34,60 @@ public class SampleViewer extends PluginModel<Entity> {
     public SampleViewer(String name, ScreenController<?> parent)
     {
 	super(name, parent);
-	model = new SampleViewerModel(this);
-	model.setCommonQueries(CommonService.getInstance());
+		model = new SampleViewerModel(this);
+		model.setCommonQueries(CommonService.getInstance());
     }
 
     @Override
     public String getViewName()
     {
-	return "plugins_ngs_samplerviewer_SampleViewer";
+    	return "plugins_ngs_samplerviewer_SampleViewer";
     }
 
     @Override
     public String getViewTemplate()
     {
-	return "plugins/ngs/samplerviewer/SampleViewer.ftl";
+    	return "plugins/ngs/samplerviewer/SampleViewer.ftl";
     }
 
     @Override
     public void handleRequest(Database db, Tuple request) {
-	this.db = db;
+		this.db = db;
+		
+		model.setAction(request.getString("__action"));
 	
-	model.setAction(request.getString("__action"));
-
-	if(model.getAction().equals("showAllSamples")) {
-	    model.setProjectName("");
-	    this.reload(db);
-	} else if(model.getAction().equals("showAllProtocols")) {
-	    model.setProtocolId(0);
-	    model.setProtocolName("");
-	    this.reload(db);
-	} else if(model.getAction().equals("selectProject")) {
-	    model.setProjectName(request.getString("projecttype"));
-	} else if (model.getAction().equals("submitchanges")) {
-	    submitMatrixChanges(request);		
-	} else if(model.getAction().equals("selectProtocol")) {
-	    model.setProtocolId(request.getInt("protocoltype"));
-	}
+		if (model.getAction().equals("showAllSamples")) {
+		    model.setProjectName("");
+		    this.reload(db);
+		} else if(model.getAction().equals("showAllProtocols")) {
+		    model.setProtocolId(0);
+		    model.setProtocolName("");
+		    this.reload(db);
+		} else if(model.getAction().equals("selectProject")) {
+		    model.setProjectName(request.getString("projecttype"));
+		} else if (model.getAction().equals("submitchanges")) {
+		    submitMatrixChanges(request);		
+		} else if(model.getAction().equals("selectProtocol")) {
+		    model.setProtocolId(request.getInt("protocoltype"));
+		}
 
     }
     
     @Override
     public void reload(Database db)
     {
-	this.db = db;
-	try {
-	    model.setProjects(db.find(Project.class));
-	    model.setProtocols(db.find(Protocol.class));
-	} catch (Exception e) {
-	    String msg = "An exception occured when retrieving projects and/or protocols from the database";
-	    logger.error(msg,e);
-	    this.setMessages(new ScreenMessage(msg != null ? msg : "null", false));
-	}
-	setSampleMatrix(model.getProjectName(), model.getProtocolId());
+    	model.setUserId(this.getLogin().getUserId());
+    	
+		this.db = db;
+		try {
+		    model.setProjects(db.find(Project.class));
+		    model.setProtocols(db.find(Protocol.class));
+		} catch (Exception e) {
+		    String msg = "An exception occured when retrieving projects and/or protocols from the database";
+		    logger.error(msg,e);
+		    this.setMessages(new ScreenMessage(msg != null ? msg : "null", false));
+		}
+		setSampleMatrix(model.getProjectName(), model.getProtocolId());
     }
 
     /** Retrieve all necessary data to fill the Sample Matrix Viewer
@@ -105,7 +107,8 @@ public class SampleViewer extends PluginModel<Entity> {
 				model.setProtocolName(model.getCommonQueries().getProtocolById(protocolId).getName());
 				model.setFeatures(model.getCommonQueries().getMeasurementsByProtocol(protocolId));
 		    } else {
-				model.setFeatures(model.getCommonQueries().getAllMeasurements());
+		    	int investigationId = model.getCommonQueries().getUserInvestigationId(model.getUserId());
+				model.setFeatures(model.getCommonQueries().getAllMeasurements(investigationId));
 				model.setProtocolName("");
 		    }
 		} catch (Exception e) {

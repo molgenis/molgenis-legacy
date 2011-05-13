@@ -1245,11 +1245,15 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<Measurement> getAllMeasurements()
+	public List<Measurement> getAllMeasurements(int investigationId)
 			throws DatabaseException, ParseException
 	{
 		Query<Measurement> q = db.query(Measurement.class);
 		q.sortASC("id");
+		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.EQUALS, investigationId);
+		QueryRule qr2 = new QueryRule(Operator.OR);
+		QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
+		q.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
 		return q.find();
 	}
 	
@@ -1263,7 +1267,7 @@ public class CommonService
 	 * @throws ParseException
 	 */
 	public List<Measurement> getAllMeasurementsSorted(String sortField,
-		String sortOrder) throws DatabaseException, ParseException
+		String sortOrder, int investigationId) throws DatabaseException, ParseException
 	{
 		Query<Measurement> q = db.query(Measurement.class);
 		if (sortOrder.equals("ASC")) {
@@ -1271,6 +1275,10 @@ public class CommonService
 		} else {
 			q.sortDESC(sortField);
 		}
+		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.EQUALS, investigationId);
+		QueryRule qr2 = new QueryRule(Operator.OR);
+		QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
+		q.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
 		return q.find();
 	}
 	
@@ -1281,11 +1289,15 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<ObservableFeature> getAllObservableFeatures()
+	public List<ObservableFeature> getAllObservableFeatures(int investigationId)
 			throws DatabaseException, ParseException
 	{
 		Query<ObservableFeature> q = db.query(ObservableFeature.class);
 		q.sortASC(ObservableFeature.ID);
+		QueryRule qr1 = new QueryRule(ObservableFeature.INVESTIGATION, Operator.EQUALS, investigationId);
+		QueryRule qr2 = new QueryRule(Operator.OR);
+		QueryRule qr3 = new QueryRule(ObservableFeature.INVESTIGATION_NAME, Operator.EQUALS, "System");
+		q.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
 		return q.find();
 	}
 
@@ -1299,19 +1311,12 @@ public class CommonService
 	 */
 	public List<Measurement> getMeasurementsByProtocol(int protocolId) throws DatabaseException, ParseException {
 		
-		Query<Protocol> q = db.query(Protocol.class);
-		q.eq(Protocol.ID, protocolId);
-		List<Protocol> protocols = q.find();
+		Protocol protocol = db.findById(Protocol.class, protocolId);
 
 		List<Measurement> features = new ArrayList<Measurement>();
-		if (!protocols.isEmpty()) { 
-		    List<Integer> featureIds = protocols.get(0).getFeatures_Id();
-		    for (Integer i : featureIds) {
-				Query<Measurement> r = db.query(Measurement.class);
-				r.eq(ObservableFeature.ID, i);
-				features.addAll(r.find());
-		    }
-		}
+	    for (Integer i : protocol.getFeatures_Id()) {
+			features.add(db.findById(Measurement.class, i));
+	    }
 		
 		return features;
 	}
@@ -1344,6 +1349,7 @@ public class CommonService
 	 * @throws IOException
 	 * @throws DatabaseException
 	 */
+	@Deprecated
 	public void makeMeasurement(String name, String description, String dataType)
 			throws DatabaseException, IOException
 	{
@@ -1679,53 +1685,8 @@ public class CommonService
 			throw new DatabaseException("Sample not found");
 
 	}
-
-	/**
-	 * Returns all observed values for a given sample and list of features.
-	 * NOTE: Creates a default "" value if observedValue doesn't exist yet for
-	 * given feature and sample. This created default does not link to a
-	 * ProtocolApplication and this method isn't responsible for storing this
-	 * object in the database.
-	 * 
-	 * @param sampleId
-	 * @param features
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-	public List<ObservedValue> getObservedValueBySampleAndFeatures(int sampleId, List<Measurement> features)
-			throws DatabaseException, ParseException
-	{
-
-		List<ObservedValue> values = new ArrayList<ObservedValue>();
-
-		for (Measurement f : features)
-		{ // for each feature, find value
-			Query<ObservedValue> q = db.query(ObservedValue.class);
-			q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, sampleId));
-			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, f.getId()));
-
-			if (q.find().isEmpty())
-			{ // if value doesnt exist, create new one
-				ObservedValue newOV = new ObservedValue();
-				newOV.setFeature(f);
-				newOV.setValue("");
-				newOV.setTarget(sampleId);
-				newOV.setInvestigation(this.getSampleById(sampleId).getInvestigation_Id());
-				values.add(newOV);
-			}
-			else
-			{
-				values.add(q.find().get(0));
-			}
-
-		}
-
-		return values;
-	}
 	
 	/** 
-	 * TODO: Change name and clean up to make this method more generic
-	 * 
 	 * Returns all observed values for a given sample and list of features.
 	 * NOTE: Creates a default "" value if observedValue doesn't exist yet for
 	 * given feature and sample. This created default does not link to a
@@ -1737,8 +1698,8 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<ObservedValue> getObservedValueByTargetAndFeatures(int targetId, List<Measurement> measurements)
-			throws DatabaseException, ParseException
+	public List<ObservedValue> getObservedValuesByTargetAndFeatures(int targetId, List<Measurement> measurements,
+			int investigationId) throws DatabaseException, ParseException
 	{
 
 		List<ObservedValue> values = new ArrayList<ObservedValue>();
@@ -1748,6 +1709,7 @@ public class CommonService
 			Query<ObservedValue> q = db.query(ObservedValue.class);
 			q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetId));
 			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, m.getId()));
+			q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.EQUALS, investigationId));
 			List<ObservedValue> vals = q.find();
 			
 			if (vals.isEmpty())
@@ -1757,7 +1719,7 @@ public class CommonService
 				newOV.setValue("");
 				// don't set relation, as that can then never be reset to null
 				newOV.setTarget(targetId);
-				newOV.setInvestigation(this.getObservationTargetById(targetId).getInvestigation_Id());
+				newOV.setInvestigation(investigationId);
 				values.add(newOV);
 			}
 			else

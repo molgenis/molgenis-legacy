@@ -110,13 +110,16 @@ public class PrintLabelPlugin extends GenericPlugin
 	 */
 	private PdfPTable makeLabels(List<Individual> individualList, List<Measurement> measurementList) throws DatabaseException, ParseException {
 		PdfPTable table = new PdfPTable(2);
+		
+		int investigationId = cs.getUserInvestigationId(this.getLogin().getUserId());
         
         for (Individual ind : individualList) {
         	PdfPCell newCell = new PdfPCell();
         	newCell.addElement(new Paragraph("Database ID: " + ind.getId().toString()));
         	newCell.addElement(new Paragraph("Database name: " + ind.getName()));
         	
-        	List<ObservedValue> valueList = cs.getObservedValueByTargetAndFeatures(ind.getId(), measurementList);
+        	List<ObservedValue> valueList = cs.getObservedValuesByTargetAndFeatures(ind.getId(), measurementList,
+        			investigationId);
         	for (ObservedValue value : valueList) {
         		String featName = cs.getMeasurementById(value.getFeature()).getName();
         		String actualValue;
@@ -235,7 +238,8 @@ public class PrintLabelPlugin extends GenericPlugin
     	features = new SelectMultipleInput("Features", null);
 		features.setLabel("Select feature(s):");
     	try {
-		    for (Measurement feature : cs.getAllMeasurementsSorted(Measurement.NAME, "ASC")) {
+    		int investigationId = cs.getUserInvestigationId(this.getLogin().getUserId());
+		    for (Measurement feature : cs.getAllMeasurementsSorted(Measurement.NAME, "ASC", investigationId)) {
 		    	features.addOption(feature.getId(), feature.getName());
 		    }
 		} catch(Exception e) {

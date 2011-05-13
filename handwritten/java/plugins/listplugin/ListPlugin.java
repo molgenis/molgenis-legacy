@@ -130,7 +130,8 @@ public class ListPlugin extends PluginModel<Entity> {
 			
 		try {
 			// Populate measurement list
-			List<Measurement> featList = ct.getAllMeasurementsSorted(Measurement.NAME, "ASC");
+			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
+			List<Measurement> featList = ct.getAllMeasurementsSorted(Measurement.NAME, "ASC", investigationId);
 			if (featList.size() > 0) {
 				this.setFeatureList(featList);
 			} else {

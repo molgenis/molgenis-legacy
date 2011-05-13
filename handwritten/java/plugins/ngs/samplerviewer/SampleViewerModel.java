@@ -36,17 +36,18 @@ public class SampleViewerModel extends SimpleScreenModel {
     private String projectName = "";
     private int protocolId = 0;
     private String protocolName = "";
+    private int userId;
     private CommonService cq;
     
     List<ObservedValue> valuesBySample;
     
     
     public void setAction(String action) {
-	this.action = action;
+    	this.action = action;
     }
 
     public String getAction() {
-	return action;
+    	return action;
     }
 
     public void setProjects(List<Project> projects) {
@@ -98,36 +99,37 @@ public class SampleViewerModel extends SimpleScreenModel {
     }
 
     public void setProtocolId(int protocolId) {
-	this.protocolId = protocolId;
+    	this.protocolId = protocolId;
     }
 
     public int getProtocolId() {
-	return protocolId;
+    	return protocolId;
     }
 
     public void setCommonQueries(CommonService cq) {
-	this.cq = cq;
+    	this.cq = cq;
     }
 
     public CommonService getCommonQueries() {
-	return cq;
+    	return cq;
     }
     
     public List<ObservedValue> getValuesBySample() throws DatabaseException, ParseException {
-	return valuesBySample;
+    	return valuesBySample;
     }
     
     public List<ObservedValue> getValuesBySample(int sampleId, List<Measurement> features) throws DatabaseException, ParseException {
-    	valuesBySample = cq.getObservedValueBySampleAndFeatures(sampleId, features);
+    	int investigationId = cq.getUserInvestigationId(userId);
+    	valuesBySample = cq.getObservedValuesByTargetAndFeatures(sampleId, features, investigationId);
     	return valuesBySample;
     }
 
-	@Override
-	public boolean isVisible()
-	{
-		// TODO Auto-generated method stub
-		return false;
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 
+	public int getUserId() {
+		return userId;
+	}
 
 }

@@ -38,51 +38,52 @@ public class Workflow extends PluginModel<Entity> {
      */
     public Workflow(String name, ScreenController<?> parent)
     {
-	super(name, parent);
-	model = new WorkflowModel(this);
-	this.model.setCommonQueries(CommonService.getInstance());
-	
+		super(name, parent);
+		model = new WorkflowModel(this);
+		this.model.setCommonQueries(CommonService.getInstance());
     }
 
     @Override
     public String getViewName()
     {
-	return "plugins_ngs_workflow_Workflow";
+    	return "plugins_ngs_workflow_Workflow";
     }
 
     @Override
     public String getViewTemplate()
     {
-	return "plugins/ngs/workflow/Workflow.ftl";
+    	return "plugins/ngs/workflow/Workflow.ftl";
     }
 
     @Override
     public void handleRequest(Database db, Tuple request) {
-	model.getCommonQueries().setDatabase(db);
-	this.db = db;
-	model.setAction(request.getString("__action"));
-
-	if(model.getAction().equals("showAll")) {
-	    model.setProjectName("");
-	} else if(model.getAction().equals("ShowSamplesForProject")) {
-	    model.setProjectName(request.getString("id"));
-	    this.reload(db);
-	} else if (model.getAction().equals("ShowSampleInfo")) {
-	    String sampleName = request.getString("id");
-	    setSampleMatrix(sampleName);
-
-	} else if (model.getAction().equals("submitchanges")) {
-	    submitMatrixChanges(request);
-	    setSampleMatrix(model.getSample().getName());
-	    model.setAction("ShowSampleInfo");
-
-	} else if (model.getAction().equals("changeProtocol")) {
-	    Integer workflowId = request.getInt("protocolbox");
-	    changeWorkflow(workflowId);
-	    model.setAction("ShowSampleInfo");
-	    setSampleMatrix(model.getSample().getName());
-
-	}
+    	model.setUserId(this.getLogin().getUserId());
+    	
+		model.getCommonQueries().setDatabase(db);
+		this.db = db;
+		model.setAction(request.getString("__action"));
+	
+		if(model.getAction().equals("showAll")) {
+		    model.setProjectName("");
+		} else if(model.getAction().equals("ShowSamplesForProject")) {
+		    model.setProjectName(request.getString("id"));
+		    this.reload(db);
+		} else if (model.getAction().equals("ShowSampleInfo")) {
+		    String sampleName = request.getString("id");
+		    setSampleMatrix(sampleName);
+	
+		} else if (model.getAction().equals("submitchanges")) {
+		    submitMatrixChanges(request);
+		    setSampleMatrix(model.getSample().getName());
+		    model.setAction("ShowSampleInfo");
+	
+		} else if (model.getAction().equals("changeProtocol")) {
+		    Integer workflowId = request.getInt("protocolbox");
+		    changeWorkflow(workflowId);
+		    model.setAction("ShowSampleInfo");
+		    setSampleMatrix(model.getSample().getName());
+	
+		}
 
     }
 

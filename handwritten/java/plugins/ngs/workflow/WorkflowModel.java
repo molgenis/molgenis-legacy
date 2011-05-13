@@ -37,8 +37,17 @@ public class WorkflowModel extends SimpleScreenModel {
     private Protocol currentProtocol;
     private CommonService cq;
     private NgsSample sample = new NgsSample();
+    private int userId;
 
-    private boolean projectSpecific = false;
+    public int getUserId() {
+		return userId;
+	}
+
+	public void setUserId(int userId) {
+		this.userId = userId;
+	}
+
+	private boolean projectSpecific = false;
     private String projectName = "";
     private String action = "init";
     
@@ -64,7 +73,8 @@ public class WorkflowModel extends SimpleScreenModel {
     }
     
     public void setValuesBySample(int sampleId, List<Measurement> features) throws DatabaseException, ParseException {
-    	valuesBySample = cq.getObservedValueBySampleAndFeatures(sampleId, features);
+    	int investigationId = cq.getUserInvestigationId(userId);
+    	valuesBySample = cq.getObservedValuesByTargetAndFeatures(sampleId, features, investigationId);
     }
 
     public void setAction(String action) {
@@ -108,44 +118,36 @@ public class WorkflowModel extends SimpleScreenModel {
     }
 
     public void setProtocols(List<Protocol> protocols) {
-	this.protocols = protocols;
+    	this.protocols = protocols;
     }
 
     public List<Protocol> getProtocols() {
-	return protocols;
+    	return protocols;
     }
 
     public void setCurrentProtocol(Protocol currentProtocol) {
-	this.currentProtocol = currentProtocol;
+    	this.currentProtocol = currentProtocol;
     }
 
     public Protocol getCurrentProtocol() {
-	return currentProtocol;
+    	return currentProtocol;
     }
 
     public void setProjectSpecific(boolean projectSpecific) {
-	this.projectSpecific = projectSpecific;
+    	this.projectSpecific = projectSpecific;
     }
 
     public boolean isProjectSpecific() {
-	return projectSpecific;
+    	return projectSpecific;
     }
 
     public void setProjectName(String projectName) {
-	this.projectName = projectName;
+    	this.projectName = projectName;
     }
 
     public String getProjectName() {
-	return projectName;
+    	return projectName;
     }
-
-	@Override
-	public boolean isVisible()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 
 }
 

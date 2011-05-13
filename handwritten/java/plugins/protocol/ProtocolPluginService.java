@@ -108,7 +108,8 @@ public class ProtocolPluginService {
      * @throws ParseException
      */
     public List<ObservedValue> getObservedValuesByTargetAndFeatures(int targetId, List<Measurement> features) throws DatabaseException, ParseException {
-    	return cq.getObservedValueByTargetAndFeatures(targetId, features);
+    	int investigationId = cq.getUserInvestigationId(userId);
+    	return cq.getObservedValuesByTargetAndFeatures(targetId, features, investigationId);
     }
     
     /**

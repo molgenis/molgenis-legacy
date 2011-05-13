@@ -42,7 +42,7 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 		
 		featureList = new ArrayList<Measurement>();
 		featureIdList = new ArrayList<Integer>();
-		allMeasurementList = cq.getAllMeasurements();
+		allMeasurementList = cq.getAllMeasurements(investigationId);
 		totalNrOfMeasurements = allMeasurementList.size();
 		if (totalNrOfMeasurements == 0) {
 			throw new DatabaseException("No measurements found in database");

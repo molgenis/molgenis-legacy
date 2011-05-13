@@ -373,14 +373,16 @@ public class ApplyProtocolUI {
 				}
 				valueTable.setCell(colNrInTable, 0, div);
 		    }
+		    
+		    int investigationId = cs.getUserInvestigationId(model.getUserId());
 	
 		    // Rest of the rows contain inputs for each target-feature combination
 		    for (int row = 1; row <= model.getFullTargetList().size(); row++) {
 		    	
 		    	List<ObservedValue> values = null;
 		    	if (!model.isNewProtocolApplication()) {
-		    		values = cs.getObservedValueByTargetAndFeatures(
-		    				model.getTargetsIdList().get(row - 1), model.getFeaturesList());
+		    		values = cs.getObservedValuesByTargetAndFeatures(
+		    				model.getTargetsIdList().get(row - 1), model.getFeaturesList(), investigationId);
 		    	}
 		
 				for (int col = 0; col < sizeFeatures; col++) {

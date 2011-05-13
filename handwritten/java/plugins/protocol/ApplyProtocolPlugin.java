@@ -108,7 +108,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
     	DateFormat formatter = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
     	
 		try {
-			int investigationId = cs.getUserInvestigationId(this.getLogin().getUserId());;
+			int investigationId = cs.getUserInvestigationId(this.getLogin().getUserId());
 		    int paId = cs.makeProtocolApplication(investigationId, model.getProtocolId());
 		    int sizeTargets = model.getFullTargetList().size();
 	
@@ -116,8 +116,8 @@ public class ApplyProtocolPlugin extends GenericPlugin
 	
 		    	// TODO: if user selected "new values", don't retrieve existing values
 		    	// but make only new ones
-				List<ObservedValue> originalValues = cs.getObservedValueByTargetAndFeatures(
-					model.getTargetsIdList().get(row - 1), model.getFeaturesList());
+				List<ObservedValue> originalValues = cs.getObservedValuesByTargetAndFeatures(
+					model.getTargetsIdList().get(row - 1), model.getFeaturesList(), investigationId);
 		
 				int sizeFeatures = model.getFeaturesList().size();
 				for (int col = 0; col < sizeFeatures; col++) {
