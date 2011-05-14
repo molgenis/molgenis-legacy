@@ -17,7 +17,7 @@ public class KEGGGene {
 		header += "NTSeq" + sep;
 		header += "genBankIDs" + sep;
 		header += "pathways";
-		return header + "\n";
+		return header;
 	}
 	
 	public static String toStringMediumHeader(String sep){
@@ -29,7 +29,7 @@ public class KEGGGene {
 		header += "NCBIGeneID" + sep;
 		header += "genBankIDs" + sep;
 		header += "pathways";
-		return header + "\n";
+		return header;
 	}
 	
 	public static String toStringShortHeader(String sep){
@@ -39,7 +39,7 @@ public class KEGGGene {
 		header += "definition" + sep;
 		header += "NCBIGI" + sep;
 		header += "NCBIGeneID" + sep;
-		return header + "\n";
+		return header;
 	}
 	
 	public String toStringFull(String sep){
@@ -61,7 +61,7 @@ public class KEGGGene {
 		for(String key : pathways.keySet()){
 			toString += key + "->" + pathways.get(key) + ";";
 		}
-		return toString + "\n";
+		return toString;
 	}
 	
 	public String toStringMedium(String sep){
@@ -81,7 +81,7 @@ public class KEGGGene {
 		for(String key : pathways.keySet()){
 			toString += key + "->" + pathways.get(key) + ";";
 		}
-		return toString + "\n";
+		return toString;
 	}
 	
 	public String toStringShort(String sep){
@@ -93,7 +93,7 @@ public class KEGGGene {
 		toString += NCBIGI + sep;
 		toString += NCBIGeneID + sep;
 		
-		return toString + "\n";
+		return toString;
 	}
 	
 	String entry;

@@ -18,6 +18,9 @@ import keggapi.SSDBRelation;
 
 public class KEGGTools
 {
+	
+	private static int MAX_RETRIES = 5;
+	private static int CUR_RETRIES = 0;
 
 	/**
 	 * Finds closest orthologous gene. 1) Find KO entry. If this has one gene, use
@@ -228,12 +231,9 @@ public class KEGGTools
 	 * @throws ServiceException
 	 */
 	public static KEGGGene getKeggGene(String organismGeneIdentifier) throws RemoteException, ServiceException
-	{
-		//System.out.println("** getKeggGene called with: " + organismGeneIdentifier + " **");
-		
+	{		
 		KEGGLocator locator = new KEGGLocator();
 		KEGGPortType serv = locator.getKEGGPort();
-
 		String bget = serv.bget(organismGeneIdentifier);
 		String orgCode = organismGeneIdentifier.split(":")[0];
 		return parseKeggGene(orgCode, bget, serv);
@@ -345,9 +345,21 @@ public class KEGGTools
 	private static Map<String, String> getPathways(String entry, KEGGPortType serv) throws RemoteException
 	{
 		Map<String, String> res = new HashMap<String, String>();
-		for (String s : serv.get_pathways_by_genes(new String[] { entry }))
+		try
 		{
-			res.put(s, trim(serv.btit(s)));
+			for (String s : serv.get_pathways_by_genes(new String[] { entry }))
+			{
+				res.put(s, trim(serv.btit(s)));
+			}
+		}
+		catch(Exception e){
+			CUR_RETRIES++;
+			System.out.println("Caught exception at try "+CUR_RETRIES+"..");
+			if(CUR_RETRIES == MAX_RETRIES+1){
+				System.out.println("Maximum amount of retries ("+MAX_RETRIES+" reached, exiting..");
+			}else{
+				return getPathways(entry, serv);
+			}
 		}
 		return res;
 	}
