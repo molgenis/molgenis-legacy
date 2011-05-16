@@ -26,9 +26,9 @@ import org.molgenis.util.Tuple;
  * Base-class for a screen displaying information from the invengine system to
  * the user.
  */
-public  abstract class SimpleScreenController<MODEL extends ScreenModel>
-		extends SimpleTree<ScreenController<?>> implements
-		ScreenController<MODEL>, Serializable
+public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
+		SimpleTree<ScreenController<?>> implements ScreenController<MODEL>,
+		Serializable
 {
 	// member variables
 	/** */
@@ -40,7 +40,7 @@ public  abstract class SimpleScreenController<MODEL extends ScreenModel>
 	/** */
 	static final long serialVersionUID = 5286068849305140609L;
 	/** Determines which of the subscreens should be shown */
-	private String selectedId;
+	protected String selectedId;
 
 	// /** The name of the view to be used. */
 	// private String viewName;
@@ -60,9 +60,10 @@ public  abstract class SimpleScreenController<MODEL extends ScreenModel>
 	 * This method (re)loads the view, making persistant data actual again. This
 	 * method needs to be called when the screen operates on, for instance, a
 	 * recordset.
-	 * @throws Exception 
-	 * @throws Exception 
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
+	 * @throws Exception
+	 * @throws Exception
 	 */
 	public abstract void reload(Database db) throws Exception;
 
@@ -159,14 +160,12 @@ public  abstract class SimpleScreenController<MODEL extends ScreenModel>
 	@Override
 	public String getCustomHtmlHeaders()
 	{
-		String result = "<!--custom html headers:-->";
+		String result = "<!--custom html headers: " + this.getName() + "-->";
 
-		if (this.getModel() != null && this.getModel().getSelected() != null) result += this
-				.getModel().getSelected().getController()
-				.getCustomHtmlHeaders();
-		else
-			for (ScreenController<?> c : this.getChildren())
-				result += c.getCustomHtmlHeaders();
+		for (ScreenController<?> c : this.getChildren())
+		{
+			result += c.getCustomHtmlHeaders();
+		}
 
 		return result;
 	}
@@ -209,11 +208,14 @@ public  abstract class SimpleScreenController<MODEL extends ScreenModel>
 		{
 			return getChild(selectedId).getModel();
 		}
-		if (getChildren().size() > 0)
-		{
-			if (getChildren().firstElement() instanceof ScreenModel) return getChildren()
-					.firstElement().getModel();
-		}
+		// below code only holds for menu's so commented. Whole concept of
+		// getSelected is wrong here...
+		// if (getChildren().size() > 0)
+		// {
+		// if (getChildren().firstElement() instanceof ScreenModel) return
+		// getChildren()
+		// .firstElement().getModel();
+		// }
 		return null;
 	}
 
@@ -226,17 +228,17 @@ public  abstract class SimpleScreenController<MODEL extends ScreenModel>
 	{
 		this.view = view;
 	}
-	
+
 	public String render()
 	{
 		return this.getView().render();
 	}
-	
-//	@Override
-//	public void setParent(Object parent)
-//	{
-//		// TODO Auto-generated method stub
-//		
-//	}
+
+	// @Override
+	// public void setParent(Object parent)
+	// {
+	// // TODO Auto-generated method stub
+	//		
+	// }
 
 }
