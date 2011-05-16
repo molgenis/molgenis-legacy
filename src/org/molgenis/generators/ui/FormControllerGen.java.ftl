@@ -73,9 +73,9 @@ public class ${JavaName(form.className)}FormController extends FormController<${
 		//sort is a bit hacky awaiting redesign of the Form classes
 		try
 		{
-			((FormController)this.getController()).getPager().setOrderByField("${form.sortby}".toLowerCase());
-			((FormController)this.getController()).getPager().setOrderByOperator(Operator.SORT${form.sortorder});
-			this.setSort("${form.sortby}");
+			((FormController)this).getPager().setOrderByField("${form.sortby}".toLowerCase());
+			((FormController)this).getPager().setOrderByOperator(Operator.SORT${form.sortorder});
+			this.getModel().setSort("${form.sortby}");
 		}
 		catch (DatabaseException e)
 		{
