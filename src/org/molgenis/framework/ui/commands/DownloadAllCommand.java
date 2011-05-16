@@ -4,6 +4,7 @@
 package org.molgenis.framework.ui.commands;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -42,7 +43,10 @@ public class DownloadAllCommand<E extends Entity> extends SimpleCommand
 		logger.debug(this.getName());
 
 		FormModel<? extends Entity> view = this.getFormScreen();
-		db.find(view.getController().getEntityClass(), new CsvWriter(csvDownload), view.getRulesExclLimitOffset());
+		List<String> fieldsToExport = view.create().getFields();
+		fieldsToExport.removeAll(view.getSystemHiddenColumns());
+		
+		db.find(view.getController().getEntityClass(), new CsvWriter(csvDownload), fieldsToExport, view.getRulesExclLimitOffset());
 
 		return ScreenModel.Show.SHOW_MAIN;
 	}

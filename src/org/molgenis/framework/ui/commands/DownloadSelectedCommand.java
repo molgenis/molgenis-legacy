@@ -66,7 +66,7 @@ public class DownloadSelectedCommand<E extends Entity> extends SimpleCommand
 
 		if (ids != null)
 		{
-			if (ids.getClass().equals(Vector.class))
+			if (ids instanceof List)
 			{
 				records = (List<Object>) ids;
 			}
@@ -79,9 +79,12 @@ public class DownloadSelectedCommand<E extends Entity> extends SimpleCommand
 			csvDownload.println("No records selected.");
 			return ScreenModel.Show.SHOW_MAIN;
 		}
+		
+		List<String> fieldsToExport = view.create().getFields();
+		fieldsToExport.removeAll(view.getSystemHiddenColumns());
 
 		// watch out, the "IN" operator expects an Object[]
-		db.find(view.getController().getEntityClass(), new CsvWriter(csvDownload),
+		db.find(view.getController().getEntityClass(), new CsvWriter(csvDownload), fieldsToExport,
 				new QueryRule("id", Operator.IN, records));
 		return ScreenModel.Show.SHOW_MAIN;
 	}
