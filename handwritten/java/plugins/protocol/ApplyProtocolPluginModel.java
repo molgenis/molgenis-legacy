@@ -31,6 +31,7 @@ public class ApplyProtocolPluginModel {
 	private int protocolId;
 	private boolean newProtocolApplication = false;
 	private boolean timeInfo = false;
+	private boolean allValues = false;
 	private int userId;
 	private int investigationId;
 	private Map<Measurement, List<Code>> codeMap = new HashMap<Measurement, List<Code>>();
@@ -153,5 +154,13 @@ public class ApplyProtocolPluginModel {
 	
 	public Database getDatabase() {
 		return cs.getDatabase();
+	}
+
+	public void setAllValues(boolean allValues) {
+		this.allValues = allValues;
+	}
+
+	public boolean isAllValues() {
+		return allValues;
 	}
 }

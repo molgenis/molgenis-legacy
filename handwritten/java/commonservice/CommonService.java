@@ -346,9 +346,11 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<ObservedValue> getAllObservedValues(int measurementId) throws DatabaseException, ParseException {
+	public List<ObservedValue> getAllObservedValues(int measurementId, int investigationId) 
+		throws DatabaseException, ParseException {
 		Query<ObservedValue> q = db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, measurementId));
+		q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.EQUALS, investigationId));
 		q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
 		return q.find();
 	}
@@ -1747,13 +1749,21 @@ public class CommonService
 						returnValue = currentValue;
 						storedTime = protappTime;
 					}
+					values.add(returnValue);
 				}
-				values.add(returnValue);
 			}
 
 		}
 
 		return values;
+	}
+	
+	public List<ObservedValue> getObservedValuesByTargetAndFeatures(int targetId, Measurement measurement,
+			int investigationId) throws DatabaseException, ParseException
+	{
+		List<Measurement> measurementList = new ArrayList<Measurement>();
+		measurementList.add(measurement);
+		return getObservedValuesByTargetAndFeatures(targetId, measurementList, investigationId);
 	}
 
 	/** Finds a sample entity by its id

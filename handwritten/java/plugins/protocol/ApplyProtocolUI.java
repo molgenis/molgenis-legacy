@@ -43,6 +43,7 @@ public class ApplyProtocolUI {
     private SelectMultipleInput batches;
     private RadioInput newOrEditButtons;
     private CheckboxInput timeBox;
+    private CheckboxInput allValuesBox;
     
     private ApplyProtocolPluginModel model;
     private CommonService cs = CommonService.getInstance();
@@ -64,6 +65,7 @@ public class ApplyProtocolUI {
 		makeBatchSelect();
 		makeNewOrEditButtons();
 		makeTimeSelectbox();
+		makeAllValuesSelectbox();
 		makeSelectButton();
 		makeClearButton();
 		fillContainer();
@@ -78,10 +80,12 @@ public class ApplyProtocolUI {
      * 
      * @param col column to insert the input in
      * @param row row to insert the input in
+     * @param order in case of multiple HtmlInputs for one target-feature combination, append this number
+     * to keep the input name unique
      * @param value the value to insert
      * @throws Exception 
      */
-    private HtmlInput makeInput(int featureNr, int col, int row, ObservedValue value) throws Exception {
+    private HtmlInput makeInput(int featureNr, int col, int row, int order, ObservedValue value) throws Exception {
     	
 		HtmlInput valueInput;
 		Measurement feature = model.getFeaturesList().get(featureNr);
@@ -103,7 +107,7 @@ public class ApplyProtocolUI {
 		// Make the appropriate input
 		if (dataType.equals("string") && model.getAllCodesForFeature(feature).size() > 0) {
 		    // If there are codes for this Measurement, show a selectbox with those
-		    valueInput = new SelectInput(col + "_" + row);
+		    valueInput = new SelectInput(col + "_" + row + "_" + order);
 		    ((SelectInput)valueInput).setOptionsFromStringList(model.getAllCodesForFeatureAsStrings(feature));
 		} else {
 			if (panelLabel != null) {
@@ -115,8 +119,8 @@ public class ApplyProtocolUI {
 				}
 			} else {
 				// Normally, show the input belonging to the data type
-				valueInput = MolgenisFieldTypes.createInput(dataType, col + "_" + row, observationTargetType,
-		    		model.getDatabase());
+				valueInput = MolgenisFieldTypes.createInput(dataType, col + "_" + row + "_" + order, 
+					observationTargetType, model.getDatabase());
 				if (dataType.equals("string")) {
 					((StringInput)valueInput).setWidth(20);
 				}
@@ -212,12 +216,7 @@ public class ApplyProtocolUI {
     	options.add(new ValueLabel("Edit", "Edit existing values"));
     	String value = "New";
     	newOrEditButtons = new RadioInput("NewOrEdit", "", 
-				"Indicate whether you want to fill in new values or edit existing ones.", 
-				options, value);
-    	// TODO? Make radio buttons readonly when application name is not AnimalDB
-//    	if (!app.servlet.MolgenisServlet.getMolgenisVariantID().equals("molgenis_apps")) {
-//    		newOrEditButtons.setReadonly(true);
-//    	}
+				"Indicate whether you want to fill in new values or edit existing ones.", options, value);
 		protocolDiv.add(newOrEditButtons);
 	}
     
@@ -227,14 +226,24 @@ public class ApplyProtocolUI {
     private void makeTimeSelectbox() {
     	Vector<ValueLabel> options = new Vector<ValueLabel>();
     	options.add(new ValueLabel("Time", "Show date-time fields with values"));
-    	timeBox = new CheckboxInput("TimeBox", "", "Indicate whether you want date-time fields next to the values", 
-    			options, null);
-    	// TODO? Make checkbox readonly when application name is not AnimalDB
-//    	if (!app.servlet.MolgenisServlet.getMolgenisVariantID().equals("molgenis_apps")) {
-//    		timeBox.setReadonly(true);
-//    	}
+    	timeBox = new CheckboxInput("TimeBox", "", 
+    			"Indicate whether you want date-time fields next to the values", options, null);
     	protocolDiv.add(new TextParagraph("", "")); // gives empty <p></p>
 		protocolDiv.add(timeBox);
+    }
+    
+    /**
+     * Create a checkbox to toggle time fields with the values.
+     */
+    private void makeAllValuesSelectbox() {
+    	Vector<ValueLabel> options = new Vector<ValueLabel>();
+    	options.add(new ValueLabel("AllValues", 
+    			"Show not only most recent but all values (works only with 'Edit existing values'"));
+    	allValuesBox = new CheckboxInput("AllValuesBox", "", 
+    			"Indicate whether you want to see all values for every target-measurement combination", 
+    			options, null);
+    	protocolDiv.add(new TextParagraph("", "")); // gives empty <p></p>
+		protocolDiv.add(allValuesBox);
     }
 
     /**
@@ -336,7 +345,7 @@ public class ApplyProtocolUI {
 					colNrInTable *= 3;
 				}
 				div = new DivPanel();
-				HtmlInput input = makeInput(col, colNrInTable, 0, null);
+				HtmlInput input = makeInput(col, colNrInTable, 0, 0, null);
 				input.setLabel("");
 				div.add(input);
 				ActionInput applyButton2 = new ActionInput("ApplyDefault_" + colNrInTable, "", "Set");
@@ -371,40 +380,67 @@ public class ApplyProtocolUI {
 		    // Rest of the rows contain inputs for each target-feature combination
 		    for (int row = 1; row <= model.getFullTargetList().size(); row++) {
 		    	
-		    	List<ObservedValue> values = null;
-		    	if (!model.isNewProtocolApplication()) {
-		    		values = cs.getObservedValuesByTargetAndFeatures(
-		    				model.getTargetsIdList().get(row - 1), model.getFeaturesList(), investigationId);
-		    	}
-		
 				for (int col = 0; col < sizeFeatures; col++) {
 					int colNrInTable = col;
 					if (model.isTimeInfo()) {
 						colNrInTable *= 3;
 					}
 					
-					ObservedValue tmpValue = null;
 					if (!model.isNewProtocolApplication()) {
-						tmpValue = values.get(col);
-					}
-				    HtmlInput input = makeInput(col, colNrInTable, row, tmpValue);
-				    // Put the input in the right place in the table
-					if (model.isTimeInfo()) {
-						DatetimeInput datetimeInputStart = new DatetimeInput((colNrInTable + 1) + "_" + row);
-						if (tmpValue != null && tmpValue.getTime() != null) {
-							datetimeInputStart.setValue(tmpValue.getTime());
+						// Show existing values, or new ones if none can be found
+			    		DivPanel valueDiv = new DivPanel();
+		    			DivPanel starttimeDiv = new DivPanel();
+		    			DivPanel endtimeDiv = new DivPanel();
+		    			int valueCounter = 0;
+			    		List<ObservedValue> values = cs.getObservedValuesByTargetAndFeatures(
+			    			model.getTargetsIdList().get(row - 1), model.getFeaturesList().get(col), 
+			    			investigationId);
+			    		for (ObservedValue value : values) {
+			    			HtmlInput input = makeInput(col, colNrInTable, row, valueCounter, value);
+			    			input.setLabel("");
+			    			valueDiv.add(input);
+			    			if (model.isTimeInfo()) {
+					    		DatetimeInput datetimeInputStart = new DatetimeInput((colNrInTable + 1) + 
+					    				"_" + row + "_" + valueCounter);
+					    		datetimeInputStart.setLabel("");
+								if (value != null && value.getTime() != null) {
+									datetimeInputStart.setValue(value.getTime());
+								}
+								starttimeDiv.add(datetimeInputStart);
+								DatetimeInput datetimeInputEnd = new DatetimeInput((colNrInTable + 2) + 
+										"_" + row + "_" + valueCounter);
+								datetimeInputEnd.setLabel("");
+								if (value != null && value.getEndtime() != null) {
+									datetimeInputEnd.setValue(value.getEndtime());
+								}
+								endtimeDiv.add(datetimeInputEnd);
+			    			}
+			    			
+			    			if (!model.isAllValues()) {
+			    				// If user wants only the first value, jump out now:
+			    				break;
+			    			}
+			    			
+			    			valueCounter++;
+				    	}
+			    		valueTable.setCell(colNrInTable, row, valueDiv);
+			    		valueTable.setCell(colNrInTable + 1, row, starttimeDiv);
+			    		valueTable.setCell(colNrInTable + 2, row, endtimeDiv);
+					} else {
+						// Show only new values
+						HtmlInput input = makeInput(col, colNrInTable, row, 0, null);
+						valueTable.setCell(colNrInTable, row, input);
+						if (model.isTimeInfo()) {
+							DatetimeInput datetimeInputStart = new DatetimeInput((colNrInTable + 1) + "_" + row + "_0");
+							valueTable.setCell(colNrInTable + 1, row, datetimeInputStart);
+							DatetimeInput datetimeInputEnd = new DatetimeInput((colNrInTable + 2) + "_" + row + "_0");
+							valueTable.setCell(colNrInTable + 2, row, datetimeInputEnd);
 						}
-						valueTable.setCell(colNrInTable + 1, row, datetimeInputStart);
-						DatetimeInput datetimeInputEnd = new DatetimeInput((colNrInTable + 2) + "_" + row);
-						if (tmpValue != null && tmpValue.getEndtime() != null) {
-							datetimeInputEnd.setValue(tmpValue.getEndtime());
-						}
-						valueTable.setCell(colNrInTable + 2, row, datetimeInputEnd);
 					}
-				    valueTable.setCell(colNrInTable, row, input);
 				}
 		    }
 		} catch(Exception e) {
+			e.printStackTrace();
 		    logger.error("Filling table cells failed", e);
 		}
     }
@@ -421,34 +457,6 @@ public class ApplyProtocolUI {
 		} catch (Exception e) {
 			return id.toString();
 		}
-    }
-    
-    /**
-     * Make an input that's appropriate for the given observed value and insert it into the value table
-     * at col, row.
-     * 
-     * @param featureNr : place where the observable feature occurs in the model's observable feature list
-     * @param col : table column to put input in
-     * @param row : table row to put input in
-     * @param originalObservedValue : observed value to take the value from
-     * @throws Exception
-     */
-    public void makeInputAndSetCell(int featureNr, int col, int row, ObservedValue originalObservedValue) throws Exception {
-		HtmlInput input = makeInput(featureNr, col, row, originalObservedValue);
-		valueTable.setCell(col, row, input);
-    }
-    
-    /**
-     * Make a date-time input and insert it into the value table at col, row.
-     * 
-     * @param col
-     * @param row
-     * @param datetime
-     * @throws Exception
-     */
-    public void makeDateInputAndSetCell(int col, int row, String datetime) throws Exception {
-		DatetimeInput input = new DatetimeInput(col + "_" + row, datetime);
-		valueTable.setCell(col, row, input);
     }
     
     public void addTableDiv() {
@@ -470,6 +478,13 @@ public class ApplyProtocolUI {
 			timeBox.setValue(valueVector); // checkboxInput's setValue() expects a vector of String (undocumented behavior)
 		} else {
 			timeBox.setValue(null);
+		}
+		if (model.isAllValues()) {
+			Vector<String> valueVector = new Vector<String>();
+			valueVector.add("AllValues");
+			allValuesBox.setValue(valueVector); // checkboxInput's setValue() expects a vector of String (undocumented behavior)
+		} else {
+			allValuesBox.setValue(null);
 		}
     }
 

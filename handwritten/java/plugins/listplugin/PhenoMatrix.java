@@ -23,6 +23,7 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 	private int nrOfTargets;
 	private int nrOfFeatures;
 	private int totalNrOfMeasurements;
+	int investigationId;
 	private CommonService cq = CommonService.getInstance();
 	
 	public Database getDatabase() {
@@ -36,7 +37,7 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 		if (targetType.equals("All")) {
 			targetType = null;
 		}
-		int investigationId = cq.getUserInvestigationId(userId);
+		investigationId = cq.getUserInvestigationId(userId);
 		targetIdList = cq.getAllObservationTargetIds(targetType, false, investigationId);
 		nrOfTargets = targetIdList.size();
 		
@@ -72,7 +73,7 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 		Integer[][] size = new Integer[nrOfTargets][totalNrOfMeasurements];
 		int colNr = allMeasurementList.indexOf(meas);
 		List<Integer> seenTargetLocs = new ArrayList<Integer>();
-		List<ObservedValue> valueList = cq.getAllObservedValues(measurementId);
+		List<ObservedValue> valueList = cq.getAllObservedValues(measurementId, investigationId);
 		if (valueList != null && valueList.size() > 0) {
 			for (ObservedValue value : valueList) {
 				int targetLoc = targetIdList.indexOf(value.getTarget());

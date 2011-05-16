@@ -118,112 +118,131 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		try {
 			int investigationId = cs.getUserInvestigationId(this.getLogin().getUserId());
 		    int paId = cs.makeProtocolApplication(investigationId, model.getProtocolId());
-		    int sizeTargets = model.getFullTargetList().size();
-	
-		    for (int row = 1; row <= sizeTargets; row++) {
-	
-		    	// TODO: if user selected "new values", don't retrieve existing values
-		    	// but make only new ones
-				List<ObservedValue> originalValues = cs.getObservedValuesByTargetAndFeatures(
-					model.getTargetsIdList().get(row - 1), model.getFeaturesList(), investigationId);
+		    
+		    for (int row = 1; row <= model.getFullTargetList().size(); row++) {
+		    	
+		    	int targetId = model.getTargetsIdList().get(row - 1);
 		
-				int sizeFeatures = model.getFeaturesList().size();
-				for (int col = 0; col < sizeFeatures; col++) {
+				for (int col = 0; col < model.getFeaturesList().size(); col++) {
+					
+					Measurement measurement = model.getFeaturesList().get(col);
+				    String dataType = measurement.getDataType();
+					
 					int colNrInTable = col;
 					if (model.isTimeInfo()) {
 						colNrInTable *= 3;
 					}
 					
-				    // Get original value/relation
-				    ObservedValue originalObservedValue = originalValues.get(col);
-				    Measurement measurement = model.getFeaturesList().get(col);
-				    String dataType = measurement.getDataType();
-				    String oldValue = "";
-				    if (dataType.equals("xref")) {
-						if (originalObservedValue.getRelation_Name() != null) {
-							oldValue = originalObservedValue.getRelation_Name();
+					List<ObservedValue> originalValues = cs.getObservedValuesByTargetAndFeatures(
+							targetId, measurement, investigationId);
+					
+					if (!model.isNewProtocolApplication()) {
+						// User chose to edit existing values
+						
+						// Loop through the values
+						int valueCounter = 0;
+						for (ObservedValue originalObservedValue : originalValues) {
+							
+						    String oldValue = "";
+						    if (dataType.equals("xref")) {
+								if (originalObservedValue.getRelation_Name() != null) {
+									oldValue = originalObservedValue.getRelation_Name();
+								}
+						    } else {
+						    	oldValue = originalObservedValue.getValue();
+						    }
+						    Date oldStartTime = originalObservedValue.getTime();
+						    Date oldEndTime = originalObservedValue.getEndtime();
+				
+						    // Get new/modified value/relation
+						    Date startTime = null;
+						    Date endTime = null;
+							if (model.isTimeInfo()) {
+								// If date-time info supplied, get and parse that as well
+								if (request.getString((colNrInTable + 1) + "_" + row + "_" + valueCounter) != null) {
+									String startTimeString = request.getString((colNrInTable + 1) + "_" + row);
+									startTime = formatter.parse(startTimeString);
+								}
+								if (request.getString((colNrInTable + 2) + "_" + row + "_" + valueCounter) != null) {
+									String endTimeString = request.getString((colNrInTable + 2) + "_" + row);
+									endTime = formatter.parse(endTimeString);
+								}
+							}
+						    String newValue = "";
+						    if (request.getString(colNrInTable + "_" + row + "_" + valueCounter) != null) {
+						    	newValue = request.getString(colNrInTable + "_" + row + "_" + valueCounter);
+						    }
+				
+						    // Compare, and update if necessary
+						    if (!oldValue.equals(newValue) || oldStartTime != startTime || oldEndTime != endTime) {
+								if (dataType.equals("xref")) {
+									originalObservedValue.setRelation_Id(null);
+								    originalObservedValue.setRelation_Name(newValue);
+								    originalObservedValue.setValue(null);
+								} else {
+								    originalObservedValue.setValue(newValue);
+								}
+								originalObservedValue.setTime(startTime);
+								originalObservedValue.setEndtime(endTime);
+								//originalObservedValue.setProtocolApplication(paId);
+					
+								db.update(originalObservedValue);
+								// TODO: add to batch list and add later
+						    }
+						    
+						    if (!model.isAllValues()) {
+			    				// If user wants only the first value, jump out now:
+			    				break;
+			    			}
+						    
+						    valueCounter++;
+						} // end of value loop
+					} else {
+						// User chose to enter new values
+						Date startTime = null;
+					    Date endTime = null;
+					    ObservedValue newValue = new ObservedValue();
+						if (model.isTimeInfo()) {
+							// If date-time info supplied, get and parse that as well
+							if (request.getString((colNrInTable + 1) + "_" + row + "_0") != null) {
+								String startTimeString = request.getString((colNrInTable + 1) + "_" + row + "_0");
+								startTime = formatter.parse(startTimeString);
+							}
+							if (request.getString((colNrInTable + 2) + "_" + row + "_0") != null) {
+								String endTimeString = request.getString((colNrInTable + 2) + "_" + row + "_0");
+								endTime = formatter.parse(endTimeString);
+							}
 						}
-				    } else {
-				    	oldValue = originalObservedValue.getValue();
-				    }
-				    Date oldStartTime = originalObservedValue.getTime();
-				    Date oldEndTime = originalObservedValue.getEndtime();
-		
-				    // Get new/modified value/relation
-				    Date startTime = null;
-				    Date endTime = null;
-					if (model.isTimeInfo()) {
-						// If date-time info supplied, get and parse that as well
-						if (request.getString((colNrInTable + 1) + "_" + row) != null) {
-							String startTimeString = request.getString((colNrInTable + 1) + "_" + row);
-							startTime = formatter.parse(startTimeString);
-						}
-						if (request.getString((colNrInTable + 2) + "_" + row) != null) {
-							String endTimeString = request.getString((colNrInTable + 2) + "_" + row);
-							endTime = formatter.parse(endTimeString);
-						}
-					}
-				    String newValue = "";
-				    if (request.getString(colNrInTable + "_" + row) != null) {
-				    	newValue = request.getString(colNrInTable + "_" + row);
-				    }
-		
-				    // Compare, and update if necessary
-				    if (!oldValue.equals(newValue) || oldStartTime != startTime || oldEndTime != endTime) {
-						if (dataType.equals("xref")) {
-							originalObservedValue.setRelation_Id(null);
-						    originalObservedValue.setRelation_Name(newValue);
-						    originalObservedValue.setValue(null);
-						} else {
-						    originalObservedValue.setValue(newValue);
-						}
-						originalObservedValue.setTime(startTime);
-						originalObservedValue.setEndtime(endTime);
-						originalObservedValue.setProtocolApplication(paId);
+					    String value = "";
+					    if (request.getString(colNrInTable + "_" + row + "_0") != null) {
+					    	value = request.getString(colNrInTable + "_" + row + "_0");
+					    }
 			
-						try {
-						    db.add(originalObservedValue);
-						    // TODO: add to batch list and add later
-						    // TODO: do update when user has chosen 'Edit existing'
-						} catch(Exception e) {
-						    e.printStackTrace();
-						    logger.error("An exception occurred while updating ObservedValue " + 
-							    originalValues.get(col).getValue() + " for ObservableFeature " + 
-							    originalValues.get(col).getFeature_Name(), e);
-						}
-		
-				    } else {
-						// If user pressed 'Apply Defaults', values in the boxes were changed,
-						// so after 'Apply' reset these boxes to the original values, so we can be sure
-						// they reflect what the user entered
-						if (dataType.equals("xref")) {
-							originalObservedValue.setRelation_Id(null);
-						    originalObservedValue.setRelation_Name(oldValue);
-						    originalObservedValue.setValue(null);
+					    // Compare, and update if necessary
+					    if (dataType.equals("xref")) {
+					    	newValue.setRelation_Id(null);
+					    	newValue.setRelation_Name(value);
+					    	newValue.setValue(null);
 						} else {
-						    originalObservedValue.setValue(oldValue);
+							newValue.setValue(value);
 						}
-						originalObservedValue.setTime(oldStartTime);
-						originalObservedValue.setEndtime(oldEndTime);
-				    }
-		
-				    ui.makeInputAndSetCell(col, colNrInTable, row, originalObservedValue);
-				    if (model.isTimeInfo()) {
-				    	String startTimeString = "";
-				    	if (originalObservedValue.getTime() != null) {
-				    		startTimeString = formatter.format(originalObservedValue.getTime());
-				    	}
-				    	String endTimeString = "";
-				    	if (originalObservedValue.getEndtime() != null) {
-				    		endTimeString = formatter.format(originalObservedValue.getEndtime());
-				    	}
-				    	ui.makeDateInputAndSetCell(colNrInTable + 1, row, startTimeString);
-				    	ui.makeDateInputAndSetCell(colNrInTable + 2, row, endTimeString);
-				    }
-				}
-		    }
-	
-		   return new ScreenMessage("Protocol applied successfully", true);
+					    newValue.setFeature(measurement);
+					    newValue.setTarget(targetId);
+					    newValue.setTime(startTime);
+					    newValue.setEndtime(endTime);
+					    newValue.setProtocolApplication(paId);
+					    newValue.setInvestigation(model.getInvestigationId());
+				
+						db.add(newValue);
+						// TODO: add to batch list and add later
+					}
+				} // end of feature loop
+		    } // end of target loop
+		    
+		    // Reset table:
+		    ui.fillTableCells();
+		    
+		    return new ScreenMessage("Protocol applied successfully", true);
 		} catch (Exception e) {
 		    e.printStackTrace();
 		    if (e.getMessage() != null) {
@@ -262,7 +281,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		    }
 		    try {
 				for (int row = 1; row <= sizeTargets; row++) {
-				    ui.makeInputAndSetCell(col, colNrInTable, row, newValue);
+				    // TODO ui.makeInputAndSetCell(col, colNrInTable, row, newValue);
 				}
 		    } catch(Exception e) {
 		    	return new ScreenMessage("Setting defaults failed: " + e, false);
@@ -307,7 +326,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		}
 		try {
 		    for (int row = 1; row <= sizeTargets; row++) {
-		    	ui.makeInputAndSetCell(featureNr, col, row, newValue);
+		    	// TODO ui.makeInputAndSetCell(featureNr, col, row, newValue);
 		    }
 		} catch(Exception e) {
 			return new ScreenMessage("Setting defaults failed: " + e, false);
@@ -386,6 +405,13 @@ public class ApplyProtocolPlugin extends GenericPlugin
 			model.setTimeInfo(false);
 		}
 		
+		// Get all values yes/no
+		if (request.getBool("AllValuesBox") != null) {
+			model.setAllValues(true);
+		} else {
+			model.setAllValues(false);
+		}
+		
 		ui.setValues();
 	
 		// Make the table div
@@ -405,7 +431,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		try {
 			String startTime = request.getString(col + "_0");
 		    for (int row = 1; row <= model.getFullTargetList().size(); row++) {
-		    	ui.makeDateInputAndSetCell(col, row, startTime);
+		    	// TODO ui.makeDateInputAndSetCell(col, row, startTime);
 		    }
 		} catch(Exception e) {
 			return new ScreenMessage("Setting start date-time defaults failed: " + e, false);
@@ -422,7 +448,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		try {
 			String endTime = request.getString(col + "_0");
 		    for (int row = 1; row <= model.getFullTargetList().size(); row++) {
-		    	ui.makeDateInputAndSetCell(col, row, endTime);
+		    	// TODO ui.makeDateInputAndSetCell(col, row, endTime);
 		    }
 		} catch(Exception e) {
 			return new ScreenMessage("Setting end date-time defaults failed: " + e, false);

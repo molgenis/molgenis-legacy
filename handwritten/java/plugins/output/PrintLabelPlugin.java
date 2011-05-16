@@ -94,7 +94,8 @@ public class PrintLabelPlugin extends GenericPlugin
         document.add(table);
         document.close();
         
-        text = new TextParagraph("pdfFilename", "<a href=\"tmpfile/" + pdfFile.getName() + "\">Download pdf</a>");
+        String filename = pdfFile.getName();
+        text = new TextParagraph("pdfFilename", "<a href=\"tmpfile/" + filename + "\">Download pdf</a>");
 		text.setLabel("");
 		// text is added to panel on reload()
 	}
