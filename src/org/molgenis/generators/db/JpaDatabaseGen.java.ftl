@@ -51,7 +51,20 @@ public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
 	public void initMappers(EntityManager em)
 	{
 		<#list model.entities as entity><#if !entity.isAbstract()>
-		putMapper(${entity.namespace}.${JavaName(entity)}.class, new ${entity.namespace}.db.${JavaName(entity)}JpaMapper(em));
+//		putMapper(${entity.namespace}.${JavaName(entity)}.class, new ${entity.namespace}.db.${JavaName(entity)}JpaMapper(em));
+		<#if entity.decorator?exists>
+				<#if auth_loginclass?ends_with("SimpleLogin")>
+		this.putMapper(${entity.namespace}.${JavaName(entity)}.class, new ${entity.decorator}(new ${entity.namespace}.db.${JavaName(entity)}JpaMapper(em)));
+				<#else>
+		this.putMapper(${entity.namespace}.${JavaName(entity)}.class, new ${entity.decorator}(new ${entity.namespace}.db.${JavaName(entity)}SecurityDecorator(new ${entity.namespace}.db.${JavaName(entity)}JpaMapper(em))));
+				</#if>	
+			<#else>
+				<#if auth_loginclass?ends_with("SimpleLogin")>
+		this.putMapper(${entity.namespace}.${JavaName(entity)}.class, new ${entity.namespace}.db.${JavaName(entity)}JpaMapper(em));
+				<#else>
+		this.putMapper(${entity.namespace}.${JavaName(entity)}.class, new ${entity.namespace}.db.${JavaName(entity)}SecurityDecorator(new ${entity.namespace}.db.${JavaName(entity)}JpaMapper(em)));
+				</#if>
+			</#if>
 		</#if></#list>	
 	}	
 

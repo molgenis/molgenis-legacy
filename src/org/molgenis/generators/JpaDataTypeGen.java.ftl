@@ -668,7 +668,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 			if( tuple.get${settertype(f)}("${name(entity)}.${name(f)}_${name(f.xrefField)}") != null) this.set${JavaName(f)}_${JavaName(f.xrefField)}(tuple.get${settertype(f)}("${name(entity)}.${name(f)}_${name(f.xrefField)}"));
 			//alias of xref
 			if( tuple.getObject("${name(f)}") != null) 
-				this.set${JavaName(f)}((${JavaName(f.xrefEntity)})tuple.getObject("${name(f)}"));
+				this.set${JavaName(f)}_${JavaName(f.xrefField)}(tuple.get${settertype(f)}("${name(f)}"));
 			if( tuple.getObject("${name(entity)}.${name(f)}") != null) 
 				this.set${JavaName(f)}_${JavaName(f.xrefField)}(tuple.get${settertype(f)}("${name(entity)}.${name(f)}_${name(f.xrefField)}"));
 			//set label for field ${JavaName(f)}

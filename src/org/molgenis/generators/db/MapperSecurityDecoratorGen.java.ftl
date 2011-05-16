@@ -18,8 +18,8 @@ import java.util.List;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.auth.service.MolgenisUserService;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.jdbc.JDBCMapper;
 import org.molgenis.framework.db.jdbc.MappingDecorator;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvWriter;
@@ -27,7 +27,12 @@ import org.molgenis.util.CsvWriter;
 public class ${clazzName}<E extends ${entityClass}> extends MappingDecorator<E>
 {
 	//JDBCMapper is the generate thing
-	public ${clazzName}(JDBCMapper<E> generatedMapper)
+//	public ${clazzName}(JDBCMapper<E> generatedMapper)
+//	{
+//		super(generatedMapper);
+//	}
+
+	public ${clazzName}(Mapper<E> generatedMapper)
 	{
 		super(generatedMapper);
 	}

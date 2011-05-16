@@ -26,6 +26,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.FileSourceHelper;
 import org.molgenis.framework.db.JoinQuery;
+import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryImp;
 import org.molgenis.framework.db.QueryRule;
@@ -65,7 +66,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	/** batch size */
 	static final int BATCH_SIZE = 5000;
 	/** List of mappers, mapping entities to a JDBC connection */
-	Map<String, JDBCMapper<? extends Entity>> mappers = new TreeMap<String, JDBCMapper<? extends Entity>>();
+	Map<String, Mapper<? extends Entity>> mappers = new TreeMap<String, Mapper<? extends Entity>>();
 	/** The filesource associated to this database: takes care of "file" fields */
 	File fileSource;
 	/** Login object */
@@ -97,7 +98,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 		fsh = new JDBCFileSourceHelper(this);
 	}
 
-	public JDBCDatabase(DataSourceWrapper data_src, File file_source) throws DatabaseException
+	public JDBCDatabase(DataSourceWrapper data_src, File file_source)
 	{
 		super(data_src);
 
@@ -506,15 +507,15 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	 * @throws SQLException
 	 */
 	@SuppressWarnings("unchecked")
-	private <E extends Entity> JDBCMapper<E> getMapperFor(Class<E> klazz)
+	private <E extends Entity> Mapper<E> getMapperFor(Class<E> klazz)
 			throws DatabaseException
 	{
 		// transform to generic exception
-		JDBCMapper<? extends Entity> mapper = mappers.get(klazz.getName());
+		Mapper<E> mapper = (Mapper<E>) mappers.get(klazz.getName());
 		if (mapper == null) throw new DatabaseException(
 				"getMapperFor failed because no mapper available for "
 						+ klazz.getName());
-		return (JDBCMapper<E>) mapper;
+		return mapper;
 	}
 
 	/**
@@ -529,7 +530,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	 * @param mapper
 	 */
 	protected <E extends Entity> void putMapper(Class<E> klazz,
-			JDBCMapper<E> mapper)
+			Mapper<E> mapper)
 	{
 		this.mappers.put(klazz.getName(), mapper);
 		// logger.debug("added mapper for klazz " + klazz.getName());
@@ -637,7 +638,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	 * @throws SQLException
 	 */
 	@SuppressWarnings("unchecked")
-	private <E extends Entity> JDBCMapper<E> getMapperFor(List<E> entities)
+	private <E extends Entity> Mapper<E> getMapperFor(List<E> entities)
 			throws DatabaseException
 	{
 		try
@@ -712,8 +713,8 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	public <E extends Entity> E findById(Class<E> klazz, Object id)
 			throws DatabaseException
 	{
-		JDBCMapper<E> mapper = getMapperFor(klazz);
-		List<E> result = (List<E>) mapper.find(new QueryRule(mapper.create()
+		Mapper<E> mapper = getMapperFor(klazz);
+		List<E> result = mapper.find(new QueryRule(mapper.create()
 				.getIdField(), QueryRule.Operator.EQUALS, id));
 		if (result.size() > 0) return result.get(0);
 		return null;
