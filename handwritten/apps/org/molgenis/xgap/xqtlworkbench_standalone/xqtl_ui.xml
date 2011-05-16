@@ -31,7 +31,7 @@
 	<form label="Explore data" name="Investigations" entity="Investigation" compact_view="name" group="biologist">
 			<menu name="InvestigationMenu">
 			<plugin label="Search data" name="SimpleDbSearch" type="plugin.search.SimpleWholeDatabaseSearch" group="biologist" /> 
-			<!--broken, can't seem to fix it.. plugin name="Overview" type="plugins.investigationoverview.InvestigationOverviewPlugin" /-->
+			<plugin name="Overview" type="plugins.investigationoverview.InvestigationOverviewPlugin" />
 				<menu name="BasicAnnotations" label="Basic annotations">
 					<form name="Individuals" entity="Individual" />
 					<form name="Panels" entity="Panel" />
@@ -87,8 +87,8 @@
 					<form name="MolgenisUserGroupLink" entity="MolgenisUserGroupLink"/>
 					<form name="MolgenisEntity" entity="MolgenisEntity" view="list" label="Entities"/>
 					<form name="MolgenisPermission" entity="MolgenisPermission"/>
-					<form name="TestClass" entity="TestClass"/>
-					<form name="TestClass2" entity="TestClass2"/>
+					<!--form name="TestClass" entity="TestClass"/>
+					<form name="TestClass2" entity="TestClass2"/-->
 				</menu>
 			</menu>
 			<plugin label="Database settings" name="DatabaseSettings" type="plugins.system.database.Settings" />
