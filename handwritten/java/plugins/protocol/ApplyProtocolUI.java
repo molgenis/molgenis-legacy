@@ -153,18 +153,17 @@ public class ApplyProtocolUI {
      * 
      */
     public void makeProtocolSelect() {
-
-	try {
-	    protocols = new SelectInput("Protocols");
-	    protocols.setLabel("Choose Protocol:");
-	    protocols.setOptions(cs.getAllProtocols(), Protocol.ID, Protocol.NAME);
-	    protocolDiv.add(protocols);
-
-	} catch(Exception e) {
-		e.printStackTrace();
-	    logger.error("An error occurred while retrieving protocols from the database", e);
-	}
-
+		try {
+		    protocols = new SelectInput("Protocols");
+		    protocols.setLabel("Choose Protocol:");
+		    protocols.setOptions(cs.getAllProtocolsSorted(Protocol.NAME, "ASC", model.getInvestigationId()), 
+		    		Protocol.ID, Protocol.NAME);
+		    protocolDiv.add(protocols);
+	
+		} catch(Exception e) {
+			e.printStackTrace();
+		    logger.error("An error occurred while retrieving protocols from the database", e);
+		}
     }
 
     /** Create a select box with ObservationTargets grabbed from the database

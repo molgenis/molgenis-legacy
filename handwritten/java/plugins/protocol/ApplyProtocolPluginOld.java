@@ -264,7 +264,7 @@ public class ApplyProtocolPluginOld extends PluginModel<Entity> {
 		try {
 			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
 			// Populate protocol list
-			this.setProtocolList(ct.getAllProtocolsSorted("name", "ASC"));
+			this.setProtocolList(ct.getAllProtocolsSorted(Protocol.NAME, "ASC", investigationId));
 			// Populate target ID list
 			this.setTargetIdList(ct.getAllObservationTargetIds(null, false, investigationId));
 			// Populate animal group list
