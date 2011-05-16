@@ -14,7 +14,6 @@
 	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/lucene-highlighter-3.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/mindterm.jar"/>
 	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/mydas-1.6.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/ontoCAT_v0.9.5.3.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/molgenis"/>
 	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/spssw-1.66.jar"/>
 	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/iText-5.0.6.jar"/>
@@ -28,4 +27,3 @@
 	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/ontocat-0.9.7.6.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
-

@@ -7,7 +7,7 @@ axis.jar: used by e.g. miscellaneous.kegg.Run (KEGG tools)
 commons-discovery-0.4.jar: used by e.g. miscellaneous.kegg.Run (KEGG tools)
 mydas-1.6.0: DAS stuff (uk.ac.ebi.mydas.model.DasType, uk.ac.ebi.mydas.model.DasFeature etc)
 mindterm: SSH stuff (com.mindbright.ssh2.SSH2Transport, com.mindbright.jca.security.SecureRandom etc)
-ontoCAT_v0.9.5.3.jar: OntoCAT stuff (uk.ac.ebi.ontoapi.Ontology, uk.ac.ebi.ontoapi.OntologyService etc)
+ontocat_v0.9.5.3.jar: OntoCAT stuff (uk.ac.ebi.ontoapi.Ontology, uk.ac.ebi.ontoapi.OntologyService etc)
 
 Erik
 charts4j-1.2.jar: GoogleBarChart (com.googlecode.charts4j.*)
