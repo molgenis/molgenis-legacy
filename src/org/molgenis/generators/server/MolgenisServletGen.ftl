@@ -49,7 +49,11 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 
 	public Database getDatabase() throws Exception
 	{
-		<#if db_mode = 'standalone'>
+
+		<#if databaseImp = 'jpa'>
+			JpaDatabase db = new ${package}.JpaDatabase();
+			return db;		
+		<#elseif db_mode = 'standalone'>
 			BasicDataSource data_src = new BasicDataSource();
 			data_src.setDriverClassName("${db_driver}");
 			data_src.setUsername("${db_user}");
@@ -62,9 +66,6 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 			JDBCDatabase db = new ${package}.JDBCDatabase(dataSource, new File("${db_filepath}"));
 			db.getFileSourceHelper().setVariantId("${model.name}");
 			return db;
-		<#elseif databaseImp = 'jpa'>
-			JpaDatabase db = new ${package}.JpaDatabase();
-			return db;			
 		<#else>
 			//The datasource is created by the servletcontext	
 			DataSource dataSource = (DataSource)getServletContext().getAttribute("DataSource");
