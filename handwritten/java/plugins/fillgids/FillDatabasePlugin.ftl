@@ -40,13 +40,6 @@
 	<input type='submit' class='addbutton' value='deleteDB' onclick="__action.value='deleteDB'" />
 </div>
 
-<div id="readInvestigations" class="row">
-<label for="readinv">Choose your directory with the investigation files:</label>
-
-	<input style="margin-right:50px" type="file" name="readinv" id="readinv"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<input type='submit' class='addbutton' value='load investigations' onclick="__action.value='loadinv'" />
-</div>
-
 <div id="readIndividuals" class="row">
 	<label for="readind">Choose your directory with the individual files:</label>
 	<input style="margin-right:50px" type="file" name="readind" id="readind"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -69,16 +62,6 @@
 	<label for="submittie">Load the files into the database: </label>
 	<input type='submit' name='submittie' class='addbutton' value='load files into db' onclick="__action.value='loadAll'" />
 </div>
-
-
-
-
-
-<#--<div id="ulilinetablediv" class="row">
-	<label for="ulilinetable">'Linie' (Line) table CSV export file:</label>
-	<input type="file" name="ulilinetable" id="ulilinetable" class="textbox" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<input type='submit' class='addbutton' value='Load lines from old version' onclick="__action.value='loadUliLines'" />
-</div>-->
 
 
 <div>

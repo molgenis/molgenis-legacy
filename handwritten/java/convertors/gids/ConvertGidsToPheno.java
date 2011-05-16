@@ -4,11 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
 import org.apache.log4j.Logger;
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
@@ -17,9 +14,7 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
-
 import app.CsvExport;
-import app.JDBCDatabase;
 
 public class ConvertGidsToPheno
 {
@@ -31,25 +26,32 @@ public class ConvertGidsToPheno
 	private String invName;
 	
 	
-	public void converter(String filename,String outputDir, String invName) throws Exception{
+	
+	public void converter(File file, String invName) throws Exception{
 		
 		//String filename = "C:/Documents and Settings/Administrator/workspace/molgenis_apps/handwritten/java/convertors/gids/export_CeliacSprue_for_PhenoModel.csv";
-		
-		ConvertGidsToPheno conv = new ConvertGidsToPheno();
-		conv.makeInvestigation(invName);
-		//conv.populateIndividual(filename,invName);
-		conv.populateMeasurement(filename,invName);
-		conv.populateValue(filename,invName);
 		this.invName = invName;
+		
+		makeInvestigation(invName);
+		populateIndividual(file,invName);
+		populateMeasurement(file,invName);
+		populateValue(file,invName);
+		
 		CsvExport export = new CsvExport();
-		//File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-		File tmpDir = new File(outputDir);
-		
-		System.out.println("individualsList size = " + individualsList.size());
-		
-		export.exportAll(tmpDir, individualsList, measurementsList, valuesList, investigationList);
+		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+		File tmpFileDir = new File(tmpDir.getAbsolutePath());
+
+		try{
+
+			export.exportAll(tmpFileDir, individualsList, measurementsList, valuesList);
+		}
+		catch(Exception e){
+			logger.info("CANNOT EXPORT DATA");
+		}
 	}
 
+	
+	
 	public ConvertGidsToPheno() throws Exception
 	{
 		logger = Logger.getLogger("ConvertGidsToPheno");
@@ -69,14 +71,16 @@ public class ConvertGidsToPheno
 		Investigation newInvest = new Investigation();
 		newInvest.setName(invName);
 		logger.info("#########################  makeInvestigation    " + invName );
+		
+		newInvest.setName(invName);
+		
 		return newInvest;
 	}
 	
-	public void populateIndividual(String filename) throws Exception
+	public void populateIndividual(File file, String invName) throws Exception
 	{
 		final List<String> namesSeen = new ArrayList<String>();
-		
-		File file = new File(filename);
+		this.invName = invName;
 		CsvFileReader reader = new CsvFileReader(file);
 		reader.parse(new CsvReaderListener()
 		{
@@ -92,7 +96,8 @@ public class ConvertGidsToPheno
 					namesSeen.add(gidsId);
 					Individual newIndividual = new Individual();
 					newIndividual.setName(gidsId);
-					newIndividual.setInvestigation_Name(invName);
+					//logger.info("INDIVIDUALS INVESTIGATION: " + getInvestigation());
+					newIndividual.setInvestigation_Name(getInvestigation());
 					newIndividual.setMother_Name(mother_Name);					
 					newIndividual.setFather_Name(father_Name);	
 					individualsList.add(newIndividual);
@@ -101,8 +106,7 @@ public class ConvertGidsToPheno
 		});
 	}
 	
-	public void populateMeasurement(String filename, String invName) throws Exception {
-		File file = new File(filename);
+	public void populateMeasurement(File file, String invName) throws Exception {
 		CsvFileReader reader = new CsvFileReader(file);
 		for (String header : reader.colnames()) {
 			if (!header.equals("id_individual") && !header.equals("id_mother") && !header.equals("id_father")) {
@@ -119,18 +123,18 @@ public class ConvertGidsToPheno
 	}
 	
 	
-	public void populateValue(String filename, String invName) throws Exception
+	public void populateValue(File file, String invName) throws Exception
 	{
-		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
 		reader.parse(new CsvReaderListener()
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
+				
 				//logger.info("Parsing line: " + line_number);
 				
 				String targetName = tuple.getString("id_individual");
-				
+				/*
 				// date_of_birth
 				String date_of_birth = tuple.getString("date_of_birth");
 				//valuesToAddList.add(ct.createObservedValue(invid, protocolAppsToAddList.get(0).getName(), now, 
@@ -190,11 +194,12 @@ public class ConvertGidsToPheno
 				//keep_informed(yes/no/unknown
 				
 				//isolate_type (dna,rna,blood
-				
+				*/
 				for (Measurement m : measurementsList) {
 					String featureName = m.getName();	
 					String value = tuple.getString(featureName);
-					
+					//logger.info("***** VALUE  " + value);
+					//logger.info("MEASUREMENTS INVESTIGATION: " + getInvestigation());
 					//if(value.contains("'")){
 					//	value = value.replace("'", "");
 					//}
@@ -202,11 +207,14 @@ public class ConvertGidsToPheno
 					newValue.setFeature_Name(featureName);
 					newValue.setTarget_Name(targetName);
 					newValue.setValue(value);
-					newValue.setInvestigation_Name("CeliacSprue");
+					newValue.setInvestigation_Name(getInvestigation());
 					
 					valuesList.add(newValue);
+					
 				}
+				
 			}
 		});
+		
 	}
 }

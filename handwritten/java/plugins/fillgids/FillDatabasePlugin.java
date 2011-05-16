@@ -10,7 +10,6 @@ package plugins.fillgids;
 import java.io.File;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
@@ -53,8 +52,6 @@ public class FillDatabasePlugin extends PluginModel<Entity>
 	public void handleRequest(Database db, Tuple request)
 	{
 		
-		
-		
 		String action = request.getString("__action");
 		
 		
@@ -67,32 +64,7 @@ public class FillDatabasePlugin extends PluginModel<Entity>
 		}
 		
 		
-		if(action.equals("loadinv")){
-			logger.info("##################################");
-		//	String filename = request.getString("readinv");
-			File bla = request.getFile("readinv");
-			
-			File moveBla = new File(roanDir + File.separator + bla.getName());
-			//move the file
-			boolean moveSuccess = bla.renameTo(moveBla);
-			if(!moveSuccess){
-				logger.error("MOVE readinv PHAIL");
-				//error oid... gaat vaak fout onder windoos!!!! java bug!!
-			}
-			
-			String originalName = request.getString("readinvOriginalFileName");
-			boolean renameSuccess = moveBla.renameTo(new File(roanDir + File.separator + originalName));
-			
-			if(!renameSuccess){
-				logger.error("RENAME readinv PHAIL");
-				//error oid... gaat vaak fout onder windoos!!!! java bug!!
-			}
 		
-			
-		//	logger.info("****** loadinv" + filename);
-		
-			
-		}
 		
 		
 		if(action.equals("loadind")){

@@ -8,7 +8,7 @@
 	
 <!-- this shows a title and border -->
 	<div class="formscreen">
-		<div class="form_header" id="${screen.getName()}">
+		<div class="form_header" id="${screen.getName()}"> 
 		${screen.label}
 		</div>
 		
@@ -41,6 +41,7 @@
 		<option value="select investigation"</option>
 		<#list screen.investigations as investigation>
 			<option value="${investigation.name}">${investigation.name}</option>
+			
 		</#list>
 	</select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <label for="createNew">or create a new investigation</label>
 	<input name='createNew' id='createNew'type='text'>
@@ -55,9 +56,15 @@
 	
 	<h3>output will be in the same folder as the input</h3>
 </div>
-
-
+<#if screen.finished??>
+<div id="bal">
+	
+		<a href="tmpfile/individual.txt">Download individuals</a><br />
+		<a href="tmpfile/measurement.txt">Download measurements</a><br />
+		<a href="tmpfile/observedvalue.txt">Download observed values</a>
+	
 <div>
+</#if>
     <br />
     <hr />
     <br />

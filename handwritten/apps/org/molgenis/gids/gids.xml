@@ -5,7 +5,7 @@
 	-->
 	
 	<!--  set Molgenis name and label for GIDS application -->
-<molgenis name="gids" label="gids"> 
+<molgenis name="org.molgenis"> 
 
 </molgenis>
 

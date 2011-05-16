@@ -4,7 +4,7 @@
 		"http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd"
 	-->
 
-<molgenis name="gids">
+<molgenis name="molgenis_apps">
 	
 	<menu name="mainmenu" position="left">
 		<plugin name="WelcomeScreen" type="plugins.welcome.GidsWelcomeScreenPlugin" label="Welcome"/>
@@ -12,10 +12,11 @@
 		<menu name="ImportData" label="Import Data">
 			<plugin name="ConvertDataIntoPheno" type="plugins.convertergids.ConvertDataIntoPhenoPlugin" label="Convert data"/>
 			<plugin name="FillDatabase" type="plugins.fillgids.FillDatabasePlugin" label="Load data" />
+			<plugin name="PrintLabel" type="plugins.output.PrintLabelPlugin" label="Print Labels" />
 		</menu>	
 	    <form entity="Investigation" name="investigation">
 		    
-	        <menu name="ProjectMenu">
+	        <menu name="ProjectMenuGIDS">
 	        	
 		       	<form name="individuals" entity="Individual" view="list" label="Observation targets" />
 				<form name="measurement" entity="Measurement" view="list" label="Measurements" />

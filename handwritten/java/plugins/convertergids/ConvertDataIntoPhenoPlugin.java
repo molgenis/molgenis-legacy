@@ -8,6 +8,7 @@
 package plugins.convertergids;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,27 +25,22 @@ import convertors.gids.ConvertGidsToPheno;
 
 public class ConvertDataIntoPhenoPlugin extends PluginModel<Entity>
 {
-	
+
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private File roanDir;
 	private List<Investigation> investigations;
+	private String finished = null;
 	
 
 	public ConvertDataIntoPhenoPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
-	/*
-	public String getCustomHtmlHeaders()
-    {
-        return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
-    }
-*/
+
 	@Override
 	public String getViewName()
 	{
@@ -60,47 +56,48 @@ public class ConvertDataIntoPhenoPlugin extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-		Investigation chosenInv;
+
 		String invName = "";
 		String action = request.getString("__action");
 		
 		if (!request.getString("investigation").equals("") && !request.getString("investigation").equals("select investigation")) {
-			String invId = request.getString("investigation");
 			invName = request.getString("investigation");
-			logger.info("******** invId" + invId);
+			
 		}
 		else{
-			logger.info("*****###*** invId");
 			invName = request.getString("createNew");
-			logger.info("*****###*** CREATE NEW:  " + invName);
+			Investigation inve = new Investigation();
+			inve.setName(invName);
+			try {
+				db.add(inve);
+			} catch (DatabaseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
-		logger.info("inVNAMENEEAMSD " + invName);
-		StringBuilder stbu = new StringBuilder();
-		File filename = request.getFile("convertData");
-		String file = filename.toString();
-		String []array = file.split("/");
-		for(int i=0; i <array.length-1; i++){
-			stbu.append(array[i]+"/");
-		}
-		String folder = stbu.toString();
-		logger.info("**********  folder  "+folder);
+		File file = request.getFile("convertData");
+
 		if (action.equals("convertMe") ){
 			//String a = request.getAction("checker");
 			try {
-				
 				ConvertGidsToPheno cgtp = new ConvertGidsToPheno();
-				cgtp.converter(file,folder,invName);
+				
+				cgtp.converter(file, invName);
+				finished = "finish";
+
 			} catch (Exception e) {
 				e.printStackTrace();
-			}	
+			}
+
 		}
-		
-		
-		
-		
+				
 	}
 
+	
 	@Override
 	public void reload(Database db)
 	{
@@ -124,6 +121,12 @@ public class ConvertDataIntoPhenoPlugin extends PluginModel<Entity>
 
 	public List<Investigation> getInvestigations() {
 		return investigations;
+	}
+	public void setFinished(String finished) {
+		this.finished = finished;
+	}
+	public String getFinished() {
+		return finished;
 	}
 	
 }
