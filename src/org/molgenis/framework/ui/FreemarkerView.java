@@ -58,9 +58,11 @@ public class FreemarkerView extends SimpleScreenView
 				// set the template loading paths
 				cfg.setObjectWrapper(new DefaultObjectWrapper());
 
-				BeansWrapper wrapper = new BeansWrapper();
-				wrapper.setExposeFields(true);
-				cfg.setObjectWrapper(wrapper);
+//				BeansWrapper wrapper = new BeansWrapper();
+//				//ouch, don't do this
+//				wrapper.setExposeFields(true);
+//				wrapper.setExposureLevel(BeansWrapper.EXPOSE_PROPERTIES_ONLY);
+//				cfg.setObjectWrapper(wrapper);
 
 				cfg
 						.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
