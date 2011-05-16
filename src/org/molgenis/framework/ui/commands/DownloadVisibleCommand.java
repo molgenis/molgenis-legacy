@@ -47,10 +47,19 @@ public class DownloadVisibleCommand extends SimpleCommand
 
 		FormModel<?> view = this.getFormScreen();
 		List<? extends Entity> records = view.getRecords();
-		CsvWriter writer = new CsvWriter(csvDownload, view.create().getFields());
+		
+		List<String> fieldsToExport = view.create().getFields();
+		fieldsToExport.removeAll(view.getSystemHiddenColumns());
+		
+		CsvWriter writer = new CsvWriter(csvDownload, fieldsToExport);
 		writer.writeHeader();
+		
 		for (Entity e : records)
-			writer.writeRow(e);
+		{
+			for(String field: fieldsToExport)
+				writer.writeValue(e.get(field));
+			writer.writeEndOfLine();
+		}
 		
 		return ScreenModel.Show.SHOW_MAIN;		
 	}
