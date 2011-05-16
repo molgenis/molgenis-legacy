@@ -269,7 +269,7 @@ public class ComputePlugin extends GenericPlugin
 
                 if (protocol.getInputs() != null)
                 {
-                    List<Integer> inputIDs = protocol.getInputs();
+                    List<Integer> inputIDs = protocol.getInputs_Id();
                     System.out.println(">>>>>>>>>>> inputs size: " + inputIDs.size());
                     for (int j = 0; j < inputIDs.size(); j++)
                     {
@@ -282,7 +282,7 @@ public class ComputePlugin extends GenericPlugin
                 if (protocol.getOutputs() != null)
                 {
 
-                    List<Integer> outputIDs = protocol.getOutputs();
+                    List<Integer> outputIDs = protocol.getOutputs_Id();
                     System.out.println(">>>>>>>>>>> output size: " + outputIDs.size());
                     for (int j = 0; j < outputIDs.size(); j++)
                     {
