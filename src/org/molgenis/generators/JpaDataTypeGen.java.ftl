@@ -275,9 +275,9 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	private <#if field.type="xref">${JavaName(field.xrefEntity)}<#elseif field.type="mref">List<${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)} = <#if field.type == "mref">new ArrayList<${JavaName(field.xrefEntity)}>()<#else> ${default(field)}</#if>;				
 				</#if>
 			<#else>
-				<#if field.isNillable()>
-	@Null
-				<#else>
+				
+
+				<#if !field.isNillable()>
 	@NotNull
 				</#if>
 	private <#if field.type="xref">${JavaName(field.xrefEntity)}<#elseif field.type="mref">List<${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)} = <#if field.type == "mref">new ArrayList<${JavaName(field.xrefEntity)}>()<#else> ${default(field)}</#if>;
