@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.molgenis.core.MolgenisFile;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.jdbc.JDBCMapper;
@@ -41,6 +42,12 @@ public class MolgenisFileDecorator<E extends MolgenisFile> extends MappingDecora
 	
 	//TODO: Danny Parameterize the JDBCMapper object <Object> ??
 	public MolgenisFileDecorator(JDBCMapper<E> generatedMapper)
+	{
+		super(generatedMapper);
+	}
+	
+	//new kind of constructor to work with latest DB changes
+	public MolgenisFileDecorator(Mapper<E> generatedMapper)
 	{
 		super(generatedMapper);
 	}
