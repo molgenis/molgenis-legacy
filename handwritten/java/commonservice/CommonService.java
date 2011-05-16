@@ -1102,10 +1102,14 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<Protocol> getAllProtocols() throws DatabaseException,
+	public List<Protocol> getAllProtocols(int investigationId) throws DatabaseException,
 			ParseException
 	{
 		Query<Protocol> q = db.query(Protocol.class);
+		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.EQUALS, investigationId);
+		QueryRule qr2 = new QueryRule(Operator.OR);
+		QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
+		q.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
 		return q.find();
 	}
 
@@ -1139,9 +1143,13 @@ public class CommonService
 	 * @throws ParseException
 	 */
 	public List<Protocol> getAllProtocolsSorted(String sortField,
-			String sortOrder) throws DatabaseException, ParseException
+			String sortOrder, int investigationId) throws DatabaseException, ParseException
 	{
 		Query<Protocol> q = db.query(Protocol.class);
+		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.EQUALS, investigationId);
+		QueryRule qr2 = new QueryRule(Operator.OR);
+		QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
+		q.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
 		if (sortOrder.equals("ASC")) {
 			q.sortASC(sortField);
 		} else {
