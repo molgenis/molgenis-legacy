@@ -40,7 +40,7 @@
 				diastolic blood pressure. There may be many alternative protocols to
 				measure a feature. See Protocol section.</description>
 		</entity>
-		<entity name="Measurement" extends="ObservableFeature"><!-- decorator="decorators.MeasurementDecorator"> --> 
+		<entity name="Measurement" extends="ObservableFeature" decorator="decorators.MeasurementDecorator"> 
 			<description>Generic obserable feature to flexibly define a
 				measurement</description>
 			<field name="unit" type="xref" xref_entity="OntologyTerm"

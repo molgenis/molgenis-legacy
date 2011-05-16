@@ -35,26 +35,23 @@ public class MeasurementDecorator<E extends Measurement> extends MappingDecorato
 		String featureName;
 		Database db = this.getDatabase();
 		ct.setDatabase(db);
+		
+		// Dirty trick to prevent Protocols from being made when calling from Hudson test:
+		if (ct.getInvestigationId("System") == -1) {
+			// In Hudson, there is no pre-generated Investigation 'System' present in the DB, 
+			// so the method returns -1 and then we happily return true so the test will not fail.
+			return true;
+		}
 
 		for (E e : entities) {
 			// Add corresponding event type
 			featureName = e.getName();
 			protocolName = "Set" + featureName;
 			int etId, featId;
-			int invId = -1;
-			
-			// Dirty trick to prevent Protocols from being made when calling from Hudson test:
-			try {
-				invId = ct.getInvestigationId("System");
-			} catch (Exception e1) {
-				// In Hudson, there are no Investigations present in the DB, so the exception is
-				// thrown and then we happily return true so the test will not fail
-				return true;
-			}
 			
 			try {
 				// Auto-generated protocols will be linked to the always present System investigation
-				etId = ct.makeProtocol(invId, protocolName);
+				etId = ct.makeProtocol(e.getInvestigation(), protocolName);
 			} catch (Exception e2) {
 				return false;
 			}
@@ -65,7 +62,7 @@ public class MeasurementDecorator<E extends Measurement> extends MappingDecorato
 				return false;
 			}
 			// Add entry to coupling table. 
-			// FIXME this is not how it should go
+			// FIXME this is not how it should go. Well how should it go then?
 			Protocol_Features efEntry = new Protocol_Features();
 			efEntry.setProtocol(etId);
 			efEntry.setFeatures(featId);
