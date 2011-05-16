@@ -2,18 +2,19 @@ package org.molgenis.framework.db.jdbc;
 
 import java.util.List;
 
-import org.molgenis.fieldtypes.FieldType;
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 
-public class MappingDecorator<E extends Entity> implements JDBCMapper<E>
+public class MappingDecorator<E extends Entity> implements Mapper<E>
 {
-	private JDBCMapper<E> mapper;
+	private Mapper<E> mapper;
 
-	public MappingDecorator(JDBCMapper<E> generatedMapper)
+	public MappingDecorator(Mapper<E> generatedMapper)
 	{
 		this.mapper = generatedMapper;
 	}
@@ -61,7 +62,7 @@ public class MappingDecorator<E extends Entity> implements JDBCMapper<E>
 	}
 
 	@Override
-	public JDBCDatabase getDatabase()
+	public Database getDatabase()
 	{
 		return mapper.getDatabase();
 	}
@@ -85,7 +86,7 @@ public class MappingDecorator<E extends Entity> implements JDBCMapper<E>
 	}
 
 	@Override
-	public FieldType getFieldType(String field)
+	public org.molgenis.framework.db.jdbc.ColumnInfo.Type getFieldType(String field)
 	{
 		// TODO Auto-generated method stub
 		return mapper.getFieldType(field);
@@ -101,7 +102,7 @@ public class MappingDecorator<E extends Entity> implements JDBCMapper<E>
 	@Override
 	public E create()
 	{
-		return (E) mapper.create();
+		return mapper.create();
 	}
 
 	@Override

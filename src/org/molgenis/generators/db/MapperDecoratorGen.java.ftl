@@ -23,7 +23,13 @@ import org.molgenis.framework.db.jdbc.JDBCMapper;
 public class ${clazzName}<E extends ${entityClass}> extends MappingDecorator<E>
 {
 	//JDBCMapper is the generate thing
-	public ${clazzName}(JDBCMapper generatedMapper)
+//	public ${clazzName}(JDBCMapper generatedMapper)
+//	{
+//		super(generatedMapper);
+//	}
+
+	//Mapper is the generate thing
+	public ${clazzName}(Mapper generatedMapper)
 	{
 		super(generatedMapper);
 	}

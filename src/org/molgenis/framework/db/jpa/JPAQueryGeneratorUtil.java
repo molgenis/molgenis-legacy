@@ -15,10 +15,10 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
-import javax.persistence.metamodel.Metamodel;
 
 import org.apache.commons.logging.LogFactory;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.util.AbstractEntity;
@@ -30,17 +30,16 @@ import org.molgenis.util.Entity;
 public class JPAQueryGeneratorUtil {
 
     public static <IN extends Entity> TypedQuery<IN> createQuery(
-	    Class<IN> inputClass, JpaMapper<IN> mapper, EntityManager em,
+	    Class<IN> inputClass, Mapper<IN> mapper, EntityManager em,
 	    QueryRule... rules) throws DatabaseException {
 	return createQuery(inputClass, inputClass, mapper, em, rules);
     }
 
     public static <IN extends Entity, OUT> TypedQuery<OUT> createQuery(
-	    Class<IN> inputClass, Class<OUT> outputClass, JpaMapper<IN> mapper,
+	    Class<IN> inputClass, Class<OUT> outputClass, Mapper<IN> mapper,
 	    EntityManager em, QueryRule... rules) throws DatabaseException {
 	CriteriaBuilder cb = em.getCriteriaBuilder();
 	CriteriaQuery<OUT> cq = cb.createQuery(outputClass);
-	Metamodel m = em.getMetamodel();
 	Root<IN> root = cq.from(inputClass);
 
 	if (inputClass.getSimpleName().equals(outputClass.getSimpleName())) {
@@ -62,12 +61,12 @@ public class JPAQueryGeneratorUtil {
     }    
     
     public static <IN extends Entity> TypedQuery<Long> createCount(
-	    Class<IN> inputClass, JpaMapper<IN> mapper, EntityManager em,
+	    Class<IN> inputClass, Mapper<IN> mapper, EntityManager em,
 	    QueryRule... rules) throws DatabaseException {
 	return createQuery(inputClass, Long.class, mapper, em, rules);
     }
 
-    private static <E> int[] createWhere(JpaMapper mapper, EntityManager em,
+    private static <E extends Entity> int[] createWhere(Mapper<E> mapper, EntityManager em,
 	    Root<E> root, CriteriaQuery cq, CriteriaBuilder cb,
 	    QueryRule... rules) throws DatabaseException {
 
@@ -90,9 +89,11 @@ public class JPAQueryGeneratorUtil {
 			throw new UnsupportedOperationException(
 				"Not supported yet.");
 		    case SORTASC:
+		    	rule.setValue(mapper.getTableFieldName(rule.getValue().toString()));
 			orders.add(cb.asc(root.get((String) rule.getValue())));
 			break;
 		    case SORTDESC:
+		    	rule.setValue(mapper.getTableFieldName(rule.getValue().toString()));
 			orders.add(cb.desc(root.get((String) rule.getValue())));
 			break;
 		    case LIMIT:
@@ -117,7 +118,7 @@ public class JPAQueryGeneratorUtil {
 				    try {
 					// it's a xref attribute which is joined to root
 					if (root.get(attributeName).getJavaType().newInstance() instanceof Entity) {
-					    Entity entity = (Entity) root.getJavaType().newInstance();
+					    Entity entity = root.getJavaType().newInstance();
 					    String xrefAttribtename = entity.getXrefIdFieldName(attributeName);
 					    
 					    Join join = root.join(attributeName);
@@ -219,7 +220,7 @@ public class JPAQueryGeneratorUtil {
 	return limitOffset;
     }
 
-    private static Field getIdField(Class entity) {
+    private static Field getIdField(Class<Entity> entity) {
 	for (Field f : entity.getDeclaredFields()) {
 	    Annotation annotation = f.getAnnotation(javax.persistence.Id.class);
 	    if (annotation != null) {

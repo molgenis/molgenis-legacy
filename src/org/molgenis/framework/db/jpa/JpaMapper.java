@@ -4,18 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-
-
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.DatabaseMapper;
+import org.molgenis.framework.db.Mapper;
 import org.molgenis.util.Entity;
 
 /**
  * @author Morris Swertz
  * @author Joris Lops
  */
-public interface JpaMapper<E extends Entity> extends DatabaseMapper<E>
+public interface JpaMapper<E extends Entity> extends Mapper<E>
 {
 	/** Create a new instance */
 	public E create();

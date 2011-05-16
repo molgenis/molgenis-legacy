@@ -2,8 +2,8 @@ package org.molgenis.framework.db.jdbc;
 
 import java.util.List;
 
-import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvWriter;
@@ -16,7 +16,7 @@ import org.molgenis.util.Entity;
  * @author Joris Lops
  * 
  */
-public interface JDBCMapper<E extends Entity>
+public interface JDBCMapper<E extends Entity> extends Mapper<E>
 {	
 	public JDBCDatabase getDatabase();
 
@@ -48,7 +48,7 @@ public interface JDBCMapper<E extends Entity>
 
 	public String getTableFieldName(String field);
 
-	public FieldType getFieldType(String field);
+	public org.molgenis.framework.db.jdbc.ColumnInfo.Type getFieldType(String field);
 
 //	/**
 //	 * Helper method for retrieving keys.

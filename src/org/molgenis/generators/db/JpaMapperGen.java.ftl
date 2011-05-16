@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jpa.JpaMapper;
 import org.molgenis.framework.db.jdbc.ColumnInfo.Type;
+import org.molgenis.util.CsvReader;
+import org.molgenis.util.CsvWriter;
 
 <#list allFields(entity) as f><#if f.type == "file">
 import org.apache.commons.io.FileUtils;
@@ -85,9 +87,10 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 		this.em = em;
 	}
 
+<#--
 //	@Deprecated
 //	public ${JavaName(entity)}JpaMapper(Database db) {}
-
+-->
 	public void setEntityManager(EntityManager em) {
 		this.em = em;
 	}

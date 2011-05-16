@@ -11,12 +11,14 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.metamodel.EntityType;
 
+import org.eclipse.persistence.jpa.JpaHelper;
+import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.molgenis.framework.db.CsvToDatabase.IntegerWrapper;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.DatabaseMapper;
 import org.molgenis.framework.db.FileSourceHelper;
 import org.molgenis.framework.db.JoinQuery;
+import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryImp;
 import org.molgenis.framework.db.QueryRule;
@@ -59,7 +61,7 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	/** BATCH SIZE */
 	private int BATCH_SIZE = 10000;
 
-	private static Map<String, DatabaseMapper> mappers = new TreeMap<String, DatabaseMapper>();
+	private static Map<String, Mapper<? extends Entity>> mappers = new TreeMap<String, Mapper<? extends Entity>>();
 	private EntityManager em = null;
 	/** in transaction */
 	// private boolean inTransaction;
@@ -261,7 +263,7 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	public <E extends Entity> int count(Class<E> entityClass,
 			QueryRule... rules) throws DatabaseException
 	{
-	    TypedQuery<Long> query = JPAQueryGeneratorUtil.createCount(entityClass, (JpaMapper<E>)getMapper(entityClass.getName()), em, rules);
+	    TypedQuery<Long> query = JPAQueryGeneratorUtil.createCount(entityClass, (Mapper<E>)getMapper(entityClass.getName()), em, rules);
 	    Long result = query.getSingleResult();
 	    return result.intValue();
 	}
@@ -308,7 +310,7 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	public <E extends Entity> List<E> find(Class<E> entityClass,
 			QueryRule... rules) throws DatabaseException
 	{
-	    TypedQuery<E> query = JPAQueryGeneratorUtil.createQuery(entityClass, (JpaMapper<E>)getMapper(entityClass.getName()), em, rules);
+	    TypedQuery<E> query = JPAQueryGeneratorUtil.createQuery(entityClass, (Mapper<E>)getMapper(entityClass.getName()), em, rules);
 	    return query.getResultList();
 	}
 
@@ -327,6 +329,14 @@ public class JpaDatabase extends AbstractDatabase implements Database
 			throw new DatabaseException(e);
 		}
 		return null;
+	}
+
+	@Override
+	public <E extends Entity> List<E> findByExample(E example)
+	{	
+		ReadObjectQuery query = new ReadObjectQuery();
+		query.setExampleObject(example);
+		return (List<E>)JpaHelper.getServerSession(em.getEntityManagerFactory()).executeQuery(query);
 	}
 
 	@Override
@@ -607,15 +617,15 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	}
 
 	protected static <E extends Entity> void putMapper(Class<E> klazz,
-			DatabaseMapper mapper)
+			Mapper<E> mapper)
 	{
 		mappers.put(klazz.getName(), mapper);
 		// logger.debug("added mapper for klazz " + klazz.getName());
 	}
 
-	protected <E extends Entity> JpaMapper<E> getMapper(String name)
+	protected <E extends Entity> Mapper<E> getMapper(String name)
 	{
-		return (JpaMapper<E>) mappers.get(name);
+		return (Mapper<E>) mappers.get(name);
 	}
 
 	public void flush()

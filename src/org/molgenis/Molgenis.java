@@ -211,20 +211,28 @@ public class Molgenis {
 
 	if (options.generate_sql) {
 	    if (options.mapper_implementation.equals(MapperImplementation.JPA)) {
-		generators.add(new JpaDatabaseGen());
-		generators.add(new JpaDataTypeGen());
-		//generators.add(new JpaDataTypeListenerGen());
-		generators.add(new JpaMapperGen());
-		generators.add(new JDBCMetaDatabaseGen());
+	    	generators.add(new JpaDatabaseGen());
+	    	generators.add(new JpaDataTypeGen());
+	    	//generators.add(new JpaDataTypeListenerGen());
+	    	generators.add(new JpaMapperGen());
+	    	generators.add(new JDBCMetaDatabaseGen());
 
-		//generates Entity Listeners
-		JpaEntityListenerGen entityListGen = new JpaEntityListenerGen();
-		entityListGen.setHandwritten(true);
-		generators.add(entityListGen);
+	    	//generates Entity Listeners
+	    	JpaEntityListenerGen entityListGen = new JpaEntityListenerGen();
+	    	entityListGen.setHandwritten(true);
+	    	generators.add(entityListGen);
 
-		if (options.generate_persistence) {
-		    generators.add(new PersistenceGen());
-		}
+	    	if (options.generate_persistence) {
+	    		generators.add(new PersistenceGen());
+	    	}
+	    	
+	    	// JDBC authorization
+			if (!options.auth_loginclass.endsWith("SimpleLogin")) {
+			    generators.add(new MapperSecurityDecoratorGen());
+			}
+
+			// decorators
+			generators.add(new MapperDecoratorGen());
 	    } else {
 		// DATABASE
 		// mysql.org
