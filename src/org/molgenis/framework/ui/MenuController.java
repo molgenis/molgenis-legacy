@@ -88,4 +88,39 @@ public class MenuController extends SimpleScreenController<MenuModel>
 	{
 		return super.getModel();
 	}
+	
+	@Override
+	public ScreenModel getSelected()
+	{
+		if (getChild(selectedId) != null)
+		{
+			return getChild(selectedId).getModel();
+		}
+		if (getChildren().size() > 0)
+		{
+			if (getChildren().firstElement() instanceof ScreenModel) return getChildren()
+					.firstElement().getModel();
+		}
+		return null;
+	}
+	
+	public String getCustomHtmlHeaders()
+	{
+		String result = "<!--custom html headers: " + this.getName() + "-->";
+
+		if (this.getModel() != null && this.getModel().getSelected() != null)
+		{
+			result += this.getModel().getSelected().getController()
+					.getCustomHtmlHeaders();
+		}
+		else
+		{
+			for (ScreenController<?> c : this.getChildren())
+			{
+				result += c.getCustomHtmlHeaders();
+			}
+		}
+
+		return result;
+	}
 }
