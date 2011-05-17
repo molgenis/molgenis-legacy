@@ -43,6 +43,7 @@ import org.molgenis.model.elements.Tree;
 import org.molgenis.model.elements.UISchema;
 import org.molgenis.model.elements.View;
 import org.molgenis.model.elements.Form.SortOrder;
+import org.molgenis.model.elements.Plugin.PluginFlavor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -1138,6 +1139,13 @@ public class MolgenisModelParser {
                 plugin.setGroup(group);
                 plugin.setNamespace(namespace);
                 new_parent = plugin;
+                
+                //METHOD
+                String method = element.getAttribute("flavor");
+                if(!"".equals(method))
+                {
+                	plugin.setPluginMethod(PluginFlavor.getPluginMethod(method));
+                }
 
                 // READONLY
                 plugin.setReadOnly(false);
@@ -1238,6 +1246,7 @@ public class MolgenisModelParser {
 
                 // }
             } catch (Exception e) {
+                e.printStackTrace();
                 throw new MolgenisModelException(e.getMessage());
             }
 
