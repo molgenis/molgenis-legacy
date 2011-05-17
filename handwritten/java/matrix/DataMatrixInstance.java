@@ -5,9 +5,8 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import org.molgenis.data.Data;
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
-
-import app.JDBCDatabase;
 
 public interface DataMatrixInstance
 {
@@ -229,7 +228,7 @@ public interface DataMatrixInstance
 	 * @return A new matrix
 	 * @throws Exception
 	 */
-	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowEntityValues(JDBCDatabase db, QueryRule... rules) throws Exception;
+	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowEntityValues(Database db, QueryRule... rules) throws Exception;
 
 	/**
 	 * Get a submatrix from this matrix by applying a generic filter ('where')
@@ -265,7 +264,7 @@ public interface DataMatrixInstance
 	 * @return A new matrix
 	 * @throws Exception
 	 */
-	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByColEntityValues(JDBCDatabase db, QueryRule... rules) throws Exception;
+	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByColEntityValues(Database db, QueryRule... rules) throws Exception;
 
 	/**
 	 * Get a submatrix from this matrix by applying a generic filter ('where')
@@ -322,7 +321,7 @@ public interface DataMatrixInstance
 	 * @return
 	 * @throws Exception
 	 */
-	public AbstractDataMatrixInstance<Object> getMatrixSortByColEntityValues(JDBCDatabase db, boolean asc) throws Exception;
+	public AbstractDataMatrixInstance<Object> getMatrixSortByColEntityValues(Database db, boolean asc) throws Exception;
 	
 	/**
 	 * Get a sorted copy of this matrix. The sorting is applied to a row of
@@ -354,7 +353,7 @@ public interface DataMatrixInstance
 	 * @return
 	 * @throws Exception
 	 */
-	public AbstractDataMatrixInstance<Object> getMatrixSortByColMatrixValues(JDBCDatabase db, boolean asc) throws Exception;
+	public AbstractDataMatrixInstance<Object> getMatrixSortByColMatrixValues(Database db, boolean asc) throws Exception;
 
 	/**
 	 * Make a logical union with another matrix and return the resulting matrix.

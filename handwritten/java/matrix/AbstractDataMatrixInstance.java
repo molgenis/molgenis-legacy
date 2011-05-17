@@ -18,12 +18,11 @@ import matrix.general.MatrixReadException;
 import org.apache.log4j.Logger;
 import org.molgenis.core.Nameable;
 import org.molgenis.data.Data;
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.util.CsvWriter;
-
-import app.JDBCDatabase;
 
 /**
  * Abstract implementation for MatrixInterface. Some functions require XGAP
@@ -281,12 +280,12 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 		return rowNames;
 	}
 	
-	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowEntityValues(JDBCDatabase db, QueryRule... rules) throws Exception
+	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowEntityValues(Database db, QueryRule... rules) throws Exception
 	{
 		return AbstractDataMatrixQueries.getSubMatrixFilterByRowEntityValues((AbstractDataMatrixInstance<Object>) this, db, rules);
 	}
 
-	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByColEntityValues(JDBCDatabase db, QueryRule... rules) throws Exception
+	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByColEntityValues(Database db, QueryRule... rules) throws Exception
 	{
 		return AbstractDataMatrixQueries.getSubMatrixFilterByColEntityValues((AbstractDataMatrixInstance<Object>) this, db, rules);
 	}
@@ -306,7 +305,7 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 		throw new Exception("Unimplemented.");
 	}
 
-	public AbstractDataMatrixInstance<Object> getMatrixSortByColEntityValues(JDBCDatabase db, boolean asc)
+	public AbstractDataMatrixInstance<Object> getMatrixSortByColEntityValues(Database db, boolean asc)
 			throws Exception
 	{
 		QueryRule sorting = null;
@@ -334,7 +333,7 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 		throw new Exception("Unimplemented.");
 	}
 
-	public AbstractDataMatrixInstance<Object> getMatrixSortByColMatrixValues(JDBCDatabase db, boolean asc)
+	public AbstractDataMatrixInstance<Object> getMatrixSortByColMatrixValues(Database db, boolean asc)
 			throws Exception
 	{
 		List<Data> result = db.find(Data.class, new QueryRule("name", Operator.EQUALS, this.getData().getName()));

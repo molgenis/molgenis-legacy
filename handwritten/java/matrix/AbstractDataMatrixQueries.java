@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.core.Nameable;
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-
-import app.JDBCDatabase;
 
 public class AbstractDataMatrixQueries
 {
@@ -130,7 +129,7 @@ public class AbstractDataMatrixQueries
 	}
 
 	public static AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowEntityValues(
-			AbstractDataMatrixInstance<Object> dm, JDBCDatabase db, QueryRule... rules) throws Exception
+			AbstractDataMatrixInstance<Object> dm, Database db, QueryRule... rules) throws Exception
 	{
 		List<String> colNames = dm.getColNames();
 		// 1. query on row type entities
@@ -150,7 +149,7 @@ public class AbstractDataMatrixQueries
 	}
 
 	public static AbstractDataMatrixInstance<Object> getSubMatrixFilterByColEntityValues(
-			AbstractDataMatrixInstance<Object> dm, JDBCDatabase db, QueryRule... rules) throws Exception
+			AbstractDataMatrixInstance<Object> dm, Database db, QueryRule... rules) throws Exception
 	{
 		List<String> rowNames = dm.getRowNames();
 		// 1. query on column type entities
