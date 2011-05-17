@@ -21,6 +21,7 @@ import java.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.StringWriter;
+import java.io.IOException;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.ResultSetTuple;
@@ -121,8 +122,8 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	public void set${JavaName(field)}_${JavaName(label)}(java.util.List<${type(field.xrefLabels[label_index])}> ${name(field)}_${label}List);	
 			</#list></#if>						
 		<#elseif type_label == "file" || type_label=="image" >
-	public File get${JavaName(field)}File();
-	public void set${JavaName(field)}File(File file);
+	public File get${JavaName(field)}AttachedFile();
+	public void set${JavaName(field)}AttachedFile(File file);
 			</#if>
 		</#if>	
 	</#foreach>	
@@ -941,7 +942,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 }
 </#if>
 
-
+<#include "DataTypeFactory.java.ftl"/>
 
 }
 
