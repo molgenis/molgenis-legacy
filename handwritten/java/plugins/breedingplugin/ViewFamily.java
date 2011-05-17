@@ -114,7 +114,7 @@ public class ViewFamily extends PluginModel<Entity>
 				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, cs.getMeasurementId("Litter")));
 				List<ObservedValue> valueList = q.find();
 				if (valueList.size() == 1) {
-					litterId = valueList.get(0).getRelation();
+					litterId = valueList.get(0).getRelation_Id();
 				} else {
 					if (valueList.size() == 1) {
 						throw new DatabaseException("Animal is not from a litter");
@@ -132,7 +132,7 @@ public class ViewFamily extends PluginModel<Entity>
 				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, cs.getMeasurementId("Litter")));
 				valueList = q.find();
 				for (ObservedValue value : valueList) {
-					siblings += (cs.getObservationTargetLabel(value.getTarget()) + ", ");
+					siblings += (cs.getObservationTargetLabel(value.getTarget_Id()) + ", ");
 				}
 				if (siblings.length() > 0) {
 					siblings = siblings.substring(0, siblings.length() - 2);
@@ -145,7 +145,7 @@ public class ViewFamily extends PluginModel<Entity>
 				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, cs.getMeasurementId("Parentgroup")));
 				valueList = q.find();
 				if (valueList.size() == 1) {
-					parentgroupId = valueList.get(0).getRelation();
+					parentgroupId = valueList.get(0).getRelation_Id();
 				} else {
 					if (valueList.size() == 1) {
 						throw new DatabaseException("Litter does not have a parentgroup");
@@ -162,7 +162,7 @@ public class ViewFamily extends PluginModel<Entity>
 				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, cs.getMeasurementId("Mother")));
 				valueList = q.find();
 				for (ObservedValue value : valueList) {
-					mothers += (cs.getObservationTargetLabel(value.getTarget()) + ", ");
+					mothers += (cs.getObservationTargetLabel(value.getTarget_Id()) + ", ");
 				}
 				if (mothers.length() > 0) {
 					mothers = mothers.substring(0, mothers.length() - 2);
@@ -175,7 +175,7 @@ public class ViewFamily extends PluginModel<Entity>
 				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, cs.getMeasurementId("Father")));
 				valueList = q.find();
 				for (ObservedValue value : valueList) {
-					fathers += (cs.getObservationTargetLabel(value.getTarget()) + ", ");
+					fathers += (cs.getObservationTargetLabel(value.getTarget_Id()) + ", ");
 				}
 				if (fathers.length() > 0) {
 					fathers = fathers.substring(0, fathers.length() - 2);

@@ -336,7 +336,7 @@ public class ManageLitters extends PluginModel<Entity>
 				motherQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, measurementId));
 				List<ObservedValue> motherValueList = motherQuery.find();
 				if (motherValueList.size() > 0) {
-					int motherId = motherValueList.get(0).getTarget();
+					int motherId = motherValueList.get(0).getTarget_Id();
 					measurementId = ct.getMeasurementId("Species");
 					speciesId = ct.getMostRecentValueAsXref(motherId, measurementId);
 					measurementId = ct.getMeasurementId("AnimalType");
@@ -470,7 +470,7 @@ public class ManageLitters extends PluginModel<Entity>
 					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, tmpLitter.getId()));
 					List<ObservedValue> valueList = q.find();
 					if (valueList.size() > 0) {
-						int parentgroupId = valueList.get(0).getRelation();
+						int parentgroupId = valueList.get(0).getRelation_Id();
 						parentgroup = ct.getObservationTargetById(parentgroupId).getName();
 					}
 					litterToAdd.setParentgroup(parentgroup);
