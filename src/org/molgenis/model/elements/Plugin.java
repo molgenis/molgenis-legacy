@@ -9,23 +9,57 @@
 
 package org.molgenis.model.elements;
 
+import org.molgenis.model.MolgenisModelException;
+
 // jdk
 
 /**
  * 
  */
-public class Plugin extends UISchema 
+public class Plugin extends UISchema
 {
+	public enum PluginFlavor
+	{
+		FREEMARKER("freemarker"), EASY("easy"), VAADIN("vaadin"), UNKNOWN(
+				"unknown");
+
+		private String tag;
+
+		private PluginFlavor(String tag)
+		{
+			this.tag = tag;
+		}
+
+		public String toString()
+		{
+			return this.tag;
+		}
+
+		public static PluginFlavor getPluginMethod(String method)
+				throws MolgenisModelException
+		{
+			String options = "";
+			for (PluginFlavor p : PluginFlavor.values())
+			{
+				if (p.toString().equalsIgnoreCase(method)) return p;
+				options += p.toString() + ", ";
+			}
+			throw new MolgenisModelException("method='" + method
+					+ "' is UNKNOWN for plugin. Valid options: " + options);
+		}
+	};
+
 	// constructor(s)
 	/**
 	 * 
 	 */
-	public Plugin(String name, UISchema parent, String pluginType) 
+	public Plugin(String name, UISchema parent, String pluginType)
 	{
 		super(name, parent);
 		this.entity = null;
 		this.pluginType = pluginType;
 	}
+
 	/**
 	 * 
 	 */
@@ -50,7 +84,7 @@ public class Plugin extends UISchema
 	{
 		return this.entity;
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -58,7 +92,7 @@ public class Plugin extends UISchema
 	{
 		this.record = record;
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -66,6 +100,7 @@ public class Plugin extends UISchema
 	{
 		return this.record;
 	}
+
 	/**
 	 * 
 	 */
@@ -73,13 +108,18 @@ public class Plugin extends UISchema
 	{
 		this.readonly = readonly;
 	}
-	
+
 	public String toString()
 	{
-		if(getRecord() != null){
-			return String.format("Plugin(name=%s, entity=%s, group=%s)", getName(), getRecord().getName(), getGroup());
-		}else{
-			return String.format("Plugin(name=%s, group=%s)", getName(), getGroup());
+		if (getRecord() != null)
+		{
+			return String.format("Plugin(name=%s, entity=%s, group=%s)",
+					getName(), getRecord().getName(), getGroup());
+		}
+		else
+		{
+			return String.format("Plugin(name=%s, group=%s)", getName(),
+					getGroup());
 		}
 	}
 
@@ -90,15 +130,27 @@ public class Plugin extends UISchema
 	{
 		return this.readonly;
 	}
-	
-	public String getPluginType() {
+
+	public String getPluginType()
+	{
 		return pluginType;
 	}
 
-	public void setPluginType(String pluginType) {
+	public void setPluginType(String pluginType)
+	{
 		this.pluginType = pluginType;
 	}
-	
+
+	public PluginFlavor getPluginMethod()
+	{
+		return pluginMethod;
+	}
+
+	public void setPluginMethod(PluginFlavor pluginMethod)
+	{
+		this.pluginMethod = pluginMethod;
+	}
+
 	/** */
 	private Record record;
 	/** */
@@ -107,6 +159,8 @@ public class Plugin extends UISchema
 	private String pluginType;
 	/** */
 	private boolean readonly;
+	/** */
+	private PluginFlavor pluginMethod = PluginFlavor.FREEMARKER;
 
 	/** */
 	private static final long serialVersionUID = -2642011592737487306L;
