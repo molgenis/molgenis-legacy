@@ -57,7 +57,7 @@ public class FillDatabasePlugin extends PluginModel<Entity>
 		
 		if (action.equals("deleteDB") ){
 			try {
-				new emptyDatabase((app.JDBCDatabase) db, true);
+				new emptyDatabase(db, true);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}	
