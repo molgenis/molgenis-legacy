@@ -13,8 +13,6 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import app.JDBCDatabase;
-
 public class EmptyDbPlugin extends PluginModel<Entity>
 {
 
@@ -44,7 +42,7 @@ public class EmptyDbPlugin extends PluginModel<Entity>
 			String action = request.getString("__action");
 
 			if (action.equals("emptyDatabase")) {
-				new emptyDatabase((JDBCDatabase)db, false);
+				new emptyDatabase(db, false);
 			}
 		}catch(Exception e){
 			logger.error(e);
