@@ -160,11 +160,11 @@ public class ApplyProtocolPlugin extends GenericPlugin
 							if (model.isTimeInfo()) {
 								// If date-time info supplied, get and parse that as well
 								if (request.getString((colNrInTable + 1) + "_" + row + "_" + valueCounter) != null) {
-									String startTimeString = request.getString((colNrInTable + 1) + "_" + row);
+									String startTimeString = request.getString((colNrInTable + 1) + "_" + row + "_" + valueCounter);
 									startTime = formatter.parse(startTimeString);
 								}
 								if (request.getString((colNrInTable + 2) + "_" + row + "_" + valueCounter) != null) {
-									String endTimeString = request.getString((colNrInTable + 2) + "_" + row);
+									String endTimeString = request.getString((colNrInTable + 2) + "_" + row + "_" + valueCounter);
 									endTime = formatter.parse(endTimeString);
 								}
 							}
