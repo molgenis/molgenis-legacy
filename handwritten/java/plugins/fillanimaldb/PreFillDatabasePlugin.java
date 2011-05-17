@@ -14,7 +14,6 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import plugins.emptydb.emptyDatabase;
-import app.JDBCDatabase;
 
 public class PreFillDatabasePlugin extends PluginModel<Entity>
 {
@@ -50,7 +49,7 @@ public class PreFillDatabasePlugin extends PluginModel<Entity>
 			if (action.equals("fillDB") )
 			{
 				// Empty db and run generated sql scripts
-				new emptyDatabase((JDBCDatabase)db, true);
+				new emptyDatabase(db, true);
 				
 				// Populate db with targets, features, values etc. needed to make AnimalDB run
 				FillAnimalDB myFillAnimalDB = new FillAnimalDB(db);

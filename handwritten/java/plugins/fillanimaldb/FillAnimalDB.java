@@ -23,7 +23,7 @@ import commonservice.CommonService;
 
 public class FillAnimalDB {
 
-	private JDBCDatabase db;
+	private Database db;
 	private CommonService ct;
 	
 	public FillAnimalDB() throws Exception {
@@ -33,7 +33,7 @@ public class FillAnimalDB {
 	}
 	
 	public FillAnimalDB(Database db) throws Exception {
-		this.db = (JDBCDatabase) db;
+		this.db = db;
 		ct = CommonService.getInstance();
 		ct.setDatabase(this.db);
 	}
