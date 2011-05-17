@@ -24,8 +24,6 @@ import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
 
-import app.JDBCDatabase;
-
 import commonservice.CommonService;
 
 public class LoadAnimalDB
@@ -36,7 +34,7 @@ public class LoadAnimalDB
 
 	public LoadAnimalDB(Database db, Login login) throws Exception
 	{
-		this.db = (JDBCDatabase) db;
+		this.db = db;
 		this.login = login;
 		ct = CommonService.getInstance();
 		ct.setDatabase(this.db);
