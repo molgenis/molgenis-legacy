@@ -13,6 +13,8 @@ import org.molgenis.organization.Investigation;
 import plugins.emptydb.emptyDatabase;
 import filehandling.generic.MolgenisFileHandler;
 
+import app.JDBCDatabase;
+
 public class DataLoader
 {
 
