@@ -15,7 +15,6 @@ import org.molgenis.model.elements.Model;
 import org.molgenis.model.elements.Plugin;
 import org.molgenis.model.elements.UISchema;
 
-
 import freemarker.template.Template;
 
 public class PluginControllerGen extends Generator
