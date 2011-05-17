@@ -11,13 +11,12 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.organization.Investigation;
 
 import plugins.emptydb.emptyDatabase;
-import app.JDBCDatabase;
 import filehandling.generic.MolgenisFileHandler;
 
 public class DataLoader
 {
 
-	public static ArrayList<String> load(JDBCDatabase db, boolean resetDbWhenApplicable)
+	public static ArrayList<String> load(Database db, boolean resetDbWhenApplicable)
 	{
 		ArrayList<String> result = new ArrayList<String>();
 
@@ -134,7 +133,7 @@ public class DataLoader
 
 	public static void main(String[] args) throws Exception
 	{
-		JDBCDatabase db = new JDBCDatabase("xgap.properties");
+		Database db = new JDBCDatabase("xgap.properties");
 		ArrayList<String> result = DataLoader.load(db, true);
 		for (String s : result)
 		{

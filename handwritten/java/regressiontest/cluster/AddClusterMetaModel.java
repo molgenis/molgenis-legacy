@@ -8,6 +8,7 @@ import org.molgenis.cluster.ParameterName;
 import org.molgenis.cluster.ParameterSet;
 import org.molgenis.cluster.ParameterValue;
 import org.molgenis.data.Data;
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.organization.Investigation;
@@ -19,7 +20,7 @@ public class AddClusterMetaModel
 	
 	public static void main(String[] args) throws Exception
 	{
-		JDBCDatabase db = new JDBCDatabase("xgap.properties");
+		Database db = new JDBCDatabase("xgap.properties");
 		
 		Investigation inv = db.find(Investigation.class, new QueryRule("name", Operator.EQUALS, "ClusterDemo")).get(0);
 		QueryRule investigationId = new QueryRule("investigation", Operator.EQUALS, inv.getId());
@@ -33,7 +34,7 @@ public class AddClusterMetaModel
 
 	}
 
-	public AddClusterMetaModel(Data genoData, Data phenoData, JDBCDatabase db) throws Exception
+	public AddClusterMetaModel(Data genoData, Data phenoData, Database db) throws Exception
 	{
 
 		db.beginTx();

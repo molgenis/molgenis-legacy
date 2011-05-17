@@ -10,11 +10,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.molgenis.core.MolgenisFile;
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 
 import plugins.emptydb.emptyDatabase;
 import regressiontest.cluster.DataLoader;
-import app.JDBCDatabase;
 
 public class resetdatabase_loadexampledata_4EE1D7A3E73C504183B69F7D20108853 extends app.servlet.MolgenisServlet
 {
@@ -29,14 +29,14 @@ public class resetdatabase_loadexampledata_4EE1D7A3E73C504183B69F7D20108853 exte
 
 		boolean databaseIsAvailable = false;
 		boolean resetSuccess = false;
-		JDBCDatabase db = null;
+		Database db = null;
 
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/plain");
 
 		try
 		{
-			db = (JDBCDatabase) this.getDatabase();
+			db = this.getDatabase();
 			databaseIsAvailable = true;
 		}
 		catch (Exception e)
@@ -65,7 +65,7 @@ public class resetdatabase_loadexampledata_4EE1D7A3E73C504183B69F7D20108853 exte
 					// ignore this and continue to load SQL
 				}
 				out.print("Now resetting datamodel/database.\n");
-				new emptyDatabase((JDBCDatabase) db, true);
+				new emptyDatabase(db, true);
 				out.print("Reset datamodel success. Continuing to load example data.\n");
 				resetSuccess = true;
 			}
