@@ -9,7 +9,6 @@ import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 
 import xgap.importexport.DataElementImportByFile;
-import app.JDBCDatabase;
 import decorators.NameConvention;
 
 public class DatabaseDataMatrixWriter
