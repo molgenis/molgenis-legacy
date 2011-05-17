@@ -13,7 +13,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 
 import org.molgenis.core.MolgenisFile;
-import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
@@ -24,7 +23,6 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.HtmlTools;
 import org.molgenis.util.Tuple;
 
-import app.JDBCDatabase;
 import app.servlet.MolgenisServlet;
 import filehandling.generic.MolgenisFileHandler;
 import filehandling.generic.PerformUpload;
@@ -91,7 +89,7 @@ public class MolgenisFileManager extends PluginModel<Entity>
 					throw new FileNotFoundException("No file selected");
 				}
 				
-				PerformUpload.doUpload((JDBCDatabase) db, this.model.getMolgenisFile(), file);
+				PerformUpload.doUpload(db, this.model.getMolgenisFile(), file);
 				this.setMessages(new ScreenMessage("File uploaded", true));
 			}
 
