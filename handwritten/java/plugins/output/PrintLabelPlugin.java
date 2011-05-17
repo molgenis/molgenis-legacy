@@ -122,7 +122,7 @@ public class PrintLabelPlugin extends GenericPlugin
         	List<ObservedValue> valueList = cs.getObservedValuesByTargetAndFeatures(ind.getId(), measurementList,
         			investigationId);
         	for (ObservedValue value : valueList) {
-        		String featName = cs.getMeasurementById(value.getFeature()).getName();
+        		String featName = cs.getMeasurementById(value.getFeature_Id()).getName();
         		String actualValue;
         		if (value.getValue() != null) {
         			actualValue = value.getValue();
