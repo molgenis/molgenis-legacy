@@ -8,6 +8,7 @@ import org.molgenis.core.OntologyTerm;
 import org.molgenis.data.Data;
 import org.molgenis.data.DecimalDataElement;
 import org.molgenis.data.TextDataElement;
+import org.molgenis.framework.db.Database;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Panel;
@@ -20,11 +21,10 @@ import org.molgenis.xgap.Metabolite;
 import plugins.archiveexportimport.ArchiveExportImportPlugin;
 import plugins.archiveexportimport.XgapCsvImport;
 import plugins.archiveexportimport.XgapExcelImport;
-import app.JDBCDatabase;
 
 public class DB
 {
-	static public boolean removeData(JDBCDatabase db) throws Exception
+	static public boolean removeData(Database db) throws Exception
 	{
 	
 		List<MolgenisFile> mfList = db.find(MolgenisFile.class);
@@ -50,7 +50,7 @@ public class DB
 		return true;
 	}
 	
-	public boolean importExampleData(JDBCDatabase db) throws Exception{
+	public boolean importExampleData(Database db) throws Exception{
 		File tarFu = new File(this.getClass().getResource("../../csv/tar/gcc_xqtl.tar.gz").getFile());
 		File extractDir = TarGz.tarExtract(tarFu);
 		

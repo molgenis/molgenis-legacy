@@ -17,12 +17,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.molgenis.core.MolgenisFile;
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
-import app.JDBCDatabase;
 import filehandling.generic.MolgenisFileHandler;
 
 public class downloadfile extends app.servlet.MolgenisServlet {
@@ -36,7 +36,7 @@ public class downloadfile extends app.servlet.MolgenisServlet {
 		boolean databaseIsAvailable = false;
 		boolean paramsPresent = false;
 		boolean fileFound = false;
-		JDBCDatabase db = null;
+		Database db = null;
 		File file = null;
 		MolgenisFile mf = null;
 //		String type = null;
@@ -44,7 +44,7 @@ public class downloadfile extends app.servlet.MolgenisServlet {
 		String name = null;
 
 		try {
-			db = (JDBCDatabase) this.getDatabase();
+			db = this.getDatabase();
 			databaseIsAvailable = true;
 		} catch (Exception e) {
 			PrintWriter out = response.getWriter();
@@ -147,7 +147,7 @@ public class downloadfile extends app.servlet.MolgenisServlet {
 		}
 	}
 
-	public void displayUsage(PrintWriter out, JDBCDatabase db) {
+	public void displayUsage(PrintWriter out, Database db) {
 		String usage = "To download file content, please specify 'name' (ie. downloadfile?name=myresultfile\n\n";
 		out.print(usage);
 	}

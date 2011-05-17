@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.molgenis.cluster.Job;
 import org.molgenis.cluster.Subjob;
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.util.HttpServletRequestTuple;
@@ -19,8 +20,6 @@ import org.molgenis.util.Tuple;
 import plugins.cluster.helper.Command;
 import plugins.cluster.implementations.LocalComputationResource;
 import plugins.cluster.interfaces.ComputationResource;
-import app.JDBCDatabase;
-import filehandling.generic.MolgenisFileHandler;
 
 /**
  * TaskReporter servlet receives status updates from subjobs and reports them to
@@ -55,7 +54,7 @@ public class taskreporter extends app.servlet.MolgenisServlet
 
 			String statusText = req.getString("statustext"); // text
 
-			JDBCDatabase db = (JDBCDatabase) this.getDatabase();
+			Database db = this.getDatabase();
 
 			QueryRule jobQuery0 = new QueryRule("id", Operator.EQUALS, jobID);
 			QueryRule subjobQuery0 = new QueryRule("job", Operator.EQUALS, jobID);

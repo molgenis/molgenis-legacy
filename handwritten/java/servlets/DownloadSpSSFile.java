@@ -17,12 +17,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
-
-import app.JDBCDatabase;
 	
 
 public class DownloadSpSSFile extends app.servlet.MolgenisServlet
@@ -113,7 +112,7 @@ public class DownloadSpSSFile extends app.servlet.MolgenisServlet
 
     }
 	
-	public String displayUsage(JDBCDatabase db)
+	public String displayUsage(Database db)
 	{
 		String usage = "Usage:" + "\n\n" + "SPSS file download:\n"
 				+ "http://localhost:8080/gcc/downloadspssfile?id=58342&download=all&stream=true" + "\n\n"

@@ -15,12 +15,11 @@ import matrix.general.DataMatrixHandler;
 
 import org.apache.log4j.Logger;
 import org.molgenis.data.Data;
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
-
-import app.JDBCDatabase;
 
 /**
  * Serves static files such as images, css files and javascript from classpath.
@@ -44,13 +43,13 @@ public class downloadmatrixascsv extends app.servlet.MolgenisServlet
 		response.setStatus(HttpServletResponse.SC_OK);
 		
 		boolean databaseIsAvailable = false;
-		JDBCDatabase db = null;
+		Database db = null;
 		
 		String content = "";
 
 		try
 		{
-			db = (JDBCDatabase) this.getDatabase();
+			db = this.getDatabase();
 			databaseIsAvailable = true;
 		}
 		catch (Exception e)
@@ -123,7 +122,7 @@ public class downloadmatrixascsv extends app.servlet.MolgenisServlet
 		p.close();
 	}
 
-	public String displayUsage(JDBCDatabase db)
+	public String displayUsage(Database db)
 	{
 		String usage = "Usage:" + "\n\n" + "Full matrix, streamed output:\n"
 				+ "http://localhost:8080/xgap/downloadmatrixascsv?id=58342&download=all&stream=true" + "\n\n"
@@ -137,7 +136,7 @@ public class downloadmatrixascsv extends app.servlet.MolgenisServlet
 		return usage;
 	}
 
-	public String matricesFromDb(JDBCDatabase db)
+	public String matricesFromDb(Database db)
 	{
 		String res = "";
 		try

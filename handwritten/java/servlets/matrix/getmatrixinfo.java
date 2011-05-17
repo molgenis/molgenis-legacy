@@ -12,12 +12,11 @@ import matrix.AbstractDataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
 import org.molgenis.data.Data;
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
-
-import app.JDBCDatabase;
 
 public class getmatrixinfo extends app.servlet.MolgenisServlet {
 
@@ -33,11 +32,11 @@ public class getmatrixinfo extends app.servlet.MolgenisServlet {
 
 		boolean databaseIsAvailable = false;
 		boolean setupSuccess = false;
-		JDBCDatabase db = null;
+		Database db = null;
 		AbstractDataMatrixInstance<Object> instance = null;
 		
 		try {
-			db = (JDBCDatabase) this.getDatabase();
+			db = this.getDatabase();
 			databaseIsAvailable = true;
 		} catch (Exception e) {
 			PrintWriter out = response.getWriter();
@@ -95,13 +94,13 @@ public class getmatrixinfo extends app.servlet.MolgenisServlet {
 		}
 	}
 
-	public void displayUsage(PrintWriter out, JDBCDatabase db) {
+	public void displayUsage(PrintWriter out, Database db) {
 		String usage = "Downloadable  matrices available in this database:\n\n"
 				+ matricesFromDb(db) + "\n";
 		out.print(usage);
 	}
 
-	public String matricesFromDb(JDBCDatabase db) {
+	public String matricesFromDb(Database db) {
 		String res = "";
 		try {
 			List<Data> dataList = db.find(Data.class);

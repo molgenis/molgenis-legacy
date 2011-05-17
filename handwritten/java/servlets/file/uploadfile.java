@@ -9,10 +9,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.molgenis.framework.db.Database;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
-import app.JDBCDatabase;
 import filehandling.generic.PerformUpload;
 
 public class uploadfile extends app.servlet.MolgenisServlet
@@ -33,7 +33,7 @@ public class uploadfile extends app.servlet.MolgenisServlet
 
 		try
 		{
-			JDBCDatabase db = (JDBCDatabase) getDatabase();
+			Database db = getDatabase();
 			Tuple req = new HttpServletRequestTuple(request);
 
 			String fileName = req.getString("name"); // the 'real' file name

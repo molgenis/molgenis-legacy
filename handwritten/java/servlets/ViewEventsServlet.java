@@ -47,7 +47,7 @@ public class ViewEventsServlet extends app.servlet.MolgenisServlet {
 					int rowCount = 0;
 					for (ObservedValue currentValue : valList) {
 						// Get the corresponding event (type):
-						int eventId = currentValue.getProtocolApplication();
+						int eventId = currentValue.getProtocolApplication_Id();
 						ProtocolApplication currentEvent = ct.getProtocolApplicationById(eventId);
 						if (rowCount % 2 == 0) {
 							out.print("<tr class='form_listrow0'>");

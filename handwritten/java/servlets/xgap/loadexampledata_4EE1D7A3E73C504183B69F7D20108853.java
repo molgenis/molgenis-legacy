@@ -8,8 +8,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.molgenis.framework.db.Database;
+
 import regressiontest.cluster.DataLoader;
-import app.JDBCDatabase;
 
 public class loadexampledata_4EE1D7A3E73C504183B69F7D20108853 extends app.servlet.MolgenisServlet
 {
@@ -24,14 +25,14 @@ public class loadexampledata_4EE1D7A3E73C504183B69F7D20108853 extends app.servle
 
 		boolean databaseIsAvailable = false;
 		//boolean resetSuccess = false;
-		JDBCDatabase db = null;
+		Database db = null;
 
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/plain");
 
 		try
 		{
-			db = (JDBCDatabase) this.getDatabase();
+			db = this.getDatabase();
 			databaseIsAvailable = true;
 		}
 		catch (Exception e)
