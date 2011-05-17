@@ -58,7 +58,7 @@ public class MeasurementDecorator<E extends Measurement> extends MappingDecorato
 			
 			try {
 				// Auto-generated protocols will be linked to the always present System investigation
-				etId = ct.makeProtocol(e.getInvestigation(), protocolName);
+				etId = ct.makeProtocol(e.getInvestigation_Id(), protocolName);
 			} catch (Exception e2) {
 				return false;
 			}
