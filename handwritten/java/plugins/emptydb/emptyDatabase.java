@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.util.cmdline.CmdLineException;
 
@@ -24,7 +25,7 @@ public class emptyDatabase {
 	 * @param insertMetadata Run generated insert_metadata.sql or not
 	 * @throws Exception
 	 */
-	public emptyDatabase(JDBCDatabase db, boolean insertMetadata) throws Exception {
+	public emptyDatabase(Database db, boolean insertMetadata) throws Exception {
 		System.out.println("start running create_tables.sql");
 		empty(db, "../../create_tables.sql");
 		System.out.println("done running create_tables.sql");
@@ -36,11 +37,11 @@ public class emptyDatabase {
 	}
 
 
-	private void empty(JDBCDatabase db, String sqlScriptName) throws SQLException, DatabaseException, FileNotFoundException, IOException, CmdLineException {
+	private void empty(Database db, String sqlScriptName) throws SQLException, DatabaseException, FileNotFoundException, IOException, CmdLineException {
 		Connection conn = null;
 		try {
 			InputStream fis = this.getClass().getResourceAsStream(sqlScriptName);
-			conn = db.getConnection();
+			conn = ((JDBCDatabase) db).getConnection();
 			String create_tables_sql = "";
 			try {
 				BufferedReader in = new BufferedReader(new InputStreamReader(fis));
