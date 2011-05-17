@@ -7,11 +7,10 @@ import matrix.AbstractDataMatrixInstance;
 import matrix.AbstractDataMatrixQueries;
 
 import org.molgenis.core.Nameable;
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-
-import app.JDBCDatabase;
 
 public class AdvancedMemoryMatrix<E> extends MemoryMatrix<E>
 {
@@ -21,7 +20,7 @@ public class AdvancedMemoryMatrix<E> extends MemoryMatrix<E>
 	}
 	
 	
-	public Matrix<E> getSubMatrixFilterByRowEntityValues(JDBCDatabase db, QueryRule... rules) throws Exception
+	public Matrix<E> getSubMatrixFilterByRowEntityValues(Database db, QueryRule... rules) throws Exception
 	{
 		List<String> colNames = this.getColNames();
 		// 1. query on row type entities
@@ -41,7 +40,7 @@ public class AdvancedMemoryMatrix<E> extends MemoryMatrix<E>
 		return res;
 	}
 
-	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByColEntityValues(JDBCDatabase db, QueryRule... rules) throws Exception
+	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByColEntityValues(Database db, QueryRule... rules) throws Exception
 	{
 		//TODO: similar to getSubMatrixFilterByRowEntityValues()
 		return null;
