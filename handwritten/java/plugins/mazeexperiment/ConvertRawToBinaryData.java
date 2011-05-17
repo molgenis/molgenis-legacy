@@ -19,13 +19,11 @@ import org.molgenis.maze.BinaryChannelData;
 import org.molgenis.maze.ChannelMapping;
 import org.molgenis.maze.MazeData;
 
-import app.JDBCDatabase;
-
 import commonservice.CommonService;
 
 public class ConvertRawToBinaryData {
 
-	private JDBCDatabase db;
+	private Database db;
 	private CommonService ct;
 	private List<MazeData> Mdlist;					// the resulting list containing the selected raw data
 	//private BinaryChannelData[] AllPreviousSwitchEvents	= new BinaryChannelData[500];	// a list of switchevents to be aggregated within a second (arraysize depends on th # of channels present, for now fix on 500)
@@ -39,7 +37,7 @@ public class ConvertRawToBinaryData {
 	private String statusmessage;
 
 	public ConvertRawToBinaryData(Database db) throws Exception {
-		this.db = (JDBCDatabase) db;
+		this.db = db;
 		ct = CommonService.getInstance();
 		ct.setDatabase(this.db);
 	}
