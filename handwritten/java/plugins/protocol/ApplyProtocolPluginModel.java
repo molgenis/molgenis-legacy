@@ -60,7 +60,7 @@ public class ApplyProtocolPluginModel {
 			
 			String observationTargetType = "ObservationTarget";
 			if (m.getTargettypeAllowedForRelation() != null) {
-				int entityId = m.getTargettypeAllowedForRelation();
+				int entityId = m.getTargettypeAllowedForRelation_Id();
 				observationTargetType = cs.getEntityName(entityId);
 			}
 			typeMap.put(m, observationTargetType);
