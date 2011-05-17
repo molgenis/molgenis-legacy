@@ -105,6 +105,7 @@ digraph G {
                 arrowhead = "empty"
                 color = "#808080"
         ]
+ <#-- we don't render interface relationships as that seems to be confusing        
 <#list entities as entity>
     <#if entity.hasImplements()>
     	<#list entity.implements as interface><#if entities?seq_contains(interface) && (!interface.system || rendersystem)>
@@ -112,12 +113,14 @@ digraph G {
     	</#if></#list>
     </#if>
 </#list>
+-->
 
 /*inheritance relationships*/
         edge [
                 arrowhead = "empty"
                 color = "black"
         ]
+        
 <#list entities as entity>
 	<#if entities?seq_contains(entity) && entity.hasAncestor() && (!entity.ancestor.system || rendersystem)>  
         "${JavaName(entity)}" -> "${JavaName(entity.ancestor)}"
@@ -129,8 +132,9 @@ digraph G {
                 arrowhead = "open"
                 arrowsize = 0.6
         ]
+ <#-- we don't render interface relationships as that seems to be confusing-->       
 <#list entities as entity>
-	<#if !entity.system || rendersystem>
+	<#if !entity.abstract && (!entity.system || rendersystem)>
 		<#list entity.implementedFields as f>
 			<#if f.type=="xref" && (!f.xrefEntity.system || rendersystem)>
 		"${JavaName(entity)}" -> "${JavaName(f.xrefEntity)}" [
@@ -152,9 +156,10 @@ digraph G {
              arrowsize = 0.6
         ]
 <#-- to check for duplicates -->
+<#-- we don't render interface relationships as that seems to be confusing-->
 <#assign mref_names = []>
 <#list entities as entity>
-	<#if !entity.system || rendersystem>
+	<#if !entity.abstract && (!entity.system || rendersystem)>
 		<#list entity.implementedFields as f >
 			<#if f.type=="mref" && (!f.xrefEntity.system || rendersystem)>	
 		"${JavaName(entity)}" -> "${JavaName(f.xrefEntity)}"[
