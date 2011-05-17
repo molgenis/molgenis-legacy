@@ -139,10 +139,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 
 				// reset the filters...
 				pager.resetFilters();
-				for (QueryRule r : model.getUserRules())
-				{
-					pager.addFilter(r);
-				}
+				this.rewriteAllRules(db, model.getUserRules());
 				for (QueryRule r : model.getSystemRules())
 				{
 					pager.addFilter(r);
@@ -300,7 +297,9 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		FormModel<E> model = getModel();
 		
 		Operator operator = QueryRule.Operator.valueOf(request.getString("__filter_operator"));
+		System.out.println(">>>>>>>>>>>>Operator" + operator);
 		String value = request.getString("__filter_value");
+		System.out.println(">>>>>>>>>>>>value" + value);
 		// automatically add LIKE delimiters %
 		if (operator.equals(Operator.LIKE) && !value.contains("%"))
 		{
@@ -308,37 +307,60 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		}
 		
 		
-		if (request.getString("__filter_attribute").equals("all"))  {
-			String entityName = request.getString("__target");
-			// 1 - get the possible fields for the entity that were looking at
-			org.molgenis.model.elements.Entity eType = db.getMetaData().getEntity(entityName);
-			QueryRule rule = new QueryRule(Operator.OR);
-			
-		     //  2  - iterate fields and build the queryrules - if field != "__Type"
-					for (Field field : eType.getFields()) {
-						System.out.println("*** FIELD NAME : " + field.getName().toLowerCase());
-						if (!field.getName().equals("__Type") ) {
-							QueryRule fieldRule = new QueryRule(field.getName().toLowerCase(), operator, value);
-							System.out.println("*** QUERYRULE : " + fieldRule.toString());
-							model.getUserRules().add(fieldRule);
-							model.getUserRules().add(rule);
-						}
-					}
-		}else if (request.getString("__filter_attribute").equals("searchIndex"))  {
-			//TODO:   plugins.LuceneIndex.DBIndexPlugin.searchIndex()
-		}
-		else{
+//		if (request.getString("__filter_attribute").equals("all"))  {
+//			String entityLabel = request.getString("__target");
+//			String controllerClassName = entityLabel + "FormController";
+//			//System.out.println(">>>>>>>getMetaData().getClass" + db.getMetaData());
+//			Class<? extends Entity> entityClass =  this.getEntityClass();
+//		
+//			
+//			//System.out.println(">>>>>>>getMetaData().getClass" + entityClass.getSuperclass().toString());
+//			
+//			//entityClass.getClassLoader();
+//
+//			//entityClass.getSuperclass(); 						
+//			//entityClass.getSuperclass().getTypeParameters();
+//			//System.out.println(">>>>>>> getSimpleName " + entityClass.getSuperclass().getSimpleName());
+//			
+//			// 1 - get the possible fields for the entity that were looking at
+//			System.out.println(">>>>>>>entityLabel" + entityLabel);
+//			System.out.println(">>>>>>>entityControllerClassName"+ 	entityClass.getSuperclass().getTypeParameters().toString());
+//			//org.molgenis.model.elements.Entity eType = db.getMetaData().getEntity(entityName);
+//			org.molgenis.model.elements.Entity eType = db.getMetaData().getEntity(entityClass.getSimpleName());  //TODO 
+//
+//			QueryRule orRule = new QueryRule(Operator.OR);
+//			boolean first = true;
+//			
+//		     //  2  - iterate fields and build the queryrules - if field != "__Type"
+//					for (Field field : eType.getFields()) {
+//						System.out.println("*** FIELD NAME : " + field.getName().toLowerCase());
+//						if (!field.getName().equals("__Type") ) {
+//
+//							//getsSearchField will map the field to field_name in case of xref/mref
+//							QueryRule fieldRule = new QueryRule(field.getName(), operator, value);
+//							System.out.println("*** QUERYRULE : " + fieldRule.toString());
+//							//add 'or' except for first filter rule
+//							if(first)
+//								first = false;
+//							else
+//								model.getUserRules().add(orRule);
+//							model.getUserRules().add(fieldRule);
+//						}
+//					}
+//		}else if (request.getString("__filter_attribute").equals("searchIndex"))  {
+//			//TODO:   plugins.LuceneIndex.DBIndexPlugin.searchIndex()
+//		}
+//		else{
 			System.out.println("*** ELSE : ");
 			QueryRule rule = new QueryRule(request.getString("__filter_attribute"), operator, value);
+			System.out.println(">>>>>>>>>>>>rule" + rule);
 			model.getUserRules().add(rule);
-		}
+//		}
 
 		// reload the filters...
 		pager.resetFilters();
-		for (QueryRule r : model.getUserRules())
-		{
-			pager.addFilter(r);
-		}
+		this.rewriteAllRules(db, model.getUserRules());
+		
 		for (QueryRule r : model.getSystemRules())
 		{
 			pager.addFilter(r);
@@ -346,6 +368,52 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		pager.first(db);
 	}
 
+	/** the 'all' field needs special treatment 
+	 * @throws DatabaseException 
+	 * @throws MolgenisModelException */
+	private void rewriteAllRules(Database db, List<QueryRule> rulesToRewrite) throws DatabaseException, MolgenisModelException
+	{
+		for (QueryRule r : rulesToRewrite)
+		{
+			if (r.getField().equals("all"))  
+			{
+				List<QueryRule> all = new ArrayList<QueryRule>();
+				
+				Class<? extends Entity> entityClass =  this.getEntityClass();
+		
+				org.molgenis.model.elements.Entity eType = db.getMetaData().getEntity(entityClass.getSimpleName());  //TODO 
+
+				QueryRule orRule = new QueryRule(Operator.OR);
+				boolean first = true;
+				
+			     //  2  - iterate fields and build the queryrules - if field != "__Type"
+						for (Field field : eType.getFields()) {
+							System.out.println("*** FIELD NAME : " + field.getName().toLowerCase());
+							if (!field.getName().equals("__Type") ) {
+
+								//getsSearchField will map the field to field_name in case of xref/mref
+								QueryRule fieldRule = new QueryRule(this.getSearchField(field.getName()), r.getOperator(), r.getValue());
+//								if(field.getType().getClass().getSimpleName().equals("XrefField") || field.getType().getClass().getSimpleName().equals("MrefField")  )
+//								{
+//									 fieldRule = new QueryRule(field.getName(), r.getOperator(), r.getValue());
+//								}
+								System.out.println("*** QUERYRULE : " + fieldRule.toString());
+								//add 'or' except for first filter rule
+								if(first)
+									first = false;
+								else
+									all.add(orRule);
+								all.add(fieldRule);
+							}
+						}
+						
+						pager.addFilter(new QueryRule(all));
+			} else {	
+				pager.addFilter(r);
+			}
+		}
+	}
+	
 	// overrides
 	@Override
 	public void reload(Database db)
@@ -376,10 +444,11 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 
 				model.setSystemRules(newSystemRules);
 
-				for (QueryRule rule : model.getUserRules())
-				{
-					pager.addFilter(rule);
-				}
+				this.rewriteAllRules(db, model.getUserRules());
+//				for (QueryRule rule : model.getUserRules())
+//				{
+//					pager.addFilter(rule);
+//				}
 			}
 
 			// check view and set limit accordingly

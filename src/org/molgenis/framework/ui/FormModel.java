@@ -267,9 +267,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 				.getController()));
 
 		// File: Add batch
-		super
-				.addCommand(new AddBatchCommand("upload_csv", this
-						.getController()));
+		super.addCommand(new AddBatchCommand("upload_csv", this.getController()));
 
 		// EDIT MENU
 		// EDIT: Add new record
@@ -337,7 +335,8 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	{
 		try
 		{
-			// 'this' is always org.molgenis.framework.ui.FormModel, so how do we get the actual FormController here??
+			// 'this' is always org.molgenis.framework.ui.FormModel, so how do
+			// we get the actual FormController here??
 			return this.getSecurity().canRead(this.getController());
 		}
 		catch (DatabaseException e)
@@ -429,8 +428,8 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 			// set defaults for xrefs
 			for (ParentFilter pf : this.getParentFilters())
 			{
-				FormModel<?> parent = (FormModel<?>) this.getController().get(
-						pf.getParentForm()).getModel();
+				FormModel<?> parent = (FormModel<?>) this.getController()
+						.get(pf.getParentForm()).getModel();
 				List<?> records = parent.getRecords();
 				if (records.size() > 0)
 				{
@@ -542,9 +541,21 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		{
 			String field = rule.getField();
 			String label = "";
-			if (field != null) label = nameLabelMap.get(field);
+			if (field != null)
+			{
+				if (field.equals("all"))
+				{
+					label = "All Fields";
+				}
+				else
+				{
+					label = nameLabelMap.get(field);
+				}
+			}
+
 			filters.add(label + " " + rule.getOperator().toString() + " "
 					+ rule.getValue());
+
 		}
 
 		return filters;
@@ -716,8 +727,8 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 
 			for (ParentFilter pf : this.getParentFilters())
 			{
-				FormModel<?> parent = (FormModel<?>) this.getController().get(
-						pf.getParentForm()).getModel();
+				FormModel<?> parent = (FormModel<?>) this.getController()
+						.get(pf.getParentForm()).getModel();
 				List<?> records = parent.getRecords();
 
 				// add filters for xref or mref relationships (if any)
@@ -736,10 +747,10 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 						{
 							for (int i = 0; i < values.size(); i++)
 							{
-								QueryRule rule = new QueryRule(pf
-										.getXrefToParent(),
-										QueryRule.Operator.EQUALS, values
-												.get(i));
+								QueryRule rule = new QueryRule(
+										pf.getXrefToParent(),
+										QueryRule.Operator.EQUALS,
+										values.get(i));
 								if (xref_filters.size() > 0) xref_filters
 										.add(new QueryRule(Operator.OR));
 								xref_filters.add(rule);
