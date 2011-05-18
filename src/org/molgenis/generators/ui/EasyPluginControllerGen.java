@@ -79,7 +79,8 @@ public class EasyPluginControllerGen extends Generator
 					templateArgs.put("clazzName", shortKlazzName);					
 					templateArgs.put("macroName", fullKlazzName.replace(".", "_"));	
 					templateArgs.put("templatePath", targetFtl.toString().replace("\\", "/"));
-					templateArgs.put("package", packageName);					
+					templateArgs.put("package", packageName);	
+					templateArgs.put("flavor", plugin.getFlavor().toString().toLowerCase());
 
 					OutputStream targetOut = new FileOutputStream(targetFile);
 					template.process(templateArgs, new OutputStreamWriter(targetOut));

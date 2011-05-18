@@ -43,7 +43,7 @@ import org.molgenis.model.elements.Tree;
 import org.molgenis.model.elements.UISchema;
 import org.molgenis.model.elements.View;
 import org.molgenis.model.elements.Form.SortOrder;
-import org.molgenis.model.elements.Plugin.PluginFlavor;
+import org.molgenis.model.elements.Plugin.Flavor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -1144,7 +1144,7 @@ public class MolgenisModelParser {
                 String method = element.getAttribute("flavor");
                 if(!"".equals(method))
                 {
-                	plugin.setPluginMethod(PluginFlavor.getPluginMethod(method));
+                	plugin.setPluginMethod(Flavor.getPluginMethod(method));
                 }
 
                 // READONLY

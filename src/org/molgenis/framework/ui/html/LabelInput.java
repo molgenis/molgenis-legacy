@@ -5,9 +5,16 @@ package org.molgenis.framework.ui.html;
  */
 public class LabelInput extends HtmlInput
 {
+	//very confusing, would like to set label without id here
+	@Deprecated
 	public LabelInput(String name)
 	{
 		super(name,null);
+	}
+	
+	public LabelInput(String name, String value)
+	{
+		super(name,value);
 	}
 
 	@Override

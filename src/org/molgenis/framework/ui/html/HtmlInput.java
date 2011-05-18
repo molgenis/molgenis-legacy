@@ -6,7 +6,7 @@ import org.molgenis.framework.ui.ScreenView;
 /**
  * HtmlInput is the base-class for all the 'toHtml' input classes.
  */
-public abstract class HtmlInput implements Input
+public abstract class HtmlInput implements Input, HtmlRenderer
 {
 	/** Constant indicating use of JQUERY */
 	public static boolean INJECT_JQUERY = true;
@@ -300,6 +300,7 @@ public abstract class HtmlInput implements Input
 		tabIndex = " tabindex=" + Integer.toString(tabidx);
 	}
 	
+	@Override
 	public String render()
 	{
 		return this.toHtml();

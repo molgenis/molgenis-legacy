@@ -2,6 +2,7 @@ package org.molgenis.framework.ui;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -16,34 +17,44 @@ import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
 
 /**
- * FreemarkerView uses a Freemarker template to render the user interface. The Freemarker template will get as parameters:
+ * FreemarkerView uses a Freemarker template to render the user interface. The
+ * Freemarker template will get as parameters:
  * <ol>
- * <li>application - result of model.getController().getApplicationController().getModel()
+ * <li>application - result of
+ * model.getController().getApplicationController().getModel()
  * <li>model - result of getModel()
  * <li>screen - deprecated, synonym of model
  * <li>viewhelper - all kinds of helper methods
  * <li>show - parameter influencing whole app or only one screen rendering
  * </ol>
+ * 
  * @see http://www.freemarker.org
  */
-public class FreemarkerView extends SimpleScreenView
+public class FreemarkerView extends SimpleScreenView<ScreenModel>
 {
-	
+
 	// wrapper of this template
 	private freemarker.template.Configuration cfg = null;
-	private String templatePath; 
+	private String templatePath;
 	private transient Logger logger = Logger.getLogger(this.getClass());
-	private ScreenModel model;
-	
+	private boolean usePublicFields = true;
+	private Map<String,Object> arguments = new LinkedHashMap<String,Object>();
+
 	public FreemarkerView(String templatePath, ScreenModel model)
 	{
+		this(templatePath, model, true);
+	}
+
+	public FreemarkerView(String templatePath, ScreenModel model,
+			boolean usePublicFields)
+	{
+		super(model);
 		this.templatePath = templatePath;
-		this.model = model;
+		this.usePublicFields = usePublicFields;
 	}
 	
 	@SuppressWarnings("deprecation")
-	@Override
-	public String render()
+	public String render(String templatePath, Map<String,Object> templateArgs, boolean usePublicFields)
 	{
 		logger.debug("trying to render " + templatePath);
 		try
@@ -58,11 +69,14 @@ public class FreemarkerView extends SimpleScreenView
 				// set the template loading paths
 				cfg.setObjectWrapper(new DefaultObjectWrapper());
 
-//				BeansWrapper wrapper = new BeansWrapper();
-//				//ouch, don't do this
-//				wrapper.setExposeFields(true);
-//				wrapper.setExposureLevel(BeansWrapper.EXPOSE_PROPERTIES_ONLY);
-//				cfg.setObjectWrapper(wrapper);
+				if (this.usePublicFields)
+				{
+					BeansWrapper wrapper = new BeansWrapper();
+					// ouch, don't do this
+					wrapper.setExposeFields(true);
+					wrapper.setExposureLevel(BeansWrapper.EXPOSE_SAFE);
+					cfg.setObjectWrapper(wrapper);
+				}
 
 				cfg
 						.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
@@ -74,7 +88,8 @@ public class FreemarkerView extends SimpleScreenView
 				// load templates from plugins, can be anywere
 				// (nb this method is deprecated but I can't see why)
 				ClassTemplateLoader root = new ClassTemplateLoader();
-				ClassTemplateLoader plugins = new ClassTemplateLoader(model.getClass());
+				ClassTemplateLoader plugins = new ClassTemplateLoader(model
+						.getClass());
 
 				// ClassTemplateLoader loader1 = new ClassTemplateLoader(
 				// Object.class, "");
@@ -86,14 +101,6 @@ public class FreemarkerView extends SimpleScreenView
 				cfg.setTemplateLoader(mLoader);
 				logger.debug("created freemarker config");
 			}
-
-			// create template parameters
-			Map<String, Object> templateArgs = new TreeMap<String, Object>();
-			templateArgs.put("application", model.getController().getApplicationController().getModel());
-			templateArgs.put("screen", model);
-			templateArgs.put("model", model);
-			templateArgs.put("widgetfactory", new ScreenViewHelper());
-			templateArgs.put("show", model.getController().getApplicationController().getModel().getShow());
 
 			// merge template
 			cfg.addAutoInclude("ScreenViewHelper.ftl");
@@ -118,12 +125,53 @@ public class FreemarkerView extends SimpleScreenView
 
 			return sw.toString().replace("\n", "<br/>");
 
-		}
+		}		
+	}
+
+	@Override
+	public String render()
+	{
+		// create template parameters
+		Map<String, Object> templateArgs = new LinkedHashMap<String,Object>(this.arguments);
+		templateArgs.put("application", model.getController()
+				.getApplicationController().getModel());
+		templateArgs.put("screen", model);
+		templateArgs.put("model", model);
+		templateArgs.put("widgetfactory", new ScreenViewHelper());
+		templateArgs.put("show", model.getController()
+				.getApplicationController().getModel().getShow());
+		
+		return this.render(templatePath, templateArgs, usePublicFields);
 	}
 
 	@Override
 	public String getCustomHtmlHeaders()
 	{
 		return model.getController().getCustomHtmlHeaders();
+	}
+
+	public String getTemplatePath()
+	{
+		return templatePath;
+	}
+
+	public void setTemplatePath(String templatePath)
+	{
+		this.templatePath = templatePath;
+	}
+
+	public boolean isUsePublicFields()
+	{
+		return usePublicFields;
+	}
+
+	public void setUsePublicFields(boolean usePublicFields)
+	{
+		this.usePublicFields = usePublicFields;
+	}
+	
+	public void addParameter(String name, Object value)
+	{
+		this.arguments.put(name,value);
 	}
 }
