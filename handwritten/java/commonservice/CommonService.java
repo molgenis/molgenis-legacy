@@ -45,9 +45,6 @@ import org.molgenis.protocol.Workflow;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.protocol.WorkflowElement_PreviousSteps;
 import org.molgenis.protocol.WorkflowElement_Workflow;
-import org.molgenis.util.Tuple;
-
-import app.JDBCDatabase;
 
 import com.ibm.icu.util.Calendar;
 
@@ -115,7 +112,7 @@ public class CommonService
 			return -1;
 		}
 		if (featList.size() > 0) {
-			return featList.get(0).getFeatureId();
+			return featList.get(0).getFeatureId_Id();
 		} else {
 			return -1;
 		}
@@ -632,7 +629,7 @@ public class CommonService
 		valueQuery.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
 		List<ObservedValue> valueList = valueQuery.find();
 		for (ObservedValue value : valueList) {
-			panelIdList.add(value.getTarget());
+			panelIdList.add(value.getTarget_Id());
 		}
 
 		return getObservationTargets(panelIdList);
@@ -1604,24 +1601,33 @@ public class CommonService
 	 * @return string containing the sample type (i.e. "dna" or "rna")
 	 * @throws DatabaseException
 	 *             database error occured
+	 * @throws ParseException 
 	 */
 	public String getSampleTypeByProject(String projectName)
-			throws DatabaseException
+			throws DatabaseException, ParseException
 	{
-
 		String answer = "";
-		List<Tuple> tuples;
 
-		tuples = ((JDBCDatabase) db)
-				.sql("Select s.sampletype from NgsSample s, Project p where p.name = '"
-						+ projectName + "' AND s.project = p.id;");
-
-		if (!tuples.isEmpty())
-		{
-			answer = tuples.get(0).getString("sampletype");
-		}
+		List<NgsSample> samples = db.query(NgsSample.class).equals(NgsSample.PROJECT_NAME, projectName).find();
+		
+		if (!samples.isEmpty())
+			answer = samples.get(0).getSampletype();
 		else
-		    logger.error("A database inconsistency occured while trying to retrieve sampletype for a project");
+			logger.error("A database inconsistency occured while trying to retrieve sampletype for a project");
+
+//		String answer = "";
+//		List<Tuple> tuples;
+//
+//		tuples = ((JDBCDatabase) db)
+//				.sql("Select s.sampletype from NgsSample s, Project p where p.name = '"
+//						+ projectName + "' AND s.project = p.id;");
+//
+//		if (!tuples.isEmpty())
+//		{
+//			answer = tuples.get(0).getString("sampletype");
+//		}
+//		else
+//		    logger.error("A database inconsistency occured while trying to retrieve sampletype for a project");
 
 		return answer;
 	}
