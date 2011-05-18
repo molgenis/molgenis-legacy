@@ -17,6 +17,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -43,6 +44,7 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 	public InvestigationOverviewPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
+		((FreemarkerView)this.getView()).setUsePublicFields(false);
 	}
 
 	@Override
