@@ -8,30 +8,23 @@
 package org.molgenis.mutation.ui.header;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.news.ui.NewsModel;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class Col7a1Header extends PluginModel<Entity>
+public class Col7a1Header extends EasyPluginController<Col7a1HeaderModel>
 {
 	private static final long serialVersionUID = 5933871906981851063L;
 
 	public Col7a1Header(String name, ScreenController<?> parent)
 	{
-		super(name, parent);
-	}
-
-	@Override
-	public String getViewName()
-	{
-		return "org_molgenis_mutation_ui_header_Col7a1Header";
-	}
-
-	@Override
-	public String getViewTemplate()
-	{
-		return "org/molgenis/mutation/ui/header/Col7a1Header.ftl";
+		super(name, null, parent);
+		this.setModel(new Col7a1HeaderModel(this));
+		this.setView(new FreemarkerView("Col7a1Header.ftl", getModel()));
 	}
 
 	@Override
@@ -56,26 +49,10 @@ public class Col7a1Header extends PluginModel<Entity>
 		
 		return headers;
 	}
-	
-	
-	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
-		//nothing to do here
-	}
 
 	@Override
 	public void reload(Database db)
 	{
 		//nothing to do here
-	}
-	
-	@Override
-	public boolean isVisible()
-	{
-		//you can use this to hide this plugin, e.g. based on user rights.
-		//e.g.
-		//if(!this.getLogin().hasEditPermission(myEntity)) return false;
-		return true;
 	}
 }

@@ -1,4 +1,3 @@
-<#macro org_molgenis_mutation_ui_header_Col7a1Header screen>
 <form name="Home" method="get" action="">
 <input type="hidden" name="__target" value="View">
 <input type="hidden" name="select" value="SearchPlugin">
@@ -10,4 +9,3 @@
 	<a href="javascript:window.print();"><img src="res/img/print.png"></a>
 </div>
 <br/>
-</#macro>
