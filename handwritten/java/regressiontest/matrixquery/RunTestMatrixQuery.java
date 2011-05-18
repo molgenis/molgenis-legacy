@@ -9,6 +9,7 @@ import matrix.test.implementations.general.Helper;
 
 import org.junit.Test;
 import org.molgenis.data.Data;
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 
@@ -28,7 +29,7 @@ import app.JDBCDatabase;
  */
 public class RunTestMatrixQuery extends TestCase {
 	
-	JDBCDatabase db = null;
+	Database db = null;
 	AbstractDataMatrixInstance<Object> baseMatrix = null;
 	
 	public RunTestMatrixQuery() throws Exception{
