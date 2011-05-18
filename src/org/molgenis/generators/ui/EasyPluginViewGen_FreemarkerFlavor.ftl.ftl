@@ -10,8 +10,6 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
 -->
 <#noparse>
-<#-- MolgenisWidgets taglib with for example e.g. <@date name="mydate"/> but also <@molgenis_header>-->
-<#include "MolgenisWidgets.ftl" >
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${model.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -38,8 +36,8 @@
 			<div class="screenpadding">	
 			
 <#--begin your plugin-->	
-The currently selected date: ${model.date?date}
-Change date: <@date name="date" value=model.date/> <@action name="updateDate"/>
+<p>The currently selected date: ${model.date?date}</p>
+<label>Change date:</label><@date name="date" value=model.date/> <@action name="updateDate"/>
 	
 <#--end of your plugin-->	
 			</div>

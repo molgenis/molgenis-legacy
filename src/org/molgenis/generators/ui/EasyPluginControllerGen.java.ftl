@@ -27,7 +27,13 @@ public class ${clazzName} extends EasyPluginController<${clazzName}Model>
 	{
 		super(name, null, parent);
 		this.setModel(new ${clazzName}Model(this)); //the default model
-		this.setView(new FreemarkerView("${clazzName}View.ftl", getModel())); //the defaults view
+		<#if flavor=="freemarker">
+		this.setView(new FreemarkerView("${clazzName}View.ftl", getModel())); //<plugin flavor="freemarker"
+		<#elseif flavor=="easy">
+		this.setView(new ${clazzName}View(getModel())); //<plugin flavor="easy"
+		<#else>
+		throw new UnsupportedOperationException("plugin flavor=\"${flavor}\" is not yet supported");
+		</#if>
 	}
 	
 	/**

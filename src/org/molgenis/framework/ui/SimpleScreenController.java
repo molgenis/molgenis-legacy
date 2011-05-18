@@ -160,10 +160,10 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
 	@Override
 	public String getCustomHtmlHeaders()
 	{
-		String result = "<!--custom html headers: " + this.getName() + "-->";
-
+		String result = "";
 		for (ScreenController<?> c : this.getChildren())
 		{
+			result += "<!--custom html headers: " + c.getName() + "-->";
 			result += c.getCustomHtmlHeaders();
 		}
 

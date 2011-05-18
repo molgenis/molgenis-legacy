@@ -18,12 +18,14 @@ package org.molgenis.framework.ui;
  * Base-class for a screen displaying information from the invengine system to
  * the user.
  */
-public abstract class SimpleScreenView implements ScreenView
+public abstract class SimpleScreenView<M extends ScreenModel> implements ScreenView
 {
 	String customHtmlHeaders = "";
+	M model = null;
 	
-	public SimpleScreenView()
+	public SimpleScreenView(M model)
 	{
+		this.model = model;
 	}
 
 	public void setCustomHtmlHeaders(String customHtmlHeaders)
@@ -39,4 +41,14 @@ public abstract class SimpleScreenView implements ScreenView
 
 	@Override
 	public abstract String render();
+
+	public M getModel()
+	{
+		return model;
+	}
+
+	public void setModel(M model)
+	{
+		this.model = model;
+	}
 }

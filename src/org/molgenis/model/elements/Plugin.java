@@ -18,14 +18,14 @@ import org.molgenis.model.MolgenisModelException;
  */
 public class Plugin extends UISchema
 {
-	public enum PluginFlavor
+	public enum Flavor
 	{
 		FREEMARKER("freemarker"), EASY("easy"), VAADIN("vaadin"), UNKNOWN(
 				"unknown");
 
 		private String tag;
 
-		private PluginFlavor(String tag)
+		private Flavor(String tag)
 		{
 			this.tag = tag;
 		}
@@ -35,11 +35,11 @@ public class Plugin extends UISchema
 			return this.tag;
 		}
 
-		public static PluginFlavor getPluginMethod(String method)
+		public static Flavor getPluginMethod(String method)
 				throws MolgenisModelException
 		{
 			String options = "";
-			for (PluginFlavor p : PluginFlavor.values())
+			for (Flavor p : Flavor.values())
 			{
 				if (p.toString().equalsIgnoreCase(method)) return p;
 				options += p.toString() + ", ";
@@ -141,14 +141,14 @@ public class Plugin extends UISchema
 		this.pluginType = pluginType;
 	}
 
-	public PluginFlavor getPluginMethod()
+	public Flavor getFlavor()
 	{
-		return pluginMethod;
+		return flavor;
 	}
 
-	public void setPluginMethod(PluginFlavor pluginMethod)
+	public void setPluginMethod(Flavor pluginMethod)
 	{
-		this.pluginMethod = pluginMethod;
+		this.flavor = pluginMethod;
 	}
 
 	/** */
@@ -160,7 +160,7 @@ public class Plugin extends UISchema
 	/** */
 	private boolean readonly;
 	/** */
-	private PluginFlavor pluginMethod = PluginFlavor.FREEMARKER;
+	private Flavor flavor = Flavor.FREEMARKER;
 
 	/** */
 	private static final long serialVersionUID = -2642011592737487306L;

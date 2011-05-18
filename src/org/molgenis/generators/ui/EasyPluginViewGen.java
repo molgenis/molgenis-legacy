@@ -17,7 +17,8 @@ import freemarker.template.Template;
 
 public class EasyPluginViewGen extends Generator
 {
-	public static final transient Logger logger = Logger.getLogger(EasyPluginViewGen.class);
+	public static final transient Logger logger = Logger
+			.getLogger(EasyPluginViewGen.class);
 
 	@Override
 	public String getDescription()
@@ -31,69 +32,99 @@ public class EasyPluginViewGen extends Generator
 		generateForm(model, options, model.getUserinterface());
 	}
 
-	private void generateForm(Model model, MolgenisOptions options, UISchema schema) throws Exception
+	private void generateForm(Model model, MolgenisOptions options,
+			UISchema schema) throws Exception
 	{
-		Template template = createTemplate("/" + getClass().getSimpleName() + ".ftl.ftl");
+		// we have multiple flavors of views
+		Template template = null;
 		Map<String, Object> templateArgs = createTemplateArguments(options);
 
 		for (UISchema screen : schema.getChildren())
 		{
 			if (screen.getClass() == Plugin.class)
 			{
+				File targetFile = null;
 
 				Plugin plugin = (Plugin) screen;
 
 				String fullKlazzName = plugin.getPluginType();
 				String packageName = fullKlazzName;
-				if (fullKlazzName.contains("."))
-					packageName = fullKlazzName.substring(0, fullKlazzName.lastIndexOf("."));
+				if (fullKlazzName.contains(".")) packageName = fullKlazzName
+						.substring(0, fullKlazzName.lastIndexOf("."));
 
 				String shortKlazzName = fullKlazzName;
-				if (fullKlazzName.contains("."))
-					shortKlazzName = fullKlazzName.substring(fullKlazzName.lastIndexOf(".") + 1);
+				if (fullKlazzName.contains(".")) shortKlazzName = fullKlazzName
+						.substring(fullKlazzName.lastIndexOf(".") + 1);
 
-				File targetFile = new File(this.getHandWrittenPath(options) + "/" + fullKlazzName.replace(".", "/")
-						+ "View.ftl");
-				// only generate if the file doesn't exist AND plugin not already on classpath
+				switch (plugin.getFlavor())
+				{
+					case FREEMARKER:
+						targetFile = new File(this.getHandWrittenPath(options)
+								+ "/" + fullKlazzName.replace(".", "/")
+								+ "View.ftl");
+						template = createTemplate("/" + getClass().getSimpleName()
+								+ "_FreemarkerFlavor.ftl.ftl");
+						break;
+					case EASY:
+						targetFile = new File(this.getHandWrittenPath(options)
+								+ "/" + fullKlazzName.replace(".", "/")
+								+ "View.java");
+						template = createTemplate("/" + getClass().getSimpleName()
+								+ "_EasyFlavor.ftl.ftl");
+						break;
+					default:
+						throw new UnsupportedOperationException("Plugin flavor "+plugin.getFlavor()+" not (yet) supported");
+				}
+
+				// only generate if the file doesn't exist AND plugin not
+				// already on classpath
 				Class<?> c = null;
 				try
 				{
-					//check if plugin controller exist, then assume user is already happy and don't need templates.
+					// check if plugin controller exist, then assume user is
+					// already happy and don't need templates.
 					c = Class.forName(fullKlazzName);
-					//return;
-				} catch (Exception e)
-				{
-					logger.debug("skipped plugin "+plugin.getName()+" as it is on the classpath");
+					// return;
 				}
-				logger.debug("tested classforname on "+fullKlazzName+": "+c);
-			
-				
-				
+				catch (Exception e)
+				{
+					logger.debug("skipped plugin " + plugin.getName()
+							+ " as it is on the classpath");
+				}
+				logger.debug("tested classforname on " + fullKlazzName + ": "
+						+ c);
+
 				if (!targetFile.exists() && c == null)
 				{
-					File targetDir = new File(this.getHandWrittenPath(options) + "/" + packageName.replace(".", "/"));
+					File targetDir = new File(this.getHandWrittenPath(options)
+							+ "/" + packageName.replace(".", "/"));
 					targetDir.mkdirs();
-					
+
 					templateArgs.put("screen", plugin);
 					templateArgs.put("template", template.getName());
-					templateArgs.put("clazzName", shortKlazzName);					
-					templateArgs.put("macroName", fullKlazzName.replace(".", "_"));	
-					templateArgs.put("templatePath", targetFile.toString().replace("\\", "/"));
-					templateArgs.put("package", packageName);									
+					templateArgs.put("clazzName", shortKlazzName);
+					templateArgs.put("macroName", fullKlazzName.replace(".",
+							"_"));
+					templateArgs.put("templatePath", targetFile.toString()
+							.replace("\\", "/"));
+					templateArgs.put("package", packageName);
 
 					OutputStream targetOut = new FileOutputStream(targetFile);
-					template.process(templateArgs, new OutputStreamWriter(targetOut));
+					template.process(templateArgs, new OutputStreamWriter(
+							targetOut));
 					targetOut.close();
 
-					logger.info("generated " + targetFile.getAbsolutePath().substring(this.getHandWrittenPath(options).length()));
+					logger.info("generated "
+							+ targetFile.getAbsolutePath().substring(
+									this.getHandWrittenPath(options).length()));
 				}
 				else
 				{
 					logger.debug("Skipped because exists: " + targetFile);
 				}
 			}
-			
-			//get children of this screen and generate those
+
+			// get children of this screen and generate those
 			generateForm(model, options, screen);
 		}
 	}
