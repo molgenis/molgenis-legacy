@@ -131,8 +131,6 @@ public class MutationUploadVO implements Serializable
 	{
 		if (this.getExon().getIsIntron())
 			this.getMutation().setType("splice-site mutation");
-		else if (this.getMutation().getAa_Notation().indexOf("fsX") > -1 || this.getMutation().getAa_Notation().indexOf("Ter") > -1)
-			this.getMutation().setType("nonsense mutation");
 		else if (this.getMutation().getEvent().equals("deletion"))
 			if (this.getMutation().getLength() <= 20)
 				if (this.getMutation().getAa_Notation().indexOf("fsX") > -1)
@@ -166,6 +164,8 @@ public class MutationUploadVO implements Serializable
 					this.getMutation().setType("large insertion frame-shift");
 				else
 					this.getMutation().setType("large insertion in-frame");
+		else if (this.getMutation().getAa_Notation().indexOf("fsX") > -1 || this.getMutation().getAa_Notation().indexOf("Ter") > -1)
+			this.getMutation().setType("nonsense mutation");
 		else
 			this.getMutation().setType("missense mutation");
 	}
