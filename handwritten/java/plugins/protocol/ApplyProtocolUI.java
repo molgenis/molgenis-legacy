@@ -145,6 +145,36 @@ public class ApplyProtocolUI {
 		return valueInput;
 
     }
+    
+    /**
+     * Makes the appropriate input for the cell at col, row and adds it to the valueTable.
+     * At the moment, supports only cells which contain one input.
+     * 
+     * @param featureNr
+     * @param col
+     * @param row
+     * @param order
+     * @param value
+     * @throws Exception
+     */
+	public void makeInputAndSetCell(int featureNr, int col, int row, int order, ObservedValue value) throws Exception {
+		HtmlInput input = makeInput(featureNr, col, row, order, value);
+		valueTable.setCell(col, row, input);
+	}
+	
+	/**
+	 * Makes the appropriate date input for the cell at col, row and adds it to the valueTable.
+     * At the moment, supports only cells which contain one input.
+     * 
+	 * @param col
+	 * @param row
+	 * @param order
+	 * @param theTime
+	 */
+	public void makeDateInputAndSetCell(int col, int row, int order, String theTime) {
+		DatetimeInput input = new DatetimeInput(col + "_" + row + "_" + order, theTime);
+		valueTable.setCell(col, row, input);
+	}
 
     /** Fill the container
      * 
@@ -238,7 +268,8 @@ public class ApplyProtocolUI {
     private void makeAllValuesSelectbox() {
     	Vector<ValueLabel> options = new Vector<ValueLabel>();
     	options.add(new ValueLabel("AllValues", 
-    			"Show not only most recent but all values (works only with 'Edit existing values'"));
+    			"Show not only most recent but all values (works only with 'Edit existing values' and" +
+    			"disables defaults)"));
     	allValuesBox = new CheckboxInput("AllValuesBox", "", 
     			"Indicate whether you want to see all values for every target-measurement combination", 
     			options, null);
@@ -336,44 +367,49 @@ public class ApplyProtocolUI {
      */
     public void fillTableCells() throws DatabaseException, ParseException {
 		try {
-		    DivPanel div;
-		    // First row contains default input boxes
-		    int sizeFeatures = model.getFeaturesList().size();
-		    for (int col = 0; col < sizeFeatures; col++) {
-		    	int colNrInTable = col;
-				if (model.isTimeInfo()) {
-					colNrInTable *= 3;
-				}
-				div = new DivPanel();
-				HtmlInput input = makeInput(col, colNrInTable, 0, 0, null);
-				input.setLabel("");
-				div.add(input);
-				ActionInput applyButton2 = new ActionInput("ApplyDefault_" + colNrInTable, "", "Set");
-				div.add(applyButton2);
-				// Put the input in the right place in the table
-				if (model.isTimeInfo()) {
-					Date now = Calendar.getInstance().getTime();
-					
-					// Make div with default start date-time
-					DivPanel div2 = new DivPanel();
-					DatetimeInput datetimeInputStart = new DatetimeInput((colNrInTable + 1) + "_0", now);
-					datetimeInputStart.setLabel("");
-					div2.add(datetimeInputStart);
-					ActionInput applyButtonStartTime = new ActionInput("ApplyStartTime_" + (colNrInTable + 1), "", "Set");
-					div2.add(applyButtonStartTime);
-					valueTable.setCell(colNrInTable + 1, 0, div2);
-					
-					// Make div with default end date-time
-					DivPanel div3 = new DivPanel();
-					DatetimeInput datetimeInputEnd = new DatetimeInput((colNrInTable + 2) + "_0", now);
-					datetimeInputEnd.setLabel("");
-					div3.add(datetimeInputEnd);
-					ActionInput applyButtonEndTime = new ActionInput("ApplyEndTime_" + (colNrInTable + 2), "", "Set");
-					div3.add(applyButtonEndTime);
-					valueTable.setCell(colNrInTable + 2, 0, div3);
-				}
-				valueTable.setCell(colNrInTable, 0, div);
-		    }
+			int sizeFeatures = model.getFeaturesList().size();
+			 
+			if (model.isAllValues() == false) {
+			    DivPanel div;
+			    // First row contains default input boxes
+			    for (int col = 0; col < sizeFeatures; col++) {
+			    	int colNrInTable = col;
+					if (model.isTimeInfo()) {
+						colNrInTable *= 3;
+					}
+					div = new DivPanel();
+					HtmlInput input = makeInput(col, colNrInTable, 0, 0, null);
+					input.setLabel("");
+					div.add(input);
+					ActionInput applyButton2 = new ActionInput("ApplyDefault_" + colNrInTable, "", "Set");
+					div.add(applyButton2);
+					// Put the input in the right place in the table
+					if (model.isTimeInfo()) {
+						Date now = Calendar.getInstance().getTime();
+						
+						// Make div with default start date-time
+						DivPanel div2 = new DivPanel();
+						DatetimeInput datetimeInputStart = new DatetimeInput((colNrInTable + 1) + "_0_0", now);
+						datetimeInputStart.setLabel("");
+						div2.add(datetimeInputStart);
+						ActionInput applyButtonStartTime = new ActionInput("ApplyStartTime_" + (colNrInTable + 1), 
+								"", "Set");
+						div2.add(applyButtonStartTime);
+						valueTable.setCell(colNrInTable + 1, 0, div2);
+						
+						// Make div with default end date-time
+						DivPanel div3 = new DivPanel();
+						DatetimeInput datetimeInputEnd = new DatetimeInput((colNrInTable + 2) + "_0_0", now);
+						datetimeInputEnd.setLabel("");
+						div3.add(datetimeInputEnd);
+						ActionInput applyButtonEndTime = new ActionInput("ApplyEndTime_" + (colNrInTable + 2), 
+								"", "Set");
+						div3.add(applyButtonEndTime);
+						valueTable.setCell(colNrInTable + 2, 0, div3);
+					}
+					valueTable.setCell(colNrInTable, 0, div);
+			    }
+			}
 		    
 		    int investigationId = cs.getUserInvestigationId(model.getUserId());
 	

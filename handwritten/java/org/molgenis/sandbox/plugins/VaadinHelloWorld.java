@@ -2,6 +2,7 @@ package org.molgenis.sandbox.plugins;
 
 import javax.servlet.http.HttpSession;
 
+import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ApplicationController;
 import org.molgenis.organization.Investigation;
@@ -41,14 +42,16 @@ public class VaadinHelloWorld extends Application
 		Window mainWindow = new Window("My first Vaadin Application");
 		this.setMainWindow(mainWindow);
 
-		final TextField myText = new TextField();
-		FormModel<Investigation> invModel = (FormModel<Investigation>)molgenis.get("investigation");
+		/*
+		FormController<Investigation> invModel = (FormController<Investigation>)molgenis.get("investigation");
 		Investigation currentInvestigation = invModel.getCurrent(); // returns null... why?
 		if (currentInvestigation != null) {
 			myText.setCaption("Current investigation = " + currentInvestigation.getName());
 		} else {
 			myText.setCaption("No current investigation found");
-		}
+		}*/
+		
+		final TextField myText = new TextField();
 		mainWindow.addComponent(myText);
 		myText.setStyleName("myspacing");
 		

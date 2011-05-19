@@ -275,13 +275,13 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		    ObservedValue newValue = new ObservedValue();
 		    // Put value in appropriate field
 		    if (dataType.equals("xref")) {
-		    	newValue.setRelation_Name(request.getString(colNrInTable + "_0"));
+		    	newValue.setRelation_Name(request.getString(colNrInTable + "_0_0"));
 		    } else {
-		    	newValue.setValue(request.getString(colNrInTable + "_0"));
+		    	newValue.setValue(request.getString(colNrInTable + "_0_0"));
 		    }
 		    try {
 				for (int row = 1; row <= sizeTargets; row++) {
-				    // TODO ui.makeInputAndSetCell(col, colNrInTable, row, newValue);
+				    ui.makeInputAndSetCell(col, colNrInTable, row, 0, newValue);
 				}
 		    } catch(Exception e) {
 		    	return new ScreenMessage("Setting defaults failed: " + e, false);
@@ -320,13 +320,13 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		ObservedValue newValue = new ObservedValue();
 		// Put value in appropriate field
 		if (dataType.equals("xref")) {
-		    newValue.setRelation_Name(request.getString(col + "_0"));
+		    newValue.setRelation_Name(request.getString(col + "_0_0"));
 		} else {
-		    newValue.setValue(request.getString(col + "_0"));
+		    newValue.setValue(request.getString(col + "_0_0"));
 		}
 		try {
 		    for (int row = 1; row <= sizeTargets; row++) {
-		    	// TODO ui.makeInputAndSetCell(featureNr, col, row, newValue);
+		    	ui.makeInputAndSetCell(featureNr, col, row, 0, newValue);
 		    }
 		} catch(Exception e) {
 			return new ScreenMessage("Setting defaults failed: " + e, false);
@@ -416,7 +416,10 @@ public class ApplyProtocolPlugin extends GenericPlugin
 	
 		// Make the table div
 		ui.makeTable();
-		ui.makeApplyAllDefaultsButton();
+		if (model.isAllValues() == false) {
+			// Show Apply all defaults button only when showing one value per cell
+			ui.makeApplyAllDefaultsButton();
+		}
 		ui.makeApplyButton();
 		ui.addTableDiv();
 		
@@ -429,9 +432,9 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		fixValues(request);
 		
 		try {
-			String startTime = request.getString(col + "_0");
+			String startTime = request.getString(col + "_0_0");
 		    for (int row = 1; row <= model.getFullTargetList().size(); row++) {
-		    	// TODO ui.makeDateInputAndSetCell(col, row, startTime);
+		    	ui.makeDateInputAndSetCell(col, row, 0, startTime);
 		    }
 		} catch(Exception e) {
 			return new ScreenMessage("Setting start date-time defaults failed: " + e, false);
@@ -446,9 +449,9 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		fixValues(request);
 		
 		try {
-			String endTime = request.getString(col + "_0");
+			String endTime = request.getString(col + "_0_0");
 		    for (int row = 1; row <= model.getFullTargetList().size(); row++) {
-		    	// TODO ui.makeDateInputAndSetCell(col, row, endTime);
+		    	ui.makeDateInputAndSetCell(col, row, 0, endTime);
 		    }
 		} catch(Exception e) {
 			return new ScreenMessage("Setting end date-time defaults failed: " + e, false);
@@ -459,7 +462,8 @@ public class ApplyProtocolPlugin extends GenericPlugin
 	
 	/**
 	 * Go through all inputs in the table and set their values,
-	 * so changes that the user already made don't get lost
+	 * so changes that the user already made don't get lost.
+	 * Works only for cells that contain one input.
 	 */
 	private void fixValues(Tuple request) {
 		
@@ -470,7 +474,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		
 		for (int colNr = 0; colNr < nrOfCols; colNr++) {
 			 for (int row = 1; row <= model.getFullTargetList().size(); row++) {
-				 ui.fixCellValue(colNr, row, request.getString(colNr + "_" + row));
+				 ui.fixCellValue(colNr, row, request.getString(colNr + "_" + row + "_0"));
 			 }
 		}
 	}
