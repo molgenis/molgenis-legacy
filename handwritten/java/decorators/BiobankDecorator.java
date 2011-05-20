@@ -32,14 +32,16 @@ public class BiobankDecorator<E extends org.molgenis.bbmri.BiobankPanel> extends
 	public int add(List<E> entities) throws DatabaseException
 	{
 		//retrieve the user who uploaded/added the record
-		int userId = this.getDatabase().getSecurity().getUserId();
 		
-		// add your pre-processing here, e.g.
-		 for (org.molgenis.bbmri.BiobankPanel e : entities)
-		 {
-			 e.setUploader_Id(userId);
-		 }
-
+		if (this.getDatabase().getSecurity().getUserId() != null) {
+			int userId = this.getDatabase().getSecurity().getUserId();
+			
+			// add your pre-processing here, e.g.
+			for (org.molgenis.bbmri.BiobankPanel e : entities)
+			{
+				e.setUploader_Id(userId);
+			}
+		}
 		
 		// here we call the standard 'add'
 		int count = super.add(entities);
