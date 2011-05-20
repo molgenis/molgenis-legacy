@@ -126,6 +126,11 @@ public class UserLogin extends EasyPluginController<UserLoginModel>
 	{
 		this.getModel().setAction("Register");
 	}
+	
+	public void Cancel(Database db, Tuple request)
+	{
+		this.getModel().setAction("Cancel");
+	}
 
 	public void AddUser(Database db, Tuple request) throws DatabaseException
 	{
