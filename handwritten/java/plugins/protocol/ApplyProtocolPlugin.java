@@ -176,8 +176,8 @@ public class ApplyProtocolPlugin extends GenericPlugin
 						    // Compare, and update if necessary
 						    if (!oldValue.equals(newValue) || oldStartTime != startTime || oldEndTime != endTime) {
 								if (dataType.equals("xref")) {
-									originalObservedValue.setRelation_Id(null);
-								    originalObservedValue.setRelation_Name(newValue);
+									// Set _Id instead of _Name because db.update() doesn't resolve foreign keys
+									originalObservedValue.setRelation_Id(cs.getObservationTargetId(newValue));
 								    originalObservedValue.setValue(null);
 								} else {
 								    originalObservedValue.setValue(newValue);

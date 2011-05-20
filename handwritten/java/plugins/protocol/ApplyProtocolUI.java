@@ -112,7 +112,7 @@ public class ApplyProtocolUI {
 		} else {
 			if (panelLabel != null) {
 				// If there's only a subset of labeled Panels allowed for this Measurement, show a selectbox with those
-				valueInput = new SelectInput(col + "_" + row);
+				valueInput = new SelectInput(col + "_" + row + "_" + order);
 				List<ObservationTarget> panelList = model.getAllPanelsForFeature(feature);
 				for (ObservationTarget p : panelList) {
 					((SelectInput)valueInput).addOption(p.getName(), p.getName());
