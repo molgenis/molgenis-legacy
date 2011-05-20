@@ -501,11 +501,10 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				// set the headers for the download
 				response.setContentType("application/x-download");
 
-				//response.setHeader("Content-Disposition",
-				//		"attachment; filename="
-				//				+ controller.getName().toLowerCase() + ".txt");
-
-				response.setHeader("Content-Disposition", "attachment; filename="	+ controller.getName().toLowerCase() + ".csv");
+				response.setHeader("Content-Disposition",
+						"attachment; filename="
+								+ controller.getName().toLowerCase() + ".txt");
+	
 
 				// let the handleRequest produce the content
 				PrintWriter out = new PrintWriter(response.getOutputStream());
