@@ -41,14 +41,13 @@ public class EventViewerJSONServlet extends app.servlet.MolgenisServlet {
 			Tuple req = new HttpServletRequestTuple(request);
 			
 			if (req.getInt("reset") != null) {
+				// TODO: do we need a reset option at all?
 				if (req.getInt("reset") == 1) {
 					pm = new PhenoMatrix();
 					storedTargetStart = 0;
 					storedTargetLength = 0;
 					storedTargetType = "All";
 					totalNrOfFeatures = 0;
-					out.print("Reset JSON servlet");
-					out.flush();
 					logger.debug("Reset JSON servlet");
 					return;
 				}

@@ -7,6 +7,8 @@
 
 package plugins.listplugin;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -21,6 +23,8 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.util.Entity;
+import org.molgenis.util.HtmlTools;
+import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
 import app.servlet.MolgenisServlet;
@@ -81,6 +85,7 @@ public class ListPlugin extends PluginModel<Entity> {
 	public void handleRequest(Database db, Tuple request) {
 		try {
 			String action = request.getString("__action");
+			
 			if (action.equals("saveBatch")) {
 				int batchId;
 				// Make or get Batch
@@ -105,9 +110,64 @@ public class ListPlugin extends PluginModel<Entity> {
 					db.add(newBatchEntity);
 				}
 				
-				this.setMessages(new ScreenMessage("Batch saved successfully", true));
-				
+				this.setMessages(new ScreenMessage("Batch saved successfully", true));	
 			}
+			
+			if (action.equals("resetServlet")) {
+				
+				// FIXME: We do this here because here we have the request and we can get the port number from that.
+				// What we actually want is to do the reset in the reload() method, but there we don't have the request.
+				
+				int port = ((HttpServletRequestTuple) request).getRequest().getServerPort();
+				
+				String url = "http://localhost:" + port +  "/" + 
+				MolgenisServlet.getMolgenisVariantID() + "/EventViewerJSONServlet?reset=1";
+				URL servletURL = null;
+				try {
+					servletURL = new URL(url);
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+					throw e;
+				}
+				URLConnection servletConn = null;
+				try {
+					servletConn = servletURL.openConnection();
+				} catch (IOException e) {
+					// If connecting to localhost fails, try IP address instead
+					try {
+						url = "http://" + HtmlTools.getExposedIPAddress() + ":" + port +  "/" + 
+							MolgenisServlet.getMolgenisVariantID() + "/EventViewerJSONServlet?reset=1";
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						throw e1;
+					}
+					try {
+						servletURL = new URL(url);
+					} catch (MalformedURLException e1) {
+						e1.printStackTrace();
+						throw e1;
+					}
+					try {
+						servletConn = servletURL.openConnection();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+						throw e1;
+					}
+					try {
+						servletConn.getContent();
+					} catch (IOException e1) {
+						this.setMessages(new ScreenMessage("Data source reset through IP address", true));
+						// getContent() will always throw an exception, so do nothing more here
+					}
+				}
+				try {
+					servletConn.getContent();
+				} catch (IOException e) {
+					this.setMessages(new ScreenMessage("Data source reset through localhost", true));
+					// getContent() will always throw an exception, so do nothing more here
+				}
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (e.getMessage() != null) {
@@ -117,16 +177,6 @@ public class ListPlugin extends PluginModel<Entity> {
 	}
 	
 	public void reload(Database db) {
-		
-		// Reset servlet
-		try {
-			URL servletURL = new URL("http://localhost:8080/" + MolgenisServlet.getMolgenisVariantID() + 
-					"/EventViewerJSONServlet?reset=1");
-			URLConnection servletConn = servletURL.openConnection();
-			servletConn.getContent();
-		} catch (Exception e) {
-			//
-		}
 			
 		try {
 			// Populate measurement list

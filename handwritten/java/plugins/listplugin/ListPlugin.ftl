@@ -104,6 +104,9 @@ Limit values to most recent one:
 </div>
 <div style='clear:left'>
 	<!-- Bogus div so previous div remains within the page limits -->
+	
+	<!-- TODO: how do we achieve the effect of this button without the user having to push a button? -->
+	<input type='submit' class='addbutton' value='Reset data source' onclick="__action.value='resetServlet'" />
 </div>
 
 <#--end of your plugin-->

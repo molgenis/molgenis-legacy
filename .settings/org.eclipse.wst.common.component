@@ -27,6 +27,6 @@
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="java-output-path"/>
-        <property name="context-root" value="molgenis_apps"/>
+        <property name="context-root" value="animaldb"/>
     </wb-module>
 </project-modules>
