@@ -8,13 +8,15 @@
 		<form name="Cohorts" entity="BiobankPanel" label="Biobank Overview"	hide_fields="id,description,Species,Individuals,PanelType,FounderPanels,ontologyReference" />
 		<menu name="Admin">
 		    <menu name="DataViews">
-				<!-- <form name="Biobanks" entity="Biobank" view="list" /> -->
+		 		<!-- <form name="Biobanks" entity="Biobank" view="list" /> -->
 				<form name="Coordinators" entity="Person" view="list" sortby="LastName" />
 				<form name="Institutes" entity="Institute" view="list" />
 				<form name="Categories" sortby="name" view="list" entity="BiobankCategory" />
 				<form name="DataTypes" entity="BiobankDataType" />
 				<form name="Topics" entity="BiobankTopic" />
 			</menu>
+			
+			
 			<plugin name="Settings" type="plugins.system.settings.Settings" />
 			<menu name="usermanagement" position="left" label="User management">
 				<form name="MolgenisUser" entity="MolgenisUser" label="User" />
@@ -33,6 +35,6 @@
 		</menu>
 		<plugin name="BbmriHelp" type="plugins.help.BbmriHelpPlugin" label="Help"  />
 		<plugin name="BbmriContact" type="plugins.contact.BbmriContactPlugin" label="Contact" />
-
+		
 	</menu>
 </molgenis>

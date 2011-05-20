@@ -24,8 +24,10 @@
 			<field name="Acronym" nillable="true" description="Acronym for this biobank. For example: NTR" label="Acronym" />
 
 		</entity>
-		<entity name="BiobankPanel" extends="Panel">
+		<entity name="BiobankPanel" extends="Panel" decorator="decorators.BiobankDecorator">
 			<description>This describes a panel (or: cohort) of individuals for which data was collected within the biobank.</description>
+			<field name="Approved" type="bool" nillable="false" description="This field indicates whether the record is approved by admin/curator" ></field>
+			<field name="Uploader" type="xref" xref_entity="MolgenisUser" nillable="true" description="The user who uploaded the record"></field>
 			<field name="Category" type="xref" xref_entity="BiobankCategory" description="A. Core Biobanks, DNA available, B. Supporting biobanks (DNA not yet available)" />
 			<field name="SubCategory" type="xref" xref_entity="BiobankCategory" description="For example: Population, development, birth and growth" />
 			<field name="Topic" type="mref" xref_entity="BiobankTopic" />

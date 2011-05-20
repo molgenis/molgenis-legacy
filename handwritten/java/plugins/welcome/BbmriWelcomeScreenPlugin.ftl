@@ -36,6 +36,10 @@
 <li/>Click <img src="http://www.bbmriwiki.nl/biobanks/generated-res/img/listview.png"/> to go back to listview
 </ul></p>
 
+<#if screen.userId != 0>
+<p><a href="molgenis.do?__target=Cohorts&__action=filter_set&__filter_attribute=Approved&__filter_operator=EQUALS&__filter_value=1">See all approved cohorts</a></p>
+</#if>
+
 <p> This is a beta system and we want to improve the user interface still a lot including an advanced search option. Also now everybody can edit everything which we are now making more finegrained.
 <br/>Please report any ideas, suggestions, bugs to <a href="mailto:m.a.swertz@rug.nl">m.a.swertz@rug.nl</a>  </p>
 

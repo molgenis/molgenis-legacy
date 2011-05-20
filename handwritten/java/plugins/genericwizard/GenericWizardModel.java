@@ -9,10 +9,10 @@ import app.ImportWizardExcelPrognosis;
 
 public class GenericWizardModel {
 
-	String whichScreen;
-	File currentFile;
-	ImportWizardExcelPrognosis iwep;
-	boolean importSuccess;
+	private String whichScreen;
+	private File currentFile;
+	private ImportWizardExcelPrognosis iwep;
+	private boolean importSuccess;
 	
 	public String getWhichScreen() {
 		return whichScreen;

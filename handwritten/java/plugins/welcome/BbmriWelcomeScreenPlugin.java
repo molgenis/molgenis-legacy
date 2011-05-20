@@ -82,4 +82,12 @@ public class BbmriWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>
 		//if(!this.getLogin().hasEditPermission(myEntity)) return false;
 		return true;
 	}
+	
+	public int getUserId() {
+		if (this.getLogin().isAuthenticated() == true) {
+			return this.getLogin().getUserId();
+		} else {
+			return 0;
+		}
+	}
 }
