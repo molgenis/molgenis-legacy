@@ -39,7 +39,7 @@ public class BiobankDecorator<E extends org.molgenis.bbmri.BiobankPanel> extends
 			// add your pre-processing here, e.g.
 			for (org.molgenis.bbmri.BiobankPanel e : entities)
 			{
-				e.setUploader_Id(userId);
+				//e.setUploader_Id(userId);
 			}
 		}
 		
