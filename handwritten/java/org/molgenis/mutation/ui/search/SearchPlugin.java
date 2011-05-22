@@ -397,6 +397,7 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 			this.mBrowseVO.setExonList(exonList);
 		}
 		
+		this.populateProteinDomainPanel();
 	}
 
 	private void handleShowExon(Tuple request) throws DatabaseException, ParseException, RESyntaxException
@@ -661,6 +662,12 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 			((SelectInput) this.searchPluginVO.getDisplayOptionsForm().get("showMutations")).setValue("show");
 		else
 			((SelectInput) this.searchPluginVO.getDisplayOptionsForm().get("showMutations")).setValue("hide");
+	}
+
+	private void populateProteinDomainPanel()
+	{
+		this.mBrowseVO.getProteinDomainPanel().setProteinDomainSummaryVO(this.searchPluginVO.getProteinDomainSummaryVO());
+		this.mBrowseVO.getProteinDomainPanel().setScreenName(this.getController().getName());
 	}
 
 	private void populateSequencePanel()

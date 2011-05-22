@@ -6,6 +6,8 @@
 <#assign exons                  = proteinDomainSummaryVO.exons>
 <#if exons?size &gt; 0>
 <h4>Browse the ${exons?first.getGene_Name()} gene: ${proteinDomainSummaryVO.proteinDomain.getName()}</h4>
+${mbrowse.getProteinDomainPanel()}
+<#--
 <#if proteinDomainSummaryVO.proteinDomain.getName() == 'Triple helix domain'>
 	<#assign colour = "#6dcbfe">
 <#else>
@@ -23,6 +25,7 @@
 </tr>
 </table>
 </div>
+-->
 <br/>
 
 <div class="scrollable">
