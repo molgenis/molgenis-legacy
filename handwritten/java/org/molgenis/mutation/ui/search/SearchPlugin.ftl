@@ -56,18 +56,19 @@
 
 <#elseif vo.action?starts_with("findMutationsByTerm")>
 
-	<#assign mutationSummaryVOHash = vo.mutationSummaryVOHash>
-
-	<#list mutationSummaryVOHash?keys as key>
-		<#assign pager = mutationSummaryVOHash[key]>
+	<#assign mutationSummaryVOHash = vo.getMutationSummaryVOHash()>
+	<#list vo.getMutationSummaryVOHash()?keys as field>
+	<#if field?starts_with(" ")>
+		<#assign pager = mutationSummaryVOHash[field]>
 		<p>
-		<#if pager.entities?size &gt; 0><img id="catimg${key}" src="res/img/open.png" onclick="toggleDiv('cat${key}', 'catimg${key}');"></#if>
-		${pager.entities?size} mutations found in "${key}" (total ${screen.getNumPatients(pager.entities)} patients).
+		<#if pager.entities?size &gt; 0><img id="catimg${field}" src="res/img/open.png" onclick="toggleDiv('cat${field}', 'catimg${field}');"></#if>
+		${pager.entities?size} mutations found in "${field}" (total ${screen.getNumPatients(pager.entities)} patients).
 		</p>
-		<div id="cat${key}" style="display:none">
+		<div id="cat${field}" style="display:none">
 		${vo.setPager(pager)}
 		<#include "mutations.ftl">
 		</div>
+	</#if>
 	</#list>
 
 <#elseif vo.action?starts_with("findPatients")>

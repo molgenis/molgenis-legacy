@@ -509,7 +509,7 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 		if (mutationSummaryVOs.size() > 0)
 		{
 			LimitOffsetPager<MutationSummaryVO> pager = new LimitOffsetPager<MutationSummaryVO>(mutationSummaryVOs, 10, 0);
-			this.searchPluginVO.getMutationSummaryVOHash().put(key, pager);
+			this.searchPluginVO.getMutationSummaryVOHash().put(" " + key + " ", pager);
 		}
 	}
 
