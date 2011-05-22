@@ -76,6 +76,8 @@
 
 <#assign searchPluginUtils  = screen.searchPluginUtils>
 
+${mbrowse.getSequencePanel()}
+<#--
 <div class="scrollable">
 <pre>
 <#if exonSummaryVO.orientation == "R">
@@ -87,5 +89,6 @@ ${exonSummaryVO.nuclSequenceFlankLeft}<span class="seq"><#list exonSummaryVO.exo
 <#if !exonSummaryVO.exon.getIsIntron()><#list 1..exonSummaryVO.nuclSequenceFlankLeft?length as i> </#list><span>${searchPluginUtils.printBaseNumbers(exonSummaryVO.exon)}</span></#if>
 </pre>
 </div>
+-->
 
 </#if>

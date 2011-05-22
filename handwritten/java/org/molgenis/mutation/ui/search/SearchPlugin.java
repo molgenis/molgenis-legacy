@@ -418,6 +418,7 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 			this.searchPluginVO.setPager(new LimitOffsetPager<MutationSummaryVO>(this.searchPluginVO.getMutationSummaryVOs(), 10, 0));
 		}
 		this.searchPluginVO.setHeader("");
+		this.populateSequencePanel();
 	}
 
 	@Override
@@ -515,36 +516,36 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 
 	private void populateSimpleSearchForm()
 	{
-		this.searchPluginVO.getSimpleSearchForm().get("__target").setValue(this.getScreen().getName());
+		this.searchPluginVO.getSimpleSearchForm().get("__target").setValue(this.getController().getName());
 		this.searchPluginVO.getSimpleSearchForm().get("term").setValue(this.mutationSearchCriteriaVO.getSearchTerm());
 	}
 
 	private void populateListAllMutationsForm()
 	{
-		this.searchPluginVO.getListAllMutationsForm().get("__target").setValue(this.getScreen().getName());
-		this.searchPluginVO.getListAllMutationsForm().get("select").setValue(this.getScreen().getName());
+		this.searchPluginVO.getListAllMutationsForm().get("__target").setValue(this.getController().getName());
+		this.searchPluginVO.getListAllMutationsForm().get("select").setValue(this.getController().getName());
 	}
 
 	private void populateListAllPatientsForm()
 	{
-		this.searchPluginVO.getListAllPatientsForm().get("__target").setValue(this.getScreen().getName());
-		this.searchPluginVO.getListAllMutationsForm().get("select").setValue(this.getScreen().getName());
+		this.searchPluginVO.getListAllPatientsForm().get("__target").setValue(this.getController().getName());
+		this.searchPluginVO.getListAllMutationsForm().get("select").setValue(this.getController().getName());
 	}
 
 	private void populateToSimpleSearchForm()
 	{
-		this.searchPluginVO.getToSimpleSearchForm().get("__target").setValue(this.getScreen().getName());
+		this.searchPluginVO.getToSimpleSearchForm().get("__target").setValue(this.getController().getName());
 	}
 
 	private void populateToExpertSearchForm()
 	{
-		this.searchPluginVO.getToExpertSearchForm().get("__target").setValue(this.getScreen().getName());
+		this.searchPluginVO.getToExpertSearchForm().get("__target").setValue(this.getController().getName());
 	}
 
 	private void populateShowMutationForm() throws DatabaseException, ParseException
 	{
-		this.searchPluginVO.getShowMutationForm().get("__target").setValue(this.getScreen().getName());
-		this.searchPluginVO.getListAllMutationsForm().get("select").setValue(this.getScreen().getName());
+		this.searchPluginVO.getShowMutationForm().get("__target").setValue(this.getController().getName());
+		this.searchPluginVO.getListAllMutationsForm().get("select").setValue(this.getController().getName());
 		List<ValueLabel> mutationIdOptions  = new ArrayList<ValueLabel>();
 		mutationIdOptions.add(new ValueLabel("", "Select mutation"));
 		for (Mutation mutation : this.mutationService.getAllMutations())
@@ -557,8 +558,8 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 	{
 		Mutation template = new Mutation();
 		
-		this.searchPluginVO.getExpertSearchForm().get("__target").setValue(this.getScreen().getName());
-		this.searchPluginVO.getExpertSearchForm().get("select").setValue(this.getScreen().getName());
+		this.searchPluginVO.getExpertSearchForm().get("__target").setValue(this.getController().getName());
+		this.searchPluginVO.getExpertSearchForm().get("select").setValue(this.getController().getName());
 
 		if (this.mutationSearchCriteriaVO.getVariation() != null)
 			((StringInput) this.searchPluginVO.getExpertSearchForm().get("variation")).setValue(this.mutationSearchCriteriaVO.getVariation());
@@ -626,7 +627,7 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 	
 	private void populateDisplayOptionsForm()
 	{
-		this.searchPluginVO.getDisplayOptionsForm().get("__target").setValue(this.getScreen().getName());
+		this.searchPluginVO.getDisplayOptionsForm().get("__target").setValue(this.getController().getName());
 		this.searchPluginVO.getDisplayOptionsForm().get("__action").setValue(this.searchPluginVO.getAction());
 		
 		if (this.mutationSearchCriteriaVO.getProteinDomainId() != null)
@@ -660,6 +661,13 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 			((SelectInput) this.searchPluginVO.getDisplayOptionsForm().get("showMutations")).setValue("show");
 		else
 			((SelectInput) this.searchPluginVO.getDisplayOptionsForm().get("showMutations")).setValue("hide");
+	}
+
+	private void populateSequencePanel()
+	{
+		this.mBrowseVO.getSequencePanel().setExonSummaryVO(this.searchPluginVO.getExonSummaryVO());
+		this.mBrowseVO.getSequencePanel().setMutationSummaryVOs(this.searchPluginVO.getMutationSummaryVOs());
+		this.mBrowseVO.getSequencePanel().setScreenName(this.getController().getName());
 	}
 
 	//TODO: Move the following methods to SearchPluginVO
