@@ -15,6 +15,7 @@ public class TextParagraph extends HtmlInput
 	public TextParagraph(String name, Object value)
 	{
 		super(name, value);
+		this.setLabel("");
 	}
 
 	@Override
