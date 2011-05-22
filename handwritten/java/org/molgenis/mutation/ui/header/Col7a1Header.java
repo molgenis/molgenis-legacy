@@ -10,11 +10,7 @@ package org.molgenis.mutation.ui.header;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
-import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.news.ui.NewsModel;
-import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 public class Col7a1Header extends EasyPluginController<Col7a1HeaderModel>
 {
