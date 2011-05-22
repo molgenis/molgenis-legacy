@@ -8,20 +8,20 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.util.Tuple;
 
 /**
- * Test2Controller takes care of all user requests and application logic.
+ * TestTwoController takes care of all user requests and application logic.
  *
  * <li>Each user request is handled by its own method based action=methodName. 
  * <li> MOLGENIS takes care of db.commits and catches exceptions to show to the user
- * <li>Test2Model holds application state and business logic on top of domain model. Get it via this.getModel()/setModel(..)
- * <li>Test2View holds the template to show the layout. Get/set it via this.getView()/setView(..).
+ * <li>TestTwoModel holds application state and business logic on top of domain model. Get it via this.getModel()/setModel(..)
+ * <li>TestTwoView holds the template to show the layout. Get/set it via this.getView()/setView(..).
  */
-public class Test2 extends EasyPluginController<Test2Model>
+public class TestTwo extends EasyPluginController<TestTwoModel>
 {
-	public Test2(String name, ScreenController<?> parent)
+	public TestTwo(String name, ScreenController<?> parent)
 	{
 		super(name, null, parent);
-		this.setModel(new Test2Model(this)); //the default model
-		this.setView(new FreemarkerView("Test2View.ftl", getModel())); //the defaults view
+		this.setModel(new TestTwoModel(this)); //the default model
+		this.setView(new TestTwoView(getModel())); //<plugin flavor="easy"
 	}
 	
 	/**
@@ -48,11 +48,12 @@ public class Test2 extends EasyPluginController<Test2Model>
 	public void updateDate(Database db, Tuple request) throws Exception
 	{
 		getModel().date = request.getDate("date");
-		getModel().setSuccess("update succesfull");
 	
 //		//Easily create object from request and add to database
 //		Investigation i = new Investigation(request);
 //		db.add(i);
 //		this.setMessage("Added new investigation");
+
+		getModel().setSuccess("update succesfull");
 	}
 }

@@ -34,6 +34,4 @@ public class TestModel extends SimpleScreenModel
 		//each Model can access the controller to notify it when needed.
 		super(controller);
 	}
-	
-	
 }

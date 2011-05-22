@@ -33,22 +33,22 @@ public class VaadinHelloWorld extends Application
 
 	private void initHello()
 	{
-		//todo: to really integrate we must have access to MOLGENIS user interface elements.
-		WebApplicationContext context = (WebApplicationContext) getContext();
-		HttpSession session = context.getHttpSession();
-		ApplicationController molgenis = (ApplicationController) session.getAttribute("application");
-		Investigation currentInvestigation = ((FormModel<Investigation>)molgenis.get("Investigations")).getCurrent();
+//		//todo: to really integrate we must have access to MOLGENIS user interface elements.
+//		WebApplicationContext context = (WebApplicationContext) getContext();
+//		HttpSession session = context.getHttpSession();
+//		ApplicationController molgenis = (ApplicationController) session.getAttribute("application");
+//		Investigation currentInvestigation = ((FormModel<Investigation>)molgenis.get("Investigations")).getCurrent();
 		
 
 		Window mainWindow = new Window("My first Vaadin Application");
 		this.setMainWindow(mainWindow);
 
 		final Label myLabel = new Label();
-		myLabel.setValue("Hello world");
+		myLabel.setValue("Hello ... ");
 		mainWindow.addComponent(myLabel);
 
 		final TextField myText = new TextField();
-		myText.setCaption("Hello ...investigation="+currentInvestigation.getName());
+		myText.setCaption("WORLD");
 		mainWindow.addComponent(myText);
 		myText.setStyleName("myspacing");
 
