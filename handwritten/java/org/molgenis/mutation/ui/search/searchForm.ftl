@@ -123,6 +123,17 @@ Click anywhere on this schematic representation of the COL7A1 gene to graphicall
 <li>Mutation nomenclature is according to the <a href="http://www.hgvs.org/mutnomen/" target="_new">HGVS recommendations</a></li>
 </ol>
 <br/><br/>
+<table width="100%">
+<tr>
+<td><a href="http://www.idi.it/web/idi/home" target="_new"><img src="res/img/col7a1/idi.jpg" height="80"/></a></td>
+<td><a href="http://www.uniklinik-freiburg.de/ims/live/hospital/dermatology_en.html" target="_new"><img src="res/img/col7a1/ukl-logo.jpg" width="250" height="80"/></a></td>
+<td><a href="http://www.guysandstthomas.nhs.uk/services/dash/dermatology/dermatology.aspx" target="_new"><img src="res/img/col7a1/stjohns.jpg" height="80"/></a></td>
+<td><a href="http://www.eb-haus.eu/index.php?id=21&L=1" target="_new"><img src="res/img/col7a1/ebhaus.png" height="80"/></a></td>
+<td><a href="http://www.umcg.nl/NL/UMCG/overhetumcg/organisatie/Specialismen/dermatologie/Pages/default.aspx" target="_new"><img src="res/img/col7a1/umcg.jpg" width="250" height="80"/></a></td>
+<td><a href="http://www.debra-international.org/" target="_new"><img src="res/img/col7a1/debra_international.png" height="80"/></a></td>
+</tr>
+</table>
+<br/><br/>
 
 </td>
 <td class="news_box">
