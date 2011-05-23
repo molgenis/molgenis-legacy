@@ -7,6 +7,10 @@
 
 package org.molgenis.feedback.ui;
 
+import javax.servlet.http.HttpServletRequest;
+
+import nl.captcha.Captcha;
+
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
@@ -14,6 +18,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.util.Entity;
+import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.SimpleEmailService.EmailException;
 
@@ -60,6 +65,15 @@ public class Contact extends PluginModel<Entity>
 					throw new IllegalArgumentException("Please enter an email address.");
 				if (StringUtils.isEmpty(request.getString("comments")))
 					throw new IllegalArgumentException("Please enter your comments.");
+
+				// get the http request that is encapsulated inside the tuple
+				HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
+				HttpServletRequest httpRequest   = rt.getRequest();
+
+				Captcha captcha                  = (Captcha) httpRequest.getSession().getAttribute(Captcha.NAME);
+
+				if (!captcha.isCorrect(request.getString("code")))
+					throw new IllegalArgumentException("Code was wrong.");
 					
 				String emailContents = "New comment via the contact form:\n" +
 					"Name: " + request.getString("name") + "\n"+

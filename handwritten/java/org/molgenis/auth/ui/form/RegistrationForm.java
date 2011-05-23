@@ -37,6 +37,8 @@ public class RegistrationForm extends Container
 		this.add(cityInput);
 		TextLineInput countryInput     = new TextLineInput("country");
 		this.add(countryInput);
+		TextLineInput codeInput        = new TextLineInput("code");
+		this.add(codeInput);
 		ActionInput addUserInput       = new ActionInput("AddUser", "Add");
 		addUserInput.setTooltip("Add");
 		this.add(addUserInput);

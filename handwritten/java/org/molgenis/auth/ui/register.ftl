@@ -18,4 +18,10 @@
 <tr><td>City</td><td>${form.city}</td></tr>
 <tr><td>Country</td><td>${form.country}</td></tr>
 </table>
+<h3>Code verification</h3>
+<table>
+<tr><td></td><td><img src="captchaImg"/></td></tr>
+<tr><td>Enter code</td><td>${form.code}</td><td>*</td></tr>
+</table>
+<br/>
 ${form.Cancel} ${form.AddUser}

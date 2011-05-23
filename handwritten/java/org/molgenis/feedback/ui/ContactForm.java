@@ -22,6 +22,7 @@ public class ContactForm extends Container
 		this.add(new TextLineInput("email"));
 		this.add(new StringInput("comments", "Enter your comments here"));
 		((StringInput) this.get("comments")).setHeight(10);
+		this.add(new TextLineInput("code"));
 		this.add(new ActionInput("send"));
 		((ActionInput) this.get("send")).setValue(1);
 		((ActionInput) this.get("send")).setLabel("Submit");

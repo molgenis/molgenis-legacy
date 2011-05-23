@@ -30,6 +30,8 @@ ${form.__target}
 <tr><td>Name *</td><td>${form.name}</td></tr>
 <tr><td>Email *</td><td>${form.email}</td></tr>
 <tr><td>Comments *</td><td>${form.comments}</td></tr>
+<tr><td></td><td><img src="captchaImg"/></td></tr>
+<tr><td>Enter code *</td><td>${form.code}</td></tr>
 <tr><td colspan="2">${form.send}</td></tr>
 </table>
 			</div>

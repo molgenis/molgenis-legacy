@@ -19,6 +19,8 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nl.captcha.Captcha;
+
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.auth.OpenIdLogin;
@@ -138,6 +140,15 @@ public class UserLogin extends EasyPluginController<UserLoginModel>
 
 		try
 		{
+			// get the http request that is encapsulated inside the tuple
+			HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
+			HttpServletRequest httpRequest   = rt.getRequest();
+
+			Captcha captcha                  = (Captcha) httpRequest.getSession().getAttribute(Captcha.NAME);
+
+			if (!captcha.isCorrect(request.getString("code")))
+				throw new Exception("Code was wrong.");
+
 			if (this.getApplicationController().getLogin().isAuthenticated())
 			{
 				 // if logged in, log out first
@@ -158,10 +169,6 @@ public class UserLogin extends EasyPluginController<UserLoginModel>
 			MolgenisUser admin              = userService.findById(this.getApplicationController().getLogin().getUserId());
 			if (StringUtils.isEmpty(admin.getEmailaddress()))
 				throw new DatabaseException("Internal error. Please contact the owner of the site per email.");
-
-			// get the http request that is encapsulated inside the tuple
-			HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
-			HttpServletRequest httpRequest   = rt.getRequest();
 
 			// Email the admin
 			String activationURL =
@@ -187,6 +194,7 @@ public class UserLogin extends EasyPluginController<UserLoginModel>
 		finally
 		{
 			this.getApplicationController().getLogin().logout();
+			this.reload(db);
 		}
 	}
 
