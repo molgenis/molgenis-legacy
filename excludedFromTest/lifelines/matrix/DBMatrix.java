@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.organization.Investigation;
@@ -17,13 +16,12 @@ import org.richfaces.model.Ordering;
 
 import app.JpaDatabase;
 
-public class DBMatrix<T> implements PagableMatrix<T, Column, Integer> {
+public class DBMatrix<T> implements PagableMatrix<Column, Integer> {
 	private T[][] data;
 	private static JpaDatabase db;
 	private Investigation investigation;
 	
 	final String qlTargetIds = "SELECT ot.id FROM ObservationTarget ot WHERE ot.investigation = :investigation";
-	
 	final String qlTarget = "SELECT ov.target.id FROM ObservedValue ov WHERE ov.investigation = :investigation AND ov.feature.name = '%s' AND ov.value %s '%s' %s";
 	final String qlTargetIdsByFeatureAndTargetIds = "SELECT ov.target.id FROM ObservedValue ov WHERE " +
 			"ov.investigation = :investigation AND " +
@@ -36,6 +34,7 @@ public class DBMatrix<T> implements PagableMatrix<T, Column, Integer> {
 		try {
 			db = new JpaDatabase();
 		} catch (DatabaseException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -90,7 +89,7 @@ public class DBMatrix<T> implements PagableMatrix<T, Column, Integer> {
 		if(numberOfRows < 0) {
 			numberOfRows = pageSize;
 		}
-		LoadDataFromDatabase(numberOfRows, offset);		
+		loadDataFromDatabase(numberOfRows, offset);		
 	}
 	
 	private void loadObservationTargets() throws NumberFormatException, DatabaseException, SQLException {
@@ -98,7 +97,7 @@ public class DBMatrix<T> implements PagableMatrix<T, Column, Integer> {
 		observationTargetIds = getTargetsIds();
 
 		for(Column column : columns) {
-			String filter = (String)column.getMyFilter();
+			String filter = (String)column.getFilter();
 			if(filter != null && !filter.isEmpty()) {
 				observationTargetIds = andIds(observationTargetIds, 
 						executeCondition(column.getName(), "=" , filter, observationTargetIds));
@@ -174,7 +173,7 @@ public class DBMatrix<T> implements PagableMatrix<T, Column, Integer> {
 		return null;
 	}
 
-	public void LoadDataFromDatabase(int numberOfRows, int offset) throws DatabaseException, ParseException, SQLException {
+	public void loadDataFromDatabase(int numberOfRows, int offset) throws DatabaseException, ParseException, SQLException {
 		System.err.println("loadDataFromDatabase");
 		data = (T[][])Array.newInstance(klass, numberOfRows, columns.size());
 	
@@ -279,4 +278,52 @@ public class DBMatrix<T> implements PagableMatrix<T, Column, Integer> {
 	public Investigation getInvestigation() {
 		return investigation;
 	}
+
+	@Override
+	public int getPageSize() {
+		return pageSize;
+	}
+	
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
+
+	@Override
+	public SimplePager getColumnPager() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setColumnPager(SimplePager pager) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException();
+	}
+
+//	@Override
+//	public boolean isColumnPageChanged() {
+//		// TODO Auto-generated method stub
+//		throw new UnsupportedOperationException();
+//	}
+//
+//	@Override
+//	public void setColumnPageChanged(boolean columnPageChanged) {
+//		// TODO Auto-generated method stub
+//		throw new UnsupportedOperationException();
+//	}
+
+    @Override
+    public List<Column> getVisableColumns() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean isDirty() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setDirty(boolean dirty) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }
