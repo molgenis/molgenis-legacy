@@ -153,32 +153,36 @@ public class UserLogin extends EasyPluginController<UserLoginModel>
 			MolgenisUserService userService = MolgenisUserService.getInstance(db);
 			MolgenisUser user               = this.toMolgenisUser(request);
 			userService.insert(user);
+			
+			// Get the email address of admin user.
+			MolgenisUser admin              = userService.findById(this.getApplicationController().getLogin().getUserId());
+			if (StringUtils.isEmpty(admin.getEmailaddress()))
+				throw new DatabaseException("Internal error. Please contact the owner of the site per email.");
 
 			// get the http request that is encapsulated inside the tuple
 			HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
 			HttpServletRequest httpRequest   = rt.getRequest();
 
-			// Email the user
+			// Email the admin
 			String activationURL =
 				httpRequest.getRequestURL().toString() +
 				"?__target=" + this.getName() +
 				"&select=" + this.getName() +
 				"&__action=Activate&actCode=" + user.getActivationCode();
-			String emailContents = "Somebody, probably you, requested a user account for " + this.getRoot().getLabel() + ".\n";
-			emailContents += "Please visit the following URL in order to activate your account:\n";
-			emailContents += activationURL + "\n\n";
-			emailContents += "If you have not requested an account please ignore this mail.";
+			String emailContents = "User registration for " + this.getRoot().getLabel() + "\n";
+			emailContents       += "In order to activate the user visit the following URL:\n";
+			emailContents       += activationURL + "\n\n";
 			
 			//assuming: 'encoded' p.w. (setting deObf = true)
-			this.getEmailService().email("Your registration request", emailContents, user.getEmailaddress(), true);
+			this.getEmailService().email("User registration for " + this.getRoot().getLabel(), emailContents, admin.getEmailaddress(), true);
 			
-			this.getModel().getMessages().add(new ScreenMessage("Adding user successful - check your e-mail for activation instructions", true));
+			this.getModel().getMessages().add(new ScreenMessage("Thank you for registering. Your request has been sent to the adminstrator for approval.", true));
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 			this.getModel().setAction("Register");
-			throw new DatabaseException("Adding user failed: " + e.getMessage());
+			throw new DatabaseException(e.getMessage());
 		}
 		finally
 		{
@@ -220,13 +224,11 @@ public class UserLogin extends EasyPluginController<UserLoginModel>
 
 			this.getModel().getMessages().add(new ScreenMessage("Activation successful", true));
 
-			// Email the curator
-			// TODO: Where to get admin/curator address from?
-//			String emailContents = "Dear curator, a new user has activated their account:\n" +
-//			user.getTitle() + " " + user.getFirstname() + " " + user.getLastname() + 
-//			", " + user.getPosition() + " at the department " + user.getDepartment() +
-//			" of " + user.getInstitute() + ".";
-//			this.getEmailService().email("New user", emailContents, "p.c.van.den.akker@medgen.umcg.nl", true);
+			// Email the user
+			String emailContents = "Dear " + user.getFirstname() + " " + user.getLastname() + ",\n\n";
+			emailContents       += "your registration request for " + this.getRoot().getLabel() + " was approved.\n";
+			emailContents       += "Your account is now active.\n";
+			this.getEmailService().email("Your registration request", emailContents, user.getEmailaddress(), true);
 		}
 		catch (Exception e)
 		{
