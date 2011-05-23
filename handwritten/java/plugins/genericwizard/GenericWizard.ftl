@@ -68,7 +68,7 @@
 	<#list model.iwep.sheetsImportable?keys as sheet>
 	<tr class="form_listrow1">
 		<td>${sheet}</td>
-		<td><#if model.iwep.sheetsImportable[sheet] == true><p class="successmessage">Yes</p><#else><p class="errormessage">No</p></#if></td>
+		<td><#if model.iwep.sheetsImportable[sheet]?exists><p class="successmessage">Yes</p><#else><p class="errormessage">No</p></#if></td>
 	</tr>
 	</#list>
 
