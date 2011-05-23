@@ -315,9 +315,14 @@ td .form_listrow1{
         border-left-width: 0px;
         border-right-width:0px;
 }
+
 .scrollable {
+		height: 120px;
         width: 100%;
-        overflow: auto;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-top: 10px;
+        padding-bottom: 10px;
 }
 pre {
         color: #000000;
