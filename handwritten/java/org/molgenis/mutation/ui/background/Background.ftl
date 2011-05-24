@@ -18,17 +18,17 @@
 <#assign backgroundSummaryVO = screen.backgroundSummaryVO>
 <h3>Background</h3>
 <p>
-This COL7A1 mutation database is constructed to aid all clinicians and scientists working in the field of dystrophic epidermolysis bullosa (DEB) and the COL7A1 gene. The database contains all DEB patients who have been published in the medical literature together with their COL7A1 genotypes and molecular phenotypes (i.e. result from immunofluorescence and electron microscopy investigations). The COL7A1 mutation database can be searched for patients or mutations, and each by several categories. The database also contains a number of unpublished patients and COL7A1 mutations. Therefore, this database can be used as a central, quick reference database for all who work in the DEB field. Mutations are numbered according to the current reference sequence (<a href="http://www.ncbi.nlm.nih.gov/nuccore/157389010" target="_new">GenBank Accession no. NM000094.3</a>). Mutation nomenclature is according to the <a href="http://www.hgvs.org/mutnomen/" target="_new">HGVS recommendations</a>. 
+This International Dystrophic Epidermolysis Bullosa Patient Registry is constructed to aid all clinicians and scientists working in the field of dystrophic epidermolysis bullosa (DEB) and the COL7A1 gene. The registry contains all DEB patients who have been published in the medical literature together with their COL7A1 genotypes and molecular phenotypes (i.e. results from immunofluorescence and electron microscopy investigations). The DEB Registry can be searched for patients or mutations, and each by several categories. The registry also contains a number of unpublished patients and COL7A1 mutations. Therefore, this registry can be used as a central, quick reference for all who work in the DEB field. Mutations are numbered according to the current reference sequence (<a href="http://www.ncbi.nlm.nih.gov/nuccore/157389010" target="_new">GenBank Accession no. NM000094.3</a>). Mutation nomenclature is according to the <a href="http://www.hgvs.org/mutnomen/" target="_new">HGVS recommendations</a>. 
 </p>
 <p>
-You are free to use the database for your studies. A paper describing the development, construction and data of the COL7A1 mutation database is currently under review. Please cite <a href="http://www.col7a1.org/" target="_new">http://www.col7a1.org/</a> when using the database. 
+You are free to use the registry for your studies. A paper describing the development, construction and data of the DEB registry is currently under review. Please cite <a href="http://www.col7a1.org/" target="_new">http://www.col7a1.org/</a> when using the registry. 
 </p>
 <h3>About dystrophic epidermolysis bullosa and the COL7A1 gene</h3>
 <p>
-Dystrophic epidermolysis bullosa is a heritable blistering disorder that is caused by mutations in the COL7A1 gene [OMIM *120120] encoding type VII collagen. DEB can be inherited either dominantly (DDEB, [OMIM #131750, #131800]) or recessively (RDEB, [OMIM #226600]). See Bruckner-Tuderman (2010) for a good review on DEB. Although a few recurrent mutations have been identified, most families carry unique mutations. Many studies have shown that phenotypic outcomes cannot always be predicted on the basis of COL7A1 genotypes. Therefore, a central database listing all patients, mutations, genotypes and phenotypes is necessary.
+Dystrophic epidermolysis bullosa is a heritable blistering disorder that is caused by mutations in the COL7A1 gene [OMIM *120120] encoding type VII collagen. DEB can be inherited either dominantly (DDEB, [OMIM #131750, #131800]) or recessively (RDEB, [OMIM #226600]). See Bruckner-Tuderman (2010) for a good review on DEB. Although a few recurrent mutations have been identified, most families carry unique mutations. Many studies have shown that phenotypic outcomes cannot always be predicted on the basis of COL7A1 genotypes. Therefore, a central registry listing all patients, mutations, genotypes and phenotypes is necessary.
 </p>
 <p>
-Fine et al. (2008) describe the clinical subtypes of DEB and the clinical and molecular features that are part of DEB. In this database, the phenotypic consensus classification as published by Fine et al. is used (table 1).
+Fine et al. (2008) describe the clinical subtypes of DEB and the clinical and molecular features that are part of DEB. In this registry, the phenotypic consensus classification as published by Fine et al. is used (table 1).
 </p>
 Table 1. Dystrophic EB subtypes (modified from Fine et al., 2008)
 <table class="listtable">
@@ -54,7 +54,7 @@ Table 1. Dystrophic EB subtypes (modified from Fine et al., 2008)
 </table>
 <h3>About the data</h3>
 <p>
-The COL7A1 mutation database is maintained by the departments of Genetics and Dermatology of the University Medical Center Groningen, the Netherlands on behalf of an international initiative of departments involved in the clinical care for patients with DEB and research into DEB. The COL7A1 mutation database currently contains ${backgroundSummaryVO.numPatients} DEB patients and ${backgroundSummaryVO.numMutations} COL7A1 mutations. Of these, ${backgroundSummaryVO.numPatientsUnpub} are unpublished DEB patients. This database is a work in progress. New publications will be added monthly. The institutes that are currently working together in this database are:
+The DEB registry is maintained by the departments of Genetics and Dermatology of the University Medical Center Groningen, the Netherlands on behalf of an international initiative of departments involved in the clinical care for patients with DEB and research into DEB. The International DEB Patient Registry currently contains ${backgroundSummaryVO.numPatients} DEB patients and ${backgroundSummaryVO.numMutations} COL7A1 mutations. Of these, ${backgroundSummaryVO.numPatientsUnpub} are unpublished DEB patients. This registry is a work in progress. New publications will be added regularly. The institutes that are currently working together on this registry are:
 </p>
 <ul>
 <li>Istituto Dermopatico dell'Immacolata, Rome, Italy</li>
@@ -64,14 +64,14 @@ The COL7A1 mutation database is maintained by the departments of Genetics and De
 <li>Departments of Genetics and Dermatology, University Medical Center Groningen, Groningen, the Netherlands</li>
 </ul>
 <p>
-All departments that are willing to collaborate in this project are welcome and can <a href="molgenis.do?__target=View&select=Contact">contact</a> us. We will contact other departments to set up broader collaborations in the future. Please contact <a href="molgenis.do?__target=View&select=Contact">Dr. Peter van den Akker</a> if you need any assistance with the data or database. 
+All departments that are willing to collaborate in this project are welcome and can <a href="molgenis.do?__target=View&select=Contact">contact</a> us. We will contact other departments to set up broader collaborations in the future. Please contact <a href="molgenis.do?__target=View&select=Contact">Dr. Peter van den Akker</a> if you need any assistance with the data or registry. 
 </p>
 <h3>Adding your unpublished data</h3>
 <p>
-The inclusion of unpublished data improves the quality of the data and the use of the database. Therefore, we aim to increase the number of unpublished patients and mutations in the coming years by collaborating with an increasing number of departments. In the "<a href="molgenis.do?__target=View&select=UploadPlugin">Submit data</a>" field you can upload the unpublished data from your department. We highly recommend the use of the provided excel sheet in order to standardize the data. Submitted data will be inserted after curation. Before you can submit data, you need to login. By doing so, a unique user ID is generated that is attached to each patient you submit. This will enable you to come back at a later stage and edit the data you submitted.
+The inclusion of unpublished data improves the quality of the data and the use of the registry. Therefore, we aim to increase the number of unpublished patients and mutations in the coming years by collaborating with an increasing number of departments. In the "<a href="molgenis.do?__target=View&select=UploadPlugin">Submit data</a>" field you can upload the unpublished data from your department. We highly recommend the use of the provided excel sheet in order to standardize the data. Submitted data will be inserted after curation. Before you can submit data, you need to login. By doing so, a unique user ID is generated that is attached to each patient you submit. This will enable you to come back at a later stage and edit the data you submitted.
 </p>
 <p>
-All users who upload unpublished data will be mentioned in the news field on the homepage and in the news archive. Additionally, we will contact these users to cooperate on future update papers on the database.
+All users who upload unpublished data will be mentioned in the news field on the homepage and in the news archive. Additionally, we will contact these users to cooperate on future update papers on the registry.
 </p>
 <h3>About curation of unpublished data</h3>
 <p>
@@ -91,14 +91,14 @@ Please contact Dr. Morris Swertz, <a href="mailto:m.a.swertz@rug.nl">m.a.swertz@
 <li>Swertz MA, De Brock EO, Van Hijum SA, De Jong A, Buist G, Baerends RJ, Kok J, Kuipers OP, Jansen RC. Molecular Genetics Information System (MOLGENIS): alternatives in developing local experimental genomics databases. Bioinformatics. 2004 Sep 1;20(13):2075-83. Epub 2004 Apr 1. PubMed PMID: <a href="http://www.ncbi.nlm.nih.gov/pubmed/15059831" target="_new">15059831</a>.</li>
 <li>Swertz MA, Jansen RC. Beyond standardization: dynamic software infrastructures for systems biology. Nat Rev Genet. 2007 Mar;8(3):235-43. Epub 2007 Feb 13. Review. PubMed PMID: <a href="http://www.ncbi.nlm.nih.gov/pubmed/17297480" target="_new">17297480</a>.</li>
 </ol>
-<h3>Collaborators</h3>
+<h3>Collaborators and supporters</h3>
 <table width="100%">
 <tr>
-<td><a href="http://www.idi.it/web/idi/home" target="_new"><img src="res/img/col7a1/idi.jpg" height="100"/></a></td>
-<td><a href="http://www.uniklinik-freiburg.de/ims/live/hospital/dermatology_en.html" target="_new"><img src="res/img/col7a1/ukl-logo.jpg" width="250"/></a></td>
-<td><a href="http://www.guysandstthomas.nhs.uk/services/dash/dermatology/dermatology.aspx" target="_new"><img src="res/img/col7a1/stjohns.jpg" height="100"/></a></td>
-<td><a href="http://www.eb-haus.eu/index.php?id=21&L=1" target="_new"><img src="res/img/col7a1/ebhaus.png" height="100"/></a></td>
 <td><a href="http://www.umcg.nl/NL/UMCG/overhetumcg/organisatie/Specialismen/dermatologie/Pages/default.aspx" target="_new"><img src="res/img/col7a1/umcg.jpg" width="250"/></a></td>
+<td><a href="http://www.idi.it/web/idi/home" target="_new"><img src="res/img/col7a1/idi.jpg" height="100"/></a></td>
+<td><a href="http://www.eb-haus.eu/index.php?id=21&L=1" target="_new"><img src="res/img/col7a1/ebhaus.png" height="100"/></a></td>
+<td><a href="http://www.guysandstthomas.nhs.uk/services/dash/dermatology/dermatology.aspx" target="_new"><img src="res/img/col7a1/stjohns.jpg" height="100"/></a></td>
+<td><a href="http://www.uniklinik-freiburg.de/ims/live/hospital/dermatology_en.html" target="_new"><img src="res/img/col7a1/ukl-logo.jpg" width="250"/></a></td>
 <td><a href="http://www.debra-international.org/" target="_new"><img src="res/img/col7a1/debra_international.png" height="100"/></a></td>
 </tr>
 </table>
