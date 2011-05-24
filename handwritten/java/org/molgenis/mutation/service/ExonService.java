@@ -13,6 +13,8 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.jdbc.JDBCConnectionHelper;
+import org.molgenis.framework.db.jdbc.JDBCDatabase;
+import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.Gene;
 
@@ -265,24 +267,36 @@ public class ExonService implements Serializable
 
 	private Integer findExonIdByCdna_position(Integer cdna_position) throws DatabaseException
 	{
-//		List<Tuple> result = this.db.sql(String.format("SELECT id FROM Exon WHERE cdna_position <= %d AND %d <= cdna_position + length - 1", cdna_position, cdna_position));
-//		// Should be only one result if exons have been entered correctly
-//		return result.get(0).getInt("id");
-		
-		
-		javax.persistence.Query q = this.db.getEntityManager().createNativeQuery(String.format("SELECT id FROM Exon WHERE cdna_position <= %d AND %d <= cdna_position + length - 1", cdna_position, cdna_position));
-		return (Integer) q.getSingleResult();
+		if (this.db instanceof JDBCDatabase)
+		{
+			List<Tuple> result = ((JDBCDatabase) this.db).sql(String.format("SELECT id FROM Exon WHERE cdna_position <= %d AND %d <= cdna_position + length - 1", cdna_position, cdna_position));
+			// Should be only one result if exons have been entered correctly
+			return result.get(0).getInt("id");
+		}
+		else if (this.db instanceof JpaDatabase)
+		{
+			javax.persistence.Query q = this.db.getEntityManager().createNativeQuery(String.format("SELECT id FROM Exon WHERE cdna_position <= %d AND %d <= cdna_position + length - 1", cdna_position, cdna_position));
+			return (Integer) q.getSingleResult();
+		}
+		else
+			throw new DatabaseException("Unsupported database mapper");
 	}
 
 	private Integer findExonIdByGdna_position(Integer gdna_position) throws DatabaseException
 	{
-//		List<Tuple> result = this.db.sql(String.format("SELECT id FROM Exon WHERE (gdna_position - length) <= %d AND %d <= gdna_position", gdna_position, gdna_position));
-//		// Should be only one result if exons and introns have been entered correctly
-//		return result.get(0).getInt("id");
-		
-		
-		javax.persistence.Query q = this.db.getEntityManager().createNativeQuery(String.format("SELECT id FROM Exon WHERE (gdna_position - length) <= %d AND %d <= gdna_position", gdna_position, gdna_position));
-		return (Integer) q.getSingleResult();
+		if (this.db instanceof JDBCDatabase)
+		{
+			List<Tuple> result = ((JDBCDatabase) this.db).sql(String.format("SELECT id FROM Exon WHERE (gdna_position - length) <= %d AND %d <= gdna_position", gdna_position, gdna_position));
+			// Should be only one result if exons and introns have been entered correctly
+			return result.get(0).getInt("id");
+		}
+		else if (this.db instanceof JpaDatabase)
+		{
+			javax.persistence.Query q = this.db.getEntityManager().createNativeQuery(String.format("SELECT id FROM Exon WHERE (gdna_position - length) <= %d AND %d <= gdna_position", gdna_position, gdna_position));
+			return (Integer) q.getSingleResult();
+		}
+		else
+			throw new DatabaseException("Unsupported database mapper");
 	}
 
 	public Integer findExonIdByPosition(String position) throws DatabaseException, RESyntaxException
