@@ -62,7 +62,7 @@
 </#if>
 <h4><a name="other">Patient material</a></h4>
 <table class="listtable" cellpadding="4">
-<tr class="form_listrow1"><th width="50%">Patient material available?</th><td>unknown</td></tr>
+<tr class="form_listrow1"><th width="50%">Patient material available?</th><td><#if patientSummaryVO.material?size &gt; 0><#list patientSummaryVO.material as material>${material}<br/></#list><#else>unknown</#if></td></tr>
 </table>
 
 <#--

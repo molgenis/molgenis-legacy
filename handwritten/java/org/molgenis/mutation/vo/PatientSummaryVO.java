@@ -29,6 +29,7 @@ public class PatientSummaryVO implements Serializable
 	private MolgenisUser submitter;
 	private I_F if_;
 	private E_M em_;
+	private List<String> material;
 
 	public PatientSummaryVO()
 	{
@@ -110,7 +111,13 @@ public class PatientSummaryVO implements Serializable
 	public void setEm_(E_M em_) {
 		this.em_ = em_;
 	}
-	
+	public List<String> getMaterial() {
+		return material;
+	}
+	public void setMaterial(List<String> material) {
+		this.material = material;
+	}
+
 	public String toString()
 	{
 		return

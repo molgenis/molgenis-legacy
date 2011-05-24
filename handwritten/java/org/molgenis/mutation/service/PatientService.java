@@ -75,7 +75,7 @@ public class PatientService implements Serializable
 		if (criteria.getMutationId() != null)
 		{
 			Mutation mutation = this.db.findById(Mutation.class, criteria.getMutationId());
-			query = query.equals(Patient.MUTATION1, mutation).or().equals(Patient.MUTATION2, mutation);
+			query = query.equals(Patient.MUTATION1, mutation.getId()).or().equals(Patient.MUTATION2, mutation.getId());
 		}
 		if (criteria.getMid() != null)
 		{
@@ -390,7 +390,7 @@ public class PatientService implements Serializable
 		// this.db.query(MutationPhenotype.class).equals(MutationPhenotype.NAME,
 		// "DEB-u").find().get(0);
 		MutationPhenotype phenotype = this.db.query(MutationPhenotype.class)
-				.equals(MutationPhenotype.NAME, "Unknown").find().get(0);
+				.equals(MutationPhenotype.NAME, "DEB-u").find().get(0);
 
 		patientSummaryVO.setPhenotype(phenotype);
 
@@ -447,6 +447,9 @@ public class PatientService implements Serializable
 			List<E_M> em_s = this.db.query(E_M.class).equals(E_M.PATIENT, patient.getId()).find();
 			if (em_s.size() > 0)
 				patientSummaryVO.setEm_(em_s.get(0));
+			
+			patientSummaryVO.setMaterial(patient.getMaterial_Name());
+
 //		}
 //		else if (this.db instanceof JpaDatabase)
 //		{

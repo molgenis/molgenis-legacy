@@ -199,6 +199,12 @@
 				nillable="true" label="PubMed ID" />
 			<field name="consent" type="enum" enum_options="publication,yes,no"
 				default="no" label="Patient consent" />
+			<field name="material" type="mref" xref_field="Material.id"
+				xref_label="name" label="Patient material"/>
+		</entity>
+		<entity name="Material" implements="Nameable">
+			<description>Patient material</description>
+			<unique fields="name"></unique>
 		</entity>
 		<entity name="I_F" implements="Identifiable">
 		<!-- keep for now. Later this should become entry in 'Protocol'. -->
