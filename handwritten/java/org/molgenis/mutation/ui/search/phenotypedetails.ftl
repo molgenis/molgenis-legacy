@@ -60,6 +60,11 @@
 <tr class="form_listrow0"><th width="50%" colspan="2">Comments</th><td><#if patientSummaryVO.em_.getDescription()??>${patientSummaryVO.em_.getDescription()}</#if></td></tr>
 </table>
 </#if>
+<h4><a name="other">Other</a></h4>
+<table class="listtable" cellpadding="4">
+<tr class="form_listrow1"><th width="50%">Patient material available?</th><td>unknown</td></tr>
+</table>
+
 <#--
 <#assign listrow = "0">
 <#list details.values.fields as key>

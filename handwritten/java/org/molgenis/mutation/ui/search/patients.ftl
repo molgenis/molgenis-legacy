@@ -53,6 +53,10 @@
 <#list patientSummaryVO.publications as publication>
 	<a href="${patientSummaryVO.pubmedURL}${publication.getPubmedID_Name()}" target="_new">${publication.getTitle()}</a><br/>
 </#list>
+<#if patientSummaryVO.submitter?? && !patientSummaryVO.submitter.getSuperuser()>
+First submitted as unpublished case by
+${patientSummaryVO.submitter.getDepartment()}, ${patientSummaryVO.submitter.getInstitute()}, ${patientSummaryVO.submitter.getCity()}, ${patientSummaryVO.submitter.getCountry()}
+</#if>
 <#elseif patientSummaryVO.submitter??>
 Unpublished<br/>
 ${patientSummaryVO.submitter.getDepartment()}, ${patientSummaryVO.submitter.getInstitute()}, ${patientSummaryVO.submitter.getCity()}, ${patientSummaryVO.submitter.getCountry()}

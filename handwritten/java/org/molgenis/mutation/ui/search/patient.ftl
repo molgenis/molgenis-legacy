@@ -7,12 +7,17 @@
 <tr class="form_listrow0"><th>Phenotype</th><td>${patientSummaryVO.phenotype.getMajortype()}, ${patientSummaryVO.phenotype.getSubtype()}<#if patientSummaryVO.patient.getConsent() != "no"> [<a href="molgenis.do?__target=${screen.name}&__action=showPhenotypeDetails&pid=${patientSummaryVO.patient.getIdentifier()}#phenotype">Details</a>]</#if></td></tr>
 <tr class="form_listrow1"><th>Immunofluorescence: type VII collagen</th><td><#if patientSummaryVO.if_??>${patientSummaryVO.if_.getValue()}</#if><#if patientSummaryVO.patient.getConsent() != "no">  [<a href="molgenis.do?__target=${screen.name}&__action=showPhenotypeDetails&pid=${patientSummaryVO.patient.getIdentifier()}#if">Details</a>]</#if></td></tr>
 <tr class="form_listrow0"><th>Electron Microscopy: anchoring fibrils</th><td><#if patientSummaryVO.em_??>${patientSummaryVO.em_.getNumber()}</#if><#if patientSummaryVO.patient.getConsent() != "no">  [<a href="molgenis.do?__target=${screen.name}&__action=showPhenotypeDetails&pid=${patientSummaryVO.patient.getIdentifier()}#em">Details</a>]</#if></td></tr>
-<tr class="form_listrow1"><th>Local patient no</th><td>${patientSummaryVO.patient.getNumber()}</td></tr>
-<tr class="form_listrow0"><th>Reference</th><td>
+<tr class="form_listrow1"><th>Patient material available?</th><td>unknown</td></tr>
+<tr class="form_listrow0"><th>Local patient no</th><td>${patientSummaryVO.patient.getNumber()}</td></tr>
+<tr class="form_listrow1"><th>Reference</th><td>
 <#if patientSummaryVO.publications?? && patientSummaryVO.publications?size &gt; 0>
 <#list patientSummaryVO.publications as publication>
 <a href="${patientSummaryVO.pubmedURL}${publication.getPubmedID_Name()}" target="_new">${publication.getTitle()}</a><br/>
 </#list>
+<#if patientSummaryVO.submitter?? && !patientSummaryVO.submitter.getSuperuser()>
+First submitted as unpublished case by
+${patientSummaryVO.submitter.getDepartment()}, ${patientSummaryVO.submitter.getInstitute()}, ${patientSummaryVO.submitter.getCity()}, ${patientSummaryVO.submitter.getCountry()}
+</#if>
 <#elseif patientSummaryVO.submitter??>
 Unpublished<br/>
 ${patientSummaryVO.submitter.getDepartment()}, ${patientSummaryVO.submitter.getInstitute()}, ${patientSummaryVO.submitter.getCity()}, ${patientSummaryVO.submitter.getCountry()}
