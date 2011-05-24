@@ -18,7 +18,7 @@ The International Dystrophic Epidermolysis Bullosa Patient Registry contains ano
 The database currently contains ${vo.numPatients} DEB patients, of which ${vo.numUnpublished} unpublished, and ${vo.numMutations} COL7A1 mutations. Search or browse below.
 </p>
 <br/>
-<h3>Search database</h3>
+<h3>Search registry</h3>
 <p>
 Search by typing any search term in the search field, like cDNA (e.g. "3G>T") or protein (e.g. "Arg525Ter") notations of mutations, mode of inheritance (e.g. "dominant") or specific phenotypes (e.g. "severe generalized"). Search results are shown at bottom of page.
 </p>
