@@ -120,8 +120,8 @@ public class ListPlugin extends PluginModel<Entity> {
 				
 				int port = ((HttpServletRequestTuple) request).getRequest().getServerPort();
 				
-				String url = "http://localhost:" + port +  "/" + 
-				MolgenisServlet.getMolgenisVariantID() + "/EventViewerJSONServlet?reset=1";
+				String url = "http://localhost:" + port +  "/" + MolgenisServlet.getMolgenisVariantID() + 
+					"/EventViewerJSONServlet?reset=1";
 				URL servletURL = null;
 				try {
 					servletURL = new URL(url);

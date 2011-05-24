@@ -6,9 +6,10 @@
 		<plugin name="BbmriWelcomeScreen" type="plugins.welcome.BbmriWelcomeScreenPlugin" label="Welcome" />
 		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Login" />
 		<form name="Cohorts" entity="BiobankPanel" label="Biobank Overview"	hide_fields="id,description,Species,Individuals,PanelType,FounderPanels,ontologyReference,canRead,canWrite,Approved" />
+		<plugin name="CohortPlugin" type="plugins.listplugin.CohortsPlugin" label="Biobank Overview (plugin)" />
 		<menu name="Admin">
 		    <menu name="DataViews">
-		    	<form name="AdminCohorts" entity="BiobankPanel" label="Admin Biobank"	hide_fields="id,description,Species,Individuals,PanelType,FounderPanels,ontologyReference" />
+		    	<form name="AdminCohorts" entity="BiobankPanel" label="Admin Biobank" hide_fields="id,description,Species,Individuals,PanelType,FounderPanels,ontologyReference" />
 		    	<!-- <form name="Biobanks" entity="Biobank" view="list" /> -->
 				<form name="Coordinators" entity="Person" view="list" sortby="LastName" />
 				<form name="Institutes" entity="Institute" view="list" />
