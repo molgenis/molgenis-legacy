@@ -7,8 +7,9 @@
 
 package plugins.listplugin;
 
-import java.util.Date;
+import java.util.List;
 
+import org.molgenis.bbmri.BiobankPanel;
 import org.molgenis.framework.ui.EasyPluginModel;
 
 /**
@@ -20,10 +21,8 @@ public class CohortsPluginModel extends EasyPluginModel
 {
 	//a system veriable that is needed by tomcat
 	private static final long serialVersionUID = 1L;
-	//this string can be referenced from CohortsPluginView.ftl template as ${model.helloWorld}
-	public String helloWorld = "hello World";
-	//this date can be referenced from CohortsPluginView.ftl template as ${model.date}
-	public Date date = new Date();
+	
+	private List<BiobankPanel> cohorts;
 	
 	//another example, you can also use getInvestigations() and setInvestigations(...)
 	//public List<Investigation> investigations = new ArrayList<Investigation>();
@@ -32,6 +31,14 @@ public class CohortsPluginModel extends EasyPluginModel
 	{
 		//each Model can access the controller to notify it when needed.
 		super(controller);
+	}
+
+	public void setCohorts(List<BiobankPanel> cohorts) {
+		this.cohorts = cohorts;
+	}
+
+	public List<BiobankPanel> getCohorts() {
+		return cohorts;
 	}
 	
 	

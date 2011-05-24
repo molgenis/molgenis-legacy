@@ -24,11 +24,43 @@
 			<div class="screenpadding">	
 			
 <#--begin your plugin-->	
-<p>The currently selected date: ${model.date?date}</p>
-<label>Change date:</label><@date name="date" value=model.date/> <@action name="updateDate"/>
+
+<table cellpadding="0" cellspacing="0" border="0" class="display" id="listtable">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Category</th>
+			<th>Topic</th>
+			<th>Coordinators</th>
+		</tr>
+	</thead>
+	<tbody>
+		<#list model.cohorts as cohort>
+		<tr>
+			<td>${cohort.name}</td>
+			<td>${cohort.Category}</td>
+			<td>${cohort.Topic}</td>
+			<td>${cohort.Coordinators}</td>
+		</tr>
+		</#list>
+	</tbody>
+</table>
 	
 <#--end of your plugin-->	
 			</div>
 		</div>
 	</div>
 </form>
+
+<script>
+
+<!-- Initialization of 'listtable' as DataTable -->
+var oTable = jQuery('#listtable').dataTable(
+	{ "bProcessing": true,
+	  "bServerSide": false,
+	  "sPaginationType": "full_numbers",
+	  "bSaveState": true,
+	  "bAutoWidth": false }
+);
+
+</script>

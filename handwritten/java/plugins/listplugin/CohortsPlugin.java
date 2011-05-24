@@ -1,11 +1,12 @@
 
 package plugins.listplugin;
 
+import org.molgenis.bbmri.BiobankPanel;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.Query;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.EasyPluginController;
-import org.molgenis.util.Tuple;
 
 /**
  * CohortsPluginController takes care of all user requests and application logic.
@@ -17,11 +18,26 @@ import org.molgenis.util.Tuple;
  */
 public class CohortsPlugin extends EasyPluginController<CohortsPluginModel>
 {
+	private static final long serialVersionUID = -6218788933409278070L;
+
 	public CohortsPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, null, parent);
 		this.setModel(new CohortsPluginModel(this)); //the default model
 		this.setView(new FreemarkerView("CohortsPluginView.ftl", getModel())); //<plugin flavor="freemarker"
+	}
+	
+	public String getCustomHtmlHeaders() {
+		return "<script type=\"text/javascript\" src=\"res/scripts/custom/jquery.dataTables.js\"></script>\n"
+			//+ "<script type=\"text/javascript\" charset=\"utf-8\">jQuery.noConflict();</script>\n"
+			//+ "<script src=\"res/scripts/custom/jquery-ui-1.8.6.custom.min.js\" type=\"text/javascript\" language=\"javascript\"></script>"
+			+ "<script src=\"res/scripts/custom/jquery.autocomplete.combobox.js\" type=\"text/javascript\" language=\"javascript\"></script>"
+			//+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">\n"
+			+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/demo_table.css\">\n"
+			+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/demo_page.css\">\n";
+			//+"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/ui-lightness/jquery-ui-1.8.6.custom.css\">";
+		   //+ "<script>$(document).ready(function(){ $( \"#arf\" ).combobox();  }); </script>";
+			//+ "<script> $(function() { $( \"#arf\" ).combobox();  });	</script>;";
 	}
 	
 	/**
@@ -33,27 +49,8 @@ public class CohortsPlugin extends EasyPluginController<CohortsPluginModel>
 	@Override
 	public void reload(Database db) throws Exception
 	{	
-//		//example: update model with data from the database
-//		Query q = db.query(Investigation.class);
-//		q.like("name", "molgenis");
-//		getModel().investigations = q.find();
-	}
-	
-	/**
-	 * When action="updateDate": update model and/or view accordingly.
-	 *
-	 * Exceptions will be logged and shown to the user automatically.
-	 * All db actions are within one transaction.
-	 */
-	public void updateDate(Database db, Tuple request) throws Exception
-	{
-		getModel().date = request.getDate("date");
-	
-//		//Easily create object from request and add to database
-//		Investigation i = new Investigation(request);
-//		db.add(i);
-//		this.setMessage("Added new investigation");
-
-		getModel().setSuccess("update succesfull");
+		// Fill list of Cohorts
+		Query<BiobankPanel> q = db.query(BiobankPanel.class);
+		this.getModel().setCohorts(q.find());
 	}
 }
