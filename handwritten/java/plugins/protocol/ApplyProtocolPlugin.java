@@ -36,11 +36,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		super(name, parent);
 	
 		model = new ApplyProtocolPluginModel();
-		try {
-			model.setUserAndInvestigationId(this.getLogin().getUserId());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		
 		ui = new ApplyProtocolUI(model);
     }
 
@@ -94,15 +90,11 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		cs.makeObservationTargetNameMap(userId, false);
 		
 		model.setCommonService(cs);
-	
+		
 		// Only first time or if user changed:
-		try {
-			if (ui.getProtocolApplicationContainer() == null || userId != model.getUserId()) {
-				model.setUserAndInvestigationId(userId);
-			    ui.initScreen();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (ui.getProtocolApplicationContainer() == null || userId != model.getUserId()) {
+			model.setUserAndInvestigationId(userId);
+		    ui.initScreen();
 		}
     }
 
@@ -231,7 +223,9 @@ public class ApplyProtocolPlugin extends GenericPlugin
 					    newValue.setTime(startTime);
 					    newValue.setEndtime(endTime);
 					    newValue.setProtocolApplication(paId);
-					    newValue.setInvestigation(model.getInvestigationId());
+					    if (model.getInvestigationId() != -1) {
+					    	newValue.setInvestigation(model.getInvestigationId());
+					    }
 				
 						db.add(newValue);
 						// TODO: add to batch list and add later

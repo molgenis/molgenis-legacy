@@ -164,22 +164,26 @@ public class CommonService
 	/**
 	 * Gets the ID of the investigation owned by the user with ID 'userId'.
 	 * Assumption: a user only owns one investigation.
-	 * If they own none, an exception is thrown. If they own multiple, only the first one is returned.
+	 * If they own none, -1 is returned. If they own multiple, only the first one is returned.
 	 * 
 	 * @param userId
 	 * @return
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public int getUserInvestigationId(int userId) throws DatabaseException, ParseException {
+	public int getUserInvestigationId(int userId) {
 		Query<Investigation> q = db.query(Investigation.class);
 		q.addRules(new QueryRule(Investigation.OWNS, Operator.EQUALS, userId));
-		List<Investigation> invList = q.find();
-		
+		List<Investigation> invList;
+		try {
+			invList = q.find();
+		} catch (Exception e) {
+			return -1;
+		}
 		if (invList.size() > 0) {
 		    return invList.get(0).getId();
 		} else {
-		    throw new DatabaseException("No investigation can be found for user with ID: " + userId);
+		    return -1;
 		}
 	}
 	

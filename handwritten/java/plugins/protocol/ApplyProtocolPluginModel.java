@@ -139,7 +139,7 @@ public class ApplyProtocolPluginModel {
 		return fullTargetList;
 	}
 
-	public void setUserAndInvestigationId(int userId) throws DatabaseException, ParseException {
+	public void setUserAndInvestigationId(int userId) {
 		this.userId = userId;
 		this.investigationId = cs.getUserInvestigationId(userId);
 	}
