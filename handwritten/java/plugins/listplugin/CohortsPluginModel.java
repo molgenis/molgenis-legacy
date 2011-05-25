@@ -7,9 +7,15 @@
 
 package plugins.listplugin;
 
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.molgenis.bbmri.BiobankPanel;
+import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Query;
 import org.molgenis.framework.ui.EasyPluginModel;
 
 /**
@@ -41,5 +47,29 @@ public class CohortsPluginModel extends EasyPluginModel
 		return cohorts;
 	}
 	
+	public java.util.List<BiobankPanel> removeEmptyValues(Database db) {
+		
+		java.util.List<BiobankPanel> biobankPanel = new ArrayList<BiobankPanel>();
+		Iterator<BiobankPanel> iterator  = biobankPanel.iterator();
+		
+		Query<BiobankPanel> q = db.query(BiobankPanel.class);
+		try {
+			biobankPanel =  q.find();
+			while (iterator.hasNext()) {
+				if (iterator.next().getGwaDataNum().isEmpty()) {
+					iterator.next().setGwaDataNum("not available");
+				}
+				
+			}
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		return biobankPanel;
+		
+		
+	}
 	
 }

@@ -23,30 +23,67 @@
 		<div class="screenbody">
 			<div class="screenpadding">	
 			
-<#--begin your plugin-->	
-
-<table cellpadding="0" cellspacing="0" border="0" class="display" id="listtable">
-	<thead>
-		<tr>
-			<th>Name</th>
-			<th>Category</th>
-			<th>Topic</th>
-			<th>Coordinators</th>
-		</tr>
-	</thead>
-	<tbody>
-		<#list model.cohorts as cohort>
-		<tr>
-			<td>${cohort.name}</td>
-			<td>${cohort.Category}</td>
-			<td>${cohort.Topic}</td>
-			<td>${cohort.Coordinators}</td>
-		</tr>
-		</#list>
-	</tbody>
-</table>
+				
+				<table cellpadding="0" cellspacing="0" border="0" class="display" id="listtable">
+					<thead>
+						<tr>
+							<th>Id</th>
+							<th>Category</th>
+							<th>SubCategory</th>
+							<th>Topic</th>
+							<th>Institutions</th>
+							<th>Coordinators</th>
+							<th>Current n=</th>
+							<th>Biodata</th>
+							<th>Number of Gwa Data</th>
+							<th>Gwa Platform</th>
+							<th>Gwa Comments</th>
+							<th>General Comments</th>
+							<th>Publications</th>
+						</tr>
+					</thead>
+					<tbody>
+						<#list model.cohorts as cohort>
+						<tr>
+							<td>${cohort.name}</td>
+							<td>${cohort.Category_Name}</td>
+							<td>${cohort.SubCategory_Name}</td>
+							<td>${cohort.Topic_Name}</td>
+							<td>${cohort.Institutes_Name}</td>
+							<td>${cohort.Coordinators_LastName}</td>
+							<td>${cohort.Size}</td>
+							<td>${cohort.Biodata_name}</td>
+							<#if cohort.GwaDataNum??>
+								<td>${cohort.GwaDataNum}</td>
+							<#else>
+								<td></td>
+							</#if>
+							<#if cohort.GwaPlatform??>
+								<td>${cohort.GwaPlatform}</td>
+							 <#else>
+							 	<td></td>
+							 </#if>
+							<#if cohort.GwaComments??>
+								<td>${cohort.GwaComments}</td>
+							 <#else>
+							 	<td></td>
+							 </#if>
+							 <#if cohort.GeneralComments??>
+								<td>${cohort.GeneralComments}</td>
+							<#else>
+								<td></td>
+							</#if>
+							<#if cohort.Publications??>
+								<td>${cohort.Publications}</td>
+							<#else>
+								<td></td>
+							</#if>
+							 
+						</tr>
+						</#list>
+					</tbody>
+				</table>
 	
-<#--end of your plugin-->	
 			</div>
 		</div>
 	</div>

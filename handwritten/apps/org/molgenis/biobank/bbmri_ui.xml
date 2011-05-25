@@ -5,8 +5,10 @@
 	<menu name="main" position="left" startswith="WelcomeScreen">
 		<plugin name="BbmriWelcomeScreen" type="plugins.welcome.BbmriWelcomeScreenPlugin" label="Welcome" />
 		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Login" />
-		<form name="Cohorts" entity="BiobankPanel" label="Biobank Overview"	hide_fields="id,description,Species,Individuals,PanelType,FounderPanels,ontologyReference,canRead,canWrite,Approved" />
-		<plugin name="CohortPlugin" type="plugins.listplugin.CohortsPlugin" label="Biobank Overview (plugin)" />
+		<plugin name="CohortPlugin" type="plugins.listplugin.CohortsPlugin" label="Biobank Overview " />
+		<menu name="EditData" label="Edit data">
+			<form name="Cohorts" entity="BiobankPanel" label="Biobank Overview"	hide_fields="id,description,Species,Individuals,PanelType,FounderPanels,ontologyReference,canRead,canWrite,Approved" />
+		</menu>
 		<menu name="Admin">
 		    <menu name="DataViews">
 		    	<form name="AdminCohorts" entity="BiobankPanel" label="Admin Biobank" hide_fields="id,description,Species,Individuals,PanelType,FounderPanels,ontologyReference" />
@@ -17,8 +19,6 @@
 				<form name="DataTypes" entity="BiobankDataType" />
 				<form name="Topics" entity="BiobankTopic" />
 			</menu>
-			
-			
 			<plugin name="Settings" type="plugins.system.settings.Settings" />
 			<menu name="usermanagement" position="left" label="User management">
 				<form name="MolgenisUser" entity="MolgenisUser" label="User" />
