@@ -397,4 +397,10 @@ body {
 	font-size: 10pt;
     font-weight: bold;
 }
+
+.clickable_block {
+	display: block;
+	height: 100%;
+	width: 100%;
+}
 /*end of edits*/
