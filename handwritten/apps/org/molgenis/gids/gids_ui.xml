@@ -8,11 +8,12 @@
 	
 	<menu name="mainmenu" position="left">
 		<plugin name="WelcomeScreen" type="plugins.welcome.GidsWelcomeScreenPlugin" label="Welcome"/>
-		<!--<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Login"/>-->
+		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Login"/>
+		<!-- <plugin name="ListPlugin" type="plugins.listplugin.ListPlugin" label="Matrix" /> -->
 		<menu name="ImportData" label="Import Data">
 			<plugin name="ConvertDataIntoPheno" type="plugins.convertergids.ConvertDataIntoPhenoPlugin" label="Convert data"/>
 			<plugin name="FillDatabase" type="plugins.fillgids.FillDatabasePlugin" label="Load data" />
-			<plugin name="PrintLabel" type="plugins.output.PrintLabelPlugin" label="Print Labels" />
+			
 		</menu>	
 	    <form entity="Investigation" name="investigation">
 		    
@@ -23,7 +24,7 @@
 				<form name="observedvalue" entity="ObservedValue" view="list" label="Observed values" />	
 	
 	        </menu>
-	        <!--<plugin name="ListPlugin" type="plugins.listplugin.ListPlugin" label="Matrix" />-->
+	        
 	        <!--<plugin label="Import data" name="DefImport" type="plugins.genericwizard.GenericWizard" />-->
 	    </form> 
 	     

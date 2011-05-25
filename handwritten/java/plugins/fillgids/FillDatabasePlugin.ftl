@@ -37,30 +37,29 @@
 <h2>GIDS</h2>
 
 <div id="deleteAllFromDatabase" class="row">
-	<input type='submit' class='addbutton' value='deleteDB' onclick="__action.value='deleteDB'" />
+	<input type='submit' class='addbutton' value='emptyDB' onclick="__action.value='emptyDB'" />
 </div>
 
-<div id="readIndividuals" class="row">
+<div style="margin-top:20px" id="readIndividuals" class="row">
 	<label for="readind">Choose your directory with the individual files:</label>
-	<input style="margin-right:50px" type="file" name="readind" id="readind"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<input type='submit' class='addbutton' value='load individuals' onclick="__action.value='loadind'" />
+	<input style="margin-left:34px" type="file" name="readind" id="readind"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </div>
 
 <div id="readMeasurement" class="row">
 	<label for="readmeas">Choose your directory with the measurement files:</label>&nbsp;&nbsp;&nbsp;
-	<input type="file" name="readmeas" id="readmeas" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<input type='submit' class='addbutton' value='load measurement' onclick="__action.value='loadmeas'" />
+	<input  type="file" name="readmeas" id="readmeas" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 </div>
 
 <div id="readValues" class="row">
 	<label for="readval">Choose your directory with the observedvalues files:</label>
-	<input type="file" name="readval" id="readval"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<input type='submit' class='addbutton' value='load values' onclick="__action.value='loadval'" />
+	<input style="margin-left:3px" type="file" name="readval" id="readval"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 </div>
 
-<div id="submitbutton" class="row">
-	<label for="submittie">Load the files into the database: </label>
-	<input type='submit' name='submittie' class='addbutton' value='load files into db' onclick="__action.value='loadAll'" />
+<div style="padding-left:418px; margin-top:10px" id="submitbutton" class="row">
+
+	<input style="background-color:#5B82A4; color:white" type='submit' name='submittie' class='addbutton' value='load files into db' onclick="__action.value='loadAll'" />
 </div>
 
 

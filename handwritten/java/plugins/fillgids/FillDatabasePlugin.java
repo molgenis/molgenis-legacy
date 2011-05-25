@@ -12,6 +12,8 @@ import java.io.File;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.organization.Investigation;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -51,88 +53,51 @@ public class FillDatabasePlugin extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-		
+
 		String action = request.getString("__action");
+		logger.info("##############   " + roanDir.toString());
 		
-		
-		if (action.equals("deleteDB") ){
+		if (action.equals("emptyDB") ){
 			try {
-				new emptyDatabase(db, true);
+				if(db.count(Investigation.class)!=0){
+					new emptyDatabase(db, true);
+					this.setMessages(new ScreenMessage("empty database succesfully", true));
+				}
+				else{
+					this.setMessages(new ScreenMessage("database is empty already", true));
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}	
 		}
 		
-		
-		
-		
-		
-		if(action.equals("loadind")){
-			File bla = request.getFile("readind");
-			File moveBla = new File(roanDir + File.separator + bla.getName());
-			//move the file
-			boolean moveSuccess = bla.renameTo(moveBla);
-			if(!moveSuccess){
-				logger.error("MOVE readind PHAIL");
-				//error oid... gaat vaak fout onder windoos!!!! java bug!!
-			}
-			
-			String originalName = request.getString("readindOriginalFileName");
-			boolean renameSuccess = moveBla.renameTo(new File(roanDir + File.separator + originalName));
-			
-			if(!renameSuccess){
-				logger.error("RENAME readind PHAIL");
-				//error oid... gaat vaak fout onder windoos!!!! java bug!!
-			}
-		
-			
-		}
-		if(action.equals("loadmeas")){
-			File bla = request.getFile("readmeas");
-			File moveBla = new File(roanDir + File.separator + bla.getName());
-			//move the file
-			boolean moveSuccess = bla.renameTo(moveBla);
-			if(!moveSuccess){
-				logger.error("MOVE readmeas PHAIL");
-				//error oid... gaat vaak fout onder windoos!!!! java bug!!
-			}
-			
-			String originalName = request.getString("readmeasOriginalFileName");
-			boolean renameSuccess = moveBla.renameTo(new File(roanDir + File.separator + originalName));
-			
-			if(!renameSuccess){
-				logger.error("RENAME readmeas PHAIL");
-				//error oid... gaat vaak fout onder windoos!!!! java bug!!
-			}
-		
-			
-		}
-		if(action.equals("loadval")){
-			File bla = request.getFile("readval");
-			File moveBla = new File(roanDir + File.separator + bla.getName());
-			//move the file
-			boolean moveSuccess = bla.renameTo(moveBla);
-			if(!moveSuccess){
-				logger.error("MOVE readval PHAIL");
-				//error oid... gaat vaak fout onder windoos!!!! java bug!!
-			}
-			
-			String originalName = request.getString("readvalOriginalFileName");
-			boolean renameSuccess = moveBla.renameTo(new File(roanDir + File.separator + originalName));
-			
-			if(!renameSuccess){
-				logger.error("RENAME readval PHAIL");
-				//error oid... gaat vaak fout onder windoos!!!! java bug!!
-			}
-			
-		}
 		if(action.equals("loadAll")){
 			
 			try {
+				File fileInd = request.getFile("readind");
+				File fileMeas = request.getFile("readmeas");
+				File fileVal = request.getFile("readval");
+			
+				File moveInd = new File(roanDir + File.separator + fileInd.getName());
+				File moveMeas = new File(roanDir + File.separator + fileMeas.getName());
+				File moveVal = new File(roanDir + File.separator + fileVal.getName());
+				boolean moveSuccessInd = fileInd.renameTo(moveInd);
+				boolean moveSuccessMeas = fileMeas.renameTo(moveMeas);
+				boolean moveSuccessVal = fileVal.renameTo(moveVal);
+				String originalNameInd = request.getString("readindOriginalFileName");
+				String originalNameMeas = request.getString("readmeasOriginalFileName");
+				String originalNameVal = request.getString("readvalOriginalFileName");
+				boolean renameSuccessInd = moveInd.renameTo(new File(roanDir + File.separator + originalNameInd));
+				boolean renameSuccessMeas = moveMeas.renameTo(new File(roanDir + File.separator + originalNameMeas));
+				boolean renameSuccessVal = moveVal.renameTo(new File(roanDir + File.separator + originalNameVal));
+				
+				
 				CsvImport.importAll(roanDir, db, null);
+				this.setMessages(new ScreenMessage("data succesfully added to the database", true));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 			}
 		}
 		
@@ -148,19 +113,7 @@ public class FillDatabasePlugin extends PluginModel<Entity>
 			 //message of error of zoiets
 		 }
 		}
-//		try
-//		{
-//			Database db = this.getDatabase();
-//			Query q = db.query(Experiment.class);
-//			q.like("name", "test");
-//			List<Experiment> recentExperiments = q.find();
-//			
-//			//do something
-//		}
-//		catch(Exception e)
-//		{
-//			//...
-//		}
+
 	}
 	
 }

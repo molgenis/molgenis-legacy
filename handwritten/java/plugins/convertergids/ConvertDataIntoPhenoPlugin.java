@@ -17,7 +17,9 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.organization.Investigation;
+import org.molgenis.pheno.Measurement;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -59,40 +61,58 @@ public class ConvertDataIntoPhenoPlugin extends PluginModel<Entity>
 
 		String invName = "";
 		String action = request.getString("__action");
-		
-		if (!request.getString("investigation").equals("") && !request.getString("investigation").equals("select investigation")) {
-			invName = request.getString("investigation");
-			
-		}
-		else{
-			invName = request.getString("createNew");
-			Investigation inve = new Investigation();
-			inve.setName(invName);
-			try {
-				db.add(inve);
-			} catch (DatabaseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
 		File file = request.getFile("convertData");
-
+		
+		try {
+			if(db.query(Investigation.class).eq(Investigation.NAME, "System").count() == 0){
+				Investigation i = new Investigation();
+				i.setName("System");
+				db.add(i);
+				
+			}
+		} catch (DatabaseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		if (action.equals("convertMe") ){
-			//String a = request.getAction("checker");
+			if (!request.getString("investigation").equals("") && !request.getString("investigation").equals("select investigation")) {
+				invName = request.getString("investigation");
+				
+			}
+			else{
+				invName = request.getString("createNew");
+				Investigation inve = new Investigation();
+				inve.setName(invName);
+				inve.setOwns_Name("admin");
+				try {
+					db.add(inve);
+				} catch (DatabaseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
 			try {
 				ConvertGidsToPheno cgtp = new ConvertGidsToPheno();
 				
-				cgtp.converter(file, invName);
+				cgtp.converter(file, invName,db);
 				finished = "finish";
 
 			} catch (Exception e) {
 				e.printStackTrace();
+				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 			}
 
+		}
+		if (action.equals("clean") ){		
+			finished = null;
 		}
 				
 	}

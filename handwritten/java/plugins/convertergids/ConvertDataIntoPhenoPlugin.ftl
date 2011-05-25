@@ -62,7 +62,7 @@
 		<a href="tmpfile/individual.txt">Download individuals</a><br />
 		<a href="tmpfile/measurement.txt">Download measurements</a><br />
 		<a href="tmpfile/observedvalue.txt">Download observed values</a>
-	
+	<input style="margin-left:100px" type='submit' class='addbutton' value='  clean downloads  ' onclick="__action.value='clean'"/>
 <div>
 </#if>
     <br />
