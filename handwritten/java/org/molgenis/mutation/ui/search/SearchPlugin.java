@@ -398,6 +398,7 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 		}
 		
 		this.populateProteinDomainPanel();
+		this.populateExonIntronPanel();
 	}
 
 	private void handleShowExon(Tuple request) throws DatabaseException, ParseException, RESyntaxException
@@ -668,6 +669,13 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 	{
 		this.mBrowseVO.getProteinDomainPanel().setProteinDomainSummaryVO(this.searchPluginVO.getProteinDomainSummaryVO());
 		this.mBrowseVO.getProteinDomainPanel().setScreenName(this.getController().getName());
+	}
+
+	private void populateExonIntronPanel()
+	{
+		this.mBrowseVO.getExonIntronPanel().setExons(this.mBrowseVO.getExonList());
+		this.mBrowseVO.getExonIntronPanel().setShowIntrons(this.searchPluginVO.getQueryParametersVO().getShowIntrons());
+		this.mBrowseVO.getExonIntronPanel().setScreenName(this.getController().getName());
 	}
 
 	private void populateSequencePanel()

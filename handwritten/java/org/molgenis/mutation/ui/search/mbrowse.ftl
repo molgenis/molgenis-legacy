@@ -28,6 +28,8 @@ ${mbrowse.getProteinDomainPanel()}
 -->
 <br/>
 
+${mbrowse.getExonIntronPanel()}
+<#--
 <div class="scrollable">
 <table border="0" cellpadding="0" cellspacing="0">
 <tr>
@@ -71,6 +73,7 @@ ${mbrowse.getProteinDomainPanel()}
 </tr>
 </table>
 </div>
+-->
 
 <br/>
 </#if>

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.molgenis.mutation.Exon;
+import org.molgenis.mutation.ui.html.ExonIntronPanel;
 import org.molgenis.mutation.ui.html.ProteinDomainPanel;
 import org.molgenis.mutation.ui.html.SequencePanel;
 
@@ -15,7 +16,8 @@ public class MBrowseVO implements Serializable
 	List<Exon> exonList;
 	ExonSummaryVO exonSummaryVO;
 	ProteinDomainPanel proteinDomainPanel = new ProteinDomainPanel();
-	SequencePanel sequencePanel = new SequencePanel();
+	ExonIntronPanel exonIntronPanel       = new ExonIntronPanel();
+	SequencePanel sequencePanel           = new SequencePanel();
 
 	public List<ProteinDomainSummaryVO> getProteinDomainList() {
 		return proteinDomainList;
@@ -47,6 +49,12 @@ public class MBrowseVO implements Serializable
 	}
 	public void setProteinDomainPanel(ProteinDomainPanel proteinDomainPanel) {
 		this.proteinDomainPanel = proteinDomainPanel;
+	}
+	public ExonIntronPanel getExonIntronPanel() {
+		return exonIntronPanel;
+	}
+	public void setExonIntronPanel(ExonIntronPanel exonIntronPanel) {
+		this.exonIntronPanel = exonIntronPanel;
 	}
 	public SequencePanel getSequencePanel() {
 		return sequencePanel;

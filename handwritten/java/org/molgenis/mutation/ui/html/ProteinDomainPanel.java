@@ -13,7 +13,6 @@ import org.molgenis.mutation.vo.ProteinDomainSummaryVO;
 public class ProteinDomainPanel extends HtmlInput
 {
 	private ProteinDomainSummaryVO proteinDomainSummaryVO;
-	private String colour;
 	private String screenName = "";
 
 	public ProteinDomainPanel()
@@ -25,18 +24,12 @@ public class ProteinDomainPanel extends HtmlInput
 	{
 		super(name, label);
 		this.setLabel(label);
-		this.setClazz("scrollable");
 	}
 	
 	@Override
 	public String toHtml()
 	{
 		StrBuilder result = new StrBuilder();
-
-		if (this.proteinDomainSummaryVO.getProteinDomain().getName().equals("Triple helix domain"))
-			this.colour   = "#6dcbfe";
-		else
-			this.colour   = "#d95a14";
 
 		List<Exon> exons  = this.proteinDomainSummaryVO.getExons();
 
@@ -50,8 +43,8 @@ public class ProteinDomainPanel extends HtmlInput
 		{
 			int width = exon.getLength() / 10;
 			result.appendln("<td>");
-			result.appendln("<div style=\"background-color: " + this.colour + "; display: block; width: " + width + "px; height: 26px;\">");
-			result.appendln("<a style=\"display: block; height: 100%; width: 100%;\" href=\"molgenis.do?__target=" + this.screenName + "&select=" + this.screenName + "&__action=showProteinDomain&domain_id=" + proteinDomainSummaryVO.getProteinDomain().getId() + "&snpbool=1#exon" + exon.getId() + "\" alt=\"" + exon.getName() + "\" title=\"" + exon.getName() + "\"></a>");
+			result.appendln("<div class=\"pd" + this.proteinDomainSummaryVO.getProteinDomain().getId() + "\" style=\"display: block; width: " + width + "px; height: 26px;\">");
+			result.appendln("<a class=\"clickable_block\" href=\"molgenis.do?__target=" + this.screenName + "&select=" + this.screenName + "&__action=showProteinDomain&domain_id=" + proteinDomainSummaryVO.getProteinDomain().getId() + "&snpbool=1#exon" + exon.getId() + "\" alt=\"" + exon.getName() + "\" title=\"" + exon.getName() + "\"></a>");
 			result.appendln("</div>");
 			result.appendln("</td>");
 		}
