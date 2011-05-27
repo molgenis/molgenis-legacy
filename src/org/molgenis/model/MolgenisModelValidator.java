@@ -66,6 +66,8 @@ public class MolgenisModelValidator
 		}
 
 		copyFieldsToSubclassToEnforceConstraints(model);
+                
+                validateNameSize(model);
 
 	}
 
@@ -77,6 +79,20 @@ public class MolgenisModelValidator
 		// TODO 
 		
 	}
+        
+        public static void validateNameSize(Model model) throws MolgenisModelException {
+            for(Entity e : model.getEntities()) {
+                //maximum num of chars in oracle table name of column is 30
+                if(e.getName().length() > 30) {
+                    throw new MolgenisModelException(String.format("table name %s is longer than %d", e.getName(), 30));
+                }
+                for(Field f : e.getFields()) {
+                    if(f.getName().length() > 30) {
+                        throw new MolgenisModelException(String.format("table name %s is longer than %d", e.getName(), 30));
+                    }
+                }
+            }
+        }
 
 	public static void validateUI(Model model, MolgenisOptions options)
 			throws MolgenisModelException, DatabaseException
