@@ -423,25 +423,25 @@ public class DatabaseLogin implements Login, Serializable {
 		return this.owns(entity.getClass());
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean canRead(org.molgenis.framework.ui.ScreenController<?> screen)
-	{
-		if (this.isAuthenticated() && this.user.getSuperuser())
-			return true;
-
-		String className = screen.getClass().getName();
-
-		//if (className.equals("app.ui.UserLoginPlugin"))
-		//	return true;
-
-		if (this.readMap.containsKey(className))
-			return true;
-
-		return false;
-	}
+//	/**
+//	 * {@inheritDoc}
+//	 */
+//	@Override
+//	public boolean canRead(org.molgenis.framework.ui.ScreenController<?> screen)
+//	{
+//		if (this.isAuthenticated() && this.user.getSuperuser())
+//			return true;
+//
+//		String className = screen.getClass().getName();
+//
+//		//if (className.equals("app.ui.UserLoginPlugin"))
+//		//	return true;
+//
+//		if (this.readMap.containsKey(className))
+//			return true;
+//
+//		return false;
+//	}
 
 	/**
 	 * {@inheritDoc}
