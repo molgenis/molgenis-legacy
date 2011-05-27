@@ -16,7 +16,7 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 
 
-public class PhenoMatrix2 extends Matrix2<ObservedValue> {
+public class PhenoMatrix2 extends Matrix<ObservedValue> {
 
 	private Database db = null;
 	private List<ObservationTarget> targetList;
@@ -231,14 +231,14 @@ public class PhenoMatrix2 extends Matrix2<ObservedValue> {
 	}
 
 	@Override
-	public Matrix2<ObservedValue> getSubMatrix(int[] rowIndices, int[] colIndices)
+	public Matrix<ObservedValue> getSubMatrix(int[] rowIndices, int[] colIndices)
 			throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Matrix2<ObservedValue> getSubMatrix(int row, int nRows, int col, int nCols)
+	public Matrix<ObservedValue> getSubMatrix(int row, int nRows, int col, int nCols)
 			throws Exception {
 		// TODO Auto-generated method stub
 		return null;

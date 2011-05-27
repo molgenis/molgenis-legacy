@@ -68,6 +68,7 @@ public class CommonService
 	private boolean isFilled = false; //for fill database query
 	private transient Logger logger = Logger.getLogger(CommonService.class);
 	private static Map<Integer, String> observationTargetNameMap = null;
+	private static int portNumber = 8080;
 	
 	// --- Stuff for Singleton design pattern
 	private static CommonService instance = null;
@@ -2081,6 +2082,14 @@ public class CommonService
 		} catch (DatabaseException e) {
 			return null;
 		}
+	}
+
+	public static void setPortNumber(int portNumber) {
+		CommonService.portNumber = portNumber;
+	}
+
+	public static int getPortNumber() {
+		return portNumber;
 	}
 
 }

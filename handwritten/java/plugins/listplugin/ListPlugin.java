@@ -8,7 +8,6 @@
 package plugins.listplugin;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -23,8 +22,6 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.util.Entity;
-import org.molgenis.util.HtmlTools;
-import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
 import app.servlet.MolgenisServlet;
@@ -125,14 +122,14 @@ public class ListPlugin extends PluginModel<Entity> {
 		
 		try {
 			// Reset servlet so state of that remains consistent with ours
-			String url = "http://localhost:8080/" + MolgenisServlet.getMolgenisVariantID() + 
-				"/EventViewerJSONServlet?reset=1";
+			String url = "http://localhost:" + CommonService.getPortNumber() + "/" + 
+				MolgenisServlet.getMolgenisVariantID() + "/EventViewerJSONServlet?reset=1";
 			URL servletURL = new URL(url);
 			URLConnection servletConn = servletURL.openConnection();
 			try {
 				servletConn.getContent();
 			} catch (IOException e) {
-				this.setMessages(new ScreenMessage("Data source reset through localhost:8080", true));
+				//this.setMessages(new ScreenMessage("Data source reset through localhost:8080", true));
 				// getContent() will always throw an exception, so do nothing more here
 			}
 

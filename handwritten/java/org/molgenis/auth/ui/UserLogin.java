@@ -44,6 +44,8 @@ import org.molgenis.framework.ui.html.TablePanel;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
+import commonservice.CommonService;
+
 /**
  * This screen shows a login box, or if someone is already logged in, the user
  * information and a logout button.
@@ -106,6 +108,11 @@ public class UserLogin extends EasyPluginController<UserLoginModel>
 			HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
 			HttpServletRequest httpRequest   = rt.getRequest();
 			HttpServletResponse httpResponse = rt.getResponse();
+			
+			// Specifically for AnimalDB ListPlugin, where we need the port number
+			// when we are running on VM7. User has to pass by this point and here we know the
+			// port number, so we do it here.
+			CommonService.setPortNumber(httpRequest.getLocalPort());
 
 			if (StringUtils.isNotEmpty(this.getApplicationController().getLogin().getRedirect()))
 			{

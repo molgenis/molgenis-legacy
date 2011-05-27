@@ -1,14 +1,8 @@
 
 package plugins.listplugin;
 
-import java.awt.List;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import org.molgenis.bbmri.BiobankPanel;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
