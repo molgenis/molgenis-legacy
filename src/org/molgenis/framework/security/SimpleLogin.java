@@ -107,6 +107,12 @@ public class SimpleLogin implements Login
 	}
 
 	@Override
+	public boolean canRead(org.molgenis.framework.ui.ScreenModel model)
+	{
+		return true;
+	}
+
+	@Override
 	public QueryRule getRowlevelSecurityFilters(Class<? extends Entity> klazz)
 	{
 		// TODO Auto-generated method stub
