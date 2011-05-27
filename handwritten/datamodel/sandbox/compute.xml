@@ -70,8 +70,8 @@
 				description="The compute backend used" />
 			<field name="protocol" type="xref" xref_entity="ComputeProtocol"
 				description="Reference to the protocol this ProtocolApplication is an application of. Shadows ProtocolApplication.protocol." />
-			<field name="PreviousSteps" type="mref" xref_entity="ComputeApplication"
-				description="To keep track of calculation dependencies == workflow; Note: can be changed at runtime" />
+			<field name="PrevSteps" type="mref" xref_entity="ComputeApplication"
+				description="To keep track of calculation dependencies == workflow; Note: can be changed at runtime (name was PreviousSteps)" />
 			<field name="script" nillable="true" type="text"
 				description="The actual command to be sent to the cluster, is a
 			filled in version of the one define in the ComputeProtocol, depending on the interpreter (e.g. R gets values prepended, bash gets freemarker template applied" />
