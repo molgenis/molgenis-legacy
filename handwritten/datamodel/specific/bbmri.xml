@@ -41,5 +41,12 @@
 			<field name="Publications" label="Publications" type="text" nillable="true" />
 			<field name="Approved" default="false" type="bool" nillable="false" description="This field indicates whether the record is approved by admin/curator" ></field>
 		</entity>
+		
+		<entity name="ChangeLog">
+			<description>This contains changes to bbmri entities. </description>
+			<field name="id" type="autoid" description="automatically generated id" />
+			<field name="date" description="the date of the change"></field>
+			<field name="entity" description="the entity that has changed"></field>
+		</entity>
 	</module>
 </molgenis>
