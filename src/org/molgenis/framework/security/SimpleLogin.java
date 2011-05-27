@@ -100,11 +100,11 @@ public class SimpleLogin implements Login
 		return true;
 	}
 
-	@Override
-	public boolean canRead(org.molgenis.framework.ui.ScreenController<?> screen)
-	{
-		return true;
-	}
+//	@Override
+//	public boolean canRead(org.molgenis.framework.ui.ScreenController<?> screen)
+//	{
+//		return true;
+//	}
 
 	@Override
 	public boolean canRead(org.molgenis.framework.ui.ScreenModel model)
