@@ -112,7 +112,7 @@ public class ComputeLoadExample
 			ComputeApplication wf1_e2_run1 = new ComputeApplication();
 			wf1_e2_run1.setName("wf1_e2_run1");
 			wf1_e2_run1.setProtocol(e2.getProtocol());
-		    wf1_e2_run1.setPreviousSteps_Id(wf1_e1_run1.getId());
+		    wf1_e2_run1.setPrevSteps_Id(wf1_e1_run1.getId());
 		    wf1_e2_run1.setTime(new Date());
 		    wf1_e2_run1.setComputeScript("impute chr1 file1impute.map > result1impute.imputed");
 		    
@@ -185,7 +185,7 @@ public class ComputeLoadExample
 			ComputeApplication wf1_e2_run2 = new ComputeApplication();
 			wf1_e2_run2.setName("wf1_e2_run2");
 			wf1_e2_run2.setProtocol(e2.getProtocol());
-		    wf1_e2_run2.setPreviousSteps_Id(wf1_e1_run2.getId());
+		    wf1_e2_run2.setPrevSteps_Id(wf1_e1_run2.getId());
 		    wf1_e2_run2.setTime(new Date());
 		    wf1_e1_run1.setComputeScript("impute chr2 file2impute.map > result2impute.imputed");
 		    db.add(wf1_e2_run2);
