@@ -136,7 +136,14 @@ public class ${JavaName(form.className)}FormController extends FormController<${
 		${JavaName(entity)}Form form = new ${JavaName(entity)}Form(entity);
 		form.setNewRecord(newrecord);
 		form.setReadonly(getModel().isReadonly());
-		<#if form.hideFields?size &gt; 0>form.setHiddenColumns(Arrays.asList(new String[]{${csvQuotedEntity(entity, form.hideFields)}}));</#if>
+		
+		<#if form.hideFields?size &gt; 0>
+		Vector<String> userHiddenColumns = new Vector<String>();
+		userHiddenColumns.addAll(Arrays.asList(new String[]{${csvQuotedEntity(entity, form.hideFields)}}));
+		getModel().setUserHiddenColumns(userHiddenColumns);
+		
+		form.setHiddenColumns(Arrays.asList(new String[]{${csvQuotedEntity(entity, form.hideFields)}}));
+		</#if>
 		<#if form.compactView?size &gt; 0>form.setCompactView(Arrays.asList(new String[]{${csvQuoted(form.compactView)}}));</#if>
 		return form;
 	}
