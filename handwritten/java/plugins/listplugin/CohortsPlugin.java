@@ -61,19 +61,19 @@ public class CohortsPlugin extends EasyPluginController<CohortsPluginModel>
 	
 	}
 	
-	public boolean isVisible() {
-		if (this.getApplicationController().getLogin().isAuthenticated()) {
-			try {
-				if (this.getApplicationController().getLogin().canRead(this)) {
-					return true;
-				}
-			} catch (DatabaseException e) {
-				e.printStackTrace();
-			}
-			
-		}
-		return false;
-	}
+//	public boolean isVisible() {
+//		if (this.getApplicationController().getLogin().isAuthenticated()) {
+//			try {
+//				if (this.getApplicationController().getLogin().canRead(this)) {
+//					return true;
+//				}
+//			} catch (DatabaseException e) {
+//				e.printStackTrace();
+//			}
+//			
+//		}
+//		return false;
+//	}
 
 
 	
