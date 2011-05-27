@@ -42,11 +42,13 @@ public class DownloadAllCommand<E extends Entity> extends SimpleCommand
 	{
 		logger.debug(this.getName());
 
-		FormModel<? extends Entity> view = this.getFormScreen();
-		List<String> fieldsToExport = view.create().getFields();
-		fieldsToExport.removeAll(view.getSystemHiddenColumns());
+		FormModel<? extends Entity> model = this.getFormScreen();
 		
-		db.find(view.getController().getEntityClass(), new CsvWriter(csvDownload), fieldsToExport, view.getRulesExclLimitOffset());
+		List<String> fieldsToExport = model.create().getFields();
+		fieldsToExport.removeAll(model.getSystemHiddenColumns());
+		fieldsToExport.removeAll(model.getUserHiddenColumns());
+		//TODO : remove entity name, capitals to small , and remove all _name fields
+		db.find(model.getController().getEntityClass(), new CsvWriter(csvDownload), fieldsToExport, model.getRulesExclLimitOffset());
 
 		return ScreenModel.Show.SHOW_MAIN;
 	}
