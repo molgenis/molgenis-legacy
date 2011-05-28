@@ -126,7 +126,11 @@ public class ${JavaName(form.className)}FormController extends FormController<${
 		<#assign screentype = Name(subscreen.getType().toString()?lower_case) />
 		<#if screentype == "Form"><#assign screentype = "FormController"/></#if>
 		new ${package}.${JavaName(subscreen)}${screentype}(this);
-</#list>		
+</#list>	
+
+<#if form.hideFields?size &gt; 0>
+		getModel().setUserHiddenColumns(Arrays.asList(new String[]{${csvQuotedEntity(entity, form.hideFields)}}));
+</#if>	
 	}
 	
 	@Override
@@ -136,14 +140,7 @@ public class ${JavaName(form.className)}FormController extends FormController<${
 		${JavaName(entity)}Form form = new ${JavaName(entity)}Form(entity);
 		form.setNewRecord(newrecord);
 		form.setReadonly(getModel().isReadonly());
-		
-		<#if form.hideFields?size &gt; 0>
-		Vector<String> userHiddenColumns = new Vector<String>();
-		userHiddenColumns.addAll(Arrays.asList(new String[]{${csvQuotedEntity(entity, form.hideFields)}}));
-		getModel().setUserHiddenColumns(userHiddenColumns);
-		
-		form.setHiddenColumns(Arrays.asList(new String[]{${csvQuotedEntity(entity, form.hideFields)}}));
-		</#if>
+		form.setHiddenColumns(getModel().getUserHiddenColumns());
 		<#if form.compactView?size &gt; 0>form.setCompactView(Arrays.asList(new String[]{${csvQuoted(form.compactView)}}));</#if>
 		return form;
 	}
@@ -165,7 +162,7 @@ public class ${JavaName(form.className)}FormController extends FormController<${
 <#list form.getRecord().getAllFields() as field>
 	<#if field.type="xref" || field.type="mref">
 		<#list field.xrefLabelNames?reverse as label>
-		if(fieldName.equals("${name(field)}")) return "${name(field)}_${name(label)}";
+		if(fieldName.equals("${field.name}")) return "${field.name}_${label}";
 		</#list>
 	</#if>
 </#list>	
