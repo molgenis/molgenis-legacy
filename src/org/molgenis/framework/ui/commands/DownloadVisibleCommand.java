@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
@@ -48,8 +49,7 @@ public class DownloadVisibleCommand extends SimpleCommand
 		FormModel<?> view = this.getFormScreen();
 		List<? extends Entity> records = view.getRecords();
 		
-		List<String> fieldsToExport = view.create().getFields();
-		fieldsToExport.removeAll(view.getSystemHiddenColumns());
+		List<String> fieldsToExport = ((FormController<?>)this.getController()).getVisibleColumnNames();
 		
 		CsvWriter writer = new CsvWriter(csvDownload, fieldsToExport);
 		writer.writeHeader();

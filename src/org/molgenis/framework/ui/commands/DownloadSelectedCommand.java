@@ -15,6 +15,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
@@ -80,8 +81,7 @@ public class DownloadSelectedCommand<E extends Entity> extends SimpleCommand
 			return ScreenModel.Show.SHOW_MAIN;
 		}
 		
-		List<String> fieldsToExport = view.create().getFields();
-		fieldsToExport.removeAll(view.getSystemHiddenColumns());
+		List<String> fieldsToExport = ((FormController<?>)this.getController()).getVisibleColumnNames();
 
 		// watch out, the "IN" operator expects an Object[]
 		db.find(view.getController().getEntityClass(), new CsvWriter(csvDownload), fieldsToExport,
