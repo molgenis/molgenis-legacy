@@ -30,6 +30,7 @@ import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.commands.ScreenCommand;
 import org.molgenis.framework.ui.commands.SimpleCommand;
 import org.molgenis.framework.ui.html.HtmlForm;
+import org.molgenis.framework.ui.html.Input;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
@@ -39,11 +40,13 @@ import org.molgenis.util.Tuple;
 /**
  * @param <E>
  */
-public abstract class FormController<E extends Entity> extends SimpleScreenController<FormModel<E>>
+public abstract class FormController<E extends Entity> extends
+		SimpleScreenController<FormModel<E>>
 {
 	// member variables
 	/** */
-	private static final transient Logger logger = Logger.getLogger(FormController.class.getSimpleName());
+	private static final transient Logger logger = Logger
+			.getLogger(FormController.class.getSimpleName());
 
 	/** Helper object that takes care of database paging */
 	protected DatabasePager<E> pager;
@@ -60,16 +63,18 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		super(name, null, parent);
 		this.setModel(new FormModel<E>(this));
 		this.setView(new FreemarkerView("FormView.ftl", getModel()));
-		
+
 		FormModel<E> model = getModel();
 		resetSystemHiddenColumns();
 		model.resetUserHiddenColumns();
-		
-		//setViewMacro(FormModel.class.getSimpleName().replace("Model", "View"));
+
+		// setViewMacro(FormModel.class.getSimpleName().replace("Model",
+		// "View"));
 		// FIXME: this assumes first column is sortable...
 		try
 		{
-			this.pager = new LimitOffsetPager<E>(getEntityClass(), model.create().getFields().firstElement());
+			this.pager = new LimitOffsetPager<E>(getEntityClass(), model
+					.create().getFields().firstElement());
 			// this.pager = new PrimaryKeyPager<E>(view.getEntityClass(),
 			// view.getDatabase(), view.create().getIdField());
 
@@ -109,7 +114,8 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 			model.setSelectedIds(request.getList(FormModel.INPUT_SELECTED));
 
 			// if none selected, make empty list
-			if (model.getSelectedIds() == null) model.setSelectedIds(new ArrayList<Object>());
+			if (model.getSelectedIds() == null) model
+					.setSelectedIds(new ArrayList<Object>());
 
 			// get the current command if any
 			ScreenCommand command = model.getCommand(action);
@@ -189,7 +195,8 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 			}
 			else if (action.equals("sort"))
 			{
-				String attribute = getSearchField(request.getString("__sortattribute"));
+				String attribute = getSearchField(request
+						.getString("__sortattribute"));
 
 				if (pager.getOrderByField().equals(attribute))
 				{
@@ -216,19 +223,21 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 			}
 			else if (action.equals("hideColumn"))
 			{
-				Vector<String> UserHiddencols = model.getUserHiddenColumns();
+				List<String> UserHiddencols = model.getUserHiddenColumns();
 				String attribute = request.getString("attribute");
 
-				if (!UserHiddencols.contains(attribute)) UserHiddencols.add(attribute);
+				if (!UserHiddencols.contains(attribute)) UserHiddencols
+						.add(attribute);
 				model.setUserHiddenColumns(UserHiddencols);
 
 			}
 			else if (action.equals("showColumn"))
 			{
-				Vector<String> UserHiddencols = model.getUserHiddenColumns();
+				List<String> UserHiddencols = model.getUserHiddenColumns();
 				String attribute = request.getString("attribute");
 
-				if (UserHiddencols.contains(attribute)) UserHiddencols.remove(attribute);
+				if (UserHiddencols.contains(attribute)) UserHiddencols
+						.remove(attribute);
 				model.setUserHiddenColumns(UserHiddencols);
 			}
 			// ACTIONS BELOW HAVE BEEN MOVED TO 'form.command' package
@@ -292,11 +301,13 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		}
 	}
 
-	private void addFilter(DatabasePager<E> pager, Database db, Tuple request) throws DatabaseException, MolgenisModelException
+	private void addFilter(DatabasePager<E> pager, Database db, Tuple request)
+			throws DatabaseException, MolgenisModelException
 	{
 		FormModel<E> model = getModel();
-		
-		Operator operator = QueryRule.Operator.valueOf(request.getString("__filter_operator"));
+
+		Operator operator = QueryRule.Operator.valueOf(request
+				.getString("__filter_operator"));
 		System.out.println(">>>>>>>>>>>>Operator" + operator);
 		String value = request.getString("__filter_value");
 		System.out.println(">>>>>>>>>>>>value" + value);
@@ -305,62 +316,72 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		{
 			value = "%" + value + "%";
 		}
-		
-		
-//		if (request.getString("__filter_attribute").equals("all"))  {
-//			String entityLabel = request.getString("__target");
-//			String controllerClassName = entityLabel + "FormController";
-//			//System.out.println(">>>>>>>getMetaData().getClass" + db.getMetaData());
-//			Class<? extends Entity> entityClass =  this.getEntityClass();
-//		
-//			
-//			//System.out.println(">>>>>>>getMetaData().getClass" + entityClass.getSuperclass().toString());
-//			
-//			//entityClass.getClassLoader();
-//
-//			//entityClass.getSuperclass(); 						
-//			//entityClass.getSuperclass().getTypeParameters();
-//			//System.out.println(">>>>>>> getSimpleName " + entityClass.getSuperclass().getSimpleName());
-//			
-//			// 1 - get the possible fields for the entity that were looking at
-//			System.out.println(">>>>>>>entityLabel" + entityLabel);
-//			System.out.println(">>>>>>>entityControllerClassName"+ 	entityClass.getSuperclass().getTypeParameters().toString());
-//			//org.molgenis.model.elements.Entity eType = db.getMetaData().getEntity(entityName);
-//			org.molgenis.model.elements.Entity eType = db.getMetaData().getEntity(entityClass.getSimpleName());  //TODO 
-//
-//			QueryRule orRule = new QueryRule(Operator.OR);
-//			boolean first = true;
-//			
-//		     //  2  - iterate fields and build the queryrules - if field != "__Type"
-//					for (Field field : eType.getFields()) {
-//						System.out.println("*** FIELD NAME : " + field.getName().toLowerCase());
-//						if (!field.getName().equals("__Type") ) {
-//
-//							//getsSearchField will map the field to field_name in case of xref/mref
-//							QueryRule fieldRule = new QueryRule(field.getName(), operator, value);
-//							System.out.println("*** QUERYRULE : " + fieldRule.toString());
-//							//add 'or' except for first filter rule
-//							if(first)
-//								first = false;
-//							else
-//								model.getUserRules().add(orRule);
-//							model.getUserRules().add(fieldRule);
-//						}
-//					}
-//		}else if (request.getString("__filter_attribute").equals("searchIndex"))  {
-//			//TODO:   plugins.LuceneIndex.DBIndexPlugin.searchIndex()
-//		}
-//		else{
-			System.out.println("*** ELSE : ");
-			QueryRule rule = new QueryRule(request.getString("__filter_attribute"), operator, value);
-			System.out.println(">>>>>>>>>>>>rule" + rule);
-			model.getUserRules().add(rule);
-//		}
+
+		// if (request.getString("__filter_attribute").equals("all")) {
+		// String entityLabel = request.getString("__target");
+		// String controllerClassName = entityLabel + "FormController";
+		// //System.out.println(">>>>>>>getMetaData().getClass" +
+		// db.getMetaData());
+		// Class<? extends Entity> entityClass = this.getEntityClass();
+		//		
+		//			
+		// //System.out.println(">>>>>>>getMetaData().getClass" +
+		// entityClass.getSuperclass().toString());
+		//			
+		// //entityClass.getClassLoader();
+		//
+		// //entityClass.getSuperclass();
+		// //entityClass.getSuperclass().getTypeParameters();
+		// //System.out.println(">>>>>>> getSimpleName " +
+		// entityClass.getSuperclass().getSimpleName());
+		//			
+		// // 1 - get the possible fields for the entity that were looking at
+		// System.out.println(">>>>>>>entityLabel" + entityLabel);
+		// System.out.println(">>>>>>>entityControllerClassName"+
+		// entityClass.getSuperclass().getTypeParameters().toString());
+		// //org.molgenis.model.elements.Entity eType =
+		// db.getMetaData().getEntity(entityName);
+		// org.molgenis.model.elements.Entity eType =
+		// db.getMetaData().getEntity(entityClass.getSimpleName()); //TODO
+		//
+		// QueryRule orRule = new QueryRule(Operator.OR);
+		// boolean first = true;
+		//			
+		// // 2 - iterate fields and build the queryrules - if field != "__Type"
+		// for (Field field : eType.getFields()) {
+		// System.out.println("*** FIELD NAME : " +
+		// field.getName().toLowerCase());
+		// if (!field.getName().equals("__Type") ) {
+		//
+		// //getsSearchField will map the field to field_name in case of
+		// xref/mref
+		// QueryRule fieldRule = new QueryRule(field.getName(), operator,
+		// value);
+		// System.out.println("*** QUERYRULE : " + fieldRule.toString());
+		// //add 'or' except for first filter rule
+		// if(first)
+		// first = false;
+		// else
+		// model.getUserRules().add(orRule);
+		// model.getUserRules().add(fieldRule);
+		// }
+		// }
+		// }else if
+		// (request.getString("__filter_attribute").equals("searchIndex")) {
+		// //TODO: plugins.LuceneIndex.DBIndexPlugin.searchIndex()
+		// }
+		// else{
+		System.out.println("*** ELSE : ");
+		QueryRule rule = new QueryRule(request.getString("__filter_attribute"),
+				operator, value);
+		System.out.println(">>>>>>>>>>>>rule" + rule);
+		model.getUserRules().add(rule);
+		// }
 
 		// reload the filters...
 		pager.resetFilters();
 		this.rewriteAllRules(db, model.getUserRules());
-		
+
 		for (QueryRule r : model.getSystemRules())
 		{
 			pager.addFilter(r);
@@ -368,52 +389,70 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		pager.first(db);
 	}
 
-	/** the 'all' field needs special treatment 
-	 * @throws DatabaseException 
-	 * @throws MolgenisModelException */
-	private void rewriteAllRules(Database db, List<QueryRule> rulesToRewrite) throws DatabaseException, MolgenisModelException
+	/**
+	 * the 'all' field needs special treatment
+	 * 
+	 * @throws DatabaseException
+	 * @throws MolgenisModelException
+	 */
+	private void rewriteAllRules(Database db, List<QueryRule> rulesToRewrite)
+			throws DatabaseException, MolgenisModelException
 	{
 		for (QueryRule r : rulesToRewrite)
 		{
-			if (r.getField().equals("all"))  
+			if (r.getField().equals("all"))
 			{
 				List<QueryRule> all = new ArrayList<QueryRule>();
-				
-				Class<? extends Entity> entityClass =  this.getEntityClass();
-		
-				org.molgenis.model.elements.Entity eType = db.getMetaData().getEntity(entityClass.getSimpleName());  //TODO 
+
+				Class<? extends Entity> entityClass = this.getEntityClass();
+
+				org.molgenis.model.elements.Entity eType = db.getMetaData()
+						.getEntity(entityClass.getSimpleName()); // TODO
 
 				QueryRule orRule = new QueryRule(Operator.OR);
 				boolean first = true;
-				
-			     //  2  - iterate fields and build the queryrules - if field != "__Type"
-						for (Field field : eType.getFields()) {
-							System.out.println("*** FIELD NAME : " + field.getName().toLowerCase());
-							if (!field.getName().equals("__Type") ) {
 
-								//getsSearchField will map the field to field_name in case of xref/mref
-								QueryRule fieldRule = new QueryRule(this.getSearchField(field.getName()), r.getOperator(), r.getValue());
-//								if(field.getType().getClass().getSimpleName().equals("XrefField") || field.getType().getClass().getSimpleName().equals("MrefField")  )
-//								{
-//									 fieldRule = new QueryRule(field.getName(), r.getOperator(), r.getValue());
-//								}
-								System.out.println("*** QUERYRULE : " + fieldRule.toString());
-								//add 'or' except for first filter rule
-								if(first)
-									first = false;
-								else
-									all.add(orRule);
-								all.add(fieldRule);
-							}
-						}
-						
-						pager.addFilter(new QueryRule(all));
-			} else {	
+				// 2 - iterate fields and build the queryrules - if field !=
+				// "__Type"
+				for (Field field : eType.getFields())
+				{
+					System.out.println("*** FIELD NAME : "
+							+ field.getName().toLowerCase());
+					if (!field.getName().equals("__Type"))
+					{
+
+						// getsSearchField will map the field to field_name in
+						// case of xref/mref
+						QueryRule fieldRule = new QueryRule(this
+								.getSearchField(field.getName()), r
+								.getOperator(), r.getValue());
+						// if(field.getType().getClass().getSimpleName().equals("XrefField")
+						// ||
+						// field.getType().getClass().getSimpleName().equals("MrefField")
+						// )
+						// {
+						// fieldRule = new QueryRule(field.getName(),
+						// r.getOperator(), r.getValue());
+						// }
+						System.out.println("*** QUERYRULE : "
+								+ fieldRule.toString());
+						// add 'or' except for first filter rule
+						if (first) first = false;
+						else
+							all.add(orRule);
+						all.add(fieldRule);
+					}
+				}
+
+				pager.addFilter(new QueryRule(all));
+			}
+			else
+			{
 				pager.addFilter(r);
 			}
 		}
 	}
-	
+
 	// overrides
 	@Override
 	public void reload(Database db)
@@ -445,10 +484,10 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 				model.setSystemRules(newSystemRules);
 
 				this.rewriteAllRules(db, model.getUserRules());
-//				for (QueryRule rule : model.getUserRules())
-//				{
-//					pager.addFilter(rule);
-//				}
+				// for (QueryRule rule : model.getUserRules())
+				// {
+				// pager.addFilter(rule);
+				// }
 			}
 
 			// check view and set limit accordingly
@@ -518,7 +557,8 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		FormModel<E> model = getModel();
 
 		// set form level rights
-		boolean formReadonly = model.isReadonly() || !model.getSecurity().canWrite(model.create().getClass());
+		boolean formReadonly = model.isReadonly()
+				|| !model.getSecurity().canWrite(model.create().getClass());
 		model.setReadonly(formReadonly);
 
 		// load the rows
@@ -531,7 +571,8 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 
 		for (E record : allRecords)
 		{
-			boolean rowReadonly = formReadonly || !model.getSecurity().canWrite(record.getClass());
+			boolean rowReadonly = formReadonly
+					|| !model.getSecurity().canWrite(record.getClass());
 
 			if (rowReadonly) record.setReadonly(true);
 			// else
@@ -552,18 +593,20 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 	 * @throws DatabaseException
 	 * @throws IOException
 	 */
-	public boolean doAdd(Database db, Tuple request) throws ParseException, DatabaseException, IOException
+	public boolean doAdd(Database db, Tuple request) throws ParseException,
+			DatabaseException, IOException
 	{
 		ScreenMessage msg = null;
 		Entity entity = getModel().create();
 		boolean result = false;
-	
+
 		try
 		{
 			db.beginTx();
 			entity.set(request);
 			int updatedRows = 0;
-			if (request.getObject(FormModel.INPUT_BATCHADD) != null && request.getInt(FormModel.INPUT_BATCHADD) > 1)
+			if (request.getObject(FormModel.INPUT_BATCHADD) != null
+					&& request.getInt(FormModel.INPUT_BATCHADD) > 1)
 			{
 				// batch
 				int i;
@@ -575,35 +618,38 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 			else
 			{
 				updatedRows = db.add(entity);
-	
+
 			}
 			db.commitTx();
-			msg = new ScreenMessage("ADD SUCCESS: affected " + updatedRows, null, true);
+			msg = new ScreenMessage("ADD SUCCESS: affected " + updatedRows,
+					null, true);
 			result = true;
 			// navigate to newly added record
 			pager.last(db);
-	
+
 		}
 		catch (Exception e)
 		{
 			db.rollbackTx();
-			msg = new ScreenMessage("ADD FAILED: " + e.getMessage(), null, false);
+			msg = new ScreenMessage("ADD FAILED: " + e.getMessage(), null,
+					false);
 			result = false;
 		}
 		getModel().getMessages().add(msg);
-	
+
 		/* make sure the user sees the newly added record(s) */
 		// view.setMode(FormScreen.Mode.RECORD_VIEW);
 		// pager.setLimit(1);
 		pager.resetOrderBy();
 		pager.last(db);
 		// should reset to an order that shows the record on the end
-	
+
 		return result;
 	}
 
 	// helper method
-	protected void doUpdate(Database db, Tuple request) throws DatabaseException, IOException, ParseException
+	protected void doUpdate(Database db, Tuple request)
+			throws DatabaseException, IOException, ParseException
 	{
 		Entity entity = getModel().create();
 		ScreenMessage msg = null;
@@ -611,13 +657,15 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		{
 			entity.set(request);
 			int updatedRows = db.update(entity);
-			msg = new ScreenMessage("UPDATE SUCCESS: affected " + updatedRows, null, true);
+			msg = new ScreenMessage("UPDATE SUCCESS: affected " + updatedRows,
+					null, true);
 		}
 		catch (Exception e)
 		{
 			logger.error("doUpdate(): " + e);
 			e.printStackTrace();
-			msg = new ScreenMessage("UPDATE FAILED: " + e.getMessage(), null, false);
+			msg = new ScreenMessage("UPDATE FAILED: " + e.getMessage(), null,
+					false);
 		}
 		getModel().getMessages().add(msg);
 		if (msg.isSuccess())
@@ -628,7 +676,8 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 	}
 
 	// helper method
-	protected void doRemove(Database db, Tuple request) throws DatabaseException, ParseException, IOException
+	protected void doRemove(Database db, Tuple request)
+			throws DatabaseException, ParseException, IOException
 	{
 		Entity entity = getModel().create();
 		ScreenMessage msg = null;
@@ -636,13 +685,16 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 		{
 			entity.set(request);
 			int updatedRows = db.remove(entity);
-			if (updatedRows > 0) msg = new ScreenMessage("REMOVE SUCCESS: affected " + updatedRows, null, true);
+			if (updatedRows > 0) msg = new ScreenMessage(
+					"REMOVE SUCCESS: affected " + updatedRows, null, true);
 			else
-				msg = new ScreenMessage("REMOVE FAILED: call system administrator", null, false);
+				msg = new ScreenMessage(
+						"REMOVE FAILED: call system administrator", null, false);
 		}
 		catch (Exception e)
 		{
-			msg = new ScreenMessage("REMOVE FAILED: " + e.getMessage(), null, false);
+			msg = new ScreenMessage("REMOVE FAILED: " + e.getMessage(), null,
+					false);
 		}
 		getModel().getMessages().add(msg);
 
@@ -668,8 +720,9 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 			// set the filter to select the xref-ed entity
 			pager.resetFilters();
 			getModel().setUserRules(new ArrayList<QueryRule>());
-			QueryRule rule = new QueryRule(request.getString("attribute"), QueryRule.Operator.valueOf(request
-					.getString("operator")), request.getString("value"));
+			QueryRule rule = new QueryRule(request.getString("attribute"),
+					QueryRule.Operator.valueOf(request.getString("operator")),
+					request.getString("value"));
 			pager.addFilter(rule);
 
 			// tell "my" menu to select me
@@ -863,8 +916,41 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 	// view.getRules());
 	// }
 	// }
-	
-	
+
+	/**
+	 * Calculates visible columns. Needed for downloads.
+	 */
+	public List<String> getVisibleColumnNames()
+	{
+		// FIXME temporary fix because model not properly used
+		// we should instead use getModel().getHiddenColumns().
+
+		List<String> showColumns = new ArrayList<String>();
+		try
+		{
+			HtmlForm f = getInputs(this.getEntityClass().newInstance(), false);
+
+			for (Input i : f.getInputs())
+			{
+				if (!i.isHidden())
+				{
+					// strip prefix = this.getEntityClass() + "_"
+					String name = i.getName();
+					name = name.substring(this.getEntityClass().getSimpleName()
+							.length() + 1);
+
+					// then add _label using getSearchField() where needed
+					showColumns.add(getSearchField(name));
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return showColumns;
+	}
+
 	/**
 	 * Provides the class of the entitites managed by this form. Note: Java
 	 * erases the specific type of E, therefore we cannot say E.newInstance();
@@ -880,7 +966,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 	 * Default settings for compact columns
 	 */
 	public abstract void resetCompactView();
-	
+
 	// ABSTRACT METHODS, varied per entity
 	/**
 	 * Abstract method to build the inputs for each row. The result will be a
@@ -893,7 +979,7 @@ public abstract class FormController<E extends Entity> extends SimpleScreenContr
 	public abstract HtmlForm getInputs(E entity, boolean newrecord);
 
 	public abstract Vector<String> getHeaders();
-	
+
 	/**
 	 * Helper function that translates xref field name into its label (for
 	 * showing that in the UI).
