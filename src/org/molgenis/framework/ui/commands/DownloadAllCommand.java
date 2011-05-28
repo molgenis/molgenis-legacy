@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
@@ -44,9 +45,8 @@ public class DownloadAllCommand<E extends Entity> extends SimpleCommand
 
 		FormModel<? extends Entity> model = this.getFormScreen();
 		
-		List<String> fieldsToExport = model.create().getFields();
-		fieldsToExport.removeAll(model.getSystemHiddenColumns());
-		fieldsToExport.removeAll(model.getUserHiddenColumns());
+		List<String> fieldsToExport = ((FormController<?>)this.getController()).getVisibleColumnNames();
+		
 		//TODO : remove entity name, capitals to small , and remove all _name fields
 		db.find(model.getController().getEntityClass(), new CsvWriter(csvDownload), fieldsToExport, model.getRulesExclLimitOffset());
 
