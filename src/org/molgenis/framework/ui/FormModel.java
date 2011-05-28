@@ -205,8 +205,8 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	private ScreenCommand currentCommand = null;
 
 	/** columns that are invisible to the user */
-	private Vector<String> systemHiddenColumns = new Vector<String>();
-	protected Vector<String> userHiddenColumns = new Vector<String>();
+	private List<String> systemHiddenColumns = new Vector<String>();
+	protected List<String> userHiddenColumns = new Vector<String>();
 
 	/** Helper object that takes care of database paging */
 	// private DatabasePager<E> pager;
@@ -545,7 +545,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 			{
 				if (field.equals("all"))
 				{
-					label = "All Fields";
+					label = "Any field";
 				}
 				else
 				{
@@ -884,17 +884,17 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		this.userHiddenColumns.addAll(this.getSystemHiddenColumns());
 	}
 
-	public Vector<String> getSystemHiddenColumns()
+	public List<String> getSystemHiddenColumns()
 	{
 		return systemHiddenColumns;
 	}
 
-	public Vector<String> getUserHiddenColumns()
+	public List<String> getUserHiddenColumns()
 	{
 		return userHiddenColumns;
 	}
 
-	public void setUserHiddenColumns(Vector<String> userHiddenColumns)
+	public void setUserHiddenColumns(List<String> userHiddenColumns)
 	{
 		this.userHiddenColumns = userHiddenColumns;
 	}
