@@ -78,23 +78,23 @@
 			<img class="navigation_button" src="${command.icon}" onclick="${command.getJavaScriptAction()}" alt="${command.label}" title="${command.label}"/>&nbsp;
 		</#list>	
 		<!--search box-->
-		<label>Search:</label><select title="choose attribute" name="__filter_attribute">
+		<label>Search:</label><select id="${screen.name}_filter_attribute" title="choose attribute" name="__filter_attribute" style="display:none">
+			<option value="all">Any field</option>
 		<#list screen.getNewRecordForm().inputs as input><#if !input.hidden>
 			<option value="${screen.getSearchField(input.name)}">${input.label}</option>
 		</#if></#list>
-			<option value="all">All fields</option>
 			<option value="searchIndex">Search Index</option>
 		</select>
-		<select title="choose search operator" name="__filter_operator">
-			<option value="EQUALS">=</option>
+		<select id="${screen.name}_filter_operator" title="choose search operator" name="__filter_operator" style="display:none">
 			<option value="LIKE">LIKE</option>	
+			<option value="EQUALS">=</option>
 			<option value="NOT">!=</option>
 			<option value="LESS">&lt;</option>
 			<option value="LESS_EQUAL">&lt;=</option>
 			<option value="GREATER_EQUAL">&gt;=</option>
 			<option value="GREATER">&gt;</option>
 		</select>
-		<input title="fill in search term" type="text" name="__filter_value" onkeypress="if (event.keyCode == 13){setInput('${screen.name}_form','_self','','${screen.name}','filter_add','iframe'); document.forms.${screen.name}_form.submit(); return false;}">					
+		<input title="fill in search term" type="text" name="__filter_value" onfocus="${screen.name}_filter_attribute.style.display='inline'; ${screen.name}_filter_operator.style.display='inline';" onkeypress="if (event.keyCode == 13){setInput('${screen.name}_form','_self','','${screen.name}','filter_add','iframe'); document.forms.${screen.name}_form.submit(); return false;}">					
 		<img class="navigation_button" src="generated-res/img/filter.png" alt="Add filter" onclick="setInput('${screen.name}_form','_self','','${screen.name}','filter_add','iframe'); document.forms.${screen.name}_form.submit();"/>		
 </div>
 </#macro>
