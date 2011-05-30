@@ -13,10 +13,14 @@ import java.util.Date;
 import java.util.List;
 
 import org.molgenis.auth.DatabaseLogin;
+import org.molgenis.auth.MolgenisGroup;
+import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.bbmri.ChangeLog;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.jdbc.MappingDecorator;
 import org.molgenis.framework.security.Login;
 import org.molgenis.organization.Investigation;
@@ -51,12 +55,13 @@ public class BiobankDecorator<E extends org.molgenis.bbmri.BiobankPanel> extends
 				for (org.molgenis.bbmri.BiobankPanel e : entities)
 				{
 					e.setOwns_Id(userId);
+					
+					MolgenisGroup mg = getDatabase().find(MolgenisGroup.class, new QueryRule(MolgenisGroup.NAME, Operator.EQUALS, "AllUsers")).get(0);
+					e.setCanRead_Id(mg.getId());
+					
 				}
 			}
 		}
-		
-		
-
 		
 		// here we call the standard 'add'
 		int count = super.add(entities);

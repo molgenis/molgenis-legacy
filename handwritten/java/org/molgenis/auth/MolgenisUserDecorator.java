@@ -7,6 +7,7 @@
 
 package org.molgenis.auth;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
@@ -14,6 +15,8 @@ import org.apache.commons.lang.StringUtils;
 import org.molgenis.auth.util.PasswordHasher;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.jdbc.MappingDecorator;
 import org.molgenis.framework.db.jdbc.JDBCMapper;
 
@@ -43,9 +46,22 @@ public class MolgenisUserDecorator<E extends org.molgenis.auth.MolgenisUser> ext
 
 		// here we call the standard 'add'
 		int count = super.add(entities);
-
+		
 		// add your post-processing here
 		// if you throw and exception the previous add will be rolled back
+		for (org.molgenis.auth.MolgenisUser e : entities)
+		{
+			//Add the user to the AllUsers group
+			MolgenisGroup mg = getDatabase().find(MolgenisGroup.class, new QueryRule(MolgenisGroup.NAME, Operator.EQUALS, "AllUsers")).get(0);
+			MolgenisUserGroupLink mugl = new MolgenisUserGroupLink();
+			mugl.setUser_Id(e.getId());
+			mugl.setGroup_Id(mg.getId());
+			try {
+				getDatabase().add(mugl);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
 
 		return count;
 	}
