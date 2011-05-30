@@ -333,17 +333,22 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	@Override
 	public boolean isVisible()
 	{
-		try
+		Login login = this.getController().getApplicationController().getLogin();
+		if (login.isAuthenticated())
 		{
-			// 'this' is always org.molgenis.framework.ui.FormModel, so how do
-			// we get the actual FormController here??
-			return this.getSecurity().canRead(this);
+			try
+			{
+				if (login.canRead(this.getController().getEntityClass()))
+				{
+					return true;
+				}
+			}
+			catch (DatabaseException e)
+			{
+				e.printStackTrace();
+			}
 		}
-		catch (DatabaseException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 		return false;
 	}
 
