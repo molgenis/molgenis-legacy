@@ -288,6 +288,8 @@ public class DatabaseLogin implements Login, Serializable {
 
 		String className = entityClass.getName();
 
+		// Who put this here and why?
+		// This makes all tables like MolgenisUser and MolgenisGroup always visible to all authenticated users
 		if (className.startsWith("org.molgenis.auth.Molgenis"))
 			return true;
 
@@ -456,7 +458,6 @@ public class DatabaseLogin implements Login, Serializable {
 
 		//if (className.equals("app.ui.UserLoginPlugin"))
 		//	return true;
-
 		if (this.readMap.containsKey(className))
 			return true;
 
