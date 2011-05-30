@@ -46,7 +46,7 @@ ${widgetfactory.action(name,label)}
   <script src="jquery/js/jquery-1.4.4.min.js"></script>
   <script src="jquery/js/jquery-ui-1.8.7.custom.min.js"></script>
   -->
-		${screen.controller.getCustomHtmlHeaders()}
+		<#if screen.controller??>${screen.controller.getCustomHtmlHeaders()}</#if>
 	</head>
 	<body onload="RecoverScroll.init();<#if screen.customHtmlBodyOnLoad?exists>${screen.getCustomHtmlBodyOnLoad()}</#if>">
 	<#if applicationHtmlError?exists>${applicationHtmlError}</#if>
