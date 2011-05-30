@@ -21,7 +21,7 @@ import org.molgenis.framework.db.jdbc.MappingDecorator;
 import org.molgenis.framework.db.jdbc.JDBCMapper;
 
 
-public class MolgenisUserDecorator<E extends org.molgenis.auth.MolgenisUser> extends MappingDecorator<E>
+public class MolgenisUserDecorator<E extends MolgenisUser> extends MappingDecorator<E>
 {
 	//JDBCMapper is the generate thing
 	public MolgenisUserDecorator(JDBCMapper<E> generatedMapper)
@@ -49,7 +49,7 @@ public class MolgenisUserDecorator<E extends org.molgenis.auth.MolgenisUser> ext
 		
 		// add your post-processing here
 		// if you throw and exception the previous add will be rolled back
-		for (org.molgenis.auth.MolgenisUser e : entities)
+		for (MolgenisUser e : entities)
 		{
 			// Try to add the user to the AllUsers group
 			MolgenisGroup mg;

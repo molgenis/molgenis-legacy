@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.molgenis.auth.MolgenisGroup;
+import org.molgenis.bbmri.BiobankPanel;
 import org.molgenis.bbmri.ChangeLog;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -21,7 +22,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.jdbc.MappingDecorator;
 import org.molgenis.framework.security.Login;
 
-public class BiobankDecorator<E extends org.molgenis.bbmri.BiobankPanel> extends MappingDecorator<E>
+public class BiobankDecorator<E extends BiobankPanel> extends MappingDecorator<E>
 {
 	//JDBCMapper is the generate thing
 //	public BiobankDecorator(JDBCMapper generatedMapper)
@@ -30,7 +31,7 @@ public class BiobankDecorator<E extends org.molgenis.bbmri.BiobankPanel> extends
 //	}
 
 	//Mapper is the generate thing
-	public BiobankDecorator(Mapper generatedMapper)
+	public BiobankDecorator(Mapper<E> generatedMapper)
 	{
 		super(generatedMapper);
 	}
