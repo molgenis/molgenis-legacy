@@ -57,7 +57,7 @@ public class BiobankDecorator<E extends org.molgenis.bbmri.BiobankPanel> extends
 						MolgenisGroup mg = getDatabase().find(MolgenisGroup.class, 
 								new QueryRule(MolgenisGroup.NAME, Operator.EQUALS, "AllUsers")).get(0);
 						e.setCanRead_Id(mg.getId());
-					} catch (DatabaseException dbe) {
+					} catch (Exception ex) {
 						// When running from Hudson, there will be no group "AllUsers" so we prevent
 						// an error, to keep our friend Hudson from breaking
 					}

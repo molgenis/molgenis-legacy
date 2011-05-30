@@ -55,7 +55,7 @@ public class MolgenisUserDecorator<E extends org.molgenis.auth.MolgenisUser> ext
 			MolgenisGroup mg;
 			try {
 				mg = getDatabase().find(MolgenisGroup.class, new QueryRule(MolgenisGroup.NAME, Operator.EQUALS, "AllUsers")).get(0);
-			} catch (DatabaseException dbe) {
+			} catch (Exception ex) {
 				// When running from Hudson, there will be no group "AllUsers" so we return without giving
 				// an error, to keep our friend Hudson from breaking
 				return count;
