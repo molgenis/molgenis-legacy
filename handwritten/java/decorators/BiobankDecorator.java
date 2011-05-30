@@ -8,13 +8,10 @@
 package decorators;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
-import org.molgenis.auth.DatabaseLogin;
 import org.molgenis.auth.MolgenisGroup;
-import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.bbmri.ChangeLog;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -23,7 +20,6 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.jdbc.MappingDecorator;
 import org.molgenis.framework.security.Login;
-import org.molgenis.organization.Investigation;
 
 public class BiobankDecorator<E extends org.molgenis.bbmri.BiobankPanel> extends MappingDecorator<E>
 {
@@ -42,23 +38,29 @@ public class BiobankDecorator<E extends org.molgenis.bbmri.BiobankPanel> extends
 	@Override
 	public int add(List<E> entities) throws DatabaseException
 	{
-		org.molgenis.bbmri.ChangeLog chl = null;
-		Date date = new Date(); 
+		//ChangeLog chl = null;
+		//Date date = new Date(); 
 		
-		//retrieve the user who uploaded/added the record
+		// add your pre-processing here
 		Login login = this.getDatabase().getSecurity();
 		if (login != null) {
 			if (login.getUserId() != null) {
 				int userId = this.getDatabase().getSecurity().getUserId();
 				
-				// add your pre-processing here, e.g.
 				for (org.molgenis.bbmri.BiobankPanel e : entities)
 				{
+					// Set ownership of new record to current user
 					e.setOwns_Id(userId);
 					
-					MolgenisGroup mg = getDatabase().find(MolgenisGroup.class, new QueryRule(MolgenisGroup.NAME, Operator.EQUALS, "AllUsers")).get(0);
-					e.setCanRead_Id(mg.getId());
-					
+					// Give group "AllUsers" read-rights on the new record
+					try {
+						MolgenisGroup mg = getDatabase().find(MolgenisGroup.class, 
+								new QueryRule(MolgenisGroup.NAME, Operator.EQUALS, "AllUsers")).get(0);
+						e.setCanRead_Id(mg.getId());
+					} catch (DatabaseException dbe) {
+						// When running from Hudson, there will be no group "AllUsers" so we prevent
+						// an error, to keep our friend Hudson from breaking
+					}
 				}
 			}
 		}
