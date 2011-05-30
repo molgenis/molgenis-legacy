@@ -323,6 +323,9 @@ public class DatabaseLogin implements Login, Serializable {
 
 		String className = entityClass.getName();
 
+		// Who put this here and why????
+		// This makes all tables like MolgenisUser and MolgenisGroup seem as owned all authenticated users,
+		// so they can change them at will!
 		if (className.startsWith("org.molgenis.auth.Molgenis"))
 			return true;
 
