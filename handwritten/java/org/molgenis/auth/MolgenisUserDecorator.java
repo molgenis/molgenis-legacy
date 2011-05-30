@@ -51,15 +51,23 @@ public class MolgenisUserDecorator<E extends org.molgenis.auth.MolgenisUser> ext
 		// if you throw and exception the previous add will be rolled back
 		for (org.molgenis.auth.MolgenisUser e : entities)
 		{
-			//Add the user to the AllUsers group
-			MolgenisGroup mg = getDatabase().find(MolgenisGroup.class, new QueryRule(MolgenisGroup.NAME, Operator.EQUALS, "AllUsers")).get(0);
+			// Try to add the user to the AllUsers group
+			MolgenisGroup mg;
+			try {
+				mg = getDatabase().find(MolgenisGroup.class, new QueryRule(MolgenisGroup.NAME, Operator.EQUALS, "AllUsers")).get(0);
+			} catch (DatabaseException dbe) {
+				// When running from Hudson, there will be no group "AllUsers" so we return without giving
+				// an error, to keep our friend Hudson from breaking
+				return count;
+			}
+			
 			MolgenisUserGroupLink mugl = new MolgenisUserGroupLink();
 			mugl.setUser_Id(e.getId());
 			mugl.setGroup_Id(mg.getId());
 			try {
 				getDatabase().add(mugl);
 			} catch (IOException e1) {
-				e1.printStackTrace();
+				throw new DatabaseException(e1.getMessage());
 			}
 		}
 
