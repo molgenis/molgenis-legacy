@@ -1,7 +1,6 @@
 package org.molgenis.framework.ui;
 
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.security.Login;
 
 public class EasyPluginModel extends SimpleScreenModel
 {
@@ -10,28 +9,19 @@ public class EasyPluginModel extends SimpleScreenModel
 	public EasyPluginModel(ScreenController<?> controller)
 	{
 		super(controller);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public boolean isVisible()
 	{
-		Login login = this.getController().getApplicationController().getLogin();
-		if (login.isAuthenticated())
+		try
 		{
-			try
-			{
-				if (login.canRead(this.getController()))
-				{
-					return true;
-				}
-			}
-			catch (DatabaseException e)
-			{
-				e.printStackTrace();
-			}
+			return this.getController().getApplicationController().getLogin().canRead(this.getController());
 		}
-
-		return false;
+		catch (DatabaseException e)
+		{
+			e.printStackTrace();
+			return false;
+		}
 	}
 }
