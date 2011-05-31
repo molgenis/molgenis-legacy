@@ -76,7 +76,7 @@ public class OntoCatIndexPlugin extends PluginModel<org.molgenis.util.Entity>
         put(LC.GetLuceneConfiguration("ONTOLOGIES_DIRECTORY") + "human-phenotype-ontology_v1294.obo", "Human Phenotype Ontology");
         put(LC.GetLuceneConfiguration("ONTOLOGIES_DIRECTORY") + "human_disease_v1.251.obo", "Human Disease");
  		put(LC.GetLuceneConfiguration("ONTOLOGIES_DIRECTORY") + "Thesaurus_10_03.owl", "NCI Thesaurus");
- 		put(LC.GetLuceneConfiguration("ONTOLOGIES_DIRECTORY") + "/mesh.obo", "MeSH");
+ 		put(LC.GetLuceneConfiguration("ONTOLOGIES_DIRECTORY") + "mesh.obo", "MeSH");
 	}};
 
 
@@ -85,14 +85,14 @@ public class OntoCatIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 		OntoCatIndexPlugin p = new OntoCatIndexPlugin("x",null);
 		
 		p.buildIndexOntocat();
-		List<String> ontologies = new ArrayList<String>();
+		//List<String> ontologies = new ArrayList<String>();
 		//ontologies.add("Human Phenotype Ontology");
-		ontologies.add("Human Disease");
-		ontologies.add("NCI Thesaurus");
+		//ontologies.add("Human Disease");
+		//ontologies.add("NCI Thesaurus");
 		//ontologies.add("MeSH");
 		
-		p.setInputToken("cystic lung disease");
-		p.setStatus("x");
+		//p.setInputToken("cystic lung disease");
+		//p.setStatus("x");
 		//p.SearchIndexOntocat("asthma", ontologies);
 				
 	}
@@ -395,7 +395,7 @@ public class OntoCatIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 		    
 		   for (String ontology_file: ontologyNamesMap.keySet()){
 			   say("now " + writer.getReader().numDocs() + " terms indexed");
-			
+			   System.out.println(ontology_file);
 			   File file1 = new File(ontology_file);
 			   OntologyService os = new FileOntologyService(file1.toURI());
 			   
@@ -428,7 +428,7 @@ public class OntoCatIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 			       
 			       syns = os.getSynonyms(term);
 			       //System.out.println("syns:\n" + syns);
-			       for (String s : syns){
+			       for (String s : syns) {
 			    	   if (term.getLabel().toLowerCase() != s){ //if it doesn't already exists 
 				    	   s = "\"" + s.toLowerCase() + "\"";
 				    	   //System.out.println("syns: " + s);

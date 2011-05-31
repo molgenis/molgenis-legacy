@@ -33,7 +33,6 @@
 							<th>Topic</th>
 							<th>Institutions</th>
 							<th>Coordinators</th>
-							<th>Current n=</th>
 							<th>Biodata</th>
 							<th>Number of Gwa Data</th>
 							<th>Gwa Platform</th>
@@ -51,7 +50,6 @@
 							<td>${cohort.Topic_Name}</td>
 							<td>${cohort.Institutes_Name}</td>
 							<td>${cohort.Coordinators_LastName}</td>
-							<td>${cohort.Size}</td>
 							<td>${cohort.Biodata_name}</td>
 							<#if cohort.GwaDataNum??>
 								<td>${cohort.GwaDataNum}</td>

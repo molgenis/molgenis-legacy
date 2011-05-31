@@ -46,6 +46,9 @@
 <p>This system was developed by the NBIC Biobanking platform, BBMRI-NL bioinformatics rainbow hosted at the Coordination Center, UMCG, and in collaboration with GEN2PHEN,
 LifeLines and the European Bionformatics Institute regarding data model and tools. It was generated using MOLGENIS.</p>
 
+
+<span style="color: #3366CC;"><span style="font-size: .75em;">Last update was on 25 May 2011</span></span>
+
 	
 <#--end of your plugin-->	
 			</div>

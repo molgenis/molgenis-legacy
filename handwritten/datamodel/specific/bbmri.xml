@@ -20,7 +20,7 @@
 		</entity>
 		<entity name="Biobank" extends="Investigation">
 			<description>Describes one biobank cohort</description>
-			<field name="name" nillable="true" description="the name of the biobank [in investigation the name is unique], For example: Netherlands Twin Registry" />
+			<field name="name" nillable="false" default="name" description="the name of the biobank [in investigation the name is unique], For example: Netherlands Twin Registry" />
 			<field name="Acronym" nillable="true" description="Acronym for this biobank. For example: NTR" label="Acronym" />
 
 		</entity>

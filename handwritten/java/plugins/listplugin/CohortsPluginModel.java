@@ -16,7 +16,10 @@ import org.molgenis.bbmri.BiobankPanel;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
+import org.molgenis.framework.security.Login;
 import org.molgenis.framework.ui.EasyPluginModel;
+
+import com.hp.hpl.jena.vocabulary.DB;
 
 /**
  * CohortsPluginModel takes care of all state and it can have helper methods to query the database.
@@ -71,5 +74,15 @@ public class CohortsPluginModel extends EasyPluginModel
 		
 		
 	}
+	
+//	@Override
+//	public boolean isVisible() {
+//		try {
+//			return this.getController().getApplicationController().getLogin().canRead(this.getController());
+//		} catch (DatabaseException e) {
+//			e.printStackTrace();
+//			return false;
+//		}
+//	}
 	
 }

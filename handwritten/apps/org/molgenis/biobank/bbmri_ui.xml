@@ -5,9 +5,11 @@
 	<menu name="main" position="left" startswith="WelcomeScreen">
 		<plugin name="BbmriWelcomeScreen" type="plugins.welcome.BbmriWelcomeScreenPlugin" label="Welcome" />
 		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Login" />
-		<plugin name="CohortPlugin" type="plugins.listplugin.CohortsPlugin" label="Biobank Overview " />
+		<menu name="BiobankOverview" label="Biobank Overview">
+			<plugin name="CohortPlugin" type="plugins.listplugin.CohortsPlugin" label="Biobank Overview " />
+		</menu>
 		<menu name="EditData" label="Edit data">
-			<form name="Cohorts" entity="BiobankPanel" label="Biobank Overview"	hide_fields="id,description,Species,Individuals,PanelType,FounderPanels,ontologyReference,canRead,canWrite,Approved" />
+			<form name="Cohorts" entity="BiobankPanel" label="Biobank Overview"	hide_fields="id,description,Species,Individuals,PanelType,FounderPanels,ontologyReference,canRead,canWrite,Approved,owns" />
 		</menu>
 		<menu name="Admin">
 		    <menu name="DataViews">
@@ -24,8 +26,8 @@
 				<form name="MolgenisUser" entity="MolgenisUser" label="User" />
 				<form name="MolgenisGroup" entity="MolgenisGroup" label="Group" />
 				<form name="MolgenisEntity" entity="MolgenisEntity" label="Entity" />
-				<form name="MolgenisPermission" entity="MolgenisPermission"
-					label="Permission" />
+				<form name="MolgenisPermission" entity="MolgenisPermission" label="Permission" />
+				<form name="MolgenisUserGroupLink" entity="MolgenisUserGroupLink"/>
 			</menu>
 			<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard" label="Batch Upload" />
 			<plugin name="GenerateN3andRDF" type="plugins.mapping.GenerateN3andRDF"	label="Mapping" />
