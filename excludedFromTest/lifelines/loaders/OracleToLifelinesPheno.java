@@ -21,7 +21,7 @@ import org.molgenis.pheno.Measurement;
  */
 public class OracleToLifelinesPheno {
     
-    private class Column {
+    public class Column {
         private String name;
         private String type;
         private int length;
@@ -86,12 +86,13 @@ public class OracleToLifelinesPheno {
     
     public static void main(String[] args) throws Exception {
         OracleToLifelinesPheno oracleToLifelinesPheno = new OracleToLifelinesPheno();
+        oracleToLifelinesPheno.load();
     }
     
-    public OracleToLifelinesPheno() throws Exception {
-        
-        
-        
+    public OracleToLifelinesPheno() throws Exception {     
+    }
+    
+    public void load() throws Exception {
         Investigation inv = new Investigation();
         inv.setName(tableName + "1");
         
@@ -114,7 +115,7 @@ public class OracleToLifelinesPheno {
         em.getTransaction().commit();
     }
     
-    private List<Column> getColumns() throws Exception {
+    public List<Column> getColumns() throws Exception {
         Connection con = null;
         ResultSet rs = null;
         Statement st = null;

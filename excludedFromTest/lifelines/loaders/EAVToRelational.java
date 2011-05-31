@@ -33,7 +33,7 @@ public class EAVToRelational {
 	
 	public EAVToRelational() throws Exception {
 		DatabaseLogin databaseLogin = new DatabaseLogin();
-		databaseLogin.setConnectionString("jdbc:mysql://localhost/gcc");
+		databaseLogin.setConnectionString("jdbc:mysql://localhost/test_gcc");
 		databaseLogin.setUserName("molgenis");
 		databaseLogin.setPassword("molgenis");
 //		databaseLogin.setDatabaseName("lifelines");
