@@ -62,9 +62,9 @@ Updates of the database, both user features and insertion of new data, will be a
 <p align="center"><a href="molgenis.do?__target=NewsPlugin&select=NewsPlugin&__action=all" target="_parent">All News</a></p>
 </div>
 
-
-
 </#if>
+
+<p align="center"><a href="http://www.twitter.com/DEB_registry" target="_new"><img src="res/img/col7a1/twitter.jpg" width="20"></a> Follow us on twitter.</p>
 
 			</div>
 		</div>
