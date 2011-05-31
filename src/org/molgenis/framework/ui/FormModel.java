@@ -338,7 +338,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		{
 			try
 			{
-				if (login.canRead(this.getController().getEntityClass()))
+				if (login.canRead(this.getController()))
 				{
 					return true;
 				}
