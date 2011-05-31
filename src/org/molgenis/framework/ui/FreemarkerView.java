@@ -37,7 +37,7 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 	private freemarker.template.Configuration cfg = null;
 	private String templatePath;
 	private transient Logger logger = Logger.getLogger(this.getClass());
-	private boolean usePublicFields = true;
+	private boolean usePublicFields = true;//false;
 	private Map<String,Object> arguments = new LinkedHashMap<String,Object>();
 
 	public FreemarkerView(String templatePath, ScreenModel model)

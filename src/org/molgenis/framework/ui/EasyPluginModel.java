@@ -21,7 +21,7 @@ public class EasyPluginModel extends SimpleScreenModel
 		{
 			try
 			{
-				if (login.canRead(this))
+				if (login.canRead(this.getController()))
 				{
 					return true;
 				}

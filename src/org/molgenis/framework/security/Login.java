@@ -109,7 +109,7 @@ public interface Login
 	 * @return read permission
 	 * @throws DatabaseException
 	 */
-	//public boolean canRead(ScreenController<?> screen) throws DatabaseException;
+	public boolean canRead(ScreenController<?> screen) throws DatabaseException;
 
 	/**
 	 * Indicates whether the user has permissions to read data from this
@@ -118,7 +118,7 @@ public interface Login
 	 * @return read permission
 	 * @throws DatabaseException
 	 */
-	public boolean canRead(ScreenModel model) throws DatabaseException;
+//	public boolean canRead(ScreenModel model) throws DatabaseException;
 
 	/**
 	 * Indicates whether the user has permissions to add, update, delete data
