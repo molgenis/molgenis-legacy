@@ -67,7 +67,11 @@ public class MolgenisUserDecorator<E extends MolgenisUser> extends MappingDecora
 			try {
 				getDatabase().add(mugl);
 			} catch (IOException e1) {
-				throw new DatabaseException(e1.getMessage());
+				try {
+					throw new Exception(e1.getMessage());
+				} catch (Exception e2) {
+					e2.printStackTrace();
+				}
 			}
 		}
 
