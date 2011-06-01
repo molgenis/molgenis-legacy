@@ -9,22 +9,22 @@
 		<plugin name="SearchPlugin" type="org.molgenis.mutation.ui.search.Col7a1Search" label="Search">
 			<plugin name="NewsBar" type="org.molgenis.news.ui.News" label="News"/>
 		</plugin>
-		<plugin name="UploadPlugin" type="org.molgenis.mutation.ui.upload.Upload" label="Submit data"/>
+		<plugin name="UploadPlugin" type="org.molgenis.mutation.ui.upload.Col7a1Upload" label="Submit data"/>
 		<plugin name="Contact" type="org.molgenis.feedback.ui.Contact" label="Contact"/>
 		<plugin name="Publications" type="org.molgenis.core.ui.AllPublications" label="References"/>
 		<plugin name="Background" type="org.molgenis.mutation.ui.background.Background" label="Background"/>
 		<plugin name="NewsPlugin" type="org.molgenis.news.ui.News" label="News"/>
-		<menu name="Management" label="Management">
+		<menu name="Management" position="left" label="Management">
 			<form name="Gene" entity="MutationGene"/>
 			<form name="ProteinDomain" entity="ProteinDomain" label="Protein domain"/>
 			<form name="Exon" entity="Exon"/>
 			<form name="Mutation" entity="Mutation"/>
 			<form name="Phenotype" entity="MutationPhenotype"/>
-			<form name="Submission" entity="Submission">
-				<form name="Patient" entity="Patient">
-					<form name="PhenotypeDetails" entity="PhenotypeDetails" label="Phenotype details"/>
-				</form>
-			</form>
+			<form name="ObservableFeature" entity="ObservableFeature" label="Phenotypic Feature"/>
+			<form name="Protocol" entity="Protocol" label="COL7A1 Protocol"/>
+			<form name="ObservedValue" entity="ObservedValue" label="Phenotypic Value"/>
+			<form name="Patient" entity="Patient"/>
+			<form name="Submission" entity="Submission"/>
 			<form name="Publication" entity="Publication" compact_view="Title,PubmedID" label="References">
 				<form name="OntologyTerm" entity="OntologyTerm" label="Ontology term"/>
 			</form>
