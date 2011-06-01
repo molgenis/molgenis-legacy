@@ -4,7 +4,6 @@ package org.molgenis.sandbox.plugins;
 import java.util.List;
 
 import org.molgenis.bbmri.Biobank;
-import org.molgenis.bbmri.BiobankPanel;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.organization.Institute;
@@ -12,7 +11,6 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.organization.Person;
 
 import app.JDBCDatabase;
-import app.servlet.MolgenisServlet;
 //joeri: missing import
 //import app.ui.CoordinatorsFormModel;
 
@@ -61,7 +59,7 @@ public class VaadinTest extends Application {
 			this.db = new JDBCDatabase("/Users/despoina/Documents/GCC_workspace/molgenis_apps/handwritten/apps/org/molgenis/biobank/bbmri.molgenis.properties");
 			
 			//joeri: try using:
-			Database db = new MolgenisServlet().getDatabase();
+			//Database db = new MolgenisServlet().getDatabase();
 			
 			ct = CommonService.getInstance();
 			ct.setDatabase(this.db);
@@ -207,7 +205,7 @@ public class VaadinTest extends Application {
 			List <Biobank> Biobank = db.query(Biobank.class).find();
 			List<Investigation> investigationID   = db.query(Investigation.class).find();
 			List <Institute> Institute = db.query(Institute.class).find();
-			List <BiobankPanel> BiobankPanel = db.query(BiobankPanel.class).find();
+			List <Biobank> BiobankPanel = db.query(Biobank.class).find();
 			List <OntologyTerm> Category = db.query(OntologyTerm.class).find();
 			
 			//List <CoordinatorsFormModel> Coordinators =  (List<CoordinatorsFormModel>) CoordinatorsFormModel.class.getDeclaredFields(); 
@@ -227,8 +225,8 @@ public class VaadinTest extends Application {
 			        
 				
 				
-				if ((value = BiobankPanel.get(i).getName()) != null) 					ic.getContainerProperty(id, "id").setValue(value);
-				if ((value = Biobank.get(i).getName()) != null) 							ic.getContainerProperty(id, "Cohort").setValue(value);
+				//if ((value = BiobankPanel.get(i).getId()) != null) 					ic.getContainerProperty(id, "id").setValue(value);
+				if ((value = Biobank.get(i).getCohort()) != null) 							ic.getContainerProperty(id, "Cohort").setValue(value);
 				if ((value = Category.get(i).getName()) != null) 							ic.getContainerProperty(id, "Category").setValue(value); //TODO : this is not a join query. In molgenis this is fixed by xrefs
 				if ((value = BiobankPanel.get(i).getGeneralComments()) != null) 	ic.getContainerProperty(id, "General comments").setValue(value);
 				if ((value = BiobankPanel.get(i).getGwaDataNum())!=null)			ic.getContainerProperty(id, "GWA data n=").setValue(value);

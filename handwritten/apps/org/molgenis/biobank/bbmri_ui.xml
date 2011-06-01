@@ -5,16 +5,16 @@
 	<menu name="main" position="left" startswith="WelcomeScreen">
 		<plugin name="BbmriWelcomeScreen" type="plugins.welcome.BbmriWelcomeScreenPlugin" label="Welcome" />
 		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Login" />
-		<menu name="BiobankOverview" label="Biobank Overview">
+         <!--  		<menu name="BiobankOverview" label="Biobank Overview">
 			<plugin name="CohortPlugin" type="plugins.listplugin.CohortsPlugin" label="Biobank Overview " />
 		</menu>
-		<menu name="EditData" label="Edit data">
-			<form name="Cohorts" entity="BiobankPanel" label="Biobank Overview"	hide_fields="id,description,Species,Individuals,PanelType,FounderPanels,ontologyReference,canRead,canWrite,Approved,owns" />
+		 -->
+		<menu name="BiobankOverview" label="Biobank Overview">
+			<form name="Cohorts" entity="Biobank" label="Biobank Overview"	hide_fields="id,canRead,canWrite,Approved,owns" />
 		</menu>
 		<menu name="Admin">
 		    <menu name="DataViews">
-		    	<form name="AdminCohorts" entity="BiobankPanel" label="Admin Biobank" hide_fields="id,description,Species,Individuals,PanelType,FounderPanels,ontologyReference" />
-		    	<!-- <form name="Biobanks" entity="Biobank" view="list" /> -->
+		    	<form name="AdminCohorts" entity="Biobank" label="Admin Biobank" hide_fields="id" />
 				<form name="Coordinators" entity="Person" view="list" sortby="LastName" />
 				<form name="Institutes" entity="Institute" view="list" />
 				<form name="Categories" sortby="name" view="list" entity="BiobankCategory" />

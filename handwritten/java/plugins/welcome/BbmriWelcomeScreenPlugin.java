@@ -7,7 +7,11 @@
 
 package plugins.welcome;
 
+import java.text.ParseException;
+
+import org.molgenis.bbmri.ChangeLog;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
@@ -15,6 +19,8 @@ import org.molgenis.util.Tuple;
 
 public class BbmriWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>
 {
+	
+	ChangeLog mostRecentChangeLogEntry; 
 
 	private static final long serialVersionUID = -2848815736940818733L;
 
@@ -59,21 +65,23 @@ public class BbmriWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>
 	@Override
 	public void reload(Database db)
 	{
-//		try
-//		{
-//			Database db = this.getDatabase();
-//			Query q = db.query(Experiment.class);
-//			q.like("name", "test");
-//			List<Experiment> recentExperiments = q.find();
-//			
-//			//do something
-//		}
-//		catch(Exception e)
-//		{
-//			//...
-//		}
+		try {
+			mostRecentChangeLogEntry = db.query(ChangeLog.class).sortDESC(ChangeLog.DATE).find().get(0);
+		} catch (Exception e) {
+			// no entries (yet), so mostRecentChangeLogEntry will remain null
+		}
+		
+		
 	}
 	
+	public ChangeLog getMostRecentChangeLogEntry() {
+		return mostRecentChangeLogEntry;
+	}
+
+	public void setMostRecentChangeLogEntry(ChangeLog mostRecentChangeLogEntry) {
+		this.mostRecentChangeLogEntry = mostRecentChangeLogEntry;
+	}
+
 	@Override
 	public boolean isVisible()
 	{

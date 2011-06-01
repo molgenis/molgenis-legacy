@@ -1,7 +1,7 @@
 
 package plugins.listplugin;
 
-import org.molgenis.bbmri.BiobankPanel;
+import org.molgenis.bbmri.Biobank;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.ui.EasyPluginController;
@@ -50,7 +50,7 @@ public class CohortsPlugin extends EasyPluginController<CohortsPluginModel>
 	public void reload(Database db) throws Exception
 	{	
 		// Fill list of Cohorts
-		Query<BiobankPanel> q = db.query(BiobankPanel.class);
+		Query<Biobank> q = db.query(Biobank.class);
 		this.getModel().setCohorts(q.find());
 	
 	}

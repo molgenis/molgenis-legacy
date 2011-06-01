@@ -47,7 +47,13 @@
 LifeLines and the European Bionformatics Institute regarding data model and tools. It was generated using MOLGENIS.</p>
 
 
-<span style="color: #3366CC;"><span style="font-size: .75em;">Last update was on 25 May 2011</span></span>
+<span style="color: #3366CC;"><span style="font-size: .75em;">
+<#if screen.mostRecentChangeLogEntry??>
+	Last update was on ${screen.mostRecentChangeLogEntry.date}.
+<#else>
+	No updates yet.
+</#if>
+</span></span>
 
 	
 <#--end of your plugin-->	

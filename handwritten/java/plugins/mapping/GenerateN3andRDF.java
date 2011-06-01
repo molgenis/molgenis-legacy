@@ -21,6 +21,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.util.FileManager;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.DC;
 import com.itextpdf.text.pdf.hyphenation.TernaryTree.Iterator;
 
@@ -54,13 +55,13 @@ public class GenerateN3andRDF extends PluginModel
 	{
 		if ("GenerateN3".equals(request.getAction())) {
 				
-				Object d2rq = new D2RQ(); 
+				/*Object d2rq = new D2RQ(); 
 				
 				Object mapping = new Mapping();
 				
 				String tmp = null;
 				Object MappingGenerator = new MappingGenerator(tmp);
-			
+			   */
 				// Set up the ModelD2RQ using a mapping file
 				Model m = new ModelD2RQ("/Users/despoina/Documents/d2r-server-0.7/molgenis_rdf_mapping.n3");
 				Model JenaMapping = FileManager.get().loadModel("/Users/despoina/Documents/d2r-server-0.7/molgenis_rdf_mapping.n3");
@@ -74,15 +75,15 @@ public class GenerateN3andRDF extends PluginModel
 				Triple pattern = new Triple(subject, predicate, object);
 
 				// Query the graph
-				Iterator it = (Iterator) g.find(pattern);
+				ExtendedIterator<Triple> it =  g.find(pattern);
 
 				// Output query results
-				/*
-				while (it.hasNext()) {
-				    Triple t = (Triple) it.next();
-				    System.out.println("Published in 2003: " + t.getSubject());
+				
+				while ((it).hasNext()) {
+				    Triple t = (Triple) (it).next();
+				    System.out.println(">>>Published in 2003: " + t.getSubject());
 				}
-				*/
+				
 				
 				String sparql = 
 				    "PREFIX dc: <http://purl.org/dc/elements/1.1/>" +
@@ -98,10 +99,7 @@ public class GenerateN3andRDF extends PluginModel
 				    System.out.println("Title: " + row.getLiteral("paperTitle").getString());
 				    System.out.println("Author: " + row.getLiteral("authorName").getString());
 				}
-		
 			}
-			
-		
 	}
 
 	@Override

@@ -12,14 +12,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.molgenis.bbmri.BiobankPanel;
+import org.molgenis.bbmri.Biobank;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
-import org.molgenis.framework.security.Login;
 import org.molgenis.framework.ui.EasyPluginModel;
 
-import com.hp.hpl.jena.vocabulary.DB;
 
 /**
  * CohortsPluginModel takes care of all state and it can have helper methods to query the database.
@@ -31,7 +29,7 @@ public class CohortsPluginModel extends EasyPluginModel
 	//a system veriable that is needed by tomcat
 	private static final long serialVersionUID = 1L;
 	
-	private List<BiobankPanel> cohorts;
+	private List<Biobank> cohorts;
 	
 	//another example, you can also use getInvestigations() and setInvestigations(...)
 	//public List<Investigation> investigations = new ArrayList<Investigation>();
@@ -42,22 +40,22 @@ public class CohortsPluginModel extends EasyPluginModel
 		super(controller);
 	}
 
-	public void setCohorts(List<BiobankPanel> cohorts) {
+	public void setCohorts(List<Biobank> cohorts) {
 		this.cohorts = cohorts;
 	}
 
-	public List<BiobankPanel> getCohorts() {
+	public List<Biobank> getCohorts() {
 		return cohorts;
 	}
 	
-	public java.util.List<BiobankPanel> removeEmptyValues(Database db) {
+	public java.util.List<Biobank> removeEmptyValues(Database db) {
 		
-		java.util.List<BiobankPanel> biobankPanel = new ArrayList<BiobankPanel>();
-		Iterator<BiobankPanel> iterator  = biobankPanel.iterator();
+		java.util.List<Biobank> Biobank = new ArrayList<Biobank>();
+		Iterator<Biobank> iterator  = Biobank.iterator();
 		
-		Query<BiobankPanel> q = db.query(BiobankPanel.class);
+		Query<Biobank> q = db.query(Biobank.class);
 		try {
-			biobankPanel =  q.find();
+			Biobank =  q.find();
 			while (iterator.hasNext()) {
 				if (iterator.next().getGwaDataNum().isEmpty()) {
 					iterator.next().setGwaDataNum("not available");
@@ -70,7 +68,7 @@ public class CohortsPluginModel extends EasyPluginModel
 			e.printStackTrace();
 		}
 		
-		return biobankPanel;
+		return Biobank;
 		
 		
 	}
