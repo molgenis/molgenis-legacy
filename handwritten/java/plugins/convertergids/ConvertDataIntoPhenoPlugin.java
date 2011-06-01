@@ -19,7 +19,6 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.organization.Investigation;
-import org.molgenis.pheno.Measurement;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -36,11 +35,16 @@ public class ConvertDataIntoPhenoPlugin extends PluginModel<Entity>
 	
 	private List<Investigation> investigations;
 	private String finished = null;
+	public ConvertGidsToPheno cgtp;
 	
 
 	public ConvertDataIntoPhenoPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
+	}
+	
+	public ConvertGidsToPheno getCgtp() {
+		return this.cgtp;
 	}
 
 	@Override
@@ -100,9 +104,10 @@ public class ConvertDataIntoPhenoPlugin extends PluginModel<Entity>
 			}
 			
 			try {
-				ConvertGidsToPheno cgtp = new ConvertGidsToPheno();
+				cgtp = new ConvertGidsToPheno();
 				
-				cgtp.converter(file, invName,db);
+				cgtp.converter(file, invName, db);
+				
 				finished = "finish";
 
 			} catch (Exception e) {

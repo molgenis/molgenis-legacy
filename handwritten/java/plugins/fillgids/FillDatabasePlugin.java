@@ -75,25 +75,35 @@ public class FillDatabasePlugin extends PluginModel<Entity>
 			
 			try {
 				File fileInd = request.getFile("readind");
+				if(fileInd != null){
+					File moveInd = new File(roanDir + File.separator + fileInd.getName());
+					boolean moveSuccessInd = fileInd.renameTo(moveInd);
+					String originalNameInd = request.getString("readindOriginalFileName");
+					boolean renameSuccessInd = moveInd.renameTo(new File(roanDir + File.separator + originalNameInd));
+				}
+				
+				
 				File fileMeas = request.getFile("readmeas");
-				File fileVal = request.getFile("readval");
-			
-				File moveInd = new File(roanDir + File.separator + fileInd.getName());
-				File moveMeas = new File(roanDir + File.separator + fileMeas.getName());
-				File moveVal = new File(roanDir + File.separator + fileVal.getName());
-				boolean moveSuccessInd = fileInd.renameTo(moveInd);
-				boolean moveSuccessMeas = fileMeas.renameTo(moveMeas);
-				boolean moveSuccessVal = fileVal.renameTo(moveVal);
-				String originalNameInd = request.getString("readindOriginalFileName");
-				String originalNameMeas = request.getString("readmeasOriginalFileName");
-				String originalNameVal = request.getString("readvalOriginalFileName");
-				boolean renameSuccessInd = moveInd.renameTo(new File(roanDir + File.separator + originalNameInd));
-				boolean renameSuccessMeas = moveMeas.renameTo(new File(roanDir + File.separator + originalNameMeas));
-				boolean renameSuccessVal = moveVal.renameTo(new File(roanDir + File.separator + originalNameVal));
+				if(fileMeas != null){
+					File moveMeas = new File(roanDir + File.separator + fileMeas.getName());
+					boolean moveSuccessMeas = fileMeas.renameTo(moveMeas);
+					String originalNameMeas = request.getString("readmeasOriginalFileName");
+					boolean renameSuccessMeas = moveMeas.renameTo(new File(roanDir + File.separator + originalNameMeas));
+				}
+				
+				
+				File fileVal = request.getFile("readval");		
+				if(fileVal != null){
+					File moveVal = new File(roanDir + File.separator + fileVal.getName());						
+					boolean moveSuccessVal = fileVal.renameTo(moveVal);								
+					String originalNameVal = request.getString("readvalOriginalFileName");							
+					boolean renameSuccessVal = moveVal.renameTo(new File(roanDir + File.separator + originalNameVal));
+				}
 				
 				
 				CsvImport.importAll(roanDir, db, null);
 				this.setMessages(new ScreenMessage("data succesfully added to the database", true));
+				roanDir = null;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -58,10 +58,15 @@
 </div>
 <#if screen.finished??>
 <div id="bal">
-	
+	<#if screen.cgtp.listSizeTargets gt 0>
 		<a href="tmpfile/individual.txt">Download individuals</a><br />
+	</#if>
+	<#if screen.cgtp.listSizeMeasurements gt 0>
 		<a href="tmpfile/measurement.txt">Download measurements</a><br />
+	</#if>
+	<#if screen.cgtp.listSizeValues gt 0>
 		<a href="tmpfile/observedvalue.txt">Download observed values</a>
+	</#if>
 	<input style="margin-left:100px" type='submit' class='addbutton' value='  clean downloads  ' onclick="__action.value='clean'"/>
 <div>
 </#if>

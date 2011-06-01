@@ -22,9 +22,11 @@ public class ConvertGidsToPheno
 	private Logger logger;
 	final List<Individual> individualsList  = new ArrayList<Individual>();
 	final List<Measurement> measurementsList  = new ArrayList<Measurement>();
+	final List<Measurement> totalMeasurementsList  = new ArrayList<Measurement>();
 	final List<ObservedValue> valuesList  = new ArrayList<ObservedValue>();
 	final List<Investigation> investigationList = new ArrayList<Investigation>();
 	private String invName;
+	
 	Database db;
 	
 	
@@ -32,7 +34,7 @@ public class ConvertGidsToPheno
 		
 		this.invName = invName;
 		this.db = db;
-		
+		logger.info("************* " + invName);
 		makeInvestigation(invName);
 		populateIndividual(file,invName);
 		populateMeasurement(file,invName);
@@ -43,9 +45,9 @@ public class ConvertGidsToPheno
 		File tmpFileDir = new File(tmpDir.getAbsolutePath());
 		
 		try{
+			logger.info("     >>>>>>>>>>>>> Measurements list contains " + measurementsList.size() + " items");
 			export.exportAll(tmpFileDir, individualsList, measurementsList, valuesList);
-		}
-		catch(Exception e){
+		} catch(Exception e){
 			logger.info("CANNOT EXPORT DATA");
 		}
 	}
@@ -55,8 +57,16 @@ public class ConvertGidsToPheno
 	public Database getDb() {
 		return db;
 	}
-
-
+	
+	public Integer getListSizeTargets (){
+		return individualsList.size();
+	}
+	public Integer getListSizeMeasurements (){
+		return measurementsList.size();
+	}
+	public Integer getListSizeValues (){
+		return valuesList.size();
+	}
 
 	public ConvertGidsToPheno() throws Exception
 	{
@@ -73,6 +83,8 @@ public class ConvertGidsToPheno
 	
 	public void populateIndividual(File file, String invName) throws Exception
 	{
+		individualsList.clear();
+		
 		final List<String> namesSeen = new ArrayList<String>();
 		this.invName = invName;
 		CsvFileReader reader = new CsvFileReader(file);
@@ -89,7 +101,6 @@ public class ConvertGidsToPheno
 					namesSeen.add(gidsId);
 					Individual newIndividual = new Individual();
 					newIndividual.setName(gidsId);
-
 					newIndividual.setInvestigation_Name(getInvestigation());
 					newIndividual.setMother_Name(mother_Name);					
 					newIndividual.setFather_Name(father_Name);	
@@ -100,26 +111,30 @@ public class ConvertGidsToPheno
 	}
 	
 	public void populateMeasurement(File file, String invName) throws Exception {
+		
+		measurementsList.clear();
+		totalMeasurementsList.clear();
+		
 		CsvFileReader reader = new CsvFileReader(file);
 		int teller=1;
 		for (String header : reader.colnames()) {
 			if (!header.equals("id_individual") && !header.equals("id_mother") && !header.equals("id_father")) {
+				
 				if(db.query(Measurement.class).eq(Measurement.NAME, header).count() == 0){
-					logger.info("THIS IS A NEW MEASUREMENT: " + header);
 					Measurement measurement = new Measurement();
 					measurement.setName(header);
 					measurement.setInvestigation_Name(invName);
 					measurementsList.add(measurement);
-				} else {
-					logger.info("THIS MEASUREMENT ALREADY EXISTED: " + header);
+					totalMeasurementsList.add(measurement);
+				} else {			
 					List<Measurement> measList = db.query(Measurement.class).eq(Measurement.NAME, header).find();
+					int invID = db.query(Investigation.class).eq(Investigation.NAME, "System" ).find().get(0).getId();
 					Measurement meas = measList.get(0);
-					
-					meas.setInvestigation_Name("System"); // todo make
+					meas.setInvestigation_Id(invID);
 					db.update(meas);
-					
+					totalMeasurementsList.add(meas);
 				}
-			}
+			}		
 			teller++;
 		}
 	}
@@ -131,28 +146,24 @@ public class ConvertGidsToPheno
 	
 	public void populateValue(File file, String invName) throws Exception
 	{
+		valuesList.clear();
+		
 		CsvFileReader reader = new CsvFileReader(file);
 		reader.parse(new CsvReaderListener()
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
-			{
-				
-				String targetName = tuple.getString("id_individual");
-				
-				for (Measurement m : measurementsList) {
+			{				
+				String targetName = tuple.getString("id_individual");				
+				for (Measurement m : totalMeasurementsList) {
 					String featureName = m.getName();	
 					String value = tuple.getString(featureName);
-
 					ObservedValue newValue = new ObservedValue();
 					newValue.setFeature_Name(featureName);
 					newValue.setTarget_Name(targetName);
 					newValue.setValue(value);
-					newValue.setInvestigation_Name(getInvestigation());
-					
-					valuesList.add(newValue);
-					
+					newValue.setInvestigation_Name(getInvestigation());					
+					valuesList.add(newValue);					
 				}
-				
 			}
 		});
 		
