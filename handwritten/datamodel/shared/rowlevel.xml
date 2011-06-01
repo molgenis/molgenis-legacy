@@ -6,7 +6,7 @@
 			<field name="canRead" type="xref" xref_field="MolgenisRole.id" xref_label="name" nillable="true"/>
 			<field name="canWrite" type="xref" xref_field="MolgenisRole.id" xref_label="name" nillable="true"/>
 			<!-- NO USE CASE FOR IT SO DON'T USE AS IT CONFUSES AS DEMO SHOWED field name="canExecute" type="xref" xref_field="MolgenisRole.id" xref_label="name" nillable="true"/-->
-			<field name="owns" type="xref" xref_field="MolgenisRole.id" xref_label="name"/>
+			<field name="owns" type="xref" xref_field="MolgenisRole.id" xref_label="name" default="2" />
 		</entity>
 	</module>
 </molgenis>

@@ -7,14 +7,12 @@
 
 package decorators;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
 import org.molgenis.auth.MolgenisGroup;
 import org.molgenis.bbmri.Biobank;
 import org.molgenis.bbmri.ChangeLog;
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
@@ -47,7 +45,7 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 			if (login.getUserId() != null) {
 				int userId = this.getDatabase().getSecurity().getUserId();
 				
-				for (org.molgenis.bbmri.Biobank e : entities)
+				for (Biobank e : entities)
 				{
 					// Set ownership of new record to current user
 					e.setOwns_Id(userId);
@@ -61,8 +59,6 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 						// When running from Hudson, there will be no group "AllUsers" so we prevent
 						// an error, to keep our friend Hudson from breaking
 					}
-				
-					
 				}
 			}
 		}
@@ -70,7 +66,9 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 		// here we call the standard 'add'
 		int count = super.add(entities);
 
-		for (org.molgenis.bbmri.Biobank e : entities) {
+		// add your post-processing here
+		// if you throw and exception the previous add will be rolled back
+		for (Biobank e : entities) {
 	
 			//on every new entity update changelog table 
 			try {
@@ -81,24 +79,26 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 				
 				this.getDatabase().add(changeLog);
 				
-			} catch (IOException ioe) {
+			} catch (Exception ioe) {
 				ioe.printStackTrace();
 			}
-		}		
-		// add your post-processing here
-		// if you throw and exception the previous add will be rolled back
+		}
 
 		return count;
 	}
 
 	@Override
 	public int update(List<E> entities) throws DatabaseException
-	{
-		//ChangeLog chl = null;
-		Date date = new Date(); 
-		
+	{	
 		// add your pre-processing here
-		for (org.molgenis.bbmri.Biobank e : entities)
+
+		// here we call the standard 'update'
+		int count = super.update(entities);
+
+		// add your post-processing here
+		// if you throw and exception the previous add will be rolled back
+		Date date = new Date(); 
+		for (Biobank e : entities)
 		{
 			//on every entity update, update changelog table 
 			try {
@@ -108,16 +108,10 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 				changeLog.setEntity_Id(e.getId());
 				this.getDatabase().add(changeLog);
 				
-			} catch (IOException ioe) {
+			} catch (Exception ioe) {
 				ioe.printStackTrace();
 			}
 		}
-
-		// here we call the standard 'update'
-		int count = super.update(entities);
-
-		// add your post-processing here
-		// if you throw and exception the previous add will be rolled back
 
 		return count;
 	}
