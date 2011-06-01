@@ -24,10 +24,14 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
+import org.molgenis.mutation.E_M;
 import org.molgenis.mutation.Exon;
+import org.molgenis.mutation.I_F;
 import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.MutationGene;
 import org.molgenis.mutation.MutationPhenotype;
+import org.molgenis.mutation.Patient;
+import org.molgenis.mutation.PhenotypeDetails;
 import org.molgenis.mutation.service.ExonService;
 import org.molgenis.mutation.service.MutationService;
 import org.molgenis.mutation.service.PatientService;
@@ -38,8 +42,11 @@ import org.molgenis.mutation.vo.ExonSearchCriteriaVO;
 import org.molgenis.mutation.vo.MBrowseVO;
 import org.molgenis.mutation.vo.MutationSearchCriteriaVO;
 import org.molgenis.mutation.vo.MutationSummaryVO;
+import org.molgenis.mutation.vo.ObservedValueVO;
+import org.molgenis.mutation.vo.PatientDetailsVO;
 import org.molgenis.mutation.vo.PatientSearchCriteriaVO;
 import org.molgenis.mutation.vo.PatientSummaryVO;
+import org.molgenis.mutation.vo.PhenotypeDetailsVO;
 import org.molgenis.mutation.vo.ProteinDomainSummaryVO;
 import org.molgenis.mutation.vo.QueryParametersVO;
 import org.molgenis.mutation.vo.SearchPluginVO;
@@ -84,6 +91,29 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 	{
 		return "org/molgenis/mutation/ui/search/SearchPlugin.ftl";
 	}
+
+//	public String getCustomHtmlHeaders()
+//	{
+//		String divId = "PatientPager";
+//		//path with the vaadin app serlvet (including trailing slash)
+//		String servletPath = "/molgenis_apps/vaadin/patient_pager/";
+//		//path of this app; should also work when null (but doesn't)
+//		String appPath = "/molgenis_apps/";
+//		
+//		return "<link rel=\"stylesheet\" style=\"text/css\" type=\"text/css\" href=\""+appPath+"VAADIN/themes/molgenis/styles.css\">" +
+//		"<script type=\"text/javascript\">"+
+//		"var vaadin = {"+
+//		//optionally repeat for each div
+//		"	vaadinConfigurations: {"+
+//		"		'"+divId+"' :{"+
+//		"			appUri:'"+servletPath+"',"+ 
+//		"			themeUri: '"+appPath+"VAADIN/themes/molgenis',\n "+
+//		"			versionInfo : {vaadinVersion:\"6.5.2\",applicationVersion:\"NONVERSIONED\"}"+
+//		"		}"+
+//		"	}};"+
+//		"</script>"+
+//		"<script language='javascript' src='"+appPath+"VAADIN/widgetsets/com.vaadin.terminal.gwt.DefaultWidgetSet/com.vaadin.terminal.gwt.DefaultWidgetSet.nocache.js'></script>";
+//	}
 
 	@Override
 	public void handleRequest(Database db, Tuple request)
@@ -269,6 +299,28 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 				this.searchPluginVO.setPatientSummaryVOs(this.patientService.getAllPatientSummaries());
 				this.searchPluginVO.setPager(new LimitOffsetPager<PatientSummaryVO>(this.searchPluginVO.getPatientSummaryVOs(), 20, 0));
 				this.searchPluginVO.setHeader(this.searchPluginVO.getPatientSummaryVOs().size() + " results for \"Display all patients\".");
+
+
+//				HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
+//				HttpServletRequest httpRequest   = rt.getRequest();
+				
+//				List<PatientSummaryVO> list      = new ArrayList<PatientSummaryVO>();
+//				for (PatientSummaryVO patientSummaryVO : searchPluginVO.getPatientSummaryVOs())
+//					list.add(patientSummaryVO);
+//
+//				httpRequest.getSession().setAttribute("patientSummaryVO", list);
+				
+//				HttpServletResponse httpResponse = rt.getResponse();
+//				RequestDispatcher dispatcher     = httpRequest.getRequestDispatcher("PatientPager2");  
+//				dispatcher.include(httpRequest, httpResponse);
+//				System.out.println("INCLUDE: " + httpResponse.toString());
+//
+//				if (StringUtils.isNotEmpty(this.getApplicationController().getLogin().getRedirect()))
+//				{
+//					String redirectURL = httpRequest.getRequestURL() + "?__target=main" + "&select=" + this.getApplicationController().getLogin().getRedirect();
+//					httpResponse.sendRedirect(redirectURL);
+//				}
+			
 			}
 			else if (this.searchPluginVO.getAction().equals("showProteinDomain"))
 			{
@@ -307,17 +359,7 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 			}
 			else if (this.searchPluginVO.getAction().equals("showPhenotypeDetails"))
 			{
-				if (StringUtils.isNotEmpty(request.getString("pid")))
-				{
-					PatientSearchCriteriaVO criteria = new PatientSearchCriteriaVO();
-					criteria.setPid(request.getString("pid"));
-					criteria.setConsent(true);
-					List<PatientSummaryVO> patientSummaryVOs = this.patientService.findPatients(criteria);
-					if (patientSummaryVOs.size() != 1)
-						throw new Exception("Unknown patient id.");
-					this.searchPluginVO.setPatientSummaryVO(patientSummaryVOs.get(0));
-					this.searchPluginVO.setHeader("Phenotypic details for patient '" + criteria.getPid() + "'");
-				}
+				this.handleShowPhenotypeDetails(request);
 			}
 			else if (this.searchPluginVO.getAction().startsWith("mutationsFirstPage"))
 			{
@@ -365,6 +407,25 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 		
 		for (ScreenController<?> child : this.getController().getChildren())
 			child.handleRequest(db, request);
+	}
+
+	private void handleShowPhenotypeDetails(Tuple request) throws Exception
+	{
+		if (StringUtils.isNotEmpty(request.getString("pid")))
+		{
+			PatientSearchCriteriaVO criteria = new PatientSearchCriteriaVO();
+			criteria.setPid(request.getString("pid"));
+			criteria.setConsent(true);
+			List<PatientSummaryVO> patientSummaryVOs = this.patientService.findPatients(criteria);
+			if (patientSummaryVOs.size() != 1)
+				throw new Exception("Unknown patient id.");
+			this.searchPluginVO.setPatientSummaryVO(patientSummaryVOs.get(0));
+
+			PhenotypeDetailsVO phenotypeDetailsVO = this.patientService.findPhenotypeDetails(request.getString("pid"));
+			this.searchPluginVO.setPhenotypeDetailsVO(phenotypeDetailsVO);
+
+			this.searchPluginVO.setHeader("Phenotypic details for patient '" + criteria.getPid() + "'");
+		}
 	}
 
 	private void handleShowProteinDomain(Tuple request) throws Exception
@@ -480,6 +541,50 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 			}
 	}
 	
+//	private void convert2eav(Database db) throws DatabaseException, ParseException
+//	{
+//		List<Patient> patients = db.query(Patient.class).find();
+//		for (Patient patient : patients)
+//		{
+//			PhenotypeDetails details = db.findById(PhenotypeDetails.class, patient.getPhenotype_Details_Id());
+//			for (String field : details.getFields())
+//			{
+//				if ("id".equals(field))
+//					continue;
+//				if (details.get(field) == null)
+//					continue;
+//				String value = details.get(field).toString();
+//				System.out.println("INSERT INTO ObservedValue (Investigation, Feature, Target, __Type, value) SELECT 1, f.id, " + patient.getId() + ", 'ObservedValue', '" + value + "' FROM ObservationElement f WHERE name = '" + field + "';");
+//			}
+//
+//			List<I_F> ifs = db.query(I_F.class).equals(I_F.PATIENT, patient.getId()).find();
+//			for (I_F if_ : ifs)
+//			{
+//				String field = "Amount of type VII collagen";
+//				String value = if_.getValue();
+//				System.out.println("INSERT INTO ObservedValue (Investigation, Feature, Target, __Type, value) SELECT 1, f.id, " + patient.getId() + ", 'ObservedValue', '" + value + "' FROM ObservationElement f WHERE name = '" + field + "';");
+//				String field2 = "IF Retention of type VII Collagen in basal cells";
+//				String value2 = if_.getRetention();
+//				System.out.println("INSERT INTO ObservedValue (Investigation, Feature, Target, __Type, value) SELECT 1, f.id, " + patient.getId() + ", 'ObservedValue', '" + value2 + "' FROM ObservationElement f WHERE name = '" + field2 + "';");
+//			}
+//			
+//			List<E_M> ems = db.query(E_M.class).equals(E_M.PATIENT, patient.getId()).find();
+//			for (E_M em_ : ems)
+//			{
+//				String field = "Anchoring fibrils Number";
+//				String value = em_.getNumber();
+//				System.out.println("INSERT INTO ObservedValue (Investigation, Feature, Target, __Type, value) SELECT 1, f.id, " + patient.getId() + ", 'ObservedValue', '" + value + "' FROM ObservationElement f WHERE name = '" + field + "';");
+//				String field2 = "Anchoring fibrils Ultrastructure";
+//				String value2 = em_.getAppearance();
+//				System.out.println("INSERT INTO ObservedValue (Investigation, Feature, Target, __Type, value) SELECT 1, f.id, " + patient.getId() + ", 'ObservedValue', '" + value2 + "' FROM ObservationElement f WHERE name = '" + field2 + "';");
+//				String field3 = "EM Retention of type VII Collagen in basal cells";
+//				String value3 = em_.getRetention();
+//				System.out.println("INSERT INTO ObservedValue (Investigation, Feature, Target, __Type, value) SELECT 1, f.id, " + patient.getId() + ", 'ObservedValue', '" + value3 + "' FROM ObservationElement f WHERE name = '" + field3 + "';");
+//			}
+//		}
+//		
+//	}
+
 	@Override
 	public boolean isVisible()
 	{
