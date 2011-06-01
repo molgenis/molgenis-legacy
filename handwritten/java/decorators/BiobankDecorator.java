@@ -76,10 +76,7 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 				
 				ChangeLog changeLog = new ChangeLog();
 				changeLog.setDate(date.toString());
-
-				changeLog.setEntity(e);
-				//changeLog.setEntity(e.getId()); //RED
-				
+				changeLog.setEntity_Id(e.getId());
 				this.getDatabase().add(changeLog);
 				
 			} catch (Exception ioe) {
@@ -109,7 +106,7 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 				ChangeLog changeLog = new ChangeLog();
 				changeLog.setDate(date.toString());
 				changeLog.setEntity_Id(e.getId());
-				this.getDatabase().add(changeLog);
+				this.getDatabase().update(changeLog);
 				
 			} catch (Exception ioe) {
 				ioe.printStackTrace();
@@ -127,7 +124,8 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 		for (Biobank e : entities)
 		{
 			try {
-				List<ChangeLog> changelogList = getDatabase().query(ChangeLog.class).eq(ChangeLog.ENTITY_ID,  e.getId()).find();
+				List<ChangeLog> changelogList = getDatabase().query(ChangeLog.class).eq(ChangeLog.ENTITY_ID,
+						e.getId()).find();
 				getDatabase().remove(changelogList);
 			} catch (Exception e1) {
 				e1.printStackTrace();
