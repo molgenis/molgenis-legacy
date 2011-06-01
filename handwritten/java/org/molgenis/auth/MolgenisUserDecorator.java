@@ -13,6 +13,8 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.auth.util.PasswordHasher;
+import org.molgenis.bbmri.Biobank;
+import org.molgenis.bbmri.ChangeLog;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
@@ -101,8 +103,18 @@ public class MolgenisUserDecorator<E extends MolgenisUser> extends MappingDecora
 	public int remove(List<E> entities) throws DatabaseException
 	{
 		// add your pre-processing here
-
+		// first remove corresponding MolgenisUserGroupLink entries, so we will be allowed to remove the User entities
+		for (E e : entities)
+		{
+			try {
+				List<MolgenisUserGroupLink> molgenisUserGroupLink = getDatabase().query(MolgenisUserGroupLink.class).eq(MolgenisUserGroupLink.USER__NAME,  e.getId()).find();
+				getDatabase().remove(molgenisUserGroupLink);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
 		// here we call the standard 'remove'
+		
 		int count = super.remove(entities);
 
 		// add your post-processing here, e.g.
