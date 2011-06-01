@@ -51,6 +51,7 @@ public class SearchPluginVO implements Serializable
 	private List<ProteinDomainSummaryVO> proteinDomainList;
 	private PatientSummaryVO patientSummaryVO;
 	private PhenotypeDetails phenotypeDetails;
+	private PhenotypeDetailsVO phenotypeDetailsVO;
 
 	private List<MolgenisNews> news;
 	private LimitOffsetPager<?> pager;
@@ -325,6 +326,16 @@ public class SearchPluginVO implements Serializable
 	public void setPhenotypeDetails(PhenotypeDetails phenotypeDetails)
 	{
 		this.phenotypeDetails = phenotypeDetails;
+	}
+
+	public PhenotypeDetailsVO getPhenotypeDetailsVO()
+	{
+		return phenotypeDetailsVO;
+	}
+
+	public void setPhenotypeDetailsVO(PhenotypeDetailsVO phenotypeDetailsVO)
+	{
+		this.phenotypeDetailsVO = phenotypeDetailsVO;
 	}
 
 	public List<MolgenisNews> getNews() {
