@@ -27,16 +27,18 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.mutation.Antibody;
-import org.molgenis.mutation.E_M;
-import org.molgenis.mutation.I_F;
 import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.MutationPhenotype;
 import org.molgenis.mutation.Patient;
 import org.molgenis.mutation.PhenotypeDetails;
 import org.molgenis.mutation.excel.UploadBatchExcelReader;
 import org.molgenis.mutation.util.PatientComparator;
+import org.molgenis.mutation.vo.ObservedValueVO;
 import org.molgenis.mutation.vo.PatientSearchCriteriaVO;
 import org.molgenis.mutation.vo.PatientSummaryVO;
+import org.molgenis.mutation.vo.PhenotypeDetailsVO;
+import org.molgenis.pheno.ObservedValue;
+import org.molgenis.protocol.Protocol;
 import org.molgenis.services.PubmedService;
 import org.molgenis.services.pubmed.PubmedArticle;
 import org.molgenis.submission.Submission;
@@ -123,8 +125,55 @@ public class PatientService implements Serializable
 		}
 	}
 
-	public PatientSummaryVO findPatientById(Integer id) throws Exception {
+	public PatientSummaryVO findPatientById(Integer id) throws Exception
+	{
 		return this.toPatientSummaryVO(this.db.findById(Patient.class, id));
+	}
+
+	public PhenotypeDetailsVO findPhenotypeDetails(String pid) throws DatabaseException, ParseException
+	{
+		List<Patient> patients = this.db.query(Patient.class).equals(Patient.IDENTIFIER, pid).in(Patient.CONSENT, Arrays.asList(new String[] { "publication", "yes" })).find();
+		
+		if (CollectionUtils.isEmpty(patients))
+			throw new IllegalArgumentException("Unknown patient identifier '" + pid + "'");
+		
+		if (this.db instanceof JDBCDatabase)
+		{
+			PhenotypeDetailsVO phenotypeDetailsVO = new PhenotypeDetailsVO();
+			phenotypeDetailsVO.setPatientId(patients.get(0).getId());
+			phenotypeDetailsVO.setPatientIdentifier(patients.get(0).getIdentifier());
+			phenotypeDetailsVO.setObservedValues(new HashMap<String, List<ObservedValueVO>>());
+
+			List<Protocol> protocols = this.db.query(Protocol.class).find();
+			
+			if (CollectionUtils.isEmpty(protocols))
+				return phenotypeDetailsVO;
+			
+			for (Protocol protocol : protocols)
+			{
+				// ignore protocols without features
+				if (protocol.getFeatures_Id().size() == 0)
+					continue;
+
+				phenotypeDetailsVO.getObservedValues().put(" " + protocol.getName(), new ArrayList<ObservedValueVO>());
+
+				List<ObservedValue> observedValues = this.db.query(ObservedValue.class).equals(ObservedValue.TARGET, patients.get(0).getId()).in(ObservedValue.FEATURE, protocol.getFeatures_Id()).find();
+				for (ObservedValue observedValue : observedValues)
+				{
+					ObservedValueVO observedValueVO = new ObservedValueVO();
+					observedValueVO.setFeatureName(observedValue.getFeature_Name());
+					observedValueVO.setValue(observedValue.getValue());
+					phenotypeDetailsVO.getObservedValues().get(" " + protocol.getName()).add(observedValueVO);
+				}
+			}
+			return phenotypeDetailsVO;
+		}
+		else if (this.db instanceof JpaDatabase)
+		{
+			throw new UnsupportedOperationException("To be implemented");
+		}
+		else
+			throw new UnsupportedOperationException("Unsupported database mapper");
 	}
 
 	public List<PatientSummaryVO> getAllPatientSummaries() throws DatabaseException, ParseException
@@ -419,13 +468,11 @@ public class PatientService implements Serializable
 		PatientSummaryVO patientSummaryVO = new PatientSummaryVO();
 		patientSummaryVO.setPatient(patient);
 
-//		if (this.db instanceof JDBCDatabase)
-//		{
+		if (this.db instanceof JDBCDatabase)
+		{
 			patientSummaryVO.setMutation1(this.db.findById(Mutation.class, patient.getMutation1_Id()));
 			patientSummaryVO.setMutation2(this.db.findById(Mutation.class, patient.getMutation2_Id()));
 			patientSummaryVO.setPhenotype(this.db.findById(MutationPhenotype.class, patient.getPhenotype_Id()));
-			if (!"no".equals(patient.getConsent()))
-				patientSummaryVO.setPhenotypeDetails(this.db.findById(PhenotypeDetails.class, patient.getPhenotype_Details_Id()));
 
 			patientSummaryVO.setPubmedURL(PublicationService.PUBMED_URL);
 
@@ -439,25 +486,14 @@ public class PatientService implements Serializable
 			patientSummaryVO.setSubmission(submission);
 			MolgenisUser submitter = this.db.findById(MolgenisUser.class, submission.getSubmitters_Id().get(0));
 			patientSummaryVO.setSubmitter(submitter);
-
-			List<I_F> if_s = this.db.query(I_F.class).equals(I_F.PATIENT, patient.getId()).find();
-			if (if_s.size() > 0)
-				patientSummaryVO.setIf_(if_s.get(0));
-
-			List<E_M> em_s = this.db.query(E_M.class).equals(E_M.PATIENT, patient.getId()).find();
-			if (em_s.size() > 0)
-				patientSummaryVO.setEm_(em_s.get(0));
 			
 			patientSummaryVO.setMaterial(patient.getMaterial_Name());
-
-//		}
-//		else if (this.db instanceof JpaDatabase)
-//		{
+		}
+		else if (this.db instanceof JpaDatabase)
+		{
 //			patientSummaryVO.setMutation1(patient.getMutation1());
 //			patientSummaryVO.setMutation2(patient.getMutation2());
 //			patientSummaryVO.setPhenotype(patient.getPhenotype());
-//			if (!"no".equals(patient.getConsent()))
-//				patientSummaryVO.setPhenotypeDetails(patient.getPhenotype_Details());
 //
 //			patientSummaryVO.setPubmedURL(PublicationService.PUBMED_URL);
 //
@@ -465,15 +501,11 @@ public class PatientService implements Serializable
 //
 //			patientSummaryVO.setSubmission(patient.getSubmission());
 //			patientSummaryVO.setSubmitter(patient.getSubmission().getSubmitters().get(0));
-//
-//			if (patient.getI_FCollection().size() > 0)
-//				patientSummaryVO.setIf_(patient.getI_FCollection().toArray(new I_F[0])[0]);
-//
-//			if (patient.getE_MCollection().size() > 0)
-//				patientSummaryVO.setEm_(patient.getE_MCollection().toArray(new E_M[0])[0]);
-//		}
-//		else
-//			throw new DatabaseException("Unsupported database mapper");
+//			
+//			patientSummaryVO.setMaterial(patient.getMaterial_Name());
+		}
+		else
+			throw new DatabaseException("Unsupported database mapper");
 
 		// cache value
 		this.cache.put(patient.getId(), patientSummaryVO);
