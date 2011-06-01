@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.molgenis.auth.MolgenisGroup;
+import org.molgenis.auth.MolgenisUser;
 import org.molgenis.bbmri.Biobank;
 import org.molgenis.bbmri.ChangeLog;
 import org.molgenis.framework.db.DatabaseException;
@@ -69,6 +70,17 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 
 		// add your post-processing here
 		// if you throw and exception the previous add will be rolled back
+		
+		// First a check to see if Hudson is running (if so, there will be no user "admin" present).
+		// If yes, bail out, because Hudson cannot handle the ChangeLog entries.
+		try {
+			if (getDatabase().query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().size() == 0) {
+				return count;
+			}
+		} catch (ParseException e1) {
+			return count;
+		}
+		
 		for (Biobank e : entities) {
 	
 			//on every new entity update changelog table 
@@ -97,6 +109,17 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 
 		// add your post-processing here
 		// if you throw and exception the previous add will be rolled back
+		
+		// First a check to see if Hudson is running (if so, there will be no user "admin" present).
+		// If yes, bail out, because Hudson cannot handle the ChangeLog entries.
+		try {
+			if (getDatabase().query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().size() == 0) {
+				return count;
+			}
+		} catch (ParseException e1) {
+			return count;
+		}
+		
 		Date date = new Date(); 
 		for (Biobank e : entities)
 		{
