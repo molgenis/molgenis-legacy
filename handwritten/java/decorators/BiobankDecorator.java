@@ -7,6 +7,7 @@
 
 package decorators;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -68,21 +69,21 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 
 		// add your post-processing here
 		// if you throw and exception the previous add will be rolled back
-//		for (Biobank e : entities) {
-//	
-//			//on every new entity update changelog table 
-//			try {
-//				
-//				ChangeLog changeLog = new ChangeLog();
-//				changeLog.setDate(date.toString());
-//				changeLog.setEntity(e.getId());
-//				
-//				this.getDatabase().add(changeLog);
-//				
-//			} catch (Exception ioe) {
-//				ioe.printStackTrace();
-//			}
-//		}
+		for (Biobank e : entities) {
+	
+			//on every new entity update changelog table 
+			try {
+				
+				ChangeLog changeLog = new ChangeLog();
+				changeLog.setDate(date.toString());
+				changeLog.setEntity(e.getId());
+				
+				this.getDatabase().add(changeLog);
+				
+			} catch (Exception ioe) {
+				ioe.printStackTrace();
+			}
+		}
 
 		return count;
 	}
@@ -97,21 +98,21 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 
 		// add your post-processing here
 		// if you throw and exception the previous add will be rolled back
-//		Date date = new Date(); 
-//		for (Biobank e : entities)
-//		{
-//			//on every entity update, update changelog table 
-//			try {
-//				
-//				ChangeLog changeLog = new ChangeLog();
-//				changeLog.setDate(date.toString());
-//				changeLog.setEntity_Id(e.getId());
-//				this.getDatabase().add(changeLog);
-//				
-//			} catch (Exception ioe) {
-//				ioe.printStackTrace();
-//			}
-//		}
+		Date date = new Date(); 
+		for (Biobank e : entities)
+		{
+			//on every entity update, update changelog table 
+			try {
+				
+				ChangeLog changeLog = new ChangeLog();
+				changeLog.setDate(date.toString());
+				changeLog.setEntity_Id(e.getId());
+				this.getDatabase().add(changeLog);
+				
+			} catch (Exception ioe) {
+				ioe.printStackTrace();
+			}
+		}
 
 		return count;
 	}
@@ -120,12 +121,21 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 	public int remove(List<E> entities) throws DatabaseException
 	{
 		// add your pre-processing here
-
+		// first remove corresponding ChangeLog entries, so we will be allowed to remove the entities themselves
+		for (Biobank e : entities)
+		{
+			try {
+				List<ChangeLog> changelogList = getDatabase().query(ChangeLog.class).eq(ChangeLog.ENTITY_ID, 
+						e.getId()).find();
+				getDatabase().remove(changelogList);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
 		// here we call the standard 'remove'
 		int count = super.remove(entities);
 
-		// add your post-processing here, e.g.
-		// if(true) throw new SQLException("Because of a post trigger the remove is cancelled.");
+		// add your post-processing here
 
 		return count;
 	}
