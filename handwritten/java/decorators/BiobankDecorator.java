@@ -68,21 +68,21 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 
 		// add your post-processing here
 		// if you throw and exception the previous add will be rolled back
-		for (Biobank e : entities) {
-	
-			//on every new entity update changelog table 
-			try {
-				
-				ChangeLog changeLog = new ChangeLog();
-				changeLog.setDate(date.toString());
-				changeLog.setEntity(e.getId());
-				
-				this.getDatabase().add(changeLog);
-				
-			} catch (Exception ioe) {
-				ioe.printStackTrace();
-			}
-		}
+//		for (Biobank e : entities) {
+//	
+//			//on every new entity update changelog table 
+//			try {
+//				
+//				ChangeLog changeLog = new ChangeLog();
+//				changeLog.setDate(date.toString());
+//				changeLog.setEntity(e.getId());
+//				
+//				this.getDatabase().add(changeLog);
+//				
+//			} catch (Exception ioe) {
+//				ioe.printStackTrace();
+//			}
+//		}
 
 		return count;
 	}
@@ -97,21 +97,21 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 
 		// add your post-processing here
 		// if you throw and exception the previous add will be rolled back
-		Date date = new Date(); 
-		for (Biobank e : entities)
-		{
-			//on every entity update, update changelog table 
-			try {
-				
-				ChangeLog changeLog = new ChangeLog();
-				changeLog.setDate(date.toString());
-				changeLog.setEntity_Id(e.getId());
-				this.getDatabase().add(changeLog);
-				
-			} catch (Exception ioe) {
-				ioe.printStackTrace();
-			}
-		}
+//		Date date = new Date(); 
+//		for (Biobank e : entities)
+//		{
+//			//on every entity update, update changelog table 
+//			try {
+//				
+//				ChangeLog changeLog = new ChangeLog();
+//				changeLog.setDate(date.toString());
+//				changeLog.setEntity_Id(e.getId());
+//				this.getDatabase().add(changeLog);
+//				
+//			} catch (Exception ioe) {
+//				ioe.printStackTrace();
+//			}
+//		}
 
 		return count;
 	}
