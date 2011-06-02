@@ -1,13 +1,5 @@
-<molgenis name="ngs" label="Next Generation Sequencing Workbench">
-	<description>Simple workbench to work with Illumina NGS data. Samples
-		are delivered as part of Investigations, optionally registering the
-		contacts for this investigation. Within an NGS facility these samples
-		will be processed into libraries. These libraries will subsequently be
-		measured on the Illumina flowcell, each library into one lane. Along
-		the way a lot of 'Features' will be measured that result in
-		ObservedValues that need to be attached to samples, libraries, or
-		lanes respectively. This user interface provides a minimal way to do
-		this.</description>
+<molgenis name="ngs" label="Next Generation Sequencing">
+
 	<plugin name="molgenis_header" type="plugins.header.MolgenisHeader" />
 	<menu name="main" position="left">
 		<form name="Investigations" entity="Investigation" hide_fields="id,accession">
@@ -23,7 +15,7 @@
 				hide_fields="ontologyReference,id,relation" />
 		</form>
 		<form name="Flowcells" entity="Flowcell" hide_fields="id,ontologyReference">
-			<form name="Lanes" entity="Lane" hide_fields="id,ontologyReference">
+			<form name="LanesAndLibraries" entity="FlowcellLaneLibrary" hide_fields="id,ontologyReference">
 				<form name="ValuesPerLane" entity="ObservedValue"
 					hide_fields="ontologyReference,id,relation" />
 			</form>
@@ -36,5 +28,6 @@
 			<plugin name="ListPlugin" label="Matrix viewer" type="plugins.listplugin.ListPlugin" />
 		</menu>
 		<plugin name="ExcelImport" label="Excel import" type="plugins.genericwizard.GenericWizard" />
+		<plugin name="ImportWorksheet" label="Import work sheet" type="org.molgenis.ngs.Plugin.ImportWorksheet"/>
 	</menu>
 </molgenis>
