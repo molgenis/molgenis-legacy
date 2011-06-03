@@ -197,7 +197,7 @@ public class ComputePlugin extends GenericPlugin
             app.setProtocol((Protocol) currentWorkflow);
             app.setComputeResource("gridgain");//for time being
             app.setName(request.getString(pipelineName.getName()));
-            app.setStartTime(cal.getTime());
+            //app.setStartTime(cal.getTime());
 
             System.out.println("" + request.getString(pipelineName.getName()));
 

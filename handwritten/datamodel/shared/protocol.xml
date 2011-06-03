@@ -145,6 +145,20 @@
 		-->
 		<description>Molgenis compute framework that extends the molgenis
 			protocol framework adding the computational details</description>
+		<!-- entity name="ProtocolOutput" implements="Observation">
+				<description>Initial proposal of specifying output for error handling</description>
+			<field name="name" type="text" description="name of the output"/>
+			<field name="pathTemplate" type="text" description="template of the path to the output"/>
+
+			<field name="Inputs" type="mref" xref_entity="ComputeFeature" label="Inputs" nillable="true"
+			description="input parameters used to define path to the output"/>	
+			
+		    <field name="type" type="enum" enum_options="[file,table,string]" default="file" 
+			description="type of the expected output"/>
+			<field name="data_type" type="enum" enum_options="[data,log]" 
+			description="specifies, if produced data is data or a log"/>	
+				
+		</entity> -->
 		<entity name="ComputeProtocol" extends="Protocol">
 			<description>
 				Executable definitions of computational 'protocols' of analysis. For
@@ -196,8 +210,8 @@
 			<description>A protocolApplication that reports the scheduling or
 				application of running a ComputeProtocol. Discussion: how to tie
 				this closer to the data?</description>
-			<field name="StartTime" auto="true" nillable="false" type="datetime"
-				description="Datatime when the job was started." />
+			<!--  <field name="StartTime" auto="true" nillable="false" type="datetime"
+				description="Datatime when the job was started." />-->
 			<field name="ComputeResource" type="enum"
 				enum_options="[local, cluster, gridgain, cloud, image]" default="local"
 				description="The compute backend used" />

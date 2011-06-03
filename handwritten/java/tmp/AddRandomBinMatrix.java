@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import matrix.test.implementations.general.Helper;
-
 import app.JDBCDatabase;
 
 public class AddRandomBinMatrix

@@ -117,7 +117,7 @@
 
 	</target>
 	
-	<target name="makeWar" depends="test">
+	<target name="makeWar" depends="compile">
 				<!-- the ant war task. with all resources in place, create the war file -->
 				<war destfile="${war.dir}/${war.name}" webxml="${webxml.dir}">
 					<classes dir="${build.dir}">
