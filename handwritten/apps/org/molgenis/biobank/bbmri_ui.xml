@@ -10,7 +10,7 @@
 		</menu>
 		 -->
 		<menu name="BiobankOverview" label="Biobank Overview">
-			<form name="Cohorts" entity="Biobank" label="Biobank Overview"	hide_fields="id,canRead,canWrite,Approved,owns" />
+			<form name="Cohorts" entity="Biobank" label="Biobank Overview"	hide_fields="id,canRead,canWrite,Approved,owns,Acronym" />
 		</menu>
 		<menu name="Admin">
 		    <menu name="DataViews">
@@ -20,6 +20,7 @@
 				<form name="Categories" sortby="name" view="list" entity="BiobankCategory" />
 				<form name="DataTypes" entity="BiobankDataType" />
 				<form name="Topics" entity="BiobankTopic" />
+				<form name="ChangeLog" entity="ChangeLog" />
 			</menu>
 			<plugin name="Settings" type="plugins.system.settings.Settings" />
 			<menu name="usermanagement" position="left" label="User management">
