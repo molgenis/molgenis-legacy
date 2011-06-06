@@ -13,8 +13,7 @@
 
 <#-- Observable features -->
 <#assign phenotypeDetailsVO = vo.phenotypeDetailsVO>
-<#list phenotypeDetailsVO.observedValues?keys as protocolName>
-<#if protocolName?starts_with(" ")>
+<#list phenotypeDetailsVO.protocolNames as protocolName>
 <h4>${protocolName}</h4>
 <table class="listtable" cellpadding="4">
 <#assign even = 1>
@@ -30,13 +29,12 @@
 <tr class="${class}"><th width="50%">${observedValueVO.featureName}</th><td>${observedValueVO.value}</td></tr>
 </#list>
 </table>
-</#if>
 </#list>
 
 <#-- Patient material -->
 <h4><a name="material">Patient material</a></h4>
 <table class="listtable" cellpadding="4">
-<tr class="form_listrow1"><th width="50%">Patient material available?</th><td><#if patientSummaryVO.material?size &gt; 0><#list patientSummaryVO.material as material>${material}<br/></#list><#else>unknown</#if></td></tr>
+<tr class="form_listrow1"><th width="50%">Patient material available?</th><td><#if patientSummaryVO.patientMaterialList?size &gt; 0><#list patientSummaryVO.patientMaterialList as material>${material}<br/></#list><#else>unknown</#if></td></tr>
 </table>
 
 <#--

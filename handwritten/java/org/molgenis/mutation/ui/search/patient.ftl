@@ -1,30 +1,31 @@
 <#assign patientSummaryVO = vo.patientSummaryVO>
 <table class="listtable" cellpadding="4">
-<tr class="form_listrow0"><th>Patient ID</th><td>${patientSummaryVO.patient.getIdentifier()}</td></tr>
+<tr class="form_listrow0"><th>Patient ID</th><td>${patientSummaryVO.patientIdentifier}</td></tr>
 <tr class="form_listrow1"><th>Genotype</th><td>
-<#if patientSummaryVO.mutation1??>${patientSummaryVO.mutation1.getCdna_Notation()}<#if patientSummaryVO.mutation1.getAa_Notation() != ""> (${patientSummaryVO.mutation1.getAa_Notation()})</#if></#if>
-<#if patientSummaryVO.mutation2??> and ${patientSummaryVO.mutation2.getCdna_Notation()}<#if patientSummaryVO.mutation2.getAa_Notation() != ""> (${patientSummaryVO.mutation2.getAa_Notation()})</#if></#if></th></tr>
-<tr class="form_listrow0"><th>Phenotype</th><td>${patientSummaryVO.phenotype.getMajortype()}, ${patientSummaryVO.phenotype.getSubtype()}<#if patientSummaryVO.patient.getConsent() != "no"> [<a href="molgenis.do?__target=${screen.name}&__action=showPhenotypeDetails&pid=${patientSummaryVO.patient.getIdentifier()}#phenotype">Details</a>]</#if></td></tr>
+<#list patientSummaryVO.variantSummaryVOList as variantSummaryVO>
+${variantSummaryVO.cdnaNotation}<#if variantSummaryVO.aaNotation??> (${variantSummaryVO.aaNotation})</#if>
+</#list>
+</td></tr>
+<tr class="form_listrow0"><th>Phenotype</th><td>${patientSummaryVO.getPhenotypeMajor()}, ${patientSummaryVO.getPhenotypeSub()}<#if patientSummaryVO.patientConsent != "no"> [<a href="molgenis.do?__target=${screen.name}&__action=showPhenotypeDetails&pid=${patientSummaryVO.patientIdentifier}#phenotype">Details</a>]</#if></td></tr>
 <#--
 <tr class="form_listrow1"><th>Immunofluorescence: type VII collagen</th><td><#if patientSummaryVO.if_??>${patientSummaryVO.if_.getValue()}</#if><#if patientSummaryVO.patient.getConsent() != "no">  [<a href="molgenis.do?__target=${screen.name}&__action=showPhenotypeDetails&pid=${patientSummaryVO.patient.getIdentifier()}#%20Immunofluorescence">Details</a>]</#if></td></tr>
 <tr class="form_listrow0"><th>Electron Microscopy: anchoring fibrils</th><td><#if patientSummaryVO.em_??>${patientSummaryVO.em_.getNumber()}</#if><#if patientSummaryVO.patient.getConsent() != "no">  [<a href="molgenis.do?__target=${screen.name}&__action=showPhenotypeDetails&pid=${patientSummaryVO.patient.getIdentifier()}#%20Electron">Details</a>]</#if></td></tr>
 -->
-<tr class="form_listrow1"><th>Patient material available?</th><td><#if patientSummaryVO.material?size &gt; 0>yes [<a href="molgenis.do?__target=${screen.name}&__action=showPhenotypeDetails&pid=${patientSummaryVO.patient.getIdentifier()}#material">Details</a>]<#else>unknown</#if></td></tr>
-<tr class="form_listrow0"><th>Local patient no</th><td>${patientSummaryVO.patient.getNumber()}</td></tr>
+<tr class="form_listrow1"><th>Patient material available?</th><td><#if patientSummaryVO.patientMaterialList?size &gt; 0>yes [<a href="molgenis.do?__target=${screen.name}&__action=showPhenotypeDetails&pid=${patientSummaryVO.patient.getIdentifier()}#material">Details</a>]<#else>unknown</#if></td></tr>
+<tr class="form_listrow0"><th>Local patient no</th><td>${patientSummaryVO.patientNumber}</td></tr>
 <tr class="form_listrow1"><th>Reference</th><td>
-<#if patientSummaryVO.publications?? && patientSummaryVO.publications?size &gt; 0>
-<#list patientSummaryVO.publications as publication>
-<a href="${patientSummaryVO.pubmedURL}${publication.getPubmedID_Name()}" target="_new">${publication.getTitle()}</a><br/>
+<#if patientSummaryVO.publicationVOList?? && patientSummaryVO.publicationVOList?size &gt; 0>
+<#list patientSummaryVO.publicationVOList as publicationVO>
+<a href="${patientSummaryVO.pubmedURL}${publicationVO.pubmed}" target="_new">${publicationVO.title}</a><br/>
 </#list>
-<#if patientSummaryVO.submitter?? && !patientSummaryVO.submitter.getSuperuser()>
+<#if patientSummaryVO.submitterDepartment??>
 First submitted as unpublished case by
-${patientSummaryVO.submitter.getDepartment()}, ${patientSummaryVO.submitter.getInstitute()}, ${patientSummaryVO.submitter.getCity()}, ${patientSummaryVO.submitter.getCountry()}
+${patientSummaryVO.submitterDepartment}, ${patientSummaryVO.submitterInstitute}, ${patientSummaryVO.submitterCity}, ${patientSummaryVO.submitterCountry}
 </#if>
 <#elseif patientSummaryVO.submitter??>
 Unpublished<br/>
-${patientSummaryVO.submitter.getDepartment()}, ${patientSummaryVO.submitter.getInstitute()}, ${patientSummaryVO.submitter.getCity()}, ${patientSummaryVO.submitter.getCountry()}
+${patientSummaryVO.submitterDepartment}, ${patientSummaryVO.submitterInstitute}, ${patientSummaryVO.submitterCity}, ${patientSummaryVO.submitterCountry}
 </#if></td></tr>
-<#--<tr class="form_listrow1"><th>Patient consent</th><td>${patientSummaryVO.patient.consent}</td></tr>-->
 </table>
 
 <p>

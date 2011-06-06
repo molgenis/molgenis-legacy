@@ -41,37 +41,39 @@
 </#if>
 <tr class="${clazz}">
 <td rowspan="2">${pager.offset + count}</td>
-<td rowspan="2"><a href="molgenis.do?__target=${screen.name}&__action=showPatient&pid=${patientSummaryVO.patient.getIdentifier()}#results">${patientSummaryVO.patient.getIdentifier()}</a></td>
-<td rowspan="2">${patientSummaryVO.phenotype.getMajortype()}, ${patientSummaryVO.phenotype.getSubtype()}</td>
+<td rowspan="2"><a href="molgenis.do?__target=${screen.name}&__action=showPatient&pid=${patientSummaryVO.patientIdentifier}#results">${patientSummaryVO.patientIdentifier}</a></td>
+<td rowspan="2">${patientSummaryVO.phenotypeMajor}, ${patientSummaryVO.phenotypeSub}</td>
 <td>First Mutation</td>
-<td><a href="molgenis.do?__target=${screen.name}&__action=showMutation&mid=${patientSummaryVO.mutation1.getIdentifier()}#results">${patientSummaryVO.mutation1.getCdna_Notation()}</a></td>
-<td>${patientSummaryVO.mutation1.getAa_Notation()}</td>
-<td>${patientSummaryVO.mutation1.getExon_Name()}</td>
-<td>${patientSummaryVO.mutation1.getConsequence()}</td>
+<#assign variantSummaryVO1 = patientSummaryVO.variantSummaryVOList?first>
+<td><a href="molgenis.do?__target=${screen.name}&__action=showMutation&mid=${variantSummaryVO1.identifier}#results">${variantSummaryVO1.cdnaNotation}</a></td>
+<td>${variantSummaryVO1.aaNotation}</td>
+<td>${variantSummaryVO1.exonName}</td>
+<td>${variantSummaryVO1.consequence}</td>
 <td rowspan="2">
-<#if patientSummaryVO.publications?? && patientSummaryVO.publications?size &gt; 0>
-<#list patientSummaryVO.publications as publication>
-	<a href="${patientSummaryVO.pubmedURL}${publication.getPubmedID_Name()}" target="_new">${publication.getTitle()}</a><br/>
+<#if patientSummaryVO.publicationVOList?? && patientSummaryVO.publicationVOList?size &gt; 0>
+<#list patientSummaryVO.publicationVOList as publicationVO>
+	<a href="${patientSummaryVO.pubmedURL}${publicationVO.pubmed}" target="_new">${publicationVO.title}</a><br/>
 </#list>
-<#if patientSummaryVO.submitter?? && !patientSummaryVO.submitter.getSuperuser()>
+<#if patientSummaryVO.submitterDepartment??>
 First submitted as unpublished case by
-${patientSummaryVO.submitter.getDepartment()}, ${patientSummaryVO.submitter.getInstitute()}, ${patientSummaryVO.submitter.getCity()}, ${patientSummaryVO.submitter.getCountry()}
+${patientSummaryVO.submitterDepartment}, ${patientSummaryVO.submitterInstitute}, ${patientSummaryVO.submitterCity}, ${patientSummaryVO.submitterCountry}
 </#if>
 <#elseif patientSummaryVO.submitter??>
 Unpublished<br/>
-${patientSummaryVO.submitter.getDepartment()}, ${patientSummaryVO.submitter.getInstitute()}, ${patientSummaryVO.submitter.getCity()}, ${patientSummaryVO.submitter.getCountry()}
+${patientSummaryVO.submitterDepartment}, ${patientSummaryVO.submitterInstitute}, ${patientSummaryVO.submitterCity}, ${patientSummaryVO.submitterCountry}
 </#if>
 </td>
 </tr>
 <tr class="${clazz}">
 <td>Second Mutation</td>
-<#if patientSummaryVO.mutation2??>
-<td><a href="molgenis.do?__target=${screen.name}&__action=showMutation&mid=${patientSummaryVO.mutation2.getIdentifier()}#results">${patientSummaryVO.mutation2.getCdna_Notation()}</a></td>
-<td>${patientSummaryVO.mutation2.getAa_Notation()}</td>
-<td>${patientSummaryVO.mutation2.getExon_Name()}</td>
-<td>${patientSummaryVO.mutation2.getConsequence()}</td>
+<#if patientSummaryVO.variantSummaryVOList?size &gt; 1>
+<#assign variantSummaryVO2 = patientSummaryVO.variantSummaryVOList?last>
+<td><a href="molgenis.do?__target=${screen.name}&__action=showMutation&mid=${variantSummaryVO2.identifier}#results">${variantSummaryVO2.cdnaNotation}</a></td>
+<td>${variantSummaryVO2.aaNotation}</td>
+<td>${variantSummaryVO2.exonName}</td>
+<td>${variantSummaryVO2.consequence}</td>
 <#else>
-<td colspan="4">${patientSummaryVO.patient.getMutation2remark()}</td>
+<td colspan="4">${patientSummaryVO.variantComment}</td>
 </#if>
 </tr>
 
@@ -93,4 +95,4 @@ ${patientSummaryVO.submitter.getDepartment()}, ${patientSummaryVO.submitter.getI
 [<a href="#">Back to top</a>]
 </p>
 
-
+<iframe src="PatientPager" width="100%" height="900" frameborder="0" scrolling="no"></iframe>

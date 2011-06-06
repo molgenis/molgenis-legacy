@@ -31,62 +31,62 @@
 <th>Phenotype</th>
 </tr>
 <tr class="form_listrow1">
-<td><a href="molgenis.do?__target=${screen.name}&__action=showMutation&mid=${mutationSummaryVO.mutation.getIdentifier()}#results">${mutationSummaryVO.mutation.getIdentifier()}</a></td>
-<td>${mutationSummaryVO.mutation.getCdna_Notation()}</td>
-<td>${mutationSummaryVO.mutation.getAa_Notation()}</td>
-<td><a href="molgenis.do?__target=${screen.name}&__action=showExon&exon_id=${mutationSummaryVO.mutation.getExon_Id()}#results">${mutationSummaryVO.mutation.getExon_Name()}</a></td>
-<td>${mutationSummaryVO.mutation.getConsequence()}</td>
-<td>${mutationSummaryVO.mutation.getInheritance()}</td>
+<td><a href="molgenis.do?__target=${screen.name}&__action=showMutation&mid=${mutationSummaryVO.identifier}#results">${mutationSummaryVO.identifier}</a></td>
+<td>${mutationSummaryVO.cdnaNotation}</td>
+<td>${mutationSummaryVO.aaNotation}</td>
+<td><a href="molgenis.do?__target=${screen.name}&__action=showExon&exon_id=${mutationSummaryVO.exonId}#results">${mutationSummaryVO.exonName}</a></td>
+<td>${mutationSummaryVO.consequence}</td>
+<td>${mutationSummaryVO.inheritance}</td>
 <td></td>
 <td></td>
 </tr>
 
+<#--
 <tr class="tableheader">
 </tr>
-<#list mutationSummaryVO.patients as patientSummaryVO>
-<#assign secondMutation = "empty">
-<#if patientSummaryVO.mutation1.getId() == mutationSummaryVO.mutation.getId()>
-	<#if patientSummaryVO.mutation2??>
-		<#assign secondMutation = patientSummaryVO.mutation2>
-	</#if>
-<#elseif patientSummaryVO.mutation2.getId() == mutationSummaryVO.mutation.getId()>
-	<#if patientSummaryVO.mutation1??>
-		<#assign secondMutation = patientSummaryVO.mutation1>
-	</#if>
-</#if>
+-->
+<#list mutationSummaryVO.patientSummaryVOList as patientSummaryVO>
+
+<#if patientSummaryVO.variantSummaryVOList?size != 0>
+<#list patientSummaryVO.variantSummaryVOList as variantSummaryVO>
 <tr class="form_listrow1">
-<#if secondMutation != "empty">
-<td>+ <a href="molgenis.do?__target=${screen.name}&__action=showMutation&mid=${secondMutation.getIdentifier()}">${secondMutation.getIdentifier()}</a></td>
-<td>${secondMutation.getCdna_Notation()}</td>
-<td>${secondMutation.getAa_Notation()}</td>
-<td><a href="molgenis.do?__target=${screen.name}&__action=showExon&exon_id=${secondMutation.getExon_Id()}&snpbool=1">${secondMutation.getExon_Name()}</a></td>
-<td>${secondMutation.getConsequence()}</td>
-<td>${secondMutation.getInheritance()}</td>
-<#else>
-<td>+</td>
-<td>${patientSummaryVO.patient.getMutation2remark()}</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</#if>
-<td><a href="molgenis.do?__target=${screen.name}&__action=showPatient&pid=${patientSummaryVO.patient.getIdentifier()}">${patientSummaryVO.patient.getIdentifier()}</a></td>
-<td>${patientSummaryVO.phenotype.getMajortype()}, ${patientSummaryVO.phenotype.getSubtype()}</td>
+<td>+ <a href="molgenis.do?__target=${screen.name}&__action=showMutation&mid=${variantSummaryVO.identifier}">${variantSummaryVO.identifier}</a></td>
+<td>${variantSummaryVO.cdnaNotation}</td>
+<td>${variantSummaryVO.aaNotation}</td>
+<td><a href="molgenis.do?__target=${screen.name}&__action=showExon&exon_id=${variantSummaryVO.exonId}&snpbool=1">${variantSummaryVO.exonName}</a></td>
+<td>${variantSummaryVO.consequence}</td>
+<td>${variantSummaryVO.inheritance}</td>
+<td><a href="molgenis.do?__target=${screen.name}&__action=showPatient&pid=${patientSummaryVO.patientIdentifier}">${patientSummaryVO.patientIdentifier}</a></td>
+<td>${patientSummaryVO.phenotypeMajor}, ${patientSummaryVO.phenotypeSub}</td>
 </tr>
+</#list>
+<#else>
+<tr class="form_listrow1">
+<td>+</td>
+<td><#if patientSummaryVO.variantComment??>${patientSummaryVO.variantComment}<#else>Error</#if></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><a href="molgenis.do?__target=${screen.name}&__action=showPatient&pid=${patientSummaryVO.patientIdentifier}">${patientSummaryVO.patientIdentifier}</a></td>
+<td>${patientSummaryVO.phenotypeMajor}, ${patientSummaryVO.phenotypeSub}</td>
+</tr>
+</#if>
+
 <tr class="form_listrow1">
 <td colspan="5"></td>
 <td colspan="3">
-<#if patientSummaryVO.publications?? && patientSummaryVO.publications?size &gt; 0>
-<#list patientSummaryVO.publications as publication>
-<a href="${patientSummaryVO.pubmedURL}${publication.getPubmedID_Name()}" target="_new">${publication.getTitle()}</a></br>
+<#if patientSummaryVO.publicationVOList?? && patientSummaryVO.publicationVOList?size &gt; 0>
+<#list patientSummaryVO.publicationVOList as publicationVO>
+<a href="${mutationSummaryVO.pubmedURL}${publicationVO.pubmed}" target="_new">${publicationVO.title}</a></br>
 </#list>
-<#if patientSummaryVO.submitter?? && !patientSummaryVO.submitter.getSuperuser()>
+<#if patientSummaryVO.submitterDepartment??>
 First submitted as unpublished case by
-${patientSummaryVO.submitter.getDepartment()}, ${patientSummaryVO.submitter.getInstitute()}, ${patientSummaryVO.submitter.getCity()}, ${patientSummaryVO.submitter.getCountry()}
+${patientSummaryVO.submitterDepartment}, ${patientSummaryVO.submitterInstitute}, ${patientSummaryVO.submitterCity}, ${patientSummaryVO.submitterCountry}
 </#if>
-<#elseif patientSummaryVO.submitter??>
+<#elseif patientSummaryVO.submitterDepartment??>
 Unpublished<br/>
-${patientSummaryVO.submitter.getDepartment()}, ${patientSummaryVO.submitter.getInstitute()}, ${patientSummaryVO.submitter.getCity()}, ${patientSummaryVO.submitter.getCountry()}
+${patientSummaryVO.submitterDepartment}, ${patientSummaryVO.submitterInstitute}, ${patientSummaryVO.submitterCity}, ${patientSummaryVO.submitterCountry}
 </#if>
 </td>
 </tr>
