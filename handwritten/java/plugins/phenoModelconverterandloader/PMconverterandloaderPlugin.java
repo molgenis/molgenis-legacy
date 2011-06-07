@@ -26,7 +26,7 @@ import plugins.emptydb.emptyDatabase;
 
 import app.CsvImport;
 
-import convertors.gids.ConvertGidsToPheno;
+import convertors.GenericConvertor;
 
 /**
  * 
@@ -49,8 +49,9 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	 * skip = skips the convertwindow and goes immediately to load files into database window
 	 */
 	private String state = "start";
-	public ConvertGidsToPheno cgtp;
+	public GenericConvertor gc;
 	public String wait = "no";
+	public String invName = "";
 	
 	
 
@@ -59,8 +60,8 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		super(name, parent);
 	}
 	
-	public ConvertGidsToPheno getCgtp() {
-		return this.cgtp;
+	public GenericConvertor getGC() {
+		return this.gc;
 	}
 
 	@Override
@@ -78,17 +79,13 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-
-		String invName = "";
 		String action = request.getString("__action");
-		File file = request.getFile("convertData");
-		
+		File file = request.getFile("convertData");	
 		try {
 			if(db.query(Investigation.class).eq(Investigation.NAME, "System").count() == 0){
 				Investigation i = new Investigation();
 				i.setName("System");
-				db.add(i);
-				
+				db.add(i);	
 			}
 		} catch (DatabaseException e1) {
 			e1.printStackTrace();
@@ -100,8 +97,9 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		if(action.equals("skip")){
 			state = "skip";
 		}
-		
-		
+		if (action.equals("clean") ){		
+			state = null;
+		}
 		//goes back to the startscreen
 		if(action.equals("reset")){
 			state = "start";
@@ -129,34 +127,15 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		 * if all the measurements already exist, then there will be no measurement.txt made.
 		 */
 		if(action.equals("pipeline")){	
-			if (!request.getString("investigation").equals("") && !request.getString("investigation").equals("select investigation")) {
-				invName = request.getString("investigation");
-				
-			}
-			else{
-				invName = request.getString("createNew");
-				Investigation inve = new Investigation();
-				inve.setName(invName);
-				inve.setOwns_Name("admin");
-				try {
-					db.add(inve);
-				} catch (DatabaseException e) {
-					
-					e.printStackTrace();
-				} catch (IOException e) {
-					
-					e.printStackTrace();
-				}
-			}
-			
+			checkInvestigation(db, request);
+
 			try {
 				//convert csv file into different txt files
-				cgtp = new ConvertGidsToPheno();			
-				cgtp.converter(file, invName, db);		    
+				runGenerConver(file,invName,db);		    
 				state = "pipeline";
 				
 				//get the server path
-				File dir = cgtp.getDir();
+				File dir = gc.getDir();
 				
 				//import the data into database
 				CsvImport.importAll(dir, db, null);
@@ -173,28 +152,11 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		 * Create downloadable links
 		 */
 		if (action.equals("downloads") ){
-			if (!request.getString("investigation").equals("") && !request.getString("investigation").equals("select investigation")) {
-				invName = request.getString("investigation");			
-			}
-			else{
-				invName = request.getString("createNew");
-				Investigation inve = new Investigation();
-				inve.setName(invName);
-				inve.setOwns_Name("admin");
-				try {
-					db.add(inve);
-				} catch (DatabaseException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-
-					e.printStackTrace();
-				}
-			}
+			checkInvestigation(db, request);
 			
 			try {
 				//convert csv file into different txt files
-				cgtp = new ConvertGidsToPheno();			
-				cgtp.converter(file, invName, db);				
+				runGenerConver(file,invName,db);				
 				state = "downloaded";
 
 			} catch (Exception e) {
@@ -203,9 +165,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 			}
 
 		}		
-		if (action.equals("clean") ){		
-			state = null;
-		}				
+						
 	}
 
 	@Override
@@ -223,6 +183,38 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		}
 		
 //		
+	}
+	
+	public void checkInvestigation(Database db, Tuple request){
+		if (!request.getString("investigation").equals("") && !request.getString("investigation").equals("select investigation")) {
+			invName = request.getString("investigation");			
+		}
+		else{
+			invName = request.getString("createNew");
+			Investigation inve = new Investigation();
+			inve.setName(invName);
+			inve.setOwns_Name("admin");
+			try {
+				db.add(inve);
+			} catch (DatabaseException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void runGenerConver(File file, String invName, Database db){
+		try {
+			gc = new GenericConvertor();
+			gc.converter(file, invName, db);				
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}			
+		
 	}
 	
 	public void setInvestigations(List<Investigation> investigations) {
