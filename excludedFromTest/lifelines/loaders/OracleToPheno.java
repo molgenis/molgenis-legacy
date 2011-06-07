@@ -24,7 +24,7 @@ import org.molgenis.pheno.ObservedValue;
 public class OracleToPheno {
     private String sql = "SELECT * FROM LLPOPER.%s";
     private String tableName = "LL_DATASET9";
-    private String investigationName = "LL_DATASET91";
+    private String investigationName = tableName;
     
     public static void main(String[] args) throws Exception {
         new OracleToPheno();
@@ -66,7 +66,7 @@ public class OracleToPheno {
                 }                
                 
                 ObservedValue ov = new ObservedValue();
-                ov.setFeature(measurements.get(i));
+                ov.setFeature(measurements.get(i-1));
                 ov.setValue(value.toString());
                 ov.setInvestigation(investigation);
                 ov.setTarget(target);

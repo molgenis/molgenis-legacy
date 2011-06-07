@@ -8,10 +8,14 @@ import app.JpaDatabase;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.EntityManager;
+import org.molgenis.model.jaxb.Field;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 
@@ -75,14 +79,21 @@ public class OracleToLifelinesPheno {
         
         
     }
-    
+    //SELECT * FROM llpoper.LL_DATASET9
+    private String schemaName = "llpoper";
     private String tableName = "LL_DATASET9";
+    
     private String columnQuery = 
             "SELECT atc.column_name, atc.data_type, atc.data_length, atc.data_precision,  comments.comments "
             +"FROM all_col_comments comments "
             +"JOIN all_tab_columns atc ON (comments.column_name = atc.column_name AND comments.table_name = atc.table_name) "
             +"WHERE comments.table_name = '%s' "
             +"ORDER BY atc.column_id";
+    
+    private String commentQuery = 
+            "SELECT comments.column_name, comments.comments "
+            +"FROM all_col_comments comments "
+            +"WHERE comments.table_name = '%s'";
     
     public static void main(String[] args) throws Exception {
         OracleToLifelinesPheno oracleToLifelinesPheno = new OracleToLifelinesPheno();
@@ -92,21 +103,53 @@ public class OracleToLifelinesPheno {
     public OracleToLifelinesPheno() throws Exception {     
     }
     
+    //Key = columnName, Value = comment
+    private Map<String, String> columnComment = new HashMap<String, String>();
+    
+    private void loadComments() throws Exception {
+        Connection con = getConnection();
+        Statement stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery(String.format(commentQuery, tableName));
+        while(rs.next()) {
+            columnComment.put(rs.getString(1), rs.getString(2));
+        }
+        rs.close();
+        stmt.close();
+        con.close();
+    }
+    
     public void load() throws Exception {
-        Investigation inv = new Investigation();
-        inv.setName(tableName + "1");
+        loadComments();
         
-        List<Column> columns = getColumns();
-        //List<Measurement> measurements = new ArrayList<Measurement>();
-        for(Column c : columns) {
+        Investigation inv = new Investigation();
+        inv.setName(tableName);
+        
+        Connection con = getConnection();        
+        Statement stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery(String.format("SELECT * FROM %s.%s", schemaName, tableName));
+        ResultSetMetaData rsm = rs.getMetaData();
+        
+        for(int i = 1; i <= rsm.getColumnCount(); ++i) {
             Measurement m = new Measurement();
             m.setInvestigation(inv);
             inv.getObservationElementCollection().add(m);
-            m.setName(c.getName());
-            m.setDataType(c.getType());
-            m.setDescription(c.getComment());
-            //measurements.add(m);
+            m.setName(rsm.getColumnName(i));
+            
+            m.setDataType(Field.Type.getType(rsm.getColumnType(i)).toString());
+            m.setDescription(columnComment.get(rsm.getColumnName(i)));            
         }
+        
+//        List<Column> columns = getColumns();
+//        //List<Measurement> measurements = new ArrayList<Measurement>();
+//        for(Column c : columns) {
+//            Measurement m = new Measurement();
+//            m.setInvestigation(inv);
+//            inv.getObservationElementCollection().add(m);
+//            m.setName(c.getName());
+//            m.setDataType(c.getType());
+//            m.setDescription(c.getComment());
+//            //measurements.add(m);
+//        }
         
         JpaDatabase db = new JpaDatabase();
         EntityManager em = db.getEntityManager();

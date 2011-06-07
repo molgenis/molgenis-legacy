@@ -27,17 +27,20 @@ import app.JpaDatabase;
 import java.util.HashMap;
 
 public class EAVToRelational {
-	public static void main(String[] args) throws Exception {
+        private static final String INVESTIGATION_NAME = "LL_DATASET9";
+        
+        public static void main(String[] args) throws Exception {
 		new EAVToRelational();
 	}
 	
 	public EAVToRelational() throws Exception {
 		DatabaseLogin databaseLogin = new DatabaseLogin();
-		databaseLogin.setConnectionString("jdbc:mysql://localhost/test_gcc");
+		databaseLogin.setConnectionString("jdbc:oracle:thin:@//localhost:2000/llp");
 		databaseLogin.setUserName("molgenis");
-		databaseLogin.setPassword("molgenis");
+		databaseLogin.setPassword("molTagtGen24Ora");
 //		databaseLogin.setDatabaseName("lifelines");
-		databaseLogin.setDriverClass(com.mysql.jdbc.Driver.class);
+		databaseLogin.setDriverClass(oracle.jdbc.OracleDriver.class);
+                //databaseLogin.setDriverClass(com.mysql.jdbc.Driver.class);
 		
 		
 		databaseLogin.setDatasourcePlatform(new MySQLPlatform());
@@ -60,7 +63,7 @@ public class EAVToRelational {
 //		investigation.setName("Life Lines Study Dev1");
 		String findByNameAndInvestigation = "SELECT i FROM Investigation i WHERE i.name = :name";
 		List<Investigation> investigations = em.createQuery(findByNameAndInvestigation, Investigation.class)
-			.setParameter("name", "Life Lines Study Dev1")
+			.setParameter("name", INVESTIGATION_NAME)
 			.getResultList();
 //		List<Investigation> investigations = jpaDatabase.findByExample(investigation);
 		Investigation investigation = investigations.get(0);
@@ -73,7 +76,8 @@ public class EAVToRelational {
 			.getResultList();
                 StringBuilder insertSQL = new StringBuilder("INSERT INTO Joris ");
 		for(Measurement f : features) {
-			String columnName = f.getName().split("\\.")[1].trim().replace("_", "");
+                    String columnName = f.getName();	
+                    //String columnName = f.getName().split("\\.")[1].trim().replace("_", "");
 
                         //insertSQL.append(f.getName() + ",");
 
@@ -121,7 +125,7 @@ public class EAVToRelational {
                 
                 JpaDatabase db = new JpaDatabase();
                 String sql =  "SELECT value, Feature, Target FROM ObservedValue "
-                                +"WHERE investigation = 1 ORDER BY target, feature";
+                                +"WHERE investigation = ? ORDER BY target, feature";
 
                 int w = 0;
                 HashMap<Integer, Integer> featureIndex = new HashMap<Integer, Integer>();
@@ -133,6 +137,7 @@ public class EAVToRelational {
                 int targetIndx = 0;
                 List<Object[]> sqlDS = db.getEntityManager()
                         .createNativeQuery(sql)
+                        .setParameter(1, investigation.getId())
                         .getResultList();
                 targetIndx = (Integer)sqlDS.get(0)[2];
 

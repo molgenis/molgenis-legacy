@@ -39,7 +39,7 @@ public class ConverterLifeLinesPheno {
      * @throws DatabaseException
      */
     public static void main(String[] args) throws DatabaseException {
-        if (args != null) {
+        if (args != null && args.length > 0) {
             fileName = args[0];
         }
 

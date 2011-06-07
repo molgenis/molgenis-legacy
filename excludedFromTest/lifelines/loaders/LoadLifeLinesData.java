@@ -34,7 +34,7 @@ public class LoadLifeLinesData {
 
     public static void main(String[] args) throws Exception {
         String dataDir = "/Users/jorislops/Desktop/Archive/data";
-        if (args != null) {
+        if (args != null && args.length > 0) {
             dataDir = args[0];
         }
 

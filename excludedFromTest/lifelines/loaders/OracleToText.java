@@ -10,6 +10,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.List;
 import lifelines.loaders.OracleToLifelinesPheno.Column;
+import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
 
