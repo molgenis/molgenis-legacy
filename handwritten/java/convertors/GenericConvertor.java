@@ -42,9 +42,9 @@ public class GenericConvertor
 		
 		CsvExport export = new CsvExport();
 		tmpDir = new File(System.getProperty("java.io.tmpdir"));
-		File tmpFileDir = new File(tmpDir.getAbsolutePath());
+		
 		logger.info("############   "+tmpDir.toString());
-		File a = new File(tmpFileDir + File.separator +"measurement.txt");
+		File a = new File(tmpDir + File.separator +"measurement.txt");
 		boolean flag = false;
 		if(a.exists()){
 			flag=a.delete();
@@ -53,7 +53,7 @@ public class GenericConvertor
 			logger.info("Measurement.txt was not in de tmpdirectory");
 		}
 		try{
-			export.exportAll(tmpFileDir, individualsList, measurementsList, valuesList);
+			export.exportAll(tmpDir, individualsList, measurementsList, valuesList);
 		} catch(Exception e){
 			logger.info("CANNOT EXPORT DATA");
 		}
