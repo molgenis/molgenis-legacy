@@ -27,6 +27,8 @@ public class ConvertGidsToPheno
 	final List<Investigation> investigationList = new ArrayList<Investigation>();
 	private String invName;
 	
+	public File tmpDir = null;
+	
 	Database db;
 	
 	
@@ -34,18 +36,24 @@ public class ConvertGidsToPheno
 		
 		this.invName = invName;
 		this.db = db;
-		logger.info("************* " + invName);
 		makeInvestigation(invName);
 		populateIndividual(file,invName);
 		populateMeasurement(file,invName);
 		populateValue(file,invName);
 		
 		CsvExport export = new CsvExport();
-		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+		tmpDir = new File(System.getProperty("java.io.tmpdir"));
 		File tmpFileDir = new File(tmpDir.getAbsolutePath());
-		
+		logger.info("############   "+tmpDir.toString());
+		File a = new File(tmpFileDir + File.separator +"measurement.txt");
+		boolean flag = false;
+		if(a.exists()){
+			flag=a.delete();
+		}
+		else{
+			logger.info("FILE WAS NOT FOUND");
+		}
 		try{
-			logger.info("     >>>>>>>>>>>>> Measurements list contains " + measurementsList.size() + " items");
 			export.exportAll(tmpFileDir, individualsList, measurementsList, valuesList);
 		} catch(Exception e){
 			logger.info("CANNOT EXPORT DATA");
@@ -67,7 +75,11 @@ public class ConvertGidsToPheno
 	public Integer getListSizeValues (){
 		return valuesList.size();
 	}
-
+	
+	public File getDir(){
+		return tmpDir;
+	}
+	
 	public ConvertGidsToPheno() throws Exception
 	{
 		logger = Logger.getLogger("ConvertGidsToPheno");
@@ -76,7 +88,6 @@ public class ConvertGidsToPheno
 	public Investigation makeInvestigation(String invName){
 		Investigation newInvest = new Investigation();
 		newInvest.setName(invName);
-		logger.info("#########################  makeInvestigation    " + invName );		
 		newInvest.setName(invName);
 		return newInvest;
 	}
@@ -116,7 +127,7 @@ public class ConvertGidsToPheno
 		totalMeasurementsList.clear();
 		
 		CsvFileReader reader = new CsvFileReader(file);
-		int teller=1;
+
 		for (String header : reader.colnames()) {
 			if (!header.equals("id_individual") && !header.equals("id_mother") && !header.equals("id_father")) {
 				
@@ -126,6 +137,7 @@ public class ConvertGidsToPheno
 					measurement.setInvestigation_Name(invName);
 					measurementsList.add(measurement);
 					totalMeasurementsList.add(measurement);
+
 				} else {			
 					List<Measurement> measList = db.query(Measurement.class).eq(Measurement.NAME, header).find();
 					int invID = db.query(Investigation.class).eq(Investigation.NAME, "System" ).find().get(0).getId();
@@ -133,9 +145,10 @@ public class ConvertGidsToPheno
 					meas.setInvestigation_Id(invID);
 					db.update(meas);
 					totalMeasurementsList.add(meas);
+
 				}
 			}		
-			teller++;
+			
 		}
 	}
 	
