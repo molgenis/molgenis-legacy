@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.log4j.Logger;
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
@@ -15,129 +15,173 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
-
 import app.CsvExport;
 
-/**
- * Class that reads in any csv data file with observable features (measurements) in the columns,
- * observation targets (individuals) in the rows, and observed values in the 'cells'.
- * The first column is supposed to contain the targets' identifiers.
- * The data is put into 4 lists: investigations, measurements, individuals and values.
- * These lists are then written to txt files that conform to the Pheno model and can be
- * imported using the ExcelImporter.
- * 
- * @author Roan Kanninga, erikroos
- *
- */
 public class GenericConvertor
 {
 	private Logger logger;
-	static final List<Individual> individualsList  = new ArrayList<Individual>();
-	static final List<Measurement> measurementsList  = new ArrayList<Measurement>();
-	static final List<ObservedValue> valuesList  = new ArrayList<ObservedValue>();
-	static final List<Investigation> investigationList = new ArrayList<Investigation>();
+	final List<Individual> individualsList  = new ArrayList<Individual>();
+	final List<Measurement> measurementsList  = new ArrayList<Measurement>();
+	final List<Measurement> totalMeasurementsList  = new ArrayList<Measurement>();
+	final List<ObservedValue> valuesList  = new ArrayList<ObservedValue>();
+	final List<Investigation> investigationList = new ArrayList<Investigation>();
+	private String invName;
 	
-	// Put the path to the export file of your original data here:
-	private static String filename = "/Users/roankanninga/Documents/NewMolgenis/molgenis_apps/handwritten/java/convertors/gids/export_CeliacSprue_for_PhenoModel.csv";
-	// Put the names of your investigation(s) here:
-	private String [] listOfInvestigationNames = {"CeliacSprue", "PreventCD", "IBD", "COPD", "GODDAF", "SLE"};
-	// Put the header of the column with the individuals' identifiers here:
-	private String indColumn = "id_individual";
+	public File tmpDir = null;
 	
-	public static void main(String[] args) throws Exception
-	{
-		GenericConvertor conv = new GenericConvertor();
-		conv.populateInvestigations();
-		conv.populateIndividual(filename);
-		conv.populateMeasurement(filename);
-		conv.populateValue(filename);
+	Database db;
+
+	public void converter(File file, String invName, Database db) throws Exception{
+		
+		this.invName = invName;
+		this.db = db;
+		makeInvestigation(invName);
+		populateIndividual(file,invName);
+		populateMeasurement(file,invName);
+		populateValue(file,invName);
 		
 		CsvExport export = new CsvExport();
-		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-		export.exportAll(tmpDir, individualsList, measurementsList, valuesList, investigationList);
+		tmpDir = new File(System.getProperty("java.io.tmpdir"));
+		File tmpFileDir = new File(tmpDir.getAbsolutePath());
+		logger.info("############   "+tmpDir.toString());
+		File a = new File(tmpFileDir + File.separator +"measurement.txt");
+		boolean flag = false;
+		if(a.exists()){
+			flag=a.delete();
+		}
+		else{
+			logger.info("Measurement.txt was not in de tmpdirectory");
+		}
+		try{
+			export.exportAll(tmpFileDir, individualsList, measurementsList, valuesList);
+		} catch(Exception e){
+			logger.info("CANNOT EXPORT DATA");
+		}
 	}
 
+	public Database getDb() {
+		return db;
+	}
+	
+	public Integer getListSizeTargets (){
+		return individualsList.size();
+	}
+	public Integer getListSizeMeasurements (){
+		return measurementsList.size();
+	}
+	public Integer getListSizeValues (){
+		return valuesList.size();
+	}
+	
+	public File getDir(){
+		return tmpDir;
+	}
+	
 	public GenericConvertor() throws Exception
 	{
-		logger = Logger.getLogger("GenericConvertor");
+		logger = Logger.getLogger("Generic Convertor");
 	}
 
-	public void populateInvestigations(){
-		
-		for(String invName: listOfInvestigationNames){
-			investigationList.add(makeInvestigation(invName));
-		}
-		
-	}
 	public Investigation makeInvestigation(String invName){
 		Investigation newInvest = new Investigation();
+		newInvest.setName(invName);
 		newInvest.setName(invName);
 		return newInvest;
 	}
 	
-	public void populateIndividual(String filename) throws Exception
+	public void populateIndividual(File file, String invName) throws Exception
 	{
-		final List<String> namesSeen = new ArrayList<String>();
+		individualsList.clear();
 		
-		File file = new File(filename);
+		final List<String> namesSeen = new ArrayList<String>();
+		this.invName = invName;
 		CsvFileReader reader = new CsvFileReader(file);
 		reader.parse(new CsvReaderListener()
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
-				logger.info("Parsing line: " + line_number);
+				//Change id into the targetname/target id column
+				String id = tuple.getString("id_individual");
 				
-				String gidsId = tuple.getString(indColumn);
-				
-				if (!namesSeen.contains(gidsId)) {
-					namesSeen.add(gidsId);
+				// Optionally
+				String mother_Name = tuple.getString("id_mother");
+				String father_Name = tuple.getString("id_father");
+								
+				if (!namesSeen.contains(id)) {
+					namesSeen.add(id);
 					Individual newIndividual = new Individual();
-					newIndividual.setName(gidsId);
-					newIndividual.setInvestigation_Name(listOfInvestigationNames[0]);
+					newIndividual.setName(id);
+					newIndividual.setInvestigation_Name(getInvestigation());
+					// Optionally
+					newIndividual.setMother_Name(mother_Name);					
+					newIndividual.setFather_Name(father_Name);	
+					
 					individualsList.add(newIndividual);
 				}
 			}
 		});
 	}
 	
-	public void populateMeasurement(String filename) throws Exception {
-		File file = new File(filename);
+	public void populateMeasurement(File file, String invName) throws Exception {
+		
+		measurementsList.clear();
+		totalMeasurementsList.clear();
+		
 		CsvFileReader reader = new CsvFileReader(file);
+
 		for (String header : reader.colnames()) {
-			if (!header.equals(indColumn)) {
-				Measurement measurement = new Measurement();
-				measurement.setName(header);
-				measurement.setInvestigation_Name(listOfInvestigationNames[0]);
-				measurementsList.add(measurement);
-			}
+			//optionally
+			//if (!header.equals("id_individual")) {
+			if (!header.equals("id_individual") && !header.equals("id_mother") && !header.equals("id_father")) {
+				if(db.query(Measurement.class).eq(Measurement.NAME, header).count() == 0){
+					Measurement measurement = new Measurement();
+					measurement.setName(header);
+					measurement.setInvestigation_Name(invName);
+					measurementsList.add(measurement);
+					totalMeasurementsList.add(measurement);
+
+				} else {			
+					List<Measurement> measList = db.query(Measurement.class).eq(Measurement.NAME, header).find();
+					int invID = db.query(Investigation.class).eq(Investigation.NAME, "System" ).find().get(0).getId();
+					Measurement meas = measList.get(0);
+					meas.setInvestigation_Id(invID);
+					db.update(meas);
+					totalMeasurementsList.add(meas);
+
+				}
+			}		
+			
 		}
 	}
 	
-	public void populateValue(String filename) throws Exception
+	public String getInvestigation(){
+		return invName;
+	}
+	
+	
+	public void populateValue(File file, String invName) throws Exception
 	{
-		File file = new File(filename);
+		valuesList.clear();
+		
 		CsvFileReader reader = new CsvFileReader(file);
 		reader.parse(new CsvReaderListener()
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
-			{
-				logger.info("Parsing line: " + line_number);
-				
-				String targetName = tuple.getString(indColumn);
-				
-				for (Measurement m : measurementsList) {
+			{			
+				//Change targetname into the targetname/target id column
+				String targetName = tuple.getString("id_individual");				
+				for (Measurement m : totalMeasurementsList) {
 					String featureName = m.getName();	
 					String value = tuple.getString(featureName);
-					
 					ObservedValue newValue = new ObservedValue();
 					newValue.setFeature_Name(featureName);
 					newValue.setTarget_Name(targetName);
 					newValue.setValue(value);
-					newValue.setInvestigation_Name(listOfInvestigationNames[0]);
-					
-					valuesList.add(newValue);
+					newValue.setInvestigation_Name(getInvestigation());					
+					valuesList.add(newValue);					
 				}
 			}
 		});
+		
 	}
 }
