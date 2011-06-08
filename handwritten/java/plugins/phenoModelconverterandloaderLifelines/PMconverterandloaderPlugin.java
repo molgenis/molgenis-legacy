@@ -5,12 +5,9 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package plugins.phenoModelconverterandloader;
+package plugins.phenoModelconverterandloaderLifelines;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -29,6 +26,7 @@ import plugins.emptydb.emptyDatabase;
 
 import app.CsvImport;
 
+import convertors.CopyOfGenericConvertor;
 import convertors.GenericConvertor;
 
 /**
@@ -52,10 +50,10 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	 * skip = skips the convertwindow and goes immediately to load files into database window
 	 */
 	private String state = "start";
-	public GenericConvertor gc;
+	public CopyOfGenericConvertor gc;
 	public String wait = "no";
 	public String invName = "";
-	public String [] arrayMeasurements;
+	
 	
 
 	public PMconverterandloaderPlugin(String name, ScreenController<?> parent)
@@ -63,7 +61,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		super(name, parent);
 	}
 	
-	public GenericConvertor getGC() {
+	public CopyOfGenericConvertor getGC() {
 		return this.gc;
 	}
 
@@ -82,7 +80,6 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-		logger.info("#######################");
 		String action = request.getString("__action");
 		File file = request.getFile("convertData");	
 		try {
@@ -130,33 +127,9 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		 * Runs pipeline, data will be converted to 3 different files; individual.txt, measurement.txt and observedvalue.txt
 		 * if all the measurements already exist, then there will be no measurement.txt made.
 		 */
-		if(action.equals("update")){
-			
-			File fileData = request.getFile("convertData");	
-			String fileName = fileData.toString();
-			try {
-				BufferedReader buffy = new BufferedReader(new FileReader (fileName));
-				
-				for(int x =0; x<1; x++){
-					try {
-						String line = buffy.readLine();
-						arrayMeasurements = line.split(";");
-						
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
-			
-		}
 		if(action.equals("pipeline")){	
 			checkInvestigation(db, request);
-			
-			
+
 			try {
 				//convert csv file into different txt files
 				runGenerConver(file,invName,db);		    
@@ -195,8 +168,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		}		
 						
 	}
-	
-	
+
 	@Override
 	public void reload(Database db)
 	{
@@ -236,7 +208,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	
 	public void runGenerConver(File file, String invName, Database db){
 		try {
-			gc = new GenericConvertor();
+			gc = new CopyOfGenericConvertor();
 			gc.converter(file, invName, db);				
 			
 		} catch (Exception e) {

@@ -25,8 +25,15 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->
 
+<#if screen.wait = "yes">
+	<div id="waiter" style="cursor:wait"/> 
+	<#else>
+		<div id="waiter2" style="cursor:wait"/> 
+			
+		
+</#if>
 	
-
+<div id="waitornot">
 	<h1>Import data</h1>
 	<em>Caution: this might interfere with existing database items!</em>
 	
@@ -100,24 +107,12 @@
 				
 			</#list>
 		</select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <label for="createNew">or create a new investigation</label>
-		<input name='createNew' id='createNew'type='text'><br /><br /><br />
-		 
+		<input name='createNew' id='createNew'type='text'>
 	</div>
+	<div style="margin-top:20px" id="converter" class="row">
 	<label for="convertData"> Upload here the file you want to prepare for the phenomodel in Molgenis:</label><br />
 	
 		<input style="margin-right:50px" type="file" name="convertData" id="convertData"/><br / ><br / ><br / >
-		<input type='submit' class='addbutton' value='update' onclick="__action.value='update'; createNew.getText()"/>
-		<#if screen.arrayMeasurements??>
-		<select name="x" id="x"> 
-		<option value="select target"</option>
-			<#list screen.arrayMeasurements as x>
-				<option value="${x}">${x}</option>			
-			</#list>
-		</select>
-		</#if>
-	<div style="margin-top:20px; display:none" id="converter" class="row" >
-	
-	
 		<h4>Run the converter and immediately load the files into the database &nbsp;&nbsp;&nbsp;&nbsp;<input type='submit' class='addbutton' value='run pipeline' onclick="__action.value='pipeline'; createNew.getText()"/></h4>
 		
 		<br />
@@ -137,7 +132,7 @@
 	    <br />
 	</div>
 	<input type='submit' class='addbutton' value='  reset ' onclick="__action.value='reset'"/>
-
+</div>
 	
 <#--end of your plugin-->	
 			</div>
