@@ -23,6 +23,7 @@ public class SearchPluginVO implements Serializable
 {
 	private static final long serialVersionUID = 8321193926556324386L;
 	private String action = "init";
+	private String result = "mutations"; // Initially search/display mutations
 	private String header;
 	private int numPatients;
 	private int numUnpublished;
@@ -50,8 +51,10 @@ public class SearchPluginVO implements Serializable
 	private ProteinDomainSummaryVO proteinDomainSummaryVO;
 	private List<ProteinDomainSummaryVO> proteinDomainList;
 	private PatientSummaryVO patientSummaryVO;
+	private List<PatientDetailsVO> patientDetailsVO;
 	private PhenotypeDetails phenotypeDetails;
 	private PhenotypeDetailsVO phenotypeDetailsVO;
+	private HashMap<String, LimitOffsetPager<PatientSummaryVO>> patientSummaryVOHash;
 
 	private List<MolgenisNews> news;
 	private LimitOffsetPager<?> pager;
@@ -64,6 +67,14 @@ public class SearchPluginVO implements Serializable
 	public void setAction(String action)
 	{
 		this.action = action;
+	}
+
+	public String getResult() {
+		return result;
+	}
+
+	public void setResult(String result) {
+		this.result = result;
 	}
 
 	public String getHeader()
@@ -287,6 +298,14 @@ public class SearchPluginVO implements Serializable
 		this.patientSummaryVOs = patientSummaryVOs;
 	}
 
+	public List<PatientDetailsVO> getPatientDetailsVO() {
+		return patientDetailsVO;
+	}
+
+	public void setPatientDetailsVO(List<PatientDetailsVO> patientDetailsVO) {
+		this.patientDetailsVO = patientDetailsVO;
+	}
+
 	public ProteinDomainSummaryVO getProteinDomainSummaryVO()
 	{
 		return proteinDomainSummaryVO;
@@ -336,6 +355,15 @@ public class SearchPluginVO implements Serializable
 	public void setPhenotypeDetailsVO(PhenotypeDetailsVO phenotypeDetailsVO)
 	{
 		this.phenotypeDetailsVO = phenotypeDetailsVO;
+	}
+
+	public HashMap<String, LimitOffsetPager<PatientSummaryVO>> getPatientSummaryVOHash() {
+		return patientSummaryVOHash;
+	}
+
+	public void setPatientSummaryVOHash(
+			HashMap<String, LimitOffsetPager<PatientSummaryVO>> patientSummaryVOHash) {
+		this.patientSummaryVOHash = patientSummaryVOHash;
 	}
 
 	public List<MolgenisNews> getNews() {
