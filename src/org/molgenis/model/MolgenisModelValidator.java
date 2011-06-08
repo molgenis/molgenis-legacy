@@ -88,7 +88,7 @@ public class MolgenisModelValidator
                 }
                 for(Field f : e.getFields()) {
                     if(f.getName().length() > 30) {
-                        throw new MolgenisModelException(String.format("table name %s is longer than %d", e.getName(), 30));
+                        throw new MolgenisModelException(String.format("field name %s is longer than %d", f.getName(), 30));
                     }
                 }
             }
