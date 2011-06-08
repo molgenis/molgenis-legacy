@@ -25,15 +25,8 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->
 
-<#if screen.wait = "yes">
-	<div id="waiter" style="cursor:wait"/> 
-	<#else>
-		<div id="waiter2" style="cursor:wait"/> 
-			
-		
-</#if>
 	
-<div id="waitornot">
+
 	<h1>Import data</h1>
 	<em>Caution: this might interfere with existing database items!</em>
 	
@@ -132,7 +125,7 @@
 	    <br />
 	</div>
 	<input type='submit' class='addbutton' value='  reset ' onclick="__action.value='reset'"/>
-</div>
+
 	
 <#--end of your plugin-->	
 			</div>
