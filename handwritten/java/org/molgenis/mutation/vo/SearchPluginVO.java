@@ -51,7 +51,7 @@ public class SearchPluginVO implements Serializable
 	private ProteinDomainSummaryVO proteinDomainSummaryVO;
 	private List<ProteinDomainSummaryVO> proteinDomainList;
 	private PatientSummaryVO patientSummaryVO;
-	private List<PatientDetailsVO> patientDetailsVO;
+//	private List<PatientDetailsVO> patientDetailsVO;
 	private PhenotypeDetails phenotypeDetails;
 	private PhenotypeDetailsVO phenotypeDetailsVO;
 	private HashMap<String, LimitOffsetPager<PatientSummaryVO>> patientSummaryVOHash;
@@ -298,13 +298,13 @@ public class SearchPluginVO implements Serializable
 		this.patientSummaryVOs = patientSummaryVOs;
 	}
 
-	public List<PatientDetailsVO> getPatientDetailsVO() {
-		return patientDetailsVO;
-	}
-
-	public void setPatientDetailsVO(List<PatientDetailsVO> patientDetailsVO) {
-		this.patientDetailsVO = patientDetailsVO;
-	}
+//	public List<PatientDetailsVO> getPatientDetailsVO() {
+//		return patientDetailsVO;
+//	}
+//
+//	public void setPatientDetailsVO(List<PatientDetailsVO> patientDetailsVO) {
+//		this.patientDetailsVO = patientDetailsVO;
+//	}
 
 	public ProteinDomainSummaryVO getProteinDomainSummaryVO()
 	{
