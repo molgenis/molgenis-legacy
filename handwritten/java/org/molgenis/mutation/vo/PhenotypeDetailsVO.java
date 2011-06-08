@@ -1,6 +1,7 @@
 package org.molgenis.mutation.vo;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -10,6 +11,7 @@ public class PhenotypeDetailsVO implements Serializable
 
 	private Integer patientId;
 	private String patientIdentifier;
+	private List<String> protocolNames = new ArrayList<String>();
 	private String protocolName;
 	// (protocolName, List<ObservedValueVO>)
 	private HashMap<String, List<ObservedValueVO>> observedValues = new HashMap<String, List<ObservedValueVO>>();
@@ -25,6 +27,12 @@ public class PhenotypeDetailsVO implements Serializable
 	}
 	public void setPatientIdentifier(String patientIdentifier) {
 		this.patientIdentifier = patientIdentifier;
+	}
+	public List<String> getProtocolNames() {
+		return protocolNames;
+	}
+	public void setProtocolNames(List<String> protocolNames) {
+		this.protocolNames = protocolNames;
 	}
 	public String getProtocolName() {
 		return protocolName;
