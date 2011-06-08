@@ -126,7 +126,8 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 					List<MutationSummaryVO> results = mutationService.findMutations(criteria);
 					if (results.size() > 0)
 					{
-						patientSummaryVO.setMutation1(results.get(0).getMutation());
+						//TODO: fixme (change of MutationSummaryVO)
+//						patientSummaryVO.setMutation1(results.get(0).getMutation());
 					}
 					else
 					{
@@ -162,7 +163,10 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 						criteria.setVariation(mutationUploadVO2.getMutation().getCdna_Notation());
 						List<MutationSummaryVO> results = mutationService.findMutations(criteria);
 						if (results.size() > 0)
-							patientSummaryVO.setMutation2(results.get(0).getMutation());
+						{
+							//TODO: fixme (change of MutationSummaryVO)
+//							patientSummaryVO.setMutation2(results.get(0).getMutation());
+						}
 						else
 						{
 							mutationIdentifier = mutationIdentifier + 1;

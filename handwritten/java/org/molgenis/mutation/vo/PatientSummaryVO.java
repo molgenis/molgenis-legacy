@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.core.Publication;
+import org.molgenis.core.vo.PublicationVO;
 import org.molgenis.mutation.E_M;
 import org.molgenis.mutation.I_F;
 import org.molgenis.mutation.Mutation;
@@ -18,6 +19,28 @@ import org.molgenis.submission.Submission;
 public class PatientSummaryVO implements Serializable
 {
 	private static final long serialVersionUID = -8983436185205230071L;
+	private String patientIdentifier;
+	private String patientNumber;
+	private String patientConsent;
+	private String patientAge;
+	private String patientGender;
+	private String patientEthnicity;
+	private String patientDeceased;
+	private String patientDeathCause;
+	private String patientMmp1Allele1;
+	private String patientMmp1Allele2;
+	private List<MutationSummaryVO> variantSummaryVOList;
+	private String variantComment;
+	private String phenotypeMajor;
+	private String phenotypeSub;
+	private List<String> patientMaterialList;
+	private String submitterDepartment;
+	private String submitterInstitute;
+	private String submitterCity;
+	private String submitterCountry;
+	private List<PublicationVO> publicationVOList;
+	
+	//TODO: remove old code with persistent objects
 	private Patient patient;
 	private Mutation mutation1;
 	private Mutation mutation2;
@@ -43,6 +66,166 @@ public class PatientSummaryVO implements Serializable
 		this.submitter        = new MolgenisUser();
 		this.if_              = new I_F();
 		this.em_              = new E_M();
+	}
+
+	public String getPatientIdentifier() {
+		return patientIdentifier;
+	}
+
+	public void setPatientIdentifier(String patientIdentifier) {
+		this.patientIdentifier = patientIdentifier;
+	}
+
+	public String getPatientNumber() {
+		return patientNumber;
+	}
+
+	public void setPatientNumber(String patientNumber) {
+		this.patientNumber = patientNumber;
+	}
+
+	public String getPatientConsent() {
+		return patientConsent;
+	}
+
+	public void setPatientConsent(String patientConsent) {
+		this.patientConsent = patientConsent;
+	}
+
+	public String getPatientAge() {
+		return patientAge;
+	}
+
+	public void setPatientAge(String patientAge) {
+		this.patientAge = patientAge;
+	}
+
+	public String getPatientGender() {
+		return patientGender;
+	}
+
+	public void setPatientGender(String patientGender) {
+		this.patientGender = patientGender;
+	}
+
+	public String getPatientEthnicity() {
+		return patientEthnicity;
+	}
+
+	public void setPatientEthnicity(String patientEthnicity) {
+		this.patientEthnicity = patientEthnicity;
+	}
+
+	public String getPatientDeceased() {
+		return patientDeceased;
+	}
+
+	public void setPatientDeceased(String patientDeceased) {
+		this.patientDeceased = patientDeceased;
+	}
+
+	public String getPatientDeathCause() {
+		return patientDeathCause;
+	}
+
+	public void setPatientDeathCause(String patientDeathCause) {
+		this.patientDeathCause = patientDeathCause;
+	}
+
+	public String getPatientMmp1Allele1() {
+		return patientMmp1Allele1;
+	}
+
+	public void setPatientMmp1Allele1(String patientMmp1Allele1) {
+		this.patientMmp1Allele1 = patientMmp1Allele1;
+	}
+
+	public String getPatientMmp1Allele2() {
+		return patientMmp1Allele2;
+	}
+
+	public void setPatientMmp1Allele2(String patientMmp1Allele2) {
+		this.patientMmp1Allele2 = patientMmp1Allele2;
+	}
+
+	public List<MutationSummaryVO> getVariantSummaryVOList() {
+		return variantSummaryVOList;
+	}
+
+	public void setVariantSummaryVOList(List<MutationSummaryVO> variantSummaryVOList) {
+		this.variantSummaryVOList = variantSummaryVOList;
+	}
+
+	public String getVariantComment() {
+		return variantComment;
+	}
+
+	public void setVariantComment(String variantComment) {
+		this.variantComment = variantComment;
+	}
+
+	public String getPhenotypeMajor() {
+		return phenotypeMajor;
+	}
+
+	public void setPhenotypeMajor(String phenotypeMajor) {
+		this.phenotypeMajor = phenotypeMajor;
+	}
+
+	public String getPhenotypeSub() {
+		return phenotypeSub;
+	}
+
+	public void setPhenotypeSub(String phenotypeSub) {
+		this.phenotypeSub = phenotypeSub;
+	}
+
+	public List<String> getPatientMaterialList() {
+		return patientMaterialList;
+	}
+
+	public void setPatientMaterialList(List<String> patientMaterialList) {
+		this.patientMaterialList = patientMaterialList;
+	}
+
+	public String getSubmitterDepartment() {
+		return submitterDepartment;
+	}
+
+	public void setSubmitterDepartment(String submitterDepartment) {
+		this.submitterDepartment = submitterDepartment;
+	}
+
+	public String getSubmitterInstitute() {
+		return submitterInstitute;
+	}
+
+	public void setSubmitterInstitute(String submitterInstitute) {
+		this.submitterInstitute = submitterInstitute;
+	}
+
+	public String getSubmitterCity() {
+		return submitterCity;
+	}
+
+	public void setSubmitterCity(String submitterCity) {
+		this.submitterCity = submitterCity;
+	}
+
+	public String getSubmitterCountry() {
+		return submitterCountry;
+	}
+
+	public void setSubmitterCountry(String submitterCountry) {
+		this.submitterCountry = submitterCountry;
+	}
+
+	public List<PublicationVO> getPublicationVOList() {
+		return publicationVOList;
+	}
+
+	public void setPublicationVOList(List<PublicationVO> publicationVOList) {
+		this.publicationVOList = publicationVOList;
 	}
 
 	public Patient getPatient() {

@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -40,8 +39,11 @@ import org.molgenis.mutation.vo.MutationSummaryVO;
 import org.molgenis.mutation.vo.MutationUploadVO;
 import org.molgenis.mutation.vo.PatientSearchCriteriaVO;
 import org.molgenis.mutation.vo.PatientSummaryVO;
+import org.molgenis.submission.Submission;
+import org.molgenis.auth.MolgenisUser;
 import org.molgenis.core.Publication;
 import org.molgenis.core.service.PublicationService;
+import org.molgenis.core.vo.PublicationVO;
 
 public class MutationService implements Serializable
 {
@@ -67,6 +69,38 @@ public class MutationService implements Serializable
 
 	public List<MutationSummaryVO> findMutations(MutationSearchCriteriaVO criteria) throws DatabaseException, java.text.ParseException
 	{
+		List<Mutation> mutations = this._findMutations(criteria);
+
+		if (mutations.size() > 0)
+			return this.toMutationSummaryVOList(mutations);
+		else
+			return new ArrayList<MutationSummaryVO>();
+	}
+
+	public List<PatientSummaryVO> findPatients(MutationSearchCriteriaVO criteria) throws DatabaseException, ParseException
+	{
+		List<Mutation> mutations = this._findMutations(criteria);
+		
+		if (mutations.size() > 0)
+		{
+			PatientService patientService = PatientService.getInstance(this.db);
+			List<PatientSummaryVO> result = new ArrayList<PatientSummaryVO>();
+
+			for (Mutation mutation : mutations)
+			{
+				PatientSearchCriteriaVO criteria2 = new PatientSearchCriteriaVO();
+				criteria2.setMutationId(mutation.getId());
+				List<PatientSummaryVO> patientSummaryVOs = patientService.findPatients(criteria2);
+				result.addAll(patientSummaryVOs);
+			}
+			return result;
+		}
+		else
+			return new ArrayList<PatientSummaryVO>();
+	}
+
+	protected List<Mutation> _findMutations(MutationSearchCriteriaVO criteria) throws DatabaseException, java.text.ParseException
+	{
 		Query<Mutation> query = this.db.query(Mutation.class);
 
 		if (criteria.getCdnaPosition() != null)
@@ -80,7 +114,6 @@ public class MutationService implements Serializable
 		if (criteria.getExonName() != null)
 			query = query.equals(Mutation.EXON_NAME, "Exon " + criteria.getExonName()).or().equals(Mutation.EXON_NAME, "IVS" + criteria.getExonName());
 		if (criteria.getExonNumber() != null)
-			//TODO: cheap and bad trick to avoid join
 			query = query.equals(Mutation.EXON_NAME, "Exon " + criteria.getExonNumber()).or().equals(Mutation.EXON_NAME, "IVS" + criteria.getExonNumber());
 		if (criteria.getMid() != null)
 			query = query.equals(Mutation.IDENTIFIER, criteria.getMid());
@@ -158,7 +191,7 @@ public class MutationService implements Serializable
 		}
 		if (StringUtils.length(criteria.getPublication()) > 2)
 		{
-			List<Publication> publications = this.db.query(Publication.class).like(Publication.AUTHORLIST, "%" + criteria.getPublication() + "%").or().like(Publication.TITLE, "%" + criteria.getPublication() + "%").find();
+			List<Publication> publications = this.db.query(Publication.class).like(Publication.NAME, criteria.getPublication() + "%").or().like(Publication.TITLE, "%" + criteria.getPublication() + "%").find();
 			List<Integer> publicationIds   = new ArrayList<Integer>();
 			for (Publication publication : publications)
 				publicationIds.add(publication.getId());
@@ -183,9 +216,9 @@ public class MutationService implements Serializable
 			query = query.equals(Mutation.CDNA_NOTATION, criteria.getVariation()).or().equals(Mutation.CDNA_NOTATION, "c." + criteria.getVariation()).or().equals(Mutation.AA_NOTATION, criteria.getVariation()).or().equals(Mutation.AA_NOTATION, "p." + criteria.getVariation());
 
 		if (query.getRules().length > 0)
-			return this.toMutationSummaryVOList(query.find());
+			return query.sortASC(Mutation.IDENTIFIER).find();
 		else		
-			return new ArrayList<MutationSummaryVO>();
+			return new ArrayList<Mutation>();
 	}
 
 	private MutationSummaryVO toMutationSummaryVO(Mutation mutation) throws DatabaseException, java.text.ParseException
@@ -193,58 +226,137 @@ public class MutationService implements Serializable
 		if (this.cache.containsKey(mutation.getId()))
 			return this.cache.get(mutation.getId());
 
-		PatientService patientService             = PatientService.getInstance(db);
-		ProteinDomainService proteinDomainService = ProteinDomainService.getInstance(this.db);
-		List<Mutation> allMutations               = this.getAllMutations();
-		ProteinDomain proteinDomain               = proteinDomainService.findProteinDomain(mutation);
-
 		MutationSummaryVO mutationSummaryVO       = new MutationSummaryVO();
-		mutationSummaryVO.setMutation(mutation);
+		mutationSummaryVO.setIdentifier(mutation.getIdentifier());
+		mutationSummaryVO.setCdnaNotation(mutation.getCdna_Notation());
+		mutationSummaryVO.setGdnaNotation(mutation.getGdna_Notation());
+		mutationSummaryVO.setGdnaPosition(mutation.getGdna_Position());
+		mutationSummaryVO.setAaNotation(mutation.getAa_Notation());
+		mutationSummaryVO.setAaPosition(mutation.getAa_Position());
 		if (StringUtils.isNotEmpty(mutation.getAa_Notation()))
 			mutationSummaryVO.setNiceNotation(mutation.getCdna_Notation() + " (" + mutation.getAa_Notation() + ")");
 		else
 			mutationSummaryVO.setNiceNotation(mutation.getCdna_Notation());
 		mutationSummaryVO.setCodonChange(this.getCodonChange(mutation));
-		mutationSummaryVO.setProteinDomain(proteinDomain);
-		mutationSummaryVO.setFirstMutation(allMutations.get(0));
-		mutationSummaryVO.setPrevMutation(this.findPrevMutation(mutation));
-		mutationSummaryVO.setNextMutation(this.findNextMutation(mutation));
-		mutationSummaryVO.setLastMutation(allMutations.get(allMutations.size() - 1));
-
-		PatientSearchCriteriaVO criteria = new PatientSearchCriteriaVO();
-		criteria.setMutationId(mutation.getId());
-		List<PatientSummaryVO> patientSummaryVOs  = patientService.findPatients(criteria);
-
-		mutationSummaryVO.setPatients(patientSummaryVOs);
-
-		mutationSummaryVO.setPubmedURL(PublicationService.PUBMED_URL);
+		mutationSummaryVO.setConsequence(mutation.getConsequence());
+		mutationSummaryVO.setType(mutation.getType());
+		mutationSummaryVO.setInheritance(mutation.getInheritance());
+		mutationSummaryVO.setReportedSNP(mutation.getReportedSNP());
+		mutationSummaryVO.setPathogenicity(mutation.getPathogenicity());
 		
-		HashMap<Integer, MutationPhenotype> phenotypeHash = new HashMap<Integer, MutationPhenotype>();
-		HashMap<Integer, Publication> publicationHash     = new HashMap<Integer, Publication>();
-		for (PatientSummaryVO patientSummaryVO : patientSummaryVOs)
+		mutationSummaryVO.setExonId(mutation.getExon_Id());
+		mutationSummaryVO.setExonName(mutation.getExon_Name());
+
+		Exon exon = this.db.findById(Exon.class, mutation.getExon_Id());
+		List<ProteinDomain> proteinDomains                = this.db.query(ProteinDomain.class).in(ProteinDomain.ID, exon.getProteinDomain_Id()).find();
+		// helper hash to get distinct protein domain names
+		HashMap<Integer, String> domainNameHash           = new HashMap<Integer, String>();
+		for (ProteinDomain domain : proteinDomains)
+			domainNameHash.put(domain.getId(), domain.getName());
+		mutationSummaryVO.setProteinDomainNameList(new ArrayList<String>());
+		mutationSummaryVO.getProteinDomainNameList().addAll(domainNameHash.values());
+
+		mutationSummaryVO.setPatientSummaryVOList(new ArrayList<PatientSummaryVO>());
+		// helper hash to get distinct phenotypes
+		HashMap<Integer, String> phenotypeNameHash        = new HashMap<Integer, String>();
+		// helper hash to get distinct publications
+		HashMap<Integer, PublicationVO> publicationVOHash = new HashMap<Integer, PublicationVO>();
+		
+		List<Patient> patients = this.db.query(Patient.class).equals(Patient.MUTATION1, mutation.getId()).or().equals(Patient.MUTATION2, mutation.getId()).find();
+		for (Patient patient : patients)
 		{
-			if (patientSummaryVO.getPhenotype() != null)
-				phenotypeHash.put(patientSummaryVO.getPhenotype().getId(), patientSummaryVO.getPhenotype());
-			if (patientSummaryVO.getPublications() != null)
-				for (Publication publication : patientSummaryVO.getPublications())
-					publicationHash.put(publication.getId(), publication);
+			PatientSummaryVO patientSummaryVO = new PatientSummaryVO();
+			patientSummaryVO.setPatientIdentifier(patient.getIdentifier());
+			patientSummaryVO.setVariantComment(patient.getMutation2remark());
+			
+			MutationPhenotype phenotype = this.db.findById(MutationPhenotype.class, patient.getPhenotype_Id());
+			patientSummaryVO.setPhenotypeMajor(phenotype.getMajortype());
+			patientSummaryVO.setPhenotypeSub(phenotype.getSubtype());
+			phenotypeNameHash.put(phenotype.getId(), phenotype.getMajortype() + ", " + phenotype.getSubtype());
+
+			patientSummaryVO.setVariantSummaryVOList(new ArrayList<MutationSummaryVO>());
+			//TODO: How to generalize this in future?
+			List<Mutation> otherVariants;
+			if (mutation.getId().equals(patient.getMutation1_Id()))
+				otherVariants = this.db.query(Mutation.class).equals(Mutation.ID, patient.getMutation2_Id()).find();
+			else
+				otherVariants = this.db.query(Mutation.class).equals(Mutation.ID, patient.getMutation1_Id()).find();
+
+			for (Mutation otherVariant : otherVariants)
+			{
+				MutationSummaryVO otherVariantVO = new MutationSummaryVO();
+				otherVariantVO.setIdentifier(otherVariant.getIdentifier());
+				otherVariantVO.setCdnaNotation(otherVariant.getCdna_Notation());
+				otherVariantVO.setAaNotation(otherVariant.getAa_Notation());
+				otherVariantVO.setConsequence(otherVariant.getConsequence());
+				otherVariantVO.setInheritance(otherVariant.getInheritance());
+				otherVariantVO.setExonId(otherVariant.getExon_Id());
+				otherVariantVO.setExonName(otherVariant.getExon_Name());
+				patientSummaryVO.getVariantSummaryVOList().add(otherVariantVO);
+			}
+			patientSummaryVO.setVariantComment(patient.getMutation2remark());
+
+			Submission submission  = this.db.findById(Submission.class, patient.getSubmission_Id());
+			MolgenisUser submitter = this.db.findById(MolgenisUser.class, submission.getSubmitters_Id().get(0));
+			patientSummaryVO.setSubmitterDepartment(submitter.getDepartment());
+			patientSummaryVO.setSubmitterInstitute(submitter.getInstitute());
+			patientSummaryVO.setSubmitterCity(submitter.getCity());
+			patientSummaryVO.setSubmitterCountry(submitter.getCountry());
+			patientSummaryVO.setPublicationVOList(new ArrayList<PublicationVO>());
+
+			if (CollectionUtils.isNotEmpty(patient.getPublications_Id()))
+			{
+				List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPublications_Id()).find();
+
+				for (Publication publication : publications)
+				{
+					PublicationVO publicationVO = new PublicationVO();
+					publicationVO.setName(publication.getName());
+					publicationVO.setTitle(publication.getTitle());
+					publicationVO.setPubmed(publication.getPubmedID_Name());
+					patientSummaryVO.getPublicationVOList().add(publicationVO);
+					publicationVOHash.put(publication.getId(), publicationVO);
+				}
+			}
+			mutationSummaryVO.getPatientSummaryVOList().add(patientSummaryVO);
 		}
 
-		mutationSummaryVO.setPhenotypes(Arrays.asList(phenotypeHash.values().toArray(new MutationPhenotype[0])));
-		mutationSummaryVO.setPublications(Arrays.asList(publicationHash.values().toArray(new Publication[0])));
+		mutationSummaryVO.setPhenotypeNameList(new ArrayList<String>());
+		mutationSummaryVO.getPhenotypeNameList().addAll(phenotypeNameHash.values());
 
-//		Mutation positionMutation                 = new Mutation();
-//		logger.debug(">>> cdna_position==" + mutation.getCdna_position());
-//		positionMutation.setCdna_position(mutation.getCdna_position());
-//		logger.debug(">>> positionMutations==" + this.db.findByExample(positionMutation));
-//		logger.debug(">>> positionMutations==" + this.db.query(Mutation.class).equals("cdna_position", mutation.getCdna_position()).find());
-		mutationSummaryVO.setPositionMutations(this.db.query(Mutation.class).equals(Mutation.CDNA_POSITION, mutation.getCdna_Position()).find());
+		mutationSummaryVO.setPublicationVOList(new ArrayList<PublicationVO>());
+		mutationSummaryVO.getPublicationVOList().addAll(publicationVOHash.values());
 
-//		Mutation codonMutation                    = new Mutation();
-//		codonMutation.setCdna_position(mutation.getCdna_position());
-		Exon exon = this.db.findById(Exon.class, mutation.getExon_Id());
+		mutationSummaryVO.setPubmedURL(PublicationService.PUBMED_URL);
+
+		mutationSummaryVO.setPositionMutations(new ArrayList<MutationSummaryVO>());
+		List<Mutation> positionMutations = this.db.query(Mutation.class).equals(Mutation.CDNA_POSITION, mutation.getCdna_Position()).find();
+		for (Mutation positionMutation : positionMutations)
+		{
+			if (!positionMutation.getId().equals(mutation.getId()))
+			{
+				MutationSummaryVO tmp = new MutationSummaryVO();
+				tmp.setIdentifier(positionMutation.getIdentifier());
+				tmp.setCdnaNotation(positionMutation.getCdna_Notation());
+				mutationSummaryVO.getPositionMutations().add(tmp);
+			}
+		}
+
 		if (!exon.getIsIntron())
-			mutationSummaryVO.setCodonMutations(this.db.query(Mutation.class).equals(Mutation.AA_POSITION, mutation.getAa_Position()).find());
+		{
+			mutationSummaryVO.setCodonMutations(new ArrayList<MutationSummaryVO>());
+			List<Mutation> codonMutations = this.db.query(Mutation.class).equals(Mutation.AA_POSITION, mutation.getAa_Position()).find();
+			for (Mutation codonMutation : codonMutations)
+			{
+				if (!codonMutation.getId().equals(mutation.getId()))
+				{
+					MutationSummaryVO tmp = new MutationSummaryVO();
+					tmp.setIdentifier(codonMutation.getIdentifier());
+					tmp.setCdnaNotation(codonMutation.getCdna_Notation());
+					mutationSummaryVO.getCodonMutations().add(tmp);
+				}
+			}
+		}
 
 		// cache value
 		this.cache.put(mutation.getId(), mutationSummaryVO);
@@ -257,7 +369,10 @@ public class MutationService implements Serializable
 		List<MutationSummaryVO> result            = new ArrayList<MutationSummaryVO>();
 
 		for (Mutation mutation : mutations)
-			result.add(this.toMutationSummaryVO(mutation));
+		{
+			MutationSummaryVO mutationSummaryVO = this.toMutationSummaryVO(mutation);
+			result.add(mutationSummaryVO);
+		}
 		
 		return result;
 	}
@@ -272,24 +387,24 @@ public class MutationService implements Serializable
 		return mutation;
 	}
 
-	private Mutation findPrevMutation(Mutation mutation) throws DatabaseException, java.text.ParseException
+	private MutationSummaryVO findPrevMutation(Mutation mutation) throws DatabaseException, java.text.ParseException
 	{
 		List<Mutation> mutations = this.db.query(Mutation.class).lt(Mutation.CDNA_POSITION, mutation.getCdna_Position()).sortDESC(Mutation.CDNA_POSITION).limit(1).find();
 
 		if (mutations.size() > 0)
-			return mutations.get(0);
+			return this.toMutationSummaryVO(mutations.get(0));
 		else
-			return mutation;
+			return this.toMutationSummaryVO(mutation);
 	}
 
-	private Mutation findNextMutation(Mutation mutation) throws DatabaseException, java.text.ParseException
+	private MutationSummaryVO findNextMutation(Mutation mutation) throws DatabaseException, java.text.ParseException
 	{
 		List<Mutation> mutations = this.db.query(Mutation.class).gt(Mutation.CDNA_POSITION, mutation.getCdna_Position()).sortASC(Mutation.CDNA_POSITION).limit(1).find();
 
 		if (mutations.size() > 0)
-			return mutations.get(0);
+			return this.toMutationSummaryVO(mutations.get(0));
 		else
-			return mutation;
+			return this.toMutationSummaryVO(mutation);
 	}
 
 	/**
@@ -301,6 +416,28 @@ public class MutationService implements Serializable
 	public List<Mutation> getAllMutations() throws DatabaseException, java.text.ParseException
 	{
 		return this.db.query(Mutation.class).sortASC(Mutation.CDNA_POSITION).find();
+	}
+
+	public MutationSummaryVO getFirstMutation() throws DatabaseException, ParseException
+	{
+		return this.toMutationSummaryVO(this.db.query(Mutation.class).sortASC(Mutation.CDNA_POSITION).limit(1).find().get(0));
+	}
+
+	public MutationSummaryVO getPrevMutation(String identifier) throws DatabaseException, ParseException
+	{
+		Mutation mutation = this.db.query(Mutation.class).equals(Mutation.IDENTIFIER, identifier).find().get(0);
+		return this.findPrevMutation(mutation);
+	}
+
+	public MutationSummaryVO getNextMutation(String identifier) throws DatabaseException, ParseException
+	{
+		Mutation mutation = this.db.query(Mutation.class).equals(Mutation.IDENTIFIER, identifier).find().get(0);
+		return this.findNextMutation(mutation);
+	}
+
+	public MutationSummaryVO getLastMutation() throws DatabaseException, ParseException
+	{
+		return this.toMutationSummaryVO(this.db.query(Mutation.class).sortDESC(Mutation.CDNA_POSITION).limit(1).find().get(0));
 	}
 
 	/**
@@ -565,8 +702,8 @@ public class MutationService implements Serializable
 		if (StringUtils.isEmpty(mutationUploadVO.getMutation().getMutationPosition()) || "0".equals(mutationUploadVO.getMutation().getMutationPosition()))
 			return;
 		
-//		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "COL7A1").find().get(0);
-		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "CHD7").find().get(0);
+		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "COL7A1").find().get(0);
+//		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "CHD7").find().get(0);
 		mutationUploadVO.setGene(gene);
 		mutationUploadVO.getMutation().setGene(gene);
 
@@ -713,8 +850,8 @@ public class MutationService implements Serializable
 	{
 		// set default gene
 
-//		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "COL7A1").find().get(0);
-		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "CHD7").find().get(0);
+		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "COL7A1").find().get(0);
+//		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "CHD7").find().get(0);
 
 		mutationUploadVO.setGene(gene);
 		mutationUploadVO.getMutation().setGene(gene);

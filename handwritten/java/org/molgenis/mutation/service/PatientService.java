@@ -16,10 +16,12 @@ import javax.xml.bind.JAXBException;
 import jxl.Workbook;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.core.Publication;
 import org.molgenis.core.service.PublicationService;
+import org.molgenis.core.vo.PublicationVO;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
@@ -27,18 +29,24 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.mutation.Antibody;
+import org.molgenis.mutation.E_M;
+import org.molgenis.mutation.I_F;
 import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.MutationPhenotype;
 import org.molgenis.mutation.Patient;
 import org.molgenis.mutation.PhenotypeDetails;
 import org.molgenis.mutation.excel.UploadBatchExcelReader;
 import org.molgenis.mutation.util.PatientComparator;
+import org.molgenis.mutation.vo.MutationSummaryVO;
 import org.molgenis.mutation.vo.ObservedValueVO;
 import org.molgenis.mutation.vo.PatientSearchCriteriaVO;
 import org.molgenis.mutation.vo.PatientSummaryVO;
 import org.molgenis.mutation.vo.PhenotypeDetailsVO;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
+import org.molgenis.protocol.Workflow;
+import org.molgenis.protocol.WorkflowElement;
+import org.molgenis.protocol.service.WorkflowService;
 import org.molgenis.services.PubmedService;
 import org.molgenis.services.pubmed.PubmedArticle;
 import org.molgenis.submission.Submission;
@@ -113,11 +121,10 @@ public class PatientService implements Serializable
 			}
 			query = query.in(Patient.SUBMISSION, submissionIds);
 		}
-		query = query.sortASC(Patient.IDENTIFIER);
 
 		if (query.getRules().length > 0)
 		{
-			return this.toPatientSummaryVOList(query.find());
+			return this.toPatientSummaryVOList(query.sortASC(Patient.IDENTIFIER).find());
 		}
 		else // Return an empty list, if query is "empty". find() would return all objects.
 		{
@@ -142,20 +149,33 @@ public class PatientService implements Serializable
 			PhenotypeDetailsVO phenotypeDetailsVO = new PhenotypeDetailsVO();
 			phenotypeDetailsVO.setPatientId(patients.get(0).getId());
 			phenotypeDetailsVO.setPatientIdentifier(patients.get(0).getIdentifier());
+			phenotypeDetailsVO.setProtocolNames(new ArrayList<String>());
 			phenotypeDetailsVO.setObservedValues(new HashMap<String, List<ObservedValueVO>>());
 
-			List<Protocol> protocols = this.db.query(Protocol.class).find();
+			List<Workflow> workflows = this.db.query(Workflow.class).find();
 			
-			if (CollectionUtils.isEmpty(protocols))
+			if (CollectionUtils.isEmpty(workflows))
 				return phenotypeDetailsVO;
 			
-			for (Protocol protocol : protocols)
+			// Use only first workflow
+			// TODO: What to do in case more than one workflow was found???
+			
+			WorkflowService workflowService        = WorkflowService.getInstance(this.db);
+			List<WorkflowElement> workflowElements = workflowService.findWorkflowElements(workflows.get(0));
+
+			if (CollectionUtils.isEmpty(workflowElements))
+				return phenotypeDetailsVO;
+			
+			for (WorkflowElement workflowElement : workflowElements)
 			{
+				Protocol protocol = this.db.findById(Protocol.class, workflowElement.getProtocol_Id());
+
 				// ignore protocols without features
 				if (protocol.getFeatures_Id().size() == 0)
 					continue;
 
-				phenotypeDetailsVO.getObservedValues().put(" " + protocol.getName(), new ArrayList<ObservedValueVO>());
+				phenotypeDetailsVO.getProtocolNames().add(protocol.getName());
+				phenotypeDetailsVO.getObservedValues().put(protocol.getName(), new ArrayList<ObservedValueVO>());
 
 				List<ObservedValue> observedValues = this.db.query(ObservedValue.class).equals(ObservedValue.TARGET, patients.get(0).getId()).in(ObservedValue.FEATURE, protocol.getFeatures_Id()).find();
 				for (ObservedValue observedValue : observedValues)
@@ -163,7 +183,7 @@ public class PatientService implements Serializable
 					ObservedValueVO observedValueVO = new ObservedValueVO();
 					observedValueVO.setFeatureName(observedValue.getFeature_Name());
 					observedValueVO.setValue(observedValue.getValue());
-					phenotypeDetailsVO.getObservedValues().get(" " + protocol.getName()).add(observedValueVO);
+					phenotypeDetailsVO.getObservedValues().get(protocol.getName()).add(observedValueVO);
 				}
 			}
 			return phenotypeDetailsVO;
@@ -421,6 +441,182 @@ public class PatientService implements Serializable
 		}
 	}
 
+	public String exportCsv() throws DatabaseException, ParseException
+	{
+		List<Patient> patients = this.db.query(Patient.class).equals(Patient.CONSENT, "publication").sortASC(Patient.IDENTIFIER).find();
+		
+		String result          = "";
+
+		List<String> header = this.exportHeader();
+		result += StringUtils.join(header, ",") + "\n";
+
+		for (Patient patient : patients)
+		{
+			List<String> columns = this.exportRow(patient);
+			result += StringUtils.join(columns, ",") + "\n";
+		}
+		
+		return result;
+	}
+	
+	public List<String> exportHeader()
+	{
+		List<String> row = new ArrayList<String>();
+		row.add("Identifier");
+		row.add("Local patient number");
+		row.add("Patient Consent");
+		row.add("Phenotype major type");
+		row.add("Phenotype Subtype");
+		row.add("cDNA change_1");
+		row.add("Protein change_1");
+		row.add("Exon/Intron_1");
+		row.add("Consequence_1");
+		row.add("Inheritance_1");
+		row.add("cDNA change_2");
+		row.add("Protein change_2");
+		row.add("Exon/Intron_2");
+		row.add("Consequence_2");
+		row.add("Inheritance_2");
+		row.add("IF LH7:2");
+		row.add("IF Retention COLVII");
+		row.add("EM AF_no");
+		row.add("EM AF_structure");
+		row.add("EM_Retention COLVII");
+		row.add("MMP1 Allele1(rs1799750)");
+		row.add("MMP1 Allele2 (rs1799750)");
+		row.add("Reference");
+		row.add("PubMed ID");
+		row.add("Gender");
+		row.add("Age");
+		row.add("Ethnicity");
+		row.add("Deceased");
+		row.add("Cause of death");
+		row.add("Blistering");
+		row.add("Location");
+		row.add("Hands");
+		row.add("Feet");
+		row.add("Arms");
+		row.add("Legs");
+		row.add("Proximal body flexures");
+		row.add("Trunk");
+		row.add("Mucosa");
+		row.add("Skin atrophy");
+		row.add("Milia");
+		row.add("Nail dystrophy");
+		row.add("Albopapuloid papules");
+		row.add("Pruritic papules");
+		row.add("Alopecia");
+		row.add("Squamous cell carcinoma(s)");
+		row.add("Revertant skin patch(es)");
+		row.add("Mechanism");
+		row.add("Flexion contractures");
+		row.add("Pseudosyndactyly (hands)");
+		row.add("Microstomia");
+		row.add("Ankyloglossia");
+		row.add("Swallowing difficulties/ dysphagia/ oesophagus strictures");
+		row.add("Growth retardation");
+		row.add("Anaemia");
+		row.add("Renal failure");
+		row.add("Dilated cardiomyopathy");
+		row.add("Other");
+		
+		return row;
+	}
+
+	public List<String> exportRow(Patient patient) throws DatabaseException, ParseException
+	{
+		List<String> row = new ArrayList<String>();
+		row.add(patient.getIdentifier());
+		row.add(patient.getNumber());
+		row.add(patient.getConsent());
+		MutationPhenotype phenotype = this.db.findById(MutationPhenotype.class, patient.getPhenotype_Id());
+		row.add(phenotype.getMajortype());
+		row.add(phenotype.getSubtype());
+		Mutation mutation1          = this.db.findById(Mutation.class, patient.getMutation1_Id());
+		row.add(mutation1.getCdna_Notation());
+		row.add(mutation1.getAa_Notation());
+		row.add(mutation1.getExon_Name());
+		row.add(mutation1.getConsequence());
+		row.add(mutation1.getInheritance());
+		Mutation mutation2          = this.db.findById(Mutation.class, patient.getMutation2_Id());
+		if (mutation2 != null)
+		{
+			row.add(mutation2.getCdna_Notation());
+			row.add(mutation2.getAa_Notation());
+			row.add(mutation2.getExon_Name());
+			row.add(mutation2.getConsequence());
+			row.add(mutation2.getInheritance());
+		}
+		else
+		{
+			row.add(patient.getMutation2remark());
+			row.add("");
+			row.add("");
+			row.add("");
+			row.add("");
+		}
+		List<I_F> ifs               = this.db.query(I_F.class).equals(I_F.PATIENT, patient.getId()).find();
+		row.add(ifs.get(0).getValue());
+		row.add(ifs.get(0).getRetention());
+
+		List<E_M> ems               = this.db.query(E_M.class).equals(E_M.PATIENT, patient.getId()).find();
+		row.add(ems.get(0).getNumber());
+		row.add(ems.get(0).getAppearance());
+		row.add(ems.get(0).getRetention());
+
+		row.add(patient.getMmp1_Allele1());
+		row.add(patient.getMmp1_Allele2());
+
+		List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPublications_Id()).find();
+		List<String> publicationNames  = new ArrayList<String>();
+		List<String> publicationPudmed = new ArrayList<String>();
+		for (Publication publication : publications)
+		{
+			publicationNames.add(publication.getName());
+			publicationPudmed.add(publication.getPubmedID_Name());
+		}
+		row.add(StringUtils.join(publicationNames, ";"));
+		row.add(StringUtils.join(publicationPudmed, ";"));
+
+		row.add(patient.getGender());
+		row.add(patient.getAge());
+		row.add(patient.getEthnicity());
+		row.add(patient.getDeceased());
+		row.add(patient.getDeath_Cause());
+
+		PhenotypeDetails phenotypeDetails = this.db.findById(PhenotypeDetails.class, patient.getPhenotype_Details_Id());
+		row.add(phenotypeDetails.getBlistering());
+		row.add(phenotypeDetails.getLocation());
+		row.add(phenotypeDetails.getHands());
+		row.add(phenotypeDetails.getFeet());
+		row.add(phenotypeDetails.getArms());
+		row.add(phenotypeDetails.getLegs());
+		row.add(phenotypeDetails.getProximal_Body_Flexures());
+		row.add(phenotypeDetails.getTrunk());
+		row.add(phenotypeDetails.getMucous_Membranes());
+		row.add(phenotypeDetails.getSkin_Atrophy());
+		row.add(phenotypeDetails.getMilia());
+		row.add(phenotypeDetails.getNail_Dystrophy());
+		row.add(phenotypeDetails.getAlbopapuloid_Papules());
+		row.add(phenotypeDetails.getPruritic_Papules());
+		row.add(phenotypeDetails.getAlopecia());
+		row.add(phenotypeDetails.getSquamous_Cell_Carcinomas());
+		row.add(phenotypeDetails.getRevertant_Skin_Patch());
+		row.add(phenotypeDetails.getMechanism());
+		row.add(phenotypeDetails.getFlexion_Contractures());
+		row.add(phenotypeDetails.getPseudosyndactyly_Hands());
+		row.add(phenotypeDetails.getMicrostomia());
+		row.add(phenotypeDetails.getAnkyloglossia());
+		row.add(phenotypeDetails.getDysphagia());
+		row.add(phenotypeDetails.getGrowth_Retardation());
+		row.add(phenotypeDetails.getAnemia());
+		row.add(phenotypeDetails.getRenal_Failure());
+		row.add(phenotypeDetails.getDilated_Cardiomyopathy());
+		row.add(phenotypeDetails.getOther());
+
+		return row;
+	}
+
 	public void setDefaults(PatientSummaryVO patientSummaryVO)
 			throws DatabaseException, ParseException, MalformedURLException,
 			JAXBException, IOException {
@@ -458,6 +654,58 @@ public class PatientService implements Serializable
 		}
 	}
 
+//	public PatientDetailsVO toPatientDetailsVO(Patient patient) throws DatabaseException, ParseException
+//	{
+//		PatientDetailsVO patientDetailsVO = new PatientDetailsVO();
+//		
+//		patientDetailsVO.setIdentifier(patient.getIdentifier());
+//		patientDetailsVO.setPhenotypeName(patient.getPhenotype_Name());
+//		patientDetailsVO.setMutationNo(Arrays.asList(new String[] { "First Mutation", "SecondMutation" }));
+//		Mutation mutation1 = this.db.findById(Mutation.class, patient.getMutation1_Id());
+//		String cdnaNotation = mutation1.getCdna_Notation();
+//		String aaNotation   = mutation1.getAa_Notation();
+//		String exonName     = mutation1.getExon_Name();
+//		String consequence  = mutation1.getConsequence();
+//		if (patient.getMutation2_Id() != null)
+//		{
+//			Mutation mutation2 = this.db.findById(Mutation.class, patient.getMutation2_Id());
+//			cdnaNotation      += "<br/>" + mutation2.getCdna_Notation();
+//			aaNotation        += "<br/>" + mutation2.getAa_Notation();
+//			exonName          += "<br/>" + mutation2.getExon_Name();
+//			consequence       += "<br/>" + mutation2.getConsequence();
+//		}
+//		patientDetailsVO.setCdnaNotation(cdnaNotation);
+//		patientDetailsVO.setAaNotation(aaNotation);
+//		patientDetailsVO.setExonName(exonName);
+//		patientDetailsVO.setConsequence(consequence);
+//
+//		String publicationName = "";
+//		if (CollectionUtils.isNotEmpty(patient.getPublications_Id()))
+//		{
+//			List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPublications_Id()).find();
+//			for (Publication publication : publications)
+//				publicationName += publication.getTitle() + "<br/>";
+//		}
+//		patientDetailsVO.setPublicationName(publicationName);
+//		
+//		return patientDetailsVO;
+//	}
+
+//	public List<PatientDetailsVO> toPatientDetailsVOList(List<PatientSummaryVO> patientSummaryVOs) throws DatabaseException, ParseException
+//	{
+//		List<PatientDetailsVO> result = new ArrayList<PatientDetailsVO>();
+//
+////		for (int i = 0; i < patientSummaryVOs.size(); i++)
+////		{
+////			Patient patient = patients.get(i);
+////			PatientDetailsVO patientDetailsVO = this.toPatientDetailsVO(patient);
+////			patientDetailsVO.setCounter(i + 1);
+////			result.add(patientDetailsVO);
+////		}
+//
+//		return result;
+//	}
+
 	private PatientSummaryVO toPatientSummaryVO(Patient patient) throws DatabaseException, ParseException
 	{
 		if (this.cache.containsKey(patient.getId()))
@@ -466,28 +714,88 @@ public class PatientService implements Serializable
 		}
 
 		PatientSummaryVO patientSummaryVO = new PatientSummaryVO();
-		patientSummaryVO.setPatient(patient);
+//		patientSummaryVO.setPatient(patient);
 
 		if (this.db instanceof JDBCDatabase)
 		{
-			patientSummaryVO.setMutation1(this.db.findById(Mutation.class, patient.getMutation1_Id()));
-			patientSummaryVO.setMutation2(this.db.findById(Mutation.class, patient.getMutation2_Id()));
-			patientSummaryVO.setPhenotype(this.db.findById(MutationPhenotype.class, patient.getPhenotype_Id()));
+			patientSummaryVO.setPatientIdentifier(patient.getIdentifier());
+			patientSummaryVO.setPatientNumber(patient.getNumber());
+			patientSummaryVO.setPatientConsent(patient.getConsent());
+			patientSummaryVO.setPatientAge(patient.getAge());
+			patientSummaryVO.setPatientGender(patient.getGender());
+			patientSummaryVO.setPatientEthnicity(patient.getEthnicity());
+			patientSummaryVO.setPatientDeceased(patient.getDeceased());
+			patientSummaryVO.setPatientDeathCause(patient.getDeath_Cause());
+			patientSummaryVO.setPatientMmp1Allele1(patient.getMmp1_Allele1());
+			patientSummaryVO.setPatientMmp1Allele2(patient.getMmp1_Allele2());
+			
+			patientSummaryVO.setVariantSummaryVOList(new ArrayList<MutationSummaryVO>());
+			Mutation mutation1 = this.db.findById(Mutation.class, patient.getMutation1_Id());
+			MutationSummaryVO variantSummaryVO1 = new MutationSummaryVO();
+			variantSummaryVO1.setIdentifier(mutation1.getIdentifier());
+			variantSummaryVO1.setCdnaNotation(mutation1.getCdna_Notation());
+			variantSummaryVO1.setAaNotation(mutation1.getAa_Notation());
+			variantSummaryVO1.setExonName(mutation1.getExon_Name());
+			variantSummaryVO1.setConsequence(mutation1.getConsequence());
+			patientSummaryVO.getVariantSummaryVOList().add(variantSummaryVO1);
+			if (patient.getMutation2_Id() != null)
+			{
+				Mutation mutation2 = this.db.findById(Mutation.class, patient.getMutation2_Id());
+				MutationSummaryVO variantSummaryVO2 = new MutationSummaryVO();
+				variantSummaryVO2.setIdentifier(mutation2.getIdentifier());
+				variantSummaryVO2.setCdnaNotation(mutation2.getCdna_Notation());
+				variantSummaryVO2.setAaNotation(mutation2.getAa_Notation());
+				variantSummaryVO2.setExonName(mutation2.getExon_Name());
+				variantSummaryVO2.setConsequence(mutation2.getConsequence());
+				patientSummaryVO.getVariantSummaryVOList().add(variantSummaryVO2);
+			}
+			patientSummaryVO.setVariantComment(patient.getMutation2remark());
+
+			MutationPhenotype phenotype = this.db.findById(MutationPhenotype.class, patient.getPhenotype_Id());
+			patientSummaryVO.setPhenotypeMajor(phenotype.getMajortype());
+			patientSummaryVO.setPhenotypeSub(phenotype.getSubtype());
+			
+			patientSummaryVO.setPatientMaterialList(patient.getMaterial_Name());
+			
+			Submission submission  = this.db.findById(Submission.class, patient.getSubmission_Id());
+			MolgenisUser submitter = this.db.findById(MolgenisUser.class, submission.getSubmitters_Id().get(0));
+			patientSummaryVO.setSubmitterDepartment(submitter.getDepartment());
+			patientSummaryVO.setSubmitterInstitute(submitter.getInstitute());
+			patientSummaryVO.setSubmitterCity(submitter.getCity());
+			patientSummaryVO.setSubmitterCountry(submitter.getCountry());
+			
+			if (CollectionUtils.isNotEmpty(patient.getPublications_Id()))
+			{
+				patientSummaryVO.setPublicationVOList(new ArrayList<PublicationVO>());
+				List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPublications_Id()).find();
+				for (Publication publication : publications)
+				{
+					PublicationVO publicationVO = new PublicationVO();
+					publicationVO.setName(publication.getName());
+					publicationVO.setTitle(publication.getTitle());
+					publicationVO.setPubmed(publication.getPubmedID_Name());
+					patientSummaryVO.getPublicationVOList().add(publicationVO);
+				}
+			}
+			
+			//TODO: old, remove persistent objects
+
+//			patientSummaryVO.setMutation1(this.db.findById(Mutation.class, patient.getMutation1_Id()));
+//			patientSummaryVO.setMutation2(this.db.findById(Mutation.class, patient.getMutation2_Id()));
+//			patientSummaryVO.setPhenotype(phenotype);
 
 			patientSummaryVO.setPubmedURL(PublicationService.PUBMED_URL);
 
-			if (CollectionUtils.isNotEmpty(patient.getPublications_Id()))
-			{
-				List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPublications_Id()).find();
-				patientSummaryVO.setPublications(publications);
-			}
-
-			Submission submission = this.db.findById(Submission.class, patient.getSubmission_Id());
-			patientSummaryVO.setSubmission(submission);
-			MolgenisUser submitter = this.db.findById(MolgenisUser.class, submission.getSubmitters_Id().get(0));
-			patientSummaryVO.setSubmitter(submitter);
-			
-			patientSummaryVO.setMaterial(patient.getMaterial_Name());
+//			if (CollectionUtils.isNotEmpty(patient.getPublications_Id()))
+//			{
+//				List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPublications_Id()).find();
+//				patientSummaryVO.setPublications(publications);
+//			}
+//
+//			patientSummaryVO.setSubmission(submission);
+//			patientSummaryVO.setSubmitter(submitter);
+//			
+//			patientSummaryVO.setMaterial(patient.getMaterial_Name());
 		}
 		else if (this.db instanceof JpaDatabase)
 		{

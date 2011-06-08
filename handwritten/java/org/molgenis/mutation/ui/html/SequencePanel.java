@@ -57,9 +57,9 @@ public class SequencePanel extends HtmlInput
 				boolean hasMutation = false;
 				for (MutationSummaryVO mutationSummaryVO : mutationSummaryVOs)
 				{
-					String url     = "molgenis.do?__target=" + this.screenName + "&select=" + this.screenName + "&__action=showMutation&mid=" + mutationSummaryVO.getMutation().getIdentifier() + "#results";
+					String url     = "molgenis.do?__target=" + this.screenName + "&select=" + this.screenName + "&__action=showMutation&mid=" + mutationSummaryVO.getIdentifier() + "#results";
 					String tooltip = mutationSummaryVO.getNiceNotation();
-					if (mutationSummaryVO.getMutation().getGdna_Position() == i)
+					if (mutationSummaryVO.getGdnaPosition() == i)
 					{
 						hasMutation = true;
 						result.append("<span class=\"mut\">");

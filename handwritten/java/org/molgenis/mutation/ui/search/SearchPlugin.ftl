@@ -46,6 +46,22 @@
 
 	<#include "mutation.ftl">
 
+<#elseif vo.action?starts_with("showFirstMutation")>
+
+	<#include "mutation.ftl">
+
+<#elseif vo.action?starts_with("showPrevMutation")>
+
+	<#include "mutation.ftl">
+
+<#elseif vo.action?starts_with("showNextMutation")>
+
+	<#include "mutation.ftl">
+
+<#elseif vo.action?starts_with("showLastMutation")>
+
+	<#include "mutation.ftl">
+
 <#elseif vo.action?starts_with("showPatient")>
 
 	<#include "patient.ftl">
@@ -56,17 +72,25 @@
 
 <#elseif vo.action?starts_with("findMutationsByTerm")>
 
-	<#assign mutationSummaryVOHash = vo.getMutationSummaryVOHash()>
-	<#list vo.getMutationSummaryVOHash()?keys as field>
+	<#if vo.result == "mutations">
+		<#assign resultHash = vo.mutationSummaryVOHash>
+	<#else>
+		<#assign resultHash = vo.patientSummaryVOHash>
+	</#if>
+	<#list resultHash?keys as field>
 	<#if field?starts_with(" ")>
-		<#assign pager = mutationSummaryVOHash[field]>
+		<#assign pager = resultHash[field]>
 		<p>
 		<#if pager.entities?size &gt; 0><img id="catimg${field}" src="res/img/open.png" onclick="toggleDiv('cat${field}', 'catimg${field}');"></#if>
-		${pager.entities?size} mutations found in "${field}" (total ${screen.getNumPatients(pager.entities)} patients).
+		${pager.entities?size} ${vo.result} found in "${field}"<#-- (total ${screen.getNumPatients(pager.entities)} patients)-->.
 		</p>
 		<div id="cat${field}" style="display:none">
 		${vo.setPager(pager)}
-		<#include "mutations.ftl">
+		<#if vo.result == "mutations">
+			<#include "mutations.ftl">
+		<#else>
+			<#include "patients.ftl">
+		</#if>
 		</div>
 	</#if>
 	</#list>
