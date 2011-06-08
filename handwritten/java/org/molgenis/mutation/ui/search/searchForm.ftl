@@ -33,6 +33,10 @@ Search by typing any search term in the search field, like cDNA (e.g. "3G>T") or
 </tr>
 <tr>
 	<td></td>
+	<td>${form.result}</td>
+</tr>
+<tr>
+	<td></td>
 	<td>
 		${form.findMutationsByTerm}
 		</form>
