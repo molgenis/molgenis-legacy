@@ -20,9 +20,13 @@
 			<form name="Exon" entity="Exon"/>
 			<form name="Mutation" entity="Mutation"/>
 			<form name="Phenotype" entity="MutationPhenotype"/>
-			<form name="ObservableFeature" entity="ObservableFeature" label="Phenotypic Feature"/>
-			<form name="Protocol" entity="Protocol" label="COL7A1 Protocol"/>
-			<form name="ObservedValue" entity="ObservedValue" label="Phenotypic Value"/>
+			<form name="Workflow" entity="Workflow" label="DEB Workflow">
+				<form name="WorkflowElement" entity="WorkflowElement" hide_fields="ExecutionTime">
+					<form name="Protocol" entity="Protocol" label="DEB Protocol" hide_fields="Investigation,ontologyReference,TargetFilter"/>
+				</form>
+			</form>
+			<form name="Measurement" entity="Measurement" label="Phenotypic Feature" hide_fields="Investigation,ontologyReference,targettypeAllowedForRelation,panelLabelAllowedForRelation"/>
+			<form name="ObservedValue" entity="ObservedValue" label="Phenotypic Value" hide_fields="Investigation,protocolApplication,ontologyReference,time,endtime"/>
 			<form name="Patient" entity="Patient"/>
 			<form name="Submission" entity="Submission"/>
 			<form name="Publication" entity="Publication" compact_view="Title,PubmedID" label="References">
@@ -32,6 +36,7 @@
 			<form name="IF" entity="I_F"/>
 			<form name="EM" entity="E_M"/>
 			<form name="News" entity="MolgenisNews"/>
+			<plugin name="ExportCsv" type="org.molgenis.mutation.ui.export.Export" label="Export CSV"/>
 		</menu>
 		<plugin name="myCOL7A1" type="org.molgenis.mutation.ui.mycol7a1.MyCOL7A1" label="Submissions"/>
 		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="myCOL7A1"/>
