@@ -31,12 +31,12 @@ public class GenericConvertor
 	
 	Database db;
 
-	public void converter(File file, String invName, Database db) throws Exception{
+	public void converter(File file, String invName, Database db, String target, String father, String mother) throws Exception{
 		
 		this.invName = invName;
 		this.db = db;
 		makeInvestigation(invName);
-		populateIndividual(file,invName);
+		populateIndividual(file,invName,target, father, mother);
 		populateMeasurement(file,invName);
 		populateValue(file,invName);
 		
@@ -89,7 +89,7 @@ public class GenericConvertor
 		return newInvest;
 	}
 	
-	public void populateIndividual(File file, String invName) throws Exception
+	public void populateIndividual(File file, String invName,final String target, final String father, final String mother) throws Exception
 	{
 		individualsList.clear();
 		
@@ -101,11 +101,11 @@ public class GenericConvertor
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
 				//Change id into the targetname/target id column
-				String id = tuple.getString("id_individual");
+				String id = tuple.getString(target);
 				
 				// Optionally
-				String mother_Name = tuple.getString("id_mother");
-				String father_Name = tuple.getString("id_father");
+				String mother_Name = tuple.getString(mother);
+				String father_Name = tuple.getString(father);
 								
 				if (!namesSeen.contains(id)) {
 					namesSeen.add(id);

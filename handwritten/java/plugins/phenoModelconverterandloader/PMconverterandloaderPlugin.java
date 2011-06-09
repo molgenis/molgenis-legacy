@@ -52,11 +52,15 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	 * skip = skips the convertwindow and goes immediately to load files into database window
 	 */
 	private String state = "start";
+	public String status = "bla";
 	public GenericConvertor gc;
 	public String wait = "no";
 	public String invName = "";
 	public String [] arrayMeasurements;
-	
+	private File fileData;
+	private String target;
+	private String father;
+	private String mother;
 
 	public PMconverterandloaderPlugin(String name, ScreenController<?> parent)
 	{
@@ -84,7 +88,8 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	{
 		logger.info("#######################");
 		String action = request.getString("__action");
-		File file = request.getFile("convertData");	
+
+
 		try {
 			if(db.query(Investigation.class).eq(Investigation.NAME, "System").count() == 0){
 				Investigation i = new Investigation();
@@ -98,11 +103,16 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		}
 		
 		//goes to the load files into database screen
+		if(action.equals("step3")){
+			state = "skip";
+			status = "bla";
+		}
+		
 		if(action.equals("skip")){
 			state = "skip";
 		}
 		if (action.equals("clean") ){		
-			state = null;
+			//state = start;
 		}
 		//goes back to the startscreen
 		if(action.equals("reset")){
@@ -130,9 +140,8 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		 * Runs pipeline, data will be converted to 3 different files; individual.txt, measurement.txt and observedvalue.txt
 		 * if all the measurements already exist, then there will be no measurement.txt made.
 		 */
-		if(action.equals("update")){
-			
-			File fileData = request.getFile("convertData");	
+		if(action.equals("update")){		
+			fileData = request.getFile("convertData");	
 			String fileName = fileData.toString();
 			try {
 				BufferedReader buffy = new BufferedReader(new FileReader (fileName));
@@ -141,6 +150,8 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 					try {
 						String line = buffy.readLine();
 						arrayMeasurements = line.split(";");
+						checkInvestigation(db, request);
+						state="updated";
 						
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
@@ -154,12 +165,13 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 			
 		}
 		if(action.equals("pipeline")){	
-			checkInvestigation(db, request);
-			
-			
 			try {
 				//convert csv file into different txt files
-				runGenerConver(file,invName,db);		    
+				target = request.getString("target");	
+				father = request.getString("father");
+				mother = request.getString("mother");
+				
+				runGenerConver(fileData,invName,db,target,father,mother);		    
 				state = "pipeline";
 				
 				//get the server path
@@ -180,13 +192,16 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		 * Create downloadable links
 		 */
 		if (action.equals("downloads") ){
-			checkInvestigation(db, request);
-			
 			try {
+				target = request.getString("target");
+				father = request.getString("father");
+				mother = request.getString("mother");
 				//convert csv file into different txt files
-				runGenerConver(file,invName,db);				
-				state = "downloaded";
-
+				
+				runGenerConver(fileData,invName,db,target,father,mother);				
+				status = "downloaded";
+				//state = "downloaded";
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
@@ -215,16 +230,20 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	}
 	
 	public void checkInvestigation(Database db, Tuple request){
+
 		if (!request.getString("investigation").equals("") && !request.getString("investigation").equals("select investigation")) {
-			invName = request.getString("investigation");			
+			invName = request.getString("investigation");	
+
 		}
 		else{
-			invName = request.getString("createNew");
+			invName = request.getString("createNewInvest");
 			Investigation inve = new Investigation();
 			inve.setName(invName);
 			inve.setOwns_Name("admin");
 			try {
+				
 				db.add(inve);
+				
 			} catch (DatabaseException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -234,10 +253,10 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		}
 	}
 	
-	public void runGenerConver(File file, String invName, Database db){
+	public void runGenerConver(File file, String invName, Database db,String target, String father, String mother){
 		try {
 			gc = new GenericConvertor();
-			gc.converter(file, invName, db);				
+			gc.converter(file, invName, db, target,father,mother);				
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -258,6 +277,9 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	}
 	public String getState() {
 		return state;
+	}
+	public String getStatus() {
+		return status;
 	}
 	
 }
