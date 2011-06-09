@@ -13,8 +13,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.auth.util.PasswordHasher;
-import org.molgenis.bbmri.Biobank;
-import org.molgenis.bbmri.ChangeLog;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
