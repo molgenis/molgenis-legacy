@@ -208,8 +208,12 @@ public class AddAnimalPlugin extends GenericPlugin
 		// Custom name
 		String customName = null;
 		int customNumber = -1;
-		if (customname != null && customname.getObject() != null) {
-			customName = customname.getObject().toString();
+		if (customname.getObject() != null || startnumber.getObject() != null) {
+			if (customname.getObject() != null) {
+				customName = customname.getObject().toString();
+			} else {
+				customName = "";
+			}
 			if (startnumber.getObject() != null) {
 				customNumber = Integer.parseInt(startnumber.getObject().toString());
 			} else {
@@ -347,6 +351,9 @@ public class AddAnimalPlugin extends GenericPlugin
 		
 		db.commitTx();
 		
+		// Update custom label map now new animals have been added
+		ct.makeObservationTargetNameMap(this.getLogin().getUserId(), true);
+		
 		// Add success message to the screen
 		this.getMessages().clear();
 		this.getMessages().add(new ScreenMessage(animalsToAddList.size() + " animal(s) added succesfully", true));
@@ -454,7 +461,7 @@ public class AddAnimalPlugin extends GenericPlugin
 					":");
 		
 			customname = new TextLineInput("customname");
-			customname.setLabel("Base:");
+			customname.setLabel("Base (may be empty):");
 			customNamePanel.add(customname);
 		
 			startnumber = new IntInput("startnumber");
