@@ -1,6 +1,7 @@
 package lifelines.loaders;
 
 import java.sql.Date;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,7 +25,14 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 
 import app.JpaDatabase;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.HashMap;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.sessions.Session;
 
 public class EAVToRelational {
         private static final String INVESTIGATION_NAME = "LL_DATASET9";
@@ -74,7 +82,7 @@ public class EAVToRelational {
 		List<Measurement> features = em.createQuery(qlObservableFeature, Measurement.class)
 			.setParameter("investigation", investigation)
 			.getResultList();
-                StringBuilder insertSQL = new StringBuilder("INSERT INTO Joris ");
+              StringBuilder insertSQL = new StringBuilder("INSERT INTO Joris ");
 		for(Measurement f : features) {
                     String columnName = f.getName();	
                     //String columnName = f.getName().split("\\.")[1].trim().replace("_", "");
@@ -100,28 +108,36 @@ public class EAVToRelational {
 			}
 		}
                 //insertSQL.deleteCharAt(insertSQL.length()-1);
-                insertSQL.append("VALUES (%s)");
-		
+                insertSQL.append("VALUES (");
+		for(int i = 0; i < features.size()-1; ++i) {
+                    insertSQL.append("?,");
+                }             
+                insertSQL.append("?)");
+                
+                
+                Connection conn = getConnection(em);
+                PreparedStatement ps = conn.prepareStatement(insertSQL.toString());
+                
 		creator.addTableDefinition(tableDefinition);
-
-//                try {
-//                    creator.dropTables(dbSession);
-//                } catch (Exception ex) {
-//                    //ex.printStackTrace();
-//                }
-
 		creator.createTables(dbSession);
 		
-		DBMatrix<String> matrix = new DBMatrix<String>(String.class, -1);
-		for(Measurement m : features) {
-			matrix.addColumn(m.getName());	
-		}
-		matrix.setInvestigation(investigation);
+                
+                
+                
+//                
+//		DBMatrix<String> matrix = new DBMatrix<String>(String.class, -1);
+//		for(Measurement m : features) {
+//			matrix.addColumn(m.getName());	
+//		}
+//		matrix.setInvestigation(investigation);
 		//matrix.loadData(matrix.getNumberOfRows(), 0);
 		//Object[][] data = matrix.getData();
 
 
                 Object[] insertRow = new Object[features.size()];
+                
+                
+                
                 
                 JpaDatabase db = new JpaDatabase();
                 String sql =  "SELECT value, Feature, Target FROM ObservedValue "
@@ -139,30 +155,18 @@ public class EAVToRelational {
                         .createNativeQuery(sql)
                         .setParameter(1, investigation.getId())
                         .getResultList();
-                targetIndx = (Integer)sqlDS.get(0)[2];
+                targetIndx = ((BigDecimal)sqlDS.get(0)[2]).intValue();
 
-                
 
                 for(Object[] row : sqlDS) {
-                    if(targetIndx != ((Integer)row[2]).intValue()) {
-                        targetIndx = (Integer)row[2];
-
-                        StringBuilder values = new StringBuilder();
-                        for(int i = 0; i < insertRow.length; ++i) {
-                            values.append(getSqlValue(insertRow[i], features.get(i)));
-                            if(i+1 < features.size()) {
-                                values.append(",");
-                            }
-                        }
-                        String insert = String.format(insertSQL.toString(), values.toString());
-			em.getTransaction().begin();
-			em.createNativeQuery(insert).executeUpdate();
-			em.getTransaction().commit();
-                        //System.out.println(insert);
+                    if(targetIndx != ((BigDecimal)row[2]).intValue()) {
+                        targetIndx = ((BigDecimal)row[2]).intValue();
+			InsertRow(ps, insertRow);
                     }
-                    int fIdx = featureIndex.get((Integer)row[1]);
-                    insertRow[fIdx] = row[0].toString();
+                    int fIdx = featureIndex.get(((BigDecimal)row[1]).intValue());
+                    insertRow[fIdx] = row[0];
                 }
+                InsertRow(ps, insertRow);
 
 
 
@@ -213,37 +217,70 @@ public class EAVToRelational {
 //		}
 	}
 
-        private String getSqlValue(Object value, Measurement f) throws ParseException, Exception
+        private void InsertRow(PreparedStatement ps, Object[] insertRow) throws SQLException, ParseException, Exception {
+            for(int i = 0; i < insertRow.length; ++i) {
+                ps.setObject(i+1, insertRow[i]);
+            }
+            ps.execute();
+        }
+        
+//    private void InsertRow(Object[] insertRow, List<Measurement> features, StringBuilder insertSQL, EntityManager em) throws Exception {
+//        
+//        
+//        
+//        
+//        StringBuilder values = new StringBuilder();
+//        for(int i = 0; i < insertRow.length; ++i) {
+//            values.append(getSqlValue(insertRow[i], features.get(i)));
+//            if(i+1 < features.size()) {
+//                values.append(",");
+//            }
+//        }
+//        String insert = String.format(insertSQL.toString(), values.toString());
+//        em.getTransaction().begin();
+//        em.createNativeQuery(insert).executeUpdate();
+//        em.getTransaction().commit();
+//        //System.out.println(insert);
+//    }
+
+        private Object getSqlValue(Object value, Measurement f) throws ParseException, Exception
         {
             if(value == null) {
                 return "null";
             } if(f.getDataType().equals("code")) {
-                    return value.toString();
+                return value.toString();
             } else if(f.getDataType().equals("int")) {
-                    return value.toString();
+                return new Integer(value.toString());
             } else if(f.getDataType().equals("datetime")) {
                     if(( (String)value).toLowerCase().contains("null")) {
                             return "NULL";
                     } else {
                         try {
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("y/M/d H:m:s");
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d H:m:s");
                             java.util.Date d = dateFormat.parse(value.toString());
                             Timestamp t = new Timestamp(d.getDate());
-                            return "'" +t.toString() + "'";
+                            return t;
                         } catch(ParseException pe) {
                             SimpleDateFormat dateFormat = new SimpleDateFormat("y/M/d H:m");
                             java.util.Date d = dateFormat.parse(value.toString());
                             Timestamp t = new Timestamp(d.getDate());
-                            return "'" +t.toString() + "'";
+                            return t;
                         }
                     }
                     //values.append(dArr[i]);
             } else if(f.getDataType().equals("decimal")) {
-                    return value.toString();
+                return new Float(value.toString());
             } else if(f.getDataType().equals("string")) {
-                return     "'" + value + "'" ;
+                return value;
             } else {
                 throw new Exception("DataType not supported!" + f.getDataType());
             }
         }
+        
+    private Connection getConnection(EntityManager em) {
+        Session session = ((EntityManagerImpl) em).getSession();
+        UnitOfWorkImpl uow = (UnitOfWorkImpl) session;
+        DatabaseAccessor dbAcc = (DatabaseAccessor) uow.getAccessor();
+        return dbAcc.getConnection();
+    }
 }
