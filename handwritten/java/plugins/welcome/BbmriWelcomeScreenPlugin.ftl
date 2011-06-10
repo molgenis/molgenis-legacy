@@ -23,7 +23,16 @@
 		
 		<div class="screenbody">
 			<div class="screenpadding">	
-<#--begin your plugin-->	
+<#--begin your plugin-->
+
+<h1>Welcome to the Catalogue of Dutch biobanks</h1>
+<p>This application allows you to view all biobanks associated with BBMRI-NL in Biobank Overview. The catalogue is updated monthly.</p>
+<p>To apply for inclusion of your biobank in this catalogue, please <a href="molgenis.do?__target=main&select=BbmriContact">contact the BBMRI-NL office</a>.</p>
+<p>You can download data from the database. It is also possible to upload new or edited information, but for security reasons all submittals will be monitored by the BBMRI-NL office before publication.</p>
+<p>To find your way around the application, you might want to check out the <a href="molgenis.do?__target=main&select=BbmriHelp">User manual</a>.</p>
+<p>If you have any questions or remarks, please do not hesitate to <a href="molgenis.do?__target=main&select=BbmriContact">contact us</a>.</p>
+
+<!--
 
 <h1> Welcome to the BBMRI-NL biobank registry </h1>
 
@@ -36,9 +45,9 @@
 <li/>Click <img src="http://www.bbmriwiki.nl/biobanks/generated-res/img/listview.png"/> to go back to listview
 </ul></p>
 
-<#if screen.userId != 0>
+<!#if screen.userId != 0>
 <p><a href="molgenis.do?__target=Cohorts&__action=filter_set&__filter_attribute=Approved&__filter_operator=EQUALS&__filter_value=1">See all approved cohorts</a></p>
-</#if>
+<!/#if>
 
 <p> This is a beta system and we want to improve the user interface still a lot including an advanced search option. Also now everybody can edit everything which we are now making more finegrained.
 <br/>Please report any ideas, suggestions, bugs to <a href="mailto:m.a.swertz@rug.nl">m.a.swertz@rug.nl</a>  </p>
@@ -48,13 +57,14 @@ LifeLines and the European Bionformatics Institute regarding data model and tool
 
 
 <span style="color: #3366CC;"><span style="font-size: .75em;">
-<#if screen.mostRecentChangeLogEntry??>
-	Last update was on ${screen.mostRecentChangeLogEntry.date}.
-<#else>
+<!#if screen.mostRecentChangeLogEntry??>
+	Last update was on {screen.mostRecentChangeLogEntry.date}.
+<!#else>
 	No updates yet.
-</#if>
+<!/#if>
 </span></span>
 
+-->
 	
 <#--end of your plugin-->	
 			</div>

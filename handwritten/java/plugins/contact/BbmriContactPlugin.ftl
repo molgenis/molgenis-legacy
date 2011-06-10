@@ -22,9 +22,25 @@
 		</#list>
 		<div class="screenbody">
 			<div class="screenpadding">	
-			<h1> Contact </h1>
-			<p> This is a beta system and we want to improve the user interface still a lot including an advanced search option. 
-			Also now everybody can edit everything which we are now making more finegrained.</p>
+			<h1>Contact</h1>
+			<p>Please contact the BBMRI-NL office if you have any questions about this catalogue or about BBMRI(-NL). Your comments are also welcome. Should you wish to submit your biobank(s) for inclusion in the catalogue, please send us an email.</p>
+			
+			<p><em>Program manager</em><br />
+			Margreet Brandsma<br />
+			<a href="mailto:m.brandsma@bbmri.nl">m.brandsma AT bbmri.nl</a><br />
+			+31 71 5269412<br />
+			(Mon, Tue, Wed)</p>
+
+			<p><em>Communications executive</em><br />
+			Margot Heesakker-Heintz<br />
+			<a href="mailto:m.heesakker@bbmri.nl">m.heesakker AT bbmri.nl</a><br />
+			+31 71 5268498<br />
+			(Tue, Wed)</p>
+
+			<p><strong>BBMRI Europe</strong><br />
+			To find out more about the pan-European initiative BBMRI, please visit <a href="http://www.bbmri.eu/" target="_blank">www.bbmri.eu</a>.</p>
+			
+			<!--
 			<ul><li>
 					Bij vragen of opmerkingen kunt u contact opnemen met BBMRI-NL door te emailen of bellen naar <br/>
 					Margreet Brandsma, programmamanager<br/>
@@ -39,6 +55,7 @@
 			<li>For more information about the application, please report any ideas, suggestions, bugs to <a href="mailto:m.a.swertz@rug.nl">m.a.swertz AT rug.nl</a>  </p></li>
 			</ul>
 			</div>
+			-->
 		</div>
 	</div>
 </form>
