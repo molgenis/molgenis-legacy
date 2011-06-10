@@ -37,8 +37,8 @@ public class GenericConvertor
 		this.db = db;
 		makeInvestigation(invName);
 		populateIndividual(file,invName,target, father, mother);
-		populateMeasurement(file,invName);
-		populateValue(file,invName);
+		populateMeasurement(file,invName,target, father, mother);
+		populateValue(file,invName, target);
 		
 		CsvExport export = new CsvExport();
 		tmpDir = new File(System.getProperty("java.io.tmpdir"));
@@ -107,6 +107,7 @@ public class GenericConvertor
 				String mother_Name = tuple.getString(mother);
 				String father_Name = tuple.getString(father);
 								
+				
 				if (!namesSeen.contains(id)) {
 					namesSeen.add(id);
 					Individual newIndividual = new Individual();
@@ -122,7 +123,7 @@ public class GenericConvertor
 		});
 	}
 	
-	public void populateMeasurement(File file, String invName) throws Exception {
+	public void populateMeasurement(File file, String invName,final String target, final String father, final String mother) throws Exception {
 		
 		measurementsList.clear();
 		totalMeasurementsList.clear();
@@ -132,7 +133,7 @@ public class GenericConvertor
 		for (String header : reader.colnames()) {
 			//optionally
 			//if (!header.equals("id_individual")) {
-			if (!header.equals("id_individual") && !header.equals("id_mother") && !header.equals("id_father")) {
+			if (!header.equals(target) && !header.equals(mother) && !header.equals(father)) {
 				if(db.query(Measurement.class).eq(Measurement.NAME, header).count() == 0){
 					Measurement measurement = new Measurement();
 					measurement.setName(header);
@@ -159,7 +160,7 @@ public class GenericConvertor
 	}
 	
 	
-	public void populateValue(File file, String invName) throws Exception
+	public void populateValue(File file, String invName,final String target) throws Exception
 	{
 		valuesList.clear();
 		
@@ -169,7 +170,7 @@ public class GenericConvertor
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{			
 				//Change targetname into the targetname/target id column
-				String targetName = tuple.getString("id_individual");				
+				String targetName = tuple.getString(target);				
 				for (Measurement m : totalMeasurementsList) {
 					String featureName = m.getName();	
 					String value = tuple.getString(featureName);
