@@ -305,7 +305,9 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 				${fieldName}New = em.getReference(${fieldName}New.getClass(), ${fieldName}New.getIdValue());
 				${name(entity)}.set${JavaName(field)}(${fieldName}New);
 			} else { //object is reference by xref		
-				${name(entity)}.set${JavaName(field)}((${JavaName(field.getXrefEntity())})em.find(${JavaName(field.getXrefEntity())}.class, ${name(entity)}.get${JavaName(field)}_${JavaName(field.xrefField)}()));
+                            if(${name(entity)}.get${JavaName(field)}_${JavaName(field.xrefField)}() != null) {
+                                ${name(entity)}.set${JavaName(field)}((${JavaName(field.getXrefEntity())})em.find(${JavaName(field.getXrefEntity())}.class, ${name(entity)}.get${JavaName(field)}_${JavaName(field.xrefField)}()));
+                            }
 			}
 
 	</#if>
