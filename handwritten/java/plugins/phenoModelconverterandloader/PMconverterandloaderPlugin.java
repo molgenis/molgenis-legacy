@@ -110,13 +110,16 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		
 		if(action.equals("skip")){
 			state = "skip";
+			status = "bla";
 		}
 		if (action.equals("clean") ){		
 			//state = start;
+			status = "bla";
 		}
 		//goes back to the startscreen
 		if(action.equals("reset")){
 			state = "start";
+			status = "bla";
 		}
 		
 		if (action.equals("emptyDB") ){
@@ -200,7 +203,6 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 				
 				runGenerConver(fileData,invName,db,target,father,mother);				
 				status = "downloaded";
-				//state = "downloaded";
 				
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -215,6 +217,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
+		
 		setInvestigations(new ArrayList<Investigation>());
 		try {
 			setInvestigations(db.query(Investigation.class).find());

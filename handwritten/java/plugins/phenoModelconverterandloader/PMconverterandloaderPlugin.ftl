@@ -72,8 +72,7 @@
 				<select name="investigation" id="investigation"> 
 					<option value="select investigation"</option>
 					<#list screen.investigations as investigation>
-						<option value="${investigation.name}">${investigation.name}</option>
-						
+						<option value="${investigation.name}">${investigation.name}</option>	
 					</#list>
 				</select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <label for="createNewInvest">or create a new investigation</label>
 				<input name='createNewInvest' id='createNewInvest'type='text'><br /><br /><br /> 
@@ -103,8 +102,7 @@
 						<option value="select mother"</option>
 						<#list screen.arrayMeasurements as mother>
 							<option value="${mother}">${mother}</option>			
-						</#list>
-					
+						</#list>		
 					</select>
 				</div>
 				<br />
