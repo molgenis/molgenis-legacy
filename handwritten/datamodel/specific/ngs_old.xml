@@ -16,10 +16,10 @@
 			<field name="investigator_id" type="xref" xref_entity="Investigator" nillable="true" description="Researcher in this project" xref_label="id" unique="false" />
 			<unique fields="name" /> <!-- ,contractcode" / -->
 		</entity>
-		<entity name="LibraryBarcode" implements="Identifiable"> <!-- extends="OntologyTerm" -->
+		<entity name="LibraryBarcode" implements="Identifiable"> <!-- extends="OntologyTerm"-->
 			<field name="barcode" type="string" description="The nucleotide sequence which forms the barcode" />
 		</entity>
-		<entity name="LibraryCapturing" implements="Identifiable"> <!-- extends="OntologyTerm" -->
+		<entity name="LibraryCapturing" implements="Identifiable"> <!-- extends="OntologyTerm"-->
 			<field name="capturing" type="string" />
 		</entity>
 		<entity name="Flowcell" extends="ObservationTarget" xref_label="name">
@@ -35,19 +35,21 @@
 			<field name="sampletype" type="enum" default="dna" enum_options="[dna,rna]" auto="false" nillable="false" description="Type of sample (dna/rna). Will become ontologyReference" unique="false" />
 			<field name="barcode" type="xref" xref_entity="LibraryBarcode" />
 			<field name="capturing" type="xref" xref_entity="LibraryCapturing" />
+			<!-- this should not be here but defined in the sample! field name="origin" type="xref" xref_field="Species.id" nillable="true" description="Origin of the sample (i.e. duck, pig, human)" unique="false" 
+				/ -->
 			<field name="fragmentlength" type="int" auto="false" readonly="true" nillable="true" description="Length of the sample fragments" unique="false" />
 			<field name="description" type="text" auto="false" readonly="true" nillable="true" description="Description/Notes about the sample" unique="false" />
+			<field name="Samples" type="mref" xref_field="NgsSample.id" description="One sample, or a pool of samples, from which this library was prepared" />
 			<unique fields="barcode,capturing" description="For now, we suppose that a library is uniquely defined by its capturing and barcode." />
 		</entity>
-		<entity name="FlowcellLaneSample" extends="ObservationTarget">
+		<entity name="FlowcellLaneLibrary" extends="ObservationTarget">
 			<description> A lane is one lane on the Illumina Genome Analyzer
 			</description>
 			<field name="status" type="enum" enum_options="[to do,done]" default="to do" nillable="false" description="Status of the analysis of this flowcell-lane-library combination" />
-			<field name="flowcell" type="xref" xref_entity="Flowcell" description="The flowcell to which this lane belongs" />
-			<field name="lanenumber" type="enum" enum_options="[1,2,3,4,5,6,7,8]" description="The lane number that is unique within a flow cell. Typically in range 1-8" />
-			<field name="sample" type="xref" xref_entity="NgsSample" description="The sample which is measured on this lane" />
-			<field name="remark" type="string" description="Any remark on this Flowcell-lane-sample combination"/>
-			<unique fields="flowcell,lanenumber,sample" description="Lane number is unique per flowcell" />
+			<field name="Flowcell" type="xref" xref_entity="Flowcell" description="The flowcell to which this lane belongs" />
+			<field name="LaneNumber" type="enum" enum_options="[L1,L2,L3,L4,L5,L6,L7,L8]" description="The lane number that is unique within a flow cell. Typically in range 1-8" />
+			<field name="Library" type="xref" xref_entity="Library" description="The library (or barcoded libraries) which is (are) measured in this lane" />
+			<unique fields="FlowCell,LaneNumber,Library" description="Lane number is unique per flowcell" />
 		</entity>
 		<entity name="NgsSample" extends="Sample">
 			<description> This extended investigation provides extra fields for saving information of the customer, such as their address, telephone number, etc</description>
@@ -56,10 +58,9 @@
 			<field name="origin" type="string" auto="false" nillable="true" description="Origin of the sample (i.e. duck, pig, human)" unique="false" />
 			<field name="readlength" type="int" auto="false" readonly="true" nillable="true" description="Length of the read to be executed" unique="false" />
 			<field name="location" type="string" auto="false" readonly="true" nillable="true" description="Location of a sample (i.e. freezer in rom 502.20)" unique="false" />
-			<field name="library" type="xref" xref_entity="Library" nillable="false" description="The library in which this sample was." />
+			<field name="description" type="text" auto="false" readonly="true" nillable="true" description="Description/Notes about the sample" unique="false" />
 			<field name="project" type="xref" xref_entity="Project" nillable="true" description="Project that the sample belongs to" xref_label="name" unique="false" />
 			<field name="workflowElement" type="xref" xref_entity="WorkflowElement" nillable="true" description="At what workflow element the sample is currently at" xref_label="name" unique="false" />
-			<field name="description" type="text" auto="false" readonly="true" nillable="true" description="Description/Notes about the sample" unique="false" />
 		</entity>
 		<entity name="ProjectWorkflow" label="Project Workflow" implements="Identifiable">
 			<description> A project workflow describes the protocol applications
@@ -74,20 +75,6 @@
 		</entity>
 		<entity name="Investigator" extends="Person">
 			<description>Researcher in a given project</description>
-		</entity>
-		<entity name="Worksheet">
-			<field name="status" type="string" />
-			<field name="sample" type="string" />
-			<field name="barcode" type="string" />
-			<field name="project" type="string" />
-			<field name="investigator" type="string" />
-			<field name="lane" type="string" />
-			<field name="date" type="date" />
-			<field name="machine" type="string" />
-			<field name="flowcell" type="string" />
-			<field name="capturing" type="string" />
-			<field name="remark" type="string" />
-			<unique fields="flowcell,lane,sample" />
 		</entity>
 	</module>
 </molgenis>

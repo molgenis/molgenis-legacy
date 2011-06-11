@@ -23,7 +23,9 @@
 		<div class="screenbody">
 			<div class="screenpadding">	
 			
-<#--begin your plugin-->	
+<#--begin your plugin-->
+<h2>The worksheet</h2>
+
 <h2>Data import wizard</h2>
 <div style="height: 10px;">&nbsp;</div>
 
@@ -31,6 +33,10 @@
 <br>
 <input type="file" name="upload"/>
 <input type="submit" value="uploadfile" onclick="__action.value='uploadaction';return true;"/><br>
+<br/>
+<br/>
+<br/>
+<a href="tmpfile/worksheet.csv"><img src="clusterdemo/excel.gif"/> Download worksheet</a>
 
 <div style="height: 25px;">&nbsp;</div>
 <#--a href="clusterdemo/ExampleExcel.xls"><img src="clusterdemo/excel.gif"/></a><label>Download example Excel file</label-->
