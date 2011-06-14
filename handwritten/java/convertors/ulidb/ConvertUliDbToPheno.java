@@ -25,8 +25,6 @@ import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
 
-import app.JDBCDatabase;
-
 import commonservice.CommonService;
 
 public class ConvertUliDbToPheno
@@ -53,7 +51,7 @@ public class ConvertUliDbToPheno
 	{
 		calendar = Calendar.getInstance();
 		
-		this.db = (JDBCDatabase) db;
+		this.db = db;
 		this.login = login;
 		ct = CommonService.getInstance();
 		ct.setDatabase(this.db);
