@@ -27,6 +27,7 @@ public class ImportWorksheetModel extends EasyPluginModel
 	public String helloWorld = "hello World";
 	//this date can be referenced from ImportWorksheetView.ftl template as ${model.date}
 	public Date date = new Date();
+//	public String worksheetpath = "";
 	
 	//another example, you can also use getInvestigations() and setInvestigations(...)
 	//public List<Investigation> investigations = new ArrayList<Investigation>();
@@ -35,7 +36,5 @@ public class ImportWorksheetModel extends EasyPluginModel
 	{
 		//each Model can access the controller to notify it when needed.
 		super(controller);
-	}
-	
-	
+	}	
 }

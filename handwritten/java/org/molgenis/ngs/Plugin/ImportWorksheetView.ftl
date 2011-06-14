@@ -24,11 +24,18 @@
 			<div class="screenpadding">	
 			
 <#--begin your plugin-->
-<h2>The worksheet</h2>
-
 <h2>Data import wizard</h2>
 <div style="height: 10px;">&nbsp;</div>
-
+Each line in your CSV-file is uniquely characterized by its flowcell, lane and sample.<BR>
+What to do with duplicates: 
+<select name="duplicates">
+	<option value="update">Update</option>
+	<option value="ignore">Ignore</option>
+	<option value="error">Error</option>
+</select>
+<BR>
+<BR>
+<BR>
 <i>Upload *.csv file with your worksheet</i>
 <br>
 <input type="file" name="upload"/>

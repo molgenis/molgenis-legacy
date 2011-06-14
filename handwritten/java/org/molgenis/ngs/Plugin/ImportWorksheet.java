@@ -73,23 +73,25 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 		// q.like("name", "molgenis");
 		// getModel().investigations = q.find();
 
-//		String sqlalldata = "SELECT fls.status, s.name, lb.barcode, p.name, fls.lanenumber, f.daterun, f.machine, ot.name AS otname FROM FlowcellLaneSample fls" +
-//				" JOIN Flowcell f ON (fls.flowcell = f.id)" +
-//				" JOIN ObservationTarget ot ON (ot.id = f.id)" +
-//				" JOIN NgsSample s ON (fls.sample = s.id)" +
-//				" JOIN Library l ON (s.library = l.id)" +
-//				" JOIN LibraryBarcode lb ON (l.barcode = lb.id) " +
-//				" JOIN LibraryCapturing lc ON (l.capturing = lc.id)" +
-//				" JOIN Project p ON (s.project = p.id);";
-//		getModel().worksheetsql = ((JDBCDatabase)db).sql(sqlalldata);
-
+		// String sqlalldata =
+		// "SELECT fls.status, s.name, lb.barcode, p.name, fls.lanenumber, f.daterun, f.machine, ot.name AS otname FROM FlowcellLaneSample fls"
+		// +
+		// " JOIN Flowcell f ON (fls.flowcell = f.id)" +
+		// " JOIN ObservationTarget ot ON (ot.id = f.id)" +
+		// " JOIN NgsSample s ON (fls.sample = s.id)" +
+		// " JOIN Library l ON (s.library = l.id)" +
+		// " JOIN LibraryBarcode lb ON (l.barcode = lb.id) " +
+		// " JOIN LibraryCapturing lc ON (l.capturing = lc.id)" +
+		// " JOIN Project p ON (s.project = p.id);";
+		// getModel().worksheetsql = ((JDBCDatabase)db).sql(sqlalldata);
+		
 		// empty worksheet table
 		List<Worksheet> wsl = db.query(Worksheet.class).find();
 		for (Worksheet ws : wsl) {
 			db.remove(ws);
 		}
-		
-		// fill worksheet table		
+
+		// fill worksheet table
 		List<FlowcellLaneSample> flslst = db.query(FlowcellLaneSample.class).find();
 		for (FlowcellLaneSample fls : flslst) {
 			// get data
@@ -100,7 +102,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 			LibraryBarcode lb = db.findById(LibraryBarcode.class, l.getBarcode());
 			Project p = db.findById(Project.class, s.getProject());
 			Investigator i = db.findById(Investigator.class, p.getInvestigator_Id());
-			
+
 			// create sheet
 			Worksheet ws = new Worksheet();
 			ws.setStatus(fls.getStatus());
@@ -117,11 +119,11 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 			// add sheet
 			db.add(ws);
 		}
-		
-		
+
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 		File f = new File(tmpDir + File.separator + "worksheet.csv");
-		getModel().worksheetpath = tmpDir + File.separator + "worksheet.csv";
+		// getModel().worksheetpath = tmpDir + File.separator + "worksheet.csv";
+
 		CsvWriter writer = new CsvFileWriter(f);
 		writer.setSeparator(",");
 		Boolean first = true;
@@ -140,17 +142,21 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 	}
 
 	public void uploadaction(final Database db, Tuple request) throws Exception {
+		String duplicateaction = request.getString("duplicates"); // update, ignore, error
+		
 		File file = request.getFile("upload");
 		// File file = new File(request.getString("upload"));
-		/*
-		 * if (file == null) { throw new Exception("No file selected."); } else
-		 * if (!file.getName().endsWith(".csv")) { throw new Exception(
-		 * "File does not end with '.csv', other formats are not supported."); }
-		 */
+
+		if (file == null) {
+			throw new Exception("No file selected.");
+		} else if (!file.getName().endsWith(".csv")) {
+			throw new Exception("File does not end with '.csv', other formats are not supported.");
+		}
 
 		System.out.println(">> Start reading csv");
 
-		CsvReader reader = new CsvFileReader(new File("/Users/mdijkstra/Desktop/lane-barcodes.csv"));
+		CsvReader reader = new CsvFileReader(file);// new
+													// File("/Users/mdijkstra/Desktop/lane-barcodes.csv"));
 		// System.out.println(">>" + reader.)
 		reader.setSeparator(',');
 		System.out.println(">> " + reader.colnames());
@@ -231,13 +237,13 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 					db.add(lib);
 				}
 
-//				// add the sample to the library (if not there yet)
-//				List<Integer> libsamples = lib.getSamples();
-//				if (!libsamples.contains(sample.getId())) {
-//					libsamples.add(sample.getId());
-//					lib.setSamples(libsamples);
-//					db.update(lib);
-//				}
+				// // add the sample to the library (if not there yet)
+				// List<Integer> libsamples = lib.getSamples();
+				// if (!libsamples.contains(sample.getId())) {
+				// libsamples.add(sample.getId());
+				// lib.setSamples(libsamples);
+				// db.update(lib);
+				// }
 
 				// _sample_
 				// assume that a sample names occurs in only one line
@@ -250,7 +256,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 					sample.setLibrary(lib);
 					db.add(sample);
 				}
-				
+
 				// _flowcell_
 				String flowcellname = tuple.getString("flowcell");
 				Flowcell flowcell = (Flowcell) getObject(db, Flowcell.class, "name", flowcellname);
@@ -258,11 +264,14 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 					print(">> We create a new flowcell");
 					flowcell = new Flowcell();
 					flowcell.setName(flowcellname);
-					String date = tuple.getString("date");					
-					//Calendar cal = Calendar.getInstance();
-					//cal.set(2000 + Integer.parseInt(date.substring(0, 2)), Integer.parseInt(date.substring(2, 4)), Integer.parseInt(date.substring(4, 6)));
-					//print(cal.getTime().toString());
-					java.util.Date date_tmp = new java.util.Date(2000 - 1900 + Integer.parseInt(date.substring(0, 2)), Integer.parseInt(date.substring(2, 4)) - 1, Integer.parseInt(date.substring(4, 6)));
+					String date = tuple.getString("date");
+					// Calendar cal = Calendar.getInstance();
+					// cal.set(2000 + Integer.parseInt(date.substring(0, 2)),
+					// Integer.parseInt(date.substring(2, 4)),
+					// Integer.parseInt(date.substring(4, 6)));
+					// print(cal.getTime().toString());
+					java.util.Date date_tmp = new java.util.Date(2000 - 1900 + Integer.parseInt(date.substring(0, 2)), Integer.parseInt(date.substring(2, 4)) - 1, Integer.parseInt(date
+							.substring(4, 6)));
 					print(date_tmp.toString());
 					flowcell.setDaterun(date_tmp);
 					flowcell.setMachine(tuple.getString("machine"));
@@ -298,7 +307,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 					fls.setSample(sample);
 					fls.setName("flowcell_lane_sample_name_" + samplename);
 					fls.setRemark(tuple.getString("remark"));
-					
+
 					print("Before adding flowcell lane lib");
 					db.add(fls);
 					print("Flowcell-Lane-Library object added");
