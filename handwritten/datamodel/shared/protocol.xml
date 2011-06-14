@@ -205,6 +205,9 @@
 				description="the value of the parameter for Jobs" />
 			<field name="isUser" type="boolean" default="false" 
 				description="Define if this feature is interesting for user (otherwise, hide it by default)" />
+			<field name="featureType" type="enum" enum_options="[default,log,data]" default="default"
+			description="field to specify the type of input/output features"/>
+            <field name="isDerived" type="boolean" description="a flag to indicate if the ComputeFeature consists of other ComputeFeatures"/>
 		</entity>
 		<entity name="ComputeApplication" extends="ProtocolApplication">
 			<description>A protocolApplication that reports the scheduling or
