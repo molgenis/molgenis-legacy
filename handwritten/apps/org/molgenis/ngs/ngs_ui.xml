@@ -1,29 +1,6 @@
 <molgenis name="molgenis_apps" label="Next Generation Sequencing">
 	<plugin name="molgenis_header" type="plugins.header.MolgenisHeader" />
 	<menu name="main" position="left">
-		<form name="Investigations" entity="Investigation" hide_fields="id,accession">
-			<menu name="InvestigationMenu" label="Projects">
-				<form name="Samples" entity="Sample" hide_fields="id,ontologyReference">
-					<form name="ValuesPerSample" entity="ObservedValue" hide_fields="ontologyReference,id,relation" />
-				</form>
-			</menu>
-		</form>
-		<form name="Libraries" entity="Library" hide_fields="id,ontologyReference">
-			<form name="ValuesPerLibrary" entity="ObservedValue" hide_fields="ontologyReference,id,relation" />
-		</form>
-		<form name="Flowcells" entity="Flowcell" hide_fields="id,ontologyReference">
-			<form name="LanesAndLibraries" entity="FlowcellLaneSample" hide_fields="id,ontologyReference">
-				<form name="ValuesPerLane" entity="ObservedValue" hide_fields="ontologyReference,id,relation" />
-			</form>
-		</form>
-		<form name="Contacts" entity="Person" compact_view="FirstName,MidInitials,LastName" hide_fields="id" />
-		<menu name="protocol" position="left" label="Protocol menu">
-			<form name="Measurements" entity="Measurement" hide_fields="id,ontologyReference" />
-			<form name="Protocols" entity="Protocol" hide_fields="id,investigation" />
-			<plugin name="ApplyProtocol" label="Apply protocol" type="plugins.protocol.ApplyProtocolPlugin" />
-			<plugin name="ListPlugin" label="Matrix viewer" type="plugins.listplugin.ListPlugin" />
-		</menu>
-		<plugin name="ExcelImport" label="Excel import" type="plugins.genericwizard.GenericWizard" />
 		<form name="Worksheet" label="Worksheet" entity="Worksheet" />
 		<plugin name="ImportWorksheet" label="Import worksheet" type="org.molgenis.ngs.Plugin.ImportWorksheet" />
 	</menu>
