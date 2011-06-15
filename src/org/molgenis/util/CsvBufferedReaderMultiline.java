@@ -104,7 +104,7 @@ public class CsvBufferedReaderMultiline implements CsvReader
 		List<String> row = this.getRow(); 
 
 		//parse all other lines and collect first column value
-		while ((row = this.getRow()) != null && row.size()>0 && !isBlockEnd(row.get(0)))
+		while ((row = this.getRow()) != null && row.size()>0 && !isBlockEnd(row))
 		{
 			// get first element
 			result.add(row.get(0));
@@ -216,7 +216,10 @@ public class CsvBufferedReaderMultiline implements CsvReader
 		// int index;
 
 		while (lineCount < noElements && (row = this.getRow()) != null && row.size() > 0
-				&& !isBlockEnd(row.get(0)))
+				&& !isBlockEnd(row))
+
+
+
 		{
 
 			// template of the tuple
@@ -406,6 +409,12 @@ public class CsvBufferedReaderMultiline implements CsvReader
 		String currentRecord = "";
 		while ((line = reader.readLine()) != null)
 		{
+            if(this.getBlockEnd().equals(line))
+            {
+                result.add(line);
+                return result;
+            }
+
 			if (this.separator == 0)
 			{
 				separator = guessSeparator(line);
@@ -504,9 +513,9 @@ public class CsvBufferedReaderMultiline implements CsvReader
 	 * @return boolean indicating whether the line matches block end.
 	 * @throws IOException
 	 */
-	private boolean isBlockEnd(String line)
+	private boolean isBlockEnd(List<String> line)
 	{
-		if (line.equals(blockEnd)) return true;
+		if (line.size() == 1 && blockEnd.equals(line.get(0))) return true;
 		return false;
 	}
 
