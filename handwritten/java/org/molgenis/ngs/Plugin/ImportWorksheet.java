@@ -1,45 +1,28 @@
 package org.molgenis.ngs.Plugin;
 
 import java.io.File;
-import java.io.IOException;
-import java.sql.Date;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
-import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.EasyPluginController;
-import org.molgenis.generators.csv.CsvExportGen;
 import org.molgenis.ngs.Flowcell;
-import org.molgenis.ngs.FlowcellLaneLibrary;
 import org.molgenis.ngs.FlowcellLaneSample;
 import org.molgenis.ngs.Investigator;
-import org.molgenis.ngs.Lane;
 import org.molgenis.ngs.Library;
 import org.molgenis.ngs.LibraryBarcode;
 import org.molgenis.ngs.LibraryCapturing;
 import org.molgenis.ngs.NgsSample;
 import org.molgenis.ngs.Project;
 import org.molgenis.ngs.Worksheet;
-import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvFileWriter;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Tuple;
-import org.molgenis.xgap.Sample;
-
-import app.JDBCDatabase;
 
 /**
  * ImportWorksheetController takes care of all user requests and application
