@@ -16,6 +16,9 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
@@ -23,6 +26,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.organization.Investigation;
 import org.molgenis.util.Entity;
+import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
 import plugins.emptydb.emptyDatabase;
@@ -124,11 +128,8 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		
 		if (action.equals("emptyDB") ){
 			try {
-				if(db.count(Investigation.class)!=0){
-					wait = "yes";
-					new emptyDatabase(db, true);
-					wait ="no";
-					
+				if(db.count(Investigation.class)!=0){				
+					new emptyDatabase(db, true);					
 					this.setMessages(new ScreenMessage("empty database succesfully", true));
 				}
 				else{
@@ -173,17 +174,28 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 				target = request.getString("target");	
 				father = request.getString("father");
 				mother = request.getString("mother");
-				
-				runGenerConver(fileData,invName,db,target,father,mother);		    
-				state = "pipeline";
-				
-				//get the server path
-				File dir = gc.getDir();
-				
-				//import the data into database
-				CsvImport.importAll(dir, db, null);
-				dir = null;
-				this.setMessages(new ScreenMessage("data succesfully added to the database", true));
+				try{
+					runGenerConver(fileData,invName,db,target,father,mother);		    
+					state = "pipeline";
+					
+					//get the server path
+					File dir = gc.getDir();
+					
+					//import the data into database
+					try{
+						CsvImport.importAll(dir, db, null);
+						dir = null;
+						//this.setMessages(new ScreenMessage("data succesfully added to the database", true));
+						redirectToInvestigationPage(request);
+					}catch(Exception e){
+						if(e.getMessage().startsWith("Tried to add existing Individual elements as new insert:")){
+							this.setMessages(new ScreenMessage("The individuals already exist in the database", false));
+						}
+					}
+				}
+				catch(Exception e){
+					this.setMessages(new ScreenMessage(e.getMessage(), false));
+				}
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -212,7 +224,6 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		}		
 						
 	}
-	
 	
 	@Override
 	public void reload(Database db)
@@ -266,6 +277,23 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 			e.printStackTrace();
 		}			
 		
+	}
+	
+	public void redirectToInvestigationPage(Tuple request){
+
+		HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
+		HttpServletRequest httpRequest   = rt.getRequest();
+
+		// get the http response that is used in this handleRequest
+		HttpServletResponse httpResponse = rt.getResponse();
+		
+		String returnURL = httpRequest.getRequestURL() + "?__target=" + this.getName() + "&__action=mainmenu&select=investigation";
+		try {
+			httpResponse.sendRedirect(returnURL);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void setInvestigations(List<Investigation> investigations) {

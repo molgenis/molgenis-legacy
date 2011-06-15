@@ -144,7 +144,7 @@
 	    <br />
 	    <hr />
 	    <br />
-	</div>
+</div>
 	<#if screen.state !="start">
 		<div id="resetMe">
 			<input type='submit' class='addbutton' value='return to mainscreen' onclick="__action.value='reset'"/>
