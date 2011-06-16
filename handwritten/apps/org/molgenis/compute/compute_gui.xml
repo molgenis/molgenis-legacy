@@ -3,6 +3,7 @@
 		DOCTYPE molgenis PUBLIC "MOLGENIS 1.0"
 		"http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd"
 	-->
+<!--<molgenis name="molgenis_apps" label="Compute Testing">-->
 <molgenis name="compute" label="Compute Testing">
 	<!--<plugin name="molgenis_header" type="plugins.header.ComputeHeader" />-->
 
@@ -70,5 +71,12 @@
 				label="Excel Import" />
 			<plugin name="GenericExport"
 				type="plugins.archiveexportimport.ArchiveExportImportPlugin" label="Excel export" />
+            <menu name="NGS">
+                <form name="Worksheet" label="Worksheet" entity="Worksheet">
+                    <plugin name="Button" type="org.molgenis.compute.StartNgs"/>
+                </form>
+		        <plugin name="ImportWorksheet" label="Import worksheet" type="org.molgenis.ngs.Plugin.ImportWorksheet" />
+            </menu>
+
 	</menu>
 </molgenis>
