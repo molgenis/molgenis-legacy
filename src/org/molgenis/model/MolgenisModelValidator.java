@@ -1,5 +1,8 @@
 package org.molgenis.model;
 
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,6 +26,9 @@ import org.molgenis.model.elements.UISchema;
 import org.molgenis.model.elements.Unique;
 import org.molgenis.model.elements.View;
 import org.molgenis.util.Pair;
+
+import java.sql.*;
+
 
 public class MolgenisModelValidator
 {
@@ -960,10 +966,16 @@ public class MolgenisModelValidator
 		//keywords.addAll(Arrays.asList(MOLGENIS_KEYWORDS));
 		keywords.addAll(Arrays.asList(JAVA_KEYWORDS));
 		keywords.addAll(Arrays.asList(JAVASCRIPT_KEYWORDS));
-		if (options.db_driver.contains("mysql")) keywords.addAll(Arrays
-				.asList(MYSQL_KEYWORDS));
-		if (options.db_driver.contains("hsql")) keywords.addAll(Arrays
-				.asList(HSQL_KEYWORDS));
+		
+		
+		
+		if (options.db_driver.contains("oracle")) {
+			
+			keywords.addAll(fillOraclekeywords());
+		}
+			
+		if (options.db_driver.contains("mysql")) keywords.addAll(Arrays.asList(MYSQL_KEYWORDS));
+		if (options.db_driver.contains("hsql")) keywords.addAll(Arrays.asList(HSQL_KEYWORDS));
 
 		if (model.getName().contains(" "))
 		{
@@ -1031,8 +1043,7 @@ public class MolgenisModelValidator
 									+ "' cannot contain spaces. Use 'label' if you want to show a name with spaces.");
 				}
 
-				if (keywords.contains(f.getName().toUpperCase())
-						|| keywords.contains(f.getName().toLowerCase()))
+				if (keywords.contains(f.getName().toUpperCase()) || keywords.contains(f.getName().toLowerCase()))
 				{
 					// f.setName(f.getName() + "_");
 					// logger.warn("field name '" + f.getName() + "' illegal:" +
@@ -1118,6 +1129,83 @@ public class MolgenisModelValidator
 		}
 	}
 
+	private static List<String> fillOraclekeywords() 	{
+		List<String> keywords = new ArrayList<String>();
+		int i=0;
+		
+	    try
+		{	
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+			Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@//localhost:2000/llp", "molgenis", "molTagtGen24Ora");
+	    	
+	    	conn.setAutoCommit(false);
+	        Statement stmt = conn.createStatement();
+	    	
+	    	ResultSet rset = stmt.executeQuery("select KEYWORD from sys.v_$reserved_words");
+		    while (rset.next()) {
+		    	keywords.add(rset.getString(1));
+	    		//System.out.println(">>>>>" + rset.getString(1));
+
+		    	//ORACLE_KEYWORDS[i++] = rset.getString(1);
+		    }
+		    keywords.remove("ID");
+		    keywords.remove("NAME");
+		    keywords.remove("PERMISSION");
+		    keywords.remove("DATAFILE");
+		    keywords.remove("DATA");
+		    keywords.remove("STORAGE");
+		    keywords.remove("VALUE");
+		    keywords.remove("ROLES");
+		    keywords.remove("LOCATION");
+		    keywords.remove("TIME");
+		    keywords.remove("IDENTIFIER");
+		    keywords.remove("CLONE");
+		    keywords.remove("STRUCTURE");
+		    keywords.remove("CATEGORY");
+		    keywords.remove("SAMPLE");
+		    keywords.remove("SIZE");
+		    keywords.remove("DATE");
+		    keywords.remove("JOB");
+		    keywords.remove("TIMESTAMP");
+		    keywords.remove("YEAR");
+		    keywords.remove("MONTH");
+		    keywords.remove("DAY");
+		    keywords.remove("HOUR");		    
+		    keywords.remove("MINUTE");
+		    keywords.remove("SECOND");
+		    keywords.remove("ROWID");  //!!! xm, this is weird
+		    keywords.remove("LENGTH"); 
+		    keywords.remove("OTHER");
+		    keywords.remove("RETENTION");
+		    keywords.remove("PROJECT"); 
+		    keywords.remove("LIBRARY");
+		    keywords.remove("TYPE");
+		    keywords.remove("VOLUME");
+		    keywords.remove("VERSION");
+		    keywords.remove("COMMENT");
+		    keywords.remove("ROW"); 
+		    keywords.remove("QUERY");
+		    keywords.remove("BATCH");
+		    //keywords.remove(""); //keywords.remove("");
+		    //keywords.remove("");
+		    //keywords.remove(""); //keywords.remove("");
+		    //keywords.remove("");
+		    //keywords.remove("");
+
+		    
+		   // ORACLE_KEYWORDS = (String []) keywords.toArray();
+		    
+			stmt.close();
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		catch (ClassNotFoundException e)  {
+			e.printStackTrace();
+		}
+		return keywords;
+	  }
+	
 	/** test for case sensitivity */
 	public static void correctXrefCaseSensitivity(Model model)
 			throws MolgenisModelException
@@ -1305,6 +1393,9 @@ public class MolgenisModelValidator
 
 	protected static final String[] JAVASCRIPT_KEYWORDS =
 	{ "function" };
+	
+	protected static String[] ORACLE_KEYWORDS = null;
+	
 
 	private static String firstToUpper(String string)
 	{
