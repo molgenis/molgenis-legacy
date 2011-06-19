@@ -32,9 +32,6 @@
 			<form name="Publication" entity="Publication" compact_view="Title,PubmedID" label="References">
 				<form name="OntologyTerm" entity="OntologyTerm" label="Ontology term"/>
 			</form>
-			<form name="Antibody" entity="Antibody"/>
-			<form name="IF" entity="I_F"/>
-			<form name="EM" entity="E_M"/>
 			<form name="News" entity="MolgenisNews"/>
 			<plugin name="ExportCsv" type="org.molgenis.mutation.ui.export.Export" label="Export CSV"/>
 		</menu>

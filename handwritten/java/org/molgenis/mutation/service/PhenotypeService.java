@@ -8,7 +8,6 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.mutation.MutationPhenotype;
-import org.molgenis.mutation.PhenotypeDetails;
 import org.molgenis.mutation.vo.PhenotypeSearchCriteriaVO;
 
 public class PhenotypeService implements Serializable
@@ -66,16 +65,5 @@ public class PhenotypeService implements Serializable
 	public MutationPhenotype findPhenotypeById(Integer id) throws DatabaseException
 	{
 		return this.db.findById(MutationPhenotype.class, id);
-	}
-	
-	/**
-	 * Find phenotype details by their id (one record with details)
-	 * @param id
-	 * @return phenotype details
-	 * @throws DatabaseException
-	 */
-	public PhenotypeDetails findPhenotypeDetailsById(Integer id) throws DatabaseException
-	{
-		return this.db.findById(PhenotypeDetails.class, id);
 	}
 }

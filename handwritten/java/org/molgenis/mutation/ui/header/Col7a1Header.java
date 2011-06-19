@@ -36,7 +36,10 @@ public class Col7a1Header extends EasyPluginController<Col7a1HeaderModel>
 //		cp res/css/menu.css generated-res/css
 //		cp res/scripts/all.js generated-res/scripts
 //		cp res/img/*.jpg generated-res/img
-		
+
+		headers += String.format(cssFormat, "res/displaytag/css/displaytag.css");
+		//headers += String.format(cssFormat, "res/displaytag/css/screen.css");
+		//headers += String.format(cssFormat, "res/displaytag/css/site.css");
 		headers += String.format(cssFormat, "res/css/col7a1/colors.css");
 		headers += String.format(cssFormat, "res/css/col7a1/data.css");
 		//headers += String.format(cssFormat, "res/css/main.css");

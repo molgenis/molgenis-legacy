@@ -30,19 +30,15 @@ import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import org.molgenis.mutation.E_M;
-import org.molgenis.mutation.I_F;
 import org.molgenis.mutation.Mutation;
-import org.molgenis.mutation.Patient;
-import org.molgenis.mutation.MutationPhenotype;
-import org.molgenis.mutation.PhenotypeDetails;
 import org.molgenis.mutation.service.MutationService;
 import org.molgenis.mutation.service.PatientService;
 import org.molgenis.mutation.vo.MutationSearchCriteriaVO;
 import org.molgenis.mutation.vo.MutationSummaryVO;
 import org.molgenis.mutation.vo.MutationUploadVO;
 import org.molgenis.mutation.vo.PatientSummaryVO;
-import org.molgenis.core.Publication;
+import org.molgenis.mutation.vo.PhenotypeDetailsVO;
+import org.molgenis.core.vo.PublicationVO;
 //import col7a1.UploadBatch;
 import org.molgenis.submission.Submission;
 
@@ -99,18 +95,23 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 //				if (lineNo > 5) return;
 				PatientSummaryVO patientSummaryVO = new PatientSummaryVO();
 				
-				patientSummaryVO.setSubmission(submission);
+				patientSummaryVO.setSubmissionDate(submission.getDate());
 
-				patientSummaryVO.setPatient(new Patient());
-				patientSummaryVO.getPatient().setNumber(tuple.getString("Local patient number"));
-				patientSummaryVO.getPatient().setGender(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Gender")), "unknown"));
-				patientSummaryVO.getPatient().setEthnicity(tuple.getString("Ethnicity"));
-				patientSummaryVO.getPatient().setAge(ObjectUtils.toString(tuple.getString("Age"), "unknown"));
-				patientSummaryVO.getPatient().setDeceased(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Deceased")), "unknown"));
-				patientSummaryVO.getPatient().setConsent(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Signed consent")), "no"));
+				patientSummaryVO.setPatientNumber(tuple.getString("Local patient number"));
+				patientSummaryVO.setPatientGender(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Gender")), "unknown"));
+				patientSummaryVO.setPatientEthnicity(tuple.getString("Ethnicity"));
+				patientSummaryVO.setPatientAge(ObjectUtils.toString(tuple.getString("Age"), "unknown"));
+				patientSummaryVO.setPatientDeceased(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Deceased")), "unknown"));
+				patientSummaryVO.setPatientConsent(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Signed consent")), "no"));
+
+				patientSummaryVO.setVariantSummaryVOList(new ArrayList<MutationSummaryVO>());
 
 				if (StringUtils.isNotEmpty(tuple.getString("cDNA change_1")))
 				{
+					MutationSummaryVO mutationSummaryVO = new MutationSummaryVO();
+					mutationSummaryVO.setCdnaNotation("c." + tuple.getString("cDNA change_1"));
+					patientSummaryVO.getVariantSummaryVOList().add(mutationSummaryVO);
+
 					MutationUploadVO mutationUploadVO1 = new MutationUploadVO();
 					mutationUploadVO1.setMutation(new Mutation());
 					mutationUploadVO1.getMutation().setCdna_Notation("c." + tuple.getString("cDNA change_1"));
@@ -135,7 +136,6 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 						mutationUploadVO1.getMutation().setIdentifier("M" + mutationIdentifier);
 						mutationUploadVO1.getMutation().setName("M" + mutationIdentifier);
 						mutationService.insert(mutationUploadVO1);
-						patientSummaryVO.setMutation1(mutationUploadVO1.getMutation());
 					}
 				}
 
@@ -144,11 +144,15 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 				if (StringUtils.isNotEmpty(tuple.getString("cDNA change_2")))
 				{
 					if (tuple.getString("cDNA change_2").equalsIgnoreCase("na"))
-						patientSummaryVO.getPatient().setMutation2remark("NA");
+						patientSummaryVO.setVariantComment(tuple.getString("cDNA change_2").toUpperCase());
 					else if (tuple.getString("cDNA change_2").equalsIgnoreCase("unknown"))
-						patientSummaryVO.getPatient().setMutation2remark("unknown");
+						patientSummaryVO.setVariantComment(tuple.getString("cDNA change_2").toUpperCase());
 					else
 					{
+						MutationSummaryVO mutationSummaryVO = new MutationSummaryVO();
+						mutationSummaryVO.setCdnaNotation("c." + tuple.getString("cDNA change_2"));
+						patientSummaryVO.getVariantSummaryVOList().add(mutationSummaryVO);
+
 						MutationUploadVO mutationUploadVO2 = new MutationUploadVO();
 						mutationUploadVO2.setMutation(new Mutation());
 						mutationUploadVO2.getMutation().setCdna_Notation("c." + tuple.getString("cDNA change_2"));
@@ -173,57 +177,55 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 							mutationUploadVO2.getMutation().setIdentifier("M" + mutationIdentifier);
 							mutationUploadVO2.getMutation().setName("M" + mutationIdentifier);
 							mutationService.insert(mutationUploadVO2);
-							patientSummaryVO.setMutation2(mutationUploadVO2.getMutation());
 						}
 					}
 				}
 
-				patientSummaryVO.setPhenotype(new MutationPhenotype());
-				patientSummaryVO.getPhenotype().setMajortype(StringUtils.upperCase(tuple.getString("Phenotype major type")));
-				patientSummaryVO.getPhenotype().setSubtype(StringUtils.lowerCase(tuple.getString("Phenotype Subtype")));
-				
-				patientSummaryVO.setPhenotypeDetails(new PhenotypeDetails());
+				patientSummaryVO.setPhenotypeMajor(StringUtils.upperCase(tuple.getString("Phenotype major type")));
+				patientSummaryVO.setPhenotypeSub(StringUtils.lowerCase(tuple.getString("Phenotype Subtype")));
 
-				patientSummaryVO.getPhenotypeDetails().setLocation(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Location")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setBlistering(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Blistering")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setHands(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Hands")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setFeet(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Feet")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setArms(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Arms")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setLegs(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Legs")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setProximal_Body_Flexures(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Proximal body flexures")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setTrunk(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Trunk")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setMucous_Membranes(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Mucosa")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setSkin_Atrophy(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Skin atrophy")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setMilia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Milia")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setNail_Dystrophy(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Nail dystrophy")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setAlbopapuloid_Papules(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Albopapuloid papules")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setPruritic_Papules(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Pruritic papules")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setAlopecia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Alopecia")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setSquamous_Cell_Carcinomas(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Squamous cell carcinoma(s)")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setRevertant_Skin_Patch(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Revertant skin patch(es)")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setMechanism(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Mechanism")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setFlexion_Contractures(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Flexion contractures")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setPseudosyndactyly_Hands(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Pseudosyndactyly (hands)")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setMicrostomia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Microstomia")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setAnkyloglossia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Ankyloglossia")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setDysphagia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Swallowing difficulties/ dysphagia/ oesophagus strictures")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setGrowth_Retardation(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Growth retardation")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setAnemia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Anaemia")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setRenal_Failure(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Renal failure")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setDilated_Cardiomyopathy(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Dilated cardiomyopathy")), "unknown"));
+				PhenotypeDetailsVO phenotypeDetailsVO = new PhenotypeDetailsVO();
 
-				patientSummaryVO.getPhenotypeDetails().setColoboma(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Coloboma")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setCongenital_Heart_Defect(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Congenital heart defect")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setClp(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("C(L)P")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setChoanal_Anomaly(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Choanal anomaly")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setMental_Retardation(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Mental retardation")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setGrowth_Retardation(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Growth retardation")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setGenital_Hypoplasia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Genital hypoplasia")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setExternal_Ear_Anomaly(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("External ear anomaly")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setSemicircular_Canal_Anomaly(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Semicircular canal anomaly")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setHearing_Loss(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Hearing loss")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setTe_Anomaly(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("TE anomaly")), "unknown"));
-				patientSummaryVO.getPhenotypeDetails().setCn_Dysfunction(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("CN dysfunction")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setLocation(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Location")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setBlistering(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Blistering")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setHands(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Hands")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setFeet(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Feet")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setArms(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Arms")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setLegs(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Legs")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setProximal_Body_Flexures(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Proximal body flexures")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setTrunk(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Trunk")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setMucous_Membranes(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Mucosa")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setSkin_Atrophy(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Skin atrophy")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setMilia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Milia")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setNail_Dystrophy(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Nail dystrophy")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setAlbopapuloid_Papules(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Albopapuloid papules")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setPruritic_Papules(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Pruritic papules")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setAlopecia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Alopecia")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setSquamous_Cell_Carcinomas(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Squamous cell carcinoma(s)")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setRevertant_Skin_Patch(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Revertant skin patch(es)")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setMechanism(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Mechanism")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setFlexion_Contractures(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Flexion contractures")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setPseudosyndactyly_Hands(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Pseudosyndactyly (hands)")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setMicrostomia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Microstomia")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setAnkyloglossia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Ankyloglossia")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setDysphagia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Swallowing difficulties/ dysphagia/ oesophagus strictures")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setGrowth_Retardation(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Growth retardation")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setAnemia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Anaemia")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setRenal_Failure(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Renal failure")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setDilated_Cardiomyopathy(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Dilated cardiomyopathy")), "unknown"));
+//
+//				patientSummaryVO.getPhenotypeDetails().setColoboma(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Coloboma")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setCongenital_Heart_Defect(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Congenital heart defect")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setClp(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("C(L)P")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setChoanal_Anomaly(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Choanal anomaly")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setMental_Retardation(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Mental retardation")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setGrowth_Retardation(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Growth retardation")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setGenital_Hypoplasia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Genital hypoplasia")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setExternal_Ear_Anomaly(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("External ear anomaly")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setSemicircular_Canal_Anomaly(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Semicircular canal anomaly")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setHearing_Loss(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Hearing loss")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setTe_Anomaly(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("TE anomaly")), "unknown"));
+//				patientSummaryVO.getPhenotypeDetails().setCn_Dysfunction(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("CN dysfunction")), "unknown"));
 
 //				for (String field : patientSummaryVO.getPhenotypeDetails().getFields(true))
 //				{
@@ -234,33 +236,32 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 
 				if (tuple.getString("PubMed ID") != null && tuple.getString("Reference") != null)
 				{
-					List<Publication> publications = new ArrayList<Publication>();
-					String[] pubmeds               = tuple.getString("PubMed ID").split(";");
-					String[] titles                = tuple.getString("Reference").split(";");
+					List<PublicationVO> publicationVOs = new ArrayList<PublicationVO>();
+					String[] pubmeds                   = tuple.getString("PubMed ID").split(";");
+					String[] titles                    = tuple.getString("Reference").split(";");
 					for (int i = 0; i < pubmeds.length; i++)
 					{
-						Publication publication = new Publication();
-						publication.setPubmedID_Name(pubmeds[i]);
-						publication.setName(titles[i]);
-						publication.setTitle(titles[i]);
-						publications.add(publication);
+						PublicationVO publicationVO = new PublicationVO();
+						publicationVO.setPubmed(pubmeds[i]);
+						publicationVO.setName(titles[i]);
+						publicationVO.setTitle(titles[i]);
+						publicationVOs.add(publicationVO);
 					}
-					patientSummaryVO.setPublications(publications);
+					patientSummaryVO.setPublicationVOList(publicationVOs);
 				}
 
-				patientSummaryVO.setIf_(new I_F());
-				patientSummaryVO.getIf_().setAntibody_Name("LH7:2");
-				patientSummaryVO.getIf_().setValue(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("IF LH7:2")), "unknown"));
-				patientSummaryVO.getIf_().setRetention(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("IF Retention COLVII")), "unknown"));
-
-				patientSummaryVO.setEm_(new E_M());
-				patientSummaryVO.getEm_().setNumber(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("EM AF_no")), "unknown"));
-				patientSummaryVO.getEm_().setAppearance(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("EM AF_structure")), "unknown"));
-				patientSummaryVO.getEm_().setRetention(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("EM_Retention COLVII")), "unknown"));
+//				patientSummaryVO.setIf_(new I_F());
+//				patientSummaryVO.getIf_().setAntibody_Name("LH7:2");
+//				patientSummaryVO.getIf_().setValue(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("IF LH7:2")), "unknown"));
+//				patientSummaryVO.getIf_().setRetention(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("IF Retention COLVII")), "unknown"));
+//
+//				patientSummaryVO.setEm_(new E_M());
+//				patientSummaryVO.getEm_().setNumber(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("EM AF_no")), "unknown"));
+//				patientSummaryVO.getEm_().setAppearance(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("EM AF_structure")), "unknown"));
+//				patientSummaryVO.getEm_().setRetention(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("EM_Retention COLVII")), "unknown"));
 
 				patientIdentifier = patientIdentifier + 1;
-				patientSummaryVO.getPatient().setIdentifier("P" + patientIdentifier);
-				patientSummaryVO.getPatient().setName("P" + patientIdentifier);
+				patientSummaryVO.setPatientIdentifier("P" + patientIdentifier);
 				patientService.insert(patientSummaryVO);
 				
 				total.set(total.get() + 1);

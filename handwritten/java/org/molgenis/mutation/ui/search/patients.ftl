@@ -1,3 +1,9 @@
+<#-- TODO: make this a Servlet/JspView and move PrintWriter to render() methods -->
+
+${vo.rawOutput}
+
+<#--
+
 <#assign pager = vo.pager>
 <#if pager.count &gt; 0>
 	<#assign patientSummaryVOs = pager.page>
@@ -91,6 +97,4 @@ ${patientSummaryVO.submitterDepartment}, ${patientSummaryVO.submitterInstitute},
 </p>
 </#if>
 
-<p>
-[<a href="#">Back to top</a>]
-</p>
+-->

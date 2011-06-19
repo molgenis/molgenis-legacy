@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.molgenis.mutation.MutationGene;
-import org.molgenis.mutation.PhenotypeDetails;
 import org.molgenis.mutation.ui.LimitOffsetPager;
 import org.molgenis.mutation.ui.search.form.DisplayOptionsForm;
 import org.molgenis.mutation.ui.search.form.ExpertSearchForm;
@@ -52,9 +51,9 @@ public class SearchPluginVO implements Serializable
 	private List<ProteinDomainSummaryVO> proteinDomainList;
 	private PatientSummaryVO patientSummaryVO;
 //	private List<PatientDetailsVO> patientDetailsVO;
-	private PhenotypeDetails phenotypeDetails;
 	private PhenotypeDetailsVO phenotypeDetailsVO;
 	private HashMap<String, LimitOffsetPager<PatientSummaryVO>> patientSummaryVOHash;
+	private String rawOutput; // for output from included sources
 
 	private List<MolgenisNews> news;
 	private LimitOffsetPager<?> pager;
@@ -337,16 +336,6 @@ public class SearchPluginVO implements Serializable
 		this.patientSummaryVO = patientSummaryVO;
 	}
 
-	public PhenotypeDetails getPhenotypeDetails()
-	{
-		return phenotypeDetails;
-	}
-
-	public void setPhenotypeDetails(PhenotypeDetails phenotypeDetails)
-	{
-		this.phenotypeDetails = phenotypeDetails;
-	}
-
 	public PhenotypeDetailsVO getPhenotypeDetailsVO()
 	{
 		return phenotypeDetailsVO;
@@ -364,6 +353,14 @@ public class SearchPluginVO implements Serializable
 	public void setPatientSummaryVOHash(
 			HashMap<String, LimitOffsetPager<PatientSummaryVO>> patientSummaryVOHash) {
 		this.patientSummaryVOHash = patientSummaryVOHash;
+	}
+
+	public String getRawOutput() {
+		return rawOutput;
+	}
+
+	public void setRawOutput(String rawOutput) {
+		this.rawOutput = rawOutput;
 	}
 
 	public List<MolgenisNews> getNews() {

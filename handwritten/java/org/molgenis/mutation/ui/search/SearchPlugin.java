@@ -7,12 +7,19 @@
 
 package org.molgenis.mutation.ui.search;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -46,6 +53,7 @@ import org.molgenis.mutation.vo.QueryParametersVO;
 import org.molgenis.mutation.vo.SearchPluginVO;
 import org.molgenis.news.service.NewsService;
 import org.molgenis.util.Entity;
+import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
@@ -85,29 +93,6 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 	{
 		return "org/molgenis/mutation/ui/search/SearchPlugin.ftl";
 	}
-
-//	public String getCustomHtmlHeaders()
-//	{
-//		String divId = "PatientPager";
-//		//path with the vaadin app serlvet (including trailing slash)
-//		String servletPath = "/molgenis_apps/vaadin/patient_pager/";
-//		//path of this app; should also work when null (but doesn't)
-//		String appPath = "/molgenis_apps/";
-//		
-//		return "<link rel=\"stylesheet\" style=\"text/css\" type=\"text/css\" href=\""+appPath+"VAADIN/themes/molgenis/styles.css\">" +
-//		"<script type=\"text/javascript\">"+
-//		"var vaadin = {"+
-//		//optionally repeat for each div
-//		"	vaadinConfigurations: {"+
-//		"		'"+divId+"' :{"+
-//		"			appUri:'"+servletPath+"',"+ 
-//		"			themeUri: '"+appPath+"VAADIN/themes/molgenis',\n "+
-//		"			versionInfo : {vaadinVersion:\"6.5.2\",applicationVersion:\"NONVERSIONED\"}"+
-//		"		}"+
-//		"	}};"+
-//		"</script>"+
-//		"<script language='javascript' src='"+appPath+"VAADIN/widgetsets/com.vaadin.terminal.gwt.DefaultWidgetSet/com.vaadin.terminal.gwt.DefaultWidgetSet.nocache.js'></script>";
-//	}
 
 	@Override
 	public void handleRequest(Database db, Tuple request)
@@ -290,22 +275,6 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 			{
 				this.searchPluginVO.getPager().last();
 			}
-			else if (this.searchPluginVO.getAction().startsWith("patientsFirstPage"))
-			{
-				this.searchPluginVO.getPager().first();
-			}
-			else if (this.searchPluginVO.getAction().startsWith("patientsPrevPage"))
-			{
-				this.searchPluginVO.getPager().prev();
-			}
-			else if (this.searchPluginVO.getAction().startsWith("patientsNextPage"))
-			{
-				this.searchPluginVO.getPager().next();
-			}
-			else if (this.searchPluginVO.getAction().startsWith("patientsLastPage"))
-			{
-				this.searchPluginVO.getPager().last();
-			}
 			
 			this.populateDisplayOptionsForm();
 		}
@@ -415,20 +384,19 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 
 	private void handleListAllMutations() throws DatabaseException, ParseException
 	{
-		List<Integer> mutationIdList                         = new ArrayList<Integer>();
-		HashMap<Integer, List<PatientSummaryVO>> patientSummaryVOs = new HashMap<Integer, List<PatientSummaryVO>>();
+		HashMap<String, List<PatientSummaryVO>> patientSummaryVOs = new HashMap<String, List<PatientSummaryVO>>();
 		
 		List<PatientSummaryVO> tmp = this.patientService.getAllPatientSummaries();
 		for (PatientSummaryVO patientSummaryVO : tmp)
 		{
-			Integer key1 = patientSummaryVO.getMutation1().getId();
+			String key1 = patientSummaryVO.getVariantSummaryVOList().get(0).getIdentifier();
 
 			if (!patientSummaryVOs.containsKey(key1))
 				patientSummaryVOs.put(key1, new ArrayList<PatientSummaryVO>());
 			
 			patientSummaryVOs.get(key1).add(patientSummaryVO);
 			
-			Integer key2 = patientSummaryVO.getMutation1().getId();
+			String key2 = patientSummaryVO.getVariantSummaryVOList().get(1).getIdentifier();
 
 			if (!patientSummaryVOs.containsKey(key2))
 				patientSummaryVOs.put(key2, new ArrayList<PatientSummaryVO>());
@@ -456,36 +424,30 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 		}	
 	}
 
-	private void handleListAllPatients(Tuple request) throws DatabaseException, ParseException
+	private void handleListAllPatients(Tuple request) throws DatabaseException, ParseException, ServletException, IOException
 	{
 //		MolgenisUser user = new MolgenisUser();
 //		user.setId(this.getLogin().getUserId());
 //		this.searchPluginVO.setPatientSummaryVOs(this.patientService.find(user));
 		List<PatientSummaryVO> patientSummaryVOs = this.patientService.getAllPatientSummaries();
 		this.searchPluginVO.setPatientSummaryVOs(patientSummaryVOs);
-		this.searchPluginVO.setPager(new LimitOffsetPager<PatientSummaryVO>(this.searchPluginVO.getPatientSummaryVOs(), 20, 0));
+
+		HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
+		HttpServletRequest httpRequest   = rt.getRequest();
+		HttpServletResponse httpResponse = rt.getResponse();
+		HttpSession httpSession          = httpRequest.getSession();
+		RedirectTextWrapper respWrapper  = new RedirectTextWrapper(httpResponse);
+		
+		httpSession.setAttribute("patientSummaryVOs", searchPluginVO.getPatientSummaryVOs());
+		
+		// Call/include jsp
+		RequestDispatcher dispatcher = httpRequest.getRequestDispatcher("patientPager.jsp");
+		if (dispatcher != null)
+			dispatcher.include(httpRequest, respWrapper);
+		
+		this.searchPluginVO.setRawOutput(respWrapper.getOutput());
+//		this.searchPluginVO.setPager(new LimitOffsetPager<PatientSummaryVO>(this.searchPluginVO.getPatientSummaryVOs(), 20, 0));
 		this.searchPluginVO.setHeader(this.searchPluginVO.getPatientSummaryVOs().size() + " results for \"Display all patients\".");
-
-
-//		HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
-//		HttpServletRequest httpRequest   = rt.getRequest();
-		
-//		List<PatientSummaryVO> list      = new ArrayList<PatientSummaryVO>();
-//		for (PatientSummaryVO patientSummaryVO : searchPluginVO.getPatientSummaryVOs())
-//			list.add(patientSummaryVO);
-//
-//		httpRequest.getSession().setAttribute("patientSummaryVO", list);
-		
-//		HttpServletResponse httpResponse = rt.getResponse();
-//		RequestDispatcher dispatcher     = httpRequest.getRequestDispatcher("PatientPager2");  
-//		dispatcher.include(httpRequest, httpResponse);
-//		System.out.println("INCLUDE: " + httpResponse.toString());
-//
-//		if (StringUtils.isNotEmpty(this.getApplicationController().getLogin().getRedirect()))
-//		{
-//			String redirectURL = httpRequest.getRequestURL() + "?__target=main" + "&select=" + this.getApplicationController().getLogin().getRedirect();
-//			httpResponse.sendRedirect(redirectURL);
-//		}
 	}
 
 	private void handleShowPhenotypeDetails(Tuple request) throws Exception

@@ -9,6 +9,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.Metamodel;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -101,54 +114,32 @@ public class MutationService implements Serializable
 
 	protected List<Mutation> _findMutations(MutationSearchCriteriaVO criteria) throws DatabaseException, java.text.ParseException
 	{
-		Query<Mutation> query = this.db.query(Mutation.class);
-
-		if (criteria.getCdnaPosition() != null)
-			query = query.equals(Mutation.CDNA_POSITION, criteria.getCdnaPosition());
-		if (criteria.getCodonChangeNumber() != null)
-			query = query.equals(Mutation.AA_POSITION, criteria.getCodonChangeNumber());
-		if (StringUtils.length(criteria.getConsequence()) > 2)
-			query = query.like(Mutation.CONSEQUENCE, criteria.getConsequence() + "%");
-		if (criteria.getExonId() != null)
-			query = query.equals(Mutation.EXON, criteria.getExonId());
-		if (criteria.getExonName() != null)
-			query = query.equals(Mutation.EXON_NAME, "Exon " + criteria.getExonName()).or().equals(Mutation.EXON_NAME, "IVS" + criteria.getExonName());
-		if (criteria.getExonNumber() != null)
-			query = query.equals(Mutation.EXON_NAME, "Exon " + criteria.getExonNumber()).or().equals(Mutation.EXON_NAME, "IVS" + criteria.getExonNumber());
-		if (criteria.getMid() != null)
-			query = query.equals(Mutation.IDENTIFIER, criteria.getMid());
-		if (StringUtils.length(criteria.getInheritance()) > 2)
-			query = query.like(Mutation.INHERITANCE, criteria.getInheritance() + "%");
-		if (criteria.getMutationId() != null)
-			query = query.equals(Mutation.ID, criteria.getMutationId());
-		if (criteria.getPhenotypeId() != null)
+		if (this.db instanceof JDBCDatabase)
 		{
-			//TODO: add proper join capability
-			List<Patient> patients    = this.db.query(Patient.class).equals(Patient.PHENOTYPE, criteria.getPhenotypeId()).find();
-			List<Integer> mutationIds = new ArrayList<Integer>();
-			for (Patient patient : patients)
+			Query<Mutation> query = this.db.query(Mutation.class);
+	
+			if (criteria.getCdnaPosition() != null)
+				query = query.equals(Mutation.CDNA_POSITION, criteria.getCdnaPosition());
+			if (criteria.getCodonChangeNumber() != null)
+				query = query.equals(Mutation.AA_POSITION, criteria.getCodonChangeNumber());
+			if (StringUtils.length(criteria.getConsequence()) > 2)
+				query = query.like(Mutation.CONSEQUENCE, criteria.getConsequence() + "%");
+			if (criteria.getExonId() != null)
+				query = query.equals(Mutation.EXON, criteria.getExonId());
+			if (criteria.getExonName() != null)
+				query = query.equals(Mutation.EXON_NAME, "Exon " + criteria.getExonName()).or().equals(Mutation.EXON_NAME, "IVS" + criteria.getExonName());
+			if (criteria.getExonNumber() != null)
+				query = query.equals(Mutation.EXON_NAME, "Exon " + criteria.getExonNumber()).or().equals(Mutation.EXON_NAME, "IVS" + criteria.getExonNumber());
+			if (criteria.getMid() != null)
+				query = query.equals(Mutation.IDENTIFIER, criteria.getMid());
+			if (StringUtils.length(criteria.getInheritance()) > 2)
+				query = query.like(Mutation.INHERITANCE, criteria.getInheritance() + "%");
+			if (criteria.getMutationId() != null)
+				query = query.equals(Mutation.ID, criteria.getMutationId());
+			if (criteria.getPhenotypeId() != null)
 			{
-				mutationIds.add(patient.getMutation1_Id());
-				mutationIds.add(patient.getMutation2_Id());
-			}
-			if (mutationIds.size() > 0)
-				query = query.in(Mutation.ID, mutationIds);
-		}
-		if (StringUtils.length(criteria.getPhenotypeName()) > 2)
-		{
-			//TODO: add proper join capability
-			List<MutationPhenotype> phenotypes =
-				this.db.query(MutationPhenotype.class)
-				.like(MutationPhenotype.NAME, criteria.getPhenotypeName() + "%").or()
-				.like(MutationPhenotype.MAJORTYPE, criteria.getPhenotypeName() + "%").or()
-				.like(MutationPhenotype.SUBTYPE, criteria.getPhenotypeName() + "%")
-				.find();
-			List<Integer> phenotypeIds = new ArrayList<Integer>();
-			for (MutationPhenotype phenotype : phenotypes)
-				phenotypeIds.add(phenotype.getId());
-			if (phenotypeIds.size() > 0)
-			{
-				List<Patient> patients    = this.db.query(Patient.class).in(Patient.PHENOTYPE, phenotypeIds).find();
+				//TODO: add proper join capability
+				List<Patient> patients    = this.db.query(Patient.class).equals(Patient.PHENOTYPE, criteria.getPhenotypeId()).find();
 				List<Integer> mutationIds = new ArrayList<Integer>();
 				for (Patient patient : patients)
 				{
@@ -158,46 +149,35 @@ public class MutationService implements Serializable
 				if (mutationIds.size() > 0)
 					query = query.in(Mutation.ID, mutationIds);
 			}
-		}
-		if (criteria.getPid() != null)
-		{
-			//TODO: add proper join capability
-			List<Patient> patients    = this.db.query(Patient.class).equals(Patient.IDENTIFIER, criteria.getPid()).find();
-			List<Integer> mutationIds = new ArrayList<Integer>();
-			for (Patient patient : patients)
+			if (StringUtils.length(criteria.getPhenotypeName()) > 2)
 			{
-				mutationIds.add(patient.getMutation1_Id());
-				mutationIds.add(patient.getMutation2_Id());
+				//TODO: add proper join capability
+				List<MutationPhenotype> phenotypes =
+					this.db.query(MutationPhenotype.class)
+					.like(MutationPhenotype.NAME, criteria.getPhenotypeName() + "%").or()
+					.like(MutationPhenotype.MAJORTYPE, criteria.getPhenotypeName() + "%").or()
+					.like(MutationPhenotype.SUBTYPE, criteria.getPhenotypeName() + "%")
+					.find();
+				List<Integer> phenotypeIds = new ArrayList<Integer>();
+				for (MutationPhenotype phenotype : phenotypes)
+					phenotypeIds.add(phenotype.getId());
+				if (phenotypeIds.size() > 0)
+				{
+					List<Patient> patients    = this.db.query(Patient.class).in(Patient.PHENOTYPE, phenotypeIds).find();
+					List<Integer> mutationIds = new ArrayList<Integer>();
+					for (Patient patient : patients)
+					{
+						mutationIds.add(patient.getMutation1_Id());
+						mutationIds.add(patient.getMutation2_Id());
+					}
+					if (mutationIds.size() > 0)
+						query = query.in(Mutation.ID, mutationIds);
+				}
 			}
-			if (mutationIds.size() > 0)
-				query = query.in(Mutation.ID, mutationIds);
-		}
-		if (criteria.getProteinDomainId() != null)
-		{
-			//TODO: add proper join capability
-//			List<Exon_ProteinDomain> epds = this.db.query(Exon_ProteinDomain.class).equals(Exon_ProteinDomain.PROTEINDOMAIN, criteria.getProteinDomainId()).find();
-//			//List<Tuple> epds      = this.db.sql(String.format("SELECT Exon FROM Exon_proteinDomain WHERE proteinDomain = %d", criteria.getProteinDomainId()));
-//			List<Integer> exonIds = new ArrayList<Integer>();
-//			for (Exon_ProteinDomain epd : epds)
-//				exonIds.add(epd.getExon_Id());
-//			if (exonIds.size() > 0)
-//				query = query.in(Mutation.EXON, exonIds);
-			List<Exon> exons = this.db.query(Exon.class).equals(Exon.PROTEINDOMAIN, criteria.getProteinDomainId()).find();
-			List<Integer> exonIds = new ArrayList<Integer>();
-			for (Exon exon : exons)
-				exonIds.add(exon.getId());
-			if (exonIds.size() > 0)
-				query = query.in(Mutation.EXON, exonIds);
-		}
-		if (StringUtils.length(criteria.getPublication()) > 2)
-		{
-			List<Publication> publications = this.db.query(Publication.class).like(Publication.NAME, criteria.getPublication() + "%").or().like(Publication.TITLE, "%" + criteria.getPublication() + "%").find();
-			List<Integer> publicationIds   = new ArrayList<Integer>();
-			for (Publication publication : publications)
-				publicationIds.add(publication.getId());
-			if (publicationIds.size() > 0)
+			if (criteria.getPid() != null)
 			{
-				List<Patient> patients    = this.db.query(Patient.class).in(Patient.PUBLICATIONS, publicationIds).find();
+				//TODO: add proper join capability
+				List<Patient> patients    = this.db.query(Patient.class).equals(Patient.IDENTIFIER, criteria.getPid()).find();
 				List<Integer> mutationIds = new ArrayList<Integer>();
 				for (Patient patient : patients)
 				{
@@ -207,18 +187,141 @@ public class MutationService implements Serializable
 				if (mutationIds.size() > 0)
 					query = query.in(Mutation.ID, mutationIds);
 			}
+			if (criteria.getProteinDomainId() != null)
+			{
+				//TODO: add proper join capability
+	//			List<Exon_ProteinDomain> epds = this.db.query(Exon_ProteinDomain.class).equals(Exon_ProteinDomain.PROTEINDOMAIN, criteria.getProteinDomainId()).find();
+	//			//List<Tuple> epds      = this.db.sql(String.format("SELECT Exon FROM Exon_proteinDomain WHERE proteinDomain = %d", criteria.getProteinDomainId()));
+	//			List<Integer> exonIds = new ArrayList<Integer>();
+	//			for (Exon_ProteinDomain epd : epds)
+	//				exonIds.add(epd.getExon_Id());
+	//			if (exonIds.size() > 0)
+	//				query = query.in(Mutation.EXON, exonIds);
+				List<Exon> exons = this.db.query(Exon.class).equals(Exon.PROTEINDOMAIN, criteria.getProteinDomainId()).find();
+				List<Integer> exonIds = new ArrayList<Integer>();
+				for (Exon exon : exons)
+					exonIds.add(exon.getId());
+				if (exonIds.size() > 0)
+					query = query.in(Mutation.EXON, exonIds);
+			}
+			if (StringUtils.length(criteria.getPublication()) > 2)
+			{
+				List<Publication> publications = this.db.query(Publication.class).like(Publication.NAME, criteria.getPublication() + "%").or().like(Publication.TITLE, "%" + criteria.getPublication() + "%").find();
+				List<Integer> publicationIds   = new ArrayList<Integer>();
+				for (Publication publication : publications)
+					publicationIds.add(publication.getId());
+				if (publicationIds.size() > 0)
+				{
+					List<Patient> patients    = this.db.query(Patient.class).in(Patient.PUBLICATIONS, publicationIds).find();
+					List<Integer> mutationIds = new ArrayList<Integer>();
+					for (Patient patient : patients)
+					{
+						mutationIds.add(patient.getMutation1_Id());
+						mutationIds.add(patient.getMutation2_Id());
+					}
+					if (mutationIds.size() > 0)
+						query = query.in(Mutation.ID, mutationIds);
+				}
+			}
+			if (criteria.getReportedAsSNP() != null)
+				query = query.equals(Mutation.REPORTEDSNP, criteria.getReportedAsSNP());
+			if (StringUtils.length(criteria.getType()) > 2)
+				query = query.like(Mutation.TYPE_, criteria.getType() + "%");
+			if (StringUtils.length(criteria.getVariation()) > 0)
+				query = query.equals(Mutation.CDNA_NOTATION, criteria.getVariation()).or().equals(Mutation.CDNA_NOTATION, "c." + criteria.getVariation()).or().equals(Mutation.AA_NOTATION, criteria.getVariation()).or().equals(Mutation.AA_NOTATION, "p." + criteria.getVariation());
+	
+			if (query.getRules().length > 0)
+				return query.sortASC(Mutation.IDENTIFIER).find();
+			else		
+				return new ArrayList<Mutation>();
 		}
-		if (criteria.getReportedAsSNP() != null)
-			query = query.equals(Mutation.REPORTEDSNP, criteria.getReportedAsSNP());
-		if (StringUtils.length(criteria.getType()) > 2)
-			query = query.like(Mutation.TYPE_, criteria.getType() + "%");
-		if (StringUtils.length(criteria.getVariation()) > 0)
-			query = query.equals(Mutation.CDNA_NOTATION, criteria.getVariation()).or().equals(Mutation.CDNA_NOTATION, "c." + criteria.getVariation()).or().equals(Mutation.AA_NOTATION, criteria.getVariation()).or().equals(Mutation.AA_NOTATION, "p." + criteria.getVariation());
+		else if (this.db instanceof JpaDatabase)
+		{
+			CriteriaBuilder cb               = this.db.getEntityManager().getCriteriaBuilder();
+			CriteriaQuery<Mutation> query    = cb.createQuery(Mutation.class);
+//			Metamodel metaModel              = this.db.getEntityManager().getMetamodel();
+//			EntityType<Mutation> Mutation_   = metaModel.entity(Mutation.class);
 
-		if (query.getRules().length > 0)
-			return query.sortASC(Mutation.IDENTIFIER).find();
-		else		
-			return new ArrayList<Mutation>();
+			Root<Mutation> mutation          = query.from(Mutation.class);
+			query.select(mutation);
+			
+			List<Predicate> mutationCriteria = new ArrayList<Predicate>();
+
+			if (criteria.getCdnaPosition() != null)
+				mutationCriteria.add(cb.equal(mutation.get("cdna_position"), criteria.getCdnaPosition()));
+			if (criteria.getCodonChangeNumber() != null)
+				mutationCriteria.add(cb.equal(mutation.get("aa_position"), criteria.getCodonChangeNumber()));
+			if (StringUtils.length(criteria.getConsequence()) > 2)
+				mutationCriteria.add(cb.like(mutation.<String>get("consequence"), criteria.getConsequence() + "%"));
+			if (criteria.getExonId() != null || criteria.getExonName() != null || criteria.getExonNumber() != null || criteria.getProteinDomainId() != null)
+			{
+				Join<Mutation, Exon> exon = mutation.join("exon", JoinType.LEFT);
+
+				if (criteria.getExonId() != null)
+					mutationCriteria.add(cb.equal(exon.get("id"), criteria.getExonId()));
+				if (criteria.getExonName() != null)
+					mutationCriteria.add(cb.or(cb.like(exon.<String>get("name"), "Exon " + criteria.getExonName()), cb.like(exon.<String>get("name"), "IVS" + criteria.getExonName())));
+				if (criteria.getExonNumber() != null)
+					mutationCriteria.add(cb.or(cb.like(exon.<String>get("name"), "Exon " + criteria.getExonNumber()), cb.like(exon.<String>get("name"), "IVS" + criteria.getExonNumber())));
+				
+				if (criteria.getProteinDomainId() != null)
+				{
+					Join<Exon, ProteinDomain> proteinDomain = exon.join("proteinDomain", JoinType.LEFT);
+					
+					mutationCriteria.add(cb.equal(proteinDomain.get("id"), criteria.getProteinDomainId()));
+				}
+			}
+			if (criteria.getMid() != null)
+				mutationCriteria.add(cb.equal(mutation.get("identifier"), criteria.getMid()));
+			if (StringUtils.length(criteria.getInheritance()) > 2)
+				mutationCriteria.add(cb.like(mutation.<String>get("inheritance"), criteria.getInheritance() + "%"));
+			if (criteria.getMutationId() != null)
+				mutationCriteria.add(cb.equal(mutation.get("id"), criteria.getMutationId()));
+			if (criteria.getPid() != null || criteria.getPhenotypeId() != null || StringUtils.length(criteria.getPhenotypeName()) > 2 || StringUtils.length(criteria.getPublication()) > 2)
+			{
+				Join<Mutation, Patient> patient1 = mutation.join("patientMutation1Collection", JoinType.LEFT);
+				Join<Mutation, Patient> patient2 = mutation.join("patientMutation2Collection", JoinType.LEFT);
+
+				if (criteria.getPid() != null)
+					mutationCriteria.add(cb.or(cb.equal(patient1.get("identifier"), criteria.getPid()), cb.equal(patient2.get("identifier"), criteria.getPid())));
+
+				if (criteria.getPhenotypeId() != null || StringUtils.length(criteria.getPhenotypeName()) > 2)
+				{
+					Join<Patient, MutationPhenotype> phenotype1 = patient1.join("phenotype", JoinType.LEFT);
+					Join<Patient, MutationPhenotype> phenotype2 = patient2.join("phenotype", JoinType.LEFT);
+
+					if (criteria.getPhenotypeId() != null)
+						mutationCriteria.add(cb.or(cb.equal(phenotype1.get("id"), criteria.getPhenotypeId()), cb.equal(phenotype2.get("id"), criteria.getPhenotypeId())));
+					if (StringUtils.length(criteria.getPhenotypeName()) > 2)
+						mutationCriteria.add(cb.or(cb.like(phenotype1.<String>get("name"), criteria.getPhenotypeName() + "%"), cb.like(phenotype1.<String>get("majortype"), criteria.getPhenotypeName() + "%"), cb.like(phenotype1.<String>get("subtype"), criteria.getPhenotypeName() + "%"), cb.like(phenotype2.<String>get("name"), criteria.getPhenotypeName() + "%"), cb.like(phenotype2.<String>get("majortype"), criteria.getPhenotypeName() + "%"), cb.like(phenotype2.<String>get("subtype"), criteria.getPhenotypeName() + "%")));
+				}
+				
+				if (StringUtils.length(criteria.getPublication()) > 2)
+				{
+					Join<Patient, Publication> publication1 = patient1.join("publication", JoinType.LEFT);
+					Join<Patient, Publication> publication2 = patient2.join("publication", JoinType.LEFT);
+					
+					mutationCriteria.add(cb.or(cb.like(publication1.<String>get("name"), "%" + criteria.getPublication() + "%"), cb.like(publication1.<String>get("title"), "%" + criteria.getPublication() + "%"), cb.like(publication2.<String>get("name"), "%" + criteria.getPublication() + "%"), cb.like(publication2.<String>get("title"), "%" + criteria.getPublication() + "%")));
+				}
+			}
+			if (criteria.getReportedAsSNP() != null)
+				mutationCriteria.add(cb.equal(mutation.get("reportedsnp"), criteria.getMutationId()));
+			if (StringUtils.length(criteria.getType()) > 2)
+				mutationCriteria.add(cb.like(mutation.<String>get("type"), criteria.getType() + "%"));
+			if (StringUtils.length(criteria.getVariation()) > 0)
+				mutationCriteria.add(cb.or(cb.equal(mutation.get("cdna_notation"), criteria.getVariation()), cb.equal(mutation.<String>get("cdna_notation"), "c." + criteria.getExonNumber()), cb.equal(mutation.get("aa_notation"), criteria.getVariation()), cb.equal(mutation.get("cdna_notation"), "p." + criteria.getVariation())));
+
+			if (mutationCriteria.size() > 0)
+			{
+				query.where(cb.and(mutationCriteria.toArray(new Predicate[0])));
+				query.orderBy(cb.asc(mutation.get("identifier")));
+				return this.db.getEntityManager().createQuery(query).getResultList();
+			}
+			else
+				return new ArrayList<Mutation>();
+		}
+		else
+			throw new DatabaseException("Unsupported database mapper");
 	}
 
 	private MutationSummaryVO toMutationSummaryVO(Mutation mutation) throws DatabaseException, java.text.ParseException
@@ -247,8 +350,9 @@ public class MutationService implements Serializable
 		mutationSummaryVO.setExonId(mutation.getExon_Id());
 		mutationSummaryVO.setExonName(mutation.getExon_Name());
 
-		Exon exon = this.db.findById(Exon.class, mutation.getExon_Id());
+		Exon exon                                         = this.db.findById(Exon.class, mutation.getExon_Id());
 		List<ProteinDomain> proteinDomains                = this.db.query(ProteinDomain.class).in(ProteinDomain.ID, exon.getProteinDomain_Id()).find();
+
 		// helper hash to get distinct protein domain names
 		HashMap<Integer, String> domainNameHash           = new HashMap<Integer, String>();
 		for (ProteinDomain domain : proteinDomains)

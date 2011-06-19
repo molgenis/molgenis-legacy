@@ -12,6 +12,7 @@ import org.molgenis.mutation.ProteinDomain;
 public class MutationSummaryVO implements Serializable
 {
 	private static final long serialVersionUID = 6822471461546986166L;
+	private Integer id;
 	private String identifier;
 	private String cdnaNotation;
 	private String gdnaNotation;
@@ -48,6 +49,12 @@ public class MutationSummaryVO implements Serializable
 	private List<MutationSummaryVO> positionMutations;
 	private List<MutationSummaryVO> codonMutations;
 
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
 	public String getIdentifier() {
 		return identifier;
 	}
