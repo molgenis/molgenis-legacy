@@ -31,6 +31,13 @@ public class WorkflowService implements Serializable
 		return workflowService;
 	}
 	
+	/**
+	 * Find workflow elements in the order they have been specified inside a workflow
+	 * @param workflow
+	 * @return workflow elements
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 */
 	public List<WorkflowElement> findWorkflowElements(Workflow workflow) throws DatabaseException, ParseException
 	{
 		List<WorkflowElement> result   = new ArrayList<WorkflowElement>();
