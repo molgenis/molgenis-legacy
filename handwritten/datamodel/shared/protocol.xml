@@ -232,6 +232,14 @@
 				default="no status" length="127" description="Status text of this subjob." />
 			<field name="StatusProgress" nillable="true" type="int"
 				description="Percentage done." default="0" />
-		</entity>
+            <!-- few new fields to show log information-->
+            <field name="LogFile" nillable="true" type="text"
+                description="field to show the content of the log file"/>
+            <field name="OutputFile" nillable="true" type="text"
+                description="field to show the content of the output file"/>
+            <field name="ErrorFile" nillable="true" type="text"
+                description="field to show the content of the error file"/>
+
+        </entity>
 	</module>
 </molgenis>
