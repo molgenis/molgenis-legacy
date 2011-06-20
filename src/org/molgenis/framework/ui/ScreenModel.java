@@ -128,7 +128,7 @@ public interface ScreenModel extends Serializable
 	 * @param controller
 	 *            to handle events on this screen
 	 */
-	public void setController(ScreenController<?> controller);
+	public void setController(ScreenController<? extends ScreenModel> controller);
 
 	/**
 	 * Method to indicate whether the screen should be shown. E.g. because the
