@@ -103,7 +103,7 @@ public abstract class PluginModel<E extends Entity> extends
 	}
 
 	@Override
-	public void setController(ScreenController<?> controller)
+	public void setController(ScreenController<? extends ScreenModel> controller)
 	{
 		throw new UnsupportedOperationException();
 	}
