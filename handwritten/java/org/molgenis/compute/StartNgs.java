@@ -1,15 +1,15 @@
 package org.molgenis.compute;
 
-//import app.ui.WorksheetFormController;
 import compute.pipelinemodel.Pipeline;
-import org.molgenis.data.Data;
+import compute.pipelinemodel.Script;
+import compute.pipelinemodel.Step;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.*;
 import org.molgenis.ngs.FlowcellLaneSample;
 import org.molgenis.ngs.Worksheet;
-import org.molgenis.ngs.ui.WorksheetForm;
 import org.molgenis.pheno.ObservationTarget;
+import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.*;
 import org.molgenis.util.Tuple;
 
@@ -28,17 +28,32 @@ import java.util.*;
  */
 public class StartNgs extends EasyPluginController<StartNgsModel>
 {
+    private static final String PARAMETER = "parameter";//reserved word to show that ComputeFeatureValue goes from WorkflowElementParameter
+
+
     public static final String DATE_FORMAT_NOW = "yyyy-MM-dd-HH:mm:ss";
     //format to run pipeline in compute
     private Pipeline pipeline = null;
+    private Step currentStep = null;
+    private String strCurrentPipelineStep = "INITIAL";
+    private int pipelineElementNumber = 0;
 
     //map of all compute features/values
-    private HashMap<String, String> allFeatureValues = new HashMap<String, String>();
+    private Hashtable<String, String> weavingValues = null;
+    private Hashtable<String, String> userValues = null;
     private HashMap<String, ComputeFeature> computeFeatures = new HashMap<String, ComputeFeature>();
+
+    //target of pipeline
+    private ObservationTarget target = null;
+    //whole workflow application
+    private ComputeApplication wholeWorkflowApp = null;
+
+    private Calendar cal = Calendar.getInstance();
+    private WorkflowParametersWeaver weaver = new WorkflowParametersWeaver();
 
     private enum UserParameter
     {
-        sample, flowcell, lane, barcode, machine, date;
+        sample, flowcell, lane, barcode, machine, date, capturing;
     }
 
     public StartNgs(String name, ScreenController<?> parent)
@@ -59,6 +74,8 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         System.out.println("pipeline started");
 
         pipeline = new Pipeline();
+        userValues = new Hashtable<String, String>();
+        pipelineElementNumber = 0;
 
         ScreenController<?> parentController = (ScreenController<?>) this.getParent();
         FormModel<Worksheet> parentForm = (FormModel<Worksheet>) ((FormController) parentController).getModel();
@@ -73,9 +90,10 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         String strFlowcell = data.getFlowcell();
         String strBarcode = data.getBarcode();
         String strSample = data.getSample();
+        String strCapturing = data.getCapturing();
 
         //application for the whole workflow
-        ComputeApplication wholeWorkflowApp = new ComputeApplication();
+        wholeWorkflowApp = new ComputeApplication();
 
         //we have only one workflow
         Workflow workflow = db.query(Workflow.class).find().get(0);
@@ -99,46 +117,50 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
                 switch (UserParameter.valueOf(computeFeature.getName()))
                 {
                     case sample:
-                        allFeatureValues.put(computeFeature.getName(), strSample);
+                        userValues.put(computeFeature.getName(), strSample);
                         break;
                     case lane:
-                        allFeatureValues.put(computeFeature.getName(), strLane);
+                        userValues.put(computeFeature.getName(), strLane);
                         break;
                     case flowcell:
-                        allFeatureValues.put(computeFeature.getName(), strFlowcell);
+                        userValues.put(computeFeature.getName(), strFlowcell);
                         break;
                     case barcode:
-                        allFeatureValues.put(computeFeature.getName(), strBarcode);
+                        userValues.put(computeFeature.getName(), strBarcode);
                         break;
                     case machine:
-                        allFeatureValues.put(computeFeature.getName(), strMachine);
+                        userValues.put(computeFeature.getName(), strMachine);
                         break;
                     case date:
-                        allFeatureValues.put(computeFeature.getName(), strDate);
+                        userValues.put(computeFeature.getName(), strDate);
+                        break;
+                   case capturing:
+                        userValues.put(computeFeature.getName(), strCapturing);
                         break;
                 }
             }
             else
             {
-                allFeatureValues.put(computeFeature.getName(), computeFeature.getDefaultValue());
+                //allFeatureValues.put(computeFeature.getName(), computeFeature.getDefaultValue());
             }
         }
 
         System.out.println("workflow" + workflow.getName());
 
         //our current targer is FlowcellLaneSample
-        ObservationTarget target = db.query(FlowcellLaneSample.class).equals(FlowcellLaneSample.LANENUMBER, strLane).
+        target = db.query(FlowcellLaneSample.class).equals(FlowcellLaneSample.LANENUMBER, strLane).
                 equals(FlowcellLaneSample.FLOWCELL_NAME, strFlowcell).
                 equals(FlowcellLaneSample.SAMPLE_NAME, strSample).find().get(0);
 
         //add few parameters
-        wholeWorkflowApp.setComputeResource("gridgain");//for time being
-        wholeWorkflowApp.setTime(Calendar.getInstance().getTime());
+        wholeWorkflowApp.setComputeResource("cluster");//for time being
+        wholeWorkflowApp.setTime(cal.getTime());
 
-        //add to database
+        //set app name everywhere and add to database
         String appName = strLane + "_" + strFlowcell + "_" + strSample + "_" + now();
         wholeWorkflowApp.setName(appName);
         pipeline.setId(appName);
+        weaver.setJobID(appName);
         db.add(wholeWorkflowApp);
 
         //process workflow elements
@@ -150,6 +172,11 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
             processWorkflowElement(db, request, workflowElement);
         }
 
+        String logfile = weaver.getLogfilename();
+        System.out.println("logfile: " + logfile);
+
+        pipeline.setLogfile(logfile);
+
 
         getModel().setSuccess("update succesfull");
     }
@@ -157,8 +184,9 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
     private void processWorkflowElement(Database db, Tuple request, WorkflowElement workflowElement)
             throws DatabaseException, ParseException, IOException
     {
-        //table of values for weaving
-        Hashtable<String, String> weavingValues = new Hashtable<String, String>();
+
+        weavingValues = new Hashtable<String, String>();
+        weavingValues.putAll(userValues);
 
         System.out.println(">>> workflow element: " + workflowElement.getName());
 
@@ -168,7 +196,6 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
 
         //get protocol and template
         ComputeProtocol protocol = db.findById(ComputeProtocol.class, workflowElement.getProtocol_Id());
-        String protocolTemplate = protocol.getScriptTemplate();
 
         //fill vectors/hashtable with complex/simple compute features
         if (protocol.getInputs().size() > 0)
@@ -176,8 +203,10 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
             List<ComputeFeature> computeFeatures = db.query(ComputeFeature.class).in(ComputeFeature.ID, protocol.getInputs_Id()).find();
             for (ComputeFeature computeFeature : computeFeatures)
             {
-                System.out.println("feature: " + computeFeature.getName() + " --> " + computeFeature.getDefaultValue());
-                if (computeFeature.getIsDerived())
+                //System.out.println("input feature: " + computeFeature.getName() + " --> " + computeFeature.getDefaultValue());
+                if (computeFeature.getIsUser() || computeFeature.getDefaultValue().equalsIgnoreCase(PARAMETER))
+                    continue;
+                else if (computeFeature.getIsDerived())
                 {
                     featuresToDerive.addElement(computeFeature);
                 }
@@ -197,7 +226,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
             List<ComputeFeature> computeFeatures = db.query(ComputeFeature.class).in(ComputeFeature.ID, protocol.getOutputs_Id()).find();
             for (ComputeFeature computeFeature : computeFeatures)
             {
-                System.out.println("feature: " + computeFeature.getName() + " --> " + computeFeature.getDefaultValue());
+                //System.out.println("output feature: " + computeFeature.getName() + " --> " + computeFeature.getDefaultValue());
                 if (computeFeature.getIsDerived())
                 {
                     featuresToDerive.addElement(computeFeature);
@@ -220,7 +249,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
 
         for (WorkflowElementParameter par : workflowElementParameters)
         {
-            System.out.println("par: " + par.getFeature_Name() + " --> " + par.getTarget_Name());
+            //System.out.println("par: " + par.getFeature_Name() + " --> " + par.getTarget_Name());
 
             ComputeFeature feature = computeFeatures.get(par.getTarget_Name());
             weavingValues.put(par.getFeature_Name(), feature.getDefaultValue());
@@ -230,30 +259,141 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         //create compute applications
         //todo iterate over several features
         //now just hardcoded for fastqc index (only one feature to iterate over)
+
         if (featuresToIterate.size() > 0)
         {
             ComputeFeature fastqcFeature = featuresToIterate.elementAt(0);
             for (int i = 1; i < 3; i++)
             {
+                System.out.println(">>>>>>>> fastQC : " + fastqcFeature.getName());
                 weavingValues.put(fastqcFeature.getName(), i + "");
-                generateComApp(db, request, workflowElement, weavingValues, featuresToDerive);
+                generateComApp(db, request, workflowElement, protocol, weavingValues, featuresToDerive);
             }
         }
         else
         {
-            generateComApp(db, request, workflowElement, weavingValues, featuresToDerive);
+            generateComApp(db, request, workflowElement, protocol, weavingValues, featuresToDerive);
 
         }
 
     }
 
-    private void generateComApp(Database db, Tuple request, WorkflowElement workflowElement,
-                                Hashtable<String, String> weavingValues,
-                                Vector<ComputeFeature> featuresToDerive) throws IOException, DatabaseException
+    private void generateComApp(Database db, Tuple request, WorkflowElement workflowElement, ComputeProtocol protocol,
+                                Hashtable<String, String> weavingValues, Vector<ComputeFeature> featuresToDerive)
+            throws IOException, DatabaseException
     {
         ComputeApplication app = new ComputeApplication();
+        app.setProtocol(protocol);
+        app.setTime(cal.getTime());
+        app.setComputeResource("cluster");
 
-        //db.add(app);
+        String appName = "ngs_" + pipeline.getId() + "_" + workflowElement.getName() + "_" + pipelineElementNumber;
+        app.setName(appName);
+        System.out.println("---application---> " + appName);
+
+        String protocolTemplate = protocol.getScriptTemplate();
+
+        System.out.println("--- template \n" + protocolTemplate );
+
+        //weave complex features
+        for (int i = 0; i < featuresToDerive.size(); i++)
+        {
+            ComputeFeature feature = featuresToDerive.elementAt(i);
+            String featureName = feature.getName();
+            String featureTemplate = feature.getDefaultValue();
+
+            String featureValue = weaver.weaveFreemarker(featureTemplate, weavingValues);
+            //System.out.println("complex-feature: " + featureName + " --> " + featureValue);
+            weavingValues.put(featureName, featureValue);
+        }
+
+        String result = weaver.weaveFreemarker(protocolTemplate, weavingValues);
+        app.setComputeScript(result);
+        //app.setPrevSteps();
+        db.add(app);
+
+        Set entries = weavingValues.entrySet();
+        Iterator it = entries.iterator();
+        while (it.hasNext())
+        {
+            Map.Entry entry = (Map.Entry) it.next();
+            String name = (String) entry.getKey();
+            String value = (String) entry.getValue();
+
+            System.out.println("feature: " + name + " ---> " + value);
+            ObservedValue observedValue = new ObservedValue();
+            observedValue.setValue(value);
+            observedValue.setProtocolApplication(app);
+            observedValue.setTarget(target);
+            ComputeFeature feature = computeFeatures.get(name);
+            observedValue.setFeature(feature);
+            db.add(observedValue);
+        }
+
+       System.out.println("script \n " + result);
+
+
+        pipelineElementNumber++;
+
+        //create compute pipeline
+        String scriptID = app.getName();
+        weaver.setScriptID(scriptID);
+        weaver.setWalltime(protocol.getComputationalTime());
+        weaver.setActualCommand(result);
+        String remoteLocation = computeFeatures.get("outputdir").getDefaultValue();
+        weaver.setDatasetLocation(remoteLocation);
+        //write file for testing purposes
+        String scriptFile = weaver.makeScript();
+        String logfile = weaver.getLogfilename();
+        pipeline.setLogfile(logfile);
+
+        weaver.writeToFile("/test/" + pipelineElementNumber + scriptID, scriptFile);
+
+        //todo rewrite pipeline generation
+        //look into proper choose of logfile and all path settings
+        List<String> strPreviousWorkflowElements = workflowElement.getPreviousSteps_Name();
+
+        if(strPreviousWorkflowElements.size() == 0)//script does not depend on other scripts
+        {
+            if(currentStep == null) //it is a first script in the pipeline
+            {
+                Step step = new Step("step_" + app.getName());
+                currentStep = step;
+                pipeline.addStep(step);
+            }
+
+            Script pipelineScript = new Script(scriptID, remoteLocation, result.getBytes());
+            currentStep.addScript(pipelineScript);
+        }
+        else //scripts depends on previous scripts
+        {
+            String strPrevious = strPreviousWorkflowElements.get(0);
+
+            if(!strPrevious.equalsIgnoreCase(strCurrentPipelineStep))
+            {
+                Step step = new Step("step_" + app.getName());
+                currentStep = step;
+                pipeline.addStep(step);
+            }
+
+            Script pipelineScript = new Script(scriptID, remoteLocation, result.getBytes());
+            currentStep.addScript(pipelineScript);
+
+            strCurrentPipelineStep = strPrevious;
+        }
+
+        System.out.println("--- pipeline: " + pipeline.getId());
+        for(int i = 0; i < pipeline.getNumberOfSteps(); i++)
+        {
+            Step step = pipeline.getStep(i);
+            System.out.println("step: " + step.getId());
+            for(int ii = 0; ii < step.getNumberOfScripts(); ii++)
+            {
+                Script script = step.getScript(ii);
+                System.out.println("script: " + script.getID());
+            }
+        }
+
 
     }
 
@@ -263,9 +403,8 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         return date.substring(2, 4) + date.substring(5, 7) + date.substring(8, 10);
     }
 
-    public static String now()
+    public String now()
     {
-        Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
         return sdf.format(cal.getTime());
 
