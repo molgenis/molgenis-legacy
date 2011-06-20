@@ -1,6 +1,6 @@
 package org.molgenis.compute;
 
-import app.ui.WorksheetFormController;
+//import app.ui.WorksheetFormController;
 import compute.pipelinemodel.Pipeline;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
