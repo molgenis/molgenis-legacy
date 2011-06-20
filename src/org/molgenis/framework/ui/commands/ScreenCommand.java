@@ -112,7 +112,7 @@ public interface ScreenCommand extends Templateable, Serializable, ScreenModel
 	 * @param screen
 	 *            The screen this command belongs to
 	 */
-	public void setController(ScreenController<?> screen);
+	public void setController(ScreenController<? extends ScreenModel> screen);
 
 	/**
 	 * @return true if this command should be shown as a dialog. @see #setDialog

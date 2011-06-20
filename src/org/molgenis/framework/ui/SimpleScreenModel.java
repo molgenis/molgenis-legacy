@@ -142,7 +142,7 @@ public abstract class SimpleScreenModel implements
 	}
 
 	@Override
-	public void setController(ScreenController<?> controller)
+	public void setController(ScreenController<? extends ScreenModel> controller)
 	{
 		this.controller = controller;
 	}
