@@ -52,6 +52,16 @@ public class Setup {
             ex.printStackTrace(System.out);
         }
     }
+    
+    public void oracleToText(ActionEvent ar) {
+        try {
+            //new ConverterLifeLinesPheno(dataDictonary).main(new String[]{dataDictonary});
+//             OracleToText.main(null);
+            //new EAVToRelational().main(null);
+        } catch (Exception ex) {
+            ex.printStackTrace(System.out);
+        }        
+    }
 
 
 }

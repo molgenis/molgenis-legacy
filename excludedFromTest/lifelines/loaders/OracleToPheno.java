@@ -22,7 +22,7 @@ import org.molgenis.pheno.ObservedValue;
  * @author jorislops
  */
 public class OracleToPheno {
-    private String sql = "SELECT * FROM LLPOPER.%s";
+    private String sql = "SELECT * FROM LLPOPER.%s WHERE rownum < 10";
     private String tableName = "LL_DATASET9";
     private String investigationName = tableName;
     
@@ -31,7 +31,7 @@ public class OracleToPheno {
     }
 
     public OracleToPheno() throws Exception {
-        Connection con = OracleToLifelinesPheno.getConnection();
+        Connection con = LoaderUtils.getConnection();
         Statement stm = con.createStatement();
         ResultSet rs = stm.executeQuery(String.format(sql, tableName));
         ResultSetMetaData rsmd = rs.getMetaData();
@@ -45,7 +45,7 @@ public class OracleToPheno {
         
         List<Measurement> measurements = new ArrayList<Measurement>();
         for(int i = 1; i <= rsmd.getColumnCount(); ++i) {
-            String columnName = rsmd.getColumnName(1);        
+            String columnName = rsmd.getColumnName(i);        
             Measurement m = em.createQuery("SELECT m FROM Measurement m WHERE m.name = :name AND m.investigation = :investigation", Measurement.class)
               .setParameter("name", columnName)
               .setParameter("investigation", investigation)
@@ -53,9 +53,11 @@ public class OracleToPheno {
             measurements.add(m);
         }
         
-        em.getTransaction().begin();
+        
         while(rs.next()) {
             ObservationElement target = null;
+        
+            em.getTransaction().begin();
             for(int i = 1; i <= rsmd.getColumnCount(); ++i) {
                 Object value = rs.getObject(i);
                 if(i == 1) {
@@ -67,12 +69,17 @@ public class OracleToPheno {
                 
                 ObservedValue ov = new ObservedValue();
                 ov.setFeature(measurements.get(i-1));
-                ov.setValue(value.toString());
+                if(value != null) {
+                    ov.setValue(value.toString());
+                } 
                 ov.setInvestigation(investigation);
                 ov.setTarget(target);
-                em.persist(ov);
+                if(value != null) {
+                    em.persist(ov);
+                }
             }
+            em.getTransaction().commit();
         }
-        em.getTransaction().commit();
+        
     }
 }
