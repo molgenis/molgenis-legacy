@@ -30,8 +30,8 @@ public class WorkflowParametersWeaver
             "#PBS -l nodes=1:ppn=1\n" +
             "#PBS -l walltime=${walltime}\n" +
             "#PBS -l mem=7gb\n" +
-            "#PBS -e ${location}/err/err_${jobID}_${scriptID}.err\n" +
-            "#PBS -o ${location}/out/out_${jobID}_${scriptID}.out\n" +
+            "#PBS -e ${location}/err/err_${scriptID}.err\n" +
+            "#PBS -o ${location}/out/out_${scriptID}.out\n" +
             "printf \"${scriptID}_started \" >>${location}/log_${jobID}.txt\n" +
             "date \"+DATE: %m/%d/%y%tTIME: %H:%M:%S\" >>${location}/log_${jobID}.txt\n" +
             "${actualcommand}\n" +
@@ -57,7 +57,7 @@ public class WorkflowParametersWeaver
             e.printStackTrace();
         }
 
-        System.out.println("result: " + out.toString());
+        //System.out.println("result: " + out.toString());
 
         return out.toString();
     }
