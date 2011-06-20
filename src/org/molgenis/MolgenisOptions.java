@@ -47,21 +47,24 @@ public class MolgenisOptions
 	@Option(name = "example_data_dir", param = Option.Param.DIRPATH, type = Option.Type.REQUIRED_ARGUMENT, usage = "Directory where example data lives. Default: 'data'")
 	public String example_data_dir = "data";
 	
+        @Option(name = "output_dir", param = Option.Param.DIRPATH, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Directory where all generated code is stored")
+        public String output_dir = "generated";
+        
 	/** Source directory for generated python*/
 	@Option(name = "output_python", param = Option.Param.DIRPATH, type = Option.Type.REQUIRED_ARGUMENT, usage = "Output-directory for the generated Python classes. Default: 'generated/python'")
-	public String output_python = "generated/python";
+	public String output_python = output_dir + "/python";
 
 	/** Source directory for generated java*/
 	@Option(name = "output_src", param = Option.Param.DIRPATH, type = Option.Type.REQUIRED_ARGUMENT, usage = "Output-directory for the generated Java classes. Default: 'generated/java'")
-	public String output_src = "generated/java";
+	public String output_src = output_dir + "/java";
 
 	/** Source directory for handwritten java */
 	@Option(name = "output_hand", param = Option.Param.DIRPATH, type = Option.Type.REQUIRED_ARGUMENT, usage = "Source directory for handwritten java. Default: 'handwritten/java'")
-	public String output_hand = "handwritten/java";
+	public String output_hand = output_dir + "/java";
 
 	/** Source directory for generated sql */
 	@Option(name = "output_sql", param = Option.Param.DIRPATH, type = Option.Type.REQUIRED_ARGUMENT, usage = "Output-directory for the generated sql files. Default: 'generated/sql'")
-	public String output_sql = "generated/sql";
+	public String output_sql = output_dir + "/sql";
 
 	/** Source directory for generated doc */
 	@Option(name = "output_doc", param = Option.Param.DIRPATH, type = Option.Type.REQUIRED_ARGUMENT, usage = "Output-directory for the generated documentation. Default: 'WebContent/generated-doc'")
@@ -180,7 +183,7 @@ public class MolgenisOptions
 	public String db_mode = "servlet";
 	
 	@Option(name = "output_cpp", param = Option.Param.DIRPATH, type = Option.Type.REQUIRED_ARGUMENT, usage = "Output-directory for the generated CPP classes. Default: 'generated/cpp'")
-	public String output_cpp = "generated/cpp";
+	public String output_cpp = output_dir + "/cpp";
 	
 	@Option(name = "generate_cpp", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Generate CPP. Default: false")
 	public boolean generate_cpp = false;
@@ -209,7 +212,9 @@ public class MolgenisOptions
 	@Option(name = "generate_plugins", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "generate the Molgenis plugin API. Default: true")
 	public boolean generate_plugins = true;
 	
-
+        @Option(name = "delete_generated_folder", param= Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "delete generated Folder before generators are executed. Default: true")
+        public boolean delete_generated_folder = true;
+        
 	// @Option(name = "force_lowercase_names", param = "force_lowercase_names",
 	// type = Option.Type.REQUIRED_ARGUMENT, usage =
 	// "Expert option. Wether all names should be converted to lowercase. Default: true"
