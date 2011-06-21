@@ -39,7 +39,8 @@ public class WorkflowParametersWeaver
             "date \"+DATE: %m/%d/%y%tTIME: %H:%M:%S\" >>${location}/log_${jobID}.txt";
 
     private String logfilename = "${location}/log_${jobID}.txt";
-
+    private String errfilename = "${location}/err/err_${scriptID}.err";
+    private String outfilename = "${location}/out/out_${scriptID}.out";
 
     public String weaveFreemarker(String strTemplate, Hashtable<String, String> parameters)
     {
@@ -71,6 +72,17 @@ public class WorkflowParametersWeaver
     {
         return weaveFreemarker(logfilename, scriptParameters);
     }
+
+    public String getErrfilename()
+    {
+        return weaveFreemarker(errfilename, scriptParameters);
+    }
+
+    public String getOutfilename()
+    {
+        return weaveFreemarker(outfilename, scriptParameters);
+    }
+
 
     public void setJobID(String str)
     {

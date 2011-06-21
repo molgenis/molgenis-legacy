@@ -3,6 +3,7 @@ package org.molgenis.compute;
 import compute.pipelinemodel.Pipeline;
 import compute.pipelinemodel.Script;
 import compute.pipelinemodel.Step;
+import compute.scriptserver.MCF;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.*;
@@ -11,8 +12,10 @@ import org.molgenis.ngs.Worksheet;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.*;
+import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
+import javax.servlet.ServletContext;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -29,6 +32,7 @@ import java.util.*;
 public class StartNgs extends EasyPluginController<StartNgsModel>
 {
     private static final String PARAMETER = "parameter";//reserved word to show that ComputeFeatureValue goes from WorkflowElementParameter
+    private static final String LOG = "log";// reserved word for logging feature type used in ComputeFeature
 
 
     public static final String DATE_FORMAT_NOW = "yyyy-MM-dd-HH:mm:ss";
@@ -37,6 +41,10 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
     private Step currentStep = null;
     private String strCurrentPipelineStep = "INITIAL";
     private int pipelineElementNumber = 0;
+
+    //compute
+    private MCF mcf = null;
+
 
     //map of all compute features/values
     private Hashtable<String, String> weavingValues = null;
@@ -50,6 +58,9 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
 
     private Calendar cal = Calendar.getInstance();
     private WorkflowParametersWeaver weaver = new WorkflowParametersWeaver();
+
+    //responsible for updating DB with progress
+    private DatabaseUpdater updater = new DatabaseUpdater();
 
     private enum UserParameter
     {
@@ -70,8 +81,16 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
 
     public void buttonStart(Database db, Tuple request) throws Exception
     {
+        if (mcf == null)
+                {
+                    HttpServletRequestTuple req = (HttpServletRequestTuple) request;
+                    ServletContext servletContext = req.getRequest().getSession().getServletContext();
+                    mcf = (MCF) servletContext.getAttribute("MCF");
+                }
 
-        System.out.println("pipeline started");
+
+
+        System.out.println(">>> generate apps");
 
         pipeline = new Pipeline();
         userValues = new Hashtable<String, String>();
@@ -161,6 +180,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         wholeWorkflowApp.setName(appName);
         pipeline.setId(appName);
         weaver.setJobID(appName);
+//        db.beginTx();
         db.add(wholeWorkflowApp);
 
         //process workflow elements
@@ -173,12 +193,27 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         }
 
         String logfile = weaver.getLogfilename();
-        System.out.println("logfile: " + logfile);
+        //System.out.println("logfile: " + logfile);
 
-        pipeline.setLogfile(logfile);
+        pipeline.setPipelinelogpath(logfile);
 
-
+        db.commitTx();
         getModel().setSuccess("update succesfull");
+
+        //execute pipeline
+        System.out.println(pipeline.toString());
+        mcf.setPipeline(pipeline);
+
+        //start monitoring for database update
+        if(!updater.isStarted())
+        {
+            updater.setSettings(10, 10);
+            updater.setDatabase(db);
+            updater.setMCF(mcf);
+            updater.start();
+        }
+
+
     }
 
     private void processWorkflowElement(Database db, Tuple request, WorkflowElement workflowElement)
@@ -280,7 +315,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
 
     private void generateComApp(Database db, Tuple request, WorkflowElement workflowElement, ComputeProtocol protocol,
                                 Hashtable<String, String> weavingValues, Vector<ComputeFeature> featuresToDerive)
-            throws IOException, DatabaseException
+            throws IOException, DatabaseException, ParseException
     {
         ComputeApplication app = new ComputeApplication();
         app.setProtocol(protocol);
@@ -311,9 +346,18 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         app.setComputeScript(result);
         //app.setPrevSteps();
         db.add(app);
+        List<ComputeApplication> res = db.query(ComputeApplication.class).equals(ComputeApplication.NAME, app.getName()).find();
+        if (res.size() != 1)
+            throw new DatabaseException("ERROR while inserting into db");
+
+        app = res.get(0);
 
         Set entries = weavingValues.entrySet();
         Iterator it = entries.iterator();
+
+        //this is used for database update with ComputeAppPaths
+        String logpathfile = null;
+
         while (it.hasNext())
         {
             Map.Entry entry = (Map.Entry) it.next();
@@ -326,6 +370,11 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
             observedValue.setProtocolApplication(app);
             observedValue.setTarget(target);
             ComputeFeature feature = computeFeatures.get(name);
+            if(feature.getFeatureType().equalsIgnoreCase(LOG))
+            {
+                logpathfile = value;
+            }
+
             observedValue.setFeature(feature);
             db.add(observedValue);
         }
@@ -341,17 +390,22 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         weaver.setWalltime(protocol.getComputationalTime());
         weaver.setActualCommand(result);
         String remoteLocation = computeFeatures.get("outputdir").getDefaultValue();
+
+        System.out.println("remote location: " + remoteLocation);
+
         weaver.setDatasetLocation(remoteLocation);
         //write file for testing purposes
         String scriptFile = weaver.makeScript();
         String logfile = weaver.getLogfilename();
-        pipeline.setLogfile(logfile);
+        pipeline.setPipelinelogpath(logfile);
 
         weaver.writeToFile("/test/" + pipelineElementNumber + scriptID, scriptFile);
 
         //todo rewrite pipeline generation
         //look into proper choose of logfile and all path settings
         List<String> strPreviousWorkflowElements = workflowElement.getPreviousSteps_Name();
+
+        String scriptRemoteLocation = remoteLocation + "/scripts/";
 
         if(strPreviousWorkflowElements.size() == 0)//script does not depend on other scripts
         {
@@ -362,7 +416,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
                 pipeline.addStep(step);
             }
 
-            Script pipelineScript = new Script(scriptID, remoteLocation, result.getBytes());
+            Script pipelineScript = new Script(scriptID, scriptRemoteLocation, scriptFile.getBytes());
             currentStep.addScript(pipelineScript);
         }
         else //scripts depends on previous scripts
@@ -376,25 +430,21 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
                 pipeline.addStep(step);
             }
 
-            Script pipelineScript = new Script(scriptID, remoteLocation, result.getBytes());
+            Script pipelineScript = new Script(scriptID, scriptRemoteLocation, scriptFile.getBytes());
             currentStep.addScript(pipelineScript);
 
             strCurrentPipelineStep = strPrevious;
         }
 
-        System.out.println("--- pipeline: " + pipeline.getId());
-        for(int i = 0; i < pipeline.getNumberOfSteps(); i++)
-        {
-            Step step = pipeline.getStep(i);
-            System.out.println("step: " + step.getId());
-            for(int ii = 0; ii < step.getNumberOfScripts(); ii++)
-            {
-                Script script = step.getScript(ii);
-                System.out.println("script: " + script.getID());
-            }
-        }
+        //here ComputeAppPaths generation
+        ComputeAppPaths appPaths = new ComputeAppPaths();
+        appPaths.setApplication(app);
+        appPaths.setErrpath(weaver.getErrfilename());
+        appPaths.setOutpath(weaver.getOutfilename());
+        if(logpathfile != null)
+            appPaths.setLogpath(logpathfile);
 
-
+       updater.addComputeAppPath(appPaths);
     }
 
     //returns format yymmdd
