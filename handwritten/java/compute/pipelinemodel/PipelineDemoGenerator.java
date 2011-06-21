@@ -62,7 +62,7 @@ public class PipelineDemoGenerator
     public Pipeline getTest()
     {
         Pipeline p = generateTestCase("test1", "", "/Users/georgebyelas/Development/ScriptbasedComputePlatform/input.txt", false);
-        p.setLogfile("/data/byelas/demo/test1log.txt");
+        //p.setLogfile("/data/byelas/demo/test1log.txt");
 
         return p;
 
@@ -314,10 +314,10 @@ public class PipelineDemoGenerator
         String pipelineID = "pipeline" + id_number;
         pipeline.setId(pipelineID);
 
-        pipeline.setLogfile("/data/byelas/demo/"+ pipelineID +"/log.txt");
+        //pipeline.setLogfile("/data/byelas/demo/"+ pipelineID +"/log.txt");
 
         if(isLocal)
-            pipeline.setLogfile("/demo/"+ pipelineID +"/log.txt");
+            ;//pipeline.setLogfile("/demo/"+ pipelineID +"/log.txt");
 
 
         Random randomGenerator = new Random();
