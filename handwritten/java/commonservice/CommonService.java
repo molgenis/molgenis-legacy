@@ -2058,17 +2058,17 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public Project getProject(String contractcode) throws DatabaseException, ParseException {
-	    Query<Project> s = db.query(Project.class);
-	    s.addRules(new QueryRule(Project.CONTRACTCODE, Operator.EQUALS,
-		    contractcode));
-	
-		if(s.find().isEmpty()) {
-		    throw new DatabaseException("Project with contractcode " + contractcode + " does not exist.");
-		}
-		else
-		    return s.find().get(0);
-	}
+//	public Project getProject(String contractcode) throws DatabaseException, ParseException {
+//	    Query<Project> s = db.query(Project.class);
+//	    s.addRules(new QueryRule(Project.CONTRACTCODE, Operator.EQUALS,
+//		    contractcode));
+//	
+//		if(s.find().isEmpty()) {
+//		    throw new DatabaseException("Project with contractcode " + contractcode + " does not exist.");
+//		}
+//		else
+//		    return s.find().get(0);
+//	}
 	
 	/**
 	 * Get the name of the given MolgenisEntity. Returns null if it doesn't exist.
