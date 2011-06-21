@@ -15,4 +15,10 @@ public class IntInput extends TextLineInput
 	{
 		super( name, value );
 	}
+
+	public IntInput(String name, String label, Integer value,
+			boolean nillable, boolean readonly)
+	{
+		super(name,label, value == null ? null : value.toString(),nillable,readonly);
+	}
 }

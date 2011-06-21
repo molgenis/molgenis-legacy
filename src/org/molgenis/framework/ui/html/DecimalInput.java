@@ -14,4 +14,13 @@ public class DecimalInput extends StringInput
 	{
 		this (name, null);
 	}
+
+	public DecimalInput(String name, String label, Double value,
+			boolean nillable, boolean readonly)
+	{
+		super(name,value);
+		this.setLabel(label);
+		this.setNillable(nillable);
+		this.setReadonly(readonly);
+	}
 }
