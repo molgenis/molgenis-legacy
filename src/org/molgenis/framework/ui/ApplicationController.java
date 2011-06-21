@@ -240,6 +240,16 @@ public class ApplicationController extends SimpleScreenController<ApplicationMod
 				s.getModel().getMessages().clear();
 		}	
 	}
+
+	/**
+	 * Get the database object for this application
+	 * @return
+	 * @throws Exception
+	 */
+	public Database getDatabase()
+	{
+		throw new UnsupportedOperationException("getDatabase must be implemented for use");
+	}
 	
 	
 //	public ScreenController<?,?> getSelected()

@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.lang.reflect.Method;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.util.Tuple;
 
 /**
@@ -39,10 +40,10 @@ public abstract class EasyPluginController<M extends ScreenModel> extends
 
 	public void delegate(String action, Database db, Tuple request)
 	{
-		//try/catch for db.rollbackTx
+		// try/catch for db.rollbackTx
 		try
 		{
-			//try/catch for method calling
+			// try/catch for method calling
 			try
 			{
 				db.beginTx();

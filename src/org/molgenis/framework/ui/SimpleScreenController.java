@@ -240,5 +240,11 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
 	// // TODO Auto-generated method stub
 	//		
 	// }
+	
+	@Override
+	public Database getDatabase()
+	{
+		return this.getApplicationController().getDatabase();
+	}
 
 }
