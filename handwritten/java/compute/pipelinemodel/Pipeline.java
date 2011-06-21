@@ -13,7 +13,7 @@ public class Pipeline
     private Vector<Step> steps = new Vector();
     private LoggingReader monitor = null;
 
-    private String logfile;
+    private String pipelinelogpath;
 
 
     public int getNumberOfSteps()
@@ -51,14 +51,14 @@ public class Pipeline
         return monitor;
     }
 
-    public String getLogfile()
+    public String getPipelinelogpath()
     {
-        return logfile;
+        return pipelinelogpath;
     }
 
-    public void setLogfile(String logfile)
+    public void setPipelinelogpath(String pipelinelogpath)
     {
-        this.logfile = logfile;
+        this.pipelinelogpath = pipelinelogpath;
     }
 
     @Override
@@ -68,5 +68,10 @@ public class Pipeline
                 "id='" + id + '\'' +
                 ", steps=" + steps +
                 '}';
+    }
+
+    public String pipelineLogFile()
+    {
+        return monitor.getLogFile();
     }
 }

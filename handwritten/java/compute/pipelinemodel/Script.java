@@ -22,11 +22,14 @@ public class Script implements Serializable
 
     private String remoteDir = null;
 
+    private boolean isFinished = false;
+    private boolean isStarted = false;
 
     private boolean hasAdditionalFiles = false;
     private Vector<FileToSaveRemotely> filesToSaveRemotely = new Vector();
 
     private boolean isShort = false;
+
 
     public Script(String scriptID, String outputRemoteLocation, byte[] bytes)
     {
@@ -141,6 +144,26 @@ public class Script implements Serializable
     public int getNumberFileToSaveRemotely()
     {
         return filesToSaveRemotely.size(); 
+    }
+
+    public boolean isFinished()
+    {
+        return isFinished;
+    }
+
+    public void setFinished(boolean finished)
+    {
+        isFinished = finished;
+    }
+
+    public boolean isStarted()
+    {
+        return isStarted;
+    }
+
+    public void setStarted(boolean started)
+    {
+        isStarted = started;
     }
 
     @Override

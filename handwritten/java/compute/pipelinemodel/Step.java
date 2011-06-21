@@ -96,6 +96,18 @@ public class Step
         this.scriptsFinished = scriptsFinished;
     }
 
+
+    public Script getScript(String id)
+    {
+        for(int i = 0; i < scripts.size(); i++)
+        {
+            Script script = scripts.elementAt(i);
+            if(script.getID().equalsIgnoreCase(id))
+                return script;
+        }
+        return null;
+    }
+
     @Override
     public String toString()
     {
