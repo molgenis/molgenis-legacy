@@ -31,6 +31,7 @@ import org.molgenis.util.Entity;
  */
 public class MrefInput extends HtmlInput
 {
+	private String error = null;
 	// private List<ValueLabel> options = new Vector<ValueLabel>();
 	// The label of the value to show in the box
 	// xrefLabel,values
@@ -48,23 +49,45 @@ public class MrefInput extends HtmlInput
 		super(name, value);
 	}
 	
-	public MrefInput(String name, String entityName, Database db) throws InstantiationException, IllegalAccessException
+	public MrefInput(String name, String entityName, Database db)
 	{
 		this(name, db.getClassForName(entityName));
 	}
 	
-	public MrefInput(String name, Class<? extends Entity> xrefEntityClass) throws InstantiationException, IllegalAccessException
+	public MrefInput(String name, String entityName, Database db, String label,
+			Object value, boolean nillable, boolean readonly)
+	{
+		this(name, entityName, db);
+		this.setLabel(label);
+		this.setValue(value);
+		this.setNillable(nillable);
+		this.setReadonly(readonly);
+	}
+	
+	public MrefInput(String name, Class<? extends Entity> xrefEntityClass) 
 	{
 		super(name,null);
 		
-		this.setXrefEntity(xrefEntityClass);
-		this.setXrefField(xrefEntityClass.newInstance().getIdField());
-		this.setXrefLabels(xrefEntityClass.newInstance().getLabelFields());
+		try
+		{
+			this.setXrefEntity(xrefEntityClass);
+			this.setXrefField(xrefEntityClass.newInstance().getIdField());
+			this.setXrefLabels(xrefEntityClass.newInstance().getLabelFields());
+		}
+		catch (Exception e)
+		{
+			this.error = e.getMessage();
+			e.printStackTrace();
+		}
+		
+		
 	}
 
 	@Override
 	public String toHtml()
 	{
+		if (this.error != null) return "ERROR: "+error;
+		
 		// BIG FIXME we have to enable nillable checkin on this one
 		this.setNillable(true);
 

@@ -1,5 +1,7 @@
 package org.molgenis.framework.ui.html;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import org.molgenis.util.ValueLabel;
@@ -10,10 +12,10 @@ import org.molgenis.util.ValueLabel;
 public class CheckboxInput extends HtmlInput
 {
 	private Vector<ValueLabel> options = new Vector<ValueLabel>();
-	
+
 	/**
-	 * Construct a checkbox input with a name, a label and a description, as well as one or more options and
-	 * zero or more selected values.
+	 * Construct a checkbox input with a name, a label and a description, as
+	 * well as one or more options and zero or more selected values.
 	 * 
 	 * @param name
 	 * @param label
@@ -21,13 +23,43 @@ public class CheckboxInput extends HtmlInput
 	 * @param options
 	 * @param value
 	 */
-	public CheckboxInput(String name, String label, String description, Vector<ValueLabel> options, Vector<String> value)
+	public CheckboxInput(String name, String label, String description,
+			Vector<ValueLabel> options, Vector<String> value)
 	{
 		super(name, value);
 		super.setLabel(label);
 		super.setDescription(description);
 		this.options = options;
-		this.setReadonly(false);			
+		this.setReadonly(false);
+	}
+
+	public CheckboxInput(String name, List<String> options,
+			List<String> optionLabels, String label, String value,
+			boolean nillable, boolean readonly)
+	{
+		super(name, value);
+		if (optionLabels != null && optionLabels.size() > 0
+				& optionLabels.size() != options.size()) throw new IllegalArgumentException(
+				"optionLabels, if set, must be of same size as options");
+
+		List<ValueLabel> result = new ArrayList<ValueLabel>();
+		if (optionLabels != null && optionLabels.size() == optionLabels.size())
+		{
+			for (int i = 0; i < options.size(); i++)
+			{
+				result.add(new ValueLabel(options.get(i), optionLabels.get(i)));
+			}
+		}
+		else
+		{
+			for(String option: options)
+			{
+				result.add(new ValueLabel(option,option));
+			}
+		}
+		this.setLabel(label);
+		this.setNillable(nillable);
+		this.setReadonly(readonly);
 	}
 
 	public String toHtml()
@@ -38,47 +70,56 @@ public class CheckboxInput extends HtmlInput
 			input.setHidden(true);
 			return input.toHtml();
 		}
-		
+
 		StringBuffer optionString = new StringBuffer("");
-		String readonly = ( isReadonly() ? " class=\"readonly\" readonly " : "");
+		String readonly = (isReadonly() ? " class=\"readonly\" readonly " : "");
 		String checked = "";
-		
+
 		if (!(options.isEmpty()))
 		{
 			for (ValueLabel option : options)
 			{
-				if (getObject() != null) {
-					checked = ( ((Vector<String>)getObject()).contains(option.getValue().toString()) ? " checked " : "");
+				if (getObject() != null)
+				{
+					checked = (((Vector<String>) getObject()).contains(option
+							.getValue().toString()) ? " checked " : "");
 				}
-				optionString.append("<input id=\"" + this.getId() + "\" type=\"checkbox\" " + readonly + checked + 
-						" name=\"" + this.getName() + "\" value=\"" + option.getValue() + "\">" + option.getLabel() + 
-						"<br />\n");
-			}			
-		}
-		else {
-			if (getObject() != null) {
-				checked = ( ((Vector<String>)getObject()).contains(this.getName()) ? " checked " : "");
+				optionString.append("<input id=\"" + this.getId()
+						+ "\" type=\"checkbox\" " + readonly + checked
+						+ " name=\"" + this.getName() + "\" value=\""
+						+ option.getValue() + "\">" + option.getLabel()
+						+ "<br />\n");
 			}
-			optionString.append("<input id=\"" + this.getId() + "\" type=\"checkbox\" " + readonly + checked + 
-					" name=\"" +  this.getName() + "\">" + this.getLabel());		
 		}
-		
+		else
+		{
+			if (getObject() != null)
+			{
+				checked = (((Vector<String>) getObject()).contains(this
+						.getName()) ? " checked " : "");
+			}
+			optionString.append("<input id=\"" + this.getId()
+					+ "\" type=\"checkbox\" " + readonly + checked + " name=\""
+					+ this.getName() + "\">" + this.getLabel());
+		}
+
 		return optionString.toString();
 	}
-	
+
 	@Override
 	public String getValue()
 	{
 		String value = "";
-		for (ValueLabel i: options)
+		for (ValueLabel i : options)
 		{
-			if (((Vector<String>)getObject()).contains(i.getValue()))
+			if (((Vector<String>) getObject()).contains(i.getValue()))
 			{
 				value += i.getLabel() + ", ";
 			}
 		}
 		// remove trailing comma
-		if (value.length() > 2) {
+		if (value.length() > 2)
+		{
 			return value.substring(0, value.length() - 2);
 		}
 		return value;

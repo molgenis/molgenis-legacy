@@ -20,6 +20,16 @@ public class BoolInput extends HtmlInput
 		super(name, null);
 	}
 
+	public BoolInput(String name, String label, Boolean value,
+			boolean nillable, boolean readonly)
+	{
+		this(name,value);
+		this.setLabel(label);
+		this.setValue(value);
+		this.setNillable(nillable);
+		this.setReadonly(readonly);
+	}
+
 	@Override
 	public String toHtml()
 	{

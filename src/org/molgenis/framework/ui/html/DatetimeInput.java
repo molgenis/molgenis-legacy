@@ -13,6 +13,7 @@ package org.molgenis.framework.ui.html;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -29,6 +30,14 @@ public class DatetimeInput extends HtmlInput
 	public DatetimeInput(String name, Object value)
 	{
 		super(name, value);
+	}
+
+	public DatetimeInput(String name, String label, Date value, boolean nillable, boolean readonly)
+	{
+		super(name,value);
+		if(label != null && !label.equals("null")) this.setLabel(label);
+		this.setReadonly(readonly);
+		this.setNillable(nillable);
 	}
 
 	// tohtml

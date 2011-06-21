@@ -30,6 +30,15 @@ public class FileInput extends HtmlInput
 		this(name, null);
 	}
 
+	public FileInput(String name, String label, String value,
+			boolean nillable, boolean readonly)
+	{
+		this(name,value);
+		this.setLabel(label);
+		this.setNillable(nillable);
+		this.setReadonly(readonly);
+	}
+
 	@Override
 	public String toHtml()
 	{		

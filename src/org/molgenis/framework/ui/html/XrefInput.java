@@ -32,6 +32,7 @@ public class XrefInput extends HtmlInput
 {
 	// The label of the value to show in the box
 	private Map<String, Object> valueLabel = new LinkedHashMap<String, Object>();
+	private String error = null;
 
 	private String xrefEntity;
 	private String xrefField;
@@ -48,7 +49,7 @@ public class XrefInput extends HtmlInput
 		super(name, value);
 	}
 	
-	public XrefInput(String name, String entityName, Database db) throws InstantiationException, IllegalAccessException
+	public XrefInput(String name, String entityName, Database db) 
 	{
 		this(name, db.getClassForName(entityName));
 	}
@@ -67,12 +68,25 @@ public class XrefInput extends HtmlInput
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			this.error = e.getMessage();
 		}
+	}
+
+	public XrefInput(String name, String entityName, Database db, String label,
+			Object value, boolean nillable, boolean readonly)
+	{
+		this(name, entityName, db);
+		this.setLabel(label);
+		this.setValue(value);
+		this.setNillable(nillable);
+		this.setReadonly(readonly);
 	}
 
 	@Override
 	public String toHtml()
 	{
+		if (this.error != null) return "ERROR: "+error;
+		
 		if("".equals(xrefEntity) || "".equals(xrefField) || xrefLabels == null || xrefLabels.size() == 0)
 		{
 			throw new RuntimeException("XrefInput("+this.getName()+") is missing xrefEntity, xrefField and/or xrefLabels settings");
