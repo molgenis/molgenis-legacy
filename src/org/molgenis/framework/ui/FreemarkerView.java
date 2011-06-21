@@ -4,9 +4,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
+import org.molgenis.framework.db.Database;
 
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
@@ -131,13 +131,16 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 	@Override
 	public String render()
 	{
+		//get the database for this application
+		Database db = this.getModel().getController().getApplicationController().getDatabase();
+		
 		// create template parameters
 		Map<String, Object> templateArgs = new LinkedHashMap<String,Object>(this.arguments);
 		templateArgs.put("application", model.getController()
 				.getApplicationController().getModel());
 		templateArgs.put("screen", model);
 		templateArgs.put("model", model);
-		templateArgs.put("widgetfactory", new ScreenViewHelper());
+		templateArgs.put("widgetfactory", new WidgetFactory(db));
 		templateArgs.put("show", model.getController()
 				.getApplicationController().getModel().getShow());
 		

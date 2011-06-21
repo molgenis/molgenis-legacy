@@ -104,6 +104,12 @@ public interface ScreenController<MODEL extends ScreenModel> extends Serializabl
 	 */
 	public EmailService getEmailService();
 	
+	/**
+	 * Get an instance of the database.
+	 * Big warning: please destory the instances to limit chances of unclosed database connections
+	 */
+	public Database getDatabase();
+	
 
 	/**
 	 * Get the user interface this screen is part of.

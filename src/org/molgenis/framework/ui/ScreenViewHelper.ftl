@@ -1,16 +1,6 @@
 <#-- Factory methods to rapidly create form inputs in MOLGENIS -->
 
-<#macro date name label="null" value=widgetfactory.now() nillable=false readonly=false>
-${widgetfactory.date(name,label,value,nillable,readonly)}
-</#macro>
-
-<#macro string name label="null" value="null" nillable=false readonly=false>
-${widgetfactory.string(name,label,value,nillable,readonly)}
-</#macro>
-
-<#macro action name label="null">
-${widgetfactory.action(name,label)}
-</#macro>
+<#include "WidgetFactory.ftl"/>
 
 <#macro molgenis_header screen>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
