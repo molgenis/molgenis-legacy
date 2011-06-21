@@ -1,5 +1,6 @@
 package compute.monitor;
 
+import compute.pipelinemodel.Script;
 import compute.pipelinemodel.Step;
 import compute.pipelinemodel.Pipeline;
 import org.gridgain.grid.Grid;
@@ -16,8 +17,8 @@ public class LoggingReader
     private Grid grid = null;
     private ExecutorService exec = null;
 
-    private static final String _STARTED = "_started";
-    private static final String _FINISHED = "_finished";
+    public static final String _STARTED = "_started";
+    public static final String _FINISHED = "_finished";
 
     private String log_location = null;
 
@@ -26,6 +27,8 @@ public class LoggingReader
 
     private Summary summary = new Summary();
     private String pipelineName;
+
+    private String logging = RemoteFileReader.FILE_IS_NOT_EXISTS;
 
     public void setGrid(Grid grid)
     {
@@ -67,7 +70,7 @@ public class LoggingReader
 
     public boolean isStepFinished()
     {
-        Future<RemoteResult> future = exec.submit(new RemoteLoggingReader(log_location));
+        Future<RemoteResult> future = exec.submit(new RemoteFileReader(log_location));
 
         RemoteResult back = null;
 
@@ -84,10 +87,10 @@ public class LoggingReader
             e.printStackTrace();
         }
 
-        String logging = new String(back.getData());
+        logging = new String(back.getData());
 
         //log file is created by the first script of the pipeline;
-        if(logging.equalsIgnoreCase(RemoteLoggingReader.FILE_IS_NOT_EXISTS))
+        if(logging.equalsIgnoreCase(RemoteFileReader.FILE_IS_NOT_EXISTS))
         {
             System.out.println(">> LOG file is not created yet");
             return false;
@@ -100,13 +103,25 @@ public class LoggingReader
 
         for (int i = 0; i < summary.scripts_all; i++)
         {
-            String script_id = currentStep.getScript(i).getID();
+            Script script = currentStep.getScript(i);
+            String script_id = script.getID();
 
             int index_started = logging.indexOf(script_id + _STARTED);
             int index_finished = logging.indexOf(script_id + _FINISHED);
 
-            if (index_started > 0) summary.scripts_started++;
-            if (index_finished > 0) summary.scripts_finished++;
+            //todo in principle it is not the correct place to set the script as being started
+            //if does not work move to PipelineThread!!!
+            if (index_started > -1)
+            {
+                script.setStarted(true);
+                summary.scripts_started++;
+            }
+            if (index_finished > -1)
+            {
+                //script.setStarted(false);
+                script.setFinished(true);
+                summary.scripts_finished++;
+            }
         }
 
         currentStep.setScriptsStarted(summary.scripts_started);
@@ -136,5 +151,10 @@ public class LoggingReader
     public Summary getStepSummary()
     {
         return summary;
+    }
+
+    public String getLogFile()
+    {
+        return logging;
     }
 }

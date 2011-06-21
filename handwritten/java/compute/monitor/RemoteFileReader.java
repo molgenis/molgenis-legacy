@@ -5,25 +5,30 @@ import java.io.*;
 
 import compute.remoteexecutor.RemoteResult;
 
-public class RemoteLoggingReader implements Callable<RemoteResult>, Serializable
+public class RemoteFileReader implements Callable<RemoteResult>, Serializable
 {
     RemoteResult returnData = new RemoteResult();
 
     public static final String FILE_IS_NOT_EXISTS = "not-exists";
 
-    private String logging_filename = null;
+    private String filename = null;
 
 
-    public RemoteLoggingReader(String logging_filename)
+    public RemoteFileReader(String filename)
     {
-        this.logging_filename = logging_filename;
+        this.filename = filename;
+    }
+
+    public RemoteFileReader()
+    {
+
     }
 
     //probably monitor logic should be performed remotely!!!
     public RemoteResult call() throws Exception
     {
-        System.out.println(">>> read logging");
-        returnData.setData(getFileAsBytes(logging_filename));
+        System.out.println(">>> read file");
+        returnData.setData(getFileAsBytes(filename));
         return returnData;
     }
 
@@ -42,4 +47,8 @@ public class RemoteLoggingReader implements Callable<RemoteResult>, Serializable
         return bytes;
     }
 
+    public void setFilename(String filename)
+    {
+        this.filename = filename;
+    }
 }
