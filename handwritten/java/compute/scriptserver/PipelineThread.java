@@ -44,7 +44,7 @@ public class PipelineThread implements Runnable
         //set pipeline for demo purposes
         monitor.setPipeline(pipeline);
 
-        monitor.setLogFile(pipeline.getLogfile());
+        monitor.setLogFile(pipeline.getPipelinelogpath());
         monitor.setGrid(grid);
     }
 

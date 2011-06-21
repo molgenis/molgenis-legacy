@@ -2,6 +2,8 @@ package compute.scriptserver;
 
 import compute.pipelinemodel.Pipeline;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  * Created by IntelliJ IDEA.
  * User: georgebyelas
@@ -23,5 +25,7 @@ public interface MCF
     String getSimpleTestInfo();
 
     void removePipeline(String id);
+
+    ExecutorService getExecutor();
     
 }

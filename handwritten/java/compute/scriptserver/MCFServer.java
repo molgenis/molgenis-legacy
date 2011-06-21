@@ -8,6 +8,7 @@ import compute.resourcemanager.ResourceManager;
 
 import java.util.Vector;
 import java.util.Collection;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Created by IntelliJ IDEA.
@@ -135,6 +136,12 @@ public class MCFServer implements MCF
     public void removePipeline(String id)
     {
         
+    }
+
+    @Override
+    public ExecutorService getExecutor()
+    {
+        return grid.newGridExecutorService();
     }
 
 
