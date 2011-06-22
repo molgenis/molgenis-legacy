@@ -14,7 +14,7 @@ import org.molgenis.protocol.ComputeProtocol;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.protocol.WorkflowElement;
 
-import app.JDBCDatabase;
+import app.DatabaseFactory;
 
 public class ComputeLoadExample
 {
@@ -24,7 +24,7 @@ public class ComputeLoadExample
 		
 		try
 		{
-			db = new JDBCDatabase("handwritten/apps/org/molgenis/compute/compute.properties");
+			db = DatabaseFactory.create("handwritten/apps/org/molgenis/compute/compute.properties");
 			
 			db.beginTx();
 			
