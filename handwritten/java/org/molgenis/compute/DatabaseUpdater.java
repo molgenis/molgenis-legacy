@@ -75,7 +75,7 @@ public class DatabaseUpdater
 
                     if (status.equals(AppStatus.started))
                     {
-                        application.setStatusCode(0); // 1 is submitted
+                        application.setStatusCode("started");
                         try
                         {
                             db.beginTx();
@@ -93,7 +93,7 @@ public class DatabaseUpdater
                     }
                     else if (status.equals(AppStatus.finished))
                     {
-                        application.setStatusCode(2); // 2 is succes
+                        application.setStatusCode("finished");
 
                         String error = readRemoteFile(appPaths.getErrpath());
                         application.setErrorFile(error);
