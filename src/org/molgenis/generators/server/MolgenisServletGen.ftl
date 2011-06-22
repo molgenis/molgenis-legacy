@@ -19,7 +19,7 @@ import org.molgenis.framework.security.Login;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ApplicationController;
 import org.molgenis.framework.server.AbstractMolgenisServlet;
-import ${package}.<#if databaseImp = 'jpa'>Jpa<#else>JDBC</#if>Database;
+import ${package}.DatabaseFactory;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.SimpleEmailService;
 <#if generate_BOT>
@@ -49,9 +49,8 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 
 	public Database getDatabase() throws Exception
 	{
-		<#-- watch out, this code is duplicated below!!! -->
 		<#if databaseImp = 'jpa'>
-			JpaDatabase db = new ${package}.JpaDatabase();
+			Database db = DatabaseFactory.create();
 			return db;		
 		<#elseif db_mode = 'standalone'>
 			BasicDataSource data_src = new BasicDataSource();
@@ -63,13 +62,13 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 			data_src.setMaxWait(1000);
 		
 			DataSource dataSource = (DataSource)data_src;
-			JDBCDatabase db = new ${package}.JDBCDatabase(dataSource, new File("${db_filepath}"));
+			Database db = DatabaseFactory.create(dataSource, new File("${db_filepath}"));
 			db.getFileSourceHelper().setVariantId("${model.name}");
 			return db;
 		<#else>
 			//The datasource is created by the servletcontext	
 			DataSource dataSource = (DataSource)getServletContext().getAttribute("DataSource");
-			<#if databaseImp = 'jpa'>Jpa<#else>JDBC</#if>Database db = new ${package}.<#if databaseImp = 'jpa'>Jpa<#else>JDBC</#if>Database(dataSource, new File("${db_filepath}"));
+			Database db = DatabaseFactory.create(dataSource, new File("${db_filepath}"));
 			db.getFileSourceHelper().setVariantId("${model.name}");
 			return db;
 		</#if>
@@ -124,29 +123,29 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 				try
 				{
 
-				<#if databaseImp = 'jpa'>
-					JpaDatabase db = new ${package}.JpaDatabase();
-					return db;		
-				<#elseif db_mode = 'standalone'>
-					BasicDataSource data_src = new BasicDataSource();
-					data_src.setDriverClassName("${db_driver}");
-					data_src.setUsername("${db_user}");
-					data_src.setPassword("${db_password}");
-					data_src.setUrl("${db_uri}"); // a path within the src folder?
-					data_src.setMaxIdle(10);
-					data_src.setMaxWait(1000);
-				
-					DataSource dataSource = (DataSource)data_src;
-					JDBCDatabase db = new ${package}.JDBCDatabase(dataSource, new File("${db_filepath}"));
-					db.getFileSourceHelper().setVariantId("${model.name}");
-					return db;
-				<#else>
-					//The datasource is created by the servletcontext	
-					DataSource dataSource = (DataSource)getServletContext().getAttribute("DataSource");
-					<#if databaseImp = 'jpa'>Jpa<#else>JDBC</#if>Database db = new ${package}.<#if databaseImp = 'jpa'>Jpa<#else>JDBC</#if>Database(dataSource, new File("${db_filepath}"));
-					db.getFileSourceHelper().setVariantId("${model.name}");
-					return db;
-				</#if>
+					<#if databaseImp = 'jpa'>
+						Database db = DatabaseFactory.create();
+						return db;		
+					<#elseif db_mode = 'standalone'>
+						BasicDataSource data_src = new BasicDataSource();
+						data_src.setDriverClassName("${db_driver}");
+						data_src.setUsername("${db_user}");
+						data_src.setPassword("${db_password}");
+						data_src.setUrl("${db_uri}"); // a path within the src folder?
+						data_src.setMaxIdle(10);
+						data_src.setMaxWait(1000);
+					
+						DataSource dataSource = (DataSource)data_src;
+						Database db = DatabaseFactory.create(dataSource, new File("${db_filepath}"));
+						db.getFileSourceHelper().setVariantId("${model.name}");
+						return db;
+					<#else>
+						//The datasource is created by the servletcontext	
+						DataSource dataSource = (DataSource)getServletContext().getAttribute("DataSource");
+						Database db = DatabaseFactory.create(dataSource, new File("${db_filepath}"));
+						db.getFileSourceHelper().setVariantId("${model.name}");
+						return db;
+					</#if>
 				}
 				catch (Exception e)
 				{
