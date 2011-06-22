@@ -225,9 +225,8 @@
 			<field name="ComputeScript" nillable="true" type="text"
 				description="The actual command to be sent to the cluster, is a
 			filled in version of the one define in the ComputeProtocol, depending on the interpreter (e.g. R gets values prepended, bash gets freemarker template applied" />
-			<field name="StatusCode" nillable="false" type="int" default="0"
-				description="Status code of this subjob.
-			Currently: 0: start, 1: submit, 2: error, 3: succes"/>
+			<field name="StatusCode" nillable="false" type="enum" enum_options="[idle,submitted,started,finished]" default="idle"
+				description="Status code of this subjob."/>
 			<field name="StatusText" nillable="false" type="varchar"
 				default="no status" length="127" description="Status text of this subjob." />
 			<field name="StatusProgress" nillable="true" type="int"
