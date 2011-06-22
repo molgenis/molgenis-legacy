@@ -18,8 +18,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.StringUtils;
@@ -57,6 +55,7 @@ import org.molgenis.generators.csv.CsvExportGen;
 import org.molgenis.generators.csv.CsvImportByIdGen;
 import org.molgenis.generators.csv.CsvImportGen;
 import org.molgenis.generators.csv.CsvReaderGen;
+import org.molgenis.generators.db.DatabaseFactoryGen;
 import org.molgenis.generators.db.InMemoryDatabaseGen;
 import org.molgenis.generators.db.JDBCDatabaseGen;
 import org.molgenis.generators.db.JDBCMetaDatabaseGen;
@@ -289,6 +288,8 @@ public class Molgenis {
                 generators.add(new CountPerTableGen());
                 generators.add(new FillMetadataTablesGen());
             }
+            // DatabaseFactory
+    	    generators.add(new DatabaseFactoryGen());
         } else {
             logger.info("SEVERE: Skipping ALL SQL ....");
         }
@@ -592,7 +593,7 @@ public class Molgenis {
     }
 
     public void updateDb(boolean filldb) throws SQLException, FileNotFoundException,
-            IOException, CmdLineException {
+            IOException {
 
         boolean ask = false;
 
