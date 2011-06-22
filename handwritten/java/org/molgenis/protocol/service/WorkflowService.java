@@ -8,8 +8,11 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.jdbc.JDBCDatabase;
+import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.protocol.WorkflowElement;
+import org.molgenis.util.Tuple;
 
 public class WorkflowService implements Serializable
 {
@@ -40,18 +43,27 @@ public class WorkflowService implements Serializable
 	 */
 	public List<WorkflowElement> findWorkflowElements(Workflow workflow) throws DatabaseException, ParseException
 	{
-		List<WorkflowElement> result   = new ArrayList<WorkflowElement>();
+		List<WorkflowElement> result = new ArrayList<WorkflowElement>();
 
-		List<WorkflowElement> elements = this.db.query(WorkflowElement.class).equals(WorkflowElement.WORKFLOW, workflow.getId()).find();
-		
-		// TODO: How to query for IS NULL???
-		List<WorkflowElement> remove = new ArrayList<WorkflowElement>();
-		
-		for (WorkflowElement element : elements)
-			if (CollectionUtils.isNotEmpty(element.getPreviousSteps_Id()))
-				remove.add(element);
-		
-		elements.removeAll(remove);
+		List<Integer> weIds          = new ArrayList<Integer>();
+		List<WorkflowElement> elements;
+
+		if (this.db instanceof JDBCDatabase)
+		{
+			List<Tuple> ids = ((JDBCDatabase) this.db).sql("SELECT DISTINCT we.id FROM WorkflowElement we JOIN WorkflowElement_Workflow wew ON (we.id = wew.WorkflowElement) LEFT JOIN WorkflowElement_PreviousSteps wep ON (we.id = wep.WorkflowElement) WHERE wep.WorkflowElement IS NULL AND wew.Workflow = " + workflow.getId());
+			
+			for (Tuple entry : ids)
+				weIds.add(entry.getInt(0));
+			
+		}
+		else if (this.db instanceof JpaDatabase)
+		{
+			weIds = this.db.getEntityManager().createNativeQuery("SELECT DISTINCT we.id FROM WorkflowElement we JOIN WorkflowElement_Workflow wew ON (we.id = wew.WorkflowElement) LEFT JOIN WorkflowElement_PreviousSteps wep ON (we.id = wep.WorkflowElement) WHERE wep.WorkflowElement IS NULL AND wew.Workflow = " + workflow.getId()).getResultList();
+		}
+		else
+			throw new UnsupportedOperationException("Unsupported database mapper");
+
+		elements = this.db.query(WorkflowElement.class).in(WorkflowElement.ID, weIds).find();
 
 		while (CollectionUtils.isNotEmpty(elements))
 		{
@@ -62,13 +74,37 @@ public class WorkflowService implements Serializable
 		return result;
 	}
 
+	/**
+	 * Helper to select the next following WorkflowElements, i.e. where the previous steps are the current ones
+	 * @param elements
+	 * @return List of next WorkflowElements
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 */
 	private List<WorkflowElement> findNextWorkflowElements(List<WorkflowElement> elements) throws DatabaseException, ParseException
 	{
 		List<WorkflowElement> nextElements = new ArrayList<WorkflowElement>();
 
 		for (WorkflowElement element : elements)
 		{
-			nextElements.addAll(this.db.query(WorkflowElement.class).equals(WorkflowElement.PREVIOUSSTEPS, element.getId()).find());
+			List<Integer> weIds = new ArrayList<Integer>();
+
+			if (this.db instanceof JDBCDatabase)
+			{
+				List<Tuple> ids = ((JDBCDatabase) this.db).sql("SELECT WorkflowElement FROM WorkflowElement_PreviousSteps WHERE PreviousSteps = " + element.getId());
+				
+				for (Tuple entry : ids)
+					weIds.add(entry.getInt(0));
+			}
+			else if (this.db instanceof JpaDatabase)
+			{
+				weIds = this.db.getEntityManager().createNativeQuery("SELECT WorkflowElement FROM WorkflowElement_PreviousSteps WHERE PreviousSteps = " + element.getId()).getResultList();
+			}
+			else
+				throw new UnsupportedOperationException("Unsupported database mapper");
+
+			if (weIds.size() > 0)
+				nextElements.addAll(this.db.query(WorkflowElement.class).in(WorkflowElement.ID, weIds).find());
 		}
 		return nextElements;
 	}
