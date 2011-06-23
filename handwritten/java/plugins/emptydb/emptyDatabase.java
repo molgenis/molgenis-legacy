@@ -11,9 +11,8 @@ import java.sql.Statement;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.util.cmdline.CmdLineException;
-
-import app.JDBCDatabase;
 
 public class emptyDatabase {
 	
