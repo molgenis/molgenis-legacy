@@ -19,7 +19,7 @@ import org.molgenis.framework.security.Login;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ApplicationController;
 import org.molgenis.framework.server.AbstractMolgenisServlet;
-import ${package}.DatabaseFactory;
+
 import org.molgenis.util.EmailService;
 import org.molgenis.util.SimpleEmailService;
 <#if generate_BOT>
@@ -34,7 +34,9 @@ import generic.JavaCompiler.CompileUnit;
 </#if>
 <#if db_mode = 'standalone'>
 import org.apache.commons.dbcp.BasicDataSource;
+import ${package}.<#if databaseImp = 'jpa'>Jpa<#else>JDBC</#if>Database;
 <#else>
+import ${package}.DatabaseFactory;
 import org.molgenis.framework.db.jdbc.JndiDataSourceWrapper;
 </#if>
 
@@ -62,7 +64,7 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 			data_src.setMaxWait(1000);
 		
 			DataSource dataSource = (DataSource)data_src;
-			Database db = DatabaseFactory.create(dataSource, new File("${db_filepath}"));
+			Database db = new ${package}.JDBCDatabase(dataSource, new File("${db_filepath}"));
 			db.getFileSourceHelper().setVariantId("${model.name}");
 			return db;
 		<#else>
@@ -136,7 +138,7 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 						data_src.setMaxWait(1000);
 					
 						DataSource dataSource = (DataSource)data_src;
-						Database db = DatabaseFactory.create(dataSource, new File("${db_filepath}"));
+						Database db = new ${package}.JDBCDatabase(dataSource, new File("${db_filepath}"));
 						db.getFileSourceHelper().setVariantId("${model.name}");
 						return db;
 					<#else>
