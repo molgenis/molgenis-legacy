@@ -289,7 +289,9 @@ public class Molgenis {
                 generators.add(new FillMetadataTablesGen());
             }
             // DatabaseFactory
-    	    generators.add(new DatabaseFactoryGen());
+            if (!options.db_driver.equals("org.hsqldb.jdbcDriver")) {
+            	generators.add(new DatabaseFactoryGen());
+            }
         } else {
             logger.info("SEVERE: Skipping ALL SQL ....");
         }
