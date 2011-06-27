@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="org.molgenis" label="...">
+	<module name="disease">
+	
+		<entity name="riskFactor" xref_label="riskFactorID" >
+			<field name="riskFactorID" type="autoid" nillable="false" description="ID" />
+			<field name="riskFactorName" nillable="false" description="Name" />
+		</entity>
+		
+		<entity name="literature">
+			<field name="literatureID" type="autoid" nillable="false" description="ID" />
+			<field name="literatureName" nillable="false" description="Name" />
+			<field name="riskFactor" type="mref"  xref_entity="riskFactor" xref_field="riskFactorID" xref_label="riskFactorID"  />
+			
+		</entity>
+		
+	</module>
+		
+</molgenis>
