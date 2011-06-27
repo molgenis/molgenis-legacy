@@ -208,16 +208,18 @@ public class AddAnimalPlugin extends GenericPlugin
 		// Custom name
 		String customName = null;
 		int customNumber = -1;
-		if (customname.getObject() != null || startnumber.getObject() != null) {
-			if (customname.getObject() != null) {
-				customName = customname.getObject().toString();
-			} else {
-				customName = "";
-			}
-			if (startnumber.getObject() != null) {
-				customNumber = Integer.parseInt(startnumber.getObject().toString());
-			} else {
-				customNumber = 1; // standard start at 1
+		if (customname != null && startnumber != null) {
+			if (customname.getObject() != null || startnumber.getObject() != null) {
+				if (customname.getObject() != null) {
+					customName = customname.getObject().toString();
+				} else {
+					customName = "";
+				}
+				if (startnumber.getObject() != null) {
+					customNumber = Integer.parseInt(startnumber.getObject().toString());
+				} else {
+					customNumber = 1; // standard start at 1
+				}
 			}
 		}
 		
@@ -453,6 +455,8 @@ public class AddAnimalPlugin extends GenericPlugin
 		entrydate.setNillable(false);
 		
 		customNamePanel = null;
+		customname = null;
+		startnumber = null;
 		int customNameFeatureId = ct.getCustomNameFeatureId(this.getLogin().getUserId());
 		if (customNameFeatureId != -1) {
 			// Only show custom name panel when the user has selected a custom name feature
