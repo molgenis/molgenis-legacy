@@ -60,7 +60,7 @@ public class MolgenisOptions
 
 	/** Source directory for handwritten java */
 	@Option(name = "output_hand", param = Option.Param.DIRPATH, type = Option.Type.REQUIRED_ARGUMENT, usage = "Source directory for handwritten java. Default: 'handwritten/java'")
-	public String output_hand = output_dir + "/java";
+	public String output_hand = "handwritten/java";
 
 	/** Source directory for generated sql */
 	@Option(name = "output_sql", param = Option.Param.DIRPATH, type = Option.Type.REQUIRED_ARGUMENT, usage = "Output-directory for the generated sql files. Default: 'generated/sql'")
