@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.molgenis.animaldb.CustomLabelFeature;
 import org.molgenis.auth.MolgenisEntity;
 import org.molgenis.batch.MolgenisBatch;
 import org.molgenis.batch.MolgenisBatchEntity;
@@ -74,9 +75,7 @@ public class CommonService
 	
 	private CommonService() {
 	}
-	//HERE IS THE BUG:
-	//This class depends on: import org.molgenis.animaldb.CustomLabelFeature;
-	//Which is not in the GCC project
+	
 	public static CommonService getInstance() {
 		if (instance == null) {
 			instance = new CommonService();
@@ -97,7 +96,7 @@ public class CommonService
 	/**
 	 * Returns the id of the ObservableFeature the user has chosen as custom name for the
 	 * ObservationTargets, or -1 if none was set.
-	 * BUG: Depends on CODE not in GCC project
+	 * 
 	 * @param userId
 	 * @return
 	 */
@@ -107,17 +106,17 @@ public class CommonService
 			return -1;
 		}
 		
-		//List<CustomLabelFeature> featList;
+		List<CustomLabelFeature> featList;
 		try {
-		//	featList = db.query(CustomLabelFeature.class).eq(CustomLabelFeature.USERID, userId).find();
+			featList = db.query(CustomLabelFeature.class).eq(CustomLabelFeature.USERID, userId).find();
 		} catch (Exception e) {
 			return -1;
 		}
-		//if (featList.size() > 0) {
-		//	return featList.get(0).getFeatureId_Id();
-		//} else {
+		if (featList.size() > 0) {
+			return featList.get(0).getFeatureId_Id();
+		} else {
 			return -1;
-		//}
+		}
 	}
 	
 	/**
