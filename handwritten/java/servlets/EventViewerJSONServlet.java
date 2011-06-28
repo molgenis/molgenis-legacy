@@ -117,7 +117,7 @@ public class EventViewerJSONServlet extends app.servlet.MolgenisServlet {
 			
 			// Filter terms
 			List<String> filterTermList = new ArrayList<String>();
-			for (int s = 0; s <= totalNrOfFeatures; s++) {
+			for (int s = 1; s <= totalNrOfFeatures + 1; s++) {
 				if (req.getString("sSearch_" + s) != null && !req.getString("sSearch_" + s).equals("")) {
 					filterTermList.add(req.getString("sSearch_" + s));
 				} else {
@@ -222,6 +222,7 @@ public class EventViewerJSONServlet extends app.servlet.MolgenisServlet {
 			List<Measurement> featList = pm.getFeatureList();
 			int nrOfFeatures = featList.size();
 			String[] targetNames = pm.getTargetNames(idx);
+			Integer[] targetIds = pm.getTargetIds(idx);
 			
 			// Begin output:
 			String header = "";
@@ -272,6 +273,7 @@ public class EventViewerJSONServlet extends app.servlet.MolgenisServlet {
 			for (int targetCounter = 0; targetCounter < resultSize; targetCounter++) {
 				String currentLine;
 				currentLine = "[";
+				currentLine += ("\"" + targetIds[targetCounter] + "\",");
 				currentLine += ("\"" + targetNames[targetCounter] + "\"");
 				int featureCounter = 0;
 				Iterator<Measurement> featIt = featList.iterator();

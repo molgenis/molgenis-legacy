@@ -80,10 +80,10 @@ public class PreFillDatabasePlugin extends PluginModel<Entity>
 //		}
 	}
 	
-	@Override
-	public boolean isVisible()
-	{
-		// Always visible, so user can add items to the db needed to enable logging in
-		return true;
-	}
+//	@Override
+//	public boolean isVisible()
+//	{
+//		// Always visible, so user can add items to the db needed to enable logging in
+//		return true;
+//	}
 }

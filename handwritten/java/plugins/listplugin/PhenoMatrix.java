@@ -290,19 +290,9 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 
 	public String[] getTargetNames(int[] idx) {
 		String[] returnData = new String[idx.length];
-		List<Integer> idList = new ArrayList<Integer>();
-		
-		// Get ID's for targets that are to be shown
-		for (int i = 0; i < idx.length; i++) {
-			if (idx[i] < nrOfTargets && targetIdList.get(idx[i]) != null) {
-				idList.add(targetIdList.get(idx[i]));
-			} else {
-				break;
-			}
-		}
 		
 		try {
-			// Get custom labels (or names, if there are none) for the targets
+			// Get custom labels (or names, if there are none) for the targets that are to be shown
 			for (int i = 0; i < idx.length; i++) {
 				returnData[i] = cq.getObservationTargetLabel(targetIdList.get(idx[i]));
 			}
@@ -311,6 +301,21 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 		}
 		
 		return returnData;
+	}
+	
+	public Integer[] getTargetIds(int[] idx) {
+		Integer[] idList = new Integer[idx.length];
+		
+		// Get ID's for targets that are to be shown
+		for (int i = 0; i < idx.length; i++) {
+			if (idx[i] < nrOfTargets && targetIdList.get(idx[i]) != null) {
+				idList[i] = targetIdList.get(idx[i]);
+			} else {
+				break;
+			}
+		}
+		
+		return idList;
 	}
 	
 	public List<Integer> getAllIndices() {

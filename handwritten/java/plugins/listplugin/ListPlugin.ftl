@@ -39,10 +39,8 @@ Limit values to most recent one:
 	<strong>Show/hide features</strong>
 	<select id="" name="" onchange="fnAddRemFeature(this.value);">
 		<option value="0">&nbsp;</option>
-		<#assign i = 1>
 		<#list screen.featureList as fl>
 			<option value="${fl.id}">${fl.name}</option>
-			<#assign i = i + 1>
 		</#list>
 	</select>
 </div>
@@ -62,8 +60,9 @@ Limit values to most recent one:
 	<table cellpadding="0" cellspacing="0" border="0" class="display" id="listtable">
 	<thead>
 		<tr>
-			<th></th> <!-- Here the header for the Target column will be inserted -->
-			<#assign i = 1>
+			<th></th> <!-- Here the ID's for the Targets will be inserted (invisibly) -->
+			<th></th> <!-- Here the header (name/label) for the Target column will be inserted -->
+			<#assign i = 2>
 			<#list screen.featureList as fl>
 				<th></th> <!-- Here the header for this Feature column will be inserted -->
 				<#assign i = i + 1>
@@ -80,10 +79,9 @@ Limit values to most recent one:
 	<tfoot>
 		<tr>
 			<th></th>
-			<#assign i = 1>
+			<th></th>
 			<#list screen.featureList as fl>
 				<th></th>
-				<#assign i = i + 1>
 			</#list>
 		</tr>
 	</tfoot>
@@ -142,12 +140,14 @@ var oTable = jQuery('#listtable').dataTable(
 
 <!-- piece of code to set the headers and footers, and initially hide all columns except the one with the targets -->
 var oSettings = oTable.fnSettings();
-oSettings.aoColumns[0].sTitle = document.getElementById('targettype').value;
-nTh = oSettings.aoColumns[0].nTh;
-nTh.innerHTML = oSettings.aoColumns[0].sTitle;
-nTf = oSettings.aoColumns[0].nTf;
-nTf.innerHTML = "<input type='text' name='search_feat0' value= 'Filter " + document.getElementById('targettype').value + "' class='search_init' onkeyup='oTable.fnFilter(this.value, 0)' onclick='if ( this.className == \"search_init\" ){ this.className = \"\"; this.value = \"\";}' />";
-for (var i = 1; i < nrcols; i++) {
+oTable.fnSetColumnVis(0, false); // the column with the id
+oTable.fnSetColumnVis(1, true); // the column with the name/label
+oSettings.aoColumns[1].sTitle = document.getElementById('targettype').value;
+nTh = oSettings.aoColumns[1].nTh;
+nTh.innerHTML = oSettings.aoColumns[1].sTitle;
+nTf = oSettings.aoColumns[1].nTf;
+nTf.innerHTML = "<input type='text' name='search_feat0' value= 'Filter " + document.getElementById('targettype').value + "' class='search_init' onkeyup='oTable.fnFilter(this.value, 1)' onclick='if ( this.className == \"search_init\" ){ this.className = \"\"; this.value = \"\";}' />";
+for (var i = 2; i < nrcols; i++) {
 	oTable.fnSetColumnVis(i, false);
 }
 
@@ -173,19 +173,19 @@ function fnAddRemFeature(sId) {
 				storedDisplayStart = json.iDisplayStart;
 				storedDisplayLength = json.iDisplayLength;
 				var i;
-				for (i = 0; i < json.iFeatureCol; i++) {
+				for (i = 1; i <= json.iFeatureCol; i++) {
 					oTable.fnSetColumnVis(i, true);
-					oSettings.aoColumns[i].sTitle = json.asFeatureNames[i];
+					oSettings.aoColumns[i].sTitle = json.asFeatureNames[i - 1];
 					nTh = oSettings.aoColumns[i].nTh;
 					nTh.innerHTML = oSettings.aoColumns[i].sTitle;
 					nTf = oSettings.aoColumns[i].nTf;
 					var filterText;
 					var className = "";
-					if (json.asFilterTerms[i] != "") {
-						filterText = json.asFilterTerms[i];
+					if (json.asFilterTerms[i - 1] != "") {
+						filterText = json.asFilterTerms[i - 1];
 						oSettings.aoPreSearchCols[i].sSearch = filterText;
 					} else {
-						filterText = "Filter " + json.asFeatureNames[i];
+						filterText = "Filter " + json.asFeatureNames[i - 1];
 						className = "search_init";
 					}
 					nTf.innerHTML = "<input type='text' name='search_feat" + i + "' value= '" + filterText + "' class='" + className + "' onkeyup='oTable.fnFilter(this.value, " + i + ")' onclick='if ( this.className == \"search_init\" ){ this.className = \"\"; this.value = \"\";}' />";
@@ -235,19 +235,19 @@ function fnReloadTable() {
 		oSettings._iDisplayLength = storedDisplayLength;
 		//
 		jQuery.getJSON( sSource, aoData, function (json) {
-			for (i = 0; i < json.iFeatureCol; i++) {
+			for (i = 1; i <= json.iFeatureCol; i++) {
 				oTable.fnSetColumnVis(i, true);
-				oSettings.aoColumns[i].sTitle = json.asFeatureNames[i];
+				oSettings.aoColumns[i].sTitle = json.asFeatureNames[i - 1];
 				nTh = oSettings.aoColumns[i].nTh;
 				nTh.innerHTML = oSettings.aoColumns[i].sTitle;
 				nTf = oSettings.aoColumns[i].nTf;
 				var filterText;
 				var className = "";
-				if (json.asFilterTerms[i] != "") {
-					filterText = json.asFilterTerms[i];
+				if (json.asFilterTerms[i - 1] != "") {
+					filterText = json.asFilterTerms[i - 1];
 					oSettings.aoPreSearchCols[i].sSearch = filterText;
 				} else {
-					filterText = "Filter " + json.asFeatureNames[i];
+					filterText = "Filter " + json.asFeatureNames[i - 1];
 					className = "search_init";
 				}
 				nTf.innerHTML = "<input type='text' name='search_feat" + i + "' value= '" + filterText + "' class='" + className + "' onkeyup='oTable.fnFilter(this.value, " + i + ")' onclick='if ( this.className == \"search_init\" ){ this.className = \"\"; this.value = \"\";}' />";
@@ -288,7 +288,7 @@ function fnMakeGroup() {
 	// use all rows
 	aiRows = oSettings.aiDisplayMaster; // all row numbers
 
-	// set up data array	
+	// set up data array
 	var asResultData = new Array();
 	
 	for (var i = 0, c = aiRows.length; i < c; i++) {

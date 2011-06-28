@@ -99,9 +99,9 @@ public class ListPlugin extends PluginModel<Entity> {
 				// Add visible targets to Batch
 				List<?> nameList = request.getList("saveselection", ",");
 				for (Object o : nameList) {
-					int animalId = ct.getObservationTargetId(o.toString());
+					int animalId = Integer.parseInt(o.toString());
 					MolgenisBatchEntity newBatchEntity = new MolgenisBatchEntity();
-					newBatchEntity.setName(o.toString());
+					newBatchEntity.setName(ct.getObservationTargetLabel(animalId));
 					newBatchEntity.setBatch(batchId);
 					newBatchEntity.setObjectId(animalId);
 					db.add(newBatchEntity);
