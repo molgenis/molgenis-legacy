@@ -405,7 +405,6 @@ public class FillAnimalDB {
 		locFeatIdList.add(ct.getMeasurementId("DecApplicantId"));
 		locFeatIdList.add(ct.getMeasurementId("DecApplicationPdf"));
 		locFeatIdList.add(ct.getMeasurementId("DecApprovalPdf"));
-		locFeatIdList.add(ct.getMeasurementId("FieldBiology"));
 		locFeatIdList.add(ct.getMeasurementId("StartDate"));
 		locFeatIdList.add(ct.getMeasurementId("EndDate"));
 		ct.makeProtocol(invid, "SetDecProjectSpecs", "To set the specifications of a DEC project.", locFeatIdList);

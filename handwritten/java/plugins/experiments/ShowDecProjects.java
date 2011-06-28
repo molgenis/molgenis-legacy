@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -30,7 +31,6 @@ public class ShowDecProjects extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 1906962555512398640L;
 	private List<DecProject> decappList = new ArrayList<DecProject>();
-	private List<ObservationTarget> decApplicantList = new ArrayList<ObservationTarget>();
 	private CommonService ct = CommonService.getInstance();
 	private String action = "init";
 	private int listId = 0;
@@ -83,14 +83,6 @@ public class ShowDecProjects extends PluginModel<Entity>
 		return action;
 	}
 
-	public void setDecApplicantList(List<ObservationTarget> decApplicantList) {
-		this.decApplicantList = decApplicantList;
-	}
-
-	public List<ObservationTarget> getDecApplicantList() {
-		return decApplicantList;
-	}
-
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
@@ -126,6 +118,9 @@ public class ShowDecProjects extends PluginModel<Entity>
 				} else {
 					throw(new Exception("No DEC number given - project not added"));
 				}
+				
+				// DEC applicant
+				String decapplicant = this.getLogin().getUserId().toString();
 				
 				// DEC application PDF
 				String decapplicationpdf = null;
@@ -189,6 +184,9 @@ public class ShowDecProjects extends PluginModel<Entity>
 				int measurementId = ct.getMeasurementId("DecNr");
 				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, starttime, 
 						endtime, measurementId, projectId, decnumber, 0));
+				measurementId = ct.getMeasurementId("DecApplicantId");
+				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, starttime, 
+						endtime, measurementId, projectId, decapplicant, 0));
 				if (decapplicationpdf != null) {
 					measurementId = ct.getMeasurementId("DecApplicationPdf");
 					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, starttime, 
@@ -254,7 +252,7 @@ public class ShowDecProjects extends PluginModel<Entity>
 				featureId = ct.getMeasurementId("DecApplicantId");
 				String decApplicantString = ct.getMostRecentValueAsString(currentDec.getId(), featureId);
 				if (decApplicantString != null && !decApplicantString.equals("")) {
-					ObservationTarget applicant = ct.getObservationTargetById(Integer.parseInt(decApplicantString));
+					MolgenisUser applicant = db.findById(MolgenisUser.class, Integer.parseInt(decApplicantString));
 					tmpDec.setDecApplicantName(applicant.getName());
 				} else {
 					tmpDec.setDecApplicantName("");
@@ -285,6 +283,7 @@ public class ShowDecProjects extends PluginModel<Entity>
 			
 			// Populate list of Actors with Article 9 status
 			// TODO: find a way to handle the Article 9 status now that we don't have Actors anymore
+			// For now we solve it by setting the ID of the current user as the Applicant ID
 			/*
 			decApplicantList.clear();
 			List<Integer> actorIdList = ct.getAllObservationTargetIds("Actor", false);
@@ -301,6 +300,7 @@ public class ShowDecProjects extends PluginModel<Entity>
 				}
 			}
 			*/
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			this.getMessages().clear();

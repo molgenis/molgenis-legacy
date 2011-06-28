@@ -51,16 +51,18 @@
 	/>
 	</div>
 	
+	<!--
 	<div id="decapplicant" class="row">
 	<label for="decapplicant">DEC Applicant:</label>
 	<select name="decapplicant" id="decapplicant"> 
-		<#list screen.decApplicantList as decApplicant>
+		<!#list screen.decApplicantList as decApplicant>
 			<option 
-			<#if currentDecProject??><#if currentDecProject.decApplicantName = decApplicant.name>selected="selected"</#if></#if>
-			value="${decApplicant.id?string.computer}">${decApplicant.name}</option>
-		</#list>
+			<!#if currentDecProject??><!#if currentDecProject.decApplicantName = decApplicant.name>selected="selected"<!/#if><!/#if>
+			value="{decApplicant.id?string.computer}">{decApplicant.name}</option>
+		<!/#list>
 	</select>
 	</div>
+	-->
 	
 	<div id="decapplicationpdf" class="row">
 	<label for="decapplicationpdf">DEC Application PDF:</label>
