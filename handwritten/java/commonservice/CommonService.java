@@ -396,7 +396,7 @@ public class CommonService
 			List<MolgenisBatchEntity> entities = q.find();
 		
 			for(MolgenisBatchEntity m : entities) {
-			    returnList.add(db.findById(ObservationTarget.class, m.getObjectId()).getId().toString());
+			    returnList.add(m.getObjectId().toString());
 			}
 		} catch (Exception e) {
 			// Do nothing, return empty list

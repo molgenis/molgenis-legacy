@@ -14,6 +14,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.molgenis.batch.MolgenisBatch;
+import org.molgenis.batch.MolgenisBatchEntity;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
@@ -47,7 +49,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 	private String action = "init";
 	private ObservationTarget animalToAddOrRemove;
 	private ObservationTarget subproject;
-	private List<ObservationTarget> groupList = new ArrayList<ObservationTarget>();
+	private List<MolgenisBatch> batchList = new ArrayList<MolgenisBatch>();
 
 	public ShowAnimalsInSubprojects(String name, ScreenController<?> parent)
 	{
@@ -197,12 +199,12 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 		return subproject;
 	}
 	
-	public void setGroupList(List<ObservationTarget> groupList) {
-		this.groupList = groupList;
+	public void setBatchList(List<MolgenisBatch> batchList) {
+		this.batchList = batchList;
 	}
 
-	public List<ObservationTarget> getGroupList() {
-		return groupList;
+	public List<MolgenisBatch> getBatchList() {
+		return batchList;
 	}
 
 	public void setAction(String action)
@@ -227,10 +229,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 				animalIdList.clear();
 				
 				// Get chosen subproject and set in this class
-				String subprojectIdString = request.getString("id");
-				subprojectIdString = subprojectIdString.replace(".", "");
-				subprojectIdString = subprojectIdString.replace(",", "");
-				int subprojectId = Integer.parseInt(subprojectIdString);
+				int subprojectId = request.getInt("id");
 				setSubproject(ct.getObservationTargetById(subprojectId));
 				
 				// Find all the animals currently in this DEC subproject
@@ -432,29 +431,20 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 					List<?> animalIdsAsObjectsList = request.getList("animal");
 					for (Object animalIdAsObject : animalIdsAsObjectsList) {
 						String animalIdString = (String)animalIdAsObject;
-						animalIdString = animalIdString.replace(".", "");
-						animalIdString = animalIdString.replace(",", "");
 						animalIdList.add(Integer.parseInt(animalIdString));
 					}
 				}
 				if (request.getList("groupname") != null) {
-					List<?> groupIdsAsObjectsList = request.getList("groupname");
-					for (Object groupIdAsObject : groupIdsAsObjectsList) {
-						String groupIdString = (String)groupIdAsObject;
-						groupIdString = groupIdString.replace(".", "");
-						groupIdString = groupIdString.replace(",", "");
-						int groupId = Integer.parseInt(groupIdString);
-						featureId = ct.getMeasurementId("Group");
-						q = db.query(ObservedValue.class);
-		                q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
-		                q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, groupId));
-		                valueList = q.find();
-		                for (ObservedValue v : valueList) {
-		                	int animalId = v.getTarget_Id();
-			                if (!animalIdList.contains(animalId)) {
-			                	animalIdList.add(animalId);
-			                }
-		                }
+					List<?> batchIdsAsObjectsList = request.getList("groupname");
+					for (Object batchIdAsObject : batchIdsAsObjectsList) {
+						String batchIdString = (String)batchIdAsObject;
+						int batchId = Integer.parseInt(batchIdString);
+						Query<MolgenisBatchEntity> batchQuery = db.query(MolgenisBatchEntity.class);
+						batchQuery.addRules(new QueryRule(MolgenisBatchEntity.BATCH, Operator.EQUALS, batchId));
+						List<MolgenisBatchEntity> entities = batchQuery.find();
+						for (MolgenisBatchEntity e : entities) {
+							animalIdList.add(e.getObjectId());
+						}
 					}
 				}
 				// Remove animals from id list that are already in an experiment currently
@@ -462,20 +452,16 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 				q = db.query(ObservedValue.class);
 				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
 				q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
+				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, animalIdList));
 				valueList = q.find();
-				String message = null;
 				if (valueList.size() > 0) {
-					message = "The following animal id's: ";
-				}
-				for (ObservedValue value : valueList) {
-					int animalInExperimentId = value.getTarget_Id();
-					if (animalIdList.contains(animalInExperimentId)) {
+					String message = "The following animal id's: ";
+					for (ObservedValue value : valueList) {
+						int animalInExperimentId = value.getTarget_Id();
 						message += animalInExperimentId;
 						message += " ";
 						animalIdList.remove(animalIdList.indexOf(animalInExperimentId));
 					}
-				}
-				if (message != null) {
 					message += "were removed because they are already in a DEC subproject";
 					this.getMessages().add(new ScreenMessage(message, false));
 				}
@@ -578,8 +564,8 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 			// Populate DEC subproject list
 			this.setSubprojectList(ct.getAllMarkedPanels("Experiment", investigationId));
 			
-			// Populate group list
-			setGroupList(ct.getAllMarkedPanels("Selection", investigationId));
+			// Populate batch list
+			setBatchList(ct.getAllBatches());
 			
 			// Populate list of all animals
 			allAnimalIdList = ct.getAllObservationTargetIds("Individual", true, investigationId);			

@@ -56,7 +56,7 @@
 
 <#elseif screen.action == "RemoveAnimalsFromSubproject">
 
-<p><a href="molgenis.do?__target=${screen.name}&__action=ShowAnimalsInSubproject&id=${strf.id}">Back to overview</a></p>
+<p><a href="molgenis.do?__target=${screen.name}&__action=ShowAnimalsInSubproject&id=${strf.id?string.computer}">Back to overview</a></p>
 
 <em>Removing&nbsp;
 <#list screen.getAnimalRemoveIdList() as animalId>
@@ -80,7 +80,7 @@ from ${strf.name}</em>
 		<label for='discomfort'>Actual discomfort:</label>
 		<select name='discomfort' id='discomfort'>
 		<#list screen.actualDiscomfortCodeList as dcl>
-			<option value="${dcl.description}">${dcl.code} (${dcl.description})</option>
+			<option value="${dcl.description}">${dcl.code_string} (${dcl.description})</option>
 		</#list>
 		</select>
 	</div>
@@ -89,7 +89,7 @@ from ${strf.name}</em>
 		<label for='endstatus'>Actual animal end status:</label>
 		<select name='endstatus' id='endstatus' onchange="showDeathDatetime(this.value);">
 		<#list screen.actualEndstatusCodeList as ecl>
-			<option value="${ecl.description}">${ecl.code} (${ecl.description})</option>
+			<option value="${ecl.description}">${ecl.code_string} (${ecl.description})</option>
 		</#list>
 		</select>
 	</div>
@@ -107,15 +107,15 @@ from ${strf.name}</em>
 
 <#elseif screen.action == "ApplyRemoveAnimalsFromSubproject">
 
-<p><a href="molgenis.do?__target=${screen.name}&__action=ShowAnimalsInSubproject&id=${strf.id}">Back to overview</a></p>
+<p><a href="molgenis.do?__target=${screen.name}&__action=ShowAnimalsInSubproject&id=${strf.id?string.computer}">Back to overview</a></p>
 
 <#elseif screen.action == "ApplyAddAnimalToSubproject">
 
-<p><a href="molgenis.do?__target=${screen.name}&__action=ShowAnimalsInSubproject&id=${strf.id}">Back to overview</a></p>
+<p><a href="molgenis.do?__target=${screen.name}&__action=ShowAnimalsInSubproject&id=${strf.id?string.computer}">Back to overview</a></p>
 
 <#elseif screen.action == "AddAnimalToSubproject">
 
-<p><a href="molgenis.do?__target=${screen.name}&__action=ShowAnimalsInSubproject&id=${strf.id}">Back to overview</a></p>
+<p><a href="molgenis.do?__target=${screen.name}&__action=ShowAnimalsInSubproject&id=${strf.id?string.computer}">Back to overview</a></p>
 
 <em>Adding animal(s) to ${strf.name}</em><br />
 
@@ -130,16 +130,16 @@ from ${strf.name}</em>
 		<select name='animal' id='animal' size='20' multiple='multiple'>
 		<#list screen.allAnimalIdList as animalId>
 			<#assign name = screen.getAnimalName(animalId)>
-			<option value="${animalId}">${name}</option>
+			<option value="${animalId?string.computer}">${name}</option>
 		</#list>
 		</select>
 	</div>
 	
 	<div>
-		<label for='groupname'>Preset group(s):</label>
+		<label for='groupname'>Batch(es):</label>
 		<select name='groupname' id='groupname' size='20' multiple='multiple'>
-			<#list screen.groupList as group>
-				<option value="${group.id}">${group.name}</option>
+			<#list screen.batchList as batch>
+				<option value="${batch.id?string.computer}">${batch.name}</option>
 			</#list>
 		</select>
 	</div>
@@ -153,7 +153,7 @@ from ${strf.name}</em>
 		<label for='painmanagement'>Pain management:</label>
 		<select name='painmanagement' id='painmanagement'>
 		<#list screen.painManagementCodeList as pml>
-			<option value="${pml.description}">${pml.code} (${pml.description})</option>
+			<option value="${pml.description}">${pml.code_string} (${pml.description})</option>
 		</#list>
 		</select>
 	</div>
@@ -162,7 +162,7 @@ from ${strf.name}</em>
 		<label for='anaesthesia'>Anaesthesia:</label>
 		<select name='anaesthesia' id='anaesthesia'>
 		<#list screen.anaesthesiaCodeList as al>
-			<option value="${al.description}">${al.code} (${al.description})</option>
+			<option value="${al.description}">${al.code_string} (${al.description})</option>
 		</#list>
 		</select>
 	</div>
@@ -171,7 +171,7 @@ from ${strf.name}</em>
 		<label for='discomfort'>Expected discomfort:</label>
 		<select name='discomfort' id='discomfort'>
 		<#list screen.expectedDiscomfortCodeList as dcl>
-			<option value="${dcl.description}">${dcl.code} (${dcl.description})</option>
+			<option value="${dcl.description}">${dcl.code_string} (${dcl.description})</option>
 		</#list>
 		</select>
 	</div>
@@ -180,7 +180,7 @@ from ${strf.name}</em>
 		<label for='endstatus'>Expected animal end status:</label>
 		<select name='endstatus' id='endstatus'>
 		<#list screen.expectedEndstatusCodeList as ecl>
-			<option value="${ecl.description}">${ecl.code} (${ecl.description})</option>
+			<option value="${ecl.description}">${ecl.code_string} (${ecl.description})</option>
 		</#list>
 		</select>
 	</div>
@@ -198,7 +198,7 @@ from ${strf.name}</em>
 <select name="subproject" id="subproject" class="selectbox" onchange="callScreenWithSubprojectId(this.value);">
 	<option value="0">&nbsp;</option>
 	<#list screen.subprojectList as sl>
-		<option value="${sl.id}">${sl.name}</option>
+		<option value="${sl.id?string.computer}">${sl.name}</option>
 	</#list>
 </select>
 </div>
