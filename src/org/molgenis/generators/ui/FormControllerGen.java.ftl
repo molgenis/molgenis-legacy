@@ -131,6 +131,12 @@ public class ${JavaName(form.className)}FormController extends FormController<${
 <#if form.hideFields?size &gt; 0>
 		getModel().setUserHiddenColumns(Arrays.asList(new String[]{${csvQuotedEntity(entity, form.hideFields)}}));
 </#if>	
+
+<#list form.getRecord().getAllFields() as field>
+	<#if field.getType() == "xref" || field.getType() == "mref">
+		getModel().addCommand(new org.molgenis.framework.ui.commands.AddXrefCommand("${entity}_${field.getName()}", this, new ${field.getXrefEntityName()}(), new ${field.getXrefEntityName()}Form()));
+	</#if>
+</#list>
 	}
 	
 	@Override
