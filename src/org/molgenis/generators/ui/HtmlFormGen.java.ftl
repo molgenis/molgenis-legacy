@@ -114,6 +114,11 @@ public class ${JavaName(entity)}Form extends EntityForm<${JavaName(entity)}>
 			<#else>
 			input.setValueLabel<#if inputtype = "Mref">s</#if>("${field.xrefField.name}", getEntity().get${JavaName(field)}_${JavaName(field.getXrefField())}());
 			</#if>
+			ActionInput addButton = new ActionInput("add", "Add", "Add"); // ${field.label}
+			addButton.setIcon("generated-res/img/new.png");
+			addButton.setJavaScriptAction("if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.forms.${JavaName(entity)}_form.__target.value='${JavaName(entity)}';document.forms.${JavaName(entity)}_form.__action.value='${entity.name}_${field.name}';molgenis_window = window.open('','molgenis_edit_new_xref','height=800,width=600,location=no,status=no,menubar=no,directories=no,toolbar=no,resizable=yes,scrollbars=yes');document.forms.${JavaName(entity)}_form.target='molgenis_edit_new_xref';document.forms.${JavaName(entity)}_form.__show.value='popup';document.forms.${JavaName(entity)}_form.submit();molgenis_window.focus();");
+			input.setIncludeAddButton(true);
+			input.setAddButton(addButton);
 			</#if>
 			<#if field.hidden>
 			input.setHidden(<#if (field.auto && field.readOnly) || (field.defaultValue?exists)>true<#else>!isNewRecord()</#if>);
