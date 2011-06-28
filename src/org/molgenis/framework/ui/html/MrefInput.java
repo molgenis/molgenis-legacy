@@ -44,6 +44,10 @@ public class MrefInput extends HtmlInput
 	private List<String> xrefLabels = new ArrayList<String>();
 	private List<QueryRule> xrefFilters = new ArrayList<QueryRule>();
 
+	// Parameter to indicate whether this MrefInput should have an 'Add new ...' button attached to it.
+	private boolean includeAddButton = false;
+	private ActionInput addButton = new ActionInput("add", "", "");
+
 	public MrefInput(String name, Object value)
 	{
 		super(name, value);
@@ -142,7 +146,7 @@ public class MrefInput extends HtmlInput
 							getXrefLabels().get(0), getXrefFilterRESTString());
 			buttons += "<button type=\"button\" onclick=\"mref_removeInput(this.parentNode);\">-</button>";
 
-			return "<div id=\"" + getName() +  "\">" + html.toString() + buttons + "</div>";
+			return "<div id=\"" + getName() +  "\">" + html.toString() + buttons  + (includeAddButton ? this.addButton : "") + "</div>";
 		}
 	}
 
@@ -231,6 +235,16 @@ public class MrefInput extends HtmlInput
 	{
 		this.xrefLabels.clear();
 		this.xrefLabels.add(xrefLabel);
+	}
+
+	public void setIncludeAddButton(boolean includeAddButton)
+	{
+		this.includeAddButton = includeAddButton;
+	}
+
+	public void setAddButton(ActionInput addButton)
+	{
+		this.addButton = addButton;
 	}
 
 	public List<?> getValueLabels(String xrefLabelName)
