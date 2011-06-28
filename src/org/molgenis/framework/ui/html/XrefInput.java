@@ -37,7 +37,11 @@ public class XrefInput extends HtmlInput
 	private String xrefEntity;
 	private String xrefField;
 	private String xrefFilter;
-	private List<String> xrefLabels = new ArrayList<String>();;
+	private List<String> xrefLabels = new ArrayList<String>();
+	
+	// Parameter to indicate whether this XrefInput should have an 'Add new ...' button attached to it.
+	private boolean includeAddButton = false;
+	private ActionInput addButton = new ActionInput("add", "", "");
 
 	public XrefInput(String name)
 	{
@@ -123,7 +127,7 @@ public class XrefInput extends HtmlInput
 		// }
 		return "<select id=\"" + this.getId() + "\" name=\"" + this.getName()
 				+ "\" " + readonly + ">\n" + optionsHtml.toString()
-				+ "</select>\n";
+				+ "</select>\n" + (includeAddButton ? this.addButton : "");
 	}
 
 	private String toCsv(List<String> xrefLabels)
@@ -239,6 +243,16 @@ public class XrefInput extends HtmlInput
 	{
 		assert(xrefLabels != null);
 		this.xrefLabels = xrefLabels;
+	}
+
+	public void setIncludeAddButton(boolean includeAddButton)
+	{
+		this.includeAddButton = includeAddButton;
+	}
+
+	public void setAddButton(ActionInput addButton)
+	{
+		this.addButton = addButton;
 	}
 
 	public Object getValueLabel(String xrefLabelName)
