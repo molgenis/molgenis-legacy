@@ -474,14 +474,14 @@ var molgenis_required = new Array(${required});
 	<!-- put in table so we can collapse the content panel-->
 	<table width="100%">
 		<tr>
-			<td class="form_collapse" style="width: 12px;float:right;clear:right; margin:5px;"><img src="generated-res/img/minus.png" id="${screen.name}_toggleImage" onclick="javascript:toggleForm('${screen.name}')"/></td>
+			<!--<td class="form_collapse" style="width: 12px;float:right;clear:right; margin:5px;"><img src="generated-res/img/minus.png" id="${screen.name}_toggleImage" onclick="javascript:toggleForm('${screen.name}')"/></td>-->
 			<td id="${screen.name}_contentPanel">
-				<div style="float:right;clear:right; margin:5px;">
+			  <tr>
 					<#list screen.getFilters() as filter>			
 						<label>Search results <#if filter_index=0>where: <#else></#if>${filter}</label><image height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="setInput('${screen.name}_form','_self','','${screen.name}','filter_remove','iframe'); document.forms.${screen.name}_form.filter_id.value='${filter_index}'; document.forms.${screen.name}_form.submit();" title="remove filter"/>
 					</#list>
-				</div>
-				<@form_toolbar screen/>
+			  </tr>
+			<@form_toolbar screen/>
 				<div class="screenbody">
 					<div class="screenpadding">
 					<#if screen.mode.toString() == "editview">
