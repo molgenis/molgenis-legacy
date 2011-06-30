@@ -14,13 +14,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.cxf.common.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.security.Login;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Entity;
 
 import org.molgenis.auth.MolgenisGroup;
