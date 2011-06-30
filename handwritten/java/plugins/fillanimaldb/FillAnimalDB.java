@@ -383,68 +383,86 @@ public class FillAnimalDB {
 		
 		logger.info("Create Protocols");
 		// Protocol for Location plugin: SetSublocationOf (feature: Location)
-		List<Integer> locFeatIdList = new ArrayList<Integer>();
-		locFeatIdList.add(ct.getMeasurementId("Location"));
-		ct.makeProtocol(invid, "SetSublocationOf", "To set one location as the sublocation of another.", locFeatIdList);	
+		List<Integer> featureIdList = new ArrayList<Integer>();
+		featureIdList.add(ct.getMeasurementId("Location"));
+		ct.makeProtocol(invid, "SetSublocationOf", "To set one location as the sublocation of another.", featureIdList);	
 		// Protocol for Breeding module: SetLitterSpecs
-		locFeatIdList = new ArrayList<Integer>();
-		locFeatIdList.add(ct.getMeasurementId("Parentgroup"));
-		locFeatIdList.add(ct.getMeasurementId("DateOfBirth"));
-		locFeatIdList.add(ct.getMeasurementId("Size"));
-		locFeatIdList.add(ct.getMeasurementId("Certain"));
-		ct.makeProtocol(invid, "SetLitterSpecs", "To set the specifications of a litter.", locFeatIdList);
+		featureIdList = new ArrayList<Integer>();
+		featureIdList.add(ct.getMeasurementId("Parentgroup"));
+		featureIdList.add(ct.getMeasurementId("DateOfBirth"));
+		featureIdList.add(ct.getMeasurementId("Size"));
+		featureIdList.add(ct.getMeasurementId("Certain"));
+		ct.makeProtocol(invid, "SetLitterSpecs", "To set the specifications of a litter.", featureIdList);
 		// Protocol SetAddress
-		locFeatIdList = new ArrayList<Integer>();
-		locFeatIdList.add(ct.getMeasurementId("Street"));
-		locFeatIdList.add(ct.getMeasurementId("Housenumber"));
-		locFeatIdList.add(ct.getMeasurementId("City"));
-		ct.makeProtocol(invid, "SetAddress", "To set an address.", locFeatIdList);
+		featureIdList = new ArrayList<Integer>();
+		featureIdList.add(ct.getMeasurementId("Street"));
+		featureIdList.add(ct.getMeasurementId("Housenumber"));
+		featureIdList.add(ct.getMeasurementId("City"));
+		ct.makeProtocol(invid, "SetAddress", "To set an address.", featureIdList);
 		// Protocol SetDecProjectSpecs
-		locFeatIdList = new ArrayList<Integer>();
-		locFeatIdList.add(ct.getMeasurementId("DecNr"));
-		locFeatIdList.add(ct.getMeasurementId("DecApplicantId"));
-		locFeatIdList.add(ct.getMeasurementId("DecApplicationPdf"));
-		locFeatIdList.add(ct.getMeasurementId("DecApprovalPdf"));
-		locFeatIdList.add(ct.getMeasurementId("StartDate"));
-		locFeatIdList.add(ct.getMeasurementId("EndDate"));
-		ct.makeProtocol(invid, "SetDecProjectSpecs", "To set the specifications of a DEC project.", locFeatIdList);
+		featureIdList = new ArrayList<Integer>();
+		featureIdList.add(ct.getMeasurementId("DecNr"));
+		featureIdList.add(ct.getMeasurementId("DecApplicantId"));
+		featureIdList.add(ct.getMeasurementId("DecApplicationPdf"));
+		featureIdList.add(ct.getMeasurementId("DecApprovalPdf"));
+		featureIdList.add(ct.getMeasurementId("StartDate"));
+		featureIdList.add(ct.getMeasurementId("EndDate"));
+		ct.makeProtocol(invid, "SetDecProjectSpecs", "To set the specifications of a DEC project.", featureIdList);
 		// Protocol SetDecSubprojectSpecs
-		locFeatIdList = new ArrayList<Integer>();
-		locFeatIdList.add(ct.getMeasurementId("ExperimentNr"));
-		locFeatIdList.add(ct.getMeasurementId("DecSubprojectApplicationPdf"));
-		locFeatIdList.add(ct.getMeasurementId("Concern"));
-		locFeatIdList.add(ct.getMeasurementId("Goal"));
-		locFeatIdList.add(ct.getMeasurementId("SpecialTechn"));
-		locFeatIdList.add(ct.getMeasurementId("LawDef"));
-		locFeatIdList.add(ct.getMeasurementId("ToxRes"));
-		locFeatIdList.add(ct.getMeasurementId("Anaesthesia"));
-		locFeatIdList.add(ct.getMeasurementId("PainManagement"));
-		locFeatIdList.add(ct.getMeasurementId("AnimalEndStatus"));
-		locFeatIdList.add(ct.getMeasurementId("OldAnimalDBRemarks"));
-		locFeatIdList.add(ct.getMeasurementId("DecApplication"));
-		locFeatIdList.add(ct.getMeasurementId("StartDate"));
-		locFeatIdList.add(ct.getMeasurementId("EndDate"));
-		ct.makeProtocol(invid, "SetDecSubprojectSpecs", "To set the specifications of a DEC subproject.", locFeatIdList);
+		featureIdList = new ArrayList<Integer>();
+		featureIdList.add(ct.getMeasurementId("ExperimentNr"));
+		featureIdList.add(ct.getMeasurementId("DecSubprojectApplicationPdf"));
+		featureIdList.add(ct.getMeasurementId("Concern"));
+		featureIdList.add(ct.getMeasurementId("Goal"));
+		featureIdList.add(ct.getMeasurementId("SpecialTechn"));
+		featureIdList.add(ct.getMeasurementId("LawDef"));
+		featureIdList.add(ct.getMeasurementId("ToxRes"));
+		featureIdList.add(ct.getMeasurementId("Anaesthesia"));
+		featureIdList.add(ct.getMeasurementId("PainManagement"));
+		featureIdList.add(ct.getMeasurementId("AnimalEndStatus"));
+		featureIdList.add(ct.getMeasurementId("OldAnimalDBRemarks"));
+		featureIdList.add(ct.getMeasurementId("DecApplication"));
+		featureIdList.add(ct.getMeasurementId("StartDate"));
+		featureIdList.add(ct.getMeasurementId("EndDate"));
+		ct.makeProtocol(invid, "SetDecSubprojectSpecs", "To set the specifications of a DEC subproject.", featureIdList);
 		// Protocol AnimalInSubproject
-		locFeatIdList = new ArrayList<Integer>();
-		locFeatIdList.add(ct.getMeasurementId("Experiment"));
-		locFeatIdList.add(ct.getMeasurementId("SourceTypeSubproject"));
-		locFeatIdList.add(ct.getMeasurementId("PainManagement"));
-		locFeatIdList.add(ct.getMeasurementId("Anaesthesia"));
-		locFeatIdList.add(ct.getMeasurementId("ExpectedDiscomfort"));
-		locFeatIdList.add(ct.getMeasurementId("ExpectedAnimalEndStatus"));
-		ct.makeProtocol(invid, "AnimalInSubproject", "To add an animal to an experiment.", locFeatIdList);
+		featureIdList = new ArrayList<Integer>();
+		featureIdList.add(ct.getMeasurementId("Experiment"));
+		featureIdList.add(ct.getMeasurementId("SourceTypeSubproject"));
+		featureIdList.add(ct.getMeasurementId("PainManagement"));
+		featureIdList.add(ct.getMeasurementId("Anaesthesia"));
+		featureIdList.add(ct.getMeasurementId("ExpectedDiscomfort"));
+		featureIdList.add(ct.getMeasurementId("ExpectedAnimalEndStatus"));
+		ct.makeProtocol(invid, "AnimalInSubproject", "To add an animal to an experiment.", featureIdList);
 		// Protocol AnimalFromSubproject
-		locFeatIdList = new ArrayList<Integer>();
-		locFeatIdList.add(ct.getMeasurementId("FromExperiment"));
-		locFeatIdList.add(ct.getMeasurementId("ActualDiscomfort"));
-		locFeatIdList.add(ct.getMeasurementId("ActualAnimalEndStatus"));
-		ct.makeProtocol(invid, "AnimalFromSubproject", "To remove an animal from an experiment.", locFeatIdList);
+		featureIdList = new ArrayList<Integer>();
+		featureIdList.add(ct.getMeasurementId("FromExperiment"));
+		featureIdList.add(ct.getMeasurementId("ActualDiscomfort"));
+		featureIdList.add(ct.getMeasurementId("ActualAnimalEndStatus"));
+		ct.makeProtocol(invid, "AnimalFromSubproject", "To remove an animal from an experiment.", featureIdList);
 		// Protocol SetGenotype
-		locFeatIdList = new ArrayList<Integer>();
-		locFeatIdList.add(ct.getMeasurementId("GeneName"));
-		locFeatIdList.add(ct.getMeasurementId("GeneState"));
-		ct.makeProtocol(invid, "SetGenotype", "To set part (one gene) of an animal's genotype.", locFeatIdList);
+		featureIdList = new ArrayList<Integer>();
+		featureIdList.add(ct.getMeasurementId("GeneName"));
+		featureIdList.add(ct.getMeasurementId("GeneState"));
+		ct.makeProtocol(invid, "SetGenotype", "To set part (one gene) of an animal's genotype.", featureIdList);
+		// Protocol Wean
+		// Discussion: for now we leave out the custom label feature, because that is flexible (set by user).
+		// Discussion: for now we leave out the Genotype features. Genotype is set a few weeks after weaning,
+		// when the PCR results come in. So we'd probably better use a separate set of protocols for that
+		// (Background + X times Genotype protocol).
+		featureIdList = new ArrayList<Integer>();
+		featureIdList.add(ct.getMeasurementId("Litter"));
+		featureIdList.add(ct.getMeasurementId("Sex"));
+		featureIdList.add(ct.getMeasurementId("WeanDate"));
+		featureIdList.add(ct.getMeasurementId("Active"));
+		featureIdList.add(ct.getMeasurementId("DateOfBirth"));
+		featureIdList.add(ct.getMeasurementId("Species"));
+		featureIdList.add(ct.getMeasurementId("AnimalType"));
+		featureIdList.add(ct.getMeasurementId("Source"));
+		featureIdList.add(ct.getMeasurementId("Color"));
+		featureIdList.add(ct.getMeasurementId("Earmark"));
+		featureIdList.add(ct.getMeasurementId("Sex"));
+		ct.makeProtocol(invid, "Wean", "To wean an animal.", featureIdList);
 		
 		// Init lists that we can later add to the DB at once
 		List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();

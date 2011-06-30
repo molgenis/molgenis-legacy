@@ -43,7 +43,8 @@ public class ManageLitters extends PluginModel<Entity>
 	private String birthdatetime = "";
 	private String weandatetime = "";
 	private int litterSize;
-	private int weanSize;
+	private int weanSizeFemale;
+	private int weanSizeMale;
 	private boolean litterSizeApproximate;
 	private CommonService ct = CommonService.getInstance();
 	private SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
@@ -122,12 +123,19 @@ public class ManageLitters extends PluginModel<Entity>
 	public void setLitterSize(int litterSize) {
 		this.litterSize = litterSize;
 	}
-	public void setWeanSize(int weanSize) {
-		this.weanSize = weanSize;
+	
+	public void setWeanSizeFemale(int weanSizeFemale) {
+		this.weanSizeFemale = weanSizeFemale;
 	}
-
-	public int getWeanSize() {
-		return weanSize;
+	public int getWeanSizeFemale() {
+		return weanSizeFemale;
+	}
+	
+	public void setWeanSizeMale(int weanSizeMale) {
+		this.weanSizeMale = weanSizeMale;
+	}
+	public int getWeanSizeMale() {
+		return weanSizeMale;
 	}
 
 	public int getSelectedParentgroup() {
@@ -175,15 +183,19 @@ public class ManageLitters extends PluginModel<Entity>
 				throw new Exception("Wean date cannot be empty");
 			}
 			setWeandatetime(request.getString("weandatetime"));
-			setWeanSize(request.getInt("weansize"));
-			if (request.getString("customname") != null) {
-				customName = request.getString("customname");
-				if (request.getInt("startnumber") != null) {
-					customNumber = request.getInt("startnumber");
-				} else {
-					customNumber = 1; // standard start at 1
-				}
+			setWeanSizeFemale(request.getInt("weansizefemale"));
+			setWeanSizeMale(request.getInt("weansizemale"));
+			
+			customName = request.getString("customname");
+			if (request.getString("customname") == null) {
+				customName = "";
 			}
+			if (request.getInt("startnumber") != null) {
+				customNumber = request.getInt("startnumber");
+			} else {
+				customNumber = 1; // standard start at 1
+			}
+			
 		} else {
 			setLitterName(request.getString("littername"));
 			String parentgroupIdString = request.getString("parentgroup");
@@ -349,6 +361,7 @@ public class ManageLitters extends PluginModel<Entity>
 					throw(new Exception("No mother (properties) found - litter not weaned"));
 				}
 				// Set wean size
+				int weanSize = weanSizeFemale + weanSizeMale;
 				int protocolId = ct.getProtocolId("SetWeanSize");
 				measurementId = ct.getMeasurementId("WeanSize");
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
@@ -368,12 +381,25 @@ public class ManageLitters extends PluginModel<Entity>
 				}
 				db.add(animalsToAddList);
 				
+				int animalNumber = 0;
 				for (ObservationTarget animal : animalsToAddList) {
 					int animalId = animal.getId();
+					
+					// TODO: link every value to a single Wean protocol application instead of to its own one
+					
 					protocolId = ct.getProtocolId("SetLitter");
 					measurementId = ct.getMeasurementId("Litter");
 					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
 							null, protocolId, measurementId, animalId, null, litter));
+					// Set sex
+					int sexId = ct.getObservationTargetId("Female");
+					if (animalNumber >= weanSizeFemale) {
+						sexId = ct.getObservationTargetId("Male");
+					}
+					protocolId = ct.getProtocolId("SetSex");
+					measurementId = ct.getMeasurementId("Sex");
+					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
+							null, protocolId, measurementId, animalId, null, sexId));
 					// Set wean date on animal
 					protocolId = ct.getProtocolId("SetWeanDate");
 					measurementId = ct.getMeasurementId("WeanDate");
@@ -405,18 +431,23 @@ public class ManageLitters extends PluginModel<Entity>
 					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
 							null, protocolId, measurementId, animalId, null, sourceId));
 					// Set custom name/ID
-					if (customName != null) {
-						protocolId = ct.getProtocolId("SetCustomID");
-						measurementId = ct.getMeasurementId("CustomID");
+					if (this.getCustomNameFeature() != null) {
+						protocolId = ct.getProtocolId("Set" + this.getCustomNameFeature());
+						measurementId = ct.getMeasurementId(this.getCustomNameFeature());
 						valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
 								null, protocolId, measurementId, animalId, customName + customNumber, 0));
 						customNumber++;
 					}
+					
+					animalNumber++;
 				}
 				
 				db.add(valuesToAddList);
 				
 				db.commitTx();
+				
+				// Update custom label map now new animals have been added
+				ct.makeObservationTargetNameMap(this.getLogin().getUserId(), true);
 				
 				this.action = "ShowLitters";
 				this.reload(db);

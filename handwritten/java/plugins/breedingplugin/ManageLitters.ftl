@@ -106,21 +106,25 @@
 	</div>
 	
 	<!-- Size -->
-	<div id='weansizediv' class='row'>
-		<label for='weansize'>Number weaned:</label>
-		<input type='text' class='textbox' name='weansize' id='weansize' value='<#if screen.weanSize?exists>${screen.getWeanSize()}</#if>' />
+	<div id='weansize_part1' class='row'>
+		<label for='weansizefemale'>Nr. of females:</label>
+		<input type='text' class='textbox' name='weansizefemale' id='weansizefemale' value='<#if screen.weanSizeFemale?exists>${screen.getWeanSizeFemale()}</#if>' />
+	</div>
+	<div id='weansize_part2' class='row'>
+		<label for='weansizemale'>Nr. of males:</label>
+		<input type='text' class='textbox' name='weansizemale' id='weansizemale' value='<#if screen.weanSizeMale?exists>${screen.getWeanSizeMale()}</#if>' />
 	</div>
 	
 	<#if screen.getCustomNameFeature()??>
 		<#assign label = screen.getCustomNameFeature()>
 	
 		<div id="customname" class="row">
-			<label for="customname">${label} base (if desired):</label>
+			<label for="customname">${label} base:</label>
 			<input type="text" name="customname" id="customname" class="textbox" />
 		</div>
 	
 		<div id="startnumber" class="row">
-			<label for="startnumber">${label} start number (if desired):</label>
+			<label for="startnumber">${label} start number:</label>
 			<input type="text" name="startnumber" id="startnumber" class="textbox" />
 		</div>
 	</#if>
