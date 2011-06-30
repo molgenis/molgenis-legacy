@@ -16,6 +16,18 @@ public class ComputeAppPaths
     String outpath;
     String errpath;
 
+    public String getExtralog()
+    {
+        return extralog;
+    }
+
+    public void setExtralog(String extralog)
+    {
+        this.extralog = extralog;
+    }
+
+    String extralog;
+
     public ComputeApplication getApplication()
     {
         return application;

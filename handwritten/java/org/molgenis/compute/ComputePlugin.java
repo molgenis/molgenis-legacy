@@ -18,12 +18,7 @@ import org.molgenis.framework.ui.html.TablePanel;
 import org.molgenis.framework.ui.html.XrefInput;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.protocol.ComputeApplication;
-import org.molgenis.protocol.ComputeFeature;
-import org.molgenis.protocol.ComputeProtocol;
-import org.molgenis.protocol.Protocol;
-import org.molgenis.protocol.Workflow;
-import org.molgenis.protocol.WorkflowElement;
+import org.molgenis.protocol.*;
 import org.molgenis.util.Tuple;
 
 

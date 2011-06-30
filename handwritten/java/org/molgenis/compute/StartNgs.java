@@ -411,7 +411,8 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         {
             if(currentStep == null) //it is a first script in the pipeline
             {
-                Step step = new Step("step_" + app.getName());
+                //Step step = new Step("step_" + app.getName());
+                Step step = new Step(workflowElement.getName());
                 currentStep = step;
                 pipeline.addStep(step);
             }
@@ -425,12 +426,15 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
 
             if(!strPrevious.equalsIgnoreCase(strCurrentPipelineStep))
             {
-                Step step = new Step("step_" + app.getName());
+                //Step step = new Step("step_" + app.getName());
+                Step step = new Step(workflowElement.getName());
                 currentStep = step;
                 pipeline.addStep(step);
             }
 
             Script pipelineScript = new Script(scriptID, scriptRemoteLocation, scriptFile.getBytes());
+            //for demo
+            pipelineScript.setShort(true);
             currentStep.addScript(pipelineScript);
 
             strCurrentPipelineStep = strPrevious;
@@ -441,6 +445,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         appPaths.setApplication(app);
         appPaths.setErrpath(weaver.getErrfilename());
         appPaths.setOutpath(weaver.getOutfilename());
+        appPaths.setExtralog(weaver.getExtralogfilename());
         if(logpathfile != null)
             appPaths.setLogpath(logpathfile);
 

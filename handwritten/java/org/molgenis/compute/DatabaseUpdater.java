@@ -70,7 +70,7 @@ public class DatabaseUpdater
 
                     AppStatus status = findStatus(name);
 
-                    System.out.println("application: " + name + " --->  " + status.toString());
+                    //System.out.println("application: " + name + " --->  " + status.toString());
 
 
                     if (status.equals(AppStatus.started))
@@ -96,14 +96,21 @@ public class DatabaseUpdater
                         application.setStatusCode("finished");
 
                         String error = readRemoteFile(appPaths.getErrpath());
-                        application.setErrorFile(error);
+                        //application.setErrorFile(error);
+                        String extralog = readRemoteFile(appPaths.getExtralog());
                         String output = readRemoteFile(appPaths.getOutpath());
-                        application.setOutputFile(output);
+                        application.setOutputFile(error);
+
+
                         if (appPaths.getLogpath() != null)
                         {
                             String log = readRemoteFile(appPaths.getLogpath());
-                            application.setLogFile(log);
+                            //application.setLogFile(log);
+                            extralog += log;
                         }
+
+                        application.setLogFile(extralog);
+
                         try
                         {
                             db.beginTx();
