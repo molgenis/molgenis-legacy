@@ -433,10 +433,8 @@ var molgenis_required = new Array(${required});
 </#macro>
 
 	<#if show == "popup">
-		<@molgenis_header screen/>
 		<#--@form_popup screen/-->
-		${screen.getCurrentCommand().render()}
-		<@molgenis_footer />	
+		${screen.getCurrentCommand().render()}	
 	<#elseif show == "newrecord">
 		<@molgenis_header screen/>
 		<@form_new screen/>
