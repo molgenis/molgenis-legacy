@@ -74,24 +74,57 @@
 
 <div id='buttons_part' class='row'>
 	<input type='submit' class='addbutton' value='Add' onclick="__action.value='Add'" />
+	<input type='submit' class='addbutton' value='Cancel' onclick="__action.value='Cancel'" />
 </div>
 
 <#else>
 
 <p><a href="molgenis.do?__target=${screen.name}&__action=New">Make new user...</a></p>
 
+<p>Welcome, ${screen.userName}. You own the following investigation(s):</p>
 <table>
-	<tr><th>User name</th><th>Investigation(s)</th></tr>
-
+	<tr>
+		<th style='padding:5px'>Name</th>
+		<th style='padding:5px'>Read-rights</th>
+		<th style='padding:5px'>Write-rights</th>
+	</tr>
 <#assign i = 0>
-<#list screen.getUserNames() as user>
-	<tr><td>${user}</td><td>${screen.getInvestigationName(i)}</td></tr>
+<#list screen.investigations as inv>
+	<#assign invname = inv.name>
+	<tr>
+		<td style='padding:5px'>${invname}</td>
+		<td style='padding:5px'>
+		<#if screen.getInvestigationSharers(invname, false)??>
+			${screen.getInvestigationSharers(invname, false)}<br />
+		<#else>
+			Currently none<br />
+		</#if>
+			<select name="shareread" id="shareread">
+				<#list screen.users as moluser>
+					<option value="${moluser.id?string.computer}">${moluser.name}</option>
+				</#list>
+			</select>
+			<input type='submit' class='addbutton' value='Share' onclick="__action.value='ShareRead${i}'" />
+		</td>
+		<td style='padding:5px'>
+		<#if screen.getInvestigationSharers(invname, true)??>
+			${screen.getInvestigationSharers(invname, true)}<br />
+		<#else>
+			Currently none<br />
+		</#if>
+			<select name="sharewrite" id="sharewrite">
+				<#list screen.users as moluser>
+					<option value="${moluser.id?string.computer}">${moluser.name}</option>
+				</#list>
+			</select>
+			<input type='submit' class='addbutton' value='Share' onclick="__action.value='ShareWrite${i}'" />
+		</td>
+	</tr>
 	<#assign i = i + 1>
 </#list>
 
-</table>
-
 </#if>
+</table>
 
 <#--end of your plugin-->	
 			</div>

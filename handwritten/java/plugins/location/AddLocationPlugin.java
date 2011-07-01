@@ -78,7 +78,7 @@ public class AddLocationPlugin extends PluginModel<Entity>
 				Date now = calendar.getTime();
 				
 				// Make and add location
-				int invid = ct.getUserInvestigationId(this.getLogin().getUserId());
+				int invid = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
 				int locid = ct.makeLocation(invid, name, this.getLogin().getUserId());
 				if (slocid > 0) {
 					int protocolId = ct.getProtocolId("SetSublocationOf");
@@ -107,8 +107,8 @@ public class AddLocationPlugin extends PluginModel<Entity>
 		
 		try {
 			// Populate location list
-			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
-			List<Integer> locationIdList = ct.getAllObservationTargetIds("Location", false, investigationId);
+			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
+			List<Integer> locationIdList = ct.getAllObservationTargetIds("Location", false, investigationIds);
 			if (locationIdList.size() > 0) {
 				this.locationList = ct.getObservationTargets(locationIdList);
 			} else {

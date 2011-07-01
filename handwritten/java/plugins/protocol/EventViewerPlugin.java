@@ -94,8 +94,8 @@ public class EventViewerPlugin extends PluginModel<Entity>
 		// Populate target list
 		List<Integer> idList = null;
 		try {
-			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
-			idList = ct.getAllObservationTargetIds(null, false, investigationId);
+			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
+			idList = ct.getAllObservationTargetIds(null, false, investigationIds);
 		} catch (Exception e) {
 			e.printStackTrace();
 			this.setMessages(new ScreenMessage("Something went wrong while loading target list", false));

@@ -322,7 +322,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				}
 				
 				// Some variables we need later on
-				int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
+				int investigationId = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
 				Calendar myCal = Calendar.getInstance();
 				Date now = myCal.getTime();
 				
@@ -430,8 +430,8 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 		// Populate experiments list
 		experimentList.clear();
 		try {
-			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
-			List<ObservationTarget> expList = ct.getAllMarkedPanels("Experiment", investigationId);
+			List<Integer> investigationIds = ct.getWritableUserInvestigationIds(this.getLogin().getUserId());
+			List<ObservationTarget> expList = ct.getAllMarkedPanels("Experiment", investigationIds);
 			int pos = 1;
 			for (ObservationTarget currentExp : expList) {
 				String name = currentExp.getName();
@@ -486,7 +486,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				Date now = calendar.getTime();
 				featureId = ct.getMeasurementId("Experiment");
 				// Make list of ID's of all animals that are alive
-				List<Integer> aliveAnimalIdList = ct.getAllObservationTargetIds("Individual", true, investigationId);
+				List<Integer> aliveAnimalIdList = ct.getAllObservationTargetIds("Individual", true, investigationIds);
 				int nrOfAnimals = 0;
 				if (aliveAnimalIdList.size() > 0) {
 					Query<ObservedValue> q = db.query(ObservedValue.class);
@@ -533,7 +533,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 		}
 		
 		try {
-			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
+			List<Integer> investigationIds = ct.getWritableUserInvestigationIds(this.getLogin().getUserId());
 			// Concern
 			this.setConcernCodeList(ct.getAllCodesForFeature("Concern"));
 			// Goal
@@ -551,7 +551,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 			// AnimalEndStatus
 			this.setAnimalEndStatusCodeList(ct.getAllCodesForFeature("AnimalEndStatus"));
 			// decApplicationList
-			this.setDecApplicationList(ct.getAllMarkedPanels("DecApplication", investigationId));
+			this.setDecApplicationList(ct.getAllMarkedPanels("DecApplication", investigationIds));
 		} catch (Exception e) {
 			this.getMessages().clear();
 			String message = "Something went wrong while loading lists";

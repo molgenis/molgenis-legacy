@@ -131,7 +131,7 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 					endstatus = request.getString("endstatus");
 				}
 				
-				int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
+				int investigationId = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
 				
 				// Set 'Removal' feature
 				int protocolId = ct.getProtocolId("SetRemoval");
@@ -200,8 +200,8 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 
 		try {
 			// Populate animal list
-			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
-			this.setAnimalIdList(ct.getAllObservationTargetIds("Individual", true, investigationId));
+			List<Integer> investigationIds = ct.getWritableUserInvestigationIds(this.getLogin().getUserId());
+			this.setAnimalIdList(ct.getAllObservationTargetIds("Individual", true, investigationIds));
 			
 			// Populate removal code list
 			this.setRemovalCodeList(ct.getAllCodesForFeature("Removal"));

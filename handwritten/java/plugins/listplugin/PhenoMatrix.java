@@ -23,7 +23,7 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 	private int nrOfTargets;
 	private int nrOfFeatures;
 	private int totalNrOfMeasurements;
-	int investigationId;
+	private List<Integer> investigationIds;
 	private CommonService cq = CommonService.getInstance();
 	
 	public Database getDatabase() {
@@ -37,13 +37,13 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 		if (targetType.equals("All")) {
 			targetType = null;
 		}
-		investigationId = cq.getUserInvestigationId(userId);
-		targetIdList = cq.getAllObservationTargetIds(targetType, false, investigationId);
+		investigationIds = cq.getAllUserInvestigationIds(userId);
+		targetIdList = cq.getAllObservationTargetIds(targetType, false, investigationIds);
 		nrOfTargets = targetIdList.size();
 		
 		featureList = new ArrayList<Measurement>();
 		featureIdList = new ArrayList<Integer>();
-		allMeasurementList = cq.getAllMeasurements(investigationId);
+		allMeasurementList = cq.getAllMeasurements(investigationIds);
 		totalNrOfMeasurements = allMeasurementList.size();
 		if (totalNrOfMeasurements == 0) {
 			throw new DatabaseException("No measurements found in database");
@@ -73,7 +73,7 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 		Integer[][] size = new Integer[nrOfTargets][totalNrOfMeasurements];
 		int colNr = allMeasurementList.indexOf(meas);
 		List<Integer> seenTargetLocs = new ArrayList<Integer>();
-		List<ObservedValue> valueList = cq.getAllObservedValues(measurementId, investigationId);
+		List<ObservedValue> valueList = cq.getAllObservedValues(measurementId, investigationIds);
 		if (valueList != null && valueList.size() > 0) {
 			for (ObservedValue value : valueList) {
 				int targetLoc = targetIdList.indexOf(value.getTarget());

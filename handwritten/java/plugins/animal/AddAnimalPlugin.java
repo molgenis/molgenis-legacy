@@ -232,7 +232,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		}
 		
 		// Investigation
-		int invid = ct.getUserInvestigationId(this.getLogin().getUserId());
+		int invid = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
 		
 		db.beginTx();
 		
@@ -363,7 +363,7 @@ public class AddAnimalPlugin extends GenericPlugin
 	
 	private void populateTablePanel(Database db) throws DatabaseException, ParseException {
 		
-		int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
+		List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
 		
 		// panel for all elements
 		tablePanel = new DivPanel(this.getName() + "panel", null);
@@ -372,14 +372,14 @@ public class AddAnimalPlugin extends GenericPlugin
 		// DISCUSSION: why is this not ontology???
 		species = new SelectInput("species");
 		species.setLabel("Species:");
-		species.setOptions(ct.getAllMarkedPanels("Species", investigationId), "id", "name");
+		species.setOptions(ct.getAllMarkedPanels("Species", investigationIds), "id", "name");
 		species.setNillable(false);
 
 		// Populate sexes list
 		// DISCUSSION: why is this not ontology???
 		sex = new SelectInput("sex");
 		sex.setLabel("Sex:");
-		sex.setOptions(ct.getAllMarkedPanels("Sex", investigationId), "id", "name");
+		sex.setOptions(ct.getAllMarkedPanels("Sex", investigationIds), "id", "name");
 		sex.setNillable(false);
 
 		// Populate source list
@@ -387,7 +387,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		// which is taken care of in the Breeding Module
 		source = new SelectInput("source");
 		source.setLabel("Source:");
-		List<ObservationTarget> tmpSourceList = ct.getAllMarkedPanels("Source", investigationId);
+		List<ObservationTarget> tmpSourceList = ct.getAllMarkedPanels("Source", investigationIds);
 		for (ObservationTarget tmpSource : tmpSourceList)
 		{
 			int featureId = ct.getMeasurementId("SourceType");
@@ -422,7 +422,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		
 		background = new SelectInput("background");
 		background.setLabel("Background:");
-		background.setOptions(ct.getAllMarkedPanels("Background", investigationId), "id", "name");
+		background.setOptions(ct.getAllMarkedPanels("Background", investigationIds), "id", "name");
 		gmoPanel.add(background);
 		
 		genePanel = new RepeatingPanel("geneinput", "GMO information:");

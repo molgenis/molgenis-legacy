@@ -107,8 +107,8 @@ public class SampleViewer extends PluginModel<Entity> {
 				model.setProtocolName(model.getCommonQueries().getProtocolById(protocolId).getName());
 				model.setFeatures(model.getCommonQueries().getMeasurementsByProtocol(protocolId));
 		    } else {
-		    	int investigationId = model.getCommonQueries().getUserInvestigationId(model.getUserId());
-				model.setFeatures(model.getCommonQueries().getAllMeasurements(investigationId));
+		    	List<Integer> investigationIds = model.getCommonQueries().getAllUserInvestigationIds(model.getUserId());
+				model.setFeatures(model.getCommonQueries().getAllMeasurements(investigationIds));
 				model.setProtocolName("");
 		    }
 		} catch (Exception e) {

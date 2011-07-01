@@ -134,7 +134,7 @@ public class ApplyProtocolPluginOld extends PluginModel<Entity> {
 					}
 					
 					// First, make the event
-					int invid = ct.getUserInvestigationId(this.getLogin().getUserId());
+					int invid = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
 					ProtocolApplication app = ct.createProtocolApplication(invid, protocolId);
 					db.add(app);
 					int eventid = app.getId();
@@ -262,13 +262,13 @@ public class ApplyProtocolPluginOld extends PluginModel<Entity> {
 		ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
 		
 		try {
-			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
+			List<Integer> investigationIds = ct.getWritableUserInvestigationIds(this.getLogin().getUserId());
 			// Populate protocol list
-			this.setProtocolList(ct.getAllProtocolsSorted(Protocol.NAME, "ASC", investigationId));
+			this.setProtocolList(ct.getAllProtocolsSorted(Protocol.NAME, "ASC", investigationIds));
 			// Populate target ID list
-			this.setTargetIdList(ct.getAllObservationTargetIds(null, false, investigationId));
+			this.setTargetIdList(ct.getAllObservationTargetIds(null, false, investigationIds));
 			// Populate animal group list
-			List<Integer> groupIdList = ct.getAllObservationTargetIds("Group", false, investigationId);
+			List<Integer> groupIdList = ct.getAllObservationTargetIds("Group", false, investigationIds);
 			this.setGroupList(ct.getObservationTargets(groupIdList));
 		} catch (Exception e) {
 			this.getMessages().clear();

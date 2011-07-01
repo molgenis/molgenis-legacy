@@ -22,7 +22,7 @@ public class WorkflowModel extends SimpleScreenModel {
 
 	private static final long serialVersionUID = -1792154119915644699L;
 
-	public WorkflowModel(ScreenController controller)
+	public WorkflowModel(ScreenController<?> controller)
 	{
 		super(controller);
 		// TODO Auto-generated constructor stub
@@ -73,8 +73,9 @@ public class WorkflowModel extends SimpleScreenModel {
     }
     
     public void setValuesBySample(int sampleId, List<Measurement> features) throws DatabaseException, ParseException {
-    	int investigationId = cq.getUserInvestigationId(userId);
-    	valuesBySample = cq.getObservedValuesByTargetAndFeatures(sampleId, features, investigationId);
+    	List<Integer> investigationIds = cq.getAllUserInvestigationIds(userId);
+    	int ownInvId = cq.getOwnUserInvestigationId(userId);
+    	valuesBySample = cq.getObservedValuesByTargetAndFeatures(sampleId, features, investigationIds, ownInvId);
     }
 
     public void setAction(String action) {

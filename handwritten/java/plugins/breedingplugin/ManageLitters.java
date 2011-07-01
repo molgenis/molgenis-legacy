@@ -223,7 +223,7 @@ public class ManageLitters extends PluginModel<Entity>
 			Calendar calendar = Calendar.getInstance();
 			Date now = calendar.getTime();
 			
-			int invid = ct.getUserInvestigationId(this.getLogin().getUserId());
+			int invid = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
 			
 			this.action = request.getString("__action");
 			
@@ -477,10 +477,10 @@ public class ManageLitters extends PluginModel<Entity>
 		ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
 		
 		try {
-			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
+			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
 			// Populate litter list
 			litterList.clear();
-			List<ObservationTarget> tmpLitterList = ct.getAllMarkedPanels("Litter", investigationId);
+			List<ObservationTarget> tmpLitterList = ct.getAllMarkedPanels("Litter", investigationIds);
 			for (ObservationTarget tmpLitter : tmpLitterList) {
 				// Check if no wean date set
 				int featid = ct.getMeasurementId("WeanDate");
@@ -546,7 +546,7 @@ public class ManageLitters extends PluginModel<Entity>
 			}
 			
 			// Populate parent group list
-			this.setParentgroupList(ct.getAllMarkedPanels("Parentgroup", investigationId));
+			this.setParentgroupList(ct.getAllMarkedPanels("Parentgroup", investigationIds));
 			
 		} catch (Exception e) {
 			if (e.getMessage() != null) {

@@ -67,7 +67,7 @@ public class ManageLines extends PluginModel<Entity>
 				Date now = Calendar.getInstance().getTime();
 				this.setLineName(request.getString("lineName"));
 				// Make group
-				int invid = cs.getUserInvestigationId(this.getLogin().getUserId());
+				int invid = cs.getOwnUserInvestigationId(this.getLogin().getUserId());
 				int groupid = cs.makePanel(invid, lineName, this.getLogin().getUserId());
 				// Mark group as Line using a special event
 				int protocolId = cs.getProtocolId("SetTypeOfGroup");
@@ -101,11 +101,11 @@ public class ManageLines extends PluginModel<Entity>
 		cs.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
 		
 		try {
-			int investigationId = cs.getUserInvestigationId(this.getLogin().getUserId());
+			List<Integer> investigationIds = cs.getAllUserInvestigationIds(this.getLogin().getUserId());
 			// Populate source list
 			// All source types pertaining to "Eigen fok binnen uw organisatorische werkeenheid"
 			sourceList = new ArrayList<ObservationTarget>();
-			List<ObservationTarget> tmpSourceList = cs.getAllMarkedPanels("Source", investigationId);
+			List<ObservationTarget> tmpSourceList = cs.getAllMarkedPanels("Source", investigationIds);
 			for (ObservationTarget tmpSource : tmpSourceList) {
 				int featid = cs.getMeasurementId("SourceType");
 				Query<ObservedValue> sourceTypeQuery = db.query(ObservedValue.class);

@@ -164,15 +164,15 @@ public class CommonService
 	
 	/**
 	 * Gets the ID of the investigation owned by the user with ID 'userId'.
-	 * Assumption: a user only owns one investigation.
-	 * If they own none, -1 is returned. If they own multiple, only the first one is returned.
+	 * Assumption: a user can only own one investigation.
+	 * Returns -1 if no or multiple investigations found.
 	 * 
 	 * @param userId
 	 * @return
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public int getUserInvestigationId(int userId) {
+	public int getOwnUserInvestigationId(int userId) {
 		Query<Investigation> q = db.query(Investigation.class);
 		q.addRules(new QueryRule(Investigation.OWNS, Operator.EQUALS, userId));
 		List<Investigation> invList;
@@ -181,13 +181,66 @@ public class CommonService
 		} catch (Exception e) {
 			return -1;
 		}
-		if (invList.size() > 0) {
-		    return invList.get(0).getId();
+		if (invList.size() == 1) {
+			return invList.get(0).getId();
 		} else {
-		    return -1;
+			return -1;
 		}
 	}
 	
+	/**
+	 * Gets the ID's of the investigation owned, readable or writable by the user with ID 'userId'.
+	 * 
+	 * @param userId
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 */
+	public List<Integer> getAllUserInvestigationIds(int userId) {
+		Query<Investigation> q = db.query(Investigation.class);
+		q.addRules(new QueryRule(Investigation.OWNS, Operator.EQUALS, userId));
+		q.addRules(new QueryRule(Operator.OR));
+		q.addRules(new QueryRule(Investigation.CANREAD, Operator.EQUALS, userId));
+		q.addRules(new QueryRule(Operator.OR));
+		q.addRules(new QueryRule(Investigation.CANWRITE, Operator.EQUALS, userId));
+		List<Integer> returnList = new ArrayList<Integer>();
+		List<Investigation> invList;
+		try {
+			invList = q.find();
+		} catch (Exception e) {
+			return null;
+		}
+		for (Investigation inv : invList) {
+			returnList.add(inv.getId());
+		}
+		return returnList;
+	}
+	
+	/**
+	 * Gets the ID's of the investigation owned or writable by the user with ID 'userId'.
+	 * 
+	 * @param userId
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 */
+	public List<Integer> getWritableUserInvestigationIds(int userId) {
+		Query<Investigation> q = db.query(Investigation.class);
+		q.addRules(new QueryRule(Investigation.OWNS, Operator.EQUALS, userId));
+		q.addRules(new QueryRule(Operator.OR));
+		q.addRules(new QueryRule(Investigation.CANWRITE, Operator.EQUALS, userId));
+		List<Integer> returnList = new ArrayList<Integer>();
+		List<Investigation> invList;
+		try {
+			invList = q.find();
+		} catch (Exception e) {
+			return null;
+		}
+		for (Investigation inv : invList) {
+			returnList.add(inv.getId());
+		}
+		return returnList;
+	}
 
 	/**
 	 * Retrieve an observation target by id. Gives back null if not found.
@@ -291,14 +344,14 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<Integer> getAllObservationTargetIds(String type, boolean isActive, int investigationId) 
+	public List<Integer> getAllObservationTargetIds(String type, boolean isActive, List<Integer> investigationIds) 
 	throws DatabaseException, ParseException
 	{
 		List<Integer> returnList = new ArrayList<Integer>();
 		if (isActive == false) {
 			Query<ObservationTarget> targetQuery = db.query(ObservationTarget.class);
-			targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION, Operator.EQUALS, 
-					investigationId));
+			targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION, Operator.IN, 
+					investigationIds));
 			if (type != null) {
 				targetQuery.addRules(new QueryRule(ObservationTarget.__TYPE, Operator.EQUALS, 
 						type));
@@ -314,7 +367,7 @@ public class CommonService
 			Query<ObservedValue> valueQuery = db.query(ObservedValue.class);
 			valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
 			valueQuery.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
-			valueQuery.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.EQUALS, investigationId));
+			valueQuery.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
 			List<ObservedValue> valueList = valueQuery.find();
 			List<Integer> activeIdList = new ArrayList<Integer>();
 			for (ObservedValue value : valueList) {
@@ -324,8 +377,8 @@ public class CommonService
 			List<Integer> typeIdList = new ArrayList<Integer>();
 			if (type != null) {
 				Query<ObservationTarget> targetQuery = db.query(ObservationTarget.class);
-				targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION, Operator.EQUALS, 
-						investigationId));
+				targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION, Operator.IN, 
+						investigationIds));
 				targetQuery.addRules(new QueryRule(ObservationTarget.__TYPE, Operator.EQUALS, 
 						type));
 				List<ObservationTarget> targetList = targetQuery.find();
@@ -348,23 +401,23 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<ObservedValue> getAllObservedValues(int measurementId, int investigationId) 
+	public List<ObservedValue> getAllObservedValues(int measurementId, List<Integer> investigationIds) 
 		throws DatabaseException, ParseException {
 		Query<ObservedValue> q = db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, measurementId));
-		q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.EQUALS, investigationId));
+		q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
 		q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
 		return q.find();
 	}
 	
-	/** Returns all ObservationTargets in the Investigation with ID investigationId
+	/** Returns all ObservationTargets in the Investigations with ID's investigationIds
 	 * 
 	 * @return list of observation targets
 	 * @throws DatabaseException 
 	 */
-	public List<ObservationTarget> getAllObservationTargets(int investigationId) {
+	public List<ObservationTarget> getAllObservationTargets(List<Integer> investigationIds) {
 		try {
-		    return db.query(ObservationTarget.class).eq(ObservationTarget.INVESTIGATION, investigationId).find();
+		    return db.query(ObservationTarget.class).in(ObservationTarget.INVESTIGATION, investigationIds).find();
 		} catch (Exception e) {
 		    return new ArrayList<ObservationTarget>();
 		}
@@ -474,18 +527,14 @@ public class CommonService
 			return;
 		}
 		
-		int investigationId;
-		try {
-			investigationId = getUserInvestigationId(userId);
-		} catch (Exception e) {
-			return;
-		}
-		
 		observationTargetNameMap = new HashMap<Integer, String>();
+		
+		List<Integer> invIdList = getAllUserInvestigationIds(userId);
+		
+		// First fill with standard names for all the investigations the current user has rights on
 		List<ObservationTarget> targetList = new ArrayList<ObservationTarget>();
-		// First fill with standard names
 		try {
-			targetList = getAllObservationTargets(investigationId);
+			targetList = getAllObservationTargets(invIdList);
 		} catch (Exception e) {
 			// targetList will remain empty
 			return;
@@ -498,7 +547,7 @@ public class CommonService
 				observationTargetNameMap.put(target.getId(), target.getId().toString());
 			}
 		}
-		
+			
 		// Then overwrite with custom names, if existing
 		int customNameFeatureId = getCustomNameFeatureId(userId);
 		if (customNameFeatureId != -1) {
@@ -507,7 +556,7 @@ public class CommonService
 				valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, 
 						customNameFeatureId));
 				valueQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, 
-						getAllObservationTargetIds(null, false, investigationId)));
+						getAllObservationTargetIds(null, false, invIdList)));
 				List<ObservedValue> valueList = valueQuery.find();
 				for (ObservedValue value : valueList) {
 					if (value.getValue() != null) {
@@ -522,6 +571,7 @@ public class CommonService
 				// No fancy names then...
 			}
 		}
+		
 	}
 
 	/**
@@ -620,7 +670,7 @@ public class CommonService
 	// TODO: think of what to do with species, sexes, sources etc.
 	// Do we want to keep using the 'TypeOfGroup' Measurement or do we want to use Pheno
 	// entities like Species etc.
-	public List<ObservationTarget> getAllMarkedPanels(String mark, int investigationId)
+	public List<ObservationTarget> getAllMarkedPanels(String mark, List<Integer> investigationIds)
 			throws DatabaseException, ParseException
 	{
 		List<Integer> panelIdList = new ArrayList<Integer>();
@@ -628,7 +678,7 @@ public class CommonService
 		Query<ObservedValue> valueQuery = db.query(ObservedValue.class);
 		valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, getMeasurementId("TypeOfGroup")));
 		valueQuery.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, mark));
-		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.EQUALS, investigationId);
+		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.IN, investigationIds);
 		QueryRule qr2 = new QueryRule(Operator.OR);
 		QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
 		valueQuery.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
@@ -1106,11 +1156,11 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<Protocol> getAllProtocols(int investigationId) throws DatabaseException,
+	public List<Protocol> getAllProtocols(List<Integer> investigationIds) throws DatabaseException,
 			ParseException
 	{
 		Query<Protocol> q = db.query(Protocol.class);
-		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.EQUALS, investigationId);
+		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.IN, investigationIds);
 		QueryRule qr2 = new QueryRule(Operator.OR);
 		QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
 		q.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
@@ -1147,10 +1197,10 @@ public class CommonService
 	 * @throws ParseException
 	 */
 	public List<Protocol> getAllProtocolsSorted(String sortField,
-			String sortOrder, int investigationId) throws DatabaseException, ParseException
+			String sortOrder, List<Integer> investigationIds) throws DatabaseException, ParseException
 	{
 		Query<Protocol> q = db.query(Protocol.class);
-		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.EQUALS, investigationId);
+		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.IN, investigationIds);
 		QueryRule qr2 = new QueryRule(Operator.OR);
 		QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
 		q.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
@@ -1261,12 +1311,12 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<Measurement> getAllMeasurements(int investigationId)
+	public List<Measurement> getAllMeasurements(List<Integer> investigationIds)
 			throws DatabaseException, ParseException
 	{
 		Query<Measurement> q = db.query(Measurement.class);
 		q.sortASC("id");
-		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.EQUALS, investigationId);
+		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.IN, investigationIds);
 		QueryRule qr2 = new QueryRule(Operator.OR);
 		QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
 		q.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
@@ -1283,7 +1333,7 @@ public class CommonService
 	 * @throws ParseException
 	 */
 	public List<Measurement> getAllMeasurementsSorted(String sortField,
-		String sortOrder, int investigationId) throws DatabaseException, ParseException
+		String sortOrder, List<Integer> investigationIds) throws DatabaseException, ParseException
 	{
 		Query<Measurement> q = db.query(Measurement.class);
 		if (sortOrder.equals("ASC")) {
@@ -1291,7 +1341,7 @@ public class CommonService
 		} else {
 			q.sortDESC(sortField);
 		}
-		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.EQUALS, investigationId);
+		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.IN, investigationIds);
 		QueryRule qr2 = new QueryRule(Operator.OR);
 		QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
 		q.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
@@ -1305,12 +1355,12 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<ObservableFeature> getAllObservableFeatures(int investigationId)
+	public List<ObservableFeature> getAllObservableFeatures(List<Integer> investigationIds)
 			throws DatabaseException, ParseException
 	{
 		Query<ObservableFeature> q = db.query(ObservableFeature.class);
 		q.sortASC(ObservableFeature.ID);
-		QueryRule qr1 = new QueryRule(ObservableFeature.INVESTIGATION, Operator.EQUALS, investigationId);
+		QueryRule qr1 = new QueryRule(ObservableFeature.INVESTIGATION, Operator.IN, investigationIds);
 		QueryRule qr2 = new QueryRule(Operator.OR);
 		QueryRule qr3 = new QueryRule(ObservableFeature.INVESTIGATION_NAME, Operator.EQUALS, "System");
 		q.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
@@ -1724,7 +1774,7 @@ public class CommonService
 	 * @throws ParseException
 	 */
 	public List<ObservedValue> getObservedValuesByTargetAndFeatures(int targetId, List<Measurement> measurements,
-			int investigationId) throws DatabaseException, ParseException
+			List<Integer> investigationIds, int investigationToAddToId) throws DatabaseException, ParseException
 	{
 
 		List<ObservedValue> values = new ArrayList<ObservedValue>();
@@ -1734,7 +1784,7 @@ public class CommonService
 			Query<ObservedValue> q = db.query(ObservedValue.class);
 			q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetId));
 			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, m.getId()));
-			q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.EQUALS, investigationId));
+			q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
 			List<ObservedValue> vals = q.find();
 			
 			if (vals.isEmpty())
@@ -1744,7 +1794,7 @@ public class CommonService
 				newOV.setValue("");
 				// don't set relation, as that can then never be reset to null
 				newOV.setTarget(targetId);
-				newOV.setInvestigation(investigationId);
+				newOV.setInvestigation(investigationToAddToId);
 				values.add(newOV);
 			}
 			else
@@ -1770,11 +1820,11 @@ public class CommonService
 	}
 	
 	public List<ObservedValue> getObservedValuesByTargetAndFeatures(int targetId, Measurement measurement,
-			int investigationId) throws DatabaseException, ParseException
+			List<Integer> investigationIds, int investigationToBeAddedToId) throws DatabaseException, ParseException
 	{
 		List<Measurement> measurementList = new ArrayList<Measurement>();
 		measurementList.add(measurement);
-		return getObservedValuesByTargetAndFeatures(targetId, measurementList, investigationId);
+		return getObservedValuesByTargetAndFeatures(targetId, measurementList, investigationIds, investigationToBeAddedToId);
 	}
 
 	/** Finds a sample entity by its id

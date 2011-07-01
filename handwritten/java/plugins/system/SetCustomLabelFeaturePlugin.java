@@ -122,8 +122,8 @@ public class SetCustomLabelFeaturePlugin extends PluginModel<Entity>
 		
 		try {
 			// Populate feature list
-			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
-			this.setMeasurementList(ct.getAllMeasurementsSorted("name", "ASC", investigationId));
+			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
+			this.setMeasurementList(ct.getAllMeasurementsSorted("name", "ASC", investigationIds));
 		} catch (Exception e) {
 			this.getMessages().clear();
 			String message = "Something went wrong while loading lists";

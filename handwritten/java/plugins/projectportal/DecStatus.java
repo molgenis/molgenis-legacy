@@ -101,10 +101,10 @@ public class DecStatus extends GenericPlugin
 		statusTable.addColumn("Status");
 		
 		try {
-			int investigationId = cq.getUserInvestigationId(this.getLogin().getUserId());
+			List<Integer> investigationIds = cq.getAllUserInvestigationIds(this.getLogin().getUserId());
 			
 			int rowCount = 0;
-			List<ObservationTarget> decList = cq.getAllMarkedPanels("DecApplication", investigationId);
+			List<ObservationTarget> decList = cq.getAllMarkedPanels("DecApplication", investigationIds);
 			for (ObservationTarget decApp : decList) {
 				rowCount = addStatusRows(decApp, statusTable, rowCount);
 			}
@@ -140,7 +140,7 @@ public class DecStatus extends GenericPlugin
 		
 		int decId = decApp.getId();
 		
-		int investigationId = cq.getUserInvestigationId(this.getLogin().getUserId());
+		List<Integer> investigationIds = cq.getAllUserInvestigationIds(this.getLogin().getUserId());
 		
 		int featureId = cq.getMeasurementId("DecNr");
 		String decNr = cq.getMostRecentValueAsString(decId, featureId);
@@ -152,7 +152,7 @@ public class DecStatus extends GenericPlugin
 		featureId = cq.getMeasurementId("EndDate");
 		statusTable.setCell(1, rowCount, cq.getMostRecentValueAsString(decId, featureId));
 		
-		List<ObservationTarget> expList = cq.getAllMarkedPanels("Experiment", investigationId);
+		List<ObservationTarget> expList = cq.getAllMarkedPanels("Experiment", investigationIds);
 		for (ObservationTarget subproject : expList) {
 			int subprojectId = subproject.getId();
 			
@@ -182,7 +182,7 @@ public class DecStatus extends GenericPlugin
 				Date now = Calendar.getInstance().getTime();
 				featureId = cq.getMeasurementId("Experiment");
 				List<Integer> aliveAnimalIdList = cq.getAllObservationTargetIds("Individual", true, 
-						investigationId);
+						investigationIds);
 				if (aliveAnimalIdList.size() > 0) {
 					Query<ObservedValue> q = db.query(ObservedValue.class);
 					q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, subprojectId));
@@ -194,7 +194,7 @@ public class DecStatus extends GenericPlugin
 				}
 				nrOfAnimalsAliveCum += nrOfAnimalsAlive;
 				List<Integer> totalAnimalIdList = cq.getAllObservationTargetIds("Individual", false, 
-						investigationId);
+						investigationIds);
 				if (totalAnimalIdList.size() > 0) {
 					Query<ObservedValue> q = db.query(ObservedValue.class);
 					q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, subprojectId));

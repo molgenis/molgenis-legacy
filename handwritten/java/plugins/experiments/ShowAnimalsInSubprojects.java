@@ -316,7 +316,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 						value.setEndtime(subProjectRemovalDatetime);
 						db.update(value);
 						
-						int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
+						int investigationId = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
 						
 						// If applicable, end status Active and set Death date
 						if (endstatus.equals("A. Dood in het kader van de proef") || endstatus.equals("B. Gedood na beeindiging van de proef")) {
@@ -507,7 +507,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 					}
 					
 					// Make 'AnimalInSubproject' protocol application and add values
-					int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
+					int investigationId = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
 					int protocolId = ct.getProtocolId("AnimalInSubproject");
 					ProtocolApplication app = ct.createProtocolApplication(investigationId, protocolId);
 					db.add(app);
@@ -559,16 +559,16 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 
 		try
 		{
-			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
+			List<Integer> investigationIds = ct.getWritableUserInvestigationIds(this.getLogin().getUserId());
 			
 			// Populate DEC subproject list
-			this.setSubprojectList(ct.getAllMarkedPanels("Experiment", investigationId));
+			this.setSubprojectList(ct.getAllMarkedPanels("Experiment", investigationIds));
 			
 			// Populate batch list
 			setBatchList(ct.getAllBatches());
 			
 			// Populate list of all animals
-			allAnimalIdList = ct.getAllObservationTargetIds("Individual", true, investigationId);			
+			allAnimalIdList = ct.getAllObservationTargetIds("Individual", true, investigationIds);			
 			
 			// Populate pain management code list
 			this.setPainManagementCodeList(ct.getAllCodesForFeature("PainManagement"));

@@ -21,7 +21,9 @@ import commonservice.CommonService;
 
 public class SampleViewerModel extends SimpleScreenModel {
 
-    public SampleViewerModel(ScreenController controller)
+	private static final long serialVersionUID = 6526272996795129817L;
+
+	public SampleViewerModel(ScreenController<?> controller)
 	{
 		super(controller);
 		// TODO Auto-generated constructor stub
@@ -119,8 +121,9 @@ public class SampleViewerModel extends SimpleScreenModel {
     }
     
     public List<ObservedValue> getValuesBySample(int sampleId, List<Measurement> features) throws DatabaseException, ParseException {
-    	int investigationId = cq.getUserInvestigationId(userId);
-    	valuesBySample = cq.getObservedValuesByTargetAndFeatures(sampleId, features, investigationId);
+    	List<Integer> investigationIds = cq.getAllUserInvestigationIds(userId);
+    	int ownInvId = cq.getOwnUserInvestigationId(userId);
+    	valuesBySample = cq.getObservedValuesByTargetAndFeatures(sampleId, features, investigationIds, ownInvId);
     	return valuesBySample;
     }
 

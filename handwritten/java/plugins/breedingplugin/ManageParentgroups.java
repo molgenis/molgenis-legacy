@@ -144,7 +144,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			String featureName, String valueName, String valueCertainName, int parentgroupid, Date tmpDate) 
 	throws DatabaseException, ParseException, IOException {
 		int eventCounter = 0;
-		int invid = ct.getUserInvestigationId(this.getLogin().getUserId());
+		int invid = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
 		int protocolId = ct.getProtocolId(protocolName);
 		
 		// Init lists that we can later add to the DB at once
@@ -191,7 +191,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			Calendar calendar = Calendar.getInstance();
 			Date now = calendar.getTime();
 			
-			int invid = ct.getUserInvestigationId(this.getLogin().getUserId());
+			int invid = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
 			
 			String action = request.getString("__action");
 			
@@ -260,13 +260,13 @@ public class ManageParentgroups extends PluginModel<Entity>
 		}
 	}
 	
-	public List<Integer> populateParentList(Database db, String sexName, int investigationId) 
+	public List<Integer> populateParentList(Database db, String sexName, List<Integer> investigationIds) 
 		throws DatabaseException, ParseException {
 		
 		Query<ObservedValue> q = db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Sex"));
 		q.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, sexName));
-		q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.EQUALS, investigationId));
+		q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
 		List<ObservedValue> valueList = q.find();
 		List<Integer> parentIdList = new ArrayList<Integer>();
 		for (ObservedValue value : valueList) {
@@ -282,13 +282,13 @@ public class ManageParentgroups extends PluginModel<Entity>
 		ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
 		
 		try {
-			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
+			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
 			// Populate mother list
-			motherIdList = populateParentList(db, "Female", investigationId);
+			motherIdList = populateParentList(db, "Female", investigationIds);
 			// Populate father list
-			fatherIdList = populateParentList(db, "Male", investigationId);
+			fatherIdList = populateParentList(db, "Male", investigationIds);
 			// Populate line list
-			lineList = ct.getAllMarkedPanels("Line", investigationId);
+			lineList = ct.getAllMarkedPanels("Line", investigationIds);
 			
 		} catch (Exception e) {
 			this.getMessages().clear();

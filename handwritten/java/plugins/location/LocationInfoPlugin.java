@@ -14,7 +14,6 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -93,8 +92,8 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 		
 		// Populate location list
 		try {
-			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
-			List<Integer> locationIdList = ct.getAllObservationTargetIds("Location", false, investigationId);
+			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
+			List<Integer> locationIdList = ct.getAllObservationTargetIds("Location", false, investigationIds);
 			if (locationIdList.size() > 0) {
 				this.locationList = ct.getObservationTargets(locationIdList);
 			} else {

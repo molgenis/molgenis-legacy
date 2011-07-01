@@ -33,21 +33,37 @@ public class AnimalDbUsers extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 3660487327165570585L;
 	private String action = "init";
-	private List<String> userNames;
-	private List<String> invNames;
 	private List<Investigation> investigations;
+	private List<MolgenisUser> users;
+	private Database db;
 
 	public AnimalDbUsers(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
 	
-	public List<String> getUserNames() {
-		return userNames;
+	public String getUserName() {
+		return this.getLogin().getUserName();
 	}
 	
-	public String getInvestigationName(int idx) {
-		return invNames.get(idx);
+	public String getInvestigationSharers(String invName, boolean canWrite) {
+		try {
+			Query<Investigation> q = db.query(Investigation.class);
+			q.addRules(new QueryRule(Investigation.NAME, Operator.EQUALS, invName));
+			List<Investigation> invList = q.find();
+			if (invList.size() == 1) {
+				Investigation inv = invList.get(0);
+				if (canWrite == true) {
+					return inv.getCanWrite_Name();
+				} else {
+					return inv.getCanRead_Name();
+				}
+			} else {
+				return null;
+			}
+		} catch(Exception e) {
+			return null;
+		}
 	}
 	
 	/**
@@ -57,41 +73,35 @@ public class AnimalDbUsers extends PluginModel<Entity>
 	 * All db actions are within one transaction.
 	 */ 
 	@Override
-	public void reload(Database db) {	
+	public void reload(Database db) {
 		
-		userNames = new ArrayList<String>();
-		invNames = new ArrayList<String>();
-		setInvestigations(new ArrayList<Investigation>());
-		// Load user names and investigations list
+		this.db = db;
+		
 		try {
-			List<MolgenisUser> userList = db.query(MolgenisUser.class).find();
-			for (MolgenisUser u : userList) {
-				userNames.add(u.getName());
-				int userId = u.getId();
-				
-				Query<Investigation> q = db.query(Investigation.class);
-				q.addRules(new QueryRule(Investigation.OWNS, Operator.EQUALS, userId));
-				List<Investigation> invList = q.find();
-				String invs = "";
-				for (Investigation i : invList) {
-					invs += (i.getName() + ", ");
-				}
-				if (invs.length() > 0) {
-					invs = invs.substring(0, invs.length() - 2);
-				}
-				invNames.add(invs);
-			}
-			
-			setInvestigations(db.query(Investigation.class).find());
+			users = db.find(MolgenisUser.class);
+		} catch (DatabaseException e1) {
+			this.setMessages(new ScreenMessage("Something went wrong while loading user list", false));
+			e1.printStackTrace();
+		}
+		
+		int userId = this.getLogin().getUserId();
+		// Load user's investigation list
+		try {
+			Query<Investigation> q = db.query(Investigation.class);
+			q.addRules(new QueryRule(Investigation.OWNS, Operator.EQUALS, userId));
+			List<Investigation> invList = q.find();
+			setInvestigations(invList);
 			
 		} catch (Exception e) {
-			this.setMessages(new ScreenMessage("Something went wrong while loading user list", false));
+			this.setMessages(new ScreenMessage("Something went wrong while loading investigation list", false));
 			e.printStackTrace();
 		}
 	}
 	
 	@Override
 	public void handleRequest(Database db, Tuple request) {
+		
+		this.db = db;
 		
 		try {
 			action = request.getAction();
@@ -101,6 +111,25 @@ public class AnimalDbUsers extends PluginModel<Entity>
 			}
 			if (action.equals("New")) {
 				//
+			}
+			if (action.equals("Cancel")) {
+				action = "init";
+			}
+			if (action.startsWith("ShareRead")) {
+				int invNr = Integer.parseInt(action.substring(9));
+				Investigation inv = investigations.get(invNr);
+				int userId = request.getInt("shareread");
+				inv.setCanRead_Id(userId);
+				db.update(inv);
+				this.setMessages(new ScreenMessage("Investigation succesfully shared.", true));
+			}
+			if (action.startsWith("ShareWrite")) {
+				int invNr = Integer.parseInt(action.substring(10));
+				Investigation inv = investigations.get(invNr);
+				int userId = request.getInt("sharewrite");
+				inv.setCanWrite_Id(userId);
+				db.update(inv);
+				this.setMessages(new ScreenMessage("Investigation succesfully shared.", true));
 			}
 			if (action.equals("Add")) {
 				
@@ -159,7 +188,7 @@ public class AnimalDbUsers extends PluginModel<Entity>
 						}
 						chosenInv = new Investigation();
 						chosenInv.setName(newinv);
-						db.add(chosenInv); // owner is now defaulted to the one logged in!
+						db.add(chosenInv); // owner is defaulted to the one logged in!
 						
 					} else {
 						Query<Investigation> q = db.query(Investigation.class);
@@ -171,7 +200,7 @@ public class AnimalDbUsers extends PluginModel<Entity>
 							throw new Exception("No (valid) investigation chosen");
 						}
 					}
-					chosenInv.setOwns(userId);
+					chosenInv.setOwns_Id(userId); // TODO: this fails when you're not admin
 					db.update(chosenInv);
 				} else {
 					throw new Exception("No (valid) investigation chosen");
@@ -261,7 +290,7 @@ public class AnimalDbUsers extends PluginModel<Entity>
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (e.getMessage() != null) {
-				this.setMessages(new ScreenMessage("Error adding user: " + e.getMessage(), false));
+				this.setMessages(new ScreenMessage("Error: " + e.getMessage(), false));
 			}
 		}
 	}
@@ -311,6 +340,10 @@ public class AnimalDbUsers extends PluginModel<Entity>
 
 	public List<Investigation> getInvestigations() {
 		return investigations;
+	}
+	
+	public List<MolgenisUser> getUsers() {
+		return users;
 	}
 
 }

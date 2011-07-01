@@ -112,7 +112,9 @@ public class PrintLabelPlugin extends GenericPlugin
 	private PdfPTable makeLabels(List<Individual> individualList, List<Measurement> measurementList) throws DatabaseException, ParseException {
 		PdfPTable table = new PdfPTable(2);
 		
-		int investigationId = cs.getUserInvestigationId(this.getLogin().getUserId());
+		int userId = this.getLogin().getUserId();
+		List<Integer> investigationIds = cs.getAllUserInvestigationIds(userId);
+    	int ownInvId = cs.getOwnUserInvestigationId(userId);
         
         for (Individual ind : individualList) {
         	PdfPCell newCell = new PdfPCell();
@@ -120,7 +122,7 @@ public class PrintLabelPlugin extends GenericPlugin
         	newCell.addElement(new Paragraph("Database name: " + ind.getName()));
         	
         	List<ObservedValue> valueList = cs.getObservedValuesByTargetAndFeatures(ind.getId(), measurementList,
-        			investigationId);
+        			investigationIds, ownInvId);
         	for (ObservedValue value : valueList) {
         		String featName = cs.getMeasurementById(value.getFeature_Id()).getName();
         		String actualValue;
@@ -222,8 +224,8 @@ public class PrintLabelPlugin extends GenericPlugin
     	targets = new SelectMultipleInput("Targets", null);
 	    targets.setLabel("Select animal(s):");
 		try {
-			int investigationId = cs.getUserInvestigationId(this.getLogin().getUserId());
-		    for (Integer animalId : cs.getAllObservationTargetIds("Individual", true, investigationId)) {
+			List<Integer> investigationIds = cs.getAllUserInvestigationIds(this.getLogin().getUserId());
+		    for (Integer animalId : cs.getAllObservationTargetIds("Individual", true, investigationIds)) {
 		    	targets.addOption(animalId, getTargetName(animalId));
 		    }
 		} catch(Exception e) {
@@ -239,8 +241,8 @@ public class PrintLabelPlugin extends GenericPlugin
     	features = new SelectMultipleInput("Features", null);
 		features.setLabel("Select feature(s):");
     	try {
-    		int investigationId = cs.getUserInvestigationId(this.getLogin().getUserId());
-		    for (Measurement feature : cs.getAllMeasurementsSorted(Measurement.NAME, "ASC", investigationId)) {
+    		List<Integer> investigationIds = cs.getAllUserInvestigationIds(this.getLogin().getUserId());
+		    for (Measurement feature : cs.getAllMeasurementsSorted(Measurement.NAME, "ASC", investigationIds)) {
 		    	features.addOption(feature.getId(), feature.getName());
 		    }
 		} catch(Exception e) {

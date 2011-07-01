@@ -190,7 +190,7 @@ public class ApplyProtocolUI {
 		try {
 		    protocols = new SelectInput("Protocols");
 		    protocols.setLabel("Choose Protocol:");
-		    protocols.setOptions(cs.getAllProtocolsSorted(Protocol.NAME, "ASC", model.getInvestigationId()), 
+		    protocols.setOptions(cs.getAllProtocolsSorted(Protocol.NAME, "ASC", model.getInvestigationIds()), 
 		    		Protocol.ID, Protocol.NAME);
 		    protocolDiv.add(protocols);
 	
@@ -207,8 +207,8 @@ public class ApplyProtocolUI {
 		try {
 		    targets = new SelectMultipleInput("Targets", null);
 		    targets.setLabel("Choose Targets:");
-		    int investigationId = cs.getUserInvestigationId(model.getUserId());
-		    for (ObservationTarget o : cs.getAllObservationTargets(investigationId)) {
+		    List<Integer> investigationIds = cs.getWritableUserInvestigationIds(model.getUserId());
+		    for (ObservationTarget o : cs.getAllObservationTargets(investigationIds)) {
 		    	targets.addOption(o.getId(), this.getTargetName(o.getId()));
 		    }
 		    protocolDiv.add(targets);
@@ -411,7 +411,9 @@ public class ApplyProtocolUI {
 			    }
 			}
 		    
-		    int investigationId = cs.getUserInvestigationId(model.getUserId());
+			int userId = model.getUserId();
+			int ownInvId = cs.getOwnUserInvestigationId(userId);
+		    List<Integer> investigationIds = cs.getWritableUserInvestigationIds(userId);
 	
 		    // Rest of the rows contain inputs for each target-feature combination
 		    for (int row = 1; row <= model.getFullTargetList().size(); row++) {
@@ -430,7 +432,7 @@ public class ApplyProtocolUI {
 		    			int valueCounter = 0;
 			    		List<ObservedValue> values = cs.getObservedValuesByTargetAndFeatures(
 			    			model.getTargetsIdList().get(row - 1), model.getFeaturesList().get(col), 
-			    			investigationId);
+			    			investigationIds, ownInvId);
 			    		for (ObservedValue value : values) {
 			    			HtmlInput input = makeInput(col, colNrInTable, row, valueCounter, value);
 			    			input.setLabel("");

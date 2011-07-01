@@ -33,7 +33,7 @@ public class ApplyProtocolPluginModel {
 	private boolean timeInfo = false;
 	private boolean allValues = false;
 	private int userId;
-	private int investigationId;
+	private List<Integer> investigationIds;
 	private Map<Measurement, List<Code>> codeMap = new HashMap<Measurement, List<Code>>();
 	private Map<Measurement, List<String>> codeMapString = new HashMap<Measurement, List<String>>();
 	private Map<Measurement, List<ObservationTarget>> panelMap = new HashMap<Measurement, List<ObservationTarget>>();
@@ -56,7 +56,7 @@ public class ApplyProtocolPluginModel {
 			codeMapString.put(m, cs.getAllCodesForFeatureAsStrings(m.getName()));
 			
 			String panelLabel = m.getPanelLabelAllowedForRelation();
-			panelMap.put(m, cs.getAllMarkedPanels(panelLabel, investigationId));
+			panelMap.put(m, cs.getAllMarkedPanels(panelLabel, investigationIds));
 			
 			String observationTargetType = "ObservationTarget";
 			if (m.getTargettypeAllowedForRelation() != null) {
@@ -139,17 +139,21 @@ public class ApplyProtocolPluginModel {
 		return fullTargetList;
 	}
 
-	public void setUserAndInvestigationId(int userId) {
+	public void setUserAndInvestigationIds(int userId) {
 		this.userId = userId;
-		this.investigationId = cs.getUserInvestigationId(userId);
+		this.investigationIds = cs.getWritableUserInvestigationIds(userId);
 	}
 
 	public int getUserId() {
 		return userId;
 	}
 	
-	public int getInvestigationId() {
-		return investigationId;
+	public int getOwnInvestigationId() {
+		return cs.getOwnUserInvestigationId(userId);
+	}
+	
+	public List<Integer> getInvestigationIds() {
+		return investigationIds;
 	}
 	
 	public Database getDatabase() {

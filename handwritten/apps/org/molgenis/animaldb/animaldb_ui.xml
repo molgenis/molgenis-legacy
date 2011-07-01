@@ -28,7 +28,7 @@
 				<form name="MolgenisPermission" entity="MolgenisPermission" view="list" label="Permissions"/>
 				<plugin name="PermissionManagementPlugin" type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin"
 					label="Permission management" />
-				<plugin name="AnimalDbUsers" type="plugins.system.AnimalDbUsers" label="Manage AnimalDB users" />
+				<plugin name="AnimalDbUsers" type="plugins.system.AnimalDbUsers" label="Manage users and investigations" />
 			</menu>
 		</menu>
 

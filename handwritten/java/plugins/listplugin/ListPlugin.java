@@ -134,8 +134,8 @@ public class ListPlugin extends PluginModel<Entity> {
 			}
 
 			// Populate measurement list
-			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
-			List<Measurement> featList = ct.getAllMeasurementsSorted(Measurement.NAME, "ASC", investigationId);
+			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
+			List<Measurement> featList = ct.getAllMeasurementsSorted(Measurement.NAME, "ASC", investigationIds);
 			if (featList.size() > 0) {
 				this.setFeatureList(featList);
 			} else {

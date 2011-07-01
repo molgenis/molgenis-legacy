@@ -93,7 +93,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		
 		// Only first time or if user changed:
 		if (ui.getProtocolApplicationContainer() == null || userId != model.getUserId()) {
-			model.setUserAndInvestigationId(userId);
+			model.setUserAndInvestigationIds(userId);
 		    ui.initScreen();
 		}
     }
@@ -108,8 +108,10 @@ public class ApplyProtocolPlugin extends GenericPlugin
     	DateFormat formatter = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
     	
 		try {
-			int investigationId = cs.getUserInvestigationId(this.getLogin().getUserId());
-		    int paId = cs.makeProtocolApplication(investigationId, model.getProtocolId());
+			int userId = this.getLogin().getUserId();
+			int ownInvId = cs.getOwnUserInvestigationId(userId);
+			List<Integer> investigationIds = cs.getWritableUserInvestigationIds(userId);
+		    int paId = cs.makeProtocolApplication(ownInvId, model.getProtocolId());
 		    
 		    for (int row = 1; row <= model.getFullTargetList().size(); row++) {
 		    	
@@ -126,7 +128,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 					}
 					
 					List<ObservedValue> originalValues = cs.getObservedValuesByTargetAndFeatures(
-							targetId, measurement, investigationId);
+							targetId, measurement, investigationIds, ownInvId);
 					
 					if (!model.isNewProtocolApplication()) {
 						// User chose to edit existing values
@@ -223,8 +225,10 @@ public class ApplyProtocolPlugin extends GenericPlugin
 					    newValue.setTime(startTime);
 					    newValue.setEndtime(endTime);
 					    newValue.setProtocolApplication(paId);
-					    if (model.getInvestigationId() != -1) {
-					    	newValue.setInvestigation(model.getInvestigationId());
+					    // TODO: is it correct that new values are always assigned to the investigation
+					    // owned by the current user?
+					    if (model.getOwnInvestigationId() != -1) {
+					    	newValue.setInvestigation(model.getOwnInvestigationId());
 					    }
 				
 						db.add(newValue);

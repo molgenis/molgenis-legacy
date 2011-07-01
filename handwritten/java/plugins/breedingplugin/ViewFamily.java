@@ -76,8 +76,8 @@ public class ViewFamily extends PluginModel<Entity>
 
 		try {
 			// Populate animal list
-			int investigationId = cs.getUserInvestigationId(this.getLogin().getUserId());
-			this.setAnimalIdList(cs.getAllObservationTargetIds("Individual", true, investigationId));
+			List<Integer> investigationIds = cs.getAllUserInvestigationIds(this.getLogin().getUserId());
+			this.setAnimalIdList(cs.getAllObservationTargetIds("Individual", true, investigationIds));
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (e.getMessage() != null) {

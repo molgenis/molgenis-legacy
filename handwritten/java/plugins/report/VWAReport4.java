@@ -47,9 +47,10 @@ public class VWAReport4 extends AnimalDBReport
 
 			ArrayList<ArrayList<Integer>> rowList = new ArrayList<ArrayList<Integer>>();
 
-			// Go through all animals
-			int investigationId = ct.getUserInvestigationId(userId);
-			List<Integer> targetIdList = ct.getAllObservationTargetIds("Individual", false, investigationId);
+			// Go through all animals owned by the current user
+			List<Integer> investigationIds = new ArrayList<Integer>();
+			investigationIds.add(ct.getOwnUserInvestigationId(userId));
+			List<Integer> targetIdList = ct.getAllObservationTargetIds("Individual", false, investigationIds);
 			for (Integer targetid : targetIdList)
 			{
 				// Check AnimalType

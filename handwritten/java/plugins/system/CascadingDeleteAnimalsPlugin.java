@@ -76,12 +76,12 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 	}
 
 	public void removeValues(Database db, CommonService ct, int targetId, 
-			List<ProtocolApplication> protocolApplicationList, int investigationId) 
+			List<ProtocolApplication> protocolApplicationList, List<Integer> investigationIds) 
 		throws DatabaseException, ParseException, IOException {
 		// Values related to the target itself
 		Query<ObservedValue> q = db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetId));
-		q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.EQUALS, investigationId));
+		q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
 		List<ObservedValue> valueList = q.find();
 		for (ObservedValue value : valueList) {
 			int paId = value.getProtocolApplication_Id();
@@ -94,7 +94,7 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 		// Values in which the target is linked to
 		q = db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, targetId));
-		q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.EQUALS, investigationId));
+		q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
 		valueList = q.find();
 		for (ObservedValue value : valueList) {
 			int paId = value.getProtocolApplication_Id();
@@ -111,24 +111,26 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 	{
 		try
 		{
-			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
+			int userId = this.getLogin().getUserId();
+			List<Integer> investigationIds = ct.getWritableUserInvestigationIds(userId);
 			
 			String action = request.getString("__action");
 			List<ProtocolApplication> protocolApplicationList = new ArrayList<ProtocolApplication>();
 			
 			if (action.equals("remove")) {
+				
 				List<?> targetsIdsAsObjectsList = request.getList("target");
 				for (Object targetIdAsObject : targetsIdsAsObjectsList) {
 					// Animal ID
 					int targetId = Integer.parseInt((String)targetIdAsObject);
-					removeValues(db, ct, targetId, protocolApplicationList, investigationId);
+					removeValues(db, ct, targetId, protocolApplicationList, investigationIds);
 					ObservationTarget target = ct.getObservationTargetById(targetId);
 					db.remove(target);
 				}
 				for (ProtocolApplication pa : protocolApplicationList) {
 					Query<ObservedValue> q = db.query(ObservedValue.class);
 					q.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, pa.getId()));
-					q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.EQUALS, investigationId));
+					q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
 					List<ObservedValue> valueList = q.find();
 					if (valueList.size() == 0) {
 						// No values left in this application, so safe to remove
@@ -142,10 +144,10 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 		
 			if (action.equals("removeAllAnimals"))
 			{
-				List<Integer> animalIdList = ct.getAllObservationTargetIds("Individual", false, investigationId);
+				List<Integer> animalIdList = ct.getAllObservationTargetIds("Individual", false, investigationIds);
 				List<ObservationTarget> allAnimalList = ct.getObservationTargets(animalIdList);
 				for (ObservationTarget animal : allAnimalList) {
-					removeValues(db, ct, animal.getId(), protocolApplicationList, investigationId);
+					removeValues(db, ct, animal.getId(), protocolApplicationList, investigationIds);
 					db.remove(animal);
 				}
 				db.remove(protocolApplicationList);
@@ -170,8 +172,8 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 
 		try
 		{
-			int investigationId = ct.getUserInvestigationId(this.getLogin().getUserId());
-			this.setTargetIdList(ct.getAllObservationTargetIds(null, false, investigationId));
+			List<Integer> investigationIds = ct.getWritableUserInvestigationIds(this.getLogin().getUserId());
+			this.setTargetIdList(ct.getAllObservationTargetIds(null, false, investigationIds));
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (e.getMessage() != null) {
