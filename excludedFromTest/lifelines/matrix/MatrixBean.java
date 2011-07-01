@@ -45,8 +45,8 @@ public class MatrixBean {
     private String exportOption = "All";
     private boolean exportAllColumns = false;
 
-    public MatrixBean() throws NumberFormatException, DatabaseException, SQLException, ParseException {
-    	dataModel = new PagableDataModel<Column, Integer>(new RelationalMatrix(20));
+    public MatrixBean() throws NumberFormatException, DatabaseException, SQLException, ParseException, Exception {
+    	dataModel = new PagableDataModel<Column, Integer>(new RelationalMatrix(10));
         loadObservableFeatureGroups();
         loadFeaturesByName();
         loadInvestigation();

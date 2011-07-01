@@ -10,20 +10,26 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
-import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.sessions.Session;
+//import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+//import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+//import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+//import org.eclipse.persistence.sessions.Session;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.organization.Investigation;
 import org.richfaces.model.Ordering;
 
 import app.JpaDatabase;
 import java.math.BigDecimal;
+import java.sql.DriverManager;
+import javax.persistence.Persistence;
 import org.apache.log4j.Logger;
+import org.hibernate.ejb.HibernateEntityManager;
 
 public class RelationalMatrix implements PagableMatrix<Column, Integer> {
-
+    private final String KEY_COLUMN = "PA_ID";
+    private final String TABLE_NAME = "ONDERZOEK9";
+    
+    
     private JpaDatabase db;
     private EntityManager em;
     private Object[][] data;
@@ -31,7 +37,7 @@ public class RelationalMatrix implements PagableMatrix<Column, Integer> {
     private List<Integer> targets = new ArrayList<Integer>();
     private int pageSize;
     private SimplePager columnPager;
-    private String keyColumn = "PA_ID";
+
 
     private Logger logger = Logger.getLogger(RelationalMatrix.class);
     
@@ -40,18 +46,15 @@ public class RelationalMatrix implements PagableMatrix<Column, Integer> {
         em = db.getEntityManager();
     }
 
-    public RelationalMatrix(int pageSize) throws DatabaseException, SQLException {
+    public RelationalMatrix(int pageSize) throws DatabaseException, SQLException, Exception {
         initDatabase();
         this.pageSize = pageSize;
         this.columns = retrieveDatabaseColumns();
         this.columnPager = new SimplePager(this, 5);
     }
 
-    private Connection getConnection() throws DatabaseException {
-        Session session = ((EntityManagerImpl) new JpaDatabase().getEntityManager()).getSession();
-        UnitOfWorkImpl uow = (UnitOfWorkImpl) session;
-        DatabaseAccessor dbAcc = (DatabaseAccessor) uow.getAccessor();
-        return dbAcc.getConnection();
+    private Connection getConnection() throws DatabaseException, SQLException, ClassNotFoundException {
+        return db.createJDBCConnection();
     }
 
     @Override
@@ -83,7 +86,7 @@ public class RelationalMatrix implements PagableMatrix<Column, Integer> {
     public int getNumberOfRows() {
         int numRows = 0;
         if(getVisableColumns().size() > 0) {
-            String sql = "SELECT COUNT(*) FROM Joris " + createWhere();
+            String sql = String.format("SELECT COUNT(*) FROM %s %s ", TABLE_NAME, createWhere());
             numRows = ((BigDecimal) em.createNativeQuery(sql.toString()).getSingleResult()).intValue();
             logger.debug(String.format("sql = %s", sql));
         }
@@ -102,21 +105,26 @@ public class RelationalMatrix implements PagableMatrix<Column, Integer> {
 
         List<Column> visableColumns = null;
         if (offset == -1) {
-            sql.append(String.format("%s, ", keyColumn));
+            sql.append(String.format("%s, ", KEY_COLUMN));
             visableColumns = getColumns();
         } else {
-            sql.append(String.format("%s, ", keyColumn));
+            sql.append(String.format("%s, ", KEY_COLUMN));
             visableColumns = getVisableColumns();
         }
         //loadRowCount(visableColumns.size());
 
         for (Column c : visableColumns) {
-            sql.append(getSqlColumnName(c.getName()));
+            if(c.getName().equalsIgnoreCase(KEY_COLUMN))
+            {
+                sql.append(getSqlColumnName(c.getName()) + " PatientID");
+            } else {                
+                sql.append(getSqlColumnName(c.getName()));
+            }
             sql.append(",");
         }
 
         sql.deleteCharAt(sql.length() - 1); //remove last comma
-        sql.append(" FROM Joris ");
+        sql.append(String.format(" FROM %s ", TABLE_NAME));
 
         sql.append(createWhere());
         sql.append(createSort());
@@ -136,13 +144,14 @@ public class RelationalMatrix implements PagableMatrix<Column, Integer> {
         targets.clear();
 
         Object[] rec = x.toArray();
+        int numColumns = visableColumns.size()+1;
         if (rec.length > 0 && rec[0] instanceof Object[]) {
-            data = new Object[x.size()][visableColumns.size()+1];
+            data = new Object[x.size()][numColumns];
             for (int i = 0; i < rec.length; ++i) {
                 targets.add(((BigDecimal) ((Object[]) rec[i])[0]).intValue());
                 Object[] r = (Object[]) rec[i];
                 if (r != null) {
-                    for (int j = 0; j < r.length; ++j) {
+                    for (int j = 0; j < numColumns; ++j) {
                         data[i][j] = r[j];
                     }
                 }
@@ -154,13 +163,6 @@ public class RelationalMatrix implements PagableMatrix<Column, Integer> {
                 data[i][0] = rec[i];
             }
         }
-
-//        for (int i = 0; i < rec.length; ++i) {
-//            for (int j = 0; j < data[i].length; ++j) {
-//                System.out.print(data[i][j] + "\t");
-//            }
-//            System.out.println();
-//        }
     }
 
 //    private void loadRowCount(int columnCount) {
@@ -221,7 +223,7 @@ public class RelationalMatrix implements PagableMatrix<Column, Integer> {
     public void setColumns(List<Column> columns) {
         this.columns = columns;
         for (Column c : columns) {
-            if (c.getName().contains(keyColumn)) {
+            if (c.getName().contains(KEY_COLUMN)) {
                 columns.remove(c);
                 break;
             }
@@ -233,11 +235,11 @@ public class RelationalMatrix implements PagableMatrix<Column, Integer> {
         throw new UnsupportedOperationException();
     }
 
-    public final List<Column> retrieveDatabaseColumns() throws SQLException, DatabaseException {
+    public final List<Column> retrieveDatabaseColumns() throws SQLException, DatabaseException, Exception {
         List<Column> dbColumns = new ArrayList<Column>();
 
         DatabaseMetaData dbMetaData = getConnection().getMetaData();
-        ResultSet rsColumns = dbMetaData.getColumns(null, null, "Joris".toUpperCase(), null);
+        ResultSet rsColumns = dbMetaData.getColumns(null, null, TABLE_NAME.toUpperCase(), null);
         while (rsColumns.next()) {
             String columnName = rsColumns.getString("COLUMN_NAME");
             String columnType = rsColumns.getString("TYPE_NAME");

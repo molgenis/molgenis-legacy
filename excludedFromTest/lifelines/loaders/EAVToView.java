@@ -18,7 +18,7 @@ import org.molgenis.pheno.Measurement;
 public class EAVToView {
     private final String schemaName = "LLPOPER";
     private final String tableName = "LL_DATASET9";
-    private final int investigationId = 2675723;
+    private final int investigationId = 1;
     
     public static void main(String[] args) throws Exception {
         new EAVToView();

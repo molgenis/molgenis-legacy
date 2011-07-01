@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
+import org.molgenis.framework.db.jpa.JpaUtil;
 import org.molgenis.model.jaxb.Field;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
@@ -123,7 +124,9 @@ public class OracleToLifelinesPheno {
     }
 
     public void load() throws Exception {
+        
         JpaDatabase db = new JpaDatabase();
+        JpaUtil.dropAndCreateTables(db);
         EntityManager em = db.getEntityManager();
         Connection con = LoaderUtils.getConnection();
         loadComments();
@@ -131,7 +134,7 @@ public class OracleToLifelinesPheno {
         List<Measurement> measurements = loadInvestigationAndMeasurement(con, em);
         loadTargets(con, em);
 
-        writeCSVFile(con, em, measurements);
+        //writeCSVFile(con, em, measurements);
 
         //loadDataWithUnion(measurements, em, con);
     }
@@ -149,7 +152,8 @@ public class OracleToLifelinesPheno {
             measurements.add(m);
 
             m.setInvestigation(investigation);
-            investigation.getObservationElementCollection().add(m);
+            investigation.getInvestigationObservationElementCollection().add(m);
+//            investigation.getObservationElementCollection().add(m);
             m.setName(rsm.getColumnName(i));
 
             m.setDataType(Field.Type.getType(rsm.getColumnType(i)).toString());
@@ -159,6 +163,7 @@ public class OracleToLifelinesPheno {
         em.getTransaction().begin();
         em.persist(investigation);
         em.getTransaction().commit();
+        System.out.println(investigation.getId());
         return measurements;
     }
     private HashMap<String, Integer> paId = new HashMap<String, Integer>();
@@ -173,6 +178,7 @@ public class OracleToLifelinesPheno {
 
         while (rs.next()) {
             ObservationTarget target = new ObservationTarget();
+            target.setInvestigation(investigation);
             target.setName("" + rs.getBigDecimal(1).intValue());
             targets.add(target);
         }

@@ -75,6 +75,8 @@ public class LoaderUtils {
             return "cast(%s as number)";
         } else if (dataType.equals("string")) {
             return "%s";
+        } else if(dataType.equals("long")) {
+            return "cast(%s as number)";
         } else {
             throw new Exception("DataType not supported!" + dataType);
         }        

@@ -22,9 +22,9 @@ public class FilterParser {
         ExprLexer lexer = new ExprLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         ExprParser parser = new ExprParser(tokens);
-        ErrorList errorList = new ErrorList();
-        lexer.setErrorReporter(errorList);
-        parser.setErrorReporter(errorList);
+//        ErrorList errorList = new ErrorList();
+//        lexer.setErrorReporter(errorList);
+//        parser.setErrorReporter(errorList);
 
         String result = null;
         try {
@@ -33,9 +33,9 @@ public class FilterParser {
             Logger.getLogger(FilterParser.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        if(errorList.hasErrorMsg()) {
-            return null;
-        }
+//        if(errorList.hasErrorMsg()) {
+//            return null;
+//        }
 
         return result;
     }

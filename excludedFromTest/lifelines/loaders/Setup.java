@@ -47,7 +47,7 @@ public class Setup {
         try {
             //new ConverterLifeLinesPheno(dataDictonary).main(new String[]{dataDictonary});
             //new LoadLifeLinesData().main(new String[] {dataDirectory});
-            new EAVToRelational().main(null);
+//            new EAVToRelational().main(null);
         } catch (Exception ex) {
             ex.printStackTrace(System.out);
         }
