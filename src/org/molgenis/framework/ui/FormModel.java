@@ -14,7 +14,6 @@ package org.molgenis.framework.ui;
 
 // jdk
 import java.io.File;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -120,12 +119,12 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		}
 	}
 
-	public List<HtmlInput> getInputs()
+	public List<HtmlInput<?>> getInputs()
 	{
 		return getController().getInputs((E) create(), true).getInputs();
 	}
 
-	public List<HtmlInput> getInputs(E entity)
+	public List<HtmlInput<?>> getInputs(E entity)
 	{
 		return getController().getInputs(entity, false).getInputs();
 	}

@@ -170,7 +170,7 @@ public abstract class PluginModel<E extends Entity> extends
 
 	@Deprecated
 	// will be removed
-	public ScreenController getScreen()
+	public ScreenController<?> getScreen()
 	{
 		return getController();
 	}

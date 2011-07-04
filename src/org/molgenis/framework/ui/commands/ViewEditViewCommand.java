@@ -56,7 +56,7 @@ public class ViewEditViewCommand extends SimpleCommand
 	}
 
 	@Override
-	public List<HtmlInput> getInputs() throws DatabaseException
+	public List<HtmlInput<?>> getInputs() throws DatabaseException
 	{
 		// TODO Auto-generated method stub
 		return null;

@@ -17,7 +17,7 @@ package org.molgenis.framework.ui.html;
  */
 public class EnumInput extends SelectInput
 {
-	public EnumInput(String name, Object value)
+	public EnumInput(String name, String value)
 	{
 		super(name, value);
 	}
@@ -25,5 +25,10 @@ public class EnumInput extends SelectInput
 	public EnumInput(String name)
 	{
 		this(name, null);
+	}
+
+	protected EnumInput()
+	{
+		super();
 	}
 }

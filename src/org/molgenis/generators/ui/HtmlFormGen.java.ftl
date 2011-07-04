@@ -65,18 +65,50 @@ public class ${JavaName(entity)}Form extends EntityForm<${JavaName(entity)}>
 	}	
 	
 	@Override
-	public List<HtmlInput> getInputs()
+	public List<HtmlInput<?>> getInputs()
 	{	
-		List<HtmlInput> inputs = new ArrayList<HtmlInput>();			
+		List<HtmlInput<?>> inputs = new ArrayList<HtmlInput<?>>();			
 <#list allFields(entity) as field>
 	<#assign inputtype = Name(field.getType().toString())>
 		//${JavaName(field)}: ${field}
 		{
-		    <#if field.type == "xref" >
-		    	//xref
-				${inputtype}Input input = new ${inputtype}Input("${entity.name}_${field.name}",getEntity().get${JavaName(field)}_${JavaName(field.getXrefField())}());
+		    <#if field.type == "xref">
+		    <#assign xref_entity = field.xrefEntity>
+		    //TODO: when we have JPA this should become:
+			//XrefInput input = new XrefInput("${entity.name}_${field.name}", getEntity().get${JavaName(field)}());
+			//create xref dummy object
+			${JavaName(xref_entity)} dummy = null;
+			if(getEntity().get${JavaName(field)}() != null)
+			{
+			 	dummy = new ${JavaName(xref_entity)}();
+				dummy.set${JavaName(field.xrefFieldName)}(getEntity().get${JavaName(field)}_${JavaName(field.xrefFieldName)}());
+				<#if field.xrefLabelNames[0] != field.xrefFieldName>
+					<#list field.xrefLabelNames as label>
+				dummy.set${JavaName(label)}( getEntity().get${JavaName(field)}_${JavaName(label)}() ); 
+					</#list>
+				</#if>
+			}
+			${inputtype}Input input = new ${inputtype}Input("${entity.name}_${field.name}", ${xref_entity.getNamespace()}.${JavaName(field.xrefEntity)}.class, dummy);
+			<#elseif field.type == "mref">
+			<#assign xref_entity = field.xrefEntity>
+			//TODO: when we have JPA this should become:
+			//MrefInput input = new MrefInput("${entity.name}_${field.name}", getEntity().get${JavaName(field)}());
+			//create xref dummy list of references
+			List<${JavaName(xref_entity)}> dummyList = new ArrayList<${JavaName(xref_entity)}>();
+			if(getEntity().get${JavaName(field)}() != null) for(int i = 0; i < getEntity().get${JavaName(field)}().size(); i++ )
+			{
+				${JavaName(xref_entity)} dummy = new ${JavaName(xref_entity)}();
+				dummy.set${JavaName(field.xrefFieldName)}(getEntity().get${JavaName(field)}_${JavaName(field.xrefFieldName)}().get(i));
+				<#if field.xrefLabelNames[0] != field.xrefFieldName>
+					<#list field.xrefLabelNames as label>
+				dummy.set${JavaName(label)}( getEntity().get${JavaName(field)}_${JavaName(label)}().get(i) ); 
+					</#list>
+				</#if>
+				dummyList.add(dummy);
+			}   
+			${inputtype}Input input = new ${inputtype}Input("${entity.name}_${field.name}", ${xref_entity.getNamespace()}.${JavaName(field.xrefEntity)}.class, dummyList);
 			<#else>
-				${inputtype}Input input = new ${inputtype}Input("${entity.name}_${field.name}",getEntity().get${JavaName(field)}());
+			${inputtype}Input input = new ${inputtype}Input("${entity.name}_${field.name}",getEntity().get${JavaName(field)}());
 			</#if>
 			
 			input.setLabel("${field.label}");
@@ -102,18 +134,6 @@ public class ${JavaName(entity)}Form extends EntityForm<${JavaName(entity)}>
 			input.setOptions(getEntity().get${JavaName(field)}Options());
 			</#if>	
 			<#if inputtype = "Xref" || inputtype = "Mref">
-			<#assign xref_entity = field.xrefEntity>
-			input.setXrefEntity("${xref_entity.getNamespace()}.${JavaName(field.xrefEntity)}");
-			input.setXrefField("${name(field.xrefField)}");
-			input.setXrefLabels(Arrays.asList("${csv(field.xrefLabelNames)}".split(",")));
-			//initialize the ${field.xrefEntityName}.${csv(field.xrefLabelNames)} of current record
-			<#if field.xrefLabelNames[0] != field.xrefFieldName>
-				<#list field.xrefLabelNames as label>
-			input.setValueLabel<#if inputtype = "Mref">s</#if>("${label}", getEntity().get${JavaName(field)}_${JavaName(label)}()); 
-				</#list>
-			<#else>
-			input.setValueLabel<#if inputtype = "Mref">s</#if>("${field.xrefField.name}", getEntity().get${JavaName(field)}_${JavaName(field.getXrefField())}());
-			</#if>
 			ActionInput addButton = new ActionInput("add", "Add", "Add"); // ${field.label}
 			addButton.setIcon("generated-res/img/new.png");
 			addButton.setJavaScriptAction("if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.forms.${JavaName(entity)}_form.__target.value='${JavaName(entity)}';document.forms.${JavaName(entity)}_form.__action.value='${entity.name}_${field.name}';molgenis_window = window.open('','molgenis_edit_new_xref','height=800,width=600,location=no,status=no,menubar=no,directories=no,toolbar=no,resizable=yes,scrollbars=yes');document.forms.${JavaName(entity)}_form.target='molgenis_edit_new_xref';document.forms.${JavaName(entity)}_form.__show.value='popup';document.forms.${JavaName(entity)}_form.submit();molgenis_window.focus();");

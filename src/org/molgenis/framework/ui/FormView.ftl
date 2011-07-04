@@ -82,7 +82,7 @@
 		<!--search box-->
 		<label>Search:</label><select id="${screen.name}_filter_attribute" title="choose attribute" name="__filter_attribute" style="display:none">
 			<option value="all">Any field</option>
-		<#list screen.getNewRecordForm().inputs as input><#if !input.hidden>
+		<#list screen.getNewRecordForm().inputs as input><#if !input.isHidden()>
 			<option value="${screen.getSearchField(input.name)}">${input.label}</option>
 		</#if></#list>
 			<option value="searchIndex">Search Index</option>

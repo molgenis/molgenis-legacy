@@ -6,7 +6,7 @@ package org.molgenis.framework.ui.html;
 public class NsequenceInput extends TextInput
 {
 
-	public NsequenceInput(String name, Object value)
+	public NsequenceInput(String name, String value)
 	{
 		super(name, value);
 		super.setWidth(100);

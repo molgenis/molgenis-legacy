@@ -25,7 +25,7 @@ public class GridPanel extends TablePanel
 		String result = "<table>\n";
 		int cell      = 0;
 
-		for (HtmlInput i : this.inputs.values())
+		for (HtmlInput<?> i : this.inputs.values())
 		{
 			if (i.isHidden())
 				continue;

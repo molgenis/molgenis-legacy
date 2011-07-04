@@ -23,7 +23,7 @@ public class HtmlForm
 	 */
 	private boolean newRecord = false;
 	/** Inputs */
-	private List<HtmlInput> inputs = new ArrayList<HtmlInput>();
+	private List<HtmlInput<?>> inputs = new ArrayList<HtmlInput<?>>();
 	/** Actions */
 	private List<ActionInput> actions = new ArrayList<ActionInput>();
 
@@ -53,12 +53,12 @@ public class HtmlForm
 	}
 
 	/** Create the inputs to be shown */
-	public List<HtmlInput> getInputs()
+	public List<HtmlInput<?>> getInputs()
 	{
 		return this.inputs;
 	}
 
-	public void setInputs(List<HtmlInput> inputs)
+	public void setInputs(List<HtmlInput<?>> inputs)
 	{
 		this.inputs = inputs;
 	}
@@ -73,11 +73,11 @@ public class HtmlForm
 		this.readonly = readonly;
 	}
 
-	public void addInput(HtmlInput... inputs)
+	public void addInput(HtmlInput<?> ... inputs)
 	{
-		for (HtmlInput input : inputs)
+		for (HtmlInput<?> input : inputs)
 		{
-			this.getInputs().add(input);
+			this.inputs.add(input);
 		}
 
 	}

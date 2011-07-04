@@ -19,7 +19,7 @@ public abstract class PluginCommand extends SimpleCommand
 	}
 
 	/** Optional function if you need a dialog */
-	public abstract List<HtmlInput> getInputs();
+	public abstract List<HtmlInput<?>> getInputs();
 
 	/**
 	 * Handle the request that is delegated from the formscreen

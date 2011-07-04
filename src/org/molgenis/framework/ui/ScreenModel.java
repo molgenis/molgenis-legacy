@@ -51,6 +51,10 @@ public interface ScreenModel extends Serializable
 	public enum Show
 	{
 		/**
+		 * Show the current screen as JSON
+		 */
+		SHOW_JSON("json"),
+		/**
 		 * Show the current screen as part of its parent. This means the layout template is called on the root of the user interface.
 		 */
 		SHOW_MAIN("inline"), 

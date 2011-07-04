@@ -3,8 +3,8 @@ package org.molgenis.fieldtypes;
 import java.util.List;
 
 import org.molgenis.MolgenisFieldTypes;
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.html.HtmlInput;
+import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Field;
@@ -149,7 +149,7 @@ public abstract class FieldType
 				.toLowerCase();
 	}
 
-	public abstract HtmlInput createInput(String name, String xrefEntityClassName, Database db) throws InstantiationException, IllegalAccessException;
+	public abstract HtmlInput createInput(String name, String xrefEntityClassNames) throws HtmlInputException;
 
 	public abstract String getCppJavaPropertyType() throws MolgenisModelException;
 }

@@ -10,7 +10,7 @@ public class HexaInput extends StringInput
 		this(name, null);
 	}	
 	
-	public HexaInput(String name, Object value)
+	public HexaInput(String name, String value)
 	{
 		super(name, value);
 	}

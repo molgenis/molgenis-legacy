@@ -13,12 +13,11 @@
 package org.molgenis.framework.ui.html;
 
 // jdk
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.text.ParseException;
 import java.util.List;
-import java.util.Vector;
 
 import org.molgenis.util.Entity;
+import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
 /**
@@ -26,26 +25,29 @@ import org.molgenis.util.ValueLabel;
  * class ValueLabel to define values and labels. The options will be shown as
  * dropdown select box.
  */
-public class SelectInput extends HtmlInput
+public class SelectInput extends OptionInput<Object>
 {
-	private List<ValueLabel> options = new Vector<ValueLabel>();
 	private String targetfield;
 	private String onchange;
 
-	public SelectInput(String name, String label)
+	public SelectInput(Tuple t) throws HtmlInputException
 	{
-		this(name);
-		this.setLabel(label);
+		super(t);
 	}
 
 	public SelectInput(String name)
 	{
-		super(name, null);
+		super(name,null);
 	}
-
+	
 	public SelectInput(String name, Object value)
 	{
 		super(name, value);
+	}
+
+	public SelectInput()
+	{
+		super();
 	}
 
 	@Override
@@ -75,7 +77,7 @@ public class SelectInput extends HtmlInput
 			// start with empty option
 			optionsHtml.append("\t<option value=\"\"></option>\n");
 		}
-		for (ValueLabel choice : options)
+		for (ValueLabel choice : getOptions())
 		{
 			if (super.getValue().equals(choice.getValue().toString()))
 			{
@@ -93,62 +95,6 @@ public class SelectInput extends HtmlInput
 		return "<select class=\"" + this.getClazz() + "\" id=\"" + this.getId()
 				+ "\" name=\"" + this.getName() + "\" " + readonly + onchange
 				+ ">\n" + optionsHtml.toString() + "</select>\n";
-	}
-
-	@Override
-	/**
-	 * Returns the label of the selected value.
-	 */
-	public String getValue()
-	{
-		for (ValueLabel choice : options)
-		{
-			if (super.getValue().equals(choice.getValue().toString()))
-			{
-				return choice.getLabel().toString();
-			}
-		}
-		return "";
-	}
-
-	public List<ValueLabel> getChoices()
-	{
-		return options;
-	}
-
-	public void setOptions(ValueLabel... choices)
-	{
-		this.options = Arrays.asList(choices);
-	}
-
-	public void setOptions(List<ValueLabel> choices)
-	{
-		this.options = choices;
-	}
-
-	public void setOptions(String... choices)
-	{
-		List<ValueLabel> choicePairs = new ArrayList<ValueLabel>();
-		for (String choice : choices)
-		{
-			choicePairs.add(new ValueLabel(choice, choice));
-		}
-		this.setOptions(choicePairs);
-	}
-	
-	/**
-	 * Set the options for this selectbox using a list of strings
-	 * 
-	 * @param choices List of Strings representing the options for this selectbox
-	 */
-	public void setOptionsFromStringList(List<String> choices)
-	{
-		List<ValueLabel> choicePairs = new ArrayList<ValueLabel>();
-		for (String choice : choices)
-		{
-			choicePairs.add(new ValueLabel(choice, choice));
-		}
-		this.setOptions(choicePairs);
 	}
 
 	public String getTargetfield()
@@ -173,7 +119,7 @@ public class SelectInput extends HtmlInput
 
 	public void addOption(Object value, Object label)
 	{
-		this.getChoices().add(
+		this.getOptions().add(
 				new ValueLabel(value.toString(), label.toString()));
 	}
 
@@ -187,12 +133,19 @@ public class SelectInput extends HtmlInput
 			String labelField)
 	{
 		// clear list
-		this.getChoices().clear();
+		this.getOptions().clear();
 
 		// add new values and labels
 		for (Entity e : entities)
 		{
 			this.addOption(e.get(valueField), e.get(labelField));
 		}
+	}
+
+	@Override
+	public String toHtml(Tuple params) throws ParseException,
+			HtmlInputException
+	{
+		return new SelectInput(params).render();
 	}
 }

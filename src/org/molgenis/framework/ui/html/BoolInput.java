@@ -1,20 +1,22 @@
 package org.molgenis.framework.ui.html;
 
+import org.molgenis.util.Tuple;
+
 /**
  * Input for yes/no.
  */
-public class BoolInput extends HtmlInput
+public class BoolInput extends HtmlInput<Boolean>
 {
 	public enum Option
 	{
 		READONLY;
 	}
 
-	public BoolInput(String name, Object value)
+	public BoolInput(String name, Boolean value)
 	{
 		super(name, value);
 	}
-	
+
 	public BoolInput(String name)
 	{
 		super(name, null);
@@ -23,19 +25,28 @@ public class BoolInput extends HtmlInput
 	public BoolInput(String name, String label, Boolean value,
 			boolean nillable, boolean readonly)
 	{
-		this(name,value);
+		this(name, value);
 		this.setLabel(label);
 		this.setValue(value);
 		this.setNillable(nillable);
 		this.setReadonly(readonly);
 	}
+	
+	public BoolInput(Tuple t) throws HtmlInputException
+	{
+		super(t);
+	}
+
+	public BoolInput()
+	{
+	}
 
 	@Override
 	public String toHtml()
 	{
-		//String readonly = ( isReadonly() ? " readonly " : "");
+		// String readonly = ( isReadonly() ? " readonly " : "");
 
-		if( this.isHidden() )
+		if (this.isHidden())
 		{
 			StringInput input = new StringInput(this.getName(), this.getValue());
 			input.setLabel(this.getLabel());
@@ -43,19 +54,32 @@ public class BoolInput extends HtmlInput
 			input.setHidden(true);
 			return input.toHtml();
 		}
-		
-		if(isReadonly())
-			return "<select class=\"readonly\" id=\"" + this.getId() + "\" name=\"" + this.getName() + "\" readonly=\"readonly\">" + "<option value=\"" + getValue() + "\" selected>"+getValue()+"</option></select>\n";
+
+		if (isReadonly()) return "<select class=\"readonly\" id=\""
+				+ this.getId() + "\" name=\"" + this.getName()
+				+ "\" readonly=\"readonly\">" + "<option value=\"" + getValue()
+				+ "\" selected>" + getValue() + "</option></select>\n";
 		else
-			return "<select id=\"" + this.getId() + "\" name=\"" + this.getName() + "\">" + "<option value=\"true\"" + (getValue().equals("yes") ? "selected" : "") + ">yes</option>" + "<option value=\"false\"" + (getValue().equals("no") ? "selected" : "") + ">no</option>" + "<option value=\"\"" + (getValue().equals("") ? "selected" : "") + "></option>" + "</select>\n";
+			return "<select id=\"" + this.getId() + "\" name=\""
+					+ this.getName() + "\">" + "<option value=\"true\""
+					+ (getValue().equals("yes") ? "selected" : "")
+					+ ">yes</option>" + "<option value=\"false\""
+					+ (getValue().equals("no") ? "selected" : "")
+					+ ">no</option>" + "<option value=\"\""
+					+ (getValue().equals("") ? "selected" : "") + "></option>"
+					+ "</select>\n";
 	}
 
 	public String getValue()
 	{
-		if( super.getValue().equals("true") )
-			return "yes";
-		if( super.getValue().equals("false") )
-			return "no";
+		if (super.getValue().equals("true")) return "yes";
+		if (super.getValue().equals("false")) return "no";
 		return "";
+	}
+
+	@Override
+	public String toHtml(Tuple p) throws HtmlInputException
+	{
+		return new BoolInput(p).render();
 	}
 }

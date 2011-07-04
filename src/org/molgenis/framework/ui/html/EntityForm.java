@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Vector;
 
+import org.molgenis.framework.db.Database;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
@@ -59,7 +60,7 @@ public abstract class EntityForm<E extends Entity> extends HtmlForm
 		this.entity = entity;
 	}
 
-	public void setInputs(List<HtmlInput> inputs)
+	public void setInputs(List<HtmlInput<?>> inputs)
 	{
 		throw new UnsupportedOperationException(
 				"In EntityForm the inputs cannot be changed");

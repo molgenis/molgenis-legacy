@@ -1,26 +1,43 @@
 package org.molgenis.framework.ui.html;
 
+import java.text.ParseException;
+
+import org.molgenis.util.Tuple;
+
 /**
  * Input for string data. Renders as a normal <code>input</code>.
  */
-public class TextLineInput extends HtmlInput
+public class TextLineInput<E> extends HtmlInput<E>
 {
-	public TextLineInput(String name, String label, String value, boolean nillable, boolean readonly)
-	{
-		this(name,value);
-		this.setLabel(label);
-		this.setNillable(nillable);
-		this.setReadonly(readonly);
-	}
-	
 	public TextLineInput(String name)
 	{
 		this(name, null);
 	}
+	
+	@Deprecated
+	public TextLineInput(String name, String label, E value, boolean nillable, boolean readonly)
+	{
+		this(name,label,value,nillable,readonly,null);
+	}
+	
+	public TextLineInput(String name, String label, E value, boolean nillable, boolean readonly, String description)
+	{
+		super(name,label,value,nillable,readonly,description);
+	}
 
-	public TextLineInput(String name, Object value)
+	public TextLineInput(String name, E value)
 	{
 		super(name, value);
+	}
+	
+	public TextLineInput(Tuple t) throws HtmlInputException
+	{
+		super(t);
+	}
+
+	protected TextLineInput()
+	{
+		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -47,5 +64,12 @@ public class TextLineInput extends HtmlInput
 
 		return "<input type=\"text\" id=\"" + getId() + "\" class=\"" + classAtt + "\" name=\"" + getName()
 				+ "\" value=\"" + getValue() + "\" " + attributes + tabIndex + " />";
+	}
+
+	@Override
+	public String toHtml(Tuple params) throws ParseException,
+			HtmlInputException
+	{
+		return new TextLineInput(params).render();
 	}
 }

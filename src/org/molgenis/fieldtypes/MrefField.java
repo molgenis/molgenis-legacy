@@ -1,7 +1,7 @@
 package org.molgenis.fieldtypes;
 
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.html.HtmlInput;
+import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.framework.ui.html.MrefInput;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Field;
@@ -74,10 +74,9 @@ public class MrefField extends FieldType
 	}
 
 	@Override
-	public HtmlInput createInput(String name, String xrefEntityClassName,
-			Database db) throws InstantiationException, IllegalAccessException
+	public HtmlInput createInput(String name, String xrefEntityClassName) throws HtmlInputException
 	{
-		return new MrefInput(name, xrefEntityClassName, db);
+		return new MrefInput(name, xrefEntityClassName);
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 <#-- Factory methods to rapidly create form inputs in MOLGENIS -->
 
-<#include "WidgetFactory.ftl"/>
 
 <#macro molgenis_header screen>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
