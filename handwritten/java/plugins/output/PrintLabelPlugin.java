@@ -9,7 +9,6 @@ package plugins.output;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +28,7 @@ import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
 
-import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
 import commonservice.CommonService;
 
 public class PrintLabelPlugin extends GenericPlugin
@@ -48,6 +42,7 @@ public class PrintLabelPlugin extends GenericPlugin
 	private ActionInput printButton;
 	private TextParagraph text = null;
 	private CommonService cs = CommonService.getInstance();
+	private LabelGenerator labelGenerator = null;
 	
 	public PrintLabelPlugin(String name, ScreenController<?> parent)
 	{
@@ -75,51 +70,32 @@ public class PrintLabelPlugin extends GenericPlugin
 	 * When the user presses 'Print', make a pdf with labels for the desired animals and features.
 	 * 
 	 * @param request
+	 * @throws ParseException 
 	 * @throws DatabaseException
-	 * @throws ParseException
-	 * @throws FileNotFoundException
-	 * @throws DocumentException
+	 * @throws DocumentException 
+	 * @throws FileNotFoundException 
 	 */
 	private void handlePrintRequest(Tuple request) throws DatabaseException, ParseException, FileNotFoundException, DocumentException {
-		List<Individual> individualList = getIndividualsFromUi(request);
-		List<Measurement> measurementList = getMeasurementsFromUi(request);
+		
+		int userId = this.getLogin().getUserId();
 		
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 		File pdfFile = new File(tmpDir.getAbsolutePath() + File.separatorChar + "cagelabels.pdf");
-		Document document = new Document();
-        PdfWriter.getInstance(document, new FileOutputStream(pdfFile));
-        
-        document.open();
-        PdfPTable table = makeLabels(individualList, measurementList);
-        document.add(table);
-        document.close();
-        
-        String filename = pdfFile.getName();
-        text = new TextParagraph("pdfFilename", "<a href=\"tmpfile/" + filename + "\">Download pdf</a>");
-		text.setLabel("");
-		// text is added to panel on reload()
-	}
-	
-	/**
-	 * Make the actual labels.
-	 * 
-	 * @param individualList
-	 * @param measurementIdList
-	 * @return A PdfPTable with all the labels
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-	private PdfPTable makeLabels(List<Individual> individualList, List<Measurement> measurementList) throws DatabaseException, ParseException {
-		PdfPTable table = new PdfPTable(2);
+		String filename = pdfFile.getName();
 		
-		int userId = this.getLogin().getUserId();
+		labelGenerator.startDocument(pdfFile);
+		
 		List<Integer> investigationIds = cs.getAllUserInvestigationIds(userId);
+		List<Individual> individualList = getIndividualsFromUi(request);
+		List<Measurement> measurementList = getMeasurementsFromUi(request);
     	int ownInvId = cs.getOwnUserInvestigationId(userId);
         
         for (Individual ind : individualList) {
-        	PdfPCell newCell = new PdfPCell();
-        	newCell.addElement(new Paragraph("Database ID: " + ind.getId().toString()));
-        	newCell.addElement(new Paragraph("Database name: " + ind.getName()));
+        	
+        	List<String> lineList = new ArrayList<String>();
+        	
+        	lineList.add("Database ID: " + ind.getId().toString());
+        	lineList.add("Database name: " + ind.getName());
         	
         	List<ObservedValue> valueList = cs.getObservedValuesByTargetAndFeatures(ind.getId(), measurementList,
         			investigationIds, ownInvId);
@@ -131,17 +107,22 @@ public class PrintLabelPlugin extends GenericPlugin
         		} else {
         			actualValue = value.getRelation_Name();
         		}
-        		newCell.addElement(new Paragraph(featName + ": " + actualValue));
+        		lineList.add(featName + ": " + actualValue);
         	}
         	
-        	table.addCell(newCell);
+        	labelGenerator.addLabelToDocument(lineList);
         }
         if (individualList.size() % 2 != 0) {
-        	// In case of uneven number of animals, add empty cell to make row full
-        	table.addCell("");
+        	// In case of uneven number of animals, add empty label to make row full
+        	List<String> lineList = new ArrayList<String>();
+        	labelGenerator.addLabelToDocument(lineList);
         }
-        
-        return table;
+		
+		labelGenerator.finishDocument();
+		
+        text = new TextParagraph("pdfFilename", "<a href=\"tmpfile/" + filename + "\">Download pdf</a>");
+		text.setLabel("");
+		// text is added to panel on reload()
 	}
 	
 	/**
@@ -187,8 +168,12 @@ public class PrintLabelPlugin extends GenericPlugin
 	@Override
 	public void reload(Database db)
 	{
+		int userId = this.getLogin().getUserId();
+		
 		cs.setDatabase(db);
-		cs.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
+		cs.makeObservationTargetNameMap(userId, false);
+		
+		labelGenerator = new LabelGenerator(2);
 		
 		initScreen();
 	}
