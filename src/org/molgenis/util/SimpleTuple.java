@@ -90,6 +90,14 @@ public class SimpleTuple implements Tuple
 			//assert this.keys.size() <= this.values.size();
 		}
 	}
+	
+	public SimpleTuple(Map<String,Object> valueMap)
+	{
+		for(String key: valueMap.keySet())
+		{
+			this.set(key, valueMap.get(key));
+		}
+	}
 
 	public int getNrColumns()
 	{
