@@ -15,6 +15,7 @@ import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.ActionInput;
+import org.molgenis.framework.ui.html.EntityInput;
 import org.molgenis.framework.ui.html.TablePanel;
 import org.molgenis.framework.ui.html.TextInput;
 import org.molgenis.framework.ui.html.XrefInput;
@@ -49,7 +50,7 @@ public class ApplyProtocolQuickly extends GenericPlugin
 //		
 	
 
-		XrefInput individualId = new XrefInput("individualId", currentIndividual);
+		EntityInput individualId = new XrefInput("individualId", currentIndividual);
 
 		individualId.setXrefEntity(Individual.class);
 		individualId.setXrefField(Individual.ID);

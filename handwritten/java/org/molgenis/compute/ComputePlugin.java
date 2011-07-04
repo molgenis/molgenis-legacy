@@ -12,6 +12,7 @@ import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.ActionInput;
+import org.molgenis.framework.ui.html.EntityInput;
 import org.molgenis.framework.ui.html.LabelInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.TablePanel;
@@ -37,7 +38,7 @@ public class ComputePlugin extends GenericPlugin
     private TablePanel tableRun = new TablePanel();
 
 
-    private XrefInput workflowXrefInput = new XrefInput("Select workflow protocol", "Workflow");
+    private EntityInput workflowXrefInput = new XrefInput("Select workflow protocol", Workflow.class);
     private ActionInput buttonDone = new ActionInput("buttonDone", "Done");
     private ActionInput buttonSave = new ActionInput("buttonSave", "Start");
 

@@ -24,11 +24,11 @@
 			<div class="screenpadding">	
 			
 <#--begin your plugin-->	
-<p>The currently selected date: ${model.date?date}</p>
-<label>Change date:</label><@date name="date" value=model.date/> <@action name="updateDate"/>
 
-STR: <@string name="test" nillable="true"/>
-	
+Matrix:
+
+${model.getMatrixView()}
+
 <#--end of your plugin-->	
 			</div>
 		</div>

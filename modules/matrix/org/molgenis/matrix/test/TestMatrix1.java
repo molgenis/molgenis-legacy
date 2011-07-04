@@ -16,7 +16,6 @@ import org.molgenis.matrix.CsvMatrixWriter;
 import org.molgenis.matrix.Matrix;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.MemoryMatrix;
-import org.molgenis.matrix.SimpleObservedValueMatrix;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservedValue;
@@ -114,11 +113,11 @@ public class TestMatrix1
 
 			logger.info("example data loaded");
 
-			Matrix m = new SimpleObservedValueMatrix(db, targets, features);
+			//Matrix m = new SimpleObservedValueMatrix(db, targets, features);
 
-			logger.info("matrix loaded from database");
+			//logger.info("matrix loaded from database");
 
-			logger.info(toString(m));
+			//logger.info(toString(m));
 
 			db.rollbackTx();
 		}

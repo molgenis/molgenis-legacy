@@ -2,11 +2,11 @@ package org.molgenis.matrix.test;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 import org.molgenis.matrix.MatrixException;
-import org.molgenis.matrix.MemoryMatrix;
 
 public class TestMatrixPerformance extends TestMatrix
 {
@@ -111,15 +111,15 @@ public class TestMatrixPerformance extends TestMatrix
 		{
 			long start = System.currentTimeMillis();
 
-			int[] rowIndices = new int[matrix.getRowCount()];
-			int[] colIndices = new int[matrix.getColCount()];
+			List<Integer> rowIndices = new ArrayList<Integer>();
+			List<Integer> colIndices = new ArrayList<Integer>();
 			for (int row = 0; row < matrix.getRowCount(); row++)
 			{
-				rowIndices[row] = row;
+				rowIndices.add(row);
 			}
 			for (int col = 0; col < matrix.getColCount(); col++)
 			{
-				colIndices[col] = col;
+				colIndices.add(col);
 			}
 
 			matrix.getSubMatrixByIndex(rowIndices, colIndices);

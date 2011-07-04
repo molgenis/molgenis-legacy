@@ -383,11 +383,11 @@ public class BinaryMatrix<E> extends MemoryMatrix<E>
 	}
 
 	@Override
-	public Matrix<E> getSubMatrixByIndex(int[] rowIndices, int[] colIndices)
+	public Matrix<E> getSubMatrixByIndex(List<Integer> rowIndices, List<Integer> colIndices)
 			throws MatrixException
 	{
 
-		E[][] elements = create(rowIndices.length, colIndices.length);
+		E[][] elements = create(rowIndices.size(), colIndices.size());
 
 		// fill elements
 		try

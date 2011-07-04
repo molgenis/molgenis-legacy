@@ -223,22 +223,22 @@ public class CsvMatrix<E> extends MemoryMatrix<E>
 	}
 
 	@Override
-	public Matrix<E> getSubMatrixByIndex(int[] rowIndices, int[] colIndices)
+	public Matrix<E> getSubMatrixByIndex(List<Integer> rowIndices, List<Integer> colIndices)
 			throws MatrixException
 	{
 		// optimalization: sort ascending in primitive array, then dont use
 		// .contains on list (slow) but smart counter
 		Matrix<E> result = null;
-		final E[][] elements = create(rowIndices.length, colIndices.length);
+		final E[][] elements = create(rowIndices.size(), colIndices.size());
 
 		final ArrayList<Integer> rowIndicesList = new ArrayList<Integer>(
-				rowIndices.length);
+				rowIndices.size());
 		for (int i : rowIndices)
 		{
 			rowIndicesList.add(i);
 		}
 		final ArrayList<Integer> colIndicesList = new ArrayList<Integer>(
-				colIndices.length);
+				colIndices.size());
 		for (int i : colIndices)
 		{
 			colIndicesList.add(i);

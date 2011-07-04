@@ -17,6 +17,7 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.ActionInput;
+import org.molgenis.framework.ui.html.EntityInput;
 import org.molgenis.framework.ui.html.TextInput;
 import org.molgenis.framework.ui.html.XrefInput;
 import org.molgenis.pheno.Individual;
@@ -159,9 +160,9 @@ public class ApplyProtocolQuicklyOld extends PluginModel
 		return new ActionInput("ChangeDescription");
 	}
 
-	public XrefInput getChooseIndividual()
+	public EntityInput getChooseIndividual()
 	{
-		XrefInput individualId = new XrefInput("individualId", currentIndividual);
+		EntityInput individualId = new XrefInput("individualId", currentIndividual);
 
 		individualId.setXrefEntity(Individual.class);
 		individualId.setXrefField(Individual.ID);

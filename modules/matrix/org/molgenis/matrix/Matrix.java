@@ -16,21 +16,6 @@ import java.util.List;
 public interface Matrix<E>
 {	
 	/**
-	 * Returns true if the column and row names are unique within this matrix.
-	 * If 'false' the use 'ByName' method will result in Exceptions
-	 * 
-	 * @return true if column and row names are unique
-	 */
-	public boolean hasUniqueNames();
-	
-	/**
-	 * Get row metadata
-	 * 
-	 * @return list with column definitions
-	 */
-	public List<MatrixDimension> getRows();
-
-	/**
 	 * Simplified version of getRows() that only returns the row names and not
 	 * metadata on the rows.
 	 * 
@@ -39,13 +24,6 @@ public interface Matrix<E>
 	 * @throws MatrixException 
 	 */
 	public List<String> getRowNames() throws MatrixException;
-
-	/**
-	 * Get column metadata
-	 * 
-	 * @return list with row definitions
-	 */
-	public List<MatrixDimension> getCols();
 	
 	/**
 	 * Simplified version of getCols that only returns column names and not
@@ -104,17 +82,6 @@ public interface Matrix<E>
 			int numCols) throws MatrixException;
 
 	/**
-	 * Get a subset from the matrix using the column and row definitions
-	 * 
-	 * @param columns
-	 * @param rows
-	 * @return subset of the matrix as 2-dim array
-	 * @throws MatrixException 
-	 */
-	public Matrix<E> getSubMatrixByDimension(List<MatrixDimension> columns,
-			List<MatrixDimension> rows) throws MatrixException;
-
-	/**
 	 * Get a subset from the matrix using the column and row names
 	 * 
 	 * This method will throw an error if the names within the matrix are not
@@ -145,12 +112,6 @@ public interface Matrix<E>
 	 * @throws MatrixException 
 	 */
 	public E getValueByName(String rowName, String colName) throws MatrixException;
-
-	/**
-	 * Get one value from the matrix by dimension
-	 * @throws MatrixException 
-	 */
-	public E getValue(MatrixDimension row, MatrixDimension col) throws MatrixException;
 
 	/**
 	 * Count of rows.
@@ -217,25 +178,8 @@ public interface Matrix<E>
 	 * @return slice of the matrix based on row and column indexes
 	 * @throws MatrixException
 	 */
-	public Matrix<E> getSubMatrixByIndex(int[] rowIndices, int[] colIndices)
+	public Matrix<E> getSubMatrixByIndex(List<Integer> rowIndices, List<Integer> colIndices)
 			throws MatrixException;
-
-	/**
-	 * Get column by its dimension.
-	 * 
-	 * @param col
-	 * @return a col as array
-	 * @throws MatrixException
-	 */
-	public E[] getCol(MatrixDimension col) throws MatrixException;
-
-	/** Get a row by its dimension
-	 * 
-	 * @param row
-	 * @return a row as array
-	 * @throws MatrixException
-	 */
-	public E[] getRow(MatrixDimension row) throws MatrixException;
 
 	/**
 	 * 

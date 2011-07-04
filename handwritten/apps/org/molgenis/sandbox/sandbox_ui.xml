@@ -6,13 +6,10 @@
 			type="org.molgenis.sandbox.plugins.TestTwo" />
 		<plugin name="TestThree" flavor="freemarker"
 			type="org.molgenis.sandbox.plugins.TestThree" />
-		<form name="Investigations" entity="Investigation" />
-		<!--
-			<form name="Investigations" entity="Investigation"> <plugin
-			name="TestEmbedVaadin"
-			type="org.molgenis.sandbox.plugins.VaadinPlugin" /> </form> <plugin
-			name="TestListView" type="org.molgenis.sandbox.plugins.TestListView"
-			/> <include file="org/molgenis/sandbox/component_ui.xml" />
-		-->
+		<plugin name="FreermarkerTaglibExamples" type="org.molgenis.sandbox.plugins.FreemarkerTaglibExamples"/>
+		<form name="Investigations" entity="Investigation"/>
+		<form name="MolgenisUsers" entity="MolgenisUser"/>
+		<form name="Persons" entity="Person"/>
+		<plugin name="TestMatrixView" type="org.molgenis.matrix.example.MatrixViewExample1"/>
 	</menu>
 </molgenis>

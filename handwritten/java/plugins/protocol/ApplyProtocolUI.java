@@ -17,6 +17,7 @@ import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DatetimeInput;
 import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.HtmlInput;
+import org.molgenis.framework.ui.html.OptionInput;
 import org.molgenis.framework.ui.html.RadioInput;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.SelectMultipleInput;
@@ -41,7 +42,7 @@ public class ApplyProtocolUI {
     private SelectInput protocols;
     private SelectMultipleInput targets;
     private SelectMultipleInput batches;
-    private RadioInput newOrEditButtons;
+    private OptionInput newOrEditButtons;
     private CheckboxInput timeBox;
     private CheckboxInput allValuesBox;
     
@@ -120,7 +121,7 @@ public class ApplyProtocolUI {
 			} else {
 				// Normally, show the input belonging to the data type
 				valueInput = MolgenisFieldTypes.createInput(dataType, col + "_" + row + "_" + order, 
-					observationTargetType, model.getDatabase());
+					observationTargetType);
 				if (dataType.equals("string")) {
 					((StringInput)valueInput).setWidth(20);
 				}
@@ -137,7 +138,8 @@ public class ApplyProtocolUI {
 		    	valueInput.setValue(value.getRelation_Name());
 		    	if (panelLabel == null) { // If a panel label was set, valueInput has been turned into a selectbox and we cannot do the statement below
 			    	// Because this involves an xref box, set the value and label of the selected option
-			    	((XrefInput) valueInput).setValueLabel("name", value.getRelation_Name());
+		    		throw new RuntimeException("I don't understand the next code line. (Morris). In the new XrefInput it works slightly different...");
+			    	//((XrefInput) valueInput).setValueLabel("name", value.getRelation_Name());
 		    	}
 		    }
 		}
@@ -171,7 +173,7 @@ public class ApplyProtocolUI {
 	 * @param order
 	 * @param theTime
 	 */
-	public void makeDateInputAndSetCell(int col, int row, int order, String theTime) {
+	public void makeDateInputAndSetCell(int col, int row, int order, Date theTime) {
 		DatetimeInput input = new DatetimeInput(col + "_" + row + "_" + order, theTime);
 		valueTable.setCell(col, row, input);
 	}
@@ -541,7 +543,7 @@ public class ApplyProtocolUI {
     	if (valueTable.getCell(col, row) instanceof XrefInput) {
     		try {
     			int targetId = Integer.parseInt(value.toString());
-				((XrefInput) input).setValueLabel("name", cs.getObservationTargetById(targetId).getName());
+				((XrefInput) input).setValue(cs.getObservationTargetById(targetId));
 			} catch (Exception e) {
 				// Do nothing, no value will be set
 			}

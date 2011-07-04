@@ -226,7 +226,7 @@ public class LoginScreen extends PluginModel<Entity>
 		}
 	}
 
-	public List<HtmlInput> getInputs()
+	public List<HtmlInput<?>> getInputs()
 	{
 		CommandTemplate f = new CommandTemplate();
 

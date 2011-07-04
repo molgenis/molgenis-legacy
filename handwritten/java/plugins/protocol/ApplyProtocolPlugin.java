@@ -430,7 +430,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		fixValues(request);
 		
 		try {
-			String startTime = request.getString(col + "_0_0");
+			Date startTime = request.getDate(col + "_0_0");
 		    for (int row = 1; row <= model.getFullTargetList().size(); row++) {
 		    	ui.makeDateInputAndSetCell(col, row, 0, startTime);
 		    }
@@ -447,7 +447,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		fixValues(request);
 		
 		try {
-			String endTime = request.getString(col + "_0_0");
+			Date endTime = request.getDate(col + "_0_0");
 		    for (int row = 1; row <= model.getFullTargetList().size(); row++) {
 		    	ui.makeDateInputAndSetCell(col, row, 0, endTime);
 		    }

@@ -14,6 +14,7 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.DatetimeInput;
+import org.molgenis.framework.ui.html.EntityInput;
 import org.molgenis.framework.ui.html.TablePanel;
 import org.molgenis.framework.ui.html.TextInput;
 import org.molgenis.framework.ui.html.XrefInput;
@@ -36,7 +37,7 @@ public class InputExamples extends GenericPlugin
 	{
 		TextInput previous = new TextInput("previousRequest");
 		previous.setReadonly(true);
-		previous.setValue(this.previousRequest);
+		previous.setValue(this.previousRequest.toString());
 
 		view.add(previous);
 
@@ -49,11 +50,9 @@ public class InputExamples extends GenericPlugin
 		view.add(datetime);
 
 		try {
-			XrefInput xref;
-			xref = new XrefInput("xref", null);
+			EntityInput xref;
+			xref = new XrefInput("xref", Individual.class);
 			xref.setXrefEntity(Individual.class);
-			xref.setXrefField(Individual.ID);
-			xref.setXrefLabel(Individual.NAME);
 			view.add(xref);
 		} catch (Exception e) {
 			logger.error("Not able to add xref input for 'Individual'");

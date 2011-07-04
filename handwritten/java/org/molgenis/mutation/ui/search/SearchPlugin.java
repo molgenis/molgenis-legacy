@@ -29,6 +29,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.html.IntInput;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.mutation.Exon;
@@ -727,10 +728,10 @@ public abstract class SearchPlugin extends PluginModel<Entity>
 			((StringInput) this.searchPluginVO.getExpertSearchForm().get("variation")).setValue(this.mutationSearchCriteriaVO.getVariation());
 
 		if (this.mutationSearchCriteriaVO.getCdnaPosition() != null)
-			((StringInput) this.searchPluginVO.getExpertSearchForm().get("nuclno")).setValue(this.mutationSearchCriteriaVO.getCdnaPosition());
+			((IntInput) this.searchPluginVO.getExpertSearchForm().get("nuclno")).setValue(this.mutationSearchCriteriaVO.getCdnaPosition());
 
 		if (this.mutationSearchCriteriaVO.getCodonNumber() != null)
-			((StringInput) this.searchPluginVO.getExpertSearchForm().get("aano")).setValue(this.mutationSearchCriteriaVO.getCodonNumber());
+			((IntInput) this.searchPluginVO.getExpertSearchForm().get("aano")).setValue(this.mutationSearchCriteriaVO.getCodonNumber());
 
 		List<ValueLabel> exonIdOptions      = new ArrayList<ValueLabel>();
 		exonIdOptions.add(new ValueLabel("", "Select exon/intron"));

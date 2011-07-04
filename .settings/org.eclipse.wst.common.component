@@ -8,6 +8,7 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/handwritten/datamodel"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/handwritten/apps"/>
         <wb-resource deploy-path="/" source-path="/generated/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/matrix"/>
         <dependent-module archiveName="ontoCAT_v0.8.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/Documents and Settings/Administrator/workspace/gcc/lib/ontoCAT_v0.8.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
