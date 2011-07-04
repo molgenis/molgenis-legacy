@@ -1,0 +1,6 @@
+To convert to binary:
+java -jar CsvToBin.jar ExampleData ExampleInv Metabolite Individual Decimal example.txt
+
+To convert back:
+rm example.txt
+java -jar BinToCsv.jar example.bin
