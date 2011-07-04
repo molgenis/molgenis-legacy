@@ -1436,7 +1436,11 @@ public class Entity extends DBSchema implements Record
 			List<String> result = new ArrayList<String>();
 			if (this.getKeys().size() > 0)
 			{
-				for (Field f : this.getKey(0).getFields())
+				//use secondary keys, otherwise primary keys
+				List<Field> keyFields = null;
+				if (this.getKeys().size() > 1) keyFields = this.getKeyFields(1);
+				else keyFields = this.getKeyFields(0);
+				for (Field f :keyFields)
 				{
 					result.add(f.getName());
 				}
