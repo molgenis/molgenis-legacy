@@ -125,5 +125,20 @@ public abstract class AbstractEntity implements Entity, Serializable
 		throw new UnsupportedOperationException();
 	}
 	
+	public String getLabelValue()
+	{
+		String result = "";
+		for (String label : this.getLabelFields())
+		{
+			if (result.equals("")) result += this.get(label) != null ? this.get(label)
+					: "";
+			else
+				result += ":"
+						+ (this.get(label) != null ? this.get(label) : "");
+		}
+
+		return result;
+	}
+	
 	 
 }

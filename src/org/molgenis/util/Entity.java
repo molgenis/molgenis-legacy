@@ -117,4 +117,6 @@ public interface Entity
 	//for JPA only
 	public String getXrefIdFieldName(String fieldName);
 
+	public String getLabelValue();
+
 }
