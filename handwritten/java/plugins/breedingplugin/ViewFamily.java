@@ -116,11 +116,7 @@ public class ViewFamily extends PluginModel<Entity>
 				if (valueList.size() == 1) {
 					litterId = valueList.get(0).getRelation_Id();
 				} else {
-					if (valueList.size() == 1) {
-						throw new DatabaseException("Animal is not from a litter");
-					} else {
-						throw new DatabaseException("Error: animal is from multiple litters");
-					}
+					throw new DatabaseException("Cannot show family info: animal is from no or multiple litters");
 				}
 				String litterName = cs.getObservationTargetById(litterId).getName();
 				
