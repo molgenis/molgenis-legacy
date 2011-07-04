@@ -22,11 +22,16 @@ public class TextInput extends StringInput
 		this(name,null);
 	}
 	
-	public TextInput(String name, Object value)
+	public TextInput(String name, String value)
 	{
 		super(name, value);
 		this.setMaxHeight(50);
 		this.setMinHeight(3);
+	}
+
+	protected TextInput()
+	{
+		// TODO Auto-generated constructor stub
 	}
 	
 //merged with StringInput

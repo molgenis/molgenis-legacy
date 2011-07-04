@@ -4,7 +4,6 @@
 package org.molgenis.framework.ui.commands;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -61,7 +60,7 @@ public class DownloadAllCommand<E extends Entity> extends SimpleCommand
 	}
 
 	@Override
-	public List<HtmlInput> getInputs() throws DatabaseException
+	public List<HtmlInput<?>> getInputs() throws DatabaseException
 	{
 		// TODO Auto-generated method stub
 		return null;

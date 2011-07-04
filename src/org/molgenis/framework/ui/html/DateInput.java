@@ -18,13 +18,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import org.molgenis.util.Tuple;
+
 
 
 /**
  * Input for date. Depends on javascript to showDateInput().
  */
 
-public class DateInput extends HtmlInput
+public class DateInput extends HtmlInput<Date>
 {	
 	/** uses default value of today as value
 	 * @throws ParseException */
@@ -39,13 +41,13 @@ public class DateInput extends HtmlInput
 		this.setLabel(label);
 	}
 	
-	public DateInput(String name, String label, Object value)
+	public DateInput(String name, String label, Date value)
 	{
 		super(name,value);
 		this.setLabel(label);
 	}
 	
-	public DateInput(String name, Object value)
+	public DateInput(String name, Date value)
 	{
 		super(name, value);
 	}
@@ -56,6 +58,15 @@ public class DateInput extends HtmlInput
 		if(label != null && !label.equals("null")) this.setLabel(label);
 		this.setReadonly(readonly);
 		this.setNillable(nillable);
+	}
+
+	public DateInput(Tuple params) throws HtmlInputException
+	{
+		set(params);
+	}
+	
+	protected DateInput()
+	{
 	}
 
 	// tohtml
@@ -112,6 +123,13 @@ public class DateInput extends HtmlInput
 		if (this.isReadonly()) options += "disabled:true";
 		return   "<div type=\"text\" id=\""+this.getName()+"\"></div><script>"+
 			    "$(\"#"+this.getName()+"\").datepicker({"+options+"});</script>";
+
+	}
+
+	@Override
+	public String toHtml(Tuple p) throws ParseException, HtmlInputException
+	{
+		return new DateInput(p).render();
 
 	}
 }

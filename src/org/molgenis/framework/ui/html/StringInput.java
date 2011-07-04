@@ -1,10 +1,17 @@
 package org.molgenis.framework.ui.html;
 
+import org.molgenis.util.Tuple;
+
 /**
  * Input for string data. Renders as a <code>textarea</code>.
  */
-public class StringInput extends HtmlInput
+public class StringInput extends HtmlInput<String>
 {
+	public StringInput(Tuple t) throws HtmlInputException
+	{
+		super(t);
+	}
+	
 	public StringInput(String name, String label, String value, boolean nillable, boolean readonly)
 	{
 		this(name,value);
@@ -18,13 +25,18 @@ public class StringInput extends HtmlInput
 		this(name,null);
 	}
 	
-	public StringInput(String name, Object value)
+	public StringInput(String name, String value)
 	{
 		super(name, value);
 		width = 50;
 		height = 1;
 		this.setMinHeight(1);
 		this.setMaxHeight(25);
+	}
+
+	public StringInput()
+	{
+		// TODO Auto-generated constructor stub
 	}
 
 	public String toHtml()
@@ -129,4 +141,10 @@ public class StringInput extends HtmlInput
 //		return "<input type=\"text\" id=\"" + getId() + "\" class=\"" + classAtt + "\" name=\"" + getName()
 //				+ "\" value=\"" + getValue() + "\" " + attributes + tabIndex + " />";
 //	}
+	
+	@Override
+	public String toHtml(Tuple params) throws HtmlInputException
+	{
+		return new StringInput(params).render();
+	}
 }

@@ -14,95 +14,127 @@ package org.molgenis.framework.ui.html;
 
 // jdk
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
-import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.server.QueryRuleUtil;
 import org.molgenis.util.Entity;
+import org.molgenis.util.Tuple;
 
 /**
  * Input for many-to-many cross-references (xref) to choose data entities from
  * the database. Selectable data items will be shown as selection box and are
  * loaded dynamically via an 'ajax' service.
  */
-public class MrefInput extends HtmlInput
+public class MrefInput extends EntityInput<List<? extends Entity>>
 {
-	private String error = null;
-	// private List<ValueLabel> options = new Vector<ValueLabel>();
-	// The label of the value to show in the box
-	// xrefLabel,values
-	private Map<String, List<?>> valueLabels = new TreeMap<String, List<?>>();
+	public static final String VALUES = "values";
+
 	// what is this?
 	private String targetfield;
 
-	private String xrefEntity;
-	private String xrefField;
-	private List<String> xrefLabels = new ArrayList<String>();
-	private List<QueryRule> xrefFilters = new ArrayList<QueryRule>();
-
-	// Parameter to indicate whether this MrefInput should have an 'Add new ...' button attached to it.
+	// Parameter to indicate whether this MrefInput should have an 'Add new ...'
+	// button attached to it.
 	private boolean includeAddButton = false;
 	private ActionInput addButton = new ActionInput("add", "", "");
 
-	public MrefInput(String name, Object value)
+	/** Minimal constructor */
+	public MrefInput(String name, Class<? extends Entity> xrefEntityClass,
+			List<? extends Entity> dummyList)
 	{
-		super(name, value);
+		super(name, xrefEntityClass, dummyList);
 	}
-	
-	public MrefInput(String name, String entityName, Database db)
+
+	/**
+	 * Alternative minimal constructor using an entity object instance to
+	 * configure all.
+	 */
+	public MrefInput(String name, List<? extends Entity> objects)
 	{
-		this(name, db.getClassForName(entityName));
+		this(name, objects.get(0).getClass(), objects);
 	}
-	
-	public MrefInput(String name, String entityName, Database db, String label,
-			Object value, boolean nillable, boolean readonly)
+
+	/** Alternative minimal constructor using an entity class to configure all. */
+
+	public MrefInput(String name, Class<? extends Entity> xrefEntityClass)
 	{
-		this(name, entityName, db);
-		this.setLabel(label);
-		this.setValue(value);
-		this.setNillable(nillable);
-		this.setReadonly(readonly);
+		super(name, xrefEntityClass, null);
 	}
-	
-	public MrefInput(String name, Class<? extends Entity> xrefEntityClass) 
+
+	/**
+	 * Alternative minimal constructor using entity name
+	 * 
+	 * @throws HtmlInputException
+	 * 
+	 * @throws ClassNotFoundException
+	 * @throws ClassNotFoundException
+	 */
+	public MrefInput(String name, String entityName) throws HtmlInputException
 	{
-		super(name,null);
-		
-		try
-		{
-			this.setXrefEntity(xrefEntityClass);
-			this.setXrefField(xrefEntityClass.newInstance().getIdField());
-			this.setXrefLabels(xrefEntityClass.newInstance().getLabelFields());
-		}
-		catch (Exception e)
-		{
-			this.error = e.getMessage();
-			e.printStackTrace();
-		}
-		
-		
+		super(name, entityName);
+	}
+
+	/** Complete constructor */
+	public MrefInput(String name, String label, List<Entity> values,
+			Boolean nillable, Boolean readonly, String description,
+			Class<? extends Entity> xrefEntityClass)
+	{
+		super(name, label, values, nillable, readonly, description,
+				xrefEntityClass);
+	}
+
+	/**
+	 * Alternative complete constructor using String name of entityClass
+	 * 
+	 * @throws HtmlInputException
+	 */
+	public MrefInput(String name, String label, List<Entity> values,
+			Boolean nillable, Boolean readonly, String description,
+			String xrefEntityClass) throws HtmlInputException
+	{
+		super(name, label, values, nillable, readonly, description,
+				xrefEntityClass);
+	}
+
+	/**
+	 * Constructor taking parameters from tuple
+	 * 
+	 * @throws HtmlInputException
+	 */
+	@SuppressWarnings("unchecked")
+	public MrefInput(Tuple t) throws HtmlInputException
+	{
+		super(t);
+		if (!t.isNull(VALUE)) this.setValue((List<Entity>) t.getList(VALUE));
+		if (!t.isNull(VALUES)) this.setValue((List<Entity>) t.getList(VALUES));
+	}
+
+	protected MrefInput()
+	{
+		super();
 	}
 
 	@Override
 	public String toHtml()
 	{
-		if (this.error != null) return "ERROR: "+error;
-		
+		if (this.error != null) return "ERROR: " + error;
+
 		// BIG FIXME we have to enable nillable checkin on this one
 		this.setNillable(true);
 
-		List<?> values = (List<?>) super.getObject();
-		if (values == null) values = new ArrayList<Object>();
+		List<? extends Entity> values = getObject();
+		if (values == null) values = new ArrayList<Entity>();
 
 		// template of an xref dialog
-		XrefInput input = new XrefInput(this.getName());
-		input.setXrefEntity(this.getXrefEntity());
-		input.setXrefField(this.getXrefField());
-		input.setXrefLabels(this.getXrefLabels());
+		XrefInput input = null;
+		try
+		{
+			input = new XrefInput(this.getName(), this.getXrefEntity());
+		}
+		catch (HtmlInputException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 		input.setReadonly(this.isReadonly());
 		input.setStyle("display: block;");
 		input.setHidden(this.isHidden());
@@ -113,14 +145,6 @@ public class MrefInput extends HtmlInput
 		for (int i = 0; i < values.size(); i++)
 		{
 			input.setValue(values.get(i));
-
-			// String result = "";
-
-			for (String labelName : this.getXrefLabels())
-			{
-				input.setValueLabel(labelName, this.getValueLabels(labelName)
-						.get(i));
-			}
 			input.setId(this.getName() + i);
 			html.append(input.toHtml());
 		}
@@ -134,11 +158,12 @@ public class MrefInput extends HtmlInput
 
 		if (isHidden() || isReadonly())
 		{
-			return "<div id=\"" + getName() +  "\">" + html.toString() + "</div>";
+			return "<div id=\"" + getName() + "\">" + html.toString()
+					+ "</div>";
 		}
 		else
 		{
-			
+
 			String buttons = String
 					.format(
 							"<button style=\"\" type=\"button\" onclick=\"mref_addInput('%s','%s','%s','%s','%s',this.parentNode);\">+</button>",
@@ -146,7 +171,8 @@ public class MrefInput extends HtmlInput
 							getXrefLabels().get(0), getXrefFilterRESTString());
 			buttons += "<button type=\"button\" onclick=\"mref_removeInput(this.parentNode);\">-</button>";
 
-			return "<div id=\"" + getName() +  "\">" + html.toString() + buttons  + (includeAddButton ? this.addButton : "") + "</div>";
+			return "<div id=\"" + getName() + "\">" + html.toString() + buttons
+					+ (includeAddButton ? this.addButton : "") + "</div>";
 		}
 	}
 
@@ -157,33 +183,40 @@ public class MrefInput extends HtmlInput
 	public String getValue()
 	{
 		String result = "";
-
-		int size = 0;
-		for (String label : this.getXrefLabels())
+		for (Entity value : getObject())
 		{
-			if (this.getValueLabels(label) != null)
-			{
-				size = Math.max(size, this.getValueLabels(label).size());
-			}
+			if (result.toString().equals("")) result += value.getLabelValue();
+			else
+				result += ", " + value.getLabelValue();
 		}
+		return result;
 
-		for (int i = 0; i < size; i++)
-		{
-			String valueLabel = "";
-			for (String labelName : this.getXrefLabels())
-			{
-				String value = this.getValueLabels(labelName) != null
-						&& i < this.getValueLabels(labelName).size()
-						&& this.getValueLabels(labelName).get(i) != null ? this
-						.getValueLabels(labelName).get(i).toString() : "";
-				if (valueLabel.toString().equals("")) valueLabel += value;
-				else
-					valueLabel += ":" + value;
-			}
-			result += ", " + valueLabel;
-		}
-
-		return result.replaceFirst(", ", "");
+		// int size = 0;
+		// for (String label : this.getXrefLabels())
+		// {
+		// if (this.getValueLabels(label) != null)
+		// {
+		// size = Math.max(size, this.getValueLabels(label).size());
+		// }
+		// }
+		//
+		// for (int i = 0; i < size; i++)
+		// {
+		// String valueLabel = "";
+		// for (String labelName : this.getXrefLabels())
+		// {
+		// String value = this.getValueLabels(labelName) != null
+		// && i < this.getValueLabels(labelName).size()
+		// && this.getValueLabels(labelName).get(i) != null ? this
+		// .getValueLabels(labelName).get(i).toString() : "";
+		// if (valueLabel.toString().equals("")) valueLabel += value;
+		// else
+		// valueLabel += ":" + value;
+		// }
+		// result += ", " + valueLabel;
+		// }
+		//
+		// return result.replaceFirst(", ", "");
 	}
 
 	public String getTargetfield()
@@ -196,47 +229,6 @@ public class MrefInput extends HtmlInput
 		this.targetfield = targetfield;
 	}
 
-	public String getXrefEntity()
-	{
-		return xrefEntity;
-	}
-
-	public <E extends Entity> void setXrefEntity(Class<E> klazz)
-	{
-		this.setXrefEntity(klazz.getName());
-	}
-
-	public void setXrefEntity(String xrefEntity)
-	{
-		this.xrefEntity = xrefEntity;
-	}
-
-	public String getXrefField()
-	{
-		return xrefField;
-	}
-
-	public void setXrefField(String xrefField)
-	{
-		this.xrefField = xrefField;
-	}
-
-	public List<String> getXrefLabels()
-	{
-		return xrefLabels;
-	}
-
-	public void setXrefLabels(List<String> xrefLabels)
-	{
-		this.xrefLabels = xrefLabels;
-	}
-
-	public void setXrefLabel(String xrefLabel)
-	{
-		this.xrefLabels.clear();
-		this.xrefLabels.add(xrefLabel);
-	}
-
 	public void setIncludeAddButton(boolean includeAddButton)
 	{
 		this.includeAddButton = includeAddButton;
@@ -247,24 +239,9 @@ public class MrefInput extends HtmlInput
 		this.addButton = addButton;
 	}
 
-	public List<?> getValueLabels(String xrefLabelName)
+	@Override
+	public String toHtml(Tuple params) throws HtmlInputException
 	{
-		return valueLabels.get(xrefLabelName);
-	}
-
-	public void setValueLabels(String xrefLabelName, List<?> valueLabels)
-	{
-		this.valueLabels.put(xrefLabelName, valueLabels);
-	}
-
-	// returns filters as filter string
-	public String getXrefFilterRESTString()
-	{
-		return QueryRuleUtil.toRESTstring(xrefFilters);
-	}
-
-	public void setXrefFilters(QueryRule... queryRule)
-	{
-		this.xrefFilters.addAll(Arrays.asList(queryRule));
+		return new MrefInput(params).render();
 	}
 }

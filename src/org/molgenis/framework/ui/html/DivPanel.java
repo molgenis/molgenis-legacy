@@ -1,5 +1,6 @@
 package org.molgenis.framework.ui.html;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -9,9 +10,9 @@ import org.molgenis.util.Tuple;
 /**
  * Provides a panel to order your inputs using html <code>div</code>.
  */
-public class DivPanel extends HtmlInput
+public class DivPanel extends HtmlWidget
 {
-	LinkedHashMap<String, HtmlInput> inputs = new LinkedHashMap<String, HtmlInput>();
+	LinkedHashMap<String, HtmlInput<?>> inputs = new LinkedHashMap<String, HtmlInput<?>>();
 
 	public DivPanel()
 	{
@@ -30,9 +31,9 @@ public class DivPanel extends HtmlInput
 	 * @param HtmlInput
 	 *            ... inputs
 	 */
-	public void add(HtmlInput... inputs)
+	public void add(HtmlInput<?>... inputs)
 	{
-		for (HtmlInput input : inputs)
+		for (HtmlInput<?> input : inputs)
 		{
 			this.inputs.put(input.getName(), input);
 		}
@@ -44,15 +45,15 @@ public class DivPanel extends HtmlInput
 	 * @param HtmlInput
 	 *            ... inputs
 	 */
-	public void remove(HtmlInput... inputs)
+	public void remove(HtmlInput<?>... inputs)
 	{
-		for (HtmlInput input : inputs)
+		for (HtmlInput<?> input : inputs)
 		{
 			this.inputs.remove(input.getName());
 		}
 	}
 
-	public HtmlInput get(String name)
+	public HtmlInput<?> get(String name)
 	{
 		return this.inputs.get(name);
 	}
@@ -64,7 +65,7 @@ public class DivPanel extends HtmlInput
 	public String toHtml()
 	{
 		String result = "";
-		for (HtmlInput i : this.inputs.values())
+		for (HtmlInput<?> i : this.inputs.values())
 		{
 			result += "<div style=\"clear:both; ";
 			if (i.isHidden())
@@ -92,14 +93,15 @@ public class DivPanel extends HtmlInput
 	 * 
 	 * @param request
 	 */
+	@SuppressWarnings("unchecked")
 	public void setValuesFromRequest(Tuple request)
 	{
 		Object object;
-		List<HtmlInput> inputList = new ArrayList<HtmlInput>();
+		List<HtmlInput<?>> inputList = new ArrayList<HtmlInput<?>>();
 		fillList(inputList, this);
 		for (HtmlInput input : inputList)
 		{
-			object = request.getObject(input.getName());
+			object = request.getString(input.getName());
 			if (object != null)
 			{
 				input.setValue(object);
@@ -115,9 +117,9 @@ public class DivPanel extends HtmlInput
 	 * @param inputList
 	 * @param startInput
 	 */
-	private void fillList(List<HtmlInput> inputList, DivPanel startInput)
+	private void fillList(List<HtmlInput<?>> inputList, DivPanel startInput)
 	{
-		for (HtmlInput input : startInput.inputs.values())
+		for (HtmlInput<?> input : startInput.inputs.values())
 		{
 			if (input instanceof DivPanel || input instanceof RepeatingPanel)
 			{
@@ -128,6 +130,14 @@ public class DivPanel extends HtmlInput
 				inputList.add(input);
 			}
 		}
+	}
+
+	@Override
+	public String toHtml(Tuple params) throws ParseException,
+			HtmlInputException
+	{
+		//TODO this should work with also a 'nested' value.
+		throw new UnsupportedOperationException();
 	}
 
 }

@@ -1,7 +1,7 @@
 package org.molgenis.fieldtypes;
 
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.html.HtmlInput;
+import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.model.MolgenisModelException;
 
 @Deprecated
@@ -59,10 +59,9 @@ public class ListField extends FieldType
 	 * Since this class is deprecated, this method is not implemented.
 	 */
 	@Override
-	public HtmlInput createInput(String name, String xrefEntityClassName,
-			Database db) throws InstantiationException, IllegalAccessException
+	public HtmlInput createInput(String name, String xrefEntityClassName) throws HtmlInputException
 	{
-		throw new InstantiationException("Class deprecated, will not return input.");
+		throw new HtmlInputException("Class deprecated, will not return input.");
 	}
 
 	@Override

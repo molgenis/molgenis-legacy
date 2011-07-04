@@ -12,18 +12,18 @@ import org.molgenis.util.Tuple;
  * This class functions as the holder, or container, of all UI components and elements within one plugin. All "pieces"
  * of your UI puzzle should be located within a Container.
  */
-public class Container extends LinkedHashMap<String, Input> implements ScreenView
+public class Container extends LinkedHashMap<String, Input<?>> implements ScreenView
 {
 	private static final long serialVersionUID = -8565170009471766957L;
 
-	public void add(Input i)
+	public void add(Input<?> i)
 	{
 		this.put(i.getName().toLowerCase(), i);
 	}
 
-	public void addAll(List<HtmlInput> inputs)
+	public void addAll(List<HtmlInput<?>> inputs)
 	{
-		for (Input i : inputs)
+		for (Input<?> i : inputs)
 			this.add(i);
 	}
 

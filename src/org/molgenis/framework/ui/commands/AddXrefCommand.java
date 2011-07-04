@@ -45,7 +45,7 @@ public class AddXrefCommand<E extends Entity> extends AddCommand<E>
 	}
 
 	@Override
-	public List<HtmlInput> getInputs() throws DatabaseException
+	public List<HtmlInput<?>> getInputs() throws DatabaseException
 	{
 		return this.xrefForm.getInputs();
 	}

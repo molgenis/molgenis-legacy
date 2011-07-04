@@ -1,5 +1,6 @@
 package org.molgenis.framework.ui.html;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -11,9 +12,9 @@ import org.molgenis.util.Tuple;
  * TODO: this is now exactly the same as the DivPanel; we need to rewrite this
  * so that it uses html tables to order the inputs.
  */
-public class TablePanel extends HtmlInput
+public class TablePanel extends HtmlWidget
 {
-	LinkedHashMap<String, HtmlInput> inputs = new LinkedHashMap<String, HtmlInput>();
+	LinkedHashMap<String, HtmlInput<?>> inputs = new LinkedHashMap<String, HtmlInput<?>>();
 
 	public TablePanel()
 	{
@@ -113,5 +114,12 @@ public class TablePanel extends HtmlInput
 			}
 		}
 	}
-
+	
+	@Override
+	public String toHtml(Tuple params) throws ParseException,
+			HtmlInputException
+	{
+		//TODO?
+		throw new UnsupportedOperationException();
+	}
 }

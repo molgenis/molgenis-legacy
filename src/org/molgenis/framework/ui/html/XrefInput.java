@@ -13,13 +13,11 @@
 package org.molgenis.framework.ui.html;
 
 // jdk
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.text.ParseException;
 import java.util.List;
-import java.util.Map;
 
-import org.molgenis.framework.db.Database;
 import org.molgenis.util.Entity;
+import org.molgenis.util.Tuple;
 
 /**
  * Input for cross-reference (xref) entities in a MOLGENIS database. Data will
@@ -28,81 +26,101 @@ import org.molgenis.util.Entity;
  * for the values. Use xrefLabels to select which field(s) should be shown as
  * labels to the user (optional).
  */
-public class XrefInput extends HtmlInput
+public class XrefInput extends EntityInput<Entity>
 {
-	// The label of the value to show in the box
-	private Map<String, Object> valueLabel = new LinkedHashMap<String, Object>();
-	private String error = null;
-
-	private String xrefEntity;
-	private String xrefField;
-	private String xrefFilter;
-	private List<String> xrefLabels = new ArrayList<String>();
-	
-	// Parameter to indicate whether this XrefInput should have an 'Add new ...' button attached to it.
+	// Parameter to indicate whether this XrefInput should have an 'Add new ...'
+	// button attached to it.
 	private boolean includeAddButton = false;
 	private ActionInput addButton = new ActionInput("add", "", "");
 
-	public XrefInput(String name)
+	/** Minimal constructor */
+	public <E extends Entity> XrefInput(String name, Class<? extends Entity> xrefEntityClass,
+			E value)
 	{
-		super(name,null);
-	}
-	
-	public XrefInput(String name, Object value)
-	{
-		super(name, value);
-	}
-	
-	public XrefInput(String name, String entityName, Database db) 
-	{
-		this(name, db.getClassForName(entityName));
-	}
-	
-	public XrefInput(String name, Class<? extends Entity> xrefEntityClass)
-	{
-		super(name,null);
-		
-		try
-		{
-			this.setXrefField(xrefEntityClass.newInstance().getIdField());
-			this.setXrefLabels(xrefEntityClass.newInstance().getLabelFields());
-			this.setXrefEntity(xrefEntityClass);
-		}
-		catch (Exception e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			this.error = e.getMessage();
-		}
+		super(name, xrefEntityClass, value);
 	}
 
-	public XrefInput(String name, String entityName, Database db, String label,
-			Object value, boolean nillable, boolean readonly)
+	/**
+	 * Alternative minimal constructor using an entity object instance to
+	 * configure all.
+	 */
+	public <E extends Entity> XrefInput(String name, E object)
 	{
-		this(name, entityName, db);
-		this.setLabel(label);
-		this.setValue(value);
-		this.setNillable(nillable);
-		this.setReadonly(readonly);
+		super(name, object.getClass(), object);
+	}
+
+	/** Alternative minimal constructor using an entity class to configure all. */
+
+	public XrefInput(String name, Class<? extends Entity> xrefEntityClass)
+	{
+		super(name, xrefEntityClass, null);
+	}
+
+	/**
+	 * Alternative minimal constructor using entity name
+	 * 
+	 * @throws ClassNotFoundException
+	 * @throws ClassNotFoundException
+	 * @throws ClassNotFoundException
+	 */
+	public XrefInput(String name, String entityName) throws HtmlInputException
+	{
+		super(name, entityName);
+	}
+
+	/** Complete constructor */
+	public XrefInput(String name, String label, Entity value, Boolean nillable,
+			Boolean readonly, String description,
+			Class<? extends Entity> xrefEntityClass)
+	{
+		super(name, label, value, nillable, readonly, description,
+				xrefEntityClass);
+	}
+
+	/** Alternative complete constructor using String name of entityClass */
+	public XrefInput(String name, String label, Entity value, Boolean nillable,
+			Boolean readonly, String description, String xrefEntityClass)
+			throws HtmlInputException
+	{
+		super(name, label, value, nillable, readonly, description,
+				xrefEntityClass);
+	}
+
+	/**
+	 * Constructor taking parameters from tuple
+	 * 
+	 * @throws HtmlInputException
+	 */
+	public XrefInput(Tuple t) throws HtmlInputException
+	{
+		super(t);
+	}
+
+	protected XrefInput()
+	{
 	}
 
 	@Override
 	public String toHtml()
 	{
-		if (this.error != null) return "ERROR: "+error;
-		
-		if("".equals(xrefEntity) || "".equals(xrefField) || xrefLabels == null || xrefLabels.size() == 0)
+		if (this.error != null) return "ERROR: " + error;
+
+		if ("".equals(getXrefEntity()) || "".equals(getXrefField())
+				|| getXrefLabels() == null || getXrefLabels().size() == 0)
 		{
-			throw new RuntimeException("XrefInput("+this.getName()+") is missing xrefEntity, xrefField and/or xrefLabels settings");
+			throw new RuntimeException(
+					"XrefInput("
+							+ this.getName()
+							+ ") is missing xrefEntity, xrefField and/or xrefLabels settings");
 		}
-		
-		String xrefLabelString = this.toCsv(xrefLabels);
+
+		String xrefLabelString = this.toCsv(getXrefLabels());
 		String readonly = (this.isReadonly()) ? " readonly class=\"readonly\" "
 				: String
 						.format(
 								" onfocus=\"showXrefInput(this,'%s','%s','%s','%s'); return false;\" ",
-								xrefEntity, xrefField, xrefLabelString,
-								xrefFilter);
+								getXrefEntity(), getXrefField(),
+								xrefLabelString, getXrefFilters());
 
 		if (this.isHidden())
 		{
@@ -117,8 +135,9 @@ public class XrefInput extends HtmlInput
 		StringBuffer optionsHtml = new StringBuffer();
 		if (super.getObject() != null)
 		{
-			optionsHtml.append("\t<option selected value=\"" + super.getValue()
-					+ "\">" + this.getValue() + "</option>\n");
+			optionsHtml.append("\t<option selected value=\""
+					+ getObject().getIdValue() + "\">" + this.getValue()
+					+ "</option>\n");
 		}
 		// else if (!this.isReadonly())
 		// {
@@ -147,102 +166,8 @@ public class XrefInput extends HtmlInput
 	 */
 	public String getValue()
 	{
-		/*for (String label : this.xrefLabels)
-		{
-			if (this.valueLabel.get(label) != null) {
-				return this.valueLabel.get(label).toString();
-			}
-		}
-		return "";*/
-		
-		String result = "";
-		for (String label : this.xrefLabels)
-		{
-			if (result.equals("")) result += this.valueLabel.get(label) != null ? this.valueLabel
-					.get(label)
-					: "";
-			else
-				result += ":"
-						+ (this.valueLabel.get(label) != null ? this.valueLabel
-								.get(label) : "");
-		}
-
-		return result;
-	}
-
-	public String getXrefEntity()
-	{
-		return xrefEntity;
-	}
-
-	/**
-	 * Set the entity where this xref should get its values from
-	 * 
-	 * @param xrefEntity
-	 */
-	public <E extends Entity> void setXrefEntity(Class<E> xrefEntity)
-	{
-		this.setXrefEntity(xrefEntity.getName());
-	}
-
-	/**
-	 * Set the entity where this xref should get its values from
-	 * 
-	 * @param xrefEntity
-	 */
-	public void setXrefEntity(String xrefEntity)
-	{
-		this.xrefEntity = xrefEntity;
-	}
-
-	public String getXrefField()
-	{
-		return xrefField;
-	}
-
-	/**
-	 * Set the entity field (i.e. database column) that this xref should get its
-	 * values from. For example 'id'.
-	 * 
-	 * @param xrefField
-	 *            field name
-	 */
-	public void setXrefField(String xrefField)
-	{
-		this.xrefField = xrefField;
-	}
-
-	public List<String> getXrefLabel()
-	{
-		return xrefLabels;
-	}
-
-	/**
-	 * Set the entity field (i.e. database column) that provides the values that
-	 * should be shown to the user as options in the xref select box. For
-	 * example 'name'.
-	 * 
-	 * @param xrefLabel
-	 *            field name
-	 */
-	public void setXrefLabel(String xrefLabel)
-	{
-		assert(xrefLabel != null);
-		this.xrefLabels.clear();
-		this.xrefLabels.add(xrefLabel);
-	}
-
-	/**
-	 * In case of entities with multiple column keys you can also have multiple
-	 * labels concatenated together. For example 'investigation_name, name'.
-	 * 
-	 * @param xrefLabels
-	 *            a list of field names
-	 */
-	public void setXrefLabels(List<String> xrefLabels)
-	{
-		assert(xrefLabels != null);
-		this.xrefLabels = xrefLabels;
+		if (getObject() != null) return this.getObject().getLabelValue();
+		return "";
 	}
 
 	public void setIncludeAddButton(boolean includeAddButton)
@@ -255,18 +180,11 @@ public class XrefInput extends HtmlInput
 		this.addButton = addButton;
 	}
 
-	public Object getValueLabel(String xrefLabelName)
+	@Override
+	public String toHtml(Tuple params) throws ParseException,
+			HtmlInputException
 	{
-		return valueLabel.get(xrefLabelName);
-	}
-
-	/**
-	 * Set the default selected value and label
-	 */
-	public void setValueLabel(String xrefLabelName, Object valueLabel)
-	{
-		this.valueLabel.clear();
-		this.valueLabel.put(xrefLabelName, valueLabel);
+		return new XrefInput(params).render();
 	}
 
 }

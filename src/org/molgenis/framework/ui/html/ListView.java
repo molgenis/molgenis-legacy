@@ -1,9 +1,11 @@
 package org.molgenis.framework.ui.html;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.util.Tuple;
 
 /**
  * (in progress) The listview shows a list of InputForm (sets of inputs) in an excel like
@@ -17,14 +19,14 @@ import org.molgenis.framework.db.QueryRule;
  * <li>if this list isReadonly (default) then each row will show only values, otherwise inputs
  * TODO make easier to populate with entity instances.
  */
-public class ListView extends HtmlInput
+public class ListView extends HtmlInput<List<HtmlForm>>
 {
 	List<HtmlForm> rows = new ArrayList<HtmlForm>();
 	String sortedBy = null;
 	QueryRule.Operator sortOrder = QueryRule.Operator.SORTDESC;
 	boolean selectable = true;
 	int offset = 0;
-
+	
 	public ListView(String name, List<HtmlForm> rows)
 	{
 		super(name, null);
@@ -52,7 +54,7 @@ public class ListView extends HtmlInput
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void setValue(Object value)
+	public void setValue(List<HtmlForm> value)
 	{
 		if (value instanceof List)
 		{
@@ -178,7 +180,7 @@ public class ListView extends HtmlInput
 			result += "<td>"+(getOffset() + rowNo)+".</td>";
 			
 			//checkbox
-			OnoffInput checkbox = new OnoffInput("massUpdate","TODO");
+			OnoffInput checkbox = new OnoffInput("massUpdate","TODO", false);
 			result += "<td>"+(isSelectable() ? checkbox.toHtml() : "")+"</td>";
 			
 			//render action buttons per row
@@ -211,6 +213,14 @@ public class ListView extends HtmlInput
 		result += "</table>";
 
 		return result;
+	}
+
+	@Override
+	public String toHtml(Tuple params) throws ParseException,
+			HtmlInputException
+	{
+		//TODO
+		throw new UnsupportedOperationException();
 	}
 
 }

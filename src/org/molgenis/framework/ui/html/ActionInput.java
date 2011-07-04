@@ -1,10 +1,14 @@
 package org.molgenis.framework.ui.html;
 
+import java.text.ParseException;
+
+import org.molgenis.util.Tuple;
+
 /**
  * The ActionInput defines action buttons.
  * When clicked, it will result in a new request(__action=&lt;name&gt;)
  */
-public class ActionInput extends HtmlInput
+public class ActionInput extends HtmlInput<Object>
 {
 	public enum Type
 	{
@@ -103,6 +107,15 @@ public class ActionInput extends HtmlInput
 	{
 		this(select_target.toString());
 		this.setLabel(select_target.toString().replace("_", " "));
+	}
+
+	public ActionInput(Tuple t) throws HtmlInputException
+	{
+		super(t);
+	}
+
+	public ActionInput()
+	{
 	}
 
 	// HtmlInput overloads
@@ -214,12 +227,13 @@ public class ActionInput extends HtmlInput
 	@Override
 	public String getLabel()
 	{
-		if (super.getLabel() == super.getValue()) return getName();
+		if (super.getValue() != null && super.getLabel() == super.getValue()) return getName();
 		return super.getLabel();
 	}
 	
 	public String getButtonValue()
 	{
+		if(buttonValue == null) return this.getLabel();
 		return buttonValue;
 	}
 	
@@ -251,5 +265,12 @@ public class ActionInput extends HtmlInput
 	{
 		return "<a title=\"" + this.getDescription() + "\" onclick=\""
 				+ this.getJavaScriptAction() + "\">" + getLabel() + "</a>";
+	}
+
+	@Override
+	public String toHtml(Tuple params) throws ParseException,
+			HtmlInputException
+	{
+		return new ActionInput(params).render();
 	}
 }

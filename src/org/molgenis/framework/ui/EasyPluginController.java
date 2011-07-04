@@ -4,7 +4,6 @@ import java.io.PrintWriter;
 import java.lang.reflect.Method;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.util.Tuple;
 
 /**

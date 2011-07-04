@@ -20,7 +20,7 @@ package org.molgenis.framework.ui.html;
  * <li>Style: css sentence for this input. FIXME: is this still used?
  * </ul>
  */
-public interface Input
+public interface Input<E>
 {
 
 	/**
@@ -62,7 +62,7 @@ public interface Input
 	 * 
 	 * @return Object value
 	 */
-	public abstract Object getObject();
+	public abstract E getObject();
 
 	/**
 	 * Retrieve the value of this input as a String.
@@ -77,7 +77,7 @@ public interface Input
 	 * 
 	 * @param Object value
 	 */
-	public abstract void setValue( Object value );
+	public abstract void setValue( E value );
 
 	/**
 	 * Retrieve wether this input is readonly.

@@ -56,10 +56,10 @@ public class AddBatchCommand<E extends Entity> extends SimpleCommand
 	}
 
 	@Override
-	public List<HtmlInput> getInputs() throws DatabaseException
+	public List<HtmlInput<?>> getInputs() throws DatabaseException
 	{
 		// delegate to the formscreen
-		List<HtmlInput> inputs = this.getFormScreen().getNewRecordForm().getInputs();
+		List<HtmlInput<?>> inputs = this.getFormScreen().getNewRecordForm().getInputs();
 
 		// remove not-null constraints
 		for (HtmlInput i : inputs)

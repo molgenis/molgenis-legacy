@@ -39,7 +39,7 @@ public class AddCommand2<E extends Entity> extends SimpleCommand
 	}
 
 	@Override
-	public List<HtmlInput> getInputs() throws DatabaseException
+	public List<HtmlInput<?>> getInputs() throws DatabaseException
 	{
 		CommandTemplate f = new CommandTemplate();
 		f.addAll(this.getFormScreen().getNewRecordForm().getInputs());		

@@ -1,13 +1,28 @@
 package org.molgenis.framework.ui.html;
 
+import java.text.ParseException;
+
 import org.apache.commons.lang.StringEscapeUtils;
-import org.molgenis.framework.ui.ScreenView;
+import org.molgenis.util.Tuple;
 
 /**
  * HtmlInput is the base-class for all the 'toHtml' input classes.
+ * 
+ * TODO: parameterize value.
+ * 
+ * Implements TemplateDirectiveModel so it can be used as macro (if
+ * toHtml(params) is implemented).
+ * 
  */
-public abstract class HtmlInput implements Input, HtmlRenderer
+public abstract class HtmlInput<E> implements Input<E>, HtmlRenderer
 {
+	public static final String NAME = "name";
+	public static final String LABEL = "label";
+	public static final String VALUE = "value";
+	public static final String NILLABLE = "nillable";
+	public static final String READONLY = "readonly";
+	public static final String DESCRIPTION = "decription";
+
 	/** Constant indicating use of JQUERY */
 	public static boolean INJECT_JQUERY = true;
 
@@ -15,7 +30,7 @@ public abstract class HtmlInput implements Input, HtmlRenderer
 	private String name;
 
 	/** The value of the input */
-	private Object value;
+	private E value;
 
 	/** The label of the input. Defaults to 'name'. */
 	private String label;
@@ -67,13 +82,41 @@ public abstract class HtmlInput implements Input, HtmlRenderer
 	 * @param value
 	 *            The value of the html-input.
 	 */
-	public HtmlInput(String name, Object value)
+	public HtmlInput(String name, E value)
 	{
+		assert (name != null);
 		this.setName(name);
 		this.setLabel(name);
 		this.setDescription(name);
 		this.setId(name);
 		this.setValue(value);
+	}
+
+	public HtmlInput(String name, String label, E value, boolean nillable,
+			boolean readonly, String description)
+	{
+		this(name, value);
+		this.setLabel(label);
+		this.setNillable(nillable);
+		this.setReadonly(readonly);
+		this.setDescription(description);
+	}
+
+	public HtmlInput(Tuple t) throws HtmlInputException
+	{
+		this.set(t);
+	}
+
+	@SuppressWarnings("unchecked")
+	public void set(Tuple t) throws HtmlInputException
+	{
+		this.name = t.getString(NAME);
+		this.label = t.getString(LABEL);
+		this.value = (E)t.getObject(VALUE);
+		if (t.getBool(NILLABLE) != null) this.nillable = t.getBool(NILLABLE);
+		if (t.getBool(READONLY) != null) this.readonly = t.getBool(READONLY);
+		this.description = t.getString(DESCRIPTION);
+
 	}
 
 	public HtmlInput()
@@ -113,7 +156,7 @@ public abstract class HtmlInput implements Input, HtmlRenderer
 	}
 
 	// TODO: This *needs* to be renamed to getValue()
-	public Object getObject()
+	public E getObject()
 	{
 		return value;
 	}
@@ -149,8 +192,8 @@ public abstract class HtmlInput implements Input, HtmlRenderer
 			return getObject().toString();
 		}
 	}
-
-	public void setValue(Object value)
+	
+	public void setValue(E value)
 	{
 		this.value = value;
 	}
@@ -299,16 +342,30 @@ public abstract class HtmlInput implements Input, HtmlRenderer
 	{
 		tabIndex = " tabindex=" + Integer.toString(tabidx);
 	}
-	
+
 	@Override
 	public String render()
 	{
 		return this.toHtml();
 	}
-	
+
 	public String getCustomHtmlHeaders()
 	{
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/**
+	 * Generic method to produce the inputs html by setting its parameters from
+	 * tuple. This is used to create Freermarker macros like <@string name="id"
+	 * /> Needs to be overriden to work.
+	 * 
+	 * @throws ParseException
+	 * @throws HtmlInputException
+	 */
+	public String toHtml(Tuple params) throws ParseException,
+			HtmlInputException
+	{
+		throw new UnsupportedOperationException();
 	}
 }

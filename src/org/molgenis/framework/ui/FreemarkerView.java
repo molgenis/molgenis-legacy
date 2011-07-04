@@ -2,11 +2,14 @@ package org.molgenis.framework.ui;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.html.WidgetFactory;
 
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
@@ -34,9 +37,9 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 {
 
 	// wrapper of this template
-	private freemarker.template.Configuration cfg = null;
+	private freemarker.template.Configuration conf = null;
 	private String templatePath;
-	private transient Logger logger = Logger.getLogger(this.getClass());
+	private transient Logger logger = Logger.getLogger(FreemarkerView.class);
 	private boolean usePublicFields = true;//false;
 	private Map<String,Object> arguments = new LinkedHashMap<String,Object>();
 
@@ -60,51 +63,60 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 		try
 		{
 			// keep configuration in session so we can reuse it
-			if (cfg == null)
+			if (conf == null)
 			{
 				logger.debug("create freemarker config");
 				// create configuration
-				cfg = new freemarker.template.Configuration();
+				conf = new freemarker.template.Configuration();
 
 				// set the template loading paths
-				cfg.setObjectWrapper(new DefaultObjectWrapper());
+				conf.setObjectWrapper(new DefaultObjectWrapper());
 
-				if (this.usePublicFields)
+				if (usePublicFields)
 				{
 					BeansWrapper wrapper = new BeansWrapper();
 					// ouch, don't do this
 					wrapper.setExposeFields(true);
 					wrapper.setExposureLevel(BeansWrapper.EXPOSE_SAFE);
-					cfg.setObjectWrapper(wrapper);
+					conf.setObjectWrapper(wrapper);
 				}
 
-				cfg
+				conf
 						.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
 
+				List<ClassTemplateLoader> loaders =  new ArrayList<ClassTemplateLoader>();
+				
+				
 				// create template loader
 				// load templates from MOLGENIS
-				ClassTemplateLoader molgenistl = new ClassTemplateLoader(
-						MolgenisOriginalStyle.class, "");
+				loaders.add(new ClassTemplateLoader(
+						MolgenisOriginalStyle.class, ""));
 				// load templates from plugins, can be anywere
 				// (nb this method is deprecated but I can't see why)
-				ClassTemplateLoader root = new ClassTemplateLoader();
-				ClassTemplateLoader plugins = new ClassTemplateLoader(model
-						.getClass());
+				loaders.add(new ClassTemplateLoader());
+				
+				for(Object key: templateArgs.keySet())
+				{
+					if("model".equals(key)) loaders.add(new ClassTemplateLoader(templateArgs.get(key)
+						.getClass()));
+				}
 
 				// ClassTemplateLoader loader1 = new ClassTemplateLoader(
 				// Object.class, "");
 				// ClassTemplateLoader loader2 = new ClassTemplateLoader(
 				// getClass().getSuperclass(), "");
-				TemplateLoader[] loaders = new TemplateLoader[]
-				{ molgenistl, root, plugins };
-				MultiTemplateLoader mLoader = new MultiTemplateLoader(loaders);
-				cfg.setTemplateLoader(mLoader);
+				MultiTemplateLoader mLoader = new MultiTemplateLoader(loaders.toArray(new ClassTemplateLoader[loaders.size()]));
+				conf.setTemplateLoader(mLoader);
 				logger.debug("created freemarker config");
 			}
 
 			// merge template
-			cfg.addAutoInclude("ScreenViewHelper.ftl");
-			Template template = cfg.getTemplate(templatePath);
+			conf.addAutoInclude("ScreenViewHelper.ftl");
+			
+			WidgetFactory wf = new WidgetFactory();
+			wf.configure(conf);
+			
+			Template template = conf.getTemplate(templatePath);
 			StringWriter writer = new StringWriter();
 			template.process(templateArgs, writer);
 			writer.close();
@@ -140,7 +152,8 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 				.getApplicationController().getModel());
 		templateArgs.put("screen", model);
 		templateArgs.put("model", model);
-		templateArgs.put("widgetfactory", new WidgetFactory(db));
+		templateArgs.put("widgetfactory", new WidgetFactory());
+		
 		templateArgs.put("show", model.getController()
 				.getApplicationController().getModel().getShow());
 		

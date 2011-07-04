@@ -145,7 +145,7 @@ public abstract class SimpleCommand extends SimpleScreenModel implements ScreenC
 	 * 
 	 * @throws DatabaseException
 	 */
-	public abstract List<HtmlInput> getInputs() throws DatabaseException;
+	public abstract List<HtmlInput<?>> getInputs() throws DatabaseException;
 
 	// GETTERS AND SETTERS BELOW
 	@Override

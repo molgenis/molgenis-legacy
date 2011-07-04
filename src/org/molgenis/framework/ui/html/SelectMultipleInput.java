@@ -12,30 +12,46 @@
 
 package org.molgenis.framework.ui.html;
 
+import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
 
 import org.molgenis.util.Entity;
+import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
 /**
  * Input for multiple select. This means that a user can select multiple items
  * from a predefined selection.
  */
-public class SelectMultipleInput extends HtmlInput
+public class SelectMultipleInput extends OptionInput<List<String>>
 {
-	private List<ValueLabel> options = new Vector<ValueLabel>();
-
+	public static final String VALUES = "values";
+	
 	/**
 	 * 
 	 * @param name Name of the Input
 	 * @param objects list of selected values
 	 */
-	public SelectMultipleInput(String name, List<Object> objects)
+	public SelectMultipleInput(String name, List<String> objects)
 	{
 		super(name, objects);
+	}
+	
+	public SelectMultipleInput(String name, String label, List<String> values,
+			Boolean nillable, Boolean readonly, String description,
+			List<String> options, List<String> option_labels)
+			throws HtmlInputException
+	{
+		super(name, label, values, nillable, readonly, description, options,
+				option_labels);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public SelectMultipleInput(Tuple t) throws HtmlInputException
+	{
+		super(t);
+		this.setValue((List<String>)t.getList(VALUES));
 	}
 
 	@Override
@@ -65,7 +81,7 @@ public class SelectMultipleInput extends HtmlInput
 			// start with empty option
 			optionsHtml.append("\t<option value=\"\"></option>\n");
 		}
-		for (ValueLabel choice : options)
+		for (ValueLabel choice : getOptions())
 		{
 			if (stringValues.contains(choice.getValue().toString()))
 			{
@@ -101,7 +117,7 @@ public class SelectMultipleInput extends HtmlInput
 			stringValues.add(v.toString());
 		}
 
-		for (ValueLabel choice : options)
+		for (ValueLabel choice : getOptions())
 		{
 			if (stringValues.contains(choice.getValue().toString()))
 			{
@@ -115,21 +131,6 @@ public class SelectMultipleInput extends HtmlInput
 				.substring(0, optionstring.lastIndexOf(","));
 		return optionstring;
 	}
-
-	public List<ValueLabel> getChoices()
-	{
-		return options;
-	}
-
-	public void setOptions(ValueLabel... choices)
-	{
-		this.options = Arrays.asList(choices);
-	}
-
-	public void setOptions(List<ValueLabel> choices)
-	{
-		this.options = choices;
-	}
 	
 	/** Set the options for the input
 	 * 
@@ -141,7 +142,7 @@ public class SelectMultipleInput extends HtmlInput
 			String labelField)
 	{
 		// clear list
-		this.getChoices().clear();
+		this.getOptions().clear();
 
 		// add new values and labels
 		for (Object e : entities)
@@ -152,7 +153,7 @@ public class SelectMultipleInput extends HtmlInput
 	
 	public void addOption(Object value, Object label)
 	{
-		this.getChoices().add(
+		this.getOptions().add(
 				new ValueLabel(value.toString(), label.toString()));
 	}
 
@@ -164,5 +165,12 @@ public class SelectMultipleInput extends HtmlInput
 			choicePairs.add(new ValueLabel(choice, choice));
 		}
 		this.setOptions(choicePairs);
+	}
+
+	@Override
+	public String toHtml(Tuple params) throws ParseException,
+			HtmlInputException
+	{
+		return new SelectMultipleInput(params).render();
 	}
 }

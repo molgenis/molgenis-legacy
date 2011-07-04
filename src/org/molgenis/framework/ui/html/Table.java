@@ -1,15 +1,17 @@
 package org.molgenis.framework.ui.html;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.molgenis.util.Pair;
+import org.molgenis.util.Tuple;
 
 /*
  * Provides an html table with input components in the cells.
  */
-public class Table extends HtmlInput
+public class Table extends HtmlWidget
 {
 	LinkedHashMap<Pair<Integer, Integer>, Object> cells = new LinkedHashMap<Pair<Integer, Integer>, Object>();
 	LinkedHashMap<Pair<Integer, Integer>, String> cellStyles = new LinkedHashMap<Pair<Integer, Integer>, String>();
@@ -123,8 +125,8 @@ public class Table extends HtmlInput
 		if (o == null) {
 			return "";
 		}
-		if (o instanceof HtmlInput) {
-			return ((HtmlInput) o).toHtml();
+		if (o instanceof HtmlInput<?>) {
+			return ((HtmlInput<?>) o).toHtml();
 		}
 		return o.toString();
 	}
@@ -184,5 +186,13 @@ public class Table extends HtmlInput
 	public String getHeaderCellStyle()
 	{
 		return headerCellStyle;
+	}
+
+	@Override
+	public String toHtml(Tuple params) throws ParseException,
+			HtmlInputException
+	{
+		//TODO?
+		throw new UnsupportedOperationException();
 	}
 }

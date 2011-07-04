@@ -11,29 +11,50 @@
 
 package org.molgenis.framework.ui.html;
 
+import java.text.ParseException;
+
+import org.molgenis.util.Tuple;
+
 /**
- * Input for hyperlinks. This will automatically create a hyperlink to outside information.
+ * Input for hyperlinks. This will automatically create a hyperlink to outside
+ * information.
  */
-public class HyperlinkInput extends HtmlInput
-{	
-	public HyperlinkInput(String name, Object value)
+public class HyperlinkInput extends HtmlInput<String>
+{
+	public HyperlinkInput(String name, String value)
 	{
-		super (name, value);
+		super(name, value);
 	}
-	
+
 	public HyperlinkInput(String name)
 	{
-		this (name, null);
+		this(name, null);
 	}
-	
+
+	public HyperlinkInput(String name, String label, String value,
+			boolean nillable, boolean readonly)
+	{
+		super(name, value);
+		this.setLabel(label);
+		this.setNillable(nillable);
+		this.setReadonly(readonly);
+	}
+
+	public HyperlinkInput(Tuple t)
+	{
+		this(t.getString(NAME), t.getString(LABEL), t.getString(VALUE), t
+				.getBool(NILLABLE), t.getBool(READONLY));
+	}
+
 	/**
 	 * {@inheritDoc}. Inludes hyperlink naar outside information.
 	 */
 	public String getValue()
 	{
-		return "<a href=\""+super.getValue()+"\">"+super.getValue()+"</a>";
+		return "<a href=\"" + super.getValue() + "\">" + super.getValue()
+				+ "</a>";
 	}
-	
+
 	/**
 	 * Override because hyperlink must not be escaped
 	 */
@@ -45,19 +66,26 @@ public class HyperlinkInput extends HtmlInput
 	@Override
 	public String toHtml()
 	{
-		String readonly = ( isReadonly() ? "readonly class=\"readonly\" " : "");
-		
+		String readonly = (isReadonly() ? "readonly class=\"readonly\" " : "");
 
 		if (this.isHidden())
 		{
-			StringInput input = new StringInput(this.getName(), super.getValue());
+			StringInput input = new StringInput(this.getName(), super
+					.getValue());
 			input.setLabel(this.getLabel());
-			input.setDescription(this.getDescription());				
+			input.setDescription(this.getDescription());
 			input.setHidden(true);
 			return input.toHtml();
 		}
-			
-		return "<input id=\""+getId()+"\" name=\""+getName()+"\" value=\""+super.getValue()+"\" "+readonly+" />";
+
+		return "<input id=\"" + getId() + "\" name=\"" + getName()
+				+ "\" value=\"" + super.getValue() + "\" " + readonly + " />";
 	}
-	
+
+	@Override
+	public String toHtml(Tuple params) throws ParseException
+	{
+		return new HyperlinkInput(params).render();
+	}
+
 }

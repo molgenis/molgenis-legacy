@@ -6,7 +6,7 @@ package org.molgenis.framework.ui.html;
 public class HiddenInput extends StringInput
 {
 
-	public HiddenInput(String name, Object value)
+	public HiddenInput(String name, String value)
 	{
 		super(name, value);
 		this.setHidden(true);

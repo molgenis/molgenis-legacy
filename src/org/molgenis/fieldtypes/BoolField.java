@@ -1,8 +1,8 @@
 package org.molgenis.fieldtypes;
 
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.html.BoolInput;
 import org.molgenis.framework.ui.html.HtmlInput;
+import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.model.MolgenisModelException;
 
 public class BoolField extends FieldType
@@ -51,8 +51,7 @@ public class BoolField extends FieldType
 	}
 
 	@Override
-	public HtmlInput createInput(String name, String xrefEntityClassName,
-			Database db) throws InstantiationException, IllegalAccessException
+	public HtmlInput createInput(String name, String xrefEntityClassName) throws HtmlInputException
 	{
 		return new BoolInput(name);
 	}

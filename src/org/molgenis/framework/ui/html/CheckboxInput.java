@@ -4,15 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
 /**
  * Input for checkbox data.
  */
-public class CheckboxInput extends HtmlInput
+public class CheckboxInput extends OptionInput<List<String>>
 {
-	private Vector<ValueLabel> options = new Vector<ValueLabel>();
-
+	public static final String VALUES = "values";
+	
 	/**
 	 * Construct a checkbox input with a name, a label and a description, as
 	 * well as one or more options and zero or more selected values.
@@ -24,17 +25,17 @@ public class CheckboxInput extends HtmlInput
 	 * @param value
 	 */
 	public CheckboxInput(String name, String label, String description,
-			Vector<ValueLabel> options, Vector<String> value)
+			Vector<ValueLabel> options, List<String> value)
 	{
 		super(name, value);
 		super.setLabel(label);
 		super.setDescription(description);
-		this.options = options;
+		super.setOptions(options);
 		this.setReadonly(false);
 	}
 
 	public CheckboxInput(String name, List<String> options,
-			List<String> optionLabels, String label, String value,
+			List<String> optionLabels, String label, List<String> value,
 			boolean nillable, boolean readonly)
 	{
 		super(name, value);
@@ -52,14 +53,27 @@ public class CheckboxInput extends HtmlInput
 		}
 		else
 		{
-			for(String option: options)
+			for (String option : options)
 			{
-				result.add(new ValueLabel(option,option));
+				result.add(new ValueLabel(option, option));
 			}
 		}
 		this.setLabel(label);
 		this.setNillable(nillable);
 		this.setReadonly(readonly);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public CheckboxInput(Tuple t) throws HtmlInputException
+	{
+		super(t);
+		if(!t.isNull(VALUE)) this.setValue((List<String>) t.getList(VALUE));
+		if(!t.isNull(VALUES)) this.setValue((List<String>) t.getList(VALUES));
+	}
+
+	protected CheckboxInput()
+	{
+		super();
 	}
 
 	public String toHtml()
@@ -75,13 +89,13 @@ public class CheckboxInput extends HtmlInput
 		String readonly = (isReadonly() ? " class=\"readonly\" readonly " : "");
 		String checked = "";
 
-		if (!(options.isEmpty()))
+		if (!(getOptions().isEmpty()))
 		{
-			for (ValueLabel option : options)
+			for (ValueLabel option : getOptions())
 			{
 				if (getObject() != null)
 				{
-					checked = (((Vector<String>) getObject()).contains(option
+					checked = (((List<String>) getObject()).contains(option
 							.getValue().toString()) ? " checked " : "");
 				}
 				optionString.append("<input id=\"" + this.getId()
@@ -110,7 +124,7 @@ public class CheckboxInput extends HtmlInput
 	public String getValue()
 	{
 		String value = "";
-		for (ValueLabel i : options)
+		for (ValueLabel i : getOptions())
 		{
 			if (((Vector<String>) getObject()).contains(i.getValue()))
 			{
@@ -124,5 +138,10 @@ public class CheckboxInput extends HtmlInput
 		}
 		return value;
 	}
-
+	
+	@Override
+	public String toHtml(Tuple p) throws HtmlInputException
+	{
+		return new CheckboxInput(p).render();
+	}
 }

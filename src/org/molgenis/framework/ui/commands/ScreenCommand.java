@@ -145,7 +145,7 @@ public interface ScreenCommand extends Templateable, Serializable, ScreenModel
 	 * @return a list of input boxes to show
 	 * @throws DatabaseException
 	 */
-	public List<HtmlInput> getInputs() throws DatabaseException;
+	public List<HtmlInput<?>> getInputs() throws DatabaseException;
 
 	/**
 	 * Return a list of buttons to show.
