@@ -477,6 +477,7 @@ var molgenis_required = new Array(${required});
 			  <tr>
 					<#list screen.getFilters() as filter>			
 						<label>Search results <#if filter_index=0>where: <#else></#if>${filter}</label><image height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="setInput('${screen.name}_form','_self','','${screen.name}','filter_remove','iframe'); document.forms.${screen.name}_form.filter_id.value='${filter_index}'; document.forms.${screen.name}_form.submit();" title="remove filter"/>
+					    </br>
 					</#list>
 			  </tr>
 			<@form_toolbar screen/>
