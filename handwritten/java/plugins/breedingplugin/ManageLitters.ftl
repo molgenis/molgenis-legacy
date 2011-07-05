@@ -27,6 +27,10 @@
 
 <#if screen.action == "ShowLitters">
 
+	<#if screen.labelDownloadLink??>
+		<p>${screen.labelDownloadLink}</p>
+	</#if>
+
 	<p><a href="molgenis.do?__target=${screen.name}&__action=AddLitter">Add</a></p>
 
 	<#if screen.litterList?exists>

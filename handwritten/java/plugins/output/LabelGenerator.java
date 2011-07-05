@@ -23,15 +23,28 @@ public class LabelGenerator {
 		this.nrOfColumns = nrOfColumns;
 	}
 	
-	public void startDocument(File pdfFile) throws FileNotFoundException, DocumentException {
+	public void startDocument(File pdfFile) throws LabelGeneratorException {
 		document = new Document();
-		PdfWriter.getInstance(document, new FileOutputStream(pdfFile));
+		try {
+			PdfWriter.getInstance(document, new FileOutputStream(pdfFile));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			throw new LabelGeneratorException();
+		} catch (DocumentException e) {
+			e.printStackTrace();
+			throw new LabelGeneratorException();
+		}
         document.open();
         table = new PdfPTable(nrOfColumns);
 	}
 	
-	public void finishDocument() throws DocumentException {
-		document.add(table);
+	public void finishDocument() throws LabelGeneratorException {
+		try {
+			document.add(table);
+		} catch (DocumentException e) {
+			e.printStackTrace();
+			throw new LabelGeneratorException();
+		}
         document.close();
 	}
 	

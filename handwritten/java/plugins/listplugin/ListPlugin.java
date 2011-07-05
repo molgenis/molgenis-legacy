@@ -120,9 +120,11 @@ public class ListPlugin extends PluginModel<Entity> {
 	
 	public void reload(Database db) {
 		
+		ct.setDatabase(db);
+		
 		try {
 			// Reset servlet so state of that remains consistent with ours
-			String url = "http://localhost:" + CommonService.getPortNumber() + "/" + 
+			String url = "http://localhost:" + ct.getPortNumber() + "/" + 
 				MolgenisServlet.getMolgenisVariantID() + "/EventViewerJSONServlet?reset=1";
 			URL servletURL = new URL(url);
 			URLConnection servletConn = servletURL.openConnection();

@@ -8,7 +8,6 @@
 package plugins.output;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,6 @@ import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
 
-import com.itextpdf.text.DocumentException;
 import commonservice.CommonService;
 
 public class PrintLabelPlugin extends GenericPlugin
@@ -70,12 +68,11 @@ public class PrintLabelPlugin extends GenericPlugin
 	 * When the user presses 'Print', make a pdf with labels for the desired animals and features.
 	 * 
 	 * @param request
+	 * @throws LabelGeneratorException 
 	 * @throws ParseException 
 	 * @throws DatabaseException
-	 * @throws DocumentException 
-	 * @throws FileNotFoundException 
 	 */
-	private void handlePrintRequest(Tuple request) throws DatabaseException, ParseException, FileNotFoundException, DocumentException {
+	private void handlePrintRequest(Tuple request) throws LabelGeneratorException, DatabaseException, ParseException {
 		
 		int userId = this.getLogin().getUserId();
 		
@@ -96,7 +93,7 @@ public class PrintLabelPlugin extends GenericPlugin
         	
         	lineList.add("Database ID: " + ind.getId().toString());
         	lineList.add("Database name: " + ind.getName());
-        	
+        	lineList.add("User label: " + cs.getObservationTargetLabel(ind.getId()));
         	List<ObservedValue> valueList = cs.getObservedValuesByTargetAndFeatures(ind.getId(), measurementList,
         			investigationIds, ownInvId);
         	for (ObservedValue value : valueList) {

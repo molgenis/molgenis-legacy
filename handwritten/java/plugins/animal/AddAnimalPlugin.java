@@ -50,14 +50,14 @@ public class AddAnimalPlugin extends GenericPlugin
 	public SelectInput genestate = null;
 	public DateInput birthdate = null;
 	public DateInput entrydate = null;
-	public TextLineInput customname = null;
+	public TextLineInput<String> customname = null;
 	public IntInput startnumber = null;
 	public IntInput numberofanimals = null;
 	public SelectInput actor = null;
 	public ActionInput addbutton = null;
 
-	// container that renders whole form as table (left labels, right inputs)
-	public DivPanel tablePanel = null;
+	// container that renders whole form as divs (left labels, right inputs)
+	public DivPanel containingPanel = null;
 	// subpanel to conditionally show the genetic modification questions (background, genotype)
 	public DivPanel gmoPanel = null;
 	// sub-subpanel to conditionally show the genetic modification questions (gene, genestate)
@@ -107,7 +107,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		try {
 			String action = request.getAction();
 			if (action.equals("Add")) {
-				tablePanel.setValuesFromRequest(request);
+				containingPanel.setValuesFromRequest(request);
 				handleAddRequest(db, request);
 			}
 		} catch (Exception e) {
@@ -211,12 +211,14 @@ public class AddAnimalPlugin extends GenericPlugin
 		if (customname != null && startnumber != null) {
 			if (customname.getObject() != null || startnumber.getObject() != null) {
 				if (customname.getObject() != null) {
-					customName = customname.getObject().toString();
+					customName = customname.getObject();
 				} else {
 					customName = "";
 				}
 				if (startnumber.getObject() != null) {
-					customNumber = Integer.parseInt(startnumber.getObject().toString());
+					// TODO: Find out why HtmlInput<E>'s getObject() returns a String object and not an
+					// Integer one, as expected!
+					customNumber = Integer.parseInt(startnumber.getValue());
 				} else {
 					customNumber = 1; // standard start at 1
 				}
@@ -226,7 +228,9 @@ public class AddAnimalPlugin extends GenericPlugin
 		// Number of animals
 		int nrOfAnimals = 1;
 		if (numberofanimals.getObject() != null) {
-			nrOfAnimals = Integer.parseInt(numberofanimals.getObject().toString());
+			// TODO: Find out why HtmlInput<E>'s getObject() returns a String object and not an
+			// Integer one, as expected!
+			nrOfAnimals = Integer.parseInt(numberofanimals.getValue());
 		} else {
 			throw(new Exception("No number given - animal(s) not added"));
 		}
@@ -366,7 +370,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
 		
 		// panel for all elements
-		tablePanel = new DivPanel(this.getName() + "panel", null);
+		containingPanel = new DivPanel(this.getName() + "panel", null);
 
 		// Populate animal species list
 		// DISCUSSION: why is this not ontology???
@@ -481,23 +485,23 @@ public class AddAnimalPlugin extends GenericPlugin
 		addbutton = new ActionInput("Add", "&nbsp;", "Add animal(s)");
 
 		// add everything to the panel
-		tablePanel.add(species);
-		tablePanel.add(sex);
-		tablePanel.add(source);
-		tablePanel.add(animaltype);
-		tablePanel.add(gmoPanel);
-		tablePanel.add(birthdate);
-		tablePanel.add(entrydate);
-		tablePanel.add(numberofanimals);
+		containingPanel.add(species);
+		containingPanel.add(sex);
+		containingPanel.add(source);
+		containingPanel.add(animaltype);
+		containingPanel.add(gmoPanel);
+		containingPanel.add(birthdate);
+		containingPanel.add(entrydate);
 		if (customNamePanel != null) {
-			tablePanel.add(customNamePanel);
+			containingPanel.add(customNamePanel);
 		}
-		tablePanel.add(addbutton);
+		containingPanel.add(numberofanimals);
+		containingPanel.add(addbutton);
 	}
 	
 	public String render()
 	{
-		return this.tablePanel.toHtml();
+		return this.containingPanel.toHtml();
 	}
 	
 }

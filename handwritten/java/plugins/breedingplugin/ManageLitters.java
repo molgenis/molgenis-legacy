@@ -7,6 +7,7 @@
 
 package plugins.breedingplugin;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,9 +26,12 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+
+import plugins.output.LabelGenerator;
 
 import commonservice.CommonService;
 
@@ -51,6 +55,7 @@ public class ManageLitters extends PluginModel<Entity>
 	private String action = "ShowLitters";
 	private String customName = null;
 	private int customNumber = -1;
+	private String labelDownloadLink = null;
 
 	public ManageLitters(String name, ScreenController<?> parent)
 	{
@@ -175,6 +180,14 @@ public class ManageLitters extends PluginModel<Entity>
 		} else {
 			return ct.getMeasurementById(featureId).getName();
 		}
+	}
+
+	public void setLabelDownloadLink(String labelDownloadLink) {
+		this.labelDownloadLink = labelDownloadLink;
+	}
+
+	public String getLabelDownloadLink() {
+		return labelDownloadLink;
 	}
 
 	private void setUserFields(Tuple request, boolean wean) throws Exception {
@@ -339,9 +352,13 @@ public class ManageLitters extends PluginModel<Entity>
 				} catch (Exception e) {
 					throw(new Exception("No parentgroup found - litter not weaned"));
 				}
+				// Find Line for this Parentgroup
+				int lineId = ct.getMostRecentValueAsXref(parentgroupId, ct.getMeasurementId("Line"));
+				String lineName = ct.getObservationTargetById(lineId).getName();
 				// Find first mother, plus her animal type and species
 				int speciesId;
 				String animalType;
+				String motherLabel;
 				measurementId = ct.getMeasurementId("Mother");
 				Query<ObservedValue> motherQuery = db.query(ObservedValue.class);
 				motherQuery.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, parentgroupId));
@@ -353,12 +370,26 @@ public class ManageLitters extends PluginModel<Entity>
 					speciesId = ct.getMostRecentValueAsXref(motherId, measurementId);
 					measurementId = ct.getMeasurementId("AnimalType");
 					animalType = ct.getMostRecentValueAsString(motherId, measurementId);
+					measurementId = ct.getCustomNameFeatureId(this.getLogin().getUserId());
+					motherLabel = ct.getMostRecentValueAsString(motherId, measurementId);
 					// Keep normal and transgene types, but set type of child from wild parents to normal
 					if (animalType.equals("C. Wildvang") || animalType.equals("D. Biotoop")) {
 						animalType = "A. Gewoon dier";
 					}
 				} else {
 					throw(new Exception("No mother (properties) found - litter not weaned"));
+				}
+				// Find father and his name or custom label
+				String fatherLabel = "";
+				measurementId = ct.getMeasurementId("Father");
+				Query<ObservedValue> fatherQuery = db.query(ObservedValue.class);
+				fatherQuery.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, parentgroupId));
+				fatherQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, measurementId));
+				List<ObservedValue> fatherValueList = fatherQuery.find();
+				if (fatherValueList.size() > 0) {
+					int fatherId = fatherValueList.get(0).getTarget_Id();
+					measurementId = ct.getCustomNameFeatureId(this.getLogin().getUserId());
+					fatherLabel = ct.getMostRecentValueAsString(fatherId, measurementId);
 				}
 				// Set wean size
 				int weanSize = weanSizeFemale + weanSizeMale;
@@ -448,6 +479,74 @@ public class ManageLitters extends PluginModel<Entity>
 				
 				// Update custom label map now new animals have been added
 				ct.makeObservationTargetNameMap(this.getLogin().getUserId(), true);
+				
+				// Make temporary cage labels
+				File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+				File pdfFile = new File(tmpDir.getAbsolutePath() + File.separatorChar + "weanlabels.pdf");
+				String filename = pdfFile.getName();
+				LabelGenerator labelgenerator = new LabelGenerator(2);
+				labelgenerator.startDocument(pdfFile);
+				List<String> elementList;
+				int nrOfCages = 0;
+				int nrOfFemales = weanSizeFemale;
+				while (nrOfFemales > 0) {
+					elementList = new ArrayList<String>();
+					// Line name + Nr. of females in cage
+					String firstLine = lineName; 
+					if (nrOfFemales >= 3) {
+						firstLine += "\t\t3 females";
+					} else {
+						if (nrOfFemales == 1) {
+							firstLine += "\t\t1 female";
+						} else {
+							firstLine += "\t\t2 females";
+						}
+					}
+					elementList.add(firstLine);
+					// Parents
+					elementList.add(motherLabel + " x " + fatherLabel);
+					// Litter birth date
+					elementList.add(litterBirthDateString);
+					// Nrs. for writing extra information behind
+					for (int i = 1; i <= Math.min(nrOfFemales, 3); i++) {
+						elementList.add(i + ".");
+					}
+					
+					labelgenerator.addLabelToDocument(elementList);
+					nrOfFemales -= 3;
+					nrOfCages++;
+				}
+				int nrOfMales = weanSizeMale;
+				while (nrOfMales > 0) {
+					elementList = new ArrayList<String>();
+					// Line name + Nr. of males in cage
+					String firstLine = lineName; 
+					if (nrOfMales >= 2) {
+						firstLine += "\t\t2 males";
+					} else {
+						firstLine += "\t\t1 male";
+					}
+					elementList.add(firstLine);
+					// Parents
+					elementList.add(motherLabel + " x " + fatherLabel);
+					// Litter birth date
+					elementList.add(litterBirthDateString);
+					// Nrs. for writing extra information behind
+					for (int i = 1; i <= Math.min(nrOfMales, 2); i++) {
+						elementList.add(i + ".");
+					}
+					
+					labelgenerator.addLabelToDocument(elementList);
+					nrOfMales -= 2;
+					nrOfCages++;
+				}
+				// In case of an odd number of cages, add extra label to make row full
+				if (nrOfCages %2 != 0) {
+					elementList = new ArrayList<String>();
+					labelgenerator.addLabelToDocument(elementList);
+				}
+				labelgenerator.finishDocument();
+				this.setLabelDownloadLink("<a href=\"tmpfile/" + filename + "\">Download temporary wean labels as pdf</a>");
 				
 				this.action = "ShowLitters";
 				this.reload(db);
