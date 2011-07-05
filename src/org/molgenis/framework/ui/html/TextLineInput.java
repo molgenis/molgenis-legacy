@@ -70,6 +70,6 @@ public class TextLineInput<E> extends HtmlInput<E>
 	public String toHtml(Tuple params) throws ParseException,
 			HtmlInputException
 	{
-		return new TextLineInput(params).render();
+		return new TextLineInput<E>(params).render();
 	}
 }

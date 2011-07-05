@@ -101,7 +101,7 @@ public class DivPanel extends HtmlWidget
 		fillList(inputList, this);
 		for (HtmlInput input : inputList)
 		{
-			object = request.getString(input.getName());
+			object = request.getObject(input.getName());
 			if (object != null)
 			{
 				input.setValue(object);
