@@ -24,7 +24,7 @@
 	<#list screen.getMenus() as menu>
 							<td class="menuitem" id="${screen.name}_menu_${menu.name}" onclick="mopen('${screen.name}_menu_${menu.name}Sub');">
 								${menu.label}
-								<img src="generated-res/img/pulldown.gif" alt="pulldown"><br>
+								<img src="generated-res/img/pulldown.gif" alt="pulldown"><br />
 								<div class="submenu" id="${screen.name}_menu_${menu.name}Sub">
 									<table>
 		<#list menu.getCommands() as command>
@@ -125,9 +125,9 @@
 			<#assign requiredcount = requiredcount + 1 />
 		</#if>
 	</#list>
-			<!--<tr><td><br><label>Number of copies: </label></td>
+			<!--<tr><td><br /><label>Number of copies: </label></td>
 		
-			<td><br><input name="__batchadd" value="1" size="4"/></td></tr>-->
+			<td><br /><input name="__batchadd" value="1" size="4"/></td></tr>-->
 		</form>
 	</table>
 	<p align="right">
@@ -286,7 +286,7 @@ var molgenis_required = new Array(${required});
 					<#if input.getTarget() != "" && input.getObject()?exists >
 					<td class="link" onClick="setInput('${screen.name}_form','_self','','${input.getTarget()}','xref_select','iframe'); document.forms.${screen.name}_form.attribute.value='${input.getTargetfield()}'; document.forms.${screen.name}_form.operator.value='EQUALS'; document.forms.${screen.name}_form.value.value='${input.getObject()}'; document.forms.${screen.name}_form.submit();">${input.getHtmlValue()}</td>	
 					<#else>
-		<td><div  class="recordview_datavalue">${input.getValue()?replace('\n','<br>')}&nbsp;</div></td>
+		<td><div  class="recordview_datavalue">${input.getValue()?replace('\n','<br />')}&nbsp;</div></td>
 					</#if>
 				<#else>
 		<td>${input.toHtml()}</td>
@@ -316,7 +316,7 @@ var molgenis_required = new Array(${required});
 </#if>
 </td></tr></table>		
 	</#list>
-<br>
+<br />
 </#macro>
 
 <#macro listview screen>
@@ -419,7 +419,7 @@ var molgenis_required = new Array(${required});
 		<#list screen.getNewRecordForm() as input>
 		<tr><td><label>${input.label}<#if !input.isNillable()  && !input.isReadonly()> *</#if></label></td><td>${input.toHtml()}</td></tr>
 		</#list>
-		<!--<tr><td><br><label>Number of copies: </label></td><td><br><input name="__batchadd" value="1" size="4"/></td></tr>-->		
+		<!--<tr><td><br /><label>Number of copies: </label></td><td><br /><input name="__batchadd" value="1" size="4"/></td></tr>-->		
 		<tr><td colspan="2"><i>Add CSV data.</i></td></tr>					
 		<tr><td><label>CSV data</label></td><td><textarea name="__csvdata" cols="80" rows="20"></textarea></td></tr>
 		<tr><td colspan="2" class="edit_button_area">
@@ -477,7 +477,7 @@ var molgenis_required = new Array(${required});
 			  <tr>
 					<#list screen.getFilters() as filter>			
 						<label>Search results <#if filter_index=0>where: <#else></#if>${filter}</label><image height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="setInput('${screen.name}_form','_self','','${screen.name}','filter_remove','iframe'); document.forms.${screen.name}_form.filter_id.value='${filter_index}'; document.forms.${screen.name}_form.submit();" title="remove filter"/>
-					    </br>
+					    <br />
 					</#list>
 			  </tr>
 			<@form_toolbar screen/>
