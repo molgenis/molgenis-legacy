@@ -164,7 +164,7 @@ public abstract class HtmlInput<E> implements Input<E>, HtmlRenderer
 	// TODO: This *needs* to be renamed to getValueToString() or removed!!!
 	public String getValue()
 	{
-		return getValue(true);
+		return getValue(false); 
 	}
 
 	/**
