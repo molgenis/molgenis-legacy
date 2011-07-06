@@ -3,11 +3,11 @@
 
 <molgenis name="molgenis_apps">
 	<menu name="main">
-		<form name="riskFactors" entity="riskFactor" label="Risk Factor">
-			<form name="riskFactorPublications" entity="PublicationFactor" />
+		<form name="RiskFactors" entity="RiskFactor" label="Risk Factor">
+		 <form name="RiskFactorPublications" entity="PublicationFactor" />  
 		</form>
 		<form name="publication" entity="Publication" label="Publications">
-			<form name="publicationRiskFactors" entity="PublicationFactor" />
+			<form name="publicationRiskFactors" entity="PublicationFactor" />  
 		</form>
 	</menu>
 </molgenis> 
