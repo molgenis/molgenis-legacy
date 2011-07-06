@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -44,7 +43,8 @@ public class ManageParentgroups extends PluginModel<Entity>
 	private String groupName = "";
 	private String datetime = "";
 	private List<ObservationTarget> lineList;
-	private int line;
+	private int line = 0;
+	private boolean firstTime = true;
 	
 	public ManageParentgroups(String name, ScreenController<?> parent)
 	{
@@ -178,18 +178,26 @@ public class ManageParentgroups extends PluginModel<Entity>
 		db.add(valuesToAddList);
 	}
 	
-	private void setUserFields(Tuple request) throws DatabaseException, ParseException {
+	private void setUserFields(Tuple request) {
 		setDatetime(request.getString("datetime"));
 		setGroupName(request.getString("groupname"));
 		setLine(request.getInt("line"));
+	}
+	
+	private void resetUserFields() {
+		this.selectedMotherIdList.clear();
+		this.selectedFatherIdList.clear();
+		SimpleDateFormat sdfMolgenis = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
+		Date now = new Date();
+		this.setDatetime(sdfMolgenis.format(now));
+		this.setGroupName(null);
 	}
 
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
 		try {
-			Calendar calendar = Calendar.getInstance();
-			Date now = calendar.getTime();
+			Date now = new Date();
 			
 			int invid = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
 			
@@ -220,7 +228,8 @@ public class ManageParentgroups extends PluginModel<Entity>
 				db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 						protocolId, measurementId, groupid, null, line));
 				
-				this.getMessages().clear();
+				// Success: empty selected lists and show success message
+				this.resetUserFields();
 				this.getMessages().add(new ScreenMessage("Parentgroup succesfully added", true));
 			}
 			
@@ -235,7 +244,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			if (action.equals("remIndMother")) {
 				setUserFields(request);
 				int motherId = request.getInt("mother");
-				this.selectedMotherIdList.remove(motherId);
+				this.selectedMotherIdList.remove(this.selectedMotherIdList.indexOf(motherId));
 			}
 			
 			if (action.equals("addIndFather")) {
@@ -249,7 +258,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			if (action.equals("remIndFather")) {
 				setUserFields(request);
 				int fatherId = request.getInt("father");
-				this.selectedFatherIdList.remove(fatherId);
+				this.selectedFatherIdList.remove(this.selectedFatherIdList.indexOf(fatherId));
 			}
 		} catch (Exception e) {
 			this.getMessages().clear();
@@ -278,8 +287,12 @@ public class ManageParentgroups extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
-		ct.setDatabase(db);
-		ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
+		if (firstTime == true) {
+			firstTime = false;
+			ct.setDatabase(db);
+			ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
+			this.resetUserFields();
+		}
 		
 		try {
 			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
@@ -291,7 +304,6 @@ public class ManageParentgroups extends PluginModel<Entity>
 			lineList = ct.getAllMarkedPanels("Line", investigationIds);
 			
 		} catch (Exception e) {
-			this.getMessages().clear();
 			String message = "Something went wrong while loading lists";
 			if (e.getMessage() != null) {
 				message += (": " + e.getMessage());
