@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-	<!--
-		DOCTYPE molgenis PUBLIC "MOLGENIS 1.0"
-		"http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd"
-	-->
+<!-- DOCTYPE molgenis PUBLIC "MOLGENIS 1.0" "http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd" -->
 
 <molgenis name="molgenis_apps">
-
-	<form name="riskFactors" entity="riskFactor" label="Risk Factor" />
-    <form name="literatures" entity="literature" label="Literature" />
-    
+	<menu name="main">
+		<form name="riskFactors" entity="riskFactor" label="Risk Factor">
+			<form name="riskFactorPublications" entity="PublicationFactor" />
+		</form>
+		<form name="publication" entity="Publication" label="Publications">
+			<form name="publicationRiskFactors" entity="PublicationFactor" />
+		</form>
+	</menu>
 </molgenis> 
 
