@@ -28,7 +28,15 @@ public class BbmriHeader extends PluginModel<Entity>
 	{
 		super(name, parent);
 	}
-
+	
+	@Override
+	public String getCustomHtmlHeaders()
+	{
+		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"bbmri/css/bbmri_colors.css\">" + "\n" +
+			   "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/main_override.css\">" ;
+	}
+	
+	
 	@Override
 	public String getViewName()
 	{

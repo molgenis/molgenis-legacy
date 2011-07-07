@@ -1,0 +1,33 @@
+body {
+        font-family: 'Trebuchet MS', Helvetica, sans-serif;
+}
+	
+	#header {
+	        color: #008981;
+	        font-size: 14pt;
+	        font-style: italic;
+	        /*font-weight: bold;*/
+	        font-family: Verdana, 'Trebuchet MS', Helvetica, sans-serif;
+	}
+	
+	body,#header,#navigation,#information,#footer,.form_new,.form_filter,.embedtable,.popup
+	        {
+	        background: white;
+	}
+	
+	.leftNavigationSelected,.navigationSelected,.form_header {
+	        background: #01A1A4;
+	        color: #FFFFFF;
+	        text-decoration: none;
+}
+	
+	.leftNavigationNotSelected,.navigationNotSelected {
+        background: #008981;
+	        color: #FFFFFF;
+	        text-decoration: none;
+	}
+	
+	.leftNavigationSelected,.leftNavigationNotSelected,.navigationSelected,.navigationNotSelected,.formscreen,.form_new,.form_filter,.popup
+	        {
+	        border-color: #008981;
+}

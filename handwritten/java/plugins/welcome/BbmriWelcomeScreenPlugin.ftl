@@ -25,7 +25,7 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->
 
-<h1>Welcome to the Catalogue of Dutch biobanks</h1>
+<h3>Welcome to the Catalogue of Dutch biobanks</h3>
 <p>This application allows you to view all biobanks associated with BBMRI-NL in Biobank Overview. The catalogue is updated monthly.</p>
 <p>To apply for inclusion of your biobank in this catalogue, please <a href="molgenis.do?__target=main&select=BbmriContact">contact the BBMRI-NL office</a>.</p>
 <p>You can download data from the database. It is also possible to upload new or edited information, but for security reasons all submittals will be monitored by the BBMRI-NL office before publication.</p>
