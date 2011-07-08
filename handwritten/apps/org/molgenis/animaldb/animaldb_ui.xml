@@ -96,16 +96,12 @@
 		<menu name="valuemenu" position="left" label="Values">
 			<plugin name="ApplyProtocol" type="plugins.protocol.ApplyProtocolPlugin"
 				label="Make/edit values" />
-			<!-- <plugin name="EditProtocol" type="plugins.protocol.EditProtocolPlugin"
-				label="Edit protocol application" /> -->
-			<!-- <plugin name="ApplyProtocolOld" type="plugins.protocol.ApplyProtocolPluginOld"
-				label="Apply protocol (old)" /> -->
 			<plugin name="ListPlugin" type="plugins.listplugin.ListPlugin"
 				label="View value matrix" />
+			<plugin name="MatrixViewExample" type="org.molgenis.matrix.example.MatrixViewExample1"
+				label="View NEW value matrix" />
 			<plugin name="EventViewer" type="plugins.protocol.EventViewerPlugin"
 				label="View value timeline" />
-			<!-- <plugin name="ListPlugin2" type="plugins.listplugin.ListPlugin2"
-                label="ExtJs listplugin" /> -->
 		</menu>
 		
 		<menu name="projectmenu" position="left" label="DEC (sub)projects">
