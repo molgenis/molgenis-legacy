@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+
 /**
  * Simple 'in-memory' implementation of the Matrix. Data is stored as
  * two-dimensional array.
@@ -198,7 +199,7 @@ public class MemoryMatrix<E> implements Matrix<E>
 	}
 
 	@Override
-	public E getValueByName(String rowName, String colName)
+	public E getValue(String rowName, String colName)
 			throws MatrixException
 	{
 		return this.getValue(getRowId(rowName), getColId(colName));

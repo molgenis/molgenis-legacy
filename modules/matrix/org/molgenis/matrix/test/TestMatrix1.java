@@ -16,6 +16,7 @@ import org.molgenis.matrix.CsvMatrixWriter;
 import org.molgenis.matrix.Matrix;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.MemoryMatrix;
+import org.molgenis.matrix.SortableMatrix;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservedValue;

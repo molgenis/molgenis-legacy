@@ -8,7 +8,7 @@
 package org.molgenis.matrix.example;
 
 import org.molgenis.framework.ui.EasyPluginModel;
-import org.molgenis.matrix.MatrixView;
+import org.molgenis.matrix.ui.MatrixViewer;
 
 /**
  * MatrixViewExample1Model takes care of all state and it can have helper methods to query the database.
@@ -17,7 +17,7 @@ import org.molgenis.matrix.MatrixView;
  */
 public class MatrixViewExample1Model extends EasyPluginModel
 {
-	private MatrixView matrixView;
+	private MatrixViewer matrixView;
 	
 	public MatrixViewExample1Model(MatrixViewExample1 controller)
 	{
@@ -25,12 +25,12 @@ public class MatrixViewExample1Model extends EasyPluginModel
 		super(controller);
 	}
 
-	public MatrixView getMatrixView()
+	public MatrixViewer getMatrixView()
 	{
 		return matrixView;
 	}
 
-	public void setMatrixView(MatrixView view)
+	public void setMatrixView(MatrixViewer view)
 	{
 		this.matrixView = view;
 	}

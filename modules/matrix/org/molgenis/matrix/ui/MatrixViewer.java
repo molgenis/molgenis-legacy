@@ -1,4 +1,4 @@
-package org.molgenis.matrix;
+package org.molgenis.matrix.ui;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,6 +19,8 @@ import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.LabelInput;
+import org.molgenis.matrix.Matrix;
+import org.molgenis.matrix.MatrixException;
 import org.molgenis.util.Tuple;
 
 /**
@@ -37,7 +39,7 @@ import org.molgenis.util.Tuple;
  * (using Matrix interface)
  * 
  */
-public class MatrixView extends HtmlInput<Matrix> implements MolgenisService
+public class MatrixViewer extends HtmlInput<Matrix> implements MolgenisService
 {	
 	// map of rowids and the widget to show as rowheader
 	private Map<String, HtmlInput> rows = null;
@@ -54,7 +56,7 @@ public class MatrixView extends HtmlInput<Matrix> implements MolgenisService
 	 * rows.
 	 * @throws NameNotUniqueException 
 	 */
-	public MatrixView(ScreenController<?> controller, String name, Matrix<?> values) throws MatrixViewException,
+	public MatrixViewer(ScreenController<?> controller, String name, Matrix<?> values) throws MatrixViewException,
 			MatrixException, NameNotUniqueException
 	{
 		this(controller,name,values.getRowNames(),values.getColNames(),values);
@@ -64,7 +66,7 @@ public class MatrixView extends HtmlInput<Matrix> implements MolgenisService
 	 * Constructure where it is selected which rows and columns of the data will
 	 * be visible to the user.
 	 */
-	public MatrixView(ScreenController<?> controller, String name, List<String> rows, List<String> cols, Matrix<?> values)
+	public MatrixViewer(ScreenController<?> controller, String name, List<String> rows, List<String> cols, Matrix<?> values)
 			throws MatrixViewException, NameNotUniqueException
 	{
 		super(name, null);

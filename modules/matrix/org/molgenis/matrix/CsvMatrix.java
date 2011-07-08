@@ -15,27 +15,33 @@ import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
 
 /**
- * Matrix that loads its data from a CsvReader.
+ * A MemoryMatrix that loads its data from a CsvReader.
+ * This scales not very well ;-)
  * 
  * Example usage:
  * 
  * <pre>
- * Matrix m = new CsvMatrix(new CsvFileReader(file));
+ * Matrix m = new CsvMatrix(File file);
  * </pre>
  * 
  * @param <E>
  */
 public class CsvMatrix<E> extends MemoryMatrix<E>
 {
-
-	
 	Logger logger = Logger.getLogger(getClass().getSimpleName());
 
+	//for reading the csv
 	private CsvReader csvReader;
+	
+	//convertor to read the values
 	private CsvMatrixValueConvertor convertor;
+	
+	//class that holds the valueType
 	private Class<E> valueType;
 	
 	/**
+	 * Creates a MemoryMatrix<String>
+	 * 
 	 * @throws MatrixException 
 	 * @throws FileNotFoundException 
 	 * 
@@ -46,6 +52,8 @@ public class CsvMatrix<E> extends MemoryMatrix<E>
 	}
 	
 	/**
+	 * Creates a MemoryMatrix<valueClass>
+	 *
 	 * @param csvFile
 	 */
 	public CsvMatrix(Class<E> valueClass, File f) throws FileNotFoundException, MatrixException
@@ -54,7 +62,7 @@ public class CsvMatrix<E> extends MemoryMatrix<E>
 	}
 
 	/**
-	 * 	 * Set the value type of the values. 
+	 * Set the value type of the values. 
 	 * 
 	 * @param valueClass. Currently only differentiates between Double and String
 	 * @param reader

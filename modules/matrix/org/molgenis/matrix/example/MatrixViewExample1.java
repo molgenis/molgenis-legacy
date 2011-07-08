@@ -9,8 +9,8 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.matrix.Matrix;
-import org.molgenis.matrix.MatrixView;
 import org.molgenis.matrix.MemoryMatrix;
+import org.molgenis.matrix.ui.MatrixViewer;
 
 /**
  * MatrixViewExample1Controller takes care of all user requests and application logic.
@@ -46,7 +46,7 @@ public class MatrixViewExample1 extends EasyPluginController<MatrixViewExample1M
 		matrix.setValue("row2","col1", "cel21");
 		matrix.setValue("row2","col2", "cel12");
 		
-		getModel().setMatrixView(new MatrixView(this,"testmatrix", matrix));
+		getModel().setMatrixView(new MatrixViewer(this,"testmatrix", matrix));
 	}
 
 }
