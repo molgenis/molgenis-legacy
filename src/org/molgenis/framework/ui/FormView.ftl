@@ -488,9 +488,8 @@ var molgenis_required = new Array(${required});
 					<#else> 
 			<@listview screen /> 
 					</#if>
-					</div>
-				</div>
-</form>
+			</form>		
+					
 <!-- subforms -->
 		<#if (screen.mode.toString() == "editview") && screen.count &gt; 0>
 			<#list screen.children as subscreen>
@@ -499,6 +498,13 @@ var molgenis_required = new Array(${required});
 </div>
 			</#list>
 		</#if>
+					</div>
+					
+			
+					
+				</div>
+
+
 	</#if>
 <!-- end of FormScreen ${screen.getName()}-->
 			</td>
