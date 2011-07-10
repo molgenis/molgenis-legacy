@@ -109,7 +109,7 @@ public class ${JavaName(form.className)}FormController extends FormController<${
 		<#list superclasses(form.getRecord()) as subform_entity>
 			<#if subform_entity.getName() == field.xrefEntityName>
 		//filter on subform_entity.${name(field.xrefField)} == <#if field.getType() == "mref">ANY </#if> parentform_entity.${name(field)}
-		getModel().getParentFilters().add(new ParentFilter("${parent_form.name}","${SqlName(name(field))}_${subform_entity.getPrimaryKey().getName()}",Arrays.asList("${csv(field.xrefLabelNames)}".split(",")),"${SqlName(field.xrefField)}"));		
+		getModel().getParentFilters().add(new ParentFilter("${parent_form.name}","${SqlName(name(field))}",Arrays.asList("${csv(field.xrefLabelNames)}".split(",")),"${SqlName(field.xrefField)}"));		
 			</#if>
 		</#list>
 	</#if>
