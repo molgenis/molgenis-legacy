@@ -1,88 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-        DOCTYPE molgenis PUBLIC "MOLGENIS 1.0"
-        "http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd"
-    -->
-<!--<molgenis name="molgenis_apps" label="Compute Testing">-->
+	<!--
+		DOCTYPE molgenis PUBLIC "MOLGENIS 1.0"
+		"http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd"
+	-->
+	<!--<molgenis name="molgenis_apps" label="Compute Testing">-->
 <molgenis name="compute" label="Compute Testing">
-    <!--<plugin name="molgenis_header" type="plugins.header.ComputeHeader" />-->
-
-    <menu name="mainmenu" position="left" startswith="WelcomeScreen">
-
-
-        <!--
-          <menu name="Targets">
-              <form name="Individuals" entity="Individual" />
-
-                  compact_view="Name"
-
-
-              <form name="Panels" entity="Panel" />
-              <form name="Samples" entity="Sample" />
-              <form name="Lanes" entity="Lane" />
-          </menu>
-           -->
-        <menu name="NGS">
-            <form name="Worksheet" label="Worksheet" entity="Worksheet">
-                <plugin name="Button" type="org.molgenis.compute.StartNgs"/>
-            </form>
-            <form name="FlowcellLaneSample" label="Run analysis on target" entity="FlowcellLaneSample">
-                <plugin name="StartTarget" type="org.molgenis.compute.StartNgs" label="Run"/>
-            </form>
-            <plugin name="ImportWorksheet" label="Import worksheet" type="org.molgenis.ngs.Plugin.ImportWorksheet"/>
-        </menu>
-
-
-        <form name="ComputeProtocols" entity="ComputeProtocol"
-              hide_fields="Investigation,ontologyReference,TargetFilter,Contact,ProtocolType"
-              viewtype="record">
-            <form name="ComputeFeatures" entity="ComputeFeature"
-                  hide_fields="Investigation,ontologyReference,temporal"
-                  viewtype="list"/>
-        </form>
-        <form name="Workflows" entity="Workflow" viewtype="record"
-              hide_fields="Investigation,ontologyReference,ProtocolType,TargetFilter">
-            <form name="WorkflowElements" entity="WorkflowElement" viewtype="record">
-                <form name="WorkflowElementParameters" entity="WorkflowElementParameter"
-                      viewtype="list"/>
-            </form>
-        </form>
-        <!--
-                  <form name="CreateComputeApplication" label="Select pipeline to run"
-                  entity="Workflow" viewtype="record"
-                  hide_fields="description,Investigation,ontologyReference,ProtocolType,TargetFilter,Contact,Features"
-                  >
-              -->
-        <!--
-              <menu name="SelectPipeline" label="Select pipeline to run">
-                  <plugin name="ComputePlugin" label="Choose pipeline to run"
-                      type="org.molgenis.compute.ComputePlugin" />
-              </menu>
-              -->
-        <form name="ComputeApplications" entity="ComputeApplication"
-              viewtype="record" hide_fields="Investigation,Performer,ontologyReference">
-            <form name="ObservedValues" entity="ObservedValue" viewtype="list"
-                  hide_fields="ontologyReference,relation"/>
-        </form>
-        <menu name="Console">
-            <plugin name="console" type="org.molgenis.compute.ConsolePlugin"/>
-        </menu>
-        <menu name="Admin">
-            <form name="AllComputeProtocols" entity="ComputeProtocol"
-                  viewtype="list"/>
-            <form name="AllComputeFeatures" entity="ComputeFeature"
-                  viewtype="list"/>
-            <!--<form name="Allworkflows" entity="Workflow" viewtype="record" />-->
-            <form name="AllElement" entity="WorkflowElement" viewtype="list"/>
-            <form name="AllComputeApplications" entity="ComputeApplication"
-                  viewtype="record"/>
-            <form name="AllObservedValues" entity="ObservedValue" viewtype="list"/>
-            <!-- form name="Outputs" entity="ProtocolOutput" viewtype="list" /> -->
-        </menu>
-        <plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard"
-                label="Excel Import"/>
-        <plugin name="GenericExport"
-                type="plugins.archiveexportimport.ArchiveExportImportPlugin" label="Excel export"/>
-
-    </menu>
+	<plugin name="MolgenisHeader" type="plugins.header.NgsHeader" />
+	<menu name="mainmenu" position="left" startswith="WelcomeScreen">
+		<!--
+			<menu name="Targets"> <form name="Individuals" entity="Individual" />
+			compact_view="Name" <form name="Panels" entity="Panel" /> <form
+			name="Samples" entity="Sample" /> <form name="Lanes" entity="Lane" />
+			</menu>
+		-->
+		<menu name="NGS">
+			<form name="Worksheet" label="Worksheet" entity="Worksheet">
+				<plugin name="Button" type="org.molgenis.compute.StartNgs" />
+			</form>
+			<form name="FlowcellLaneSample" label="Run analysis on target"
+				entity="FlowcellLaneSample">
+				<plugin name="StartTarget" type="org.molgenis.compute.StartNgs"
+					label="Run" />
+			</form>
+			<plugin name="ImportWorksheet" label="Import worksheet"
+				type="org.molgenis.ngs.Plugin.ImportWorksheet" />
+		</menu>
+		<menu name="Compute">
+			<form name="AllComputeFeatures" hide_fields="id,Investigation,ontologyReference,targettypeAllowedForRelation,panelLabelAllowedForRelation,temporal,featureType" entity="ComputeFeature" viewtype="list" />
+			<form name="ComputeProtocols" entity="ComputeProtocol"
+				hide_fields="Investigation,ontologyReference,TargetFilter,Contact,ProtocolType,Features"
+				viewtype="record">
+				<form name="ComputeFeatures" entity="ComputeFeature"
+					hide_fields="Investigation,ontologyReference,temporal" viewtype="list" />
+			</form>
+			<form name="Workflows" entity="Workflow" viewtype="record"
+				hide_fields="id,Investigation,ontologyReference,ProtocolType,TargetFilter,Features">
+				<form name="WorkflowElements" entity="WorkflowElement"
+					viewtype="record">
+					<form name="WorkflowElementParameters" hide_fields="id" entity="WorkflowElementParameter"
+						viewtype="list" />
+				</form>
+			</form>
+			<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard"
+				label="Import pipelines" />
+		</menu>
+		<!--
+			<form name="CreateComputeApplication" label="Select pipeline to run"
+			entity="Workflow" viewtype="record"
+			hide_fields="description,Investigation,ontologyReference,ProtocolType,TargetFilter,Contact,Features"
+			>
+		-->
+		<!--
+			<menu name="SelectPipeline" label="Select pipeline to run"> <plugin
+			name="ComputePlugin" label="Choose pipeline to run"
+			type="org.molgenis.compute.ComputePlugin" /> </menu>
+		-->
+		<menu name="Logs">
+			<form name="ComputeApplications" entity="ComputeApplication"
+				viewtype="record" hide_fields="Investigation,Performer,ontologyReference">
+				<form name="ObservedValues" entity="ObservedValue" viewtype="list"
+					hide_fields="ontologyReference,relation" />
+			</form>
+			<menu name="Console">
+				<plugin name="console" type="org.molgenis.compute.ConsolePlugin" />
+			</menu>
+		</menu>
+		<menu name="Admin">
+			<form name="AllElement" entity="WorkflowElement" viewtype="list" />
+			<form name="AllComputeApplications" entity="ComputeApplication"
+				viewtype="record" />
+			<form name="AllObservedValues" entity="ObservedValue" viewtype="list" />
+			<!-- form name="Outputs" entity="ProtocolOutput" viewtype="list" /> -->
+			<plugin name="GenericExport"
+				type="plugins.archiveexportimport.ArchiveExportImportPlugin" label="Excel export" />
+		</menu>
+	</menu>
 </molgenis>
