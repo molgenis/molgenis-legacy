@@ -130,21 +130,14 @@ public class CsvBufferedReaderMultiline implements CsvReader
 		// skip to reading block
 		goToBlockStart(reader);
 
-		// use cached
-		// logger.info("guessed separator: '" + separator + "'");
-
-		// get rid of trailing separator
-		
-//		if (headerLine.lastIndexOf(separator) == headerLine.length() - 1)
-//		{
-//			headerLine = headerLine.substring(0, headerLine.length() - 1);
-//		}
-
 		//get the column names as in file
 		List<String> colnames = this.getRow();
 		
 		//get data line as comparison to see if we need to add anonymous first column for data matrix
 		List<String> dataline = this.getRow();
+		
+		//empty file has empty headers
+		if(dataline == null) return new ArrayList<String>();
 
 		// if data line is longer, then add empty first column header
 		if (colnames.size() + 1 == dataline.size())
@@ -394,7 +387,7 @@ public class CsvBufferedReaderMultiline implements CsvReader
 
 	/**
 	 * This method reads a line but also takes into consideration escaping using
-	 * " (or other escape if set).
+	 * " (or other escape if set). It returns null if no line is found.
 	 * 
 	 * @throws IOException
 	 */
@@ -409,13 +402,12 @@ public class CsvBufferedReaderMultiline implements CsvReader
 		String currentRecord = "";
 		while ((line = reader.readLine()) != null)
 		{
-            if(this.getBlockEnd().equals(line))
+            if(!inQuotes && this.getBlockEnd().equals(line.trim()))
             {
-                result.add(line);
-                return result;
+            	return null;
             }
 
-			if (this.separator == 0)
+			if (!inQuotes && this.separator == 0)
 			{
 				separator = guessSeparator(line);
 			}
@@ -471,15 +463,15 @@ public class CsvBufferedReaderMultiline implements CsvReader
 			if(!inQuotes)
 			{
 				result.add(currentRecord.trim());
-				break;
+				return result;
 			}
 			else
 			{
 				currentRecord += "\n";
 			}
 		}
-
-		return result;
+		
+		return null;
 	}
 
 	/**
