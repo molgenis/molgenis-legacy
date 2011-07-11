@@ -94,7 +94,9 @@ public class Workflow extends PluginModel<Entity> {
      */
     private void changeWorkflow(Integer workflowId) {
 	NgsSample samp = model.getSample();
-	samp.setWorkflowElement(workflowId);
+	
+	if(true) throw new UnsupportedOperationException("see problem on next line.");
+	//samp.setWorkflowElement(workflowId);
 	try {
 	    db.update(samp);
 	} catch (Exception e) {
@@ -123,7 +125,7 @@ public class Workflow extends PluginModel<Entity> {
 		model.setSamples(model.getCommonQueries().getAllSamples());	
 	    }
 	    else {
-		model.setSamples(model.getCommonQueries().getAllSamplesForProject(model.getProjectName()));
+		model.setSamples(model.getCommonQueries().getAllSamplesForInvestigation(model.getProjectName()));
 	    }
 
 	    model.setProjects(db.find(Project.class));
@@ -151,15 +153,16 @@ public class Workflow extends PluginModel<Entity> {
      */
     public void setSampleMatrix(String sampleName) {
 	try {
-	    //sample should never be null: sample is chosen from a drop down list grabbed from Database
-	    model.setSample(model.getCommonQueries().getSampleByName(sampleName));
-	    
-	    NgsSample samp = model.getCommonQueries().getSampleByName(sampleName);
-	    WorkflowElement element = model.getCommonQueries().getWorkflowElement(samp.getWorkflowElement_Name());
-	    model.setFeatures(model.getCommonQueries().getMeasurementsByProtocol(element.getProtocol_Id()));
-	    model.setCurrentProtocol(model.getCommonQueries().getProtocolById(element.getProtocol_Id()));
-	    model.setValuesBySample(model.getSample().getId(), model.getFeatures());
-	    model.setWorkflowElements(model.getCommonQueries().getCandidateWorkflowElements(model.getSample().getWorkflowElement_Id()));
+		throw new Exception("commented out lines below");
+//	    //sample should never be null: sample is chosen from a drop down list grabbed from Database
+//	    model.setSample(model.getCommonQueries().getSampleByName(sampleName));
+//	    
+//	    NgsSample samp = model.getCommonQueries().getSampleByName(sampleName);
+//	    //WorkflowElement element = model.getCommonQueries().getWorkflowElement(samp.getWorkflowElement_Name());
+//	    model.setFeatures(model.getCommonQueries().getMeasurementsByProtocol(element.getProtocol_Id()));
+//	    model.setCurrentProtocol(model.getCommonQueries().getProtocolById(element.getProtocol_Id()));
+//	    model.setValuesBySample(model.getSample().getId(), model.getFeatures());
+//	    model.setWorkflowElements(model.getCommonQueries().getCandidateWorkflowElements(model.getSample().getWorkflowElement_Id()));
  
 	} catch (Exception e) {
 	    String msg = "Exception occured while trying to retrieve Sample information for Sample" + sampleName;

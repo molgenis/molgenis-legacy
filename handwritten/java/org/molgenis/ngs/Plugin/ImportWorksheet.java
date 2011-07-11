@@ -5,18 +5,18 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.ngs.Flowcell;
-import org.molgenis.ngs.FlowcellLaneSample;
 import org.molgenis.ngs.Investigator;
-import org.molgenis.ngs.Library;
 import org.molgenis.ngs.LibraryBarcode;
 import org.molgenis.ngs.LibraryCapturing;
+import org.molgenis.ngs.LibraryLane;
+import org.molgenis.ngs.Machine;
 import org.molgenis.ngs.NgsSample;
-import org.molgenis.ngs.Project;
 import org.molgenis.ngs.Worksheet;
+import org.molgenis.organization.Investigation;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvFileWriter;
 import org.molgenis.util.CsvReader;
@@ -51,22 +51,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 	 */
 	@Override
 	public void reload(Database db) throws Exception {
-		// //example: update model with data from the database
-		// Query q = db.query(Investigation.class);
-		// q.like("name", "molgenis");
-		// getModel().investigations = q.find();
-
-		// String sqlalldata =
-		// "SELECT fls.status, s.name, lb.barcode, p.name, fls.lanenumber, f.daterun, f.machine, ot.name AS otname FROM FlowcellLaneSample fls"
-		// +
-		// " JOIN Flowcell f ON (fls.flowcell = f.id)" +
-		// " JOIN ObservationTarget ot ON (ot.id = f.id)" +
-		// " JOIN NgsSample s ON (fls.sample = s.id)" +
-		// " JOIN Library l ON (s.library = l.id)" +
-		// " JOIN LibraryBarcode lb ON (l.barcode = lb.id) " +
-		// " JOIN LibraryCapturing lc ON (l.capturing = lc.id)" +
-		// " JOIN Project p ON (s.project = p.id);";
-		// getModel().worksheetsql = ((JDBCDatabase)db).sql(sqlalldata);
+		//reload the worksheet table after import...
 		
 		// empty worksheet table
 		List<Worksheet> wsl = db.query(Worksheet.class).find();
@@ -75,30 +60,32 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 		}
 
 		// fill worksheet table
-		List<FlowcellLaneSample> flslst = db.query(FlowcellLaneSample.class).find();
-		for (FlowcellLaneSample fls : flslst) {
+		List<LibraryLane> libraryLaneList = db.query(LibraryLane.class).find();
+		for (LibraryLane libraryList : libraryLaneList) {
+			
 			// get data
-			Flowcell f = db.findById(Flowcell.class, fls.getFlowcell_Id());
-			NgsSample s = db.findById(NgsSample.class, fls.getSample());
-			Library l = db.findById(Library.class, s.getLibrary());
-			LibraryCapturing lc = db.findById(LibraryCapturing.class, l.getCapturing());
-			LibraryBarcode lb = db.findById(LibraryBarcode.class, l.getBarcode());
-			Project p = db.findById(Project.class, s.getProject());
-			Investigator i = db.findById(Investigator.class, p.getInvestigator_Id());
+			Flowcell flowcell = db.findById(Flowcell.class, libraryList.getFlowcell_Id());
+			NgsSample sample = db.findById(NgsSample.class, libraryList.getSample());
+			LibraryCapturing lc = db.findById(LibraryCapturing.class, libraryList.getCapturing());
+			LibraryBarcode lb = db.findById(LibraryBarcode.class, libraryList.getBarcode());
+			Investigation inv = db.findById(Investigation.class, sample.getInvestigation());
+			Investigator i = null;
+			if(inv.getContacts_Id().size() > 0) i = db.findById(Investigator.class, inv.getContacts_Id().get(0));
+			Machine m = db.findById(Machine.class, flowcell.getMachine());
 
 			// create sheet
 			Worksheet ws = new Worksheet();
-			ws.setStatus(fls.getStatus());
-			ws.setSample(s.getName());
+			ws.setStatus(libraryList.getStatus());
+			ws.setSample(sample.getName());
 			ws.setBarcode(lb.getBarcode());
-			ws.setProject(p.getName());
-			ws.setInvestigator(i.getLastName());
-			ws.setLane(fls.getLanenumber());
-			ws.setDate(f.getDaterun());
-			ws.setMachine(f.getMachine());
-			ws.setFlowcell(f.getName());
+			ws.setProject(inv.getName());
+			if(inv.getContacts_Id().size() > 0) ws.setInvestigator(i.getLastName());
+			ws.setLane(libraryList.getLane());
+			ws.setDate(flowcell.getDate());
+			ws.setMachine(m.getMachine());
+			ws.setFlowcell(flowcell.getName());
 			ws.setCapturing(lc.getCapturing());
-			ws.setRemark(fls.getRemark());
+			ws.setRemark(libraryList.getDescription());
 			// add sheet
 			db.add(ws);
 		}
@@ -148,7 +135,8 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 			@Override
 			public void handleLine(int line_number, Tuple tuple) throws Exception {
 				System.out.println(">> Parsing line " + line_number);
-
+				
+				
 				// _investigator_
 				String investigatorname = tuple.getString("investigator");
 				Investigator inv = (Investigator) getObject(db, Investigator.class, "LastName", investigatorname);
@@ -160,16 +148,15 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 
 				// _project_
 				String projectname = tuple.getString("project");
-				Project project = (Project) getObject(db, Project.class, "name", projectname);
-				if (project == null) {
-					project = new Project();
-					project.setName(projectname);
-					project.setInvestigator_Id(inv.getId());
-					db.add(project);
+				Investigation investigation = (Investigation) getObject(db, Investigation.class, "name", projectname);
+				if (investigation == null) {
+					investigation = new Investigation();
+					investigation.setName(projectname);
+					investigation.getContacts_Id().add(inv.getId());
+					db.add(investigation);
 				}
 
-				// _library_
-				// _library_ (1a) Capturing
+				// _library_ Capturing
 				String capturing = tuple.getString("capturing");
 				LibraryCapturing libcap = (LibraryCapturing) getObject(db, LibraryCapturing.class, "capturing", capturing);
 				if (libcap == null) {
@@ -178,7 +165,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 					db.add(libcap);
 				}
 
-				// _libary_ (1b) Barcode
+				// _libary_ Barcode
 				String barcode = tuple.getString("barcode");
 				if (barcode == null)
 					barcode = "NA";
@@ -191,34 +178,34 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 				}
 
 				// _library_ (1)
-				Query q = db.query(Library.class);
+				//Query q = db.query(Library.class);
 				// q.addRules(new QueryRule("capturing", Operator.EQUALS,
 				// capturing));
 				// q.addRules(new QueryRule("barcode", Operator.EQUALS,
 				// barcode));
-				List<Library> liblist = q.find();
+				//List<Library> liblist = q.find();
 
 				// first select the target library, if available (... the
 				// q.addRules statements don't work...)
-				Library lib = null;
-				for (Library thislib : liblist) {
-					if (thislib.getCapturing_Id() == libcap.getId() && thislib.getBarcode_Id() == libbar.getId()) {
-						lib = thislib;
-					}
-				}
-
-				if (lib == null) {
-					lib = new Library();
-
-					lib.setCapturing(libcap);
-					lib.setBarcode(libbar);
-
-					// Why is library an ObservatgionTarget?! OT has field name
-					// which lib shouldnt have... :-s
-					lib.setName("lib_" + capturing + barcode);
-
-					db.add(lib);
-				}
+//				LibraryLane lib = null;
+//				for (LibraryLane thislib : liblist) {
+//					if (thislib.getCapturing_Id() == libcap.getId() && thislib.getBarcode_Id() == libbar.getId()) {
+//						lib = thislib;
+//					}
+//				}
+//
+//				if (lib == null) {
+//					lib = new Library();
+//
+//					lib.setCapturing(libcap);
+//					lib.setBarcode(libbar);
+//
+//					// Why is library an ObservatgionTarget?! OT has field name
+//					// which lib shouldnt have... :-s
+//					lib.setName("lib_" + capturing + barcode);
+//
+//					db.add(lib);
+//				}
 
 				// // add the sample to the library (if not there yet)
 				// List<Integer> libsamples = lib.getSamples();
@@ -235,11 +222,19 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 				if (sample == null) {
 					sample = new NgsSample();
 					sample.setName(samplename);
-					sample.setProject(project);
-					sample.setLibrary(lib);
+					sample.setInvestigation(investigation);
 					db.add(sample);
 				}
 
+				// _machine-
+				String machinename = tuple.getString("machine");
+				Machine machine = (Machine) getObject(db, Machine.class, "machine", machinename);
+				if (machine == null) {
+					machine = new Machine();
+					machine.setMachine(machinename);
+					db.add(machine);
+				}
+				
 				// _flowcell_
 				String flowcellname = tuple.getString("flowcell");
 				Flowcell flowcell = (Flowcell) getObject(db, Flowcell.class, "name", flowcellname);
@@ -256,21 +251,21 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 					java.util.Date date_tmp = new java.util.Date(2000 - 1900 + Integer.parseInt(date.substring(0, 2)), Integer.parseInt(date.substring(2, 4)) - 1, Integer.parseInt(date
 							.substring(4, 6)));
 					print(date_tmp.toString());
-					flowcell.setDaterun(date_tmp);
-					flowcell.setMachine(tuple.getString("machine"));
+					flowcell.setDate(date_tmp);
+					flowcell.setMachine(machine);
 					db.add(flowcell);
 				}
 
 				// _flowcell lane library_
-				q = db.query(FlowcellLaneSample.class);
-				List<FlowcellLaneSample> flslst = q.find();
-				FlowcellLaneSample fls = null;
-				for (FlowcellLaneSample thisfls : flslst) {
-					Boolean equal = (thisfls.getFlowcell_Id().equals(flowcell.getId())) && (thisfls.getLanenumber().substring(1).equals(tuple.getString("lane")))
+				Query<LibraryLane> q = db.query(LibraryLane.class);
+				List<LibraryLane> flslst = q.find();
+				LibraryLane fls = null;
+				for (LibraryLane thisfls : flslst) {
+					Boolean equal = (thisfls.getFlowcell_Id().equals(flowcell.getId())) && (thisfls.getLane().substring(1).equals(tuple.getString("lane")))
 							&& (thisfls.getSample_Id().equals(sample.getId()));
 					if (equal) {
 						fls = thisfls;
-						print(" ALERT !!! >> Flowcell-Lane-Library object was already found: " + fls.toString());
+						print(" ALERT !!! >> Flowcell-Lane-s object was already found: " + fls.toString());
 						break;
 					}
 				}
@@ -278,7 +273,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 				if (fls == null) {
 					// if fll is still null, then it doesn't exist in the DB
 					// yet, so we will add it
-					fls = new FlowcellLaneSample();
+					fls = new LibraryLane();
 					String status = tuple.getString("status");
 					if ("g".equalsIgnoreCase(status))
 						status = "to do";
@@ -286,10 +281,12 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 						status = "done";
 					fls.setStatus(status);
 					fls.setFlowcell(flowcell);
-					fls.setLanenumber(tuple.getString("lane"));
+					fls.setLane(tuple.getString("lane"));
 					fls.setSample(sample);
-					fls.setName("flowcell_lane_sample_name_" + samplename);
-					fls.setRemark(tuple.getString("remark"));
+					fls.setName(samplename);
+					fls.setDescription(tuple.getString("remark"));
+					fls.setBarcode(libbar);
+					fls.setCapturing(libcap);
 
 					print("Before adding flowcell lane lib");
 					db.add(fls);

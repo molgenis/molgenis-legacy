@@ -1658,12 +1658,12 @@ public class CommonService
 	 *             database error occured
 	 * @throws ParseException 
 	 */
-	public String getSampleTypeByProject(String projectName)
+	public String getSampleTypeByInvestigation(String projectName)
 			throws DatabaseException, ParseException
 	{
 		String answer = "";
 
-		List<NgsSample> samples = db.query(NgsSample.class).equals(NgsSample.PROJECT_NAME, projectName).find();
+		List<NgsSample> samples = db.query(NgsSample.class).equals(NgsSample.INVESTIGATION_NAME, projectName).find();
 		
 		if (!samples.isEmpty())
 			answer = samples.get(0).getSampletype();
@@ -1696,7 +1696,7 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<NgsSample> getAllSamplesForProject(String projectName)
+	public List<NgsSample> getAllSamplesForInvestigation(String projectName)
 	throws DatabaseException, ParseException {
 
 	    Query<Project> q = db.query(Project.class);
@@ -1709,7 +1709,7 @@ public class CommonService
 		Integer id = project.get(0).getId(); 
 
 		Query<NgsSample> p = db.query(NgsSample.class);
-		p.eq(NgsSample.PROJECT, id);
+		p.eq(NgsSample.INVESTIGATION, id);
 		return p.find();
 
 	    }
@@ -1914,18 +1914,18 @@ public class CommonService
 	 * @throws ParseException
 	 * @throws DatabaseException
 	 */
-	public WorkflowElement getWorkflowElement(NgsSample sample) throws DatabaseException, ParseException
-			
-			
-	{
-	    Integer i = sample.getWorkflowElement_Id();
-		WorkflowElement q = db.findById(WorkflowElement.class, i);
-		if(q == null) {
-		    throw new DatabaseException("WorkflowElement not found");
-		}
-		else
-		    return q;
-	}
+//	public WorkflowElement getWorkflowElement(NgsSample sample) throws DatabaseException, ParseException
+//			
+//			
+//	{
+//	    Integer i = sample.getWorkflowElement_Id();
+//		WorkflowElement q = db.findById(WorkflowElement.class, i);
+//		if(q == null) {
+//		    throw new DatabaseException("WorkflowElement not found");
+//		}
+//		else
+//		    return q;
+//	}
 
 	
 	/** Returns a list of all workflow entities in the database

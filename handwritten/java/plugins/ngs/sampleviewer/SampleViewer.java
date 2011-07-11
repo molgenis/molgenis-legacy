@@ -98,7 +98,7 @@ public class SampleViewer extends PluginModel<Entity> {
 		try {
 		    
 	 	    if (!projectName.equals("")) {
-	 	    	model.setSamples(model.getCommonQueries().getAllSamplesForProject(projectName));
+	 	    	model.setSamples(model.getCommonQueries().getAllSamplesForInvestigation(projectName));
 		    } else {
 		    	model.setSamples(model.getCommonQueries().getAllSamples());
 		    }
