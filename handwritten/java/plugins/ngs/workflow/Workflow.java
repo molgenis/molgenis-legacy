@@ -14,7 +14,6 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.ngs.NgsSample;
-import org.molgenis.ngs.Project;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.util.Entity;
@@ -117,23 +116,23 @@ public class Workflow extends PluginModel<Entity> {
     @Override
     public void reload(Database db)
     {
-	model.getCommonQueries().setDatabase(db);
-	this.db = db;
-
-	try {
-	    if(model.getProjectName().equals("")) {
-		model.setSamples(model.getCommonQueries().getAllSamples());	
-	    }
-	    else {
-		model.setSamples(model.getCommonQueries().getAllSamplesForInvestigation(model.getProjectName()));
-	    }
-
-	    model.setProjects(db.find(Project.class));
-
-
-	} catch(Exception e) {
-	    logger.error("An exception occured while retrieving samples, projects and/or protocols from the db", e);
-	}
+		model.getCommonQueries().setDatabase(db);
+		this.db = db;
+	
+		try {
+		    if(model.getProjectName().equals("")) {
+		    	model.setSamples(model.getCommonQueries().getAllSamples());	
+		    }
+		    else {
+		    	//model.setSamples(model.getCommonQueries().getAllSamplesForInvestigation(model.getProjectName()));
+		    }
+	
+		    //model.setProjects(db.find(Project.class));
+	
+	
+		} catch(Exception e) {
+		    logger.error("An exception occured while retrieving samples, projects and/or protocols from the db", e);
+		}
     }
 
     @Override

@@ -95,7 +95,7 @@ public class MatrixViewer extends HtmlInput<Matrix> implements MolgenisService
 	{
 		Map<String,Object> templateArgs = new LinkedHashMap<String,Object>();
 		templateArgs.put("model",this);
-		return new FreemarkerView(null,null).render("MatrixView.ftl", templateArgs, false);	
+		return new FreemarkerView(null,null).render("MatrixView.ftl", templateArgs);	
 	}
 	
 	/**

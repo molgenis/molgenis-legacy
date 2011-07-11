@@ -10,7 +10,6 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.SimpleScreenModel;
 import org.molgenis.ngs.NgsSample;
-import org.molgenis.ngs.Project;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
@@ -30,7 +29,7 @@ public class WorkflowModel extends SimpleScreenModel {
 
 	private List<NgsSample> samples = new ArrayList<NgsSample>();
     private List<Measurement> features = new ArrayList<Measurement>();
-    private List<Project> projects = new ArrayList<Project>();
+    //private List<Project> projects = new ArrayList<Project>();
     private List<Protocol> protocols = new ArrayList<Protocol>();
     private List<ObservedValue> valuesBySample = new ArrayList<ObservedValue>();
     private  Set<WorkflowElement> workflowElements = new LinkedHashSet<WorkflowElement>();
@@ -79,35 +78,35 @@ public class WorkflowModel extends SimpleScreenModel {
     }
 
     public void setAction(String action) {
-	this.action = action;
+    	this.action = action;
     }
 
     public String getAction() {
-	return action;
+    	return action;
     }
 
     public void setSamples(List<NgsSample> allSamples) {
-	this.samples = allSamples;
+    	this.samples = allSamples;
     }
 
     public List<NgsSample> getSamples() {
-	return samples;
+    	return samples;
     }
 
-    public void setProjects(List<Project> projects) {
-	this.projects = projects;
+    /*public void setProjects(List<Project> projects) {
+    	this.projects = projects;
     }
 
     public List<Project> getProjects() {
-	return projects;
-    }
+    	return projects;
+    }*/
 
     public void setSample(NgsSample sample) {
-	this.sample = sample;
+    	this.sample = sample;
     }
 
     public NgsSample getSample() {
-	return sample;
+    	return sample;
     }
 
     public void setFeatures(List<Measurement> features) {

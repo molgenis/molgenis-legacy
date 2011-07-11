@@ -15,7 +15,6 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.ngs.NgsSample;
-import org.molgenis.ngs.Project;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
@@ -80,7 +79,7 @@ public class SampleViewer extends PluginModel<Entity> {
     	
 		this.db = db;
 		try {
-		    model.setProjects(db.find(Project.class));
+		    //model.setProjects(db.find(Project.class));
 		    model.setProtocols(db.find(Protocol.class));
 		} catch (Exception e) {
 		    String msg = "An exception occured when retrieving projects and/or protocols from the database";
@@ -98,7 +97,7 @@ public class SampleViewer extends PluginModel<Entity> {
 		try {
 		    
 	 	    if (!projectName.equals("")) {
-	 	    	model.setSamples(model.getCommonQueries().getAllSamplesForInvestigation(projectName));
+	 	    	//model.setSamples(model.getCommonQueries().getAllSamplesForInvestigation(projectName));
 		    } else {
 		    	model.setSamples(model.getCommonQueries().getAllSamples());
 		    }

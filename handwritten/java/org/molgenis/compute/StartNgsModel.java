@@ -7,8 +7,6 @@
 
 package org.molgenis.compute;
 
-import java.util.Date;
-
 import org.molgenis.framework.ui.EasyPluginModel;
 import org.molgenis.framework.ui.html.ActionInput;
 

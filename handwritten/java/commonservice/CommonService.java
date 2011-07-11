@@ -27,7 +27,6 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.ngs.NgsPerson;
 import org.molgenis.ngs.NgsSample;
-import org.molgenis.ngs.Project;
 import org.molgenis.organization.Institute;
 import org.molgenis.organization.Investigation;
 import org.molgenis.organization.Person;
@@ -1696,7 +1695,8 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<NgsSample> getAllSamplesForInvestigation(String projectName)
+	// Commented out because Project does not exist anymore.
+	/*public List<NgsSample> getAllSamplesForInvestigation(String projectName)
 	throws DatabaseException, ParseException {
 
 	    Query<Project> q = db.query(Project.class);
@@ -1706,21 +1706,21 @@ public class CommonService
 	    if (!project.isEmpty())
 	    { 
 
-		Integer id = project.get(0).getId(); 
-
-		Query<NgsSample> p = db.query(NgsSample.class);
-		p.eq(NgsSample.INVESTIGATION, id);
-		return p.find();
+			Integer id = project.get(0).getId(); 
+	
+			Query<NgsSample> p = db.query(NgsSample.class);
+			p.eq(NgsSample.INVESTIGATION, id);
+			return p.find();
 
 	    }
 	    else
 	    {
-		logger.warn("Project " + projectName
-			+ " could not be found in the database");
-		return new ArrayList<NgsSample>();
+			logger.warn("Project " + projectName
+				+ " could not be found in the database");
+			return new ArrayList<NgsSample>();
 	    }
 
-	}
+	}*/
 
 	/**
 	 * Return all samples found in database

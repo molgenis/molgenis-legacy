@@ -7,7 +7,6 @@ import compute.scriptserver.MCF;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.*;
-import org.molgenis.ngs.FlowcellLaneSample;
 import org.molgenis.ngs.Worksheet;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
@@ -167,9 +166,10 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         System.out.println("workflow" + workflow.getName());
 
         //our current targer is FlowcellLaneSample
-        target = db.query(FlowcellLaneSample.class).equals(FlowcellLaneSample.LANENUMBER, strLane).
+        // Commented out because FlowcellLaneSample does not exist (anymore?)
+        /*target = db.query(FlowcellLaneSample.class).equals(FlowcellLaneSample.LANENUMBER, strLane).
                 equals(FlowcellLaneSample.FLOWCELL_NAME, strFlowcell).
-                equals(FlowcellLaneSample.SAMPLE_NAME, strSample).find().get(0);
+                equals(FlowcellLaneSample.SAMPLE_NAME, strSample).find().get(0);*/
 
         //add few parameters
         wholeWorkflowApp.setComputeResource("cluster");//for time being
