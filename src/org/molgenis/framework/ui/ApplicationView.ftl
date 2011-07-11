@@ -1,4 +1,4 @@
-<#include "ScreenCommand.ftl">
+
 <#include "Layout.ftl"/>
 <#-- start with the 'main' screen, which is called 'application'-->
 
