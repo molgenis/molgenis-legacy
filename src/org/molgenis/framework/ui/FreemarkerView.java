@@ -40,24 +40,17 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 	private freemarker.template.Configuration conf = null;
 	private String templatePath;
 	private transient Logger logger = Logger.getLogger(FreemarkerView.class);
-	private boolean usePublicFields = true;//false;
 	private Map<String,Object> arguments = new LinkedHashMap<String,Object>();
 
 	public FreemarkerView(String templatePath, ScreenModel model)
 	{
-		this(templatePath, model, true);
-	}
-
-	public FreemarkerView(String templatePath, ScreenModel model,
-			boolean usePublicFields)
-	{
 		super(model);
 		this.templatePath = templatePath;
-		this.usePublicFields = usePublicFields;
+		//this.usePublicFields = usePublicFields;
 	}
 	
 	@SuppressWarnings("deprecation")
-	public String render(String templatePath, Map<String,Object> templateArgs, boolean usePublicFields)
+	public String render(String templatePath, Map<String,Object> templateArgs)//, boolean usePublicFields)
 	{
 		logger.debug("trying to render " + templatePath);
 		try
@@ -68,19 +61,6 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 				logger.debug("create freemarker config");
 				// create configuration
 				conf = new freemarker.template.Configuration();
-
-				// set the template loading paths
-				conf.setObjectWrapper(new DefaultObjectWrapper());
-
-				if (usePublicFields)
-				{
-					BeansWrapper wrapper = new BeansWrapper();
-					// ouch, don't do this
-					wrapper.setExposeFields(true);
-					wrapper.setExposureLevel(BeansWrapper.EXPOSE_SAFE);
-					conf.setObjectWrapper(wrapper);
-				}
-
 				conf
 						.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
 
@@ -157,7 +137,7 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 		templateArgs.put("show", model.getController()
 				.getApplicationController().getModel().getShow());
 		
-		return this.render(templatePath, templateArgs, usePublicFields);
+		return this.render(templatePath, templateArgs);
 	}
 
 	@Override
@@ -174,16 +154,6 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 	public void setTemplatePath(String templatePath)
 	{
 		this.templatePath = templatePath;
-	}
-
-	public boolean isUsePublicFields()
-	{
-		return usePublicFields;
-	}
-
-	public void setUsePublicFields(boolean usePublicFields)
-	{
-		this.usePublicFields = usePublicFields;
 	}
 	
 	public void addParameter(String name, Object value)
