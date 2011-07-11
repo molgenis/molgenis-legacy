@@ -126,6 +126,13 @@ public class XrefInput extends EntityInput<Entity>
 		{
 			StringInput input = new StringInput(this.getName(), super
 					.getValue());
+			
+			if(super.getObject() instanceof Entity)
+			{
+				input = new StringInput(this.getName(), super
+						.getObject().getIdValue().toString());
+			}
+
 			input.setLabel(this.getLabel());
 			input.setDescription(this.getDescription());
 			input.setHidden(true);
