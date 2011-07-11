@@ -17,7 +17,7 @@ public class MolgenisForm extends Container implements HtmlRenderer
 	public String render()
 	{	
 		//use freemarker macros to render form header and footer
-		FreemarkerView view = new FreemarkerView(MolgenisForm.class.getPackage().getName().replace(".", "/")+"/MolgenisForm.ftl", getModel(), false);
+		FreemarkerView view = new FreemarkerView(MolgenisForm.class.getPackage().getName().replace(".", "/")+"/MolgenisForm.ftl", getModel());
 		view.addParameter("inputs", this.getInputs());
 		String result = view.render();
 		return result;
