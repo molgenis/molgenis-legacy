@@ -14,8 +14,6 @@
 				<form name="MolgenisUserGroupLink" entity="MolgenisUserGroupLink"/>
 				<form name="MolgenisEntity" entity="MolgenisEntity" view="list" label="Entities"/>
 				<form name="MolgenisPermission" entity="MolgenisPermission"/>
-				<form name="TestClass" entity="TestClass"/>
-				<form name="TestClass2" entity="TestClass2"/>
 			</menu>
 		</menu>
 	
