@@ -22,7 +22,7 @@ public class CsvWriter
 	/** to send log messages on progress to */
 	private static final transient Logger logger = Logger.getLogger(CsvWriter.class.getSimpleName());
 	/** writer the output is written to */
-	private PrintWriter writer = null;
+	protected PrintWriter writer = null;
 	/** separator used to separate columns, default "\t" */
 	private String separator = "\t";
 	/** separator used to separate lists, default "|" */
