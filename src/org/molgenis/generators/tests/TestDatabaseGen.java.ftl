@@ -68,9 +68,9 @@ public class TestDatabase
 		try
 		{		
 		<#if databaseImp = 'jpa'>		
-			db = new app.JpaDatabase();
-                        JpaUtil.dropAndCreateTables( (JpaDatabase)db);
+			db = new app.JpaDatabase(JpaUtil.createTables());
 			((JpaDatabase)db).getEntityManager().setFlushMode(FlushModeType.AUTO);
+			//JpaUtil.dropAndCreateTables(db.getEntityManager());
 		<#else>
 			<#if db_mode = 'standalone'>
 			db = new JDBCDatabase("molgenis.testhsql.properties");
@@ -90,7 +90,7 @@ public class TestDatabase
 <#if databaseImp = 'jpa'>		
 	@AfterTest
 	public static void destory() {
-		JpaUtil.dropTables((JpaDatabase)db);
+		JpaUtil.dropDatabase(db.getEntityManager());
 	}	
 </#if>		
 		
@@ -110,7 +110,7 @@ public class TestDatabase
 		//retrieve xref entity candidates
 <#list entity.allFields as f><#if !f.auto>
 	<#if f.type == "xref" || f.type == "mref">
-		List<${JavaName(f.xrefEntity)}> ${name(f)}Xrefs = db.query(${JavaName(f.xrefEntity)}.class)<#if f.xrefEntity.hasAncestor()>.eq("${typefield()}",${JavaName(f.xrefEntity)}.class.getSimpleName())</#if>.find();	
+		List<${JavaName(f.xrefEntity)}> ${name(f)}Xrefs = db.query(${JavaName(f.xrefEntity)}.class)<#if f.xrefEntity.hasAncestor()>.eq("__Type",${JavaName(f.xrefEntity)}.class.getSimpleName())</#if>.find();	
 	</#if></#if>
 </#list>		
 

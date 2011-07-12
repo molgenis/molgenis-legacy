@@ -78,9 +78,9 @@ public class TestCsv
 	{
 		try
 		{		
-			db = new app.JpaDatabase(true);
-                        JpaUtil.createTables((JpaDatabase)db);
+			db = new app.JpaDatabase(JpaUtil.createTables());
 			((JpaDatabase)db).getEntityManager().setFlushMode(FlushModeType.AUTO);
+			//JpaUtil.dropAndCreateTables(db.getEntityManager());
 		}
 		catch (Exception e)
 		{
@@ -90,7 +90,7 @@ public class TestCsv
 	}
 	@AfterTest
 	public static void destory() {
-            JpaUtil.dropTables((JpaDatabase)db);		
+		JpaUtil.dropDatabase(db.getEntityManager());
 	}	
 <#else>
 	@BeforeTest
@@ -107,11 +107,6 @@ public class TestCsv
 		}
 		logger.info("Database created");
 	}
-
-	@AfterTest
-	public static void destory() {
-            
-	}
 </#if>		
 	
 	@Test
@@ -124,17 +119,8 @@ public class TestCsv
 		dir.delete(); //delete the file, need dir
 		
 		//create a test set1
-		<#if databaseImp = 'jpa'>
-                TestDataSet set1 = new TestDataSet(50,5, (app.JpaDatabase)db);		
-                ((JpaDatabase)db).getEntityManager().clear();
-                JpaUtil.dropAndCreateTables((JpaDatabase)db);
-                <#else>
-                TestDataSet set1 = new TestDataSet(50,5);
-                </#if>
-                
-
-
-
+		TestDataSet set1 = new TestDataSet(50,5);
+		
 		//export set1 from memory to dir1
 		File dir1 = new File(dir + "/dir1");
 		dir1.mkdirs();
@@ -155,7 +141,7 @@ public class TestCsv
 	
 		//clean database
 		<#if databaseImp = 'jpa'>
-                        JpaUtil.dropAndCreateTables((JpaDatabase)db);
+			db = new app.JpaDatabase(JpaUtil.dropAndCreateTables( ((JpaDatabase)db).getEntityManager() ));
 		<#else>
 			new Molgenis("molgenis.test.properties").updateDb();
 		</#if>
@@ -175,7 +161,7 @@ public class TestCsv
 		
 		//clean database
 		<#if databaseImp = 'jpa'>
-                        JpaUtil.dropAndCreateTables((JpaDatabase)db);
+			db = new app.JpaDatabase(JpaUtil.dropAndCreateTables( ((JpaDatabase)db).getEntityManager() ));
 		<#else>
 			new Molgenis("molgenis.test.properties").updateDb();
 		</#if>
@@ -235,9 +221,7 @@ public class TestCsv
 	}
 	
     public static void main(String[] args) throws Exception
-    {
-        oneTimeSetUp();
-	new TestCsv().testCsv1();
-        destory();
-    }
+	{
+		new TestCsv().testCsv1();
+	}
 }

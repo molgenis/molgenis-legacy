@@ -31,12 +31,6 @@ public class MolgenisModel
 
 			model = MolgenisModelParser.parseDbSchema(options.model_database);
 
-                        for(Entity entity : model.getEntities()) {
-                            System.out.println(String.format("<class>%s.%s</class>",entity.getNamespace(),entity.getName()));
-                            
-                        }
-                        
-                        
 			logger.debug("read: " + model);
 
 			// if (!options.exclude_system) Model.createSystemTables(model);

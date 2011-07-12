@@ -230,10 +230,6 @@ public class Molgenis {
                     generators.add(new MapperSecurityDecoratorGen());
                 }
 
-                
-                //used to compile (should be removed at some point in time, use of factory insteady of JDBCDatabase)
-                generators.add(new JDBCDatabaseGen());
-                
                 // decorators
                 generators.add(new MapperDecoratorGen());
             } else {
