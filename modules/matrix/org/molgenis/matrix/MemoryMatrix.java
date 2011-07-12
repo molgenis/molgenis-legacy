@@ -2,10 +2,7 @@ package org.molgenis.matrix;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-
 
 /**
  * Simple 'in-memory' implementation of the Matrix. Data is stored as
@@ -13,14 +10,14 @@ import java.util.Map;
  * 
  * @param <E>
  */
-public class MemoryMatrix<E> implements Matrix<E>
+public class MemoryMatrix<E, A, V> implements Matrix<E, A, V>
 {
-	private E[][] values;
-	private List<String> rowNames = new ArrayList<String>();
-	private List<String> colNames = new ArrayList<String>();
+	private V[][] values;
+	private List<E> rowNames = new ArrayList<E>();
+	private List<A> colNames = new ArrayList<A>();
 
 	/** Creata an empty matrix using dimensions */
-	public MemoryMatrix(List<String> rowNames, List<String> colNames)
+	public MemoryMatrix(List<E> rowNames, List<A> colNames)
 			throws MatrixException
 	{
 		// add row metadata
@@ -28,11 +25,11 @@ public class MemoryMatrix<E> implements Matrix<E>
 		this.setRowNames(rowNames);
 
 		// set the values
-		this.setValues(this.create(rowNames.size(), colNames.size()));
+		this.setValues((V[][]) this.create(rowNames.size(), colNames.size()));
 	}
 
-	public MemoryMatrix(List<String> rowNames, List<String> colNames,
-			E[][] values) throws MatrixException
+	public MemoryMatrix(List<E> rowNames, List<A> colNames, V[][] values)
+			throws MatrixException
 	{
 		// add row metadata
 		this.setColNames(colNames);
@@ -47,10 +44,21 @@ public class MemoryMatrix<E> implements Matrix<E>
 	{
 	}
 
-	@Override
-	public E[] getCol(int i) throws MatrixException
+	/**
+	 * Copy constructor
+	 * 
+	 * @param values
+	 * @throws MatrixException
+	 */
+	public MemoryMatrix(Matrix<E, A, V> matrix) throws MatrixException
 	{
-		E[] result = create(getRowCount());
+		this(matrix.getRowNames(), matrix.getColNames(), matrix.getValues());
+	}
+
+	@Override
+	public V[] getCol(int i) throws MatrixException
+	{
+		V[] result = create(getRowCount());
 		try
 		{
 			for (int j = 0; j < getRowCount(); j++)
@@ -67,7 +75,7 @@ public class MemoryMatrix<E> implements Matrix<E>
 	}
 
 	@Override
-	public E[] getRow(int i) throws MatrixException
+	public V[] getRow(int i) throws MatrixException
 	{
 		try
 		{
@@ -80,19 +88,23 @@ public class MemoryMatrix<E> implements Matrix<E>
 	}
 
 	@Override
-	public E getValue(int row, int col) throws MatrixException
+	public V getValue(int row, int col) throws MatrixException
 	{
-		return getValues()[row][col];
+		if (row >= this.getRowCount()) throw new MatrixException(
+				"row > rowCount");
+		if (col >= this.getColCount()) throw new MatrixException(
+				"col > colCount");
+		return this.values[row][col];
 	}
 
 	@Override
-	public Matrix<E> getSubMatrixByOffset(int row, int nrows, int col, int ncols)
-			throws MatrixException
+	public Matrix<E, A, V> getSubMatrixByOffset(int row, int nrows, int col,
+			int ncols) throws MatrixException
 	{
-		List<String> rows = new ArrayList<String>(nrows);
-		List<String> cols = new ArrayList<String>(ncols);
-		E[][] elements = create(nrows, ncols);
-		E[][] allAlements = this.getValues();
+		List<E> rows = new ArrayList<E>(nrows);
+		List<A> cols = new ArrayList<A>(ncols);
+		V[][] elements = (V[][]) create(nrows, ncols);
+		V[][] allAlements = this.getValues();
 
 		rows = this.getRowNames().subList(row, row + nrows);
 		cols = this.getColNames().subList(col, col + ncols);
@@ -104,17 +116,17 @@ public class MemoryMatrix<E> implements Matrix<E>
 				elements[rowIndex][colIndex] = allAlements[rowIndex][colIndex];
 			}
 		}
-		return new MemoryMatrix<E>(rows, cols, elements);
+		return new MemoryMatrix<E, A, V>(rows, cols, elements);
 	}
 
 	@Override
-	public Matrix<E> getSubMatrixByIndex(List<Integer> rowIndices,
+	public Matrix<E, A, V> getSubMatrixByIndex(List<Integer> rowIndices,
 			List<Integer> colIndices) throws MatrixException
 	{
-		List<String> rows = new ArrayList<String>(rowIndices.size());
-		List<String> cols = new ArrayList<String>(colIndices.size());
-		E[][] elements = create(rowIndices.size(), colIndices.size());
-		E[][] allAlements = this.getValues();
+		List<E> rows = new ArrayList<E>(rowIndices.size());
+		List<A> cols = new ArrayList<A>(colIndices.size());
+		V[][] elements = (V[][]) create(rowIndices.size(), colIndices.size());
+		V[][] allAlements = this.getValues();
 
 		for (int rowIndicesIndex = 0; rowIndicesIndex < rowIndices.size(); rowIndicesIndex++)
 		{
@@ -131,7 +143,7 @@ public class MemoryMatrix<E> implements Matrix<E>
 			cols.add(this.getColNames().get(colIndices.get(colIndicesIndex)));
 		}
 
-		return new MemoryMatrix<E>(rows, cols, elements);
+		return new MemoryMatrix<E, A, V>(rows, cols, elements);
 	}
 
 	@Override
@@ -141,7 +153,7 @@ public class MemoryMatrix<E> implements Matrix<E>
 	}
 
 	@Override
-	public List<String> getColNames() throws MatrixException
+	public List<A> getColNames() throws MatrixException
 	{
 		return Collections.unmodifiableList(this.colNames);
 	}
@@ -153,27 +165,27 @@ public class MemoryMatrix<E> implements Matrix<E>
 	}
 
 	@Override
-	public List<String> getRowNames() throws MatrixException
+	public List<E> getRowNames() throws MatrixException
 	{
 		return Collections.unmodifiableList(this.rowNames);
 	}
 
 	@Override
-	public Matrix<E> getSubMatrixByName(List<String> rowSelection,
-			List<String> colSelection) throws MatrixException
+	public Matrix<E, A, V> getSubMatrixByName(List<E> rowSelection,
+			List<A> colSelection) throws MatrixException
 	{
 		List<Integer> rowDimensions = new ArrayList<Integer>();
 		List<Integer> colDimensions = new ArrayList<Integer>();
 
 		// get row dimensions
-		for (String rowName : rowSelection)
+		for (E rowName : rowSelection)
 		{
 			rowDimensions.add(getRowId(rowName));
 
 		}
 
 		// get column dimensions rowIndices
-		for (String colName : colSelection)
+		for (A colName : colSelection)
 		{
 			colDimensions.add(getColId(colName));
 		}
@@ -182,7 +194,7 @@ public class MemoryMatrix<E> implements Matrix<E>
 
 	}
 
-	public Integer getRowId(String rowName) throws MatrixException
+	public Integer getRowId(E rowName) throws MatrixException
 	{
 		int rowid = this.rowNames.indexOf(rowName);
 		if (rowid == -1) throw new MatrixException("couldn't find row by name "
@@ -190,7 +202,7 @@ public class MemoryMatrix<E> implements Matrix<E>
 		return rowid;
 	}
 
-	public Integer getColId(String colName) throws MatrixException
+	public Integer getColId(A colName) throws MatrixException
 	{
 		int colid = this.colNames.indexOf(colName);
 		if (colid == -1) throw new MatrixException("couldn't find col by name "
@@ -199,22 +211,17 @@ public class MemoryMatrix<E> implements Matrix<E>
 	}
 
 	@Override
-	public E getValue(String rowName, String colName)
-			throws MatrixException
+	public V getValue(E rowName, A colName) throws MatrixException
 	{
 		return this.getValue(getRowId(rowName), getColId(colName));
 	}
 
 	@Override
-	public void transpose() throws MatrixException
+	public Matrix<A, E, V> transpose() throws MatrixException
 	{
-		// swap rows and column metadata
-		List<String> copyRowNames = this.rowNames;
-		this.rowNames = this.colNames;
-		this.colNames = copyRowNames;
-
 		// copy the data, swapped
-		E[][] newValues = create(this.rowNames.size(), this.colNames.size());
+		V[][] newValues = (V[][]) create(this.rowNames.size(), this.colNames
+				.size());
 		for (int i = 0; i < this.getValues().length; i++)
 		{
 			for (int j = 0; j < this.getValues().length; j++)
@@ -223,16 +230,17 @@ public class MemoryMatrix<E> implements Matrix<E>
 			}
 		}
 
-		// replace values with newValues
-		this.setValues(newValues);
+		// return a new memory matrix
+		return new MemoryMatrix<A, E, V>(this.colNames, this.rowNames,
+				newValues);
 	}
 
-	protected E[][] getValues() throws MatrixException
+	public V[][] getValues() throws MatrixException
 	{
 		return this.values;
 	}
 
-	protected void setValues(E[][] values) throws MatrixException
+	protected void setValues(V[][] values) throws MatrixException
 	{
 		// checks number of rows
 		if (getRowCount() != values.length) throw new MatrixException(
@@ -241,7 +249,7 @@ public class MemoryMatrix<E> implements Matrix<E>
 		int i = 0;
 
 		// check length of each row to be equal to number of columns
-		for (E[] row : values)
+		for (V[] row : values)
 		{
 			if (getColCount() != row.length) throw new MatrixException(
 					"values on row=" + (i + 1)
@@ -253,21 +261,25 @@ public class MemoryMatrix<E> implements Matrix<E>
 		this.values = values;
 	}
 
-	public void setValue(String row, String col, E value)
-			throws MatrixException
+	public void setValue(E row, A col, V value) throws MatrixException
 	{
 		this.values[getRowId(row)][getColId(col)] = value;
 
 	}
 
-	@SuppressWarnings("unchecked")
-	protected E[] create(int rows)
+	public void setValue(int row, int col, V value) throws MatrixException
 	{
-		return (E[]) new Object[rows];
+		this.values[row][col] = value;
+
 	}
 
 	@SuppressWarnings("unchecked")
-	protected E[][] create(int rows, int cols)
+	protected V[] create(int rows)
+	{
+		return (V[]) new Object[rows];
+	}
+
+	public V[][] create(int rows, int cols)
 	{
 		// create all empty rows as well
 		Object[][] data = new Object[rows][cols];
@@ -276,15 +288,15 @@ public class MemoryMatrix<E> implements Matrix<E>
 			data[i] = new Object[cols];
 		}
 
-		return (E[][]) data;
+		return (V[][]) data;
 	}
 
-	protected void setRowNames(List<String> rowNames) throws MatrixException
+	protected void setRowNames(List<E> rowNames) throws MatrixException
 	{
 		resetRows();
 
 		// add row metadata
-		for (String rowName : rowNames)
+		for (E rowName : rowNames)
 		{
 			if (this.rowNames.contains(rowName))
 			{
@@ -300,12 +312,12 @@ public class MemoryMatrix<E> implements Matrix<E>
 	 * @param colNames
 	 * @throws MatrixException
 	 */
-	protected void setColNames(List<String> colNames) throws MatrixException
+	protected void setColNames(List<A> colNames) throws MatrixException
 	{
 		// clean existing metadata
 		resetCols();
 
-		for (String colName : colNames)
+		for (A colName : colNames)
 		{
 
 			if (this.colNames.contains(colName))
@@ -319,31 +331,31 @@ public class MemoryMatrix<E> implements Matrix<E>
 
 	private void resetRows()
 	{
-		this.rowNames = new ArrayList<String>();
+		this.rowNames = new ArrayList<E>();
 	}
 
 	private void resetCols()
 	{
-		this.colNames = new ArrayList<String>();
+		this.colNames = new ArrayList<A>();
 	}
 
 	@Override
-	public E[] getColByName(String colName) throws MatrixException
+	public V[] getColByName(A colName) throws MatrixException
 	{
 		return getCol(getColId(colName));
 	}
 
 	@Override
-	public E[] getRowByName(String name) throws MatrixException
+	public V[] getRowByName(E name) throws MatrixException
 	{
 		return getRow(getRowId(name));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Class<E> getValueType() throws MatrixException
+	public Class<V> getValueType() throws MatrixException
 	{
-		return (Class<E>) this.values.getClass().getComponentType()
+		return (Class<V>) this.values.getClass().getComponentType()
 				.getComponentType();
 	}
 

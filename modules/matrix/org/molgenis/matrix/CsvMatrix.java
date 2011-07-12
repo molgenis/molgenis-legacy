@@ -6,17 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.molgenis.matrix.convertors.CsvMatrixValueConvertor;
-import org.molgenis.matrix.convertors.DoubleCsvMatrixValueConvertor;
-import org.molgenis.matrix.convertors.StringCsvMatrixValueConvertor;
+import org.molgenis.matrix.convertors.ValueConvertor;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvReaderListener;
+import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Tuple;
 
 /**
- * A MemoryMatrix that loads its data from a CsvReader.
- * This scales not very well ;-)
+ * Matrix reader that reads each value from a file. Not very efficient but does scale memorywise.
  * 
  * Example usage:
  * 
@@ -26,93 +24,87 @@ import org.molgenis.util.Tuple;
  * 
  * @param <E>
  */
-public class CsvMatrix<E> extends MemoryMatrix<E>
+public class CsvMatrix<E, A, V> extends MemoryMatrix<E, A, V>
 {
 	Logger logger = Logger.getLogger(getClass().getSimpleName());
 
-	//for reading the csv
+	// for reading the csv
 	private CsvReader csvReader;
-	
-	//convertor to read the values
-	private CsvMatrixValueConvertor convertor;
-	
-	//class that holds the valueType
+
+	// convertor to read the values
+	private ValueConvertor<E> rowConvertor;
+	private ValueConvertor<A> colConvertor;
+	private ValueConvertor<V> valueConvertor;
+
+	// class that holds the valueType
 	private Class<E> valueType;
-	
-	/**
-	 * Creates a MemoryMatrix<String>
-	 * 
-	 * @throws MatrixException 
-	 * @throws FileNotFoundException 
-	 * 
-	 */
-	public CsvMatrix(File f) throws FileNotFoundException, MatrixException
-	{
-		this((Class<E>)String.class, f);
-	}
-	
-	/**
-	 * Creates a MemoryMatrix<valueClass>
-	 *
-	 * @param csvFile
-	 */
-	public CsvMatrix(Class<E> valueClass, File f) throws FileNotFoundException, MatrixException
-	{
-		this(valueClass, new CsvFileReader(f));
-	}
 
 	/**
-	 * Set the value type of the values. 
+	 * Copy constructor for CsvMatrix
 	 * 
-	 * @param valueClass. Currently only differentiates between Double and String
-	 * @param reader
+	 * @param rowConvertor
+	 * @param colConvertor
+	 * @param valueConvertor
+	 * @param values
+	 * @throws FileNotFoundException
 	 * @throws MatrixException
 	 */
-	public CsvMatrix(Class<E> valueClass, CsvReader reader) throws MatrixException
+	public CsvMatrix(ValueConvertor<E> rowConvertor,
+			ValueConvertor<A> colConvertor, ValueConvertor<V> valueConvertor,
+			Matrix<E, A, V> values) throws MatrixException
 	{
-		super();
-		//get the convertor to go from Strings to E
-		convertor = getConvertor(valueClass);
-		valueType = valueClass;
-		csvReader = reader;
+		super(values);
+		this.rowConvertor = rowConvertor;
+		this.colConvertor = colConvertor;
+		this.valueConvertor = valueConvertor;
+	}
 
+	/**
+	 * Creates a MemoryMatrix from Csv file. It uses the convertors to convert
+	 * rowheader, colunmnheaders and values
+	 * 
+	 * @param rowConvertor
+	 * @param colConvertor
+	 * @param valueConvertor
+	 * @param f
+	 * @throws FileNotFoundException
+	 * @throws MatrixException
+	 */
+	public CsvMatrix(ValueConvertor<E> rowConvertor,
+			ValueConvertor<A> colConvertor, ValueConvertor<V> valueConvertor,
+			File f) throws FileNotFoundException, MatrixException
+	{
 		// put the rownames and colnames in parent
 		try
 		{
-			this.setRowNames(csvReader.rownames());
-			this.setColNames(csvReader.colnames().subList(1,
-					csvReader.colnames().size()));
+			this.rowConvertor = rowConvertor;
+			this.colConvertor = colConvertor;
+			this.valueConvertor = valueConvertor;
+			this.csvReader = new CsvFileReader(f);
+
+			List<E> rowNames = new ArrayList<E>();
+			for (String s : csvReader.rownames())
+				rowNames.add(this.rowConvertor.read(s));
+			
+			List<A> colNames = new ArrayList<A>();
+			for (String s : csvReader.colnames().subList(1,
+					csvReader.colnames().size()))
+				colNames.add(this.colConvertor.read(s));
+
+			this.setRowNames(rowNames);
+			this.setColNames(colNames);
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 			throw new MatrixException(e.getMessage());
 		}
-
-	}
-
-	/**
-	 * Generate a convertor for a class, currently only Double and String
-	 * @param valueClass
-	 * @return
-	 */
-	private CsvMatrixValueConvertor getConvertor(Class<E> valueClass)
-	{
-		if(Double.class.equals(valueClass))
-		{
-			return new DoubleCsvMatrixValueConvertor();
-		}
-		else
-		{
-			return new StringCsvMatrixValueConvertor();
-		}
-		
 	}
 
 	@Override
-	public E[] getCol(final int colIndex) throws MatrixException
+	public V[] getCol(final int colIndex) throws MatrixException
 	{
-		final E[] result = create(getRowCount());
+		final V[] result = create(getRowCount());
 		try
 		{
 			csvReader.reset();
@@ -138,11 +130,11 @@ public class CsvMatrix<E> extends MemoryMatrix<E>
 	}
 
 	@Override
-	public E getValue(final int rowIndex, final int colIndex)
+	public V getValue(final int rowIndex, final int colIndex)
 			throws MatrixException
 	{
 		// naive implementation
-		final finalObject<E> finalResult = new finalObject<E>();
+		final finalObject<V> finalResult = new finalObject<V>();
 		try
 		{
 			csvReader.reset();
@@ -170,9 +162,9 @@ public class CsvMatrix<E> extends MemoryMatrix<E>
 	}
 
 	@Override
-	protected E[][] getValues() throws MatrixException
+	public V[][] getValues() throws MatrixException
 	{
-		final E[][] result = create(getRowCount(), getColCount());
+		final V[][] result = create(getRowCount(), getColCount());
 		try
 		{
 			csvReader.reset();
@@ -199,10 +191,10 @@ public class CsvMatrix<E> extends MemoryMatrix<E>
 	}
 
 	@Override
-	public E[] getRow(int rowIndex) throws MatrixException
+	public V[] getRow(int rowIndex) throws MatrixException
 	{
 		final int finalRowIndex = rowIndex;
-		final E[] result = create(getColCount());
+		final V[] result = create(getColCount());
 		try
 		{
 			csvReader.reset();
@@ -231,13 +223,13 @@ public class CsvMatrix<E> extends MemoryMatrix<E>
 	}
 
 	@Override
-	public Matrix<E> getSubMatrixByIndex(List<Integer> rowIndices, List<Integer> colIndices)
-			throws MatrixException
+	public Matrix<E, A, V> getSubMatrixByIndex(List<Integer> rowIndices,
+			List<Integer> colIndices) throws MatrixException
 	{
 		// optimalization: sort ascending in primitive array, then dont use
 		// .contains on list (slow) but smart counter
-		Matrix<E> result = null;
-		final E[][] elements = create(rowIndices.size(), colIndices.size());
+		Matrix<E, A, V> result = null;
+		final V[][] elements = create(rowIndices.size(), colIndices.size());
 
 		final ArrayList<Integer> rowIndicesList = new ArrayList<Integer>(
 				rowIndices.size());
@@ -282,33 +274,33 @@ public class CsvMatrix<E> extends MemoryMatrix<E>
 			throw new MatrixException(e.getMessage());
 		}
 
-		List<String> rowNames = new ArrayList<String>();
-		List<String> colNames = new ArrayList<String>();
+		List<E> rowNames = new ArrayList<E>();
+		List<A> colNames = new ArrayList<A>();
 
 		for (int rowIndex : rowIndices)
 		{
-			rowNames.add(this.getRowNames().get(rowIndex).toString());
+			rowNames.add(this.getRowNames().get(rowIndex));
 		}
 
 		for (int colIndex : colIndices)
 		{
-			colNames.add(this.getColNames().get(colIndex).toString());
+			colNames.add(this.getColNames().get(colIndex));
 		}
 
-		result = new MemoryMatrix<E>(rowNames, colNames, elements);
+		result = new MemoryMatrix<E, A, V>(rowNames, colNames, elements);
 		return result;
 	}
 
 	@Override
-	public Matrix<E> getSubMatrixByOffset(int row, int nRows, int col, int nCols)
-			throws MatrixException
+	public Matrix<E, A, V> getSubMatrixByOffset(int row, int nRows, int col,
+			int nCols) throws MatrixException
 	{
 		final int finalRow = row;
 		final int finalNRows = nRows;
 		final int finalCol = col;
 		final int finalNCols = nCols;
-		Matrix<E> result = null;
-		final E[][] elements = create(nRows, nCols);
+		Matrix<E, A, V> result = null;
+		final V[][] elements = create(nRows, nCols);
 
 		try
 		{
@@ -342,10 +334,10 @@ public class CsvMatrix<E> extends MemoryMatrix<E>
 				}
 			});
 
-			List<String> rowNames = getRowNames().subList(row, row + nRows);
-			List<String> colNames = getColNames().subList(col, col + nCols);
+			List<E> rowNames = getRowNames().subList(row, row + nRows);
+			List<A> colNames = getColNames().subList(col, col + nCols);
 
-			result = new MemoryMatrix<E>(rowNames, colNames, elements);
+			result = new MemoryMatrix<E, A, V>(rowNames, colNames, elements);
 		}
 		catch (Exception e)
 		{
@@ -357,17 +349,39 @@ public class CsvMatrix<E> extends MemoryMatrix<E>
 
 	@SuppressWarnings("unchecked")
 	/** Helper method for unchecked cast*/
-	private E getValue(Tuple tuple, int index)
+	private V getValue(Tuple tuple, int index)
 	{
-		return (E) convertor.convert(tuple.getString(index));
+		return valueConvertor.read(tuple.getString(index));
 	}
-	
+
 	@Override
-	public Class<E> getValueType()
+	public Class<V> getValueType()
 	{
-		return this.valueType;
+		return this.valueConvertor.getValueType();
 	}
 	
+	public void write(CsvWriter writer) throws MatrixException
+	{
+		// NB this only works if names are unique!!!
+		// set headers
+		List<String> headers = new ArrayList<String>();
+		for (A value : getColNames())
+			headers.add(this.colConvertor.write(value));
+		writer.setHeaders(headers);
+		writer.writeHeader();
+		for (E rowName : getRowNames())
+		{
+			writer.writeValue(this.rowConvertor.write(rowName));
+			for (V value : getRowByName(rowName))
+			{
+				writer.writeSeparator();
+				writer.writeValue(this.valueConvertor.write(value));
+			}
+			writer.writeEndOfLine();
+		}
+
+		writer.close();
+	}
 }
 
 /**

@@ -56,7 +56,7 @@ public class MatrixViewer extends HtmlInput<Matrix> implements MolgenisService
 	 * rows.
 	 * @throws NameNotUniqueException 
 	 */
-	public MatrixViewer(ScreenController<?> controller, String name, Matrix<?> values) throws MatrixViewException,
+	public MatrixViewer(ScreenController<?> controller, String name, Matrix<String,String,String> values) throws MatrixViewException,
 			MatrixException, NameNotUniqueException
 	{
 		this(controller,name,values.getRowNames(),values.getColNames(),values);
@@ -66,7 +66,7 @@ public class MatrixViewer extends HtmlInput<Matrix> implements MolgenisService
 	 * Constructure where it is selected which rows and columns of the data will
 	 * be visible to the user.
 	 */
-	public MatrixViewer(ScreenController<?> controller, String name, List<String> rows, List<String> cols, Matrix<?> values)
+	public MatrixViewer(ScreenController<?> controller, String name, List<String> rows, List<String> cols, Matrix<String,String,String> values)
 			throws MatrixViewException, NameNotUniqueException
 	{
 		super(name, null);
@@ -215,7 +215,7 @@ public class MatrixViewer extends HtmlInput<Matrix> implements MolgenisService
 	
 	/** Set the values of the data table 
 	 * @throws MatrixViewException */
-	public void setValue(Matrix<?> values) throws MatrixViewException
+	public void setValue(Matrix<?,?,?> values) throws MatrixViewException
 	{
 		if (values == null) throw new MatrixViewException(
 				"values matrix cannot be null");

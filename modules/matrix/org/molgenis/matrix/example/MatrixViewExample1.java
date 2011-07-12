@@ -40,7 +40,7 @@ public class MatrixViewExample1 extends EasyPluginController<MatrixViewExample1M
 	{	
 		List<String> rows = Arrays.asList(new String[]{"row1","row2"});
 		List<String> cols = Arrays.asList(new String[]{"col1","col2"});
-		MemoryMatrix<String> matrix = new MemoryMatrix<String>(rows,cols);
+		MemoryMatrix<String,String,String> matrix = new MemoryMatrix<String,String,String>(rows,cols);
 		matrix.setValue("row1","col1", "cel11");
 		matrix.setValue("row1","col2", "cel12");
 		matrix.setValue("row2","col1", "cel21");

@@ -84,7 +84,7 @@ public class TestMatrix extends TestCase
 	 * @return
 	 * @throws MatrixException
 	 */
-	private String matrixToString(Matrix<? extends Object> m) throws MatrixException
+	private String matrixToString(Matrix m) throws MatrixException
 	{
 		// print headers
 		String result = "\nMatrix: \n";

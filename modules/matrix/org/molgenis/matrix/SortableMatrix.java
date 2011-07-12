@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Adds sorting capability to a Matrix
  */
-public interface SortableMatrix<E> extends Matrix<E>
+public interface SortableMatrix<E,A,V> extends Matrix<E,A,V>
 {
 
 	/** 
