@@ -1,4 +1,4 @@
-package org.molgenis.xgap;
+package org.molgenis.xgap.test;
 import org.molgenis.Molgenis;
 
 public class XgapUpdateTestDatabase

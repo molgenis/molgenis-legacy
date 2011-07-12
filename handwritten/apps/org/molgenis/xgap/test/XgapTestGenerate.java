@@ -1,15 +1,15 @@
-package org.molgenis.xgap;
+package org.molgenis.xgap.test;
 
 
 import org.molgenis.Molgenis;
 
-public class XgapGenerate
+public class XgapTestGenerate
 {
 	public static void main(String[] args) throws Exception
 	{
 		try
 		{
-			new Molgenis("handwritten/apps/org/molgenis/xgap/xgap.properties").generate();
+			new Molgenis("handwritten/apps/org/molgenis/xgap/xgap.test.properties").generate();
 			
 		} catch(Exception e)
 		{
