@@ -103,7 +103,7 @@ public abstract class AbstractEntity implements Entity, Serializable
 	}
 	
 	/** Default implementation. Will be overriden if your entity model contains subclasses */
-	public String get__Type()
+	public String getDType()
 	{
 		throw new UnsupportedOperationException();
 	}
@@ -120,7 +120,7 @@ public abstract class AbstractEntity implements Entity, Serializable
 		throw new UnsupportedOperationException();
 	}
 	
-	public void set__Type(String type)
+	public void setDType(String type)
 	{
 		throw new UnsupportedOperationException();
 	}

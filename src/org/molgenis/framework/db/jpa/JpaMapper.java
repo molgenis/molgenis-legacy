@@ -2,6 +2,7 @@ package org.molgenis.framework.db.jpa;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 import org.molgenis.framework.db.DatabaseException;
@@ -15,6 +16,7 @@ import org.molgenis.util.Entity;
 public interface JpaMapper<E extends Entity> extends Mapper<E>
 {
 	/** Create a new instance */
+    @Override
 	public E create();
 	
 	public List<E> findAll();
@@ -31,16 +33,19 @@ public interface JpaMapper<E extends Entity> extends Mapper<E>
 	 * maps {@link org.molgenis.framework.Database#add(List)}
 	 * @throws DatabaseException 
 	 */
+    @Override
 	public int add(List<E> entities) throws DatabaseException;
 
 	/**
 	 * maps {@link org.molgenis.framework.Database#update(List)}
 	 */
+    @Override
 	public int update(List<E> entities) throws DatabaseException;
 
 	/**
 	 * maps {@link org.molgenis.framework.Database#remove(List)}
 	 */
+    @Override
 	public int remove(List<E> entities) throws DatabaseException;
 
 	/**
@@ -60,9 +65,11 @@ public interface JpaMapper<E extends Entity> extends Mapper<E>
 	 */
 	public boolean saveFileAttachements(List<E> entities, File dir) throws IOException;
 	
+        @Override
 	public org.molgenis.framework.db.jdbc.ColumnInfo.Type getFieldType(String field);
 	
+        @Override
 	public String getTableFieldName(String field);
-	
-
+        
+	public void resolveForeignKeys(List<E> entities)  throws DatabaseException, ParseException;
 }

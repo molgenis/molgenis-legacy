@@ -18,6 +18,7 @@ package ${package};
 
 <#if databaseImp = 'jpa'>
 import app.JpaDatabase;
+import org.molgenis.framework.db.jpa.JpaMapper;
 <#else>	
 import app.JDBCDatabase;
 </#if>
@@ -46,9 +47,18 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+
 <#list model.entities as entity>
+<#if !entity.isAbstract()>
+	<#if entity.decorator?exists >
+import ${entity.decorator};		
+        <#else>
+import ${entity.namespace}.db.${JavaName(entity)}<#if databaseImp = 'jpa'>Jpa</#if>Mapper;
+	</#if>
+</#if>
 import ${entity.namespace}.${JavaName(entity)};
 </#list>
+
 
 /**
  * This class produces a random data set
@@ -67,7 +77,13 @@ public class TestDataSet
 	{	
 	}
 		
-	public TestDataSet(int size, int mrefSize)
+	
+        <#if databaseImp = 'jpa'>
+            public TestDataSet(int size, int mrefSize, app.JpaDatabase db)  
+            throws org.molgenis.framework.db.DatabaseException
+        <#else>
+            public TestDataSet(int size, int mrefSize)  
+        </#if>
 	{
 		<#list entities as entity><#if !entity.abstract && !entity.association>
 		//generating ${entity.name} data:
@@ -127,6 +143,23 @@ public class TestDataSet
 			</#if></#if></#list>
 			this.${name(entity)}.add(e);
 		}
+
+
+
+<#if databaseImp = 'jpa'>
+
+	<#if entity.decorator?exists >
+            ${entity.decorator} ${name(entity)}Save = (${entity.decorator})db
+	<#else> 
+            ${JavaName(entity)}JpaMapper ${name(entity)}Save = (${JavaName(entity)}JpaMapper)(JpaMapper)db
+	</#if>
+		.getMapper("${JavaName(entity)}");	
+        
+            //((JpaDatabase)db).getEntityManager().getTransaction().begin();
+            db.add(this.${name(entity)});
+            //((JpaDatabase)db).getEntityManager().getTransaction().commit();
+</#if>		
+		
 		</#if></#list>
 	}	 
 	

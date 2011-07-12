@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jpa.JpaMapper;
@@ -54,6 +56,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.molgenis.util.Tuple;
 import java.text.ParseException;
+import org.molgenis.framework.db.QueryRule.Operator;
 
 <#--import all xref entities-->
 <#foreach field in entity.getAllFields()>
@@ -77,9 +80,11 @@ import ${e.namespace}.db.*;
 	</#list></#if>
 </#list>
 
+
 public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity)}>
 {
 	private EntityManager em;
+        private Database db;
 
 	public ${JavaName(entity)}JpaMapper() {}
 
@@ -87,10 +92,12 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 		this.em = em;
 	}
 
-<#--
-//	@Deprecated
-//	public ${JavaName(entity)}JpaMapper(Database db) {}
--->
+	@Deprecated
+	public ${JavaName(entity)}JpaMapper(Database db) {
+            this.db = db;
+            this.em = ((JpaDatabase)db).getEntityManager();
+        }
+
 	public void setEntityManager(EntityManager em) {
 		this.em = em;
 	}
@@ -140,7 +147,7 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 	finally the objects that refer to this object*/
     public void create(${JavaName(entity)} entity) throws DatabaseException {
         try {
-//			em.persist(entity);
+
 
 <#foreach field in entity.getAllFields()>
 	<#assign type_label = field.getType().toString()>
@@ -172,8 +179,12 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 </#foreach>
 
 			//prevents uncontrolled recursion call of create (stack overflow)
+          
+          if(entity.getIdValue() != null) {
+            entity = em.merge(entity);            
+          } else {
             em.persist(entity);
-
+          }
 //inverse association relation
 <#list model.entities as e>
     <#if !e.abstract>
@@ -255,8 +266,8 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 		<#if f.type=="mref" && Name(f.getXrefEntityName()) == Name(entity) >
 		<#assign multipleXrefs = e.getNumberOfReferencesTo(entity)/>
 		//${multipleXrefs}
-			if(${name(entity)}.get${Name(f.entity)}<#if multipleXrefs &gt; 1 >${Name(f)}</#if>Collection().contains(${name(entity)})) {	
-				${name(entity)}.get${Name(f.entity)}<#if multipleXrefs &gt; 1 >${Name(f)}</#if>Collection().remove(${name(entity)});
+			if(${name(entity)}.get${Name(f)}<#if multipleXrefs &gt; 1 >${Name(e)}</#if>Collection().contains(${name(entity)})) {	
+				${name(entity)}.get${Name(f)}<#if multipleXrefs &gt; 1 >${Name(e)}</#if>Collection().remove(${name(entity)});
 			}
 		</#if>
 	</#list>
@@ -371,10 +382,11 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 		int count = 0;
 		
 		try {
-			for (${JavaName(entity)} ${name(entity)} : entities) {
-				create(${name(entity)});
-				++count;
-			}
+                    this.resolveForeignKeys(entities);
+                    for (${JavaName(entity)} ${name(entity)} : entities) {
+                            create(${name(entity)});
+                            ++count;
+                    }
 		} catch (Exception ex) {
             try {
                 em.getTransaction().rollback();
@@ -391,10 +403,11 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 	{
 		int count = 0;
 		try {
-			for (${JavaName(entity)} ${name(entity)} : entities) {
-				edit(${name(entity)});
-				++count;
-			}
+                    this.resolveForeignKeys(entities);
+                    for (${JavaName(entity)} ${name(entity)} : entities) {
+                            edit(${name(entity)});
+                            ++count;
+                    }
 		} catch (Exception ex) {
             try {
                 em.getTransaction().rollback();
@@ -411,10 +424,10 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 	{
 		int count = 0;		
 		try {
-			for (${JavaName(entity)} ${name(entity)} : entities) {
-				destroy(${name(entity)}, em);
-				++count;
-			}
+                    for (${JavaName(entity)} ${name(entity)} : entities) {
+                            destroy(${name(entity)}, em);
+                            ++count;
+                    }
 		} catch (Exception ex) {
             try {
                 em.getTransaction().rollback();
@@ -486,9 +499,10 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 	}
 
 	@Override
+        @Deprecated
 	public Database getDatabase()
 	{
-		throw new UnsupportedOperationException();
+            return db;
 	}
 
 	@Override
@@ -538,6 +552,102 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 	{
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public void resolveForeignKeys(final List<${JavaName(entity)}> entities)  throws DatabaseException, ParseException
+	{
+<#assign has_xrefs=false>		
+<#list allFields(entity) as f><#if f.type == 'xref' &&   f.xrefLabelNames[0] != f.xrefFieldName><#assign has_xrefs=true>	
+		//create foreign key list for field '${name(f)}' to ${name(f.xrefEntity)}.${name(f.xrefField)} using ${csv(f.xrefLabelNames)})	
+		//we will use a hash of the values to ensure that entities are only queried once	
+                final Set<String> ${name(f)}RulesKeys = new HashSet<String>();
+                final List<QueryRule> ${name(f)}Rules = new ArrayList<QueryRule>();
+</#if>
+</#list>	
+<#if has_xrefs>		
+		//create all query rules	
+		for(${JavaName(entity)} object: entities)
+		{
+<#list allFields(entity) as f><#if f.type == 'xref' && f.xrefLabelNames[0] != f.xrefFieldName>
+		<#if f.xrefLabelNames?size &gt; 1>
+			//create xref rule filtering on the combination of labels ${csv(f.xrefLabelNames)}
+			{
+				List<QueryRule> rules = new ArrayList<QueryRule>();
+				String key = "";
+				<#list f.xrefLabelNames as label>
+				rules.add(new QueryRule("${label}", Operator.EQUALS, object.get${JavaName(f)}_${JavaName(label)}()));	
+				key += 	object.get${JavaName(f)}_${JavaName(label)}();
+				</#list>			
+				QueryRule complexRule = new QueryRule(rules);
+				if(!${name(f)}Rules.containsKey(key))
+				{
+					${name(f)}Rules.add(key, complexRule);
+					${name(f)}Rules.add(key+"_OR_", new QueryRule(Operator.OR));
+				}
+			}
+		<#else>
+			//create xref rule filtering on the label ${csv(f.xrefLabelNames)}
+			{
+				QueryRule xrefFilter = new QueryRule("${f.xrefLabelNames[0]}", Operator.EQUALS, object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}());
+				if(object.get${JavaName(f)}() == null && object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}()!= null && !${name(f)}RulesKeys.contains(object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}()))
+				{
+                                        ${name(f)}RulesKeys.add(object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}().toString());
+					${name(f)}Rules.add(xrefFilter);
+					${name(f)}Rules.add(new QueryRule(Operator.OR));
+				}
+			}
+		</#if>	
+</#if></#list>
+		}
+
+<#list allFields(entity) as f><#if f.type == 'xref' && f.xrefLabelNames[0] != f.xrefFieldName>
+		//resolve foreign key field '${name(f)}' to ${name(f.xrefEntity)}.${name(f.xrefField)} using ${csv(f.xrefLabelNames)})
+		final java.util.Map<String,${JavaType(f.xrefField)}> ${name(f)}_Labels_to_IdMap = new java.util.TreeMap<String,${JavaType(f.xrefField)}>();
+		
+		List<${JavaName(f.xrefEntity)}> ${name(f)}List = null;
+		try
+		{
+			${name(f)}List = getDatabase().find(${JavaName(f.xrefEntity)}.class, ${name(f)}Rules.toArray(new QueryRule[${name(f)}Rules.size()]));
+		}
+		catch(Exception e)
+		{
+			// something went wrong while querying for this entities' name field
+			// we assume it has no such field, which should have been checked earlier ofcourse
+			// regardless, just quit the function now
+			return;
+		}
+	
+		for(${JavaName(f.xrefEntity)} xref :  ${name(f)}List)
+		{
+			String key = "";
+			<#list f.xrefLabelNames as label>
+			key += 	xref.get${JavaName(label)}();
+			</#list>		
+			${name(f)}_Labels_to_IdMap.put(key, xref.get${JavaName(f.xrefField)}());
+		}
+	
+</#if></#list>
+
+		//update objects with the keys
+		for(int i = 0; i < entities.size(); i++)
+		{
+			${JavaName(entity)} object = entities.get(i);		
+			<#list allFields(entity) as f><#if f.type == 'xref'  && f.xrefLabelNames[0] != f.xrefFieldName>
+			//update object using label fields ${csv(f.xrefLabelNames)}
+			if(object.get${JavaName(f)}() == null)
+			{
+				String key = "";
+				<#list f.xrefLabelNames as label>
+				key += 	object.get${JavaName(f)}_${JavaName(label)}();
+				object.set${JavaName(f)}(${name(f)}_Labels_to_IdMap.get(key));
+				</#list>
+			}
+			</#if></#list>	
+						
+		}
+</#if>		
+	}
+
 
 //Generated by MapperCommons.subclass_per_table.java.ftl
 <#--<#include "MapperCommons.subclass_per_table.java.ftl">-->

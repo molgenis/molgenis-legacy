@@ -351,7 +351,7 @@ public abstract class FormController<E extends Entity> extends
 		// for (Field field : eType.getFields()) {
 		// System.out.println("*** FIELD NAME : " +
 		// field.getName().toLowerCase());
-		// if (!field.getName().equals("__Type") ) {
+		// if (!field.getName().equals("${typefield()}") ) {
 		//
 		// //getsSearchField will map the field to field_name in case of
 		// xref/mref
@@ -413,12 +413,12 @@ public abstract class FormController<E extends Entity> extends
 				boolean first = true;
 
 				// 2 - iterate fields and build the queryrules - if field !=
-				// "__Type"
+				// "${typefield()}"
 				for (Field field : eType.getFields())
 				{
 					System.out.println("*** FIELD NAME : "
 							+ field.getName().toLowerCase());
-					if (!field.getName().equals("__Type"))
+					if (!field.getName().equals("${typefield()}"))
 					{
 
 						// getsSearchField will map the field to field_name in

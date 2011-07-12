@@ -1246,6 +1246,10 @@ public class Entity extends DBSchema implements Record
 
 		return result;
 	}
+        
+        
+        
+        
 
 	/**
 	 * Returns the key at the given index. The first key in the list (index 0)
@@ -1265,6 +1269,19 @@ public class Entity extends DBSchema implements Record
 
 		return getKeys().get(index);
 	}
+        
+        
+        public List<Unique> getUniqueKeysWithoutPk() throws MolgenisModelException {
+            List<Unique> result = new ArrayList<Unique>();
+            for(Unique u : unique_fields) {
+                if(u.getFields().get(0).isAuto()) {
+                    continue;
+                }
+                result.add(u);
+            }
+            return result;
+        }
+        
 
 	/**
 	 * Returns a list of the fields that make up the key at the given index. The
@@ -1402,7 +1419,7 @@ public class Entity extends DBSchema implements Record
 		}
 		return count;
 	}
-
+       
 	public int getNumberOfMrefTo(Entity e) throws MolgenisModelException
 	{
 		int count = 0;
@@ -1416,6 +1433,8 @@ public class Entity extends DBSchema implements Record
 		}
 		return count;
 	}
+        
+        
 
 	public List<String> getXrefLabels() throws MolgenisModelException
 	{

@@ -176,7 +176,10 @@ public class Field
 				case Types.CHAR:
 					return STRING;
 				case Types.VARCHAR:
-					return STRING;					
+					return STRING;
+                                case Types.NVARCHAR:
+                                        return STRING;
+                                          
 				//boolean
 				case Types.BOOLEAN:
 					return BOOL;
@@ -191,6 +194,8 @@ public class Field
 					return INT;					
 				case Types.BIGINT:
 					return LONG;
+                                case Types.NUMERIC:
+                                        return LONG;
 				//decimal
 				case Types.REAL:
 					return DECIMAL;
@@ -214,6 +219,9 @@ public class Field
 					return DATETIME;
 				case Types.TIMESTAMP:
 					return DATETIME;
+                                
+                                    
+                                    
 				default:
 				{
 					logger.error("Unknown type: "+type);
