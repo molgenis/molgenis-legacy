@@ -1695,32 +1695,31 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	// Commented out because Project does not exist anymore.
-	/*public List<NgsSample> getAllSamplesForInvestigation(String projectName)
+	public List<NgsSample> getAllSamplesForInvestigation(String projectName)
 	throws DatabaseException, ParseException {
 
-	    Query<Project> q = db.query(Project.class);
-	    q.equals(Project.NAME, projectName);
-	    List<Project> project = q.find();
+	    Query<Investigation> q = db.query(Investigation.class);
+	    q.equals(Investigation.NAME, projectName);
+	    List<Investigation> project = q.find();
 
 	    if (!project.isEmpty())
 	    { 
 
-			Integer id = project.get(0).getId(); 
-	
-			Query<NgsSample> p = db.query(NgsSample.class);
-			p.eq(NgsSample.INVESTIGATION, id);
-			return p.find();
+		Integer id = project.get(0).getId(); 
+
+		Query<NgsSample> p = db.query(NgsSample.class);
+		p.eq(NgsSample.INVESTIGATION, id);
+		return p.find();
 
 	    }
 	    else
 	    {
-			logger.warn("Project " + projectName
-				+ " could not be found in the database");
-			return new ArrayList<NgsSample>();
+		logger.warn("Project " + projectName
+			+ " could not be found in the database");
+		return new ArrayList<NgsSample>();
 	    }
 
-	}*/
+	}
 
 	/**
 	 * Return all samples found in database

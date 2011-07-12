@@ -25,7 +25,7 @@ public class CreateNewProjectModel extends SimpleScreenModel {
 		// TODO Auto-generated constructor stub
 	}
 
-	//private Project project;
+	private Investigation project;
     private NgsPerson person;
     private Institute institute;
     private List<NgsPerson> labworkers = Lists.newArrayList();
@@ -87,13 +87,13 @@ public class CreateNewProjectModel extends SimpleScreenModel {
 	return workflows;
     }
 
-    /*public void setProject(Project project) {
+    public void setProject(Investigation project) {
 	this.project = project;
     }
 
-    public Project getProject() {
+    public Investigation getProject() {
 	return project;
-    }*/
+    }
 
     public void setPerson(NgsPerson person) {
 	this.person = person;

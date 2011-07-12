@@ -1,24 +1,44 @@
 package org.molgenis.compute;
 
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+
+import javax.servlet.ServletContext;
+
+import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.FormController;
+import org.molgenis.framework.ui.FormModel;
+import org.molgenis.framework.ui.FreemarkerView;
+import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.ngs.LibraryLane;
+import org.molgenis.ngs.Worksheet;
+import org.molgenis.pheno.ObservationElement;
+import org.molgenis.pheno.ObservedValue;
+import org.molgenis.protocol.ComputeApplication;
+import org.molgenis.protocol.ComputeFeature;
+import org.molgenis.protocol.ComputeProtocol;
+import org.molgenis.protocol.Workflow;
+import org.molgenis.protocol.WorkflowElement;
+import org.molgenis.protocol.WorkflowElementParameter;
+import org.molgenis.util.HttpServletRequestTuple;
+import org.molgenis.util.Tuple;
+
 import compute.pipelinemodel.Pipeline;
 import compute.pipelinemodel.Script;
 import compute.pipelinemodel.Step;
 import compute.scriptserver.MCF;
-import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.ui.*;
-import org.molgenis.ngs.Worksheet;
-import org.molgenis.pheno.ObservationTarget;
-import org.molgenis.pheno.ObservedValue;
-import org.molgenis.protocol.*;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
-
-import javax.servlet.ServletContext;
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * StartNgsController takes care of all user requests and application logic.
@@ -51,7 +71,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
     private HashMap<String, ComputeFeature> computeFeatures = new HashMap<String, ComputeFeature>();
 
     //target of pipeline
-    private ObservationTarget target = null;
+    private ObservationElement target = null;
     //whole workflow application
     private ComputeApplication wholeWorkflowApp = null;
 
@@ -166,10 +186,9 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         System.out.println("workflow" + workflow.getName());
 
         //our current targer is FlowcellLaneSample
-        // Commented out because FlowcellLaneSample does not exist (anymore?)
-        /*target = db.query(FlowcellLaneSample.class).equals(FlowcellLaneSample.LANENUMBER, strLane).
-                equals(FlowcellLaneSample.FLOWCELL_NAME, strFlowcell).
-                equals(FlowcellLaneSample.SAMPLE_NAME, strSample).find().get(0);*/
+        target = db.query(LibraryLane.class).equals(LibraryLane.LANE, strLane).
+                equals(LibraryLane.FLOWCELL_NAME, strFlowcell).
+                equals(LibraryLane.SAMPLE_NAME, strSample).find().get(0);
 
         //add few parameters
         wholeWorkflowApp.setComputeResource("cluster");//for time being

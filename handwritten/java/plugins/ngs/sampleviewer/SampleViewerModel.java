@@ -12,6 +12,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.SimpleScreenModel;
 import org.molgenis.ngs.NgsSample;
+import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
@@ -30,7 +31,7 @@ public class SampleViewerModel extends SimpleScreenModel {
 
 	private List<NgsSample> samples = new ArrayList<NgsSample>();
     private List<Measurement> features = new ArrayList<Measurement>();
-    //private List<Project> projects = new ArrayList<Project>();
+    private List<Investigation> projects = new ArrayList<Investigation>();
     private List<Protocol> protocols = new ArrayList<Protocol>();
 
     private String action = "init";
@@ -51,13 +52,13 @@ public class SampleViewerModel extends SimpleScreenModel {
     	return action;
     }
 
-    /*public void setProjects(List<Project> projects) {
-    	this.projects = projects;
+    public void setProjects(List<Investigation> projects) {
+	this.projects = projects;
     }
 
-    public List<Project> getProjects() {
-    	return projects;
-    }*/
+    public List<Investigation> getProjects() {
+	return projects;
+    }
 
     public void setProtocols(List<Protocol> protocols) {
 	this.protocols = protocols;

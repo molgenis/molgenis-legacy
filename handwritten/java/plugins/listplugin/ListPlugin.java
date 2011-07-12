@@ -136,8 +136,9 @@ public class ListPlugin extends PluginModel<Entity> {
 			}
 
 			// Populate measurement list
-			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
-			List<Measurement> featList = ct.getAllMeasurementsSorted(Measurement.NAME, "ASC", investigationIds);
+			//List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
+			//List<Measurement> featList = ct.getAllMeasurementsSorted(Measurement.NAME, "ASC", investigationIds);
+			List<Measurement> featList = db.find(Measurement.class);
 			if (featList.size() > 0) {
 				this.setFeatureList(featList);
 			} else {
@@ -145,7 +146,7 @@ public class ListPlugin extends PluginModel<Entity> {
 			}
 		
 			// Populate Batch list
-			batchList = ct.getAllBatches();
+			batchList = new ArrayList<MolgenisBatch>();//ct.getAllBatches();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
