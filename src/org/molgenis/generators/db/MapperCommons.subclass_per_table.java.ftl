@@ -161,9 +161,7 @@
 	public void resolveForeignKeys(List<${JavaName(entity)}> entities)  throws DatabaseException, ParseException
 	{
 <#assign has_xrefs=false>		
-<#list allFields(entity) as f>
-  <#if f.type == 'xref' &&   f.xrefLabelNames[0] != f.xrefFieldName>
-  <#assign has_xrefs=true>	
+<#list allFields(entity) as f><#if f.type == 'xref' &&   f.xrefLabelNames[0] != f.xrefFieldName><#assign has_xrefs=true>	
 		//create foreign key map for field '${name(f)}' to ${name(f.xrefEntity)}.${name(f.xrefField)} using ${csv(f.xrefLabelNames)})	
 		//we will use a hash of the values to ensure that entities are only queried once	
 		final java.util.Map<String,QueryRule> ${name(f)}Rules = new java.util.TreeMap<String,QueryRule>();

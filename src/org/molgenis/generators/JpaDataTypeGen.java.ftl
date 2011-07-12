@@ -120,7 +120,7 @@ public interface ${JavaName(entity)} extends <#if entity.hasImplements()><#list 
 <#-- disables many-to-many relationships (makes it compatible with no-JPA database)   -->
 	<#if !entity.description?contains("Link table for many-to-many relationship") >
 @Entity
-@Table(name = "${SqlName(entity)}"<#list entity.getUniqueKeysWithoutPk() as uniqueKeys ><@compress single_line=true>
+@Table(name = "${SqlName(entity)}"<#list entity.keys as uniqueKeys ><@compress single_line=true>
 		<#if uniqueKeys_index = 0 >, uniqueConstraints={
 	@UniqueConstraint( columnNames={<#else>), @UniqueConstraint( columnNames={</#if>
     <#list key_fields(uniqueKeys) as uniqueFields >
@@ -138,7 +138,7 @@ public interface ${JavaName(entity)} extends <#if entity.hasImplements()><#list 
 )
 		<#if !entity.hasAncestor() && entity.hasDescendants() >
 @Inheritance(strategy=InheritanceType.JOINED)
-@DiscriminatorColumn(name="DType", discriminatorType=DiscriminatorType.STRING)
+@DiscriminatorColumn(name="__Type", discriminatorType=DiscriminatorType.STRING)
 		</#if>
 	</#if>
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -228,7 +228,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
  			<#if isPrimaryKey(field,entity) && !entity.hasAncestor()>
     @Id
     			<#if field.auto = true>
-    @GeneratedValue(strategy = GenerationType.AUTO)   			
+    @GeneratedValue(strategy = GenerationType.IDENTITY)   			
     			</#if>
     		</#if>
 		</#if>	
@@ -271,13 +271,13 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		<#assign type_label = field.getType().toString()>
 			<#if isPrimaryKey(field,entity)>
 				<#if !entity.hasAncestor()>
-	//@NotNull
+	@NotNull
 	private <#if field.type="xref">${JavaName(field.xrefEntity)}<#elseif field.type="mref">List<${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)} = <#if field.type == "mref">new ArrayList<${JavaName(field.xrefEntity)}>()<#else> ${default(field)}</#if>;				
 				</#if>
 			<#else>
 				
 
-				<#if !field.isNillable() >
+				<#if !field.isNillable()>
 	@NotNull
 				</#if>
 	private <#if field.type="xref">${JavaName(field.xrefEntity)}<#elseif field.type="mref">List<${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)} = <#if field.type == "mref">new ArrayList<${JavaName(field.xrefEntity)}>()<#else> ${default(field)}</#if>;
@@ -427,7 +427,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 
 	public void set${JavaName(field)}(${type(field.xrefField)} ${name(field)}_${name(field.xrefField)})
 	{
-		this.${name(field)}_${name(field.xrefField)} = ${name(field)}_${name(field.xrefField)};
+		throw new UnsupportedOperationException();
 	}
 	
 	public ${type(field.xrefField)} get${JavaName(field)}_${JavaName(field.xrefField)}()
@@ -668,9 +668,9 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 			if( tuple.get${settertype(f)}("${name(entity)}.${name(f)}_${name(f.xrefField)}") != null) this.set${JavaName(f)}_${JavaName(f.xrefField)}(tuple.get${settertype(f)}("${name(entity)}.${name(f)}_${name(f.xrefField)}"));
 			//alias of xref
 			if( tuple.getObject("${name(f)}") != null) 
-				this.set${JavaName(f)}((${JavaName(f.xrefEntity)})tuple.getObject("${name(f)}"));
+				this.set${JavaName(f)}_${JavaName(f.xrefField)}(tuple.get${settertype(f)}("${name(f)}"));
 			if( tuple.getObject("${name(entity)}.${name(f)}") != null) 
-				this.set${JavaName(f)}((${JavaName(f.xrefEntity)})tuple.getObject("${name(entity)}.${name(f)}_${name(f.xrefField)}"));
+				this.set${JavaName(f)}_${JavaName(f.xrefField)}(tuple.get${settertype(f)}("${name(entity)}.${name(f)}_${name(f.xrefField)}"));
 			//set label for field ${JavaName(f)}
 			<#if f.xrefLabelNames[0] != f.xrefFieldName><#list f.xrefLabelNames as label>
 			if( strict || tuple.getObject("${name(f)}_${name(label)}") != null) this.set${JavaName(f)}_${JavaName(label)}(tuple.get${settertype(f.xrefLabels[label_index])}("${name(f)}_${name(label)}"));			
@@ -924,22 +924,21 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	<#list e.implementedFields as f>
 		<#if f.type=="xref" && f.getXrefEntityName() == entity.name>
 			 <#assign multipleXrefs = e.getNumberOfReferencesTo(entity)/>
-//${multipleXrefs}
 	@OneToMany(mappedBy="${name(f)}" /*, cascade={CascadeType.REFRESH, CascadeType.MERGE} */)
-    private Collection<${Name(f.entity)}> ${name(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection = new ArrayList<${Name(f.entity)}>();
+    private Collection<${Name(f.entity)}> ${name(f.entity)}<#if multipleXrefs &gt; 1 >${Name(f)}</#if>Collection = new ArrayList<${Name(f.entity)}>();
 
 	@XmlTransient
-	public Collection<${Name(f.entity)}> get${JavaName(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection()
+	public Collection<${Name(f.entity)}> get${JavaName(f.entity)}<#if multipleXrefs &gt; 1 >${Name(f)}</#if>Collection()
 	{
-            return ${name(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection;
+            return ${name(f.entity)}<#if multipleXrefs &gt; 1 >${Name(f)}</#if>Collection;
 	}
 
-    public void set${JavaName(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection(Collection<${Name(f.entity)}> collection)
+    public void set${JavaName(f.entity)}<#if multipleXrefs &gt; 1 >${JavaName(f)}</#if>Collection(Collection<${Name(f.entity)}> collection)
     {
         for (${JavaName(f.entity)} ${name(f.entity)} : collection) {
             ${name(f.entity)}.set${JavaName(f)}(this);
         }
-        ${name(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection = collection;
+        ${name(f.entity)}<#if multipleXrefs &gt; 1 >${Name(f)}</#if>Collection = collection;
     }	
 		</#if>
 	</#list></#if>
@@ -948,20 +947,19 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	<#if !e.abstract && !e.isAssociation()>
 		<#list e.implementedFields as f>
 			<#if f.type=="mref" && f.getXrefEntityName() == entity.name>
-				<#assign multipleXrefs = e.getNumberOfMrefTo(entity)/>
-	//${multipleXrefs}
-        @ManyToMany(mappedBy="${name(f)}" /*, cascade={CascadeType.REFRESH, CascadeType.MERGE} */)
-        private Collection<${Name(f.entity)}> ${name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection = new ArrayList<${Name(f.entity)}>();
+				<#assign multipleXrefs = e.getNumberOfReferencesTo(entity)/>
+	@ManyToMany(mappedBy="${name(f)}" /*, cascade={CascadeType.REFRESH, CascadeType.MERGE} */)
+    private Collection<${Name(f.entity)}> ${name(f.entity)}<#if multipleXrefs &gt; 1 >${Name(f)}</#if>Collection = new ArrayList<${Name(f.entity)}>();
 
 	@XmlTransient
-	public Collection<${Name(f.entity)}> get${Name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection()
+	public Collection<${Name(f.entity)}> get${JavaName(f.entity)}<#if multipleXrefs &gt; 1 >${Name(f)}</#if>Collection()
 	{
-        return ${name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection;
+        return ${name(f.entity)}<#if multipleXrefs &gt; 1 >${Name(f)}</#if>Collection;
 	}
 
-    public void set${Name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection(Collection<${Name(f.entity)}> collection)
+    public void set${Name(f.entity)}<#if multipleXrefs &gt; 1 >${Name(f)}</#if>Collection(Collection<${Name(f.entity)}> collection)
     {
-    	${name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection.addAll(collection);
+    	${name(f.entity)}<#if multipleXrefs &gt; 1 >${Name(f)}</#if>Collection.addAll(collection);
     }	
 			</#if>
 		</#list>

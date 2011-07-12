@@ -2,15 +2,15 @@
 <#if db_driver?contains('hsql')>
 SET WRITE_DELAY FALSE;
 </#if>
-INSERT INTO MolgenisRole (${typefield()}, id, name) values ('MolgenisGroup', 1, 'system');
-INSERT INTO MolgenisRole (${typefield()}, id, name) values ('MolgenisUser', 2, 'admin');
-INSERT INTO MolgenisRole (${typefield()}, id, name) values ('MolgenisUser', 3, 'anonymous');
-INSERT INTO MolgenisRole (${typefield()}, id, name) values ('MolgenisGroup', 4, 'AllUsers');
+INSERT INTO MolgenisRole (__Type, id, name) values ('MolgenisGroup', 1, 'system');
+INSERT INTO MolgenisRole (__Type, id, name) values ('MolgenisUser', 2, 'admin');
+INSERT INTO MolgenisRole (__Type, id, name) values ('MolgenisUser', 3, 'anonymous');
+INSERT INTO MolgenisRole (__Type, id, name) values ('MolgenisGroup', 4, 'AllUsers');
 INSERT INTO MolgenisGroup (id) values (1);
 INSERT INTO MolgenisGroup (id) values (4);
 
 <#list model.getUserinterface().getAllUniqueGroups() as group>
-INSERT INTO MolgenisRole (${typefield()}, id, name) values ('MolgenisGroup', ${group_index+5}, '${group}');
+INSERT INTO MolgenisRole (__Type, id, name) values ('MolgenisGroup', ${group_index+5}, '${group}');
 INSERT INTO MolgenisGroup (id) values (${group_index+5});
 <#-- for testing? INSERT INTO MolgenisUser (id, password_, emailaddress, firstname, lastname, active, superuser) values (2, 'md5_21232f297a57a5a743894a0e4a801fc3', '', 'admin', 'admin', true, true); -->
 </#list>

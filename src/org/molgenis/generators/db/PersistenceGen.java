@@ -35,7 +35,6 @@ public class PersistenceGen extends Generator
 		target.getParentFile().mkdirs();
 		
 		templateArgs.put("options", options);
-                templateArgs.put("model", model);
 
 		OutputStream targetOut = new FileOutputStream( target );
 		template.process( templateArgs, new OutputStreamWriter( targetOut ) );

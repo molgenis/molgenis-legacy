@@ -168,7 +168,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	{
 	<#if entity.hasDescendants() || entity.hasAncestor()>
 		//set the type for a new instance
-                set${typefield()}(this.getClass().getSimpleName());
+		set__Type(this.getClass().getSimpleName());
 	<#else>
 		super();
 	</#if>	
