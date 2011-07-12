@@ -773,6 +773,8 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 			DatabaseAction dbAction, String... keyNames)
 			throws DatabaseException, ParseException, IOException
 	{
+		if(keyNames.length == 0) throw new DatabaseException("At least one key must be provided, e.g. 'name'");
+		
 		// nothing todo?
 		if (entities.size() == 0) return 0;
 
