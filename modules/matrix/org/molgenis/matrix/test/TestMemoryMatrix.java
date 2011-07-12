@@ -10,7 +10,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.molgenis.matrix.CsvDoubleMatrix;
+import org.molgenis.matrix.DoubleCsvMemoryMatrix;
 import org.molgenis.matrix.Matrix;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.MemoryMatrix;
@@ -47,7 +47,7 @@ public class TestMemoryMatrix
 		
 		assertEquals(m.getRow(0),values[0]);
 		
-		CsvDoubleMatrix m2  = new CsvDoubleMatrix(m);
+		DoubleCsvMemoryMatrix m2  = new DoubleCsvMemoryMatrix(m);
 		
 		CsvStringWriter csvWriter = new CsvStringWriter(new StringWriter());
 		m2.write(csvWriter);

@@ -6,6 +6,7 @@ import org.molgenis.framework.db.QueryRule;
 
 /**
  * Interface that adds filtering capabilities to a matrix
+ * At some point we want to merge this with Matrix so that all our matrices become editable.
  */
 public interface FilterableMatrix<E,A,V> extends Matrix<E,A,V>
 {

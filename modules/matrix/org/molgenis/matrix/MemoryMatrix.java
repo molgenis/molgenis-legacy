@@ -1,5 +1,6 @@
 package org.molgenis.matrix;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,33 +11,55 @@ import java.util.List;
  * 
  * @param <E>
  */
-public class MemoryMatrix<E, A, V> implements Matrix<E, A, V>
+public class MemoryMatrix<E, A, V> implements EditableMatrix<E, A, V>
 {
 	private V[][] values;
 	private List<E> rowNames = new ArrayList<E>();
 	private List<A> colNames = new ArrayList<A>();
+	private Class<V> valueType = null;
 
 	/** Creata an empty matrix using dimensions */
-	public MemoryMatrix(List<E> rowNames, List<A> colNames)
+	public MemoryMatrix(List<E> rowNames, List<A> colNames, Class<V> valueType)
 			throws MatrixException
 	{
+		this.valueType = valueType;
+		
 		// add row metadata
 		this.setColNames(colNames);
 		this.setRowNames(rowNames);
 
 		// set the values
-		this.setValues((V[][]) this.create(rowNames.size(), colNames.size()));
+		this.setValues(this.create(rowNames.size(), colNames.size(), valueType));
 	}
 
 	public MemoryMatrix(List<E> rowNames, List<A> colNames, V[][] values)
 			throws MatrixException
-	{
+	{		
+		//get from a not-null value the valueType
+		this.valueType = getValueType(values);
+		
 		// add row metadata
 		this.setColNames(colNames);
 		this.setRowNames(rowNames);
 
 		// set the values
 		this.setValues(values);
+	}
+
+	@SuppressWarnings("unchecked")
+	private Class<V> getValueType(V[][] values2) throws MatrixException
+	{
+		for(int i = 0; i < values.length; i++)
+		{
+			for(int j = 0; j< values.length; j++)
+			{
+				if(values[i][j] != null)
+				{
+					return (Class<V>) values[i][j].getClass();
+				}
+			}
+		}
+		throw new MatrixException("MemoryMatrix needs at least one value in the [][] to establish type");
 	}
 
 	/** Protected constructor for the subclasses */
@@ -103,7 +126,7 @@ public class MemoryMatrix<E, A, V> implements Matrix<E, A, V>
 	{
 		List<E> rows = new ArrayList<E>(nrows);
 		List<A> cols = new ArrayList<A>(ncols);
-		V[][] elements = (V[][]) create(nrows, ncols);
+		V[][] elements = (V[][]) create(nrows, ncols, this.valueType);
 		V[][] allAlements = this.getValues();
 
 		rows = this.getRowNames().subList(row, row + nrows);
@@ -125,7 +148,7 @@ public class MemoryMatrix<E, A, V> implements Matrix<E, A, V>
 	{
 		List<E> rows = new ArrayList<E>(rowIndices.size());
 		List<A> cols = new ArrayList<A>(colIndices.size());
-		V[][] elements = (V[][]) create(rowIndices.size(), colIndices.size());
+		V[][] elements = (V[][]) create(rowIndices.size(), colIndices.size(), this.valueType);
 		V[][] allAlements = this.getValues();
 
 		for (int rowIndicesIndex = 0; rowIndicesIndex < rowIndices.size(); rowIndicesIndex++)
@@ -221,7 +244,7 @@ public class MemoryMatrix<E, A, V> implements Matrix<E, A, V>
 	{
 		// copy the data, swapped
 		V[][] newValues = (V[][]) create(this.rowNames.size(), this.colNames
-				.size());
+				.size(), this.valueType);
 		for (int i = 0; i < this.getValues().length; i++)
 		{
 			for (int j = 0; j < this.getValues().length; j++)
@@ -279,18 +302,19 @@ public class MemoryMatrix<E, A, V> implements Matrix<E, A, V>
 		return (V[]) new Object[rows];
 	}
 
-	public V[][] create(int rows, int cols)
-	{
+	@SuppressWarnings("unchecked")
+	public V[][] create(int rows, int cols, Class<V> valueType)
+	{		   		
 		// create all empty rows as well
-		Object[][] data = new Object[rows][cols];
+		V[][] data = (V[][])Array.newInstance(valueType,rows,cols);
 		for (int i = 0; i < data.length; i++)
 		{
-			data[i] = new Object[cols];
+			data[i] = (V[])Array.newInstance(valueType, cols);
 		}
 
-		return (V[][]) data;
+		return data;
 	}
-
+	
 	protected void setRowNames(List<E> rowNames) throws MatrixException
 	{
 		resetRows();
@@ -357,6 +381,65 @@ public class MemoryMatrix<E, A, V> implements Matrix<E, A, V>
 	{
 		return (Class<V>) this.values.getClass().getComponentType()
 				.getComponentType();
+	}
+
+	@Override
+	public void setCol(int col, List<V> colValues) throws MatrixException
+	{
+		// colValues must be of same lenght as values
+		if (this.values.length != colValues.size()) throw new MatrixException(
+				"setCol failed: colValues != getRowCount()");
+
+		// col must be inside getColCount
+		if (col >= getColCount()) throw new MatrixException(
+				"setCol failed: col >= getColCount()");
+
+		// in each row set
+		for (int i = 0; i < colValues.size(); i++)
+		{
+			this.values[i][col] = colValues.get(i);
+		}
+
+	}
+
+	@Override
+	public void setCol(A col, List<V> colValues) throws MatrixException
+	{
+		this.setCol(this.getColId(col), colValues);
+
+	}
+
+	@Override
+	public void setRow(int row, List<V> rowValues) throws MatrixException
+	{
+		// rowValues must be in size of colCount
+		if (rowValues.size() != this.getColCount()) throw new MatrixException(
+				"setRow failed: rowValues.size() != getColCount()");
+
+		// row must be in size of rowCount
+		if (row >= getRowCount()) throw new MatrixException(
+				"setRow failed: row >= getRowCount()");
+
+		// iterate
+		for (int i = 0; i < rowValues.size(); i++)
+		{
+			this.values[row][i] = rowValues.get(i);
+		}
+
+	}
+
+	@Override
+	public void setRow(E row, List<V> rowValues) throws MatrixException
+	{
+		this.setRow(getRowId(row), rowValues);
+
+	}
+
+	@Override
+	public void store() throws MatrixException
+	{
+		throw new UnsupportedOperationException(
+				"in memory database cannot be stored. Use CsvMemoryMatrix or BinaryMemoryMatrix instead");
 	}
 
 }

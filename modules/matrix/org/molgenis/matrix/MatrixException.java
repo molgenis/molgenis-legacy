@@ -12,4 +12,9 @@ public class MatrixException extends Exception
 		super(string);
 	}
 
+	public MatrixException(Exception e)
+	{
+		super(e);
+	}
+
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 /**
  * Adds sorting capability to a Matrix
+ * At some point we want to merge this with Matrix so that all our matrices become editable.
  */
 public interface SortableMatrix<E,A,V> extends Matrix<E,A,V>
 {

@@ -8,8 +8,8 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.matrix.Matrix;
-import org.molgenis.matrix.MemoryMatrix;
+import org.molgenis.matrix.StringMatrix;
+import org.molgenis.matrix.StringMemoryMatrix;
 import org.molgenis.matrix.ui.MatrixViewer;
 
 /**
@@ -40,7 +40,7 @@ public class MatrixViewExample1 extends EasyPluginController<MatrixViewExample1M
 	{	
 		List<String> rows = Arrays.asList(new String[]{"row1","row2"});
 		List<String> cols = Arrays.asList(new String[]{"col1","col2"});
-		MemoryMatrix<String,String,String> matrix = new MemoryMatrix<String,String,String>(rows,cols);
+		StringMemoryMatrix matrix = new StringMemoryMatrix(rows,cols);
 		matrix.setValue("row1","col1", "cel11");
 		matrix.setValue("row1","col2", "cel12");
 		matrix.setValue("row2","col1", "cel21");

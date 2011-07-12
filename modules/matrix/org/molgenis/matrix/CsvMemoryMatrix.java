@@ -7,19 +7,44 @@ import java.util.List;
 
 import org.molgenis.matrix.convertors.ValueConvertor;
 import org.molgenis.util.CsvFileReader;
+import org.molgenis.util.CsvFileWriter;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Tuple;
 
-public class CsvMemoryMatrix<E,A,V> extends MemoryMatrix<E,A,V>
+/**
+ * A simple matrix implementation that reads data from a file. Optionally, usage
+ * of rownames/colnames during construction will retrieve only a subset of the
+ * data.
+ * 
+ * Caveat: this will cause an out-of-memory error if the data file is too big.
+ * (In future versions there will be a 'CsvCachedMatrix to deal with that').
+ * 
+ * Also, while the matrix is currently editable, the edits are only persisted
+ * after calling 'write'. Discussion: should we use separate writer objects? Or
+ * a new interface?
+ * 
+ * Variability of the different E,A,V parameters is sorted used ValueConvertor.
+ * Idea is to merge this with the FieldType system of core molgenis.
+ * 
+ * The idea is to use subclasses to get rid of the E,A,V parameters for often
+ * used combinations. See CsvDoubleMatrix for example.
+ * 
+ * @param <E>
+ * @param <A>
+ * @param <V>
+ */
+public class CsvMemoryMatrix<E, A, V> extends MemoryMatrix<E, A, V>
 {
 	// convertor to read the values
 	private ValueConvertor<E> rowConvertor;
 	private ValueConvertor<A> colConvertor;
 	private ValueConvertor<V> valueConvertor;
-	
+	private File file;
+
 	/**
-	 * Copy constructor for CsvMatrix
+	 * Copy constructor for CsvMatrix. Copoies the values out of the other
+	 * matrix into this matrix.
 	 * 
 	 * @param rowConvertor
 	 * @param colConvertor
@@ -30,28 +55,30 @@ public class CsvMemoryMatrix<E,A,V> extends MemoryMatrix<E,A,V>
 	 */
 	public CsvMemoryMatrix(ValueConvertor<E> rowConvertor,
 			ValueConvertor<A> colConvertor, ValueConvertor<V> valueConvertor,
-			Matrix<E, A, V> values) throws MatrixException
+			Matrix<E, A, V> values, File file) throws MatrixException
 	{
 		super(values);
 		this.rowConvertor = rowConvertor;
 		this.colConvertor = colConvertor;
 		this.valueConvertor = valueConvertor;
+		this.file = file;
 	}
 
 	/**
 	 * Creates a MemoryMatrix from Csv file. It uses the convertors to convert
-	 * rowheader, colunmnheaders and values
+	 * rowheader, colunmnheaders and values. All row and column names are used.
 	 * 
 	 * @param rowConvertor
 	 * @param colConvertor
 	 * @param valueConvertor
-	 * @param f
+	 * @param file
 	 * @throws FileNotFoundException
 	 * @throws MatrixException
 	 */
-	public CsvMemoryMatrix(ValueConvertor<E> rowConvertor,
-			ValueConvertor<A> colConvertor, ValueConvertor<V> valueConvertor,
-			File f) throws FileNotFoundException, MatrixException
+	public CsvMemoryMatrix(final ValueConvertor<E> rowConvertor,
+			final ValueConvertor<A> colConvertor,
+			final ValueConvertor<V> valueConvertor, File file)
+			throws FileNotFoundException, MatrixException
 	{
 		// put the rownames and colnames in parent
 		try
@@ -59,21 +86,22 @@ public class CsvMemoryMatrix<E,A,V> extends MemoryMatrix<E,A,V>
 			this.rowConvertor = rowConvertor;
 			this.colConvertor = colConvertor;
 			this.valueConvertor = valueConvertor;
-			CsvFileReader csvReader = new CsvFileReader(f);
+			this.file = file;
+			CsvFileReader csvReader = new CsvFileReader(file);
 
-			//load rowNames
+			// load rowNames
 			final List<E> rowNames = new ArrayList<E>();
 			for (String s : csvReader.rownames())
 				rowNames.add(this.rowConvertor.read(s));
-			
-			//load colNames
+
+			// load colNames
 			final List<A> colNames = new ArrayList<A>();
 			for (String s : csvReader.colnames().subList(1,
 					csvReader.colnames().size()))
 				colNames.add(this.colConvertor.read(s));
-			
-			//load values
-			final V[][] values = this.create(rowNames.size(), colNames.size());
+
+			// load values
+			final V[][] values = this.create(rowNames.size(), colNames.size(), valueConvertor.getValueType());
 			csvReader.reset();
 			csvReader.parse(new CsvReaderListener()
 			{
@@ -83,10 +111,17 @@ public class CsvMemoryMatrix<E,A,V> extends MemoryMatrix<E,A,V>
 				{
 					for (int col = 0; col < tuple.size() - 1; col++)
 					{
-						if(col >= colNames.size()) throw new MatrixException("csv row longer than colnames");
-						if( (line_number - 1) >= rowNames.size()) throw new MatrixException("csv rowcount longer than rownames");
-						
-						values[line_number - 1][col] = getValue(tuple, col + 1);
+						if (col >= colNames.size()) throw new MatrixException(
+								"new "
+										+ this.getClass().getSimpleName()
+										+ "() failed: csv row longer than colnames");
+						if ((line_number - 1) >= rowNames.size()) throw new MatrixException(
+								"new "
+										+ this.getClass().getSimpleName()
+										+ "() failed:csv rowcount longer than rownames");
+
+						values[line_number - 1][col] = valueConvertor
+								.read(tuple.getString(col + 1));
 					}
 
 				}
@@ -102,14 +137,27 @@ public class CsvMemoryMatrix<E,A,V> extends MemoryMatrix<E,A,V>
 			throw new MatrixException(e.getMessage());
 		}
 	}
-	
-	@SuppressWarnings("unchecked")
-	/** Helper method for unchecked cast*/
-	private V getValue(Tuple tuple, int index)
+
+	/**
+	 * Write the matrix to a file
+	 * 
+	 * @throws MatrixException
+	 */
+	public void store() throws MatrixException
 	{
-		return valueConvertor.read(tuple.getString(index));
+		if (this.file == null) throw new MatrixException(this.getClass()
+				.getSimpleName()
+				+ ".write() failed: file was null");
+		try
+		{
+			this.write(new CsvFileWriter(this.file));
+		}
+		catch (Exception e)
+		{
+			throw new MatrixException(e);
+		}
 	}
-	
+
 	public void write(CsvWriter writer) throws MatrixException
 	{
 		// NB this only works if names are unique!!!
@@ -131,5 +179,46 @@ public class CsvMemoryMatrix<E,A,V> extends MemoryMatrix<E,A,V>
 		}
 
 		writer.close();
+	}
+
+	// getters/setters
+	public ValueConvertor<E> getRowConvertor()
+	{
+		return rowConvertor;
+	}
+
+	public void setRowConvertor(ValueConvertor<E> rowConvertor)
+	{
+		this.rowConvertor = rowConvertor;
+	}
+
+	public ValueConvertor<A> getColConvertor()
+	{
+		return colConvertor;
+	}
+
+	public void setColConvertor(ValueConvertor<A> colConvertor)
+	{
+		this.colConvertor = colConvertor;
+	}
+
+	public ValueConvertor<V> getValueConvertor()
+	{
+		return valueConvertor;
+	}
+
+	public void setValueConvertor(ValueConvertor<V> valueConvertor)
+	{
+		this.valueConvertor = valueConvertor;
+	}
+
+	public File getFile()
+	{
+		return file;
+	}
+
+	public void setFile(File file)
+	{
+		this.file = file;
 	}
 }

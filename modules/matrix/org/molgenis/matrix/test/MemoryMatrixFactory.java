@@ -3,13 +3,12 @@ package org.molgenis.matrix.test;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.matrix.Matrix;
+import org.molgenis.matrix.DoubleMemoryMatrix;
 import org.molgenis.matrix.MatrixException;
-import org.molgenis.matrix.MemoryMatrix;
 
 public class MemoryMatrixFactory
 {
-	public static Matrix<String, String, Double> create(int rows, int cols)
+	public static DoubleMemoryMatrix create(int rows, int cols)
 			throws MatrixException
 	{
 		List<String> rowNames = new ArrayList<String>();
@@ -20,7 +19,7 @@ public class MemoryMatrixFactory
 		for (int i = 0; i < cols; i++)
 			colNames.add("col" + i);
 
-		MemoryMatrix<String, String, Double> matrix = new MemoryMatrix<String, String, Double>(
+		DoubleMemoryMatrix matrix = new DoubleMemoryMatrix(
 				rowNames, colNames);
 		for (int i = 0; i < rows; i++)
 			for (int j = 0; j < cols; j++)
