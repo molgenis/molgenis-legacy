@@ -15,6 +15,7 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import org.apache.commons.lang.StringUtils;
 
 import org.apache.commons.logging.LogFactory;
 import org.molgenis.framework.db.DatabaseException;
@@ -80,7 +81,9 @@ public class JPAQueryGeneratorUtil {
 	    QueryRule rule = new QueryRule(r);
 	    if (mapper != null) {
 		String attributeName = rule.getField();
-
+                if(!StringUtils.isEmpty(attributeName)) {
+                    attributeName = attributeName.substring(0,1).toLowerCase() + attributeName.substring(1);
+                }
 		Operator operator = rule.getOperator();
 		Predicate predicate = null;
                           

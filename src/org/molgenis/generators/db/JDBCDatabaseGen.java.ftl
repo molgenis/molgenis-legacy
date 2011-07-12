@@ -83,6 +83,7 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 	
 	private void setup()
 	{
+            <#if databaseImp != 'JPA'>
 		<#list model.entities as entity><#if !entity.isAbstract()>
 			<#if entity.decorator?exists>
 				<#if auth_loginclass?ends_with("SimpleLogin")>
@@ -98,6 +99,7 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 				</#if>
 			</#if>
 		</#if></#list>
+            </#if>
 	}
 	
 	<#if decorator_overriders != ''>/**
