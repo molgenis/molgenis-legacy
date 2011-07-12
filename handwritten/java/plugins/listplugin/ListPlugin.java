@@ -146,7 +146,7 @@ public class ListPlugin extends PluginModel<Entity> {
 			}
 		
 			// Populate Batch list
-			batchList = new ArrayList<MolgenisBatch>();//ct.getAllBatches();
+			batchList = ct.getAllBatches();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
