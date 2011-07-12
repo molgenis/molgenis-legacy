@@ -26,7 +26,6 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -370,8 +369,7 @@ public class ManageLitters extends PluginModel<Entity>
 					speciesId = ct.getMostRecentValueAsXref(motherId, measurementId);
 					measurementId = ct.getMeasurementId("AnimalType");
 					animalType = ct.getMostRecentValueAsString(motherId, measurementId);
-					measurementId = ct.getCustomNameFeatureId(this.getLogin().getUserId());
-					motherLabel = ct.getMostRecentValueAsString(motherId, measurementId);
+					motherLabel = ct.getObservationTargetLabel(motherId);
 					// Keep normal and transgene types, but set type of child from wild parents to normal
 					if (animalType.equals("C. Wildvang") || animalType.equals("D. Biotoop")) {
 						animalType = "A. Gewoon dier";
@@ -388,8 +386,7 @@ public class ManageLitters extends PluginModel<Entity>
 				List<ObservedValue> fatherValueList = fatherQuery.find();
 				if (fatherValueList.size() > 0) {
 					int fatherId = fatherValueList.get(0).getTarget_Id();
-					measurementId = ct.getCustomNameFeatureId(this.getLogin().getUserId());
-					fatherLabel = ct.getMostRecentValueAsString(fatherId, measurementId);
+					fatherLabel = ct.getObservationTargetLabel(fatherId);
 				}
 				// Set wean size
 				int weanSize = weanSizeFemale + weanSizeMale;

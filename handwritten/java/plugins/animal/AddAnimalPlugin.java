@@ -190,10 +190,9 @@ public class AddAnimalPlugin extends GenericPlugin
 		SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
 		
 		// Birth date
-		Date birthDate = null;
+		String birthDate = null;
 		if (!birthdate.getValue().equals("")) {
-			String birthDateString = birthdate.getValue();
-			birthDate = sdf.parse(birthDateString);
+			birthDate = birthdate.getValue();
 		}
 		
 		// Entry date
@@ -340,9 +339,8 @@ public class AddAnimalPlugin extends GenericPlugin
 			// Set birthdate
 			if (birthDate != null) {
 				app = appsToAddList.get(7);
-				SimpleDateFormat sdfDb = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 				valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
-						featureIdList.get(8), animalid, sdfDb.format(birthDate), 0));
+						featureIdList.get(8), animalid, birthDate, 0));
 			}
 			// Set custom name/ID
 			if (customNameFeature != null && customName != null) {
@@ -468,7 +466,7 @@ public class AddAnimalPlugin extends GenericPlugin
 			customNamePanel = new DivPanel("CustomName", ct.getMeasurementById(customNameFeatureId).getName() + 
 					":");
 		
-			customname = new TextLineInput("customname");
+			customname = new TextLineInput<String>("customname");
 			customname.setLabel("Base (may be empty):");
 			customNamePanel.add(customname);
 		

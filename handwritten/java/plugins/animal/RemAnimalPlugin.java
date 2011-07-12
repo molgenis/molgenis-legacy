@@ -158,7 +158,7 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 					measurementId = ct.getMeasurementId("DeathDate");
 					db.add(ct.createObservedValueWithProtocolApplication(investigationId, 
 							deathDatetime, null, protocolId, measurementId, animalId, 
-							deathDatetimeParsedString, 0));
+							deathDatetimeString, 0));
 				}
 				
 				// Set subproject end values

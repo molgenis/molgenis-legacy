@@ -286,14 +286,15 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 				
 				// Date-time of death (if applicable)
 				Date deathDatetime = null;
-				String deathDatetimeParsedString = null;
+				String deathDatetimeString = null;
+				//String deathDatetimeParsedString = null;
 				if (request.getString("deathdatetime") != null) {
-					String deathDatetimeString = request.getString("deathdatetime");
+					deathDatetimeString = request.getString("deathdatetime");
 					if (!deathDatetimeString.equals("")) {
 						SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
-						SimpleDateFormat sdfForDbCompare = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 						deathDatetime = sdf.parse(deathDatetimeString);
-						deathDatetimeParsedString = sdfForDbCompare.format(deathDatetime);
+						//SimpleDateFormat sdfForDbCompare = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+						//deathDatetimeParsedString = sdfForDbCompare.format(deathDatetime);
 					}
 				}
 				
@@ -337,7 +338,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 							int measurementId = ct.getMeasurementId("DeathDate");
 							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(investigationId, 
 									deathDatetime, null, protocolId, measurementId, animalId, 
-									deathDatetimeParsedString, 0));
+									deathDatetimeString, 0));
 						}
 						
 						// Set subproject end values

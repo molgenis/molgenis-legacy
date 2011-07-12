@@ -187,9 +187,8 @@ public class ManageParentgroups extends PluginModel<Entity>
 	private void resetUserFields() {
 		this.selectedMotherIdList.clear();
 		this.selectedFatherIdList.clear();
-		SimpleDateFormat sdfMolgenis = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
 		Date now = new Date();
-		this.setDatetime(sdfMolgenis.format(now));
+		this.setDatetime(sdf.format(now));
 		this.setGroupName(null);
 	}
 

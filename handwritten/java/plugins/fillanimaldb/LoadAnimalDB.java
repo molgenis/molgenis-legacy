@@ -371,7 +371,7 @@ public class LoadAnimalDB
 				Date birthDayDate = null;
 				if (birthDayString.equals("NULL")) {
 					birthDayString = null;
-				}else {
+				} else {
 					//change date formatting from mysql to molgenis style
 					birthDayDate = sdf.parse(birthDayString);
 					birthDayString = sdfMolgenis.format(birthDayDate);
@@ -852,7 +852,7 @@ public class LoadAnimalDB
 				db.add(app);
 				int protappid = app.getId();
 				int measurementId = ct.getMeasurementId("Experiment");
-				valuesToAddList.add(ct.createObservedValue(invid, protappid, entryDate, exitDate,measurementId, 
+				valuesToAddList.add(ct.createObservedValue(invid, protappid, entryDate, exitDate, measurementId, 
 						newanimalid, null, newexpid));
 				measurementId = ct.getMeasurementId("SourceTypeSubproject");
 				valuesToAddList.add(ct.createObservedValue(invid, protappid, entryDate, exitDate, measurementId,
@@ -995,6 +995,7 @@ public class LoadAnimalDB
 				if (newanimalid > 0) {
 					// date
 					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+					SimpleDateFormat sdfMolgenis = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
 					String dateString = tuple.getString("date");
 					Date eventDate = null;
 					if (!dateString.equals("NULL")) {
@@ -1038,23 +1039,22 @@ public class LoadAnimalDB
 								measurementId = ct.getMeasurementId("DateOfBirth");
 								valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, 
 										eventDate, null, protocolId, measurementId, newanimalid, 
-										sdf.format(eventDate), 0));
+										sdfMolgenis.format(eventDate), 0));
 							} else {
 								// Set the broughtinevent based on the oldanimaldb "Broughtin" event
 								int protocolId = ct.getProtocolId("SetOldAnimalDBBroughtinDate");
 								measurementId = ct.getMeasurementId("OldAnimalDBBroughtinDate");
 								valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, 
 										eventDate, null, protocolId, measurementId, newanimalid, 
-										sdf.format(eventDate), 0));
+										sdfMolgenis.format(eventDate), 0));
 							}
 						}
 						if (eventType.equals("Died")) {
 							// Set the date of death based on the oldanimaldb "Died" event
-							String eventDateParsedString = sdf.format(eventDate);
 							int protocolId = ct.getProtocolId("SetDeathDate");
 							int measurementId = ct.getMeasurementId("DeathDate");
 							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, eventDate, null, 
-									protocolId, measurementId, newanimalid, eventDateParsedString, 0));
+									protocolId, measurementId, newanimalid, sdfMolgenis.format(eventDate), 0));
 							
 							// Report as dead/removed by setting the endtime of the most recent Active value
 							measurementId = ct.getMeasurementId("Active");
@@ -1075,7 +1075,7 @@ public class LoadAnimalDB
 							Query<ObservedValue> q = db.query(ObservedValue.class);
 							q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, newanimalid));
 							q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, measurementId));
-							q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, eventDateParsedString));
+							q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, sdf.format(eventDate)));
 							q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 							List<ObservedValue> valueList = q.find();
 							if (valueList.size() == 1) // Safe assumption: animal can only be in one experiment at a time
@@ -1108,7 +1108,7 @@ public class LoadAnimalDB
 							int protocolId = ct.getProtocolId("SetCageCleanDate");
 							int measurementId = ct.getMeasurementId("CageCleanDate");
 							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, eventDate, null, 
-									protocolId, measurementId, newanimalid, sdf.format(eventDate), 0));
+									protocolId, measurementId, newanimalid, sdfMolgenis.format(eventDate), 0));
 						}
 
 						// Set the weandate based on the oldanimaldb "Wean" event
@@ -1116,7 +1116,7 @@ public class LoadAnimalDB
 							int protocolId = ct.getProtocolId("SetWeanDate");
 							int measurementId = ct.getMeasurementId("Weandate");
 							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, eventDate, null, 
-									protocolId, measurementId, newanimalid, sdf.format(eventDate), 0));
+									protocolId, measurementId, newanimalid, sdfMolgenis.format(eventDate), 0));
 						}
 
 						// Set the Remark application based on the oldanimaldb "Remark" event
