@@ -1,3 +1,4 @@
+############
 
 [paste test results in R..]
 [HINT: use log4j.appender.CONSOLE.Threshold=ERROR]
@@ -5,26 +6,22 @@
 [and, SKIPELEMENT should be FALSE]
 [now use..]
 
-outFileName <- "p1.png"
-ylim <- 7E+5
+# don't copy line below if you don't want a file
+png(filename=paste("/Users/joerivandervelde/Desktop/", "plot.png"), height=1000, width=1000, bg="white")
+
+
+ylim=c(1e+2,1e+8)
 scale <- .8
 names(bin) <- c('Write', 'Text_row', 'Text_col', 'Text_sublist', 'Text_suboffs', 'Deci_row', 'Deci_col', 'Deci_sublist', 'Deci_suboffs')
 
-# don't copy line below if you don't want a file
-#png(filename=paste("/Users/joerivandervelde/Desktop/", outFileName), height=1200, width=800, bg="white")
-
-#complete header.. huge when many tests ran:
-#boxplot(bin, col="snow2", cex.lab=scale, cex.axis=scale, cex.main=scale, main=paste("Binary vs Database vs CSV vs Memory matrix performance\nSettings: ", matrixDimension1, " by ", matrixDimension2, ", maxTextLength ", maxTextLength, ", fixedTextLength ", fixedTextLength, ", sparse ", sparse, "\nrunRegressionTests ", runRegressionTests, ", runPerformanceTests", runPerformanceTests, ", skipPerElement ", skipPerElement), border="green4", ylab="Writing / reading speed (elements/sec)", xlab="Data type / retrieval method", ylim=c(0,ylim))
-#header without other info
-boxplot(bin, col="snow2", cex.lab=scale, cex.axis=scale, cex.main=scale, main="Binary vs Database vs CSV vs Memory matrix performance", border="green4", ylab="Writing / reading speed (elements/sec)", xlab="Data type / retrieval method", ylim=c(0,ylim))
-
+boxplot(bin, ylim=ylim, log = "y", col="snow2", cex.lab=scale, cex.axis=scale, cex.main=scale, main="Binary vs Database vs CSV vs Memory matrix performance", border="green4", ylab="Writing / reading speed (elements/sec)", xlab="Data type / retrieval method")
 boxplot(db, col="snow2", cex.lab=scale, cex.axis=scale, cex.main=scale, border="orangered", add=TRUE, names=FALSE)
 boxplot(file, col="snow2", cex.lab=scale, cex.axis=scale, cex.main=scale, border="darkgoldenrod3", add=TRUE, names=FALSE)
 boxplot(memory, col="snow2", cex.lab=scale, cex.axis=scale, cex.main=scale, border="royalblue", add=TRUE, names=FALSE)
-legend(x=1,y=ylim, c("Bin","DB","CSV","Mem"), cex=1, col=c("green4","orangered","darkgoldenrod3","royalblue"), lty=1, lwd=3)
+legend(x=1,y=1e+8, c("Bin","DB","CSV","Mem"), cex=1, col=c("green4","orangered","darkgoldenrod3","royalblue"), lty=1, lwd=3)
 
 # don't copy line below if you don't want a file
-#dev.off()
+dev.off()
 
 
 ############

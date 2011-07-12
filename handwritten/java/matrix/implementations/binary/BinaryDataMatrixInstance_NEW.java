@@ -1,4 +1,4 @@
-package matrix.implementations.binary.etc;
+package matrix.implementations.binary;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -13,15 +13,15 @@ import matrix.AbstractDataMatrixInstance;
 import org.apache.log4j.Logger;
 import org.molgenis.data.Data;
 
-public class BinaryMatrix_ADVANCED_WORKINPROGRESS<E> extends AbstractDataMatrixInstance<E>
+public class BinaryDataMatrixInstance_NEW<E> extends AbstractDataMatrixInstance<E>
 {
 	Logger logger = Logger.getLogger(getClass().getSimpleName());
-	int hardDriveCache = 8000000; //FIXME: how to determine? whats best general size?
+	int HD_BLOCK_SIZE = 8000000; //FIXME: how to determine? whats best general size?
 
 	/***********/
 	/** CONSTRUCTOR */
 	/***********/
-	public BinaryMatrix_ADVANCED_WORKINPROGRESS(File bin) throws Exception
+	public BinaryDataMatrixInstance_NEW(File bin) throws Exception
 	{
 		this.setBin(bin);
 
@@ -132,9 +132,9 @@ public class BinaryMatrix_ADVANCED_WORKINPROGRESS<E> extends AbstractDataMatrixI
 			int endOfElementsPointer = startOfElements + (this.getNumberOfCols() * this.getNumberOfRows() * 8);
 			this.setEndOfElementsPointer(endOfElementsPointer);
 		}
-		logger.info(dataDescription.getValueType() + " - getStartOfElementsPointer: "
+		System.out.println(dataDescription.getValueType() + " - getStartOfElementsPointer: "
 				+ this.getStartOfElementsPointer());
-		logger.info(dataDescription.getValueType() + " - getEndOfElementsPointer: " + this.getEndOfElementsPointer());
+		System.out.println(dataDescription.getValueType() + " - getEndOfElementsPointer: " + this.getEndOfElementsPointer());
 	}
 
 	/***********/
@@ -142,9 +142,9 @@ public class BinaryMatrix_ADVANCED_WORKINPROGRESS<E> extends AbstractDataMatrixI
 	/***********/
 
 	// Primary function to read doubles
-	public Double[] readNextDoublesFromRAF(RandomAccessFile raf, int nr) throws IOException
+	public Double[] readNextDoublesFromRAF(RandomAccessFile raf, int elementAmount) throws IOException
 	{
-		byte[] arr = new byte[nr * 8];
+		byte[] arr = new byte[elementAmount * 8];
 		raf.read(arr);
 		return byteArrayToDoubles(arr);
 	}
@@ -154,7 +154,7 @@ public class BinaryMatrix_ADVANCED_WORKINPROGRESS<E> extends AbstractDataMatrixI
 	 */
 	public Object[] readStringsFromRAF(RandomAccessFile raf, int elementAmount, int elementLength) throws IOException
 	{
-		//logger.info("readFixedTextFromRAF called with: rafPointer=" + raf.getFilePointer() + ", elementAmount="+ elementAmount + ", elementLength=" + elementLength);
+		//System.out.println("readFixedTextFromRAF called with: rafPointer=" + raf.getFilePointer() + ", elementAmount="+ elementAmount + ", elementLength=" + elementLength);
 		Object[] result = new Object[elementAmount];
 		int totalBytes = elementAmount * elementLength;
 
@@ -166,7 +166,7 @@ public class BinaryMatrix_ADVANCED_WORKINPROGRESS<E> extends AbstractDataMatrixI
 		for (int i = 0; i < bytes.length; i++)
 		{
 			chars[i] = (char) bytes[i];
-			//logger.info("chars[i]: " + chars[i]);
+			//System.out.println("chars[i]: " + chars[i]);
 		}
 
 		for (int i = 0; i < elementAmount; i++)
@@ -187,7 +187,7 @@ public class BinaryMatrix_ADVANCED_WORKINPROGRESS<E> extends AbstractDataMatrixI
 			}else{
 				result[i] = fromChars;
 			}
-			//logger.info("result[" + i + "]: " + result[i]);
+			//System.out.println("result[" + i + "]: " + result[i]);
 		}
 		return result;
 	}
@@ -224,44 +224,6 @@ public class BinaryMatrix_ADVANCED_WORKINPROGRESS<E> extends AbstractDataMatrixI
 			}
 		}
 		return res;
-	}
-
-	@Deprecated
-	public static double byteArrayToDouble(byte[] arr)
-	{
-		long longBits = 0;
-		for (int i = 0; i < arr.length; i++)
-		{
-			longBits <<= 8;
-			longBits |= (long) arr[i] & 255;
-		}
-		return Double.longBitsToDouble(longBits);
-	}
-
-	@Deprecated
-	public Double readNextDoubleFromRAF(RandomAccessFile raf) throws IOException
-	{
-		byte[] arr = new byte[8];
-		raf.read(arr);
-		double d = byteArrayToDouble(arr);
-		if (d == Double.MAX_VALUE)
-		{
-			return null;
-		}
-		return d;
-	}
-
-	@Deprecated
-	public String readNextStringFromRAF(RandomAccessFile raf, int stringLength) throws IOException
-	{
-		byte[] string = new byte[stringLength];
-		raf.read(string);
-		String result = new String(string);
-		if (this.getNullCharPattern().matcher(result).matches())
-		{
-			result = "";
-		}
-		return result;
 	}
 
 	/***********/
@@ -351,7 +313,7 @@ public class BinaryMatrix_ADVANCED_WORKINPROGRESS<E> extends AbstractDataMatrixI
 	@Override
 	/**
 	 * Get only one element (from a RandomAccessFile instance), therefore extremely inefficient to retrieve many elements and not optimizable.
-	 * @status: Ready for testing and review.
+	 * @status: Done
 	 */
 	public Object getElement(int rowindex, int colindex) throws Exception
 	{
@@ -387,8 +349,8 @@ public class BinaryMatrix_ADVANCED_WORKINPROGRESS<E> extends AbstractDataMatrixI
 
 	@Override
 	/**
-	 * Get a row (from a RandomAccessFile instance), optimized by reading the entire row at once - or in blocks of 8 megabyte for variable text elements.
-	 * @status: Work in progress.
+	 * Get a row (from a RandomAccessFile instance), optimized by reading the entire row at once
+	 * @status: Done
 	 */
 	public Object[] getRow(int rowIndex) throws Exception
 	{
@@ -418,54 +380,22 @@ public class BinaryMatrix_ADVANCED_WORKINPROGRESS<E> extends AbstractDataMatrixI
 				}
 				raf.seek(this.startOfElementsPointer + byteOffset);
 				
-				logger.info("starting to read at: " + (this.startOfElementsPointer + byteOffset));
-				logger.info("can read until: " + this.endOfElementsPointer);
+//				System.out.println("starting to read at: " + (this.startOfElementsPointer + byteOffset));
+//				System.out.println("can read until: " + this.endOfElementsPointer);
 				int diff = (int) (this.endOfElementsPointer - (this.startOfElementsPointer + byteOffset));
-				logger.info("which is " + diff + " bytes");
+//				System.out.println("which is " + diff + " bytes");
 			
+				// read the row as 1 big element
+				Object[] tmpResult = readStringsFromRAF(raf, 1, diff);
+				String rowLine = tmpResult[0].toString();
 				
-				
-				if(diff < hardDriveCache){
-					// in this case, read the entire rest of the file by reading one big element
-					Object[] tmpResult = readStringsFromRAF(raf, 1, diff);
-					System.out.println("read: " + tmpResult[0]);
-				}else{
-					// in this case, read hard drive cache size from file
-					int iterations = hardDriveCache / diff;
-					int leftover = hardDriveCache % diff;
-					for(int i=0; i<iterations; i++){
-						Object[] tmpResult = readStringsFromRAF(raf, 1, hardDriveCache);
-						System.out.println("iteration "+i+", read: " + tmpResult[0]);
-					}
-					Object[] tmpResult = readStringsFromRAF(raf, 1, leftover);
-					System.out.println("leftover, read: " + tmpResult[0]);
-					
-				}
-				
-				for (int i = 0; i < result.length; i++)
+				//cut up the result
+				int startAt = 0;
+				for (int i = 0; i <  this.getNumberOfCols(); i++)
 				{
-					//result[i] = readNextStringFromRAF(raf, this.getTextDataElementLengths()[startIndex + i]);
-					
-					
-					//first 'advanced' implementation.. how to do this?
-					
-					//read in 8 megs if possible (check with end pointer)
-					
-					//do this by scaling the string size to the number of columns retrieved?? maybe wrap this or use 'primitive' function??
-					
-					//then iterate data and assign the strings
-					
-					// if enough, quit
-					
-					// if not enough, goto start :)
-					
-					
-					
-					//Object[] tmpResult = readStringsFromRAF(raf, this.getNumberOfCols(), 100);
-					
-					
-					
-					
+					int elementLength = this.getTextDataElementLengths()[i+startIndex];
+					result[i] = rowLine.substring(startAt, startAt+elementLength);
+					startAt += elementLength;
 				}
 			}
 		}
@@ -475,13 +405,67 @@ public class BinaryMatrix_ADVANCED_WORKINPROGRESS<E> extends AbstractDataMatrixI
 
 	@Override
 	/**
-	 * Get a column (from a RandomAccessFile instance), optimized by reading in blocks of 8 megabyte so get multiple values at once - unless the colums are further apart than 8 megabyte ofcourse. (for variable length text elements this cannot be guessed...)
+	 * Get a column (from a RandomAccessFile instance), optimized by reading in blocks of HD_BLOCK_SIZE bytes
+	 * to get multiple values at once - unless the colums are further apart than HD_BLOCK_SIZE bytes ofcourse.
+	 * (for variable length text elements this cannot be guessed...)
 	 * @status: TODO
 	 */
-	public E[] getCol(int colIndex) throws Exception
+	public Object[] getCol(int colIndex) throws Exception
 	{
-		// TODO Auto-generated method stub
-		return null;
+		Object[] result = new Object[this.getNumberOfRows()];
+		RandomAccessFile raf = new RandomAccessFile(this.getBin(), "r");
+		
+		if (this.getData().getValueType().equals("Decimal"))
+		{
+			raf.seek(this.startOfElementsPointer + (colIndex * 8));
+			
+			//find out if next column value is more than HD_BLOCK_SIZE away
+			//if so: seperate queries
+			//if not.. read in ??
+			
+			//retrieve by skipping over, time it
+			//if closer than HD_BLOCK_SIZE together, retrieve multiple and time it
+			//pick fastest for the rest
+			
+			int theEnd = this.getEndOfElementsPointer();
+			
+			if(this.getNumberOfCols() > HD_BLOCK_SIZE){
+				//retrieve per element because we can't use block retrieve anyway!
+				//TODO
+			}else{
+				//maybe retrieving blocks is useful now...
+				
+				if(this.getNumberOfRows() < 30){
+					//test of speed difference only useful when retrieving many elements
+					//
+				}else{
+					//find out per-element speed, retrieve 10
+				//	for()
+				//	readNextDoublesFromRAF(raf, 1)[0];
+				}
+				
+				
+			}
+			
+			if(theEnd > 32412343){
+				result = readNextDoublesFromRAF(raf, result.length);
+			}
+			
+			
+		}
+		else
+		{
+			if (this.getTextElementLength() != 0)
+			{
+				
+			}
+			else
+			{
+				
+			}
+		}
+			
+		return result;
 	}
 
 	/**

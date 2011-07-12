@@ -102,6 +102,7 @@ public class TestBinMatrix extends TestCase
 			{
 				for (String method : methods)
 				{
+					System.out.println("*** METHOD: " + method);
 					assertTrue(TestingMethods.parseToPlainAndCompare(logger, bm, bm.getData(),
 							h.getInputFilesDir(), method, true, true));
 					// TestingMethods.parseToPlainAndCompare(logger, bm,
