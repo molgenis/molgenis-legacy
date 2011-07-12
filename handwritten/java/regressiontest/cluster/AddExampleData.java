@@ -13,7 +13,7 @@ public class AddExampleData
 {
 	public AddExampleData(Database db) throws Exception
 	{
-		File tarFu = new File("./data/xqtlwb/gcc_xqtl.tar.gz");
+		File tarFu = new File("./publicdata/xqtl/gcc_xqtl.tar.gz");
 
 		File extractDir = TarGz.tarExtract(tarFu);
 

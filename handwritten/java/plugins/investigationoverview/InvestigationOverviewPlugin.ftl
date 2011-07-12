@@ -54,7 +54,6 @@
 		<td colspan="2">There are no annotations.</td>
 	<#else>
 		<#list model.annotationList?keys as a>
-		DEBUG: A = ${a}
 			<td>
 			<#--if a?starts_with("Data")>
 				<a href="?select=Data">${blueSquare} ${a}</a>
