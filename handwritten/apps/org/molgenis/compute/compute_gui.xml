@@ -77,12 +77,19 @@
 				<plugin name="console" type="org.molgenis.compute.ConsolePlugin" />
 			</menu>
 		</menu>
+		<menu name="Reports">
+			<plugin name="ListPlugin" type="plugins.listplugin.ListPlugin"
+				label="View value matrix" />
+			<plugin name="MatrixViewExample" type="org.molgenis.matrix.example.MatrixViewExample1"
+				label="View NEW value matrix" />
+		</menu>
 		<menu name="Admin">
 			<form name="LibraryBarcodes" entity="LibraryBarcode" />
 			<form name="LibraryCapturings" entity="LibraryCapturing" />
 			<form name="AllElement" entity="WorkflowElement" viewtype="list" />
 			<form name="AllComputeApplications" entity="ComputeApplication"
 				viewtype="record" />
+				<form name="AllMeasurements" entity="Measurement" viewtype="list" />
 			<form name="AllObservedValues" entity="ObservedValue" viewtype="list" />
 			<!-- form name="Outputs" entity="ProtocolOutput" viewtype="list" /> -->
 			<plugin name="GenericExport"
