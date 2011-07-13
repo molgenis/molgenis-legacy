@@ -30,7 +30,7 @@ public class XqtlGenerate
 		try
 		{
 			deleteDirectory(new File("hsqldb"));
-			new Molgenis("handwritten/apps/org/molgenis/xgap/xqtlworkbench_standalone/xqtl.properties").generate();
+			new Molgenis("handwritten/apps/org/molgenis/xgap/xqtlworkbench/xqtl.properties").generate();
 			
 		} catch(Exception e)
 		{

@@ -1,10 +1,10 @@
 <molgenis name="molgenis_apps" label="xQTL workbench">
 	<plugin name="molgenis_header" type="plugins.cluster.demo.header.MolgenisHeader" />
 	<menu name="main">
-		<menu label="Home" name="Welcome">
-			<plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.ClusterDemo" />
-			<plugin label="Login" name="UserLogin" type="org.molgenis.auth.ui.UserLogin" />
-		</menu>
+		
+		<plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.ClusterDemo" />
+		
+		<plugin label="Login" name="UserLogin" type="org.molgenis.auth.ui.UserLogin" />
 
 		<!--plugin name="GeneNetwork" type="plugins.genenetwork.GeneNetwork"/ -->
 
@@ -29,7 +29,7 @@
 				</form>
 				<menu name="BasicAnnotations" label="View annotations">
 					<form name="Individuals" entity="Individual" />
-					<form name="Panels" entity="Panel" />
+					<form name="Panels" entity="Panel" group="biologist" />
 					<form name="Chromosomes" entity="Chromosome" />
 					<form name="Markers" entity="Marker" />
 					<form name="Genes" entity="Gene" />
