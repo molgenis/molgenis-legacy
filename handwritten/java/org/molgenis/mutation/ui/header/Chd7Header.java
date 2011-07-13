@@ -8,31 +8,20 @@
 package org.molgenis.mutation.ui.header;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
-public class Chd7Header extends PluginModel<Entity>
+public class Chd7Header extends EasyPluginController<Chd7HeaderModel>
 {
 
 	private static final long serialVersionUID = 6224612078995632056L;
 
 	public Chd7Header(String name, ScreenController<?> parent)
 	{
-		super(name, parent);
-	}
-
-	@Override
-	public String getViewName()
-	{
-		return "org_molgenis_mutation_ui_header_Chd7Header";
-	}
-
-	@Override
-	public String getViewTemplate()
-	{
-		return "org/molgenis/mutation/ui/header/Chd7Header.ftl";
+		super(name, null, parent);
+		this.setModel(new Chd7HeaderModel(this));
+		this.setView(new FreemarkerView("Chd7Header.ftl", getModel()));
 	}
 
 	@Override
@@ -48,7 +37,10 @@ public class Chd7Header extends PluginModel<Entity>
 //		cp res/css/menu.css generated-res/css
 //		cp res/scripts/all.js generated-res/scripts
 //		cp res/img/*.jpg generated-res/img
-		
+
+		headers += String.format(cssFormat, "res/displaytag/css/displaytag.css");
+		//headers += String.format(cssFormat, "res/displaytag/css/screen.css");
+		//headers += String.format(cssFormat, "res/displaytag/css/site.css");
 		headers += String.format(cssFormat, "res/css/col7a1/colors.css");
 		headers += String.format(cssFormat, "res/css/col7a1/data.css");
 		//headers += String.format(cssFormat, "res/css/main.css");
@@ -57,24 +49,10 @@ public class Chd7Header extends PluginModel<Entity>
 		
 		return headers;
 	}
-	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
-		//nothing to do here
-	}
 
 	@Override
 	public void reload(Database db)
 	{
 		//nothing to do here
-	}
-	
-	@Override
-	public boolean isVisible()
-	{
-		//you can use this to hide this plugin, e.g. based on user rights.
-		//e.g.
-		//if(!this.getLogin().hasEditPermission(myEntity)) return false;
-		return true;
 	}
 }
