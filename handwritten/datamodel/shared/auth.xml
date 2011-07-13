@@ -12,11 +12,10 @@
 			-->
 		</entity>
 
-		<!-- why this mref table? MOLGENIS autogenerates it when using MREFs? -->
-		<entity name="MolgenisUserGroupLink" system="true">
+		<entity name="MolgenisRoleGroupLink" system="true">
 			<field name="id" type="autoid" />
 			<field name="group_" type="xref" xref_field="MolgenisGroup.id" xref_label="name" />
-			<field name="user_" type="xref" xref_field="MolgenisUser.id" xref_label="name" />
+			<field name="role_" type="xref" xref_field="MolgenisRole.id" xref_label="name" />
 		</entity>
 		
 		<entity name="MolgenisUser" extends="MolgenisRole" decorator="org.molgenis.auth.MolgenisUserDecorator" system="true">

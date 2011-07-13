@@ -10,7 +10,7 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.auth.MolgenisRole;
 import org.molgenis.auth.MolgenisUser;
-import org.molgenis.auth.MolgenisUserGroupLink;
+import org.molgenis.auth.MolgenisRoleGroupLink;
 import org.molgenis.auth.util.PasswordHasher;
 import org.molgenis.auth.vo.MolgenisUserSearchCriteriaVO;
 import org.molgenis.framework.db.Database;
@@ -72,10 +72,12 @@ public class MolgenisUserService
 		List<Integer> roleIdList          = new ArrayList<Integer>();
 		roleIdList.add(role.getId());
 
-		List<MolgenisUserGroupLink> links = this.db.query(MolgenisUserGroupLink.class).equals(MolgenisUserGroupLink.USER_, role.getId()).find();
+		List<MolgenisRoleGroupLink> links = this.db.query(MolgenisRoleGroupLink.class).equals(MolgenisRoleGroupLink.ROLE_, role.getId()).find();
 
-		for (MolgenisUserGroupLink link : links)
-			roleIdList.add(link.getGroup_Id());
+		for (MolgenisRoleGroupLink link : links) {
+			//roleIdList.add(link.getGroup_Id());
+			findGroupIds(db.findById(MolgenisRole.class, link.getGroup_Id()));
+		}
 		
 		return roleIdList;
 	}

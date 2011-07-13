@@ -61,8 +61,8 @@ public class MolgenisUserDecorator<E extends MolgenisUser> extends MappingDecora
 				return count;
 			}
 			
-			MolgenisUserGroupLink mugl = new MolgenisUserGroupLink();
-			mugl.setUser_Id(e.getId());
+			MolgenisRoleGroupLink mugl = new MolgenisRoleGroupLink();
+			mugl.setRole_Id(e.getId());
 			mugl.setGroup_Id(mg.getId());
 			try {
 				getDatabase().add(mugl);
@@ -101,13 +101,13 @@ public class MolgenisUserDecorator<E extends MolgenisUser> extends MappingDecora
 	public int remove(List<E> entities) throws DatabaseException
 	{
 		// add your pre-processing here
-		// first remove corresponding MolgenisUserGroupLink entries, so we will be allowed to remove the User entities
+		// first remove corresponding MolgenisRoleGroupLink entries, so we will be allowed to remove the User entities
 		for (E e : entities)
 		{
 			try {
-				//List<MolgenisUserGroupLink> molgenisUserGroupLink = getDatabase().query(MolgenisUserGroupLink.class).eq(MolgenisUserGroupLink.USER__NAME,  e.getIdValue()).find();
-				MolgenisUserGroupLink molgenisUserGroupLink = getDatabase().findById(MolgenisUserGroupLink.class, e.getId());
-				getDatabase().remove(molgenisUserGroupLink);
+				//List<MolgenisRoleGroupLink> MolgenisRoleGroupLink = getDatabase().query(MolgenisRoleGroupLink.class).eq(MolgenisRoleGroupLink.USER__NAME,  e.getIdValue()).find();
+				MolgenisRoleGroupLink MolgenisRoleGroupLink = getDatabase().findById(MolgenisRoleGroupLink.class, e.getId());
+				getDatabase().remove(MolgenisRoleGroupLink);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}

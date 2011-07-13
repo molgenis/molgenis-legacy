@@ -226,7 +226,7 @@ public class AnimalDbUsers extends PluginModel<Entity>
 				permList.add(makePermission(db, userId, "write","org.molgenis.news.MolgenisNews"));
 				permList.add(makePermission(db, userId, "write","org.molgenis.auth.MolgenisRole"));
 				permList.add(makePermission(db, userId, "write","org.molgenis.auth.MolgenisGroup"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.auth.MolgenisUserGroupLink"));
+				permList.add(makePermission(db, userId, "write","org.molgenis.auth.MolgenisRoleGroupLink"));
 				permList.add(makePermission(db, userId, "write","org.molgenis.auth.MolgenisUser"));
 				permList.add(makePermission(db, userId, "write","org.molgenis.auth.MolgenisEntity"));
 				permList.add(makePermission(db, userId, "write","org.molgenis.auth.MolgenisPermission"));

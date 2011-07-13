@@ -28,7 +28,7 @@
 				<form name="MolgenisGroup" entity="MolgenisGroup" label="Group" />
 				<form name="MolgenisEntity" entity="MolgenisEntity" label="Entity" />
 				<form name="MolgenisPermission" entity="MolgenisPermission" label="Permission" />
-				<form name="MolgenisUserGroupLink" entity="MolgenisUserGroupLink"/>
+				<form name="MolgenisRoleGroupLink" entity="MolgenisRoleGroupLink"/>
 			</menu>
 			<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard" label="Batch Upload" />
 			<plugin name="GenerateN3andRDF" type="plugins.mapping.GenerateN3andRDF"	label="Mapping" />

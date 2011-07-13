@@ -23,7 +23,7 @@
 			<menu name="usermanagement" position="left" label="Security menu" >
 				<form name="MolgenisUser" entity="MolgenisUser" view="list" label="Users"/>
 				<form name="MolgenisGroup" entity="MolgenisGroup" view="list" label="Groups"/>
-				<form name="MolgenisUserGroupLink" entity="MolgenisUserGroupLink" view="list" label="Users in groups"/>
+				<form name="MolgenisRoleGroupLink" entity="MolgenisRoleGroupLink" view="list" label="Users in groups"/>
 				<form name="MolgenisEntity" entity="MolgenisEntity" view="list" label="Entities"/>
 				<form name="MolgenisPermission" entity="MolgenisPermission" view="list" label="Permissions"/>
 				<plugin name="PermissionManagementPlugin" type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin"
