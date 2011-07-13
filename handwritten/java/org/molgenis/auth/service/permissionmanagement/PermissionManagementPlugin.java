@@ -135,11 +135,5 @@ public class PermissionManagementPlugin extends PluginModel<Entity> {
     {
     	this.setMessages();
     }
-    
-    @Override
-    public boolean isVisible() {
-    	// Show this one always!
-    	return true;
-    }
 
 }
