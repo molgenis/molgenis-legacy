@@ -33,7 +33,7 @@ public class TestPhenoMatrix
 	public static void setUp() throws FileNotFoundException, SQLException, IOException, CmdLineException, Exception
 	{
 		// clean database
-		new Molgenis(PROPERTIES_FILE).updateDb();
+		new Molgenis(PROPERTIES_FILE).updateDb(true);
 	}
 
 	@Test

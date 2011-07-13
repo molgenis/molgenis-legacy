@@ -11,5 +11,6 @@
 		<form name="MolgenisUsers" entity="MolgenisUser"/>
 		<form name="Persons" entity="Person"/>
 		<plugin name="TestMatrixView" type="org.molgenis.matrix.example.MatrixViewExample1"/>
+		<plugin name="StringMatrixView" type="org.molgenis.matrix.example.StringMatrixViewExample"/>
 	</menu>
 </molgenis>
