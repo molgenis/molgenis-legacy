@@ -7,6 +7,7 @@ public class ObservedValueVO implements Serializable
 	private static final long serialVersionUID = 1L;
 
 	private String featureName;
+	private String targetName;
 	private String value;
 
 	public String getFeatureName() {
@@ -14,6 +15,12 @@ public class ObservedValueVO implements Serializable
 	}
 	public void setFeatureName(String featureName) {
 		this.featureName = featureName;
+	}
+	public String getTargetName() {
+		return targetName;
+	}
+	public void setTargetName(String targetName) {
+		this.targetName = targetName;
 	}
 	public String getValue() {
 		return value;

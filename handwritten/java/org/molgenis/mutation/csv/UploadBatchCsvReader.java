@@ -36,6 +36,7 @@ import org.molgenis.mutation.service.PatientService;
 import org.molgenis.mutation.vo.MutationSearchCriteriaVO;
 import org.molgenis.mutation.vo.MutationSummaryVO;
 import org.molgenis.mutation.vo.MutationUploadVO;
+import org.molgenis.mutation.vo.ObservedValueVO;
 import org.molgenis.mutation.vo.PatientSummaryVO;
 import org.molgenis.mutation.vo.PhenotypeDetailsVO;
 import org.molgenis.core.vo.PublicationVO;
@@ -94,7 +95,7 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 				//parse object, setting defaults and values from file
 //				if (lineNo > 5) return;
 				PatientSummaryVO patientSummaryVO = new PatientSummaryVO();
-				
+
 				patientSummaryVO.setSubmissionDate(submission.getDate());
 
 				patientSummaryVO.setPatientNumber(tuple.getString("Local patient number"));
@@ -108,35 +109,35 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 
 				if (StringUtils.isNotEmpty(tuple.getString("cDNA change_1")))
 				{
-					MutationSummaryVO mutationSummaryVO = new MutationSummaryVO();
-					mutationSummaryVO.setCdnaNotation("c." + tuple.getString("cDNA change_1"));
-					patientSummaryVO.getVariantSummaryVOList().add(mutationSummaryVO);
-
-					MutationUploadVO mutationUploadVO1 = new MutationUploadVO();
-					mutationUploadVO1.setMutation(new Mutation());
-					mutationUploadVO1.getMutation().setCdna_Notation("c." + tuple.getString("cDNA change_1"));
-					mutationService.assignValuesFromNotation(mutationUploadVO1);
+					MutationUploadVO mutationUploadVO = new MutationUploadVO();
+					mutationUploadVO.setMutation(new Mutation());
+					mutationUploadVO.getMutation().setCdna_Notation("c." + tuple.getString("cDNA change_1"));
+					mutationService.assignValuesFromNotation(mutationUploadVO);
 					if (StringUtils.isNotEmpty(tuple.getString("Protein change_1")))
-						mutationUploadVO1.getMutation().setAa_Notation("p." + tuple.getString("Protein change_1"));
+						mutationUploadVO.getMutation().setAa_Notation("p." + tuple.getString("Protein change_1"));
 					if (StringUtils.isNotEmpty(tuple.getString("Consequence_1")))
-						mutationUploadVO1.getMutation().setConsequence(ObjectUtils.toString(tuple.getString("Consequence_1"), ""));
-					mutationUploadVO1.getMutation().setInheritance(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Inheritance_1")), ""));
-					
-					MutationSearchCriteriaVO criteria = new MutationSearchCriteriaVO();
-					criteria.setVariation(mutationUploadVO1.getMutation().getCdna_Notation());
-					List<MutationSummaryVO> results = mutationService.findMutations(criteria);
-					if (results.size() > 0)
+						mutationUploadVO.getMutation().setConsequence(ObjectUtils.toString(tuple.getString("Consequence_1"), ""));
+					mutationUploadVO.getMutation().setInheritance(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Inheritance_1")), ""));
+	
+					mutationIdentifier = mutationIdentifier + 1;
+					mutationUploadVO.getMutation().setIdentifier("M" + mutationIdentifier);
+					mutationUploadVO.getMutation().setName("M" + mutationIdentifier);
+
+					// Insert mutation if it does not exist already
+
+					MutationSearchCriteriaVO criteria   = new MutationSearchCriteriaVO();
+					criteria.setVariation(mutationUploadVO.getMutation().getCdna_Notation());
+					List<MutationSummaryVO> results     = mutationService.findMutations(criteria);
+
+					if (results.size() != 1)
 					{
-						//TODO: fixme (change of MutationSummaryVO)
-//						patientSummaryVO.setMutation1(results.get(0).getMutation());
+						mutationService.insert(mutationUploadVO);
+						System.out.println(">>>Inserted mutation: " + mutationUploadVO.getMutation().toString());
 					}
-					else
-					{
-						mutationIdentifier = mutationIdentifier + 1;
-						mutationUploadVO1.getMutation().setIdentifier("M" + mutationIdentifier);
-						mutationUploadVO1.getMutation().setName("M" + mutationIdentifier);
-						mutationService.insert(mutationUploadVO1);
-					}
+					MutationSummaryVO mutationSummaryVO = new MutationSummaryVO();
+					mutationSummaryVO.setCdnaNotation(mutationUploadVO.getMutation().getCdna_Notation());
+
+					patientSummaryVO.getVariantSummaryVOList().add(mutationSummaryVO);
 				}
 
 				// Second mutation can be 'NA' or 'unknown':
@@ -149,42 +150,42 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 						patientSummaryVO.setVariantComment(tuple.getString("cDNA change_2").toUpperCase());
 					else
 					{
-						MutationSummaryVO mutationSummaryVO = new MutationSummaryVO();
-						mutationSummaryVO.setCdnaNotation("c." + tuple.getString("cDNA change_2"));
-						patientSummaryVO.getVariantSummaryVOList().add(mutationSummaryVO);
-
-						MutationUploadVO mutationUploadVO2 = new MutationUploadVO();
-						mutationUploadVO2.setMutation(new Mutation());
-						mutationUploadVO2.getMutation().setCdna_Notation("c." + tuple.getString("cDNA change_2"));
-						mutationService.assignValuesFromNotation(mutationUploadVO2);
+						MutationUploadVO mutationUploadVO = new MutationUploadVO();
+						mutationUploadVO.setMutation(new Mutation());
+						mutationUploadVO.getMutation().setCdna_Notation("c." + tuple.getString("cDNA change_2"));
+						mutationService.assignValuesFromNotation(mutationUploadVO);
 						if (StringUtils.isNotEmpty(tuple.getString("Protein change_2")))
-							mutationUploadVO2.getMutation().setAa_Notation("p." + tuple.getString("Protein change_2"));
-						if (StringUtils.isNotEmpty(tuple.getString("Consequence_1")))
-							mutationUploadVO2.getMutation().setConsequence(ObjectUtils.toString(tuple.getString("Consequence_2"), ""));
-						mutationUploadVO2.getMutation().setInheritance(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Inheritance_2")), ""));
+							mutationUploadVO.getMutation().setAa_Notation("p." + tuple.getString("Protein change_2"));
+						if (StringUtils.isNotEmpty(tuple.getString("Consequence_2")))
+							mutationUploadVO.getMutation().setConsequence(ObjectUtils.toString(tuple.getString("Consequence_2"), ""));
+						mutationUploadVO.getMutation().setInheritance(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Inheritance_2")), ""));
+		
+						mutationIdentifier = mutationIdentifier + 1;
+						mutationUploadVO.getMutation().setIdentifier("M" + mutationIdentifier);
+						mutationUploadVO.getMutation().setName("M" + mutationIdentifier);
 
-						MutationSearchCriteriaVO criteria = new MutationSearchCriteriaVO();
-						criteria.setVariation(mutationUploadVO2.getMutation().getCdna_Notation());
-						List<MutationSummaryVO> results = mutationService.findMutations(criteria);
-						if (results.size() > 0)
+						// Insert mutation if it does not exist already
+
+						MutationSearchCriteriaVO criteria   = new MutationSearchCriteriaVO();
+						criteria.setVariation(mutationUploadVO.getMutation().getCdna_Notation());
+						List<MutationSummaryVO> results     = mutationService.findMutations(criteria);
+
+						if (results.size() != 1)
 						{
-							//TODO: fixme (change of MutationSummaryVO)
-//							patientSummaryVO.setMutation2(results.get(0).getMutation());
+							mutationService.insert(mutationUploadVO);
+							System.out.println(">>>Inserted mutation: " + mutationUploadVO.getMutation().toString());
 						}
-						else
-						{
-							mutationIdentifier = mutationIdentifier + 1;
-							mutationUploadVO2.getMutation().setIdentifier("M" + mutationIdentifier);
-							mutationUploadVO2.getMutation().setName("M" + mutationIdentifier);
-							mutationService.insert(mutationUploadVO2);
-						}
+						MutationSummaryVO mutationSummaryVO = new MutationSummaryVO();
+						mutationSummaryVO.setCdnaNotation(mutationUploadVO.getMutation().getCdna_Notation());
+
+						patientSummaryVO.getVariantSummaryVOList().add(mutationSummaryVO);
 					}
 				}
 
 				patientSummaryVO.setPhenotypeMajor(StringUtils.upperCase(tuple.getString("Phenotype major type")));
 				patientSummaryVO.setPhenotypeSub(StringUtils.lowerCase(tuple.getString("Phenotype Subtype")));
 
-				PhenotypeDetailsVO phenotypeDetailsVO = new PhenotypeDetailsVO();
+//				PhenotypeDetailsVO phenotypeDetailsVO = new PhenotypeDetailsVO();
 
 //				patientSummaryVO.getPhenotypeDetails().setLocation(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Location")), "unknown"));
 //				patientSummaryVO.getPhenotypeDetails().setBlistering(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Blistering")), "unknown"));
@@ -250,20 +251,28 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 					patientSummaryVO.setPublicationVOList(publicationVOs);
 				}
 
-//				patientSummaryVO.setIf_(new I_F());
-//				patientSummaryVO.getIf_().setAntibody_Name("LH7:2");
-//				patientSummaryVO.getIf_().setValue(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("IF LH7:2")), "unknown"));
-//				patientSummaryVO.getIf_().setRetention(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("IF Retention COLVII")), "unknown"));
-//
-//				patientSummaryVO.setEm_(new E_M());
-//				patientSummaryVO.getEm_().setNumber(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("EM AF_no")), "unknown"));
-//				patientSummaryVO.getEm_().setAppearance(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("EM AF_structure")), "unknown"));
-//				patientSummaryVO.getEm_().setRetention(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("EM_Retention COLVII")), "unknown"));
-
 				patientIdentifier = patientIdentifier + 1;
 				patientSummaryVO.setPatientIdentifier("P" + patientIdentifier);
+				patientSummaryVO.setPatientName("P" + patientIdentifier);
 				patientService.insert(patientSummaryVO);
-				
+
+				patientSummaryVO.setObservedValueVOList(new ArrayList<ObservedValueVO>());
+
+				for (int i = 34; i < 100; i++)
+				{
+					System.out.println(">>>i==" + i);
+					String colName = tuple.getColName(i);
+					System.out.println(">>>colName==" + colName);
+					
+					if (colName == null)
+						break;
+					
+					ObservedValueVO observedValueVO = new ObservedValueVO();
+					observedValueVO.setFeatureName(colName);
+					observedValueVO.setTargetName(patientSummaryVO.getPatientIdentifier());
+					observedValueVO.setValue(tuple.getString(colName));
+				}
+
 				total.set(total.get() + 1);
 //				patientList.add(patientSummaryVO);		
 //				

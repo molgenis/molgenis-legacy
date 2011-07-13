@@ -9,6 +9,7 @@ public class PatientSummaryVO implements Serializable
 {
 	private static final long serialVersionUID = -8983436185205230071L;
 	private String patientIdentifier;
+	private String patientName;
 	private String patientNumber;
 	private String patientConsent;
 	private String patientAge;
@@ -30,6 +31,7 @@ public class PatientSummaryVO implements Serializable
 	private String submitterCity;
 	private String submitterCountry;
 	private List<PublicationVO> publicationVOList;
+	private List<ObservedValueVO> observedValueVOList;
 	
 	//TODO: remove old code with persistent objects
 //	private Patient patient;
@@ -65,6 +67,14 @@ public class PatientSummaryVO implements Serializable
 
 	public void setPatientIdentifier(String patientIdentifier) {
 		this.patientIdentifier = patientIdentifier;
+	}
+
+	public String getPatientName() {
+		return patientName;
+	}
+
+	public void setPatientName(String patientName) {
+		this.patientName = patientName;
 	}
 
 	public String getPatientNumber() {
@@ -235,7 +245,15 @@ public class PatientSummaryVO implements Serializable
 		this.publicationVOList = publicationVOList;
 	}
 
-//	public Patient getPatient() {
+public List<ObservedValueVO> getObservedValueVOList() {
+		return observedValueVOList;
+	}
+
+	public void setObservedValueVOList(List<ObservedValueVO> observedValueVOList) {
+		this.observedValueVOList = observedValueVOList;
+	}
+
+	//	public Patient getPatient() {
 //		return patient;
 //	}
 //	public void setPatient(Patient patient) {

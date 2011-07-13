@@ -24,6 +24,7 @@ import jxl.Workbook;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.auth.MolgenisUser;
+import org.molgenis.core.OntologyTerm;
 import org.molgenis.core.Publication;
 import org.molgenis.core.service.PublicationService;
 import org.molgenis.core.vo.PublicationVO;
@@ -33,7 +34,6 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.db.jpa.JpaDatabase;
-import org.molgenis.mutation.Exon;
 import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.MutationPhenotype;
 import org.molgenis.mutation.Patient;
@@ -44,6 +44,7 @@ import org.molgenis.mutation.vo.ObservedValueVO;
 import org.molgenis.mutation.vo.PatientSearchCriteriaVO;
 import org.molgenis.mutation.vo.PatientSummaryVO;
 import org.molgenis.mutation.vo.PhenotypeDetailsVO;
+import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.Workflow;
@@ -278,7 +279,14 @@ public class PatientService implements Serializable
 				phenotypeDetailsVO.getProtocolNames().add(protocol.getName());
 				phenotypeDetailsVO.getObservedValues().put(protocol.getName(), new ArrayList<ObservedValueVO>());
 
-				List<ObservedValue> observedValues = this.db.query(ObservedValue.class).equals(ObservedValue.TARGET, patients.get(0).getId()).in(ObservedValue.FEATURE, protocol.getFeatures_Id()).find();
+				List<ObservedValue> observedValues = new ArrayList<ObservedValue>();
+				if (this.db instanceof JDBCDatabase)
+					observedValues = this.db.query(ObservedValue.class).equals(ObservedValue.TARGET, patients.get(0).getId()).in(ObservedValue.FEATURE, protocol.getFeatures_Id()).find();
+				else if (this.db instanceof JpaDatabase)
+					observedValues = this.db.query(ObservedValue.class).equals("target", patients.get(0)).in("feature", protocol.getFeatures()).find();
+				else
+					throw new UnsupportedOperationException("Unsupported database mapper");
+
 				for (ObservedValue observedValue : observedValues)
 				{
 					ObservedValueVO observedValueVO = new ObservedValueVO();
@@ -368,6 +376,56 @@ public class PatientService implements Serializable
 			throw e;
 		}
 	}
+/*
+	public void insert(PublicationVO publicationVO) throws DatabaseException, IOException
+	{
+		if (publicationVO == null)
+			return;
+		
+		OntologyTerm ontologyTerm = new OntologyTerm();
+		ontologyTerm.setDefinition("PubMed ID");
+		ontologyTerm.setName(publicationVO.getPubmed());
+		
+		List<OntologyTerm> terms  = this.db.findByExample(ontologyTerm);
+		
+		if (terms.size() != 1)
+			this.db.add(ontologyTerm);
+		else
+			ontologyTerm = terms.get(0);
+
+		Publication publication   = new Publication();
+		publication.setName(publicationVO.getName());
+		publication.setTitle(publicationVO.getTitle());
+		publication.setPubmedID(ontologyTerm);
+		
+		List<Publication> publications = this.db.findByExample(publication);
+
+		if (publications.size() != 1)
+			this.db.add(publication);
+	}
+*/
+	public void insert(ObservedValueVO observedValueVO) throws DatabaseException, ParseException, IOException
+	{
+		if (observedValueVO == null)
+			return;
+		
+		List<ObservableFeature> features = this.db.query(ObservableFeature.class).equals(ObservableFeature.NAME, observedValueVO.getFeatureName()).find();
+		
+		if (features.size() != 1)
+			return;
+		
+		List<Patient> patients = this.db.query(Patient.class).equals(Patient.IDENTIFIER, observedValueVO.getTargetName()).find();
+		
+		if (patients.size() != 1)
+			return;
+
+		ObservedValue observedValue = new ObservedValue();
+		observedValue.setFeature(features.get(0));
+		observedValue.setTarget(patients.get(0));
+		observedValue.setValue(observedValueVO.getValue());
+		
+		this.db.add(observedValue);
+	}
 
 	/**
 	 * Insert patient and set primary key
@@ -381,7 +439,7 @@ public class PatientService implements Serializable
 		if (patientSummaryVO == null)
 			return;
 
-		Patient patient = new Patient();
+		Patient patient = this.toPatient(patientSummaryVO);
 
 		// submissions are never inserted via patients, just select newest
 		// by date
@@ -394,14 +452,21 @@ public class PatientService implements Serializable
 //		}
 
 		// mutations are never inserted via patients, just select
+		int i = 1;
 		for (MutationSummaryVO mutationSummaryVO : patientSummaryVO.getVariantSummaryVOList())
 		{
 			List<Mutation> mutations = this.db.query(Mutation.class).equals(Mutation.CDNA_NOTATION, mutationSummaryVO.getCdnaNotation()).find();
 
+			System.out.println(">>> Queried: " + mutationSummaryVO.getCdnaNotation() + ", found: " + mutations.size());
 			if (mutations.size() != 1)
 				throw new Exception("ERROR: No mutation found for " + mutationSummaryVO.getCdnaNotation());
 
-			patient.setMutation1_Id(mutations.get(0).getId());
+			if (i == 1)
+				patient.setMutation1_Id(mutations.get(0).getId());
+			else
+				patient.setMutation2_Id(mutations.get(0).getId());
+			
+			i++;
 		}
 
 		// phenotypes are never inserted via patients, just select
@@ -415,15 +480,6 @@ public class PatientService implements Serializable
 			patientSummaryVO.setPhenotypeId(phenotypes.get(0).getId());
 		}
 		patient.setPhenotype_Id(patientSummaryVO.getPhenotypeId());
-
-		// Insert PhenotypeDetails
-//		this.db.add(patientSummaryVO.getPhenotypeDetails());
-//		List<PhenotypeDetails> phenotypeDetails = this.db
-//				.findByExample(patientSummaryVO.getPhenotypeDetails());
-//		if (phenotypeDetails.size() > 0) {
-//			patientSummaryVO.getPatient().setPhenotype_Details(
-//					phenotypeDetails.get(0));
-//		}
 
 		// Publications are never inserted via patients, just select
 		if (CollectionUtils.isNotEmpty(patientSummaryVO.getPublicationVOList()))
@@ -445,7 +501,7 @@ public class PatientService implements Serializable
 				
 			patient.setPublications_Id(publicationIds);
 		}
-
+		patient.setSubmission_Id(1);
 		// Insert patient
 		this.db.add(patient);
 	}
@@ -716,6 +772,36 @@ public class PatientService implements Serializable
 //		return result;
 //	}
 
+	private Patient toPatient(PatientSummaryVO patientSummaryVO) throws DatabaseException, ParseException
+	{
+		Patient patient = new Patient();
+
+		patient.setIdentifier(patientSummaryVO.getPatientIdentifier());
+		patient.setName(patientSummaryVO.getPatientName());
+		patient.setNumber(patientSummaryVO.getPatientNumber());
+		patient.setConsent(patientSummaryVO.getPatientConsent());
+		patient.setAge(patientSummaryVO.getPatientAge());
+		patient.setGender(patientSummaryVO.getPatientGender());
+		patient.setEthnicity(patientSummaryVO.getPatientEthnicity());
+		patient.setDeceased(patientSummaryVO.getPatientDeceased());
+		patient.setDeath_Cause(patientSummaryVO.getPatientDeathCause());
+		patient.setMmp1_Allele1(patientSummaryVO.getPatientMmp1Allele1());
+		patient.setMmp1_Allele2(patientSummaryVO.getPatientMmp1Allele2());
+		if (StringUtils.isNotEmpty(patientSummaryVO.getVariantComment()))
+			patient.setMutation2remark(patientSummaryVO.getVariantComment());
+
+//		patientSummaryVO.setPatientMaterialList(patient.getMaterial_Name());
+//			
+//		Submission submission  = this.db.findById(Submission.class, patient.getSubmission_Id());
+//		MolgenisUser submitter = this.db.findById(MolgenisUser.class, submission.getSubmitters_Id().get(0));
+//		patientSummaryVO.setSubmitterDepartment(submitter.getDepartment());
+//		patientSummaryVO.setSubmitterInstitute(submitter.getInstitute());
+//		patientSummaryVO.setSubmitterCity(submitter.getCity());
+//		patientSummaryVO.setSubmitterCountry(submitter.getCountry());
+
+		return patient;
+	}
+
 	private PatientSummaryVO toPatientSummaryVO(Patient patient) throws DatabaseException, ParseException
 	{
 		if (this.cache.containsKey(patient.getId()))
@@ -757,16 +843,16 @@ public class PatientService implements Serializable
 			variantSummaryVO2.setConsequence(mutation2.getConsequence());
 			patientSummaryVO.getVariantSummaryVOList().add(variantSummaryVO2);
 		}
-		else
-		{
-			MutationSummaryVO variantSummaryVO2 = new MutationSummaryVO();
-			variantSummaryVO2.setIdentifier(patient.getMutation2remark());
-			variantSummaryVO2.setCdnaNotation(patient.getMutation2remark());
-			variantSummaryVO2.setAaNotation(patient.getMutation2remark());
-			variantSummaryVO2.setExonName(patient.getMutation2remark());
-			variantSummaryVO2.setConsequence(patient.getMutation2remark());
-			patientSummaryVO.getVariantSummaryVOList().add(variantSummaryVO2);
-		}
+//		else
+//		{
+//			MutationSummaryVO variantSummaryVO2 = new MutationSummaryVO();
+//			variantSummaryVO2.setIdentifier(patient.getMutation2remark());
+//			variantSummaryVO2.setCdnaNotation(patient.getMutation2remark());
+//			variantSummaryVO2.setAaNotation(patient.getMutation2remark());
+//			variantSummaryVO2.setExonName(patient.getMutation2remark());
+//			variantSummaryVO2.setConsequence(patient.getMutation2remark());
+//			patientSummaryVO.getVariantSummaryVOList().add(variantSummaryVO2);
+//		}
 		patientSummaryVO.setVariantComment(patient.getMutation2remark());
 
 		MutationPhenotype phenotype = this.db.findById(MutationPhenotype.class, patient.getPhenotype_Id());
@@ -795,24 +881,9 @@ public class PatientService implements Serializable
 				patientSummaryVO.getPublicationVOList().add(publicationVO);
 			}
 		}
-			
-			//TODO: old, remove persistent objects
-
-//			patientSummaryVO.setMutation1(this.db.findById(Mutation.class, patient.getMutation1_Id()));
-//			patientSummaryVO.setMutation2(this.db.findById(Mutation.class, patient.getMutation2_Id()));
-//			patientSummaryVO.setPhenotype(phenotype);
 
 		patientSummaryVO.setPubmedURL(PublicationService.PUBMED_URL);
 
-//			if (CollectionUtils.isNotEmpty(patient.getPublications_Id()))
-//			{
-//				List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPublications_Id()).find();
-//				patientSummaryVO.setPublications(publications);
-//			}
-//
-//			patientSummaryVO.setSubmission(submission);
-//			patientSummaryVO.setSubmitter(submitter);
-//			
 //			patientSummaryVO.setMaterial(patient.getMaterial_Name());
 
 		// cache value
