@@ -18,14 +18,14 @@ INSERT INTO MolgenisGroup (id) values (${group_index+5});
 INSERT INTO MolgenisUser (id, password_, emailaddress, firstname, lastname, active, superuser) values (2, 'md5_21232f297a57a5a743894a0e4a801fc3', '', 'admin', 'admin', true, true);
 INSERT INTO MolgenisUser (id, password_, emailaddress, firstname, lastname, active) values (3, 'md5_294de3557d9d00b3d2d8a1e6aab028cf', '', 'anonymous','anonymous', true);
 
-INSERT INTO MolgenisRoleGroupLink (group_, user_) values (1, 2);
-INSERT INTO MolgenisRoleGroupLink (group_, user_) values (4, 2);
-INSERT INTO MolgenisRoleGroupLink (group_, user_) values (1, 3);
-INSERT INTO MolgenisRoleGroupLink (group_, user_) values (4, 3);
+INSERT INTO MolgenisRoleGroupLink (group_, role_) values (1, 2);
+INSERT INTO MolgenisRoleGroupLink (group_, role_) values (4, 2);
+INSERT INTO MolgenisRoleGroupLink (group_, role_) values (1, 3);
+INSERT INTO MolgenisRoleGroupLink (group_, role_) values (4, 3);
 
 <#--
 INSERT INTO MolgenisPermission (role_, entity, permission) SELECT 2, id, "read" FROM MolgenisEntity WHERE MolgenisEntity.name = 'MolgenisUser';
-INSERT INTO MolgenisPermission (role_, entity, permission) SELECT 2, id, "read" FROM MolgenisEntity WHERE MolgenisEntity.name = 'MolgenisGrou';
+INSERT INTO MolgenisPermission (role_, entity, permission) SELECT 2, id, "read" FROM MolgenisEntity WHERE MolgenisEntity.name = 'MolgenisGroup';
 INSERT INTO MolgenisPermission (role_, entity, permission) SELECT 2, id, "read" FROM MolgenisEntity WHERE MolgenisEntity.name = 'MolgenisRoleGroupLink';
 INSERT INTO MolgenisPermission (role_, entity, permission) SELECT 2, id, "write" FROM MolgenisEntity WHERE MolgenisEntity.name = 'MolgenisUser';
 INSERT INTO MolgenisPermission (role_, entity, permission) SELECT 2, id, "write" FROM MolgenisEntity WHERE MolgenisEntity.name = 'MolgenisGroup';
