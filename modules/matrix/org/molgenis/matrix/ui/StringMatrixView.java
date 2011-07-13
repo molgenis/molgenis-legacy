@@ -1,11 +1,12 @@
 package org.molgenis.matrix.ui;
 
 import org.molgenis.framework.ui.html.HtmlInput;
+import org.molgenis.matrix.Matrix;
 import org.molgenis.matrix.StringMatrix;
 
-public class StringMatrixView extends HtmlInput<StringMatrix>
+public class StringMatrixView extends HtmlInput<Matrix<String,String,String>>
 {
-	public StringMatrixView(String name, StringMatrix matrix)
+	public StringMatrixView(String name, Matrix<String,String,String> matrix)
 	{
 		super(name, matrix);
 	}
@@ -15,10 +16,17 @@ public class StringMatrixView extends HtmlInput<StringMatrix>
 	{
 		try
 		{
-			StringMatrix m = getObject();
+			Matrix<String,String,String> m = getObject();
+			
 			
 			// very naive
-			String result = "<table border=\"1\"><thead><tr><td>&nbsp;</td>";
+			String result = "";
+			
+			// add a pulldown to select cols
+				
+				
+			//render table
+			result += "<table border=\"1\"><thead><tr><td>&nbsp;</td>";
 
 			// header
 			for (String col : m.getColNames())

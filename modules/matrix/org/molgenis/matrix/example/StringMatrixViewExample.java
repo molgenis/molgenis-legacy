@@ -1,5 +1,6 @@
 package org.molgenis.matrix.example;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -7,6 +8,12 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.html.ActionInput;
+import org.molgenis.framework.ui.html.LabelInput;
+import org.molgenis.framework.ui.html.MolgenisForm;
+import org.molgenis.framework.ui.html.SelectInput;
+import org.molgenis.matrix.Matrix;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.StringMemoryMatrix;
 import org.molgenis.matrix.ui.StringMatrixView;
@@ -26,13 +33,47 @@ import org.molgenis.util.Tuple;
 public class StringMatrixViewExample extends
 		EasyPluginController<StringMatrixViewExampleModel>
 {
+	// these should be handled by the matrixview!
+	List<String> selectedRows = new ArrayList<String>();
+	List<String> selectedCols = new ArrayList<String>();
+	StringMemoryMatrix m = null;
+
 	public StringMatrixViewExample(String name, ScreenController<?> parent)
 	{
 		super(name, null, parent);
-		this.setModel(new StringMatrixViewExampleModel(this)); // the default
-		// model
-		this.setView(new FreemarkerView("StringMatrixViewExampleView.ftl",
-				getModel())); // <plugin flavor="freemarker"
+		try
+		{
+
+			this.setModel(new StringMatrixViewExampleModel(this)); // the
+			// default
+			// model
+			this.setView(new FreemarkerView("StringMatrixViewExampleView.ftl",
+					getModel())); // <plugin flavor="freemarker"
+
+			List<String> features = Arrays.asList(new String[]
+			{ "f1", "f2", "f3", "f4", "f5" });
+			List<String> targets = Arrays.asList(new String[]
+			{ "t1", "t2", "t3" });
+			StringMemoryMatrix m;
+
+			this.m = new StringMemoryMatrix(targets, features);
+
+			for (String t : targets)
+			{
+				for (String f : features)
+				{
+					this.m.setValue(t, f, t + f);
+				}
+			}
+
+		}
+		catch (MatrixException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			this.getModel().setMessages(
+					new ScreenMessage("ERROR " + e.getMessage(), false));
+		}
 	}
 
 	/**
@@ -44,41 +85,67 @@ public class StringMatrixViewExample extends
 	@Override
 	public void reload(Database db) throws Exception
 	{
-
+		if(this.selectedCols == null || this.selectedCols.size() == 0)
+		{
+			this.selectedCols = m.getColNamesByOffset(0,1);
+		}
+	}
+	
+	/**
+	 * HandleRequest action 'doClearAll'
+	 * @param db
+	 */
+	public void doReset(Database db, Tuple t)
+	{
+		this.selectedCols = null;
+	}
+	
+	/**
+	 * HandleRequest action 'doCelectCol'
+	 * @param db
+	 * @param t
+	 */
+	public void doSelectCol(Database db, Tuple t)
+	{
+		if(!this.selectedCols.contains(t.getString("col")))
+			this.selectedCols.add(t.getString("col"));
 	}
 
 	@Override
 	public String render()
 	{
+
 		try
 		{
-			List<String> features = Arrays.asList(new String[]
-			{ "f1", "f2", "f3", "f4", "f5" });
-			List<String> targets = Arrays.asList(new String[]
-			{ "t1", "t2", "t3" });
-			StringMemoryMatrix m;
+			MolgenisForm form = new MolgenisForm(this.getModel());
+			
+			form.add(new LabelInput("l2","Selected matrix:"));
+			
+			SelectInput selectCol = new SelectInput("col");
+			selectCol.setOptions(m.getColNames(), m.getColNames());
+			selectCol.setOnchange("");
+			form.add(selectCol);
 
-			m = new StringMemoryMatrix(targets, features);
+			form.add(new ActionInput("doSelectCol"));
+			form.add(new ActionInput("doReset"));
 
-			for (String t : targets)
-			{
-				for (String f : features)
-				{
-					m.setValue(t, f, t + f);
-				}
-			}
+			//render all rows and only selected cols; default column 1
+			Matrix<String,String,String> visible = m.getSubMatrixByName(m.getRowNames(), this.selectedCols);
+			form.add(new StringMatrixView("test", visible));
+			
+			
+			form.add(new LabelInput("l1","Whole matrix:"));
+			form.add(new StringMatrixView("all", m));
 
-			StringMatrixView view = new StringMatrixView("test", m);
-
-			return view.render();
-
+			return form.render();
 		}
-		catch (MatrixException e)
+		catch (Exception e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return "ERROR " + e.getMessage();
+			return "ERROR "+e.getMessage();
 		}
+
 
 	}
 

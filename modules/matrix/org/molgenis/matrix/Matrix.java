@@ -159,4 +159,13 @@ public interface Matrix<E, A, V>
 	 */
 	public V[][] getValues() throws MatrixException;
 
+	/** 
+	 * Retrieve column names only for the selected index,offset
+	 * @param index
+	 * @param offset
+	 * @return
+	 * @throws MatrixException 
+	 */
+	public List<A> getColNamesByOffset(int index, int offset) throws MatrixException;
+
 }

@@ -47,7 +47,7 @@ public class MemoryMatrix<E, A, V> implements EditableMatrix<E, A, V>
 	}
 
 	@SuppressWarnings("unchecked")
-	private Class<V> getValueType(V[][] values2) throws MatrixException
+	private Class<V> getValueType(V[][] values) throws MatrixException
 	{
 		for(int i = 0; i < values.length; i++)
 		{
@@ -148,22 +148,30 @@ public class MemoryMatrix<E, A, V> implements EditableMatrix<E, A, V>
 	{
 		List<E> rows = new ArrayList<E>(rowIndices.size());
 		List<A> cols = new ArrayList<A>(colIndices.size());
+		
+		//create placeholder for new values + existing values
 		V[][] elements = (V[][]) create(rowIndices.size(), colIndices.size(), this.valueType);
 		V[][] allAlements = this.getValues();
 
-		for (int rowIndicesIndex = 0; rowIndicesIndex < rowIndices.size(); rowIndicesIndex++)
+		//set colnames
+		for (int col: colIndices)
 		{
-			rows.add(this.getRowNames().get(rowIndices.get(rowIndicesIndex)));
-			for (int colIndicesIndex = 0; colIndicesIndex < colIndices.size(); colIndicesIndex++)
-			{
-				elements[rowIndicesIndex][colIndicesIndex] = allAlements[rowIndices
-						.get(rowIndicesIndex)][colIndices.get(colIndicesIndex)];
-			}
+			cols.add(this.getColNames().get(col));
 		}
-
-		for (int colIndicesIndex = 0; colIndicesIndex < colIndices.size(); colIndicesIndex++)
+		
+		//set rownames and values
+		int rowIndex = 0;
+		int colIndex = 0;
+		for (int row: rowIndices)
 		{
-			cols.add(this.getColNames().get(colIndices.get(colIndicesIndex)));
+			rows.add(this.getRowNames().get(row));
+			colIndex = 0;
+			for (int col: colIndices)
+			{
+				elements[rowIndex][colIndex] = allAlements[row][col];
+				colIndex++;
+			}
+			rowIndex++;
 		}
 
 		return new MemoryMatrix<E, A, V>(rows, cols, elements);
@@ -178,7 +186,8 @@ public class MemoryMatrix<E, A, V> implements EditableMatrix<E, A, V>
 	@Override
 	public List<A> getColNames() throws MatrixException
 	{
-		return Collections.unmodifiableList(this.colNames);
+		//return a copy
+		return new ArrayList<A>(this.colNames);
 	}
 
 	@Override
@@ -190,13 +199,16 @@ public class MemoryMatrix<E, A, V> implements EditableMatrix<E, A, V>
 	@Override
 	public List<E> getRowNames() throws MatrixException
 	{
-		return Collections.unmodifiableList(this.rowNames);
+		return new ArrayList<E>(this.rowNames);
 	}
 
 	@Override
 	public Matrix<E, A, V> getSubMatrixByName(List<E> rowSelection,
 			List<A> colSelection) throws MatrixException
 	{
+		if(rowSelection == null || rowSelection.size() == 0) throw new MatrixException(this.getClass().getSimpleName()+".getSubMatrixByName() failed: rowSelection was empty");
+		if(colSelection == null || colSelection.size() == 0) throw new MatrixException(this.getClass().getSimpleName()+".getSubMatrixByName() failed: colSelection was empty");
+		
 		List<Integer> rowDimensions = new ArrayList<Integer>();
 		List<Integer> colDimensions = new ArrayList<Integer>();
 
@@ -440,6 +452,12 @@ public class MemoryMatrix<E, A, V> implements EditableMatrix<E, A, V>
 	{
 		throw new UnsupportedOperationException(
 				"in memory database cannot be stored. Use CsvMemoryMatrix or BinaryMemoryMatrix instead");
+	}
+
+	@Override
+	public List<A> getColNamesByOffset(int index, int offset) throws MatrixException
+	{
+		return this.getColNames().subList(index, index + offset);
 	}
 
 }
