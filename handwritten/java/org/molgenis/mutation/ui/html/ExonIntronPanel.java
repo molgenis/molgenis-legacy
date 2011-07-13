@@ -1,15 +1,11 @@
 package org.molgenis.mutation.ui.html;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.text.StrBuilder;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.mutation.Exon;
-import org.molgenis.mutation.vo.ProteinDomainSummaryVO;
-import org.molgenis.util.Tuple;
 
 /*
  * A panel that prints clickable exon-intron boxes
