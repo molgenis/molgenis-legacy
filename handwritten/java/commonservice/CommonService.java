@@ -1315,10 +1315,14 @@ public class CommonService
 	{
 		Query<Measurement> q = db.query(Measurement.class);
 		q.sortASC("id");
-		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.IN, investigationIds);
-		QueryRule qr2 = new QueryRule(Operator.OR);
-		QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
-		q.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
+		if (investigationIds.size() > 0) {
+			QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.IN, investigationIds);
+			QueryRule qr2 = new QueryRule(Operator.OR);
+			QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
+			q.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
+		} else {
+			q.addRules(new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System"));
+		}
 		return q.find();
 	}
 	
@@ -1340,10 +1344,14 @@ public class CommonService
 		} else {
 			q.sortDESC(sortField);
 		}
-		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.IN, investigationIds);
-		QueryRule qr2 = new QueryRule(Operator.OR);
-		QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
-		q.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
+		if (investigationIds.size() > 0) {
+			QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.IN, investigationIds);
+			QueryRule qr2 = new QueryRule(Operator.OR);
+			QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
+			q.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
+		} else {
+			q.addRules(new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System"));
+		}
 		return q.find();
 	}
 	
@@ -1359,10 +1367,14 @@ public class CommonService
 	{
 		Query<ObservableFeature> q = db.query(ObservableFeature.class);
 		q.sortASC(ObservableFeature.ID);
-		QueryRule qr1 = new QueryRule(ObservableFeature.INVESTIGATION, Operator.IN, investigationIds);
-		QueryRule qr2 = new QueryRule(Operator.OR);
-		QueryRule qr3 = new QueryRule(ObservableFeature.INVESTIGATION_NAME, Operator.EQUALS, "System");
-		q.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
+		if (investigationIds.size() > 0) {
+			QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.IN, investigationIds);
+			QueryRule qr2 = new QueryRule(Operator.OR);
+			QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
+			q.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
+		} else {
+			q.addRules(new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System"));
+		}
 		return q.find();
 	}
 

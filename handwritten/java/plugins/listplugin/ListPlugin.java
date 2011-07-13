@@ -30,7 +30,7 @@ import commonservice.CommonService;
 
 public class ListPlugin extends PluginModel<Entity> {
 	private static final long serialVersionUID = -7341276676642021364L;
-	private List<Measurement> featureList;
+	private List<Measurement> featureList = new ArrayList<Measurement>();
 	private List<MolgenisBatch> batchList = new ArrayList<MolgenisBatch>();
 	private CommonService ct = CommonService.getInstance();
 	
