@@ -74,29 +74,41 @@
 
 	<#if vo.result == "mutations">
 		<#assign resultHash = vo.mutationSummaryVOHash>
+		<#list resultHash?keys as field>
+			<#if field?starts_with(" ")>
+				<#assign pager = resultHash[field]>
+<p>
+				<#if pager.entities?size &gt; 0>
+<img id="catimg${field}" src="res/img/open.png" onclick="toggleDiv('cat${field}', 'catimg${field}');">
+				</#if>
+${pager.entities?size} ${vo.result} found in "${field}"<#-- (total ${screen.getNumPatients(pager.entities)} patients)-->.
+</p>
+<div id="cat${field}" style="display:none">
+${vo.setPager(pager)}
+				<#include "mutations.ftl">
+</div>
+			</#if>
+		</#list>
 	<#else>
 		<#assign resultHash = vo.patientSummaryVOHash>
+		<#list resultHash?keys as field>
+			<#if field?starts_with(" ")>
+				<#assign rawOutput = resultHash[field]>
+<p>
+<img id="catimg${field}" src="res/img/open.png" onclick="toggleDiv('cat${field}', 'catimg${field}');">
+${vo.result} found in "${field}".
+</p>
+<div id="cat${field}" style="display:none">
+				<#include "patients.ftl">
+</div>
+			</#if>
+		</#list>
 	</#if>
-	<#list resultHash?keys as field>
-	<#if field?starts_with(" ")>
-		<#assign pager = resultHash[field]>
-		<p>
-		<#if pager.entities?size &gt; 0><img id="catimg${field}" src="res/img/open.png" onclick="toggleDiv('cat${field}', 'catimg${field}');"></#if>
-		${pager.entities?size} ${vo.result} found in "${field}"<#-- (total ${screen.getNumPatients(pager.entities)} patients)-->.
-		</p>
-		<div id="cat${field}" style="display:none">
-		${vo.setPager(pager)}
-		<#if vo.result == "mutations">
-			<#include "mutations.ftl">
-		<#else>
-			<#include "patients.ftl">
-		</#if>
-		</div>
-	</#if>
-	</#list>
+	
 
 <#elseif vo.action?starts_with("findPatients")>
 
+	<#assign rawOutput = vo.rawOutput>
 	<#include "patients.ftl">
 
 <#elseif vo.action?starts_with("find")>
@@ -109,6 +121,7 @@
 
 <#elseif vo.action?starts_with("listAllPatient") || vo.action?starts_with("patients")>
 
+	<#assign rawOutput = vo.rawOutput>
 	<#include "patients.ftl">
 
 </#if>

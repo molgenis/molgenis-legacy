@@ -1,6 +1,6 @@
 <#-- TODO: make this a Servlet/JspView and move PrintWriter to render() methods -->
 
-${vo.rawOutput}
+${rawOutput}
 
 <#--
 

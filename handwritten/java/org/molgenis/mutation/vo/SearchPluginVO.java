@@ -52,7 +52,7 @@ public class SearchPluginVO implements Serializable
 	private PatientSummaryVO patientSummaryVO;
 //	private List<PatientDetailsVO> patientDetailsVO;
 	private PhenotypeDetailsVO phenotypeDetailsVO;
-	private HashMap<String, LimitOffsetPager<PatientSummaryVO>> patientSummaryVOHash;
+	private HashMap<String, String> patientSummaryVOHash;
 	private String rawOutput; // for output from included sources
 
 	private List<MolgenisNews> news;
@@ -346,12 +346,11 @@ public class SearchPluginVO implements Serializable
 		this.phenotypeDetailsVO = phenotypeDetailsVO;
 	}
 
-	public HashMap<String, LimitOffsetPager<PatientSummaryVO>> getPatientSummaryVOHash() {
+	public HashMap<String, String> getPatientSummaryVOHash() {
 		return patientSummaryVOHash;
 	}
 
-	public void setPatientSummaryVOHash(
-			HashMap<String, LimitOffsetPager<PatientSummaryVO>> patientSummaryVOHash) {
+	public void setPatientSummaryVOHash(HashMap<String, String> patientSummaryVOHash) {
 		this.patientSummaryVOHash = patientSummaryVOHash;
 	}
 

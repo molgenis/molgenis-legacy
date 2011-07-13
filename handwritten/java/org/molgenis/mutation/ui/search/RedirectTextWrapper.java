@@ -1,7 +1,7 @@
 package org.molgenis.mutation.ui.search;
 
-import java.io.CharArrayWriter;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -10,13 +10,13 @@ import javax.servlet.http.HttpServletResponseWrapper;
 public class RedirectTextWrapper extends HttpServletResponseWrapper
 {
 	private PrintWriter printWriter;
-	private CharArrayWriter caWriter;
+	private StringWriter stringWriter;
 
 	public RedirectTextWrapper(HttpServletResponse response)
 	{
 		super(response);
-		this.caWriter = new CharArrayWriter();
-		this.printWriter = new PrintWriter(caWriter);
+		this.stringWriter = new StringWriter();
+		this.printWriter  = new PrintWriter(stringWriter);
 	}
 
 	@Override
@@ -24,9 +24,9 @@ public class RedirectTextWrapper extends HttpServletResponseWrapper
 	{
 		return this.printWriter;
 	}
-	
+
 	public String getOutput()
 	{
-		return new String(this.caWriter.toCharArray());
+		return this.stringWriter.toString();
 	}
 }
