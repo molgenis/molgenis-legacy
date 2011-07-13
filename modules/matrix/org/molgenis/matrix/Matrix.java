@@ -2,6 +2,8 @@ package org.molgenis.matrix;
 
 import java.util.List;
 
+import org.molgenis.framework.db.QueryRule;
+
 /**
  * MOLGENIS interface to handle matrix like 'EAV' data sets:
  * <ul>

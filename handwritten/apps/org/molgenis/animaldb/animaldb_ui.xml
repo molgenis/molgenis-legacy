@@ -99,7 +99,9 @@
 			<plugin name="ListPlugin" type="plugins.listplugin.ListPlugin"
 				label="View value matrix" />
 			<plugin name="MatrixViewExample" type="org.molgenis.matrix.example.MatrixViewExample1"
-				label="View NEW value matrix" />
+				label="View NEW value matrix (Morris)" />
+			<plugin name="MatrixManagerExample" type="org.molgenis.matrix.ui.manager.MatrixManager"
+				label="View NEW value matrix (Joeri)" />
 			<plugin name="EventViewer" type="plugins.protocol.EventViewerPlugin"
 				label="View value timeline" />
 		</menu>

@@ -46,16 +46,21 @@ public class MemoryMatrix<E, A, V> implements EditableMatrix<E, A, V>
 		this.setValues(values);
 	}
 
-	@SuppressWarnings("unchecked")
-	private Class<V> getValueType(V[][] values) throws MatrixException
+	private Class getValueType(V[][] values) throws MatrixException
 	{
 		for(int i = 0; i < values.length; i++)
 		{
-			for(int j = 0; j< values.length; j++)
+			for(int j = 0; j < values[i].length; j++)
 			{
 				if(values[i][j] != null)
 				{
-					return (Class<V>) values[i][j].getClass();
+					if (values[i][j] instanceof String) {
+						return String.class;
+					} else if (values[i][j] instanceof Number) {
+						return Double.class;
+					} else {
+						return (Class<V>) values[i][j].getClass();
+					}
 				}
 			}
 		}
