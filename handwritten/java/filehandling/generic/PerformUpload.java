@@ -27,7 +27,7 @@ public class PerformUpload
 	 * @throws Exception 
 	 * @throws XGAPStorageException
 	 */
-	public static void doUpload(Database db, MolgenisFile mf, File content) throws Exception
+	public static void doUpload(Database db, MolgenisFile mf, File content, boolean skipWhenDestExists) throws Exception
 	{
 		File storageForFileType = new MolgenisFileHandler(db).getStorageDirFor(mf.get__Type());
 
@@ -35,7 +35,7 @@ public class PerformUpload
 		String storageFileName = NameConvention.escapeFileName(mf.getName());
 		File dest = new File(storageForFileType.getAbsolutePath() + File.separator + storageFileName + "."
 				+ mf.getExtension());
-		CopyFile.copyFile(content, dest);
+		CopyFile.copyFile(content, dest, skipWhenDestExists);
 	}
 
 	/**
@@ -63,7 +63,7 @@ public class PerformUpload
 	 * @throws Exception
 	 */
 	public static void doUpload(Database db, boolean useTx, String name, String type, File content,
-			HashMap<String, String> extraFields) throws Exception
+			HashMap<String, String> extraFields, boolean skipWhenDestExists) throws Exception
 	{
 
 		// file check
@@ -127,7 +127,7 @@ public class PerformUpload
 			String storageFileName = NameConvention.escapeFileName(mfAdd.getName());
 			File dest = new File(storageForFileType.getAbsolutePath() + File.separator + storageFileName + "."
 					+ mfAdd.getExtension());
-			CopyFile.copyFile(content, dest);
+			CopyFile.copyFile(content, dest, skipWhenDestExists);
 
 			// commit if file is in the right place, and if the transaction is started in this function (see comment above for beginTx)
 			if (txStartedHere)

@@ -89,7 +89,7 @@ public class MolgenisFileManager extends PluginModel<Entity>
 					throw new FileNotFoundException("No file selected");
 				}
 				
-				PerformUpload.doUpload(db, this.model.getMolgenisFile(), file);
+				PerformUpload.doUpload(db, this.model.getMolgenisFile(), file, false);
 				this.setMessages(new ScreenMessage("File uploaded", true));
 			}
 

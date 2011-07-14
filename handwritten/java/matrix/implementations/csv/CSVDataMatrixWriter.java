@@ -99,7 +99,7 @@ public class CSVDataMatrixWriter
 			// extraFields.put("data", data.getId().toString());
 			extraFields.put("data_name", data.getName().toString());
 
-			PerformUpload.doUpload(db, true, data.getName() + ".txt", "CSVDataMatrix", inputFile, extraFields);
+			PerformUpload.doUpload(db, true, data.getName() + ".txt", "CSVDataMatrix", inputFile, extraFields, false);
 
 		}
 

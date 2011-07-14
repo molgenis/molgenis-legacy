@@ -1,104 +1,82 @@
 <molgenis name="molgenis_apps" label="xQTL workbench">
 	<plugin name="molgenis_header" type="plugins.cluster.demo.header.MolgenisHeader" />
 	<menu name="main">
-		
+
 		<plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.ClusterDemo" />
-		
 		<plugin label="Login" name="UserLogin" type="org.molgenis.auth.ui.UserLogin" />
+		<plugin label="Import data" name="QTLWizard" type="plugins.xgapwizard.QTLDataSetWizard" group="biologist" />
 
-		<!--plugin name="GeneNetwork" type="plugins.genenetwork.GeneNetwork"/ -->
-
-		<plugin label="Import data" name="QTLWizard"
-			type="plugins.xgapwizard.QTLDataSetWizard" group="biologist" />
-
-		<form label="Explore data" name="Investigations" entity="Investigation"
-			compact_view="name" group="biologist">
+		<form label="Explore data" name="Investigations" entity="Investigation" compact_view="name" group="biologist">
 			<menu name="InvestigationMenu">
-				<plugin name="Overview"
-					type="plugins.investigationoverview.InvestigationOverviewPlugin" />
-				<form name="Datas" label="View data" entity="Data"
-					compact_view="name">
-					<menu name="Select">
-						<plugin name="Manager" type="plugins.matrix.manager.MatrixManager" />
-						<plugin name="Heatmap" type="plugins.matrix.heatmap.MatrixHeatmap" />
-						<plugin name="Rplot" type="plugins.rplot.RplotPlugin" />
-						<plugin name="Inspector" type="plugins.matrix.inspector.MatrixInspector" />
-						<plugin name="MatrixAdmin" label="Delete storage"
-							type="plugins.matrix.admin.MatrixAdmin" />
+				<plugin name="Overview" type="plugins.investigationoverview.InvestigationOverviewPlugin" group="biologist"/>
+				<form name="Datas" label="View data" entity="Data" compact_view="name" group="biologist">
+					<menu name="Select" group="biologist">
+						<plugin name="Manager" type="plugins.matrix.manager.MatrixManager" group="biologist" />
+						<plugin name="Heatmap" type="plugins.matrix.heatmap.MatrixHeatmap" group="biologist" />
+						<plugin name="Rplot" type="plugins.rplot.RplotPlugin" group="biologist" />
+						<plugin name="Inspector" type="plugins.matrix.inspector.MatrixInspector" group="biologist" />
+						<plugin name="MatrixAdmin" label="Delete storage" type="plugins.matrix.admin.MatrixAdmin" group="biologist" />
 					</menu>
 				</form>
 				<menu name="BasicAnnotations" label="View annotations">
 					<form name="Individuals" entity="Individual" />
 					<form name="Panels" entity="Panel" group="biologist" />
-					<form name="Chromosomes" entity="Chromosome" />
-					<form name="Markers" entity="Marker" />
-					<form name="Genes" entity="Gene" />
-					<form name="ClassicalPhenotypes" entity="ClassicalPhenotype" />
-					<menu name="AdvancedAnnotations" label="More annotations">
-						<form name="DerivedTraits" entity="DerivedTrait" />
-						<form name="Factors" entity="Factor" />
-						<form name="MassPeaks" entity="MassPeak" />
-						<form name="Metabolites" entity="Metabolite" />
-						<form name="Probes" entity="Probe" />
-						<form name="Samples" entity="Sample" />
-						<form name="Spots" entity="Spot" />
+					<form name="Chromosomes" entity="Chromosome" group="biologist" />
+					<form name="Markers" entity="Marker" group="biologist" />
+					<form name="Genes" entity="Gene" group="biologist" />
+					<form name="ClassicalPhenotypes" entity="ClassicalPhenotype" group="biologist" />
+					<menu name="AdvancedAnnotations" label="More annotations" group="biologist">
+						<form name="DerivedTraits" entity="DerivedTrait" group="biologist" />
+						<form name="Factors" entity="Factor" group="biologist" />
+						<form name="MassPeaks" entity="MassPeak" group="biologist" />
+						<form name="Metabolites" entity="Metabolite" group="biologist" />
+						<form name="Probes" entity="Probe" group="biologist" />
+						<form name="Samples" entity="Sample" group="biologist" />
+						<form name="Spots" entity="Spot" group="biologist" />
 					</menu>
 				</menu>
-				<form name="Files" entity="InvestigationFile" label="View files">
-					<plugin name="Viewer" type="plugins.molgenisfile.MolgenisFileManager" />
+				<form name="Files" entity="InvestigationFile" label="View files" group="biologist">
+					<plugin name="Viewer" type="plugins.molgenisfile.MolgenisFileManager" group="biologist" />
 				</form>
 			</menu>
 		</form>
 
-		<plugin label="Map QTLs" name="Cluster" type="plugins.cluster.ClusterPlugin"
-			group="biologist" />
+		<plugin label="Map QTLs" name="Cluster" type="plugins.cluster.ClusterPlugin" group="biologist" />
 
 		<menu name="AnalysisSettings" label="Add analyses" group="bioinformatician">
-			<plugin label="Install R packages" name="DependencyManager"
-				type="plugins.cluster.demo.dependencymanager.DependencyManager" />
-
-			<form name="Analysis" label="Add new analysis" entity="Analysis" />
-
-			<form name="ParameterSets" label="Configure parameters" entity="ParameterSet">
-				<form name="ParameterNames" entity="ParameterName">
-					<form name="ParameterValues" entity="ParameterValue" />
+			<form name="RScripts" label="Add R script" entity="RScript" group="bioinformatician">
+				<plugin name="RViewer" type="plugins.molgenisfile.MolgenisFileManager" group="bioinformatician"/>
+				<plugin label="Help" name="AddNewToolsHelp" type="plugins.cluster.addnewtoolshelp" group="bioinformatician" />
+			</form>
+			<form name="Analysis" label="Add new analysis" entity="Analysis" group="bioinformatician" />
+			<form name="ParameterSets" label="Configure parameters" entity="ParameterSet" group="bioinformatician">
+				<form name="ParameterNames" entity="ParameterName" group="bioinformatician">
+					<form name="ParameterValues" entity="ParameterValue" group="bioinformatician" />
 				</form>
 			</form>
-
-			<form name="DataSets" label="Configure datasets" entity="DataSet">
-				<form name="DataNames" entity="DataName">
-					<form name="DataValues" entity="DataValue" />
+			<form name="DataSets" label="Configure datasets" entity="DataSet" group="bioinformatician">
+				<form name="DataNames" entity="DataName" group="bioinformatician">
+					<form name="DataValues" entity="DataValue" group="bioinformatician" />
 				</form>
 			</form>
 		</menu>
 
 
-		<menu label="Settings" name="Admin" group="admin">
-			<!--menu label="Batches" name="batches"> <form name="ManageBatches" entity="MolgenisBatch" 
-				label="Batches" /> <form name="ManageBatchEntities" entity="MolgenisBatchEntity" 
-				label="Batch entities" /> <plugin name="Batch" type="plugins.batch.BatchPlugin" 
-				label="Batch management" /> <plugin name="BatchView" type="plugins.batch.BatchViewPlugin" 
-				label="Batch viewer" /> </menu -->
-
-			<menu name="Auth" label="Auth settings" group="admin">
-				<plugin name="PermissionManagementPlugin"
-					type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin" />
+		<menu label="Settings" name="Admin">
+			<menu name="Auth" label="Auth settings">
+				<plugin name="PermissionManagementPlugin" type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin" />
 				<menu name="Management">
 					<form name="MolgenisUser" entity="MolgenisUser" />
-					<form name="MolgenisGroup" entity="MolgenisGroup" />
+					<form name="MolgenisGroup" entity="MolgenisGroup"/>
 					<form name="MolgenisRoleGroupLink" entity="MolgenisRoleGroupLink" />
-					<form name="MolgenisEntity" entity="MolgenisEntity" view="list"
-						label="Entities" />
+					<form name="MolgenisEntity" entity="MolgenisEntity" view="list" label="Entities" />
 					<form name="MolgenisPermission" entity="MolgenisPermission" />
-					<!--form name="TestClass" entity="TestClass"/> <form name="TestClass2" 
-						entity="TestClass2"/ -->
 				</menu>
 			</menu>
-			<plugin label="Database" name="DatabaseSettings"
-				type="plugins.system.database.Settings" />
-			<plugin label="Storage" name="Settings"
-				type="plugins.system.settings.Settings" />
-			<menu name="Ontologies" label="Ontologies">
+			<plugin label="Database" name="DatabaseSettings" type="plugins.system.database.Settings" />
+			<plugin label="File storage" name="Settings" type="plugins.system.settings.Settings" />
+			<plugin label="Install R packages" name="DependencyManager" type="plugins.cluster.demo.dependencymanager.DependencyManager" />
+			<menu name="Ontologies" label="Ontologies" >
 				<form name="Species" entity="Species" />
 				<form name="OntologyTerms" entity="OntologyTerm" />
 			</menu>
@@ -107,9 +85,8 @@
 				<plugin name="DuplicateRemover" type="plugins.help.duplicates.DuplicatesPlugin" />
 				<plugin name="KeggConverter" type="plugins.keggplugin.KeggToolsPlugin" />
 			</menu>
-
 		</menu>
-		<plugin label="Search" name="SimpleDbSearch"
-			type="plugin.search.SimpleWholeDatabaseSearch" group="biologist" />
+		
+		<plugin label="Search" name="SimpleDbSearch" type="plugin.search.SimpleWholeDatabaseSearch" group="biologist" />
 	</menu>
 </molgenis>

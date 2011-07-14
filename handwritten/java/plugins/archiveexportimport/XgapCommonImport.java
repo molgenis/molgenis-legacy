@@ -27,7 +27,7 @@ public class XgapCommonImport {
 	 * @param dataDir
 	 * @throws Exception
 	 */
-	public static void importMatrices(List<String> investigationNames, Database db, boolean useTx, File dataDir)
+	public static void importMatrices(List<String> investigationNames, Database db, boolean useTx, File dataDir, boolean skipWhenDestExists)
 			throws Exception {
 
 		//FIXME: this apparently assumes a new database because all investigations/matrices are queried?
@@ -62,7 +62,7 @@ public class XgapCommonImport {
 				File content = new File(dataDir + File.separator + dataFileName);
 				HashMap<String, String> extraFields = new HashMap<String, String>();
 				extraFields.put("data_name", data.getName());
-				PerformUpload.doUpload(db, useTx, dataFileName, type, content, extraFields);
+				PerformUpload.doUpload(db, useTx, dataFileName, type, content, extraFields, skipWhenDestExists);
 			}
 		}
 	}

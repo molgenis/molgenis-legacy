@@ -19,11 +19,11 @@ public class AddExampleData
 
 		if (ArchiveExportImportPlugin.isExcelFormatXGAPArchive(extractDir))
 		{
-			new XgapExcelImport(extractDir, db);
+			new XgapExcelImport(extractDir, db, true);
 		}
 		else
 		{
-			new XgapCsvImport(extractDir, db);
+			new XgapCsvImport(extractDir, db, true);
 		}
 	}
 }

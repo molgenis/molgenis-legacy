@@ -42,14 +42,14 @@ public class Case2
 	//	File tarFu = new File(this.getClass().getResource("tar/Fu.tar.gz").getFile());
 		File tarFu = new File(path + "/Fu.tar.gz");
 		File extractFu = TarGz.tarExtract(tarFu);
-		new XgapCsvImport(extractFu, db);
+		new XgapCsvImport(extractFu, db, false);
 		
 		// Import Beamer
 		System.out.println("Step 3"); 
 		//File tarBeamer = new File(this.getClass().getResource("tar/Beamer.tar.gz").getFile());
 		File tarBeamer = new File(path + "/Beamer.tar.gz");
 		File extractBeamer = TarGz.tarExtract(tarBeamer);
-		new XgapCsvImport(extractBeamer, db);
+		new XgapCsvImport(extractBeamer, db, false);
 
 		// Export both into one archive
 		System.out.println("Step 4"); 
@@ -64,7 +64,7 @@ public class Case2
 		// Import both from one archive
 		System.out.println("Step 6"); 
 		File extractBoth = TarGz.tarExtract(repackBoth);
-		new XgapCsvImport(extractBoth, db);
+		new XgapCsvImport(extractBoth, db, false);
 		
 		// Export Fu
 		System.out.println("Step 7"); 

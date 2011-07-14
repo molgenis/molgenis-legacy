@@ -120,7 +120,7 @@ public class BinaryDataMatrixWriter
 			HashMap<String, String> extraFields = new HashMap<String, String>();
 			extraFields.put("data_name", data.getName());
 			
-			PerformUpload.doUpload(db, true, data.getName()+".bin", "BinaryDataMatrix", binFile, extraFields);
+			PerformUpload.doUpload(db, true, data.getName()+".bin", "BinaryDataMatrix", binFile, extraFields, false);
 
 		}
 

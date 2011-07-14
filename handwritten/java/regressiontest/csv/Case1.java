@@ -44,14 +44,14 @@ public class Case1
 	//	File tarBailey = new File(this.getClass().getResource("tar/Bailey.tar.gz").getFile());
 		File tarBailey = new File(path + "/Bailey.tar.gz");
 		File extractBailey = TarGz.tarExtract(tarBailey);
-		new XgapCsvImport(extractBailey, db);
+		new XgapCsvImport(extractBailey, db, false);
 		
 		// Import Lyons
 		System.out.println("Step 3"); 
 	//	File tarLyons = new File(this.getClass().getResource("tar/Lyons.tar.gz").getFile());
 		File tarLyons = new File(path + "/Lyons.tar.gz");
 		File extractLyons = TarGz.tarExtract(tarLyons);
-		new XgapCsvImport(extractLyons, db);
+		new XgapCsvImport(extractLyons, db, false);
 
 		// Export both into one archive
 		System.out.println("Step 4"); 
@@ -66,7 +66,7 @@ public class Case1
 		// Import both from one archive
 		System.out.println("Step 6"); 
 		File extractBoth = TarGz.tarExtract(repackBoth);
-		new XgapCsvImport(extractBoth, db);
+		new XgapCsvImport(extractBoth, db, false);
 		
 		// Export Bailey
 		System.out.println("Step 7"); 

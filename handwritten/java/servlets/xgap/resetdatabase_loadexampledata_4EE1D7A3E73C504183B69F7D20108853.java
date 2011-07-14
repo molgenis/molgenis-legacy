@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.molgenis.core.MolgenisFile;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.xgap.xqtlworkbench.ResetXgapDb;
 
 import plugins.emptydb.emptyDatabase;
 import regressiontest.cluster.DataLoader;
@@ -27,9 +28,9 @@ public class resetdatabase_loadexampledata_4EE1D7A3E73C504183B69F7D20108853 exte
 	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 
-		boolean databaseIsAvailable = false;
 		boolean resetSuccess = false;
 		Database db = null;
+		boolean dbAvailable = false;
 
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/plain");
@@ -37,42 +38,23 @@ public class resetdatabase_loadexampledata_4EE1D7A3E73C504183B69F7D20108853 exte
 		try
 		{
 			db = this.getDatabase();
-			databaseIsAvailable = true;
+			dbAvailable = true;
 		}
-		catch (Exception e)
+		catch (Exception e1)
 		{
-			out.print("Database unavailable.");
-			out.print("\n\n");
-			e.printStackTrace(out);
+			e1.printStackTrace(out);
 		}
 
-		if (databaseIsAvailable)
+		if (dbAvailable)
 		{
 			try
 			{
-				out.print("First deleting all database-associated files if applicable.\n");
-				try
-				{
-					List<MolgenisFile> mfList = db.find(MolgenisFile.class);
-					out.print("Number of files: " + mfList.size() + "\n");
-					db.remove(mfList);
-					mfList = db.find(MolgenisFile.class);
-					out.print("Number of after delete: " + mfList.size() + "\n");
-				}
-				catch (DatabaseException dbe)
-				{
-					// database scheme does not contain MolgenisFile.class
-					// ignore this and continue to load SQL
-				}
-				out.print("Now resetting datamodel/database.\n");
-				new emptyDatabase(db, true);
-				out.print("Reset datamodel success. Continuing to load example data.\n");
+				String report = ResetXgapDb.reset(db, true);
+				out.print(report);
 				resetSuccess = true;
 			}
 			catch (Exception e)
 			{
-				out.print("Error while trying to overwrite datamodel.");
-				out.print("\n\n");
 				e.printStackTrace(out);
 			}
 		}

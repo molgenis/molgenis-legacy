@@ -58,7 +58,7 @@ public class UploadTest
 				String file = img.getAbsolutePath();
 				HashMap<String, String> extraFields = new HashMap<String, String>();
 				extraFields.put("investigation_name", inv.getName());
-				PerformUpload.doUpload(db, true, name, type, img, extraFields);
+				PerformUpload.doUpload(db, true, name, type, img, extraFields, false);
 			}
 		}
 		if (method.equals("curl"))

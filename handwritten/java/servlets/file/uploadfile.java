@@ -52,7 +52,7 @@ public class uploadfile extends app.servlet.MolgenisServlet
 				}
 			}
 	
-			PerformUpload.doUpload(db, true, fileName, fileType, fileContent, extraFields);
+			PerformUpload.doUpload(db, true, fileName, fileType, fileContent, extraFields, false);
 
 			out.println("upload successful");
 

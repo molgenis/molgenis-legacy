@@ -10,7 +10,7 @@ import app.CsvImport;
 
 public class XgapCsvImport
 {
-	public XgapCsvImport(File extractDir, Database db) throws Exception
+	public XgapCsvImport(File extractDir, Database db, boolean skipWhenDestExists) throws Exception
 	{
 	
 		db.beginTx();
@@ -22,7 +22,7 @@ public class XgapCsvImport
 			File investigationFile = new File(extractDir + File.separator + "study.txt");
 			List<String> investigationNames = XgapCommonImport.getInvestigationNameFromFile(investigationFile);
 
-			XgapCommonImport.importMatrices(investigationNames, db, false, new File(extractDir + File.separator + "data"));
+			XgapCommonImport.importMatrices(investigationNames, db, false, new File(extractDir + File.separator + "data"), skipWhenDestExists);
 		
 			db.commitTx();
 		}

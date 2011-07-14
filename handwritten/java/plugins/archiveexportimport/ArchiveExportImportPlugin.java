@@ -144,9 +144,9 @@ public class ArchiveExportImportPlugin extends PluginModel<Entity>
 					File tarFile = request.getFile("importArchive");
 					File extractDir = TarGz.tarExtract(tarFile);
 					if(isExcelFormatXGAPArchive(extractDir)){
-						new XgapExcelImport(extractDir, db);
+						new XgapExcelImport(extractDir, db, false);
 					}else{
-						new XgapCsvImport(extractDir, db);
+						new XgapCsvImport(extractDir, db, false);
 					}
 					
 			}

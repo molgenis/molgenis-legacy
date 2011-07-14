@@ -55,9 +55,9 @@ public class DB
 		File extractDir = TarGz.tarExtract(tarFu);
 		
 		if(ArchiveExportImportPlugin.isExcelFormatXGAPArchive(extractDir)){
-			new XgapExcelImport(extractDir, db);
+			new XgapExcelImport(extractDir, db, false);
 		}else{
-			new XgapCsvImport(extractDir, db);
+			new XgapCsvImport(extractDir, db, false);
 		}
 		
 		return true;

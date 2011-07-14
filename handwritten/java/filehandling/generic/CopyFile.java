@@ -27,7 +27,7 @@ public class CopyFile {
 	private static boolean verify = true;
 	private static int override = OVERWRITE_ASK;
 
-	public static Long copyFile(File srcFile, File destFile)
+	public static Long copyFile(File srcFile, File destFile, boolean skipWhenDestExists)
 		throws IOException {
 		
 		//System.out.println("Copying " + srcFile.getAbsolutePath() + " to " + destFile.getAbsolutePath());
@@ -38,7 +38,9 @@ public class CopyFile {
 		}
 		if (destFile.exists())
 		{
-			throw new IOException("Destination file '" + destFile.getAbsolutePath() + "' already exists.");
+			if(!skipWhenDestExists){
+				throw new IOException("Destination file '" + destFile.getAbsolutePath() + "' already exists.");
+			}
 		}
 		
 		InputStream in = new FileInputStream(srcFile);
@@ -139,7 +141,7 @@ public class CopyFile {
 		}
 
 		// copy file, optionally creating a checksum
-		Long checksumSrc = copyFile(srcFile, destFile);
+		Long checksumSrc = copyFile(srcFile, destFile, false);
 
 		// copy timestamp of last modification
 		if (copyOriginalTimestamp) {

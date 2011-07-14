@@ -22,7 +22,7 @@ import app.ExcelImport;
 public class XgapExcelImport
 {
 
-	public XgapExcelImport(File extractDir, Database db) throws Exception
+	public XgapExcelImport(File extractDir, Database db, boolean skipWhenDestExists) throws Exception
 	{
 
 		// System.out.println("XgapExcelImport called");
@@ -58,7 +58,7 @@ public class XgapExcelImport
 			if (dataDir != null)
 			{
 				List<String> investigationNames = getInvestigationNameFromExcel(excelFile);
-				XgapCommonImport.importMatrices(investigationNames, db, false, dataDir);
+				XgapCommonImport.importMatrices(investigationNames, db, false, dataDir, skipWhenDestExists);
 			}
 
 			db.commitTx();

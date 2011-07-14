@@ -2,17 +2,12 @@ package servlets.xgap;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.molgenis.core.MolgenisFile;
-import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
-
-import plugins.emptydb.emptyDatabase;
+import org.molgenis.xgap.xqtlworkbench.ResetXgapDb;
 
 public class resetdatabase_4EE1D7A3E73C504183B69F7D20108853 extends app.servlet.MolgenisServlet
 {
@@ -24,55 +19,18 @@ public class resetdatabase_4EE1D7A3E73C504183B69F7D20108853 extends app.servlet.
 
 	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-
-		boolean databaseIsAvailable = false;
-		//boolean resetSuccess = false;
-		Database db = null;
-
+		
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/plain");
 
 		try
 		{
-			db = this.getDatabase();
-			databaseIsAvailable = true;
+			String report = ResetXgapDb.reset(this.getDatabase(), true);
+			out.print(report);
 		}
 		catch (Exception e)
 		{
-			out.print("Database unavailable.");
-			out.print("\n\n");
 			e.printStackTrace(out);
-		}
-
-		if (databaseIsAvailable)
-		{
-			try
-			{
-				out.print("First deleting all database-associated files if applicable.\n");
-				try
-				{
-					List<MolgenisFile> mfList = db.find(MolgenisFile.class);
-					out.print("Number of files: " + mfList.size() + "\n");
-					db.remove(mfList);
-					mfList = db.find(MolgenisFile.class);
-					out.print("Number of after delete: " + mfList.size() + "\n");
-				}
-				catch (DatabaseException dbe)
-				{
-					// database scheme does not contain MolgenisFile.class
-					// ignore this and continue to load SQL
-				}
-				out.print("Now resetting datamodel/database.\n");
-				new emptyDatabase(db, true);
-				out.print("Reset datamodel success.\n");
-				//resetSuccess = true;
-			}
-			catch (Exception e)
-			{
-				out.print("Error while trying to overwrite datamodel.");
-				out.print("\n\n");
-				e.printStackTrace(out);
-			}
 		}
 
 		out.close();
