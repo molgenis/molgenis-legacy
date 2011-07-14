@@ -17,7 +17,7 @@ public class XqtlUpdateDatabase
 		
 		//remove HSQL DB (not really needed) and file storage dir
 		XqtlGenerate.deleteDirectory(new File("hsqldb"));
-		if(db.getFileSourceHelper().hasFilesource(false)){
+		if(db.getFileSourceHelper().hasValidFileSource()){
 			XqtlGenerate.deleteDirectory(db.getFileSourceHelper().getFilesource(false));
 		}
 		
