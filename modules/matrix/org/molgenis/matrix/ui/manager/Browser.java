@@ -285,9 +285,10 @@ public class Browser
 			//unrecognized filter?
 		}
 		
-		List<String> colNames = filterMatrix.getColNames();
-		for (String colName : colNames)
+		List<ObservableFeature> cols = filterMatrix.getColNames();
+		for (ObservableFeature col : cols)
 		{
+			String colName = col.getName();
 			Object filterValue = request.getObject("FILTER_VALUE_COL_" + colName);
 			if (filterValue != null)
 			{
@@ -302,9 +303,10 @@ public class Browser
 			}
 		}
 		
-		List<String> rowNames = filterMatrix.getRowNames();
-		for (String rowName : rowNames)
+		List<ObservationTarget> rows = filterMatrix.getRowNames();
+		for (ObservationTarget row : rows)
 		{
+			String rowName = row.getName();
 			Object filterValue = request.getObject("FILTER_VALUE_ROW_" + rowName);
 			if (filterValue != null)
 			{

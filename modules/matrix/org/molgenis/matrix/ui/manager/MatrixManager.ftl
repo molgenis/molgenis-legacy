@@ -121,22 +121,22 @@
 					<tr>
 						<td></td><td></td>
 						<#list browser.subMatrix.colNames as n>
-							<td class="matrixTableCell colorOfTitle"><b>${n}</b></td>
+							<td class="matrixTableCell colorOfTitle"><b>${n.getName()}</b></td>
 						</#list>
 					</tr>
 					<tr>
 						<td></td><td></td>
 						<#list browser.subMatrix.colNames as n>
-							<td><nobr><select name="FILTER_OPERATOR_COL_${n}"><option value="GREATER">&gt;</option><option value="GREATER_EQUAL">&gt;=</option><option value="LESS">&lt;</option><option value="LESS_EQUAL">&lt;=</option><option value="EQUALS">==</option></select><input type="text" size="4" name="FILTER_VALUE_COL_${n}"></input></nobr></td>
+							<td><nobr><select name="FILTER_OPERATOR_COL_${n.getName()}"><option value="GREATER">&gt;</option><option value="GREATER_EQUAL">&gt;=</option><option value="LESS">&lt;</option><option value="LESS_EQUAL">&lt;=</option><option value="EQUALS">==</option></select><input type="text" size="4" name="FILTER_VALUE_COL_${n.getName()}"></input></nobr></td>
 						</#list>
 					</tr>
 					<#list browser.subMatrix.rowNames as n> 
 						<tr>
 							<td class="matrixTableCell colorOfTitle">
-								<div style="display: inline;text-align:center;"><b>${n}</b></div>
+								<div style="display: inline;text-align:center;"><b>${n.getName()}</b></div>
 							</td>
 
-							<td><nobr><select name="FILTER_OPERATOR_ROW_${n}"><option value="GREATER">&gt;</option><option value="GREATER_EQUAL">&gt;=</option><option value="LESS">&lt;</option><option value="LESS_EQUAL">&lt;=</option><option value="EQUALS">==</option></select><input type="text" size="4" name="FILTER_VALUE_ROW_${n}"></input></nobr></td>
+							<td><nobr><select name="FILTER_OPERATOR_ROW_${n.getName()}"><option value="GREATER">&gt;</option><option value="GREATER_EQUAL">&gt;=</option><option value="LESS">&lt;</option><option value="LESS_EQUAL">&lt;=</option><option value="EQUALS">==</option></select><input type="text" size="4" name="FILTER_VALUE_ROW_${n.getName()}"></input></nobr></td>
 							
 							<#assign x = browser.subMatrix.colCount>
 							<#list 0..x-1 as i>								
@@ -144,10 +144,19 @@
 
 						  				<#if browser.subMatrix.values[n_index][i] != "">
 							  				<#assign val = browser.subMatrix.values[n_index][i]>
+							  				<#if val.getValue()??>
+							  					<#assign showValue = val.getValue()>
+							  				<#else>
+							  					<#if val.getRelation()??>
+							  						<#assign showValue = val.getRelation_Name()>
+							  					<#else>
+							  						<#assign showValue = "">
+							  					</#if>
+							  				</#if>
 						  					<#if n_index%2==0>
-						  						<td class="matrixTableCell matrixRowColor1">${val}</td>
+						  						<td class="matrixTableCell matrixRowColor1">${showValue}</td>
 						  					<#else>
-						  						<td class="matrixTableCell matrixRowColor0">${val}</td>
+						  						<td class="matrixTableCell matrixRowColor0">${showValue}</td>
 						  					</#if>
 						  				<#else>
 						  					<!--td class="matrixTableCell matrixRowColorEmpty">&nbsp;</td-->

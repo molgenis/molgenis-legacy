@@ -198,7 +198,6 @@ public class MatrixManager extends PluginModel
 				Browser br = createBrowserInstance(db);
 				this.model.setBrowser(br);
 				createOverLibText(db);
-				createHeaders();
 			}
 			catch (Exception e)
 			{
@@ -207,6 +206,9 @@ public class MatrixManager extends PluginModel
 				this.model.setBrowser(null);
 			}
 		}
+		
+		// Always create headers, so they remain up-to-date after paging etc.
+		createHeaders();
 	}
 
 }

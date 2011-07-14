@@ -2,7 +2,6 @@ package org.molgenis.matrix;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,8 +35,12 @@ public class MemoryMatrix<E, A, V> implements EditableMatrix<E, A, V>
 			throws MatrixException
 	{		
 		//get from a not-null value the valueType
-		this.valueType = getValueType(values);
-		
+		try {
+			this.valueType = getValueType(values);
+		} catch (MatrixException e) {
+			// Discussion: what to do here? Do we need the valueType when there are only null-values
+			// in the current (sub)matrix? Could we maybe take ObservedValue.class as default?
+		}
 		// add row metadata
 		this.setColNames(colNames);
 		this.setRowNames(rowNames);
@@ -135,7 +138,7 @@ public class MemoryMatrix<E, A, V> implements EditableMatrix<E, A, V>
 		{
 			for (int colIndex = col; colIndex < col + ncols; colIndex++)
 			{
-				elements[rowIndex][colIndex] = allAlements[rowIndex][colIndex];
+				elements[rowIndex - row][colIndex - col] = allAlements[rowIndex][colIndex];
 			}
 		}
 		return new MemoryMatrix<E, A, V>(rows, cols, elements);
