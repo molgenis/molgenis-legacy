@@ -78,10 +78,11 @@
 			</menu>
 		</menu>
 		<menu name="Reports">
-			<plugin name="ListPlugin" type="plugins.listplugin.ListPlugin"
+			<plugin name="UploadSampleReport" type="org.molgenis.matrix.ui.upload.UploadSampleReport"/>
 				label="View value matrix" />
 			<plugin name="MatrixViewExample" type="org.molgenis.matrix.example.MatrixViewExample1"
 				label="View NEW value matrix" />
+			<plugin name="MatrixViewer" type="org.molgenis.matrix.ui.manager.MatrixManager"/>
 		</menu>
 		<menu name="Admin">
 			<form name="LibraryBarcodes" entity="LibraryBarcode" />

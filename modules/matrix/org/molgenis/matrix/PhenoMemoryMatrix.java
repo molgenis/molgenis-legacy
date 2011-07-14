@@ -20,10 +20,15 @@ import org.molgenis.util.Entity;
 public class PhenoMemoryMatrix<E extends ObservationElement, A extends ObservationElement>
 		extends MemoryMatrix<E, A, ObservedValue>
 {
+	Class<E> rowType;
+	Class<A> colType;
+	
 	public PhenoMemoryMatrix(Class<E> rowType, Class<A> colType, Database db)
 			throws MatrixException, DatabaseException, ParseException
 	{
 		this(db.find(rowType), db.find(colType), db);
+		this.rowType = rowType;
+		this.colType = colType;
 	}
 
 	/** Construct a pheno matrix from database, only using selected rows/cols */
@@ -32,6 +37,12 @@ public class PhenoMemoryMatrix<E extends ObservationElement, A extends Observati
 	{
 		// names are unique in whole database???
 		super(rows, cols, ObservedValue.class);
+		
+		//get rowType and colType
+		for(E row: rows) if(row == null) throw new MatrixException("rows may not have null values");
+		for(A col: cols) if(col == null) throw new MatrixException("cols may not have null values");
+		this.rowType = (Class<E>) rows.get(0).getClass();
+		this.colType = (Class<A>) cols.get(0).getClass();
 
 		// get a map of index->id
 		List<Object> rowIds = getIds(rows);
@@ -65,9 +76,11 @@ public class PhenoMemoryMatrix<E extends ObservationElement, A extends Observati
 	 * @throws MatrixException
 	 */
 	public PhenoMemoryMatrix(Class<E> rowType, Class<A> colType,
-			StringMatrix matrix) throws MatrixException
+			Matrix<String, String, String> matrix) throws MatrixException
 	{
 		super();
+		this.rowType = rowType;
+		this.colType = colType;
 
 		try
 		{
@@ -90,14 +103,17 @@ public class PhenoMemoryMatrix<E extends ObservationElement, A extends Observati
 			}
 			this.setColNames(cols);
 			// create new ObservedValue instances
-			ObservedValue[][] values = this.create(rows.size(), cols.size(), ObservedValue.class);
+			ObservedValue[][] values = this.create(rows.size(), cols.size(),
+					ObservedValue.class);
 			for (int i = 0; i < rows.size(); i++)
 			{
 				for (int j = 0; j < cols.size(); j++)
 				{
 					ObservedValue v = new ObservedValue();
 					v.setTarget_Name(rows.get(i).getName());
+					v.setTarget___Type(this.rowType.getSimpleName());
 					v.setFeature_Name(cols.get(j).getName());
+					v.setFeature___Type(this.colType.getSimpleName());
 					v.setValue(matrix.getValue(i, j));
 					values[i][j] = v;
 				}
@@ -121,13 +137,6 @@ public class PhenoMemoryMatrix<E extends ObservationElement, A extends Observati
 
 	}
 
-	@Override
-	public void store()
-	{
-		throw new UnsupportedOperationException(
-				"use store(Database, DatabaseAction) instead");
-	}
-
 	/**
 	 * Write this matrix to the database. Use 'action' parameter to specify
 	 * behaviour in case of duplicates.
@@ -139,9 +148,14 @@ public class PhenoMemoryMatrix<E extends ObservationElement, A extends Observati
 	public void store(Database db, Database.DatabaseAction action)
 			throws DatabaseException
 	{
+		boolean inTransaction = false;
 		try
 		{
-			db.beginTx();
+			if (!db.inTx())
+			{
+				db.beginTx();
+				inTransaction = true;
+			}
 
 			// except in case of remove, first add the targets.
 			if (!action.equals(Database.DatabaseAction.REMOVE)
@@ -158,7 +172,7 @@ public class PhenoMemoryMatrix<E extends ObservationElement, A extends Observati
 						ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME,
 						ObservedValue.VALUE, ObservedValue.TIME);
 			}
-			
+
 			// remove unless linked to another value. BIG FIXME!!!
 			if (action.equals(Database.DatabaseAction.REMOVE)
 					|| action
@@ -168,12 +182,18 @@ public class PhenoMemoryMatrix<E extends ObservationElement, A extends Observati
 				db.update(this.getColNames(), action, ObservationElement.NAME);
 			}
 
-			db.commitTx();
+			if(inTransaction) db.commitTx();
 		}
 		catch (Exception e)
 		{
-			db.rollbackTx();
+			if(inTransaction) db.rollbackTx();
+			throw new DatabaseException(e);
 		}
+	}
+
+	public void store(Database db) throws DatabaseException
+	{
+		store(db, Database.DatabaseAction.ADD_IGNORE_EXISTING);
 	}
 
 	public String toString()
@@ -202,7 +222,10 @@ public class PhenoMemoryMatrix<E extends ObservationElement, A extends Observati
 				for (A col : getColNames())
 				{
 					writer.writeSeparator();
-					writer.writeValue(this.getValue(row, col).getValue());
+					if(this.getValue(row, col) != null)
+						writer.writeValue(this.getValue(row, col).getValue());
+					else
+						writer.writeValue(writer.getMissingValue()	);
 				}
 				writer.writeEndOfLine();
 			}

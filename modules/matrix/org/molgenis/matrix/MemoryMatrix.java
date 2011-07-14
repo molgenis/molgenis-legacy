@@ -453,13 +453,6 @@ public class MemoryMatrix<E, A, V> implements EditableMatrix<E, A, V>
 	}
 
 	@Override
-	public void store() throws MatrixException
-	{
-		throw new UnsupportedOperationException(
-				"in memory database cannot be stored. Use CsvMemoryMatrix or BinaryMemoryMatrix instead");
-	}
-
-	@Override
 	public List<A> getColNamesByOffset(int index, int offset) throws MatrixException
 	{
 		return this.getColNames().subList(index, index + offset);

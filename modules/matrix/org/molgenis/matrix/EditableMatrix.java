@@ -19,6 +19,4 @@ public interface EditableMatrix<E,A,V> extends Matrix<E,A,V>
 	public void setValue(int row, int col, V value) throws MatrixException;
 
 	public void setValue(E rowName, A colName, V value) throws MatrixException;
-	
-	public void store() throws MatrixException;
 }

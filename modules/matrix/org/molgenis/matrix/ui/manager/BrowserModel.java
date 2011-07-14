@@ -1,10 +1,6 @@
 package org.molgenis.matrix.ui.manager;
 
-import matrix.AbstractDataMatrixInstance;
-
-import org.molgenis.data.Data;
 import org.molgenis.matrix.Matrix;
-import org.molgenis.matrix.TargetFeatureMemoryMatrix;
 
 public class BrowserModel {
 	private int colStart; //calculated from previous colStart, action, stepsize, colMax, width

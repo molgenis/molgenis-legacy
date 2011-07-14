@@ -8,6 +8,7 @@ import java.util.List;
 import org.molgenis.matrix.convertors.ValueConvertor;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvFileWriter;
+import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Tuple;
@@ -40,7 +41,6 @@ public class CsvMemoryMatrix<E, A, V> extends MemoryMatrix<E, A, V>
 	private ValueConvertor<E> rowConvertor;
 	private ValueConvertor<A> colConvertor;
 	private ValueConvertor<V> valueConvertor;
-	private File file;
 
 	/**
 	 * Copy constructor for CsvMatrix. Copoies the values out of the other
@@ -52,16 +52,23 @@ public class CsvMemoryMatrix<E, A, V> extends MemoryMatrix<E, A, V>
 	 * @param values
 	 * @throws FileNotFoundException
 	 * @throws MatrixException
+	 * @throws FileNotFoundException 
 	 */
 	public CsvMemoryMatrix(ValueConvertor<E> rowConvertor,
 			ValueConvertor<A> colConvertor, ValueConvertor<V> valueConvertor,
-			Matrix<E, A, V> values, File file) throws MatrixException
+			Matrix<E, A, V> values, File file) throws MatrixException, FileNotFoundException
+	{
+		this(rowConvertor,colConvertor,valueConvertor, new CsvFileReader(file));
+	}
+	public CsvMemoryMatrix(ValueConvertor<E> rowConvertor,
+			ValueConvertor<A> colConvertor, ValueConvertor<V> valueConvertor,
+			Matrix<E, A, V> values, CsvReader reader) throws MatrixException
 	{
 		super(values);
 		this.rowConvertor = rowConvertor;
 		this.colConvertor = colConvertor;
 		this.valueConvertor = valueConvertor;
-		this.file = file;
+
 	}
 
 	/**
@@ -74,11 +81,11 @@ public class CsvMemoryMatrix<E, A, V> extends MemoryMatrix<E, A, V>
 	 * @param file
 	 * @throws FileNotFoundException
 	 * @throws MatrixException
-	 */
+	 */	
 	public CsvMemoryMatrix(final ValueConvertor<E> rowConvertor,
 			final ValueConvertor<A> colConvertor,
-			final ValueConvertor<V> valueConvertor, File file)
-			throws FileNotFoundException, MatrixException
+			final ValueConvertor<V> valueConvertor, CsvReader csvReader)
+			throws MatrixException
 	{
 		// put the rownames and colnames in parent
 		try
@@ -86,8 +93,6 @@ public class CsvMemoryMatrix<E, A, V> extends MemoryMatrix<E, A, V>
 			this.rowConvertor = rowConvertor;
 			this.colConvertor = colConvertor;
 			this.valueConvertor = valueConvertor;
-			this.file = file;
-			CsvFileReader csvReader = new CsvFileReader(file);
 
 			// load rowNames
 			final List<E> rowNames = new ArrayList<E>();
@@ -135,26 +140,6 @@ public class CsvMemoryMatrix<E, A, V> extends MemoryMatrix<E, A, V>
 		{
 			e.printStackTrace();
 			throw new MatrixException(e.getMessage());
-		}
-	}
-
-	/**
-	 * Write the matrix to a file
-	 * 
-	 * @throws MatrixException
-	 */
-	public void store() throws MatrixException
-	{
-		if (this.file == null) throw new MatrixException(this.getClass()
-				.getSimpleName()
-				+ ".write() failed: file was null");
-		try
-		{
-			this.write(new CsvFileWriter(this.file));
-		}
-		catch (Exception e)
-		{
-			throw new MatrixException(e);
 		}
 	}
 
@@ -210,15 +195,5 @@ public class CsvMemoryMatrix<E, A, V> extends MemoryMatrix<E, A, V>
 	public void setValueConvertor(ValueConvertor<V> valueConvertor)
 	{
 		this.valueConvertor = valueConvertor;
-	}
-
-	public File getFile()
-	{
-		return file;
-	}
-
-	public void setFile(File file)
-	{
-		this.file = file;
 	}
 }

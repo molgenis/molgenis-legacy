@@ -1,10 +1,8 @@
 package org.molgenis.matrix;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-
 import org.molgenis.matrix.convertors.DoubleConvertor;
 import org.molgenis.matrix.convertors.StringConvertor;
+import org.molgenis.util.CsvReader;
 
 public class DoubleCsvMemoryMatrix extends CsvMemoryMatrix<String, String, Double>
 {
@@ -12,21 +10,13 @@ public class DoubleCsvMemoryMatrix extends CsvMemoryMatrix<String, String, Doubl
 	{
 		super(new StringConvertor(),
 				new StringConvertor(),
-				new DoubleConvertor(), matrix, null);
+				new DoubleConvertor(), null);
 	}
 	
-	public DoubleCsvMemoryMatrix(Matrix<String,String,Double> matrix, File file) throws MatrixException
+	public DoubleCsvMemoryMatrix(Matrix<String,String,Double> matrix, CsvReader reader) throws MatrixException
 	{
 		super(new StringConvertor(),
 				new StringConvertor(),
-				new DoubleConvertor(), matrix, file);
+				new DoubleConvertor(), matrix, reader);
 	}
-
-	public DoubleCsvMemoryMatrix(File f) throws FileNotFoundException,
-			MatrixException
-	{
-		super(new StringConvertor(), new StringConvertor(),
-				new DoubleConvertor(), f);
-	}
-
 }

@@ -1,24 +1,16 @@
 package org.molgenis.matrix;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 
 import org.molgenis.matrix.convertors.StringConvertor;
+import org.molgenis.util.CsvReader;
 
 public class StringCsvMemoryMatrix extends CsvMemoryMatrix<String, String, String> implements StringMatrix
 {
-	public StringCsvMemoryMatrix(Matrix<String, String, String> matrix, File f)
-			throws MatrixException
+	public StringCsvMemoryMatrix(CsvReader reader) throws FileNotFoundException, MatrixException
 	{
 		super(new StringConvertor(), new StringConvertor(),
-				new StringConvertor(), matrix, f);
-	}
-
-	public StringCsvMemoryMatrix(File f) throws FileNotFoundException,
-			MatrixException
-	{
-		super(new StringConvertor(), new StringConvertor(),
-				new StringConvertor(), f);
+				new StringConvertor(), reader);
 	}
 
 }
