@@ -18,7 +18,7 @@ import java.util.List;
 
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jdbc.MappingDecorator;
-import org.molgenis.framework.db.jdbc.JDBCMapper;
+import org.molgenis.framework.db.Mapper;
 
 public class ${clazzName}<E extends ${entityClass}> extends MappingDecorator<E>
 {
