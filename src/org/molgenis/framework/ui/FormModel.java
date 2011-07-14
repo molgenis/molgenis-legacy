@@ -38,6 +38,7 @@ import org.molgenis.framework.ui.commands.DownloadAllCommand;
 import org.molgenis.framework.ui.commands.DownloadSelectedCommand;
 import org.molgenis.framework.ui.commands.DownloadVisibleCommand;
 import org.molgenis.framework.ui.commands.EditSelectedCommand;
+import org.molgenis.framework.ui.commands.GalaxyCommand;
 import org.molgenis.framework.ui.commands.RemoveSelectedCommand;
 import org.molgenis.framework.ui.commands.ScreenCommand;
 import org.molgenis.framework.ui.commands.ViewEditViewCommand;
@@ -267,6 +268,9 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 
 		// File: Add batch
 		super.addCommand(new AddBatchCommand("upload_csv", this.getController()));
+		
+		// File: Send to galaxy
+		super.addCommand(new GalaxyCommand("send_to_galaxy", this.getController()));
 
 		// EDIT MENU
 		// EDIT: Add new record

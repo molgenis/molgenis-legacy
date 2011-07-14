@@ -35,6 +35,8 @@ public class ApplicationController extends
 	private EmailService emailService;
 	/** Other services, mapped by path */
 	private Map<String,MolgenisService> services;
+	/** Galaxy url*/
+	private String galaxyUrl;
 
 	/**
 	 * Construct a user interface for a database.
@@ -119,7 +121,7 @@ public class ApplicationController extends
 	 */
 	public void handleRequest(Database db, Tuple request)
 	{
-		logger.debug("delegating handleRequest(" + request.toString() + ")");
+		logger.info("delegating handleRequest(" + request.toString() + ")");
 		String screen = request.getString(ScreenModel.INPUT_TARGET);
 
 		// action for me?
@@ -146,6 +148,15 @@ public class ApplicationController extends
 				}
 			}
 			return;
+		}
+		//no target set, handle centrally
+		else
+		{
+			if(!request.isNull("GALAXY_URL"))
+			{
+				this.setGalaxyUrl(request.getString("GALAXY_URL"));
+				logger.info("set galaxy url to "+this.getGalaxyUrl());
+			}
 		}
 
 		// delegate
@@ -276,6 +287,16 @@ public class ApplicationController extends
 		this.services.put(matrixView.getName(), matrixView);
 	}
 
+	public String getGalaxyUrl()
+	{
+		return galaxyUrl;
+	}
+
+	public void setGalaxyUrl(String galaxyUrl)
+	{
+		this.galaxyUrl = galaxyUrl;
+	}
+
 	// public ScreenController<?,?> getSelected()
 	// {
 	// if(this.getModel() != null && this.getModel().getSelected() != null)
@@ -284,4 +305,6 @@ public class ApplicationController extends
 	// }
 	// return null;
 	// }
+	
+	
 }
