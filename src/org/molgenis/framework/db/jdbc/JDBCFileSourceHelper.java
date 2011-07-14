@@ -95,6 +95,17 @@ public class JDBCFileSourceHelper implements FileSourceHelper
 		return getFilesource(false);
 	}
 	
+	public boolean hasFilesource(boolean mustBeValid) throws Exception{
+		File storage = getFileStorageRoot(mustBeValid);
+		if(this.variantId == null){
+			throw new Exception("Variant ID (app name) not set.");
+		}
+		if(storage == null){
+			return false;
+		}
+		return true;
+	}
+	
 	public File getFilesource(boolean mustBeValid) throws Exception
 	{
 		File storage = getFileStorageRoot(mustBeValid);

@@ -55,6 +55,14 @@ public interface FileSourceHelper
 	public abstract boolean hasValidFileSource() throws DatabaseException;
 
 	/**
+	 * Ask whether there is a current file source.
+	 * @param mustBeValid
+	 * @return
+	 * @throws Exception
+	 */
+	public abstract boolean hasFilesource(boolean mustBeValid) throws Exception;
+		
+	/**
 	 * Setter for the application name. (MOLGENIS variant id, see
 	 * MolgenisServlet) it would be nice to not need this function here.
 	 * 
