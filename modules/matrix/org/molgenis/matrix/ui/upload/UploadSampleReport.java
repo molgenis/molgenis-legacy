@@ -190,4 +190,15 @@ public class UploadSampleReport extends
 	{
 		//na
 	}
+	
+	// Morris, please fill in the methods below!
+	
+	private void setError(String message) {
+		// TODO Auto-generated method stub
+	}
+	
+	private void setSucces(String string) {
+		// TODO Auto-generated method stub
+		
+	}
 }
