@@ -197,8 +197,7 @@ label {
 
 .screenpadding {
 	margin: 10px;
-	margin: expression('0px');
-	
+	/* margin: expression('0px'); */
 }
 
 .listtable th {
@@ -229,8 +228,8 @@ td .form_listrow0{
 	vertical-align: top;
 }
 
-td .form_listrow1{
-	.form_listrow1
+td .form_listrow1 {
+	vertical-align: top;
 }
 
 .embedtable {
