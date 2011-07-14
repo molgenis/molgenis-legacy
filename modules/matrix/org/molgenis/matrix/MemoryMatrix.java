@@ -54,13 +54,7 @@ public class MemoryMatrix<E, A, V> implements EditableMatrix<E, A, V>
 			{
 				if(values[i][j] != null)
 				{
-					if (values[i][j] instanceof String) {
-						return String.class;
-					} else if (values[i][j] instanceof Number) {
-						return Double.class;
-					} else {
-						return (Class<V>) values[i][j].getClass();
-					}
+					return (Class<V>) values[i][j].getClass();
 				}
 			}
 		}
