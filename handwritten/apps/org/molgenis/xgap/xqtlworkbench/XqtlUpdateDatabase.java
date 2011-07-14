@@ -17,7 +17,7 @@ public class XqtlUpdateDatabase
 		
 		//remove HSQL DB (not really needed) and file storage dir
 		XqtlGenerate.deleteDirectory(new File("hsqldb"));
-		if(db.getFileSourceHelper().hasValidFileSource()){
+		if(db.getFileSourceHelper().hasFilesource(false)){
 			XqtlGenerate.deleteDirectory(db.getFileSourceHelper().getFilesource(false));
 		}
 		
@@ -25,6 +25,7 @@ public class XqtlUpdateDatabase
 		try
 		{
 			String report = ResetXgapDb.reset(db, false);
+			//new Molgenis("org/molgenis/xgap/xqtlworkbench/xqtl.properties").updateDb(true);
 			System.out.print(report);
 		}
 		catch (Exception e)
