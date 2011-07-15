@@ -80,7 +80,8 @@
 </table>
 
 <div id='buttons_part' class='row'>
-<input type='submit' class='submitbutton' value='AddPerm' onclick="__action.value='AddPerm'"/>
+	<input type='submit' class='submitbutton' value='AddPerm' onclick="__action.value='AddPerm'"/>
+	<input type='submit' class='submitbutton' value='Cancel' onclick="__action.value='init'"/>
 </div>
 
 
@@ -189,7 +190,7 @@
 
 <div style="float:left">
 
-	<h2>Permission for entities owned by user<br />${model.getRole().getName()}</h2>
+	<h2>Permissions for entities owned by user<br />${model.getRole().getName()}</h2>
 	
 	<table cellpadding="1" cellspacing="1" border="1" class="display" id="listtable2">
 	
