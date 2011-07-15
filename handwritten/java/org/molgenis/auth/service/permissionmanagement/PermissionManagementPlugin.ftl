@@ -46,7 +46,7 @@
 
 <table cellpadding="1" cellspacing="1" border="1" class="display" id="addtable">
 	<tr>
-		<td style="padding:5px">Entity:</td> 
+		<td style="padding:5px">Entity owned by you:</td> 
 		<td style="padding:5px">
 			<select name="entity" id="entity" class="selectbox">
 				<#list service.findPermissions(model.getRole().getId(), "own") as perms>
@@ -62,13 +62,11 @@
 			<select name="permission" id="permission" class="selectbox">
 				<option value="read">Read</option>
 				<option value="write">Write</option>
-				<option value="execute">Execute</option>
-				<option value="own">Own</option> <#-- Only super users.. should we have this here? -->
 			</select>
 		</td>
 	</tr>
 	<tr>
-		<td style="padding:5px">Role:</td> 
+		<td style="padding:5px">User/group:</td> 
 		<td style="padding:5px">
 			<select name="role" id="role" class="selectbox">
 				<#list service.findRoles() as users>
@@ -80,7 +78,7 @@
 </table>
 
 <div id='buttons_part' class='row'>
-	<input type='submit' class='submitbutton' value='AddPerm' onclick="__action.value='AddPerm'"/>
+	<input type='submit' class='submitbutton' value='Add' onclick="__action.value='AddPerm'"/>
 	<input type='submit' class='submitbutton' value='Cancel' onclick="__action.value='init'"/>
 </div>
 
@@ -92,7 +90,7 @@
 
 <table cellpadding="1" cellspacing="1" border="1" class="display" id="addtable">
 	<tr>
-		<td style="padding:5px">Entity:</td> 
+		<td style="padding:5px">Entity owned by you:</td> 
 		<td style="padding:5px">
 			<select name="entity" id="entity" class="selectbox">
 				<#list service.findEntities() as entities>
@@ -119,16 +117,6 @@
 					selected="selected"
 				</#if>
 				>Write</option>
-				<option value="execute"
-				<#if permission.getPermission() == 'execute'>
-					selected="selected"
-				</#if>
-				>Execute</option>
-				<option value="own"
-				<#if permission.getPermission() == 'own'>
-					selected="selected"
-				</#if>
-				>Own</option> <#-- Only super users.. should we have this here? -->
 			</select>
 		</td>
 	</tr>
@@ -149,7 +137,7 @@
 </table>
 
 <div id='buttons_part' class='row'>
-<input type='submit' class='submitbutton' value='UpdatePerm' onclick="__action.value='UpdatePerm'"/>
+<input type='submit' class='submitbutton' value='Update' onclick="__action.value='UpdatePerm'"/>
 </div>
 
 </form>
@@ -212,10 +200,10 @@
 			<td style="padding:5px">${entity.name}</td> 
 			<td style="padding:5px">${perm.getPermission()}</td>
 			<td style="padding:5px">
-				<a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=${perm.getId()}">Modify</a>
+				<a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=${perm.getId()?string.computer}">Modify</a>
 			</td>
 			<td style="padding:5px">
-				<a href="molgenis.do?__target=${screen.name}&__action=Remove&id=${perm.getId()}">Remove</a>
+				<a href="molgenis.do?__target=${screen.name}&__action=Remove&id=${perm.getId()?string.computer}">Remove</a>
 			</td>
 		</tr>
 	</#list>
@@ -223,7 +211,7 @@
 	</table>
 	
 	<p>
-		<a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=0">Add</a>
+		<a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=0">Add permission on entity you own</a>
 	</p>
 
 </div>
