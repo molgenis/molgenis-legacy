@@ -4,8 +4,7 @@ package org.molgenis.xgap.xqtlworkbench;
 import java.io.File;
 
 import org.molgenis.Molgenis;
-import org.molgenis.generators.Generator;
-import org.molgenis.generators.cpp.CPPCassette;
+import org.molgenis.generators.sql.FillMetadataTablesGen;
 
 public class XqtlGenerate
 {
@@ -30,7 +29,7 @@ public class XqtlGenerate
 		try
 		{
 			deleteDirectory(new File("hsqldb"));
-			new Molgenis("handwritten/apps/org/molgenis/xgap/xqtlworkbench/xqtl.properties").generate();
+			new Molgenis("handwritten/apps/org/molgenis/xgap/xqtlworkbench/xqtl.properties", FillMetadataTablesGen.class).generate();
 			
 		} catch(Exception e)
 		{

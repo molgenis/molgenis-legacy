@@ -11,7 +11,7 @@
   <property name="dist"  			location="dist"      			/>
   <property name="libraries" 		location="lib"       			/>
   <property name="myname" 			value="Danny Arends" 			/>
-  <property name="version"          value="3.3.0"        			/>
+  <property name="version"          value="4.0.0"        			/>
   <property environment="env"/>
   
 	<target name="init">
@@ -32,7 +32,7 @@
   	<unjar src="WebContent/WEB-INF/lib/keggapi.jar" dest="${build}" overwrite="false"/>
   	<unjar src="WebContent/WEB-INF/lib/mydas-1.6.0.jar" dest="${build}" overwrite="false"/>
   	<unjar src="WebContent/WEB-INF/lib/mindterm.jar" dest="${build}" overwrite="false"/>
-  	<unjar src="WebContent/WEB-INF/lib/ontoCAT_v0.9.5.3.jar" dest="${build}" overwrite="false"/>	
+  	<unjar src="WebContent/WEB-INF/lib/ontocat-0.9.7.6.jar" dest="${build}" overwrite="false"/>	
   	<!-- Erik -->
   	<unjar src="WebContent/WEB-INF/lib/charts4j-1.2.jar" dest="${build}" overwrite="false"/>
   	<unjar src="WebContent/WEB-INF/lib/jopenid-1.07.jar" dest="${build}" overwrite="false"/>
@@ -41,6 +41,8 @@
   	<unjar src="WebContent/WEB-INF/lib/lucene-core-3.0.2.jar" dest="${build}" overwrite="false"/>
   	<unjar src="WebContent/WEB-INF/lib/lucene-highlighter-3.0.1.jar" dest="${build}" overwrite="false"/>
   	<unjar src="WebContent/WEB-INF/lib/spssw-1.66.jar" dest="${build}" overwrite="false"/>
+  	<unjar src="WebContent/WEB-INF/lib/simplecaptcha-1.1.1.jar" dest="${build}" overwrite="false"/>
+  	<unjar src="WebContent/WEB-INF/lib/pircbot.jar" dest="${build}" overwrite="false"/>
 
   	
   	<!-- Unknown and NOT DOCUMENTED -->
@@ -73,7 +75,11 @@
   	        <include name="**/*.jar"/>
   	    </fileset>
   	</copy>
-  	<javac srcdir="${src}/apps;${src}/java;${src}/webserver;generated/" destdir="${build}" classpath="${build}/;${dist}/molgenis-3.3.0.jar" />
+  	<javac srcdir="${src}/apps;${src}/java;${src}/webserver;generated/" destdir="${build}" classpath="${build}/;${dist}/molgenis-4.0.0.jar" includeantruntime="false"
+  		excludes="**/convertors/ulidb/**/*,
+  		**/plugins/fillanimaldb/**/*,
+  		**/compute/**/*"
+  	/>
   </target>
 
   <target name="package" depends="compile" description="Package the distribution" >
@@ -99,7 +105,7 @@
      	 <manifest>
      	    <attribute name="Built-By" value="${myname}"/>
      	    <attribute name="Main-Class" value="RunStandalone"/>
-     	 	<attribute name="Class-Path" value="molgenis-3.3.0.jar"/>
+     	 	<attribute name="Class-Path" value="molgenis-4.0.0.jar"/>
      	  </manifest>
     </jar>
   	<copy todir="${dist}/WebContent">
@@ -109,11 +115,11 @@
   	        <include name="**/*.*"/>
   	    </fileset>
   	</copy>
-  	<copy todir="${dist}/Data">
+  	<!--copy todir="${dist}/Data">
   	    <fileset dir="Data">
   	    	<include name="**/*.*"/>
   	    </fileset>
-  	</copy>
+  	</copy-->
   	<copy todir="${dist}/hsqldb">
   	    <fileset dir="hsqldb">
   	    	<exclude name="**/.svn/*"/>

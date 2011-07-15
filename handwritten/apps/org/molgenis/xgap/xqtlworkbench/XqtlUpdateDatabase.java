@@ -13,6 +13,12 @@ public class XqtlUpdateDatabase
 {
 	public static void main(String[] args) throws Exception
 	{
+		
+		new Molgenis("org/molgenis/xgap/xqtlworkbench/xqtl.properties").updateDb(true);
+		
+		// FOR SOME UNEXPLAINABLE REASON, THIS CLASS DOESN'T WORK AT ALL
+		
+		/**
 		Database db = new MolgenisServlet().getDatabase();
 		
 		//remove HSQL DB (not really needed) and file storage dir
@@ -22,31 +28,32 @@ public class XqtlUpdateDatabase
 		}
 		
 		//reset DB
-		try
-		{
+		
 			String report = ResetXgapDb.reset(db, false);
 			//new Molgenis("org/molgenis/xgap/xqtlworkbench/xqtl.properties").updateDb(true);
 			System.out.print(report);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+	
 		
 		//reset default storage path and try to add example data
 		if(db.getFileSourceHelper().getHasSystemSettingsTable().equals("true")){
+			System.out.println("deleting existing file source");
 			db.getFileSourceHelper().deleteFilesource();
 		}
 		db.getFileSourceHelper().setFilesource("./data");
 		db.getFileSourceHelper().validateFileSource();
 		if(db.getFileSourceHelper().hasValidFileSource())
 		{
+			System.out.println("default file source valid, now starting data loader");
 			ArrayList<String> result = DataLoader.load(db, false);
 			for (String s : result)
 			{
 				System.out.println(s);
 			}
 		}
+		
+		*/
+		
+		
 		
 	}
 }
