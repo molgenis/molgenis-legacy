@@ -17,8 +17,8 @@
 	<target name="init">
     <!-- Create the time stamp -->
     <tstamp/>
-    <echo message="Number of Processors = ${env.NUMBER_OF_PROCESSORS}"/>
-    <echo message="ANT_HOME is set to = ${env.ANT_HOME}"/>
+    <!--echo message="Number of Processors = ${env.NUMBER_OF_PROCESSORS}"/-->
+    <!--echo message="ANT_HOME is set to = ${env.ANT_HOME}"/-->
 
     <!-- Create the build directory structure used by compile -->
     <mkdir dir="${build}"/>
@@ -138,4 +138,12 @@
     <delete dir="${build}"/>
     <delete dir="${dist}"/>
   </target>
+	
+	<target name="generate">
+		<java classname="org.molgenis.Molgenis" fork="yes" failonerror="true">
+			<classpath path="${dist}/molgenis-4.0.0.jar"/>
+			<arg value="handwritten/apps/org/molgenis/xgap/xqtlworkbench/xqtl.properties" />
+		</java>
+	</target>
+	
 </project>
