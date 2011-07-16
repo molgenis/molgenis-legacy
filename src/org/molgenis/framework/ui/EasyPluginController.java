@@ -80,5 +80,15 @@ public abstract class EasyPluginController<M extends ScreenModel> extends
 			e.printStackTrace();
 		}
 	}
+	
+	public void setError(String message)
+	{
+		this.getModel().setMessages(new ScreenMessage(message,false));
+	}
+	
+	public void setSucces(String message)
+	{
+		this.getModel().setMessages(new ScreenMessage(message,true));
+	}
 
 }
