@@ -47,9 +47,9 @@ public class GalaxyCommand extends SimpleCommand {
 	}
 
 	@Override
-	public List<HtmlInput> getActions() {
+	public List<ActionInput> getActions() {
 		// TODO Auto-generated method stub
-		return new ArrayList<HtmlInput>();
+		return new ArrayList<ActionInput>();
 	}
 	
 	@Override

@@ -11,7 +11,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.Templateable;
+import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Tuple;
 
@@ -28,7 +28,7 @@ import org.molgenis.util.Tuple;
  * <li>getActions() lists the pushbuttons to be shown</li>
  * </ul>
  */
-public interface ScreenCommand extends Templateable, Serializable, ScreenModel
+public interface ScreenCommand extends Serializable, ScreenModel
 {
 	/**
 	 * Retrieve the name of the icon to be shown. No icon will be shown if null.
@@ -57,8 +57,9 @@ public interface ScreenCommand extends Templateable, Serializable, ScreenModel
 	public void setLabel(String label);
 
 	/**
-	 * Override the default javascript for this command by your own (usally not
-	 * necessary, @see 'isDialog').
+	 * Override the default javascript for this command by your own. This is
+	 * usally not necessary, @see 'isDialog', but can be used for example if you
+	 * want to do a linkout. Note: this is actually 'onClick'.
 	 * 
 	 * @param action
 	 *            a string with javascript that should be executed onClick.
@@ -75,7 +76,10 @@ public interface ScreenCommand extends Templateable, Serializable, ScreenModel
 	/**
 	 * @param name
 	 *            unique action name of this command (unique within the parent
-	 *            screen)
+	 *            screen). This is used by the controller to target this
+	 *            command. If you would like to link just use
+	 *            ../molgenis.do?__target
+	 *            =getController().getName()&__action=this.getName()
 	 */
 	public void setName(String name);
 
@@ -87,7 +91,8 @@ public interface ScreenCommand extends Templateable, Serializable, ScreenModel
 	/**
 	 * @return Unique name of the target screen that should handle this command.
 	 *         Default this equals getScreen(), i.e. the target is the same as
-	 *         the screen this command is part of.
+	 *         the screen this command is part of. Translates to
+	 *         getController().getName().
 	 */
 	public String getTarget();
 
@@ -95,7 +100,10 @@ public interface ScreenCommand extends Templateable, Serializable, ScreenModel
 	 * @param target
 	 *            Unique name of the target screen that should handle this
 	 *            command
+	 * 
+	 *            DEPRECATED: you should use setControler() instead.
 	 */
+	@Deprecated
 	public void setTargetController(String target);
 
 	/**
@@ -115,7 +123,9 @@ public interface ScreenCommand extends Templateable, Serializable, ScreenModel
 	public void setController(ScreenController<? extends ScreenModel> screen);
 
 	/**
-	 * @return true if this command should be shown as a dialog. @see #setDialog
+	 * @return true if this command should be shown as a dialog. This will
+	 *         result in a popup being shown that only shows the result of
+	 *         render(). @see #setDialog
 	 */
 	public boolean isDialog();
 
@@ -123,12 +133,15 @@ public interface ScreenCommand extends Templateable, Serializable, ScreenModel
 	 * @param dialog
 	 *            set to true if MOLGENIS should show this command via a dialog.
 	 *            This results in javascript that pop-ups a dialog when pushed.
+	 *            This will not work if you are using a custom database action.
 	 */
 	public void setDialog(boolean dialog);
 
 	/**
-	 * @return the unique name of the menu this command is part of. Null
-	 *         indicates it will not be shown on the menu.
+	 * @return the unique name of the menu this command is part of. This will
+	 *         only work if your screen has a menu (such as the generated
+	 *         FormScreen). Null indicates it will not be shown on the menu of
+	 *         the containing screen.
 	 */
 	public String getMenu();
 
@@ -141,6 +154,11 @@ public interface ScreenCommand extends Templateable, Serializable, ScreenModel
 	public void setMenu(String menu);
 
 	/**
+	 * When using the standard layout this will result in a dialog showing first
+	 * inputs and then actions. If you override 'render()' this behavior depends
+	 * on your own programming.
+	 * 
+	 * TODO move to DialogCommand subclass
 	 * 
 	 * @return a list of input boxes to show
 	 * @throws DatabaseException
@@ -148,14 +166,21 @@ public interface ScreenCommand extends Templateable, Serializable, ScreenModel
 	public List<HtmlInput<?>> getInputs() throws DatabaseException;
 
 	/**
-	 * Return a list of buttons to show.
+	 * Set what action buttons to show at the bottom of your dialog.When using
+	 * the standard layout this will result in a dialog showing first inputs and
+	 * then actions. If you override 'render()' this behavior depends on your
+	 * own programming.
+	 * 
+	 * TODO move to DialogCommand subclass.
 	 * 
 	 * @return list of HtmlInput that should be shown in the action area
 	 */
-	public List<HtmlInput> getActions();
+	public List<ActionInput> getActions();
 
 	/**
-	 * Handle the request thrown by this command.
+	 * Handle the request thrown by this command. The return type specifies how
+	 * MOLGENIS should return this result, i.e., as download or as part of a
+	 * popup or as part of the main screen.
 	 * 
 	 * @param db
 	 *            provides access to the database
@@ -170,12 +195,15 @@ public interface ScreenCommand extends Templateable, Serializable, ScreenModel
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public ScreenModel.Show handleRequest(Database db, Tuple request, PrintWriter downloadStream)
-			throws ParseException, DatabaseException, IOException;
+	public ScreenModel.Show handleRequest(Database db, Tuple request,
+			PrintWriter downloadStream) throws ParseException,
+			DatabaseException, IOException;
 
 	/**
 	 * @return boolean whether this action should be treated as a download
 	 *         button.
+	 * 
+	 *         TODO do we still need this one???
 	 */
 	public boolean isDownload();
 
@@ -183,13 +211,16 @@ public interface ScreenCommand extends Templateable, Serializable, ScreenModel
 	 * @param download
 	 *            true indicates that this action should be treated as a
 	 *            download action. @see handleRequest() where the download
-	 *            target is passed as stream and ScreenModel.Show can return
+	 *            target is passed as stream and ScreenModel. Show can return
 	 *            Show.VIEW_DOWNLOAD.
 	 */
 	public void setDownload(boolean download);
 
 	/**
-	 * @return whether this command should be shown on the command menu.
+	 * @return whether this command should be shown on the command toolbar or
+	 *         not. Standard MOLGENIS screens have a toolbar on top (just below
+	 *         the menus). This behavior is not enabled if you customize
+	 *         render().
 	 */
 	public boolean isToolbar();
 
@@ -203,24 +234,35 @@ public interface ScreenCommand extends Templateable, Serializable, ScreenModel
 	/**
 	 * @return the layout macro to be used if this command has a dialog.
 	 *         Defaults to the default layout showing inputs and actions.
+	 * 
+	 *         DEPRECATED. You can use the FreemarkerView instead.
+	 * 
+	 *         TODO: create setView() analogous to ScreenController.
 	 */
+	@Deprecated
 	public String getMacro();
 
 	/**
 	 * @return the layout macro to be used if this command has a dialog.
 	 *         Defaults to the default layout template for commands,
 	 *         ScreenCommand.ftl
+	 * 
+	 *         DEPRECATED. You can use the FreemarkerView instead.
+	 * 
+	 *         TODO: create setView() analogous to ScreenController.
 	 */
+	@Deprecated
 	public String getTemplate();
 
 	/**
 	 * 
-	 * @return false if this command should be hidden
+	 * @return false if this command should be hidden. For example because the
+	 *         menu option is only available if particular rights are met.
 	 */
 	public boolean isVisible();
-	
+
 	/**
-	 * Render this command plugin 
+	 * Render this command plugin.
 	 */
 	public String render();
 

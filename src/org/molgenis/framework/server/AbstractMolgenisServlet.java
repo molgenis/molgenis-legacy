@@ -438,8 +438,13 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				session.invalidate();
 				return;
 			}
-			molgenis = createUserInterface(userLogin);
+			molgenis = createUserInterface(userLogin);	
 		}
+		//this should work unless complicated load balancing without proxy rewriting...
+		molgenis.setBaseUrl( request.getScheme() + "://" + request.getServerName() +
+                getPort(request) + request.getContextPath());
+
+		
 		// ((UserInterface)molgenis).setDatabase(db);
 		userLogin = ((ApplicationController) molgenis).getLogin();
 
@@ -451,6 +456,9 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		// handle request
 		try
 		{
+			//set the base adress
+			
+			
 			Tuple requestTuple = new HttpServletRequestTuple(request, response);
 
 			// action == download an attached file
@@ -1567,5 +1575,14 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	// }
 	// }
 	// }
+	
+	private static String getPort(HttpServletRequest req) {
+	    if ("http".equalsIgnoreCase(req.getScheme()) && req.getServerPort() != 80 ||
+	            "https".equalsIgnoreCase(req.getScheme()) && req.getServerPort() != 443 ) {
+	        return (":" + req.getServerPort());
+	    } else {
+	        return "";
+	    }
+	}
 
 }

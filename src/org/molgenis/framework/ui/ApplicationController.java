@@ -35,6 +35,8 @@ public class ApplicationController extends
 	private EmailService emailService;
 	/** Other services, mapped by path */
 	private Map<String,MolgenisService> services;
+	/** The current base url that you may need in your apps */
+	private String baseUrl;
 	/** Galaxy url*/
 	private String galaxyUrl;
 
@@ -287,6 +289,25 @@ public class ApplicationController extends
 		this.services.put(matrixView.getName(), matrixView);
 	}
 
+	/**
+	 * The base url of this app. Generally the path up to %/molgenis.do
+	 * @return
+	 */
+	public String getApplicationUrl()
+	{
+		return baseUrl;
+	}
+
+	/**
+	 * This method is used only internally.
+	 * 
+	 * @param baseUrl
+	 */
+	public void setBaseUrl(String baseUrl)
+	{
+		this.baseUrl = baseUrl;
+	}
+
 	public String getGalaxyUrl()
 	{
 		return galaxyUrl;
@@ -297,14 +318,4 @@ public class ApplicationController extends
 		this.galaxyUrl = galaxyUrl;
 	}
 
-	// public ScreenController<?,?> getSelected()
-	// {
-	// if(this.getModel() != null && this.getModel().getSelected() != null)
-	// {
-	// return this.getModel().getSelected().getController();
-	// }
-	// return null;
-	// }
-	
-	
 }

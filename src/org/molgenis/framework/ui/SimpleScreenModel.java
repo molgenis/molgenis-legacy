@@ -327,4 +327,16 @@ public abstract class SimpleScreenModel implements
 		this.setMessages(new ScreenMessage(message,false));
 	}
 
+	public String getCustomHtmlHeaders()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getCustomHtmlBodyOnLoad()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
