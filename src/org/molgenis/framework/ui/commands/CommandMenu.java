@@ -8,7 +8,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.Templateable;
+import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 
 
@@ -27,13 +27,6 @@ public class CommandMenu extends SimpleCommand
 		this.setLabel(label);
 		this.setIcon(icon);
 		this.setJavaScriptAction(action);
-	}
-
-	/** for enabeling submenus **/
-	public String toJavascript( Templateable s )
-	{
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	/**
@@ -69,7 +62,7 @@ public class CommandMenu extends SimpleCommand
 	}
 
 	@Override
-	public List<HtmlInput> getActions()
+	public List<ActionInput> getActions()
 	{
 		// TODO Auto-generated method stub
 		return null;

@@ -12,6 +12,7 @@ import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.SimpleScreenModel;
+import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Tuple;
 
@@ -247,7 +248,7 @@ public abstract class SimpleCommand extends SimpleScreenModel implements ScreenC
 	}
 
 	@Override
-	public abstract List<HtmlInput> getActions();
+	public abstract List<ActionInput> getActions();
 
 	@Override
 	public Show handleRequest(Database db, Tuple request, PrintWriter downloadStream) throws ParseException,

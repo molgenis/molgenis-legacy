@@ -8,7 +8,6 @@ import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
@@ -20,6 +19,7 @@ import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.FormModel.Mode;
+import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
@@ -90,7 +90,7 @@ public class DownloadSelectedCommand<E extends Entity> extends SimpleCommand
 	}
 
 	@Override
-	public List<HtmlInput> getActions()
+	public List<ActionInput> getActions()
 	{
 		// TODO Auto-generated method stub
 		return null;

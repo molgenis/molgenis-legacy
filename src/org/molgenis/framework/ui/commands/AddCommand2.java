@@ -48,9 +48,9 @@ public class AddCommand2<E extends Entity> extends SimpleCommand
 	}
 
 	@Override
-	public List<HtmlInput> getActions()
+	public List<ActionInput> getActions()
 	{
-		List<HtmlInput> inputs = new ArrayList<HtmlInput>();
+		List<ActionInput> inputs = new ArrayList<ActionInput>();
 
 		// HiddenInput inDialog = new HiddenInput("__indialog","add");
 		// inputs.add(inDialog);

@@ -40,9 +40,9 @@ public class AddBatchCommand<E extends Entity> extends SimpleCommand
 	}
 
 	@Override
-	public List<HtmlInput> getActions()
+	public List<ActionInput> getActions()
 	{
-		List<HtmlInput> inputs = new ArrayList<HtmlInput>();
+		List<ActionInput> inputs = new ArrayList<ActionInput>();
 		
 		ActionInput submit = new ActionInput("add", ActionInput.Type.SAVE);
 		submit.setIcon("generated-res/img/save.png");
@@ -62,7 +62,7 @@ public class AddBatchCommand<E extends Entity> extends SimpleCommand
 		List<HtmlInput<?>> inputs = this.getFormScreen().getNewRecordForm().getInputs();
 
 		// remove not-null constraints
-		for (HtmlInput i : inputs)
+		for (HtmlInput<?> i : inputs)
 			i.setNillable(true);
 
 		// add the textarea for csv

@@ -42,9 +42,9 @@ public class AddCommand<E extends Entity> extends SimpleCommand
 	}
 
 	@Override
-	public List<HtmlInput> getActions()
+	public List<ActionInput> getActions()
 	{
-		List<HtmlInput> inputs = new ArrayList<HtmlInput>();
+		List<ActionInput> inputs = new ArrayList<ActionInput>();
 
 //		HiddenInput inDialog = new HiddenInput("__indialog","add");
 //		inputs.add(inDialog);
@@ -74,7 +74,7 @@ public class AddCommand<E extends Entity> extends SimpleCommand
 		if (request.getString(FormModel.INPUT_SHOW) == null)
 		{
 			// delegate to the form controller
-			((FormController<E>) this.getController()).doAdd(db, request);
+			((FormController<?>) this.getController()).doAdd(db, request);
 		}
 		return ScreenModel.Show.SHOW_MAIN;
 	}

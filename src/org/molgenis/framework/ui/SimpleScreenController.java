@@ -246,5 +246,11 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
 	{
 		return this.getApplicationController().getDatabase();
 	}
+	
+	@Override
+	public String getApplicationUrl()
+	{
+		return this.getApplicationController().getApplicationUrl();
+	}
 
 }

@@ -68,7 +68,7 @@ public class AddXrefCommand<E extends Entity> extends AddCommand<E>
 				xrefEntity.set(request);
 				int updatedRows = db.add(xrefEntity);
 				db.commitTx();
-				((FormController<E>) this.getController()).getModel().getCurrent().set(this.getName(), this.xrefEntity.getIdValue());
+				((FormController<?>) this.getController()).getModel().getCurrent().set(this.getName(), this.xrefEntity.getIdValue());
 				msg = new ScreenMessage("ADD SUCCESS: affected " + updatedRows,	null, true);
 			}
 			catch (Exception e)
@@ -76,7 +76,7 @@ public class AddXrefCommand<E extends Entity> extends AddCommand<E>
 				db.rollbackTx();
 				msg = new ScreenMessage("ADD FAILED: " + e.getMessage(), null, false);
 			}
-			((FormController<E>) this.getController()).getModel().getMessages().add(msg);
+			((FormController<?>) this.getController()).getModel().getMessages().add(msg);
 		}
 		return ScreenModel.Show.SHOW_MAIN;
 	}

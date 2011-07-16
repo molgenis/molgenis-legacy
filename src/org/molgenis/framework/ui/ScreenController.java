@@ -32,7 +32,8 @@ import org.molgenis.util.Tuple;
  * (see templates). It also eases understanding as Screen is reduced to a simple
  * Bean (that can be hold in a Session) and the Controllers that manipulate it.
  */
-public interface ScreenController<MODEL extends ScreenModel> extends Serializable, Tree<ScreenController<?>>
+public interface ScreenController<MODEL extends ScreenModel> extends
+		Serializable, Tree<ScreenController<?>>
 {
 	/**
 	 * Refresh/reload the model.
@@ -46,9 +47,10 @@ public interface ScreenController<MODEL extends ScreenModel> extends Serializabl
 	 * most recent progress information
 	 * <li>Etc.
 	 * </ul>
-	 * @throws Exception 
-	 * @throws Exception 
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
+	 * @throws Exception
+	 * @throws Exception
 	 */
 	public void reload(Database db) throws Exception;
 
@@ -57,8 +59,8 @@ public interface ScreenController<MODEL extends ScreenModel> extends Serializabl
 	 * <p>
 	 * handleRequest() can be called to change a screen, or any resources
 	 * managed by the Screen. Such requests are passed as Tuple, typically with
-	 * the {@link ScreenModel#INPUT_ACTION} that indicates to the Screen what action
-	 * to execute. For example:
+	 * the {@link ScreenModel#INPUT_ACTION} that indicates to the Screen what
+	 * action to execute. For example:
 	 * <ul>
 	 * <li>a database backed screen can receive an "delete" action to remove
 	 * data from the database underlying the screen. In this case an underlying
@@ -69,47 +71,50 @@ public interface ScreenController<MODEL extends ScreenModel> extends Serializabl
 	 * </ul>
 	 * 
 	 * @param request
-	 *        a request
+	 *            a request
 	 */
-	public void handleRequest( Database db, Tuple request );
-	
+	public void handleRequest(Database db, Tuple request);
+
 	/**
 	 * Handle a user request (typically implemented in the subclass).
 	 * 
 	 * @param db
 	 * @param request
-	 * @param out additional parameter that allows you to write downloadable output
+	 * @param out
+	 *            additional parameter that allows you to write downloadable
+	 *            output
 	 */
-	public void handleRequest( Database db, Tuple request, PrintWriter out);	
-	
+	public void handleRequest(Database db, Tuple request, PrintWriter out);
+
 	/**
 	 * Get the view
 	 */
-	//public Templateable getScreen();
-	
-	/** Get the model for this controller 
+	// public Templateable getScreen();
+
+	/**
+	 * Get the model for this controller
 	 */
 	public MODEL getModel();
-	
+
 	/**
 	 * Get the view for this controller
+	 * 
 	 * @return
 	 */
 	public ScreenView getView();
-	
+
 	/**
 	 * Get access to the emailservice.
 	 * 
 	 * @return email service
 	 */
 	public EmailService getEmailService();
-	
+
 	/**
-	 * Get an instance of the database.
-	 * Big warning: please destory the instances to limit chances of unclosed database connections
+	 * Get an instance of the database. Big warning: please destory the
+	 * instances to limit chances of unclosed database connections
 	 */
 	public Database getDatabase();
-	
 
 	/**
 	 * Get the user interface this screen is part of.
@@ -123,11 +128,12 @@ public interface ScreenController<MODEL extends ScreenModel> extends Serializabl
 	String render();
 
 	String getCustomHtmlHeaders();
-	
-	String getCustomHtmlBodyOnLoad();	
-	
+
+	String getCustomHtmlBodyOnLoad();
+
 	/**
 	 * Method to select what child should be selected
+	 * 
 	 * @param viewid
 	 */
 	void setSelected(String viewid);
@@ -140,4 +146,9 @@ public interface ScreenController<MODEL extends ScreenModel> extends Serializabl
 
 	ScreenModel getSelected();
 
+	/**
+	 * Retrieve the base url for this MOLGENIS. You can use this to build new
+	 * urls to your app.
+	 */
+	String getApplicationUrl();
 }
