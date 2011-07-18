@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="org.molgenis">
+	<module name="batch">
+	<entity name="MolgenisBatch" implements="Identifiable,Nameable">
+			<description>This interface adds a description field to all entities
+				the implement it.</description>
+			<field name="description" type="text" nillable="true"
+				description="description field" />
+			<field name="query" type="text" nillable="true"
+				description="description field" />
+			<field name="molgenisUser" type="xref" xref_entity="MolgenisUser" nillable="false"/>
+			<unique fields="name"></unique>
+		</entity>
+		<entity name="MolgenisBatchEntity" implements="Identifiable,Nameable">
+			<description>This interface adds a description field to all entities
+				the implement it.</description>
+			<field name="batch" type="xref" nillable="false" xref_entity="MolgenisBatch" 
+				xref_field="id" xref_label="name" description="description field" />
+			<field name="entityType" type="xref" nillable="true" xref_entity="OntologyTerm"
+				description="description field" />
+			<field name="objectId" type="int" nillable="false"
+				description="description field"/>
+			<unique fields="objectId,batch"></unique>	
+		</entity>
+	</module>
+</molgenis>

@@ -1,0 +1,185 @@
+<molgenis name="org.molgenis">
+	<module name="xgap">
+		<description>XGAP</description>
+		<entity name="Locus" abstract="true">
+			<description> position. Typical examples of such traits are genes,
+				probes and markers. Common structure for entities that have a
+				genomic</description>
+			<field name="Chromosome" label="Chromosome" type="xref"
+				xref_entity="Chromosome" xref_field="id" xref_label="name" nillable="true"
+				description="Reference to the chromosome this
+				position belongs to." />
+			<field name="cM" label="cMPosition" type="decimal" nillable="true"
+				description="genetic map position in centi morgan (cM)." />
+			<field name="bpStart" label="Start (5')" type="long" nillable="true"
+				description="numeric basepair postion (5') on the chromosome" />
+			<field name="bpEnd" label="End" type="long" nillable="true"
+				description="numeric basepair postion (3') on the chromosome" />
+			<field name="Seq" type="text" nillable="true"
+				description="The FASTA text representation of the sequence." />
+			<field name="Symbol" type="varchar" nillable="true"
+				description="todo" />
+		</entity>
+		<entity name="Chromosome" extends="ObservableFeature">
+			<field name="orderNr" type="int" />
+			<field name="isAutosomal" type="bool" />
+			<field name="bpLength" type="int" nillable="true" />
+			<field name="Species" label="Species" type="xref" xref_entity="Species"
+				xref_field="id" xref_label="name" nillable="true"
+				description="Reference to the species this
+				chromosome belongs to." />
+		</entity>
+		<entity name="NMRBin" extends="ObservableFeature">
+			<description> Shift of the NMR frequency due to the chemical
+				environment.</description>
+		</entity>
+		<entity name="Clone" extends="ObservableFeature" implements="Locus">
+			<description> BAC clone fragment.</description>
+		</entity>
+		<entity name="DerivedTrait" extends="ObservableFeature">
+			<description> Any meta trait, eg. false discovery rates, P-values,
+				thresholds.</description>
+		</entity>
+		<!--
+			instead use mage.factor <entity name="Factor"
+			extends="ObservableFeature"> <description> Experimental conditions,
+			such as temperature differences, batch effects etc.</description>
+			</entity>
+		-->
+		<entity name="Gene" extends="ObservableFeature" implements="Locus">
+			<description> Trait annotations specific for genes.</description>
+			<field name="Symbol" nillable="true"
+				description="Main symbol this gene is known by (not necessarily unique, in constrast to 'name')" />
+			<field name="Aliases" nillable="true"
+				description="Alternative symbols this gene is known by, separated by ','" />
+			<field name="Orientation" type="enum" enum_options="[F,R]"
+				nillable="true"
+				description="Orientation of the gene on the genome (F=forward, R=reverse)" />
+			<field name="Control" type="bool" nillable="true"
+				description="Indicating whether this is a 'housekeeping' gene that can be used as control." />
+		</entity>
+		<entity name="Protein" extends="ObservableFeature">
+			<description> Trait annotations specific for proteins.</description>
+			<!--
+				Question: Is there a specific notation involved that we can create
+				type for?
+			-->
+			<field name="Gene" label="Gene" type="xref" xref_entity="Gene"
+				xref_field="id" xref_label="name" nillable="true"
+				description="The gene that produces this protein" />
+			<field name="AminoSequence" label="Sequence" type="text" nillable="true"
+				description="The aminoacid sequence." />
+			<field name="Mass" label="Mass" type="decimal" nillable="true"
+				description="The mass of this metabolite" />
+		</entity>
+		<entity name="Metabolite" extends="ObservableFeature">
+			<description> Trait annotations specific for metabolites.
+			</description>
+			<field name="Formula" label="Formula" type="varchar" length="128"
+				nillable="true" description="The chemical formula of a metabolite." />
+			<field name="Mass" label="Mass" type="decimal" nillable="true"
+				description="The mass of this metabolite" />
+			<field name="Structure" label="Structure" type="text" nillable="true"
+				description="The chemical structure of a metabolite (in SMILES representation)." />
+		</entity>
+		<entity name="ClassicalPhenotype" extends="ObservableFeature">
+			<description> Trait annotations specific for classical phenotypes.
+			</description>
+			<!--
+				Question: Is there a specific notation involved that we can create
+				type for?
+			-->
+			<!--
+				field name="Unit" label="Unit" type="xref"
+				xref_entity="MeasurementUnit" xref_field="id" xref_label="name"
+				nillable="true" description="The unit this trait was measured in
+				like centimeters, gram, etc (TODO: make ontology)." /
+			-->
+			<field name="Category" label="Category" type="varchar" length="128"
+				nillable="true" />
+			<!-- 
+			<field name="Description" label="Description" type="varchar"
+				length="512" nillable="true" />
+			 -->
+			<field name="Molecule" label="Molecule" type="varchar"
+				nillable="true" />
+		</entity>
+		<entity name="Marker" extends="ObservableFeature" implements="Locus">
+			<description> Trait annotations specific for markers.</description>
+		</entity>
+		<entity name="Probe" extends="ObservableFeature" implements="Locus">
+			<description> A piece of sequence that reports for the expression of
+				a gene, typically spotted onto a microarray.</description>
+			<field name="Mismatch" type="bool"
+				description="Indicating whether the probe is a match" default="false" />
+			<field name="ProbeSet" type="xref" nillable="true" xref_entity="ProbeSet"
+				xref_field="id" xref_label="name"
+				description="Optional: probeset this probe belongs to (e.g., in Affymetrix assays)." />
+		</entity>
+		<entity name="Spot" extends="Probe">
+			<description>
+				This is the spot on a microarray.
+				<br />
+				Note: We don't distinquish between probes (the sequence) and spots
+				(the sequence as spotted on the array).
+			</description>
+			<field name="x" type="int" description="Row" />
+			<field name="y" type="int" description="Column" />
+			<field name="GridX" type="int" description="Meta Row" nillable="true" />
+			<field name="GridY" type="int" description="Meta Column"
+				nillable="true" />
+			<unique fields="X,Y,GridX,GridY" />
+		</entity>
+		<entity name="ProbeSet" extends="ObservableFeature">
+			<description> A set of Probes. E.g. Affymetrix probeset has multiple
+				probes.</description>
+		</entity>
+		<entity name="MassPeak" extends="ObservableFeature">
+			<description> A peak that has been selected within a mass
+				spectrometry experiment.</description>
+			<field name="MZ" type="decimal" nillable="true"
+				description="Mass over charge ratio of this peak." />
+			<!--
+				field name="Intensity" type="decimal" optional="true"
+				description="Intensity of this peak." /
+			-->
+			<field name="RetentionTime" type="decimal" nillable="true"
+				description="The retention-time of this peak in minutes." />
+		</entity>
+		<entity name="InvestigationFile" extends="MolgenisFile">
+			<field name="Investigation" type="xref" xref_entity="Investigation"
+				description="Reference to the Study." />
+		</entity>
+		<entity name="Tissue" extends="OntologyTerm" description="Ontology of tissue. E.g. spleen" />
+		<entity name="SampleLabel" extends="OntologyTerm"
+			description="Ontology of sample labels. E.g. cy3, cy5" />
+		<entity name="Sample" extends="ObservationTarget">
+			<description></description>
+			<field name="Individual" type="xref" xref_entity="Individual"
+				xref_field="id" xref_label="name" nillable="true"
+				description="The individual from which this sample was taken." />
+			<field name="Tissue" type="xref" xref_entity="Tissue"
+				xref_field="id" xref_label="name" nillable="true"
+				description="The tissue from which this sample was taken." />
+		</entity>
+		<!--entity name="GenericObservationTarget" extends="ObservationTarget">
+			<description>Generic implementation of ObservationTarget for
+				applications that choose not to choose subclasses such as Individual
+				or Panel. NOT NEEDED? ObservationTarget is not abstract</description>
+		</entity-->
+		<entity name="PairedSample" extends="ObservationTarget">
+			<description> A pair of samples labeled for a two-color microarray
+				experiment.</description>
+			<field name="Subject1" type="xref" xref_entity="Individual"
+				xref_field="id" xref_label="name" description="The first subject" />
+			<field name="Label1" type="xref" xref_entity="SampleLabel"
+				xref_field="id" xref_label="name" nillable="true"
+				description="Which channel or Fluorescent labeling is associated with the first subject" />
+			<field name="Subject2" type="xref" xref_entity="Individual"
+				xref_field="id" xref_label="name" description="The second sample" />
+			<field name="Label2" type="xref" xref_entity="SampleLabel"
+				xref_field="id" xref_label="name" nillable="true"
+				description="Which channel or Fluorescent labeling is associated with the second subject" />
+		</entity>
+	</module>
+</molgenis>

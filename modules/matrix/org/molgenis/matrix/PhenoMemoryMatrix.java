@@ -111,9 +111,9 @@ public class PhenoMemoryMatrix<E extends ObservationElement, A extends Observati
 				{
 					ObservedValue v = new ObservedValue();
 					v.setTarget_Name(rows.get(i).getName());
-					v.setTarget___Type(this.rowType.getSimpleName());
+					//v.setTarget___Type(this.rowType.getSimpleName());
 					v.setFeature_Name(cols.get(j).getName());
-					v.setFeature___Type(this.colType.getSimpleName());
+					//v.setFeature___Type(this.colType.getSimpleName());
 					v.setValue(matrix.getValue(i, j));
 					values[i][j] = v;
 				}

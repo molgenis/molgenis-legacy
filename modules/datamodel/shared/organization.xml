@@ -1,0 +1,88 @@
+<molgenis name="org.molgenis">
+	<module name="organization">
+		<description>Generic entities you can use as the starting point of
+			your model.</description>
+		<entity name="Investigation" implements="Nameable,Describable,Authorizable" xref_label="name">
+			<description>Investigation defines self-contained units of study. For
+				example: Framingham study. Optionally a description and an accession
+				to a data source can be provided. Each Investigation has a unique
+				name and a group of subjects of observation (ObservableTarget),
+				traits of observation (ObservableFeature), results (in
+				ObservedValues), and optionally actions (Protocols,
+				ProtoclApplications). 'Invetigation' maps to standard XGAP/FuGE
+				Investigation, MAGE-TAB Experiment and METABASE:Study.</description>
+			<field name="startDate" nillable="true"  type="datetime" description="The start point of the study." auto="true" />
+			<field name="endDate" nillable="true" auto="false" type="datetime" description="The end point of the study." />
+			<field name="contacts" type="mref" xref_entity="Person"
+				nillable="true" />	
+			<!-- field name="description" type="text" nillable="true"
+				description="(Optional) Rudimentary meta data about the Investigation" / -->>
+			<field name="accession" type="hyperlink" nillable="true"
+				description="(Optional) URI or accession number to indicate source of Study. E.g. arrayexpress:M-EXP-2345" />
+			<unique fields="name" description="Name is unique" />
+		</entity>
+		<entity name="InvestigationElement" abstract="true" implements="Nameable,Describable"
+			xref_label="name">
+			<description>General superclass to use for all elements of an
+				Investigation. The unique forces all of these elements to have
+				unique names within one Investigation. (can be changed to
+				Name,Study,Type by flipping a boolean in the molgenis 'Unique'
+				class.)</description>
+			<field name="Investigation" type="xref" xref_label="name"
+				xref_entity="Investigation" nillable="true"
+				description="Reference to the Study that this data element is part of" />
+			<field name="ontologyReference" type="xref" xref_entity="OntologyTerm"
+				nillable="true"
+				description="(Optional) Reference to the formal ontology definition for this element, e.g. 'Animal' or 'GWAS protocol'" />
+			<unique fields="name,Investigation" description="Name is unique within an Investigation" />
+		</entity>
+		<entity name="Contact" implements="Identifiable" abstract="true">
+			<description> A contact is either a person or an organization. Copied
+				from FuGE::Contact.</description>
+			<field name="Address" type="text" nillable="true"
+				description="The address of the Contact." />
+			<field name="Phone" nillable="true"
+				description="The telephone number of the Contact including the suitable area codes." />
+			<field name="Email" nillable="true"
+				description="The email address of the Contact." />
+			<field name="Fax" nillable="true" type="varchar"
+				description="The fax number of the Contact." />
+			<field name="tollFreePhone" nillable="true" type="string"
+				description="A toll free phone number for the Contact, including suitable area codes." />
+		</entity>
+		<entity name="Person" implements="Contact" xref_label="LastName">
+			<!-- we may want to add a 'screen name' to use as xref_label -->
+			<description>
+				Person represents one or more people involved with an Investigation.
+				This may include authors on a paper, lab personnel or PIs. Person
+				has last name, firstname, mid initial, address, contact and email. A
+				Person role is included to represent how a Person is involved with
+				an investigation. For submission to repository purposes an allowed
+				value is 'submitter' and the term is present in the MGED Ontology,
+				an alternative use could represent job title. An Example from
+				ArrayExpress is E-MTAB-506
+				<a
+					href="ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/TABM/E-TABM-506/E-TABM-506.idf.txt">
+					ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/TABM/E-TABM-506/E-TABM-506.idf.txt.
+				</a>
+				.
+				<br />
+				The FUGE equivalent to Person is FuGE::Person.
+			</description>
+			<field name="FirstName" label="First Name" nillable="true" />
+			<field name="MidInitials" label="Mid Initials" nillable="true" />
+			<field name="LastName" label="Last Name" />
+			<field name="Title" label="Title" nillable="true" description="An academic title, e.g. Prof.dr, PhD" />
+			<field name="Affiliation" type="xref" xref_entity="Institute"
+				nillable="true" />
+			<field name="Roles" type="mref" xref_field="OntologyTerm.id"
+				nillable="true" description="indicate role of the contact, e.g. lab worker or PI" />
+			<unique fields="FirstName,MidInitials,LastName" />
+		</entity>
+		<entity name="Institute" implements="Contact" xref_label="name">
+			<description> A contact is either a person or an organization. Copied
+				from FuGE::Contact.</description>
+				<field name="name" unique="true"/>
+		</entity>
+	</module>
+</molgenis>

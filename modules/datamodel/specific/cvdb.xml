@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE molgenis PUBLIC "MOLGENIS 1.0" "http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd" -->
+<molgenis name="org.molgenis">
+	<module name="cvdb">
+		<entity name="Observation">
+			<field name="id" type="autoid"/>
+			<field name="variant" type="xref" xref_field="Variant.id" xref_label="name"/>
+			<field name="sample" type="xref" xref_field="Sample.id" xref_label="name"/>
+			<field name="coverage" type="number" nillable="true"/>
+			<field name="variantSupport" type="number" nillable="true"/>
+		</entity>
+		<entity name="Region">
+			<field name="id" type="autoid"/>
+			<field name="sample" type="xref" xref_field="Sample.id" xref_label="name"/>
+			<field name="chromosome"/>
+			<field name="begin" type="number"/>
+			<field name="end" type="number"/>
+		</entity>
+		<entity name="Sample">
+			<field name="id" type="autoid"/>
+			<field name="name" unique="true"/>
+			<field name="submission" type="xref" xref_field="Submission.id" xref_label="name"/>
+			<field name="poolSize" type="number"/>
+			<field name="threshold" type="number"/>
+		</entity>
+		<entity name="Status">
+			<field name="id" type="autoid"/>
+			<field name="variant" type="xref" xref_field="Variant.id" xref_label="name"/>
+			<field name="remark" type="text"/>
+		</entity>
+		<entity name="Submission">
+			<field name="id" type="autoid"/>
+			<field name="name" unique="true"/>
+			<field name="submitter" type="xref" xref_field="Submitter.id" xref_label="name"/>
+			<field name="platform"/>
+			<field name="paired" type="number"/>
+			<field name="length" type="number"/>
+			<field name="enrichmentPlatform"/>
+			<field name="variantCaller"/>
+			<field name="aligner"/>
+			<field name="experimentType"/>
+			<field name="experimentDate" type="date"/>
+			<field name="remark" type="text"/>
+		</entity>
+		<entity name="Submitter">
+			<field name="id" type="autoid"/>
+			<field name="name" unique="true"/>
+			<field name="center"/>
+			<field name="contact"/>
+			<field name="remark" type="text"/>
+		</entity>
+		<entity name="Variant">
+			<field name="id" type="autoid"/>
+			<field name="name" unique="true"/>
+			<field name="chromosome"/>
+			<field name="begin" type="number"/>
+			<field name="end" type="number"/>
+			<field name="reference"/>
+			<unique fields="name,chromosome,begin,end,reference"/>
+		</entity>
+	</module>
+</molgenis>

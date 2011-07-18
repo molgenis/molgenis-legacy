@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="org.molgenis" label="Molgenis Auth Test Suite">
+	<module name="auth">
+		<entity name="MolgenisRole" system="true" implements="Identifiable">
+			<field name="name" unique="true" />
+		</entity>
+
+		<entity name="MolgenisGroup" extends="MolgenisRole" system="true">
+			<!--
+			<field name="members" type="mref" xref_field="MolgenisUser.id" xref_label="name" />
+			-->
+		</entity>
+
+		<entity name="MolgenisRoleGroupLink" system="true" implements="Identifiable">
+			<field name="group_" type="xref" xref_field="MolgenisGroup.id" xref_label="name" />
+			<field name="role_" type="xref" xref_field="MolgenisRole.id" xref_label="name" />
+		</entity>
+		
+		<entity name="MolgenisUser" extends="MolgenisRole" decorator="org.molgenis.auth.MolgenisUserDecorator" system="true">
+			<description>Anyone who can login</description>
+			<field name="password_" type="string" description="big fixme: password type" />
+			<field name="emailaddress" type="string" />
+			<field name="activationCode" type="string"
+				description="Used as alternative authentication mechanism to verify user email and/or if user has lost password."
+				nillable="true" />
+			<field name="active" type="bool" default="false"
+				description="Boolean to indicate if this account can be used to login" />
+			<field name="title" type="string" nillable="true" />
+			<field name="lastname" type="string" />
+			<field name="firstname" type="string" />
+			<field name="institute" type="string" nillable="true" />
+			<field name="department" type="string" nillable="true" />
+			<field name="position_" type="string" nillable="true" />
+			<field name="city" type="string" nillable="true" />
+			<field name="country" type="string" nillable="true" />
+			<field name="superuser" type="bool" default="false" />
+			<!-- todo: profile: picture, field, address, zip, timezone, flag to set public email, website, other details -->
+		</entity>
+		<entity name="MolgenisEntity" system="true" implements="Identifiable">
+			<description>Referenceable catalog of entity names, menus, forms and plugins.</description>
+			<field name="name" description="Name of the entity" />
+			<field name="type_" description="Type of the entity"/>
+			<field name="className" unique="true" description="Full name of the entity" />
+			<unique fields="name,type_"/>
+		</entity>
+		<entity name="MolgenisPermission" system="true" implements="Identifiable">
+			<field name="role_" type="xref" xref_field="MolgenisRole.id" xref_label="name"/>
+			<field name="entity" type="xref" xref_field="MolgenisEntity.id" xref_label="className"/>
+			<field name="permission" type="enum" enum_options="[read,write,own]"/>
+			<!-- no use case for 'execute' so don't use it -->
+		</entity>
+	</module>
+</molgenis>

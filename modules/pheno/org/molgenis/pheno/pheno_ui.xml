@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<molgenis name="pheno.ui" label="GEN2PHEN Pheno-OM Reference Implementation">
+	<plugin name="MolgenisHeader" type="plugins.header.PhenoHeader" />
+	<menu name="TopMenu" position="left">
+		<form name="Investigations" entity="Investigation">
+			<menu name="InvestigationMenu" position="top_left">
+				<plugin name="InvestigationReport" type="plugins.report.InvestigationReport" />
+				<form name="ObservableFeatures" entity="ObservableFeature" label="Observable Features">
+					<form name=" Definitions" entity="OntologyTerm" description="Definitions of terms used" />
+				</form>
+				<form name="ObservedValues" entity="ObservedValue" />
+				<form name="ObservedInferences" entity="ObservedInference" />
+				<form name="Individuals" entity="Individual" />
+				<form name="Panels" label="Panels" entity="Panel" />
+				<form name="Protocols" entity="Protocol">
+					<menu name="ProtocolMenu">
+						<form name="ProtocolParameters" entity="ObservableFeature" />
+					</menu>
+				</form>
+				<form name="ProtocolApplications" entity="ProtocolApplication" label="Protocol Applications">
+					<menu name="ProtocolApplicationMenu">
+						<form name="ObservedValues2" entity="ObservedValue" />
+						<form name="ObservedInferences2" entity="ObservedInference" />
+					</menu>
+				</form>
+				<form name="OntologyTerms" label="Ontology Terms" entity="OntologyTerm" />
+				<form name="Ontologies" label="Ontologies" entity="Ontology">
+					<form name="OntologyTermsForSource" label="Terms for this source"
+						entity="OntologyTerm" />
+				</form>
+			</menu>
+		</form>
+
+		<menu name="submenu" position="left" label="Search...">
+			<plugin name="DBIndex" label="DB Index and Search" type="plugins.LuceneIndex.DBIndexPlugin" />
+
+			<plugin name="OntoCatIndexPlugin2" label="Index OntoCAT"
+				type="plugins.LuceneIndex.OntoCatIndexPlugin" />
+		</menu>
+	</menu>
+</molgenis>

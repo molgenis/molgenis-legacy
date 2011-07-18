@@ -1,0 +1,190 @@
+<molgenis name="org.molgenis">
+	<module name="core">
+		<description>Generic entities you can use as the starting point of
+			your model.</description>
+		<entity name="Identifiable" abstract="true" system="true">
+			<description>This interface assigns an automatic 'id' field to every
+				object.</description>
+			<field name="id" type="autoid" description="automatically generated id" />
+		</entity>
+		<entity name="Nameable" abstract="true" decorator="decorators.NameableDecorator"
+			implements="Identifiable">
+			<description>This interface extends Identifiable with a unique 'name'
+				field. The name length can be stored in one byte. (Java has signed
+				integers) The name is by itself not unique, this should be enforced
+				within a certain context. For example, unique(name, study) to make
+				the name unique within one single study. The NameableDecorator
+				ensures that names don't lead to problems in R and other script
+				environments.</description>
+			<field name="name" length="127" type="varchar" description="human-readable name." />
+		</entity>
+		<entity name="Describable" abstract="true" system="true">
+			<description>This interface adds a description field to all entities
+				the implement it.</description>
+			<field name="description" type="text" nillable="true"
+				description="description field" />
+		</entity>
+		<entity name="OntologyTerm" xref_label="name" implements="Nameable"
+			system="true">
+			<description>
+				OntologyTerm defines a single entry (term) from an ontology or a
+				controlled vocabulary (defined by Ontology). The name is the
+				ontology term which is unique within an ontology source, such as
+				[examples here]. Other data entities can reference to this
+				OntologyTerm to harmonize naming of concepts. Each term should have
+				a local, unique label within the Investigation. If no suitable
+				ontology term exists then one can define new terms locally (in which
+				case there is no formal accession for the term limiting its use for
+				cross-Investigation queries). In those cases the local name should
+				be repeated in both term and termAccession. Maps to
+				FuGE::OntologyIndividual; in MAGE-TAB there is no separate entity to
+				model terms.
+				<br />
+				Optionally a local controlled vocabulary or ontology can be defined,
+				for example to represent 'Codelists' often used in questionaires.
+				Note: this is not a InvestigationElement because of the additional
+				xref_label and unique constraint.This class defines a single entry
+				from an ontology or a controlled vocabulary.
+				<br />
+				If it is a simple controlled vocabulary, there may be no formal
+				accession for the term. In these cases the local name should be
+				repeated in both term and termAccession. If the term has a value,
+				the OntologyTerm will have a single DataProperty whose value was the
+				value for the property. For instance, for an OntologyIndividual
+				based on the MO ontology the attributes might be: The term would be
+				what is usually called the local name in the Ontology, for instance
+				'Age'; The termAccession could be
+				'http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Age' or a
+				an arbitrary accession if one exists; The identifier is a unique
+				identifier for individuals in the scope of the FuGE instance; The
+				inherited name attribute should not be used; The ontologyURI of
+				OntologySource could be
+				'http://mged.sourceforge.net/ontologies/MGEDOntology.owl&quot;. The
+				OntologyTerm subclasses are instances of Ontology classes and
+				properties, not the actual terms themselves. An OntologyIndividual,
+				if based on an existing Ontology, can be considered a statement that
+				can be validated against the referenced ontology. The subclasses and
+				their associations are based on the Ontology Definition Model,
+				ad/2005-04-13, submitted to the OMG as a response to RFP
+				ad/2003-03-40, Copyright 2005 DSTC Pty Ltd. Copyright 2005 IBM
+				Copyright 2005 Sandpiper Software, Inc under the standard OMG
+				license terms. 
+			</description>
+			<field auto="false" name="ontology" type="xref" nillable="true"
+				description="(Optional) The source ontology or controlled vocabulary list that ontology terms have been obtained from."
+				xref_entity="Ontology" />
+			<field nillable="true" auto="false" name="termAccession" type="varchar"
+				description="(Optional) The accession number assigned to the ontology term in its source ontology. If empty it is assumed to be a locally defined term. " />
+			<field nillable="true" auto="false" name="definition" type="string"
+				description="(Optional) The definition of the term." />
+			<unique fields="ontology,termAccession"
+				description="The term accession is unique within an Ontology" />
+			<field nillable="true" auto="false" name="termPath" type="varchar"
+				length="1024"
+				description="EXTENSION. The Ontology Lookup Service path that contains this term." />
+			<unique fields="ontology,name" description="ADDITION: Name is unique within its type " />
+		</entity>
+		<entity name="Ontology" implements="Nameable" system="true">
+			<description> Ontology defines a reference to a an ontology or
+				controlled vocabulary from which well-defined and stable (ontology)
+				terms can be obtained. Each Ontology should have a unique name, for
+				instance: Gene Ontology, Mammalian Phenotype, Human Phenotype
+				Ontology, Unified Medical Language System, Medical Subject Headings,
+				etc. Also a abbreviation is required, for instance: GO, MP, HPO,
+				UMLS, MeSH, etc. Use of existing ontologies/vocabularies is
+				recommended to harmonize phenotypic feature and value descriptions.
+				But one can also create a 'local' Ontology. The Ontology class maps
+				to FuGE::Ontology, MAGE-TAB::TermSourceREF.</description>
+			<field auto="false" name="ontologyAccession" type="string"
+				nillable="true"
+				description="A identifier that uniquely identifies the ontology (typically an acronym). E.g. GO, MeSH, HPO." />
+			<field nillable="true" auto="false" name="ontologyURI" type="hyperlink"
+				description="(Optional) A URI that references the location of the ontology." />
+			<unique fields="name" description="Name is unique within its type " />
+		</entity>
+		<!--
+		<entity name="MolgenisUserGroup" system="true" implements="Nameable">
+			<description>A unit to collect users togethers as 'members' and then
+				set view and/or edit permissions for all of them together. If a user
+				is allowed to edit he/she is also allowed to view the data.
+			</description>
+			<field name="members" type="mref" xref_entity="MolgenisUser"
+				description="references to of zero or more users that are members of this group" />
+			<field name="allowedToView" type="mref" xref_entity="MolgenisEntity"
+				description="list of zero or more entities the members of this usergroup may view." />
+			<field name="allowedToEdit" type="mref" xref_entity="MolgenisEntity"
+				description="list of zero or more entities the members of this usergroup may edit." />
+			<field name="viewAll" type="bool" default="false"
+				description="when set to true the group members can view all entities" />
+			<field name="editAll" type="bool" default="false"
+				description="when set to true the group members can edit all entities (making them superuser). DISCUSSION: should exclude system entities?" />
+		</entity>
+		<entity name="MolgenisUser" system="true" implements="Nameable">
+			<description>Anyone who can login</description>
+			<field name="password" description="password of this user (needs to be md5)" />
+			<field name="superuser" label="isSuperuser" type="bool"
+				default="false"
+				description="if set to true this user can edit all entities irrespective of the group rights." />
+			<field name="active" type="bool" default="true" />
+		</entity>
+		<entity name="MolgenisEntity" system="true" implements="Nameable">
+			<description> Referenceable catalog of entity names, that are the
+				data types used by the permission system.</description>
+			<field name="className" description="Full classpath name of the entity type" />
+		</entity>
+		-->
+		<entity name="MolgenisFile" abstract="false" implements="Nameable"
+			decorator="decorators.MolgenisFileDecorator">
+			<description>
+				Helper entity to deal with files. Has a decorator to regulate
+				storage and coupling to an Entity. Do not make abstract because of
+				subtyping. This means the names of the subclasses will be used to
+				distinguish MolgenisFiles and place them in the correct folders.
+				<br />
+				MS: make it use the &lt;field type="file" property under the hood. 
+				<br />
+				MS: where do the mimetypes go? I mean, I don't see the added value
+				now.
+			</description>
+			<field name="Extension" nillable="false" length="8"
+				description="The file extension. This will be mapped to MIME type at runtime. For example, a type 'png' will be served out as 'image/png'." />
+		</entity>
+		<entity name="Publication" implements="Nameable">
+			<description>	Publication is part of the Investigation package and is used to represent information about one or more publications related to an
+				Investigation. The publication need not only be primary publication	for an Investigation but may also represent other related
+				information- though this use is less common. Publications have	attributes of publications Authors and also DOI and Pubmed
+				identifiers (when these are available). These are represented as OntologyTerms as in the MAGE-TAB model all 'xrefs' (cross
+				references) for ontologies and accession numbers are handled generically. An example of a publication is available in an IDF file
+				from ArrayExpress is experiment E-MTAB-506
+				<a
+					href="ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/TABM/E-TABM-506/E-TABM-506.idf.txt">ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/TABM/E-TABM-506/E-TABM-506.idf.txt
+				</a>
+				.
+				<br />
+				The FuGE equivalent to Publication is FuGE::Bibliographic Reference.
+			</description>
+			<field name="PubmedID" label="Pubmed ID" type="xref"
+				xref_entity="OntologyTerm" nillable="true" />
+			<field name="DOI" label="Publication DOI" nillable="true" type="xref"
+				xref_entity="OntologyTerm" />
+			<field name="authorList" type="text"
+				description="The names of the authors of the publication" nillable="true" />
+			<!--
+				using name instead! field name="Title" label="Publication Title"
+				description="The title of the Publication" nillable="true"/
+			-->
+			<field name="Title" label="Publication Title" description="The title of the Publication" />
+			<field name="Status" label="Publication Status" description="The status of the Publication"	type="xref" xref_entity="OntologyTerm" nillable="true" />
+			<!-- was like this : <field name="Status" label="Publication Status" description="The status of the Publication" type="xref" xref_field="OntologyTerm.id" nillable="true" />  -->
+			<unique fields="Name" />
+		</entity>
+		<entity name="UseCase" label="Use Cases">
+			<description> All the use cases send to the server are stored in this
+				entity .</description>
+			<field name="UseCaseId" type="autoid" />
+			<field name="UseCaseName" type="string" />
+			<field name="SearchType" type="string" />
+			<unique fields="UseCaseId" />
+		</entity>
+	</module>
+</molgenis>

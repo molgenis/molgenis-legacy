@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE molgenis PUBLIC "MOLGENIS 1.0" "http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd" -->
+<molgenis name="org.molgenis" label="COL7A1">
+	<module name="submission">
+		<entity name="submittable" abstract="true">
+			<!-- Make working group for Submission (or deal with this as part of the 'LIMS' module. Is like protocolApplication and 
+				you want to keep track of who did it and when, which parameters were used. -->
+			<field name="submission" type="xref" xref_field="Submission.id"
+				xref_label="identifier" description="Submission this object was introduced."
+				label="Submission" />
+		</entity>
+		<entity name="Submission" implements="Identifiable">
+			<!-- should become a core feature. Develop as part of 'Submission' module. -->
+			<description>A submission of data made by a MolgenisUser.</description>
+			<field name="identifier" description="Automatically generated external identifier"
+				unique="true" />
+			<field name="submitters" type="mref" xref_field="MolgenisUser.id"
+				xref_label="name" nillable="true" description="Submitters who supplied the cases."
+				label="Submitters" />
+			<field name="date_" type="date" description="Submission date"
+				label="Submission date" />
+			<field name="releasedate" type="date"
+				description="Release date of data part of the submission" label="Release date" />
+		</entity>
+	</module>
+</molgenis>
