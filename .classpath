@@ -1,12 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="handwritten/apps"/>
+	<classpathentry kind="src" path="modules/webserver"/>
 	<classpathentry kind="src" path="generated/sql"/>
 	<classpathentry kind="src" path="generated/java"/>
-	<classpathentry kind="src" path="handwritten/datamodel"/>
-	<classpathentry kind="src" path="handwritten/webserver"/>
-	<classpathentry kind="src" path="handwritten/java"/>
+	<classpathentry kind="src" path="apps/lifelines"/>
+	<classpathentry kind="src" path="modules/search"/>
+	<classpathentry kind="src" path="modules/import"/>
+	<classpathentry kind="src" path="modules/news"/>
+	<classpathentry kind="src" path="modules/pheno"/>
+	<classpathentry kind="src" path="apps/bbmri"/>
+	<classpathentry kind="src" path="apps/lifelinespheno"/>
+	<classpathentry kind="src" path="apps/magetab"/>
+	<classpathentry kind="src" path="modules/datamodel"/>
+	<classpathentry kind="src" path="apps/gwascentral"/>
+	<classpathentry kind="src" path="apps/ngs"/>
+	<classpathentry kind="src" path="modules/settings"/>
+	<classpathentry kind="src" path="apps/chd7"/>
+	<classpathentry kind="src" path="apps/bioshare"/>
+	<classpathentry kind="src" path="apps/sandbox"/>
+	<classpathentry kind="src" path="apps/maze"/>
+	<classpathentry kind="src" path="apps/gscf"/>
+	<classpathentry kind="src" path="apps/col7a1"/>
+	<classpathentry kind="src" path="apps/cvdb"/>
+	<classpathentry kind="src" path="apps/xgap"/>
 	<classpathentry kind="src" path="modules/matrix"/>
+	<classpathentry kind="src" path="modules/batch"/>
+	<classpathentry kind="src" path="apps/all4test"/>
+	<classpathentry kind="src" path="modules/compute"/>
+	<classpathentry kind="src" path="apps/designgg"/>
+	<classpathentry kind="src" path="modules/file"/>
+	<classpathentry kind="src" path="modules/mutation"/>
+	<classpathentry kind="src" path="modules/auth"/>
+	<classpathentry kind="src" path="apps/animaldb"/>
+	<classpathentry kind="src" path="apps/gids"/>
+	<classpathentry kind="src" path="handwritten/java"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/charts4j-1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/jaxrpc.jar"/>

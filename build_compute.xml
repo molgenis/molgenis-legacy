@@ -1,0 +1,9 @@
+<project default="test">
+	<!--
+		sandbox means generating as described, than compile the apps we depend
+		on
+	-->
+	<ant antfile="build_common.xml" target="compile">
+		<property name="app_name" value="gcc" />
+	</ant>
+</project>
