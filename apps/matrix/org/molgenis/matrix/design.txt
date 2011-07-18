@@ -1,0 +1,47 @@
+Ontwerp binaire matrix
+====================
+
+string nullChar (1 byte)
+
+int nameLength (1 byte)
+string name (nameLength * 1 byte)
+
+int investigationNameLength (1 byte)
+string investigationName (investigationNameLength * 1 byte)
+
+int colTypeLength (1 byte)
+string colType (colTypeLength * 1 byte)
+
+int rowTypeLength (1 byte)
+string rowType (rowTypeLength * 1 byte)
+
+boolean isNumeric: 0 = false, 1 = true (1 byte)
+
+int totalCols (4 bytes)
+int totalRows (4 bytes)
+
+int[totalCols] colNameLengths (totalCols * 1 byte)
+int[totalRows] rowNameLengths (totalRows * 1 byte)
+
+string[totalCols] colNames (totalCols * colNameLengths[colNames_index] * 1 byte)
+string[totalRows] rowNames (totalRows * rowNameLengths[rowNames_index] * 1 byte)
+
+int stringLength:
+IF isNumeric == 1
+  stringLength = NULL
+ELSE
+  IF text elements of equal length
+    stringLength = text element length
+  ELSE
+    stringLength = 0
+
+int[totalCols * totalRows] textElementLengths:
+IF isNumeric != 1 && stringLength != 0
+  textElementLengths (totalCols * totalRows * 1 byte)
+ELSE
+  textElementLengths = NULL
+
+IF isNumeric == 1
+  double[] dataElements (totalCols * totalRows * 8 byte)
+ELSE
+  string[] dataElements (totalCols * totalRows * textElementLengths[dataElements_index] * 1 byte)

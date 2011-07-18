@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+		DOCTYPE molgenis PUBLIC "MOLGENIS 1.0"
+		"http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd"
+	-->
+	
+	<!--  set Molgenis name and label for GIDS application -->
+<molgenis name="org.molgenis"> 
+
+</molgenis>
+
+

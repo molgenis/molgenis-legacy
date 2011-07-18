@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+		DOCTYPE molgenis PUBLIC "MOLGENIS 1.0"
+		"http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd"
+	-->
+
+<molgenis name="molgenis_apps" label="AnimalDB">
+
+	<plugin name="AnimalDBHeader" type="plugins.header.AnimalDb4GscfHeader" />
+
+	<menu name="mainmenu" position="left" startswith="WelcomeScreen">
+			
+		<form name="Investigations" label="Browse investigations" entity="Investigation" compact_view="name">
+				<form name="Individuals" entity="Individual" />
+		</form>
+		
+		<plugin name="PreFillDatabase" type="plugins.fillanimaldb.PreFillDatabasePlugin"
+			label="Load required data" />
+
+	</menu>
+
+</molgenis>

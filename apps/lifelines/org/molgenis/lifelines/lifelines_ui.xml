@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- TEST TEST DOCTYPE molgenis PUBLIC "MOLGENIS 1.0" "http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd" -->
+<molgenis name="lifelines" label="Lifelines Catalogue">
+
+	<plugin name="MolgenisHeader" type="plugins.header.lifelinesHeader" />
+
+	<menu name="main" position="left" startswith="WelcomeScreen">
+
+
+		<plugin name="lifelinesWelcomeScreen" type="plugins.welcome.lifelinesWelcomeScreenPlugin"
+			label="Welcome" />
+		<plugin name="UserLogin" type="plugins.auth.UserLogin" label="Login" />
+
+		<menu name="DataViews" label="Data Views">
+		<plugin name="ListPlugin" type="plugins.listplugin.ListPlugin" label="Make/view lists" />
+			<form name="Measurements" entity="Measurement" view="list">
+				<form name="Codes" entity="Code" view="list"/>
+			</form>
+			<form name="Protocols" entity="Protocol" />
+			<form name="Individuals" entity="Individual" />
+			<form name="Investigation" entity="Investigation" view="list"/>
+			<form name="ObservationTarget" entity="ObservationTarget" label="Patients" view="list"/>
+			<form name="ObservedValue" entity="ObservedValue" label="Observed Value" view="list"/>
+		</menu>
+
+		<menu name="DataLoaders" label="Data Loaders">
+			<plugin name="LifelinesDataConvertToPhenoModel"
+				type="plugins.LifelinesData.LifelinesDataConvertToPhenoModel" label="Lifelines Data Convert" />
+			<plugin name="LifelinesDataImport" type="plugins.LifelinesData.LifelinesDataImport"
+				label="Lifelines Data Import" />
+			<plugin name="SPSSExport" type="plugins.SPSSAdmin.SPSSExport" label="SPSS Export" />
+			<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard"
+				label="Batch Upload" />
+		</menu>
+
+		<menu name="Admin">
+			<form name="Ontologies" entity="Ontology" />
+			<form name="OntologyTerms" entity="OntologyTerm" />
+			<plugin name="Settings" type="plugins.system.settings.Settings" />
+			<menu name="usermanagement" position="left" label="User management">
+				<form name="MolgenisUser" entity="MolgenisUser" label="MolgenisUser" />
+				<form name="MolgenisGroup" entity="MolgenisGroup" label="MolgenisGroup" />
+				<form name="MolgenisEntity" entity="MolgenisEntity" label="MolgenisEntity" />
+				<form name="MolgenisPermission" entity="MolgenisPermission"
+					label="MolgenisPermission" />
+			</menu>
+		</menu>
+
+		<menu name="submenu" position="left" label="Index powered Search">
+			<plugin name="DBIndex" label="DB Index"
+				type="plugins.LuceneIndex.DBIndexPlugin" />
+			<plugin name="OntoCatIndexPlugin" label="OntoCAT Index"
+				type="plugins.LuceneIndex.OntoCatIndexPlugin" />
+			<plugin name="AdminIndex" label="Admin Indexes"
+				type="plugins.LuceneIndex.AdminIndexes" />
+		</menu>
+	</menu>
+</molgenis>

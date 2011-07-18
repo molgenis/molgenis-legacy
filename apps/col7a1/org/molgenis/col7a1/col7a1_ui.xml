@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+		DOCTYPE molgenis PUBLIC "MOLGENIS 1.0"
+		"http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd"
+	-->
+<molgenis name="col7a1">
+	<plugin name="MolgenisHeader" type="org.molgenis.mutation.ui.header.Col7a1Header"/>
+	<menu name="View" startswith="SearchPlugin">
+		<plugin name="SearchPlugin" type="org.molgenis.mutation.ui.search.Col7a1Search" label="Search">
+			<plugin name="NewsBar" type="org.molgenis.news.ui.News" label="News"/>
+		</plugin>
+		<plugin name="UploadPlugin" type="org.molgenis.mutation.ui.upload.Col7a1Upload" label="Submit data"/>
+		<plugin name="Contact" type="org.molgenis.feedback.ui.Contact" label="Contact"/>
+		<plugin name="Publications" type="org.molgenis.core.ui.AllPublications" label="References"/>
+		<plugin name="Background" type="org.molgenis.mutation.ui.background.Background" label="Background"/>
+		<plugin name="NewsPlugin" type="org.molgenis.news.ui.News" label="News"/>
+		<menu name="Management" position="left" label="Management">
+			<form name="Gene" entity="MutationGene"/>
+			<form name="ProteinDomain" entity="ProteinDomain" label="Protein domain"/>
+			<form name="Exon" entity="Exon"/>
+			<form name="Mutation" entity="Mutation"/>
+			<form name="Phenotype" entity="MutationPhenotype"/>
+			<form name="Workflow" entity="Workflow" label="DEB Workflow">
+				<form name="WorkflowElement" entity="WorkflowElement" hide_fields="ExecutionTime">
+					<form name="Protocol" entity="Protocol" label="DEB Protocol" hide_fields="Investigation,ontologyReference,TargetFilter"/>
+				</form>
+			</form>
+			<form name="Measurement" entity="Measurement" label="Phenotypic Feature" hide_fields="Investigation,ontologyReference,targettypeAllowedForRelation,panelLabelAllowedForRelation"/>
+			<form name="ObservedValue" entity="ObservedValue" label="Phenotypic Value" hide_fields="Investigation,protocolApplication,ontologyReference,time,endtime"/>
+			<form name="Patient" entity="Patient"/>
+			<form name="Submission" entity="Submission"/>
+			<form name="Publication" entity="Publication" compact_view="Title,PubmedID" label="References">
+				<form name="OntologyTerm" entity="OntologyTerm" label="Ontology term"/>
+			</form>
+			<form name="News" entity="MolgenisNews"/>
+			<plugin name="ExportCsv" type="org.molgenis.mutation.ui.export.Export" label="Export CSV"/>
+		</menu>
+		<plugin name="myCOL7A1" type="org.molgenis.mutation.ui.mycol7a1.MyCOL7A1" label="Submissions"/>
+		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="myCOL7A1"/>
+	</menu>
+</molgenis>

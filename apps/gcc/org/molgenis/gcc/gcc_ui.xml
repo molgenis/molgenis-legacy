@@ -1,0 +1,12 @@
+<molgenis name="molgenis_apps">
+	<plugin name="molgenis_header" type="plugins.header.MolgenisHeader" />
+	<menu name="main" position="left">
+		<!-- empty gui so no elements can collide with project elements -->
+		<form name="Investigations" entity="Investigation">
+			<form name="Measurements" entity="Measurement"></form>		
+		</form>
+		<menu name="ImportData" label="Import Data">
+			<plugin name="ConvertDataIntoPheno" type="plugins.phenoModelconverterandloader.PMconverterandloaderPlugin" label="Convert data"/>
+		</menu>
+	</menu>
+</molgenis>
