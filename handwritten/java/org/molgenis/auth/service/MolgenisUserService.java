@@ -76,8 +76,10 @@ public class MolgenisUserService
 
 		for (MolgenisRoleGroupLink link : links) {
 			//roleIdList.add(link.getGroup_Id());
-			findGroupIds(db.findById(MolgenisRole.class, link.getGroup_Id()));
+			roleIdList.addAll(findGroupIds(db.findById(MolgenisRole.class, link.getGroup_Id())));
 		}
+		
+		System.out.println();
 		
 		return roleIdList;
 	}
