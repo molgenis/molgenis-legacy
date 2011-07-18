@@ -139,7 +139,7 @@
     </fileset>
 	</copy>
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-    <jar jarfile="${dist}/molgenis-3.3.0.jar" basedir="${build}">
+    <jar jarfile="${dist}/molgenis-4.0.0.jar" basedir="${build}">
     <manifest>
     	<attribute name="Built-By" value="${myname}"/>
     </manifest>
