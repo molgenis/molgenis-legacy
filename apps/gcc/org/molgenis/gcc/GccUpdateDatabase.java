@@ -7,6 +7,6 @@ public class GccUpdateDatabase
 {
 	public static void main(String[] args) throws Exception
 	{
-		new Molgenis("handwritten/apps/org/molgenis/gcc/gcc.properties").updateDb(true);
+		new Molgenis("apps/gcc/org/molgenis/gcc/gcc.properties").updateDb(true);
 	}
 }
