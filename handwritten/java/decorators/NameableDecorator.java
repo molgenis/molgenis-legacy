@@ -1,34 +1,29 @@
-/* Date:        November 16, 2010
+/* Date:        July 18, 2011
  * Template:	MapperDecoratorGen.java.ftl
- * generator:   org.molgenis.generators.db.MapperDecoratorGen 3.3.3
+ * generator:   org.molgenis.generators.db.MapperDecoratorGen 4.0.0-testing
  *
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
 package decorators;
 
+import java.sql.SQLException;
 import java.util.List;
 
-import org.molgenis.core.Nameable;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Mapper;
-import org.molgenis.framework.db.jdbc.JDBCMapper;
 import org.molgenis.framework.db.jdbc.MappingDecorator;
+import org.molgenis.framework.db.Mapper;
 
-public class NameableDecorator<E extends Nameable> extends MappingDecorator<E>
+public class NameableDecorator<E extends org.molgenis.core.Nameable> extends MappingDecorator<E>
 {
-	
-	protected boolean strict = false;
-	
 	//JDBCMapper is the generate thing
-	//TODO: Danny Parameterize the JDBCMapper object <Object> ??
-	public NameableDecorator(JDBCMapper<E> generatedMapper)
-	{
-		super(generatedMapper);
-	}
-	
-	//new kind of constructor to work with latest DB changes
-	public NameableDecorator(Mapper<E> generatedMapper)
+//	public NameableDecorator(JDBCMapper generatedMapper)
+//	{
+//		super(generatedMapper);
+//	}
+
+	//Mapper is the generate thing
+	public NameableDecorator(Mapper generatedMapper)
 	{
 		super(generatedMapper);
 	}
@@ -36,13 +31,17 @@ public class NameableDecorator<E extends Nameable> extends MappingDecorator<E>
 	@Override
 	public int add(List<E> entities) throws DatabaseException
 	{
-		if(strict){
-			NameConvention.validateEntityNamesStrict(entities);
-		}else{
-			NameConvention.validateEntityNames(entities);
-		}
-		
+		// add your pre-processing here, e.g.
+		// for (org.molgenis.core.Nameable e : entities)
+		// {
+		//  	e.setTriggeredField("Before add called!!!");
+		// }
+
+		// here we call the standard 'add'
 		int count = super.add(entities);
+
+		// add your post-processing here
+		// if you throw and exception the previous add will be rolled back
 
 		return count;
 	}
@@ -50,16 +49,34 @@ public class NameableDecorator<E extends Nameable> extends MappingDecorator<E>
 	@Override
 	public int update(List<E> entities) throws DatabaseException
 	{
-		if(strict){
-			NameConvention.validateEntityNamesStrict(entities);
-		}else{
-			NameConvention.validateEntityNames(entities);
-		}
-		
+
+		// add your pre-processing here, e.g.
+		// for (org.molgenis.core.Nameable e : entities)
+		// {
+		// 		e.setTriggeredField("Before update called!!!");
+		// }
+
+		// here we call the standard 'update'
 		int count = super.update(entities);
+
+		// add your post-processing here
+		// if you throw and exception the previous add will be rolled back
 
 		return count;
 	}
-	
+
+	@Override
+	public int remove(List<E> entities) throws DatabaseException
+	{
+		// add your pre-processing here
+
+		// here we call the standard 'remove'
+		int count = super.remove(entities);
+
+		// add your post-processing here, e.g.
+		// if(true) throw new SQLException("Because of a post trigger the remove is cancelled.");
+
+		return count;
+	}
 }
 

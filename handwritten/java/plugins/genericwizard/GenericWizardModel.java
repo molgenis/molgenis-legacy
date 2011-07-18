@@ -1,49 +1,38 @@
+/* Date:        July 18, 2011
+ * Template:	EasyPluginModelGen.java.ftl
+ * generator:   org.molgenis.generators.ui.EasyPluginModelGen 4.0.0-testing
+ * 
+ * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
+ */
+
 package plugins.genericwizard;
 
-import java.io.File;
+import java.util.Date;
 
-import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.SimpleScreenModel;
+import org.molgenis.framework.ui.EasyPluginModel;
 
-import app.ImportWizardExcelPrognosis;
-
-public class GenericWizardModel {
-
-	private String whichScreen;
-	private File currentFile;
-	private ImportWizardExcelPrognosis iwep;
-	private boolean importSuccess;
+/**
+ * GenericWizardModel takes care of all state and it can have helper methods to query the database.
+ * It should not contain layout or application logic which are solved in View and Controller.
+ * @See org.molgenis.framework.ui.ScreenController for available services.
+ */
+public class GenericWizardModel extends EasyPluginModel
+{
+	//a system veriable that is needed by tomcat
+	private static final long serialVersionUID = 1L;
+	//this string can be referenced from GenericWizardView.ftl template as ${model.helloWorld}
+	public String helloWorld = "hello World";
+	//this date can be referenced from GenericWizardView.ftl template as ${model.date}
+	public Date date = new Date();
 	
-	public String getWhichScreen() {
-		return whichScreen;
-	}
+	//another example, you can also use getInvestigations() and setInvestigations(...)
+	//public List<Investigation> investigations = new ArrayList<Investigation>();
 
-	public void setWhichScreen(String whichScreen) {
-		this.whichScreen = whichScreen;
+	public GenericWizardModel(GenericWizard controller)
+	{
+		//each Model can access the controller to notify it when needed.
+		super(controller);
 	}
 	
-	public File getCurrentFile() {
-		return currentFile;
-	}
-
-	public void setCurrentFile(File currentFile) {
-		this.currentFile = currentFile;
-	}
-
-	public ImportWizardExcelPrognosis getIwep() {
-		return iwep;
-	}
-
-	public void setIwep(ImportWizardExcelPrognosis iwep) {
-		this.iwep = iwep;
-	}
-
-	public boolean isImportSuccess() {
-		return importSuccess;
-	}
-
-	public void setImportSuccess(boolean importSuccess) {
-		this.importSuccess = importSuccess;
-	}
-
+	
 }

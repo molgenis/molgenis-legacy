@@ -1,140 +1,59 @@
-/* Date:        February 2, 2010
- * Template:	PluginScreenJavaTemplateGen.java.ftl
- * generator:   org.molgenis.generators.ui.PluginScreenJavaTemplateGen 3.3.2-testing
- * 
- * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
- */
 
 package plugins.genericwizard;
 
-import java.io.File;
-import java.io.PrintWriter;
-
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.util.Entity;
-import org.molgenis.util.SimpleTuple;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.util.Tuple;
 
-import app.ExcelImport;
-import app.ImportWizardExcelPrognosis;
-
-public class GenericWizard extends PluginModel<Entity> {
-
-	private static final long serialVersionUID = -6011550003937663086L;
-	private GenericWizardModel model = new GenericWizardModel();
-
-	public GenericWizardModel getMyModel() {
-		return model;
+/**
+ * GenericWizardController takes care of all user requests and application logic.
+ *
+ * <li>Each user request is handled by its own method based action=methodName. 
+ * <li> MOLGENIS takes care of db.commits and catches exceptions to show to the user
+ * <li>GenericWizardModel holds application state and business logic on top of domain model. Get it via this.getModel()/setModel(..)
+ * <li>GenericWizardView holds the template to show the layout. Get/set it via this.getView()/setView(..).
+ */
+public class GenericWizard extends EasyPluginController<GenericWizardModel>
+{
+	public GenericWizard(String name, ScreenController<?> parent)
+	{
+		super(name, null, parent);
+		this.setModel(new GenericWizardModel(this)); //the default model
+		this.setView(new FreemarkerView("GenericWizardView.ftl", getModel())); //<plugin flavor="freemarker"
 	}
-
-	public GenericWizard(String name, ScreenController<?> parent) {
-		super(name, parent);
-	}
-
+	
+	/**
+	 * At each page view: reload data from database into model and/or change.
+	 *
+	 * Exceptions will be caught, logged and shown to the user automatically via setMessages().
+	 * All db actions are within one transaction.
+	 */ 
 	@Override
-	public String getCustomHtmlHeaders() {
-		return "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>";
-
+	public void reload(Database db) throws Exception
+	{	
+//		//example: update model with data from the database
+//		Query q = db.query(Investigation.class);
+//		q.like("name", "molgenis");
+//		getModel().investigations = q.find();
 	}
+	
+	/**
+	 * When action="updateDate": update model and/or view accordingly.
+	 *
+	 * Exceptions will be logged and shown to the user automatically.
+	 * All db actions are within one transaction.
+	 */
+	public void updateDate(Database db, Tuple request) throws Exception
+	{
+		getModel().date = request.getDate("date");
+	
+//		//Easily create object from request and add to database
+//		Investigation i = new Investigation(request);
+//		db.add(i);
+//		this.setMessage("Added new investigation");
 
-	@Override
-	public String getViewName() {
-		return "GenericWizard";
+		getModel().setSuccess("update succesfull");
 	}
-
-	@Override
-	public String getViewTemplate() {
-		return "plugins/genericwizard/GenericWizard.ftl";
-	}
-
-	@Override
-	public void handleRequest(Database db, Tuple request) {
-		System.out.println("*** handleRequest WRAPPER __action: "
-				+ request.getString("__action"));
-		this.handleRequest(db, request, null);
-	}
-
-	public void handleRequest(Database db, Tuple request, PrintWriter out) {
-		if (request.getString("__action") != null) {
-
-			System.out.println("*** handleRequest __action: "
-					+ request.getString("__action"));
-
-			try {
-				
-				//BUTTONS ON SCREEN ONE
-				if (request.getString("__action").equals("upload")) {
-
-					//get uploaded file and do checks
-					File file = request.getFile("upload");
-					if (file == null) {
-						throw new Exception("No file selected.");
-					} else if (!file.getName().endsWith(".xls")) {
-						throw new Exception(
-								"File does not end with '.xls', other formats are not supported.");
-					}
-
-					//run prognosis
-					ImportWizardExcelPrognosis iwep = new ImportWizardExcelPrognosis(
-							file);
-					
-					//if no error, set prognosis, set file, and continue
-					this.model.setIwep(iwep);
-					this.model.setCurrentFile(file);
-					this.model.setWhichScreen("two");
-					
-				//BUTTONS ON SCREEN TWO
-				} else if (request.getString("__action").equals("toScreenOne")) {
-					
-					//goto screen one
-					this.model.setWhichScreen("one");
-					
-					//reset stuff
-					this.model.setCurrentFile(null);
-					this.model.setIwep(null);
-					this.model.setImportSuccess(false);
-
-				} else if (request.getString("__action").equals("import")) {
-					
-					//goto screen three
-					this.model.setWhichScreen("three");
-					
-					//set import succes to false (again), to be sure
-					this.model.setImportSuccess(false);
-					ExcelImport.importAll(this.model.getCurrentFile(), db,
-							new SimpleTuple());
-					
-					//when no error, set success to true
-					this.model.setImportSuccess(true);
-				}
-
-				this.setMessages();
-			} catch (Exception e) {
-				e.printStackTrace();
-				this.setMessages(new ScreenMessage(e.getMessage() != null ? e
-						.getMessage() : "null", false));
-			}
-		}
-	}
-
-	public void clearMessage() {
-		this.setMessages();
-	}
-
-	@Override
-	public void reload(Database db) {
-
-		try {
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.setMessages(new ScreenMessage(e.getMessage() != null ? e
-					.getMessage() : "null", false));
-		}
-
-	}
-
 }

@@ -1,191 +1,38 @@
+/* Date:        July 18, 2011
+ * Template:	EasyPluginModelGen.java.ftl
+ * generator:   org.molgenis.generators.ui.EasyPluginModelGen 4.0.0-testing
+ * 
+ * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
+ */
+
 package plugins.cluster;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Date;
 
-import org.molgenis.cluster.Analysis;
-import org.molgenis.cluster.DataName;
-import org.molgenis.cluster.DataValue;
-import org.molgenis.cluster.Job;
-import org.molgenis.cluster.ParameterName;
-import org.molgenis.cluster.ParameterValue;
-import org.molgenis.cluster.Subjob;
-import org.molgenis.data.Data;
-import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.SimpleScreenModel;
-
-import plugins.cluster.helper.LoginSettings;
+import org.molgenis.framework.ui.EasyPluginModel;
 
 /**
- * Model for ClusterPlugin
- * @author joerivandervelde
- *
+ * ClusterPluginModel takes care of all state and it can have helper methods to query the database.
+ * It should not contain layout or application logic which are solved in View and Controller.
+ * @See org.molgenis.framework.ui.ScreenController for available services.
  */
-public class ClusterPluginModel
+public class ClusterPluginModel extends EasyPluginModel
 {
+	//a system veriable that is needed by tomcat
+	private static final long serialVersionUID = 1L;
+	//this string can be referenced from ClusterPluginView.ftl template as ${model.helloWorld}
+	public String helloWorld = "hello World";
+	//this date can be referenced from ClusterPluginView.ftl template as ${model.date}
+	public Date date = new Date();
 	
-	String deployName;
-	
-	int maxSubjobs;
-	int nrOfJobs;
-	
-	String state;
-	String selectedComputeResource;
-	
-	HashMap<String, String> jobParamMap = new HashMap<String, String>();
-	
-	Job candidateJob;
-	LoginSettings ls;
-	
-	List<Data> matrices = new ArrayList<Data>();
-	List<Job> jobs = new ArrayList<Job>();
-	List<Subjob> subjobs = new ArrayList<Subjob>();
-	List<Analysis> analysis = new ArrayList<Analysis>();
-	List<ParameterName> parameternames = new ArrayList<ParameterName>();
-	List<ParameterValue> parametervalues = new ArrayList<ParameterValue>();
-	List<DataName> datanames = new ArrayList<DataName>();
-	List<DataValue> datavalues = new ArrayList<DataValue>();
-	
-	String refreshRate = "15";
-	
-	
+	//another example, you can also use getInvestigations() and setInvestigations(...)
+	//public List<Investigation> investigations = new ArrayList<Investigation>();
 
-	public String getDeployName()
+	public ClusterPluginModel(ClusterPlugin controller)
 	{
-		return deployName;
+		//each Model can access the controller to notify it when needed.
+		super(controller);
 	}
-	public void setDeployName(String deployName)
-	{
-		this.deployName = deployName;
-	}
-	public String getRefreshRate()
-	{
-		return refreshRate;
-	}
-	public void setRefreshRate(String refreshRate)
-	{
-		this.refreshRate = refreshRate;
-	}
-	public String getSelectedComputeResource()
-	{
-		return selectedComputeResource;
-	}
-	public void setSelectedComputeResource(String selectedComputeResource)
-	{
-		this.selectedComputeResource = selectedComputeResource;
-	}
-	public int getMaxSubjobs()
-	{
-		return maxSubjobs;
-	}
-	public void setMaxSubjobs(int maxSubjobs)
-	{
-		this.maxSubjobs = maxSubjobs;
-	}
-	public int getNrOfJobs()
-	{
-		return nrOfJobs;
-	}
-	public void setNrOfJobs(int nrOfJobs)
-	{
-		this.nrOfJobs = nrOfJobs;
-	}
-	public String getState()
-	{
-		return state;
-	}
-	public void setState(String state)
-	{
-		this.state = state;
-	}
-	public HashMap<String, String> getJobParamMap()
-	{
-		return jobParamMap;
-	}
-	public void setJobParamMap(HashMap<String, String> jobParamMap)
-	{
-		this.jobParamMap = jobParamMap;
-	}
-	public Job getCandidateJob()
-	{
-		return candidateJob;
-	}
-	public void setCandidateJob(Job candidateJob)
-	{
-		this.candidateJob = candidateJob;
-	}
-	public LoginSettings getLs()
-	{
-		return ls;
-	}
-	public void setLs(LoginSettings ls)
-	{
-		this.ls = ls;
-	}
-	public List<Data> getMatrices()
-	{
-		return matrices;
-	}
-	public void setMatrices(List<Data> matrices)
-	{
-		this.matrices = matrices;
-	}
-	public List<Job> getJobs()
-	{
-		return jobs;
-	}
-	public void setJobs(List<Job> jobs)
-	{
-		this.jobs = jobs;
-	}
-	public List<Subjob> getSubjobs()
-	{
-		return subjobs;
-	}
-	public void setSubjobs(List<Subjob> subjobs)
-	{
-		this.subjobs = subjobs;
-	}
-	public List<Analysis> getAnalysis()
-	{
-		return analysis;
-	}
-	public void setAnalysis(List<Analysis> analysis)
-	{
-		this.analysis = analysis;
-	}
-	public List<ParameterName> getParameternames()
-	{
-		return parameternames;
-	}
-	public void setParameternames(List<ParameterName> parameternames)
-	{
-		this.parameternames = parameternames;
-	}
-	public List<ParameterValue> getParametervalues()
-	{
-		return parametervalues;
-	}
-	public void setParametervalues(List<ParameterValue> parametervalues)
-	{
-		this.parametervalues = parametervalues;
-	}
-	public List<DataName> getDatanames()
-	{
-		return datanames;
-	}
-	public void setDatanames(List<DataName> datanames)
-	{
-		this.datanames = datanames;
-	}
-	public List<DataValue> getDatavalues()
-	{
-		return datavalues;
-	}
-	public void setDatavalues(List<DataValue> datavalues)
-	{
-		this.datavalues = datavalues;
-	}
-
+	
+	
 }

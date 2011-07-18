@@ -1,41 +1,38 @@
+/* Date:        July 18, 2011
+ * Template:	EasyPluginModelGen.java.ftl
+ * generator:   org.molgenis.generators.ui.EasyPluginModelGen 4.0.0-testing
+ * 
+ * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
+ */
+
 package plugins.xgapwizard;
 
-import java.util.List;
+import java.util.Date;
 
-import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.SimpleScreenModel;
-import org.molgenis.organization.Investigation;
+import org.molgenis.framework.ui.EasyPluginModel;
 
-public class QTLDataSetWizardModel extends SimpleScreenModel
+/**
+ * QTLDataSetWizardModel takes care of all state and it can have helper methods to query the database.
+ * It should not contain layout or application logic which are solved in View and Controller.
+ * @See org.molgenis.framework.ui.ScreenController for available services.
+ */
+public class QTLDataSetWizardModel extends EasyPluginModel
 {
-	public QTLDataSetWizardModel(ScreenController controller)
+	//a system veriable that is needed by tomcat
+	private static final long serialVersionUID = 1L;
+	//this string can be referenced from QTLDataSetWizardView.ftl template as ${model.helloWorld}
+	public String helloWorld = "hello World";
+	//this date can be referenced from QTLDataSetWizardView.ftl template as ${model.date}
+	public Date date = new Date();
+	
+	//another example, you can also use getInvestigations() and setInvestigations(...)
+	//public List<Investigation> investigations = new ArrayList<Investigation>();
+
+	public QTLDataSetWizardModel(QTLDataSetWizard controller)
 	{
+		//each Model can access the controller to notify it when needed.
 		super(controller);
-		// TODO Auto-generated constructor stub
 	}
-
-	private Integer selectedInv;
-	private List<Investigation> investigations;
-
-	public Integer getSelectedInv()
-	{
-		return selectedInv;
-	}
-
-	public void setSelectedInv(Integer selectedInv)
-	{
-		this.selectedInv = selectedInv;
-	}
-
-	public List<Investigation> getInvestigations()
-	{
-		return investigations;
-	}
-
-	public void setInvestigations(List<Investigation> investigations)
-	{
-		this.investigations = investigations;
-	}
-
-
+	
+	
 }

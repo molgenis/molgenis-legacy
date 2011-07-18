@@ -1,39 +1,29 @@
-/* Date:        February 15, 2011
+/* Date:        July 18, 2011
  * Template:	MapperDecoratorGen.java.ftl
- * generator:   org.molgenis.generators.db.MapperDecoratorGen 3.3.3
+ * generator:   org.molgenis.generators.db.MapperDecoratorGen 4.0.0-testing
  *
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
 package decorators;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
 
-import matrix.general.DataMatrixHandler;
-
-import org.molgenis.core.MolgenisFile;
-import org.molgenis.data.Data;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Mapper;
-import org.molgenis.framework.db.jdbc.JDBCMapper;
 import org.molgenis.framework.db.jdbc.MappingDecorator;
+import org.molgenis.framework.db.Mapper;
 
 public class DataDecorator<E extends org.molgenis.data.Data> extends MappingDecorator<E>
 {
-	
-	protected boolean strict = false;
-	
-	// JDBCMapper is the generate thing
-	//TODO: Danny Parameterize the JDBCMapper object <Object> ??
-	public DataDecorator(JDBCMapper<E> generatedMapper)
-	{
-		super(generatedMapper);
-	}
-	
-	//new kind of constructor to work with latest DB changes
-	public DataDecorator(Mapper<E> generatedMapper)
+	//JDBCMapper is the generate thing
+//	public DataDecorator(JDBCMapper generatedMapper)
+//	{
+//		super(generatedMapper);
+//	}
+
+	//Mapper is the generate thing
+	public DataDecorator(Mapper generatedMapper)
 	{
 		super(generatedMapper);
 	}
@@ -41,75 +31,52 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MappingDeco
 	@Override
 	public int add(List<E> entities) throws DatabaseException
 	{
-		// default check
-		if(strict){
-			NameConvention.validateEntityNamesStrict(entities);
-		}else{
-			NameConvention.validateEntityNames(entities);
-		}
+		// add your pre-processing here, e.g.
+		// for (org.molgenis.data.Data e : entities)
+		// {
+		//  	e.setTriggeredField("Before add called!!!");
+		// }
 
+		// here we call the standard 'add'
 		int count = super.add(entities);
+
+		// add your post-processing here
+		// if you throw and exception the previous add will be rolled back
+
 		return count;
 	}
-	
-	/**
-	 * Update the MolgenisFile with the name of the Data object so filenames
-	 * stay the same as the matrix names.
-	 */
+
 	@Override
 	public int update(List<E> entities) throws DatabaseException
 	{
-		// default check
-		if(strict){
-			NameConvention.validateEntityNamesStrict(entities);
-		}else{
-			NameConvention.validateEntityNames(entities);
-		}
 
-		// get datamatrixhandler and make molgenisfile list
-		DataMatrixHandler dmh = new DataMatrixHandler(this.getDatabase());
-		List<MolgenisFile> mfList = new ArrayList<MolgenisFile>();
+		// add your pre-processing here, e.g.
+		// for (org.molgenis.data.Data e : entities)
+		// {
+		// 		e.setTriggeredField("Before update called!!!");
+		// }
 
-		// try to get the files for the matrices and change their names
-		for (Data dm : entities)
-		{
-			MolgenisFile mf = null;
-			try{
-			mf = dmh.findMolgenisFile(dm);
-			}catch(NullPointerException npe){
-				//backend not a file
-			}
-			if (mf != null)
-			{
-				mf.setName(dm.getName());
-				mfList.add(mf);
-			}
-		}
-
-		// try to update the (molgenis)files, decorated to also change the
-		// filenames
-		try
-		{
-			this.getDatabase().update(mfList);
-		}
-		catch (IOException e)
-		{
-			throw new DatabaseException(e);
-		}
-
-		// if it works, continue to update the Data entities
+		// here we call the standard 'update'
 		int count = super.update(entities);
+
+		// add your post-processing here
+		// if you throw and exception the previous add will be rolled back
+
 		return count;
 	}
 
 	@Override
 	public int remove(List<E> entities) throws DatabaseException
 	{
-		// TODO: could be enhanced with automatic datasource removal, see
-		// matrix.general.DataMatrixHandler
-		// but BEWARE of cyclic relations between the functions!!
+		// add your pre-processing here
+
+		// here we call the standard 'remove'
 		int count = super.remove(entities);
+
+		// add your post-processing here, e.g.
+		// if(true) throw new SQLException("Because of a post trigger the remove is cancelled.");
+
 		return count;
 	}
-
 }
+

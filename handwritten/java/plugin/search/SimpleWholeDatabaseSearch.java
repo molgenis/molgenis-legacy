@@ -1,155 +1,59 @@
-/* Date:        October 28, 2010
- * Template:	PluginScreenJavaTemplateGen.java.ftl
- * generator:   org.molgenis.generators.ui.PluginScreenJavaTemplateGen 3.3.3
- * 
- * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
- */
 
 package plugin.search;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.util.Entity;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.util.Tuple;
 
-import app.JDBCMetaDatabase;
-
-public class SimpleWholeDatabaseSearch extends PluginModel<Entity>
+/**
+ * SimpleWholeDatabaseSearchController takes care of all user requests and application logic.
+ *
+ * <li>Each user request is handled by its own method based action=methodName. 
+ * <li> MOLGENIS takes care of db.commits and catches exceptions to show to the user
+ * <li>SimpleWholeDatabaseSearchModel holds application state and business logic on top of domain model. Get it via this.getModel()/setModel(..)
+ * <li>SimpleWholeDatabaseSearchView holds the template to show the layout. Get/set it via this.getView()/setView(..).
+ */
+public class SimpleWholeDatabaseSearch extends EasyPluginController<SimpleWholeDatabaseSearchModel>
 {
-	private static final long serialVersionUID = 4004696283997492221L;
-
 	public SimpleWholeDatabaseSearch(String name, ScreenController<?> parent)
 	{
-		super(name, parent);
-	}
-
-	private SimpleWholeDatabaseSearchModel model = new SimpleWholeDatabaseSearchModel();
-
-	JDBCMetaDatabase metadb;
-
-	public SimpleWholeDatabaseSearchModel getMyModel()
-	{
-		return model;
+		super(name, null, parent);
+		this.setModel(new SimpleWholeDatabaseSearchModel(this)); //the default model
+		this.setView(new FreemarkerView("SimpleWholeDatabaseSearchView.ftl", getModel())); //<plugin flavor="freemarker"
 	}
 	
-	public String getCustomHtmlHeaders()
-	{
-		return "";
-	}
-
+	/**
+	 * At each page view: reload data from database into model and/or change.
+	 *
+	 * Exceptions will be caught, logged and shown to the user automatically via setMessages().
+	 * All db actions are within one transaction.
+	 */ 
 	@Override
-	public String getViewName()
-	{
-		return "plugin_search_SimpleWholeDatabaseSearch";
+	public void reload(Database db) throws Exception
+	{	
+//		//example: update model with data from the database
+//		Query q = db.query(Investigation.class);
+//		q.like("name", "molgenis");
+//		getModel().investigations = q.find();
 	}
-
-	@Override
-	public String getViewTemplate()
+	
+	/**
+	 * When action="updateDate": update model and/or view accordingly.
+	 *
+	 * Exceptions will be logged and shown to the user automatically.
+	 * All db actions are within one transaction.
+	 */
+	public void updateDate(Database db, Tuple request) throws Exception
 	{
-		return "plugin/search/SimpleWholeDatabaseSearch.ftl";
-	}
+		getModel().date = request.getDate("date");
+	
+//		//Easily create object from request and add to database
+//		Investigation i = new Investigation(request);
+//		db.add(i);
+//		this.setMessage("Added new investigation");
 
-	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
-		try
-		{
-			if (request.getString("__action") != null)
-			{
-				String action = request.getString("__action");
-
-				//TODO: Danny: Use or loose
-				//File file = null;
-
-				if (action.equals("doSearch"))
-				{
-					String searchThis = request.getString("searchThis");
-					
-					this.model.searchThis = searchThis;
-
-					long start = System.currentTimeMillis();
-					List<org.molgenis.util.Entity> results = search(searchThis, db);
-					long stop = System.currentTimeMillis();
-					
-					double time = (stop-start)/1000.0;
-					System.out.println("TIME " + time);
-					this.model.setTime(time);
-
-					this.model.setResults(results);
-					this.setMessages(new ScreenMessage("Search complete", true));
-				}
-			}
-		}
-
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
-		}
-	}
-
-	private List<Entity> search(String searchThis, Database db) throws DatabaseException
-	{
-		List<org.molgenis.util.Entity> res = new ArrayList<org.molgenis.util.Entity>();
-		Vector<org.molgenis.model.elements.Entity> eList = metadb.getEntities();
-
-		for (org.molgenis.model.elements.Entity eClass : eList)
-		{
-			if (!eClass.isAbstract() && !eClass.isSystem())
-			{
-				List<? extends org.molgenis.util.Entity> eInstances = db.find(db.getClassForName(eClass.getName()));
-				for (org.molgenis.util.Entity e : eInstances)
-				{
-					for (String field : e.getFields())
-					{
-						// match if:
-						// 1. Field value is not NULL
-						// 2. Class is equal to Type, hereby removing
-						// superclasses from results
-						// 3. Lowercased value matches the lowercased search
-						// string
-						if (e.get(field) != null && e.get("__Type").toString().equals(eClass.getName())
-								&& e.get(field).toString().toLowerCase().contains(searchThis.toLowerCase()))
-						{
-							res.add(e);
-							break;
-						}
-					}
-				}
-			}
-		}
-		return res;
-	}
-
-	public void clearMessage()
-	{
-		this.setMessages();
-	}
-
-	@Override
-	public void reload(Database db)
-	{
-
-		try
-		{
-			if (metadb == null)
-			{
-				metadb = new JDBCMetaDatabase();
-			}
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
-
-		}
+		getModel().setSuccess("update succesfull");
 	}
 }

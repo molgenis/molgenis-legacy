@@ -5,30 +5,30 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package plugins.rplot;
+package plugins.help.duplicates;
 
 import java.util.Date;
 
 import org.molgenis.framework.ui.EasyPluginModel;
 
 /**
- * RplotPluginModel takes care of all state and it can have helper methods to query the database.
+ * DuplicatesPluginModel takes care of all state and it can have helper methods to query the database.
  * It should not contain layout or application logic which are solved in View and Controller.
  * @See org.molgenis.framework.ui.ScreenController for available services.
  */
-public class RplotPluginModel extends EasyPluginModel
+public class DuplicatesPluginModel extends EasyPluginModel
 {
 	//a system veriable that is needed by tomcat
 	private static final long serialVersionUID = 1L;
-	//this string can be referenced from RplotPluginView.ftl template as ${model.helloWorld}
+	//this string can be referenced from DuplicatesPluginView.ftl template as ${model.helloWorld}
 	public String helloWorld = "hello World";
-	//this date can be referenced from RplotPluginView.ftl template as ${model.date}
+	//this date can be referenced from DuplicatesPluginView.ftl template as ${model.date}
 	public Date date = new Date();
 	
 	//another example, you can also use getInvestigations() and setInvestigations(...)
 	//public List<Investigation> investigations = new ArrayList<Investigation>();
 
-	public RplotPluginModel(RplotPlugin controller)
+	public DuplicatesPluginModel(DuplicatesPlugin controller)
 	{
 		//each Model can access the controller to notify it when needed.
 		super(controller);

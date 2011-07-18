@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-<molgenis name="magetab">
-	<module name="data">
-		<description>Merged with XGAP data</description>
-	</module>
-</molgenis>

@@ -1,183 +1,59 @@
-/* Date:        October 28, 2010
- * Template:	PluginScreenJavaTemplateGen.java.ftl
- * generator:   org.molgenis.generators.ui.PluginScreenJavaTemplateGen 3.3.3
- * 
- * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
- */
 
 package plugins.molgenisfile;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-
-import org.molgenis.core.MolgenisFile;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.FormController;
-import org.molgenis.framework.ui.FormModel;
-import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.util.Entity;
-import org.molgenis.util.HtmlTools;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.util.Tuple;
 
-import app.servlet.MolgenisServlet;
-import filehandling.generic.MolgenisFileHandler;
-import filehandling.generic.PerformUpload;
-
-public class MolgenisFileManager extends PluginModel<Entity>
+/**
+ * MolgenisFileManagerController takes care of all user requests and application logic.
+ *
+ * <li>Each user request is handled by its own method based action=methodName. 
+ * <li> MOLGENIS takes care of db.commits and catches exceptions to show to the user
+ * <li>MolgenisFileManagerModel holds application state and business logic on top of domain model. Get it via this.getModel()/setModel(..)
+ * <li>MolgenisFileManagerView holds the template to show the layout. Get/set it via this.getView()/setView(..).
+ */
+public class MolgenisFileManager extends EasyPluginController<MolgenisFileManagerModel>
 {
-
-	private static final long serialVersionUID = 7832540415673199206L;
-
 	public MolgenisFileManager(String name, ScreenController<?> parent)
 	{
-		super(name, parent);
+		super(name, null, parent);
+		this.setModel(new MolgenisFileManagerModel(this)); //the default model
+		this.setView(new FreemarkerView("MolgenisFileManagerView.ftl", getModel())); //<plugin flavor="freemarker"
 	}
-
-	private MolgenisFileManagerModel model = new MolgenisFileManagerModel();
-
-	public MolgenisFileManagerModel getMyModel()
-	{
-		return model;
-	}
-
-	private MolgenisFileHandler mfh = null;
-
+	
+	/**
+	 * At each page view: reload data from database into model and/or change.
+	 *
+	 * Exceptions will be caught, logged and shown to the user automatically via setMessages().
+	 * All db actions are within one transaction.
+	 */ 
 	@Override
-	public String getViewName()
-	{
-		return "plugins_molgenisfile_MolgenisFileManager";
+	public void reload(Database db) throws Exception
+	{	
+//		//example: update model with data from the database
+//		Query q = db.query(Investigation.class);
+//		q.like("name", "molgenis");
+//		getModel().investigations = q.find();
 	}
-
-	@Override
-	public String getViewTemplate()
+	
+	/**
+	 * When action="updateDate": update model and/or view accordingly.
+	 *
+	 * Exceptions will be logged and shown to the user automatically.
+	 * All db actions are within one transaction.
+	 */
+	public void updateDate(Database db, Tuple request) throws Exception
 	{
-		return "plugins/molgenisfile/MolgenisFileManager.ftl";
-	}
+		getModel().date = request.getDate("date");
+	
+//		//Easily create object from request and add to database
+//		Investigation i = new Investigation(request);
+//		db.add(i);
+//		this.setMessage("Added new investigation");
 
-	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
-		try
-		{
-			if (request.getString("__action") != null)
-			{
-				String action = request.getString("__action");
-
-				File file = null;
-
-				if (request.getString("__action").equals("uploadTextArea"))
-				{
-					String content = request.getString("inputTextArea");
-					File inputTextAreaContent = new File(System.getProperty("java.io.tmpdir") + File.separator
-							+ "tmpTextAreaInput" + System.nanoTime() + ".txt");
-					BufferedWriter out = new BufferedWriter(new FileWriter(inputTextAreaContent));
-					out.write(content);
-					out.close();
-					file = inputTextAreaContent;
-				}
-				else if (action.equals("upload"))
-				{
-					file = request.getFile("upload");
-				}
-				
-				if (file == null)
-				{
-					throw new FileNotFoundException("No file selected");
-				}
-				
-				PerformUpload.doUpload(db, this.model.getMolgenisFile(), file, false);
-				this.setMessages(new ScreenMessage("File uploaded", true));
-			}
-
-			this.setMessages();
-		}
-
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
-		}
-	}
-
-	public void clearMessage()
-	{
-		this.setMessages();
-	}
-
-	@Override
-	public void reload(Database db)
-	{
-
-		try
-		{
-			
-			ScreenController<?> parentController = (ScreenController<?>) this.getParent();
-			FormModel<MolgenisFile> parentForm = (FormModel<MolgenisFile>) ((FormController)parentController).getModel();
-			MolgenisFile molgenisFile = parentForm.getRecords().get(0);
-
-			this.model.setMolgenisFile(molgenisFile);
-
-			if (mfh == null)
-			{
-				mfh = new MolgenisFileHandler(db);
-			}
-
-			boolean hasFile = false;
-
-			try
-			{
-				mfh.getFile(molgenisFile);
-				hasFile = true;
-			}
-			catch (FileNotFoundException e)
-			{
-				// no file found, assume there is none for this MolgenisFile
-				// object :)
-			}
-
-			this.model.setHasFile(hasFile);
-
-			// doesnt work??
-			//String db_path = "http://" + HtmlTools.getExposedIPAddress() + ":8080/" + MolgenisServlet.getMolgenisVariantID();
-			
-			//FIXME: bad practice!!!
-			
-			if(this.model.getDb_path() == null){
-				String db_path = "http://" + HtmlTools.getExposedIPAddress() + "/" + MolgenisServlet.getMolgenisVariantID();
-				this.model.setDb_path(db_path);
-			}
-			
-			
-			//FIXME: also bad!!
-			if(this.model.getIpURl() == null){
-				String ip = HtmlTools.getExposedIPAddress();
-				String app = MolgenisServlet.getMolgenisVariantID();
-				String url = "http://" + ip + ":8080/" + app + "/" + "molgenis.do";
-				this.model.setIpURl(url);
-			}
-			
-			// db_path = "http://" + "localhost" + ":8080/" +
-			// MolgenisServlet.getMolgenisVariantID();
-
-			
-
-			
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
-
-		}
-	}
-
-	@Override
-	public boolean isVisible()
-	{
-		return true;
+		getModel().setSuccess("update succesfull");
 	}
 }

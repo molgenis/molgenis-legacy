@@ -1,207 +1,59 @@
-/* Date:        July 24, 2009
- * Template:	PluginScreenJavaTemplateGen.java.ftl
- * generator:   org.molgenis.generators.screen.PluginScreenJavaTemplateGen 3.3.0-testing
- * 
- * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
- */
 
 package plugins.keggplugin;
 
-import miscellaneous.kegg.KEGGGene;
-import miscellaneous.kegg.KEGGOrthologue;
-import miscellaneous.kegg.KEGGTools;
-
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.util.Entity;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.util.Tuple;
 
-public class KeggToolsPlugin extends PluginModel<Entity>
+/**
+ * KeggToolsPluginController takes care of all user requests and application logic.
+ *
+ * <li>Each user request is handled by its own method based action=methodName. 
+ * <li> MOLGENIS takes care of db.commits and catches exceptions to show to the user
+ * <li>KeggToolsPluginModel holds application state and business logic on top of domain model. Get it via this.getModel()/setModel(..)
+ * <li>KeggToolsPluginView holds the template to show the layout. Get/set it via this.getView()/setView(..).
+ */
+public class KeggToolsPlugin extends EasyPluginController<KeggToolsPluginModel>
 {
-
-	private static final long serialVersionUID = 4365180891730331426L;
-
 	public KeggToolsPlugin(String name, ScreenController<?> parent)
 	{
-		super(name, parent);
+		super(name, null, parent);
+		this.setModel(new KeggToolsPluginModel(this)); //the default model
+		this.setView(new FreemarkerView("KeggToolsPluginView.ftl", getModel())); //<plugin flavor="freemarker"
 	}
-
-	public String	sourceOrganism;
-	public String	targetOrganism;
-	public String	input;
-
-	public String	outputSimple		= "";
-	public String	outputAdvanced	= "";
-
-	public String getSourceOrganism()
-	{
-		return sourceOrganism;
-	}
-
-	public void setSourceOrganism(String sourceOrganism)
-	{
-		this.sourceOrganism = sourceOrganism;
-	}
-
-	public String getTargetOrganism()
-	{
-		return targetOrganism;
-	}
-
-	public void setTargetOrganism(String targetOrganism)
-	{
-		this.targetOrganism = targetOrganism;
-	}
-
-	public String getInput()
-	{
-		return input;
-	}
-
-	public void setInput(String input)
-	{
-		this.input = input;
-	}
-
-	public String getOutputSimple()
-	{
-		return outputSimple;
-	}
-
-	public void setOutputSimple(String outputSimple)
-	{
-		this.outputSimple = outputSimple;
-	}
-
-	public String getOutputAdvanced()
-	{
-		return outputAdvanced;
-	}
-
-	public void setOutputAdvanced(String outputAdvanced)
-	{
-		this.outputAdvanced = outputAdvanced;
-	}
-
+	
+	/**
+	 * At each page view: reload data from database into model and/or change.
+	 *
+	 * Exceptions will be caught, logged and shown to the user automatically via setMessages().
+	 * All db actions are within one transaction.
+	 */ 
 	@Override
-	public String getViewName()
-	{
-		return "plugins_keggplugin_KeggToolsPlugin";
+	public void reload(Database db) throws Exception
+	{	
+//		//example: update model with data from the database
+//		Query q = db.query(Investigation.class);
+//		q.like("name", "molgenis");
+//		getModel().investigations = q.find();
 	}
-
-	@Override
-	public String getViewTemplate()
+	
+	/**
+	 * When action="updateDate": update model and/or view accordingly.
+	 *
+	 * Exceptions will be logged and shown to the user automatically.
+	 * All db actions are within one transaction.
+	 */
+	public void updateDate(Database db, Tuple request) throws Exception
 	{
-		return "plugins/keggplugin/KeggToolsPlugin.ftl";
+		getModel().date = request.getDate("date");
+	
+//		//Easily create object from request and add to database
+//		Investigation i = new Investigation(request);
+//		db.add(i);
+//		this.setMessage("Added new investigation");
+
+		getModel().setSuccess("update succesfull");
 	}
-
-	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
-
-		String sourceOrganism = request.getString("sourceOrganism");
-		String targetOrganism = request.getString("targetOrganism");
-
-		this.setSourceOrganism(sourceOrganism);
-		this.setTargetOrganism(targetOrganism);
-		this.setInput(input);
-
-		String action = request.getString("__action");
-		if (action.equals("example"))
-		{
-			this.setSourceOrganism("sce");
-			this.setTargetOrganism("hsa");
-			this.setInput("PMR1\nIME2\nCCC1");
-		}
-
-		if (action.equals("doAnnotation"))
-		{
-			String outputSimple = "source" + "\t" + "entry" + "\n";
-			String outputAdvanced = "source" + "\t" + KEGGGene.toStringMediumHeader("\t");
-
-			String input = request.getString("inputIdList");
-			input = input.replace(" ", "");
-			String[] ids = input.split("\n");
-
-			for (String s : ids)
-			{
-				String id = s.replace("\r", "");
-				try
-				{
-					KEGGGene sourceGene = KEGGTools.getKeggGene(sourceOrganism + ":" + id);
-					System.out.println("id: " + id + " -> entry: " + sourceGene.getEntry());
-
-					outputSimple += id + "\t" + sourceGene.getEntry() + "\n";
-					outputAdvanced += id + "\t" + sourceGene.toStringMedium("\t");
-				} catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-			}
-			
-			this.setOutputSimple(outputSimple);
-			this.setOutputAdvanced(outputAdvanced);
-		}
-
-		if (action.equals("doOrthology"))
-		{
-			String outputSimple = "source" + "\t" + "entry" + "\n";
-			String outputAdvanced = "source" + "\t" + KEGGGene.toStringMediumHeader("\t");
-
-			String input = request.getString("inputIdList");
-			// System.out.println("input: '" + input + "'");
-			input = input.replace(" ", "");
-			String[] ids = input.split("\n");
-
-			for (String s : ids)
-			{
-				String id = s.replace("\r", "");
-
-				try
-				{
-
-					KEGGGene sourceGene = KEGGTools.getKeggGene(sourceOrganism + ":" + id);
-					System.out.println("id: " + id + " -> entry: " + sourceGene.getEntry());
-					KEGGOrthologue orthology = KEGGTools.getClosestOrthologue(sourceGene.getEntry(), targetOrganism);
-					KEGGGene targetGene = KEGGTools.getKeggGene(orthology.getTargetEntry());
-
-					outputSimple += id + "\t" + orthology.getTargetEntry() + "\n";
-					// outputAdvanced += id + "\t" + orthology.getTargetEntry() + "\t" +
-					// sourceGene.getDefinition() + "\t" + targetGene.getDefinition() +
-					// "\n";
-
-					outputAdvanced += id + "\t" + targetGene.toStringMedium("\t");
-
-				} catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-			}
-
-			this.setOutputSimple(outputSimple);
-			this.setOutputAdvanced(outputAdvanced);
-
-		}
-	}
-
-	@Override
-	public void reload(Database db)
-	{
-		// try
-		// {
-		// Database db = this.getDatabase();
-		// Query q = db.query(Experiment.class);
-		// q.like("name", "test");
-		// List<Experiment> recentExperiments = q.find();
-		//			
-		// //do something
-		// }
-		// catch(Exception e)
-		// {
-		// //...
-		// }
-	}
-
 }

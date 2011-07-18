@@ -1,138 +1,59 @@
-/* Date:        February 2, 2010
- * Template:	PluginScreenJavaTemplateGen.java.ftl
- * generator:   org.molgenis.generators.ui.PluginScreenJavaTemplateGen 3.3.2-testing
- * 
- * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
- */
 
 package plugins.matrix.inspector;
 
-import java.io.PrintWriter;
-
-import matrix.general.DataMatrixHandler;
-
-import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.FormController;
-import org.molgenis.framework.ui.FormModel;
-import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.util.Tuple;
 
-import plugins.matrix.manager.Browser;
-import plugins.matrix.manager.MatrixManager;
-
-public class MatrixInspector extends PluginModel
+/**
+ * MatrixInspectorController takes care of all user requests and application logic.
+ *
+ * <li>Each user request is handled by its own method based action=methodName. 
+ * <li> MOLGENIS takes care of db.commits and catches exceptions to show to the user
+ * <li>MatrixInspectorModel holds application state and business logic on top of domain model. Get it via this.getModel()/setModel(..)
+ * <li>MatrixInspectorView holds the template to show the layout. Get/set it via this.getView()/setView(..).
+ */
+public class MatrixInspector extends EasyPluginController<MatrixInspectorModel>
 {
-
-	private MatrixInspectorModel model = new MatrixInspectorModel();
-	private DataMatrixHandler dmh = null;
-
-	public MatrixInspectorModel getMyModel()
-	{
-		return model;
-	}
-
 	public MatrixInspector(String name, ScreenController<?> parent)
 	{
-		super(name, parent);
+		super(name, null, parent);
+		this.setModel(new MatrixInspectorModel(this)); //the default model
+		this.setView(new FreemarkerView("MatrixInspectorView.ftl", getModel())); //<plugin flavor="freemarker"
 	}
-
+	
+	/**
+	 * At each page view: reload data from database into model and/or change.
+	 *
+	 * Exceptions will be caught, logged and shown to the user automatically via setMessages().
+	 * All db actions are within one transaction.
+	 */ 
 	@Override
-	public String getCustomHtmlHeaders()
-	{
-		return "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>";
-
+	public void reload(Database db) throws Exception
+	{	
+//		//example: update model with data from the database
+//		Query q = db.query(Investigation.class);
+//		q.like("name", "molgenis");
+//		getModel().investigations = q.find();
 	}
-
-	@Override
-	public String getViewName()
+	
+	/**
+	 * When action="updateDate": update model and/or view accordingly.
+	 *
+	 * Exceptions will be logged and shown to the user automatically.
+	 * All db actions are within one transaction.
+	 */
+	public void updateDate(Database db, Tuple request) throws Exception
 	{
-		return "MatrixInspector";
+		getModel().date = request.getDate("date");
+	
+//		//Easily create object from request and add to database
+//		Investigation i = new Investigation(request);
+//		db.add(i);
+//		this.setMessage("Added new investigation");
+
+		getModel().setSuccess("update succesfull");
 	}
-
-	@Override
-	public String getViewTemplate()
-	{
-		return "plugins/matrix/inspector/MatrixInspector.ftl";
-	}
-
-	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
-		System.out.println("*** handleRequest WRAPPER __action: " + request.getString("__action"));
-		this.handleRequest(db, request, null);
-	}
-
-	@Override
-	public boolean isVisible()
-	{
-		return true;
-	}
-
-	public void handleRequest(Database db, Tuple request, PrintWriter out)
-	{
-		if (request.getString("__action") != null)
-		{
-
-			System.out.println("*** handleRequest __action: " + request.getString("__action"));
-
-			try
-			{
-
-				this.setMessages();
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
-			}
-		}
-	}
-
-	public void clearMessage()
-	{
-		this.setMessages();
-	}
-
-	@Override
-	public void reload(Database db)
-	{
-
-		if(dmh == null){
-			dmh = new DataMatrixHandler(db);
-		}
-		
-		ScreenController<?> parentController = (ScreenController<?>) this.getParent().getParent();
-		FormModel<Data> parentForm = (FormModel<Data>) ((FormController)parentController).getModel();
-		Data data = parentForm.getRecords().get(0);
-
-		try
-		{
-
-			//ASSUMING newOrOtherData");
-
-			this.model.setSelectedData(data);
-			this.model.setHasBackend(dmh.isDataStoredIn(data, data.getStorage()));
-			
-			logger.info("hasBackend: " + this.model.isHasBackend());
-			
-			if (this.model.isHasBackend())
-			{
-				logger.info("*** creating browser instance");
-				Browser br = MatrixManager.createBrowserInstance(db, data);
-				this.model.setWarningsAndErrors(new WarningsAndErrors(data, db, br.getModel().getInstance()));
-
-			}
-
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
-		}
-
-	}
-
 }

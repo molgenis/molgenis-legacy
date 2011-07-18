@@ -1,78 +1,37 @@
+/* Date:        July 18, 2011
+ * Template:	EasyPluginModelGen.java.ftl
+ * generator:   org.molgenis.generators.ui.EasyPluginModelGen 4.0.0-testing
+ * 
+ * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
+ */
+
 package plugins.matrix.manager;
 
-import java.util.Map;
+import java.util.Date;
 
-import org.molgenis.data.Data;
-import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.SimpleScreenModel;
+import org.molgenis.framework.ui.EasyPluginModel;
 
-public class MatrixManagerModel {
+/**
+ * MatrixManagerModel takes care of all state and it can have helper methods to query the database.
+ * It should not contain layout or application logic which are solved in View and Controller.
+ * @See org.molgenis.framework.ui.ScreenController for available services.
+ */
+public class MatrixManagerModel extends EasyPluginModel
+{
+	//a system veriable that is needed by tomcat
+	private static final long serialVersionUID = 1L;
+	//this string can be referenced from MatrixManagerView.ftl template as ${model.helloWorld}
+	public String helloWorld = "hello World";
+	//this date can be referenced from MatrixManagerView.ftl template as ${model.date}
+	public Date date = new Date();
+	
+	//another example, you can also use getInvestigations() and setInvestigations(...)
+	//public List<Investigation> investigations = new ArrayList<Investigation>();
 
-	
-	private Data selectedData;
-	private Browser browser;
-	
-	private String colHeader;
-	private String rowHeader;
-	private Map<String, String> overlibText;
-
-	
-	private boolean hasBackend;
-	private boolean uploadMode;
-	private String uploadTextAreaContent;
-	
-	
-	
-	public Data getSelectedData()
+	public MatrixManagerModel(MatrixManager controller)
 	{
-		return selectedData;
-	}
-	public void setSelectedData(Data selectedData)
-	{
-		this.selectedData = selectedData;
-	}
-	public String getUploadTextAreaContent() {
-		return uploadTextAreaContent;
-	}
-	public void setUploadTextAreaContent(String uploadTextAreaContent) {
-		this.uploadTextAreaContent = uploadTextAreaContent;
-	}
-	public boolean isHasBackend() {
-		return hasBackend;
-	}
-	public void setHasBackend(boolean hasBackend) {
-		this.hasBackend = hasBackend;
-	}
-	public boolean isUploadMode() {
-		return uploadMode;
-	}
-	public void setUploadMode(boolean uploadMode) {
-		this.uploadMode = uploadMode;
-	}
-
-	public Browser getBrowser() {
-		return browser;
-	}
-	public void setBrowser(Browser browser) {
-		this.browser = browser;
-	}
-	public String getColHeader() {
-		return colHeader;
-	}
-	public void setColHeader(String colHeader) {
-		this.colHeader = colHeader;
-	}
-	public String getRowHeader() {
-		return rowHeader;
-	}
-	public void setRowHeader(String rowHeader) {
-		this.rowHeader = rowHeader;
-	}
-	public Map<String, String> getOverlibText() {
-		return overlibText;
-	}
-	public void setOverlibText(Map<String, String> overlibText) {
-		this.overlibText = overlibText;
+		//each Model can access the controller to notify it when needed.
+		super(controller);
 	}
 	
 	

@@ -1,86 +1,59 @@
-/* Date:        October 5, 2010
- * Template:	PluginScreenJavaTemplateGen.java.ftl
- * generator:   org.molgenis.generators.ui.PluginScreenJavaTemplateGen 3.3.3
- * 
- * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
- */
 
 package plugins.cluster.demo;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.util.Entity;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.util.Tuple;
 
-
-
-public class ClusterDemo extends PluginModel<Entity>
+/**
+ * ClusterDemoController takes care of all user requests and application logic.
+ *
+ * <li>Each user request is handled by its own method based action=methodName. 
+ * <li> MOLGENIS takes care of db.commits and catches exceptions to show to the user
+ * <li>ClusterDemoModel holds application state and business logic on top of domain model. Get it via this.getModel()/setModel(..)
+ * <li>ClusterDemoView holds the template to show the layout. Get/set it via this.getView()/setView(..).
+ */
+public class ClusterDemo extends EasyPluginController<ClusterDemoModel>
 {
-	private static final long serialVersionUID = -5307970595544892186L;
-
 	public ClusterDemo(String name, ScreenController<?> parent)
 	{
-		super(name, parent);
-	}
-
-	@Override
-	public String getViewName()
-	{
-		return "plugins_cluster_demo_ClusterDemo";
-	}
-
-	@Override
-	public String getViewTemplate()
-	{
-		return "plugins/cluster/demo/ClusterDemo.ftl";
-	}
-
-	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
-		//replace example below with yours
-//		try
-//		{
-//		Database db = this.getDatabase();
-//		String action = request.getString("__action");
-//		
-//		if( action.equals("do_add") )
-//		{
-//			Experiment e = new Experiment();
-//			e.set(request);
-//			db.add(e);
-//		}
-//		} catch(Exception e)
-//		{
-//			//e.g. show a message in your form
-//		}
-	}
-
-	@Override
-	public void reload(Database db)
-	{
-//		try
-//		{
-//			Database db = this.getDatabase();
-//			Query q = db.query(Experiment.class);
-//			q.like("name", "test");
-//			List<Experiment> recentExperiments = q.find();
-//			
-//			//do something
-//		}
-//		catch(Exception e)
-//		{
-//			//...
-//		}
+		super(name, null, parent);
+		this.setModel(new ClusterDemoModel(this)); //the default model
+		this.setView(new FreemarkerView("ClusterDemoView.ftl", getModel())); //<plugin flavor="freemarker"
 	}
 	
+	/**
+	 * At each page view: reload data from database into model and/or change.
+	 *
+	 * Exceptions will be caught, logged and shown to the user automatically via setMessages().
+	 * All db actions are within one transaction.
+	 */ 
 	@Override
-	public boolean isVisible()
+	public void reload(Database db) throws Exception
+	{	
+//		//example: update model with data from the database
+//		Query q = db.query(Investigation.class);
+//		q.like("name", "molgenis");
+//		getModel().investigations = q.find();
+	}
+	
+	/**
+	 * When action="updateDate": update model and/or view accordingly.
+	 *
+	 * Exceptions will be logged and shown to the user automatically.
+	 * All db actions are within one transaction.
+	 */
+	public void updateDate(Database db, Tuple request) throws Exception
 	{
-		//you can use this to hide this plugin, e.g. based on user rights.
-		//e.g.
-		//if(!this.getLogin().hasEditPermission(myEntity)) return false;
-		return true;
+		getModel().date = request.getDate("date");
+	
+//		//Easily create object from request and add to database
+//		Investigation i = new Investigation(request);
+//		db.add(i);
+//		this.setMessage("Added new investigation");
+
+		getModel().setSuccess("update succesfull");
 	}
 }

@@ -1,280 +1,59 @@
-/* Date:        February 2, 2010
- * Template:	PluginScreenJavaTemplateGen.java.ftl
- * generator:   org.molgenis.generators.ui.PluginScreenJavaTemplateGen 3.3.2-testing
- * 
- * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
- */
 
 package plugins.matrix.manager;
 
-import java.io.PrintWriter;
-import java.util.List;
-
-import matrix.AbstractDataMatrixInstance;
-import matrix.general.DataMatrixHandler;
-import matrix.general.Importer;
-
-import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.FormController;
-import org.molgenis.framework.ui.FormModel;
-import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.util.Tuple;
 
-public class MatrixManager extends PluginModel
+/**
+ * MatrixManagerController takes care of all user requests and application logic.
+ *
+ * <li>Each user request is handled by its own method based action=methodName. 
+ * <li> MOLGENIS takes care of db.commits and catches exceptions to show to the user
+ * <li>MatrixManagerModel holds application state and business logic on top of domain model. Get it via this.getModel()/setModel(..)
+ * <li>MatrixManagerView holds the template to show the layout. Get/set it via this.getView()/setView(..).
+ */
+public class MatrixManager extends EasyPluginController<MatrixManagerModel>
 {
-
-	private DataMatrixHandler dmh = null;
-	
-	private MatrixManagerModel model = new MatrixManagerModel();
-
-	public MatrixManagerModel getMyModel()
-	{
-		return model;
-	}
-
 	public MatrixManager(String name, ScreenController<?> parent)
 	{
-		super(name, parent);
+		super(name, null, parent);
+		this.setModel(new MatrixManagerModel(this)); //the default model
+		this.setView(new FreemarkerView("MatrixManagerView.ftl", getModel())); //<plugin flavor="freemarker"
 	}
-
+	
+	/**
+	 * At each page view: reload data from database into model and/or change.
+	 *
+	 * Exceptions will be caught, logged and shown to the user automatically via setMessages().
+	 * All db actions are within one transaction.
+	 */ 
 	@Override
-	public String getCustomHtmlHeaders()
-	{
-		return "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>";
-
+	public void reload(Database db) throws Exception
+	{	
+//		//example: update model with data from the database
+//		Query q = db.query(Investigation.class);
+//		q.like("name", "molgenis");
+//		getModel().investigations = q.find();
 	}
-
-	@Override
-	public String getViewName()
+	
+	/**
+	 * When action="updateDate": update model and/or view accordingly.
+	 *
+	 * Exceptions will be logged and shown to the user automatically.
+	 * All db actions are within one transaction.
+	 */
+	public void updateDate(Database db, Tuple request) throws Exception
 	{
-		return "MatrixManager";
+		getModel().date = request.getDate("date");
+	
+//		//Easily create object from request and add to database
+//		Investigation i = new Investigation(request);
+//		db.add(i);
+//		this.setMessage("Added new investigation");
+
+		getModel().setSuccess("update succesfull");
 	}
-
-	@Override
-	public String getViewTemplate()
-	{
-		return "plugins/matrix/manager/MatrixManager.ftl";
-	}
-
-	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
-		System.out.println("*** handleRequest WRAPPER __action: " + request.getString("__action"));
-		this.handleRequest(db, request, null);
-	}
-
-	@Override
-	public boolean isVisible()
-	{
-		return true;
-	}
-
-	public void handleRequest(Database db, Tuple request, PrintWriter out)
-	{
-		if (request.getString("__action") != null)
-		{
-
-			System.out.println("*** handleRequest __action: " + request.getString("__action"));
-
-			try
-			{
-				if (this.model.isUploadMode())
-				{
-					// if(request.getString("inputTextArea") != null){
-					//DON'T DO THIS: BAD FOR LARGE UPLOADS -> this.getModel().setUploadTextAreaContent(request.getString("inputTextArea"));
-					// }
-					Importer.performImport(request, this.model.getSelectedData(), db);
-					// set to null to force backend check/creation of browser
-					// instance
-					this.model.setSelectedData(null);
-				}
-				else
-				{
-					int stepSize = request.getInt("stepSize") < 1 ? 1 : request.getInt("stepSize");
-					int width = request.getInt("width") < 1 ? 1 : request.getInt("width");
-					int height = request.getInt("height") < 1 ? 1 : request.getInt("height");
-
-					this.model.getBrowser().getModel().setStepSize(stepSize);
-					this.model.getBrowser().getModel().setWidth(width);
-					this.model.getBrowser().getModel().setHeight(height);
-
-					RequestHandler.handle(this.model, request, out);
-				}
-
-				this.setMessages();
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
-			}
-		}
-	}
-
-	public static Browser createBrowserInstance(Database db, Data data) throws Exception
-	{
-		boolean verifiedBackend = false;
-		DataMatrixHandler dmh = new DataMatrixHandler(db); //must create new because function is static (reused)
-		verifiedBackend = dmh.isDataStoredIn(data, data.getStorage());
-		if (verifiedBackend)
-		{
-			AbstractDataMatrixInstance<Object> m = dmh.createInstance(data);
-			Browser br = new Browser(data, m);
-			// this.model.setBrowser(br);
-			return br;
-		}
-		else
-		{
-			throw new Exception("Could not verify existence of data source");
-		}
-	}
-
-	private void createOverLibText(Database db) throws Exception
-	{
-		// System.out.println("*** createOverLibText");
-		List<String> rowNames = this.model.getBrowser().getModel().getSubMatrix().getRowNames();
-		List<String> colNames = this.model.getBrowser().getModel().getSubMatrix().getColNames();
-		this.model.setOverlibText(OverlibText.getOverlibText(db, rowNames, colNames));
-	}
-
-	public void clearMessage()
-	{
-		this.setMessages();
-	}
-
-	private void createHeaders()
-	{
-		this.model.setColHeader(this.model.getSelectedData().getFeatureType() + " "
-				+ (this.model.getBrowser().getModel().getColStart() + 1) + "-"
-				+ this.model.getBrowser().getModel().getColStop() + " of "
-				+ this.model.getBrowser().getModel().getColMax());
-		this.model.setRowHeader(this.model.getSelectedData().getTargetType() + "<br>"
-				+ (this.model.getBrowser().getModel().getRowStart() + 1) + "-"
-				+ this.model.getBrowser().getModel().getRowStop() + " of "
-				+ this.model.getBrowser().getModel().getRowMax());
-	}
-
-	public static boolean dataHasChanged(Data newData, Data oldData)
-	{
-
-		for (String f : oldData.getFields())
-		{
-			// System.out.println("getting + " +f+", old = " + oldData.get(f) +
-			// ", new = " + newData.get(f));
-
-			Object oldAttr = oldData.get(f);
-			Object newAttr = newData.get(f);
-
-			if (oldAttr == null && newAttr == null)
-			{
-				// equal if both are null
-				// System.out.println("TWO NULLS - EQUAL!");
-			}
-			else if (oldAttr == null || newAttr == null)
-			{
-				// unequal if either is null
-				// System.out.println("ONE NULL: DOES NOT EQUAL!");
-				return true;
-			}
-			else if (!newAttr.equals(oldAttr))
-			{
-				// if both not full, perform 'equals'
-				// System.out.println("VALUE DIFFERENCE - DOES NOT EQUAL!");
-				return true;
-			}
-			else
-			{
-				// System.out.println("ALL CONDITIONS MET - EQUAL!");
-			}
-
-		}
-		// System.out.println("ALL EQUAL");
-		return false;
-	}
-
-	@Override
-	public void reload(Database db)
-	{
-
-		// TODO: create refresh button
-		// TODO: review this 'core' logic carefully :)
-
-		ScreenController<?> parentController = (ScreenController<?>) this.getParent().getParent();
-		FormModel<Data> parentForm = (FormModel<Data>) ((FormController)parentController).getModel();
-		Data data = parentForm.getRecords().get(0);
-
-		  
-		try
-		{
-			
-			if(this.dmh == null){
-				dmh = new DataMatrixHandler(db);
-			}
-
-			boolean newOrOtherData;
-			// boolean createBrowserSuccess = true; //assume success, can be
-			// false if a new instance is created but fails
-
-			if (this.model.getSelectedData() == null)
-			{
-				newOrOtherData = true;
-			}
-			else
-			{
-				if (dataHasChanged(this.model.getSelectedData(), data))
-				{
-					newOrOtherData = true;
-				}
-				else
-				{
-					newOrOtherData = false;
-				}
-			}
-
-			this.model.setSelectedData(data);
-
-			if (newOrOtherData)
-			{
-				logger.info("*** newOrOtherData");
-				this.model.setHasBackend(dmh.isDataStoredIn(data, data.getStorage()));
-				logger.info("hasBackend: " + this.model.isHasBackend());
-				if (this.model.isHasBackend())
-				{
-					logger.info("*** creating browser instance");
-					Browser br = createBrowserInstance(db, data);
-					this.model.setBrowser(br);
-
-					// moved to Inspector
-					// this.model.setWarningsAndErrors(new
-					// WarningsAndErrors(data,
-					// db, this.model.getBrowser().getModel()
-					// .getInstance()));
-
-				}
-			}
-
-			if (this.model.isHasBackend())
-			{
-				this.model.setUploadMode(false);
-				createOverLibText(db);
-				createHeaders();
-			}
-			else
-			{
-				this.model.setUploadMode(true);
-			}
-
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
-			this.model.setBrowser(null);
-		}
-
-	}
-
 }

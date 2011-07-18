@@ -1,147 +1,59 @@
-/* Date:        October 11, 2010
- * Template:	PluginScreenJavaTemplateGen.java.ftl
- * generator:   org.molgenis.generators.ui.PluginScreenJavaTemplateGen 3.3.3
- * 
- * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
- */
 
 package plugins.cluster.demo.dependencymanager;
 
-import java.io.File;
-
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.util.Entity;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.util.Tuple;
 
-import plugins.cluster.implementations.LocalComputationResource;
-
-public class DependencyManager extends PluginModel<Entity>
+/**
+ * DependencyManagerController takes care of all user requests and application logic.
+ *
+ * <li>Each user request is handled by its own method based action=methodName. 
+ * <li> MOLGENIS takes care of db.commits and catches exceptions to show to the user
+ * <li>DependencyManagerModel holds application state and business logic on top of domain model. Get it via this.getModel()/setModel(..)
+ * <li>DependencyManagerView holds the template to show the layout. Get/set it via this.getView()/setView(..).
+ */
+public class DependencyManager extends EasyPluginController<DependencyManagerModel>
 {
-	private static final long serialVersionUID = 3728283831751229340L;
-	private DependencyManagerModel model = new DependencyManagerModel();
-	private File usrHomeLibs;
-
-	public DependencyManagerModel getMyModel()
-	{
-		return this.model;
-	}
-
 	public DependencyManager(String name, ScreenController<?> parent)
 	{
-		super(name, parent);
+		super(name, null, parent);
+		this.setModel(new DependencyManagerModel(this)); //the default model
+		this.setView(new FreemarkerView("DependencyManagerView.ftl", getModel())); //<plugin flavor="freemarker"
 	}
-
+	
+	/**
+	 * At each page view: reload data from database into model and/or change.
+	 *
+	 * Exceptions will be caught, logged and shown to the user automatically via setMessages().
+	 * All db actions are within one transaction.
+	 */ 
 	@Override
-	public String getViewName()
+	public void reload(Database db) throws Exception
+	{	
+//		//example: update model with data from the database
+//		Query q = db.query(Investigation.class);
+//		q.like("name", "molgenis");
+//		getModel().investigations = q.find();
+	}
+	
+	/**
+	 * When action="updateDate": update model and/or view accordingly.
+	 *
+	 * Exceptions will be logged and shown to the user automatically.
+	 * All db actions are within one transaction.
+	 */
+	public void updateDate(Database db, Tuple request) throws Exception
 	{
-		return "plugins_cluster_demo_dependencymanager_DependencyManager";
-	}
+		getModel().date = request.getDate("date");
+	
+//		//Easily create object from request and add to database
+//		Investigation i = new Investigation(request);
+//		db.add(i);
+//		this.setMessage("Added new investigation");
 
-	@Override
-	public String getViewTemplate()
-	{
-		return "plugins/cluster/demo/dependencymanager/DependencyManager.ftl";
-	}
-
-	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
-		// replace example below with yours
-		try
-		{
-
-			String action = request.getString("__action");
-
-			LocalComputationResource lcr = null;
-			setUsrHomeLibs(null);
-			
-			if(action.startsWith("install")){
-				lcr = new LocalComputationResource();
-				setUsrHomeLibs(new File(System.getProperty("user.home")
-						+ File.separator + "libs"));
-			}
-			
-			if (action.equals("installQtl"))
-			{
-				lcr.installQtl();
-			}
-
-			else if (action.equals("installRcurl"))
-			{
-				lcr.installRCurl();
-			}
-
-			else if (action.equals("installBitops"))
-			{
-				lcr.installBitops();
-			}
-
-//			else if (action.equals("installClusterJobs"))
-//			{
-//				lcr.installClusterJobs();
-//			}
-
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public void reload(Database db)
-	{
-		this.model.setBitops(false);
-		this.model.setRcurl(false);
-		this.model.setRqtl(false);
-		this.model.setClusterjobs(false);
-		
-		File usrHomeLibs = new File(System.getProperty("user.home")
-				+ File.separator + "libs");
-		
-		File bitopsDir = new File(usrHomeLibs.getAbsolutePath()
-				+ File.separator + "bitops");
-		File qtlDir = new File(usrHomeLibs.getAbsolutePath()
-				+ File.separator + "qtl");
-		File rcurlDir = new File(usrHomeLibs.getAbsolutePath()
-				+ File.separator + "RCurl");
-		File clusterJobsDir = new File(usrHomeLibs.getAbsolutePath()
-				+ File.separator + "ClusterJobs");
-		
-		System.out.println("checking dir: " + bitopsDir.getAbsolutePath());
-		System.out.println("checking dir: " + qtlDir.getAbsolutePath());
-		System.out.println("checking dir: " + rcurlDir.getAbsolutePath());
-		System.out.println("checking dir: " + clusterJobsDir.getAbsolutePath());
-
-		if(bitopsDir.exists()){
-			System.out.println("bitopsDir exists");
-			this.model.setBitops(true);
-		}
-		
-		if(qtlDir.exists()){
-			System.out.println("qtlDir exists");
-			this.model.setRqtl(true);
-		}
-		
-		if(rcurlDir.exists()){
-			System.out.println("rcurlDir exists");
-			this.model.setRcurl(true);
-		}
-		
-		if(clusterJobsDir.exists()){
-			System.out.println("clusterJobsDir exists");
-			this.model.setClusterjobs(true);
-		}
-
-	}
-
-	public void setUsrHomeLibs(File usrHomeLibs) {
-		this.usrHomeLibs = usrHomeLibs;
-	}
-
-	public File getUsrHomeLibs() {
-		return usrHomeLibs;
+		getModel().setSuccess("update succesfull");
 	}
 }

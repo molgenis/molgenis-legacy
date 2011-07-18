@@ -1,68 +1,38 @@
+/* Date:        July 18, 2011
+ * Template:	EasyPluginModelGen.java.ftl
+ * generator:   org.molgenis.generators.ui.EasyPluginModelGen 4.0.0-testing
+ * 
+ * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
+ */
+
 package plugins.molgenisfile;
 
-import org.molgenis.core.MolgenisFile;
-import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.SimpleScreenModel;
+import java.util.Date;
 
-public class MolgenisFileManagerModel
+import org.molgenis.framework.ui.EasyPluginModel;
+
+/**
+ * MolgenisFileManagerModel takes care of all state and it can have helper methods to query the database.
+ * It should not contain layout or application logic which are solved in View and Controller.
+ * @See org.molgenis.framework.ui.ScreenController for available services.
+ */
+public class MolgenisFileManagerModel extends EasyPluginModel
 {
+	//a system veriable that is needed by tomcat
+	private static final long serialVersionUID = 1L;
+	//this string can be referenced from MolgenisFileManagerView.ftl template as ${model.helloWorld}
+	public String helloWorld = "hello World";
+	//this date can be referenced from MolgenisFileManagerView.ftl template as ${model.date}
+	public Date date = new Date();
+	
+	//another example, you can also use getInvestigations() and setInvestigations(...)
+	//public List<Investigation> investigations = new ArrayList<Investigation>();
 
-	private MolgenisFile molgenisFile;
-	private String db_path;
-	private boolean hasFile;
-	private String uploadTextAreaContent;
-	private String ipURl;
+	public MolgenisFileManagerModel(MolgenisFileManager controller)
+	{
+		//each Model can access the controller to notify it when needed.
+		super(controller);
+	}
 	
 	
-
-	public String getUploadTextAreaContent()
-	{
-		return uploadTextAreaContent;
-	}
-
-	public void setUploadTextAreaContent(String uploadTextAreaContent)
-	{
-		this.uploadTextAreaContent = uploadTextAreaContent;
-	}
-
-	public String getIpURl()
-	{
-		return ipURl;
-	}
-
-	public void setIpURl(String ipURl)
-	{
-		this.ipURl = ipURl;
-	}
-
-	public boolean isHasFile()
-	{
-		return hasFile;
-	}
-
-	public void setHasFile(boolean hasFile)
-	{
-		this.hasFile = hasFile;
-	}
-
-	public String getDb_path()
-	{
-		return db_path;
-	}
-
-	public void setDb_path(String dbPath)
-	{
-		db_path = dbPath;
-	}
-
-	public MolgenisFile getMolgenisFile()
-	{
-		return molgenisFile;
-	}
-
-	public void setMolgenisFile(MolgenisFile molgenisFile)
-	{
-		this.molgenisFile = molgenisFile;
-	}
-
 }

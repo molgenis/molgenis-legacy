@@ -1,68 +1,59 @@
-/* Date:        November 11, 2009
- * Template:	PluginScreenJavaTemplateGen.java.ftl
- * generator:   org.molgenis.generators.ui.PluginScreenJavaTemplateGen 3.3.2-testing
- * 
- * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
- */
 
 package plugins.cluster.demo.header;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.util.Entity;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.util.Tuple;
 
 /**
- * A simple plugin to create the header of the MOLGENIS application. This
- * includes the header logo as well as the top level menu items for
- * documentation, services etc (replaces the hardcoded header).
- * 
- * @author Morris Swertz
+ * MolgenisHeaderController takes care of all user requests and application logic.
+ *
+ * <li>Each user request is handled by its own method based action=methodName. 
+ * <li> MOLGENIS takes care of db.commits and catches exceptions to show to the user
+ * <li>MolgenisHeaderModel holds application state and business logic on top of domain model. Get it via this.getModel()/setModel(..)
+ * <li>MolgenisHeaderView holds the template to show the layout. Get/set it via this.getView()/setView(..).
  */
-public class MolgenisHeader extends PluginModel<Entity>
+public class MolgenisHeader extends EasyPluginController<MolgenisHeaderModel>
 {
-	private static final long serialVersionUID = 6155556950170399575L;
-
 	public MolgenisHeader(String name, ScreenController<?> parent)
 	{
-		super(name, parent);
-	}
-
-	@Override
-	public String getViewName()
-	{
-		return "plugins_cluster_demo_header_MolgenisHeader";
-	}
-
-	@Override
-	public String getViewTemplate()
-	{
-		return "plugins/cluster/demo/header/MolgenisHeader.ftl";
-	}
-
-	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
-		//static
-	}
-
-	@Override
-	public void reload(Database db)
-	{
-		//static
-	}
-
-	@Override
-	public boolean isVisible()
-	{
-		return true;
+		super(name, null, parent);
+		this.setModel(new MolgenisHeaderModel(this)); //the default model
+		this.setView(new FreemarkerView("MolgenisHeaderView.ftl", getModel())); //<plugin flavor="freemarker"
 	}
 	
+	/**
+	 * At each page view: reload data from database into model and/or change.
+	 *
+	 * Exceptions will be caught, logged and shown to the user automatically via setMessages().
+	 * All db actions are within one transaction.
+	 */ 
 	@Override
-	public String getCustomHtmlHeaders()
+	public void reload(Database db) throws Exception
+	{	
+//		//example: update model with data from the database
+//		Query q = db.query(Investigation.class);
+//		q.like("name", "molgenis");
+//		getModel().investigations = q.find();
+	}
+	
+	/**
+	 * When action="updateDate": update model and/or view accordingly.
+	 *
+	 * Exceptions will be logged and shown to the user automatically.
+	 * All db actions are within one transaction.
+	 */
+	public void updateDate(Database db, Tuple request) throws Exception
 	{
-		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/colors.css\">" + "\n" +
-			   "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/main_override.css\">" ;
+		getModel().date = request.getDate("date");
+	
+//		//Easily create object from request and add to database
+//		Investigation i = new Investigation(request);
+//		db.add(i);
+//		this.setMessage("Added new investigation");
+
+		getModel().setSuccess("update succesfull");
 	}
 }

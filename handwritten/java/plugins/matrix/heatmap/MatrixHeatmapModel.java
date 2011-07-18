@@ -1,88 +1,38 @@
+/* Date:        July 18, 2011
+ * Template:	EasyPluginModelGen.java.ftl
+ * generator:   org.molgenis.generators.ui.EasyPluginModelGen 4.0.0-testing
+ * 
+ * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
+ */
+
 package plugins.matrix.heatmap;
 
-import org.molgenis.framework.ui.ScreenController;
+import java.util.Date;
 
-import matrix.AbstractDataMatrixInstance;
-import plugins.matrix.manager.MatrixManagerModel;
+import org.molgenis.framework.ui.EasyPluginModel;
 
-public class MatrixHeatmapModel extends MatrixManagerModel{
+/**
+ * MatrixHeatmapModel takes care of all state and it can have helper methods to query the database.
+ * It should not contain layout or application logic which are solved in View and Controller.
+ * @See org.molgenis.framework.ui.ScreenController for available services.
+ */
+public class MatrixHeatmapModel extends EasyPluginModel
+{
+	//a system veriable that is needed by tomcat
+	private static final long serialVersionUID = 1L;
+	//this string can be referenced from MatrixHeatmapView.ftl template as ${model.helloWorld}
+	public String helloWorld = "hello World";
+	//this date can be referenced from MatrixHeatmapView.ftl template as ${model.date}
+	public Date date = new Date();
+	
+	//another example, you can also use getInvestigations() and setInvestigations(...)
+	//public List<Investigation> investigations = new ArrayList<Investigation>();
 
-	
-	private Double lowestVal;
-	private Double highestVal;
-	private RGB start;
-	private RGB stop;
-	private AbstractDataMatrixInstance heatMatrix;
-	private Boolean autoScale;
-	private Double customStart;
-	private Double customStop;
-	
-	
-	public Double getCustomStart()
+	public MatrixHeatmapModel(MatrixHeatmap controller)
 	{
-		return customStart;
+		//each Model can access the controller to notify it when needed.
+		super(controller);
 	}
-	public void setCustomStart(Double customStart)
-	{
-		this.customStart = customStart;
-	}
-	public Double getCustomStop()
-	{
-		return customStop;
-	}
-	public void setCustomStop(Double customStop)
-	{
-		this.customStop = customStop;
-	}
-	public Boolean getAutoScale()
-	{
-		return autoScale;
-	}
-	public void setAutoScale(Boolean autoScale)
-	{
-		this.autoScale = autoScale;
-	}
-	public Double getLowestVal()
-	{
-		return lowestVal;
-	}
-	public void setLowestVal(Double lowestVal)
-	{
-		this.lowestVal = lowestVal;
-	}
-	public Double getHighestVal()
-	{
-		return highestVal;
-	}
-	public void setHighestVal(Double highestVal)
-	{
-		this.highestVal = highestVal;
-	}
-	public RGB getStart()
-	{
-		return start;
-	}
-	public void setStart(RGB start)
-	{
-		this.start = start;
-	}
-	public RGB getStop()
-	{
-		return stop;
-	}
-	public void setStop(RGB stop)
-	{
-		this.stop = stop;
-	}
-	public AbstractDataMatrixInstance getHeatMatrix()
-	{
-		return heatMatrix;
-	}
-	public void setHeatMatrix(AbstractDataMatrixInstance heatMatrix)
-	{
-		this.heatMatrix = heatMatrix;
-	}
-	
 	
 	
 }
