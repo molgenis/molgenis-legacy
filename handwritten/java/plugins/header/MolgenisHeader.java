@@ -1,5 +1,5 @@
 
-package plugins.keggplugin;
+package plugins.header;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FreemarkerView;
@@ -8,20 +8,20 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.util.Tuple;
 
 /**
- * KeggToolsPluginController takes care of all user requests and application logic.
+ * MolgenisHeaderController takes care of all user requests and application logic.
  *
  * <li>Each user request is handled by its own method based action=methodName. 
  * <li> MOLGENIS takes care of db.commits and catches exceptions to show to the user
- * <li>KeggToolsPluginModel holds application state and business logic on top of domain model. Get it via this.getModel()/setModel(..)
- * <li>KeggToolsPluginView holds the template to show the layout. Get/set it via this.getView()/setView(..).
+ * <li>MolgenisHeaderModel holds application state and business logic on top of domain model. Get it via this.getModel()/setModel(..)
+ * <li>MolgenisHeaderView holds the template to show the layout. Get/set it via this.getView()/setView(..).
  */
-public class KeggToolsPlugin extends EasyPluginController<KeggToolsPluginModel>
+public class MolgenisHeader extends EasyPluginController<MolgenisHeaderModel>
 {
-	public KeggToolsPlugin(String name, ScreenController<?> parent)
+	public MolgenisHeader(String name, ScreenController<?> parent)
 	{
 		super(name, null, parent);
-		this.setModel(new KeggToolsPluginModel(this)); //the default model
-		this.setView(new FreemarkerView("KeggToolsPluginView.ftl", getModel())); //<plugin flavor="freemarker"
+		this.setModel(new MolgenisHeaderModel(this)); //the default model
+		this.setView(new FreemarkerView("MolgenisHeaderView.ftl", getModel())); //<plugin flavor="freemarker"
 	}
 	
 	/**
