@@ -20,15 +20,12 @@ import commonservice.CommonService;
 public class BatchService {
 
     private Database db;
-    private CommonService cq = CommonService.getInstance();
+    //private CommonService cq = CommonService.getInstance();
     
     public void setDatabase(Database db, int userId)
     {
     	this.db = db;
-		if(true)
-		{
-			throw new UnsupportedOperationException("this is animaldb specific???");
-		}
+		
 //    	cq.setDatabase(db);
 //    	cq.makeObservationTargetNameMap(userId, false);
     }
@@ -134,7 +131,7 @@ public class BatchService {
     	this.db.commitTx();
     }
     
-    public String getTargetLabel(int targetId) throws DatabaseException, ParseException {
-    	return cq.getObservationTargetLabel(targetId);
-    }
+//    public String getTargetLabel(int targetId) throws DatabaseException, ParseException {
+//    	return cq.getObservationTargetLabel(targetId);
+//    }
 }
