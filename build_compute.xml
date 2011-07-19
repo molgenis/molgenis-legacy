@@ -1,9 +1,22 @@
-<project default="test">
-	<!--
-		sandbox means generating as described, than compile the apps we depend
-		on
-	-->
-	<ant antfile="build_common.xml" target="compile">
-		<property name="app_name" value="gcc" />
-	</ant>
+<project>
+	<!-- this name is used to name the war file -->
+	<property name="app_name" value="compute"/>
+	
+	<!-- this holds all the settings for the generator -->
+	<property name="app_properties" value="apps/compute/org/molgenis/compute/compute.properties" />
+	
+	<!-- this determines what handwritten modules should be loaded -->
+	<path id="app.class.path">
+		<pathelement location="apps/compute" />
+		<pathelement location="modules/auth" />
+		<pathelement location="modules/pheno" />
+		<pathelement location="modules/file" />
+		<pathelement location="modules/datamodel" />
+		<pathelement location="modules/settings" />
+		<pathelement location="modules/import"/>
+	</path>
+	
+	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
+	<import file="build_common.xml"/>
+
 </project>

@@ -120,14 +120,14 @@
 		<plugin name="YearlyReportModule" type="plugins.report.YearlyReportModule"
 			label="Yearly report" />
 
-		<menu name="searchmenu" position="left" label="Search">
+		<!--  REMOVED BECAUSE MODULE NOT CLEAN YET, depends on bbmirmenu name="searchmenu" position="left" label="Search">
 			<plugin name="SimpleDbSearch" label="Simple search" type="plugin.search.SimpleWholeDatabaseSearch" />
 	        <menu name="indexmenu" position="left" label="Index search">
 		       	<plugin name="DBIndex" label="DB index" type="plugins.LuceneIndex.DBIndexPlugin" />
 				<plugin name="OntoCatIndexPlugin" label="OntoCAT index" type="plugins.LuceneIndex.OntoCatIndexPlugin" /> 
 				<plugin name="AdminIndex" label="Admin indices" type="plugins.LuceneIndex.AdminIndexes" />
 			</menu>
-		</menu>
+		</menu-->
 		
 		<plugin name="VaadinPlugin" type="org.molgenis.sandbox.plugins.VaadinPlugin"
 			label="Vaadin test plugin" />

@@ -1,9 +1,0 @@
-<project default="test">
-
-
-
-	<property name="app_source" value="handwritten/java"/>
-	
-	
-	
-</project>

@@ -16,14 +16,12 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.jdbc.JDBCMapper;
 import org.molgenis.framework.db.jdbc.MappingDecorator;
+import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.Protocol_Features;
 
-import commonservice.CommonService;
-
 public class MeasurementDecorator<E extends Measurement> extends MappingDecorator<E> {
-	private CommonService ct = CommonService.getInstance();
 	Logger logger  = Logger.getLogger("MeasurementDecorator");
 	
 	// JDBCMapper is the generate thing
@@ -41,10 +39,10 @@ public class MeasurementDecorator<E extends Measurement> extends MappingDecorato
 		String protocolName;
 		String featureName;
 		Database db = this.getDatabase();
-		ct.setDatabase(db);
 		
 		// Dirty trick to prevent Protocols from being made when calling from Hudson test:
-		if (ct.getInvestigationId("System") == -1) {
+		if (db.query(Investigation.class).eq(Investigation.NAME,"System").count() == 0)
+		{
 			// In Hudson, there is no pre-generated Investigation 'System' present in the DB, 
 			// so the method returns -1 and then we happily return true so the test will not fail.
 			return true;
@@ -58,13 +56,19 @@ public class MeasurementDecorator<E extends Measurement> extends MappingDecorato
 			
 			try {
 				// Auto-generated protocols will be linked to the always present System investigation
-				etId = ct.makeProtocol(e.getInvestigation_Id(), protocolName);
+				Protocol newProtocol = new Protocol();
+				newProtocol.setName(protocolName);
+				db.add(newProtocol);	
+				//etId = ct.makeProtocol(e.getInvestigation_Id(), protocolName);
+				etId = newProtocol.getId();
+				
 			} catch (Exception e2) {
 				return false;
 			}
 			// Get Feature ID
 			try {
-				featId = ct.getMeasurementId(featureName);
+				
+				featId = Measurement.findByInvestigationName(db, null, featureName).getId();
 			} catch (Exception e3) {
 				return false;
 			}
@@ -87,14 +91,13 @@ public class MeasurementDecorator<E extends Measurement> extends MappingDecorato
 		String protocolName;
 		String featureName;
 		Database db = this.getDatabase();
-		ct.setDatabase(db);
 	
 		for (E e : entities) {
 			featureName = e.getName();
 			// Remove corresponding protocol
 			protocolName = "Set" + featureName;
 			try {
-				Protocol et = ct.getProtocol(protocolName);
+				Protocol et = Protocol.findByNameInvestigation(db, protocolName, null);
 				if(et != null)
 					db.remove(et);
 				else return true;
