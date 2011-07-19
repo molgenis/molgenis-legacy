@@ -3,6 +3,7 @@ package plugins.batch;
 import java.util.List;
 
 import org.molgenis.batch.MolgenisBatchEntity;
+import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.Table;
 
@@ -54,6 +55,5 @@ public class BatchViewUi {
 		}
 		
 		container.add(batchTable);
-		
 	}
 }

@@ -281,8 +281,8 @@ public class AnimalDbUsers extends PluginModel<Entity>
 				permList.add(makePermission(db, userId, "write","app.ui.AddSubprojectPlugin"));
 				permList.add(makePermission(db, userId, "write","app.ui.AnimalsInSubprojectsPlugin"));
 				permList.add(makePermission(db, userId, "write","app.ui.YearlyReportModulePlugin"));
-				permList.add(makePermission(db, userId, "read","app.ui.searchmenuMenu"));
-				permList.add(makePermission(db, userId, "write","app.ui.SimpleDbSearchPlugin"));
+				//permList.add(makePermission(db, userId, "read","app.ui.searchmenuMenu"));
+				//permList.add(makePermission(db, userId, "write","app.ui.SimpleDbSearchPlugin"));
 				db.add(permList);
 				
 				action = "init";

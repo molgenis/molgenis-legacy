@@ -98,10 +98,8 @@
 				label="Make/edit values" />
 			<plugin name="ListPlugin" type="plugins.listplugin.ListPlugin"
 				label="View value matrix" />
-			<plugin name="MatrixViewExample" type="org.molgenis.matrix.example.MatrixViewExample1"
-				label="View NEW value matrix (Morris)" />
 			<plugin name="MatrixManagerExample" type="org.molgenis.matrix.ui.manager.MatrixManager"
-				label="View NEW value matrix (Joeri)" />
+				label="View NEW value matrix" />
 			<plugin name="EventViewer" type="plugins.protocol.EventViewerPlugin"
 				label="View value timeline" />
 		</menu>
@@ -129,8 +127,8 @@
 			</menu>
 		</menu-->
 		
-		<plugin name="VaadinPlugin" type="org.molgenis.sandbox.plugins.VaadinPlugin"
-			label="Vaadin test plugin" />
+		<!-- <plugin name="VaadinPlugin" type="org.molgenis.sandbox.plugins.VaadinPlugin"
+			label="Vaadin test plugin" /> -->
 		
 		<!-- 
 		<menu name="maze" position="left" label="Manage maze experiment">

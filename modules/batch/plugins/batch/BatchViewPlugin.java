@@ -17,11 +17,9 @@ import org.molgenis.util.Tuple;
 public class BatchViewPlugin extends GenericPlugin
 {
     private static final long serialVersionUID = -3093693807976546141L;
-    private String action = "init";
+    //private String action = "init";
     private BatchContainer batchContainer = null;
     private BatchService service;
-    //TODO: Danny: If unused, please remove
-    //private static transient Logger logger = Logger.getLogger(BatchViewPlugin.class);
     private BatchViewUi ui = new BatchViewUi();
 
     public BatchViewPlugin(String name, ScreenController<?> parent)
@@ -32,31 +30,19 @@ public class BatchViewPlugin extends GenericPlugin
 
     public void handleRequest(Database db, Tuple request)
     {
-	try
-	{
-	    this.action = request.getString("__action");
-
-	    if ( action.equals("Select") )
-	    {
-	    	//this.handleSelectRequest(request);
-	    }
-	    else if (action.equals("Add"))
-	    {
-	    	//this.handleAddRequest(request);
-	    }
-	    else if (action.equals("Remove"))
-	    {
-	    	//this.handleRemoveRequest(request);
-	    }
-	    else if (action.equals("Clear"))
-	    {
-	    	this.action = "init";
-	    }
-	}
-	catch (Exception e)
-	{
-	    e.printStackTrace();
-	}
+		try
+		{
+		    //this.action = request.getString("__action");
+	
+//		    if (action.equals("Refresh"))
+//		    {
+//		    	this.action = "init";
+//		    }
+		}
+		catch (Exception e)
+		{
+		    e.printStackTrace();
+		}
     }
 
     @Override
@@ -64,19 +50,8 @@ public class BatchViewPlugin extends GenericPlugin
     {
 		service.setDatabase(db, this.getLogin().getUserId());
 	
-		if ("init".equals(this.action)) {
-		    try {
-				if (batchContainer == null) {
-				    batchContainer = new BatchContainer(service, this.getLogin().getUserId());
-				} else { //how can we do this better? Otherwise we are still calling the db everytime
-				    batchContainer.updateBatches();
-				}
-				
-				ui.updateBatchView(batchContainer, service);
-		    } catch (Exception e) {
-		    	e.printStackTrace();
-		    }
-		}
+		batchContainer = new BatchContainer(service, this.getLogin().getUserId());
+		ui.updateBatchView(batchContainer, service);
     }
 
     /**
