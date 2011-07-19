@@ -1,12 +1,18 @@
-<!-- this ant script allows you to run the molgenis generator from the commandline-->
+<!-- this is a 'superclass' ant script with all stuff in common. 
+It should be used via 'import' 
+plus passing of properties 
+'app_properties' (reference properties file) and
+'app_src' (listing of the src folders to be included) -->
 <project>
-	<!-- requires app_properties and app_src property -->
+	<!-- requires app_name, app_properties properties and app_src path -->
+	<fail unless="app_properties">app_properties is not set. Did you use the right build_xyz.xml?</fail>
+	<fail unless="app_name">app_name is not set. Did you use the right build_xyz.xml?</fail>
 
 	<!-- static properties shared between all apps-->
 	<property file="${app_properties}" />
 	<property name="molgenis.dir" value="../molgenis" />
-	<property name="build.dir" value="build/classes" />
-	<property name="testng.report.dir" value="target/test-output" />
+	<property name="build.dir" value="dist/classes" />
+	<property name="testng.report.dir" value="dist/test-output" />
 	<property name="war.dir" value="dist/war" />
 	<property name="war.name" value="${appname}.war" />
 	<property name="webxml.dir" value="WebContent/WEB-INF/web.xml" />
@@ -21,11 +27,9 @@
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
-	
+
 	<!-- path to app src -->
-	<path id="app.classpath">
-		<pathelement path="${app_src}"/>
-	</path>
+
 
 	<taskdef resource="testngtasks" classpathref="molgenis.classpath" />
 
@@ -33,10 +37,7 @@
 	<target name="clean">
 		<!-- remove and create generated folder  -->
 		<delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="${output_src}" />
 			<fileset dir="${build.dir}" />
-			<fileset dir="${output_sql}" />
-			<fileset dir="${output_ccp}" />
 			<fileset dir="${testng.report.dir}" />
 			<fileset dir="${war.dir}" />
 		</delete>
@@ -49,6 +50,12 @@
 
 	<!-- generate based on properties file for this app_properties-->
 	<target name="generate">
+		<!-- clean generated folders -->
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="${output_src}" />
+			<fileset dir="${output_sql}" />
+			<fileset dir="${output_ccp}" />
+		</delete>
 
 		<!-- check if the molgenis project is where it is to be expected, in ../molgenis/ -->
 		<condition property="dir.exists">
@@ -68,30 +75,45 @@
 		<!-- call the generator -->
 		<java classname="org.molgenis.Molgenis" fork="yes" failonerror="true">
 			<classpath refid="molgenis.classpath" />
+			<classpath refid="app.class.path" />
 			<arg value="${app_properties}" />
 		</java>
+
+		<!-- copy all ftl files from module folders-->
+		<pathconvert property="app_path" refid="app.class.path" pathsep="/**/*.ftl,">
+			<map from="${user.dir}/" to="" />
+		</pathconvert>
+		<echo message="copying ftl files from: ${app_path}" />
+		<fail unless="app_path">app.class.path is not set</fail>
+		<copy todir="${build.dir}" verbose="true">
+			<!-- watch the traling /**/*.ftl"-->
+			<fileset dir="." includes="${app_path}/**/*.ftl" />
+			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />
+		</copy>
+
+		<!-- copy sql and other resources from generate sql -->
+		<copy todir="${build.dir}" verbose="true">
+			<fileset dir="${output_sql}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
+			<fileset dir="${output_src}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
+		</copy>
+
 
 	</target>
 
 	<target name="compile">
-		<echo message="compile :${app_src}"/>
-		
+
+		<pathconvert property="app_src" refid="app.class.path" pathsep=":">
+			<map from="${user.dir}/" to="" />
+		</pathconvert>
+		<fail unless="app_src">app.class.path is not set. Did you use the right build_xyz.xml?</fail>
+
+		<echo message="compile :${output_src}:${app_src}" />
+
 		<!-- compile the generated results, use fork to run it with its own memory settings -->
 		<javac fork="true" srcdir="${output_src}:${app_src}" destdir="${build.dir}" nowarn="on" memoryinitialsize="256m" memorymaximumsize="512m">
 			<classpath refid="molgenis.classpath" />
 		</javac>
 
-		<!-- copy resources like properties files -->
-		<copy todir="${build.dir}">
-			<fileset dir="${output_src}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
-			<fileset refid="${app.classpath}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
-			<fileset dir="${output_sql}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
-		</copy>
-		<copy todir="${build.dir}" flatten="true">
-			<path>
-				<pathelement path="${app_src}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
-			</path>
-		</copy>
 	</target>
 
 	<target name="test">
@@ -141,4 +163,8 @@
 		</war>
 	</target>
 	-->
+
+	<target name="generate-compile" depends="generate,compile"/>
+	
+	<target name="clean-generate-compile" depends="clean,generate,compile"/>
 </project>

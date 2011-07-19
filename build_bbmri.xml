@@ -1,6 +1,12 @@
 <!-- compute means generating as described, than compile the apps we depend on -->
 <project>
+	<!-- this name is used to name the war file -->
+	<property name="app_name" value="bbmri"/>
+	
+	<!-- this holds all the settings for the generator -->
 	<property name="app_properties" value="apps/bbmri/org/molgenis/biobank/bbmri.molgenis.properties" />
+	
+	<!-- this determines what handwritten modules should be loaded -->
 	<path id="app.class.path">
 		<pathelement location="apps/bbmri" />
 		<pathelement location="modules/auth" />
@@ -10,26 +16,8 @@
 		<pathelement location="modules/settings" />
 		<pathelement location="modules/import"/>
 	</path>
-	<property name="app_src" refid="app.class.path"/>
-
-	<target name="clean">
-		<ant antfile="build_common.xml" target="clean" inheritAll="true">
-		</ant>
-	</target>
-
-	<target name="generate">
-		<ant antfile="build_common.xml" target="generate" inheritAll="true"/>
-		<antcall target="compile" />
-	</target>
-
-	<target name="compile">
-		<ant antfile="build_common.xml" target="compile" inheritAll="true"/>
-	</target>
-
-	<target name="clean_generate" depends="clean,generate,compile"/>
-
-	<target name="test" depends="clean,generate,compile">
-		<ant antfile="build_common.xml" target="test" inheritAll="true"/>
-	</target>
+	
+	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
+	<import file="build_common.xml"/>
 
 </project>
