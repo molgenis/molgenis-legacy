@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.tools.ant.Project;
@@ -70,6 +71,7 @@ import org.molgenis.generators.db.PersistenceGen;
 import org.molgenis.generators.db.ViewMapperGen;
 import org.molgenis.generators.doc.DotDocGen;
 import org.molgenis.generators.doc.DotDocMinimalGen;
+import org.molgenis.generators.doc.DotDocModuleDependencyGen;
 import org.molgenis.generators.doc.FileFormatDocGen;
 import org.molgenis.generators.doc.ObjectModelDocGen;
 import org.molgenis.generators.excel.ExcelExportGen;
@@ -96,12 +98,12 @@ import org.molgenis.generators.sql.PSqlCreateSubclassPerTableGen;
 import org.molgenis.generators.tests.TestCsvGen;
 import org.molgenis.generators.tests.TestDataSetGen;
 import org.molgenis.generators.tests.TestDatabaseGen;
-import org.molgenis.generators.ui.FormControllerGen;
-import org.molgenis.generators.ui.HtmlFormGen;
-import org.molgenis.generators.ui.MenuControllerGen;
 import org.molgenis.generators.ui.EasyPluginControllerGen;
 import org.molgenis.generators.ui.EasyPluginModelGen;
 import org.molgenis.generators.ui.EasyPluginViewGen;
+import org.molgenis.generators.ui.FormControllerGen;
+import org.molgenis.generators.ui.HtmlFormGen;
+import org.molgenis.generators.ui.MenuControllerGen;
 import org.molgenis.generators.ui.PluginControllerGen;
 import org.molgenis.model.MolgenisModel;
 import org.molgenis.model.elements.Model;
@@ -146,6 +148,9 @@ public class Molgenis {
      */
     public <E extends Generator> Molgenis(MolgenisOptions options,
             Class<? extends Generator>... generatorsToUse) throws Exception {
+    	BasicConfigurator.configure();
+    	
+    	
         this.loadFieldTypes();
 
         this.options = options;
@@ -184,6 +189,7 @@ public class Molgenis {
             generators.add(new FileFormatDocGen());
             generators.add(new DotDocMinimalGen());
             generators.add(new ObjectModelDocGen());
+            generators.add(new DotDocModuleDependencyGen());
             //not used: generators.add(new TextUmlGen());
         } else {
             logger.info("Skipping documentation ....");

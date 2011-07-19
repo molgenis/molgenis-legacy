@@ -280,14 +280,14 @@ public class MolgenisOptions
 		try
 		{
 			//try to load from local files
-			props.load(new FileInputStream(propertiesFile));
+			props.load(new FileInputStream(propertiesFile.trim()));
 		}
 		catch (FileNotFoundException e)
 		{
 			try
 			{
 				//try to load from classpath
-				props.load(ClassLoader.getSystemResourceAsStream(propertiesFile));
+				props.load(ClassLoader.getSystemResourceAsStream(propertiesFile.trim()));
 			}
 			catch(Exception e2)
 			{
