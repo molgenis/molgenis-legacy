@@ -1,0 +1,22 @@
+<!-- compute means generating as described, than compile the apps we depend on -->
+<project>
+	<!-- this name is used to name the war file -->
+	<property name="app_name" value="gids"/>
+	
+	<!-- this holds all the settings for the generator -->
+	<property name="app_properties" value="apps/gids/org/molgenis/gids/gids.properties" />
+	
+	<!-- this determines what handwritten modules should be loaded -->
+	<path id="app.class.path">
+		<pathelement location="apps/animaldb" />
+		<pathelement location="modules/auth" />
+		<pathelement location="modules/pheno" />
+		<pathelement location="modules/datamodel" />
+		<!-- TODO: just playing with sandbox I suppose? Otherwise stuff should move to a module-->
+		<pathelement location="apps/sandbox"/>
+	</path>
+	
+	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
+	<import file="build_common.xml"/>
+
+</project>
