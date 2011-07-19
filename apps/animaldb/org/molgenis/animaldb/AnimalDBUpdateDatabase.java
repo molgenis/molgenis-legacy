@@ -15,6 +15,6 @@ public class AnimalDBUpdateDatabase
 {
 	public static void main(String[] args) throws Exception
 	{
-		new Molgenis("handwritten/apps/org/molgenis/animaldb/animaldb.properties").updateDb(true);
+		new Molgenis("apps/animaldb/org/molgenis/animaldb/animaldb.properties").updateDb(true);
 	}
 }
