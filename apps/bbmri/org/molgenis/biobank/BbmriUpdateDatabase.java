@@ -11,9 +11,9 @@ public class BbmriUpdateDatabase
 {
 	public static void main(String[] args) throws Exception
 	{
-		new Molgenis("handwritten/apps/org/molgenis/biobank/bbmri.molgenis.properties").updateDb(true);
+		new Molgenis("apps/bbmri/org/molgenis/biobank/bbmri.molgenis.properties").updateDb(true);
 		
-		JDBCDatabase db = new JDBCDatabase("handwritten/apps/org/molgenis/biobank/bbmri.molgenis.properties");
+		JDBCDatabase db = new JDBCDatabase("apps/bbmri/org/molgenis/biobank/bbmri.molgenis.properties");
 		
 		
 		MolgenisUser u = new MolgenisUser();

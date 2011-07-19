@@ -80,14 +80,14 @@ plus passing of properties
 		</java>
 
 		<!-- copy all ftl files from module folders-->
-		<pathconvert property="app_path" refid="app.class.path" pathsep="/**/*.ftl,">
+		<pathconvert property="app_path" refid="app.class.path" pathsep="/**/*,">
 			<map from="${user.dir}/" to="" />
 		</pathconvert>
 		<echo message="copying ftl files from: ${app_path}" />
 		<fail unless="app_path">app.class.path is not set</fail>
-		<copy todir="${build.dir}" verbose="true">
+		<copy todir="${build.dir}">
 			<!-- watch the traling /**/*.ftl"-->
-			<fileset dir="." includes="${app_path}/**/*.ftl" />
+			<fileset dir="." includes="${app_path}/**/*" />
 			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />
 		</copy>
 
@@ -117,8 +117,15 @@ plus passing of properties
 	</target>
 
 	<target name="test">
+		<!-- combine classpaths -->
+		<path id="combined.class.path">
+			<path refid="molgenis.classpath"/>
+			<path refid="app.class.path"/>
+		</path>
+		
+		
 		<!-- run the tests -->
-		<testng classpathref="molgenis.classpath" outputDir="${testng.report.dir}" haltOnFailure="true">
+		<testng classpathref="combined.class.path" outputDir="${testng.report.dir}" haltOnFailure="true">
 			<xmlfileset dir="${build.dir}" includes="testng.xml" />
 			<jvmarg value="-ea" />
 		</testng>
@@ -167,4 +174,6 @@ plus passing of properties
 	<target name="generate-compile" depends="generate,compile"/>
 	
 	<target name="clean-generate-compile" depends="clean,generate,compile"/>
+	
+	<target name="clean-generate-compile-test" depends="clean,generate,compile,test"/>
 </project>
