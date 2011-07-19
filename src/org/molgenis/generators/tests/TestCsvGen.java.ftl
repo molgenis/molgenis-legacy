@@ -98,8 +98,8 @@ public class TestCsv
 	{
 		try
 		{		
-			db = new app.JDBCDatabase("molgenis.test.properties");
-			new Molgenis("molgenis.test.properties").updateDb();
+			db = new app.JDBCDatabase("${options.molgenis_properties}");
+			new Molgenis("${options.molgenis_properties}");
 		}
 		catch (Exception e)
 		{
@@ -143,7 +143,7 @@ public class TestCsv
 		<#if databaseImp = 'jpa'>
 			db = new app.JpaDatabase(JpaUtil.dropAndCreateTables( ((JpaDatabase)db).getEntityManager() ));
 		<#else>
-			new Molgenis("molgenis.test.properties").updateDb();
+			new Molgenis("${options.molgenis_properties}").updateDb();
 		</#if>
 		
 		//import dir2 into database
@@ -163,7 +163,7 @@ public class TestCsv
 		<#if databaseImp = 'jpa'>
 			db = new app.JpaDatabase(JpaUtil.dropAndCreateTables( ((JpaDatabase)db).getEntityManager() ));
 		<#else>
-			new Molgenis("molgenis.test.properties").updateDb();
+			new Molgenis("${options.molgenis_properties}").updateDb();
 		</#if>
 		
 		//import dir3 into database
