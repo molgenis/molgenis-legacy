@@ -34,6 +34,9 @@ public class MolgenisOptions
 	{
 		MULTIQUERY, JPA, PREPARED_STATEMENT, UNKNOWN
 	}
+	
+	/** Properties file where this data came from */
+	private String molgenis_properties = "";
 
 	/** relative paths to the data model XML files. Discussion: is COLLECTION good enough here? */
 	@Option(name = "model_database", param = Option.Param.COLLECTION, type = Option.Type.REQUIRED_ARGUMENT, usage = "File with data structure specification (in MOLGENIS DSL). Default: new ArrayList<String>()")
@@ -100,6 +103,18 @@ public class MolgenisOptions
 	/** Path where file attachments (&lt;field type="file" ... &gt;) should be stored.*/
 	@Option(name = "db_filepath", param = Option.Param.DIRPATH, type = Option.Type.REQUIRED_ARGUMENT, usage = "Path where the database should store file attachements. Default: 'data'")
 	public String db_filepath = "data";
+	
+	/** TEST Database user */
+	@Option(name = "db_test_user", param = Option.Param.STRING, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Username for the database. Default: ''")
+	public String db_test_user = "molgenis";
+	
+	/** TEST Database user password */
+	@Option(name = "db_test_password", param = Option.Param.PASSWORD, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Password for database. Default: ''")
+	public String db_test_password = "molgenis";
+
+	/** TEST Database uri. For example: jdbc:mysql://localhost/molgenis" */
+	@Option(name = "db_test_uri", param = Option.Param.STRING, type = Option.Type.REQUIRED_ARGUMENT, usage = "Uri of the database. Default: 'jdbc:mysql://localhost/molgenis?innodb_autoinc_lock_mode=2'")
+	public String db_test_uri = "jdbc:mysql://localhost/molgenis_test?innodb_autoinc_lock_mode=2";
 
 	/** Advanced option: JNDI name that puts the database into the server context */
 	@Option(name = "db_jndiname", param = Option.Param.STRING, type = Option.Type.REQUIRED_ARGUMENT, usage = "Used to create a JDBC database resource for the application. Default: 'molgenis_jndi'")
@@ -276,6 +291,7 @@ public class MolgenisOptions
 	 */
 	public MolgenisOptions(String propertiesFile) throws FileNotFoundException, IOException, CmdLineException
 	{
+		this.molgenis_properties = propertiesFile;
 		Properties props = new Properties();
 		try
 		{
@@ -568,4 +584,16 @@ public class MolgenisOptions
 	{
 		this.path = path;
 	}
+
+	public String getMolgenis_properties()
+	{
+		return molgenis_properties;
+	}
+
+	public void setMolgenis_properties(String molgenisProperties)
+	{
+		molgenis_properties = molgenisProperties;
+	}
+	
+	
 }
