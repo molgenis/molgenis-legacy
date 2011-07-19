@@ -43,7 +43,7 @@ public class BatchViewUi {
 					batchTable.addRow("");
 				}
 				
-				batchTable.setCell(1, row, service.getTargetLabel(entity.getObjectId()));
+				batchTable.setCell(1, row, entity.getName());
 				
 				row++;
 			}

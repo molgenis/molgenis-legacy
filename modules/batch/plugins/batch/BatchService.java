@@ -21,17 +21,14 @@ import commonservice.CommonService;
 class BatchService {
 
     private Database db;
-    private CommonService cs = CommonService.getInstance();
+    //private CommonService cs = CommonService.getInstance();
     
     public BatchService() {
     }
     
     public void setDatabase(Database db, int userId) {
     	this.db = db;
-		if(true)
-		{
-			throw new UnsupportedOperationException("this is animaldb specific???");
-		}
+		
 //    	cs.setDatabase(db);
 //    	cs.makeObservationTargetNameMap(userId, false);
     }
@@ -59,13 +56,13 @@ class BatchService {
     	return db.findById(ObservationTarget.class, objectId);
     }
 
-	public Object getTargetLabel(Integer id) {
-		try {
-			return cs.getObservationTargetLabel(id);
-		} catch (Exception e) {
-			return id.toString();
-		}
-	}
+//	public Object getTargetLabel(Integer id) {
+//		try {
+//			return cs.getObservationTargetLabel(id);
+//		} catch (Exception e) {
+//			return id.toString();
+//		}
+//	}
     
   
 }
