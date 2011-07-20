@@ -109,8 +109,15 @@
 				<include name="**/*.ftl" />
 			</fileset-->
 			<fileset dir="." includes="${app_path}/**/*.ftl"/>
+			<fileset dir="." includes="**/plugins/**/*.ftl"/>
+			<fileset dir="." includes="**/*.sql"/>
 			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1"/>
 		</copy>
+		<copy todir="${build}" verbose="true">
+			<fileset dir="." includes="**/*.sql"/>
+			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1"/>
+		</copy>
+		
 		
 		<copy todir="${build}">
 			<fileset dir="modules/webserver">
