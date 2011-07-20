@@ -12,7 +12,7 @@ import org.molgenis.matrix.PhenoMemoryMatrix;
 import org.molgenis.matrix.StringCsvMemoryMatrix;
 import org.molgenis.matrix.ui.PhenoMatrixView;
 import org.molgenis.matrix.ui.StringMatrixView;
-import org.molgenis.ngs.LibraryLane;
+//import org.molgenis.ngs.LibraryLane;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
@@ -46,7 +46,7 @@ public class UploadSampleReport extends
 	// place where the uploaded csv is stored
 	Matrix<String, String, String> csvMatrix;
 	// place where the uploaded data can be viewed
-	PhenoMemoryMatrix<LibraryLane, ObservableFeature> phenoMatrix;
+//	PhenoMemoryMatrix<LibraryLane, ObservableFeature> phenoMatrix;
 
 	public UploadSampleReport(String name, ScreenController<?> parent)
 	{
@@ -88,7 +88,7 @@ public class UploadSampleReport extends
 		f.add(new TextParagraph("t",
 				"Done. TODO: show result."));
 		
-		f.add(new PhenoMatrixView<LibraryLane, ObservableFeature> ("test",phenoMatrix));
+//		f.add(new PhenoMatrixView<LibraryLane, ObservableFeature> ("test",phenoMatrix));
 
 		f.add(new ActionInput("doReset", "back"));
 
@@ -161,12 +161,12 @@ public class UploadSampleReport extends
 		// copy the matrix into a pheno matrix and store
 		try
 		{
-			PhenoMemoryMatrix<LibraryLane, ObservableFeature> phenoMatrix = new PhenoMemoryMatrix<LibraryLane, ObservableFeature>(
-					LibraryLane.class, ObservableFeature.class, csvMatrix);
-			phenoMatrix.store(db);
-			
-			this.phenoMatrix = new PhenoMemoryMatrix<LibraryLane, ObservableFeature>(
-					LibraryLane.class, ObservableFeature.class, db);
+//			PhenoMemoryMatrix<LibraryLane, ObservableFeature> phenoMatrix = new PhenoMemoryMatrix<LibraryLane, ObservableFeature>(
+//					LibraryLane.class, ObservableFeature.class, csvMatrix);
+//			phenoMatrix.store(db);
+//			
+//			this.phenoMatrix = new PhenoMemoryMatrix<LibraryLane, ObservableFeature>(
+//					LibraryLane.class, ObservableFeature.class, db);
 
 			this.state = State.SAVED;
 			this.setSucces("Pheno matrix saved succesfully");
