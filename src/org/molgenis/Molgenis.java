@@ -230,14 +230,7 @@ public class Molgenis {
                 if (options.generate_persistence) {
                     generators.add(new PersistenceGen());
                 }
-
-                // JDBC authorization
-                if (!options.auth_loginclass.endsWith("SimpleLogin")) {
-                    generators.add(new MapperSecurityDecoratorGen());
-                }
-
-                // decorators
-                generators.add(new MapperDecoratorGen());
+                
             } else {
                 // DATABASE
                 // mysql.org
@@ -279,14 +272,6 @@ public class Molgenis {
                     // System.exit(-1);
                 }
 
-                // JDBC authorization
-                if (!options.auth_loginclass.endsWith("SimpleLogin")) {
-                    generators.add(new MapperSecurityDecoratorGen());
-                }
-
-                // decorators
-                generators.add(new MapperDecoratorGen());
-
                 // test
                 generators.add(new JDBCMetaDatabaseGen());
                 // SQL
@@ -294,6 +279,17 @@ public class Molgenis {
                 generators.add(new CountPerTableGen());
                 generators.add(new FillMetadataTablesGen());
             }
+            
+            // authorization
+            if (!options.auth_loginclass.endsWith("SimpleLogin") && options.generate_decorators) {
+                generators.add(new MapperSecurityDecoratorGen());
+            }
+
+            // decorators
+            if(options.generate_decorators){
+            	generators.add(new MapperDecoratorGen());
+            }
+            
             // DatabaseFactory
             if (!options.db_driver.equals("org.hsqldb.jdbcDriver")) {
             	generators.add(new DatabaseFactoryGen());

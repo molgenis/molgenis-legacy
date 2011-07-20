@@ -227,6 +227,9 @@ public class MolgenisOptions
 	@Option(name = "generate_plugins", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "generate the Molgenis plugin API. Default: true")
 	public boolean generate_plugins = true;
 	
+	@Option(name = "generate_decorators", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "generate decorator templates. Default: true")
+	public boolean generate_decorators = true;
+	
     @Option(name = "delete_generated_folder", param= Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "delete generated Folder before generators are executed. Default: true")
     //default set to false as partial generation leads to compile problems in for example molgenis_apps
     public boolean delete_generated_folder = false;
