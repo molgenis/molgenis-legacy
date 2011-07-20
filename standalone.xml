@@ -113,7 +113,7 @@
 		</copy>
 		
 		<copy todir="${build}">
-			<fileset dir="${src}/webserver">
+			<fileset dir="modules/webserver">
 				<include name="**/mime.*" />
 			</fileset>
 		</copy>
