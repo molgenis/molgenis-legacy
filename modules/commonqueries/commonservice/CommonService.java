@@ -15,9 +15,9 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.molgenis.animaldb.CustomLabelFeature;
-import org.molgenis.auth.MolgenisEntity;
 import org.molgenis.batch.MolgenisBatch;
 import org.molgenis.batch.MolgenisBatchEntity;
+import org.molgenis.core.MolgenisEntity;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
