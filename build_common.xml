@@ -32,6 +32,10 @@ plus passing of properties
 
 
 	<taskdef resource="testngtasks" classpathref="molgenis.classpath" />
+	<taskdef name="xmltask" classpathref="molgenis.classpath" classname="com.oopsconsultancy.xmltask.ant.XmlTask"/>
+	
+	
+	
 
 	<!-- clean out generated and build folders -->
 	<target name="clean">
@@ -170,6 +174,22 @@ plus passing of properties
 		</war>
 	</target>
 	-->
+	
+	<target name="update-eclipse">
+		
+		<pathconvert property="app_xml" refid="app.class.path" pathsep="&quot;/&gt;&lt;classpathentry kind=&quot;src&quot; path=&quot;">
+			<map from="${user.dir}/" to="" />
+		</pathconvert>
+		
+		<property name="app_xml2" value="&lt;classpathentry kind=&quot;src&quot; path=&quot;${app_xml}&quot;/&gt;"/>
+		<echo message="eclipse .classpath xml: ${app_xml2}"/>
+	
+		<xmltask source=".classpath" dest=".classpath" outputter="simple">
+			<remove path="classpath/classpathentry[@kind='src']"/>
+			<insert path="classpath" position="under" xml="${app_xml2}"/>
+		</xmltask>
+		
+	</target>
 
 	<target name="generate-compile" depends="generate,compile"/>
 	
