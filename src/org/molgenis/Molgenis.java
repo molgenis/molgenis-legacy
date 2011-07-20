@@ -354,15 +354,16 @@ public class Molgenis {
             //generators.add(new PluginControllerGen());
             //generators.add(new PluginScreenFTLTemplateGen());
             //generators.add(new PluginScreenJavaTemplateGen());
-
-            generators.add(new PluginControllerGen());
+          
             generators.add(new EasyPluginViewGen());
             generators.add(new EasyPluginControllerGen());
             generators.add(new EasyPluginModelGen());
         } else {
             logger.info("Skipping generation of plugins ....");
         }
-
+        
+        //plugin controllers - always need these to map plugins in the GUI
+        generators.add(new PluginControllerGen());
 
         // SOAP
         if (options.generate_soap) {
