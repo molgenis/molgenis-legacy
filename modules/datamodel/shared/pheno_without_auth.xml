@@ -11,7 +11,7 @@
 				dependent (e.g. to only show particular subqueries of ontologies).
 			</description>
 		</entity>
-		<entity name="ObservationElement" implements="InvestigationElement,Authorizable">
+		<entity name="ObservationElement" implements="InvestigationElement">
 			<description> Elements that are the targets or features we are
 				looking at of our research.</description>
 			<unique fields="Investigation,name" description="Name is unique in each class (same as fields='name,__Type')"/>
