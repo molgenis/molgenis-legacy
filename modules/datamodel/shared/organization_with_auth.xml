@@ -2,7 +2,7 @@
 	<module name="organization">
 		<description>Generic entities you can use as the starting point of
 			your model.</description>
-		<entity name="Investigation" implements="Nameable,Describable" xref_label="name">
+		<entity name="Investigation" implements="Nameable,Describable,Authorizable" xref_label="name">
 			<description>Investigation defines self-contained units of study. For
 				example: Framingham study. Optionally a description and an accession
 				to a data source can be provided. Each Investigation has a unique
