@@ -30,7 +30,7 @@
 			<!-- <font style='font-size:24px; font-weight:bold;'>xQTL workbench</font>--><br><br>
 			Welcome to the xQTL workbench, a platform for the storage and analysis of genetic and phenotype data.<br> 
 			
-			For manuals and	more information, see <a href="http://www.xgap.org/wiki/xQTLDemo">xQTL workbench wiki</a>.<br><br> xQTL workbench aims to provide the following features: 
+			For manuals and	more information, see <a href="http://www.xgap.org/wiki/xQTL">xQTL workbench wiki</a>.<br><br> xQTL workbench aims to provide the following features: 
 			<ul>
 				<li>Available as an <b>'In-House tool'</b> or usable in a <b>collaborative setting</b> via web interfaces</li>
 				<li><b>Customizable database</b> for genetics/phenotype data using software generators</li>
@@ -72,6 +72,13 @@
 					</td>
 				</tr>
 			</table>
+			<table>
+				<tr>
+					<td align="center">
+						<font style='font-size:10px;'>(login as user <b>biologist</b>, password <b>bio</b>)</font>
+					</td>
+				</tr>
+			</table>
 		</td>
 		
 		<td width="20px">&nbsp;</td>
@@ -82,6 +89,13 @@
 
 					<td align="center">
 						<font style='font-size:15px; font-weight:bold;'>Browse</font> <font style='font-size:15px;'>data</font>
+					</td>
+				</tr>
+			</table>
+			<table>
+				<tr>
+					<td align="center">
+						<font style='font-size:10px;'>(login as user <b>biologist</b>, password <b>bio</b>)</font>
 					</td>
 				</tr>
 			</table>
@@ -98,6 +112,13 @@
 					</td>
 				</tr>
 			</table>
+			<table>
+				<tr>
+					<td align="center">
+						<font style='font-size:10px;'>(login as user <b>biologist</b>, password <b>bio</b>)</font>
+					</td>
+				</tr>
+			</table>
 		</td>
 		
 		<td width="20px">&nbsp;</td>
@@ -107,6 +128,13 @@
 				<tr>
 					<td align="center">
 						<font style='font-size:15px; font-weight:bold;'>Add</font> <font style='font-size:15px;'>analysis</font>
+					</td>
+				</tr>
+			</table>
+			<table>
+				<tr>
+					<td align="center">
+						<font style='font-size:10px;'>(login as user <b>bioinformatician</b>, password <b>bio</b>)</font>
 					</td>
 				</tr>
 			</table>

@@ -16,10 +16,8 @@
 <!-- url broken for DJTJWS-->
 <div align="right">
 	<font style="font-size:10px;">
-		| <a href="api/REST/">JSON api</a> |
-		<a href="api/SOAP/">SOAP api</a> | 
-		<a href="api/R/">R api</a> | 
-		<a href="api/REST/">REST api</a> | 
+		<#-->| <a href="api/REST/">JSON api</a> | <a href="api/SOAP/">SOAP api</a> | <a href="api/R/">R api</a> | -->
+		<a href="api/REST/">REST api</a>
 		  
 	</font>
 </div>

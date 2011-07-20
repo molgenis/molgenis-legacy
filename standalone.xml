@@ -151,14 +151,17 @@
 	</target>
 
 	<target name="clean" description="clean up">
-		<!-- Delete the ${build} and ${dist} directory trees -->
-		<delete dir="${build}" />
 		
-		<!-- Delete the generated folder -->
-		<delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="generated/java" />
+		<!-- Delete the content of the build folder -->
+		<delete includeemptydirs="true">
+			<fileset dir="${build}" includes="**/*"/>
 		</delete>
-		<mkdir dir="generated/java" />
+		
+		<!-- Delete the content of the generated folder -->
+		<delete includeemptydirs="true">
+			<fileset dir="generated/java" includes="**/*"/>
+		</delete>
+		
 	</target>
 
 	<target name="generate">
