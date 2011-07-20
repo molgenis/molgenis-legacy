@@ -113,7 +113,9 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	 * @throws NamingException
 	 * @throws DatabaseException
 	 */
-	public abstract Object getSoapImpl() throws Exception;
+	public Object getSoapImpl() throws Exception{
+		return null;
+	}
 
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)

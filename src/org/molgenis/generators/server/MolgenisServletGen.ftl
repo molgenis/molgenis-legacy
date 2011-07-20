@@ -183,10 +183,11 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 		return "${model.name}";
 	}	
 	
+<#if generate_soap>
 	@Override
 	public Object getSoapImpl() throws Exception
 	{
 		return new ${package}.servlet.SoapApi((Database)getDatabase());
 	}
-
+</#if>
 }

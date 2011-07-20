@@ -56,6 +56,7 @@ public class MolgenisServletGen extends Generator
 		templateArgs.put("mail_smtp_au", options.mail_smtp_au);
 		
 		templateArgs.put("linkout_overlay", options.linkout_overlay);
+		templateArgs.put("generate_soap", options.generate_soap);
 		
 		OutputStream targetOut = new FileOutputStream( target );
 		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
