@@ -253,7 +253,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 			invName = request.getString("createNewInvest");
 			Investigation inve = new Investigation();
 			inve.setName(invName);
-			inve.setOwns_Name("admin");
+//			inve.setOwns_Name("admin"); default pheno.xml does not have authorizable for Investigation anymore
 			try {
 				
 				db.add(inve);
