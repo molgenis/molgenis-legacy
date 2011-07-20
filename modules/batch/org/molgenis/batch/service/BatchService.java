@@ -15,8 +15,6 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.pheno.ObservationTarget;
 
-import commonservice.CommonService;
-
 public class BatchService {
 
     private Database db;

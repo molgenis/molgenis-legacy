@@ -37,6 +37,8 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/gids"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/handwritten/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/generated/sql"/>
+        <wb-resource deploy-path="/" source-path="/modules/commonqueries"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/commonqueries"/>
         <dependent-module archiveName="ontoCAT_v0.8.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/Documents and Settings/Administrator/workspace/gcc/lib/ontoCAT_v0.8.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
