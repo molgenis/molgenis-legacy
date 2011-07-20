@@ -5,10 +5,10 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.auth.MolgenisEntity;
 import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.auth.util.PasswordHasher;
+import org.molgenis.core.MolgenisEntity;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;

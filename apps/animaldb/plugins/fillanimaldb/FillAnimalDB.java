@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.molgenis.auth.MolgenisEntity;
+import org.molgenis.core.MolgenisEntity;
 import org.molgenis.core.Ontology;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
