@@ -68,7 +68,7 @@ public class MeasurementDecorator<E extends Measurement> extends MappingDecorato
 			// Get Feature ID
 			try {
 				
-				featId = Measurement.findByInvestigationName(db, null, featureName).getId();
+				featId = Measurement.findByNameInvestigation(db, featureName, null).getId();
 			} catch (Exception e3) {
 				return false;
 			}
