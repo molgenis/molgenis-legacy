@@ -9,7 +9,7 @@
 	<path id="app.class.path">
 		<pathelement location="apps/${app_name}" />
 		<pathelement location="modules/auth" />
-		<pathelement location="modules/common-queries" />
+		<pathelement location="modules/commonqueries" />
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/import" />
 		<pathelement location="modules/mutation" />
