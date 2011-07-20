@@ -15,8 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import app.servlet.MolgenisServlet;
-
 /**
  * Serves static files such as images, css files and javascript from classpath.
  * This is servlet is used when serving from a Jar file in the Mortbay server.
@@ -30,19 +28,18 @@ public class tmpfileservlet extends Servlet
 	/**
 	 * Get a resource from the jar and copy it the the response.
 	 */
-	public void service( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
+	public void service(HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
 	{
 		
 		String url = request.getRequestURI();
-		
+		String variant = url.substring(url.indexOf("/")+1,url.indexOf("/tmpfile"));
 		OutputStream out = response.getOutputStream();
-		try
-		{
+		try{
 			InputStream in = null;
 			
 			//get filename from used URL, so this is the only 'parameter'
-			String urlBase = MolgenisServlet.getMolgenisVariantID() + "/tmpfile/";
-			String urlFile = url.substring(urlBase.length()); 
+			String urlBase = variant + "/tmpfile/";
+			String urlFile = url.substring(urlBase.length()+1); 
 					
 			File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 			File filePath =  new File(tmpDir.getAbsolutePath() + File.separatorChar + urlFile);
@@ -59,8 +56,7 @@ public class tmpfileservlet extends Servlet
 
 
 			byte[] buffer = new byte[2048];
-			for( ;; )
-			{
+			for( ;; ){
 				int nBytes = in.read(buffer);
 				if( nBytes <= 0 )
 					break;
@@ -69,13 +65,13 @@ public class tmpfileservlet extends Servlet
 			out.flush();
 
 			logger.info("serving " + request.getRequestURI());
-		}
-		catch( Exception e )
-		{
+		}catch(Exception e ){
+			byte[] header = ("Temporary file "+variant+" location error:\n").getBytes();
+			out.write(header,0,header.length);
+			byte[] exception = ("loading of failed: " + e).getBytes();
+			out.write(exception,0,exception.length);
 			logger.error("loading of failed: " + e);
-		}
-		finally
-		{
+		}finally{
 			out.close();
 		}
 		

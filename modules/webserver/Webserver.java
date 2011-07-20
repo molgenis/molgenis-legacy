@@ -280,7 +280,7 @@ public class Webserver implements ServletContext, Serializable {
 		// Make a new one.
 		try {
 			addServlet(urlPat, (Servlet) Class.forName(className).newInstance(), initParams, null);
-			Utils.console("Servlet: " + className + " connected on: " + urlPat);
+			//Utils.console("Servlet: " + className + " connected on: " + urlPat);
 		} catch (ClassNotFoundException e) {
 			log("Class not found: " + className);
 			ClassLoader cl = getClass().getClassLoader();
