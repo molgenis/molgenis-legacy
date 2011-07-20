@@ -36,7 +36,8 @@ import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.protocol.WorkflowElementParameter;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
-
+import org.molgenis.ngs.Worksheet;
+import org.molgenis.ngs.LibraryLane;
 
 /**
  * StartNgsController takes care of all user requests and application logic.
