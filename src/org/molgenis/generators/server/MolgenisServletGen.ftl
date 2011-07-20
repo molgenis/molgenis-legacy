@@ -108,9 +108,9 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 	public Login createLogin( Database db, HttpServletRequest request )
 	{
 	<#if auth_redirect != ''>
-		return new ${loginclass}(<#if loginclass != 'org.molgenis.framework.security.SimpleLogin'>db, "${auth_redirect}"</#if>);
+		return new ${loginclass}(db, "${auth_redirect}");
 	<#else>
-		return new ${loginclass}(<#if loginclass != 'org.molgenis.framework.security.SimpleLogin'>db</#if>);
+		return new ${loginclass}(db);
 	</#if>
 	}
 
