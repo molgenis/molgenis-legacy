@@ -103,35 +103,34 @@
 			<unique fields="name" description="Name is unique within its type " />
 		</entity>
 		<!--
-		<entity name="MolgenisUserGroup" system="true" implements="Nameable">
+			<entity name="MolgenisUserGroup" system="true" implements="Nameable">
 			<description>A unit to collect users togethers as 'members' and then
-				set view and/or edit permissions for all of them together. If a user
-				is allowed to edit he/she is also allowed to view the data.
-			</description>
-			<field name="members" type="mref" xref_entity="MolgenisUser"
-				description="references to of zero or more users that are members of this group" />
-			<field name="allowedToView" type="mref" xref_entity="MolgenisEntity"
-				description="list of zero or more entities the members of this usergroup may view." />
-			<field name="allowedToEdit" type="mref" xref_entity="MolgenisEntity"
-				description="list of zero or more entities the members of this usergroup may edit." />
-			<field name="viewAll" type="bool" default="false"
-				description="when set to true the group members can view all entities" />
-			<field name="editAll" type="bool" default="false"
-				description="when set to true the group members can edit all entities (making them superuser). DISCUSSION: should exclude system entities?" />
-		</entity>
-		<entity name="MolgenisUser" system="true" implements="Nameable">
-			<description>Anyone who can login</description>
-			<field name="password" description="password of this user (needs to be md5)" />
-			<field name="superuser" label="isSuperuser" type="bool"
-				default="false"
-				description="if set to true this user can edit all entities irrespective of the group rights." />
-			<field name="active" type="bool" default="true" />
-		</entity>
-		<entity name="MolgenisEntity" system="true" implements="Nameable">
-			<description> Referenceable catalog of entity names, that are the
-				data types used by the permission system.</description>
-			<field name="className" description="Full classpath name of the entity type" />
-		</entity>
+			set view and/or edit permissions for all of them together. If a user
+			is allowed to edit he/she is also allowed to view the data.
+			</description> <field name="members" type="mref"
+			xref_entity="MolgenisUser" description="references to of zero or more
+			users that are members of this group" /> <field name="allowedToView"
+			type="mref" xref_entity="MolgenisEntity" description="list of zero or
+			more entities the members of this usergroup may view." /> <field
+			name="allowedToEdit" type="mref" xref_entity="MolgenisEntity"
+			description="list of zero or more entities the members of this
+			usergroup may edit." /> <field name="viewAll" type="bool"
+			default="false" description="when set to true the group members can
+			view all entities" /> <field name="editAll" type="bool"
+			default="false" description="when set to true the group members can
+			edit all entities (making them superuser). DISCUSSION: should exclude
+			system entities?" /> </entity> <entity name="MolgenisUser"
+			system="true" implements="Nameable"> <description>Anyone who can
+			login</description> <field name="password" description="password of
+			this user (needs to be md5)" /> <field name="superuser"
+			label="isSuperuser" type="bool" default="false" description="if set
+			to true this user can edit all entities irrespective of the group
+			rights." /> <field name="active" type="bool" default="true" />
+			</entity> <entity name="MolgenisEntity" system="true"
+			implements="Nameable"> <description> Referenceable catalog of entity
+			names, that are the data types used by the permission
+			system.</description> <field name="className" description="Full
+			classpath name of the entity type" /> </entity>
 		-->
 		<entity name="MolgenisFile" abstract="false" implements="Nameable"
 			decorator="decorators.MolgenisFileDecorator">
@@ -150,11 +149,17 @@
 				description="The file extension. This will be mapped to MIME type at runtime. For example, a type 'png' will be served out as 'image/png'." />
 		</entity>
 		<entity name="Publication" implements="Nameable">
-			<description>	Publication is part of the Investigation package and is used to represent information about one or more publications related to an
-				Investigation. The publication need not only be primary publication	for an Investigation but may also represent other related
-				information- though this use is less common. Publications have	attributes of publications Authors and also DOI and Pubmed
-				identifiers (when these are available). These are represented as OntologyTerms as in the MAGE-TAB model all 'xrefs' (cross
-				references) for ontologies and accession numbers are handled generically. An example of a publication is available in an IDF file
+			<description>
+				Publication is part of the Investigation package and is used to
+				represent information about one or more publications related to an
+				Investigation. The publication need not only be primary publication
+				for an Investigation but may also represent other related
+				information- though this use is less common. Publications have
+				attributes of publications Authors and also DOI and Pubmed
+				identifiers (when these are available). These are represented as
+				OntologyTerms as in the MAGE-TAB model all 'xrefs' (cross
+				references) for ontologies and accession numbers are handled
+				generically. An example of a publication is available in an IDF file
 				from ArrayExpress is experiment E-MTAB-506
 				<a
 					href="ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/TABM/E-TABM-506/E-TABM-506.idf.txt">ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/TABM/E-TABM-506/E-TABM-506.idf.txt
@@ -174,8 +179,13 @@
 				description="The title of the Publication" nillable="true"/
 			-->
 			<field name="Title" label="Publication Title" description="The title of the Publication" />
-			<field name="Status" label="Publication Status" description="The status of the Publication"	type="xref" xref_entity="OntologyTerm" nillable="true" />
-			<!-- was like this : <field name="Status" label="Publication Status" description="The status of the Publication" type="xref" xref_field="OntologyTerm.id" nillable="true" />  -->
+			<field name="Status" label="Publication Status" description="The status of the Publication"
+				type="xref" xref_entity="OntologyTerm" nillable="true" />
+			<!--
+				was like this : <field name="Status" label="Publication Status"
+				description="The status of the Publication" type="xref"
+				xref_field="OntologyTerm.id" nillable="true" />
+			-->
 			<unique fields="Name" />
 		</entity>
 		<entity name="UseCase" label="Use Cases">
@@ -185,6 +195,14 @@
 			<field name="UseCaseName" type="string" />
 			<field name="SearchType" type="string" />
 			<unique fields="UseCaseId" />
+		</entity>
+		<entity name="MolgenisEntity" system="true" implements="Identifiable">
+			<description>Referenceable catalog of entity names, menus, forms and
+				plugins.</description>
+			<field name="name" description="Name of the entity" />
+			<field name="type_" description="Type of the entity" />
+			<field name="className" unique="true" description="Full name of the entity" />
+			<unique fields="name,type_" />
 		</entity>
 	</module>
 </molgenis>

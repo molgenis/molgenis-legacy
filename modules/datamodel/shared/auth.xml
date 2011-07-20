@@ -36,13 +36,6 @@
 			<field name="superuser" type="bool" default="false" />
 			<!-- todo: profile: picture, field, address, zip, timezone, flag to set public email, website, other details -->
 		</entity>
-		<entity name="MolgenisEntity" system="true" implements="Identifiable">
-			<description>Referenceable catalog of entity names, menus, forms and plugins.</description>
-			<field name="name" description="Name of the entity" />
-			<field name="type_" description="Type of the entity"/>
-			<field name="className" unique="true" description="Full name of the entity" />
-			<unique fields="name,type_"/>
-		</entity>
 		<entity name="MolgenisPermission" system="true" implements="Identifiable">
 			<field name="role_" type="xref" xref_field="MolgenisRole.id" xref_label="name"/>
 			<field name="entity" type="xref" xref_field="MolgenisEntity.id" xref_label="className"/>
