@@ -6,6 +6,8 @@ plus passing of properties
 <project>
 	<!-- requires app_name, app_properties properties and app_src path -->
 	<fail unless="app_properties">app_properties is not set. Did you use the right build_xyz.xml?</fail>
+	<available file="${app_properties}" property="isFileAvail" />
+	<fail unless="isFileAvail" message="app_properties file not found: ${app_properties}" />
 	<fail unless="app_name">app_name is not set. Did you use the right build_xyz.xml?</fail>
 
 	<!-- static properties shared between all apps-->
@@ -186,7 +188,7 @@ plus passing of properties
 		
 		<!-- add generated src as well -->
 		<property name="app_xml2" value="&lt;classpathentry kind=&quot;src&quot; path=&quot;${app_xml}&quot;/&gt;"/>
-		<property name="app_xml3" value="&lt;classpathentry kind=&quot;src&quot; path=&quot;${output_sql}&quot;/&gt;&lt;classpathentry kind=&quot;src&quot; path=&quot;${output_src}&quot;/&gt;${app_xml2}"/>
+		<property name="app_xml3" value="${app_xml2}&lt;classpathentry kind=&quot;src&quot; path=&quot;${output_sql}&quot;/&gt;&lt;classpathentry kind=&quot;src&quot; path=&quot;${output_src}&quot;/&gt;"/>
 		<echo message="eclipse .classpath xml: ${app_xml3}"/>
 	
 		<xmltask source=".classpath" dest=".classpath" outputter="simple">
