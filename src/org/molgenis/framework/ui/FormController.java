@@ -494,14 +494,15 @@ public abstract class FormController<E extends Entity> extends
 			// if (view.getMode().equals(Mode.EDIT_VIEW) && !view.isReadonly())
 			// view.setMode(Mode.RECORD_VIEW);
 
-			if (model.getMode().equals(Mode.EDIT_VIEW)) pager.setLimit(1);
+			if (model.getMode().equals(Mode.EDIT_VIEW))
+				pager.setLimit(1);
 			else
 				pager.setLimit(model.getLimit());
 
 			// refresh pager and options
 			if (model.isReadonly())
 			// view.getDatabase().cacheXrefOptions(view.getEntityClass());
-			pager.refresh(db);
+				pager.refresh(db);
 
 			// update view
 
@@ -574,7 +575,8 @@ public abstract class FormController<E extends Entity> extends
 			boolean rowReadonly = formReadonly
 					|| !model.getSecurity().canWrite(record.getClass());
 
-			if (rowReadonly) record.setReadonly(true);
+			if (rowReadonly) 
+				record.setReadonly(true);
 			// else
 			// recordreadonly = false;
 
