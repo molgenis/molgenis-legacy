@@ -1438,9 +1438,13 @@ public class Entity extends DBSchema implements Record
 			{
 				//use secondary keys, otherwise primary keys
 				List<Field> keyFields = null;
-				if (this.getKeys().size() > 1) keyFields = this.getKeyFields(1);
-				else keyFields = this.getKeyFields(0);
-				for (Field f :keyFields)
+				if (this.getKeys().size() > 1) {
+					keyFields = this.getKeyFields(1);
+				} else {
+					keyFields = this.getKeyFields(0);
+				}
+				
+				for (Field f : keyFields)
 				{
 					result.add(f.getName());
 				}
