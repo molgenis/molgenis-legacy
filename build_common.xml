@@ -125,6 +125,7 @@ plus passing of properties
 		<path id="combined.class.path">
 			<path refid="molgenis.classpath"/>
 			<path refid="app.class.path"/>
+			<path location="${output_src}"/>
 		</path>
 		
 		
@@ -183,7 +184,7 @@ plus passing of properties
 		
 		<!-- add generated src as well -->
 		<property name="app_xml2" value="&lt;classpathentry kind=&quot;src&quot; path=&quot;${app_xml}&quot;/&gt;"/>
-		<property name="app_xml3" value="&lt;classpathentry kind=&quot;src&quot; path=&quot;${output_src}&quot;/&gt;${app_xml2}"/>
+		<property name="app_xml3" value="&lt;classpathentry kind=&quot;src&quot; path=&quot;${output_sql}&quot;/&gt;&lt;classpathentry kind=&quot;src&quot; path=&quot;${output_src}&quot;/&gt;${app_xml2}"/>
 		<echo message="eclipse .classpath xml: ${app_xml3}"/>
 	
 		<xmltask source=".classpath" dest=".classpath" outputter="simple">

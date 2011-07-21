@@ -15,6 +15,7 @@
 		<pathelement location="modules/matrix" />
 		<pathelement location="modules/auth" />
 		<pathelement location="apps/ngs" />
+		<pathelement location="modules/datamodel" />
 	</path>
 
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
