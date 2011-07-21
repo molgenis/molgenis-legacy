@@ -192,7 +192,7 @@ plus passing of properties
 		<echo message="eclipse .classpath xml: ${app_xml3}"/>
 	
 		<xmltask source=".classpath" dest=".classpath" outputter="simple">
-			<remove path="classpath/classpathentry[@kind='src']"/>
+			<remove path="classpath/classpathentry[@kind='src' and not(@exported)]"/>
 			<insert path="classpath" position="under" xml="${app_xml3}"/>
 		</xmltask>
 		
