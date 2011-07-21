@@ -133,6 +133,41 @@ public class TarGz
 	private static File tarExtract(File archive, File extractDir,
 			boolean nested, List<File> markedDeleted)
 			throws InvalidHeaderException, IOException, InterruptedException
+	{
+		InputStream inStream = System.in;
+
+		try
+		{
+			inStream = new FileInputStream(archive);
+		}
+		catch (IOException ex)
+		{
+			inStream = null;
+			ex.printStackTrace(System.err);
+		}
+		return tarExtract(inStream, extractDir, nested, markedDeleted);
+		
+	}
+	
+	/**
+	 * 
+	 * @param inStream = the inputstream from a file
+	 * @param extractDir
+	 * @param keepNested
+	 *            Extract nested tar.gz files as usual, but do not attempt to
+	 *            delete the nested tar.gz files after extraction. This was
+	 *            added because MS Windows machines do not always have
+	 *            permission to delete these files, causing failed regression
+	 *            tests for no good reason. Default call is and should be
+	 *            'false'.
+	 * @return
+	 * @throws InvalidHeaderException
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	private static File tarExtract(InputStream inStream, File extractDir,
+			boolean nested, List<File> markedDeleted)
+			throws InvalidHeaderException, IOException, InterruptedException
 	// private static File tarExtract(File archive, File extractDir, boolean
 	// nested) throws InvalidHeaderException, IOException
 	{
@@ -144,18 +179,6 @@ public class TarGz
 		{
 			recursiveDelete(extractDir);
 			extractDir.mkdir();
-		}
-
-		InputStream inStream = System.in;
-
-		try
-		{
-			inStream = new FileInputStream(archive);
-		}
-		catch (IOException ex)
-		{
-			inStream = null;
-			ex.printStackTrace(System.err);
 		}
 
 		TarArchive tarchive = null;
@@ -237,10 +260,28 @@ public class TarGz
 	public static File tarExtract(File archive, File extractDir)
 			throws InvalidHeaderException, IOException, InterruptedException
 	{
-		// return tarExtract(archive, extractDir, false, new ArrayList<File>());
 		return tarExtract(archive, extractDir, false, new ArrayList<File>());
 	}
-
+	
+	/**
+	 * Wrapper for private static File tarExtract(InputStream inStream, File extractDir,
+	 * boolean nested, List<File> markedDeleted). Adds nested = false and empty
+	 * file list used ONLY in recursion to avoid MS Windows not deleting the
+	 * appropriate files.
+	 * 
+	 * @param inStream = the inputstream from a file
+	 * @param extractDir
+	 * @return
+	 * @throws InvalidHeaderException
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	public static File tarExtract(InputStream inStream, File extractDir)
+			throws InvalidHeaderException, IOException, InterruptedException
+	{
+		return tarExtract(inStream, extractDir, false, new ArrayList<File>());
+	}
+	
 	/**
 	 * Wrapper for public static File tarExtract(File archive, File extractDir).
 	 * Adds default extractDir by getting the java tmp dir and archive name.
@@ -266,6 +307,32 @@ public class TarGz
 		File extractDir = new File(System.getProperty("java.io.tmpdir")
 				+ File.separator + archiveName + "_extract");
 		return tarExtract(archive, extractDir);
+	}
+	
+	/**
+	 * Wrapper for public static File tarExtract(File archive, File extractDir).
+	 * Adds default extractDir by getting the java tmp dir and archive name.
+	 * 
+	 * @param inStream = the inputstream from a file
+	 * @param keepNested
+	 *            Extract nested tar.gz files as usual, but do not attempt to
+	 *            delete the nested tar.gz files after extraction. This was
+	 *            added because MS Windows machines do not always have
+	 *            permission to delete these files, causing failed regression
+	 *            tests for no good reason. Default call is and should be
+	 *            'false'.
+	 * @return
+	 * @throws InvalidHeaderException
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	public static File tarExtract(InputStream inStream) throws InvalidHeaderException,
+			IOException, InterruptedException
+	{
+		String archiveName = "inputstream_"+System.nanoTime();
+		File extractDir = new File(System.getProperty("java.io.tmpdir")
+				+ File.separator + archiveName + "_extract");
+		return tarExtract(inStream, extractDir);
 	}
 
 	private static List<File> findTarGzFiles(File dir)
