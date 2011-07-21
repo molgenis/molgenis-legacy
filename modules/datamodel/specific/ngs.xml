@@ -92,6 +92,7 @@
 		</entity>
 		<entity name="Worksheet">
 			<!-- simple placeholder of above structure -->
+			<field name="id" type="autoid"/>
 			<field name="status" type="string" />
 			<field name="sample" type="string" />
 			<field name="barcode" type="string" />

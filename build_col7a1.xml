@@ -1,0 +1,23 @@
+<project>
+	<!-- this name is used to name the war file -->
+	<property name="app_name" value="col7a1" />
+
+	<!-- this holds all the settings for the generator -->
+	<property name="app_properties" value="apps/${app_name}/org/molgenis/${app_name}/${app_name}.properties"/>
+	<!-- this determines what handwritten modules should be loaded -->
+	<path id="app.class.path">
+		<pathelement location="apps/${app_name}" />
+		<pathelement location="modules/datamodel" />
+		<pathelement location="modules/auth" />
+		<pathelement location="modules/pheno" />
+		<pathelement location="modules/search" />	
+		<pathelement location="modules/mutation" />	
+		<pathelement location="modules/news" />	
+		<pathelement location="modules/settings" />	
+		<pathelement location="modules/file" />	
+	</path>
+
+	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
+	<import file="build_common.xml" />
+
+</project>
