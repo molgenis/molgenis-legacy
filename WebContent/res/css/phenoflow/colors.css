@@ -1,0 +1,59 @@
+/**5DA55B*/ 
+
+/**color of title*/
+#header {
+    color: #5B82A4;
+}
+
+/**overall background*/
+body,#header,#navigation,#information,#footer {
+    background: white;
+}
+
+/**highlight background*/
+.formscreen, .form_new, .form_filter, .embedtable, .popup, .form_new,.form_filter {
+    background: #EEF5F5;
+}
+
+/**shade header*/
+.leftNavigationSelected,.navigationSelected,.form_header, td.submenuitem:hover {
+    background: #5E9E9E;
+}
+
+/**highlight*/
+.leftNavigationNotSelected,.navigationNotSelected, .form_menu, .submenuitem   {
+    background: #BDD7D7;
+    color: black;
+}
+
+.submenuitem{
+    h: expression(onmouseover=new Function("this.style.backgroundColor='#5E9E9E'; this.style.color='#fff';"),
+                       onmouseout=new Function("this.style.backgroundColor='#BDD7D7'; this.style.color='black';")); 
+    /*ie hack for td.submenuitem:hover*/
+    
+}
+
+/**shade borders*/
+.leftNavigationSelected,.navigationSelected,.formscreen,.form_new,.form_filter,.popup, .form_menu 
+{
+    border-color: #5E9E9E;
+}
+
+/**font color*/
+.leftNavigationSelected,.navigationSelected {
+    color: white;
+}
+
+td .form_listrow0 {
+    background: white;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #5E9E9E;
+}
+
+td .form_listrow1 {
+    background: #BDD7D7;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #5E9E9E;
+}
