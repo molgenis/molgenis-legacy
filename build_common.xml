@@ -181,12 +181,14 @@ plus passing of properties
 			<map from="${user.dir}/" to="" />
 		</pathconvert>
 		
+		<!-- add generated src as well -->
 		<property name="app_xml2" value="&lt;classpathentry kind=&quot;src&quot; path=&quot;${app_xml}&quot;/&gt;"/>
-		<echo message="eclipse .classpath xml: ${app_xml2}"/>
+		<property name="app_xml3" value="&lt;classpathentry kind=&quot;src&quot; path=&quot;${output_src}&quot;/&gt;${app_xml2}"/>
+		<echo message="eclipse .classpath xml: ${app_xml3}"/>
 	
 		<xmltask source=".classpath" dest=".classpath" outputter="simple">
 			<remove path="classpath/classpathentry[@kind='src']"/>
-			<insert path="classpath" position="under" xml="${app_xml2}"/>
+			<insert path="classpath" position="under" xml="${app_xml3}"/>
 		</xmltask>
 		
 	</target>
