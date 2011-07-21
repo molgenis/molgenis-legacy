@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.matrix.FilterableMatrix;
 import org.molgenis.matrix.Matrix;
+import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.TargetFeatureMemoryMatrix;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationTarget;
@@ -25,7 +27,7 @@ public class Browser
 		return model;
 	}
 
-	public Browser(TargetFeatureMemoryMatrix instance) throws Exception
+	public Browser(Matrix instance) throws Exception
 	{
 		// create instance of complete matrix and run checks
 		model.setInstance(instance);
@@ -267,16 +269,19 @@ public class Browser
 	 */
 	public void applyFilters(Tuple request) throws Exception
 	{
+		if (!(this.getModel().getInstance() instanceof FilterableMatrix)) {
+			throw new MatrixException("Error: matrix not filterable");
+		}
 		
-		Matrix filterMatrix = null;
+		FilterableMatrix filterMatrix = null;
 		
 		if(request.getString("__action").equals("filterVisible")){
 			// get the current submatrix (view)
-			filterMatrix = this.getModel().getSubMatrix();
+			filterMatrix = (FilterableMatrix) this.getModel().getSubMatrix();
 		}
 		else if(request.getString("__action").equals("filterAll")){
 			// get the original complete matrix
-			filterMatrix = this.getModel().getInstance();
+			filterMatrix = (FilterableMatrix) this.getModel().getInstance();
 		}else{
 			//unrecognized filter?
 		}
@@ -292,10 +297,8 @@ public class Browser
 				String filterOperator = request.getString("FILTER_OPERATOR_COL_" + colName);
 				QueryRule q = new QueryRule(colName, Operator.valueOf(filterOperator), filterValue);
 				
-				//filterMatrix = filterMatrix.getSubMatrixFilterByColMatrixValues(q);
-				throw new UnsupportedOperationException("getSubMatrixFilterByRowMatrixValues not yet supported in Matrix interface");
-				
-				//this.model.setSubMatrix(filterMatrix);	
+				filterMatrix = filterMatrix.getSubMatrixFilterByColMatrixValues(q);
+				this.model.setSubMatrix(filterMatrix);	
 			}
 		}
 		
@@ -310,10 +313,8 @@ public class Browser
 				String filterOperator = request.getString("FILTER_OPERATOR_ROW_" + rowName);
 				QueryRule q = new QueryRule(rowName, Operator.valueOf(filterOperator), filterValue);
 				
-				//filterMatrix = filterMatrix.getSubMatrixFilterByRowMatrixValues(q);
-				throw new UnsupportedOperationException("getSubMatrixFilterByRowMatrixValues not yet supported in Matrix interface");
-				
-				//this.model.setSubMatrix(filterMatrix);
+				filterMatrix = filterMatrix.getSubMatrixFilterByRowMatrixValues(q);
+				this.model.setSubMatrix(filterMatrix);
 			}
 		}
 		

@@ -4,15 +4,17 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.molgenis.framework.db.QueryRule;
+
 /**
  * Simple 'in-memory' implementation of the Matrix. Data is stored as
  * two-dimensional array.
  * 
  * @param <E>
  */
-public class MemoryMatrix<E, A, V> implements EditableMatrix<E, A, V>
+public class MemoryMatrix<E, A, V> implements Matrix<E, A, V>
 {
-	private V[][] values;
+	protected V[][] values;
 	private List<E> rowNames = new ArrayList<E>();
 	private List<A> colNames = new ArrayList<A>();
 	private Class<V> valueType = null;
@@ -395,58 +397,6 @@ public class MemoryMatrix<E, A, V> implements EditableMatrix<E, A, V>
 	{
 		return (Class<V>) this.values.getClass().getComponentType()
 				.getComponentType();
-	}
-
-	@Override
-	public void setCol(int col, List<V> colValues) throws MatrixException
-	{
-		// colValues must be of same lenght as values
-		if (this.values.length != colValues.size()) throw new MatrixException(
-				"setCol failed: colValues != getRowCount()");
-
-		// col must be inside getColCount
-		if (col >= getColCount()) throw new MatrixException(
-				"setCol failed: col >= getColCount()");
-
-		// in each row set
-		for (int i = 0; i < colValues.size(); i++)
-		{
-			this.values[i][col] = colValues.get(i);
-		}
-
-	}
-
-	@Override
-	public void setCol(A col, List<V> colValues) throws MatrixException
-	{
-		this.setCol(this.getColId(col), colValues);
-
-	}
-
-	@Override
-	public void setRow(int row, List<V> rowValues) throws MatrixException
-	{
-		// rowValues must be in size of colCount
-		if (rowValues.size() != this.getColCount()) throw new MatrixException(
-				"setRow failed: rowValues.size() != getColCount()");
-
-		// row must be in size of rowCount
-		if (row >= getRowCount()) throw new MatrixException(
-				"setRow failed: row >= getRowCount()");
-
-		// iterate
-		for (int i = 0; i < rowValues.size(); i++)
-		{
-			this.values[row][i] = rowValues.get(i);
-		}
-
-	}
-
-	@Override
-	public void setRow(E row, List<V> rowValues) throws MatrixException
-	{
-		this.setRow(getRowId(row), rowValues);
-
 	}
 
 	@Override
