@@ -2,8 +2,6 @@ package org.molgenis.matrix.ui.manager;
 
 import java.util.Map;
 
-import org.molgenis.data.Data;
-
 
 public class MatrixManagerModel {
 

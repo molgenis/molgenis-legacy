@@ -114,6 +114,8 @@ plus passing of properties
 		<echo message="compile :${output_src}:${app_src}" />
 
 		<!-- compile the generated results, use fork to run it with its own memory settings -->
+		<!-- TODO: find out why this fails under Windows. Maybe a slashes issue? -->
+		<!-- Note: setting nowarn to "off" and verbose to "yes" does not give additional information -->
 		<javac fork="true" srcdir="${output_src}:${app_src}" destdir="${build.dir}" nowarn="on" memoryinitialsize="256m" memorymaximumsize="512m">
 			<classpath refid="molgenis.classpath" />
 		</javac>

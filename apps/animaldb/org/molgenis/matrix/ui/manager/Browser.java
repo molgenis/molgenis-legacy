@@ -2,13 +2,9 @@ package org.molgenis.matrix.ui.manager;
 
 import java.util.List;
 
-import matrix.AbstractDataMatrixInstance;
-import org.molgenis.matrix.Matrix;
-
-import org.molgenis.data.Data;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.matrix.Matrix;
 import org.molgenis.matrix.TargetFeatureMemoryMatrix;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationTarget;

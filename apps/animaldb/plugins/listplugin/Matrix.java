@@ -12,7 +12,6 @@ import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
-import matrix.general.MatrixReadException;
 
 import org.apache.log4j.Logger;
 import org.molgenis.util.CsvWriter;
@@ -166,7 +165,7 @@ public abstract class Matrix<E>
 	 */
 	public int getRowIndexForName(String rowName) throws Exception
 	{
-		if (!rowNames.contains(rowName)) throw new MatrixReadException("rowname " + rowName + " not known in matrix");
+		if (!rowNames.contains(rowName)) throw new Exception("rowname " + rowName + " not known in matrix");
 		return this.rowNames.indexOf(rowName);
 	}
 
@@ -180,7 +179,7 @@ public abstract class Matrix<E>
 	 */
 	public int getColIndexForName(String colName) throws Exception
 	{
-		if (!colNames.contains(colName)) throw new MatrixReadException("colname " + colName + " not known in matrix");
+		if (!colNames.contains(colName)) throw new Exception("colname " + colName + " not known in matrix");
 		return this.colNames.indexOf(colName);
 	}
 

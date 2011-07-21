@@ -9,8 +9,6 @@
 	<!-- this determines what handwritten modules should be loaded -->
 	<path id="app.class.path">
 		<pathelement location="apps/animaldb" />
-		<!-- TODO: move shared stuff from xgap to modules/.. so you don't need to generate almost all-->
-		<pathelement location="apps/xgap" />
 		<pathelement location="modules/auth" />
 		<pathelement location="modules/pheno" />
 		<pathelement location="modules/commonqueries" />
@@ -18,13 +16,11 @@
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/settings" />
 		<pathelement location="modules/import"/>
-		<!--pathelement location="modules/search"/-->
 		<pathelement location="modules/news"/>
 		<pathelement location="modules/webserver"/>
 		<pathelement location="modules/matrix"/>
 		<pathelement location="modules/batch"/>
-		<!-- TODO: just playing with sandbox I suppose? Otherwise stuff should move to a module-->
-		<pathelement location="apps/sandbox"/>
+		<pathelement location="modules/search"/>
 	</path>
 	
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->

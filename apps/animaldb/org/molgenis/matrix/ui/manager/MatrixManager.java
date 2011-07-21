@@ -11,7 +11,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -144,44 +143,6 @@ public class MatrixManager extends PluginModel
 		this.model.setRowHeader((this.model.getBrowser().getModel().getRowStart() + 1) + "-"
 				+ this.model.getBrowser().getModel().getRowStop() + " of "
 				+ this.model.getBrowser().getModel().getRowMax());
-	}
-
-	public static boolean dataHasChanged(Data newData, Data oldData)
-	{
-
-		for (String f : oldData.getFields())
-		{
-			// System.out.println("getting + " +f+", old = " + oldData.get(f) +
-			// ", new = " + newData.get(f));
-
-			Object oldAttr = oldData.get(f);
-			Object newAttr = newData.get(f);
-
-			if (oldAttr == null && newAttr == null)
-			{
-				// equal if both are null
-				// System.out.println("TWO NULLS - EQUAL!");
-			}
-			else if (oldAttr == null || newAttr == null)
-			{
-				// unequal if either is null
-				// System.out.println("ONE NULL: DOES NOT EQUAL!");
-				return true;
-			}
-			else if (!newAttr.equals(oldAttr))
-			{
-				// if both not full, perform 'equals'
-				// System.out.println("VALUE DIFFERENCE - DOES NOT EQUAL!");
-				return true;
-			}
-			else
-			{
-				// System.out.println("ALL CONDITIONS MET - EQUAL!");
-			}
-
-		}
-		// System.out.println("ALL EQUAL");
-		return false;
 	}
 
 	@Override
