@@ -86,6 +86,7 @@ plus passing of properties
 		</java>
 
 		<!-- copy all ftl files from module folders-->
+		<!-- concat all elements of app_path together seperated by /**/*, -->
 		<pathconvert property="app_path" refid="app.class.path" pathsep="/**/*,">
 			<map from="${user.dir}/" to="" />
 		</pathconvert>
@@ -94,6 +95,7 @@ plus passing of properties
 		<copy todir="${build.dir}">
 			<!-- watch the traling /**/*.ftl"-->
 			<fileset dir="." includes="${app_path}/**/*" />
+			<!-- cut the two leading directories from path -->
 			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />
 		</copy>
 
