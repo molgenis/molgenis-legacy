@@ -1,6 +1,7 @@
 package regressiontest.matrixquery.help;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 
 import org.molgenis.core.MolgenisFile;
@@ -12,6 +13,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Panel;
+import org.molgenis.util.JarClass;
 import org.molgenis.util.TarGz;
 import org.molgenis.xgap.Chromosome;
 import org.molgenis.xgap.DerivedTrait;
@@ -51,8 +53,15 @@ public class DB
 	}
 	
 	public boolean importExampleData(Database db) throws Exception{
-		File tarFu = new File(this.getClass().getResource("../../csv/tar/gcc_xqtl.tar.gz").getFile());
-		File extractDir = TarGz.tarExtract(tarFu);
+		File tarFu = new File("./publicdata/xqtl/xqtl_exampledata.tar.gz");
+		
+		File extractDir = null;
+		if(tarFu.exists()){
+			extractDir = TarGz.tarExtract(tarFu);
+		}else{
+			InputStream tfi = JarClass.getFileFromJARFile("Application.jar", "xqtl_exampledata.tar.gz");
+			extractDir = TarGz.tarExtract(tfi);
+		}
 		
 		if(ArchiveExportImportPlugin.isExcelFormatXGAPArchive(extractDir)){
 			new XgapExcelImport(extractDir, db, false);

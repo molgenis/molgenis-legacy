@@ -143,6 +143,11 @@
 				<include name="**/*.*" />
 			</fileset>
 		</copy>
+		<copy todir="${build}/">
+			<fileset dir="publicdata/xqtl">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
 
 		<!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
 		<jar jarfile="${dist}/Application.jar" basedir="${build}" update="false">
