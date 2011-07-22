@@ -41,10 +41,13 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MappingDeco
 	@Override
 	public int add(List<E> entities) throws DatabaseException
 	{
+		System.out.println("** DataDecorator - ADD");
 		// default check
 		if(strict){
+			System.out.println("** DataDecorator - strict");
 			NameConvention.validateEntityNamesStrict(entities);
 		}else{
+			System.out.println("** DataDecorator - loose");
 			NameConvention.validateEntityNames(entities);
 		}
 
@@ -59,10 +62,13 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MappingDeco
 	@Override
 	public int update(List<E> entities) throws DatabaseException
 	{
+		System.out.println("** DataDecorator - UPDATE");
 		// default check
 		if(strict){
+			System.out.println("** DataDecorator - strict");
 			NameConvention.validateEntityNamesStrict(entities);
 		}else{
+			System.out.println("** DataDecorator - loose");
 			NameConvention.validateEntityNames(entities);
 		}
 
@@ -75,7 +81,7 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MappingDeco
 		{
 			MolgenisFile mf = null;
 			try{
-			mf = dmh.findMolgenisFile(dm);
+				mf = dmh.findMolgenisFile(dm);
 			}catch(NullPointerException npe){
 				//backend not a file
 			}
@@ -105,9 +111,27 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MappingDeco
 	@Override
 	public int remove(List<E> entities) throws DatabaseException
 	{
-		// TODO: could be enhanced with automatic datasource removal, see
-		// matrix.general.DataMatrixHandler
-		// but BEWARE of cyclic relations between the functions!!
+		System.out.println("** DataDecorator - REMOVE");
+		if(entities.size() > 1){
+			throw new DatabaseException("You can only remove one 'Data' at a time");
+		}
+		
+		//try to find a MolgenisFile for this Data
+		Data dm = entities.get(0);
+		DataMatrixHandler dmh = new DataMatrixHandler(this.getDatabase());
+		MolgenisFile mf = null;
+		try{
+			mf = dmh.findMolgenisFile(dm);
+		}catch(NullPointerException npe){
+			//backend not a file
+		}
+		
+		//if there is one, throw error and do not remove Data
+		if (mf != null)
+		{
+			throw new DatabaseException("This 'Data' still has a file source associated with it. Remove this file first.");
+		}
+		
 		int count = super.remove(entities);
 		return count;
 	}
