@@ -27,7 +27,7 @@ import org.molgenis.framework.db.jdbc.DataSourceWrapper;
 import org.molgenis.framework.db.jdbc.SimpleDataSourceWrapper;
 import org.molgenis.model.elements.Model;
 <#if decorator_overriders != ''>
-import org.molgenis.framework.db.jdbc.JDBCMapper;
+import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.jdbc.MappingDecorator;
 import org.apache.log4j.Logger;
 import java.lang.reflect.Constructor;
@@ -126,12 +126,12 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 					if("${entity.decorator}".substring("${entity.decorator}".lastIndexOf(".")+1).equals(s)){
 						logger.info("${entity.decorator} overwritten for ${JavaName(entity)} entity.");
 						try{
-							Constructor constr = Class.forName("${decorator_overriders}." + s).getDeclaredConstructor(JDBCMapper.class);
+							Constructor constr = Class.forName("${decorator_overriders}." + s).getDeclaredConstructor(Mapper.class);
 							MappingDecorator mapdec = (MappingDecorator) constr.newInstance(new ${entity.namespace}.db.${JavaName(entity)}Mapper(this));
 							<#if auth_loginclass?ends_with("SimpleLogin")>
-								this.putMapper(${entity.namespace}.${JavaName(entity)}.class, mapdec);
+							this.putMapper(${entity.namespace}.${JavaName(entity)}.class, mapdec);
 							<#else>
-								this.putMapper(${entity.namespace}.${JavaName(entity)}.class, new ${entity.decorator}(new ${entity.namespace}.db.${JavaName(entity)}SecurityDecorator(mapdec)));
+							this.putMapper(${entity.namespace}.${JavaName(entity)}.class, new ${entity.namespace}.db.${JavaName(entity)}SecurityDecorator(mapdec));
 							</#if>	
 						}catch(Exception e){
 							e.printStackTrace();
@@ -160,12 +160,12 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 				if("${entity.decorator}".substring("${entity.decorator}".lastIndexOf(".")+1).equals(overrideDecName)){
 					logger.info("Overriding decorator: ${entity.decorator} with ${decorator_overriders}." + overrideDecName);
 					try{
-						Constructor constr = Class.forName("${decorator_overriders}." + overrideDecName).getDeclaredConstructor(JDBCMapper.class);
+						Constructor constr = Class.forName("${decorator_overriders}." + overrideDecName).getDeclaredConstructor(Mapper.class);
 						MappingDecorator mapdec = (MappingDecorator) constr.newInstance(new ${entity.namespace}.db.${JavaName(entity)}Mapper(this));
 						<#if auth_loginclass?ends_with("SimpleLogin")>
 						this.putMapper(${entity.namespace}.${JavaName(entity)}.class, mapdec);
 						<#else>
-						this.putMapper(${entity.namespace}.${JavaName(entity)}.class, new ${entity.decorator}(new ${entity.namespace}.db.${JavaName(entity)}SecurityDecorator(mapdec)));
+						this.putMapper(${entity.namespace}.${JavaName(entity)}.class, new ${entity.namespace}.db.${JavaName(entity)}SecurityDecorator(mapdec));
 						</#if>	
 					}catch(Exception e){
 						e.printStackTrace();
