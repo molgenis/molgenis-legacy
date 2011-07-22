@@ -35,7 +35,6 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/gwascentral"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/animaldb"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/gids"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/handwritten/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/generated/sql"/>
         <wb-resource deploy-path="/" source-path="/modules/commonqueries"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/commonqueries"/>
