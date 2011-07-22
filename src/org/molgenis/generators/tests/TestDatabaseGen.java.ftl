@@ -42,7 +42,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.DatabaseException;
 
-import static  org.testng.AssertJUnit.*;
+import org.testng.AssertJUnit;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -153,22 +153,22 @@ public class TestDatabase
 		//add entities and check counts
 		db.add(entities);
 		Query<${JavaName(entity)}> q = db.query(${JavaName(entity)}.class)<#if entity.hasAncestor() || entity.hasDescendants()>.eq("${typefield()}",${JavaName(entity)}.class.getSimpleName())</#if>;
-		assertEquals(total, q.count());
+		AssertJUnit.assertEquals(total, q.count());
 		List<${JavaName(entity)}> entitiesDb = q.sortASC("${pkey(entity).name}").find();
-		assertEquals(total, entitiesDb.size());
+		AssertJUnit.assertEquals(total, entitiesDb.size());
 <#if databaseImp != 'jpa'>		
 		//compare entities against insert (assumes sorting by id)
 		for(int i = 0; i < total; i++)
 		{
-			assertNotNull(entities.get(i).get${JavaName(pkey(entity))}());
+			AssertJUnit.assertNotNull(entities.get(i).get${JavaName(pkey(entity))}());
 	<#list entity.allFields as f><#if pkey(entity).name != f.name && !f.auto><#if f.type == "date">
 			//check formatted because of milliseconds rounding
-			assertEquals(dateFormat.format(entities.get(i).get${JavaName(f)}()), dateFormat.format(entitiesDb.get(i).get${JavaName(f)}()));
+			AssertJUnit.assertEquals(dateFormat.format(entities.get(i).get${JavaName(f)}()), dateFormat.format(entitiesDb.get(i).get${JavaName(f)}()));
 	<#elseif f.type == "datetime">
 			//check formatted because of milliseconds rounding
-			assertEquals(dateTimeFormat.format(entities.get(i).get${JavaName(f)}()),dateTimeFormat.format(entitiesDb.get(i).get${JavaName(f)}()));
+			AssertJUnit.assertEquals(dateTimeFormat.format(entities.get(i).get${JavaName(f)}()),dateTimeFormat.format(entitiesDb.get(i).get${JavaName(f)}()));
 	<#else>
-			assertEquals(entities.get(i).get${JavaName(f)}(), entitiesDb.get(i).get${JavaName(f)}());
+			AssertJUnit.assertEquals(entities.get(i).get${JavaName(f)}(), entitiesDb.get(i).get${JavaName(f)}());
 	</#if>
 	</#if></#list>		
 		}	
@@ -184,11 +184,11 @@ public class TestDatabase
 				q2.equals("${name(f)}",entity.get${JavaName(f)}());
 				List<${JavaName(entity)}> results = q2.find();
 <#if pkey(entity) == f>
-				assertEquals(results.size(),1);
+				AssertJUnit.assertEquals(results.size(),1);
 </#if>			
 				for(${JavaName(entity)} r: results)
 				{
-					assertEquals(r.get${JavaName(f)}(),entity.get${JavaName(f)}());
+					AssertJUnit.assertEquals(r.get${JavaName(f)}(),entity.get${JavaName(f)}());
 				}
 			}
 </#if></#list>
