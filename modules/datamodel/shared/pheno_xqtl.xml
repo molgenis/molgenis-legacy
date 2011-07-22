@@ -11,7 +11,7 @@
 				dependent (e.g. to only show particular subqueries of ontologies).
 			</description>
 		</entity>
-		<entity name="ObservationElement" implements="InvestigationElement,Authorizable">
+		<entity name="ObservationElement" implements="InvestigationElement">
 			<description> Elements that are the targets or features we are
 				looking at of our research.</description>
 		</entity>
@@ -21,7 +21,7 @@
 				ObservationTarget class maps to XGAP:Subject, METABASE:Patient and
 				maps to Page:Abstract_Observation_Target. The name of
 				observationTargets is unique.</description>
-			<unique fields="name" />
+			<unique fields="name"/>
 		</entity>
 		<entity name="ObservableFeature" extends="ObservationElement">
 			<description>ObservableFeature defines anything that can be observed
