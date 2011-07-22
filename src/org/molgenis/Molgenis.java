@@ -137,6 +137,15 @@ public class Molgenis {
         this(new MolgenisOptions(propertiesFile), generatorsToUse);
     }
 
+    public Molgenis()
+    {
+    }
+    
+    public void init(String propertiesFile, Class<? extends Generator>... generatorsToUse) throws Exception
+    {
+    	new Molgenis(new MolgenisOptions(propertiesFile), generatorsToUse);
+    }
+
     /**
      * Construct a MOLGENIS generator
      * 
@@ -593,7 +602,7 @@ public class Molgenis {
      * @throws CmdLineException
      */
     public void updateDb() throws SQLException, FileNotFoundException,
-            IOException, CmdLineException {
+            IOException {
         updateDb(false);
     }
 
