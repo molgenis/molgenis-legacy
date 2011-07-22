@@ -23,10 +23,12 @@ import commonservice.CommonService;
 public class ViewEventsServlet extends app.servlet.MolgenisServlet {
 	private static final long serialVersionUID = -5860101269122494304L;
 	private static Logger logger = Logger.getLogger(ViewEventsServlet.class);
-	private CommonService ct = CommonService.getInstance();
+	private CommonService ct = null;
 
 	public void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
+		ct = CommonService.getInstance();
 
 		PrintWriter out = response.getWriter();
 		try {

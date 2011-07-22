@@ -28,11 +28,12 @@ import commonservice.CommonService;
 public class AddEventMenuServlet extends app.servlet.MolgenisServlet {
 	private static final long serialVersionUID = -9148847518626490722L;
 	private static Logger logger = Logger.getLogger(AddEventMenuServlet.class);
-	private CommonService ct = CommonService.getInstance();
+	private CommonService ct = null;
 
 	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-
+		ct = CommonService.getInstance();
+		
 		PrintWriter out = response.getWriter();
 		try
 		{

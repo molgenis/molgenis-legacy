@@ -27,11 +27,12 @@ import commonservice.CommonService;
 public class LocationInformationServlet extends app.servlet.MolgenisServlet {
 	private static final long serialVersionUID = -5115596071747077428L;
 	private static Logger logger = Logger.getLogger(LocationInformationServlet.class);
-	private CommonService ct = CommonService.getInstance();
+	private CommonService ct = null;
 
 	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-
+		ct = CommonService.getInstance();
+		
 		PrintWriter out = response.getWriter();
 		try
 		{

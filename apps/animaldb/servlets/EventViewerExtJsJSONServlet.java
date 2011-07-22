@@ -23,7 +23,7 @@ public class EventViewerExtJsJSONServlet extends app.servlet.MolgenisServlet {
 	private static Logger logger = Logger.getLogger(EventViewerExtJsJSONServlet.class);
 	
 	private static PhenoMatrix pm = new PhenoMatrix();
-	private CommonService ct = CommonService.getInstance();
+	private CommonService ct = null;
 	
 	//private static int storedTargetStart;
 	//private static int storedTargetLength;
@@ -33,7 +33,7 @@ public class EventViewerExtJsJSONServlet extends app.servlet.MolgenisServlet {
 
 	public void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+		ct = CommonService.getInstance();
 		PrintWriter out = response.getWriter();
 		try {
 			//Tuple req = new HttpServletRequestTuple(request);

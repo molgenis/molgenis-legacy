@@ -24,13 +24,15 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 	private int nrOfFeatures;
 	private int totalNrOfMeasurements;
 	private List<Integer> investigationIds;
-	private CommonService cq = CommonService.getInstance();
+	private CommonService cq = null;
 	
 	public Database getDatabase() {
 		return db;
 	}
 	
 	public void init(Database db, String targetType, int userId) throws DatabaseException, ParseException {
+		cq = CommonService.getInstance();
+		
 		this.db = db;
 		cq.setDatabase(db);
 		
