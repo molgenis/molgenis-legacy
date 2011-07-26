@@ -67,7 +67,7 @@ public class DownloadXLS <E extends Entity> extends SimpleCommand
 		//TODO : the actual xls headers/formatting 
 		//TODO : this needs different call or TODO just an extra if in abstractMolgenisServlet for the different suffix (.xls) ?
 		//db.find(model.getController().getEntityClass(), new CsvWriter(csvDownload), fieldsToExport, rules);
-		db.find(model.getController().getEntityClass(), new XlsWriter(csvDownload), fieldsToExport, rules);
+		//db.find(model.getController().getEntityClass(), new XlsWriter(csvDownload), fieldsToExport, rules);
 
 
 		return ScreenModel.Show.SHOW_MAIN;
