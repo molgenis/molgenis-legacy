@@ -4,7 +4,7 @@
   <test name="First test">
     <classes>
        <class name="test.TestCsv" />
-        <class name="test.TestDatabase" />
+       <class name="test.TestDatabase" />
     </classes>
   </test>
 </suite>
