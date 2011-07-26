@@ -158,8 +158,8 @@ public interface Database
 	 * @return list of entities that match the example
 	 * @throws DatabaseException
 	 */
-	public <E extends Entity> void find(Class<E> entityClass, XlsWriter writer, List<String> fieldsToExport, QueryRule... rules)
-	throws DatabaseException;
+	//public <E extends Entity> void find(Class<E> entityClass, XlsWriter writer, List<String> fieldsToExport, QueryRule... rules)
+	//throws DatabaseException;
 
 	/**
 	* Find all entity objects matching the not-null properties of one example
