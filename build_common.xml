@@ -87,7 +87,7 @@ plus passing of properties
 
 		<!-- copy all ftl files from module folders-->
 		<!-- concat all elements of app_path together seperated by /**/*, -->
-		<pathconvert property="app_path" refid="app.class.path" pathsep="/**/*,">
+		<pathconvert property="app_path" refid="app.class.path" pathsep="/**/*," dirsep="/">
 			<map from="${user.dir}/" to="" />
 		</pathconvert>
 		<echo message="copying ftl files from: ${app_path}" />
@@ -96,7 +96,8 @@ plus passing of properties
 			<!-- watch the traling /**/*.ftl"-->
 			<fileset dir="." includes="${app_path}/**/*" />
 			<!-- cut the two leading directories from path -->
-			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />
+			<!--mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" /-->
+			<cutdirsmapper dirs="2"/>
 		</copy>
 
 		<!-- copy sql and other resources from generate sql -->
