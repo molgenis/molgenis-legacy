@@ -135,7 +135,8 @@
     <mkdir dir="${dist}"/>
 	<copy todir="${build}">
     <fileset dir="${src}">
-        <include name="**/*.ftl"/>
+        <include name="**/*.*"/>
+    	<exclude name="**/*.java"/>
     </fileset>
 	</copy>
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
