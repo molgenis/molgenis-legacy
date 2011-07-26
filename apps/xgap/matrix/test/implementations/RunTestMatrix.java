@@ -10,12 +10,12 @@ import matrix.test.implementations.general.TestMatrix;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 import org.molgenis.framework.db.Database;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Parameters;
+import org.testng.annotations.Test;
 
 import app.servlet.MolgenisServlet;
 
