@@ -8,7 +8,7 @@
 	
 	<menu name="mainmenu" position="left">
 		<!-- <plugin name="WelcomeScreen" type="plugins.welcome.GidsWelcomeScreenPlugin" label="Welcome"/> -->
-		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Login"/>
+		 <plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Login"/>
 		<!-- <plugin name="ListPlugin" type="plugins.listplugin.ListPlugin" label="Matrix" /> -->
 		<menu name="ImportData" label="Import Data">
 			
