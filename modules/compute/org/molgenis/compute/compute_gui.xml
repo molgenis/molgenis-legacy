@@ -53,10 +53,10 @@
 			<form name="ComputeFeatures"
 				hide_fields="id,Investigation,ontologyReference,targettypeAllowedForRelation,panelLabelAllowedForRelation,temporal,featureType"
 				entity="ComputeFeature" viewtype="list" />
-			<!--  plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard"
-				label="Upload pipelines" /-->
-		</menu>
-		<!--
+			<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard"
+				label="Upload pipelines" />
+        </menu>
+        		<!--
 			<form name="CreateComputeApplication" label="Select pipeline to run"
 			entity="Workflow" viewtype="record"
 			hide_fields="description,Investigation,ontologyReference,ProtocolType,TargetFilter,Contact,Features"
@@ -67,10 +67,12 @@
 			name="ComputePlugin" label="Choose pipeline to run"
 			type="org.molgenis.compute.ComputePlugin" /> </menu>
 		-->
-		<menu name="Reports"><!-- 		
-		DIRTY DEPENDENCIES
-			<plugin name="console" label="Job monitoring"
+		<menu name="Reports">
+            <plugin name="console" label="Job monitoring"
 				type="org.molgenis.compute.ui.ConsolePlugin" />
+            <!--
+		DIRTY DEPENDENCIES
+
 			<menu name="Logs" label="Compute Logs">
 				<form name="ComputeApplications" entity="ComputeApplication"
 					viewtype="record" hide_fields="Investigation,Performer,ontologyReference">

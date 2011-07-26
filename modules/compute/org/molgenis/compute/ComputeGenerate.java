@@ -8,6 +8,6 @@ public class ComputeGenerate
 {
 	public static void main(String[] args) throws Exception
 	{
-		new Molgenis("apps/compute/org/molgenis/compute/compute.properties").generate();
+		new Molgenis("modules/compute/org/molgenis/compute/compute.properties").generate();
 	}
 }
