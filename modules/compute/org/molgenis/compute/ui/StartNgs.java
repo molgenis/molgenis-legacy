@@ -27,6 +27,7 @@ import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.pheno.ObservationElement;
+import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.ComputeApplication;
 import org.molgenis.protocol.ComputeFeature;
@@ -70,7 +71,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
     private HashMap<String, ComputeFeature> computeFeatures = new HashMap<String, ComputeFeature>();
 
     //target of pipeline
-    private ObservationElement target = null;
+    private LibraryLane target = null;
     //whole workflow application
     private ComputeApplication wholeWorkflowApp = null;
 
@@ -186,8 +187,9 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
 
         //our current targer is FlowcellLaneSample
         target = db.query(LibraryLane.class).equals(LibraryLane.LANE, strLane).
-                equals(LibraryLane.FLOWCELL_NAME, strFlowcell).
-                equals(LibraryLane.SAMPLE_NAME, strSample).find().get(0);
+        equals(LibraryLane.FLOWCELL_NAME, strFlowcell).
+        equals(LibraryLane.SAMPLE_NAME, strSample).find().get(0);
+
 
         //add few parameters
         wholeWorkflowApp.setComputeResource("cluster");//for time being
@@ -230,7 +232,6 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
             updater.setMCF(mcf);
             updater.start();
         }
-
 
     }
 
@@ -337,6 +338,8 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
     {
         ComputeApplication app = new ComputeApplication();
         app.setProtocol(protocol);
+        //test setting of workflow element
+        app.setWorkflowElement(workflowElement);
         app.setTime(cal.getTime());
         app.setComputeResource("cluster");
 
@@ -374,7 +377,8 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         Iterator it = entries.iterator();
 
         //this is used for database update with ComputeAppPaths
-        String logpathfile = null;
+        Vector<String> logpathfiles = new Vector<String>();
+        //logpathfile = null;
 
         while (it.hasNext())
         {
@@ -390,7 +394,8 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
             ComputeFeature feature = computeFeatures.get(name);
             if(feature.getFeatureType().equalsIgnoreCase(LOG))
             {
-                logpathfile = value;
+                logpathfiles.addElement(value);
+                //logpathfile = value;
             }
 
             observedValue.setFeature(feature);
@@ -407,6 +412,16 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         weaver.setScriptID(scriptID);
         weaver.setWalltime(protocol.getComputationalTime());
         weaver.setActualCommand(result);
+        //extra for verification test (count # reads)
+        if(app.getWorkflowElement_Name().equalsIgnoreCase("BamIndexElement1"))
+        {
+            String scriptVerification = weaver.makeVerificationScript();
+            weaver.setVerificationCommand(scriptVerification);
+        }
+        else
+           weaver.setVerificationCommand("\n");
+        //finish extra
+
         String remoteLocation = computeFeatures.get("outputdir").getDefaultValue();
 
         System.out.println("remote location: " + remoteLocation);
@@ -414,6 +429,8 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         weaver.setDatasetLocation(remoteLocation);
         //write file for testing purposes
         String scriptFile = weaver.makeScript();
+
+
         String logfile = weaver.getLogfilename();
         pipeline.setPipelinelogpath(logfile);
 
@@ -464,8 +481,11 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         appPaths.setErrpath(weaver.getErrfilename());
         appPaths.setOutpath(weaver.getOutfilename());
         appPaths.setExtralog(weaver.getExtralogfilename());
-        if(logpathfile != null)
-            appPaths.setLogpath(logpathfile);
+//        if(logpathfile != null)
+//            appPaths.setLogpath(logpathfile);
+          if(logpathfiles.size() > 0)
+              for(int iii = 0; iii < logpathfiles.size(); iii++)
+                appPaths.addLogpath(logpathfiles.elementAt(iii));
 
        updater.addComputeAppPath(appPaths);
     }

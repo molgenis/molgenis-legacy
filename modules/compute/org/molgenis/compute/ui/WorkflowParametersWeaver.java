@@ -22,6 +22,7 @@ public class WorkflowParametersWeaver
     private static final String ACTUAL_COMMAND = "actualcommand";
     private static final String SCRIPT_ID = "scriptID";
     private static final String WALLTIME = "walltime";
+    private static final String VERIFICATION_COMMAND = "verificationcommand";
 
     private Hashtable<String, String> scriptParameters = new Hashtable<String, String>();
 
@@ -37,14 +38,21 @@ public class WorkflowParametersWeaver
             "date \"+start time: %m/%d/%y%t %H:%M:%S\" >>${location}/extra/${scriptID}.txt\n" +
             "echo running on node: `hostname` >>${location}/extra/${scriptID}.txt\n" +
             "${actualcommand}\n" +
+            "${verificationcommand}" +
             "printf \"${scriptID}_finished \" >>${location}/log_${jobID}.txt\n" +
             "date \"+finish time: %m/%d/%y%t %H:%M:%S\" >>${location}/extra/${scriptID}.txt\n" +
-            "date \"+DATE: %m/%d/%y%tTIME: %H:%M:%S\" >>${location}/log_${jobID}.txt";
+            "date \"+DATE: %m/%d/%y%tTIME: %H:%M:%S\" >>${location}/log_${jobID}.txt\n";
 
     private String logfilename = "${location}/log_${jobID}.txt";
     private String errfilename = "${location}/err/err_${scriptID}.err";
     private String outfilename = "${location}/out/out_${scriptID}.out";
     private String extrafilename = "${location}/extra/${scriptID}.txt";
+
+    private String verificationTemplate = "java -jar /data/gcc/tools/GATK-1.0.5069/Sting/dist/GenomeAnalysisTK.jar " +
+            "-R /data/gcc/resources/hg19/indices/human_g1k_v37.fa  " +
+            "-I /data/gcc/test_george/819/110214_SN163_391A80MTLABXX_4_AGAGAT.sorted.bam " +
+            "-T CountReads " +
+            ">>${location}/extra/${scriptID}.txt\n";
 
 
     public String weaveFreemarker(String strTemplate, Hashtable<String, String> parameters)
@@ -66,6 +74,12 @@ public class WorkflowParametersWeaver
         //System.out.println("result: " + out.toString());
 
         return out.toString();
+    }
+
+    //extra to test read
+    public String makeVerificationScript()
+    {
+        return weaveFreemarker(verificationTemplate, scriptParameters);
     }
 
     public String makeScript()
@@ -114,6 +128,11 @@ public class WorkflowParametersWeaver
         scriptParameters.put(WALLTIME, str);
     }
 
+    public void setVerificationCommand(String str)
+    {
+        scriptParameters.put(VERIFICATION_COMMAND, str);
+    }
+
     public void writeToFile(String outfilename, String script)
     {
         try
@@ -132,4 +151,5 @@ public class WorkflowParametersWeaver
 
         return weaveFreemarker(extrafilename, scriptParameters);
     }
+
 }

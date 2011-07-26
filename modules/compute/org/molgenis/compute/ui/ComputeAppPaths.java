@@ -2,6 +2,8 @@ package org.molgenis.compute.ui;
 
 import org.molgenis.protocol.ComputeApplication;
 
+import java.util.Vector;
+
 /**
  * Created by IntelliJ IDEA.
  * User: georgebyelas
@@ -11,10 +13,22 @@ import org.molgenis.protocol.ComputeApplication;
  */
 public class ComputeAppPaths
 {
+
+
+    public enum AppStatus
+    {
+        idle, started, finished;
+    }
+
+    private AppStatus prevStatus = AppStatus.idle;
+
+
     ComputeApplication application = null;
-    String logpath;
+    Vector<String> logpaths = new Vector<String>();
     String outpath;
     String errpath;
+    String extralog;
+
 
     public String getExtralog()
     {
@@ -26,8 +40,6 @@ public class ComputeAppPaths
         this.extralog = extralog;
     }
 
-    String extralog;
-
     public ComputeApplication getApplication()
     {
         return application;
@@ -38,15 +50,22 @@ public class ComputeAppPaths
         this.application = application;
     }
 
-    public String getLogpath()
+
+    public void addLogpath(String s)
     {
-        return logpath;
+        logpaths.addElement(s);
     }
 
-    public void setLogpath(String logpath)
+    public String getLogpath(int i)
     {
-        this.logpath = logpath;
+        return logpaths.elementAt(i);
     }
+
+    public int getLogpathSize()
+    {
+        return logpaths.size();
+    }
+
 
     public String getOutpath()
     {
@@ -66,5 +85,15 @@ public class ComputeAppPaths
     public void setErrpath(String errpath)
     {
         this.errpath = errpath;
+    }
+
+    public AppStatus getPrevStatus()
+    {
+        return prevStatus;
+    }
+
+    public void setPrevStatus(AppStatus prevStatus)
+    {
+        this.prevStatus = prevStatus;
     }
 }

@@ -3,6 +3,7 @@ package org.molgenis.compute.ui;
 
 import org.molgenis.compute.monitor.LoggingReader;
 import org.molgenis.compute.monitor.RemoteFileReader;
+import org.molgenis.compute.monitor.RemoteFileToStringReader;
 import org.molgenis.compute.remoteexecutor.RemoteResult;
 import org.molgenis.compute.scriptserver.MCF;
 import org.molgenis.framework.db.Database;
@@ -39,13 +40,10 @@ public class DatabaseUpdater
     private boolean isStarted = false;
     private MCF mcf = null;
 
-    private RemoteFileReader fileReader = new RemoteFileReader();
     private ExecutorService executor = null;
 
-    public enum AppStatus
-    {
-        idle, started, finished;
-    }
+    private RemoteFileToStringReader fileReader = new RemoteFileToStringReader();
+
 
     public void start()
     {
@@ -57,11 +55,11 @@ public class DatabaseUpdater
             {
                 System.out.println(">>> updater report");
 
-                //here it si more efficient to monitor only stArted applications
-                //now we monitor all of them
+                //first "cache" all log files of active pipelines
+                //this is more efficient than read it every log file to find application status later
+                Vector<String> allLogs = readAllLogs();
 
                 Vector<ComputeAppPaths> appToRemove = new Vector<ComputeAppPaths>();
-
                 for (int i = 0; i < activeComputeApps.size(); i++)
                 {
                     ComputeAppPaths appPaths = activeComputeApps.elementAt(i);
@@ -69,12 +67,16 @@ public class DatabaseUpdater
 
                     String name = application.getName();
 
-                    AppStatus status = findStatus(name);
+                    //to avoid transaction if the status is not changed
+                    ComputeAppPaths.AppStatus prevStatus = appPaths.getPrevStatus();
+                    ComputeAppPaths.AppStatus status = findStatus(name, allLogs);
 
-                    //System.out.println("application: " + name + " --->  " + status.toString());
+                    if(prevStatus.equals(status))
+                        continue;
 
+                    appPaths.setPrevStatus(status);
 
-                    if (status.equals(AppStatus.started))
+                    if (status.equals(ComputeAppPaths.AppStatus.started))
                     {
                         application.setStatusCode("started");
                         try
@@ -92,7 +94,7 @@ public class DatabaseUpdater
                             e.printStackTrace();
                         }
                     }
-                    else if (status.equals(AppStatus.finished))
+                    else if (status.equals(ComputeAppPaths.AppStatus.finished))
                     {
                         application.setStatusCode("finished");
 
@@ -103,11 +105,16 @@ public class DatabaseUpdater
                         application.setOutputFile(error);
 
 
-                        if (appPaths.getLogpath() != null)
+                        if (appPaths.getLogpathSize() > 0)
                         {
-                            String log = readRemoteFile(appPaths.getLogpath());
+                            for(int iii = 0; iii < appPaths.getLogpathSize(); iii++)
+                            {
+                                String log = readRemoteFile(appPaths.getLogpath(iii));
                             //application.setLogFile(log);
+                            extralog += "\n-------------------------------------\n";
                             extralog += log;
+                            }
+
                         }
 
                         application.setLogFile(extralog);
@@ -137,38 +144,50 @@ public class DatabaseUpdater
         }, delay * 1000, period * 1000);
     }
 
-    private AppStatus findStatus(String name)
+    private ComputeAppPaths.AppStatus findStatus(String name, Vector<String> allLogs)
     {
-        String logfile = RemoteFileReader.FILE_IS_NOT_EXISTS;
 
-        for (int i = 0; i < mcf.getNumberActivePipelines(); i++)
+        for (int i = 0; i < allLogs.size(); i++)
         {
-            String path = mcf.getPipeline(i).getPipelinelogpath();
-            logfile = readRemoteFile(path);
-            if (!logfile.equalsIgnoreCase(RemoteFileReader.FILE_IS_NOT_EXISTS))
+            String logfile = allLogs.elementAt(i);
+            if (!logfile.equalsIgnoreCase(RemoteFileToStringReader.FILE_IS_NOT_EXISTS))
             {
                 int index_started = logfile.indexOf(name + LoggingReader._STARTED);
                 int index_finished = logfile.indexOf(name + LoggingReader._FINISHED);
 
                 if (index_finished > -1)
-                    return AppStatus.finished;
+                    return ComputeAppPaths.AppStatus.finished;
                 else if (index_started > -1)
-                    return AppStatus.started;
+                    return ComputeAppPaths.AppStatus.started;
             }
 
         }
-        return AppStatus.idle;
+        return ComputeAppPaths.AppStatus.idle;
+    }
+
+    private Vector<String> readAllLogs()
+    {
+        Vector<String> allLogs = new Vector<String>();
+
+        for (int i = 0; i < mcf.getNumberActivePipelines(); i++)
+        {
+            String path = mcf.getPipeline(i).getPipelinelogpath();
+            String logfile = readRemoteFile(path);
+            allLogs.addElement(logfile);
+        }
+
+        return allLogs;
     }
 
     private String readRemoteFile(String path)
     {
+        fileReader.setFilename(path);
+        Future<String> future = executor.submit(fileReader);
 
-        Future<RemoteResult> future = executor.submit(new RemoteFileReader(path));
-
-        RemoteResult back = null;
+        String result = null;
         try
         {
-            back = future.get();
+            result = future.get();
         }
         catch (InterruptedException e)
         {
@@ -178,9 +197,8 @@ public class DatabaseUpdater
         {
             e.printStackTrace();
         }
-
-
-        return new String(back.getData());
+        System.out.println("result: " + result);
+        return result;
     }
 
     public void stop()
@@ -218,7 +236,7 @@ public class DatabaseUpdater
 
         if (executor == null)
         {
-            System.out.println("pizdec");
+            System.out.println("executor does not exist");
         }
     }
 }
