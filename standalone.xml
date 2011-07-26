@@ -36,6 +36,10 @@
 	</target>
 
 	<target name="unjar" depends="init" description="compile the Standalone source ">
+		
+		<!-- Unpack molgenis -->
+		<unjar src="${dist}/molgenis-4.0.0.jar" dest="${build}" overwrite="false" />
+		
 		<!-- Compile the java code from ${src} into ${build} -->
 		<!-- Joeri -->
 		<unjar src="WebContent/WEB-INF/lib/jaxrpc.jar" dest="${build}" overwrite="false" />
@@ -90,7 +94,7 @@
 		</copy>
 		<pathconvert targetos="unix" property="app_src" refid="app.class.path" />
 		<echo message="compiling using src path: ${app_src}" />
-		<javac srcdir="${app_src}" destdir="${build}" classpath="${build}/;${dist}/molgenis-4.0.0.jar" includeantruntime="false" excludes="**/convertors/ulidb/**/*,
+		<javac srcdir="${app_src}" destdir="${build}" classpath="${build}/" includeantruntime="false" excludes="**/convertors/ulidb/**/*,
   		**/plugins/fillanimaldb/**/*,
   		**/compute/**/*" />
 	</target>
