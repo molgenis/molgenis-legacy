@@ -145,7 +145,10 @@ public abstract class FormController<E extends Entity> extends
 
 				// reset the filters...
 				pager.resetFilters();
-				this.rewriteAllRules(db, model.getUserRules());
+				for(QueryRule rewrittenRule: this.rewriteAllRules(db, model.getUserRules()))
+				{
+					pager.addFilter(rewrittenRule);
+				}
 				for (QueryRule r : model.getSystemRules())
 				{
 					pager.addFilter(r);
@@ -380,7 +383,10 @@ public abstract class FormController<E extends Entity> extends
 
 		// reload the filters...
 		pager.resetFilters();
-		this.rewriteAllRules(db, model.getUserRules());
+		for(QueryRule rewrittenRule: this.rewriteAllRules(db, model.getUserRules()))
+		{
+			pager.addFilter(rewrittenRule);
+		}
 
 		for (QueryRule r : model.getSystemRules())
 		{
@@ -395,12 +401,13 @@ public abstract class FormController<E extends Entity> extends
 	 * @throws DatabaseException
 	 * @throws MolgenisModelException
 	 */
-	private void rewriteAllRules(Database db, List<QueryRule> rulesToRewrite)
+	public QueryRule[] rewriteAllRules(Database db, List<QueryRule> rulesToRewrite)
 			throws DatabaseException, MolgenisModelException
 	{
+		List<QueryRule> result = new ArrayList<QueryRule>();
 		for (QueryRule r : rulesToRewrite)
 		{
-			if (r.getField().equals("all"))
+			if ("all".equals(r.getField()))
 			{
 				List<QueryRule> all = new ArrayList<QueryRule>();
 
@@ -444,13 +451,16 @@ public abstract class FormController<E extends Entity> extends
 					}
 				}
 
-				pager.addFilter(new QueryRule(all));
+				//return pager.addFilter(new QueryRule(all));
+				result.add(new QueryRule(all));
 			}
 			else
 			{
-				pager.addFilter(r);
+				//pager.addFilter(r);
+				result.add(r);
 			}
 		}
+		return result.toArray(new QueryRule[result.size()]);
 	}
 
 	// overrides
@@ -483,11 +493,11 @@ public abstract class FormController<E extends Entity> extends
 
 				model.setSystemRules(newSystemRules);
 
-				this.rewriteAllRules(db, model.getUserRules());
-				// for (QueryRule rule : model.getUserRules())
-				// {
-				// pager.addFilter(rule);
-				// }
+				
+				 for (QueryRule rule : this.rewriteAllRules(db, model.getUserRules()))
+				 {
+					 pager.addFilter(rule);
+				 }
 			}
 
 			// check view and set limit accordingly

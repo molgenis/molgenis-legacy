@@ -4,17 +4,20 @@
 package org.molgenis.framework.ui.commands;
 
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
+import org.molgenis.model.MolgenisModelException;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -44,11 +47,25 @@ public class DownloadAllCommand<E extends Entity> extends SimpleCommand
 		logger.debug(this.getName());
 
 		FormModel<? extends Entity> model = this.getFormScreen();
+		FormController<?> controller = ((FormController<?>)this.getController());
 		
-		List<String> fieldsToExport = ((FormController<?>)this.getController()).getVisibleColumnNames();
+		List<String> fieldsToExport = controller.getVisibleColumnNames();
 		
 		//TODO : remove entity name, capitals to small , and remove all _name fields
-		db.find(model.getController().getEntityClass(), new CsvWriter(csvDownload), fieldsToExport, model.getRulesExclLimitOffset());
+		//we need to rewrite rules to accomodate the 'all'
+		QueryRule[] rules;
+		try
+		{
+			rules = controller.rewriteAllRules(db, Arrays.asList(model.getRulesExclLimitOffset()));
+		}
+		catch (MolgenisModelException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new DatabaseException(e);
+		}
+		
+		db.find(model.getController().getEntityClass(), new CsvWriter(csvDownload), fieldsToExport, rules);
 
 		return ScreenModel.Show.SHOW_MAIN;
 	}
