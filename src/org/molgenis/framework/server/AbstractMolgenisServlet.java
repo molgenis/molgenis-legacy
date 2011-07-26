@@ -416,7 +416,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		// login/logout
 		HttpSession session = request.getSession();
 		Login userLogin = null;
-		// Get appplication from session (or create one)
+		// Get application from session (or create one)
 		ApplicationController molgenis = (ApplicationController) session
 				.getAttribute("application");
 
@@ -458,15 +458,15 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		// handle request
 		try
 		{
-			//set the base adress
+			//set the base address
 			
 			
 			Tuple requestTuple = new HttpServletRequestTuple(request, response);
 
 			// action == download an attached file
 			// FIXME move to form controllers handlerequest...
-			if (FileInput.ACTION_DOWNLOAD.equals(requestTuple
-					.getString(ScreenModel.INPUT_ACTION)))
+			
+			if (FileInput.ACTION_DOWNLOAD.equals(requestTuple.getString(ScreenModel.INPUT_ACTION)))
 			{
 				logger.info(requestTuple);
 
@@ -499,11 +499,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				out.close();
 			}
 
-			// action == download, but now in a standard way, handled by
-			// controller
-			else if (ScreenModel.Show.SHOW_DOWNLOAD.equals(requestTuple
-					.getString(FormModel.INPUT_SHOW)))
-			{
+			// action == download, but now in a standard way, handled by controller
+			else if (ScreenModel.Show.SHOW_DOWNLOAD.equals(requestTuple.getString(FormModel.INPUT_SHOW))) {
 				// get the screen that will hande the download request
 				ScreenController<? extends ScreenModel> controller = molgenis
 						.get(requestTuple.getString(ScreenModel.INPUT_TARGET));
@@ -511,10 +508,14 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				// set the headers for the download
 				response.setContentType("application/x-download");
 
+				//TODO : find out the command that requested it and call .txt or .xls 
+			
+				ScreenModel.Show.values();
 				response.setHeader("Content-Disposition",
 						"attachment; filename="
-								+ controller.getName().toLowerCase() + ".txt");
-	
+								+ controller.getName().toLowerCase() + ".tsv");
+				//				+ controller.getName().toLowerCase() + ".txt");
+				
 
 				// let the handleRequest produce the content
 				PrintWriter out = new PrintWriter(response.getOutputStream());
