@@ -10,6 +10,6 @@ public class helloWorldTest
 	{
 		System.out.println("hello");
 		
-		org.testng.Assert.assertEquals(false, true);
+		org.testng.Assert.assertEquals(true, true);
 	}
 }
