@@ -143,7 +143,7 @@ plus passing of properties
 
 		<junitreport todir="${testng.report.dir}">
 			<fileset dir="${testng.report.dir}">
-				<include name="*/*.xml" />
+				<include name="**/*.xml" />
 			</fileset>
 
 			<report format="noframes" todir="${testng.report.dir}" />
