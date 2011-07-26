@@ -183,9 +183,16 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 
 		this.source = new SimpleDataSourceWrapper(dSource);
 
-		File file_source = new File(p.getProperty("db_filepath"));
-		this.fileSource = file_source;
-		fsh = new JDBCFileSourceHelper(this);
+		if(p.getProperty("db_filepath") != null)
+		{
+			File file_source = new File(p.getProperty("db_filepath"));
+			this.fileSource = file_source;
+			fsh = new JDBCFileSourceHelper(this);
+		}
+		else
+		{
+			this.logger.warn("db_filepath is missing");
+		}
 	}
 
 	/**
