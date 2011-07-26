@@ -137,7 +137,7 @@ plus passing of properties
 		
 		<!-- run the tests -->
 		<testng classpathref="combined.class.path" outputDir="${testng.report.dir}" haltOnFailure="true">
-			<xmlfileset dir="${build.dir}" includes="testng.xml" />
+			<xmlfileset dir="${build.dir}" includes="**/*testng.xml" />
 			<jvmarg value="-ea" />
 		</testng>
 
