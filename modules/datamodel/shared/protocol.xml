@@ -220,7 +220,10 @@
 				description="The compute backend used" />
 			<field name="protocol" type="xref" xref_entity="Protocol"
 				description="Reference to the protocol this ProtocolApplication is an application of. Shadows ProtocolApplication.protocol." />
-			<field name="PrevSteps" type="mref" xref_entity="ComputeApplication" nillable="true"
+            <!-- xref to WorkflowElement to test - hardcore # reads counting-->
+            <field name="WorkflowElement" type="xref" xref_entity="WorkflowElement" nillable="true"
+                            description="reference to workflow element of the compute application" />
+            <field name="PrevSteps" type="mref" xref_entity="ComputeApplication" nillable="true"
 				description="To keep track of calculation dependencies == workflow; Note: can be changed at runtime (name was PreviousSteps)" />
 			<field name="ComputeScript" nillable="true" type="text"
 				description="The actual command to be sent to the cluster, is a
