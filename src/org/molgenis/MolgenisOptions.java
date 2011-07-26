@@ -17,7 +17,9 @@ import org.molgenis.util.cmdline.CmdLineParser;
 import org.molgenis.util.cmdline.Option;
 
 /**
- * Option to parameterize the {@link Molgenis} and the {@link org.molgenis.framework.server.MolgenisServer}
+ * Option to parameterize the {@link Molgenis} and the
+ * {@link org.molgenis.framework.server.MolgenisServer}
+ * 
  * @author Morris Swertz
  */
 public class MolgenisOptions
@@ -28,36 +30,40 @@ public class MolgenisOptions
 
 	/**
 	 * Alternative generator cartridges.
+	 * 
 	 * @author Morris Swertz
 	 */
 	public enum MapperImplementation
 	{
 		MULTIQUERY, JPA, PREPARED_STATEMENT, UNKNOWN
 	}
-	
+
 	/** Properties file where this data came from */
 	private String molgenis_properties = "";
 
-	/** relative paths to the data model XML files. Discussion: is COLLECTION good enough here? */
+	/**
+	 * relative paths to the data model XML files. Discussion: is COLLECTION
+	 * good enough here?
+	 */
 	@Option(name = "model_database", param = Option.Param.COLLECTION, type = Option.Type.REQUIRED_ARGUMENT, usage = "File with data structure specification (in MOLGENIS DSL). Default: new ArrayList<String>()")
 	public ArrayList<String> model_database = new ArrayList<String>();
 
 	/** relative path to the ui.xml file */
 	@Option(name = "model_userinterface", param = Option.Param.FILEPATH, type = Option.Type.REQUIRED_ARGUMENT, usage = "File with user interface specification (in MOLGENIS DSL). Can be same file as model_database. Default: ''")
 	public String model_userinterface = "";
-	
-	/** directory where example data lives (used for test and documentation)*/
+
+	/** directory where example data lives (used for test and documentation) */
 	@Option(name = "example_data_dir", param = Option.Param.DIRPATH, type = Option.Type.REQUIRED_ARGUMENT, usage = "Directory where example data lives. Default: 'data'")
 	public String example_data_dir = "data";
-	
-        @Option(name = "output_dir", param = Option.Param.DIRPATH, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Directory where all generated code is stored")
-        public String output_dir = "generated";
-        
-	/** Source directory for generated python*/
+
+	@Option(name = "output_dir", param = Option.Param.DIRPATH, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Directory where all generated code is stored")
+	public String output_dir = "generated";
+
+	/** Source directory for generated python */
 	@Option(name = "output_python", param = Option.Param.DIRPATH, type = Option.Type.REQUIRED_ARGUMENT, usage = "Output-directory for the generated Python classes. Default: 'generated/python'")
 	public String output_python = output_dir + "/python";
 
-	/** Source directory for generated java*/
+	/** Source directory for generated java */
 	@Option(name = "output_src", param = Option.Param.DIRPATH, type = Option.Type.REQUIRED_ARGUMENT, usage = "Output-directory for the generated Java classes. Default: 'generated/java'")
 	public String output_src = output_dir + "/java";
 
@@ -73,8 +79,10 @@ public class MolgenisOptions
 	@Option(name = "output_doc", param = Option.Param.DIRPATH, type = Option.Type.REQUIRED_ARGUMENT, usage = "Output-directory for the generated documentation. Default: 'WebContent/generated-doc'")
 	public String output_doc = "WebContent/generated-doc";
 
-//	@Option(name = "output_type", param = "string", type = Option.Type.REQUIRED_ARGUMENT, usage = "Output type of the project, either war (for use in tomcat) or jar (standalone).")
-//	public String output_type = "";
+	// @Option(name = "output_type", param = "string", type =
+	// Option.Type.REQUIRED_ARGUMENT, usage =
+	// "Output type of the project, either war (for use in tomcat) or jar (standalone).")
+	// public String output_type = "";
 
 	/** Source directory for web content */
 	@Option(name = "output_web", param = Option.Param.DIRPATH, type = Option.Type.REQUIRED_ARGUMENT, usage = "Output-directory for any generated web resources. Default: 'WebContent'")
@@ -87,7 +95,7 @@ public class MolgenisOptions
 	/** Database user */
 	@Option(name = "db_user", param = Option.Param.STRING, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Username for the database. Default: ''")
 	public String db_user = "";
-	
+
 	/** Class folder with overrides for decorators */
 	@Option(name = "decorator_overriders", param = Option.Param.CLASS, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Points to an application package with overriding classes for entity decorators, mapped by name. Default: ''")
 	public String decorator_overriders = "";
@@ -100,14 +108,17 @@ public class MolgenisOptions
 	@Option(name = "db_uri", param = Option.Param.STRING, type = Option.Type.REQUIRED_ARGUMENT, usage = "Uri of the database. Default: 'jdbc:mysql://localhost/molgenis?innodb_autoinc_lock_mode=2'")
 	public String db_uri = "jdbc:mysql://localhost/molgenis?innodb_autoinc_lock_mode=2";
 
-	/** Path where file attachments (&lt;field type="file" ... &gt;) should be stored.*/
+	/**
+	 * Path where file attachments (&lt;field type="file" ... &gt;) should be
+	 * stored.
+	 */
 	@Option(name = "db_filepath", param = Option.Param.DIRPATH, type = Option.Type.REQUIRED_ARGUMENT, usage = "Path where the database should store file attachements. Default: 'data'")
 	public String db_filepath = "data";
-	
+
 	/** TEST Database user */
 	@Option(name = "db_test_user", param = Option.Param.STRING, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Username for the database. Default: ''")
 	public String db_test_user = "molgenis";
-	
+
 	/** TEST Database user password */
 	@Option(name = "db_test_password", param = Option.Param.PASSWORD, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Password for database. Default: ''")
 	public String db_test_password = "molgenis";
@@ -116,23 +127,29 @@ public class MolgenisOptions
 	@Option(name = "db_test_uri", param = Option.Param.STRING, type = Option.Type.REQUIRED_ARGUMENT, usage = "Uri of the database. Default: 'jdbc:mysql://localhost/molgenis?innodb_autoinc_lock_mode=2'")
 	public String db_test_uri = "jdbc:mysql://localhost/molgenis_test?innodb_autoinc_lock_mode=2";
 
-	/** Advanced option: JNDI name that puts the database into the server context */
+	/**
+	 * Advanced option: JNDI name that puts the database into the server context
+	 */
 	@Option(name = "db_jndiname", param = Option.Param.STRING, type = Option.Type.REQUIRED_ARGUMENT, usage = "Used to create a JDBC database resource for the application. Default: 'molgenis_jndi'")
 	public String db_jndiname = "molgenis_jndi";
 
-	/** Advanced option: Type of object relational mapping.*/
+	/** Advanced option: Type of object relational mapping. */
 	@Option(name = "object_relational_mapping", param = Option.Param.STRING, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Expert option: Choosing OR strategy. Either 'class_per_table', 'subclass_per_table', 'hierarchy_per_table'. Default: SUBCLASS_PER_TABLE")
 	public String object_relational_mapping = SUBCLASS_PER_TABLE;
-	
+
 	/** Advanced option: Type of mapper implementation */
 	@Option(name = "mapper_implementation", param = Option.Param.ENUM, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Expert option: Choosing wether multiquery is used instead of prepared statements. Default: MULTIQUERY")
 	public MapperImplementation mapper_implementation = MapperImplementation.MULTIQUERY;
-	
-	/** DISCUSSION: Still used? Add good description here. Fixed typo (persisitence -> persistence), also description is vague, added true/false to the sentence.. */
+
+	/**
+	 * DISCUSSION: Still used? Add good description here. Fixed typo
+	 * (persisitence -> persistence), also description is vague, added
+	 * true/false to the sentence..
+	 */
 	@Option(name = "generate_persistence", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Expert option: Choosing whether persistence.xml is generated by molgenis (true) or supplied by user (false). Default: true")
-	public boolean generate_persistence = true;	
-	
-	/** Advanced option: skip entities marked as 'system="true"'*/
+	public boolean generate_persistence = true;
+
+	/** Advanced option: skip entities marked as 'system="true"' */
 	@Option(name = "exclude_system", param = Option.Param.BOOLEAN, type = Option.Type.REQUIRED_ARGUMENT, usage = "Expert option: Whether system tables should be excluded from generation. Default: true")
 	public boolean exclude_system = true;
 
@@ -143,113 +160,118 @@ public class MolgenisOptions
 	/** Name of form/plugin to redirect to after login */
 	@Option(name = "auth_redirect", param = Option.Param.STRING, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Get name of form/plugin to redirect to after login. Default: ''")
 	public String auth_redirect = "";
-	
+
 	/** email adress used to send emails with */
 	@Option(name = "mail_smtp_from", param = Option.Param.STRING, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Sets the email adress used to send emails from. Default: ''")
 	public String mail_smtp_from = "";
-	
+
 	/** email protocol to be used. For example: smtp or asmpt */
 	@Option(name = "mail_smtp_protocol", param = Option.Param.STRING, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Sets the email protocol, either smtp, smtps or null. Default: 'smtps'")
 	public String mail_smtp_protocol = "smtps";
-	
+
 	/** email server name. For example: localhost */
 	@Option(name = "mail_smtp_hostname", param = Option.Param.STRING, type = Option.Type.OPTIONAL_ARGUMENT, usage = "SMTP host server. Default: 'smtp.gmail.com'")
 	public String mail_smtp_hostname = "smtp.gmail.com";
-	
+
 	/** email server port. For example: 25 */
 	@Option(name = "mail_smtp_port", param = Option.Param.INTEGER, type = Option.Type.OPTIONAL_ARGUMENT, usage = "SMTP host server port. Default: 465")
 	public int mail_smtp_port = 465;
-	
+
 	/** email user name. Keep empty for anonymous */
 	@Option(name = "mail_smtp_user", param = Option.Param.STRING, type = Option.Type.OPTIONAL_ARGUMENT, usage = "SMTP user for authenticated emailing. Default: ''")
 	public String mail_smtp_user = "";
-	
+
 	@Option(name = "mail_smtp_au", param = Option.Param.STRING, type = Option.Type.OPTIONAL_ARGUMENT, usage = "SMTP auth. Default: ''")
 	public String mail_smtp_au = "";
-	
+
 	@Option(name = "generate_R", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Should R-interface be generated. Default: true.")
 	public boolean generate_R = true;
-	
+
 	@Option(name = "generate_BOT", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Should BOT be generated. Default: true.")
 	public boolean generate_BOT = false;
-	
+
 	@Option(name = "linkout_overlay", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Applies an optional overlay of your HTML with linkouts for popular identifier to online databases. Default: false")
 	public boolean linkout_overlay = false;
-	
+
 	@Option(name = "generate_doc", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Should documentation be generated. Default: true.")
 	public boolean generate_doc = true;
-	
+
 	@Option(name = "generate_csv", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Should CsvReaders be generated. Default: true.")
 	public boolean generate_csv = true;
-	
+
 	@Option(name = "generate_Python", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Should Python-interface be generated. Default: false.")
 	public boolean generate_Python = false;
-	
+
 	@Option(name = "generate_tests", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Should run-time testing be generated. Default: true.")
 	public boolean generate_tests = true;
-	
+
 	@Option(name = "generate_ExcelImport", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Should Excel file importing be generated. Default: true.")
 	public boolean generate_ExcelImport = true;
-	
+
 	@Option(name = "generate_MolgenisServlet", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Should The molgenisServlet be generated or does the user supply ones own. Default: true.")
 	public boolean generate_MolgenisServlet = true;
-	
+
 	@Option(name = "db_mode", param = Option.Param.STRING, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Which mode should the molgenisServlet use when contacting the dabase. Default: 'servlet'")
 	public String db_mode = "servlet";
-	
+
 	@Option(name = "output_cpp", param = Option.Param.DIRPATH, type = Option.Type.REQUIRED_ARGUMENT, usage = "Output-directory for the generated CPP classes. Default: 'generated/cpp'")
 	public String output_cpp = output_dir + "/cpp";
-	
+
 	@Option(name = "generate_cpp", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Generate CPP. Default: false")
 	public boolean generate_cpp = false;
-	
+
 	@Option(name = "generate_imdb", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Generate the in memory database classes. Default: true")
 	public boolean generate_imdb = true;
-	
+
 	@Option(name = "generate_sql", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Generate any SQL related classes. Default: true")
 	public boolean generate_sql = true;
-	
+
 	@Option(name = "copy_resources", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Copy resources to generated-res. Default: true")
 	public boolean copy_resources = true;
-	
+
 	@Option(name = "generate_html", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "generate HTML. Default: true")
 	public boolean generate_html = true;
 
 	@Option(name = "generate_rdf", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "generate the RDF API. Default: true")
 	public boolean generate_rdf = true;
-	
+
 	@Option(name = "generate_rest", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "generate the REST API. Default: true")
 	public boolean generate_rest = true;
-	
+
 	@Option(name = "generate_soap", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "generate the SOAP API. Default: true")
 	public boolean generate_soap = true;
-	
+
 	@Option(name = "generate_plugins", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "generate the Molgenis plugin API. Default: true")
 	public boolean generate_plugins = true;
-	
+
 	@Option(name = "generate_decorators", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "generate decorator templates. Default: true")
 	public boolean generate_decorators = true;
-	
-    @Option(name = "delete_generated_folder", param= Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "delete generated Folder before generators are executed. Default: true")
-    //default set to false as partial generation leads to compile problems in for example molgenis_apps
-    public boolean delete_generated_folder = false;
-        
+
+	@Option(name = "delete_generated_folder", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "delete generated Folder before generators are executed. Default: true")
+	// default set to false as partial generation leads to compile problems in
+	// for example molgenis_apps
+	public boolean delete_generated_folder = false;
+
 	// @Option(name = "force_lowercase_names", param = "force_lowercase_names",
 	// type = Option.Type.REQUIRED_ARGUMENT, usage =
 	// "Expert option. Wether all names should be converted to lowercase. Default: true"
 	// )
 	// public boolean force_lowercase_names = false;
 
-//	@Option(name = "verbose", param = "", type = Option.Type.NO_ARGUMENT, usage = "This switch turns the verbose-mode on.")
-//	public boolean verbose = true;
+	// @Option(name = "verbose", param = "", type = Option.Type.NO_ARGUMENT,
+	// usage = "This switch turns the verbose-mode on.")
+	// public boolean verbose = true;
 
-//	@Option(name = "compile", param = "c", type = Option.Type.NO_ARGUMENT, usage = "This switch makes the factory also compile (usefull outside IDE).")
-//	public boolean compile = false;
-	
-//	@Option(name = "force_molgenis_package", param = "force_molgenis_package", type = Option.Type.REQUIRED_ARGUMENT, usage = "Expert option. Whether the generated package should be 'molgenis' or the name specified in the model. Default: false")
-//	public boolean force_molgenis_package = false;
+	// @Option(name = "compile", param = "c", type = Option.Type.NO_ARGUMENT,
+	// usage =
+	// "This switch makes the factory also compile (usefull outside IDE).")
+	// public boolean compile = false;
 
-	
+	// @Option(name = "force_molgenis_package", param =
+	// "force_molgenis_package", type = Option.Type.REQUIRED_ARGUMENT, usage =
+	// "Expert option. Whether the generated package should be 'molgenis' or the name specified in the model. Default: false")
+	// public boolean force_molgenis_package = false;
+
 	/**
 	 * Initialize with the defaults
 	 */
@@ -257,26 +279,31 @@ public class MolgenisOptions
 	{
 
 	}
-	
+
 	/**
 	 * Get the options as a map, used in the UsedMolgenisOptionsGen.ftl template
+	 * 
 	 * @return
 	 * @throws Exception
 	 */
-	public Map<String, Object> getOptionsAsMap() throws Exception{
+	public Map<String, Object> getOptionsAsMap() throws Exception
+	{
 		HashMap<String, Object> result = new HashMap<String, Object>();
 		// use reflection to get the Fields
 		Field[] fields = this.getClass().getDeclaredFields();
-		
+
 		for (int i = 0; i < fields.length; i++)
 		{
 			// only include the annotated fields
 			if (fields[i].isAnnotationPresent(Option.class))
 			{
 				Option opt = fields[i].getAnnotation(Option.class);
-				if (opt.param() == Option.Param.PASSWORD){
+				if (opt.param() == Option.Param.PASSWORD)
+				{
 					result.put(opt.name(), "xxxxxx");
-				}else{
+				}
+				else
+				{
 					result.put(opt.name(), fields[i].get(this));
 				}
 			}
@@ -287,43 +314,50 @@ public class MolgenisOptions
 	/**
 	 * Initialize options from properties file
 	 * 
-	 * @param propertiesFile the path string to molgenis.properties file
+	 * @param propertiesFile
+	 *            the path string to molgenis.properties file
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 * @throws CmdLineException
 	 */
-	public MolgenisOptions(String propertiesFile) throws FileNotFoundException, IOException, CmdLineException
+	public MolgenisOptions(String propertiesFile) throws FileNotFoundException,
+			IOException, CmdLineException
 	{
 		this.molgenis_properties = propertiesFile;
 		Properties props = new Properties();
 		try
 		{
-			//try to load from local files
+			// try to load from local files
 			props.load(new FileInputStream(propertiesFile.trim()));
 		}
 		catch (FileNotFoundException e)
 		{
 			try
 			{
-				//try to load from classpath
-				props.load(ClassLoader.getSystemResourceAsStream(propertiesFile.trim()));
+				// try to load from classpath
+				props.load(ClassLoader.getSystemResourceAsStream(propertiesFile
+						.trim()));
 			}
-			catch(Exception e2)
+			catch (Exception e2)
 			{
-				throw new IOException("couldn't find file " + new File(propertiesFile).getAbsolutePath());
+				throw new IOException("couldn't find file "
+						+ new File(propertiesFile).getAbsolutePath());
 			}
-			
+
 		}
 
 		CmdLineParser parser = new CmdLineParser(this);
 		parser.parse(props);
-		//System.out.println("Mapper implementation molgenis name: " + this.mapper_implementation.name());
+		// System.out.println("Mapper implementation molgenis name: " +
+		// this.mapper_implementation.name());
 
-//		if (new File(propertiesFile).getParentFile() != null)
-//		{
-//			this.path = new File(propertiesFile).getParentFile().getAbsolutePath() + "/";
-//		}
-		Logger.getLogger(this.getClass().getSimpleName()).debug("parsed properties file.");
+		// if (new File(propertiesFile).getParentFile() != null)
+		// {
+		// this.path = new
+		// File(propertiesFile).getParentFile().getAbsolutePath() + "/";
+		// }
+		Logger.getLogger(this.getClass().getSimpleName()).debug(
+				"parsed properties file.");
 	}
 
 	/**
@@ -334,11 +368,23 @@ public class MolgenisOptions
 	 * @throws FileNotFoundException
 	 * @throws CmdLineException
 	 */
-	public MolgenisOptions(Properties properties) throws CmdLineException
+	public MolgenisOptions(Properties properties)
 	{
-		CmdLineParser parser = new CmdLineParser(this);
-		parser.parse(properties);
-		Logger.getLogger(this.getClass().getSimpleName()).debug("parsed properties file.");
+		CmdLineParser parser;
+		try
+		{
+			parser = new CmdLineParser(this);
+			parser.parse(properties);
+			Logger.getLogger(this.getClass().getSimpleName()).debug(
+					"parsed properties file.");
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new RuntimeException("Cannot find property file: "
+					+ e.getMessage());
+		}
 	}
 
 	public String toString()
@@ -367,7 +413,7 @@ public class MolgenisOptions
 	{
 		this.model_database = model_database;
 	}
-	
+
 	public void setModelDatabase(String model_database)
 	{
 		ArrayList<String> v = new ArrayList<String>();
@@ -425,15 +471,15 @@ public class MolgenisOptions
 		this.output_doc = output_doc;
 	}
 
-//	public String getOutput_type()
-//	{
-//		return output_type;
-//	}
-//
-//	public void setOutput_type(String output_type)
-//	{
-//		this.output_type = output_type;
-//	}
+	// public String getOutput_type()
+	// {
+	// return output_type;
+	// }
+	//
+	// public void setOutput_type(String output_type)
+	// {
+	// this.output_type = output_type;
+	// }
 
 	public String getOutputWeb()
 	{
@@ -520,7 +566,8 @@ public class MolgenisOptions
 		return mapper_implementation;
 	}
 
-	public void setMapperImplementation(MapperImplementation mapper_implementation)
+	public void setMapperImplementation(
+			MapperImplementation mapper_implementation)
 	{
 		this.mapper_implementation = mapper_implementation;
 	}
@@ -535,15 +582,15 @@ public class MolgenisOptions
 		this.exclude_system = exclude_system;
 	}
 
-//	public boolean isForce_molgenis_package()
-//	{
-//		return force_molgenis_package;
-//	}
-//
-//	public void setForce_molgenis_package(boolean force_molgenis_package)
-//	{
-//		this.force_molgenis_package = force_molgenis_package;
-//	}
+	// public boolean isForce_molgenis_package()
+	// {
+	// return force_molgenis_package;
+	// }
+	//
+	// public void setForce_molgenis_package(boolean force_molgenis_package)
+	// {
+	// this.force_molgenis_package = force_molgenis_package;
+	// }
 
 	public String getAuthLoginclass()
 	{
@@ -555,26 +602,26 @@ public class MolgenisOptions
 		this.auth_loginclass = auth_loginclass;
 	}
 
-//	public boolean isVerbose()
-//	{
-//		return verbose;
-//	}
-//
-//	public void setVerbose(boolean verbose)
-//	{
-//		this.verbose = verbose;
-//	}
+	// public boolean isVerbose()
+	// {
+	// return verbose;
+	// }
+	//
+	// public void setVerbose(boolean verbose)
+	// {
+	// this.verbose = verbose;
+	// }
 
-//	public boolean isCompile()
-//	{
-//		return compile;
-//	}
-//
-//	public void setCompile(boolean compile)
-//	{
-//		this.compile = compile;
-//	}
-	
+	// public boolean isCompile()
+	// {
+	// return compile;
+	// }
+	//
+	// public void setCompile(boolean compile)
+	// {
+	// this.compile = compile;
+	// }
+
 	// internal
 	public String path = "";
 
@@ -597,6 +644,5 @@ public class MolgenisOptions
 	{
 		molgenis_properties = molgenisProperties;
 	}
-	
-	
+
 }

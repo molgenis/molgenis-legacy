@@ -37,6 +37,7 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.ResultSetTuple;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.cmdline.CmdLineException;
 
 /**
  * JDBC implementation of Database to query relational databases.
@@ -128,17 +129,18 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 
 	public JDBCDatabase(Properties p)
 	{
-		BasicDataSource dSource = new BasicDataSource();
-		dSource.setDriverClassName(p.getProperty("db_driver"));
-		dSource.setUsername(p.getProperty("db_user"));
-		dSource.setPassword(p.getProperty("db_password"));
-		dSource.setUrl(p.getProperty("db_uri"));
-
-		this.source = new SimpleDataSourceWrapper(dSource);
-
-		File file_source = new File(p.getProperty("db_filepath"));
-		this.fileSource = file_source;
-		fsh = new JDBCFileSourceHelper(this);
+		this(new MolgenisOptions(p));
+//		BasicDataSource dSource = new BasicDataSource();
+//		dSource.setDriverClassName(p.getProperty("db_driver"));
+//		dSource.setUsername(p.getProperty("db_user"));
+//		dSource.setPassword(p.getProperty("db_password"));
+//		dSource.setUrl(p.getProperty("db_uri"));
+//
+//		this.source = new SimpleDataSourceWrapper(dSource);
+//
+//		File file_source = new File(p.getProperty("db_filepath"));
+//		this.fileSource = file_source;
+//		fsh = new JDBCFileSourceHelper(this);
 	}
 
 	public JDBCDatabase(File propertiesFilePath) throws FileNotFoundException,
