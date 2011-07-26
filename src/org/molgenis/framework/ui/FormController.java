@@ -430,9 +430,7 @@ public abstract class FormController<E extends Entity> extends
 
 						// getsSearchField will map the field to field_name in
 						// case of xref/mref
-						QueryRule fieldRule = new QueryRule(this
-								.getSearchField(field.getName()), r
-								.getOperator(), r.getValue());
+						QueryRule fieldRule = new QueryRule(this.getSearchField(field.getName()), r.getOperator(), r.getValue());
 						// if(field.getType().getClass().getSimpleName().equals("XrefField")
 						// ||
 						// field.getType().getClass().getSimpleName().equals("MrefField")

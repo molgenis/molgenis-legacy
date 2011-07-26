@@ -29,6 +29,7 @@ import org.molgenis.model.elements.Model;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
+import org.molgenis.util.XlsWriter;
 
 /**
  * Interface to manage and search persistent data Entity objects.
@@ -157,6 +158,21 @@ public interface Database
 	 * @return list of entities that match the example
 	 * @throws DatabaseException
 	 */
+	public <E extends Entity> void find(Class<E> entityClass, XlsWriter writer, List<String> fieldsToExport, QueryRule... rules)
+	throws DatabaseException;
+
+	/**
+	* Find all entity objects matching the not-null properties of one example
+	* object.
+	* 
+	* @param <E>
+	*            type of entity
+	* @param example
+	*            object which not-null properties will be used as QueryRules
+	*            for search
+	* @return list of entities that match the example
+	* @throws DatabaseException
+	*/
 	public <E extends Entity> List<E> findByExample(E example) throws DatabaseException;
 
 	/**
