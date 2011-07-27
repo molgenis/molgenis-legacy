@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="xqtl_dev" default="compile_app" basedir=".">
 	<description>
-        ANT file for xQTL development
+        ANT file for xQTL development. Complete from-scratch compile and run.
+		Work in progress, will update with more doc to explain things.
     </description>
 
+	<!--
+	Application class path. Describes the location of the app and the modules it consists of.
+	-->
 	<path id="app.class.path">
 		<pathelement location="apps/xgap" />
 		<pathelement location="generated/java" />
@@ -16,20 +20,25 @@
 		<pathelement location="modules/pheno" />
 		<pathelement location="modules/settings" />
 	</path>
-	
+
+	<!-- Path ref to the molgenis libraries -->
 	<path id="molgenis-libs">
 		<fileset dir="../molgenis/lib">
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
 
+	<!-- Path ref to the application libraries -->
 	<path id="app-libs">
 		<fileset dir="WebContent/WEB-INF/lib">
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
-	
-	<target name="clean" description="Delete the content of the app build, app generated and Molgenis build folders">
+
+	<!--
+	Step 0: Delete the content of the app build, app generated and Molgenis build folders.
+	-->
+	<target name="clean" description="Delete generated and build content">
 		<delete includeemptydirs="true">
 			<fileset dir="build" includes="**/*" />
 		</delete>
@@ -40,7 +49,7 @@
 			<fileset dir="generated" includes="**/*" />
 		</delete>
 	</target>
-	
+
 	<!--
 	Step 1: Compile MOLGENIS. This is assumed to be in your 'workspace'.
 	(e.g. you run this script in '/somedir/molgenis_apps', then molgenis must be in '/somedir/molgenis')
@@ -66,7 +75,7 @@
 	Step 2: Generate the application. This assumes you have compiled molgenis.
 	The molgenis/build and libraries are used as classpath.
 	-->
-	<target name="generate" depends="compile_molgenis" description="Generate the application">
+	<target name="generate_app" depends="compile_molgenis" description="Generate the application">
 		<java classname="org.molgenis.Molgenis" fork="yes" failonerror="true">
 			<arg value="apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl.properties" />
 			<classpath>
@@ -75,35 +84,38 @@
 			</classpath>
 		</java>
 	</target>
-	
+
 	<!--
 	Step 3: Compile generated datatypes. However we must exclude the security decorators,
 	which depend on the org.molgenis.auth.service module.
 	 -->
-	<target name="compile_gd" depends="generate" description="Compile generated datatypes">
+	<target name="compile_datatypes" depends="generate_app" description="Compile generated datatypes">
 		<javac srcdir="generated/java/org" excludes="**/*Decorator.java" destdir="build" includeantruntime="false">
 			<classpath>
 				<path refid="molgenis-libs" />
-				<!--path refid="app-libs" /-->
 				<path location="../molgenis/build" />
 			</classpath>
 		</javac>
 	</target>
-	
-	<!-- compile the actual app -->
-	<target name="compile_app" depends="compile_gd" description="Compile">
-			<pathconvert targetos="unix" property="app_src" refid="app.class.path" />
-			<javac srcdir="${app_src}" destdir="build" includeantruntime="false" excludes="**/WebTest.java">
-				<classpath>
-					<path refid="molgenis-libs" />
-					<path refid="app-libs" />
-					<path location="../molgenis/build" />
-				</classpath>
-			</javac>
-		</target>
-	
-	<!-- compile other generated stuff that depends on the app -->
-	<target name="compile_gs" depends="compile_app" description="Compile app and test">
+
+	<!--
+	Step 4: Compile the actual application using the components specified in app.class.path.
+	-->
+	<target name="compile_app" depends="compile_datatypes" description="Compile application">
+		<pathconvert targetos="unix" property="app_src" refid="app.class.path" />
+		<javac srcdir="${app_src}" destdir="build" includeantruntime="false" excludes="**/WebTest.java">
+			<classpath>
+				<path refid="molgenis-libs" />
+				<path refid="app-libs" />
+				<path location="../molgenis/build" />
+			</classpath>
+		</javac>
+	</target>
+
+	<!--
+	Step 5: Compile other generated parts that depends on having the application compiled first
+	-->
+	<target name="compile_other" depends="compile_app" description="Compile other generated">
 		<javac srcdir="generated/java/app" destdir="build" includeantruntime="false">
 			<classpath>
 				<path refid="molgenis-libs" />
@@ -117,9 +129,41 @@
 			</classpath>
 		</javac>
 	</target>
-	
-	<!-- Run the app -->
-	<target name="run" depends="compile_gs">
+
+
+	<!--
+	Step 6: Copy resources other than Java files from the locations of app.class.path
+	into the build folder
+	-->
+	<target name="copy_resources" depends="compile_other">
+
+		<!-- Grab the elements of app.class.path and convert to make a fileset pattern
+		usable by fileset. We concatenate the elements with '/**/*,' to grab all files.
+		The regexp cuts off everything until the original specified path location. Eg:
+		"/Users/joerivandervelde/Workspaces/workspace-23-03-2010/molgenis_apps/apps/xgap"
+		becomes "apps/xgap/**/*".
+		-->
+		<pathconvert pathsep="/**/*," refid="app.class.path" property="app_fileset_pattern">
+			<regexpmapper from=".*/(.*/.*)" to="\1" />
+		</pathconvert>
+
+		<!-- Grab all files from the fileset pattern, excluding Java files -->
+		<fileset dir="." id="app_fileset" includes="${app_fileset_pattern}/**/*">
+			<exclude name="**/*.java" />
+		</fileset>
+
+		<!-- Copy to build dir. Use a regexp to remove the leading locations
+		such as 'apps/xgap' or 'modules/pheno' -->
+		<copy todir="build" verbose="true">
+			<fileset refid="app_fileset" />
+			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />
+		</copy>
+	</target>
+
+	<!--
+	Step 7: Start the application
+	-->
+	<target name="run" depends="copy_resources" description="Start the application">
 		<java classname="boot.RunStandalone" fork="yes" failonerror="true">
 			<classpath>
 				<path refid="molgenis-libs" />
