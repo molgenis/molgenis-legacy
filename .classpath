@@ -1,44 +1,61 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-
+<?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-  <classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"></classpathentry>
-  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/charts4j-1.2.jar"></classpathentry>
-  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/jaxrpc.jar"></classpathentry>
-  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/keggapi.jar"></classpathentry>
-  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/lucene-core-3.0.2.jar"></classpathentry>
-  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/lucene-highlighter-3.0.1.jar"></classpathentry>
-  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/mindterm.jar"></classpathentry>
-  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/mydas-1.6.0.jar"></classpathentry>
-  <classpathentry combineaccessrules="false" exported="true" kind="src" path="/molgenis"></classpathentry>
-  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/spssw-1.66.jar"></classpathentry>
-  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/iText-5.0.6.jar"></classpathentry>
-  <classpathentry exported="true" kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v6.0"></classpathentry>
-  <classpathentry exported="true" kind="con" path="org.eclipse.jst.j2ee.internal.module.container"></classpathentry>
-  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/vaadin-6.5.2.jar"></classpathentry>
-  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/vaadin-externallayout-0.5.jar"></classpathentry>
-  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/pircbot.jar"></classpathentry>
-  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/axis.jar"></classpathentry>
-  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/commons-discovery-0.4.jar"></classpathentry>
-  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/ontocat-0.9.7.6.jar"></classpathentry>
-  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/simplecaptcha-1.1.1.jar"></classpathentry>
-  <classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"></classpathentry>
-  <classpathentry kind="lib" path="WebContent/WEB-INF/lib/selenium-java-2.2.0.jar"></classpathentry>
-  <classpathentry kind="lib" path="WebContent/WEB-INF/lib/selenium-server-standalone-2.2.0.jar"></classpathentry>
-  <classpathentry kind="output" path="build/classes"></classpathentry>
-  <classpathentry kind="src" path="apps\animaldb"></classpathentry>
-  <classpathentry kind="src" path="modules\auth"></classpathentry>
-  <classpathentry kind="src" path="modules\pheno"></classpathentry>
-  <classpathentry kind="src" path="modules\commonqueries"></classpathentry>
-  <classpathentry kind="src" path="modules\file"></classpathentry>
-  <classpathentry kind="src" path="modules\datamodel"></classpathentry>
-  <classpathentry kind="src" path="modules\settings"></classpathentry>
-  <classpathentry kind="src" path="modules\import"></classpathentry>
-  <classpathentry kind="src" path="modules\news"></classpathentry>
-  <classpathentry kind="src" path="modules\webserver"></classpathentry>
-  <classpathentry kind="src" path="modules\matrix"></classpathentry>
-  <classpathentry kind="src" path="modules\batch"></classpathentry>
-  <classpathentry kind="src" path="modules\search"></classpathentry>
-  <classpathentry kind="src" path="generated/sql"></classpathentry>
-  <classpathentry kind="src" path="generated/java"></classpathentry>
+	<classpathentry kind="src" path="modules/webserver"/>
+	<classpathentry kind="src" path="modules/commonqueries"/>
+	<classpathentry kind="src" path="generated/sql"/>
+	<classpathentry kind="src" path="apps/chd7"/>
+	<classpathentry kind="src" path="apps/lifelines"/>
+	<classpathentry kind="src" path="apps/bioshare"/>
+	<classpathentry kind="src" path="apps/sandbox"/>
+	<classpathentry kind="src" path="apps/maze"/>
+	<classpathentry kind="src" path="apps/bbmri"/>
+	<classpathentry kind="src" path="apps/col7a1"/>
+	<classpathentry kind="src" path="apps/gscf"/>
+	<classpathentry kind="src" path="apps/cvdb"/>
+	<classpathentry kind="src" path="apps/xgap"/>
+	<classpathentry kind="src" path="apps/designgg"/>
+	<classpathentry kind="src" path="apps/lifelinespheno"/>
+	<classpathentry kind="src" path="apps/magetab"/>
+	<classpathentry kind="src" path="apps/ngs"/>
+	<classpathentry kind="src" path="apps/gwascentral"/>
+	<classpathentry kind="src" path="apps/animaldb"/>
+	<classpathentry kind="src" path="apps/gids"/>
+	<classpathentry kind="src" path="modules/search"/>
+	<classpathentry kind="src" path="modules/import"/>
+	<classpathentry kind="src" path="modules/news"/>
+	<classpathentry kind="src" path="modules/pheno"/>
+	<classpathentry kind="src" path="generated/java"/>
+	<classpathentry kind="src" path="modules/matrix"/>
+	<classpathentry kind="src" path="modules/batch"/>
+	<classpathentry kind="src" path="modules/compute"/>
+	<classpathentry kind="src" path="modules/file"/>
+	<classpathentry kind="src" path="modules/auth"/>
+	<classpathentry kind="src" path="modules/mutation"/>
+	<classpathentry kind="src" path="modules/datamodel"/>
+	<classpathentry kind="src" path="modules/settings"/>
+	<classpathentry kind="src" path="apps/gcc"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/charts4j-1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/jaxrpc.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/keggapi.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/lucene-core-3.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/lucene-highlighter-3.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/mindterm.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/mydas-1.6.0.jar"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/molgenis"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/spssw-1.66.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/iText-5.0.6.jar"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v6.0"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/vaadin-6.5.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/vaadin-externallayout-0.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/pircbot.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/axis.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/commons-discovery-0.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/ontocat-0.9.7.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/simplecaptcha-1.1.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/selenium-java-2.2.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/selenium-server-standalone-2.2.0.jar"/>
+	<classpathentry kind="output" path="build/classes"/>
 </classpath>
-
