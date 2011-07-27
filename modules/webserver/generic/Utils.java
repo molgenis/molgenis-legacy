@@ -58,6 +58,10 @@ import javax.swing.JTextArea;
  */
 public class Utils{
 	
+	/*
+	 * BUG we need to not end with a whitespace ? 
+	 * test: TestWebserver.testGenerics
+	 */
 	static public String printDoubleArray(double[] d){
 		String t="";
 		for(double v : d){

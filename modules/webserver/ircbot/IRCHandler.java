@@ -34,7 +34,7 @@ import org.jibble.pircbot.NickAlreadyInUseException;
 public class IRCHandler implements Runnable{
 	private IRCClient ircclient;
 	private static String default_name = "MWorkBOT";
-	private static String default_channel = "molgenis_apps";
+	public static String default_channel = "molgenis_apps";
 	private static String default_irc_host = "irc.freenode.net";
 	
 	String name;
@@ -60,7 +60,7 @@ public class IRCHandler implements Runnable{
 		verbose=v;
 	}
 		
-	boolean connect(String name, int id, String channel,boolean verbose){
+	public boolean connect(String name, int id, String channel,boolean verbose){
 		ircclient = new IRCClient(name,id);
 		ircclient.setVerbose(verbose);
 		try {
