@@ -94,9 +94,8 @@
 		</copy>
 		<pathconvert targetos="unix" property="app_src" refid="app.class.path" />
 		<echo message="compiling using src path: ${app_src}" />
-		<javac srcdir="${app_src}" destdir="${build}" classpath="${build}/" includeantruntime="false" excludes="**/convertors/ulidb/**/*,
-  		**/plugins/fillanimaldb/**/*,
-  		**/compute/**/*" />
+		<javac srcdir="${app_src}" destdir="${build}" classpath="${build}/" includeantruntime="false" excludes=
+			"**/WebTest.java" />
 	</target>
 
 	<target name="package" depends="compile" description="Package the distribution">
@@ -157,8 +156,8 @@
 		<jar jarfile="${dist}/Application.jar" basedir="${build}" update="false">
 			<manifest>
 				<attribute name="Built-By" value="${myname}" />
-				<attribute name="Main-Class" value="RunStandalone" />
-				<attribute name="Class-Path" value="molgenis-4.0.0.jar" />
+				<attribute name="Main-Class" value="boot.RunStandalone" />
+				<!--attribute name="Class-Path" value="molgenis-4.0.0.jar" /-->
 			</manifest>
 		</jar>
 
