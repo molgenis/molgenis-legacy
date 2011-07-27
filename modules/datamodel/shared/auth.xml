@@ -38,7 +38,7 @@
 		</entity>
 		<entity name="MolgenisPermission" system="true" implements="Identifiable">
 			<field name="role_" type="xref" xref_field="MolgenisRole.id" xref_label="name"/>
-			<field name="entity" type="xref" xref_field="MolgenisEntity.id" xref_label="className"/>
+			<field name="entity" type="xref" xref_field="MolgenisEntity.id" />
 			<field name="permission" type="enum" enum_options="[read,write,own]"/>
 			<!-- no use case for 'execute' so don't use it -->
 		</entity>

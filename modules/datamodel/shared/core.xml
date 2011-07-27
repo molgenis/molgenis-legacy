@@ -196,7 +196,7 @@
 			<field name="SearchType" type="string" />
 			<unique fields="UseCaseId" />
 		</entity>
-		<entity name="MolgenisEntity" system="true" implements="Identifiable" xref_label="name" >
+		<entity name="MolgenisEntity" system="true" implements="Identifiable" xref_label="className" >
 			<description>Referenceable catalog of entity names, menus, forms and
 				plugins.</description>
 			<field name="name" description="Name of the entity" />
