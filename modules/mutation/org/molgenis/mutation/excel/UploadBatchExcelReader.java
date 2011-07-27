@@ -26,6 +26,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.mutation.csv.UploadBatchCsvReader;
+import org.molgenis.util.CsvPrintWriter;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
@@ -92,7 +93,7 @@ public class UploadBatchExcelReader
 			}
 		}
 		PrintWriter pw = new PrintWriter(file);
-		CsvWriter cw = new CsvWriter(pw, headers);
+		CsvPrintWriter cw = new CsvPrintWriter(pw, headers);
 		cw.setMissingValue("");
 		cw.writeHeader();
 		for(int rowIndex = 1; rowIndex < sheet.getRows(); rowIndex++){

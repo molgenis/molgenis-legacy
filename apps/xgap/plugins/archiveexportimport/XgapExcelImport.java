@@ -2,7 +2,6 @@ package plugins.archiveexportimport;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,10 +9,9 @@ import java.util.List;
 import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
-import jxl.read.biff.BiffException;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.util.CsvWriter;
+import org.molgenis.util.CsvPrintWriter;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
@@ -132,7 +130,7 @@ public class XgapExcelImport
 			}
 		}
 		PrintWriter pw = new PrintWriter(file);
-		CsvWriter cw = new CsvWriter(pw, headers);
+		CsvPrintWriter cw = new CsvPrintWriter(pw, headers);
 		cw.setMissingValue("");
 		cw.writeHeader();
 		for (int rowIndex = 1; rowIndex < sheet.getRows(); rowIndex++)

@@ -32,7 +32,15 @@
 <p>To find your way around the application, you might want to check out the <a href="molgenis.do?__target=main&select=BbmriHelp">User manual</a>.</p>
 <p>If you have any questions or remarks, please do not hesitate to <a href="molgenis.do?__target=main&select=BbmriContact">contact us</a>.</p>
 
+
 <!--
+
+<span style="color: #3366CC;"><span style="font-size: .75em;">
+<!#if screen.mostRecentChangeLogEntry??>
+	Last update was on {screen.mostRecentChangeLogEntry.date}.
+<!#else>
+	No updates yet.
+<!/#if>
 
 <h1> Welcome to the BBMRI-NL biobank registry </h1>
 

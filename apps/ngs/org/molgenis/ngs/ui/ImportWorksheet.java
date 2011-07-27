@@ -94,7 +94,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 		File f = new File(tmpDir + File.separator + "worksheet.csv");
 		// getModel().worksheetpath = tmpDir + File.separator + "worksheet.csv";
 
-		CsvWriter writer = new CsvFileWriter(f);
+		CsvFileWriter writer = new CsvFileWriter(f);
 		writer.setSeparator(",");
 		Boolean first = true;
 		for (Worksheet ws : db.query(Worksheet.class).find()) {
