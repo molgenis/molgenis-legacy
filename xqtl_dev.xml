@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="xqtl_dev" default="compile_app" basedir=".">
+	
 	<description>
+		
         ANT file for xQTL development. Complete from-scratch compile and run.
-		Work in progress, will update with more doc to explain things.
+		Work in progress, may need fixes and will be updated with more doc to
+		explain things.
+		
+		The entire app should be installable using:
+		
+		svn co http://www.molgenis.org/svn/molgenis/trunk/ molgenis
+		svn co http://www.molgenis.org/svn/molgenis_apps/trunk/ molgenis_apps
+		ant -f molgenis_apps/xqtl_dev.xml run
+
     </description>
 
 	<!--
@@ -39,6 +49,8 @@
 	Step 0: Delete the content of the app build, app generated and Molgenis build folders.
 	-->
 	<target name="clean" description="Delete generated and build content">
+		<mkdir dir="../molgenis/build"/>
+		
 		<delete includeemptydirs="true">
 			<fileset dir="build" includes="**/*" />
 		</delete>
@@ -158,6 +170,11 @@
 			<fileset refid="app_fileset" />
 			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />
 		</copy>
+		
+		<!--
+		TODO: Copy SQL files and other stuff from the root!
+		-->
+		
 	</target>
 
 	<!--
