@@ -95,9 +95,11 @@ public class MolgenisResourceCopyGen extends Generator
 		else
 		{
 			// copy the images/scripts/css
+			logger.info("MolgenisResourceCopyGen starting regular copy..");
 			File source = new File(MolgenisOriginalStyle.class.getResource("res").getFile().replace("%20", " "));
+			logger.info("MolgenisResourceCopyGen source dir = " + source.getAbsolutePath());
 			File target = new File(this.getWebserverPath(options).replace("%20", " ") + "/generated-res");
-
+			logger.info("MolgenisResourceCopyGen target dir = " + target.getAbsolutePath());
 			// deledeleteDirectory(target);
 			copyDirectory(source, target);
 			logger.info("MolgenisResourceCopyGen NON-JAR: generated " + target);
