@@ -33,28 +33,39 @@ public class MolgenisResourceCopyGen extends Generator
 	{
 		String jarPath = getClass().getResource("").getFile();
 
-		// System.out.println(jarPath);
+		logger.info("MolgenisResourceCopyGen: 'jarPath' = " + jarPath);
+		
 		if (jarPath.contains("!"))
 		{
-
+			logger.info("MolgenisResourceCopyGen: jarPath.contains('!'), we are inside a JAR file!");
 			jarPath = jarPath.split("!")[0].split("file:")[1];
-
-			File target = new File(this.getWebserverPath(options) + "/generated-res");
+			
+			File target = new File(this.getWebserverPath(options) + File.separator + "generated-res");
 
 			// check if the target exists otherwise it's created
 			if (!target.exists())
 			{
 				boolean succes = target.mkdirs();
-				if (!succes) throw new Exception("can't create /generated-res directory!");
+				if (!succes){
+					throw new Exception("MolgenisResourceCopyGen: can't create /generated-res directory!");
+				}else{
+					logger.info("MolgenisResourceCopyGen: /generated-res directory created");
+				}
+			}else{
+				logger.info("MolgenisResourceCopyGen: " + target.getAbsolutePath() + " already exists");
 			}
 
 			JarFile jar = new JarFile(jarPath);
 			Enumeration<JarEntry> entries = jar.entries();
+			
+			boolean found = false;
 			while (entries.hasMoreElements())
 			{
 				JarEntry file = entries.nextElement();
 				if (file.getName().contains(RESOURCE_FOLDER))
 				{
+					found = true;
+					logger.info("MolgenisResourceCopyGen: file.getName().contains("+RESOURCE_FOLDER+"");
 					if (!file.isDirectory())
 					{
 						ZipEntry zipEntry = jar.getEntry(file.getName());
@@ -70,11 +81,16 @@ public class MolgenisResourceCopyGen extends Generator
 						}
 						dst.createNewFile();
 						copyFile(outFilePath, is, dst);
+						logger.info("MolgenisResourceCopyGen: copied "+outFilePath + " to " + dst.getAbsolutePath());
 					}
 				}
 			}
 
-			logger.info("generated " + target);
+			if(found == false){
+				throw new Exception("MolgenisResourceCopyGen: could not find " + RESOURCE_FOLDER + " inside JAR");
+			}
+			
+			logger.info("MolgenisResourceCopyGen JAR: generated " + target);
 		}
 		else
 		{
@@ -84,7 +100,7 @@ public class MolgenisResourceCopyGen extends Generator
 
 			// deledeleteDirectory(target);
 			copyDirectory(source, target);
-			logger.info("generated " + target);
+			logger.info("MolgenisResourceCopyGen NON-JAR: generated " + target);
 		}
 	}
 
