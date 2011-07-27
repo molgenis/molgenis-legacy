@@ -37,7 +37,6 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.ResultSetTuple;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
-import org.molgenis.util.cmdline.CmdLineException;
 
 /**
  * JDBC implementation of Database to query relational databases.
