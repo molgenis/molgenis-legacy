@@ -33,10 +33,10 @@ public class WWWServer extends Webserver implements Runnable
 		
 		if(servetlocation != null){
 			System.out.println("getting servlets from location " + servletLoc);
-			autoMapping = getServlets.getMapping(servletLoc);
+			autoMapping = getServlets.getMapping(servletLoc, false); // 27-7 bugfix ER, please check!
 		}else{
 			System.out.println("servetlocation == null, getting servlets from location " + servletLocJAR);
-			autoMapping = getServlets.getMapping(servletLocJAR);
+			autoMapping = getServlets.getMapping(servletLocJAR, true); // 27-7 bugfix ER, please check!
 		}
 		
 		for (String key : autoMapping.keySet())	{
