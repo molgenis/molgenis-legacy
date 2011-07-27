@@ -27,7 +27,7 @@ import org.molgenis.framework.db.DatabaseException;
 //import org.molgenis.framework.db.jdbc.JndiDataSourceWrapper;
 //import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.Query;
-import org.molgenis.util.CsvWriter;
+import org.molgenis.util.CsvPrintWriter;
 
 
 
@@ -98,7 +98,7 @@ public class SoapApi
 			<#list allFields(entity) as f>
 			if(${name(f)} != null) q.equals("${name(f)}", ${name(f)});
 			</#list>
-			q.limit(1000).find(new CsvWriter(out)); //safety net of 1000
+			q.limit(1000).find(new CsvPrintWriter(out)); //safety net of 1000
 			out.close();
 			return _result.toString();
 		} 

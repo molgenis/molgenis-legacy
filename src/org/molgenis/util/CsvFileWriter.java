@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Subclass of CsvWriter to write csv/tab to a file
  */
-public class CsvFileWriter extends CsvWriter
+public class CsvFileWriter extends CsvPrintWriter
 {
 	public CsvFileWriter(File f) throws IOException
 	{

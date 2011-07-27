@@ -17,6 +17,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
+import org.molgenis.util.CsvPrintWriter;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -52,7 +53,7 @@ public class DownloadVisibleCommand extends SimpleCommand
 		
 		List<String> fieldsToExport = ((FormController<?>)this.getController()).getVisibleColumnNames();
 		
-		CsvWriter writer = new CsvWriter(csvDownload, fieldsToExport);
+		CsvWriter writer = new CsvPrintWriter(csvDownload, fieldsToExport);
 		writer.writeHeader();
 		
 		for (Entity e : records)
