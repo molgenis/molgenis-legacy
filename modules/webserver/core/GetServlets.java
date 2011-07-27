@@ -24,27 +24,30 @@ public class GetServlets
 
 	}
 
-	public HashMap<String,String> doStuff(String s) throws IOException{
-		System.out.println("GetServlets starting");
-		URL servetlocation = getClass().getResource(s);
-		
+	public HashMap<String,String> getMapping(String servletLoc, boolean isJar) throws IOException{
+		System.out.println("getMapping starting" + ", servetlocation: " + servletLoc);
+	
+		URL servetlocation = getClass().getResource(servletLoc);
 		File servetlocationFolder = null;
-		System.out.println("decoratorOverrideURL???: " + servetlocation);
+		
 		if(servetlocation != null){
+			System.out.println("getMapping != null");
 			servetlocationFolder = new File(servetlocation.getFile().replace("%20", " "));
 			System.out.println("Going to load: '"+ servetlocationFolder+"' loaded.");
+			if(!isJar){
 			return (servletLocations = recurseDir(servetlocationFolder));
+			}else{
+				return (servletLocations = recurseJar(servetlocationFolder));
+			}
 		}else{
-			System.err.println("Servlet location '/servlets' could not be loaded.");
-			return null;
+			throw new IOException("Servlet location '"+servletLoc+"'could not be loaded");
 		}
-		//System.out.println("GetServlets constructor done");
 	}
 	
 	public HashMap<String,String> recurseDir(File f) throws IOException
 	{
 		System.out.println("recurseDir starting");
-		if (f.isDirectory()){
+	
 			for (File file : f.listFiles())	{
 				Utils.log("Found: servlet file ? " + f.getAbsolutePath(),System.out);
 				String servletLocation = servletBasePath;
@@ -68,19 +71,25 @@ public class GetServlets
 					recurseDir(file);
 				}
 			}
-		}else{
+		
+		return servletLocations;
+	}
+	
+	public HashMap<String,String> recurseJar(File f) throws IOException
+	{
+
 			Utils.log("Not a directory: " + f.isDirectory() +" "+ f.isFile(),System.err);
 			try {
 				ArrayList<String> c = JarClass.getClassesFromJARFile("Application.jar","servlets");
 				for(String s : c){
 					Utils.console(s);
-					s = s.replace("class ", "");
+					s = s.replace("class", "");
 					String servletName = s.substring(s.lastIndexOf(".")+1);
 					servletLocations.put(servletName, s);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
+			
 		}
 		return servletLocations;
 	}

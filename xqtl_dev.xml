@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="xqtl_dev" default="compile" basedir=".">
+	<description>
+        ANT file for xQTL development
+    </description>
+
+	<path id="app.class.path">
+		<pathelement location="apps/xgap" />
+		<pathelement location="generated/java" />
+		<pathelement location="modules/auth" />
+		<pathelement location="modules/file" />
+		<pathelement location="modules/search" />
+		<pathelement location="modules/webserver" />
+		<pathelement location="modules/datamodel" />
+		<pathelement location="modules/import" />
+		<pathelement location="modules/pheno" />
+		<pathelement location="modules/settings" />
+	</path>
+
+	<target name="clean" description="Delete the content of the build and generated folders">
+		<delete includeemptydirs="true">
+			<fileset dir="build" includes="**/*" />
+		</delete>
+		<delete includeemptydirs="true">
+			<fileset dir="../molgenis/build" includes="**/*" />
+		</delete>
+		<delete includeemptydirs="true">
+			<fileset dir="generated" includes="**/*" />
+		</delete>
+	</target>
+
+	<target name="generate" depends="clean" description="Generates latest xQTL, assuming you have a compiled Molgenis in your workspace">
+		<java classname="org.molgenis.Molgenis" fork="yes" failonerror="true">
+			<classpath path="../molgenis/build" />
+			<arg value="apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl.properties" />
+		</java>
+	</target>
+	
+	<target name="compile_molgenis" description="Compile Molgenis">
+		<javac srcdir="../molgenis/src" destdir="../molgenis/build" classpath="../molgenis/lib/" includeantruntime="false" />
+	</target>
+	
+	<target name="compile_generated" description="Compile generated java">
+		<javac srcdir="generated/java" destdir="build" classpath="../molgenis/build,../molgenis/lib,WebContent/WEB-INF/lib" includeantruntime="false" />
+	</target>
+	
+	<target name="compile" description="Compile">
+		<pathconvert targetos="unix" property="app_src" refid="app.class.path" />
+		<javac srcdir="${app_src}" destdir="build" classpath=
+			"../molgenis/build,
+			../molgenis/lib,
+			WebContent/WEB-INF/lib," includeantruntime="false" excludes="**/WebTest.java" />
+	</target>
+
+</project>

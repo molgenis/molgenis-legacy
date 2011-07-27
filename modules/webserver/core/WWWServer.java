@@ -2,12 +2,17 @@ package core;
 
 import generic.Utils;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 
 public class WWWServer extends Webserver implements Runnable
 {
 	private static final long serialVersionUID = 1L;
+	
+	private static String servletLoc = "../servlets";
+	private static String servletLocJAR = "servlets";
 
 	public WWWServer(String variant) throws IOException
 	{
@@ -18,9 +23,22 @@ public class WWWServer extends Webserver implements Runnable
 		aliases.put("/cgi-bin", new java.io.File("WebContent/cgi-bin"));
 		aliases.put("/", new java.io.File("WebContent"));
 		setMappingTable(aliases);
-		GetServlets servletgetter = new GetServlets();
+		GetServlets getServlets = new GetServlets();
 		// Serving all servlets in handwritten/java/servlets
-		HashMap<String, String> autoMapping = servletgetter.doStuff("../servlets");
+
+		System.out.println("GetServlets starting");
+		
+		HashMap<String, String> autoMapping = new HashMap<String, String>();
+		URL servetlocation = getClass().getResource(servletLoc);
+		
+		if(servetlocation != null){
+			System.out.println("getting servlets from location " + servletLoc);
+			autoMapping = getServlets.getMapping(servletLoc);
+		}else{
+			System.out.println("servetlocation == null, getting servlets from location " + servletLocJAR);
+			autoMapping = getServlets.getMapping(servletLocJAR);
+		}
+		
 		for (String key : autoMapping.keySet())	{
 			addServlet(variant + "/" + key, autoMapping.get(key));
 		}
