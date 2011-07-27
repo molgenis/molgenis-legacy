@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="xqtl_dev" default="compile" basedir=".">
+<project name="xqtl_dev" default="compile_app" basedir=".">
 	<description>
         ANT file for xQTL development
     </description>
@@ -16,8 +16,20 @@
 		<pathelement location="modules/pheno" />
 		<pathelement location="modules/settings" />
 	</path>
+	
+	<path id="molgenis-libs">
+		<fileset dir="../molgenis/lib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
 
-	<target name="clean" description="Delete the content of the build and generated folders">
+	<path id="app-libs">
+		<fileset dir="WebContent/WEB-INF/lib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	
+	<target name="clean" description="Delete the content of the app build, app generated and Molgenis build folders">
 		<delete includeemptydirs="true">
 			<fileset dir="build" includes="**/*" />
 		</delete>
@@ -28,28 +40,94 @@
 			<fileset dir="generated" includes="**/*" />
 		</delete>
 	</target>
+	
+	<!--
+	Step 1: Compile MOLGENIS. This is assumed to be in your 'workspace'.
+	(e.g. you run this script in '/somedir/molgenis_apps', then molgenis must be in '/somedir/molgenis')
+	-->
+	<target name="compile_molgenis" depends="clean" description="Compile MOLGENIS">
+		<!-- Run javac on the src dir to be compiled into build, using the molgenis-libs fileset as classpath -->
+		<javac srcdir="../molgenis/src" destdir="../molgenis/build" includeantruntime="false">
+			<classpath>
+				<path refid="molgenis-libs" />
+			</classpath>
+		</javac>
+		<!-- Copy the res folder to the build dir so it can be found by MolgenisResourceCopyGen -->
+		<copy todir="../molgenis/build/org/molgenis/framework/ui/res" verbose="true">
+			<fileset dir="../molgenis/src/org/molgenis/framework/ui/res" includes="**/*.*" />
+		</copy>
+		<!-- Copy all Freemarker templates anywhere in MOLGENIS too -->
+		<copy todir="../molgenis/build" verbose="true">
+			<fileset dir="../molgenis/src" includes="**/*.ftl" />
+		</copy>
+	</target>
 
-	<target name="generate" depends="clean" description="Generates latest xQTL, assuming you have a compiled Molgenis in your workspace">
+	<!--
+	Step 2: Generate the application. This assumes you have compiled molgenis.
+	The molgenis/build and libraries are used as classpath.
+	-->
+	<target name="generate" depends="compile_molgenis" description="Generate the application">
 		<java classname="org.molgenis.Molgenis" fork="yes" failonerror="true">
-			<classpath path="../molgenis/build" />
 			<arg value="apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl.properties" />
+			<classpath>
+				<path refid="molgenis-libs" />
+				<path location="../molgenis/build" />
+			</classpath>
 		</java>
 	</target>
 	
-	<target name="compile_molgenis" description="Compile Molgenis">
-		<javac srcdir="../molgenis/src" destdir="../molgenis/build" classpath="../molgenis/lib/" includeantruntime="false" />
+	<!--
+	Step 3: Compile generated datatypes. However we must exclude the security decorators,
+	which depend on the org.molgenis.auth.service module.
+	 -->
+	<target name="compile_gd" depends="generate" description="Compile generated datatypes">
+		<javac srcdir="generated/java/org" excludes="**/*Decorator.java" destdir="build" includeantruntime="false">
+			<classpath>
+				<path refid="molgenis-libs" />
+				<!--path refid="app-libs" /-->
+				<path location="../molgenis/build" />
+			</classpath>
+		</javac>
 	</target>
 	
-	<target name="compile_generated" description="Compile generated java">
-		<javac srcdir="generated/java" destdir="build" classpath="../molgenis/build,../molgenis/lib,WebContent/WEB-INF/lib" includeantruntime="false" />
+	<!-- compile the actual app -->
+	<target name="compile_app" depends="compile_gd" description="Compile">
+			<pathconvert targetos="unix" property="app_src" refid="app.class.path" />
+			<javac srcdir="${app_src}" destdir="build" includeantruntime="false" excludes="**/WebTest.java">
+				<classpath>
+					<path refid="molgenis-libs" />
+					<path refid="app-libs" />
+					<path location="../molgenis/build" />
+				</classpath>
+			</javac>
+		</target>
+	
+	<!-- compile other generated stuff that depends on the app -->
+	<target name="compile_gs" depends="compile_app" description="Compile app and test">
+		<javac srcdir="generated/java/app" destdir="build" includeantruntime="false">
+			<classpath>
+				<path refid="molgenis-libs" />
+				<path location="../molgenis/build" />
+			</classpath>
+		</javac>
+		<javac srcdir="generated/java/test" destdir="build" includeantruntime="false">
+			<classpath>
+				<path refid="molgenis-libs" />
+				<path location="../molgenis/build" />
+			</classpath>
+		</javac>
 	</target>
 	
-	<target name="compile" description="Compile">
-		<pathconvert targetos="unix" property="app_src" refid="app.class.path" />
-		<javac srcdir="${app_src}" destdir="build" classpath=
-			"../molgenis/build,
-			../molgenis/lib,
-			WebContent/WEB-INF/lib," includeantruntime="false" excludes="**/WebTest.java" />
+	<!-- Run the app -->
+	<target name="run" depends="compile_gs">
+		<java classname="boot.RunStandalone" fork="yes" failonerror="true">
+			<classpath>
+				<path refid="molgenis-libs" />
+				<path refid="app-libs" />
+				<path location="../molgenis/build" />
+				<path location="build" />
+			</classpath>
+		</java>
 	</target>
 
 </project>
