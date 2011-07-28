@@ -101,12 +101,11 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
     public void buttonStart(Database db, Tuple request) throws Exception
     {
         if (mcf == null)
-                {
-                    HttpServletRequestTuple req = (HttpServletRequestTuple) request;
-                    ServletContext servletContext = req.getRequest().getSession().getServletContext();
-                    mcf = (MCF) servletContext.getAttribute("MCF");
-                }
-
+        {
+            HttpServletRequestTuple req = (HttpServletRequestTuple) request;
+            ServletContext servletContext = req.getRequest().getSession().getServletContext();
+            mcf = (MCF) servletContext.getAttribute("MCF");
+        }
 
 
         System.out.println(">>> generate apps");
@@ -172,7 +171,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
                     case date:
                         userValues.put(computeFeature.getName(), strDate);
                         break;
-                   case capturing:
+                    case capturing:
                         userValues.put(computeFeature.getName(), strCapturing);
                         break;
                 }
@@ -187,8 +186,8 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
 
         //our current targer is FlowcellLaneSample
         target = db.query(LibraryLane.class).equals(LibraryLane.LANE, strLane).
-        equals(LibraryLane.FLOWCELL_NAME, strFlowcell).
-        equals(LibraryLane.SAMPLE_NAME, strSample).find().get(0);
+                equals(LibraryLane.FLOWCELL_NAME, strFlowcell).
+                equals(LibraryLane.SAMPLE_NAME, strSample).find().get(0);
 
 
         //add few parameters
@@ -225,7 +224,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         mcf.setPipeline(pipeline);
 
         //start monitoring for database update
-        if(!updater.isStarted())
+        if (!updater.isStarted())
         {
             updater.setSettings(10, 10);
             updater.setDatabase(db);
@@ -349,7 +348,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
 
         String protocolTemplate = protocol.getScriptTemplate();
 
-        System.out.println("--- template \n" + protocolTemplate );
+        System.out.println("--- template \n" + protocolTemplate);
 
         //weave complex features
         for (int i = 0; i < featuresToDerive.size(); i++)
@@ -392,7 +391,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
             observedValue.setProtocolApplication(app);
             observedValue.setTarget(target);
             ComputeFeature feature = computeFeatures.get(name);
-            if(feature.getFeatureType().equalsIgnoreCase(LOG))
+            if (feature.getFeatureType().equalsIgnoreCase(LOG))
             {
                 logpathfiles.addElement(value);
                 //logpathfile = value;
@@ -402,7 +401,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
             db.add(observedValue);
         }
 
-       System.out.println("script \n " + result);
+        System.out.println("script \n " + result);
 
 
         pipelineElementNumber++;
@@ -413,13 +412,13 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         weaver.setWalltime(protocol.getComputationalTime());
         weaver.setActualCommand(result);
         //extra for verification test (count # reads)
-        if(app.getWorkflowElement_Name().equalsIgnoreCase("BamIndexElement1"))
+        if (app.getWorkflowElement_Name().equalsIgnoreCase("BamIndexElement1"))
         {
             String scriptVerification = weaver.makeVerificationScript();
             weaver.setVerificationCommand(scriptVerification);
         }
         else
-           weaver.setVerificationCommand("\n");
+            weaver.setVerificationCommand("\n");
         //finish extra
 
         String remoteLocation = computeFeatures.get("outputdir").getDefaultValue();
@@ -442,9 +441,9 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
 
         String scriptRemoteLocation = remoteLocation + "/scripts/";
 
-        if(strPreviousWorkflowElements.size() == 0)//script does not depend on other scripts
+        if (strPreviousWorkflowElements.size() == 0)//script does not depend on other scripts
         {
-            if(currentStep == null) //it is a first script in the pipeline
+            if (currentStep == null) //it is a first script in the pipeline
             {
                 //Step step = new Step("step_" + app.getName());
                 Step step = new Step(workflowElement.getName());
@@ -459,7 +458,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         {
             String strPrevious = strPreviousWorkflowElements.get(0);
 
-            if(!strPrevious.equalsIgnoreCase(strCurrentPipelineStep))
+            if (!strPrevious.equalsIgnoreCase(strCurrentPipelineStep))
             {
                 //Step step = new Step("step_" + app.getName());
                 Step step = new Step(workflowElement.getName());
@@ -483,11 +482,11 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         appPaths.setExtralog(weaver.getExtralogfilename());
 //        if(logpathfile != null)
 //            appPaths.setLogpath(logpathfile);
-          if(logpathfiles.size() > 0)
-              for(int iii = 0; iii < logpathfiles.size(); iii++)
+        if (logpathfiles.size() > 0)
+            for (int iii = 0; iii < logpathfiles.size(); iii++)
                 appPaths.addLogpath(logpathfiles.elementAt(iii));
 
-       updater.addComputeAppPath(appPaths);
+        updater.addComputeAppPath(appPaths);
     }
 
     //returns format yymmdd

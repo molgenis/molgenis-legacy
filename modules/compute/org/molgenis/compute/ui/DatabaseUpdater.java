@@ -53,7 +53,7 @@ public class DatabaseUpdater
         {
             public void run()
             {
-                System.out.println(">>> updater report");
+                //System.out.println(">>> updater report");
 
                 //first "cache" all log files of active pipelines
                 //this is more efficient than read it every log file to find application status later
@@ -197,7 +197,7 @@ public class DatabaseUpdater
         {
             e.printStackTrace();
         }
-        System.out.println("result: " + result);
+        //System.out.println("result: " + result);
         return result;
     }
 
