@@ -24,6 +24,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.ProtocolApplication;
@@ -39,6 +40,7 @@ public class ManageLitters extends PluginModel<Entity>
 	private static final long serialVersionUID = 7608670026855241487L;
 	private List<ObservationTarget> parentgroupList;
 	private List<Litter> litterList = new ArrayList<Litter>();
+	private List<Litter> genoLitterList = new ArrayList<Litter>();
 	private int selectedParentgroup;
 	private int litter;
 	private String litterName = "";
@@ -55,6 +57,11 @@ public class ManageLitters extends PluginModel<Entity>
 	private String customName = null;
 	private int customNumber = -1;
 	private String labelDownloadLink = null;
+	private List<ObservationTarget> backgroundList;
+	private List<String> geneNameList;
+	private List<String> geneStateList;
+	private int genoLitterId;
+	private Database db;
 
 	public ManageLitters(String name, ScreenController<?> parent)
 	{
@@ -91,6 +98,13 @@ public class ManageLitters extends PluginModel<Entity>
 	}
 	public List<Litter> getLitterList() {
 		return litterList;
+	}
+	
+	public void setGenoLitterList(List<Litter> genoLitterList) {
+		this.genoLitterList = genoLitterList;
+	}
+	public List<Litter> getGenoLitterList() {
+		return genoLitterList;
 	}
 	
 	public String getLitterName() {
@@ -189,6 +203,38 @@ public class ManageLitters extends PluginModel<Entity>
 		return labelDownloadLink;
 	}
 
+	public List<ObservationTarget> getBackgroundList() {
+		return backgroundList;
+	}
+
+	public void setBackgroundList(List<ObservationTarget> backgroundList) {
+		this.backgroundList = backgroundList;
+	}
+
+	public List<String> getGeneNameList() {
+		return geneNameList;
+	}
+
+	public void setGeneNameList(List<String> geneNameList) {
+		this.geneNameList = geneNameList;
+	}
+
+	public List<String> getGeneStateList() {
+		return geneStateList;
+	}
+
+	public void setGeneStateList(List<String> geneStateList) {
+		this.geneStateList = geneStateList;
+	}
+	
+	public int getGenoLitterId() {
+		return genoLitterId;
+	}
+
+	public void setGenoLitterId(int genoLitterId) {
+		this.genoLitterId = genoLitterId;
+	}
+
 	private void setUserFields(Tuple request, boolean wean) throws Exception {
 		if (wean == true) {
 			if (request.getString("weandatetime") == null || request.getString("weandatetime").equals("")) {
@@ -226,7 +272,30 @@ public class ManageLitters extends PluginModel<Entity>
 			}
 		}
 	}
-
+	
+	public String getParentInfo() {
+		// TODO: fill in
+		return "";
+	}
+	
+	public List<Individual> getAnimalsInLitter() {
+		List<Individual> returnList = new ArrayList<Individual>();
+		try {
+			Query<ObservedValue> q = this.db.query(ObservedValue.class);
+			q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, this.getGenoLitterId()));
+			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, ct.getMeasurementId("Litter")));
+			List<ObservedValue> valueList = q.find();
+			int animalId;
+			for (ObservedValue value : valueList) {
+				animalId = value.getTarget_Id();
+				returnList.add(ct.getIndividualById(animalId));
+			}
+			return returnList;
+		} catch (Exception e) {
+			// On fail, return empty list to UI
+			return new ArrayList<Individual>();
+		}
+	}
 
 	@Override
 	public void handleRequest(Database db, Tuple request)
@@ -394,7 +463,7 @@ public class ManageLitters extends PluginModel<Entity>
 				measurementId = ct.getMeasurementId("WeanSize");
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 						protocolId, measurementId, litter, Integer.toString(weanSize), 0));
-				// Set wean date on litter
+				// Set wean date on litter -> this is how we mark a litter as weaned (but not genotyped)
 				protocolId = ct.getProtocolId("SetWeanDate");
 				measurementId = ct.getMeasurementId("WeanDate");
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
@@ -550,6 +619,10 @@ public class ManageLitters extends PluginModel<Entity>
 				this.getMessages().clear();
 				this.getMessages().add(new ScreenMessage("All " + weanSize + " animals succesfully weaned", true));
 			}
+			
+			if (action.equals("ShowGenotype")) {
+				this.setGenoLitterId(request.getInt("id"));
+			}
 
 		} catch (Exception e) {
 			try {
@@ -569,80 +642,103 @@ public class ManageLitters extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{	
-		ct.setDatabase(db);
+		this.db = db;
+		
+		ct.setDatabase(this.db);
 		ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
 		
 		try {
 			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
-			// Populate litter list
+			
+			// Populate unweaned and ungenotyped litter lists
+			int featid;
+			Query<ObservedValue> q;
+			boolean unweaned;
+			boolean ungenotyped;
 			litterList.clear();
+			genoLitterList.clear();
 			List<ObservationTarget> tmpLitterList = ct.getAllMarkedPanels("Litter", investigationIds);
 			for (ObservationTarget tmpLitter : tmpLitterList) {
-				// Check if no wean date set
-				int featid = ct.getMeasurementId("WeanDate");
-				Query<ObservedValue> q = db.query(ObservedValue.class);
+				unweaned = false;
+				ungenotyped = false;
+				// Check if no wean date set -> Unweaned litter
+				featid = ct.getMeasurementId("WeanDate");
+				q = db.query(ObservedValue.class);
 				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, tmpLitter.getId()));
 				if (q.count() == 0) {
-					Litter litterToAdd = new Litter();
-					// ID
-					litterToAdd.setId(tmpLitter.getId());
-					// Name
-					litterToAdd.setName(tmpLitter.getName());
-					// Parentgroup
-					String parentgroup = null;
-					featid = ct.getMeasurementId("Parentgroup");
+					unweaned = true;
+				}
+				if (unweaned == false) {
+					// Check if no genotype date set -> Ungenotyped litter
+					featid = ct.getMeasurementId("GenotypeDate");
 					q = db.query(ObservedValue.class);
 					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
 					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, tmpLitter.getId()));
-					List<ObservedValue> valueList = q.find();
-					if (valueList.size() > 0) {
-						int parentgroupId = valueList.get(0).getRelation_Id();
-						parentgroup = ct.getObservationTargetById(parentgroupId).getName();
+					if (q.count() == 0) {
+						ungenotyped = true;
 					}
-					litterToAdd.setParentgroup(parentgroup);
-					// Birthdate
-					String birthDate = null;
-					featid = ct.getMeasurementId("DateOfBirth");
-					q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
-					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, tmpLitter.getId()));
-					valueList = q.find();
-					if (valueList.size() > 0) {
-						birthDate = valueList.get(0).getValue();
-					}
+				}
+				if (unweaned == false && ungenotyped == false) {
+					continue;
+				}
+				// Make a temporary litter and set all relevant values
+				Litter litterToAdd = new Litter();
+				// ID
+				litterToAdd.setId(tmpLitter.getId());
+				// Name
+				litterToAdd.setName(tmpLitter.getName());
+				// Parentgroup
+				featid = ct.getMeasurementId("Parentgroup");
+				int parentgroupId = ct.getMostRecentValueAsXref(tmpLitter.getId(), featid);
+				String parentgroup = ct.getObservationTargetById(parentgroupId).getName();
+				litterToAdd.setParentgroup(parentgroup);
+				// Birth date
+				featid = ct.getMeasurementId("DateOfBirth");
+				String birthDate = ct.getMostRecentValueAsString(tmpLitter.getId(), featid);
+				if (!birthDate.equals("")) {
 					litterToAdd.setBirthDate(birthDate);
-					// Size
-					String size = "-1";
-					featid = ct.getMeasurementId("Size");
-					q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
-					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, tmpLitter.getId()));
-					valueList = q.find();
-					if (valueList.size() > 0) {
-						size = valueList.get(0).getValue();
-					}
+				}
+				// Wean date
+				featid = ct.getMeasurementId("WeanDate");
+				String weanDate = ct.getMostRecentValueAsString(tmpLitter.getId(), featid);
+				if (!weanDate.equals("")) {
+					litterToAdd.setWeanDate(weanDate);
+				}
+				// Size
+				featid = ct.getMeasurementId("Size");
+				String size = ct.getMostRecentValueAsString(tmpLitter.getId(), featid);
+				if (size.equals("")) {
+					litterToAdd.setSize(-1);
+				} else {
 					litterToAdd.setSize(Integer.parseInt(size));
-					// Size approximate
-					String isApproximate = "";
-					featid = ct.getMeasurementId("Certain");
-					q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
-					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, tmpLitter.getId()));
-					valueList = q.find();
-					if (valueList.size() > 0) {
-						String tmpValue = valueList.get(0).getValue();
-						if (tmpValue.equals("0")) isApproximate = "No";
-						if (tmpValue.equals("1")) isApproximate = "Yes";
-					}
-					litterToAdd.setSizeApproximate(isApproximate);
-					
+				}
+				// Size approximate
+				String isApproximate = "";
+				featid = ct.getMeasurementId("Certain");
+				String tmpValue = ct.getMostRecentValueAsString(tmpLitter.getId(), featid);
+				if (tmpValue.equals("0")) {
+					isApproximate = "No";
+				}
+				if (tmpValue.equals("1")) {
+					isApproximate = "Yes";
+				}
+				litterToAdd.setSizeApproximate(isApproximate);
+				
+				if (unweaned == true) {
 					litterList.add(litterToAdd);
+				} else {
+					genoLitterList.add(litterToAdd);
 				}
 			}
-			
 			// Populate parent group list
 			this.setParentgroupList(ct.getAllMarkedPanels("Parentgroup", investigationIds));
+			// Populate backgrounds list
+			this.setBackgroundList(ct.getAllMarkedPanels("Background", investigationIds));
+			// Populate gene name list
+			this.setGeneNameList(ct.getAllCodesForFeatureAsStrings("GeneName"));
+			// Populate gene state list
+			this.setGeneStateList(ct.getAllCodesForFeatureAsStrings("GeneState"));
 			
 		} catch (Exception e) {
 			if (e.getMessage() != null) {

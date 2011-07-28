@@ -97,7 +97,8 @@ public class FillAnimalDB {
 		ct.makeMeasurement(invid, "Housenumber", numberUnitId, null, null, false, "int", "To set the house-number part of an address.", login.getUserId());
 		ct.makeMeasurement(invid, "City", stringUnitId, null, null, false, "string", "To set the city part of an address.", login.getUserId());
 		ct.makeMeasurement(invid, "CustomID", stringUnitId, null, null, false, "string", "To set a target's custom ID.", login.getUserId());
-		ct.makeMeasurement(invid, "WeanDate", datetimeUnitId, null, null, true, "datetime", "To set a target's date of weaning.", login.getUserId());
+		ct.makeMeasurement(invid, "WeanDate", datetimeUnitId, null, null, true, "datetime", "To set a litter's or target's date of weaning.", login.getUserId());
+		ct.makeMeasurement(invid, "GenotypeDate", datetimeUnitId, null, null, true, "datetime", "To set a litter's date of genotyping.", login.getUserId());
 		ct.makeMeasurement(invid, "CageCleanDate", datetimeUnitId, null, null, true, "datetime", "To set a target's date of cage cleaning.", login.getUserId());
 		ct.makeMeasurement(invid, "DeathDate", datetimeUnitId, null, null, true, "datetime", "To set a target's date of death.", login.getUserId());
 		ct.makeMeasurement(invid, "Active", stringUnitId, null, null, false, "string", "To register a target's activity span.", login.getUserId());
@@ -305,7 +306,7 @@ public class FillAnimalDB {
 		ct.makeCode("2", "B. Transgeen dier", "AnimalType");
 		ct.makeCode("3", "C. Wildvang", "AnimalType");
 		ct.makeCode("4", "D. Biotoop", "AnimalType");
-		// Codes for Gene
+		// Codes for GeneName
 		ct.makeCode("Cry1", "Cry1", "GeneName");
 		ct.makeCode("Cry2", "Cry2", "GeneName");
 		ct.makeCode("Per1", "Per1", "GeneName");
