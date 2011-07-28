@@ -18,7 +18,7 @@
 		
 		<entity name="MolgenisUser" extends="MolgenisRole" decorator="org.molgenis.auth.MolgenisUserDecorator" system="true">
 			<description>Anyone who can login</description>
-			<field name="password_" type="string" description="big fixme: password type" />
+			<field name="password_" type="string" default="secret" description="big fixme: password type" />
 			<field name="emailaddress" type="string" />
 			<field name="activationCode" type="string"
 				description="Used as alternative authentication mechanism to verify user email and/or if user has lost password."
