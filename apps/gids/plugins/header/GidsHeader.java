@@ -19,9 +19,9 @@ import org.molgenis.util.Tuple;
  * 
  * @author Morris Swertz
  */
-public class MolgenisHeader extends PluginModel
+public class GidsHeader extends PluginModel
 {
-	public MolgenisHeader(String name, ScreenController parent)
+	public GidsHeader(String name, ScreenController parent)
 	{
 		super(name, parent);
 	}
@@ -35,7 +35,7 @@ public class MolgenisHeader extends PluginModel
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/header/MolgenisHeader.ftl";
+		return "plugins/header/GidsHeader.ftl";
 	}
 
 	@Override
