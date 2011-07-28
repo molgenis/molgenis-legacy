@@ -2,6 +2,8 @@ package org.molgenis.util;
 
 import java.util.List;
 
+import jxl.write.WritableSheet;
+
 public interface CsvWriter
 {
 
@@ -54,5 +56,9 @@ public interface CsvWriter
 
 	public abstract void writeMatrix(List<String> rowNames,
 			List<String> colNames, Object[][] elements);
+
+	void writeRow(Entity e, WritableSheet sheet);
+
+	void writeRow(Tuple t, WritableSheet sheet);
 
 }

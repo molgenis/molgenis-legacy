@@ -512,7 +512,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				ScreenModel.Show.values();
 				response.setHeader("Content-Disposition",
 						"attachment; filename="
-								+ controller.getName().toLowerCase() + ".tsv");
+								+ controller.getName().toLowerCase() + ".csv");
 				//				+ controller.getName().toLowerCase() + ".txt");
 				
 
