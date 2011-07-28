@@ -80,7 +80,16 @@
 			</div>
 			
 			<label for="convertData"> Upload here the file you want to prepare for the phenomodel in Molgenis:</label><br />
-			<input style="margin-right:50px" type="file" name="convertData" id="convertData"/><br / ><br / ><br / >
+			<input style="margin-right:50px" type="file" name="convertData" id="convertData"/>
+			<label for="delimeter"> Choose the delimeter:</label>
+				<select name="delimeter" id="delimeter" style="margin-right:10px">
+					<option value="choose the delimeter"</option>
+					<#list screen.arrayDelimeter as delimeter>
+						<option value="${delimeter}">${delimeter}</option>			
+					</#list>		
+				</select>
+			<label>(default is semicolon) </label>
+			<br / ><br / ><br / >
 			<input type='submit' class='addbutton' value='next' onclick="__action.value='update'; createNew.getText()"/>
 			<input type='submit' class='addbutton' value='skip this step' onclick="__action.value='skip'"/>
 		<#elseif screen.state = "updated">	

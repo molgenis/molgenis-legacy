@@ -65,6 +65,11 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	private String target;
 	private String father;
 	private String mother;
+	private String TAB = "\t";
+	private String COMMA = ",";
+	private String SEMICOLON = ";";
+	private String delimeter;
+	private String [] arrayDelimeter = {",","tab",";"};
 
 	public PMconverterandloaderPlugin(String name, ScreenController<?> parent)
 	{
@@ -149,11 +154,25 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 			String fileName = fileData.toString();
 			try {
 				BufferedReader buffy = new BufferedReader(new FileReader (fileName));
-				
+				delimeter = request.getString("delimeter");
+				logger.info("$$$$$#########" + delimeter);
+				if(delimeter.equals("tab")){
+					delimeter = TAB;
+				}
+				if(delimeter.equals(",")){
+					delimeter = COMMA;
+				}
+				if(delimeter.equals(";")){
+					delimeter = SEMICOLON;
+				}
+				else if(delimeter.equals("choose the delimeter")){
+					this.setMessages(new ScreenMessage("No delimeter is chosen, delimeter is set to semicolon", true));
+					delimeter = SEMICOLON;
+				}
 				for(int x =0; x<1; x++){
 					try {
 						String line = buffy.readLine();
-						arrayMeasurements = line.split(";");
+						arrayMeasurements = line.split(delimeter);
 						checkInvestigation(db, request);
 						state="updated";
 						
@@ -331,5 +350,11 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	public String getStatus() {
 		return status;
 	}
+
+	public String[] getArrayDelimeter() {
+		return arrayDelimeter;
+	}
+	
+ 
 	
 }
