@@ -4,6 +4,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import jxl.write.WritableSheet;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 
@@ -295,5 +297,19 @@ public class CsvPrintWriter implements CsvWriter
 	public void writeEndOfLine()
 	{
 		this.writer.println();
+	}
+
+	@Override
+	public void writeRow(Entity e, WritableSheet sheet)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void writeRow(Tuple t, WritableSheet sheet)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }
