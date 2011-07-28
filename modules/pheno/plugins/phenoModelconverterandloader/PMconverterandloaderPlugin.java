@@ -296,6 +296,25 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		}
 	}
 	
+	public GenericConvertor getGc() {
+		return gc;
+	}
+
+
+	public String getInvName() {
+		return invName;
+	}
+
+
+	public String[] getArrayMeasurements() {
+		return arrayMeasurements;
+	}
+
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	public void setInvestigations(List<Investigation> investigations) {
 		this.investigations = investigations;
 	}
