@@ -8,12 +8,14 @@
 	
 	<!-- this determines what handwritten modules should be loaded -->
 	<path id="app.class.path">
-		<pathelement location="apps/animaldb" />
+		<pathelement location="apps/gids" />
 		<pathelement location="modules/auth" />
 		<pathelement location="modules/pheno" />
 		<pathelement location="modules/datamodel" />
+		<pathelement location="modules/settings" />
+		<pathelement location="modules/file" />
 		<!-- TODO: just playing with sandbox I suppose? Otherwise stuff should move to a module-->
-		<pathelement location="apps/sandbox"/>
+		
 	</path>
 	
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
