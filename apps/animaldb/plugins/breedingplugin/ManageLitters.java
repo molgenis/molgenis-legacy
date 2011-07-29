@@ -32,6 +32,7 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import plugins.output.LabelGenerator;
+import plugins.output.LabelGeneratorException;
 
 import commonservice.CommonService;
 
@@ -58,8 +59,11 @@ public class ManageLitters extends PluginModel<Entity>
 	private int customNumber = -1;
 	private String labelDownloadLink = null;
 	private List<ObservationTarget> backgroundList;
+	private List<ObservationTarget> sexList;
 	private List<String> geneNameList;
 	private List<String> geneStateList;
+	private List<String> colorList;
+	private List<String> earmarkList;
 	private int genoLitterId;
 	private Database db;
 
@@ -235,6 +239,30 @@ public class ManageLitters extends PluginModel<Entity>
 		this.genoLitterId = genoLitterId;
 	}
 
+	public List<ObservationTarget> getSexList() {
+		return sexList;
+	}
+
+	public void setSexList(List<ObservationTarget> sexList) {
+		this.sexList = sexList;
+	}
+
+	public List<String> getColorList() {
+		return colorList;
+	}
+
+	public void setColorList(List<String> colorList) {
+		this.colorList = colorList;
+	}
+
+	public List<String> getEarmarkList() {
+		return earmarkList;
+	}
+
+	public void setEarmarkList(List<String> earmarkList) {
+		this.earmarkList = earmarkList;
+	}
+
 	private void setUserFields(Tuple request, boolean wean) throws Exception {
 		if (wean == true) {
 			if (request.getString("weandatetime") == null || request.getString("weandatetime").equals("")) {
@@ -274,8 +302,23 @@ public class ManageLitters extends PluginModel<Entity>
 	}
 	
 	public String getParentInfo() {
-		// TODO: fill in
-		return "";
+		
+		try {
+			String returnString = "";
+			
+			int parentgroupId = ct.getMostRecentValueAsXref(this.getGenoLitterId(), ct.getMeasurementId("Parentgroup"));
+			String parentgroupName = ct.getObservationTargetById(parentgroupId).getName();
+			
+			returnString += ("Parentgroup: " + parentgroupName + "<br />");
+			returnString += (getLineInfo(parentgroupId) + "<br />");
+			returnString += (getParentGenoInfo(parentgroupId, "Mother") + "<br />");
+			returnString += (getParentGenoInfo(parentgroupId, "Father") + "<br />");
+			
+			return returnString;
+			
+		} catch (Exception e) {
+			return "No (complete) parent info available";
+		}
 	}
 	
 	public List<Individual> getAnimalsInLitter() {
@@ -295,6 +338,73 @@ public class ManageLitters extends PluginModel<Entity>
 			// On fail, return empty list to UI
 			return new ArrayList<Individual>();
 		}
+	}
+	
+	public int getAnimalSex(int animalId) {
+		try {
+			return ct.getMostRecentValueAsXref(animalId, ct.getMeasurementId("Sex"));
+		} catch (Exception e) {
+			return -1;
+		}
+	}
+	
+	private int findParentForParentgroup(int parentgroupId, String parentSex) throws DatabaseException, ParseException {
+		int measurementId = ct.getMeasurementId(parentSex);
+		Query<ObservedValue> parentQuery = db.query(ObservedValue.class);
+		parentQuery.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, parentgroupId));
+		parentQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, measurementId));
+		List<ObservedValue> parentValueList = parentQuery.find();
+		if (parentValueList.size() > 0) {
+			return parentValueList.get(0).getTarget_Id();
+		} else {
+			throw new DatabaseException("No " + parentSex + " found for parentgroup with ID " + parentgroupId);
+		}
+	}
+	
+	private String getParentGenoInfo(int parentgroupId, String parentSex) throws DatabaseException, ParseException {
+		String returnString = "";
+		int parentId = findParentForParentgroup(parentgroupId, parentSex);
+		String parentName = ct.getObservationTargetLabel(parentId);
+		returnString += (parentSex + ": " + parentName + ", ");
+		int measurementId = ct.getMeasurementId("Background");
+		int parentBackgroundId = ct.getMostRecentValueAsXref(parentId, measurementId);
+		String parentBackgroundName = "unknown";
+		if (parentBackgroundId != -1) {
+			parentBackgroundName = ct.getObservationTargetById(parentBackgroundId).getName();
+		}
+		returnString += ("background: " + parentBackgroundName);
+		Query<ObservedValue> q = this.db.query(ObservedValue.class);
+		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, parentId));
+		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, ct.getMeasurementId("GeneName")));
+		List<ObservedValue> valueList = q.find();
+		if (valueList != null) {
+			int protocolApplicationId;
+			for (ObservedValue value : valueList) {
+				String geneName = value.getValue();
+				String geneState = "";
+				protocolApplicationId = value.getProtocolApplication_Id();
+				q = this.db.query(ObservedValue.class);
+				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, parentId));
+				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, ct.getMeasurementId("GeneState")));
+				q.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, protocolApplicationId));
+				List<ObservedValue> geneStateValueList = q.find();
+				if (geneStateValueList != null) {
+					if (geneStateValueList.size() > 0) {
+						geneState = geneStateValueList.get(0).getValue();
+					}
+				}
+				returnString += (", gene: " + geneName + ", ");
+				returnString += ("state: " + geneState);
+			}
+		}
+		
+		return returnString;
+	}
+	
+	private String getLineInfo(int parentgroupId) throws DatabaseException, ParseException {
+		int lineId = ct.getMostRecentValueAsXref(parentgroupId, ct.getMeasurementId("Line"));
+		String lineName = ct.getObservationTargetById(lineId).getName();
+		return ("Line: " + lineName);
 	}
 
 	@Override
@@ -427,35 +537,27 @@ public class ManageLitters extends PluginModel<Entity>
 				int speciesId;
 				String animalType;
 				String motherLabel;
-				measurementId = ct.getMeasurementId("Mother");
-				Query<ObservedValue> motherQuery = db.query(ObservedValue.class);
-				motherQuery.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, parentgroupId));
-				motherQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, measurementId));
-				List<ObservedValue> motherValueList = motherQuery.find();
-				if (motherValueList.size() > 0) {
-					int motherId = motherValueList.get(0).getTarget_Id();
+				try {
+					int motherId = findParentForParentgroup(parentgroupId, "Mother");
 					measurementId = ct.getMeasurementId("Species");
 					speciesId = ct.getMostRecentValueAsXref(motherId, measurementId);
 					measurementId = ct.getMeasurementId("AnimalType");
 					animalType = ct.getMostRecentValueAsString(motherId, measurementId);
 					motherLabel = ct.getObservationTargetLabel(motherId);
-					// Keep normal and transgene types, but set type of child from wild parents to normal
-					if (animalType.equals("C. Wildvang") || animalType.equals("D. Biotoop")) {
-						animalType = "A. Gewoon dier";
-					}
-				} else {
+				} catch (Exception e) {
 					throw(new Exception("No mother (properties) found - litter not weaned"));
+				}
+				// Keep normal and transgene types, but set type of child from wild parents to normal
+				if (animalType.equals("C. Wildvang") || animalType.equals("D. Biotoop")) {
+					animalType = "A. Gewoon dier";
 				}
 				// Find father and his name or custom label
 				String fatherLabel = "";
-				measurementId = ct.getMeasurementId("Father");
-				Query<ObservedValue> fatherQuery = db.query(ObservedValue.class);
-				fatherQuery.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, parentgroupId));
-				fatherQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, measurementId));
-				List<ObservedValue> fatherValueList = fatherQuery.find();
-				if (fatherValueList.size() > 0) {
-					int fatherId = fatherValueList.get(0).getTarget_Id();
+				try {
+					int fatherId = findParentForParentgroup(parentgroupId, "Father");
 					fatherLabel = ct.getObservationTargetLabel(fatherId);
+				} catch (Exception e) {
+					throw(new Exception("No father (properties) found - litter not weaned"));
 				}
 				// Set wean size
 				int weanSize = weanSizeFemale + weanSizeMale;
@@ -473,7 +575,8 @@ public class ManageLitters extends PluginModel<Entity>
 				
 				// Link animals to litter and set wean dates etc.
 				for (int animalNumber = 0; animalNumber < weanSize; animalNumber++) {
-					ObservationTarget animalToAdd = ct.createIndividual(invid, "animal_" + weanDate + "_" + animalNumber, this.getLogin().getUserId());
+					ObservationTarget animalToAdd = ct.createIndividual(invid, "animal_" + weanDate + "_" + animalNumber, 
+							this.getLogin().getUserId());
 					animalsToAddList.add(animalToAdd);
 				}
 				db.add(animalsToAddList);
@@ -547,81 +650,85 @@ public class ManageLitters extends PluginModel<Entity>
 				ct.makeObservationTargetNameMap(this.getLogin().getUserId(), true);
 				
 				// Make temporary cage labels
-				File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-				File pdfFile = new File(tmpDir.getAbsolutePath() + File.separatorChar + "weanlabels.pdf");
-				String filename = pdfFile.getName();
-				LabelGenerator labelgenerator = new LabelGenerator(2);
-				labelgenerator.startDocument(pdfFile);
-				List<String> elementList;
-				int nrOfCages = 0;
-				int nrOfFemales = weanSizeFemale;
-				while (nrOfFemales > 0) {
-					elementList = new ArrayList<String>();
-					// Line name + Nr. of females in cage
-					String firstLine = lineName; 
-					if (nrOfFemales >= 3) {
-						firstLine += "\t\t3 females";
-					} else {
-						if (nrOfFemales == 1) {
-							firstLine += "\t\t1 female";
-						} else {
-							firstLine += "\t\t2 females";
-						}
-					}
-					elementList.add(firstLine);
-					// Parents
-					elementList.add(motherLabel + " x " + fatherLabel);
-					// Litter birth date
-					elementList.add(litterBirthDateString);
-					// Nrs. for writing extra information behind
-					for (int i = 1; i <= Math.min(nrOfFemales, 3); i++) {
-						elementList.add(i + ".");
-					}
-					
-					labelgenerator.addLabelToDocument(elementList);
-					nrOfFemales -= 3;
-					nrOfCages++;
-				}
-				int nrOfMales = weanSizeMale;
-				while (nrOfMales > 0) {
-					elementList = new ArrayList<String>();
-					// Line name + Nr. of males in cage
-					String firstLine = lineName; 
-					if (nrOfMales >= 2) {
-						firstLine += "\t\t2 males";
-					} else {
-						firstLine += "\t\t1 male";
-					}
-					elementList.add(firstLine);
-					// Parents
-					elementList.add(motherLabel + " x " + fatherLabel);
-					// Litter birth date
-					elementList.add(litterBirthDateString);
-					// Nrs. for writing extra information behind
-					for (int i = 1; i <= Math.min(nrOfMales, 2); i++) {
-						elementList.add(i + ".");
-					}
-					
-					labelgenerator.addLabelToDocument(elementList);
-					nrOfMales -= 2;
-					nrOfCages++;
-				}
-				// In case of an odd number of cages, add extra label to make row full
-				if (nrOfCages %2 != 0) {
-					elementList = new ArrayList<String>();
-					labelgenerator.addLabelToDocument(elementList);
-				}
-				labelgenerator.finishDocument();
-				this.setLabelDownloadLink("<a href=\"tmpfile/" + filename + "\">Download temporary wean labels as pdf</a>");
+				makeTempCageLabels(lineName, motherLabel, fatherLabel, litterBirthDateString);
 				
 				this.action = "ShowLitters";
 				this.reload(db);
-				this.getMessages().clear();
 				this.getMessages().add(new ScreenMessage("All " + weanSize + " animals succesfully weaned", true));
 			}
 			
 			if (action.equals("ShowGenotype")) {
 				this.setGenoLitterId(request.getInt("id"));
+			}
+			
+			if (action.equals("Genotype")) {
+				
+				// Init lists that we can later add to the DB at once
+				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
+				
+				// Set genotype date on litter -> this is how we mark a litter as genotyped
+				int protocolId = ct.getProtocolId("SetGenotypeDate");
+				int measurementId = ct.getMeasurementId("GenotypeDate");
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, 
+						null, protocolId, measurementId, this.genoLitterId, weandatetime, 0));
+				
+				int animalCount = 0;
+				for (Individual animal : this.getAnimalsInLitter()) {
+					
+					// Here we set the values from the genotyping.
+					// TODO: what to do with existing values (such as Sex)?
+					// Now we just make a newer value, but maybe we want to edit the existing one (if present)?
+					
+					// Set sex
+					int sexId = request.getInt("sex_" + animalCount);
+					protocolId = ct.getProtocolId("SetSex");
+					measurementId = ct.getMeasurementId("Sex");
+					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, 
+							null, protocolId, measurementId, animal.getId(), null, sexId));
+					
+					// Set color
+					String color = request.getString("color_" + animalCount);
+					protocolId = ct.getProtocolId("SetColor");
+					measurementId = ct.getMeasurementId("Color");
+					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, 
+							null, protocolId, measurementId, animal.getId(), color, 0));
+					
+					// Set earmark
+					String earmark = request.getString("earmark_" + animalCount);
+					protocolId = ct.getProtocolId("SetEarmark");
+					measurementId = ct.getMeasurementId("Earmark");
+					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, 
+							null, protocolId, measurementId, animal.getId(), earmark, 0));
+					
+					// Set background
+					int backgroundId = request.getInt("background_" + animalCount);
+					protocolId = ct.getProtocolId("SetBackground");
+					measurementId = ct.getMeasurementId("Background");
+					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, 
+							null, protocolId, measurementId, animal.getId(), null, backgroundId));
+					
+					// Set genotype
+					int paId = ct.makeProtocolApplication(invid, ct.getProtocolId("SetGenotype"));
+					String geneName = request.getString("geneName_" + animalCount);
+					measurementId = ct.getMeasurementId("GeneName");
+					valuesToAddList.add(ct.createObservedValue(invid, paId, now, null, measurementId, 
+							animal.getId(), geneName, 0));
+					String geneState = request.getString("geneState_" + animalCount);
+					measurementId = ct.getMeasurementId("GeneState");
+					valuesToAddList.add(ct.createObservedValue(invid, paId, now, null, measurementId, 
+							animal.getId(), geneState, 0));
+					
+					animalCount++;
+				}
+				
+				db.add(valuesToAddList);
+				
+				// Make definitive cage labels
+				makeDefCageLabels();
+				
+				this.action = "ShowLitters";
+				this.reload(db);
+				this.getMessages().add(new ScreenMessage("All " + animalCount + " animals succesfully genotyped", true));
 			}
 
 		} catch (Exception e) {
@@ -637,6 +744,116 @@ public class ManageLitters extends PluginModel<Entity>
 			e.printStackTrace();
 			this.action = "ShowLitters";
 		}
+	}
+
+	private void makeDefCageLabels() throws LabelGeneratorException, DatabaseException, ParseException {
+		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+		File pdfFile = new File(tmpDir.getAbsolutePath() + File.separatorChar + "deflabels.pdf");
+		String filename = pdfFile.getName();
+		LabelGenerator labelgenerator = new LabelGenerator(2);
+		labelgenerator.startDocument(pdfFile);
+		
+		int parentgroupId = ct.getMostRecentValueAsXref(this.getGenoLitterId(), ct.getMeasurementId("Parentgroup"));
+		String line = this.getLineInfo(parentgroupId);
+		String motherInfo = this.getParentGenoInfo(parentgroupId, "Mother");
+		String fatherInfo = this.getParentGenoInfo(parentgroupId, "Father");
+		
+		List<String> elementList;
+		
+		for (Individual animal : this.getAnimalsInLitter()) {
+			elementList = new ArrayList<String>();
+			// Earmark
+			// Line
+			elementList.add(line);
+			// Background + GeneName + GeneState
+			// Color + Sex
+			// Birthdate
+			// Geno mother
+			elementList.add(motherInfo);
+			// Geno father
+			elementList.add(fatherInfo);
+			// OldUliDbExperimentator
+			
+			labelgenerator.addLabelToDocument(elementList);
+		}
+		
+		// In case of an odd number of animals, add extra label to make row full
+		if (this.getAnimalsInLitter().size() %2 != 0) {
+			elementList = new ArrayList<String>();
+			labelgenerator.addLabelToDocument(elementList);
+		}
+		
+		labelgenerator.finishDocument();
+		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename + "\">Download definitive cage labels as pdf</a>");
+	}
+
+	private void makeTempCageLabels(String lineName, String motherLabel, String fatherLabel, String litterBirthDateString) throws LabelGeneratorException {
+		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+		File pdfFile = new File(tmpDir.getAbsolutePath() + File.separatorChar + "weanlabels.pdf");
+		String filename = pdfFile.getName();
+		LabelGenerator labelgenerator = new LabelGenerator(2);
+		labelgenerator.startDocument(pdfFile);
+		List<String> elementList;
+		int nrOfCages = 0;
+		int nrOfFemales = weanSizeFemale;
+		while (nrOfFemales > 0) {
+			elementList = new ArrayList<String>();
+			// Line name + Nr. of females in cage
+			String firstLine = lineName; 
+			if (nrOfFemales >= 3) {
+				firstLine += "\t\t3 females";
+			} else {
+				if (nrOfFemales == 1) {
+					firstLine += "\t\t1 female";
+				} else {
+					firstLine += "\t\t2 females";
+				}
+			}
+			elementList.add(firstLine);
+			// Parents
+			elementList.add(motherLabel + " x " + fatherLabel);
+			// Litter birth date
+			elementList.add(litterBirthDateString);
+			// Nrs. for writing extra information behind
+			for (int i = 1; i <= Math.min(nrOfFemales, 3); i++) {
+				elementList.add(i + ".");
+			}
+			
+			labelgenerator.addLabelToDocument(elementList);
+			nrOfFemales -= 3;
+			nrOfCages++;
+		}
+		int nrOfMales = weanSizeMale;
+		while (nrOfMales > 0) {
+			elementList = new ArrayList<String>();
+			// Line name + Nr. of males in cage
+			String firstLine = lineName; 
+			if (nrOfMales >= 2) {
+				firstLine += "\t\t2 males";
+			} else {
+				firstLine += "\t\t1 male";
+			}
+			elementList.add(firstLine);
+			// Parents
+			elementList.add(motherLabel + " x " + fatherLabel);
+			// Litter birth date
+			elementList.add(litterBirthDateString);
+			// Nrs. for writing extra information behind
+			for (int i = 1; i <= Math.min(nrOfMales, 2); i++) {
+				elementList.add(i + ".");
+			}
+			
+			labelgenerator.addLabelToDocument(elementList);
+			nrOfMales -= 2;
+			nrOfCages++;
+		}
+		// In case of an odd number of cages, add extra label to make row full
+		if (nrOfCages %2 != 0) {
+			elementList = new ArrayList<String>();
+			labelgenerator.addLabelToDocument(elementList);
+		}
+		labelgenerator.finishDocument();
+		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename + "\">Download temporary wean labels as pdf</a>");
 	}
 
 	@Override
@@ -735,10 +952,16 @@ public class ManageLitters extends PluginModel<Entity>
 			this.setParentgroupList(ct.getAllMarkedPanels("Parentgroup", investigationIds));
 			// Populate backgrounds list
 			this.setBackgroundList(ct.getAllMarkedPanels("Background", investigationIds));
+			// Populate sexes list
+			this.setSexList(ct.getAllMarkedPanels("Sex", investigationIds));
 			// Populate gene name list
 			this.setGeneNameList(ct.getAllCodesForFeatureAsStrings("GeneName"));
 			// Populate gene state list
 			this.setGeneStateList(ct.getAllCodesForFeatureAsStrings("GeneState"));
+			// Populate color list
+			this.setColorList(ct.getAllCodesForFeatureAsStrings("Color"));
+			// Populate earmark list
+			this.setEarmarkList(ct.getAllCodesForFeatureAsStrings("Earmark"));
 			
 		} catch (Exception e) {
 			if (e.getMessage() != null) {

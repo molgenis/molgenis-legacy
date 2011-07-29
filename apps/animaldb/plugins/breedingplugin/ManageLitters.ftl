@@ -90,7 +90,7 @@
 		<select name='parentgroup'>
 		<#if screen.parentgroupList?exists>
 			<#list screen.parentgroupList as pgl>
-				<option value='${pgl.id}'>${pgl.name}</option>
+				<option value='${pgl.id?string.computer}'>${pgl.name}</option>
 			</#list>
 		</#if>
 		</select>
@@ -162,11 +162,95 @@
 	
 	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowLitters">Back to overview</a></p>
 	
-	<p>Genotype screen</p>
+	<h2>Genotype litter</h2>
 	
+	<p>${screen.parentInfo}</p>
+	
+	<p><em>Note: sexes have been pre-filled based on weaning info</em></p>
+	
+	<table>
+		<tr>
+			<th>Animal name</th>
+			<th>Sex</th>
+			<th>Color</th>
+			<th>Earmark</th>
+			<th>Background</th>
+			<th>Gene name</th>
+			<th>Gene state</th>
+		</tr>
+	<#assign animalCount = 0>
 	<#list screen.getAnimalsInLitter() as animal>
-		${animal.name}<br />
+		<tr>
+			<td>${animal.name}</td>
+			<td>
+				<select id='sex_${animalCount}' name='sex_${animalCount}'>
+				<#if screen.sexList?exists>
+					<#list screen.sexList as sex>
+						<option value='${sex.id?string.computer}'
+						<#if screen.getAnimalSex(animal.id) = sex.id>
+							selected="selected"
+						</#if>
+						>${sex.name}</option>
+					</#list>
+				</#if>
+				</select>
+			</td>
+			<td>
+				<select id='color_${animalCount}' name='color_${animalCount}'>
+				<#if screen.colorList?exists>
+					<#list screen.colorList as color>
+						<option value='${color}'>${color}</option>
+					</#list>
+				</#if>
+				</select>
+			</td>
+			<td>
+				<select id='earmark_${animalCount}' name='earmark_${animalCount}'>
+				<#if screen.earmarkList?exists>
+					<#list screen.earmarkList as earmark>
+						<option value='${earmark}'>${earmark}</option>
+					</#list>
+				</#if>
+				</select>
+			</td>
+			<td>
+				<select id='background_${animalCount}' name='background_${animalCount}'>
+				<#if screen.backgroundList?exists>
+					<#list screen.backgroundList as background>
+						<option value='${background.id?string.computer}'>${background.name}</option>
+					</#list>
+				</#if>
+				</select>
+			</td>
+			<td>
+				<select id='geneName_${animalCount}' name='geneName_${animalCount}'>
+				<#if screen.geneNameList?exists>
+					<#list screen.geneNameList as geneName>
+						<option value='${geneName}'>${geneName}</option>
+					</#list>
+				</#if>
+				</select>
+			</td>
+			<td>
+				<select id='geneState_${animalCount}' name='geneState_${animalCount}'>
+				<#if screen.geneStateList?exists>
+					<#list screen.geneStateList as geneState>
+						<option value='${geneState}'>${geneState}</option>
+					</#list>
+				</#if>
+				</select>
+			</td>
+		</tr>
+		<#assign animalCount = animalCount + 1>
 	</#list>
+	</table>
+	<!-- "+" button for extra geneName + geneState columns, TODO get working
+	<input type='submit' class='addbutton' value='+' onclick="" /> -->
+	
+	<!-- Save button -->
+	<div id='save' class='row'>
+		<input type='submit' class='addbutton' value='Save' onclick="__action.value='Genotype'" />
+	</div>
 	
 </#if>
 	
