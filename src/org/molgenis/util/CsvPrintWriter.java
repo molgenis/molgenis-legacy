@@ -312,4 +312,11 @@ public class CsvPrintWriter implements CsvWriter
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void writeHeader(WritableSheet excelSheet)
+	{
+		// TODO Auto-generated method stub
+		
+	}
 }
