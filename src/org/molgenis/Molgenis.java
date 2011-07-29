@@ -240,6 +240,8 @@ public class Molgenis {
                     generators.add(new PersistenceGen());
                 }
                 
+                generators.add(new FillMetadataTablesGen());
+                
             } else {
                 // DATABASE
                 // mysql.org
