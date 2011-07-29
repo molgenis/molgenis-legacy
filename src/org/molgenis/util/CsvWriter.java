@@ -61,4 +61,6 @@ public interface CsvWriter
 
 	void writeRow(Tuple t, WritableSheet sheet);
 
+	void writeHeader(WritableSheet excelSheet);
+
 }

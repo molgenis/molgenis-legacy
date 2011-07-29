@@ -2,8 +2,13 @@ package org.molgenis.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.log4j.Logger;
 
 import jxl.CellView;
 import jxl.Workbook;
@@ -36,6 +41,63 @@ public class XlsWriter implements CsvWriter
 	WritableWorkbook workbook;
 	private WritableSheet excelSheet;
 	
+	private static final transient Logger logger = Logger.getLogger(XlsWriter.class.getSimpleName());
+	protected PrintWriter writer = null;
+
+	/** number of rows written */
+	private int count = 0;
+	/** value to use for missing/null values such as "NULL" or "NA", default "" */
+	private String missingValue = "";
+	private List<String> headers = new ArrayList<String>();
+
+	/**
+	 * TODO : ----Construct the Writer, wrapping another writer.---
+	 */
+	public XlsWriter(PrintWriter writer, List<String> headers) {
+		this(writer);
+		this.headers = headers;
+	}
+	
+	
+	
+	public XlsWriter(String string) {
+		System.out.println(">>> The .xls file will be written in : " + string);
+		this.setInputFile(string);
+
+	}
+
+	public XlsWriter(PrintWriter csvDownload) {
+		
+		this.writer = csvDownload;
+
+		writeHeader();
+		WorkbookSettings wbSettings = new WorkbookSettings();
+		wbSettings.setLocale(new Locale("en", "EN"));
+		String inputFile = 	System.getProperty("java.io.tmpdir");
+		System.out.println(">>>>>>>>>>>>>>Check for the xls file in " + inputFile + "xlswriter.xls");
+		File file = new File(inputFile + "xlswriter.xls");
+		
+		wbSettings.setLocale(new Locale("en", "EN"));
+
+		try	{
+			WritableWorkbook workbook = Workbook.createWorkbook(file, wbSettings);
+			workbook = Workbook.createWorkbook(file, wbSettings);
+			workbook.createSheet("Report", 0);
+			WritableSheet excelSheet = workbook.getSheet(0);
+			createLabel(excelSheet);
+			//createContent(excelSheet);
+			workbook.write();
+			workbook.close();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		catch (WriteException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
 
 	
 	public void setInputFile(String inputFile) {
@@ -52,20 +114,32 @@ public class XlsWriter implements CsvWriter
 	}
 	
 	
-	public XlsWriter() {
-
-	}
-
-	public XlsWriter(String string) {
-		System.out.println(">>> The .xls file will be written in : " + string);
-		this.setInputFile(string);
-
-	}
+	
 
 	@Override
-	public void writeHeader()  {
+	public void writeHeader(WritableSheet excelSheet)  {
 		addCaption(excelSheet, 0, 0, "Header 1");
 		addCaption(excelSheet, 1, 0, "This is another header");
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.molgenis.util.CsvWriter#writeHeader()
+	 */
+	@Override
+	public void writeHeader()
+	{
+		for (int i = 0; i < headers.size(); i++)
+		{
+			if (i < headers.size() - 1)
+			{
+				writer.print(headers.get(i));
+			}
+			else
+			{
+				writer.print(headers.get(i));
+			}
+		}
+		writer.println();
 	}
 
 	@Override
@@ -106,12 +180,7 @@ public class XlsWriter implements CsvWriter
 	}
 	
 	
-	@Override
-	public void writeValue(Object object) {
-		//put this object in the current cell and go to next cell
-		excelSheet = workbook.getSheet(0);
-		
-	}
+
 	
 	
 	@Override
@@ -135,13 +204,54 @@ public class XlsWriter implements CsvWriter
 		
 	}
 
-	@Override
-	public void writeMatrix(List<String> rowNames, List<String> colNames, Object[][] elements) {
+	/**
+	 * Write out an XGAP matrix. The inputs can be retrieved from any
+	 * implementation of the XGAP matrix interface class.
+	 * 
+	 * @param rowNames
+	 * @param colNames
+	 * @param elements
+	 */
+	public void writeMatrix(List<String> rowNames, List<String> colNames, Object[][] elements)
+	{
 		//first write the headers (colnames), first cell is empty because this is a matrix
 		//than for each row first write the rowname
 		//than use the row[i] to write the rest of the row
 		
+		logger.info("writeMatrix called");
+		String cols = "";
+		for (String col : colNames)
+		{
+			cols += "\t" + col;
+		}
+		writer.println(cols);
+		logger.info("printing: " + cols);
+		for (int rowIndex = 0; rowIndex < rowNames.size(); rowIndex++)
+		{
+			String row = rowNames.get(rowIndex);
+			for (int colIndex = 0; colIndex < colNames.size(); colIndex++)
+			{
+				if (elements[rowIndex][colIndex] == null)
+				{
+					row += "\t";
+				}
+				else
+				{
+					row += "\t" + elements[rowIndex][colIndex];
+				}
+			}
+			writer.println(row);
+			logger.info("printing: " + row);
+		}
 	}
+	
+//	@Override
+//	public void writeMatrix(List<String> rowNames, List<String> colNames, Object[][] elements) {
+//		
+//		
+//	}
+	
+
 	
 	public void write(File file) throws IOException, WriteException {
 		
@@ -159,6 +269,9 @@ public class XlsWriter implements CsvWriter
 		workbook.close();
 	}
 
+	/* 
+	 * This produces some random data in the excel file. 
+	 */
 	private void createContent(WritableSheet excelSheet) throws WriteException, RowsExceededException {
 		
 		// Write a few number
@@ -223,6 +336,7 @@ public class XlsWriter implements CsvWriter
 			cv.setAutosize(true);
 
 			// Write a few headers
+			//TODO : add entities name for labels
 			addCaption(excelSheet, 0, 0, "Header 1");
 			addCaption(excelSheet, 1, 0, "This is another header");
 		
@@ -241,16 +355,128 @@ public class XlsWriter implements CsvWriter
 		
 	}
 
+	
 
+	
+	/*****************************************************************
+	 *  (non-Javadoc)
+	 * @see org.molgenis.util.CsvWriter#writeRow(org.molgenis.util.Entity)
+	 */
 	@Override
-	public void writeRow(Entity e)	{
+	public void writeRow(Entity e)
+	{
 		
+		boolean first = true;
+		for (String col : headers)
+		{
+			if (first) {
+				first = false;
+			}
+			//print value
+			writeValue(e.get(col));
+
+		}
+		//newline
+		writer.println();
+		// writer.println(e.getValues(separator));
+		if (++count % 10000 == 0) logger.debug("wrote line " + count + ": " + e);
 	}
 
-
+	/* (non-Javadoc)
+	 * @see org.molgenis.util.CsvWriter#writeRow(org.molgenis.util.Tuple)
+	 */
 	@Override
-	public void writeRow(Tuple t) {
+	public void writeRow(Tuple t)
+	{
+		boolean first = true;
+		for (String col : headers)
+		{
+			//print separator unless first element
+			if (first)
+			{
+				first = false;
+			}
+			else
+			{
+				//writer.print(separator);  //TODO
+			}
+			//print value
+			writeValue(t.getObject(col));
+		}
+		writer.println();
+		if (count++ % 10000 == 0) logger.debug("wrote tuple to line " + count + ": " + t);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.molgenis.util.CsvWriter#writeValue(java.lang.Object)
+	 */
+	
+
+	
+	@Override
+	public void writeValue(Object object)
+	{
 		
+		excelSheet = workbook.getSheet(0);
+
+		try {
+			if (object == null)
+			{
+				writer.print(this.missingValue);
+			}
+	
+			else
+			{
+				if (object instanceof List<?>)
+				{
+					List<?> list = (List<?>) object;
+					for (int i = 0; i < list.size(); i++)
+					{
+						if (list.get(i) != null)
+						{
+							addLabel(excelSheet, 0, i, list.get(i).toString());
+						}
+						else
+						{
+							addLabel(excelSheet, 0, i, this.getMissingValue());
+						}
+					}
+				}
+				else
+				{
+					//writer.print(StringEscapeUtils.escapeCsv(object.toString().trim().replace("\n", "")));
+					writer.print(StringEscapeUtils.escapeCsv(object.toString()));  //TODO : what about xls????
+				}
+			}
+		}
+		catch (RowsExceededException e)
+		{
+			e.printStackTrace();
+		}
+		catch (WriteException e)
+		{
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * Get the String that is used for missing or null values, default 'NA'.
+	 */
+	public String getMissingValue()
+	{
+		return missingValue;
+	}
+
+	/**
+	 * Set the String that is used for missingValues such as null, default 'NA'.
+	 * 
+	 * @param missingValue
+	 *            new missing value String.
+	 */
+	public void setMissingValue(String missingValue)
+	{
+		this.missingValue = missingValue;
 	}
 
 
