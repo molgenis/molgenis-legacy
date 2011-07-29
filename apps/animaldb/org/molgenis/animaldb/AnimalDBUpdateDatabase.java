@@ -2,6 +2,7 @@ package org.molgenis.animaldb;
 
 
 import org.molgenis.Molgenis;
+import org.molgenis.framework.db.jpa.JpaUtil;
 
 /**
  * Updates the AnimalDB database, clearing existing tables but not removing obsolete ones.
@@ -16,5 +17,6 @@ public class AnimalDBUpdateDatabase
 	public static void main(String[] args) throws Exception
 	{
 		new Molgenis("apps/animaldb/org/molgenis/animaldb/animaldb.properties").updateDb(true);
+		// TODO: make something like the method above in JPA that can run the generated_metadata.sql
 	}
 }
