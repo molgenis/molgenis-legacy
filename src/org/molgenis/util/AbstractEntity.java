@@ -27,7 +27,49 @@ public abstract class AbstractEntity implements Entity, Serializable
 	@XmlTransient
 	private boolean readonly;
 	
-	public void set(String name, Object value) throws ParseException
+	
+	public static boolean isObjectRepresentation(String objStr) {
+		int left = objStr.indexOf("(");
+		int right = objStr.lastIndexOf(")");
+		return (left == -1 || right == -1) ? false : true;
+	}
+	
+	public static <T extends Entity> T setValuesFromString(String objStr, Class<T> klass) throws Exception {
+		T result;
+		try
+		{
+			result = klass.newInstance();
+		}
+		catch (Exception e)
+		{
+			throw e;
+		}
+		
+		int left = objStr.indexOf("(");
+		int right = objStr.lastIndexOf(")");
+		
+		//String entityName = objStr.substring(0, left);
+		String content = null;
+		try {
+			 content = objStr.substring(left+1, right);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		String[] attrValues = content.split(" ");
+		for(String attrValue : attrValues) {
+			String[] av = attrValue.split("=");
+			String attr = av[0];
+			String value = av[1];
+			if(value.charAt(0) == '\'' && value.charAt(value.length() -1) == '\'') {
+				value = value.substring(1, value.length()-1);
+			} 
+			result.set(attr, value);
+		}		
+		return result;
+	}
+	
+	
+	public void set(String name, Object value) throws Exception
 	{
 		//inefficient
 		Tuple t = new SimpleTuple();
@@ -35,7 +77,7 @@ public abstract class AbstractEntity implements Entity, Serializable
 		this.set(t,false);
 	}
 
-	public void set( Tuple values ) throws ParseException
+	public void set( Tuple values ) throws Exception
 	{
 		this.set(values,true);
 	}

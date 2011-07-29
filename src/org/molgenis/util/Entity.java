@@ -27,7 +27,7 @@ public interface Entity
 	 * @param value 
 	 * @throws ParseException 
 	 */
-	public void set(String fieldName, Object value) throws ParseException;
+	public void set(String fieldName, Object value) throws Exception;
 	
 	/**
 	 * Set the properties of this entity using the values from a Tuple.
@@ -35,7 +35,7 @@ public interface Entity
 	 * @param values
 	 * @throws ParseException
 	 */
-	public void set( Tuple values ) throws ParseException;
+	public void set( Tuple values ) throws Exception;
 
 	/**
 	 * Set the properties of this entity using the values from a Tuple.
@@ -51,7 +51,7 @@ public interface Entity
 	 *        Entity
 	 * @throws ParseException
 	 */
-	public void set( Tuple values, boolean strict ) throws ParseException;
+	public void set( Tuple values, boolean strict ) throws Exception;
 
 	/**
 	 * Generic getter (by fieldname)
@@ -112,7 +112,7 @@ public interface Entity
 	public void validate() throws Exception;
 
 
-	Entity create(Tuple tuple) throws ParseException;
+	Entity create(Tuple tuple) throws Exception;
 	
 	//for JPA only
 	public String getXrefIdFieldName(String fieldName);

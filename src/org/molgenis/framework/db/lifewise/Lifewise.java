@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
+import java.sql.ResultSet;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,10 +35,10 @@ import org.molgenis.model.elements.Model;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
+import org.molgenis.util.Tuple;
 
 public class Lifewise implements Database
 {
-
 	private static final transient Logger logger = Logger
 			.getLogger(Lifewise.class.getSimpleName());
 	@SuppressWarnings("rawtypes")
@@ -295,34 +296,25 @@ public class Lifewise implements Database
 	public <E extends Entity> List<E> findByExample(E example)
 			throws DatabaseException
 	{
-		try
+		Query<E> q = (Query<E>) this.query(example.getClass());
+		for (String field : example.getFields())
 		{
-			Query<E> q = (Query<E>) this.query(example.getClass());
-			for (String field : example.getFields())
+			if (example.get(field) != null)
 			{
-				if (example.get(field) != null)
+				if (example.get(field) instanceof List)
 				{
-					if (example.get(field) instanceof List)
+					if (((List) example.get(field)).size() > 0)
 					{
-						if (((List) example.get(field)).size() > 0)
-						{
-							q.in(field, (List) example.get(field));
-						}
-					}
-					else
-					{
-						q.equals(field, example.get(field));
+						q.in(field, (List) example.get(field));
 					}
 				}
+				else
+				{
+					q.equals(field, example.get(field));
+				}
 			}
-
-			return q.find();
 		}
-		catch (ParseException pe)
-		{
-			pe.printStackTrace();
-		}
-		return null;
+		return q.find();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -374,8 +366,8 @@ public class Lifewise implements Database
 	}
 
 	@Override
-	public <E extends Entity> int add(E entity) throws DatabaseException,
-			IOException
+	public <E extends Entity> int add(E entity) throws DatabaseException
+			
 	{
 		List<E> entityList = new ArrayList<E>();
 		entityList.add(entity);
@@ -384,22 +376,21 @@ public class Lifewise implements Database
 
 	@Override
 	public <E extends Entity> int add(List<E> entities)
-			throws DatabaseException, IOException
+			throws DatabaseException
 	{
 		return executeClientOperation("QueryHandler.add", entities);
 	}
 
 	@Override
 	public <E extends Entity> int add(Class<E> klazz, CsvReader reader,
-			CsvWriter writer) throws Exception
+			CsvWriter writer) throws DatabaseException
 	{
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public <E extends Entity> int update(E entity) throws DatabaseException,
-			IOException
+	public <E extends Entity> int update(E entity) throws DatabaseException
 	{
 		List<E> entityList = new ArrayList<E>();
 		entityList.add(entity);
@@ -408,21 +399,20 @@ public class Lifewise implements Database
 
 	@Override
 	public <E extends Entity> int update(List<E> entities)
-			throws DatabaseException, IOException
+			throws DatabaseException
 	{
 		return executeClientOperation("QueryHandler.add", entities);
 	}
 
 	@Override
 	public <E extends Entity> int update(Class<E> klazz, CsvReader reader)
-			throws DatabaseException, IOException, Exception
+			throws DatabaseException
 	{
 		return getMapperFor(klazz).update(reader);
 	}
 
 	@Override
-	public <E extends Entity> int remove(E entity) throws DatabaseException,
-			IOException
+	public <E extends Entity> int remove(E entity) throws DatabaseException
 	{
 		List<E> entityList = new ArrayList<E>();
 		entityList.add(entity);
@@ -431,14 +421,14 @@ public class Lifewise implements Database
 
 	@Override
 	public <E extends Entity> int remove(List<E> entities)
-			throws DatabaseException, IOException
+			throws DatabaseException
 	{
 		return executeClientOperation("QueryHandler.remove", entities, false);
 	}
 
 	@Override
 	public <E extends Entity> int remove(Class<E> entityClass, CsvReader reader)
-			throws DatabaseException, IOException, Exception
+			throws DatabaseException
 	{
 		// TODO Auto-generated method stub
 		return 0;
@@ -447,7 +437,7 @@ public class Lifewise implements Database
 	@Override
 	public <E extends Entity> int update(List<E> entities,
 			DatabaseAction dbAction, String... keyName)
-			throws DatabaseException, ParseException, IOException
+			throws DatabaseException
 	{
 		// TODO Auto-generated method stub
 		return 0;
@@ -475,10 +465,9 @@ public class Lifewise implements Database
 
 	@Override
 	public <E extends Entity> List<E> toList(Class<E> klazz, CsvReader reader,
-			int noEntities) throws Exception
+			int noEntities) throws DatabaseException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -510,15 +499,6 @@ public class Lifewise implements Database
 	}
 
 	@Override
-	public <E extends Entity> void find(Class<E> entityClass, CsvWriter writer,
-			List<String> fieldsToExport, QueryRule... rules)
-			throws DatabaseException
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public EntityManager getEntityManager()
 	{
 		throw new UnsupportedOperationException();
@@ -526,6 +506,26 @@ public class Lifewise implements Database
 	
 	@Override
 	public FileSourceHelper getFileSourceHelper() throws Exception
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public <E extends Entity> void find(Class<E> entityClass, CsvWriter writer,
+			List<String> fieldsToExport, QueryRule... rules)
+			throws DatabaseException
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<Tuple> sql(String query, QueryRule ...queryRules) throws DatabaseException
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public ResultSet executeQuery(String query, QueryRule ...queryRules) throws DatabaseException
 	{
 		throw new UnsupportedOperationException();
 	}

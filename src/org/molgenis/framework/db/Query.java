@@ -190,7 +190,7 @@ public interface Query<E extends Entity>
 	 * @throws DatabaseException
 	 * @throws ParseException 
 	 */
-	public abstract List<E> find() throws DatabaseException, ParseException;
+	public abstract List<E> find() throws DatabaseException;
 	
 	/** Finder for csv data */
 	public abstract void find(CsvWriter writer) throws DatabaseException, ParseException;

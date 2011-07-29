@@ -250,7 +250,7 @@ public class MolgenisOptions
 	@Option(name = "delete_generated_folder", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "delete generated Folder before generators are executed. Default: true")
 	// default set to false as partial generation leads to compile problems in
 	// for example molgenis_apps
-	public boolean delete_generated_folder = false;
+	public boolean delete_generated_folder = true;
 
 	// @Option(name = "force_lowercase_names", param = "force_lowercase_names",
 	// type = Option.Type.REQUIRED_ARGUMENT, usage =

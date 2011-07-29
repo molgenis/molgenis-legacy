@@ -1,5 +1,6 @@
 package org.molgenis.framework.db;
 
+import java.text.ParseException;
 import java.util.List;
 
 import org.molgenis.framework.db.jdbc.ColumnInfo.Type;
@@ -35,10 +36,11 @@ public interface Mapper<E extends Entity> {
 
 	public int remove(CsvReader reader) throws DatabaseException;
 
-	public List<E> toList(CsvReader reader, int limit) throws Exception;
+	public List<E> toList(CsvReader reader, int limit) throws DatabaseException;
 
 	public String getTableFieldName(String field);
 
-	public Type getFieldType(String field);	
+	public Type getFieldType(String field);
 	
+	public void resolveForeignKeys(List<E> enteties) throws ParseException, DatabaseException;
 }

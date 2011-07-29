@@ -42,7 +42,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.DatabaseException;
 
-import org.testng.AssertJUnit;
+import static  org.testng.AssertJUnit.*;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -68,16 +68,16 @@ public class TestDatabase
 		try
 		{		
 		<#if databaseImp = 'jpa'>		
-			db = new app.JpaDatabase(JpaUtil.createTables());
+			db = new app.JpaDatabase(true);
+                        JpaUtil.dropAndCreateTables( (JpaDatabase)db);
 			((JpaDatabase)db).getEntityManager().setFlushMode(FlushModeType.AUTO);
-			//JpaUtil.dropAndCreateTables(db.getEntityManager());
 		<#else>
 			<#if db_mode = 'standalone'>
 			db = new JDBCDatabase("molgenis.testhsql.properties");
 			<#else>
-			db = new JDBCDatabase("${options.molgenis_properties}");	
+			db = new JDBCDatabase("molgenis.test.properties");	
 			//create the database
-			new Molgenis("${options.molgenis_properties}").updateDb();
+			new Molgenis("molgenis.test.properties").updateDb();
 			</#if>
 		</#if>	
 		}
@@ -90,7 +90,7 @@ public class TestDatabase
 <#if databaseImp = 'jpa'>		
 	@AfterTest
 	public static void destory() {
-		JpaUtil.dropDatabase(db.getEntityManager());
+		JpaUtil.dropTables((JpaDatabase)db);
 	}	
 </#if>		
 		
@@ -110,7 +110,7 @@ public class TestDatabase
 		//retrieve xref entity candidates
 <#list entity.allFields as f><#if !f.auto>
 	<#if f.type == "xref" || f.type == "mref">
-		List<${JavaName(f.xrefEntity)}> ${name(f)}Xrefs = db.query(${JavaName(f.xrefEntity)}.class)<#if f.xrefEntity.hasAncestor()>.eq("__Type",${JavaName(f.xrefEntity)}.class.getSimpleName())</#if>.find();	
+		List<${JavaName(f.xrefEntity)}> ${name(f)}Xrefs = db.query(${JavaName(f.xrefEntity)}.class)<#if f.xrefEntity.hasAncestor()>.eq("${typefield()}",${JavaName(f.xrefEntity)}.class.getSimpleName())</#if>.find();	
 	</#if></#if>
 </#list>		
 
@@ -153,22 +153,22 @@ public class TestDatabase
 		//add entities and check counts
 		db.add(entities);
 		Query<${JavaName(entity)}> q = db.query(${JavaName(entity)}.class)<#if entity.hasAncestor() || entity.hasDescendants()>.eq("${typefield()}",${JavaName(entity)}.class.getSimpleName())</#if>;
-		AssertJUnit.assertEquals(total, q.count());
+		assertEquals(total, q.count());
 		List<${JavaName(entity)}> entitiesDb = q.sortASC("${pkey(entity).name}").find();
-		AssertJUnit.assertEquals(total, entitiesDb.size());
+		assertEquals(total, entitiesDb.size());
 <#if databaseImp != 'jpa'>		
 		//compare entities against insert (assumes sorting by id)
 		for(int i = 0; i < total; i++)
 		{
-			AssertJUnit.assertNotNull(entities.get(i).get${JavaName(pkey(entity))}());
+			assertNotNull(entities.get(i).get${JavaName(pkey(entity))}());
 	<#list entity.allFields as f><#if pkey(entity).name != f.name && !f.auto><#if f.type == "date">
 			//check formatted because of milliseconds rounding
-			AssertJUnit.assertEquals(dateFormat.format(entities.get(i).get${JavaName(f)}()), dateFormat.format(entitiesDb.get(i).get${JavaName(f)}()));
+			assertEquals(dateFormat.format(entities.get(i).get${JavaName(f)}()), dateFormat.format(entitiesDb.get(i).get${JavaName(f)}()));
 	<#elseif f.type == "datetime">
 			//check formatted because of milliseconds rounding
-			AssertJUnit.assertEquals(dateTimeFormat.format(entities.get(i).get${JavaName(f)}()),dateTimeFormat.format(entitiesDb.get(i).get${JavaName(f)}()));
+			assertEquals(dateTimeFormat.format(entities.get(i).get${JavaName(f)}()),dateTimeFormat.format(entitiesDb.get(i).get${JavaName(f)}()));
 	<#else>
-			AssertJUnit.assertEquals(entities.get(i).get${JavaName(f)}(), entitiesDb.get(i).get${JavaName(f)}());
+			assertEquals(entities.get(i).get${JavaName(f)}(), entitiesDb.get(i).get${JavaName(f)}());
 	</#if>
 	</#if></#list>		
 		}	
@@ -184,11 +184,11 @@ public class TestDatabase
 				q2.equals("${name(f)}",entity.get${JavaName(f)}());
 				List<${JavaName(entity)}> results = q2.find();
 <#if pkey(entity) == f>
-				AssertJUnit.assertEquals(results.size(),1);
+				assertEquals(results.size(),1);
 </#if>			
 				for(${JavaName(entity)} r: results)
 				{
-					AssertJUnit.assertEquals(r.get${JavaName(f)}(),entity.get${JavaName(f)}());
+					assertEquals(r.get${JavaName(f)}(),entity.get${JavaName(f)}());
 				}
 			}
 </#if></#list>

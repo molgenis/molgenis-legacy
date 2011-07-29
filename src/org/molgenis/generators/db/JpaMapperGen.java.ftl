@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jpa.JpaMapper;
@@ -54,6 +56,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.molgenis.util.Tuple;
 import java.text.ParseException;
+import org.molgenis.framework.db.QueryRule.Operator;
 
 <#--import all xref entities-->
 <#foreach field in entity.getAllFields()>
@@ -77,9 +80,11 @@ import ${e.namespace}.db.*;
 	</#list></#if>
 </#list>
 
+
 public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity)}>
 {
 	private EntityManager em;
+        private Database db;
 
 	public ${JavaName(entity)}JpaMapper() {}
 
@@ -87,10 +92,12 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 		this.em = em;
 	}
 
-<#--
-//	@Deprecated
-//	public ${JavaName(entity)}JpaMapper(Database db) {}
--->
+	@Deprecated
+	public ${JavaName(entity)}JpaMapper(Database db) {
+            this.db = db;
+            this.em = ((JpaDatabase)db).getEntityManager();
+        }
+
 	public void setEntityManager(EntityManager em) {
 		this.em = em;
 	}
@@ -140,7 +147,7 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 	finally the objects that refer to this object*/
     public void create(${JavaName(entity)} entity) throws DatabaseException {
         try {
-//			em.persist(entity);
+
 
 <#foreach field in entity.getAllFields()>
 	<#assign type_label = field.getType().toString()>
@@ -172,8 +179,12 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 </#foreach>
 
 			//prevents uncontrolled recursion call of create (stack overflow)
+          
+          if(entity.getIdValue() != null) {
+            entity = em.merge(entity);            
+          } else {
             em.persist(entity);
-
+          }
 //inverse association relation
 <#list model.entities as e>
     <#if !e.abstract>
@@ -255,8 +266,8 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 		<#if f.type=="mref" && Name(f.getXrefEntityName()) == Name(entity) >
 		<#assign multipleXrefs = e.getNumberOfReferencesTo(entity)/>
 		//${multipleXrefs}
-			if(${name(entity)}.get${Name(f.entity)}<#if multipleXrefs &gt; 1 >${Name(f)}</#if>Collection().contains(${name(entity)})) {	
-				${name(entity)}.get${Name(f.entity)}<#if multipleXrefs &gt; 1 >${Name(f)}</#if>Collection().remove(${name(entity)});
+			if(${name(entity)}.get${Name(f)}<#if multipleXrefs &gt; 1 >${Name(e)}</#if>Collection().contains(${name(entity)})) {	
+				${name(entity)}.get${Name(f)}<#if multipleXrefs &gt; 1 >${Name(e)}</#if>Collection().remove(${name(entity)});
 			}
 		</#if>
 	</#list>
@@ -285,19 +296,17 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 
 <#foreach field in entity.getAllFields()>
 	<#assign type_label = field.getType().toString()>
-	<#if type_label == "xref">
-		<#assign numRef = entity.getNumberOfReferencesTo(field.getXrefEntity())>
-			
-			<#assign fieldName = name(field.getXrefEntity()) />
-			<#assign methodName = Name(field.getXrefEntity()) />
 
+	<#if type_label == "xref" || type_label == "mref">
+		<#assign numRef = entity.getNumberOfReferencesTo(field.getXrefEntity())>
+			<#assign fieldName = name(field) />
+	<#--		
 			<#if numRef &gt; 1 >
-				<#assign fieldName = fieldName + Name(field) />
-				<#assign methodName = Name(field) />
+				<#assign fieldName = fieldName + Name(entity)/>
 			</#if>
-			<#assign fieldName = fieldName + Name(field) />
-			
+		-->
 			//${numRef}
+		<#if type_label == "xref">
 			${JavaName(field.getXrefEntity())} ${fieldName}Old = persistent${JavaName(entity)}.get${JavaName(field)}();
 			${JavaName(field.getXrefEntity())} ${fieldName}New = ${name(entity)}.get${JavaName(field)}();
 
@@ -309,7 +318,21 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
                                 ${name(entity)}.set${JavaName(field)}((${JavaName(field.getXrefEntity())})em.find(${JavaName(field.getXrefEntity())}.class, ${name(entity)}.get${JavaName(field)}_${JavaName(field.xrefField)}()));
                             }
 			}
-
+    	<#elseif type_label == "mref">
+			for(${JavaName(field.getXrefEntity())} mrefEntity : ${name(entity)}.get${JavaName(field)}()) {
+				if(mrefEntity.get${Name(pkey(field.getXrefEntity()))}() == null) {
+					em.persist(mrefEntity);
+				}
+				mrefEntity.get${JavaName(fieldName)}<#if numRef &gt; 1 >${Name(entity)}</#if>Collection().add(${name(entity)});
+			}
+			
+			for(${pkeyJavaType(field.getXrefEntity())} id : ${name(entity)}.get${JavaName(fieldName)}_Id()) {
+				${JavaName(field.getXrefEntity())} mref = em.find(${JavaName(field.getXrefEntity())}.class, id);
+				if(!${name(entity)}.get${JavaName(fieldName)}().contains(mref)) {
+					${name(entity)}.get${JavaName(fieldName)}().add(mref);
+				}
+			}    
+		</#if>
 	</#if>
 </#foreach>
 			if(!em.contains(${name(entity)})) {
@@ -371,10 +394,11 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 		int count = 0;
 		
 		try {
-			for (${JavaName(entity)} ${name(entity)} : entities) {
-				create(${name(entity)});
-				++count;
-			}
+                    this.resolveForeignKeys(entities);
+                    for (${JavaName(entity)} ${name(entity)} : entities) {
+                            create(${name(entity)});
+                            ++count;
+                    }
 		} catch (Exception ex) {
             try {
                 em.getTransaction().rollback();
@@ -391,10 +415,11 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 	{
 		int count = 0;
 		try {
-			for (${JavaName(entity)} ${name(entity)} : entities) {
-				edit(${name(entity)});
-				++count;
-			}
+                    this.resolveForeignKeys(entities);
+                    for (${JavaName(entity)} ${name(entity)} : entities) {
+                            edit(${name(entity)});
+                            ++count;
+                    }
 		} catch (Exception ex) {
             try {
                 em.getTransaction().rollback();
@@ -411,10 +436,10 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 	{
 		int count = 0;		
 		try {
-			for (${JavaName(entity)} ${name(entity)} : entities) {
-				destroy(${name(entity)}, em);
-				++count;
-			}
+                    for (${JavaName(entity)} ${name(entity)} : entities) {
+                            destroy(${name(entity)}, em);
+                            ++count;
+                    }
 		} catch (Exception ex) {
             try {
                 em.getTransaction().rollback();
@@ -486,9 +511,10 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 	}
 
 	@Override
+        @Deprecated
 	public Database getDatabase()
 	{
-		throw new UnsupportedOperationException();
+            return db;
 	}
 
 	@Override
@@ -538,10 +564,6 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 	{
 		throw new UnsupportedOperationException();
 	}
-
-//Generated by MapperCommons.subclass_per_table.java.ftl
-<#--<#include "MapperCommons.subclass_per_table.java.ftl">-->
-
 	
 	public ${JavaName(entity)} create()
 	{
@@ -550,7 +572,8 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 <#else>
 		return null; //abstract type, cannot be instantiated
 </#if>
-	}
+	}	
 	
+	<#include "MapperCommons.java.ftl">
 	<#include "MapperFileAttachments.java.ftl">
 }

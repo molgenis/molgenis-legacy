@@ -18,6 +18,7 @@ package org.molgenis.framework.db;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.List;
@@ -29,6 +30,8 @@ import org.molgenis.model.elements.Model;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
+import org.molgenis.util.ResultSetTuple;
+import org.molgenis.util.Tuple;
 import org.molgenis.util.XlsWriter;
 
 /**
@@ -239,7 +242,7 @@ public interface Database
 	 *            to be added.
 	 * @return number of entity objects that have added.
 	 */
-	public <E extends Entity> int add(E entity) throws DatabaseException, IOException;
+	public <E extends Entity> int add(E entity) throws DatabaseException;
 
 	/**
 	 * Add a list of entity objects in batch to the database
@@ -250,7 +253,7 @@ public interface Database
 	 *            to be added
 	 * @return number of entity objects that have been added
 	 */
-	public <E extends Entity> int add(List<E> entities) throws DatabaseException, IOException;
+	public <E extends Entity> int add(List<E> entities) throws DatabaseException;
 
 	/**
 	 * Add a list of entity objects to the database by parsing them from a csv
@@ -265,7 +268,7 @@ public interface Database
 	 * @return number of entities added
 	 * @throws Exception
 	 */
-	public <E extends Entity> int add(Class<E> klazz, CsvReader reader, CsvWriter writer) throws Exception;
+	public <E extends Entity> int add(Class<E> klazz, CsvReader reader, CsvWriter writer) throws DatabaseException;
 
 	/**
 	 * Update one entity object in the database.
@@ -280,7 +283,7 @@ public interface Database
 	 * @param entity
 	 *            The entity which needs to be updated in the database.
 	 */
-	public <E extends Entity> int update(E entity) throws DatabaseException, IOException;
+	public <E extends Entity> int update(E entity) throws DatabaseException;
 
 	/**
 	 * Update a list of entity objects in batch from the database
@@ -290,7 +293,7 @@ public interface Database
 	 * @param entities
 	 *            to be updated
 	 */
-	public <E extends Entity> int update(List<E> entities) throws DatabaseException, IOException;
+	public <E extends Entity> int update(List<E> entities) throws DatabaseException;
 
 	/**
 	 * Update a list of entity objects in the database by reading the new values
@@ -305,8 +308,7 @@ public interface Database
 	 * @return number of entities update
 	 * @throws Exception
 	 */
-	public <E extends Entity> int update(Class<E> klazz, CsvReader reader) throws DatabaseException, IOException,
-			Exception;
+	public <E extends Entity> int update(Class<E> klazz, CsvReader reader) throws DatabaseException;
 
 	/**
 	 * Remove one particular entity from the database.
@@ -316,7 +318,7 @@ public interface Database
 	 * @param entity
 	 *            to be removed.
 	 */
-	public <E extends Entity> int remove(E entity) throws DatabaseException, IOException;
+	public <E extends Entity> int remove(E entity) throws DatabaseException;
 
 	/**
 	 * Remove a list of entity objects in batch from the database
@@ -326,7 +328,7 @@ public interface Database
 	 * @param entities
 	 *            to be removed
 	 */
-	public <E extends Entity> int remove(List<E> entities) throws DatabaseException, IOException;
+	public <E extends Entity> int remove(List<E> entities) throws DatabaseException;
 
 	/**
 	 * Remove a list of entity objects from the database by parsing the
@@ -341,8 +343,7 @@ public interface Database
 	 * @return number of entities that have been removed
 	 * @throws Exception
 	 */
-	public <E extends Entity> int remove(Class<E> entityClass, CsvReader reader) throws DatabaseException, IOException,
-			Exception;
+	public <E extends Entity> int remove(Class<E> entityClass, CsvReader reader) throws DatabaseException;
 
 	/**
 	 * Enumeration of complex database update actions supported by updateByName
@@ -385,7 +386,7 @@ public interface Database
 	 *            use. For example: experiment, name
 	 */
 	public <E extends Entity> int update(List<E> entities, DatabaseAction dbAction, String... keyName)
-			throws DatabaseException, ParseException, IOException;
+			throws DatabaseException;
 
 	/**
 	 * Get the path to the file directory that this database uses to store file
@@ -434,7 +435,7 @@ public interface Database
 	 * @return list of entity objects of type=klazz
 	 * @throws Exception
 	 */
-	public <E extends Entity> List<E> toList(Class<E> klazz, CsvReader reader, int noEntities) throws Exception;
+	public <E extends Entity> List<E> toList(Class<E> klazz, CsvReader reader, int noEntities) throws DatabaseException;
 
 	/**
 	 * Return a list of the classes of the entities managed.
@@ -475,4 +476,17 @@ public interface Database
 	 */
 	public EntityManager getEntityManager();
 
+	/**
+	 * Executes a query and get back a List of (Molgenis)Tuples
+	 * @return List<Tuple>
+	 */
+	@Deprecated
+	public List<Tuple> sql(String query, QueryRule ...queryRules) throws DatabaseException;
+	
+	/**
+	 * Executes a query and get back a List of (Molgenis)Tuples, rules are added to where
+	 * @return ResultSetTuple
+	 */
+	@Deprecated	
+	public ResultSet executeQuery(String query, QueryRule ... queryRules) throws DatabaseException;
 }

@@ -613,7 +613,7 @@ public abstract class FormController<E extends Entity> extends
 		try
 		{
 			db.beginTx();
-			entity.set(request);
+			entity.set(request, false);
 			int updatedRows = 0;
 			if (request.getObject(FormModel.INPUT_BATCHADD) != null
 					&& request.getInt(FormModel.INPUT_BATCHADD) > 1)
@@ -665,7 +665,7 @@ public abstract class FormController<E extends Entity> extends
 		ScreenMessage msg = null;
 		try
 		{
-			entity.set(request);
+			entity.set(request, false);
 			int updatedRows = db.update(entity);
 			msg = new ScreenMessage("UPDATE SUCCESS: affected " + updatedRows,
 					null, true);

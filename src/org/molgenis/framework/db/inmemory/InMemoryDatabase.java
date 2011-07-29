@@ -2,6 +2,7 @@ package org.molgenis.framework.db.inmemory;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -41,39 +42,36 @@ public class InMemoryDatabase implements Database
 			.getLogger(InMemoryDatabase.class);
 
 	@Override
-	public <E extends Entity> int add(E entity) throws DatabaseException,
-			IOException
+	public <E extends Entity> int add(E entity) throws DatabaseException
 	{
-		try
+		Class<? extends Entity> c = entity.getClass();
+		if (db.get(c) == null)
 		{
-			Class<? extends Entity> c = entity.getClass();
-			if (db.get(c) == null)
-			{
-				db.put(c, new LinkedHashMap<Integer, Entity>());
-			}
+			db.put(c, new LinkedHashMap<Integer, Entity>());
+		}
 
-			db.get(c).put(autoid++, (Entity) entity);
+		db.get(c).put(autoid++, (Entity) entity);
 
-			// set autoid unless already set
-			if (entity.get(entity.getIdField()) == null)
+		// set autoid unless already set
+		if (entity.get(entity.getIdField()) == null)
+		{
+			Tuple t = new SimpleTuple();
+			t.set(entity.getIdField(), autoid);
+			try
 			{
-				Tuple t = new SimpleTuple();
-				t.set(entity.getIdField(), autoid);
 				entity.set(t, false);
 			}
+			catch (Exception ex)
+			{
+				throw new DatabaseException(ex);
+			}
 		}
-		catch (ParseException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 		return 1;
 	}
 
 	@Override
 	public <E extends Entity> int add(List<E> entities)
-			throws DatabaseException, IOException
+			throws DatabaseException
 	{
 		for (E entity : entities)
 		{
@@ -85,9 +83,8 @@ public class InMemoryDatabase implements Database
 
 	@Override
 	public <E extends Entity> int add(Class<E> klazz, CsvReader reader,
-			CsvWriter writer) throws Exception
+			CsvWriter writer)
 	{
-		// TODO solve in superclass
 		throw new UnsupportedOperationException();
 	}
 
@@ -95,21 +92,18 @@ public class InMemoryDatabase implements Database
 	public void beginTx() throws DatabaseException
 	{
 		throw new UnsupportedOperationException();
-
 	}
 
 	@Override
 	public void close() throws DatabaseException
 	{
 		throw new UnsupportedOperationException();
-
 	}
 
 	@Override
 	public void commitTx() throws DatabaseException
 	{
 		throw new UnsupportedOperationException();
-
 	}
 
 	@Override
@@ -127,19 +121,12 @@ public class InMemoryDatabase implements Database
 	}
 
 	@Override
-	public <E extends Entity> void find(Class<E> klazz, CsvWriter writer,
-			List<String> fieldsToExport, QueryRule... rules)
-			throws DatabaseException
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public <E extends Entity> List<E> find(Class<E> klazz, QueryRule... rules)
 			throws DatabaseException
 	{
-
-		if (db.get(klazz) == null) return new ArrayList<E>();
+		if (db.get(klazz) == null) 
+			return new ArrayList<E>();
+		
 		if (rules.length == 0)
 		{
 			return getValues(klazz);
@@ -182,26 +169,17 @@ public class InMemoryDatabase implements Database
 	public <E extends Entity> List<E> findByExample(E example)
 			throws DatabaseException
 	{
-		// TODO move to common superclass of JDBC/InMemory/XML database
-		try
-		{
-			Query<E> q = this.query(getClassForEntity(example));
+		Query<E> q = this.query(getClassForEntity(example));
 
-			for (String field : example.getFields())
+		for (String field : example.getFields())
+		{
+			if (example.get(field) != null)
 			{
-				if (example.get(field) != null)
-				{
-					q.equals(field, example.get(field));
-				}
+				q.equals(field, example.get(field));
 			}
+		}
 
-			return q.find();
-		}
-		catch (ParseException pe)
-		{
-			logger.warn("Parsing exception occured", pe);
-		}
-		return null;
+		return q.find();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -248,8 +226,7 @@ public class InMemoryDatabase implements Database
 	}
 
 	@Override
-	public <E extends Entity> int remove(E entity) throws DatabaseException,
-			IOException
+	public <E extends Entity> int remove(E entity) throws DatabaseException
 	{
 		List<E> entities = this.findByExample(entity);
 		Entity e;
@@ -269,7 +246,7 @@ public class InMemoryDatabase implements Database
 
 	@Override
 	public <E extends Entity> int remove(List<E> entities)
-			throws DatabaseException, IOException
+			throws DatabaseException
 	{
 		int count = 0;
 		for (E entity : entities)
@@ -281,7 +258,7 @@ public class InMemoryDatabase implements Database
 
 	@Override
 	public <E extends Entity> int remove(Class<E> klazz, CsvReader reader)
-			throws DatabaseException, IOException, Exception
+			throws DatabaseException
 	{
 		throw new UnsupportedOperationException();
 	}
@@ -294,14 +271,13 @@ public class InMemoryDatabase implements Database
 
 	@Override
 	public <E extends Entity> List<E> toList(Class<E> klazz, CsvReader reader,
-			int noEntities) throws Exception
+			int noEntities) throws DatabaseException
 	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public <E extends Entity> int update(E entity) throws DatabaseException,
-			IOException
+	public <E extends Entity> int update(E entity) throws DatabaseException
 	{
 		// needs to know primary key for this...and that needs to be set...
 		throw new UnsupportedOperationException();
@@ -309,7 +285,7 @@ public class InMemoryDatabase implements Database
 
 	@Override
 	public <E extends Entity> int update(List<E> entities)
-			throws DatabaseException, IOException
+			throws DatabaseException
 	{
 		// needs to know primary key for this...and that needs to be set...
 		throw new UnsupportedOperationException();
@@ -317,7 +293,7 @@ public class InMemoryDatabase implements Database
 
 	@Override
 	public <E extends Entity> int update(Class<E> klazz, CsvReader reader)
-			throws DatabaseException, IOException, Exception
+			throws DatabaseException
 	{
 		// needs to know primary key for this...and that needs to be set...
 		throw new UnsupportedOperationException();
@@ -386,7 +362,7 @@ public class InMemoryDatabase implements Database
 	@Override
 	public <E extends Entity> int update(List<E> entities,
 			DatabaseAction dbAction, String... keyName)
-			throws DatabaseException, ParseException, IOException
+			throws DatabaseException
 	{
 		throw new UnsupportedOperationException();
 	}
@@ -402,4 +378,24 @@ public class InMemoryDatabase implements Database
 	{
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public <E extends Entity> void find(Class<E> entityClass, CsvWriter writer,
+			List<String> fieldsToExport, QueryRule... rules)
+			throws DatabaseException
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<Tuple> sql(String query, QueryRule ...queryRules) throws DatabaseException
+	{
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public ResultSet executeQuery(String query, QueryRule ...queryRules)
+	{
+		throw new UnsupportedOperationException();
+	}	
 }
