@@ -13,10 +13,17 @@
 	      <property name="javax.persistence.jdbc.password" value="${options.dbPassword}"/>
 	      <property name="javax.persistence.jdbc.driver" value="${options.dbDriver}"/>
 	      <property name="javax.persistence.jdbc.user" value="${options.dbUser}"/>
-              <property name="javax.persistence.validation.mode" value="none"/>    
-
-              <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/>
-              <property name="hibernate.show_sql" value="true"/> 
+          <property name="javax.persistence.validation.mode" value="none"/>    
+          <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/>
+          <property name="hibernate.show_sql" value="true"/>
+          
+          <!--
+          Automatically validates or exports schema DDL to the database when the SessionFactory is created. 
+          With create-drop, the database schema will be dropped when the SessionFactory is closed explicitly.
+		e.g. validate | update | create | create-drop
+           -->
+            <property name="hibernate.hbm2ddl.auto" value="validate"/>
+           
 	    </properties>
 	</persistence-unit>
 	<persistence-unit name="molgenis_test" transaction-type="RESOURCE_LOCAL">
@@ -28,10 +35,17 @@
 	      <property name="javax.persistence.jdbc.password" value="molgenis"/>
 	      <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
 	      <property name="javax.persistence.jdbc.user" value="molgenis"/>
-	      <property name="javax.persistence.validation.mode" value="none"/>     
-
-              <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/>
-              <property name="hibernate.show_sql" value="true"/>
+	      <property name="javax.persistence.validation.mode" value="none"/>
+          <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/>
+          <property name="hibernate.show_sql" value="true"/>
+	    
+          <!--
+          Automatically validates or exports schema DDL to the database when the SessionFactory is created. 
+          With create-drop, the database schema will be dropped when the SessionFactory is closed explicitly.
+		e.g. validate | update | create | create-drop
+           -->
+            <property name="hibernate.hbm2ddl.auto" value="validate"/>	    
+	    
 	    </properties>
 	</persistence-unit>		
 </persistence>
