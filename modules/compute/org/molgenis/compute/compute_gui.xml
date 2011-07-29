@@ -24,7 +24,7 @@
 				hide_fields="Investigation,ontologyReference">
 				<form name="Lanes" entity="LibraryLane" hide_fields="Investigation,ontologyReference" />
 			</form>
-			<form name="Worksheet" label="Analysis Worksheet" entity="Worksheet">
+			<form name="Worksheet" label="Analysis Worksheet" entity="Worksheet" commands="org.molgenis.compute.ui.WorksheetBatchCommand">
 				<plugin name="Button" type="org.molgenis.compute.ui.StartNgs" />
 			</form>
 			<!--
@@ -62,12 +62,7 @@
 			hide_fields="description,Investigation,ontologyReference,ProtocolType,TargetFilter,Contact,Features"
 			>
 		-->
-		<!--
-			<menu name="SelectPipeline" label="Select pipeline to run"> <plugin
-			name="ComputePlugin" label="Choose pipeline to run"
-			type="org.molgenis.compute.ComputePlugin" /> </menu>
-		-->
-		<menu name="Reports">
+			<menu name="Reports">
             <plugin name="console" label="Job monitoring"
 				type="org.molgenis.compute.ui.ConsolePlugin" />
             <!--
