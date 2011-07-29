@@ -28,7 +28,7 @@
 			<field name="Topic" type="mref" nillable="true" xref_entity="BiobankTopic" />
 			<field name="Institutes" nillable="true" type="mref" xref_label="name" xref_entity="Institute" label="Institutions" description="Institute that are custodian of this biobankPanel (found in xls as Institutions). For example: VU" />
 			<field name="Coordinators" type="mref" nillable="true" xref_entity="Person" mref_name="BiobankContact" description="One or more contact persons for this biobank" />
-			<field name="panelSize" label="Current n=" nillable="true" description="Current n= in xls" />
+			<field name="PanelSize" label="Current n=" nillable="true" description="Current n= in xls" />
 			<field name="Biodata" type="mref" nillable="true" xref_entity="BiobankDataType" description="Biodata in xls" />
 			<field name="GwaDataNum" label="GWA data n=" type="string" nillable="true" description="GWA data n=" />
 			<field name="GwaPlatform" label="GWA platform" type="string" nillable="true" description="GWA platform in xls" />
