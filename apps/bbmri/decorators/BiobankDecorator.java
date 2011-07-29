@@ -77,7 +77,7 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 			if (getDatabase().query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().size() == 0) {
 				return count;
 			}
-		} catch (ParseException e1) {
+		} catch (Exception e1) {
 			return count;
 		}
 		
@@ -116,7 +116,7 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 			if (getDatabase().query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().size() == 0) {
 				return count;
 			}
-		} catch (ParseException e1) {
+		} catch (Exception e1) {
 			return count;
 		}
 		

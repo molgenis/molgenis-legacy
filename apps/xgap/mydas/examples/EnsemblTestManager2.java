@@ -9,8 +9,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.xgap.Gene;
+
+import app.DatabaseFactory;
 
 import uk.ac.ebi.mydas.exceptions.BadReferenceObjectException;
 import uk.ac.ebi.mydas.exceptions.DataSourceException;
@@ -19,14 +22,13 @@ import uk.ac.ebi.mydas.model.DasComponentFeature;
 import uk.ac.ebi.mydas.model.DasFeature;
 import uk.ac.ebi.mydas.model.DasMethod;
 import uk.ac.ebi.mydas.model.DasType;
-import app.JDBCDatabase;
 
 public class EnsemblTestManager2 {
 	private ArrayList<DasType> types;
 	private DasType geneType, transcriptType, exonType;
 	private DasMethod method;
 	private Connection connection;
-	private JDBCDatabase db;
+	private Database db;
 
 	public EnsemblTestManager2() throws DataSourceException, FileNotFoundException, IOException, DatabaseException {
 		// Initialize types
@@ -45,7 +47,7 @@ public class EnsemblTestManager2 {
 		/*String userName = "anonymous";
 		String password = "";*/
 		//String url = "jdbc:mysql://ensembldb.ensembl.org:5306/homo_sapiens_core_56_37a";
-		db = new JDBCDatabase("xgap.properties");
+		db = DatabaseFactory.create("xgap.properties");
 		
 		/**
 		try {

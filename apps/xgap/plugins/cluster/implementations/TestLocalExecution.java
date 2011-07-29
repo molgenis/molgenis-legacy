@@ -1,7 +1,9 @@
 package plugins.cluster.implementations;
 
+import org.molgenis.framework.db.Database;
+
 import plugins.cluster.helper.Command;
-import app.JDBCDatabase;
+import app.DatabaseFactory;
 import filehandling.generic.MolgenisFileHandler;
 
 public class TestLocalExecution
@@ -13,7 +15,7 @@ public class TestLocalExecution
 	 */
 	public static void main(String[] args) throws Exception
 	{
-		JDBCDatabase db = new JDBCDatabase("handwritten/apps/org/molgenis/xgap/xqtlworkbench_standalone/xqtl.properties");
+		Database db = DatabaseFactory.create("handwritten/apps/org/molgenis/xgap/xqtlworkbench_standalone/xqtl.properties");
 		LocalComputationResource lc = new LocalComputationResource();
 
 		// project dir

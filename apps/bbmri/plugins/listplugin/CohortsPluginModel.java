@@ -64,8 +64,6 @@ public class CohortsPluginModel extends EasyPluginModel
 			}
 		} catch (DatabaseException e) {
 			e.printStackTrace();
-		} catch (ParseException e) {
-			e.printStackTrace();
 		}
 		
 		return Biobank;

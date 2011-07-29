@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.molgenis.MolgenisOptions;
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.util.cmdline.CmdLineException;
@@ -20,14 +21,14 @@ import uk.ac.ebi.mydas.model.DasComponentFeature;
 import uk.ac.ebi.mydas.model.DasFeature;
 import uk.ac.ebi.mydas.model.DasMethod;
 import uk.ac.ebi.mydas.model.DasType;
-import app.JDBCDatabase;
+import app.DatabaseFactory;
 
 public class XgapTestManager {
 	private ArrayList<DasType> types;
 	private DasType geneType;
 	private DasMethod method;
 	
-	private JDBCDatabase db;
+	private Database db;
 
 	public XgapTestManager() throws DataSourceException {
 		// Initialize types
@@ -38,7 +39,7 @@ public class XgapTestManager {
 		
 		// Create database
 		try {
-			db = new JDBCDatabase(new MolgenisOptions("xgap.properties"));
+			db = DatabaseFactory.create((new MolgenisOptions("xgap.properties")));
 		} catch (Exception e) {
 			throw new DataSourceException(e.toString());
 		} 

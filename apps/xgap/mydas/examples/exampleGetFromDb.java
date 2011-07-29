@@ -4,10 +4,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.xgap.Gene;
 
-import app.JDBCDatabase;
+import app.DatabaseFactory;
 
 public class exampleGetFromDb {
 
@@ -19,7 +20,7 @@ public class exampleGetFromDb {
 	 */
 	public static void main(String[] args) throws FileNotFoundException, IOException, DatabaseException {
 		
-		JDBCDatabase db = new JDBCDatabase("xgap.properties");
+		Database db = DatabaseFactory.create("xgap.properties");
 		
 		List<Gene> genes = db.find(Gene.class);
 		//TODO: Danny: Use or loose (perhaps the entire main ??)

@@ -135,7 +135,7 @@
 				feature" />
 			-->
 		</entity>
-		<entity name="Observation" abstract="true">
+		<entity name="Observation" abstract="true"  implements="Identifiable">
 			<description>
 				Generic model for observations, that is, the observed value on a
 				feature-target pair given a protocol. See the 'data' package for all

@@ -20,8 +20,6 @@ import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.util.Tuple;
 
-import app.JDBCDatabase;
-
 public class MatrixManager extends PluginModel
 {
 
@@ -107,7 +105,7 @@ public class MatrixManager extends PluginModel
 
 	public static Browser createBrowserInstance(Database db) throws Exception
 	{
-		TargetFeatureMemoryMatrix tfmm = new TargetFeatureMemoryMatrix((JDBCDatabase) db);
+		TargetFeatureMemoryMatrix tfmm = new TargetFeatureMemoryMatrix(db);
 		return new Browser(tfmm);
 	}
 

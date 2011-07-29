@@ -66,7 +66,7 @@ public class MolgenisUserDecorator<E extends MolgenisUser> extends MappingDecora
 			mugl.setGroup_Id(mg.getId());
 			try {
 				getDatabase().add(mugl);
-			} catch (IOException e1) {
+			} catch (DatabaseException e1) {
 				try {
 					throw new Exception(e1.getMessage());
 				} catch (Exception e2) {

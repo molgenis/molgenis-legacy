@@ -103,8 +103,15 @@ public class LifelinesDataImport extends PluginModel<Entity>
                     String fileName = file.getName();
 					String tableName = fileName.substring(0, fileName.length() - 4);		
                     
-					BufferedReader reader = new BufferedReader(new FileReader(file));
-					String headerLine = reader.readLine();
+					BufferedReader reader = null;
+					String headerLine = null;
+					try {
+						reader = new BufferedReader(new FileReader(file));
+						headerLine = reader.readLine();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					
 					// Get the column headers, clean them up and make corresponding features
 					String[] columns = headerLine.split(",");
@@ -206,17 +213,10 @@ public class LifelinesDataImport extends PluginModel<Entity>
 				
 			} catch (DatabaseException e) {
 				e.printStackTrace();
-			} catch (ParseException e) {
-				e.printStackTrace();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
+			} catch (Exception ex) {
+				ex.printStackTrace();
 			}
-			
 		}
-
-		
 	}
 
 	@Override

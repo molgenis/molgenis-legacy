@@ -10,6 +10,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.pheno.Measurement;
@@ -18,14 +19,14 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
 
-import app.JDBCDatabase;
+import app.DatabaseFactory;
 
 public class LoadLifeLinesData {
 	public static void main(String[] args) throws Exception {
 		int paIdx = 0; //name for protocal Application
 		int investigationId = 1;
 		
-		JDBCDatabase db = new JDBCDatabase("/gcc/handwritten/apps/org/molgenis/biobank/bbmri.molgenis.properties/bbmri.molgenis.properties");
+		Database db = DatabaseFactory.create("/gcc/handwritten/apps/org/molgenis/biobank/bbmri.molgenis.properties/bbmri.molgenis.properties");
 		
 		Hashtable<String, Integer> fkMis = new Hashtable<String, Integer>();
 

@@ -254,10 +254,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		} catch (DatabaseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 		
 //		
 	}
@@ -279,10 +276,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 				
 			} catch (DatabaseException e) {
 				e.printStackTrace();
-			} catch (IOException e) {
-
-				e.printStackTrace();
-			}
+			} 
 		}
 	}
 	

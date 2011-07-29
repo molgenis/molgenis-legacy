@@ -20,7 +20,6 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.ResultSetTuple;
 import org.molgenis.util.Tuple;
 
-import app.JDBCDatabase;
 import decorators.NameConvention;
 
 public class DatabaseDataMatrixInstance extends AbstractDataMatrixInstance
@@ -134,7 +133,7 @@ public class DatabaseDataMatrixInstance extends AbstractDataMatrixInstance
 	{
 		String sql = String.format("SELECT " + rowIndexString + "," + colIndexString + "," + valueString + " FROM "
 				+ type + dataElement + " WHERE " + dataString + "=%s", matrixId);
-		ResultSetTuple rs = new ResultSetTuple(((JDBCDatabase) db).executeQuery(sql));
+		ResultSetTuple rs = new ResultSetTuple(db.executeQuery(sql));
 
 		Object[][] data = new Object[this.getNumberOfRows()][this.getNumberOfCols()];
 		if (type.equals("Decimal"))
@@ -195,7 +194,7 @@ public class DatabaseDataMatrixInstance extends AbstractDataMatrixInstance
 
 		String sql = "SELECT " + rowIndexString + ", " + colIndexString + ", " + valueString + " FROM " + type
 				+ dataElement + "";
-		ResultSetTuple rs = new ResultSetTuple(((JDBCDatabase) db).executeQuery(sql, new QueryRule(rowIndexString,
+		ResultSetTuple rs = new ResultSetTuple(db.executeQuery(sql, new QueryRule(rowIndexString,
 				Operator.IN, rowIndicesCastable), new QueryRule(colIndexString, Operator.IN, colIndicesCastable),
 				new QueryRule(dataString, Operator.EQUALS, matrixId)));
 
@@ -227,7 +226,7 @@ public class DatabaseDataMatrixInstance extends AbstractDataMatrixInstance
 				+ type + dataElement + " WHERE " + rowIndexString + ">=%s AND " + rowIndexString + "<%s AND "
 				+ colIndexString + ">=%s AND " + colIndexString + "<%s AND " + dataString + "=%s", row, row + rows,
 				col, col + cols, matrixId);
-		ResultSetTuple rs = new ResultSetTuple(((JDBCDatabase) db).executeQuery(sql));
+		ResultSetTuple rs = new ResultSetTuple(db.executeQuery(sql));
 
 		Object[][] data = new Object[rows][cols];
 		if (type.equals(decimalTypeString))

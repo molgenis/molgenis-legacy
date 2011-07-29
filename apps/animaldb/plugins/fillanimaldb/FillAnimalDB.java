@@ -17,7 +17,7 @@ import org.molgenis.framework.security.Login;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservedValue;
 
-import app.JDBCDatabase;
+import app.DatabaseFactory;
 
 import commonservice.CommonService;
 
@@ -27,7 +27,7 @@ public class FillAnimalDB {
 	private CommonService ct;
 	
 	public FillAnimalDB() throws Exception {
-		db = new JDBCDatabase("handwritten/apps/org/molgenis/animaldb/animaldb.properties");
+		db = DatabaseFactory.create("handwritten/apps/org/molgenis/animaldb/animaldb.properties");
 		ct = CommonService.getInstance();
 		ct.setDatabase(db);
 	}

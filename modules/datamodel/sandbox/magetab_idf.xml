@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<molgenis name="org.molgenis.magetab" label="MAGE-TAB Model v1.1">
+<molgenis name="magetab" label="MAGE-TAB Model v1.1">
 	<description>
 		<p>
 			Authors documentation: Helen Parkinson and Morris Swertz
@@ -95,8 +95,8 @@
 			<field name="Investigation" type="xref" xref_entity="Investigation" />
 			<field name="ExperDesigns" label="Experimental Design(s) (name was ExperimentalDesigns)"
 				type="mref" xref_entity="OntologyTerm" />
-			<field name="Date" type="date" label="Date of Experiment"
-				nillable="true" />
+			<field name="ExperimentDate" type="date" label="Date of Experiment"
+				nillable="true" /> <!-- renamed for Oracle, Date -->
 			<field name="PublicRelease" type="date" label="Public Release Date"
 				nillable="true" />
 			<field name="Description" type="text" label="Experiment Description"
@@ -113,7 +113,7 @@
 				type="mref" xref_entity="OntologyTerm" nillable="true" />
 			<field name="Protocols" type="mref" xref_entity="Protocol"
 				nillable="true" />
-			<field name="Publications" type="mref" xref_entity="Publication"
+			<field name="publicationsID" type="mref" xref_entity="Publication"
 				nillable="true" />
 			<field name="SRDFFile" label="SDRF File" type="file" nillable="true" />
 			<!-- unique fields="name" /-->

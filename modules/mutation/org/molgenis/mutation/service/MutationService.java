@@ -212,7 +212,7 @@ public class MutationService implements Serializable
 					publicationIds.add(publication.getId());
 				if (publicationIds.size() > 0)
 				{
-					List<Patient> patients    = this.db.query(Patient.class).in(Patient.PUBLICATIONS, publicationIds).find();
+					List<Patient> patients    = this.db.query(Patient.class).in(Patient.PUBLICATIONSPATIENT, publicationIds).find();
 					List<Integer> mutationIds = new ArrayList<Integer>();
 					for (Patient patient : patients)
 					{
@@ -408,9 +408,9 @@ public class MutationService implements Serializable
 			patientSummaryVO.setSubmitterCountry(submitter.getCountry());
 			patientSummaryVO.setPublicationVOList(new ArrayList<PublicationVO>());
 
-			if (CollectionUtils.isNotEmpty(patient.getPublications_Id()))
+			if (CollectionUtils.isNotEmpty(patient.getPublicationsPatient_Id()))
 			{
-				List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPublications_Id()).find();
+				List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPublicationsPatient_Id()).find();
 
 				for (Publication publication : publications)
 				{

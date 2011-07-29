@@ -195,7 +195,7 @@
 				nillable="true"
 				description="Reason why mutation2 might be null: NA - mutation1 is dominant, unknown - mutation2 is unknown"
 				label="Second Mutation remark" />
-			<field name="publications" type="mref" xref_field="Publication.id"
+			<field name="publicationsPatient" type="mref" xref_field="Publication.id"
 				nillable="true" label="PubMed ID" />
 			<field name="consent" type="enum" enum_options="publication,yes,no"
 				default="no" label="Patient consent" />

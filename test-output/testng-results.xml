@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results skipped="0" failed="0" total="115" passed="115">
+  <reporter-output>
+  </reporter-output>
+  <suite name="Default suite" duration-ms="84665" started-at="2011-07-29T14:01:30Z" finished-at="2011-07-29T14:02:55Z">
+    <groups>
+    </groups>
+    <test name="Default test" duration-ms="84665" started-at="2011-07-29T14:01:30Z" finished-at="2011-07-29T14:02:55Z">
+      <class name="test.TestDatabase">
+        <test-method status="PASS" signature="oneTimeSetUp()" name="oneTimeSetUp" is-config="true" duration-ms="69877" started-at="2011-07-29T14:01:30Z" finished-at="2011-07-29T14:02:40Z">
+        </test-method>
+        <test-method status="PASS" signature="testDataSet()" name="testDataSet" duration-ms="55" started-at="2011-07-29T14:02:40Z" finished-at="2011-07-29T14:02:40Z">
+        </test-method>
+        <test-method status="PASS" signature="testDataName()" name="testDataName" duration-ms="67" started-at="2011-07-29T14:02:40Z" depends-on-methods="test.TestDatabase.testDataSet" finished-at="2011-07-29T14:02:40Z">
+        </test-method>
+        <test-method status="PASS" signature="testInstitute()" name="testInstitute" duration-ms="37" started-at="2011-07-29T14:02:40Z" finished-at="2011-07-29T14:02:40Z">
+        </test-method>
+        <test-method status="PASS" signature="testInvestigator()" name="testInvestigator" duration-ms="91" started-at="2011-07-29T14:02:40Z" depends-on-methods="test.TestDatabase.testInstitute" finished-at="2011-07-29T14:02:40Z">
+        </test-method>
+        <test-method status="PASS" signature="testConversionTypeLookup()" name="testConversionTypeLookup" duration-ms="42" started-at="2011-07-29T14:02:40Z" finished-at="2011-07-29T14:02:40Z">
+        </test-method>
+        <test-method status="PASS" signature="testMazeData()" name="testMazeData" duration-ms="595" started-at="2011-07-29T14:02:40Z" depends-on-methods="test.TestDatabase.testConversionTypeLookup" finished-at="2011-07-29T14:02:41Z">
+        </test-method>
+        <test-method status="PASS" signature="testChannelMapping()" name="testChannelMapping" duration-ms="191" started-at="2011-07-29T14:02:41Z" finished-at="2011-07-29T14:02:41Z">
+        </test-method>
+        <test-method status="PASS" signature="testBinaryChannelData()" name="testBinaryChannelData" duration-ms="109" started-at="2011-07-29T14:02:41Z" depends-on-methods="test.TestDatabase.testChannelMapping, test.TestDatabase.testMazeData" finished-at="2011-07-29T14:02:41Z">
+        </test-method>
+        <test-method status="PASS" signature="testMolgenisRole()" name="testMolgenisRole" duration-ms="49" started-at="2011-07-29T14:02:41Z" finished-at="2011-07-29T14:02:41Z">
+        </test-method>
+        <test-method status="PASS" signature="testInvestigation()" name="testInvestigation" duration-ms="195" started-at="2011-07-29T14:02:41Z" depends-on-methods="test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:41Z">
+        </test-method>
+        <test-method status="PASS" signature="testInvestDetails()" name="testInvestDetails" duration-ms="407" started-at="2011-07-29T14:02:41Z" depends-on-methods="test.TestDatabase.testInvestigation" finished-at="2011-07-29T14:02:42Z">
+        </test-method>
+        <test-method status="PASS" signature="testInvestigationFile()" name="testInvestigationFile" duration-ms="79" started-at="2011-07-29T14:02:42Z" depends-on-methods="test.TestDatabase.testInvestigation" finished-at="2011-07-29T14:02:42Z">
+        </test-method>
+        <test-method status="PASS" signature="testMolgenisEntity()" name="testMolgenisEntity" duration-ms="49" started-at="2011-07-29T14:02:42Z" finished-at="2011-07-29T14:02:42Z">
+        </test-method>
+        <test-method status="PASS" signature="testMolgenisPermission()" name="testMolgenisPermission" duration-ms="44" started-at="2011-07-29T14:02:42Z" depends-on-methods="test.TestDatabase.testMolgenisEntity, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:42Z">
+        </test-method>
+        <test-method status="PASS" signature="testMolgenisGroup()" name="testMolgenisGroup" duration-ms="29" started-at="2011-07-29T14:02:42Z" finished-at="2011-07-29T14:02:42Z">
+        </test-method>
+        <test-method status="PASS" signature="testMolgenisRoleGroupLink()" name="testMolgenisRoleGroupLink" duration-ms="62" started-at="2011-07-29T14:02:42Z" depends-on-methods="test.TestDatabase.testMolgenisGroup, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:42Z">
+        </test-method>
+        <test-method status="PASS" signature="testMolgenisUser()" name="testMolgenisUser" duration-ms="48" started-at="2011-07-29T14:02:42Z" finished-at="2011-07-29T14:02:42Z">
+        </test-method>
+        <test-method status="PASS" signature="testMolgenisBatch()" name="testMolgenisBatch" duration-ms="56" started-at="2011-07-29T14:02:42Z" depends-on-methods="test.TestDatabase.testMolgenisUser" finished-at="2011-07-29T14:02:42Z">
+        </test-method>
+        <test-method status="PASS" signature="testNgsPerson()" name="testNgsPerson" duration-ms="70" started-at="2011-07-29T14:02:42Z" depends-on-methods="test.TestDatabase.testInstitute" finished-at="2011-07-29T14:02:42Z">
+        </test-method>
+        <test-method status="PASS" signature="testOntology()" name="testOntology" duration-ms="36" started-at="2011-07-29T14:02:42Z" finished-at="2011-07-29T14:02:42Z">
+        </test-method>
+        <test-method status="PASS" signature="testBiobankCategory()" name="testBiobankCategory" duration-ms="91" started-at="2011-07-29T14:02:42Z" depends-on-methods="test.TestDatabase.testOntology" finished-at="2011-07-29T14:02:42Z">
+        </test-method>
+        <test-method status="PASS" signature="testBiobank()" name="testBiobank" duration-ms="221" started-at="2011-07-29T14:02:42Z" depends-on-methods="test.TestDatabase.testBiobankCategory, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:43Z">
+        </test-method>
+        <test-method status="PASS" signature="testBiobankDataType()" name="testBiobankDataType" duration-ms="40" started-at="2011-07-29T14:02:43Z" depends-on-methods="test.TestDatabase.testOntology" finished-at="2011-07-29T14:02:43Z">
+        </test-method>
+        <test-method status="PASS" signature="testBiobankTopic()" name="testBiobankTopic" duration-ms="49" started-at="2011-07-29T14:02:43Z" depends-on-methods="test.TestDatabase.testOntology" finished-at="2011-07-29T14:02:43Z">
+        </test-method>
+        <test-method status="PASS" signature="testChangeLog()" name="testChangeLog" duration-ms="44" started-at="2011-07-29T14:02:43Z" depends-on-methods="test.TestDatabase.testBiobank" finished-at="2011-07-29T14:02:43Z">
+        </test-method>
+        <test-method status="PASS" signature="testOntologyTerm()" name="testOntologyTerm" duration-ms="50" started-at="2011-07-29T14:02:43Z" depends-on-methods="test.TestDatabase.testOntology" finished-at="2011-07-29T14:02:43Z">
+        </test-method>
+        <test-method status="PASS" signature="testClassicalPhenotype()" name="testClassicalPhenotype" duration-ms="148" started-at="2011-07-29T14:02:43Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:43Z">
+        </test-method>
+        <test-method status="PASS" signature="testCode()" name="testCode" duration-ms="64" started-at="2011-07-29T14:02:43Z" depends-on-methods="test.TestDatabase.testOntologyTerm" finished-at="2011-07-29T14:02:43Z">
+        </test-method>
+        <test-method status="PASS" signature="testComputeFeature()" name="testComputeFeature" duration-ms="172" started-at="2011-07-29T14:02:43Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisEntity, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:43Z">
+        </test-method>
+        <test-method status="PASS" signature="testDataFile()" name="testDataFile" duration-ms="213" started-at="2011-07-29T14:02:43Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:43Z">
+        </test-method>
+        <test-method status="PASS" signature="testDerivedTrait()" name="testDerivedTrait" duration-ms="111" started-at="2011-07-29T14:02:43Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:43Z">
+        </test-method>
+        <test-method status="PASS" signature="testFactor()" name="testFactor" duration-ms="67" started-at="2011-07-29T14:02:43Z" depends-on-methods="test.TestDatabase.testOntologyTerm" finished-at="2011-07-29T14:02:44Z">
+        </test-method>
+        <test-method status="PASS" signature="testMachine()" name="testMachine" duration-ms="30" started-at="2011-07-29T14:02:44Z" finished-at="2011-07-29T14:02:44Z">
+        </test-method>
+        <test-method status="PASS" signature="testFlowcell()" name="testFlowcell" duration-ms="124" started-at="2011-07-29T14:02:44Z" depends-on-methods="test.TestDatabase.testMachine, test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:44Z">
+        </test-method>
+        <test-method status="PASS" signature="testIndividual()" name="testIndividual" duration-ms="144" started-at="2011-07-29T14:02:44Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:44Z">
+        </test-method>
+        <test-method status="PASS" signature="testLocation()" name="testLocation" duration-ms="227" started-at="2011-07-29T14:02:44Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:44Z">
+        </test-method>
+        <test-method status="PASS" signature="testMassPeak()" name="testMassPeak" duration-ms="131" started-at="2011-07-29T14:02:44Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:44Z">
+        </test-method>
+        <test-method status="PASS" signature="testMeasurement()" name="testMeasurement" duration-ms="112" started-at="2011-07-29T14:02:44Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisEntity, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:44Z">
+        </test-method>
+        <test-method status="PASS" signature="testCustomLabelFeature()" name="testCustomLabelFeature" duration-ms="54" started-at="2011-07-29T14:02:44Z" depends-on-methods="test.TestDatabase.testMeasurement, test.TestDatabase.testMolgenisUser" finished-at="2011-07-29T14:02:44Z">
+        </test-method>
+        <test-method status="PASS" signature="testMetabolite()" name="testMetabolite" duration-ms="103" started-at="2011-07-29T14:02:44Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:45Z">
+        </test-method>
+        <test-method status="PASS" signature="testMolgenisBatchEntity()" name="testMolgenisBatchEntity" duration-ms="64" started-at="2011-07-29T14:02:45Z" depends-on-methods="test.TestDatabase.testMolgenisBatch, test.TestDatabase.testOntologyTerm" finished-at="2011-07-29T14:02:45Z">
+        </test-method>
+        <test-method status="PASS" signature="testMutationPhenotype()" name="testMutationPhenotype" duration-ms="149" started-at="2011-07-29T14:02:45Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:45Z">
+        </test-method>
+        <test-method status="PASS" signature="testNMRBin()" name="testNMRBin" duration-ms="204" started-at="2011-07-29T14:02:45Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:45Z">
+        </test-method>
+        <test-method status="PASS" signature="testNgsSample()" name="testNgsSample" duration-ms="137" started-at="2011-07-29T14:02:45Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:45Z">
+        </test-method>
+        <test-method status="PASS" signature="testLibraryCapturing()" name="testLibraryCapturing" duration-ms="79" started-at="2011-07-29T14:02:45Z" finished-at="2011-07-29T14:02:45Z">
+        </test-method>
+        <test-method status="PASS" signature="testLibraryBarcode()" name="testLibraryBarcode" duration-ms="23" started-at="2011-07-29T14:02:45Z" finished-at="2011-07-29T14:02:45Z">
+        </test-method>
+        <test-method status="PASS" signature="testLibraryLane()" name="testLibraryLane" duration-ms="95" started-at="2011-07-29T14:02:45Z" depends-on-methods="test.TestDatabase.testLibraryCapturing, test.TestDatabase.testNgsSample, test.TestDatabase.testInvestigation, test.TestDatabase.testLibraryBarcode, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole, test.TestDatabase.testFlowcell" finished-at="2011-07-29T14:02:45Z">
+        </test-method>
+        <test-method status="PASS" signature="testObservableFeature()" name="testObservableFeature" duration-ms="81" started-at="2011-07-29T14:02:45Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:45Z">
+        </test-method>
+        <test-method status="PASS" signature="testObservationElement()" name="testObservationElement" duration-ms="66" started-at="2011-07-29T14:02:45Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:45Z">
+        </test-method>
+        <test-method status="PASS" signature="testObservationTarget()" name="testObservationTarget" duration-ms="148" started-at="2011-07-29T14:02:45Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:46Z">
+        </test-method>
+        <test-method status="PASS" signature="testParameterSet()" name="testParameterSet" duration-ms="113" started-at="2011-07-29T14:02:46Z" finished-at="2011-07-29T14:02:46Z">
+        </test-method>
+        <test-method status="PASS" signature="testAnalysis()" name="testAnalysis" duration-ms="45" started-at="2011-07-29T14:02:46Z" depends-on-methods="test.TestDatabase.testParameterSet, test.TestDatabase.testDataSet" finished-at="2011-07-29T14:02:46Z">
+        </test-method>
+        <test-method status="PASS" signature="testJob()" name="testJob" duration-ms="41" started-at="2011-07-29T14:02:46Z" depends-on-methods="test.TestDatabase.testAnalysis" finished-at="2011-07-29T14:02:46Z">
+        </test-method>
+        <test-method status="PASS" signature="testParameterName()" name="testParameterName" duration-ms="30" started-at="2011-07-29T14:02:46Z" depends-on-methods="test.TestDatabase.testParameterSet" finished-at="2011-07-29T14:02:46Z">
+        </test-method>
+        <test-method status="PASS" signature="testParameterValue()" name="testParameterValue" duration-ms="66" started-at="2011-07-29T14:02:46Z" depends-on-methods="test.TestDatabase.testParameterName" finished-at="2011-07-29T14:02:46Z">
+        </test-method>
+        <test-method status="PASS" signature="testPerson()" name="testPerson" duration-ms="62" started-at="2011-07-29T14:02:46Z" depends-on-methods="test.TestDatabase.testInstitute" finished-at="2011-07-29T14:02:46Z">
+        </test-method>
+        <test-method status="PASS" signature="testComputeProtocol()" name="testComputeProtocol" duration-ms="213" started-at="2011-07-29T14:02:46Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testPerson" finished-at="2011-07-29T14:02:46Z">
+        </test-method>
+        <test-method status="PASS" signature="testProbeSet()" name="testProbeSet" duration-ms="104" started-at="2011-07-29T14:02:46Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:46Z">
+        </test-method>
+        <test-method status="PASS" signature="testProtocol()" name="testProtocol" duration-ms="92" started-at="2011-07-29T14:02:46Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testPerson" finished-at="2011-07-29T14:02:46Z">
+        </test-method>
+        <test-method status="PASS" signature="testArrayDesign()" name="testArrayDesign" duration-ms="226" started-at="2011-07-29T14:02:46Z" depends-on-methods="test.TestDatabase.testProtocol, test.TestDatabase.testOntologyTerm, test.TestDatabase.testPerson" finished-at="2011-07-29T14:02:47Z">
+        </test-method>
+        <test-method status="PASS" signature="testCompositeElement()" name="testCompositeElement" duration-ms="270" started-at="2011-07-29T14:02:47Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testArrayDesign, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:47Z">
+        </test-method>
+        <test-method status="PASS" signature="testDesignElement()" name="testDesignElement" duration-ms="88" started-at="2011-07-29T14:02:47Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testArrayDesign, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:47Z">
+        </test-method>
+        <test-method status="PASS" signature="testNameValueType()" name="testNameValueType" duration-ms="51" started-at="2011-07-29T14:02:47Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testArrayDesign, test.TestDatabase.testOntologyTerm" finished-at="2011-07-29T14:02:47Z">
+        </test-method>
+        <test-method status="PASS" signature="testProtocolApplication()" name="testProtocolApplication" duration-ms="105" started-at="2011-07-29T14:02:47Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testProtocol" finished-at="2011-07-29T14:02:47Z">
+        </test-method>
+        <test-method status="PASS" signature="testData()" name="testData" duration-ms="120" started-at="2011-07-29T14:02:47Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testObservationElement, test.TestDatabase.testOntologyTerm, test.TestDatabase.testProtocolApplication, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:47Z">
+        </test-method>
+        <test-method status="PASS" signature="testBinaryDataMatrix()" name="testBinaryDataMatrix" duration-ms="61" started-at="2011-07-29T14:02:47Z" depends-on-methods="test.TestDatabase.testData" finished-at="2011-07-29T14:02:47Z">
+        </test-method>
+        <test-method status="PASS" signature="testCSVDataMatrix()" name="testCSVDataMatrix" duration-ms="54" started-at="2011-07-29T14:02:47Z" depends-on-methods="test.TestDatabase.testData" finished-at="2011-07-29T14:02:47Z">
+        </test-method>
+        <test-method status="PASS" signature="testDataValue()" name="testDataValue" duration-ms="44" started-at="2011-07-29T14:02:47Z" depends-on-methods="test.TestDatabase.testDataName, test.TestDatabase.testData" finished-at="2011-07-29T14:02:47Z">
+        </test-method>
+        <test-method status="PASS" signature="testDecimalDataElement()" name="testDecimalDataElement" duration-ms="165" started-at="2011-07-29T14:02:47Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testObservationElement, test.TestDatabase.testProtocolApplication, test.TestDatabase.testData" finished-at="2011-07-29T14:02:48Z">
+        </test-method>
+        <test-method status="PASS" signature="testObservedInference()" name="testObservedInference" duration-ms="224" started-at="2011-07-29T14:02:48Z" depends-on-methods="test.TestDatabase.testObservationTarget, test.TestDatabase.testInvestigation, test.TestDatabase.testObservationElement, test.TestDatabase.testOntologyTerm, test.TestDatabase.testProtocolApplication" finished-at="2011-07-29T14:02:48Z">
+        </test-method>
+        <test-method status="PASS" signature="testObservedValue()" name="testObservedValue" duration-ms="145" started-at="2011-07-29T14:02:48Z" depends-on-methods="test.TestDatabase.testObservationTarget, test.TestDatabase.testInvestigation, test.TestDatabase.testObservationElement, test.TestDatabase.testOntologyTerm, test.TestDatabase.testProtocolApplication" finished-at="2011-07-29T14:02:48Z">
+        </test-method>
+        <test-method status="PASS" signature="testOriginalFile()" name="testOriginalFile" duration-ms="46" started-at="2011-07-29T14:02:48Z" depends-on-methods="test.TestDatabase.testData" finished-at="2011-07-29T14:02:48Z">
+        </test-method>
+        <test-method status="PASS" signature="testProtocolDocument()" name="testProtocolDocument" duration-ms="37" started-at="2011-07-29T14:02:48Z" depends-on-methods="test.TestDatabase.testProtocol" finished-at="2011-07-29T14:02:48Z">
+        </test-method>
+        <test-method status="PASS" signature="testPublication()" name="testPublication" duration-ms="36" started-at="2011-07-29T14:02:48Z" depends-on-methods="test.TestDatabase.testOntologyTerm" finished-at="2011-07-29T14:02:48Z">
+        </test-method>
+        <test-method status="PASS" signature="testRScript()" name="testRScript" duration-ms="71" started-at="2011-07-29T14:02:48Z" depends-on-methods="test.TestDatabase.testInvestigation" finished-at="2011-07-29T14:02:48Z">
+        </test-method>
+        <test-method status="PASS" signature="testReporter()" name="testReporter" duration-ms="225" started-at="2011-07-29T14:02:48Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testArrayDesign, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:48Z">
+        </test-method>
+        <test-method status="PASS" signature="testArrayFeature()" name="testArrayFeature" duration-ms="274" started-at="2011-07-29T14:02:48Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testArrayDesign, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole, test.TestDatabase.testReporter" finished-at="2011-07-29T14:02:49Z">
+        </test-method>
+        <test-method status="PASS" signature="testReporterGroup()" name="testReporterGroup" duration-ms="227" started-at="2011-07-29T14:02:49Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testArrayDesign, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:49Z">
+        </test-method>
+        <test-method status="PASS" signature="testSampleLabel()" name="testSampleLabel" duration-ms="47" started-at="2011-07-29T14:02:49Z" depends-on-methods="test.TestDatabase.testOntology" finished-at="2011-07-29T14:02:49Z">
+        </test-method>
+        <test-method status="PASS" signature="testPairedSample()" name="testPairedSample" duration-ms="100" started-at="2011-07-29T14:02:49Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testSampleLabel, test.TestDatabase.testIndividual, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:49Z">
+        </test-method>
+        <test-method status="PASS" signature="testSelectedData()" name="testSelectedData" duration-ms="54" started-at="2011-07-29T14:02:49Z" depends-on-methods="test.TestDatabase.testJob" finished-at="2011-07-29T14:02:49Z">
+        </test-method>
+        <test-method status="PASS" signature="testSelectedParameter()" name="testSelectedParameter" duration-ms="74" started-at="2011-07-29T14:02:49Z" depends-on-methods="test.TestDatabase.testJob" finished-at="2011-07-29T14:02:49Z">
+        </test-method>
+        <test-method status="PASS" signature="testSpecies()" name="testSpecies" duration-ms="76" started-at="2011-07-29T14:02:49Z" depends-on-methods="test.TestDatabase.testOntology" finished-at="2011-07-29T14:02:49Z">
+        </test-method>
+        <test-method status="PASS" signature="testChromosome()" name="testChromosome" duration-ms="170" started-at="2011-07-29T14:02:49Z" depends-on-methods="test.TestDatabase.testSpecies, test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:49Z">
+        </test-method>
+        <test-method status="PASS" signature="testClone()" name="testClone" duration-ms="124" started-at="2011-07-29T14:02:49Z" depends-on-methods="test.TestDatabase.testChromosome, test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:50Z">
+        </test-method>
+        <test-method status="PASS" signature="testGene()" name="testGene" duration-ms="88" started-at="2011-07-29T14:02:50Z" depends-on-methods="test.TestDatabase.testChromosome, test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:50Z">
+        </test-method>
+        <test-method status="PASS" signature="testMarker()" name="testMarker" duration-ms="152" started-at="2011-07-29T14:02:50Z" depends-on-methods="test.TestDatabase.testChromosome, test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:50Z">
+        </test-method>
+        <test-method status="PASS" signature="testMutationGene()" name="testMutationGene" duration-ms="130" started-at="2011-07-29T14:02:50Z" depends-on-methods="test.TestDatabase.testChromosome, test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:50Z">
+        </test-method>
+        <test-method status="PASS" signature="testExon()" name="testExon" duration-ms="195" started-at="2011-07-29T14:02:50Z" depends-on-methods="test.TestDatabase.testMutationGene" finished-at="2011-07-29T14:02:50Z">
+        </test-method>
+        <test-method status="PASS" signature="testMutation()" name="testMutation" duration-ms="240" started-at="2011-07-29T14:02:50Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testExon, test.TestDatabase.testMutationGene, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:50Z">
+        </test-method>
+        <test-method status="PASS" signature="testPanel()" name="testPanel" duration-ms="164" started-at="2011-07-29T14:02:50Z" depends-on-methods="test.TestDatabase.testSpecies, test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:51Z">
+        </test-method>
+        <test-method status="PASS" signature="testProbe()" name="testProbe" duration-ms="131" started-at="2011-07-29T14:02:51Z" depends-on-methods="test.TestDatabase.testChromosome, test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole, test.TestDatabase.testProbeSet" finished-at="2011-07-29T14:02:51Z">
+        </test-method>
+        <test-method status="PASS" signature="testProtein()" name="testProtein" duration-ms="120" started-at="2011-07-29T14:02:51Z" depends-on-methods="test.TestDatabase.testGene, test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:51Z">
+        </test-method>
+        <test-method status="PASS" signature="testSpot()" name="testSpot" duration-ms="616" started-at="2011-07-29T14:02:51Z" depends-on-methods="test.TestDatabase.testChromosome, test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMolgenisRole, test.TestDatabase.testProbeSet" finished-at="2011-07-29T14:02:51Z">
+        </test-method>
+        <test-method status="PASS" signature="testSubjob()" name="testSubjob" duration-ms="216" started-at="2011-07-29T14:02:51Z" depends-on-methods="test.TestDatabase.testJob" finished-at="2011-07-29T14:02:52Z">
+        </test-method>
+        <test-method status="PASS" signature="testSubmission()" name="testSubmission" duration-ms="187" started-at="2011-07-29T14:02:52Z" finished-at="2011-07-29T14:02:52Z">
+        </test-method>
+        <test-method status="PASS" signature="testPhenotypeDetails()" name="testPhenotypeDetails" duration-ms="192" started-at="2011-07-29T14:02:52Z" finished-at="2011-07-29T14:02:52Z">
+        </test-method>
+        <test-method status="PASS" signature="testPatient()" name="testPatient" duration-ms="517" started-at="2011-07-29T14:02:52Z" depends-on-methods="test.TestDatabase.testMutationPhenotype, test.TestDatabase.testInvestigation, test.TestDatabase.testPhenotypeDetails, test.TestDatabase.testOntologyTerm, test.TestDatabase.testMutation, test.TestDatabase.testSubmission, test.TestDatabase.testIndividual, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:53Z">
+        </test-method>
+        <test-method status="PASS" signature="testAntibody()" name="testAntibody" duration-ms="32" started-at="2011-07-29T14:02:53Z" finished-at="2011-07-29T14:02:53Z">
+        </test-method>
+        <test-method status="PASS" signature="testE_M()" name="testE_M" duration-ms="68" started-at="2011-07-29T14:02:53Z" depends-on-methods="test.TestDatabase.testPatient, test.TestDatabase.testAntibody" finished-at="2011-07-29T14:02:53Z">
+        </test-method>
+        <test-method status="PASS" signature="testI_F()" name="testI_F" duration-ms="54" started-at="2011-07-29T14:02:53Z" depends-on-methods="test.TestDatabase.testPatient, test.TestDatabase.testAntibody" finished-at="2011-07-29T14:02:53Z">
+        </test-method>
+        <test-method status="PASS" signature="testTextDataElement()" name="testTextDataElement" duration-ms="341" started-at="2011-07-29T14:02:53Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testObservationElement, test.TestDatabase.testProtocolApplication, test.TestDatabase.testData" finished-at="2011-07-29T14:02:53Z">
+        </test-method>
+        <test-method status="PASS" signature="testTissue()" name="testTissue" duration-ms="85" started-at="2011-07-29T14:02:53Z" depends-on-methods="test.TestDatabase.testOntology" finished-at="2011-07-29T14:02:53Z">
+        </test-method>
+        <test-method status="PASS" signature="testSample()" name="testSample" duration-ms="119" started-at="2011-07-29T14:02:53Z" depends-on-methods="test.TestDatabase.testTissue, test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testIndividual, test.TestDatabase.testMolgenisRole" finished-at="2011-07-29T14:02:53Z">
+        </test-method>
+        <test-method status="PASS" signature="testWorkflow()" name="testWorkflow" duration-ms="277" started-at="2011-07-29T14:02:53Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testPerson" finished-at="2011-07-29T14:02:54Z">
+        </test-method>
+        <test-method status="PASS" signature="testWorkflowElement()" name="testWorkflowElement" duration-ms="127" started-at="2011-07-29T14:02:54Z" depends-on-methods="test.TestDatabase.testProtocol" finished-at="2011-07-29T14:02:54Z">
+        </test-method>
+        <test-method status="PASS" signature="testComputeApplication()" name="testComputeApplication" duration-ms="273" started-at="2011-07-29T14:02:54Z" depends-on-methods="test.TestDatabase.testInvestigation, test.TestDatabase.testOntologyTerm, test.TestDatabase.testProtocol, test.TestDatabase.testWorkflowElement" finished-at="2011-07-29T14:02:54Z">
+        </test-method>
+        <test-method status="PASS" signature="testWorkflowElementParameter()" name="testWorkflowElementParameter" duration-ms="351" started-at="2011-07-29T14:02:54Z" depends-on-methods="test.TestDatabase.testObservationTarget, test.TestDatabase.testInvestigation, test.TestDatabase.testObservationElement, test.TestDatabase.testOntologyTerm, test.TestDatabase.testProtocolApplication, test.TestDatabase.testWorkflowElement" finished-at="2011-07-29T14:02:54Z">
+        </test-method>
+        <test-method status="PASS" signature="testBibliographicReference()" name="testBibliographicReference" duration-ms="85" started-at="2011-07-29T14:02:54Z" finished-at="2011-07-29T14:02:54Z">
+        </test-method>
+        <test-method status="PASS" signature="testMaterial()" name="testMaterial" duration-ms="32" started-at="2011-07-29T14:02:54Z" finished-at="2011-07-29T14:02:54Z">
+        </test-method>
+        <test-method status="PASS" signature="testMolgenisFile()" name="testMolgenisFile" duration-ms="46" started-at="2011-07-29T14:02:55Z" finished-at="2011-07-29T14:02:55Z">
+        </test-method>
+        <test-method status="PASS" signature="testMolgenisNews()" name="testMolgenisNews" duration-ms="25" started-at="2011-07-29T14:02:55Z" finished-at="2011-07-29T14:02:55Z">
+        </test-method>
+        <test-method status="PASS" signature="testProteinDomain()" name="testProteinDomain" duration-ms="34" started-at="2011-07-29T14:02:55Z" finished-at="2011-07-29T14:02:55Z">
+        </test-method>
+        <test-method status="PASS" signature="testUseCase()" name="testUseCase" duration-ms="36" started-at="2011-07-29T14:02:55Z" finished-at="2011-07-29T14:02:55Z">
+        </test-method>
+        <test-method status="PASS" signature="testWorksheet()" name="testWorksheet" duration-ms="23" started-at="2011-07-29T14:02:55Z" finished-at="2011-07-29T14:02:55Z">
+        </test-method>
+      </class>
+    </test>
+  </suite>
+</testng-results>

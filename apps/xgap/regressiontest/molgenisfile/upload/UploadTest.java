@@ -5,11 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.molgenis.framework.db.Database;
 import org.molgenis.organization.Investigation;
 
 import plugins.cluster.helper.Command;
 import plugins.cluster.implementations.LocalComputationResource;
-import app.JDBCDatabase;
+import app.DatabaseFactory;
 import filehandling.generic.MolgenisFileHandler;
 import filehandling.generic.PerformUpload;
 
@@ -30,7 +31,7 @@ public class UploadTest
 		
 		// get database, filehandler, and computeresource to handle commandline
 		// calls
-		JDBCDatabase db = new JDBCDatabase("handwritten/apps/org/molgenis/xgap/xgap.properties");
+		Database db = DatabaseFactory.create("handwritten/apps/org/molgenis/xgap/xgap.properties");
 		LocalComputationResource lc = new LocalComputationResource();
 
 		// names and type of files we want to upload

@@ -11,20 +11,21 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.pheno.ObservedValue;
 
-import app.JDBCDatabase;
+import app.DatabaseFactory;
 
 public class Matrix<T> {
 	private T[][] data;
-	private static JDBCDatabase db;
+	private static Database db;
 	
 	static {
 		try {
-			db =  new JDBCDatabase("molgenis.properties");
+			db = DatabaseFactory.create("molgenis.properties");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

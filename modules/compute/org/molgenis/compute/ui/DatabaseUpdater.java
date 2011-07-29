@@ -89,10 +89,6 @@ public class DatabaseUpdater
                         {
                             e.printStackTrace();
                         }
-                        catch (IOException e)
-                        {
-                            e.printStackTrace();
-                        }
                     }
                     else if (status.equals(ComputeAppPaths.AppStatus.finished))
                     {
@@ -126,10 +122,6 @@ public class DatabaseUpdater
                             db.commitTx();
                         }
                         catch (DatabaseException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        catch (IOException e)
                         {
                             e.printStackTrace();
                         }

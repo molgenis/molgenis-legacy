@@ -499,7 +499,7 @@ public class PatientService implements Serializable
 				publicationIds.add(publications.get(0).getId());
 			}
 				
-			patient.setPublications_Id(publicationIds);
+			patient.setPublicationsPatient_Id(publicationIds);
 		}
 		patient.setSubmission_Id(1);
 		// Insert patient
@@ -632,7 +632,7 @@ public class PatientService implements Serializable
 		row.add(patient.getMmp1_Allele1());
 		row.add(patient.getMmp1_Allele2());
 
-		List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPublications_Id()).find();
+		List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPublicationsPatient_Id()).find();
 		List<String> publicationNames  = new ArrayList<String>();
 		List<String> publicationPudmed = new ArrayList<String>();
 		for (Publication publication : publications)
@@ -868,10 +868,10 @@ public class PatientService implements Serializable
 		patientSummaryVO.setSubmitterCity(submitter.getCity());
 		patientSummaryVO.setSubmitterCountry(submitter.getCountry());
 			
-		if (CollectionUtils.isNotEmpty(patient.getPublications_Id()))
+		if (CollectionUtils.isNotEmpty(patient.getPublicationsPatient_Id()))
 		{
 			patientSummaryVO.setPublicationVOList(new ArrayList<PublicationVO>());
-			List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPublications_Id()).find();
+			List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPublicationsPatient_Id()).find();
 			for (Publication publication : publications)
 			{
 				PublicationVO publicationVO = new PublicationVO();

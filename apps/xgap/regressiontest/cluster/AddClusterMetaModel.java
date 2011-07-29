@@ -13,14 +13,15 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.organization.Investigation;
 
-import app.JDBCDatabase;
+import app.DatabaseFactory;
+
 
 public class AddClusterMetaModel
 {
 	
 	public static void main(String[] args) throws Exception
 	{
-		Database db = new JDBCDatabase("xgap.properties");
+		Database db = DatabaseFactory.create("xgap.properties");
 		
 		Investigation inv = db.find(Investigation.class, new QueryRule("name", Operator.EQUALS, "ClusterDemo")).get(0);
 		QueryRule investigationId = new QueryRule("investigation", Operator.EQUALS, inv.getId());

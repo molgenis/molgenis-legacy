@@ -64,7 +64,7 @@
 			<!-- - Added by Alex -->
 			<field name="term" type="xref" xref_entity="OntologyTerm" />
 			<!-- Comment can be removed??? -->
-			<field name="Comment" type="text" nillable="true" />
+			<field name="ArrayDesignComment" type="text" nillable="true" />
 			<unique fields="Name" />
 		</entity>
 		<entity name="ArrayFeature" extends="DesignElement">
@@ -80,8 +80,8 @@
 			</description>
 			<field name="BlockCol" type="int" />
 			<field name="BlockRow" type="int" />
-			<field name="Col" type="int" />
-			<field name="Row" type="int" />
+			<field name="ColPos" type="int" /> <!-- rename for Oracle, col -->
+			<field name="RowPos" type="int" /> <!-- rename for Oracle, row -->
 			<field name="Reporter" type="xref" xref_entity="Reporter" />
 		</entity>
 		<entity name="ReporterGroup" extends="DesignElement">
@@ -97,7 +97,8 @@
 				specification for detailed examples.</description>
 			<field name="ReporterSequence" type="text" />
 			<field name="ControlType" type="mref" xref_entity="OntologyTerm" />
-			<field name="DatabaseEntry" label="Reporter Database Entry"
+			<!-- renamed DatabaseEntry to solve name clash! -->
+                        <field name="dbEntryER" label="Reporter Database Entry"
 				type="mref" xref_entity="OntologyTerm"  />
 			<field name="reporterGroup" label="Reporter Group" type="mref"
 				xref_entity="ReporterGroup" />
@@ -112,7 +113,7 @@
 				is not needed. See the MAGE-TAB specification for detailed examples.
 			</description>
 			<field name="Reporters" type="mref" xref_entity="Reporter" />
-			<field name="DatabaseEntry" label="Composite Element Database Entry"
+			<field name="dbEntryDE" label="Composite Element Database Entry"
 				type="mref" xref_entity="OntologyTerm" />
 			<!-- Alex 10/5/2010 -->
 			<field name="Comments" label="Comments" type="mref" xref_entity="NameValueType"

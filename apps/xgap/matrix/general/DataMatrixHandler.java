@@ -23,7 +23,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.util.Entity;
 import org.molgenis.util.ValueLabel;
 
-import app.JDBCDatabase;
+import app.DatabaseFactory;
 import app.servlet.MolgenisServlet;
 import filehandling.generic.MolgenisFileHandler;
 
@@ -372,7 +372,7 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 */
 	public static void main(String[] args) throws Exception
 	{
-		Database db = new JDBCDatabase("gcc.properties");
+		Database db = DatabaseFactory.create("gcc.properties");
 		DataMatrixHandler mh = new DataMatrixHandler(db);
 		Data dm = db.find(Data.class).get(0);
 		mh.isDataStoredIn(dm, "Binary");

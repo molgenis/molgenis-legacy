@@ -2,12 +2,14 @@ package regressiontest.csv;
 
 import java.io.File;
 
+import org.molgenis.framework.db.Database;
 import org.molgenis.util.TarGz;
+
+import app.DatabaseFactory;
 
 import plugins.archiveexportimport.XgapCsvExport;
 import plugins.archiveexportimport.XgapCsvImport;
 import plugins.emptydb.emptyDatabase;
-import app.JDBCDatabase;
 
 public class Case2
 {
@@ -30,7 +32,7 @@ public class Case2
 		String fuInvestigationName = "MetaNetwork";
 		String beamerInvestigationName = "Bone mineral density in F2 progeny from a C57BL/6J x CAST/EiJ intercross";
 		
-		JDBCDatabase db = new JDBCDatabase("xgap.properties");
+		Database db = DatabaseFactory.create("xgap.properties");
 		File path = new File(new File("").getAbsolutePath() + "/handwritten/java/regressiontest/csv/tar");
 		
 		// Clear database

@@ -1,7 +1,9 @@
 package plugins.cluster.helper;
 
+import org.molgenis.framework.db.Database;
+
 import plugins.cluster.implementations.LocalComputationResource;
-import app.JDBCDatabase;
+import app.DatabaseFactory;
 import filehandling.generic.MolgenisFileHandler;
 
 public class Tester {
@@ -11,7 +13,7 @@ public class Tester {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
-		JDBCDatabase db = new JDBCDatabase("xgap.properties");
+		Database db = DatabaseFactory.create("xgap.properties");
 		LocalComputationResource lc = new LocalComputationResource();
 
 		String out = lc.executeCommand(new Command("ls"));

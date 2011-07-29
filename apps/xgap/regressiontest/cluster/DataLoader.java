@@ -13,7 +13,7 @@ import org.molgenis.organization.Investigation;
 import plugins.emptydb.emptyDatabase;
 import filehandling.generic.MolgenisFileHandler;
 
-import app.JDBCDatabase;
+import app.DatabaseFactory;
 
 public class DataLoader
 {
@@ -135,7 +135,7 @@ public class DataLoader
 
 	public static void main(String[] args) throws Exception
 	{
-		Database db = new JDBCDatabase("xgap.properties");
+		Database db = DatabaseFactory.create("xgap.properties");
 		ArrayList<String> result = DataLoader.load(db, true);
 		for (String s : result)
 		{

@@ -7,7 +7,7 @@ import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 
-import app.JDBCDatabase;
+import app.DatabaseFactory;
 
 public class XgapLoadPanelTypes
 {
@@ -37,7 +37,7 @@ public class XgapLoadPanelTypes
 	 */
 	public static void main(String[] args) throws FileNotFoundException, IOException, DatabaseException
 	{
-		Database db = new JDBCDatabase("handwritten/properties/gcc.properties");
+		Database db = DatabaseFactory.create("handwritten/properties/gcc.properties");
 		new XgapLoadPanelTypes(db);
 		db.close();
 	}

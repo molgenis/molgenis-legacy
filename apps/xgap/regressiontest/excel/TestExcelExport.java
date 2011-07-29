@@ -2,15 +2,16 @@ package regressiontest.excel;
 
 import java.io.File;
 
-import app.ExcelExport;
-import app.JDBCDatabase;
+import org.molgenis.framework.db.Database;
 
+import app.DatabaseFactory;
+import app.ExcelExport;
 
 public class TestExcelExport {
 
 	public TestExcelExport() throws Exception{
 		
-		JDBCDatabase db = new JDBCDatabase("xgap.test.properties");
+		Database db = DatabaseFactory.create("xgap.test.properties");
 		//new emptyDatabase(db);
 		//db.remove(db.find(Species.class));
 		//db.remove(db.find(Strain.class));
@@ -25,9 +26,8 @@ public class TestExcelExport {
 		new ExcelExport().exportAll(file, db, true);
 		
 		System.out.println("result: " + file.getAbsolutePath());
-		
-		
 	}
+	
 	public static void main(String[] args) throws Exception {
 		new TestExcelExport();
 	}

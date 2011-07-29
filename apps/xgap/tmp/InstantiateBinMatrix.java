@@ -8,14 +8,14 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.util.Entity;
 
-import app.JDBCDatabase;
+import app.DatabaseFactory;
 
 public class InstantiateBinMatrix
 {
 
 	public InstantiateBinMatrix() throws FileNotFoundException, IOException, DatabaseException, InstantiationException, IllegalAccessException{
 		
-		Database db = new JDBCDatabase("handwritten/properties/gcc.properties");
+		Database db = DatabaseFactory.create("handwritten/properties/gcc.properties");
 		
 		List<? extends Entity> test = db.find(db.getClassForName("BinaryDataMatrix"));
 		for(Entity e : test){

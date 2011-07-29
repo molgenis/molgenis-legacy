@@ -22,7 +22,9 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.cmdline.CmdLineException;
 
-import app.JDBCDatabase;
+import app.DatabaseFactory;
+
+//import app.JDBCDatabase;
 
 public class TestPhenoMatrix
 {
@@ -40,7 +42,7 @@ public class TestPhenoMatrix
 	public void testPhenoMatrixFromDatabase() throws SQLException,
 			CmdLineException, Exception
 	{
-		JDBCDatabase db = new JDBCDatabase(PROPERTIES_FILE);
+		Database db = DatabaseFactory.create(PROPERTIES_FILE);
 
 		for (Investigation i : db.find(Investigation.class))
 			System.out.println(i);
@@ -114,7 +116,7 @@ public class TestPhenoMatrix
 	public void testPhenoMatrixFromStringMatrix() throws SQLException,
 			CmdLineException, Exception
 	{
-		JDBCDatabase db = new JDBCDatabase(PROPERTIES_FILE);
+		Database db = DatabaseFactory.create(PROPERTIES_FILE);
 
 		// create a StringMemoryMatrix
 		List<String> features = Arrays.asList(new String[]

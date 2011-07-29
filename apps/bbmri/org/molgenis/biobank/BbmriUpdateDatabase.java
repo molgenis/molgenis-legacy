@@ -3,8 +3,9 @@ package org.molgenis.biobank;
 
 import org.molgenis.Molgenis;
 import org.molgenis.auth.MolgenisUser;
+import org.molgenis.framework.db.Database;
 
-import app.JDBCDatabase;
+import app.DatabaseFactory;
 
 
 public class BbmriUpdateDatabase
@@ -13,8 +14,7 @@ public class BbmriUpdateDatabase
 	{
 		new Molgenis("apps/bbmri/org/molgenis/biobank/bbmri.molgenis.properties").updateDb(true);
 		
-		JDBCDatabase db = new JDBCDatabase("apps/bbmri/org/molgenis/biobank/bbmri.molgenis.properties");
-		
+		Database db = DatabaseFactory.create("apps/bbmri/org/molgenis/biobank/bbmri.molgenis.properties");
 		
 		MolgenisUser u = new MolgenisUser();
 		u.setName("bbmri");

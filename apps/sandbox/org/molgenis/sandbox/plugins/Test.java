@@ -70,11 +70,11 @@ public class Test extends EasyPluginController<TestModel>
 	
 	/**
 	 * Example of a custom action handler.
+	 * @throws Exception 
 	 * @throws ParseException 
 	 * @throws IOException 
-	 * @throws DatabaseException 
 	 */
-	public void addInvestigation(Database db, Tuple request) throws ParseException, DatabaseException, IOException
+	public void addInvestigation(Database db, Tuple request) throws Exception
 	{
 		//Easily create object from request and use it
 		Investigation i = new Investigation();

@@ -99,7 +99,7 @@
 			<field name="project" type="string" />
 			<field name="investigator" type="string" />
 			<field name="lane" type="string" />
-			<field name="date" type="date" />
+			<field name="creationDate" type="date" /> <!-- renamed for Oracle, date -->
 			<field name="machine" type="string" />
 			<field name="flowcell" type="string" />
 			<field name="capturing" type="string" />

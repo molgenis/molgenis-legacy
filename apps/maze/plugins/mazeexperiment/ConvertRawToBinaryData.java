@@ -213,7 +213,7 @@ public class ConvertRawToBinaryData {
 							// get the switch state from the existing event
 							int prevss = this.AllPreviousSwitchEvents[chn].getSwitchstate();
 							this.AllPreviousSwitchEvents[chn].setSwitchstate(prevss + 1);
-							this.AllPreviousSwitchEvents[chn].setRowid(rowid);
+							this.AllPreviousSwitchEvents[chn].setRecordId(rowid);
 							//logger.debug("****** update prevswitchstate (" + Integer.toString(prevss)+") with 1");
 						}else {
 							//logger.debug("****** prev se does not exist");
@@ -223,7 +223,7 @@ public class ConvertRawToBinaryData {
 							SwitchEvent.setTimestamp(switchdate);
 							SwitchEvent.setChannelid(chid);
 							SwitchEvent.setSwitchstate(1);
-							SwitchEvent.setRowid(rowid);
+							SwitchEvent.setRecordId(rowid);
 							// set the first switch event for this port
 							this.AllPreviousSwitchEvents[chn] = SwitchEvent;
 							//String debugstring = "***event fields: " 
@@ -247,7 +247,7 @@ public class ConvertRawToBinaryData {
 						SwitchEvent.setTimestamp(switchdate);
 						SwitchEvent.setSwitchstate(1);
 						SwitchEvent.setChannelid(chid);
-						SwitchEvent.setRowid(rowid);
+						SwitchEvent.setRecordId(rowid);
 						//SwitchEvent.setChannelid_channelnumber(chn);
 
 						// add the switchevent to the previousswitcheventarraylist

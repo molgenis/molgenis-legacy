@@ -81,7 +81,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 			ws.setProject(inv.getName());
 			if(inv.getContacts_Id().size() > 0) ws.setInvestigator(i.getLastName());
 			ws.setLane(libraryList.getLane());
-			ws.setDate(flowcell.getDate());
+			ws.setCreationDate(flowcell.getDate());
 			ws.setMachine(m.getMachine());
 			ws.setFlowcell(flowcell.getName());
 			ws.setCapturing(lc.getCapturing());

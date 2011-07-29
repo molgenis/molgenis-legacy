@@ -111,10 +111,6 @@ public class AllObservations extends PluginModel<Entity>
 		{
 			e.printStackTrace();
 		}
-		catch (ParseException e)
-		{
-			e.printStackTrace();
-		}
 	}
 	
 	@Override

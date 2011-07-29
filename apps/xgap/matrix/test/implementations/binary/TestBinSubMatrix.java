@@ -8,14 +8,14 @@ import matrix.general.DataMatrixHandler;
 import matrix.implementations.binary.BinaryDataMatrixInstance;
 
 import org.molgenis.data.Data;
+import org.molgenis.framework.db.Database;
 
-import app.JDBCDatabase;
+import app.DatabaseFactory;
 
 public class TestBinSubMatrix {
 
 	public TestBinSubMatrix() throws Exception {
-
-		JDBCDatabase db = new JDBCDatabase("handwritten/properties/gcc.test.properties");
+		Database db = DatabaseFactory.create("handwritten/properties/gcc.test.properties");
 
 		List<BinaryDataMatrixInstance> bmList = new ArrayList<BinaryDataMatrixInstance>();
 

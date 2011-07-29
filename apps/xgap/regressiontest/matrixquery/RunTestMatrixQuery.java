@@ -13,8 +13,9 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 
+import app.DatabaseFactory;
+
 import regressiontest.matrixquery.help.DB;
-import app.JDBCDatabase;
 
 /**
  * Use test database to add example data and try out different query/sorting functions.
@@ -33,7 +34,7 @@ public class RunTestMatrixQuery extends TestCase {
 	AbstractDataMatrixInstance<Object> baseMatrix = null;
 	
 	public RunTestMatrixQuery() throws Exception{
-		db = new JDBCDatabase("handwritten/apps/org/molgenis/xgap/xgap.test.properties");
+		db = DatabaseFactory.create("handwritten/apps/org/molgenis/xgap/xgap.test.properties");
 		assertTrue(Helper.storageDirsAreAvailable(db));
 		assertTrue(DB.removeData(db));
 		assertTrue(new DB().importExampleData(db));

@@ -10,8 +10,6 @@ import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 
-import app.JDBCDatabase;
-
 public class TargetFeatureMemoryMatrix extends PhenoMemoryMatrix<ObservationTarget,ObservableFeature> 
 	implements TargetFeatureMatrix, EditableMatrix<ObservationTarget,ObservableFeature, ObservedValue>, 
 	FilterableMatrix<ObservationTarget,ObservableFeature, ObservedValue>
@@ -29,7 +27,7 @@ public class TargetFeatureMemoryMatrix extends PhenoMemoryMatrix<ObservationTarg
 		super(ObservationTarget.class, ObservableFeature.class, m);
 	}
 
-	public TargetFeatureMemoryMatrix(JDBCDatabase db) throws MatrixException, DatabaseException, ParseException
+	public TargetFeatureMemoryMatrix(Database db) throws MatrixException, DatabaseException, ParseException
 	{
 		super(ObservationTarget.class, ObservableFeature.class, db);
 	}

@@ -52,7 +52,7 @@
 			<description>The table containing the converted data</description>
 			<field name="id" type="autoid" />
 			<field name="timestamp" type="datetime" />
-			<field name="rowid" type="xref" xref_field="MazeData.id" nillable="true"/>
+			<field name="recordId" type="xref" xref_field="MazeData.id" nillable="true"/> <!-- rename for Oracle rowId -->
 			<!-- MOLGENIS cannot deail with xrefs that have no xref_label unless it is nillable (than it is ignored in tests) -->
 			<field name="channelid" type="xref" xref_field="ChannelMapping.id"
 				xref_label="channelnumber" />

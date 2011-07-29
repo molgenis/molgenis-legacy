@@ -22,7 +22,7 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import app.JDBCDatabase;
+//import app.JDBCDatabase;
 
 public class InvestigationOverview extends PluginModel<Entity>
 {
@@ -132,7 +132,7 @@ public class InvestigationOverview extends PluginModel<Entity>
 	private void refreshInvestigationReport(Database db) throws DatabaseException
 	{
 		// count all investigations and list them
-		investigations = ((JDBCDatabase) db)
+		investigations = db
 				.sql("select i.id, i.name as investigation, i.description as description, count(distinct v.observationTarget) as targets, count(distinct v.Measurement) as features from investigation i, observedvalue v where i.id = v.investigation group by i.id, i.name order by i.name;");
 		
 //		.sql("select i.id as id, i.name as investigation, i.description, t.targets, f.features "

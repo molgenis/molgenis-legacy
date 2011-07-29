@@ -3,8 +3,10 @@ package tmp;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.molgenis.framework.db.Database;
+
 import matrix.test.implementations.general.Helper;
-import app.JDBCDatabase;
+import app.DatabaseFactory;
 
 public class AddRandomBinMatrix
 {
@@ -18,7 +20,7 @@ public class AddRandomBinMatrix
 		boolean fixedTextLength = false;
 		boolean sparse = false;
 	
-		JDBCDatabase db = new JDBCDatabase("handwritten/properties/gcc.properties");
+		Database db = DatabaseFactory.create("handwritten/properties/gcc.properties");
 		
 		Helper h = new Helper(db);
 

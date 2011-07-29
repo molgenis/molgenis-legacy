@@ -6,9 +6,11 @@ import java.io.FileWriter;
 import java.util.List;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.molgenis.framework.db.Database;
 import org.molgenis.util.Tuple;
 
-import app.JDBCDatabase;
+import app.DatabaseFactory;
+
 
 public class machielAnnotator {
 
@@ -58,7 +60,7 @@ public class machielAnnotator {
 		 * 4) check for genes in this regen
 		 */
 		
-		JDBCDatabase db;
+		Database db;
 		
 		// connect to SNP database
 		/** 0 */ db = setDatabaseConnection(homo_sapiens_variation);		
@@ -98,7 +100,7 @@ public class machielAnnotator {
 		
 	}
 	
-	private int getVariationIDfromName(JDBCDatabase db, String Name)
+	private int getVariationIDfromName(Database db, String Name)
 	{
 		int ID = -1;
 		
@@ -118,7 +120,7 @@ public class machielAnnotator {
 		return ID;
 	}
 	
-	private void setVariationInfo(JDBCDatabase db, int variation_id)
+	private void setVariationInfo(Database db, int variation_id)
 	{		
 		// variables
 		List<Tuple> result;
@@ -138,7 +140,7 @@ public class machielAnnotator {
 		}
 	}
 	
-	private void setChromosome(JDBCDatabase db)
+	private void setChromosome(Database db)
 	{		
 		// variables
 		List<Tuple> result;
@@ -154,7 +156,7 @@ public class machielAnnotator {
 		}
 	}
 	
-	private void setGeneInfo(JDBCDatabase db)
+	private void setGeneInfo(Database db)
 	{		
 		// variables
 		List<Tuple> result;
@@ -185,20 +187,20 @@ public class machielAnnotator {
 	 * @return JDBCDatabase connection
 	 * @throws FatalException 
 	 */
-	private JDBCDatabase setDatabaseConnection(String dbName) {
+	private Database setDatabaseConnection(String dbName) {
 		BasicDataSource data_src = new BasicDataSource();
 		data_src.setDriverClassName("com.mysql.jdbc.Driver");
 		data_src.setUsername("anonymous");
 		data_src.setUrl("jdbc:mysql://ensembldb.ensembl.org:5306/" + dbName);
-		JDBCDatabase db = null;
+		Database db = null;
 		
 		try {
-			db = new JDBCDatabase(data_src, new File(""));
+			db = DatabaseFactory.create(data_src, new File(""));
 		} catch (Exception e) {
 			System.out.println("DB error: " + dbName);
 		}
 		
-		return (JDBCDatabase) db;
+		return (Database) db;
 	}
 	
 

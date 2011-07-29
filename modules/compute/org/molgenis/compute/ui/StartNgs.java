@@ -119,7 +119,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         Worksheet data = parentForm.getRecords().get(0);
         //data.
 
-        Date date = data.getDate();
+        Date date = data.getCreationDate();
         String strDate = formatDate("" + date);
 
         String strLane = data.getLane();

@@ -98,9 +98,9 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MappingDeco
 		{
 			this.getDatabase().update(mfList);
 		}
-		catch (IOException e)
+		catch (DatabaseException e)
 		{
-			throw new DatabaseException(e);
+			throw e;
 		}
 
 		// if it works, continue to update the Data entities

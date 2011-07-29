@@ -196,10 +196,6 @@ public class DBIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 			nuc.setUseCaseName(request);
 			nuc.setSearchType(SearchType);
 			db.add(nuc);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (DatabaseException e) {
 			e.printStackTrace();
 		}
