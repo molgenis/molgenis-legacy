@@ -7,7 +7,7 @@ public class LifelinesPhenoGenerate {
 	public static void main(String[] args) throws Exception
 	{
 		Logger logger = Logger.getLogger("LifelinesPhenoGenerate");
-		new Molgenis("handwritten/apps/org/molgenis/lifelinespheno/LifelinesPheno.properties").generate();
+		new Molgenis("apps/lifelinespheno/org/molgenis/lifelinespheno/LifelinesPheno.properties").generate();
 		logger.info("LifelinesPheno generated successfully!");
 	}
 }

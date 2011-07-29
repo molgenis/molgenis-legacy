@@ -5,6 +5,6 @@ import org.molgenis.Molgenis;
 public class LifelinesPhenoUpdateDatabase {
 	public static void main(String[] args) throws Exception
 	{
-		new Molgenis("handwritten/apps/org/molgenis/lifelinespheno/LifelinesPheno.properties").updateDb(true);
+		new Molgenis("apps/lifelinespheno/org/molgenis/lifelinespheno/LifelinesPheno.properties").updateDb(true);
 	}
 }
