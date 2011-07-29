@@ -1,5 +1,6 @@
 package org.molgenis.framework.db.jdbc;
 
+import java.text.ParseException;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
@@ -74,7 +75,7 @@ public class MappingDecorator<E extends Entity> implements Mapper<E>
 	}
 
 	@Override
-	public List<E> toList(CsvReader reader, int limit) throws Exception
+	public List<E> toList(CsvReader reader, int limit) throws DatabaseException
 	{
 		return mapper.toList(reader, limit);
 	}
@@ -109,5 +110,12 @@ public class MappingDecorator<E extends Entity> implements Mapper<E>
 	public void find(CsvWriter writer, List<String> fieldsToExport, QueryRule ...rules) throws DatabaseException
 	{
 		mapper.find(writer, fieldsToExport, rules);
+	}
+
+	@Override
+	public void resolveForeignKeys(List<E> enteties) throws ParseException,
+			DatabaseException
+	{
+		mapper.resolveForeignKeys(enteties);
 	}
 }

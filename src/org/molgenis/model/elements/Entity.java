@@ -1287,6 +1287,17 @@ public class Entity extends DBSchema implements Record
 
 		return fields;
 	}
+	
+    public List<Unique> getUniqueKeysWithoutPk() throws MolgenisModelException {
+        List<Unique> result = new ArrayList<Unique>();
+        for(Unique u : unique_fields) {
+            if(u.getFields().get(0).isAuto()) {
+                continue;
+            }
+            result.add(u);
+        }
+        return result;
+    }
 
 	// Object overloads
 	/**

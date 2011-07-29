@@ -26,7 +26,7 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	@SuppressWarnings(value="all")
 	public <E extends Entity> int update(List<E> entities, DatabaseAction dbAction, String... keyNames)
-			throws DatabaseException, ParseException, IOException
+			throws DatabaseException
 	{
 		// nothing todo?
 		if (entities.size() == 0) return 0;
@@ -226,7 +226,7 @@ public abstract class AbstractDatabase implements Database
 	}
 
 	public <E extends Entity> void matchByNameAndUpdateFields(List<E> existingEntities, List<E> entities)
-			throws ParseException
+			throws DatabaseException
 	{
 		// List<E> updatedDbEntities = new ArrayList<E>();
 		for (E entityInDb : existingEntities)
@@ -262,7 +262,14 @@ public abstract class AbstractDatabase implements Database
 
 						}
 					}
-					entityInDb.set(newValues, false);
+					try
+					{
+						entityInDb.set(newValues, false);
+					}
+					catch (Exception ex)
+					{
+						throw new DatabaseException(ex);
+					}
 				}
 			}
 		}
@@ -272,14 +279,7 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> List<E> findByExample(E example) throws DatabaseException
 	{
-		try
-		{
-			return this.queryByExample(example).find();
-		}
-		catch (ParseException e)
-		{
-			throw new DatabaseException(e);
-		}
+		return this.queryByExample(example).find();
 	}
 
 	

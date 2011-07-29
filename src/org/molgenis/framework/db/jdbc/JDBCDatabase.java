@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -299,34 +298,25 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	public <E extends Entity> List<E> findByExample(E example)
 			throws DatabaseException
 	{
-		try
-		{
-			Query<E> q = this.query(getClassForEntity(example));
-			// add first security rules
-			// q.addRules(this.getSecurity().getRowlevelSecurityFilters(example.getClass()));
+		Query<E> q = this.query(getClassForEntity(example));
+		// add first security rules
+		// q.addRules(this.getSecurity().getRowlevelSecurityFilters(example.getClass()));
 
-			for (String field : example.getFields())
+		for (String field : example.getFields())
+		{
+			if (example.get(field) != null)
 			{
-				if (example.get(field) != null)
+				if (example.get(field) instanceof List<?>)
 				{
-					if (example.get(field) instanceof List<?>)
-					{
-						if (((List<?>) example.get(field)).size() > 0) q.in(
-								field, (List<?>) example.get(field));
-					}
-					else
-						q.equals(field, example.get(field));
+					if (((List<?>) example.get(field)).size() > 0) q.in(
+							field, (List<?>) example.get(field));
 				}
+				else
+					q.equals(field, example.get(field));
 			}
+		}
 
-			return q.find();
-		}
-		catch (ParseException pe)
-		{
-			// should never happen...
-			pe.printStackTrace();
-		}
-		return null;
+		return q.find();
 	}
 
 	// @Override
@@ -415,8 +405,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	}
 
 	// @Override
-	public <E extends Entity> int add(E entity) throws DatabaseException,
-			IOException
+	public <E extends Entity> int add(E entity) throws DatabaseException
 	{
 		List<E> entityList = new ArrayList<E>();
 		entityList.add(entity);
@@ -425,7 +414,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 
 	// @Override
 	public <E extends Entity> int add(List<E> entities)
-			throws DatabaseException, IOException
+			throws DatabaseException
 	{
 		if (entities.size() > 0)
 		{
@@ -436,14 +425,13 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 
 	// @Override
 	public <E extends Entity> int add(Class<E> klazz, CsvReader reader,
-			CsvWriter writer) throws Exception
+			CsvWriter writer) throws DatabaseException
 	{
 		return getMapperFor(klazz).add(reader, writer);
 	}
 
 	// @Override
-	public <E extends Entity> int update(E entity) throws DatabaseException,
-			IOException
+	public <E extends Entity> int update(E entity) throws DatabaseException
 	{
 		List<E> entityList = new ArrayList<E>();
 		entityList.add(entity);
@@ -452,7 +440,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 
 	// @Override
 	public <E extends Entity> int update(List<E> entities)
-			throws DatabaseException, IOException
+			throws DatabaseException
 	{
 		if (entities.size() > 0)
 		{
@@ -463,14 +451,13 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 
 	// @Override
 	public <E extends Entity> int update(Class<E> klazz, CsvReader reader)
-			throws Exception
+			throws DatabaseException
 	{
 		return getMapperFor(klazz).update(reader);
 	}
 
 	// @Override
-	public <E extends Entity> int remove(E entity) throws DatabaseException,
-			IOException
+	public <E extends Entity> int remove(E entity) throws DatabaseException
 	{
 		List<E> entityList = new ArrayList<E>();
 		entityList.add(entity);
@@ -479,7 +466,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 
 	// @Override
 	public <E extends Entity> int remove(List<E> entities)
-			throws DatabaseException, IOException
+			throws DatabaseException
 	{
 		if (entities.size() > 0)
 		{
@@ -490,7 +477,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 
 	// @Override
 	public <E extends Entity> int remove(Class<E> klazz, CsvReader reader)
-			throws Exception
+			throws DatabaseException
 	{
 		return getMapperFor(klazz).remove(reader);
 	}
@@ -512,7 +499,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	 * @param klazz
 	 *            the entity class to get the mapper from
 	 * @return a mapper or a exception
-	 * @throws SQLException
+	 * @throws DatabaseException
 	 */
 	@SuppressWarnings("unchecked")
 	private <E extends Entity> Mapper<E> getMapperFor(Class<E> klazz)
@@ -554,7 +541,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 
 	// @Override
 	public <E extends Entity> List<E> toList(Class<E> klazz, CsvReader reader,
-			int limit) throws Exception
+			int limit) throws DatabaseException
 	{
 		return getMapperFor(klazz).toList(reader, limit);
 	}
@@ -729,7 +716,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	}
 
 	public <E extends Entity> void matchByNameAndUpdateFields(
-			List<E> existingEntities, List<E> entities) throws ParseException
+			List<E> existingEntities, List<E> entities) throws DatabaseException
 	{
 		// List<E> updatedDbEntities = new ArrayList<E>();
 		for (E entityInDb : existingEntities)
@@ -766,7 +753,14 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 
 						}
 					}
-					entityInDb.set(newValues, false);
+					try
+					{
+						entityInDb.set(newValues, false);
+					}
+					catch (Exception ex)
+					{
+						throw new DatabaseException(ex);
+					}
 				}
 			}
 		}
@@ -779,7 +773,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	 */
 	public <E extends Entity> int update(List<E> entities,
 			DatabaseAction dbAction, String... keyNames)
-			throws DatabaseException, ParseException, IOException
+			throws DatabaseException
 	{
 		if(keyNames.length == 0) throw new DatabaseException("At least one key must be provided, e.g. 'name'");
 		

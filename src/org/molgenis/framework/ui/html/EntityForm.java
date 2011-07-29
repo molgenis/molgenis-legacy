@@ -71,9 +71,9 @@ public abstract class EntityForm<E extends Entity> extends HtmlForm
 	 * 
 	 * @param name
 	 * @param value
-	 * @throws ParseException
+	 * @throws Exception 
 	 */
-	public void set(String name, Object value) throws ParseException
+	public void set(String name, Object value) throws Exception
 	{
 		Tuple t = new SimpleTuple();
 		t.set(name, value);

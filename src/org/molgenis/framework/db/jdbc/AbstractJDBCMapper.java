@@ -492,18 +492,25 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 		return rowsAffected;
 	}
 
-	public List<E> toList(CsvReader reader, int limit) throws Exception
+	public List<E> toList(CsvReader reader, int limit) throws DatabaseException
 	{
 		final List<E> entities = createList(10);
-		reader.parse(limit, new CsvReaderListener()
+		try
 		{
-			public void handleLine(int line_number, Tuple line) throws Exception
+			reader.parse(limit, new CsvReaderListener()
 			{
-				E e = create();
-				e.set(line, false); // parse the tuple
-				entities.add(e);
-			}
-		});
+				public void handleLine(int line_number, Tuple line) throws Exception
+				{
+					E e = create();
+					e.set(line, false); // parse the tuple
+					entities.add(e);
+				}
+			});
+		}
+		catch (Exception ex)
+		{
+			throw new DatabaseException(ex);
+		}
 		return entities;
 	}
 

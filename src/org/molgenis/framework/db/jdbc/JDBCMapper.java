@@ -44,7 +44,7 @@ public interface JDBCMapper<E extends Entity> extends Mapper<E>
 
 	public int remove(CsvReader reader) throws DatabaseException;
 
-	public List<E> toList(CsvReader reader, int limit) throws Exception;
+	public List<E> toList(CsvReader reader, int limit) throws DatabaseException;
 
 	public String getTableFieldName(String field);
 

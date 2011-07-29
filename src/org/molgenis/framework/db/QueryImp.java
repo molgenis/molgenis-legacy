@@ -166,7 +166,7 @@ public class QueryImp<E extends Entity> implements Query<E> {
 	}
 
 	@Override
-	public List<E> find() throws DatabaseException, ParseException {
+	public List<E> find() throws DatabaseException {
 		if (this.klazz != null && this.database != null) {
 			return this.find(this.database, this.klazz);
 		}
@@ -175,8 +175,7 @@ public class QueryImp<E extends Entity> implements Query<E> {
 	}
 
 	@Override
-	public List<E> find(Database db, Class<E> klazz) throws DatabaseException,
-			ParseException {
+	public List<E> find(Database db, Class<E> klazz) throws DatabaseException {
 		return db.find(klazz, this.getRules());
 	}
 

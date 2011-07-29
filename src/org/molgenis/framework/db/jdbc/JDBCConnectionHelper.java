@@ -182,7 +182,7 @@ public class JDBCConnectionHelper
 	 * @throws SQLException
 	 * @throws DatabaseException
 	 */
-	public ResultSet executeQuery(String sql, QueryRule... rules) throws SQLException, DatabaseException
+	public ResultSet executeQuery(String sql, QueryRule... rules) throws DatabaseException
 	{
 		getConnection();
 		Statement stmt = null;
@@ -208,7 +208,7 @@ public class JDBCConnectionHelper
 		catch (SQLException sqle)
 		{
 			logger.error("executeQuery(" + sql + ")" + sqle);
-			throw sqle;
+			throw new DatabaseException(sqle);
 		}
 	}
 
