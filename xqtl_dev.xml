@@ -171,16 +171,29 @@
 			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />
 		</copy>
 		
-		<!--
-		TODO: Copy SQL files and other stuff from the root!
-		-->
+		<!-- Copy SQL files from generated/sql to build root -->
+		<copy todir="build" verbose="true">				
+			<fileset dir="generated/sql" includes="**/*.sql" />
+		</copy>
 		
 	</target>
 
 	<!--
-	Step 7: Start the application
+	Step 7: The complete make-and-start application procedure
 	-->
-	<target name="run" depends="copy_resources" description="Start the application">
+	<target name="make_run" depends="copy_resources" description="Make and start the application">
+		<java classname="boot.RunStandalone" fork="yes" failonerror="true">
+			<classpath>
+				<path refid="molgenis-libs" />
+				<path refid="app-libs" />
+				<path location="../molgenis/build" />
+				<path location="build" />
+			</classpath>
+		</java>
+	</target>
+	
+	<!-- Just try to start the application -->
+	<target name="run" description="Start the application">
 		<java classname="boot.RunStandalone" fork="yes" failonerror="true">
 			<classpath>
 				<path refid="molgenis-libs" />
