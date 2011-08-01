@@ -11,10 +11,9 @@
 				dependent (e.g. to only show particular subqueries of ontologies).
 			</description>
 		</entity>
-		<entity name="ObservationElement" implements="InvestigationElement,Authorizable" xref_label="name">
+		<entity name="ObservationElement" implements="InvestigationElement" xref_label="name">
 			<description> Elements that are the targets or features we are
 				looking at of our research.</description>
-			<unique fields="Investigation,name" description="Name is unique in each class (same as fields='name,__Type')"/>
 		</entity>
 		<entity name="ObservationTarget" extends="ObservationElement">
 			<description> An ObservationTarget class defines the subjects of

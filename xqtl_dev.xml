@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="xqtl_dev" default="compile_app" basedir=".">
+<project name="xqtl_dev" default="run" basedir=".">
 	
 	<description>
 		
@@ -66,7 +66,7 @@
 	Step 1: Compile MOLGENIS. This is assumed to be in your 'workspace'.
 	(e.g. you run this script in '/somedir/molgenis_apps', then molgenis must be in '/somedir/molgenis')
 	-->
-	<target name="compile_molgenis" depends="clean" description="Compile MOLGENIS">
+	<target name="compile_molgenis" description="Compile MOLGENIS">
 		<!-- Run javac on the src dir to be compiled into build, using the molgenis-libs fileset as classpath -->
 		<javac srcdir="../molgenis/src" destdir="../molgenis/build" includeantruntime="false">
 			<classpath>
@@ -202,6 +202,10 @@
 				<path location="build" />
 			</classpath>
 		</java>
+	</target>
+	
+	<!-- Just make the application -->
+	<target name="make" depends="copy_resources" description="Make the application">
 	</target>
 
 </project>
