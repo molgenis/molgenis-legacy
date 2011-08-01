@@ -14,6 +14,9 @@
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/settings" />
 		<pathelement location="modules/file" />
+		<pathelement location="modules/decorators/core" />
+		<pathelement location="modules/decorators/auth" />
+		<pathelement location="modules/decorators/pheno" />
 		<!-- TODO: just playing with sandbox I suppose? Otherwise stuff should move to a module-->
 		
 	</path>

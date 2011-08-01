@@ -11,7 +11,7 @@
 		
 		svn co http://www.molgenis.org/svn/molgenis/trunk/ molgenis
 		svn co http://www.molgenis.org/svn/molgenis_apps/trunk/ molgenis_apps
-		ant -f molgenis_apps/xqtl_dev.xml run
+		ant -f molgenis_apps/xqtl_dev.xml make_run
 
     </description>
 
@@ -29,6 +29,10 @@
 		<pathelement location="modules/import" />
 		<pathelement location="modules/pheno" />
 		<pathelement location="modules/settings" />
+		<pathelement location="modules/decorators/core" />
+		<pathelement location="modules/decorators/auth" />
+		<pathelement location="modules/decorators/pheno" />
+		<pathelement location="modules/decorators/data" />
 	</path>
 
 	<!-- Path ref to the molgenis libraries -->
@@ -46,7 +50,7 @@
 	</path>
 
 	<!--
-	Step 0: Delete the content of the app build, app generated and Molgenis build folders.
+	Step 1: Delete the content of the app build, app generated and Molgenis build folders.
 	-->
 	<target name="clean" description="Delete generated and build content">
 		<mkdir dir="../molgenis/build"/>
@@ -63,10 +67,10 @@
 	</target>
 
 	<!--
-	Step 1: Compile MOLGENIS. This is assumed to be in your 'workspace'.
+	Step 2: Compile MOLGENIS. This is assumed to be in your 'workspace'.
 	(e.g. you run this script in '/somedir/molgenis_apps', then molgenis must be in '/somedir/molgenis')
 	-->
-	<target name="compile_molgenis" description="Compile MOLGENIS">
+	<target name="compile_molgenis" depends="clean" description="Compile MOLGENIS">
 		<!-- Run javac on the src dir to be compiled into build, using the molgenis-libs fileset as classpath -->
 		<javac srcdir="../molgenis/src" destdir="../molgenis/build" includeantruntime="false">
 			<classpath>
@@ -84,7 +88,7 @@
 	</target>
 
 	<!--
-	Step 2: Generate the application. This assumes you have compiled molgenis.
+	Step 3: Generate the application. This assumes you have compiled molgenis.
 	The molgenis/build and libraries are used as classpath.
 	-->
 	<target name="generate_app" depends="compile_molgenis" description="Generate the application">
@@ -98,7 +102,7 @@
 	</target>
 
 	<!--
-	Step 3: Compile generated datatypes. However we must exclude the security decorators,
+	Step 4: Compile generated datatypes. However we must exclude the security decorators,
 	which depend on the org.molgenis.auth.service module.
 	 -->
 	<target name="compile_datatypes" depends="generate_app" description="Compile generated datatypes">
@@ -111,7 +115,7 @@
 	</target>
 
 	<!--
-	Step 4: Compile the actual application using the components specified in app.class.path.
+	Step 5: Compile the actual application using the components specified in app.class.path.
 	-->
 	<target name="compile_app" depends="compile_datatypes" description="Compile application">
 		<pathconvert targetos="unix" property="app_src" refid="app.class.path" />
@@ -125,7 +129,7 @@
 	</target>
 
 	<!--
-	Step 5: Compile other generated parts that depends on having the application compiled first
+	Step 6: Compile other generated parts that depends on having the application compiled first
 	-->
 	<target name="compile_other" depends="compile_app" description="Compile other generated">
 		<javac srcdir="generated/java/app" destdir="build" includeantruntime="false">
@@ -144,7 +148,7 @@
 
 
 	<!--
-	Step 6: Copy resources other than Java files from the locations of app.class.path
+	Step 7: Copy resources other than Java files from the locations of app.class.path
 	into the build folder
 	-->
 	<target name="copy_resources" depends="compile_other">
@@ -179,7 +183,7 @@
 	</target>
 
 	<!--
-	Step 7: The complete make-and-start application procedure
+	Step 8: The complete make-and-start application procedure
 	-->
 	<target name="make_run" depends="copy_resources" description="Make and start the application">
 		<java classname="boot.RunStandalone" fork="yes" failonerror="true">
@@ -192,7 +196,7 @@
 		</java>
 	</target>
 	
-	<!-- Just try to start the application -->
+	<!-- Just start the application -->
 	<target name="run" description="Start the application">
 		<java classname="boot.RunStandalone" fork="yes" failonerror="true">
 			<classpath>

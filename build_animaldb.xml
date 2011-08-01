@@ -21,6 +21,9 @@
 		<pathelement location="modules/matrix"/>
 		<pathelement location="modules/batch"/>
 		<pathelement location="modules/search"/>
+		<pathelement location="modules/decorators/core" />
+		<pathelement location="modules/decorators/auth" />
+		<pathelement location="modules/decorators/pheno" />
 	</path>
 	
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->

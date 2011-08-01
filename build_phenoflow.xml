@@ -9,6 +9,8 @@
 	<path id="app.class.path">
 		<pathelement location="apps/${app_name}" />
 		<pathelement location="modules/datamodel" />
+		<pathelement location="modules/decorators/core" />
+		<pathelement location="modules/decorators/pheno" />
 	</path>
 
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->

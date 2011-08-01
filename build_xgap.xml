@@ -15,6 +15,10 @@
 		<pathelement location="modules/settings" />
 		<pathelement location="modules/pheno" />
 		<pathelement location="modules/search" />
+		<pathelement location="modules/decorators/core" />
+		<pathelement location="modules/decorators/auth" />
+		<pathelement location="modules/decorators/pheno" />
+		<pathelement location="modules/decorators/data" />
 	</path>
 
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->

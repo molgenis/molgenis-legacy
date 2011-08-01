@@ -22,6 +22,10 @@
 		<pathelement location="modules/news" />
 		<pathelement location="modules/search" />
 		<pathelement location="modules/webserver" />
+		<pathelement location="modules/decorators/core" />
+		<pathelement location="modules/decorators/auth" />
+		<pathelement location="modules/decorators/pheno" />
+		<pathelement location="modules/decorators/data" />
 		<pathelement location="apps/animaldb" />
 		<pathelement location="apps/chd7" />
 		<pathelement location="apps/designgg" />
