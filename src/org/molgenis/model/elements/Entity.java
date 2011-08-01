@@ -392,6 +392,10 @@ public class Entity extends DBSchema implements Record
 	{
 		return implements_parents.size() > 0;
 	}
+	
+	public Vector<String> getImplementsNames(){
+		return implements_parents;
+	}
 
 	public Vector<Entity> getImplements() throws MolgenisModelException
 	{
