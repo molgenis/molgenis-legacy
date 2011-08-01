@@ -1,4 +1,4 @@
-package filehandling.generic;
+package decorators;
 
 import java.io.File;
 import java.io.FileNotFoundException;

@@ -20,8 +20,6 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.jdbc.JDBCMapper;
 import org.molgenis.framework.db.jdbc.MappingDecorator;
 
-import filehandling.generic.MolgenisFileHandler;
-
 /**
  * Generic decorator for MOLGENIS files. These files are coupled to entities and
  * stored in a user defined, verified place. The 'FileType' denotes the final
