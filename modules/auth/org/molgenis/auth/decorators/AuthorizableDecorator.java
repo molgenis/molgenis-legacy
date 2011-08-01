@@ -16,10 +16,9 @@ import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.jdbc.MappingDecorator;
-import org.molgenis.organization.Investigation;
+import org.molgenis.util.Entity;
 
-// TODO: get rid of 'extends Investigation' but how??
-public class AuthorizableDecorator<E extends Investigation> extends MappingDecorator<E>
+public class AuthorizableDecorator<E extends Entity> extends MappingDecorator<E>
 {
 	// JDBCMapper is the generate thing
 	// public AuthorizableDecorator(JDBCMapper generatedMapper)
@@ -44,31 +43,25 @@ public class AuthorizableDecorator<E extends Investigation> extends MappingDecor
 			try
 			{
 				Class entityClass = e.getClass();
-				Method getOwns = entityClass.getDeclaredMethod("getOwns");
-				Class partypes[] = new Class[1];
-				partypes[0] = Integer.TYPE;
-				Method setOwns = entityClass.getDeclaredMethod("setOwns_Id", partypes);
+				Method getOwns = entityClass.getMethod("getOwns_Id");
 				Object result = getOwns.invoke(e);
 				if (result == null)
 				{
-					// This is how it should become:
-					// Investigation inv = getDatabase()
-					// .getEntityManager()
-					// .createQuery("SELECT i FROM Investigation i WHERE i.name = 'admin'",
-					// Investigation.class)
-					// .getSingleResult();
-
-					int adminId = getDatabase()
+					Integer adminId = getDatabase()
 							.find(MolgenisRole.class, new QueryRule(MolgenisRole.NAME, Operator.EQUALS, "admin"))
 							.get(0).getId();
-					// e.setOwns_Id(adminId);
 					Object arglist[] = new Object[1];
 					arglist[0] = adminId;
+					
+					Class partypes[] = new Class[1];
+					partypes[0] = Integer.class;
+					Method setOwns = entityClass.getMethod("setOwns_Id", partypes);
 					setOwns.invoke(e, arglist);
 				}
 			}
 			catch (Exception e1)
 			{
+				e1.printStackTrace();
 				throw new DatabaseException(e1);
 			}
 		}

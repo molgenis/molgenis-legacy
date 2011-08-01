@@ -206,83 +206,19 @@ public class AnimalDbUsers extends PluginModel<Entity>
 					throw new Exception("No (valid) investigation chosen");
 				}
 				
-				// Give rights on entities, forms, menus and plugins
+				// Give rights on ALL entities, forms, menus and plugins (TODO: leave some out?)
 				List<MolgenisPermission> permList = new ArrayList<MolgenisPermission>();
-				permList.add(makePermission(db, userId, "write","org.molgenis.core.OntologyTerm"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.core.Ontology"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.organization.Investigation"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.pheno.ObservationElement"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.pheno.ObservationTarget"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.pheno.ObservableFeature"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.pheno.Measurement"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.pheno.Individual"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.pheno.Location"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.pheno.Panel"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.pheno.Code"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.pheno.ObservedValue"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.protocol.Protocol"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.protocol.ProtocolApplication"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.data.ObservedInference"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.news.MolgenisNews"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.auth.MolgenisRole"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.auth.MolgenisGroup"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.auth.MolgenisRoleGroupLink"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.auth.MolgenisUser"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.auth.MolgenisEntity"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.auth.MolgenisPermission"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.batch.MolgenisBatch"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.batch.MolgenisBatchEntity"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.animaldb.CustomLabelFeature"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.organization.Investigation_Contacts"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.pheno.Panel_Individuals"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.pheno.Panel_FounderPanels"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.pheno.Code_Feature"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.protocol.Protocol_Features"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.protocol.ProtocolApplication_Performer"));
-				permList.add(makePermission(db, userId, "write","org.molgenis.data.ObservedInference_DerivedFrom"));
-				permList.add(makePermission(db, userId, "write","app.ui.AnimalDBHeaderPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.mainmenuMenu"));
-				permList.add(makePermission(db, userId, "write","app.ui.AnimalDBWelcomeScreenPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.NewsPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.PreFillDatabasePlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.securitymenuMenu"));
-				permList.add(makePermission(db, userId, "write","app.ui.UserLoginPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.usermanagementMenu"));
-				permList.add(makePermission(db, userId, "write","app.ui.PermissionManagementPluginPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.AnimalDbUsersPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.systemmenuMenu"));
-				permList.add(makePermission(db, userId, "write","app.ui.FillDatabasePlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.CascadingDeleteAnimalsPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.SetCustomLabelFeaturePlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.batchesMenu"));
-				permList.add(makePermission(db, userId, "write","app.ui.ManageBatchesFormController"));
-				permList.add(makePermission(db, userId, "write","app.ui.BatchPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.BatchViewPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.animalmenuMenu"));
-				permList.add(makePermission(db, userId, "write","app.ui.AddAnimalPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.breedingmoduleMenu"));
-				permList.add(makePermission(db, userId, "write","app.ui.ViewFamilyPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.ManageLinesPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.ManageParentgroupsPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.ManageLittersPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.RemAnimalPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.PrintLabelsPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.AddSpecialGroupPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.locationmenuMenu"));
-				permList.add(makePermission(db, userId, "write","app.ui.AddLocationPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.LocationInfoPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.valuemenuMenu"));
-				permList.add(makePermission(db, userId, "write","app.ui.ApplyProtocolPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.ListPluginPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.EventViewerPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.projectmenuMenu"));
-				permList.add(makePermission(db, userId, "write","app.ui.DecStatusPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.AddProjectPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.AddSubprojectPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.AnimalsInSubprojectsPlugin"));
-				permList.add(makePermission(db, userId, "write","app.ui.YearlyReportModulePlugin"));
-				//permList.add(makePermission(db, userId, "read","app.ui.searchmenuMenu"));
-				//permList.add(makePermission(db, userId, "write","app.ui.SimpleDbSearchPlugin"));
+				Query<MolgenisEntity> q = db.query(MolgenisEntity.class);
+				List<MolgenisEntity> entList = q.find();
+				if (entList != null) {
+					for (MolgenisEntity ent : entList) {
+						MolgenisPermission newPerm = new MolgenisPermission();
+						newPerm.setRole_Id(userId);
+						newPerm.setPermission("write");
+						newPerm.setEntity_Id(ent.getId());
+						permList.add(newPerm);
+					}
+				}
 				db.add(permList);
 				
 				action = "init";
@@ -293,22 +229,6 @@ public class AnimalDbUsers extends PluginModel<Entity>
 				this.setMessages(new ScreenMessage("Error: " + e.getMessage(), false));
 			}
 		}
-	}
-	
-	private MolgenisPermission makePermission(Database db, int userId, String right, String entityClassName) 
-		throws DatabaseException, ParseException {
-		
-		// TODO: find out why newPerm.setEntity_ClassName() doesn't work!
-		
-		Query<MolgenisEntity> q = db.query(MolgenisEntity.class);
-		q.addRules(new QueryRule(MolgenisEntity.CLASSNAME, Operator.EQUALS, entityClassName));
-		List<MolgenisEntity> entList = q.find();
-		
-		MolgenisPermission newPerm = new MolgenisPermission();
-		newPerm.setRole(userId);
-		newPerm.setPermission(right);
-		newPerm.setEntity(entList.get(0).getId());
-		return newPerm;
 	}
 
 	public String getAction() {
