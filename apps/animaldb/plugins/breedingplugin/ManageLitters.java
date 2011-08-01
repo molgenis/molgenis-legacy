@@ -311,8 +311,11 @@ public class ManageLitters extends PluginModel<Entity>
 			
 			returnString += ("Parentgroup: " + parentgroupName + "<br />");
 			returnString += (getLineInfo(parentgroupId) + "<br />");
-			returnString += (getParentGenoInfo(parentgroupId, "Mother") + "<br />");
-			returnString += (getParentGenoInfo(parentgroupId, "Father") + "<br />");
+			
+			int motherId = findParentForParentgroup(parentgroupId, "Mother");
+			returnString += ("Mother: " + getGenoInfo(motherId) + "<br />");
+			int fatherId = findParentForParentgroup(parentgroupId, "Father");
+			returnString += ("Father: " + getGenoInfo(fatherId) + "<br />");
 			
 			return returnString;
 			
@@ -361,20 +364,17 @@ public class ManageLitters extends PluginModel<Entity>
 		}
 	}
 	
-	private String getParentGenoInfo(int parentgroupId, String parentSex) throws DatabaseException, ParseException {
+	private String getGenoInfo(int animalId) throws DatabaseException, ParseException {
 		String returnString = "";
-		int parentId = findParentForParentgroup(parentgroupId, parentSex);
-		String parentName = ct.getObservationTargetLabel(parentId);
-		returnString += (parentSex + ": " + parentName + ", ");
 		int measurementId = ct.getMeasurementId("Background");
-		int parentBackgroundId = ct.getMostRecentValueAsXref(parentId, measurementId);
-		String parentBackgroundName = "unknown";
-		if (parentBackgroundId != -1) {
-			parentBackgroundName = ct.getObservationTargetById(parentBackgroundId).getName();
+		int animalBackgroundId = ct.getMostRecentValueAsXref(animalId, measurementId);
+		String animalBackgroundName = "unknown";
+		if (animalBackgroundId != -1) {
+			animalBackgroundName = ct.getObservationTargetById(animalBackgroundId).getName();
 		}
-		returnString += ("background: " + parentBackgroundName);
+		returnString += ("background: " + animalBackgroundName);
 		Query<ObservedValue> q = this.db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, parentId));
+		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, ct.getMeasurementId("GeneName")));
 		List<ObservedValue> valueList = q.find();
 		if (valueList != null) {
@@ -384,7 +384,7 @@ public class ManageLitters extends PluginModel<Entity>
 				String geneState = "";
 				protocolApplicationId = value.getProtocolApplication_Id();
 				q = this.db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, parentId));
+				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, ct.getMeasurementId("GeneState")));
 				q.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, protocolApplicationId));
 				List<ObservedValue> geneStateValueList = q.find();
@@ -755,24 +755,39 @@ public class ManageLitters extends PluginModel<Entity>
 		
 		int parentgroupId = ct.getMostRecentValueAsXref(this.getGenoLitterId(), ct.getMeasurementId("Parentgroup"));
 		String line = this.getLineInfo(parentgroupId);
-		String motherInfo = this.getParentGenoInfo(parentgroupId, "Mother");
-		String fatherInfo = this.getParentGenoInfo(parentgroupId, "Father");
+		int motherId = findParentForParentgroup(parentgroupId, "Mother");
+		String motherInfo = this.getGenoInfo(motherId);
+		int fatherId = findParentForParentgroup(parentgroupId, "Mother");
+		String fatherInfo = this.getGenoInfo(fatherId);
 		
 		List<String> elementList;
 		
 		for (Individual animal : this.getAnimalsInLitter()) {
+			int animalId = animal.getId();
 			elementList = new ArrayList<String>();
 			// Earmark
+			elementList.add("Earmark: " + ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("Earmark")));
+			// Name / custom label
+			elementList.add("Name: " + ct.getObservationTargetLabel(animalId));
 			// Line
 			elementList.add(line);
 			// Background + GeneName + GeneState
+			elementList.add(this.getGenoInfo(animalId));
 			// Color + Sex
+			String colorSex = "Color/sex:";
+			colorSex += ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("Color"));
+			colorSex += "\t";
+			int sexId = ct.getMostRecentValueAsXref(animalId, ct.getMeasurementId("Sex"));
+			colorSex += ct.getObservationTargetById(sexId).getName();
+			elementList.add(colorSex);
 			// Birthdate
+			elementList.add("Birthdate: " + ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("DateOfBirth")));
 			// Geno mother
-			elementList.add(motherInfo);
+			elementList.add("Mother: " + motherInfo);
 			// Geno father
-			elementList.add(fatherInfo);
+			elementList.add("Father: " + fatherInfo);
 			// OldUliDbExperimentator
+			elementList.add("Experimentator: " + ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("OldUliDbExperimentator")));
 			
 			labelgenerator.addLabelToDocument(elementList);
 		}

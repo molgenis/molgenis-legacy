@@ -170,16 +170,24 @@ public class AddAnimalPlugin extends GenericPlugin
 				throw(new Exception("No background given - animal(s) not added"));
 			}
 			// Check gene name/state pairs
-			List<?> tmpGeneList = (List<?>) gene.getObject();
-			List<?> tmpGenestateList = (List<?>) genestate.getObject();
+			List<String> tmpGeneList = new ArrayList<String>();
+			if (gene.getObject() instanceof String) {
+				tmpGeneList.add(gene.getValue());
+			} else {
+				tmpGeneList = (List<String>) gene.getObject();
+			}
+			List<String> tmpGenestateList = new ArrayList<String>();
+			if (genestate.getObject() instanceof String) {
+				tmpGenestateList.add(genestate.getValue());
+			} else {
+				tmpGenestateList = (List<String>) genestate.getObject();
+			}
 			// Zero or more gene - genestate couples
-			int nrOfGenes = 0;
 			if (tmpGeneList != null) {
-				for (Object tmpGene : tmpGeneList) {
-					geneList.add((String) tmpGene);
-					Object tmpGenestate = tmpGenestateList.get(nrOfGenes);
-					genestateList.add((String) tmpGenestate);
-					nrOfGenes++;
+				int nrOfGenes = 0;
+				for (String tmpGene : tmpGeneList) {
+					geneList.add(tmpGene);
+					genestateList.add(tmpGenestateList.get(nrOfGenes++));
 				}
 			}
 		} else {
