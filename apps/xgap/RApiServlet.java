@@ -1,4 +1,3 @@
-import filehandling.generic.MolgenisFileHandler;
 import generic.Utils;
 
 import java.io.BufferedOutputStream;
@@ -19,6 +18,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 
 import app.servlet.MolgenisServlet;
+import decorators.MolgenisFileHandler;
 
 /**Use seperate servlet because of the custom R script that needs to be added*/
 public class RApiServlet extends app.servlet.MolgenisServlet

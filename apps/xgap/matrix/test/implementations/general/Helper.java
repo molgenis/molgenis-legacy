@@ -38,7 +38,6 @@ import org.molgenis.xgap.Marker;
 
 import regressiontest.util.Util;
 import decorators.NameConvention;
-import filehandling.generic.MolgenisFileHandler;
 
 public class Helper
 {

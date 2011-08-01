@@ -4,6 +4,7 @@ import org.molgenis.core.MolgenisFile;
 import org.molgenis.framework.db.Database;
 
 import app.DatabaseFactory;
+import decorators.MolgenisFileHandler;
 
 public class ExampleUsage
 {

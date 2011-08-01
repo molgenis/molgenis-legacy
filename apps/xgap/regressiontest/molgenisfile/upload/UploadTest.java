@@ -11,7 +11,6 @@ import org.molgenis.organization.Investigation;
 import plugins.cluster.helper.Command;
 import plugins.cluster.implementations.LocalComputationResource;
 import app.DatabaseFactory;
-import filehandling.generic.MolgenisFileHandler;
 import filehandling.generic.PerformUpload;
 
 public class UploadTest

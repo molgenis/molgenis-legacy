@@ -9,7 +9,6 @@ import org.molgenis.util.DetectOS;
 
 import plugins.cluster.helper.Command;
 import plugins.cluster.interfaces.ComputationResource;
-import filehandling.generic.MolgenisFileHandler;
 
 /**
  * Local implementation of ComputationResource

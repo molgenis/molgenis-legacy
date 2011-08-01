@@ -23,7 +23,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
-import filehandling.generic.MolgenisFileHandler;
+import decorators.MolgenisFileHandler;
 
 public class downloadfile extends app.servlet.MolgenisServlet {
 

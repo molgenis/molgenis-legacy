@@ -4,7 +4,6 @@ import org.molgenis.framework.db.Database;
 
 import plugins.cluster.helper.Command;
 import app.DatabaseFactory;
-import filehandling.generic.MolgenisFileHandler;
 
 public class TestLocalExecution
 {

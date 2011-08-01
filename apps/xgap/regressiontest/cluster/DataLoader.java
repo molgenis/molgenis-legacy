@@ -11,8 +11,6 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.organization.Investigation;
 
 import plugins.emptydb.emptyDatabase;
-import filehandling.generic.MolgenisFileHandler;
-
 import app.DatabaseFactory;
 
 public class DataLoader

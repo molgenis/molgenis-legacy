@@ -24,7 +24,7 @@ import org.molgenis.util.HtmlTools;
 import org.molgenis.util.Tuple;
 
 import app.servlet.MolgenisServlet;
-import filehandling.generic.MolgenisFileHandler;
+import decorators.MolgenisFileHandler;
 import filehandling.generic.PerformUpload;
 
 public class MolgenisFileManager extends PluginModel<Entity>

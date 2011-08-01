@@ -25,7 +25,7 @@ import org.molgenis.util.ValueLabel;
 
 import app.DatabaseFactory;
 import app.servlet.MolgenisServlet;
-import filehandling.generic.MolgenisFileHandler;
+import decorators.MolgenisFileHandler;
 
 /**
  * Class to handle the coupling of 'Data' objects and storage of the actual data

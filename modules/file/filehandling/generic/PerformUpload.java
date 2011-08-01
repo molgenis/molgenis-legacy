@@ -1,17 +1,15 @@
 package filehandling.generic;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.molgenis.core.MolgenisFile;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.util.ValueLabel;
 
+import decorators.MolgenisFileHandler;
 import decorators.NameConvention;
-import filehandling.generic.MolgenisFileHandler.TypeUnknownException;
 
 public class PerformUpload
 {
