@@ -5,13 +5,16 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package org.molgenis.auth;
+package decorators;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.molgenis.auth.MolgenisGroup;
+import org.molgenis.auth.MolgenisRoleGroupLink;
+import org.molgenis.auth.MolgenisUser;
 import org.molgenis.auth.util.PasswordHasher;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;

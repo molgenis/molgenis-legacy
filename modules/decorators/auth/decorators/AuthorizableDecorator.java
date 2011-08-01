@@ -5,7 +5,7 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package org.molgenis.auth.decorators;
+package decorators;
 
 import java.lang.reflect.Method;
 import java.util.List;

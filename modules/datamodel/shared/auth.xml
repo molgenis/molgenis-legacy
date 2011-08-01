@@ -16,7 +16,7 @@
 			<field name="role_" type="xref" xref_field="MolgenisRole.id" xref_label="name" />
 		</entity>
 		
-		<entity name="MolgenisUser" extends="MolgenisRole" decorator="org.molgenis.auth.MolgenisUserDecorator" system="true">
+		<entity name="MolgenisUser" extends="MolgenisRole" decorator="decorators.MolgenisUserDecorator" system="true">
 			<description>Anyone who can login</description>
 			<field name="password_" type="string" default="secret" description="big fixme: password type" />
 			<field name="emailaddress" type="string" />
@@ -42,7 +42,7 @@
 			<field name="permission" type="enum" enum_options="[read,write,own]"/>
 			<!-- no use case for 'execute' so don't use it -->
 		</entity>
-		<entity name="Authorizable" abstract="true" decorator="org.molgenis.auth.decorators.AuthorizableDecorator">
+		<entity name="Authorizable" abstract="true" decorator="decorators.AuthorizableDecorator">
 			<description>Interface for row level security</description>
 			<field name="canRead" type="xref" xref_entity="MolgenisRole" xref_field="id" xref_label="name" nillable="true"/>
 			<field name="canWrite" type="xref" xref_entity="MolgenisRole" xref_field="id" xref_label="name" nillable="true"/>
