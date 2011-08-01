@@ -302,9 +302,9 @@ public class Molgenis {
             }
             
             // DatabaseFactory
-            if (!options.db_driver.equals("org.hsqldb.jdbcDriver")) {
-            	generators.add(new DatabaseFactoryGen());
-            }
+            //if (!options.db_driver.equals("org.hsqldb.jdbcDriver")) {
+            generators.add(new DatabaseFactoryGen());
+            //}
         } else {
             logger.info("SEVERE: Skipping ALL SQL ....");
         }
