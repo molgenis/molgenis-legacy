@@ -757,7 +757,7 @@ public class ManageLitters extends PluginModel<Entity>
 		String line = this.getLineInfo(parentgroupId);
 		int motherId = findParentForParentgroup(parentgroupId, "Mother");
 		String motherInfo = this.getGenoInfo(motherId);
-		int fatherId = findParentForParentgroup(parentgroupId, "Mother");
+		int fatherId = findParentForParentgroup(parentgroupId, "Father");
 		String fatherInfo = this.getGenoInfo(fatherId);
 		
 		List<String> elementList;
@@ -774,9 +774,9 @@ public class ManageLitters extends PluginModel<Entity>
 			// Background + GeneName + GeneState
 			elementList.add(this.getGenoInfo(animalId));
 			// Color + Sex
-			String colorSex = "Color/sex:";
+			String colorSex = "Color/sex: ";
 			colorSex += ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("Color"));
-			colorSex += "\t";
+			colorSex += "\t\t";
 			int sexId = ct.getMostRecentValueAsXref(animalId, ct.getMeasurementId("Sex"));
 			colorSex += ct.getObservationTargetById(sexId).getName();
 			elementList.add(colorSex);
