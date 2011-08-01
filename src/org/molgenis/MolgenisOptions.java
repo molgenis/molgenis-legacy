@@ -251,6 +251,9 @@ public class MolgenisOptions
 	// default set to false as partial generation leads to compile problems in
 	// for example molgenis_apps
 	public boolean delete_generated_folder = true;
+	
+	@Option(name = "authorizable", param = Option.Param.COLLECTION, type = Option.Type.OPTIONAL_ARGUMENT, usage = "For use in molgenis_apps! Tells the generator on which entities to append an implements='Authorizable'. Default: new ArrayList<String>()")
+	public ArrayList<String> authorizable = new ArrayList<String>();
 
 	// @Option(name = "force_lowercase_names", param = "force_lowercase_names",
 	// type = Option.Type.REQUIRED_ARGUMENT, usage =

@@ -3,6 +3,7 @@ package org.molgenis.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
@@ -30,6 +31,19 @@ public class MolgenisModel
 //				db_files.set(i, options.path + db_files.get(i));
 
 			model = MolgenisModelParser.parseDbSchema(options.model_database);
+			
+			// Get the strings of the property 'authorizable' and add the entity name
+			// 'Authorizable' to the list of Implements. Solves datamodel duplication
+			// in molgenis_apps suite. Possible future work: put auth dependencies into
+			// molgenis itself so it becomes generic across projects.
+			for(String eName : options.authorizable) {
+				eName = eName.trim(); //allow e.g. 'Observation, Investigation'
+				Vector<String> implNames = model.getEntity(eName).getImplementsNames();
+				if(!implNames.contains("Authorizable")){
+					implNames.add("Authorizable");
+					model.getEntity(eName).setImplements(implNames);
+				}
+			}
 
 			logger.debug("read: " + model);
 
