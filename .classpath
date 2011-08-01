@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="modules/webserver"/>
+	<classpathentry kind="src" path="apps/phenoflow"/>
 	<classpathentry kind="src" path="apps/gcc"/>
 	<classpathentry kind="src" path="modules/commonqueries"/>
 	<classpathentry kind="src" path="generated/sql"/>
