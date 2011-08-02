@@ -387,7 +387,7 @@ public class Ssh
 		this.port = port;
 	}
 
-	public String downloadStringFromFile(String remoteFile) throws IOException
+	public String downloadFile(String remoteFile) throws IOException
 	{
 		logger.debug("download remoteFile file '" + remoteFile + "' as string");
 
