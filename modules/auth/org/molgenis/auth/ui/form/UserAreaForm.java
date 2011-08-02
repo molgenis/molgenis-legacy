@@ -13,7 +13,7 @@ public class UserAreaForm extends Container
 
 	public UserAreaForm()
 	{
-		TablePanel passwordGroup        = new TablePanel("login", null);
+		TablePanel passwordGroup        = new TablePanel("login", "login");
 		PasswordInput oldPwdInput       = new PasswordInput("oldpwd");
 		oldPwdInput.setLabel("Old password");
 		passwordGroup.add(oldPwdInput);
@@ -25,7 +25,7 @@ public class UserAreaForm extends Container
 		passwordGroup.add(newPwdInput2);
 		this.add(passwordGroup);
 		
-		TablePanel addressGroup           = new TablePanel("personal", null);
+		TablePanel addressGroup           = new TablePanel("personal", "personal");
 		TextLineInput email               = new TextLineInput("emailaddress");
 		email.setNillable(false);
 		email.setLabel("Email");
