@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="xqtl_selenium" default="clean_make_deletedb_test" basedir=".">
+
+	<import file="xqtl_dev.xml" />
+
+	<taskdef resource="testngtasks" classpath="../molgenis/lib/testng-5.14.10.jar" />
+
+	<!--
+	Make the app, remove existing database and run test
+	-->
+	<target name="clean_make_deletedb_test" description="Make app and start the web test">
+		<antcall target="clean_make" />
+		<antcall target="deletedb" />
+		<antcall target="test" />
+	</target>
+
+	<!--
+	Just remove existing HSQL database
+	-->
+	<target name="deletedb" description="Delete generated and build content">
+		<!-- mkdir hsqldb if it doesn't exist -->
+		<mkdir dir="hsqldb" />
+
+		<!-- remove content of hsqldb -->
+		<delete includeemptydirs="true">
+			<fileset dir="hsqldb" includes="**/*" />
+		</delete>
+	</target>
+
+	<!--
+	Just run the test
+	-->
+	<target name="test" description="Start the web test">
+		<testng suitename="webtest">
+			<xmlfileset dir="build/test" includes="xqtl_selenium_testng_.xml" />
+			<!--classfileset dir="build/test" includes="WebTest.class"/-->
+			<classpath>
+				<path refid="molgenis-libs" />
+				<path refid="app-libs" />
+				<path location="../molgenis/build" />
+				<path location="build" />
+			</classpath>
+		</testng>
+	</target>
+</project>

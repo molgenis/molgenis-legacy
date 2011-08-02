@@ -3,11 +3,11 @@
 	
 	<description>
 		
-        ANT file for xQTL development. Complete from-scratch compile and run.
+        ANT file for xQTL development. Complete compilation and run script.
 		Work in progress, may need fixes and will be updated with more doc to
 		explain things.
 		
-		The entire app should be installable using:
+		The application can be installed and started using:
 		
 		svn co http://www.molgenis.org/svn/molgenis/trunk/ molgenis
 		svn co http://www.molgenis.org/svn/molgenis_apps/trunk/ molgenis_apps
@@ -50,11 +50,13 @@
 	</path>
 
 	<!--
-	Step 1: Delete the content of the app build, app generated and Molgenis build folders.
+	CLEAN - Step 1: Delete the content of the app build, app generated and Molgenis build folders.
 	-->
 	<target name="clean" description="Delete generated and build content">
+		<!-- mkdir build if it doesn't exist -->
 		<mkdir dir="../molgenis/build"/>
 		
+		<!-- remove content of build, ../molgenis/build and generated -->
 		<delete includeemptydirs="true">
 			<fileset dir="build" includes="**/*" />
 		</delete>
@@ -67,10 +69,13 @@
 	</target>
 
 	<!--
-	Step 2: Compile MOLGENIS. This is assumed to be in your 'workspace'.
+	MAKE - Step 2: Compile MOLGENIS. This is assumed to be in your 'workspace'.
 	(e.g. you run this script in '/somedir/molgenis_apps', then molgenis must be in '/somedir/molgenis')
 	-->
-	<target name="compile_molgenis" depends="clean" description="Compile MOLGENIS">
+	<target name="compile_molgenis" description="Compile MOLGENIS">
+		<!-- mkdir build if it doesn't exist -->
+		<mkdir dir="../molgenis/build"/>
+		
 		<!-- Run javac on the src dir to be compiled into build, using the molgenis-libs fileset as classpath -->
 		<javac srcdir="../molgenis/src" destdir="../molgenis/build" includeantruntime="false">
 			<classpath>
@@ -88,10 +93,10 @@
 	</target>
 
 	<!--
-	Step 3: Generate the application. This assumes you have compiled molgenis.
+	MAKE - Step 3: Generate the application. This assumes you have compiled molgenis.
 	The molgenis/build and libraries are used as classpath.
 	-->
-	<target name="generate_app" depends="compile_molgenis" description="Generate the application">
+	<target name="generate_app" description="Generate the application">
 		<java classname="org.molgenis.Molgenis" fork="yes" failonerror="true">
 			<arg value="apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl.properties" />
 			<classpath>
@@ -102,10 +107,10 @@
 	</target>
 
 	<!--
-	Step 4: Compile generated datatypes. However we must exclude the security decorators,
+	MAKE - Step 4: Compile generated datatypes. However we must exclude the security decorators,
 	which depend on the org.molgenis.auth.service module.
 	 -->
-	<target name="compile_datatypes" depends="generate_app" description="Compile generated datatypes">
+	<target name="compile_datatypes" description="Compile generated datatypes">
 		<javac srcdir="generated/java/org" excludes="**/*Decorator.java" destdir="build" includeantruntime="false">
 			<classpath>
 				<path refid="molgenis-libs" />
@@ -115,11 +120,11 @@
 	</target>
 
 	<!--
-	Step 5: Compile the actual application using the components specified in app.class.path.
+	MAKE - Step 5: Compile the actual application using the components specified in app.class.path.
 	-->
-	<target name="compile_app" depends="compile_datatypes" description="Compile application">
+	<target name="compile_app" description="Compile application">
 		<pathconvert targetos="unix" property="app_src" refid="app.class.path" />
-		<javac srcdir="${app_src}" destdir="build" includeantruntime="false" excludes="**/WebTest.java">
+		<javac srcdir="${app_src}" destdir="build" includeantruntime="false">
 			<classpath>
 				<path refid="molgenis-libs" />
 				<path refid="app-libs" />
@@ -129,9 +134,9 @@
 	</target>
 
 	<!--
-	Step 6: Compile other generated parts that depends on having the application compiled first
+	MAKE - Step 6: Compile other generated parts that depends on having the application compiled first
 	-->
-	<target name="compile_other" depends="compile_app" description="Compile other generated">
+	<target name="compile_other" description="Compile other generated">
 		<javac srcdir="generated/java/app" destdir="build" includeantruntime="false">
 			<classpath>
 				<path refid="molgenis-libs" />
@@ -148,10 +153,10 @@
 
 
 	<!--
-	Step 7: Copy resources other than Java files from the locations of app.class.path
+	MAKE - Step 7: Copy resources other than Java files from the locations of app.class.path
 	into the build folder
 	-->
-	<target name="copy_resources" depends="compile_other">
+	<target name="copy_resources">
 
 		<!-- Grab the elements of app.class.path and convert to make a fileset pattern
 		usable by fileset. We concatenate the elements with '/**/*,' to grab all files.
@@ -179,24 +184,11 @@
 		<copy todir="build" verbose="true">				
 			<fileset dir="generated/sql" includes="**/*.sql" />
 		</copy>
-		
-	</target>
-
-	<!--
-	Step 8: The complete make-and-start application procedure
-	-->
-	<target name="make_run" depends="copy_resources" description="Make and start the application">
-		<java classname="boot.RunStandalone" fork="yes" failonerror="true">
-			<classpath>
-				<path refid="molgenis-libs" />
-				<path refid="app-libs" />
-				<path location="../molgenis/build" />
-				<path location="build" />
-			</classpath>
-		</java>
 	</target>
 	
-	<!-- Just start the application -->
+	<!--
+	RUN - Step 8: Run the application
+	-->
 	<target name="run" description="Start the application">
 		<java classname="boot.RunStandalone" fork="yes" failonerror="true">
 			<classpath>
@@ -208,8 +200,35 @@
 		</java>
 	</target>
 	
-	<!-- Just make the application -->
-	<target name="make" depends="copy_resources" description="Make the application">
+	<!--
+	MAKE WRAPPER - All instructions to make the application in one bundle
+	-->
+	<target name="make"  description="Make the application">
+		<antcall target="compile_molgenis" />
+		<antcall target="generate_app" />
+		<antcall target="compile_datatypes" />
+		<antcall target="compile_app" />
+		<antcall target="compile_other" />
+		<antcall target="copy_resources" />
+	</target>
+	
+	<!-- 
+	CLEAN, MAKE - Clean and make the application
+	Used when setting up the app from scratch, but not starting the webserver.
+	For instance, when performing Selenium web tests.
+	-->
+	<target name="clean_make" description="Clean and make the application">
+		<antcall target="clean" />
+		<antcall target="make" />
+	</target>
+	
+	<!--
+	MAKE, RUN - The complete make & run procedure
+	Used as default when installing from a fresh SVN checkout
+	-->
+	<target name="make_run" description="Make and start the application">
+		<antcall target="make" />
+		<antcall target="run" />
 	</target>
 
 </project>
