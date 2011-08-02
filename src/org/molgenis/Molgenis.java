@@ -517,6 +517,7 @@ public class Molgenis {
                 if (!f.isHidden()) {
                     if (f.isDirectory()) {
                         result &= deleteContentOfDirectory(f);
+                        f.delete();
                     } else {
                         result &= f.delete();
                     }
