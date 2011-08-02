@@ -63,7 +63,6 @@ public class CommonService
 	private boolean isFilled = false; //for fill database query
 	private transient Logger logger = Logger.getLogger(CommonService.class);
 	protected static Map<Integer, String> observationTargetNameMap = null;
-	private int portNumber = 8080;
 	
 	// --- Stuff for Singleton design pattern
 	protected static CommonService instance = null;
@@ -2056,14 +2055,6 @@ public class CommonService
 		}
 	}
 
-	public void setPortNumber(int portNumber) {
-		this.portNumber = portNumber;
-	}
-
-	public int getPortNumber() {
-		return portNumber;
-	}
-
 	/**
 	 * Returns the id of the ObservableFeature the user has chosen as custom name for the
 	 * ObservationTargets, or -1 if none was set.
@@ -2073,7 +2064,6 @@ public class CommonService
 	 */
 	public int getCustomNameFeatureId(int userId)
 	{
-		
 		if (userId == -1) {
 			return -1;
 		}

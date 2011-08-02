@@ -883,6 +883,7 @@ public class ManageLitters extends PluginModel<Entity>
 			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
 			
 			// Populate unweaned and ungenotyped litter lists
+			// TODO: don't do this every time as it impairs performance!
 			int featid;
 			Query<ObservedValue> q;
 			boolean unweaned;
