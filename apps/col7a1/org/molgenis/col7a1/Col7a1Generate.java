@@ -9,6 +9,6 @@ public class Col7a1Generate
 {
 	public static void main(String[] args) throws Exception
 	{
-		new Molgenis("handwritten/apps/org/molgenis/col7a1/col7a1.properties").generate();
+		new Molgenis("apps/col7a1/org/molgenis/col7a1/col7a1.properties").generate();
 	}
 }
