@@ -8,7 +8,7 @@
   		<#assign has_xrefs=true>	
 		//create foreign key map for field '${name(f)}' to ${name(f.xrefEntity)}.${name(f.xrefField)} using ${csv(f.xrefLabelNames)})	
 		//we will use a hash of the values to ensure that entities are only queried once	
-		final List<QueryRule> ${name(f)}Rules = new ArrayList<QueryRule>();
+		final Map<String, QueryRule> ${name(f)}Rules = new LinkedHashMap<String, QueryRule>();
 	</#if>
 </#list>	
 <#if has_xrefs>		
@@ -26,19 +26,24 @@
 				rules.add(new QueryRule("${label}", Operator.EQUALS, object.get${JavaName(f)}_${JavaName(label)}()));	
 				key += 	object.get${JavaName(f)}_${JavaName(label)}();
 				</#list>			
-				//${name(f)}Rules.add(complexRule);
-				${name(f)}Rules.add(new QueryRule(Operator.OR));
+				QueryRule complexRule = new QueryRule(rules);
+				if(!${name(f)}Rules.containsKey(key))
+				{
+					${name(f)}Rules.put(key, complexRule);
+					${name(f)}Rules.put(key+"_OR_", new QueryRule(Operator.OR));
+				}
 			}
 		<#else>
 			//create xref rule filtering on the label ${csv(f.xrefLabelNames)}
-			{				
-				if(object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}()!= null)
+			{
+				QueryRule xrefFilter = new QueryRule("${f.xrefLabelNames[0]}", Operator.EQUALS, object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}());
+				
+				if(object.get${JavaName(f)}() == null && object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}()!= null && !${name(f)}Rules.containsKey(object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}()))
 				{
-					QueryRule xrefFilter = new QueryRule("${f.xrefLabelNames[0]}", Operator.EQUALS, object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}());
-					${name(f)}Rules.add(xrefFilter);
-					${name(f)}Rules.add(new QueryRule(Operator.OR));
+					${name(f)}Rules.put(""+object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}(), xrefFilter);
+					${name(f)}Rules.put(""+object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}()+"_OR_", new QueryRule(Operator.OR));
 				}
-			}
+			}		
 		</#if>	
 	</#if>
 </#list>
@@ -52,13 +57,11 @@
 <#else>		
 		final java.util.Map<String,${JavaType(f.xrefField)}> ${name(f)}_Labels_to_IdMap = new java.util.TreeMap<String,${JavaType(f.xrefField)}>();
 </#if>		
-
 		
 		List<${JavaName(f.xrefEntity)}> ${name(f)}List = null;
 		try
 		{
-		
-			${name(f)}List = getDatabase().find(${JavaName(f.xrefEntity)}.class, ${name(f)}Rules.toArray(new QueryRule[${name(f)}Rules.size()]));
+			${name(f)}List = getDatabase().find(${JavaName(f.xrefEntity)}.class, ${name(f)}Rules.values().toArray(new QueryRule[${name(f)}Rules.values().size()]));
 		}
 		catch(Exception e)
 		{
