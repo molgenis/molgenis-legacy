@@ -1,3 +1,4 @@
 <molgenis name="Phenoflow">
+<plugin name="EbiHeader" type="org.molgenis.phenoflow.ui.EbiStyleLoader"/>
 	<form name="Investigations" entity="Investigation" />
 </molgenis>
