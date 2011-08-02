@@ -8,10 +8,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.molgenis.animaldb.CustomLabelFeature;
@@ -24,7 +22,6 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.organization.Institute;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Code;
 import org.molgenis.pheno.Individual;
@@ -36,17 +33,11 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
-import org.molgenis.protocol.Workflow;
-import org.molgenis.protocol.WorkflowElement;
-import org.molgenis.protocol.WorkflowElement_PreviousSteps;
-import org.molgenis.protocol.WorkflowElement_Workflow;
 
 import com.ibm.icu.util.Calendar;
 
 /**
  * @author erikroos
- * @author Jessica Lundberg
- * @author Morris Swertz
  * 
  *         Changelog <li>MS: Added constants to replace the String values that
  *         lead to so many typos. Can't we autogenerate all these services?
@@ -60,7 +51,6 @@ public class CommonService
 
 	protected static Database db;
 	private static int protAppCounter = 0;
-	private boolean isFilled = false; //for fill database query
 	private transient Logger logger = Logger.getLogger(CommonService.class);
 	protected static Map<Integer, String> observationTargetNameMap = null;
 	
@@ -85,26 +75,6 @@ public class CommonService
 	public void setDatabase(Database db)
 	{
 	    CommonService.db = db;
-	}
-	
-	/**
-	 * Begins a database transaction.
-	 * 
-	 * @throws DatabaseException
-	 */
-	public void beginTransaction() throws DatabaseException
-	{
-		db.beginTx();
-	}
-
-	/**
-	 * Commits a database transaction.
-	 * 
-	 * @throws DatabaseException
-	 */
-	public void commitTransaction() throws DatabaseException
-	{
-		db.commitTx();
 	}
 
 	/**
@@ -1168,6 +1138,25 @@ public class CommonService
 		    throw new DatabaseException("No ontologyterm id could be located for" +
 			    "ontologyterm with name " + name);
 	}
+	
+	/** Finds an ontologyterm based on ontology name
+	 * 
+	 * @param name
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 */
+	public OntologyTerm getOntologyTerm(String name) throws DatabaseException, ParseException {
+	    Query<OntologyTerm> q = db.query(OntologyTerm.class);
+		q.addRules(new QueryRule(OntologyTerm.NAME, Operator.EQUALS,
+				name));
+		if (!q.find().isEmpty())
+		{
+			return q.find().get(0);
+		}
+		else
+			throw new DatabaseException("OntologyTerm not found");
+	}
 
 	/**
 	 * Create a new ontologyterm and add it to the database, returning the id
@@ -1463,21 +1452,6 @@ public class CommonService
 	}
 
 	/**
-	 * Return all lab workers from the database.
-	 * 
-	 * @return Collection of Contacts
-	 * @throws ParseException
-	 * @throws DatabaseException
-	 */
-//	public Collection<NgsPerson> getAllLabWorkers() throws DatabaseException,
-//			ParseException
-//	{
-//		Query<NgsPerson> q = db.query(NgsPerson.class);
-//		q.addRules(new QueryRule("labworker", Operator.EQUALS, true));
-//		return q.find();
-//	}
-
-	/**
 	 * Add a protocol to the database
 	 * 
 	 * @param name
@@ -1519,168 +1493,6 @@ public class CommonService
 		protocol.setFeatures_Id(featureIds);
 		db.add(protocol);
 	}
-
-	/**
-	 * Add a lab worker to the database
-	 * 
-	 * @param fName
-	 *            first name of lab tech
-	 * @param lName
-	 *            last name of lab tech
-	 * @param email
-	 *            email of lab tech
-	 * @throws IOException
-	 * @throws DatabaseException
-	 */
-//	public void addLabWorker(String fName, String lName, String email)
-//			throws DatabaseException, IOException
-//	{
-//		NgsPerson worker = new NgsPerson();
-//		worker.setFirstName(fName);
-//		worker.setLastName(lName);
-//		worker.setEmail(email);
-//		worker.setLabworker(true);
-//		db.add(worker);
-//	}
-
-	/**
-	 * Find a lab worker based on first and last name (Exact matching)
-	 * 
-	 * @param firstName
-	 *            first name of lab worker
-	 * @param lastName
-	 *            last name of lab worker
-	 * @return a List of Contacts matching this name (Guaranteed to be a list of
-	 *         0 or 1 = firstname + lastname must be unique, and exact matching
-	 *         only)
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-//	public List<NgsPerson> getLabWorkerByName(String firstName, String lastName)
-//			throws DatabaseException, ParseException
-//	{
-//		Query<NgsPerson> q = db.query(NgsPerson.class);
-//		q.eq(Person.FIRSTNAME, firstName);
-//		q.eq(Person.LASTNAME, lastName);
-//		
-//		q.addRules(new QueryRule("labworker", Operator.EQUALS, true));
-//
-//		return q.find();
-//	}
-
-	/**
-	 * Retrieve the sampletype from a project Note: Each project's samples must
-	 * be of the same type
-	 * 
-	 * @param projectName
-	 *            name of the project
-	 * @return string containing the sample type (i.e. "dna" or "rna")
-	 * @throws DatabaseException
-	 *             database error occured
-	 * @throws ParseException 
-	 */
-//	public String getSampleTypeByInvestigation(String projectName)
-//			throws DatabaseException, ParseException
-//	{
-//		String answer = "";
-//
-//		List<NgsSample> samples = db.query(NgsSample.class).equals(NgsSample.INVESTIGATION_NAME, projectName).find();
-//		
-//		if (!samples.isEmpty())
-//			answer = samples.get(0).getSampletype();
-//		else
-//			logger.error("A database inconsistency occured while trying to retrieve sampletype for a project");
-
-//		String answer = "";
-//		List<Tuple> tuples;
-//
-//		tuples = ((JDBCDatabase) db)
-//				.sql("Select s.sampletype from NgsSample s, Project p where p.name = '"
-//						+ projectName + "' AND s.project = p.id;");
-//
-//		if (!tuples.isEmpty())
-//		{
-//			answer = tuples.get(0).getString("sampletype");
-//		}
-//		else
-//		    logger.error("A database inconsistency occured while trying to retrieve sampletype for a project");
-//
-//		return answer;
-//	}
-
-	/**
-	 * Find all samples for a project
-	 * 
-	 * @param projectName
-	 *            project for whom we want to find samples.
-	 * @return a list containing all samples found for a given project
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-//	public List<NgsSample> getAllSamplesForInvestigation(String projectName)
-//	throws DatabaseException, ParseException {
-//
-//	    Query<Investigation> q = db.query(Investigation.class);
-//	    q.equals(Investigation.NAME, projectName);
-//	    List<Investigation> project = q.find();
-//
-//	    if (!project.isEmpty())
-//	    { 
-//
-//		Integer id = project.get(0).getId(); 
-//
-//		Query<NgsSample> p = db.query(NgsSample.class);
-//		p.eq(NgsSample.INVESTIGATION, id);
-//		return p.find();
-//
-//	    }
-//	    else
-//	    {
-//		logger.warn("Project " + projectName
-//			+ " could not be found in the database");
-//		return new ArrayList<NgsSample>();
-//	    }
-//
-//	}
-
-	/**
-	 * Return all samples found in database
-	 * 
-	 * @return list of samples
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-//	public List<NgsSample> getAllSamples() throws DatabaseException,
-//			ParseException
-//	{
-//		Query<NgsSample> q = db.query(NgsSample.class);
-//		q.sortASC(NgsSample.ID);
-//
-//		return q.find();
-//	}
-
-	/**
-	 * Find a sample by it's name
-	 * 
-	 * @param sampleName
-	 *            name of sample to find information for
-	 * @return Sample object containing all information for given sample
-	 * @throws ParseException
-	 * @throws DatabaseException
-	 */
-//	public NgsSample getSampleByName(String sampleName) throws DatabaseException,
-//			ParseException
-//	{
-//		Query<NgsSample> q = db.query(NgsSample.class);
-//		q.eq(NgsSample.NAME, sampleName);
-//		if (!q.find().isEmpty())
-//		{
-//			return q.find().get(0);
-//		}
-//		else
-//			throw new DatabaseException("Sample not found");
-//
-//	}
 	
 	/** 
 	 * Returns all observed values for a given sample and list of features.
@@ -1748,21 +1560,6 @@ public class CommonService
 		return getObservedValuesByTargetAndFeatures(targetId, measurementList, investigationIds, investigationToBeAddedToId);
 	}
 
-	/** Finds a sample entity by its id
-	 * 
-	 * @param id
-	 * @return
-	 * @throws DatabaseException
-	 */
-//	public NgsSample getSampleById(int id) throws DatabaseException {
-//	    NgsSample q = db.findById(NgsSample.class, id);
-//	    if(q == null) {
-//		    throw new DatabaseException("WorkflowElement not found");
-//		}
-//		else
-//		    return q;
-//	}
-
 	/** Finds a protocolapplication entity by its name
 	 * 
 	 * @param name
@@ -1784,184 +1581,7 @@ public class CommonService
 		    throw new DatabaseException("No protocolapplication with name " +
 			    name + "could be found.");
 	}
-
-	/**
-	 * Gets a workflow
-	 * 
-	 * @param workflowName
-	 * @throws ParseException
-	 * @throws DatabaseException
-	 */
-	public Workflow getWorkflow(String workflowName) throws DatabaseException,
-			ParseException
-	{
-		Query<Workflow> q = db.query(Workflow.class);
-		q.addRules(new QueryRule(Workflow.NAME, Operator.EQUALS, workflowName));
-		if (!q.find().isEmpty())
-		{
-			return q.find().get(0);
-		}
-		else
-		    throw new DatabaseException("No workflow with name " +
-			    workflowName + "could be found.");
-	}
-
-	/**
-	 * Gets a workflowelement based on a workflowelement name
-	 * 
-	 * @param workflowName
-	 * @throws ParseException
-	 * @throws DatabaseException
-	 */
-	public WorkflowElement getWorkflowElement(String workflowElementName)
-			throws DatabaseException, ParseException
-	{
-		Query<WorkflowElement> q = db.query(WorkflowElement.class);
-		q.addRules(new QueryRule(WorkflowElement.NAME, Operator.EQUALS,
-				workflowElementName));
-		if (!q.find().isEmpty())
-		{
-			return q.find().get(0);
-		}
-		else
-		    throw new DatabaseException("No workflowelement with name " +
-			    workflowElementName + "could be found.");
-	}
 	
-	/**
-	 * Gets a workflowelement associated with a sample
-	 * 
-	 * @param workflowName
-	 * @throws ParseException
-	 * @throws DatabaseException
-	 */
-//	public WorkflowElement getWorkflowElement(NgsSample sample) throws DatabaseException, ParseException
-//			
-//			
-//	{
-//	    Integer i = sample.getWorkflowElement_Id();
-//		WorkflowElement q = db.findById(WorkflowElement.class, i);
-//		if(q == null) {
-//		    throw new DatabaseException("WorkflowElement not found");
-//		}
-//		else
-//		    return q;
-//	}
-
-	
-	/** Returns a list of all workflow entities in the database
-	 * 
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-	public List<Workflow> getAllWorkflows() throws DatabaseException,
-			ParseException
-	{
-		Query<Workflow> q = db.query(Workflow.class);
-		return q.find();
-	}
-	
-	/** Queries to see if database is filled or not.
-	 * 
-	 * @return
-	 */
-	public boolean isNgsDatabaseFilled() {
-	  if(isFilled) 
-	      return true;
-	  else
-	      isFilled = true;
-	      return false;
-	}
-	
-	/** Finds an ontologyterm based on ontology name
-	 * 
-	 * @param name
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-	public OntologyTerm getOntologyTerm(String name) throws DatabaseException, ParseException {
-	    Query<OntologyTerm> q = db.query(OntologyTerm.class);
-		q.addRules(new QueryRule(OntologyTerm.NAME, Operator.EQUALS,
-				name));
-		if (!q.find().isEmpty())
-		{
-			return q.find().get(0);
-		}
-		else
-			throw new DatabaseException("OntologyTerm not found");
-	}
-	
-	/**
-	 * 
-	 * @param elementId
-	 * @return
-	 * @throws ParseException 
-	 * @throws DatabaseException 
-	 */
-	public WorkflowElement getWorkflowElement(int elementId) throws DatabaseException, ParseException {
-	    Query<WorkflowElement> q = db.query(WorkflowElement.class);
-	    q.addRules(new QueryRule(WorkflowElement.ID, Operator.EQUALS,
-		    elementId));
-	    
-	    if(!q.find().isEmpty()) {
-		return q.find().get(0);
-	    }
-	    else
-		throw new DatabaseException("Element does not exist");
-	}
-	/**
-	 * 
-	 * @param currentElementId
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-	public Set<WorkflowElement> getCandidateWorkflowElements(Integer currentElementId) throws DatabaseException, ParseException {
-	    Set<WorkflowElement> list1 = new LinkedHashSet<WorkflowElement>();
-	    Set<WorkflowElement> list2 = new LinkedHashSet<WorkflowElement>();
-	    Set<WorkflowElement> answer = new LinkedHashSet<WorkflowElement>();
-
-	    Query<WorkflowElement_PreviousSteps> q = db.query(WorkflowElement_PreviousSteps.class);
-	    q.addRules(new QueryRule(WorkflowElement_PreviousSteps.PREVIOUSSTEPS, Operator.EQUALS,
-		    currentElementId));
-
-	    for(WorkflowElement_PreviousSteps w : q.find()) {
-		Query<WorkflowElement> p = db.query(WorkflowElement.class);
-		p.addRules(new QueryRule(WorkflowElement.ID, Operator.EQUALS,
-			w.getWorkflowElement_Id()));
-		list1.addAll(p.find()); // matching by ids, should only be 1 at a time..
-	    }
-
-
-	    List<WorkflowElement_Workflow> wkflowElements = new ArrayList<WorkflowElement_Workflow>();
-
-	    for(Integer i : this.getWorkflowElement(currentElementId).getWorkflow_Id()) {
-		Query<WorkflowElement_Workflow> r = db.query(WorkflowElement_Workflow.class);
-		r.addRules(new QueryRule(WorkflowElement_Workflow.WORKFLOWELEMENT, Operator.EQUALS, i));
-		wkflowElements.addAll(r.find());
-	    }
-
-
-	    for(WorkflowElement_Workflow t : wkflowElements) {
-		Query<WorkflowElement> s = db.query(WorkflowElement.class);
-		s.addRules(new QueryRule(WorkflowElement.ID, Operator.EQUALS,
-			t.getAutoid()));
-		list2.addAll(s.find()); // matching by ids, should only be 1 at a time..
-	    }
-
-	    for(WorkflowElement w : list1) {
-		if(list2.contains(w)) {
-		    answer.add(w);
-		}
-	    }
-
-	    return answer;    
-
-
-	}
-
 	/** Get Investigation based on name
 	 * 
 	 * @param name
@@ -1980,66 +1600,6 @@ public class CommonService
 		else
 		    return s.find().get(0);
 	}
-
-	/** Get institute based on name
-	 * 
-	 * @param name
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-	public Institute getInstitute(String name) throws DatabaseException, ParseException {
-	    Query<Institute> s = db.query(Institute.class);
-	    s.addRules(new QueryRule(Institute.NAME, Operator.EQUALS,
-		    name));
-	
-		if(s.find().isEmpty()) {
-		    throw new DatabaseException("Institute with name " + name + " does not exist.");
-		}
-		else
-		    return s.find().get(0);
-	}
-
-	/** Get NgsPerson by first name and last name
-	 * 
-	 * @param firstName
-	 * @param lastName
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-//	public NgsPerson getPerson(String firstName, String lastName) throws DatabaseException, ParseException {
-//	    Query<NgsPerson> s = db.query(NgsPerson.class);
-//	    s.addRules(new QueryRule(NgsPerson.FIRSTNAME, Operator.EQUALS,
-//		    firstName));
-//	    s.addRules(new QueryRule(NgsPerson.LASTNAME, Operator.EQUALS,
-//		    lastName));
-//
-//	    if(s.find().isEmpty()) {
-//		throw new DatabaseException("Person with name " + firstName + " " + lastName + " does not exist.");
-//	    }
-//	    else
-//		return s.find().get(0);	
-//	}
-
-	/** Get project by contract code
-	 * 
-	 * @param contractcode
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-//	public Project getProject(String contractcode) throws DatabaseException, ParseException {
-//	    Query<Project> s = db.query(Project.class);
-//	    s.addRules(new QueryRule(Project.CONTRACTCODE, Operator.EQUALS,
-//		    contractcode));
-//	
-//		if(s.find().isEmpty()) {
-//		    throw new DatabaseException("Project with contractcode " + contractcode + " does not exist.");
-//		}
-//		else
-//		    return s.find().get(0);
-//	}
 	
 	/**
 	 * Get the name of the given MolgenisEntity. Returns null if it doesn't exist.
