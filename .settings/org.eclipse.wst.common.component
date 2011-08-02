@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="molgenis_apps">
+        <wb-resource deploy-path="/" source-path="/WebContent"/>
+        <wb-resource deploy-path="/" source-path="/generated/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/datamodel"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/generated/sql"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/generated/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/phenoflow"/>
+        <dependent-module archiveName="ontoCAT_v0.8.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/Documents and Settings/Administrator/workspace/gcc/lib/ontoCAT_v0.8.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="mydas-1.6.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/Documents and Settings/Administrator/workspace/gcc/lib/mydas-1.6.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="mindterm.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/Documents and Settings/Administrator/workspace/gcc/lib/mindterm.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jaxrpc.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/Documents and Settings/Administrator/workspace/gcc/lib/jaxrpc.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="keggapi.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/Documents and Settings/Administrator/workspace/gcc/lib/keggapi.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="molgenis.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/molgenis/molgenis">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="java-output-path"/>
+        <property name="context-root" value="molgenis_apps"/>
+    </wb-module>
+</project-modules>
