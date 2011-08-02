@@ -47,7 +47,7 @@
 					<td style='padding:5px'>${litter.birthDate}</td>
 					<td style='padding:5px'>${litter.size}</td>
 					<td style='padding:5px'>${litter.isSizeApproximate}</td>
-					<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=ShowWean&id=${litter.id}">Wean</a></td>
+					<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=ShowWean&id=${litter.id?string.computer}">Wean</a></td>
 				</tr>
 			</#list>
 			</table>
@@ -68,7 +68,7 @@
 					<td style='padding:5px'>${litter.birthDate}</td>
 					<td style='padding:5px'>${litter.weanDate}</td>
 					<td style='padding:5px'>${litter.size}</td>
-					<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=ShowGenotype&id=${litter.id}">Genotype</a></td>
+					<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=ShowGenotype&id=${litter.id?string.computer}">Genotype</a></td>
 				</tr>
 			</#list>
 			</table>

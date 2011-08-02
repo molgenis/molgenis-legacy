@@ -934,7 +934,7 @@ public class ManageLitters extends PluginModel<Entity>
 				// Wean date
 				featid = ct.getMeasurementId("WeanDate");
 				String weanDate = ct.getMostRecentValueAsString(tmpLitter.getId(), featid);
-				if (!weanDate.equals("")) {
+				if (weanDate != null && !weanDate.equals("")) {
 					litterToAdd.setWeanDate(weanDate);
 				}
 				// Size

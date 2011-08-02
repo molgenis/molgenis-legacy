@@ -221,6 +221,10 @@ public class AnimalDbUsers extends PluginModel<Entity>
 				}
 				db.add(permList);
 				
+				this.setMessages(new ScreenMessage("User " + username + 
+						" succesfully added and assigned ownership of investigation " + 
+						chosenInv.getName(), true));
+				
 				action = "init";
 			}
 		} catch (Exception e) {
