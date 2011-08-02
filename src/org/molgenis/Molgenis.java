@@ -159,10 +159,15 @@ public class Molgenis {
             Class<? extends Generator>... generatorsToUse) throws Exception {
     	BasicConfigurator.configure();
     	
+
     	
         this.loadFieldTypes();
 
         this.options = options;
+		
+        if(generatorsToUse != null && generatorsToUse.length > 0) {
+			this.options.delete_generated_folder = false;
+		}
 
         Logger.getLogger("freemarker.cache").setLevel(Level.INFO);
         logger.info("\nMOLGENIS version " + org.molgenis.Version.convertToString());
@@ -757,5 +762,9 @@ public class Molgenis {
                     + "\n");
         }
         return result.toString();
+    }
+    
+    public MolgenisOptions getMolgenisOptions() {
+    	return this.options;
     }
 }

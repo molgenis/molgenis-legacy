@@ -79,9 +79,6 @@ public abstract class JpaDatabase extends AbstractDatabase implements Database {
             return emfs.get(name);
         }
 	}	
-	
-	
-	
     /** BATCH SIZE */
     private int BATCH_SIZE = 10000;
     private static Map<String, Mapper<? extends Entity>> mappers = new TreeMap<String, Mapper<? extends Entity>>();
@@ -102,6 +99,11 @@ public abstract class JpaDatabase extends AbstractDatabase implements Database {
     protected JpaDatabase(String persistenceUnitName, Model jdbcMetaDatabase) {
         this.persistenceUnitName = persistenceUnitName;
         this.model = jdbcMetaDatabase;
+    }
+    
+    protected JpaDatabase(String persistenceUnitName) {
+    	this.persistenceUnitName = persistenceUnitName;
+    	this.em = EMFactory.createEntityManager();
     }
 
     protected void setEntityManager(EntityManager em) {

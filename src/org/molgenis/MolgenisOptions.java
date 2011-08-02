@@ -141,6 +141,9 @@ public class MolgenisOptions
 	@Option(name = "mapper_implementation", param = Option.Param.ENUM, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Expert option: Choosing wether multiquery is used instead of prepared statements. Default: MULTIQUERY")
 	public MapperImplementation mapper_implementation = MapperImplementation.MULTIQUERY;
 
+	@Option(name = "generate_persistence", param = Option.Param.STRING, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Expert option: Choosing the JPA persistence unit name from the persistence.xml that is used by molgenis. Default: molgenis")
+	public String jpa_persistenceUnitName = "molgenis";
+	
 	/**
 	 * DISCUSSION: Still used? Add good description here. Fixed typo
 	 * (persisitence -> persistence), also description is vague, added
