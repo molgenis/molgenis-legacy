@@ -25,6 +25,12 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->
 
+<#if screen.action = "init">
+
+<input type='submit' class='addbutton' value='Show value matrix' onclick="__action.value='Show'" />
+
+<#else>
+
 <input type="hidden" name="userId" id="userId" value="${screen.userId}" />
 
 <div id="togglesdiv">
@@ -103,6 +109,8 @@ Limit values to most recent one:
 <div style='clear:left'>
 	<!-- Bogus div so previous div remains within the page limits -->
 </div>
+
+</#if>
 
 <#--end of your plugin-->
 			</div>

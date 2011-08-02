@@ -14,6 +14,8 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
+import commonservice.CommonService;
+
 public class AnimalDBWelcomeScreenPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -5861419875983400033L;
@@ -59,19 +61,10 @@ public class AnimalDBWelcomeScreenPlugin extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
-//		try
-//		{
-//			Database db = this.getDatabase();
-//			Query q = db.query(Experiment.class);
-//			q.like("name", "test");
-//			List<Experiment> recentExperiments = q.find();
-//			
-//			//do something
-//		}
-//		catch(Exception e)
-//		{
-//			//...
-//		}
+		// Entry point when logging in, so good place to (re)set the ObservationTarget label map
+		CommonService cs = CommonService.getInstance();
+		cs.setDatabase(db);
+		cs.makeObservationTargetNameMap(this.getLogin().getUserId(), true);
 	}
 	
 	@Override

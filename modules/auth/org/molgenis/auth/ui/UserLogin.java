@@ -109,17 +109,6 @@ public class UserLogin extends EasyPluginController<UserLoginModel>
 			HttpServletRequest httpRequest   = rt.getRequest();
 			HttpServletResponse httpResponse = rt.getResponse();
 			
-			// Specifically for AnimalDB
-			// * For the ListPlugin, where we need the port number
-			// when we are running on VM7. User has to pass by this point and here we know the
-			// port number, so we do it here.
-			// * We force the system to set the custom label map here, so it is updated
-			// when a user logs out and another logs in.
-			//CommonService cs = CommonService.getInstance();
-			//cs.setDatabase(db);
-			//cs.setPortNumber(httpRequest.getLocalPort());
-			//cs.makeObservationTargetNameMap(this.getApplicationController().getLogin().getUserId(), true);
-
 			if (StringUtils.isNotEmpty(this.getApplicationController().getLogin().getRedirect()))
 			{
 				String redirectURL = httpRequest.getRequestURL() + "?__target=main" + "&select=" + this.getApplicationController().getLogin().getRedirect();
