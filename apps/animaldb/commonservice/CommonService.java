@@ -127,6 +127,35 @@ public class CommonService
 	}
 	
 	/**
+	 * Gets the IDs of all the investigations owned by the user with ID 'userId'.
+	 * Returns null if no investigation found.
+	 * 
+	 * @param userId
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 */
+	public List<Integer> getOwnUserInvestigationIds(int userId) {
+		Query<Investigation> q = db.query(Investigation.class);
+		q.addRules(new QueryRule(Investigation.OWNS, Operator.EQUALS, userId));
+		List<Investigation> invList;
+		List<Integer> returnList = new ArrayList<Integer>();
+		try {
+			invList = q.find();
+		} catch (Exception e) {
+			return null;
+		}
+		if (invList != null && invList.size() > 0) {
+			for (Investigation inv : invList) {
+				returnList.add(inv.getId());
+			}
+		} else {
+			return null;
+		}
+		return returnList;
+	}
+	
+	/**
 	 * Gets the ID's of the investigation owned, readable or writable by the user with ID 'userId'.
 	 * 
 	 * @param userId
@@ -286,6 +315,11 @@ public class CommonService
 	throws DatabaseException, ParseException
 	{
 		List<Integer> returnList = new ArrayList<Integer>();
+		
+		if (investigationIds == null) {
+			return returnList;
+		}
+		
 		if (isActive == false) {
 			Query<ObservationTarget> targetQuery = db.query(ObservationTarget.class);
 			targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION, Operator.IN, 

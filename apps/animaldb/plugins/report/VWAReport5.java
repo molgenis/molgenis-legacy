@@ -41,8 +41,7 @@ public class VWAReport5 extends AnimalDBReport {
 			String endOfYearString = (year + 1) + "-01-01 00:00:00";
 			Date endOfYear = sdf.parse(endOfYearString);
 			
-			List<Integer> investigationIds = new ArrayList<Integer>();
-			investigationIds.add(ct.getOwnUserInvestigationId(userId));
+			List<Integer> investigationIds = ct.getOwnUserInvestigationIds(userId);
 			List<ObservationTarget> decappList = ct.getAllMarkedPanels("DecApplication", investigationIds);
 			for (ObservationTarget d : decappList) {
 				// Check if the DEC application was (partly) in this year
