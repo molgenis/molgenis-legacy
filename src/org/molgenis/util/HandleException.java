@@ -8,8 +8,8 @@ import org.apache.commons.logging.Log;
 /*
  * The idea is to use this in every exception, than exception is
  * handle in the same way.
- * At the moment after every exception the JVM quites. This should
- * be changed in future, for example quite in test & development
+ * At the moment after every exception System.exit(1) is called. This should
+ * be changed in the future, for example in test & development
  * but continue in production (some flag in for example molgenis.properties, could
  * be an idea).
  * 
