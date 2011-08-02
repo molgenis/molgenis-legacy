@@ -14,9 +14,10 @@
 		<pathelement location="modules/settings" />
 		<pathelement location="modules/file" />
 		<pathelement location="modules/matrix" />
-		<pathelement location="modules/auth" />
 		<pathelement location="apps/ngs" />
 		<pathelement location="modules/datamodel" />
+		<pathelement location="modules/decorators/core" />
+		<pathelement location="modules/decorators/pheno" />
 	</path>
 
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
