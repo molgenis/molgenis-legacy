@@ -30,6 +30,7 @@ import org.molgenis.core.service.PublicationService;
 import org.molgenis.core.vo.PublicationVO;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
+import org.molgenis.framework.db.CsvToDatabase;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.jdbc.JDBCDatabase;
@@ -53,6 +54,7 @@ import org.molgenis.protocol.service.WorkflowService;
 import org.molgenis.services.PubmedService;
 import org.molgenis.services.pubmed.PubmedArticle;
 import org.molgenis.submission.Submission;
+import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
@@ -318,6 +320,25 @@ public class PatientService implements Serializable
 	}
 
 	/**
+	 * Get number of patients by type of mutation pathogenicity
+	 * @param pathogenicity
+	 * @return number of patients
+	 * @throws DatabaseException
+	 */
+	public int getNumPatientsByPathogenicity(String pathogenicity) throws DatabaseException
+	{
+		if (this.db instanceof JDBCDatabase)
+			return ((JDBCDatabase) this.db).sql("SELECT DISTINCT p.id FROM Patient p LEFT JOIN Mutation m ON (p.mutation1 = m.id) WHERE m.pathogenicity = '" + pathogenicity + "'").size();
+		else if (this.db instanceof JpaDatabase)
+		{
+			javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT COUNT(DISTINCT p.id) FROM Patient p LEFT JOIN Mutation m ON (p.mutation1 = m.id) WHERE m.pathogenicity = " + pathogenicity);
+			return Integer.valueOf(q.getSingleResult().toString());
+		}
+		else
+			throw new DatabaseException("Unsupported database mapper");
+	}
+
+	/**
 	 * Get number of unpublished patients.
 	 * 
 	 * @return number of unpublished patients
@@ -362,13 +383,13 @@ public class PatientService implements Serializable
 	 * @return number of patients inserted
 	 * @throws Exception
 	 */
-	public int insertBatch(File file) throws Exception {
+	public int insertBatch(File file, CsvToDatabase<Entity> uploadBatchCsvReader) throws Exception {
 		try {
 			db.beginTx();
-			Workbook workbook = Workbook.getWorkbook(file);
-			int count = new UploadBatchExcelReader().importSheet(db,
-					workbook.getSheet("Patients"), new SimpleTuple(),
-					DatabaseAction.ADD_IGNORE_EXISTING, "");
+			Workbook workbook             = Workbook.getWorkbook(file);
+			UploadBatchExcelReader reader = new UploadBatchExcelReader();
+			reader.setUploadBatchCsvReader(uploadBatchCsvReader);
+			int count                     = reader.importSheet(db, workbook.getSheet("Patients"), new SimpleTuple(), DatabaseAction.ADD_IGNORE_EXISTING, "");
 			db.commitTx();
 			return count;
 		} catch (Exception e) {
@@ -404,28 +425,29 @@ public class PatientService implements Serializable
 			this.db.add(publication);
 	}
 */
-	public void insert(ObservedValueVO observedValueVO) throws DatabaseException, ParseException, IOException
-	{
-		if (observedValueVO == null)
-			return;
-		
-		List<ObservableFeature> features = this.db.query(ObservableFeature.class).equals(ObservableFeature.NAME, observedValueVO.getFeatureName()).find();
-		
-		if (features.size() != 1)
-			return;
-		
-		List<Patient> patients = this.db.query(Patient.class).equals(Patient.IDENTIFIER, observedValueVO.getTargetName()).find();
-		
-		if (patients.size() != 1)
-			return;
-
-		ObservedValue observedValue = new ObservedValue();
-		observedValue.setFeature(features.get(0));
-		observedValue.setTarget(patients.get(0));
-		observedValue.setValue(observedValueVO.getValue());
-		
-		this.db.add(observedValue);
-	}
+//	public void insertObservedValues(PatientSummaryVO patientSummaryVO) throws DatabaseException, ParseException, IOException
+//	{
+//		if (observedValueVO == null)
+//			return;
+//		
+//		List<ObservableFeature> features = this.db.query(ObservableFeature.class).equals(ObservableFeature.NAME, observedValueVO.getFeatureName()).find();
+//		
+//		if (features.size() != 1)
+//			return;
+//		
+//		List<Patient> patients = this.db.query(Patient.class).equals(Patient.IDENTIFIER, observedValueVO.getTargetName()).find();
+//		
+//		if (patients.size() != 1)
+//			return;
+//
+//		ObservedValue observedValue = new ObservedValue();
+//		observedValue.setFeature(features.get(0));
+//		observedValue.setInvestigation(1);
+//		observedValue.setTarget(patients.get(0));
+//		observedValue.setValue(observedValueVO.getValue());
+//		
+//		this.db.add(observedValue);
+//	}
 
 	/**
 	 * Insert patient and set primary key
@@ -457,7 +479,7 @@ public class PatientService implements Serializable
 		{
 			List<Mutation> mutations = this.db.query(Mutation.class).equals(Mutation.CDNA_NOTATION, mutationSummaryVO.getCdnaNotation()).find();
 
-			System.out.println(">>> Queried: " + mutationSummaryVO.getCdnaNotation() + ", found: " + mutations.size());
+//			System.out.println(">>> Queried: " + mutationSummaryVO.getCdnaNotation() + ", found: " + mutations.size());
 			if (mutations.size() != 1)
 				throw new Exception("ERROR: No mutation found for " + mutationSummaryVO.getCdnaNotation());
 
@@ -504,6 +526,32 @@ public class PatientService implements Serializable
 		patient.setSubmission_Id(1);
 		// Insert patient
 		this.db.add(patient);
+		
+		// Insert ObservedValues
+		
+		for (ObservedValueVO observedValueVO : patientSummaryVO.getObservedValueVOList())
+		{
+			if (observedValueVO == null)
+				return;
+			
+			List<ObservableFeature> features = this.db.query(ObservableFeature.class).equals(ObservableFeature.NAME, observedValueVO.getFeatureName()).find();
+			
+			if (features.size() != 1)
+				return;
+			
+			List<Patient> patients = this.db.query(Patient.class).equals(Patient.IDENTIFIER, observedValueVO.getTargetName()).find();
+			
+			if (patients.size() != 1)
+				return;
+	
+			ObservedValue observedValue = new ObservedValue();
+			observedValue.setFeature(features.get(0));
+			observedValue.setInvestigation(1);
+			observedValue.setTarget(patient.getId());
+			observedValue.setValue(observedValueVO.getValue());
+			
+			this.db.add(observedValue);
+		}
 	}
 
 	public String exportCsv() throws DatabaseException, ParseException
@@ -699,11 +747,11 @@ public class PatientService implements Serializable
 		// MutationPhenotype phenotype =
 		// this.db.query(MutationPhenotype.class).equals(MutationPhenotype.NAME,
 		// "DEB-u").find().get(0);
-		MutationPhenotype phenotype = this.db.query(MutationPhenotype.class)
-				.equals(MutationPhenotype.NAME, "DEB-u").find().get(0);
-
-		patientSummaryVO.setPhenotypeMajor(phenotype.getMajortype());
-		patientSummaryVO.setPhenotypeSub(phenotype.getSubtype());
+//		MutationPhenotype phenotype = this.db.query(MutationPhenotype.class)
+//				.equals(MutationPhenotype.NAME, "DEB-u").find().get(0);
+//
+//		patientSummaryVO.setPhenotypeMajor(phenotype.getMajortype());
+//		patientSummaryVO.setPhenotypeSub(phenotype.getSubtype());
 
 		// set default Pubmed values based on given PubMed ID (if any)
 

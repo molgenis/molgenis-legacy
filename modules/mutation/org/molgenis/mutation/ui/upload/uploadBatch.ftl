@@ -14,7 +14,7 @@ For obtaining consent, you can download the provided <a href="res/consent_form.p
 <table border="0" cellpadding="4" cellspacing="4">
 <tr>
 	<td>File name:</td>
-	<td><input type="file" name="upload"/><input type="submit" value="Upload" onclick="__action.value='emailBatch';return true;"/></td>
+	<td><input type="file" name="upload"/><input type="submit" value="Upload" onclick="__action.value='insertBatch';return true;"/></td>
 	<td><a href="res/col7a1_template.xls">Example template</a></td>
 
 	<td><a href="molgenis.do?__target=${screen.name}&__action=newPatient">Submit single patient</a></td>

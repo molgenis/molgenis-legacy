@@ -8,16 +8,15 @@
 package org.molgenis.mutation.ui.background;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.mutation.service.MutationService;
 import org.molgenis.mutation.service.PatientService;
 import org.molgenis.mutation.vo.BackgroundSummaryVO;
-import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 
-public class Background extends PluginModel<Entity>
+public class Background extends EasyPluginController<BackgroundModel>
 {
 
 	private static final long serialVersionUID = -5551425852519199587L;
@@ -27,24 +26,9 @@ public class Background extends PluginModel<Entity>
 
 	public Background(String name, ScreenController<?> parent)
 	{
-		super(name, parent);
-	}
-
-	@Override
-	public String getViewName()
-	{
-		return "org_molgenis_mutation_ui_background_Background";
-	}
-
-	@Override
-	public String getViewTemplate()
-	{
-		return "org/molgenis/mutation/ui/background/Background.ftl";
-	}
-
-	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
+		super(name, null, parent);
+		this.setModel(new BackgroundModel(this));
+		this.setView(new FreemarkerView("Background.ftl", getModel()));
 	}
 
 	@Override
@@ -52,26 +36,19 @@ public class Background extends PluginModel<Entity>
 	{
 		try
 		{
-			this.mutationService     = MutationService.getInstance(db);
-			this.patientService      = PatientService.getInstance(db);
-			this.backgroundSummaryVO = new BackgroundSummaryVO();
-			this.backgroundSummaryVO.setNumMutations(this.mutationService.getNumMutations());
-			this.backgroundSummaryVO.setNumPatients(this.patientService.getNumPatients());
-			this.backgroundSummaryVO.setNumPatientsUnpub(this.patientService.getNumUnpublishedPatients());
-			this.backgroundSummaryVO.setPhenotypeCountHash(this.patientService.getPhenotypeCounts());
+			this.mutationService = MutationService.getInstance(db);
+			this.patientService  = PatientService.getInstance(db);
+			this.getModel().setNumMutations(this.mutationService.getNumMutations());
+			this.getModel().setNumPatients(this.patientService.getNumPatients());
+			this.getModel().setNumPatientsUnpub(this.patientService.getNumUnpublishedPatients());
+			this.getModel().setPhenotypeCountHash(this.patientService.getPhenotypeCounts());
 		}
 		catch(Exception e)
 		{
 			//...
 		}
 	}
-	
-	@Override
-	public boolean isVisible()
-	{
-		return true;
-	}
-	
+
 	public BackgroundSummaryVO getBackgroundSummaryVO()
 	{
 		return this.backgroundSummaryVO;

@@ -22,12 +22,14 @@ import jxl.Cell;
 import jxl.Sheet;
 
 import org.apache.log4j.Logger;
+import org.molgenis.framework.db.CsvToDatabase;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.mutation.csv.UploadBatchCsvReader;
 import org.molgenis.util.CsvPrintWriter;
 import org.molgenis.util.CsvWriter;
+import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
@@ -38,7 +40,8 @@ import org.molgenis.util.Tuple;
 public class UploadBatchExcelReader
 {
 	public static final transient Logger logger = Logger.getLogger(UploadBatchExcelReader.class);
-			
+	private CsvToDatabase<Entity> uploadBatchCsvReader;
+
 	/**
 	 * Imports UploadBatch from a workbook sheet.
 	 */
@@ -57,7 +60,7 @@ public class UploadBatchExcelReader
 		}
 		boolean fileHasHeaders = writeSheetToFile(sheet, tmpUploadBatch);
 		if(fileHasHeaders){
-			int count = new UploadBatchCsvReader().importCsv(db, tmpUploadBatch, defaults, dbAction, missingValue);
+			int count = this.uploadBatchCsvReader.importCsv(db, tmpUploadBatch, defaults, dbAction, missingValue);
 			tmpUploadBatch.delete();
 			return count;
 		}else{
@@ -109,5 +112,10 @@ public class UploadBatchExcelReader
 		}
 		cw.close();
 		return true;
+	}
+	
+	public void setUploadBatchCsvReader(CsvToDatabase<Entity> uploadBatchCsvReader)
+	{
+		this.uploadBatchCsvReader = uploadBatchCsvReader;
 	}
 }

@@ -13,8 +13,10 @@
 <tr class="form_listrow1"><th>Mutation ID</th><td>${mutationSummaryVO.identifier}</td></tr>
 <tr class="form_listrow0"><th>cDNA change</th><td>${mutationSummaryVO.cdnaNotation}</td></tr>
 <tr class="form_listrow1"><th>Chromosomal change</th><td>${mutationSummaryVO.gdnaNotation}</td></tr>
+<#if mutationSummaryVO.codonChange != "">
 <tr class="form_listrow0"><th>First affected codon number</th><td><#if mutationSummaryVO.aaPosition??>${mutationSummaryVO.aaPosition?c}</#if></td></tr>
 <tr class="form_listrow1"><th>Codon change</th><td>${mutationSummaryVO.codonChange}</td></tr>
+</#if>
 <tr class="form_listrow0"><th>Protein change</th><td>${mutationSummaryVO.aaNotation}</td></tr>
 <tr class="form_listrow1"><th>Exon/intron</th><td><a href="molgenis.do?__target=${screen.name}&__action=showExon&exon_id=${mutationSummaryVO.exonId}#results">${mutationSummaryVO.exonName}</a></td></tr>
 <tr class="form_listrow0"><th>Protein domain</th><td><#list mutationSummaryVO.proteinDomainNameList as domainName>${domainName}</#list></td></tr>
@@ -31,7 +33,9 @@
 <tr class="form_listrow1"><th>Predicted effect on splicing?</th><td><#if mutationSummaryVO.mutation.effectOnSplicing??>${mutationSummaryVO.mutation.effectOnSplicing?string("yes", "no")}</#if></td></tr>
 -->
 <tr class="form_listrow1"><th>Other changes at nucleotide position</th><td><#if mutationSummaryVO.positionMutations??><#list mutationSummaryVO.positionMutations as positionMutationVO><a href="molgenis.do?__target=${screen.name}&__action=showMutation&mid=${positionMutationVO.identifier}#results">${positionMutationVO.cdnaNotation}</a><br/></#list></#if></td></tr>
+<#if mutationSummaryVO.codonChange != "">
 <#if mutationSummaryVO.codonMutations??><tr class="form_listrow0"><th>Other changes at codon position</th><td><#list mutationSummaryVO.codonMutations as codonMutationVO><a href="molgenis.do?__target=${screen.name}&__action=showMutation&mid=${codonMutationVO.identifier}#results">${codonMutationVO.cdnaNotation}</a><br/></#list></td></tr></#if>
+</#if>
 </table>
 
 <p>

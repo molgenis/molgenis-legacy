@@ -1,4 +1,4 @@
-<#assign mbrowse = screen.MBrowseVO>
+<#assign mbrowse = model.mBrowseVO>
 
 <#if vo.action?starts_with("showProteinDomain")>
 
@@ -79,8 +79,6 @@ ${mbrowse.getExonIntronPanel()}
 </#if>
 
 <#elseif vo.action?starts_with("showExon")>
-
-<#assign searchPluginUtils  = screen.searchPluginUtils>
 
 ${mbrowse.getSequencePanel()}
 <#--

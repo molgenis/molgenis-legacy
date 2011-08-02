@@ -57,7 +57,7 @@
 <td>${variantSummaryVO.consequence}</td>
 <td>${variantSummaryVO.inheritance}</td>
 <td><a href="molgenis.do?__target=${screen.name}&__action=showPatient&pid=${patientSummaryVO.patientIdentifier}">${patientSummaryVO.patientIdentifier}</a></td>
-<td>${patientSummaryVO.phenotypeMajor}, ${patientSummaryVO.phenotypeSub}</td>
+<td>${patientSummaryVO.phenotypeMajor}<#if patientSummaryVO.phenotypeSub != "">, ${patientSummaryVO.phenotypeSub}</#if></td>
 </tr>
 </#list>
 <#else>
@@ -69,7 +69,7 @@
 <td></td>
 <td></td>
 <td><a href="molgenis.do?__target=${screen.name}&__action=showPatient&pid=${patientSummaryVO.patientIdentifier}">${patientSummaryVO.patientIdentifier}</a></td>
-<td>${patientSummaryVO.phenotypeMajor}, ${patientSummaryVO.phenotypeSub}</td>
+<td>${patientSummaryVO.phenotypeMajor}<#if patientSummaryVO.phenotypeSub != "">, ${patientSummaryVO.phenotypeSub}</#if></td>
 </tr>
 </#if>
 

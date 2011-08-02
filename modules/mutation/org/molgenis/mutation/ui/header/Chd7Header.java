@@ -14,7 +14,6 @@ import org.molgenis.framework.ui.ScreenController;
 
 public class Chd7Header extends EasyPluginController<Chd7HeaderModel>
 {
-
 	private static final long serialVersionUID = 6224612078995632056L;
 
 	public Chd7Header(String name, ScreenController<?> parent)
@@ -41,7 +40,7 @@ public class Chd7Header extends EasyPluginController<Chd7HeaderModel>
 		headers += String.format(cssFormat, "res/displaytag/css/displaytag.css");
 		//headers += String.format(cssFormat, "res/displaytag/css/screen.css");
 		//headers += String.format(cssFormat, "res/displaytag/css/site.css");
-		headers += String.format(cssFormat, "res/css/col7a1/colors.css");
+		headers += String.format(cssFormat, "res/css/chd7/colors.css");
 		headers += String.format(cssFormat, "res/css/col7a1/data.css");
 		//headers += String.format(cssFormat, "res/css/main.css");
 		//headers += String.format(cssFormat, "res/css/menu.css");

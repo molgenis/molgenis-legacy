@@ -1,4 +1,3 @@
-<#macro org_molgenis_mutation_ui_search_SearchPlugin screen>
 <!-- this shows a title and border -->
 	<div class="formscreen">
 		<div class="form_header" id="${screen.getName()}">
@@ -17,7 +16,7 @@
 		<div class="screenbody">
 			<div class="screenpadding">		
 
-<#assign vo = screen.searchPluginVO>
+<#assign vo = model>
 <#assign queryParametersVO = vo.queryParametersVO>
 
 <#include "searchForm.ftl">
@@ -99,7 +98,7 @@ ${vo.setPager(pager)}
 ${vo.result} found in "${field}".
 </p>
 <div id="cat${field}" style="display:none">
-				<#include "patients.ftl">
+				${rawOutput}
 </div>
 			</#if>
 		</#list>
@@ -109,7 +108,7 @@ ${vo.result} found in "${field}".
 <#elseif vo.action?starts_with("findPatients")>
 
 	<#assign rawOutput = vo.rawOutput>
-	<#include "patients.ftl">
+	${rawOutput}
 
 <#elseif vo.action?starts_with("find")>
 
@@ -122,7 +121,7 @@ ${vo.result} found in "${field}".
 <#elseif vo.action?starts_with("listAllPatient") || vo.action?starts_with("patients")>
 
 	<#assign rawOutput = vo.rawOutput>
-	<#include "patients.ftl">
+	${rawOutput}
 
 </#if>
 
@@ -131,4 +130,3 @@ ${vo.result} found in "${field}".
 			</div>
 		</div>
 	</div>
-</#macro>

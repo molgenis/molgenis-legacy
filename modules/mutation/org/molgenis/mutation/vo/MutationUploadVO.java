@@ -90,24 +90,24 @@ public class MutationUploadVO implements Serializable
 	{
 		return new Mutation().getInheritanceOptions();
 	}
-	public java.util.List<ValueLabel> getTypeOptions()
-	{
-		return new Mutation().getTypeOptions();
-	}
+//	public java.util.List<ValueLabel> getTypeOptions()
+//	{
+//		return new Mutation().getTypeOptions();
+//	}
 
 	public void assignNt(String nuclSequence, int mutationStart)
 	{
-		System.out.println(">>> assignNt: mutationStart==" + mutationStart);
-		System.out.println(">>> assignNt: start: mutation==" + this.getMutation());
+//		System.out.println(">>> assignNt: mutationStart==" + mutationStart);
+//		System.out.println(">>> assignNt: start: mutation==" + this.getMutation());
 		Integer length = this.getMutation().getLength();
-		System.out.println(">>> assignNt: length==" + length);
+//		System.out.println(">>> assignNt: length==" + length);
 
 		if (length == null)
 			length = 1;
 
-		System.out.println(">>> assignNt: vor setNt, seq==" + nuclSequence);
+//		System.out.println(">>> assignNt: vor setNt, seqlen==" + nuclSequence.length() + ", seq==" + nuclSequence);
 		this.setNt(nuclSequence.substring(mutationStart, mutationStart + length).toUpperCase());
-		System.out.println(">>> assignNt: nach setNt");
+//		System.out.println(">>> assignNt: nach setNt");
 	}
 
 	public void assignConsequence()

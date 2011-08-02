@@ -9,19 +9,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.Metamodel;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -376,7 +370,8 @@ public class MutationService implements Serializable
 			MutationPhenotype phenotype = this.db.findById(MutationPhenotype.class, patient.getPhenotype_Id());
 			patientSummaryVO.setPhenotypeMajor(phenotype.getMajortype());
 			patientSummaryVO.setPhenotypeSub(phenotype.getSubtype());
-			phenotypeNameHash.put(phenotype.getId(), phenotype.getMajortype() + ", " + phenotype.getSubtype());
+			String phenotypeName = phenotype.getMajortype() + (StringUtils.isNotEmpty(phenotype.getSubtype()) ? ", " + phenotype.getSubtype() : "");
+			phenotypeNameHash.put(phenotype.getId(), phenotypeName);
 
 			patientSummaryVO.setVariantSummaryVOList(new ArrayList<MutationSummaryVO>());
 			//TODO: How to generalize this in future?
@@ -806,8 +801,8 @@ public class MutationService implements Serializable
 		if (StringUtils.isEmpty(mutationUploadVO.getMutation().getMutationPosition()) || "0".equals(mutationUploadVO.getMutation().getMutationPosition()))
 			return;
 		
-		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "COL7A1").find().get(0);
-//		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "CHD7").find().get(0);
+//		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "COL7A1").find().get(0);
+		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "CHD7").find().get(0);
 		mutationUploadVO.setGene(gene);
 		mutationUploadVO.getMutation().setGene(gene);
 
@@ -835,10 +830,12 @@ public class MutationService implements Serializable
 
 		mutationUploadVO.setExon(exon);
 		mutationUploadVO.getMutation().setExon(exon); // this is crap, use navigable objects
+		System.out.println(">>> assignValuesFromPosition: mut.pos==" + mutationUploadVO.getMutation().getMutationPosition() + ", exon==" + exon.getName());
 		mutationUploadVO.getMutation().setCdna_Position(SequenceUtils.getCDNAPosition(mutationUploadVO.getMutation().getMutationPosition()));
 		mutationUploadVO.getMutation().setGdna_Position(SequenceUtils.getGDNAPosition(mutationUploadVO.getMutation().getMutationPosition(), exon, gene.getOrientation()));
 
 		int mutationStart;
+//		System.out.println(">>> assignValuesFromPosition: mut.gdna==" + mutationUploadVO.getMutation().getGdna_Position() + ", gene.start==" + mutationUploadVO.getGene().getBpStart());
 		if ("F".equals(mutationUploadVO.getGene().getOrientation()))
 			mutationStart = mutationUploadVO.getMutation().getGdna_Position() - mutationUploadVO.getGene().getBpStart().intValue();
 		else
@@ -954,8 +951,8 @@ public class MutationService implements Serializable
 	{
 		// set default gene
 
-		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "COL7A1").find().get(0);
-//		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "CHD7").find().get(0);
+//		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "COL7A1").find().get(0);
+		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "CHD7").find().get(0);
 
 		mutationUploadVO.setGene(gene);
 		mutationUploadVO.getMutation().setGene(gene);
@@ -966,5 +963,10 @@ public class MutationService implements Serializable
 	public int getNumMutations() throws DatabaseException
 	{
 		return this.db.count(Mutation.class);
+	}
+	
+	public int getNumMutationsByPathogenicity(String pathogenicity) throws DatabaseException
+	{
+		return this.db.query(Mutation.class).equals(Mutation.PATHOGENICITY, pathogenicity).count();
 	}
 }

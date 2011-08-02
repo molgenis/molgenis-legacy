@@ -249,16 +249,48 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 						publicationVOs.add(publicationVO);
 					}
 					patientSummaryVO.setPublicationVOList(publicationVOs);
+					patientSummaryVO.setPatientConsent("publication");
 				}
 
 				patientIdentifier = patientIdentifier + 1;
 				patientSummaryVO.setPatientIdentifier("P" + patientIdentifier);
 				patientSummaryVO.setPatientName("P" + patientIdentifier);
-				patientService.insert(patientSummaryVO);
 
 				patientSummaryVO.setObservedValueVOList(new ArrayList<ObservedValueVO>());
 
-				for (int i = 34; i < 100; i++)
+				ObservedValueVO observedValueVO;
+				
+				observedValueVO = new ObservedValueVO();
+				observedValueVO.setFeatureName("LH7:2 Amount of type VII collagen");
+				observedValueVO.setTargetName(patientSummaryVO.getPatientIdentifier());
+				observedValueVO.setValue(ObjectUtils.toString(tuple.getString("IF LH7:2"), "unknown"));
+				patientSummaryVO.getObservedValueVOList().add(observedValueVO);
+
+				observedValueVO = new ObservedValueVO();
+				observedValueVO.setFeatureName("IF Retention of type VII Collagen in basal cells");
+				observedValueVO.setTargetName(patientSummaryVO.getPatientIdentifier());
+				observedValueVO.setValue(ObjectUtils.toString(tuple.getString("IF Retention COLVII"), "unknown"));
+				patientSummaryVO.getObservedValueVOList().add(observedValueVO);
+
+				observedValueVO = new ObservedValueVO();
+				observedValueVO.setFeatureName("Anchoring fibrils Number");
+				observedValueVO.setTargetName(patientSummaryVO.getPatientIdentifier());
+				observedValueVO.setValue(ObjectUtils.toString(tuple.getString("EM AF_no"), "unknown"));
+				patientSummaryVO.getObservedValueVOList().add(observedValueVO);
+				
+				observedValueVO = new ObservedValueVO();
+				observedValueVO.setFeatureName("Anchoring fibrils Ultrastructure");
+				observedValueVO.setTargetName(patientSummaryVO.getPatientIdentifier());
+				observedValueVO.setValue(ObjectUtils.toString(tuple.getString("EM AF_structure"), "unknown"));
+				patientSummaryVO.getObservedValueVOList().add(observedValueVO);
+				
+				observedValueVO = new ObservedValueVO();
+				observedValueVO.setFeatureName("EM Retention of type VII Collagen in basal cells");
+				observedValueVO.setTargetName(patientSummaryVO.getPatientIdentifier());
+				observedValueVO.setValue(ObjectUtils.toString(tuple.getString("EM_Retention COLVII"), "unknown"));
+				patientSummaryVO.getObservedValueVOList().add(observedValueVO);
+
+				for (int i = 34; ; i++)
 				{
 					System.out.println(">>>i==" + i);
 					String colName = tuple.getColName(i);
@@ -267,11 +299,14 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 					if (colName == null)
 						break;
 					
-					ObservedValueVO observedValueVO = new ObservedValueVO();
+					observedValueVO = new ObservedValueVO();
 					observedValueVO.setFeatureName(colName);
 					observedValueVO.setTargetName(patientSummaryVO.getPatientIdentifier());
-					observedValueVO.setValue(tuple.getString(colName));
+					observedValueVO.setValue(ObjectUtils.toString(tuple.getString(colName), "unknown"));
+					patientSummaryVO.getObservedValueVOList().add(observedValueVO);
 				}
+
+				patientService.insert(patientSummaryVO);
 
 				total.set(total.get() + 1);
 //				patientList.add(patientSummaryVO);		

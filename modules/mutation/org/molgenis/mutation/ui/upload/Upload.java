@@ -25,6 +25,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.core.vo.PublicationVO;
+import org.molgenis.framework.db.CsvToDatabase;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
@@ -67,6 +68,8 @@ public abstract class Upload extends PluginModel<Entity>
 	private PatientSummaryVO patientSummaryVO;
 	private int referer ; // referer for patient.mutation{1,2} => 1 or 2, 0 initially
 	
+	protected CsvToDatabase<Entity> uploadBatchCsvReader;
+
 	private PatientForm patientForm    = new PatientForm();
 	private MutationForm mutationForm  = new MutationForm();
 
@@ -143,7 +146,7 @@ public abstract class Upload extends PluginModel<Entity>
 		else if (this.action.equals("insertBatch"))
 		{
 			File file = request.getFile("upload");
-			int count = this.patientService.insertBatch(file);
+			int count = this.patientService.insertBatch(file, this.uploadBatchCsvReader);
 			this.getMessages().add(new ScreenMessage("Successfully inserted " + count + " patients", true));
 			this.initMutationUploadVO();
 			this.initPatientSummaryVO();
@@ -363,7 +366,7 @@ public abstract class Upload extends PluginModel<Entity>
 		this.mutationForm.get("aa_notation").setValue(this.mutationUploadVO.getMutation().getAa_Notation());
 		((SelectInput) this.mutationForm.get("consequence")).setOptions(new Mutation().getConsequenceOptions());
 		this.mutationForm.get("consequence").setValue(this.mutationUploadVO.getMutation().getConsequence());
-		((SelectInput) this.mutationForm.get("type")).setOptions(new Mutation().getTypeOptions());
+//		((SelectInput) this.mutationForm.get("type")).setOptions(new Mutation().getTypeOptions());
 		this.mutationForm.get("type").setValue(this.mutationUploadVO.getMutation().getType());
 	}
 	

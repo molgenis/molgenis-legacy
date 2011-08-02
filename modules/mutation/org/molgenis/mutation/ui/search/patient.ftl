@@ -6,7 +6,7 @@
 ${variantSummaryVO.cdnaNotation}<#if variantSummaryVO.aaNotation??> (${variantSummaryVO.aaNotation})</#if>
 </#list>
 </td></tr>
-<tr class="form_listrow0"><th>Phenotype</th><td>${patientSummaryVO.getPhenotypeMajor()}, ${patientSummaryVO.getPhenotypeSub()}<#if patientSummaryVO.patientConsent != "no"> [<a href="molgenis.do?__target=${screen.name}&__action=showPhenotypeDetails&pid=${patientSummaryVO.patientIdentifier}#phenotype">Details</a>]</#if></td></tr>
+<tr class="form_listrow0"><th>Phenotype</th><td>${patientSummaryVO.getPhenotypeMajor()}<#if patientSummaryVO.getPhenotypeSub() != "">, ${patientSummaryVO.getPhenotypeSub()}</#if><#if patientSummaryVO.patientConsent != "no"> [<a href="molgenis.do?__target=${screen.name}&__action=showPhenotypeDetails&pid=${patientSummaryVO.patientIdentifier}#phenotype">Details</a>]</#if></td></tr>
 <#--
 <tr class="form_listrow1"><th>Immunofluorescence: type VII collagen</th><td><#if patientSummaryVO.if_??>${patientSummaryVO.if_.getValue()}</#if><#if patientSummaryVO.patient.getConsent() != "no">  [<a href="molgenis.do?__target=${screen.name}&__action=showPhenotypeDetails&pid=${patientSummaryVO.patient.getIdentifier()}#%20Immunofluorescence">Details</a>]</#if></td></tr>
 <tr class="form_listrow0"><th>Electron Microscopy: anchoring fibrils</th><td><#if patientSummaryVO.em_??>${patientSummaryVO.em_.getNumber()}</#if><#if patientSummaryVO.patient.getConsent() != "no">  [<a href="molgenis.do?__target=${screen.name}&__action=showPhenotypeDetails&pid=${patientSummaryVO.patient.getIdentifier()}#%20Electron">Details</a>]</#if></td></tr>

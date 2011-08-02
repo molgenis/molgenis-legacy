@@ -1,4 +1,3 @@
-<#macro org_molgenis_mutation_ui_background_Background screen>
 	<div class="formscreen">
 		<div class="form_header" id="${screen.getName()}">
 		${screen.label}
@@ -15,7 +14,6 @@
 		
 		<div class="screenbody">
 			<div class="screenpadding">
-<#assign backgroundSummaryVO = screen.backgroundSummaryVO>
 <h3>Background</h3>
 <p>
 This International Dystrophic Epidermolysis Bullosa Patient Registry is constructed to aid all clinicians and scientists working in the field of dystrophic epidermolysis bullosa (DEB) and the COL7A1 gene. The registry contains all DEB patients who have been published in the medical literature together with their COL7A1 genotypes and molecular phenotypes (i.e. results from immunofluorescence and electron microscopy investigations). The DEB Registry can be searched for patients or mutations, and each by several categories. The registry also contains a number of unpublished patients and COL7A1 mutations. Therefore, this registry can be used as a central, quick reference for all who work in the DEB field. Mutations are numbered according to the current reference sequence (<a href="http://www.ncbi.nlm.nih.gov/nuccore/157389010" target="_new">GenBank Accession no. NM000094.3</a>). Mutation nomenclature is according to the <a href="http://www.hgvs.org/mutnomen/" target="_new">HGVS recommendations</a>. 
@@ -34,27 +32,27 @@ Table 1. Dystrophic EB subtypes (modified from Fine et al., 2008)
 <table class="listtable">
 <caption align="bottom">* Rare variants in italic type.<br/>** Previously called RDEB, Hallopeau-Siemens.</caption>
 <tr class="tableheader"><th>Type</th><th>Subtype*</th><th>Number of patients</th></tr>
-<tr class="form_listrow1"><td rowspan="7">DDEB</td><td>DDEB, generalized (DDEB-gen)</td><td>${backgroundSummaryVO.getPhenotypeCount("DDEB-gen")}</td></tr>
-<tr class="form_listrow0"><td><i>DDEB, acral (DDEB-ac)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("DDEB-ac")}</td></tr>
-<tr class="form_listrow1"><td><i>DDEB, pretibial (DDEB-Pt)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("DDEB-Pt")}</td></tr>
-<tr class="form_listrow0"><td><i>DDEB, pruriginosa (DDEB-Pr)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("DDEB-Pr")}</td></tr>
-<tr class="form_listrow1"><td><i>DDEB, nails only (DDEB-na)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("DDEB-na")}</td></tr>
-<tr class="form_listrow0"><td><i>DDEB, bullous dermolysis of the newborn (DDEB-BDN)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("DDEB-BDN")}</td></tr>
-<tr class="form_listrow1"><td><i>DDEB, unknown (DDEB-u)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("DDEB-u")}</td></tr>
-<tr class="form_listrow0"><td>DEB</td><td><i>DEB, unknown (DEB-u)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("DEB-u")}</td></tr>
-<tr class="form_listrow1"><td rowspan="9">RDEB</td><td>RDEB, severe generalized (RDEB-sev gen)**</td><td>${backgroundSummaryVO.getPhenotypeCount("RDEB-sev gen")}</td></tr>
-<tr class="form_listrow0"><td>RDEB, generalized other (RDEB-O)</td><td>${backgroundSummaryVO.getPhenotypeCount("RDEB-O")}</td></tr>
-<tr class="form_listrow1"><td><i>RDEB, acral (RDEB-ac)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("RDEB-ac")}</td></tr>
-<tr class="form_listrow0"><td><i>RDEB, inversa (RDEB-i)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("RDEB-i")}</td></tr>
-<tr class="form_listrow1"><td><i>RDEB, pretibial (RDEB-Pt)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("RDEB-Pt")}</td></tr>
-<tr class="form_listrow0"><td><i>RDEB, pruriginosa (RDEB-Pr)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("RDEB-Pr")}</td></tr>
-<tr class="form_listrow1"><td><i>RDEB, centripetalis (RDEB-Ce)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("RDEB-Ce")}</td></tr>
-<tr class="form_listrow0"><td><i>RDEB, bullous dermolysis of the newborn (RDEB-BDN)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("RDEB-BDN")}</td></tr>
-<tr class="form_listrow1"><td><i>RDEB, unknown (RDEB-u)</i></td><td>${backgroundSummaryVO.getPhenotypeCount("RDEB-u")}</td></tr>
+<tr class="form_listrow1"><td rowspan="7">DDEB</td><td>DDEB, generalized (DDEB-gen)</td><td>${model.getPhenotypeCount("DDEB-gen")}</td></tr>
+<tr class="form_listrow0"><td><i>DDEB, acral (DDEB-ac)</i></td><td>${model.getPhenotypeCount("DDEB-ac")}</td></tr>
+<tr class="form_listrow1"><td><i>DDEB, pretibial (DDEB-Pt)</i></td><td>${model.getPhenotypeCount("DDEB-Pt")}</td></tr>
+<tr class="form_listrow0"><td><i>DDEB, pruriginosa (DDEB-Pr)</i></td><td>${model.getPhenotypeCount("DDEB-Pr")}</td></tr>
+<tr class="form_listrow1"><td><i>DDEB, nails only (DDEB-na)</i></td><td>${model.getPhenotypeCount("DDEB-na")}</td></tr>
+<tr class="form_listrow0"><td><i>DDEB, bullous dermolysis of the newborn (DDEB-BDN)</i></td><td>${model.getPhenotypeCount("DDEB-BDN")}</td></tr>
+<tr class="form_listrow1"><td><i>DDEB, unknown (DDEB-u)</i></td><td>${model.getPhenotypeCount("DDEB-u")}</td></tr>
+<tr class="form_listrow0"><td>DEB</td><td><i>DEB, unknown (DEB-u)</i></td><td>${model.getPhenotypeCount("DEB-u")}</td></tr>
+<tr class="form_listrow1"><td rowspan="9">RDEB</td><td>RDEB, severe generalized (RDEB-sev gen)**</td><td>${model.getPhenotypeCount("RDEB-sev gen")}</td></tr>
+<tr class="form_listrow0"><td>RDEB, generalized other (RDEB-O)</td><td>${model.getPhenotypeCount("RDEB-O")}</td></tr>
+<tr class="form_listrow1"><td><i>RDEB, acral (RDEB-ac)</i></td><td>${model.getPhenotypeCount("RDEB-ac")}</td></tr>
+<tr class="form_listrow0"><td><i>RDEB, inversa (RDEB-i)</i></td><td>${model.getPhenotypeCount("RDEB-i")}</td></tr>
+<tr class="form_listrow1"><td><i>RDEB, pretibial (RDEB-Pt)</i></td><td>${model.getPhenotypeCount("RDEB-Pt")}</td></tr>
+<tr class="form_listrow0"><td><i>RDEB, pruriginosa (RDEB-Pr)</i></td><td>${model.getPhenotypeCount("RDEB-Pr")}</td></tr>
+<tr class="form_listrow1"><td><i>RDEB, centripetalis (RDEB-Ce)</i></td><td>${model.getPhenotypeCount("RDEB-Ce")}</td></tr>
+<tr class="form_listrow0"><td><i>RDEB, bullous dermolysis of the newborn (RDEB-BDN)</i></td><td>${model.getPhenotypeCount("RDEB-BDN")}</td></tr>
+<tr class="form_listrow1"><td><i>RDEB, unknown (RDEB-u)</i></td><td>${model.getPhenotypeCount("RDEB-u")}</td></tr>
 </table>
 <h3>About the data</h3>
 <p>
-The DEB registry is maintained by the departments of Genetics and Dermatology of the University Medical Center Groningen, the Netherlands on behalf of an international initiative of departments involved in the clinical care for patients with DEB and research into DEB. The International DEB Patient Registry currently contains ${backgroundSummaryVO.numPatients} DEB patients and ${backgroundSummaryVO.numMutations} COL7A1 mutations. Of these, ${backgroundSummaryVO.numPatientsUnpub} are unpublished DEB patients. This registry is a work in progress. New publications will be added regularly. The institutes that are currently working together on this registry are:
+The DEB registry is maintained by the departments of Genetics and Dermatology of the University Medical Center Groningen, the Netherlands on behalf of an international initiative of departments involved in the clinical care for patients with DEB and research into DEB. The International DEB Patient Registry currently contains ${model.numPatients} DEB patients and ${model.numMutations} COL7A1 mutations. Of these, ${model.numPatientsUnpub} are unpublished DEB patients. This registry is a work in progress. New publications will be added regularly. The institutes that are currently working together on this registry are:
 </p>
 <ul>
 <li>Istituto Dermopatico dell'Immacolata, Rome, Italy</li>
@@ -105,4 +103,3 @@ Please contact Dr. Morris Swertz, <a href="mailto:m.a.swertz@rug.nl">m.a.swertz@
 			</div>
 		</div>
 	</div>
-</#macro>

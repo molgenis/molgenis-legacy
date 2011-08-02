@@ -8,20 +8,10 @@
 <#assign expert    = vo.toExpertSearchForm>
 <#assign mutations = vo.listAllMutationsForm>
 <#assign patients  = vo.listAllPatientsForm>
-<h3>
-Welcome to the <b>international registry of dystrophic epidermolysis bullosa (DEB) patients and associated COL7A1 mutations</b>.
-</h3>
-<p>
-The International Dystrophic Epidermolysis Bullosa Patient Registry contains anonymised data on both published and unpublished DEB patients, as well as their associated COL7A1 mutations and genotypes, and clinical and molecular phenotypes.
-</p>
-<p>
-The database currently contains ${vo.numPatients} DEB patients, of which ${vo.numUnpublished} unpublished, and ${vo.numMutations} COL7A1 mutations. Search or browse below.
-</p>
-<br/>
-<h3>Search registry</h3>
-<p>
-Search by typing any search term in the search field, like cDNA (e.g. "3G>T") or protein (e.g. "Arg525Ter") notations of mutations, mode of inheritance (e.g. "dominant") or specific phenotypes (e.g. "severe generalized"). Search results are shown at bottom of page.
-</p>
+
+${model.textWelcome}
+
+${model.textSearch}
 <br/>
 <table cellpadding="4" cellspacing="4">
 <tr>
@@ -52,7 +42,7 @@ Search by typing any search term in the search field, like cDNA (e.g. "3G>T") or
 <!--<form method="post">${back.__target}${back.__action}${back.expertSearch}${back.submit}</form>-->
 <h3>Advanced search page</h3>
 <p>
-Perform a more advanced search on the COL7A1 mutation database. If you enter or select two or more search terms simultaneously, the search engine will perform a combined search action (i.e. AND).
+Perform a more advanced search on the ${vo.geneName} mutation database. If you enter or select two or more search terms simultaneously, the search engine will perform a combined search action (i.e. AND).
 </p>
 <table cellpadding="4" cellspacing="4">
 <form action="molgenis.do#results" method="post" name="AdvSearch">
@@ -82,12 +72,14 @@ ${muta.expertSearch}
 	
 -->
 <br/><br/>
-<h3>Browse the COL7A1 gene</h3>
+<h3>Browse the ${vo.geneName} gene</h3>
 <p>
-Click anywhere on this schematic representation of the COL7A1 gene to graphically browse the gene. With every click you will zoom in deeper on the COL7A1 gene. Mutated nucleotides are depicted in red. If the cursor is placed over the mutated nucleotide(s), the corresponding mutation is shown.
+Click anywhere on this schematic representation of the ${vo.geneName} gene to graphically browse the gene. With every click you will zoom in deeper on the ${vo.geneName} gene. Mutated nucleotides are depicted in red. If the cursor is placed over the mutated nucleotide(s), the corresponding mutation is shown.
 </p>
 <br/>
 <p>
+${model.mBrowseVO.getGenePanel()}
+<#--
 <div class="scrollable">
 <table cellpadding="0" cellspacing="0" width="1%">
 <tr>
@@ -116,30 +108,18 @@ Click anywhere on this schematic representation of the COL7A1 gene to graphicall
 </tr>
 </table>
 </div>
+-->
 </p>
 <br/>
-<h4>General remarks</h4>
-<ol>
-<li>Mutations are numbered according to the current reference sequence (<a href="http://www.ncbi.nlm.nih.gov/nuccore/157389010" target="_new">GenBank Accession no. NM_000094.3</a>)</li>
-<li>Mutation nomenclature is according to the <a href="http://www.hgvs.org/mutnomen/" target="_new">HGVS recommendations</a></li>
-</ol>
+${model.textRemarks}
 <br/>
-<h4>Collaborators and supporters</h4>
-<table width="100%">
-<tr>
-<td><a href="http://www.umcg.nl/NL/UMCG/overhetumcg/organisatie/Specialismen/dermatologie/Pages/default.aspx" target="_new"><img src="res/img/col7a1/umcg.jpg" width="200"/></a></td>
-<td><a href="http://www.idi.it/web/idi/home" target="_new"><img src="res/img/col7a1/idi.jpg" height="75"/></a></td>
-<td><a href="http://www.eb-haus.eu/index.php?id=21&L=1" target="_new"><img src="res/img/col7a1/ebhaus.png" height="75"/></a></td>
-<td><a href="http://www.guysandstthomas.nhs.uk/services/dash/dermatology/dermatology.aspx" target="_new"><img src="res/img/col7a1/stjohns.jpg" height="75"/></a></td>
-<td><a href="http://www.uniklinik-freiburg.de/ims/live/hospital/dermatology_en.html" target="_new"><img src="res/img/col7a1/ukl-logo.jpg" width="200"/></a></td>
-<td><a href="http://www.debra-international.org/" target="_new"><img src="res/img/col7a1/debra_international.png" height="75"/></a></td>
-</tr>
-</table>
+${model.textCollaborations}
 <br/><br/>
 
 </td>
 <td class="news_box">
-<@layout screen.getChild("NewsBar")/>
+${model.controller.getChild("NewsBar").render()}
+<#--<@layout screen.getChild("NewsBar")/>-->
 </td>
 </tr>
 </table>
