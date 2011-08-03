@@ -53,7 +53,7 @@ public class ResetXgapDb
 				}
 				report += "Now resetting datamodel/database.\n";
 				new emptyDatabase(db, true);
-				report += "Reset datamodel success.\n";
+				report += "Reset datamodel SUCCESS";
 				// resetSuccess = true;
 			}
 			catch (Exception e)

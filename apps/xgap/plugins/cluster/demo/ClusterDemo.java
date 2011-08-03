@@ -7,11 +7,18 @@
 
 package plugins.cluster.demo;
 
+import java.util.List;
+
+import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+import org.molgenis.xgap.xqtlworkbench.ResetXgapDb;
 
 
 
@@ -60,19 +67,26 @@ public class ClusterDemo extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
-//		try
-//		{
-//			Database db = this.getDatabase();
-//			Query q = db.query(Experiment.class);
-//			q.like("name", "test");
-//			List<Experiment> recentExperiments = q.find();
-//			
-//			//do something
-//		}
-//		catch(Exception e)
-//		{
-//			//...
-//		}
+		
+		
+		try
+		{
+			//fails when there is no table 'MolgenisUser', or no MolgenisUser named 'admin'
+			//assume database has not been setup yet
+			db.find(MolgenisUser.class, new QueryRule("name", Operator.EQUALS, "admin")).get(0);
+			
+		}
+		catch(Exception e)
+		{
+			//setup database and report back
+			String report = ResetXgapDb.reset(this.getDatabase(), true);
+			if(report.endsWith("SUCCESS")){
+				this.setMessages(new ScreenMessage("Database creation success!", true));
+			}else{
+				this.setMessages(new ScreenMessage("Database creation fail! Review report: "+report, false));
+			}
+			
+		}
 	}
 	
 	@Override
