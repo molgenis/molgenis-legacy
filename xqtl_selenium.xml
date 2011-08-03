@@ -6,11 +6,10 @@
 	<taskdef resource="testngtasks" classpath="../molgenis/lib/testng-5.14.10.jar" />
 
 	<!--
-	Make the app, remove existing database and run test
+	Clean, make app and run test
 	-->
 	<target name="clean_make_deletedb_test" description="Make app and start the web test">
 		<antcall target="clean_make" />
-		<antcall target="deletedb" />
 		<antcall target="test" />
 	</target>
 
@@ -28,9 +27,10 @@
 	</target>
 
 	<!--
-	Just run the test
+	Just run the test (though requires deletion of database)
 	-->
 	<target name="test" description="Start the web test">
+		<antcall target="deletedb" />
 		<testng suitename="webtest">
 			<xmlfileset dir="build/test" includes="xqtl_selenium_testng_.xml" />
 			<!--classfileset dir="build/test" includes="WebTest.class"/-->
