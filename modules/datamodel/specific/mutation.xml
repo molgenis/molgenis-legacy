@@ -10,13 +10,7 @@
 			<!-- extends Gene from xgap model or merge? I expect a new 'module' inside 
 				gcc that deals with 'org.molgenis.mutation'. -->
 			<description>A gene.</description>
-			<!--<field name="chromosome" description="Chromosome of gene."
-				nillable="true" label="Chromosome" />
-			--><!--<field name="position" description="Position on the chromosome."
-				nillable="true" label="Position" /> now: bpStart-->
-			<!--<field name="nuclSequence" type="text"
-				description="Nucleotide sequence (bases) of the gene." label="Nucleotide sequence" /> now: Seq
-			--><field name="aaSequence" type="text" description="Amino acid sequence of the gene."
+			<field name="aaSequence" type="text" description="Amino acid sequence of the gene."
 				nillable="true" label="Amino acid sequence" />
 			<field name="genbankId" description="Genbank identifier." label="Genbank ID" />
 			<field name="genomeBuild" description="Genbank genome build."
@@ -48,122 +42,13 @@
 				xref_label="name" nillable="true" label="Parent domain" />
 			<unique fields="name"></unique>
 		</entity>
-		<!--<entity name="Col7a1Publication" extends="Publication">
-			 should be merged with existing publication. If fields are missing 
-				they should be added. Sidenote: did you already the pubmed service? (enter 
-				pubmedid, automatically populate) 
-			<description>A publication in a scientific journal.</description>
-			<field name="id" type="autoid" hidden="true" description="Primary key." />
-			<field name="authors" description="Authors of publications."
-				nillable="true" label="Author(s)" />
-			<field name="title" description="Title." nillable="true" label="Title" />
-			<field name="journal" description="The journal the publication appeared."
-				nillable="true" label="Journal" />
-			<field name="year" type="number" description="Publication year."
-				nillable="true" label="Year" />
-			<field name="volume" description="Volume the publication appeared."
-				nillable="true" label="Volume" />
-			<field name="issue" description="Issue the publication appeared."
-				nillable="true" label="Issue" />
-			<field name="startPage" description="Start page." nillable="true"
-				label="Start page" />
-			<field name="endPage" description="End page." nillable="true"
-				label="End page" />
-			<field name="pubmed" description="PubMed id." label="PubMed ID" />
-			<field name="pdf" description="URL to PDF." nillable="true"
-				label="" hidden="false" />
-			<unique fields="pubmed"></unique>
-		</entity>
-		--><entity name="MutationPhenotype" extends="ObservableFeature" implements="Nameable">
+		<entity name="MutationPhenotype" extends="ObservableFeature" implements="Nameable">
 			<!-- this needs to become ObservableFeature or Measurement. That may be 
 				much work. Migration path: first make this extend ObservableFeature. Phenotype 
 				in xgap should be deleted. -->
 			<description>A phenotype.</description>
 			<field name="majortype" description="Major type." label="Major type" type="varchar" length="128"/>
 			<field name="subtype" description="Subtype." label="Subtype" type="varchar" length="128"/>
-		</entity>
-		<entity name="PhenotypeDetails" implements="Identifiable">
-			<!-- This should become an entry in the Protocol table, with associated 
-				entries in the ObservableFeature table. Wait until LIMS and Matrix done. -->
-			<description>Phenotypic details. (See fields.)</description>
-			<field name="blistering" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="blistering" label="Blistering" />
-			<field name="location" type="enum" enum_options="[generalized,localized,unknown]"
-				default="unknown" description="Location" label="Location" />
-			<field name="hands" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Hands" />
-			<field name="feet" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Feet" />
-			<field name="arms" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Arms" />
-			<field name="legs" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Legs" />
-			<field name="proximal_body_flexures" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Proximal body flexures" />
-			<field name="trunk" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Trunk" />
-			<field name="mucous_membranes" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Mucous membranes" />
-			<field name="skin_atrophy" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Skin atrophy" />
-			<field name="milia" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Milia" />
-			<field name="nail_dystrophy" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Nail dystrophy" />
-			<field name="albopapuloid_papules" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Albopapuloid papules" />
-			<field name="pruritic_papules" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Pruritic papules" />
-			<field name="alopecia" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Alopecia" />
-			<field name="squamous_cell_carcinomas" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Squamous cell carcinomas" />
-			<field name="revertant_skin_patch" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Revertant skin patch" />
-			<field name="mechanism" nillable="true" description="" label="Mechanism" />
-			<field name="flexion_contractures" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Flexion contractures" />
-			<field name="pseudosyndactyly_hands" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Pseudosyndactyly hands" />
-			<field name="microstomia" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Microstomia" />
-			<field name="ankyloglossia" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Ankyloglossia" />
-			<field name="dysphagia" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Dysphagia" />
-			<field name="growth_retardation" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Growth retardation" />
-			<field name="anemia" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Anemia" />
-			<field name="renal_failure" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Renal failure" />
-			<field name="dilated_cardiomyopathy" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Dilated cardiomyopathy" />
-			<field name="other" nillable="true" description="" label="" />
-			<!-- Fields specific for CHD7 -->
-			<field name="coloboma" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Coloboma" />
-			<field name="congenital_heart_defect" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Congenital heart defect" />
-			<field name="clp" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="CLP" />
-			<field name="choanal_anomaly" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Choanal anomaly" />
-			<field name="mental_retardation" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Mental retardation" />
-			<field name="genital_hypoplasia" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Genital hypoplasia" />
-			<field name="external_ear_anomaly" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="External ear anomaly" />
-			<field name="semicircular_canal_anomaly" type="enum"
-				enum_options="[yes,no,unknown]" default="unknown" description=""
-				label="Semicircular canal anomaly" />
-			<field name="hearing_loss" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="Hearing loss" />
-			<field name="te_anomaly" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="TE anomaly" />
-			<field name="cn_dysfunction" type="enum" enum_options="[yes,no,unknown]"
-				default="unknown" description="" label="CN dysfunction" />
 		</entity>
 		<entity name="Patient" extends="Individual" implements="submittable">
 		<!-- For now: extends Individual. 
@@ -185,8 +70,6 @@
 			<field name="mmp1_allele2" nillable="true" label="MMP1 allele 2" />
 			<field name="phenotype" type="xref" xref_field="MutationPhenotype.id"
 				xref_label="name" label="Phenotype" />
-			<field name="phenotype_details" type="xref" xref_field="PhenotypeDetails.id"
-				nillable="true" label="Phenotype details" />
 			<field name="mutation1" type="xref" xref_field="Mutation.id"
 				xref_label="name" nillable="true" label="First Mutation" />
 			<field name="mutation2" type="xref" xref_field="Mutation.id"
@@ -195,7 +78,7 @@
 				nillable="true"
 				description="Reason why mutation2 might be null: NA - mutation1 is dominant, unknown - mutation2 is unknown"
 				label="Second Mutation remark" />
-			<field name="publicationsPatient" type="mref" xref_field="Publication.id"
+			<field name="patientreferences" type="mref" xref_field="Publication.id"
 				nillable="true" label="PubMed ID" />
 			<field name="consent" type="enum" enum_options="publication,yes,no"
 				default="no" label="Patient consent" />
@@ -206,50 +89,9 @@
 			<description>Patient material</description>
 			<unique fields="name"></unique>
 		</entity>
-		<entity name="I_F" implements="Identifiable">
-		<!-- keep for now. Later this should become entry in 'Protocol'. -->
-			<description>Immunofluorescence staining intensity of collagen type
-				VII at the basement membrane zone in non-involved skin with different
-				antibodies.</description>
-			<field name="patient" type="xref" xref_field="Patient.id"
-				xref_label="identifier" label="Patient" />
-			<field name="antibody" type="xref" xref_field="Antibody.id"
-				xref_label="name" nillable="true" label="Antibody"
-				description="Antibody used for detection." />
-			<field name="value" type="enum"
-				enum_options="normal,slightly reduced,reduced,strongly reduced,absent,unknown"
-				default="unknown" label="Value" description="Value of collagen type VII" />
-			<field name="retention" type="enum" enum_options="yes,no,unknown"
-				default="unknown" label="Retention of type VII Collagen in basal cells" />
-			<field name="description" type="text" nillable="true" label="Description" />
-			<unique fields="patient,antibody"></unique>
-		</entity>
-		<entity name="Antibody" implements="Nameable">
-			<!-- keep for now. Later this should become entry in 'Protocol'. -->
-			<description>Antibody used for IF/EM.</description>
-			<unique fields="name"></unique>
-		</entity>
-		<entity name="E_M" implements="Identifiable">
-			<!-- keep for now. Later this should become entry in 'Protocol'. -->
-			<description>Anchoring fibrils detected by transmission electron
-				microscopy.</description>
-			<field name="patient" type="xref" xref_field="Patient.id"
-				xref_label="identifier" label="Patient" />
-			<field name="antibody" type="xref" xref_field="Antibody.id"
-				xref_label="name" nillable="true" label="Antibody"
-				description="Antibody used for detection." />
-			<field name="number_" type="enum" enum_options="normal,reduced,absent,unknown"
-				default="unknown" label="Number (semi-quantitative)" description="Number (semi-quantitative)" />
-			<field name="appearance" type="enum" enum_options="normal,altered,unknown"
-				default="unknown" label="Ultra-structural appearance" description="Ultra-structural appearance" />
-			<field name="retention" type="enum" enum_options="yes,no,unknown"
-				default="unknown" label="Retention of type VII Collagen in basal cells" />
-			<field name="description" type="text" nillable="true" label="Description" />
-			<unique fields="patient"></unique>
-		</entity>
 		<entity name="Mutation" extends="ObservableFeature">
 		<!-- part of org.molgenis.mutation. Extends ObservableFeature? Implements Locus? -->
-			<description>Part of an exon that has its codon changed.</description>
+			<description>Part of an exon/intron that has its codon changed.</description>
 			<field name="identifier" nillable="false" readonly="true"
 				description="Automatically generated external identifier" unique="true" />
 			<field name="mutationPosition" default="0"
