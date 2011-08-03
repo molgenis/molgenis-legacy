@@ -1,9 +1,40 @@
 <project name="phenoflow" basedir="../..">
+	<!-- pass for ebi tomcats -->
+	<property file="apps/phenoflow/build.properties" />
+	<property name="lib.catalina"
+	          value="dist/catalina-ant.jar" />
+
+	<property name="deploy.test.path" value="/ebi/www/deploy-test/tc-magetab" />
+
+	<property name="deploy.live.path" value="/ebi/www/deploy-live/tc-magetab" />
+
+	<property name="controller.live.path"
+	          value="/ebi/www/jlive/servers/tc-magetab/controller" />
+
+	<taskdef name="deploy"
+	         classname="org.apache.catalina.ant.DeployTask"
+	         classpath="${lib.catalina}" />
+	<taskdef name="undeploy"
+	         classname="org.apache.catalina.ant.UndeployTask"
+	         classpath="${lib.catalina}" />
+	<taskdef name="reload"
+	         classname="org.apache.catalina.ant.ReloadTask"
+	         classpath="${lib.catalina}" />
+	<taskdef name="list"
+	         classname="org.apache.catalina.ant.ListTask"
+	         classpath="${lib.catalina}" />
+	
+	<path id="jsch.path">
+		<pathelement location="dist/jsch-0.1.43.jar" />
+	</path>
+
+
+
 	<!-- this name is used to name the war file -->
 	<property name="app_name" value="phenoflow" />
 
 	<!-- this holds all the settings for the generator -->
-	<property name="app_properties" value="${app_name}.properties" />
+	<property name="app_properties" value="apps/${app_name}/${app_name}.properties" />
 
 	<!-- this determines what handwritten modules should be loaded -->
 	<path id="app.class.path">
@@ -15,5 +46,62 @@
 
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
 	<import file="../../build_common.xml" />
+	
+	<target name="copy-test">
+		<input message="Please enter your username for tc-test-3:"
+		       addproperty="tc.user"
+		       defaultvalue="tomasz" />
+		<input message="Please enter your password for tc-test-3:"
+		       addproperty="tc.pass" />
+		<scp file="dist/pheno.war"
+		     trust="true"
+		     verbose="true"
+		     todir="${tc.user}@tc-test-3.ebi.ac.uk:${deploy.test.path}"
+		     password="${tc.pass}">
+		</scp>
+		<sshexec host="tc-test-3.ebi.ac.uk"
+		         trust="true"
+		         verbose="true"
+		         username="${tc.user}"
+		         password="${tc.pass}"
+		         command="chmod 664 ${deploy.test.path}/pheno.war" />
+	</target>
+
+	<target name="copy-live" depends="copy-test">
+		<sshexec host="tc-test-3.ebi.ac.uk"
+		         trust="true"
+		         verbose="true"
+		         username="${tc.user}"
+		         password="${tc.pass}"
+		         command="sudo -u tc_user cp ${deploy.test.path}/pheno.war  ${deploy.live.path}/." />
+	</target>
+
+	<target name="deploy-test">
+		<deploy url="http://tc-test-3.ebi.ac.uk:10110/manager"
+		        username="tomcat"
+		        password="tomcat"
+		        path="/microarray-srv/pheno"
+		        config="${deploy.test.path}/microarray-srv#pheno.xml"
+		        update="true" />
+
+		<property name="running" value="/microarray-srv/pheno:running" />
+
+		<list url="http://tc-test-3.ebi.ac.uk:10110/manager"
+		      outputproperty="ctx.status"
+		      username="tomcat"
+		      password="tomcat">
+		</list>
+
+		<condition property="context.running">
+			<contains string="${ctx.status}" substring="${running}" />
+		</condition>
+		<fail message="Application not running!">
+			<condition>
+				<not>
+					<isset property="context.running" />
+				</not>
+			</condition>
+		</fail>
+	</target>
 
 </project>
