@@ -10,9 +10,8 @@
 		<classes>
 			<class name="test.WebTest">
 				<methods>
-					<include name="setupDatabase" />
+					<include name="startup" />
 					<include name="login" />
-					<include name="setupStorage" />
 					<include name="loadExampleData" />
 					<include name="exploreExampleData" />
 				</methods>

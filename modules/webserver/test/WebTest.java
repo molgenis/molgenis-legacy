@@ -52,20 +52,19 @@ public class WebTest
 	{
 		new RunStandalone();
 	}
-
+	
 	@Test
-	public void setupDatabase() throws InterruptedException
+	public void startup() throws InterruptedException
 	{
-		selenium.open("/molgenis_apps/resetdatabase_4EE1D7A3E73C504183B69F7D20108853");
+		selenium.open("/molgenis_apps/molgenis.do");
 		selenium.waitForPageToLoad("30000");
+		Assert.assertEquals(selenium.getTitle(), "xQTL workbench");
 	}
 
 	@Test
 	public void login() throws InterruptedException
 	{
-		selenium.open("/molgenis_apps/molgenis.do");
-		selenium.waitForPageToLoad("30000");
-		Assert.assertEquals(selenium.getTitle(), "xQTL workbench");
+
 		selenium.click("css=div.navigationNotSelected");
 		selenium.waitForPageToLoad("30000");
 		selenium.type("id=username", "admin");
@@ -74,35 +73,19 @@ public class WebTest
 		selenium.waitForPageToLoad("30000");
 	}
 
-	@Test
-	public void setupStorage() throws InterruptedException
-	{
-
-		selenium.click("//div[@onclick=\"document.forms.main.__target.value='main';document.forms.main.select.value='Admin';document.forms.main.submit();\"]");
-		selenium.waitForPageToLoad("30000");
-		selenium.click("//div[@onclick=\"document.forms.Admin.__target.value='Admin';document.forms.Admin.select.value='Settings';document.forms.Admin.submit();\"]");
-		selenium.waitForPageToLoad("30000");
-		selenium.click("//input[@value='Set path']");
-		selenium.waitForPageToLoad("30000");
-		selenium.click("//input[@value='Validate']");
-		selenium.waitForPageToLoad("30000");
-
-	}
 
 	@Test
 	public void loadExampleData() throws InterruptedException
 	{
-		selenium.click("//div[@onclick=\"document.forms.Admin.__target.value='Admin';document.forms.Admin.select.value='DatabaseSettings';document.forms.Admin.submit();\"]");
+		selenium.click("css=div.navigationNotSelected");
 		selenium.waitForPageToLoad("30000");
-		selenium.click("link=Load example data");
+		selenium.click("css=input[type=submit]");
 		selenium.waitForPageToLoad("30000");
 	}
 
 	@Test
 	public void exploreExampleData() throws InterruptedException
 	{
-		selenium.open("/molgenis_apps/molgenis.do");
-		selenium.waitForPageToLoad("30000");
 		selenium.click("//div[@onclick=\"document.forms.main.__target.value='main';document.forms.main.select.value='Investigations';document.forms.main.submit();\"]");
 		selenium.waitForPageToLoad("30000");
 		selenium.click("link=metaboliteexpression");
