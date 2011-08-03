@@ -108,6 +108,7 @@ public class Ssh
 
 			boolean isAuthenticated = conn.authenticateWithPassword(username,
 					password);
+			
 			if (isAuthenticated == false)
 			{
 				throw new IOException("Authentication failed.");

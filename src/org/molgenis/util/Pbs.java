@@ -159,18 +159,18 @@ public class Pbs extends Ssh
 		// //get all ids (do we need to filter missing??)
 		// String ids = "";
 		// for(String id: this.jobs.keySet()) ids +=" "+id;
-		//		
+		//
 		// // retrieve the state
 		// SshResult pbsOutput = executeCommand("qstat -f " + ids);
 		//
 		// // parse the result
 		// String[] result = pbsOutput.getStdOut().split("\n\n");
-		//		
+		//
 		// //create map of reports
 		// Map<String,String> idReportMap = new LinkedHashMap<String,String>();
 		// for(String res: result)
 		// {
-		//			
+		//
 		// }
 
 		for (PbsJob j : this.jobs.values())
