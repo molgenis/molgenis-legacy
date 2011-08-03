@@ -154,7 +154,7 @@ public class PbsJob
 			if (res.contains("job_state"))
 			{
 				String job_state = res.split("=")[1].trim();
-				this.state = State.valueOf(job_state);
+				this.state = State.fromString(job_state);
 			}
 
 			if (res.contains("exec_host"))
