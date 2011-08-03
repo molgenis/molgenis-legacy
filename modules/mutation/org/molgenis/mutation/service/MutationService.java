@@ -206,7 +206,7 @@ public class MutationService implements Serializable
 					publicationIds.add(publication.getId());
 				if (publicationIds.size() > 0)
 				{
-					List<Patient> patients    = this.db.query(Patient.class).in(Patient.PUBLICATIONSPATIENT, publicationIds).find();
+					List<Patient> patients    = this.db.query(Patient.class).in(Patient.PATIENTREFERENCES, publicationIds).find();
 					List<Integer> mutationIds = new ArrayList<Integer>();
 					for (Patient patient : patients)
 					{
@@ -403,9 +403,9 @@ public class MutationService implements Serializable
 			patientSummaryVO.setSubmitterCountry(submitter.getCountry());
 			patientSummaryVO.setPublicationVOList(new ArrayList<PublicationVO>());
 
-			if (CollectionUtils.isNotEmpty(patient.getPublicationsPatient_Id()))
+			if (CollectionUtils.isNotEmpty(patient.getPatientreferences_Id()))
 			{
-				List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPublicationsPatient_Id()).find();
+				List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPatientreferences_Id()).find();
 
 				for (Publication publication : publications)
 				{
@@ -801,8 +801,8 @@ public class MutationService implements Serializable
 		if (StringUtils.isEmpty(mutationUploadVO.getMutation().getMutationPosition()) || "0".equals(mutationUploadVO.getMutation().getMutationPosition()))
 			return;
 		
-//		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "COL7A1").find().get(0);
-		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "CHD7").find().get(0);
+		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "COL7A1").find().get(0);
+//		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "CHD7").find().get(0);
 		mutationUploadVO.setGene(gene);
 		mutationUploadVO.getMutation().setGene(gene);
 
@@ -951,8 +951,8 @@ public class MutationService implements Serializable
 	{
 		// set default gene
 
-//		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "COL7A1").find().get(0);
-		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "CHD7").find().get(0);
+		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "COL7A1").find().get(0);
+//		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "CHD7").find().get(0);
 
 		mutationUploadVO.setGene(gene);
 		mutationUploadVO.getMutation().setGene(gene);

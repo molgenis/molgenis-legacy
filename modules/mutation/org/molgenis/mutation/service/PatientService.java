@@ -348,10 +348,10 @@ public class PatientService implements Serializable
 	public int getNumUnpublishedPatients() throws DatabaseException, ParseException
 	{
 		if (this.db instanceof JDBCDatabase)
-			return ((JDBCDatabase) this.db).sql("SELECT DISTINCT id FROM Patient WHERE NOT EXISTS (SELECT id FROM Patient_publications WHERE Patient.id = Patient_publications.Patient)").size();
+			return ((JDBCDatabase) this.db).sql("SELECT DISTINCT id FROM Patient WHERE NOT EXISTS (SELECT id FROM Patient_publicationsPatient WHERE Patient.id = Patient_publicationsPatient.Patient)").size();
 		else if (this.db instanceof JpaDatabase)
 		{
-			javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT COUNT(DISTINCT p.id) FROM Patient p LEFT OUTER JOIN Patient_publications pp ON (p.id = pp.Patient) WHERE pp.publications IS NULL");
+			javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT COUNT(DISTINCT p.id) FROM Patient p LEFT OUTER JOIN Patient_publicationsPatient pp ON (p.id = pp.Patient) WHERE pp.publications IS NULL");
 			return Integer.valueOf(q.getSingleResult().toString());
 		}
 		else
@@ -521,7 +521,7 @@ public class PatientService implements Serializable
 				publicationIds.add(publications.get(0).getId());
 			}
 				
-			patient.setPublicationsPatient_Id(publicationIds);
+			patient.setPatientreferences_Id(publicationIds);
 		}
 		patient.setSubmission_Id(1);
 		// Insert patient
@@ -680,7 +680,7 @@ public class PatientService implements Serializable
 		row.add(patient.getMmp1_Allele1());
 		row.add(patient.getMmp1_Allele2());
 
-		List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPublicationsPatient_Id()).find();
+		List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPatientreferences_Id()).find();
 		List<String> publicationNames  = new ArrayList<String>();
 		List<String> publicationPudmed = new ArrayList<String>();
 		for (Publication publication : publications)
@@ -916,10 +916,10 @@ public class PatientService implements Serializable
 		patientSummaryVO.setSubmitterCity(submitter.getCity());
 		patientSummaryVO.setSubmitterCountry(submitter.getCountry());
 			
-		if (CollectionUtils.isNotEmpty(patient.getPublicationsPatient_Id()))
+		if (CollectionUtils.isNotEmpty(patient.getPatientreferences_Id()))
 		{
 			patientSummaryVO.setPublicationVOList(new ArrayList<PublicationVO>());
-			List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPublicationsPatient_Id()).find();
+			List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPatientreferences_Id()).find();
 			for (Publication publication : publications)
 			{
 				PublicationVO publicationVO = new PublicationVO();

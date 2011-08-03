@@ -277,7 +277,7 @@ public class SearchPlugin extends EasyPluginController<SearchModel>
 		
 		this.getModel().setPatientSummaryVOs(this.patientService.findPatients(this.patientSearchCriteriaVO));
 		((HttpServletRequestTuple) request).getRequest().getSession().setAttribute("patientSummaryVOs", this.getModel().getPatientSummaryVOs());
-		this.getModel().setRawOutput(this.include(request, "patientPager.jsp"));
+		this.getModel().setRawOutput(this.include(request, "res/mutation/patientPager.jsp"));
 		this.getModel().setHeader(this.getModel().getPatientSummaryVOs().size() + " results for " + this.patientSearchCriteriaVO.toString());
 	}
 
@@ -425,7 +425,7 @@ public class SearchPlugin extends EasyPluginController<SearchModel>
 		List<PatientSummaryVO> patientSummaryVOs = this.patientService.getAllPatientSummaries();
 		this.getModel().setPatientSummaryVOs(patientSummaryVOs);
 		((HttpServletRequestTuple) request).getRequest().getSession().setAttribute("patientSummaryVOs", this.getModel().getPatientSummaryVOs());
-		this.getModel().setRawOutput(this.include(request, "patientPager.jsp"));
+		this.getModel().setRawOutput(this.include(request, "res/mutation/patientPager.jsp"));
 		this.getModel().setHeader(this.getModel().getPatientSummaryVOs().size() + " results for \"Display all patients\".");
 	}
 
@@ -647,7 +647,7 @@ public class SearchPlugin extends EasyPluginController<SearchModel>
 
 				this.getModel().setPatientSummaryVOs(patientSummaryVOs);
 				((HttpServletRequestTuple) request).getRequest().getSession().setAttribute("patientSummaryVOs", this.getModel().getPatientSummaryVOs());
-				this.getModel().getPatientSummaryVOHash().put(" " + key + " ", this.include(request, "patientPager.jsp"));
+				this.getModel().getPatientSummaryVOHash().put(" " + key + " ", this.include(request, "res/mutation/patientPager.jsp"));
 			}
 		}
 		else

@@ -52,8 +52,9 @@ public class SequencePanel extends HtmlInput
 			int endPos   = ("R".equals(exonSummaryVO.getOrientation()) ?
 							startPos - exonSummaryVO.getExon().getLength() :
 							startPos + exonSummaryVO.getExon().getLength());
-			for (int i = startPos; i < endPos; i++)
-//			for (int i = startPos; i > endPos; i--)
+			for (int i = startPos;
+					("R".equals(exonSummaryVO.getOrientation()) ? i > endPos : i < endPos);
+					i = ("R".equals(exonSummaryVO.getOrientation()) ? i - 1 : i + 1))
 			{
 				boolean hasMutation = false;
 				for (MutationSummaryVO mutationSummaryVO : mutationSummaryVOs)
