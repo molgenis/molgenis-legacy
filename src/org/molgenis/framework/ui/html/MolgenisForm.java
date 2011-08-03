@@ -1,6 +1,7 @@
 package org.molgenis.framework.ui.html;
 
 import org.molgenis.framework.ui.FreemarkerView;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 
 public class MolgenisForm extends Container implements HtmlRenderer
@@ -11,6 +12,11 @@ public class MolgenisForm extends Container implements HtmlRenderer
 	public MolgenisForm(ScreenModel model)
 	{
 		this.model = model;
+	}
+	
+	public MolgenisForm(ScreenController<?> controller)
+	{
+		this(controller.getModel());
 	}
 	
 	@Override
