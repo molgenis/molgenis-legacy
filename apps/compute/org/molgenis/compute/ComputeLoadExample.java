@@ -8,9 +8,6 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
-import org.molgenis.protocol.ComputeApplication;
-import org.molgenis.protocol.ComputeFeature;
-import org.molgenis.protocol.ComputeProtocol;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.protocol.WorkflowElement;
 

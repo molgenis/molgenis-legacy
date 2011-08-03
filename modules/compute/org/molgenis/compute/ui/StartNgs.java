@@ -15,6 +15,9 @@ import java.util.Vector;
 
 import javax.servlet.ServletContext;
 
+import org.molgenis.compute.ComputeApplication;
+import org.molgenis.compute.ComputeFeature;
+import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.compute.pipelinemodel.Pipeline;
 import org.molgenis.compute.pipelinemodel.Script;
 import org.molgenis.compute.pipelinemodel.Step;
@@ -26,19 +29,14 @@ import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.pheno.ObservationElement;
-import org.molgenis.pheno.ObservationTarget;
+import org.molgenis.ngs.LibraryLane;
+import org.molgenis.ngs.Worksheet;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.protocol.ComputeApplication;
-import org.molgenis.protocol.ComputeFeature;
-import org.molgenis.protocol.ComputeProtocol;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.protocol.WorkflowElementParameter;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
-import org.molgenis.ngs.Worksheet;
-import org.molgenis.ngs.LibraryLane;
 
 /**
  * StartNgsController takes care of all user requests and application logic.
@@ -191,7 +189,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
 
 
         //add few parameters
-        wholeWorkflowApp.setComputeResource("cluster");//for time being
+       // wholeWorkflowApp.setComputeResource("cluster");//for time being
         wholeWorkflowApp.setTime(cal.getTime());
 
         //set app name everywhere and add to database
@@ -338,9 +336,9 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         ComputeApplication app = new ComputeApplication();
         app.setProtocol(protocol);
         //test setting of workflow element
-        app.setWorkflowElement(workflowElement);
+       // app.setWorkflowElement(workflowElement);
         app.setTime(cal.getTime());
-        app.setComputeResource("cluster");
+        //app.setComputeResource("cluster");
 
         String appName = "ngs_" + pipeline.getId() + "_" + workflowElement.getName() + "_" + pipelineElementNumber;
         app.setName(appName);
@@ -412,13 +410,13 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         weaver.setWalltime(protocol.getComputationalTime());
         weaver.setActualCommand(result);
         //extra for verification test (count # reads)
-        if (app.getWorkflowElement_Name().equalsIgnoreCase("BamIndexElement1"))
-        {
-            String scriptVerification = weaver.makeVerificationScript();
-            weaver.setVerificationCommand(scriptVerification);
-        }
-        else
-            weaver.setVerificationCommand("\n");
+//        if (app.getWorkflowElement_Name().equalsIgnoreCase("BamIndexElement1"))
+//        {
+//            String scriptVerification = weaver.makeVerificationScript();
+//            weaver.setVerificationCommand(scriptVerification);
+//        }
+//        else
+//            weaver.setVerificationCommand("\n");
         //finish extra
 
         String remoteLocation = computeFeatures.get("outputdir").getDefaultValue();

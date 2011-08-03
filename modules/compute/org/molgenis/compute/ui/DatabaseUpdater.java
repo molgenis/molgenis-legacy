@@ -1,22 +1,19 @@
 package org.molgenis.compute.ui;
 
 
-import org.molgenis.compute.monitor.LoggingReader;
-import org.molgenis.compute.monitor.RemoteFileReader;
-import org.molgenis.compute.monitor.RemoteFileToStringReader;
-import org.molgenis.compute.remoteexecutor.RemoteResult;
-import org.molgenis.compute.scriptserver.MCF;
-import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.protocol.ComputeApplication;
-
-import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+
+import org.molgenis.compute.ComputeApplication;
+import org.molgenis.compute.monitor.LoggingReader;
+import org.molgenis.compute.monitor.RemoteFileToStringReader;
+import org.molgenis.compute.scriptserver.MCF;
+import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 
 
 /**

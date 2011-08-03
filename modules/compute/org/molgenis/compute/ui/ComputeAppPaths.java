@@ -1,8 +1,8 @@
 package org.molgenis.compute.ui;
 
-import org.molgenis.protocol.ComputeApplication;
-
 import java.util.Vector;
+
+import org.molgenis.compute.ComputeApplication;
 
 /**
  * Created by IntelliJ IDEA.
