@@ -8,6 +8,7 @@
 	<!-- this determines what handwritten modules should be loaded -->
 	<path id="app.class.path">
 		<pathelement location="apps/${app_name}" />
+		<pathelement location="modules/auth" />
 		<pathelement location="modules/compute" />
 		<pathelement location="modules/pheno" />
 		<pathelement location="modules/import" />
@@ -18,6 +19,7 @@
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/decorators/core" />
 		<pathelement location="modules/decorators/pheno" />
+		<pathelement location="modules/decorators/auth" />
 	</path>
 
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
