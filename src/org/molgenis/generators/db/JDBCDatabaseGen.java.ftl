@@ -124,7 +124,7 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 					s = s.substring(s.lastIndexOf(".")+1);
 					<#list model.entities as entity><#if !entity.isAbstract()><#if entity.decorator?exists>
 					if("${entity.decorator}".substring("${entity.decorator}".lastIndexOf(".")+1).equals(s)){
-						logger.info("${entity.decorator} overwritten for ${JavaName(entity)} entity.");
+						//logger.info("${entity.decorator} overwritten for ${JavaName(entity)} entity.");
 						try{
 							Constructor constr = Class.forName("${decorator_overriders}." + s).getDeclaredConstructor(Mapper.class);
 							MappingDecorator mapdec = (MappingDecorator) constr.newInstance(new ${entity.namespace}.db.${JavaName(entity)}Mapper(this));
@@ -158,7 +158,7 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 				String overrideDecName = classFile.getName().substring(0, classFile.getName().length()-6);
 				<#list model.entities as entity><#if !entity.isAbstract()><#if entity.decorator?exists>
 				if("${entity.decorator}".substring("${entity.decorator}".lastIndexOf(".")+1).equals(overrideDecName)){
-					logger.info("Overriding decorator: ${entity.decorator} with ${decorator_overriders}." + overrideDecName);
+					//logger.info("Overriding decorator: ${entity.decorator} with ${decorator_overriders}." + overrideDecName);
 					try{
 						Constructor constr = Class.forName("${decorator_overriders}." + overrideDecName).getDeclaredConstructor(Mapper.class);
 						MappingDecorator mapdec = (MappingDecorator) constr.newInstance(new ${entity.namespace}.db.${JavaName(entity)}Mapper(this));
