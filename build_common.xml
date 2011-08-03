@@ -141,13 +141,13 @@ plus passing of properties
 			<jvmarg value="-ea" />
 		</testng>
 
-		<junitreport todir="${testng.report.dir}">
+		<!--junitreport todir="${testng.report.dir}">
 			<fileset dir="${testng.report.dir}">
 				<include name="**/*.xml" />
 			</fileset>
 
 			<report format="noframes" todir="${testng.report.dir}" />
-		</junitreport>
+		</junitreport-->
 
 	</target>
 	<!--
