@@ -11,12 +11,9 @@
 
 package ${package};
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.auth.MolgenisUser;
-import org.molgenis.auth.service.MolgenisUserService;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
