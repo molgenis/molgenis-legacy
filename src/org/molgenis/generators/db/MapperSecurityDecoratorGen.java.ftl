@@ -21,6 +21,11 @@ import org.molgenis.framework.db.jdbc.MappingDecorator;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvWriter;
 
+import java.text.ParseException;
+
+import org.molgenis.auth.MolgenisUser;
+import org.molgenis.auth.service.MolgenisUserService;
+
 public class ${clazzName}<E extends ${entityClass}> extends MappingDecorator<E>
 {
 	//JDBCMapper is the generate thing
