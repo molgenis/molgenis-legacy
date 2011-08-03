@@ -27,7 +27,24 @@
 	<tr>
 		<td align="center" colspan="7" >
 			<div align="left">
-			<!-- <font style='font-size:24px; font-weight:bold;'>xQTL workbench</font>--><br><br>
+			<!-- <font style='font-size:24px; font-weight:bold;'>xQTL workbench</font>-->
+			<#if screen.userIsAdminAndDatabaseIsEmpty == true>
+				<br><br><table bgcolor="white"><tr><td>
+				<br><i><font color="red">You are logged in as admin, and the database does not contain any investigations.</font></i><br><br>
+				Enter your preferred file storage location, and press 'Load' to validate this path and load the example dataset here. Unvalidated paths are overwritten.<br><br>
+				The default shown is ./data - consider changing this before continuing. Be aware of permissions your OS grants you on this directory, depending on which user started up the application.<br><br>
+				
+				<#if screen.validpath?exists>
+					<b>A valid path is already present and cannot be overwritten here. To do so, use Settings -> File storage.</b><br><br>
+					Path: <font style="font-size:medium; font-family: Courier, 'Courier New', monospace">${screen.validpath}</font>
+				<#else>
+					Path: <input type="text" size="30" style="border:2px solid black; color:blue; display:inline; font-size:medium; font-family: Courier, 'Courier New', monospace" id="inputBox" name="fileDirPath" value="./data" onkeypress="if(window.event.keyCode==13){document.forms.${screen.name}.__action.value = 'setPathAndLoad';}">
+				</#if>
+				
+				<input type="submit" value="Load" onclick="document.forms.${screen.name}.__action.value = 'setPathAndLoad'; document.forms.${screen.name}.submit();"/>
+				<br><br></td></tr></table>
+			</#if>
+			<br><br>
 			Welcome to the xQTL workbench, a platform for the storage and analysis of genetic and phenotype data.<br> 
 			
 			For manuals and	more information, see <a href="http://www.xgap.org/wiki/xQTL">xQTL workbench wiki</a>.<br><br> xQTL workbench aims to provide the following features: 

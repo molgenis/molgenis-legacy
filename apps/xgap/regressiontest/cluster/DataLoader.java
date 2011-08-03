@@ -117,7 +117,7 @@ public class DataLoader
 				Data genoData = db.find(Data.class, investigationId, genoName).get(0);
 				Data phenoData = db.find(Data.class, investigationId, phenoName).get(0);
 				new AddClusterMetaModel(genoData, phenoData, db);
-				result.add("Success");
+				result.add("Complete success");
 			}
 			catch (Exception e)
 			{
