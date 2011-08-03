@@ -235,6 +235,8 @@
 			<field name="StatusProgress" nillable="true" type="int"
 				description="Percentage done." default="0" />
             <!-- few new fields to show log information-->
+            <field name="ClusterHost" nillable="true" description="Hostname of cluster that runs this job." />
+            <field name="JobID" nillable="true" description="The ID of this job within the cluster." />
             <field name="LogFile" nillable="true" type="text"
                 description="field to show the content of the log file"/>
             <field name="OutputFile" nillable="true" type="text"
