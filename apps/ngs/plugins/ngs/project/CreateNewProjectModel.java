@@ -12,9 +12,9 @@ import java.util.List;
 
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.SimpleScreenModel;
-import org.molgenis.ngs.NgsPerson;
 import org.molgenis.organization.Institute;
 import org.molgenis.organization.Investigation;
+import org.molgenis.organization.Person;
 import org.molgenis.protocol.Workflow;
 import org.testng.collections.Lists;
 
@@ -26,9 +26,9 @@ public class CreateNewProjectModel extends SimpleScreenModel {
 	}
 
 	private Investigation project;
-    private NgsPerson person;
+    private Person person;
     private Institute institute;
-    private List<NgsPerson> labworkers = Lists.newArrayList();
+    private List<Person> labworkers = Lists.newArrayList();
     private String action = "init";
     private List<Investigation> investigation = new ArrayList<Investigation>();
     private Investigation invest;
@@ -37,12 +37,12 @@ public class CreateNewProjectModel extends SimpleScreenModel {
 
 
 
-    public void setLabworkers(List<NgsPerson> labworkers)
+    public void setLabworkers(List<Person> labworkers)
     {
 	this.labworkers = labworkers;
     }
 
-    public List<NgsPerson> getLabworkers()
+    public List<Person> getLabworkers()
     {
 	return labworkers;
     }
@@ -95,11 +95,11 @@ public class CreateNewProjectModel extends SimpleScreenModel {
 	return project;
     }
 
-    public void setPerson(NgsPerson person) {
+    public void setPerson(Person person) {
 	this.person = person;
     }
 
-    public NgsPerson getPerson() {
+    public Person getPerson() {
 	return person;
     }
 

@@ -9,7 +9,6 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.ngs.Flowcell;
-import org.molgenis.ngs.Investigator;
 import org.molgenis.ngs.LibraryBarcode;
 import org.molgenis.ngs.LibraryCapturing;
 import org.molgenis.ngs.LibraryLane;
@@ -17,11 +16,11 @@ import org.molgenis.ngs.Machine;
 import org.molgenis.ngs.NgsSample;
 import org.molgenis.ngs.Worksheet;
 import org.molgenis.organization.Investigation;
+import org.molgenis.organization.Person;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvFileWriter;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvReaderListener;
-import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Tuple;
 
 /**
@@ -69,8 +68,8 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 			LibraryCapturing lc = db.findById(LibraryCapturing.class, libraryList.getCapturing());
 			LibraryBarcode lb = db.findById(LibraryBarcode.class, libraryList.getBarcode());
 			Investigation inv = db.findById(Investigation.class, sample.getInvestigation());
-			Investigator i = null;
-			if(inv.getContacts_Id().size() > 0) i = db.findById(Investigator.class, inv.getContacts_Id().get(0));
+			Person i = null;
+			if(inv.getContacts_Id().size() > 0) i = db.findById(Person.class, inv.getContacts_Id().get(0));
 			Machine m = db.findById(Machine.class, flowcell.getMachine());
 
 			// create sheet
@@ -139,9 +138,9 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 				
 				// _investigator_
 				String investigatorname = tuple.getString("investigator");
-				Investigator inv = (Investigator) getObject(db, Investigator.class, "LastName", investigatorname);
+				Person inv = (Person) getObject(db, Person.class, "LastName", investigatorname);
 				if (inv == null) {
-					inv = new Investigator();
+					inv = new Person();
 					inv.setLastName(investigatorname);
 					db.add(inv);
 				}
