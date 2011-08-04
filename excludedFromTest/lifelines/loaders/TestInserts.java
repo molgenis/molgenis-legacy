@@ -33,7 +33,7 @@ public class TestInserts {
         m.setName("Measurement4");
         m.setInvestigation(investigation);
 
-        investigation.getInvestigationObservationElementCollection().add(m);
+        investigation.getInvestigationMeasurementCollection().add(m);
         
         
         

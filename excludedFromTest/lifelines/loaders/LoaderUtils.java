@@ -59,6 +59,11 @@ public class LoaderUtils {
         String username = "molgenis";
         String password = "molTagtGen24Ora";
 
+//	      String driver = "com.mysql.jdbc.Driver";
+//	      String url = "jdbc:mysql://localhost/lifelines";
+//	      String username = "molgenis";
+//	      String password = "molgenis";    	
+    	
         Class.forName(driver);
         Connection conn = DriverManager.getConnection(url, username, password);
         return conn;

@@ -1,0 +1,216 @@
+<molgenis name="org.molgenis">
+	<module name="core">
+		<description>Generic entities you can use as the starting point of
+			your model.</description>
+		<entity name="Identifiable" abstract="true" system="true">
+			<description>This interface assigns an automatic 'id' field to every
+				object.</description>
+			<field name="id" type="autoid" description="automatically generated id" />
+		</entity>
+		<entity name="Nameable" abstract="true" decorator="decorators.NameableDecorator">
+			<description>This interface extends Identifiable with a unique 'name'
+				field. The name length can be stored in one byte. (Java has signed
+				integers) The name is by itself not unique, this should be enforced
+				within a certain context. For example, unique(name, study) to make
+				the name unique within one single study. The NameableDecorator
+				ensures that names don't lead to problems in R and other script
+				environments.</description>
+			<field name="name" length="127" type="varchar" description="human-readable name." />
+		</entity>
+		<entity name="Describable" abstract="true" system="true">
+			<description>This interface adds a description field to all entities
+				the implement it.</description>
+			<field name="description" type="text" nillable="true"
+				description="description field" />
+		</entity>
+<!-- 		<entity name="MolgenisUser" system="true" implements="Nameable">
+			<description>Anyone who can login</description>
+			<field name="password" description="password of this user (needs to be md5)" />
+			<field name="superuser" label="isSuperuser" type="bool"
+				default="false"
+				description="if set to true this user can edit all entities irrespective of the group rights." />
+			<field name="active" type="bool" default="true" />
+		</entity> -->
+<!-- 		<entity name="MolgenisEntity" system="true" implements="Nameable">
+			<description> Referenceable catalog of entity names, that are the
+				data types used by the permission system.</description>
+			<field name="className" description="Full classpath name of the entity type" />
+		</entity> -->
+		
+<!-- 		<entity name="MolgenisFile" abstract="false" implements="Nameable"
+			decorator="decorators.MolgenisFileDecorator">
+			<description>
+				Helper entity to deal with files. Has a decorator to regulate
+				storage and coupling to an Entity. Do not make abstract because of
+				subtyping. This means the names of the subclasses will be used to
+				distinguish MolgenisFiles and place them in the correct folders.
+				<br />
+				MS: make it use the &lt;field type="file" property under the hood. 
+				<br />
+				MS: where do the mimetypes go? I mean, I don't see the added value
+				now.
+			</description>
+			<field name="Extension" nillable="false" length="8"
+				description="The file extension. This will be mapped to MIME type at runtime. For example, a type 'png' will be served out as 'image/png'." />
+		</entity>
+		<entity name="UseCase" label="Use Cases">
+			<description> All the use cases send to the server are stored in this
+				entity .</description>
+			<field name="UseCaseId" type="autoid" />
+			<field name="UseCaseName" type="string" />
+			<field name="SearchType" type="string" />
+			<unique fields="UseCaseId" />
+		</entity> -->
+	</module>
+	
+	<module name="organization">
+		<description>Generic entities you can use as the starting point of
+			your model.</description>
+		<entity name="Investigation" implements="Nameable,Describable,Identifiable" xref_label="name">
+			<description>Investigation defines self-contained units of study. For
+				example: Framingham study. Optionally a description and an accession
+				to a data source can be provided. Each Investigation has a unique
+				name and a group of subjects of observation (ObservableTarget),
+				traits of observation (ObservableFeature), results (in
+				ObservedValues), and optionally actions (Protocols,
+				ProtoclApplications). 'Invetigation' maps to standard XGAP/FuGE
+				Investigation, MAGE-TAB Experiment and METABASE:Study.</description>
+			<!-- field name="description" type="text" nillable="true"
+				description="(Optional) Rudimentary meta data about the Investigation" / -->>
+<!-- 			<field name="accession" type="hyperlink" nillable="true"
+				description="(Optional) URI or accession number to indicate source of Study. E.g. arrayexpress:M-EXP-2345" /> -->
+			<unique fields="name" description="Name is unique" />
+		</entity>
+		<entity name="InvestigationElement" abstract="true" implements="Nameable,Describable,Identifiable"
+			xref_label="name">
+			<description>General superclass to use for all elements of an
+				Investigation. The unique forces all of these elements to have
+				unique names within one Investigation. (can be changed to
+				Name,Study,Type by flipping a boolean in the molgenis 'Unique'
+				class.)</description>
+			<field name="Investigation" type="xref" xref_label="name"
+				xref_entity="Investigation" nillable="true"
+				description="Reference to the Study that this data element is part of" />
+<!-- 			<field name="ontologyReference" type="xref" xref_entity="OntologyTerm"
+				nillable="true"
+				description="(Optional) Reference to the formal ontology definition for this element, e.g. 'Animal' or 'GWAS protocol'" /> -->
+			<unique fields="name,Investigation" description="Name is unique within an Investigation" />
+		</entity>
+	</module>
+	
+	<module name="pheno">
+		<description>Pheno is an generic version of XGAP developed in close
+			collaboration within GEN2PHEN, EBI, UMC Groningen, U Groningen, FIMM,
+			U Leicester. Todo: add docs again from pheno model. The pheno core
+			needs to be preserved! Add changelog special section.</description>
+		<entity name="ObservationTarget" implements="InvestigationElement">
+			<description> An ObservationTarget class defines the subjects of
+				observation. For instance: individual 1 from Investigation x. The
+				ObservationTarget class maps to XGAP:Subject, METABASE:Patient and
+				maps to Page:Abstract_Observation_Target. The name of
+				observationTargets is unique.</description>
+			<unique fields="name" />
+		</entity>
+		<entity name="Measurement" implements="InvestigationElement" decorator="decorators.MeasurementDecorator"> 
+			<description>Generic obserable feature to flexibly define a
+				measurement</description>
+			<field name="dataType" type="enum" default="string"
+				enum_options="[xref,string,datetime,int,code,image,decimal,bool]"
+				description="(Optional) Reference to the technical data type. FIXME: should be mref to MolgenisTypes 
+					so we can everything molgenis can. For example then you could also have as type 'Individual'. 
+					Or maybe rather an expression so you could say 'Individual()'" />
+			<field name="temporal" type="boolean" default="false"
+				description="Whether this feature is time dependent and can have different values when measured 
+					on different times (e.g. weight, temporal=true) or generally only measured once (e.g. birth date, 
+					temporal=false) " />
+			<field name="description" type="text" nillable="true"
+				description="(Optional) Rudimentary meta data about the observable feature. Use of ontology 
+					terms references to establish unambigious descriptions is recommended" />
+		</entity>
+<!-- 		<entity name="Individual" extends="ObservationTarget">
+			<description> The Individuals class defines human cases that are used
+				as observation target. The Individual class maps to XGAP:Individual
+				and PaGE:Individual. Note that minimal information like 'sex' can be
+				defined as ObservedValue, and that that basic relationships like
+				'father' and 'mother' can also be defined via ObservedRelationship,
+				using the 'relation' field. Groups of individuals can be defined via Panel.</description>
+			<field name="Mother" type="xref" nillable="true" xref_entity="Individual"
+				xref_field="id" xref_label="name" description="Refers to the mother of the individual." />
+			<field name="Father" type="xref" nillable="true" xref_entity="Individual"
+				xref_field="id" xref_label="name" description="Refers to the father of the individual." />
+		</entity> -->
+		<entity name="Observation" abstract="true">
+			<description>
+				Generic model for observations, that is, the observed value on a
+				feature-target pair given a protocol. See the 'data' package for all
+				kinds of observations. Typically, this data is visualized in a
+				spreadsheet format having rows (targets) and columns (features). Use
+				cases that need support are:
+				<ul>
+					<li>Simple text/int values, e.g. 'length in cm (row;
+						observableFeature) of individual1 (col; observationTarget) = 179
+						(value). These can be stored in subclass 'ObservedValue'</li>
+					<li>Relationship values, e.g. 'individual 1(row:observationtarget)
+						and individual2 (col:observationtarget) = brothers
+						(value:observabvlefeature). These can be stored in subclass
+						'ObservedValue'</li>
+					<li>Coded values, e.g. 'invidual 1 (row) and feature 'sex' (col) =
+						'male' (value; reference to code or ontology. These can be stored
+						in subclass 'ObservedValue'</li>
+					<li>Data file values, e.g., 'aligned.bam' or 'plink imputed'
+						(feature). These can be stored in subclass DataFile</li>
+					<li>Data matrices, e.g. 'qtlProfile' (feature) for 'bxd panel'
+						(target). These can be stored in subclass ObservedData</li>
+					<li>Measurements are typically grouped by the protocol used,
+						therefore a link to protocol application is added.</li>
+				</ul>
+				Implementation wise, the data may or may not be stored in the
+				database directly. This is an optimization strategy independent of
+				this generic structure. This structure is born out of the merger of
+				Pheno-OM, XGAP and MAGE-TAB.<!--
+					The original documentation: <br /> Generic data structure for
+					aiming the values of a data set as described in Data. Each
+					DataElement describes a cell in a data matrix of rows (from) and
+					columns (to), e.g., in "dataset X" it was measured that geneX (col)
+					relates to geneZ (row). <br /> MAGE-TAB 1.1. has the column
+					ArrayDataMatrix and DerivedArrayDataMatrix. The formats of both
+					types are tab-delimited and the distinction is that an
+					ArrayDataMatrix is raw data and the DerivedArrayDataMatrix is
+					processed data. The DerivedArrayDataMatrix associates a file of a
+					specific format - see the MAGE-TAB specification for details. In
+					order to index the Rows and Columns of DataMatrix we have generated
+					a DimensionElement that allows us to index DimensionRow and
+					DimensionColumn.
+				-->
+			</description>
+			<field name="Investigation" type="xref" xref_entity="Investigation" nillable="true" />
+<!-- 			<field name="protocolApplication" type="xref" xref_entity="ProtocolApplication"
+				nillable="true"
+				description="Reference to the protocol application that was used to produce this observation. For example a particular patient visit or the application of a microarray or the calculation of a QTL model" /> -->
+			<field name="Feature" type="xref" xref_entity="Measurement"
+				xref_field="id" xref_label="name"
+				description="References the ObservableFeature that this observation was made on. For example 'probe123'. Can be ommited for 1D data (i.e., a data list)." />
+			<field name="Target" type="xref" xref_entity="ObservationTarget"
+				xref_field="id" xref_label="name"
+				description="References the ObservationTarget that this feature was made on. For example 'individual1'. In a correlation matrix this could be also 'probe123'." />
+		</entity>		
+		
+		<entity name="ObservedValue" implements="Identifiable,Observation">
+			<description>
+				Generic storage of values, relationships and optional ontology
+				mapping of the value/relation. Values can be atomatic observations,
+				e.g., length (feature) of individual 1 (target) = 179cm (value).
+				Values can also be relationship values, e.g., extract (feature) of
+				sample 1 (target) = derived sample (relation).
+				<br />
+				Discussion: how to model sample pooling in this model?
+				<br />
+				More Discussion: do we want to have type specific subclasses? No,
+				because you can solve this by casting during querying?
+			</description>
+				<field nillable="true" name="value" description="The value observed" />
+<!-- 			<field nillable="true" name="relation" type="xref" xref_entity="ObservationTarget"
+				description="Reference to other end of the relationship, if any. For example to a 'brother' or from 'sample' to 'derivedSample'." /> -->
+		</entity>
+	</module>
+</molgenis>

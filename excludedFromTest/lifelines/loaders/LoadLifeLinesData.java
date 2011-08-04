@@ -12,11 +12,8 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.protocol.Protocol;
-import org.molgenis.protocol.ProtocolApplication;
 
 import app.JpaDatabase;
 import java.util.HashMap;
@@ -68,8 +65,8 @@ public class LoadLifeLinesData {
                 String fileName = file.getName();
                 String tableName = fileName.substring(0, fileName.length() - 4);
 
-                List<Protocol> protocols = db.find(Protocol.class,
-                        new QueryRule("name", Operator.EQUALS, dataSetName));
+//                List<Protocol> protocols = db.find(Protocol.class,
+//                        new QueryRule("name", Operator.EQUALS, dataSetName));
 
                 for (int i = 0; i < columns.length; ++i) {
                     List<Measurement> fList = db.find(Measurement.class,
@@ -128,7 +125,6 @@ public class LoadLifeLinesData {
                             if (target != null) {
                                 ObservedValue ov = new ObservedValue();
                                 ov.setFeature(features[i]);
-                                ov.setTime(new Date());
 
                                 Measurement feature = features[i];
                                 String type = feature.getDataType();
@@ -197,16 +193,18 @@ public class LoadLifeLinesData {
                                 // tableName, columns[i], type));
                                 // }
 
-                                ProtocolApplication pa = new ProtocolApplication();
-                                pa.setInvestigation(investigation);
-                                pa.setName("" + paIdx++);
+//                                ProtocolApplication pa = new ProtocolApplication();
+//                                pa.setInvestigation(investigation);
+//                                pa.setName("" + paIdx++);
+//
+//                                pa.setProtocol(protocols.get(0));
+//                                
+//                                
+//                                pa.setTime(new Date());
+//
+//                                db.add(pa);
 
-                                pa.setProtocol(protocols.get(0));
-                                pa.setTime(new Date());
-
-                                db.add(pa);
-
-                                ov.setProtocolApplication(pa);
+//                                ov.setProtocolApplication(pa);
                                 ov.setTarget(target);
                                 ov.setInvestigation(investigation);
 

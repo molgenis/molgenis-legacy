@@ -124,7 +124,6 @@ public class OracleToLifelinesPheno {
     }
 
     public void load() throws Exception {
-        
         JpaDatabase db = new JpaDatabase();
         JpaUtil.dropAndCreateTables(db);
         EntityManager em = db.getEntityManager();
@@ -132,7 +131,7 @@ public class OracleToLifelinesPheno {
         loadComments();
 
         List<Measurement> measurements = loadInvestigationAndMeasurement(con, em);
-        loadTargets(con, em);
+//        loadTargets(con, em);
 
         //writeCSVFile(con, em, measurements);
 
@@ -152,11 +151,20 @@ public class OracleToLifelinesPheno {
             measurements.add(m);
 
             m.setInvestigation(investigation);
-            investigation.getInvestigationObservationElementCollection().add(m);
+            investigation.getInvestigationMeasurementCollection().add(m);
 //            investigation.getObservationElementCollection().add(m);
             m.setName(rsm.getColumnName(i));
 
+            System.out.println(rsm.getColumnName(i) + "\t" + rsm.getPrecision(i) + "\t"   + rsm.getScale(i));
+            
             m.setDataType(Field.Type.getType(rsm.getColumnType(i)).toString());
+            if(m.getDataType().equals("decimal")) {
+            	int precision = rsm.getPrecision(i);           
+            	if(precision == 0) {
+            		m.setDataType(Field.Type.INT.toString());
+            	}
+            }
+            
             m.setDescription(columnComment.get(rsm.getColumnName(i)));
         }
 

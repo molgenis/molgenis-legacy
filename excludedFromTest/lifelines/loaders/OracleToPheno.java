@@ -14,7 +14,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservationElement;
+import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 
 /**
@@ -22,7 +22,7 @@ import org.molgenis.pheno.ObservedValue;
  * @author jorislops
  */
 public class OracleToPheno {
-    private String sql = "SELECT * FROM LLPOPER.%s WHERE rownum < 10";
+    private String sql = "SELECT * FROM LLPOPER.%s";
     private String tableName = "LL_DATASET9";
     private String investigationName = tableName;
     
@@ -53,19 +53,21 @@ public class OracleToPheno {
             measurements.add(m);
         }
         
+
         
         while(rs.next()) {
-            ObservationElement target = null;
+            ObservationTarget target = null;
         
             em.getTransaction().begin();
             for(int i = 1; i <= rsmd.getColumnCount(); ++i) {
                 Object value = rs.getObject(i);
                 if(i == 1) {
-                    target = new ObservationElement();
+                    target = new ObservationTarget();
                     target.setInvestigation(investigation);
                     target.setName(value.toString());
                     em.persist(target);
                 }                
+                
                 
                 ObservedValue ov = new ObservedValue();
                 ov.setFeature(measurements.get(i-1));
@@ -78,8 +80,10 @@ public class OracleToPheno {
                     em.persist(ov);
                 }
             }
+            em.clear();
+            em.flush();
             em.getTransaction().commit();
         }
-        
+                
     }
 }
