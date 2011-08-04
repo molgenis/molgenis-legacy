@@ -19,7 +19,7 @@ import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.jdbc.MappingDecorator;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvWriter;
+import org.molgenis.util.CsvFileWriter;
 
 import java.text.ParseException;
 
@@ -87,7 +87,7 @@ public class ${clazzName}<E extends ${entityClass}> extends MappingDecorator<E>
 	}
 
 	@Override
-	public int add(CsvReader reader, CsvWriter writer) throws DatabaseException
+	public int add(CsvReader reader, CsvFileWriter writer) throws DatabaseException
 	{
 		if (this.getDatabase().getSecurity() != null)
 		{
@@ -135,7 +135,7 @@ public class ${clazzName}<E extends ${entityClass}> extends MappingDecorator<E>
 	}
 
 	@Override
-	public void find(CsvWriter writer, QueryRule ...rules) throws DatabaseException
+	public void find(CsvFileWriter writer, QueryRule ...rules) throws DatabaseException
 	{
 		if (this.getDatabase().getSecurity() != null)
 		{
@@ -179,7 +179,7 @@ public class ${clazzName}<E extends ${entityClass}> extends MappingDecorator<E>
 	}
 
 	@Override
-	public void find(CsvWriter writer, List<String> fieldsToExport, QueryRule ...rules) throws DatabaseException
+	public void find(CsvFileWriter writer, List<String> fieldsToExport, QueryRule ...rules) throws DatabaseException
 	{
 		if (this.getDatabase().getSecurity() != null)
 		{
