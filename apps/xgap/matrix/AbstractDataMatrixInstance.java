@@ -22,7 +22,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.util.CsvPrintWriter;
+import org.molgenis.util.CsvWriter;
 import org.molgenis.util.CsvFileWriter;
 
 /**
@@ -388,7 +388,7 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 
 	public void writeToCsvWriter(PrintWriter out) throws Exception
 	{
-		CsvPrintWriter cfr = new CsvPrintWriter(out);
+		CsvWriter cfr = new CsvWriter(out);
 		cfr.writeMatrix(getRowNames(), getColNames(), getElements());
 		cfr.close();
 	}

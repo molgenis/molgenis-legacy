@@ -14,7 +14,7 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 
 import org.apache.log4j.Logger;
-import org.molgenis.util.CsvPrintWriter;
+import org.molgenis.util.CsvWriter;
 
 /**
  * An interface to a matrix, not unlike the Matrix class in the R-project. Row
@@ -225,7 +225,7 @@ public abstract class PhenoMatrixInterface<E>
 	
 	// Used in a plugin context
 	public void writeToCsvWriter(PrintWriter out) throws Exception{
-		CsvPrintWriter cfr = new CsvPrintWriter(out);
+		CsvWriter cfr = new CsvWriter(out);
 		cfr.writeMatrix(getRowNames(), getColNames(), getElements());
 		cfr.close();
 	}

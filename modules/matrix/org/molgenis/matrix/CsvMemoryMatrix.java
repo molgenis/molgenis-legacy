@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.molgenis.matrix.convertors.ValueConvertor;
 import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.CsvPrintWriter;
+import org.molgenis.util.CsvWriter;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.SpreadsheetWriter;
@@ -149,8 +149,8 @@ public class CsvMemoryMatrix<E, A, V> extends MemoryMatrix<E, A, V> {
 		for (E rowName : getRowNames()) {
 			writer.writeValue(this.rowConvertor.write(rowName));
 			for (V value : getRowByName(rowName)) {
-				if (writer instanceof CsvPrintWriter)
-					((CsvPrintWriter) writer).writeSeparator();
+				if (writer instanceof CsvWriter)
+					((CsvWriter) writer).writeSeparator();
 				writer.writeValue(this.valueConvertor.write(value));
 			}
 			writer.writeEndOfLine();
