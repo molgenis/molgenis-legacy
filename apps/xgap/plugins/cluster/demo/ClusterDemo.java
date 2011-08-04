@@ -13,6 +13,7 @@ import java.util.List;
 import matrix.AbstractDataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
+import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.auth.MolgenisRoleGroupLink;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.data.Data;
@@ -132,6 +133,7 @@ public class ClusterDemo extends PluginModel<Entity>
 			// unrelated to the rest of the function
 			if(db.find(MolgenisUser.class).size() == 2){
 				addExampleUsers(db);
+				giveExtraNeededPermissions(db);
 			}
 			
 			// case 1
@@ -193,6 +195,31 @@ public class ClusterDemo extends PluginModel<Entity>
 			{
 				this.setMessages(new ScreenMessage(e.getMessage(), false));
 			}
+	}
+	
+	
+	/**
+	 * Give permissions on datatypes which are not covered by the gui xml to the group 'biologist'.
+	 * By default, when setting a group="biologist" on a form, permissions on that form and its
+	 * entity are automatically added by the molgenis parser. But we can't reach them all.
+	 * @throws DatabaseException 
+	 */
+	public void giveExtraNeededPermissions(Database db) throws DatabaseException{
+		String[] entities = new String[]{
+				"org.molgenis.core.MolgenisFile",
+				"org.molgenis.data.BinaryDataMatrix",
+				"org.molgenis.data.CSVDataMatrix",
+				"org.molgenis.pheno.ObservationElement"
+				};
+		
+		for(String e : entities){
+			MolgenisPermission mp = new MolgenisPermission();
+			mp.setEntity_ClassName(e);
+			mp.setRole_Name("biologist");
+			mp.setPermission("write");
+			db.add(mp);
+		}
+		
 	}
 	
 	/**
