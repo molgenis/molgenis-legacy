@@ -2,178 +2,425 @@
 	<module name="pheno">
 		<description>
 			<h1>
-			GEN2PHEN Phenoflow Reference Implementation Documentation
+				GEN2PHEN Phenoflow Reference Implementation Documentation
 		</h1>
-		<p>
-		version: draft 2011-08-03
-		</p><p>
-		GEN2PHEN Phenotype Model is a minimal data model to represent a data
-		set ofphenotypic observations resulting from one or more
-		investigations. Objective	is to harmonize the exchange of phenotype
-		descriptions between various		repositories and to host phenotype
-		information ranging annotations in locus 		specific databases to rich
-		clinical reports from cohort studies. The initial		version of this model
-		was compiled at the Gen2Phen phenotype workshop, May 		8-9, Geneva,
-		building on previous modeling efforts from the XGAP, PaGE, FuGE,		LOVD,
-		and MAGE-TAB projects. Were appropriate mapping to these models are		provided.
-		</p><p>
-		This document was created by: Morris Swertz, Tomasz Adamusiak, Juha
-		Muilu,	Gudmundur Thorisson, Isabel Fortier, Paul Burton, John Hancock,
-		IllkeLappalainen, Anthony Brookes, other members of the EU-GEN2PHEN,
-		EU-CASIMIR,	NBIC/BioAssist collaborations and Helen Parkinson.
+			<p>
+				version: draft 2011-08-03
 		</p>
-		<p>
-			changelog/decisions 2011-08-03
-			<ol>
-			<li>Merging ObservableFeature and ObservationTarget, split agreed to be redundant</li>
-			</ol>
-		
-			changelog/decisions 2009-07-20 2009-08-05 (following MPD import by
-			TA):
-			<ol>
-				<li />
-				Changed time on ObservedValue to optional. Added description field
-				to
-				investigation entity. Removed length="127" on name and changed
-				type to text
-				in identifiable.
-			</ol>
-			changelog/decisions 2009-06-11 (following G2P AM4):
-			<ol>
-				<li />
-				Added self-reference on Protocol to create aggregated protocols Use
-				case: a
-				study is a set of Questionnaires, each questionaire being a
-				protocol
-				<li />
-				Added VariableDefinition as subclass of Observable feature and moved
-				attribute 'unit' from ObservedValue to ValueDefinition.
-				VariableDefinition
-				can refer to one (?) ObservableFeature concept.
-				Use case: a questionaire
-				(protocol) is defined to measure 'length' in
-				cm; 'length' is the observable
-				feature, 'length in cm' the
-				VariableDefinition. Motivation: if unit was
-				defined on ObservedValue
-				than one cannot define the unit for a protocol. If
-				unit was defined
-				in two places (protocol and value level) then they can
-				conflict with
-				each other.
-				<li />
-				Added timestamp to both the protocolApplication and ObservedValue
-				Use case:
-				blood pressure was measured at five ten minute intervals at
-				8:00, 8:10, 8:20
-				Motivation: protocols often include repeated
-				measurements. Positive example
-				is the use case of blood pressure time
-				series. Negative example is 'blood
-				pressure standing' and 'blood
-				pressure lying down' which are different
-				observableFeatures.
-				<li />
-				Adapted the description of protocolapplication to say it is an
-				'instance' of
-				the protocol usage.
-				<li />
-				Did not change observableFeature.name into
-				observableFeature.description is
-				not advisable as it is inconsistent.
-				<li />
-				Did not replace subclass InferredValue with a directional self
-				reference on
-				ObservedValue because of understandeability
-			</ol>
-			changelog/decisions 2009-06-12 (following meeting Juha Muilu, Morris
-			Swertz,
-			Tomasz Adamusiak):
-			<ol>
-				<li />
-				Protocol.name is not unique within an investigation as it can be
-				reused in
-				multiple studies, a relationship definable via
-				ProtocolApplication.
-				<li />
-				ObservationTargets are not unique to one investigations as they can
-				be
-				observed in multiple studies, a relationship definable via the
-				ObservedValue.
-				<li />
-				SelfRecursion on ObservedValue for multivalue and derived value was
-				dropped
-				for simplicity reasons. Until shown otherwise multivalue
-				features can be
-				grouped by protocol.
-				<li />
-				ObservedValue name is not made unique within investigation as defies
-				its
-				purpose is to integrate between studies.
-				<li />
-				There is no explicit relationship between ObservedValue.value and
-				Code.term;
-				such constraint checking is outside the scope of this
-				model.
-				<li />
-				Added a 'value' to ParameterValue which was missing.
-				<li />
-				Changed that Code doesn't extend the OntologyTerm class but instead
-				refers
-				to an instance.
-				<li />
-				InferredValue seems not normalized in the sense that one has to
-				repeat
-				ObservationTarget which is implied via the ObservedValues it
-				refers to.
-				However, this is not changed because it can be that an
-				inference is provided
-				without providing the ObservedValues or that a
-				Panel level inference is
-				derived from a set of individual level
-				observedvalues.
-			</ol>
-			changelog/decisions 2009-08-04 (mostly bugfixes following import
-			sessions
-			with Morris Swertz, Tomasz Adamusiak):
-			<ol>
-				<li>Made name of observation target globally unique. Discussion to
-					reduce this constraint to unique within investigation.</li>
-				<li>Made name of ontologySource globally unique.</li>
-				<li>Add ontology term to value.</li>
-				<li>Made ontology URI optional, its name should be a unique
-					identifier
+			<p>
+				GEN2PHEN Phenotype Model is a minimal data model to represent a
+				data
+				set ofphenotypic observations resulting from one or more
+				investigations. Objective is to harmonize the exchange of phenotype
+				descriptions between various repositories and to host phenotype
+				information ranging annotations in locus specific databases to rich
+				clinical reports from cohort studies. The initial version of this
+				model
+				was compiled at the Gen2Phen phenotype workshop, May 8-9,
+				Geneva,
+				building on previous modeling efforts from the XGAP, PaGE,
+				FuGE,
+				LOVD,
+				and MAGE-TAB projects. Were appropriate mapping to these
+				models are
+				provided.
+		</p>
+			<p>
+				This document was created by: Morris Swertz, Tomasz Adamusiak,
+				Juha
+				Muilu, Gudmundur Thorisson, Isabel Fortier, Paul Burton, John
+				Hancock,
+				IllkeLappalainen, Anthony Brookes, other members of the
+				EU-GEN2PHEN,
+				EU-CASIMIR, NBIC/BioAssist collaborations and Helen
+				Parkinson.
+		</p>
+			<p>
+				changelog/decisions 2011-08-03
+				<ol>
+					<li>Merging ObservableFeature and ObservationTarget into
+						ObservationElement, split agreed to be redundant</li>
+					<li>Reinstated ObservedRelationship</li>
+				</ol>
+
+				Changelog 2010-09-19, by Morris
+				<ol>
+					<li>Removed
+						ObservedValue.name as that was a workaround.</li>
+					<li>Set focal default to
+						'false' to keep old behavior</li>
+				</ol>
+				Changelog 2010-08-04, by Erik Roos
+				<ol>
+					<li>Added
+						xref_label="name" to MREF from Protocol to
+						ObservableFeature, so interface
+						can show nice labels.</li>
+					<li>Added xref_label="name" to XREF from InvestigationElement
+						to
+						Investigation</li>
+				</ol>
+				Changelog 2010-07-30, by Erik Roos
+				<ol>
+					<li>Commented
+						out uniqueness constraint for 'code' field of Code,
+						since the code
+						itself
+						doesn't need to be unique. The combination of
+						code and feature should be
+						unique instead.</li>
+				</ol>
+				Changelog 2010-07-29, by Erik Roos
+				<ol>
+					<li>Made ontologyAccession
+						in Ontology nillable</li>
+					<li>Made field 'investigation' in ObservedValue
+						nillable</li>
+					<li>Made field 'value' in ObservedValue nillable, because in
+						an
+						ObservedRelationship you don't have to fill in this field</li>
+					<li>Integrated
+						ObservedRelationship into ObservedValue, so it
+						becomes easier to mix them
+						in your code</li>
+				</ol>
+				Changelog 2010-02-08
+				<ol>
+					<li>Code part of model</li>
+				</ol>
+				Changelog 2010-07-28, by Erik Roos
+				<ol>
+					<li>Made ObservedValue implement
+						Nameable, so values can have a name
+					</li>
+					<li>Added optional Endtime field
+						to ObservedValue</li>
+					<li>Added fields to ObservableFeature needed for AnimalDB:
+						focal,
+						observationtargettype and observationtargetlabel</li>
+					<li>Added decorator
+						to ObservableFeature</li>
+					<li>Added field observationTargetType to ObservationTarget</li>
+				</ol>
+				Following Luxembourg 2009-10-02 and 11-11
+				<ol>
+					<li>Special
+						treatment of 'nulls'</li>
+					<li>IDF type of things: contributors, publications,
+						roles etc -> see
+						exchange format</li>
+					<li>Added aggregate value to capture
+						dbGaP data</li>
+				</ol>
+				Changelog 2009-08-12
+				<ol>
+					<li>Made OntologySource optional</li>
+					<li>Made ontologyTerm and OntologySource unique within invstigation
+					</li>
+					<li>Removed ontologytTerm.termLabel as it was ambiguous with the
+						term itself.
+						If people want to use their own coding they can use
+						'Code'</li>
+					<li>Removed
+						CodeList and Code. Instead linked ObservableFeature to
+						one of more
+						OntologyTerms
+						having codes.</li>
+				</ol>
+				Changelog 2010-01-20
+				<ol>
+					<li>Further extended documentation</li>
+					<li>Discussion: do we need to remove father/mother from individual
+						-> can
+						be done via ObservableFeature?</li>
+					<li>Extended investigation with a property
+						to indicate source of the
+						data. Discussion: should we put in
+						components from
+						MAGE-TAB IDF?
+					</li>
+				</ol>
+				changelog/decisions 2009-09-02 (more bugfixes following import
+				sessions with
+				Morris Swertz, Tomasz Adamusiak):
+				<ol>
+					<li> ISSUE: VariableDefinition derives
+						from ObservableFeature, in
+						reality will be the only class used, as the
+						abstract
+						ObservableFeature has no unit nor categories. MOTIVATION: to have
+						multiple
+						units on ObservableFeature? This is not achieved in the
+						model atm, as
+						there's
+						no relation under than inheres in, also if
+						multiple units are
+						defined, than
+						it would be impossible to connect
+						them to ObservedValues.
+						RESOLUTION:
+						merge
+						the units and codes into
+						ObservableFeature. Remove
+						VariableDefinition.
 				</li>
-				<li>Made ObservableFeature.name unique within investigation. This
-					allows
-					for synonymous feature naming over investigations. The user
-					of
-					OntologyReferences allows cross-study queries if there is an
-					external
-					mapping ontology that indicates equivalence (BIG BUT
-					EXCITING TODO)</li>
-				<li>We now require certain features on Individual like 'sex' and
-					'species'. This results in practical problems because the data
-					provider may
-					use a different terminology to denote this features.
-					(in this case;
-					Characateristics[Sex] and Characteristics[Organism]
-					DECISION: move these
-					properties to become an 'ObservableFeature'
+					<li> ISSUE: the capability to relate observeable features.
+						MOTIVATION: MPD
+						provides a category hierarchy for their
+						measurements (cat1,cat2,cat3).
+						These
+						can hardly be interpreted as
+						hierarchy of protocols but was added as
+						'procotocolComponents'
+						for
+						demonstration purposes and to test subprotocols PROPOSED
+						RESOLUTION:
+						Change field 'ObservableFeature.ontologyTerm' from an
+						'xref' to 'mref'.
+						Then
+						we can add multiple terms to one feature
+						adding cat1,cat2,cat3 as
+						additional
+						'tags'. Caution: this doesn't
+						denote hierarchical relationship And rely
+						on
+						a separate application
+						ontology to describe these relationships (so
+						at runtime
+						ontologies
+						can be loaded to assist the mapping).</li>
+					<li> ISSUE: ObservedValue
+						and ProtocolApplication could reference
+						different Investigations. At
+						the
+						moment investigation is referenced
+						in 3 different classes:
+						ObservedValue,
+						ObservableFeature and
+						ProtocolApplication. MOTIVATION: This is to
+						support
+						different level
+						of granularity: -ObservableFeature needs an Investigation
+						reference for the cases when the researcher did not want to
+						disclose actual
+						measurements values but still wanted to show what
+						was measured.
+						-ObservableFeatures
+						can have different investigations
+						but share the same
+						ProtocolApplication.
+						Using ProtocolApplications
+						that bridge multiple investigations is
+						probably
+						a bit too
+						complicated. RESOLUTION: ignore in the model.
+						Implementationwize
+						add a trigger that checks if all ObservedValues are consistent
+						with
+						their
+						protocolapplication regarding their Investigation.</li>
+					<li> ISSUE: unit
+						and codelist are variants of the same thing, namely
+						binding the range
+						and
+						interpretation of observedValues. RESOLUTION:
+						Made CodeList and instance
+						of an OntologyTerm so that it can be
+						addressed as being a unit.</li>
+				</ol>
+				Open issues:
+				<ol>
+					<li> ISSUE: Codes are a special kind of OntologyTerm, i.e.
+						well
+						defined values. RESOLUTION: Is there a sensible way to make Code
+						extend
+						OntologyTerm? Then ObservedValue.codeReference could be
+						dropped.</li>
+					<li>
+						ISSUE: In case an ObservedValue uses a CodeList then
+						ObservedValue.value
+						actually becomes a foreign key to Code.code. Is
+						is neither used
+						nor
+						constrained.
+						RESOLUTION: create a trigger that
+						automatically finds the appropriate label
+						for a value.</li>
+				</ol>
+				changelog/decisions 2009-08-04 (mostly bugfixes following import
+				sessions
+				with Morris Swertz, Tomasz Adamusiak):
+				<ol>
+					<li>Made name of observation target globally unique. Discussion to
+						reduce this constraint to unique within investigation.</li>
+					<li>Made name of ontologySource globally unique.</li>
+					<li>Add ontology term to value.</li>
+					<li>Made ontology URI optional, its name should be a unique
+						identifier
 				</li>
-				<li>Next to 'father' and 'mother' one can imagine that there are
-					more
-					(family)relationships like 'twin'. In the source data this was
-					reported as
-					'OX0232:MZ twin' (awkward!) We need a mechanism to
-					enable such
-					relationships flexibly. DECISION: need to a new type of
-					ObservedValue that
-					can have references to one (or more?) other
-					ObservationTargets. Needs to be
-					fully implemented still.</li>
-			</ol>
-		</p>	
+					<li>Made ObservableFeature.name unique within investigation. This
+						allows
+						for synonymous feature naming over investigations. The user
+						of
+						OntologyReferences allows cross-study queries if there is an
+						external
+						mapping ontology that indicates equivalence (BIG BUT
+						EXCITING TODO)</li>
+					<li>We now require certain features on Individual like 'sex' and
+						'species'. This results in practical problems because the data
+						provider may
+						use a different terminology to denote this features.
+						(in this case;
+						Characateristics[Sex] and Characteristics[Organism]
+						DECISION: move these
+						properties to become an 'ObservableFeature'
+					</li>
+					<li>Next to 'father' and 'mother' one can imagine that there are
+						more
+						(family)relationships like 'twin'. In the source data this was
+						reported as
+						'OX0232:MZ twin' (awkward!) We need a mechanism to
+						enable such
+						relationships flexibly. DECISION: need to a new type of
+						ObservedValue that
+						can have references to one (or more?) other
+						ObservationTargets. Needs to be
+						fully implemented still.</li>
+				</ol>
+			</p>
+			<p>
+				changelog/decisions 2009-07-20 2009-08-05
+				(following MPD import by
+				TA):
+				<ol>
+					<li />
+					Changed time on ObservedValue to
+					optional. Added description field
+					to investigation entity. Removed
+					length="127"
+					on name and changed
+					type to text in identifiable.
+				</ol>
+				changelog/decisions 2009-06-12 (following meeting Juha Muilu, Morris
+				Swertz, Tomasz Adamusiak):
+				<ol>
+					<li />
+					Protocol.name is not unique within
+					an investigation as it can be
+					reused in multiple studies, a
+					relationship
+					definable via
+					ProtocolApplication.
+					<li />
+					ObservationTargets are not unique
+					to one investigations as they can
+					be observed in multiple studies, a
+					relationship
+					definable via the
+					ObservedValue.
+					<li />
+					SelfRecursion on ObservedValue for
+					multivalue and derived value was
+					dropped for simplicity reasons. Until shown
+					otherwise multivalue
+					features can be grouped by protocol.
+					<li />
+					ObservedValue
+					name is not made unique within investigation as defies
+					its purpose is
+					to
+					integrate between studies.
+					<li />
+					There is no explicit relationship between
+					ObservedValue.value and
+					Code.term; such constraint checking is outside the
+					scope of this
+					model.
+					<li />
+					Added a 'value' to ParameterValue which was missing.
+					<li />
+					Changed that Code doesn't extend the OntologyTerm class but instead
+					refers to an instance.
+					<li />
+					InferredValue seems not normalized in the sense
+					that one has to
+					repeat ObservationTarget which is implied via the
+					ObservedValues
+					it
+					refers to. However, this is not changed because it can be that an
+					inference
+					is provided without providing the ObservedValues or that a
+					Panel
+					level
+					inference
+					is derived from a set of individual level
+					observedvalues.
+				</ol>
+				changelog/decisions
+				2009-06-11 (following G2P AM4):
+				<ol>
+					<li />
+					Added self-reference on Protocol
+					to create aggregated protocols Use
+					case: a study is a set of
+					Questionnaires,
+					each questionaire being a
+					protocol
+					<li />
+					Added VariableDefinition as subclass
+					of Observable feature and moved
+					attribute 'unit' from ObservedValue
+					to
+					ValueDefinition.
+					VariableDefinition can refer to one (?) ObservableFeature concept.
+					Use case:
+					a questionaire (protocol) is defined to measure 'length'
+					in cm;
+					'length'
+					is the observable feature, 'length in cm' the
+					VariableDefinition.
+					Motivation:
+					if unit was defined on ObservedValue
+					than one cannot define the unit
+					for
+					a protocol. If unit was defined
+					in two places (protocol and value
+					level)
+					then they can conflict with
+					each other.
+					<li />
+					Added timestamp to both the
+					protocolApplication and ObservedValue
+					Use case: blood pressure was measured
+					at five ten minute intervals
+					at 8:00, 8:10, 8:20 Motivation:
+					protocols
+					often
+					include repeated
+					measurements. Positive example is the use case of blood
+					pressure
+					time series. Negative example is 'blood pressure standing'
+					and
+					'blood
+					pressure lying down' which are different observableFeatures.
+					<li />
+					Adapted
+					the description of protocolapplication to say it is an
+					'instance' of
+					the
+					protocol usage.
+					<li />
+					Did not change observableFeature.name into
+					observableFeature.description
+					is not advisable as it is
+					inconsistent.
+					<li />
+					Did not replace subclass InferredValue
+					with a directional self
+					reference on ObservedValue because of
+					understandeability
+				</ol>
+			</p>
 		</description>
 		<entity name="Species" extends="OntologyTerm">
 			<description>Ontology terms for species. E.g. Arabidopsis thaliana.
@@ -184,20 +431,24 @@
 		</entity>
 		<entity name="ObservationElement" implements="InvestigationElement"
 			xref_label="name">
-			<description> Elements that are the targets or features we are
-				looking at of our research.</description>
-		</entity>
-		<entity name="ObservationTarget" extends="ObservationElement">
-			<description> An ObservationTarget class defines the subjects of
-				observation. For instance: individual 1 from Investigation x. The
-				ObservationTarget class maps to XGAP:Subject, METABASE:Patient and
-				maps to Page:Abstract_Observation_Target. The name of
-				observationTargets is unique.</description>
-			<unique fields="name" />
-		</entity>
-		<entity name="ObservableFeature" extends="ObservationElement">
-			<description>ObservableFeature defines anything that can be observed
-				in a phenotypic Investigation. For instance: Height, Systolic blood
+			<description>
+				Elements that are the targets or features we are
+				looking at of our
+				research.
+				<br></br>
+				An ObservationTarget class defines the subjects of
+				observation. For
+				instance: individual 1 from Investigation x. The
+				ObservationTarget
+				class maps to XGAP:Subject, METABASE:Patient and
+				maps to
+				Page:Abstract_Observation_Target. The name of
+				observationTargets is
+				unique.
+				<br></br>
+				ObservableFeature defines anything that can be observed
+				in a
+				phenotypic Investigation. For instance: Height, Systolic blood
 				pressure, Diastolic blood pressure, and Treatment for hypertension
 				are observable features. The name of ObservableFeature is unique
 				within one Investigation. It is recommended that each
@@ -217,9 +468,53 @@
 				diastolic blood pressure.
 				There may be many alternative protocols to
 				measure a feature. See
-				Protocol section.</description>
+				Protocol section.
+			</description>
+			<unique fields="name" />
 		</entity>
-		<entity name="Measurement" extends="ObservableFeature"
+		<!-- <entity name="ObservationTarget" extends="ObservationElement"> <description> 
+			An ObservationTarget class defines the subjects of observation. For instance: 
+			individual 1 from Investigation x. The ObservationTarget class maps to XGAP:Subject, 
+			METABASE:Patient and maps to Page:Abstract_Observation_Target. The name of 
+			observationTargets is unique.</description> <unique fields="name" /> </entity> 
+			<entity name="ObservableFeature" extends="ObservationElement"> <description>ObservableFeature 
+			defines anything that can be observed in a phenotypic Investigation. For 
+			instance: Height, Systolic blood pressure, Diastolic blood pressure, and 
+			Treatment for hypertension are observable features. The name of ObservableFeature 
+			is unique within one Investigation. It is recommended that each ObservableFeature 
+			is named according to a well-defined ontology term which can be specified 
+			via ontologyReference. Note that in some instances an observableFeature can 
+			also be an observationTarget, for example in the case of correlation matrices. 
+			The ObservableFeature class maps to XGAP:Trait, METABASE:Question, FuGE:DimensionElement, 
+			and PaGE:ObservableFeature. Multi-value features can be grouped by Protocol. 
+			For instance: high blood pressure can be inferred from observations for features 
+			systolic and diastolic blood pressure. There may be many alternative protocols 
+			to measure a feature. See Protocol section.</description> </entity> -->
+		<entity name="ObservedRelationship" extends="ObservedValue">
+			<description>
+				Special kind of observation for relative statements
+				between ObservationElements.
+				For example to indicate parentOf,
+				sisterOf, etc. It is promoted that
+				the relation type is an ontology
+				term that is referenced via the
+				ontologyReference that is inherited
+				from ObservedValue. Note: group
+				statements are solved via Panel. E.g.
+				members of on house hold can
+				be
+				modelled by (i) creating a panel that
+				links all individuals and (ii)
+				assigning family properties to this
+				panel. Alternatively, the family
+				properties can be assigned to each
+				individual seperately.
+			</description>
+			<field name="relatedObservationTarget" type="xref"
+				xref_field="ObservationElement.id" xref_label="name"
+				description="Reference to other end of the relationship." />
+		</entity>
+		<entity name="Measurement" extends="ObservationElement"
 			decorator="decorators.MeasurementDecorator">
 			<description>Generic obserable feature to flexibly define a
 				measurement</description>
@@ -253,7 +548,7 @@
 					in ObservedValues that have relations to Panels labeled as 'Species')"
 				nillable="true" label="Panel label allowed for relation" />
 		</entity>
-		<entity name="Individual" extends="ObservationTarget">
+		<entity name="Individual" extends="ObservationElement">
 			<description> The Individuals class defines human cases that are used
 				as observation target. The Individual class maps to XGAP:Individual
 				and PaGE:Individual. Note that minimal information like 'sex' can be
@@ -266,7 +561,7 @@
 			<field name="Father" type="xref" nillable="true" xref_entity="Individual"
 				xref_field="id" xref_label="name" description="Refers to the father of the individual." />
 		</entity>
-		<entity name="Location" extends="ObservationTarget">
+		<entity name="Location" extends="ObservationElement">
 			<description>This class defines physical locations such as buildings,
 				departments,
 				rooms, freezers and cages. Use ObservedValues to link
@@ -274,7 +569,7 @@
 				eachother, to build
 				a location hierarchy.</description>
 		</entity>
-		<entity name="Panel" extends="ObservationTarget">
+		<entity name="Panel" extends="ObservationElement">
 			<description>The Panel class defines groups of individuals based on
 				cohort design, case/controls, families, etc. For instance: LifeLines
 				cohort, 'middle aged man', 'recombinant mouse inbred Line dba x b6'
@@ -305,7 +600,7 @@
 				the ontologyReference. Code extends OntologyTerm such that it can be
 				referenced by ObservedValue.value. The Code class maps to
 				METABASE::Code</description>
-			<field name="feature" type="mref" xref_entity="ObservableFeature"
+			<field name="feature" type="mref" xref_entity="ObservationElement"
 				description="The feature for which these codes where defined." />
 			<field name="code_string" type="string"
 				description="The code used to represent this term. For example: { '1'-'male', '2'-'female'}" />
@@ -390,7 +685,8 @@
 				ontology definition or 'code' for this value (recommended for non-numeric
 				values such as codes)" />
 			<field nillable="true" name="value" description="The value observed" />
-			<field nillable="true" name="relation" type="xref" xref_entity="ObservationTarget"
+			<field nillable="true" name="relation" type="xref"
+				xref_entity="ObservationElement"
 				description="Reference to other end of the relationship, if any. For example to a 'brother' or from 'sample' to 'derivedSample'." />
 			<field nillable="true" auto="false" name="time" type="datetime"
 				description="(Optional) Time when the value was observed. For example in time series or if feature is time-dependent like 'age'" />
@@ -398,145 +694,4 @@
 				description="(Optional) Time when the value's validity ended" />
 		</entity>
 	</module>
-	<!-- version: release candidate 2010-02-08 <p /> GEN2PHEN Phenotype Model 
-		is a minimal data model to represent a data set of phenotypic observations 
-		resulting from one or more investigations. Objective is to harmonize the 
-		exchange of phenotype descriptions between various repositories and to host 
-		phenotype information ranging annotations in locus specific databases to 
-		rich clinical reports from cohort studies. The initial version of this model 
-		was compiled at the Gen2Phen phenotype workshop, May 8-9, Geneva, building 
-		on previous modeling efforts from the XGAP, METABASE, PaGE, FuGE, and MAGE-TAB 
-		projects. Were appropriate mapping to these models are provided. <p /> This 
-		document was created by: Morris Swertz, Tomasz Adamusiak, Juha Muilu, Gudmundur 
-		Thorisson, Isabel Fortier, Paul Burton, John Hancock, Illke Lappalainen, 
-		Anthony Brookes, other members of the EU-GEN2PHEN, EU-CASIMIR, NBIC/BioAssist 
-		collaborations and Helen Parkinson. <p> changelog/decisions 2009-07-20 2009-08-05 
-		(following MPD import by TA): <ol> <li /> Changed time on ObservedValue to 
-		optional. Added description field to investigation entity. Removed length="127" 
-		on name and changed type to text in identifiable. </ol> changelog/decisions 
-		2009-06-11 (following G2P AM4): <ol> <li /> Added self-reference on Protocol 
-		to create aggregated protocols Use case: a study is a set of Questionnaires, 
-		each questionaire being a protocol <li /> Added VariableDefinition as subclass 
-		of Observable feature and moved attribute 'unit' from ObservedValue to ValueDefinition. 
-		VariableDefinition can refer to one (?) ObservableFeature concept. Use case: 
-		a questionaire (protocol) is defined to measure 'length' in cm; 'length' 
-		is the observable feature, 'length in cm' the VariableDefinition. Motivation: 
-		if unit was defined on ObservedValue than one cannot define the unit for 
-		a protocol. If unit was defined in two places (protocol and value level) 
-		then they can conflict with each other. <li /> Added timestamp to both the 
-		protocolApplication and ObservedValue Use case: blood pressure was measured 
-		at five ten minute intervals at 8:00, 8:10, 8:20 Motivation: protocols often 
-		include repeated measurements. Positive example is the use case of blood 
-		pressure time series. Negative example is 'blood pressure standing' and 'blood 
-		pressure lying down' which are different observableFeatures. <li /> Adapted 
-		the description of protocolapplication to say it is an 'instance' of the 
-		protocol usage. <li /> Did not change observableFeature.name into observableFeature.description 
-		is not advisable as it is inconsistent. <li /> Did not replace subclass InferredValue 
-		with a directional self reference on ObservedValue because of understandeability 
-		</ol> changelog/decisions 2009-06-12 (following meeting Juha Muilu, Morris 
-		Swertz, Tomasz Adamusiak): <ol> <li /> Protocol.name is not unique within 
-		an investigation as it can be reused in multiple studies, a relationship 
-		definable via ProtocolApplication. <li /> ObservationTargets are not unique 
-		to one investigations as they can be observed in multiple studies, a relationship 
-		definable via the ObservedValue. <li /> SelfRecursion on ObservedValue for 
-		multivalue and derived value was dropped for simplicity reasons. Until shown 
-		otherwise multivalue features can be grouped by protocol. <li /> ObservedValue 
-		name is not made unique within investigation as defies its purpose is to 
-		integrate between studies. <li /> There is no explicit relationship between 
-		ObservedValue.value and Code.term; such constraint checking is outside the 
-		scope of this model. <li /> Added a 'value' to ParameterValue which was missing. 
-		<li /> Changed that Code doesn't extend the OntologyTerm class but instead 
-		refers to an instance. <li /> InferredValue seems not normalized in the sense 
-		that one has to repeat ObservationTarget which is implied via the ObservedValues 
-		it refers to. However, this is not changed because it can be that an inference 
-		is provided without providing the ObservedValues or that a Panel level inference 
-		is derived from a set of individual level observedvalues. </ol> changelog/decisions 
-		2009-08-04 (mostly bugfixes following import sessions with Morris Swertz, 
-		Tomasz Adamusiak): <ol> <li> Made name of observation target globally unique. 
-		Discussion to reduce this constraint to unique within investigation.</li> 
-		<li> Made name of OntologySource globally unique (later made undone) </li> 
-		<li> Add ontology term to value.</li> <li> Made ontology URI optional, its 
-		name should be a unique identifier</li> <li> Made ObservableFeature.name 
-		unique within investigation. This allows for synonymous feature naming over 
-		investigations. The user of OntologyReferences allows cross-study queries 
-		if there is an external mapping ontology that indicates equivalence (BIG 
-		BUT EXCITING TODO)</li> <li> We now require certain features on Individual 
-		like 'sex' and 'species'. This results in practical problems because the 
-		data provider may use a different terminology to denote this features. (in 
-		this case; Characateristics[Sex] and Characteristics[Organism] DECISION: 
-		move these properties to become an 'ObservableFeature' </li> <li> Next to 
-		'father' and 'mother' one can imagine that there are more (family)relationships 
-		like 'twin'. In the source data this was reported as 'OX0232:MZ twin' (awkward!) 
-		We need a mechanism to enable such relationships flexibly. DECISION: need 
-		to a new type of ObservedValue that can have references to one (or more?) 
-		other ObservationTargets. Needs to be fully implemented still.</li> </ol> 
-		changelog/decisions 2009-09-02 (more bugfixes following import sessions with 
-		Morris Swertz, Tomasz Adamusiak): <ol> <li> ISSUE: VariableDefinition derives 
-		from ObservableFeature, in reality will be the only class used, as the abstract 
-		ObservableFeature has no unit nor categories. MOTIVATION: to have multiple 
-		units on ObservableFeature? This is not achieved in the model atm, as there's 
-		no relation under than inheres in, also if multiple units are defined, than 
-		it would be impossible to connect them to ObservedValues. RESOLUTION: merge 
-		the units and codes into ObservableFeature. Remove VariableDefinition.</li> 
-		<li> ISSUE: the capability to relate observeable features. MOTIVATION: MPD 
-		provides a category hierarchy for their measurements (cat1,cat2,cat3). These 
-		can hardly be interpreted as hierarchy of protocols but was added as 'procotocolComponents' 
-		for demonstration purposes and to test subprotocols PROPOSED RESOLUTION: 
-		Change field 'ObservableFeature.ontologyTerm' from an 'xref' to 'mref'. Then 
-		we can add multiple terms to one feature adding cat1,cat2,cat3 as additional 
-		'tags'. Caution: this doesn't denote hierarchical relationship And rely on 
-		a separate application ontology to describe these relationships (so at runtime 
-		ontologies can be loaded to assist the mapping).</li> <li> ISSUE: ObservedValue 
-		and ProtocolApplication could reference different Investigations. At the 
-		moment investigation is referenced in 3 different classes: ObservedValue, 
-		ObservableFeature and ProtocolApplication. MOTIVATION: This is to support 
-		different level of granularity: -ObservableFeature needs an Investigation 
-		reference for the cases when the researcher did not want to disclose actual 
-		measurements values but still wanted to show what was measured. -ObservableFeatures 
-		can have different investigations but share the same ProtocolApplication. 
-		Using ProtocolApplications that bridge multiple investigations is probably 
-		a bit too complicated. RESOLUTION: ignore in the model. Implementationwize 
-		add a trigger that checks if all ObservedValues are consistent with their 
-		protocolapplication regarding their Investigation.</li> <li> ISSUE: unit 
-		and codelist are variants of the same thing, namely binding the range and 
-		interpretation of observedValues. RESOLUTION: Made CodeList and instance 
-		of an OntologyTerm so that it can be addressed as being a unit.</li> </ol> 
-		Open issues: <ol> <li> ISSUE: Codes are a special kind of OntologyTerm, i.e. 
-		well defined values. RESOLUTION: Is there a sensible way to make Code extend 
-		OntologyTerm? Then ObservedValue.codeReference could be dropped.</li> <li> 
-		ISSUE: In case an ObservedValue uses a CodeList then ObservedValue.value 
-		actually becomes a foreign key to Code.code. Is is neither used nor constrained. 
-		RESOLUTION: create a trigger that automatically finds the appropriate label 
-		for a value.</li> </ol> Following Luxembourg 2009-10-02 and 11-11 <ol> <li>Special 
-		treatment of 'nulls'</li> <li>IDF type of things: contributors, publications, 
-		roles etc -> see exchange format</li> <li>Added aggregate value to capture 
-		dbGaP data</li> </ol> Changelog 2009-08-12 <ol> <li>Made OntologySource optional</li> 
-		<li>Made ontologyTerm and OntologySource unique within invstigation </li> 
-		<li>Removed ontologytTerm.termLabel as it was ambiguous with the term itself. 
-		If people want to use their own coding they can use 'Code'</li> <li>Removed 
-		CodeList and Code. Instead linked ObservableFeature to one of more OntologyTerms 
-		having codes.</li> </ol> Changelog 2010-01-20 <ol> <li>Further extended documentation</li> 
-		<li>Discussion: do we need to remove father/mother from individual -> can 
-		be done via ObservableFeature?</li> <li>Extended investigation with a property 
-		to indicate source of the data. Discussion: should we put in components from 
-		MAGE-TAB IDF? </li> </ol> Changelog 2010-02-08 <ol> <li>Code part of model</li> 
-		</ol> Changelog 2010-07-28, by Erik Roos <ol> <li>Made ObservedValue implement 
-		Nameable, so values can have a name </li> <li>Added optional Endtime field 
-		to ObservedValue</li> <li>Added fields to ObservableFeature needed for AnimalDB: 
-		focal, observationtargettype and observationtargetlabel</li> <li>Added decorator 
-		to ObservableFeature</li> <li>Added field observationTargetType to ObservationTarget</li> 
-		</ol> Changelog 2010-07-29, by Erik Roos <ol> <li>Made ontologyAccession 
-		in Ontology nillable</li> <li>Made field 'investigation' in ObservedValue 
-		nillable</li> <li>Made field 'value' in ObservedValue nillable, because in 
-		an ObservedRelationship you don't have to fill in this field</li> <li>Integrated 
-		ObservedRelationship into ObservedValue, so it becomes easier to mix them 
-		in your code</li> </ol> Changelog 2010-07-30, by Erik Roos <ol> <li>Commented 
-		out uniqueness constraint for 'code' field of Code, since the code itself 
-		doesn't need to be unique. The combination of code and feature should be 
-		unique instead.</li> </ol> Changelog 2010-08-04, by Erik Roos <ol> <li>Added 
-		xref_label="name" to MREF from Protocol to ObservableFeature, so interface 
-		can show nice labels.</li> <li>Added xref_label="name" to XREF from InvestigationElement 
-		to Investigation</li> </ol> Changelog 2010-09-19, by Morris <ol> <li>Removed 
-		ObservedValue.name as that was a workaround.</li> <li>Set focal default to 
-		'false' to keep old behavior</li> </ol> </p> -->
 </molgenis>
