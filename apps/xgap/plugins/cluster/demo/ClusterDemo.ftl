@@ -30,12 +30,12 @@
 			<!-- <font style='font-size:24px; font-weight:bold;'>xQTL workbench</font>-->
 			<#if screen.userIsAdminAndDatabaseIsEmpty == true>
 				<br><br><table bgcolor="white"><tr><td>
-				<br><i><font color="red">You are logged in as admin, and the database does not contain any investigations.</font></i><br><br>
-				Enter your preferred file storage location, and press 'Load' to validate this path and load the example dataset here. Unvalidated paths are overwritten.<br><br>
+				<br><i><font color="red">You are logged in as admin, and the database does not contain any investigations or other users.</font></i><br><br>
+				Enter your preferred file storage location, and press 'Load' to validate this path and load the example dataset here. Unvalidated paths are overwritten. In addition, the demo users and permissions are loaded.<br><br>
 				The default shown is ./data - consider changing this before continuing. Be aware of permissions your OS grants you on this directory, depending on which user started up the application.<br><br>
 				
 				<#if screen.validpath?exists>
-					<b>A valid path is already present and cannot be overwritten here. To do so, use Settings -> File storage.</b><br><br>
+					<b>A valid path is present and cannot be overwritten here. To do so, use Settings -> File storage.</b><br><br>
 					Path: <font style="font-size:medium; font-family: Courier, 'Courier New', monospace">${screen.validpath}</font>
 				<#else>
 					Path: <input type="text" size="30" style="border:2px solid black; color:blue; display:inline; font-size:medium; font-family: Courier, 'Courier New', monospace" id="inputBox" name="fileDirPath" value="./data" onkeypress="if(window.event.keyCode==13){document.forms.${screen.name}.__action.value = 'setPathAndLoad';}">
@@ -81,7 +81,12 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="top" align="center" onClick="document.forms.main.__target.value='main';document.forms.main.select.value='Cluster';document.forms.main.submit();">
+		<td valign="top" align="center"
+		<#if screen.loggedIn>
+			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='Cluster';document.forms.main.submit();">
+		<#else>
+			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='UserLogin';document.forms.main.submit();">
+		</#if>
 			<table bgcolor="#BBBBBB" cellpadding="10" cellspacing="10" border="2" width="160px">
 				<tr>
 					<td align="center">
@@ -92,7 +97,7 @@
 			<table>
 				<tr>
 					<td align="center">
-						<font style='font-size:10px;'>(login as user <b>biologist</b>, password <b>bio</b>)</font>
+						<font style='font-size:10px;'>(login as user <b>bio-user</b>, password <b>bio</b>)</font>
 					</td>
 				</tr>
 			</table>
@@ -100,7 +105,12 @@
 		
 		<td width="20px">&nbsp;</td>
 		
-		<td align="center" onClick="document.forms.main.__target.value='main';document.forms.main.select.value='Investigations';document.forms.main.submit();">
+		<td align="center"
+		<#if screen.loggedIn>
+			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='Investigations';document.forms.main.submit();">
+		<#else>
+			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='UserLogin';document.forms.main.submit();">
+		</#if>
 			<table  bgcolor="#BBBBBB" cellpadding="10" cellspacing="10" border="2" width="160px">
 				<tr>
 
@@ -112,7 +122,7 @@
 			<table>
 				<tr>
 					<td align="center">
-						<font style='font-size:10px;'>(login as user <b>biologist</b>, password <b>bio</b>)</font>
+						<font style='font-size:10px;'>(login as user <b>bio-user</b>, password <b>bio</b>)</font>
 					</td>
 				</tr>
 			</table>
@@ -120,7 +130,12 @@
 		
 		<td width="20px">&nbsp;</td>
 
-		<td align="center" onClick="document.forms.main.__target.value='main';document.forms.main.select.value='QTLWizard';document.forms.main.submit();">
+		<td align="center"
+		<#if screen.loggedIn>
+			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='QTLWizard';document.forms.main.submit();">
+		<#else>
+			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='UserLogin';document.forms.main.submit();">
+		</#if>
 			<table  bgcolor="#BBBBBB" cellpadding="10" cellspacing="10" border="2" width="160px">
 
 				<tr>
@@ -132,7 +147,7 @@
 			<table>
 				<tr>
 					<td align="center">
-						<font style='font-size:10px;'>(login as user <b>biologist</b>, password <b>bio</b>)</font>
+						<font style='font-size:10px;'>(login as user <b>bio-user</b>, password <b>bio</b>)</font>
 					</td>
 				</tr>
 			</table>
@@ -140,7 +155,12 @@
 		
 		<td width="20px">&nbsp;</td>
 		
-		<td align="center" onClick="document.forms.main.__target.value='main';document.forms.main.select.value='RScripts';document.forms.main.submit();">
+		<td align="center"
+		<#if screen.loggedIn>
+			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='AnalysisSettings';document.forms.main.submit();">
+		<#else>
+			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='UserLogin';document.forms.main.submit();">
+		</#if>
 			<table  bgcolor="#BBBBBB" cellpadding="10" cellspacing="10" border="2" width="160px">
 				<tr>
 					<td align="center">
@@ -151,7 +171,7 @@
 			<table>
 				<tr>
 					<td align="center">
-						<font style='font-size:10px;'>(login as user <b>bioinformatician</b>, password <b>bio</b>)</font>
+						<font style='font-size:10px;'>(login as user <b>bioinfo-user</b>, password <b>bioinfo</b>)</font>
 					</td>
 				</tr>
 			</table>

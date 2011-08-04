@@ -13,9 +13,11 @@ import java.util.List;
 import matrix.AbstractDataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
+import org.molgenis.auth.MolgenisRoleGroupLink;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
@@ -39,12 +41,21 @@ public class ClusterDemo extends PluginModel<Entity>
 		super(name, parent);
 	}
 	
-	public boolean userIsAdminAndDatabaseIsEmpty;
+	private boolean userIsAdminAndDatabaseIsEmpty;
+	private String validpath;
+	private boolean loggedIn;
+	
+	
+	public boolean isLoggedIn()
+	{
+		return loggedIn;
+	}
 
-	public String validpath;
-	
-	
-	
+	public void setLoggedIn(boolean loggedIn)
+	{
+		this.loggedIn = loggedIn;
+	}
+
 	public String getValidpath()
 	{
 		return validpath;
@@ -117,12 +128,22 @@ public class ClusterDemo extends PluginModel<Entity>
 		try
 		{
 			
+			// first, lets add the example users if admin/anynomous are the only users
+			// unrelated to the rest of the function
+			if(db.find(MolgenisUser.class).size() == 2){
+				addExampleUsers(db);
+			}
+			
 			// case 1
 			if(db.getFileSourceHelper().hasValidFileSource())
 			{
 				// don't do anything extra, but prevents from going
 				// into case 2 which also applies to valid paths..
 				// (as well as unvalid ones!)
+				
+				//however - request.getString("fileDirPath") is now null
+				//so set string here for nice output
+				path = db.getFileSourceHelper().getFilesource(true).getAbsolutePath();
 			}
 			//case 2 (not a validated path: just delete and use input)
 			else if(db.getFileSourceHelper().hasFilesource(false))
@@ -173,10 +194,59 @@ public class ClusterDemo extends PluginModel<Entity>
 				this.setMessages(new ScreenMessage(e.getMessage(), false));
 			}
 	}
+	
+	/**
+	 * Adds example users. Depends on having roles 'biologist' and 'bioinformatician' in the GUI xml.
+	 * @param db
+	 * @throws DatabaseException
+	 */
+	public void addExampleUsers(Database db) throws DatabaseException{
+		MolgenisUser bioUser = new MolgenisUser();
+		bioUser.setName("bio-user");
+		bioUser.setPassword("bio");
+		bioUser.setFirstname("bio_firstname");
+		bioUser.setLastname("bio_lastname");
+		bioUser.setEmailaddress("bio_email");
+		bioUser.setActive(true);
+		
+		MolgenisUser bioInfoUser = new MolgenisUser();
+		bioInfoUser.setName("bioinfo-user");
+		bioInfoUser.setPassword("bioinfo");
+		bioInfoUser.setFirstname("bioinfo_firstname");
+		bioInfoUser.setLastname("bioinfo_lastname");
+		bioInfoUser.setEmailaddress("bioinfo_email");
+		bioInfoUser.setActive(true);
+		
+		db.add(bioUser);
+		db.add(bioInfoUser);
+		
+		MolgenisRoleGroupLink bioLink = new MolgenisRoleGroupLink();
+		bioLink.setGroup_Name("biologist");
+		bioLink.setRole(bioUser);
+		
+		MolgenisRoleGroupLink bioInfoLink = new MolgenisRoleGroupLink();
+		bioInfoLink.setGroup_Name("bioinformatician");
+		bioInfoLink.setRole(bioInfoUser);
+		
+		MolgenisRoleGroupLink makeBioinfoPartOfBio = new MolgenisRoleGroupLink();
+		makeBioinfoPartOfBio.setGroup_Name("biologist");
+		makeBioinfoPartOfBio.setRole_Name("bioinformatician");
+		
+		db.add(bioLink);
+		db.add(bioInfoLink);
+		db.add(makeBioinfoPartOfBio);
+		
+	}
 
 	@Override
 	public void reload(Database db)
 	{
+		
+		if(this.getLogin().isAuthenticated()){
+			this.setLoggedIn(true);
+		}else{
+			this.setLoggedIn(false);
+		}
 		
 		
 		try
