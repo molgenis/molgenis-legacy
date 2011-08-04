@@ -106,40 +106,11 @@ public class MCFServer implements MCF
 
     }
 
-    public static void main(String[] args)
-    {
-        MCFServer mcf = new MCFServer();
-
-        String result = mcf.test();
-        System.out.println("ID: " + result);
-
-    }
-
-    public String test()
-    {
-        String ID = "LALA_ID";
-
-        Pipeline p = new Pipeline();
-        p.setId(ID);
-        this.setPipeline(p);
-        Pipeline back = this.getPipeline(ID);
-
-        return back.getId();
-    }
-
-    public String getSimpleTestInfo()
-    {
-        String result = pipelines.elementAt(0).getMonitor().getTestSummary();
-
-        return result;
-    }
-
     public void removePipeline(String id)
     {
         
     }
 
-    @Override
     public ExecutorService getExecutor()
     {
         return grid.newGridExecutorService();

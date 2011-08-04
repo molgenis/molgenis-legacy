@@ -22,9 +22,6 @@ public interface MCF
 
     int getNumberActivePipelines();
 
-    //temporary demo
-    String getSimpleTestInfo();
-
     void removePipeline(String id);
 
     ExecutorService getExecutor();
