@@ -34,6 +34,10 @@
 		<pathelement location="modules/decorators/pheno" />
 		<pathelement location="modules/decorators/data" />
 	</path>
+	
+	<!-- Path refs to build dirs -->
+	<property name="mol_build_dir" value="../molgenis/build/classes" />
+	<property name="app_build_dir" value="build/classes" />
 
 	<!-- Path ref to the molgenis libraries -->
 	<path id="molgenis-libs">
@@ -53,15 +57,16 @@
 	CLEAN - Step 1: Delete the content of the app build, app generated and Molgenis build folders.
 	-->
 	<target name="clean" description="Delete generated and build content">
-		<!-- mkdir build if it doesn't exist -->
-		<mkdir dir="../molgenis/build"/>
+		<!-- create build dirs if they doesn't exist -->
+		<mkdir dir="${mol_build_dir}"/>
+		<mkdir dir="${app_build_dir}"/>
 		
-		<!-- remove content of build, ../molgenis/build and generated -->
+		<!-- remove content of build, ${mol_build_dir} and generated -->
 		<delete includeemptydirs="true">
-			<fileset dir="build" includes="**/*" />
+			<fileset dir="${app_build_dir}" includes="**/*" />
 		</delete>
 		<delete includeemptydirs="true">
-			<fileset dir="../molgenis/build" includes="**/*" />
+			<fileset dir="${mol_build_dir}" includes="**/*" />
 		</delete>
 		<delete includeemptydirs="true">
 			<fileset dir="generated" includes="**/*" />
@@ -73,21 +78,22 @@
 	(e.g. you run this script in '/somedir/molgenis_apps', then molgenis must be in '/somedir/molgenis')
 	-->
 	<target name="compile_molgenis" description="Compile MOLGENIS">
-		<!-- mkdir build if it doesn't exist -->
-		<mkdir dir="../molgenis/build"/>
+		<!-- create build dirs if they doesn't exist -->
+		<mkdir dir="${mol_build_dir}"/>
+		<mkdir dir="${app_build_dir}"/>
 		
 		<!-- Run javac on the src dir to be compiled into build, using the molgenis-libs fileset as classpath -->
-		<javac srcdir="../molgenis/src" destdir="../molgenis/build" includeantruntime="false">
+		<javac srcdir="../molgenis/src" destdir="${mol_build_dir}" includeantruntime="false">
 			<classpath>
 				<path refid="molgenis-libs" />
 			</classpath>
 		</javac>
 		<!-- Copy the res folder to the build dir so it can be found by MolgenisResourceCopyGen -->
-		<copy todir="../molgenis/build/org/molgenis/framework/ui/res" verbose="true">
+		<copy todir="${mol_build_dir}/org/molgenis/framework/ui/res" verbose="true">
 			<fileset dir="../molgenis/src/org/molgenis/framework/ui/res" includes="**/*.*" />
 		</copy>
 		<!-- Copy all Freemarker templates anywhere in MOLGENIS too -->
-		<copy todir="../molgenis/build" verbose="true">
+		<copy todir="${mol_build_dir}" verbose="true">
 			<fileset dir="../molgenis/src" includes="**/*.ftl" />
 		</copy>
 	</target>
@@ -101,7 +107,7 @@
 			<arg value="apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl.properties" />
 			<classpath>
 				<path refid="molgenis-libs" />
-				<path location="../molgenis/build" />
+				<path location="${mol_build_dir}" />
 			</classpath>
 		</java>
 	</target>
@@ -111,10 +117,10 @@
 	which depend on the org.molgenis.auth.service module.
 	 -->
 	<target name="compile_datatypes" description="Compile generated datatypes">
-		<javac srcdir="generated/java/org" excludes="**/*Decorator.java" destdir="build" includeantruntime="false">
+		<javac srcdir="generated/java/org" excludes="**/*Decorator.java" destdir="${app_build_dir}" includeantruntime="false">
 			<classpath>
 				<path refid="molgenis-libs" />
-				<path location="../molgenis/build" />
+				<path location="${mol_build_dir}" />
 			</classpath>
 		</javac>
 	</target>
@@ -124,11 +130,11 @@
 	-->
 	<target name="compile_app" description="Compile application">
 		<pathconvert targetos="unix" property="app_src" refid="app.class.path" />
-		<javac srcdir="${app_src}" destdir="build" includeantruntime="false">
+		<javac srcdir="${app_src}" destdir="${app_build_dir}" includeantruntime="false">
 			<classpath>
 				<path refid="molgenis-libs" />
 				<path refid="app-libs" />
-				<path location="../molgenis/build" />
+				<path location="${mol_build_dir}" />
 			</classpath>
 		</javac>
 	</target>
@@ -137,16 +143,16 @@
 	MAKE - Step 6: Compile other generated parts that depends on having the application compiled first
 	-->
 	<target name="compile_other" description="Compile other generated">
-		<javac srcdir="generated/java/app" destdir="build" includeantruntime="false">
+		<javac srcdir="generated/java/app" destdir="${app_build_dir}" includeantruntime="false">
 			<classpath>
 				<path refid="molgenis-libs" />
-				<path location="../molgenis/build" />
+				<path location="${mol_build_dir}" />
 			</classpath>
 		</javac>
-		<javac srcdir="generated/java/test" destdir="build" includeantruntime="false">
+		<javac srcdir="generated/java/test" destdir="${app_build_dir}" includeantruntime="false">
 			<classpath>
 				<path refid="molgenis-libs" />
-				<path location="../molgenis/build" />
+				<path location="${mol_build_dir}" />
 			</classpath>
 		</javac>
 	</target>
@@ -175,13 +181,13 @@
 
 		<!-- Copy to build dir. Use a regexp to remove the leading locations
 		such as 'apps/xgap' or 'modules/pheno' -->
-		<copy todir="build" verbose="true">
+		<copy todir="${app_build_dir}" verbose="true">
 			<fileset refid="app_fileset" />
 			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />
 		</copy>
 		
 		<!-- Copy SQL files from generated/sql to build root -->
-		<copy todir="build" verbose="true">				
+		<copy todir="${app_build_dir}" verbose="true">				
 			<fileset dir="generated/sql" includes="**/*.sql" />
 		</copy>
 	</target>
@@ -194,8 +200,8 @@
 			<classpath>
 				<path refid="molgenis-libs" />
 				<path refid="app-libs" />
-				<path location="../molgenis/build" />
-				<path location="build" />
+				<path location="${mol_build_dir}" />
+				<path location="${app_build_dir}" />
 			</classpath>
 		</java>
 	</target>

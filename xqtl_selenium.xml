@@ -32,13 +32,13 @@
 	<target name="test" description="Start the web test">
 		<antcall target="deletedb" />
 		<testng suitename="webtest">
-			<xmlfileset dir="build/test" includes="xqtl_selenium_testng_.xml" />
+			<xmlfileset dir="${app_build_dir}/test" includes="xqtl_selenium_testng_.xml" />
 			<!--classfileset dir="build/test" includes="WebTest.class"/-->
 			<classpath>
 				<path refid="molgenis-libs" />
 				<path refid="app-libs" />
-				<path location="../molgenis/build" />
-				<path location="build" />
+				<path location="${mol_build_dir}" />
+				<path location="${app_build_dir}" />
 			</classpath>
 		</testng>
 	</target>

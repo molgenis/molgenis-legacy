@@ -19,7 +19,15 @@ public class WebTest
 	SeleniumServer server;
 	HttpCommandProcessor proc;
 	Selenium selenium;
-	Integer port = 11000;
+	Integer deployPort = 11000;
+	Integer sleepTime = 5000;
+	String pageLoadTimeout = "30000";
+
+	public void sleepHelper(String who) throws InterruptedException
+	{
+		System.out.println(who + " done, now sleeping for " + sleepTime + " msec");
+		Thread.sleep(sleepTime);
+	}
 
 	@BeforeSuite(alwaysRun = true)
 	public void setupBeforeSuite(ITestContext context)
@@ -27,7 +35,7 @@ public class WebTest
 		String seleniumHost = "localhost";
 		String seleniumPort = "9080";
 		String seleniumBrowser = "firefox";
-		String seleniumUrl = "http://localhost:"+port+"/";
+		String seleniumUrl = "http://localhost:" + deployPort + "/";
 
 		RemoteControlConfiguration rcc = new RemoteControlConfiguration();
 		rcc.setSingleWindow(true);
@@ -51,45 +59,55 @@ public class WebTest
 	@BeforeClass
 	public void setUp()
 	{
-		new RunStandalone(port);
+		new RunStandalone(deployPort);
 	}
-	
+
 	@Test
 	public void startup() throws InterruptedException
 	{
 		selenium.open("/molgenis_apps/molgenis.do");
-		selenium.waitForPageToLoad("30000");
+		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertEquals(selenium.getTitle(), "xQTL workbench");
+		Assert.assertTrue(selenium.isTextPresent("Welcome"));
+		Assert.assertEquals(selenium.getText("link=R api"), "R api");
+		sleepHelper("startup");
 	}
 
 	@Test
 	public void login() throws InterruptedException
 	{
-
-		selenium.click("css=div.navigationNotSelected");
-		selenium.waitForPageToLoad("30000");
+		selenium.click("//div[@onclick=\"document.forms.main.__target.value='main';document.forms.main.select.value='UserLogin';document.forms.main.submit();\"]");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertEquals(selenium.getText("link=Register"), "Register");
 		selenium.type("id=username", "admin");
 		selenium.type("id=password", "admin");
 		selenium.click("id=Login");
-		selenium.waitForPageToLoad("30000");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Logged in as admin"));
+		sleepHelper("login");
 	}
-
 
 	@Test
 	public void loadExampleData() throws InterruptedException
 	{
-		selenium.click("css=div.navigationNotSelected");
-		selenium.waitForPageToLoad("30000");
-		selenium.click("css=input[type=submit]");
-		selenium.waitForPageToLoad("30000");
+		selenium.click("//div[@onclick=\"document.forms.main.__target.value='main';document.forms.main.select.value='ClusterDemo';document.forms.main.submit();\"]");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("You are logged in as admin, and the database does not contain any investigations."));
+		selenium.click("id=loadExamples");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("File path './data' was validated and the dataloader succeeded"));
+		sleepHelper("loadExampleData");
 	}
 
 	@Test
 	public void exploreExampleData() throws InterruptedException
 	{
 		selenium.click("//div[@onclick=\"document.forms.main.__target.value='main';document.forms.main.select.value='Investigations';document.forms.main.submit();\"]");
-		selenium.waitForPageToLoad("30000");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertEquals(selenium.getText("link=Marker (117)"), "Marker (117)");
 		selenium.click("link=metaboliteexpression");
-		selenium.waitForPageToLoad("30000");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertEquals(selenium.getText("//div[@id='Datas_screen']/div[2]/form/div/div[2]/div/table/tbody/tr[3]/td/table/tbody/tr[3]/td[4]"),"942");
+		sleepHelper("exploreExampleData");
 	}
 }
