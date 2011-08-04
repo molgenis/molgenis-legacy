@@ -23,7 +23,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.security.Login;
 import org.molgenis.model.elements.Model;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvWriter;
+import org.molgenis.util.SpreadsheetWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
@@ -83,7 +83,7 @@ public class InMemoryDatabase implements Database
 
 	@Override
 	public <E extends Entity> int add(Class<E> klazz, CsvReader reader,
-			CsvWriter writer)
+			SpreadsheetWriter writer)
 	{
 		throw new UnsupportedOperationException();
 	}
@@ -114,7 +114,7 @@ public class InMemoryDatabase implements Database
 	}
 
 	@Override
-	public <E extends Entity> void find(Class<E> klazz, CsvWriter writer,
+	public <E extends Entity> void find(Class<E> klazz, SpreadsheetWriter writer,
 			QueryRule... rules) throws DatabaseException
 	{
 		throw new UnsupportedOperationException();
@@ -380,7 +380,7 @@ public class InMemoryDatabase implements Database
 	}
 
 	@Override
-	public <E extends Entity> void find(Class<E> entityClass, CsvWriter writer,
+	public <E extends Entity> void find(Class<E> entityClass, SpreadsheetWriter writer,
 			List<String> fieldsToExport, QueryRule... rules)
 			throws DatabaseException
 	{

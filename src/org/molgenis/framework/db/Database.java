@@ -28,7 +28,7 @@ import javax.persistence.EntityManager;
 import org.molgenis.framework.security.Login;
 import org.molgenis.model.elements.Model;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvWriter;
+import org.molgenis.util.SpreadsheetWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.ResultSetTuple;
 import org.molgenis.util.Tuple;
@@ -135,7 +135,7 @@ public interface Database
 	 *            to filter or otherwise change result
 	 * @throws DatabaseException
 	 */
-	public <E extends Entity> void find(Class<E> entityClass, CsvWriter writer, QueryRule... rules)
+	public <E extends Entity> void find(Class<E> entityClass, SpreadsheetWriter writer, QueryRule... rules)
 			throws DatabaseException;
 
 	/**
@@ -146,7 +146,7 @@ public interface Database
 	 * Optionally the auto id's are not exported.
 	 * 
 	 */
-	public <E extends Entity> void find(Class<E> entityClass, CsvWriter writer, List<String> fieldsToExport, QueryRule... rules)
+	public <E extends Entity> void find(Class<E> entityClass, SpreadsheetWriter writer, List<String> fieldsToExport, QueryRule... rules)
 			throws DatabaseException;
 
 	/**
@@ -268,7 +268,7 @@ public interface Database
 	 * @return number of entities added
 	 * @throws Exception
 	 */
-	public <E extends Entity> int add(Class<E> klazz, CsvReader reader, CsvWriter writer) throws DatabaseException;
+	public <E extends Entity> int add(Class<E> klazz, CsvReader reader, SpreadsheetWriter writer) throws DatabaseException;
 
 	/**
 	 * Update one entity object in the database.

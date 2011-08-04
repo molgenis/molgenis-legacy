@@ -37,7 +37,7 @@ import org.molgenis.framework.ui.commands.CommandMenu;
 import org.molgenis.framework.ui.commands.DownloadAllCommand;
 import org.molgenis.framework.ui.commands.DownloadSelectedCommand;
 import org.molgenis.framework.ui.commands.DownloadVisibleCommand;
-import org.molgenis.framework.ui.commands.DownloadXLS;
+import org.molgenis.framework.ui.commands.DownloadXlsCommand;
 import org.molgenis.framework.ui.commands.EditSelectedCommand;
 import org.molgenis.framework.ui.commands.GalaxyCommand;
 import org.molgenis.framework.ui.commands.RemoveSelectedCommand;
@@ -267,7 +267,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		super.addCommand(new DownloadAllCommand("download_all", this
 				.getController()));
 		
-		super.addCommand(new DownloadXLS("download_xls", this.getController()));
+		super.addCommand(new DownloadXlsCommand("download_xls", this.getController()));
 
 		// File: Add batch
 		super.addCommand(new AddBatchCommand("upload_csv", this.getController()));

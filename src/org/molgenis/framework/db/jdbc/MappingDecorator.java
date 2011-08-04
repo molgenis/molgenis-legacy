@@ -8,7 +8,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvWriter;
+import org.molgenis.util.SpreadsheetWriter;
 import org.molgenis.util.Entity;
 
 public class MappingDecorator<E extends Entity> implements Mapper<E>
@@ -39,7 +39,7 @@ public class MappingDecorator<E extends Entity> implements Mapper<E>
 	}
 
 	@Override
-	public int add(CsvReader reader, CsvWriter writer) throws DatabaseException
+	public int add(CsvReader reader, SpreadsheetWriter writer) throws DatabaseException
 	{
 		return mapper.add(reader, writer);
 	}
@@ -57,7 +57,7 @@ public class MappingDecorator<E extends Entity> implements Mapper<E>
 	}
 
 	@Override
-	public void find(CsvWriter writer, QueryRule ...rules) throws DatabaseException
+	public void find(SpreadsheetWriter writer, QueryRule ...rules) throws DatabaseException
 	{
 		mapper.find(writer, rules);
 	}
@@ -107,7 +107,7 @@ public class MappingDecorator<E extends Entity> implements Mapper<E>
 	}
 
 	@Override
-	public void find(CsvWriter writer, List<String> fieldsToExport, QueryRule ...rules) throws DatabaseException
+	public void find(SpreadsheetWriter writer, List<String> fieldsToExport, QueryRule ...rules) throws DatabaseException
 	{
 		mapper.find(writer, fieldsToExport, rules);
 	}

@@ -39,7 +39,7 @@ public class DownloadSelectedCommand<E extends Entity> extends SimpleCommand
 	public DownloadSelectedCommand(String name, ScreenController<?>  parentScreen)
 	{
 		super(name, parentScreen);
-		this.setLabel("Download selected");
+		this.setLabel("Download selected (.csv)");
 		this.setIcon("generated-res/img/download.png");
 		this.setDownload(true);
 		this.setMenu("File");

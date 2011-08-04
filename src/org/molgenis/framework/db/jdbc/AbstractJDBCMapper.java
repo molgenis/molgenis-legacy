@@ -18,7 +18,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvReaderListener;
-import org.molgenis.util.CsvWriter;
+import org.molgenis.util.SpreadsheetWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.ResultSetTuple;
 import org.molgenis.util.Tuple;
@@ -105,7 +105,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 
 	// FIXME: can we merge the two add functions by wrapping list/reader into an
 	// iterator of some kind?
-	public int add(CsvReader reader, CsvWriter writer) throws DatabaseException
+	public int add(CsvReader reader, SpreadsheetWriter writer) throws DatabaseException
 	{
 		int rowsAffected = 0;
 		final String TX_TICKET = "ADD+" + this.create().getClass().getCanonicalName() + "_CSV";
@@ -575,7 +575,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 		}
 	}
 
-	public void find(CsvWriter writer, QueryRule... rules) throws DatabaseException
+	public void find(SpreadsheetWriter writer, QueryRule... rules) throws DatabaseException
 	{
 		// default should be false for regular behaviour
 		// FIXME: java warning? "Varargs methods should only override or be
@@ -600,7 +600,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 	 * Reason for backup: function needs to be looked at - possible bug
 	 * See other find() function below for explanation!
 	 */
-	public void findBACKUP(CsvWriter writer, boolean skipIdFields, QueryRule... rules) throws DatabaseException
+	public void findBACKUP(SpreadsheetWriter writer, boolean skipIdFields, QueryRule... rules) throws DatabaseException
 	{
 		try
 		{
@@ -677,7 +677,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 		}
 	}
 	
-	public void find(CsvWriter writer, List<String> fieldsToExport, QueryRule... rules) throws DatabaseException
+	public void find(SpreadsheetWriter writer, List<String> fieldsToExport, QueryRule... rules) throws DatabaseException
 	{
 		try
 		{

@@ -35,7 +35,7 @@ public class DownloadAllCommand<E extends Entity> extends SimpleCommand
 	public DownloadAllCommand(String name, ScreenController<?>  parentScreen)
 	{
 		super(name, parentScreen);
-		this.setLabel("Download all");
+		this.setLabel("Download all (.csv)");
 		this.setIcon("generated-res/img/download.png");
 		this.setDownload(true);
 		this.setMenu("File");

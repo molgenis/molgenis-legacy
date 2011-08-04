@@ -33,7 +33,7 @@ import org.molgenis.framework.db.jdbc.JDBCMapper;
 import org.molgenis.framework.security.Login;
 import org.molgenis.model.elements.Model;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvWriter;
+import org.molgenis.util.SpreadsheetWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -286,7 +286,7 @@ public class Lifewise implements Database
 	}
 
 	@Override
-	public <E extends Entity> void find(Class<E> entityClass, CsvWriter writer,
+	public <E extends Entity> void find(Class<E> entityClass, SpreadsheetWriter writer,
 			QueryRule... rules) throws DatabaseException
 	{
 		throw new UnsupportedOperationException();
@@ -383,7 +383,7 @@ public class Lifewise implements Database
 
 	@Override
 	public <E extends Entity> int add(Class<E> klazz, CsvReader reader,
-			CsvWriter writer) throws DatabaseException
+			SpreadsheetWriter writer) throws DatabaseException
 	{
 		// TODO Auto-generated method stub
 		return 0;
@@ -511,7 +511,7 @@ public class Lifewise implements Database
 	}
 
 	@Override
-	public <E extends Entity> void find(Class<E> entityClass, CsvWriter writer,
+	public <E extends Entity> void find(Class<E> entityClass, SpreadsheetWriter writer,
 			List<String> fieldsToExport, QueryRule... rules)
 			throws DatabaseException
 	{

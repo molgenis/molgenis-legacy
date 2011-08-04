@@ -4,7 +4,7 @@ import java.util.List;
 
 import jxl.write.WritableSheet;
 
-public interface CsvWriter
+public interface SpreadsheetWriter
 {
 
 	/**
@@ -27,24 +27,24 @@ public interface CsvWriter
 	 *            Tuple to be written.
 	 */
 	public abstract void writeRow(Tuple t);
-
+	
 	/**
-	 * Write a row to stream
+	 * Write a row to an Excel sheet.
+	 * TODO: keep or remove as it is (too) implementation-specific?
 	 * 
-	 * @param values
+	 * @param e
+	 * @param sheet
 	 */
-	// public void writeRow(Object[] values)
-	// {
-	// // FIXME: this is probably unnecessarily slow
-	// for (int i = 0; i < values.length; i++)
-	// {
-	// if(i > 0) writer.print(separator);
-	// writeValue(values[i], writer);
-	// }
-	// writer.println();
-	// if (count++ % 10000 == 0) logger.debug("wrote values array to line " +
-	// count + " ");
-	// }
+	void writeRow(Entity e, WritableSheet sheet);
+	
+	/**
+	 * Write a row to an Excel sheet.
+	 * TODO: keep or remove as it is (too) implementation-specific?
+	 * 
+	 * @param e
+	 * @param sheet
+	 */
+	void writeRow(Tuple t, WritableSheet sheet);
 
 	public abstract void writeValue(Object object);
 
@@ -56,10 +56,6 @@ public interface CsvWriter
 
 	public abstract void writeMatrix(List<String> rowNames,
 			List<String> colNames, Object[][] elements);
-
-	void writeRow(Entity e, WritableSheet sheet);
-
-	void writeRow(Tuple t, WritableSheet sheet);
 
 	void writeHeader(WritableSheet excelSheet);
 
