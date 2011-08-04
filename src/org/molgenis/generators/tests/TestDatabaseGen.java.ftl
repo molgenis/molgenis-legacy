@@ -75,9 +75,9 @@ public class TestDatabase
 			<#if db_mode = 'standalone'>
 			db = new JDBCDatabase("molgenis.testhsql.properties");
 			<#else>
-			db = new JDBCDatabase("molgenis.test.properties");	
+			db = new JDBCDatabase("${options.molgenis_properties}");	
 			//create the database
-			new Molgenis("molgenis.test.properties").updateDb();
+			new Molgenis("${options.molgenis_properties}").updateDb();
 			</#if>
 		</#if>	
 		}
