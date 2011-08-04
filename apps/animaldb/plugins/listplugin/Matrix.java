@@ -15,7 +15,7 @@ import jxl.write.WritableWorkbook;
 
 import org.apache.log4j.Logger;
 import org.molgenis.util.CsvPrintWriter;
-import org.molgenis.util.CsvWriter;
+import org.molgenis.util.SpreadsheetWriter;
 
 /**
  * An interface to a matrix, not unlike the Matrix class in the R-project. Row
@@ -226,7 +226,7 @@ public abstract class Matrix<E>
 	
 	// Used in a plugin context
 	public void writeToCsvWriter(PrintWriter out) throws Exception{
-		CsvWriter cfr = new CsvPrintWriter(out);
+		SpreadsheetWriter cfr = new CsvPrintWriter(out);
 		cfr.writeMatrix(getRowNames(), getColNames(), getElements());
 		cfr.close();
 	}
