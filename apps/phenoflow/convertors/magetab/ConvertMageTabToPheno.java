@@ -13,7 +13,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
-import org.molgenis.pheno.ObservableFeature;
+import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
@@ -68,7 +68,7 @@ public class ConvertMageTabToPheno
 			final Map<String, Individual> iMap = new LinkedHashMap<String, Individual>();
 
 			// load all features, optionally adding terms
-			final Map<String, ObservableFeature> fMap = new LinkedHashMap<String, ObservableFeature>();
+			final Map<String, ObservationElement> fMap = new LinkedHashMap<String, ObservationElement>();
 			
 			for (String annotation : reader.colnames().subList(1, reader.colnames().indexOf("Sample Name")))
 			{
@@ -79,7 +79,7 @@ public class ConvertMageTabToPheno
 					// exclude 'Individual'
 					//if (!characteristic.equalsIgnoreCase("Individual"))
 					//
-						ObservableFeature f = new ObservableFeature();
+					ObservationElement f = new ObservationElement();
 						f.setInvestigation(inv.getId());
 						f.setName(characteristic);
 						f.setInvestigation(inv.getId());
@@ -93,9 +93,9 @@ public class ConvertMageTabToPheno
 
 				}
 			}
-			for (ObservableFeature f : fMap.values())
+			for (ObservationElement f : fMap.values())
 				System.out.println(f);
-			db.add(new ArrayList<ObservableFeature>(fMap.values()));
+			db.add(new ArrayList<ObservationElement>(fMap.values()));
 
 			// add individuals at first parse
 			reader.parse(new CsvReaderListener()
@@ -163,7 +163,7 @@ public class ConvertMageTabToPheno
 								//if (!characteristic.equalsIgnoreCase("Individual"))
 								//{
 
-									ObservableFeature f = fMap.get(characteristic);
+								ObservationElement f = fMap.get(characteristic);
 
 									// exception for specific characteristics
 									// 'sex',
