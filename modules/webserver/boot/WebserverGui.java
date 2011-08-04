@@ -32,13 +32,13 @@ public class WebserverGui extends JFrame implements MouseListener{
 	String title =  variant + " powered by Molgenis Webserver";
 	final String url = "http://localhost:" + WWWServer.DEF_PORT + "/" + variant;
 
-	WebserverGui() throws IOException{
+	WebserverGui(Integer port) throws IOException{
 		setSize(300,150); 
 		setTitle(title);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	    setVisible(true);
 	    addMouseListener(this);
-		
+	    if(port != null){ WWWServer.DEF_PORT = port; }
 	    (webserverthread = new Thread(web = new WWWServer(variant))).start();
 	    if(usedOptions.generate_BOT){
 	    	web.setAttribute("bot", botentry);

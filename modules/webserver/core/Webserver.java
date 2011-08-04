@@ -88,7 +88,7 @@ public class Webserver implements ServletContext, Serializable {
 	protected static final int DEF_MIN_ACT_SESS = 10;
 	protected static final int DESTROY_TIME_SEC = 15;
 	protected static final int HTTP_MAX_HDR_LEN = 1024 * 1024 * 10;
-	public static final int DEF_PORT = 8080;
+	public static int DEF_PORT = 8080;
 	public static final String BGCOLOR = "BGCOLOR=\"WHITE\"";
 	protected static final int DEF_MAX_CONN_USE = 100;
 	public static final String UTF8 = "UTF-8"; // default encoding

@@ -5,19 +5,19 @@ import java.io.IOException;
 
 public class RunStandalone
 {
-
-	public RunStandalone()
+	
+	public RunStandalone(Integer port)
 	{
 		try
 		{
 			try
 			{
-				new WebserverGui();
+				new WebserverGui(port);
 			}
 			catch (HeadlessException e)
 			{
 				System.out.println("No GUI available going into commandline mode");
-				new Thread(new WebserverCmdLine()).start();
+				new Thread(new WebserverCmdLine(port)).start();
 			}
 		}
 		catch (IOException e)
@@ -32,6 +32,13 @@ public class RunStandalone
 	 */
 	public static void main(String[] args)
 	{
-		new RunStandalone();
+		if(args.length == 0){
+			// null construct: start on port 8080
+			new RunStandalone(null);
+		}else if(args.length == 1){
+			//int constructor: start on custom port
+			new RunStandalone(Integer.parseInt(args[0]));
+		}
+		
 	}
 }

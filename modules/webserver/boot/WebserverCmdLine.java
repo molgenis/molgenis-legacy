@@ -17,7 +17,8 @@ public class WebserverCmdLine implements Runnable{
 	String title =  variant + " powered by Molgenis Webserver";
 	final String url = "http://localhost:" + WWWServer.DEF_PORT + "/" + variant;
 
-	WebserverCmdLine() throws IOException{
+	WebserverCmdLine(Integer port) throws IOException{
+		if(port != null){ WWWServer.DEF_PORT = port; }
 	    (webserverthread = new Thread(web = new WWWServer(variant))).start();
 	    if(usedOptions.generate_BOT){
 	    	web.setAttribute("bot", botentry);

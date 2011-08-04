@@ -19,6 +19,7 @@ public class WebTest
 	SeleniumServer server;
 	HttpCommandProcessor proc;
 	Selenium selenium;
+	Integer port = 11000;
 
 	@BeforeSuite(alwaysRun = true)
 	public void setupBeforeSuite(ITestContext context)
@@ -26,7 +27,7 @@ public class WebTest
 		String seleniumHost = "localhost";
 		String seleniumPort = "9080";
 		String seleniumBrowser = "firefox";
-		String seleniumUrl = "http://localhost:8080/";
+		String seleniumUrl = "http://localhost:"+port+"/";
 
 		RemoteControlConfiguration rcc = new RemoteControlConfiguration();
 		rcc.setSingleWindow(true);
@@ -50,7 +51,7 @@ public class WebTest
 	@BeforeClass
 	public void setUp()
 	{
-		new RunStandalone();
+		new RunStandalone(port);
 	}
 	
 	@Test
