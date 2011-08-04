@@ -6,7 +6,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvWriter;
+import org.molgenis.util.SpreadsheetWriter;
 import org.molgenis.util.Entity;
 
 /**
@@ -26,7 +26,7 @@ public interface JDBCMapper<E extends Entity> extends Mapper<E>
 	// iterator of some kind?
 	public E create();
 	
-	public int add(CsvReader reader, CsvWriter writer) throws DatabaseException;
+	public int add(CsvReader reader, SpreadsheetWriter writer) throws DatabaseException;
 	
 	public int update(List<E> entities) throws DatabaseException;
 	
@@ -38,9 +38,9 @@ public interface JDBCMapper<E extends Entity> extends Mapper<E>
 
 	public List<E> find(QueryRule ...rules) throws DatabaseException;
 
-	public void find(CsvWriter writer, QueryRule ... rules) throws DatabaseException;
+	public void find(SpreadsheetWriter writer, QueryRule ... rules) throws DatabaseException;
 	
-	public void find(CsvWriter writer, List<String> fieldsToExport, QueryRule ... rules) throws DatabaseException;
+	public void find(SpreadsheetWriter writer, List<String> fieldsToExport, QueryRule ... rules) throws DatabaseException;
 
 	public int remove(CsvReader reader) throws DatabaseException;
 

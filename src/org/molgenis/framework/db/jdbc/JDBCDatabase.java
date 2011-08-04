@@ -31,7 +31,7 @@ import org.molgenis.framework.db.QueryImp;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.security.Login;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvWriter;
+import org.molgenis.util.SpreadsheetWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.ResultSetTuple;
 import org.molgenis.util.SimpleTuple;
@@ -379,14 +379,14 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 //	}
 
 	// @Override
-	public <E extends Entity> void find(Class<E> klazz, CsvWriter writer,
+	public <E extends Entity> void find(Class<E> klazz, SpreadsheetWriter writer,
 			QueryRule... rules) throws DatabaseException
 	{
 		getMapperFor(klazz).find(writer, rules);
 	}
 
 	// @Override
-	public <E extends Entity> void find(Class<E> klazz, CsvWriter writer,
+	public <E extends Entity> void find(Class<E> klazz, SpreadsheetWriter writer,
 			List<String> fieldsToExport, QueryRule... rules)
 			throws DatabaseException
 	{
@@ -425,7 +425,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 
 	// @Override
 	public <E extends Entity> int add(Class<E> klazz, CsvReader reader,
-			CsvWriter writer) throws DatabaseException
+			SpreadsheetWriter writer) throws DatabaseException
 	{
 		return getMapperFor(klazz).add(reader, writer);
 	}

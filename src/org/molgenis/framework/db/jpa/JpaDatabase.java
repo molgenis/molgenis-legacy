@@ -27,7 +27,7 @@ import org.molgenis.framework.security.Login;
 import org.molgenis.model.elements.Model;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvReaderListener;
-import org.molgenis.util.CsvWriter;
+import org.molgenis.util.SpreadsheetWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -153,7 +153,7 @@ public abstract class JpaDatabase extends AbstractDatabase implements Database {
 
     @Override
     public <E extends Entity> int add(final Class<E> klazz,
-            final CsvReader reader, final CsvWriter writer) throws DatabaseException {
+            final CsvReader reader, final SpreadsheetWriter writer) throws DatabaseException {
         // batch of entities
         final List<E> entityBatch = new ArrayList<E>();
         // counter
@@ -260,7 +260,7 @@ public abstract class JpaDatabase extends AbstractDatabase implements Database {
     }
 
     @Override
-    public <E extends Entity> void find(Class<E> entityClass, CsvWriter writer,
+    public <E extends Entity> void find(Class<E> entityClass, SpreadsheetWriter writer,
             QueryRule... rules) throws DatabaseException {
         try {
             throw new NoSuchMethodException();
@@ -272,7 +272,7 @@ public abstract class JpaDatabase extends AbstractDatabase implements Database {
     }
 
     @Override
-    public <E extends Entity> void find(Class<E> entityClass, CsvWriter writer,
+    public <E extends Entity> void find(Class<E> entityClass, SpreadsheetWriter writer,
             List<String> fieldsToExport, QueryRule... rules)
             throws DatabaseException {
         boolean first = true;

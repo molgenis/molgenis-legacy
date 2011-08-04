@@ -8,7 +8,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 /**
- * Subclass of CsvWriter to write csv/tab to a file
+ * Subclass of CsvPrintWriter to write csv/tab to a file
  */
 public class CsvFileWriter extends CsvPrintWriter
 {

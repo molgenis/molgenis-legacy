@@ -22,17 +22,13 @@ import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
-
-
 import jxl.write.Label;
-
 import jxl.write.biff.RowsExceededException;
 
 /**
  * Write values to an Excel file
  */
-
-public class XlsWriter implements CsvWriter
+public class XlsWriter implements SpreadsheetWriter
 {
 	private String inputFile = System.getProperty("java.io.tmpdir");
 	private WritableCellFormat timesBoldUnderline;
@@ -58,17 +54,15 @@ public class XlsWriter implements CsvWriter
 		this.headers = headers;
 	}
 	
-	
-	
 	public XlsWriter(String string) {
 		System.out.println(">>> The .xls file will be written in : " + string);
 		this.setInputFile(string);
 
 	}
 
-	public XlsWriter(PrintWriter csvDownload) {
+	public XlsWriter(PrintWriter xlsDownload) {
 		
-		this.writer = csvDownload;
+		this.writer = xlsDownload;
 
 		writeHeader();
 		WorkbookSettings wbSettings = new WorkbookSettings();
@@ -97,8 +91,6 @@ public class XlsWriter implements CsvWriter
 		}
 		
 	}
-
-
 	
 	public void setInputFile(String inputFile) {
 		this.inputFile = inputFile;
@@ -112,9 +104,6 @@ public class XlsWriter implements CsvWriter
 	public void setOutputFile(String inputFile) {
 		this.setInputFile(inputFile);
 	}
-	
-	
-	
 
 	@Override
 	public void writeHeader(WritableSheet excelSheet)  {
@@ -179,10 +168,6 @@ public class XlsWriter implements CsvWriter
 		
 	}
 	
-	
-
-	
-	
 	@Override
 	public void writeEndOfLine() {
 		//go to next row
@@ -244,15 +229,7 @@ public class XlsWriter implements CsvWriter
 			logger.info("printing: " + row);
 		}
 	}
-	
-//	@Override
-//	public void writeMatrix(List<String> rowNames, List<String> colNames, Object[][] elements) {
-//		
-//		
-//	}
-	
 
-	
 	public void write(File file) throws IOException, WriteException {
 		
 		WorkbookSettings wbSettings = new WorkbookSettings();
@@ -306,13 +283,11 @@ public class XlsWriter implements CsvWriter
 		sheet.addCell(number);
 	}
 
-
 	private void addLabel(WritableSheet sheet, int column, int row, String s)  throws WriteException, RowsExceededException {
 			Label label;
 			label = new Label(column, row, s, times);
 			sheet.addCell(label);		
 	}
-
 
 	private void createLabel(WritableSheet excelSheet)  throws WriteException {
 			// Lets create a times font
@@ -354,13 +329,10 @@ public class XlsWriter implements CsvWriter
 		}
 		
 	}
-
-	
-
 	
 	/*****************************************************************
 	 *  (non-Javadoc)
-	 * @see org.molgenis.util.CsvWriter#writeRow(org.molgenis.util.Entity)
+	 * @see org.molgenis.util.SpreadsheetWriter#writeRow(org.molgenis.util.Entity)
 	 */
 	@Override
 	public void writeRow(Entity e)
@@ -410,9 +382,6 @@ public class XlsWriter implements CsvWriter
 	/* (non-Javadoc)
 	 * @see org.molgenis.util.CsvWriter#writeValue(java.lang.Object)
 	 */
-	
-
-	
 	@Override
 	public void writeValue(Object object)
 	{
@@ -479,9 +448,4 @@ public class XlsWriter implements CsvWriter
 		this.missingValue = missingValue;
 	}
 
-
-	
-	
-
-	
 }

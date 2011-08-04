@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.util.CsvWriter;
+import org.molgenis.util.SpreadsheetWriter;
 import org.molgenis.util.Entity;
 
 /**
@@ -194,12 +194,12 @@ public class QueryImp<E extends Entity> implements Query<E> {
 	}
 
 	@Override
-	public void find(CsvWriter writer) throws DatabaseException, ParseException {
+	public void find(SpreadsheetWriter writer) throws DatabaseException, ParseException {
 		find(writer, null);
 	}
 
 	@Override
-	public void find(CsvWriter writer, List<String> fieldsToExport)
+	public void find(SpreadsheetWriter writer, List<String> fieldsToExport)
 			throws DatabaseException, ParseException {
 		if (this.klazz != null && this.database != null) {
 			database.find(this.klazz, writer, fieldsToExport, this.getRules());
@@ -210,7 +210,7 @@ public class QueryImp<E extends Entity> implements Query<E> {
 	}
 
 	@Override
-	public void find(CsvWriter writer, boolean skipAutoId)
+	public void find(SpreadsheetWriter writer, boolean skipAutoId)
 			throws DatabaseException, ParseException, InstantiationException,
 			IllegalAccessException {
 		this.find(writer, this.klazz.newInstance().getFields(skipAutoId));

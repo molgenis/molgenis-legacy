@@ -3,7 +3,7 @@ package org.molgenis.framework.db;
 import java.text.ParseException;
 import java.util.List;
 
-import org.molgenis.util.CsvWriter;
+import org.molgenis.util.SpreadsheetWriter;
 import org.molgenis.util.Entity;
 
 
@@ -193,15 +193,15 @@ public interface Query<E extends Entity>
 	public abstract List<E> find() throws DatabaseException;
 	
 	/** Finder for csv data */
-	public abstract void find(CsvWriter writer) throws DatabaseException, ParseException;
+	public abstract void find(SpreadsheetWriter writer) throws DatabaseException, ParseException;
 
 	/** Finder for csv data with added option only export particular fields*/
-	public abstract void find(CsvWriter writer, List<String> fieldsToExport) throws DatabaseException, ParseException;
+	public abstract void find(SpreadsheetWriter writer, List<String> fieldsToExport) throws DatabaseException, ParseException;
 
 	/** Finder for csv data with added option to only skip ids
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException */
-	public abstract void find(CsvWriter writer, boolean skipAutoIds) throws DatabaseException, ParseException, InstantiationException, IllegalAccessException;	
+	public abstract void find(SpreadsheetWriter writer, boolean skipAutoIds) throws DatabaseException, ParseException, InstantiationException, IllegalAccessException;	
 	
 	
 	/**
