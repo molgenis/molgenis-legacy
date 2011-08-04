@@ -1,22 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="xqtl_selenium" default="clean_make_deletedb_test" basedir=".">
+<project name="xqtl_selenium" default="clean_make_test" basedir=".">
 
+	<description>
+		
+	Run a Selenium web test on a freshly build xQTL workbench.
+		
+	At the moment there are two issues that require attention:
+		
+	1 - The test must be started as root (e.g. sudo ant -f...) under Unix,
+		or else creation of the file directory in the application will
+		likely fail during the test where the database/storage is setup.
+		
+	2 - The test must be started in the directory of the Ant script.
+		(e.g. NOT: sudo ant -f molgenis_apps/xqtl_s...) If you start it
+		from another directory, Selenium cannot find the WebContent
+		directory (amongst other resources?) and the test fails.
+		
+	</description>
+	
+	<!-- Import development script for reuse -->
 	<import file="xqtl_dev.xml" />
 
+	<!-- Import TestNG as an Ant task -->
 	<taskdef resource="testngtasks" classpath="../molgenis/lib/testng-5.14.10.jar" />
 
 	<!--
-	Clean, make app and run test
+	Wrapper: Clean dirs, make application and run the test
 	-->
-	<target name="clean_make_deletedb_test" description="Make app and start the web test">
+	<target name="clean_make_test" description="Make app and start the web test">
 		<antcall target="clean_make" />
 		<antcall target="test" />
 	</target>
 
 	<!--
-	Just remove existing HSQL database
+	Remove existing HSQL database
 	-->
 	<target name="deletedb" description="Delete generated and build content">
+		
 		<!-- mkdir hsqldb if it doesn't exist -->
 		<mkdir dir="hsqldb" />
 
@@ -24,16 +44,24 @@
 		<delete includeemptydirs="true">
 			<fileset dir="hsqldb" includes="**/*" />
 		</delete>
+		
 	</target>
-
+	
 	<!--
-	Just run the test (though requires deletion of database)
+	Run the test
 	-->
 	<target name="test" description="Start the web test">
+		
+		<!--
+		Delete the database. This is needed because
+		the setup of the database itself is tested
+		-->
 		<antcall target="deletedb" />
+		
+		<!-- Run TestNG/Selenium -->
 		<testng suitename="webtest">
 			<xmlfileset dir="${app_build_dir}/test" includes="xqtl_selenium_testng_.xml" />
-			<!--classfileset dir="build/test" includes="WebTest.class"/-->
+			<!--ALTERNATIVE: classfileset dir="build/test" includes="WebTest.class"/-->
 			<classpath>
 				<path refid="molgenis-libs" />
 				<path refid="app-libs" />
@@ -41,5 +69,10 @@
 				<path location="${app_build_dir}" />
 			</classpath>
 		</testng>
+			
+		<!-- Delete the tmp file storage dir that was created during the test -->
+		<delete dir="/tmp_selenium_test_data"/>
+		
 	</target>
+	
 </project>

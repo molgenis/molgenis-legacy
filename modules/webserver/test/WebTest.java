@@ -93,10 +93,11 @@ public class WebTest
 		selenium.click("//div[@onclick=\"document.forms.main.__target.value='main';document.forms.main.select.value='ClusterDemo';document.forms.main.submit();\"]");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("You are logged in as admin, and the database does not contain any investigations or other users."));
+		selenium.type("id=inputBox", "./tmp_selenium_test_data");
 		sleepHelper("loadExampleData page loaded, now pressing button to load users, data, permissions etc");
 		selenium.click("id=loadExamples");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("File path './data' was validated and the dataloader succeeded"));
+		Assert.assertTrue(selenium.isTextPresent("File path './tmp_selenium_test_data' was validated and the dataloader succeeded"));
 		sleepHelper("loadExampleData");
 	}
 
