@@ -12,7 +12,6 @@ import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvFileWriter;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvReaderListener;
-import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.Marker;
 
@@ -47,7 +46,7 @@ public class GerardParser
 
 			File outfile = new File(outputDir.getCanonicalFile() + "/individual.txt");
 			CsvReader reader = new CsvFileReader(f);
-			CsvWriter writer = new CsvFileWriter(outfile);
+			CsvFileWriter writer = new CsvFileWriter(outfile);
 
 			// each line is:
 			// rs604860343 19 217034 10000000000
@@ -70,7 +69,7 @@ public class GerardParser
 	public static void writeMarkerFile(final File inputDir, final File outputDir) throws Exception
 	{
 		File outfile = new File(outputDir.getCanonicalFile() + "/marker.txt");
-		final CsvWriter writer = new CsvFileWriter(outfile);
+		final CsvFileWriter writer = new CsvFileWriter(outfile);
 
 		for (File f : inputDir.listFiles())
 		{

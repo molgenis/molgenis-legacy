@@ -23,7 +23,7 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.util.CsvPrintWriter;
-import org.molgenis.util.CsvWriter;
+import org.molgenis.util.CsvFileWriter;
 
 /**
  * Abstract implementation for MatrixInterface. Some functions require XGAP
@@ -388,7 +388,7 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 
 	public void writeToCsvWriter(PrintWriter out) throws Exception
 	{
-		CsvWriter cfr = new CsvPrintWriter(out);
+		CsvPrintWriter cfr = new CsvPrintWriter(out);
 		cfr.writeMatrix(getRowNames(), getColNames(), getElements());
 		cfr.close();
 	}
