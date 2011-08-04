@@ -43,7 +43,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.FileInput;
 import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.CsvPrintWriter;
+import org.molgenis.util.CsvWriter;
 import org.molgenis.util.CsvStringReader;
 import org.molgenis.util.SpreadsheetWriter;
 import org.molgenis.util.Entity;
@@ -1040,7 +1040,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				}
 
 				// execute query
-				SpreadsheetWriter writer = new CsvPrintWriter(out);
+				SpreadsheetWriter writer = new CsvWriter(out);
 				// CsvWriter writer = new CsvFileWriter( new
 				// File("c:/testout.txt") );
 				db.find(getClassForName(entityName), writer, rulesList
@@ -1199,7 +1199,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					if (action.equals("ADD"))
 					{
 						File temp = File.createTempFile("molgenis", "tab");
-						SpreadsheetWriter writer = new CsvPrintWriter(new PrintWriter(
+						SpreadsheetWriter writer = new CsvWriter(new PrintWriter(
 								new BufferedWriter(new FileWriter(temp))));
 						if (requestTuple.getObject(INPUT_SILENT) != null
 								&& requestTuple.getBool(INPUT_SILENT) == true)

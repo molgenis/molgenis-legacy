@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Subclass of CsvWriter to write csv/tab to a file
  */
-public class CsvStringWriter extends CsvPrintWriter
+public class CsvStringWriter extends CsvWriter
 {
 	private StringWriter writer;
 	

@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
  * FIXME make Tuple and Entity both inherit from the same interface so this
  * writer can be simplified.
  */
-public class CsvPrintWriter implements SpreadsheetWriter
+public class CsvWriter implements SpreadsheetWriter
 {
 	/** to send log messages on progress to */
 	private static final transient Logger logger = Logger.getLogger(SpreadsheetWriter.class.getSimpleName());
@@ -39,13 +39,13 @@ public class CsvPrintWriter implements SpreadsheetWriter
 	/**
 	 * Construct the Writer, wrapping another writer.
 	 */
-	public CsvPrintWriter(PrintWriter writer, List<String> headers)
+	public CsvWriter(PrintWriter writer, List<String> headers)
 	{
 		this(writer);
 		this.headers = headers;
 	}
 
-	public CsvPrintWriter(PrintWriter writer)
+	public CsvWriter(PrintWriter writer)
 	{
 		this.writer = writer;
 	}
