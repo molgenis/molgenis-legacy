@@ -21,7 +21,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.util.CsvPrintWriter;
+import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -84,7 +84,7 @@ public class DownloadSelectedCommand<E extends Entity> extends SimpleCommand
 		List<String> fieldsToExport = ((FormController<?>)this.getController()).getVisibleColumnNames();
 
 		// watch out, the "IN" operator expects an Object[]
-		db.find(view.getController().getEntityClass(), new CsvPrintWriter(csvDownload), fieldsToExport,
+		db.find(view.getController().getEntityClass(), new CsvWriter(csvDownload), fieldsToExport,
 				new QueryRule("id", Operator.IN, records));
 		return ScreenModel.Show.SHOW_MAIN;
 	}

@@ -18,7 +18,7 @@ import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.model.MolgenisModelException;
-import org.molgenis.util.CsvPrintWriter;
+import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -65,7 +65,7 @@ public class DownloadAllCommand<E extends Entity> extends SimpleCommand
 			throw new DatabaseException(e);
 		}
 		
-		db.find(model.getController().getEntityClass(), new CsvPrintWriter(csvDownload), fieldsToExport, rules);
+		db.find(model.getController().getEntityClass(), new CsvWriter(csvDownload), fieldsToExport, rules);
 
 		return ScreenModel.Show.SHOW_MAIN;
 	}
