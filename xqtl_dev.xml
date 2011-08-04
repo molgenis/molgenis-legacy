@@ -36,7 +36,7 @@
 	</path>
 	
 	<!-- Path refs to build dirs -->
-	<property name="mol_build_dir" value="../molgenis/build/classes" />
+	<property name="mol_build_dir" value="../molgenis/bin" />
 	<property name="app_build_dir" value="build/classes" />
 
 	<!-- Path ref to the molgenis libraries -->
