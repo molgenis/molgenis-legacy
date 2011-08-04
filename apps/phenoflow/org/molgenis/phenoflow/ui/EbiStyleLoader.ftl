@@ -26,10 +26,10 @@
 <div class="breadcrumbs">
 <a href="/" class="firstbreadcrumb">EBI</a>
 <a href="/arrayexpress/">ArrayExpress</a>
-<a href="">GEN2PHEN Phenotype Model reference implementation</a>
+<a href="">Phenoflow</a>
 </div>
 
-		<table><tr><td width="100%"><h1>GEN2PHEN Phenotype Model reference implementation</h1></td><td>
+		<table><tr><td width="100%"><h1>GEN2PHEN Phenoflow reference implementation</h1></td><td>
 		<a href="http://www.molgenis.org">
 			<img src="generated-res/img/logo_molgenis.gif" height="70px" align="right"/>
 		</a>
@@ -37,4 +37,4 @@
 		
 	
 
-<div align="right" style="color: maroon; font: 12px Arial;margin-right: 10px;">| <a href="about.html">About</a>  | <a href="doc/objectmodel.html">Object model</a>  | <a href="api/R">R-project API</a> | <a href="api/find">HTTP API</a> | <a href="api/rest/?_wadl">REST API</a> | <a href="api/soap?wsdl">Web Services API</a></div>
+<div align="right" style="color: maroon; font: 12px Arial;margin-right: 10px;"><a href="generated-doc/objectmodel.html">Documentation</a>  | <a href="api/R">R-project API</a> | <a href="api/find">HTTP API</a> | <a href="api/rest/?_wadl">REST API</a> | <a href="api/soap?wsdl">Web Services API</a></div>
