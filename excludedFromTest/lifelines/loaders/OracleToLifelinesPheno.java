@@ -86,27 +86,28 @@ public class OracleToLifelinesPheno {
             return "Column{" + "name=" + name + ", type=" + type + ", length=" + length + ", precision=" + precision + ", comment=" + comment + '}';
         }
     }
-    private Investigation investigation = new Investigation();
-    private String schemaName = "llpoper";
-    private String tableName = "LL_DATASET9";
-    private String pk = "pa_id";
-    private String columnQuery =
+    private final Integer investigationId;
+    private final String schemaName;
+    private final String tableName;
+    private final String pk = "pa_id";
+    private final String columnQuery =
             "SELECT atc.column_name, atc.data_type, atc.data_length, atc.data_precision,  comments.comments "
             + "FROM all_col_comments comments "
             + "JOIN all_tab_columns atc ON (comments.column_name = atc.column_name AND comments.table_name = atc.table_name) "
             + "WHERE comments.table_name = '%s' "
             + "ORDER BY atc.column_id";
-    private String commentQuery =
+    private final String commentQuery =
             "SELECT comments.column_name, comments.comments "
             + "FROM all_col_comments comments "
             + "WHERE comments.table_name = '%s'";
+    private Investigation investigation;
 
-    public static void main(String[] args) throws Exception {
-        OracleToLifelinesPheno oracleToLifelinesPheno = new OracleToLifelinesPheno();
-        oracleToLifelinesPheno.load();
-    }
 
-    public OracleToLifelinesPheno() throws Exception {
+    public OracleToLifelinesPheno(String schemaName, String tableName, Integer investigationId) throws Exception {
+    	this.schemaName = schemaName;
+    	this.tableName = tableName;
+    	this.investigationId = investigationId;
+    	load();
     }
     //Key = columnName, Value = comment
     private Map<String, String> columnComment = new HashMap<String, String>();
@@ -123,23 +124,20 @@ public class OracleToLifelinesPheno {
         con.close();
     }
 
-    public void load() throws Exception {
+    private void load() throws Exception {
         JpaDatabase db = new JpaDatabase();
-        JpaUtil.dropAndCreateTables(db);
+        //JpaUtil.dropAndCreateTables(db);
         EntityManager em = db.getEntityManager();
         Connection con = LoaderUtils.getConnection();
         loadComments();
 
         List<Measurement> measurements = loadInvestigationAndMeasurement(con, em);
-//        loadTargets(con, em);
-
-        //writeCSVFile(con, em, measurements);
-
-        //loadDataWithUnion(measurements, em, con);
     }
 
     private List<Measurement> loadInvestigationAndMeasurement(Connection con, EntityManager em) throws SQLException {
-        investigation.setName(tableName + new Date().toString());
+        investigation = em.find(Investigation.class, investigationId);
+    	
+    	//investigation.setName(tableName + " "+ new Date().toString());
 
         Statement stmt = con.createStatement();
         ResultSet rs = stmt.executeQuery(String.format("SELECT * FROM %s.%s", schemaName, tableName));
@@ -169,7 +167,7 @@ public class OracleToLifelinesPheno {
         }
 
         em.getTransaction().begin();
-        em.persist(investigation);
+        em.merge(investigation);
         em.getTransaction().commit();
         System.out.println(investigation.getId());
         return measurements;
@@ -334,5 +332,9 @@ public class OracleToLifelinesPheno {
             }
         }
         return result;
+    }
+    
+    public int getInvestigationId() {
+    	return investigation.getId();
     }
 }

@@ -1,39 +1,44 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package lifelines.loaders;
 
 import app.JpaDatabase;
 import java.util.List;
 import javax.persistence.EntityManager;
+
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 
 /**
  *
- * @author jorislops
+ * @author joris lops
  */
 public class EAVToView {
-    private final String schemaName = "LLPOPER";
-    private final String tableName = "LL_DATASET9";
+    private final String schemaName;
+    private final String tableName;
     private final int investigationId = 1;
-    
+    private final String schemaToExportView;
     private final String databaseTarget = "mysql";
+    private final int protocolId;
     
-    public static void main(String[] args) throws Exception {
-        new EAVToView();
-    }
-
-    public EAVToView() throws DatabaseException, Exception {
+    public EAVToView(String schemaName, String tableName, String schemaToExportView, int protocolId) throws DatabaseException, Exception {
+    	this.schemaName = schemaName;
+    	this.tableName = tableName;
+    	this.schemaToExportView = schemaToExportView;
+    	this.protocolId = protocolId;
+    	load();
+    }    
+    
+    private void load() throws DatabaseException, Exception {
+    	
         JpaDatabase db = new JpaDatabase();
         EntityManager em = db.getEntityManager();
             
         String column = "max(case when feature = %d then %s end) as %s \n";
                 
         StringBuilder query = new StringBuilder("SELECT ");    
-        List<Measurement> measurements = LoaderUtils.getMeasurementsByInvestigationId(investigationId, em, schemaName, tableName);
+        List<Measurement> measurements = LoaderUtils.getMeasurementsByInvestigationId(investigationId, em, this.schemaName, this.tableName);
         for(int i = 0; i < measurements.size(); ++i) {
             Measurement m = measurements.get(i);
             String castPart = LoaderUtils.getCast(m.getDataType());
@@ -49,13 +54,32 @@ public class EAVToView {
                 query.append(",");
             }
         }        
-        query.append(String.format(" FROM \n observedvalue \n WHERE investigation = %d \n GROUP BY target", investigationId));
-        
-        System.out.println(query.toString());
+        query.append(String.format(" FROM \n observedvalue \n WHERE investigation = %d AND protocolId = %d \n GROUP BY recordId", investigationId, protocolId));
         
         
-    
+
+        String viewQuery = "";
+        if(databaseTarget.equals("mysql")) {
+        	viewQuery = String.format("CREATE TABLE %s.%s %S", schemaToExportView, tableName, query.toString()); 
+        } else {
+        	viewQuery = query.toString();
+        }
+        
+        System.out.println();
+        System.out.println(viewQuery.toString());
+//        Object result = db.getEntityManager().createNativeQuery(viewQuery).getResultList();
+//        if(result != null)
+//        	System.out.println("view created");
+//        else
+//        	System.out.println("view created failed!");
+        
+        
+        Session s = db.getEntityManager().unwrap(Session.class);
+        Transaction t = s.beginTransaction();
+        s.createSQLQuery(String.format("DROP TABLE IF EXISTS %s", tableName)).executeUpdate();
+        s.createSQLQuery(viewQuery).executeUpdate();
+        t.commit();
+        
+        
     }
-    
-    
 }
