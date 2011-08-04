@@ -7,7 +7,6 @@
 	<classpathentry kind="src" path="modules/decorators/data"/>
 	<classpathentry kind="src" path="apps/phenoflow"/>
 	<classpathentry kind="src" path="apps/gcc"/>
-	<classpathentry kind="src" path="modules/commonqueries"/>
 	<classpathentry kind="src" path="generated/sql"/>
 	<classpathentry kind="src" path="apps/chd7"/>
 	<classpathentry kind="src" path="apps/lifelines"/>
