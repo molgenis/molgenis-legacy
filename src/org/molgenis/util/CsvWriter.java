@@ -1,10 +1,9 @@
 package org.molgenis.util;
 
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
-import jxl.write.WritableSheet;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
@@ -36,9 +35,7 @@ public class CsvWriter implements SpreadsheetWriter
 	/** headers to be written out */
 	private List<String> headers = new ArrayList<String>();
 
-	/**
-	 * Construct the Writer, wrapping another writer.
-	 */
+	
 	public CsvWriter(PrintWriter writer, List<String> headers)
 	{
 		this(writer);
@@ -48,6 +45,17 @@ public class CsvWriter implements SpreadsheetWriter
 	public CsvWriter(PrintWriter writer)
 	{
 		this.writer = writer;
+	}
+	
+	public CsvWriter(OutputStream outputStream, List<String> headers)
+	{
+		this(outputStream);
+		this.headers = headers;
+	}
+
+	public CsvWriter(OutputStream outputStream)
+	{
+		this.writer = new PrintWriter(outputStream);
 	}
 
 	/**
@@ -253,12 +261,10 @@ public class CsvWriter implements SpreadsheetWriter
 		this.separator = separator;
 	}
 
-	/** Close the writer */
 	public void close()
 	{
 		writer.flush();
 		writer.close();
-
 	}
 
 	public String getListSeparator()
@@ -297,26 +303,5 @@ public class CsvWriter implements SpreadsheetWriter
 	public void writeEndOfLine()
 	{
 		this.writer.println();
-	}
-
-	@Override
-	public void writeRow(Entity e, WritableSheet sheet)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void writeRow(Tuple t, WritableSheet sheet)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void writeHeader(WritableSheet excelSheet)
-	{
-		// TODO Auto-generated method stub
-		
 	}
 }

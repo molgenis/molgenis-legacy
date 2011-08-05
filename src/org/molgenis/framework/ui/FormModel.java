@@ -36,8 +36,10 @@ import org.molgenis.framework.ui.commands.ChangeListLimitCommand;
 import org.molgenis.framework.ui.commands.CommandMenu;
 import org.molgenis.framework.ui.commands.DownloadAllCommand;
 import org.molgenis.framework.ui.commands.DownloadSelectedCommand;
+import org.molgenis.framework.ui.commands.DownloadSelectedXlsCommand;
 import org.molgenis.framework.ui.commands.DownloadVisibleCommand;
-import org.molgenis.framework.ui.commands.DownloadXlsCommand;
+import org.molgenis.framework.ui.commands.DownloadAllXlsCommand;
+import org.molgenis.framework.ui.commands.DownloadVisibleXlsCommand;
 import org.molgenis.framework.ui.commands.EditSelectedCommand;
 import org.molgenis.framework.ui.commands.GalaxyCommand;
 import org.molgenis.framework.ui.commands.RemoveSelectedCommand;
@@ -255,19 +257,23 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		// add all actions
 		// menu FILE
 
-		// File:Download visible
-		super.addCommand(new DownloadVisibleCommand("download_visible", this
-				.getController()));
+		// TXT file: Download visible
+		super.addCommand(new DownloadVisibleCommand("download_txt_visible", this.getController()));
 
-		// File:Download Selected
-		super.addCommand(new DownloadSelectedCommand("download_selected", this
-				.getController()));
+		// TXT file: Download Selected
+		super.addCommand(new DownloadSelectedCommand("download_txt_selected", this.getController()));
 
-		// FILE:Download all
-		super.addCommand(new DownloadAllCommand("download_all", this
-				.getController()));
+		// TXT file: Download all
+		super.addCommand(new DownloadAllCommand("download_txt_all", this.getController()));
 		
-		super.addCommand(new DownloadXlsCommand("download_xls", this.getController()));
+		// XLS file: Download visible
+		super.addCommand(new DownloadVisibleXlsCommand("download_xls_visible", this.getController()));
+		
+		// XLS file: Download Selected
+		super.addCommand(new DownloadSelectedXlsCommand("download_xls_selected", this.getController()));
+
+		// XLS file: Download all
+		super.addCommand(new DownloadAllXlsCommand("download_xls_all", this.getController()));
 
 		// File: Add batch
 		super.addCommand(new AddBatchCommand("upload_csv", this.getController()));
@@ -340,22 +346,15 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	public boolean isVisible()
 	{
 		Login login = this.getController().getApplicationController().getLogin();
-		if (login.isAuthenticated())
+		try
 		{
-			try
-			{
-				if (login.canRead(this.getController()))
-				{
-					return true;
-				}
-			}
-			catch (DatabaseException e)
-			{
-				e.printStackTrace();
-			}
+			return (login.canRead(this.getController()));
 		}
-
-		return false;
+		catch (DatabaseException e)
+		{
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	/**

@@ -1,8 +1,6 @@
 package org.molgenis.framework.ui.commands;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.ParseException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,8 +66,7 @@ public class AddCommand<E extends Entity> extends SimpleCommand
 	}
 
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, PrintWriter downloadStream) throws ParseException,
-			DatabaseException, IOException
+	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception
 	{		
 		if (request.getString(FormModel.INPUT_SHOW) == null)
 		{

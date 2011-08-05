@@ -1,8 +1,6 @@
 package org.molgenis.framework.ui.commands;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.ParseException;
+import java.io.OutputStream;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
@@ -12,7 +10,6 @@ import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.commands.AddCommand;
 import org.molgenis.framework.ui.html.EntityForm;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Entity;
@@ -57,7 +54,7 @@ public class AddXrefCommand<E extends Entity> extends AddCommand<E>
 	}
 
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, PrintWriter downloadStream) throws ParseException, DatabaseException, IOException
+	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception
 	{
 		if (request.getString(FormModel.INPUT_SHOW) == null)
 		{

@@ -280,10 +280,24 @@ public abstract class JpaDatabase extends AbstractDatabase implements Database {
         for (Entity e : find(entityClass, rules)) {
             if (first) {
                 writer.setHeaders(fieldsToExport);
-                writer.writeHeader();
+                try
+				{
+					writer.writeHeader();
+				}
+				catch (Exception e1)
+				{
+					throw new DatabaseException(e1);
+				}
                 first = false;
             }
-            writer.writeRow(e);
+            try
+			{
+				writer.writeRow(e);
+			}
+			catch (Exception e1)
+			{
+				throw new DatabaseException(e1);
+			}
             count++;
         }
         logger.debug(String.format("find(%s, writer) wrote %s lines",

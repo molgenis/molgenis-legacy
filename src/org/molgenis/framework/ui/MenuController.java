@@ -14,6 +14,7 @@
 package org.molgenis.framework.ui;
 
 
+import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import org.apache.log4j.Logger;
@@ -78,10 +79,12 @@ public class MenuController extends SimpleScreenController<MenuModel>
 		}
 	}
 
+
+	
 	@Override
-	public void handleRequest(Database db, Tuple request, PrintWriter out) {
+	public void handleRequest(Database db, Tuple request, OutputStream out)
+	{
 		this.handleRequest(db, request);
-		
 	}
 	
 	public MenuModel getModel()

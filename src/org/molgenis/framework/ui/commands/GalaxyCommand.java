@@ -1,6 +1,6 @@
 package org.molgenis.framework.ui.commands;
 
-import java.io.PrintWriter;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,10 +53,9 @@ public class GalaxyCommand extends SimpleCommand {
 	}
 	
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, PrintWriter downloadStream)
+	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream)
 	{
 		logger.debug("galaxy button clicked: "+this.getController().getApplicationController().getGalaxyUrl());
-		
 		
 		return ScreenModel.Show.SHOW_MAIN;
 	}

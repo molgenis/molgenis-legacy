@@ -13,7 +13,7 @@
 package org.molgenis.framework.ui;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.OutputStream;
 import java.io.Serializable;
 
 import org.molgenis.framework.db.Database;
@@ -84,7 +84,7 @@ public interface ScreenController<MODEL extends ScreenModel> extends
 	 *            additional parameter that allows you to write downloadable
 	 *            output
 	 */
-	public void handleRequest(Database db, Tuple request, PrintWriter out);
+	public void handleRequest(Database db, Tuple request, OutputStream out);
 
 	/**
 	 * Get the view

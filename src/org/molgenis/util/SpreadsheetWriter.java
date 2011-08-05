@@ -9,16 +9,18 @@ public interface SpreadsheetWriter
 
 	/**
 	 * Write the header.
+	 * @throws Exception 
 	 */
-	public abstract void writeHeader();
+	public abstract void writeHeader() throws Exception;
 
 	/**
 	 * Write a row to stream.
 	 * 
 	 * @param e
 	 *            Entity to be written.
+	 * @throws Exception 
 	 */
-	public abstract void writeRow(Entity e);
+	public abstract void writeRow(Entity e) throws Exception;
 
 	/**
 	 * Write a row to stream.
@@ -27,24 +29,6 @@ public interface SpreadsheetWriter
 	 *            Tuple to be written.
 	 */
 	public abstract void writeRow(Tuple t);
-	
-	/**
-	 * Write a row to an Excel sheet.
-	 * TODO: keep or remove as it is (too) implementation-specific?
-	 * 
-	 * @param e
-	 * @param sheet
-	 */
-	void writeRow(Entity e, WritableSheet sheet);
-	
-	/**
-	 * Write a row to an Excel sheet.
-	 * TODO: keep or remove as it is (too) implementation-specific?
-	 * 
-	 * @param e
-	 * @param sheet
-	 */
-	void writeRow(Tuple t, WritableSheet sheet);
 
 	public abstract void writeValue(Object object);
 
@@ -52,11 +36,17 @@ public interface SpreadsheetWriter
 
 	public abstract void writeEndOfLine();
 
-	public abstract void close();
+	/**
+	 * Finish up and close the exported file. For example, close the workbook
+	 * when writing to Excel, or the PrintWriter when writing to CSV. Could
+	 * close the wrapped OutputStream. The returned OutputStream is closed after
+	 * any download in AbstractMolgenisServlet.
+	 * 
+	 * @throws Exception
+	 */
+	public abstract void close() throws Exception;
 
 	public abstract void writeMatrix(List<String> rowNames,
 			List<String> colNames, Object[][] elements);
-
-	void writeHeader(WritableSheet excelSheet);
 
 }

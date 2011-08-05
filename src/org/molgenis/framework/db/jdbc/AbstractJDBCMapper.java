@@ -583,6 +583,23 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 		this.find(writer, null, rules);
 	}
 	
+	/**
+	 * Helper function to write an already known list of entites to a SpreadsheetWriter.
+	 * @param entities
+	 * @param writer
+	 * @param fieldsToExport
+	 * @throws Exception 
+	 */
+	public static void find(List<? extends Entity> entities, SpreadsheetWriter writer, List<String> fieldsToExport) throws Exception
+	{	
+		writer.setHeaders(fieldsToExport);
+		writer.writeHeader();
+		for(Entity e : entities){
+			writer.writeRow(e);
+		}
+		writer.close();
+	}
+	
 	private boolean hasXrefByNameEquivalent(String field, Vector<String> fields){
 		for(String checkField: fields){
 			//must at least be "{field}" plus " _name" as length
@@ -681,12 +698,12 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 	{
 		try
 		{
-			logger.debug("new ResultSetTuple(executeSelect(rules)....");
+			//logger.debug("new ResultSetTuple(executeSelect(rules)....");
 			ResultSetTuple rs = new ResultSetTuple(executeSelect(rules));
-			logger.debug("executeSelect(rules)");
+			/*logger.debug("executeSelect(rules)");
 			for(QueryRule q : rules){
 				logger.debug("rule: " + q.toString());
-			}
+			}*/
 			// transform result set in writer
 			E entity = create();				
 			List<String> fields = fieldsToExport; 
@@ -702,25 +719,6 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 				entity.set(rs);
 				entityBatch.add(entity);
 				i++;
-
-				// write batch
-				
-				/*
-				if (i % BATCH_SIZE == 0)
-				{
-					// load mrefs
-					System.out.println("*** mapMrefs -> BATCH"); //program will crash after this
-					
-					//DOES NOT WORK -> mapMrefs is NOT ALLOWED while the resultset is ACTIVE
-					mapMrefs(entityBatch);
-					
-					for (E e : entityBatch)
-					{
-						writer.writeRow(e);
-					}
-					entityBatch.clear();
-				}
-				*/
 				
 			}
 			// write remaining
@@ -732,11 +730,11 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 				writer.writeRow(e);
 			}
 			entityBatch.clear();
-
 			rs.close();
+			writer.close();
 
-			logger.debug("find(" + create().getClass().getSimpleName() + ", CsvWriter, " + Arrays.asList(rules)
-					+ "): wrote " + i + " lines.");
+			logger.debug("find(" + create().getClass().getSimpleName() + ", SpreadsheetWriter, " + 
+					Arrays.asList(rules) + "): wrote " + i + " lines.");
 		}
 		catch (Exception e)
 		{
