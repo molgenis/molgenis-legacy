@@ -58,11 +58,8 @@
 			<form name="ComputeFeatures"
 				hide_fields="id,Investigation,ontologyReference,targettypeAllowedForRelation,panelLabelAllowedForRelation,temporal,featureType"
 				entity="ComputeFeature" viewtype="list" />
-			<!--
-				plugin name="GenericWizard"
-				type="plugins.genericwizard.GenericWizard" label="Upload pipelines"
-				/
-			-->
+			<plugin name="GenericWizard"
+				type="plugins.genericwizard.GenericWizard" label="Upload pipelines" />
 		</menu>
 		<!--
 			<form name="CreateComputeApplication" label="Select pipeline to run"
