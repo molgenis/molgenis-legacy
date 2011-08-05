@@ -1,5 +1,7 @@
 package org.molgenis.compute.ui;
 
+import java.io.IOException;
+
 import org.molgenis.compute.ComputeApplication;
 import org.molgenis.compute.ComputeResource;
 import org.molgenis.framework.db.Database;
@@ -44,6 +46,20 @@ public class PbsSubmitApplication extends
 		// nothing to do, because reload does all the work
 	}
 
+	public void remove(Database db, Tuple request) {
+		// we want to kill current job
+		try
+		{
+			pbs.remove(currentjob);
+			this.currentjob = null;
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+			this.setError(e.getMessage());
+		}
+	}
+	
 	/**
 	 * Handle the submit
 	 */
@@ -61,19 +77,18 @@ public class PbsSubmitApplication extends
 
 			// Create a Pbs and submit the script
 			// get the ComputeApplication
-			FormModel<ComputeApplication> parentForm = (FormModel<ComputeApplication>) this
-					.getParent().getModel();
+			FormModel<ComputeApplication> parentForm = (FormModel<ComputeApplication>) this.getParent().getModel();
 			ComputeApplication app = parentForm.getCurrent();
 
 			// create the Job
 			currentjob = new PbsJob(app.getComputeScript());
-			currentjob.setQueue("short");
+			currentjob.setQueue(app.getQueue());
 			currentjob.setName("app" + System.currentTimeMillis());
 
 			if (pbs == null) pbs = new Pbs(resource.getName(), username, password);
 
 			pbs.submit(currentjob);
-
+			
 			app.setJobID(currentjob.getId());
 			db.update(app);
 
@@ -110,6 +125,9 @@ public class PbsSubmitApplication extends
 		{
 			ActionInput refresh = new ActionInput("refresh");
 			mf.add(refresh);
+			
+			ActionInput remove = new ActionInput("remove");
+			mf.add(remove);
 		}
 		// if already submitted, we expect here to see it running?
 		if (currentjob != null)

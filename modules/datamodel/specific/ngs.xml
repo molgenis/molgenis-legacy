@@ -70,7 +70,7 @@
 			<field name="date" type="date"
 				description="The date the flowcell was run on the machine" />
 		</entity>
-		<entity name="LibraryLane" extends="ObservationTarget">
+		<entity name="LibraryLane" extends="ObservationElement">
 			<description>This is actually our worksheet. Name is typically
 				library name, or of there is only one sample per library it may be
 				sample name. Description of the sample library that has been
