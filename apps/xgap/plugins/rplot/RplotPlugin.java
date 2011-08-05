@@ -65,19 +65,12 @@ public class RplotPlugin<E extends Entity> extends PluginModel<E>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
-		System.out.println("*** handleRequest WRAPPER __action: " + request.getString("__action"));
-		this.handleRequest(db, request, null);
-	}
-
-	@Override
 	public boolean isVisible()
 	{
 		return true;
 	}
 
-	public void handleRequest(Database db, Tuple request, PrintWriter out)
+	public void handleRequest(Database db, Tuple request)
 	{
 		if (request.getString("__action") != null)
 		{

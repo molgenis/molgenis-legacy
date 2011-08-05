@@ -47,13 +47,7 @@ public class Settings<E extends Entity> extends PluginModel<E>
 		return "plugins/system/settings/Settings.ftl";
 	}
 
-	@Override
 	public void handleRequest(Database db, Tuple request)
-	{
-		this.handleRequest(db, request, null);
-	}
-
-	public void handleRequest(Database db, Tuple request, PrintWriter out)
 	{
 		if (request.getString("__action") != null)
 		{

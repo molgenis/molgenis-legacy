@@ -57,14 +57,7 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 		return "plugins/investigationoverview/InvestigationOverviewPlugin.ftl";
 	}
 
-	@Override
 	public void handleRequest(Database db, Tuple request)
-	{
-		System.out.println("*** handleRequest WRAPPER __action: " + request.getString("__action"));
-		this.handleRequest(db, request, null);
-	}
-
-	public void handleRequest(Database db, Tuple request, PrintWriter out)
 	{
 		if (request.getString("__action") != null)
 		{

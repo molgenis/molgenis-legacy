@@ -7,14 +7,17 @@
 
 package org.molgenis.matrix.ui.manager;
 
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.matrix.TargetFeatureMemoryMatrix;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationTarget;
@@ -54,14 +57,7 @@ public class MatrixManager extends PluginModel
 		return "org/molgenis/matrix/ui/manager/MatrixManager.ftl";
 	}
 
-	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
-		System.out.println("*** handleRequest WRAPPER __action: " + request.getString("__action"));
-		this.handleRequest(db, request, null);
-	}
-
-	public void handleRequest(Database db, Tuple request, PrintWriter out)
+	public void handleRequest(Database db, Tuple request, OutputStream out)
 	{
 		if (request.getString("__action") != null)
 		{
@@ -90,7 +86,7 @@ public class MatrixManager extends PluginModel
 					this.model.getBrowser().getModel().setWidth(width);
 					this.model.getBrowser().getModel().setHeight(height);
 
-					RequestHandler.handle(this.model, request, out);
+					RequestHandler.handle(this.model, request, new PrintWriter(out));
 				}
 
 				this.setMessages();
@@ -168,6 +164,12 @@ public class MatrixManager extends PluginModel
 		
 		// Always create headers, so they remain up-to-date after paging etc.
 		createHeaders();
+	}
+
+	@Override
+	public void handleRequest(Database db, Tuple request) {
+		handleRequest(db, request, null);
+		
 	}
 
 }

@@ -68,14 +68,7 @@ public class MatrixWizard extends PluginModel<Entity>
 		return "plugins/xgapwizard/MatrixWizard.ftl";
 	}
 
-	@Override
 	public void handleRequest(Database db, Tuple request)
-	{
-		System.out.println("*** handleRequest WRAPPER __action: " + request.getString("__action"));
-		this.handleRequest(db, request, null);
-	}
-
-	public void handleRequest(Database db, Tuple request, PrintWriter out)
 	{
 		if (request.getString("__action") != null)
 		{
@@ -84,7 +77,6 @@ public class MatrixWizard extends PluginModel<Entity>
 
 			try
 			{
-				
 				
 				if(request.getString("__action").equals("upload") || request.getString("__action").equals("uploadTextArea")){
 					

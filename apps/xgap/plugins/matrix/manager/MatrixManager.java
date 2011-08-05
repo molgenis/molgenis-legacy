@@ -7,8 +7,10 @@
 
 package plugins.matrix.manager;
 
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Vector;
 
 import matrix.AbstractDataMatrixInstance;
 import matrix.general.DataMatrixHandler;
@@ -21,6 +23,7 @@ import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Tuple;
 
 public class MatrixManager extends PluginModel
@@ -60,19 +63,12 @@ public class MatrixManager extends PluginModel
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
-		System.out.println("*** handleRequest WRAPPER __action: " + request.getString("__action"));
-		this.handleRequest(db, request, null);
-	}
-
-	@Override
 	public boolean isVisible()
 	{
 		return true;
 	}
 
-	public void handleRequest(Database db, Tuple request, PrintWriter out)
+	public void handleRequest(Database db, Tuple request, OutputStream out)
 	{
 		if (request.getString("__action") != null)
 		{
@@ -101,7 +97,7 @@ public class MatrixManager extends PluginModel
 					this.model.getBrowser().getModel().setWidth(width);
 					this.model.getBrowser().getModel().setHeight(height);
 
-					RequestHandler.handle(this.model, request, out);
+					RequestHandler.handle(this.model, request, new PrintWriter(out));
 				}
 
 				this.setMessages();
@@ -275,6 +271,11 @@ public class MatrixManager extends PluginModel
 			this.model.setBrowser(null);
 		}
 
+	}
+
+	@Override
+	public void handleRequest(Database db, Tuple request) {
+		handleRequest(db, request, null);
 	}
 
 }

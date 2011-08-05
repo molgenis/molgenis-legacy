@@ -49,15 +49,8 @@ public class GenericWizard extends PluginModel<Entity> {
 	public String getViewTemplate() {
 		return "plugins/genericwizard/GenericWizard.ftl";
 	}
-
-	@Override
+	
 	public void handleRequest(Database db, Tuple request) {
-		System.out.println("*** handleRequest WRAPPER __action: "
-				+ request.getString("__action"));
-		this.handleRequest(db, request, null);
-	}
-
-	public void handleRequest(Database db, Tuple request, PrintWriter out) {
 		if (request.getString("__action") != null) {
 
 			System.out.println("*** handleRequest __action: "

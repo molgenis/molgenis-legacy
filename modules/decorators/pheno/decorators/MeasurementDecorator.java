@@ -8,6 +8,7 @@
 package decorators;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -52,35 +53,17 @@ public class MeasurementDecorator<E extends Measurement> extends MappingDecorato
 			// Add corresponding event type
 			featureName = e.getName();
 			protocolName = "Set" + featureName;
-			int etId, featId;
 			
 			try {
 				// Auto-generated protocols will be linked to the always present System investigation
 				Protocol newProtocol = new Protocol();
 				newProtocol.setName(protocolName);
+				List<Integer> features_id = new ArrayList<Integer>();
+				features_id.add(Measurement.findByNameInvestigation(db, featureName, null).getId());
+				newProtocol.setFeatures_Id(features_id);
 				db.add(newProtocol);	
-				//etId = ct.makeProtocol(e.getInvestigation_Id(), protocolName);
-				etId = newProtocol.getId();
 				
 			} catch (Exception e2) {
-				return false;
-			}
-			// Get Feature ID
-			try {
-				
-				featId = Measurement.findByNameInvestigation(db, featureName, null).getId();
-			} catch (Exception e3) {
-				return false;
-			}
-			// Add entry to coupling table. 
-			// FIXME this is not how it should go. Well how should it go then?
-			Protocol_Features efEntry = new Protocol_Features();
-			efEntry.setProtocol(etId);
-			efEntry.setFeatures(featId);
-			try {
-				db.add(efEntry);
-			} catch (Exception e4) {
-				e4.printStackTrace();
 				return false;
 			}
 		}

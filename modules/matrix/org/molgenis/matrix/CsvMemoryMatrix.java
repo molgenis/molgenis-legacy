@@ -138,7 +138,7 @@ public class CsvMemoryMatrix<E, A, V> extends MemoryMatrix<E, A, V> {
 		}
 	}
 
-	public void write(SpreadsheetWriter writer) throws MatrixException {
+	public void write(SpreadsheetWriter writer) throws Exception {
 		// NB this only works if names are unique!!!
 		// set headers
 		List<String> headers = new ArrayList<String>();

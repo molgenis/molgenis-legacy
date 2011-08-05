@@ -19,7 +19,7 @@ import org.molgenis.util.CsvStringWriter;
 public class TestMemoryMatrix
 {
 	@Test
-	public void test1() throws MatrixException, IOException
+	public void test1() throws Exception
 	{
 		cleanMemory("start", 0);
 		

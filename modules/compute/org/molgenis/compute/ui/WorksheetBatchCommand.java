@@ -61,8 +61,7 @@ public class WorksheetBatchCommand extends SimpleCommand
         return inputs;
     }
 
-    @Override
-    public ScreenModel.Show handleRequest(Database db, Tuple request, PrintWriter downloadStream)
+    public ScreenModel.Show handleRequest(Database db, Tuple request)
     {
         logger.debug("worksheet batch command button clicked: " + request.toString());
 
