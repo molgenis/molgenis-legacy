@@ -9,6 +9,6 @@ public class Chd7Generate
 {
 	public static void main(String[] args) throws Exception
 	{
-		new Molgenis("handwritten/apps/org/molgenis/chd7/chd7.properties").generate();
+		new Molgenis("apps/chd7/org/molgenis/chd7/chd7.properties").generate();
 	}
 }
