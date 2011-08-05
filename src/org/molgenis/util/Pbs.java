@@ -127,6 +127,14 @@ public class Pbs extends Ssh
 		job.setId(id);
 		this.jobs.put(id, job);
 	}
+	
+	public void remove(PbsJob job) throws IOException {
+		// kill on cluster
+		SshResult result = this.executeCommand("qdel " + job.getId());
+		
+		// remove job from 'jobs'
+		this.jobs.remove(job.getName());
+	}
 
 	public void refresh(PbsJob job) throws IOException
 	{
