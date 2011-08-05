@@ -82,10 +82,15 @@ public class OracleToPheno {
         for(ObservationTarget t : targets) {
         	paidTargets.put(t.getName().toString(), t);
         }        	
-        	
+
+        
+        int w = 0;
+        
+        em.getTransaction().begin();
         while(rs.next()) {
+        	++w;
             ObservationTarget target = null;
-            em.getTransaction().begin();
+            
             for(int i = 1; i <= rsmd.getColumnCount(); ++i) {
                 Object value = rs.getObject(i);
                 if(i == 1) {
@@ -114,11 +119,17 @@ public class OracleToPheno {
                     em.persist(ov);
                 }
             }
-            em.clear();
-            em.flush();
-            em.getTransaction().commit();
-            recordId++;  
-        }        
+            if(w % 10 == 0) {
+            	em.flush();
+            	em.clear();
+            }
+            
+            if(recordId % 100 == 0) {
+            	System.out.println(recordId);
+            }          
+            recordId++;
+        }   
+        em.getTransaction().commit();
     }
     
     private static int recordId  = 0;

@@ -17,16 +17,18 @@ import org.molgenis.pheno.Measurement;
 public class EAVToView {
     private final String schemaName;
     private final String tableName;
-    private final int investigationId = 1;
+    private final int investigationId;
     private final String schemaToExportView;
-    private final String databaseTarget = "mysql";
+    private final String databaseTarget;
     private final int protocolId;
     
-    public EAVToView(String schemaName, String tableName, String schemaToExportView, int protocolId) throws DatabaseException, Exception {
+    public EAVToView(String schemaName, String tableName, String schemaToExportView, int protocolId, String databaseTarget, int investigationId) throws DatabaseException, Exception {
     	this.schemaName = schemaName;
     	this.tableName = tableName;
     	this.schemaToExportView = schemaToExportView;
     	this.protocolId = protocolId;
+    	this.databaseTarget = databaseTarget;
+    	this.investigationId = investigationId;
     	load();
     }    
     
@@ -59,10 +61,15 @@ public class EAVToView {
         
 
         String viewQuery = "";
+        
+    	String tempTableName = (schemaToExportView != null) ? "" + schemaToExportView + "." : "";
+    	tempTableName += tableName;        
         if(databaseTarget.equals("mysql")) {
-        	viewQuery = String.format("CREATE TABLE %s.%s %S", schemaToExportView, tableName, query.toString()); 
+        	viewQuery = String.format("CREATE TABLE %s %S", tempTableName, query.toString()); 
         } else {
-        	viewQuery = query.toString();
+        	//String materializedView = "CREATE MATERIALIZED VIEW %s NOCACHE NOPARALLEL BUILD IMMEDIATE USING INDEX REFRESH ON DEMAND COMPLETE DISABLE QUERY REWRITE AS %s";
+        	String view = "CREATE VIEW %s AS %s";
+        	viewQuery = String.format(view, tempTableName, query.toString());;
         }
         
         System.out.println();
@@ -76,7 +83,13 @@ public class EAVToView {
         
         Session s = db.getEntityManager().unwrap(Session.class);
         Transaction t = s.beginTransaction();
-        s.createSQLQuery(String.format("DROP TABLE IF EXISTS %s", tableName)).executeUpdate();
+        if(databaseTarget.equals("mysql")) {
+        	s.createSQLQuery(String.format("DROP TABLE IF EXISTS %s", tableName)).executeUpdate();
+        } else {
+        	//figure out if it exists first
+        	//s.createSQLQuery(String.format("DROP TABLE %s", tableName)).executeUpdate();
+        }
+        
         s.createSQLQuery(viewQuery).executeUpdate();
         t.commit();
         

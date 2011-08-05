@@ -13,10 +13,17 @@ import app.DatabaseFactory;
 
 public class FillEAVFromTables {
     public static void main(String[] args) throws Exception {
-    	String investigation = "OV027";
+    	String investigation = "onderzoek9";
     	String schemaName = "llpoper";
-        String schemaToExportView = "testViews";
-        String[] tableNames = new String[]{"OV027LABDATA", "LL_BLOEDDRUKAVG"};
+        String schemaToExportView = null;
+        String[] tableNames = new String[]{"LL_DATASET9"};
+        String databaseTarget = "oracle";
+    	
+    	//    	String investigation = "OV027";
+//    	String schemaName = "llpoper";
+//        String schemaToExportView = null;
+//        String[] tableNames = new String[]{"OV027LABDATA", "LL_BLOEDDRUKAVG"};
+//        String databaseTarget = "oracle";
         
         Investigation inv = new Investigation();
         inv.setName(String.format("%s %s",investigation, new Date().toString()));        
@@ -33,7 +40,7 @@ public class FillEAVFromTables {
 	        
 	        OracleToPheno oracleToPheno = new OracleToPheno(tableName, investigationId);
 	        
-	        EAVToView eavToView = new EAVToView(schemaName, tableName, schemaToExportView, oracleToPheno.getProtocolId());
+	        EAVToView eavToView = new EAVToView(schemaName, tableName, schemaToExportView, oracleToPheno.getProtocolId(), databaseTarget, investigationId);
         }
         
         

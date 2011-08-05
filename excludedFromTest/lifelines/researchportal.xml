@@ -208,7 +208,11 @@
 				More Discussion: do we want to have type specific subclasses? No,
 				because you can solve this by casting during querying?
 			</description>
-				<field nillable="true" name="value" description="The value observed" />
+				<field name="value" nillable="false" description="The value observed" />
+				<field name="recordId" index="true"/>
+				<field name="protocolId" index="true"/>
+				
+				
 <!-- 			<field nillable="true" name="relation" type="xref" xref_entity="ObservationTarget"
 				description="Reference to other end of the relationship, if any. For example to a 'brother' or from 'sample' to 'derivedSample'." /> -->
 		</entity>
