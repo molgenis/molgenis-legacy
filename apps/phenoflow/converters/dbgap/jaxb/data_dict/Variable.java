@@ -1,4 +1,4 @@
-package convertors.dbgap.jaxb.data_dict;
+package converters.dbgap.jaxb.data_dict;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -76,7 +76,7 @@
 		         command="sudo -u tc_user cp ${deploy.test.path}/pheno.war  ${deploy.live.path}/." />
 	</target>
 
-	<target name="deploy-test">
+	<target name="deploy-test" depends="copy-test">
 		<deploy url="http://tc-test-3.ebi.ac.uk:10110/manager"
 		        username="tomcat"
 		        password="tomcat"

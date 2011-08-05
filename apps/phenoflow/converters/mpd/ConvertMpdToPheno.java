@@ -1,4 +1,4 @@
-package convertors.mpd;
+package converters.mpd;
 
 import java.io.File;
 import java.util.ArrayList;

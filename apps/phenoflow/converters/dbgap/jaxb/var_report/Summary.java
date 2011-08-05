@@ -1,4 +1,4 @@
-package convertors.dbgap.jaxb.var_report;
+package converters.dbgap.jaxb.var_report;
 
 import java.util.ArrayList;
 import java.util.List;

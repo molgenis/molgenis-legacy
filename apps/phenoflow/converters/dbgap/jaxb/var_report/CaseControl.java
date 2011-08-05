@@ -1,4 +1,4 @@
-package convertors.dbgap.jaxb.var_report;
+package converters.dbgap.jaxb.var_report;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

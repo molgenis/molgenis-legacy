@@ -1,4 +1,4 @@
-package convertors.dbgap;
+package converters.dbgap;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -23,9 +23,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import convertors.dbgap.jaxb.Study;
-import convertors.dbgap.jaxb.data_dict.Data_Dict;
-import convertors.dbgap.jaxb.var_report.Var_Report;
+import converters.dbgap.jaxb.Study;
+import converters.dbgap.jaxb.data_dict.Data_Dict;
+import converters.dbgap.jaxb.var_report.Var_Report;
 
 public class DbGapService
 {

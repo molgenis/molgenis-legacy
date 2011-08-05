@@ -1,10 +1,10 @@
-package convertors.dbgap.jaxb;
+package converters.dbgap.jaxb;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import convertors.dbgap.jaxb.data_dict.Data_Dict;
-import convertors.dbgap.jaxb.var_report.Var_Report;
+import converters.dbgap.jaxb.data_dict.Data_Dict;
+import converters.dbgap.jaxb.var_report.Var_Report;
 
 public class Study
 {

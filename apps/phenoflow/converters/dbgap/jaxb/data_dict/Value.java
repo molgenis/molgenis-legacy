@@ -1,4 +1,4 @@
-package convertors.dbgap.jaxb.data_dict;
+package converters.dbgap.jaxb.data_dict;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
