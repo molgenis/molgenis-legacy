@@ -126,12 +126,12 @@
 				description="Protocol to be used at this workflow step" />
 			<field name="PreviousSteps" type="mref" xref_entity="WorkflowElement" nillable="true"
 				description="Previous steps that need to be done before this protocol can be executed." />
-			<field name="ExecutionTime" nillable="true" type="text"
-				description="Predicted execution time" default="23:59:00" />
+			<!--
+            <field name="ExecutionTime" nillable="true" type="text"
+				description="Predicted execution time" default="23:59:00" /-->
 			<unique fields="name" />
 			<!-- field name="Defaults" type="mref" xref_entity="ObservedValue" nillable="true"
 				description="Default values of compute protocol features, which should be defined on workflow element level" /-->
-			<unique fields="name" />
 		</entity>
 		<entity name="WorkflowElementParameter" extends="ObservedValue">
 			<field name="WorkflowElement" type="xref" xref_entity="WorkflowElement" description="To attach a parameter to a WorkflowElement"/>

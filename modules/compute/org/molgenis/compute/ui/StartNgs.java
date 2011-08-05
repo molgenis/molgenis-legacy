@@ -133,6 +133,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         //we have only one workflow
         Workflow workflow = db.query(Workflow.class).find().get(0);
         wholeWorkflowApp.setProtocol(workflow);
+        wholeWorkflowApp.setInterpreter("WorkflowInterpreter");
 
         //take all compute features, not so many for ngs pipeline
         // having one workflow makes life easy
@@ -218,6 +219,8 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         getModel().setSuccess("update succesfull");
 
         //execute pipeline
+        //the following code should be commneted, if gridgain is not used (not started in ContextListener of MolgenisServlet)
+
         System.out.println(pipeline.toString());
         mcf.setPipeline(pipeline);
 
@@ -362,6 +365,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
 
         String result = weaver.weaveFreemarker(protocolTemplate, weavingValues);
         app.setComputeScript(result);
+        app.setInterpreter("bash");
         //app.setPrevSteps();
         db.add(app);
         List<ComputeApplication> res = db.query(ComputeApplication.class).equals(ComputeApplication.NAME, app.getName()).find();
@@ -416,7 +420,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
 //            weaver.setVerificationCommand(scriptVerification);
 //        }
 //        else
-//            weaver.setVerificationCommand("\n");
+            weaver.setVerificationCommand("\n");
         //finish extra
 
         String remoteLocation = computeFeatures.get("outputdir").getDefaultValue();
