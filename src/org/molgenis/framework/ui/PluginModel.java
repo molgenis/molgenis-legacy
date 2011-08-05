@@ -1,5 +1,6 @@
 package org.molgenis.framework.ui;
 
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Vector;
 
@@ -31,8 +32,10 @@ public abstract class PluginModel<E extends Entity> extends
 		return this.getApplicationController().getLogin();
 	}
 
+
+	
 	@Override
-	public void handleRequest(Database db, Tuple request, PrintWriter out)
+	public void handleRequest(Database db, Tuple request, OutputStream out)
 	{
 		this.handleRequest(db, request);
 	}

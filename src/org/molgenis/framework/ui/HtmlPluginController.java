@@ -13,13 +13,11 @@
 
 package org.molgenis.framework.ui;
 
-import java.io.PrintWriter;
+import java.io.OutputStream;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
-
-
 
 
 public class HtmlPluginController<E extends Entity> extends SimpleScreenController<HtmlPluginModel<E>>
@@ -82,7 +80,7 @@ public class HtmlPluginController<E extends Entity> extends SimpleScreenControll
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request, PrintWriter out) {
+	public void handleRequest(Database db, Tuple request, OutputStream out) {
 		this.handleRequest(db, request);
 		
 	}

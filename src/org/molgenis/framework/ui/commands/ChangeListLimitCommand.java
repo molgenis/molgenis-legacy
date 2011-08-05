@@ -3,14 +3,14 @@
  */
 package org.molgenis.framework.ui.commands;
 
-import java.io.PrintWriter;
+import java.io.OutputStream;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Entity;
@@ -49,9 +49,8 @@ public class ChangeListLimitCommand<E extends Entity> extends SimpleCommand
 	}
 
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, PrintWriter downloadStream)
+	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream)
 	{
-
 		getFormScreen().setLimit(getLimit());
 		return ScreenModel.Show.SHOW_MAIN;
 	}

@@ -1,6 +1,6 @@
 package org.molgenis.framework.ui;
 
-import java.io.PrintWriter;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 
 import org.molgenis.framework.db.Database;
@@ -19,19 +19,19 @@ public abstract class EasyPluginController<M extends ScreenModel> extends
 		super(name, model, parent);
 	}
 
-	@Override
-	public void handleRequest(Database db, Tuple request, PrintWriter out)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
 	/**
 	 * If a user sends a request it can be handled here. Default, it will be
 	 * automatically mapped to methods based request.getAction();
 	 */
 	@Override
 	public void handleRequest(Database db, Tuple request)
+	{
+		// automatically calls functions with same name as action
+		delegate(request.getAction(), db, request);
+	}
+	
+	@Override
+	public void handleRequest(Database db, Tuple request, OutputStream out)
 	{
 		// automatically calls functions with same name as action
 		delegate(request.getAction(), db, request);

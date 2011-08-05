@@ -1,16 +1,14 @@
 package org.molgenis.framework.ui.commands;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.ParseException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.CsvToDatabase;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Database.DatabaseAction;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -75,8 +73,7 @@ public class AddBatchCommand<E extends Entity> extends SimpleCommand
 	}
 
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, PrintWriter downloadStream) throws ParseException, DatabaseException,
-			IOException
+	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception
 	{
 		logger.debug(this.getName());
 

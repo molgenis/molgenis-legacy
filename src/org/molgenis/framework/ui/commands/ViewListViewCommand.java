@@ -3,18 +3,16 @@
  */
 package org.molgenis.framework.ui.commands;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.ParseException;
+import java.io.OutputStream;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.FormModel;
+import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Entity;
@@ -35,8 +33,7 @@ public class ViewListViewCommand<E extends Entity> extends SimpleCommand
 	}
 
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, PrintWriter downloadStream) throws DatabaseException, ParseException,
-			IOException
+	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception
 	{
 		logger.debug(this.getName());
 

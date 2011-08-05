@@ -13,6 +13,7 @@
 package org.molgenis.framework.ui;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -98,7 +99,7 @@ public abstract class FormController<E extends Entity> extends
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request, PrintWriter out)
+	public void handleRequest(Database db, Tuple request, OutputStream out)
 	{
 		logger.debug("handleRequest(" + request + ")");
 

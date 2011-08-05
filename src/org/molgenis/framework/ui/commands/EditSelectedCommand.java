@@ -1,6 +1,6 @@
 package org.molgenis.framework.ui.commands;
 
-import java.io.PrintWriter;
+import java.io.OutputStream;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -8,10 +8,10 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.ui.FormModel;
+import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.Entity;
@@ -49,7 +49,7 @@ public class EditSelectedCommand extends SimpleCommand
 	}
 
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, PrintWriter out) throws DatabaseException
+	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream out) throws Exception
 	{
 		logger.debug(this.getName());
 

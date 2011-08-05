@@ -1,6 +1,7 @@
 package org.molgenis.framework.ui.commands;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.text.ParseException;
@@ -196,8 +197,7 @@ public interface ScreenCommand extends Serializable, ScreenModel
 	 * @throws ParseException
 	 */
 	public ScreenModel.Show handleRequest(Database db, Tuple request,
-			PrintWriter downloadStream) throws ParseException,
-			DatabaseException, IOException;
+			OutputStream downloadStream) throws Exception;
 
 	/**
 	 * @return boolean whether this action should be treated as a download

@@ -19,25 +19,25 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.XlsWriter;
 
 /**
  * This command downloads the currently selected records as csv
  * 
  * @param <E>
  */
-public class DownloadSelectedCommand<E extends Entity> extends SimpleCommand
+public class DownloadSelectedXlsCommand<E extends Entity> extends SimpleCommand
 {
 	private static final long serialVersionUID = 3619865367653131342L;
 	public static final transient Logger logger = Logger
-			.getLogger(DownloadSelectedCommand.class);
+			.getLogger(DownloadSelectedXlsCommand.class);
 
-	public DownloadSelectedCommand(String name, ScreenController<?>  parentScreen)
+	public DownloadSelectedXlsCommand(String name, ScreenController<?>  parentScreen)
 	{
 		super(name, parentScreen);
-		this.setLabel("Download selected (.txt)");
+		this.setLabel("Download selected (.xls)");
 		this.setIcon("generated-res/img/download.png");
 		this.setDownload(true);
 		this.setMenu("File");
@@ -52,7 +52,8 @@ public class DownloadSelectedCommand<E extends Entity> extends SimpleCommand
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream csvDownload) throws Exception
+	public ScreenModel.Show handleRequest(Database db, Tuple request,
+			OutputStream xlsDownload) throws Exception
 	{
 		logger.debug(this.getName());
 
@@ -73,14 +74,14 @@ public class DownloadSelectedCommand<E extends Entity> extends SimpleCommand
 
 		if (records.size() == 0)
 		{
-			//csvDownload.println("No records selected.");
+			//xlsDownload.println("No records selected.");
 			return ScreenModel.Show.SHOW_MAIN;
 		}
 		
 		List<String> fieldsToExport = ((FormController<?>)this.getController()).getVisibleColumnNames();
 
 		// watch out, the "IN" operator expects an Object[]
-		db.find(view.getController().getEntityClass(), new CsvWriter(csvDownload), fieldsToExport,
+		db.find(view.getController().getEntityClass(), new XlsWriter(xlsDownload), fieldsToExport,
 				new QueryRule("id", Operator.IN, records));
 		return ScreenModel.Show.SHOW_MAIN;
 	}

@@ -1,8 +1,6 @@
 package org.molgenis.framework.ui.commands;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.ParseException;
+import java.io.OutputStream;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
@@ -251,10 +249,8 @@ public abstract class SimpleCommand extends SimpleScreenModel implements ScreenC
 	public abstract List<ActionInput> getActions();
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, PrintWriter downloadStream) throws ParseException,
-			DatabaseException, IOException
+	public Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception
 	{
-		// TODO Auto-generated method stub
 		return ScreenModel.Show.SHOW_MAIN;
 	}
 

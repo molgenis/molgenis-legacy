@@ -1,5 +1,6 @@
 package org.molgenis.framework.ui.commands;
 
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
@@ -14,17 +15,16 @@ import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.model.MolgenisModelException;
-import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.XlsWriter;
 
-public class DownloadXlsCommand <E extends Entity> extends SimpleCommand
+public class DownloadAllXlsCommand <E extends Entity> extends SimpleCommand
 {
 	private static final long serialVersionUID = -2682113764135477871L;
 	public static final transient Logger logger = Logger.getLogger(DownloadAllCommand.class);
 
-	public DownloadXlsCommand(String name, FormController<E> parentScreen)
+	public DownloadAllXlsCommand(String name, FormController<E> parentScreen)
 	{
 		super(name, parentScreen);
 		this.setLabel("Download all (.xls)");
@@ -34,7 +34,7 @@ public class DownloadXlsCommand <E extends Entity> extends SimpleCommand
 	}
 
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, PrintWriter xlsDownload) throws DatabaseException
+	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream xlsDownload) throws Exception
 	{
 		logger.debug(this.getName());
 

@@ -506,21 +506,28 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 
 				// set the headers for the download
 				response.setContentType("application/x-download");
+				
+				String action = requestTuple.getString(ScreenModel.INPUT_ACTION);
+				String extension = null;
+				if(action.startsWith("download_txt_")){
+					extension = "txt";
+				}else if(action.startsWith("download_xls_")){
+					extension = "xls";
+				}else{
+					throw new Exception("Download type '" + action + "' unsupported!");
+				}
 
-				//TODO : find out the command that requested it and call .txt or .xls 
-			
 				ScreenModel.Show.values();
 				response.setHeader("Content-Disposition",
 						"attachment; filename="
-								+ controller.getName().toLowerCase() + ".csv");
-				//				+ controller.getName().toLowerCase() + ".txt");
+								+ controller.getName().toLowerCase() + "." + extension);
 				
-
 				// let the handleRequest produce the content
-				PrintWriter out = new PrintWriter(response.getOutputStream());
-				controller.handleRequest(db, requestTuple, out);
-				out.flush();
-				out.close();
+				controller.handleRequest(db, requestTuple, response.getOutputStream());
+				
+				//TODO: does this fail when stream is already closed??
+				response.getOutputStream().flush();
+				response.getOutputStream().close();
 			}
 
 			// handle normal event and then write the response
@@ -860,6 +867,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	/**
 	 * Handle use of the download API.
 	 * 
+	 * TODO: this method is horrible and should be properly refactored, documented and tested!
+	 * 
 	 * @param request
 	 * @param response
 	 */
@@ -1039,6 +1048,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					}
 				}
 
+				// TODO: when is this reached??
+				
 				// execute query
 				SpreadsheetWriter writer = new CsvWriter(out);
 				// CsvWriter writer = new CsvFileWriter( new

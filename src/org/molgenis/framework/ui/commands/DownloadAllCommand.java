@@ -3,7 +3,7 @@
  */
 package org.molgenis.framework.ui.commands;
 
-import java.io.PrintWriter;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,14 +35,14 @@ public class DownloadAllCommand<E extends Entity> extends SimpleCommand
 	public DownloadAllCommand(String name, ScreenController<?>  parentScreen)
 	{
 		super(name, parentScreen);
-		this.setLabel("Download all (.csv)");
+		this.setLabel("Download all (.txt)");
 		this.setIcon("generated-res/img/download.png");
 		this.setDownload(true);
 		this.setMenu("File");
 	}
 
 	@Override
-	public ScreenModel.Show handleRequest(Database db, Tuple request, PrintWriter csvDownload) throws DatabaseException
+	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream csvDownload) throws Exception
 	{
 		logger.debug(this.getName());
 

@@ -2,7 +2,7 @@ package org.molgenis.framework.ui;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.OutputStream;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -221,7 +221,7 @@ public class ApplicationController extends
 	// }
 
 	@Override
-	public void handleRequest(Database db, Tuple request, PrintWriter out)
+	public void handleRequest(Database db, Tuple request, OutputStream out)
 	{
 		this.handleRequest(db, request);
 
