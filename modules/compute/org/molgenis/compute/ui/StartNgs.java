@@ -407,7 +407,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         //create compute pipeline
         String scriptID = app.getName();
         weaver.setScriptID(scriptID);
-        weaver.setWalltime(protocol.getComputationalTime());
+        weaver.setWalltime(protocol.getWalltime());
         weaver.setActualCommand(result);
         //extra for verification test (count # reads)
 //        if (app.getWorkflowElement_Name().equalsIgnoreCase("BamIndexElement1"))
