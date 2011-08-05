@@ -74,7 +74,7 @@ public class MutationService implements Serializable
 		return mutationService;
 	}
 
-	public List<MutationSummaryVO> findMutations(MutationSearchCriteriaVO criteria) throws DatabaseException, java.text.ParseException
+	public List<MutationSummaryVO> findMutations(MutationSearchCriteriaVO criteria) throws DatabaseException
 	{
 		List<Mutation> mutations = this._findMutations(criteria);
 
@@ -106,7 +106,7 @@ public class MutationService implements Serializable
 			return new ArrayList<PatientSummaryVO>();
 	}
 
-	protected List<Mutation> _findMutations(MutationSearchCriteriaVO criteria) throws DatabaseException, java.text.ParseException
+	protected List<Mutation> _findMutations(MutationSearchCriteriaVO criteria) throws DatabaseException
 	{
 		if (this.db instanceof JDBCDatabase)
 		{
@@ -318,7 +318,7 @@ public class MutationService implements Serializable
 			throw new DatabaseException("Unsupported database mapper");
 	}
 
-	private MutationSummaryVO toMutationSummaryVO(Mutation mutation) throws DatabaseException, java.text.ParseException
+	private MutationSummaryVO toMutationSummaryVO(Mutation mutation) throws DatabaseException
 	{
 		if (this.cache.containsKey(mutation.getId()))
 			return this.cache.get(mutation.getId());
@@ -463,7 +463,7 @@ public class MutationService implements Serializable
 		return mutationSummaryVO;
 	}
 
-	private List<MutationSummaryVO> toMutationSummaryVOList(List<Mutation> mutations) throws DatabaseException, java.text.ParseException
+	private List<MutationSummaryVO> toMutationSummaryVOList(List<Mutation> mutations) throws DatabaseException
 	{
 		List<MutationSummaryVO> result            = new ArrayList<MutationSummaryVO>();
 
@@ -486,7 +486,7 @@ public class MutationService implements Serializable
 		return mutation;
 	}
 
-	private MutationSummaryVO findPrevMutation(Mutation mutation) throws DatabaseException, java.text.ParseException
+	private MutationSummaryVO findPrevMutation(Mutation mutation) throws DatabaseException
 	{
 		List<Mutation> mutations = this.db.query(Mutation.class).lt(Mutation.CDNA_POSITION, mutation.getCdna_Position()).sortDESC(Mutation.CDNA_POSITION).limit(1).find();
 
@@ -496,7 +496,7 @@ public class MutationService implements Serializable
 			return this.toMutationSummaryVO(mutation);
 	}
 
-	private MutationSummaryVO findNextMutation(Mutation mutation) throws DatabaseException, java.text.ParseException
+	private MutationSummaryVO findNextMutation(Mutation mutation) throws DatabaseException
 	{
 		List<Mutation> mutations = this.db.query(Mutation.class).gt(Mutation.CDNA_POSITION, mutation.getCdna_Position()).sortASC(Mutation.CDNA_POSITION).limit(1).find();
 
@@ -517,24 +517,24 @@ public class MutationService implements Serializable
 		return this.db.query(Mutation.class).sortASC(Mutation.CDNA_POSITION).find();
 	}
 
-	public MutationSummaryVO getFirstMutation() throws DatabaseException, ParseException
+	public MutationSummaryVO getFirstMutation() throws DatabaseException
 	{
 		return this.toMutationSummaryVO(this.db.query(Mutation.class).sortASC(Mutation.CDNA_POSITION).limit(1).find().get(0));
 	}
 
-	public MutationSummaryVO getPrevMutation(String identifier) throws DatabaseException, ParseException
+	public MutationSummaryVO getPrevMutation(String identifier) throws DatabaseException
 	{
 		Mutation mutation = this.db.query(Mutation.class).equals(Mutation.IDENTIFIER, identifier).find().get(0);
 		return this.findPrevMutation(mutation);
 	}
 
-	public MutationSummaryVO getNextMutation(String identifier) throws DatabaseException, ParseException
+	public MutationSummaryVO getNextMutation(String identifier) throws DatabaseException
 	{
 		Mutation mutation = this.db.query(Mutation.class).equals(Mutation.IDENTIFIER, identifier).find().get(0);
 		return this.findNextMutation(mutation);
 	}
 
-	public MutationSummaryVO getLastMutation() throws DatabaseException, ParseException
+	public MutationSummaryVO getLastMutation() throws DatabaseException
 	{
 		return this.toMutationSummaryVO(this.db.query(Mutation.class).sortDESC(Mutation.CDNA_POSITION).limit(1).find().get(0));
 	}
@@ -634,11 +634,11 @@ public class MutationService implements Serializable
 		try
 		{
 			// Exons are never inserted via mutations, just select
-			logger.debug(">>> exon==" + mutationUploadVO.getExon());
-			mutationUploadVO.getMutation().setExon(this.db.findById(Exon.class, mutationUploadVO.getExon().getId()));
+			logger.debug(">>> exon==" + mutationUploadVO.getExonId());
+			mutationUploadVO.getMutation().setExon(this.db.findById(Exon.class, mutationUploadVO.getExonId()));
 
 			// Genes are never inserted via mutations, just select
-			mutationUploadVO.getMutation().setGene(this.db.query(MutationGene.class).equals(MutationGene.NAME, mutationUploadVO.getGene().getName()).find().get(0));
+			mutationUploadVO.getMutation().setGene(this.db.query(MutationGene.class).equals(MutationGene.SYMBOL, mutationUploadVO.getGeneSymbol()).find().get(0));
 
 			// Insert mutation and set primary key
 			count = this.db.add(mutationUploadVO.getMutation());
@@ -801,15 +801,17 @@ public class MutationService implements Serializable
 		if (StringUtils.isEmpty(mutationUploadVO.getMutation().getMutationPosition()) || "0".equals(mutationUploadVO.getMutation().getMutationPosition()))
 			return;
 		
-		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "COL7A1").find().get(0);
-//		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "CHD7").find().get(0);
-		mutationUploadVO.setGene(gene);
+		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, mutationUploadVO.getGeneSymbol()).find().get(0);
+		mutationUploadVO.setGeneBpStart(gene.getBpStart().intValue());
+		mutationUploadVO.setGeneOrientation(gene.getOrientation());
+		mutationUploadVO.setGeneSeq(gene.getSeq());
+		mutationUploadVO.setGeneSymbol(gene.getSymbol());
 		mutationUploadVO.getMutation().setGene(gene);
 
 		//logger.debug("gene==" + this.mutationVO.getGene());
 		//HashMap<String, String> aminoAcidHash = this.mutationService.getAminoAcids();
 
-		String nuclSequence      = mutationUploadVO.getGene().getSeq();
+		String nuclSequence      = mutationUploadVO.getGeneSeq();
 		StringBuffer mutSequence = new StringBuffer(nuclSequence);
 
 		// find corresponding exon
@@ -828,7 +830,8 @@ public class MutationService implements Serializable
 		Exon exon                = exonSummaryVOs.get(0).getExon();
 //		logger.debug(">>> exon==" + exon.toString());
 
-		mutationUploadVO.setExon(exon);
+		mutationUploadVO.setExonId(exon.getId());
+		mutationUploadVO.setExonIsIntron(exon.getIsIntron());
 		mutationUploadVO.getMutation().setExon(exon); // this is crap, use navigable objects
 		System.out.println(">>> assignValuesFromPosition: mut.pos==" + mutationUploadVO.getMutation().getMutationPosition() + ", exon==" + exon.getName());
 		mutationUploadVO.getMutation().setCdna_Position(SequenceUtils.getCDNAPosition(mutationUploadVO.getMutation().getMutationPosition()));
@@ -836,16 +839,16 @@ public class MutationService implements Serializable
 
 		int mutationStart;
 //		System.out.println(">>> assignValuesFromPosition: mut.gdna==" + mutationUploadVO.getMutation().getGdna_Position() + ", gene.start==" + mutationUploadVO.getGene().getBpStart());
-		if ("F".equals(mutationUploadVO.getGene().getOrientation()))
-			mutationStart = mutationUploadVO.getMutation().getGdna_Position() - mutationUploadVO.getGene().getBpStart().intValue();
+		if ("F".equals(mutationUploadVO.getGeneOrientation()))
+			mutationStart = mutationUploadVO.getMutation().getGdna_Position() - mutationUploadVO.getGeneBpStart().intValue();
 		else
-			mutationStart = mutationUploadVO.getGene().getBpStart().intValue() - mutationUploadVO.getMutation().getGdna_Position();
+			mutationStart = mutationUploadVO.getGeneBpStart().intValue() - mutationUploadVO.getMutation().getGdna_Position();
 		
 		if (mutationUploadVO.getMutation().getLength() == null)
 			mutationUploadVO.getMutation().setLength(1); // default value
 
 //		logger.debug(">>> vor assignNt: mutationStart==" + mutationStart);
-		mutationUploadVO.assignNt(nuclSequence, mutationStart);
+		this.assignNt(mutationUploadVO, nuclSequence, mutationStart);
 //		logger.debug(">>> nt==" + mutationUploadVO.getNt());
 		//this.mutationVO.setNt(nuclSequence.substring(mutationStart, mutationStart + 1).toUpperCase());
 		//logger.debug("mutationStart==" + mutationStart + ".");
@@ -855,7 +858,7 @@ public class MutationService implements Serializable
 		{
 			int mutationEnd      = mutationStart + mutationUploadVO.getMutation().getLength();
 			//this.mutationVO.setNt(nuclSequence.substring(mutationStart, mutationEnd).toUpperCase());
-			mutationUploadVO.assignNt(nuclSequence, mutationStart);
+			this.assignNt(mutationUploadVO, nuclSequence, mutationStart);
 //			logger.debug(">>> nt==" + mutationUploadVO.getNt());
 			mutSequence.delete(mutationStart, mutationEnd);
 			mutationUploadVO.getMutation().setNtchange("");
@@ -863,7 +866,7 @@ public class MutationService implements Serializable
 		else if (mutationUploadVO.getMutation().getEvent().equals("duplication"))
 		{
 			//int mutationEnd      = mutationStart + mutationUploadVO.getMutation().getLength();
-			mutationUploadVO.assignNt(nuclSequence, mutationStart);
+			this.assignNt(mutationUploadVO, nuclSequence, mutationStart);
 			mutSequence.insert(mutationStart, mutationUploadVO.getNt());
 			mutationUploadVO.getMutation().setNtchange("");
 		}
@@ -887,7 +890,7 @@ public class MutationService implements Serializable
 			
 			int mutationEnd      = mutationStart + mutationUploadVO.getMutation().getLength();
 			//this.mutationVO.setNt(nuclSequence.substring(mutationStart, mutationEnd).toUpperCase());
-			mutationUploadVO.assignNt(nuclSequence, mutationStart);
+			this.assignNt(mutationUploadVO, nuclSequence, mutationStart);
 //			logger.debug(">>> nt==" + mutationUploadVO.getNt());
 			mutSequence.delete(mutationStart, mutationEnd);
 			
@@ -898,8 +901,8 @@ public class MutationService implements Serializable
 		}
 
 		logger.debug(">>> assignValuesFromPosition: mutation==" + mutationUploadVO.getMutation().toString());
-		mutationUploadVO.assignCdna_notation();
-		mutationUploadVO.assignGdna_notation();
+		this.assignCdna_notation(mutationUploadVO);
+		this.assignGdna_notation(mutationUploadVO);
 
 		// Calculations for transcribed part
 		
@@ -938,25 +941,26 @@ public class MutationService implements Serializable
 
 			mutationUploadVO.getMutation().setAa_Position(changeCodonNum);
 			
-			mutationUploadVO.assignAa_notation(trlMutSeq, changeAaNum);
+			this.assignAa_notation(mutationUploadVO, trlMutSeq, changeAaNum);
 		}
 
-		mutationUploadVO.assignType();
-		mutationUploadVO.assignConsequence();
+		this.assignType(mutationUploadVO);
+		this.assignConsequence(mutationUploadVO);
 //		logger.debug(">>> assignValuesFromPosition: mutation==" + mutationUploadVO.getMutation().toString());
 //		logger.debug(">>> end of assignValues: nt==" + mutationUploadVO.getNt());
 	}
 	
-	public void setDefaults(MutationUploadVO mutationUploadVO) throws DatabaseException, ParseException
+	public void setDefaults(MutationUploadVO mutationUploadVO) throws DatabaseException
 	{
 		// set default gene
+		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, mutationUploadVO.getGeneSymbol()).find().get(0);
 
-		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "COL7A1").find().get(0);
-//		MutationGene gene = this.db.query(MutationGene.class).equals(MutationGene.NAME, "CHD7").find().get(0);
+		mutationUploadVO.setGeneBpStart(gene.getBpStart().intValue());
+		mutationUploadVO.setGeneOrientation(gene.getOrientation());
+		mutationUploadVO.setGeneSeq(gene.getSeq());
+		mutationUploadVO.setGeneSymbol(gene.getSymbol());
 
-		mutationUploadVO.setGene(gene);
 		mutationUploadVO.getMutation().setGene(gene);
-		
 		mutationUploadVO.getMutation().setEvent("NA");
 	}
 
@@ -968,5 +972,156 @@ public class MutationService implements Serializable
 	public int getNumMutationsByPathogenicity(String pathogenicity) throws DatabaseException
 	{
 		return this.db.query(Mutation.class).equals(Mutation.PATHOGENICITY, pathogenicity).count();
+	}
+	
+	private void assignNt(MutationUploadVO mutationUploadVO, String nuclSequence, int mutationStart)
+	{
+//		System.out.println(">>> assignNt: mutationStart==" + mutationStart);
+//		System.out.println(">>> assignNt: start: mutation==" + this.getMutation());
+		Integer length = mutationUploadVO.getMutation().getLength();
+//		System.out.println(">>> assignNt: length==" + length);
+
+		if (length == null)
+			length = 1;
+
+//		System.out.println(">>> assignNt: vor setNt, seqlen==" + nuclSequence.length() + ", seq==" + nuclSequence);
+		mutationUploadVO.setNt(nuclSequence.substring(mutationStart, mutationStart + length).toUpperCase());
+//		System.out.println(">>> assignNt: nach setNt");
+	}
+	
+	private void assignConsequence(MutationUploadVO mutationUploadVO)
+	{
+		// default: missense, no effect on splicing
+		mutationUploadVO.getMutation().setConsequence("Missense codon");
+		mutationUploadVO.getMutation().setEffectOnSplicing(false);
+
+		if (mutationUploadVO.getExonIsIntron())
+		{
+			mutationUploadVO.getMutation().setConsequence("Altered splicing -> premature termination codon");
+			mutationUploadVO.getMutation().setEffectOnSplicing(true);
+		}
+		else if (mutationUploadVO.getMutation().getAa_Notation().indexOf("fsX") > -1 || mutationUploadVO.getMutation().getAa_Notation().indexOf("Ter") > -1)
+			mutationUploadVO.getMutation().setConsequence("Premature termination codon");
+		else if (mutationUploadVO.getMutation().getAa_Position() != null && mutationUploadVO.getMutation().getAa_Position() == 1)
+			mutationUploadVO.getMutation().setConsequence("No initiation of transcription/translation");
+	}
+	
+	private void assignType(MutationUploadVO mutationUploadVO)
+	{
+		if (mutationUploadVO.getExonIsIntron())
+			mutationUploadVO.getMutation().setType("splice-site mutation");
+		else if (mutationUploadVO.getMutation().getEvent().equals("deletion"))
+			if (mutationUploadVO.getMutation().getLength() <= 20)
+				if (mutationUploadVO.getMutation().getAa_Notation().indexOf("fsX") > -1)
+					mutationUploadVO.getMutation().setType("small deletion frame-shift");
+				else
+					mutationUploadVO.getMutation().setType("small deletion in-frame");
+			else
+				if (mutationUploadVO.getMutation().getAa_Notation().indexOf("fsX") > -1)
+					mutationUploadVO.getMutation().setType("large deletion frame-shift");
+				else
+					mutationUploadVO.getMutation().setType("large deletion in-frame");
+		else if (mutationUploadVO.getMutation().getEvent().equals("duplication"))
+			if (mutationUploadVO.getMutation().getLength() <= 20)
+				if (mutationUploadVO.getMutation().getAa_Notation().indexOf("fsX") > -1)
+					mutationUploadVO.getMutation().setType("small duplication frame-shift");
+				else
+					mutationUploadVO.getMutation().setType("small duplication in-frame");
+			else
+				if (mutationUploadVO.getMutation().getAa_Notation().indexOf("fsX") > -1)
+					mutationUploadVO.getMutation().setType("large duplication frame-shift");
+				else
+					mutationUploadVO.getMutation().setType("large duplication in-frame");
+		else if (mutationUploadVO.getMutation().getEvent().equals("insertion"))
+			if (mutationUploadVO.getMutation().getLength() <= 20)
+				if (mutationUploadVO.getMutation().getAa_Notation().indexOf("fsX") > -1)
+					mutationUploadVO.getMutation().setType("small insertion frame-shift");
+				else
+					mutationUploadVO.getMutation().setType("small insertion in-frame");
+			else
+				if (mutationUploadVO.getMutation().getAa_Notation().indexOf("fsX") > -1)
+					mutationUploadVO.getMutation().setType("large insertion frame-shift");
+				else
+					mutationUploadVO.getMutation().setType("large insertion in-frame");
+		else if (mutationUploadVO.getMutation().getAa_Notation().indexOf("fsX") > -1 || mutationUploadVO.getMutation().getAa_Notation().indexOf("Ter") > -1)
+			mutationUploadVO.getMutation().setType("nonsense mutation");
+		else
+			mutationUploadVO.getMutation().setType("missense mutation");
+	}
+	
+	private String getNotation(MutationUploadVO mutationUploadVO, String position) throws RESyntaxException
+	{
+		if (mutationUploadVO.getMutation().getLength() == null)
+			return "";
+
+		String notation = position;
+
+		if (mutationUploadVO.getMutation().getEvent().equals("insertion"))
+			notation += "_" + SequenceUtils.getAddedPosition(position, 1);
+		else if (mutationUploadVO.getMutation().getLength() > 1)
+			notation += "_" + SequenceUtils.getAddedPosition(position, mutationUploadVO.getMutation().getLength() - 1);
+
+		if (mutationUploadVO.getMutation().getEvent().equals("deletion"))
+		{
+			notation += "del";
+			if (mutationUploadVO.getMutation().getLength() <= 2)
+				notation += mutationUploadVO.getNt();
+		}
+		else if (mutationUploadVO.getMutation().getEvent().equals("duplication"))
+		{
+			notation += "dup";
+			if (mutationUploadVO.getMutation().getLength() <= 2)
+				notation += mutationUploadVO.getNt();
+		}
+		else if (mutationUploadVO.getMutation().getEvent().equals("insertion"))
+			notation += "ins" + mutationUploadVO.getMutation().getNtchange();
+		else if (mutationUploadVO.getMutation().getEvent().equals("point mutation"))
+			notation += mutationUploadVO.getNt() + ">" + mutationUploadVO.getMutation().getNtchange();
+		else if (mutationUploadVO.getMutation().getEvent().equals("insertion/deletion"))
+		{
+			// deletion
+			notation += "del";
+			if (mutationUploadVO.getMutation().getLength() <= 2)
+				notation += mutationUploadVO.getNt();
+			//insertion
+			notation += "ins" + mutationUploadVO.getMutation().getNtchange();
+		}
+		return notation;
+	}
+	
+	private void assignGdna_notation(MutationUploadVO mutationUploadVO) throws RESyntaxException
+	{
+		if (mutationUploadVO.getMutation().getLength() != null)
+			mutationUploadVO.getMutation().setGdna_Notation("g." + this.getNotation(mutationUploadVO, mutationUploadVO.getMutation().getGdna_Position().toString()));
+		else
+			mutationUploadVO.getMutation().setGdna_Notation("");
+	}
+
+	private void assignCdna_notation(MutationUploadVO mutationUploadVO) throws RESyntaxException
+	{
+		if (mutationUploadVO.getMutation().getLength() != null)
+			mutationUploadVO.getMutation().setCdna_Notation("c." + this.getNotation(mutationUploadVO, mutationUploadVO.getMutation().getMutationPosition()));
+		else
+			mutationUploadVO.getMutation().setCdna_Notation("");
+	}
+
+	private void assignAa_notation(MutationUploadVO mutationUploadVO, String trlMutSeq, int codonNum)
+	{
+		if (codonNum == 1)
+			mutationUploadVO.getMutation().setAa_Notation("p.0");
+		else if (codonNum > 1)
+		{
+			mutationUploadVO.getMutation().setAa_Notation("p." + mutationUploadVO.getAa() + codonNum + mutationUploadVO.getAachange());
+			if (mutationUploadVO.getMutation().getLength() % 3 != 0 && !mutationUploadVO.getMutation().getEvent().equals("point mutation"))
+			{
+				mutationUploadVO.getMutation().setAa_Notation(mutationUploadVO.getMutation().getAa_Notation() + "fs");
+				int terPos = SequenceUtils.indexOfCodon(trlMutSeq, "Ter", codonNum);
+
+				if (terPos > -1)
+					mutationUploadVO.getMutation().setAa_Notation(mutationUploadVO.getMutation().getAa_Notation() + "X" + (terPos - codonNum + 1)); // + " DEBUG: " + terPos + "-" + codonNum + ", "+ trlMutSeq); //StringUtils.substring(trlMutSeq, (codonNum - 1) * 3));
+			}
+		}
+		else
+			mutationUploadVO.getMutation().setAa_Notation("");
 	}
 }

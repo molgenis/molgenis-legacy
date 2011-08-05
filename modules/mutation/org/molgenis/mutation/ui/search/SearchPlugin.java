@@ -65,10 +65,6 @@ public class SearchPlugin extends EasyPluginController<SearchModel>
 	private PatientService patientService;
 	private PhenotypeService phenotypeService;
 	private ProteinDomainService domainService;
-//	private NewsService newsService;
-
-//	private SearchPluginVO searchPluginVO                     = new SearchPluginVO();
-//	private MBrowseVO mBrowseVO                               = new MBrowseVO();
 
 	private ExonSearchCriteriaVO exonSearchCriteriaVO         = new ExonSearchCriteriaVO();
 	private MutationSearchCriteriaVO mutationSearchCriteriaVO = new MutationSearchCriteriaVO();
@@ -186,7 +182,7 @@ public class SearchPlugin extends EasyPluginController<SearchModel>
 			}
 			else if (this.getModel().getAction().equals("listAllMutations"))
 			{
-				this.handleListAllMutations();
+				this.handleListAllMutations(request);
 			}
 			else if (this.getModel().getAction().equals("listAllPatients"))
 			{
@@ -270,14 +266,14 @@ public class SearchPlugin extends EasyPluginController<SearchModel>
 			child.handleRequest(db, request);
 	}
 
-	private void handleFindPatients(Tuple request) throws DatabaseException, ParseException, ServletException, IOException
+	private void handleFindPatients(Tuple request) throws DatabaseException, ParseException
 	{
 		if (StringUtils.isNotEmpty(request.getString("mid")))
 			this.patientSearchCriteriaVO.setMid(request.getString("mid"));
 		
 		this.getModel().setPatientSummaryVOs(this.patientService.findPatients(this.patientSearchCriteriaVO));
 		((HttpServletRequestTuple) request).getRequest().getSession().setAttribute("patientSummaryVOs", this.getModel().getPatientSummaryVOs());
-		this.getModel().setRawOutput(this.include(request, "res/mutation/patientPager.jsp"));
+		this.getModel().setRawOutput(this.include(request, this.getModel().getPatientPager()));
 		this.getModel().setHeader(this.getModel().getPatientSummaryVOs().size() + " results for " + this.patientSearchCriteriaVO.toString());
 	}
 
@@ -298,7 +294,7 @@ public class SearchPlugin extends EasyPluginController<SearchModel>
 			if (request.getString("snpbool").equals("hide"))
 				this.mutationSearchCriteriaVO.setReportedAsSNP(false);
 	
-		this.getModel().setMutationSummaryVOHash(new HashMap<String, LimitOffsetPager<MutationSummaryVO>>());
+		this.getModel().setMutationSummaryVOHash(new HashMap<String, String>());
 		this.getModel().setPatientSummaryVOHash(new HashMap<String, String>());
 
 		MutationSearchCriteriaVO criteria = new MutationSearchCriteriaVO();
@@ -352,54 +348,57 @@ public class SearchPlugin extends EasyPluginController<SearchModel>
 		this.getModel().setHeader(numres + " results found.");
 	}
 
-	private void handleShowNextMutation(Tuple request) throws DatabaseException, ParseException
+	private void handleShowNextMutation(Tuple request) throws DatabaseException
 	{
 		this.getModel().setMutationSummaryVO(this.mutationService.getNextMutation(request.getString("identifier")));
 	}
 
-	private void handleShowPrevMutation(Tuple request) throws DatabaseException, ParseException
+	private void handleShowPrevMutation(Tuple request) throws DatabaseException
 	{
 		this.getModel().setMutationSummaryVO(mutationService.getPrevMutation(request.getString("mid")));
 	}
 
-	private void handleShowLastMutation() throws DatabaseException, ParseException
+	private void handleShowLastMutation() throws DatabaseException
 	{
 		this.getModel().setMutationSummaryVO(mutationService.getLastMutation());
 	}
 
-	private void handleShowFirstMutation() throws DatabaseException, ParseException
+	private void handleShowFirstMutation() throws DatabaseException
 	{
 		this.getModel().setMutationSummaryVO(mutationService.getFirstMutation());
 	}
 
-	private void handleListAllMutations() throws DatabaseException, ParseException
+	private void handleListAllMutations(Tuple request) throws DatabaseException, ParseException
 	{
-		HashMap<String, List<PatientSummaryVO>> patientSummaryVOs = new HashMap<String, List<PatientSummaryVO>>();
-		
-		List<PatientSummaryVO> tmp = this.patientService.getAllPatientSummaries();
-		for (PatientSummaryVO patientSummaryVO : tmp)
-		{
-			String key1 = patientSummaryVO.getVariantSummaryVOList().get(0).getIdentifier();
-
-			if (!patientSummaryVOs.containsKey(key1))
-				patientSummaryVOs.put(key1, new ArrayList<PatientSummaryVO>());
-			
-			patientSummaryVOs.get(key1).add(patientSummaryVO);
-			
-			if (patientSummaryVO.getVariantSummaryVOList().size() > 1)
-			{
-				String key2 = patientSummaryVO.getVariantSummaryVOList().get(1).getIdentifier();
-	
-				if (!patientSummaryVOs.containsKey(key2))
-					patientSummaryVOs.put(key2, new ArrayList<PatientSummaryVO>());
-				
-				patientSummaryVOs.get(key2).add(patientSummaryVO);
-			}
-		}
-		
-		this.getModel().setPatientSummaryVOs(this.patientService.getAllPatientSummaries());
+//		HashMap<String, List<PatientSummaryVO>> patientSummaryVOs = new HashMap<String, List<PatientSummaryVO>>();
+//		
+//		List<PatientSummaryVO> tmp = this.patientService.getAllPatientSummaries();
+//		for (PatientSummaryVO patientSummaryVO : tmp)
+//		{
+//			String key1 = patientSummaryVO.getVariantSummaryVOList().get(0).getIdentifier();
+//
+//			if (!patientSummaryVOs.containsKey(key1))
+//				patientSummaryVOs.put(key1, new ArrayList<PatientSummaryVO>());
+//			
+//			patientSummaryVOs.get(key1).add(patientSummaryVO);
+//			
+//			if (patientSummaryVO.getVariantSummaryVOList().size() > 1)
+//			{
+//				String key2 = patientSummaryVO.getVariantSummaryVOList().get(1).getIdentifier();
+//	
+//				if (!patientSummaryVOs.containsKey(key2))
+//					patientSummaryVOs.put(key2, new ArrayList<PatientSummaryVO>());
+//				
+//				patientSummaryVOs.get(key2).add(patientSummaryVO);
+//			}
+//		}
+//		
+//		this.getModel().setPatientSummaryVOs(this.patientService.getAllPatientSummaries());
 		this.getModel().setMutationSummaryVOs(this.mutationService.getAllMutationSummaries());
-		this.getModel().setPager(new LimitOffsetPager<MutationSummaryVO>(this.getModel().getMutationSummaryVOs(), 10, 0));
+//		this.getModel().setPager(new LimitOffsetPager<MutationSummaryVO>(this.getModel().getMutationSummaryVOs(), 10, 0));
+		((HttpServletRequestTuple) request).getRequest().getSession().setAttribute("mutationSummaryVOList", this.getModel().getMutationSummaryVOs());
+		this.getModel().setRawOutput(this.include(request, this.getModel().getMutationPager()));
+
 		this.getModel().setHeader(this.getModel().getMutationSummaryVOs().size() + " results for \"Display all mutations\".");
 	}
 
@@ -417,7 +416,7 @@ public class SearchPlugin extends EasyPluginController<SearchModel>
 		}	
 	}
 
-	private void handleListAllPatients(Tuple request) throws DatabaseException, ParseException, ServletException, IOException
+	private void handleListAllPatients(Tuple request) throws DatabaseException, ParseException
 	{
 //		MolgenisUser user = new MolgenisUser();
 //		user.setId(this.getLogin().getUserId());
@@ -425,7 +424,7 @@ public class SearchPlugin extends EasyPluginController<SearchModel>
 		List<PatientSummaryVO> patientSummaryVOs = this.patientService.getAllPatientSummaries();
 		this.getModel().setPatientSummaryVOs(patientSummaryVOs);
 		((HttpServletRequestTuple) request).getRequest().getSession().setAttribute("patientSummaryVOs", this.getModel().getPatientSummaryVOs());
-		this.getModel().setRawOutput(this.include(request, "res/mutation/patientPager.jsp"));
+		this.getModel().setRawOutput(this.include(request, this.getModel().getPatientPager()));
 		this.getModel().setHeader(this.getModel().getPatientSummaryVOs().size() + " results for \"Display all patients\".");
 	}
 
@@ -458,7 +457,9 @@ public class SearchPlugin extends EasyPluginController<SearchModel>
 
 		this.getModel().setProteinDomainSummaryVO(this.domainService.findProteinDomain(request.getInt("domain_id"), false));
 		this.getModel().setMutationSummaryVOs(this.mutationService.findMutations(mutationSearchCriteriaVO));
-		this.getModel().setPager(new LimitOffsetPager<MutationSummaryVO>(this.getModel().getMutationSummaryVOs(), 10, 0));
+		((HttpServletRequestTuple) request).getRequest().getSession().setAttribute("mutationSummaryVOList", this.getModel().getMutationSummaryVOs());
+		this.getModel().setRawOutput(this.include(request, this.getModel().getMutationPager()));
+//		this.getModel().setPager(new LimitOffsetPager<MutationSummaryVO>(this.getModel().getMutationSummaryVOs(), 10, 0));
 
 		if (this.getModel().getProteinDomainSummaryVO() == null)
 		{
@@ -498,7 +499,9 @@ public class SearchPlugin extends EasyPluginController<SearchModel>
 		if (this.getModel().getQueryParametersVO().getShowMutations())
 		{
 			this.getModel().setMutationSummaryVOs(this.mutationService.findMutations(mutationSearchCriteriaVO));
-			this.getModel().setPager(new LimitOffsetPager<MutationSummaryVO>(this.getModel().getMutationSummaryVOs(), 10, 0));
+			((HttpServletRequestTuple) request).getRequest().getSession().setAttribute("mutationSummaryVOList", this.getModel().getMutationSummaryVOs());
+			this.getModel().setRawOutput(this.include(request, this.getModel().getMutationPager()));
+//			this.getModel().setPager(new LimitOffsetPager<MutationSummaryVO>(this.getModel().getMutationSummaryVOs(), 10, 0));
 		}
 		this.getModel().setHeader("");
 		this.populateSequencePanel();
@@ -647,7 +650,7 @@ public class SearchPlugin extends EasyPluginController<SearchModel>
 
 				this.getModel().setPatientSummaryVOs(patientSummaryVOs);
 				((HttpServletRequestTuple) request).getRequest().getSession().setAttribute("patientSummaryVOs", this.getModel().getPatientSummaryVOs());
-				this.getModel().getPatientSummaryVOHash().put(" " + key + " ", this.include(request, "res/mutation/patientPager.jsp"));
+				this.getModel().getPatientSummaryVOHash().put(" " + key + " ", this.include(request, this.getModel().getPatientPager()));
 			}
 		}
 		else
@@ -656,7 +659,10 @@ public class SearchPlugin extends EasyPluginController<SearchModel>
 			if (mutationSummaryVOs.size() > 0)
 			{
 				LimitOffsetPager<MutationSummaryVO> pager = new LimitOffsetPager<MutationSummaryVO>(mutationSummaryVOs, 10, 0);
-				this.getModel().getMutationSummaryVOHash().put(" " + key + " ", pager);
+				
+				this.getModel().setMutationSummaryVOs(mutationSummaryVOs);
+				((HttpServletRequestTuple) request).getRequest().getSession().setAttribute("mutationSummaryVOList", this.getModel().getMutationSummaryVOs());
+				this.getModel().getMutationSummaryVOHash().put(" " + key + " ", this.include(request, this.getModel().getMutationPager()));
 			}
 		}
 	}

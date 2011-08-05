@@ -75,16 +75,13 @@
 		<#assign resultHash = vo.mutationSummaryVOHash>
 		<#list resultHash?keys as field>
 			<#if field?starts_with(" ")>
-				<#assign pager = resultHash[field]>
+				<#assign rawOutput = resultHash[field]>
 <p>
-				<#if pager.entities?size &gt; 0>
 <img id="catimg${field}" src="res/img/open.png" onclick="toggleDiv('cat${field}', 'catimg${field}');">
-				</#if>
-${pager.entities?size} ${vo.result} found in "${field}"<#-- (total ${screen.getNumPatients(pager.entities)} patients)-->.
+${vo.result} found in "${field}"<#-- (total ${screen.getNumPatients(pager.entities)} patients)-->.
 </p>
 <div id="cat${field}" style="display:none">
-${vo.setPager(pager)}
-				<#include "mutations.ftl">
+				${rawOutput}
 </div>
 			</#if>
 		</#list>

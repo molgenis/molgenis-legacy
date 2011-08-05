@@ -1,3 +1,10 @@
+<#if vo.geneName == "CHD7">
+
+<#assign rawOutput = vo.rawOutput>
+${rawOutput}
+
+<#else>
+
 <#assign pager                  = vo.pager>
 <#if pager.count &gt; 0>
 	<#assign mutationSummaryVOs = pager.page>
@@ -115,3 +122,5 @@ alert(navigator.appName);
 alert(navigator.appVersion);
 </script>
 -->
+
+</#if>

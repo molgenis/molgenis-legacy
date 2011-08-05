@@ -24,6 +24,8 @@ public class Chd7Search extends SearchPlugin
 		this.setModel(new SearchModel(this));
 		this.setView(new FreemarkerView("SearchPlugin.ftl", this.getModel()));
 		this.getModel().setGeneName("CHD7");
+		this.getModel().setPatientPager("res/mutation/chd7PatientPager.jsp");
+		this.getModel().setMutationPager("res/mutation/chd7MutationPager.jsp");
 	}
 	
 	@Override

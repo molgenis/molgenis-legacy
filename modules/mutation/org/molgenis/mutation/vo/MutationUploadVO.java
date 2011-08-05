@@ -2,11 +2,9 @@ package org.molgenis.mutation.vo;
 
 import java.io.Serializable;
 
-import org.apache.regexp.RESyntaxException;
 import org.molgenis.mutation.Exon;
 import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.MutationGene;
-import org.molgenis.mutation.util.SequenceUtils;
 import org.molgenis.util.ValueLabel;
 
 public class MutationUploadVO implements Serializable
@@ -15,9 +13,12 @@ public class MutationUploadVO implements Serializable
 	//TODO: Danny: Use or loose
 	/*private static final transient Logger logger = Logger.getLogger(MutationUploadVO.class.getSimpleName());*/
 	private Mutation mutation;
-	private Exon exon;
-	private MutationGene gene;
-
+	private Integer exonId;
+	private Boolean exonIsIntron;
+	private Integer geneBpStart;
+	private String geneOrientation;
+	private String geneSeq;
+	private String geneSymbol;
 	// Values that are calculated but not stored in the db
 	private String refseq;
 	private String nt;
@@ -36,18 +37,53 @@ public class MutationUploadVO implements Serializable
 	public void setMutation(Mutation mutation) {
 		this.mutation = mutation;
 	}
-	public Exon getExon() {
-		return exon;
+	public Integer getExonId() {
+		return exonId;
 	}
-	public void setExon(Exon exon) {
-		this.exon = exon;
+
+	public void setExonId(Integer exonId) {
+		this.exonId = exonId;
 	}
-	public MutationGene getGene() {
-		return gene;
+
+	public Boolean getExonIsIntron() {
+		return exonIsIntron;
 	}
-	public void setGene(MutationGene gene) {
-		this.gene = gene;
+
+	public void setExonIsIntron(Boolean exonIsIntron) {
+		this.exonIsIntron = exonIsIntron;
 	}
+
+	public Integer getGeneBpStart() {
+		return geneBpStart;
+	}
+
+	public void setGeneBpStart(Integer geneBpStart) {
+		this.geneBpStart = geneBpStart;
+	}
+
+	public String getGeneOrientation() {
+		return geneOrientation;
+	}
+
+	public void setGeneOrientation(String geneOrientation) {
+		this.geneOrientation = geneOrientation;
+	}
+
+	public String getGeneSeq() {
+		return geneSeq;
+	}
+
+	public void setGeneSeq(String geneSeq) {
+		this.geneSeq = geneSeq;
+	}
+	public String getGeneSymbol() {
+		return geneSymbol;
+	}
+
+	public void setGeneSymbol(String geneSymbol) {
+		this.geneSymbol = geneSymbol;
+	}
+
 	public String getRefseq() {
 		return refseq;
 	}
@@ -90,173 +126,18 @@ public class MutationUploadVO implements Serializable
 	{
 		return new Mutation().getInheritanceOptions();
 	}
-//	public java.util.List<ValueLabel> getTypeOptions()
-//	{
-//		return new Mutation().getTypeOptions();
-//	}
-
-	public void assignNt(String nuclSequence, int mutationStart)
-	{
-//		System.out.println(">>> assignNt: mutationStart==" + mutationStart);
-//		System.out.println(">>> assignNt: start: mutation==" + this.getMutation());
-		Integer length = this.getMutation().getLength();
-//		System.out.println(">>> assignNt: length==" + length);
-
-		if (length == null)
-			length = 1;
-
-//		System.out.println(">>> assignNt: vor setNt, seqlen==" + nuclSequence.length() + ", seq==" + nuclSequence);
-		this.setNt(nuclSequence.substring(mutationStart, mutationStart + length).toUpperCase());
-//		System.out.println(">>> assignNt: nach setNt");
-	}
-
-	public void assignConsequence()
-	{
-		// default: missense, no effect on splicing
-		this.getMutation().setConsequence("Missense codon");
-		this.getMutation().setEffectOnSplicing(false);
-
-		if (this.getExon().getIsIntron())
-		{
-			this.getMutation().setConsequence("Altered splicing -> premature termination codon");
-			this.getMutation().setEffectOnSplicing(true);
-		}
-		else if (this.getMutation().getAa_Notation().indexOf("fsX") > -1 || this.getMutation().getAa_Notation().indexOf("Ter") > -1)
-			this.getMutation().setConsequence("Premature termination codon");
-		else if (this.getMutation().getAa_Position() != null && this.getMutation().getAa_Position() == 1)
-			this.getMutation().setConsequence("No initiation of transcription/translation");
-	}
-
-	public void assignType()
-	{
-		if (this.getExon().getIsIntron())
-			this.getMutation().setType("splice-site mutation");
-		else if (this.getMutation().getEvent().equals("deletion"))
-			if (this.getMutation().getLength() <= 20)
-				if (this.getMutation().getAa_Notation().indexOf("fsX") > -1)
-					this.getMutation().setType("small deletion frame-shift");
-				else
-					this.getMutation().setType("small deletion in-frame");
-			else
-				if (this.getMutation().getAa_Notation().indexOf("fsX") > -1)
-					this.getMutation().setType("large deletion frame-shift");
-				else
-					this.getMutation().setType("large deletion in-frame");
-		else if (this.getMutation().getEvent().equals("duplication"))
-			if (this.getMutation().getLength() <= 20)
-				if (this.getMutation().getAa_Notation().indexOf("fsX") > -1)
-					this.getMutation().setType("small duplication frame-shift");
-				else
-					this.getMutation().setType("small duplication in-frame");
-			else
-				if (this.getMutation().getAa_Notation().indexOf("fsX") > -1)
-					this.getMutation().setType("large duplication frame-shift");
-				else
-					this.getMutation().setType("large duplication in-frame");
-		else if (this.getMutation().getEvent().equals("insertion"))
-			if (this.getMutation().getLength() <= 20)
-				if (this.getMutation().getAa_Notation().indexOf("fsX") > -1)
-					this.getMutation().setType("small insertion frame-shift");
-				else
-					this.getMutation().setType("small insertion in-frame");
-			else
-				if (this.getMutation().getAa_Notation().indexOf("fsX") > -1)
-					this.getMutation().setType("large insertion frame-shift");
-				else
-					this.getMutation().setType("large insertion in-frame");
-		else if (this.getMutation().getAa_Notation().indexOf("fsX") > -1 || this.getMutation().getAa_Notation().indexOf("Ter") > -1)
-			this.getMutation().setType("nonsense mutation");
-		else
-			this.getMutation().setType("missense mutation");
-	}
-
-	private String getNotation(String position) throws RESyntaxException
-	{
-		if (this.getMutation().getLength() == null)
-			return "";
-
-		String notation = position;
-
-		if (this.getMutation().getEvent().equals("insertion"))
-			notation += "_" + SequenceUtils.getAddedPosition(position, 1);
-		else if (this.getMutation().getLength() > 1)
-			notation += "_" + SequenceUtils.getAddedPosition(position, this.getMutation().getLength() - 1);
-
-		if (this.getMutation().getEvent().equals("deletion"))
-		{
-			notation += "del";
-			if (this.getMutation().getLength() <= 2)
-				notation += this.getNt();
-		}
-		else if (this.getMutation().getEvent().equals("duplication"))
-		{
-			notation += "dup";
-			if (this.getMutation().getLength() <= 2)
-				notation += this.getNt();
-		}
-		else if (this.getMutation().getEvent().equals("insertion"))
-			notation += "ins" + this.getMutation().getNtchange();
-		else if (this.getMutation().getEvent().equals("point mutation"))
-			notation += this.getNt() + ">" + this.getMutation().getNtchange();
-		else if (this.getMutation().getEvent().equals("insertion/deletion"))
-		{
-			// deletion
-			notation += "del";
-			if (this.getMutation().getLength() <= 2)
-				notation += this.getNt();
-			//insertion
-			notation += "ins" + this.getMutation().getNtchange();
-		}
-		return notation;
-	}
-
-	public void assignCdna_notation() throws RESyntaxException
-	{
-		if (this.getMutation().getLength() != null)
-			this.getMutation().setCdna_Notation("c." + this.getNotation(this.getMutation().getMutationPosition()));
-		else
-			this.getMutation().setCdna_Notation("");
-	}
-
-	public void assignGdna_notation() throws RESyntaxException
-	{
-		if (this.getMutation().getLength() != null)
-			this.getMutation().setGdna_Notation("g." + this.getNotation(this.getMutation().getGdna_Position().toString()));
-		else
-			this.getMutation().setGdna_Notation("");
-	}
-
-	public void assignAa_notation(String trlMutSeq, int codonNum)
-	{
-		if (codonNum == 1)
-			this.getMutation().setAa_Notation("p.0");
-		else if (codonNum > 1)
-		{
-			this.getMutation().setAa_Notation("p." + this.getAa() + codonNum + this.getAachange());
-			if (this.getMutation().getLength() % 3 != 0 && !this.getMutation().getEvent().equals("point mutation"))
-			{
-				this.getMutation().setAa_Notation(this.getMutation().getAa_Notation() + "fs");
-				int terPos = SequenceUtils.indexOfCodon(trlMutSeq, "Ter", codonNum);
-
-				if (terPos > -1)
-					this.getMutation().setAa_Notation(this.getMutation().getAa_Notation() + "X" + (terPos - codonNum + 1)); // + " DEBUG: " + terPos + "-" + codonNum + ", "+ trlMutSeq); //StringUtils.substring(trlMutSeq, (codonNum - 1) * 3));
-			}
-		}
-		else
-			this.getMutation().setAa_Notation("");
-	}
 
 	public Mutation toMutation()
 	{
-		this.mutation.setExon(this.exon);
-		this.mutation.setGene(this.gene);
+		this.mutation.setExon(this.exonId);
+//		this.mutation.setGene(this.gene);
 		return this.mutation;
 	}
 	
 	public String toString()
 	{
 		return
-		"Gene: " + this.getGene().getId() + "\n" +
+		"Gene: " + this.getGeneSymbol() + "\n" +
 		"Position: " + this.getMutation().getMutationPosition() + "\n" +
 		"Nucleotide: " + this.getNt() + "\n" +
 		"Event: " + this.getMutation().getEvent() + "\n" +

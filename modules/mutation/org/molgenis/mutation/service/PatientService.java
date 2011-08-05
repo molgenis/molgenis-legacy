@@ -348,10 +348,10 @@ public class PatientService implements Serializable
 	public int getNumUnpublishedPatients() throws DatabaseException, ParseException
 	{
 		if (this.db instanceof JDBCDatabase)
-			return ((JDBCDatabase) this.db).sql("SELECT DISTINCT id FROM Patient WHERE NOT EXISTS (SELECT id FROM Patient_publicationsPatient WHERE Patient.id = Patient_publicationsPatient.Patient)").size();
+			return ((JDBCDatabase) this.db).sql("SELECT DISTINCT id FROM Patient WHERE NOT EXISTS (SELECT id FROM Patient_patientreferences WHERE Patient.id = Patient_patientreferences.Patient)").size();
 		else if (this.db instanceof JpaDatabase)
 		{
-			javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT COUNT(DISTINCT p.id) FROM Patient p LEFT OUTER JOIN Patient_publicationsPatient pp ON (p.id = pp.Patient) WHERE pp.publications IS NULL");
+			javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT COUNT(DISTINCT p.id) FROM Patient p LEFT OUTER JOIN Patient_patientreferences pp ON (p.id = pp.Patient) WHERE pp.patientreferences IS NULL");
 			return Integer.valueOf(q.getSingleResult().toString());
 		}
 		else
@@ -730,94 +730,42 @@ public class PatientService implements Serializable
 		return row;
 	}
 
-	public void setDefaults(PatientSummaryVO patientSummaryVO)
-			throws DatabaseException, ParseException, MalformedURLException,
-			JAXBException, IOException {
-		// set default mutations
-
-		// Mutation nf = new Mutation();
-		// nf.setCdna_notation("NF");
-		// nf = db.findByExample(nf).get(0);
-		//
-		// patientSummaryVO.setMutation1(nf);
-		// patientSummaryVO.setMutation2(nf);
-
-		// set default phenotype
-
-		// MutationPhenotype phenotype =
-		// this.db.query(MutationPhenotype.class).equals(MutationPhenotype.NAME,
-		// "DEB-u").find().get(0);
-//		MutationPhenotype phenotype = this.db.query(MutationPhenotype.class)
-//				.equals(MutationPhenotype.NAME, "DEB-u").find().get(0);
+//	public void setDefaults(PatientSummaryVO patientSummaryVO)
+//			throws DatabaseException, ParseException, MalformedURLException,
+//			JAXBException, IOException {
+//		// set default mutations
 //
-//		patientSummaryVO.setPhenotypeMajor(phenotype.getMajortype());
-//		patientSummaryVO.setPhenotypeSub(phenotype.getSubtype());
-
-		// set default Pubmed values based on given PubMed ID (if any)
-
-		if (CollectionUtils.isNotEmpty(patientSummaryVO.getPublicationVOList())) {
-			for (PublicationVO publicationVO : patientSummaryVO.getPublicationVOList()) {
-				PubmedService pubmedService = new PubmedService();
-				List<Integer> pubmedIds = new ArrayList<Integer>();
-				pubmedIds.add(new Integer(publicationVO.getPubmed()));
-				List<PubmedArticle> articles = pubmedService
-						.getPubmedArticlesForIds(pubmedIds);
-				// TODO:Danny: Use or loose
-				/* PubmedArticle article = */articles.get(0);
-			}
-		}
-	}
-
-//	public PatientDetailsVO toPatientDetailsVO(Patient patient) throws DatabaseException, ParseException
-//	{
-//		PatientDetailsVO patientDetailsVO = new PatientDetailsVO();
-//		
-//		patientDetailsVO.setIdentifier(patient.getIdentifier());
-//		patientDetailsVO.setPhenotypeName(patient.getPhenotype_Name());
-//		patientDetailsVO.setMutationNo(Arrays.asList(new String[] { "First Mutation", "SecondMutation" }));
-//		Mutation mutation1 = this.db.findById(Mutation.class, patient.getMutation1_Id());
-//		String cdnaNotation = mutation1.getCdna_Notation();
-//		String aaNotation   = mutation1.getAa_Notation();
-//		String exonName     = mutation1.getExon_Name();
-//		String consequence  = mutation1.getConsequence();
-//		if (patient.getMutation2_Id() != null)
-//		{
-//			Mutation mutation2 = this.db.findById(Mutation.class, patient.getMutation2_Id());
-//			cdnaNotation      += "<br/>" + mutation2.getCdna_Notation();
-//			aaNotation        += "<br/>" + mutation2.getAa_Notation();
-//			exonName          += "<br/>" + mutation2.getExon_Name();
-//			consequence       += "<br/>" + mutation2.getConsequence();
+//		// Mutation nf = new Mutation();
+//		// nf.setCdna_notation("NF");
+//		// nf = db.findByExample(nf).get(0);
+//		//
+//		// patientSummaryVO.setMutation1(nf);
+//		// patientSummaryVO.setMutation2(nf);
+//
+//		// set default phenotype
+//
+//		// MutationPhenotype phenotype =
+//		// this.db.query(MutationPhenotype.class).equals(MutationPhenotype.NAME,
+//		// "DEB-u").find().get(0);
+////		MutationPhenotype phenotype = this.db.query(MutationPhenotype.class)
+////				.equals(MutationPhenotype.NAME, "DEB-u").find().get(0);
+////
+////		patientSummaryVO.setPhenotypeMajor(phenotype.getMajortype());
+////		patientSummaryVO.setPhenotypeSub(phenotype.getSubtype());
+//
+//		// set default Pubmed values based on given PubMed ID (if any)
+//
+//		if (CollectionUtils.isNotEmpty(patientSummaryVO.getPublicationVOList())) {
+//			for (PublicationVO publicationVO : patientSummaryVO.getPublicationVOList()) {
+//				PubmedService pubmedService = new PubmedService();
+//				List<Integer> pubmedIds = new ArrayList<Integer>();
+//				pubmedIds.add(new Integer(publicationVO.getPubmed()));
+//				List<PubmedArticle> articles = pubmedService
+//						.getPubmedArticlesForIds(pubmedIds);
+//				// TODO:Danny: Use or loose
+//				/* PubmedArticle article = */articles.get(0);
+//			}
 //		}
-//		patientDetailsVO.setCdnaNotation(cdnaNotation);
-//		patientDetailsVO.setAaNotation(aaNotation);
-//		patientDetailsVO.setExonName(exonName);
-//		patientDetailsVO.setConsequence(consequence);
-//
-//		String publicationName = "";
-//		if (CollectionUtils.isNotEmpty(patient.getPublications_Id()))
-//		{
-//			List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPublications_Id()).find();
-//			for (Publication publication : publications)
-//				publicationName += publication.getTitle() + "<br/>";
-//		}
-//		patientDetailsVO.setPublicationName(publicationName);
-//		
-//		return patientDetailsVO;
-//	}
-
-//	public List<PatientDetailsVO> toPatientDetailsVOList(List<PatientSummaryVO> patientSummaryVOs) throws DatabaseException, ParseException
-//	{
-//		List<PatientDetailsVO> result = new ArrayList<PatientDetailsVO>();
-//
-////		for (int i = 0; i < patientSummaryVOs.size(); i++)
-////		{
-////			Patient patient = patients.get(i);
-////			PatientDetailsVO patientDetailsVO = this.toPatientDetailsVO(patient);
-////			patientDetailsVO.setCounter(i + 1);
-////			result.add(patientDetailsVO);
-////		}
-//
-//		return result;
 //	}
 
 	private Patient toPatient(PatientSummaryVO patientSummaryVO) throws DatabaseException, ParseException
@@ -879,6 +827,7 @@ public class PatientService implements Serializable
 		variantSummaryVO1.setAaNotation(mutation1.getAa_Notation());
 		variantSummaryVO1.setExonName(mutation1.getExon_Name());
 		variantSummaryVO1.setConsequence(mutation1.getConsequence());
+		variantSummaryVO1.setPathogenicity(mutation1.getPathogenicity());
 		patientSummaryVO.getVariantSummaryVOList().add(variantSummaryVO1);
 		if (patient.getMutation2_Id() != null)
 		{
@@ -889,6 +838,7 @@ public class PatientService implements Serializable
 			variantSummaryVO2.setAaNotation(mutation2.getAa_Notation());
 			variantSummaryVO2.setExonName(mutation2.getExon_Name());
 			variantSummaryVO2.setConsequence(mutation2.getConsequence());
+			variantSummaryVO2.setPathogenicity(mutation2.getPathogenicity());
 			patientSummaryVO.getVariantSummaryVOList().add(variantSummaryVO2);
 		}
 //		else

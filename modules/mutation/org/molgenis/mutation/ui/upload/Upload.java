@@ -8,8 +8,6 @@
 package org.molgenis.mutation.ui.upload;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -17,8 +15,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
-
-import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -80,16 +76,17 @@ public abstract class Upload extends PluginModel<Entity>
 		super(name, parent);
 	}
 
-	private void initMutationUploadVO() throws DatabaseException, ParseException
+	private void initMutationUploadVO() throws DatabaseException
 	{
 		this.mutationUploadVO = new MutationUploadVO();
+		this.mutationUploadVO.setGeneSymbol(this.GENENAME);
 		this.mutationService.setDefaults(this.mutationUploadVO);
 	}
 	
-	private void initPatientSummaryVO() throws DatabaseException, ParseException, MalformedURLException, JAXBException, IOException
+	private void initPatientSummaryVO()
 	{
 		this.patientSummaryVO = new PatientSummaryVO();
-		this.patientService.setDefaults(this.patientSummaryVO);
+//		this.patientService.setDefaults(this.patientSummaryVO);
 		this.referer          = 0;
 	}
 
@@ -351,8 +348,8 @@ public abstract class Upload extends PluginModel<Entity>
 		this.mutationForm.get("inheritance").setValue(this.mutationUploadVO.getMutation().getInheritance());
 		this.mutationForm.get("readonly_pos").setValue(this.mutationUploadVO.getMutation().getMutationPosition());
 		((SelectInput) this.mutationForm.get("exon")).setOptions(exonOptions);
-		if (this.mutationUploadVO.getExon() != null)
-			this.mutationForm.get("exon").setValue(this.mutationUploadVO.getExon().getId());
+		if (this.mutationUploadVO.getExonId() != null)
+			this.mutationForm.get("exon").setValue(this.mutationUploadVO.getExonId());
 		this.mutationForm.get("nt_rep").setValue(this.mutationUploadVO.getNt());
 		this.mutationForm.get("readonly_ntchange").setValue(this.mutationUploadVO.getMutation().getNtchange());
 		this.mutationForm.get("codon_number").setValue(this.mutationUploadVO.getMutation().getAa_Position());
@@ -440,90 +437,90 @@ public abstract class Upload extends PluginModel<Entity>
 		return patientSummaryVO;
 	}
 	
-	private PhenotypeDetailsVO toPhenotypeDetailsVO(Tuple request)
-	{
-		PhenotypeDetailsVO phenotypeDetailsVO = new PhenotypeDetailsVO();
-
-		phenotypeDetailsVO.setObservedValues(new HashMap<String, List<ObservedValueVO>>());
-
-		//TODO: Implement that in a generic way
-		
-		return phenotypeDetailsVO;
-//		if (StringUtils.isNotEmpty(request.getString("blistering")))
-//			phenotypeDetailsVO.setBlistering(request.getString("blistering"));
-//		if (StringUtils.isNotEmpty(request.getString("location")))
-//			patientSummaryVO.getPhenotypeDetails().setLocation(request.getString("location"));
-//		if (StringUtils.isNotEmpty(request.getString("hands")))
-//			patientSummaryVO.getPhenotypeDetails().setHands(request.getString("hands"));
-//		if (StringUtils.isNotEmpty(request.getString("feet")))
-//			patientSummaryVO.getPhenotypeDetails().setFeet(request.getString("feet"));
-//		if (StringUtils.isNotEmpty(request.getString("arms")))
-//			patientSummaryVO.getPhenotypeDetails().setArms(request.getString("arms"));
-//		if (StringUtils.isNotEmpty(request.getString("legs")))
-//			patientSummaryVO.getPhenotypeDetails().setLegs(request.getString("legs"));
-//		if (StringUtils.isNotEmpty(request.getString("proximal_body_flexures")))
-//			patientSummaryVO.getPhenotypeDetails().setProximal_Body_Flexures(request.getString("proximal_body_flexures"));
-//		if (StringUtils.isNotEmpty(request.getString("trunk")))
-//			patientSummaryVO.getPhenotypeDetails().setTrunk(request.getString("trunk"));
-//		if (StringUtils.isNotEmpty(request.getString("mucous_membranes")))
-//			patientSummaryVO.getPhenotypeDetails().setMucous_Membranes(request.getString("mucous_membranes"));
-//		if (StringUtils.isNotEmpty(request.getString("skin_atrophy")))
-//			patientSummaryVO.getPhenotypeDetails().setSkin_Atrophy(request.getString("skin_atrophy"));
-//		if (StringUtils.isNotEmpty(request.getString("milia")))
-//			patientSummaryVO.getPhenotypeDetails().setMilia(request.getString("milia"));
-//		if (StringUtils.isNotEmpty(request.getString("nail_dystrophy")))
-//			patientSummaryVO.getPhenotypeDetails().setNail_Dystrophy(request.getString("nail_dystrophy"));
-//		if (StringUtils.isNotEmpty(request.getString("albopapuloid_papules")))
-//			patientSummaryVO.getPhenotypeDetails().setAlbopapuloid_Papules(request.getString("albopapuloid_papules"));
-//		if (StringUtils.isNotEmpty(request.getString("pruritic_papules")))
-//			patientSummaryVO.getPhenotypeDetails().setPruritic_Papules(request.getString("pruritic_papules"));
-//		if (StringUtils.isNotEmpty(request.getString("alopecia")))
-//			patientSummaryVO.getPhenotypeDetails().setAlopecia(request.getString("alopecia"));
-//		if (StringUtils.isNotEmpty(request.getString("squamous_cell_carcinomas")))
-//			patientSummaryVO.getPhenotypeDetails().setSquamous_Cell_Carcinomas(request.getString("squamous_cell_carcinomas"));
-//		if (StringUtils.isNotEmpty(request.getString("revertant_skin_patch")))
-//			patientSummaryVO.getPhenotypeDetails().setRevertant_Skin_Patch(request.getString("revertant_skin_patch"));
-//		if (StringUtils.isNotEmpty(request.getString("mechanism")))
-//			patientSummaryVO.getPhenotypeDetails().setMechanism(request.getString("mechanism"));
-//		if (StringUtils.isNotEmpty(request.getString("flexion_contractures")))
-//			patientSummaryVO.getPhenotypeDetails().setFlexion_Contractures(request.getString("flexion_contractures"));
-//		if (StringUtils.isNotEmpty(request.getString("pseudosyndactyly_hands")))
-//			patientSummaryVO.getPhenotypeDetails().setPseudosyndactyly_Hands(request.getString("pseudosyndactyly_hands"));
-//		if (StringUtils.isNotEmpty(request.getString("microstomia")))
-//			patientSummaryVO.getPhenotypeDetails().setMicrostomia(request.getString("microstomia"));
-//		if (StringUtils.isNotEmpty(request.getString("ankyloglossia")))
-//			patientSummaryVO.getPhenotypeDetails().setAnkyloglossia(request.getString("ankyloglossia"));
-//		if (StringUtils.isNotEmpty(request.getString("dysphagia")))
-//			patientSummaryVO.getPhenotypeDetails().setDysphagia(request.getString("dysphagia"));
-//		if (StringUtils.isNotEmpty(request.getString("growth_retardation")))
-//			patientSummaryVO.getPhenotypeDetails().setGrowth_Retardation(request.getString("growth_retardation"));
-//		if (StringUtils.isNotEmpty(request.getString("anemia")))
-//			patientSummaryVO.getPhenotypeDetails().setAnemia(request.getString("anemia"));
-//		if (StringUtils.isNotEmpty(request.getString("renal_failure")))
-//			patientSummaryVO.getPhenotypeDetails().setRenal_Failure(request.getString("renal_failure"));
-//		if (StringUtils.isNotEmpty(request.getString("dilated_cardiomyopathy")))
-//			patientSummaryVO.getPhenotypeDetails().setDilated_Cardiomyopathy(request.getString("dilated_cardiomyopathy"));
-//		if (StringUtils.isNotEmpty(request.getString("other")))
-//			patientSummaryVO.getPhenotypeDetails().setOther(request.getString("other"));
+//	private PhenotypeDetailsVO toPhenotypeDetailsVO(Tuple request)
+//	{
+//		PhenotypeDetailsVO phenotypeDetailsVO = new PhenotypeDetailsVO();
+//
+//		phenotypeDetailsVO.setObservedValues(new HashMap<String, List<ObservedValueVO>>());
+//
+//		//TODO: Implement that in a generic way
 //		
-//		// IF
-//		if (StringUtils.isNotEmpty(request.getString("if_value")))
-//			patientSummaryVO.getIf_().setValue(request.getString("if_value"));
-//		if (StringUtils.isNotEmpty(request.getString("if_retention")))
-//			patientSummaryVO.getIf_().setRetention(request.getString("if_retention"));
-//		if (StringUtils.isNotEmpty(request.getString("if_description")))
-//			patientSummaryVO.getIf_().setDescription(request.getString("if_description"));
-//		
-//		// EM
-//		if (StringUtils.isNotEmpty(request.getString("em_fibrils")))
-//			patientSummaryVO.getEm_().setNumber(request.getString("em_fibrils"));
-//		if (StringUtils.isNotEmpty(request.getString("em_appearance")))
-//			patientSummaryVO.getEm_().setAppearance(request.getString("em_appearance"));
-//		if (StringUtils.isNotEmpty(request.getString("em_retention")))
-//			patientSummaryVO.getEm_().setRetention(request.getString("em_retention"));
-//		if (StringUtils.isNotEmpty(request.getString("em_description")))
-//			patientSummaryVO.getEm_().setDescription(request.getString("em_description"));
-	}
+//		return phenotypeDetailsVO;
+////		if (StringUtils.isNotEmpty(request.getString("blistering")))
+////			phenotypeDetailsVO.setBlistering(request.getString("blistering"));
+////		if (StringUtils.isNotEmpty(request.getString("location")))
+////			patientSummaryVO.getPhenotypeDetails().setLocation(request.getString("location"));
+////		if (StringUtils.isNotEmpty(request.getString("hands")))
+////			patientSummaryVO.getPhenotypeDetails().setHands(request.getString("hands"));
+////		if (StringUtils.isNotEmpty(request.getString("feet")))
+////			patientSummaryVO.getPhenotypeDetails().setFeet(request.getString("feet"));
+////		if (StringUtils.isNotEmpty(request.getString("arms")))
+////			patientSummaryVO.getPhenotypeDetails().setArms(request.getString("arms"));
+////		if (StringUtils.isNotEmpty(request.getString("legs")))
+////			patientSummaryVO.getPhenotypeDetails().setLegs(request.getString("legs"));
+////		if (StringUtils.isNotEmpty(request.getString("proximal_body_flexures")))
+////			patientSummaryVO.getPhenotypeDetails().setProximal_Body_Flexures(request.getString("proximal_body_flexures"));
+////		if (StringUtils.isNotEmpty(request.getString("trunk")))
+////			patientSummaryVO.getPhenotypeDetails().setTrunk(request.getString("trunk"));
+////		if (StringUtils.isNotEmpty(request.getString("mucous_membranes")))
+////			patientSummaryVO.getPhenotypeDetails().setMucous_Membranes(request.getString("mucous_membranes"));
+////		if (StringUtils.isNotEmpty(request.getString("skin_atrophy")))
+////			patientSummaryVO.getPhenotypeDetails().setSkin_Atrophy(request.getString("skin_atrophy"));
+////		if (StringUtils.isNotEmpty(request.getString("milia")))
+////			patientSummaryVO.getPhenotypeDetails().setMilia(request.getString("milia"));
+////		if (StringUtils.isNotEmpty(request.getString("nail_dystrophy")))
+////			patientSummaryVO.getPhenotypeDetails().setNail_Dystrophy(request.getString("nail_dystrophy"));
+////		if (StringUtils.isNotEmpty(request.getString("albopapuloid_papules")))
+////			patientSummaryVO.getPhenotypeDetails().setAlbopapuloid_Papules(request.getString("albopapuloid_papules"));
+////		if (StringUtils.isNotEmpty(request.getString("pruritic_papules")))
+////			patientSummaryVO.getPhenotypeDetails().setPruritic_Papules(request.getString("pruritic_papules"));
+////		if (StringUtils.isNotEmpty(request.getString("alopecia")))
+////			patientSummaryVO.getPhenotypeDetails().setAlopecia(request.getString("alopecia"));
+////		if (StringUtils.isNotEmpty(request.getString("squamous_cell_carcinomas")))
+////			patientSummaryVO.getPhenotypeDetails().setSquamous_Cell_Carcinomas(request.getString("squamous_cell_carcinomas"));
+////		if (StringUtils.isNotEmpty(request.getString("revertant_skin_patch")))
+////			patientSummaryVO.getPhenotypeDetails().setRevertant_Skin_Patch(request.getString("revertant_skin_patch"));
+////		if (StringUtils.isNotEmpty(request.getString("mechanism")))
+////			patientSummaryVO.getPhenotypeDetails().setMechanism(request.getString("mechanism"));
+////		if (StringUtils.isNotEmpty(request.getString("flexion_contractures")))
+////			patientSummaryVO.getPhenotypeDetails().setFlexion_Contractures(request.getString("flexion_contractures"));
+////		if (StringUtils.isNotEmpty(request.getString("pseudosyndactyly_hands")))
+////			patientSummaryVO.getPhenotypeDetails().setPseudosyndactyly_Hands(request.getString("pseudosyndactyly_hands"));
+////		if (StringUtils.isNotEmpty(request.getString("microstomia")))
+////			patientSummaryVO.getPhenotypeDetails().setMicrostomia(request.getString("microstomia"));
+////		if (StringUtils.isNotEmpty(request.getString("ankyloglossia")))
+////			patientSummaryVO.getPhenotypeDetails().setAnkyloglossia(request.getString("ankyloglossia"));
+////		if (StringUtils.isNotEmpty(request.getString("dysphagia")))
+////			patientSummaryVO.getPhenotypeDetails().setDysphagia(request.getString("dysphagia"));
+////		if (StringUtils.isNotEmpty(request.getString("growth_retardation")))
+////			patientSummaryVO.getPhenotypeDetails().setGrowth_Retardation(request.getString("growth_retardation"));
+////		if (StringUtils.isNotEmpty(request.getString("anemia")))
+////			patientSummaryVO.getPhenotypeDetails().setAnemia(request.getString("anemia"));
+////		if (StringUtils.isNotEmpty(request.getString("renal_failure")))
+////			patientSummaryVO.getPhenotypeDetails().setRenal_Failure(request.getString("renal_failure"));
+////		if (StringUtils.isNotEmpty(request.getString("dilated_cardiomyopathy")))
+////			patientSummaryVO.getPhenotypeDetails().setDilated_Cardiomyopathy(request.getString("dilated_cardiomyopathy"));
+////		if (StringUtils.isNotEmpty(request.getString("other")))
+////			patientSummaryVO.getPhenotypeDetails().setOther(request.getString("other"));
+////		
+////		// IF
+////		if (StringUtils.isNotEmpty(request.getString("if_value")))
+////			patientSummaryVO.getIf_().setValue(request.getString("if_value"));
+////		if (StringUtils.isNotEmpty(request.getString("if_retention")))
+////			patientSummaryVO.getIf_().setRetention(request.getString("if_retention"));
+////		if (StringUtils.isNotEmpty(request.getString("if_description")))
+////			patientSummaryVO.getIf_().setDescription(request.getString("if_description"));
+////		
+////		// EM
+////		if (StringUtils.isNotEmpty(request.getString("em_fibrils")))
+////			patientSummaryVO.getEm_().setNumber(request.getString("em_fibrils"));
+////		if (StringUtils.isNotEmpty(request.getString("em_appearance")))
+////			patientSummaryVO.getEm_().setAppearance(request.getString("em_appearance"));
+////		if (StringUtils.isNotEmpty(request.getString("em_retention")))
+////			patientSummaryVO.getEm_().setRetention(request.getString("em_retention"));
+////		if (StringUtils.isNotEmpty(request.getString("em_description")))
+////			patientSummaryVO.getEm_().setDescription(request.getString("em_description"));
+//	}
 
 	private void toMutationUploadVO(Tuple request)
 	{
@@ -557,9 +554,7 @@ public abstract class Upload extends PluginModel<Entity>
 			else
 				this.mutationUploadVO.getMutation().setFounderMutation(false);
 
-		MutationGene gene = new MutationGene();
-		gene.setName(ObjectUtils.toString(request.getString("gene"), ""));
-		this.mutationUploadVO.setGene(gene);
+		this.mutationUploadVO.setGeneSymbol(ObjectUtils.toString(request.getString("gene"), ""));
 
 		if (StringUtils.isNotEmpty(request.getString("length")))
 			this.mutationUploadVO.getMutation().setLength(request.getInt("length"));
@@ -604,7 +599,7 @@ public abstract class Upload extends PluginModel<Entity>
 			if (mutationUploadVO == null)
 			{
 				this.initMutationUploadVO();
-				this.mutationUploadVO.setGene(db.query(MutationGene.class).equals(MutationGene.NAME, this.GENENAME).find().get(0));
+				this.mutationUploadVO.setGeneSymbol(db.query(MutationGene.class).equals(MutationGene.NAME, this.GENENAME).find().get(0).getSymbol());
 			}
 
 			if (patientSummaryVO == null)

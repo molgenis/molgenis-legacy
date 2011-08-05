@@ -22,6 +22,8 @@ public class Col7a1Search extends SearchPlugin
 		this.setModel(new SearchModel(this));
 		this.setView(new FreemarkerView("SearchPlugin.ftl", this.getModel()));
 		this.getModel().setGeneName("COL7A1");
+		this.getModel().setPatientPager("res/mutation/patientPager.jsp");
+		this.getModel().setMutationPager("res/mutation/chd7MutationPager.jsp");
 	}
 	
 	@Override

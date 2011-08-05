@@ -31,6 +31,8 @@ public class SearchModel extends EasyPluginModel
 {
 	private static final long serialVersionUID = 1L;
 	private String geneName;
+	private String patientPager;
+	private String mutationPager;
 	private String action = "init";
 	private String result = "mutations"; // Initially search/display mutations
 	private String header;
@@ -55,7 +57,7 @@ public class SearchModel extends EasyPluginModel
 	private ExonSummaryVO exonSummaryVO;
 	private MutationSummaryVO mutationSummaryVO;
 	private List<MutationSummaryVO> mutationSummaryVOs        = new ArrayList<MutationSummaryVO>();
-	private HashMap<String, LimitOffsetPager<MutationSummaryVO>> mutationSummaryVOHash;
+	private HashMap<String, String> mutationSummaryVOHash;
 	private List<PatientSummaryVO> patientSummaryVOs          = new ArrayList<PatientSummaryVO>();
 	private ProteinDomainSummaryVO proteinDomainSummaryVO;
 	private List<ProteinDomainSummaryVO> proteinDomainList;
@@ -83,6 +85,22 @@ public class SearchModel extends EasyPluginModel
 	public void setGeneName(String geneName)
 	{
 		this.geneName = geneName;
+	}
+
+	public String getPatientPager() {
+		return patientPager;
+	}
+
+	public void setPatientPager(String patientPager) {
+		this.patientPager = patientPager;
+	}
+
+	public String getMutationPager() {
+		return mutationPager;
+	}
+
+	public void setMutationPager(String mutationPager) {
+		this.mutationPager = mutationPager;
 	}
 
 	public String getAction()
@@ -303,13 +321,12 @@ public class SearchModel extends EasyPluginModel
 		this.mutationSummaryVOs = mutationSummaryVOs;
 	}
 
-	public HashMap<String, LimitOffsetPager<MutationSummaryVO>> getMutationSummaryVOHash()
+	public HashMap<String, String> getMutationSummaryVOHash()
 	{
 		return mutationSummaryVOHash;
 	}
 
-	public void setMutationSummaryVOHash(
-			HashMap<String, LimitOffsetPager<MutationSummaryVO>> mutationSummaryVOHash)
+	public void setMutationSummaryVOHash(HashMap<String, String> mutationSummaryVOHash)
 	{
 		this.mutationSummaryVOHash = mutationSummaryVOHash;
 	}

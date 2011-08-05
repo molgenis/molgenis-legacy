@@ -20,73 +20,19 @@
 <display:column title="Phenotype" sortable="true">
 	<c:out value="${current.phenotypeMajor}"/><c:if test="${fn:length(current.phenotypeSub) > 1}">, <c:out value="${current.phenotypeSub}"/></c:if>
 </display:column>
-<display:column media="html" title="Mutation" class="nowrap" sortable="false">
-<div class="unwrapped">First Mutation</div>
-<div class="unwrapped">Second Mutation</div>
-</display:column>
-<display:column media="html" title="cDNA change">
-<div class="unwrapped">
+<display:column media="html" title="cDNA change" sortable="true" headerClass="sortable">
 	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showMutation&mid=${current.variantSummaryVOList[0].identifier}#results"/>
 	<a href="<c:out value="${url}"/>"><c:out value="${current.variantSummaryVOList[0].cdnaNotation}"/></a>
-</div>
-<div class="unwrapped">
-	<c:choose>
-	<c:when test="${fn:length(current.variantSummaryVOList) > 1}">
-	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showMutation&mid=${current.variantSummaryVOList[1].identifier}#results"/>
-	<a href="<c:out value="${url}"/>"><c:out value="${current.variantSummaryVOList[1].cdnaNotation}"/></a>
-	</c:when>
-	<c:otherwise>
-	<c:out value="${current.variantComment}"/>
-	</c:otherwise>
-	</c:choose>
-</div>
 </display:column>
-<display:column media="html" title="Protein change">
-<div class="unwrapped">
+<display:column media="html" title="Protein change" sortable="true" headerClass="sortable">
 	<c:out value="${current.variantSummaryVOList[0].aaNotation}"/>
-</div>
-<div class="unwrapped">
-	<c:choose>
-	<c:when test="${fn:length(current.variantSummaryVOList) > 1}">
-	<c:out value="${current.variantSummaryVOList[1].aaNotation}"/>
-	</c:when>
-	<c:otherwise>
-	&nbsp;
-	</c:otherwise>
-	</c:choose>
-</div>
 </display:column>
-<display:column media="html" title="Exon">
-<div class="unwrapped">
+<display:column media="html" title="Exon" sortable="true" headerClass="sortable">
 	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showExon&exon_id=${current.variantSummaryVOList[0].exonId}#results"/>
 	<a href="<c:out value="${url}"/>"><c:out value="${current.variantSummaryVOList[0].exonName}"/></a>
-</div>
-<div class="unwrapped">
-	<c:choose>
-	<c:when test="${fn:length(current.variantSummaryVOList) > 1}">
-	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showExon&exon_id=${current.variantSummaryVOList[1].exonId}#results"/>
-	<a href="<c:out value="${url}"/>"><c:out value="${current.variantSummaryVOList[1].exonName}"/></a>
-	</c:when>
-	<c:otherwise>
-	&nbsp;
-	</c:otherwise>
-	</c:choose>
-</div>
 </display:column>
-<display:column media="html" title="Consequence">
-<div class="unwrapped">
-	<c:out value="${current.variantSummaryVOList[0].consequence}"/>
-</div>
-<div class="unwrapped">
-	<c:choose>
-	<c:when test="${fn:length(current.variantSummaryVOList) > 1}">
-	<c:out value="${current.variantSummaryVOList[1].consequence}"/>
-	</c:when>
-	<c:otherwise>
-	&nbsp;
-	</c:otherwise>
-	</c:choose>
-</div>
+<display:column media="html" title="Pathogenicity" sortable="true" headerClass="sortable">
+	<c:out value="${current.variantSummaryVOList[0].pathogenicity}"/>
 </display:column>
 <display:column media="html" title="Reference">
 	<c:choose>
@@ -96,43 +42,22 @@
 	</c:forEach>
 	</c:when>
 	<c:otherwise>
-	<c:out value="Unpublished"/><br/>
-	<c:out value="${current.submitterDepartment}, ${current.submitterInstitute}, ${current.submitterCity}, ${current.submitterCountry}"/>
+	<c:out value="Unpublished"/>
 	</c:otherwise>
 	</c:choose>
 </display:column>
 
-<display:column media="csv excel" title="cDNA change 1">
+<display:column media="csv excel" title="cDNA change">
 	<c:out value="${current.variantSummaryVOList[0].cdnaNotation}" escapeXml="false"/>
 </display:column>
-<display:column media="csv excel" title="Protein change 1">
+<display:column media="csv excel" title="Protein change">
 	<c:out value="${current.variantSummaryVOList[0].aaNotation}" escapeXml="false"/>
 </display:column>
-<display:column media="csv excel" title="Exon/Intron 1">
+<display:column media="csv excel" title="Exon/Intron">
 	<c:out value="${current.variantSummaryVOList[0].exonName}" escapeXml="false"/>
 </display:column>
-<display:column media="csv excel" title="Consequence 1">
-	<c:out value="${current.variantSummaryVOList[0].consequence}" escapeXml="false"/>
-</display:column>
-<display:column media="csv excel" title="cDNA change 2">
-	<c:if test="${fn:length(current.variantSummaryVOList) > 1}">
-	<c:out value="${current.variantSummaryVOList[1].cdnaNotation}" escapeXml="false"/>
-	</c:if>
-</display:column>
-<display:column media="csv excel" title="Protein change 2">
-	<c:if test="${fn:length(current.variantSummaryVOList) > 1}">
-	<c:out value="${current.variantSummaryVOList[1].aaNotation}" escapeXml="false"/>
-	</c:if>
-</display:column>
-<display:column media="csv excel" title="Exon/Intron 2">
-	<c:if test="${fn:length(current.variantSummaryVOList) > 1}">
-	<c:out value="${current.variantSummaryVOList[1].exonName}" escapeXml="false"/>
-	</c:if>
-</display:column>
-<display:column media="csv excel" title="Consequence 2">
-	<c:if test="${fn:length(current.variantSummaryVOList) > 1}">
-	<c:out value="${current.variantSummaryVOList[1].consequence}" escapeXml="false"/>
-	</c:if>
+<display:column media="csv excel" title="Pathogenicity">
+	<c:out value="${current.variantSummaryVOList[0].pathogenicity}" escapeXml="false"/>
 </display:column>
 <display:column media="csv excel" title="Reference">
 <c:forEach var="publicationVO" items="${current.publicationVOList}">
