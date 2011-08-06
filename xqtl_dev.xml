@@ -236,5 +236,16 @@
 		<antcall target="make" />
 		<antcall target="run" />
 	</target>
+	
+	<!--
+	Dev help: Recompile/copy the app. Basically MAKE without the generation step.
+	-->
+	<target name="recompile" description="Recompile/copy the application">
+		<antcall target="compile_molgenis" />
+		<antcall target="compile_datatypes" />
+		<antcall target="compile_app" />
+		<antcall target="compile_other" />
+		<antcall target="copy_resources" />
+	</target>
 
 </project>

@@ -1,9 +1,9 @@
 
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
 <suite name="Matrix test suite">
-  <test name="First test">
+  <test name="Comprehensive matrix tests">
     <classes>
-       <class name="matrix.test.implementations.helloWorldTest" />
+       <class name="matrix.test.implementations.RunTestMatrix" />
     </classes>
   </test>
 </suite>

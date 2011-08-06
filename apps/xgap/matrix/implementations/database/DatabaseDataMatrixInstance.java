@@ -22,7 +22,7 @@ import org.molgenis.util.Tuple;
 
 import decorators.NameConvention;
 
-public class DatabaseDataMatrixInstance extends AbstractDataMatrixInstance
+public class DatabaseDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 {
 	private String dataElement = "DataElement";
 	private String dimensionElement = "DimensionElement";

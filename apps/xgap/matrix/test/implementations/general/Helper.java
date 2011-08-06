@@ -79,8 +79,7 @@ public class Helper
 		return d;
 	}
 
-	public void prepareDatabaseAndFiles(String storage, int matrixDimension1, int matrixDimension2, int maxTextLength,
-			boolean fixedTextLength, boolean sparse) throws DatabaseException, IOException, InterruptedException
+	public void prepareDatabaseAndFiles(String storage, Params params) throws DatabaseException, IOException, InterruptedException
 	{
 		// new emptyDatabase(db);
 		db.remove(db.find(TextDataElement.class));
@@ -88,7 +87,9 @@ public class Helper
 		db.remove(db.find(Marker.class));
 		db.remove(db.find(Individual.class));
 		db.remove(db.find(MolgenisFile.class));
-		db.remove(db.find(Data.class));
+		for(Data d : db.find(Data.class)){
+			db.remove(d);
+		}
 		db.remove(db.find(DerivedTrait.class));
 		db.remove(db.find(Panel.class));
 		db.remove(db.find(Investigation.class));
@@ -98,8 +99,8 @@ public class Helper
 		db.add(inv);
 
 		logger.info("Creating randomized individuals and markers, and adding them to database..");
-		List<Individual> indList = getRandomIndividuals(inv, matrixDimension1);
-		List<Marker> marList = getRandomMarkers(inv, matrixDimension2);
+		List<Individual> indList = getRandomIndividuals(inv, params.matrixDimension1);
+		List<Marker> marList = getRandomMarkers(inv, params.matrixDimension2);
 		db.add(indList);
 		db.add(marList);
 
@@ -146,8 +147,8 @@ public class Helper
 		logger.info("Randomizing data matrix filling and adding data files to input directory..");
 		for (Data data : dataList)
 		{
-			createAndWriteRandomMatrix(inputFilesDir, data, db, matrixDimension2, matrixDimension1, maxTextLength,
-					sparse, fixedTextLength);
+			createAndWriteRandomMatrix(inputFilesDir, data, db, params.matrixDimension2, params.matrixDimension1, params.maxTextLength,
+					params.sparse, params.fixedTextLength);
 		}
 
 		this.inputFilesDir = inputFilesDir;
@@ -424,107 +425,17 @@ public class Helper
 		return res;
 	}
 
-	public void printSettings(String source, int matrixDimension1, int matrixDimension2, int maxTextLength,
-			boolean fixedTextLength, boolean sparse, boolean runRegressionTests, boolean runPerformanceTests,
-			boolean skipPerElement)
+	public void printSettings(String source, Params params)
 	{
 		System.out.println("##################################################");
 		System.out.println("## Test" + source + "Matrix" + "\tstarting with settings: ##");
 		System.out.println("##################################################");
-//		System.out.println("matrixDimension1 <- c(matrixDimension1, " + matrixDimension1 + ")");
-//		System.out.println("matrixDimension2 <- c(matrixDimension2, " + matrixDimension2 + ")");
-//		System.out.println("maxTextLength <- c(maxTextLength, " + maxTextLength + ")");
-//		System.out.println("fixedTextLength <- c(fixedTextLength, " + Boolean.toString(fixedTextLength).toUpperCase() + ")");
-//		System.out.println("sparse <- c(sparse, " + Boolean.toString(sparse).toUpperCase() + ")");
-//		System.out.println("runRegressionTests <- c(runRegressionTests, " + Boolean.toString(runRegressionTests).toUpperCase() + ")");
-//		System.out.println("runPerformanceTests <- c(runPerformanceTests, " + Boolean.toString(runPerformanceTests).toUpperCase() + ")");
-//		System.out.println("skipPerElement <- c(skipPerElement, " + Boolean.toString(skipPerElement).toUpperCase() + ")");
-		System.out.println("matrixDimension1 <- " + matrixDimension1);
-		System.out.println("matrixDimension2 <- " + matrixDimension2);
-		System.out.println("maxTextLength <- " + maxTextLength);
-		System.out.println("fixedTextLength <- " + Boolean.toString(fixedTextLength).toUpperCase());
-		System.out.println("sparse <- " + Boolean.toString(sparse).toUpperCase());
-		System.out.println("runRegressionTests <- " + Boolean.toString(runRegressionTests).toUpperCase());
-		System.out.println("runPerformanceTests <- " + Boolean.toString(runPerformanceTests).toUpperCase());
-		System.out.println("skipPerElement <- " + Boolean.toString(skipPerElement).toUpperCase());
-	}
-
-	public static void printForR(TestMatrix tm)
-	{
-		String[] dataTypes =
-		{ "Text", "Decimal" };
-		List<String> sourceTypesWithResults = new ArrayList<String>();
-		if (tm.getBinaryPerformanceResults().size() > 0)
-		{
-			sourceTypesWithResults.add("bin");
-		}
-		if (tm.getDatabasePerformanceResults().size() > 0)
-		{
-			sourceTypesWithResults.add("db");
-		}
-		if (tm.getFilePerformanceResults().size() > 0)
-		{
-			sourceTypesWithResults.add("file");
-		}
-		if (tm.getMemoryPerformanceResults().size() > 0)
-		{
-			sourceTypesWithResults.add("memory");
-		}
-
-		for (String sourceType : sourceTypesWithResults)
-		{
-			printFromMap(tm, sourceType, "Write", "Write_" + sourceType);
-			String dataframe = sourceType + " <- data.frame(Write_" + sourceType + ", ";
-
-			if (tm.isRunPerformanceTests())
-			{
-				for (String dataType : dataTypes)
-				{
-					if (!tm.isSkipPerElement())
-					{
-						printFromMap(tm, sourceType, dataType + "_element", dataType.charAt(0) + "_elem_" + sourceType);
-						dataframe += dataType.charAt(0) + "_elem_" + sourceType + ", ";
-					}
-					printFromMap(tm, sourceType, dataType + "_row", dataType.charAt(0) + "_row_" + sourceType);
-					printFromMap(tm, sourceType, dataType + "_col", dataType.charAt(0) + "_col_" + sourceType);
-					printFromMap(tm, sourceType, dataType + "_sublist", dataType.charAt(0) + "_sublist_" + sourceType);
-					printFromMap(tm, sourceType, dataType + "_suboffs", dataType.charAt(0) + "_suboffs_" + sourceType);
-					dataframe += dataType.charAt(0) + "_row_" + sourceType + ", " + dataType.charAt(0) + "_col_"
-							+ sourceType + ", " + dataType.charAt(0) + "_sublist_" + sourceType + ", "
-							+ dataType.charAt(0) + "_suboffs_" + sourceType + ", ";
-				}
-			}
-
-			System.out.println(dataframe.substring(0, dataframe.length() - 2) + ")");
-		}
-	}
-
-	private static void printFromMap(TestMatrix tm, String source, String key, String rParamName)
-	{
-		List<HashMap<String, Integer>> results = null;
-		if (source.equals("bin"))
-		{
-			results = tm.getBinaryPerformanceResults();
-		}
-		else if (source.equals("db"))
-		{
-			results = tm.getDatabasePerformanceResults();
-		}
-		else if (source.equals("file"))
-		{
-			results = tm.getFilePerformanceResults();
-		}
-		else if (source.equals("memory"))
-		{
-			results = tm.getMemoryPerformanceResults();
-		}
-		System.out.print(rParamName + " <- c(" + key.replace("Text", "T").replace("Decimal", "D")+"_"+source+", ");
-		String vals = "";
-		for (HashMap<String, Integer> hm : results)
-		{
-			vals += hm.get(key) + ", ";
-		}
-		System.out.print(vals.substring(0, vals.length() - 2) + ")\n");
+		System.out.println("matrixDimension1 <- " + params.matrixDimension1);
+		System.out.println("matrixDimension2 <- " + params.matrixDimension2);
+		System.out.println("maxTextLength <- " + params.maxTextLength);
+		System.out.println("fixedTextLength <- " + Boolean.toString(params.fixedTextLength).toUpperCase());
+		System.out.println("sparse <- " + Boolean.toString(params.sparse).toUpperCase());
+		System.out.println("skipPerElement <- " + Boolean.toString(params.skipPerElement).toUpperCase());
 	}
 
 	private List<Individual> getRandomIndividuals(Investigation inv, int amount)
@@ -580,124 +491,5 @@ public class Helper
 			res += line+"\n";
 		}
 		return res;
-	}
-
-	public static boolean storageDirsAreAvailable(Database db) throws Exception
-	{
-		return db.getFileSourceHelper().getFilesource(true) != null ? true : false;
-	}
-
-	public long timeMemoryMatrixCreation(Data data, Database db, int totalRows, int totalCols, int maxStringLength, boolean sparse, boolean fixedTextLength) throws DatabaseException, MatrixReadException
-	{
-		long storeTimerStart = System.currentTimeMillis();
-		
-		List<String> colNames = new ArrayList<String>();
-		List<String> rowNames = new ArrayList<String>();
-
-		Object[][] elements = null;
-
-		List<? extends Entity> colList = db.find(db.getClassForName(data.getFeatureType()));
-		List<? extends Entity> rowList = db.find(db.getClassForName(data.getTargetType()));
-		
-		for (Entity e : colList)
-		{
-			colNames.add(e.get("name").toString());
-		}
-		
-		for (Entity e : rowList)
-		{
-			rowNames.add(e.get("name").toString());
-		}
-
-		if (data.getValueType().equals("Decimal"))
-		{
-			//decimal data
-			elements = new Object[totalRows][totalCols];
-			for (int i = 0; i < totalRows; i++)
-			{
-				for (int j = 0; j < totalCols; j++)
-				{
-					if (sparse)
-					{
-						if (Util.getRandomBoolean() == true)
-						{
-							double rand = Util.getRandomDouble();
-							elements[i][j] = rand;
-						}
-						else
-						{
-							elements[i][j] = null;
-						}
-					}
-					else
-					{
-						double rand = Util.getRandomDouble();
-						elements[i][j] = rand;
-					}
-				}
-			}
-		}
-		else
-		{
-			// for text data, swap row with col dimension size
-			elements = new Object[totalCols][totalRows];
-			for (int i = 0; i < totalCols; i++)
-			{
-				for (int j = 0; j < totalRows; j++)
-				{
-					if (sparse)
-					{
-						if (Util.getRandomBoolean() == true)
-						{
-							String rand = Util.getRandomString(maxStringLength, fixedTextLength);
-							elements[i][j] = rand;
-						}
-						else
-						{
-							elements[i][j] = null;
-						}
-					}
-					else
-					{
-						String rand = Util.getRandomString(maxStringLength, fixedTextLength);
-						elements[i][j] = rand;
-					}
-				}
-			}
-		}
-		
-		//new MemoryDataMatrixInstance<Object>(rowNames, colNames, elements, data);
-		
-		long storeTimerStop = System.currentTimeMillis();
-		long time = storeTimerStop - storeTimerStart;
-			
-		return time;
-	}
-	
-	//helper function to have empty lists of test results to append to..
-	//does NOT work for 'per element testing' !!
-	public static void printEmptyRLists(){
-		
-//		System.out.println("matrixDimension1 <- c()");
-//		System.out.println("matrixDimension2 <- c()");
-//		System.out.println("maxTextLength <- c()");
-//		System.out.println("fixedTextLength <- c()");
-//		System.out.println("sparse <- c()");
-//		System.out.println("runRegressionTests <- c()");
-//		System.out.println("runPerformanceTests <- c()");
-//		System.out.println("skipPerElement <- c()");
-		
-		String[] sourceTypes = new String[]{"bin", "db", "file", "memory"};
-		String[] dataTypes = new String[]{"T", "D"};
-		String[] testTypes = new String[]{"row", "col", "sublist", "suboffs"};
-		for(String sourceType : sourceTypes){
-		System.out.println("Write_"+sourceType+" <- c()");
-			for(String dataType : dataTypes){
-				for(String testType : testTypes){
-					System.out.println(dataType+"_"+testType+"_"+sourceType+" <- c()");
-				}
-			}
-		
-		}
 	}
 }

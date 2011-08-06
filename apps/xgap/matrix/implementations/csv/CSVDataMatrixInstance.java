@@ -17,7 +17,7 @@ import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
 
-public class CSVDataMatrixInstance extends AbstractDataMatrixInstance
+public class CSVDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 {
 	Logger logger = Logger.getLogger(getClass().getSimpleName());
 

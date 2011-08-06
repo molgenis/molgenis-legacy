@@ -15,7 +15,7 @@ import matrix.implementations.memory.MemoryDataMatrixInstance;
 import org.apache.log4j.Logger;
 import org.molgenis.data.Data;
 
-public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance {
+public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance<Object> {
 	Logger logger = Logger.getLogger(getClass().getSimpleName());
 
 	private int textElementLength;

@@ -31,6 +31,14 @@
 		<antcall target="clean_make" />
 		<antcall target="test" />
 	</target>
+	
+	<!--
+	Wraps all test suites
+	-->
+	<target name="test" description="Make app and start the web test">
+		<antcall target="testmatrix" />
+		<antcall target="testwebgui" />
+	</target>
 
 	<!--
 	Remove existing HSQL database
@@ -48,9 +56,35 @@
 	</target>
 	
 	<!--
-	Run the test
+	Run the XGAP matrix test suite
 	-->
-	<target name="test" description="Start the web test">
+	<target name="testmatrix" description="Test matrix">
+		
+		<!--
+		Delete the database. This is needed because
+		the setup of the database itself is tested
+		-->
+		<antcall target="deletedb" />
+		
+		<!-- Run TestNG -->
+		<testng>
+			<xmlfileset dir="${app_build_dir}/matrix/test/implementations" includes="testng.xml" />
+			<classpath>
+				<path refid="molgenis-libs" />
+				<path refid="app-libs" />
+				<path location="${mol_build_dir}" />
+				<path location="${app_build_dir}" />
+			</classpath>
+		</testng>
+				
+		<!-- Delete the tmp file storage dir that was created during the test -->
+		<delete dir="/tmp_matrix_test_data"/>
+	</target>
+	
+	<!--
+	Run the web gui test
+	-->
+	<target name="testwebgui" description="Start the web test">
 		
 		<!--
 		Delete the database. This is needed because
@@ -59,7 +93,7 @@
 		<antcall target="deletedb" />
 		
 		<!-- Run TestNG/Selenium -->
-		<testng suitename="webtest">
+		<testng>
 			<xmlfileset dir="${app_build_dir}/test" includes="xqtl_selenium_testng_.xml" />
 			<!--ALTERNATIVE: classfileset dir="build/test" includes="WebTest.class"/-->
 			<classpath>

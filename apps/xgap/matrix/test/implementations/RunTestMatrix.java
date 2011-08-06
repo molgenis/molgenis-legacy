@@ -1,21 +1,20 @@
 package matrix.test.implementations;
 
-import java.util.Arrays;
-import java.util.Collection;
-
-import junit.framework.TestCase;
-import matrix.test.implementations.general.Helper;
+import matrix.test.implementations.binary.TestBinMatrix;
+import matrix.test.implementations.csv.TestFileMatrix;
+import matrix.test.implementations.database.TestDatabaseMatrix;
 import matrix.test.implementations.general.Params;
-import matrix.test.implementations.general.TestMatrix;
+import matrix.test.implementations.memory.TestMemoryMatrix;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.organization.Investigation;
+import org.molgenis.xgap.xqtlworkbench.ResetXgapDb;
+import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.ExpectedExceptions;
+import org.testng.annotations.Test;
 
 import app.servlet.MolgenisServlet;
 
@@ -23,88 +22,72 @@ import app.servlet.MolgenisServlet;
  * Test data matrix import and export across all backends, all retrieval functions,
  * data types, and most dimensions, transpositions, sparsities, and text length variation.
  * 
- * !! WARNING !!
- * Running the test might DELETE records and files from the current database.
- *
- * To run the test:
- * - Generate test XGAP (apps/org/molgenis/xgap/XgapTestGenerate)
- * - Update test database (apps/org/molgenis/xgap/XgapUpdateTestDatabase)
- * - Set storage directory:
- * -- Either in the GUI (has validation):
- *		Menu 'Admin and settings', tab 'Settings' and follow instructions.
- * -- Or by inserting SQL (no validation, you have to be sure):
- *		NOTE! Replace 'YOURDIRECTORY' with your storage dir, e.g. 'data/test' for unix like or 'C:\data\test' for windows like.
-		use test_xgap_1_5;
-		create table systemsettings_090527PBDB00QCGEXP4G (filedirpath VARCHAR(255), verified BOOL DEFAULT 0);
-		insert into systemsettings_090527PBDB00QCGEXP4G (filedirpath, verified) values ('YOURDIRECTORY', 1);
- *
- * @author joerivandervelde
+ * To be used in xQTL automated test cases
  *
  */
-@RunWith(value = Parameterized.class)
-public class RunTestMatrix extends TestCase {
+public class RunTestMatrix {
 
-	private TestMatrix tm;
-	private Database db;
-	
-	public RunTestMatrix(Params params) throws Exception {
-		db = new MolgenisServlet().getDatabase();
-		tm = new TestMatrix(db, params);
-	}
-
-	@Parameters
-	public static Collection<Object[]> data() {
+	@DataProvider(name = "params")
+	public static Object[][] data() {
 		Object[][] data = new Object[][] {
-				//			 DIM DIM TEXT	FIX.T?  SPARSE? R.TEST? P.TEST? SKIPEL.?
-				{ new Params(1,	 1,  0,		false,	false,	true,	false,	false) },
-				{ new Params(1,	 1,  0,		true,	true,	true,	false,	false) },
-				{ new Params(1,	 1,  1,		false,	true,	true,	false,	false) },
-				{ new Params(1,	 1,  1,		true,	false,	true,	false,	false) },
-				{ new Params(20, 10, 50,	false,	true,	true,	false,	false) },
-				{ new Params(10, 20, 50,	true,	false,	true,	false,	false) },
-				{ new Params(20, 10, 50,	false,	false,	true,	false,	false) },
-				{ new Params(10, 20, 50,	true,	true,	true,	false,	false) },
-				{ new Params(75, 95, 2,		false,	true,	true,	false,	true) },
-				{ new Params(95, 75, 2,		true,	false,	true,	false,	true) },
-				{ new Params(100, 5, 127,	false,	false,	true,	false,	true) },
-				{ new Params(5, 100, 127,	true,	true,	true,	false,	true) }
+				//			 DIM DIM TEXT	FIX.T?  SPARSE?	SKIPEL.?
+				{ new Params(1,	 1,  0,		true,	false,	false) },
+				{ new Params(1,	 1,  1,		true,	false,	false) },
+				{ new Params(20, 1, 10,		true,	true,	false) },
+				{ new Params(1, 20, 10,		false,	false,	false) },
+				{ new Params(50, 10, 127,	false,	true,	false) },
+				{ new Params(10, 50, 127,	true,	false,	false) },
 				};
-		return Arrays.asList(data);
+		return data;
 	}
-	
+
 	@BeforeClass
-	public static void print(){
-		Helper.printEmptyRLists();
+	public void setup() throws Exception {
+		
+		Database db = new MolgenisServlet().getDatabase();
+		
+		//assert db is empty
+		Assert.assertFalse(db.getFileSourceHelper().hasFilesource(false));
+		try{
+			db.find(Investigation.class).get(0);
+			Assert.fail("DatabaseException expected");
+		}catch(DatabaseException expected){
+			//DatabaseException was thrown
+		}
+		
+		//setup database
+		String report = ResetXgapDb.reset(db, true);
+		Assert.assertTrue(report.endsWith("SUCCESS"));
+		
+		//setup file storage
+		String path = "./tmp_matrix_test_data";
+		db.getFileSourceHelper().setFilesource(path);
+		db.getFileSourceHelper().validateFileSource();
+		Assert.assertTrue(db.getFileSourceHelper().hasValidFileSource());
 	}
 
-	@Before
-	public void assertAppDirAvailable() throws Exception {
-		assertTrue(Helper.storageDirsAreAvailable(db));
+	@Test(dataProvider = "params")
+	public void binary(Params params) throws Exception{
+		Database db = new MolgenisServlet().getDatabase();
+		new TestBinMatrix(db, params);
 	}
 
-	@After
-	public void printPerformance() {
-		Helper.printForR(tm);
+	@Test(dataProvider = "params")
+	public void database(Params params) throws Exception {
+		Database db = new MolgenisServlet().getDatabase();
+		new TestDatabaseMatrix(db, params);
 	}
 
-	@Test
-	public void binary() throws Exception{
-		tm.runBinary();
-	}
-
-	@Test
-	public void database() throws Exception {
-		tm.runDatabase();
-	}
-
-	@Test
-	public void file() throws Exception {
-		tm.runFile();
+	@Test(dataProvider = "params")
+	public void file(Params params) throws Exception {
+		Database db = new MolgenisServlet().getDatabase();
+		new TestFileMatrix(db, params);
 	}
 	
-	@Test
-	public void memory() throws Exception {
-		tm.runMemory();
+	@Test(dataProvider = "params")
+	public void memory(Params params) throws Exception {
+		Database db = new MolgenisServlet().getDatabase();
+		new TestMemoryMatrix(db, params);
 	}
 	
 }
