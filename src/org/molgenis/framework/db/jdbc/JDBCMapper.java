@@ -2,12 +2,13 @@ package org.molgenis.framework.db.jdbc;
 
 import java.util.List;
 
+import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.SpreadsheetWriter;
 import org.molgenis.util.Entity;
+import org.molgenis.util.SpreadsheetWriter;
 
 /**
  * Factory for creating SQL statements
@@ -48,7 +49,7 @@ public interface JDBCMapper<E extends Entity> extends Mapper<E>
 
 	public String getTableFieldName(String field);
 
-	public org.molgenis.framework.db.jdbc.ColumnInfo.Type getFieldType(String field);
+	public FieldType getFieldType(String field);
 
 //	/**
 //	 * Helper method for retrieving keys.

@@ -3,13 +3,14 @@ package org.molgenis.framework.db.jdbc;
 import java.text.ParseException;
 import java.util.List;
 
+import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.SpreadsheetWriter;
 import org.molgenis.util.Entity;
+import org.molgenis.util.SpreadsheetWriter;
 
 public class MappingDecorator<E extends Entity> implements Mapper<E>
 {
@@ -87,7 +88,7 @@ public class MappingDecorator<E extends Entity> implements Mapper<E>
 	}
 
 	@Override
-	public org.molgenis.framework.db.jdbc.ColumnInfo.Type getFieldType(String field)
+	public FieldType getFieldType(String field)
 	{
 		// TODO Auto-generated method stub
 		return mapper.getFieldType(field);

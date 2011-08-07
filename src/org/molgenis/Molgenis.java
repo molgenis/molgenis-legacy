@@ -30,7 +30,7 @@ import org.apache.tools.ant.listener.Log4jListener;
 import org.molgenis.MolgenisOptions.MapperImplementation;
 import org.molgenis.fieldtypes.BoolField;
 import org.molgenis.fieldtypes.DateField;
-import org.molgenis.fieldtypes.DateTimeField;
+import org.molgenis.fieldtypes.DatetimeField;
 import org.molgenis.fieldtypes.DecimalField;
 import org.molgenis.fieldtypes.EnumField;
 import org.molgenis.fieldtypes.FileField;
@@ -41,7 +41,7 @@ import org.molgenis.fieldtypes.IntField;
 import org.molgenis.fieldtypes.LongField;
 import org.molgenis.fieldtypes.MrefField;
 import org.molgenis.fieldtypes.NSequenceField;
-import org.molgenis.fieldtypes.OnOffField;
+import org.molgenis.fieldtypes.OnoffField;
 import org.molgenis.fieldtypes.StringField;
 import org.molgenis.fieldtypes.TextField;
 import org.molgenis.fieldtypes.XrefField;
@@ -440,7 +440,7 @@ public class Molgenis {
     private void loadFieldTypes() {
         MolgenisFieldTypes.addType(new BoolField());
         MolgenisFieldTypes.addType(new DateField());
-        MolgenisFieldTypes.addType(new DateTimeField());
+        MolgenisFieldTypes.addType(new DatetimeField());
         MolgenisFieldTypes.addType(new DecimalField());
         MolgenisFieldTypes.addType(new EnumField());
         MolgenisFieldTypes.addType(new FileField());
@@ -450,7 +450,7 @@ public class Molgenis {
         MolgenisFieldTypes.addType(new LongField());
         MolgenisFieldTypes.addType(new MrefField());
         MolgenisFieldTypes.addType(new NSequenceField());
-        MolgenisFieldTypes.addType(new OnOffField());
+        MolgenisFieldTypes.addType(new OnoffField());
         MolgenisFieldTypes.addType(new StringField());
         MolgenisFieldTypes.addType(new TextField());
         MolgenisFieldTypes.addType(new XrefField());

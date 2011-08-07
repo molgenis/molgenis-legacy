@@ -5,7 +5,7 @@ import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.model.MolgenisModelException;
 
-public class DateTimeField extends FieldType
+public class DatetimeField extends FieldType
 {
 	@Override
 	public String getJavaPropertyType() throws MolgenisModelException

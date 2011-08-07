@@ -2,7 +2,7 @@ package org.molgenis.framework.db;
 
 import java.util.List;
 
-import org.molgenis.framework.db.jdbc.ColumnInfo.Type;
+import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.util.Entity;
 
 public interface DatabaseMapper<E extends Entity>
@@ -17,5 +17,5 @@ public interface DatabaseMapper<E extends Entity>
 	
 	public String getTableFieldName(String field);
 
-	public Type getFieldType(String field);
+	public FieldType getFieldType(String field);
 }

@@ -49,6 +49,13 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 		//this.usePublicFields = usePublicFields;
 	}
 	
+	public FreemarkerView(String templatePath, Map<String,Object> templateArgs)
+	{
+		super(null);
+		this.templatePath = templatePath;
+		this.arguments = templateArgs;
+	}
+	
 	@SuppressWarnings("deprecation")
 	public String render(String templatePath, Map<String,Object> templateArgs)//, boolean usePublicFields)
 	{
@@ -77,7 +84,7 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 				
 				for(Object key: templateArgs.keySet())
 				{
-					if("model".equals(key)) loaders.add(new ClassTemplateLoader(templateArgs.get(key)
+					if("model".equals(key) && templateArgs.get(key) != null) loaders.add(new ClassTemplateLoader(templateArgs.get(key)
 						.getClass()));
 				}
 
@@ -124,18 +131,22 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 	public String render()
 	{
 		//get the database for this application
-		Database db = this.getModel().getController().getApplicationController().getDatabase();
+		//Database db = this.getModel().getController().getApplicationController().getDatabase();
 		
 		// create template parameters
 		Map<String, Object> templateArgs = new LinkedHashMap<String,Object>(this.arguments);
-		templateArgs.put("application", model.getController()
+		if(model != null)
+		{
+			templateArgs.put("application", model.getController()
 				.getApplicationController().getModel());
+			templateArgs.put("show", model.getController()
+					.getApplicationController().getModel().getShow());
+		}
 		templateArgs.put("screen", model);
 		templateArgs.put("model", model);
 		templateArgs.put("widgetfactory", new WidgetFactory());
 		
-		templateArgs.put("show", model.getController()
-				.getApplicationController().getModel().getShow());
+
 		
 		return this.render(templatePath, templateArgs);
 	}

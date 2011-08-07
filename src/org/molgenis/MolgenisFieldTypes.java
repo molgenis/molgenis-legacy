@@ -6,19 +6,21 @@ import java.util.TreeMap;
 import org.apache.log4j.Logger;
 import org.molgenis.fieldtypes.BoolField;
 import org.molgenis.fieldtypes.DateField;
-import org.molgenis.fieldtypes.DateTimeField;
+import org.molgenis.fieldtypes.DatetimeField;
 import org.molgenis.fieldtypes.DecimalField;
 import org.molgenis.fieldtypes.EnumField;
 import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.fieldtypes.FileField;
+import org.molgenis.fieldtypes.FreemarkerField;
 import org.molgenis.fieldtypes.HexaField;
+import org.molgenis.fieldtypes.RichtextField;
 import org.molgenis.fieldtypes.HyperlinkField;
 import org.molgenis.fieldtypes.ImageField;
 import org.molgenis.fieldtypes.IntField;
 import org.molgenis.fieldtypes.LongField;
 import org.molgenis.fieldtypes.MrefField;
 import org.molgenis.fieldtypes.NSequenceField;
-import org.molgenis.fieldtypes.OnOffField;
+import org.molgenis.fieldtypes.OnoffField;
 import org.molgenis.fieldtypes.StringField;
 import org.molgenis.fieldtypes.TextField;
 import org.molgenis.fieldtypes.UnknownField;
@@ -47,7 +49,7 @@ public class MolgenisFieldTypes
 		{
 			addType(new BoolField());
 			addType(new DateField());
-			addType(new DateTimeField());
+			addType(new DatetimeField());
 			addType(new DecimalField());
 			addType(new EnumField());
 			addType(new FileField());
@@ -56,12 +58,14 @@ public class MolgenisFieldTypes
 			addType(new LongField());
 			addType(new MrefField());
 			addType(new NSequenceField());
-			addType(new OnOffField());
+			addType(new OnoffField());
 			addType(new StringField());
 			addType(new TextField());
 			addType(new XrefField());
 			addType(new IntField());
 			addType(new HexaField());
+			addType(new RichtextField());
+			addType(new FreemarkerField());
 
 			init = true;
 		}
