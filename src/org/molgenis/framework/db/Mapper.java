@@ -3,11 +3,10 @@ package org.molgenis.framework.db;
 import java.text.ParseException;
 import java.util.List;
 
-import org.molgenis.framework.db.jdbc.ColumnInfo.Type;
+import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.SpreadsheetWriter;
-
 import org.molgenis.util.Entity;
+import org.molgenis.util.SpreadsheetWriter;
 
 public interface Mapper<E extends Entity> {
 	public Database getDatabase();
@@ -40,7 +39,7 @@ public interface Mapper<E extends Entity> {
 
 	public String getTableFieldName(String field);
 
-	public Type getFieldType(String field);
+	public FieldType getFieldType(String field);
 	
 	public void resolveForeignKeys(List<E> enteties) throws ParseException, DatabaseException;
 }

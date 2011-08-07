@@ -9,6 +9,8 @@ import org.apache.log4j.Logger;
 import org.molgenis.framework.MolgenisService;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.security.Login;
+import org.molgenis.framework.ui.html.FreemarkerInput;
+import org.molgenis.framework.ui.html.RichtextInput;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.FileLink;
 import org.molgenis.util.Tuple;
@@ -317,5 +319,13 @@ public class ApplicationController extends
 	{
 		this.galaxyUrl = galaxyUrl;
 	}
-
+	
+	public String getCustomHtmlHeaders()
+	{
+		//TODO: this should be made more generic
+		return 
+		new FreemarkerInput("blaat").getCustomHtmlHeaders()+
+		new RichtextInput("blaat").getCustomHtmlHeaders() +
+		super.getCustomHtmlHeaders();
+	}
 }

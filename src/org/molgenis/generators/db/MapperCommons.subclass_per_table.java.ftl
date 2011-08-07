@@ -136,25 +136,13 @@
 	}
 	
 	@Override
-	public org.molgenis.framework.db.jdbc.ColumnInfo.Type getFieldType(String fieldName)
+	public FieldType getFieldType(String fieldName)
 	{
 		<#list viewFields(entity) as f>
-		<#assign type= f.type>
-		<#if type == "user" || type == "xref" || type == "mref">		
-		<#assign type = f.xrefField.type/>
-		if("${name(f)}".equalsIgnoreCase(fieldName) || "${name(f.entity)}.${name(f)}".equalsIgnoreCase(fieldName)) return org.molgenis.framework.db.jdbc.ColumnInfo.Type.${type?upper_case};
-		<#list f.xrefLabelNames as xref_label>
-		if("${name(f)}_${name(xref_label)}".equalsIgnoreCase(fieldName) 
-		    || "${name(f.entity)}.${name(f)}_${name(xref_label)}".equalsIgnoreCase(fieldName))
-		{
-			return org.molgenis.framework.db.jdbc.ColumnInfo.Type.STRING;
-		}
+			if("${name(f)}".equalsIgnoreCase(fieldName) || "${name(f.entity)}.${name(f)}".equalsIgnoreCase(fieldName)) 
+				return new ${JavaName(f.type.toString())}Field();
 		</#list>
-		<#else>		
-		if("${name(f)}".equalsIgnoreCase(fieldName) || "${name(f.entity)}.${name(f)}".equalsIgnoreCase(fieldName)) return org.molgenis.framework.db.jdbc.ColumnInfo.Type.${type?upper_case};
-		</#if>
-		</#list>
-		return org.molgenis.framework.db.jdbc.ColumnInfo.Type.STRING;
+		return new UnknownField();
 	}		
 	
 <#include "MapperCommons.java.ftl">

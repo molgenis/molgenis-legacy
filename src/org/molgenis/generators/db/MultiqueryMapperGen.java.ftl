@@ -38,7 +38,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jdbc.AbstractJDBCMapper;
 import org.molgenis.framework.db.jdbc.JDBCMapper;
 import org.molgenis.MolgenisFieldTypes;
-import org.molgenis.fieldtypes.FieldType;
+import org.molgenis.fieldtypes.*;
 
 <#list allFields(entity) as f><#if f.type == "file" || f.type == "image">
 import org.apache.commons.io.FileUtils;
