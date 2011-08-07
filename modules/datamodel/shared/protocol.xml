@@ -37,7 +37,7 @@
 			<field name="ProtocolType" type="xref" xref_entity="OntologyTerm"
 				nillable="true"
 				description="annotation of the protocol to a well-defined ontological class." />
-			<field name="description" type="text" nillable="true"
+			<field name="description" type="richtext" nillable="true"
 				description="Description, or reference to a description, of the protocol" />
 			<!-- TOMASZ: Changed xref_entity=ObservableFeature to ObservationElement, 
 			as ObservableFeature/ObservationTarget was merged into ObservationElement 
