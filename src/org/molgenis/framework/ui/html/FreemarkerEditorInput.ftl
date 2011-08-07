@@ -4,14 +4,12 @@
 </textarea>
 </div-->
 									
-<textarea id="${name}" name="${name}" cols="80" rows="5"> 
-<#if value?exists>${value}</#if>
-</textarea>
+<textarea id="${name}" name="${name}" cols="80" rows="5"><#if value?exists>${value}</#if></textarea>
  
 <script type="text/javascript"> 
 	var ${name}_editor = CodeMirror.fromTextArea(document.getElementById('${name}'), {
-    width: "80",
-    height: "50px",
+	width: "551px", 
+	height: "139px",
     textWrapping: false,
     iframeClass: "CodeMirror-iframe",
     parserfile: "../contrib/freemarker/js/parsefreemarker.js",
