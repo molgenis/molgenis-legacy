@@ -7,6 +7,6 @@ public class SandboxUpdateDatabase
 {
 	public static void main(String[] args) throws Exception
 	{
-		new Molgenis("handwritten/apps/org/molgenis/sandbox/sandbox.properties").updateDb(true);
+		new Molgenis("apps/sandbox/sandbox.properties").updateDb(true);
 	}
 }
