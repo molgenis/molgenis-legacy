@@ -10,6 +10,7 @@
 	var ${name}_editor = CodeMirror.fromTextArea(document.getElementById('${name}'), {
 	width: "551px", 
 	height: "139px",
+	onChange: save,
     textWrapping: false,
     iframeClass: "CodeMirror-iframe",
     parserfile: "../contrib/freemarker/js/parsefreemarker.js",
