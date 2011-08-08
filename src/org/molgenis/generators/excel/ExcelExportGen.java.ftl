@@ -129,7 +129,7 @@ public class ExcelExport
 	    workbook.close();
 	    
 	    // Remove temporary directory
-		TarGz.recursiveDelete(directory);
+		TarGz.recursiveDeleteContent(directory);
 	}
 
 	/**

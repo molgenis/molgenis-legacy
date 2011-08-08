@@ -358,6 +358,9 @@ public class TarGz
 	/**
 	 * Recursive delete of all content of a directory, except .svn files.
 	 * Does not delete the directory itself.
+	 * 
+	 * FIXME: STILL UNCLEAR TO ME IF THE INITIAL DIR IS REMOVED OR NOT - SEEMS TO VARY
+	 * 
 	 * @param dir
 	 * @throws InterruptedException
 	 */
