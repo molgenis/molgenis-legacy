@@ -9,9 +9,6 @@
 		<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1" >
 		<title>${screen.getLabel()}</title>
 		<link rel="shortcut icon" type="image/x-icon" href="generated-res/img/molgenis.ico" />
-		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
-		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.js"></script>
-		<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css"/>
 		<link rel="stylesheet" style="text/css" type="text/css" href="generated-res/css/main.css">
 		<link rel="stylesheet" style="text/css" type="text/css" href="generated-res/css/data.css">
 		<link rel="stylesheet" style="text/css" type="text/css" href="generated-res/css/colors.css">
@@ -26,6 +23,9 @@
 		<script src="generated-res/scripts/mrefinput.js" type="text/javascript" language="javascript"></script>					
 		<script src="generated-res/scripts/menu.js" type="text/javascript" language="javascript"></script>			
 		<script src="generated-res/scripts/recoverscroll.js" type="text/javascript" language="javascript"></script>	
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.js"></script>
+		<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css"/>
   <#--
   <link rel="stylesheet" style="text/css" type="text/css" href="jquery/css/smoothness/jquery-ui-1.8.7.custom.css">			
   <script src="jquery/js/jquery-1.4.4.min.js"></script>
