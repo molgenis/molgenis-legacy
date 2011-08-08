@@ -33,68 +33,11 @@
 	</target>
 	
 	<!--
-	Wraps all test suites
+	Run all xQTL TestNG/Selenium tests
 	-->
-	<target name="test" description="Make app and start the web test">
-		<antcall target="testmatrix" />
-		<antcall target="testwebgui" />
-	</target>
-
-	<!--
-	Remove existing HSQL database
-	-->
-	<target name="deletedb" description="Delete generated and build content">
-		
-		<!-- mkdir hsqldb if it doesn't exist -->
-		<mkdir dir="hsqldb" />
-
-		<!-- remove content of hsqldb -->
-		<delete includeemptydirs="true">
-			<fileset dir="hsqldb" includes="**/*" />
-		</delete>
-		
-	</target>
-	
-	<!--
-	Run the XGAP matrix test suite
-	-->
-	<target name="testmatrix" description="Test matrix">
-		
-		<!--
-		Delete the database. This is needed because
-		the setup of the database itself is tested
-		-->
-		<antcall target="deletedb" />
-		
-		<!-- Run TestNG -->
-		<testng>
-			<xmlfileset dir="${app_build_dir}/matrix/test/implementations" includes="xqtl_matrix_testng_.xml" />
-			<classpath>
-				<path refid="molgenis-libs" />
-				<path refid="app-libs" />
-				<path location="${mol_build_dir}" />
-				<path location="${app_build_dir}" />
-			</classpath>
-		</testng>
-				
-		<!-- Delete the tmp file storage dir that was created during the test -->
-		<delete dir="/tmp_matrix_test_data"/>
-	</target>
-	
-	<!--
-	Run the web gui test
-	-->
-	<target name="testwebgui" description="Start the web test">
-		
-		<!--
-		Delete the database. This is needed because
-		the setup of the database itself is tested
-		-->
-		<antcall target="deletedb" />
-		
-		<!-- Run TestNG/Selenium -->
-		<testng>
-			<xmlfileset dir="${app_build_dir}/test" includes="xqtl_selenium_testng_.xml" />
+	<target name="test" description="Run all tests">
+		<testng haltOnFailure="true">
+			<xmlfileset dir="${app_build_dir}" includes="**/*testng_xqtl.xml" />
 			<!--ALTERNATIVE: classfileset dir="build/test" includes="WebTest.class"/-->
 			<classpath>
 				<path refid="molgenis-libs" />
@@ -103,10 +46,38 @@
 				<path location="${app_build_dir}" />
 			</classpath>
 		</testng>
-			
-		<!-- Delete the tmp file storage dir that was created during the test -->
-		<delete dir="/tmp_selenium_test_data"/>
-		
+	</target>
+	
+	<!--
+	Run Selenium test only
+	TODO: just wrap the one difference with an argument structure?
+	-->
+	<target name="testweb" description="Start the Selenium test">
+		<testng haltOnFailure="true">
+			<xmlfileset dir="${app_build_dir}" includes="**/selenium_testng_xqtl.xml" />
+			<classpath>
+				<path refid="molgenis-libs" />
+				<path refid="app-libs" />
+				<path location="${mol_build_dir}" />
+				<path location="${app_build_dir}" />
+			</classpath>
+		</testng>
+	</target>
+	
+	<!--
+	Run Selenium test only
+	TODO: just wrap the one difference with an argument structure?
+	-->
+	<target name="testmatrix" description="Start the matrix test">
+		<testng haltOnFailure="true">
+			<xmlfileset dir="${app_build_dir}" includes="**/matrix_testng_xqtl.xml" />
+			<classpath>
+				<path refid="molgenis-libs" />
+				<path refid="app-libs" />
+				<path location="${mol_build_dir}" />
+				<path location="${app_build_dir}" />
+			</classpath>
+		</testng>
 	</target>
 	
 </project>

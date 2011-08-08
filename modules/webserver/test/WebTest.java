@@ -1,13 +1,20 @@
 package test;
 
+import java.io.File;
+
+import org.molgenis.framework.db.Database;
+import org.molgenis.util.TarGz;
 import org.openqa.selenium.server.RemoteControlConfiguration;
 import org.openqa.selenium.server.SeleniumServer;
 import org.testng.Assert;
 import org.testng.ITestContext;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
+import app.servlet.MolgenisServlet;
 import boot.RunStandalone;
 
 import com.thoughtworks.selenium.DefaultSelenium;
@@ -22,15 +29,21 @@ public class WebTest
 	Integer deployPort = 11000;
 	Integer sleepTime = 5000;
 	String pageLoadTimeout = "30000";
+	String storagePath = new File(".").getAbsolutePath() + File.separator + "tmp_selenium_test_data";
 
-	public void sleepHelper(String who) throws InterruptedException
+	private void sleepHelper(String who) throws InterruptedException
 	{
 		System.out.println(who + " done, now sleeping for " + sleepTime + " msec");
 		Thread.sleep(sleepTime);
 	}
+	
+	
+	private String propertyScript(String element, String property){
+		return "var x = window.document.getElementById('"+element+"'); window.document.defaultView.getComputedStyle(x,null).getPropertyValue('"+property+"');";
+	}
 
-	@BeforeSuite(alwaysRun = true)
-	public void setupBeforeSuite(ITestContext context)
+	@BeforeClass(alwaysRun = true)
+	public void setupBeforeClass(ITestContext context) throws Exception
 	{
 		String seleniumHost = "localhost";
 		String seleniumPort = "9080";
@@ -54,12 +67,15 @@ public class WebTest
 		proc = new HttpCommandProcessor(seleniumHost, Integer.parseInt(seleniumPort), seleniumBrowser, seleniumUrl);
 		selenium = new DefaultSelenium(proc);
 		selenium.start();
-	}
-
-	@BeforeClass
-	public void setUp()
-	{
+		
+		TestHelper.deleteDatabase();
 		new RunStandalone(deployPort);
+	}
+	
+	@AfterClass(alwaysRun = true)
+	public void cleanupAfterClass() throws InterruptedException, Exception
+	{
+		TestHelper.deleteStorage();
 	}
 
 	@Test
@@ -91,11 +107,11 @@ public class WebTest
 	@Test
 	public void loadExampleData() throws InterruptedException
 	{
-		selenium.type("id=inputBox", "./tmp_selenium_test_data");
+		selenium.type("id=inputBox", storagePath);
 		sleepHelper("loadExampleData page loaded, now pressing button to load users, data, permissions etc");
 		selenium.click("id=loadExamples");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("File path './tmp_selenium_test_data' was validated and the dataloader succeeded"));
+		Assert.assertTrue(selenium.isTextPresent("File path '"+storagePath+"' was validated and the dataloader succeeded"));
 		sleepHelper("loadExampleData");
 	}
 
@@ -150,8 +166,5 @@ public class WebTest
 		sleepHelper("compactView");
 	
 	}
-	
-	private String propertyScript(String element, String property){
-		return "var x = window.document.getElementById('"+element+"'); window.document.defaultView.getComputedStyle(x,null).getPropertyValue('"+property+"');";
-	}
+
 }

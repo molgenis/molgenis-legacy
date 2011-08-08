@@ -1,5 +1,7 @@
 package matrix.test.implementations;
 
+import java.io.File;
+
 import matrix.test.implementations.binary.TestBinMatrix;
 import matrix.test.implementations.csv.TestFileMatrix;
 import matrix.test.implementations.database.TestDatabaseMatrix;
@@ -11,10 +13,13 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.organization.Investigation;
 import org.molgenis.xgap.xqtlworkbench.ResetXgapDb;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Test;
+
+import test.TestHelper;
 
 import app.servlet.MolgenisServlet;
 
@@ -41,8 +46,10 @@ public class RunTestMatrix {
 		return data;
 	}
 
-	@BeforeClass
-	public void setup() throws Exception {
+	@BeforeClass(alwaysRun = true)
+	public void setupBeforeClass() throws Exception {
+		
+		TestHelper.deleteDatabase();
 		
 		Database db = new MolgenisServlet().getDatabase();
 		
@@ -60,10 +67,16 @@ public class RunTestMatrix {
 		Assert.assertTrue(report.endsWith("SUCCESS"));
 		
 		//setup file storage
-		String path = "./tmp_matrix_test_data";
+		String path = new File(".").getAbsolutePath() + File.separator + "tmp_matrix_test_data";
 		db.getFileSourceHelper().setFilesource(path);
 		db.getFileSourceHelper().validateFileSource();
 		Assert.assertTrue(db.getFileSourceHelper().hasValidFileSource());
+	}
+	
+	@AfterClass(alwaysRun = true)
+	public void cleanupAfterClass() throws InterruptedException, Exception
+	{
+		TestHelper.deleteStorage();
 	}
 
 	@Test(dataProvider = "params")

@@ -1,0 +1,13 @@
+
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+<suite name="Database archives test suite">
+  <test name="Import/export database archives tests" preserve-order="true">
+    <classes>
+       <class name="regressiontest.archives.TestArchives">
+			<methods>
+				<include name="exportExcelArchive" />
+			</methods>
+       </class>
+    </classes>
+  </test>
+</suite>

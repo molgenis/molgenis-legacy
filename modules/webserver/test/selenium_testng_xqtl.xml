@@ -1,12 +1,12 @@
 
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
-<suite name="Web server test suite">
+<suite name="Selenium test suite">
 	<!-- test name="Generic stuff"> <classes> <class name="test.TestGeneric" 
 		/> </classes> </test> <test name="Web server"> <classes> <class name="test.TestWebserver" 
 		/> </classes> </test> <test name="Bot network"> <classes> <class name="test.TestBot" 
 		/> </classes> </test -->
 
-	<test name="xQTL web test" preserve-order="true">
+	<test name="xQTL workbench walkthrough" preserve-order="true">
 		<classes>
 			<class name="test.WebTest">
 				<methods>

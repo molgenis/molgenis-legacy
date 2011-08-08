@@ -140,8 +140,8 @@ public class Helper
 		}
 		else
 		{
-			TarGz.recursiveDelete(inputFilesDir);
-			inputFilesDir.mkdir();
+			TarGz.recursiveDeleteContent(inputFilesDir);
+			inputFilesDir.mkdir(); //should not be needed, but half of the tests fail without it!
 		}
 
 		logger.info("Randomizing data matrix filling and adding data files to input directory..");

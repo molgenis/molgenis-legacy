@@ -1,7 +1,7 @@
 
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
 <suite name="Matrix test suite">
-  <test name="Comprehensive matrix tests">
+  <test name="XGAP matrix">
     <classes>
        <class name="matrix.test.implementations.RunTestMatrix" />
     </classes>

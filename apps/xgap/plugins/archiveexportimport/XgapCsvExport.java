@@ -33,8 +33,8 @@ public class XgapCsvExport extends CsvWriterNoExportDataElement
 		}
 		else
 		{
-			TarGz.recursiveDelete(directory);
-			directory.mkdir();
+			TarGz.recursiveDeleteContent(directory);
+			//directory.mkdir();
 		}
 		
 		//File excelFile = new File(directory.getAbsolutePath() + File.separator + "xgap.xls");
