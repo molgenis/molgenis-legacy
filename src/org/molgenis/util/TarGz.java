@@ -177,7 +177,7 @@ public class TarGz
 		}
 		else
 		{
-			recursiveDelete(extractDir);
+			recursiveDeleteContent(extractDir);
 			extractDir.mkdir();
 		}
 
@@ -354,31 +354,65 @@ public class TarGz
 		}
 		return tars;
 	}
-
+	
 	/**
-	 * Recursive delete. Takes a directory as input and traverses all subfolders
-	 * before deleting their content and the directories.
-	 * 
+	 * Recursive delete of all content of a directory, except .svn files.
+	 * Does not delete the directory itself.
 	 * @param dir
 	 * @throws InterruptedException
 	 */
-	public static void recursiveDelete(File dir) throws InterruptedException
+	public static void recursiveDeleteContentIgnoreSvn(File dir) throws InterruptedException
 	{
+		if(!dir.exists()){
+			throw new InterruptedException("File location '"+dir.getAbsolutePath()+"' does not exist");
+		}
 		if (dir.isDirectory())
 		{
 			for (File f : dir.listFiles())
 			{
-				recursiveDelete(f);
+				if(!f.toString().endsWith(".svn")){
+					recursiveDeleteContentIgnoreSvn(f);
+				}
 			}
+		}
+		else
+		{
+			delete(dir, true);
+		}
+		
+		// Delete empty dirs (but not the original input dir)
+		if(dir.isDirectory() && dir.list().length == 0){
+			delete(dir, true);
+		}
+	}
 
+	/**
+	 * Recursive delete of all content in a directory.
+	 * 
+	 * @param dir
+	 * @throws InterruptedException
+	 */
+	public static void recursiveDeleteContent(File dir) throws InterruptedException
+	{
+		if(!dir.exists()){
+			throw new InterruptedException("File location '"+dir.getAbsolutePath()+"' does not exist");
+		}
+		if (dir.isDirectory())
+		{
+			for (File f : dir.listFiles())
+			{
+				recursiveDeleteContent(f);
+			}
 		}
 		else
 		{
 			delete(dir, true);
 		}
 
-		// Try to delete the current directory or file (succeeds if empty)
-		delete(dir, false);
+		// Delete empty dirs (but not the original input dir)
+		if(dir.isDirectory() && dir.list().length == 0){
+			delete(dir, true);
+		}
 	}
 
 	/**
@@ -388,7 +422,7 @@ public class TarGz
 	 *            File to be deleted
 	 * @throws InterruptedException
 	 */
-	private static void delete(File f, boolean warn)
+	public static void delete(File f, boolean throwOnFail)
 			throws InterruptedException
 	{
 		System.gc(); // hotfixes a known ms windows bug. see:
@@ -399,11 +433,17 @@ public class TarGz
 			Thread.sleep(10);
 			System.gc();
 			delSuccess = f.delete();
-			if (!delSuccess && warn)
+			if(delSuccess)
 			{
-				System.out.println("WARNING: could not delete "
+				System.out.println("Deleted on second attempt: " + f.getAbsolutePath());
+			}
+			if (!delSuccess && throwOnFail)
+			{
+				throw new InterruptedException("Could not delete "
 						+ f.getAbsolutePath());
 			}
+		}else{
+			System.out.println("Deleted: " + f.getAbsolutePath());
 		}
 	}
 
