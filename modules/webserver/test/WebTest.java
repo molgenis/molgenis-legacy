@@ -83,16 +83,14 @@ public class WebTest
 		selenium.type("id=password", "admin");
 		selenium.click("id=Login");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("Logged in as admin"));
+		//note: page now redirects to the Home screen ('auth_redirect' in properties)
+		Assert.assertTrue(selenium.isTextPresent("You are logged in as admin, and the database does not contain any investigations or other users."));
 		sleepHelper("login");
 	}
 
 	@Test
 	public void loadExampleData() throws InterruptedException
 	{
-		selenium.click("//div[@onclick=\"document.forms.main.__target.value='main';document.forms.main.select.value='ClusterDemo';document.forms.main.submit();\"]");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("You are logged in as admin, and the database does not contain any investigations or other users."));
 		selenium.type("id=inputBox", "./tmp_selenium_test_data");
 		sleepHelper("loadExampleData page loaded, now pressing button to load users, data, permissions etc");
 		selenium.click("id=loadExamples");
