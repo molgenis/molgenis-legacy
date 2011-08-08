@@ -208,9 +208,4 @@ public class ArchiveExportImportPlugin extends PluginModel<Entity>
 		}
 	}
 
-	@Override
-	public boolean isVisible()
-	{
-		return true;
-	}
 }

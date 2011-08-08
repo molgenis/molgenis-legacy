@@ -110,4 +110,48 @@ public class WebTest
 		Assert.assertEquals(selenium.getText("//div[@id='Datas_screen']/div[2]/form/div/div[2]/div/table/tbody/tr[3]/td/table/tbody/tr[3]/td[4]"),"942");
 		sleepHelper("exploreExampleData");
 	}
+	
+	@Test
+	public void compactView() throws InterruptedException
+	{
+		/*
+		 * REMARK
+		 * 
+		 * Here you'd want to use a statement like:
+		 * 
+		 * Assert.assertFalse(selenium.isElementPresent("Investigation_description"));
+		 * 
+		 * or maybe
+		 * 
+		 * Assert.assertFalse(selenium.isTextPresent("description"));
+		 * 
+		 * But this is currently NOT WORKING. Selenium does not check the graphical layout
+		 * of the page, and things hidden with JavaScript/CSS tricks are often not technically hidden.
+		 * 
+		 * So testing this directly will always result in TRUE even while the user CANNOT see the
+		 * element on his/her screen. We'll use a trick instead: execute a piece of JavaScript to
+		 * retrieve style that was applied to an element. We can check the result to find out if a
+		 * property (ie. 'display') has a certain value we expect is has.
+		 * 
+		 */
+		
+		//assert if the hide investigation and data table rows are hidden
+		Assert.assertEquals(selenium.getEval(propertyScript("Investigations_collapse_tr_id", "display")), "none");
+		Assert.assertEquals(selenium.getEval(propertyScript("Datas_collapse_tr_id", "display")), "none");
+		
+		//click both unhide buttons
+		selenium.click("id=Investigations_collapse_button_id");
+		selenium.click("id=Datas_collapse_button_id");
+		
+		//assert if the hide investigation and data table rows are hidden
+		Assert.assertEquals(selenium.getEval(propertyScript("Investigations_collapse_tr_id", "display")), "table-row");
+		Assert.assertEquals(selenium.getEval(propertyScript("Datas_collapse_tr_id", "display")), "table-row");		
+		
+		sleepHelper("compactView");
+	
+	}
+	
+	private String propertyScript(String element, String property){
+		return "var x = window.document.getElementById('"+element+"'); window.document.defaultView.getComputedStyle(x,null).getPropertyValue('"+property+"');";
+	}
 }
