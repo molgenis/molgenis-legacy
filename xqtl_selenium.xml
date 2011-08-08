@@ -68,7 +68,7 @@
 		
 		<!-- Run TestNG -->
 		<testng>
-			<xmlfileset dir="${app_build_dir}/matrix/test/implementations" includes="testng.xml" />
+			<xmlfileset dir="${app_build_dir}/matrix/test/implementations" includes="xqtl_matrix_testng_.xml" />
 			<classpath>
 				<path refid="molgenis-libs" />
 				<path refid="app-libs" />
@@ -94,7 +94,7 @@
 		
 		<!-- Run TestNG/Selenium -->
 		<testng>
-			<xmlfileset dir="${app_build_dir}/test" includes="xqtl_matrix_testng_.xml" />
+			<xmlfileset dir="${app_build_dir}/test" includes="xqtl_selenium_testng_.xml" />
 			<!--ALTERNATIVE: classfileset dir="build/test" includes="WebTest.class"/-->
 			<classpath>
 				<path refid="molgenis-libs" />
