@@ -54,20 +54,14 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.text.ParseException;
 
-
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.db.jdbc.AbstractJDBCMapper;
-import org.molgenis.framework.db.jdbc.JDBCConnectionHelper;
-import org.molgenis.framework.db.jdbc.ColumnInfo;
 import org.molgenis.framework.db.jdbc.JDBCMapper;
-import org.molgenis.framework.db.jdbc.ColumnInfo.Type;
-import org.molgenis.util.ValueLabel;
-import org.molgenis.MolgenisFieldTypes;
-import org.molgenis.fieldtypes.FieldType;
+import org.molgenis.fieldtypes.*;
 
 <#list allFields(entity) as f><#if f.type == "file">
 import org.apache.commons.io.FileUtils;
