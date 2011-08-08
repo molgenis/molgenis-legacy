@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<molgenis name="org.molgenis" label="Molgenis Auth Test Suite">
+<molgenis name="org.molgenis">
 	<module name="auth">
 		<entity name="MolgenisRole" system="true" implements="Identifiable" xref_label="name" >
 			<field name="name" unique="true" />
