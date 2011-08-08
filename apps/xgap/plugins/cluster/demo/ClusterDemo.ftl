@@ -81,31 +81,8 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="top" align="center"
-		<#if screen.loggedIn>
-			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='Cluster';document.forms.main.submit();">
-		<#else>
-			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='UserLogin';document.forms.main.submit();">
-		</#if>
-			<table bgcolor="#BBBBBB" cellpadding="10" cellspacing="10" border="2" width="160px">
-				<tr>
-					<td align="center">
-						<font style='font-size:15px; font-weight:bold;'>Run</font> <font style='font-size:15px;'>QTL mapping</font>
-					</td>
-				</tr>
-			</table>
-			<table>
-				<tr>
-					<td align="center">
-						<font style='font-size:10px;'>(login as user <b>bio-user</b>, password <b>bio</b>)</font>
-					</td>
-				</tr>
-			</table>
-		</td>
-		
-		<td width="20px">&nbsp;</td>
-		
-		<td align="center"
+	
+	<td align="center"
 		<#if screen.loggedIn>
 			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='Investigations';document.forms.main.submit();">
 		<#else>
@@ -127,9 +104,9 @@
 				</tr>
 			</table>
 		</td>
-		
+	
 		<td width="20px">&nbsp;</td>
-
+		
 		<td align="center"
 		<#if screen.loggedIn>
 			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='QTLWizard';document.forms.main.submit();">
@@ -141,6 +118,30 @@
 				<tr>
 					<td align="center">
 						<font style='font-size:15px; font-weight:bold;'>Import</font> <font style='font-size:15px;'>data</font>
+					</td>
+				</tr>
+			</table>
+			<table>
+				<tr>
+					<td align="center">
+						<font style='font-size:10px;'>(login as user <b>bio-user</b>, password <b>bio</b>)</font>
+					</td>
+				</tr>
+			</table>
+		</td>
+		
+		<td width="20px">&nbsp;</td>
+
+		<td valign="top" align="center"
+		<#if screen.loggedIn>
+			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='Cluster';document.forms.main.submit();">
+		<#else>
+			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='UserLogin';document.forms.main.submit();">
+		</#if>
+			<table bgcolor="#BBBBBB" cellpadding="10" cellspacing="10" border="2" width="160px">
+				<tr>
+					<td align="center">
+						<font style='font-size:15px; font-weight:bold;'>Run</font> <font style='font-size:15px;'>QTL mapping</font>
 					</td>
 				</tr>
 			</table>
@@ -177,6 +178,7 @@
 			</table>
 			&nbsp;
 		</td>
+		
 	</tr>
 	
 	<tr>

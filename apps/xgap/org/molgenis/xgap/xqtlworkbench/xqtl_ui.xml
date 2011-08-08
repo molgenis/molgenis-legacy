@@ -4,9 +4,8 @@
 
 		<plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.ClusterDemo" />
 		<plugin label="Login" name="UserLogin" type="org.molgenis.auth.ui.UserLogin" />
-		<plugin label="Import data" name="QTLWizard" type="plugins.xgapwizard.QTLDataSetWizard" group="biologist" />
-
-		<form label="Explore data" name="Investigations" entity="Investigation" compact_view="name" group="biologist">
+		
+		<form label="Browse data" name="Investigations" entity="Investigation" compact_view="name" group="biologist">
 			<menu name="InvestigationMenu">
 				<plugin name="Overview" type="plugins.investigationoverview.InvestigationOverviewPlugin" group="biologist"/>
 				<form name="Datas" label="View data" entity="Data" compact_view="name" group="biologist">
@@ -40,10 +39,12 @@
 				</form>
 			</menu>
 		</form>
+		
+		<plugin label="Import data" name="QTLWizard" type="plugins.xgapwizard.QTLDataSetWizard" group="biologist" />
 
-		<plugin label="Map QTLs" name="Cluster" type="plugins.cluster.ClusterPlugin" group="biologist" />
+		<plugin label="Run QTL mapping" name="Cluster" type="plugins.cluster.ClusterPlugin" group="biologist" />
 
-		<menu name="AnalysisSettings" label="Add analyses" group="bioinformatician">
+		<menu name="AnalysisSettings" label="Add analysis" group="bioinformatician">
 			<form name="RScripts" label="Add R script" entity="RScript" group="bioinformatician">
 				<plugin name="RViewer" type="plugins.molgenisfile.MolgenisFileManager" group="bioinformatician"/>
 				<plugin label="Help" name="AddNewToolsHelp" type="plugins.cluster.addnewtoolshelp" group="bioinformatician" />
@@ -61,19 +62,20 @@
 			</form>
 		</menu>
 
+		<plugin label="Search" name="SimpleDbSearch" type="plugin.search.SimpleWholeDatabaseSearch" group="biologist" />
 
-		<menu label="Settings" name="Admin">
-			<menu name="Auth" label="Auth settings">
-				<plugin name="PermissionManagementPlugin" type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin" />
-				<menu name="Management">
+		<menu label="Admin" name="Admin">
+			<menu name="Auth" label="Users and permissions">
+				<menu name="Basic management">
 					<form name="MolgenisUser" entity="MolgenisUser" />
 					<form name="MolgenisGroup" entity="MolgenisGroup"/>
 					<form name="MolgenisRoleGroupLink" entity="MolgenisRoleGroupLink" />
 					<form name="MolgenisEntity" entity="MolgenisEntity" view="list" label="Entities" />
 					<form name="MolgenisPermission" entity="MolgenisPermission" />
 				</menu>
+				<plugin label="My permissions" name="PermissionManagementPlugin" type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin" />
 			</menu>
-			<plugin label="Database" name="DatabaseSettings" type="plugins.system.database.Settings" />
+			<plugin label="Database status" name="DatabaseSettings" type="plugins.system.database.Settings" />
 			<plugin label="File storage" name="Settings" type="plugins.system.settings.Settings" />
 			<plugin label="Install R packages" name="DependencyManager" type="plugins.cluster.demo.dependencymanager.DependencyManager" />
 			<menu name="Ontologies" label="Ontologies" >
@@ -82,11 +84,13 @@
 			</menu>
 			<menu name="OtherAdmin" label="Utilities">
 				<plugin name="ExcelWizard" type="plugins.genericwizard.GenericWizard" />
+				<plugin name="NamingPolicy" type="plugins.help.naming.NamingPlugin" />
 				<plugin name="DuplicateRemover" type="plugins.help.duplicates.DuplicatesPlugin" />
 				<plugin name="KeggConverter" type="plugins.keggplugin.KeggToolsPlugin" />
+				<plugin name="MatrixWizard" type="plugins.xgapwizard.MatrixWizard" />
+				<plugin name="DatabaseArchiver" type="plugins.archiveexportimport.ArchiveExportImportPlugin" />
 			</menu>
 		</menu>
 		
-		<plugin label="Search" name="SimpleDbSearch" type="plugin.search.SimpleWholeDatabaseSearch" group="biologist" />
 	</menu>
 </molgenis>

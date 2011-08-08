@@ -1,5 +1,5 @@
 <#macro MatrixWizard screen>
-<#assign model = screen.model>
+<#assign model = screen.myModel>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -34,10 +34,13 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->
 
-<h2>XGAP data import wizard</h2>
+<h2>XGAP data matrix overview</h2>
+<h5>This screen provides an overview of all data matrices stored in your database.
+The status of the storage is checked and displayed. You can import matrices here if there is no
+associated storage for Data (matrix) definition. These tags are taken from the 'Add analysis' menu: Datasets and Datanames. In addition, you can tag matrices and view some
+examples.</h5>
 
-
-<#if model.isShowVerified() == true>
+<#if model.getShowVerified() == true>
 	<input type="submit" value="Hide verified" onclick="__action.value='hideVerified';return true;"/>
 <#else>
 	<input type="submit" value="Show verified" onclick="__action.value='showVerified';return true;"/>
@@ -49,7 +52,7 @@
 <#assign shownMatrices = 0>
 <#list model.dataInfo as di>
 	<#assign show = true>
-	<#if model.isShowVerified() == false>
+	<#if model.getShowVerified() == false>
 		<#if di.existingDataSource != 'null'>
 			<#assign show = false>
 		</#if>
@@ -87,7 +90,7 @@
 		<#list model.dataInfo as di>
 		
 			<#assign show = true>
-			<#if model.isShowVerified() == false>
+			<#if model.getShowVerified() == false>
 				<#if di.existingDataSource != 'null'>
 					<#assign show = false>
 				</#if>

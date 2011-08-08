@@ -127,8 +127,5 @@ public class NamingPlugin extends PluginModel<Entity> {
 
 	}
 
-	@Override
-	public boolean isVisible() {
-		return true;
-	}
+
 }

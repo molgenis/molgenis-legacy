@@ -37,9 +37,9 @@ public class MatrixWizard extends PluginModel<Entity>
 
 	private DataMatrixHandler dmh = null;
 	
-	private MatrixWizardModel model = new MatrixWizardModel(this);
+	private MatrixWizardModel model = new MatrixWizardModel();
 
-	public MatrixWizardModel getModel()
+	public MatrixWizardModel getMyModel()
 	{
 		return model;
 	}
@@ -96,10 +96,10 @@ public class MatrixWizard extends PluginModel<Entity>
 					Data data = db.find(Data.class, new QueryRule("id", Operator.EQUALS, dataIdreq)).get(0);
 					Importer.performImport(importFile, data, db);
 				}else if(request.getString("__action").equals("showVerified")){
-					this.getModel().setShowVerified(true);
+					this.getMyModel().setShowVerified(true);
 				}
 				else if(request.getString("__action").equals("hideVerified")){
-					this.getModel().setShowVerified(false);
+					this.getMyModel().setShowVerified(false);
 				}else if(request.getString("__action").equals("tag")){
 					int dataIdreq = request.getInt("__dataId");
 					String[] tagging = request.getString("tagging_"+dataIdreq).split(" -> ");
@@ -153,6 +153,10 @@ public class MatrixWizard extends PluginModel<Entity>
 	{
 		if(dmh == null){
 			dmh = new DataMatrixHandler(db);
+		}
+		
+		if(this.getMyModel().getShowVerified() == null){
+			this.getMyModel().setShowVerified(true);
 		}
 		
 		ArrayList<DataInfo> dataInfo = new ArrayList<DataInfo>();
