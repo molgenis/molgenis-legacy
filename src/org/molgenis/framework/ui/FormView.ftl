@@ -280,7 +280,7 @@ var molgenis_required = new Array(${required});
 			</#if>
 			
 			<#if !input.isHidden()>
-	<tr title="${input.getDescription()}" <#if input.collapse>class="${screen.name}_collapse" </#if>>
+	<tr title="${input.getDescription()}" <#if input.collapse>class="${screen.name}_collapse" id="${screen.name}_collapse_tr_id" </#if>>
 		<td><label>${input.label}<#if !input.isNillable() && !input.isReadonly()> *</#if></label></td>
 				<#if screen.readonly >
 					<#if input.getTarget() != "" && input.getObject()?exists >
@@ -305,7 +305,7 @@ var molgenis_required = new Array(${required});
 <#--show collapse button if collapsed items-->
 <#list record.inputs as input>
 	<#if input.collapse><tr><td colspan="2"><script>toggleCssClass("${screen.name}_collapse");</script>
-	<input type="button" onClick="toggleCssClass('${screen.name}_collapse'); if(this.value == 'Hide details') this.value='Show details'; else this.value='Hide additional fields'" value="Show additional fields"/></td></tr><#break/></#if>
+	<input type="button" id="${screen.name}_collapse_button_id" onClick="toggleCssClass('${screen.name}_collapse'); if(this.value == 'Hide details') this.value='Show details'; else this.value='Hide additional fields'" value="Show additional fields"/></td></tr><#break/></#if>
 </#list>		
 </table></td><td  class="edit_button_area">
 <#if readonly != "true">
