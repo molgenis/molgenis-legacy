@@ -12,9 +12,9 @@ public class LoadInvestigationFromDirectory
 {
 	public static void main(String[] args) throws Exception
 	{
-		String directory = "C:/work/workspace_web/molgenis4phenotype/data/Europhenome";
+		String directory = "../phenoflow_data/Europhenome2";
 
-		Database db = new JDBCDatabase("C:/work/workspace_web/molgenis_apps/handwritten/apps/org/molgenis/pheno/pheno.properties");
+		Database db = new JDBCDatabase("apps/phenoflow/phenoflow.properties");
 		CsvImport.importAll(new File(directory), db, new SimpleTuple());
 	}
 }

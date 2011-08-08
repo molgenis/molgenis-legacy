@@ -6,7 +6,7 @@ Europhenome Transform
 
 =head1 SYNOPSIS
 
-Transform from Europhenome mart export to MOLGENIS tab delimited import
+Transform from Europhenome mart export to PhenoflowTAB format
 
 =cut
 
@@ -15,19 +15,18 @@ use warnings;
 
 use Text::CSV_XS;
 use Data::Dumper;
-use Term::ProgressBar;
 use Log::Log4perl qw(:easy);
 Log::Log4perl->easy_init(
-						  {
-							 level  => $DEBUG,
-							 layout => '%-5p - %m%n',
-							 file   => ">EurophenomeTransform.log",
-						  },
-						  {
-							 level  => $INFO,
-							 layout => '%-5p - %m%n',
-							 file   => "STDOUT",
-						  }
+	{
+		level  => $DEBUG,
+		layout => '%-5p - %m%n',
+		file   => ">EurophenomeTransform.log",
+	},
+	{
+		level  => $DEBUG,
+		layout => '%-5p - %m%n',
+		file   => "STDOUT",
+	}
 );
 
 =head1 DESCRIPTION
@@ -42,8 +41,9 @@ Main function. Nothing fancy.
 
 =cut
 
-our @datapoints;
-our %warn;
+my @datapoints;
+my %warn;
+my $basedir = '../../../../../phenoflow_data/Europhenome2';
 
 sub main() {
 
@@ -51,17 +51,19 @@ sub main() {
 	usage();
 
 	# load data into respective hashes
+	fix_export();
+
 	load_datapoints();
 
 	# write data to molgenis import format
-	write_ontologysource_term();
-	write_variabledefinition();
+	#write_ontologysource_term();
+	#write_variabledefinition();
 
-	write_investigation();
-	write_individual_panel();
+	#write_investigation();
+	#write_individual_panel();
 
-	write_observedvalue();
-	write_protocol();
+	#write_observedvalue();
+	#write_protocol();
 
 	print_warnings();
 	exit 0;
@@ -100,31 +102,31 @@ sub write_protocol($$) {
 	}
 
 	# write protocols
-	open my $fh1, ">:utf8", "../../../data/Europhenome/protocol.txt" or die "$!";
-	open my $fh3, ">:utf8", "../../../data/Europhenome/protocol_observableFeatures.txt" or die "$!";
+	open my $fh1, ">:utf8", "$basedir/protocol.txt" or die "$!";
+	open my $fh3, ">:utf8", "$basedir/protocol_observableFeatures.txt" or die "$!";
 
 	# write headers
 	print $fh1 join ( "\t", qw/name/ );
 	print $fh3 join ( "\t", qw/protocol_name observableFeature_name/ );
 
 	# walk the tree write protocol and protocolcomponents
-	while ( my ( $protocolName, $features ) = each(%protocol) ) {	
+	while ( my ( $protocolName, $features ) = each(%protocol) ) {
 		print $fh1 join ( "\t", $protocolName );
 		for my $featureName ( keys %$features ) {
 			print $fh3 join ( "\t", $protocolName, $featureName );
 		}
 	}
-	
+
 	close $fh1;
 	close $fh3;
-	INFO( 'Wrote ' . scalar(keys %protocol) . ' Protocols' );
+	INFO( 'Wrote ' . scalar( keys %protocol ) . ' Protocols' );
 }
 
 sub write_observedvalue() {
 	my ( $datapoint_ref, $meas_ref, ) = @_;
 	local $\ = "\n";    # do the magic of println
 
-	open my $fh1, ">:utf8", "../../../data/Europhenome/observedvalue.txt" or die "$!";
+	open my $fh1, ">:utf8", "$basedir/observedvalue.txt" or die "$!";
 
 	# write headers
 	print $fh1 join (
@@ -135,8 +137,8 @@ sub write_observedvalue() {
 	for my $datapoint (@datapoints) {
 
 		print $fh1 join ( "\t",
-						  $datapoint->{'Animal id'},   $datapoint->{'Parameter name'},
-						  $datapoint->{'Centre Name'}, $datapoint->{'Value'} );
+			$datapoint->{'Animal id'},   $datapoint->{'Parameter name'},
+			$datapoint->{'Centre Name'}, $datapoint->{'Value'} );
 	}
 	close $fh1;
 	INFO( 'Wrote ' . scalar(@datapoints) . ' ObservedValues' );
@@ -149,7 +151,7 @@ sub write_individual_panel() {
 	# create hashes
 	for my $datapoint (@datapoints) {
 		if ( defined $ind_gender{ $datapoint->{'Animal id'} }
-			 && $ind_gender{ $datapoint->{'Animal id'} } ne $datapoint->{'Sex'} )
+			&& $ind_gender{ $datapoint->{'Animal id'} } ne $datapoint->{'Sex'} )
 		{
 			LOGDIE "gender mismatch";
 		}
@@ -157,9 +159,9 @@ sub write_individual_panel() {
 		$panel{ $datapoint->{'Strain name'} }->{ $datapoint->{'Animal id'} }++;
 	}
 
-	open my $fh1, ">:utf8", "../../../data/Europhenome/individual.txt"        or LOGDIE "$!";
-	open my $fh2, ">:utf8", "../../../data/Europhenome/panel_individuals.txt" or LOGDIE "$!";
-	open my $fh3, ">:utf8", "../../../data/Europhenome/panel.txt"             or LOGDIE "$!";
+	open my $fh1, ">:utf8", "$basedir/individual.txt"        or LOGDIE "$!";
+	open my $fh2, ">:utf8", "$basedir/panel_individuals.txt" or LOGDIE "$!";
+	open my $fh3, ">:utf8", "$basedir/panel.txt"             or LOGDIE "$!";
 
 	# write headers
 	print $fh1 join ( "\t", qw/name species_termLabel sex/ );
@@ -189,7 +191,7 @@ sub write_individual_panel() {
 sub write_investigation() {
 	local $\ = "\n";    # do the magic of println
 
-	open my $fh_out, ">:utf8", "../../../data/Europhenome/investigation.txt" or die "$!";
+	open my $fh_out, ">:utf8", "$basedir/investigation.txt" or die "$!";
 	print $fh_out join ( "\t", qw/name description/ );    # write headers
 
 	# create a hash of uniqe project names
@@ -210,7 +212,7 @@ sub write_investigation() {
 sub write_variabledefinition() {
 	local $\ = "\n";    # do the magic of println
 
-	open my $fh1, ">:utf8", "../../../data/Europhenome/variabledefinition.txt"
+	open my $fh1, ">:utf8", "$basedir/variabledefinition.txt"
 	  or get_logger->logdie($!);
 
 	# write headers
@@ -221,8 +223,8 @@ sub write_variabledefinition() {
 	for my $datapoint (@datapoints) {
 		$composite_key = $datapoint->{'Parameter name'} . $datapoint->{'Centre Name'};
 		print $fh1 join ( "\t",
-						  $datapoint->{'Parameter name'},
-						  $datapoint->{'Unit'}, $datapoint->{'Centre Name'} )
+			$datapoint->{'Parameter name'},
+			$datapoint->{'Unit'}, $datapoint->{'Centre Name'} )
 		  unless defined $Parameter_name{$composite_key};
 
 		$Parameter_name{$composite_key}++;
@@ -233,7 +235,7 @@ sub write_variabledefinition() {
 	INFO( 'Wrote ' . scalar( keys %Parameter_name ) . ' variableDefinitions' );
 
 	# add units as ontology terms to file
-	open my $fh2, ">>:utf8", "../../../data/Europhenome/ontologyterm.txt" or LOGDIE($!);
+	open my $fh2, ">>:utf8", "$basedir/ontologyterm.txt" or LOGDIE($!);
 
 	for my $key ( keys %Unit ) {
 
@@ -249,7 +251,7 @@ sub write_ontologysource_term() {
 	local $\ = "\n";    # do the magic of println
 
 	my @ontologysource = ( [ 'name', 'ontologyuri' ], [ 'EFO', 'http://www.ebi.ac.uk/efo' ] );
-	open my $fh_out, ">:utf8", "../../../data/Europhenome/ontologysource.txt"
+	open my $fh_out, ">:utf8", "$basedir/ontologysource.txt"
 	  or LOGDIE($!);
 	for my $line (@ontologysource) {
 		print $fh_out join ( "\t", @$line );
@@ -257,14 +259,11 @@ sub write_ontologysource_term() {
 	close $fh_out;
 
 	my @ontologyterm = (
-						 [ 'term', 'termLabel', 'termAccession', 'termSource_name' ],
-						 [
-							'mouse strain',                         'mouse strain',
-							'http://www.ebi.ac.uk/efo/EFO_0000607', 'EFO'
-						 ],
+		[ 'term', 'termLabel', 'termAccession', 'termSource_name' ],
+		[ 'mouse strain', 'mouse strain', 'http://www.ebi.ac.uk/efo/EFO_0000607', 'EFO' ],
 	);
 
-	open $fh_out, ">:utf8", "../../../data/Europhenome/ontologyterm.txt"
+	open $fh_out, ">:utf8", "$basedir/ontologyterm.txt"
 	  or LOGDIE($!);
 	for my $line (@ontologyterm) {
 		print $fh_out join ( "\t", @$line );
@@ -272,44 +271,71 @@ sub write_ontologysource_term() {
 	close $fh_out;
 }
 
+# fixes broken lines in input, unsure why this is happening
+sub fix_export($) {
+	open my $fh_in,  "<:utf8", "$basedir/orig/mart_export.txt";
+	open my $fh_out, ">:utf8", "$basedir/orig/mart_export_fixed.txt";
+
+	my $c     = 0;
+	my @lines = <$fh_in>;
+	my @newlines;
+	for my $line (@lines) {
+		INFO "Processed $c lines" if ++$c % 10000 == 0;
+		chomp $line;
+		$warn{"REMOVING CR ON line $c"}++ if $line =~ /\r/;
+		$line =~ s/\r//;
+		if ( $line !~ /^\d+/ && $c != 1 ) {
+			$warn{"MERGING on line $c"}++;
+			my $lastline = pop @newlines;
+			chomp $lastline;
+			push @newlines, $lastline . $line . "\n";
+		}
+		else {
+			push @newlines, $line . "\n";
+		}
+	}
+
+	print $fh_out @newlines;
+	INFO "Processed $c lines";
+
+	close($fh_in);
+	close($fh_out);
+
+}
+
 sub load_datapoints($) {
 
 	my $csv = make_csv_parser();
-	open my $fh_in, "<:utf8", "../../../data/Europhenome/orig/mart_export.txt"
+	open my $fh_in, "<:utf8", "$basedir/orig/mart_export_fixed.txt"
 	  or LOGDIE("$!");
 
 	# set column names to headers
 	$csv->column_names( $csv->getline($fh_in) );
 
 	my $c;
-	my $progress = Term::ProgressBar->new(
-										   {
-											 count  => 35276,
-											 name   => 'Loading datapoints',
-											 ETA    => 'linear',
-											 remove => 0,
-										   }
-	);
+	my $progress = 159202;
 
 	until ( $csv->eof() ) {
 		my $row = trim_row( $csv->getline_hr($fh_in) );
 		check_parser_for_errors( \$csv, \$row );
 
 		# modify some values on the fly
-		$row->{'Animal id'}      = 'EUROPHENOME' . $row->{'Animal id'};
-		$row->{'Centre Name'}    = 'Europhenome @' . $row->{'Centre Name'};
-		$row->{'Parameter name'} =
-		    $row->{'Parameter name'} . ' - '
-		  . $row->{'Procedure'} . '('
-		  . $row->{'Empress SOP Link'} . ')';
-		$row->{'Procedure'} =
-		  $row->{'Procedure'} . '  - Empress SOP Link: ' . $row->{'Empress SOP Link'};
-		$row->{'Sex'} = 'female' if $row->{'Sex'} eq 'F';
-		$row->{'Sex'} = 'male'   if $row->{'Sex'} eq 'M';
+		#		$row->{'Animal id'}      = 'EUROPHENOME' . $row->{'Animal id'};
+		#		$row->{'Centre Name'}    = 'Europhenome @' . $row->{'Centre Name'};
+		#		$row->{'Parameter name'} =
+		#		    $row->{'Parameter name'} . ' - '
+		#		  . $row->{'Procedure'} . '('
+		#		  . $row->{'Empress SOP Link'} . ')';
+		#		$row->{'Procedure'} =
+		#		  $row->{'Procedure'} . '  - Empress SOP Link: ' . $row->{'Empress SOP Link'};
+		#		$row->{'Sex'} = 'female' if $row->{'Sex'} eq 'F';
+		#		$row->{'Sex'} = 'male'   if $row->{'Sex'} eq 'M';
 
 		# add to array
 		push @datapoints, $row;
-		$progress->update( $c++ );
+
+		#print Dumper($row) if $row->{'Europhenome id'} eq '27';
+		INFO $c . "/$progress" if ++$c % 10000 == 0;
 	}
 	close($fh_in);
 	INFO( 'Loaded ' . scalar @datapoints . ' datapoints' );
@@ -343,21 +369,21 @@ sub print_warnings() {
 sub make_csv_parser {
 	my $csv = Text::CSV_XS->new(
 		{
-		   sep_char    => qq{\t},
-		   quote_char  => qq{"},    # default
-		   escape_char => qq{"},    # default
-		   binary      => 1,
+			sep_char    => qq{\t},
+			quote_char  => qq{"},    # default
+			escape_char => qq{"},    # default
+			binary      => 1,
 
-		   # modified settings below
-		   blank_is_undef     => 1,
-		   allow_loose_quotes => 1,
+			# modified settings below
+			blank_is_undef     => 1,
+			allow_loose_quotes => 1,
 		}
 	);
 }
 
 sub check_parser_for_errors {
 	my ( $csv_ref, $row_ref ) = @_;
-	if ( !( defined $$row_ref ) and !( $$csv_ref->eof() ) ) {
+	if ( !( defined $$row_ref ) and ( $$csv_ref->eof() ) ) {
 		my $bad_argument = $$csv_ref->error_input();    # get the most recent bad argument
 		my $diag         = $$csv_ref->error_diag();
 		LOGDIE "WARNING: CSV parser error <$diag> on line - $bad_argument.\n";
