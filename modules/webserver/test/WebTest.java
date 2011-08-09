@@ -2,27 +2,24 @@ package test;
 
 import java.io.File;
 
-import org.molgenis.framework.db.Database;
-import org.molgenis.util.TarGz;
-import org.openqa.selenium.server.RemoteControlConfiguration;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverBackedSelenium;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.server.SeleniumServer;
 import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
-import app.servlet.MolgenisServlet;
 import boot.RunStandalone;
 
-import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.HttpCommandProcessor;
 import com.thoughtworks.selenium.Selenium;
 
 public class WebTest
 {
+	WebDriver driver;
 	SeleniumServer server;
 	HttpCommandProcessor proc;
 	Selenium selenium;
@@ -45,28 +42,34 @@ public class WebTest
 	@BeforeClass(alwaysRun = true)
 	public void setupBeforeClass(ITestContext context) throws Exception
 	{
-		String seleniumHost = "localhost";
-		String seleniumPort = "9080";
-		String seleniumBrowser = "firefox";
+		driver = new FirefoxDriver();
+		
 		String seleniumUrl = "http://localhost:" + deployPort + "/";
-
-		RemoteControlConfiguration rcc = new RemoteControlConfiguration();
-		rcc.setSingleWindow(true);
-		rcc.setPort(Integer.parseInt(seleniumPort));
-
-		try
-		{
-			server = new SeleniumServer(false, rcc);
-			server.boot();
-		}
-		catch (Exception e)
-		{
-			throw new IllegalStateException("Can't start selenium server", e);
-		}
-
-		proc = new HttpCommandProcessor(seleniumHost, Integer.parseInt(seleniumPort), seleniumBrowser, seleniumUrl);
-		selenium = new DefaultSelenium(proc);
-		selenium.start();
+		
+		selenium = new WebDriverBackedSelenium(driver, seleniumUrl);
+		
+//		String seleniumHost = "localhost";
+//		String seleniumPort = "9080";
+//		String seleniumBrowser = "firefox";
+		
+//
+//		RemoteControlConfiguration rcc = new RemoteControlConfiguration();
+//		rcc.setSingleWindow(true);
+//		rcc.setPort(Integer.parseInt(seleniumPort));
+//
+//		try
+//		{
+//			server = new SeleniumServer(false, rcc);
+//			server.boot();
+//		}
+//		catch (Exception e)
+//		{
+//			throw new IllegalStateException("Can't start selenium server", e);
+//		}
+//
+//		proc = new HttpCommandProcessor(seleniumHost, Integer.parseInt(seleniumPort), seleniumBrowser, seleniumUrl);
+//		selenium = new DefaultSelenium(proc);
+//		selenium.start();
 		
 		TestHelper.deleteDatabase();
 		new RunStandalone(deployPort);
