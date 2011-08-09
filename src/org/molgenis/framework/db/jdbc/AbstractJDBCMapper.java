@@ -526,7 +526,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 			ResultSet rs = getDatabase().executeQuery(sql);
 			rs.next();
 			int result = rs.getInt("num_rows");
-			logger.info("counted " + this.create().getClass().getSimpleName() + " objects");
+			logger.debug("counted " + this.create().getClass().getSimpleName() + " objects");
 			rs.close(); // closes connection too?
 			return result;
 		}
