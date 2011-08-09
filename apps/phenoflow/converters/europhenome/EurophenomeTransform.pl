@@ -51,21 +51,22 @@ sub main() {
 	usage();
 
 	# load data into respective hashes
-	fix_export();
+	#fix_export();
 
 	load_datapoints();
 
 	# write data to molgenis import format
+	write_investigation();
+
+	write_panel();
+
 	#write_ontologysource_term();
 	#write_variabledefinition();
-
-	#write_investigation();
-	#write_individual_panel();
 
 	#write_observedvalue();
 	#write_protocol();
 
-	print_warnings();
+	#print_warnings();
 	exit 0;
 }
 
@@ -144,47 +145,27 @@ sub write_observedvalue() {
 	INFO( 'Wrote ' . scalar(@datapoints) . ' ObservedValues' );
 }
 
-sub write_individual_panel() {
+sub write_panel() {
 	local $\ = "\n";    # do the magic of println
-	my ( %panel, %ind_gender );    # store unique panel names
+	my %panel;          # store unique panel names
 
 	# create hashes
 	for my $datapoint (@datapoints) {
-		if ( defined $ind_gender{ $datapoint->{'Animal id'} }
-			&& $ind_gender{ $datapoint->{'Animal id'} } ne $datapoint->{'Sex'} )
-		{
-			LOGDIE "gender mismatch";
-		}
-		$ind_gender{ $datapoint->{'Animal id'} } = $datapoint->{'Sex'};
-		$panel{ $datapoint->{'Strain name'} }->{ $datapoint->{'Animal id'} }++;
+		$panel{ "Line name: " . $datapoint->{'Line name'} . " Sex: " . $datapoint->{'Sex'} }
+		  ++;
 	}
 
-	open my $fh1, ">:utf8", "$basedir/individual.txt"        or LOGDIE "$!";
-	open my $fh2, ">:utf8", "$basedir/panel_individuals.txt" or LOGDIE "$!";
-	open my $fh3, ">:utf8", "$basedir/panel.txt"             or LOGDIE "$!";
+	open my $fh1, ">:utf8", "$basedir/panel.txt" or LOGDIE "$!";
 
 	# write headers
-	print $fh1 join ( "\t", qw/name species_termLabel sex/ );
-	print $fh2 join ( "\t", qw/panel_name individual_name/ );
-	print $fh3 join ( "\t", qw/name/ );
+	print $fh1 join ( "\t", qw/name/ );
 
-	while ( my ( $animal_id, $gender ) = each(%ind_gender) ) {
-		print $fh1 join ( "\t", $animal_id, 'mouse strain', $gender );
-
-	}
-
-	while ( my ( $strain, $animals ) = each(%panel) ) {
-		print $fh3 join ( "\t", $strain );
-
-		for my $animal_id ( keys %$animals ) {
-			print $fh2 join ( "\t", $strain, $animal_id );
-		}
+	for my $name (keys %panel)  {
+		print $fh1 join ( "\t", $name );
 	}
 
 	close $fh1;
-	close $fh2;
-	close $fh3;
-	INFO( 'Wrote ' . scalar( keys %ind_gender ) . ' Individuals' );
+
 	INFO( 'Wrote ' . scalar( keys %panel ) . ' Panels' );
 }
 
@@ -192,18 +173,21 @@ sub write_investigation() {
 	local $\ = "\n";    # do the magic of println
 
 	open my $fh_out, ">:utf8", "$basedir/investigation.txt" or die "$!";
-	print $fh_out join ( "\t", qw/name description/ );    # write headers
+	print $fh_out join ( "\t", qw/name description accession/ );    # write headers
 
 	# create a hash of uniqe project names
 	my %project;
 	for my $datapoint (@datapoints) {
-		$project{ $datapoint->{'Centre Name'} }++;
+		$project{ $datapoint->{'Europhenome ID'} }++;
 	}
 
 	my $description_suffix = q{[Source: http://www.europhenome.org/]};
 
 	for my $name ( keys %project ) {
-		print $fh_out join ( "\t", $name, $description_suffix );
+		print $fh_out join ( "\t",
+			"Europhenome ID: " . $name,
+			$description_suffix,
+			'http://www.europhenome.org/databrowser/viewer.jsp?set=true&m=true&l=' . $name );
 	}
 	close $fh_out;
 	INFO( 'Wrote ' . scalar( keys %project ) . ' Investigations' );
@@ -319,7 +303,17 @@ sub load_datapoints($) {
 		my $row = trim_row( $csv->getline_hr($fh_in) );
 		check_parser_for_errors( \$csv, \$row );
 
+		# skip empty lines
+		unless ( defined $row->{'Europhenome ID'} ) {
+			WARN "Skipping row $c";
+			next;
+		}
+
 		# modify some values on the fly
+		#for my $heading (keys %$row){
+		#	$row->{$heading} = $heading . " " . $row->{$heading} if defined $row->{$heading};
+		#}
+
 		#		$row->{'Animal id'}      = 'EUROPHENOME' . $row->{'Animal id'};
 		#		$row->{'Centre Name'}    = 'Europhenome @' . $row->{'Centre Name'};
 		#		$row->{'Parameter name'} =
