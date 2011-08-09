@@ -80,4 +80,23 @@
 		</testng>
 	</target>
 	
+	<!--
+	Test to quickly find out if Selenium is working
+	-->
+	<target name="test_selenium_only">
+		<mkdir dir="${app_build_dir}"/>
+		<javac srcdir="modules/webserver/test" includes="SeleniumTest.java" destdir="${app_build_dir}" includeantruntime="false">
+			<classpath>
+				<path refid="app-libs" />
+			</classpath>
+		</javac>
+		<testng haltOnFailure="true">
+			<xmlfileset dir="${app_build_dir}/test" includes="testng_test_selenium_only.xml" />
+			<classpath>
+				<path refid="app-libs" />
+				<path location="${app_build_dir}" />
+			</classpath>
+		</testng>
+	</target>
+	
 </project>
