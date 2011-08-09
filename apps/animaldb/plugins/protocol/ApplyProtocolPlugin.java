@@ -109,7 +109,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
     	
 		try {
 			int userId = this.getLogin().getUserId();
-			int ownInvId = cs.getOwnUserInvestigationId(userId);
+			int ownInvId = cs.getOwnUserInvestigationIds(userId).get(0);
 			List<Integer> investigationIds = cs.getWritableUserInvestigationIds(userId);
 		    int paId = cs.makeProtocolApplication(ownInvId, model.getProtocolId());
 		    
@@ -127,7 +127,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 						colNrInTable *= 3;
 					}
 					
-					List<ObservedValue> originalValues = cs.getObservedValuesByTargetAndFeatures(
+					List<ObservedValue> originalValues = cs.getObservedValuesByTargetAndFeature(
 							targetId, measurement, investigationIds, ownInvId);
 					
 					if (!model.isNewProtocolApplication()) {
@@ -178,7 +178,9 @@ public class ApplyProtocolPlugin extends GenericPlugin
 								}
 								originalObservedValue.setTime(startTime);
 								originalObservedValue.setEndtime(endTime);
-								//originalObservedValue.setProtocolApplication(paId);
+								if (originalObservedValue.getProtocolApplication_Id() == null) {
+									originalObservedValue.setProtocolApplication_Id(paId);
+								}
 					
 								db.update(originalObservedValue);
 								// TODO: add to batch list and add later

@@ -66,6 +66,7 @@ public class ManageLitters extends PluginModel<Entity>
 	private List<String> earmarkList;
 	private int genoLitterId;
 	private Database db;
+	private boolean firstTime = true;
 
 	public ManageLitters(String name, ScreenController<?> parent)
 	{
@@ -351,6 +352,46 @@ public class ManageLitters extends PluginModel<Entity>
 		}
 	}
 	
+	public String getAnimalColor(int animalId) {
+		try {
+			return ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("Color"));
+		} catch (Exception e) {
+			return "unknown";
+		}
+	}
+	
+	public String getAnimalEarmark(int animalId) {
+		try {
+			return ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("Earmark"));
+		} catch (Exception e) {
+			return "";
+		}
+	}
+	
+	public int getAnimalBackground(int animalId) {
+		try {
+			return ct.getMostRecentValueAsXref(animalId, ct.getMeasurementId("Background"));
+		} catch (Exception e) {
+			return -1;
+		}
+	}
+	
+	public String getAnimalGeneName(int animalId) {
+		try {
+			return ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("GeneName"));
+		} catch (Exception e) {
+			return "";
+		}
+	}
+	
+	public String getAnimalGeneState(int animalId) {
+		try {
+			return ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("GeneState"));
+		} catch (Exception e) {
+			return "";
+		}
+	}
+	
 	private int findParentForParentgroup(int parentgroupId, String parentSex) throws DatabaseException, ParseException {
 		int measurementId = ct.getMeasurementId(parentSex);
 		Query<ObservedValue> parentQuery = db.query(ObservedValue.class);
@@ -414,8 +455,6 @@ public class ManageLitters extends PluginModel<Entity>
 			Calendar calendar = Calendar.getInstance();
 			Date now = calendar.getTime();
 			
-			int invid = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
-			
 			this.action = request.getString("__action");
 			
 			if (action.equals("AddLitter")) {
@@ -427,6 +466,7 @@ public class ManageLitters extends PluginModel<Entity>
 			}
 			
 			if (action.equals("ApplyAddLitter")) {
+				int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
 				setUserFields(request, false);
 				Date eventDate = sdf.parse(birthdatetime);
 				
@@ -481,7 +521,7 @@ public class ManageLitters extends PluginModel<Entity>
 				db.add(valuesToAddList);
 				
 				this.action = "ShowLitters";
-				this.reload(db);
+				this.reloadLists(db);
 				this.getMessages().clear();
 				this.getMessages().add(new ScreenMessage("Litter succesfully added", true));
 			}
@@ -496,8 +536,9 @@ public class ManageLitters extends PluginModel<Entity>
 			}
 			
 			if (action.equals("Wean")) {
+				int invid = ct.getObservationTargetById(litter).getInvestigation_Id();
 				setUserFields(request, true);
-				Date weanDate = sdf.parse(weandatetime);	
+				Date weanDate = sdf.parse(weandatetime);
 				
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
@@ -653,7 +694,7 @@ public class ManageLitters extends PluginModel<Entity>
 				makeTempCageLabels(lineName, motherLabel, fatherLabel, litterBirthDateString);
 				
 				this.action = "ShowLitters";
-				this.reload(db);
+				this.reloadLists(db);
 				this.getMessages().add(new ScreenMessage("All " + weanSize + " animals succesfully weaned", true));
 			}
 			
@@ -662,6 +703,9 @@ public class ManageLitters extends PluginModel<Entity>
 			}
 			
 			if (action.equals("Genotype")) {
+				
+				int invid = ct.getObservationTargetById(this.genoLitterId).getInvestigation_Id();
+				List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
 				
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
@@ -676,58 +720,78 @@ public class ManageLitters extends PluginModel<Entity>
 				for (Individual animal : this.getAnimalsInLitter()) {
 					
 					// Here we set the values from the genotyping.
-					// TODO: what to do with existing values (such as Sex)?
-					// Now we just make a newer value, but maybe we want to edit the existing one (if present)?
 					
 					// Set sex
 					int sexId = request.getInt("sex_" + animalCount);
-					protocolId = ct.getProtocolId("SetSex");
-					measurementId = ct.getMeasurementId("Sex");
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, 
-							null, protocolId, measurementId, animal.getId(), null, sexId));
-					
+					ObservedValue value = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
+							ct.getMeasurementByName("Sex"), investigationIds, invid).get(0);
+					value.setRelation_Id(sexId);
+					value.setValue(null);
+					if (value.getProtocolApplication_Id() == null) {
+						int paId = ct.makeProtocolApplication(invid, ct.getProtocolId("SetSex"));
+						value.setProtocolApplication_Id(paId);
+					}
+					valuesToAddList.add(value);
 					// Set color
 					String color = request.getString("color_" + animalCount);
-					protocolId = ct.getProtocolId("SetColor");
-					measurementId = ct.getMeasurementId("Color");
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, 
-							null, protocolId, measurementId, animal.getId(), color, 0));
-					
+					value = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
+							ct.getMeasurementByName("Color"), investigationIds, invid).get(0);
+					value.setValue(color);
+					if (value.getProtocolApplication_Id() == null) {
+						int paId = ct.makeProtocolApplication(invid, ct.getProtocolId("SetColor"));
+						value.setProtocolApplication_Id(paId);
+					}
+					valuesToAddList.add(value);
 					// Set earmark
 					String earmark = request.getString("earmark_" + animalCount);
-					protocolId = ct.getProtocolId("SetEarmark");
-					measurementId = ct.getMeasurementId("Earmark");
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, 
-							null, protocolId, measurementId, animal.getId(), earmark, 0));
-					
+					value = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
+							ct.getMeasurementByName("Earmark"), investigationIds, invid).get(0);
+					value.setValue(earmark);
+					if (value.getProtocolApplication_Id() == null) {
+						int paId = ct.makeProtocolApplication(invid, ct.getProtocolId("SetEarmark"));
+						value.setProtocolApplication_Id(paId);
+					}
+					valuesToAddList.add(value);
 					// Set background
 					int backgroundId = request.getInt("background_" + animalCount);
-					protocolId = ct.getProtocolId("SetBackground");
-					measurementId = ct.getMeasurementId("Background");
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, 
-							null, protocolId, measurementId, animal.getId(), null, backgroundId));
-					
+					value = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
+							ct.getMeasurementByName("Background"), investigationIds, invid).get(0);
+					value.setRelation_Id(backgroundId);
+					value.setValue(null);
+					if (value.getProtocolApplication_Id() == null) {
+						int paId = ct.makeProtocolApplication(invid, ct.getProtocolId("SetBackground"));
+						value.setProtocolApplication_Id(paId);
+					}
+					valuesToAddList.add(value);
 					// Set genotype
 					int paId = ct.makeProtocolApplication(invid, ct.getProtocolId("SetGenotype"));
 					String geneName = request.getString("geneName_" + animalCount);
-					measurementId = ct.getMeasurementId("GeneName");
-					valuesToAddList.add(ct.createObservedValue(invid, paId, now, null, measurementId, 
-							animal.getId(), geneName, 0));
+					value = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
+							ct.getMeasurementByName("GeneName"), investigationIds, invid).get(0);
+					value.setValue(geneName);
+					if (value.getProtocolApplication_Id() == null) {
+						value.setProtocolApplication_Id(paId);
+					}
+					valuesToAddList.add(value);
 					String geneState = request.getString("geneState_" + animalCount);
-					measurementId = ct.getMeasurementId("GeneState");
-					valuesToAddList.add(ct.createObservedValue(invid, paId, now, null, measurementId, 
-							animal.getId(), geneState, 0));
+					value = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
+							ct.getMeasurementByName("GeneState"), investigationIds, invid).get(0);
+					value.setValue(geneState);
+					if (value.getProtocolApplication_Id() == null) {
+						value.setProtocolApplication_Id(paId);
+					}
+					valuesToAddList.add(value);
 					
 					animalCount++;
 				}
 				
-				db.add(valuesToAddList);
+				db.update(valuesToAddList);
 				
 				// Make definitive cage labels
 				makeDefCageLabels();
 				
 				this.action = "ShowLitters";
-				this.reload(db);
+				this.reloadLists(db);
 				this.getMessages().add(new ScreenMessage("All " + animalCount + " animals succesfully genotyped", true));
 			}
 
@@ -874,6 +938,13 @@ public class ManageLitters extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{	
+		if (firstTime == true) {
+			firstTime = false;
+			reloadLists(db);
+		}
+	}
+	
+	private void reloadLists(Database db) {
 		this.db = db;
 		
 		ct.setDatabase(this.db);
@@ -883,64 +954,67 @@ public class ManageLitters extends PluginModel<Entity>
 			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
 			
 			// Populate unweaned and ungenotyped litter lists
-			// TODO: don't do this every time as it impairs performance!
-			int featid;
-			Query<ObservedValue> q;
-			boolean unweaned;
-			boolean ungenotyped;
 			litterList.clear();
 			genoLitterList.clear();
-			List<ObservationTarget> tmpLitterList = ct.getAllMarkedPanels("Litter", investigationIds);
-			for (ObservationTarget tmpLitter : tmpLitterList) {
-				unweaned = false;
-				ungenotyped = false;
-				// Check if no wean date set -> Unweaned litter
-				featid = ct.getMeasurementId("WeanDate");
-				q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
-				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, tmpLitter.getId()));
-				if (q.count() == 0) {
-					unweaned = true;
+			
+			// Make list of ID's of weaned litters
+			List<Integer> weanedLitterIdList = new ArrayList<Integer>();
+			int featid = ct.getMeasurementId("WeanDate");
+			Query<ObservedValue> q = db.query(ObservedValue.class);
+			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
+			List<ObservedValue> valueList = q.find();
+			for (ObservedValue value : valueList) {
+				int litterId = value.getTarget_Id();
+				if (!weanedLitterIdList.contains(litterId)) {
+					weanedLitterIdList.add(litterId);
 				}
-				if (unweaned == false) {
-					// Check if no genotype date set -> Ungenotyped litter
-					featid = ct.getMeasurementId("GenotypeDate");
-					q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
-					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, tmpLitter.getId()));
-					if (q.count() == 0) {
-						ungenotyped = true;
-					}
+			}
+			// Make list of ID's of genotyped litters
+			List<Integer> genotypedLitterIdList = new ArrayList<Integer>();
+			featid = ct.getMeasurementId("GenotypeDate");
+			q = db.query(ObservedValue.class);
+			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
+			valueList = q.find();
+			for (ObservedValue value : valueList) {
+				int litterId = value.getTarget_Id();
+				if (!genotypedLitterIdList.contains(litterId)) {
+					genotypedLitterIdList.add(litterId);
 				}
-				if (unweaned == false && ungenotyped == false) {
+			}
+			// Get all litters that the current user has rights on
+			List<ObservationTarget> allLitterList = ct.getAllMarkedPanels("Litter", investigationIds);
+			for (ObservationTarget litter : allLitterList) {
+				int litterId = litter.getId();
+				if (weanedLitterIdList.contains(litterId) && genotypedLitterIdList.contains(litterId)) {
+					// Skip litters that have both been weaned and genotyped
 					continue;
 				}
 				// Make a temporary litter and set all relevant values
 				Litter litterToAdd = new Litter();
 				// ID
-				litterToAdd.setId(tmpLitter.getId());
+				litterToAdd.setId(litterId);
 				// Name
-				litterToAdd.setName(tmpLitter.getName());
+				litterToAdd.setName(litter.getName());
 				// Parentgroup
 				featid = ct.getMeasurementId("Parentgroup");
-				int parentgroupId = ct.getMostRecentValueAsXref(tmpLitter.getId(), featid);
+				int parentgroupId = ct.getMostRecentValueAsXref(litterId, featid);
 				String parentgroup = ct.getObservationTargetById(parentgroupId).getName();
 				litterToAdd.setParentgroup(parentgroup);
 				// Birth date
 				featid = ct.getMeasurementId("DateOfBirth");
-				String birthDate = ct.getMostRecentValueAsString(tmpLitter.getId(), featid);
+				String birthDate = ct.getMostRecentValueAsString(litterId, featid);
 				if (!birthDate.equals("")) {
 					litterToAdd.setBirthDate(birthDate);
 				}
 				// Wean date
 				featid = ct.getMeasurementId("WeanDate");
-				String weanDate = ct.getMostRecentValueAsString(tmpLitter.getId(), featid);
+				String weanDate = ct.getMostRecentValueAsString(litterId, featid);
 				if (weanDate != null && !weanDate.equals("")) {
 					litterToAdd.setWeanDate(weanDate);
 				}
 				// Size
 				featid = ct.getMeasurementId("Size");
-				String size = ct.getMostRecentValueAsString(tmpLitter.getId(), featid);
+				String size = ct.getMostRecentValueAsString(litterId, featid);
 				if (size.equals("")) {
 					litterToAdd.setSize(-1);
 				} else {
@@ -949,7 +1023,7 @@ public class ManageLitters extends PluginModel<Entity>
 				// Size approximate
 				String isApproximate = "";
 				featid = ct.getMeasurementId("Certain");
-				String tmpValue = ct.getMostRecentValueAsString(tmpLitter.getId(), featid);
+				String tmpValue = ct.getMostRecentValueAsString(litterId, featid);
 				if (tmpValue.equals("0")) {
 					isApproximate = "No";
 				}
@@ -957,8 +1031,8 @@ public class ManageLitters extends PluginModel<Entity>
 					isApproximate = "Yes";
 				}
 				litterToAdd.setSizeApproximate(isApproximate);
-				
-				if (unweaned == true) {
+				// Add to the right list
+				if (!weanedLitterIdList.contains(litterId)) {
 					litterList.add(litterToAdd);
 				} else {
 					genoLitterList.add(litterToAdd);

@@ -142,16 +142,15 @@ public class ManageParentgroups extends PluginModel<Entity>
 	
 	private void AddParents(Database db, List<Integer> parentIdList, String protocolName, String eventName, 
 			String featureName, String valueName, String valueCertainName, int parentgroupid, Date tmpDate) 
-	throws DatabaseException, ParseException, IOException {
-		int eventCounter = 0;
-		int invid = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
+			throws DatabaseException, ParseException, IOException {
+		
+		int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
 		int protocolId = ct.getProtocolId(protocolName);
 		
 		// Init lists that we can later add to the DB at once
 		List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
 		
 		for (int parentId : parentIdList) {
-			eventCounter++;
 			// Find the 'SetMother'/'SetFather' event type
 			// TODO: SetMother/SetFather are now plain event types with only the Mother/Father feature
 			// and no longer the Certain feature. Solve this!
@@ -198,7 +197,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 		try {
 			Date now = new Date();
 			
-			int invid = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
+			int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
 			
 			String action = request.getString("__action");
 			

@@ -381,6 +381,18 @@ public class FillAnimalDB {
 		ct.makeCode("2 r 2 l", "two right, two left", "Earmark");
 		ct.makeCode("O", "none", "Earmark");
 		ct.makeCode("x", "", "Earmark");
+		// Codes for Color
+		ct.makeCode("beige", "beige", "Color");
+		ct.makeCode("brown", "brown", "Color");
+		ct.makeCode("yellow", "yellow", "Color");
+		ct.makeCode("gray", "gray", "Color");
+		ct.makeCode("gray-brown", "gray-brown", "Color");
+		ct.makeCode("red-brown", "red-brown", "Color");
+		ct.makeCode("black", "black", "Color");
+		ct.makeCode("black-brown", "black-brown", "Color");
+		ct.makeCode("black-gray", "black-gray", "Color");
+		ct.makeCode("white", "white", "Color");
+		ct.makeCode("cinnamon", "cinnamon", "Color");
 		
 		logger.info("Create Protocols");
 		// Protocol for Location plugin: SetSublocationOf (feature: Location)

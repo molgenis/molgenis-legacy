@@ -45,21 +45,21 @@ public class MeasurementDecorator<E extends Measurement> extends MappingDecorato
 		if (db.query(Investigation.class).eq(Investigation.NAME,"System").count() == 0)
 		{
 			// In Hudson, there is no pre-generated Investigation 'System' present in the DB, 
-			// so the method returns -1 and then we happily return true so the test will not fail.
+			// so we happily return true so the test will not fail.
 			return true;
 		}
 
 		for (E e : entities) {
-			// Add corresponding event type
+			// Add corresponding protocol
 			featureName = e.getName();
 			protocolName = "Set" + featureName;
 			
 			try {
-				// Auto-generated protocols will be linked to the always present System investigation
 				Protocol newProtocol = new Protocol();
 				newProtocol.setName(protocolName);
+				newProtocol.setInvestigation_Id(e.getInvestigation_Id());
 				List<Integer> features_id = new ArrayList<Integer>();
-				features_id.add(Measurement.findByNameInvestigation(db, featureName, null).getId());
+				features_id.add(e.getId()); // e is already in the db so we can do this
 				newProtocol.setFeatures_Id(features_id);
 				db.add(newProtocol);	
 				
@@ -130,7 +130,7 @@ public class MeasurementDecorator<E extends Measurement> extends MappingDecorato
 
 	public int update(List<E> entities) throws DatabaseException {
 
-		// add your pre-processing here
+		// add your pre-processing here TODO: shouldn't we do this after the update?
 		if (!updateCorrespondingProtocol(entities)) {
 			logger.warn("Could not update corresponding protocol");
 			//throw new DatabaseException("Could not update corresponding protocol - observable feature not updated");

@@ -523,8 +523,8 @@ public class CommonService
 	{
 		Panel newGroup = new Panel();
 		newGroup.setName(panelName);
-		newGroup.setInvestigation(investigationId);
-		newGroup.setOwns(userId);
+		newGroup.setInvestigation_Id(investigationId);
+		newGroup.setOwns_Id(userId);
 		db.add(newGroup);
 		return newGroup.getId();
 	}
@@ -698,9 +698,9 @@ public class CommonService
 	{
 		Date now = Calendar.getInstance().getTime();
 		ProtocolApplication pa = new ProtocolApplication();
-		pa.setInvestigation(investigationId);
+		pa.setInvestigation_Id(investigationId);
 		pa.setName(protocolId + "_" + protAppCounter++ + "_" + now.toString()); // strange but unique name
-		pa.setProtocol(protocolId);
+		pa.setProtocol_Id(protocolId);
 		pa.setTime(now);
 		return pa;
 	}
@@ -741,9 +741,9 @@ public class CommonService
 	public int makeProtocolApplication(int investigationId, int protocolId) throws DatabaseException, IOException {
 		Date now = Calendar.getInstance().getTime();
 		ProtocolApplication pa = new ProtocolApplication();
-		pa.setInvestigation(investigationId);
+		pa.setInvestigation_Id(investigationId);
 		pa.setName(protocolId + "_" + protAppCounter++ + "_" + now.toString()); // strange but unique name
-		pa.setProtocol(protocolId);
+		pa.setProtocol_Id(protocolId);
 		pa.setTime(now);
 		db.add(pa);
 		return pa.getId();
@@ -891,14 +891,14 @@ public class CommonService
 		db.add(app);
 		
 		ObservedValue newValue = new ObservedValue();
-		newValue.setInvestigation(investigationId);
-		newValue.setProtocolApplication(app.getId());
-		newValue.setFeature(featureId);
+		newValue.setInvestigation_Id(investigationId);
+		newValue.setProtocolApplication_Id(app.getId());
+		newValue.setFeature_Id(featureId);
 		newValue.setTime(starttime);
 		newValue.setEndtime(endtime);
-		newValue.setTarget(subjectTargetId);
+		newValue.setTarget_Id(subjectTargetId);
 		if (targetRef != 0) {
-			newValue.setRelation(targetRef);
+			newValue.setRelation_Id(targetRef);
 		} else {
 			newValue.setValue(valueString);
 		}
@@ -922,21 +922,24 @@ public class CommonService
 		Query<ObservedValue> q = db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
 		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureid));
+		q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
 		// Discussion: if you uncomment the previous line, only values are retrieved
 		// that have endtime 'null', i.e. values that are still valid.
 		// Is this desirable? Maybe we could use a boolean to switch this behavior on and off?
 		// q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 		List<ObservedValue> valueList = q.find();
 		if (valueList.size() > 0) {
-			ObservedValue returnValue = null;
+			ObservedValue returnValue = valueList.get(0); // default is first one
 			Date storedTime = null;
 			for (ObservedValue currentValue : valueList) {
-				int protappId = currentValue.getProtocolApplication_Id();
-				ProtocolApplication protapp = getProtocolApplicationById(protappId);
-				Date protappTime = protapp.getTime();
-				if (storedTime == null || protappTime.after(storedTime)) {
-					returnValue = currentValue;
-					storedTime = protappTime;
+				if (currentValue.getProtocolApplication_Id() == null) {
+					int protappId = currentValue.getProtocolApplication_Id();
+					ProtocolApplication protapp = getProtocolApplicationById(protappId);
+					Date protappTime = protapp.getTime();
+					if (storedTime == null || protappTime.after(storedTime)) {
+						returnValue = currentValue;
+						storedTime = protappTime;
+					}
 				}
 			}
 			return returnValue.getValue();
@@ -967,22 +970,24 @@ public class CommonService
 		Query<ObservedValue> q = db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
 		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureid));
+		q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
 		// Discussion: if you uncomment the previous line, only values are retrieved
 		// that have endtime 'null', i.e. values that are still valid.
 		// Is this desirable? Maybe we could use a boolean to switch this behavior on and off?
 		//q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
-		q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
 		List<ObservedValue> valueList = q.find();
 		if (valueList.size() > 0) {
-			ObservedValue returnValue = null;
+			ObservedValue returnValue = valueList.get(0); // default is first one
 			Date storedTime = null;
 			for (ObservedValue currentValue : valueList) {
-				int protappId = currentValue.getProtocolApplication_Id();
-				ProtocolApplication protapp = getProtocolApplicationById(protappId);
-				Date protappTime = protapp.getTime();
-				if (storedTime == null || protappTime.after(storedTime)) {
-					returnValue = currentValue;
-					storedTime = protappTime;
+				if (currentValue.getProtocolApplication_Id() == null) {
+					int protappId = currentValue.getProtocolApplication_Id();
+					ProtocolApplication protapp = getProtocolApplicationById(protappId);
+					Date protappTime = protapp.getTime();
+					if (storedTime == null || protappTime.after(storedTime)) {
+						returnValue = currentValue;
+						storedTime = protappTime;
+					}
 				}
 			}
 			return returnValue.getRelation_Id();
@@ -1346,6 +1351,21 @@ public class CommonService
 	}
 	
 	/**
+	 * Finds a Measurement entity by its name
+	 * 
+	 * @param featureId
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 */
+	public Measurement getMeasurementByName(String featureName)
+			throws DatabaseException, ParseException
+	{
+		return db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, 
+				featureName)).get(0);
+	}
+	
+	/**
 	 * Create and add a Measurement to the database.
 	 * Note: unlike the other makeMeasurement(), this method does NOT set the Investigation, the Unit,
 	 * the TargettypeAllowedForRelation, the panelLabelAllowedForRelation and the Temporal fields.
@@ -1393,8 +1413,8 @@ public class CommonService
 	{
 		Measurement newFeat = new Measurement();
 		newFeat.setName(name);
-		newFeat.setInvestigation(investigationId);
-		newFeat.setUnit(unitId);
+		newFeat.setInvestigation_Id(investigationId);
+		newFeat.setUnit_Id(unitId);
 		if (targettypeAllowedForRelation != null) {
 			newFeat.setTargettypeAllowedForRelation(targettypeAllowedForRelation);
 		}
@@ -1404,7 +1424,7 @@ public class CommonService
 		newFeat.setTemporal(temporal);
 		newFeat.setDataType(dataType);
 		newFeat.setDescription(description);
-		newFeat.setOwns(userId);
+		newFeat.setOwns_Id(userId);
 		db.add(newFeat);
 		return newFeat.getId();
 	}
@@ -1529,7 +1549,8 @@ public class CommonService
 	}
 	
 	/** 
-	 * Returns all observed values for a given sample and list of features.
+	 * Returns all observed values for a given ObservationTarget and list of features,
+	 * sorted so that the most recent one comes first.
 	 * NOTE: Creates a default "" value if observedValue doesn't exist yet for
 	 * given feature and sample. This created default does not link to a
 	 * ProtocolApplication and this method isn't responsible for storing this
@@ -1540,45 +1561,33 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<ObservedValue> getObservedValuesByTargetAndFeatures(int targetId, List<Measurement> measurements,
-			List<Integer> investigationIds, int investigationToAddToId) throws DatabaseException, ParseException
+	public List<ObservedValue> getObservedValuesByTargetAndFeatures(int targetId, 
+			List<Measurement> measurements, List<Integer> investigationIds, 
+			int investigationToAddToId) throws DatabaseException, ParseException
 	{
 
 		List<ObservedValue> values = new ArrayList<ObservedValue>();
 
 		for (Measurement m : measurements)
-		{ // for each feature, find value
+		{ // for each feature, find/make value(s)
 			Query<ObservedValue> q = db.query(ObservedValue.class);
 			q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetId));
 			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, m.getId()));
 			q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
+			q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
 			List<ObservedValue> vals = q.find();
 			
 			if (vals.isEmpty())
 			{ // if value doesn't exist, create new one
 				ObservedValue newOV = new ObservedValue();
-				newOV.setFeature(m.getId());
+				newOV.setFeature_Id(m.getId());
 				newOV.setValue("");
 				// don't set relation, as that can then never be reset to null
-				newOV.setTarget(targetId);
-				newOV.setInvestigation(investigationToAddToId);
+				newOV.setTarget_Id(targetId);
+				newOV.setInvestigation_Id(investigationToAddToId);
 				values.add(newOV);
-			}
-			else
-			{
-				ObservedValue returnValue = null;
-				Date storedTime = null;
-				
-				for (ObservedValue currentValue : vals) {
-					int protappId = currentValue.getProtocolApplication_Id();
-					ProtocolApplication protapp = getProtocolApplicationById(protappId);
-					Date protappTime = protapp.getTime();
-					if (storedTime == null || protappTime.after(storedTime)) {
-						returnValue = currentValue;
-						storedTime = protappTime;
-					}
-					values.add(returnValue);
-				}
+			} else {
+				values.addAll(vals);
 			}
 
 		}
@@ -1586,12 +1595,30 @@ public class CommonService
 		return values;
 	}
 	
-	public List<ObservedValue> getObservedValuesByTargetAndFeatures(int targetId, Measurement measurement,
-			List<Integer> investigationIds, int investigationToBeAddedToId) throws DatabaseException, ParseException
+	/**
+	 * Returns all observed values for a given ObservationTarget and ObservableFeature,
+	 * sorted so that the most recent one comes first.
+	 * NOTE: Creates a default "" value if observedValue doesn't exist yet for
+	 * given feature and sample. This created default does not link to a
+	 * ProtocolApplication and this method isn't responsible for storing this
+	 * object in the database.
+	 * 
+	 * @param targetId
+	 * @param measurement
+	 * @param investigationIds
+	 * @param investigationToBeAddedToId
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 */
+	public List<ObservedValue> getObservedValuesByTargetAndFeature(int targetId, 
+			Measurement measurement, List<Integer> investigationIds, 
+			int investigationToBeAddedToId) throws DatabaseException, ParseException
 	{
 		List<Measurement> measurementList = new ArrayList<Measurement>();
 		measurementList.add(measurement);
-		return getObservedValuesByTargetAndFeatures(targetId, measurementList, investigationIds, investigationToBeAddedToId);
+		return getObservedValuesByTargetAndFeatures(targetId, measurementList, investigationIds, 
+				investigationToBeAddedToId);
 	}
 
 	/** Finds a protocolapplication entity by its name

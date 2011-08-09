@@ -199,7 +199,11 @@
 				<select id='color_${animalCount}' name='color_${animalCount}'>
 				<#if screen.colorList?exists>
 					<#list screen.colorList as color>
-						<option value='${color}'>${color}</option>
+						<option value='${color}'
+						<#if screen.getAnimalColor(animal.id) = color>
+							selected="selected"
+						</#if>
+						>${color}</option>
 					</#list>
 				</#if>
 				</select>
@@ -208,7 +212,11 @@
 				<select id='earmark_${animalCount}' name='earmark_${animalCount}'>
 				<#if screen.earmarkList?exists>
 					<#list screen.earmarkList as earmark>
-						<option value='${earmark}'>${earmark}</option>
+						<option value='${earmark}'
+						<#if screen.getAnimalEarmark(animal.id) = earmark>
+							selected="selected"
+						</#if>
+						>${earmark}</option>
 					</#list>
 				</#if>
 				</select>
@@ -217,7 +225,11 @@
 				<select id='background_${animalCount}' name='background_${animalCount}'>
 				<#if screen.backgroundList?exists>
 					<#list screen.backgroundList as background>
-						<option value='${background.id?string.computer}'>${background.name}</option>
+						<option value='${background.id?string.computer}'
+						<#if screen.getAnimalBackground(animal.id) = background.id>
+							selected="selected"
+						</#if>
+						>${background.name}</option>
 					</#list>
 				</#if>
 				</select>
@@ -226,7 +238,11 @@
 				<select id='geneName_${animalCount}' name='geneName_${animalCount}'>
 				<#if screen.geneNameList?exists>
 					<#list screen.geneNameList as geneName>
-						<option value='${geneName}'>${geneName}</option>
+						<option value='${geneName}'
+						<#if screen.getAnimalGeneName(animal.id) = geneName>
+							selected="selected"
+						</#if>
+						>${geneName}</option>
 					</#list>
 				</#if>
 				</select>
@@ -235,7 +251,11 @@
 				<select id='geneState_${animalCount}' name='geneState_${animalCount}'>
 				<#if screen.geneStateList?exists>
 					<#list screen.geneStateList as geneState>
-						<option value='${geneState}'>${geneState}</option>
+						<option value='${geneState}'
+						<#if screen.getAnimalGeneState(animal.id) = geneState>
+							selected="selected"
+						</#if>
+						>${geneState}</option>
 					</#list>
 				</#if>
 				</select>

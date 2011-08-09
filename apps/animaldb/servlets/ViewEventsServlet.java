@@ -48,16 +48,18 @@ public class ViewEventsServlet extends app.servlet.MolgenisServlet {
 					out.print("<table class='listtable'>");
 					int rowCount = 0;
 					for (ObservedValue currentValue : valList) {
-						// Get the corresponding event (type):
-						int eventId = currentValue.getProtocolApplication_Id();
-						ProtocolApplication currentEvent = ct.getProtocolApplicationById(eventId);
 						if (rowCount % 2 == 0) {
 							out.print("<tr class='form_listrow0'>");
 						} else {
 							out.print("<tr class='form_listrow1'>");
 						}
-						// Protocol name and app dates
-						out.print("<td>" + currentEvent.getProtocol_Name() + "<br />");
+						out.print("<td>");
+						// Get the corresponding protocol (application):
+						if (currentValue.getProtocolApplication_Id() != null) {
+							int eventId = currentValue.getProtocolApplication_Id();
+							ProtocolApplication currentEvent = ct.getProtocolApplicationById(eventId);
+							out.print(currentEvent.getProtocol_Name() + "<br />");
+						}
 						if (currentValue.getTime() != null) out.print(" Valid from " + currentValue.getTime().toString());
 						if (currentValue.getEndtime() != null) out.print(" through " + currentValue.getEndtime().toString());
 						out.print("</td>");

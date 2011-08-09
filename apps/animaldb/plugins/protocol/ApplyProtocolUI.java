@@ -432,7 +432,7 @@ public class ApplyProtocolUI {
 		    			DivPanel starttimeDiv = new DivPanel();
 		    			DivPanel endtimeDiv = new DivPanel();
 		    			int valueCounter = 0;
-			    		List<ObservedValue> values = cs.getObservedValuesByTargetAndFeatures(
+			    		List<ObservedValue> values = cs.getObservedValuesByTargetAndFeature(
 			    			model.getTargetsIdList().get(row - 1), model.getFeaturesList().get(col), 
 			    			investigationIds, ownInvId);
 			    		for (ObservedValue value : values) {

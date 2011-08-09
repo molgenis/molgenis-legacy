@@ -143,6 +143,7 @@ public class ConvertUliDbToPheno
 		makeProtocolApplication("SetParentgroup");
 		makeProtocolApplication("SetLitter");
 		makeProtocolApplication("SetWeanDate");
+		makeProtocolApplication("SetGenotypeDate");
 	}
 	
 	public void populateValue(String filename) throws Exception
@@ -283,8 +284,20 @@ public class ConvertUliDbToPheno
 				// Farbe -> Color
 				String color = tuple.getString("Farbe");
 				if (color != null) {
+					String colorName = null;
+					if (color.equals("beige")) colorName = "beige";
+					if (color.equals("braun")) colorName = "brown";
+					if (color.equals("gelb")) colorName = "yellow";
+					if (color.equals("grau")) colorName = "gray";
+					if (color.equals("grau-braun")) colorName = "gray-brown";
+					if (color.equals("rotbraun")) colorName = "red-brown";
+					if (color.equals("schwarz")) colorName = "black";
+					if (color.equals("Schwarz-braun")) colorName = "black-brown";
+					if (color.equals("schwarz-gray")) colorName = "black-gray";
+					if (color.equals("weiss")) colorName = "white";
+					if (color.equals("zimt")) colorName = "cinnamon";
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetColor"), 
-							now, null, "Color", newAnimalName, color, null));
+							now, null, "Color", newAnimalName, colorName, null));
 				}
 				
 				// Ohrmarkierung1 -> Earmark
@@ -418,13 +431,15 @@ public class ConvertUliDbToPheno
 								now, null, "Line", parentgroupName, null, line));
 					}
 					
-					// Make a litter and set wean date
+					// Make a litter and set wean and genotype dates
 					String litterName = "OldUliDbLitter_" + newAnimalName;
 					panelsToAddList.add(ct.createPanel(invName, litterName, userName));
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), 
 							now, null, "TypeOfGroup", litterName, "Litter", null));
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanDate"), 
 							now, null, "WeanDate", litterName, weanDate, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotypeDate"), 
+							now, null, "GenotypeDate", litterName, weanDate, null));
 					
 					// Link litter to parentgroup
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroup"), 

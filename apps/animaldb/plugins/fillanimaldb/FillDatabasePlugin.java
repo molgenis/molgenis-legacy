@@ -13,6 +13,8 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
+import commonservice.CommonService;
+
 import convertors.ulidb.ConvertUliDbToPheno;
 
 public class FillDatabasePlugin extends PluginModel<Entity>
@@ -81,6 +83,10 @@ public class FillDatabasePlugin extends PluginModel<Entity>
 				myLoadUliDb.populateValue(filename);
 				myLoadUliDb.parseParentRelations(filename);
 				myLoadUliDb.writeToDb();
+				
+				CommonService cs = CommonService.getInstance();
+				cs.setDatabase(db);
+				cs.makeObservationTargetNameMap(this.getLogin().getUserId(), true);
 			}
 			
 			if( action.equals("loadAnimals") )
