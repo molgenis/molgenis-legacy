@@ -9,6 +9,7 @@ package org.molgenis.compute.ui;
 
 import org.molgenis.framework.ui.EasyPluginModel;
 import org.molgenis.framework.ui.html.ActionInput;
+import org.molgenis.framework.ui.html.IntInput;
 
 /**
  * StartNgsModel takes care of all state and it can have helper methods to query the database.
@@ -19,9 +20,9 @@ import org.molgenis.framework.ui.html.ActionInput;
 public class StartNgsModel extends EasyPluginModel
 {
 
-
     private ActionInput buttonStart = new ActionInput("buttonStart", "Start NGS pipeline for selected lanes");
-
+    private ActionInput buttonTest = new ActionInput("buttonTest", "Test Step");
+    private IntInput inputStep = new IntInput("inputStep");
 
     //a system veriable that is needed by tomcat
     private static final long serialVersionUID = 1L;
@@ -44,4 +45,26 @@ public class StartNgsModel extends EasyPluginModel
     {
         this.buttonStart = buttonStart;
     }
+
+
+    public ActionInput getButtonTest()
+    {
+        return buttonTest;
+    }
+
+    public void setButtonTest(ActionInput buttonTest)
+    {
+        this.buttonTest = buttonTest;
+    }
+
+    public IntInput getInputStep()
+    {
+        return inputStep;
+    }
+
+    public void setInputStep(IntInput i)
+    {
+        this.inputStep = i;
+    }
+
 }

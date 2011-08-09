@@ -4,7 +4,7 @@
 		<description>Extension of protocol for compute</description>
 		<entity name="ComputeDetails" abstract="true">
 			<description>Interface to store compute properties</description>
-			<field name="interpreter" type="enum" enum_options="[bash,R,Python]"
+			<field name="interpreter" type="enum" enum_options="[bash,R,Python,WorkflowInterpreter]"
 				description="the interpreter used to run this command. For example 'shellTemplate'" />
 			<field name="ComputationalTime" nillable="true"
 				description="the passage of time from the start to the completion of a task" />
@@ -116,7 +116,7 @@
 				field name="ClusterHost" nillable="true" description="Hostname of
 				cluster that runs this job." /
 			-->
-			<field name="ComputeResource" type="xref" xref_entity="ComputeResource"
+			<field name="ComputeResource" type="xref" xref_entity="ComputeResource" nillable="true"
 				description="The compute backend used" />
 			<field name="JobID" nillable="true"
 				description="The ID of this job within the cluster." />

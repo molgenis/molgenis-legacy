@@ -96,6 +96,15 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
     {
     }
 
+
+    public void buttonTest(Database db, Tuple request) throws Exception
+    {
+        System.out.println("just say hello: " + this.getModel().getInputStep().getValue());
+        System.out.println("and = " +  request.getInt("inputStep"));
+
+    }
+
+
     public void buttonStart(Database db, Tuple request) throws Exception
     {
         if (mcf == null)
@@ -218,20 +227,21 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         db.commitTx();
         getModel().setSuccess("update succesfull");
 
-        //execute pipeline
-        //the following code should be commneted, if gridgain is not used (not started in ContextListener of MolgenisServlet)
-
-        System.out.println(pipeline.toString());
-        mcf.setPipeline(pipeline);
-
-        //start monitoring for database update
-        if (!updater.isStarted())
+        if(mcf != null)
         {
-            updater.setSettings(10, 10);
-            updater.setDatabase(db);
-            updater.setMCF(mcf);
-            updater.start();
+            mcf.setPipeline(pipeline);
+
+            //start monitoring for database update
+            if (!updater.isStarted())
+            {
+                updater.setSettings(10, 10);
+                updater.setDatabase(db);
+                updater.setMCF(mcf);
+                updater.start();
+            }
         }
+        else
+            System.out.println(pipeline.toString());
 
     }
 
