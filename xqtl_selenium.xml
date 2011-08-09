@@ -90,6 +90,20 @@
 				<path refid="app-libs" />
 			</classpath>
 		</javac>
+		<path id="webserver_path">
+			<pathelement location="modules/webserver" />
+		</path>
+		<pathconvert pathsep="/**/*," refid="webserver_path" property="webserver_path_pattern">
+			<regexpmapper from=".*/(.*/.*)" to="\1" />
+		</pathconvert>
+		<fileset dir="." id="webserver_path" includes="${webserver_path_pattern}/**/*">
+			<include name="**/testng_test_selenium_only.xml" />
+			<exclude name="**/*.java" />
+		</fileset>
+		<copy todir="${app_build_dir}" verbose="true">
+			<fileset refid="webserver_path" />
+			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />
+		</copy>
 		<testng haltOnFailure="true">
 			<xmlfileset dir="${app_build_dir}/test" includes="testng_test_selenium_only.xml" />
 			<classpath>
