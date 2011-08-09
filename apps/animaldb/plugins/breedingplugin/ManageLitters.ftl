@@ -212,11 +212,11 @@
 				<select id='earmark_${animalCount}' name='earmark_${animalCount}'>
 				<#if screen.earmarkList?exists>
 					<#list screen.earmarkList as earmark>
-						<option value='${earmark}'
-						<#if screen.getAnimalEarmark(animal.id) = earmark>
+						<option value='${earmark.code_String}'
+						<#if screen.getAnimalEarmark(animal.id) = earmark.code_String>
 							selected="selected"
 						</#if>
-						>${earmark}</option>
+						>${earmark.code_String}</option>
 					</#list>
 				</#if>
 				</select>

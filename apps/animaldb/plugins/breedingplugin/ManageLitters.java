@@ -24,6 +24,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.pheno.Code;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
@@ -63,7 +64,7 @@ public class ManageLitters extends PluginModel<Entity>
 	private List<String> geneNameList;
 	private List<String> geneStateList;
 	private List<String> colorList;
-	private List<String> earmarkList;
+	private List<Code> earmarkList;
 	private int genoLitterId;
 	private Database db;
 	private boolean firstTime = true;
@@ -256,11 +257,11 @@ public class ManageLitters extends PluginModel<Entity>
 		this.colorList = colorList;
 	}
 
-	public List<String> getEarmarkList() {
+	public List<Code> getEarmarkList() {
 		return earmarkList;
 	}
 
-	public void setEarmarkList(List<String> earmarkList) {
+	public void setEarmarkList(List<Code> earmarkList) {
 		this.earmarkList = earmarkList;
 	}
 
@@ -521,7 +522,8 @@ public class ManageLitters extends PluginModel<Entity>
 				db.add(valuesToAddList);
 				
 				this.action = "ShowLitters";
-				this.reloadLists(db);
+				this.reload(db);
+				this.reloadLitterLists(db);
 				this.getMessages().clear();
 				this.getMessages().add(new ScreenMessage("Litter succesfully added", true));
 			}
@@ -694,7 +696,8 @@ public class ManageLitters extends PluginModel<Entity>
 				makeTempCageLabels(lineName, motherLabel, fatherLabel, litterBirthDateString);
 				
 				this.action = "ShowLitters";
-				this.reloadLists(db);
+				this.reload(db);
+				this.reloadLitterLists(db);
 				this.getMessages().add(new ScreenMessage("All " + weanSize + " animals succesfully weaned", true));
 			}
 			
@@ -791,7 +794,8 @@ public class ManageLitters extends PluginModel<Entity>
 				makeDefCageLabels();
 				
 				this.action = "ShowLitters";
-				this.reloadLists(db);
+				this.reload(db);
+				this.reloadLitterLists(db);
 				this.getMessages().add(new ScreenMessage("All " + animalCount + " animals succesfully genotyped", true));
 			}
 
@@ -940,11 +944,36 @@ public class ManageLitters extends PluginModel<Entity>
 	{	
 		if (firstTime == true) {
 			firstTime = false;
-			reloadLists(db);
+			reloadLitterLists(db);
+		}
+		
+		try {
+			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
+			
+			// Populate parent group list
+			this.setParentgroupList(ct.getAllMarkedPanels("Parentgroup", investigationIds));
+			// Populate backgrounds list
+			this.setBackgroundList(ct.getAllMarkedPanels("Background", investigationIds));
+			// Populate sexes list
+			this.setSexList(ct.getAllMarkedPanels("Sex", investigationIds));
+			// Populate gene name list
+			this.setGeneNameList(ct.getAllCodesForFeatureAsStrings("GeneName"));
+			// Populate gene state list
+			this.setGeneStateList(ct.getAllCodesForFeatureAsStrings("GeneState"));
+			// Populate color list
+			this.setColorList(ct.getAllCodesForFeatureAsStrings("Color"));
+			// Populate earmark list
+			this.setEarmarkList(ct.getAllCodesForFeature("Earmark"));
+		} catch (Exception e) {
+			if (e.getMessage() != null) {
+				this.getMessages().clear();
+				this.getMessages().add(new ScreenMessage(e.getMessage(), false));
+			}
+			e.printStackTrace();
 		}
 	}
 	
-	private void reloadLists(Database db) {
+	private void reloadLitterLists(Database db) {
 		this.db = db;
 		
 		ct.setDatabase(this.db);
@@ -1038,20 +1067,6 @@ public class ManageLitters extends PluginModel<Entity>
 					genoLitterList.add(litterToAdd);
 				}
 			}
-			// Populate parent group list
-			this.setParentgroupList(ct.getAllMarkedPanels("Parentgroup", investigationIds));
-			// Populate backgrounds list
-			this.setBackgroundList(ct.getAllMarkedPanels("Background", investigationIds));
-			// Populate sexes list
-			this.setSexList(ct.getAllMarkedPanels("Sex", investigationIds));
-			// Populate gene name list
-			this.setGeneNameList(ct.getAllCodesForFeatureAsStrings("GeneName"));
-			// Populate gene state list
-			this.setGeneStateList(ct.getAllCodesForFeatureAsStrings("GeneState"));
-			// Populate color list
-			this.setColorList(ct.getAllCodesForFeatureAsStrings("Color"));
-			// Populate earmark list
-			this.setEarmarkList(ct.getAllCodesForFeatureAsStrings("Earmark"));
 			
 		} catch (Exception e) {
 			if (e.getMessage() != null) {
