@@ -126,6 +126,8 @@
 				description="field to show the content of the output file" />
 			<field name="ErrorFile" nillable="true" type="text"
 				description="field to show the content of the error file" />
+			<field name="Queue" nillable="true" type="text"
+				description="ADDED TO FIX THE BUILD - NEEDED IN PbsSubmitApplication.java: currentjob.setQueue(app.getQueue());" />
 		</entity>
 	</module>
 </molgenis>
