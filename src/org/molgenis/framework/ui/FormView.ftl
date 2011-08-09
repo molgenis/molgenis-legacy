@@ -329,7 +329,7 @@ var molgenis_required = new Array(${required});
 		<#--empty headers for the browse button and tick boxes -->
 		<th><label>&nbsp;</label></th><th><label>&nbsp;</label></th>		
 			<#list record.inputs as input>				
-				<#if screen.getController().getClass().getSimpleName() != "FormController">
+				<#if screen.getController().getClass().getSimpleName() != "FormController" && screen.getController().getClass().getSuperclass().getSimpleName() != "FormController">
 					<#if input.isHidden()>
 					<#else>
 					<th>
