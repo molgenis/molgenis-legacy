@@ -87,9 +87,9 @@
 <#assign selectedItem = screen.getSelected()/>
 <#list screen.getVisibleChildren() as item>
 <#if item == selectedItem>
-	<div class="navigationSelected" onClick="document.forms.${screen.getName()}.__target.value='${screen.name}';document.forms.${screen.getName()}.select.value='${item.name}';document.forms.${screen.getName()}.submit();">${item.label}</div>
+	<div id="${item.name}_tab_button" class="navigationSelected" onClick="document.forms.${screen.getName()}.__target.value='${screen.name}';document.forms.${screen.getName()}.select.value='${item.name}';document.forms.${screen.getName()}.submit();">${item.label}</div>
 <#else>
-	<div class="navigationNotSelected" onClick="document.forms.${screen.getName()}.__target.value='${screen.name}';document.forms.${screen.getName()}.select.value='${item.name}';document.forms.${screen.getName()}.submit();">${item.label}</div>
+	<div id="${item.name}_tab_button" class="navigationNotSelected" onClick="document.forms.${screen.getName()}.__target.value='${screen.name}';document.forms.${screen.getName()}.select.value='${item.name}';document.forms.${screen.getName()}.submit();">${item.label}</div>
 </#if>
 </#list>
 	</form>
