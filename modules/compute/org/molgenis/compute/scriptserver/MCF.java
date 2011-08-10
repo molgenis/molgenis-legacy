@@ -17,10 +17,11 @@ public interface MCF
     //set pipeline for execution
     void setPipeline(Pipeline pipeline);
 
-    Pipeline getPipeline(String id);
-    Pipeline getPipeline(int i);
-
     int getNumberActivePipelines();
+    Pipeline getActivePipeline(int i);
+
+    int getNumberFinishedPipelines();
+    Pipeline getArchivePipeline(int i);
 
     void removePipeline(String id);
 

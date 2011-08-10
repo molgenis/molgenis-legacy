@@ -16,6 +16,7 @@ public class Pipeline
 
     private String pipelinelogpath;
 
+    private boolean isFinished = false;
 
     public int getNumberOfSteps()
     {
@@ -74,5 +75,15 @@ public class Pipeline
     public String pipelineLogFile()
     {
         return monitor.getLogFile();
+    }
+
+    public boolean isFinished()
+    {
+        return isFinished;
+    }
+
+    public void setFinished(boolean finished)
+    {
+        isFinished = finished;
     }
 }

@@ -91,9 +91,6 @@ public class PipelineThread implements Runnable
             //here monitor step execution
             monitor.setStep(step);
 
-//            System.out.println(">>> monitoring execution");
-
-            //while (!monitor.isNotFinishedStep())
             while(!step.isFinished())
             {
                 boolean isFinished = monitor.isStepFinished();
@@ -115,11 +112,9 @@ public class PipelineThread implements Runnable
                 }
             }
 
-//            System.out.println("... step finished");
-
         }
         exec.shutdown();
-
+        pipeline.setFinished(true);
         System.out.println("... pipeline " + pipeline.getId() + "finished");
 
     }
