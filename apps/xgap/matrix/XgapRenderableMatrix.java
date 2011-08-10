@@ -1,15 +1,16 @@
-package org.molgenis.matrix.component;
+package matrix;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import matrix.AbstractDataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.matrix.component.Filter;
+import org.molgenis.matrix.component.RenderableMatrix;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservationTarget;
 
