@@ -17,11 +17,6 @@ import java.util.TreeMap;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.html.HtmlWidget;
 
-/**
- * Renders an editor for freemarker including code higlighting and line numbers.
- * 
- * Based on http://codemirror.net/ (thanks!)
- */
 public class MatrixRenderer extends HtmlWidget
 {
 	

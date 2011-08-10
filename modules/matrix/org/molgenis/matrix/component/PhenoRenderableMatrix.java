@@ -35,6 +35,9 @@ public class PhenoRenderableMatrix implements RenderableMatrix<ObservationTarget
 		visibleCols = db.find(ObservableFeature.class);
 		totalNumberOfCols = visibleCols.size();
 		
+		// TODO: allocate visibleValues. Solution below doesn't work! Find out why.
+		//visibleValues = new List<ObservedValue>[totalNumberOfRows][totalNumberOfCols];
+		
 		int row = 0;
 		int col = 0;
 		for (ObservationTarget t : visibleRows) {
@@ -79,7 +82,7 @@ public class PhenoRenderableMatrix implements RenderableMatrix<ObservationTarget
 	
 	@Override
 	public String renderValue(List<ObservedValue> values) {
-		if (values.size() > 0) {
+		if (values != null && values.size() > 0) {
 			if (values.get(0).getValue() != null) {
 				return values.get(0).getValue();
 			} else {

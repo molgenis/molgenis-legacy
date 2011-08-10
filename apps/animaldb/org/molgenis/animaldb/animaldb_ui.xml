@@ -98,8 +98,10 @@
 				label="Make/edit values" />
 			<plugin name="ListPlugin" type="plugins.listplugin.ListPlugin"
 				label="View value matrix" />
+			<plugin name="RenderableMatrixPlugin" type="plugins.listplugin.RenderableMatrixPlugin"
+				label="View renderable matrix" />
 			<plugin name="MatrixManagerExample" type="org.molgenis.matrix.ui.manager.MatrixManager"
-				label="View NEW value matrix" />
+				label="View XGAP matrix" />
 			<plugin name="EventViewer" type="plugins.protocol.EventViewerPlugin"
 				label="View value timeline" />
 		</menu>
