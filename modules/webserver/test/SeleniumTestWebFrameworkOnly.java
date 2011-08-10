@@ -1,5 +1,8 @@
 package test;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+
 import org.openqa.selenium.server.RemoteControlConfiguration;
 import org.openqa.selenium.server.SeleniumServer;
 import org.testng.Assert;
@@ -21,7 +24,7 @@ public class SeleniumTestWebFrameworkOnly
 	public void start() throws Exception
 	{
 		String seleniumHost = "localhost";
-		int seleniumPort = Helper.getAvailablePort(9080, 100);
+		int seleniumPort = getAvailablePort(9080, 100);
 		String seleniumBrowser = "firefox";
 		String seleniumUrl = "http://www.google.com";
 
@@ -56,6 +59,39 @@ public class SeleniumTestWebFrameworkOnly
 	public void stop() throws Exception
 	{
 		selenium.stop();
+	}
+	
+	/**
+	 * COPIED FROM Helper.java TO KEEP THE TEST STANDALONE
+	 * @param initialPort
+	 * @param range
+	 * @return
+	 * @throws IOException
+	 */
+	public static int getAvailablePort(int initialPort, int range)
+			throws IOException {
+		for (int port = initialPort; port < (initialPort + range); port++) {
+			boolean portTaken = false;
+			ServerSocket socket = null;
+			try {
+				socket = new ServerSocket(port);
+			} catch (IOException e) {
+				portTaken = true;
+			} finally {
+				if (socket != null) {
+					socket.close();
+				}
+			}
+			if (!portTaken) {
+				return port;
+			}
+		}
+		throw new IOException(
+				"All ports in the range "
+						+ initialPort
+						+ "-"
+						+ (initialPort + range)
+						+ " were unavailable. Select a different initial port or increase the scanning range.");
 	}
 
 }
