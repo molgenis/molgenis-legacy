@@ -257,4 +257,6 @@ public interface Query<E extends Entity>
 
 	/** Create a query based on the non-null values of an example */
 	public Query<E> example(Entity example);
+	
+	public abstract void removeRule(QueryRule ruleToBeRemoved);
 }

@@ -258,4 +258,17 @@ public class QueryImp<E extends Entity> implements Query<E> {
 		}
 		return this;
 	}	
+	
+
+	public void removeRule(QueryRule ruleToBeRemoved)
+    {
+        try
+        {
+            rules.remove(ruleToBeRemoved);
+        }
+        catch(ArrayIndexOutOfBoundsException e)
+        {
+            System.out.println("ArrayIndexOutOfBoundsException " + e.getLocalizedMessage());
+        }
+    } 
 }
