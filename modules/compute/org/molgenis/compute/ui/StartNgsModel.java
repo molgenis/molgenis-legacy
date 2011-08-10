@@ -22,6 +22,7 @@ public class StartNgsModel extends EasyPluginModel
 
     private ActionInput buttonStart = new ActionInput("buttonStart", "Start NGS pipeline for selected lanes");
     private ActionInput buttonTest = new ActionInput("buttonTest", "Test Step");
+    private ActionInput buttonGenerate = new ActionInput("buttonGenerate", "Generate Pipeline");
     private IntInput inputStep = new IntInput("inputStep");
 
     //a system veriable that is needed by tomcat
@@ -67,4 +68,13 @@ public class StartNgsModel extends EasyPluginModel
         this.inputStep = i;
     }
 
+    public ActionInput getButtonGenerate()
+    {
+        return buttonGenerate;
+    }
+
+    public void setButtonGenerate(ActionInput buttonGenerate)
+    {
+        this.buttonGenerate = buttonGenerate;
+    }
 }

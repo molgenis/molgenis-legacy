@@ -79,6 +79,8 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
     //responsible for updating DB with progress
     private DatabaseUpdater updater = new DatabaseUpdater();
 
+    boolean flagJustGenerate = false;
+
     private enum UserParameter
     {
         sample, flowcell, lane, barcode, machine, date, capturing;
@@ -99,9 +101,23 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
 
     public void buttonTest(Database db, Tuple request) throws Exception
     {
-        System.out.println("just say hello: " + this.getModel().getInputStep().getValue());
-        System.out.println("and = " +  request.getInt("inputStep"));
+        int stepID =  request.getInt("inputStep");
+        System.out.println("step to debug: " + stepID);
 
+        Pipeline testPipeline = new Pipeline();
+        testPipeline.setId("step" + stepID + "_" + pipeline.getId());
+        testPipeline.setPipelinelogpath(pipeline.getPipelinelogpath());
+        testPipeline.setMonitor(pipeline.getMonitor());
+        testPipeline.addStep(pipeline.getStep(stepID));
+
+        executePipeline(db, testPipeline);
+    }
+
+    public void buttonGenerate(Database db, Tuple request) throws Exception
+    {
+        flagJustGenerate = true;
+        buttonStart(db, request);
+        flagJustGenerate = false;
     }
 
 
@@ -199,7 +215,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
 
 
         //add few parameters
-       // wholeWorkflowApp.setComputeResource("cluster");//for time being
+        // wholeWorkflowApp.setComputeResource("cluster");//for time being
         wholeWorkflowApp.setTime(cal.getTime());
 
         //set app name everywhere and add to database
@@ -227,7 +243,12 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         db.commitTx();
         getModel().setSuccess("update succesfull");
 
-        if(mcf != null)
+        executePipeline(db, pipeline);
+    }
+
+    private void executePipeline(Database db, Pipeline pipeline)
+    {
+        if (mcf != null && !flagJustGenerate)
         {
             mcf.setPipeline(pipeline);
 
@@ -244,6 +265,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
             System.out.println(pipeline.toString());
 
     }
+
 
     private void processWorkflowElement(Database db, Tuple request, WorkflowElement workflowElement)
             throws DatabaseException, ParseException, IOException
@@ -349,7 +371,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         ComputeApplication app = new ComputeApplication();
         app.setProtocol(protocol);
         //test setting of workflow element
-       // app.setWorkflowElement(workflowElement);
+        app.setWorkflowElement(workflowElement);
         app.setTime(cal.getTime());
         //app.setComputeResource("cluster");
 
@@ -430,7 +452,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
 //            weaver.setVerificationCommand(scriptVerification);
 //        }
 //        else
-            weaver.setVerificationCommand("\n");
+        weaver.setVerificationCommand("\n");
         //finish extra
 
         String remoteLocation = computeFeatures.get("outputdir").getDefaultValue();
@@ -492,8 +514,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         appPaths.setErrpath(weaver.getErrfilename());
         appPaths.setOutpath(weaver.getOutfilename());
         appPaths.setExtralog(weaver.getExtralogfilename());
-//        if(logpathfile != null)
-//            appPaths.setLogpath(logpathfile);
+
         if (logpathfiles.size() > 0)
             for (int iii = 0; iii < logpathfiles.size(); iii++)
                 appPaths.addLogpath(logpathfiles.elementAt(iii));

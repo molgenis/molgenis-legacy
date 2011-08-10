@@ -160,7 +160,7 @@ public class DatabaseUpdater
 
         for (int i = 0; i < mcf.getNumberActivePipelines(); i++)
         {
-            String path = mcf.getPipeline(i).getPipelinelogpath();
+            String path = mcf.getActivePipeline(i).getPipelinelogpath();
             String logfile = readRemoteFile(path);
             allLogs.addElement(logfile);
         }

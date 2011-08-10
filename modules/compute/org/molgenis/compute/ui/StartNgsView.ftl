@@ -26,6 +26,8 @@
 <#--begin your plugin-->	
 ${model.buttonStart}
 <br/>
+${model.buttonGenerate}
+<br/>
 ${model.inputStep}
 ${model.buttonTest}
 	
