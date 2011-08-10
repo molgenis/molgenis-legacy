@@ -8,7 +8,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class WebDriverTest
+public class WebDriverTestWebFrameworkOnly
 {
 
 	WebDriver driver;
@@ -20,7 +20,7 @@ public class WebDriverTest
 	}
 	
 	@Test
-	public void frontPage() throws InterruptedException
+	public void google() throws InterruptedException
 	{
 		driver.get("http://www.google.com");
 		Assert.assertEquals("Google", driver.getTitle());
