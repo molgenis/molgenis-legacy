@@ -9,14 +9,14 @@ import org.molgenis.core.Nameable;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.organization.InvestigationElement;
+import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservationTarget;
 
 public class OverlibText {
 	public static Map<String, String> getOverlibText(Database db, List<String> rowNames, List<String> colNames) throws Exception
 	{
-		List<ObservationTarget> rows = db.find(ObservationTarget.class, new QueryRule("name", Operator.IN, rowNames));
-		List<ObservationTarget> cols = db.find(ObservationTarget.class, new QueryRule("name", Operator.IN, colNames));
+		List<ObservationElement> rows = db.find(ObservationElement.class, new QueryRule("name", Operator.IN, rowNames));
+		List<ObservationElement> cols = db.find(ObservationElement.class, new QueryRule("name", Operator.IN, colNames));
 		
 		List<String> foundRows = new ArrayList<String>();
 		List<String> foundCols = new ArrayList<String>();
@@ -32,7 +32,7 @@ public class OverlibText {
 		
 		for(String rowName : rowNames){
 			if(!foundRows.contains(rowName)){
-				ObservationTarget nullIden = new ObservationTarget();
+				ObservationElement nullIden = new ObservationElement();
 				nullIden.setName(rowName);
 				nullIden.set("id", "-1");
 				rows.add(nullIden);
@@ -40,7 +40,7 @@ public class OverlibText {
 		}
 		for(String colName : colNames){
 			if(!foundCols.contains(colName)){
-				ObservationTarget nullIden = new ObservationTarget();
+				ObservationElement nullIden = new ObservationElement();
 				nullIden.setName(colName);
 				nullIden.set("id", "-1");
 				cols.add(nullIden);

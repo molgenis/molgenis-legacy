@@ -1,5 +1,5 @@
 <!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
-<suite name="Test to see if Selenium is working">
+<suite name="Test to see if Selenium on a WebDriver backend is working">
 	<test name="Assert Google">
 		<classes>
 			<class name="test.SeleniumOnWebDriverBackendTestWebFrameworkOnly" />

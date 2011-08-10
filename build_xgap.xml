@@ -15,6 +15,7 @@
 		<pathelement location="modules/settings" />
 		<pathelement location="modules/pheno" />
 		<pathelement location="modules/search" />
+		<pathelement location="modules/matrix" />
 		<pathelement location="modules/decorators/core" />
 		<pathelement location="modules/decorators/auth" />
 		<pathelement location="modules/decorators/pheno" />

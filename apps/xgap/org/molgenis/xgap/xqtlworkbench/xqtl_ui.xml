@@ -15,6 +15,7 @@
 						<plugin name="Rplot" type="plugins.rplot.RplotPlugin" group="biologist" />
 						<plugin name="Inspector" type="plugins.matrix.inspector.MatrixInspector" group="biologist" />
 						<plugin name="MatrixAdmin" label="Delete storage" type="plugins.matrix.admin.MatrixAdmin" group="biologist" />
+						<plugin name="Manager_dev" type="plugins.matrix_dev.manager.MatrixManager" group="biologist" />
 					</menu>
 				</form>
 				<menu name="BasicAnnotations" label="View annotations">

@@ -25,20 +25,20 @@
 	<taskdef resource="testngtasks" classpath="../molgenis/lib/testng-5.14.10.jar" />
 
 	<!--
-	Wrapper: Clean dirs, make application and run the test
+	Wrapper: Complete xQTL Selenium web test.
+	Clean dirs, make application and run the test.
 	-->
-	<target name="clean_make_test" description="Make app and start the web test">
+	<target name="clean_make_webtest" description="Make app and start the web test">
 		<antcall target="clean_make" />
-		<antcall target="test" />
+		<antcall target="webtest" />
 	</target>
 	
 	<!--
-	Run all xQTL TestNG/Selenium tests
+	Run xQTL selenium test
 	-->
-	<target name="test" description="Run all tests">
+	<target name="webtest" description="Start the Selenium test">
 		<testng haltOnFailure="true">
-			<xmlfileset dir="${app_build_dir}" includes="**/*testng_xqtl.xml" />
-			<!--ALTERNATIVE: classfileset dir="build/test" includes="WebTest.class"/-->
+			<xmlfileset dir="${app_build_dir}" includes="**/xqtl_test_selenium.xml" />
 			<classpath>
 				<path refid="molgenis-libs" />
 				<path refid="app-libs" />
@@ -47,42 +47,11 @@
 			</classpath>
 		</testng>
 	</target>
-	
+		
 	<!--
-	Run Selenium test only
-	TODO: just wrap the one difference with an argument structure?
-	-->
-	<target name="testweb" description="Start the Selenium test">
-		<testng haltOnFailure="true">
-			<xmlfileset dir="${app_build_dir}" includes="**/selenium_testng_xqtl.xml" />
-			<classpath>
-				<path refid="molgenis-libs" />
-				<path refid="app-libs" />
-				<path location="${mol_build_dir}" />
-				<path location="${app_build_dir}" />
-			</classpath>
-		</testng>
-	</target>
-	
-	<!--
-	Run Selenium test only
-	TODO: just wrap the one difference with an argument structure?
-	-->
-	<target name="testmatrix" description="Start the matrix test">
-		<testng haltOnFailure="true">
-			<xmlfileset dir="${app_build_dir}" includes="**/matrix_testng_xqtl.xml" />
-			<classpath>
-				<path refid="molgenis-libs" />
-				<path refid="app-libs" />
-				<path location="${mol_build_dir}" />
-				<path location="${app_build_dir}" />
-			</classpath>
-		</testng>
-	</target>
-	
-	
-	<!--
-	Test the webtest frameworks
+	STANDALONE FUNCTION.
+	Test the webtest frameworks to see if they run at all.
+	Atm in Hudson as 'web_test_frameworks'. Don't touch.
 	-->
 	<target name="test_webframeworks">
 		<mkdir dir="${app_build_dir}"/>

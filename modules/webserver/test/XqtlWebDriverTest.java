@@ -40,7 +40,7 @@ public class XqtlWebDriverTest
 	@BeforeClass(alwaysRun = true)
 	public void setupBeforeClass(ITestContext context) throws Exception
 	{
-		TestHelper.deleteDatabase();
+		Helper.deleteDatabase();
 		new RunStandalone(deployPort);
 		driver = new FirefoxDriver();
 	}

@@ -21,19 +21,17 @@ public class SeleniumTestWebFrameworkOnly
 	public void start() throws Exception
 	{
 		String seleniumHost = "localhost";
-		String seleniumPort = "9080";
+		int seleniumPort = Helper.getAvailablePort(9080, 100);
 		String seleniumBrowser = "firefox";
 		String seleniumUrl = "http://www.google.com";
-		SeleniumServer server;
-		HttpCommandProcessor proc;
 
 		RemoteControlConfiguration rcc = new RemoteControlConfiguration();
 		rcc.setSingleWindow(true);
-		rcc.setPort(Integer.parseInt(seleniumPort));
+		rcc.setPort(seleniumPort);
 
 		try
 		{
-			server = new SeleniumServer(false, rcc);
+			SeleniumServer server = new SeleniumServer(false, rcc);
 			server.boot();
 		}
 		catch (Exception e)
@@ -41,7 +39,7 @@ public class SeleniumTestWebFrameworkOnly
 			throw new IllegalStateException("Can't start selenium server", e);
 		}
 
-		proc = new HttpCommandProcessor(seleniumHost, Integer.parseInt(seleniumPort), seleniumBrowser, seleniumUrl);
+		HttpCommandProcessor proc = new HttpCommandProcessor(seleniumHost, seleniumPort, seleniumBrowser, seleniumUrl);
 		selenium = new DefaultSelenium(proc);
 		selenium.start();
 	}

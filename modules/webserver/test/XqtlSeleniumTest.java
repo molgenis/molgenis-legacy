@@ -1,84 +1,68 @@
 package test;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.ServerSocket;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverBackedSelenium;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.server.RemoteControlConfiguration;
 import org.openqa.selenium.server.SeleniumServer;
 import org.testng.Assert;
-import org.testng.ITestContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import boot.RunStandalone;
 
+import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.HttpCommandProcessor;
 import com.thoughtworks.selenium.Selenium;
 
-public class WebTest
+public class XqtlSeleniumTest
 {
-	WebDriver driver;
-	SeleniumServer server;
-	HttpCommandProcessor proc;
+//	SeleniumServer server;
+//	HttpCommandProcessor proc;
+	
 	Selenium selenium;
-	Integer deployPort = 11000;
-	Integer sleepTime = 5000;
+	Integer sleepTime = 1000;
 	String pageLoadTimeout = "30000";
 	String storagePath = new File(".").getAbsolutePath() + File.separator + "tmp_selenium_test_data";
 
-	private void sleepHelper(String who) throws InterruptedException
-	{
-		System.out.println(who + " done, now sleeping for " + sleepTime + " msec");
-		Thread.sleep(sleepTime);
-	}
-	
-	
-	private String propertyScript(String element, String property){
-		return "var x = window.document.getElementById('"+element+"'); window.document.defaultView.getComputedStyle(x,null).getPropertyValue('"+property+"');";
-	}
 
-	@BeforeClass(alwaysRun = true)
-	public void setupBeforeClass(ITestContext context) throws Exception
+
+	@BeforeClass
+	public void start() throws Exception
 	{
-		driver = new FirefoxDriver();
 		
-		String seleniumUrl = "http://localhost:" + deployPort + "/";
+		int webserverPort = Helper.getAvailablePort(11000, 100);
 		
-		selenium = new WebDriverBackedSelenium(driver, seleniumUrl);
-		
-//		String seleniumHost = "localhost";
-//		String seleniumPort = "9080";
-//		String seleniumBrowser = "firefox";
-		
-//
-//		RemoteControlConfiguration rcc = new RemoteControlConfiguration();
-//		rcc.setSingleWindow(true);
-//		rcc.setPort(Integer.parseInt(seleniumPort));
-//
-//		try
-//		{
-//			server = new SeleniumServer(false, rcc);
-//			server.boot();
-//		}
-//		catch (Exception e)
-//		{
-//			throw new IllegalStateException("Can't start selenium server", e);
-//		}
-//
-//		proc = new HttpCommandProcessor(seleniumHost, Integer.parseInt(seleniumPort), seleniumBrowser, seleniumUrl);
-//		selenium = new DefaultSelenium(proc);
-//		selenium.start();
-		
-		TestHelper.deleteDatabase();
-		new RunStandalone(deployPort);
-	}
+		String seleniumUrl = "http://localhost:" + webserverPort + "/";
+		String seleniumHost = "localhost";
+		String seleniumBrowser = "firefox";
+		int seleniumPort = Helper.getAvailablePort(9080, 100);
 	
-	@AfterClass(alwaysRun = true)
-	public void cleanupAfterClass() throws InterruptedException, Exception
-	{
-		TestHelper.deleteStorage();
+		RemoteControlConfiguration rcc = new RemoteControlConfiguration();
+		rcc.setSingleWindow(true);
+		rcc.setPort(seleniumPort);
+
+		try
+		{
+			SeleniumServer server = new SeleniumServer(false, rcc);
+			server.boot();
+		}
+		catch (Exception e)
+		{
+			throw new IllegalStateException("Cannot start selenium server: ", e);
+		}
+
+		HttpCommandProcessor proc = new HttpCommandProcessor(seleniumHost, seleniumPort, seleniumBrowser, seleniumUrl);
+		selenium = new DefaultSelenium(proc);
+		selenium.start();
+		
+		Helper.deleteDatabase();
+		
+		new RunStandalone(webserverPort);
 	}
 
 	@Test
@@ -95,14 +79,20 @@ public class WebTest
 	@Test
 	public void login() throws InterruptedException
 	{
-		selenium.click("//div[@onclick=\"document.forms.main.__target.value='main';document.forms.main.select.value='UserLogin';document.forms.main.submit();\"]");
+		//selenium.click("//div[@onclick=\"document.forms.main.__target.value='main';document.forms.main.select.value='UserLogin';document.forms.main.submit();\"]");
+		selenium.click("id=UserLogin_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertEquals(selenium.getText("link=Register"), "Register");
 		selenium.type("id=username", "admin");
 		selenium.type("id=password", "admin");
 		selenium.click("id=Login");
 		selenium.waitForPageToLoad(pageLoadTimeout);
+		
 		//note: page now redirects to the Home screen ('auth_redirect' in properties)
+		//note2: REDIRECT BROKEN, DISABLED ATM
+		selenium.click("id=ClusterDemo_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		
 		Assert.assertTrue(selenium.isTextPresent("You are logged in as admin, and the database does not contain any investigations or other users."));
 		sleepHelper("login");
 	}
@@ -121,7 +111,8 @@ public class WebTest
 	@Test
 	public void exploreExampleData() throws InterruptedException
 	{
-		selenium.click("//div[@onclick=\"document.forms.main.__target.value='main';document.forms.main.select.value='Investigations';document.forms.main.submit();\"]");
+		//selenium.click("//div[@onclick=\"document.forms.main.__target.value='main';document.forms.main.select.value='Investigations';document.forms.main.submit();\"]");
+		selenium.click("id=Investigations_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertEquals(selenium.getText("link=Marker (117)"), "Marker (117)");
 		selenium.click("link=metaboliteexpression");
@@ -168,6 +159,23 @@ public class WebTest
 		
 		sleepHelper("compactView");
 	
+	}
+	
+	@AfterClass
+	public void stop() throws Exception
+	{
+		selenium.stop();
+		Helper.deleteStorage();
+	}
+	
+	private void sleepHelper(String who) throws InterruptedException
+	{
+		System.out.println(who + " done, now sleeping for " + sleepTime + " msec");
+		Thread.sleep(sleepTime);
+	}
+	
+	private String propertyScript(String element, String property){
+		return "var x = window.document.getElementById('"+element+"'); window.document.defaultView.getComputedStyle(x,null).getPropertyValue('"+property+"');";
 	}
 
 }

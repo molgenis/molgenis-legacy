@@ -5,7 +5,7 @@
 		
         ANT file for xQTL development. Complete compilation and run script.
 		Work in progress, may need fixes and will be updated with more doc to
-		explain things.
+		explain things. Includes developer functions and basic tests.
 		
 		The application can be installed and started using:
 		
@@ -21,14 +21,15 @@
 	<path id="app.class.path">
 		<pathelement location="apps/xgap" />
 		<pathelement location="generated/java" />
+		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/auth" />
 		<pathelement location="modules/file" />
-		<pathelement location="modules/search" />
-		<pathelement location="modules/webserver" />
-		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/import" />
-		<pathelement location="modules/pheno" />
+		<pathelement location="modules/webserver" />
 		<pathelement location="modules/settings" />
+		<pathelement location="modules/pheno" />
+		<pathelement location="modules/search" />
+		<pathelement location="modules/matrix" />
 		<pathelement location="modules/decorators/core" />
 		<pathelement location="modules/decorators/auth" />
 		<pathelement location="modules/decorators/pheno" />
@@ -74,8 +75,8 @@
 	</target>
 
 	<!--
-	MAKE - Step 2: Compile MOLGENIS. This is assumed to be in your 'workspace'.
-	(e.g. you run this script in '/somedir/molgenis_apps', then molgenis must be in '/somedir/molgenis')
+	MAKE - Step 2: Compile MOLGENIS. This is assumed to be in your 'workspace'. (e.g. you run
+	this script in '/somedir/molgenis_apps', then molgenis must be in '/somedir/molgenis')
 	-->
 	<target name="compile_molgenis" description="Compile MOLGENIS">
 		<!-- create build dirs if they doesn't exist -->
@@ -113,8 +114,8 @@
 	</target>
 
 	<!--
-	MAKE - Step 4: Compile generated datatypes. However we must exclude the security decorators,
-	which depend on the org.molgenis.auth.service module.
+	MAKE - Step 4: Compile generated datatypes. However we must exclude the
+	security decorators, which depend on the org.molgenis.auth.service module.
 	 -->
 	<target name="compile_datatypes" description="Compile generated datatypes">
 		<javac srcdir="generated/java/org" excludes="**/*Decorator.java" destdir="${app_build_dir}" includeantruntime="false">
@@ -140,7 +141,7 @@
 	</target>
 
 	<!--
-	MAKE - Step 6: Compile other generated parts that depends on having the application compiled first
+	MAKE - Step 6: Compile other generated parts that depends on having the application compiled first.
 	-->
 	<target name="compile_other" description="Compile other generated">
 		<javac srcdir="generated/java/app" destdir="${app_build_dir}" includeantruntime="false">
@@ -159,8 +160,7 @@
 
 
 	<!--
-	MAKE - Step 7: Copy resources other than Java files from the locations of app.class.path
-	into the build folder
+	MAKE - Step 7: Copy resources other than Java files from the locations of app.class.path into the build folder.
 	-->
 	<target name="copy_resources">
 
@@ -193,7 +193,7 @@
 	</target>
 	
 	<!--
-	RUN - Step 8: Run the application
+	RUN - Step 8: Start the application.
 	-->
 	<target name="run" description="Start the application">
 		<java classname="boot.RunStandalone" fork="yes" failonerror="true">
@@ -219,9 +219,10 @@
 	</target>
 	
 	<!-- 
-	CLEAN, MAKE - Clean and make the application
-	Used when setting up the app from scratch, but not starting the webserver.
-	For instance, when performing Selenium web tests.
+	CLEAN, MAKE - Clean and make the application.
+	Used when setting up the app from scratch, but not starting the webserver
+	or running any tests. Good for developing and running Selenium web
+	tests separately later on.
 	-->
 	<target name="clean_make" description="Clean and make the application">
 		<antcall target="clean" />
@@ -229,12 +230,22 @@
 	</target>
 	
 	<!--
-	MAKE, RUN - The complete make & run procedure
-	Used as default when installing from a fresh SVN checkout
+	MAKE, RUN - The complete make & run procedure.
+	Used when installing the app from a fresh SVN checkout.
 	-->
 	<target name="make_run" description="Make and start the application">
 		<antcall target="make" />
 		<antcall target="run" />
+	</target>
+	
+	<!-- 
+	CLEAN, MAKE, TEST - Clean and make the application, then run tests.
+	Used for project validation on Hudson.
+	-->
+	<target name="clean_make_test" description="Clean and make the application">
+		<antcall target="clean" />
+		<antcall target="make" />
+		<antcall target="test" />
 	</target>
 	
 	<!--
@@ -246,6 +257,24 @@
 		<antcall target="compile_app" />
 		<antcall target="compile_other" />
 		<antcall target="copy_resources" />
+	</target>
+	
+	<!-- Import TestNG as an Ant task -->
+	<taskdef resource="testngtasks" classpath="../molgenis/lib/testng-5.14.10.jar" />
+	
+	<!--
+	Dev help: Run xQTL tests on a compiled application.
+	-->
+	<target name="test" description="Run all tests">
+		<testng haltOnFailure="true">
+			<xmlfileset dir="${app_build_dir}" includes="**/*_testng_xqtl.xml" />
+			<classpath>
+				<path refid="molgenis-libs" />
+				<path refid="app-libs" />
+				<path location="${mol_build_dir}" />
+				<path location="${app_build_dir}" />
+			</classpath>
+		</testng>
 	</target>
 
 </project>

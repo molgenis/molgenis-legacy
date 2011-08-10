@@ -19,7 +19,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Test;
 
-import test.TestHelper;
+import test.Helper;
 
 import app.servlet.MolgenisServlet;
 
@@ -49,7 +49,7 @@ public class RunTestMatrix {
 	@BeforeClass(alwaysRun = true)
 	public void setupBeforeClass() throws Exception {
 		
-		TestHelper.deleteDatabase();
+		Helper.deleteDatabase();
 		
 		Database db = new MolgenisServlet().getDatabase();
 		
@@ -76,7 +76,7 @@ public class RunTestMatrix {
 	@AfterClass(alwaysRun = true)
 	public void cleanupAfterClass() throws InterruptedException, Exception
 	{
-		TestHelper.deleteStorage();
+		Helper.deleteStorage();
 	}
 
 	@Test(dataProvider = "params")
