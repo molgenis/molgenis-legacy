@@ -60,6 +60,7 @@
 				entity="ComputeFeature" viewtype="list" />
 			<plugin name="GenericWizard"
 				type="plugins.genericwizard.GenericWizard" label="Upload pipelines" />
+            <plugin name="console" label="Monitor" type="org.molgenis.compute.ui.ConsolePlugin" />
 		</menu>
 		<!--
 			<form name="CreateComputeApplication" label="Select pipeline to run"
