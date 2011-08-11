@@ -1,5 +1,6 @@
 package plugins.matrix.manager;
 
+import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import org.molgenis.util.Tuple;
@@ -8,14 +9,14 @@ import org.molgenis.util.Tuple;
 
 public class RequestHandler {
 	
-	public static void handle(MatrixManagerModel screenModel, Tuple request, PrintWriter out) throws Exception {
+	public static void handle(MatrixManagerModel screenModel, Tuple request, OutputStream out) throws Exception {
 		String action = request.getString("__action");
 		if (action.equals("download_visible")) {
-			screenModel.getBrowser().getModel().getSubMatrix().writeToCsvWriter(out);
+			screenModel.getBrowser().getModel().getSubMatrix().writeToCsvWriter(new PrintWriter(out));
 			//FIXME: close 'out'?
 		}
 		else if (action.equals("download_all")) {
-			screenModel.getBrowser().getModel().getInstance().writeToCsvWriter(out);
+			screenModel.getBrowser().getModel().getInstance().writeToCsvWriter(new PrintWriter(out));
 			//FIXME: close 'out'?
 		}
 		else if (action.equals("refresh")) {
