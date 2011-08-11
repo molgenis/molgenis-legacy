@@ -7,6 +7,34 @@ totalNumberOfCols: ${matrix.totalNumberOfCols}<br>
 filteredNumberOfRows: ${matrix.filteredNumberOfRows}<br>
 filteredNumberOfCols: ${matrix.filteredNumberOfCols}<br>
 
+<#assign matrix_component_request_tag = "matrix_component_request_tag_">
+
+<table>
+	<tr>
+		<td class="menuitem shadeHeader" onclick="mopen('matrix_component_menu');">
+			Menu
+			<img src="res/img/pulldown.gif"/><br>
+			<div class="submenu" id="matrix_component_menu">
+				<table>
+					<tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.forms.${matrix.screenName}.__target.value='${matrix.screenName}';document.forms.${matrix.screenName}.__action.value='${matrix_component_request_tag}download_visible';document.forms.${matrix.screenName}.__show.value='download';document.forms.${matrix.screenName}.submit();"><img src="res/img/download.png" align="left" />Download visible as text</td></tr>
+					<tr><td class="submenuitem" onclick=""><img src="res/img/download.png" align="left" />Download visible as Excel</td></tr>
+					<tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.forms.${matrix.screenName}.__target.value='${matrix.screenName}';document.forms.${matrix.screenName}.__action.value='{matrix_component_request_tag}download_all';document.forms.${matrix.screenName}.__show.value='download';document.forms.${matrix.screenName}.submit();"><img src="res/img/download.png" align="left" />Download all as text</td></tr>
+					<tr><td class="" />Download all as Excel</td></tr>
+					<tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.forms.${matrix.screenName}.__target.value='${matrix.screenName}';document.forms.${matrix.screenName}.__action.value = '{matrix_component_request_tag}refresh';document.forms.${matrix.screenName}.submit();"><img src="res/img/update.gif" align="left" />Reset viewer</td></tr>
+				</table>
+			</div>											
+		</td>
+		
+		<td align="center" class="shadeHeader" valign="center">
+			<input type="image" src="res/img/first.png" onclick="document.forms.${matrix.screenName}.__action.value = 'moveFarLeft';" />
+			<input type="image" src="res/img/prev.png" onclick="document.forms.${matrix.screenName}.__action.value = 'moveLeft';"/>
+			<b><font class="fontColor"><#if false>${model.getColHeader()}<#else>0-0 of 0</#if></font></b>
+			<input type="image" src="res/img/next.png" onclick="document.forms.${matrix.screenName}.__action.value = 'moveRight';"/>
+			<input type="image" src="res/img/last.png"  onclick="document.forms.${matrix.screenName}.__action.value = 'moveFarRight';" />
+		</td>
+		
+		</tr>
+</table>
 
 <table class="tableBorder">
 	<tr>

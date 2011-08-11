@@ -168,8 +168,13 @@ public class PhenoRenderableMatrix implements RenderableMatrix<ObservationTarget
 	public int getFilteredNumberOfCols() {
 		return filteredNumberOfCols;
 	}
-
 	
+	
+	@Override
+	public String getScreenName() {
+		// TODO Auto-generated method stub
+		return "";
+	}
 	
 
 }

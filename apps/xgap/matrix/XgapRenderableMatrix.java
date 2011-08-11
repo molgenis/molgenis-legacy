@@ -27,12 +27,14 @@ public class XgapRenderableMatrix implements RenderableMatrix<ObservationElement
 	private int colIndex;
 	private List<Filter> filters;
 	private String constraintLogic;
+	private String screenName;
 	
-	public XgapRenderableMatrix(Database db, Data data, DataMatrixHandler dmh) throws Exception {
+	public XgapRenderableMatrix(Database db, Data data, DataMatrixHandler dmh, String screenName) throws Exception {
 		
 		boolean verifiedBackend = false;
 		verifiedBackend = dmh.isDataStoredIn(data, data.getStorage());
 		AbstractDataMatrixInstance<Object> dmi = null;
+		this.screenName = screenName;
 		
 		if (verifiedBackend)
 		{
@@ -138,6 +140,12 @@ public class XgapRenderableMatrix implements RenderableMatrix<ObservationElement
 	@Override
 	public int getFilteredNumberOfCols() {
 		return filteredNumberOfCols;
+	}
+
+
+	@Override
+	public String getScreenName() {
+		return screenName;
 	}
 
 	

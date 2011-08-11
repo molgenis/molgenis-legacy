@@ -80,15 +80,19 @@ public interface RenderableMatrix<R, C, V> {
 	
 	/**
 	 * The list of filters that was applied to reach the currently rendered matrix.
-	 * @return
 	 */
 	public List<Filter> getFilters();
 	
 	/**
 	 * The constraint logic that was used to parse the filters in a special way.
-	 * @return
 	 */
 	public String getConstraintLogic();
+	
+	/**
+	 * The name of the screen this component is being rendered it. Needed to know
+	 * where to send requests from the various buttons. FIXME: is there a smarter way?
+	 */
+	public String getScreenName();
 	
 	
 }
