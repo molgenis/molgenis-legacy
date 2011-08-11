@@ -3,6 +3,7 @@ package org.molgenis.matrix.component;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
@@ -24,28 +25,34 @@ public class PhenoRenderableMatrix implements RenderableMatrix<ObservationTarget
 	private int colIndex;
 	private List<Filter> filters;
 	private String constraintLogic;
+	Logger logger = Logger.getLogger(PhenoRenderableMatrix.class);
 	
 	public PhenoRenderableMatrix(Database db) throws DatabaseException {
 		
 		rowIndex = 0;
-		visibleRows = db.find(ObservationTarget.class);
+		visibleRows = db.find(ObservationTarget.class, new QueryRule(Operator.LIMIT, 100)); // TODO: remove limit once paging is possible
 		totalNumberOfRows = visibleRows.size();
 		
 		colIndex = 0;
 		visibleCols = db.find(ObservableFeature.class);
 		totalNumberOfCols = visibleCols.size();
 		
-		// TODO: allocate visibleValues. Solution below doesn't work! Find out why.
-		//visibleValues = new List<ObservedValue>[totalNumberOfRows][totalNumberOfCols];
+		visibleValues = new List[totalNumberOfRows][totalNumberOfCols];
 		
 		int row = 0;
-		int col = 0;
 		for (ObservationTarget t : visibleRows) {
+			int col = 0;
 			for (ObservableFeature f : visibleCols) {
-				List<ObservedValue> valueList = db.find(ObservedValue.class, 
-						new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, f.getId()), 
-						new QueryRule(ObservedValue.TARGET, Operator.EQUALS, t.getId()));
-				visibleValues[row][col] = valueList;
+				List<ObservedValue> valueList;
+				try {
+					valueList = db.find(ObservedValue.class, 
+							new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, f.getId()), 
+							new QueryRule(ObservedValue.TARGET, Operator.EQUALS, t.getId()));
+					visibleValues[row][col] = valueList;
+				} catch (Exception e) {
+					logger.info("Filling PhenoRenderableMatrix failed at " + row + ", " + col);
+					e.printStackTrace();
+				}
 				col++;
 			}
 			row ++;
