@@ -60,7 +60,7 @@ public class XgapRenderableMatrix implements RenderableMatrix<ObservationElement
 		// Filter shizzle: TODO
 		filters = new ArrayList<Filter>();
 		filteredNumberOfRows = totalNumberOfRows;
-		filteredNumberOfRows = totalNumberOfCols;
+		filteredNumberOfCols = totalNumberOfCols;
 		constraintLogic = "";
 		
 	}

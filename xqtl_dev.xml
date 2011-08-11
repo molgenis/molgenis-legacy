@@ -276,5 +276,15 @@
 			</classpath>
 		</testng>
 	</target>
+	
+	<!--
+	Dev help: Remove HSQL database
+	-->
+	<target name="deletedb" description="Delete generated and build content">
+		<mkdir dir="hsqldb" />
+		<delete includeemptydirs="true">
+			<fileset dir="hsqldb" includes="**/*" />
+		</delete>
+	</target>
 
 </project>
