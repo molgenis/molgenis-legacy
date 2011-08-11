@@ -175,7 +175,7 @@ public class MatrixManager extends PluginModel
 				{
 					System.out.println("**** CREATING XgapRenderableMatrix");
 					XgapRenderableMatrix xrm = new XgapRenderableMatrix(db, data, dmh, this.getScreen().getName());
-					MatrixRenderer m = new MatrixRenderer("piet", xrm);
+					MatrixRenderer m = new MatrixRenderer("piet", xrm, null);
 					model.setMatrix(m);
 					System.out.println("**** DONE AND SET XgapRenderableMatrix");
 				}
