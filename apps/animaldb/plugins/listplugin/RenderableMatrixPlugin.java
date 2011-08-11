@@ -8,19 +8,18 @@
 package plugins.listplugin;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.matrix.component.MatrixRenderer;
-import org.molgenis.matrix.component.PhenoRenderableMatrix;
+import org.molgenis.matrix.component.PhenoMatrix;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 public class RenderableMatrixPlugin extends PluginModel<Entity> {
 	
 	private static final long serialVersionUID = -8306984451248484959L;
-	private PhenoRenderableMatrix matrix = null;
+	private PhenoMatrix matrix = null;
 	private MatrixRenderer matrixRenderer = null;
 	
 	public RenderableMatrixPlugin(String name, ScreenController<?> parent) {
@@ -44,7 +43,10 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 	public void handleRequest(Database db, Tuple request) {
 		
 		try {
-			//String action = request.getString("__action");
+			String action = request.getString("__action");
+			if (action.startsWith("matrix_component_request_tag_")) {
+				matrixRenderer.delegateHandleRequest(request, matrix);
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -56,17 +58,17 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 	
 	public void reload(Database db) {
 		
-		if (matrix == null) {
+		//if (matrix == null) {
 			try {
-				matrix = new PhenoRenderableMatrix(db);
-				matrixRenderer = new MatrixRenderer("Pheno Matrix", matrix);
-			} catch (DatabaseException e) {
+				matrix = new PhenoMatrix(db, this.getViewName());
+				matrixRenderer = new MatrixRenderer("Pheno Matrix", matrix, matrix);
+			} catch (Exception e) {
 				e.printStackTrace();
 				if (e.getMessage() != null) {
 					this.setMessages(new ScreenMessage(e.getMessage(), false));
 				}
 			}
-		}
+		//}
 	}
 
 }
