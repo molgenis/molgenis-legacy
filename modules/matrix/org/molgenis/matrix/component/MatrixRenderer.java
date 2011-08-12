@@ -44,9 +44,9 @@ public class MatrixRenderer extends HtmlWidget
 	 * @param matrix
 	 * @throws Exception 
 	 */
-	public MatrixRenderer(String name, String value, RenderableMatrix matrix, SliceableMatrix dataSource) throws Exception
+	public MatrixRenderer(String name, String label, RenderableMatrix matrix, SliceableMatrix dataSource) throws Exception
 	{
-		super(name, value);
+		super(name, label);
 		
 		// create instance of complete matrix and run checks
 		model.setInstance(matrix);
@@ -83,7 +83,44 @@ public class MatrixRenderer extends HtmlWidget
 		// create and set the submatrix
 		RenderableMatrix subMatrix = model.getDataSource().getSubMatrixByOffset(model.getInstance(), model.getRowStart(),
 				nRows, model.getColStart(), nCols);
+		verifyRenderableMatrix(subMatrix);
 		model.setSubMatrix(subMatrix);
+	}
+	
+	private void verifyRenderableMatrix(RenderableMatrix rm) throws Exception{
+		if(rm.getConstraintLogic() == null){
+			throw new Exception("Verify renderable matrix: constraint logic is null");
+		}
+		if(rm.getColIndex() > rm.getFilteredNumberOfCols()){
+			throw new Exception("Verify renderable matrix: col index exceeds filtered number of cols");
+		}
+		if(rm.getRowIndex() > rm.getFilteredNumberOfRows()){
+			throw new Exception("Verify renderable matrix: row index exceeds filtered number of rows");
+		}
+		if(rm.getFilteredNumberOfCols() > rm.getTotalNumberOfCols()){
+			throw new Exception("Verify renderable matrix: filtered number of cols exceeds total amount of cols");
+		}
+		if(rm.getFilteredNumberOfRows() > rm.getTotalNumberOfRows()){
+			throw new Exception("Verify renderable matrix: filtered number of rows exceeds total amount of rows");
+		}
+		if(rm.getScreenName() == null){
+			throw new Exception("Verify renderable matrix: screen name is null");
+		}
+		if(rm.getVisibleCols().size() == 0){
+			throw new Exception("Verify renderable matrix: no visible columns");
+		}
+		if(rm.getVisibleRows().size() == 0){
+			throw new Exception("Verify renderable matrix: no visible rows");
+		}
+		if(rm.getVisibleValues().length == 0){
+			throw new Exception("Verify renderable matrix: no visible row values");
+		}
+		if(rm.getVisibleValues()[0].length == 0){
+			throw new Exception("Verify renderable matrix: no visible column values");
+		}
+		if(rm.getFilters() == null){
+			throw new Exception("Verify renderable matrix: filter list not instantiated");
+		}
 	}
 	
 	/**
