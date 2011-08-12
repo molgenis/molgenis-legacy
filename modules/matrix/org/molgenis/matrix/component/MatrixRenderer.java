@@ -23,8 +23,7 @@ public class MatrixRenderer extends HtmlWidget
 {
 	
 	/**
-	 * Supposed to contain ONLY navigational logic to move around in the matrix
-	 * viewer.
+	 * Supposed to contain ONLY navigational logic to move around in the rendered matrix.
 	 */
 	private RendererModel model = new RendererModel();
 

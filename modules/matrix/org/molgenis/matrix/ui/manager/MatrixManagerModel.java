@@ -2,7 +2,13 @@ package org.molgenis.matrix.ui.manager;
 
 import java.util.Map;
 
-
+/**
+ * MatrixManager deprecated. Use org.molgenis.matrix.component.MatrixRenderer screen component instead.
+ * 
+ * @author jvelde, erikroos
+ *
+ */
+@Deprecated
 public class MatrixManagerModel {
 
 	private Browser browser;

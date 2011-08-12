@@ -7,12 +7,18 @@
 
 package plugins.listplugin;
 
+import java.util.List;
+
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.matrix.component.MatrixRenderer;
 import org.molgenis.matrix.component.PhenoMatrix;
+import org.molgenis.matrix.component.RenderableMatrix;
+import org.molgenis.pheno.ObservableFeature;
+import org.molgenis.pheno.ObservationTarget;
+import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -21,6 +27,7 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 	private static final long serialVersionUID = -8306984451248484959L;
 	private PhenoMatrix matrix = null;
 	private MatrixRenderer matrixRenderer = null;
+	private List<ObservationTarget> selectedTargetList = null;
 	
 	public RenderableMatrixPlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
@@ -44,8 +51,15 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 		
 		try {
 			String action = request.getString("__action");
+			
 			if (action.startsWith("matrix_component_request_tag_")) {
 				matrixRenderer.delegateHandleRequest(request, matrix);
+			}
+			
+			if (action.equals("Save")) {
+				RenderableMatrix<ObservationTarget, ObservableFeature, ObservedValue> currentMatrixSlice = 
+						matrixRenderer.getModel().getSubMatrix();
+				this.setSelectedTargetList(currentMatrixSlice.getVisibleRows());
 			}
 			
 		} catch (Exception e) {
@@ -58,7 +72,7 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 	
 	public void reload(Database db) {
 		
-		//if (matrix == null) {
+		if (matrix == null) {
 			try {
 				matrix = new PhenoMatrix(db, this.getViewName());
 				matrixRenderer = new MatrixRenderer("Pheno Matrix", matrix, matrix);
@@ -68,7 +82,15 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 					this.setMessages(new ScreenMessage(e.getMessage(), false));
 				}
 			}
-		//}
+		}
+	}
+
+	public List<ObservationTarget> getSelectedTargetList() {
+		return selectedTargetList;
+	}
+
+	public void setSelectedTargetList(List<ObservationTarget> selectedTargetList) {
+		this.selectedTargetList = selectedTargetList;
 	}
 
 }

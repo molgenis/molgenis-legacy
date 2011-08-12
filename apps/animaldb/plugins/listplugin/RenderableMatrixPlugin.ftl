@@ -27,6 +27,15 @@
 
 <#if screen.matrixRenderer??>
 	${screen.matrixRenderer.toHtml()}
+	
+	<input type='submit' class='addbutton' value='Save selection' onclick="__action.value='Save'" />
+</#if>
+
+<#if screen.selectedTargetList??>
+	<p>You selected from the matrix screen component:</p>
+	<#list screen.selectedTargetList as target>
+		${target.name}<br />
+	</#list>
 </#if>
 
 <#--end of your plugin-->

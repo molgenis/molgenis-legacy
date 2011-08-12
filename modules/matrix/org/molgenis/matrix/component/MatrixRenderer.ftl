@@ -1,11 +1,11 @@
-name: <#if name??>${name}<#else>null</#if><br>
-label: <#if value??>${value}<#else>null</#if><br>
+<#if name??>${name}<#else>null</#if><br>
+<!-- label: <#if value??>${value}<#else>null</#if><br>
 rowIndex: ${matrix.rowIndex}<br>
 colIndex: ${matrix.colIndex}<br>
 totalNumberOfRows: ${matrix.totalNumberOfRows}<br>
 totalNumberOfCols: ${matrix.totalNumberOfCols}<br>
 filteredNumberOfRows: ${matrix.filteredNumberOfRows}<br>
-filteredNumberOfCols: ${matrix.filteredNumberOfCols}<br>
+filteredNumberOfCols: ${matrix.filteredNumberOfCols}<br> -->
 
 <#assign matrix_component_request_tag = "matrix_component_request_tag_">
 

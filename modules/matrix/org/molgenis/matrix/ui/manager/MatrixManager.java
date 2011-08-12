@@ -23,6 +23,13 @@ import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.util.Tuple;
 
+/**
+ * MatrixManager deprecated. Use org.molgenis.matrix.component.MatrixRenderer screen component instead.
+ * 
+ * @author jvelde, erikroos
+ *
+ */
+@Deprecated
 public class MatrixManager extends PluginModel
 {
 

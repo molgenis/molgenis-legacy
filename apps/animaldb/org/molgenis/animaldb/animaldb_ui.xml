@@ -100,8 +100,6 @@
 				label="View value matrix" />
 			<plugin name="RenderableMatrixPlugin" type="plugins.listplugin.RenderableMatrixPlugin"
 				label="View renderable matrix" />
-			<plugin name="MatrixManagerExample" type="org.molgenis.matrix.ui.manager.MatrixManager"
-				label="View XGAP matrix" />
 			<plugin name="EventViewer" type="plugins.protocol.EventViewerPlugin"
 				label="View value timeline" />
 		</menu>
