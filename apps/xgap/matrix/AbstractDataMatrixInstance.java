@@ -577,22 +577,24 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 	 * @param screenName
 	 * @throws Exception
 	 */
-	public void setupForRendering(String screenName, Database db) throws Exception{
+	public void setupForRendering(Database db) throws Exception{
 		
-		this.screenName = screenName;
+		//this.screenName = screenName;
 		this.db = db;
 		
-		QueryRule investigation = new QueryRule(Investigation.NAME, Operator.EQUALS, this.getData().getInvestigation_Name());
+		QueryRule investigation = new QueryRule(ObservationElement.INVESTIGATION_NAME, Operator.EQUALS, this.getData().getInvestigation_Name());
 		QueryRule rowNames = new QueryRule(ObservationElement.NAME, Operator.IN, this.getRowNames());
 		QueryRule colNames = new QueryRule(ObservationElement.NAME, Operator.IN, this.getColNames());
 		
 		//TODO: FAILS FOR BINARY WITHOUT DB ANNOTATIONS
 		
 		this.visibleRows = db.find(ObservationElement.class, investigation, rowNames);
+		System.out.println("this.visibleRows.get(0).toString()" + this.visibleRows.get(0).toString());
 		this.totalNumberOfRows = visibleRows.size();
 		
 		this.colIndex = 0;
 		this.visibleCols = db.find(ObservationElement.class, investigation, colNames);
+		System.out.println("this.visibleCols.get(0).toString()" + this.visibleCols.get(0).toString());
 		this.totalNumberOfCols = visibleCols.size();
 		
 		visibleValues = this.getElements();
@@ -610,8 +612,11 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 	@Override
 	public RenderableMatrix getSubMatrixByOffset(RenderableMatrix matrix,
 			int rowIndex, int nRows, int colIndex, int nCols) throws Exception {
+		
 		AbstractDataMatrixInstance result = this.getSubMatrixByOffset(rowIndex, nRows, colIndex, nCols);
-		result.setupForRendering(this.screenName, db);
+
+		result.setupForRendering(this.db);
+		
 		return result;
 	}
 

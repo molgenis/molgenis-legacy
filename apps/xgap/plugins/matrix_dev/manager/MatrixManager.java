@@ -180,8 +180,11 @@ public class MatrixManager extends PluginModel
 					
 					System.out.println("**** CREATING RenderableMatrix");
 					
+					
 					AbstractDataMatrixInstance matrix = dmh.createInstance(data);
-				//	matrix.setupForRendering(this.getController().getName(), db);
+					
+					//need to pass the database to the matrix
+					matrix.setupForRendering(db);
 					
 					MatrixRenderer m = new MatrixRenderer("piet", matrix, matrix);
 					

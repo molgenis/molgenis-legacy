@@ -42,7 +42,7 @@ filteredNumberOfCols: ${matrix.filteredNumberOfCols}<br> -->
 		
 		
 		<#if matrix.filteredNumberOfRows == matrix.totalNumberOfRows>
-			<#assign rowHeader = "ROWTYPE?? " + matrix.rowIndex + "-" + (matrix.rowIndex+matrix.visibleRows?size) + " of " + matrix.totalNumberOfRowss>
+			<#assign rowHeader = "ROWTYPE?? " + matrix.rowIndex + "-" + (matrix.rowIndex+matrix.visibleRows?size) + " of " + matrix.totalNumberOfRows>
 		<#else>
 			<#assign rowHeader = "ROWTYPE?? " + matrix.rowIndex + "-" + (matrix.rowIndex+matrix.visibleRows?size) + " of " + matrix.filteredNumberOfRows + " filtered results (total " + matrix.totalNumberOfRows + ")">
 		</#if>

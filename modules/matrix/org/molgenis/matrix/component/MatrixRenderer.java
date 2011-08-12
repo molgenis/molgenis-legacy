@@ -144,7 +144,7 @@ public class MatrixRenderer extends HtmlWidget
 		Map<String, Object> parameters = new TreeMap<String, Object>();
 		parameters.put("name", this.getName());
 		parameters.put("value", this.getObject());
-		parameters.put("matrix", this.model.getSubMatrix());
+		parameters.put("matrix", this.getModel().getSubMatrix());
 
 		// delegate to freemarker
 		return new FreemarkerView(
