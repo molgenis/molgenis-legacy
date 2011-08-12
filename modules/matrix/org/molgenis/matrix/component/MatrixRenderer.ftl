@@ -7,8 +7,6 @@ totalNumberOfCols: ${matrix.totalNumberOfCols}<br>
 filteredNumberOfRows: ${matrix.filteredNumberOfRows}<br>
 filteredNumberOfCols: ${matrix.filteredNumberOfCols}<br> -->
 
-<#assign matrix_component_request_tag = "matrix_component_request_tag_">
-
 <table>
 	<tr>
 		<td class="menuitem shadeHeader" onclick="mopen('matrix_component_menu');">
@@ -16,18 +14,18 @@ filteredNumberOfCols: ${matrix.filteredNumberOfCols}<br> -->
 			<img src="res/img/pulldown.gif"/><br>
 			<div class="submenu" id="matrix_component_menu">
 				<table>
-					<tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}__action.value='${matrix_component_request_tag}download_visible';__show.value='download';submit();"><img src="res/img/download.png" align="left" />Download visible as text</td></tr>
+					<tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}__action.value='${req_tag}download_visible';__show.value='download';submit();"><img src="res/img/download.png" align="left" />Download visible as text</td></tr>
 					<tr><td class="submenuitem" onclick=""><img src="res/img/download.png" align="left" />Download visible as Excel</td></tr>
-					<tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}__action.value='{matrix_component_request_tag}download_all';__show.value='download';submit();"><img src="res/img/download.png" align="left" />Download all as text</td></tr>
+					<tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}__action.value='{req_tag}download_all';__show.value='download';submit();"><img src="res/img/download.png" align="left" />Download all as text</td></tr>
 					<tr><td class="" />Download all as Excel</td></tr>
-					<tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}__action.value = '{matrix_component_request_tag}refresh';submit();"><img src="res/img/update.gif" align="left" />Reset viewer</td></tr>
+					<tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}__action.value = '{req_tag}refresh';submit();"><img src="res/img/update.gif" align="left" />Reset viewer</td></tr>
 				</table>
 			</div>											
 		</td>
 		
 		<td align="center" class="shadeHeader" valign="center">
-			<input type="image" src="res/img/first.png" onclick="__action.value = '${matrix_component_request_tag}moveFarLeft';" />
-			<input type="image" src="res/img/prev.png" onclick="__action.value = '${matrix_component_request_tag}moveLeft';"/>
+			<input type="image" src="res/img/first.png" onclick="__action.value = '${req_tag}moveFarLeft';" />
+			<input type="image" src="res/img/prev.png" onclick="__action.value = '${req_tag}moveLeft';"/>
 			
 			<#if matrix.filteredNumberOfCols == matrix.totalNumberOfCols>
 				<#assign colHeader = "COLTYPE?? " + matrix.colIndex + "-" + (matrix.colIndex+matrix.visibleCols?size) + " of " + matrix.totalNumberOfCols>
@@ -36,8 +34,8 @@ filteredNumberOfCols: ${matrix.filteredNumberOfCols}<br> -->
 			</#if>
 			
 			<b><font class="fontColor">${colHeader}</font></b>
-			<input type="image" src="res/img/next.png" onclick="__action.value = '${matrix_component_request_tag}moveRight';"/>
-			<input type="image" src="res/img/last.png"  onclick="__action.value = '${matrix_component_request_tag}moveFarRight';" />
+			<input type="image" src="res/img/next.png" onclick="__action.value = '${req_tag}moveRight';"/>
+			<input type="image" src="res/img/last.png"  onclick="__action.value = '${req_tag}moveFarRight';" />
 		</td>
 		
 		

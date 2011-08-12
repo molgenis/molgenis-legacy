@@ -78,6 +78,9 @@ public class MatrixManager extends PluginModel
 				}
 				else
 				{
+					if(request.getString("__action").startsWith(MatrixRenderer.MATRIX_COMPONENT_REQUEST_PREFIX)){
+						model.getMatrix().delegateHandleRequest(request);
+					}
 					//RequestHandler.handle(this.model, request, new PrintWriter(out));
 				}
 
