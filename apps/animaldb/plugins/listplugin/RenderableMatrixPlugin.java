@@ -53,7 +53,7 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 			String action = request.getString("__action");
 			
 			if (action.startsWith("matrix_component_request_tag_")) {
-				matrixRenderer.delegateHandleRequest(request, matrix);
+				matrixRenderer.delegateHandleRequest(request);
 			}
 			
 			if (action.equals("Save")) {
