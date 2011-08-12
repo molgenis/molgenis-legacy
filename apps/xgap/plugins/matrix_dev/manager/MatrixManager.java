@@ -180,20 +180,14 @@ public class MatrixManager extends PluginModel
 				if (this.model.isHasBackend())
 				{
 					
-					
-					System.out.println("**** CREATING RenderableMatrix");
-					
-					
+					//setup the first matrix (starting at 0,0)
 					AbstractDataMatrixInstance matrix = dmh.createInstance(data);
+					matrix.setupForRendering(db, 0, 0, matrix.getNumberOfRows(), matrix.getNumberOfCols());
 					
-					//need to pass the database to the matrix
-					matrix.setupForRendering(db);
-					
+					//create and set the renderer
 					MatrixRenderer m = new MatrixRenderer("piet", matrix, matrix);
-					
 					model.setMatrix(m);
-					
-					System.out.println("**** DONE AND SET XgapRenderableMatrix");
+
 				}
 			}
 

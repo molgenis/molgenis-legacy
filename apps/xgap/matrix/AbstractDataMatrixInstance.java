@@ -499,7 +499,6 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 	private int colIndex;
 	private List<Filter> filters;
 	private String constraintLogic;
-	private String screenName;
 	
 	/*
 	 * Helper variable: database
@@ -547,13 +546,15 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 	}
 
 	@Override
+	//Note: do not set new in submatrices to keep the original totals
 	public int getTotalNumberOfRows() {
-		return this.getNumberOfRows();
+		return totalNumberOfRows;
 	}
 
 	@Override
+	//Note: do not set new in submatrices to keep the original totals
 	public int getTotalNumberOfCols() {
-		return this.getNumberOfCols();
+		return totalNumberOfCols;
 	}
 
 	@Override
@@ -577,33 +578,40 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 	 * @param screenName
 	 * @throws Exception
 	 */
-	public void setupForRendering(Database db) throws Exception{
+	public void setupForRendering(Database db, int rowIndex, int colIndex, int totalRows, int totalCols) throws Exception{
 		
-		//this.screenName = screenName;
+		//keep the database pointer in the new matrix
 		this.db = db;
-		
+
+		//XGAP matrix headers are strings, here we query the corresponding ObservationElements back
+		//TODO: FAILS FOR BINARY WITHOUT DB ANNOTATIONS - create workaround!!
 		QueryRule investigation = new QueryRule(ObservationElement.INVESTIGATION_NAME, Operator.EQUALS, this.getData().getInvestigation_Name());
 		QueryRule rowNames = new QueryRule(ObservationElement.NAME, Operator.IN, this.getRowNames());
 		QueryRule colNames = new QueryRule(ObservationElement.NAME, Operator.IN, this.getColNames());
 		
-		//TODO: FAILS FOR BINARY WITHOUT DB ANNOTATIONS
+		/*
+		 * Set senderableMatrix member variables
+		 */
 		
+		//remember what the original coordinates where that created this submatrix
+		this.rowIndex = rowIndex;
+		this.colIndex = colIndex;
+		
+		//set rows, cols, and values
 		this.visibleRows = db.find(ObservationElement.class, investigation, rowNames);
-		System.out.println("this.visibleRows.get(0).toString()" + this.visibleRows.get(0).toString());
-		this.totalNumberOfRows = visibleRows.size();
-		
-		this.colIndex = 0;
 		this.visibleCols = db.find(ObservationElement.class, investigation, colNames);
-		System.out.println("this.visibleCols.get(0).toString()" + this.visibleCols.get(0).toString());
-		this.totalNumberOfCols = visibleCols.size();
+		this.visibleValues = this.getElements();
 		
-		visibleValues = this.getElements();
-		
+		//set totals (these do not change after instantiation!)
+		//TODO: what about filtered?
+		this.totalNumberOfRows = totalRows;
+		this.totalNumberOfCols = totalCols;
+
 		// Filters/sorting: TODO
-		filters = new ArrayList<Filter>();
-		filteredNumberOfRows = totalNumberOfRows;
-		filteredNumberOfCols = totalNumberOfCols;
-		constraintLogic = "";
+		this.filters = new ArrayList<Filter>();
+		this.filteredNumberOfRows = totalRows;
+		this.filteredNumberOfCols = totalCols;
+		this.constraintLogic = "";
 	}
 	
 	/*
@@ -615,7 +623,7 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 		
 		AbstractDataMatrixInstance result = this.getSubMatrixByOffset(rowIndex, nRows, colIndex, nCols);
 
-		result.setupForRendering(this.db);
+		result.setupForRendering(this.db, rowIndex, colIndex, matrix.getTotalNumberOfRows(), matrix.getTotalNumberOfCols());
 		
 		return result;
 	}

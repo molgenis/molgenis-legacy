@@ -50,6 +50,8 @@ public class MatrixRenderer extends HtmlWidget
 	{
 		super(name, label);
 		
+		System.out.println("matrix.getTotalNumberOfCols() = " + matrix.getTotalNumberOfCols());
+		
 		// create instance of complete matrix and run checks
 		model.setInstance(matrix);
 		model.setDataSource(dataSource);
@@ -100,10 +102,10 @@ public class MatrixRenderer extends HtmlWidget
 			throw new Exception("Verify renderable matrix: row index exceeds filtered number of rows");
 		}
 		if(rm.getFilteredNumberOfCols() > rm.getTotalNumberOfCols()){
-			throw new Exception("Verify renderable matrix: filtered number of cols exceeds total amount of cols");
+			throw new Exception("Verify renderable matrix: filtered number of cols exceeds total amount of cols ("+rm.getFilteredNumberOfCols()+" > "+rm.getTotalNumberOfCols()+")");
 		}
 		if(rm.getFilteredNumberOfRows() > rm.getTotalNumberOfRows()){
-			throw new Exception("Verify renderable matrix: filtered number of rows exceeds total amount of rows");
+			throw new Exception("Verify renderable matrix: filtered number of rows exceeds total amount of rows ("+rm.getFilteredNumberOfRows()+" > "+rm.getTotalNumberOfRows()+")");
 		}
 //		if(rm.getScreenName() == null){
 //			throw new Exception("Verify renderable matrix: screen name is null");
