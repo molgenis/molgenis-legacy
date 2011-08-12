@@ -11,15 +11,10 @@
 
 package org.molgenis.matrix.component;
 
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import matrix.AbstractDataMatrixInstance;
-
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.util.Tuple;
