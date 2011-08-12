@@ -16,21 +16,28 @@ filteredNumberOfCols: ${matrix.filteredNumberOfCols}<br> -->
 			<img src="res/img/pulldown.gif"/><br>
 			<div class="submenu" id="matrix_component_menu">
 				<table>
-					<tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.forms.${matrix.screenName}.__target.value='${matrix.screenName}';document.forms.${matrix.screenName}.__action.value='${matrix_component_request_tag}download_visible';document.forms.${matrix.screenName}.__show.value='download';document.forms.${matrix.screenName}.submit();"><img src="res/img/download.png" align="left" />Download visible as text</td></tr>
+					<tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}__target.value='${matrix.screenName}';__action.value='${matrix_component_request_tag}download_visible';__show.value='download';submit();"><img src="res/img/download.png" align="left" />Download visible as text</td></tr>
 					<tr><td class="submenuitem" onclick=""><img src="res/img/download.png" align="left" />Download visible as Excel</td></tr>
-					<tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.forms.${matrix.screenName}.__target.value='${matrix.screenName}';document.forms.${matrix.screenName}.__action.value='{matrix_component_request_tag}download_all';document.forms.${matrix.screenName}.__show.value='download';document.forms.${matrix.screenName}.submit();"><img src="res/img/download.png" align="left" />Download all as text</td></tr>
+					<tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}__target.value='${matrix.screenName}';__action.value='{matrix_component_request_tag}download_all';__show.value='download';submit();"><img src="res/img/download.png" align="left" />Download all as text</td></tr>
 					<tr><td class="" />Download all as Excel</td></tr>
-					<tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.forms.${matrix.screenName}.__target.value='${matrix.screenName}';document.forms.${matrix.screenName}.__action.value = '{matrix_component_request_tag}refresh';document.forms.${matrix.screenName}.submit();"><img src="res/img/update.gif" align="left" />Reset viewer</td></tr>
+					<tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}__target.value='${matrix.screenName}';__action.value = '{matrix_component_request_tag}refresh';submit();"><img src="res/img/update.gif" align="left" />Reset viewer</td></tr>
 				</table>
 			</div>											
 		</td>
 		
 		<td align="center" class="shadeHeader" valign="center">
-			<input type="image" src="res/img/first.png" onclick="document.forms.${matrix.screenName}.__action.value = 'moveFarLeft';" />
-			<input type="image" src="res/img/prev.png" onclick="document.forms.${matrix.screenName}.__action.value = 'moveLeft';"/>
-			<b><font class="fontColor"><#if false>${model.getColHeader()}<#else>0-0 of 0</#if></font></b>
-			<input type="image" src="res/img/next.png" onclick="document.forms.${matrix.screenName}.__action.value = 'moveRight';"/>
-			<input type="image" src="res/img/last.png"  onclick="document.forms.${matrix.screenName}.__action.value = 'moveFarRight';" />
+			<input type="image" src="res/img/first.png" onclick="__action.value = '${matrix_component_request_tag}moveFarLeft';" />
+			<input type="image" src="res/img/prev.png" onclick="__action.value = '${matrix_component_request_tag}moveLeft';"/>
+			
+			<#if matrix.filteredNumberOfCols == matrix.totalNumberOfCols>
+				<#assign colHeader = matrix.colIndex + "-" + (matrix.colIndex+matrix.visibleCols?size) + " of " + matrix.totalNumberOfCols>
+			<#else>
+				<#assign colHeader = matrix.colIndex + "-" + (matrix.colIndex+matrix.visibleCols?size) + " of " + matrix.filteredNumberOfCols + " filtered results (total " + matrix.totalNumberOfCols + ")">
+			</#if>
+			
+			<b><font class="fontColor">${colHeader}</font></b>
+			<input type="image" src="res/img/next.png" onclick="__action.value = '${matrix_component_request_tag}moveRight';"/>
+			<input type="image" src="res/img/last.png"  onclick="__action.value = '${matrix_component_request_tag}moveFarRight';" />
 		</td>
 		
 		</tr>
