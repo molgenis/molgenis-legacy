@@ -93,7 +93,7 @@ public interface RenderableMatrix<R, C, V> {
 	 * The name of the screen this component is being rendered it. Needed to know
 	 * where to send requests from the various buttons. FIXME: is there a smarter way?
 	 */
-	public String getScreenName();
+//	public String getScreenName();
 	
 	
 }

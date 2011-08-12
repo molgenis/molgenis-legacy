@@ -55,7 +55,7 @@ public class PhenoMatrix implements RenderableMatrix<ObservationTarget, Observab
 		this.filteredNumberOfCols = matrix.getFilteredNumberOfCols();
 		this.filteredNumberOfRows = matrix.getFilteredNumberOfRows();
 		this.rowIndex = matrix.getRowIndex();
-		this.screenName = matrix.getScreenName();
+		//this.screenName = matrix.getScreenName();
 		this.totalNumberOfCols = matrix.getTotalNumberOfCols();
 		this.totalNumberOfRows = matrix.getTotalNumberOfRows();
 		this.visibleCols = matrix.getVisibleCols();
@@ -181,10 +181,10 @@ public class PhenoMatrix implements RenderableMatrix<ObservationTarget, Observab
 		return filteredNumberOfCols;
 	}
 	
-	@Override
-	public String getScreenName() {
-		return screenName;
-	}
+//	@Override
+//	public String getScreenName() {
+//		return screenName;
+//	}
 
 	@Override
 	public RenderableMatrix getSubMatrixByOffset(RenderableMatrix matrix,

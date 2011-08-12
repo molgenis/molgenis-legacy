@@ -103,9 +103,9 @@ public class MatrixRenderer extends HtmlWidget
 		if(rm.getFilteredNumberOfRows() > rm.getTotalNumberOfRows()){
 			throw new Exception("Verify renderable matrix: filtered number of rows exceeds total amount of rows");
 		}
-		if(rm.getScreenName() == null){
-			throw new Exception("Verify renderable matrix: screen name is null");
-		}
+//		if(rm.getScreenName() == null){
+//			throw new Exception("Verify renderable matrix: screen name is null");
+//		}
 		if(rm.getVisibleCols().size() == 0){
 			throw new Exception("Verify renderable matrix: no visible columns");
 		}

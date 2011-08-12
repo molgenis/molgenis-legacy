@@ -566,10 +566,10 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 		return filteredNumberOfCols;
 	}
 
-	@Override
-	public String getScreenName() {
-		return screenName;
-	}
+//	@Override
+//	public String getScreenName() {
+//		return screenName;
+//	}
 	
 
 	/**
@@ -577,9 +577,10 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 	 * @param screenName
 	 * @throws Exception
 	 */
-	public void setupForRendering(String screenName) throws Exception{
+	public void setupForRendering(String screenName, Database db) throws Exception{
 		
 		this.screenName = screenName;
+		this.db = db;
 		
 		QueryRule investigation = new QueryRule(Investigation.NAME, Operator.EQUALS, this.getData().getInvestigation_Name());
 		QueryRule rowNames = new QueryRule(ObservationElement.NAME, Operator.IN, this.getRowNames());
@@ -587,16 +588,12 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 		
 		//TODO: FAILS FOR BINARY WITHOUT DB ANNOTATIONS
 		
-		rowIndex = 0;
-		visibleRows = db.find
-				(ObservationElement.class, 
-						investigation, 
-						rowNames);
-		totalNumberOfRows = visibleRows.size();
+		this.visibleRows = db.find(ObservationElement.class, investigation, rowNames);
+		this.totalNumberOfRows = visibleRows.size();
 		
-		colIndex = 0;
-		visibleCols = db.find(ObservationElement.class, investigation, colNames);
-		totalNumberOfCols = visibleCols.size();
+		this.colIndex = 0;
+		this.visibleCols = db.find(ObservationElement.class, investigation, colNames);
+		this.totalNumberOfCols = visibleCols.size();
 		
 		visibleValues = this.getElements();
 		
@@ -613,7 +610,9 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 	@Override
 	public RenderableMatrix getSubMatrixByOffset(RenderableMatrix matrix,
 			int rowIndex, int nRows, int colIndex, int nCols) throws Exception {
-		return this.getSubMatrixByOffset(rowIndex, nRows, colIndex, nCols);
+		AbstractDataMatrixInstance result = this.getSubMatrixByOffset(rowIndex, nRows, colIndex, nCols);
+		result.setupForRendering(this.screenName, db);
+		return result;
 	}
 
 	@Override

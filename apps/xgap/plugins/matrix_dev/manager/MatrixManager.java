@@ -181,11 +181,12 @@ public class MatrixManager extends PluginModel
 					System.out.println("**** CREATING RenderableMatrix");
 					
 					AbstractDataMatrixInstance matrix = dmh.createInstance(data);
-					matrix.setupForRendering(this.getController().getName());
+				//	matrix.setupForRendering(this.getController().getName(), db);
 					
 					MatrixRenderer m = new MatrixRenderer("piet", matrix, matrix);
 					
 					model.setMatrix(m);
+					
 					System.out.println("**** DONE AND SET XgapRenderableMatrix");
 				}
 			}
