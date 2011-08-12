@@ -48,7 +48,7 @@ public class PhenoMatrix implements RenderableMatrix<ObservationTarget, Observab
 		constraintLogic = "";
 	}
 	
-	public PhenoMatrix(RenderableMatrix matrix) {
+	public PhenoMatrix(RenderableMatrix matrix) throws Exception {
 		this.filters = matrix.getFilters();
 		this.constraintLogic = matrix.getConstraintLogic();
 		this.colIndex = matrix.getColIndex();
@@ -64,7 +64,7 @@ public class PhenoMatrix implements RenderableMatrix<ObservationTarget, Observab
 	}
 	
 	public PhenoMatrix(RenderableMatrix matrix, List<ObservationTarget> visibleRows,
-			List<ObservableFeature> visibleCols, List<ObservedValue> vals) {
+			List<ObservableFeature> visibleCols, List<ObservedValue> vals) throws Exception {
 		
 		// Step 1: make copy
 		this(matrix);

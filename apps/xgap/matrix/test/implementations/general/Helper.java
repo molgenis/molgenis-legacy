@@ -234,13 +234,11 @@ public class Helper
 	 * @param sparse
 	 * @param fixedTextLength
 	 * @return
-	 * @throws IOException
-	 * @throws DatabaseException
-	 * @throws MatrixReadException
+	 * @throws Exception 
 	 */
 	public MemoryDataMatrixInstance<Object> createAndWriteRandomMemoryMatrix(File inputMatrixDir, Data data,
 			Database db, int totalRows, int totalCols, int maxStringLength, boolean sparse, boolean fixedTextLength)
-			throws IOException, DatabaseException, MatrixReadException
+			throws Exception
 	{
 		File res = new File(inputMatrixDir.getAbsolutePath() + File.separator
 				+ NameConvention.escapeFileName(data.getName()) + ".txt");

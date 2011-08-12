@@ -22,7 +22,7 @@ public class MemoryDataMatrixInstance<E> extends AbstractDataMatrixInstance<E>
 	// matrix of row,col
 	E[][] values;
 	
-	public MemoryDataMatrixInstance(List<String> rownames, List<String> colnames, E[][] values, Data data) throws MatrixReadException
+	public MemoryDataMatrixInstance(List<String> rownames, List<String> colnames, E[][] values, Data data) throws Exception
 	{
 		// checks
 		if (rownames.size() != values.length) throw new MatrixReadException(
@@ -128,7 +128,7 @@ public class MemoryDataMatrixInstance<E> extends AbstractDataMatrixInstance<E>
 	}
 
 	@Override
-	public AbstractDataMatrixInstance<Object> getSubMatrix(int[] rowIndices, int[] colIndices) throws MatrixReadException
+	public AbstractDataMatrixInstance<Object> getSubMatrix(int[] rowIndices, int[] colIndices) throws Exception
 	{
 		List<String> rows = new ArrayList<String>(rowIndices.length);
 		List<String> cols = new ArrayList<String>(colIndices.length);

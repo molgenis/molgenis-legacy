@@ -41,8 +41,9 @@ public interface RenderableMatrix<R, C, V> {
 	
 	/**
 	 * The currently selected matrix values that are going to be rendered in the view.
+	 * @throws Exception 
 	 */
-	public V[][] getVisibleValues();
+	public V[][] getVisibleValues() throws Exception;
 	
 	/**
 	 * The maximum number of rows in this matrix you could possible browse or filter.

@@ -24,7 +24,7 @@ public class AbstractDataMatrixQueries
 	 * @throws Exception
 	 */
 	public static AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowMatrixValues(
-			AbstractDataMatrixInstance<Object> dm, QueryRule[] rules) throws Exception
+			AbstractDataMatrixInstance<Object> dm, QueryRule ... rules) throws Exception
 	{
 		checkQueryRules(dm, false, rules);
 
@@ -82,7 +82,7 @@ public class AbstractDataMatrixQueries
 	 * @throws Exception
 	 */
 	public static AbstractDataMatrixInstance<Object> getSubMatrixFilterByColMatrixValues(
-			AbstractDataMatrixInstance<Object> dm, QueryRule[] rules) throws Exception
+			AbstractDataMatrixInstance<Object> dm, QueryRule ... rules) throws Exception
 	{
 		checkQueryRules(dm, true, rules);
 

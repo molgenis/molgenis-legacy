@@ -39,7 +39,7 @@ public class DatabaseDataMatrixInstance extends AbstractDataMatrixInstance<Objec
 	private String type;
 	private int matrixId;
 
-	public DatabaseDataMatrixInstance(Database db, Data data) throws DatabaseException
+	public DatabaseDataMatrixInstance(Database db, Data data) throws Exception
 	{
 
 		this.db = db;

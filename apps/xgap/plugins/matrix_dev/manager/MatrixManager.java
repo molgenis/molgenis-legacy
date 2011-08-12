@@ -9,7 +9,7 @@ package plugins.matrix_dev.manager;
 
 import java.io.OutputStream;
 
-import matrix.XgapRenderableMatrix;
+import matrix.AbstractDataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 import matrix.general.Importer;
 
@@ -169,13 +169,22 @@ public class MatrixManager extends PluginModel
 			if (newOrOtherData)
 			{
 				logger.info("*** newOrOtherData");
+				
 				this.model.setHasBackend(dmh.isDataStoredIn(data, data.getStorage()));
+				
 				logger.info("hasBackend: " + this.model.isHasBackend());
+				
 				if (this.model.isHasBackend())
 				{
-					System.out.println("**** CREATING XgapRenderableMatrix");
-					XgapRenderableMatrix xrm = new XgapRenderableMatrix(db, data, dmh, this.getScreen().getName());
-					MatrixRenderer m = new MatrixRenderer("piet", xrm, null);
+					
+					
+					System.out.println("**** CREATING RenderableMatrix");
+					
+					AbstractDataMatrixInstance matrix = dmh.createInstance(data);
+					matrix.setupForRendering(this.getController().getName());
+					
+					MatrixRenderer m = new MatrixRenderer("piet", matrix, matrix);
+					
 					model.setMatrix(m);
 					System.out.println("**** DONE AND SET XgapRenderableMatrix");
 				}

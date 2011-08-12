@@ -13,15 +13,22 @@ import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
+import matrix.general.DataMatrixHandler;
 import matrix.general.MatrixReadException;
 
 import org.apache.log4j.Logger;
 import org.molgenis.core.Nameable;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.matrix.component.Filter;
+import org.molgenis.matrix.component.RenderableMatrix;
+import org.molgenis.matrix.component.SliceableMatrix;
+import org.molgenis.organization.Investigation;
+import org.molgenis.pheno.ObservationElement;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.CsvFileWriter;
 
@@ -35,7 +42,7 @@ import org.molgenis.util.CsvFileWriter;
  * @param <E>
  *            the generic type of the matrix. E.g. String, Double etc.
  */
-public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstance
+public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstance, RenderableMatrix<ObservationElement, ObservationElement, Object>, SliceableMatrix
 {
 
 	/**
@@ -448,4 +455,189 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 		
 		return res;
 	}
+	
+	
+	/********************************************************/
+	/**************** RENDERABLE & SLICEABLE ****************/
+	/********************************************************/
+	
+	/*
+	 * Implementations for RenderableMatrix 'render' functions
+	 */
+	
+	@Override
+	public String renderValue(Object value) {
+		if(value == null){
+			return "";
+		}else{
+			return value.toString();
+		}
+	}
+
+	@Override
+	public String renderRow(ObservationElement row) {
+		return row.getName(); //TODO: render entity attributes
+	}
+
+	@Override
+	public String renderCol(ObservationElement col) {
+		return col.getName(); //TODO: render entity attributes
+	}
+	
+	/*
+	 * RenderableMatrix member variables
+	 */
+	
+	private List<ObservationElement> visibleRows;
+	private List<ObservationElement> visibleCols;
+	private Object[][] visibleValues;
+	private int totalNumberOfRows;
+	private int totalNumberOfCols;
+	private int filteredNumberOfRows;
+	private int filteredNumberOfCols;
+	private int rowIndex;
+	private int colIndex;
+	private List<Filter> filters;
+	private String constraintLogic;
+	private String screenName;
+	
+	/*
+	 * Helper variable: database
+	 */
+	
+	private Database db;
+
+	/*
+	 * Getters for RenderableMatrix member variables
+	 */
+	
+	@Override
+	public List<ObservationElement> getVisibleRows() {
+		return visibleRows;
+	}
+
+	@Override
+	public List<ObservationElement> getVisibleCols() {
+		return visibleCols;
+	}
+
+	@Override
+	public Object[][] getVisibleValues() throws Exception {
+		return this.getElements();
+	}
+
+	@Override
+	public int getRowIndex() {
+		return rowIndex;
+	}
+
+	@Override
+	public int getColIndex() {
+		return colIndex;
+	}
+
+	@Override
+	public List<Filter> getFilters() {
+		return filters;
+	}
+
+	@Override
+	public String getConstraintLogic() {
+		return constraintLogic;
+	}
+
+	@Override
+	public int getTotalNumberOfRows() {
+		return this.getNumberOfRows();
+	}
+
+	@Override
+	public int getTotalNumberOfCols() {
+		return this.getNumberOfCols();
+	}
+
+	@Override
+	public int getFilteredNumberOfRows() {
+		return filteredNumberOfRows;
+	}
+
+	@Override
+	public int getFilteredNumberOfCols() {
+		return filteredNumberOfCols;
+	}
+
+	@Override
+	public String getScreenName() {
+		return screenName;
+	}
+	
+
+	/**
+	 * Prepares this AbstractDataMatrixInstance for rendering
+	 * @param screenName
+	 * @throws Exception
+	 */
+	public void setupForRendering(String screenName) throws Exception{
+		
+		this.screenName = screenName;
+		
+		QueryRule investigation = new QueryRule(Investigation.NAME, Operator.EQUALS, this.getData().getInvestigation_Name());
+		QueryRule rowNames = new QueryRule(ObservationElement.NAME, Operator.IN, this.getRowNames());
+		QueryRule colNames = new QueryRule(ObservationElement.NAME, Operator.IN, this.getColNames());
+		
+		//TODO: FAILS FOR BINARY WITHOUT DB ANNOTATIONS
+		
+		rowIndex = 0;
+		visibleRows = db.find
+				(ObservationElement.class, 
+						investigation, 
+						rowNames);
+		totalNumberOfRows = visibleRows.size();
+		
+		colIndex = 0;
+		visibleCols = db.find(ObservationElement.class, investigation, colNames);
+		totalNumberOfCols = visibleCols.size();
+		
+		visibleValues = this.getElements();
+		
+		// Filters/sorting: TODO
+		filters = new ArrayList<Filter>();
+		filteredNumberOfRows = totalNumberOfRows;
+		filteredNumberOfCols = totalNumberOfCols;
+		constraintLogic = "";
+	}
+	
+	/*
+	 * Sliceable implementation(non-Javadoc)
+	 */
+	@Override
+	public RenderableMatrix getSubMatrixByOffset(RenderableMatrix matrix,
+			int rowIndex, int nRows, int colIndex, int nCols) throws Exception {
+		return this.getSubMatrixByOffset(rowIndex, nRows, colIndex, nCols);
+	}
+
+	@Override
+	public RenderableMatrix getSubMatrixByRowValueFilter(
+			RenderableMatrix matrix, QueryRule q) throws Exception {
+		return AbstractDataMatrixQueries.getSubMatrixFilterByRowMatrixValues((AbstractDataMatrixInstance<Object>) this, q);
+	}
+
+	@Override
+	public RenderableMatrix getSubMatrixByRowHeaderFilter(
+			RenderableMatrix matrix, QueryRule q) throws Exception {
+		return AbstractDataMatrixQueries.getSubMatrixFilterByRowEntityValues((AbstractDataMatrixInstance<Object>) this, db, q);
+	}
+
+	@Override
+	public RenderableMatrix getSubMatrixByColValueFilter(
+			RenderableMatrix matrix, QueryRule q) throws Exception {
+		return AbstractDataMatrixQueries.getSubMatrixFilterByColMatrixValues((AbstractDataMatrixInstance<Object>) this, q);
+	}
+
+	@Override
+	public RenderableMatrix getSubMatrixByColHeaderFilter(
+			RenderableMatrix matrix, QueryRule q) throws Exception {
+		return AbstractDataMatrixQueries.getSubMatrixFilterByColEntityValues((AbstractDataMatrixInstance<Object>) this, db, q);
+	}
+	
 }
