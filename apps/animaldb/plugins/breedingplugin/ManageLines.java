@@ -21,6 +21,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.pheno.Panel;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -35,6 +36,7 @@ public class ManageLines extends PluginModel<Entity>
 	private String lineName;
 	private int source;
 	private List<ObservationTarget> sourceList;
+	private List<ObservationTarget> lineList;
 
 	public ManageLines(String name, ScreenController<?> parent)
 	{
@@ -120,6 +122,8 @@ public class ManageLines extends PluginModel<Entity>
 					}
 				}
 			}
+			// Populate existing lines list
+			lineList = cs.getAllMarkedPanels("Line", investigationIds);
 			
 		} catch (Exception e) {
 			this.getMessages().clear();
@@ -154,5 +158,13 @@ public class ManageLines extends PluginModel<Entity>
 
 	public List<ObservationTarget> getSourceList() {
 		return sourceList;
+	}
+
+	public List<ObservationTarget> getLineList() {
+		return lineList;
+	}
+
+	public void setLineList(List<ObservationTarget> lineList) {
+		this.lineList = lineList;
 	}
 }

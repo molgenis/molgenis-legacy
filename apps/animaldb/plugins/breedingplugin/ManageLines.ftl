@@ -25,28 +25,45 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->	
 
-<div id='name_part' class='row' style="width:700px">
-	<label for='linename'>Line name:</label>
-	<input type='text' class='textbox' name='linename' id='linename' value='<#if screen.lineName?exists>${screen.getLineName()}</#if>' />
+<div style='float:left'>
+	<p><h2>Add new breeding line</h2></p>
+	<div id='name_part' class='row' style="width:700px">
+		<label for='linename'>Line name:</label>
+		<input type='text' class='textbox' name='linename' id='linename' value='<#if screen.lineName?exists>${screen.getLineName()}</#if>' />
+	</div>
+	<!-- Source -->
+	<div id="sourceselect" class="row" style='clear:left'>
+		<label for="source">Source:</label>
+		<select name="source" id="source" class="selectbox">
+			<#if screen.sourceList??>
+				<#list screen.sourceList as source>
+					<option value="${source.id?string.computer}" <#if source.id == screen.source>selected="selected"</#if>>${source.name}</option>
+				</#list>
+			</#if>
+		</select>
+	</div>
+	<!-- Add button -->
+	<div id='buttons_part' class='row'>
+		<input type='submit' class='addbutton' value='Add' onclick="__action.value='addLine'" />
+	</div>
 </div>
 
-<!-- Source -->
-<div id="sourceselect" class="row" style='clear:left'>
-	<label for="source">Source:</label>
-	<select name="source" id="source" class="selectbox">
-		<#if screen.sourceList??>
-			<#list screen.sourceList as source>
-				<option value="${source.id?string.computer}" <#if source.id == screen.source>selected="selected"</#if>>${source.name}</option>
-			</#list>
-		</#if>
-	</select>
+<div style='float:left'>
+	<p><h2>Existing breeding lines</h2></p>
+	<#if screen.lineList??>
+		<ul>
+		<#list screen.lineList as line>
+			<li>${line.name}</li>
+		</#list>
+		</ul>
+	<#else>
+		<p>There are no breeding lines yet.</p>
+	</#if>
 </div>
 
-<!-- Add button -->
-<div id='buttons_part' class='row'>
-	<input type='submit' class='addbutton' value='Add' onclick="__action.value='addLine'" />
+<div style='clear:both'>
 </div>
-	
+
 <#--end of your plugin-->	
 			</div>
 		</div>

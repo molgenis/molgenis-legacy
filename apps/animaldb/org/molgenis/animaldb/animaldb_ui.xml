@@ -70,12 +70,12 @@
 			<menu name="breedingmodule" position="left" label="Breeding">
 				<plugin name="ViewFamily" type="plugins.breedingplugin.ViewFamily"
 					label="Family info" />
-				<plugin name="ManageLines" type="plugins.breedingplugin.ManageLines"
-					label="Manage breeding lines" />
 				<plugin name="ManageParentgroups" type="plugins.breedingplugin.ManageParentgroups"
 					label="Manage parent groups" />
 				<plugin name="ManageLitters" type="plugins.breedingplugin.ManageLitters"
 					label="Manage litters" />
+				<plugin name="ManageLines" type="plugins.breedingplugin.ManageLines"
+					label="Manage breeding lines" />
 			</menu>
 			<plugin name="RemAnimal" type="plugins.animal.RemAnimalPlugin"
 				label="Remove animals" />

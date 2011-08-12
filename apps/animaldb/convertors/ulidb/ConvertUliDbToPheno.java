@@ -41,7 +41,6 @@ public class ConvertUliDbToPheno
 	private List<ObservedValue> valuesToAddList;
 	private List<Panel> panelsToAddList;
 	private Map<String, String> oldUliDbIdMap;
-	private Map<String, String> customIdMap;
 	private Map<String, String> appMap;
 	private Calendar calendar;
 	private SimpleDateFormat sdf = new SimpleDateFormat("d-M-yyyy H:mm", Locale.US);
@@ -77,7 +76,6 @@ public class ConvertUliDbToPheno
 		panelsToAddList = new ArrayList<Panel>();
 		
 		oldUliDbIdMap = new HashMap<String, String>();
-		customIdMap = new HashMap<String, String>();
 		appMap = new HashMap<String, String>();
 	}
 	
@@ -101,9 +99,11 @@ public class ConvertUliDbToPheno
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
-				// laufende Nr -> make new animal
-				String oldAnimalId = tuple.getString("laufende Nr");
-				String animalName = "animal" + oldAnimalId;
+				// Tiernummer -> make new animal
+				String animalName = tuple.getString("Tiernummer");
+				if (animalName == null) {
+					animalName = "OldUliId" + tuple.getString("laufende Nr");
+				}
 				while (animalNames.contains(animalName)) { // make sure we have a unique name
 					animalName += "_dup";
 				}
@@ -116,7 +116,6 @@ public class ConvertUliDbToPheno
 	
 	public void populateProtocolApplication() throws Exception
 	{
-		makeProtocolApplication("SetCustomID");
 		makeProtocolApplication("SetOldUliDbId");
 		makeProtocolApplication("SetSpecies");
 		makeProtocolApplication("SetAnimalType");
@@ -159,12 +158,6 @@ public class ConvertUliDbToPheno
 				Date now = calendar.getTime();
 				
 				String newAnimalName = animalsToAddList.get(line_number - 1).getName();
-				
-				// Tiernummer -> CustomId
-				String oldAnimalId = tuple.getString("Tiernummer");
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetCustomID"), now, 
-						null, "CustomID", newAnimalName, oldAnimalId, null));
-				customIdMap.put(oldAnimalId, newAnimalName);
 				
 				// laufende Nr -> OldUliDbId
 				String oldUliDbId = tuple.getString("laufende Nr");
@@ -358,12 +351,15 @@ public class ConvertUliDbToPheno
 							now, null, "OldUliDbMotherInfo", newAnimalName, motherIdsString, null));
 					for (Integer oldMotherId : SplitParentIdsString(motherIdsString)) {
 						// Find corresponding animal
-						// If 5 digits, it's a laufende Nr (OldUliDbId); if fewer, it's a Tiernummer (CustomID)
+						// If 5 digits, it's a laufende Nr (OldUliDbId); if fewer, it's a Tiernummer (name)
 						String motherName = null;
 						if (oldMotherId.toString().length() == 5) {
 							motherName = oldUliDbIdMap.get(oldMotherId.toString());
 						} else {
-							motherName = customIdMap.get(oldMotherId.toString());
+							int idx = animalNames.indexOf(oldMotherId.toString());
+							if (idx != -1) {
+								motherName = animalNames.get(idx);
+							}
 						}
 						if (motherName != null) {
 							motherList.add(motherName);
@@ -380,12 +376,15 @@ public class ConvertUliDbToPheno
 							now, null, "OldUliDbFatherInfo", newAnimalName, fatherIdsString, null));
 					for (Integer oldFatherId : SplitParentIdsString(fatherIdsString)) {
 						// Find corresponding animal
-						// If 5 digits, it's a laufende Nr (OldUliDbId); if fewer, it's a Tiernummer (CustomId)
+						// If 5 digits, it's a laufende Nr (OldUliDbId); if fewer, it's a Tiernummer (name)
 						String fatherName = null;
 						if (oldFatherId.toString().length() == 5) {
 							fatherName = oldUliDbIdMap.get(oldFatherId.toString());
 						} else {
-							fatherName = customIdMap.get(oldFatherId.toString());
+							int idx = animalNames.indexOf(oldFatherId.toString());
+							if (idx != -1) {
+								fatherName = animalNames.get(idx);
+							}
 						}
 						if (fatherName != null) {
 							fatherList.add(fatherName);

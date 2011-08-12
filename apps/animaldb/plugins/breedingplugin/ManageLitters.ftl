@@ -111,7 +111,7 @@
 	<!-- Size approximate? -->
 	<div id="sizeapp_div" class="row">
 		<label for="sizeapp_toggle">Size approximate:</label>
-		<input type="checkbox" id="sizeapp_toggle" name="sizeapp_toggle" value="sizeapp" />
+		<input type="checkbox" id="sizeapp_toggle" name="sizeapp_toggle" value="sizeapp" checked="yes" />
 	</div>
 	
 	<!-- Add button -->
@@ -122,13 +122,11 @@
 <#elseif screen.action == "ShowWean">
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowLitters">Back to overview</a></p>
-	
 	<!-- Date and time of weaning -->
 	<div id='weandatetimediv' class='row'>
 		<label for='weandatetime'>Date and time of weaning:</label>
 		<input type='text' class='textbox' id='weandatetime' name='weandatetime' value='<#if screen.weandatetime?exists>${screen.getWeandatetime()}</#if>' onclick='showDateInput(this,true)' autocomplete='off' />
 	</div>
-	
 	<!-- Size -->
 	<div id='weansize_part1' class='row'>
 		<label for='weansizefemale'>Nr. of females:</label>
@@ -138,21 +136,14 @@
 		<label for='weansizemale'>Nr. of males:</label>
 		<input type='text' class='textbox' name='weansizemale' id='weansizemale' value='<#if screen.weanSizeMale?exists>${screen.getWeanSizeMale()}</#if>' />
 	</div>
-	
-	<#if screen.getCustomNameFeature()??>
-		<#assign label = screen.getCustomNameFeature()>
-	
-		<div id="customname" class="row">
-			<label for="customname">${label} base:</label>
-			<input type="text" name="customname" id="customname" class="textbox" />
-		</div>
-	
-		<div id="startnumber" class="row">
-			<label for="startnumber">${label} start number:</label>
-			<input type="text" name="startnumber" id="startnumber" class="textbox" />
-		</div>
-	</#if>
-
+	<div id="namebase" class="row">
+		<label for="namebase">Name base (may be empty):</label>
+		<input type="text" name="namebase" id="namebase" class="textbox" />
+	</div>
+	<div id="startnumber" class="row">
+		<label for="startnumber">Name numbering starts at:</label>
+		<input type="text" name="startnumber" id="startnumber" class="textbox" value="1" />
+	</div>
 	<!-- Add button -->
 	<div id='addlitter' class='row'>
 		<input type='submit' class='addbutton' value='Wean' onclick="__action.value='Wean'" />
@@ -166,17 +157,15 @@
 	
 	<p>${screen.parentInfo}</p>
 	
-	<p><em>Note: sexes have been pre-filled based on weaning info</em></p>
-	
 	<table>
 		<tr>
-			<th>Animal name</th>
-			<th>Sex</th>
-			<th>Color</th>
-			<th>Earmark</th>
-			<th>Background</th>
-			<th>Gene name</th>
-			<th>Gene state</th>
+			<th><strong>Animal name</strong></th>
+			<th><strong>Sex</strong></th>
+			<th><strong>Color</strong></th>
+			<th><strong>Earmark</strong></th>
+			<th><strong>Background</strong></th>
+			<th><strong>Gene name</strong></th>
+			<th><strong>Gene state</strong></th>
 		</tr>
 	<#assign animalCount = 0>
 	<#list screen.getAnimalsInLitter() as animal>

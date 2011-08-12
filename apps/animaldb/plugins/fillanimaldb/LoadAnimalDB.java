@@ -27,6 +27,12 @@ import org.molgenis.util.Tuple;
 
 import commonservice.CommonService;
 
+/**
+ * Class to load data from Ate's old AnimalDB into the new version with the Pheno model.
+ * 
+ * @author erikroos
+ *
+ */
 public class LoadAnimalDB
 {
 	private Database db;
@@ -61,7 +67,12 @@ public class LoadAnimalDB
 
 				String oldanimalid = tuple.getString("animalid");
 				String oldanimalcustomid = tuple.getString("customid");
-				//String name = tuple.getString("customid");
+				String name = null;
+				if (oldanimalcustomid != null) {
+					name = oldanimalcustomid;
+				} else {
+					name = oldanimalid;
+				}
 				String weandate = tuple.getString("weandate");
 				if (weandate.equals("NULL")) weandate = null;
 				//String status = tuple.getString("status");
@@ -74,7 +85,7 @@ public class LoadAnimalDB
 				String oldlocid = tuple.getString("location");
 				String oldlitterid = tuple.getString("litter");
 
-				ObservationTarget newAnimal = ct.createIndividual(invid, "animal" + oldanimalid, login.getUserId());
+				ObservationTarget newAnimal = ct.createIndividual(invid, name, login.getUserId());
 				db.add(newAnimal);
 				int newanimalid = newAnimal.getId();
 

@@ -56,8 +56,8 @@ public class ManageLitters extends PluginModel<Entity>
 	private CommonService ct = CommonService.getInstance();
 	private SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
 	private String action = "ShowLitters";
-	private String customName = null;
-	private int customNumber = -1;
+	private String nameBase = null;
+	private int startNumber = -1;
 	private String labelDownloadLink = null;
 	private List<ObservationTarget> backgroundList;
 	private List<ObservationTarget> sexList;
@@ -191,15 +191,6 @@ public class ManageLitters extends PluginModel<Entity>
 	{
 		return action;
 	}
-	
-	public String getCustomNameFeature() throws DatabaseException, ParseException {
-		int featureId = ct.getCustomNameFeatureId(this.getLogin().getUserId());
-		if (featureId == -1) {
-			return null;
-		} else {
-			return ct.getMeasurementById(featureId).getName();
-		}
-	}
 
 	public void setLabelDownloadLink(String labelDownloadLink) {
 		this.labelDownloadLink = labelDownloadLink;
@@ -274,14 +265,14 @@ public class ManageLitters extends PluginModel<Entity>
 			setWeanSizeFemale(request.getInt("weansizefemale"));
 			setWeanSizeMale(request.getInt("weansizemale"));
 			
-			customName = request.getString("customname");
-			if (request.getString("customname") == null) {
-				customName = "";
+			nameBase = request.getString("namebase");
+			if (request.getString("namebase") == null) {
+				nameBase = "";
 			}
 			if (request.getInt("startnumber") != null) {
-				customNumber = request.getInt("startnumber");
+				startNumber = request.getInt("startnumber");
 			} else {
-				customNumber = 1; // standard start at 1
+				startNumber = 1; // standard start at 1
 			}
 			
 		} else {
@@ -618,7 +609,7 @@ public class ManageLitters extends PluginModel<Entity>
 				
 				// Link animals to litter and set wean dates etc.
 				for (int animalNumber = 0; animalNumber < weanSize; animalNumber++) {
-					ObservationTarget animalToAdd = ct.createIndividual(invid, "animal_" + weanDate + "_" + animalNumber, 
+					ObservationTarget animalToAdd = ct.createIndividual(invid, nameBase + (startNumber + animalNumber), 
 							this.getLogin().getUserId());
 					animalsToAddList.add(animalToAdd);
 				}
@@ -673,14 +664,6 @@ public class ManageLitters extends PluginModel<Entity>
 					measurementId = ct.getMeasurementId("Source");
 					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
 							null, protocolId, measurementId, animalId, null, sourceId));
-					// Set custom name/ID
-					if (this.getCustomNameFeature() != null) {
-						protocolId = ct.getProtocolId("Set" + this.getCustomNameFeature());
-						measurementId = ct.getMeasurementId(this.getCustomNameFeature());
-						valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
-								null, protocolId, measurementId, animalId, customName + customNumber, 0));
-						customNumber++;
-					}
 					
 					animalNumber++;
 				}

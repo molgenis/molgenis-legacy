@@ -50,7 +50,7 @@ public class AddAnimalPlugin extends GenericPlugin
 	public SelectInput genestate = null;
 	public DateInput birthdate = null;
 	public DateInput entrydate = null;
-	public TextLineInput<String> customname = null;
+	public TextLineInput<String> namebase = null;
 	public IntInput startnumber = null;
 	public IntInput numberofanimals = null;
 	public SelectInput actor = null;
@@ -63,7 +63,7 @@ public class AddAnimalPlugin extends GenericPlugin
 	// sub-subpanel to conditionally show the genetic modification questions (gene, genestate)
 	public DivPanel genePanel = null;
 	// subpanel to conditionally show the custom name questions (base, start number)
-	public DivPanel customNamePanel = null;
+	public DivPanel namePanel = null;
 
 	public AddAnimalPlugin(String name, ScreenController<?> parent)
 	{
@@ -212,24 +212,20 @@ public class AddAnimalPlugin extends GenericPlugin
 			throw(new Exception("No entry date given - animal(s) not added"));
 		}
 						
-		// Custom name
-		String customName = null;
-		int customNumber = -1;
-		if (customname != null && startnumber != null) {
-			if (customname.getObject() != null || startnumber.getObject() != null) {
-				if (customname.getObject() != null) {
-					customName = customname.getObject();
-				} else {
-					customName = "";
-				}
-				if (startnumber.getObject() != null) {
-					// TODO: Find out why HtmlInput<E>'s getObject() returns a String object and not an
-					// Integer one, as expected!
-					customNumber = Integer.parseInt(startnumber.getValue());
-				} else {
-					customNumber = 1; // standard start at 1
-				}
-			}
+		// Name
+		String nameBase = null;
+		int startNumber = -1;
+		if (namebase.getObject() != null) {
+			nameBase = namebase.getObject();
+		} else {
+			nameBase = "";
+		}
+		if (startnumber.getObject() != null) {
+			// TODO: Find out why HtmlInput<E>'s getObject() returns a String object and not an
+			// Integer one, as expected!
+			startNumber = Integer.parseInt(startnumber.getValue());
+		} else {
+			startNumber = 1; // standard start at 1
 		}
 		
 		// Number of animals
@@ -243,7 +239,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		}
 		
 		// Investigation
-		int invid = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
+		int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
 		
 		db.beginTx();
 		
@@ -253,22 +249,13 @@ public class AddAnimalPlugin extends GenericPlugin
 		List<ProtocolApplication> appsToAddList = new ArrayList<ProtocolApplication>();
 		
 		// Make all animals
-		int i;
-		for (i = 1; i <= nrOfAnimals; i++) {
+		for (int i = 0; i < nrOfAnimals; i++) {
 			// Make and add animal
-			ObservationTarget newAnimal = ct.createIndividual(invid, "animal_" + now + "_" + i, this.getLogin().getUserId());
+			ObservationTarget newAnimal = ct.createIndividual(invid, nameBase + (startNumber + i), 
+					this.getLogin().getUserId());
 			animalsToAddList.add(newAnimal);
 		}
 		db.add(animalsToAddList);
-		
-		// Check if a custom name feature is set
-		String customNameFeature = null;
-		int jMax = 8;
-		int customNameFeatureId = ct.getCustomNameFeatureId(this.getLogin().getUserId());
-		if (customNameFeatureId != -1) {
-			customNameFeature = ct.getMeasurementById(customNameFeatureId).getName();
-			jMax = 9;
-		}
 		
 		// Make all protocol applications
 		List<Integer> protocolIdList = new ArrayList<Integer>();
@@ -280,10 +267,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		protocolIdList.add(ct.getProtocolId("SetBackground"));
 		protocolIdList.add(ct.getProtocolId("SetGenotype"));
 		protocolIdList.add(ct.getProtocolId("SetDateOfBirth"));
-		if (customNameFeature != null) {
-			protocolIdList.add(ct.getProtocolId("Set" + customNameFeature));
-		}
-		for (int j = 0; j < jMax; j++) {
+		for (int j = 0; j < 8; j++) {
 			ProtocolApplication newApp = ct.createProtocolApplication(invid, protocolIdList.get(j));
 			appsToAddList.add(newApp);
 		}
@@ -300,9 +284,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		featureIdList.add(ct.getMeasurementId("GeneName"));
 		featureIdList.add(ct.getMeasurementId("GeneState"));
 		featureIdList.add(ct.getMeasurementId("DateOfBirth"));
-		if (customNameFeature != null) {
-			featureIdList.add(ct.getMeasurementId(customNameFeature));
-		}
+		
 		for (ObservationTarget animal : animalsToAddList) {
 			int animalid = animal.getId();
 			
@@ -349,13 +331,6 @@ public class AddAnimalPlugin extends GenericPlugin
 				app = appsToAddList.get(7);
 				valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
 						featureIdList.get(8), animalid, birthDate, 0));
-			}
-			// Set custom name/ID
-			if (customNameFeature != null && customName != null) {
-				app = appsToAddList.get(8);
-				valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
-						featureIdList.get(9), animalid, customName + customNumber, 0));
-				customNumber++;
 			}
 			
 		}	
@@ -464,24 +439,16 @@ public class AddAnimalPlugin extends GenericPlugin
 		entrydate.setLabel("Date of entry:");
 		entrydate.setNillable(false);
 		
-		customNamePanel = null;
-		customname = null;
-		startnumber = null;
-		int customNameFeatureId = ct.getCustomNameFeatureId(this.getLogin().getUserId());
-		if (customNameFeatureId != -1) {
-			// Only show custom name panel when the user has selected a custom name feature
-			
-			customNamePanel = new DivPanel("CustomName", ct.getMeasurementById(customNameFeatureId).getName() + 
-					":");
+		namePanel = new DivPanel("Name", "Name:");
 		
-			customname = new TextLineInput<String>("customname");
-			customname.setLabel("Base (may be empty):");
-			customNamePanel.add(customname);
-		
-			startnumber = new IntInput("startnumber");
-			startnumber.setLabel("Start number:");
-			customNamePanel.add(startnumber);
-		}
+		namebase = new TextLineInput<String>("namebase");
+		namebase.setLabel("Name base (may be empty):");
+		namePanel.add(namebase);
+	
+		startnumber = new IntInput("startnumber");
+		startnumber.setLabel("Start numbering at:");
+		startnumber.setValue(1);
+		namePanel.add(startnumber);
 		
 		numberofanimals = new IntInput("numberofanimals");
 		numberofanimals.setLabel("Number of animals:");
@@ -498,9 +465,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		containingPanel.add(gmoPanel);
 		containingPanel.add(birthdate);
 		containingPanel.add(entrydate);
-		if (customNamePanel != null) {
-			containingPanel.add(customNamePanel);
-		}
+		containingPanel.add(namePanel);
 		containingPanel.add(numberofanimals);
 		containingPanel.add(addbutton);
 	}
