@@ -1,6 +1,3 @@
-/**
- * 
- */
 package commonservice;
 
 import java.io.IOException;
@@ -10,6 +7,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.molgenis.animaldb.CustomLabelFeature;
@@ -39,8 +38,9 @@ import com.ibm.icu.util.Calendar;
 /**
  * @author erikroos
  * 
- *         Changelog <li>MS: Added constants to replace the String values that
- *         lead to so many typos. Can't we autogenerate all these services?
+ *         Changelog
+ *         <li>MS: Added constants to replace the String values that
+ *         lead to so many typos. Can't we autogenerate all these services?</li>
  */
 public class CommonService
 {
@@ -1760,6 +1760,53 @@ public class CommonService
 			}
 		}
 		
+	}
+	
+	/**
+	 * Get all the name bases (non-numeric parts of the names) that are in the DB.
+	 * 
+	 * @return
+	 */
+	public List<String> getNameBases() throws DatabaseException {
+		
+		List<String> returnList = new ArrayList<String>();
+		
+		List<ObservationTarget> allTargetList = db.find(ObservationTarget.class);
+		for (ObservationTarget target : allTargetList) {
+			String name = target.getName();
+			name = name.replaceAll("\\d+$", "");
+			if (!name.equals("") && !returnList.contains(name)) {
+				returnList.add(name);
+			}
+		}
+		
+		return returnList;
+	}
+	
+	public int getHighestNumberForNameBase(String base) throws DatabaseException {
+		
+		int maxTrailingNumber = 0;
+		
+		List<ObservationTarget> targetList = db.find(ObservationTarget.class, 
+				new QueryRule(ObservationTarget.NAME, Operator.LIKE, base));
+		for (ObservationTarget target : targetList) {
+			String name = target.getName();
+			// Extra check on name
+			if (!name.startsWith(base)) {
+				continue;
+			}
+			Pattern p = Pattern.compile("\\d+$");
+			Matcher m = p.matcher(name);
+			if (!m.find()) {
+				continue;
+			}
+			int trailingNumber = Integer.parseInt(m.group());
+			if (trailingNumber > maxTrailingNumber) {
+				maxTrailingNumber = trailingNumber;
+			}
+		}
+		
+		return maxTrailingNumber;
 	}
 
 }

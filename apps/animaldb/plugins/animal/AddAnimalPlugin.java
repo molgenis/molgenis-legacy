@@ -26,6 +26,7 @@ import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.IntInput;
 import org.molgenis.framework.ui.html.RepeatingPanel;
 import org.molgenis.framework.ui.html.SelectInput;
+import org.molgenis.framework.ui.html.TextInput;
 import org.molgenis.framework.ui.html.TextLineInput;
 import org.molgenis.pheno.Code;
 import org.molgenis.pheno.ObservationTarget;
@@ -39,6 +40,8 @@ public class AddAnimalPlugin extends GenericPlugin
 {
 	private static final long serialVersionUID = -4185405160313262242L;
 	private CommonService ct = CommonService.getInstance();
+	
+	private List<String> bases = null;
 
 	// inputs
 	public SelectInput species = null;
@@ -50,7 +53,8 @@ public class AddAnimalPlugin extends GenericPlugin
 	public SelectInput genestate = null;
 	public DateInput birthdate = null;
 	public DateInput entrydate = null;
-	public TextLineInput<String> namebase = null;
+	public SelectInput namebase = null;
+	public TextLineInput<String> newnamebase = null;
 	public IntInput startnumber = null;
 	public IntInput numberofanimals = null;
 	public SelectInput actor = null;
@@ -83,6 +87,8 @@ public class AddAnimalPlugin extends GenericPlugin
 		{
 			ct.setDatabase(db);
 			ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
+			
+			bases = ct.getNameBases();
 			
 			//if (tablePanel == null) {
 				populateTablePanel(db);
@@ -216,9 +222,16 @@ public class AddAnimalPlugin extends GenericPlugin
 		String nameBase = null;
 		int startNumber = -1;
 		if (namebase.getObject() != null) {
-			nameBase = namebase.getObject();
+			nameBase = namebase.getObject().toString();
+			if (nameBase.equals("New")) {
+				if (newnamebase.getObject() != null) {
+					nameBase = newnamebase.getObject().toString();
+				} else {
+					nameBase = "";
+				}	
+			}
 		} else {
-			nameBase = "";
+			 nameBase = "";
 		}
 		if (startnumber.getObject() != null) {
 			// TODO: Find out why HtmlInput<E>'s getObject() returns a String object and not an
@@ -441,13 +454,24 @@ public class AddAnimalPlugin extends GenericPlugin
 		
 		namePanel = new DivPanel("Name", "Name:");
 		
-		namebase = new TextLineInput<String>("namebase");
+		namebase = new SelectInput("namebase");
 		namebase.setLabel("Name base (may be empty):");
+		namebase.addOption("", "");
+		namebase.addOption("New", "New (specify below)");
+		for (String base : bases) {
+			namebase.addOption(base, base);
+		}
+		namebase.setOnchange("updateStartNumber(this.value)");
 		namePanel.add(namebase);
+		
+		newnamebase = new TextLineInput<String>("newnamebase");
+		newnamebase.setLabel("New name base:");
+		namePanel.add(newnamebase);
 	
 		startnumber = new IntInput("startnumber");
+		startnumber.setId("startnumber");
 		startnumber.setLabel("Start numbering at:");
-		startnumber.setValue(1);
+		startnumber.setValue(ct.getHighestNumberForNameBase("")); // start with highest number for empty base
 		namePanel.add(startnumber);
 		
 		numberofanimals = new IntInput("numberofanimals");
@@ -473,6 +497,14 @@ public class AddAnimalPlugin extends GenericPlugin
 	public String render()
 	{
 		return this.containingPanel.toHtml();
+	}
+
+	public List<String> getBases() {
+		return bases;
+	}
+
+	public void setBases(List<String> bases) {
+		this.bases = bases;
 	}
 	
 }
