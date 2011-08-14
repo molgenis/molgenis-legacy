@@ -54,6 +54,7 @@ public class AddAnimalPlugin extends GenericPlugin
 	public DateInput birthdate = null;
 	public DateInput entrydate = null;
 	public SelectInput namebase = null;
+	public TextLineInput<String> startnumberhelper = null;
 	public TextLineInput<String> newnamebase = null;
 	public IntInput startnumber = null;
 	public IntInput numberofanimals = null;
@@ -455,14 +456,29 @@ public class AddAnimalPlugin extends GenericPlugin
 		namePanel = new DivPanel("Name", "Name:");
 		
 		namebase = new SelectInput("namebase");
+		namebase.setId("namebase");
 		namebase.setLabel("Name base (may be empty):");
-		namebase.addOption("", "");
 		namebase.addOption("New", "New (specify below)");
 		for (String base : bases) {
-			namebase.addOption(base, base);
+			if (!base.equals("")) {
+				namebase.addOption(base, base);
+			}
 		}
 		namebase.setOnchange("updateStartNumber(this.value)");
 		namePanel.add(namebase);
+		
+		startnumberhelper = new TextLineInput<String>("startnumberhelper");
+		String helperContents = "";
+		helperContents += ct.getHighestNumberForNameBase("");
+		helperContents += ";0";
+		for (String base : bases) {
+			if (!base.equals("")) {
+				helperContents += (";"+ ct.getHighestNumberForNameBase(base));
+			}
+		}
+		startnumberhelper.setValue(helperContents);
+		startnumberhelper.setHidden(true);
+		namePanel.add(startnumberhelper);
 		
 		newnamebase = new TextLineInput<String>("newnamebase");
 		newnamebase.setLabel("New name base:");

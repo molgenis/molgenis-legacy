@@ -1795,7 +1795,13 @@ public class CommonService
 			if (!name.startsWith(base)) {
 				continue;
 			}
-			Pattern p = Pattern.compile("\\d+$");
+			Pattern p;
+			if (base.equals("")) {
+				// With an empty base, name may consist of numbers only
+				p = Pattern.compile("^\\d+$");
+			} else {
+				p = Pattern.compile("\\d+$");
+			}
 			Matcher m = p.matcher(name);
 			if (!m.find()) {
 				continue;
@@ -1806,7 +1812,7 @@ public class CommonService
 			}
 		}
 		
-		return maxTrailingNumber;
+		return maxTrailingNumber + 1;
 	}
 
 }

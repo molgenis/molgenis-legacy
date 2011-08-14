@@ -7,7 +7,16 @@ function showHideGenotypeDiv(animalType) {
 }
 
 function updateStartNumber(nameBase) {
-	// TODO: find a way to get the proper highest number for the chosen label.
-	// Maybe put a hidden bases-startnumbers list on the page?
-	document.getElementById("startnumber").value = 'highest for base' + nameBase;
+	var nameBases = document.getElementById("namebase").options;
+	var startNumberString = document.getElementById("startnumberhelper").value;
+	var startNumbers = startNumberString.split(";");
+	// Find position of selected name base
+	var index = 0;
+	for (; index < nameBases.length; index++) {
+		if (nameBases[index].value === nameBase) {
+			break;
+		}
+	}
+	var startNumber = startNumbers[index];
+	document.getElementById("startnumber").value = startNumber;
 }
