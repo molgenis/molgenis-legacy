@@ -48,6 +48,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.UnavailableException;
 import javax.servlet.http.*;
 
+import app.servlet.MolgenisServlet;
+
 /// Class to serve java servlets using HTTP
 //<p>
 //See TJWS
@@ -468,7 +470,10 @@ public class Webserver implements ServletContext, Serializable {
 		if (sessions == null)
 			sessions = new HttpSessionContextImpl();
 		// TODO: display address as name and as ip
-		Utils.console("Webserver @t " + hostName + " - " + getAcceptor() + " is listening.");
+		//Utils.console("Webserver @t " + hostName + " - " + getAcceptor() + " is listening.");
+		Utils.console("*********************************************************");
+		Utils.console("APPLICATION IS RUNNING AT: http://localhost:"+DEF_PORT+"/"+MolgenisServlet.getMolgenisVariantID());
+		Utils.console("*********************************************************");
 		try {
 			while (running) {
 				try {

@@ -3,6 +3,10 @@ package boot;
 import java.awt.HeadlessException;
 import java.io.IOException;
 
+import core.Webserver;
+
+import test.Helper;
+
 public class RunStandalone
 {
 	
@@ -30,15 +34,15 @@ public class RunStandalone
 	 * @param args
 	 * @throws IOException
 	 */
-	public static void main(String[] args)
+	public static void main(String[] args) throws IOException
 	{
-		if(args.length == 0){
-			// null construct: start on port 8080
-			new RunStandalone(null);
-		}else if(args.length == 1){
-			//int constructor: start on custom port
-			new RunStandalone(Integer.parseInt(args[0]));
-		}
+		//get the default port
+		int port = Webserver.DEF_PORT;
 		
+		//check if the port is free, if not, try the next 100
+		int freePort = Helper.getAvailablePort(port, 100);
+		
+		//run the app on a free port
+		new RunStandalone(freePort);
 	}
 }
