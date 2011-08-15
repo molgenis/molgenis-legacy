@@ -8,15 +8,15 @@ filteredNumberOfRows: ${matrix.filteredNumberOfRows}<br>
 filteredNumberOfCols: ${matrix.filteredNumberOfCols}<br> -->
 
 <#if matrix.filteredNumberOfCols == matrix.totalNumberOfCols>
-	<#assign colHeader = "COLTYPE " + matrix.colIndex + "-" + (matrix.colIndex+matrix.visibleCols?size) + " of " + matrix.totalNumberOfCols>
+	<#assign colHeader = "COLTYPE " + (matrix.colIndex+1) + "-" + (matrix.colIndex+matrix.visibleCols?size) + " of " + matrix.totalNumberOfCols>
 <#else>
-	<#assign colHeader = "COLTYPE " +matrix.colIndex + "-" + (matrix.colIndex+matrix.visibleCols?size) + " of " + matrix.filteredNumberOfCols + " filtered results (total " + matrix.totalNumberOfCols + ")">
+	<#assign colHeader = "COLTYPE " + (matrix.colIndex+1) + "-" + (matrix.colIndex+matrix.visibleCols?size) + " of " + matrix.filteredNumberOfCols + " filtered results (total " + matrix.totalNumberOfCols + ")">
 </#if>
 	
 <#if matrix.filteredNumberOfRows == matrix.totalNumberOfRows>
-	<#assign rowHeader = "ROWTYPE " + matrix.rowIndex + "-" + (matrix.rowIndex+matrix.visibleRows?size) + " of " + matrix.totalNumberOfRows>
+	<#assign rowHeader = "ROWTYPE " + (matrix.rowIndex+1) + "-" + (matrix.rowIndex+matrix.visibleRows?size) + " of " + matrix.totalNumberOfRows>
 <#else>
-	<#assign rowHeader = "ROWTYPE " + matrix.rowIndex + "-" + (matrix.rowIndex+matrix.visibleRows?size) + " of " + matrix.filteredNumberOfRows + " filtered results (total " + matrix.totalNumberOfRows + ")">
+	<#assign rowHeader = "ROWTYPE " + (matrix.rowIndex+1) + "-" + (matrix.rowIndex+matrix.visibleRows?size) + " of " + matrix.filteredNumberOfRows + " filtered results (total " + matrix.totalNumberOfRows + ")">
 </#if>
 
 <table>
@@ -52,9 +52,9 @@ filteredNumberOfCols: ${matrix.filteredNumberOfCols}<br> -->
 			<input type="image" src="res/img/rowStop.png" onclick="__action.value = '${req_tag}moveFarDown';"/><br>
 			<br>
 			<table>
-				<tr><td><font class="fontColor">Stepsize</font></td><td><input type="text" name="stepSize" value="5" size="1"></td></tr>
-				<tr><td><font class="fontColor">Width</font></td><td><input type="text" name="width" value="5" size="1"></td></tr>
-				<tr><td><font class="fontColor">Height</font></td><td><input type="text" name="height" value="10" size="1"></td></tr>
+				<tr><td><font class="fontColor">Stepsize</font></td><td><input type="text" name="${req_tag}stepSize" value="${matrix.stepSize}" size="1"></td></tr>
+				<tr><td><font class="fontColor">Width</font></td><td><input type="text" name="${req_tag}width" value="${matrix.visibleCols?size}" size="1"></td></tr>
+				<tr><td><font class="fontColor">Height</font></td><td><input type="text" name="${req_tag}height" value="${matrix.visibleRows?size}" size="1"></td></tr>
 				<tr><td><input type="submit" value="Change" onclick="__action.value = '${req_tag}changeSubmatrixSize'; submit();"></td></tr>
 				<tr><td><input type="submit" value="Filter visible" onclick="__action.value = '${req_tag}filterVisible'; submit();"></td></tr>
 				<tr><td><input type="submit" value="Filter all" onclick="__action.value = '${req_tag}filterAll'; submit();"></td></tr>

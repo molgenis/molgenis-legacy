@@ -60,7 +60,7 @@ public class MatrixRenderer extends HtmlWidget
 
 		runChecks();
 
-		// set defaults for first view
+		// set defaults for first view in the 'internal' model for browsing/filtering a matrix
 		model.setStepSize(5);
 		model.setHeight(10);
 		model.setWidth(5);
@@ -86,7 +86,7 @@ public class MatrixRenderer extends HtmlWidget
 
 		// create and set the submatrix
 		RenderableMatrix subMatrix = model.getDataSource().getSubMatrixByOffset(model.getInstance(), model.getRowStart(),
-				nRows, model.getColStart(), nCols);
+				nRows, model.getColStart(), nCols, model.getStepSize());
 		verifyRenderableMatrix(subMatrix);
 		model.setSubMatrix(subMatrix);
 	}
@@ -159,6 +159,18 @@ public class MatrixRenderer extends HtmlWidget
 	
 	public void delegateHandleRequest(Tuple request) throws Exception {
 		
+		int stepSize = request.getInt(MATRIX_COMPONENT_REQUEST_PREFIX+"stepSize");
+		int width = request.getInt(MATRIX_COMPONENT_REQUEST_PREFIX+"width");
+		int height = request.getInt(MATRIX_COMPONENT_REQUEST_PREFIX+"height");
+		
+		stepSize = stepSize < 1 ? 1 : stepSize;
+		width = width < 1 ? 1 : width;
+		height = height < 1 ? 1 : height;
+
+		this.model.setStepSize(stepSize);
+		this.model.setWidth(width);
+		this.model.setHeight(height);
+		
 		String action = request.getString("__action");
 		
 		if(!action.startsWith(MATRIX_COMPONENT_REQUEST_PREFIX)){
@@ -190,20 +202,16 @@ public class MatrixRenderer extends HtmlWidget
 		}
 		else if (action.equals("moveFarUp")) {
 			this.moveFarUp();
-		}else{
+		}
+		else if (action.equals("changeSubmatrixSize")) {
+			this.update();
+		}
+		else{
 			throw new Exception("Action '"+action+"' unknown.");
 		}
 		
 		
 	}
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	private void moveActionFollowup() throws Exception

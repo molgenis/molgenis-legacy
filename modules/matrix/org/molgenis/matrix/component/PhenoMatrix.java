@@ -24,6 +24,7 @@ public class PhenoMatrix implements RenderableMatrix<ObservationTarget, Observab
 	private int filteredNumberOfCols;
 	private int rowIndex;
 	private int colIndex;
+	private int stepSize;
 	private List<Filter> filters;
 	private String constraintLogic;
 	private String screenName;
@@ -55,6 +56,7 @@ public class PhenoMatrix implements RenderableMatrix<ObservationTarget, Observab
 		this.filteredNumberOfCols = matrix.getFilteredNumberOfCols();
 		this.filteredNumberOfRows = matrix.getFilteredNumberOfRows();
 		this.rowIndex = matrix.getRowIndex();
+		this.stepSize = matrix.getStepSize();
 		//this.screenName = matrix.getScreenName();
 		this.totalNumberOfCols = matrix.getTotalNumberOfCols();
 		this.totalNumberOfRows = matrix.getTotalNumberOfRows();
@@ -64,7 +66,7 @@ public class PhenoMatrix implements RenderableMatrix<ObservationTarget, Observab
 	}
 	
 	public PhenoMatrix(RenderableMatrix matrix, List<ObservationTarget> visibleRows,
-			List<ObservableFeature> visibleCols, List<ObservedValue> vals) throws Exception {
+			List<ObservableFeature> visibleCols, List<ObservedValue> vals, int stepSize) throws Exception {
 		
 		// Step 1: make copy
 		this(matrix);
@@ -73,6 +75,7 @@ public class PhenoMatrix implements RenderableMatrix<ObservationTarget, Observab
 		this.visibleCols = visibleCols;
 		this.visibleRows = visibleRows;
 		this.visibleValues = new List[visibleRows.size()][visibleCols.size()];
+		this.stepSize = stepSize;
 		
 		int i = 0;
 		for (ObservationTarget target : visibleRows) {
@@ -188,7 +191,7 @@ public class PhenoMatrix implements RenderableMatrix<ObservationTarget, Observab
 
 	@Override
 	public RenderableMatrix getSubMatrixByOffset(RenderableMatrix matrix,
-			int rowStart, int nRows, int colStart, int nCols) throws Exception  {
+			int rowStart, int nRows, int colStart, int nCols, int stepSize) throws Exception  {
 		
 		visibleRows = db.find(ObservationTarget.class, new QueryRule(Operator.OFFSET, rowStart),
 				new QueryRule(Operator.LIMIT, nRows));
@@ -208,8 +211,8 @@ public class PhenoMatrix implements RenderableMatrix<ObservationTarget, Observab
 		
 		List<ObservedValue> vals = db.find(ObservedValue.class, new QueryRule(ObservedValue.TARGET, Operator.IN, targetIdList),
 				new QueryRule(ObservedValue.FEATURE, Operator.IN, featureIdList));
-		
-		return new PhenoMatrix(matrix, visibleRows, visibleCols, vals);
+
+		return new PhenoMatrix(matrix, visibleRows, visibleCols, vals, stepSize);
 		
 	}
 
@@ -239,6 +242,11 @@ public class PhenoMatrix implements RenderableMatrix<ObservationTarget, Observab
 			RenderableMatrix matrix, QueryRule q) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public int getStepSize() {
+		return stepSize;
 	}
 	
 

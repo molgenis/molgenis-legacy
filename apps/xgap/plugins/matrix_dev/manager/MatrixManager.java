@@ -180,9 +180,9 @@ public class MatrixManager extends PluginModel
 				if (this.model.isHasBackend())
 				{
 					
-					//setup the first matrix (starting at 0,0)
+					//setup the first matrix with bogus values that should be overwritten
 					AbstractDataMatrixInstance matrix = dmh.createInstance(data);
-					matrix.setupForRendering(db, 0, 0, matrix.getNumberOfRows(), matrix.getNumberOfCols());
+					matrix.setupForRendering(db, -1, -1, matrix.getNumberOfRows(), matrix.getNumberOfCols(), -1);
 					
 					//create and set the renderer
 					MatrixRenderer m = new MatrixRenderer("piet", matrix, matrix);

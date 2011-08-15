@@ -499,6 +499,7 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 	private int colIndex;
 	private List<Filter> filters;
 	private String constraintLogic;
+	private int stepSize;
 	
 	/*
 	 * Helper variable: database
@@ -566,6 +567,11 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 	public int getFilteredNumberOfCols() {
 		return filteredNumberOfCols;
 	}
+	
+	@Override
+	public int getStepSize() {
+		return stepSize;
+	}
 
 //	@Override
 //	public String getScreenName() {
@@ -578,7 +584,7 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 	 * @param screenName
 	 * @throws Exception
 	 */
-	public void setupForRendering(Database db, int rowIndex, int colIndex, int totalRows, int totalCols) throws Exception{
+	public void setupForRendering(Database db, int rowIndex, int colIndex, int totalRows, int totalCols, int stepSize) throws Exception{
 		
 		//keep the database pointer in the new matrix
 		this.db = db;
@@ -596,6 +602,7 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 		//remember what the original coordinates where that created this submatrix
 		this.rowIndex = rowIndex;
 		this.colIndex = colIndex;
+		this.stepSize = stepSize;
 		
 		//set rows, cols, and values
 		this.visibleRows = db.find(ObservationElement.class, investigation, rowNames);
@@ -619,11 +626,11 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 	 */
 	@Override
 	public RenderableMatrix getSubMatrixByOffset(RenderableMatrix matrix,
-			int rowIndex, int nRows, int colIndex, int nCols) throws Exception {
+			int rowIndex, int nRows, int colIndex, int nCols, int stepSize) throws Exception {
 		
 		AbstractDataMatrixInstance result = this.getSubMatrixByOffset(rowIndex, nRows, colIndex, nCols);
 
-		result.setupForRendering(this.db, rowIndex, colIndex, matrix.getTotalNumberOfRows(), matrix.getTotalNumberOfCols());
+		result.setupForRendering(this.db, rowIndex, colIndex, matrix.getTotalNumberOfRows(), matrix.getTotalNumberOfCols(), stepSize);
 		
 		return result;
 	}

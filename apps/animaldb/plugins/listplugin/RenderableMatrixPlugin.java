@@ -52,7 +52,7 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 		try {
 			String action = request.getString("__action");
 			
-			if (action.startsWith("matrix_component_request_tag_")) {
+			if (action.startsWith(MatrixRenderer.MATRIX_COMPONENT_REQUEST_PREFIX)) {
 				matrixRenderer.delegateHandleRequest(request);
 			}
 			

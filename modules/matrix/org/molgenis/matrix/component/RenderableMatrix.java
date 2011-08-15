@@ -90,10 +90,10 @@ public interface RenderableMatrix<R, C, V> {
 	public String getConstraintLogic();
 	
 	/**
-	 * The name of the screen this component is being rendered it. Needed to know
-	 * where to send requests from the various buttons. FIXME: is there a smarter way?
+	 * Show the stepsize on the screen. This is the number of cells, or 'speed' with
+	 * which the matrix moves when move (panning) actions are performed.
+	 * @return
 	 */
-//	public String getScreenName();
-	
+	public int getStepSize();
 	
 }
