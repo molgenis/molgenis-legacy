@@ -380,6 +380,14 @@ public class ManageLitters extends PluginModel<Entity>
 		}
 	}
 	
+	public String getAnimalBirthDate(int animalId) {
+		try {
+			return ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("DateOfBirth"));
+		} catch (Exception e) {
+			return "";
+		}
+	}
+	
 	public String getAnimalEarmark(int animalId) {
 		try {
 			return ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("Earmark"));
@@ -768,7 +776,7 @@ public class ManageLitters extends PluginModel<Entity>
 				int animalCount = 0;
 				for (Individual animal : this.getAnimalsInLitter()) {
 					
-					// Here we set the values from the genotyping.
+					// Here we (re)set the values from the genotyping
 					
 					// Set sex
 					int sexId = request.getInt("sex_" + animalCount);
@@ -778,6 +786,16 @@ public class ManageLitters extends PluginModel<Entity>
 					value.setValue(null);
 					if (value.getProtocolApplication_Id() == null) {
 						int paId = ct.makeProtocolApplication(invid, ct.getProtocolId("SetSex"));
+						value.setProtocolApplication_Id(paId);
+					}
+					valuesToAddList.add(value);
+					// Set birth date
+					String dob = request.getString("dob_" + animalCount);
+					value = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
+							ct.getMeasurementByName("DateOfBirth"), investigationIds, invid).get(0);
+					value.setValue(dob);
+					if (value.getProtocolApplication_Id() == null) {
+						int paId = ct.makeProtocolApplication(invid, ct.getProtocolId("SetDateOfBirth"));
 						value.setProtocolApplication_Id(paId);
 					}
 					valuesToAddList.add(value);
@@ -835,9 +853,6 @@ public class ManageLitters extends PluginModel<Entity>
 				}
 				
 				db.update(valuesToAddList);
-				
-				// Make definitive cage labels
-				makeDefCageLabels();
 				
 				this.action = "ShowLitters";
 				this.reload(db);
@@ -910,7 +925,7 @@ public class ManageLitters extends PluginModel<Entity>
 		}
 		
 		// In case of an odd number of animals, add extra label to make row full
-		if (this.getAnimalsInLitter().size() %2 != 0) {
+		if (this.getAnimalsInLitter(litter).size() %2 != 0) {
 			elementList = new ArrayList<String>();
 			labelgenerator.addLabelToDocument(elementList);
 		}
@@ -1119,6 +1134,14 @@ public class ManageLitters extends PluginModel<Entity>
 					litterToAdd.setSize(-1);
 				} else {
 					litterToAdd.setSize(Integer.parseInt(size));
+				}
+				// Wean size
+				featid = ct.getMeasurementId("WeanSize");
+				String weanSize = ct.getMostRecentValueAsString(litterId, featid);
+				if (weanSize.equals("")) {
+					litterToAdd.setWeanSize(-1);
+				} else {
+					litterToAdd.setWeanSize(Integer.parseInt(weanSize));
 				}
 				// Size approximate
 				String isApproximate = "";

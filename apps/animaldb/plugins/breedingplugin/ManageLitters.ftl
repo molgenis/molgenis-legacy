@@ -64,7 +64,8 @@
 					<th>Parentgroup</th>
 					<th>Birth date</th>
 					<th>Wean date</th>
-					<th>Size</th>
+					<th>Size at birth</th>
+					<th>Size at weaning</th>
 					<th></th>
 					<th></th>
 				</tr>
@@ -75,6 +76,7 @@
 					<td style='padding:5px'>${litter.birthDate}</td>
 					<td style='padding:5px'>${litter.weanDate}</td>
 					<td style='padding:5px'>${litter.size}</td>
+					<td style='padding:5px'>${litter.weanSize}</td>
 					<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=MakeTmpLabels&id=${litter.id?string.computer}">Make temporary cage labels</a></td>
 					<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=ShowGenotype&id=${litter.id?string.computer}">Genotype</a></td>
 				</tr>
@@ -92,7 +94,8 @@
 					<th>Parentgroup</th>
 					<th>Birth date</th>
 					<th>Wean date</th>
-					<th>Size</th>
+					<th>Size at birth</th>
+					<th>Size at weaning</th>
 					<th></th>
 				</tr>
 			<#list screen.doneLitterList as litter>
@@ -102,6 +105,7 @@
 					<td style='padding:5px'>${litter.birthDate}</td>
 					<td style='padding:5px'>${litter.weanDate}</td>
 					<td style='padding:5px'>${litter.size}</td>
+					<td style='padding:5px'>${litter.weanSize}</td>
 					<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=MakeDefLabels&id=${litter.id?string.computer}">Make definitive cage labels</a></td>
 				</tr>
 			</#list>
@@ -221,6 +225,7 @@
 	<table>
 		<tr>
 			<th><strong>Animal name</strong></th>
+			<th><strong>Birth date</strong></th>
 			<th><strong>Sex</strong></th>
 			<th><strong>Color</strong></th>
 			<th><strong>Earmark</strong></th>
@@ -230,14 +235,18 @@
 		</tr>
 	<#assign animalCount = 0>
 	<#list screen.getAnimalsInLitter() as animal>
+		<#assign animalId = animal.id>
 		<tr>
 			<td>${animal.name}</td>
+			<td>
+				<input type='text' id='dob_${animalCount}' name='dob_${animalCount}' value='${screen.getAnimalBirthDate(animalId)}' onclick='showDateInput(this,true)' autocomplete='off' />
+			</td>
 			<td>
 				<select id='sex_${animalCount}' name='sex_${animalCount}'>
 				<#if screen.sexList?exists>
 					<#list screen.sexList as sex>
 						<option value='${sex.id?string.computer}'
-						<#if screen.getAnimalSex(animal.id) = sex.id>
+						<#if screen.getAnimalSex(animalId) = sex.id>
 							selected="selected"
 						</#if>
 						>${sex.name}</option>
@@ -250,7 +259,7 @@
 				<#if screen.colorList?exists>
 					<#list screen.colorList as color>
 						<option value='${color}'
-						<#if screen.getAnimalColor(animal.id) = color>
+						<#if screen.getAnimalColor(animalId) = color>
 							selected="selected"
 						</#if>
 						>${color}</option>
@@ -263,7 +272,7 @@
 				<#if screen.earmarkList?exists>
 					<#list screen.earmarkList as earmark>
 						<option value='${earmark.code_String}'
-						<#if screen.getAnimalEarmark(animal.id) = earmark.code_String>
+						<#if screen.getAnimalEarmark(animalId) = earmark.code_String>
 							selected="selected"
 						</#if>
 						>${earmark.code_String}</option>
@@ -276,7 +285,7 @@
 				<#if screen.backgroundList?exists>
 					<#list screen.backgroundList as background>
 						<option value='${background.id?string.computer}'
-						<#if screen.getAnimalBackground(animal.id) = background.id>
+						<#if screen.getAnimalBackground(animalId) = background.id>
 							selected="selected"
 						</#if>
 						>${background.name}</option>
@@ -289,7 +298,7 @@
 				<#if screen.geneNameList?exists>
 					<#list screen.geneNameList as geneName>
 						<option value='${geneName}'
-						<#if screen.getAnimalGeneName(animal.id) = geneName>
+						<#if screen.getAnimalGeneName(animalId) = geneName>
 							selected="selected"
 						</#if>
 						>${geneName}</option>
@@ -302,7 +311,7 @@
 				<#if screen.geneStateList?exists>
 					<#list screen.geneStateList as geneState>
 						<option value='${geneState}'
-						<#if screen.getAnimalGeneState(animal.id) = geneState>
+						<#if screen.getAnimalGeneState(animalId) = geneState>
 							selected="selected"
 						</#if>
 						>${geneState}</option>
