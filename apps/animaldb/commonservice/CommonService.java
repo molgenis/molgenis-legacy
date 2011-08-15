@@ -443,6 +443,7 @@ public class CommonService
 		if (idList.size() > 0) {
 			Query<ObservationTarget> targetQuery = db.query(ObservationTarget.class);
 			targetQuery.addRules(new QueryRule(ObservationTarget.ID, Operator.IN, idList));
+			targetQuery.addRules(new QueryRule(Operator.SORTASC, ObservationTarget.NAME));
 			return targetQuery.find();
 		} else {
 		    return new ArrayList<ObservationTarget>();
