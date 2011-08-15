@@ -43,6 +43,7 @@ public class ManageLitters extends PluginModel<Entity>
 	private List<ObservationTarget> parentgroupList;
 	private List<Litter> litterList = new ArrayList<Litter>();
 	private List<Litter> genoLitterList = new ArrayList<Litter>();
+	private List<Litter> doneLitterList = new ArrayList<Litter>();
 	private int selectedParentgroup;
 	private int litter;
 	private String litterName = "";
@@ -115,6 +116,14 @@ public class ManageLitters extends PluginModel<Entity>
 		return genoLitterList;
 	}
 	
+	public List<Litter> getDoneLitterList() {
+		return doneLitterList;
+	}
+
+	public void setDoneLitterList(List<Litter> doneLitterList) {
+		this.doneLitterList = doneLitterList;
+	}
+
 	public String getLitterName() {
 		return litterName;
 	}
@@ -328,10 +337,19 @@ public class ManageLitters extends PluginModel<Entity>
 	}
 	
 	public List<Individual> getAnimalsInLitter() {
+		try {
+			return getAnimalsInLitter(this.getGenoLitterId());
+		} catch (Exception e) {
+			// On fail, return empty list to UI
+			return new ArrayList<Individual>();
+		}
+	}
+	
+	public List<Individual> getAnimalsInLitter(int litterId) {
 		List<Individual> returnList = new ArrayList<Individual>();
 		try {
 			Query<ObservedValue> q = this.db.query(ObservedValue.class);
-			q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, this.getGenoLitterId()));
+			q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, litterId));
 			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, ct.getMeasurementId("Litter")));
 			List<ObservedValue> valueList = q.find();
 			int animalId;
@@ -491,6 +509,16 @@ public class ManageLitters extends PluginModel<Entity>
 			
 			this.action = request.getString("__action");
 			
+			if (action.equals("MakeTmpLabels")) {
+				setLitter(request.getInt("id"));
+				makeTempCageLabels();
+			}
+			
+			if (action.equals("MakeDefLabels")) {
+				setLitter(request.getInt("id"));
+				makeDefCageLabels();
+			}
+			
 			if (action.equals("AddLitter")) {
 				//
 			}
@@ -563,11 +591,7 @@ public class ManageLitters extends PluginModel<Entity>
 			
 			if (action.equals("ShowWean")) {
 				// Find and set litter
-				String litterIdString = request.getString("id");
-				litterIdString = litterIdString.replace(".", "");
-				litterIdString = litterIdString.replace(",", "");
-				int litterId = Integer.parseInt(litterIdString);
-				setLitter(litterId);
+				setLitter(request.getInt("id"));
 			}
 			
 			if (action.equals("Wean")) {
@@ -608,18 +632,16 @@ public class ManageLitters extends PluginModel<Entity>
 				}
 				// Find Line for this Parentgroup
 				int lineId = ct.getMostRecentValueAsXref(parentgroupId, ct.getMeasurementId("Line"));
-				String lineName = ct.getObservationTargetById(lineId).getName();
+				
 				// Find first mother, plus her animal type and species
 				int speciesId;
 				String animalType;
-				String motherLabel;
 				try {
 					int motherId = findParentForParentgroup(parentgroupId, "Mother");
 					measurementId = ct.getMeasurementId("Species");
 					speciesId = ct.getMostRecentValueAsXref(motherId, measurementId);
 					measurementId = ct.getMeasurementId("AnimalType");
 					animalType = ct.getMostRecentValueAsString(motherId, measurementId);
-					motherLabel = ct.getObservationTargetLabel(motherId);
 				} catch (Exception e) {
 					throw(new Exception("No mother (properties) found - litter not weaned"));
 				}
@@ -627,20 +649,16 @@ public class ManageLitters extends PluginModel<Entity>
 				if (animalType.equals("C. Wildvang") || animalType.equals("D. Biotoop")) {
 					animalType = "A. Gewoon dier";
 				}
-				// Find father and his name or custom label
-				String fatherLabel = "";
-				try {
-					int fatherId = findParentForParentgroup(parentgroupId, "Father");
-					fatherLabel = ct.getObservationTargetLabel(fatherId);
-				} catch (Exception e) {
-					throw(new Exception("No father (properties) found - litter not weaned"));
-				}
-				// Set wean size
+				// Set wean sizes
 				int weanSize = weanSizeFemale + weanSizeMale;
 				int protocolId = ct.getProtocolId("SetWeanSize");
 				measurementId = ct.getMeasurementId("WeanSize");
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 						protocolId, measurementId, litter, Integer.toString(weanSize), 0));
+				protocolId = ct.getProtocolId("SetWeanSizeFemale");
+				measurementId = ct.getMeasurementId("WeanSizeFemale");
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+						protocolId, measurementId, litter, Integer.toString(weanSizeFemale), 0));
 				// Set wean date on litter -> this is how we mark a litter as weaned (but not genotyped)
 				protocolId = ct.getProtocolId("SetWeanDate");
 				measurementId = ct.getMeasurementId("WeanDate");
@@ -663,7 +681,7 @@ public class ManageLitters extends PluginModel<Entity>
 					
 					// TODO: link every value to a single Wean protocol application instead of to its own one
 					
-					// Linkt to litter
+					// Link to litter
 					protocolId = ct.getProtocolId("SetLitter");
 					measurementId = ct.getMeasurementId("Litter");
 					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
@@ -722,9 +740,6 @@ public class ManageLitters extends PluginModel<Entity>
 				
 				// Update custom label map now new animals have been added
 				ct.makeObservationTargetNameMap(this.getLogin().getUserId(), true);
-				
-				// Make temporary cage labels
-				makeTempCageLabels(lineName, motherLabel, fatherLabel, litterBirthDateString);
 				
 				this.action = "ShowLitters";
 				this.reload(db);
@@ -846,13 +861,16 @@ public class ManageLitters extends PluginModel<Entity>
 	}
 
 	private void makeDefCageLabels() throws LabelGeneratorException, DatabaseException, ParseException {
+		
+		// PDF file stuff
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 		File pdfFile = new File(tmpDir.getAbsolutePath() + File.separatorChar + "deflabels.pdf");
 		String filename = pdfFile.getName();
 		LabelGenerator labelgenerator = new LabelGenerator(2);
 		labelgenerator.startDocument(pdfFile);
 		
-		int parentgroupId = ct.getMostRecentValueAsXref(this.getGenoLitterId(), ct.getMeasurementId("Parentgroup"));
+		// Litter stuff
+		int parentgroupId = ct.getMostRecentValueAsXref(litter, ct.getMeasurementId("Parentgroup"));
 		String line = this.getLineInfo(parentgroupId);
 		int motherId = findParentForParentgroup(parentgroupId, "Mother");
 		String motherInfo = this.getGenoInfo(motherId);
@@ -861,7 +879,7 @@ public class ManageLitters extends PluginModel<Entity>
 		
 		List<String> elementList;
 		
-		for (Individual animal : this.getAnimalsInLitter()) {
+		for (Individual animal : this.getAnimalsInLitter(litter)) {
 			int animalId = animal.getId();
 			elementList = new ArrayList<String>();
 			// Earmark
@@ -886,7 +904,7 @@ public class ManageLitters extends PluginModel<Entity>
 			// Geno father
 			elementList.add("Father: " + fatherInfo);
 			// OldUliDbExperimentator
-			elementList.add("Experimentator: " + ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("OldUliDbExperimentator")));
+			elementList.add("Experimenter: " + ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("OldUliDbExperimentator")));
 			
 			labelgenerator.addLabelToDocument(elementList);
 		}
@@ -901,15 +919,31 @@ public class ManageLitters extends PluginModel<Entity>
 		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename + "\">Download definitive cage labels as pdf</a>");
 	}
 
-	private void makeTempCageLabels(String lineName, String motherLabel, String fatherLabel, String litterBirthDateString) throws LabelGeneratorException {
+	private void makeTempCageLabels() throws Exception {
+		
+		// PDF file stuff
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 		File pdfFile = new File(tmpDir.getAbsolutePath() + File.separatorChar + "weanlabels.pdf");
 		String filename = pdfFile.getName();
 		LabelGenerator labelgenerator = new LabelGenerator(2);
 		labelgenerator.startDocument(pdfFile);
 		List<String> elementList;
+		
+		// Selected litter stuff
+		int parentgroupId = ct.getMostRecentValueAsXref(litter, ct.getMeasurementId("Parentgroup"));
+		int lineId = ct.getMostRecentValueAsXref(parentgroupId, ct.getMeasurementId("Line"));
+		String lineName = ct.getObservationTargetById(lineId).getName();
+		int motherId = findParentForParentgroup(parentgroupId, "Mother");
+		String motherName = ct.getObservationTargetById(motherId).getName();
+		int fatherId = findParentForParentgroup(parentgroupId, "Father");
+		String fatherName = ct.getObservationTargetById(fatherId).getName();
+		String litterBirthDateString = ct.getMostRecentValueAsString(litter, ct.getMeasurementId("DateOfBirth"));
+		int nrOfAnimals = Integer.parseInt(ct.getMostRecentValueAsString(litter, ct.getMeasurementId("WeanSize")));
+		int nrOfFemales = Integer.parseInt(ct.getMostRecentValueAsString(litter, ct.getMeasurementId("WeanSizeFemale")));
+		int nrOfMales = nrOfAnimals - nrOfFemales;
+		
+		// Labels for females
 		int nrOfCages = 0;
-		int nrOfFemales = weanSizeFemale;
 		while (nrOfFemales > 0) {
 			elementList = new ArrayList<String>();
 			// Line name + Nr. of females in cage
@@ -929,7 +963,7 @@ public class ManageLitters extends PluginModel<Entity>
 			if (cageSize > 1) firstLine += "s";
 			elementList.add(firstLine);
 			// Parents
-			elementList.add(motherLabel + " x " + fatherLabel);
+			elementList.add(motherName + " x " + fatherName);
 			// Litter birth date
 			elementList.add(litterBirthDateString);
 			// Nrs. for writing extra information behind
@@ -941,7 +975,8 @@ public class ManageLitters extends PluginModel<Entity>
 			nrOfFemales -= cageSize;
 			nrOfCages++;
 		}
-		int nrOfMales = weanSizeMale;
+		
+		// Labels for males
 		while (nrOfMales > 0) {
 			elementList = new ArrayList<String>();
 			// Line name + Nr. of males in cage
@@ -953,7 +988,7 @@ public class ManageLitters extends PluginModel<Entity>
 			}
 			elementList.add(firstLine);
 			// Parents
-			elementList.add(motherLabel + " x " + fatherLabel);
+			elementList.add(motherName + " x " + fatherName);
 			// Litter birth date
 			elementList.add(litterBirthDateString);
 			// Nrs. for writing extra information behind
@@ -965,11 +1000,13 @@ public class ManageLitters extends PluginModel<Entity>
 			nrOfMales -= 2;
 			nrOfCages++;
 		}
+		
 		// In case of an odd number of cages, add extra label to make row full
 		if (nrOfCages %2 != 0) {
 			elementList = new ArrayList<String>();
 			labelgenerator.addLabelToDocument(elementList);
 		}
+		
 		labelgenerator.finishDocument();
 		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename + "\">Download temporary wean labels as pdf</a>");
 	}
@@ -1019,9 +1056,10 @@ public class ManageLitters extends PluginModel<Entity>
 		try {
 			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
 			
-			// Populate unweaned and ungenotyped litter lists
+			// Populate litter lists
 			litterList.clear();
 			genoLitterList.clear();
+			doneLitterList.clear();
 			
 			// Make list of ID's of weaned litters
 			List<Integer> weanedLitterIdList = new ArrayList<Integer>();
@@ -1051,10 +1089,6 @@ public class ManageLitters extends PluginModel<Entity>
 			List<ObservationTarget> allLitterList = ct.getAllMarkedPanels("Litter", investigationIds);
 			for (ObservationTarget litter : allLitterList) {
 				int litterId = litter.getId();
-				if (weanedLitterIdList.contains(litterId) && genotypedLitterIdList.contains(litterId)) {
-					// Skip litters that have both been weaned and genotyped
-					continue;
-				}
 				// Make a temporary litter and set all relevant values
 				Litter litterToAdd = new Litter();
 				// ID
@@ -1101,7 +1135,11 @@ public class ManageLitters extends PluginModel<Entity>
 				if (!weanedLitterIdList.contains(litterId)) {
 					litterList.add(litterToAdd);
 				} else {
-					genoLitterList.add(litterToAdd);
+					if (!genotypedLitterIdList.contains(litterId)) {
+						genoLitterList.add(litterToAdd);
+					} else {
+						doneLitterList.add(litterToAdd);
+					}
 				}
 			}
 			

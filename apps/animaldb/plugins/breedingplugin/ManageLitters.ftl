@@ -27,10 +27,6 @@
 
 <#if screen.action == "ShowLitters">
 
-	<#if screen.labelDownloadLink??>
-		<p>${screen.labelDownloadLink}</p>
-	</#if>
-
 	<p><a href="molgenis.do?__target=${screen.name}&__action=AddLitter">Make new litter</a></p>
 	
 	<#if screen.litterList?exists>
@@ -38,7 +34,12 @@
 			<h2>Unweaned litters</h2>
 			<table cellpadding="10" cellspacing="2" border="1">
 				<tr>
-					<th>Name</th><th>Parentgroup</th><th>Birth date</th><th>Size</th><th>Size approximate?</th><th></th>
+					<th>Name</th>
+					<th>Parentgroup</th>
+					<th>Birth date</th>
+					<th>Size</th>
+					<th>Size approximate?</th>
+					<th></th>
 				</tr>
 			<#list screen.litterList as litter>
 				<tr>
@@ -59,7 +60,13 @@
 			<h2>Weaned litters that have not been genotyped yet</h2>
 			<table cellpadding="10" cellspacing="2" border="1">
 				<tr>
-					<th>Name</th><th>Parentgroup</th><th>Birth date</th><th>Wean date</th><th>Size</th><th></th>
+					<th>Name</th>
+					<th>Parentgroup</th>
+					<th>Birth date</th>
+					<th>Wean date</th>
+					<th>Size</th>
+					<th></th>
+					<th></th>
 				</tr>
 			<#list screen.genoLitterList as litter>
 				<tr>
@@ -68,12 +75,55 @@
 					<td style='padding:5px'>${litter.birthDate}</td>
 					<td style='padding:5px'>${litter.weanDate}</td>
 					<td style='padding:5px'>${litter.size}</td>
+					<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=MakeTmpLabels&id=${litter.id?string.computer}">Make temporary cage labels</a></td>
 					<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=ShowGenotype&id=${litter.id?string.computer}">Genotype</a></td>
 				</tr>
 			</#list>
 			</table>
 		</#if>
 	</#if>
+	
+	<#if screen.doneLitterList?exists>
+		<#if screen.doneLitterList?size gt 0>
+			<h2>Weaned and genotyped litters</h2>
+			<table cellpadding="10" cellspacing="2" border="1">
+				<tr>
+					<th>Name</th>
+					<th>Parentgroup</th>
+					<th>Birth date</th>
+					<th>Wean date</th>
+					<th>Size</th>
+					<th></th>
+				</tr>
+			<#list screen.doneLitterList as litter>
+				<tr>
+					<td style='padding:5px'>${litter.name}</td>
+					<td style='padding:5px'>${litter.parentgroup}</td>
+					<td style='padding:5px'>${litter.birthDate}</td>
+					<td style='padding:5px'>${litter.weanDate}</td>
+					<td style='padding:5px'>${litter.size}</td>
+					<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=MakeDefLabels&id=${litter.id?string.computer}">Make definitive cage labels</a></td>
+				</tr>
+			</#list>
+			</table>
+		</#if>
+	</#if>
+	
+<#elseif screen.action == "MakeTmpLabels">
+
+	<#if screen.labelDownloadLink??>
+		<p>${screen.labelDownloadLink}</p>
+	</#if>
+	
+	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowLitters">Back to overview</a></p>
+	
+<#elseif screen.action == "MakeDefLabels">
+
+	<#if screen.labelDownloadLink??>
+		<p>${screen.labelDownloadLink}</p>
+	</#if>
+	
+	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowLitters">Back to overview</a></p>
 
 <#elseif screen.action == "AddLitter">
 

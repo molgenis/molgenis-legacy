@@ -40,8 +40,8 @@ public class ManageParentgroups extends PluginModel<Entity>
 	private List<Integer> selectedFatherIdList = new ArrayList<Integer>();
 	private CommonService ct = CommonService.getInstance();
 	private SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
-	private String groupName = "";
-	private String datetime = "";
+	private String groupName = null;
+	private String datetime = null;
 	private List<ObservationTarget> lineList;
 	private int line = 0;
 	private boolean firstTime = true;
@@ -178,9 +178,15 @@ public class ManageParentgroups extends PluginModel<Entity>
 	}
 	
 	private void setUserFields(Tuple request) {
-		setDatetime(request.getString("datetime"));
-		setGroupName(request.getString("groupname"));
-		setLine(request.getInt("line"));
+		if (request.getString("datetime") != null) {
+			setDatetime(request.getString("datetime"));
+		}
+		if (request.getString("groupname") != null) {
+			setGroupName(request.getString("groupname"));
+		}
+		if (request.getInt("line") != null) {
+			setLine(request.getInt("line"));
+		}
 	}
 	
 	private void resetUserFields() {
