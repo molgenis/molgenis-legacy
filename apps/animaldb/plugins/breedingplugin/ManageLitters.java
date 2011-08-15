@@ -663,10 +663,16 @@ public class ManageLitters extends PluginModel<Entity>
 					
 					// TODO: link every value to a single Wean protocol application instead of to its own one
 					
+					// Linkt to litter
 					protocolId = ct.getProtocolId("SetLitter");
 					measurementId = ct.getMeasurementId("Litter");
 					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
 							null, protocolId, measurementId, animalId, null, litter));
+					// Set line also on animal itself
+					protocolId = ct.getProtocolId("SetLine");
+					measurementId = ct.getMeasurementId("Line");
+					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
+							null, protocolId, measurementId, animalId, null, lineId));
 					// Set sex
 					int sexId = ct.getObservationTargetId("Female");
 					if (animalNumber >= weanSizeFemale) {
@@ -907,28 +913,32 @@ public class ManageLitters extends PluginModel<Entity>
 		while (nrOfFemales > 0) {
 			elementList = new ArrayList<String>();
 			// Line name + Nr. of females in cage
-			String firstLine = lineName; 
-			if (nrOfFemales >= 3) {
-				firstLine += "\t\t3 females";
+			String firstLine = lineName + "\t\t"; 
+			// Females can be 2 or 3 in a cage, if possible not 1
+			int cageSize;
+			if (nrOfFemales > 4) {
+				cageSize = 3;
 			} else {
-				if (nrOfFemales == 1) {
-					firstLine += "\t\t1 female";
+				if (nrOfFemales == 4) {
+					cageSize = 2;
 				} else {
-					firstLine += "\t\t2 females";
+					cageSize = nrOfFemales;
 				}
 			}
+			firstLine += (cageSize + " female");
+			if (cageSize > 1) firstLine += "s";
 			elementList.add(firstLine);
 			// Parents
 			elementList.add(motherLabel + " x " + fatherLabel);
 			// Litter birth date
 			elementList.add(litterBirthDateString);
 			// Nrs. for writing extra information behind
-			for (int i = 1; i <= Math.min(nrOfFemales, 3); i++) {
+			for (int i = 1; i <= cageSize; i++) {
 				elementList.add(i + ".");
 			}
 			
 			labelgenerator.addLabelToDocument(elementList);
-			nrOfFemales -= 3;
+			nrOfFemales -= cageSize;
 			nrOfCages++;
 		}
 		int nrOfMales = weanSizeMale;
