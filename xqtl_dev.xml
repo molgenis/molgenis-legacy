@@ -79,9 +79,8 @@
 	this script in '/somedir/molgenis_apps', then molgenis must be in '/somedir/molgenis')
 	-->
 	<target name="compile_molgenis" description="Compile MOLGENIS">
-		<!-- create build dirs if they doesn't exist -->
+		<!-- create build dir if it doesn't exist -->
 		<mkdir dir="${mol_build_dir}"/>
-		<mkdir dir="${app_build_dir}"/>
 		
 		<!-- Run javac on the src dir to be compiled into build, using the molgenis-libs fileset as classpath -->
 		<javac srcdir="../molgenis/src" destdir="${mol_build_dir}" includeantruntime="false">
@@ -118,6 +117,10 @@
 	security decorators, which depend on the org.molgenis.auth.service module.
 	 -->
 	<target name="compile_datatypes" description="Compile generated datatypes">
+		<!-- create build dir if it doesn't exist -->
+		<mkdir dir="${app_build_dir}"/>
+		
+		<!-- Run javac into app_build, using molgenis-libs and molgenis_build -->
 		<javac srcdir="generated/java/org" excludes="**/*Decorator.java" destdir="${app_build_dir}" includeantruntime="false">
 			<classpath>
 				<path refid="molgenis-libs" />

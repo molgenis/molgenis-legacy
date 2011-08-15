@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="xqtl_jar" default="create_jar" basedir=".">
+	<description>
+        Build a runnable JAR with a standalone xQTL application.
+		Work in progress, but must be kept stable to ensure the dependencies don't break.
+		Needs a properly connected Selenium test: right now we test on the folder that
+		is JARred instead of the JAR itself, because TestNG does not support this.
+    </description>
+	
+	<!-- Import development script for reuse -->
+	<import file="xqtl_dev.xml" />
+
+	<!-- Import TestNG as an Ant task -->
+	<taskdef resource="testngtasks" classpath="../molgenis/lib/testng-5.14.10.jar" />
+
+	<!-- Path of Molgenis libs -->
+	<property name="mlibs" value="../molgenis/lib/"/>
+	
+	<!-- Path of application libs -->
+	<property name="alibs" value="WebContent/WEB-INF/lib/"/>
+	
+	<!-- Path of all unjarred and build content, to be JARred at the end -->
+	<property name="jarme" value="${app_build_dir}/jarme"/>
+	
+	<!-- Path of dist folder where the resulting JAR will be put -->
+	<property name="dist" value="dist"/>
+	
+	<!-- Delete content of jarme dir -->
+	<target name="clean_jarme" description="Delete stuff">
+		<!-- create dir if it doesn't exist -->
+		<mkdir dir="${jarme}"/>
+		<!-- remove content -->
+		<delete includeemptydirs="true">
+			<fileset dir="${jarme}" includes="**/*" />
+		</delete>
+	</target>
+	
+	<target name="unjar" description="Unjar all Molgenis and application jars">
+		<!-- Molgenis jars -->
+		<unjar src="${mlibs}hibernate/hibernate-jpa-2.0-api-1.0.0.Final.jar" dest="${jarme}" overwrite="false"/>
+		<unjar src="${mlibs}hibernate/hibernate3.jar" dest="${jarme}" overwrite="false"/>
+		<unjar src="${mlibs}ganymed-ssh2-build250.jar" dest="${jarme}" overwrite="false"/>
+		<unjar src="${mlibs}ant-1.8.1.jar" dest="${jarme}" overwrite="false"/>
+		<unjar src="${mlibs}ant-apache-log4j.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}commons-codec-1.3.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}commons-collections-3.2.1.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}commons-dbcp-1.2.1.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}commons-fileupload-1.1.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}commons-io-1.3.1.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}commons-logging-1.1.1.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}commons-lang-2.5.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}commons-pool-1.5.2.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}cxf-2.3.3.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}concurrent.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}d2r-server-0.7.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}freemarker.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}hsqldb.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}javax.servlet.jar" dest="${jarme}" overwrite="false"/>
+		<unjar src="${mlibs}json.jar" dest="${jarme}" overwrite="false"/> 
+	  	<unjar src="${mlibs}junit-4.8.2.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}jxl.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}log4j-1.2.15.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}mail.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}serializer-2.7.1.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}tar.jar" dest="${jarme}" overwrite="false"/>
+		<unjar src="${mlibs}testng-5.14.10.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}xalan-2.7.1.jar" dest="${jarme}" overwrite="false"/> 
+	  	<unjar src="${mlibs}xercesImpl.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}xmlrpc-client-3.1.3.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}xmlrpc-common-3.1.3.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}xmlbeans-2.4.0.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}arq.jar" dest="${jarme}" overwrite="false"/> 
+	  	<unjar src="${mlibs}jena.jar" dest="${jarme}" overwrite="false"/> 
+	  	<unjar src="${mlibs}jsr311-api-1.1.1.jar" dest="${jarme}" overwrite="false"/> 
+	  	<unjar src="${mlibs}jakarta-oro-2.0.8.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}icu4j_3_4.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}d2rq-0.7.jar" dest="${jarme}" overwrite="false"/> 
+	  	<unjar src="${mlibs}jopenid-1.07.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}mysql-connector-java-5.1.2-beta-bin.jar" dest="${jarme}" overwrite="false"/>
+	  	<unjar src="${mlibs}wsdl4j-1.6.2.jar" dest="${jarme}" overwrite="false"/>
+		<!-- Application jars -->
+		<unjar src="${alibs}jaxrpc.jar" dest="${jarme}" overwrite="false" />
+		<unjar src="${alibs}axis.jar" dest="${jarme}" overwrite="false" />
+		<unjar src="${alibs}keggapi.jar" dest="${jarme}" overwrite="false" />
+		<unjar src="${alibs}mydas-1.6.0.jar" dest="${jarme}" overwrite="false" />
+		<unjar src="${alibs}mindterm.jar" dest="${jarme}" overwrite="false" />
+		<unjar src="${alibs}ontocat-0.9.7.6.jar" dest="${jarme}" overwrite="false" />
+		<unjar src="${alibs}charts4j-1.2.jar" dest="${jarme}" overwrite="false" />
+		<unjar src="${alibs}jopenid-1.07.jar" dest="${jarme}" overwrite="false" />
+		<unjar src="${alibs}iText-5.0.6.jar" dest="${jarme}" overwrite="false" />
+		<unjar src="${alibs}lucene-core-3.0.2.jar" dest="${jarme}" overwrite="false" />
+		<unjar src="${alibs}lucene-highlighter-3.0.1.jar" dest="${jarme}" overwrite="false" />
+		<unjar src="${alibs}spssw-1.66.jar" dest="${jarme}" overwrite="false" />
+		<unjar src="${alibs}simplecaptcha-1.1.1.jar" dest="${jarme}" overwrite="false" />
+		<unjar src="${alibs}pircbot.jar" dest="${jarme}" overwrite="false" />
+		<unjar src="${alibs}vaadin-6.5.2.jar" dest="${jarme}" overwrite="false" />
+		<unjar src="${alibs}vaadin-externallayout-0.5.jar" dest="${jarme}" overwrite="false" />
+		<unjar src="${alibs}selenium-server-standalone-2.2.0.jar" dest="${jarme}" overwrite="false" />
+	</target>
+	
+	<!-- Compile Molgenis on the unjarred content in jarme -->
+	<target name="compile_molgenis_jarme" description="Compile MOLGENIS on unjarred classes">
+		<!-- Run javac on molgenis, using the unjarred content as classpath -->
+		<javac srcdir="../molgenis/src" destdir="${jarme}" includeantruntime="false">
+			<classpath path="{jarme}" />
+		</javac>
+		<!-- Copy the res folder to the build dir so it can be found by MolgenisResourceCopyGen -->
+		<copy todir="${jarme}/org/molgenis/framework/ui/res" verbose="true">
+			<fileset dir="../molgenis/src/org/molgenis/framework/ui/res" includes="**/*.*" />
+		</copy>
+		<!-- Copy all Freemarker templates anywhere in MOLGENIS too -->
+		<copy todir="${jarme}" verbose="true">
+			<fileset dir="../molgenis/src" includes="**/*.ftl" />
+		</copy>
+	</target>
+	
+	<!-- Generate app on the unjarred content in jarme -->
+	<target name="generate_app_jarme" description="Generate the application">
+		<java classname="org.molgenis.Molgenis" fork="yes" failonerror="true">
+			<arg value="apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl.properties" />
+			<classpath path="${jarme}" />
+		</java>
+	</target>
+	
+	<target name="compile_datatypes_jarme" description="Compile generated datatypes">
+		<javac srcdir="generated/java/org" excludes="**/*Decorator.java" destdir="${jarme}" includeantruntime="false">
+			<classpath path="${jarme}" />
+		</javac>
+	</target>
+	
+	<target name="compile_app_jarme" description="Compile application">
+		<pathconvert targetos="unix" property="app_src" refid="app.class.path" />
+		<javac srcdir="${app_src}" destdir="${jarme}" includeantruntime="false">
+			<classpath path="${jarme}" />
+		</javac>
+	</target>
+	
+	<target name="compile_other_jarme" description="Compile other generated">
+		<javac srcdir="generated/java/app" destdir="${jarme}" includeantruntime="false">
+			<classpath path="${jarme}" />
+		</javac>
+		<javac srcdir="generated/java/test" destdir="${jarme}" includeantruntime="false">
+			<classpath path="${jarme}" />
+		</javac>
+	</target>
+	
+	<target name="copy_resources_jarme">
+		<pathconvert pathsep="/**/*," refid="app.class.path" property="app_fileset_pattern">
+			<regexpmapper from=".*/(.*/.*)" to="\1" />
+		</pathconvert>
+
+		<fileset dir="." id="app_fileset" includes="${app_fileset_pattern}/**/*">
+			<exclude name="**/*.java" />
+		</fileset>
+
+		<copy todir="${jarme}" verbose="true">
+			<fileset refid="app_fileset" />
+			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />
+		</copy>
+
+		<copy todir="${jarme}" verbose="true">				
+			<fileset dir="generated/sql" includes="**/*.sql" />
+		</copy>
+	</target>
+	
+	<target name="package_jar" description="Package the distribution">
+		
+		<mkdir dir="${dist}" />
+
+		<!-- not needed: not used -->
+		<!--pathconvert property="app_path" refid="app.class.path" pathsep="/**/*.ftl,">
+			<map from="${user.dir}/" to="" />
+		</pathconvert-->
+	
+		<!--echo message="path: ${app_path}" /-->
+	
+		<!-- not needed: already copied ??? -->
+		<!--copy todir="${build}" verbose="true">
+			<fileset dir="." includes="${app_path}/**/*.ftl" />
+			<fileset dir="." includes="**/plugins/**/*.ftl" />
+			<fileset dir="." includes="**/*.sql" />
+			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />
+		</copy-->
+		
+		<!-- copy example data -->
+		<copy todir="${jarme}">
+			<fileset dir="publicdata/xqtl">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+	
+		<!-- not needed: already copied -->
+		<!--copy todir="${build}" verbose="true">
+			<fileset dir="." includes="**/*.sql" />
+			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />
+		</copy-->
+
+
+		<!-- not needed: already copied -->
+		<!--copy todir="${build}">
+			<fileset dir="modules/webserver">
+				<include name="**/mime.*" />
+			</fileset>
+		</copy-->
+
+		<copy todir="${dist}/WebContent">
+			<fileset dir="WebContent">
+				<exclude name="WebContent/doc/*" />
+				<exclude name="WebContent/VAADIN/*" />
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		
+		<!-- not needed: automatically created? -->
+		<!--copy todir="${dist}/hsqldb">
+			<fileset dir="hsqldb">
+				<exclude name="**/.svn/*" />
+				<include name="**/*.*" />
+			</fileset>
+		</copy-->
+		
+		<!-- copy run.bat / run.sh -->
+		<copy todir="${dist}">
+			<fileset dir="handwritten/standalone">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+
+		<!-- JAR the jarme folder into dist/Application.jar -->
+		<jar jarfile="${dist}/Application.jar" basedir="${jarme}" update="false">
+			<manifest>
+				<attribute name="Built-By" value="GCC" />
+				<attribute name="Main-Class" value="boot.RunStandalone" />
+			</manifest>
+		</jar>
+
+	</target>
+	
+	<target name="create_jar">
+		<antcall target="clean_jarme" />
+		<antcall target="unjar" />
+		<antcall target="compile_molgenis_jarme" />
+		<antcall target="generate_app_jarme" />
+		<antcall target="compile_datatypes_jarme" />
+		<antcall target="compile_app_jarme" />
+		<antcall target="compile_other_jarme" />
+		<antcall target="copy_resources_jarme" />
+		<antcall target="package_jar" />
+	</target>
+	
+	<!--
+	Run webtest on the directory that was JARred because it's not possible
+	to run TestNG from inside a jar. (needs ref to class or XML files)
+	TODO: find a way to make it possible? it's a bit silly now..
+	-->
+	<target name="webtest_jar" description="Start the Selenium test">
+		<testng haltOnFailure="true">
+			<xmlfileset dir="${jarme}" includes="**/xqtl_test_selenium.xml" />
+			<classpath path="${jarme}" />
+		</testng>
+	</target>
+	
+	<!-- Wrapper to make the JAR and run the webtest -->
+	<target name="create_jar_webtest">
+		<antcall target="create_jar" />
+		<antcall target="webtest_jar" />
+	</target>
+	
+	<!-- Run the application from JAR file. Not efficient because
+	when running from here we need to make a copy first. (JAR needs
+	to find stuff from the basedir where it was launched) -->
+	<target name="run_jar" description="Start the application">
+		<!-- in order to work properly, JAR must be started from basedir -->
+		<echo message="moving application files from ${dist} to ${basedir}" />
+		<copy todir="${basedir}" overwrite="true">
+			<fileset dir="${dist}">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		<!--delete includeemptydirs="true">
+			<fileset dir="${dist}" includes="**/*" />
+		</delete-->
+		<java jar="Application.jar" fork="yes" failonerror="true" />
+	</target>
+
+</project>
