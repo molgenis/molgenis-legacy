@@ -102,10 +102,10 @@ public class ConvertUliDbToPheno
 				// Tiernummer -> make new animal
 				String animalName = tuple.getString("Tiernummer");
 				if (animalName == null) {
-					animalName = "OldUliId" + tuple.getString("laufende Nr");
+					animalName = "OldUliId_" + tuple.getString("laufende Nr");
 				}
 				while (animalNames.contains(animalName)) { // make sure we have a unique name
-					animalName += "_dup";
+					animalName = ("Dup_" + animalName);
 				}
 				animalNames.add(animalName);
 				Individual newAnimal = ct.createIndividual(invName, animalName, userName);

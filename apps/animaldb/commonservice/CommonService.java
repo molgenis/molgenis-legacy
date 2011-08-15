@@ -1763,7 +1763,9 @@ public class CommonService
 	}
 	
 	/**
-	 * Get all the name bases (non-numeric parts of the names) that are in the DB.
+	 * Get all the bases (non-numeric parts) of the ObservationTarget names that are in the DB.
+	 * Example: say there are ObservationTargets with names Morris1, Morris2 and Jessica99. This
+	 * method will then return [Morris, Jessica].
 	 * 
 	 * @return
 	 */
@@ -1783,6 +1785,15 @@ public class CommonService
 		return returnList;
 	}
 	
+	/**
+	 * Get the highest number found in the DB following the given ObservationTarget name base.
+	 * Example: say there are ObservationTargets with names Morris1, Morris2 and Jessica99. This
+	 * method, when passed 'Morris', will return 2.
+	 * 
+	 * @param base
+	 * @return
+	 * @throws DatabaseException
+	 */
 	public int getHighestNumberForNameBase(String base) throws DatabaseException {
 		
 		int maxTrailingNumber = 0;
@@ -1812,7 +1823,7 @@ public class CommonService
 			}
 		}
 		
-		return maxTrailingNumber + 1;
+		return maxTrailingNumber;
 	}
 
 }

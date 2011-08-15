@@ -136,13 +136,24 @@
 		<label for='weansizemale'>Nr. of males:</label>
 		<input type='text' class='textbox' name='weansizemale' id='weansizemale' value='<#if screen.weanSizeMale?exists>${screen.getWeanSizeMale()}</#if>' />
 	</div>
-	<div id="namebase" class="row">
+	<div id="divnamebase" class="row">
 		<label for="namebase">Name base (may be empty):</label>
-		<input type="text" name="namebase" id="namebase" class="textbox" />
+		<select id="namebase" name="namebase" onchange="updateStartNumber(this.value)">
+			<option value=""></option>
+			<option value="New">New (specify below)</option>
+			<#list screen.bases as base>
+				<option value="${base}">${base}</option>
+			</#list>
+		</select>
 	</div>
-	<div id="startnumber" class="row">
+	<input id="startnumberhelper" type="hidden" value="${screen.getStartNumberHelperContent()}">
+	<div id="divnewnamebase" class="row">
+		<label for="newnamebase">New name base:</label>
+		<input type="text" name="newnamebase" id="newnamebase" class="textbox" />
+	</div>
+	<div id="divstartnumber" class="row">
 		<label for="startnumber">Name numbering starts at:</label>
-		<input type="text" name="startnumber" id="startnumber" class="textbox" value="1" />
+		<input type="text" name="startnumber" id="startnumber" class="textbox" value="${screen.getStartNumberForEmptyBase()?string.computer}" />
 	</div>
 	<!-- Add button -->
 	<div id='addlitter' class='row'>

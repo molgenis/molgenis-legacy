@@ -68,6 +68,7 @@ public class ManageLitters extends PluginModel<Entity>
 	private int genoLitterId;
 	private Database db;
 	private boolean firstTime = true;
+	private List<String> bases = null;
 
 	public ManageLitters(String name, ScreenController<?> parent)
 	{
@@ -75,8 +76,9 @@ public class ManageLitters extends PluginModel<Entity>
 	}
 	
 	public String getCustomHtmlHeaders() {
-		return "<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n"
-				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
+		return "<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n" +
+				"<script src=\"res/scripts/custom/litters.js\" language=\"javascript\"></script>\n" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
 	}
 
 	@Override
@@ -265,8 +267,16 @@ public class ManageLitters extends PluginModel<Entity>
 			setWeanSizeFemale(request.getInt("weansizefemale"));
 			setWeanSizeMale(request.getInt("weansizemale"));
 			
-			nameBase = request.getString("namebase");
-			if (request.getString("namebase") == null) {
+			if (request.getString("namebase") != null) {
+				nameBase = request.getString("namebase");
+				if (nameBase.equals("New")) {
+					if (request.getString("newnamebase") != null) {
+						nameBase = request.getString("newnamebase");
+					} else {
+						nameBase = "";
+					}
+				}
+			} else {
 				nameBase = "";
 			}
 			if (request.getInt("startnumber") != null) {
@@ -438,6 +448,38 @@ public class ManageLitters extends PluginModel<Entity>
 		int lineId = ct.getMostRecentValueAsXref(parentgroupId, ct.getMeasurementId("Line"));
 		String lineName = ct.getObservationTargetById(lineId).getName();
 		return ("Line: " + lineName);
+	}
+
+	public List<String> getBases() {
+		return bases;
+	}
+
+	public void setBases(List<String> bases) {
+		this.bases = bases;
+	}
+	
+	public String getStartNumberHelperContent() {
+		try {
+			String helperContents = "";
+			helperContents += (ct.getHighestNumberForNameBase("") + 1);
+			helperContents += ";1";
+			for (String base : this.bases) {
+				if (!base.equals("")) {
+					helperContents += (";" + (ct.getHighestNumberForNameBase(base) + 1));
+				}
+			}
+			return helperContents;
+		} catch (Exception e) {
+			return "";
+		}
+	}
+	
+	public int getStartNumberForEmptyBase() {
+		try {
+			return ct.getHighestNumberForNameBase("") + 1;
+		} catch (DatabaseException e) {
+			return 1;
+		}
 	}
 
 	@Override
@@ -947,6 +989,8 @@ public class ManageLitters extends PluginModel<Entity>
 			this.setColorList(ct.getAllCodesForFeatureAsStrings("Color"));
 			// Populate earmark list
 			this.setEarmarkList(ct.getAllCodesForFeature("Earmark"));
+			// Populate name bases list
+			this.setBases(ct.getNameBases());
 		} catch (Exception e) {
 			if (e.getMessage() != null) {
 				this.getMessages().clear();

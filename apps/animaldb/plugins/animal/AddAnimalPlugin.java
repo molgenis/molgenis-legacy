@@ -26,7 +26,6 @@ import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.IntInput;
 import org.molgenis.framework.ui.html.RepeatingPanel;
 import org.molgenis.framework.ui.html.SelectInput;
-import org.molgenis.framework.ui.html.TextInput;
 import org.molgenis.framework.ui.html.TextLineInput;
 import org.molgenis.pheno.Code;
 import org.molgenis.pheno.ObservationTarget;
@@ -469,11 +468,11 @@ public class AddAnimalPlugin extends GenericPlugin
 		
 		startnumberhelper = new TextLineInput<String>("startnumberhelper");
 		String helperContents = "";
-		helperContents += ct.getHighestNumberForNameBase("");
-		helperContents += ";0";
+		helperContents += (ct.getHighestNumberForNameBase("") + 1);
+		helperContents += ";1";
 		for (String base : bases) {
 			if (!base.equals("")) {
-				helperContents += (";"+ ct.getHighestNumberForNameBase(base));
+				helperContents += (";" + (ct.getHighestNumberForNameBase(base) + 1));
 			}
 		}
 		startnumberhelper.setValue(helperContents);
@@ -487,7 +486,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		startnumber = new IntInput("startnumber");
 		startnumber.setId("startnumber");
 		startnumber.setLabel("Start numbering at:");
-		startnumber.setValue(ct.getHighestNumberForNameBase("")); // start with highest number for empty base
+		startnumber.setValue(ct.getHighestNumberForNameBase("") + 1); // start with highest number for empty base
 		namePanel.add(startnumber);
 		
 		numberofanimals = new IntInput("numberofanimals");
