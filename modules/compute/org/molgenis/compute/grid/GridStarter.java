@@ -4,7 +4,10 @@ import org.gridgain.grid.*;
 import org.gridgain.grid.spi.topology.basic.GridBasicTopologySpi;
 import org.gridgain.grid.spi.discovery.jgroups.GridJgroupsDiscoverySpi;
 import org.gridgain.grid.spi.communication.jgroups.GridJgroupsCommunicationSpi;
+import org.molgenis.util.Ssh;
+import org.molgenis.util.SshResult;
 
+import java.io.IOException;
 import java.util.Collection;
 
 //standard grid started
@@ -84,6 +87,23 @@ public class GridStarter
             }
         }
         System.out.println(">>> remote node is available");
+    }
+
+    public void startRemoteNode()
+    {
+        System.out.println(">>> start remote node");
+
+        try
+        {
+            Ssh ssh = new Ssh("millipede.service.rug.nl", "lala","lala");
+            SshResult result = ssh.executeCommand("qsub -q short /data/byelas/scripts/gridgain/manual_worker_script.sh");
+            System.out.println("err: " + result.getStdErr());
+            System.out.println("out: " + result.getStdOut());
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
 }

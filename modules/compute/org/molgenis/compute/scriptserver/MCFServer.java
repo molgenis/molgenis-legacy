@@ -4,6 +4,7 @@ import org.gridgain.grid.Grid;
 import org.gridgain.grid.GridNode;
 import org.molgenis.compute.grid.GridStarter;
 import org.molgenis.compute.pipelinemodel.Pipeline;
+import org.molgenis.compute.resourcemanager.NodeManager;
 import org.molgenis.compute.resourcemanager.ResourceManager;
 import org.molgenis.util.Ssh;
 import org.molgenis.util.SshResult;
@@ -131,25 +132,12 @@ public class MCFServer implements MCF
         resourceManager.setGrid(grid);
         resourceManager.setSettings(8, 10);
 
-        startRemoteNode();
+        NodeManager nodeManager = new NodeManager();
+        nodeManager.setGrid(grid);
+        nodeManager.setSettings(30, 30);
+        nodeManager.start();
 
-    }
-
-    private void startRemoteNode()
-    {
-        System.out.println("start remote node");
-
-        try
-        {
-            Ssh ssh = new Ssh("millipede.service.rug.nl", "happy","chappy");
-            SshResult result = ssh.executeCommand("qsub -q short /data/byelas/scripts/gridgain/manual_worker_script.sh");
-            System.out.println("err: " + result.getStdErr());
-            System.out.println("out: " + result.getStdOut());
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+        gridStarter.startRemoteNode();
     }
 
     public void removePipeline(String id)
