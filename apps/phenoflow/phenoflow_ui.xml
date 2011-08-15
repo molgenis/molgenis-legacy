@@ -1,4 +1,15 @@
 <molgenis name="Phenoflow">
-<plugin name="EbiHeader" type="org.molgenis.phenoflow.ui.EbiStyleLoader"/>
-	<form name="Investigations" entity="Investigation" />
+	<plugin name="EbiHeader" type="org.molgenis.phenoflow.ui.EbiStyleLoader" />
+	<menu name="InvestigationMenu" label="Investigations">
+		<form name="Investigations" entity="Investigation">
+			<menu name="DetailsMenu" label="Details">
+				<form name="Protocols" entity="Protocol" />
+				<form name="ProtocolApplications" entity="ProtocolApplication" />
+				<form name="OntologyTerms" entity="OntologyTerm" />
+				<form name="ObservationElements" entity="ObservationElement" />
+				<form name="ObservedValues" entity="ObservedValue" />
+			</menu>
+		</form>
+	</menu>
+
 </molgenis>

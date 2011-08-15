@@ -43,7 +43,28 @@ Main function. Nothing fancy.
 
 my @datapoints;
 my %warn;
-my $basedir = '../../../../../phenoflow_data/Europhenome2';
+my $basedir  = '../../../../../phenoflow_data/Europhenome2';
+my @features = (
+	'Line name',
+	'Sex',
+	'Zygosity',
+	'MGI Gene Symbol',
+	'Emma ID',
+	'International Strain Name',
+	'MouseBook Stock Identifer',
+	'EScell Clone',
+	'MGI Allele Name',
+	'MGI Gene Name',
+	'Ensembl Gene ID',
+);
+my %terms = (
+	'Mammalian Phenotype Ontology Term Name' => 'Mammalian Phenotype Ontology Term ID',
+	'MGI Allele Name'                        => 'MGI Allele Accession ID',
+	'MGI Gene Name'                          => 'MGI Gene Accession ID',
+	'Ensembl Gene ID'                        => 'Ensembl Gene ID',
+	'Phenotype Procedure'                    => 'Phenotype Procedure ESLIM ID',
+	'Parameter Name'                         => 'Parameter ESLIM ID',
+);
 
 sub main() {
 
@@ -56,17 +77,21 @@ sub main() {
 	load_datapoints();
 
 	# write data to molgenis import format
+	write_ontologyterm();
+	
 	write_investigation();
 
 	write_panel();
 
-	#write_ontologysource_term();
-	#write_variabledefinition();
+	write_features();
+	
+	write_observedvalue();
 
-	#write_observedvalue();
-	#write_protocol();
+	write_protocolapplication();
 
-	#print_warnings();
+	write_protocol();
+
+	print_warnings();
 	exit 0;
 }
 
@@ -96,53 +121,141 @@ Opens appropriate filehandles
 sub write_protocol($$) {
 	local $\ = "\n";    # do the magic of println
 
-	# load protocols into hash
-	my %protocol;
-	for my $datapoint (@datapoints) {
-		$protocol{ $datapoint->{'Procedure'} }->{ $datapoint->{'Parameter name'} }++;
-	}
-
 	# write protocols
 	open my $fh1, ">:utf8", "$basedir/protocol.txt" or die "$!";
-	open my $fh3, ">:utf8", "$basedir/protocol_observableFeatures.txt" or die "$!";
 
 	# write headers
-	print $fh1 join ( "\t", qw/name/ );
-	print $fh3 join ( "\t", qw/protocol_name observableFeature_name/ );
+	print $fh1 join ( "\t", qw/name description ontologyreference_name features_name/ );
 
-	# walk the tree write protocol and protocolcomponents
-	while ( my ( $protocolName, $features ) = each(%protocol) ) {
-		print $fh1 join ( "\t", $protocolName );
-		for my $featureName ( keys %$features ) {
-			print $fh3 join ( "\t", $protocolName, $featureName );
+	# load protocols into hash
+	my %protocol;
+	my %temp;
+	for my $datapoint (@datapoints) {
+		my $name    = $datapoint->{'Phenotype Procedure'};
+		my $feature = $datapoint->{'Parameter Name'};
+		$temp{$name}->{description} = $datapoint->{'Phenotype Pipeline'};
+		$temp{$name}->{features}->{$feature}++;
+	}
+
+	# concatanate features
+	for my $name ( keys %temp ) {
+		my $description = $temp{$name}->{description};
+		my $features;
+		for my $feature ( keys %{ $temp{$name}->{features} } ) {
+			$features = $features . "$feature|";
 		}
+		chop $features;
+		my $key = join( "\t", $name, $description, $name, $features );
+		$protocol{$key}++;
+	}
+
+	for my $key ( keys %protocol ) {
+		print $fh1 $key;
 	}
 
 	close $fh1;
-	close $fh3;
 	INFO( 'Wrote ' . scalar( keys %protocol ) . ' Protocols' );
 }
 
-sub write_observedvalue() {
-	my ( $datapoint_ref, $meas_ref, ) = @_;
+sub write_features() {
 	local $\ = "\n";    # do the magic of println
 
-	open my $fh1, ">:utf8", "$basedir/observedvalue.txt" or die "$!";
+	open my $fh1, ">:utf8", "$basedir/observationelement.txt" or LOGDIE "$!";
 
 	# write headers
 	print $fh1 join (
 		"\t",
-		qw/observationTarget_name observableFeature_name investigation_name value/
+		qw/name ontologyreference_name/
 	);
 
-	for my $datapoint (@datapoints) {
+	my %observationelement;
 
-		print $fh1 join ( "\t",
-			$datapoint->{'Animal id'},   $datapoint->{'Parameter name'},
-			$datapoint->{'Centre Name'}, $datapoint->{'Value'} );
+	# panel characteristics
+	for my $feature_name (@features) {
+		my $key = join( "\t", $feature_name, q{N/A} );
+		$observationelement{$key}++;
 	}
+
+	# protocol parameters
+	for my $datapoint (@datapoints) {
+		my $feature_name = $datapoint->{'Parameter Name'};
+		my $ontology_ref = $datapoint->{'Parameter Name'};
+		my $key          = join( "\t", $feature_name, $ontology_ref );
+		$observationelement{$key}++;
+	}
+
+	for my $key ( keys %observationelement ) {
+		print $fh1 $key;
+	}
+
 	close $fh1;
-	INFO( 'Wrote ' . scalar(@datapoints) . ' ObservedValues' );
+	INFO( 'Wrote ' . scalar( keys %observationelement ) . ' Features' );
+}
+
+sub write_observedvalue() {
+	local $\ = "\n";    # do the magic of println
+
+	open my $fh1, ">:utf8", "$basedir/observedvalue.txt" or LOGDIE "$!";
+
+	# write headers
+	print $fh1 join (
+		"\t",
+		qw/investigation_name protocolapplication_name feature_name target_name ontologyreference_name value/
+	);
+
+	my %observedvalue;
+
+	# characteristics
+	for my $feature_name (@features) {
+
+		for my $datapoint (@datapoints) {
+			my $investigation_name = get_investigation_nameDP($datapoint);
+			my $target_name        = get_panel_nameDP($datapoint);
+
+			my $key;
+
+			# no ontology term
+			unless ( exists $terms{$feature_name} ) {
+				my $value = $datapoint->{$feature_name};
+				next unless defined $value;
+				$key = join( "\t",
+					$investigation_name, q{N/A}, $feature_name, $target_name, q{N/A}, $value );
+			}
+
+			# feature connected to ontology term
+			else {
+				my $ref = $datapoint->{ $feature_name };
+				next unless defined $ref;
+				$key = join( "\t",
+					$investigation_name, q{N/A}, $feature_name, $target_name, $ref, q{N/A} );
+			}
+
+			$observedvalue{$key}++;
+		}
+	}
+
+	# values
+	for my $datapoint (@datapoints) {
+		my $investigation_name = get_investigation_nameDP($datapoint);
+		my $target_name        = get_panel_nameDP($datapoint);
+		my $feature_name       = $datapoint->{'Parameter Name'};
+		my $protocol_app = get_protocolapplication_nameDP($datapoint);
+		my $ref = $datapoint->{ 'Mammalian Phenotype Ontology Term Name' };
+		next unless defined $ref;
+		my $key = join( "\t", $investigation_name, $protocol_app, $feature_name, $target_name, $ref, q{N/A} );
+		$observedvalue{$key}++;
+	}
+	
+	# statistics 
+	#'Statistical Signifiance',
+	#'Statistical Effect size',
+
+	for my $key ( keys %observedvalue ) {
+		print $fh1 $key;
+	}
+
+	close $fh1;
+	INFO( 'Wrote ' . scalar( keys %observedvalue ) . ' ObservedValues' );
 }
 
 sub write_panel() {
@@ -151,17 +264,24 @@ sub write_panel() {
 
 	# create hashes
 	for my $datapoint (@datapoints) {
-		$panel{ "Line name: " . $datapoint->{'Line name'} . " Sex: " . $datapoint->{'Sex'} }
-		  ++;
+		WARN "PANEL "
+		  . get_panel_nameDP($datapoint)
+		  . " REUSED BETWEEN "
+		  . $panel{ get_panel_nameDP($datapoint) }
+		  . get_investigation_nameDP($datapoint)
+		  if exists $panel{ get_panel_nameDP($datapoint) }
+		  && $panel{ get_panel_nameDP($datapoint) } ne get_investigation_nameDP($datapoint);
+
+		$panel{ get_panel_nameDP($datapoint) } = get_investigation_nameDP($datapoint);
 	}
 
 	open my $fh1, ">:utf8", "$basedir/panel.txt" or LOGDIE "$!";
 
 	# write headers
-	print $fh1 join ( "\t", qw/name/ );
+	print $fh1 join ( "\t", qw/name investigation_name/ );
 
-	for my $name (keys %panel)  {
-		print $fh1 join ( "\t", $name );
+	while ( my ( $panel_name, $investigation_name ) = each %panel ) {
+		print $fh1 join ( "\t", $panel_name, $investigation_name );
 	}
 
 	close $fh1;
@@ -185,7 +305,7 @@ sub write_investigation() {
 
 	for my $name ( keys %project ) {
 		print $fh_out join ( "\t",
-			"Europhenome ID: " . $name,
+			get_investigation_name($name),
 			$description_suffix,
 			'http://www.europhenome.org/databrowser/viewer.jsp?set=true&m=true&l=' . $name );
 	}
@@ -193,66 +313,71 @@ sub write_investigation() {
 	INFO( 'Wrote ' . scalar( keys %project ) . ' Investigations' );
 }
 
-sub write_variabledefinition() {
+sub write_protocolapplication() {
 	local $\ = "\n";    # do the magic of println
 
-	open my $fh1, ">:utf8", "$basedir/variabledefinition.txt"
+	open my $fh1, ">:utf8", "$basedir/protocolapplication.txt"
 	  or get_logger->logdie($!);
 
 	# write headers
-	print $fh1 join ( "\t", qw/name unit_termLabel investigation_name/ );
+	print $fh1 join ( "\t", qw/name protocol_name/ );
 
-	my ( %Unit, %Parameter_name );    # stores unique values
-	my $composite_key;
+	my %protocolapp;
 	for my $datapoint (@datapoints) {
-		$composite_key = $datapoint->{'Parameter name'} . $datapoint->{'Centre Name'};
-		print $fh1 join ( "\t",
-			$datapoint->{'Parameter name'},
-			$datapoint->{'Unit'}, $datapoint->{'Centre Name'} )
-		  unless defined $Parameter_name{$composite_key};
+		my $name = get_protocolapplication_nameDP($datapoint);
+		my $protocol = $datapoint->{'Phenotype Procedure'};
+		my $key = join ( "\t", $name, $protocol );
+		$protocolapp{$key}++;
+	}
 
-		$Parameter_name{$composite_key}++;
-		$Unit{ $datapoint->{'Unit'} }++;
+	for my $key ( keys %protocolapp ) {
+		print $fh1 $key;
 	}
 
 	close $fh1;
-	INFO( 'Wrote ' . scalar( keys %Parameter_name ) . ' variableDefinitions' );
-
-	# add units as ontology terms to file
-	open my $fh2, ">>:utf8", "$basedir/ontologyterm.txt" or LOGDIE($!);
-
-	for my $key ( keys %Unit ) {
-
-		# headers: term,termLabel,termAccession,termSource_name
-		# data: mouse strain,mouse strain,http://www.ebi.ac.uk/efo/EFO_0000607,EFO
-		print $fh2 join ( "\t", $key, $key, q{}, q{} );
-	}
-	close $fh2;
-	INFO( 'Wrote ' . scalar( keys %Unit ) . ' units' );
+	INFO( 'Wrote ' . scalar( keys %protocolapp ) . ' ProtocolApplications' );
 }
 
-sub write_ontologysource_term() {
+sub write_ontologyterm() {
 	local $\ = "\n";    # do the magic of println
 
-	my @ontologysource = ( [ 'name', 'ontologyuri' ], [ 'EFO', 'http://www.ebi.ac.uk/efo' ] );
-	open my $fh_out, ">:utf8", "$basedir/ontologysource.txt"
-	  or LOGDIE($!);
-	for my $line (@ontologysource) {
-		print $fh_out join ( "\t", @$line );
-	}
-	close $fh_out;
+	#	my @ontologysource = ( [ 'name', 'ontologyuri' ], [ 'EFO', 'http://www.ebi.ac.uk/efo' ] );
+	#	open my $fh_out, ">:utf8", "$basedir/ontologyterm.txt"
+	#	  or LOGDIE($!);
+	#	for my $line (@ontologysource) {
+	#		print $fh_out join ( "\t", @$line );
+	#	}
+	#	close $fh_out;
+	#
+	#	my @ontologyterm = (
+	#		[ 'term', 'termLabel', 'termAccession', 'termSource_name' ],
+	#		[ 'mouse strain', 'mouse strain', 'http://www.ebi.ac.uk/efo/EFO_0000607', 'EFO' ],
+	#	);
 
-	my @ontologyterm = (
-		[ 'term', 'termLabel', 'termAccession', 'termSource_name' ],
-		[ 'mouse strain', 'mouse strain', 'http://www.ebi.ac.uk/efo/EFO_0000607', 'EFO' ],
-	);
-
-	open $fh_out, ">:utf8", "$basedir/ontologyterm.txt"
+	open my $fh_out, ">:utf8", "$basedir/ontologyterm.txt"
 	  or LOGDIE($!);
-	for my $line (@ontologyterm) {
-		print $fh_out join ( "\t", @$line );
+
+	# write headers
+	print $fh_out join ( "\t", qw/name termaccession/ );
+
+	my %ontologyterm;
+	while ( my ( $key, $value ) = each(%terms) ) {
+		for my $datapoint (@datapoints) {
+			my $name = $datapoint->{$key};
+			my $termaccession = $datapoint->{$value};
+			next unless defined $name;
+			$termaccession = 'N/A' unless defined $termaccession;
+			my $key = join( "\t", $name, $termaccession );
+			$ontologyterm{$key}++;
+		}
 	}
+
+	for my $key ( keys %ontologyterm ) {
+		print $fh_out $key;
+	}
+
 	close $fh_out;
+	INFO( ' Wrote ' . scalar( keys %ontologyterm ) . ' OntologyTerms ' );
 }
 
 # fixes broken lines in input, unsure why this is happening
@@ -296,7 +421,7 @@ sub load_datapoints($) {
 	# set column names to headers
 	$csv->column_names( $csv->getline($fh_in) );
 
-	my $c;
+	my $c        = 0;
 	my $progress = 159202;
 
 	until ( $csv->eof() ) {
@@ -310,28 +435,37 @@ sub load_datapoints($) {
 		}
 
 		# modify some values on the fly
-		#for my $heading (keys %$row){
-		#	$row->{$heading} = $heading . " " . $row->{$heading} if defined $row->{$heading};
-		#}
-
-		#		$row->{'Animal id'}      = 'EUROPHENOME' . $row->{'Animal id'};
-		#		$row->{'Centre Name'}    = 'Europhenome @' . $row->{'Centre Name'};
-		#		$row->{'Parameter name'} =
-		#		    $row->{'Parameter name'} . ' - '
-		#		  . $row->{'Procedure'} . '('
-		#		  . $row->{'Empress SOP Link'} . ')';
-		#		$row->{'Procedure'} =
-		#		  $row->{'Procedure'} . '  - Empress SOP Link: ' . $row->{'Empress SOP Link'};
-		#		$row->{'Sex'} = 'female' if $row->{'Sex'} eq 'F';
-		#		$row->{'Sex'} = 'male'   if $row->{'Sex'} eq 'M';
+		for my $heading ( keys %$row ) {
+			if ( defined $row->{$heading}
+				&& $row->{$heading} =~ /[^<>\/a-zA-Z0-9_\s\-:\.(),;\+\*]/ )
+			{
+				$warn{ "Substituting illegal character in >>> " . $& }++;
+				$row->{$heading} =~ s/[^<>\/a-zA-Z0-9_\s\-:\.(),;\+\*]/ /g;
+			}
+		}
 
 		# add to array
 		push @datapoints, $row;
 
 		#print Dumper($row) if $row->{'Europhenome id'} eq '27';
-		INFO $c . "/$progress" if ++$c % 10000 == 0;
+		INFO $c . "/$progress" if ++$c % 20000 == 0;
 	}
 	close($fh_in);
+	
+	# fix duplicated parameter names
+	my %parameters;
+	for my $datapoint (@datapoints){
+		my $param = $datapoint->{'Parameter Name'};
+		next unless defined $param;
+		if ( defined $parameters{ uc($param) } && $param ne $parameters{ uc($param) }){
+			$warn {"duplicated param name " . $param . " - " . $parameters{ uc($param) } }++;
+			$datapoint->{'Parameter Name'} = $datapoint->{'Parameter Name'} . "_";
+		} else {
+			$parameters{ uc($param) } = $param;
+		}
+	} 
+	
+	
 	INFO( 'Loaded ' . scalar @datapoints . ' datapoints' );
 }
 
@@ -355,8 +489,8 @@ sub trim_row ($) {
 }
 
 sub print_warnings() {
-	while ( my ( $msg, $no ) = each(%warn) ) {
-		WARN( $msg . " - " . $no );
+	for my $msg ( sort keys %warn ) {
+		WARN($msg);
 	}
 }
 
@@ -382,6 +516,36 @@ sub check_parser_for_errors {
 		my $diag         = $$csv_ref->error_diag();
 		LOGDIE "WARNING: CSV parser error <$diag> on line - $bad_argument.\n";
 	}
+}
+
+# NOTE: europhenomeID required as e.g. Line: Gnas Sex: Male reused between
+# Europhenome ID: 10221 and Europhenome ID: 127
+sub get_panel_nameDP {
+	my $datapoint = shift;
+	return get_investigation_nameDP($datapoint)
+	  . " Line: "
+	  . $datapoint->{'Line name'}
+	  . " Sex: "
+	  . $datapoint->{'Sex'}
+	  . " Zygosity: "
+	  . $datapoint->{'Zygosity'};
+}
+
+sub get_protocolapplication_nameDP {
+	my $datapoint = shift;
+	return $datapoint->{'Phenotype Pipeline'}
+	  . " " . $datapoint->{'Phenotype Procedure'}
+	  . " " . $datapoint->{'Parameter Name'};
+}
+
+sub get_investigation_name {
+	my $name = shift;
+	return "Europhenome ID: " . $name;
+}
+
+sub get_investigation_nameDP {
+	my $datapoint = shift;
+	return get_investigation_name( $datapoint->{'Europhenome ID'} );
 }
 
 =back

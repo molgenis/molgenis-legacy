@@ -19,7 +19,7 @@ public class LoadInvestigationFromDirectory {
 		Database db = new JDBCDatabase("apps/phenoflow/phenoflow.properties");
 
 		CsvImport.importAll(new File(directory), db, new SimpleTuple(), null,
-				DatabaseAction.ADD, "NA");
+				DatabaseAction.ADD, "N/A");
 		System.out.println("Done");
 	}
 }
