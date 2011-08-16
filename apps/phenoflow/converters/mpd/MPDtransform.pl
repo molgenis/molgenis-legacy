@@ -15,7 +15,14 @@ use warnings;
 
 use Text::CSV_XS;
 use Data::Dumper;
-# use Term::ProgressBar;
+use Log::Log4perl qw(:easy);
+Log::Log4perl->easy_init(
+	{
+		level  => $DEBUG,
+		layout => '%-5p - %m%n',
+		file   => "STDOUT",
+	}
+);
 
 =head1 DESCRIPTION
 
@@ -29,26 +36,32 @@ Main function. Nothing fancy.
 
 =cut
 
+my $basedir  = '../../../../../phenoflow_data/MPD';
+
+# Declare object that will hold the structure
+my %datapoint   = ();
+my %measurement = ();
+
 sub main() {
 
 	# Print usage
 	usage();
 
-	# Declare object that will hold the structure
-	my %datapoint   = ();
-	my %measurement = ();
-
 	# load data into respective hashes
-	load_measurements( \%measurement );
-	load_animaldatapoints( \%datapoint, \%measurement );
+	load_measurements();
+	load_animaldatapoints();
 
 	# write data to molgenis import format
-	write_ontology_term( \%datapoint, \%measurement );
-	write_investigation( \%datapoint, \%measurement );
-	write_individual_panel( \%datapoint, \%measurement );
-	write_observablefeature( \%datapoint, \%measurement );
-	write_observedvalue( \%datapoint, \%measurement );
-	write_protocol( \%datapoint, \%measurement );
+	write_investigation();
+	write_individual_panel();
+	
+	#write_ontology_term();
+	
+	
+	
+	#write_observablefeature();
+	#write_observedvalue();
+	#write_protocol();
 
 	exit 0;
 }
@@ -77,7 +90,6 @@ Opens appropriate filehandles
 =cut
 
 sub write_protocol($$) {
-	my ( $datapoint_ref, $meas_ref, ) = @_;
 	local $\ = "\n";    # do the magic of println
 
 	# load protocols into respective hashes
@@ -85,7 +97,7 @@ sub write_protocol($$) {
 	my $feat;
 	my $protocol_projsym;
 
-	while ( my ( $mesnum, $meas ) = each(%$meas_ref) ) {
+	while ( my ( $mesnum, $meas ) = each( %measurement ) ) {
         {
 	        no warnings 'uninitialized';
 
@@ -123,13 +135,13 @@ sub write_protocol($$) {
         }
 	}
 		
-	print Dumper($prot);
-	print Dumper($protocol_projsym);
+	#print Dumper($prot);
+	#print Dumper($protocol_projsym);
 	
 	# write protocols
-	open my $fh1, ">:utf8", "../../../data/MPD/protocol.txt" or die "$!";
-	open my $fh2, ">:utf8", "../../../data/MPD/protocol_protocolComponents.txt" or die "$!";
-	open my $fh3, ">:utf8", "../../../data/MPD/protocol_observableFeatures.txt" or die "$!";
+	open my $fh1, ">:utf8", "$basedir/protocol.txt" or die "$!";
+	open my $fh2, ">:utf8", "$basedir/protocol_protocolComponents.txt" or die "$!";
+	open my $fh3, ">:utf8", "$basedir/protocol_observableFeatures.txt" or die "$!";
 
 	# write headers
 	print $fh1 join (
@@ -155,11 +167,11 @@ sub write_protocol($$) {
 				push @comps3, $name3;
 				print $fh1 join ( "\t", $protocol_projsym->{$name3}->{prot_name}, $protocol_projsym->{$name3}->{projsym});
 				print $fh2 join ( "\t", $protocol_projsym->{$name2}->{prot_name},$protocol_projsym->{$name3}->{prot_name});
-				print 'name3 ' . $name3 . ' ' . Dumper($protocol_projsym->{$name3});
+				#print 'name3 ' . $name3 . ' ' . Dumper($protocol_projsym->{$name3});
 			}
 			print $fh1 join ( "\t", $protocol_projsym->{$name2}->{prot_name},  $protocol_projsym->{$name2}->{projsym});
 			print $fh2 join ( "\t", $protocol_projsym->{$name1}->{prot_name}, $protocol_projsym->{$name2}->{prot_name});
-			print 'name2 '. $name2 . ' '. Dumper($protocol_projsym->{$name2});
+			#print 'name2 '. $name2 . ' '. Dumper($protocol_projsym->{$name2});
 		}
 		print $fh1 join ( "\t", $protocol_projsym->{$name1}->{prot_name},  $protocol_projsym->{$name1}->{projsym});		
 	}	
@@ -176,10 +188,9 @@ sub write_protocol($$) {
 }
 
 sub write_observedvalue($$) {
-	my ( $datapoint_ref, $meas_ref, ) = @_;
 	local $\ = "\n";    # do the magic of println
 
-	open my $fh1, ">:utf8", "../../../data/MPD/observedvalue.txt" or die "$!";
+	open my $fh1, ">:utf8", "$basedir/observedvalue.txt" or die "$!";
 
 	# write headers
 	print $fh1 join (
@@ -190,11 +201,11 @@ sub write_observedvalue($$) {
 	my $observableFeature_name;
 	my $investigation_name;
 
-	while ( my ( $id, $datapoint ) = each(%$datapoint_ref) ) {
+	while ( my ( $id, $datapoint ) = each(%datapoint) ) {
 		$observationTarget_name = $datapoint->{animal_id};	
 		for my $measnum ( keys %{ $datapoint->{measnum} } ) {		
-			$observableFeature_name = $meas_ref->{$measnum}->{varname};
-			$investigation_name     = $meas_ref->{$measnum}->{projsym};
+			$observableFeature_name = $measurement{$measnum}->{varname};
+			$investigation_name     = $measurement{$measnum}->{projsym};
 			for my $value ( @{ $datapoint->{measnum}->{$measnum} } ) {
 				print $fh1 join ( "\t",$measnum,
 								  $observationTarget_name, $investigation_name, $observableFeature_name, $investigation_name,
@@ -206,11 +217,10 @@ sub write_observedvalue($$) {
 
 }
 
-sub write_observablefeature($$) {
-	my ( $datapoint_ref, $meas_ref, ) = @_;
+sub write_observablefeature() {
 	local $\ = "\n";    # do the magic of println
 	my %unit;           # stores unique units
-	open my $fh1, ">:utf8", "../../../data/MPD/observablefeature.txt" or die "$!";
+	open my $fh1, ">:utf8", "$basedir/observablefeature.txt" or die "$!";
 
 	# write headers
 	print $fh1 join ( "\t", qw/name investigation_name description unit_term/ );
@@ -219,14 +229,14 @@ sub write_observablefeature($$) {
 	# TODO
 	
 	# write the other features
-	while ( my ( $id, $meas ) = each(%$meas_ref) ) {
+	while ( my ( $id, $meas ) = each(%measurement) ) {
 		print $fh1 join ( "\t", $meas->{varname}, $meas->{projsym}, $meas->{desc}, $meas->{units} );
 		$unit{ $meas->{units} }->{term} = $meas->{units};
 	}
 	close $fh1;
 
 	# add units as ontology terms to file
-	open my $fh2, ">>:utf8", "../../../data/MPD/ontologyterm.txt" or die "$!";
+	open my $fh2, ">>:utf8", "$basedir/ontologyterm.txt" or die "$!";
 
 	for my $key ( keys %unit ) {
 
@@ -238,18 +248,17 @@ sub write_observablefeature($$) {
 }
 
 sub write_individual_panel($$) {
-	my ( $datapoint_ref, $meas_ref, ) = @_;
 	local $\ = "\n";    # do the magic of println
 	my %panels = ();          # store unique panel names
 
-	open my $fh1, ">:utf8", "../../../data/MPD/individual.txt"        or die "$!";
-	open my $fh2, ">:utf8", "../../../data/MPD/panel_individuals.txt" or die "$!";
+	open my $fh1, ">:utf8", "$basedir/individual.txt"        or die "$!";
+	open my $fh2, ">:utf8", "$basedir/panel_individuals.txt" or die "$!";
 
 	# write headers
 	print $fh1 join ( "\t", qw/name investigation_name/ );
 	print $fh2 join ( "\t", qw/panel_name panel_investigation_name individual_name individual_investigation_name/ );
 
-	while ( my ( $name, $animal_ref ) = each(%$datapoint_ref) ) {
+	while ( my ( $name, $animal_ref ) = each(%datapoint) ) {
 		print $fh1 join ( "\t", $animal_ref->{animal_id}, $animal_ref->{projsym} );
 		print $fh2 join ( "\t", $animal_ref->{strain}, $animal_ref->{projsym}, $animal_ref->{animal_id}, $animal_ref->{projsym} );
 		$panels{ uc($animal_ref->{strain}.'['.$animal_ref->{projsym}.']') }->{strain} = $animal_ref->{strain};
@@ -258,7 +267,7 @@ sub write_individual_panel($$) {
 	close $fh1;
 	close $fh2;
 
-	open my $fh3, ">:utf8", "../../../data/MPD/panel.txt" or die "$!";
+	open my $fh3, ">:utf8", "$basedir/panel.txt" or die "$!";
 
 	# write header
 	print $fh3 join ( "\t", qw/name investigation_name/ );
@@ -270,7 +279,6 @@ sub write_individual_panel($$) {
 }
 
 sub write_investigation($$) {
-	my ( $datapoint_ref, $meas_ref ) = @_;
 	local $\ = "\n";    # do the magic of println
 
 	my @output = (
@@ -281,14 +289,14 @@ sub write_investigation($$) {
 				   ]
 	);
 
-	open my $fh_out, ">:utf8", "../../../data/MPD/investigation.txt" or die "$!";
+	open my $fh_out, ">:utf8", "$basedir/investigation.txt" or die "$!";
 	print $fh_out join ( "\t", qw/name description accession/ );    # write headers
 
 	# create a hash of uniqe project names
 	# from measurements available in database
 	my %project;
-	for my $meas ( keys %$meas_ref ) {
-		$project{ $meas_ref->{$meas}->{projsym} }++;
+	for my $meas ( keys %measurement ) {
+		$project{ $measurement{$meas}->{projsym} }++;
 	}
 
 	# load projects name from external file
@@ -306,7 +314,7 @@ sub load_projects() {
 	my %project_des;
 
 	my $csv = make_csv_parser();
-	open my $fh_in, "<:utf8", "../../../data/MPD/orig/projects.txt" or die "$!";
+	open my $fh_in, "<:utf8", "$basedir/orig/projects.txt" or die "$!";
 
 	# set column names to headers
 	$csv->column_names( $csv->getline($fh_in) );
@@ -321,19 +329,18 @@ sub load_projects() {
 }
 
 sub write_ontology_term($$) {
-	my ( $datapoint_ref, $meas_ref ) = @_;
 	local $\ = "\n";    # do the magic of println
 	
 	# create ontology
 	# write header
-	open my $fh_out, ">:utf8", "../../../data/MPD/ontology.txt"
+	open my $fh_out, ">:utf8", "$basedir/ontology.txt"
 		  or die "ERROR: Can't open ontology.txt for write. $!";
 	print $fh_out join ( "\t", qw/name ontologyAccession/ );
 	print $fh_out join ( "\t", 'EFO', 'http://www.ebi.ac.uk/efo');
 	close $fh_out;
 
 	# for each ontology add terms
-	open $fh_out, ">:utf8", "../../../data/MPD/ontologyterm.txt"
+	open $fh_out, ">:utf8", "$basedir/ontologyterm.txt"
 	  or die "ERROR: Can't open ontologyterm.txt for write. $!";
 	  
 	# header 
@@ -353,25 +360,15 @@ sub write_ontology_term($$) {
 }
 
 sub load_animaldatapoints($$) {
-	my ( $datapoint_ref, $meas_ref, ) = @_;
-
 	my $csv = make_csv_parser();
-	open my $fh_in, "<:utf8", "../../../data/MPD/orig/animaldatapoints.txt"
+	open my $fh_in, "<:utf8", "$basedir/orig/animaldatapoints.txt"
 	  or die "ERROR: Can't load animaldatapoints.txt. $!";
 
 	# set column names to headers
 	$csv->column_names( $csv->getline($fh_in) );
 
 	my $c;
-#	my $progress = Term::ProgressBar->new(
-#										   {
-#											 count  => 548912,
-#											 name   => 'Loading datapoints',
-#											 ETA    => 'linear',
-#											 remove => 0,
-#										   }
-#	);
-#	$progress->max_update_rate(2);
+
 	my %warning;     # stores measnum that warning was already printed for
 	my %animalid;    # stores animalids for consistency checking
 	my %measid;		 # stores measurements that have values for consistency checking
@@ -380,107 +377,107 @@ sub load_animaldatapoints($$) {
 	until ( $csv->eof() ) {
 		my $row = trim_row($csv->getline_hr($fh_in));
 		check_parser_for_errors( \$csv, \$row );
-#		$progress->update( $c++ );
-		print $c . ' out of 548912' . "\n" if $c++ % 1000 == 0;
-		if ( exists( $meas_ref->{ $row->{measnum} } ) ) {
-			# TODO WHAT ABOUT MISSING VALUES
+
+		# modify some values on the fly		
+		for my $heading ( keys %$row ) {
+			if ( defined $row->{$heading}
+				&& $row->{$heading} =~ /[^<>\/a-zA-Z0-9_\s\-:\.(),;\+\*]/ )
+			{
+				$warning{ "Substituting illegal character in >>> " . $& }++;
+				$row->{$heading} =~ s/[^<>\/a-zA-Z0-9_\s\-:\.(),;\+\*]/ /g;
+			}
+		}
+
+		INFO $c . ' out of 548912' if ++$c % 100000 == 0;
+		
+		if ( exists( $measurement{ $row->{measnum} } ) ) {
+			# TODO: WHAT ABOUT MISSING VALUES
 			if ( defined( $row->{value} ) ) {
 
 				$animalid{ uc( $row->{'animal_id'} ) }->{ $row->{'animal_id'} }++;
 				$measid{ $row->{measnum} }++;
 				$warning{
-					"CAPITALISATION: $row->{'animal_id'} inconsistent in animaldatapoints.txt\n" }++
+					"CAPITALISATION: $row->{'animal_id'} inconsistent in animaldatapoints.txt" }++
 				  if scalar keys %{ $animalid{ uc( $row->{'animal_id'} ) } } > 1;
-				my $projsym = $meas_ref->{ $row->{measnum} }->{projsym};
+				my $projsym = $measurement{ $row->{measnum} }->{projsym};
 				my $individual_name = uc ($row->{'strain'} . '[' .  $row->{'animal_id'} . '][' . $projsym . ']');
 				
 				# animal_id = {strain} + {animalid}
 				# it turns out animals are numbered per strain
 				
-				$datapoint_ref->{ $individual_name }->{sex} = 'male'
+				$datapoint{ $individual_name }->{sex} = 'male'
 				  if lc( $row->{sex} ) eq 'm';
-				$datapoint_ref->{ $individual_name }->{sex} = 'female'
+				$datapoint{ $individual_name }->{sex} = 'female'
 				  if lc( $row->{sex} ) eq 'f';
-				 if (defined $datapoint_ref->{ $individual_name }->{animal_id}
-				 && $datapoint_ref->{ $individual_name }->{animal_id} ne uc($row->{strain} . "-" . $row->{animal_id} )) {
-					print "ERROR MULTIPLE ANIMAL IDs per ANIMAL?" . $individual_name . " " 
-					. $datapoint_ref->{ $individual_name }->{animal_id} . " " . $row->{strain} . "-" . $row->{animal_id} . "\n";
+				 if (defined $datapoint{ $individual_name }->{animal_id}
+				 && $datapoint{ $individual_name }->{animal_id} ne uc($row->{strain} . "-" . $row->{animal_id} )) {
+					WARN "ERROR MULTIPLE ANIMAL IDs per ANIMAL?" . $individual_name . " " 
+					. $datapoint{ $individual_name }->{animal_id} . " " . $row->{strain} . "-" . $row->{animal_id};
 				  }
-				$datapoint_ref->{ $individual_name }->{animal_id} = uc($row->{strain} . "-" . $row->{animal_id});
-				$datapoint_ref->{ $individual_name }->{strain}    = $row->{strain};
-				if (defined $datapoint_ref->{ $individual_name }->{projsym}) {
-					print "WARNING individual in 2 different investigations! " . $individual_name . " already in " .
-					$datapoint_ref->{ $individual_name }->{projsym} . " and " .$projsym . "\n"
-					if $datapoint_ref->{ $individual_name }->{projsym} ne $projsym;
+				$datapoint{ $individual_name }->{animal_id} = uc($row->{strain} . "-" . $row->{animal_id});
+				$datapoint{ $individual_name }->{strain}    = $row->{strain};
+				if (defined $datapoint{ $individual_name }->{projsym}) {
+					WARN "WARNING individual in 2 different investigations! " . $individual_name . " already in " .
+					$datapoint{ $individual_name }->{projsym} . " and " .$projsym
+					if $datapoint{ $individual_name }->{projsym} ne $projsym;
 				}
-				$datapoint_ref->{ $individual_name }->{projsym} = $projsym;
-				push @{ $datapoint_ref->{ $individual_name }->{measnum}
+				$datapoint{ $individual_name }->{projsym} = $projsym;
+				push @{ $datapoint{ $individual_name }->{measnum}
 					  ->{ $row->{measnum} } }, $row->{value};
 			 } else {
-				$warning{ "EMPTY VALUE: Line $. in animaldatapoints.txt has an empty value\n" }++;
+				$warning{ "EMPTY VALUE: Line $. in animaldatapoints.txt has an empty value" }++;
 			}
 		} else {
 			$warning{
-				"MISSING REFERENCE: measnum $row->{measnum} was not found in measurements.txt\n" }++;
+				"MISSING REFERENCE: measnum $row->{measnum} was not found in measurements.txt" }++;
 		}
 	}
 	close($fh_in);
 	
 	# find unmatched measurements (with no values)
-	for my $meas ( keys %$meas_ref) {
-		$measdesc{ uc( $meas_ref->{$meas}->{desc} ) }->{ $meas } ++;
-		$warning{"MEASUREMENT MISSING: $meas $meas_ref->{$meas}->{desc} in animaldatapoints.txt\n" }++
+	for my $meas ( keys %measurement) {
+		$measdesc{ uc( $measurement{$meas}->{desc} ) }->{ $meas } ++;
+		$warning{"MEASUREMENT MISSING: $meas $measurement{$meas}->{desc} in animaldatapoints.txt" }++
 				  if !defined $measid{$meas};
 	}
 	# find similiar measurements by description
-	for my $meas ( keys %$meas_ref) {
-		$warning{"DUPLICATE MEASUREMENTS: $meas_ref->{$meas}->{desc} (measnum $meas)\n" }++		
-		if scalar keys %{$measdesc{ uc( $meas_ref->{$meas}->{desc} ) }} > 1;		
+	for my $meas ( keys %measurement) {
+		$warning{"DUPLICATE MEASUREMENTS: $measurement{$meas}->{desc} (measnum $meas)" }++		
+		if scalar keys %{$measdesc{ uc( $measurement{$meas}->{desc} ) }} > 1;		
 	}
 
 	# print accumulated warnings
 	for my $msg ( sort( keys %warning ) ) {
-		print $msg;
+		WARN $msg;
 	}
 }
 
 sub load_measurements($) {
-	my $meas_ref = shift;
-
 	my $csv = make_csv_parser();
-	open my $fh_in, "<:utf8", "../../../data/MPD/orig/measurements.txt"
+	open my $fh_in, "<:utf8", "$basedir/orig/measurements.txt"
 	  or die "ERROR: Can't load measurements.txt. $!";
 
 	# set column names to headers
 	$csv->column_names( $csv->getline($fh_in) );
 
 	my $c;
-#	my $progress = Term::ProgressBar->new(
-#										   {
-#											 count  => 1806,
-#											 name   => 'Loading measurements',
-#											 ETA    => 'linear',
-#											 remove => 0,
-#										   }
-#	);
 
 	until ( $csv->eof() ) {
 		my $row = trim_row($csv->getline_hr($fh_in));
 		check_parser_for_errors( \$csv, \$row );
 		# assign variables
-		$meas_ref->{ $row->{measnum} }->{varname}    = $row->{varname};
-		$meas_ref->{ $row->{measnum} }->{desc}    = $row->{desc};
-		$meas_ref->{ $row->{measnum} }->{units}   = $row->{units};
-		$meas_ref->{ $row->{measnum} }->{projsym} = $row->{projsym};
-		$meas_ref->{ $row->{measnum} }->{cat1}    = $row->{cat1} if $row->{cat1} ne '=';
-		$meas_ref->{ $row->{measnum} }->{cat2}    = $row->{cat2} if $row->{cat2} ne '=';
-		$meas_ref->{ $row->{measnum} }->{cat3}    = $row->{cat3} if $row->{cat3} ne '=';
+		$measurement{ $row->{measnum} }->{varname}    = $row->{varname};
+		$measurement{ $row->{measnum} }->{desc}    = $row->{desc};
+		$measurement{ $row->{measnum} }->{units}   = $row->{units};
+		$measurement{ $row->{measnum} }->{projsym} = 'MPD: ' . $row->{projsym};
+		$measurement{ $row->{measnum} }->{cat1}    = $row->{cat1} if $row->{cat1} ne '=';
+		$measurement{ $row->{measnum} }->{cat2}    = $row->{cat2} if $row->{cat2} ne '=';
+		$measurement{ $row->{measnum} }->{cat3}    = $row->{cat3} if $row->{cat3} ne '=';
 
-#		$progress->update( $c++ );
 	}
 	close($fh_in);
 	
-	remove_dup_measurements($meas_ref);
+	remove_dup_measurements(%measurement);
 	
 }
 
@@ -490,13 +487,13 @@ sub trim_row ($){
 	
 	for my $key (keys %$row){
 		if (defined $row->{$key} && $row->{$key} =~ s/\s{2,}//){
-			print "TRIMMING $row->{$key}";
+			WARN "TRIMMING $row->{$key}";
 		}
 		if (defined $row->{$key} && $row->{$key} =~ s/^\s+//){
-			print "TRIMMING $row->{$key}";
+			WARN "TRIMMING $row->{$key}";
 		}
 		if (defined $row->{$key} && $row->{$key} =~ s/\s+$//){
-			print "TRIMMING $row->{$key}";
+			WARN "TRIMMING $row->{$key}";
 		} 
 	}
 	
@@ -504,36 +501,35 @@ sub trim_row ($){
 }
 
 sub remove_dup_measurements($) {
-	my $meas_ref = shift;
-	
+
 	my (%word_count, %warning);
 	# find duplicates, by storing path to branch in a hash
 	# if multiple paths are found, the term is duplicated in different places
-	while ( my ( $key, $meas ) = each %$meas_ref ) {
+	while ( my ( $key, $meas ) = each %measurement ) {
 		 $word_count{ $meas->{cat1} }->{ROOT}++ if defined $meas->{cat1};
 		 $word_count{ $meas->{cat2} }->{ $meas->{cat1} }++ if defined $meas->{cat2};
 		 $word_count{ $meas->{cat3} }->{ $meas->{cat1}.$meas->{cat2} }++ if defined $meas->{cat3};
 	}
 	
 	# concatenate to previous cat
-	while ( my ( $key, $meas ) = each %$meas_ref ) {
+	while ( my ( $key, $meas ) = each %measurement ) {
 		$meas->{units} = 'N' if $meas->{units} eq 'n';
 	
 		if ( defined $meas->{cat2} && scalar keys %{$word_count{ $meas->{cat2} }} > 1 ){
 			my $no = scalar keys %{$word_count{ $meas->{cat2} }};
-			$warning{"DUPLICATE CATEGORY: prefixing $meas->{cat2} with $meas->{cat1} ($no) \n" }++;
+			$warning{"DUPLICATE CATEGORY: prefixing $meas->{cat2} with $meas->{cat1} ($no) " }++;
 			$meas->{cat2} = $meas->{cat1} . ' ' . $meas->{cat2};
 		}
 		if ( defined $meas->{cat3} && scalar keys %{$word_count{ $meas->{cat3} }} > 1 ){
 			my $no = scalar keys %{$word_count{ $meas->{cat3} }};
-			$warning{"DUPLICATE CATEGORY: prefixing $meas->{cat3} with $meas->{cat2} ($no) \n" }++;
+			$warning{"DUPLICATE CATEGORY: prefixing $meas->{cat3} with $meas->{cat2} ($no) " }++;
 			$meas->{cat3} = $meas->{cat2} . ' ' . $meas->{cat3};
 		}
 	}
 
 	# print accumulated warnings
 	for my $msg ( sort( keys %warning ) ) {
-		print $msg;
+		WARN $msg;
 	}
 	
 }
@@ -558,7 +554,7 @@ sub check_parser_for_errors {
 	if ( !( defined $$row_ref ) and !( $$csv_ref->eof() ) ) {
 		my $bad_argument = $$csv_ref->error_input();    # get the most recent bad argument
 		my $diag         = $$csv_ref->error_diag();
-		print "WARNING: CSV parser error <$diag> on line - $bad_argument.\n";
+		ERROR "WARNING: CSV parser error <$diag> on line - $bad_argument.";
 	}
 }
 
