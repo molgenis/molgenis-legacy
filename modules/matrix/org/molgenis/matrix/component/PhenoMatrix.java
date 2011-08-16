@@ -45,7 +45,7 @@ public class PhenoMatrix implements RenderableMatrix<ObservationTarget, Observab
 		// Filter shizzle: TODO
 		filters = new ArrayList<Filter>();
 		filteredNumberOfRows = totalNumberOfRows;
-		filteredNumberOfRows = totalNumberOfCols;
+		filteredNumberOfCols = totalNumberOfCols;
 		constraintLogic = "";
 	}
 	

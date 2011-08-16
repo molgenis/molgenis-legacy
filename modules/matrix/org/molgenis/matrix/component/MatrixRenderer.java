@@ -51,6 +51,7 @@ public class MatrixRenderer extends HtmlWidget
 		super(name, label);
 		
 		System.out.println("matrix.getTotalNumberOfCols() = " + matrix.getTotalNumberOfCols());
+		System.out.println("matrix.getTotalNumberOfRows() = " + matrix.getTotalNumberOfRows());
 		
 		// create instance of complete matrix and run checks
 		model.setInstance(matrix);
