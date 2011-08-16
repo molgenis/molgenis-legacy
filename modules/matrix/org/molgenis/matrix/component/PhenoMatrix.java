@@ -248,6 +248,20 @@ public class PhenoMatrix implements RenderableMatrix<ObservationTarget, Observab
 	public int getStepSize() {
 		return stepSize;
 	}
+
+	@Override
+	public List<String> getRowHeaderFilterAttributes() {
+		ArrayList<String> headers = new ArrayList<String>();
+		headers.add("name");
+		return headers;
+	}
+
+	@Override
+	public List<String> getColHeaderFilterAttributes() {
+		ArrayList<String> headers = new ArrayList<String>();
+		headers.add("name");
+		return headers;
+	}
 	
 
 }

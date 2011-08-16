@@ -72,15 +72,41 @@ filteredNumberOfCols: ${matrix.filteredNumberOfCols}<br> -->
 			
 			<table class="tableBorder">
 				<tr>
-					<td></td><td></td>
+					<td colspan="2"></td>
+					<td colspan="${matrix.visibleCols?size}">Apply filter on column header:
+						<select name="FILTER_ATTRIBUTE_COL_HEADER">
+							<#list matrix.colHeaderFilterAttributes as att><option value="${att}">${att}</option></#list>
+						</select>
+						<select name="FILTER_OPERATOR_COL_HEADER">
+							<#list operators?keys as op><option value="${op}">${operators[op]}</option></#list>
+						</select>
+						<input type="text" size="4" name="FILTER_VALUE_COL_HEADER"></input></nobr>
+					</td>
+				</tr>
+			
+				<tr>
+					<td colspan="2">Apply filter on row header:</td>
 					<#list matrix.visibleCols as col>
 						<td class="matrixTableCell colorOfTitle"><b>${matrix.renderCol(col)}</b></td>
 					</#list>
 				</tr>
 				<tr>
-					<td></td><td></td>
+					<td colspan="2"><nobr>
+						<select name="FILTER_ATTRIBUTE_ROW_HEADER">
+							<#list matrix.rowHeaderFilterAttributes as att><option value="${att}">${att}</option></#list>
+						</select>
+						<select name="FILTER_OPERATOR_ROW_HEADER">
+							<#list operators?keys as op><option value="${op}">${operators[op]}</option></#list>
+						</select>
+						<input type="text" size="4" name="FILTER_VALUE_ROW_HEADER"></input></nobr>
+					</td>
 					<#list matrix.visibleCols as col>
-						<td><nobr><select name="FILTER_OPERATOR_COL_${col_index}"><option value="GREATER">&gt;</option><option value="GREATER_EQUAL">&gt;=</option><option value="LESS">&lt;</option><option value="LESS_EQUAL">&lt;=</option><option value="EQUALS">==</option></select><input type="text" size="4" name="FILTER_VALUE_COL_${col_index}"></input></nobr></td>
+						<td><nobr>
+							<select name="FILTER_OPERATOR_COL_${col_index}">
+								<#list operators?keys as op><option value="${op}">${operators[op]}</option></#list>
+							</select>
+							<input type="text" size="4" name="FILTER_VALUE_COL_${col_index}"></input></nobr>
+						</td>
 					</#list>
 				</tr>
 				<#list matrix.visibleRows as row> 
@@ -88,7 +114,13 @@ filteredNumberOfCols: ${matrix.filteredNumberOfCols}<br> -->
 						<td class="matrixTableCell colorOfTitle">
 							<b>${matrix.renderRow(row)}</b>
 						</td>
-						<td><nobr><select name="FILTER_OPERATOR_ROW_${row_index}"><option value="GREATER">&gt;</option><option value="GREATER_EQUAL">&gt;=</option><option value="LESS">&lt;</option><option value="LESS_EQUAL">&lt;=</option><option value="EQUALS">==</option></select><input type="text" size="4" name="FILTER_VALUE_ROW_${row_index}"></input></nobr></td>
+						<td>
+						<nobr>
+							<select name="FILTER_OPERATOR_ROW_${row_index}">
+								<#list operators?keys as op><option value="${op}">${operators[op]}</option></#list>
+							</select>
+							<input type="text" size="4" name="FILTER_VALUE_ROW_${row_index}"></input></nobr>
+						</td>
 						<#list 0..matrix.visibleCols?size-1 as i>								
 			  				<td class="matrixTableCell matrixRowColor<#if row_index%2==0>1<#else>0</#if>">${matrix.renderValue(matrix.visibleValues[row_index][i])}</td>
 						</#list> 

@@ -573,10 +573,21 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 		return stepSize;
 	}
 
-//	@Override
-//	public String getScreenName() {
-//		return screenName;
-//	}
+	@Override
+	public List<String> getRowHeaderFilterAttributes() {
+		ArrayList<String> headers = new ArrayList<String>();
+		//TODO: Entity attributes, dynamically using MetaModelDB!!
+		headers.add("name");
+		return headers;
+	}
+
+	@Override
+	public List<String> getColHeaderFilterAttributes() {
+		ArrayList<String> headers = new ArrayList<String>();
+		//TODO: Entity attributes, dynamically using MetaModelDB!!
+		headers.add("name");
+		return headers;
+	}
 	
 
 	/**

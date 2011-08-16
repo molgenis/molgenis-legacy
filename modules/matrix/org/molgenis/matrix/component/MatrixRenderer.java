@@ -11,6 +11,7 @@
 
 package org.molgenis.matrix.component;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -150,12 +151,25 @@ public class MatrixRenderer extends HtmlWidget
 		parameters.put("name", this.getName());
 		parameters.put("value", this.getObject());
 		parameters.put("matrix", this.getModel().getSubMatrix());
+		parameters.put("operators", this.operators());
 		parameters.put("req_tag", MATRIX_COMPONENT_REQUEST_PREFIX);
 
 		// delegate to freemarker
 		return new FreemarkerView(
 				"org/molgenis/matrix/component/MatrixRenderer.ftl",
 				parameters).render();
+	}
+	
+	private HashMap<String, String> operators(){
+		HashMap<String, String> ops = new HashMap<String, String>();
+		
+		ops.put("GREATER", "&gt;");
+		ops.put("GREATER_EQUAL", "&gt;=");
+		ops.put("LESS", "&lt;");
+		ops.put("LESS_EQUAL", "&lt;=");
+		ops.put("EQUALS", "==");
+		
+		return ops;
 	}
 	
 	public void delegateHandleRequest(Tuple request) throws Exception {

@@ -92,8 +92,22 @@ public interface RenderableMatrix<R, C, V> {
 	/**
 	 * Show the stepsize on the screen. This is the number of cells, or 'speed' with
 	 * which the matrix moves when move (panning) actions are performed.
-	 * @return
 	 */
 	public int getStepSize();
+	
+	/**
+	 * Tells the renderer on which row header attributes the user can filter. If the
+	 * row headers are strings, you could implement this with just "value". If your
+	 * headers are entities, you might want to fill this list with the attributes of the
+	 * entity.
+	 */
+	public List<String> getRowHeaderFilterAttributes();
+	
+	
+	/**
+	 * Same as getRowHeaderFilterAttributes() except for columns.
+	 */
+	public List<String> getColHeaderFilterAttributes();
+
 	
 }
