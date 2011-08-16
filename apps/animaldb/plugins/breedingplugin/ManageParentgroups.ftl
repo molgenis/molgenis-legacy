@@ -100,10 +100,10 @@
 		</select>
 	</div>
 	
-	<!-- Date and time -->
-	<div id='datetimevalue_part' class='row'>
-		<label for='datetime'>Date and time: </label>
-		<input type='text' class='textbox' id='datetime' name='datetime' value='<#if screen.datetime?exists>${screen.getDatetime()}</#if>' onclick='showDateInput(this,true)' autocomplete='off' />
+	<!-- Start date -->
+	<div id='datevalue_part' class='row'>
+		<label for='startdate'>Start date:</label>
+		<input type='text' class='textbox' id='startdate' name='startdate' value='<#if screen.startdate?exists>${screen.getStartdate()}</#if>' onclick='showDateInput(this)' autocomplete='off' />
 	</div>
 		
 	<!-- Add button -->

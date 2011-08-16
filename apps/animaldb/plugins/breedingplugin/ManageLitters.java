@@ -48,14 +48,14 @@ public class ManageLitters extends PluginModel<Entity>
 	private int litter;
 	private String litterName = "";
 	private String datetime = "";
-	private String birthdatetime = "";
-	private String weandatetime = "";
+	private String birthdate = "";
+	private String weandate = "";
 	private int litterSize;
 	private int weanSizeFemale;
 	private int weanSizeMale;
 	private boolean litterSizeApproximate;
 	private CommonService ct = CommonService.getInstance();
-	private SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
+	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
 	private String action = "ShowLitters";
 	private String nameBase = null;
 	private int startNumber = -1;
@@ -138,18 +138,18 @@ public class ManageLitters extends PluginModel<Entity>
 		this.datetime = datetime;
 	}
 	
-	public String getBirthdatetime() {
-		return birthdatetime;
+	public String getBirthdate() {
+		return birthdate;
 	}
-	public void setBirthdatetime(String birthdatetime) {
-		this.birthdatetime = birthdatetime;
+	public void setBirthdatetime(String birthdate) {
+		this.birthdate = birthdate;
 	}
 	
-	public void setWeandatetime(String weandatetime) {
-		this.weandatetime = weandatetime;
+	public void setWeandate(String weandate) {
+		this.weandate = weandate;
 	}
-	public String getWeandatetime() {
-		return weandatetime;
+	public String getWeandate() {
+		return weandate;
 	}
 
 	public int getLitterSize() {
@@ -269,10 +269,10 @@ public class ManageLitters extends PluginModel<Entity>
 
 	private void setUserFields(Tuple request, boolean wean) throws Exception {
 		if (wean == true) {
-			if (request.getString("weandatetime") == null || request.getString("weandatetime").equals("")) {
+			if (request.getString("weandate") == null || request.getString("weandate").equals("")) {
 				throw new Exception("Wean date cannot be empty");
 			}
-			setWeandatetime(request.getString("weandatetime"));
+			setWeandate(request.getString("weandate"));
 			setWeanSizeFemale(request.getInt("weansizefemale"));
 			setWeanSizeMale(request.getInt("weansizemale"));
 			
@@ -300,10 +300,10 @@ public class ManageLitters extends PluginModel<Entity>
 			parentgroupIdString = parentgroupIdString.replace(".", "");
 			parentgroupIdString = parentgroupIdString.replace(",", "");
 			setSelectedParentgroup(Integer.parseInt(parentgroupIdString));
-			if (request.getString("birthdatetime") == null || request.getString("birthdatetime").equals("")) {
+			if (request.getString("birthdate") == null || request.getString("birthdate").equals("")) {
 				throw new Exception("Birth date cannot be empty");
 			}
-			setBirthdatetime(request.getString("birthdatetime"));
+			setBirthdatetime(request.getString("birthdate"));
 			setLitterSize(request.getInt("littersize"));
 			if (request.getBool("sizeapp_toggle") != null) {
 				setLitterSizeApproximate(true);
@@ -538,7 +538,7 @@ public class ManageLitters extends PluginModel<Entity>
 			if (action.equals("ApplyAddLitter")) {
 				int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
 				setUserFields(request, false);
-				Date eventDate = sdf.parse(birthdatetime);
+				Date eventDate = dateOnlyFormat.parse(birthdate);
 				
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
@@ -563,7 +563,7 @@ public class ManageLitters extends PluginModel<Entity>
 				// Date of Birth
 				measurementId = ct.getMeasurementId("DateOfBirth");
 				valuesToAddList.add(ct.createObservedValue(invid, eventid, eventDate, null, measurementId, 
-						litterid, birthdatetime, 0));
+						litterid, birthdate, 0));
 				// Size
 				measurementId = ct.getMeasurementId("Size");
 				valuesToAddList.add(ct.createObservedValue(invid, eventid, eventDate, null, measurementId, litterid, 
@@ -605,7 +605,7 @@ public class ManageLitters extends PluginModel<Entity>
 			if (action.equals("Wean")) {
 				int invid = ct.getObservationTargetById(litter).getInvestigation_Id();
 				setUserFields(request, true);
-				Date weanDate = sdf.parse(weandatetime);
+				Date weanDate = dateOnlyFormat.parse(weandate);
 				
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
@@ -623,7 +623,7 @@ public class ManageLitters extends PluginModel<Entity>
 				Date litterBirthDate;
 				try {
 					litterBirthDateString = ct.getMostRecentValueAsString(litter, ct.getMeasurementId("DateOfBirth"));
-					litterBirthDate = sdf.parse(litterBirthDateString);
+					litterBirthDate = dateOnlyFormat.parse(litterBirthDateString);
 				} catch (Exception e) {
 					throw(new Exception("No litter birth date found - litter not weaned"));
 				}
@@ -672,7 +672,7 @@ public class ManageLitters extends PluginModel<Entity>
 				protocolId = ct.getProtocolId("SetWeanDate");
 				measurementId = ct.getMeasurementId("WeanDate");
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
-						null, protocolId, measurementId, litter, weandatetime, 0));
+						null, protocolId, measurementId, litter, weandate, 0));
 				
 				db.beginTx();
 				
@@ -713,7 +713,7 @@ public class ManageLitters extends PluginModel<Entity>
 					protocolId = ct.getProtocolId("SetWeanDate");
 					measurementId = ct.getMeasurementId("WeanDate");
 					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
-							null, protocolId, measurementId, animalId, weandatetime, 0));
+							null, protocolId, measurementId, animalId, weandate, 0));
 					// Set 'Active'
 					protocolId = ct.getProtocolId("SetActive");
 					measurementId = ct.getMeasurementId("Active");
@@ -798,7 +798,7 @@ public class ManageLitters extends PluginModel<Entity>
 				int protocolId = ct.getProtocolId("SetGenotypeDate");
 				int measurementId = ct.getMeasurementId("GenotypeDate");
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, 
-						null, protocolId, measurementId, this.genoLitterId, weandatetime, 0));
+						null, protocolId, measurementId, this.genoLitterId, weandate, 0));
 				
 				int animalCount = 0;
 				for (Individual animal : this.getAnimalsInLitter()) {

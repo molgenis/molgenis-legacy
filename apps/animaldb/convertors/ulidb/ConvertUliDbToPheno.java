@@ -43,8 +43,9 @@ public class ConvertUliDbToPheno
 	private Map<String, String> oldUliDbIdMap;
 	private Map<String, String> appMap;
 	private Calendar calendar;
-	private SimpleDateFormat sdf = new SimpleDateFormat("d-M-yyyy H:mm", Locale.US);
-	private SimpleDateFormat sdfMolgenis = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
+	private SimpleDateFormat dbFormat = new SimpleDateFormat("d-M-yyyy H:mm", Locale.US);
+	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+	//private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
 
 	public ConvertUliDbToPheno(Database db, Login login) throws Exception
 	{
@@ -178,16 +179,16 @@ public class ConvertUliDbToPheno
 				String startDateString = tuple.getString("Eingangsdatum");
 				Date startDate = null;
 				if (startDateString != null) {
-					startDate = sdf.parse(startDateString);
-					String dateOfBirth = sdfMolgenis.format(startDate);
+					startDate = dbFormat.parse(startDateString);
+					String dateOfBirth = dateOnlyFormat.format(startDate);
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), 
 							startDate, null, "DateOfBirth", newAnimalName, dateOfBirth, null));
 				}
 				String endDateString = tuple.getString("Abgangsdatum");
 				Date endDate = null;
 				if (endDateString != null) {
-					endDate = sdf.parse(endDateString);
-					String dateOfDeath = sdfMolgenis.format(endDate);
+					endDate = dbFormat.parse(endDateString);
+					String dateOfDeath = dateOnlyFormat.format(endDate);
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDeathDate"), 
 							startDate, null, "DeathDate", newAnimalName, dateOfDeath, null));
 				}
@@ -338,8 +339,8 @@ public class ConvertUliDbToPheno
 				String birthDateString = tuple.getString("Eingangsdatum");
 				String weanDate = null;
 				if (birthDateString != null) {
-					Date birthDate = sdf.parse(birthDateString);
-					weanDate = sdfMolgenis.format(birthDate);
+					Date birthDate = dbFormat.parse(birthDateString);
+					weanDate = dateOnlyFormat.format(birthDate);
 				}
 				
 				// Mutter-Nr -> Mother

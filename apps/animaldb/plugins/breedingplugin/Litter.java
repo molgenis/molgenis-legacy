@@ -14,7 +14,8 @@ public class Litter {
 	private String isSizeApproximate;
 	private int weanSize;
 	private String parentgroup;
-	private SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
+	private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
+	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
 	
 	public void setId(int id) {
 		this.id = id;
@@ -30,21 +31,33 @@ public class Litter {
 	}
 	public void setBirthDate(String birthDate) throws ParseException {
 		if (birthDate != null) {
-			this.birthDate = sdf.parse(birthDate);
+			try {
+				this.birthDate = dateOnlyFormat.parse(birthDate);
+			} catch (ParseException e) {
+				this.birthDate = dateTimeFormat.parse(birthDate);
+			}
 		} else {
 			this.birthDate = null;
 		}
 	}
 	public String getBirthDate() {
 		if (birthDate == null) return "";
-		return sdf.format(birthDate);
+		return dateOnlyFormat.format(birthDate);
 	}
 	public void setWeanDate(String weanDate) throws ParseException {
-		this.weanDate = sdf.parse(weanDate);
+		if (weanDate != null) {
+			try {
+				this.weanDate = dateOnlyFormat.parse(weanDate);
+			} catch (ParseException e) {
+				this.weanDate = dateTimeFormat.parse(weanDate);
+			}
+		} else {
+			this.weanDate = null;
+		}
 	}
 	public String getWeanDate() {
 		if (weanDate == null) return "";
-		return sdf.format(weanDate);
+		return dateOnlyFormat.format(weanDate);
 	}
 	public void setSize(int size) {
 		this.size = size;

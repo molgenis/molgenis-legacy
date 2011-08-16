@@ -75,6 +75,7 @@ public class LoadAnimalDB
 				}
 				String weandate = tuple.getString("weandate");
 				if (weandate.equals("NULL")) weandate = null;
+				// TODO: parse weandate?
 				//String status = tuple.getString("status");
 				String oldsex = tuple.getString("sex");
 				int oldspecies = tuple.getInt("species");
@@ -303,7 +304,7 @@ public class LoadAnimalDB
 						protocolId, measurementId, litterid, "Litter", 0));
 
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-				SimpleDateFormat sdfMolgenis = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
+				SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
 				// pairstartdate -> time
 				String pairStartDateString = tuple.getString("pairstartdate");
 				Date pairStartDate = null;
@@ -385,7 +386,7 @@ public class LoadAnimalDB
 				} else {
 					//change date formatting from mysql to molgenis style
 					birthDayDate = sdf.parse(birthDayString);
-					birthDayString = sdfMolgenis.format(birthDayDate);
+					birthDayString = dateOnlyFormat.format(birthDayDate);
 				}
 					
 				protocolId = ct.getProtocolId("SetDateOfBirth");
@@ -621,14 +622,14 @@ public class LoadAnimalDB
 				int eventid = app.getId();
 				
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-				SimpleDateFormat sdfMolgenis = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
+				SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
 				// applicationstartdate -> time
 				String appStartDateString = tuple.getString("applicationstartdate");
 				String appStartDateStringMolgenis = "";
 				Date appStartDate = null;
 				if (!appStartDateString.equals("NULL")) {
 					appStartDate = sdf.parse(appStartDateString);
-					appStartDateStringMolgenis = sdfMolgenis.format(appStartDate);
+					appStartDateStringMolgenis = dateOnlyFormat.format(appStartDate);
 				}
 
 				// applicationenddate -> endtime
@@ -637,7 +638,7 @@ public class LoadAnimalDB
 				Date appEndDate = null;
 				if (!appEndDateString.equals("NULL")) {
 					appEndDate = sdf.parse(appEndDateString);
-					appEndDateStringMolgenis = sdfMolgenis.format(appEndDate);
+					appEndDateStringMolgenis = dateOnlyFormat.format(appEndDate);
 				}
 
 				// StartDate
@@ -955,7 +956,7 @@ public class LoadAnimalDB
 					int featureid = ct.getMeasurementId("OldAnimalDBAnimalID");
 					Query<ObservedValue> q = db.query(ObservedValue.class);
 					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureid));
-					q.addRules(new QueryRule("value", Operator.EQUALS, oldanimalid));
+					q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, oldanimalid));
 					List<ObservedValue> valueList = q.find();
 					newanimalid = valueList.get(0).getTarget_Id();
 				}
@@ -966,7 +967,7 @@ public class LoadAnimalDB
 					int featureid = ct.getMeasurementId("OldAnimalDBPresetID");
 					Query<ObservedValue> q = db.query(ObservedValue.class);
 					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureid));
-					q.addRules(new QueryRule("value", Operator.EQUALS, oldpresetid));
+					q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, oldpresetid));
 					List<ObservedValue> valueList = q.find();
 					newgroupid = valueList.get(0).getTarget_Id();
 				}
@@ -996,7 +997,7 @@ public class LoadAnimalDB
 					int featureid = ct.getMeasurementId("OldAnimalDBAnimalID");
 					Query<ObservedValue> q = db.query(ObservedValue.class);
 					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureid));
-					q.addRules(new QueryRule("value", Operator.EQUALS, oldanimalid));
+					q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, oldanimalid));
 					List<ObservedValue> valueList = q.find();
 					if (valueList.size() > 0) {
 						newanimalid = valueList.get(0).getTarget_Id();
@@ -1005,13 +1006,14 @@ public class LoadAnimalDB
 
 				if (newanimalid > 0) {
 					// date
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-					SimpleDateFormat sdfMolgenis = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
+					SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+					SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+					SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MMMM d, yyyy HH:mm:ss", Locale.US);
 					String dateString = tuple.getString("date");
 					Date eventDate = null;
 					if (!dateString.equals("NULL")) {
 						// only parse events that have a valid date!
-						eventDate = sdf.parse(dateString);
+						eventDate = dbFormat.parse(dateString);
 
 						// get the type
 						String eventType = tuple.getString("type");
@@ -1050,14 +1052,14 @@ public class LoadAnimalDB
 								measurementId = ct.getMeasurementId("DateOfBirth");
 								valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, 
 										eventDate, null, protocolId, measurementId, newanimalid, 
-										sdfMolgenis.format(eventDate), 0));
+										dateOnlyFormat.format(eventDate), 0));
 							} else {
 								// Set the broughtinevent based on the oldanimaldb "Broughtin" event
 								int protocolId = ct.getProtocolId("SetOldAnimalDBBroughtinDate");
 								measurementId = ct.getMeasurementId("OldAnimalDBBroughtinDate");
 								valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, 
 										eventDate, null, protocolId, measurementId, newanimalid, 
-										sdfMolgenis.format(eventDate), 0));
+										dateOnlyFormat.format(eventDate), 0));
 							}
 						}
 						if (eventType.equals("Died")) {
@@ -1065,7 +1067,7 @@ public class LoadAnimalDB
 							int protocolId = ct.getProtocolId("SetDeathDate");
 							int measurementId = ct.getMeasurementId("DeathDate");
 							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, eventDate, null, 
-									protocolId, measurementId, newanimalid, sdfMolgenis.format(eventDate), 0));
+									protocolId, measurementId, newanimalid, dateOnlyFormat.format(eventDate), 0));
 							
 							// Report as dead/removed by setting the endtime of the most recent Active value
 							measurementId = ct.getMeasurementId("Active");
@@ -1086,7 +1088,7 @@ public class LoadAnimalDB
 							Query<ObservedValue> q = db.query(ObservedValue.class);
 							q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, newanimalid));
 							q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, measurementId));
-							q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, sdf.format(eventDate)));
+							q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, eventDate));
 							q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 							List<ObservedValue> valueList = q.find();
 							if (valueList.size() == 1) // Safe assumption: animal can only be in one experiment at a time
@@ -1119,7 +1121,7 @@ public class LoadAnimalDB
 							int protocolId = ct.getProtocolId("SetCageCleanDate");
 							int measurementId = ct.getMeasurementId("CageCleanDate");
 							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, eventDate, null, 
-									protocolId, measurementId, newanimalid, sdfMolgenis.format(eventDate), 0));
+									protocolId, measurementId, newanimalid, dateTimeFormat.format(eventDate), 0));
 						}
 
 						// Set the weandate based on the oldanimaldb "Wean" event
@@ -1127,7 +1129,7 @@ public class LoadAnimalDB
 							int protocolId = ct.getProtocolId("SetWeanDate");
 							int measurementId = ct.getMeasurementId("Weandate");
 							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, eventDate, null, 
-									protocolId, measurementId, newanimalid, sdfMolgenis.format(eventDate), 0));
+									protocolId, measurementId, newanimalid, dateOnlyFormat.format(eventDate), 0));
 						}
 
 						// Set the Remark application based on the oldanimaldb "Remark" event

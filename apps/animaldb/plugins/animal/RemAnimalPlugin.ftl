@@ -48,8 +48,8 @@
 </div>
 
 <div class="row">
-	<label for="deathdatetime">Date and time of death or removal:</label>
-	<input type='text' class='textbox' id='deathdatetime' name='deathdatetime' value='' onclick='showDateInput(this,true)' autocomplete='off' />
+	<label for="deathdate">Date of death or removal:</label>
+	<input type='text' class='textbox' id='deathdate' name='deathdate' value='' onclick='showDateInput(this)' autocomplete='off' />
 </div>
 
 <div id="experimentfields">

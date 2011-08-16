@@ -150,10 +150,10 @@
 		</select>
 	</div>
 	
-	<!-- Date and time of birth -->
-	<div id='newlitter_datetimevalue_part' class='row'>
-		<label for='birthdatetime'>Date and time of birth:</label>
-		<input type='text' class='textbox' id='birthdatetime' name='birthdatetime' value='<#if screen.birthdatetime?exists>${screen.getBirthdatetime()}</#if>' onclick='showDateInput(this,true)' autocomplete='off' />
+	<!-- Date of birth -->
+	<div id='newlitter_datevalue_part' class='row'>
+		<label for='birthdate'>Birth date:</label>
+		<input type='text' class='textbox' id='birthdate' name='birthdate' value='<#if screen.birthdate?exists>${screen.getBirthdate()}</#if>' onclick='showDateInput(this)' autocomplete='off' />
 	</div>
 	
 	<!-- Size -->
@@ -177,9 +177,9 @@
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowLitters">Back to overview</a></p>
 	<!-- Date and time of weaning -->
-	<div id='weandatetimediv' class='row'>
-		<label for='weandatetime'>Date and time of weaning:</label>
-		<input type='text' class='textbox' id='weandatetime' name='weandatetime' value='<#if screen.weandatetime?exists>${screen.getWeandatetime()}</#if>' onclick='showDateInput(this,true)' autocomplete='off' />
+	<div id='weandatediv' class='row'>
+		<label for='weandate'>Wean date:</label>
+		<input type='text' class='textbox' id='weandate' name='weandate' value='<#if screen.weandate?exists>${screen.getWeandate()}</#if>' onclick='showDateInput(this)' autocomplete='off' />
 	</div>
 	<!-- Size -->
 	<div id='weansize_part1' class='row'>

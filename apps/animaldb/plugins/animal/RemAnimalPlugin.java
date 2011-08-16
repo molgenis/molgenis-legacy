@@ -102,18 +102,18 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 				String removal = request.getString("removal");
 
 				// Get datetime of removal
-				String deathDatetimeString = request.getString("deathdatetime");
-				SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
+				String deathDateString = request.getString("deathdate");
+				SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
 				SimpleDateFormat sdfForDbCompare = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-				Date deathDatetime = sdf.parse(deathDatetimeString);
-				String deathDatetimeParsedString = sdfForDbCompare.format(deathDatetime);
+				Date deathDate = dateOnlyFormat.parse(deathDateString);
+				String deathDateParsedString = sdfForDbCompare.format(deathDate);
 
 				// Check if animal in experiment
 				int featureId = ct.getMeasurementId("Experiment");
 				Query<ObservedValue> q = db.query(ObservedValue.class);
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
-				q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, deathDatetimeParsedString));
+				q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, deathDateParsedString));
 				q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 				List<ObservedValue> valueList = q.find();
 				int expid = -1;
@@ -124,7 +124,7 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 					ObservedValue value = valueList.get(0);
 					expid = value.getRelation_Id();
 					// set end date-time here already
-					value.setEndtime(deathDatetime);
+					value.setEndtime(deathDate);
 					db.update(value);
 					// get values from form
 					discomfort = request.getString("discomfort");
@@ -136,7 +136,7 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 				// Set 'Removal' feature
 				int protocolId = ct.getProtocolId("SetRemoval");
 				int measurementId = ct.getMeasurementId("Removal");
-				db.add(ct.createObservedValueWithProtocolApplication(investigationId, deathDatetime, 
+				db.add(ct.createObservedValueWithProtocolApplication(investigationId, deathDate, 
 						null, protocolId, measurementId, animalId, removal, 0));
 				
 				// Report as dead/removed by setting the endtime of the Active value
@@ -147,7 +147,7 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 				List<ObservedValue> activeValueList = activeQuery.find();
 				if (activeValueList.size() == 1) {
 					ObservedValue activeValue = activeValueList.get(0);
-					activeValue.setEndtime(deathDatetime);
+					activeValue.setEndtime(deathDate);
 					activeValue.setValue("Dead");
 					db.update(activeValue);
 				}
@@ -157,8 +157,8 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 					protocolId = ct.getProtocolId("SetDeathDate");
 					measurementId = ct.getMeasurementId("DeathDate");
 					db.add(ct.createObservedValueWithProtocolApplication(investigationId, 
-							deathDatetime, null, protocolId, measurementId, animalId, 
-							deathDatetimeString, 0));
+							deathDate, null, protocolId, measurementId, animalId, 
+							deathDateString, 0));
 				}
 				
 				// Set subproject end values
@@ -168,13 +168,13 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 					db.add(app);
 					int protappid = app.getId();
 					measurementId = ct.getMeasurementId("FromExperiment");
-					db.add(ct.createObservedValue(investigationId, protappid, deathDatetime, null, 
+					db.add(ct.createObservedValue(investigationId, protappid, deathDate, null, 
 							measurementId, animalId, null, expid));
 					measurementId = ct.getMeasurementId("ActualDiscomfort");
-					db.add(ct.createObservedValue(investigationId, protappid, deathDatetime, null, 
+					db.add(ct.createObservedValue(investigationId, protappid, deathDate, null, 
 							measurementId, animalId, discomfort, 0));
 					measurementId = ct.getMeasurementId("ActualAnimalEndStatus");
-					db.add(ct.createObservedValue(investigationId, protappid, deathDatetime, null, 
+					db.add(ct.createObservedValue(investigationId, protappid, deathDate, null, 
 							measurementId, animalId, endstatus, 0));
 				}
 				

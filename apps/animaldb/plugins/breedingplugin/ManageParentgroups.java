@@ -39,9 +39,9 @@ public class ManageParentgroups extends PluginModel<Entity>
 	private List<Integer> fatherIdList = new ArrayList<Integer>();
 	private List<Integer> selectedFatherIdList = new ArrayList<Integer>();
 	private CommonService ct = CommonService.getInstance();
-	private SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
+	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
 	private String groupName = null;
-	private String datetime = null;
+	private String startdate = null;
 	private List<ObservationTarget> lineList;
 	private int line = 0;
 	private boolean firstTime = true;
@@ -105,11 +105,11 @@ public class ManageParentgroups extends PluginModel<Entity>
 		this.groupName = groupName;
 	}
 	
-	public String getDatetime() {
-		return datetime;
+	public String getStartdate() {
+		return startdate;
 	}
-	public void setDatetime(String datetime) {
-		this.datetime = datetime;
+	public void setStartdate(String startdate) {
+		this.startdate = startdate;
 	}
 
 	public void setLine(int line) {
@@ -178,8 +178,8 @@ public class ManageParentgroups extends PluginModel<Entity>
 	}
 	
 	private void setUserFields(Tuple request) {
-		if (request.getString("datetime") != null) {
-			setDatetime(request.getString("datetime"));
+		if (request.getString("startdate") != null) {
+			setStartdate(request.getString("startdate"));
 		}
 		if (request.getString("groupname") != null) {
 			setGroupName(request.getString("groupname"));
@@ -193,7 +193,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 		this.selectedMotherIdList.clear();
 		this.selectedFatherIdList.clear();
 		Date now = new Date();
-		this.setDatetime(sdf.format(now));
+		this.setStartdate(dateOnlyFormat.format(now));
 		this.setGroupName(null);
 	}
 
@@ -213,7 +213,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 					throw new Exception("No mother(s) and/or no father(s) selected");
 				}
 				setUserFields(request);
-				Date eventDate = sdf.parse(datetime);	
+				Date eventDate = dateOnlyFormat.parse(startdate);	
 				// Make group
 				int groupid = ct.makePanel(invid, groupName, this.getLogin().getUserId());
 				// Mark group as parent group using a special event
@@ -283,6 +283,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 		List<ObservedValue> valueList = q.find();
 		List<Integer> parentIdList = new ArrayList<Integer>();
 		for (ObservedValue value : valueList) {
+			// TODO: filter out the dead ones!
 			parentIdList.add(value.getTarget_Id());
 		}
 		return parentIdList;
