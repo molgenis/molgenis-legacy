@@ -589,6 +589,16 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 		return headers;
 	}
 	
+	@Override
+	public String getRowType() {
+		return this.getVisibleRows().get(0).get__Type();
+	}
+	
+	@Override
+	public String getColType() {
+		return this.getVisibleCols().get(0).get__Type();
+	}
+	
 
 	/**
 	 * Prepares this AbstractDataMatrixInstance for rendering
@@ -648,26 +658,31 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 
 	@Override
 	public RenderableMatrix getSubMatrixByRowValueFilter(
-			RenderableMatrix matrix, QueryRule q) throws Exception {
-		return AbstractDataMatrixQueries.getSubMatrixFilterByRowMatrixValues((AbstractDataMatrixInstance<Object>) this, q);
+			RenderableMatrix matrix, QueryRule ... rules) throws Exception {
+		AbstractDataMatrixInstance result =  AbstractDataMatrixQueries.getSubMatrixByRowValueFilter(this, rules);
+		result.setupForRendering(this.db, rowIndex, colIndex, matrix.getTotalNumberOfRows(), matrix.getTotalNumberOfCols(), stepSize);
+		return result;
 	}
 
 	@Override
 	public RenderableMatrix getSubMatrixByRowHeaderFilter(
-			RenderableMatrix matrix, QueryRule q) throws Exception {
-		return AbstractDataMatrixQueries.getSubMatrixFilterByRowEntityValues((AbstractDataMatrixInstance<Object>) this, db, q);
+			RenderableMatrix matrix, QueryRule ... rules) throws Exception {
+		throw new Exception("cant do that yet");
+		//return AbstractDataMatrixQueries.getSubMatrixByRowHeaderFilter(matrix, db, q);
 	}
 
 	@Override
 	public RenderableMatrix getSubMatrixByColValueFilter(
-			RenderableMatrix matrix, QueryRule q) throws Exception {
-		return AbstractDataMatrixQueries.getSubMatrixFilterByColMatrixValues((AbstractDataMatrixInstance<Object>) this, q);
+			RenderableMatrix matrix, QueryRule ... rules) throws Exception {
+		throw new Exception("cant do that yet");
+		//return AbstractDataMatrixQueries.getSubMatrixByColValueFilter(matrix, q);
 	}
 
 	@Override
 	public RenderableMatrix getSubMatrixByColHeaderFilter(
-			RenderableMatrix matrix, QueryRule q) throws Exception {
-		return AbstractDataMatrixQueries.getSubMatrixFilterByColEntityValues((AbstractDataMatrixInstance<Object>) this, db, q);
+			RenderableMatrix matrix, QueryRule ... rules) throws Exception {
+		throw new Exception("cant do that yet");
+		//return AbstractDataMatrixQueries.getSubMatrixByColHeaderFilter(matrix, db, q);
 	}
 	
 }

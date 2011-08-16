@@ -12,10 +12,13 @@
 package org.molgenis.matrix.component;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.util.Tuple;
@@ -168,6 +171,9 @@ public class MatrixRenderer extends HtmlWidget
 		ops.put("LESS", "&lt;");
 		ops.put("LESS_EQUAL", "&lt;=");
 		ops.put("EQUALS", "==");
+		ops.put("SORTASC", "sort asc");
+		ops.put("SORTDESC", "sort desc");
+		
 		
 		return ops;
 	}
@@ -220,6 +226,9 @@ public class MatrixRenderer extends HtmlWidget
 		}
 		else if (action.equals("changeSubmatrixSize")) {
 			this.update();
+		}
+		else if (action.startsWith("filter")) {
+			this.applyFilters(request);
 		}
 		else{
 			throw new Exception("Action '"+action+"' unknown.");
@@ -432,46 +441,72 @@ public class MatrixRenderer extends HtmlWidget
 	public void applyFilters(Tuple request) throws Exception
 	{
 		
-//		RenderableMatrix filterMatrix = null;
-//		
-//		if(request.getString("__action").equals("filterVisible")){
-//			// get the current submatrix (view)
-//			filterMatrix = this.getModel().getSubMatrix();
-//		}
-//		else if(request.getString("__action").equals("filterAll")){
-//			// get the original complete matrix
-//			filterMatrix = this.getModel().getInstance();
-//		}else{
-//			//unrecognized filter?
-//		}
-//		
-//		List<String> colNames = filterMatrix.getColNames();
-//		for (String colName : colNames)
-//		{
-//			Object filterValue = request.getObject("FILTER_VALUE_COL_" + colName);
-//			if (filterValue != null)
-//			{
-//				System.out.println("value for colName " + colName + ": " + filterValue);
-//				String filterOperator = request.getString("FILTER_OPERATOR_COL_" + colName);
-//				QueryRule q = new QueryRule(colName, Operator.valueOf(filterOperator), filterValue);
-//				filterMatrix = filterMatrix.getSubMatrixFilterByColMatrixValues(q);
-//				this.model.setSubMatrix(filterMatrix);	
-//			}
-//		}
-//		
-//		List<String> rowNames = filterMatrix.getRowNames();
-//		for (String rowName : rowNames)
-//		{
-//			Object filterValue = request.getObject("FILTER_VALUE_ROW_" + rowName);
-//			if (filterValue != null)
-//			{
-//				System.out.println("value for rowName " + rowName + ": " + filterValue);
-//				String filterOperator = request.getString("FILTER_OPERATOR_ROW_" + rowName);
-//				QueryRule q = new QueryRule(rowName, Operator.valueOf(filterOperator), filterValue);
-//				filterMatrix = filterMatrix.getSubMatrixFilterByRowMatrixValues(q);
-//				this.model.setSubMatrix(filterMatrix);
-//			}
-//		}
+		RenderableMatrix filterMatrix = null;
+		
+		String filterSelectionType = request.getString("FILTER_SELECTION_TYPE");
+		
+		if(filterSelectionType.equals("vis")){
+			// get the current submatrix (view)
+			filterMatrix = this.getModel().getSubMatrix();
+		}
+		else if(filterSelectionType.equals("evr")){
+			// get the original complete matrix
+			filterMatrix = this.getModel().getInstance();
+		}else{
+			throw new UnsupportedOperationException("FILTER NOT POSSIBLE YET");
+			//unrecognized filter?
+		}
+		
+		//get filters that were appliced to 'column values'
+		for(int col = 0; col < filterMatrix.getVisibleCols().size(); col++){
+			Object filterValue = request.getObject("FILTER_VALUE_COL_" + col);
+			if (filterValue != null)
+			{
+				
+				String filterOperator = request.getString("FILTER_OPERATOR_COL_" + col);
+				System.out.println("col value filter: col = " + col + ", op = " + filterOperator + ", val = " + filterValue);
+				QueryRule q = new QueryRule(String.valueOf(col), Operator.valueOf(filterOperator), filterValue);
+				filterMatrix = model.getDataSource().getSubMatrixByColValueFilter(filterMatrix, q);
+				this.model.setSubMatrix(filterMatrix);	
+			}
+		}
+		
+		//get filters that were appliced to 'row values'
+		for(int row = 0; row < filterMatrix.getVisibleRows().size(); row++){
+			Object filterValue = request.getObject("FILTER_VALUE_ROW_" + row);
+			if (filterValue != null)
+			{
+				String filterOperator = request.getString("FILTER_OPERATOR_ROW_" + row);
+				System.out.println("row value filter: row = " + row + ", op = " + filterOperator + ", val = " + filterValue);
+				QueryRule q = new QueryRule(String.valueOf(row), Operator.valueOf(filterOperator), filterValue);
+				filterMatrix = model.getDataSource().getSubMatrixByRowValueFilter(filterMatrix, q);
+				this.model.setSubMatrix(filterMatrix);	
+			}
+		}
+		
+		//get filters that were appliced to col headers
+		Object filterValue = request.getObject("FILTER_VALUE_COL_HEADER");
+		if (filterValue != null)
+		{
+			String filterOperator = request.getString("FILTER_OPERATOR_COL_HEADER");
+			String filterAttribute = request.getString("FILTER_ATTRIBUTE_COL_HEADER");
+			System.out.println("col header filter: attr = " + filterAttribute + ", op = " + filterOperator + ", val = " + filterValue);
+			QueryRule q = new QueryRule(filterAttribute, Operator.valueOf(filterOperator), filterValue);
+			filterMatrix = model.getDataSource().getSubMatrixByColHeaderFilter(filterMatrix, q);
+			this.model.setSubMatrix(filterMatrix);	
+		}
+		
+		//get filters that were appliced to row headers
+		filterValue = request.getObject("FILTER_VALUE_ROW_HEADER");
+		if (filterValue != null)
+		{
+			String filterOperator = request.getString("FILTER_OPERATOR_ROW_HEADER");
+			String filterAttribute = request.getString("FILTER_ATTRIBUTE_ROW_HEADER");
+			System.out.println("row header filter: attr = " + filterAttribute + ", op = " + filterOperator + ", val = " + filterValue);
+			QueryRule q = new QueryRule(filterAttribute, Operator.valueOf(filterOperator), filterValue);
+			filterMatrix = model.getDataSource().getSubMatrixByRowHeaderFilter(filterMatrix, q);
+			this.model.setSubMatrix(filterMatrix);	
+		}
 		
 		model.setWidth(this.model.getSubMatrix().getFilteredNumberOfCols());
 		model.setHeight(this.model.getSubMatrix().getFilteredNumberOfRows());

@@ -8,10 +8,12 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.matrix.component.RenderableMatrix;
 
 public class AbstractDataMatrixQueries
 {
 
+	@Deprecated
 	/**
 	 * Apply filters (query rules) to the values of a matrix, to get a new
 	 * subset matrix back. The 'field' specifies the row name where the filter is
@@ -26,7 +28,7 @@ public class AbstractDataMatrixQueries
 	public static AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowMatrixValues(
 			AbstractDataMatrixInstance<Object> dm, QueryRule ... rules) throws Exception
 	{
-		checkQueryRules(dm, false, rules);
+		checkQueryRulesOld(dm, false, rules);
 
 		// colNames is the resultset we want to get
 		List<String> colNames = null;
@@ -70,6 +72,7 @@ public class AbstractDataMatrixQueries
 		return res;
 	}
 
+	@Deprecated
 	/**
 	 * Apply filters (query rules) to the values of a matrix, to get a new
 	 * subset matrix back. The 'field' specifies the column name where the filter is
@@ -84,7 +87,7 @@ public class AbstractDataMatrixQueries
 	public static AbstractDataMatrixInstance<Object> getSubMatrixFilterByColMatrixValues(
 			AbstractDataMatrixInstance<Object> dm, QueryRule ... rules) throws Exception
 	{
-		checkQueryRules(dm, true, rules);
+		checkQueryRulesOld(dm, true, rules);
 
 		// rowNames is the resultset we want to get
 		List<String> colNames = dm.getColNames();
@@ -128,6 +131,7 @@ public class AbstractDataMatrixQueries
 		return res;
 	}
 
+	@Deprecated
 	public static AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowEntityValues(
 			AbstractDataMatrixInstance<Object> dm, Database db, QueryRule... rules) throws Exception
 	{
@@ -148,6 +152,7 @@ public class AbstractDataMatrixQueries
 		return res;
 	}
 
+	@Deprecated
 	public static AbstractDataMatrixInstance<Object> getSubMatrixFilterByColEntityValues(
 			AbstractDataMatrixInstance<Object> dm, Database db, QueryRule... rules) throws Exception
 	{
@@ -169,6 +174,76 @@ public class AbstractDataMatrixQueries
 		return res;
 	}
 
+
+
+	public static AbstractDataMatrixInstance getSubMatrixByRowValueFilter(
+			AbstractDataMatrixInstance matrix, QueryRule ... rules) throws Exception {
+		
+		checkQueryRules(rules);
+		
+		// colNames is the resultset we want to get
+		List<String> colNames = null;
+		List<String> rowNames = matrix.getRowNames();
+
+		// iterate over queryrules
+		for (QueryRule rule : rules)
+		{
+			List<String> result = null;
+			if (matrix.getData().getValueType().equals("Decimal"))
+			{
+				double value = Double.parseDouble(rule.getValue().toString());
+				result = selectUsingDecimal(matrix.getRow(Integer.parseInt(rule.getField())), value, rule.getOperator(), matrix.getColNames());
+			}
+			else
+			{
+				String value = rule.getValue().toString();
+				result = selectUsingText(matrix.getRow(Integer.parseInt(rule.getField())), value, rule.getOperator(), matrix.getColNames());
+			}
+
+			if (colNames == null)
+			{
+				// first queryrule being applied, store results in colnames
+				colNames = result;
+			}
+			else
+			{
+				// consecutively: basically, applying an AND operator here
+				// by removing result from colnames.. so OR not supported
+				colNames.removeAll(result);
+			}
+
+			if (colNames.size() == 0)
+			{
+				throw new Exception("No colnames in resultset, empty matrix!");
+			}
+		}
+		
+		AbstractDataMatrixInstance<Object> res = matrix.getSubMatrix(rowNames, colNames);
+
+		return res;
+	
+	}
+	
+	public static RenderableMatrix getSubMatrixByRowHeaderFilter(
+			RenderableMatrix matrix, Database db, QueryRule q) throws Exception {
+		return null;
+	}
+
+	public static RenderableMatrix getSubMatrixByColValueFilter(
+			RenderableMatrix matrix, QueryRule q) throws Exception {
+		return null;
+	}
+
+	public static RenderableMatrix getSubMatrixByColHeaderFilter(
+			RenderableMatrix matrix,  Database db, QueryRule q) throws Exception {
+		return null;
+	}
+	
+	
+	
+	
+	
+	
 	public static List<String> selectUsingText(Object[] values, String value, Operator op, List<String> dimNames)
 			throws Exception
 	{
@@ -257,8 +332,28 @@ public class AbstractDataMatrixQueries
 		}
 		return resultNames;
 	}
+	
+	private static void checkQueryRules(QueryRule... rules) throws Exception
+	{
+		for (QueryRule rule : rules)
+		{
+			if (rule.getField() == null)
+			{
+				throw new Exception("QueryRule invalid: field is null");
+			}
+			if (rule.getValue() == null)
+			{
+				throw new Exception("QueryRule invalid: value is null");
+			}
+			if (rule.getOperator() == null)
+			{
+				throw new Exception("QueryRule invalid: operator is null");
+			}
+		}
+	}
 
-	private static void checkQueryRules(AbstractDataMatrixInstance<Object> dm, boolean appliedOnColumns, QueryRule... rules) throws Exception
+	@Deprecated
+	private static void checkQueryRulesOld(AbstractDataMatrixInstance<Object> dm, boolean appliedOnColumns, QueryRule... rules) throws Exception
 	{
 		for (QueryRule rule : rules)
 		{

@@ -218,28 +218,28 @@ public class PhenoMatrix implements RenderableMatrix<ObservationTarget, Observab
 
 	@Override
 	public RenderableMatrix getSubMatrixByRowValueFilter(
-			RenderableMatrix matrix, QueryRule q) {
+			RenderableMatrix matrix, QueryRule ... rules) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public RenderableMatrix getSubMatrixByRowHeaderFilter(
-			RenderableMatrix matrix, QueryRule q) {
+			RenderableMatrix matrix, QueryRule ... rules) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public RenderableMatrix getSubMatrixByColValueFilter(
-			RenderableMatrix matrix, QueryRule q) {
+			RenderableMatrix matrix, QueryRule ... rules) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public RenderableMatrix getSubMatrixByColHeaderFilter(
-			RenderableMatrix matrix, QueryRule q) {
+			RenderableMatrix matrix, QueryRule ... rules) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -261,6 +261,16 @@ public class PhenoMatrix implements RenderableMatrix<ObservationTarget, Observab
 		ArrayList<String> headers = new ArrayList<String>();
 		headers.add("name");
 		return headers;
+	}
+	
+	@Override
+	public String getRowType() {
+		return this.getVisibleRows().get(0).get__Type();
+	}
+	
+	@Override
+	public String getColType() {
+		return this.getVisibleCols().get(0).get__Type();
 	}
 	
 

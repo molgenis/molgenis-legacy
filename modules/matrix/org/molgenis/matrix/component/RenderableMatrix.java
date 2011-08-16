@@ -103,11 +103,20 @@ public interface RenderableMatrix<R, C, V> {
 	 */
 	public List<String> getRowHeaderFilterAttributes();
 	
-	
 	/**
 	 * Same as getRowHeaderFilterAttributes() except for columns.
 	 */
 	public List<String> getColHeaderFilterAttributes();
 
+	/**
+	 * Describes what is in the rows. Displayed at the row pager. E.g. when returning
+	 * "Individual" -> "Individual 1-10 of 430".
+	 */
+	public String getRowType();
 	
+	/**
+	 * Describes what is in the columns. Displayed at the column pager. E.g. when returning
+	 * "Marker" -> "Marker 1-50 of 3000".
+	 */
+	public String getColType();
 }

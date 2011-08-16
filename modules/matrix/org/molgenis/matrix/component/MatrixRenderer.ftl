@@ -8,15 +8,15 @@ filteredNumberOfRows: ${matrix.filteredNumberOfRows}<br>
 filteredNumberOfCols: ${matrix.filteredNumberOfCols}<br> -->
 
 <#if matrix.filteredNumberOfCols == matrix.totalNumberOfCols>
-	<#assign colHeader = "COLTYPE " + (matrix.colIndex+1) + "-" + (matrix.colIndex+matrix.visibleCols?size) + " of " + matrix.totalNumberOfCols>
+	<#assign colHeader = matrix.colType + " " + (matrix.colIndex+1) + "-" + (matrix.colIndex+matrix.visibleCols?size) + " of " + matrix.totalNumberOfCols>
 <#else>
-	<#assign colHeader = "COLTYPE " + (matrix.colIndex+1) + "-" + (matrix.colIndex+matrix.visibleCols?size) + " of " + matrix.filteredNumberOfCols + " filtered results (total " + matrix.totalNumberOfCols + ")">
+	<#assign colHeader =  matrix.colType + " " + (matrix.colIndex+1) + "-" + (matrix.colIndex+matrix.visibleCols?size) + " of " + matrix.filteredNumberOfCols + " filtered results (total " + matrix.totalNumberOfCols + ")">
 </#if>
 	
 <#if matrix.filteredNumberOfRows == matrix.totalNumberOfRows>
-	<#assign rowHeader = "ROWTYPE " + (matrix.rowIndex+1) + "-" + (matrix.rowIndex+matrix.visibleRows?size) + " of " + matrix.totalNumberOfRows>
+	<#assign rowHeader = matrix.rowType + "<br>" + (matrix.rowIndex+1) + "-" + (matrix.rowIndex+matrix.visibleRows?size) + " of " + matrix.totalNumberOfRows>
 <#else>
-	<#assign rowHeader = "ROWTYPE " + (matrix.rowIndex+1) + "-" + (matrix.rowIndex+matrix.visibleRows?size) + " of " + matrix.filteredNumberOfRows + " filtered results (total " + matrix.totalNumberOfRows + ")">
+	<#assign rowHeader = matrix.rowType + "<br>" + (matrix.rowIndex+1) + "-" + (matrix.rowIndex+matrix.visibleRows?size) + " of " + matrix.filteredNumberOfRows + " filtered results (total " + matrix.totalNumberOfRows + ")">
 </#if>
 
 <table>
@@ -55,20 +55,26 @@ filteredNumberOfCols: ${matrix.filteredNumberOfCols}<br> -->
 				<tr><td><font class="fontColor">Stepsize</font></td><td><input type="text" name="${req_tag}stepSize" value="${matrix.stepSize}" size="1"></td></tr>
 				<tr><td><font class="fontColor">Width</font></td><td><input type="text" name="${req_tag}width" value="${matrix.visibleCols?size}" size="1"></td></tr>
 				<tr><td><font class="fontColor">Height</font></td><td><input type="text" name="${req_tag}height" value="${matrix.visibleRows?size}" size="1"></td></tr>
-				<tr><td><input type="submit" value="Change" onclick="__action.value = '${req_tag}changeSubmatrixSize'; submit();"></td></tr>
-				<tr><td><input type="submit" value="Filter visible" onclick="__action.value = '${req_tag}filterVisible'; submit();"></td></tr>
-				<tr><td><input type="submit" value="Filter all" onclick="__action.value = '${req_tag}filterAll'; submit();"></td></tr>
+				<tr><td colspan="2"><input type="submit" value="Update" onclick="__action.value = '${req_tag}changeSubmatrixSize'; submit();"></td></tr>
+				<tr><td colspan="2">&nbsp;</td></tr>
+				<tr><td colspan="2"><input type="submit" value="Apply filters..." onclick="__action.value = '${req_tag}filter'; submit();"></td></tr>
+				<tr><td colspan="2">
+					<select name="FILTER_SELECTION_TYPE">
+						<option value="evr">on everything</option>
+						<#if matrix.filteredNumberOfRows != matrix.totalNumberOfRows || matrix.filteredNumberOfCols != matrix.totalNumberOfCols>
+							<option value="fil">on filtered</option>
+						</#if>
+						<option value="vis">on visible</option>
+					</select>
+				</td></tr>
 			</table>
 		</td>
 		<td>
-			<!-- leeg -->
-		<td/>
-		<td valign="top">
-			<!-- leeg -->
+			<!-- empty -->
 		</td>
 	</tr>
 	<tr>
-		<td colspan="2">
+		<td>
 			
 			<table class="tableBorder">
 				<tr>
@@ -115,7 +121,7 @@ filteredNumberOfCols: ${matrix.filteredNumberOfCols}<br> -->
 							<b>${matrix.renderRow(row)}</b>
 						</td>
 						<td>
-						<nobr>
+							<nobr>
 							<select name="FILTER_OPERATOR_ROW_${row_index}">
 								<#list operators?keys as op><option value="${op}">${operators[op]}</option></#list>
 							</select>
