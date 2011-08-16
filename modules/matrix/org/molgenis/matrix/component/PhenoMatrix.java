@@ -31,6 +31,13 @@ public class PhenoMatrix implements RenderableMatrix<ObservationTarget, Observab
 	private Database db;
 	Logger logger = Logger.getLogger(PhenoMatrix.class);
 	
+	/**
+	 * Construct a PhenoMatrix using a Database as the back-end.
+	 * 
+	 * @param db
+	 * @param screenName
+	 * @throws DatabaseException
+	 */
 	public PhenoMatrix(Database db, String screenName) throws DatabaseException {
 		
 		this.db = db;
@@ -42,13 +49,35 @@ public class PhenoMatrix implements RenderableMatrix<ObservationTarget, Observab
 		totalNumberOfRows = db.count(ObservationTarget.class);
 		totalNumberOfCols = db.count(ObservableFeature.class);
 		
-		// Filter shizzle: TODO
 		filters = new ArrayList<Filter>();
 		filteredNumberOfRows = totalNumberOfRows;
 		filteredNumberOfCols = totalNumberOfCols;
 		constraintLogic = "";
 	}
 	
+	/**
+	 * Construct a PhenoMatrix using a Database as the back-end.
+	 * Initially, show columns only for the supplied ObservableFeatures.
+	 * 
+	 * @param db
+	 * @param screenName
+	 * @param visibleCols
+	 * @throws DatabaseException
+	 */
+	public PhenoMatrix(Database db, String screenName, List<ObservableFeature> visibleCols) throws DatabaseException {
+		
+		this(db, screenName);
+		
+		this.visibleCols = visibleCols;
+		filteredNumberOfCols = visibleCols.size();
+	}
+	
+	/**
+	 * Copy constructor.
+	 * 
+	 * @param matrix
+	 * @throws Exception
+	 */
 	public PhenoMatrix(RenderableMatrix matrix) throws Exception {
 		this.filters = matrix.getFilters();
 		this.constraintLogic = matrix.getConstraintLogic();
@@ -271,6 +300,14 @@ public class PhenoMatrix implements RenderableMatrix<ObservationTarget, Observab
 	@Override
 	public String getColType() {
 		return this.getVisibleCols().get(0).get__Type();
+	}
+
+	public String getScreenName() {
+		return screenName;
+	}
+
+	public void setScreenName(String screenName) {
+		this.screenName = screenName;
 	}
 	
 

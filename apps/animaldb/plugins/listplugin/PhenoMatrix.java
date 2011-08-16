@@ -12,6 +12,13 @@ import org.molgenis.pheno.ObservedValue;
 
 import commonservice.CommonService;
 
+/**
+ * This is the OLD implementation of the Matrix interface for the List Plugin.
+ * Not to be confused with the org.molgenis.matrix.component.PhenoMatrix!
+ * 
+ * @author erikroos
+ *
+ */
 public class PhenoMatrix extends Matrix<ObservedValue> {
 
 	private Database db = null;

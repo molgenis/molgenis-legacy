@@ -7,9 +7,13 @@
 
 package plugins.listplugin;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.Query;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -74,7 +78,17 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 		
 		if (matrix == null) {
 			try {
+				// Construct a list of features we want to see initially
+				Query<ObservableFeature> q = db.query(ObservableFeature.class);
+				QueryRule[] qr = new QueryRule[5];
+				qr[0] = new QueryRule(ObservableFeature.NAME, Operator.EQUALS, "Species");
+				qr[1] = new QueryRule(Operator.OR);
+				qr[2] = new QueryRule(ObservableFeature.NAME, Operator.EQUALS, "Sex");
+				qr[3] = new QueryRule(Operator.OR);
+				qr[4] = new QueryRule(ObservableFeature.NAME, Operator.EQUALS, "Color");
+				
 				matrix = new PhenoMatrix(db, this.getViewName());
+				matrix = (PhenoMatrix) matrix.getSubMatrixByColValueFilter(matrix, qr); // TODO get working!
 				matrixRenderer = new MatrixRenderer("Pheno Matrix", matrix, matrix);
 			} catch (Exception e) {
 				e.printStackTrace();
