@@ -611,12 +611,10 @@ public class ManageLitters extends PluginModel<Entity>
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
 				List<ObservationTarget> animalsToAddList = new ArrayList<ObservationTarget>();
 				
-				int measurementId;
 				// Source (take from litter)
 				int sourceId;
 				try {
-					measurementId = ct.getMeasurementId("Source");
-					sourceId = ct.getMostRecentValueAsXref(litter, measurementId);
+					sourceId = ct.getMostRecentValueAsXref(litter, ct.getMeasurementId("Source"));
 				} catch (Exception e) {
 					throw(new Exception("No source found - litter not weaned"));
 				}
@@ -624,8 +622,7 @@ public class ManageLitters extends PluginModel<Entity>
 				String litterBirthDateString;
 				Date litterBirthDate;
 				try {
-					measurementId = ct.getMeasurementId("DateOfBirth");
-					litterBirthDateString = ct.getMostRecentValueAsString(litter, measurementId);
+					litterBirthDateString = ct.getMostRecentValueAsString(litter, ct.getMeasurementId("DateOfBirth"));
 					litterBirthDate = sdf.parse(litterBirthDateString);
 				} catch (Exception e) {
 					throw(new Exception("No litter birth date found - litter not weaned"));
@@ -633,23 +630,27 @@ public class ManageLitters extends PluginModel<Entity>
 				// Find Parentgroup for this litter
 				int parentgroupId;
 				try {
-					measurementId = ct.getMeasurementId("Parentgroup");
-					parentgroupId = ct.getMostRecentValueAsXref(litter, measurementId);
+					parentgroupId = ct.getMostRecentValueAsXref(litter, ct.getMeasurementId("Parentgroup"));
 				} catch (Exception e) {
 					throw(new Exception("No parentgroup found - litter not weaned"));
 				}
 				// Find Line for this Parentgroup
 				int lineId = ct.getMostRecentValueAsXref(parentgroupId, ct.getMeasurementId("Line"));
-				
-				// Find first mother, plus her animal type and species
+				// Find first mother, plus her animal type, species, color, background, gene name and gene state
 				int speciesId;
 				String animalType;
+				String color;
+				int backgroundId;
+				String geneName;
+				String geneState;
 				try {
 					int motherId = findParentForParentgroup(parentgroupId, "Mother");
-					measurementId = ct.getMeasurementId("Species");
-					speciesId = ct.getMostRecentValueAsXref(motherId, measurementId);
-					measurementId = ct.getMeasurementId("AnimalType");
-					animalType = ct.getMostRecentValueAsString(motherId, measurementId);
+					speciesId = ct.getMostRecentValueAsXref(motherId, ct.getMeasurementId("Species"));
+					animalType = ct.getMostRecentValueAsString(motherId, ct.getMeasurementId("AnimalType"));
+					color = ct.getMostRecentValueAsString(motherId, ct.getMeasurementId("Color"));
+					backgroundId = ct.getMostRecentValueAsXref(motherId, ct.getMeasurementId("Background"));
+					geneName = ct.getMostRecentValueAsString(motherId, ct.getMeasurementId("GeneName"));
+					geneState = ct.getMostRecentValueAsString(motherId, ct.getMeasurementId("GeneState"));
 				} catch (Exception e) {
 					throw(new Exception("No mother (properties) found - litter not weaned"));
 				}
@@ -660,7 +661,7 @@ public class ManageLitters extends PluginModel<Entity>
 				// Set wean sizes
 				int weanSize = weanSizeFemale + weanSizeMale;
 				int protocolId = ct.getProtocolId("SetWeanSize");
-				measurementId = ct.getMeasurementId("WeanSize");
+				int measurementId = ct.getMeasurementId("WeanSize");
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 						protocolId, measurementId, litter, Integer.toString(weanSize), 0));
 				protocolId = ct.getProtocolId("SetWeanSizeFemale");
@@ -738,6 +739,32 @@ public class ManageLitters extends PluginModel<Entity>
 					measurementId = ct.getMeasurementId("Source");
 					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
 							null, protocolId, measurementId, animalId, null, sourceId));
+					// Set color based on mother's (can be changed during genotyping)
+					if (!color.equals("")) {
+						protocolId = ct.getProtocolId("SetColor");
+						measurementId = ct.getMeasurementId("Color");
+						valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
+								null, protocolId, measurementId, animalId, color, 0));
+					}
+					// Set background based on mother's (can be changed during genotyping)
+					if (backgroundId != -1) {
+						protocolId = ct.getProtocolId("SetBackground");
+						measurementId = ct.getMeasurementId("Background");
+						valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
+								null, protocolId, measurementId, animalId, null, backgroundId));
+					}
+					if (!geneName.equals("") && !geneState.equals("")) {
+						protocolId = ct.getProtocolId("SetGenotype");
+						int paId = ct.makeProtocolApplication(invid, protocolId);
+						// Set gene name based on mother's (can be changed during genotyping)
+						measurementId = ct.getMeasurementId("GeneName");
+						valuesToAddList.add(ct.createObservedValue(invid, paId, weanDate, 
+								null, measurementId, animalId, geneName, 0));
+						// Set gene state based on mother's (can be changed during genotyping)
+						measurementId = ct.getMeasurementId("GeneState");
+						valuesToAddList.add(ct.createObservedValue(invid, paId, weanDate, 
+								null, measurementId, animalId, geneState, 0));
+					}
 					
 					animalNumber++;
 				}

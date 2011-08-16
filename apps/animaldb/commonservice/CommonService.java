@@ -909,7 +909,8 @@ public class CommonService
 	/**
 	 * For a given ObservationTarget and ObservableFeature, returns
 	 * the value of the most recent ObservedValue,
-	 * based on the timestamp of its ProtocolApplication. 
+	 * based on the timestamp of its ProtocolApplication.
+	 * Returns "" if none found.
 	 * 
 	 * @param targetid
 	 * @param featureid
@@ -956,8 +957,9 @@ public class CommonService
 
 	/**
 	 * For a given ObservationTarget and ObservableFeature, returns
-	 * the ObservationTarget related to in the most recent ObservedValue,
-	 * based on the timestamp of its ProtocolApplication. 
+	 * the ID of the ObservationTarget related to in the most recent ObservedValue,
+	 * based on the timestamp of its ProtocolApplication.
+	 * Returns -1 if none found.
 	 * 
 	 * @param targetid
 	 * @param featureid
