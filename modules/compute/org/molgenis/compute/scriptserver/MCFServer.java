@@ -97,17 +97,6 @@ public class MCFServer implements MCF
 
     public int getNumberActivePipelines()
     {
-        Iterator it = pipelines.iterator();
-        while (it.hasNext())
-        {
-            Pipeline p = (Pipeline) it.next();
-            if (p.isFinished())
-            {
-                archivePipelines.addElement(p);
-                pipelines.remove(p);
-            }
-        }
-
         return pipelines.size();
     }
 
@@ -148,6 +137,23 @@ public class MCFServer implements MCF
     public ExecutorService getExecutor()
     {
         return grid.newGridExecutorService();
+    }
+
+    public void removeFinishedPipelines()
+    {
+        Vector<Pipeline> toRemove = new Vector<Pipeline>();
+        Iterator it = pipelines.iterator();
+        while (it.hasNext())
+        {
+            Pipeline p = (Pipeline) it.next();
+            if (p.isFinished())
+            {
+                archivePipelines.addElement(p);
+                //pipelines.remove(p);
+                toRemove.addElement(p);
+            }
+        }
+        pipelines.removeAll(toRemove);
     }
 
 

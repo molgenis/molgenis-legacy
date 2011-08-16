@@ -56,6 +56,8 @@ public class DatabaseUpdater
                 //this is more efficient than read it every log file to find application status later
                 Vector<String> allLogs = readAllLogs();
 
+                System.out.println("size of active compute apps" + activeComputeApps.size());
+
                 Vector<ComputeAppPaths> appToRemove = new Vector<ComputeAppPaths>();
                 for (int i = 0; i < activeComputeApps.size(); i++)
                 {
@@ -129,6 +131,10 @@ public class DatabaseUpdater
                 activeComputeApps.removeAll(appToRemove);
                 if (activeComputeApps.size() == 0)
                     cancel();
+
+                //maybe here is a correct place to remove pipelines
+                mcf.removeFinishedPipelines();
+
             }
         }, delay * 1000, period * 1000);
     }
@@ -186,7 +192,6 @@ public class DatabaseUpdater
         {
             e.printStackTrace();
         }
-        //System.out.println("result: " + result);
         return result;
     }
 

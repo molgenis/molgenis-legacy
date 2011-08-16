@@ -108,6 +108,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         testPipeline.setId("step" + stepID + "_" + pipeline.getId());
         testPipeline.setPipelinelogpath(pipeline.getPipelinelogpath());
         testPipeline.setMonitor(pipeline.getMonitor());
+        System.out.println("!! step " + pipeline.getStep(stepID).toString());
         testPipeline.addStep(pipeline.getStep(stepID));
 
         executePipeline(db, testPipeline);

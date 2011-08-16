@@ -26,5 +26,6 @@ public interface MCF
     void removePipeline(String id);
 
     ExecutorService getExecutor();
-    
+
+    void removeFinishedPipelines();
 }
