@@ -25,6 +25,10 @@ import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.framework.db.jpa.JpaUtil;
 </#if>
 
+<#if db_mode = 'standalone'>
+import app.servlet.MolgenisServlet;
+</#if>
+
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -73,7 +77,7 @@ public class TestDatabase
 			((JpaDatabase)db).getEntityManager().setFlushMode(FlushModeType.AUTO);
 		<#else>
 			<#if db_mode = 'standalone'>
-			db = new JDBCDatabase("molgenis.testhsql.properties");
+			db = new MolgenisServlet().getDatabase();
 			<#else>
 			db = new JDBCDatabase("${options.molgenis_properties}");	
 			//create the database
