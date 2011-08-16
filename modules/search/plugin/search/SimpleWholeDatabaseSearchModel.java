@@ -2,13 +2,12 @@ package plugin.search;
 
 import java.util.List;
 
-import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.SimpleScreenModel;
+import org.molgenis.util.Entity;
 
 public class SimpleWholeDatabaseSearchModel
 {
 	String searchThis;
-	List<org.molgenis.util.Entity> results;
+	List<Entity> results;
 	double time;
 
 	public double getTime()
@@ -31,12 +30,12 @@ public class SimpleWholeDatabaseSearchModel
 		this.searchThis = searchThis;
 	}
 
-	public List<org.molgenis.util.Entity> getResults()
+	public List<Entity> getResults()
 	{
 		return results;
 	}
 
-	public void setResults(List<org.molgenis.util.Entity> results)
+	public void setResults(List<Entity> results)
 	{
 		this.results = results;
 	}
