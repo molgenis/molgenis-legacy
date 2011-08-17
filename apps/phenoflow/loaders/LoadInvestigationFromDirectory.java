@@ -13,6 +13,7 @@ import app.JDBCDatabase;
 public class LoadInvestigationFromDirectory {
 	public static void main(String[] args) throws Exception {
 		String directory = "../phenoflow_data/Europhenome2";
+		directory = "../phenoflow_data/MPD";
 
 		new Molgenis("apps/phenoflow/phenoflow.properties").updateDb(true);
 
