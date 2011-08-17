@@ -70,7 +70,10 @@ public class TestDatabase
 	public static void oneTimeSetUp()   
 	{
 		try
-		{		
+		{
+		//bad: test expects an existing, but empty database.
+		//this means the previous test will need to end with e.g.
+		//new emptyDatabase(new MolgenisServlet().getDatabase(), false);	
 		<#if databaseImp = 'jpa'>		
 			db = new app.JpaDatabase(true);
                         JpaUtil.dropAndCreateTables( (JpaDatabase)db);
