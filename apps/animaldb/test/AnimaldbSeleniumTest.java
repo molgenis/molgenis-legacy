@@ -1,14 +1,14 @@
 package test;
 
+import org.molgenis.framework.db.Database;
 import org.openqa.selenium.server.RemoteControlConfiguration;
 import org.openqa.selenium.server.SeleniumServer;
-import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import test.Helper;
-
+import plugins.emptydb.emptyDatabase;
+import app.servlet.MolgenisServlet;
 import boot.RunStandalone;
 
 import com.thoughtworks.selenium.DefaultSelenium;
@@ -19,7 +19,7 @@ public class AnimaldbSeleniumTest
 {
 	
 	Selenium selenium;
-	Integer sleepTime = 10000;
+	Integer sleepTime = 1000;
 	String pageLoadTimeout = "30000";
 	//String storagePath = new File(".").getAbsolutePath() + File.separator + "tmp_selenium_test_data";
 
@@ -52,7 +52,8 @@ public class AnimaldbSeleniumTest
 		selenium = new DefaultSelenium(proc);
 		selenium.start();
 		
-		Helper.deleteDatabase();
+		//Helper.deleteDatabase();
+		new emptyDatabase(new MolgenisServlet().getDatabase(), true);
 		
 		new RunStandalone(webserverPort);
 	}
@@ -83,15 +84,21 @@ public class AnimaldbSeleniumTest
 //		//note2: REDIRECT BROKEN, DISABLED ATM
 //		selenium.click("id=ClusterDemo_tab_button");
 //		selenium.waitForPageToLoad(pageLoadTimeout);
-
-		sleepHelper("login");
+//
+//		sleepHelper("login");
 	}
 	
-	@AfterClass
+	@AfterClass(alwaysRun=true)
 	public void stop() throws Exception
 	{
 		selenium.stop();
+		
+		//added to fix TestDatabase which runs after this one...
+		//see comment in TestDatabase!
+		new emptyDatabase(new MolgenisServlet().getDatabase(), false);
+		
 		//Helper.deleteStorage();
+		//Helper.deleteDatabase();
 	}
 	
 	private void sleepHelper(String who) throws InterruptedException
