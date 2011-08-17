@@ -94,7 +94,7 @@ plus passing of properties
 		<fail unless="app_path">app.class.path is not set</fail>
 		<copy todir="${build.dir}">
 			<!-- watch the traling /**/*.ftl"-->
-			<fileset dir="." includes="${app_path}/**/*" />
+			<fileset dir="." includes="${app_path}/**/*" excludes="**/*.java"/>
 			<!-- cut the two leading directories from path -->
 			<!--mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" /-->
 			<cutdirsmapper dirs="2"/>
@@ -102,7 +102,7 @@ plus passing of properties
 
 		<!-- copy sql and other resources from generate sql -->
 		<copy todir="${build.dir}" verbose="true">
-			<fileset dir="${output_sql}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
+			<fileset dir="${output_sql}" includes="**/*.sql" />
 			<fileset dir="${output_src}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
 		</copy>
 
