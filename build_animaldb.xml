@@ -27,5 +27,20 @@
 	
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
 	<import file="build_common.xml"/>
+	
+	<!-- copied from build_common but added animaldb specific tests -->
+	<target name="test">
+		<!-- combine classpaths -->
+		<path id="combined.class.path">
+			<path refid="molgenis.classpath"/>
+			<path refid="app.class.path"/>
+			<path location="${output_src}"/>
+		</path>
+		<!-- run the tests -->
+		<testng classpathref="combined.class.path" outputDir="${testng.report.dir}" haltOnFailure="true">
+			<xmlfileset dir="${build.dir}" includes="**/*testng.xml,**/*animaldbtest.xml" />
+			<jvmarg value="-ea" />
+		</testng>			
+	</target>
 
 </project>
