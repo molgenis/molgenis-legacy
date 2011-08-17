@@ -16,7 +16,7 @@
 		<plugin name="News" type="plugins.news.News" label="News"/>
 			
 		<plugin name="PreFillDatabase" type="plugins.fillanimaldb.PreFillDatabasePlugin"
-			label="Load required data" />
+			label="Reset database" />
 			
 		<menu name="securitymenu" position="left" label="Security">
 			<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Logout/settings"/>

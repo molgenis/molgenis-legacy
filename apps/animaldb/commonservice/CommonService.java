@@ -178,7 +178,9 @@ public class CommonService
 			return null;
 		}
 		for (Investigation inv : invList) {
-			returnList.add(inv.getId());
+			if (!returnList.contains(inv.getId())) {
+				returnList.add(inv.getId());
+			}
 		}
 		return returnList;
 	}
@@ -300,7 +302,8 @@ public class CommonService
 	}
 
 	/**
-	 * Return a list of all observation targets of a certain type in the Investigation with ID investigationId.
+	 * Return a list of all observation targets of a certain type in the nvestigations with ID's in investigationIds
+	 * or in the System investigation.
 	 * If desired, filtered down to only the currently active ones.
 	 * 
 	 * @param type
@@ -317,16 +320,19 @@ public class CommonService
 		List<Integer> returnList = new ArrayList<Integer>();
 		
 		if (investigationIds == null) {
-			return returnList;
+			investigationIds = new ArrayList<Integer>();
+		}
+		
+		Integer systemId = getInvestigationId("System");
+		if (!investigationIds.contains(systemId)) {
+			investigationIds.add(systemId);
 		}
 		
 		if (isActive == false) {
 			Query<ObservationTarget> targetQuery = db.query(ObservationTarget.class);
-			targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION, Operator.IN, 
-					investigationIds));
+			targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION, Operator.IN, investigationIds));
 			if (type != null) {
-				targetQuery.addRules(new QueryRule(ObservationTarget.__TYPE, Operator.EQUALS, 
-						type));
+				targetQuery.addRules(new QueryRule(ObservationTarget.__TYPE, Operator.EQUALS, type));
 			}
 			List<ObservationTarget> targetList = targetQuery.find();
 			for (ObservationTarget target : targetList) {
@@ -349,10 +355,8 @@ public class CommonService
 			List<Integer> typeIdList = new ArrayList<Integer>();
 			if (type != null) {
 				Query<ObservationTarget> targetQuery = db.query(ObservationTarget.class);
-				targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION, Operator.IN, 
-						investigationIds));
-				targetQuery.addRules(new QueryRule(ObservationTarget.__TYPE, Operator.EQUALS, 
-						type));
+				targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION, Operator.IN, investigationIds));
+				targetQuery.addRules(new QueryRule(ObservationTarget.__TYPE, Operator.EQUALS, type));
 				List<ObservationTarget> targetList = targetQuery.find();
 				for (ObservationTarget target : targetList) {
 					typeIdList.add(target.getId());
@@ -581,9 +585,6 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	// TODO: think of what to do with species, sexes, sources etc.
-	// Do we want to keep using the 'TypeOfGroup' Measurement or do we want to use Pheno
-	// entities like Species etc.
 	public List<ObservationTarget> getAllMarkedPanels(String mark, List<Integer> investigationIds)
 			throws DatabaseException, ParseException
 	{
@@ -595,7 +596,7 @@ public class CommonService
 		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.IN, investigationIds);
 		QueryRule qr2 = new QueryRule(Operator.OR);
 		QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
-		valueQuery.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
+		valueQuery.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigations
 		List<ObservedValue> valueList = valueQuery.find();
 		for (ObservedValue value : valueList) {
 			panelIdList.add(value.getTarget_Id());

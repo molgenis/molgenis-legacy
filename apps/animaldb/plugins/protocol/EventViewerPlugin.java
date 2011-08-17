@@ -7,6 +7,7 @@
 
 package plugins.protocol;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
@@ -101,8 +102,9 @@ public class EventViewerPlugin extends PluginModel<Entity>
 			this.setMessages(new ScreenMessage("Something went wrong while loading target list", false));
 		}
 		if (idList != null && idList.size() > 0) {
-			this.setTargetIdList(idList);
+			this.targetIdList = idList;
 		} else {
+			this.targetIdList = new ArrayList<Integer>();
 			this.setMessages(new ScreenMessage("No targets found in database", false));
 		}
 	}

@@ -44,7 +44,7 @@ Limit values to most recent one:
 <div id="showhideselect">
 	<strong>Show/hide features</strong>
 	<select id="" name="" onchange="fnAddRemFeature(this.value);">
-		<option value="0">&nbsp;</option>
+		<option value="-1">&nbsp;</option>
 		<#list screen.featureList as fl>
 			<option value="${fl.id}">${fl.name}</option>
 		</#list>
@@ -161,7 +161,7 @@ for (var i = 2; i < nrcols; i++) {
 
 <!-- Handler for adding or removing a feature -->
 function fnAddRemFeature(sId) {
-	if (sId > 0) {
+	if (sId > -1) {
 	
 		var oSettings = oTable.fnSettings();
 		oTable.fnClearTable(0);
