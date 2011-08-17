@@ -68,8 +68,19 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 			db.getFileSourceHelper().setVariantId("${model.name}");
 			return db;
 		<#else>
-			//The datasource is created by the servletcontext	
-			DataSource dataSource = (DataSource)getServletContext().getAttribute("DataSource");
+			//The datasource is created by the servletcontext - does not work for testcases!
+			//DataSource dataSource = (DataSource)getServletContext().getAttribute("DataSource");
+			
+			//create datasource here:
+			BasicDataSource data_src = new BasicDataSource();
+			data_src.setDriverClassName("${db_driver}");
+			data_src.setUsername("${db_user}");
+			data_src.setPassword("${db_password}");
+			data_src.setUrl("${db_uri}");
+			data_src.setMaxIdle(10);
+			data_src.setMaxWait(1000);
+		
+			DataSource dataSource = (DataSource)data_src;
 			Database db = DatabaseFactory.create(dataSource, new File("${db_filepath}"));
 			db.getFileSourceHelper().setVariantId("${model.name}");
 			return db;
