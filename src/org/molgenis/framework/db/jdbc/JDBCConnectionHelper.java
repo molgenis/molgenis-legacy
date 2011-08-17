@@ -425,14 +425,19 @@ public class JDBCConnectionHelper
 					// else
 					// where_clause.append(tablePrefix + rule.getField() + " " +
 					// operator + " '" + value + "'");
-					if (rule.getOperator().equals(Operator.JOIN)) where_clause.append(rule.getField() + " " + operator
+					if (rule.getOperator().equals(Operator.JOIN)) {
+						where_clause.append(rule.getField() + " " + operator
 							+ " " + value + "");
+					}
 					else
 					{
-						if ("NULL".equals(value) && operator.equals("=")) where_clause.append(rule.getField()
-								+ " IS NULL");
-						else
+						if ("NULL".equals(value) && operator.equals("=")) {
+							where_clause.append(rule.getField() + " IS NULL");
+						} else if ("NULL".equals(value) && operator.equals("!=")) {
+							where_clause.append(rule.getField() + " IS NOT NULL");
+						} else {
 							where_clause.append(rule.getField() + " " + operator + " '" + value + "'");
+						}
 					}
 				}
 				previousRule = null;
