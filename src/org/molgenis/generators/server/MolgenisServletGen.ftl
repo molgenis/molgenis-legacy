@@ -15,6 +15,7 @@ package ${package}.servlet;
 import java.io.File;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.molgenis.framework.security.Login;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ApplicationController;
