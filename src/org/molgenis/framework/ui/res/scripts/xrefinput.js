@@ -283,3 +283,51 @@ addEvent : function(obj, eventname, func) {
 	}
 }
 }
+
+/*
+ * Post data via the rest interface
+ * param: uncapitalised entityClass e.g. mutationPhenotype
+ * return: the object inserted into db including updated primary key
+ */
+function postData(entityClass) {
+	var url         = "api/rest/json/" + entityClass; // api path should be a parameter inside Molgenis
+	var dataHash    = new Object();
+	var entity;
+	
+	for (var i = 0; i < document.forms[0].elements.length; i++) {
+		if (document.forms[0].elements[i].name.toLowerCase().indexOf(entityClass.toLowerCase() + '_') != 0) {
+			continue;
+		}
+		var elementName    = document.forms[0].elements[i].name.substr(0, 1).toLowerCase() + document.forms[0].elements[i].name.substr(1);
+		var xref_attribute = elementName.replace(entityClass + '_', '');
+		if (document.forms[0].elements[i].value != '') {
+			dataHash[xref_attribute] = document.forms[0].elements[i].value;
+		}
+	}
+
+	successFunction = function(data, textStatus) {
+		entity = data[entityClass];
+		return entity;
+	};
+
+	errorFunction = function (xhr, textStatus, errorThrown) {
+		alert("Error: " + textStatus + ", " + errorThrown);
+	};
+
+	jQuery.ajax({
+		url: url,
+		data: dataHash,
+		dataType: "json",
+		async: false,
+		success: successFunction,
+		error: errorFunction,
+		timeout: 30000,
+		type: "POST"
+	});
+
+	return entity;
+}
+
+function setXrefOption(field, id_field, label_field, entity) {
+	document.getElementById(field).options[0]  = new Option(entity[label_field][0], entity[id_field][0], true);
+}
