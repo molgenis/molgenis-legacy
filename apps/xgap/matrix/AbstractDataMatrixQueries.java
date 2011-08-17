@@ -8,7 +8,6 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.matrix.component.RenderableMatrix;
 
 public class AbstractDataMatrixQueries
 {
@@ -223,22 +222,6 @@ public class AbstractDataMatrixQueries
 		return res;
 	
 	}
-	
-	public static RenderableMatrix getSubMatrixByRowHeaderFilter(
-			RenderableMatrix matrix, Database db, QueryRule q) throws Exception {
-		return null;
-	}
-
-	public static RenderableMatrix getSubMatrixByColValueFilter(
-			RenderableMatrix matrix, QueryRule q) throws Exception {
-		return null;
-	}
-
-	public static RenderableMatrix getSubMatrixByColHeaderFilter(
-			RenderableMatrix matrix,  Database db, QueryRule q) throws Exception {
-		return null;
-	}
-	
 	
 	
 	

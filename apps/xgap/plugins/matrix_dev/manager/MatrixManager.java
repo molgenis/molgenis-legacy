@@ -21,6 +21,7 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.matrix.component.MatrixRenderer;
+import org.molgenis.matrix.component.MatrixRendererHelper;
 import org.molgenis.util.Tuple;
 
 public class MatrixManager extends PluginModel
@@ -78,8 +79,8 @@ public class MatrixManager extends PluginModel
 				}
 				else
 				{
-					if(request.getString("__action").startsWith(MatrixRenderer.MATRIX_COMPONENT_REQUEST_PREFIX)){
-						model.getMatrix().delegateHandleRequest(request);
+					if(request.getString("__action").startsWith(MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX)){
+						//model.getMatrix().delegateHandleRequest(request);
 					}
 					//RequestHandler.handle(this.model, request, new PrintWriter(out));
 				}
@@ -182,11 +183,11 @@ public class MatrixManager extends PluginModel
 					
 					//setup the first matrix with bogus values that should be overwritten
 					AbstractDataMatrixInstance matrix = dmh.createInstance(data);
-					matrix.setupForRendering(db, -1, -1, matrix.getNumberOfRows(), matrix.getNumberOfCols(), -1);
+					matrix.setDb(db);
 					
 					//create and set the renderer
-					MatrixRenderer m = new MatrixRenderer("piet", matrix, matrix);
-					model.setMatrix(m);
+					MatrixRenderer renderer = new MatrixRenderer("xgap_matrix", matrix, matrix);
+					model.setMatrix(renderer);
 
 				}
 			}

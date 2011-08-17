@@ -4,20 +4,12 @@ rowIndex: ${matrix.rowIndex}<br>
 colIndex: ${matrix.colIndex}<br>
 totalNumberOfRows: ${matrix.totalNumberOfRows}<br>
 totalNumberOfCols: ${matrix.totalNumberOfCols}<br>
-filteredNumberOfRows: ${matrix.filteredNumberOfRows}<br>
-filteredNumberOfCols: ${matrix.filteredNumberOfCols}<br> -->
+ -->
 
-<#if matrix.filteredNumberOfCols == matrix.totalNumberOfCols>
-	<#assign colHeader = matrix.colType + " " + (matrix.colIndex+1) + "-" + (matrix.colIndex+matrix.visibleCols?size) + " of " + matrix.totalNumberOfCols>
-<#else>
-	<#assign colHeader =  matrix.colType + " " + (matrix.colIndex+1) + "-" + (matrix.colIndex+matrix.visibleCols?size) + " of " + matrix.filteredNumberOfCols + " filtered results (total " + matrix.totalNumberOfCols + ")">
-</#if>
-	
-<#if matrix.filteredNumberOfRows == matrix.totalNumberOfRows>
-	<#assign rowHeader = matrix.rowType + "<br>" + (matrix.rowIndex+1) + "-" + (matrix.rowIndex+matrix.visibleRows?size) + " of " + matrix.totalNumberOfRows>
-<#else>
-	<#assign rowHeader = matrix.rowType + "<br>" + (matrix.rowIndex+1) + "-" + (matrix.rowIndex+matrix.visibleRows?size) + " of " + matrix.filteredNumberOfRows + " filtered results (total " + matrix.totalNumberOfRows + ")">
-</#if>
+
+<#assign colHeader = matrix.colType + " " + (matrix.colIndex+1) + "-" + (matrix.colIndex+matrix.visibleCols?size) + " of " + matrix.totalNumberOfCols>
+<#assign rowHeader = matrix.rowType + "<br>" + (matrix.rowIndex+1) + "-" + (matrix.rowIndex+matrix.visibleRows?size) + " of " + matrix.totalNumberOfRows>
+
 
 <table>
 	<tr>
@@ -61,9 +53,6 @@ filteredNumberOfCols: ${matrix.filteredNumberOfCols}<br> -->
 				<tr><td colspan="2">
 					<select name="FILTER_SELECTION_TYPE">
 						<option value="evr">on everything</option>
-						<#if matrix.filteredNumberOfRows != matrix.totalNumberOfRows || matrix.filteredNumberOfCols != matrix.totalNumberOfCols>
-							<option value="fil">on filtered</option>
-						</#if>
 						<option value="vis">on visible</option>
 					</select>
 				</td></tr>

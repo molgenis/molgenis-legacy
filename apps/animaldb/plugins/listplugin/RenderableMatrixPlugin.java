@@ -18,8 +18,8 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.matrix.component.MatrixRenderer;
+import org.molgenis.matrix.component.MatrixRendererHelper;
 import org.molgenis.matrix.component.PhenoMatrix;
-import org.molgenis.matrix.component.RenderableMatrix;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
@@ -56,14 +56,14 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 		try {
 			String action = request.getString("__action");
 			
-			if (action.startsWith(MatrixRenderer.MATRIX_COMPONENT_REQUEST_PREFIX)) {
-				matrixRenderer.delegateHandleRequest(request);
+			if (action.startsWith(MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX)) {
+//				matrixRenderer.delegateHandleRequest(request);
 			}
 			
 			if (action.equals("Save")) {
-				RenderableMatrix<ObservationTarget, ObservableFeature, ObservedValue> currentMatrixSlice = 
-						matrixRenderer.getModel().getSubMatrix();
-				this.setSelectedTargetList(currentMatrixSlice.getVisibleRows());
+//				RenderableMatrix<ObservationTarget, ObservableFeature, ObservedValue> currentMatrixSlice = 
+//						matrixRenderer.getModel().getSubMatrix();
+//				this.setSelectedTargetList(currentMatrixSlice.getVisibleRows());
 			}
 			
 		} catch (Exception e) {
@@ -87,8 +87,8 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 				qr[3] = new QueryRule(Operator.OR);
 				qr[4] = new QueryRule(ObservableFeature.NAME, Operator.EQUALS, "Color");
 				
-				matrix = new PhenoMatrix(db, this.getViewName());
-				matrix = (PhenoMatrix) matrix.getSubMatrixByColValueFilter(matrix, qr); // TODO get working!
+//				matrix = new PhenoMatrix(db, this.getViewName());
+//				matrix = (PhenoMatrix) matrix.getSubMatrixByColValueFilter(matrix, qr); // TODO get working!
 				matrixRenderer = new MatrixRenderer("Pheno Matrix", matrix, matrix);
 			} catch (Exception e) {
 				e.printStackTrace();

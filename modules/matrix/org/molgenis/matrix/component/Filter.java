@@ -15,17 +15,22 @@ public class Filter {
 	 * have fewer row headers (rows). TODO: other examples.
 	 * 
 	 */
-	private enum FilterType {
-		rowHeader, colHeader, rowValues, colValues
+	public enum Type {
+		rowHeader, colHeader, rowValues, colValues, rowIndex, colIndex
 	}
-	private FilterType filterType;
+	private Type filterType;
 	
 	/**
 	 * The index of the element in the matrix to apply the filter to.
 	 */
 	private int index;
 	
-	public Filter(QueryRule queryRule, FilterType filterType, int index){
+	public Filter(Type filterType, QueryRule queryRule){
+		this.queryRule = queryRule;
+		this.filterType = filterType;
+	}
+	
+	public Filter(Type filterType, QueryRule queryRule, int index){
 		this.queryRule = queryRule;
 		this.filterType = filterType;
 		this.index = index;
@@ -35,7 +40,7 @@ public class Filter {
 		return queryRule;
 	}
 
-	public FilterType getFilterType() {
+	public Type getFilterType() {
 		return filterType;
 	}
 

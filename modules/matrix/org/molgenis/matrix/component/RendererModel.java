@@ -1,5 +1,8 @@
 package org.molgenis.matrix.component;
 
+import org.molgenis.matrix.component.interfaces.RenderableMatrix;
+import org.molgenis.matrix.component.interfaces.SliceableMatrix;
+
 public class RendererModel {
 	private int colStart; //calculated from previous colStart, action, stepsize, colMax, width
 	private int colStop; //inferred from colStart, colMax and width
