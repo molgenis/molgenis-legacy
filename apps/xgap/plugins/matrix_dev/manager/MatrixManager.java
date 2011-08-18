@@ -21,7 +21,7 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.matrix.component.MatrixRenderer;
-import org.molgenis.matrix.component.MatrixRendererHelper;
+import org.molgenis.matrix.component.general.MatrixRendererHelper;
 import org.molgenis.util.Tuple;
 
 public class MatrixManager extends PluginModel

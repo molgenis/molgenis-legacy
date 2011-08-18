@@ -20,6 +20,9 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.html.HtmlWidget;
+import org.molgenis.matrix.component.general.Filter;
+import org.molgenis.matrix.component.general.MatrixRendererHelper;
+import org.molgenis.matrix.component.general.RenderableMatrixImpl;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
 import org.molgenis.matrix.component.interfaces.RenderableMatrix;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
@@ -69,10 +72,8 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 					.getTotalNumberOfCols() - 1 : MatrixRendererHelper.COL_STOP_DEFAULT;
 
 			filters = new ArrayList<Filter>();
-			// when "" is omitted: java.lang.IllegalArgumentException:
-			// QueryRule(): Operator.<= cannot be used with one argument
-			filters.add(new Filter(Filter.Type.rowIndex, new QueryRule("", Operator.LESS_EQUAL, rowStop)));
-			filters.add(new Filter(Filter.Type.colIndex, new QueryRule("", Operator.LESS_EQUAL, colStop)));
+			filters.add(new Filter(Filter.Type.paging, new QueryRule("row", Operator.LIMIT, rowStop)));
+			filters.add(new Filter(Filter.Type.paging, new QueryRule("col", Operator.LIMIT, colStop)));
 		}
 
 		applyFiltersAndRender(sliceable, filters);
@@ -95,11 +96,11 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		{
 			switch (f.getFilterType())
 			{
-				case rowIndex:
-					sliceable.sliceByRowIndex(f.getQueryRule());
+				case index:
+					sliceable.sliceByIndex(f.getQueryRule());
 					break;
-				case colIndex:
-					sliceable.sliceByColIndex(f.getQueryRule());
+				case paging:
+					sliceable.sliceByPaging(f.getQueryRule());
 					break;
 				case rowHeader:
 					sliceable.sliceByRowHeader(f.getQueryRule());
@@ -171,18 +172,18 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		//remove existing colindex filters
 		//and find out the start index..
 		//TODO: correct behaviour in combination with other filters??
-		for(int filterIndex = 0; filterIndex < renderMe.getFilters().size(); filterIndex++){
-			Filter f = renderMe.getFilters().get(filterIndex);
-			if(f.getFilterType().equals(Filter.Type.colIndex)){
-				if(f.getQueryRule().getOperator().equals(Operator.EQUALS) || f.getQueryRule().getOperator().equals(Operator.GREATER) || f.getQueryRule().getOperator().equals(Operator.GREATER_EQUAL)){
-					if(start != -1){
-						throw new Exception("Multiple filters altering column start index");
-					}
-					start = (Integer) f.getQueryRule().getValue();
-				}
-				renderMe.getFilters().remove(filterIndex);
-			}
-		}
+//		for(int filterIndex = 0; filterIndex < renderMe.getFilters().size(); filterIndex++){
+//			Filter f = renderMe.getFilters().get(filterIndex);
+//			if(f.getFilterType().equals(Filter.Type.index)){
+//				if(f.getQueryRule().getOperator().equals(Operator.EQUALS) || f.getQueryRule().getOperator().equals(Operator.GREATER) || f.getQueryRule().getOperator().equals(Operator.GREATER_EQUAL)){
+//					if(start != -1){
+//						throw new Exception("Multiple filters altering column start index");
+//					}
+//					start = (Integer) f.getQueryRule().getValue();
+//				}
+//				renderMe.getFilters().remove(filterIndex);
+//			}
+//		}
 		
 		//add new filters
 		//TODO: where?? old position??
@@ -195,8 +196,8 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 
 		this.colStartIndex = start;
 		
-		renderMe.getFilters().add(new Filter(Filter.Type.colIndex, new QueryRule("", Operator.LESS_EQUAL, stop)));
-		renderMe.getFilters().add(new Filter(Filter.Type.colIndex, new QueryRule("", Operator.GREATER_EQUAL, start)));
+		renderMe.getFilters().add(new Filter(Filter.Type.paging, new QueryRule("col", Operator.LIMIT, stop)));
+		renderMe.getFilters().add(new Filter(Filter.Type.paging, new QueryRule("col", Operator.OFFSET, start)));
 		
 	}
 

@@ -1,4 +1,4 @@
-package org.molgenis.matrix.component;
+package org.molgenis.matrix.component.general;
 
 import java.util.List;
 
@@ -26,11 +26,6 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>{
 		this.screenName = screenName;
 	}
 	
-	
-
-
-
-
 	@Override
 	public List<R> getVisibleRows() throws Exception
 	{

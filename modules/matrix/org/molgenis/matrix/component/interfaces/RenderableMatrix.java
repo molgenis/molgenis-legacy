@@ -2,7 +2,7 @@ package org.molgenis.matrix.component.interfaces;
 
 import java.util.List;
 
-import org.molgenis.matrix.component.Filter;
+import org.molgenis.matrix.component.general.Filter;
 
 
 /**

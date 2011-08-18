@@ -1,4 +1,4 @@
-package org.molgenis.matrix.component;
+package org.molgenis.matrix.component.legacy;
 
 import org.molgenis.matrix.component.interfaces.RenderableMatrix;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;

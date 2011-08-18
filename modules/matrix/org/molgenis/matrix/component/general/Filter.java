@@ -1,22 +1,20 @@
-package org.molgenis.matrix.component;
+package org.molgenis.matrix.component.general;
 
 import org.molgenis.framework.db.QueryRule;
 
 public class Filter {
 
 	/**
-	 * The queryrule of this filter. TODO: some explaining
+	 * The queryrule of this filter. @see: SliceableMatrix
 	 */
 	private QueryRule queryRule;
 
 	/**
-	 * Filter on 'rowHeader' means: e.g. if row header are entities of type
-	 * Indivual, and the query is 'age < 30', then the resulting matrix will
-	 * have fewer row headers (rows). TODO: other examples.
-	 * 
+	 * The type of filter that was applied. @see: SliceableMatrix
+	 *
 	 */
 	public enum Type {
-		rowHeader, colHeader, rowValues, colValues, rowIndex, colIndex
+		rowHeader, colHeader, rowValues, colValues, index, paging
 	}
 	private Type filterType;
 	
