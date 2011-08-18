@@ -89,7 +89,7 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 				
 //				matrix = new PhenoMatrix(db, this.getViewName());
 //				matrix = (PhenoMatrix) matrix.getSubMatrixByColValueFilter(matrix, qr); // TODO get working!
-				matrixRenderer = new MatrixRenderer("Pheno Matrix", matrix, matrix);
+				matrixRenderer = new MatrixRenderer("Pheno Matrix", matrix, matrix, this.getName());
 			} catch (Exception e) {
 				e.printStackTrace();
 				if (e.getMessage() != null) {
