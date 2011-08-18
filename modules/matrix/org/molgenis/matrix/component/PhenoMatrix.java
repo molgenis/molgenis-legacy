@@ -34,6 +34,31 @@ public class PhenoMatrix implements
 	private Database db;
 	
 	Logger logger = Logger.getLogger(PhenoMatrix.class);
+	
+	/************************************************************/
+	/**************** BasicMatrix implementation ****************/
+	/************************************************************/
+
+	@Override
+	public List<ObservationTarget> getVisibleRows() throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ObservableFeature> getVisibleCols() throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ObservedValue[][] getVisibleValues() throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	/****************************************************************/
 	/**************** SliceableMatrix implementation ****************/
@@ -92,6 +117,13 @@ public class PhenoMatrix implements
 	{
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public void createFresh() throws Exception
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 	/*************************************************************/
@@ -161,31 +193,4 @@ public class PhenoMatrix implements
 		return null;
 	}
 
-	/************************************************************/
-	/**************** BasicMatrix implementation ****************/
-	/************************************************************/
-
-	@Override
-	public List<ObservationTarget> getVisibleRows() throws Exception
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ObservableFeature> getVisibleCols() throws Exception
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ObservedValue[][] getVisibleValues() throws Exception
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	
-	
 }

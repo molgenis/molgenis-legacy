@@ -28,7 +28,7 @@ public class MatrixManager extends PluginModel
 {
 
 	private DataMatrixHandler dmh = null;
-	
+	private Data data;
 	private MatrixManagerModel model = new MatrixManagerModel();
 
 	public MatrixManagerModel getMyModel()
@@ -79,8 +79,14 @@ public class MatrixManager extends PluginModel
 				}
 				else
 				{
-					if(request.getString("__action").startsWith(MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX)){
-						//model.getMatrix().delegateHandleRequest(request);
+					String action = request.getString("__action");
+					if(action.startsWith(MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX)){
+						model.getMatrix().delegateHandleRequest(request);
+					}
+					
+					if(action.equals("resetMatrixRenderer"))
+					{
+						setupRenderer(data, db);
 					}
 					//RequestHandler.handle(this.model, request, new PrintWriter(out));
 				}
@@ -140,6 +146,7 @@ public class MatrixManager extends PluginModel
 		ScreenController<?> parentController = (ScreenController<?>) this.getParent().getParent();
 		FormModel<Data> parentForm = (FormModel<Data>) ((FormController)parentController).getModel();
 		Data data = parentForm.getRecords().get(0);
+		this.data = data;
 		  
 		try
 		{
@@ -181,13 +188,7 @@ public class MatrixManager extends PluginModel
 				if (this.model.isHasBackend())
 				{
 					
-					//setup the first matrix with bogus values that should be overwritten
-					AbstractDataMatrixInstance matrix = dmh.createInstance(data);
-					matrix.setDb(db);
-					
-					//create and set the renderer
-					MatrixRenderer renderer = new MatrixRenderer("xgap_matrix", matrix, matrix);
-					model.setMatrix(renderer);
+					setupRenderer(data, db);
 
 				}
 			}
@@ -208,6 +209,16 @@ public class MatrixManager extends PluginModel
 			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 		}
 
+	}
+	
+	private void setupRenderer(Data data, Database db) throws Exception{
+		//setup the first matrix with bogus values that should be overwritten
+		AbstractDataMatrixInstance matrix = dmh.createInstance(data);
+		matrix.setDb(db);
+		
+		//create and set the renderer
+		MatrixRenderer renderer = new MatrixRenderer("xgap_matrix", matrix, matrix, this.getName());
+		model.setMatrix(renderer);
 	}
 
 	@Override

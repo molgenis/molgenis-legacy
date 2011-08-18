@@ -528,6 +528,39 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 		return attr;
 	}
 	
+	/************************************************************/
+	/**************** BasicMatrix implementation ****************/
+	/************************************************************/
+	
+	private Database db;
+	private List<String> rowNamesCopy;
+	private List<String> colNamesCopy;
+	
+	public void setDb(Database db)
+	{
+		this.db = db;
+	}
+
+	@Override
+	public List<ObservationElement> getVisibleRows() throws Exception
+	{
+		List<ObservationElement> rows = db.find(ObservationElement.class, new QueryRule(ObservationElement.NAME, Operator.IN, rowNamesCopy));
+		return rows;
+	}
+
+	@Override
+	public List<ObservationElement> getVisibleCols() throws Exception
+	{
+		List<ObservationElement> cols = db.find(ObservationElement.class, new QueryRule(ObservationElement.NAME, Operator.IN, colNamesCopy));
+		return cols;
+	}
+
+	@Override
+	public Object[][] getVisibleValues() throws Exception
+	{
+		return this.getSubMatrix(rowNamesCopy, colNamesCopy).getElements();
+	}
+	
 	/****************************************************************/
 	/**************** SliceableMatrix implementation ****************/
 	/****************************************************************/
@@ -537,17 +570,17 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 			throws Exception
 	{
 		int val = (Integer) rule.getValue();
-		int total = this.getRowNames().size();
+		int total = rowNamesCopy.size();
 		switch (rule.getOperator())
 		{
             case EQUALS:
             	//this.setRowNames(this.getRowNames().subList(val, val+1));
             	break;
             case LESS_EQUAL:
-            	this.setRowNames(this.getRowNames().subList(0, val));
+            	rowNamesCopy = rowNamesCopy.subList(0, val);
             	break;
             case GREATER_EQUAL:
-            	//this.setRowNames(this.getRowNames().subList(val, total));
+            	rowNamesCopy = rowNamesCopy.subList(val, total);
             	break;
             case LESS:
             	//this.setRowNames(this.getRowNames().subList(0, val));
@@ -564,17 +597,17 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 			throws Exception
 	{
 		int val = (Integer) rule.getValue();
-		int total = this.getColNames().size();
+		int total = colNamesCopy.size();
 		switch (rule.getOperator())
 		{
             case EQUALS:
             	//this.setColNames(this.getColNames().subList(val, val+1));
             	break;
             case LESS_EQUAL:
-            	this.setColNames(this.getColNames().subList(0, val));
+            	colNamesCopy = colNamesCopy.subList(0, val);
             	break;
             case GREATER_EQUAL:
-            	//this.setColNames(this.getColNames().subList(val, total));
+            	colNamesCopy = colNamesCopy.subList(val, total);
             	break;
             case LESS:
             	//this.setColNames(this.getColNames().subList(0, val));
@@ -624,35 +657,12 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 		return this;
 	}
 	
-	/************************************************************/
-	/**************** BasicMatrix implementation ****************/
-	/************************************************************/
-	
-	private Database db;
-	
-	public void setDb(Database db)
-	{
-		this.db = db;
-	}
-
 	@Override
-	public List<ObservationElement> getVisibleRows() throws Exception
-	{
-		List<ObservationElement> rows = db.find(ObservationElement.class, new QueryRule(ObservationElement.NAME, Operator.IN, this.getRowNames()));
-		return rows;
-	}
-
-	@Override
-	public List<ObservationElement> getVisibleCols() throws Exception
-	{
-		List<ObservationElement> cols = db.find(ObservationElement.class, new QueryRule(ObservationElement.NAME, Operator.IN, this.getColNames()));
-		return cols;
-	}
-
-	@Override
-	public Object[][] getVisibleValues() throws Exception
-	{
-		return this.getSubMatrix(this.getRowNames(), this.getColNames()).getElements();
+	public void createFresh(){
+		this.rowNamesCopy = new ArrayList<String>(this.getRowNames().size());
+	    for(String item: this.getRowNames()){ this.rowNamesCopy.add(item); }
+	    this.colNamesCopy = new ArrayList<String>(this.getColNames().size());
+	    for(String item: this.getColNames()){ this.colNamesCopy.add(item); }
 	}
 	
 }

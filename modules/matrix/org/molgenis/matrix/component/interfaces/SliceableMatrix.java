@@ -67,4 +67,11 @@ public interface SliceableMatrix<R, C, V>
 	 * the columns, rows and values.
 	 */
 	public BasicMatrix<R, C, V> getResult() throws Exception;
+
+	/**
+	 * Before slicing, or after the result has been retrieved, reset the
+	 * SliceableMatrix to a fresh state where slice actions are once again
+	 * performed on the original matrix data instead of a sliced subset.
+	 */
+	public void createFresh() throws Exception;
 }

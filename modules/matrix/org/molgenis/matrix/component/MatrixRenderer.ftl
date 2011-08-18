@@ -1,14 +1,19 @@
 <#--if name??>${name}<#else>null</#if><br-->
 <!-- label: <#if value??>${value}<#else>null</#if><br>
-rowIndex: ${matrix.rowIndex}<br>
-colIndex: ${matrix.colIndex}<br>
+rowIndex: ${rowStartIndex}<br>
+colIndex: ${colStartIndex}<br>
 totalNumberOfRows: ${matrix.totalNumberOfRows}<br>
 totalNumberOfCols: ${matrix.totalNumberOfCols}<br>
  -->
+ 
+APPLIED FILTERS:<br>
+<#list matrix.filters as filter>
+type: ${filter.filterType} / queryrule: ${filter.queryRule} / index: ${filter.index}<br>
+</#list>
 
 
-<#assign colHeader = matrix.colType + " " + (matrix.colIndex+1) + "-" + (matrix.colIndex+matrix.visibleCols?size) + " of " + matrix.totalNumberOfCols>
-<#assign rowHeader = matrix.rowType + "<br>" + (matrix.rowIndex+1) + "-" + (matrix.rowIndex+matrix.visibleRows?size) + " of " + matrix.totalNumberOfRows>
+<#assign colHeader = matrix.colType + " " + (colStartIndex+1) + "-" + (colStartIndex+matrix.visibleCols?size) + " of " + matrix.totalNumberOfCols>
+<#assign rowHeader = matrix.rowType + "<br>" + (rowStartIndex+1) + "-" + (rowStartIndex+matrix.visibleRows?size) + " of " + matrix.totalNumberOfRows>
 
 
 <table>
@@ -22,7 +27,7 @@ totalNumberOfCols: ${matrix.totalNumberOfCols}<br>
 				<tr><td class="submenuitem" onclick=""><img src="res/img/download.png" align="left" />Download visible as Excel</td></tr>
 				<tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}__action.value='{req_tag}download_all';__show.value='download';submit();"><img src="res/img/download.png" align="left" />Download all as text</td></tr>
 				<tr><td class="submenuitem" /><img src="res/img/download.png" align="left" />Download all as Excel</td></tr>
-				<tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}__action.value = '{req_tag}refresh';submit();"><img src="res/img/update.gif" align="left" />Reset viewer</td></tr>
+				<tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.forms.${matrix.screenName}.__target.value='${matrix.screenName}';document.forms.${matrix.screenName}.__action.value = 'resetMatrixRenderer';document.forms.${matrix.screenName}.submit();"><img src="res/img/update.gif" align="left" />Reset viewer</td></tr>
 				</table>
 			</div>											
 		</td>

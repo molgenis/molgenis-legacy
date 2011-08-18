@@ -31,15 +31,10 @@ public interface RenderableMatrix<R, C, V> extends BasicMatrix<R, C, V>, SourceM
 	 * which the matrix moves when move (panning) actions are performed.
 	 */
 	public int getStepSize();
-	
-	/**
-	 * Show the column start index of the visible values
-	 */
-	public int getColIndex();
-	
-	/**
-	 * Show the row start index of the visible values
-	 */
-	public int getRowIndex();
 
+	/**
+	 * Name of the screen. Needed to send non-input type requests.
+	 * @return
+	 */
+	public String getScreenName();
 }

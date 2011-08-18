@@ -13,14 +13,23 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>{
 	List<Filter> filters;
 	String constraintLogic;
 	int stepSize;
+	int colIndex;
+	int rowIndex;
+	String screenName;
 	
-	public RenderableMatrixImpl(SourceMatrix<R, C, V> source, BasicMatrix<R, C, V> basic, List<Filter> filters, String constraintLogic, int stepSize){
+	public RenderableMatrixImpl(SourceMatrix<R, C, V> source, BasicMatrix<R, C, V> basic, List<Filter> filters, String constraintLogic, int stepSize, String screenName){
 		this.source = source;
 		this.basic = basic;
 		this.filters = filters;
 		this.constraintLogic = constraintLogic;
 		this.stepSize = stepSize;
+		this.screenName = screenName;
 	}
+	
+	
+
+
+
 
 	@Override
 	public List<R> getVisibleRows() throws Exception
@@ -111,21 +120,21 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>{
 	{
 		return this.stepSize;
 	}
-
-	@Override
-	public int getColIndex()
-	{
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getRowIndex()
-	{
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 	
+	@Override
+	public String getScreenName()
+	{
+		return screenName;
+	}
+	
+	public void setColIndex(int colIndex)
+	{
+		this.colIndex = colIndex;
+	}
+
+	public void setRowIndex(int rowIndex)
+	{
+		this.rowIndex = rowIndex;
+	}
 	
 }
