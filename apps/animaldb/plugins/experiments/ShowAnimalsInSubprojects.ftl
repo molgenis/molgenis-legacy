@@ -72,8 +72,8 @@ from ${strf.name}</em>
 	<input type="hidden" name="__action" />
 	
 	<div class="row">
-		<label for="subprojectremovaldatetime">Date and time of removal from DEC subproject:</label>
-		<input type='text' class='textbox' id='subprojectremovaldatetime' name='subprojectremovaldatetime' value='' onclick='showDateInput(this,true)' autocomplete='off' />
+		<label for="subprojectremovaldate">Date of removal from DEC subproject:</label>
+		<input type='text' class='textbox' id='subprojectremovaldate' name='subprojectremovaldate' value='' onclick='showDateInput(this)' autocomplete='off' />
 	</div>
 	
 	<div class='row'>
@@ -94,9 +94,9 @@ from ${strf.name}</em>
 		</select>
 	</div>
 	
-	<div class="row" id="deathdatetimebox" style="display:block">
-		<label for="deathdatetime">Date and time of death:</label>
-		<input type='text' class='textbox' id='deathdatetime' name='deathdatetime' value='' onclick='showDateInput(this,true)' autocomplete='off' />
+	<div class="row" id="deathdatebox" style="display:block">
+		<label for="deathdate">Date of death:</label>
+		<input type='text' class='textbox' id='deathdate' name='deathdate' value='' onclick='showDateInput(this)' autocomplete='off' />
 	</div>
 	
 	<div id='buttons_part' class='row'>
@@ -145,8 +145,8 @@ from ${strf.name}</em>
 	</div>
 	
 	<div class="row" style='clear:left'>
-		<label for="subprojectadditiondatetime">Date and time of entry into DEC subproject:</label>
-		<input type='text' class='textbox' id='subprojectadditiondatetime' name='subprojectadditiondatetime' value='' onclick='showDateInput(this,true)' autocomplete='off' />
+		<label for="subprojectadditiondate">Date of entry into DEC subproject:</label>
+		<input type='text' class='textbox' id='subprojectadditiondate' name='subprojectadditiondate' value='' onclick='showDateInput(this)' autocomplete='off' />
 	</div>
 	
 	<div class='row'>

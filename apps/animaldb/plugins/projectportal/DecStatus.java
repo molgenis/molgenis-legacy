@@ -133,7 +133,6 @@ public class DecStatus extends GenericPlugin
 		int rowCountOriginal = rowCount;
 		int nrOfAnimalsAliveCum = 0;
 		int nrOfAnimalsRemovedCum = 0;
-		int nrOfAnimalsTotalCum = 0;
 		int budgetCum = 0;
 		
 		DecimalFormat f = new DecimalFormat("0.##");
@@ -202,7 +201,6 @@ public class DecStatus extends GenericPlugin
 					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
 					nrOfAnimalsTotal = q.count();
 				}
-				nrOfAnimalsTotalCum += nrOfAnimalsTotal;
 				nrOfAnimalsRemoved = nrOfAnimalsTotal - nrOfAnimalsAlive;
 				nrOfAnimalsRemovedCum += nrOfAnimalsRemoved;
 				

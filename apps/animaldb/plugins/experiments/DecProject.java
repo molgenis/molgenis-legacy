@@ -16,7 +16,7 @@ public class DecProject {
 	private String fieldBiology;
 	private Date startDate;
 	private Date endDate;
-	private SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
+	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
 	
 	public void setId(int id) {
 		this.id = id;
@@ -70,20 +70,20 @@ public class DecProject {
 	}
 	public void setStartDate(String startDate) throws ParseException
 	{
-		this.startDate = sdf.parse(startDate);
+		this.startDate = dateOnlyFormat.parse(startDate);
 	}
 	public String getStartDate()
 	{
 		if (startDate == null) return "";
-		return sdf.format(startDate);
+		return dateOnlyFormat.format(startDate);
 	}
 	public void setEndDate(String endDate) throws ParseException
 	{
-		this.endDate = sdf.parse(endDate);
+		this.endDate = dateOnlyFormat.parse(endDate);
 	}
 	public String getEndDate()
 	{
 		if (endDate == null) return "";
-		return sdf.format(endDate);
+		return dateOnlyFormat.format(endDate);
 	}
 }

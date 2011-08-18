@@ -99,7 +99,7 @@ public class ShowDecProjects extends PluginModel<Entity>
 				// No action here
 			}
 			if (action.equals("addEditDecProject")) {
-				SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
+				SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
 				
 				// Get values from form
 				
@@ -134,22 +134,22 @@ public class ShowDecProjects extends PluginModel<Entity>
 					decapprovalpdf = request.getString("decapprovalpdf");
 				}
 				
-				// Start date-time
-				String starttimeString = "";
-				Date starttime = null;
-				if (request.getString("starttime") != null) {
-					starttimeString = request.getString("starttime");
-					starttime = sdf.parse(starttimeString);
+				// Start date
+				String startdateString = "";
+				Date startdate = null;
+				if (request.getString("startdate") != null) {
+					startdateString = request.getString("startdate");
+					startdate = dateOnlyFormat.parse(startdateString);
 				} else {
 					throw(new Exception("No start date given - project not added"));
 				}
 				
 				// End date-time
-				Date endtime = null;
-				String endtimeString = null;
-				if (request.getString("endtime") != null) {
-					endtimeString = request.getString("endtime");
-					endtime = sdf.parse(endtimeString);
+				Date enddate = null;
+				String enddateString = null;
+				if (request.getString("enddate") != null) {
+					enddateString = request.getString("enddate");
+					enddate = dateOnlyFormat.parse(enddateString);
 				}
 				
 				// Some variables we need later on
@@ -182,28 +182,28 @@ public class ShowDecProjects extends PluginModel<Entity>
 				db.add(app);
 				int protocolApplicationId = app.getId();
 				int measurementId = ct.getMeasurementId("DecNr");
-				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, starttime, 
-						endtime, measurementId, projectId, decnumber, 0));
+				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
+						enddate, measurementId, projectId, decnumber, 0));
 				measurementId = ct.getMeasurementId("DecApplicantId");
-				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, starttime, 
-						endtime, measurementId, projectId, decapplicant, 0));
+				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
+						enddate, measurementId, projectId, decapplicant, 0));
 				if (decapplicationpdf != null) {
 					measurementId = ct.getMeasurementId("DecApplicationPdf");
-					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, starttime, 
-							endtime, measurementId, projectId, decapplicationpdf, 0));
+					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
+							enddate, measurementId, projectId, decapplicationpdf, 0));
 				}
 				if (decapprovalpdf != null) {
 					measurementId = ct.getMeasurementId("DecApprovalPdf");
-					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, starttime, 
-							endtime, measurementId, projectId, decapprovalpdf, 0));
+					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
+							enddate, measurementId, projectId, decapprovalpdf, 0));
 				}
 				measurementId = ct.getMeasurementId("StartDate");
-				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, starttime, 
-						endtime, measurementId, projectId, starttimeString, 0));
-				if (endtimeString != null) {
+				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
+						enddate, measurementId, projectId, startdateString, 0));
+				if (enddateString != null) {
 					measurementId = ct.getMeasurementId("EndDate");
-					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, starttime, 
-							endtime, measurementId, projectId, endtimeString, 0));
+					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
+							enddate, measurementId, projectId, enddateString, 0));
 				}
 				// Add everything to DB
 				db.add(valuesToAddList);

@@ -240,6 +240,8 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 				q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, subprojectId));
 				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
 				q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, now));
+				// TODO: HSQL cannot handle this format!!!
+				// Timestamp format must be yyyy-mm-dd hh:mm:ss[.fffffffff]
 				q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 				List<ObservedValue> valueList = q.find();
 				for (ObservedValue v : valueList) {
@@ -266,6 +268,8 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 			
 			if (action.equals("ApplyRemoveAnimalsFromSubproject"))
 			{
+				SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+				
 				// Get values from form
 				
 				// Discomfort
@@ -275,26 +279,21 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 				String endstatus = request.getString("endstatus");
 				
 				// Date-time of removal
-				Date subProjectRemovalDatetime = null;
-				if (request.getString("subprojectremovaldatetime") != null) {
-					String subProjectRemovalDatetimeString = request.getString("subprojectremovaldatetime");
-					SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
-					subProjectRemovalDatetime = sdf.parse(subProjectRemovalDatetimeString);
+				Date subProjectRemovalDate = null;
+				if (request.getString("subprojectremovaldate") != null) {
+					String subProjectRemovalDateString = request.getString("subprojectremovaldate");
+					subProjectRemovalDate = dateOnlyFormat.parse(subProjectRemovalDateString);
 				} else {
 					throw(new Exception("No removal date given - animal(s) not removed"));
 				}
 				
 				// Date-time of death (if applicable)
-				Date deathDatetime = null;
-				String deathDatetimeString = null;
-				//String deathDatetimeParsedString = null;
-				if (request.getString("deathdatetime") != null) {
-					deathDatetimeString = request.getString("deathdatetime");
-					if (!deathDatetimeString.equals("")) {
-						SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
-						deathDatetime = sdf.parse(deathDatetimeString);
-						//SimpleDateFormat sdfForDbCompare = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-						//deathDatetimeParsedString = sdfForDbCompare.format(deathDatetime);
+				Date deathDate = null;
+				String deathDateString = null;
+				if (request.getString("deathdate") != null) {
+					deathDateString = request.getString("deathdate");
+					if (!deathDateString.equals("")) {
+						deathDate = dateOnlyFormat.parse(deathDateString);
 					}
 				}
 				
@@ -314,7 +313,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 					{
 						ObservedValue value = valueList.get(0);
 						// Set end date-time
-						value.setEndtime(subProjectRemovalDatetime);
+						value.setEndtime(subProjectRemovalDate);
 						db.update(value);
 						
 						int investigationId = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
@@ -329,7 +328,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 							if (activeValueList.size() > 0) {
 								// Take most recent one and update
 								ObservedValue activeValue = activeValueList.get(activeValueList.size() - 1);
-								activeValue.setEndtime(deathDatetime);
+								activeValue.setEndtime(deathDate);
 								activeValue.setValue("Dead");
 								db.update(activeValue);
 							}
@@ -337,14 +336,14 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 							int protocolId = ct.getProtocolId("SetDeathDate");
 							int measurementId = ct.getMeasurementId("DeathDate");
 							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(investigationId, 
-									deathDatetime, null, protocolId, measurementId, animalId, 
-									deathDatetimeString, 0));
+									deathDate, null, protocolId, measurementId, animalId, 
+									deathDateString, 0));
 						}
 						
 						// Set subproject end values
-						Date endstatusDatetime = null;
-						if (subProjectRemovalDatetime != null) {
-							endstatusDatetime = subProjectRemovalDatetime;
+						Date endstatusDate = null;
+						if (subProjectRemovalDate != null) {
+							endstatusDate = subProjectRemovalDate;
 						}
 						int protocolId = ct.getProtocolId("AnimalFromSubproject");
 						ProtocolApplication app = ct.createProtocolApplication(investigationId, protocolId);
@@ -352,13 +351,13 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 						int protocolApplicationId = app.getId();
 						int measurementId = ct.getMeasurementId("FromExperiment");
 						valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, 
-								endstatusDatetime, null, measurementId, animalId, null, subproject.getId()));
+								endstatusDate, null, measurementId, animalId, null, subproject.getId()));
 						measurementId = ct.getMeasurementId("ActualDiscomfort");
 						valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, 
-								endstatusDatetime, null, measurementId, animalId, discomfort, 0));
+								endstatusDate, null, measurementId, animalId, discomfort, 0));
 						measurementId = ct.getMeasurementId("ActualAnimalEndStatus");
 						valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, 
-								endstatusDatetime, null, measurementId, animalId, endstatus, 0));
+								endstatusDate, null, measurementId, animalId, endstatus, 0));
 					} else {
 						throw(new Exception("No or multiple open DEC subprojects found - animal(s) not removed"));
 					}
@@ -374,13 +373,12 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 			
 			if (action.equals("ApplyAddAnimalToSubproject"))
 			{
-				this.getMessages().clear();
+				SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
 				
 				// Get values from form for one or more animals
 				// Firstly, common values for all animals (TODO: maybe change so you can have separate values for each animal)
 				
 				// Get Subproject start and end dates
-				SimpleDateFormat sdfMolgenis = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
 				Date subprojectStartDate = null;
 				int featureId = ct.getMeasurementId("StartDate");
 				Query<ObservedValue> q = db.query(ObservedValue.class);
@@ -389,7 +387,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 				List<ObservedValue> valueList = q.find();
 				if (valueList.size() > 0) {
 					String subprojectStartDateString = valueList.get(0).getValue();
-					subprojectStartDate = sdfMolgenis.parse(subprojectStartDateString);
+					subprojectStartDate = dateOnlyFormat.parse(subprojectStartDateString);
 				}
 				Date subprojectEndDate = null;
 				featureId = ct.getMeasurementId("EndDate");
@@ -400,18 +398,18 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 				if (valueList.size() > 0) {
 					String subprojectEndDateString = valueList.get(0).getValue();
 					if (subprojectEndDateString != null) {
-						subprojectEndDate = sdfMolgenis.parse(subprojectEndDateString);
+						subprojectEndDate = dateOnlyFormat.parse(subprojectEndDateString);
 					}
 				}
 				
-				// Date-time of entry
-				Date subProjectAdditionDatetime = null;
-				if (request.getString("subprojectadditiondatetime") != null) {
-					String subProjectRemovalDatetimeString = request.getString("subprojectadditiondatetime");
-					subProjectAdditionDatetime = sdfMolgenis.parse(subProjectRemovalDatetimeString);
+				// Date of entry
+				Date subProjectAdditionDate = null;
+				if (request.getString("subprojectadditiondate") != null) {
+					String subProjectRemovalDateString = request.getString("subprojectadditiondate");
+					subProjectAdditionDate = dateOnlyFormat.parse(subProjectRemovalDateString);
 					// Check against Subproject time boundaries
-					if (subProjectAdditionDatetime.before(subprojectStartDate) ||
-						(subprojectEndDate != null && subProjectAdditionDatetime.after(subprojectEndDate))) {
+					if (subProjectAdditionDate.before(subprojectStartDate) ||
+						(subprojectEndDate != null && subProjectAdditionDate.after(subprojectEndDate))) {
 						throw(new Exception("Entry date outside DEC Subproject time span - animal(s) not added"));
 					}
 				} else {
@@ -515,24 +513,24 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 					int protocolApplicationId = app.getId();
 					int measurementId = ct.getMeasurementId("Experiment");
 					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, 
-							subProjectAdditionDatetime, null, measurementId, animalId, null, subproject.getId()));
+							subProjectAdditionDate, null, measurementId, animalId, null, subproject.getId()));
 					if (sourceTypeSubproject != null) {
 						measurementId = ct.getMeasurementId("SourceTypeSubproject");
 						valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, 
-								subProjectAdditionDatetime, null, measurementId, animalId, sourceTypeSubproject, 0));
+								subProjectAdditionDate, null, measurementId, animalId, sourceTypeSubproject, 0));
 					}
 					measurementId = ct.getMeasurementId("PainManagement");
 					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, 
-							subProjectAdditionDatetime, null, measurementId, animalId, painManagement, 0));
+							subProjectAdditionDate, null, measurementId, animalId, painManagement, 0));
 					measurementId = ct.getMeasurementId("Anaesthesia");
 					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, 
-							subProjectAdditionDatetime, null, measurementId, animalId, anaesthesia, 0));
+							subProjectAdditionDate, null, measurementId, animalId, anaesthesia, 0));
 					measurementId = ct.getMeasurementId("ExpectedDiscomfort");
 					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, 
-							subProjectAdditionDatetime, null, measurementId, animalId, actualDiscomfort, 0));
+							subProjectAdditionDate, null, measurementId, animalId, actualDiscomfort, 0));
 					measurementId = ct.getMeasurementId("ExpectedAnimalEndStatus");
 					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, 
-							subProjectAdditionDatetime, null, measurementId, animalId, actualEndstatus, 0));
+							subProjectAdditionDate, null, measurementId, animalId, actualEndstatus, 0));
 				} // end of for-loop through animals
 				
 				// Add everything to DB

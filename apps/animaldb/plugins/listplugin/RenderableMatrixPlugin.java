@@ -7,11 +7,9 @@
 
 package plugins.listplugin;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
@@ -20,6 +18,7 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.matrix.component.MatrixRenderer;
 import org.molgenis.matrix.component.MatrixRendererHelper;
 import org.molgenis.matrix.component.PhenoMatrix;
+import org.molgenis.matrix.component.interfaces.RenderableMatrix;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
@@ -30,7 +29,7 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 	
 	private static final long serialVersionUID = -8306984451248484959L;
 	private PhenoMatrix matrix = null;
-	private MatrixRenderer matrixRenderer = null;
+	private MatrixRenderer<ObservationTarget, ObservableFeature, List<ObservedValue>> matrixRenderer = null;
 	private List<ObservationTarget> selectedTargetList = null;
 	
 	public RenderableMatrixPlugin(String name, ScreenController<?> parent) {
@@ -47,7 +46,7 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 		return "plugins/listplugin/RenderableMatrixPlugin.ftl";
 	}
 	
-	public MatrixRenderer getMatrixRenderer() {
+	public MatrixRenderer<ObservationTarget, ObservableFeature, List<ObservedValue>> getMatrixRenderer() {
 		return this.matrixRenderer;
 	}
 	
@@ -57,13 +56,13 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 			String action = request.getString("__action");
 			
 			if (action.startsWith(MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX)) {
-//				matrixRenderer.delegateHandleRequest(request);
+				matrixRenderer.delegateHandleRequest(request);
 			}
 			
 			if (action.equals("Save")) {
-//				RenderableMatrix<ObservationTarget, ObservableFeature, ObservedValue> currentMatrixSlice = 
-//						matrixRenderer.getModel().getSubMatrix();
-//				this.setSelectedTargetList(currentMatrixSlice.getVisibleRows());
+				RenderableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> currentMatrixSlice = 
+						matrixRenderer.getRendered();
+				this.setSelectedTargetList(currentMatrixSlice.getVisibleRows());
 			}
 			
 		} catch (Exception e) {
@@ -78,8 +77,9 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 		
 		if (matrix == null) {
 			try {
+				// TODO
 				// Construct a list of features we want to see initially
-				Query<ObservableFeature> q = db.query(ObservableFeature.class);
+				//Query<ObservableFeature> q = db.query(ObservableFeature.class);
 				QueryRule[] qr = new QueryRule[5];
 				qr[0] = new QueryRule(ObservableFeature.NAME, Operator.EQUALS, "Species");
 				qr[1] = new QueryRule(Operator.OR);
@@ -87,9 +87,8 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 				qr[3] = new QueryRule(Operator.OR);
 				qr[4] = new QueryRule(ObservableFeature.NAME, Operator.EQUALS, "Color");
 				
-//				matrix = new PhenoMatrix(db, this.getViewName());
-//				matrix = (PhenoMatrix) matrix.getSubMatrixByColValueFilter(matrix, qr); // TODO get working!
-				matrixRenderer = new MatrixRenderer("Pheno Matrix", matrix, matrix, this.getName());
+				matrix = new PhenoMatrix(db);
+				matrixRenderer = new MatrixRenderer<ObservationTarget, ObservableFeature, List<ObservedValue>>("Pheno Matrix", matrix, matrix, this.getName());
 			} catch (Exception e) {
 				e.printStackTrace();
 				if (e.getMessage() != null) {

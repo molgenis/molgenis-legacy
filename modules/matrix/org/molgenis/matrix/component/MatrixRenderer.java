@@ -42,6 +42,10 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		this(name, name, sliceable, source, null, null, -1, screenName);
 	}
 
+	public RenderableMatrix<R, C, V> getRendered() {
+		return this.renderMe;
+	}
+	
 	/**
 	 * Instantiation only
 	 */

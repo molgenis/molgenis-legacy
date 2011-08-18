@@ -38,58 +38,50 @@
 	</#if>
 	
 	<div id="name" class="row">
-	<label for="name">Name:</label>
-	<input type="text" name="name" id="name" class="textbox" 
-	<#if currentDecProject?? && currentDecProject.getName()??> value="${currentDecProject.name}"</#if>
-	/>
+		<label for="name">Name:</label>
+		<input type="text" name="name" id="name" class="textbox" 
+		<#if currentDecProject?? && currentDecProject.getName()??> value="${currentDecProject.name}"</#if>
+		/>
 	</div>
 	
 	<div id="decnumber" class="row">
-	<label for="decnumber">DEC Number:</label>
-	<input type="text" name="decnumber" id="decnumber" class="textbox" 
-	<#if currentDecProject?? && currentDecProject.getDecNr()??> value="${currentDecProject.decNr}"</#if>
-	/>
+		<label for="decnumber">DEC number:</label>
+		<input type="text" name="decnumber" id="decnumber" class="textbox" 
+		<#if currentDecProject?? && currentDecProject.getDecNr()??> value="${currentDecProject.decNr}"</#if>
+		/>
 	</div>
 	
 	<!--
 	<div id="decapplicant" class="row">
-	<label for="decapplicant">DEC Applicant:</label>
-	<select name="decapplicant" id="decapplicant"> 
-		<!#list screen.decApplicantList as decApplicant>
-			<option 
-			<!#if currentDecProject??><!#if currentDecProject.decApplicantName = decApplicant.name>selected="selected"<!/#if><!/#if>
-			value="{decApplicant.id?string.computer}">{decApplicant.name}</option>
-		<!/#list>
-	</select>
+		<label for="decapplicant">DEC Applicant:</label>
+		<select name="decapplicant" id="decapplicant"> 
+			<!#list screen.decApplicantList as decApplicant>
+				<option 
+				<!#if currentDecProject??><!#if currentDecProject.decApplicantName = decApplicant.name>selected="selected"<!/#if><!/#if>
+				value="{decApplicant.id?string.computer}">{decApplicant.name}</option>
+			<!/#list>
+		</select>
 	</div>
 	-->
 	
 	<div id="decapplicationpdf" class="row">
-	<label for="decapplicationpdf">DEC Application PDF:</label>
-	<input type="text" name="decapplicationpdf" id="decapppdf" class="textbox" 
-	<#if currentDecProject?? && currentDecProject.getPdfDecApplication()??> value="${currentDecProject.pdfDecApplication}"</#if>
-	/>
+		<label for="decapplicationpdf">DEC application PDF:</label>
+		<input type="text" name="decapplicationpdf" id="decapppdf" class="textbox" <#if currentDecProject?? && currentDecProject.getPdfDecApplication()??> value="${currentDecProject.pdfDecApplication}"</#if> />
 	</div>
 	
 	<div id="decapprovalpdf" class="row">
-	<label for="decapprovalpdf">DEC Approval PDF:</label>
-	<input type="text" name="decapprovalpdf" id="decapprovalpdf" class="textbox" 
-	<#if currentDecProject?? && currentDecProject.getPdfDecApproval()??> value="${currentDecProject.pdfDecApproval}"</#if>
-	/>
+		<label for="decapprovalpdf">DEC approval PDF:</label>
+		<input type="text" name="decapprovalpdf" id="decapprovalpdf" class="textbox" <#if currentDecProject?? && currentDecProject.getPdfDecApproval()??> value="${currentDecProject.pdfDecApproval}"</#if> />
 	</div>
 	
-	<div id="starttime" class="row">
-	<label for="starttime">Project Start Date:</label>
-	<input type='text' class='textbox' id='starttime' name='starttime' 
-	<#if currentDecProject?? && currentDecProject.getStartDate()??> value="${currentDecProject.startDate}"</#if>
-	onclick='showDateInput(this,true)' autocomplete='off' />
+	<div class="row">
+		<label for="startdate">Project start date:</label>
+		<input type='text' class='textbox' id='startdate' name='startdate' <#if currentDecProject?? && currentDecProject.getStartDate()??> value="${currentDecProject.startDate}"</#if> onclick='showDateInput(this)' autocomplete='off' />
 	</div>
 	
-	<div id="endtime" class="row">
-	<label for="endtime">Project End Date:</label>
-	<input type='text' class='textbox' id='endtime' name='endtime' 
-	<#if currentDecProject?? && currentDecProject.getEndDate()??> value="${currentDecProject.endDate}"</#if>
-	onclick='showDateInput(this,true)' autocomplete='off' />
+	<div class="row">
+		<label for="enddate">Project end date:</label>
+		<input type='text' class='textbox' id='enddate' name='enddate' <#if currentDecProject?? && currentDecProject.getEndDate()??> value="${currentDecProject.endDate}"</#if> onclick='showDateInput(this)' autocomplete='off' />
 	</div>
 	
 	<div id='buttons_part' class='row'>
@@ -106,12 +98,12 @@
 	<table cellpadding="10" cellspacing="2" border="1">
 	<tr>
 		<th>Name</th>
-		<th>Start Date</th>
-		<th>End Date</th>
-		<th>DEC Number</th>
-		<th>DEC Applicant</th>
-		<th>DEC Application PDF</th>
-		<th>DEC Approval PDF</th>
+		<th>Start date</th>
+		<th>End date</th>
+		<th>DEC number</th>
+		<th>DEC applicant</th>
+		<th>DEC application PDF</th>
+		<th>DEC approval PDF</th>
 		<th></th>
 	</tr>
 	<#if screen.decappList?exists>
