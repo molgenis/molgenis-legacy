@@ -30,13 +30,13 @@ import java.util.List;
  */
 public class QueryRule implements Cloneable {
 	/** The operator being applied to the field and value */
-	private Operator operator;
+	protected Operator operator;
 
 	/** The field-name (eq column-name) in the database */
-	private String field = null;
+	protected String field = null;
 
 	/** The value to compare entries of the field in the database with */
-	private Object value = null;
+	protected Object value = null;
 
 	/** Indicate wheter this should evaluate to OR */
 	private boolean or = false; // default AND
