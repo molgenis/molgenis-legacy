@@ -329,5 +329,16 @@ function postData(entityClass) {
 }
 
 function setXrefOption(field, id_field, label_field, entity) {
-	document.getElementById(field).options[0]  = new Option(entity[label_field][0], entity[id_field][0], true);
+	var label = entity[label_field];
+	var id    = entity[id_field];
+
+	if (jQuery.isArray(label)) {
+		label = label[0];
+	}
+
+	if (jQuery.isArray(id)) {
+		id = id[0];
+	}
+
+	document.getElementById(field).options[0]  = new Option(label, id, true);
 }
