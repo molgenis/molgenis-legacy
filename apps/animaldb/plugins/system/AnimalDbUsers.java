@@ -201,7 +201,7 @@ public class AnimalDbUsers extends PluginModel<Entity>
 						}
 					}
 					chosenInv.setOwns_Id(userId); // TODO: this fails when you're not admin
-					db.update(chosenInv);
+					db.update(chosenInv); // chosenInv is always already in the DB, so db.update() is fine here
 				} else {
 					throw new Exception("No (valid) investigation chosen");
 				}

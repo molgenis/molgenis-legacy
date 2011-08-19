@@ -182,7 +182,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 									originalObservedValue.setProtocolApplication_Id(paId);
 								}
 					
-								db.update(originalObservedValue);
+								db.update(originalObservedValue); // Big TODO: with HSQL back-end, db.update() ignores new values, which may in fact be part of originalObservedValue!
 								// TODO: add to batch list and add later
 						    }
 						    
