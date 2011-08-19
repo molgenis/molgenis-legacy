@@ -16,6 +16,7 @@ import org.molgenis.framework.ui.html.EntityForm;
 import org.molgenis.framework.ui.html.HiddenInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.ActionInput.Type;
+import org.molgenis.framework.ui.html.XrefInput;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -64,7 +65,14 @@ public class AddXrefCommand<E extends Entity> extends AddCommand<E>
 	public List<HtmlInput<?>> getInputs() throws DatabaseException
 	{
 		List<HtmlInput<?>> inputs = this.xrefForm.getInputs();
-		// add two hidden fields for javascript to know id field and label field
+		for (int i = 0; i < inputs.size(); i++)
+		{
+			if (inputs.get(i) instanceof XrefInput)
+			{
+				((XrefInput) inputs.get(i)).setIncludeAddButton(false);
+			}
+		}
+		// add three hidden fields for javascript to know entity name, id field and label field
 		inputs.add(new HiddenInput("entity_name", StringUtils.uncapitalise(xrefEntity.getClass().getSimpleName())));
 		inputs.add(new HiddenInput("id_field", this.xrefEntity.getIdField()));
 		inputs.add(new HiddenInput("label_field", this.xrefEntity.getLabelFields().get(0)));
