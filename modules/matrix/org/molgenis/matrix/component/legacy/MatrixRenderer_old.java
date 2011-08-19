@@ -1,4 +1,4 @@
-package org.molgenis.matrix.component.legacy;
+//package org.molgenis.matrix.component.legacy;
 ///**
 // * File: TextInput.java <br>
 // * Copyright: Inventory 2000-2006, GBIC 2005, all rights reserved <br>

@@ -61,8 +61,8 @@ public abstract class GenericFunctions<R, C, V> implements SliceableMatrix<R, C,
 		switch (rule.getOperator())
 		{
 			case LIMIT:
-				if (rule.getField().equals("row")) rowCopy = rowCopy.subList(0, val);
-				if (rule.getField().equals("col")) colCopy = colCopy.subList(0, val);
+				if (rule.getField().equals("row")) rowCopy = rowCopy.subList(0, val > rowCopy.size() ? rowCopy.size() : val); //right place ??
+				if (rule.getField().equals("col")) colCopy = colCopy.subList(0, val > colCopy.size() ? colCopy.size() : val);
 				break;
 			case OFFSET:
 				if (rule.getField().equals("row")) rowCopy = rowCopy.subList(val, rowTotal);

@@ -65,6 +65,12 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 				this.setSelectedTargetList(currentMatrixSlice.getVisibleRows());
 			}
 			
+			if (action.equals("resetMatrixRenderer")) {
+				selectedTargetList = null;
+				matrix = new PhenoMatrix(db);
+				matrixRenderer = new MatrixRenderer<ObservationTarget, ObservableFeature, List<ObservedValue>>("Pheno Matrix", matrix, matrix, this.getName());
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (e.getMessage() != null) {
@@ -77,16 +83,6 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 		
 		if (matrix == null) {
 			try {
-				// TODO
-				// Construct a list of features we want to see initially
-				//Query<ObservableFeature> q = db.query(ObservableFeature.class);
-				QueryRule[] qr = new QueryRule[5];
-				qr[0] = new QueryRule(ObservableFeature.NAME, Operator.EQUALS, "Species");
-				qr[1] = new QueryRule(Operator.OR);
-				qr[2] = new QueryRule(ObservableFeature.NAME, Operator.EQUALS, "Sex");
-				qr[3] = new QueryRule(Operator.OR);
-				qr[4] = new QueryRule(ObservableFeature.NAME, Operator.EQUALS, "Color");
-				
 				matrix = new PhenoMatrix(db);
 				matrixRenderer = new MatrixRenderer<ObservationTarget, ObservableFeature, List<ObservedValue>>("Pheno Matrix", matrix, matrix, this.getName());
 			} catch (Exception e) {

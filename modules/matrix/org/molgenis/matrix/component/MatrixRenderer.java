@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.html.HtmlWidget;
@@ -159,11 +160,36 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		if (action.equals("moveLeft")) this.moveLeft();
 		if (action.equals("moveDown")) this.moveDown();
 		if (action.equals("moveUp")) this.moveUp();
+		if (action.startsWith("filter")) this.addFilter(request);
 		
 		orderFilters();
 		applyFiltersAndRender(sliceable, renderMe.getFilters());
 	}
 	
+	/**
+	 * PROOF OF PRINCIPLE! Needs rework.
+	 * 
+	 * @param request
+	 * @throws Exception 
+	 */
+	private void addFilter(Tuple request) throws Exception {
+		
+		MatrixQueryRule q = null;
+		
+		for (int col = 0; col < renderMe.getVisibleCols().size(); col++){
+			Object filterValue = request.getObject("FILTER_VALUE_COL_" + col);
+			if (filterValue != null) {
+				String filterOperator = request.getString("FILTER_OPERATOR_COL_" + col);
+				q = new MatrixQueryRule(String.valueOf(col), Operator.valueOf(filterOperator), filterValue);
+			}
+		}
+		
+		if (q != null) {
+			Filter newFilter = new Filter(Filter.Type.colValues, q);
+			this.renderMe.getFilters().add(newFilter);
+		}
+	}
+
 	/**
 	 * Move all LIMIT filters to the back of the filter queue!
 	 * Lame??

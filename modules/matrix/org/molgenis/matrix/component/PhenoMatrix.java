@@ -99,12 +99,36 @@ public class PhenoMatrix extends GenericFunctions<ObservationTarget, ObservableF
 		return null;
 	}
 
+	/**
+	 * PROOF OF PRINCIPLE! Needs rework.
+	 */
 	@Override
 	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColValues(MatrixQueryRule rule)
 			throws Exception
 	{
-		// TODO Auto-generated method stub
-		return null;
+		int featureIndex = Integer.parseInt(rule.getField());
+		String filterTerm = rule.getValue().toString();
+		List<ObservationTarget> targetsToKeep = new ArrayList<ObservationTarget>();
+		List<ObservedValue>[][] values = this.getVisibleValues();
+		
+		int i = 0;
+		for (ObservationTarget target : rowCopy) {
+			List<ObservedValue> valueList = values[i][featureIndex];
+			if (valueList != null && valueList.size() > 0) {
+				ObservedValue value = valueList.get(0);
+				if (value.getValue() != null && value.getValue().equals(filterTerm)) {
+					targetsToKeep.add(target);
+				} else {
+					if (value.getRelation_Name() != null && value.getRelation_Name().equals(filterTerm)) {
+						targetsToKeep.add(target);
+					}
+				}
+			}
+			i++;
+		}
+		
+		this.rowCopy = targetsToKeep;
+		return this;
 	}
 
 	@Override
@@ -136,13 +160,15 @@ public class PhenoMatrix extends GenericFunctions<ObservationTarget, ObservableF
 	@Override
 	public String getRowType()
 	{
-		return originalRows.get(0).get__Type();
+		return "ObservationTarget";
+		//return originalRows.get(0).get__Type();
 	}
 
 	@Override
 	public String getColType()
 	{
-		return originalCols.get(0).get__Type();
+		return "ObservableFeature";
+		//return originalCols.get(0).get__Type();
 	}
 
 	@Override

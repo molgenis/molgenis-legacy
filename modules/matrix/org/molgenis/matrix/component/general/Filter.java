@@ -26,11 +26,14 @@ public class Filter {
 		this.filterType = filterType;
 	}
 	
-	public Filter(Type filterType, MatrixQueryRule queryRule, int index){
-		this.queryRule = queryRule;
-		this.filterType = filterType;
-		this.index = index;
-	}
+	/**
+	 * Question: why do we need index here?
+	 */
+//	public Filter(Type filterType, MatrixQueryRule queryRule, int index){
+//		this.queryRule = queryRule;
+//		this.filterType = filterType;
+//		this.index = index;
+//	}
 
 	public MatrixQueryRule getQueryRule() {
 		return queryRule;
