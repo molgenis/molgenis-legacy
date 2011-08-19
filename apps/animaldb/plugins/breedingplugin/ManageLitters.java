@@ -791,13 +791,11 @@ public class ManageLitters extends PluginModel<Entity>
 				int invid = ct.getObservationTargetById(this.genoLitterId).getInvestigation_Id();
 				List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
 				
-				// Init lists that we can later add to the DB at once
-				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
-				
 				// Set genotype date on litter -> this is how we mark a litter as genotyped
+				// TODO: use proper date from field instead of 'weandate' which is undefined here!!
 				int protocolId = ct.getProtocolId("SetGenotypeDate");
 				int measurementId = ct.getMeasurementId("GenotypeDate");
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, 
+				db.add(ct.createObservedValueWithProtocolApplication(invid, now, 
 						null, protocolId, measurementId, this.genoLitterId, weandate, 0));
 				
 				int animalCount = 0;
@@ -814,8 +812,10 @@ public class ManageLitters extends PluginModel<Entity>
 					if (value.getProtocolApplication_Id() == null) {
 						int paId = ct.makeProtocolApplication(invid, ct.getProtocolId("SetSex"));
 						value.setProtocolApplication_Id(paId);
+						db.add(value);
+					} else {
+						db.update(value);
 					}
-					valuesToAddList.add(value);
 					// Set birth date
 					String dob = request.getString("dob_" + animalCount);
 					value = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
@@ -824,8 +824,10 @@ public class ManageLitters extends PluginModel<Entity>
 					if (value.getProtocolApplication_Id() == null) {
 						int paId = ct.makeProtocolApplication(invid, ct.getProtocolId("SetDateOfBirth"));
 						value.setProtocolApplication_Id(paId);
+						db.add(value);
+					} else {
+						db.update(value);
 					}
-					valuesToAddList.add(value);
 					// Set color
 					String color = request.getString("color_" + animalCount);
 					value = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
@@ -834,8 +836,10 @@ public class ManageLitters extends PluginModel<Entity>
 					if (value.getProtocolApplication_Id() == null) {
 						int paId = ct.makeProtocolApplication(invid, ct.getProtocolId("SetColor"));
 						value.setProtocolApplication_Id(paId);
+						db.add(value);
+					} else {
+						db.update(value);
 					}
-					valuesToAddList.add(value);
 					// Set earmark
 					String earmark = request.getString("earmark_" + animalCount);
 					value = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
@@ -844,8 +848,10 @@ public class ManageLitters extends PluginModel<Entity>
 					if (value.getProtocolApplication_Id() == null) {
 						int paId = ct.makeProtocolApplication(invid, ct.getProtocolId("SetEarmark"));
 						value.setProtocolApplication_Id(paId);
+						db.add(value);
+					} else {
+						db.update(value);
 					}
-					valuesToAddList.add(value);
 					// Set background
 					int backgroundId = request.getInt("background_" + animalCount);
 					value = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
@@ -855,8 +861,10 @@ public class ManageLitters extends PluginModel<Entity>
 					if (value.getProtocolApplication_Id() == null) {
 						int paId = ct.makeProtocolApplication(invid, ct.getProtocolId("SetBackground"));
 						value.setProtocolApplication_Id(paId);
+						db.add(value);
+					} else {
+						db.update(value);
 					}
-					valuesToAddList.add(value);
 					// Set genotype
 					int paId = ct.makeProtocolApplication(invid, ct.getProtocolId("SetGenotype"));
 					String geneName = request.getString("geneName_" + animalCount);
@@ -865,26 +873,28 @@ public class ManageLitters extends PluginModel<Entity>
 					value.setValue(geneName);
 					if (value.getProtocolApplication_Id() == null) {
 						value.setProtocolApplication_Id(paId);
+						db.add(value);
+					} else {
+						db.update(value);
 					}
-					valuesToAddList.add(value);
 					String geneState = request.getString("geneState_" + animalCount);
 					value = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
 							ct.getMeasurementByName("GeneState"), investigationIds, invid).get(0);
 					value.setValue(geneState);
 					if (value.getProtocolApplication_Id() == null) {
 						value.setProtocolApplication_Id(paId);
+						db.add(value);
+					} else {
+						db.update(value);
 					}
-					valuesToAddList.add(value);
 					
 					animalCount++;
 				}
 				
-				db.update(valuesToAddList);
-				
 				this.action = "ShowLitters";
 				this.reload(db);
 				this.reloadLitterLists(db);
-				this.getMessages().add(new ScreenMessage("All " + animalCount + " animals succesfully genotyped", true));
+				this.getMessages().add(new ScreenMessage("All " + animalCount + " animals successfully genotyped", true));
 			}
 
 		} catch (Exception e) {
