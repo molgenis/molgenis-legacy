@@ -1,13 +1,11 @@
 package org.molgenis.matrix.component.general;
 
-import org.molgenis.framework.db.QueryRule;
-
 public class Filter {
 
 	/**
 	 * The queryrule of this filter. @see: SliceableMatrix
 	 */
-	private QueryRule queryRule;
+	private MatrixQueryRule queryRule;
 
 	/**
 	 * The type of filter that was applied. @see: SliceableMatrix
@@ -23,18 +21,18 @@ public class Filter {
 	 */
 	private int index;
 	
-	public Filter(Type filterType, QueryRule queryRule){
+	public Filter(Type filterType, MatrixQueryRule queryRule){
 		this.queryRule = queryRule;
 		this.filterType = filterType;
 	}
 	
-	public Filter(Type filterType, QueryRule queryRule, int index){
+	public Filter(Type filterType, MatrixQueryRule queryRule, int index){
 		this.queryRule = queryRule;
 		this.filterType = filterType;
 		this.index = index;
 	}
 
-	public QueryRule getQueryRule() {
+	public MatrixQueryRule getQueryRule() {
 		return queryRule;
 	}
 
@@ -46,4 +44,7 @@ public class Filter {
 		return index;
 	}
 	
+	public String toString(){
+		return "Filter: type = " + this.getFilterType() + ", queryrule = " + this.getQueryRule().toString() + ", index = " + this.getIndex();
+	}
 }

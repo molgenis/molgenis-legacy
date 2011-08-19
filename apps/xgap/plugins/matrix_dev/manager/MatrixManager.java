@@ -212,9 +212,10 @@ public class MatrixManager extends PluginModel
 	}
 	
 	private void setupRenderer(Data data, Database db) throws Exception{
+		System.out.println("setupRenderer");
 		//setup the first matrix with bogus values that should be overwritten
 		AbstractDataMatrixInstance matrix = dmh.createInstance(data);
-		matrix.setDb(db);
+		matrix.setup(db);
 		
 		//create and set the renderer
 		MatrixRenderer renderer = new MatrixRenderer("xgap_matrix", matrix, matrix, this.getName());

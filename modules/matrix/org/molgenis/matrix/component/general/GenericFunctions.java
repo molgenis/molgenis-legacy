@@ -20,7 +20,7 @@ public abstract class GenericFunctions<R, C, V> implements SliceableMatrix<R, C,
 	 * their original index in the source matrix here. Complex filtering is not
 	 * possible if we don't keep track of the actual indices somehow.
 	 */
-	public SliceableMatrix<R, C, V> sliceByIndex(QueryRule rule)
+	public SliceableMatrix<R, C, V> sliceByIndex(MatrixQueryRule rule)
 	{
 
 		int val = (Integer) rule.getValue();
@@ -48,34 +48,30 @@ public abstract class GenericFunctions<R, C, V> implements SliceableMatrix<R, C,
 	}
 
 	/**
-	 * TODO Can be a generic implementation. Take the current list of generic
-	 * row/col elements and slice off a part simply by removing elements as
-	 * specified in the limit/offset filter.
+	 * TODO Order of filters matters, but we take care of this in our own logic!
+	 * 
+	 * @throws Exception 
 	 */
-	public SliceableMatrix<R, C, V> sliceByPaging(QueryRule rule)
+	public SliceableMatrix<R, C, V> sliceByPaging(MatrixQueryRule rule) throws Exception
 	{
+		System.out.println("GenericFunctions sliceByPaging(QueryRule rule) start");
 		int val = (Integer) rule.getValue();
-		int total = colCopy.size();
+		int colTotal = colCopy.size();
+		int rowTotal = rowCopy.size();
 		switch (rule.getOperator())
 		{
-			case EQUALS:
-				// this.setRowNames(this.getRowNames().subList(val, val+1));
-				break;
-			case LESS_EQUAL:
+			case LIMIT:
 				if (rule.getField().equals("row")) rowCopy = rowCopy.subList(0, val);
 				if (rule.getField().equals("col")) colCopy = colCopy.subList(0, val);
 				break;
-			case GREATER_EQUAL:
-				if (rule.getField().equals("row")) rowCopy = rowCopy.subList(val, total);
-				if (rule.getField().equals("col")) colCopy = colCopy.subList(val, total);
+			case OFFSET:
+				if (rule.getField().equals("row")) rowCopy = rowCopy.subList(val, rowTotal);
+				if (rule.getField().equals("col")) colCopy = colCopy.subList(val, colTotal);
 				break;
-			case LESS:
-				// this.setRowNames(this.getRowNames().subList(0, val));
-				break;
-			case GREATER:
-				// this.setRowNames(this.getRowNames().subList(val+1, total));
-				break;
+			default:
+				throw new Exception("unsupported operator for paging");
 		}
+		System.out.println("GenericFunctions sliceByPaging(QueryRule rule) ended");
 		return this;
 	}
 

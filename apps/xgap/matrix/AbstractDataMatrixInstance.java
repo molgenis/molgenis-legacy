@@ -19,10 +19,12 @@ import org.apache.log4j.Logger;
 import org.molgenis.core.Nameable;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.component.general.GenericFunctions;
+import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 import org.molgenis.matrix.component.interfaces.SourceMatrix;
@@ -111,6 +113,25 @@ public abstract class AbstractDataMatrixInstance<E> extends GenericFunctions<Obs
 		return getRow(rowNames.indexOf(rowName));
 	}
 
+	/**
+	 * Helper to convert ObservationElement to String
+	 */
+	public AbstractDataMatrixInstance<Object> getSubMatrixByObservationElement(List<ObservationElement> rows, List<ObservationElement> cols)
+			throws Exception
+	{
+		List<String> rowNames = new ArrayList<String>();
+		for(ObservationElement row : rows){
+			rowNames.add(row.getName());
+		}
+		
+		List<String> colNames = new ArrayList<String>();
+		for(ObservationElement col : cols){
+			colNames.add(col.getName());
+		}
+		
+		return getSubMatrix(rowNames, colNames);
+	}
+	
 	public AbstractDataMatrixInstance<Object> getSubMatrix(List<String> rowNames, List<String> colNames)
 			throws Exception
 	{
@@ -526,36 +547,17 @@ public abstract class AbstractDataMatrixInstance<E> extends GenericFunctions<Obs
 	/************************************************************/
 	/**************** BasicMatrix implementation ****************/
 	/************************************************************/
-	
-	private Database db;
-	private List<String> rowNamesCopy; //FIXME: should use GenericFunctions' rowCopy
-	private List<String> colNamesCopy; //FIXME: should use GenericFunctions' colCopy
-	
-	public void setDb(Database db)
-	{
-		this.db = db;
-	}
 
-	//FIXME: override here replaces String with ObservationElement, why not use ObservationElement directly?
-	@Override
-	public List<ObservationElement> getVisibleRows() throws Exception
+	public void setup(Database db) throws DatabaseException
 	{
-		List<ObservationElement> rows = db.find(ObservationElement.class, new QueryRule(ObservationElement.NAME, Operator.IN, rowNamesCopy));
-		return rows;
-	}
-
-	//FIXME: override here replaces String with ObservationElement, why not use ObservationElement directly?
-	@Override
-	public List<ObservationElement> getVisibleCols() throws Exception
-	{
-		List<ObservationElement> cols = db.find(ObservationElement.class, new QueryRule(ObservationElement.NAME, Operator.IN, colNamesCopy));
-		return cols;
+		this.originalCols = db.find(ObservationElement.class, new QueryRule(ObservationElement.NAME, Operator.IN, this.getColNames()));
+		this.originalRows = db.find(ObservationElement.class, new QueryRule(ObservationElement.NAME, Operator.IN, this.getRowNames()));
 	}
 
 	@Override
 	public Object[][] getVisibleValues() throws Exception
 	{
-		return this.getSubMatrix(rowNamesCopy, colNamesCopy).getElements();
+		return this.getSubMatrixByObservationElement(rowCopy, colCopy).getElements();
 	}
 	
 	/****************************************************************/
@@ -570,21 +572,21 @@ public abstract class AbstractDataMatrixInstance<E> extends GenericFunctions<Obs
 	}
 
 	@Override
-	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByColValues(QueryRule rule)
+	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByColValues(MatrixQueryRule rule)
 			throws Exception
 	{
 		return null;
 	}
 
 	@Override
-	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByRowHeader(QueryRule rule)
+	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByRowHeader(MatrixQueryRule rule)
 			throws Exception
 	{
 		return null;
 	}
 
 	@Override
-	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByColHeader(QueryRule rule)
+	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByColHeader(MatrixQueryRule rule)
 			throws Exception
 	{
 		return null;
@@ -594,15 +596,6 @@ public abstract class AbstractDataMatrixInstance<E> extends GenericFunctions<Obs
 	public BasicMatrix<ObservationElement, ObservationElement, Object> getResult() throws Exception
 	{
 		return this;
-	}
-	
-	//FIXME: when //FIXME: should use GenericFunctions' colCopy / rowCopy is used elsewhere, this can be removed!
-	@Override
-	public void createFresh(){
-		this.rowNamesCopy = new ArrayList<String>(this.getRowNames().size());
-	    for(String item: this.getRowNames()){ this.rowNamesCopy.add(item); }
-	    this.colNamesCopy = new ArrayList<String>(this.getColNames().size());
-	    for(String item: this.getColNames()){ this.colNamesCopy.add(item); }
 	}
 	
 }

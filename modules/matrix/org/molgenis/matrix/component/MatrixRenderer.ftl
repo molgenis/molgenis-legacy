@@ -8,7 +8,7 @@ totalNumberOfCols: ${matrix.totalNumberOfCols}<br>
  
 APPLIED FILTERS:<br>
 <#list matrix.filters as filter>
-type: ${filter.filterType} / queryrule: ${filter.queryRule} / index: ${filter.index}<br>
+type: ${filter}<br>
 </#list>
 
 

@@ -8,6 +8,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.component.general.GenericFunctions;
+import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 import org.molgenis.matrix.component.interfaces.SourceMatrix;
@@ -99,7 +100,7 @@ public class PhenoMatrix extends GenericFunctions<ObservationTarget, ObservableF
 	}
 
 	@Override
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColValues(QueryRule rule)
+	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColValues(MatrixQueryRule rule)
 			throws Exception
 	{
 		// TODO Auto-generated method stub
@@ -107,7 +108,7 @@ public class PhenoMatrix extends GenericFunctions<ObservationTarget, ObservableF
 	}
 
 	@Override
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByRowHeader(QueryRule rule)
+	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByRowHeader(MatrixQueryRule rule)
 			throws Exception
 	{
 		// TODO Auto-generated method stub
@@ -115,7 +116,7 @@ public class PhenoMatrix extends GenericFunctions<ObservationTarget, ObservableF
 	}
 
 	@Override
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColHeader(QueryRule rule)
+	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColHeader(MatrixQueryRule rule)
 			throws Exception
 	{
 		// TODO Auto-generated method stub

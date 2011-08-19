@@ -1,6 +1,9 @@
 package org.molgenis.matrix.component.interfaces;
 
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.matrix.component.general.MatrixQueryRule;
+
+
 
 public interface SliceableMatrix<R, C, V>
 {
@@ -18,7 +21,7 @@ public interface SliceableMatrix<R, C, V>
 	 * given is available in the current matrix.
 	 * 
 	 */
-	public SliceableMatrix<R, C, V> sliceByIndex(QueryRule rule) throws Exception;
+	public SliceableMatrix<R, C, V> sliceByIndex(MatrixQueryRule rule) throws Exception;
 
 	/**
 	 * Example 1: QueryRule("col", Operator.OFFSET, 10) plus QueryRule("col",
@@ -33,7 +36,7 @@ public interface SliceableMatrix<R, C, V>
 	 * Example 3: QueryRule("row", Operator.LIMIT, 15) Grab the first fifteen
 	 * rows from the result and discard the rest.
 	 */
-	public SliceableMatrix<R, C, V> sliceByPaging(QueryRule rule) throws Exception;
+	public SliceableMatrix<R, C, V> sliceByPaging(MatrixQueryRule rule) throws Exception;
 
 	/**
 	 * Get a submatrix from this matrix by applying a generic filter ('where')
@@ -57,7 +60,7 @@ public interface SliceableMatrix<R, C, V>
 	 * 
 	 * Example: (TODO: per index, as string?) QueryRule("5", Operator.GREATER, 175)
 	 */
-	public SliceableMatrix<R, C, V> sliceByColValues(QueryRule rule) throws Exception;
+	public SliceableMatrix<R, C, V> sliceByColValues(MatrixQueryRule rule) throws Exception;
 
 	/**
 	 * Get a submatrix from this matrix by applying a generic filter ('where')
@@ -69,7 +72,7 @@ public interface SliceableMatrix<R, C, V>
 	 * 
 	 * Example: QueryRule("name", Operator.EQUALS, "rs562378")
 	 */
-	public SliceableMatrix<R, C, V> sliceByRowHeader(QueryRule rule) throws Exception;
+	public SliceableMatrix<R, C, V> sliceByRowHeader(MatrixQueryRule rule) throws Exception;
 
 	/**
 	 * Get a submatrix from this matrix by applying a generic filter ('where')
@@ -81,7 +84,7 @@ public interface SliceableMatrix<R, C, V>
 	 * 
 	 * Example: QueryRule("chromosome_name", Operator.EQUALS, "chr3")
 	 */
-	public SliceableMatrix<R, C, V> sliceByColHeader(QueryRule rule) throws Exception;
+	public SliceableMatrix<R, C, V> sliceByColHeader(MatrixQueryRule rule) throws Exception;
 
 	/**
 	 * When done slicing, get the result. This implies that you kept track of

@@ -16,11 +16,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.matrix.component.general.Filter;
+import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.general.MatrixRendererHelper;
 import org.molgenis.matrix.component.general.RenderableMatrixImpl;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
@@ -72,8 +72,8 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 					.getTotalNumberOfCols() - 1 : MatrixRendererHelper.COL_STOP_DEFAULT;
 
 			filters = new ArrayList<Filter>();
-			filters.add(new Filter(Filter.Type.paging, new QueryRule("row", Operator.LIMIT, rowStop)));
-			filters.add(new Filter(Filter.Type.paging, new QueryRule("col", Operator.LIMIT, colStop)));
+			filters.add(new Filter(Filter.Type.paging, new MatrixQueryRule("row", Operator.LIMIT, rowStop)));
+			filters.add(new Filter(Filter.Type.paging, new MatrixQueryRule("col", Operator.LIMIT, colStop)));
 		}
 
 		applyFiltersAndRender(sliceable, filters);
@@ -94,6 +94,8 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		// apply filters in order
 		for (Filter f : filters)
 		{
+			System.out.println("iterating over: " + f.toString());
+			
 			switch (f.getFilterType())
 			{
 				case index:
@@ -153,52 +155,102 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 
 		action = action.substring(MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX.length(), action.length());
 
-
+		if (action.equals("moveRight")) this.moveRight();
+		if (action.equals("moveLeft")) this.moveLeft();
+		if (action.equals("moveDown")) this.moveDown();
+		if (action.equals("moveUp")) this.moveUp();
 		
-		if (action.equals("moveRight"))
-		{
-			this.moveRight();
-		}
-		
+		orderFilters();
 		applyFiltersAndRender(sliceable, renderMe.getFilters());
+	}
+	
+	/**
+	 * Move all LIMIT filters to the back of the filter queue!
+	 * Lame??
+	 */
+	private void orderFilters(){
+		List<Filter> limitFilters = new ArrayList<Filter>();
+		List<Filter> otherFilters = new ArrayList<Filter>();
+		for(int filterIndex = 0; filterIndex < renderMe.getFilters().size(); filterIndex++){
+			Filter f = renderMe.getFilters().get(filterIndex);
+			if(f.getFilterType().equals(Filter.Type.paging) && f.getQueryRule().getOperator().equals(Operator.LIMIT))
+			{
+				limitFilters.add(f);
+			}else{
+				otherFilters.add(f);
+			}
+		}
+		renderMe.getFilters().clear();
+		renderMe.getFilters().addAll(otherFilters);
+		renderMe.getFilters().addAll(limitFilters);
 	}
 
 	private void moveRight() throws Exception
 	{
 		System.out.println("moveRight()");
+		//TODO: needs more logic
+		boolean offsetFilterFound = false;
+		for(int filterIndex = 0; filterIndex < renderMe.getFilters().size(); filterIndex++){
+			Filter f = renderMe.getFilters().get(filterIndex);
+			if(f.getFilterType().equals(Filter.Type.paging) && f.getQueryRule().getField().equals("col") && f.getQueryRule().getOperator().equals(Operator.OFFSET)){
+				f.getQueryRule().setValue((Integer)f.getQueryRule().getValue() + renderMe.getStepSize());
+				offsetFilterFound = true;
+			}
+		}
+		if(!offsetFilterFound){
+			Filter offset = new Filter(Filter.Type.paging, new MatrixQueryRule("col", Operator.OFFSET, renderMe.getStepSize()));
+			renderMe.getFilters().add(offset);
+		}
 		
-		int start = -1;
+		this.colStartIndex = colStartIndex + renderMe.getStepSize();
 		
-		//remove existing colindex filters
-		//and find out the start index..
-		//TODO: correct behaviour in combination with other filters??
-//		for(int filterIndex = 0; filterIndex < renderMe.getFilters().size(); filterIndex++){
-//			Filter f = renderMe.getFilters().get(filterIndex);
-//			if(f.getFilterType().equals(Filter.Type.index)){
-//				if(f.getQueryRule().getOperator().equals(Operator.EQUALS) || f.getQueryRule().getOperator().equals(Operator.GREATER) || f.getQueryRule().getOperator().equals(Operator.GREATER_EQUAL)){
-//					if(start != -1){
-//						throw new Exception("Multiple filters altering column start index");
-//					}
-//					start = (Integer) f.getQueryRule().getValue();
-//				}
-//				renderMe.getFilters().remove(filterIndex);
-//			}
-//		}
+	}
+	
+	private void moveLeft() throws Exception
+	{
+		System.out.println("moveLeft()");
+		//TODO: needs more logic!!!
+		for(int filterIndex = 0; filterIndex < renderMe.getFilters().size(); filterIndex++){
+			Filter f = renderMe.getFilters().get(filterIndex);
+			if(f.getFilterType().equals(Filter.Type.paging) && f.getQueryRule().getField().equals("col") && f.getQueryRule().getOperator().equals(Operator.OFFSET)){
+				f.getQueryRule().setValue((Integer)f.getQueryRule().getValue() - renderMe.getStepSize());
+			}
+		}
+		this.colStartIndex = colStartIndex - renderMe.getStepSize();
+	}
+	
+	private void moveDown() throws Exception
+	{
+		System.out.println("moveDown()");
+		//TODO: needs more logic
+		boolean offsetFilterFound = false;
+		for(int filterIndex = 0; filterIndex < renderMe.getFilters().size(); filterIndex++){
+			Filter f = renderMe.getFilters().get(filterIndex);
+			if(f.getFilterType().equals(Filter.Type.paging) && f.getQueryRule().getField().equals("row") && f.getQueryRule().getOperator().equals(Operator.OFFSET)){
+				f.getQueryRule().setValue((Integer)f.getQueryRule().getValue() + renderMe.getStepSize());
+				offsetFilterFound = true;
+			}
+		}
+		if(!offsetFilterFound){
+			Filter offset = new Filter(Filter.Type.paging, new MatrixQueryRule("row", Operator.OFFSET, renderMe.getStepSize()));
+			renderMe.getFilters().add(offset);
+		}
 		
-		//add new filters
-		//TODO: where?? old position??
-		//TODO: logic
-		start = start != -1 ? start + renderMe.getStepSize() : renderMe.getStepSize();
-		int stop = (renderMe.getVisibleCols().size()+start);
-
-		System.out.println("new start: " + start);
-		System.out.println("new stop: " + stop);
-
-		this.colStartIndex = start;
+		this.rowStartIndex = rowStartIndex + renderMe.getStepSize();
 		
-		renderMe.getFilters().add(new Filter(Filter.Type.paging, new QueryRule("col", Operator.LIMIT, stop)));
-		renderMe.getFilters().add(new Filter(Filter.Type.paging, new QueryRule("col", Operator.OFFSET, start)));
-		
+	}
+	
+	private void moveUp() throws Exception
+	{
+		System.out.println("moveUp()");
+		//TODO: needs more logic!!!
+		for(int filterIndex = 0; filterIndex < renderMe.getFilters().size(); filterIndex++){
+			Filter f = renderMe.getFilters().get(filterIndex);
+			if(f.getFilterType().equals(Filter.Type.paging) && f.getQueryRule().getField().equals("row") && f.getQueryRule().getOperator().equals(Operator.OFFSET)){
+				f.getQueryRule().setValue((Integer)f.getQueryRule().getValue() - renderMe.getStepSize());
+			}
+		}
+		this.rowStartIndex = rowStartIndex - renderMe.getStepSize();
 	}
 
 }
