@@ -133,10 +133,9 @@ public class ${JavaName(entity)}Form extends EntityForm<${JavaName(entity)}>
 			<#if inputtype = "Enum">
 			input.setOptions(getEntity().get${JavaName(field)}Options());
 			</#if>	
-			<#if inputtype = "Xref" || inputtype = "Mref">
+			<#if inputtype = "Xref">
 			ActionInput addButton = new ActionInput("add", "Add", "Add");
 			addButton.setIcon("generated-res/img/new.png");
-			addButton.setJavaScriptAction("if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.getElementById('${entity.name}_${field.name}').form.__target.value='${JavaName(entity)}';document.getElementById('${entity.name}_${field.name}').form.__action.value='${entity.name}_${field.name}';molgenis_window = window.open('','molgenis_edit_new_xref','height=800,width=600,location=no,status=no,menubar=no,directories=no,toolbar=no,resizable=yes,scrollbars=yes');document.getElementById('${entity.name}_${field.name}').form.target='molgenis_edit_new_xref';document.getElementById('${entity.name}_${field.name}').form.__show.value='popup';document.getElementById('${entity.name}_${field.name}').form.submit();molgenis_window.focus();");
 			input.setIncludeAddButton(true);
 			input.setAddButton(addButton);
 			</#if>

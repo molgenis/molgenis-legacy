@@ -151,6 +151,10 @@ public class XrefInput extends EntityInput<Entity>
 		// optionsHtml.append("\t<option value=\"\"></option>\n");
 		// // empty option
 		// }
+		if (includeAddButton)
+		{
+			this.addButton.setJavaScriptAction("if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.getElementById('" + this.getId() + "').form.__target.value=document.getElementById('" + this.getId() + "').form.name.replace(/_form/g, '');document.getElementById('" + this.getId() + "').form.__action.value='" + this.getId() + "';molgenis_window = window.open('','molgenis_edit_new_xref','height=800,width=600,location=no,status=no,menubar=no,directories=no,toolbar=no,resizable=yes,scrollbars=yes');document.getElementById('" + this.getId() + "').form.target='molgenis_edit_new_xref';document.getElementById('" + this.getId() + "').form.__show.value='popup';document.getElementById('" + this.getId() + "').form.submit();molgenis_window.focus();");
+		}
 		return "<select id=\"" + this.getId() + "\" name=\"" + this.getName()
 				+ "\" " + readonly + ">\n" + optionsHtml.toString()
 				+ "</select>\n" + (includeAddButton ? this.addButton : "");
@@ -185,6 +189,11 @@ public class XrefInput extends EntityInput<Entity>
 	public void setAddButton(ActionInput addButton)
 	{
 		this.addButton = addButton;
+	}
+
+	public ActionInput getAddButton()
+	{
+		return this.addButton;
 	}
 
 	@Override
