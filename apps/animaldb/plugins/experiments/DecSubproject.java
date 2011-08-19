@@ -1,40 +1,22 @@
 package plugins.experiments;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
-public class DecSubproject {
-	private int id;
+public class DecSubproject extends DecEntity {
 	private int decExpListId;
-	private String Name;
-	private String ExperimentNr;
-	private String DecSubprojectApplicationPDF;
-	private String Concern;
-	private String Goal;
-	private String SpecialTechn;
-	private String LawDef;
-	private String ToxRes;
-	private String Anaesthesia;
-	private String PainManagement;
-	private String AnimalEndStatus;
-	private String OldAnimalDBRemarks;
-	private int DecApplicationId;
+	private String experimentNr;
+	private String decSubprojectApplicationPDF;
+	private String concern;
+	private String goal;
+	private String specialTechn;
+	private String lawDef;
+	private String toxRes;
+	private String anaesthesia;
+	private String painManagement;
+	private String animalEndStatus;
+	private String oldAnimalDBRemarks;
+	private int decApplicationId;
 	private String decApplication;
-	private int NrOfAnimals;
-	private Date startDate;
-	private Date endDate;
-	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+	private int nrOfAnimals;
 	
-	public void setId(int id)
-	{
-		this.id = id;
-	}
-	public int getId()
-	{
-		return id;
-	}
 	public void setDecExpListId(int decExpListId)
 	{
 		this.decExpListId = decExpListId;
@@ -43,120 +25,93 @@ public class DecSubproject {
 	{
 		return decExpListId;
 	}
-	public void setName(String name) {
-		this.Name = name;
-	}
-	public String getName() {
-		return Name;
-	}
+	
 	public void setNrOfAnimals(int nrOfAnimals) {
-		NrOfAnimals = nrOfAnimals;
+		this.nrOfAnimals = nrOfAnimals;
 	}
 	public int getNrOfAnimals() {
-		return NrOfAnimals;
+		return nrOfAnimals;
 	}
 	public void setExperimentNr(String experimentNr) {
-		ExperimentNr = experimentNr;
+		this.experimentNr = experimentNr;
 	}
 	public String getExperimentNr() {
-		return ExperimentNr;
+		return experimentNr;
 	}
 	public void setDecSubprojectApplicationPDF(
 			String decSubprojectApplicationPDF) {
-		DecSubprojectApplicationPDF = decSubprojectApplicationPDF;
+		this.decSubprojectApplicationPDF = decSubprojectApplicationPDF;
 	}
 	public String getDecSubprojectApplicationPDF() {
-		return DecSubprojectApplicationPDF;
+		return decSubprojectApplicationPDF;
 	}
 	public void setConcern(String concern) {
-		Concern = concern;
+		this.concern = concern;
 	}
 	public String getConcern() {
-		return Concern;
+		return concern;
 	}
 	public void setGoal(String goal) {
-		Goal = goal;
+		this.goal = goal;
 	}
 	public String getGoal() {
-		return Goal;
+		return goal;
 	}
 	public void setSpecialTechn(String specialTechn) {
-		SpecialTechn = specialTechn;
+		this.specialTechn = specialTechn;
 	}
 	public String getSpecialTechn() {
-		return SpecialTechn;
+		return specialTechn;
 	}
 	public void setLawDef(String lawDef) {
-		LawDef = lawDef;
+		this.lawDef = lawDef;
 	}
 	public String getLawDef() {
-		return LawDef;
+		return lawDef;
 	}
 	public void setToxRes(String toxRes) {
-		ToxRes = toxRes;
+		this.toxRes = toxRes;
 	}
 	public String getToxRes() {
-		return ToxRes;
+		return toxRes;
 	}
 	public void setAnaesthesia(String anaesthesia) {
-		Anaesthesia = anaesthesia;
+		this.anaesthesia = anaesthesia;
 	}
 	public String getAnaesthesia() {
-		return Anaesthesia;
+		return anaesthesia;
 	}
 	public void setPainManagement(String painManagement) {
-		PainManagement = painManagement;
+		this.painManagement = painManagement;
 	}
 	public String getPainManagement() {
-		return PainManagement;
+		return painManagement;
 	}
 	public void setAnimalEndStatus(String animalEndStatus) {
-		AnimalEndStatus = animalEndStatus;
+		this.animalEndStatus = animalEndStatus;
 	}
 	public String getAnimalEndStatus() {
-		return AnimalEndStatus;
+		return animalEndStatus;
 	}
 	public void setOldAnimalDBRemarks(String oldAnimalDBRemarks) {
-		OldAnimalDBRemarks = oldAnimalDBRemarks;
+		this.oldAnimalDBRemarks = oldAnimalDBRemarks;
 	}
 	public String getOldAnimalDBRemarks() {
-		if (OldAnimalDBRemarks == null) {
+		if (oldAnimalDBRemarks == null) {
 			return "";
 		}
-		return OldAnimalDBRemarks;
+		return oldAnimalDBRemarks;
 	}
 	public void setDecApplicationId(int decApplicationId) {
-		DecApplicationId = decApplicationId;
+		this.decApplicationId = decApplicationId;
 	}
 	public int getDecApplicationId() {
-		return DecApplicationId;
+		return decApplicationId;
 	}
 	public void setDecApplication(String decApplication) {
 		this.decApplication = decApplication;
 	}
 	public String getDecApplication() {
 		return decApplication;
-	}
-	public void setStartDate(String startDate) throws ParseException
-	{
-		this.startDate = dateOnlyFormat.parse(startDate);
-	}
-	public String getStartDate()
-	{
-		if (startDate == null) return "";
-		return dateOnlyFormat.format(startDate);
-	}
-	public void setEndDate(String endDate) throws ParseException
-	{
-		if (endDate.equals("")){
-			this.endDate = null;
-		}else {
-			this.endDate = dateOnlyFormat.parse(endDate);
-		}
-	}
-	public String getEndDate()
-	{
-		if (endDate == null) return "";
-		return dateOnlyFormat.format(endDate);
 	}
 }

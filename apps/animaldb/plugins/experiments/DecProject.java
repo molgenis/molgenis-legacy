@@ -1,29 +1,13 @@
 package plugins.experiments;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
-public class DecProject {
-	private int id;
+public class DecProject extends DecEntity {
 	private int decAppListId;
-	private String name;
 	private String decNr;
 	private String decApplicantName;
 	private String pdfDecApplication;
 	private String pdfDecApproval;
 	private String fieldBiology;
-	private Date startDate;
-	private Date endDate;
-	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
 	
-	public void setId(int id) {
-		this.id = id;
-	}
-	public int getId() {
-		return id;
-	}
 	public void setDecAppListId(int decAppListId)
 	{
 		this.decAppListId = decAppListId;
@@ -32,12 +16,7 @@ public class DecProject {
 	{
 		return decAppListId;
 	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getName() {
-		return name;
-	}
+	
 	public void setDecNr(String decNr) {
 		this.decNr = decNr;
 	}
@@ -67,23 +46,5 @@ public class DecProject {
 	}
 	public String getFieldBiology() {
 		return fieldBiology;
-	}
-	public void setStartDate(String startDate) throws ParseException
-	{
-		this.startDate = dateOnlyFormat.parse(startDate);
-	}
-	public String getStartDate()
-	{
-		if (startDate == null) return "";
-		return dateOnlyFormat.format(startDate);
-	}
-	public void setEndDate(String endDate) throws ParseException
-	{
-		this.endDate = dateOnlyFormat.parse(endDate);
-	}
-	public String getEndDate()
-	{
-		if (endDate == null) return "";
-		return dateOnlyFormat.format(endDate);
 	}
 }

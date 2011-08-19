@@ -233,15 +233,12 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 				setSubproject(ct.getObservationTargetById(subprojectId));
 				
 				// Find all the animals currently in this DEC subproject
-				Calendar calendar = Calendar.getInstance();
-				Date now = calendar.getTime();
+				java.sql.Date nowDb = new java.sql.Date(new Date().getTime());
 				int featureId = ct.getMeasurementId("Experiment");
 				Query<ObservedValue> q = db.query(ObservedValue.class);
 				q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, subprojectId));
 				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
-				q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, now));
-				// TODO: HSQL cannot handle this format!!!
-				// Timestamp format must be yyyy-mm-dd hh:mm:ss[.fffffffff]
+				q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, nowDb));
 				q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 				List<ObservedValue> valueList = q.find();
 				for (ObservedValue v : valueList) {

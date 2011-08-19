@@ -481,8 +481,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				featureId = ct.getMeasurementId("EndDate");
 				endDate = ct.getMostRecentValueAsString(currentExp.getId(), featureId);
 
-				Calendar calendar = Calendar.getInstance();
-				Date now = calendar.getTime();
+				java.sql.Date nowDb = new java.sql.Date(new Date().getTime());
 				featureId = ct.getMeasurementId("Experiment");
 				// Make list of ID's of all animals that are alive
 				List<Integer> aliveAnimalIdList = ct.getAllObservationTargetIds("Individual", true, investigationIds);
@@ -492,7 +491,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, currentExp.getId()));
 					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, aliveAnimalIdList));
 					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
-					q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, now));
+					q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, nowDb));
 					q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 					nrOfAnimals = q.count();
 				}

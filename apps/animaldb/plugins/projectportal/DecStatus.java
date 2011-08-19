@@ -178,7 +178,7 @@ public class DecStatus extends GenericPlugin
 				int nrOfAnimalsTotal = 0;
 				int budget = 100; // TODO: use real budget
 				budgetCum += budget;
-				Date now = Calendar.getInstance().getTime();
+				java.sql.Date nowDb = new java.sql.Date(new Date().getTime());
 				featureId = cq.getMeasurementId("Experiment");
 				List<Integer> aliveAnimalIdList = cq.getAllObservationTargetIds("Individual", true, 
 						investigationIds);
@@ -187,7 +187,7 @@ public class DecStatus extends GenericPlugin
 					q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, subprojectId));
 					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, aliveAnimalIdList));
 					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
-					q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, now));
+					q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, nowDb));
 					q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 					nrOfAnimalsAlive = q.count();
 				}
