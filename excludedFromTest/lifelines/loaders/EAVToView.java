@@ -1,6 +1,8 @@
 package lifelines.loaders;
 
 import app.JpaDatabase;
+
+import java.math.BigDecimal;
 import java.util.List;
 import javax.persistence.EntityManager;
 
@@ -85,12 +87,22 @@ public class EAVToView {
         Transaction t = s.beginTransaction();
         if(databaseTarget.equals("mysql")) {
         	s.createSQLQuery(String.format("DROP TABLE IF EXISTS %s", tableName)).executeUpdate();
-        } else {
+        } 
+        else //oracle 
+        {
+        	String viewExists = "select count(*) "
+            					+"from user_objects "
+            					+"where object_type = 'VIEW' "
+            				    +"and object_name = :viewName"; 
         	//figure out if it exists first
-        	//s.createSQLQuery(String.format("DROP TABLE %s", tableName)).executeUpdate();
-        }
-        
-        s.createSQLQuery(viewQuery).executeUpdate();
+        	int viewCount = ((BigDecimal)em.createNativeQuery(viewExists)
+        		.setParameter("viewName", tableName)
+        		.getSingleResult()).intValue();
+        	if(viewCount == 1) {
+        		s.createSQLQuery(String.format("DROP VIEW %s", tableName)).executeUpdate();	
+        	}
+        	s.createSQLQuery(viewQuery).executeUpdate();
+        }        
         t.commit();
         
         

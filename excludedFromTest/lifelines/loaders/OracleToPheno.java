@@ -114,12 +114,15 @@ public class OracleToPheno {
                     ov.setValue(value.toString());
                 } 
                 ov.setInvestigation(investigation);
+               
                 ov.setTarget(target);
                 if(value != null) {
                     em.persist(ov);
                 }
             }
-            if(w % 10 == 0) {
+            
+            
+            if(w % 1000 == 0) {
             	em.flush();
             	em.clear();
             }

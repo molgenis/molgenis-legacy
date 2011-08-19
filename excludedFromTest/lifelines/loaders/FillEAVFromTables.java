@@ -13,17 +13,17 @@ import app.DatabaseFactory;
 
 public class FillEAVFromTables {
     public static void main(String[] args) throws Exception {
-    	String investigation = "onderzoek9";
-    	String schemaName = "llpoper";
-        String schemaToExportView = null;
-        String[] tableNames = new String[]{"LL_DATASET9"};
-        String databaseTarget = "oracle";
-    	
-    	//    	String investigation = "OV027";
+//    	String investigation = "OV027";
 //    	String schemaName = "llpoper";
 //        String schemaToExportView = null;
 //        String[] tableNames = new String[]{"OV027LABDATA", "LL_BLOEDDRUKAVG"};
-//        String databaseTarget = "oracle";
+    	
+    	String investigation = "Dataset9";
+    	String schemaName = "llpoper";
+        String schemaToExportView = null;
+        String[] tableNames = new String[]{"LL_DATASET9"};    	
+    	
+        String databaseTarget = "oracle";
         
         Investigation inv = new Investigation();
         inv.setName(String.format("%s %s",investigation, new Date().toString()));        
@@ -34,15 +34,20 @@ public class FillEAVFromTables {
         em.persist(inv);
         em.getTransaction().commit();
         
+        long start = System.currentTimeMillis();
+        
         for(String tableName : tableNames) {
 	    	OracleToLifelinesPheno oracleToLifelinesPheno = new OracleToLifelinesPheno(schemaName, tableName, inv.getId());
-	        int investigationId = oracleToLifelinesPheno.getInvestigationId();
 	        
-	        OracleToPheno oracleToPheno = new OracleToPheno(tableName, investigationId);
+	        OracleToPheno oracleToPheno = new OracleToPheno(tableName, inv.getId());
 	        
-	        EAVToView eavToView = new EAVToView(schemaName, tableName, schemaToExportView, oracleToPheno.getProtocolId(), databaseTarget, investigationId);
+	        
+	        EAVToView eavToView = new EAVToView(schemaName, tableName, schemaToExportView, oracleToPheno.getProtocolId(), databaseTarget, inv.getId());
         }
         
+        long end = System.currentTimeMillis();
+        
+        System.out.println("Time: " + (start - end) / 1000);
         
         
     }
