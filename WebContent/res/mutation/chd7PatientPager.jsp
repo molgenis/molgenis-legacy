@@ -3,10 +3,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 
-<display:table name="sessionScope.patientSummaryVOs" pagesize="20" export="true" sort="list" class="listtable" id="current">
+<display:table name="patientSummaryVOs" pagesize="20" export="true" sort="list" class="listtable" id="current">
 <display:setProperty name="paging.banner.full"><span class="pagelinks"><a href="{1}">First</a> <a href="{2}">Prev</a> {0} <a href="{3}">Next</a> <a href="{4}">Last</a></span></display:setProperty>  
 <display:setProperty name="paging.banner.first"><span class="pagelinks">{0} <a href="{3}">Next</a> <a href="{4}">Last</a> </span></display:setProperty>
 <display:setProperty name="paging.banner.last"><span class="pagelinks"><a href="{1}">First</a> <a href="{2}">Prev</a> {0}</span></display:setProperty>
+<display:setProperty name="paging.banner.onepage"><span class="pagelinks"></span></display:setProperty>
 <display:setProperty name="paging.banner.item_name" value="patient"/>
 <display:setProperty name="paging.banner.items_name" value="patients"/>
 <display:setProperty name="paging.banner.page.separator" value=" "/>
@@ -47,24 +48,24 @@
 	</c:choose>
 </display:column>
 
-<display:column media="csv excel" title="cDNA change">
+<display:column media="csv excel pdf" title="cDNA change">
 	<c:out value="${current.variantSummaryVOList[0].cdnaNotation}" escapeXml="false"/>
 </display:column>
-<display:column media="csv excel" title="Protein change">
+<display:column media="csv excel pdf" title="Protein change">
 	<c:out value="${current.variantSummaryVOList[0].aaNotation}" escapeXml="false"/>
 </display:column>
-<display:column media="csv excel" title="Exon/Intron">
+<display:column media="csv excel pdf" title="Exon/Intron">
 	<c:out value="${current.variantSummaryVOList[0].exonName}" escapeXml="false"/>
 </display:column>
-<display:column media="csv excel" title="Pathogenicity">
+<display:column media="csv excel pdf" title="Pathogenicity">
 	<c:out value="${current.variantSummaryVOList[0].pathogenicity}" escapeXml="false"/>
 </display:column>
-<display:column media="csv excel" title="Reference">
+<display:column media="csv excel pdf" title="Reference">
 <c:forEach var="publicationVO" items="${current.publicationVOList}">
 	<c:out value="${publicationVO.name}" escapeXml="false"/>;
 </c:forEach>
 </display:column>
-<display:column media="csv excel" title="PubMed ID">
+<display:column media="csv excel pdf" title="PubMed ID">
 <c:forEach var="publicationVO" items="${current.publicationVOList}">
 	<c:out value="PubMed ${publicationVO.pubmed}" escapeXml="false"/>;
 </c:forEach>

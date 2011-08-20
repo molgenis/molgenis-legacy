@@ -3,7 +3,7 @@
 		DOCTYPE molgenis PUBLIC "MOLGENIS 1.0"
 		"http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd"
 	-->
-<molgenis name="chd7">
+<molgenis name="chd7" label="CHD7 Database">
 	<plugin name="MolgenisHeader" type="org.molgenis.mutation.ui.header.Chd7Header"/>
 	<menu name="View" startswith="SearchPlugin">
 		<plugin name="SearchPlugin" type="org.molgenis.mutation.ui.search.Chd7Search" label="Search">
