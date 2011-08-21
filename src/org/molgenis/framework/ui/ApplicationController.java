@@ -324,8 +324,8 @@ public class ApplicationController extends
 	{
 		//TODO: this should be made more generic
 		return 
-		new FreemarkerInput("blaat").getCustomHtmlHeaders()+
-		new RichtextInput("blaat").getCustomHtmlHeaders() +
+		new FreemarkerInput("dummy").getCustomHtmlHeaders()+
+		new RichtextInput("dummy").getCustomHtmlHeaders() +
 		super.getCustomHtmlHeaders();
 	}
 }

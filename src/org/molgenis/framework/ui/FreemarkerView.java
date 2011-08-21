@@ -56,6 +56,11 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 		this.arguments = templateArgs;
 	}
 	
+	public FreemarkerView()
+	{
+		super(null);
+	}
+
 	@SuppressWarnings("deprecation")
 	public String render(String templatePath, Map<String,Object> templateArgs)//, boolean usePublicFields)
 	{
