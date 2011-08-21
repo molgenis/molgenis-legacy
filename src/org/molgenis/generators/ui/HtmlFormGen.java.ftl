@@ -133,12 +133,12 @@ public class ${JavaName(entity)}Form extends EntityForm<${JavaName(entity)}>
 			<#if inputtype = "Enum">
 			input.setOptions(getEntity().get${JavaName(field)}Options());
 			</#if>	
-			<#if inputtype = "Xref">
+			<#--if inputtype = "Xref">
 			ActionInput addButton = new ActionInput("add", "Add", "Add");
 			addButton.setIcon("generated-res/img/new.png");
 			input.setIncludeAddButton(true);
 			input.setAddButton(addButton);
-			</#if>
+			</#if-->
 			<#if field.hidden>
 			input.setHidden(<#if (field.auto && field.readOnly) || (field.defaultValue?exists)>true<#else>!isNewRecord()</#if>);
 			<#else>
