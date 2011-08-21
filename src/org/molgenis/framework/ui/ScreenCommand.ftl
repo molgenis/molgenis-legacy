@@ -2,7 +2,7 @@
 <#if model.inputs?exists >
 <#--<body>-->
 <div class="formscreen">
-	<form action="" method="post" enctype="multipart/form-data" name="molgenis_popup">
+	<form action="" method="post" enctype="multipart/form-data" name="molgenis_popup" id="molgenis_popup">
 	<p class="form_header">${model.label}</p>
 	<#if model.messages?exists><#list model.getMessages() as message>
 		<#if message.success>
@@ -26,7 +26,7 @@
 		<#else>
 			${input.toHtml()}
 		</#if>		
-		<#if !input.isNillable() && !input.isHidden() && !input.isReadonly()>
+		<#if input.uiToolkit=='ORIGINAL' && !input.isNillable() && !input.isHidden() && !input.isReadonly()>
 			<#if requiredcount &gt; 0><#assign required = required + "," /></#if>
 			<#assign required = required + "document.forms.molgenis_popup."+ input.id />
 			<#assign requiredcount = requiredcount + 1 />
@@ -43,6 +43,9 @@ var molgenis_required = new Array(${required});
 </#list>
 	</p>
 	</form>
+	<script>
+		$("#molgenis_popup").validate();
+	</script>
 <#--</body>-->
 </#if>
 </div>

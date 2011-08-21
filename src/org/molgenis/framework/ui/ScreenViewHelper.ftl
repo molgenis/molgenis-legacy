@@ -23,17 +23,31 @@
 		<script src="generated-res/scripts/mrefinput.js" type="text/javascript" language="javascript"></script>					
 		<script src="generated-res/scripts/menu.js" type="text/javascript" language="javascript"></script>			
 		<script src="generated-res/scripts/recoverscroll.js" type="text/javascript" language="javascript"></script>	
-		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
-		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.js"></script>
-		<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css"/>
-  <#--
-  <link rel="stylesheet" style="text/css" type="text/css" href="jquery/css/smoothness/jquery-ui-1.8.7.custom.css">			
-  <script src="jquery/js/jquery-1.4.4.min.js"></script>
-  <script src="jquery/js/jquery-ui-1.8.7.custom.min.js"></script>
-  -->
+		
+		<!--link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+  		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+  		<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script-->
+  		
+  		<link href="generated-res/lib/jquery/css/smoothness/jquery-ui-1.8.7.custom.css" rel="stylesheet" type="text/css"/>
+  		<script src="generated-res/lib/jquery/js/jquery-1.6.1.min.js"></script>
+  		<script src="generated-res/lib/jquery/js/jquery-ui-1.8.7.custom.min.js"></script>
+
+  		<link rel="stylesheet" style="text/css" type="text/css" href="generated-res/css/molgenis_jquery_icons.css">
+  		<script src="generated-res/lib/jquery-plugins/validate.js"></script>
+  		<script src="generated-res/lib/jquery-plugins/autogrow.js"></script>
+  		<script src="generated-res/lib/jquery-plugins/timepicker.js"></script>
+  		<link rel="stylesheet" href="generated-res/lib/jquery-plugins/chosen.css">
+  		<script src="generated-res/lib/jquery-plugins/chosen.js"></script>
+  		<script src="generated-res/lib/jquery-plugins/ajax-chosen.js"></script>
+  		<script src="generated-res/lib/jquery-plugins/autogrowinput.js"></script>
+ 
+		<!--<script src="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dojo/dojo.xd.js" djConfig="parseOnLoad: true"></script>
+        <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dijit/themes/claro/claro.css"/>-->
+
 		<#if screen.controller??>${screen.controller.getCustomHtmlHeaders()}</#if>
 	</head>
-	<body onload="RecoverScroll.init();<#if screen.customHtmlBodyOnLoad?exists>${screen.getCustomHtmlBodyOnLoad()}</#if>">
+<#--claro is for dojo-->
+	<body class="claro" onload="RecoverScroll.init();<#if screen.customHtmlBodyOnLoad?exists>${screen.getCustomHtmlBodyOnLoad()}</#if>">
 	<#if applicationHtmlError?exists>${applicationHtmlError}</#if>
 </#macro>
 

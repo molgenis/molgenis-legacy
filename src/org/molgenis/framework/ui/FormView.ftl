@@ -119,7 +119,7 @@
 		<#else>
 			${input.toHtml()}
 		</#if>		
-		<#if !input.isNillable() && !input.isHidden() && !input.isReadonly()>
+		<#if input.uiToolkit=='ORIGINAL' && !input.isNillable() && !input.isHidden() && !input.isReadonly()>
 			<#if requiredcount &gt; 0><#assign required = required + "," /></#if>
 			<#assign required = required + "document.forms." + screen.name +"_new."+ input.id />
 			<#assign requiredcount = requiredcount + 1 />
@@ -296,7 +296,7 @@ var molgenis_required = new Array(${required});
 			${input.toHtml()}
 			</#if>
 			
-			<#if !input.isNillable() && !input.isHidden() && !input.isReadonly()>
+			<#if input.uiToolkit=='ORIGINAL' && !input.isNillable() && !input.isHidden() && !input.isReadonly()>
 				<#if requiredcount &gt; 0><#assign required = required + "," /></#if>
 				<#assign required = required + "document.forms." + screen.name + "_form." + input.id />
 				<#assign requiredcount = requiredcount + 1 />
@@ -309,7 +309,7 @@ var molgenis_required = new Array(${required});
 </#list>		
 </table></td><td  class="edit_button_area">
 <#if readonly != "true">
-<image class="edit_button" src="generated-res/img/save.png" alt="Save" onclick="if (validateForm(document.forms.${screen.name}_form,new Array(${required}))) {setInput('${screen.name}_form','_self','','${screen.name}','update','iframe'); document.forms.${screen.name}_form.submit();}" title="save the changes" />
+<image class="edit_button" src="generated-res/img/save.png" alt="Save" onclick="if ($('#${screen.name}_form').valid() && validateForm(document.forms.${screen.name}_form,new Array(${required}))) {setInput('${screen.name}_form','_self','','${screen.name}','update','iframe'); document.forms.${screen.name}_form.submit();}" title="save the changes" />
 <#-->image class="edit_button" src="generated-res/img/save.png" alt="Save" onclick="setInput('${screen.name}_form','_self','','${screen.name}','update','iframe'); document.forms.${screen.name}_form.submit();}" title="save the changes" /-->
 <image class="edit_button" src="generated-res/img/reset.png" alt="Reset" onClick="setInput('${screen.name}_form','_self','','${screen.name}','listview','iframe'); document.forms.${screen.name}_form.submit();" title="stop editing and go to list view" />
 <image class="edit_button" src="generated-res/img/delete.png" alt="Delete" onclick="if (confirm('You are about to delete a record. If you click [yes] you won\'t be able to undo this operation.')) { setInput('${screen.name}_form','_self','','${screen.name}','remove','iframe'); document.forms.${screen.name}_form.submit(); }" title="delete current record" />
@@ -489,6 +489,9 @@ var molgenis_required = new Array(${required});
 			<@listview screen /> 
 					</#if>
 			</form>		
+			<script>
+				$('#${screen.name}_form').validate();
+			</script>
 					
 <!-- subforms -->
 		<#if (screen.mode.toString() == "editview") && screen.count &gt; 0>
