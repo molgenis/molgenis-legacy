@@ -9,7 +9,7 @@
  */
 
 package org.molgenis.framework.db;
-
+ 
 import java.util.List;
 
 /**
@@ -30,13 +30,13 @@ import java.util.List;
  */
 public class QueryRule implements Cloneable {
 	/** The operator being applied to the field and value */
-	protected Operator operator;
+	private Operator operator;
 
 	/** The field-name (eq column-name) in the database */
-	protected String field = null;
+	private String field = null;
 
 	/** The value to compare entries of the field in the database with */
-	protected Object value = null;
+	private Object value = null;
 
 	/** Indicate wheter this should evaluate to OR */
 	private boolean or = false; // default AND
