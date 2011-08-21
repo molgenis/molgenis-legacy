@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="org.molgenis">
+	<module name="sandbox">
+		<entity name="FieldTest" implements="Identifiable,Nameable">
+			<field name="freemarker" type="freemarker" />
+			<field name="richtext" type="richtext" />
+			<unique fields="name"/>
+		</entity>
+	</module>
+</molgenis>

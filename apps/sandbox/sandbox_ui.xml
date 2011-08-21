@@ -3,6 +3,8 @@
 		plugin name="molgenis_header" type="plugins.header.MolgenisHeader" /
 	-->
 	<menu name="sandboxmain" position="left">
+	<plugin name="LayoutTests" type="org.molgenis.sandbox.ui.LayoutTests" />
+	<plugin name="InputsTest" type="org.molgenis.sandbox.ui.InputsTest" />
 		<!--
 			plugin name="Test" type="org.molgenis.sandbox.plugins.Test" />
 			<plugin name="TestTwo" flavor="easy"
@@ -20,6 +22,7 @@
 		-->
 		<plugin name="HtmlEditor" type="org.molgenis.sandbox.ui.HtmlEditor" />
 		<plugin name="FreemarkerEditor" type="org.molgenis.sandbox.ui.FreemarkerEditor" />
-		<form name="fieldtest" entity="FieldTest"/>
+		<form name="fieldtest" entity="FieldTest"  compact_view="name"/>
+		<form name="Investigations" entity="Investigation" />
 	</menu>
 </molgenis>
