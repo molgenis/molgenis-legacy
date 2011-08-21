@@ -52,7 +52,6 @@ public class ListView extends HtmlInput<List<HtmlForm>>
 		return this.rows;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void setValue(List<HtmlForm> value)
 	{
@@ -141,7 +140,7 @@ public class ListView extends HtmlInput<List<HtmlForm>>
 
 				// render header, only first row
 				result += "<tr><th><label>&nbsp;</label></th><th><label>&nbsp;</label></th><th><label>&nbsp;</label></th>";
-				for (HtmlInput input : form.getInputs())
+				for (HtmlInput<?> input : form.getInputs())
 				{
 
 					if (!input.isHidden())
@@ -192,7 +191,7 @@ public class ListView extends HtmlInput<List<HtmlForm>>
 			result += "</td>";
 			
 			//render other inputs
-			for (HtmlInput input : form.getInputs())
+			for (HtmlInput<?> input : form.getInputs())
 			{
 				if (!input.isHidden())
 				{

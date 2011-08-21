@@ -33,6 +33,12 @@ public class SelectMultipleInput extends OptionInput<List<String>>
 	 * @param name Name of the Input
 	 * @param objects list of selected values
 	 */
+	
+	public SelectMultipleInput(String name)
+	{
+		super(name, null);
+	}
+	
 	public SelectMultipleInput(String name, List<String> objects)
 	{
 		super(name, objects);
@@ -95,10 +101,24 @@ public class SelectMultipleInput extends OptionInput<List<String>>
 						+ "\">" + choice.getLabel() + "</option>\n");
 			}
 		}
+		
+		if(uiToolkit == UiToolkit.ORIGINAL)
+		{
 		return "<select id=\"" + this.getId() + "\" multiple name=\""
 				+ this.getName() + "\" " + readonly + " style=\""
 				+ this.getStyle() + "\">\n" + optionsHtml.toString()
 				+ "</select>\n";
+		} else if(uiToolkit == UiToolkit.JQUERY)
+		{
+			return "<select multiple class=\"ui-widget-content ui-corner-all\" id=\"" 
+			+ this.getId() + "\" name=\"" + this.getName() + "\" "
+			+ readonly + " style=\"width:350px;\">\n" + optionsHtml.toString()
+			+ "</select><script>$(\"#"+this.getId()+"\").chosen();</script>\n";
+		}
+		else
+		{
+			return uiToolkit + " NOT IMPLEMENTED";
+		}
 	}
 
 	@Override

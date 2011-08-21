@@ -68,10 +68,24 @@ public class FileInput extends HtmlInput
 			return hidden.toHtml();
 		}
 
-		return hidden.toHtml()
-				+ (isReadonly() ? "<input type=\"file\" " + readonly
-						+ "name=\"filefor_" + getName() + "\" size=\"20\">"
-						: "") + getValue();
+		if(uiToolkit == UiToolkit.ORIGINAL)
+		{
+			return hidden.toHtml()
+					+ (!isReadonly() ? "<input type=\"file\" " + readonly
+							+ "name=\"filefor_" + getName() + "\" size=\"20\">"
+							: "") + getValue();
+		}
+		else if (uiToolkit == UiToolkit.JQUERY)
+		{
+			return hidden.toHtml()
+					+ (!isReadonly() ? "<input class=\"ui-widget-content ui-corner-all\" type=\"file\" " + readonly
+							+ "name=\"filefor_" + getName() + "\" size=\"20\">"
+							: "") + getValue();
+		}
+		else
+		{
+			return "ERROR";
+		}
 	}
 
 	/**

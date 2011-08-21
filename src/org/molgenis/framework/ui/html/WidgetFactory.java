@@ -22,14 +22,14 @@ public class WidgetFactory
 {
 	public static class HtmlInputAdapter implements TemplateDirectiveModel
 	{
-		HtmlInput input = null;
+		HtmlInput<?> input = null;
 
-		private HtmlInputAdapter(HtmlInput input)
+		private HtmlInputAdapter(HtmlInput<?> input)
 		{
 			this.input = input;
 		}
 
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings({ "rawtypes" })
 		@Override
 		public void execute(Environment env, Map params,
 				TemplateModel[] loopVars, TemplateDirectiveBody body)
@@ -52,7 +52,7 @@ public class WidgetFactory
 			// try to get html
 			try
 			{
-				env.getOut().write(input.toHtml(t));
+				env.getOut().write(input.render(t));
 			}
 			catch (Exception e)
 			{
@@ -73,7 +73,7 @@ public class WidgetFactory
 
 	public static void configure(Configuration conf)
 	{
-		Map<String,HtmlInput> map = new LinkedHashMap<String,HtmlInput>();
+		Map<String,HtmlInput<?>> map = new LinkedHashMap<String,HtmlInput<?>>();
 		map.put("action", new ActionInput());
 		map.put("bool", new BoolInput());
 		map.put("string", new StringInput());
@@ -87,6 +87,7 @@ public class WidgetFactory
 		map.put("xref", new XrefInput());
 		map.put("mref", new MrefInput());
 		map.put("text", new TextInput());
+		map.put("hidden", new HiddenInput());
 		
 		for(String key: map.keySet())
 		{

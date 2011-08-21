@@ -34,6 +34,17 @@ public class CheckboxInput extends OptionInput<List<String>>
 		this.setReadonly(false);
 	}
 
+	/**
+	 * Construct a checkbox based on a list of options.
+	 * 
+	 * @param name
+	 * @param options
+	 * @param optionLabels
+	 * @param label
+	 * @param value
+	 * @param nillable
+	 * @param readonly
+	 */
 	public CheckboxInput(String name, List<String> options,
 			List<String> optionLabels, String label, List<String> value,
 			boolean nillable, boolean readonly)
@@ -63,19 +74,28 @@ public class CheckboxInput extends OptionInput<List<String>>
 		this.setReadonly(readonly);
 	}
 	
+	/** Construct a new checkbox based on a Tuple with properties.
+	 * 
+	 * @param properties
+	 * @throws HtmlInputException
+	 */
 	@SuppressWarnings("unchecked")
-	public CheckboxInput(Tuple t) throws HtmlInputException
+	public CheckboxInput(Tuple properties) throws HtmlInputException
 	{
-		super(t);
-		if(!t.isNull(VALUE)) this.setValue((List<String>) t.getList(VALUE));
-		if(!t.isNull(VALUES)) this.setValue((List<String>) t.getList(VALUES));
+		super(properties);
+		if(!properties.isNull(VALUE)) this.setValue((List<String>) properties.getList(VALUE));
+		if(!properties.isNull(VALUES)) this.setValue((List<String>) properties.getList(VALUES));
 	}
 
+	/**
+	 * Null constructor. Use with caution.
+	 */
 	protected CheckboxInput()
 	{
 		super();
 	}
 
+	@Override
 	public String toHtml()
 	{
 		if (this.isHidden())

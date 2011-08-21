@@ -1,10 +1,8 @@
 package org.molgenis.framework.ui.html;
 
-import java.text.ParseException;
 import java.util.List;
 import java.util.Vector;
 
-import org.molgenis.framework.db.Database;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;

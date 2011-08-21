@@ -21,6 +21,8 @@ public abstract class EntityInput<E> extends HtmlInput<E>
 
 	protected String error = null;
 
+	protected boolean includeAddButton = true;
+
 	public EntityInput(String name, Class<? extends Entity> xrefEntityClass,
 			E value)
 	{
@@ -65,7 +67,8 @@ public abstract class EntityInput<E> extends HtmlInput<E>
 	}
 
 	@SuppressWarnings("unchecked")
-	private static Class<? extends Entity> getEntityClass(String entityName)
+	protected
+	static Class<? extends Entity> getEntityClass(String entityName)
 			throws HtmlInputException
 	{
 		try
@@ -100,7 +103,7 @@ public abstract class EntityInput<E> extends HtmlInput<E>
 	 * @param xrefEntity
 	 * @throws HtmlInputException 
 	 */
-	public <E extends Entity> void setXrefEntity(Class<E> xrefEntity)
+	public <F extends Entity> void setXrefEntity(Class<F> xrefEntity)
 	{
 		try
 		{
@@ -193,4 +196,71 @@ public abstract class EntityInput<E> extends HtmlInput<E>
 		return QueryRuleUtil.toRESTstring(xrefFilters);
 	}
 
+	/**
+	 * Convert entities into a string of <option></option>. 
+	 * 
+	 * @param entities 
+	 * @param filter
+	 * @return
+	 */
+	public String entitiesToOptions(List<Entity> entities, List<Object> filter)
+	{
+		String result = "";
+		
+		for(Entity e: entities)
+		{
+			if(!filter.contains(e.getIdValue()))
+			{
+				result += "<option value=\""+e.getIdValue()+"\">"+e.getLabelValue()+"</option>";
+			}
+		}
+		
+		return result;
+	}
+
+	public String getXrefEntitySimpleName()
+	{
+	
+		String name = this.getXrefEntity();
+		if (name.contains(".")) return name.substring(name.lastIndexOf(".")+1	);
+		return name;
+	}
+
+	public void setIncludeAddButton(boolean includeAddButton)
+	{
+		this.includeAddButton = includeAddButton;
+	}
+
+	public ActionInput createAddButton()
+	{
+		ActionInput addButton = new ActionInput("add", "", "");
+		
+//		if(this.uiToolkit == UiToolkit.ORIGINAL)
+//		{
+//			
+//		}
+		
+		addButton.setId(this.getId() + "_addbutton");
+		addButton
+				.setLabel("Add new " + this.getXrefEntitySimpleName());
+		addButton.setIcon("generated-res/img/new.png");
+		
+		addButton
+		.setJavaScriptAction("if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.getElementById('"
+				+ this.getId()
+				+ "').form.__target.value=document.getElementById('"
+				+ this.getId()
+				+ "').form.name.replace(/_form/g, '');document.getElementById('"
+				+ this.getId()
+				+ "').form.__action.value='"
+				+ this.getId()
+				+ "';molgenis_window = window.open('','molgenis_edit_new_xref','height=800,width=600,location=no,status=no,menubar=no,directories=no,toolbar=no,resizable=yes,scrollbars=yes');document.getElementById('"
+				+ this.getId()
+				+ "').form.target='molgenis_edit_new_xref';document.getElementById('"
+				+ this.getId()
+				+ "').form.__show.value='popup';document.getElementById('"
+				+ this.getId()
+				+ "').form.submit();molgenis_window.focus();");
+		return addButton;
+	}
 }

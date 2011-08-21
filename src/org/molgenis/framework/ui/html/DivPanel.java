@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.UUID;
 
 import org.molgenis.util.Tuple;
 
@@ -16,7 +17,7 @@ public class DivPanel extends HtmlWidget
 
 	public DivPanel()
 	{
-		this(null, null);
+		this(UUID.randomUUID().toString(), null);
 	}
 
 	public DivPanel(String name, String label)
@@ -103,7 +104,7 @@ public class DivPanel extends HtmlWidget
 		Object object;
 		List<HtmlInput<?>> inputList = new ArrayList<HtmlInput<?>>();
 		fillList(inputList, this);
-		for (HtmlInput input : inputList)
+		for (@SuppressWarnings("rawtypes") HtmlInput input : inputList)
 		{
 			object = request.getObject(input.getName());
 			if (object != null)

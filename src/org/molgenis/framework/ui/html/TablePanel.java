@@ -32,9 +32,9 @@ public class TablePanel extends HtmlWidget
 	 * 
 	 * @param HtmlInput ... inputs
 	 */
-	public void add(HtmlInput ... inputs)
+	public void add(HtmlInput<?> ... inputs)
 	{
-		for(HtmlInput input: inputs) {
+		for(HtmlInput<?> input: inputs) {
 			this.inputs.put(input.getName(), input);
 		}
 	}
@@ -44,13 +44,14 @@ public class TablePanel extends HtmlWidget
 	 * 
 	 * @param HtmlInput ... inputs
 	 */
-	public void remove(HtmlInput ... inputs)
+	public void remove(HtmlInput<?> ... inputs)
 	{
-		for(HtmlInput input: inputs) {
+		for(HtmlInput<?> input: inputs) {
 			this.inputs.remove(input.getName());
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public HtmlInput get(String name)
 	{
 		return this.inputs.get(name);
@@ -63,7 +64,7 @@ public class TablePanel extends HtmlWidget
 	public String toHtml()
 	{
 		String result = "";
-		for (HtmlInput i : this.inputs.values())
+		for (HtmlInput<?> i : this.inputs.values())
 		{
 			result += "<div style=\"clear:both; ";
 			if (i.isHidden()) {
@@ -86,11 +87,12 @@ public class TablePanel extends HtmlWidget
 	 * 
 	 * @param request
 	 */
+	@SuppressWarnings("unchecked")
 	public void setValuesFromRequest(Tuple request) {
 		Object object;
-		List<HtmlInput> inputList = new ArrayList<HtmlInput>();
+		List<HtmlInput<?>> inputList = new ArrayList<HtmlInput<?>>();
 		fillList(inputList, this);
-		for (HtmlInput input : inputList) {
+		for (@SuppressWarnings("rawtypes") HtmlInput input : inputList) {
 			object = request.getObject(input.getName());
 			if (object != null) {
 				input.setValue(object);
@@ -105,8 +107,8 @@ public class TablePanel extends HtmlWidget
 	 * @param inputList
 	 * @param startInput
 	 */
-	private void fillList(List<HtmlInput> inputList, TablePanel startInput) {
-		for (HtmlInput input : startInput.inputs.values()) {
+	private void fillList(List<HtmlInput<?>> inputList, TablePanel startInput) {
+		for (HtmlInput<?> input : startInput.inputs.values()) {
 			if (input instanceof TablePanel || input instanceof RepeatingPanel) {
 				fillList(inputList, (TablePanel)input);
 			} else {

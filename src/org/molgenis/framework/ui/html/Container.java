@@ -9,10 +9,12 @@ import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.util.Tuple;
 
 /**
- * This class functions as the holder, or container, of all UI components and elements within one plugin. All "pieces"
- * of your UI puzzle should be located within a Container.
+ * This class functions as the holder, or container, of all UI components and
+ * elements within one plugin. All "pieces" of your UI puzzle should be located
+ * within a Container.
  */
-public class Container extends LinkedHashMap<String, Input<?>> implements ScreenView
+public class Container extends LinkedHashMap<String, Input<?>> implements
+		ScreenView
 {
 	private static final long serialVersionUID = -8565170009471766957L;
 
@@ -27,12 +29,13 @@ public class Container extends LinkedHashMap<String, Input<?>> implements Screen
 			this.add(i);
 	}
 
-	public void addAll(Vector<HtmlInput> inputs)
+	public void addAll(Vector<HtmlInput<?>> inputs)
 	{
-		for (Input i : inputs)
+		for (HtmlInput<?> i : inputs)
 			this.add(i);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Input get(Object key)
 	{
@@ -42,35 +45,40 @@ public class Container extends LinkedHashMap<String, Input<?>> implements Screen
 	}
 
 	/**
-	 * Tries to set the values of the inputs within this Container
-	 * using parameters in the request with the same names.
+	 * Tries to set the values of the inputs within this Container using
+	 * parameters in the request with the same names.
 	 * 
-	 * @param t The tuple used to set the values
+	 * @param t
+	 *            The tuple used to set the values
 	 */
+	@SuppressWarnings("unchecked")
 	public void setAll(Tuple t)
 	{
 		for (String key : t.getFields())
 		{
 			// only sets known fields!
-			if (this.containsKey(key)) {
+			if (this.containsKey(key))
+			{
 				this.get(key).setValue(t.getObject(key));
 			}
 		}
 	}
 
-	public List<HtmlInput> getInputs()
+	public List<HtmlInput<?>> getInputs()
 	{
-		List<HtmlInput> result = new ArrayList<HtmlInput>();
+		List<HtmlInput<?>> result = new ArrayList<HtmlInput<?>>();
 		for (String key : this.keySet())
 		{
-			result.add((HtmlInput) this.get(key));
+			result.add((HtmlInput<?>) this.get(key));
 		}
 		return result;
 	}
-	
-	public String toHtml() {
+
+	public String toHtml()
+	{
 		String returnString = "";
-		for (HtmlInput i : this.getInputs()) {
+		for (HtmlInput<?> i : this.getInputs())
+		{
 			returnString += i.toHtml();
 		}
 		return returnString;

@@ -11,10 +11,6 @@
 
 package org.molgenis.framework.ui.html;
 
-import java.util.Map;
-import java.util.TreeMap;
-
-import org.molgenis.framework.ui.FreemarkerView;
 
 /**
  * Input for rich html text editing (bold, italic, etc).
@@ -60,7 +56,8 @@ public class RichtextInput extends StringInput
 				+ "\n		 theme_advanced_statusbar_location : \"bottom\","
 				+"\n		 theme_advanced_resizing : true,"
 				+ "\n		 apply_source_formatting : true,"
-				+ "\n		 theme_advanced_path : false"
+				+ "\n		 theme_advanced_path : false,"
+				+ "\n		 onchange_callback : function (editor){tinyMCE.triggerSave();}"
 				+ "});"
 				+ "</script>";
 	}
@@ -69,7 +66,15 @@ public class RichtextInput extends StringInput
 	{
 		return String
 				.format(
-						"<textarea id=\"%s\" name=\"%s\" class=\"mceEditor\" cols=\"80\" rows=\"10\">%s</textarea>",
-						getId(), getName(), getValue());
+						"<textarea id=\"%s\" name=\"%s\" class=\"mceEditor %s\" cols=\"80\" rows=\"10\">%s</textarea>",
+						getId(), getName(), (this.isNillable() ? "" : " required"), getValue());
+	}
+	
+	/**
+	 * Override because hyperlink must not be escaped
+	 */
+	public String getHtmlValue()
+	{
+		return this.getValue();
 	}
 }

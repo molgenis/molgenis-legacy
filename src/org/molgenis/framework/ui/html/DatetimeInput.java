@@ -19,21 +19,29 @@ import java.util.Locale;
 import org.molgenis.util.Tuple;
 
 /**
- * Input for datetime data. Depends on javascript to showDateInput().
+ * Input for datetime data..
  */
-
 public class DatetimeInput extends HtmlInput<Date>
 {
+	/** Construct DatetimeInput with name */
 	public DatetimeInput(String name)
 	{
 		super(name, null);
 	}
 
+	/** Construct DatetimeInput with name, value */
 	public DatetimeInput(String name, Date value)
 	{
 		super(name, value);
 	}
+	
+	/** Construct DatetimeInput with name, label, value */
+	public DatetimeInput(String name, String label, Date value)
+	{
+		super(name, label, value);
+	}
 
+	/** Constructe Datetimeinput with name, label, value, nillable, and readonly*/
 	public DatetimeInput(String name, String label, Date value,
 			boolean nillable, boolean readonly)
 	{
@@ -43,46 +51,108 @@ public class DatetimeInput extends HtmlInput<Date>
 		this.setNillable(nillable);
 	}
 
-	public DatetimeInput(Tuple p) throws HtmlInputException
+	/** Construct Datetimeinput using a Tuple with properties */
+	public DatetimeInput(Tuple properties) throws HtmlInputException
 	{
-		set(p);
+		set(properties);
 	}
 
 	// tohtml
 	public String toHtml()
 	{
-
-		String readonly = isReadonly() ? " class=\"readonly\" readonly=\"readonly\" "
-				: "onclick=\"showDateInput(this,true) " + "";
-
 		if (this.isHidden())
 		{
-			StringInput input = new StringInput(this.getName(), this.getValue());
+			StringInput input = new StringInput(this.getName(), this
+					.getValue());
 			input.setHidden(true);
 			return input.toHtml();
 		}
+		
+		if (uiToolkit == UiToolkit.ORIGINAL)
+		{
+			return this.toDefault();
+		}
+		if (uiToolkit == UiToolkit.JQUERY)
+		{
+			return this.toJquery();
+		}
+
+		return "NOT IMPLEMENTED FOR LIBRARY " + uiToolkit;
+	}
+	
+	private String toDefault()
+	{
+		String readonly = isReadonly() ? " class=\"readonly\" readonly=\"readonly\" "
+				: "onclick=\"showDateInput(this,true) " + "";
+
 
 		return "<input type=\"text\" id=\"" + this.getId() + "\" name=\""
-				+ getName() + "\"  size=\"32\" value=\"" + getValue() + "\" "
-				+ readonly + "\" autocomplete=\"off\"/>";
+				+ getName() + "\"  size=\"32\" value=\"" + getValue()
+				+ "\" " + readonly + "\" autocomplete=\"off\"/>";
 	}
 
-	public String getValue()
+	public String toJquery()
+	{	
+		String options = "dateFormat: 'dd-mm-yy', changeMonth: true, changeYear: true, showButtonPanel: true";
+		//add clear button if nillable
+		String createScript = "function( input ) {setTimeout(function() {var buttonPane = $( input ).datepicker( \"widget\" ).find( \".ui-datepicker-buttonpane\" );" +
+				"$( \"<button>\", {text: \"Clear\", click: function() { $(input).datetimepicker( 'setDate', null );}}).addClass(\"ui-datepicker-close ui-state-default ui-priority-secondary ui-corner-all\").appendTo( buttonPane );}, 1 );}";
+		
+		if(this.isNillable())
+		 options += ", beforeShow: "+createScript;
+		
+		String validate = "";
+		
+		if(!this.isNillable()) validate = " required";
+		String result = "<input type=\"text\" readonly=\"readonly\" class=\""+(this.isReadonly() ? "readonly ": "")+"text ui-widget-content ui-corner-all"+validate+"\" id=\"" + this.getName()
+				+ "\" value=\""+this.getValue("dd-MM-yyyy HH:mm")+"\" name=\"" + this.getName()
+				+ "\" autocomplete=\"off\"/>";
+		
+		//add the dialog unless readonly (input is always readonly, i.e., cannot be typed in).
+		if(!this.isReadonly())
+			result += "<script>" + "$(\"#" + this.getName()
+				+ "\").datetimepicker({" + options + "}).click(function(){$(this).datetimepicker('show')});</script>";
+		return result;
+	}
+	
+	public String getValue(String format)
 	{
-		Object dateObject = super.getObject();
-		if (dateObject == null) return "";
+		DateFormat formatter = new SimpleDateFormat(format, Locale.US);
 
+		Object dateObject = getObject();
+		if (dateObject == null)
+		{
+			return "";
+		}
+		if (dateObject.equals(""))
+		{
+			return "";
+		}
 		// If it's already a string, return it
 		if (dateObject instanceof String)
 		{
 			return dateObject.toString();
 		}
 
-		DateFormat formatter = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss",
-				Locale.US);
-		String result = formatter.format(dateObject);
+		// If it's a Date object, first format and then return
+		String result;
+		try
+		{
+			result = formatter.format(dateObject);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return "";
+		}
 		result = result.substring(0, 1).toUpperCase() + result.substring(1);
 		return result;
+	}
+
+	
+	public String getValue()
+	{
+		return getValue("MMMM d, yyyy, HH:mm:ss");
 	}
 
 	@Override
