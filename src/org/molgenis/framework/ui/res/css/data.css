@@ -40,11 +40,11 @@
 }
 
 /**settings within the iframe*/
-input[type=text], input[type=password], input[type=file], textarea, select, button {
+/*input[type=text], input[type=password], input[type=file], textarea, select, button {
 	font-size: 8pt;
 	border: 1px #aaa solid;
 	padding-left: 2px;
-}
+}*/
 
 select{
 	min-width: 100px;
