@@ -17,9 +17,9 @@ public class MatrixQueryRule extends QueryRule
 			throw new IllegalArgumentException("QueryRule(): Operator." + operator
 					+ " cannot be used with two arguments");
 		}
-		this.field = field;
-		this.operator = operator;
-		this.value = value;
+		this.setField(field);
+		this.setOperator(operator);
+		this.setValue(value);
 	}
 
 }
