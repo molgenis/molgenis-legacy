@@ -328,7 +328,7 @@ public class ActionInput extends HtmlInput<Object>
 					+ (isShowLabel() ? "}" : ", text: false }");
 		}
 		String result = "<button id=\"" + this.getId() + "\"" + " onClick=\""
-				+ this.getJavaScriptAction() + "\">" + this.getLabel()
+				+ this.getJavaScriptAction() + "\">" + this.getButtonValue()
 				+ "</button>" + "<script>$(\"#" + this.getId()
 				+ "\").button(" + icons + ");</script>\n";
 
