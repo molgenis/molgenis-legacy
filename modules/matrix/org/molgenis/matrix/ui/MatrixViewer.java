@@ -17,6 +17,7 @@ import org.molgenis.framework.ui.NameNotUniqueException;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.ScreenModel.Show;
+import org.molgenis.framework.ui.html.AbstractHtmlElement;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.LabelInput;
 import org.molgenis.matrix.Matrix;
@@ -42,9 +43,9 @@ import org.molgenis.util.Tuple;
 public class MatrixViewer extends HtmlInput<Matrix> implements MolgenisService
 {	
 	// map of rowids and the widget to show as rowheader
-	private Map<String, HtmlInput> rows = null;
+	private Map<String, AbstractHtmlElement> rows = null;
 	// map of colids and the widget to show as colheader
-	private Map<String, HtmlInput> cols = null;
+	private Map<String, AbstractHtmlElement> cols = null;
 	// limit of rows to be shown
 	private int rowLimit = 10;
 	// limit of cols to be shown
@@ -106,7 +107,7 @@ public class MatrixViewer extends HtmlInput<Matrix> implements MolgenisService
 	 */
 	public void setRows(List<String> rowIds) throws MatrixViewException
 	{
-		Map<String, HtmlInput> temp = new LinkedHashMap<String, HtmlInput>();
+		Map<String, AbstractHtmlElement> temp = new LinkedHashMap<String, AbstractHtmlElement>();
 		for (String id : rowIds)
 		{
 			if (temp.containsKey(id)) throw new MatrixViewException(
@@ -134,7 +135,7 @@ public class MatrixViewer extends HtmlInput<Matrix> implements MolgenisService
 	 * 
 	 * @throws MatrixViewException
 	 */
-	public void setRows(Map<String, HtmlInput> rowIds)
+	public void setRows(Map<String, AbstractHtmlElement> rowIds)
 			throws MatrixViewException
 	{
 		if (rowIds == null) throw new MatrixViewException(
@@ -143,12 +144,12 @@ public class MatrixViewer extends HtmlInput<Matrix> implements MolgenisService
 	}
 
 	/** Map of RowIds and the widget used to visualize it */
-	public Map<String, HtmlInput> getRows()
+	public Map<String, AbstractHtmlElement> getRows()
 	{
 		return this.rows;
 	}
 
-	public Map<String,HtmlInput> getVisibleRows()
+	public Map<String, AbstractHtmlElement> getVisibleRows()
 	{
 		return this.rows;
 	}
@@ -166,7 +167,7 @@ public class MatrixViewer extends HtmlInput<Matrix> implements MolgenisService
 	 */
 	public void setCols(List<String> colIds) throws MatrixViewException
 	{
-		Map<String, HtmlInput> temp = new LinkedHashMap<String, HtmlInput>();
+		Map<String, AbstractHtmlElement> temp = new LinkedHashMap<String, AbstractHtmlElement>();
 		for (String id : colIds)
 		{
 			if (temp.containsKey(id)) throw new MatrixViewException(
@@ -194,7 +195,7 @@ public class MatrixViewer extends HtmlInput<Matrix> implements MolgenisService
 	 * 
 	 * @throws MatrixViewException
 	 */
-	public void setCols(Map<String, HtmlInput> colIds)
+	public void setCols(Map<String, AbstractHtmlElement> colIds)
 			throws MatrixViewException
 	{
 		if (colIds == null) throw new MatrixViewException(
@@ -203,12 +204,12 @@ public class MatrixViewer extends HtmlInput<Matrix> implements MolgenisService
 	}
 
 	/** Map of ColIds and the widget used to visualize it */
-	public Map<String, HtmlInput> getCols()
+	public Map<String, AbstractHtmlElement> getCols()
 	{
 		return this.cols;
 	}
 
-	public Map<String, HtmlInput> getVisibleCols()
+	public Map<String, AbstractHtmlElement> getVisibleCols()
 	{
 		return this.cols;
 	}
