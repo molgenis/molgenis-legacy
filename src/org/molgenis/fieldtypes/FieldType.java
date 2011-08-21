@@ -148,6 +148,11 @@ public abstract class FieldType
 		return this.getClass().getSimpleName().replace("Field", "")
 				.toLowerCase();
 	}
+	
+	public HtmlInput createInput(String name) throws HtmlInputException
+	{
+		return this.createInput(name,null);
+	}
 
 	public abstract HtmlInput createInput(String name, String xrefEntityClassNames) throws HtmlInputException;
 
