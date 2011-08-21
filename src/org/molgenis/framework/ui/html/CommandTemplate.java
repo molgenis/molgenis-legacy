@@ -8,7 +8,8 @@ import java.util.Vector;
 import org.molgenis.util.Tuple;
 
 /**
- * This class is used by commands as template. It must be replaced by 'container' at some point.
+ * This class is used by commands as template. It must be replaced by
+ * 'container' at some point.
  */
 public class CommandTemplate extends LinkedHashMap<String, Input<?>>
 {
@@ -27,10 +28,11 @@ public class CommandTemplate extends LinkedHashMap<String, Input<?>>
 
 	public void addAll(Vector<HtmlInput<?>> inputs)
 	{
-		for (Input i : inputs)
+		for (Input<?> i : inputs)
 			this.add(i);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Input get(Object key)
 	{
@@ -39,6 +41,7 @@ public class CommandTemplate extends LinkedHashMap<String, Input<?>>
 		return super.get(key);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setAll(Tuple t)
 	{
 		for (String key : t.getFields())
@@ -53,7 +56,7 @@ public class CommandTemplate extends LinkedHashMap<String, Input<?>>
 		List<HtmlInput<?>> result = new ArrayList<HtmlInput<?>>();
 		for (String key : this.keySet())
 		{
-			result.add((HtmlInput) this.get(key));
+			result.add((HtmlInput<?>) this.get(key));
 		}
 		return result;
 	}

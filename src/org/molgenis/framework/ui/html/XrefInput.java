@@ -28,14 +28,9 @@ import org.molgenis.util.Tuple;
  */
 public class XrefInput extends EntityInput<Entity>
 {
-	// Parameter to indicate whether this XrefInput should have an 'Add new ...'
-	// button attached to it.
-	private boolean includeAddButton = false;
-	private ActionInput addButton = new ActionInput("add", "", "");
-
 	/** Minimal constructor */
-	public <E extends Entity> XrefInput(String name, Class<? extends Entity> xrefEntityClass,
-			E value)
+	public <E extends Entity> XrefInput(String name,
+			Class<? extends Entity> xrefEntityClass, E value)
 	{
 		super(name, xrefEntityClass, value);
 	}
@@ -126,11 +121,11 @@ public class XrefInput extends EntityInput<Entity>
 		{
 			StringInput input = new StringInput(this.getName(), super
 					.getValue());
-			
-			if(super.getObject() instanceof Entity)
+
+			if (super.getObject() instanceof Entity)
 			{
-				input = new StringInput(this.getName(), super
-						.getObject().getIdValue().toString());
+				input = new StringInput(this.getName(), super.getObject()
+						.getIdValue().toString());
 			}
 
 			input.setLabel(this.getLabel());
@@ -146,18 +141,94 @@ public class XrefInput extends EntityInput<Entity>
 					+ getObject().getIdValue() + "\">" + this.getValue()
 					+ "</option>\n");
 		}
+
 		// else if (!this.isReadonly())
 		// {
 		// optionsHtml.append("\t<option value=\"\"></option>\n");
 		// // empty option
 		// }
-		if (includeAddButton)
+		if (this.uiToolkit == UiToolkit.ORIGINAL)
 		{
-			this.addButton.setJavaScriptAction("if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.getElementById('" + this.getId() + "').form.__target.value=document.getElementById('" + this.getId() + "').form.name.replace(/_form/g, '');document.getElementById('" + this.getId() + "').form.__action.value='" + this.getId() + "';molgenis_window = window.open('','molgenis_edit_new_xref','height=800,width=600,location=no,status=no,menubar=no,directories=no,toolbar=no,resizable=yes,scrollbars=yes');document.getElementById('" + this.getId() + "').form.target='molgenis_edit_new_xref';document.getElementById('" + this.getId() + "').form.__show.value='popup';document.getElementById('" + this.getId() + "').form.submit();molgenis_window.focus();");
+			return "<select id=\""
+					+ this.getId()
+					+ "\" name=\""
+					+ this.getName()
+					+ "\" "
+					+ readonly
+					+ ">\n"
+					+ optionsHtml.toString()
+					+ "</select>\n"
+					+ (includeAddButton && !this.isReadonly() ? this.createAddButton()
+							: "");
 		}
-		return "<select id=\"" + this.getId() + "\" name=\"" + this.getName()
-				+ "\" " + readonly + ">\n" + optionsHtml.toString()
-				+ "</select>\n" + (includeAddButton ? this.addButton : "");
+		else if (this.uiToolkit == UiToolkit.JQUERY)
+		{
+			return this.toJquery(optionsHtml.toString(), xrefLabelString);
+		}
+		else
+		{
+			return "NOT IMPLEMENTED FOR LIBRARY " + this.uiToolkit;
+		}
+	}
+
+	private String toJquery(String optionsHtml, String xrefLabelString)
+	{
+		String name;
+		try
+		{
+			name = getEntityClass(this.getXrefEntity()).getSimpleName();
+
+			String readonly = this.isReadonly() ? "readonly " : "";
+			String required = this.isNillable() ? "" : "required ";
+
+			return "<select data-placeholder=\"Choose some "
+					+ name
+					+ "\" "
+					+ readonly
+					+ " class=\""
+					+ readonly
+					+ required
+					+ "ui-widget-content ui-corner-all\" id=\""
+					+ this.getId()
+					+ "\" name=\""
+					+ this.getName()
+					+ "\" "
+					+ " style=\"width:350px;\">\n"
+					+ optionsHtml.toString()
+					+ "</select>"
+					+ "\n<script>$(\"#"
+					+ this.getId()
+					+ "\").ajaxChosen("
+					+ "\n{ "
+					+ "\n	method: 'GET', "
+					+ "\n	url: 'xref/find',"
+					+ "\n	xref_entity: '"
+					+ this.getXrefEntity()
+					+ "',"
+					+ "\n	xref_field: '"
+					+ this.getXrefField()
+					+ "',"
+					+ "\n	xref_label: '"
+					+ xrefLabelString
+					+ "',"
+					+ "\n	dataType: 'json' "
+					+ "\n},"
+					+ "\nfunction (data) {"
+					+ "\n	var terms = {}; "
+					+ "\n	$.each(data, function (i, val) {terms[i] = val;});"
+					+ "\n	return terms;"
+					+ "\n});"
+					+ "\n</script>\n"
+					+ (includeAddButton && !this.isReadonly() ? this.createAddButton()
+							: "");
+
+		}
+		catch (HtmlInputException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "ERROR";
+		}
 	}
 
 	private String toCsv(List<String> xrefLabels)
@@ -179,21 +250,6 @@ public class XrefInput extends EntityInput<Entity>
 	{
 		if (getObject() != null) return this.getObject().getLabelValue();
 		return "";
-	}
-
-	public void setIncludeAddButton(boolean includeAddButton)
-	{
-		this.includeAddButton = includeAddButton;
-	}
-
-	public void setAddButton(ActionInput addButton)
-	{
-		this.addButton = addButton;
-	}
-
-	public ActionInput getAddButton()
-	{
-		return this.addButton;
 	}
 
 	@Override

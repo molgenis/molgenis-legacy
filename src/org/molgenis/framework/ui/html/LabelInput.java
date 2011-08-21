@@ -5,37 +5,46 @@ import java.text.ParseException;
 import org.molgenis.util.Tuple;
 
 /**
- * Input that only has a label but will not show an input (i.e., doesn't have a value).
+ * Input that only has a label but will not show an input (i.e., doesn't have a
+ * value).
  */
-public class LabelInput extends HtmlInput<String>
+public class LabelInput extends AbstractHtmlElement
 {
-	//very confusing, would like to set label without id here
-	@Deprecated
-	public LabelInput(String name)
+	String value;
+
+	public LabelInput(String value)
 	{
-		super(name,null);
+		super(null);
+		this.value = value;
 	}
 	
-	public LabelInput(String name, String value)
+	public LabelInput(String id, String value)
 	{
-		super(name,value);
+		super(id);
+		this.value = value;
 	}
 
 	public LabelInput(Tuple params) throws HtmlInputException
 	{
-		super(params);
+		this(params.getString("value"));
 	}
 
 	@Override
-	public String toHtml()
+	public String render()
 	{
-		return "&nbsp;";
+		return "<label>" + value + "</label>";
 	}
 
 	@Override
-	public String toHtml(Tuple params) throws ParseException,
+	public String render(Tuple params) throws ParseException,
 			HtmlInputException
 	{
 		return new LabelInput(params).render();
+	}
+
+	@Override
+	public String getCustomHtmlHeaders()
+	{
+		return null;
 	}
 }

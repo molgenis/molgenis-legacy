@@ -45,11 +45,7 @@ public class TextLineInput<E> extends HtmlInput<E>
 	{
 		String classAtt = (this.getClazz() != null ? this.getClazz() : "");
 		classAtt += (this.isReadonly()) ? " readonly " : "";
-		if (!this.isNillable() && INJECT_JQUERY)
-		{
-			if(classAtt.length()>0) classAtt += " ";
-			classAtt += "required";
-		}
+		
 		// 'disabled' doesn't send the value. We need the value if it is
 		// key...therefore we use 'readonly'.
 
@@ -59,8 +55,7 @@ public class TextLineInput<E> extends HtmlInput<E>
 		}
 
 		String attributes = "";
-		if (INJECT_JQUERY && getSize() != null) attributes += " maxlength=\"" + getSize() + "\"";
-		if (INJECT_JQUERY && getStyle() != null) attributes += " style=\"" + getStyle() + "\"";
+		
 
 		return "<input type=\"text\" id=\"" + getId() + "\" class=\"" + classAtt + "\" name=\"" + getName()
 				+ "\" value=\"" + getValue() + "\" " + attributes + tabIndex + " />";

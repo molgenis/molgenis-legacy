@@ -37,9 +37,9 @@ public class SelectInput extends OptionInput<Object>
 
 	public SelectInput(String name)
 	{
-		super(name,null);
+		super(name, null);
 	}
-	
+
 	public SelectInput(String name, Object value)
 	{
 		super(name, value);
@@ -53,7 +53,8 @@ public class SelectInput extends OptionInput<Object>
 	@Override
 	public String toHtml()
 	{
-		String readonly = (this.isReadonly()) ? " readonly class=\"readonly\" "
+
+		String readonly = (this.isReadonly()) ? " class=\"readonly\" "
 				: "";
 
 		String onchange = (this.onchange != null) ? " onchange=\""
@@ -69,32 +70,56 @@ public class SelectInput extends OptionInput<Object>
 			return input.toHtml();
 		}
 
-		StringBuffer optionsHtml = new StringBuffer();
-		
-		if ((!this.isReadonly() && this.isNillable()) ||
-			(super.getValue().toString().equals("") && this.isNillable()))
-		{
-			// start with empty option
-			optionsHtml.append("\t<option value=\"\"></option>\n");
-		}
+		String optionsHtml = "";
+
 		for (ValueLabel choice : getOptions())
 		{
-			if (super.getValue().equals(choice.getValue().toString()))
+			if (super.getObject() != null && super.getObject().toString().equals(choice.getValue().toString()))
 			{
-				optionsHtml.append("\t<option selected value=\""
+				optionsHtml += "\t<option selected value=\""
 						+ choice.getValue() + "\">" + choice.getLabel()
-						+ "</option>\n");
+						+ "</option>\n";
 			}
 			else if (!this.isReadonly())
 			{
-				optionsHtml.append("\t<option value=\"" + choice.getValue()
-						+ "\">" + choice.getLabel() + "</option>\n");
+				optionsHtml += "\t<option value=\"" + choice.getValue()
+						+ "\">" + choice.getLabel() + "</option>\n";
 			}
 		}
-
-		return "<select class=\"" + this.getClazz() + "\" id=\"" + this.getId()
-				+ "\" name=\"" + this.getName() + "\" " + readonly + onchange
-				+ ">\n" + optionsHtml.toString() + "</select>\n";
+		//start with empty option, unless there was already a value selected
+		if ((!this.isReadonly() && this.isNillable())
+				|| ("".equals(super.getObject()) && this.isNillable()))
+		{
+			if(super.getObject() != null && super.getObject().toString().equals(""))
+				optionsHtml = "\t<option value=\"\">&nbsp;</option>\n" + optionsHtml;
+			else
+				optionsHtml += "\t<option value=\"\">&nbsp;</option>\n";
+		}
+		
+		
+		if (this.uiToolkit == UiToolkit.ORIGINAL)
+		{
+			return "<select class=\"" + this.getClazz() + "\" id=\""
+					+ this.getId() + "\" name=\"" + this.getName() + "\" "
+					+ readonly + onchange + ">\n" + optionsHtml.toString()
+					+ "</select>\n";
+		}
+		else if (this.uiToolkit == UiToolkit.DOJO)
+		{
+			return "<select dojoType=\"dijit.form.Select\" class=\"" + this.getClazz() + "\" id=\""
+			+ this.getId() + "\" name=\"" + this.getName() + "\" "
+			+ readonly + onchange + " style=\"width: 350px;\">\n" + optionsHtml.toString()
+			+ "</select>\n";
+		}
+		else if(this.uiToolkit == UiToolkit.JQUERY)
+		{
+			readonly = this.isReadonly() ? "readonly " : "";
+			return "<select class=\""+readonly+" ui-widget-content ui-corner-all\" id=\"" 
+			+ this.getId() + "\" name=\"" + this.getName() + "\" "
+			+ onchange + " style=\"width:350px;\">\n" + optionsHtml.toString()
+			+ "</select><script>$(\"#"+this.getId()+"\").chosen();</script>\n";
+		}
+			return "STYLE NOT AVAILABLE";
 	}
 
 	public String getTargetfield()
@@ -123,11 +148,15 @@ public class SelectInput extends OptionInput<Object>
 				new ValueLabel(value.toString(), label.toString()));
 	}
 
-	/** Set the options for the input
+	/**
+	 * Set the options for the input
 	 * 
-	 * @param entities list of entities to add as options (values)
-	 * @param valueField field used for identification
-	 * @param labelField field used for label (what shows on the screen)
+	 * @param entities
+	 *            list of entities to add as options (values)
+	 * @param valueField
+	 *            field used for identification
+	 * @param labelField
+	 *            field used for label (what shows on the screen)
 	 */
 	public void setOptions(List<? extends Entity> entities, String valueField,
 			String labelField)
@@ -147,5 +176,21 @@ public class SelectInput extends OptionInput<Object>
 			HtmlInputException
 	{
 		return new SelectInput(params).render();
+	}
+	
+	@Override
+	public String getCustomHtmlHeaders()
+	{
+		if(this.uiToolkit == UiToolkit.DOJO)
+		{
+			return "<script>"+
+		    "	dojo.require(\"dijit.form.Select\");"+
+		    "</script>";
+		} else if (this.uiToolkit == UiToolkit.JQUERY)
+		{
+//			return "<link rel=\"stylesheet\" href=\"generated-res/lib/jquery-plugins/chosen.css\">\n"+
+//					"<script src=\"generated-res/lib/jquery-plugins/chosen.js\" type=\"text/javascript\" language=\"javascript\"></script>\n";
+		}
+		return "";
 	}
 }

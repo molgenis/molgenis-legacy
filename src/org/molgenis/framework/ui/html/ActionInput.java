@@ -5,8 +5,8 @@ import java.text.ParseException;
 import org.molgenis.util.Tuple;
 
 /**
- * The ActionInput defines action buttons.
- * When clicked, it will result in a new request(__action=&lt;name&gt;)
+ * The ActionInput defines action buttons. When clicked, it will result in a new
+ * request(__action=&lt;name&gt;)
  */
 public class ActionInput extends HtmlInput<Object>
 {
@@ -49,9 +49,12 @@ public class ActionInput extends HtmlInput<Object>
 
 	/** JavaScript action */
 	private String JavaScriptAction;
-	
+
 	/** Text to display on button (normally "value") */
 	private String buttonValue;
+
+	/** If false, no label and only icon will be shown */
+	private boolean showLabel = true;
 
 	// constructor(s)
 	/**
@@ -64,6 +67,7 @@ public class ActionInput extends HtmlInput<Object>
 
 	/**
 	 * Constructor that sets action name and label.
+	 * 
 	 * @param name
 	 * @param label
 	 */
@@ -71,11 +75,14 @@ public class ActionInput extends HtmlInput<Object>
 	{
 		this(name, Type.CUSTOM);
 		this.setLabel(label);
-		this.setButtonValue(label); // override default button value (name) with label
+		this.setButtonValue(label); // override default button value (name) with
+		// label
 	}
-	
+
 	/**
-	 * Constructor that sets action name, label and button value (text to show on button).
+	 * Constructor that sets action name, label and button value (text to show
+	 * on button).
+	 * 
 	 * @param name
 	 * @param label
 	 */
@@ -83,7 +90,8 @@ public class ActionInput extends HtmlInput<Object>
 	{
 		this(name, label);
 		this.setTooltip(buttonValue);
-		this.setButtonValue(buttonValue); // override label as button value with explicit button value
+		this.setButtonValue(buttonValue); // override label as button value with
+		// explicit button value
 	}
 
 	/**
@@ -122,8 +130,25 @@ public class ActionInput extends HtmlInput<Object>
 	@Override
 	public String toHtml()
 	{
-		StringBuffer input = new StringBuffer("");
+		if (this.uiToolkit == UiToolkit.ORIGINAL)
+		{
+			return this.renderDefault();
 
+		}
+		else if (this.uiToolkit == UiToolkit.DOJO)
+		{
+			return this.renderDojo();
+		}
+		else if (this.uiToolkit == UiToolkit.JQUERY)
+		{
+			return this.renderJquery();
+		}
+		return "ERROR";
+	}
+
+	public String renderDefault()
+	{
+		StringBuffer input = new StringBuffer("");
 		// TODO: apparantly this can be disabled.
 		if (getIcon() != null)
 		{
@@ -138,8 +163,8 @@ public class ActionInput extends HtmlInput<Object>
 			input.append("<input type=\"submit\" onclick=\""
 					+ getJavaScriptAction() + "\" title=\"" + this.getTooltip()
 					+ "\" id=\"" + this.getId() + "\"" + "value=\""
-					+ this.getButtonValue() + "\" style=\"" + this.getStyle() + "\" "
-					+ tabIndex + " />");
+					+ this.getButtonValue() + "\" style=\"" + this.getStyle()
+					+ "\" " + tabIndex + " />");
 		}
 
 		return input.toString();
@@ -156,7 +181,9 @@ public class ActionInput extends HtmlInput<Object>
 
 	/**
 	 * Set the icon that should be shown on this button
-	 * @param icon relative path from WebContent or classpath.
+	 * 
+	 * @param icon
+	 *            relative path from WebContent or classpath.
 	 */
 	public void setIcon(String icon)
 	{
@@ -175,15 +202,18 @@ public class ActionInput extends HtmlInput<Object>
 			if (this.type == Type.SAVE)
 			{
 				StringBuffer jScript = new StringBuffer();
-				jScript
-						.append("if( validateForm(molgenis_popup,molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+Math.random();} document.forms.molgenis_popup.target = window.opener.name; document.forms.molgenis_popup.submit(); window.close();} else return false;");
+				if(this.uiToolkit == UiToolkit.ORIGINAL)
+					jScript.append("if( validateForm(molgenis_popup,molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+new Date().getTime();} document.forms.molgenis_popup.target = window.opener.name; document.forms.molgenis_popup.submit(); window.close();} else return false;");
+				else
+					jScript.append("if( $(this.form).valid() && validateForm(molgenis_popup,molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+new Date().getTime();} document.forms.molgenis_popup.target = window.opener.name; document.forms.molgenis_popup.submit(); window.close();} return false;");
+				//jScript.append("alert('click');");
+				
 				return jScript.toString();
 			}
 			else if (this.type == Type.NEXT)
 			{
 				StringBuffer jScript = new StringBuffer();
-				jScript
-						.append("if( validateForm(molgenis_popup,molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+Math.random();} document.forms.molgenis_popup.__show.value='popup'; document.forms.molgenis_popup.submit();} else return false;");
+				jScript.append("if( validateForm(molgenis_popup,molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+Math.random();} document.forms.molgenis_popup.__show.value='popup'; document.forms.molgenis_popup.submit();} else return false;");
 				return jScript.toString();
 			}
 			else if (this.type == Type.CLOSE)
@@ -210,6 +240,7 @@ public class ActionInput extends HtmlInput<Object>
 
 	/**
 	 * The Type of this action
+	 * 
 	 * @return type
 	 * @see Type
 	 */
@@ -218,7 +249,7 @@ public class ActionInput extends HtmlInput<Object>
 		return type;
 	}
 
-	/** Set the Type of this action, e.g. SAVE.*/
+	/** Set the Type of this action, e.g. SAVE. */
 	public void setType(Type type)
 	{
 		this.type = type;
@@ -230,26 +261,26 @@ public class ActionInput extends HtmlInput<Object>
 		if (super.getValue() != null && super.getLabel() == super.getValue()) return getName();
 		return super.getLabel();
 	}
-	
+
 	public String getButtonValue()
 	{
-		if(buttonValue == null) return this.getLabel();
+		if (buttonValue == null) return this.getLabel();
 		return buttonValue;
 	}
-	
+
 	public void setButtonValue(String buttonValue)
 	{
 		this.buttonValue = buttonValue;
 	}
-	
-	/** Helper method to produce the html for the icon (&lt;img&gt;)*/
+
+	/** Helper method to produce the html for the icon (&lt;img&gt;) */
 	public String getIconHtml()
 	{
 		// TODO Auto-generated method stub
 		return "<img src=\"" + this.getIcon() + "\"/>";
 	}
 
-	/** Helper method to produce html for the clickable image*/
+	/** Helper method to produce html for the clickable image */
 	public String toIconHtml()
 	{
 		return "<img class=\"edit_button\" src=\"" + getIcon() + "\" title=\""
@@ -260,7 +291,7 @@ public class ActionInput extends HtmlInput<Object>
 		// onClick="setInput('${screen.name}_form','_self','','${screen.name}','recordview','iframe'); document.forms.${screen.name}_form.__offset.value='${offset}'; document.forms.${screen.name}_form.submit();">${readonly}</label>
 	}
 
-	/** Helper method to render this button as clickable link*/
+	/** Helper method to render this button as clickable link */
 	public String toLinkHtml()
 	{
 		return "<a title=\"" + this.getDescription() + "\" onclick=\""
@@ -273,4 +304,70 @@ public class ActionInput extends HtmlInput<Object>
 	{
 		return new ActionInput(params).render();
 	}
+
+	@Override
+	public String getCustomHtmlHeaders()
+	{
+		if (this.uiToolkit == UiToolkit.DOJO)
+		{
+			return "<script type=\"text/javascript\">"
+					+ "	dojo.require(\"dijit.form.Button\");" + "</script>";
+		}
+		return "";
+	}
+
+	private String renderJquery()
+	{
+		// String icon = getIcon() != null ? " iconClass=\"dijitEditorIcon "
+		// + getIcon() + "\"" : "";
+		// String showLabel = showLabel() == false ? " showLabel=\"false\"" :
+		// "";
+		String icons = "";
+		if (getIcon() != null)
+		{
+			String icon = getIcon().replace("generated-res/img/","").replace(".png","");
+			icons += "{ icons: {primary:'" + getIcon() + "'}"
+					+ (isShowLabel() ? "}" : ", text: false }");
+		}
+		String result = "<button id=\"" + this.getId() + "\"" + " onClick=\""
+				+ this.getJavaScriptAction() + "\">" + this.getLabel()
+				+ "</button>" + "<script>$(\"#" + this.getId()
+				+ "\").button(" + icons + ");</script>\n";
+
+		return result;
+	}
+
+	private String renderDojo()
+	{
+		String icon = getIcon() != null ? " iconClass=\"dijitEditorIcon "
+				+ getIcon() + "\"" : "";
+		String showLabel = showLabel() == false ? " showLabel=\"false\"" : "";
+		String result = "<button class=\"claro\" dojoType=\"dijit.form.Button\""
+				+ " type=\"submit\""
+				+ icon
+				+ showLabel
+				+ ">"
+				+ this.getLabel()
+				+ " <script type=\"dojo/method\" event=\"onClick\" args=\"evt\">"
+				+ "var __action = dojo.byId(\"#__action\"); alert(__action.value);"
+				+ this.getJavaScriptAction() + "</script></button>";
+
+		return result;
+	}
+
+	public boolean showLabel()
+	{
+		return showLabel;
+	}
+
+	public boolean isShowLabel()
+	{
+		return showLabel;
+	}
+
+	public void setShowLabel(boolean showLabel)
+	{
+		this.showLabel = showLabel;
+	}
+
 }

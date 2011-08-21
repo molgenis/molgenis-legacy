@@ -31,11 +31,6 @@ public class MrefInput extends EntityInput<List<? extends Entity>>
 	// what is this?
 	private String targetfield;
 
-	// Parameter to indicate whether this MrefInput should have an 'Add new ...'
-	// button attached to it.
-	private boolean includeAddButton = false;
-	private ActionInput addButton = new ActionInput("add", "", "");
-
 	/** Minimal constructor */
 	public MrefInput(String name, Class<? extends Entity> xrefEntityClass,
 			List<? extends Entity> dummyList)
@@ -124,7 +119,7 @@ public class MrefInput extends EntityInput<List<? extends Entity>>
 		if (values == null) values = new ArrayList<Entity>();
 
 		// template of an xref dialog
-		XrefInput input = null;
+		EntityInput<Entity> input = null;
 		try
 		{
 			input = new XrefInput(this.getName(), this.getXrefEntity());
@@ -138,6 +133,7 @@ public class MrefInput extends EntityInput<List<? extends Entity>>
 		input.setReadonly(this.isReadonly());
 		input.setStyle("display: block;");
 		input.setHidden(this.isHidden());
+		input.setIncludeAddButton(false);
 
 		// add currently known values
 		StringBuffer html = new StringBuffer();
@@ -156,23 +152,100 @@ public class MrefInput extends EntityInput<List<? extends Entity>>
 			// html.append(input.toHtml()+"<br>");
 		}
 
-		if (isHidden() || isReadonly())
+		if (uiToolkit == UiToolkit.ORIGINAL)
 		{
-			return "<div id=\"" + getName() + "\">" + html.toString()
-					+ "</div>";
+			if (isHidden() || isReadonly())
+			{
+				return "<div id=\"" + getName() + "\">" + html.toString()
+						+ "</div>";
+			}
+			else
+			{
+				//String xrefLabelString = this.toCsv(getXrefLabels());
+
+				String buttons = String
+						.format(
+								"<button style=\"\" type=\"button\" onclick=\"mref_addInput('%s','%s','%s','%s','%s',this.parentNode);\">+</button>",
+								getName(), getXrefEntity(), getXrefField(),
+								getXrefLabels().get(0),
+								getXrefFilterRESTString());
+				buttons += "<button type=\"button\" onclick=\"mref_removeInput(this.parentNode);\">-</button>";
+
+				return "<div id=\"" + getName() + "\">" + html.toString()
+						+ buttons 
+						+ "</div>"+ (includeAddButton && !this.isReadonly() ? this.createAddButton() : "");
+			}
+		}
+		else if (uiToolkit == UiToolkit.JQUERY)
+		{
+			return this.toJquery();
 		}
 		else
 		{
+			return uiToolkit + " NOT IMPLEMENTED IN MREFINPUT";
+		}
+	}
 
-			String buttons = String
-					.format(
-							"<button style=\"\" type=\"button\" onclick=\"mref_addInput('%s','%s','%s','%s','%s',this.parentNode);\">+</button>",
-							getName(), getXrefEntity(), getXrefField(),
-							getXrefLabels().get(0), getXrefFilterRESTString());
-			buttons += "<button type=\"button\" onclick=\"mref_removeInput(this.parentNode);\">-</button>";
+	@SuppressWarnings("unchecked")
+	private String toJquery()
+	{
+		String options = "";
+		String xrefLabelString = this.toCsv(getXrefLabels());
 
-			return "<div id=\"" + getName() + "\">" + html.toString() + buttons
-					+ (includeAddButton ? this.addButton : "") + "</div>";
+		for (Entity e : (List<Entity>) this.getObject())
+		{
+			options += "<option selected=\"selected\" value=\""
+					+ e.getIdValue() + "\">" + e.getLabelValue()
+					+ "</option>";
+		}
+
+		String name;
+		try
+		{
+			name = getEntityClass(getXrefEntity())
+					.getSimpleName();
+
+			String readonly = this.isReadonly() ? "readonly " : "";
+			
+			return "<select multiple=\"multiple\" "+readonly+" data-placeholder=\"Choose some "
+					+ name
+					+ "\" class=\""+readonly+"ui-widget-content ui-corner-all\" id=\""
+					+ this.getId()
+					+ "\" name=\""
+					+ this.getName()
+					+ "\" "
+					+ " style=\"width:350px;\">\n"
+					+ options
+					+ "</select>"
+					+ "\n<script>$(\"#"
+					+ this.getId()
+					+ "\").ajaxChosen("
+					+ "\n{ "
+					+ "\n	method: 'GET', "
+					+ "\n	url: 'xref/find',"
+					+ "\n	xref_entity: '"
+					+ this.getXrefEntity()
+					+ "',"
+					+ "\n	xref_field: '"
+					+ this.getXrefField()
+					+ "',"
+					+ "\n	xref_label: '"
+					+ xrefLabelString
+					+ "',"
+					+ "\n	dataType: 'json', "
+					+ "\n},"
+					+ "\nfunction (data) {"
+					+ "\n	var terms = {}; "
+					+ "\n	$.each(data, function (i, val) {terms[i] = val;});"
+					+ "\n	return terms;" + "\n});" + "\n</script>\n"
+					+ (includeAddButton && !this.isReadonly() ? this.createAddButton() : "");
+
+		}
+		catch (HtmlInputException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "ERROR";
 		}
 	}
 
@@ -229,19 +302,20 @@ public class MrefInput extends EntityInput<List<? extends Entity>>
 		this.targetfield = targetfield;
 	}
 
-	public void setIncludeAddButton(boolean includeAddButton)
-	{
-		this.includeAddButton = includeAddButton;
-	}
-
-	public void setAddButton(ActionInput addButton)
-	{
-		this.addButton = addButton;
-	}
-
 	@Override
 	public String toHtml(Tuple params) throws HtmlInputException
 	{
 		return new MrefInput(params).render();
+	}
+
+	private String toCsv(List<String> xrefLabels)
+	{
+		String result = "";
+		for (String label : xrefLabels)
+		{
+			result += "," + label;
+		}
+
+		return result.replaceFirst(",", "");
 	}
 }

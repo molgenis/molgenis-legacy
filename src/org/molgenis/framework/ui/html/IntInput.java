@@ -7,33 +7,42 @@ import org.molgenis.util.Tuple;
 /**
  * Input for integer data.
  */
-public class IntInput extends TextLineInput<Integer>
+public class IntInput extends ValidatingInput<Integer>
 {
 	
 	public IntInput(String name)
 	{
 		super(name,null);
+		this.validationString = "digits";
+		this.setMaxWidth(10);
 	}
 
 	public IntInput(String name, Integer value)
 	{
 		super( name, value );
+		this.validationString = "digits";
+		this.setMaxWidth(10);
 	}
 
 	public IntInput(String name, String label, Integer value,
 			boolean nillable, boolean readonly, String description)
 	{
 		super(name,label, value, nillable,readonly, description);
+		this.validationString = "digits";
+		this.setMaxWidth(10);
 	}
 
 	protected IntInput()
 	{
 		super();
+		this.validationString = "digits";
+		this.setMaxWidth(10);
 	}
 	
 	public IntInput(Tuple params) throws HtmlInputException
 	{
 		super(params);
+		this.validationString = "digits";
 	}
 
 	@Override

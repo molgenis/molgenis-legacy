@@ -78,8 +78,7 @@ public class FreemarkerInput extends StringInput
 	public String toHtml()
 	{
 		Map<String, Object> parameters = new TreeMap<String, Object>();
-		parameters.put("value", this.getObject());
-		parameters.put("name", this.getName());
+		parameters.put("input", this);
 
 		// delegate to freemarker (sad Java doesn't allow multiline strings).
 		return new FreemarkerView(

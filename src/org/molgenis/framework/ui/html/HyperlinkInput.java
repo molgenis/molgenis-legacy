@@ -21,16 +21,36 @@ import org.molgenis.util.Tuple;
  */
 public class HyperlinkInput extends HtmlInput<String>
 {
+	/**
+	 * Construct HyperlinkInput with name
+	 * 
+	 * @param name
+	 */
+	public HyperlinkInput(String name)
+	{
+		this(name, null);
+	}
+	
+	/**
+	 * Construct HyperlinkInput with name and value
+	 * 
+	 * @param name
+	 * @param value
+	 */
 	public HyperlinkInput(String name, String value)
 	{
 		super(name, value);
 	}
 
-	public HyperlinkInput(String name)
-	{
-		this(name, null);
-	}
-
+	/**
+	 * Construct HyperlinkInput with name, label, value, nillable, readonly.
+	 * 
+	 * @param name
+	 * @param label
+	 * @param value
+	 * @param nillable
+	 * @param readonly
+	 */
 	public HyperlinkInput(String name, String label, String value,
 			boolean nillable, boolean readonly)
 	{
@@ -40,15 +60,18 @@ public class HyperlinkInput extends HtmlInput<String>
 		this.setReadonly(readonly);
 	}
 
-	public HyperlinkInput(Tuple t)
+	/**
+	 * Construct HyperlinkInput using a Tuple to set properties
+	 * 
+	 * @param properties
+	 */
+	public HyperlinkInput(Tuple properties)
 	{
-		this(t.getString(NAME), t.getString(LABEL), t.getString(VALUE), t
-				.getBool(NILLABLE), t.getBool(READONLY));
+		this(properties.getString(NAME), properties.getString(LABEL), properties.getString(VALUE), properties
+				.getBool(NILLABLE), properties.getBool(READONLY));
 	}
 
-	/**
-	 * {@inheritDoc}. Inludes hyperlink naar outside information.
-	 */
+	@Override
 	public String getValue()
 	{
 		return "<a href=\"" + super.getValue() + "\">" + super.getValue()
