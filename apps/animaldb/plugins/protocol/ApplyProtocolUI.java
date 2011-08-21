@@ -283,7 +283,7 @@ public class ApplyProtocolUI {
      * 
      */
     public void makeSelectButton() {
-		ActionInput selectButton = new ActionInput("Select", "Select", "Select");
+		ActionInput selectButton = new ActionInput("Select", "Select");
 		protocolDiv.add(selectButton);
     }
 
