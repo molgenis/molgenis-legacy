@@ -283,7 +283,7 @@ public class ApplyProtocolUI {
      * 
      */
     public void makeSelectButton() {
-		ActionInput selectButton = new ActionInput("Select", "&nbsp;", "Select");
+		ActionInput selectButton = new ActionInput("Select", "Select", "Select");
 		protocolDiv.add(selectButton);
     }
 
@@ -291,7 +291,7 @@ public class ApplyProtocolUI {
      * 
      */
     public void makeClearButton() {
-		ActionInput clearButton = new ActionInput("Clear", "&nbsp;", "Reset");
+		ActionInput clearButton = new ActionInput("Clear", "Reset");
 		protocolDiv.add(clearButton);
     }
 
@@ -299,7 +299,7 @@ public class ApplyProtocolUI {
      * 
      */
     public void makeApplyButton() {
-		ActionInput applyButton = new ActionInput("Apply", "", "Apply Protocol");
+		ActionInput applyButton = new ActionInput("Apply", "Apply Protocol");
 		tableDiv.add(applyButton);
     }
 
@@ -307,7 +307,7 @@ public class ApplyProtocolUI {
      * 
      */
     public void makeApplyAllDefaultsButton() {
-		ActionInput applyDefaultsButton = new ActionInput("ApplyAllDefaults", "", "Set All Defaults");
+		ActionInput applyDefaultsButton = new ActionInput("ApplyAllDefaults", "Set All Defaults");
 		tableDiv.add(applyDefaultsButton);
     }
 
@@ -394,8 +394,7 @@ public class ApplyProtocolUI {
 						DatetimeInput datetimeInputStart = new DatetimeInput((colNrInTable + 1) + "_0_0", now);
 						datetimeInputStart.setLabel("");
 						div2.add(datetimeInputStart);
-						ActionInput applyButtonStartTime = new ActionInput("ApplyStartTime_" + (colNrInTable + 1), 
-								"", "Set");
+						ActionInput applyButtonStartTime = new ActionInput("ApplyStartTime_" + (colNrInTable + 1), "Set");
 						div2.add(applyButtonStartTime);
 						valueTable.setCell(colNrInTable + 1, 0, div2);
 						
@@ -404,8 +403,7 @@ public class ApplyProtocolUI {
 						DatetimeInput datetimeInputEnd = new DatetimeInput((colNrInTable + 2) + "_0_0", now);
 						datetimeInputEnd.setLabel("");
 						div3.add(datetimeInputEnd);
-						ActionInput applyButtonEndTime = new ActionInput("ApplyEndTime_" + (colNrInTable + 2), 
-								"", "Set");
+						ActionInput applyButtonEndTime = new ActionInput("ApplyEndTime_" + (colNrInTable + 2), "Set");
 						div3.add(applyButtonEndTime);
 						valueTable.setCell(colNrInTable + 2, 0, div3);
 					}

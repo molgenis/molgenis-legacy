@@ -15,9 +15,9 @@ public class BatchSelectForm extends Container
 		batches.setLabel("Your batches");
 		batches.setNillable(false);
 		
-		ActionInput selectButton = new ActionInput("Select", "&nbsp;", "Select batch");
+		ActionInput selectButton = new ActionInput("Select", "Select batch");
 		
-		ActionInput clearButton = new ActionInput("Clear", "&nbsp;", "Clear");
+		ActionInput clearButton = new ActionInput("Clear", "Clear");
 
 		DivPanel batchesPanel    = new DivPanel("batchPanel", "");
 		batchesPanel.add(batches);

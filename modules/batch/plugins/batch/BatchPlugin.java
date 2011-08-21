@@ -169,7 +169,6 @@ public class BatchPlugin extends GenericPlugin {
    
     		table.setCell(0, i, checkbox);
     		table.setCell(1, i, target.getName());
-    		//table.setCell(1, i, service.getTargetLabel(target.getId()));
     	}
 
     	for (int i = 0; i < entities.size(); i++)
@@ -185,7 +184,6 @@ public class BatchPlugin extends GenericPlugin {
    
     		table.setCell(0, i, checkbox);
     		table.setCell(1, i, entity.getName());
-    		//table.setCell(1, i, service.getTargetLabel(entity.getObjectId()));
     	}
 
     	this.container = batchEntitySelectForm;
