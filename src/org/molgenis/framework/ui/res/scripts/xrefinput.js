@@ -328,6 +328,7 @@ function postData(entityClass) {
 	return entity;
 }
 
+
 function setXrefOption(field, id_field, label_field, entity) {
 	var label = entity[label_field];
 	var id    = entity[id_field];
@@ -340,5 +341,31 @@ function setXrefOption(field, id_field, label_field, entity) {
 		id = id[0];
 	}
 
-	document.getElementById(field).options[0]  = new Option(label, id, true);
+	var select = document.getElementById(field);
+	
+	if(select.multiple) {
+		$(select).append(new Option(label, id, true));
+		
+		//trigger adding the new option to the choices list, only in jquery
+		if($(select).hasClass('chzn-done')) {
+			$(select).trigger('liszt:updated');
+			//click the newly added element
+			$('#'+field+'_chzn').find('.active-result:last').click();
+			//hide the container again
+			$('#'+field+'_chzn').removeClass('chzn-container-active');
+		}
+	}
+	else {
+		select.options[0]  = new Option(label, id, true);
+		
+		//trigger updating in case of jqeuery
+		if($(select).hasClass('chzn-done')) {
+			$(select).trigger('liszt:updated');
+		}
+	}
+	
+	//only for jquery
+
+	
+
 }
