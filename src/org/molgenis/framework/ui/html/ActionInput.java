@@ -50,9 +50,6 @@ public class ActionInput extends HtmlInput<Object>
 	/** JavaScript action */
 	private String JavaScriptAction;
 
-	/** Text to display on button (normally "value") */
-	private String buttonValue;
-
 	/** If false, no label and only icon will be shown */
 	private boolean showLabel = true;
 
@@ -75,8 +72,6 @@ public class ActionInput extends HtmlInput<Object>
 	{
 		this(name, Type.CUSTOM);
 		this.setLabel(label);
-		this.setButtonValue(label); // override default button value (name) with
-		// label
 	}
 
 	/**
@@ -90,8 +85,6 @@ public class ActionInput extends HtmlInput<Object>
 	{
 		this(name, label);
 		this.setTooltip(buttonValue);
-		this.setButtonValue(buttonValue); // override label as button value with
-		// explicit button value
 	}
 
 	/**
@@ -108,7 +101,6 @@ public class ActionInput extends HtmlInput<Object>
 		this.setType(type);
 		this.setLabel(type.toString());
 		this.setTooltip(type.toString());
-		this.setButtonValue(name); // specific for action buttons
 	}
 
 	public ActionInput(Type select_target)
@@ -149,7 +141,7 @@ public class ActionInput extends HtmlInput<Object>
 	public String renderDefault()
 	{
 		StringBuffer input = new StringBuffer("");
-		// TODO: apparantly this can be disabled.
+		// TODO: apparently this can be disabled.
 		if (getIcon() != null)
 		{
 			input.append("<img class=\"edit_button\" src=\"" + getIcon()
@@ -163,7 +155,7 @@ public class ActionInput extends HtmlInput<Object>
 			input.append("<input type=\"submit\" onclick=\""
 					+ getJavaScriptAction() + "\" title=\"" + this.getTooltip()
 					+ "\" id=\"" + this.getId() + "\"" + "value=\""
-					+ this.getButtonValue() + "\" style=\"" + this.getStyle()
+					+ "\" style=\"" + this.getStyle()
 					+ "\" " + tabIndex + " />");
 		}
 
@@ -260,17 +252,6 @@ public class ActionInput extends HtmlInput<Object>
 	{
 		if (super.getValue() != null && super.getLabel() == super.getValue()) return getName();
 		return super.getLabel();
-	}
-
-	public String getButtonValue()
-	{
-		if (buttonValue == null) return this.getLabel();
-		return buttonValue;
-	}
-
-	public void setButtonValue(String buttonValue)
-	{
-		this.buttonValue = buttonValue;
 	}
 
 	/** Helper method to produce the html for the icon (&lt;img&gt;) */
