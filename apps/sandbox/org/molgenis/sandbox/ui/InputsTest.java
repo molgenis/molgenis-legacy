@@ -74,7 +74,7 @@ public class InputsTest extends EasyPluginController<InputsTestModel>
 		String lib = request.getString("library");
 		if("DOJO".equals(lib)) HtmlSettings.uiToolkit = UiToolkit.DOJO;
 		if("JQUERY".equals(lib)) HtmlSettings.uiToolkit = UiToolkit.JQUERY;
-		if("DEFAULT".equals(lib)) HtmlSettings.uiToolkit = Library.UiToolkit;
+		if("DEFAULT".equals(lib)) HtmlSettings.uiToolkit = UiToolkit.ORIGINAL;
 		
 	}
 	
