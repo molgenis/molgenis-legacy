@@ -51,7 +51,7 @@ public class AddCommand<E extends Entity> extends SimpleCommand
 		submit.setIcon("generated-res/img/save.png");
 		inputs.add(submit);
 
-		ActionInput cancel = new ActionInput("", ActionInput.Type.CLOSE);
+		ActionInput cancel = new ActionInput("cancel", ActionInput.Type.CLOSE);
 		cancel.setIcon("generated-res/img/cancel.png");
 		inputs.add(cancel);
 

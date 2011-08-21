@@ -13,10 +13,12 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.EntityForm;
+import org.molgenis.framework.ui.html.EntityInput;
 import org.molgenis.framework.ui.html.HiddenInput;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.framework.ui.html.ActionInput.Type;
 import org.molgenis.framework.ui.html.XrefInput;
+import org.molgenis.framework.ui.html.ActionInput.Type;
+import org.molgenis.framework.ui.html.HtmlElement.UiToolkit;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -28,6 +30,7 @@ public class AddXrefCommand<E extends Entity> extends AddCommand<E>
 	private static final long serialVersionUID = 1512493344265778285L;
 	private E xrefEntity;
 	private EntityForm<?> xrefForm;
+	//private UiToolkit library = HtmlSettings.uiToolkit;
 
 	public AddXrefCommand(ScreenController<?>  parent)
 	{
@@ -55,9 +58,15 @@ public class AddXrefCommand<E extends Entity> extends AddCommand<E>
 		// postData(): post data via rest api, retrieve object including id back
 		// setXrefOption(): set newly inserted object as current option
 		for (int i = 0; i < actions.size(); i++)
+		{
 			if (actions.get(i).getType() == Type.SAVE)
-				actions.get(i).setJavaScriptAction("if( validateForm(molgenis_popup,molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+Math.random();} var entity = postData(document.forms[0].entity_name.value); window.opener.setXrefOption(document.forms[0].__action.value, document.forms[0].id_field.value, document.forms[0].label_field.value, entity); window.close();} else return false;");
-		
+			{
+				if(actions.get(i).getUiToolkit() == UiToolkit.ORIGINAL)
+					actions.get(i).setJavaScriptAction("if( validateForm(molgenis_popup,molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+new Date().getTime();} var entity = postData(document.forms[0].entity_name.value); window.opener.setXrefOption(document.forms[0].__action.value, document.forms[0].id_field.value, document.forms[0].label_field.value, entity); window.close();} else return false;");
+				else
+					actions.get(i).setJavaScriptAction("if( $(this.form).valid() && validateForm(molgenis_popup,molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+new Date().getTime();} var entity = postData(document.forms[0].entity_name.value); window.opener.setXrefOption(document.forms[0].__action.value, document.forms[0].id_field.value, document.forms[0].label_field.value, entity); ;window.close();} return false;");			
+			}
+		}
 		return actions;
 	}
 
@@ -69,7 +78,7 @@ public class AddXrefCommand<E extends Entity> extends AddCommand<E>
 		{
 			if (inputs.get(i) instanceof XrefInput)
 			{
-				((XrefInput) inputs.get(i)).setIncludeAddButton(false);
+				((EntityInput<Entity>) inputs.get(i)).setIncludeAddButton(false);
 			}
 		}
 		// add three hidden fields for javascript to know entity name, id field and label field
