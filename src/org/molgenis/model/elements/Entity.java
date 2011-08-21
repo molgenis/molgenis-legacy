@@ -553,16 +553,7 @@ public class Entity extends DBSchema implements Record
 				result.put(f.getName(),f);
 			}
 		}
-		if (recursive && hasAncestor())
-		{
-			for(Field f: getAncestor().getFields(required, recursive, systemField, implementing))
-			{
-				if(!result.containsKey(f.getName()))
-				{
-					result.put(f.getName(),f);
-				}
-			}
-		}
+		
 		if(implementing) {
 			for(Entity implEntity : this.getImplements()) {
 				for(Field f: implEntity.getFields(required, recursive, systemField, implementing)) {
@@ -572,6 +563,17 @@ public class Entity extends DBSchema implements Record
 					}					
 				}
 			}		 
+		}
+		
+		if (recursive && hasAncestor())
+		{
+			for(Field f: getAncestor().getFields(required, recursive, systemField, implementing))
+			{
+				if(!result.containsKey(f.getName()))
+				{
+					result.put(f.getName(),f);
+				}
+			}
 		}
 		
 		return new ArrayList<Field>(result.values());
@@ -691,6 +693,15 @@ public class Entity extends DBSchema implements Record
 	{
 		Map<String, Field> all_fields = new LinkedHashMap<String, Field>();
 
+		// second the fields of the superclass
+		if (getAncestor() != null)
+		{
+			for (Field f : getAncestor().getAllFields())
+			{
+				all_fields.put(f.getName().toLowerCase(), f);
+			}
+		}
+		
 		// first fields of the interfaces
 		for (Entity iface : this.getImplements())
 		{
@@ -698,15 +709,6 @@ public class Entity extends DBSchema implements Record
 			for (Field ifaceField : ifaceFields)
 			{
 				all_fields.put(ifaceField.getName().toLowerCase(), ifaceField);
-			}
-		}
-
-		// second the fields of the superclass
-		if (getAncestor() != null)
-		{
-			for (Field f : getAncestor().getAllFields())
-			{
-				all_fields.put(f.getName().toLowerCase(), f);
 			}
 		}
 

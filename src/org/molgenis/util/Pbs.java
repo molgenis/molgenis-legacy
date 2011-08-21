@@ -210,8 +210,11 @@ public class Pbs extends Ssh
 	}
 
 	private Tuple parse(String log)
-	{
+	{		
 		SimpleTuple t = new SimpleTuple();
+		if(log == null || "".equals(log)) return t;
+		
+		logger.debug("parsing log: "+log);
 		String[] keyValuePairs = log.split("\n");
 
 		for (String keyValue : keyValuePairs)

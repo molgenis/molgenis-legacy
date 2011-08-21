@@ -44,7 +44,7 @@ CREATE TABLE ${SqlName(entity)} (
 	<#if f_index != 0>, </#if><@compress single_line=true>
 	${SqlName(f)} ${mysql_type(model,f)}
 	<#if !f.nillable> NOT </#if>NULL
-	<#if f.getDefaultValue()?exists && f.getDefaultValue() != "" && f.type != "text" && f.type != "blob" && f.type != "hyperlink"> DEFAULT <#if f.type == "bool" || f.type == "int">${f.getDefaultValue()}<#else>"${f.getDefaultValue()}"</#if></#if>
+	<#if f.getDefaultValue()?exists && f.getDefaultValue() != "" && f.type != "text" && f.type != "freemarker" && f.type != "richtext" && f.type != "blob" && f.type != "hyperlink"> DEFAULT <#if f.type == "bool" || f.type == "int">${f.getDefaultValue()}<#else>"${f.getDefaultValue()}"</#if></#if>
 	<#if f.auto && f.type == "int" && ( !entity.getAncestor()?exists || !entity.getAncestor().getField(f.name)?exists )> AUTO_INCREMENT</#if></@compress>
 </#list>
 <#list entity.getKeys() as key>

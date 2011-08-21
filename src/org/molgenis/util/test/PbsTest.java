@@ -13,8 +13,8 @@ import org.testng.annotations.Test;
 public class PbsTest
 {
 	String host = "millipede.service.rug.nl";
-	String user = "BLAAT";
-	String password = "BLAAT";
+	String user = "mswertz";
+	String password = "d3m0l0gin";
 	
 	Logger logger = Logger.getLogger(PbsTest.class);
 

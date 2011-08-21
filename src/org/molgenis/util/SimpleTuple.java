@@ -38,7 +38,12 @@ public class SimpleTuple implements Tuple
 	/**
 	 * String format used for Dates: {@value} .
 	 */
-	public static final String DATEFORMAT2 = "yyyy-MM-dd";
+	public static final String DATEFORMAT2 = "dd-MM-yyyy";
+
+	/**
+	 * String format used for Dates: {@value} .
+	 */
+	public static final String DATEFORMAT3 = "yyyy-MM-dd";
 
 	/**
 	 * String format used for Timestamps: {@value} .
@@ -47,7 +52,12 @@ public class SimpleTuple implements Tuple
 	/**
 	 * Alternative String format used for Dates: {@value} .
 	 */
-	public static final String DATETIMEFORMAT2 = "yyyy-MM-dd HH:mm:ss";
+	public static final String DATETIMEFORMAT2 = "dd-MM-yyyy HH:mm";
+
+	/**
+	 * Alternative String format used for Dates: {@value} .
+	 */
+	public static final String DATETIMEFORMAT3 = "yyyy-MM-dd HH:mm:ss";
 
 	/** Construct an empty Tuple */
 	public SimpleTuple()
@@ -86,14 +96,14 @@ public class SimpleTuple implements Tuple
 			// values need to be of same size as keys
 			this.values.add(null);
 			// temporary check
-			
-			//assert this.keys.size() <= this.values.size();
+
+			// assert this.keys.size() <= this.values.size();
 		}
 	}
-	
-	public SimpleTuple(Map<String,Object> valueMap)
+
+	public SimpleTuple(Map<String, Object> valueMap)
 	{
-		for(String key: valueMap.keySet())
+		for (String key : valueMap.keySet())
 		{
 			this.set(key, valueMap.get(key));
 		}
@@ -188,8 +198,10 @@ public class SimpleTuple implements Tuple
 		}
 		catch (NumberFormatException nfe)
 		{
-			throw new NumberFormatException("field '" + column + "' expects integer value between " + Integer.MIN_VALUE
-					+ " and " + Integer.MAX_VALUE + " instead of '" + getString(column) + "'");
+			throw new NumberFormatException("field '" + column
+					+ "' expects integer value between " + Integer.MIN_VALUE
+					+ " and " + Integer.MAX_VALUE + " instead of '"
+					+ getString(column) + "'");
 		}
 	}
 
@@ -202,8 +214,10 @@ public class SimpleTuple implements Tuple
 		}
 		catch (NumberFormatException nfe)
 		{
-			throw new NumberFormatException("field '" + column + "' expects integer value between " + Integer.MIN_VALUE
-					+ " and " + Integer.MAX_VALUE + " instead of '" + getString(column) + "'");
+			throw new NumberFormatException("field '" + column
+					+ "' expects integer value between " + Integer.MIN_VALUE
+					+ " and " + Integer.MAX_VALUE + " instead of '"
+					+ getString(column) + "'");
 		}
 	}
 
@@ -211,7 +225,8 @@ public class SimpleTuple implements Tuple
 	{
 		if (getObject(column) == null) return 0;
 
-		if (getObject(column).equals("on") || getObject(column).equals(1) || getObject(column).equals("1")) return 1;
+		if (getObject(column).equals("on") || getObject(column).equals(1)
+				|| getObject(column).equals("1")) return 1;
 
 		return 0;
 	}
@@ -225,8 +240,10 @@ public class SimpleTuple implements Tuple
 		}
 		catch (NumberFormatException nfe)
 		{
-			throw new NumberFormatException("field '" + column + "' expects long integer value between "
-					+ Long.MIN_VALUE + " and " + Long.MAX_VALUE + " instead of '" + getString(column) + "'");
+			throw new NumberFormatException("field '" + column
+					+ "' expects long integer value between " + Long.MIN_VALUE
+					+ " and " + Long.MAX_VALUE + " instead of '"
+					+ getString(column) + "'");
 		}
 	}
 
@@ -244,13 +261,16 @@ public class SimpleTuple implements Tuple
 			{
 				DecimalFormat df = new DecimalFormat();
 				// uppercase e to E, remove + as it is not parsed.
-				Number n = df.parse(getString(column).toUpperCase().replace("+", ""));
+				Number n = df.parse(getString(column).toUpperCase().replace(
+						"+", ""));
 				return n.longValue();
 			}
 			catch (Exception e)
 			{
-				throw new NumberFormatException("field '" + column + "' expects long long value between "
-						+ Long.MIN_VALUE + " and " + Long.MAX_VALUE + " instead of '" + getString(column) + "'");
+				throw new NumberFormatException("field '" + column
+						+ "' expects long long value between " + Long.MIN_VALUE
+						+ " and " + Long.MAX_VALUE + " instead of '"
+						+ getString(column) + "'");
 			}
 
 		}
@@ -260,13 +280,15 @@ public class SimpleTuple implements Tuple
 	public Boolean getBoolean(int column)
 	{
 		if (getObject(column) == null || getString(column).equals("")) return null;
-		return Boolean.valueOf(getString(column).toLowerCase().equals("true") || getString(column).trim().equals("1"));
+		return Boolean.valueOf(getString(column).toLowerCase().equals("true")
+				|| getString(column).trim().equals("1"));
 	}
 
 	public Boolean getBoolean(String column)
 	{
 		if (getObject(column) == null || getString(column).equals("")) return null;
-		return Boolean.valueOf(getString(column).toLowerCase().equals("true") || getString(column).trim().equals("1"));
+		return Boolean.valueOf(getString(column).toLowerCase().equals("true")
+				|| getString(column).trim().equals("1"));
 	}
 
 	public Double getDecimal(int column)
@@ -278,8 +300,9 @@ public class SimpleTuple implements Tuple
 		}
 		catch (NumberFormatException nfe)
 		{
-			throw new NumberFormatException("field '" + column + " expects decimal value instead of '"
-					+ getString(column) + "'");
+			throw new NumberFormatException("field '" + column
+					+ " expects decimal value instead of '" + getString(column)
+					+ "'");
 		}
 	}
 
@@ -292,8 +315,9 @@ public class SimpleTuple implements Tuple
 		}
 		catch (NumberFormatException nfe)
 		{
-			throw new NumberFormatException("field '" + column + " expects decimal value instead of '"
-					+ getString(column) + "'");
+			throw new NumberFormatException("field '" + column
+					+ " expects decimal value instead of '" + getString(column)
+					+ "'");
 		}
 	}
 
@@ -378,10 +402,12 @@ public class SimpleTuple implements Tuple
 		}
 		if (nonIUBpos.size() > 0)
 		{
-			String invalid = "there are " + nonIUBpos.size() + " non-IUB characters in your sequence.";
+			String invalid = "there are " + nonIUBpos.size()
+					+ " non-IUB characters in your sequence.";
 			for (Integer pos : nonIUBpos)
 			{
-				invalid += " '" + result.charAt(pos) + "' on position " + (pos + 1) + ".";
+				invalid += " '" + result.charAt(pos) + "' on position "
+						+ (pos + 1) + ".";
 			}
 			throw new ParseException(invalid, 0);
 		}
@@ -409,27 +435,44 @@ public class SimpleTuple implements Tuple
 	public java.sql.Date getDate(int column) throws ParseException
 	{
 		if (this.getObject(column) == null || this.getString(column) == "") return null;
-		if (this.getObject(column) instanceof java.sql.Date) return (java.sql.Date) this.getObject(column);
-		if (this.getObject(column) instanceof java.util.Date) return new java.sql.Date(((java.util.Date) this
-				.getObject(column)).getTime());
+		if (this.getObject(column) instanceof java.sql.Date) return (java.sql.Date) this
+				.getObject(column);
+		if (this.getObject(column) instanceof java.util.Date) return new java.sql.Date(
+				((java.util.Date) this.getObject(column)).getTime());
 
 		// FIXME copy of getDate(String column)
 		try
 		{
 			DateFormat formatter = new SimpleDateFormat(DATEFORMAT, Locale.US);
-			return new java.sql.Date(formatter.parse(this.getString(column)).getTime());
+			return new java.sql.Date(formatter.parse(this.getString(column))
+					.getTime());
 		}
 		catch (ParseException pe)
 		{
 			try
 			{
-				DateFormat formatter = new SimpleDateFormat(DATEFORMAT2, Locale.US);
-				return new java.sql.Date(formatter.parse(this.getString(column)).getTime());
+				DateFormat formatter = new SimpleDateFormat(DATEFORMAT2,
+						Locale.US);
+				return new java.sql.Date(formatter
+						.parse(this.getString(column)).getTime());
 			}
 			catch (ParseException pe2)
 			{
-				throw new ParseException("field '" + column + " expects date value formatted '" + DATEFORMAT
-						+ " instead of '" + getString(column) + "' for field '" + column + "'", pe.getErrorOffset());
+				try
+				{
+					DateFormat formatter = new SimpleDateFormat(DATEFORMAT3,
+							Locale.US);
+					return new java.sql.Date(formatter.parse(
+							this.getString(column)).getTime());
+				}
+				catch (ParseException pe3)
+				{
+					throw new ParseException("field '" + column
+							+ " expects date value formatted '" + DATEFORMAT
+							+ " instead of '" + getString(column)
+							+ "' for field '" + column + "'", pe
+							.getErrorOffset());
+				}
 			}
 		}
 	}
@@ -437,26 +480,43 @@ public class SimpleTuple implements Tuple
 	public java.sql.Date getDate(String column) throws ParseException
 	{
 		if (this.getObject(column) == null || this.getString(column) == "") return null;
-		if (this.getObject(column) instanceof java.sql.Date) return (java.sql.Date) this.getObject(column);
-		if (this.getObject(column) instanceof java.util.Date) return new java.sql.Date(((java.util.Date) this
-				.getObject(column)).getTime());
+		if (this.getObject(column) instanceof java.sql.Date) return (java.sql.Date) this
+				.getObject(column);
+		if (this.getObject(column) instanceof java.util.Date) return new java.sql.Date(
+				((java.util.Date) this.getObject(column)).getTime());
 
 		try
 		{
 			DateFormat formatter = new SimpleDateFormat(DATEFORMAT, Locale.US);
-			return new java.sql.Date(formatter.parse(this.getString(column)).getTime());
+			return new java.sql.Date(formatter.parse(this.getString(column))
+					.getTime());
 		}
 		catch (ParseException pe)
 		{
 			try
 			{
-				DateFormat formatter = new SimpleDateFormat(DATEFORMAT2, Locale.US);
-				return new java.sql.Date(formatter.parse(this.getString(column)).getTime());
+				DateFormat formatter = new SimpleDateFormat(DATEFORMAT2,
+						Locale.US);
+				return new java.sql.Date(formatter
+						.parse(this.getString(column)).getTime());
 			}
 			catch (ParseException pe2)
 			{
-				throw new ParseException("field '" + column + " expects date value formatted '" + DATEFORMAT
-						+ " instead of '" + getString(column) + "' for field '" + column + "'", pe.getErrorOffset());
+				try
+				{
+					DateFormat formatter = new SimpleDateFormat(DATEFORMAT3,
+							Locale.US);
+					return new java.sql.Date(formatter.parse(
+							this.getString(column)).getTime());
+				}
+				catch (ParseException pe3)
+				{
+					throw new ParseException("field '" + column
+							+ " expects date value formatted '" + DATEFORMAT
+							+ " instead of '" + getString(column)
+							+ "' for field '" + column + "'", pe
+							.getErrorOffset());
+				}
 			}
 		}
 	}
@@ -479,9 +539,10 @@ public class SimpleTuple implements Tuple
 		{
 			if (getColName(columnIndex) != null)
 			{
-				result += getColName(columnIndex) + "='" + getObject(columnIndex)
+				result += getColName(columnIndex) + "='"
+						+ getObject(columnIndex)
 
-				+ "' ";
+						+ "' ";
 			}
 			else
 			{
@@ -512,29 +573,49 @@ public class SimpleTuple implements Tuple
 		if (this.getObject(column) == null || this.getString(column) == "") return null;
 		try
 		{
-			DateFormat formatter = new SimpleDateFormat(DATETIMEFORMAT, Locale.US);
+			DateFormat formatter = new SimpleDateFormat(DATETIMEFORMAT,
+					Locale.US);
 			formatter.setTimeZone(TimeZone.getDefault());
-			return new java.sql.Timestamp(formatter.parse(this.getString(column)).getTime());
+			return new java.sql.Timestamp(formatter.parse(
+					this.getString(column)).getTime());
 		}
 		catch (ParseException pe)
 		{
 			try
 			{
-				DateFormat formatter = new SimpleDateFormat(DATETIMEFORMAT2, Locale.US);
+				DateFormat formatter = new SimpleDateFormat(DATETIMEFORMAT2,
+						Locale.US);
 				formatter.setTimeZone(TimeZone.getDefault());
-				return new java.sql.Timestamp(formatter.parse(this.getString(column)).getTime());
+				return new java.sql.Timestamp(formatter.parse(
+						this.getString(column)).getTime());
 			}
 			catch (ParseException pe2)
 			{
 				try
 				{
-					return new java.sql.Timestamp(this.getDate(column).getTime());
+					DateFormat formatter = new SimpleDateFormat(
+							DATETIMEFORMAT3, Locale.US);
+					formatter.setTimeZone(TimeZone.getDefault());
+					return new java.sql.Timestamp(formatter.parse(
+							this.getString(column)).getTime());
 				}
 				catch (ParseException pe3)
 				{
-					throw new ParseException("field '" + column + "' expects datetime value formatted '"
-							+ DATETIMEFORMAT + "' or '" + DATETIMEFORMAT2 + "' or '" + DATEFORMAT + "' or '"
-							+ DATEFORMAT2 + "' instead of '" + getString(column) + "'", pe.getErrorOffset());
+					try
+					{
+						return new java.sql.Timestamp(this.getDate(column)
+								.getTime());
+					}
+					catch (ParseException pe4)
+					{
+						throw new ParseException("field '" + column
+								+ "' expects datetime value formatted '"
+								+ DATETIMEFORMAT + "' or '" + DATETIMEFORMAT2
+								+ "' or '" + DATEFORMAT + "' or '"
+								+ DATEFORMAT2 + "' or '" + DATEFORMAT3
+								+ "' instead of '" + getString(column) + "'",
+								pe.getErrorOffset());
+					}
 				}
 			}
 		}
@@ -545,30 +626,50 @@ public class SimpleTuple implements Tuple
 		if (this.getObject(column) == null || this.getString(column) == "") return null;
 		try
 		{
-			DateFormat formatter = new SimpleDateFormat(DATETIMEFORMAT, Locale.US);
+			DateFormat formatter = new SimpleDateFormat(DATETIMEFORMAT,
+					Locale.US);
 			formatter.setTimeZone(TimeZone.getDefault());
-			return new java.sql.Timestamp(formatter.parse(this.getString(column)).getTime());
+			return new java.sql.Timestamp(formatter.parse(
+					this.getString(column)).getTime());
 		}
 		// FIXME: copy of getTimestamp(String column)
 		catch (ParseException pe)
 		{
 			try
 			{
-				DateFormat formatter = new SimpleDateFormat(DATETIMEFORMAT2, Locale.US);
+				DateFormat formatter = new SimpleDateFormat(DATETIMEFORMAT2,
+						Locale.US);
 				formatter.setTimeZone(TimeZone.getDefault());
-				return new java.sql.Timestamp(formatter.parse(this.getString(column)).getTime());
+				return new java.sql.Timestamp(formatter.parse(
+						this.getString(column)).getTime());
 			}
 			catch (ParseException pe2)
 			{
 				try
 				{
-					return new java.sql.Timestamp(this.getDate(column).getTime());
+					DateFormat formatter = new SimpleDateFormat(
+							DATETIMEFORMAT3, Locale.US);
+					formatter.setTimeZone(TimeZone.getDefault());
+					return new java.sql.Timestamp(formatter.parse(
+							this.getString(column)).getTime());
 				}
 				catch (ParseException pe3)
 				{
-					throw new ParseException("field '" + column + "' expects datetime value formatted '"
-							+ DATETIMEFORMAT + "' or '" + DATETIMEFORMAT2 + "' or '" + DATEFORMAT + "' or '"
-							+ DATEFORMAT2 + "' instead of '" + getString(column) + "'", pe.getErrorOffset());
+					try
+					{
+						return new java.sql.Timestamp(this.getDate(column)
+								.getTime());
+					}
+					catch (ParseException pe4)
+					{
+						throw new ParseException("field '" + column
+								+ "' expects datetime value formatted '"
+								+ DATETIMEFORMAT + "' or '" + DATETIMEFORMAT2
+								+ "' or '" + DATETIMEFORMAT3 + "' or '"
+								+ DATEFORMAT + "' or '" + DATEFORMAT2
+								+ "' or '" + DATEFORMAT3 + "' instead of '"
+								+ getString(column) + "'", pe.getErrorOffset());
+					}
 				}
 			}
 		}
@@ -578,12 +679,12 @@ public class SimpleTuple implements Tuple
 	{
 		return this.getList(column, null);
 	}
-	
+
 	public Set<Object> getSet(String column)
 	{
 		return new LinkedHashSet<Object>(this.getList(column, null));
 	}
-	
+
 	public Set<Object> getSet(String column, String sep)
 	{
 		return new LinkedHashSet<Object>(this.getList(column, sep));
@@ -605,7 +706,8 @@ public class SimpleTuple implements Tuple
 		{
 			List<Object> result = new ArrayList<Object>();
 			if (sep == null) sep = ",";
-			StringTokenizer tokenizer = new StringTokenizer((String) this.getObject(column), sep);
+			StringTokenizer tokenizer = new StringTokenizer((String) this
+					.getObject(column), sep);
 			while (tokenizer.hasMoreElements())
 			{
 				result.add(tokenizer.nextToken().trim());
@@ -642,7 +744,8 @@ public class SimpleTuple implements Tuple
 		{
 			List<Object> result = new ArrayList<Object>();
 			if (sep == null) sep = ",";
-			StringTokenizer tokenizer = new StringTokenizer((String) this.getObject(column), sep);
+			StringTokenizer tokenizer = new StringTokenizer((String) this
+					.getObject(column), sep);
 			while (tokenizer.hasMoreElements())
 			{
 				result.add(tokenizer.nextToken().trim());
@@ -666,13 +769,15 @@ public class SimpleTuple implements Tuple
 	@Override
 	public boolean notNull(int columnIndex)
 	{
-		return this.getObject(columnIndex) != null && !"".equals(this.getString(columnIndex));
+		return this.getObject(columnIndex) != null
+				&& !"".equals(this.getString(columnIndex));
 	}
 
 	@Override
 	public boolean notNull(String columnName)
 	{
-		return this.getObject(columnName) != null && !"".equals(this.getString(columnName));
+		return this.getObject(columnName) != null
+				&& !"".equals(this.getString(columnName));
 	}
 
 	@Override
