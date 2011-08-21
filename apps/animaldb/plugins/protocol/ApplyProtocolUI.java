@@ -270,7 +270,7 @@ public class ApplyProtocolUI {
     private void makeAllValuesSelectbox() {
     	Vector<ValueLabel> options = new Vector<ValueLabel>();
     	options.add(new ValueLabel("AllValues", 
-    			"Show not only most recent but all values (works only with 'Edit existing values' and" +
+    			"Show not only most recent but all values (works only with 'Edit existing values' and " +
     			"disables defaults)"));
     	allValuesBox = new CheckboxInput("AllValuesBox", "", 
     			"Indicate whether you want to see all values for every target-measurement combination", 

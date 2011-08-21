@@ -131,7 +131,9 @@ public class ApplyProtocolPlugin extends GenericPlugin
 							targetId, measurement, investigationIds, ownInvId);
 					
 					if (!model.isNewProtocolApplication()) {
-						// User chose to edit existing values
+						// User chose to edit existing values (db.update())
+						// Note: if a value did not yet exist for the target-feature combination,
+						// a new one is made and added to the DB.
 						
 						// Loop through the values
 						int valueCounter = 0;
@@ -179,11 +181,15 @@ public class ApplyProtocolPlugin extends GenericPlugin
 								originalObservedValue.setTime(startTime);
 								originalObservedValue.setEndtime(endTime);
 								if (originalObservedValue.getProtocolApplication_Id() == null) {
+									// No prot.app set yet -> new value -> db.add()
 									originalObservedValue.setProtocolApplication_Id(paId);
+									db.add(originalObservedValue);
+								} else {
+									// Prot.app. already set -> existing value -> db.update()
+									db.update(originalObservedValue);
 								}
 					
-								db.update(originalObservedValue); // Big TODO: with HSQL back-end, db.update() ignores new values, which may in fact be part of originalObservedValue!
-								// TODO: add to batch list and add later
+								// TODO: add value to batch list and add/update later
 						    }
 						    
 						    if (!model.isAllValues()) {
@@ -194,7 +200,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 						    valueCounter++;
 						} // end of value loop
 					} else {
-						// User chose to enter new values
+						// User chose to enter new values (db.add())
 						Date startTime = null;
 					    Date endTime = null;
 					    ObservedValue newValue = new ObservedValue();

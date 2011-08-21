@@ -77,7 +77,7 @@ public class AnimalDBWelcomeScreenPlugin extends PluginModel<Entity>
 			} else {
 				prefillDb(db);
 			}
-		} catch (DatabaseException e) {
+		} catch (Exception e) {
 			prefillDb(db);
 		}
 	}
