@@ -16,16 +16,16 @@ public class BatchEntitySelectForm extends Container
 		entitiesDbTable.addColumn("Select");
 		entitiesDbTable.addColumn("Entities");
 
-		ActionInput addButton    = new ActionInput("Add", "Add selected");
+		ActionInput addButton    = new ActionInput("Add", "", "Add selected");
 
 		Table entitiesBatchTable;
 		entitiesBatchTable       = new Table("entitiesBatchTable", "Entities in Batch");
 		entitiesBatchTable.addColumn("Select");
 		entitiesBatchTable.addColumn("Entities");
 		
-		ActionInput removeButton = new ActionInput("Remove", "Remove selected");
+		ActionInput removeButton = new ActionInput("Remove", "", "Remove selected");
 		
-		ActionInput clearButton = new ActionInput("Clear", "Clear");
+		ActionInput clearButton = new ActionInput("Clear", "", "Clear");
 
 		DivPanel panel           = new DivPanel("panel", "");
 		panel.add(entitiesDbTable);
