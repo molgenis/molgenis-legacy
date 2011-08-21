@@ -20,6 +20,7 @@ import java.util.Locale;
 import java.util.Vector;
 
 import javax.naming.NamingException;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +31,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.cxf.Bus;
 import org.apache.cxf.BusFactory;
 import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.Database;
@@ -43,12 +45,12 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.FileInput;
 import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.CsvWriter;
 import org.molgenis.util.CsvStringReader;
-import org.molgenis.util.SpreadsheetWriter;
+import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.SimpleTuple;
+import org.molgenis.util.SpreadsheetWriter;
 import org.molgenis.util.Tuple;
 
 /**
@@ -77,8 +79,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	private static final long serialVersionUID = 3141439968743510237L;
 	// whether cxf is already loaded
 	private boolean cxfLoaded = false;
-	
-	//the used molgenisoptions, set by generated MolgenisServlet
+
+	// the used molgenisoptions, set by generated MolgenisServlet
 	protected MolgenisOptions usedOptions = null;
 
 	/**
@@ -112,7 +114,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	 * @throws NamingException
 	 * @throws DatabaseException
 	 */
-	public Object getSoapImpl() throws Exception{
+	public Object getSoapImpl() throws Exception
+	{
 		return null;
 	}
 
@@ -298,7 +301,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		}
 	}
 
-	private void handleSOAPrequest(HttpServletRequest request, HttpServletResponse response) throws Exception
+	private void handleSOAPrequest(HttpServletRequest request,
+			HttpServletResponse response) throws Exception
 	{
 		// delegate to CXF servlet
 		// load the bus if needed
@@ -439,13 +443,14 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				session.invalidate();
 				return;
 			}
-			molgenis = createUserInterface(userLogin);	
+			molgenis = createUserInterface(userLogin);
 		}
-		//this should work unless complicated load balancing without proxy rewriting...
-		molgenis.setBaseUrl( request.getScheme() + "://" + request.getServerName() +
-                getPort(request) + request.getContextPath());
+		// this should work unless complicated load balancing without proxy
+		// rewriting...
+		molgenis.setBaseUrl(request.getScheme() + "://"
+				+ request.getServerName() + getPort(request)
+				+ request.getContextPath());
 
-		
 		// ((UserInterface)molgenis).setDatabase(db);
 		userLogin = ((ApplicationController) molgenis).getLogin();
 
@@ -457,15 +462,15 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		// handle request
 		try
 		{
-			//set the base address
-			
-			
+			// set the base address
+
 			Tuple requestTuple = new HttpServletRequestTuple(request, response);
 
 			// action == download an attached file
 			// FIXME move to form controllers handlerequest...
-			
-			if (FileInput.ACTION_DOWNLOAD.equals(requestTuple.getString(ScreenModel.INPUT_ACTION)))
+
+			if (FileInput.ACTION_DOWNLOAD.equals(requestTuple
+					.getString(ScreenModel.INPUT_ACTION)))
 			{
 				logger.info(requestTuple);
 
@@ -498,34 +503,46 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				out.close();
 			}
 
-			// action == download, but now in a standard way, handled by controller
-			else if (ScreenModel.Show.SHOW_DOWNLOAD.equals(requestTuple.getString(FormModel.INPUT_SHOW))) {
+			// action == download, but now in a standard way, handled by
+			// controller
+			else if (ScreenModel.Show.SHOW_DOWNLOAD.equals(requestTuple
+					.getString(FormModel.INPUT_SHOW)))
+			{
 				// get the screen that will hande the download request
 				ScreenController<? extends ScreenModel> controller = molgenis
 						.get(requestTuple.getString(ScreenModel.INPUT_TARGET));
 
 				// set the headers for the download
 				response.setContentType("application/x-download");
-				
-				String action = requestTuple.getString(ScreenModel.INPUT_ACTION);
+
+				String action = requestTuple
+						.getString(ScreenModel.INPUT_ACTION);
 				String extension = null;
-				if(action.startsWith("download_txt_")){
+				if (action.startsWith("download_txt_"))
+				{
 					extension = "txt";
-				}else if(action.startsWith("download_xls_")){
+				}
+				else if (action.startsWith("download_xls_"))
+				{
 					extension = "xls";
-				}else{
-					throw new Exception("Download type '" + action + "' unsupported!");
+				}
+				else
+				{
+					throw new Exception("Download type '" + action
+							+ "' unsupported!");
 				}
 
 				ScreenModel.Show.values();
 				response.setHeader("Content-Disposition",
 						"attachment; filename="
-								+ controller.getName().toLowerCase() + "." + extension);
-				
+								+ controller.getName().toLowerCase() + "."
+								+ extension);
+
 				// let the handleRequest produce the content
-				controller.handleRequest(db, requestTuple, response.getOutputStream());
-				
-				//TODO: does this fail when stream is already closed??
+				controller.handleRequest(db, requestTuple, response
+						.getOutputStream());
+
+				// TODO: does this fail when stream is already closed??
 				response.getOutputStream().flush();
 				response.getOutputStream().close();
 			}
@@ -566,23 +583,22 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				response.setContentType("text/html");
 				// response.setBufferSize(10000);
 				PrintWriter writer = response.getWriter();
-				
-				//TODO set application errors (should not be necessary anymore?)
-//				if (dbAvailable)
-//				{
-//					args.put("applicationHtmlError", "");
-//				}
-//				else
-//				{
-//					args.put("applicationHtmlError",
-//							"<p class=\"errormessage\">Database creation error: "
-//									+ dbErrorMessage + "</p>");
-//				}
 
+				// TODO set application errors (should not be necessary
+				// anymore?)
+				// if (dbAvailable)
+				// {
+				// args.put("applicationHtmlError", "");
+				// }
+				// else
+				// {
+				// args.put("applicationHtmlError",
+				// "<p class=\"errormessage\">Database creation error: "
+				// + dbErrorMessage + "</p>");
+				// }
 
 				// Render result
-				String show = requestTuple
-				.getString(FormModel.INPUT_SHOW);
+				String show = requestTuple.getString(FormModel.INPUT_SHOW);
 				if (ScreenModel.Show.SHOW_DIALOG.equals(show))
 				{
 					molgenis.getModel().setShow(show);
@@ -595,162 +611,164 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				{
 					molgenis.getModel().setShow("show");
 					writer.write(molgenis.render());
-					
-//					List<?> massupdate = requestTuple
-//							.getList("massUpdate");
-//					// if empty list, create empty list
-//					if (massupdate == null) massupdate = new ArrayList<Object>();
-//
-//					Vector<String> massupdate_updateable = new Vector<String>();
-//					Vector<String> massupdate_readonly = getVector(requestTuple
-//							.getObject("massUpdate_readonly"));
-//
-//					for (Object id : massupdate)
-//					{
-//						if (!massupdate_readonly.contains(id)) massupdate_updateable
-//								.add(id.toString());
-//					}
-//
-//					args.put("massupdate", massupdate_updateable);
+
+					// List<?> massupdate = requestTuple
+					// .getList("massUpdate");
+					// // if empty list, create empty list
+					// if (massupdate == null) massupdate = new
+					// ArrayList<Object>();
+					//
+					// Vector<String> massupdate_updateable = new
+					// Vector<String>();
+					// Vector<String> massupdate_readonly =
+					// getVector(requestTuple
+					// .getObject("massUpdate_readonly"));
+					//
+					// for (Object id : massupdate)
+					// {
+					// if (!massupdate_readonly.contains(id))
+					// massupdate_updateable
+					// .add(id.toString());
+					// }
+					//
+					// args.put("massupdate", massupdate_updateable);
 				}
 				else
 				{
 					molgenis.getModel().setShow("root");
 					writer.write(molgenis.render());
 				}
-				
-				
 
-//				if (false)
-//				{
-//					logger.info("create template");
-//					String templatefile = "Main.ftl";
-//
-//					// Create a freemarker template
-//					logger.debug("trying to process template '" + templatefile
-//							+ "'");
-//					Configuration freemarkerConf = this
-//							.getFreemarkerConfiguration(molgenis);
-//					Template freemarkerTemplate = freemarkerConf
-//							.getTemplate(templatefile);
-//					Map<String, Object> args = new TreeMap<String, Object>();
-//					args.put("title", molgenis.getLabel());
-//					args.put("application", molgenis);
-//					args.put("widgetfactory", new WidgetFactory());
-//
-//					if (dbAvailable)
-//					{
-//						args.put("applicationHtmlError", "");
-//					}
-//					else
-//					{
-//						args.put("applicationHtmlError",
-//								"<p class=\"errormessage\">Database creation error: "
-//										+ dbErrorMessage + "</p>");
-//					}
+				// if (false)
+				// {
+				// logger.info("create template");
+				// String templatefile = "Main.ftl";
+				//
+				// // Create a freemarker template
+				// logger.debug("trying to process template '" + templatefile
+				// + "'");
+				// Configuration freemarkerConf = this
+				// .getFreemarkerConfiguration(molgenis);
+				// Template freemarkerTemplate = freemarkerConf
+				// .getTemplate(templatefile);
+				// Map<String, Object> args = new TreeMap<String, Object>();
+				// args.put("title", molgenis.getLabel());
+				// args.put("application", molgenis);
+				// args.put("widgetfactory", new WidgetFactory());
+				//
+				// if (dbAvailable)
+				// {
+				// args.put("applicationHtmlError", "");
+				// }
+				// else
+				// {
+				// args.put("applicationHtmlError",
+				// "<p class=\"errormessage\">Database creation error: "
+				// + dbErrorMessage + "</p>");
+				// }
 
-					// args.put("username", userLogin.getUserName());
+				// args.put("username", userLogin.getUserName());
 
-					/**
-					 * Work in progress: mechanism to pass REST calls to
-					 * underlying screens (ie. plugins! much needed!) for(int i
-					 * = 0; i < requestTuple.size(); i ++){
-					 * args.put(requestTuple.getFields().get(i),
-					 * requestTuple.getString(i));
-					 * //System.out.println("**** putting: " +
-					 * requestTuple.getFields().get(i) + " TO " +
-					 * requestTuple.getString(i)); }
-					 */
+				/**
+				 * Work in progress: mechanism to pass REST calls to underlying
+				 * screens (ie. plugins! much needed!) for(int i = 0; i <
+				 * requestTuple.size(); i ++){
+				 * args.put(requestTuple.getFields().get(i),
+				 * requestTuple.getString(i));
+				 * //System.out.println("**** putting: " +
+				 * requestTuple.getFields().get(i) + " TO " +
+				 * requestTuple.getString(i)); }
+				 */
 
-					// FIXME complex screen handling
-//					String show = requestTuple
-//							.getString(FormModel.INPUT_SHOW);
-//					if (show != null)
-//					{
-//						args.put("show", requestTuple.getString("__show"));
-//
-//						// if dialog, only show target
-//						if (ScreenModel.Show.SHOW_DIALOG.equals(show))
-//						{
-//							ScreenModel<?> target = molgenis.get(requestTuple
-//									.getString("__target"));
-//							args.put("target", target.getName());
-//							args.put("application", target);
-//							// args.put("show", "dialogue");
-//						}
-//
-//						if (requestTuple.getString("__show").equals(
-//								"massupdate"))
-//						{
-//							List<?> massupdate = requestTuple
-//									.getList("massUpdate");
-//							// if empty list, create empty list
-//							if (massupdate == null) massupdate = new ArrayList<Object>();
-//
-//							Vector<String> massupdate_updateable = new Vector<String>();
-//							Vector<String> massupdate_readonly = getVector(requestTuple
-//									.getObject("massUpdate_readonly"));
-//
-//							for (Object id : massupdate)
-//							{
-//								if (!massupdate_readonly.contains(id)) massupdate_updateable
-//										.add(id.toString());
-//							}
-//
-//							args.put("massupdate", massupdate_updateable);
-//						}
-//					}
-//					else
-//					{
-//						args.put("show", "root");
-//					}
-//					logger.info("applying layout template");
+				// FIXME complex screen handling
+				// String show = requestTuple
+				// .getString(FormModel.INPUT_SHOW);
+				// if (show != null)
+				// {
+				// args.put("show", requestTuple.getString("__show"));
+				//
+				// // if dialog, only show target
+				// if (ScreenModel.Show.SHOW_DIALOG.equals(show))
+				// {
+				// ScreenModel<?> target = molgenis.get(requestTuple
+				// .getString("__target"));
+				// args.put("target", target.getName());
+				// args.put("application", target);
+				// // args.put("show", "dialogue");
+				// }
+				//
+				// if (requestTuple.getString("__show").equals(
+				// "massupdate"))
+				// {
+				// List<?> massupdate = requestTuple
+				// .getList("massUpdate");
+				// // if empty list, create empty list
+				// if (massupdate == null) massupdate = new ArrayList<Object>();
+				//
+				// Vector<String> massupdate_updateable = new Vector<String>();
+				// Vector<String> massupdate_readonly = getVector(requestTuple
+				// .getObject("massUpdate_readonly"));
+				//
+				// for (Object id : massupdate)
+				// {
+				// if (!massupdate_readonly.contains(id)) massupdate_updateable
+				// .add(id.toString());
+				// }
+				//
+				// args.put("massupdate", massupdate_updateable);
+				// }
+				// }
+				// else
+				// {
+				// args.put("show", "root");
+				// }
+				// logger.info("applying layout template");
 
-//					if (linkoutOverlay())
-//					{
-//						logger.info("applying linkout overlay");
-//						Writer result = new StringWriter();
-//						PrintWriter tmpWriter = new PrintWriter(result);
-//						freemarkerTemplate.process(args, tmpWriter);
-//						String templated = result.toString();
-//						LinkOutOverlay linker = new LinkOutOverlay();
-//						String afterOverlay = linker.addlinkouts(templated);
-//						writer.write(afterOverlay);
-//					}
-//					else
-//					{
-//						freemarkerTemplate.process(args, writer);
-//					}
-//				}
+				// if (linkoutOverlay())
+				// {
+				// logger.info("applying linkout overlay");
+				// Writer result = new StringWriter();
+				// PrintWriter tmpWriter = new PrintWriter(result);
+				// freemarkerTemplate.process(args, tmpWriter);
+				// String templated = result.toString();
+				// LinkOutOverlay linker = new LinkOutOverlay();
+				// String afterOverlay = linker.addlinkouts(templated);
+				// writer.write(afterOverlay);
+				// }
+				// else
+				// {
+				// freemarkerTemplate.process(args, writer);
+				// }
+				// }
 				writer.close();
 
 				// done, get rid of screen messages here?
 				((ApplicationController) molgenis).clearAllMessages();
-				
-				//TODO THIS USED TO BE HERE.. PLEASE REVIEW!!
-//				args.put("massupdate", massupdate_updateable);
-//					}
-//				}
-//				else
-//				{
-//					args.put("show", "root");
-//				}
-//				logger.info("applying layout template");
-//	
-//				if(usedOptions.linkout_overlay){
-//					logger.info("applying linkout overlay");
-//					Writer result = new StringWriter();
-//					PrintWriter tmpWriter = new PrintWriter(result);
-//					freemarkerTemplate.process(args, tmpWriter);
-//					String templated = result.toString();
-//					LinkOutOverlay linker = new LinkOutOverlay();
-//					String afterOverlay = linker.addlinkouts(templated);
-//					writer.write(afterOverlay);
-//				}else{
-//					freemarkerTemplate.process(args, writer);
-//				}
-//				writer.close();
-				//END OF 'USED TO BE HERE' BLOCK
+
+				// TODO THIS USED TO BE HERE.. PLEASE REVIEW!!
+				// args.put("massupdate", massupdate_updateable);
+				// }
+				// }
+				// else
+				// {
+				// args.put("show", "root");
+				// }
+				// logger.info("applying layout template");
+				//	
+				// if(usedOptions.linkout_overlay){
+				// logger.info("applying linkout overlay");
+				// Writer result = new StringWriter();
+				// PrintWriter tmpWriter = new PrintWriter(result);
+				// freemarkerTemplate.process(args, tmpWriter);
+				// String templated = result.toString();
+				// LinkOutOverlay linker = new LinkOutOverlay();
+				// String afterOverlay = linker.addlinkouts(templated);
+				// writer.write(afterOverlay);
+				// }else{
+				// freemarkerTemplate.process(args, writer);
+				// }
+				// writer.close();
+				// END OF 'USED TO BE HERE' BLOCK
 			}
 			// db.commitTx(); DISCUSSION
 		}
@@ -867,7 +885,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	/**
 	 * Handle use of the download API.
 	 * 
-	 * TODO: this method is horrible and should be properly refactored, documented and tested!
+	 * TODO: this method is horrible and should be properly refactored,
+	 * documented and tested!
 	 * 
 	 * @param request
 	 * @param response
@@ -1049,7 +1068,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				}
 
 				// TODO: when is this reached??
-				
+
 				// execute query
 				SpreadsheetWriter writer = new CsvWriter(out);
 				// CsvWriter writer = new CsvFileWriter( new
@@ -1155,19 +1174,40 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			else if (requestTuple.getObject(INPUT_DATA) == null
 					&& requestTuple.getObject(INPUT_FILE) == null)
 			{
-				// try
-				// {
-				// String clazzName = requestTuple.getString(INPUT_DATATYPE);
-				// Class<? extends Entity> entityClass =
-				// getClassForName(clazzName);
-				// Entity template = entityClass.newInstance();
-				// }
-				// catch (Exception e)
-				// {
-				// out.println("Upload failed: " + e.getMessage() + "");
-				// e.printStackTrace();
-				// throw e;
-				// }
+				try
+				{
+//					String clazzName = requestTuple.getString(INPUT_DATATYPE);
+//					Class<? extends Entity> entityClass = getClassForName(clazzName);
+//					Entity template = entityClass.newInstance();
+//
+//					out
+//							.println("<html><body><form method=\"post\" enctype=\"multipart/form-data\">");
+//					out.println("<h1>Data upload (step 2)</h1>");
+//					out.println("Enter your data as CSV.");
+//					out
+//							.println("<table><tr><td><label>Data type:</label></td><td><select name=\""
+//									+ INPUT_DATATYPE + "\">");
+//
+//					for (Class<? extends Entity> c : this.getDatabase()
+//							.getEntityClasses())
+//					{
+//						// write to screen
+//						out.println("<option value=\"" + c.getName() + "\">"
+//								+ c.getName() + "</option>");
+//					}
+//					out.println("</select></td></tr>");
+//					out
+//							.println("<tr><td></td><td><input type=\"submit\" name=\""
+//									+ INPUT_SUBMIT
+//									+ "\" value=\"Submit\"></td></tr>");
+//					out.println("</table></form></body></html>");
+				}
+				catch (Exception e)
+				{
+					out.println("Upload failed: " + e.getMessage() + "");
+					e.printStackTrace();
+					throw e;
+				}
 			}
 			// process request
 			else
@@ -1210,8 +1250,9 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					if (action.equals("ADD"))
 					{
 						File temp = File.createTempFile("molgenis", "tab");
-						SpreadsheetWriter writer = new CsvWriter(new PrintWriter(
-								new BufferedWriter(new FileWriter(temp))));
+						SpreadsheetWriter writer = new CsvWriter(
+								new PrintWriter(new BufferedWriter(
+										new FileWriter(temp))));
 						if (requestTuple.getObject(INPUT_SILENT) != null
 								&& requestTuple.getBool(INPUT_SILENT) == true)
 						{
@@ -1480,7 +1521,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 
 			// get the user interface and find the login
 			HttpSession session = request.getSession();
-			ScreenController<?>molgenis = (ApplicationController) session
+			ScreenController<?> molgenis = (ApplicationController) session
 					.getAttribute("application");
 			Login login = molgenis.getApplicationController().getLogin();
 			db.setLogin(login);
@@ -1515,7 +1556,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				}
 
 				// write the xref key as set in xref_field
-				json += result.get(i).get(xref_field).toString() + ":\"";
+				json += "\""+result.get(i).get(xref_field).toString() + "\":\"";
 
 				// write the label(s) as set in xref_label
 				for (int j = 0; j < xref_labels.size(); j++)
@@ -1530,7 +1571,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				// + result.get(i).get(xref_label) + "\"");
 			}
 			json += "}";
-
+			
 			logger.debug(json);
 
 			// write out
@@ -1588,14 +1629,20 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	// }
 	// }
 	// }
-	
-	private static String getPort(HttpServletRequest req) {
-	    if ("http".equalsIgnoreCase(req.getScheme()) && req.getServerPort() != 80 ||
-	            "https".equalsIgnoreCase(req.getScheme()) && req.getServerPort() != 443 ) {
-	        return (":" + req.getServerPort());
-	    } else {
-	        return "";
-	    }
+
+	private static String getPort(HttpServletRequest req)
+	{
+		if ("http".equalsIgnoreCase(req.getScheme())
+				&& req.getServerPort() != 80
+				|| "https".equalsIgnoreCase(req.getScheme())
+				&& req.getServerPort() != 443)
+		{
+			return (":" + req.getServerPort());
+		}
+		else
+		{
+			return "";
+		}
 	}
 
 }
