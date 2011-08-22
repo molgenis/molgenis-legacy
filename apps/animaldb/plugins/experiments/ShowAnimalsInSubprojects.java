@@ -370,40 +370,26 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 			
 			if (action.equals("ApplyAddAnimalToSubproject"))
 			{
-				SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+				SimpleDateFormat oldDateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+				
+				// Get Subproject start and end dates
+				String subprojectStartDateString = ct.getMostRecentValueAsString(subproject.getId(), ct.getMeasurementId("StartDate"));
+				Date subprojectStartDate = newDateOnlyFormat.parse(subprojectStartDateString);
+				Date subprojectEndDate = null;
+				String subprojectEndDateString = ct.getMostRecentValueAsString(subproject.getId(), ct.getMeasurementId("EndDate"));
+				if (!subprojectEndDateString.equals("")) {
+					subprojectEndDate = newDateOnlyFormat.parse(subprojectEndDateString);
+				}
 				
 				// Get values from form for one or more animals
 				// Firstly, common values for all animals (TODO: maybe change so you can have separate values for each animal)
-				
-				// Get Subproject start and end dates
-				Date subprojectStartDate = null;
-				int featureId = ct.getMeasurementId("StartDate");
-				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, subproject.getId()));
-				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
-				List<ObservedValue> valueList = q.find();
-				if (valueList.size() > 0) {
-					String subprojectStartDateString = valueList.get(0).getValue();
-					subprojectStartDate = dateOnlyFormat.parse(subprojectStartDateString);
-				}
-				Date subprojectEndDate = null;
-				featureId = ct.getMeasurementId("EndDate");
-				q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, subproject.getId()));
-				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
-				valueList = q.find();
-				if (valueList.size() > 0) {
-					String subprojectEndDateString = valueList.get(0).getValue();
-					if (subprojectEndDateString != null) {
-						subprojectEndDate = dateOnlyFormat.parse(subprojectEndDateString);
-					}
-				}
 				
 				// Date of entry
 				Date subProjectAdditionDate = null;
 				if (request.getString("subprojectadditiondate") != null) {
 					String subProjectRemovalDateString = request.getString("subprojectadditiondate");
-					subProjectAdditionDate = dateOnlyFormat.parse(subProjectRemovalDateString);
+					subProjectAdditionDate = oldDateOnlyFormat.parse(subProjectRemovalDateString);
 					// Check against Subproject time boundaries
 					if (subProjectAdditionDate.before(subprojectStartDate) ||
 						(subprojectEndDate != null && subProjectAdditionDate.after(subprojectEndDate))) {
@@ -444,12 +430,12 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 					}
 				}
 				// Remove animals from id list that are already in an experiment currently
-				featureId = ct.getMeasurementId("Experiment");
-				q = db.query(ObservedValue.class);
+				int featureId = ct.getMeasurementId("Experiment");
+				Query<ObservedValue> q = db.query(ObservedValue.class);
 				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
 				q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, animalIdList));
-				valueList = q.find();
+				List<ObservedValue> valueList = q.find();
 				if (valueList.size() > 0) {
 					String message = "The following animal id's: ";
 					for (ObservedValue value : valueList) {
