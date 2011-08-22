@@ -55,7 +55,8 @@ public class ManageLitters extends PluginModel<Entity>
 	private int weanSizeMale;
 	private boolean litterSizeApproximate;
 	private CommonService ct = CommonService.getInstance();
-	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+	private SimpleDateFormat oldDateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 	private String action = "ShowLitters";
 	private String nameBase = null;
 	private int startNumber = -1;
@@ -141,7 +142,7 @@ public class ManageLitters extends PluginModel<Entity>
 	public String getBirthdate() {
 		return birthdate;
 	}
-	public void setBirthdatetime(String birthdate) {
+	public void setBirthdate(String birthdate) {
 		this.birthdate = birthdate;
 	}
 	
@@ -272,7 +273,9 @@ public class ManageLitters extends PluginModel<Entity>
 			if (request.getString("weandate") == null || request.getString("weandate").equals("")) {
 				throw new Exception("Wean date cannot be empty");
 			}
-			setWeandate(request.getString("weandate"));
+			String weanDateString = request.getString("weandate");
+			Date tmpWeanDate = oldDateOnlyFormat.parse(weanDateString);
+			setWeandate(newDateOnlyFormat.format(tmpWeanDate));
 			setWeanSizeFemale(request.getInt("weansizefemale"));
 			setWeanSizeMale(request.getInt("weansizemale"));
 			
@@ -303,7 +306,9 @@ public class ManageLitters extends PluginModel<Entity>
 			if (request.getString("birthdate") == null || request.getString("birthdate").equals("")) {
 				throw new Exception("Birth date cannot be empty");
 			}
-			setBirthdatetime(request.getString("birthdate"));
+			String birthDateString = request.getString("birthdate");
+			Date tmpBirthDate = oldDateOnlyFormat.parse(birthDateString);
+			setBirthdate(newDateOnlyFormat.format(tmpBirthDate));
 			setLitterSize(request.getInt("littersize"));
 			if (request.getBool("sizeapp_toggle") != null) {
 				setLitterSizeApproximate(true);
@@ -382,7 +387,9 @@ public class ManageLitters extends PluginModel<Entity>
 	
 	public String getAnimalBirthDate(int animalId) {
 		try {
-			return ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("DateOfBirth"));
+			String birthDateString = ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("DateOfBirth"));
+			Date tmpBirthDate = newDateOnlyFormat.parse(birthDateString);
+			return oldDateOnlyFormat.format(tmpBirthDate);
 		} catch (Exception e) {
 			return "";
 		}
@@ -538,7 +545,7 @@ public class ManageLitters extends PluginModel<Entity>
 			if (action.equals("ApplyAddLitter")) {
 				int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
 				setUserFields(request, false);
-				Date eventDate = dateOnlyFormat.parse(birthdate);
+				Date eventDate = newDateOnlyFormat.parse(birthdate);
 				
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
@@ -605,7 +612,7 @@ public class ManageLitters extends PluginModel<Entity>
 			if (action.equals("Wean")) {
 				int invid = ct.getObservationTargetById(litter).getInvestigation_Id();
 				setUserFields(request, true);
-				Date weanDate = dateOnlyFormat.parse(weandate);
+				Date weanDate = newDateOnlyFormat.parse(weandate);
 				
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
@@ -623,7 +630,7 @@ public class ManageLitters extends PluginModel<Entity>
 				Date litterBirthDate;
 				try {
 					litterBirthDateString = ct.getMostRecentValueAsString(litter, ct.getMeasurementId("DateOfBirth"));
-					litterBirthDate = dateOnlyFormat.parse(litterBirthDateString);
+					litterBirthDate = newDateOnlyFormat.parse(litterBirthDateString);
 				} catch (Exception e) {
 					throw(new Exception("No litter birth date found - litter not weaned"));
 				}
@@ -818,9 +825,10 @@ public class ManageLitters extends PluginModel<Entity>
 					}
 					// Set birth date
 					String dob = request.getString("dob_" + animalCount);
+					Date tmpDob = oldDateOnlyFormat.parse(dob);
 					value = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
 							ct.getMeasurementByName("DateOfBirth"), investigationIds, invid).get(0);
-					value.setValue(dob);
+					value.setValue(newDateOnlyFormat.format(tmpDob));
 					if (value.getProtocolApplication_Id() == null) {
 						int paId = ct.makeProtocolApplication(invid, ct.getProtocolId("SetDateOfBirth"));
 						value.setProtocolApplication_Id(paId);

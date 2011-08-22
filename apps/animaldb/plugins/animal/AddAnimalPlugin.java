@@ -10,7 +10,6 @@ package plugins.animal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -130,7 +129,6 @@ public class AddAnimalPlugin extends GenericPlugin
 	}
 	
 	private void handleAddRequest(Database db, Tuple request) throws Exception {
-		Date now = Calendar.getInstance().getTime();
 		
 		int speciesId = 0;
 		if (species.getObject() != null) {
@@ -201,7 +199,7 @@ public class AddAnimalPlugin extends GenericPlugin
 			gmoPanel.setHidden(true);
 		}
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+		SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 		
 		// Birth date
 		String birthDate = null;
@@ -213,7 +211,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		Date entryDate = null;
 		if (!entrydate.getValue().equals("")) {
 			String entryDateString = entrydate.getValue();
-			entryDate = sdf.parse(entryDateString);
+			entryDate = dateOnlyFormat.parse(entryDateString);
 		} else {
 			throw(new Exception("No entry date given - animal(s) not added"));
 		}
@@ -468,13 +466,13 @@ public class AddAnimalPlugin extends GenericPlugin
 		
 		startnumberhelper = new TextLineInput<String>("startnumberhelper");
 		String helperContents = "";
-		helperContents += (ct.getHighestNumberForNameBase("") + 1);
-		helperContents += ";1";
+		helperContents += "1"; // start number for new base
 		for (String base : bases) {
 			if (!base.equals("")) {
 				helperContents += (";" + (ct.getHighestNumberForNameBase(base) + 1));
 			}
 		}
+		helperContents += (";" + (ct.getHighestNumberForNameBase("") + 1)); // start number for empty base (comes last in jQuery select box)
 		startnumberhelper.setValue(helperContents);
 		startnumberhelper.setHidden(true);
 		namePanel.add(startnumberhelper);
@@ -486,7 +484,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		startnumber = new IntInput("startnumber");
 		startnumber.setId("startnumber");
 		startnumber.setLabel("Start numbering at:");
-		startnumber.setValue(ct.getHighestNumberForNameBase("") + 1); // start with highest number for empty base
+		startnumber.setValue(1); // start with highest number for new base (comes first in jQuery select box)
 		namePanel.add(startnumber);
 		
 		numberofanimals = new IntInput("numberofanimals");

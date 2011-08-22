@@ -44,13 +44,12 @@ public class TerminateAnimalsServlet extends app.servlet.MolgenisServlet {
 			if (animalId == 0) {
 				out.print("");
 			} else {
-				Calendar calendar = Calendar.getInstance();
-				Date now = calendar.getTime();
+				java.sql.Date nowDb = new java.sql.Date(new Date().getTime());
 				int featureId = ct.getMeasurementId("Experiment");
 				Query<ObservedValue> q = db.query(ObservedValue.class);
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
-				q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, now));
+				q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, nowDb));
 				q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 				List<ObservedValue> valueList = q.find();
 				if (valueList.size() == 1) {

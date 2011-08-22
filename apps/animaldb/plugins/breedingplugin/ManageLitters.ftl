@@ -239,7 +239,7 @@
 		<tr>
 			<td>${animal.name}</td>
 			<td>
-				<input type='text' id='dob_${animalCount}' name='dob_${animalCount}' value='${screen.getAnimalBirthDate(animalId)}' onclick='showDateInput(this,true)' autocomplete='off' />
+				<input type='text' id='dob_${animalCount}' name='dob_${animalCount}' value='${screen.getAnimalBirthDate(animalId)}' onclick='showDateInput(this)' autocomplete='off' />
 			</td>
 			<td>
 				<select id='sex_${animalCount}' name='sex_${animalCount}'>

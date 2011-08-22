@@ -15,7 +15,7 @@ public class Litter {
 	private int weanSize;
 	private String parentgroup;
 	private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
-	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 	
 	public void setId(int id) {
 		this.id = id;

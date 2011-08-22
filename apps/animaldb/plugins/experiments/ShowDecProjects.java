@@ -99,7 +99,8 @@ public class ShowDecProjects extends PluginModel<Entity>
 				// No action here
 			}
 			if (action.equals("addEditDecProject")) {
-				SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+				SimpleDateFormat oldDateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 				
 				// Get values from form
 				
@@ -135,21 +136,19 @@ public class ShowDecProjects extends PluginModel<Entity>
 				}
 				
 				// Start date
-				String startdateString = "";
 				Date startdate = null;
 				if (request.getString("startdate") != null) {
-					startdateString = request.getString("startdate");
-					startdate = dateOnlyFormat.parse(startdateString);
+					String startdateString = request.getString("startdate");
+					startdate = oldDateOnlyFormat.parse(startdateString);
 				} else {
 					throw(new Exception("No start date given - project not added"));
 				}
 				
 				// End date-time
 				Date enddate = null;
-				String enddateString = null;
 				if (request.getString("enddate") != null) {
-					enddateString = request.getString("enddate");
-					enddate = dateOnlyFormat.parse(enddateString);
+					String enddateString = request.getString("enddate");
+					enddate = oldDateOnlyFormat.parse(enddateString);
 				}
 				
 				// Some variables we need later on
@@ -177,6 +176,9 @@ public class ShowDecProjects extends PluginModel<Entity>
 				// Set values
 				// Nice feature of pheno model: we don't have to overwrite the old values
 				// We just make new ones and the most recent ones count!
+				// TODO: this is not entirely true anymore, now that value dates
+				// are date-only, without time info, so values from the same day
+				// cannot be distinguished anymore!
 				int protocolId = ct.getProtocolId("SetDecProjectSpecs");
 				ProtocolApplication app = ct.createProtocolApplication(investigationId, protocolId);
 				db.add(app);
@@ -199,11 +201,11 @@ public class ShowDecProjects extends PluginModel<Entity>
 				}
 				measurementId = ct.getMeasurementId("StartDate");
 				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
-						enddate, measurementId, projectId, startdateString, 0));
-				if (enddateString != null) {
+						enddate, measurementId, projectId, newDateOnlyFormat.format(startdate), 0));
+				if (enddate != null) {
 					measurementId = ct.getMeasurementId("EndDate");
 					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
-							enddate, measurementId, projectId, enddateString, 0));
+							enddate, measurementId, projectId,  newDateOnlyFormat.format(enddate), 0));
 				}
 				// Add everything to DB
 				db.add(valuesToAddList);

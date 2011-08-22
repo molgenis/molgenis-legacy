@@ -199,7 +199,8 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				// No action here
 			}
 			if (action.equals("addEditDecSubproject")) {
-				SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+				SimpleDateFormat oldDateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 				
 				// Get values from form
 				
@@ -276,21 +277,20 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				// Get most recent Project start and end dates
 				featureId = ct.getMeasurementId("StartDate");
 				String projectStartDateString = ct.getMostRecentValueAsString(decappId, featureId);
-				Date projectStartDate = dateOnlyFormat.parse(projectStartDateString);
+				Date projectStartDate = newDateOnlyFormat.parse(projectStartDateString);
 				featureId = ct.getMeasurementId("EndDate");
 				Date projectEndDate = null;
 				String projectEndDateString = ct.getMostRecentValueAsString(decappId, featureId);
 				if (!projectEndDateString.equals("")) {
-					projectEndDate = dateOnlyFormat.parse(projectEndDateString);
+					projectEndDate = newDateOnlyFormat.parse(projectEndDateString);
 				}
 				
 				// Start date
-				String startdateString = "";
 				Date startdate = null;
 				if (request.getString("startdate") != null) {
-					startdateString = request.getString("startdate");
+					String startdateString = request.getString("startdate");
 					if (!startdateString.equals("")) {
-						startdate = dateOnlyFormat.parse(startdateString);
+						startdate = oldDateOnlyFormat.parse(startdateString);
 						// Check against Project time boundaries
 						if (startdate.before(projectStartDate)) {
 							throw(new Exception("Start date outside DEC Project time span - Subproject not added"));
@@ -307,11 +307,10 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				
 				// End date
 				Date enddate = null;
-				String enddateString = null;
 				if (request.getString("enddate") != null) {
-					enddateString = request.getString("enddate");
+					String enddateString = request.getString("enddate");
 					if (!enddateString.equals("")) {
-						enddate = dateOnlyFormat.parse(enddateString);
+						enddate = oldDateOnlyFormat.parse(enddateString);
 						// Check against Project time boundaries
 						if (enddate.before(projectStartDate) ||
 								enddate.after(projectEndDate)) {
@@ -345,6 +344,9 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				// Set values
 				// Nice feature of pheno model: we don't have to overwrite the old values
 				// We just make new ones and the most recent ones count!
+				// TODO: this is not entirely true anymore, now that value dates
+				// are date-only, without time info, so values from the same day
+				// cannot be distinguished anymore!
 				int protocolId = ct.getProtocolId("SetDecSubprojectSpecs");
 				ProtocolApplication app = ct.createProtocolApplication(investigationId, protocolId);
 				db.add(app);
@@ -391,11 +393,11 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				}
 				measurementId = ct.getMeasurementId("StartDate");
 				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
-						enddate, measurementId, projectId, startdateString, 0));
-				if (enddateString != null) {
+						enddate, measurementId, projectId, newDateOnlyFormat.format(startdate), 0));
+				if (enddate != null) {
 					measurementId = ct.getMeasurementId("EndDate");
 					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
-							enddate, measurementId, projectId, enddateString, 0));
+							enddate, measurementId, projectId, newDateOnlyFormat.format(enddate), 0));
 				}
 				
 				// Add everything to DB

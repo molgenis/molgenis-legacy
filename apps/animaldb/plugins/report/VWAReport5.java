@@ -35,7 +35,7 @@ public class VWAReport5 extends AnimalDBReport {
 		try {
 			this.year = year;
 			SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-			SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+			SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 			String startOfYearString = year + "-01-01 00:00:00";
 			Date startOfYear = dbFormat.parse(startOfYearString);
 			String endOfYearString = (year + 1) + "-01-01 00:00:00";

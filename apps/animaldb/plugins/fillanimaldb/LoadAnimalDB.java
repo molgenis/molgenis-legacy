@@ -303,13 +303,13 @@ public class LoadAnimalDB
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 						protocolId, measurementId, litterid, "Litter", 0));
 
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-				SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+				SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+				SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 				// pairstartdate -> time
 				String pairStartDateString = tuple.getString("pairstartdate");
 				Date pairStartDate = null;
 				if (!pairStartDateString.equals("NULL")) {
-					pairStartDate = sdf.parse(pairStartDateString);
+					pairStartDate = dbFormat.parse(pairStartDateString);
 					
 				}
 
@@ -317,7 +317,7 @@ public class LoadAnimalDB
 				String pairEndDateString = tuple.getString("pairenddate");
 				Date pairEndDate = null;
 				if (!pairEndDateString.equals("NULL")) {
-					pairEndDate = sdf.parse(pairEndDateString);
+					pairEndDate = dbFormat.parse(pairEndDateString);
 				}
 
 				// Parentgroup
@@ -385,7 +385,7 @@ public class LoadAnimalDB
 					birthDayString = null;
 				} else {
 					//change date formatting from mysql to molgenis style
-					birthDayDate = sdf.parse(birthDayString);
+					birthDayDate = dbFormat.parse(birthDayString);
 					birthDayString = dateOnlyFormat.format(birthDayDate);
 				}
 					
@@ -621,14 +621,14 @@ public class LoadAnimalDB
 				db.add(app);
 				int eventid = app.getId();
 				
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-				SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+				SimpleDateFormat csvFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+				SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 				// applicationstartdate -> time
 				String appStartDateString = tuple.getString("applicationstartdate");
 				String appStartDateStringMolgenis = "";
 				Date appStartDate = null;
 				if (!appStartDateString.equals("NULL")) {
-					appStartDate = sdf.parse(appStartDateString);
+					appStartDate = csvFormat.parse(appStartDateString);
 					appStartDateStringMolgenis = dateOnlyFormat.format(appStartDate);
 				}
 
@@ -637,7 +637,7 @@ public class LoadAnimalDB
 				String appEndDateStringMolgenis = "";
 				Date appEndDate = null;
 				if (!appEndDateString.equals("NULL")) {
-					appEndDate = sdf.parse(appEndDateString);
+					appEndDate = csvFormat.parse(appEndDateString);
 					appEndDateStringMolgenis = dateOnlyFormat.format(appEndDate);
 				}
 
@@ -1007,8 +1007,8 @@ public class LoadAnimalDB
 				if (newanimalid > 0) {
 					// date
 					SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-					SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
-					SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MMMM d, yyyy HH:mm:ss", Locale.US);
+					SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+					SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.US);
 					String dateString = tuple.getString("date");
 					Date eventDate = null;
 					if (!dateString.equals("NULL")) {

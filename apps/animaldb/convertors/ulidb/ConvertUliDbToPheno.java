@@ -44,7 +44,7 @@ public class ConvertUliDbToPheno
 	private Map<String, String> appMap;
 	private Calendar calendar;
 	private SimpleDateFormat dbFormat = new SimpleDateFormat("d-M-yyyy H:mm", Locale.US);
-	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 	//private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
 
 	public ConvertUliDbToPheno(Database db, Login login) throws Exception

@@ -265,7 +265,8 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 			
 			if (action.equals("ApplyRemoveAnimalsFromSubproject"))
 			{
-				SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+				SimpleDateFormat oldDateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 				
 				// Get values from form
 				
@@ -279,18 +280,17 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 				Date subProjectRemovalDate = null;
 				if (request.getString("subprojectremovaldate") != null) {
 					String subProjectRemovalDateString = request.getString("subprojectremovaldate");
-					subProjectRemovalDate = dateOnlyFormat.parse(subProjectRemovalDateString);
+					subProjectRemovalDate = oldDateOnlyFormat.parse(subProjectRemovalDateString);
 				} else {
 					throw(new Exception("No removal date given - animal(s) not removed"));
 				}
 				
 				// Date-time of death (if applicable)
 				Date deathDate = null;
-				String deathDateString = null;
 				if (request.getString("deathdate") != null) {
-					deathDateString = request.getString("deathdate");
+					String deathDateString = request.getString("deathdate");
 					if (!deathDateString.equals("")) {
-						deathDate = dateOnlyFormat.parse(deathDateString);
+						deathDate = oldDateOnlyFormat.parse(deathDateString);
 					}
 				}
 				
@@ -334,7 +334,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 							int measurementId = ct.getMeasurementId("DeathDate");
 							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(investigationId, 
 									deathDate, null, protocolId, measurementId, animalId, 
-									deathDateString, 0));
+									newDateOnlyFormat.format(deathDate), 0));
 						}
 						
 						// Set subproject end values
@@ -370,7 +370,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 			
 			if (action.equals("ApplyAddAnimalToSubproject"))
 			{
-				SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+				SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 				
 				// Get values from form for one or more animals
 				// Firstly, common values for all animals (TODO: maybe change so you can have separate values for each animal)

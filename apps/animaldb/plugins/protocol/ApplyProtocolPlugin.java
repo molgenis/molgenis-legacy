@@ -30,6 +30,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
     private ApplyProtocolPluginModel model;
     private ApplyProtocolUI ui;
     private CommonService cs = CommonService.getInstance();
+    private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm", Locale.US);
 
     public ApplyProtocolPlugin(String name, ScreenController<?> parent)
     {
@@ -105,7 +106,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
     
     ScreenMessage handleApply(Tuple request, Database db) {
     	
-    	DateFormat formatter = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
+    	DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.US);
     	
 		try {
 			int userId = this.getLogin().getUserId();
@@ -438,7 +439,8 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		fixValues(request);
 		
 		try {
-			Date startTime = request.getDate(col + "_0_0");
+			String startTimeString = request.getString(col + "_0_0");
+			Date startTime = dateTimeFormat.parse(startTimeString);
 		    for (int row = 1; row <= model.getFullTargetList().size(); row++) {
 		    	ui.makeDateInputAndSetCell(col, row, 0, startTime);
 		    }
@@ -455,7 +457,8 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		fixValues(request);
 		
 		try {
-			Date endTime = request.getDate(col + "_0_0");
+			String endTimeString = request.getString(col + "_0_0");
+			Date endTime = dateTimeFormat.parse(endTimeString);
 		    for (int row = 1; row <= model.getFullTargetList().size(); row++) {
 		    	ui.makeDateInputAndSetCell(col, row, 0, endTime);
 		    }

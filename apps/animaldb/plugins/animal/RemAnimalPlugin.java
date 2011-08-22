@@ -95,25 +95,26 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 			String action = request.getString("__action");
 			if (action.equals("applyDeath"))
 			{
+				SimpleDateFormat oldDateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+				SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+				
 				// Get animal ID
 				int animalId = request.getInt("animal");
 				
 				// Get kind of removal
 				String removal = request.getString("removal");
 
-				// Get datetime of removal
+				// Get date of removal
 				String deathDateString = request.getString("deathdate");
-				SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
-				SimpleDateFormat sdfForDbCompare = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-				Date deathDate = dateOnlyFormat.parse(deathDateString);
-				String deathDateParsedString = sdfForDbCompare.format(deathDate);
-
+				Date deathDate = oldDateOnlyFormat.parse(deathDateString);
+				
 				// Check if animal in experiment
 				int featureId = ct.getMeasurementId("Experiment");
 				Query<ObservedValue> q = db.query(ObservedValue.class);
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
-				q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, deathDateParsedString));
+				q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, dbFormat.format(deathDate)));
 				q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 				List<ObservedValue> valueList = q.find();
 				int expid = -1;
@@ -158,7 +159,7 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 					measurementId = ct.getMeasurementId("DeathDate");
 					db.add(ct.createObservedValueWithProtocolApplication(investigationId, 
 							deathDate, null, protocolId, measurementId, animalId, 
-							deathDateString, 0));
+							newDateOnlyFormat.format(deathDate), 0));
 				}
 				
 				// Set subproject end values

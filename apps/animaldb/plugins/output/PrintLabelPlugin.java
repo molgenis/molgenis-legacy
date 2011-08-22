@@ -92,8 +92,7 @@ public class PrintLabelPlugin extends GenericPlugin
         	List<String> lineList = new ArrayList<String>();
         	
         	lineList.add("Database ID: " + ind.getId().toString());
-        	lineList.add("Database name: " + ind.getName());
-        	lineList.add("User label: " + cs.getObservationTargetLabel(ind.getId()));
+        	lineList.add("Name: " + ind.getName());
         	List<ObservedValue> valueList = cs.getObservedValuesByTargetAndFeatures(ind.getId(), measurementList,
         			investigationIds, ownInvId);
         	for (ObservedValue value : valueList) {
