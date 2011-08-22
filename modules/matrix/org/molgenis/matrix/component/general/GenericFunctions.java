@@ -8,11 +8,15 @@ import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 
 public abstract class GenericFunctions<R, C, V> implements SliceableMatrix<R, C, V>
 {
-
+	//set once
 	public List<R> originalRows;
 	public List<C> originalCols;
+	
+	//set in createFresh() and modify with slice functions
 	public List<R> rowCopy;
 	public List<C> colCopy;
+	public List<Integer> rowIndicesCopy;
+	public List<Integer> colIndicesCopy;
 
 	/**
 	 * Can be a generic implementation. Take the current list of generic row/col
@@ -61,12 +65,28 @@ public abstract class GenericFunctions<R, C, V> implements SliceableMatrix<R, C,
 		switch (rule.getOperator())
 		{
 			case LIMIT:
-				if (rule.getField().equals("row")) rowCopy = rowCopy.subList(0, val > rowCopy.size() ? rowCopy.size() : val); //right place ??
-				if (rule.getField().equals("col")) colCopy = colCopy.subList(0, val > colCopy.size() ? colCopy.size() : val);
+				if (rule.getField().equals("row"))
+				{
+					rowCopy = rowCopy.subList(0, val > rowCopy.size() ? rowCopy.size() : val); //right place ??
+					rowIndicesCopy = rowIndicesCopy.subList(0, val > rowCopy.size() ? rowCopy.size() : val);
+				}
+				if (rule.getField().equals("col"))
+				{
+					colCopy = colCopy.subList(0, val > colCopy.size() ? colCopy.size() : val);
+					colIndicesCopy = colIndicesCopy.subList(0, val > colIndicesCopy.size() ? colIndicesCopy.size() : val);
+				}
 				break;
 			case OFFSET:
-				if (rule.getField().equals("row")) rowCopy = rowCopy.subList(val, rowTotal);
-				if (rule.getField().equals("col")) colCopy = colCopy.subList(val, colTotal);
+				if (rule.getField().equals("row"))
+				{
+					rowCopy = rowCopy.subList(val, rowTotal);
+					rowIndicesCopy = rowIndicesCopy.subList(val, rowTotal);
+				}
+				if (rule.getField().equals("col"))
+				{
+					colCopy = colCopy.subList(val, colTotal);
+					colIndicesCopy = colIndicesCopy.subList(val, rowTotal);
+				}
 				break;
 			default:
 				throw new Exception("unsupported operator for paging");
@@ -87,6 +107,14 @@ public abstract class GenericFunctions<R, C, V> implements SliceableMatrix<R, C,
 		{
 			this.colCopy.add(item);
 		}
+		this.rowIndicesCopy = new ArrayList<Integer>(this.getTotalNumberOfRows());
+		for(int i=0; i<this.getTotalNumberOfRows(); i++){
+			this.rowIndicesCopy.add(i);
+		}
+		this.colIndicesCopy = new ArrayList<Integer>(this.getTotalNumberOfCols());
+		for(int i=0; i<this.getTotalNumberOfCols(); i++){
+			this.colIndicesCopy.add(i);
+		}
 	}
 
 	/*
@@ -101,6 +129,16 @@ public abstract class GenericFunctions<R, C, V> implements SliceableMatrix<R, C,
 	public List<C> getVisibleCols() throws Exception
 	{
 		return colCopy;
+	}
+	
+	public List<Integer> getRowIndices() throws Exception
+	{
+		return rowIndicesCopy;
+	}
+	
+	public List<Integer> getColIndices() throws Exception
+	{
+		return colIndicesCopy;
 	}
 
 	/*

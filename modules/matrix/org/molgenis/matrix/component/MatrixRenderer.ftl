@@ -1,22 +1,10 @@
-<#--if name??>${name}<#else>null</#if><br-->
-<!-- label: <#if value??>${value}<#else>null</#if><br>
-rowIndex: ${rowStartIndex}<br>
-colIndex: ${colStartIndex}<br>
-totalNumberOfRows: ${matrix.totalNumberOfRows}<br>
-totalNumberOfCols: ${matrix.totalNumberOfCols}<br>
- -->
- 
-APPLIED FILTERS:<br>
-<#list matrix.filters as filter>
-type: ${filter}<br>
-</#list>
 
 
-<#assign colHeader = matrix.colType + " " + (colStartIndex+1) + "-" + (colStartIndex+matrix.visibleCols?size) + " of " + matrix.totalNumberOfCols>
-<#assign rowHeader = matrix.rowType + "<br>" + (rowStartIndex+1) + "-" + (rowStartIndex+matrix.visibleRows?size) + " of " + matrix.totalNumberOfRows>
+<#assign colHeader = matrix.colType + " index " + (matrix.colIndices[0]) + " ~ " + (matrix.colIndices[matrix.colIndices?size-1]) + " of " + matrix.totalNumberOfCols>
+<#assign rowHeader = matrix.rowType + "<br>index<br>" + (matrix.rowIndices[0]) + " ~ " + (matrix.rowIndices[matrix.rowIndices?size-1]) + "<br>of " + matrix.totalNumberOfRows>
 
 
-<table>
+<table cellpadding="3">
 	<tr>
 		<td class="menuitem shadeHeader" onclick="mopen('matrix_plugin_FileSub');">
 			Menu
@@ -54,12 +42,12 @@ type: ${filter}<br>
 				<tr><td><font class="fontColor">Height</font></td><td><input type="text" name="${req_tag}height" value="${matrix.visibleRows?size}" size="1"></td></tr>
 				<tr><td colspan="2"><input type="submit" value="Update" onclick="__action.value = '${req_tag}changeSubmatrixSize'; submit();"></td></tr>
 				<tr><td colspan="2">&nbsp;</td></tr>
-				<tr><td colspan="2"><input type="submit" value="Apply filters..." onclick="__action.value = '${req_tag}filter'; submit();"></td></tr>
+				<tr><td colspan="2"><!--input type="submit" value="Apply filters..." onclick="__action.value = '${req_tag}filter'; submit();"--></td></tr>
 				<tr><td colspan="2">
-					<select name="FILTER_SELECTION_TYPE">
+					<!--select name="FILTER_SELECTION_TYPE">
 						<option value="evr">on everything</option>
 						<option value="vis">on visible</option>
-					</select>
+					</select-->
 				</td></tr>
 			</table>
 		</td>
@@ -73,7 +61,8 @@ type: ${filter}<br>
 			<table class="tableBorder">
 				<tr>
 					<td colspan="2"></td>
-					<td colspan="${matrix.visibleCols?size}">Apply filter on column header:
+					<td colspan="${matrix.visibleCols?size}"></td>
+					<#--td colspan="${matrix.visibleCols?size}">Apply filter on column header:
 						<select name="FILTER_ATTRIBUTE_COL_HEADER">
 							<#list matrix.colHeaderFilterAttributes as att><option value="${att}">${att}</option></#list>
 						</select>
@@ -81,17 +70,18 @@ type: ${filter}<br>
 							<#list operators?keys as op><option value="${op}">${operators[op]}</option></#list>
 						</select>
 						<input type="text" size="4" name="FILTER_VALUE_COL_HEADER"></input></nobr>
-					</td>
+					</td-->
 				</tr>
 			
 				<tr>
-					<td colspan="2">Apply filter on row header:</td>
+					<td colspan="2"><#--Apply filter on row header:--></td>
 					<#list matrix.visibleCols as col>
 						<td class="matrixTableCell colorOfTitle"><b>${matrix.renderCol(col)}</b></td>
 					</#list>
 				</tr>
 				<tr>
-					<td colspan="2"><nobr>
+				<td colspan="2"></td>
+					<#-->td colspan="2"><nobr>
 						<select name="FILTER_ATTRIBUTE_ROW_HEADER">
 							<#list matrix.rowHeaderFilterAttributes as att><option value="${att}">${att}</option></#list>
 						</select>
@@ -99,27 +89,29 @@ type: ${filter}<br>
 							<#list operators?keys as op><option value="${op}">${operators[op]}</option></#list>
 						</select>
 						<input type="text" size="4" name="FILTER_VALUE_ROW_HEADER"></input></nobr>
-					</td>
+					</td-->
 					<#list matrix.visibleCols as col>
-						<td><nobr>
+						<td>
+							<div style="font-family: Courier, 'Courier New', monospace">${matrix.colIndices[col_index]}</div>
+						
+							<#--nobr>
 							<select name="FILTER_OPERATOR_COL_${col_index}">
 								<#list operators?keys as op><option value="${op}">${operators[op]}</option></#list>
 							</select>
-							<input type="text" size="4" name="FILTER_VALUE_COL_${col_index}"></input></nobr>
+							<input type="text" size="4" name="FILTER_VALUE_COL_${col_index}"></input></nobr-->
 						</td>
 					</#list>
 				</tr>
 				<#list matrix.visibleRows as row> 
 					<tr>
-						<td class="matrixTableCell colorOfTitle">
-							<b>${matrix.renderRow(row)}</b>
-						</td>
+						<td class="matrixTableCell colorOfTitle"><b>${matrix.renderRow(row)}</b></td>
 						<td>
-							<nobr>
+							<div style="font-family: Courier, 'Courier New', monospace">${matrix.rowIndices[row_index]}</div>
+							<#--nobr>
 							<select name="FILTER_OPERATOR_ROW_${row_index}">
 								<#list operators?keys as op><option value="${op}">${operators[op]}</option></#list>
 							</select>
-							<input type="text" size="4" name="FILTER_VALUE_ROW_${row_index}"></input></nobr>
+							<input type="text" size="4" name="FILTER_VALUE_ROW_${row_index}"></input></nobr-->
 						</td>
 						<#list 0..matrix.visibleCols?size-1 as i>								
 			  				<td class="matrixTableCell matrixRowColor<#if row_index%2==0>1<#else>0</#if>">${matrix.renderValue(matrix.visibleValues[row_index][i])}</td>
@@ -127,7 +119,32 @@ type: ${filter}<br>
 					</tr>
 				</#list>
 			</table>
-			
 		</td>
 	</tr>
 </table>
+
+<br><br>
+APPLIED FILTERS:<br>
+<#list matrix.filters as filter>
+type: ${filter}<br>
+</#list>
+
+<br><br>ADD NEW FILTER:<br>slice on index
+<nobr>
+<select name="FILTER_TYPE">
+<option value="rowindex">${matrix.rowType} index</option>
+<option value="colindex">${matrix.colType} index</option>
+</select>
+
+<select name="FILTER_OPERATOR_COL">
+	<#list operators?keys as op><option value="${op}">${operators[op]}</option></#list>
+</select>
+<input type="text" size="4" name="FILTER_VALUE_COL"></input>
+</nobr>
+<input type="submit" value="Apply" onclick="__action.value = '${req_tag}filter'; submit();">
+
+<br>slice on values. index:
+<select name="FILTER_VALUE">
+	<#list matrix.visibleCols as col><option value="col_${matrix.colIndices[col_index]}">${matrix.renderColSimple(col)}</option></#list>
+	<#list matrix.visibleRows as col><option value="row_${matrix.RowIndices[row_index]}">${matrix.renderRowSimple(row)}</option></#list>
+</select>

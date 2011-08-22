@@ -21,5 +21,10 @@ public class MatrixQueryRule extends QueryRule
 		this.setOperator(operator);
 		this.setValue(value);
 	}
+	
+	@Override
+	public String toString(){
+		return this.field + " " + this.operator + " " + this.value;
+	}
 
 }

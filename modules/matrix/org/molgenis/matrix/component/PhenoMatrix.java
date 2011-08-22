@@ -209,6 +209,18 @@ public class PhenoMatrix extends GenericFunctions<ObservationTarget, ObservableF
 	{
 		return col.getName();
 	}
+	
+	@Override
+	public String renderRowSimple(ObservationTarget row)
+	{
+		return row.getName();
+	}
+
+	@Override
+	public String renderColSimple(ObservableFeature col)
+	{
+		return col.getName();
+	}
 
 	@Override
 	public List<String> getRowHeaderFilterAttributes()

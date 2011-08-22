@@ -37,6 +37,18 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>{
 	{
 		return basic.getVisibleCols();
 	}
+	
+	@Override
+	public List<Integer> getRowIndices() throws Exception
+	{
+		return basic.getRowIndices();
+	}
+
+	@Override
+	public List<Integer> getColIndices() throws Exception
+	{
+		return basic.getColIndices();
+	}
 
 	@Override
 	public V[][] getVisibleValues() throws Exception
@@ -45,19 +57,19 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>{
 	}
 
 	@Override
-	public String getRowType()
+	public String getRowType() throws Exception
 	{
 		return source.getRowType();
 	}
 
 	@Override
-	public String getColType()
+	public String getColType() throws Exception
 	{
 		return source.getColType();
 	}
 
 	@Override
-	public String renderValue(V value)
+	public String renderValue(V value) throws Exception
 	{
 		return source.renderValue(value);
 	}
@@ -72,6 +84,18 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>{
 	public String renderCol(C col)
 	{
 		return source.renderCol(col);
+	}
+	
+	@Override
+	public String renderRowSimple(R row)
+	{
+		return source.renderRowSimple(row);
+	}
+
+	@Override
+	public String renderColSimple(C col)
+	{
+		return source.renderColSimple(col);
 	}
 
 	@Override

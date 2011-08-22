@@ -134,8 +134,6 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		parameters.put("name", this.getName());
 		parameters.put("value", this.getObject());
 		parameters.put("matrix", this.renderMe);
-		parameters.put("rowStartIndex", this.rowStartIndex);
-		parameters.put("colStartIndex", this.colStartIndex);
 		parameters.put("operators", MatrixRendererHelper.operators());
 		parameters.put("req_tag", MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX);
 

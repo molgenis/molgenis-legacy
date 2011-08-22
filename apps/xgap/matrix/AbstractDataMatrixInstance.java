@@ -478,16 +478,17 @@ public abstract class AbstractDataMatrixInstance<E> extends GenericFunctions<Obs
 	/**************** SourceMatrix implementation ****************/
 	/*************************************************************/
 
+	
 	@Override
-	public String getRowType()
+	public String getRowType() throws Exception
 	{
-		return "rowtype";
+		return this.getVisibleRows().get(0).get__Type();
 	}
 
 	@Override
-	public String getColType()
+	public String getColType() throws Exception
 	{
-		return "coltype";
+		return this.getVisibleCols().get(0).get__Type();
 	}
 
 	@Override
@@ -508,6 +509,18 @@ public abstract class AbstractDataMatrixInstance<E> extends GenericFunctions<Obs
 
 	@Override
 	public String renderCol(ObservationElement col)
+	{
+		return col.getName();
+	}
+	
+	@Override
+	public String renderRowSimple(ObservationElement row)
+	{
+		return row.getName();
+	}
+
+	@Override
+	public String renderColSimple(ObservationElement col)
 	{
 		return col.getName();
 	}
