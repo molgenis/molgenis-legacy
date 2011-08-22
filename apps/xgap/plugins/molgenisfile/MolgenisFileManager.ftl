@@ -84,7 +84,7 @@
 	<input type="submit" value="Upload" onclick="__action.value='upload';return true;"/><br><br>
 	Alternatively, use this textarea to upload text data.<br>
 	<textarea name="inputTextArea" rows="15" cols="50"><#if model.uploadTextAreaContent?exists>${model.uploadTextAreaContent}</#if></textarea>
-	<input type="submit" value="Upload" onclick="__action.value='uploadTextArea';return true;"/><br>
+	<input type="submit" id="uploadTextArea" value="Upload" onclick="__action.value='uploadTextArea';return true;"/><br>
 	
 
 </#if>

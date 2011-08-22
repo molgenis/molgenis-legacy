@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 
+import org.molgenis.util.DetectOS;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.server.RemoteControlConfiguration;
@@ -21,15 +22,10 @@ import com.thoughtworks.selenium.Selenium;
 
 public class XqtlSeleniumTest
 {
-//	SeleniumServer server;
-//	HttpCommandProcessor proc;
 	
 	Selenium selenium;
 	Integer sleepTime = 1000;
 	String pageLoadTimeout = "30000";
-	String storagePath = new File(".").getAbsolutePath() + File.separator + "tmp_selenium_test_data";
-
-
 
 	@BeforeClass
 	public void start() throws Exception
@@ -100,11 +96,11 @@ public class XqtlSeleniumTest
 	@Test
 	public void loadExampleData() throws InterruptedException
 	{
-		selenium.type("id=inputBox", storagePath);
+		selenium.type("id=inputBox", storagePath());
 		sleepHelper("loadExampleData page loaded, now pressing button to load users, data, permissions etc");
 		selenium.click("id=loadExamples");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("File path '"+storagePath+"' was validated and the dataloader succeeded"));
+		Assert.assertTrue(selenium.isTextPresent("File path '"+storagePath()+"' was validated and the dataloader succeeded"));
 		sleepHelper("loadExampleData");
 	}
 
@@ -176,6 +172,15 @@ public class XqtlSeleniumTest
 	
 	private String propertyScript(String element, String property){
 		return "var x = window.document.getElementById('"+element+"'); window.document.defaultView.getComputedStyle(x,null).getPropertyValue('"+property+"');";
+	}
+	
+	private String storagePath(){
+		String storagePath = new File(".").getAbsolutePath() + File.separator + "tmp_selenium_test_data";
+		if(DetectOS.getOS().startsWith("windows")){
+			return storagePath.replace("\\", "/");
+		}else{
+			return storagePath;
+		}
 	}
 
 }
