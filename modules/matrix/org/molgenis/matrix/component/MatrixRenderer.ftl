@@ -1,7 +1,7 @@
 
 
-<#assign colHeader = matrix.colType + " index " + (matrix.colIndices[0]) + " ~ " + (matrix.colIndices[matrix.colIndices?size-1]) + " of " + matrix.totalNumberOfCols>
-<#assign rowHeader = matrix.rowType + "<br>index<br>" + (matrix.rowIndices[0]) + " ~ " + (matrix.rowIndices[matrix.rowIndices?size-1]) + "<br>of " + matrix.totalNumberOfRows>
+<#assign colHeader = matrix.colType + " " + (matrix.colIndices[0]) + " ~ " + (matrix.colIndices[matrix.colIndices?size-1]) + " of " + matrix.totalNumberOfCols>
+<#assign rowHeader = matrix.rowType + "<br>" + (matrix.rowIndices[0]) + " ~ " + (matrix.rowIndices[matrix.rowIndices?size-1]) + "<br>of " + matrix.totalNumberOfRows>
 
 
 <table cellpadding="3">
@@ -123,28 +123,92 @@
 	</tr>
 </table>
 
-<br><br>
-APPLIED FILTERS:<br>
-<#list matrix.filters as filter>
-type: ${filter}<br>
-</#list>
+<br>
+<i>Applied filters, in order:</i>
+<table>
+	<#list matrix.filters as filter>
+	<tr>
+		<td>${filter}</td>
+		<td><img src="generated-res/img/exit.bmp" /></td>
+	</tr>
+	</#list>
+</table>
 
-<br><br>ADD NEW FILTER:<br>slice on index
-<nobr>
-<select name="FILTER_TYPE">
-<option value="rowindex">${matrix.rowType} index</option>
-<option value="colindex">${matrix.colType} index</option>
-</select>
+<br><i>Add a new filter:</i><br>
 
-<select name="FILTER_OPERATOR_COL">
-	<#list operators?keys as op><option value="${op}">${operators[op]}</option></#list>
-</select>
-<input type="text" size="4" name="FILTER_VALUE_COL"></input>
-</nobr>
-<input type="submit" value="Apply" onclick="__action.value = '${req_tag}filter'; submit();">
-
-<br>slice on values. index:
-<select name="FILTER_VALUE">
-	<#list matrix.visibleCols as col><option value="col_${matrix.colIndices[col_index]}">${matrix.renderColSimple(col)}</option></#list>
-	<#list matrix.visibleRows as col><option value="row_${matrix.RowIndices[row_index]}">${matrix.renderRowSimple(row)}</option></#list>
-</select>
+<table>
+	<tr>
+		<td>
+			Filter by index:
+		</td>
+		<td>
+			<select name="FILTER_BY_INDEX_FIELD">
+				<option value="rowindex">${matrix.rowType} index</option>
+				<option value="colindex">${matrix.colType} index</option>
+			</select>
+		</td>
+		<td>
+			<select name="FILTER_BY_INDEX_OPERATOR">
+				<#list operators?keys as op><option value="${op}">${operators[op]}</option></#list>
+			</select>
+		</td>
+		<td>
+			<input type="text" size="8" name="FILTER_BY_INDEX_VALUE" />
+		</td>
+		<td>
+			<input type="submit" value="Apply" onclick="__action.value = '${req_tag}filter_by_index'; submit();">
+		</td>
+	</tr>
+	<tr>
+		<td>
+			Filter by values:
+		</td>
+		<td>
+			<select name="FILTER_BY_VALUE_FIELD">
+				<#list matrix.visibleCols as col><option value="col_${matrix.colIndices[col_index]}">${matrix.renderColSimple(col)}</option></#list>
+				<#list matrix.visibleRows as row><option value="row_${matrix.rowIndices[row_index]}">${matrix.renderRowSimple(row)}</option></#list>
+			</select>
+		</td>
+		<td>
+			<select name="FILTER_BY_VALUE_OPERATOR">
+				<#list operators?keys as op><option value="${op}">${operators[op]}</option></#list>
+			</select>
+		</td>
+		<td>
+			<input type="text" size="8" name="FILTER_BY_VALUE_VALUE" />
+		</td>
+		<td>
+			<input type="submit" value="Apply" onclick="__action.value = '${req_tag}filter_by_value'; submit();">
+		</td>
+	</tr>
+	<tr>
+		<td>
+			Filter by header:
+		</td>
+		<td>
+			<select name="FILTER_BY_HEADER_FIELD">
+				<#list matrix.visibleCols as col><option value="col_${matrix.colIndices[col_index]}"><#if matrix.renderColSimple(col)?length gt 10>${matrix.renderColSimple(col)?substring(0, 10)}...<#else>${matrix.renderColSimple(col)}</#if></option></#list>
+				<#list matrix.visibleRows as row><option value="row_${matrix.rowIndices[row_index]}"><#if matrix.renderRowSimple(row)?length gt 10>${matrix.renderRowSimple(row)?substring(0, 10)}...<#else>${matrix.renderRowSimple(row)}</#if></option></#list>
+			</select>
+			<select name="FILTER_BY_HEADER_ATTRIBUTE">
+				<#list matrix.rowHeaderFilterAttributes as rha>
+					<option value="row_att_${rha}">${rha}</option>
+				</#list>
+				<#list matrix.colHeaderFilterAttributes as cha>
+					<option value="col_att_${cha}">${cha}</option>
+				</#list>
+			</select>
+		</td>
+		<td>
+			<select name="FILTER_BY_HEADER_OPERATOR">
+				<#list operators?keys as op><option value="${op}">${operators[op]}</option></#list>
+			</select>
+		</td>
+		<td>
+			<input type="text" size="8" name="FILTER_BY_HEADER_VALUE" />
+		</td>
+		<td>
+			<input type="submit" value="Apply" onclick="__action.value = '${req_tag}filter_by_value'; submit();">
+		</td>
+	</tr>
+</table>
