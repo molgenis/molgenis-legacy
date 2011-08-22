@@ -77,7 +77,7 @@
 <div align="right">
 		<!--toolbar-->
 		<#list screen.getToolbar() as command>
-			<img class="navigation_button" src="${command.icon}" onclick="${command.getJavaScriptAction()}" alt="${command.label}" title="${command.label}"/>&nbsp;
+			<img id="${screen.name}_${command.name}" class="navigation_button" src="${command.icon}" onclick="${command.getJavaScriptAction()}" alt="${command.label}" title="${command.label}"/>&nbsp;
 		</#list>	
 		<!--search box-->
 		<label>Search:</label><select id="${screen.name}_filter_attribute" title="choose attribute" name="__filter_attribute" style="display:none">
