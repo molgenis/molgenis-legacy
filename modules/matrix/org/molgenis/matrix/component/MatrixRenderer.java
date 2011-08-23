@@ -174,12 +174,11 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		
 		MatrixQueryRule q = null;
 		
-		for (int col = 0; col < renderMe.getVisibleCols().size(); col++){
-			Object filterValue = request.getObject("FILTER_VALUE_COL_" + col);
-			if (filterValue != null) {
-				String filterOperator = request.getString("FILTER_OPERATOR_COL_" + col);
-				q = new MatrixQueryRule(String.valueOf(col), Operator.valueOf(filterOperator), filterValue);
-			}
+		Object filterValue = request.getObject("FILTER_BY_VALUE_VALUE");
+		String filterField = request.getString("FILTER_BY_VALUE_FIELD").substring(4);
+		if (filterValue != null && filterField != null) {
+			String filterOperator = request.getString("FILTER_BY_VALUE_OPERATOR");
+			q = new MatrixQueryRule(filterField, Operator.valueOf(filterOperator), filterValue);
 		}
 		
 		if (q != null) {
