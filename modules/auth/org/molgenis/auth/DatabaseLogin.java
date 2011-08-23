@@ -63,13 +63,14 @@ public class DatabaseLogin implements Login, Serializable {
 	/** Constructor used to login anonymous
 	 * 
 	 * @param db database to log in to.
+	 * @throws Exception 
 	 */
-	public DatabaseLogin(Database db)
+	public DatabaseLogin(Database db) throws Exception
 	{
 		this.login(db, "anonymous", "anonymous");
 	}
 	
-	public DatabaseLogin(Database db, String redirect)
+	public DatabaseLogin(Database db, String redirect) throws Exception
 	{
 		this(db);
 		this.redirect = redirect;
@@ -119,7 +120,7 @@ public class DatabaseLogin implements Login, Serializable {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean login(Database db, String name, String password)
+	public boolean login(Database db, String name, String password) throws Exception
 	{
 		// username is required
 		if (name == null || "".equals(name))
@@ -147,7 +148,7 @@ public class DatabaseLogin implements Login, Serializable {
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			//TODO: What to do here?
+			throw e;//TODO: What to do here?
 		}
 		return false;
 	}
@@ -165,10 +166,11 @@ public class DatabaseLogin implements Login, Serializable {
 	 * 
 	 * If user is null, anonymous is logged in.
 	 *  Note: calling reload refreshes the permissions cache map. 
+	 * @throws Exception 
 	 * 
 	 */
 	@Override
-	public void reload(Database db) throws DatabaseException, ParseException {
+	public void reload(Database db) throws Exception {
 		if (this.user == null)
 			this.login(db, "anonymous", "anonymous");
 //			return;

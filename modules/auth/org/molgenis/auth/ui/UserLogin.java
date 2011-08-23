@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import nl.captcha.Captcha;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.RedirectException;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.auth.OpenIdLogin;
 import org.molgenis.auth.service.MolgenisUserException;
@@ -42,6 +43,7 @@ import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.TablePanel;
 import org.molgenis.util.HttpServletRequestTuple;
+import org.molgenis.util.RedirectedException;
 import org.molgenis.util.Tuple;
 
 //import commonservice.CommonService;
@@ -61,7 +63,7 @@ public class UserLogin extends EasyPluginController<UserLoginModel>
 		this.setView(new FreemarkerView("UserLogin.ftl", getModel()));
 	}
 
-	public void Login(Database db, Tuple request) throws DatabaseException, IOException
+	public void Login(Database db, Tuple request) throws Exception
 	{
 		this.getModel().setAction("Login");
 
@@ -113,13 +115,14 @@ public class UserLogin extends EasyPluginController<UserLoginModel>
 			{
 				String redirectURL = httpRequest.getRequestURL() + "?__target=main" + "&select=" + this.getApplicationController().getLogin().getRedirect();
 				httpResponse.sendRedirect(redirectURL);
+				throw new RedirectedException();
 			}
 		} else {
 			throw new DatabaseException("Login failed: username or password empty");
 		}
 	}
 
-	public void Logout(Database db, Tuple request) throws DatabaseException, ParseException
+	public void Logout(Database db, Tuple request) throws Exception
 	{
 		this.getModel().setAction("Logout");
 		this.getApplicationController().getLogin().logout();
