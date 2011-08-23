@@ -1,9 +1,11 @@
 package org.molgenis.framework.ui;
 
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.util.RedirectedException;
 import org.molgenis.util.Tuple;
 
 /**
@@ -22,22 +24,23 @@ public abstract class EasyPluginController<M extends ScreenModel> extends
 	/**
 	 * If a user sends a request it can be handled here. Default, it will be
 	 * automatically mapped to methods based request.getAction();
+	 * @throws RedirectedException 
 	 */
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, Tuple request) throws RedirectedException
 	{
 		// automatically calls functions with same name as action
 		delegate(request.getAction(), db, request);
 	}
 	
 	@Override
-	public void handleRequest(Database db, Tuple request, OutputStream out)
+	public void handleRequest(Database db, Tuple request, OutputStream out) throws RedirectedException
 	{
 		// automatically calls functions with same name as action
 		delegate(request.getAction(), db, request);
 	}
 
-	public void delegate(String action, Database db, Tuple request)
+	public void delegate(String action, Database db, Tuple request) throws RedirectedException
 	{
 		// try/catch for db.rollbackTx
 		try
@@ -63,8 +66,9 @@ public abstract class EasyPluginController<M extends ScreenModel> extends
 						+ this.getName() + ")." + action
 						+ "(db,tuple) failed: " + e1.getMessage());
 				db.rollbackTx();
-			}
-			catch (Exception e)
+			}catch (InvocationTargetException e){
+				throw new RedirectedException(e);
+			}catch (Exception e)
 			{
 				logger.error("call of " + this.getClass().getName() + "(name="
 						+ this.getName() + ")." + action + " failed: "

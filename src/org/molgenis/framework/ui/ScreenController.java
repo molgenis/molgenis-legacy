@@ -19,6 +19,7 @@ import java.io.Serializable;
 import org.molgenis.framework.db.Database;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.FileLink;
+import org.molgenis.util.RedirectedException;
 import org.molgenis.util.Tree;
 import org.molgenis.util.Tuple;
 
@@ -72,8 +73,10 @@ public interface ScreenController<MODEL extends ScreenModel> extends
 	 * 
 	 * @param request
 	 *            a request
+	 * @throws RedirectedException 
+	 * @throws Exception 
 	 */
-	public void handleRequest(Database db, Tuple request);
+	public void handleRequest(Database db, Tuple request) throws Exception, RedirectedException;
 
 	/**
 	 * Handle a user request (typically implemented in the subclass).
@@ -83,8 +86,10 @@ public interface ScreenController<MODEL extends ScreenModel> extends
 	 * @param out
 	 *            additional parameter that allows you to write downloadable
 	 *            output
+	 * @throws Exception 
+	 * @throws RedirectedException 
 	 */
-	public void handleRequest(Database db, Tuple request, OutputStream out);
+	public void handleRequest(Database db, Tuple request, OutputStream out) throws RedirectedException, Exception;
 
 	/**
 	 * Get the view

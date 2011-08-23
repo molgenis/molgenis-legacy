@@ -8,6 +8,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Entity;
+import org.molgenis.util.RedirectedException;
 
 /**
  * Simple authentication and authorization interface that enables MOLGENIS
@@ -35,8 +36,9 @@ public interface Login
 	 * @param password
 	 *            of user
 	 * @return true if succesfully authenticated
+	 * @throws Exception,RedirectedException 
 	 */
-	public boolean login(Database db, String name, String password);
+	public boolean login(Database db, String name, String password) throws Exception,RedirectedException;
 
 	/**
 	 * Un-authenticate the user. Now the user will be perceived as 'guest'.
@@ -48,8 +50,9 @@ public interface Login
 	 * 
 	 * @throws ParseException
 	 * @throws DatabaseException
+	 * @throws Exception 
 	 */
-	public void reload(Database db) throws DatabaseException, ParseException;
+	public void reload(Database db) throws DatabaseException, ParseException, Exception;
 
 	/**
 	 * Indicates whether the current user has been authenticated. Otherwise the

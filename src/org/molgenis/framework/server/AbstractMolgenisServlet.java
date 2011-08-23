@@ -49,6 +49,7 @@ import org.molgenis.util.CsvStringReader;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
+import org.molgenis.util.RedirectedException;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.SpreadsheetWriter;
 import org.molgenis.util.Tuple;
@@ -95,8 +96,9 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	/**
 	 * Create a Login specific to the security scheme used in this MOLGENIS. You
 	 * can override this to set a security mechanism.
+	 * @throws Exception 
 	 */
-	public abstract Login createLogin(Database db, HttpServletRequest request);
+	public abstract Login createLogin(Database db, HttpServletRequest request) throws Exception;
 
 	/**
 	 * Instantiate an application with the right root screen and optional file
@@ -386,7 +388,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	}
 
 	public void handleGUIrequest(HttpServletRequest request,
-			HttpServletResponse response) throws IOException, DatabaseException
+			HttpServletResponse response) throws Exception
 	{
 		// get database session (note: this shouldn't be in the tomcat
 		// session!!!
@@ -568,7 +570,14 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					}
 				}
 
+				try{
 				molgenis.handleRequest(db, requestTuple);
+				}catch(RedirectedException e){
+					System.out.println("So bad, we could have handled it");
+					return;
+				}catch(Exception e){
+					System.out.println("When a normal exception comes do nothing ??? Done");
+				}
 				// handle request
 				molgenis.reload(db); // reload the application
 				logger.debug("reloaded " + molgenis.getName()
