@@ -6,7 +6,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 
 /*
- * The idea is to use this in every exception, than exception is
+ * The idea is to use this in every exception, then exception is
  * handle in the same way.
  * At the moment after every exception System.exit(1) is called. This should
  * be changed in the future, for example in test & development
