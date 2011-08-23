@@ -129,6 +129,12 @@ public class DatabaseLogin implements Login, Serializable {
 		// password is required
 		if (password == null || "".equals(password))
 			return false;
+		
+		try{
+			db.find(MolgenisUser.class);
+		}catch(Exception e){
+			return false;
+		}
 
 		try
 		{
