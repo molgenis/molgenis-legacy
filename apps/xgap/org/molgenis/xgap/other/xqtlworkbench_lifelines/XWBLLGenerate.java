@@ -9,7 +9,7 @@ public class XWBLLGenerate
 	{
 		try
 		{
-			new Molgenis("handwritten/apps/org/molgenis/xgap/xqtlworkbench_lifelines/xwbll.properties").generate();
+			new Molgenis("apps/xgap/org/molgenis/xgap/other/xqtlworkbench_lifelines/xwbll.properties").generate();
 			
 		} catch(Exception e)
 		{
