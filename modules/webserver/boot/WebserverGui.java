@@ -60,40 +60,77 @@ public class WebserverGui extends JFrame implements MouseListener{
 	
 	public void paintComponent(Graphics g) {
 		Graphics2D g2d = (Graphics2D)g;
+		
 		g2d.setColor(Color.WHITE);
 		g2d.fillRect(0, 0, getWidth(),getHeight());
-		g2d.setColor(Color.BLACK);
+		
 		//CLICK to Molgenis
 		if(init){
+			
+			g2d.setColor(Color.BLACK);
 			g2d.drawString("Please open a browser and go to:",25,50);
+			
 			g2d.setColor(Color.LIGHT_GRAY);
 			g2d.fillRect(25, 60, 7*url.length(), 20);
+			
 			g2d.setColor(Color.BLACK);
 			g2d.draw3DRect(24, 59, (7*url.length())+2, 22, true);
+			
 			g2d.setColor(Color.BLACK);
 			g2d.drawString(url,26,75);
-			g2d.setColor(Color.LIGHT_GRAY);
+
 			//STOP
+			if(webserverthread != null && webserverthread.isAlive()){
+				
+			g2d.setColor(Color.LIGHT_GRAY);
 			g2d.fillRect(90, 85, 35, 20);
+			
 			g2d.setColor(Color.WHITE);
 			g2d.draw3DRect(89, 84, 37, 22, true);
-			g2d.setColor(Color.RED);
-			g2d.drawString("STOP",91,100);
-			g2d.setColor(Color.LIGHT_GRAY);
+			
+			g2d.setColor(Color.BLACK);
+			g2d.drawString("Stop",91,100);
+			
+			}else{
 			//START
+				
+			g2d.setColor(Color.LIGHT_GRAY);
 			g2d.fillRect(130, 85, 40, 20);
-			g2d.setColor(Color.white);
+			
+			g2d.setColor(Color.WHITE);
 			g2d.draw3DRect(129, 84, 42, 22, true);
-			g2d.setColor(Color.GREEN);
-			g2d.drawString("START",131,100);
+			
+			g2d.setColor(Color.BLACK);
+			g2d.drawString("Start",131,100);
+			
+			}
+			
+			//RESTART
+			g2d.setColor(Color.LIGHT_GRAY);
+			g2d.fillRect(170, 85, 35, 20);
+			
+			g2d.setColor(Color.WHITE);
+			g2d.draw3DRect(169, 84, 37, 22, true);
+			
+			g2d.setColor(Color.BLACK);
+			g2d.drawString("Restart",171,100);
+			
+			g2d.setColor(Color.BLACK);
+			g2d.drawString("Webserver status:",35,120);
+			
 			if(webserverthread != null && webserverthread.isAlive()){
 				g2d.setColor(Color.GREEN);
+				g2d.drawString("Up",35,140);
+				
 			}else{
 				g2d.setColor(Color.RED);
+				g2d.drawString("Down",35,140);
+				
 			}
-			g2d.drawString("Webserver:",25,100);
 		}else{
-			g2d.drawString("Please wait untill the molgenis starts",25,50);
+			g2d.setColor(Color.BLACK);
+			g2d.drawString("Webserver starting, please wait...",25,50);
+			this.repaint();
 		}
 	}
 	
