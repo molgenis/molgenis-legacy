@@ -105,7 +105,7 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 
 	</#if>
 
-	public Login createLogin( Database db, HttpServletRequest request )
+	public Login createLogin( Database db, HttpServletRequest request ) throws Exception
 	{
 	<#if auth_redirect != ''>
 		return new ${loginclass}(db, "${auth_redirect}");
