@@ -1,4 +1,3 @@
-<!-- compute means generating as described, than compile the apps we depend on -->
 <project>
 	<!-- this name is used to name the war file -->
 	<property name="app_name" value="animaldb"/>
@@ -44,17 +43,17 @@
 	</target>
 	
 	<target name="test_webonly">
-			<!-- combine classpaths -->
-			<path id="combined.class.path">
-				<path refid="molgenis.classpath"/>
-				<path refid="app.class.path"/>
-				<path location="${output_src}"/>
-			</path>
-			<!-- run the tests -->
-			<testng classpathref="combined.class.path" outputDir="${testng.report.dir}" haltOnFailure="true">
-				<xmlfileset dir="${build.dir}" includes="**/selenium_animaldbtest.xml" />
-				<jvmarg value="-ea" />
-			</testng>			
-		</target>
+		<!-- combine classpaths -->
+		<path id="combined.class.path">
+			<path refid="molgenis.classpath"/>
+			<path refid="app.class.path"/>
+			<path location="${output_src}"/>
+		</path>
+		<!-- run the tests -->
+		<testng classpathref="combined.class.path" outputDir="${testng.report.dir}" haltOnFailure="true">
+			<xmlfileset dir="${build.dir}" includes="**/selenium_animaldbtest.xml" />
+			<jvmarg value="-ea" />
+		</testng>
+	</target>
 
 </project>

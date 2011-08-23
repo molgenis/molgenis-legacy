@@ -52,9 +52,8 @@ public class AnimaldbSeleniumTest
 		selenium = new DefaultSelenium(proc);
 		selenium.start();
 		
-		// Is done automatically at app start-up!
-		//Helper.deleteDatabase();
-		//new emptyDatabase(new MolgenisServlet().getDatabase(), true);
+		// To be sure, empty db and don't add MolgenisUsers etc.
+		new emptyDatabase(new MolgenisServlet().getDatabase(), false);
 		
 		new RunStandalone(webserverPort);
 	}
