@@ -1,0 +1,52 @@
+<project>
+	<!-- this name is used to name the war file -->
+	<property name="app_name" value="gcc" />
+
+	<!-- this holds all the settings for the generator -->
+	<property name="app_properties" value="apps/${app_name}/org/molgenis/${app_name}/${app_name}.jpa.properties" />
+
+	<!-- this determines what handwritten modules should be loaded -->
+	<path id="app.class.path">
+		<pathelement location="apps/${app_name}" />
+		<pathelement location="modules/auth" />
+		<pathelement location="modules/datamodel" />
+		<pathelement location="modules/import" />
+		<pathelement location="modules/mutation" />
+		<pathelement location="modules/pheno" />
+		<pathelement location="modules/settings" />
+		<pathelement location="modules/batch" />
+		<pathelement location="modules/compute" />
+		<pathelement location="modules/file" />
+		<pathelement location="modules/matrix" />
+		<pathelement location="modules/news" />
+		<pathelement location="modules/search" />
+		<pathelement location="modules/webserver" />
+		<pathelement location="modules/decorators/core" />
+		<pathelement location="modules/decorators/auth" />
+		<pathelement location="modules/decorators/pheno" />
+		<pathelement location="modules/decorators/data" />
+		<pathelement location="apps/animaldb" />
+		<pathelement location="apps/chd7" />
+		<pathelement location="apps/designgg" />
+		<pathelement location="apps/gscf" />
+		<pathelement location="apps/lifelinespheno" />
+		<pathelement location="apps/ngs" />
+		<pathelement location="apps/bbmri" />
+		<pathelement location="apps/col7a1" />
+		<pathelement location="apps/gcc" />
+		<pathelement location="apps/gwascentral" />
+		<pathelement location="apps/magetab" />
+		<pathelement location="apps/sandbox" />
+		<pathelement location="apps/bioshare" />
+		<pathelement location="apps/cvdb" />
+		<pathelement location="apps/gids" />
+		<pathelement location="apps/lifelines" />
+		<pathelement location="apps/maze" />
+		<pathelement location="apps/xgap" />
+
+	</path>
+
+	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
+	<import file="build_common.xml" />
+
+</project>
