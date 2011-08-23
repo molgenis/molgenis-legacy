@@ -135,15 +135,7 @@
 		return fieldName;
 	}
 	
-	@Override
-	public FieldType getFieldType(String fieldName)
-	{
-		<#list viewFields(entity) as f>
-			if("${name(f)}".equalsIgnoreCase(fieldName) || "${name(f.entity)}.${name(f)}".equalsIgnoreCase(fieldName)) 
-				return new ${JavaName(f.type.toString())}Field();
-		</#list>
-		return new UnknownField();
-	}		
+	
 	
 <#include "MapperCommons.java.ftl">
 	
