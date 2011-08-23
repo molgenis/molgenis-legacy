@@ -36,14 +36,13 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 	private SliceableMatrix<R, C, V> sliceable;
 	private RenderableMatrix<R, C, V> renderMe;
 	private SourceMatrix<R, C, V> source;
-	private int rowStartIndex;
-	private int colStartIndex;
 	private String screenName;
+	private int stepSize;
 	
 	public MatrixRenderer(String name, SliceableMatrix<R, C, V> sliceable, SourceMatrix<R, C, V> source, String screenName)
 			throws Exception
 	{
-		this(name, name, sliceable, source, null, null, -1, screenName);
+		this(name, name, sliceable, source, null, null, 5, screenName);
 	}
 
 	public RenderableMatrix<R, C, V> getRendered() {
@@ -62,6 +61,7 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		this.source = source;
 		this.sliceable = sliceable;
 		this.screenName = screenName;
+		this.stepSize = stepSize;
 
 		// set default index filters if no filters are specified
 		if (filters == null)
@@ -125,7 +125,7 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		System.out.println("result 'basic': colsize: " + basic.getVisibleCols().size());
 		System.out.println("result 'basic': rowsize: " + basic.getVisibleRows().size());
 		
-		renderMe = new RenderableMatrixImpl<R, C, V>(source, basic, filters, "", 5, screenName);
+		renderMe = new RenderableMatrixImpl<R, C, V>(source, basic, filters, "", stepSize, screenName);
 	}
 
 	public String toHtml()
@@ -136,8 +136,6 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		parameters.put("matrix", this.renderMe);
 		parameters.put("operators", MatrixRendererHelper.operators());
 		parameters.put("req_tag", MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX);
-
-		// delegate to freemarker
 		return new FreemarkerView("org/molgenis/matrix/component/MatrixRenderer.ftl", parameters).render();
 	}
 
@@ -145,15 +143,17 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 	{
 
 		String action = request.getString("__action");
-
-		if (!action.startsWith(MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX))
+		String pref = MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX;
+		
+		if (!action.startsWith(pref))
 		{
 			throw new Exception("Action '" + action + "' does not include the matrix renderer prefix '"
-					+ MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX + "'for request delegation.");
+					+ pref + "'for request delegation.");
 		}
 
-		action = action.substring(MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX.length(), action.length());
+		action = action.substring(pref.length(), action.length());
 
+		if (action.equals("updatePagingSettings")) this.updatePagingSettings(request);
 		if (action.equals("moveRight")) this.moveRight();
 		if (action.equals("moveLeft")) this.moveLeft();
 		if (action.equals("moveDown")) this.moveDown();
@@ -164,6 +164,30 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		applyFiltersAndRender(sliceable, renderMe.getFilters());
 	}
 	
+	private void updatePagingSettings(Tuple request) throws Exception{
+		String pref = MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX;
+		int width = request.getInt(pref+"width");
+		int height = request.getInt(pref+"height");
+		this.stepSize = request.getInt(pref+"stepSize");
+		
+		List<Filter> newFilters = new ArrayList<Filter>();
+		
+		//keep all filters, except for paging -> LIMIT
+		for(int filterIndex = 0; filterIndex < renderMe.getFilters().size(); filterIndex++){
+			Filter f = renderMe.getFilters().get(filterIndex);
+			if(!(f.getFilterType().equals(Filter.Type.paging) && f.getQueryRule().getOperator().equals(Operator.LIMIT))){
+				newFilters.add(f);
+			}
+		}
+		
+		newFilters.add(new Filter(Filter.Type.paging, new MatrixQueryRule("row",Operator.LIMIT,height)));
+		newFilters.add( new Filter(Filter.Type.paging, new MatrixQueryRule("col",Operator.LIMIT,width)));
+
+		renderMe.getFilters().clear();
+		renderMe.getFilters().addAll(newFilters);
+		
+	}
+
 	/**
 	 * PROOF OF PRINCIPLE! Needs rework.
 	 * 
@@ -224,9 +248,6 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 			Filter offset = new Filter(Filter.Type.paging, new MatrixQueryRule("col", Operator.OFFSET, renderMe.getStepSize()));
 			renderMe.getFilters().add(offset);
 		}
-		
-		this.colStartIndex = colStartIndex + renderMe.getStepSize();
-		
 	}
 	
 	private void moveLeft() throws Exception
@@ -239,7 +260,6 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 				f.getQueryRule().setValue((Integer)f.getQueryRule().getValue() - renderMe.getStepSize());
 			}
 		}
-		this.colStartIndex = colStartIndex - renderMe.getStepSize();
 	}
 	
 	private void moveDown() throws Exception
@@ -258,9 +278,6 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 			Filter offset = new Filter(Filter.Type.paging, new MatrixQueryRule("row", Operator.OFFSET, renderMe.getStepSize()));
 			renderMe.getFilters().add(offset);
 		}
-		
-		this.rowStartIndex = rowStartIndex + renderMe.getStepSize();
-		
 	}
 	
 	private void moveUp() throws Exception
@@ -273,7 +290,6 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 				f.getQueryRule().setValue((Integer)f.getQueryRule().getValue() - renderMe.getStepSize());
 			}
 		}
-		this.rowStartIndex = rowStartIndex - renderMe.getStepSize();
 	}
 
 }

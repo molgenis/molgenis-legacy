@@ -40,7 +40,7 @@
 				<tr><td><font class="fontColor">Stepsize</font></td><td><input type="text" name="${req_tag}stepSize" value="${matrix.stepSize}" size="1"></td></tr>
 				<tr><td><font class="fontColor">Width</font></td><td><input type="text" name="${req_tag}width" value="${matrix.visibleCols?size}" size="1"></td></tr>
 				<tr><td><font class="fontColor">Height</font></td><td><input type="text" name="${req_tag}height" value="${matrix.visibleRows?size}" size="1"></td></tr>
-				<tr><td colspan="2"><input type="submit" value="Update" onclick="__action.value = '${req_tag}changeSubmatrixSize'; submit();"></td></tr>
+				<tr><td colspan="2"><input type="submit" value="Update" onclick="__action.value = '${req_tag}updatePagingSettings'; submit();"></td></tr>
 				<tr><td colspan="2">&nbsp;</td></tr>
 				<tr><td colspan="2"><!--input type="submit" value="Apply filters..." onclick="__action.value = '${req_tag}filter'; submit();"--></td></tr>
 				<tr><td colspan="2">
