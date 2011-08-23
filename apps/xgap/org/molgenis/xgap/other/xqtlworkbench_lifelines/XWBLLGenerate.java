@@ -13,7 +13,7 @@ public class XWBLLGenerate
 			
 		} catch(Exception e)
 		{
-			e.printStackTrace();
+			e.printStackTrace(); 
 		}
 	}
 }
