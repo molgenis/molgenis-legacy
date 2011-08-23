@@ -25,16 +25,16 @@
 		<#assign select = item.getName() />
 		<#--if the item is a left menu recurse-->
 		<#if item == selectedItem> 
-			<div class="leftNavigationSelected" onClick="document.forms.${name}.__target.value='${__target}';document.forms.${name}.select.value='${select}';document.forms.${name}.submit();">
-			${item.getLabel()}
+			<div id="${item.name}_tab_button" class="leftNavigationSelected" onClick="document.forms.${name}.__target.value='${__target}';document.forms.${name}.select.value='${select}';document.forms.${name}.submit();">
+				${item.getLabel()}
 			</div>
 			<#if item.position?exists  && (item.position == "LEFT" || item.position == "DEFAULT") && item.getChildren()?size &gt; 1>
-<div class="leftNavigationSubmenu">
-				<@MenuScreenLeft name=name screen=item submenu="true" />
-</div>
+				<div class="leftNavigationSubmenu">
+					<@MenuScreenLeft name=name screen=item submenu="true" />
+				</div>
 			</#if>		
 		<#else>
-<div class="leftNavigationNotSelected" onClick="document.forms.${name}.__target.value='${__target}';document.forms.${name}.select.value='${select}';document.forms.${name}.submit();">${item.getLabel()}</div>
+			<div  id="${item.name}_tab_button" class="leftNavigationNotSelected" onClick="document.forms.${name}.__target.value='${__target}';document.forms.${name}.select.value='${select}';document.forms.${name}.submit();">${item.getLabel()}</div>
 		</#if>
 	</#list></#if>
 </#macro>
@@ -62,7 +62,7 @@
 			<input type="hidden" name="__target" value="">
 			<input type="hidden" name="select" value="">
 			<div class="leftNavigationMenu">
-<@MenuScreenLeft name=screen.getName() screen=screen submenu="false" />
+				<@MenuScreenLeft name=screen.getName() screen=screen submenu="false" />
 			</div>
 		</form>	
 	</td>
