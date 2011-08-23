@@ -966,13 +966,7 @@ public class MolgenisModelValidator
 		//keywords.addAll(Arrays.asList(MOLGENIS_KEYWORDS));
 		keywords.addAll(Arrays.asList(JAVA_KEYWORDS));
 		keywords.addAll(Arrays.asList(JAVASCRIPT_KEYWORDS));
-		
-		
-		
-		if (options.db_driver.contains("oracle")) {
-			
-			keywords.addAll(fillOraclekeywords());
-		}
+		keywords.addAll(Arrays.asList(ORACLE_KEYWORDS));
 			
 		if (options.db_driver.contains("mysql")) keywords.addAll(Arrays.asList(MYSQL_KEYWORDS));
 		if (options.db_driver.contains("hsql")) keywords.addAll(Arrays.asList(HSQL_KEYWORDS));
@@ -1129,83 +1123,7 @@ public class MolgenisModelValidator
 		}
 	}
 
-	private static List<String> fillOraclekeywords() 	{
-		List<String> keywords = new ArrayList<String>();
-		int i=0;
-		
-	    try
-		{	
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-			Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@//localhost:2000/llp", "molgenis", "molTagtGen24Ora");
-	    	
-	    	conn.setAutoCommit(false);
-	        Statement stmt = conn.createStatement();
-	    	
-	    	ResultSet rset = stmt.executeQuery("select KEYWORD from sys.v_$reserved_words");
-		    while (rset.next()) {
-		    	keywords.add(rset.getString(1));
-	    		//System.out.println(">>>>>" + rset.getString(1));
 
-		    	//ORACLE_KEYWORDS[i++] = rset.getString(1);
-		    }
-		    keywords.remove("ID");
-		    keywords.remove("NAME");
-		    keywords.remove("PERMISSION");
-		    keywords.remove("DATAFILE");
-		    keywords.remove("DATA");
-		    keywords.remove("STORAGE");
-		    keywords.remove("VALUE");
-		    keywords.remove("ROLES");
-		    keywords.remove("LOCATION");
-		    keywords.remove("TIME");
-		    keywords.remove("IDENTIFIER");
-		    keywords.remove("CLONE");
-		    keywords.remove("STRUCTURE");
-		    keywords.remove("CATEGORY");
-		    keywords.remove("SAMPLE");
-		    keywords.remove("SIZE");
-		    keywords.remove("DATE");
-		    keywords.remove("JOB");
-		    keywords.remove("TIMESTAMP");
-		    keywords.remove("YEAR");
-		    keywords.remove("MONTH");
-		    keywords.remove("DAY");
-		    keywords.remove("HOUR");		    
-		    keywords.remove("MINUTE");
-		    keywords.remove("SECOND");
-		    keywords.remove("ROWID");  //!!! xm, this is weird
-		    keywords.remove("LENGTH"); 
-		    keywords.remove("OTHER");
-		    keywords.remove("RETENTION");
-		    keywords.remove("PROJECT"); 
-		    keywords.remove("LIBRARY");
-		    keywords.remove("TYPE");
-		    keywords.remove("VOLUME");
-		    keywords.remove("VERSION");
-		    keywords.remove("COMMENT");
-		    keywords.remove("ROW"); 
-		    keywords.remove("QUERY");
-		    keywords.remove("BATCH");
-		    //keywords.remove(""); //keywords.remove("");
-		    //keywords.remove("");
-		    //keywords.remove(""); //keywords.remove("");
-		    //keywords.remove("");
-		    //keywords.remove("");
-
-		    
-		   // ORACLE_KEYWORDS = (String []) keywords.toArray();
-		    
-			stmt.close();
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
-		catch (ClassNotFoundException e)  {
-			e.printStackTrace();
-		}
-		return keywords;
-	  }
-	
 	/** test for case sensitivity */
 	public static void correctXrefCaseSensitivity(Model model)
 			throws MolgenisModelException
@@ -1394,7 +1312,37 @@ public class MolgenisModelValidator
 	protected static final String[] JAVASCRIPT_KEYWORDS =
 	{ "function" };
 	
-	protected static String[] ORACLE_KEYWORDS = null;
+	protected static String[] ORACLE_KEYWORDS = {
+
+		"ACCESS", "ELSE", "MODIFY", "START",
+		"ADD", "EXCLUSIVE", "NOAUDIT", "SELECT",
+		"ALL", "EXISTS", "NOCOMPRESS", "SESSION",
+		"ALTER", "FILE", "NOT", "SET",
+		"AND", "FLOAT", "NOTFOUND",	"SHARE",
+		"ANY", "FOR", "NOWAIT", "SIZE",
+		"ARRAYLEN",	"FROM", "NULL", "SMALLINT",
+		"AS", "GRANT", "NUMBER","SQLBUF",
+		"ASC", "GROUP", "OF", "SUCCESSFUL",
+		"AUDIT", "HAVING", "OFFLINE", "SYNONYM",
+		"BETWEEN", "IDENTIFIED", "ON", "SYSDATE",
+		"BY", "IMMEDIATE", "ONLINE", "TABLE",
+		"CHAR",	"IN", "OPTION","THEN",
+		"CHECK", "INCREMENT", "OR",	"TO",
+		"CLUSTER", "INDEX",	"ORDER", "TRIGGER",
+		"COLUMN", "INITIAL", "PCTFREE", "UID",
+		"COMMENT", "INSERT", "PRIOR", "UNION",
+		"COMPRESS",	"INTEGER", "PRIVILEGES", "UNIQUE",
+		"CONNECT",	"INTERSECT", "PUBLIC", "UPDATE",
+		"CREATE", "INTO", "RAW", "USER",
+		"CURRENT", "IS", "RENAME",	"VALIDATE",
+		"DATE", "LEVEL", "RESOURCE", "VALUES",
+		"DECIMAL", "LIKE", "REVOKE", "VARCHAR",
+		"DEFAULT", "LOCK", "ROW", "VARCHAR2",
+		"DELETE", "LONG", "ROWID", "VIEW",
+		"DESC",	"MAXEXTENTS", "ROWLABEL", "WHENEVER",
+		"DISTINCT",	"MINUS", "ROWNUM", "WHERE",
+		"DROP",	"MODE",	"ROWS",	"WITH"
+	};
 	
 
 	private static String firstToUpper(String string)

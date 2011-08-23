@@ -32,6 +32,7 @@ public class MolgenisModel
 
 			model = MolgenisModelParser.parseDbSchema(options.model_database);
 			
+			
 			// Get the strings of the property 'authorizable' and add the entity name
 			// 'Authorizable' to the list of Implements. Solves datamodel duplication
 			// in molgenis_apps suite. Possible future work: put auth dependencies into

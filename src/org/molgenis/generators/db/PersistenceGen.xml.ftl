@@ -14,7 +14,7 @@
 	      <property name="javax.persistence.jdbc.driver" value="${options.dbDriver}"/>
 	      <property name="javax.persistence.jdbc.user" value="${options.dbUser}"/>
           <property name="javax.persistence.validation.mode" value="none"/>    
-          <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/>
+          <property name="hibernate.dialect" value="org.hibernate.dialect.Oracle10gDialect"/>
           <property name="hibernate.show_sql" value="true"/>
           
           <!--
@@ -22,7 +22,7 @@
           With create-drop, the database schema will be dropped when the SessionFactory is closed explicitly.
 		e.g. validate | update | create | create-drop
            -->
-            <property name="hibernate.hbm2ddl.auto" value="validate"/>
+            <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
            
 	    </properties>
 	</persistence-unit>

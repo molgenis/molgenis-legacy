@@ -66,7 +66,7 @@ public class MolgenisModelParser {
             throws MolgenisModelException {
         // check for illegal words
         String[] keywords = new String[]{"name", "label", "extends", "implements", "abstract", "description",
-            "system", "decorator", "xref_label"};
+            "system", "decorator", "xref_label", "allocationSize"};
         List<String> key_words = new ArrayList<String>(Arrays.asList(keywords));
         for (int i = 0; i < element.getAttributes().getLength(); i++) {
             if (!key_words.contains(element.getAttributes().item(i).getNodeName())) {
@@ -203,6 +203,9 @@ public class MolgenisModelParser {
                         + entity.getName()
                         + "'. Expected <unique fields=\"field1[,field2,..]\" description=\"...\"/>");
             }
+            
+
+            
 
             try {
                 entity.addKey(keys, elem.getAttribute("subclass").equals("true"), key_description);
@@ -255,6 +258,15 @@ public class MolgenisModelParser {
             throw new MolgenisModelException("Multiple indices elements");
         }
         // done
+        
+
+        //Todo: change if(molgenisOptions.jpa_use_sequence && element.hasAttribute("allocationSize")) 
+        if(element.hasAttribute("allocationSize")) {
+       		int allocationSize = Integer.parseInt(element.getAttribute("allocationSize"));
+    		entity.setAllocationSize(allocationSize);
+        }
+        
+        
         logger.debug("read: " + entity.getName());
         return entity;
     }
@@ -301,7 +313,7 @@ public class MolgenisModelParser {
             "index", "enum_options", "default_code", "xref", "xref_entity",
             "xref_field", "xref_label", "xref_name", "mref_name",
             "mref_localid", "mref_remoteid", "filter", "filtertype",
-            "filterfield", "filtervalue", "xref_cascade" + ""};
+            "filterfield", "filtervalue", "xref_cascade" + "", "allocationSize"};
         List<String> key_words = new ArrayList<String>(Arrays.asList(keywords));
         for (int i = 0; i < element.getAttributes().getLength(); i++) {
             if (!key_words.contains(element.getAttributes().item(i).getNodeName())) {
@@ -537,6 +549,7 @@ public class MolgenisModelParser {
         // add the field to entity
         try {
             entity.addField(field);
+            
         } catch (Exception e) {
             throw new MolgenisModelException("duplicate field '"
                     + field.getName() + "' in entity '" + entity.getName()
@@ -561,11 +574,14 @@ public class MolgenisModelParser {
         if (unique.equals("true")) {
             entity.addKey(field.getName(), null);
         }
+
         //parse annotations (used by JPA)
         if(element.getChildNodes().getLength() >= 1) {
             String annotations = org.apache.commons.lang.StringUtils.deleteWhitespace(element.getChildNodes().item(1).getTextContent()).trim();
             field.setAnnotations(annotations);
         }
+        
+
     }
 
     public static void parseView(Model model, Element element)
