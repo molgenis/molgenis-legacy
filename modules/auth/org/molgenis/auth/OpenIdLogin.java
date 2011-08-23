@@ -39,12 +39,12 @@ public class OpenIdLogin extends DatabaseLogin
 	logger.debug("OpenIdLogin()");
     }
 
-    public OpenIdLogin(Database db)
+    public OpenIdLogin(Database db) throws Exception
     {
     	this.login(db, "anonymous", "anonymous");
     }
 
-    public OpenIdLogin(Database db, String redirect)
+    public OpenIdLogin(Database db, String redirect) throws Exception
 	{
 		this(db);
 		this.redirect = redirect;
@@ -57,11 +57,9 @@ public class OpenIdLogin extends DatabaseLogin
      * @param response
      * @param returnURL
      * @param op
-     * @throws IOException
-     * @throws DatabaseException
-     * @throws ParseException
+     * @throws Exception 
      */
-    public void authenticate(Database db, HttpServletRequest request, HttpServletResponse response, String returnURL, String op) throws IOException, DatabaseException, ParseException
+    public void authenticate(Database db, HttpServletRequest request, HttpServletResponse response, String returnURL, String op) throws Exception
     {
 	OpenIdManager manager = new OpenIdManager();
 
