@@ -265,7 +265,7 @@ public class SearchPlugin extends EasyPluginController<SearchModel>
 		for (ScreenController<?> child : this.getChildren())
 			child.handleRequest(db, request);
 		}catch(Exception e){
-			System.out.println("UNHANDLED EXCEPTIONSSSS!!!!")
+			System.out.println("UNHANDLED EXCEPTIONSSSS!!!!");
 			e.printStackTrace();
 		}
 	}
