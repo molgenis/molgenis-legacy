@@ -2,14 +2,17 @@ package boot;
 
 import generic.OpenBrowser;
 import generic.Utils;
+import gui.Button;
 import ircbot.IRCHandler;
 
 import java.awt.Color;
+import java.awt.Event;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
@@ -70,71 +73,55 @@ public class WebserverGui extends JFrame implements MouseListener{
 			g2d.setColor(Color.BLACK);
 			g2d.drawString("Please open a browser and go to:",25,50);
 			
-			g2d.setColor(Color.LIGHT_GRAY);
-			g2d.fillRect(25, 60, 7*url.length(), 20);
-			
-			g2d.setColor(Color.BLACK);
-			g2d.draw3DRect(24, 59, (7*url.length())+2, 22, true);
-			
-			g2d.setColor(Color.BLACK);
-			g2d.drawString(url,26,75);
+			Button.render(url, 25, 60, g2d);
 
 			//STOP
 			if(webserverthread != null && webserverthread.isAlive()){
-				
-			g2d.setColor(Color.LIGHT_GRAY);
-			g2d.fillRect(90, 85, 35, 20);
-			
-			g2d.setColor(Color.WHITE);
-			g2d.draw3DRect(89, 84, 37, 22, true);
-			
-			g2d.setColor(Color.BLACK);
-			g2d.drawString("Stop",91,100);
+			Button.render("Stop", 90, 85, g2d);	
 			
 			}else{
 			//START
-				
-			g2d.setColor(Color.LIGHT_GRAY);
-			g2d.fillRect(130, 85, 40, 20);
-			
-			g2d.setColor(Color.WHITE);
-			g2d.draw3DRect(129, 84, 42, 22, true);
-			
-			g2d.setColor(Color.BLACK);
-			g2d.drawString("Start",131,100);
-			
+			Button.render("Start", 130, 85, g2d);
 			}
-			
-			//RESTART
-			g2d.setColor(Color.LIGHT_GRAY);
-			g2d.fillRect(170, 85, 35, 20);
-			
-			g2d.setColor(Color.WHITE);
-			g2d.draw3DRect(169, 84, 37, 22, true);
-			
-			g2d.setColor(Color.BLACK);
-			g2d.drawString("Restart",171,100);
+			Button.render("Restart", 170, 85, g2d);
 			
 			g2d.setColor(Color.BLACK);
 			g2d.drawString("Webserver status:",35,120);
 			
 			if(webserverthread != null && webserverthread.isAlive()){
 				g2d.setColor(Color.GREEN);
-				g2d.drawString("Up",35,140);
+				g2d.drawString("Online",25,140);
 				
 			}else{
 				g2d.setColor(Color.RED);
-				g2d.drawString("Down",35,140);
+				g2d.drawString("Down",25,140);
 				
 			}
 		}else{
 			g2d.setColor(Color.BLACK);
 			g2d.drawString("Webserver starting, please wait...",25,50);
-			this.repaint();
 		}
 	}
 	
+	void startWebServer(){
+	    try {
+			web = new WWWServer(variant);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+	    webserverthread = new Thread(web);
+	    webserverthread.start();
+	}
 
+	void stopWebServer(){
+		web.shutdown();
+		try {
+			web.getAcceptor().destroy();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		web.getThreadPool().setMaxThreads(-1);
+	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -149,49 +136,49 @@ public class WebserverGui extends JFrame implements MouseListener{
 			if(e.getX() > 90 && e.getX() < 125){
 				Utils.console("STOP webserver clicked");
 				if(webserverthread.isAlive()){
-					web.shutdown();
-					try {
-						web.getAcceptor().destroy();
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-					web.getThreadPool().setMaxThreads(-1);
+					stopWebServer();
 				}
 				
 			}else if(e.getX() > 130 && e.getX() < 170){
 				Utils.console("START webserver clicked");
 				if(!webserverthread.isAlive()){
-				    try {
-						web = new WWWServer(variant);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-				    webserverthread = new Thread(web);
-				    webserverthread.start();
+					startWebServer();
 				}
+			}else if(e.getX() > 170 && e.getX() < 220){
+				Utils.console("RESTART webserver clicked");
+				if(webserverthread.isAlive()){
+				    stopWebServer();
+				}
+				startWebServer();
 			}
 		}
-		paint(getGraphics());
+		repaint();
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		paint(getGraphics());
+		repaint();
+	}
+	
+	@Override
+	public boolean mouseMove(Event e, int x,int y) {
+		repaint();
+		return true;
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		paint(getGraphics());
+		repaint();
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		paint(getGraphics());
+		repaint();
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		paint(getGraphics());
+		repaint();
 	}
 
 }
