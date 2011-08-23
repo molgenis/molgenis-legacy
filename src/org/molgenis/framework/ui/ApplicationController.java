@@ -13,6 +13,7 @@ import org.molgenis.framework.ui.html.FreemarkerInput;
 import org.molgenis.framework.ui.html.RichtextInput;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.FileLink;
+import org.molgenis.util.RedirectedException;
 import org.molgenis.util.Tuple;
 
 /**
@@ -123,7 +124,7 @@ public class ApplicationController extends
 	 * @param request
 	 *            with the event
 	 */
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, Tuple request) throws Exception, RedirectedException
 	{
 		logger.info("delegating handleRequest(" + request.toString() + ")");
 		String screen = request.getString(ScreenModel.INPUT_TARGET);
@@ -223,7 +224,7 @@ public class ApplicationController extends
 	// }
 
 	@Override
-	public void handleRequest(Database db, Tuple request, OutputStream out)
+	public void handleRequest(Database db, Tuple request, OutputStream out) throws RedirectedException, Exception
 	{
 		this.handleRequest(db, request);
 
