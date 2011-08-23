@@ -8,6 +8,7 @@ import app.JpaDatabase;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -21,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
+
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jpa.JpaUtil;
 import org.molgenis.model.jaxb.Field;
 import org.molgenis.organization.Investigation;
@@ -101,6 +104,8 @@ public class OracleToLifelinesPheno {
             + "FROM all_col_comments comments "
             + "WHERE comments.table_name = '%s'";
     private Investigation investigation;
+    
+    private List<Measurement> measurements;
 
 
     public OracleToLifelinesPheno(String schemaName, String tableName, Integer investigationId) throws Exception {
@@ -127,11 +132,12 @@ public class OracleToLifelinesPheno {
     private void load() throws Exception {
         JpaDatabase db = new JpaDatabase();
         //JpaUtil.dropAndCreateTables(db);
-        EntityManager em = db.getEntityManager();
+        EntityManager em = db.createEntityManager();
         Connection con = LoaderUtils.getConnection();
         loadComments();
 
-        List<Measurement> measurements = loadInvestigationAndMeasurement(con, em);
+        measurements  = loadInvestigationAndMeasurement(con, em);
+        em.close();
     }
 
     private List<Measurement> loadInvestigationAndMeasurement(Connection con, EntityManager em) throws SQLException {
@@ -171,130 +177,6 @@ public class OracleToLifelinesPheno {
         em.getTransaction().commit();
         System.out.println(investigation.getId());
         return measurements;
-    }
-    private HashMap<String, Integer> paId = new HashMap<String, Integer>();
-
-    public void loadTargets(Connection con, EntityManager em) throws SQLException {
-        String sql = "SELECT %s FROM LLPOPER.%s";
-        sql = String.format(sql, pk, tableName);
-        Statement stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery(sql);
-
-        List<ObservationTarget> targets = new ArrayList<ObservationTarget>();
-
-        while (rs.next()) {
-            ObservationTarget target = new ObservationTarget();
-            target.setInvestigation(investigation);
-            target.setName("" + rs.getBigDecimal(1).intValue());
-            targets.add(target);
-        }
-        rs.close();
-        stmt.close();
-
-        em.getTransaction().begin();
-        for (ObservationTarget target : targets) {
-            em.persist(target);
-        }
-        em.getTransaction().commit();
-        for (ObservationTarget target : targets) {
-            paId.put(target.getName(), target.getId());
-        }
-
-        em.clear();
-    }
-
-    private void writeCSVFile(Connection con, EntityManager em, List<Measurement> measurements) throws SQLException, IOException {
-
-
-
-        String sql = "SELECT * FROM LLPOPER.%s";
-        sql = String.format(sql, tableName);
-
-//        String insertSQL = "INSERT INTO ObservedValue (target, feature, value, investigation) VALUES (?, ?, ?, ?)";
-//        //con.setAutoCommit(false);
-//        PreparedStatement ps = con.prepareCall(insertSQL);
-
-        int w = 0;
-
-        BufferedWriter bf = new BufferedWriter(new FileWriter("observedvalue.csv"));
-        bf.append("target,feature,value,investigation\n");
-        
-        Statement stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery(sql);
-
-//        ps.setInt(4, investigation.getId());
-
-        while (rs.next()) {
-            String paIDValue = rs.getString(1);
-            Integer targetId = paId.get(paIDValue);
-//            ps.setInt(1, targetId);
-            for (int i = 0; i < measurements.size(); ++i) {
-                Measurement m = measurements.get(i);
-//                ps.setInt(2, m.getId());
-                Object value = rs.getObject(i + 1);
-                if (value != null) {
-//                    ps.setString(3, value.toString());
-//                    ps.addBatch();
-                }
-
-                bf.append(String.format("%d,%d,%s,%d\n", targetId, m.getId(), value, investigation.getId()));
-            }
-            ++w;
-            if (w % 1000 == 0) {
-//                ps.executeBatch();
-                System.out.println("" + w);
-            }
-        }
-//        ps.executeBatch();
-
-        bf.flush();
-        bf.close();
-
-        System.out.println("END OF INSERT");
-    }
-
-    //preformance is bad
-    public void loadDataWithUnion(List<Measurement> measurements, EntityManager em, Connection con) throws SQLException {
-        String featureSQL = "SELECT %s, '' || %s as value, %d as feature FROM %s.%s";
-
-        StringBuilder sql = new StringBuilder();
-        for (int i = 0; i < measurements.size(); ++i) {
-            Measurement m = measurements.get(i);
-            sql.append(String.format(featureSQL, pk, m.getName(), m.getId(), schemaName, tableName));
-            if (i + 1 < measurements.size()) {
-                sql.append(" union all ");
-            }
-        }
-
-        String insert = "INSERT INTO ObservedValue (value, feature, target, investigation) VALUES (?, ?, ?, ?)";
-        PreparedStatement ps = con.prepareStatement(insert);
-        ps.setInt(4, investigation.getId());
-
-        Statement stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery(sql.toString());
-
-        int w = 0;
-        while (rs.next()) {
-            Integer targetId = paId.get(rs.getString(1));
-
-            Object value = rs.getObject(2);
-            if (value != null) {
-                Integer feature = rs.getBigDecimal(3).intValue();
-
-                ps.setString(1, value.toString());
-                ps.setInt(2, feature);
-                ps.setInt(3, targetId);
-
-                ps.addBatch();
-                if (++w % 10000 == 0) {
-                    ps.executeBatch();
-                    System.out.println("w:" +w);
-                }
-            }
-
-        }
-
-        ps.executeBatch();
     }
 
     public List<Column> getColumns() throws Exception {
@@ -337,4 +219,24 @@ public class OracleToLifelinesPheno {
     public int getInvestigationId() {
     	return investigation.getId();
     }
+    
+    public List<Measurement> getMeasurements() {
+    	return this.measurements;
+    }
+    
+    public int getRowCount() throws DatabaseException {
+    	String sql = "SELECT Count(*) FROM %s.%s";
+    	EntityManager em = null;
+    	try {
+	        JpaDatabase db = new JpaDatabase();
+	        em = db.getEntityManager();
+	        
+	        sql = String.format(sql, schemaName, tableName);
+	        return ((BigDecimal)em.createNativeQuery(sql).getSingleResult()).intValue();
+    	} catch (DatabaseException ex) {
+    		throw ex;
+    	} finally {
+    		em.close();
+    	}
+    }    
 }
