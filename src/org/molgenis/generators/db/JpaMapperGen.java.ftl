@@ -321,11 +321,11 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
                             }
 			}
     	<#elseif type_label == "mref">
-			for(${JavaName(field.getXrefEntity())} mrefEntity : ${name(entity)}.get${JavaName(field)}()) {
-				if(mrefEntity.get${Name(pkey(field.getXrefEntity()))}() == null) {
-					em.persist(mrefEntity);
+			for(${JavaName(field.getXrefEntity())} m : ${name(entity)}.get${JavaName(field)}()) {
+				if(m.get${Name(pkey(field.getXrefEntity()))}() == null) {
+					em.persist(m);
 				}
-				mrefEntity.get${JavaName(fieldName)}<#if numRef &gt; 1 >${Name(entity)}</#if>Collection().add(${name(entity)});
+				m.get${JavaName(fieldName)}<#if numRef &gt; 1 >${Name(entity)}</#if>Collection().add(${name(entity)});
 			}
 			
 			for(${pkeyJavaType(field.getXrefEntity())} id : ${name(entity)}.get${JavaName(fieldName)}_Id()) {
