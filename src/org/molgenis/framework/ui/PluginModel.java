@@ -8,6 +8,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.security.Login;
 import org.molgenis.util.Entity;
+import org.molgenis.util.RedirectedException;
 import org.molgenis.util.Tuple;
 
 public abstract class PluginModel<E extends Entity> extends
@@ -35,7 +36,7 @@ public abstract class PluginModel<E extends Entity> extends
 
 	
 	@Override
-	public void handleRequest(Database db, Tuple request, OutputStream out)
+	public void handleRequest(Database db, Tuple request, OutputStream out) throws RedirectedException, Exception
 	{
 		this.handleRequest(db, request);
 	}
@@ -153,7 +154,7 @@ public abstract class PluginModel<E extends Entity> extends
 	public abstract String getViewName();
 
 	@Override
-	public abstract void handleRequest(Database db, Tuple request);
+	public abstract void handleRequest(Database db, Tuple request) throws RedirectedException, Exception;
 
 	@Override
 	public abstract void reload(Database db);
