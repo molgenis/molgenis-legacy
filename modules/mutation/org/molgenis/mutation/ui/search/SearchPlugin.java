@@ -261,9 +261,13 @@ public class SearchPlugin extends EasyPluginController<SearchModel>
 				logger.error(el.toString());
 //				this.getMessages().add(new ScreenMessage(el.toString(), false));
 		}
-		
+		try{
 		for (ScreenController<?> child : this.getChildren())
 			child.handleRequest(db, request);
+		}catch(Exception e){
+			System.out.println("UNHANDLED EXCEPTIONSSSS!!!!")
+			e.printStackTrace();
+		}
 	}
 
 	private void handleFindPatients(Tuple request) throws DatabaseException, ParseException
