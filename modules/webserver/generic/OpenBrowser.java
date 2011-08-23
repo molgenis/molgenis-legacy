@@ -9,15 +9,23 @@ public class OpenBrowser {
 			if (osName.startsWith("Windows")){
 				Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
 			}else {
-                String[] browsers = { "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape", "safari", "camino" };
+                String[] browsers = { "firefox-bin", "firefox", "iceweasel", "opera", "konqueror", "epiphany", "mozilla", "netscape", "safari", "camino" };
                 String browser = null;
                 for (int count = 0; count < browsers.length && browser == null; count++)
-                	if (Runtime.getRuntime().exec(new String[] { "which", browsers[count] }).waitFor() == 0){
-                                browser = browsers[count];
+                {
+                	try{
+                		Runtime.getRuntime().exec(new String[] { browsers[count] }).waitFor();
+                		 browser = browsers[count];	
+                		 Runtime.getRuntime().exec(new String[] { browser, url });
+                	}catch(Exception e){
+                		//e.printStackTrace();
+                		//export PATH=/Applications/Firefox.app/Contents/MacOS:$PATH  
                 	}
-                	Runtime.getRuntime().exec(new String[] { browser, url });
 				}
-		} catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "No browser found on your path, please open it yourself.");
+			}
+		}
+			catch (Exception e) {
         JOptionPane.showMessageDialog(null, "Error in opening browser:\n" + e.getLocalizedMessage());
         }
 	}

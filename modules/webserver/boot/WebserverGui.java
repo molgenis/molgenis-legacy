@@ -30,7 +30,8 @@ public class WebserverGui extends JFrame implements MouseListener{
 	OpenBrowser browser = new OpenBrowser();
 	String variant = MolgenisServlet.getMolgenisVariantID();
 	String title =  variant + " powered by Molgenis Webserver";
-	final String url = "http://localhost:" + WWWServer.DEF_PORT + "/" + variant;
+	final String url;
+	boolean init=false;
 
 	WebserverGui(Integer port) throws IOException{
 		setSize(300,150); 
@@ -44,7 +45,9 @@ public class WebserverGui extends JFrame implements MouseListener{
 	    	web.setAttribute("bot", botentry);
 			new Thread(botentry).start();
 	    }
-
+		url = "http://localhost:" + WWWServer.DEF_PORT + "/" + variant;
+		this.repaint();
+		init = true;
 	}
 	
 	public void paint(Graphics g) {
@@ -57,37 +60,41 @@ public class WebserverGui extends JFrame implements MouseListener{
 	
 	public void paintComponent(Graphics g) {
 		Graphics2D g2d = (Graphics2D)g;
-		g2d.setColor(Color.BLACK);
+		g2d.setColor(Color.WHITE);
 		g2d.fillRect(0, 0, getWidth(),getHeight());
-		g2d.setColor(Color.WHITE);
+		g2d.setColor(Color.BLACK);
 		//CLICK to Molgenis
-		g2d.drawString("Please open a browser and go to:",25,50);
-		g2d.setColor(Color.LIGHT_GRAY);
-		g2d.fillRect(25, 60, 200, 20);
-		g2d.setColor(Color.white);
-		g2d.draw3DRect(24, 59, 202, 22, true);
-		g2d.setColor(Color.WHITE);
-		g2d.drawString(url,25,75);
-		g2d.setColor(Color.LIGHT_GRAY);
-		//STOP
-		g2d.fillRect(90, 85, 35, 20);
-		g2d.setColor(Color.white);
-		g2d.draw3DRect(89, 84, 37, 22, true);
-		g2d.setColor(Color.RED);
-		g2d.drawString("STOP",91,100);
-		g2d.setColor(Color.LIGHT_GRAY);
-		//START
-		g2d.fillRect(130, 85, 40, 20);
-		g2d.setColor(Color.white);
-		g2d.draw3DRect(129, 84, 42, 22, true);
-		g2d.setColor(Color.GREEN);
-		g2d.drawString("START",131,100);
-		if(webserverthread != null && webserverthread.isAlive()){
-			g2d.setColor(Color.GREEN);
-		}else{
+		if(init){
+			g2d.drawString("Please open a browser and go to:",25,50);
+			g2d.setColor(Color.LIGHT_GRAY);
+			g2d.fillRect(25, 60, 7*url.length(), 20);
+			g2d.setColor(Color.BLACK);
+			g2d.draw3DRect(24, 59, (7*url.length())+2, 22, true);
+			g2d.setColor(Color.BLACK);
+			g2d.drawString(url,26,75);
+			g2d.setColor(Color.LIGHT_GRAY);
+			//STOP
+			g2d.fillRect(90, 85, 35, 20);
+			g2d.setColor(Color.WHITE);
+			g2d.draw3DRect(89, 84, 37, 22, true);
 			g2d.setColor(Color.RED);
+			g2d.drawString("STOP",91,100);
+			g2d.setColor(Color.LIGHT_GRAY);
+			//START
+			g2d.fillRect(130, 85, 40, 20);
+			g2d.setColor(Color.white);
+			g2d.draw3DRect(129, 84, 42, 22, true);
+			g2d.setColor(Color.GREEN);
+			g2d.drawString("START",131,100);
+			if(webserverthread != null && webserverthread.isAlive()){
+				g2d.setColor(Color.GREEN);
+			}else{
+				g2d.setColor(Color.RED);
+			}
+			g2d.drawString("Webserver:",25,100);
+		}else{
+			g2d.drawString("Please wait untill the molgenis starts",25,50);
 		}
-		g2d.drawString("Webserver:",25,100);
 	}
 	
 
