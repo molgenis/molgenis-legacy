@@ -67,7 +67,7 @@
 				measurement on the Illumina Genome Analyzer</description>
 			<field name="machine" type="xref" xref_entity="Machine"
 				description="The Illumina machine it was run on" />
-			<field name="date" type="date"
+			<field name="runDate" type="date"
 				description="The date the flowcell was run on the machine" />
 		</entity>
 		<entity name="LibraryLane" extends="ObservationElement">

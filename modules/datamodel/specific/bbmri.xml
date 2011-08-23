@@ -41,7 +41,7 @@
 		
 		<entity name="ChangeLog" implements="Identifiable">
 			<description>This contains changes to bbmri entities. </description>
-			<field name="date" description="the date of the change"></field>
+			<field name="changeDate" description="the date of the change"></field>
 			<field name="entity" type="xref" xref_entity="Biobank" description="the Biobank entity that has changed"></field>
 		</entity>
 	</module>

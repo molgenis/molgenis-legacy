@@ -12,6 +12,7 @@ import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.organization.Investigation;
+import org.molgenis.util.RedirectedException;
 import org.molgenis.util.Tuple;
 
 /**
@@ -65,7 +66,12 @@ public class Test extends EasyPluginController<TestModel>
 	public void handleRequest(Database db, Tuple request)
 	{
 		//automatically calls functions with same name as action
-		delegate(request.getAction(), db, request);		
+		try {
+			delegate(request.getAction(), db, request);
+		} catch (RedirectedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
 	}
 	
 	/**

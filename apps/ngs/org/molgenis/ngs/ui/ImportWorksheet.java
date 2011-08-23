@@ -80,7 +80,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 			ws.setProject(inv.getName());
 			if(inv.getContacts_Id().size() > 0) ws.setInvestigator(i.getLastName());
 			ws.setLane(libraryList.getLane());
-			ws.setCreationDate(flowcell.getDate());
+			ws.setCreationDate(flowcell.getRunDate());
 			ws.setMachine(m.getMachine());
 			ws.setFlowcell(flowcell.getName());
 			ws.setCapturing(lc.getCapturing());
@@ -250,7 +250,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 					java.util.Date date_tmp = new java.util.Date(2000 - 1900 + Integer.parseInt(date.substring(0, 2)), Integer.parseInt(date.substring(2, 4)) - 1, Integer.parseInt(date
 							.substring(4, 6)));
 					print(date_tmp.toString());
-					flowcell.setDate(date_tmp);
+					flowcell.setRunDate(date_tmp);
 					flowcell.setMachine(machine);
 					db.add(flowcell);
 				}
