@@ -49,6 +49,18 @@ public class ApplicationModel extends SimpleScreenModel
 
 	public void setTarget(ScreenController<?> target)
 	{
+		/*BUG:
+		This can be resolved to a NULL pointer 
+		(When the underlying caller doesn't have required fields filled in ?)
+		To replicate: press the add new btn next to an entity which 
+		has required fields not filled out
+		
+		* NullPointerException
+	    at org.molgenis.framework.ui.ApplicationModel.setTarget(ApplicationModel.java:64)
+	    at org.molgenis.framework.server.AbstractMolgenisServlet.handleGUIrequest(AbstractMolgenisServlet.java:607)
+	    at org.molgenis.framework.server.AbstractMolgenisServlet.service(AbstractMolgenisServlet.java:242)
+	    at org.molgenis.framework.server.AbstractMolgenisServlet.doPost(AbstractMolgenisServlet.java:178)	
+		*/
 		this.target = target.getModel();
 	}
 
