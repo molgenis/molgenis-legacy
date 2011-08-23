@@ -1,8 +1,8 @@
 package test;
 
-import org.molgenis.framework.db.Database;
 import org.openqa.selenium.server.RemoteControlConfiguration;
 import org.openqa.selenium.server.SeleniumServer;
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -52,8 +52,9 @@ public class AnimaldbSeleniumTest
 		selenium = new DefaultSelenium(proc);
 		selenium.start();
 		
+		// Is done automatically at app start-up!
 		//Helper.deleteDatabase();
-		new emptyDatabase(new MolgenisServlet().getDatabase(), true);
+		//new emptyDatabase(new MolgenisServlet().getDatabase(), true);
 		
 		new RunStandalone(webserverPort);
 	}
@@ -63,29 +64,35 @@ public class AnimaldbSeleniumTest
 	{
 		selenium.open("/molgenis_apps/molgenis.do");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-//		Assert.assertEquals(selenium.getTitle(), "AnimalDB");
-//		Assert.assertTrue(selenium.isTextPresent("Welcome"));
-//		Assert.assertEquals(selenium.getText("link=R api"), "R api");
+		Assert.assertEquals(selenium.getTitle(), "AnimalDB");
+		Assert.assertTrue(selenium.isTextPresent("Welcome to AnimalDB!"));
+		Assert.assertTrue(selenium.isTextPresent("Your database was empty, so it was prefilled with entities needed to make AnimalDB run"));
 		sleepHelper("startup");
 	}
 
 	@Test
 	public void login() throws InterruptedException
 	{
-//		selenium.click("id=UserLogin_tab_button");
-//		selenium.waitForPageToLoad(pageLoadTimeout);
-//		Assert.assertEquals(selenium.getText("link=Register"), "Register");
-//		selenium.type("id=username", "admin");
-//		selenium.type("id=password", "admin");
-//		selenium.click("id=Login");
-//		selenium.waitForPageToLoad(pageLoadTimeout);
-//		
-//		//note: page now redirects to the Home screen ('auth_redirect' in properties)
-//		//note2: REDIRECT BROKEN, DISABLED ATM
-//		selenium.click("id=ClusterDemo_tab_button");
-//		selenium.waitForPageToLoad(pageLoadTimeout);
-//
-//		sleepHelper("login");
+		selenium.click("id=securitymenu_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertEquals(selenium.getText("link=Register"), "Register");
+		selenium.type("id=username", "admin");
+		selenium.type("id=password", "admin");
+		selenium.click("id=Login");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		
+		sleepHelper("login");
+	}
+	
+	@Test
+	public void logout() throws InterruptedException
+	{
+		selenium.click("id=securitymenu_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=Logout");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		
+		sleepHelper("logout");
 	}
 	
 	@AfterClass(alwaysRun=true)
