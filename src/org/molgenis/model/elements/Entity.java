@@ -1495,4 +1495,15 @@ public class Entity extends DBSchema implements Record
 		}
 		return result;
 	}
+
+	private Integer allocationSize = null;
+	
+	public void setAllocationSize(Integer allocationSize)
+	{
+		this.allocationSize  = allocationSize;
+	}
+	
+	public Integer getAllocationSize() {
+		return this.allocationSize;
+	}
 }

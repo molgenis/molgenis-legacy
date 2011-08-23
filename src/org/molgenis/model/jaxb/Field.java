@@ -214,6 +214,8 @@ public class Field
 					return DATETIME;
 				case Types.TIMESTAMP:
 					return DATETIME;
+				case Types.NUMERIC:
+					return DECIMAL;
 				default:
 				{
 					logger.error("Unknown type: "+type);

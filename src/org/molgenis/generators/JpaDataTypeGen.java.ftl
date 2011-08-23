@@ -227,9 +227,15 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	//${field.description}[type=${field.type}]
 	<#if !isPrimaryKey(field,entity) || !entity.hasAncestor()>
  			<#if isPrimaryKey(field,entity) && !entity.hasAncestor()>
-    @Id
     			<#if field.auto = true>
-    @GeneratedValue(strategy = GenerationType.AUTO)   			
+	    			<#if jpa_use_sequence >
+	@SequenceGenerator(name="${JavaName(entity)}_Gen", sequenceName="${JavaName(entity)}_Seq"<#if entity.allocationSize??>, allocationSize=${entity.allocationSize?c}</#if>)
+    @Id @GeneratedValue(generator="${JavaName(entity)}_Gen", strategy=GenerationType.SEQUENCE)		
+    				<#else>
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    				</#if>   			
+    			<#else>
+    			@Id
     			</#if>
     		</#if>
 		</#if>	
@@ -799,7 +805,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		<#if f.type=="xref" && f.getXrefEntityName() == entity.name>
 			 <#assign multipleXrefs = e.getNumberOfReferencesTo(entity)/>
 //${multipleXrefs}
-	@OneToMany(mappedBy="${name(f)}" /*, cascade={CascadeType.REFRESH, CascadeType.MERGE} */)
+	@OneToMany(mappedBy="${name(f)}"/*, cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/)
     private Collection<${Name(f.entity)}> ${name(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection = new ArrayList<${Name(f.entity)}>();
 
 	@XmlTransient
@@ -824,7 +830,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 			<#if f.type=="mref" && f.getXrefEntityName() == entity.name>
 				<#assign multipleXrefs = e.getNumberOfMrefTo(entity)/>
 	//${multipleXrefs}
-    @ManyToMany(mappedBy="${name(f)}" /*, cascade={CascadeType.REFRESH, CascadeType.MERGE} */)
+    @ManyToMany(mappedBy="${name(f)}"/*, cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/)
     private Collection<${Name(f.entity)}> ${name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection = new ArrayList<${Name(f.entity)}>();
 
 	@XmlTransient
