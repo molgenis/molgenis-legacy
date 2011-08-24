@@ -19,9 +19,10 @@ public class MatrixRendererHelper {
 		ops.put("GREATER_EQUAL", "&gt;=");
 		ops.put("LESS", "&lt;");
 		ops.put("LESS_EQUAL", "&lt;=");
-		ops.put("EQUALS", "==");
+		ops.put("EQUALS", "equals");
 		ops.put("SORTASC", "sort asc");
 		ops.put("SORTDESC", "sort desc");
+		ops.put("NOT", "is not");
 		//ops.put("LIMIT", "sort desc");
 		//ops.put("OFFSET", "sort desc");  ->  don't add here, just do by paging?
 		return ops;
