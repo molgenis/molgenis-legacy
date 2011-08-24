@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.molgenis.framework.db.QueryRule.Operator;
+
 
 public class MatrixRendererHelper {
 	
@@ -33,6 +35,18 @@ public class MatrixRendererHelper {
 			copy.add(fCopy);
 		}
 		return copy;
+	}
+	
+	public static Filter getFilterWhere(List<Filter> filters, Filter.Type type, String field, Operator operator){
+		for (int filterIndex = 0; filterIndex < filters.size(); filterIndex++)
+		{
+			Filter f = filters.get(filterIndex);
+			if(f.getFilterType().equals(type) && f.getQueryRule().getField().equals(field) && f.getQueryRule().getOperator().equals(operator))
+			{
+				return f;
+			}
+		}
+		return null;
 	}
 	
 }
