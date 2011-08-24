@@ -20,7 +20,7 @@ public class AnimaldbSeleniumTest
 	
 	Selenium selenium;
 	Integer sleepTime = 1000;
-	String pageLoadTimeout = "30000";
+	String pageLoadTimeout = "120000";
 	//String storagePath = new File(".").getAbsolutePath() + File.separator + "tmp_selenium_test_data";
 
 	@BeforeClass
@@ -51,6 +51,7 @@ public class AnimaldbSeleniumTest
 		HttpCommandProcessor proc = new HttpCommandProcessor(seleniumHost, seleniumPort, seleniumBrowser, seleniumUrl);
 		selenium = new DefaultSelenium(proc);
 		selenium.start();
+		selenium.setTimeout(pageLoadTimeout);
 		
 		// To be sure, empty db and don't add MolgenisUsers etc.
 		new emptyDatabase(new MolgenisServlet().getDatabase(), false);
