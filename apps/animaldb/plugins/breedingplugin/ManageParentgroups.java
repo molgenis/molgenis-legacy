@@ -234,7 +234,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 				
 				// Success: empty selected lists and show success message
 				this.resetUserFields();
-				this.getMessages().add(new ScreenMessage("Parentgroup succesfully added", true));
+				this.getMessages().add(new ScreenMessage("Parent group successfully added", true));
 			}
 			
 			if (action.equals("addIndMother")) {

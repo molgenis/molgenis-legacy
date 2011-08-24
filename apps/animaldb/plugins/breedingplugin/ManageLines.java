@@ -84,7 +84,7 @@ public class ManageLines extends PluginModel<Entity>
 						protocolId, measurementId, groupid, null, source));
 				
 				this.getMessages().clear();
-				this.getMessages().add(new ScreenMessage("Line succesfully added", true));
+				this.getMessages().add(new ScreenMessage("Line successfully added", true));
 			}
 			
 		} catch (Exception e) {

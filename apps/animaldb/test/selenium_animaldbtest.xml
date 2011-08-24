@@ -8,6 +8,7 @@
 					<include name="startup" />
 					<include name="login" />
 					<include name="addAnimals" />
+					<include name="breedingWorkflow" />
 					<include name="logout" />
 				</methods>
 			</class>

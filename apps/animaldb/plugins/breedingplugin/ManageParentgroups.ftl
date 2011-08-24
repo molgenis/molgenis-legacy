@@ -34,7 +34,7 @@
 	<div id='motherselect' class='row'>
 		<div style='float:left'>
 			<label for='mother'>(Possible) mother(s):</label>
-			<select name='mother' size='10'>
+			<select id='mother' name='mother' size='10'>
 			<#if screen.selectedMotherIdList?exists>
 				<#list screen.selectedMotherIdList as selectedMotherId>
 					<#assign name = screen.getAnimalName(selectedMotherId)>
@@ -44,8 +44,8 @@
 			</select>
 		</div>
 		<div>Add...<br />
-			<input type='submit' value='&lt;&lt;' onclick='__action.value="addIndMother"' />
-			<select name='ind_mother'>
+			<input type='submit' id='addmother' value='&lt;&lt;' onclick='__action.value="addIndMother"' />
+			<select id='ind_mother' name='ind_mother'>
 			<#if screen.motherIdList?exists>
 				<#list screen.motherIdList as motherId>
 					<#assign name = screen.getAnimalName(motherId)>
@@ -55,7 +55,7 @@
 			</select>
 		</div>
 		<div>Remove... <br />
-			<input type='submit' value='&gt;&gt;' onclick='__action.value="remIndMother"' />
+			<input type='submit' id='remmother' value='&gt;&gt;' onclick='__action.value="remIndMother"' />
 		</div>
 	</div>
 		
@@ -63,7 +63,7 @@
 	<div id='fatherselect' class='row'>
 		<div style='float:left'>
 			<label for='father'>(Possible) father(s):</label>
-			<select name='father' size='10'>
+			<select id='father' name='father' size='10'>
 			<#if screen.selectedFatherIdList?exists>
 				<#list screen.selectedFatherIdList as selectedFatherId>
 					<#assign name = screen.getAnimalName(selectedFatherId)>
@@ -73,8 +73,8 @@
 			</select>
 		</div>
 		<div>Add...<br />
-			<input type='submit' value='&lt;&lt;' onclick='__action.value="addIndFather"' />
-			<select name='ind_father'>
+			<input type='submit' id='addfather' value='&lt;&lt;' onclick='__action.value="addIndFather"' />
+			<select id='ind_father' name='ind_father'>
 			<#if screen.fatherIdList?exists>
 				<#list screen.fatherIdList as fatherId>
 					<#assign name = screen.getAnimalName(fatherId)>
@@ -84,7 +84,7 @@
 			</select>
 		</div>
 		<div>Remove...<br />
-			<input type='submit' value='&gt;&gt;' onclick='__action.value="remIndFather"' />
+			<input type='submit' id='remfather' value='&gt;&gt;' onclick='__action.value="remIndFather"' />
 		</div>
 	</div>
 	
@@ -108,7 +108,7 @@
 		
 	<!-- Add button -->
 	<div id='buttons_part' class='row'>
-		<input type='submit' class='addbutton' value='Add' onclick="__action.value='addParentgroup'" />
+		<input type='submit' id='addpg' class='addbutton' value='Add' onclick="__action.value='addParentgroup'" />
 	</div>
 	
 <#--end of your plugin-->	

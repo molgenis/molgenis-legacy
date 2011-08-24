@@ -434,6 +434,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		birthdate.setValue(null);
 
 		entrydate = new DateInput("entrydate", "Date of entry:");
+		entrydate.setValue(new Date());
 		entrydate.setNillable(false);
 		
 		namePanel = new DivPanel("Name", "Name:");

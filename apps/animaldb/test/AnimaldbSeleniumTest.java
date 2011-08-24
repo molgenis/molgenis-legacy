@@ -85,32 +85,61 @@ public class AnimaldbSeleniumTest
 	
 	@Test
 	public void addAnimals() throws Exception {
+		// Go to Add Animal plugin
 		selenium.click("id=animalmenu_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		//selenium.click("id=AddAnimal_tab_button");
-		//selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Bring in animals"));
-//		// Add 10 female Syrian hamsters
-//		selenium.select("id=species", "value=Syrian hamster");
-//		selenium.select("id=namebase", "value=");
-//		selenium.click("id=numberofanimals");
-//		selenium.type("id=numberofanimals", "10");
-//		selenium.click("id=Add");
-//		selenium.waitForPageToLoad(pageLoadTimeout);
-//		Assert.assertTrue(selenium.isTextPresent("10 animal(s) added succesfully"));
+		// Add 10 female Syrian hamsters
+		selenium.select("id=species", "label=Syrian hamster");
+		selenium.select("id=namebase", "value=");
+		selenium.click("id=numberofanimals");
+		selenium.type("id=numberofanimals", "10");
+		selenium.click("id=Add");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("10 animal(s) added succesfully"));
 		// Add 10 male Syrian hamsters
-//		selenium.click("css=span");
-//		selenium.click("id=species_chzn_o_5");
-//		selenium.click("css=#sex_chzn > a.chzn-single > span");
-//		selenium.click("id=sex_chzn_o_1");
-//		selenium.click("css=#namebase_chzn > a.chzn-single > span");
-//		selenium.click("id=namebase_chzn_o_22");
-//		selenium.type("id=numberofanimals", "10");
-//		selenium.click("id=Add");
-//		selenium.waitForPageToLoad(pageLoadTimeout);
-//		Assert.assertTrue(selenium.isTextPresent("10 animal(s) added succesfully"));
+		selenium.select("id=species", "label=Syrian hamster");
+		selenium.select("id=sex", "label=Male");
+		selenium.select("id=namebase", "value=");
+		selenium.click("id=numberofanimals");
+		selenium.type("id=numberofanimals", "10");
+		selenium.click("id=Add");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("10 animal(s) added succesfully"));
 		
 		sleepHelper("addAnimals");
+	}
+	
+	@Test
+	public void breedingWorkflow() throws Exception {
+		// Go to Breeding line plugin
+		selenium.click("id=breedingmodule_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=ManageLines_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Manage breeding lines"));
+		// Add a breeding line
+		selenium.click("id=linename");
+		selenium.type("id=linename", "MyLine");
+		selenium.click("id=add");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Line successfully added"));
+		// Go to Parentgroup plugin
+		selenium.click("id=ManageParentgroups_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Manage parent groups"));
+		// Add a parent group
+		selenium.click("id=groupname");
+		selenium.type("id=groupname", "MyParentgroup");
+		selenium.click("id=addmother");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=addfather");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=addpg");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Parent group successfully added"));
+		
+		sleepHelper("breedingWorkflow");
 	}
 	
 	@Test

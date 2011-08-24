@@ -44,7 +44,7 @@
 	</div>
 	<!-- Add button -->
 	<div id='buttons_part' class='row'>
-		<input type='submit' class='addbutton' value='Add' onclick="__action.value='addLine'" />
+		<input type='submit' id='add' class='addbutton' value='Add' onclick="__action.value='addLine'" />
 	</div>
 </div>
 
