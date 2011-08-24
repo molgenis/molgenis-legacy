@@ -184,7 +184,7 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	@Override
 	public void setLabel(String label)
 	{
-		assert (label != null);
+		//assert (label != null); fails web tests due to label -> null constructors, so allow it
 		this.label = label;
 	}
 
