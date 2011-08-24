@@ -177,7 +177,9 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		if (action.equals("moveFarLeft")) mover.moveFarLeft(renderMe);
 		if (action.equals("moveFarDown")) mover.moveFarDown(renderMe);
 		if (action.equals("moveFarUp")) mover.moveFarUp(renderMe);
-		if (action.startsWith("filter")) this.addFilter(action, request);
+		if (action.startsWith("add_filter")) this.addFilter(action, request);
+		if (action.startsWith("remove_filter")) this.removeFilter(action, request);
+		if (action.startsWith("push_filter")) this.pushFilter(action, request);
 
 		try
 		{
@@ -284,11 +286,11 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 	}
 
 	/**
-	 * Handle the 'Apply' buttons for filters by getting the values (type,
-	 * field, operator and value) from the request and parse them into the
-	 * corresponding filters. Basic checks on variable types is be done here but
-	 * no more. Filter correctness is checked by validateFilters in the Validate
-	 * class.
+	 * Add a filter to the stack. Handle the 'Apply' buttons for filters by
+	 * getting the values (type, field, operator and value) from the request and
+	 * parse them into the corresponding filters. Basic checks on variable types
+	 * is be done here but no more. Filter correctness is checked by
+	 * validateFilters in the Validate class.
 	 * 
 	 * @param request
 	 * @throws Exception
@@ -296,49 +298,91 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 	private void addFilter(String action, Tuple request) throws Exception
 	{
 		String pref = MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX;
-		
-		String field = request.getString(pref+action+"FILTER_FIELD");
-		Operator operator = Operator.valueOf(request.getString(pref+action+"FILTER_OPERATOR"));
-		Object value = request.getObject(pref+action+"FILTER_VALUE");
-		
+
+		String field = request.getString(pref + action + "FILTER_FIELD");
+		Operator operator = Operator.valueOf(request.getString(pref + action + "FILTER_OPERATOR"));
+		Object value = request.getObject(pref + action + "FILTER_VALUE");
+
 		new Validate<R, C, V>().validateFilterInputs(field, operator, value);
-		
+
 		MatrixQueryRule q = new MatrixQueryRule(field, operator, value);
 		Filter newFilter = null;
-		
-		if(action.equals("filter_by_index"))
+
+		if (action.equals("add_filter_by_index"))
 		{
 			newFilter = new Filter(Filter.Type.index, q);
 		}
-		else if(action.equals("filter_by_col_value"))
+		else if (action.equals("add_filter_by_col_value"))
 		{
 			newFilter = new Filter(Filter.Type.colValues, q);
 		}
-		else if(action.equals("filter_by_row_value"))
+		else if (action.equals("add_filter_by_row_value"))
 		{
 			newFilter = new Filter(Filter.Type.rowValues, q);
 		}
-		else if(action.equals("filter_by_col_header"))
+		else if (action.equals("add_filter_by_col_header"))
 		{
 			newFilter = new Filter(Filter.Type.colHeader, q);
 		}
-		else if(action.equals("filter_by_row_header"))
+		else if (action.equals("add_filter_by_row_header"))
 		{
 			newFilter = new Filter(Filter.Type.rowHeader, q);
 		}
 		else
 		{
-			throw new MatrixException("Filter action '"+action+"' not recognized.");
+			throw new MatrixException("Filter action '" + action + "' not recognized.");
 		}
-		
+
 		new Validate<R, C, V>().validateFilter(newFilter, renderMe);
-		
+
 		this.renderMe.getFilters().add(newFilter);
-		
+
 	}
 
 	/**
-	 * Move the paging filters to the back of the filter queue. The order will
+	 * Remove a filter from the stack
+	 * 
+	 * @param action
+	 * @param request
+	 */
+	private void removeFilter(String action, Tuple request)
+	{
+		int index = Integer.valueOf(action.replace("remove_filter", ""));
+		renderMe.getFilters().remove(index);
+	}
+
+	/**
+	 * Push a filter up or down the stack
+	 * 
+	 * @param action
+	 * @param request
+	 * @throws MatrixException
+	 */
+	private void pushFilter(String action, Tuple request) throws MatrixException
+	{
+		if (action.contains("push_filter_up"))
+		{
+			int index = Integer.valueOf(action.replace("push_filter_up", ""));
+			Filter filter = renderMe.getFilters().get(index);
+			if (filter.getFilterType() == Filter.Type.paging) throw new MatrixException(
+					"You cannot move paging filters yet!");
+			renderMe.getFilters().remove(index);
+			renderMe.getFilters().add(index + 1, filter);
+		}
+		else
+		{
+			int index = Integer.valueOf(action.replace("push_filter_down", ""));
+			Filter filter = renderMe.getFilters().get(index);
+			if (filter.getFilterType() == Filter.Type.paging) throw new MatrixException(
+					"You cannot move paging filters yet!");
+			renderMe.getFilters().remove(index);
+			renderMe.getFilters().add(index - 1, filter);
+		}
+
+	}
+
+	/**
+	 * Move the paging filters to the back of the filter stack. The order will
 	 * become: other, offsets, limits. This will preserve proper paging
 	 * behaviour. Later on we could allow the user to 'drag around' all the
 	 * filters and make some crazy combinations which bypass this function,
