@@ -106,7 +106,7 @@ public class PhenoMatrix extends GenericFunctions<ObservationTarget, ObservableF
 	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColValues(MatrixQueryRule rule)
 			throws Exception
 	{
-		int featureIndex = Integer.parseInt(rule.getField());
+		int featureIndex = Integer.parseInt(rule.getField().substring(4));
 		String filterTerm = rule.getValue().toString();
 		List<ObservationTarget> targetsToKeep = new ArrayList<ObservationTarget>();
 		List<ObservedValue>[][] values = this.getVisibleValues();
