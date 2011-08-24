@@ -13,8 +13,8 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>{
 	List<Filter> filters;
 	String constraintLogic;
 	int stepSize;
-	int colIndex;
-	int rowIndex;
+//	int colIndex;
+//	int rowIndex;
 	String screenName;
 	
 	public RenderableMatrixImpl(SourceMatrix<R, C, V> source, BasicMatrix<R, C, V> basic, List<Filter> filters, String constraintLogic, int stepSize, String screenName){
@@ -146,14 +146,14 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>{
 		return screenName;
 	}
 	
-	public void setColIndex(int colIndex)
-	{
-		this.colIndex = colIndex;
-	}
-
-	public void setRowIndex(int rowIndex)
-	{
-		this.rowIndex = rowIndex;
-	}
+//	public void setColIndex(int colIndex)
+//	{
+//		this.colIndex = colIndex;
+//	}
+//
+//	public void setRowIndex(int rowIndex)
+//	{
+//		this.rowIndex = rowIndex;
+//	}
 	
 }

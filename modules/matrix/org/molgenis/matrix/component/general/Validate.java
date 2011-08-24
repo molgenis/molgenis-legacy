@@ -1,14 +1,23 @@
 package org.molgenis.matrix.component.general;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
-import org.molgenis.matrix.component.interfaces.SourceMatrix;
+import org.molgenis.matrix.component.interfaces.RenderableMatrix;
 
 public class Validate<R, C, V>
 {
-	public void validateFilters(List<Filter> filters, SourceMatrix<R, C, V> source) throws Exception
+	public void validateFilter(Filter f, RenderableMatrix<R, C, V> rm) throws Exception
+	{
+		List<Filter> fList = new ArrayList<Filter>();
+		fList.add(f);
+		validateFilters(fList, rm);
+	}
+	
+	public void validateFilters(List<Filter> filters, RenderableMatrix<R, C, V> rm) throws Exception
 	{
 		for (Filter f : filters)
 		{
@@ -28,14 +37,14 @@ public class Validate<R, C, V>
 								throw new MatrixException("You cannot page below 0.");
 							}
 							if (f.getQueryRule().getField().equals("row")
-									&& (Integer) f.getQueryRule().getValue() > source.getTotalNumberOfRows()-1)
+									&& (Integer) f.getQueryRule().getValue() > rm.getTotalNumberOfRows()-1)
 							{
-								throw new MatrixException("You cannot page beyond " + (source.getTotalNumberOfRows()-1));
+								throw new MatrixException("You cannot page beyond " + (rm.getTotalNumberOfRows()-1));
 							}
 							if (f.getQueryRule().getField().equals("col")
-									&& (Integer) f.getQueryRule().getValue() > source.getTotalNumberOfCols()-1)
+									&& (Integer) f.getQueryRule().getValue() > rm.getTotalNumberOfCols()-1)
 							{
-								throw new MatrixException("You cannot page beyond " + (source.getTotalNumberOfCols()-1));
+								throw new MatrixException("You cannot page beyond " + (rm.getTotalNumberOfCols()-1));
 							}
 							break;
 					}
@@ -104,6 +113,30 @@ public class Validate<R, C, V>
 		{
 			throw new MatrixException("Action '" + action + "' does not include the matrix renderer prefix '" + pref
 					+ "'for request delegation.");
+		}
+	}
+
+	public void validateFilterInputs(String field, Operator operator, Object value) throws Exception
+	{
+		if(field == null)
+		{
+			throw new MatrixException("Filter field is null");
+		}
+		if(field.trim().equals(""))
+		{
+			throw new MatrixException("Filter field is empty");
+		}
+		if(operator == null)
+		{
+			throw new MatrixException("Filter operator is null");
+		}
+		if(value == null)
+		{
+			throw new MatrixException("Filter value is null");
+		}
+		if(value.toString().trim().equals(""))
+		{
+			throw new MatrixException("Filter value is empty");
 		}
 	}
 }

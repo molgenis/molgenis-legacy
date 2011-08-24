@@ -137,11 +137,12 @@
 <br><i>Add a new filter:</i><br>
 
 
-<table><tr>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');" checked>Index</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter2');display('hide', 'filter1');display('hide', 'filter3');display('hide', 'filter4');">Values</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter3');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter4');">Column</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter4');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');">Row</td>
+<table cellpadding="10"><tr>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');" checked>Index</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter2');display('hide', 'filter1');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');">Values by col</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter3');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter4');display('hide', 'filter5');">Values by row</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter4');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter5');">Attrb by col</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter5');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');">Attrb by row</td>
 </tr></table>
 
 <br>
@@ -153,18 +154,18 @@
 				Filter by index:
 			</td>
 			<td>
-				<select name="FILTER_BY_INDEX_FIELD">
-					<option value="rowindex">${matrix.rowType} index</option>
-					<option value="colindex">${matrix.colType} index</option>
+				<select name="${req_tag}filter_by_indexFILTER_FIELD">
+					<option value="row">${matrix.rowType} index</option>
+					<option value="col">${matrix.colType} index</option>
 				</select>
 			</td>
 			<td>
-				<select name="FILTER_BY_INDEX_OPERATOR">
+				<select name="${req_tag}filter_by_indexFILTER_OPERATOR">
 					<#list operators?keys as op><option value="${op}">${operators[op]}</option></#list>
 				</select>
 			</td>
 			<td>
-				<input type="text" size="8" name="FILTER_BY_INDEX_VALUE" />
+				<input type="text" size="8" name="${req_tag}filter_by_indexFILTER_VALUE" />
 			</td>
 			<td>
 				<input type="submit" value="Apply" onclick="__action.value = '${req_tag}filter_by_index'; submit();">
@@ -177,24 +178,23 @@
 	<table>
 		<tr>
 			<td>
-				Filter by values:
+				Filter by column values:
 			</td>
 			<td>
-				<select name="FILTER_BY_VALUE_FIELD">
+				<select name="${req_tag}filter_by_col_valueFILTER_FIELD">
 					<#list matrix.visibleCols as col><option value="col_${matrix.colIndices[col_index]}">${matrix.renderColSimple(col)}</option></#list>
-					<#list matrix.visibleRows as row><option value="row_${matrix.rowIndices[row_index]}">${matrix.renderRowSimple(row)}</option></#list>
 				</select>
 			</td>
 			<td>
-				<select name="FILTER_BY_VALUE_OPERATOR">
+				<select name="${req_tag}filter_by_col_valueFILTER_OPERATOR">
 					<#list operators?keys as op><option value="${op}">${operators[op]}</option></#list>
 				</select>
 			</td>
 			<td>
-				<input type="text" size="8" name="FILTER_BY_VALUE_VALUE" />
+				<input type="text" size="8" name="${req_tag}filter_by_col_valueFILTER_VALUE" />
 			</td>
 			<td>
-				<input type="submit" value="Apply" onclick="__action.value = '${req_tag}filter_by_value'; submit();">
+				<input type="submit" value="Apply" onclick="__action.value = '${req_tag}filter_by_col_value'; submit();">
 			</td>
 		</tr>
 	</table>
@@ -203,25 +203,23 @@
 	<table>
 		<tr>
 			<td>
-				Filter by column header:
+				Filter by row values:
 			</td>
 			<td>
-				<select name="FILTER_BY_COL_HEADER_FIELD">
-					<#list matrix.colHeaderFilterAttributes as cha>
-						<option value="col_att_${cha}">${cha}</option>
-					</#list>
+				<select name="${req_tag}filter_by_row_valueFILTER_FIELD">
+					<#list matrix.visibleRows as row><option value="row_${matrix.rowIndices[row_index]}">${matrix.renderRowSimple(row)}</option></#list>
 				</select>
 			</td>
 			<td>
-				<select name="FILTER_BY_COL_HEADER_OPERATOR">
+				<select name="${req_tag}filter_by_row_valueFILTER_OPERATOR">
 					<#list operators?keys as op><option value="${op}">${operators[op]}</option></#list>
 				</select>
 			</td>
 			<td>
-				<input type="text" size="8" name="FILTER_BY_HEADER_COL_VALUE" />
+				<input type="text" size="8" name="${req_tag}filter_by_row_valueFILTER_VALUE" />
 			</td>
 			<td>
-				<input type="submit" value="Apply" onclick="__action.value = '${req_tag}filter_by_col_header'; submit();">
+				<input type="submit" value="Apply" onclick="__action.value = '${req_tag}filter_by_row_value'; submit();">
 			</td>
 		</tr>
 	</table>
@@ -230,25 +228,52 @@
 	<table>
 		<tr>
 			<td>
-				Filter by row header:
+				Filter by column attributes:
 			</td>
 			<td>
-				<select name="FILTER_BY_HEADER_FIELD">
+				<select name="${req_tag}filter_by_col_attrbFILTER_FIELD">
+					<#list matrix.colHeaderFilterAttributes as cha>
+						<option value="col_att_${cha}">${cha}</option>
+					</#list>
+				</select>
+			</td>
+			<td>
+				<select name="${req_tag}filter_by_col_attrbFILTER_OPERATOR">
+					<#list operators?keys as op><option value="${op}">${operators[op]}</option></#list>
+				</select>
+			</td>
+			<td>
+				<input type="text" size="8" name="${req_tag}filter_by_col_attrbFILTER_VALUE" />
+			</td>
+			<td>
+				<input type="submit" value="Apply" onclick="__action.value = '${req_tag}filter_by_col_attrb'; submit();">
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="filter5" style="display:none">
+	<table>
+		<tr>
+			<td>
+				Filter by row attributes:
+			</td>
+			<td>
+				<select name="${req_tag}filter_by_row_attrbFILTER_FIELD">
 					<#list matrix.rowHeaderFilterAttributes as rha>
 						<option value="row_att_${rha}">${rha}</option>
 					</#list>
 				</select>
 			</td>
 			<td>
-				<select name="FILTER_BY_ROW_HEADER_OPERATOR">
+				<select name="${req_tag}filter_by_row_attrbFILTER_OPERATOR">
 					<#list operators?keys as op><option value="${op}">${operators[op]}</option></#list>
 				</select>
 			</td>
 			<td>
-				<input type="text" size="8" name="FILTER_BY_ROW_HEADER_VALUE" />
+				<input type="text" size="8" name="${req_tag}filter_by_row_attrbFILTER_VALUE" />
 			</td>
 			<td>
-				<input type="submit" value="Apply" onclick="__action.value = '${req_tag}filter_by_row_header'; submit();">
+				<input type="submit" value="Apply" onclick="__action.value = '${req_tag}filter_by_row_attrb'; submit();">
 			</td>
 		</tr>
 	</table>

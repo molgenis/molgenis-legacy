@@ -30,6 +30,6 @@ public class Filter {
 	}
 
 	public String toString(){
-		return "Filter: type = " + this.getFilterType() + ", queryrule = " + this.getQueryRule().toString();
+		return "Filter type: " + this.getFilterType() + ", queryrule: " + this.getQueryRule().toString();
 	}
 }

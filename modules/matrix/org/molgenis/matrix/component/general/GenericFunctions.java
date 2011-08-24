@@ -26,13 +26,29 @@ public abstract class GenericFunctions<R, C, V> implements SliceableMatrix<R, C,
 	 */
 	public SliceableMatrix<R, C, V> sliceByIndex(MatrixQueryRule rule)
 	{
-
-		int val = (Integer) rule.getValue();
+		System.out.println("GenericFunctions sliceByIndex(QueryRule rule) start");
+		int val = Integer.valueOf(rule.getValue().toString());
 		int total = colCopy.size();
 		switch (rule.getOperator())
 		{
 			case EQUALS:
-				// magic - replace colCopy
+				System.out.println("EQUALS");
+				if(rule.getField().equals("row")){
+					System.out.println("row");
+					System.out.println("size before: " + rowIndicesCopy.size());
+					List<Integer> resultIndices = new ArrayList<Integer>();
+					List<R> resultR = new ArrayList<R>();
+					for(int i=0; i<rowIndicesCopy.size(); i++){
+						if(rowIndicesCopy.get(i).equals(val)){
+							resultIndices.add(rowIndicesCopy.get(i));
+							resultR.add(rowCopy.get(i));
+						}
+					}
+					rowIndicesCopy = resultIndices;
+					rowCopy = resultR;
+					System.out.println("size after: " + rowIndicesCopy.size());
+				}
+				
 				break;
 			case LESS_EQUAL:
 				// magic - replace colCopy
@@ -47,6 +63,7 @@ public abstract class GenericFunctions<R, C, V> implements SliceableMatrix<R, C,
 				// magic - replace colCopy
 				break;
 		}
+		System.out.println("GenericFunctions sliceByIndex(QueryRule rule) ended");
 		return this;
 
 	}

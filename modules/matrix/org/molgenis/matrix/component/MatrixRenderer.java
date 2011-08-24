@@ -8,6 +8,7 @@ import java.util.TreeMap;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.html.HtmlWidget;
+import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.general.Filter;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.general.MatrixRendererHelper;
@@ -176,7 +177,7 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		if (action.equals("moveFarLeft")) mover.moveFarLeft(renderMe);
 		if (action.equals("moveFarDown")) mover.moveFarDown(renderMe);
 		if (action.equals("moveFarUp")) mover.moveFarUp(renderMe);
-		if (action.startsWith("filter")) this.addFilter(request);
+		if (action.startsWith("filter")) this.addFilter(action, request);
 
 		try
 		{
@@ -203,7 +204,7 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 	{
 		System.out.println("applyFiltersAndRender");
 
-		new Validate<R, C, V>().validateFilters(filters, source);
+		new Validate<R, C, V>().validateFilters(filters, renderMe);
 		filters = orderFilters(filters);
 		sliceable.createFresh();
 
@@ -289,30 +290,51 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 	 * no more. Filter correctness is checked by validateFilters in the Validate
 	 * class.
 	 * 
-	 * TODO: parse and set filters TODO: how to get error messages on the screen
-	 * nicely?
-	 * 
 	 * @param request
 	 * @throws Exception
 	 */
-	private void addFilter(Tuple request) throws Exception
+	private void addFilter(String action, Tuple request) throws Exception
 	{
-
-		MatrixQueryRule q = null;
-
-		Object filterValue = request.getObject("FILTER_BY_VALUE_VALUE");
-		String filterField = request.getString("FILTER_BY_VALUE_FIELD").substring(4);
-		if (filterValue != null && filterField != null)
+		String pref = MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX;
+		
+		String field = request.getString(pref+action+"FILTER_FIELD");
+		Operator operator = Operator.valueOf(request.getString(pref+action+"FILTER_OPERATOR"));
+		Object value = request.getObject(pref+action+"FILTER_VALUE");
+		
+		new Validate<R, C, V>().validateFilterInputs(field, operator, value);
+		
+		MatrixQueryRule q = new MatrixQueryRule(field, operator, value);
+		Filter newFilter = null;
+		
+		if(action.equals("filter_by_index"))
 		{
-			String filterOperator = request.getString("FILTER_BY_VALUE_OPERATOR");
-			q = new MatrixQueryRule(filterField, Operator.valueOf(filterOperator), filterValue);
+			newFilter = new Filter(Filter.Type.index, q);
 		}
-
-		if (q != null)
+		else if(action.equals("filter_by_col_value"))
 		{
-			Filter newFilter = new Filter(Filter.Type.colValues, q);
-			this.renderMe.getFilters().add(newFilter);
+			newFilter = new Filter(Filter.Type.colValues, q);
 		}
+		else if(action.equals("filter_by_row_value"))
+		{
+			newFilter = new Filter(Filter.Type.rowValues, q);
+		}
+		else if(action.equals("filter_by_col_header"))
+		{
+			newFilter = new Filter(Filter.Type.colHeader, q);
+		}
+		else if(action.equals("filter_by_row_header"))
+		{
+			newFilter = new Filter(Filter.Type.rowHeader, q);
+		}
+		else
+		{
+			throw new MatrixException("Filter action '"+action+"' not recognized.");
+		}
+		
+		new Validate<R, C, V>().validateFilter(newFilter, renderMe);
+		
+		this.renderMe.getFilters().add(newFilter);
+		
 	}
 
 	/**
