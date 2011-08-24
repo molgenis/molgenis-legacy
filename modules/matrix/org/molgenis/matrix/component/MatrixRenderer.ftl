@@ -1,7 +1,7 @@
 
 
-<#assign colHeader = matrix.colType + " " + (matrix.colIndices[0]) + " ~ " + (matrix.colIndices[matrix.colIndices?size-1]) + " of " + matrix.totalNumberOfCols>
-<#assign rowHeader = matrix.rowType + "<br>" + (matrix.rowIndices[0]) + " ~ " + (matrix.rowIndices[matrix.rowIndices?size-1]) + "<br>of " + matrix.totalNumberOfRows>
+<#assign colHeader = matrix.colType + " " + (matrix.colIndices[0]) + " ~ " + (matrix.colIndices[matrix.colIndices?size-1]) + " of " + (matrix.totalNumberOfCols-1)>
+<#assign rowHeader = matrix.rowType + "<br>" + (matrix.rowIndices[0]) + " ~ " + (matrix.rowIndices[matrix.rowIndices?size-1]) + "<br>of " + (matrix.totalNumberOfRows-1)>
 
 
 <table cellpadding="3">

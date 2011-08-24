@@ -85,7 +85,7 @@ public abstract class GenericFunctions<R, C, V> implements SliceableMatrix<R, C,
 				if (rule.getField().equals("col"))
 				{
 					colCopy = colCopy.subList(val, colTotal);
-					colIndicesCopy = colIndicesCopy.subList(val, rowTotal);
+					colIndicesCopy = colIndicesCopy.subList(val, colTotal);
 				}
 				break;
 			default:

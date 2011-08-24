@@ -1,14 +1,3 @@
-/**
- * File: TextInput.java <br>
- * Copyright: Inventory 2000-2006, GBIC 2005, all rights reserved <br>
- * Changelog:
- * <ul>
- * <li>2006-03-08, 1.0.0, DI Matthijssen; Creation
- * <li>2006-05-14, 1.1.0, MA Swertz; Refectoring into Invengine.
- * </ul>
- * TODO look at the depreciated functions.
- */
-
 package org.molgenis.matrix.component;
 
 import java.util.ArrayList;
@@ -16,13 +5,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.matrix.component.general.Filter;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.general.MatrixRendererHelper;
+import org.molgenis.matrix.component.general.Mover;
 import org.molgenis.matrix.component.general.RenderableMatrixImpl;
 import org.molgenis.matrix.component.general.Validate;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
@@ -32,9 +21,9 @@ import org.molgenis.matrix.component.interfaces.SourceMatrix;
 import org.molgenis.util.Tuple;
 
 /**
- *
- * TODO: class doc
- *
+ * 
+ * TODO: Class doc
+ * 
  * @param <R>
  * @param <C>
  * @param <V>
@@ -47,6 +36,7 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 	private SourceMatrix<R, C, V> source;
 	private String screenName;
 	private int stepSize;
+	private Mover<R, C, V> mover;
 
 	/**
 	 * Simple constructor for MatrixRenderer. Setup matrix rendering with only
@@ -54,10 +44,17 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 	 * constructor which will use default settings when called by this
 	 * constructor with certain null values.
 	 * 
-	 * @param name The HtmlWidget name for this component.
-	 * @param sliceable The sliceable matrix describing your filtering logic. Needed to create a RenderableMatrix.
-	 * @param source The source matrix describing your data and data set. Needed to create a RenderableMatrix.
-	 * @param screenName The name of the parent/plugin the component is used in. Must be set right. Use this.getName() in your plugin.
+	 * @param name
+	 *            The HtmlWidget name for this component.
+	 * @param sliceable
+	 *            The sliceable matrix describing your filtering logic. Needed
+	 *            to create a RenderableMatrix.
+	 * @param source
+	 *            The source matrix describing your data and data set. Needed to
+	 *            create a RenderableMatrix.
+	 * @param screenName
+	 *            The name of the parent/plugin the component is used in. Must
+	 *            be set right. Use this.getName() in your plugin.
 	 * @throws Exception
 	 */
 	public MatrixRenderer(String name, SliceableMatrix<R, C, V> sliceable, SourceMatrix<R, C, V> source,
@@ -66,22 +63,31 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		this(name, name, sliceable, source, null, null, 5, screenName);
 	}
 
-	public RenderableMatrix<R, C, V> getRendered()
-	{
-		return this.renderMe;
-	}
-
 	/**
-	 * Complete constructor for MatrixRenderer. Setup rendering by providing all information. Adding any filters here (!null List) will cause the default filters (paging area) to be ignored.
+	 * Complete constructor for MatrixRenderer. Setup rendering by providing all
+	 * information. Adding any filters here (!null List) will cause the default
+	 * filters (paging area) to be ignored.
 	 * 
-	 * @param name The HtmlWidget name for this component.
-	 * @param label The HtmlWidget label for this component.
-	 * @param sliceable The sliceable matrix describing your filtering logic. Needed to create a RenderableMatrix.
-	 * @param source The source matrix describing your data and data set. Needed to create a RenderableMatrix.
-	 * @param filters The list of filters used for the first render. Though provided by yourself, they will be ordered and validated as any other.
-	 * @param constraintLogic The filtering logic set on first render.
-	 * @param stepSize The 'paging speed' set on first render.
-	 * @param screenName The name of the parent/plugin the component is used in. Must be set right. Use this.getName() in your plugin.
+	 * @param name
+	 *            The HtmlWidget name for this component.
+	 * @param label
+	 *            The HtmlWidget label for this component.
+	 * @param sliceable
+	 *            The sliceable matrix describing your filtering logic. Needed
+	 *            to create a RenderableMatrix.
+	 * @param source
+	 *            The source matrix describing your data and data set. Needed to
+	 *            create a RenderableMatrix.
+	 * @param filters
+	 *            The list of filters used for the first render. Though provided
+	 *            by yourself, they will be ordered and validated as any other.
+	 * @param constraintLogic
+	 *            The filtering logic set on first render.
+	 * @param stepSize
+	 *            The 'paging speed' set on first render.
+	 * @param screenName
+	 *            The name of the parent/plugin the component is used in. Must
+	 *            be set right. Use this.getName() in your plugin.
 	 * @throws Exception
 	 */
 	public MatrixRenderer(String name, String label, SliceableMatrix<R, C, V> sliceable, SourceMatrix<R, C, V> source,
@@ -110,6 +116,77 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		}
 
 		applyFiltersAndRender(sliceable, filters);
+	}
+
+	/**
+	 * Visualize the RenderableMatrix using a Freemarker template. The resulting
+	 * HTML can be put anywhere in the screen in another plugin.
+	 */
+	public String toHtml()
+	{
+		Map<String, Object> parameters = new TreeMap<String, Object>();
+		parameters.put("name", this.getName());
+		parameters.put("value", this.getObject());
+		parameters.put("matrix", this.renderMe);
+		parameters.put("operators", MatrixRendererHelper.operators());
+		parameters.put("req_tag", MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX);
+		return new FreemarkerView("org/molgenis/matrix/component/MatrixRenderer.ftl", parameters).render();
+	}
+
+	/**
+	 * Helper function for those who want to get out the content of the rendered
+	 * matrix. This means you can choose to not render the matrix at all and
+	 * just use the 'engine', or render it yourself.
+	 * 
+	 * @return
+	 */
+	public RenderableMatrix<R, C, V> getRendered()
+	{
+		return this.renderMe;
+	}
+
+	/**
+	 * Take matrix component action from the request and call the function for
+	 * this action. After this is done, apply (altered) filters and render a new
+	 * matrix.
+	 * 
+	 * @param request
+	 * @throws Exception
+	 */
+	public void delegateHandleRequest(Tuple request) throws Exception
+	{
+
+		String action = request.getString("__action");
+		String pref = MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX;
+
+		new Validate<R, C, V>().validateAction(action, pref);
+		action = action.substring(pref.length(), action.length());
+
+		List<Filter> previousFilters = MatrixRendererHelper.copyFilterList(renderMe.getFilters());
+		if (mover == null) mover = new Mover<R, C, V>();
+
+		// note: for convenience, these action functions store filter
+		// modifications in renderMe.
+		if (action.equals("updatePagingSettings")) this.updatePagingSettings(request);
+		if (action.equals("moveRight")) mover.moveRight(renderMe);
+		if (action.equals("moveLeft")) mover.moveLeft(renderMe);
+		if (action.equals("moveDown")) mover.moveDown(renderMe);
+		if (action.equals("moveUp")) mover.moveUp(renderMe);
+		if (action.equals("moveFarRight")) mover.moveFarRight(renderMe);
+		if (action.equals("moveFarLeft")) mover.moveFarLeft(renderMe);
+		if (action.equals("moveFarDown")) mover.moveFarDown(renderMe);
+		if (action.equals("moveFarUp")) mover.moveFarUp(renderMe);
+		if (action.startsWith("filter")) this.addFilter(request);
+
+		try
+		{
+			applyFiltersAndRender(sliceable, renderMe.getFilters());
+		}
+		catch (Exception e)
+		{
+			applyFiltersAndRender(sliceable, previousFilters);
+			throw e;
+		}
 
 	}
 
@@ -127,7 +204,7 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		System.out.println("applyFiltersAndRender");
 
 		new Validate<R, C, V>().validateFilters(filters, source);
-		orderFilters();
+		filters = orderFilters(filters);
 		sliceable.createFresh();
 
 		System.out.println("sliceable: colsize: " + sliceable.getResult().getVisibleCols().size());
@@ -168,49 +245,6 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		System.out.println("result 'basic': rowsize: " + basic.getVisibleRows().size());
 
 		renderMe = new RenderableMatrixImpl<R, C, V>(source, basic, filters, "", stepSize, screenName);
-	}
-
-	/**
-	 * Visualze the RenderableMatrix using a Freemarker template. The resulting
-	 * HTML can be put anywhere in the screen in another plugin.
-	 */
-	public String toHtml()
-	{
-		Map<String, Object> parameters = new TreeMap<String, Object>();
-		parameters.put("name", this.getName());
-		parameters.put("value", this.getObject());
-		parameters.put("matrix", this.renderMe);
-		parameters.put("operators", MatrixRendererHelper.operators());
-		parameters.put("req_tag", MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX);
-		return new FreemarkerView("org/molgenis/matrix/component/MatrixRenderer.ftl", parameters).render();
-	}
-
-	/**
-	 * Take matrix component action from the request and call the function for
-	 * this action. After this is done, apply (altered) filters and render a new
-	 * matrix.
-	 * 
-	 * @param request
-	 * @throws Exception
-	 */
-	public void delegateHandleRequest(Tuple request) throws Exception
-	{
-
-		String action = request.getString("__action");
-		String pref = MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX;
-
-		new Validate<R, C, V>().validateAction(action, pref);
-		action = action.substring(pref.length(), action.length());
-
-		if (action.equals("updatePagingSettings")) this.updatePagingSettings(request);
-		if (action.equals("moveRight")) this.moveRight();
-		if (action.equals("moveLeft")) this.moveLeft();
-		if (action.equals("moveDown")) this.moveDown();
-		if (action.equals("moveUp")) this.moveUp();
-		if (action.startsWith("filter")) this.addFilter(request);
-
-		applyFiltersAndRender(sliceable, renderMe.getFilters());
-
 	}
 
 	/**
@@ -288,14 +322,15 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 	 * filters and make some crazy combinations which bypass this function,
 	 * maybe with a checkbox option.
 	 */
-	private void orderFilters()
+	private List<Filter> orderFilters(List<Filter> filters)
 	{
+		List<Filter> result = new ArrayList<Filter>();
 		List<Filter> limitFilters = new ArrayList<Filter>();
 		List<Filter> offsetFilters = new ArrayList<Filter>();
 		List<Filter> otherFilters = new ArrayList<Filter>();
-		for (int filterIndex = 0; filterIndex < renderMe.getFilters().size(); filterIndex++)
+		for (int filterIndex = 0; filterIndex < filters.size(); filterIndex++)
 		{
-			Filter f = renderMe.getFilters().get(filterIndex);
+			Filter f = filters.get(filterIndex);
 			if (f.getFilterType().equals(Filter.Type.paging))
 			{
 				if (f.getQueryRule().getOperator().equals(Operator.LIMIT))
@@ -312,107 +347,10 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 				otherFilters.add(f);
 			}
 		}
-		renderMe.getFilters().clear();
-		renderMe.getFilters().addAll(otherFilters);
-		renderMe.getFilters().addAll(offsetFilters);
-		renderMe.getFilters().addAll(limitFilters);
-	}
-
-	/**
-	 * Move area of visible values to the right. Simply set the new filters here
-	 * and let validateFilters do the validation work.
-	 * 
-	 * @throws Exception
-	 */
-	private void moveRight() throws Exception
-	{
-		System.out.println("moveRight()");
-		boolean offsetFilterFound = false;
-		for (int filterIndex = 0; filterIndex < renderMe.getFilters().size(); filterIndex++)
-		{
-			Filter f = renderMe.getFilters().get(filterIndex);
-			if (f.getFilterType().equals(Filter.Type.paging) && f.getQueryRule().getField().equals("col")
-					&& f.getQueryRule().getOperator().equals(Operator.OFFSET))
-			{
-				f.getQueryRule().setValue((Integer) f.getQueryRule().getValue() + renderMe.getStepSize());
-				offsetFilterFound = true;
-			}
-		}
-		if (!offsetFilterFound)
-		{
-			Filter offset = new Filter(Filter.Type.paging, new MatrixQueryRule("col", Operator.OFFSET,
-					renderMe.getStepSize()));
-			renderMe.getFilters().add(offset);
-		}
-	}
-
-	/**
-	 * Move area of visible values to the left. Simply set the new filters here
-	 * and let validateFilters do the validation work.
-	 * 
-	 * @throws Exception
-	 */
-	private void moveLeft() throws Exception
-	{
-		System.out.println("moveLeft()");
-		for (int filterIndex = 0; filterIndex < renderMe.getFilters().size(); filterIndex++)
-		{
-			Filter f = renderMe.getFilters().get(filterIndex);
-			if (f.getFilterType().equals(Filter.Type.paging) && f.getQueryRule().getField().equals("col")
-					&& f.getQueryRule().getOperator().equals(Operator.OFFSET))
-			{
-				f.getQueryRule().setValue((Integer) f.getQueryRule().getValue() - renderMe.getStepSize());
-			}
-		}
-	}
-
-	/**
-	 * Move area of visible values downwards. Simply set the new filters here
-	 * and let validateFilters do the validation work.
-	 * 
-	 * @throws Exception
-	 */
-	private void moveDown() throws Exception
-	{
-		System.out.println("moveDown()");
-		boolean offsetFilterFound = false;
-		for (int filterIndex = 0; filterIndex < renderMe.getFilters().size(); filterIndex++)
-		{
-			Filter f = renderMe.getFilters().get(filterIndex);
-			if (f.getFilterType().equals(Filter.Type.paging) && f.getQueryRule().getField().equals("row")
-					&& f.getQueryRule().getOperator().equals(Operator.OFFSET))
-			{
-				f.getQueryRule().setValue((Integer) f.getQueryRule().getValue() + renderMe.getStepSize());
-				offsetFilterFound = true;
-			}
-		}
-		if (!offsetFilterFound)
-		{
-			Filter offset = new Filter(Filter.Type.paging, new MatrixQueryRule("row", Operator.OFFSET,
-					renderMe.getStepSize()));
-			renderMe.getFilters().add(offset);
-		}
-	}
-
-	/**
-	 * Move area of visible values upwards. Simply set the new filters here and
-	 * let validateFilters do the validation work.
-	 * 
-	 * @throws Exception
-	 */
-	private void moveUp() throws Exception
-	{
-		System.out.println("moveUp()");
-		// TODO: needs more logic!!!
-		for (int filterIndex = 0; filterIndex < renderMe.getFilters().size(); filterIndex++)
-		{
-			Filter f = renderMe.getFilters().get(filterIndex);
-			if (f.getFilterType().equals(Filter.Type.paging) && f.getQueryRule().getField().equals("row")
-					&& f.getQueryRule().getOperator().equals(Operator.OFFSET))
-			{
-				f.getQueryRule().setValue((Integer) f.getQueryRule().getValue() - renderMe.getStepSize());
-			}
-		}
+		result.addAll(otherFilters);
+		result.addAll(offsetFilters);
+		result.addAll(limitFilters);
+		return result;
 	}
 
 }

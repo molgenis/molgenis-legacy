@@ -1,6 +1,8 @@
 package org.molgenis.matrix.component.general;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class MatrixRendererHelper {
@@ -23,6 +25,14 @@ public class MatrixRendererHelper {
 		return ops;
 	}
 
-
+	public static List<Filter> copyFilterList(List<Filter> original){
+		List<Filter> copy = new ArrayList<Filter>();
+		for(Filter f : original){
+			MatrixQueryRule q = new MatrixQueryRule(f.getQueryRule().getField(), f.getQueryRule().getOperator(), f.getQueryRule().getValue());
+			Filter fCopy = new Filter(f.getFilterType(), q);
+			copy.add(fCopy);
+		}
+		return copy;
+	}
 	
 }
