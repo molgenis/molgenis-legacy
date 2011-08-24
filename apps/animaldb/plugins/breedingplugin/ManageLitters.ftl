@@ -141,7 +141,7 @@
 	<!-- Parent group -->
 	<div id="parentgroupselect" class="row" style='clear:left'>
 		<label for="parentgroup">Parent group:</label>
-		<select name='parentgroup'>
+		<select id='parentgroup' name='parentgroup'>
 		<#if screen.parentgroupList?exists>
 			<#list screen.parentgroupList as pgl>
 				<option value='${pgl.id?string.computer}'>${pgl.name}</option>
@@ -170,7 +170,7 @@
 	
 	<!-- Add button -->
 	<div id='newlitter_buttons_part' class='row'>
-		<input type='submit' class='addbutton' value='Add' onclick="__action.value='ApplyAddLitter'" />
+		<input type='submit' id='addlitter' class='addbutton' value='Add' onclick="__action.value='ApplyAddLitter'" />
 	</div>
 	
 <#elseif screen.action == "ShowWean">
@@ -211,7 +211,7 @@
 	</div>
 	<!-- Add button -->
 	<div id='addlitter' class='row'>
-		<input type='submit' class='addbutton' value='Wean' onclick="__action.value='Wean'" />
+		<input type='submit' id='wean' class='addbutton' value='Wean' onclick="__action.value='Wean'" />
 	</div>
 
 <#elseif screen.action == "ShowGenotype">
@@ -327,8 +327,8 @@
 	<input type='submit' class='addbutton' value='+' onclick="" /> -->
 	
 	<!-- Save button -->
-	<div id='save' class='row'>
-		<input type='submit' class='addbutton' value='Save' onclick="__action.value='Genotype'" />
+	<div class='row'>
+		<input type='submit' id='save' class='addbutton' value='Save' onclick="__action.value='Genotype'" />
 	</div>
 	
 </#if>

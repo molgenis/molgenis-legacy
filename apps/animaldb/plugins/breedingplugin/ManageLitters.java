@@ -47,9 +47,8 @@ public class ManageLitters extends PluginModel<Entity>
 	private int selectedParentgroup;
 	private int litter;
 	private String litterName = "";
-	private String datetime = "";
-	private String birthdate = "";
-	private String weandate = "";
+	private String birthdate = null;
+	private String weandate = null;
 	private int litterSize;
 	private int weanSizeFemale;
 	private int weanSizeMale;
@@ -132,15 +131,12 @@ public class ManageLitters extends PluginModel<Entity>
 		this.litterName = litterName;
 	}
 	
-	public String getDatetime() {
-		return datetime;
-	}
-	public void setDatetime(String datetime) {
-		this.datetime = datetime;
-	}
-	
 	public String getBirthdate() {
-		return birthdate;
+		if (birthdate != null) {
+			return birthdate;
+		}
+		return oldDateOnlyFormat.format(new Date());
+		
 	}
 	public void setBirthdate(String birthdate) {
 		this.birthdate = birthdate;
@@ -150,7 +146,10 @@ public class ManageLitters extends PluginModel<Entity>
 		this.weandate = weandate;
 	}
 	public String getWeandate() {
-		return weandate;
+		if (weandate != null) {
+			return weandate;
+		}
+		return oldDateOnlyFormat.format(new Date());
 	}
 
 	public int getLitterSize() {
@@ -601,7 +600,7 @@ public class ManageLitters extends PluginModel<Entity>
 				this.reload(db);
 				this.reloadLitterLists(db);
 				this.getMessages().clear();
-				this.getMessages().add(new ScreenMessage("Litter succesfully added", true));
+				this.getMessages().add(new ScreenMessage("Litter successfully added", true));
 			}
 			
 			if (action.equals("ShowWean")) {
@@ -786,7 +785,7 @@ public class ManageLitters extends PluginModel<Entity>
 				this.action = "ShowLitters";
 				this.reload(db);
 				this.reloadLitterLists(db);
-				this.getMessages().add(new ScreenMessage("All " + weanSize + " animals succesfully weaned", true));
+				this.getMessages().add(new ScreenMessage("All " + weanSize + " animals successfully weaned", true));
 			}
 			
 			if (action.equals("ShowGenotype")) {
