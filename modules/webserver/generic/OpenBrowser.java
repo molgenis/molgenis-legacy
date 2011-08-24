@@ -2,31 +2,50 @@ package generic;
 
 import javax.swing.JOptionPane;
 
-public class OpenBrowser {
-	public void openURL(String url) {
-		String osName = System.getProperty("os.name");
-		try {
-			if (osName.startsWith("Windows")){
+import org.molgenis.util.DetectOS;
+
+public class OpenBrowser
+{
+	public void openURL(String url)
+	{
+		try
+		{
+			if (DetectOS.getOS().startsWith("windows"))
+			{
 				Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
-			}else {
-                String[] browsers = { "firefox-bin", "firefox", "iceweasel", "opera", "konqueror", "epiphany", "mozilla", "netscape", "safari", "camino" };
-                String browser = null;
-                for (int count = 0; count < browsers.length && browser == null; count++)
-                {
-                	try{
-                		Runtime.getRuntime().exec(new String[] { browsers[count] }).waitFor();
-                		 browser = browsers[count];	
-                		 Runtime.getRuntime().exec(new String[] { browser, url });
-                	}catch(Exception e){
-                		//e.printStackTrace();
-                		//export PATH=/Applications/Firefox.app/Contents/MacOS:$PATH  
-                	}
+			}
+			else if (DetectOS.getOS().equals("mac"))
+			{
+				Runtime.getRuntime().exec("open " + url);
+			}
+			else
+			{
+				String[] browsers =
+				{ "firefox", "iceweasel", "opera", "konqueror", "epiphany", "mozilla", "netscape", "safari" };
+				boolean browserStarted = false;
+				for (int index = 0; index < browsers.length; index++)
+				{
+					try
+					{
+						Runtime.getRuntime().exec(new String[]
+						{ browsers[index], url });
+						browserStarted = true;
+						break;
+					}
+					catch (Exception e)
+					{
+						// try next browser
+					}
 				}
-                JOptionPane.showMessageDialog(null, "No browser found on your path, please open it yourself.");
+				if (!browserStarted)
+				{
+					JOptionPane.showMessageDialog(null, "No browser found on your path, please open it yourself.");
+				}
 			}
 		}
-			catch (Exception e) {
-        JOptionPane.showMessageDialog(null, "Error in opening browser:\n" + e.getLocalizedMessage());
-        }
+		catch (Exception e)
+		{
+			JOptionPane.showMessageDialog(null, "Error in opening browser:\n" + e.getLocalizedMessage());
+		}
 	}
 }
