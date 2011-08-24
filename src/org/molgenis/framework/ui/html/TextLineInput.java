@@ -11,7 +11,7 @@ public class TextLineInput<E> extends HtmlInput<E>
 {
 	public TextLineInput(String name)
 	{
-		this(name, null);
+		super(name, null);
 	}
 	
 	@Deprecated
