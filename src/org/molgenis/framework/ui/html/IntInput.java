@@ -12,7 +12,15 @@ public class IntInput extends ValidatingInput<Integer>
 	
 	public IntInput(String name)
 	{
-		super(name,null);
+		super(name, null);
+		this.validationString = "digits";
+		this.setMaxWidth(10);
+	}
+	
+	public IntInput(String name, String label)
+	{
+		this(name);
+		this.setLabel(label);
 		this.validationString = "digits";
 		this.setMaxWidth(10);
 	}
