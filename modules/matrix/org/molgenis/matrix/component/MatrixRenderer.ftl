@@ -253,4 +253,3 @@
 		</tr>
 	</table>
 </div>
-</table>
