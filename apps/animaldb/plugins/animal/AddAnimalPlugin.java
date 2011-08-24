@@ -362,38 +362,33 @@ public class AddAnimalPlugin extends GenericPlugin
 		List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
 		
 		// panel for all elements
-		containingPanel = new DivPanel(this.getName() + "panel", null);
+		containingPanel = new DivPanel(this.getName() + "panel", "");
 
 		// Populate animal species list
 		// DISCUSSION: why is this not ontology???
-		species = new SelectInput("species");
-		species.setLabel("Species:");
+		species = new SelectInput("species", "Species:");
 		species.setOptions(ct.getAllMarkedPanels("Species", investigationIds), "id", "name");
 		species.setNillable(false);
 
 		// Populate sexes list
 		// DISCUSSION: why is this not ontology???
-		sex = new SelectInput("sex");
-		sex.setLabel("Sex:");
+		sex = new SelectInput("sex", "Sex:");
 		sex.setOptions(ct.getAllMarkedPanels("Sex", investigationIds), "id", "name");
 		sex.setNillable(false);
 
 		// Populate source list
 		// All source types except "Eigen fok binnen uw organisatorische werkeenheid",
 		// which is taken care of in the Breeding Module
-		source = new SelectInput("source");
-		source.setLabel("Source:");
+		source = new SelectInput("source", "Source:");
 		List<ObservationTarget> tmpSourceList = ct.getAllMarkedPanels("Source", investigationIds);
 		for (ObservationTarget tmpSource : tmpSourceList)
 		{
 			int featureId = ct.getMeasurementId("SourceType");
 			List<ObservedValue> sourceTypeValueList = db.query(ObservedValue.class).eq(ObservedValue.TARGET,
 					tmpSource.getId()).eq(ObservedValue.FEATURE, featureId).find();
-			if (sourceTypeValueList.size() > 0)
-			{
+			if (sourceTypeValueList.size() > 0) {
 				String sourcetype = sourceTypeValueList.get(0).getValue();
-				if (!sourcetype.equals("Eigen fok binnen uw organisatorische werkeenheid"))
-				{
+				if (!sourcetype.equals("Eigen fok binnen uw organisatorische werkeenheid")) {
 					source.addOption(tmpSource.getId(), tmpSource.getName());
 				}
 			}
@@ -401,10 +396,8 @@ public class AddAnimalPlugin extends GenericPlugin
 		source.setNillable(false);
 		
 		// Populate animaltype list
-		animaltype = new SelectInput("animaltype");
-		animaltype.setLabel("Animal type:");
-		for (Code c : ct.getAllCodesForFeature("AnimalType"))
-		{
+		animaltype = new SelectInput("animaltype", "Animal type:");
+		for (Code c : ct.getAllCodesForFeature("AnimalType")) {
 			animaltype.addOption(c.getDescription(), c.getCode_String() + " ("
 					+ c.getDescription() + ")");
 		}
@@ -416,25 +409,20 @@ public class AddAnimalPlugin extends GenericPlugin
 		gmoPanel = new DivPanel("GMO", "Genotype(s):");
 		gmoPanel.setId("GMO");
 		
-		background = new SelectInput("background");
-		background.setLabel("Background:");
+		background = new SelectInput("background", "Background:");
 		background.setOptions(ct.getAllMarkedPanels("Background", investigationIds), "id", "name");
 		gmoPanel.add(background);
 		
 		genePanel = new RepeatingPanel("geneinput", "GMO information:");
 		
-		gene = new SelectInput("gene");
-		gene.setLabel("Gene:");
-		for (String option : ct.getAllCodesForFeatureAsStrings("GeneName"))
-		{
+		gene = new SelectInput("gene", "Gene:");
+		for (String option : ct.getAllCodesForFeatureAsStrings("GeneName")) {
 			gene.addOption(option, option);
 		}
 		genePanel.add(gene);
 
-		genestate = new SelectInput("genestate");
-		genestate.setLabel("Gene state:");
-		for (String option : ct.getAllCodesForFeatureAsStrings("GeneState"))
-		{
+		genestate = new SelectInput("genestate", "Gene state:");
+		for (String option : ct.getAllCodesForFeatureAsStrings("GeneState")) {
 			genestate.addOption(option, option);
 		}
 		genePanel.add(genestate);
@@ -442,19 +430,16 @@ public class AddAnimalPlugin extends GenericPlugin
 		gmoPanel.add(genePanel);
 		gmoPanel.setHidden(true);
 
-		birthdate = new DateInput("birthdate");
-		birthdate.setLabel("Date of birth (if known):");
+		birthdate = new DateInput("birthdate", "Date of birth (if known):");
 		birthdate.setValue(null);
 
-		entrydate = new DateInput("entrydate");
-		entrydate.setLabel("Date of entry:");
+		entrydate = new DateInput("entrydate", "Date of entry:");
 		entrydate.setNillable(false);
 		
 		namePanel = new DivPanel("Name", "Name:");
 		
-		namebase = new SelectInput("namebase");
+		namebase = new SelectInput("namebase", "Name base (may be empty):");
 		namebase.setId("namebase");
-		namebase.setLabel("Name base (may be empty):");
 		namebase.addOption("New", "New (specify below)");
 		for (String base : bases) {
 			if (!base.equals("")) {
@@ -465,6 +450,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		namePanel.add(namebase);
 		
 		startnumberhelper = new TextLineInput<String>("startnumberhelper");
+		startnumberhelper.setLabel("");
 		String helperContents = "";
 		helperContents += "1"; // start number for new base
 		for (String base : bases) {
@@ -481,18 +467,16 @@ public class AddAnimalPlugin extends GenericPlugin
 		newnamebase.setLabel("New name base:");
 		namePanel.add(newnamebase);
 	
-		startnumber = new IntInput("startnumber");
+		startnumber = new IntInput("startnumber", "Start numbering at:");
 		startnumber.setId("startnumber");
-		startnumber.setLabel("Start numbering at:");
 		startnumber.setValue(1); // start with highest number for new base (comes first in jQuery select box)
 		namePanel.add(startnumber);
 		
-		numberofanimals = new IntInput("numberofanimals");
-		numberofanimals.setLabel("Number of animals:");
+		numberofanimals = new IntInput("numberofanimals", "Number of animals:");
 		numberofanimals.setValue(1);
 		numberofanimals.setNillable(false);
 
-		addbutton = new ActionInput("Add", "&nbsp;", "Add animal(s)");
+		addbutton = new ActionInput("Add", "", "Add animal(s)");
 
 		// add everything to the panel
 		containingPanel.add(species);

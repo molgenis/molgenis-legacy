@@ -84,6 +84,36 @@ public class AnimaldbSeleniumTest
 	}
 	
 	@Test
+	public void addAnimals() throws Exception {
+		selenium.click("id=animalmenu_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		//selenium.click("id=AddAnimal_tab_button");
+		//selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Bring in animals"));
+//		// Add 10 female Syrian hamsters
+//		selenium.select("id=species", "value=Syrian hamster");
+//		selenium.select("id=namebase", "value=");
+//		selenium.click("id=numberofanimals");
+//		selenium.type("id=numberofanimals", "10");
+//		selenium.click("id=Add");
+//		selenium.waitForPageToLoad(pageLoadTimeout);
+//		Assert.assertTrue(selenium.isTextPresent("10 animal(s) added succesfully"));
+		// Add 10 male Syrian hamsters
+//		selenium.click("css=span");
+//		selenium.click("id=species_chzn_o_5");
+//		selenium.click("css=#sex_chzn > a.chzn-single > span");
+//		selenium.click("id=sex_chzn_o_1");
+//		selenium.click("css=#namebase_chzn > a.chzn-single > span");
+//		selenium.click("id=namebase_chzn_o_22");
+//		selenium.type("id=numberofanimals", "10");
+//		selenium.click("id=Add");
+//		selenium.waitForPageToLoad(pageLoadTimeout);
+//		Assert.assertTrue(selenium.isTextPresent("10 animal(s) added succesfully"));
+		
+		sleepHelper("addAnimals");
+	}
+	
+	@Test
 	public void logout() throws InterruptedException
 	{
 		selenium.click("id=securitymenu_tab_button");
