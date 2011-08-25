@@ -12,15 +12,23 @@ import app.JDBCDatabase;
 
 public class LoadInvestigationFromDirectory {
 	public static void main(String[] args) throws Exception {
-		String directory = "../phenoflow_data/Europhenome2";
-		directory = "../phenoflow_data/MPD";
-
+		
 		new Molgenis("apps/phenoflow/phenoflow.properties").updateDb(true);
 
 		Database db = new JDBCDatabase("apps/phenoflow/phenoflow.properties");
-
+		String directory;
+		
+		// europhenome
+		directory = "../phenoflow_data/Europhenome2";
 		CsvImport.importAll(new File(directory), db, new SimpleTuple(), null,
 				DatabaseAction.ADD, "N/A");
+
+		// MPD
+		directory = "../phenoflow_data/MPD";
+		CsvImport.importAll(new File(directory), db, new SimpleTuple(), null,
+				DatabaseAction.ADD, "N/A");
+
+
 		System.out.println("Done");
 	}
 }

@@ -41,6 +41,7 @@ my $basedir = '../../../../../phenoflow_data/MPD';
 # Declare object that will hold the structure
 my %datapoint   = ();
 my %measurement = ();
+my %warning     = ();
 
 sub main() {
 
@@ -51,15 +52,25 @@ sub main() {
 	load_measurements();
 	load_animaldatapoints();
 
+	# print accumulated warnings
+	for my $msg ( sort( keys %warning ) ) {
+
+		#WARN $msg;
+	}
+
 	# write data to molgenis import format
 	write_investigation();
 	write_individual_panel();
 
-	#write_ontology_term();
+	write_ontology_term();
 
-	#write_observablefeature();
-	#write_observedvalue();
-	#write_protocol();
+	#write_measurement();
+	write_features();
+
+	write_observedvalue();
+
+	write_protocol();
+	write_protocolapplication();
 
 	exit 0;
 }
@@ -90,126 +101,67 @@ Opens appropriate filehandles
 sub write_protocol($$) {
 	local $\ = "\n";    # do the magic of println
 
-	# load protocols into respective hashes
-	my $prot;
-	my $feat;
-	my $protocol_projsym;
-
-	while ( my ( $mesnum, $meas ) = each(%measurement) ) {
-		{
-			no warnings 'uninitialized';
-
-			# create a tree
-			$prot->{ $meas->{projsym} . '-' . $meas->{cat1} }
-			  ->{ $meas->{projsym} . '-' . $meas->{cat2} }
-			  ->{ $meas->{projsym} . '-' . $meas->{cat3} } = undef;
-
-			# keep the values
-			$protocol_projsym->{ $meas->{projsym} . '-' . $meas->{cat1} }->{projsym} =
-			  $meas->{projsym}
-			  if defined $meas->{cat1};
-			$protocol_projsym->{ $meas->{projsym} . '-' . $meas->{cat1} }->{prot_name} =
-			  $meas->{cat1}
-			  if defined $meas->{cat1};
-			$protocol_projsym->{ $meas->{projsym} . '-' . $meas->{cat2} }->{projsym} =
-			  $meas->{projsym}
-			  if defined $meas->{cat2};
-			$protocol_projsym->{ $meas->{projsym} . '-' . $meas->{cat2} }->{prot_name} =
-			  $meas->{cat2}
-			  if defined $meas->{cat2};
-			$protocol_projsym->{ $meas->{projsym} . '-' . $meas->{cat3} }->{projsym} =
-			  $meas->{projsym}
-			  if defined $meas->{cat3};
-			$protocol_projsym->{ $meas->{projsym} . '-' . $meas->{cat3} }->{prot_name} =
-			  $meas->{cat3}
-			  if defined $meas->{cat3};
-
-			# trim empty branches
-			if ( !defined $meas->{cat3} ) {
-				delete $prot->{ $meas->{projsym} . '-' . $meas->{cat1} }
-				  ->{ $meas->{projsym} . '-' . $meas->{cat2} }
-				  ->{ $meas->{projsym} . '-' . $meas->{cat3} };
-			}
-			if ( !defined $meas->{cat2} ) {
-				delete $prot->{ $meas->{projsym} . '-' . $meas->{cat1} }
-				  ->{ $meas->{projsym} . '-' . $meas->{cat2} };
-			}
-
-			# add observablefeatures
-			if ( defined $meas->{cat3} ) {
-				$feat->{ $meas->{cat3} }->{ $meas->{desc} }++;
-			}
-			elsif ( defined $meas->{cat2} ) {
-				$feat->{ $meas->{cat2} }->{ $meas->{desc} }++;
-			}
-			else {
-				$feat->{ $meas->{cat1} }->{ $meas->{desc} }++;
-			}
-		}
-	}
-
-	#print Dumper($prot);
-	#print Dumper($protocol_projsym);
-
 	# write protocols
-	open my $fh1, ">:utf8", "$basedir/protocol.txt"                    or die "$!";
-	open my $fh2, ">:utf8", "$basedir/protocol_protocolComponents.txt" or die "$!";
-	open my $fh3, ">:utf8", "$basedir/protocol_observableFeatures.txt" or die "$!";
+	open my $fh1, ">:utf8", "$basedir/protocol.txt" or LOGDIE "$!";
 
 	# write headers
-	print $fh1 join (
-		"\t",
-		qw/name investigation_name protocolComponents_name/
-	);
-	print $fh2 join (
-		"\t",
-		qw/protocol_name protocol_self_name/
-	);
-	print $fh3 join (
-		"\t",
-		qw/protocol_name observableFeature_name/
-	);
+	print $fh1 join ( "\t", qw/name features_name/ );
 
-	# walk the tree write protocol and protocolcomponents
-	while ( my ( $name1, $prot2 ) = each(%$prot) ) {
-		my @comps2;
-		while ( my ( $name2, $prot3 ) = each(%$prot2) ) {
-			push @comps2, $name2;
-			my @comps3;
-			for my $name3 ( keys %$prot3 ) {
-				push @comps3, $name3;
-				print $fh1 join ( "\t",
-					$protocol_projsym->{$name3}->{prot_name},
-					$protocol_projsym->{$name3}->{projsym} );
-				print $fh2 join ( "\t",
-					$protocol_projsym->{$name2}->{prot_name},
-					$protocol_projsym->{$name3}->{prot_name} );
+	# load protocols into hash
+	my %protocol;
+	my %temp;
 
-				#print 'name3 ' . $name3 . ' ' . Dumper($protocol_projsym->{$name3});
-			}
-			print $fh1 join ( "\t",
-				$protocol_projsym->{$name2}->{prot_name},
-				$protocol_projsym->{$name2}->{projsym} );
-			print $fh2 join ( "\t",
-				$protocol_projsym->{$name1}->{prot_name},
-				$protocol_projsym->{$name2}->{prot_name} );
-
-			#print 'name2 '. $name2 . ' '. Dumper($protocol_projsym->{$name2});
-		}
-		print $fh1
-		  join ( "\t", $protocol_projsym->{$name1}->{prot_name},
-			$protocol_projsym->{$name1}->{projsym} );
+	while ( my ( $mesnum, $meas ) = each(%measurement) ) {
+		my $name    = $meas->{protocol};
+		my $feature = $meas->{varname};
+		$temp{$name}->{features}->{$feature}++;
 	}
 
-	# walk the tree write protocol_observablefeatures
-	while ( my ( $protocolName, $feature ) = each(%$feat) ) {
-		for my $featureName ( keys %$feature ) {
-			print $fh3 join ( "\t", $protocolName, $featureName );
+	# concatanate features
+	for my $name ( keys %temp ) {
+		my $description = $temp{$name}->{description};
+		my $features;
+		for my $feature ( keys %{ $temp{$name}->{features} } ) {
+			$features = $features . "$feature|";
 		}
+		chop $features;
+		my $key = join( "\t", $name, $features );
+		$protocol{$key}++;
 	}
+
+	for my $key ( keys %protocol ) {
+		print $fh1 $key;
+	}
+
 	close $fh1;
-	close $fh2;
-	close $fh3;
+
+	INFO( 'Wrote ' . scalar( keys %protocol ) . ' Protocols' );
+}
+
+sub write_protocolapplication() {
+	local $\ = "\n";    # do the magic of println
+
+	open my $fh1, ">:utf8", "$basedir/protocolapplication.txt"
+	  or get_logger->logdie($!);
+
+	# write headers
+	print $fh1 join ( "\t", qw/name protocol_name investigation_name/ );
+
+	my %protocolapp;
+	while ( my ( $mesnum, $meas ) = each(%measurement) ) {
+		my $name     = $meas->{protocolapp};
+		my $protocol = $meas->{protocol};
+		my $investigation = $meas->{projsym};
+		my $key      = join( "\t", $name, $protocol, $investigation );
+		$protocolapp{$key}++;
+	}
+
+	for my $key ( keys %protocolapp ) {
+		print $fh1 $key;
+	}
+
+	close $fh1;
+	INFO( 'Wrote ' . scalar( keys %protocolapp ) . ' ProtocolApplications' );
 }
 
 sub write_observedvalue($$) {
@@ -220,35 +172,35 @@ sub write_observedvalue($$) {
 	# write headers
 	print $fh1 join (
 		"\t",
-		qw/measnum observationTarget_name observationTarget_investigation_name observableFeature_name observableFeature_investigation_name investigation_name value/
+		qw/investigation_name protocolapplication_name feature_name target_name ontologyreference_name value/
 	);
-	my $observationTarget_name;
-	my $observableFeature_name;
-	my $investigation_name;
 
-	while ( my ( $id, $datapoint ) = each(%datapoint) ) {
-		$observationTarget_name = $datapoint->{animal_id};
+	my $counter;
+	while ( my ( $individual_name, $datapoint ) = each(%datapoint) ) {
 		for my $measnum ( keys %{ $datapoint->{measnum} } ) {
-			$observableFeature_name = $measurement{$measnum}->{varname};
-			$investigation_name     = $measurement{$measnum}->{projsym};
+			my $feature_name       = $measurement{$measnum}->{varname};
+			my $investigation_name = $measurement{$measnum}->{projsym};
+			my $protocolapp_name   = $measurement{$measnum}->{protocolapp};
 			for my $value ( @{ $datapoint->{measnum}->{$measnum} } ) {
 				print $fh1 join ( "\t",
-					$measnum, $observationTarget_name, $investigation_name, $observableFeature_name,
-					$investigation_name, $investigation_name, $value );
+					$investigation_name, $protocolapp_name, $feature_name, $individual_name, q{N/A},
+					$value );
+				$counter++;
 			}
 		}
 	}
 	close $fh1;
 
+	INFO( 'Wrote ' . $counter . ' ObservedValues' );
 }
 
-sub write_observablefeature() {
+sub write_measurement() {
 	local $\ = "\n";    # do the magic of println
 	my %unit;           # stores unique units
-	open my $fh1, ">:utf8", "$basedir/observablefeature.txt" or die "$!";
+	open my $fh1, ">:utf8", "$basedir/measurement.txt" or die "$!";
 
 	# write headers
-	print $fh1 join ( "\t", qw/name investigation_name description unit_term/ );
+	print $fh1 join ( "\t", qw/name investigation_name description unit_name/ );
 
 	# write the fixed 'sex' and 'species' features which are standard
 	# TODO
@@ -256,20 +208,44 @@ sub write_observablefeature() {
 	# write the other features
 	while ( my ( $id, $meas ) = each(%measurement) ) {
 		print $fh1 join ( "\t", $meas->{varname}, $meas->{projsym}, $meas->{desc}, $meas->{units} );
-		$unit{ $meas->{units} }->{term} = $meas->{units};
+		$unit{ $meas->{units} }++;
 	}
 	close $fh1;
+
+	INFO( 'Wrote ' . scalar( keys %measurement ) . ' Measurements' );
 
 	# add units as ontology terms to file
 	open my $fh2, ">>:utf8", "$basedir/ontologyterm.txt" or die "$!";
 
 	for my $key ( keys %unit ) {
 
-		# headers: name,termLabel,termAccession,termSource_name
-		# data: mouse strain,mouse strain,http://www.ebi.ac.uk/efo/EFO_0000607,EFO
-		print $fh2 join ( "\t", $unit{$key}->{term}, $unit{$key}->{term}, q{} );
+		# headers: name,termAccession
+		print $fh2 join ( "\t", $key, $key );
 	}
 	close $fh2;
+}
+
+sub write_features() {
+	local $\ = "\n";    # do the magic of println
+
+	open my $fh1, ">:utf8", "$basedir/observationelement.txt" or LOGDIE "$!";
+
+	# write headers
+	print $fh1 join (
+		"\t",
+		qw/name investigation_name description/
+	);
+
+	# write the fixed 'sex' and 'species' features which are standard
+	# TODO
+
+	# write the other features
+	while ( my ( $id, $meas ) = each(%measurement) ) {
+		print $fh1 join ( "\t", $meas->{varname}, $meas->{projsym}, $meas->{desc} );
+	}
+	close $fh1;
+
+	INFO( 'Wrote ' . scalar( keys %measurement ) . ' Features' );
 }
 
 sub write_individual_panel($$) {
@@ -304,10 +280,11 @@ sub write_individual_panel($$) {
 		print $fh2 join ( "\t", $panel_name, $panel->{projsym}, $individuals );
 	}
 	close $fh2;
+	INFO( 'Wrote ' . scalar( keys %panels ) . ' Panels' );
 }
 
 sub write_investigation($$) {
-	local $\ = "\n";        # do the magic of println
+	local $\ = "\n";    # do the magic of println
 
 	my @output = (
 		[ 'name',                   'description', 'accession' ],
@@ -337,6 +314,8 @@ sub write_investigation($$) {
 			"http://phenome.jax.org/pub-cgi/phenome/mpdcgi?rtn=projects/details&sym=" . $name );
 	}
 	close $fh_out;
+
+	INFO( 'Wrote ' . scalar( keys %project ) . ' Investigations' );
 }
 
 sub load_projects() {
@@ -361,29 +340,43 @@ sub write_ontology_term($$) {
 	local $\ = "\n";    # do the magic of println
 
 	# create ontology
-	# write header
-	open my $fh_out, ">:utf8", "$basedir/ontology.txt"
-	  or die "ERROR: Can't open ontology.txt for write. $!";
-	print $fh_out join ( "\t", qw/name ontologyAccession/ );
-	print $fh_out join ( "\t", 'EFO', 'http://www.ebi.ac.uk/efo' );
-	close $fh_out;
+	#	# write header
+	#	open my $fh_out, ">:utf8", "$basedir/ontology.txt"
+	#	  or die "ERROR: Can't open ontology.txt for write. $!";
+	#	print $fh_out join ( "\t", qw/name ontologyAccession/ );
+	#	print $fh_out join ( "\t", 'EFO', 'http://www.ebi.ac.uk/efo' );
+	#	close $fh_out;
 
 	# for each ontology add terms
-	open $fh_out, ">:utf8", "$basedir/ontologyterm.txt"
-	  or die "ERROR: Can't open ontologyterm.txt for write. $!";
+	open my $fh_out, ">:utf8", "$basedir/ontologyterm.txt"
+	  or LOGDIE "ERROR: Can't open ontologyterm.txt for write. $!";
 
 	# header
-	print $fh_out join ( "\t", qw/term termAccession ontology_name/ );
+	print $fh_out join ( "\t", qw/name termAccession/ );
 
 	my @ontologyterm = (
-		[ 'mouse strain', 'http://www.ebi.ac.uk/efo/EFO_0000607', 'EFO' ],
-		[ 'day',          'http://www.ebi.ac.uk/efo/EFO_0001789', 'EFO' ]
+		[ 'mouse strain', 'http://www.ebi.ac.uk/efo/EFO_0000607' ],
+		[ 'day',          'http://www.ebi.ac.uk/efo/EFO_0001789' ]
 	);
 
 	for my $line (@ontologyterm) {
 		print $fh_out join ( "\t", @$line );
 	}
 	close $fh_out;
+}
+
+sub substitute_illegal_characters($) {
+	my $row = shift;
+
+	# modify some values on the fly
+	for my $heading ( keys %$row ) {
+		if ( defined $row->{$heading}
+			&& $row->{$heading} =~ /[^<>\/a-zA-Z0-9_\s\-:\.(),;\+\*]/ )
+		{
+			$warning{ "Substituting illegal character in >>> " . $& }++;
+			$row->{$heading} =~ s/[^<>\/a-zA-Z0-9_\s\-:\.(),;\+\*]/<>/g;
+		}
+	}
 }
 
 sub load_animaldatapoints($$) {
@@ -396,7 +389,6 @@ sub load_animaldatapoints($$) {
 
 	my $c;
 
-	my %warning;     # stores measnum that warning was already printed for
 	my %animalid;    # stores animalids for consistency checking
 	my %measid;      # stores measurements that have values for consistency checking
 	my %measdesc;    # stores measurements descriptions for consistensy checking
@@ -405,15 +397,7 @@ sub load_animaldatapoints($$) {
 		my $row = trim_row( $csv->getline_hr($fh_in) );
 		check_parser_for_errors( \$csv, \$row );
 
-		# modify some values on the fly
-		for my $heading ( keys %$row ) {
-			if ( defined $row->{$heading}
-				&& $row->{$heading} =~ /[^<>\/a-zA-Z0-9_\s\-:\.(),;\+\*]/ )
-			{
-				$warning{ "Substituting illegal character in >>> " . $& }++;
-				$row->{$heading} =~ s/[^<>\/a-zA-Z0-9_\s\-:\.(),;\+\*]/ /g;
-			}
-		}
+		substitute_illegal_characters($row);
 
 		INFO $c . ' out of 548912' if ++$c % 100000 == 0;
 
@@ -483,11 +467,6 @@ sub load_animaldatapoints($$) {
 		$warning{"DUPLICATE MEASUREMENTS: $measurement{$meas}->{desc} (measnum $meas)"}++
 		  if scalar keys %{ $measdesc{ uc( $measurement{$meas}->{desc} ) } } > 1;
 	}
-
-	# print accumulated warnings
-	for my $msg ( sort( keys %warning ) ) {
-		WARN $msg;
-	}
 }
 
 sub load_measurements($) {
@@ -504,14 +483,29 @@ sub load_measurements($) {
 		my $row = trim_row( $csv->getline_hr($fh_in) );
 		check_parser_for_errors( \$csv, \$row );
 
+		substitute_illegal_characters($row);
+
 		# assign variables
-		$measurement{ $row->{measnum} }->{varname} = $row->{varname};
-		$measurement{ $row->{measnum} }->{desc}    = $row->{desc};
-		$measurement{ $row->{measnum} }->{units}   = $row->{units};
 		$measurement{ $row->{measnum} }->{projsym} = 'MPD: ' . $row->{projsym};
-		$measurement{ $row->{measnum} }->{cat1}    = $row->{cat1} if $row->{cat1} ne '=';
-		$measurement{ $row->{measnum} }->{cat2}    = $row->{cat2} if $row->{cat2} ne '=';
-		$measurement{ $row->{measnum} }->{cat3}    = $row->{cat3} if $row->{cat3} ne '=';
+		$measurement{ $row->{measnum} }->{varname} =
+		    $measurement{ $row->{measnum} }->{projsym} . ' - '
+		  . $row->{varname};    # . ': ' .. $row->{desc};
+
+		my $protocol_name = $row->{cat1};
+		$protocol_name .= ', ' . $row->{cat2} if $row->{cat2} ne '<>';
+		$protocol_name .= ', ' . $row->{cat3} if $row->{cat3} ne '<>';
+		$protocol_name .= ', intervention:' . $row->{intervention}
+		  if $row->{intervention} ne '<>';
+		$protocol_name .= ', intparam:' . $row->{intparm} if $row->{intparm} ne '<>';
+		$measurement{ $row->{measnum} }->{protocol} = $protocol_name;
+
+		$measurement{ $row->{measnum} }->{protocolapp} = $row->{projsym} . ': ' . $protocol_name;
+
+		$measurement{ $row->{measnum} }->{desc}  = $row->{desc};
+		$measurement{ $row->{measnum} }->{units} = $row->{units};
+		$measurement{ $row->{measnum} }->{cat1}  = $row->{cat1} if $row->{cat1} ne '=';
+		$measurement{ $row->{measnum} }->{cat2}  = $row->{cat2} if $row->{cat2} ne '=';
+		$measurement{ $row->{measnum} }->{cat3}  = $row->{cat3} if $row->{cat3} ne '=';
 
 	}
 	close($fh_in);
@@ -526,13 +520,13 @@ sub trim_row ($) {
 
 	for my $key ( keys %$row ) {
 		if ( defined $row->{$key} && $row->{$key} =~ s/\s{2,}// ) {
-			WARN "TRIMMING $row->{$key}";
+			$warning{"TRIMMING $row->{$key}"}++;
 		}
 		if ( defined $row->{$key} && $row->{$key} =~ s/^\s+// ) {
-			WARN "TRIMMING $row->{$key}";
+			$warning{"TRIMMING $row->{$key}"}++;
 		}
 		if ( defined $row->{$key} && $row->{$key} =~ s/\s+$// ) {
-			WARN "TRIMMING $row->{$key}";
+			$warning{"TRIMMING $row->{$key}"}++;
 		}
 	}
 
@@ -541,7 +535,7 @@ sub trim_row ($) {
 
 sub remove_dup_measurements($) {
 
-	my ( %word_count, %warning );
+	my (%word_count);
 
 	# find duplicates, by storing path to branch in a hash
 	# if multiple paths are found, the term is duplicated in different places
@@ -567,12 +561,6 @@ sub remove_dup_measurements($) {
 			$meas->{cat3} = $meas->{cat2} . ' ' . $meas->{cat3};
 		}
 	}
-
-	# print accumulated warnings
-	for my $msg ( sort( keys %warning ) ) {
-		WARN $msg;
-	}
-
 }
 
 sub make_csv_parser {
