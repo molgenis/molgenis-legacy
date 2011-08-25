@@ -36,7 +36,7 @@
 	<table cellpadding="10" cellspacing="2" border="1">
 		<tr>
 			<th>Name</th>
-			<th><input type='submit' class='addbutton' value='Remove selected' onclick="__action.value='RemoveAnimalsFromSubproject'" /></th>
+			<th><input type='submit' id='startrem' class='addbutton' value='Remove selected' onclick="__action.value='RemoveAnimalsFromSubproject'" /></th>
 		</tr>
 		<#assign i = 0>
 		<#list screen.getAnimalIdList() as animalId>
@@ -52,7 +52,7 @@
 </form>
 
 <br />
-<input type='submit' class='addbutton' value='Add' onclick="window.location='molgenis.do?__target=${screen.name}&__action=AddAnimalToSubproject'" />
+<input type='submit' id='startadd' class='addbutton' value='Add' onclick="window.location='molgenis.do?__target=${screen.name}&__action=AddAnimalToSubproject'" />
 
 <#elseif screen.action == "RemoveAnimalsFromSubproject">
 
@@ -73,7 +73,7 @@ from ${strf.name}</em>
 	
 	<div class="row">
 		<label for="subprojectremovaldate">Date of removal from DEC subproject:</label>
-		<input type='text' class='textbox' id='subprojectremovaldate' name='subprojectremovaldate' value='' onclick='showDateInput(this)' autocomplete='off' />
+		<input type='text' class='textbox' id='subprojectremovaldate' name='subprojectremovaldate' value='${screen.currentDate}' onclick='showDateInput(this)' autocomplete='off' />
 	</div>
 	
 	<div class='row'>
@@ -94,13 +94,13 @@ from ${strf.name}</em>
 		</select>
 	</div>
 	
-	<div class="row" id="deathdatebox" style="display:block">
+	<div class="row" style="display:block">
 		<label for="deathdate">Date of death:</label>
-		<input type='text' class='textbox' id='deathdate' name='deathdate' value='' onclick='showDateInput(this)' autocomplete='off' />
+		<input type='text' class='textbox' id='deathdate' name='deathdate' value='${screen.currentDate}' onclick='showDateInput(this)' autocomplete='off' />
 	</div>
 	
-	<div id='buttons_part' class='row'>
-		<input type='submit' class='addbutton' value='Apply' onclick="__action.value='ApplyRemoveAnimalsFromSubproject'" />
+	<div class='row'>
+		<input type='submit' id='dorem' class='addbutton' value='Apply' onclick="__action.value='ApplyRemoveAnimalsFromSubproject'" />
 	</div>
 	
 </form>
@@ -146,7 +146,7 @@ from ${strf.name}</em>
 	
 	<div class="row" style='clear:left'>
 		<label for="subprojectadditiondate">Date of entry into DEC subproject:</label>
-		<input type='text' class='textbox' id='subprojectadditiondate' name='subprojectadditiondate' value='' onclick='showDateInput(this)' autocomplete='off' />
+		<input type='text' class='textbox' id='subprojectadditiondate' name='subprojectadditiondate' value='${screen.currentDate}' onclick='showDateInput(this)' autocomplete='off' />
 	</div>
 	
 	<div class='row'>
@@ -185,22 +185,22 @@ from ${strf.name}</em>
 		</select>
 	</div>
 	
-	<div id='buttons_part' class='row'>
-		<input type='submit' class='addbutton' value='Apply' onclick="__action.value='ApplyAddAnimalToSubproject'" />
+	<div class='row'>
+		<input type='submit' id='doadd' class='addbutton' value='Apply' onclick="__action.value='ApplyAddAnimalToSubproject'" />
 	</div>
 	
 </form>
 
 <#else>
 
-<div id="subprojectselect" class="row">
-<label for="subproject">DEC Subproject:</label>
-<select name="subproject" id="subproject" class="selectbox" onchange="callScreenWithSubprojectId(this.value);">
-	<option value="0">&nbsp;</option>
-	<#list screen.subprojectList as sl>
-		<option value="${sl.id?string.computer}">${sl.name}</option>
-	</#list>
-</select>
+<div class="row">
+	<label for="subproject">DEC Subproject:</label>
+	<select name="subproject" id="subproject" class="selectbox" onchange="callScreenWithSubprojectId(this.value);">
+		<option value="0">&nbsp;</option>
+		<#list screen.subprojectList as sl>
+			<option value="${sl.id?string.computer}">${sl.name}</option>
+		</#list>
+	</select>
 </div>
 
 </#if>

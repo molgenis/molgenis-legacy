@@ -9,6 +9,8 @@
 					<include name="login" />
 					<include name="addAnimals" />
 					<include name="breedingWorkflow" />
+					<include name="decWorkflow" />
+					<include name="yearlyReports" />
 					<include name="logout" />
 				</methods>
 			</class>

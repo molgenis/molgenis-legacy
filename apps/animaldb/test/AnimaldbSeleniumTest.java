@@ -1,5 +1,8 @@
 package test;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import org.openqa.selenium.server.RemoteControlConfiguration;
 import org.openqa.selenium.server.SeleniumServer;
 import org.testng.Assert;
@@ -182,6 +185,100 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		
 		sleepHelper("breedingWorkflow");
+	}
+	
+	@Test
+	public void decWorkflow() throws Exception {
+		Calendar calendar = Calendar.getInstance();
+		String[] months = new String[] {"January", "February", "March", "April", "May", "June",
+										"July", "August", "September", "October", "November", "December"};
+		// Go to DEC project plugin
+		selenium.click("id=projectmenu_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=AddProject_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Manage DEC projects"));
+		// Make a DEC project
+		selenium.click("link=Add");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.type("id=name", "MyDEC");
+		selenium.type("id=decnumber", "12345");
+		selenium.type("id=decapppdf", "/home/test/app.pdf");
+		selenium.type("id=decapprovalpdf", "/home/test/app2.pdf");
+		int thisYear = calendar.get(Calendar.YEAR);
+		selenium.type("id=startdate", "January 1, " + thisYear);
+		selenium.type("id=enddate", "December 31, " + thisYear);
+		selenium.click("id=addproject");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("DEC Project successfully added"));
+		Assert.assertTrue(selenium.isTextPresent("MyDEC"));
+		// Go to DEC subproject plugin
+		selenium.click("id=AddSubproject_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Manage DEC subprojects"));
+		// Make a DEC subproject
+		selenium.click("link=Add");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.type("id=name", "MyProject");
+		selenium.type("id=decnumber", "A");
+		selenium.type("id=decapppdf", "/home/test/subapp.pdf");
+		int thisMonth = calendar.get(Calendar.MONTH);
+		selenium.type("id=startdate", months[thisMonth] + " 1, " + thisYear);
+		selenium.type("id=enddate", months[thisMonth] + " 28, " + thisYear);
+		selenium.click("id=addsubproject");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("DEC Subproject successfully added"));
+		Assert.assertTrue(selenium.isTextPresent("MyProject"));
+		// Go to Animals in DEC plugin
+		selenium.click("id=AnimalsInSubprojects_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Manage animals in DEC subprojects"));
+		// Add animals to DEC (multiple select does not seem to work in Selenium so there is some duplication here
+		selenium.select("id=subproject", "label=MyProject");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		addAnimalToDec("21");
+		addAnimalToDec("22");
+		addAnimalToDec("23");
+		addAnimalToDec("24");
+		addAnimalToDec("25");
+		// Remove animals from DEC
+		selenium.click("id=rem0");
+		selenium.click("id=rem1");
+		selenium.click("id=startrem");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=dorem");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Animal(s) successfully removed"));
+		selenium.click("link=Back to overview");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		// Check portal
+		selenium.click("DecStatus_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("DEC status portal"));
+		Assert.assertEquals(selenium.getText("//div[@id='StatusTable']/table/tbody/tr[2]/th"), "12345");
+		Assert.assertEquals(selenium.getText("//div[@id='StatusTable']/table/tbody/tr[3]/td[3]"), "A");
+		Assert.assertEquals(selenium.getText("//div[@id='StatusTable']/table/tbody/tr[3]/td[6]"), "3");
+		Assert.assertEquals(selenium.getText("//div[@id='StatusTable']/table/tbody/tr[3]/td[7]"), "2");
+		
+		sleepHelper("decWorkflow");
+	}
+	
+	private void addAnimalToDec(String name) {
+		selenium.click("id=startadd");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.select("id=animal", "label=" + name);
+		selenium.click("id=doadd");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Animal(s) successfully added"));
+		selenium.click("link=Back to overview");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Manage animals in DEC subprojects"));
+	}
+	
+	@Test
+	public void yearlyReports() throws Exception {
+		
+		sleepHelper("yearlyReports");
 	}
 	
 	@Test

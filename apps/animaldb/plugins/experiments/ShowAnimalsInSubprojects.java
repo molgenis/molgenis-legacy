@@ -50,6 +50,8 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 	private ObservationTarget animalToAddOrRemove;
 	private ObservationTarget subproject;
 	private List<MolgenisBatch> batchList = new ArrayList<MolgenisBatch>();
+	private SimpleDateFormat oldDateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 
 	public ShowAnimalsInSubprojects(String name, ScreenController<?> parent)
 	{
@@ -71,6 +73,11 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 	public String getViewTemplate()
 	{
 		return "plugins/experiments/ShowAnimalsInSubprojects.ftl";
+	}
+	
+	public String getCurrentDate() {
+		Date now = new Date();
+		return oldDateOnlyFormat.format(now);
 	}
 
 	public void setActualDiscomfortCodeList(List<Code> actualDiscomfortCodeList)
@@ -264,10 +271,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 			}
 			
 			if (action.equals("ApplyRemoveAnimalsFromSubproject"))
-			{
-				SimpleDateFormat oldDateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
-				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
-				
+			{	
 				// Get values from form
 				
 				// Discomfort

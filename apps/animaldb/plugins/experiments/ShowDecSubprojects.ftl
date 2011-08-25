@@ -37,12 +37,12 @@
 		<#assign currentDecSubproject = screen.getDecSubprojectByListId()>
 	</#if>
 	
-	<div id="name" class="row">
+	<div class="row">
 		<label for="name">Name:</label>
 		<input type="text" name="name" id="name" class="textbox" <#if currentDecSubproject??> value="${currentDecSubproject.name}"</#if> />
 	</div>
 	
-	<div id="decapp" class="row">
+	<div class="row">
 		<label for="decapp">DEC application:</label>
 		<select name="decapp" id="decapp"> 
 			<#list screen.decApplicationList as decAppListItem>
@@ -53,17 +53,17 @@
 		</select>
 	</div>
 	
-	<div id="decnumber" class="row">
+	<div class="row">
 		<label for="decnumber">DEC subproject code:</label>
 		<input type="text" name="decnumber" id="decnumber" class="textbox" <#if currentDecSubproject??> value="${currentDecSubproject.experimentNr}"</#if> />
 	</div>
 	
-	<div id="decapppdf" class="row">
+	<div class="row">
 		<label for="decapppdf">DEC subproject application PDF:</label>
 		<input type="text" name="decapppdf" id="decapppdf" class="textbox" <#if currentDecSubproject??> value="${currentDecSubproject.decSubprojectApplicationPDF}"</#if> />
 	</div>
 	
-	<div id="concern" class="row">
+	<div class="row">
 		<label for="concern">Concern:</label>
 		<select name="concern" id="concern">
 		<#list screen.concernCodeList as ccl>
@@ -72,7 +72,7 @@
 		</select>
 	</div>
 	
-	<div id="goal" class="row">
+	<div class="row">
 		<label for="goal">Goal:</label>
 		<select name="goal" id="goal">
 		<#list screen.goalCodeList as gcl>
@@ -81,7 +81,7 @@
 		</select>
 	</div>
 	
-	<div id="specialtechn" class="row">
+	<div class="row">
 		<label for="specialtechn">Special techniques:</label>
 		<select name="specialtechn" id="specialtechn">
 		<#list screen.specialTechnCodeList as stcl>
@@ -90,7 +90,7 @@
 		</select>
 	</div>
 	
-	<div id="lawdef" class="row">
+	<div class="row">
 		<label for="lawdef">Law definition:</label>
 		<select name="lawdef" id="lawdef">
 		<#list screen.lawDefCodeList as ldcl>
@@ -99,7 +99,7 @@
 		</select>
 	</div>
 	
-	<div id="toxres" class="row">
+	<div class="row">
 		<label for="toxres">Toxic research:</label>
 		<select name="toxres" id="toxres">
 		<#list screen.toxResCodeList as trcl>
@@ -108,7 +108,7 @@
 		</select>
 	</div>
 	
-	<div id="anaesthesia" class="row">
+	<div class="row">
 		<label for="anaesthesia">Anaesthesia:</label>
 		<select name="anaesthesia" id="anaesthesia">
 		<#list screen.anaesthesiaCodeList as acl>
@@ -117,7 +117,7 @@
 		</select>
 	</div>
 	
-	<div id="painmanagement" class="row">
+	<div class="row">
 		<label for="painmanagement">Pain management:</label>
 		<select name="painmanagement" id="painmanagement">
 		<#list screen.painManagementCodeList as pmcl>
@@ -126,7 +126,7 @@
 		</select>
 	</div>
 	
-	<div id="endstatus" class="row">
+	<div class="row">
 		<label for="endstatus">Expected animal end status:</label>
 		<select name="endstatus" id="endstatus">
 		<#list screen.animalEndStatusCodeList as aescl>
@@ -135,7 +135,7 @@
 		</select>
 	</div>
 	
-	<div id="remarks" class="row">
+	<div class="row">
 		<label for="remarks">Remarks:</label>
 		<input type="text" name="remarks" id="remarks" class="textbox" <#if currentDecSubproject??><#if currentDecSubproject.getOldAnimalDBRemarks()??>value="${currentDecSubproject.oldAnimalDBRemarks}"</#if></#if> />
 	</div>
@@ -150,8 +150,8 @@
 		<input type='text' class='textbox' id='enddate' name='enddate' <#if currentDecSubproject??><#if currentDecSubproject.getEndDate()??> value="${currentDecSubproject.endDate}"</#if></#if> onclick='showDateInput(this)' autocomplete='off' />
 	</div>
 	
-	<div id='buttons_part' class='row'>
-		<input type='submit' class='addbutton' value='Add' onclick="__action.value='addEditDecSubproject'" />
+	<div class='row'>
+		<input type='submit' id='addsubproject' class='addbutton' value='Add' onclick="__action.value='addEditDecSubproject'" />
 	</div>
 	
 </form>

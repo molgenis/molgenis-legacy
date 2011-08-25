@@ -37,14 +37,14 @@
 		<#assign currentDecProject = screen.getDecProjectByListId()>
 	</#if>
 	
-	<div id="name" class="row">
+	<div class="row">
 		<label for="name">Name:</label>
 		<input type="text" name="name" id="name" class="textbox" 
 		<#if currentDecProject?? && currentDecProject.getName()??> value="${currentDecProject.name}"</#if>
 		/>
 	</div>
 	
-	<div id="decnumber" class="row">
+	<div class="row">
 		<label for="decnumber">DEC number:</label>
 		<input type="text" name="decnumber" id="decnumber" class="textbox" 
 		<#if currentDecProject?? && currentDecProject.getDecNr()??> value="${currentDecProject.decNr}"</#if>
@@ -52,7 +52,7 @@
 	</div>
 	
 	<!--
-	<div id="decapplicant" class="row">
+	<div class="row">
 		<label for="decapplicant">DEC Applicant:</label>
 		<select name="decapplicant" id="decapplicant"> 
 			<!#list screen.decApplicantList as decApplicant>
@@ -64,12 +64,12 @@
 	</div>
 	-->
 	
-	<div id="decapplicationpdf" class="row">
+	<div class="row">
 		<label for="decapplicationpdf">DEC application PDF:</label>
 		<input type="text" name="decapplicationpdf" id="decapppdf" class="textbox" <#if currentDecProject?? && currentDecProject.getPdfDecApplication()??> value="${currentDecProject.pdfDecApplication}"</#if> />
 	</div>
 	
-	<div id="decapprovalpdf" class="row">
+	<div class="row">
 		<label for="decapprovalpdf">DEC approval PDF:</label>
 		<input type="text" name="decapprovalpdf" id="decapprovalpdf" class="textbox" <#if currentDecProject?? && currentDecProject.getPdfDecApproval()??> value="${currentDecProject.pdfDecApproval}"</#if> />
 	</div>
@@ -84,8 +84,8 @@
 		<input type='text' class='textbox' id='enddate' name='enddate' <#if currentDecProject?? && currentDecProject.getEndDate()??> value="${currentDecProject.endDate}"</#if> onclick='showDateInput(this)' autocomplete='off' />
 	</div>
 	
-	<div id='buttons_part' class='row'>
-	<input type='submit' class='addbutton' value='Add' onclick="__action.value='addEditDecProject'" />
+	<div class='row'>
+		<input type='submit' id="addproject" class='addbutton' value='Add' onclick="__action.value='addEditDecProject'" />
 	</div>
 	
 </form>
