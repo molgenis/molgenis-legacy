@@ -126,21 +126,50 @@
 <br>
 <i>Applied filters, in order:</i>
 <table cellpadding="5">
-	<#list matrix.filters as filter>
+	<#assign filterIndex = 0>
+	<!-- First show non-paging filters. TODO: remove duplication! -->
+	<#list matrix.otherFilters as filter>
 	<tr>
 		<td>${filter}</td>
-		<td><input type="image" src="generated-res/img/exit.bmp" onclick="__action.value = '${req_tag}remove_filter${filter_index}'; submit();"/></td>
+		<!-- Remove button -->
+		<td><input type="image" src="generated-res/img/exit.bmp" onclick="__action.value = '${req_tag}remove_filter${filterIndex}'; submit();"/></td>
+		<!-- Push down button -->
 		<td>
-		<#if filter_index != 0>
-			<input type="image" src="generated-res/img/sort_desc.gif" onclick="__action.value = '${req_tag}push_filter_down${filter_index}'; submit();"/>
+		<#if filterIndex != 0>
+			<input type="image" src="generated-res/img/sort_desc.gif" onclick="__action.value = '${req_tag}push_filter_down${filterIndex}'; submit();"/>
 		</#if>
 		</td>
+		<!-- Push up button -->
 		<td>
-		<#if filter_index < matrix.filters?size-1>
-			<input type="image" src="generated-res/img/sort_asc.gif" onclick="__action.value = '${req_tag}push_filter_up${filter_index}'; submit();"/>
+		<#if filterIndex < matrix.otherFilters?size-1>
+			<input type="image" src="generated-res/img/sort_asc.gif" onclick="__action.value = '${req_tag}push_filter_up${filterIndex}'; submit();"/>
 		</#if>
 		</td>
 	</tr>
+		<#assign filterIndex = filterIndex + 1>
+	</#list>
+	<!-- Then show paging filters. TODO: remove duplication! -->
+	<#assign pagingFilterIndex = 0>
+	<#list matrix.pagingFilters as filter>
+	<tr>
+		<td>${filter}</td>
+		<!-- Remove button -->
+		<td><input type="image" src="generated-res/img/exit.bmp" onclick="__action.value = '${req_tag}remove_filter${filterIndex}'; submit();"/></td>
+		<!-- Push down button -->
+		<td>
+		<#if pagingFilterIndex != 0>
+			<input type="image" src="generated-res/img/sort_desc.gif" onclick="__action.value = '${req_tag}push_filter_down${filterIndex}'; submit();"/>
+		</#if>
+		</td>
+		<!-- Push up button -->
+		<td>
+		<#if pagingFilterIndex < matrix.pagingFilters?size-1>
+			<input type="image" src="generated-res/img/sort_asc.gif" onclick="__action.value = '${req_tag}push_filter_up${filterIndex}'; submit();"/>
+		</#if>
+		</td>
+	</tr>
+		<#assign filterIndex = filterIndex + 1>
+		<#assign pagingFilterIndex = pagingFilterIndex + 1>
 	</#list>
 </table>
 
@@ -148,11 +177,11 @@
 
 
 <table cellpadding="10"><tr>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');" checked>Index</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter2');display('hide', 'filter1');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');">Values by col</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter3');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter4');display('hide', 'filter5');">Values by row</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter4');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter5');">Attrb by col</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter5');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');">Attrb by row</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');" checked>By index</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter2');display('hide', 'filter1');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');">By column values</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter3');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter4');display('hide', 'filter5');">By row values</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter4');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter5');">By column attributes</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter5');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');">By row attributes</td>
 </tr></table>
 
 <br>

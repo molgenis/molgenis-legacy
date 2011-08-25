@@ -1,5 +1,6 @@
 package org.molgenis.matrix.component.general;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
@@ -126,6 +127,28 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>{
 	public List<Filter> getFilters()
 	{
 		return this.filters;
+	}
+	
+	public List<Filter> getPagingFilters()
+	{
+		List<Filter> returnList = new ArrayList<Filter>();
+		for (Filter f : this.filters) {
+			if (f.getFilterType().equals(Filter.Type.paging)) {
+				returnList.add(f);
+			}
+		}
+		return returnList;
+	}
+	
+	public List<Filter> getOtherFilters()
+	{
+		List<Filter> returnList = new ArrayList<Filter>();
+		for (Filter f : this.filters) {
+			if (!f.getFilterType().equals(Filter.Type.paging)) {
+				returnList.add(f);
+			}
+		}
+		return returnList;
 	}
 
 	@Override
