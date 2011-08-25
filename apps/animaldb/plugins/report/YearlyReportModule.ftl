@@ -44,8 +44,8 @@
 </select>
 </div>
 
-<div id='buttons_part' class='row'>
-	<input type='submit' class='addbutton' value='Generate!' onclick="__action.value='generateYearlyReport'" />
+<div class='row'>
+	<input type='submit' id='generate' class='addbutton' value='Generate!' onclick="__action.value='generateYearlyReport'" />
 </div>
 
 <#if screen.report?exists>

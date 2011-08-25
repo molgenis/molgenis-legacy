@@ -442,7 +442,7 @@ public class VWAReport4 extends AnimalDBReport
 				+ " - Registratieformulier 4" + type + "</strong></p><br />";
 		
 		// Table
-		output += "<table border='1px' cellpadding='5px' cellspacing='5px'>";
+		output += "<div id='reporttablediv'><table border='1px' cellpadding='5px' cellspacing='5px'>";
 		output += "<tr>";
 		for (int col = 1; col <= nrCol; col++)
 		{
@@ -494,7 +494,7 @@ public class VWAReport4 extends AnimalDBReport
 			warningsList.add("No report data generated!");
 		}
 		
-		output += "</table>";
+		output += "</table></div>";
 		
 		// Warnings
 		if (warningsList.size() > 0) {

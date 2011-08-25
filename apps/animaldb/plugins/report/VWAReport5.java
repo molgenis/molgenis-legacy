@@ -317,7 +317,7 @@ public class VWAReport5 extends AnimalDBReport {
 	@Override
 	public String toString() {
 		String output = "<br /><p><strong>JAARSTAAT DIERPROEVEN registratiejaar " + year + " - Registratieformulier 5</strong></p>";
-		output += "<br /><table border='1' cellpadding='5' cellspacing='5'>";
+		output += "<br /><div id='reporttablediv'><table border='1' cellpadding='5' cellspacing='5'>";
 		output += "<tr>";
 		output += "<th></th>";
 		output += "<th></th>";
@@ -358,7 +358,7 @@ public class VWAReport5 extends AnimalDBReport {
 			output += "</tr>";
 			counter++;
 		}
-		output += "</table>";
+		output += "</table></div>";
 		
 		// Warnings
 		if (warningsList.size() > 0) {

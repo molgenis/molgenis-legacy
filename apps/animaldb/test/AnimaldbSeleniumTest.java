@@ -70,6 +70,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertEquals(selenium.getTitle(), "AnimalDB");
 		Assert.assertTrue(selenium.isTextPresent("Welcome to AnimalDB!"));
 		Assert.assertTrue(selenium.isTextPresent("Your database was empty, so it was prefilled with entities needed to make AnimalDB run"));
+		
 		sleepHelper("startup");
 	}
 
@@ -277,6 +278,39 @@ public class AnimaldbSeleniumTest
 	
 	@Test
 	public void yearlyReports() throws Exception {
+		// Go to Report plugin
+		selenium.click("id=YearlyReportModule_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		// Report 4A (default)
+		selenium.click("id=generate");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertEquals(selenium.getTable("css=#reporttablediv > table.2.0"), "Hamsters");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[2]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[3]"), "5");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[4]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[5]/strong"), "20");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[6]/strong"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[7]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[8]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[9]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[10]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[11]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[12]"), "2");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[13]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[14]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[15]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[16]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[17]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[18]"), "23");
+		// Report 5
+		selenium.select("id=form", "value=5");
+		selenium.click("id=generate");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[1]"), "12345A - MyDEC");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[6]"), "2");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[15]"), "A. Dood in het kader van de proef");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[16]"), "12345A");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[17]"), "Mesocricetus auratus");
 		
 		sleepHelper("yearlyReports");
 	}
