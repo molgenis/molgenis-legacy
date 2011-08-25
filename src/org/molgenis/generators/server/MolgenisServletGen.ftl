@@ -32,11 +32,10 @@ import javax.servlet.http.HttpServletResponse;
 import generic.JavaCompiler;
 import generic.JavaCompiler.CompileUnit;
 </#if>
+import ${package}.DatabaseFactory;
 <#if db_mode = 'standalone'>
 import org.apache.commons.dbcp.BasicDataSource;
-import ${package}.<#if databaseImp = 'jpa'>Jpa<#else>JDBC</#if>Database;
 <#else>
-import ${package}.DatabaseFactory;
 import org.molgenis.framework.db.jdbc.JndiDataSourceWrapper;
 </#if>
 
