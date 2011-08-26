@@ -3,22 +3,20 @@ package matrix.implementations.database;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import matrix.AbstractDataMatrixInstance;
 import matrix.implementations.memory.MemoryDataMatrixInstance;
 
 import org.molgenis.data.Data;
-import org.molgenis.data.DataElement;
 import org.molgenis.data.DecimalDataElement;
 import org.molgenis.data.TextDataElement;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.util.Entity;
 import org.molgenis.util.ResultSetTuple;
-import org.molgenis.util.Tuple;
 
 import decorators.NameConvention;
 
@@ -150,6 +148,8 @@ public class DatabaseDataMatrixInstance extends AbstractDataMatrixInstance<Objec
 				data[rs.getInt(rowIndexString)][rs.getInt(colIndexString)] = rs.getString(valueString);
 			}
 		}
+		rs.close();
+		
 		return data;
 	}
 
@@ -179,16 +179,47 @@ public class DatabaseDataMatrixInstance extends AbstractDataMatrixInstance<Objec
 	}
 
 	@Override
-	public AbstractDataMatrixInstance getSubMatrix(int[] rowIndices, int[] colIndices) throws Exception
+	public AbstractDataMatrixInstance<Object> getSubMatrix(int[] rowIndices, int[] colIndices) throws Exception
 	{
+		
+		//the optimized way: find out of indices form a single block
+		//if so, used offset retrieval instead
+		boolean offsetAble = true;
+		for(int i=0; i < rowIndices.length-1; i++){
+			if(rowIndices[i] != (rowIndices[i+1]+1)){
+				offsetAble = false;
+				break;
+			}
+			
+		}
+		if(offsetAble){
+			for(int i=0; i<colIndices.length-1; i++){
+				if(colIndices[i] != (colIndices[i+1]+1)){
+					offsetAble = false;
+					break;
+				}
+			}
+		}
+		if(offsetAble)
+		{
+			return getSubMatrixByOffset(rowIndices[0], rowIndices.length, colIndices[0], colIndices.length);
+		}
+	
+		//regular way of retrieval, not too bad for database matrix	(single query)
+		HashMap<Integer, Integer> rowIndexPositions = new HashMap<Integer, Integer>();
+		HashMap<Integer, Integer> colIndexPositions = new HashMap<Integer, Integer>();
+
 		Integer[] rowIndicesCastable = new Integer[rowIndices.length];
 		Integer[] colIndicesCastable = new Integer[colIndices.length];
+		
 		for (int i = 0; i < rowIndices.length; i++)
 		{
+			rowIndexPositions.put(rowIndices[i], i);
 			rowIndicesCastable[i] = rowIndices[i];
 		}
 		for (int i = 0; i < colIndices.length; i++)
 		{
+			colIndexPositions.put(colIndices[i], i);
 			colIndicesCastable[i] = colIndices[i];
 		}
 
@@ -204,22 +235,34 @@ public class DatabaseDataMatrixInstance extends AbstractDataMatrixInstance<Objec
 		{
 			while (rs.next())
 			{
-				data[rs.getInt(rowIndexString)][rs.getInt(colIndexString)] = rs.getDouble(valueString);
+				data[rowIndexPositions.get(rs.getInt(rowIndexString))][colIndexPositions.get(rs.getInt(colIndexString))] = rs.getDouble(valueString);
 			}
 		}
 		else
 		{
 			while (rs.next())
 			{
-				data[rs.getInt(rowIndexString)][rs.getInt(colIndexString)] = rs.getString(valueString);
+				data[rowIndexPositions.get(rs.getInt(rowIndexString))][colIndexPositions.get(rs.getInt(colIndexString))] = rs.getString(valueString);
 			}
 		}
 		rs.close();
-		return new MemoryDataMatrixInstance(this.getRowNames(), this.getColNames(), data, this.getData());
+
+		List<String> rowNames = new ArrayList<String>();
+		List<String> colNames = new ArrayList<String>();
+
+		for (int rowIndex : rowIndices) {
+			rowNames.add(this.getRowNames().get(rowIndex).toString());
+		}
+
+		for (int colIndex : colIndices) {
+			colNames.add(this.getColNames().get(colIndex).toString());
+		}
+		
+		return new MemoryDataMatrixInstance<Object>(rowNames, colNames, data, this.getData());
 	}
 
 	@Override
-	public AbstractDataMatrixInstance getSubMatrixByOffset(int row, int rows, int col, int cols) throws Exception
+	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(int row, int rows, int col, int cols) throws Exception
 	{
 
 		String sql = String.format("SELECT " + rowIndexString + "," + colIndexString + "," + valueString + " FROM "
@@ -246,7 +289,7 @@ public class DatabaseDataMatrixInstance extends AbstractDataMatrixInstance<Objec
 
 		rs.close();
 
-		return new MemoryDataMatrixInstance(this.getRowNames().subList(row, row + rows), this.getColNames().subList(
+		return new MemoryDataMatrixInstance<Object>(this.getRowNames().subList(row, row + rows), this.getColNames().subList(
 				col, col + cols), data, this.getData());
 	}
 

@@ -309,7 +309,6 @@ public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 	@Override
 	public AbstractDataMatrixInstance getSubMatrix(int[] rowIndices, int[] colIndices)
 			throws Exception {
-		AbstractDataMatrixInstance result = null;
 		
 		//the optimized way: find out of indices form a single block
 		//if so, used offset retrieval instead
@@ -336,7 +335,7 @@ public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 		
 		//the usual way: get single elements at the crossing sections of indices
 		//very inefficient but always works
-		
+		AbstractDataMatrixInstance<Object> result = null;
 		Object[][] elements = new Object[rowIndices.length][colIndices.length];
 		RandomAccessFile raf = new RandomAccessFile(this.getBin(), "r");
 

@@ -136,21 +136,50 @@ public class CSVDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 	}
 
 	@Override
-	public AbstractDataMatrixInstance getSubMatrix(int[] rowIndices, int[] colIndices) throws Exception
+	public AbstractDataMatrixInstance<Object> getSubMatrix(int[] rowIndices, int[] colIndices) throws Exception
 	{
+		
+		//the optimized way: find out of indices form a single block
+		//if so, used offset retrieval instead
+		boolean offsetAble = true;
+		for(int i=0; i < rowIndices.length-1; i++){
+			if(rowIndices[i] != (rowIndices[i+1]+1)){
+				offsetAble = false;
+				break;
+			}
+			
+		}
+		if(offsetAble){
+			for(int i=0; i<colIndices.length-1; i++){
+				if(colIndices[i] != (colIndices[i+1]+1)){
+					offsetAble = false;
+					break;
+				}
+			}
+		}
+		if(offsetAble)
+		{
+			return getSubMatrixByOffset(rowIndices[0], rowIndices.length, colIndices[0], colIndices.length);
+		}
+		
 		//optimalization: sort ascending in primitive array, then dont use contains on list (slow) but smart counter 
-		AbstractDataMatrixInstance result = null;
+		//TODO: probably broken!! assign elements[line_number - 1][col] is wrong..
+		//use:
+		//HashMap<Integer, Integer> rowIndexPositions = new HashMap<Integer, Integer>();
+		//HashMap<Integer, Integer> colIndexPositions = new HashMap<Integer, Integer>();
+		
+		AbstractDataMatrixInstance<Object> result = null;
 		final Object[][] elements = new Object[rowIndices.length][colIndices.length];
 
-		final ArrayList<Integer> rowIndicesList = new ArrayList(rowIndices.length);
+		final ArrayList<Integer> rowIndicesList = new ArrayList<Integer>(rowIndices.length);
 		for(int i : rowIndices){
 			rowIndicesList.add(i);
 		}
-		final ArrayList<Integer> colIndicesList = new ArrayList(colIndices.length);
+		final ArrayList<Integer> colIndicesList = new ArrayList<Integer>(colIndices.length);
 		for(int i : colIndices){
 			colIndicesList.add(i);
 		}
-		final finalObject finalResult = new finalObject();
+		//final finalObject finalResult = new finalObject();
 			reader.reset();
 			reader.parse(new CsvReaderListener()
 			{
@@ -180,21 +209,21 @@ public class CSVDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 				colNames.add(this.getColNames().get(colIndex).toString());
 			}
 			
-			result = new MemoryDataMatrixInstance(rowNames, colNames, elements, this.getData());
+			result = new MemoryDataMatrixInstance<Object>(rowNames, colNames, elements, this.getData());
 			return result;
 	}
 
 	@Override
-	public AbstractDataMatrixInstance getSubMatrixByOffset(int row, int nRows, int col, int nCols) throws Exception
+	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(int row, int nRows, int col, int nCols) throws Exception
 	{
 		final int finalRow = row;
 		final int finalNRows = nRows;
 		final int finalCol = col;
 		final int finalNCols = nCols;
-		AbstractDataMatrixInstance result = null;
+		AbstractDataMatrixInstance<Object> result = null;
 		final Object[][] elements = new Object[nRows][nCols];
 
-		final finalObject finalResult = new finalObject();
+		//final finalObject finalResult = new finalObject();
 			reader.reset();
 			reader.parse(new CsvReaderListener()
 			{
@@ -226,7 +255,7 @@ public class CSVDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 			List<String> rowNames = getRowNames().subList(row, row + nRows);
 			List<String> colNames = getColNames().subList(col, col + nCols);
 			
-			result = new MemoryDataMatrixInstance(rowNames, colNames, elements, this.getData());
+			result = new MemoryDataMatrixInstance<Object>(rowNames, colNames, elements, this.getData());
 			return result;
 	}
 	

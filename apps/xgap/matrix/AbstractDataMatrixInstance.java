@@ -502,17 +502,36 @@ public abstract class AbstractDataMatrixInstance<E> extends GenericFunctions<Obs
 			return "";
 		}
 	}
+	
+	private String render(ObservationElement o)
+	{
+		String head = o.getName();
+		String content = "";
+		for(String f : o.getFields()){
+			
+			if(!o.getFields().contains(f+"_name"))
+			{
+				
+			}
+			if(!o.getFields().contains(f+"_name") && !f.equals("name") && !f.equals("__Type") && o.get(f) != null){
+				content += f + " = " + o.get(f) + "<br>";
+			}
+			
+		}
+		return "<div style=\"display: inline; font-size: x-small; text-align: center;\" onmouseover=\"return overlib('"+content+"', CAPTION, '"+head+"')\" onmouseout=\"return nd();\"><nobr>"+"<a href=?__target="+o.get__Type()+"s&__action=filter_set&__filter_attribute="+o.get__Type()+"_name&__filter_operator=EQUALS&__filter_value="+o.getName()+">"+o.getName()+"</a></nobr></div>";
+
+	}
 
 	@Override
 	public String renderRow(ObservationElement row)
 	{
-		return row.getName();
+		return render(row);
 	}
 
 	@Override
 	public String renderCol(ObservationElement col)
 	{
-		return col.getName();
+		return render(col);
 	}
 	
 	@Override

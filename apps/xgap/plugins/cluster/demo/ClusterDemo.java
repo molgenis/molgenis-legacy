@@ -268,6 +268,8 @@ public class ClusterDemo extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
+				
+		//HtmlSettings.uiToolkit = UiToolkit.ORIGINAL;
 		
 		if(this.getLogin().isAuthenticated()){
 			this.setLoggedIn(true);

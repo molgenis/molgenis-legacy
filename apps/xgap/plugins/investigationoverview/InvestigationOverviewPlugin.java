@@ -184,7 +184,7 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 			for (InvestigationFile invFile : ifList)
 			{
 				otherList.put(invFile.getName() + "." + invFile.getExtension(),
-						"?__target=Files&__action=filter_set&__filter_attribute=File_id&__filter_operator=EQUALS&__filter_value="
+						"?__target=Files&__action=filter_set&__filter_attribute=id&__filter_operator=EQUALS&__filter_value="
 								+ invFile.getId());
 
 			}

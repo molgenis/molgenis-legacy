@@ -37,11 +37,11 @@ registerCommands('donothing,inarray,caparray,sticky,background,noclose,caption,l
 // changed on your html page or through an overLIB call.
 ////////
 if (typeof ol_fgcolor=='undefined') var ol_fgcolor="#FFFFFF";
-if (typeof ol_bgcolor=='undefined') var ol_bgcolor="#0000FF";
+if (typeof ol_bgcolor=='undefined') var ol_bgcolor="#CCCCCC";
 if (typeof ol_textcolor=='undefined') var ol_textcolor="#000000";
-if (typeof ol_capcolor=='undefined') var ol_capcolor="#FFFFFF";
-if (typeof ol_closecolor=='undefined') var ol_closecolor="#9999FF";
-if (typeof ol_textfont=='undefined') var ol_textfont="Courier New, Courier, mono, serif";
+if (typeof ol_capcolor=='undefined') var ol_capcolor="#000000";
+if (typeof ol_closecolor=='undefined') var ol_closecolor="#00FF00";
+if (typeof ol_textfont=='undefined') var ol_textfont="Verdana,Arial,Helvetica"; //Courier New, Courier, mono, serif
 if (typeof ol_captionfont=='undefined') var ol_captionfont="Verdana,Arial,Helvetica";
 if (typeof ol_closefont=='undefined') var ol_closefont="Verdana,Arial,Helvetica";
 if (typeof ol_textsize=='undefined') var ol_textsize="2";
