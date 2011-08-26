@@ -41,8 +41,8 @@
 				</div>			
 	 		</td>				
 			<td class="form_title">
-				<img class="navigation_button" src="generated-res/img/first.png" onclick="setInput('${screen.name}_form','_self','','${screen.name}','first','iframe'); document.forms.${screen.name}_form.submit();" title="go to first record"/>
-				<img class="navigation_button" src="generated-res/img/prev.png" onclick="setInput('${screen.name}_form','_self','','${screen.name}','prev','iframe'); document.forms.${screen.name}_form.submit();" title="go to previous record"/>
+				<img class="navigation_button" id="first_${screen.name}" src="generated-res/img/first.png" onclick="setInput('${screen.name}_form','_self','','${screen.name}','first','iframe'); document.forms.${screen.name}_form.submit();" title="go to first record"/>
+				<img class="navigation_button" id="prev_${screen.name}" src="generated-res/img/prev.png" onclick="setInput('${screen.name}_form','_self','','${screen.name}','prev','iframe'); document.forms.${screen.name}_form.submit();" title="go to previous record"/>
 	<#assign from = screen.offset + 1>
 	<#if from &gt; screen.count><#assign from = screen.count></#if>
 	<#if screen.mode.toString() == "listview">
@@ -52,8 +52,8 @@
 	<#else>
 				<label>${from} of ${screen.count}</label>
 	</#if>
-				<img class="navigation_button" src="generated-res/img/next.png" onclick="setInput('${screen.name}_form','_self','','${screen.name}','next','iframe'); document.forms.${screen.name}_form.submit()" title="go to next record"/>
-				<img class="navigation_button" src="generated-res/img/last.png" onclick="setInput('${screen.name}_form','_self','','${screen.name}','last','iframe'); document.forms.${screen.name}_form.submit()" title="go to last record"/>	
+				<img class="navigation_button" id="next_${screen.name}" src="generated-res/img/next.png" onclick="setInput('${screen.name}_form','_self','','${screen.name}','next','iframe'); document.forms.${screen.name}_form.submit()" title="go to next record"/>
+				<img class="navigation_button" id="last_${screen.name}" src="generated-res/img/last.png" onclick="setInput('${screen.name}_form','_self','','${screen.name}','last','iframe'); document.forms.${screen.name}_form.submit()" title="go to last record"/>	
 			</td>	
 			<td width="33%" valign="middle">
 				<!--to counter the menu size on the right-->
@@ -311,8 +311,8 @@ var molgenis_required = new Array(${required});
 <#if readonly != "true">
 <image class="edit_button" src="generated-res/img/save.png" alt="Save" onclick="if ($('#${screen.name}_form').valid() && validateForm(document.forms.${screen.name}_form,new Array(${required}))) {setInput('${screen.name}_form','_self','','${screen.name}','update','iframe'); document.forms.${screen.name}_form.submit();}" title="save the changes" />
 <#-->image class="edit_button" src="generated-res/img/save.png" alt="Save" onclick="setInput('${screen.name}_form','_self','','${screen.name}','update','iframe'); document.forms.${screen.name}_form.submit();}" title="save the changes" /-->
-<image class="edit_button" src="generated-res/img/reset.png" alt="Reset" onClick="setInput('${screen.name}_form','_self','','${screen.name}','listview','iframe'); document.forms.${screen.name}_form.submit();" title="stop editing and go to list view" />
-<image class="edit_button" src="generated-res/img/delete.png" alt="Delete" onclick="if (confirm('You are about to delete a record. If you click [yes] you won\'t be able to undo this operation.')) { setInput('${screen.name}_form','_self','','${screen.name}','remove','iframe'); document.forms.${screen.name}_form.submit(); }" title="delete current record" />
+<image class="edit_button" id="reset_${screen.name}" src="generated-res/img/reset.png" alt="Reset" onClick="setInput('${screen.name}_form','_self','','${screen.name}','listview','iframe'); document.forms.${screen.name}_form.submit();" title="stop editing and go to list view" />
+<image class="edit_button" id="delete_${screen.name}" src="generated-res/img/delete.png" alt="Delete" onclick="if (confirm('You are about to delete a record. If you click [yes] you won\'t be able to undo this operation.')) { setInput('${screen.name}_form','_self','','${screen.name}','remove','iframe'); document.forms.${screen.name}_form.submit(); }" title="delete current record" />
 </#if>
 </td></tr></table>		
 	</#list>
