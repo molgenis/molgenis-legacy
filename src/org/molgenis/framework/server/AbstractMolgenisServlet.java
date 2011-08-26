@@ -72,7 +72,9 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	public static String INPUT_SUBMIT = "submit_input";
 	/** indicating wether uploads should return added data */
 	public static String INPUT_SILENT = "data_silent";
-
+	/** keep track of window ids*/
+	private static long newWindowId;
+	
 	// get logger
 	protected final transient Logger logger = Logger.getLogger(this.getClass()
 			.getSimpleName());
@@ -119,6 +121,11 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	public Object getSoapImpl() throws Exception
 	{
 		return null;
+	}
+	
+	public static long getNewWindowId(){
+		newWindowId++;
+		return newWindowId;
 	}
 
 	@Override

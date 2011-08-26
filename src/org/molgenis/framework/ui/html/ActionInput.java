@@ -2,6 +2,7 @@ package org.molgenis.framework.ui.html;
 
 import java.text.ParseException;
 
+import org.molgenis.framework.server.AbstractMolgenisServlet;
 import org.molgenis.util.Tuple;
 
 /**
@@ -211,7 +212,7 @@ public class ActionInput extends HtmlInput<Object>
 			else if (this.type == Type.NEXT)
 			{
 				StringBuffer jScript = new StringBuffer();
-				jScript.append("if( validateForm(molgenis_popup,molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+Math.random();} document.forms.molgenis_popup.__show.value='popup'; document.forms.molgenis_popup.submit();} else return false;");
+				jScript.append("if( validateForm(molgenis_popup,molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis_"+AbstractMolgenisServlet.getNewWindowId()+"';} document.forms.molgenis_popup.__show.value='popup'; document.forms.molgenis_popup.submit();} else return false;");
 				return jScript.toString();
 			}
 			else if (this.type == Type.CLOSE)

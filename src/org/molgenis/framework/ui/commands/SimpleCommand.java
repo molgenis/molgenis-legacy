@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.AbstractMolgenisServlet;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
@@ -78,7 +79,7 @@ public abstract class SimpleCommand extends SimpleScreenModel implements ScreenC
 
 			// make sure the current window has a name (so popup can call back
 			// if necessary)
-			jScript.append("if( window.name == '' ){ window.name = 'molgenis'+Math.random();}");
+			jScript.append("if( window.name == '' ){ window.name = 'molgenis_"+AbstractMolgenisServlet.getNewWindowId()+"';}");
 
 			// default target screen is 'self'
 			jScript.append("document.forms." + this.getController().getName() + "_form." + FormModel.INPUT_TARGET

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.server.AbstractMolgenisServlet;
 import org.molgenis.framework.server.QueryRuleUtil;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -246,7 +247,7 @@ public abstract class EntityInput<E> extends HtmlInput<E>
 		addButton.setIcon("generated-res/img/new.png");
 		
 		addButton
-		.setJavaScriptAction("if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.getElementById('"
+		.setJavaScriptAction("if( window.name == '' ){ window.name = 'molgenis_"+AbstractMolgenisServlet.getNewWindowId()+"';}document.getElementById('"
 				+ this.getId()
 				+ "').form.__target.value=document.getElementById('"
 				+ this.getId()
