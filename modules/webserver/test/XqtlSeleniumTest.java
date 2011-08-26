@@ -24,7 +24,7 @@ public class XqtlSeleniumTest
 {
 	
 	Selenium selenium;
-	Integer sleepTime = 1000;
+	Integer sleepTime = 100;
 	String pageLoadTimeout = "30000";
 
 	@BeforeClass
@@ -75,7 +75,6 @@ public class XqtlSeleniumTest
 	@Test
 	public void login() throws InterruptedException
 	{
-		//selenium.click("//div[@onclick=\"document.forms.main.__target.value='main';document.forms.main.select.value='UserLogin';document.forms.main.submit();\"]");
 		selenium.click("id=UserLogin_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertEquals(selenium.getText("link=Register"), "Register");
@@ -83,12 +82,7 @@ public class XqtlSeleniumTest
 		selenium.type("id=password", "admin");
 		selenium.click("id=Login");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		
 		//note: page now redirects to the Home screen ('auth_redirect' in properties)
-		//note2: REDIRECT BROKEN, DISABLED ATM
-		selenium.click("id=ClusterDemo_tab_button");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		
 		Assert.assertTrue(selenium.isTextPresent("You are logged in as admin, and the database does not contain any investigations or other users."));
 		sleepHelper("login");
 	}
@@ -149,12 +143,68 @@ public class XqtlSeleniumTest
 		selenium.click("id=Investigations_collapse_button_id");
 		selenium.click("id=Datas_collapse_button_id");
 		
-		//assert if the hide investigation and data table rows are hidden
+		//assert if the hide investigation and data table rows are exposed
 		Assert.assertEquals(selenium.getEval(propertyScript("Investigations_collapse_tr_id", "display")), "table-row");
-		Assert.assertEquals(selenium.getEval(propertyScript("Datas_collapse_tr_id", "display")), "table-row");		
+		Assert.assertEquals(selenium.getEval(propertyScript("Datas_collapse_tr_id", "display")), "table-row");
+		
+		//click both unhide buttons
+		selenium.click("id=Investigations_collapse_button_id");
+		selenium.click("id=Datas_collapse_button_id");
+		
+		//assert if the hide investigation and data table rows are hidden again
+		Assert.assertEquals(selenium.getEval(propertyScript("Investigations_collapse_tr_id", "display")), "none");
+		Assert.assertEquals(selenium.getEval(propertyScript("Datas_collapse_tr_id", "display")), "none");
 		
 		sleepHelper("compactView");
 	
+	}
+	
+	@Test
+	public void individualForms() throws Exception {
+		//browse to basic annotations, individuals is the first form
+		selenium.click("id=BasicAnnotations_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		
+		//check some values here
+		Assert.assertEquals(selenium.getText("//form[@id='Individuals_form']/table[2]/tbody/tr[7]/td[4]"), "X7");
+		Assert.assertTrue(selenium.isTextPresent("xgap_rqtl_straintype_riself"));
+		
+		//switch to edit view and check some values there too
+		selenium.click("id=Individuals_editview");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertEquals(selenium.getValue("id=Individual_name"), "X1");
+		Assert.assertEquals(selenium.getTable("//form[@id='Individuals_form']/table[2]/tbody/tr/td/table.4.1"), "xgap_rqtl_straintype_riself\n\nxgap_rqtl_straintype_riself");
+		Assert.assertEquals(selenium.getText("//img[@onclick=\"if ($('#Individuals_form').valid() && validateForm(document.forms.Individuals_form,new Array())) {setInput('Individuals_form','_self','','Individuals','update','iframe'); document.forms.Individuals_form.submit();}\"]"), "");
+
+		//click add new, wait for popup, and select it
+		selenium.click("id=Individuals_edit_new");
+		selenium.waitForPopUp("molgenis_edit_new", "30000");
+		selenium.selectWindow("name=molgenis_edit_new");
+		
+		//fill in the form and click add
+		selenium.type("id=Individual_name", "testindv");
+		selenium.click("id=add");
+		selenium.waitForPageToLoad("30000");
+		
+		//select main window and check if add was successful
+		selenium.selectWindow("title=xQTL workbench");
+		Assert.assertTrue(selenium.isTextPresent("ADD SUCCESS: affected 1"));
+		
+		//page back and forth and check values
+		selenium.click("id=prev_Individuals");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertEquals(selenium.getValue("id=Individual_name"), "X193");
+		selenium.click("id=last_Individuals");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertEquals(selenium.getValue("id=Individual_name"), "testindv");
+		
+		//delete the test individual and check if it happened
+		selenium.click("id=delete_Individuals");
+		Assert.assertEquals(selenium.getConfirmation(), "You are about to delete a record. If you click [yes] you won't be able to undo this operation.");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("REMOVE SUCCESS: affected 1"));
+
+		sleepHelper("individualForms");
 	}
 	
 	@AfterClass
@@ -180,6 +230,20 @@ public class XqtlSeleniumTest
 			return storagePath.replace("\\", "/");
 		}else{
 			return storagePath;
+		}
+	}
+	
+	private void printAllWindows(String what)
+	{
+		System.out.println("printAllWindows - "+ what);
+		for(String s : selenium.getAllWindowNames()){
+			System.out.println("window name = "+s);
+		}
+		for(String s : selenium.getAllWindowIds()){
+			System.out.println("window id = "+s);
+		}
+		for(String s : selenium.getAllWindowTitles()){
+			System.out.println("window title = "+s);
 		}
 	}
 

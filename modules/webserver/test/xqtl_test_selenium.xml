@@ -10,6 +10,7 @@
 					<include name="loadExampleData" />
 					<include name="exploreExampleData" />
 					<include name="compactView" />
+					<include name="individualForms" />
 				</methods>
 			</class>
 		</classes>
