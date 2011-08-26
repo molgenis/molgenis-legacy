@@ -482,13 +482,15 @@ public abstract class AbstractDataMatrixInstance<E> extends GenericFunctions<Obs
 	@Override
 	public String getRowType() throws Exception
 	{
-		return this.getVisibleRows().get(0).get__Type();
+		//return this.getVisibleRows().get(0).get__Type();
+		return this.getData().getTargetType();
 	}
 
 	@Override
 	public String getColType() throws Exception
 	{
-		return this.getVisibleCols().get(0).get__Type();
+		//return this.getVisibleCols().get(0).get__Type();
+		return this.getData().getFeatureType();
 	}
 
 	@Override

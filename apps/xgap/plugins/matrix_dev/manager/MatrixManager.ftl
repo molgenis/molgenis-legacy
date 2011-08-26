@@ -44,7 +44,7 @@
 	<textarea name="inputTextArea" rows="7" cols="30"><#if model.uploadTextAreaContent?exists>${model.uploadTextAreaContent}</#if></textarea>
 	<input type="submit" value="Upload" onclick="__action.value='uploadTextArea';return true;"/><br>	
 <#else>
-${model.matrix.toHtml()}
+<#if model.matrix??>${model.matrix.toHtml()}<#else>No rendering available</#if>
 </#if>
 
 
