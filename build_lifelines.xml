@@ -6,7 +6,6 @@
 	<property name="app_properties" value="apps/xgap/org/molgenis/xgap/other/xqtlworkbench_lifelines/xwbll.properties"/>
 	<!-- this determines what handwritten modules should be loaded -->
 	<path id="app.class.path">
-		<pathelement location="apps/${app_name}" />
 		<pathelement location="apps/xgap" />
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/auth" />
