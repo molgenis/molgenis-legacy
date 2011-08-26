@@ -101,9 +101,18 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		this.sliceable = sliceable;
 		this.screenName = screenName;
 		this.stepSize = stepSize;
+		
+		int nrOfPagingFilters = 0;
+		if (filters != null) {
+			for (Filter f : filters) {
+				if (f.getFilterType().equals(Filter.Type.paging)) {
+					nrOfPagingFilters++;
+				}
+			}
+		}
 
-		// set default index filters if no filters are specified
-		if (filters == null)
+		// set default index filters if no (index) filters are specified
+		if (filters == null || nrOfPagingFilters == 0)
 		{
 			// use -1 to compensate for totals to indices
 			int rowStop = MatrixRendererHelper.ROW_STOP_DEFAULT > source.getTotalNumberOfRows() - 1 ? source
@@ -111,7 +120,7 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 			int colStop = MatrixRendererHelper.COL_STOP_DEFAULT > source.getTotalNumberOfCols() - 1 ? source
 					.getTotalNumberOfCols() - 1 : MatrixRendererHelper.COL_STOP_DEFAULT;
 
-			filters = new ArrayList<Filter>();
+			if (filters == null) filters = new ArrayList<Filter>();
 			filters.add(new Filter(Filter.Type.paging, new MatrixQueryRule("row", Operator.LIMIT, rowStop)));
 			filters.add(new Filter(Filter.Type.paging, new MatrixQueryRule("col", Operator.LIMIT, colStop)));
 		}
@@ -320,11 +329,11 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		{
 			newFilter = new Filter(Filter.Type.rowValues, q);
 		}
-		else if (action.equals("add_filter_by_col_header"))
+		else if (action.equals("add_filter_by_col_attrb"))
 		{
 			newFilter = new Filter(Filter.Type.colHeader, q);
 		}
-		else if (action.equals("add_filter_by_row_header"))
+		else if (action.equals("add_filter_by_row_attrb"))
 		{
 			newFilter = new Filter(Filter.Type.rowHeader, q);
 		}

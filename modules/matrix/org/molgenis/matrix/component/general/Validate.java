@@ -87,8 +87,8 @@ public class Validate<R, C, V>
 		}
 		if (bm.getColIndices().size() != bm.getVisibleCols().size())
 		{
-			throw new MatrixException("Number of col indices (" + bm.getRowIndices().size()
-					+ ") does not match number of visible cols (" + bm.getVisibleRows().size() + ")");
+			throw new MatrixException("Number of col indices (" + bm.getColIndices().size()
+					+ ") does not match number of visible cols (" + bm.getVisibleCols().size() + ")");
 		}
 		if (bm.getRowIndices().size() != bm.getVisibleRows().size())
 		{

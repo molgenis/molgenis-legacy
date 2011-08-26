@@ -109,6 +109,7 @@ public class PhenoMatrix extends GenericFunctions<ObservationTarget, ObservableF
 		int featureIndex = Integer.parseInt(rule.getField().substring(4));
 		String filterTerm = rule.getValue().toString();
 		List<ObservationTarget> targetsToKeep = new ArrayList<ObservationTarget>();
+		List<Integer> indicesToKeep = new ArrayList<Integer>();
 		List<ObservedValue>[][] values = this.getVisibleValues();
 		
 		int i = 0;
@@ -118,9 +119,11 @@ public class PhenoMatrix extends GenericFunctions<ObservationTarget, ObservableF
 				ObservedValue value = valueList.get(0);
 				if (value.getValue() != null && value.getValue().equals(filterTerm)) {
 					targetsToKeep.add(target);
+					indicesToKeep.add(i);
 				} else {
 					if (value.getRelation_Name() != null && value.getRelation_Name().equals(filterTerm)) {
 						targetsToKeep.add(target);
+						indicesToKeep.add(i);
 					}
 				}
 			}
@@ -128,6 +131,7 @@ public class PhenoMatrix extends GenericFunctions<ObservationTarget, ObservableF
 		}
 		
 		this.rowCopy = targetsToKeep;
+		this.rowIndicesCopy = indicesToKeep;
 		return this;
 	}
 
@@ -143,8 +147,18 @@ public class PhenoMatrix extends GenericFunctions<ObservationTarget, ObservableF
 	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColHeader(MatrixQueryRule rule)
 			throws Exception
 	{
-		// TODO Auto-generated method stub
-		return null;
+		List<ObservableFeature> featuresToKeep = new ArrayList<ObservableFeature>();
+		List<Integer> indicesToKeep = new ArrayList<Integer>();
+		String filterTerm = rule.getValue().toString();
+		List<ObservableFeature> featList = db.find(ObservableFeature.class, 
+				new QueryRule(ObservableFeature.NAME, Operator.EQUALS, filterTerm));
+		ObservableFeature featToKeep = featList.get(0);
+		int featIndex = this.originalCols.indexOf(featToKeep);
+		featuresToKeep.add(featToKeep);
+		indicesToKeep.add(featIndex);
+		this.colCopy = featuresToKeep;
+		this.colIndicesCopy = indicesToKeep;
+		return this;
 	}
 
 	@Override
@@ -235,6 +249,7 @@ public class PhenoMatrix extends GenericFunctions<ObservationTarget, ObservableF
 	{
 		List<String> returnList = new ArrayList<String>();
 		returnList.add(ObservableFeature.NAME);
+		returnList.add(ObservableFeature.__TYPE);
 		return returnList;
 	}
 

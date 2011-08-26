@@ -7,6 +7,7 @@
 
 package plugins.listplugin;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
@@ -17,6 +18,8 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.matrix.component.MatrixRenderer;
 import org.molgenis.matrix.component.PhenoMatrix;
+import org.molgenis.matrix.component.general.Filter;
+import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.general.MatrixRendererHelper;
 import org.molgenis.matrix.component.interfaces.RenderableMatrix;
 import org.molgenis.pheno.ObservableFeature;
@@ -67,8 +70,7 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 			
 			if (action.equals("resetMatrixRenderer")) {
 				selectedTargetList = null;
-				matrix = new PhenoMatrix(db);
-				matrixRenderer = new MatrixRenderer<ObservationTarget, ObservableFeature, List<ObservedValue>>("Pheno Matrix", matrix, matrix, this.getName());
+				initMatrix(db);
 			}
 			
 		} catch (Exception e) {
@@ -83,8 +85,7 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 		
 		if (matrix == null) {
 			try {
-				matrix = new PhenoMatrix(db);
-				matrixRenderer = new MatrixRenderer<ObservationTarget, ObservableFeature, List<ObservedValue>>("Pheno Matrix", matrix, matrix, this.getName());
+				initMatrix(db);
 			} catch (Exception e) {
 				e.printStackTrace();
 				if (e.getMessage() != null) {
@@ -92,6 +93,18 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 				}
 			}
 		}
+	}
+	
+	private void initMatrix(Database db) throws Exception {
+		// To test the initialization of the matrix with a predefined filter (set):
+		MatrixQueryRule qr = new MatrixQueryRule("col_att_name", Operator.EQUALS, "TypeOfGroup");
+		Filter preFilter = new Filter(Filter.Type.colHeader, qr);
+		List<Filter> preFilterList = new ArrayList<Filter>();
+		preFilterList.add(preFilter);
+		// 'Normal' code from here on:
+		matrix = new PhenoMatrix(db);
+		matrixRenderer = new MatrixRenderer<ObservationTarget, ObservableFeature, List<ObservedValue>>("Pheno Matrix", 
+				"Pheno Matrix", matrix, matrix, preFilterList, null, 5, this.getName());
 	}
 
 	public List<ObservationTarget> getSelectedTargetList() {
