@@ -109,7 +109,7 @@
 					<input type="submit" value="Show all" onclick="document.forms.${screen.name}.__action.value = 'showAllAnnotations'; document.forms.${screen.name}.submit();"/>
 				</#if>
 			</#if>
-			<input type="submit" value="Add" onclick="document.forms.${screen.name}.__action.value = 'addAnnotations'; document.forms.${screen.name}.submit();"/>
+			<input type="submit" value="Add" onClick="document.forms.InvestigationMenu.__target.value='InvestigationMenu';document.forms.InvestigationMenu.select.value='BasicAnnotations';document.forms.InvestigationMenu.submit();"/>
 		</td>
 	</tr>
 </table>
@@ -176,7 +176,7 @@
 					<input type="submit" value="Show all" onclick="document.forms.${screen.name}.__action.value = 'showAllExperiments'; document.forms.${screen.name}.submit();"/>
 				</#if>
 			</#if>
-			<input type="submit" value="Add" onclick="document.forms.${screen.name}.__action.value = 'addExperiments'; document.forms.${screen.name}.submit();"/>
+			<input type="submit" value="Add" onClick="document.forms.InvestigationMenu.__target.value='InvestigationMenu';document.forms.InvestigationMenu.select.value='Datas';document.forms.InvestigationMenu.submit();"/>
 		</td>
 	</tr>
 </table>
@@ -244,7 +244,7 @@
 					<input type="submit" value="Show all" onclick="document.forms.${screen.name}.__action.value = 'showAllOther'; document.forms.${screen.name}.submit();"/>
 				</#if>
 			</#if>
-			<input type="submit" value="Add" onclick="document.forms.${screen.name}.__action.value = 'addOther'; document.forms.${screen.name}.submit();"/>
+			<input type="submit" value="Add" onClick="document.forms.InvestigationMenu.__target.value='InvestigationMenu';document.forms.InvestigationMenu.select.value='Files';document.forms.InvestigationMenu.submit();"/>
 		</td>
 	</tr>
 </table>
