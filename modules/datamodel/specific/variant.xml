@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="org.molgenis">
+	<module name="variant">
+		<entity name="GenomeBuild" extends="ObservationElement">
+			<unique fields="Name" />
+			<field name="Species" type="xref" xref_entity="Species"/>
+		</entity>
+		<entity name="Chromosome" extends="ObservableFeature">
+			<field name="orderNr" type="int" />
+			<field name="isAutosomal" type="bool" />
+			<field name="bpLength" type="int" nillable="true" />
+			<field name="Species" label="Species" type="xref" xref_entity="Species"
+				xref_field="id" xref_label="name" nillable="true"
+				description="Reference to the species this
+				chromosome belongs to." />
+		</entity>
+		<entity name="SequenceFeature" extends="ObservableFeature">
+		<!-- do we put annotations in extension or in observedValue -->
+			<field name="genomeBuild" type="xref" xref_entity="GenomeBuild" />
+			<field name="chr" type="xref" xref_entity="Chromosome" />
+			<field name="startBP" type="int" />
+			<field name="endBP" type="int" />
+			<field name="dbRefs" type="mref" xref_entity="OntologyTerm"/>
+		</entity>
+	</module>
+</molgenis>
