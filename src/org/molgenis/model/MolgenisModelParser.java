@@ -922,7 +922,11 @@ public class MolgenisModelParser {
                 throw new MolgenisModelException("include failed: "
                         + e.getMessage());
             }
-        } else {
+        } else if (element.getTagName().equals("description"))
+        {
+        	logger.warn("currently the '<description>' tag is ignored in ui.xml");
+        }
+        else{
 
             String name = element.getAttribute("name").trim();
             String namespace = model.getName();
@@ -1254,7 +1258,7 @@ public class MolgenisModelParser {
             }
             try {
                 // root must be menu
-                if (child.getNodeName().equals("form") || child.getNodeName().equals("plugin") || child.getNodeName().equals("menu")) {
+                if (child.getNodeName().equals("description") || child.getNodeName().equals("form") || child.getNodeName().equals("plugin") || child.getNodeName().equals("menu")) {
                     parseUiSchema(model, (Element) child, model.getUserinterface());
                 } else {
                     throw new MolgenisModelException("Unrecognized element: " + child.getNodeName());
