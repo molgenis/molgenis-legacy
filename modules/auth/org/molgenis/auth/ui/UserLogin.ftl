@@ -1,4 +1,4 @@
-<form action="molgenis.do" method="post" enctype="multipart/form-data" name="${screen.name}">
+<form action="molgenis.do" method="post" enctype="multipart/form-data" id="${screen.name}" name="${screen.name}">
 	<input type="hidden" name="__target" value="${screen.name}"/>
 	<input type="hidden" name="select" value="${screen.name}"/>
 	<input type="hidden" name="__action" value="Login"/>
@@ -46,3 +46,6 @@
 		</div>
 	</div>
 </form>
+<script>
+$("#${screen.name}").validate();
+</script>
