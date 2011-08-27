@@ -207,6 +207,46 @@ public class XqtlSeleniumTest
 		sleepHelper("individualForms");
 	}
 	
+	@Test
+	public void enumInput() throws Exception {
+		//browse to 'Data' view and expand compact view
+		selenium.open("/molgenis_apps/molgenis.do?__target=InvestigationMenu&select=Datas");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=Investigations_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("link=View data");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=Datas_collapse_button_id");
+		
+		//assert content of enum fields
+		Assert.assertEquals(selenium.getTable("//form[@id='Datas_form']/table[2]/tbody/tr/td/table.8.1"), "Individual\n\nChromosomeClassicalPhenotypeDerivedTraitFactorGeneIndividualMarkerMassPeakMetabolitePanelProbeSampleSpot");
+		Assert.assertEquals(selenium.getTable("//form[@id='Datas_form']/table[2]/tbody/tr/td/table.9.1"), "Metabolite\n\nChromosomeClassicalPhenotypeDerivedTraitFactorGeneIndividualMarkerMassPeakMetabolitePanelProbeSampleSpot");
+		
+		//change Individual to Gene and save
+		selenium.click("css=#Data_FeatureType_chzn > a.chzn-single > div > b");
+		selenium.click("id=Data_FeatureType_chzn_o_4");
+		selenium.click("//img[@onclick=\"if ($('#Datas_form').valid() && validateForm(document.forms.Datas_form,new Array())) {setInput('Datas_form','_self','','Datas','update','iframe'); document.forms.Datas_form.submit();}\"]");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("UPDATE SUCCESS: affected 1"));
+		
+		//expand compact view again and check value has changed
+		selenium.click("id=Datas_collapse_button_id");
+		Assert.assertEquals(selenium.getTable("//form[@id='Datas_form']/table[2]/tbody/tr/td/table.8.1"), "Gene\n\nChromosomeClassicalPhenotypeDerivedTraitFactorGeneIndividualMarkerMassPeakMetabolitePanelProbeSampleSpot");
+		
+		//change back to Individual and save
+		selenium.click("css=#Data_FeatureType_chzn > a.chzn-single > div > b");
+		selenium.click("id=Data_FeatureType_chzn_o_5");
+		selenium.click("//img[@onclick=\"if ($('#Datas_form').valid() && validateForm(document.forms.Datas_form,new Array())) {setInput('Datas_form','_self','','Datas','update','iframe'); document.forms.Datas_form.submit();}\"]");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("UPDATE SUCCESS: affected 1"));
+		
+		//expand compact view again and check value is back to normal again
+		selenium.click("id=Datas_collapse_button_id");
+		Assert.assertEquals(selenium.getTable("//form[@id='Datas_form']/table[2]/tbody/tr/td/table.8.1"), "Individual\n\nChromosomeClassicalPhenotypeDerivedTraitFactorGeneIndividualMarkerMassPeakMetabolitePanelProbeSampleSpot");
+
+	}
+
+	
 	@AfterClass
 	public void stop() throws Exception
 	{
