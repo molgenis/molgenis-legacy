@@ -5,7 +5,7 @@ import org.molgenis.util.Tuple;
 /**
  * Input for string data. Renders as a <code>textarea</code>.
  */
-public class StringInput extends HtmlInput<String>
+public class StringInput extends ValidatingInput<String>
 {
 	public StringInput(Tuple t) throws HtmlInputException
 	{
@@ -29,10 +29,8 @@ public class StringInput extends HtmlInput<String>
 	public StringInput(String name, String value)
 	{
 		super(name, value);
-		width = 50;
-		height = 1;
 		this.setMinHeight(1);
-		this.setMaxHeight(25);
+		this.setMaxHeight(1);
 	}
 
 	public StringInput()
@@ -40,107 +38,107 @@ public class StringInput extends HtmlInput<String>
 		// TODO Auto-generated constructor stub
 	}
 
-	public String toHtml()
-	{
-		String readonly = (this.isReadonly()) ? "readonly class=\"readonly\" "
-				: "";
+//	public String toHtml()
+//	{
+//		String readonly = (this.isReadonly()) ? "readonly class=\"readonly\" "
+//				: "";
+//
+//		if (this.isHidden())
+//		{
+//			if (this.uiToolkit == UiToolkit.ORIGINAL
+//					|| this.uiToolkit == UiToolkit.JQUERY)
+//			{
+//				return "<input name=\"" + this.getName()
+//						+ "\"type=\"hidden\" value=\"" + this.getValue()
+//						+ "\"/>";
+//			}
+//			else if (this.uiToolkit == UiToolkit.DOJO)
+//			{
+//				return "<input name=\""
+//						+ this.getName()
+//						+ "\"id="
+//						+ this.getId()
+//						+ "\""
+//						+ "\"type=\"hidden\"  dojoType=\"dijit.form.TextBox\" value=\""
+//						+ this.getValue() + "\"/>";
+//
+//			}
+//		}
+//		String validate = this.isNillable() || this.isReadonly() ? "" : " required";
+//		String cssClass = this.uiToolkit == UiToolkit.JQUERY ? " class=\""+(this.isReadonly() ? "readonly ": "")+"text ui-widget-content ui-corner-all"
+//				+ validate + "\""
+//				: "";
+//		String result = "<textarea "
+//				+ cssClass
+//				+ " id=\""
+//				+ this.getId()
+//				+ "\" name=\""
+//				+ this.getName()
+//				+ "\"  "
+//				+ (this.getSize() != null && this.getSize() > 0 ? "onfocus=\"startcounter(this, "
+//						+ getSize() + ")\" onblur=\"endcounter()\""
+//						: "") + " cols=\"" + this.getWidth() + "\" rows=\""
+//				+ this.getHeight() + "\" " + readonly + " >" + this.getValue()
+//				+ "</textarea>";
+//		//if (this.library == Library.DEFAULT) 
+//			result += "<script>showTextInput(document.getElementById('"
+//				+ this.getId()
+//				+ "'),"
+//				+ this.getMinHeight()
+//				+ ","
+//				+ this.getMaxHeight() + ");</script>";
+////		if (this.library == Library.JQUERY) result += "<script>$(\"#"
+////				+ getName() + "\").autoGrow();</script>";
+//		return result;
+//	}
 
-		if (this.isHidden())
-		{
-			if (this.uiToolkit == UiToolkit.ORIGINAL
-					|| this.uiToolkit == UiToolkit.JQUERY)
-			{
-				return "<input name=\"" + this.getName()
-						+ "\"type=\"hidden\" value=\"" + this.getValue()
-						+ "\"/>";
-			}
-			else if (this.uiToolkit == UiToolkit.DOJO)
-			{
-				return "<input name=\""
-						+ this.getName()
-						+ "\"id="
-						+ this.getId()
-						+ "\""
-						+ "\"type=\"hidden\"  dojoType=\"dijit.form.TextBox\" value=\""
-						+ this.getValue() + "\"/>";
-
-			}
-		}
-		String validate = this.isNillable() || this.isReadonly() ? "" : " required";
-		String cssClass = this.uiToolkit == UiToolkit.JQUERY ? " class=\""+(this.isReadonly() ? "readonly ": "")+"text ui-widget-content ui-corner-all"
-				+ validate + "\""
-				: "";
-		String result = "<textarea "
-				+ cssClass
-				+ " id=\""
-				+ this.getId()
-				+ "\" name=\""
-				+ this.getName()
-				+ "\"  "
-				+ (this.getSize() != null && this.getSize() > 0 ? "onfocus=\"startcounter(this, "
-						+ getSize() + ")\" onblur=\"endcounter()\""
-						: "") + " cols=\"" + this.getWidth() + "\" rows=\""
-				+ this.getHeight() + "\" " + readonly + " >" + this.getValue()
-				+ "</textarea>";
-		//if (this.library == Library.DEFAULT) 
-			result += "<script>showTextInput(document.getElementById('"
-				+ this.getId()
-				+ "'),"
-				+ this.getMinHeight()
-				+ ","
-				+ this.getMaxHeight() + ");</script>";
-//		if (this.library == Library.JQUERY) result += "<script>$(\"#"
-//				+ getName() + "\").autoGrow();</script>";
-		return result;
-	}
-
-	public int width;
-
-	public int getWidth()
-	{
-		return width;
-	}
-
-	public void setWidth(int width)
-	{
-		this.width = width;
-	}
-
-	public int height;
-
-	public int getHeight()
-	{
-		return height;
-	}
-
-	public void setHeight(int height)
-	{
-		this.height = height;
-	}
-
-	private int minHeight = 1;
-
-	public int getMinHeight()
-	{
-		return minHeight;
-	}
-
-	public void setMinHeight(int minHeight)
-	{
-		this.minHeight = minHeight;
-	}
-
-	private int maxHeight = 25;
-
-	public int getMaxHeight()
-	{
-		return maxHeight;
-	}
-
-	public void setMaxHeight(int maxHeight)
-	{
-		this.maxHeight = maxHeight;
-	}
+//	public int width;
+//
+//	public int getWidth()
+//	{
+//		return width;
+//	}
+//
+//	public void setWidth(int width)
+//	{
+//		this.width = width;
+//	}
+//
+//	public int height;
+//
+//	public int getHeight()
+//	{
+//		return height;
+//	}
+//
+//	public void setHeight(int height)
+//	{
+//		this.height = height;
+//	}
+//
+//	private int minHeight = 1;
+//
+//	public int getMinHeight()
+//	{
+//		return minHeight;
+//	}
+//
+//	public void setMinHeight(int minHeight)
+//	{
+//		this.minHeight = minHeight;
+//	}
+//
+//	private int maxHeight = 25;
+//
+//	public int getMaxHeight()
+//	{
+//		return maxHeight;
+//	}
+//
+//	public void setMaxHeight(int maxHeight)
+//	{
+//		this.maxHeight = maxHeight;
+//	}
 
 	// public StringInput(String name)
 	// {
