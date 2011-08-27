@@ -2,7 +2,7 @@
 <#if model.inputs?exists >
 <#--<body>-->
 <div class="formscreen">
-	<form action="" method="post" enctype="multipart/form-data" name="molgenis_popup" id="molgenis_popup">
+	<form action="" method="post" enctype="multipart/form-data" name="${model.name}" id="${model.name}">
 	<p class="form_header">${model.label}</p>
 	<#if model.messages?exists><#list model.getMessages() as message>
 		<#if message.success>
@@ -37,7 +37,7 @@
 var molgenis_required = new Array(${required});
 </script>
 	</table>
-	<p align="right">
+	<p align="left">
 <#list model.getActions() as input>
 	${input.toHtml()}
 </#list>
