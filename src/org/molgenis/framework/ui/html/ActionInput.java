@@ -119,6 +119,7 @@ public class ActionInput extends HtmlInput<Object>
 	public ActionInput(Tuple t) throws HtmlInputException
 	{
 		super(t);
+		this.type = Type.CUSTOM;
 	}
 
 	public ActionInput()
