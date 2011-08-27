@@ -20,6 +20,7 @@
 		<pathelement location="modules/decorators/auth" />
 		<pathelement location="modules/decorators/pheno" />
 		<pathelement location="modules/decorators/data" />
+		<pathelement location="publicdata" />
 	</path>
 
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->

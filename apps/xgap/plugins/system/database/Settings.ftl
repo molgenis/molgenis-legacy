@@ -26,9 +26,18 @@
 <#--begin your plugin-->	
 
 <br><br>
-<a href="loadexampledata_4EE1D7A3E73C504183B69F7D20108853">Load example data</a><br><br>
+
+<@action name="loadExampleData" label="load example data (may take a minute)"/>
+
+<#-->a href="loadexampledata_4EE1D7A3E73C504183B69F7D20108853">Load example data</a--><br><br>
 <a href="resetdatabase_4EE1D7A3E73C504183B69F7D20108853">Reset database</a><br><br>
 <a href="resetdatabase_loadexampledata_4EE1D7A3E73C504183B69F7D20108853">Reset database & Load example data</a><br><br>
+
+<#if screen.console?exists>
+<div style="border: 1px black; background: white; width: 100%">
+${screen.console}
+</div>
+</#if>	
 	
 <br><br>
 TODO: Allow admin user to setup a database connection! merge with some kind of larger ADMIN panel.<br>
