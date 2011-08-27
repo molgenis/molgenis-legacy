@@ -13,6 +13,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Tuple;
+import org.molgenis.xgap.xqtlworkbench.ResetXgapDb;
 
 import regressiontest.cluster.DataLoader;
 
@@ -40,10 +41,16 @@ public class Settings extends PluginModel
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
+		this.console = "";
+		
 		ArrayList<String> result = new ArrayList<String>();
+		
 		if ("loadExampleData".equals(request.getAction()))
 		{
 			result = DataLoader.load(db, false);
+		} else if("resetDatabase".equals(request.getAction()))
+		{
+			result.add(ResetXgapDb.reset(this.getDatabase(), true));
 		}
 		
 		if(result.size() > 0) for(String line: result)
@@ -51,6 +58,8 @@ public class Settings extends PluginModel
 			console += line + "<br/>";
 		}
 		else console = null;
+		
+		
 		
 
 		// replace example below with yours

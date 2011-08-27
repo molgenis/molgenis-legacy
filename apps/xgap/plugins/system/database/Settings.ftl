@@ -30,8 +30,10 @@
 <@action name="loadExampleData" label="load example data (may take a minute)"/>
 
 <#-->a href="loadexampledata_4EE1D7A3E73C504183B69F7D20108853">Load example data</a--><br><br>
-<a href="resetdatabase_4EE1D7A3E73C504183B69F7D20108853">Reset database</a><br><br>
-<a href="resetdatabase_loadexampledata_4EE1D7A3E73C504183B69F7D20108853">Reset database & Load example data</a><br><br>
+
+<@action name="resetDatabase" label="reset database (all data will be deleted!!!)"/>
+<#-->a href="resetdatabase_4EE1D7A3E73C504183B69F7D20108853">Reset database</a--><br><br>
+<#-->a href="resetdatabase_loadexampledata_4EE1D7A3E73C504183B69F7D20108853">Reset database & Load example data</a><br><br-->
 
 <#if screen.console?exists>
 <div style="border: 1px black; background: white; width: 100%">
