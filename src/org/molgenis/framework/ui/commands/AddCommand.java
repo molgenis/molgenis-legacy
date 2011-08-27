@@ -47,7 +47,8 @@ public class AddCommand<E extends Entity> extends SimpleCommand
 //		HiddenInput inDialog = new HiddenInput("__indialog","add");
 //		inputs.add(inDialog);
 		
-		ActionInput submit = new ActionInput("add", ActionInput.Type.SAVE);
+		ActionInput submit = new ActionInput("Add", ActionInput.Type.SAVE);
+		submit.setValue("edit_new");
 		submit.setIcon("generated-res/img/save.png");
 		inputs.add(submit);
 

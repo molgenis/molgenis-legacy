@@ -242,16 +242,11 @@ public abstract class EntityInput<E> extends HtmlInput<E>
 //		}
 		
 		addButton.setId(this.getId() + "_addbutton");
-		addButton
-				.setLabel("Add new " + this.getXrefEntitySimpleName());
+		addButton.setButtonValue("Add new " + this.getXrefEntitySimpleName());
 		addButton.setIcon("generated-res/img/new.png");
 		
 		addButton
 		.setJavaScriptAction("if( window.name == '' ){ window.name = 'molgenis_"+AbstractMolgenisServlet.getNewWindowId()+"';}document.getElementById('"
-				+ this.getId()
-				+ "').form.__target.value=document.getElementById('"
-				+ this.getId()
-				+ "').form.name.replace(/_form/g, '');document.getElementById('"
 				+ this.getId()
 				+ "').form.__action.value='"
 				+ this.getId()

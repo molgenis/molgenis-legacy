@@ -39,7 +39,8 @@ public class AddXrefCommand<E extends Entity> extends AddCommand<E>
 
 	public AddXrefCommand(String name, ScreenController<?> parent, E xrefEntity, EntityForm<?> xrefForm)
 	{
-		super(name, parent);
+		//if the parent is a command then we need to getParent() until we find a form...
+		super(name, getParentController(parent));
 		this.xrefEntity = xrefEntity;
 		this.xrefForm   = xrefForm;
 		this.setLabel("Add " + xrefEntity.getClass().getSimpleName());
@@ -47,6 +48,15 @@ public class AddXrefCommand<E extends Entity> extends AddCommand<E>
 		this.setDialog(true);
 		this.setMenu("Edit");
 		this.setToolbar(false);
+	}
+	
+	//get the formController that this command is part of.
+	private static FormController getParentController(ScreenController<?> parent)
+	{
+		ScreenController<?> formController = parent;
+		while(formController.hasParent() && !(formController instanceof FormController))
+			formController = formController.getParent();
+		return (FormController) formController;
 	}
 
 	@Override
@@ -62,9 +72,9 @@ public class AddXrefCommand<E extends Entity> extends AddCommand<E>
 			if (actions.get(i).getType() == Type.SAVE)
 			{
 				if(actions.get(i).getUiToolkit() == UiToolkit.ORIGINAL)
-					actions.get(i).setJavaScriptAction("if( validateForm(molgenis_popup,molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+new Date().getTime();} var entity = postData(document.forms[0].entity_name.value); window.opener.setXrefOption(document.forms[0].__action.value, document.forms[0].id_field.value, document.forms[0].label_field.value, entity); window.close();} else return false;");
+					actions.get(i).setJavaScriptAction("if( validateForm(document.forms[0],molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+new Date().getTime();} var entity = postData(document.forms[0].entity_name.value); window.opener.setXrefOption(document.forms[0].__action.value, document.forms[0].id_field.value, document.forms[0].label_field.value, entity); window.close();} else return false;");
 				else
-					actions.get(i).setJavaScriptAction("if( $(this.form).valid() && validateForm(molgenis_popup,molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+new Date().getTime();} var entity = postData(document.forms[0].entity_name.value); window.opener.setXrefOption(document.forms[0].__action.value, document.forms[0].id_field.value, document.forms[0].label_field.value, entity); ;window.close();} return false;");			
+					actions.get(i).setJavaScriptAction("if( $(this.form).valid() && validateForm(document.forms[0],molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+new Date().getTime();} var entity = postData(document.forms[0].entity_name.value); window.opener.setXrefOption(document.forms[0].__action.value, document.forms[0].id_field.value, document.forms[0].label_field.value, entity); ;window.close();} return false;");			
 			}
 		}
 		return actions;
