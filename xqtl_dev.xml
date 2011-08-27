@@ -34,6 +34,7 @@
 		<pathelement location="modules/decorators/auth" />
 		<pathelement location="modules/decorators/pheno" />
 		<pathelement location="modules/decorators/data" />
+		<pathelement location="publicdata" />
 	</path>
 	
 	<!-- Path refs to build dirs -->
