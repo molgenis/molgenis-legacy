@@ -19,7 +19,7 @@ public class ValidatingInput<E> extends HtmlInput<E>
 	public int height;
 	private int minHeight = 1;
 	private int maxHeight = 1;
-	public int width = 5;
+	public int width = 32;
 	public int maxWidth = 255;
 
 	private int fontsize = 16;
@@ -240,4 +240,16 @@ public class ValidatingInput<E> extends HtmlInput<E>
 	{
 		this.maxWidth = maxWidth;
 	}
+
+	public int getFontsize()
+	{
+		return fontsize;
+	}
+
+	public void setFontsize(int fontsize)
+	{
+		this.fontsize = fontsize;
+	}
+	
+	
 }
