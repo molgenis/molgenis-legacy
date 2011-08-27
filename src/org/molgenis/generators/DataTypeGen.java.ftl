@@ -140,7 +140,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	<#foreach field in entity.getImplementedFields()>
 	
 	//${field.description}[type=${field.type}]
-	@XmlElement(name="${name(field)}")
+	@XmlElement(name="${field.name}")
 		<#assign type_label = field.getType().toString()>
 	private ${type(field)} _${name(field)} = ${default(field)};
 		<#if type_label == "enum">
