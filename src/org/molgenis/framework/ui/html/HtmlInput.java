@@ -191,6 +191,7 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	@Override
 	public String getName()
 	{
+		if(name == null) return this.getId();
 		return name;
 	}
 

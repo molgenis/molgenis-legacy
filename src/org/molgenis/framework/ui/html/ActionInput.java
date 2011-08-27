@@ -203,9 +203,9 @@ public class ActionInput extends HtmlInput<Object>
 			{
 				StringBuffer jScript = new StringBuffer();
 				if(this.uiToolkit == UiToolkit.ORIGINAL)
-					jScript.append("if( validateForm(molgenis_popup,molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+new Date().getTime();} document.forms.molgenis_popup.target = window.opener.name; document.forms.molgenis_popup.submit(); window.close();} else return false;");
+					jScript.append("if( validateForm(document.forms[0],molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+new Date().getTime();} document.forms[0].target = window.opener.name; document.forms[0].submit(); window.close();} else return false;");
 				else
-					jScript.append("if( $(this.form).valid() && validateForm(molgenis_popup,molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+new Date().getTime();} document.forms.molgenis_popup.target = window.opener.name; document.forms.molgenis_popup.submit(); window.close();} return false;");
+					jScript.append("if( $(this.form).valid() && validateForm(document.forms[0],molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis'+new Date().getTime();} document.forms[0].__show.value = ''; document.forms[0].__action.value ='"+this.getValue()+"'; document.forms[0].target = window.opener.name; document.forms[0].submit(); window.close();} return false;");
 				//jScript.append("alert('click');");
 				
 				return jScript.toString();
@@ -213,7 +213,7 @@ public class ActionInput extends HtmlInput<Object>
 			else if (this.type == Type.NEXT)
 			{
 				StringBuffer jScript = new StringBuffer();
-				jScript.append("if( validateForm(molgenis_popup,molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis_"+AbstractMolgenisServlet.getNewWindowId()+"';} document.forms.molgenis_popup.__show.value='popup'; document.forms.molgenis_popup.submit();} else return false;");
+				jScript.append("if( validateForm(document.forms[0],molgenis_required) ) { if( window.opener.name == '' ){ window.opener.name = 'molgenis_"+AbstractMolgenisServlet.getNewWindowId()+"';} document.forms[0].__show.value='popup'; document.forms[0].submit();} else return false;");
 				return jScript.toString();
 			}
 			else if (this.type == Type.CLOSE)
