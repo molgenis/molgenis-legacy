@@ -1,7 +1,6 @@
 package test;
 
 import java.util.Calendar;
-import java.util.Date;
 
 import org.openqa.selenium.server.RemoteControlConfiguration;
 import org.openqa.selenium.server.SeleniumServer;
@@ -11,6 +10,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import plugins.emptydb.emptyDatabase;
+import app.JDBCDatabase;
 import app.servlet.MolgenisServlet;
 import boot.RunStandalone;
 
@@ -24,13 +24,15 @@ public class AnimaldbSeleniumTest
 	Selenium selenium;
 	Integer sleepTime = 1000;
 	String pageLoadTimeout = "120000";
+	boolean tomcat = false;
 	//String storagePath = new File(".").getAbsolutePath() + File.separator + "tmp_selenium_test_data";
 
 	@BeforeClass
 	public void start() throws Exception
 	{
 		
-		int webserverPort = Helper.getAvailablePort(11000, 100);
+		int webserverPort = 8080;
+		if(!this.tomcat) webserverPort = Helper.getAvailablePort(11000, 100);
 		
 		String seleniumUrl = "http://localhost:" + webserverPort + "/";
 		String seleniumHost = "localhost";
@@ -57,9 +59,9 @@ public class AnimaldbSeleniumTest
 		selenium.setTimeout(pageLoadTimeout);
 		
 		// To be sure, empty db and don't add MolgenisUsers etc.
-		new emptyDatabase(new MolgenisServlet().getDatabase(), false);
-		
-		new RunStandalone(webserverPort);
+		if(!this.tomcat) new emptyDatabase(new MolgenisServlet().getDatabase(), false);
+		else new emptyDatabase(new JDBCDatabase("apps/animaldb/org/molgenis/animaldb/animaldb.properties"), false);
+		if(!this.tomcat) new RunStandalone(webserverPort);
 	}
 
 	@Test
@@ -74,7 +76,7 @@ public class AnimaldbSeleniumTest
 		sleepHelper("startup");
 	}
 
-	@Test
+	@Test(dependsOnMethods={"startup"})
 	public void login() throws InterruptedException
 	{
 		selenium.click("id=securitymenu_tab_button");
@@ -88,7 +90,7 @@ public class AnimaldbSeleniumTest
 		sleepHelper("login");
 	}
 	
-	@Test
+	@Test(dependsOnMethods={"login"})
 	public void addAnimals() throws Exception {
 		// Go to Add Animal plugin
 		selenium.click("id=animalmenu_tab_button");
@@ -96,7 +98,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("Bring in animals"));
 		// Add 10 female Syrian hamsters
 		selenium.select("id=species", "label=Syrian hamster");
-		selenium.select("id=namebase", "value=");
+		selenium.select("id=namebase", "value=Female");
 		selenium.type("id=numberofanimals", "10");
 		selenium.click("id=Add");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -104,7 +106,8 @@ public class AnimaldbSeleniumTest
 		// Add 10 male Syrian hamsters
 		selenium.select("id=species", "label=Syrian hamster");
 		selenium.select("id=sex", "label=Male");
-		selenium.select("id=namebase", "value=");
+		selenium.select("id=namebase", "value=Male");
+		selenium.type("id=startnumber", "21");
 		selenium.type("id=numberofanimals", "10");
 		selenium.click("id=Add");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -113,7 +116,7 @@ public class AnimaldbSeleniumTest
 		sleepHelper("addAnimals");
 	}
 	
-	@Test
+	@Test(dependsOnMethods={"addAnimals"})
 	public void breedingWorkflow() throws Exception {
 		// Go to Breeding line plugin
 		selenium.click("id=breedingmodule_tab_button");
@@ -188,7 +191,7 @@ public class AnimaldbSeleniumTest
 		sleepHelper("breedingWorkflow");
 	}
 	
-	@Test
+	@Test(dependsOnMethods={"breedingWorkflow"})
 	public void decWorkflow() throws Exception {
 		Calendar calendar = Calendar.getInstance();
 		String[] months = new String[] {"January", "February", "March", "April", "May", "June",
@@ -237,11 +240,11 @@ public class AnimaldbSeleniumTest
 		// Add animals to DEC (multiple select does not seem to work in Selenium so there is some duplication here
 		selenium.select("id=subproject", "label=MyProject");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		addAnimalToDec("21");
-		addAnimalToDec("22");
-		addAnimalToDec("23");
-		addAnimalToDec("24");
-		addAnimalToDec("25");
+		addAnimalToDec("Male21");
+		addAnimalToDec("Male22");
+		addAnimalToDec("Male23");
+		addAnimalToDec("Male24");
+		addAnimalToDec("Male25");
 		// Remove animals from DEC
 		selenium.click("id=rem0");
 		selenium.click("id=rem1");
@@ -276,7 +279,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("Manage animals in DEC subprojects"));
 	}
 	
-	@Test
+	@Test(dependsOnMethods={"decWorkflow"})
 	public void yearlyReports() throws Exception {
 		// Go to Report plugin
 		selenium.click("id=YearlyReportModule_tab_button");
@@ -315,7 +318,7 @@ public class AnimaldbSeleniumTest
 		sleepHelper("yearlyReports");
 	}
 	
-	@Test
+	@Test(dependsOnMethods={"yearlyReports"})
 	public void logout() throws InterruptedException
 	{
 		selenium.click("id=securitymenu_tab_button");
@@ -333,7 +336,9 @@ public class AnimaldbSeleniumTest
 		
 		//added to fix TestDatabase which runs after this one...
 		//see comment in TestDatabase!
-		new emptyDatabase(new MolgenisServlet().getDatabase(), false);
+		if(!this.tomcat) new emptyDatabase(new MolgenisServlet().getDatabase(), false);
+		else new emptyDatabase(new JDBCDatabase("apps/animaldb/org/molgenis/animaldb/animaldb.properties"), false);
+
 		
 		//Helper.deleteStorage();
 		//Helper.deleteDatabase();
