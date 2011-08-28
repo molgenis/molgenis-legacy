@@ -330,6 +330,7 @@ function postData(entityClass) {
 
 
 function setXrefOption(field, id_field, label_field, entity) {
+	alert($.param(entity) + 'label_field = '+label_field);
 	var label = entity[label_field];
 	var id    = entity[id_field];
 
@@ -344,7 +345,7 @@ function setXrefOption(field, id_field, label_field, entity) {
 	var select = document.getElementById(field);
 	
 	if(select.multiple) {
-		$(select).append(new Option(label, id, true));
+		$(select).append('<option value="'+ id +'" selected>'+ label +'</option>');
 		
 		//trigger adding the new option to the choices list, only in jquery
 		if($(select).hasClass('chzn-done')) {
@@ -356,7 +357,8 @@ function setXrefOption(field, id_field, label_field, entity) {
 		}
 	}
 	else {
-		select.options[0]  = new Option(label, id, true);
+		//select.options[0]  = new Option(label, id, true);
+		$(select).append('<option value="'+ id +'" selected>'+ label +'</option>');
 		
 		//trigger updating in case of jqeuery
 		if($(select).hasClass('chzn-done')) {
