@@ -26,12 +26,14 @@ public class XqtlSeleniumTest
 	Selenium selenium;
 	Integer sleepTime = 100;
 	String pageLoadTimeout = "30000";
+	boolean tomcat = false;
 
 	@BeforeClass
 	public void start() throws Exception
 	{
 		
-		int webserverPort = Helper.getAvailablePort(11000, 100);
+		int webserverPort = 8080;
+		if(!tomcat) webserverPort = Helper.getAvailablePort(11000, 100);
 		
 		String seleniumUrl = "http://localhost:" + webserverPort + "/";
 		String seleniumHost = "localhost";
@@ -58,7 +60,7 @@ public class XqtlSeleniumTest
 		
 		Helper.deleteDatabase();
 		
-		new RunStandalone(webserverPort);
+		if(!tomcat) new RunStandalone(webserverPort);
 	}
 
 	@Test
@@ -173,7 +175,7 @@ public class XqtlSeleniumTest
 		selenium.click("id=Individuals_editview");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertEquals(selenium.getValue("id=Individual_name"), "X1");
-		Assert.assertEquals(selenium.getTable("//form[@id='Individuals_form']/table[2]/tbody/tr/td/table.4.1"), "xgap_rqtl_straintype_riself\n\nxgap_rqtl_straintype_riself");
+		Assert.assertEquals(selenium.getText("css=#Individual_ontologyReference_chzn > a.chzn-single > span"), "xgap_rqtl_straintype_riself");
 		Assert.assertEquals(selenium.getText("//img[@onclick=\"if ($('#Individuals_form').valid() && validateForm(document.forms.Individuals_form,new Array())) {setInput('Individuals_form','_self','','Individuals','update','iframe'); document.forms.Individuals_form.submit();}\"]"), "");
 
 		//click add new, wait for popup, and select it
@@ -183,7 +185,7 @@ public class XqtlSeleniumTest
 		
 		//fill in the form and click add
 		selenium.type("id=Individual_name", "testindv");
-		selenium.click("id=add");
+		selenium.click("id=Add");
 		selenium.waitForPageToLoad("30000");
 		
 		//select main window and check if add was successful
