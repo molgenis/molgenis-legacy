@@ -3,7 +3,7 @@
 	<module name="variant">
 		<entity name="GenomeBuild" extends="ObservationElement">
 			<unique fields="Name" />
-			<field name="Species" type="xref" xref_entity="Species"/>
+			<field name="Species" type="xref" xref_entity="Species" />
 		</entity>
 		<entity name="Chromosome" extends="ObservableFeature">
 			<field name="orderNr" type="int" />
@@ -15,12 +15,14 @@
 				chromosome belongs to." />
 		</entity>
 		<entity name="SequenceFeature" extends="ObservableFeature">
-		<!-- do we put annotations in extension or in observedValue -->
+			<!-- do we put annotations in extension or in observedValue -->
 			<field name="genomeBuild" type="xref" xref_entity="GenomeBuild" />
 			<field name="chr" type="xref" xref_entity="Chromosome" />
 			<field name="startBP" type="int" />
 			<field name="endBP" type="int" />
-			<field name="dbRefs" type="mref" xref_entity="OntologyTerm"/>
+			<field name="ref" description="sequence in the reference"/>
+			<field name="alt" description="alternative sequences observed, if multiple then seperated by ','"/>
+			<field name="dbRefs" type="mref" xref_entity="OntologyTerm" />
 		</entity>
 	</module>
 </molgenis>
