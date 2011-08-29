@@ -49,8 +49,8 @@ public class WebserverGui extends JFrame implements MouseListener{
 			new Thread(botentry).start();
 	    }
 		url = "http://localhost:" + WWWServer.DEF_PORT + "/" + variant;
-		this.repaint();
 		init = true;
+		this.repaint();
 	}
 	
 	public void paint(Graphics g) {
