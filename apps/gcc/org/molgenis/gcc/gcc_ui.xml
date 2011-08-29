@@ -1,5 +1,6 @@
 <molgenis name="molgenis_apps">
 	<plugin name="molgenis_header" type="plugins.header.MolgenisHeader" />
+	<plugin label="Login" name="UserLogin" type="org.molgenis.auth.ui.UserLogin" />
 	<menu name="main" position="left">
 		<!-- empty gui so no elements can collide with project elements -->
 		<form name="Investigations" entity="Investigation">

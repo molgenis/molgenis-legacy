@@ -69,7 +69,7 @@ plus passing of properties
 		</condition>
 
 		<!-- check if molgenis is compiled into ${build.dir}, otherwise compile now -->
-		<javac srcdir="${molgenis.dir}/src" destdir="${build.dir}" nowarn="on">
+		<javac srcdir="${molgenis.dir}/src" destdir="${build.dir}" nowarn="on" debug="on">
 			<classpath refid="molgenis.classpath" />
 		</javac>
 
@@ -120,7 +120,7 @@ plus passing of properties
 
 		<!-- compile the generated results, use fork to run it with its own memory settings -->
 		<!-- NB: under Windows, forking works only if the javac path is in your PATH variable -->
-		<javac fork="true" srcdir="${output_src}:${app_src}" destdir="${build.dir}" nowarn="on" memoryinitialsize="256m" memorymaximumsize="512m">
+		<javac fork="true" srcdir="${output_src}:${app_src}" destdir="${build.dir}" nowarn="on" memoryinitialsize="256m" memorymaximumsize="512m" debug="on">
 			<classpath refid="molgenis.classpath" />
 		</javac>
 
@@ -205,4 +205,26 @@ plus passing of properties
 	<target name="clean-generate-compile" depends="clean,generate,compile"/>
 	
 	<target name="clean-generate-compile-test" depends="clean,generate,compile,test"/>
+	
+	<target name="testcopy">
+		<pathconvert property="app_path" refid="app.class.path" pathsep="/**/*," dirsep="/">
+			<map from="${user.dir}/" to="" />
+		</pathconvert>
+		
+		<copy todir="${build.dir}">
+			<!-- watch the traling /**/*.ftl"-->
+			<fileset dir="." includes="${app_path}/**/*" excludes="**/*.java"/>
+			<fileset dir="${app_path}/handwritten/java/META-INF"/>
+			<!-- cut the two leading directories from path -->
+			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />
+			<!--cutdirsmapper dirs="2"/-->
+		</copy>
+
+		<!-- copy sql and other resources from generate sql -->
+		<copy todir="${build.dir}" verbose="true">
+			<fileset dir="${output_sql}" includes="**/*.sql" />
+			<fileset dir="${output_src}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
+		</copy>
+	</target>
+	
 </project>

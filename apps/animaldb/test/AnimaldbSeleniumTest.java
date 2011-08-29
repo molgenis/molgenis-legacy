@@ -10,7 +10,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import plugins.emptydb.emptyDatabase;
-import app.JDBCDatabase;
+import app.DatabaseFactory;
 import app.servlet.MolgenisServlet;
 import boot.RunStandalone;
 
@@ -60,7 +60,7 @@ public class AnimaldbSeleniumTest
 		
 		// To be sure, empty db and don't add MolgenisUsers etc.
 		if(!this.tomcat) new emptyDatabase(new MolgenisServlet().getDatabase(), false);
-		else new emptyDatabase(new JDBCDatabase("apps/animaldb/org/molgenis/animaldb/animaldb.properties"), false);
+		else new emptyDatabase(DatabaseFactory.create("apps/animaldb/org/molgenis/animaldb/animaldb.properties"), false);
 		if(!this.tomcat) new RunStandalone(webserverPort);
 	}
 
@@ -337,7 +337,7 @@ public class AnimaldbSeleniumTest
 		//added to fix TestDatabase which runs after this one...
 		//see comment in TestDatabase!
 		if(!this.tomcat) new emptyDatabase(new MolgenisServlet().getDatabase(), false);
-		else new emptyDatabase(new JDBCDatabase("apps/animaldb/org/molgenis/animaldb/animaldb.properties"), false);
+		else new emptyDatabase(DatabaseFactory.create("apps/animaldb/org/molgenis/animaldb/animaldb.properties"), false);
 
 		
 		//Helper.deleteStorage();
