@@ -46,7 +46,7 @@ public class TestCsvGen extends Generator
 		templateArgs.put("db_mode", options.db_mode );
 		templateArgs.put("entities",entityList);
 		templateArgs.put("package", packageName);
-		templateArgs.put("options",options);
+		templateArgs.put("options", options);
 		
 		OutputStream targetOut = new FileOutputStream( target );
 		template.process( templateArgs, new OutputStreamWriter( targetOut ) );

@@ -51,8 +51,6 @@ import org.testng.annotations.Test;
 import ${entity.namespace}.${JavaName(entity)};
 </#list>
 
-import app.*;
-
 /**
  * This procecure tests file import and export
  * - create csv set1 in tmp
@@ -83,7 +81,9 @@ public class TestCsv
 			db = new app.JpaDatabase(true);
                         JpaUtil.createTables((JpaDatabase)db);
 			((JpaDatabase)db).getEntityManager().setFlushMode(FlushModeType.AUTO);
-			FillMetadata.fillMetadata(db);
+<#if !options.getAuthLoginclass()?ends_with("SimpleLogin")>
+			app.FillMetadata.fillMetadata(db);
+</#if>			
 		}
 		catch (Exception e)
 		{
@@ -128,7 +128,9 @@ public class TestCsv
 		<#if databaseImp = 'jpa'>
         TestDataSet set1 = new TestDataSet(50,5, (app.JpaDatabase)db);		
         JpaUtil.dropAndCreateTables((JpaDatabase)db);
-		FillMetadata.fillMetadata(db);
+<#if !options.getAuthLoginclass()?ends_with("SimpleLogin")>
+			app.FillMetadata.fillMetadata(db);
+</#if>			
         <#else>
         TestDataSet set1 = new TestDataSet(50,5);
         </#if>
@@ -157,7 +159,9 @@ public class TestCsv
 		//clean database
 		<#if databaseImp = 'jpa'>
             JpaUtil.dropAndCreateTables((JpaDatabase)db);
-            FillMetadata.fillMetadata(db);
+<#if !options.getAuthLoginclass()?ends_with("SimpleLogin")>
+			app.FillMetadata.fillMetadata(db);
+</#if>			
 		<#else>
 			new Molgenis("${options.molgenis_properties}").updateDb();
 		</#if>
@@ -178,7 +182,9 @@ public class TestCsv
 		//clean database
 		<#if databaseImp = 'jpa'>
             JpaUtil.dropAndCreateTables((JpaDatabase)db);
-            FillMetadata.fillMetadata(db);
+<#if !options.getAuthLoginclass()?ends_with("SimpleLogin")>
+			app.FillMetadata.fillMetadata(db);
+</#if>			
 		<#else>
 			new Molgenis("${options.molgenis_properties}").updateDb();
 		</#if>
