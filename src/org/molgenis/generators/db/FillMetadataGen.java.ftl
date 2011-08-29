@@ -104,7 +104,7 @@ public class FillMetadata {
 		//			SELECT (SELECT id FROM MolgenisRole WHERE name = '${screen.getGroup()}'), id, 'write' 
 		//			FROM MolgenisEntity WHERE MolgenisEntity.id = (SELECT id FROM MolgenisEntity WHERE className = '${screen.getEntity().namespace}.${screen.getEntity().name}');		
 		{
-			MolgenisEntity id = db.find(MolgenisEntity.class, new QueryRule("className", Operator.EQUALS, "${screen.getEntity().namespace}.${screen.getEntity().name}");
+			MolgenisEntity id = db.find(MolgenisEntity.class, new QueryRule("className", Operator.EQUALS, "${screen.getEntity().namespace}.${screen.getEntity().name}")).get(0);
 			MolgenisEntity role = db.find(MolgenisEntity.class, new QueryRule("name", Operator.EQUALS, "${screen.getGroup()}")).get(0);		
 			MolgenisEntity entity = db.find(MolgenisEntity.class, new QueryRule("id", Operator.EQUALS, id.getId()).get(0);
 			
