@@ -106,7 +106,7 @@ public class FillMetadata {
 		{
 			MolgenisEntity id = db.find(MolgenisEntity.class, new QueryRule("className", Operator.EQUALS, "${screen.getEntity().namespace}.${screen.getEntity().name}")).get(0);
 			MolgenisEntity role = db.find(MolgenisEntity.class, new QueryRule("name", Operator.EQUALS, "${screen.getGroup()}")).get(0);		
-			MolgenisEntity entity = db.find(MolgenisEntity.class, new QueryRule("id", Operator.EQUALS, id.getId()).get(0);
+			MolgenisEntity entity = db.find(MolgenisEntity.class, new QueryRule("id", Operator.EQUALS, id.getId())).get(0);
 			
 			MolgenisPermission mp = new MolgenisPermission();
 			mp.setRole(role.getId());
