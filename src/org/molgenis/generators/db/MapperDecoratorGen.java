@@ -69,6 +69,7 @@ public class MapperDecoratorGen extends ForEachEntityGenerator
 						templateArgs.put("file", packageName.replace(".", "/") + "/"
 								+ GeneratorHelper.getJavaName(entity.getName()) + getType() + getExtension());
 						templateArgs.put("package", packageName);
+						templateArgs.put("databaseImp", options.mapper_implementation.equals(MolgenisOptions.MapperImplementation.JPA) ? "jpa" : "jdbc");
 
 						OutputStream targetOut = new FileOutputStream(targetFile);
 

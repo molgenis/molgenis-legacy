@@ -78,6 +78,7 @@ public class TestDatabase
 			db = new app.JpaDatabase(true);
                         JpaUtil.dropAndCreateTables( (JpaDatabase)db);
 			((JpaDatabase)db).getEntityManager().setFlushMode(FlushModeType.AUTO);
+			//app.FillMetadata.fillMetadata(db);
 		<#else>
 			<#if db_mode = 'standalone'>
 			db = new MolgenisServlet().getDatabase();

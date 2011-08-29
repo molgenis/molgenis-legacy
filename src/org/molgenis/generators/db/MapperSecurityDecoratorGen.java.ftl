@@ -17,7 +17,6 @@ import java.util.List;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.jdbc.MappingDecorator;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvFileWriter;
 
@@ -26,14 +25,14 @@ import java.text.ParseException;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.auth.service.MolgenisUserService;
 
-public class ${clazzName}<E extends ${entityClass}> extends MappingDecorator<E>
-{
-	//JDBCMapper is the generate thing
-//	public ${clazzName}(JDBCMapper<E> generatedMapper)
-//	{
-//		super(generatedMapper);
-//	}
+<#if databaseImp = 'jpa'>
+import org.molgenis.framework.db.jpa.JpaMappingDecorator;
+<#else>
+import org.molgenis.framework.db.jdbc.MappingDecorator;
+</#if>
 
+public class ${clazzName}<E extends ${entityClass}> extends <#if databaseImp = 'jpa'>JpaMappingDecorator<E><#else>MappingDecorator<E></#if>
+{
 	public ${clazzName}(Mapper<E> generatedMapper)
 	{
 		super(generatedMapper);

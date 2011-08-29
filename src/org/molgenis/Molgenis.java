@@ -57,6 +57,7 @@ import org.molgenis.generators.csv.CsvImportByIdGen;
 import org.molgenis.generators.csv.CsvImportGen;
 import org.molgenis.generators.csv.CsvReaderGen;
 import org.molgenis.generators.db.DatabaseFactoryGen;
+import org.molgenis.generators.db.FillMetadataGen;
 import org.molgenis.generators.db.InMemoryDatabaseGen;
 import org.molgenis.generators.db.JDBCDatabaseGen;
 import org.molgenis.generators.db.JDBCMetaDatabaseGen;
@@ -230,22 +231,23 @@ public class Molgenis {
 
         if (options.generate_sql) {
             if (options.mapper_implementation.equals(MapperImplementation.JPA)) {
+            	System.out.println("--------------JPAGEN--------------");
                 generators.add(new JpaDatabaseGen());
                 generators.add(new JpaDataTypeGen());
-                //generators.add(new JpaDataTypeListenerGen());
                 generators.add(new JpaMapperGen());
                 generators.add(new JDBCMetaDatabaseGen());
-
+                
                 //generates Entity Listeners
-                JpaEntityListenerGen entityListGen = new JpaEntityListenerGen();
-                entityListGen.setHandwritten(true);
-                generators.add(entityListGen);
+                //JpaEntityListenerGen entityListGen = new JpaEntityListenerGen();
+                //entityListGen.setHandwritten(true);
+                //generators.add(entityListGen);
 
                 if (options.generate_persistence) {
                     generators.add(new PersistenceGen());
                 }
                 
-                generators.add(new FillMetadataTablesGen());
+                //generators.add(new FillMetadataTablesGen());
+                generators.add(new FillMetadataGen());
                 
             } else {
                 // DATABASE

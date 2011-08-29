@@ -81,6 +81,7 @@ public class TestCsv
 			db = new app.JpaDatabase(true);
                         JpaUtil.createTables((JpaDatabase)db);
 			((JpaDatabase)db).getEntityManager().setFlushMode(FlushModeType.AUTO);
+			FillMetadata.fillMetadata(db);
 		}
 		catch (Exception e)
 		{
@@ -116,20 +117,19 @@ public class TestCsv
 	
 	@Test
 	public void testCsv1()  throws Exception
-	{
-
-		
+	{	
 		//create tem working directory
 		File dir = File.createTempFile("molgenis","");		
 		dir.delete(); //delete the file, need dir
 		
 		//create a test set1
 		<#if databaseImp = 'jpa'>
-                TestDataSet set1 = new TestDataSet(50,5, (app.JpaDatabase)db);		
-                JpaUtil.dropAndCreateTables((JpaDatabase)db);
-                <#else>
-                TestDataSet set1 = new TestDataSet(50,5);
-                </#if>
+        TestDataSet set1 = new TestDataSet(50,5, (app.JpaDatabase)db);		
+        JpaUtil.dropAndCreateTables((JpaDatabase)db);
+		FillMetadata.fillMetadata(db);
+        <#else>
+        TestDataSet set1 = new TestDataSet(50,5);
+        </#if>
                 
 
 
@@ -154,7 +154,8 @@ public class TestCsv
 	
 		//clean database
 		<#if databaseImp = 'jpa'>
-                        JpaUtil.dropAndCreateTables((JpaDatabase)db);
+            JpaUtil.dropAndCreateTables((JpaDatabase)db);
+            FillMetadata.fillMetadata(db);
 		<#else>
 			new Molgenis("${options.molgenis_properties}").updateDb();
 		</#if>
@@ -175,6 +176,7 @@ public class TestCsv
 		//clean database
 		<#if databaseImp = 'jpa'>
             JpaUtil.dropAndCreateTables((JpaDatabase)db);
+            FillMetadata.fillMetadata(db);
 		<#else>
 			new Molgenis("${options.molgenis_properties}").updateDb();
 		</#if>

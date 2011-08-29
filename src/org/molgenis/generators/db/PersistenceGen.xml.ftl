@@ -14,7 +14,7 @@
 	      <property name="javax.persistence.jdbc.driver" value="${options.dbDriver}"/>
 	      <property name="javax.persistence.jdbc.user" value="${options.dbUser}"/>
           <property name="javax.persistence.validation.mode" value="none"/>    
-          <property name="hibernate.dialect" value="org.hibernate.dialect.Oracle10gDialect"/>
+          <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/>
           <property name="hibernate.show_sql" value="true"/>
           
           <!--
