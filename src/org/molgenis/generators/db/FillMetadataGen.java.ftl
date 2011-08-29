@@ -6,11 +6,14 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+<#if metaData>
 import org.molgenis.auth.MolgenisGroup;
 import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.auth.MolgenisRoleGroupLink;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.core.MolgenisEntity;
+</#if>
+
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
