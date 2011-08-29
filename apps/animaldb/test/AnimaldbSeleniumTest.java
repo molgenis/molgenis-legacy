@@ -228,7 +228,7 @@ public class AnimaldbSeleniumTest
 		selenium.type("id=decapppdf", "/home/test/subapp.pdf");
 		int thisMonth = calendar.get(Calendar.MONTH);
 		selenium.type("id=startdate", months[thisMonth] + " 1, " + thisYear);
-		selenium.type("id=enddate", months[thisMonth] + " 28, " + thisYear);
+		selenium.type("id=enddate", months[thisMonth] + " "+calendar.getActualMaximum(Calendar.DAY_OF_MONTH)+", " + thisYear);		
 		selenium.click("id=addsubproject");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("DEC Subproject successfully added"));
