@@ -72,6 +72,13 @@
 		<servlet-name>RApiServlet</servlet-name>
 		<url-pattern>/api/R/*</url-pattern>
 	</servlet-mapping>
-
+	<servlet>
+		<servlet-name>TmpFileServlet</servlet-name>
+		<servlet-class>core.servlets.tmpfileservlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>TmpFileServlet</servlet-name>
+		<url-pattern>/tmpfile/*</url-pattern>
+	</servlet-mapping>
 	
 </web-app>
