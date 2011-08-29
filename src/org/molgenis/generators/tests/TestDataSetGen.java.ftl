@@ -151,7 +151,7 @@ public class TestDataSet
 	<#if entity.decorator?exists >
             ${entity.decorator} ${name(entity)}Save = (${entity.decorator})db
 	<#else> 
-            ${JavaName(entity)}JpaMapper ${name(entity)}Save = (${JavaName(entity)}JpaMapper)(JpaMapper)db
+			JpaMapper ${name(entity)}Save = (JpaMapper)db
 	</#if>
 		.getMapper("${JavaName(entity)}");	
         
