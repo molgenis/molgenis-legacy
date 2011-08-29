@@ -43,7 +43,7 @@
 		<pathelement location="apps/lifelines" />
 		<pathelement location="apps/maze" />
 		<pathelement location="apps/xgap" />
-
+		<pathelement location="publicdata" />
 	</path>
 
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
