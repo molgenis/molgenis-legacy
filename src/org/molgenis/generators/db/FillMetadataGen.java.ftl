@@ -4,6 +4,8 @@ package ${package};
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import org.molgenis.auth.MolgenisGroup;
 import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.auth.MolgenisRoleGroupLink;
@@ -15,9 +17,14 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 
 public class FillMetadata {
-
+	protected static final transient Logger logger = Logger.getLogger(FillMetadata.class);
+<#if !metaData>
 	public static void fillMetadata(Database db) throws DatabaseException {
-			
+		logger.info("fillMetadata is Empty!");
+	}
+<#else>
+	public static void fillMetadata(Database db) throws DatabaseException {
+		logger.info("fillMetadata start");
 		db.beginTx();
 		MolgenisUser user1 = new MolgenisUser();
 		user1.setName("admin");
@@ -141,6 +148,7 @@ public class FillMetadata {
 		}
 		
 		db.commitTx();	
+		logger.info("fillMetadata end");
 	}
 	
 	public static List<MolgenisEntity> createEntities(String[][] entityValues) {
@@ -171,4 +179,5 @@ public class FillMetadata {
 	</#if>
 </#list>	
 	}; 
+</#if>
 }
