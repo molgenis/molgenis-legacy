@@ -245,10 +245,7 @@ public class Molgenis {
                 if (options.generate_persistence) {
                     generators.add(new PersistenceGen());
                 }
-                
-                //generators.add(new FillMetadataTablesGen());
-                generators.add(new FillMetadataGen());
-                
+
             } else {
                 // DATABASE
                 // mysql.org
@@ -295,12 +292,13 @@ public class Molgenis {
                 // SQL
                 generators.add(new CountPerEntityGen());
                 generators.add(new CountPerTableGen());
-                generators.add(new FillMetadataTablesGen());
+//                generators.add(new FillMetadataTablesGen());
             }
             
             // authorization
             if (!options.auth_loginclass.endsWith("SimpleLogin")) {
                 generators.add(new MapperSecurityDecoratorGen());
+                generators.add(new FillMetadataGen());
             }
 
             // decorators
