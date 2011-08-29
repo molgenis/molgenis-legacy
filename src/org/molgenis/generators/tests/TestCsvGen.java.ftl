@@ -51,6 +51,8 @@ import org.testng.annotations.Test;
 import ${entity.namespace}.${JavaName(entity)};
 </#list>
 
+import app.*;
+
 /**
  * This procecure tests file import and export
  * - create csv set1 in tmp
