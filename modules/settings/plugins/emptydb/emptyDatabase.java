@@ -33,40 +33,22 @@ public class emptyDatabase
 	{
 
 		System.out.println("start running create_tables.sql");
-		try
-		{
-			InputStream fis = this.getClass().getResourceAsStream("../../create_tables.sql");
+			
+		InputStream fis = this.getClass().getResourceAsStream("../../create_tables.sql");
+		if(fis != null) {
 			empty(db, fis);
-		}
-		catch (NullPointerException e)
-		{
-			System.out.println("NullPointerException caught - trying to obtain SQL from JAR instead");
-			// maybe we're running in a JAR?
-			// TODO: name of the app is now hardcoded, booo
+		} else {
+			System.out.println("File not found - trying to obtain SQL from JAR instead");
 			InputStream f = JarClass.getFileFromJARFile("Application.jar", "create_tables.sql");
-			empty(db, f);
+			if(f == null) {
+				throw new NullPointerException("Resouce not found in Jar or directory!");
+			}
+			empty(db, f);				
 		}
+		
 		System.out.println("done running create_tables.sql");
 
-		if (insertMetadata == true)
-		{
-
-			System.out.println("start running insert_metadata.sql");
-			try
-			{
-				InputStream fis = this.getClass().getResourceAsStream("../../insert_metadata.sql");
-				empty(db, fis);
-			}
-			catch (NullPointerException e)
-			{
-				System.out.println("NullPointerException caught - trying to obtain SQL from JAR instead");
-				// maybe we're running in a JAR?
-				// TODO: name of the app is now hardcoded, booo
-				InputStream f = JarClass.getFileFromJARFile("Application.jar", "insert_metadata.sql");
-				empty(db, f);
-			}
-			System.out.println("done running insert_metadata.sql");
-		}
+		app.FillMetadata.fillMetadata();
 	}
 
 	private void empty(Database db, InputStream sqlFile) throws Exception
