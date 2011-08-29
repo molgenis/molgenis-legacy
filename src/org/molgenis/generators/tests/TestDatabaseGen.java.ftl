@@ -71,16 +71,18 @@ public class TestDatabase
 	{
 		try
 		{
+		<#if databaseImp = 'jpa'>		
+			db = new app.JpaDatabase(true);
+            JpaUtil.dropAndCreateTables( (JpaDatabase)db);
+			((JpaDatabase)db).getEntityManager().setFlushMode(FlushModeType.AUTO);
+		<#else>
 		//bad: test expects an existing, but empty database.
 		//this means the previous test will need to end with e.g.
 		//new emptyDatabase(new MolgenisServlet().getDatabase(), false);	
-		<#if databaseImp = 'jpa'>		
-			db = new app.JpaDatabase(true);
-                        JpaUtil.dropAndCreateTables( (JpaDatabase)db);
-			((JpaDatabase)db).getEntityManager().setFlushMode(FlushModeType.AUTO);
-		<#else>
 			<#if db_mode = 'standalone'>
-			db = new MolgenisServlet().getDatabase();
+			db = new JDBCDatabase("${options.molgenis_properties}");	
+			//create the database
+			new Molgenis("${options.molgenis_properties}").updateDb();			
 			<#else>
 			db = new JDBCDatabase("${options.molgenis_properties}");	
 			//create the database
