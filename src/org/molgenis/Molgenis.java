@@ -298,8 +298,10 @@ public class Molgenis {
             // authorization
             if (!options.auth_loginclass.endsWith("SimpleLogin")) {
                 generators.add(new MapperSecurityDecoratorGen());
-                generators.add(new FillMetadataGen());
             }
+            
+            //gerenate metadata (empty metadata is generated if no auth is available).
+            generators.add(new FillMetadataGen());
 
             // decorators
             if(options.generate_decorators){
