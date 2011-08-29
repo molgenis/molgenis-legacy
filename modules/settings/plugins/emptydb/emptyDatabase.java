@@ -48,7 +48,7 @@ public class emptyDatabase
 		
 		System.out.println("done running create_tables.sql");
 
-		app.FillMetadata.fillMetadata();
+		app.FillMetadata.fillMetadata(db);
 	}
 
 	private void empty(Database db, InputStream sqlFile) throws Exception
