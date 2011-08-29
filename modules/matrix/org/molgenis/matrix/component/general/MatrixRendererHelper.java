@@ -5,9 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.matrix.component.interfaces.RenderableMatrix;
 
 
-public class MatrixRendererHelper {
+public class MatrixRendererHelper<R, C, V> {
 	
 	public static final String MATRIX_COMPONENT_REQUEST_PREFIX = "matrix_component_request_prefix_";
 	public static final int ROW_STOP_DEFAULT = 10;
@@ -49,5 +50,75 @@ public class MatrixRendererHelper {
 		}
 		return null;
 	}
+	
+	public String colHeaderToStringForTest(RenderableMatrix<R, C, V> rm) throws Exception
+	{
+		StringBuffer result = new StringBuffer();
+		for (C col : rm.getVisibleCols())
+		{
+			result.append(rm.renderColSimple(col)+" ");
+		}
+		return result.toString();
+	}
+	
+	public String rowHeaderToStringForTest(RenderableMatrix<R, C, V> rm) throws Exception
+	{
+		StringBuffer result = new StringBuffer();
+		for (R row : rm.getVisibleRows())
+		{
+			result.append(rm.renderRowSimple(row)+" ");
+		}
+		return result.toString();
+	}
+	
+	public String valuesToStringForTest(RenderableMatrix<R, C, V> rm) throws Exception
+	{
+		StringBuffer result = new StringBuffer();
+		V[][] elements = rm.getVisibleValues();
+		for (int rowIndex = 0; rowIndex < elements.length; rowIndex++)
+		{
+			for (int colIndex = 0; colIndex < elements[rowIndex].length; colIndex++)
+			{
+				result.append(rm.renderValue(elements[rowIndex][colIndex])+" ");
+			}
+		}
+		return result.toString();
+	}
+	
+	public String toString(RenderableMatrix<R, C, V> rm)
+	{
+		StringBuffer result = new StringBuffer();
+		try
+		{
+			for (C col : rm.getVisibleCols())
+			{
+				result.append("\t" + rm.renderColSimple(col));
+			}
+			result.append("\n");
+			V[][] elements = rm.getVisibleValues();
+			for (int rowIndex = 0; rowIndex < elements.length; rowIndex++)
+			{
+				result.append(rm.renderRowSimple(rm.getVisibleRows().get(rowIndex)));
+				for (int colIndex = 0; colIndex < elements[rowIndex].length; colIndex++)
+				{
+					if (elements[rowIndex][colIndex] == null)
+					{
+						result.append("\t");
+					}
+					else
+					{
+						result.append("\t" + rm.renderValue(elements[rowIndex][colIndex]));
+					}
+				}
+				result.append("\n");
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return result.toString();
+	}
+
 	
 }

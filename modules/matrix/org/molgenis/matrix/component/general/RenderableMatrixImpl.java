@@ -6,19 +6,22 @@ import java.util.List;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
 import org.molgenis.matrix.component.interfaces.RenderableMatrix;
 import org.molgenis.matrix.component.interfaces.SourceMatrix;
+import org.molgenis.matrix.component.test.SomeColType;
+import org.molgenis.matrix.component.test.SomeValueType;
 
-public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>{
+public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>
+{
 
 	SourceMatrix<R, C, V> source;
 	BasicMatrix<R, C, V> basic;
 	List<Filter> filters;
 	String constraintLogic;
 	int stepSize;
-//	int colIndex;
-//	int rowIndex;
 	String screenName;
-	
-	public RenderableMatrixImpl(SourceMatrix<R, C, V> source, BasicMatrix<R, C, V> basic, List<Filter> filters, String constraintLogic, int stepSize, String screenName){
+
+	public RenderableMatrixImpl(SourceMatrix<R, C, V> source, BasicMatrix<R, C, V> basic, List<Filter> filters,
+			String constraintLogic, int stepSize, String screenName)
+	{
 		this.source = source;
 		this.basic = basic;
 		this.filters = filters;
@@ -26,7 +29,7 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>{
 		this.stepSize = stepSize;
 		this.screenName = screenName;
 	}
-	
+
 	@Override
 	public List<R> getVisibleRows() throws Exception
 	{
@@ -38,7 +41,7 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>{
 	{
 		return basic.getVisibleCols();
 	}
-	
+
 	@Override
 	public List<Integer> getRowIndices() throws Exception
 	{
@@ -86,7 +89,7 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>{
 	{
 		return source.renderCol(col);
 	}
-	
+
 	@Override
 	public String renderRowSimple(R row)
 	{
@@ -128,23 +131,29 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>{
 	{
 		return this.filters;
 	}
-	
+
+	// BAD: not part of Renderable interface...
 	public List<Filter> getPagingFilters()
 	{
 		List<Filter> returnList = new ArrayList<Filter>();
-		for (Filter f : this.filters) {
-			if (f.getFilterType().equals(Filter.Type.paging)) {
+		for (Filter f : this.filters)
+		{
+			if (f.getFilterType().equals(Filter.Type.paging))
+			{
 				returnList.add(f);
 			}
 		}
 		return returnList;
 	}
-	
+
+	// BAD: not part of Renderable interface...
 	public List<Filter> getOtherFilters()
 	{
 		List<Filter> returnList = new ArrayList<Filter>();
-		for (Filter f : this.filters) {
-			if (!f.getFilterType().equals(Filter.Type.paging)) {
+		for (Filter f : this.filters)
+		{
+			if (!f.getFilterType().equals(Filter.Type.paging))
+			{
 				returnList.add(f);
 			}
 		}
@@ -162,21 +171,11 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>{
 	{
 		return this.stepSize;
 	}
-	
+
 	@Override
 	public String getScreenName()
 	{
 		return screenName;
 	}
-	
-//	public void setColIndex(int colIndex)
-//	{
-//		this.colIndex = colIndex;
-//	}
-//
-//	public void setRowIndex(int rowIndex)
-//	{
-//		this.rowIndex = rowIndex;
-//	}
 	
 }

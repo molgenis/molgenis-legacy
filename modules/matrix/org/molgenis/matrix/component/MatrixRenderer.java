@@ -101,11 +101,15 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		this.sliceable = sliceable;
 		this.screenName = screenName;
 		this.stepSize = stepSize;
-		
+		this.mover = new Mover<R, C, V>();
+
 		int nrOfPagingFilters = 0;
-		if (filters != null) {
-			for (Filter f : filters) {
-				if (f.getFilterType().equals(Filter.Type.paging)) {
+		if (filters != null)
+		{
+			for (Filter f : filters)
+			{
+				if (f.getFilterType().equals(Filter.Type.paging))
+				{
 					nrOfPagingFilters++;
 				}
 			}
@@ -125,7 +129,7 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 			filters.add(new Filter(Filter.Type.paging, new MatrixQueryRule("col", Operator.LIMIT, colStop)));
 		}
 
-		applyFiltersAndRender(sliceable, filters);
+		filterAndRenderRequest(sliceable, filters);
 	}
 
 	/**
@@ -141,18 +145,6 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		parameters.put("operators", MatrixRendererHelper.operators());
 		parameters.put("req_tag", MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX);
 		return new FreemarkerView("org/molgenis/matrix/component/MatrixRenderer.ftl", parameters).render();
-	}
-
-	/**
-	 * Helper function for those who want to get out the content of the rendered
-	 * matrix. This means you can choose to not render the matrix at all and
-	 * just use the 'engine', or render it yourself.
-	 * 
-	 * @return
-	 */
-	public RenderableMatrix<R, C, V> getRendered()
-	{
-		return this.renderMe;
 	}
 
 	/**
@@ -173,31 +165,115 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		action = action.substring(pref.length(), action.length());
 
 		List<Filter> previousFilters = MatrixRendererHelper.copyFilterList(renderMe.getFilters());
-		if (mover == null) mover = new Mover<R, C, V>();
 
 		// note: for convenience, these action functions store filter
 		// modifications in renderMe.
-		if (action.equals("updatePagingSettings")) this.updatePagingSettings(request);
+		if (action.equals("updatePagingSettings")) this.updatePagingRequest(request);
 		if (action.equals("moveRight")) mover.moveRight(renderMe);
-		if (action.equals("moveLeft")) mover.moveLeft(renderMe);
+		if (action.equals("moveLeft")) moveLeft();
 		if (action.equals("moveDown")) mover.moveDown(renderMe);
 		if (action.equals("moveUp")) mover.moveUp(renderMe);
 		if (action.equals("moveFarRight")) mover.moveFarRight(renderMe);
 		if (action.equals("moveFarLeft")) mover.moveFarLeft(renderMe);
 		if (action.equals("moveFarDown")) mover.moveFarDown(renderMe);
 		if (action.equals("moveFarUp")) mover.moveFarUp(renderMe);
-		if (action.startsWith("add_filter")) this.addFilter(action, request);
-		if (action.startsWith("remove_filter")) this.removeFilter(action, request);
-		if (action.startsWith("push_filter")) this.pushFilter(action, request);
+		if (action.startsWith("add_filter")) this.addFilterRequest(action, request);
+		if (action.startsWith("remove_filter")) this.removeFilterRequest(action, request);
+		if (action.startsWith("push_filter")) this.pushFilterRequest(action, request);
 
 		try
 		{
-			applyFiltersAndRender(sliceable, renderMe.getFilters());
+			filterAndRenderRequest(sliceable, renderMe.getFilters());
 		}
 		catch (Exception e)
 		{
-			applyFiltersAndRender(sliceable, previousFilters);
+			filterAndRenderRequest(sliceable, previousFilters);
 			throw e;
+		}
+
+	}
+
+	/**
+	 * Add a filter to the stack. Handle the 'Apply' buttons for filters by
+	 * getting the values (type, field, operator and value) from the request and
+	 * parse them into the corresponding filters. Basic checks on variable types
+	 * is be done here but no more. Filter correctness is checked by
+	 * validateFilters in the Validate class.
+	 * 
+	 * @param request
+	 * @throws Exception
+	 */
+	private void addFilterRequest(String action, Tuple request) throws Exception
+	{
+		String pref = MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX;
+
+		String field = request.getString(pref + action + "FILTER_FIELD");
+		Operator operator = Operator.valueOf(request.getString(pref + action + "FILTER_OPERATOR"));
+		Object value = request.getObject(pref + action + "FILTER_VALUE");
+
+		new Validate<R, C, V>().validateFilterInputs(field, operator, value);
+
+		MatrixQueryRule q = new MatrixQueryRule(field, operator, value);
+		Filter newFilter = null;
+
+		if (action.equals("add_filter_by_index"))
+		{
+			newFilter = new Filter(Filter.Type.index, q);
+		}
+		else if (action.equals("add_filter_by_col_value"))
+		{
+			newFilter = new Filter(Filter.Type.colValues, q);
+		}
+		else if (action.equals("add_filter_by_row_value"))
+		{
+			newFilter = new Filter(Filter.Type.rowValues, q);
+		}
+		else if (action.equals("add_filter_by_col_attrb"))
+		{
+			newFilter = new Filter(Filter.Type.colHeader, q);
+		}
+		else if (action.equals("add_filter_by_row_attrb"))
+		{
+			newFilter = new Filter(Filter.Type.rowHeader, q);
+		}
+		else
+		{
+			throw new MatrixException("Filter action '" + action + "' not recognized.");
+		}
+
+		addFilter(newFilter);
+	}
+
+	/**
+	 * Remove a filter from the stack
+	 * 
+	 * @param action
+	 * @param request
+	 */
+	private void removeFilterRequest(String action, Tuple request)
+	{
+		int index = Integer.valueOf(action.replace("remove_filter", ""));
+		removeFilter(index);
+	}
+
+	/**
+	 * Push a filter up or down the stack
+	 * 
+	 * @param action
+	 * @param request
+	 * @throws MatrixException
+	 */
+	private void pushFilterRequest(String action, Tuple request) throws MatrixException
+	{
+		if (action.contains("push_filter_up"))
+		{
+			int index = Integer.valueOf(action.replace("push_filter_up", ""));
+			pushFilter(index, false);
+		}
+		else
+		{
+			int index = Integer.valueOf(action.replace("push_filter_down", ""));
+			pushFilter(index, true);
 		}
 
 	}
@@ -211,7 +287,7 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 	 * @param filters
 	 * @throws Exception
 	 */
-	private void applyFiltersAndRender(SliceableMatrix<R, C, V> sliceable, List<Filter> filters) throws Exception
+	private void filterAndRenderRequest(SliceableMatrix<R, C, V> sliceable, List<Filter> filters) throws Exception
 	{
 		System.out.println("applyFiltersAndRender");
 
@@ -267,127 +343,13 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 	 * @param request
 	 * @throws Exception
 	 */
-	private void updatePagingSettings(Tuple request) throws Exception
+	private void updatePagingRequest(Tuple request) throws Exception
 	{
 		String pref = MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX;
 		int width = request.getInt(pref + "width");
 		int height = request.getInt(pref + "height");
-		this.stepSize = request.getInt(pref + "stepSize");
-
-		List<Filter> newFilters = new ArrayList<Filter>();
-
-		// keep all filters, except for paging -> LIMIT
-		for (int filterIndex = 0; filterIndex < renderMe.getFilters().size(); filterIndex++)
-		{
-			Filter f = renderMe.getFilters().get(filterIndex);
-			if (!(f.getFilterType().equals(Filter.Type.paging) && f.getQueryRule().getOperator().equals(Operator.LIMIT)))
-			{
-				newFilters.add(f);
-			}
-		}
-
-		newFilters.add(new Filter(Filter.Type.paging, new MatrixQueryRule("row", Operator.LIMIT, height)));
-		newFilters.add(new Filter(Filter.Type.paging, new MatrixQueryRule("col", Operator.LIMIT, width)));
-
-		renderMe.getFilters().clear();
-		renderMe.getFilters().addAll(newFilters);
-
-	}
-
-	/**
-	 * Add a filter to the stack. Handle the 'Apply' buttons for filters by
-	 * getting the values (type, field, operator and value) from the request and
-	 * parse them into the corresponding filters. Basic checks on variable types
-	 * is be done here but no more. Filter correctness is checked by
-	 * validateFilters in the Validate class.
-	 * 
-	 * @param request
-	 * @throws Exception
-	 */
-	private void addFilter(String action, Tuple request) throws Exception
-	{
-		String pref = MatrixRendererHelper.MATRIX_COMPONENT_REQUEST_PREFIX;
-
-		String field = request.getString(pref + action + "FILTER_FIELD");
-		Operator operator = Operator.valueOf(request.getString(pref + action + "FILTER_OPERATOR"));
-		Object value = request.getObject(pref + action + "FILTER_VALUE");
-
-		new Validate<R, C, V>().validateFilterInputs(field, operator, value);
-
-		MatrixQueryRule q = new MatrixQueryRule(field, operator, value);
-		Filter newFilter = null;
-
-		if (action.equals("add_filter_by_index"))
-		{
-			newFilter = new Filter(Filter.Type.index, q);
-		}
-		else if (action.equals("add_filter_by_col_value"))
-		{
-			newFilter = new Filter(Filter.Type.colValues, q);
-		}
-		else if (action.equals("add_filter_by_row_value"))
-		{
-			newFilter = new Filter(Filter.Type.rowValues, q);
-		}
-		else if (action.equals("add_filter_by_col_attrb"))
-		{
-			newFilter = new Filter(Filter.Type.colHeader, q);
-		}
-		else if (action.equals("add_filter_by_row_attrb"))
-		{
-			newFilter = new Filter(Filter.Type.rowHeader, q);
-		}
-		else
-		{
-			throw new MatrixException("Filter action '" + action + "' not recognized.");
-		}
-
-		new Validate<R, C, V>().validateFilter(newFilter, renderMe);
-
-		this.renderMe.getFilters().add(newFilter);
-
-	}
-
-	/**
-	 * Remove a filter from the stack
-	 * 
-	 * @param action
-	 * @param request
-	 */
-	private void removeFilter(String action, Tuple request)
-	{
-		int index = Integer.valueOf(action.replace("remove_filter", ""));
-		renderMe.getFilters().remove(index);
-	}
-
-	/**
-	 * Push a filter up or down the stack
-	 * 
-	 * @param action
-	 * @param request
-	 * @throws MatrixException
-	 */
-	private void pushFilter(String action, Tuple request) throws MatrixException
-	{
-		if (action.contains("push_filter_up"))
-		{
-			int index = Integer.valueOf(action.replace("push_filter_up", ""));
-			Filter filter = renderMe.getFilters().get(index);
-			if (filter.getFilterType() == Filter.Type.paging) throw new MatrixException(
-					"You cannot move paging filters yet!");
-			renderMe.getFilters().remove(index);
-			renderMe.getFilters().add(index + 1, filter);
-		}
-		else
-		{
-			int index = Integer.valueOf(action.replace("push_filter_down", ""));
-			Filter filter = renderMe.getFilters().get(index);
-			if (filter.getFilterType() == Filter.Type.paging) throw new MatrixException(
-					"You cannot move paging filters yet!");
-			renderMe.getFilters().remove(index);
-			renderMe.getFilters().add(index - 1, filter);
-		}
-
+		int newStepSize = request.getInt(pref + "stepSize");
+		updatePaging(width, height, newStepSize);
 	}
 
 	/**
@@ -426,6 +388,185 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		result.addAll(offsetFilters);
 		result.addAll(limitFilters);
 		return result;
+	}
+	
+	public void addFilter(Filter filter) throws Exception
+	{
+		new Validate<R, C, V>().validateFilter(filter, renderMe);
+		this.renderMe.getFilters().add(filter);
+	}
+
+	/**
+	 * API: Remove a filter.
+	 * 
+	 * @param index
+	 */
+	public void removeFilter(int index)
+	{
+		renderMe.getFilters().remove(index);
+	}
+
+	/**
+	 * API: Push filter up or down the stack.
+	 * @param index
+	 * @param pushDown
+	 * @throws MatrixException
+	 */
+	public void pushFilter(int index, boolean pushDown) throws MatrixException
+	{
+		Filter filter = renderMe.getFilters().get(index);
+		if (filter.getFilterType() == Filter.Type.paging) throw new MatrixException(
+				"You cannot move paging filters yet!");
+		renderMe.getFilters().remove(index);
+		if (pushDown)
+		{
+			renderMe.getFilters().add(index + 1, filter);
+		}
+		else
+		{
+			renderMe.getFilters().add(index - 1, filter);
+		}
+	}
+
+	/**
+	 * Overloaded updatePaging
+	 * 
+	 * @param width
+	 * @param height
+	 */
+	public void updatePaging(int width, int height)
+	{
+		updatePaging(width, height, -1);
+	}
+	
+	/**
+	 * API: update the paging variables
+	 * @param width
+	 * @param height
+	 * @param stepSize
+	 */
+	public void updatePaging(int width, int height, int stepSize)
+	{
+		if(stepSize > 0) this.stepSize = stepSize;
+		
+		List<Filter> newFilters = new ArrayList<Filter>();
+		
+		// keep all filters, except for paging -> LIMIT
+		for (int filterIndex = 0; filterIndex < renderMe.getFilters().size(); filterIndex++)
+		{
+			Filter f = renderMe.getFilters().get(filterIndex);
+			if (!(f.getFilterType().equals(Filter.Type.paging) && f.getQueryRule().getOperator().equals(Operator.LIMIT)))
+			{
+				newFilters.add(f);
+			}
+		}
+	
+		newFilters.add(new Filter(Filter.Type.paging, new MatrixQueryRule("row", Operator.LIMIT, height)));
+		newFilters.add(new Filter(Filter.Type.paging, new MatrixQueryRule("col", Operator.LIMIT, width)));
+	
+		renderMe.getFilters().clear();
+		renderMe.getFilters().addAll(newFilters);
+	}
+
+	/**
+	 * API: Apply current filters and render the matrix.
+	 * @throws Exception
+	 */
+	public void filterAndRender() throws Exception
+	{
+		filterAndRenderRequest(sliceable, renderMe.getFilters());
+	}
+
+	/**
+	 * API: Move left.
+	 * 
+	 * @throws Exception
+	 */
+	public void moveLeft() throws Exception
+	{
+		mover.moveLeft(renderMe);
+	}
+
+	/**
+	 * API: Move down.
+	 * 
+	 * @throws Exception
+	 */
+	public void moveDown() throws Exception
+	{
+		mover.moveDown(renderMe);
+	}
+
+	/**
+	 * API: Move right.
+	 * 
+	 * @throws Exception
+	 */
+	public void moveRight() throws Exception
+	{
+		mover.moveRight(renderMe);
+	}
+
+	/**
+	 * API: Move up.
+	 * 
+	 * @throws Exception
+	 */
+	public void moveUp() throws Exception
+	{
+		mover.moveUp(renderMe);
+	}
+	
+	/**
+	 * API: Move far left.
+	 * 
+	 * @throws Exception
+	 */
+	public void moveFarLeft() throws Exception
+	{
+		mover.moveFarLeft(renderMe);
+	}
+
+	/**
+	 * API: Move far down.
+	 * 
+	 * @throws Exception
+	 */
+	public void moveFarDown() throws Exception
+	{
+		mover.moveFarDown(renderMe);
+	}
+
+	/**
+	 * API: Move far right.
+	 * 
+	 * @throws Exception
+	 */
+	public void moveFarRight() throws Exception
+	{
+		mover.moveFarRight(renderMe);
+	}
+
+	/**
+	 * API: Move far up.
+	 * 
+	 * @throws Exception
+	 */
+	public void moveFarUp() throws Exception
+	{
+		mover.moveFarUp(renderMe);
+	}
+
+	/**
+	 * API: Get the result. Helper function for those who just want the content
+	 * of the rendered matrix. This means you can choose to not render the
+	 * matrix at all and just use the 'engine', or render it yourself.
+	 * 
+	 * @return
+	 */
+	public RenderableMatrix<R, C, V> getRendered()
+	{
+		return this.renderMe;
 	}
 
 }
