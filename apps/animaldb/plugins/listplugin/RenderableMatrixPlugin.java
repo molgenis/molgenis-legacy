@@ -11,14 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.matrix.component.MatrixRenderer;
 import org.molgenis.matrix.component.PhenoMatrix;
-import org.molgenis.matrix.component.general.Filter;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.general.MatrixRendererHelper;
 import org.molgenis.matrix.component.interfaces.RenderableMatrix;
@@ -97,9 +95,8 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 	
 	private void initMatrix(Database db) throws Exception {
 		// To test the initialization of the matrix with a predefined filter (set):
-		MatrixQueryRule qr = new MatrixQueryRule("col_att_name", Operator.EQUALS, "TypeOfGroup");
-		Filter preFilter = new Filter(Filter.Type.colHeader, qr);
-		List<Filter> preFilterList = new ArrayList<Filter>();
+		MatrixQueryRule preFilter = new MatrixQueryRule(MatrixQueryRule.Type.colHeader, "col_att_name", Operator.EQUALS, "TypeOfGroup");
+		List<MatrixQueryRule> preFilterList = new ArrayList<MatrixQueryRule>();
 		preFilterList.add(preFilter);
 		// 'Normal' code from here on:
 		matrix = new PhenoMatrix(db);
