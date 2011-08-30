@@ -1,4 +1,4 @@
-package org.molgenis.util.plink;
+package org.molgenis.util.plink.drivers;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,10 +8,13 @@ import java.util.List;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.plink.datatypes.Biallele;
+import org.molgenis.util.plink.datatypes.BimEntry;
 
 /**
  * Driver to query BIM files. BIM files annotate the genotypes of BED files.
- * See: http://pngu.mgh.harvard.edu/~purcell/plink/binary.shtml
+ * They are basically MAP files, with added biallelic data. See:
+ * http://pngu.mgh.harvard.edu/~purcell/plink/binary.shtml
  * 
  * Content of a BIM file: chromosome, SNP, cM, base-position, allele 1, allele 2
  */
@@ -44,7 +47,7 @@ public class BimFileDriver
 
 		if (reader.fileEndsWithNewlineChar())
 		{
-			this.nrOfElements = reader.getNumberOfLines() - 1;
+			this.nrOfElements = reader.getNumberOfLines() - reader.getAmountOfNewlinesAtFileEnd();
 		}
 		else
 		{
@@ -81,14 +84,14 @@ public class BimFileDriver
 		reader.parse(new CsvReaderListener()
 		{
 			public void handleLine(int line_number, Tuple tuple)
+					throws Exception
 			{
 				if (line_number - 1 >= from && line_number - 1 < to)
 				{
 					BimEntry be = new BimEntry(tuple.getString(0), tuple
 							.getString(1), tuple.getDouble(2),
-							tuple.getLong(3), new Character(tuple.getString(4)
-									.charAt(0)), new Character(tuple.getString(
-									5).charAt(0)));
+							tuple.getLong(3), new Biallele(tuple.getString(4),
+									tuple.getString(5)));
 					result.add(be);
 				}
 			}
@@ -109,11 +112,11 @@ public class BimFileDriver
 		reader.parse(new CsvReaderListener()
 		{
 			public void handleLine(int line_number, Tuple tuple)
+					throws Exception
 			{
 				BimEntry be = new BimEntry(tuple.getString(0), tuple
 						.getString(1), tuple.getDouble(2), tuple.getLong(3),
-						new Character(tuple.getString(4).charAt(0)),
-						new Character(tuple.getString(5).charAt(0)));
+						new Biallele(tuple.getString(4), tuple.getString(5)));
 				result.add(be);
 			}
 		});

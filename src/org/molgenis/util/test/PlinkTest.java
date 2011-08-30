@@ -5,9 +5,12 @@ import java.io.IOException;
 
 import junit.framework.Assert;
 
-import org.molgenis.util.plink.BedFileDriver;
-import org.molgenis.util.plink.BimFileDriver;
-import org.molgenis.util.plink.FamFileDriver;
+import org.molgenis.util.plink.datatypes.Biallele;
+import org.molgenis.util.plink.drivers.BedFileDriver;
+import org.molgenis.util.plink.drivers.BimFileDriver;
+import org.molgenis.util.plink.drivers.FamFileDriver;
+import org.molgenis.util.plink.drivers.MapFileDriver;
+import org.molgenis.util.plink.drivers.PedFileDriver;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -26,21 +29,35 @@ public class PlinkTest
 	
 	File testFam;
 	FamFileDriver famfd;
+	
+	File testPed;
+	PedFileDriver pedfd;
 
+	File testMap;
+	MapFileDriver mapfd;
+	
 	@BeforeClass
 	public void setup() throws Exception
 	{
-		testBed = new File(BedFileDriver.class
-				.getResource("testfiles/test.bed").getFile());
+		testBed = new File(Biallele.class
+				.getResource("../testfiles/test.bed").getFile());
 		bedfd = new BedFileDriver(testBed);
 		
-		testBim = new File(BimFileDriver.class
-				.getResource("testfiles/test.bim").getFile());
+		testBim = new File(Biallele.class
+				.getResource("../testfiles/test.bim").getFile());
 		bimfd = new BimFileDriver(testBim);
 		
-		testFam = new File(BimFileDriver.class
-				.getResource("testfiles/test.fam").getFile());
+		testFam = new File(Biallele.class
+				.getResource("../testfiles/test.fam").getFile());
 		famfd = new FamFileDriver(testFam);
+		
+		testPed = new File(Biallele.class
+				.getResource("../testfiles/test.ped").getFile());
+		pedfd = new PedFileDriver(testPed);
+		
+		testMap = new File(Biallele.class
+				.getResource("../testfiles/test.map").getFile());
+		mapfd = new MapFileDriver(testMap);
 	}
 
 	@Test
@@ -62,6 +79,18 @@ public class PlinkTest
 		Assert.assertEquals(6, famfd.getNrOfElements());
 	}
 
+	@Test
+	public void PED_construct() throws Exception
+	{
+		Assert.assertEquals(6, pedfd.getNrOfElements());
+	}
+	
+	@Test
+	public void MAP_construct() throws Exception
+	{
+		Assert.assertEquals(2, mapfd.getNrOfElements());
+	}
+	
 	@Test
 	public void BED_getElements() throws Exception
 	{
@@ -166,14 +195,14 @@ public class PlinkTest
 		Assert.assertEquals(2, bimfd.getAllEntries().size());
 		
 		Assert.assertEquals("snp1", bimfd.getEntries(0, 1).get(0).getSNP());
-		Assert.assertEquals('A', bimfd.getEntries(0, 1).get(0).getAllele1().charValue());
+		Assert.assertEquals('A', bimfd.getEntries(0, 1).get(0).getBiallele().getAllele1());
 		Assert.assertEquals(0.0, bimfd.getEntries(1, 2).get(0).getcM());
 		Assert.assertEquals("1", bimfd.getEntries(1, 2).get(0).getChromosome());
 		
-		Assert.assertEquals('C', bimfd.getAllEntries().get(0).getAllele2().charValue());
-		Assert.assertEquals('T', bimfd.getAllEntries().get(1).getAllele2().charValue());
-		Assert.assertEquals(1, bimfd.getAllEntries().get(0).getBpPos().longValue());
-		Assert.assertEquals(2, bimfd.getAllEntries().get(1).getBpPos().longValue());
+		Assert.assertEquals('C', bimfd.getAllEntries().get(0).getBiallele().getAllele2());
+		Assert.assertEquals('T', bimfd.getAllEntries().get(1).getBiallele().getAllele2());
+		Assert.assertEquals(1, bimfd.getAllEntries().get(0).getBpPos());
+		Assert.assertEquals(2, bimfd.getAllEntries().get(1).getBpPos());
 		Assert.assertEquals("snp2", bimfd.getAllEntries().get(1).getSNP());
 	}
 	
@@ -185,14 +214,38 @@ public class PlinkTest
 		Assert.assertEquals(2, famfd.getEntries(0, 2).size());
 		Assert.assertEquals(6, famfd.getEntries(0, 6).size());
 		
-		Assert.assertEquals(new Integer(1), famfd.getEntries(0, 1).get(0).getFamily());
-		Assert.assertEquals(new Integer(2), famfd.getEntries(0, 2).get(1).getFamily());
+		Assert.assertEquals(1, famfd.getEntries(0, 1).get(0).getFamily());
+		Assert.assertEquals(2, famfd.getEntries(0, 2).get(1).getFamily());
 		
-		Assert.assertEquals(new Integer(5), famfd.getEntries(3, 5).get(1).getFamily());
-		Assert.assertEquals(new Integer(6), famfd.getEntries(0, 6).get(5).getFamily());
+		Assert.assertEquals(5, famfd.getEntries(3, 5).get(1).getFamily());
+		Assert.assertEquals(6, famfd.getEntries(0, 6).get(5).getFamily());
 		
 		Assert.assertEquals(1.0, famfd.getAllEntries().get(2).getPhenotype());
 		Assert.assertEquals(2.0, famfd.getAllEntries().get(3).getPhenotype());
+	}
+	
+	//TODO
+	@Test
+	public void PED_getEntries() throws Exception
+	{
+		Assert.assertEquals(1, pedfd.getAllEntries());
+		//TODO
+		Assert.assertTrue(false);
+	}
+	
+	@Test
+	public void MAP_getEntries() throws Exception
+	{
+		Assert.assertEquals(1, mapfd.getEntries(0, 1).size());
+		Assert.assertEquals(1, mapfd.getEntries(1, 2).size());
+		Assert.assertEquals(2, mapfd.getEntries(0, 2).size());
+		Assert.assertEquals(2, mapfd.getAllEntries().size());
+		Assert.assertEquals("snp1", mapfd.getEntries(0, 1).get(0).getSNP());
+		Assert.assertEquals(0.0, mapfd.getEntries(1, 2).get(0).getcM());
+		Assert.assertEquals("1", mapfd.getEntries(1, 2).get(0).getChromosome());
+		Assert.assertEquals(1, mapfd.getAllEntries().get(0).getBpPos());
+		Assert.assertEquals(2, mapfd.getAllEntries().get(1).getBpPos());
+		Assert.assertEquals("snp2", mapfd.getAllEntries().get(1).getSNP());
 	}
 	
 	@AfterClass
@@ -200,6 +253,8 @@ public class PlinkTest
 	{
 		bimfd.close();
 		famfd.close();
+		pedfd.close();
+		mapfd.close();
 	}
 
 	private boolean stringArrEqual(String[] arr1, String[] arr2)

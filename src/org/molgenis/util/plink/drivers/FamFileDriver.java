@@ -1,4 +1,4 @@
-package org.molgenis.util.plink;
+package org.molgenis.util.plink.drivers;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +8,7 @@ import java.util.List;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.plink.datatypes.FamEntry;
 
 /**
  * Driver to query FAM files. FAM files annotate the families of BED files. See:
@@ -45,7 +46,7 @@ public class FamFileDriver
 
 		if (reader.fileEndsWithNewlineChar())
 		{
-			this.nrOfElements = reader.getNumberOfLines() - 1;
+			this.nrOfElements = reader.getNumberOfLines() - reader.getAmountOfNewlinesAtFileEnd();
 		}
 		else
 		{
