@@ -27,6 +27,7 @@ import org.molgenis.framework.security.Login;
 import org.molgenis.model.elements.Model;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvReaderListener;
+import org.molgenis.util.HandleException;
 import org.molgenis.util.SpreadsheetWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -144,6 +145,7 @@ public abstract class JpaDatabase extends AbstractDatabase implements Database {
             }
             commitTransaction();
         } catch (Exception e) {
+        	HandleException.handle(e);
             rollbackTx();
             throw new DatabaseException(e);
         }
