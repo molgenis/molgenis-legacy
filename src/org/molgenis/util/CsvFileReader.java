@@ -7,6 +7,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
+
+import antlr.collections.List;
 
 /**
  * CsvReader for delimited text files.
@@ -62,6 +65,56 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 		{
 			return false;
 		}
+	}
+
+	/**
+	 * Get the amount of newline characters at the end of a file. Can be of
+	 * great help when you want to judge the amount of elements in a file based
+	 * on the number of lines, when the file might contain (many) empty trailing
+	 * newlines. The amount of \r and \n terminators are counted. The
+	 * combination \r\n is reduced to \n before counting. You will probably want
+	 * to use this in combination with the more lightweight check of
+	 * fileEndsWithNewlineChar().
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public int getAmountOfNewlinesAtFileEnd() throws Exception
+	{
+		RandomAccessFile raf = new RandomAccessFile(this.file, "r");
+
+		int nrOfNewLines = 1;
+		boolean countingNewlines = true;
+		String terminatorSequence = "";
+
+		while (countingNewlines)
+		{
+			raf.seek(raf.length() - nrOfNewLines);
+			char c = (char) raf.readByte();
+
+			if (c == '\r')
+			{
+				terminatorSequence += "r";
+				nrOfNewLines++;
+			}
+			else if (c == '\n')
+			{
+				terminatorSequence += "n";
+				nrOfNewLines++;
+			}
+			else
+			{
+				countingNewlines = false;
+			}
+		}
+
+		raf.close();
+
+		// replace \r\n combinations with \n
+		terminatorSequence.replaceAll("rn", "n");
+
+		return terminatorSequence.length();
+
 	}
 
 	// @Override

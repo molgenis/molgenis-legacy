@@ -1,4 +1,4 @@
-package org.molgenis.util.plink;
+package org.molgenis.util.plink.drivers;
 
 import java.io.File;
 import java.io.IOException;
