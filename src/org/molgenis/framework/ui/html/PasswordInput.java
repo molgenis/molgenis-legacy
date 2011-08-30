@@ -57,7 +57,7 @@ public class PasswordInput extends ValidatingInput<String>
 			String cssClass = this.uiToolkit == UiToolkit.JQUERY ? " class=\"text ui-widget-content ui-corner-all"
 					+ validate + " " + readonly + "\""
 					: "";
-			String result = "<input "
+			String result = "<input type=\"password\""
 				+ cssClass
 				+ " id=\""
 				+ this.getId()
