@@ -125,6 +125,7 @@ public abstract class JpaDatabase extends AbstractDatabase implements Database {
             count = add(entities);
             commitTransaction();
         } catch (javax.persistence.PersistenceException e) {
+        	HandleException.handle(e);
             rollbackTx();
             throw new DatabaseException(e.getCause().getMessage());
         }
