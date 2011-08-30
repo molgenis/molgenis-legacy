@@ -23,7 +23,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.matrix.component.general.GenericFunctions;
+import org.molgenis.matrix.component.general.AbstractSliceableMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
@@ -41,7 +41,7 @@ import org.molgenis.util.CsvWriter;
  * @param <E>
  *            the generic type of the matrix. E.g. String, Double etc.
  */
-public abstract class AbstractDataMatrixInstance<E> extends GenericFunctions<ObservationElement, ObservationElement, Object> implements DataMatrixInstance, SourceMatrix<ObservationElement, ObservationElement, Object>, BasicMatrix<ObservationElement, ObservationElement, Object>
+public abstract class AbstractDataMatrixInstance<E> extends AbstractSliceableMatrix<ObservationElement, ObservationElement, Object> implements DataMatrixInstance, SourceMatrix<ObservationElement, ObservationElement, Object>, BasicMatrix<ObservationElement, ObservationElement, Object>
 {
 
 	/**
