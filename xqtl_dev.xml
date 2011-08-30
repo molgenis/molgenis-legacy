@@ -84,7 +84,7 @@
 		<mkdir dir="${mol_build_dir}"/>
 		
 		<!-- Run javac on the src dir to be compiled into build, using the molgenis-libs fileset as classpath -->
-		<javac srcdir="../molgenis/src" destdir="${mol_build_dir}" includeantruntime="false">
+		<javac srcdir="../molgenis/src" destdir="${mol_build_dir}" includeantruntime="false" debug="on">
 			<classpath>
 				<path refid="molgenis-libs" />
 			</classpath>
@@ -122,7 +122,7 @@
 		<mkdir dir="${app_build_dir}"/>
 		
 		<!-- Run javac into app_build, using molgenis-libs and molgenis_build -->
-		<javac srcdir="generated/java/org" excludes="**/*Decorator.java" destdir="${app_build_dir}" includeantruntime="false">
+		<javac srcdir="generated/java/org" excludes="**/*Decorator.java" destdir="${app_build_dir}" includeantruntime="false" debug="on">
 			<classpath>
 				<path refid="molgenis-libs" />
 				<path location="${mol_build_dir}" />

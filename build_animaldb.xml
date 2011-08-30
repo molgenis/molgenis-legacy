@@ -36,7 +36,7 @@
 			<path location="${output_src}"/>
 		</path>
 		<!-- run the tests -->
-		<testng classpathref="combined.class.path" outputDir="${testng.report.dir}" haltOnFailure="false">
+		<testng classpathref="combined.class.path" outputDir="${testng.report.dir}" haltOnFailure="true">
 			<xmlfileset dir="${build.dir}" includes="**/*testng.xml,**/*_animaldbtest.xml" />
 			<jvmarg value="-ea" />
 		</testng>			

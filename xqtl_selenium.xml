@@ -55,7 +55,7 @@
 	-->
 	<target name="test_webframeworks">
 		<mkdir dir="${app_build_dir}"/>
-		<javac srcdir="modules/webserver/test" includes="*TestWebFrameworkOnly.java" destdir="${app_build_dir}" includeantruntime="false">
+		<javac srcdir="modules/webserver/test" includes="*TestWebFrameworkOnly.java" destdir="${app_build_dir}" includeantruntime="false" debug="on">
 			<classpath>
 				<path refid="app-libs" />
 			</classpath>

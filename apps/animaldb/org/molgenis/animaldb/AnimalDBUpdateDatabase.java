@@ -20,3 +20,15 @@ public class AnimalDBUpdateDatabase
 		// TODO: make something like the method above in JPA that can run the generated_metadata.sql
 	}
 }
+
+/*
+public class AnimalDBUpdateDatabase
+{
+	public static void main(String[] args) throws Exception
+	{
+		new Molgenis("apps/animaldb/org/molgenis/animaldb/animaldb.properties").updateDb();
+		FillMetadata.fillMetadata(DatabaseFactory.create());
+		// TODO: make something like the method above in JPA that can run the generated_metadata.sql
+	}
+}
+*/

@@ -38,7 +38,7 @@ public class Helper {
 		System.out.println("Removing content of " + storageRoot);
 		TarGz.recursiveDeleteContent(new File(storagePath));
 		System.out.println("Removing folder " + storageRoot);
-		TarGz.delete(storageRoot, true);
+		TarGz.delete(storageRoot, false);
 	}
 
 	/**

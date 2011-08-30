@@ -41,7 +41,7 @@ alter table Code drop foreign key FK20220DCDC19DD2
 alter table Code_feature drop foreign key FKD089E6C47748C8EE
 alter table Code_feature drop foreign key FKD089E6C468E42A95
 alter table CompositeElement drop foreign key FK19E8F29594609C8F
-alter table CompositeElement_Comments drop foreign key FKC1D987E5159D986
+alter table CompositeElement_Comments drop foreign key FKC1D987ED9060012
 alter table CompositeElement_Comments drop foreign key FKC1D987E7F18D934
 alter table CompositeElement_Reporters drop foreign key FKBBA24E687F18D934
 alter table CompositeElement_Reporters drop foreign key FKBBA24E682B087ABD
@@ -50,14 +50,17 @@ alter table CompositeElement_dbEntryDE drop foreign key FKC8954EB7404A92B
 alter table ComputeApplication drop foreign key FKDDCF68B99A9D4272
 alter table ComputeApplication drop foreign key FKDDCF68B9DF23FA31
 alter table ComputeApplication drop foreign key FKDDCF68B9E56A2918
-alter table ComputeApplication_PrevSteps drop foreign key FK94D5588EB652402F
-alter table ComputeApplication_PrevSteps drop foreign key FK94D5588EF401AC14
+alter table ComputeApplication drop foreign key FKDDCF68B9E113D85F
+alter table ComputeApplication_PrevSteps drop foreign key FK94D5588E6CD8C398
+alter table ComputeApplication_PrevSteps drop foreign key FK94D5588EAA882F7D
+alter table ComputeCredentials drop foreign key FK926486655A429048
+alter table ComputeCredentials drop foreign key FK92648665E113D85F
 alter table ComputeFeature drop foreign key FKEBD1FADF8C5A5D43
 alter table ComputeProtocol drop foreign key FK64CB0BCFD592C0F5
-alter table ComputeProtocol_Inputs drop foreign key FK811A68795698103C
-alter table ComputeProtocol_Inputs drop foreign key FK811A6879556E7C6A
-alter table ComputeProtocol_Outputs drop foreign key FKEBC013025698103C
-alter table ComputeProtocol_Outputs drop foreign key FKEBC013025A10E213
+alter table ComputeProtocol_Inputs drop foreign key FK811A687993D16D73
+alter table ComputeProtocol_Inputs drop foreign key FK811A6879DB891C53
+alter table ComputeProtocol_Outputs drop foreign key FKEBC0130293D16D73
+alter table ComputeProtocol_Outputs drop foreign key FKEBC01302E02B81FC
 alter table CustomLabelFeature drop foreign key FK8B1393937349F2B9
 alter table CustomLabelFeature drop foreign key FK8B1393932B9FF6F3
 alter table Data drop foreign key FK2063CA495FE564
@@ -78,8 +81,6 @@ alter table DecimalDataElement drop foreign key FK9235780183C095C4
 alter table DerivedTrait drop foreign key FKD24A0A11A341BCBA
 alter table DesignElement drop foreign key FKC325533EA341BCBA
 alter table DesignElement drop foreign key FKC325533EF3BE0064
-alter table E_M drop foreign key FK10ED3DF9A6399
-alter table E_M drop foreign key FK10ED346AE1C59
 alter table Exon drop foreign key FK212DF2F341D444
 alter table Exon_proteinDomain drop foreign key FK5D475A9ABF4C4E7D
 alter table Exon_proteinDomain drop foreign key FK5D475A9ADA576875
@@ -88,26 +89,24 @@ alter table Flowcell drop foreign key FK7CD8A7B0495FE564
 alter table Flowcell drop foreign key FK7CD8A7B0F4EDABE6
 alter table Gene drop foreign key FK21CF35A341BCBA
 alter table Gene drop foreign key FK21CF352202292C
-alter table I_F drop foreign key FK11DD0DF9A6399
-alter table I_F drop foreign key FK11DD046AE1C59
 alter table Individual drop foreign key FK740F7EB9495FE564
 alter table Individual drop foreign key FK740F7EB94172AB70
 alter table Individual drop foreign key FK740F7EB934BB7609
 alter table InvestDetails drop foreign key FKC0EDAC6DACA1B35D
 alter table InvestDetails_ExperDesigns drop foreign key FKD93BC63DF67322A1
-alter table InvestDetails_ExperDesigns drop foreign key FKD93BC63DBDE196CC
-alter table InvestDetails_Factors drop foreign key FK4E585F1220CF3501
-alter table InvestDetails_Factors drop foreign key FK4E585F12BDE196CC
-alter table InvestDetails_NormaliTypes drop foreign key FKD051DFE9BDE196CC
+alter table InvestDetails_ExperDesigns drop foreign key FKD93BC63D458DBD58
+alter table InvestDetails_Factors drop foreign key FK4E585F1212C13F5
+alter table InvestDetails_Factors drop foreign key FK4E585F12458DBD58
+alter table InvestDetails_NormaliTypes drop foreign key FKD051DFE9458DBD58
 alter table InvestDetails_NormaliTypes drop foreign key FKD051DFE95284C44D
 alter table InvestDetails_Protocols drop foreign key FK45212769B1D9F8B5
-alter table InvestDetails_Protocols drop foreign key FK45212769BDE196CC
+alter table InvestDetails_Protocols drop foreign key FK45212769458DBD58
 alter table InvestDetails_QualityControls drop foreign key FK76683CE35C63F7AB
-alter table InvestDetails_QualityControls drop foreign key FK76683CE3BDE196CC
-alter table InvestDetails_ReplicateTypes drop foreign key FK3B69AF02BDE196CC
+alter table InvestDetails_QualityControls drop foreign key FK76683CE3458DBD58
+alter table InvestDetails_ReplicateTypes drop foreign key FK3B69AF02458DBD58
 alter table InvestDetails_ReplicateTypes drop foreign key FK3B69AF0290CC77E6
 alter table InvestDetails_publicationsID drop foreign key FK382B9134BD612153
-alter table InvestDetails_publicationsID drop foreign key FK382B9134BDE196CC
+alter table InvestDetails_publicationsID drop foreign key FK382B9134458DBD58
 alter table Investigation drop foreign key FK689AD2E2573B9387
 alter table Investigation drop foreign key FK689AD2E25DA79B25
 alter table Investigation drop foreign key FK689AD2E27E45CADE
@@ -115,7 +114,6 @@ alter table InvestigationFile drop foreign key FK2773FB7E5C063302
 alter table InvestigationFile drop foreign key FK2773FB7EACA1B35D
 alter table Investigation_contacts drop foreign key FK6FD9DD10ACA1B35D
 alter table Investigation_contacts drop foreign key FK6FD9DD1026B5F06F
-alter table Investigator drop foreign key FKA0470FC948889D37
 alter table Job drop foreign key FK1239DE0D74F40
 alter table LibraryLane drop foreign key FK3F0EFD27B0D5CEC8
 alter table LibraryLane drop foreign key FK3F0EFD27DB2E9C5F
@@ -149,7 +147,6 @@ alter table NMRBin drop foreign key FK897D5D94A341BCBA
 alter table NameValueType drop foreign key FKA663F5E0ACA1B35D
 alter table NameValueType drop foreign key FKA663F5E0F3BE0064
 alter table NameValueType drop foreign key FKA663F5E02429EE30
-alter table NgsPerson drop foreign key FK4A2805AF48889D37
 alter table NgsSample drop foreign key FK4F0BE004495FE564
 alter table ObservableFeature drop foreign key FK1AE47C13DB2E9C5F
 alter table ObservationElement drop foreign key FK57E55150573B9387
@@ -162,7 +159,7 @@ alter table ObservedInference drop foreign key FK56499A11938AE210
 alter table ObservedInference drop foreign key FK56499A11661225C9
 alter table ObservedInference_derivedFrom drop foreign key FKF4923239D3D92C3C
 alter table ObservedInference_derivedFrom drop foreign key FKF492323969D5D412
-alter table ObservedValue drop foreign key FK46CDFB692853D245
+alter table ObservedValue drop foreign key FK46CDFB69BA228940
 alter table ObservedValue drop foreign key FK46CDFB69A0D10A3A
 alter table ObservedValue drop foreign key FK46CDFB69ACA1B35D
 alter table ObservedValue drop foreign key FK46CDFB69A6AD00D5
@@ -189,12 +186,11 @@ alter table Patient drop foreign key FK340C82E5811FFDC8
 alter table Patient drop foreign key FK340C82E5F37179A2
 alter table Patient drop foreign key FK340C82E5F37179A3
 alter table Patient drop foreign key FK340C82E5AFB7BB26
-alter table Patient drop foreign key FK340C82E5E0FCC176
 alter table Patient drop foreign key FK340C82E5740FA276
 alter table Patient_material drop foreign key FK81D08541DF9A6399
 alter table Patient_material drop foreign key FK81D08541A405EE9F
-alter table Patient_publicationsPatient drop foreign key FK198A0CE4DF9A6399
-alter table Patient_publicationsPatient drop foreign key FK198A0CE4AAFA0F8F
+alter table Patient_patientreferences drop foreign key FK8A6AB073DF9A6399
+alter table Patient_patientreferences drop foreign key FK8A6AB073E170997E
 alter table Person drop foreign key FK8E48877513B63EDE
 alter table Person_Roles drop foreign key FKF5945D53D6C2B71
 alter table Person_Roles drop foreign key FKF5945D532A6DEDB3
@@ -217,7 +213,7 @@ alter table ProtocolApplication_Performer drop foreign key FKF001BA765362FEA
 alter table ProtocolDocument drop foreign key FK1E39EFF39A9D4272
 alter table ProtocolDocument drop foreign key FK1E39EFF35C063302
 alter table Protocol_Features drop foreign key FKF14116049A9D4272
-alter table Protocol_Features drop foreign key FKF141160491EE93DC
+alter table Protocol_Features drop foreign key FKF1411604C9DB7381
 alter table Publication drop foreign key FK23254A0CEEC12EE8
 alter table Publication drop foreign key FK23254A0C23F4E434
 alter table Publication drop foreign key FK23254A0C711A7200
@@ -256,7 +252,6 @@ alter table WorkflowElement_PreviousSteps drop foreign key FKCBA127AE228AA14B
 alter table WorkflowElement_Workflow drop foreign key FKE3424BC1E56A2918
 alter table WorkflowElement_Workflow drop foreign key FKE3424BC114BFD4C0
 drop table if exists Analysis
-drop table if exists Antibody
 drop table if exists ArrayDesign
 drop table if exists ArrayFeature
 drop table if exists BibliographicReference
@@ -284,10 +279,12 @@ drop table if exists CompositeElement_Reporters
 drop table if exists CompositeElement_dbEntryDE
 drop table if exists ComputeApplication
 drop table if exists ComputeApplication_PrevSteps
+drop table if exists ComputeCredentials
 drop table if exists ComputeFeature
 drop table if exists ComputeProtocol
 drop table if exists ComputeProtocol_Inputs
 drop table if exists ComputeProtocol_Outputs
+drop table if exists ComputeResource
 drop table if exists ConversionTypeLookup
 drop table if exists CustomLabelFeature
 drop table if exists Data
@@ -298,13 +295,11 @@ drop table if exists DataValue
 drop table if exists DecimalDataElement
 drop table if exists DerivedTrait
 drop table if exists DesignElement
-drop table if exists E_M
 drop table if exists Exon
 drop table if exists Exon_proteinDomain
 drop table if exists Factor
 drop table if exists Flowcell
 drop table if exists Gene
-drop table if exists I_F
 drop table if exists Individual
 drop table if exists Institute
 drop table if exists InvestDetails
@@ -318,7 +313,6 @@ drop table if exists InvestDetails_publicationsID
 drop table if exists Investigation
 drop table if exists InvestigationFile
 drop table if exists Investigation_contacts
-drop table if exists Investigator
 drop table if exists Job
 drop table if exists LibraryBarcode
 drop table if exists LibraryCapturing
@@ -346,7 +340,6 @@ drop table if exists MutationGene
 drop table if exists MutationPhenotype
 drop table if exists NMRBin
 drop table if exists NameValueType
-drop table if exists NgsPerson
 drop table if exists NgsSample
 drop table if exists ObservableFeature
 drop table if exists ObservationElement
@@ -366,10 +359,9 @@ drop table if exists ParameterSet
 drop table if exists ParameterValue
 drop table if exists Patient
 drop table if exists Patient_material
-drop table if exists Patient_publicationsPatient
+drop table if exists Patient_patientreferences
 drop table if exists Person
 drop table if exists Person_Roles
-drop table if exists PhenotypeDetails
 drop table if exists Probe
 drop table if exists ProbeSet
 drop table if exists Protein
@@ -405,13 +397,12 @@ drop table if exists WorkflowElement_PreviousSteps
 drop table if exists WorkflowElement_Workflow
 drop table if exists Worksheet
 create table Analysis (id integer not null auto_increment, Description varchar(255), name varchar(255) not null, TargetFunctionName varchar(255) not null, DataSet integer not null, ParameterSet integer not null, primary key (id), unique (name))
-create table Antibody (id integer not null auto_increment, name varchar(255) not null, primary key (id), unique (name))
 create table ArrayDesign (id integer not null auto_increment, ArrayDesignComment longtext, ArrayDesignName longtext, name varchar(255) not null, Version longtext, printingProtocol integer, Provider integer, SequencePolymerType integer, SubstrateType integer, SurfaceType integer, TechnologyType integer, term integer not null, primary key (id), unique (name))
 create table ArrayFeature (BlockCol integer not null, BlockRow integer not null, ColPos integer not null, RowPos integer not null, id integer not null, Reporter integer not null, primary key (id))
 create table BibliographicReference (id integer not null auto_increment, authors varchar(255) not null, editor varchar(255) not null, issue varchar(255) not null, name varchar(255) not null, pages varchar(255) not null, publication varchar(255) not null, publisher varchar(255) not null, title varchar(255) not null, volume varchar(255) not null, year integer not null, primary key (id), unique (name))
 create table BinaryChannelData (id integer not null auto_increment, switchstate integer not null, timestamp datetime not null, channelid integer not null, recordId integer, primary key (id))
 create table BinaryDataMatrix (id integer not null, Data integer not null, primary key (id))
-create table Biobank (id integer not null auto_increment, Acronym varchar(255), Approved bit not null, Cohort varchar(255) not null, GeneralComments longtext, GwaComments longtext, GwaDataNum varchar(255), GwaPlatform varchar(255), panelSize varchar(255), Publications longtext, canRead integer, canWrite integer, Category integer not null, owns integer, SubCategory integer not null, primary key (id), unique (Cohort))
+create table Biobank (id integer not null auto_increment, Acronym varchar(255), Approved bit not null, Cohort varchar(255) not null, GeneralComments longtext, GwaComments longtext, GwaDataNum varchar(255), GwaPlatform varchar(255), PanelSize varchar(255), Publications longtext, canRead integer, canWrite integer, Category integer not null, owns integer not null, SubCategory integer not null, primary key (id), unique (Cohort))
 create table BiobankCategory (id integer not null, primary key (id))
 create table BiobankDataType (id integer not null, primary key (id))
 create table BiobankTopic (id integer not null, primary key (id))
@@ -420,7 +411,7 @@ create table Biobank_Coordinators (Biobank integer not null, Coordinators intege
 create table Biobank_Institutes (Biobank integer not null, Institutes integer not null)
 create table Biobank_Topic (Biobank integer not null, Topic integer not null)
 create table CSVDataMatrix (id integer not null, Data integer not null, primary key (id))
-create table ChangeLog (id integer not null auto_increment, date varchar(255) not null, entity integer not null, primary key (id))
+create table ChangeLog (id integer not null auto_increment, changeDate varchar(255) not null, entity integer not null, primary key (id))
 create table ChannelMapping (id integer not null auto_increment, bitnumber integer not null, channelnumber integer not null, pcnumber integer not null, portnumber integer not null, remarks longtext, unitnumber integer not null, primary key (id), unique (pcnumber, unitnumber, portnumber, bitnumber), unique (channelnumber))
 create table Chromosome (bpLength integer, isAutosomal bit not null, orderNr integer not null, id integer not null, Species integer, primary key (id))
 create table ClassicalPhenotype (Category varchar(255), Molecule varchar(255), id integer not null, primary key (id))
@@ -431,12 +422,14 @@ create table CompositeElement (id integer not null, primary key (id))
 create table CompositeElement_Comments (CompositeElement integer not null, Comments integer not null)
 create table CompositeElement_Reporters (CompositeElement integer not null, Reporters integer not null)
 create table CompositeElement_dbEntryDE (CompositeElement integer not null, dbEntryDE integer not null)
-create table ComputeApplication (ComputeResource varchar(255) not null, ComputeScript longtext, ErrorFile longtext, LogFile longtext, OutputFile longtext, StatusCode varchar(255) not null, StatusProgress integer, StatusText varchar(255) not null, id integer not null, protocol integer not null, WorkflowElement integer, primary key (id))
+create table ComputeApplication (ComputationalTime varchar(255), ComputeScript longtext, ErrorFile longtext, interpreter varchar(255) not null, JobID varchar(255), LogFile longtext, OutputFile longtext, Queue longtext, StatusCode varchar(255) not null, StatusText varchar(255) not null, walltime varchar(255), id integer not null, ComputeResource integer, protocol integer not null, WorkflowElement integer, primary key (id))
 create table ComputeApplication_PrevSteps (ComputeApplication integer not null, PrevSteps integer not null)
+create table ComputeCredentials (id integer not null auto_increment, name varchar(255) not null, password varchar(255) not null, username varchar(255) not null, ComputeResource integer not null, MolgenisUser integer not null, primary key (id))
 create table ComputeFeature (defaultValue longtext, featureType varchar(255) not null, isDerived bit not null, isUser bit not null, iterateOver bit not null, id integer not null, primary key (id))
-create table ComputeProtocol (ComputationalTime longtext, interpreter varchar(255) not null, scriptTemplate longtext not null, id integer not null, primary key (id))
+create table ComputeProtocol (ComputationalTime varchar(255), interpreter varchar(255) not null, scriptTemplate varchar(255) not null, walltime varchar(255), id integer not null, primary key (id))
 create table ComputeProtocol_Inputs (ComputeProtocol integer not null, Inputs integer not null)
 create table ComputeProtocol_Outputs (ComputeProtocol integer not null, Outputs integer not null)
+create table ComputeResource (id integer not null auto_increment, name varchar(255) not null, primary key (id), unique (name))
 create table ConversionTypeLookup (id integer not null auto_increment, conversiontypelabel varchar(255) not null, description longtext not null, primary key (id), unique (conversiontypelabel))
 create table CustomLabelFeature (id integer not null auto_increment, featureId integer not null, userId integer not null, primary key (id), unique (userId))
 create table Data (FeatureType varchar(255) not null, name varchar(255) not null, Storage varchar(255) not null, TargetType varchar(255) not null, ValueType varchar(255) not null, id integer not null, Feature integer not null, Investigation integer, protocolApplication integer, Target integer not null, primary key (id), unique (name))
@@ -447,13 +440,11 @@ create table DataValue (id integer not null auto_increment, name varchar(255) no
 create table DecimalDataElement (id integer not null auto_increment, FeatureIndex integer not null, TargetIndex integer not null, Value double precision, Data integer not null, Feature integer not null, Investigation integer, protocolApplication integer, Target integer not null, primary key (id))
 create table DerivedTrait (id integer not null, primary key (id))
 create table DesignElement (name varchar(255) not null, id integer not null, ArrayDesign integer not null, primary key (id), unique (name))
-create table E_M (id integer not null auto_increment, appearance varchar(255) not null, description longtext, number_ varchar(255) not null, retention varchar(255) not null, antibody integer, patient integer not null, primary key (id), unique (patient))
 create table Exon (id integer not null auto_increment, cdna_position integer not null, gdna_position integer not null, isIntron bit not null, length integer not null, name varchar(255) not null, number_ integer not null, gene integer not null, primary key (id), unique (name))
 create table Exon_proteinDomain (Exon integer not null, proteinDomain integer not null)
 create table Factor (id integer not null auto_increment, name varchar(255) not null, FactorType integer, primary key (id), unique (name), unique (FactorType))
-create table Flowcell (date date not null, id integer not null, machine integer not null, primary key (id))
+create table Flowcell (runDate date not null, id integer not null, machine integer not null, primary key (id))
 create table Gene (Aliases varchar(255), bpEnd bigint, bpStart bigint, cM double precision, Control bit, Orientation varchar(255), Seq longtext, Symbol varchar(255), id integer not null, Chromosome integer, primary key (id))
-create table I_F (id integer not null auto_increment, description longtext, retention varchar(255) not null, value varchar(255) not null, antibody integer, patient integer not null, primary key (id), unique (patient, antibody))
 create table Individual (id integer not null, Father integer, Mother integer, primary key (id))
 create table Institute (id integer not null auto_increment, Address longtext, Email varchar(255), Fax varchar(255), name varchar(255) not null, Phone varchar(255), tollFreePhone varchar(255), primary key (id), unique (name))
 create table InvestDetails (id integer not null auto_increment, Description longtext, ExperimentDate date, FormatVersion varchar(255), PublicRelease date, SRDFFile varchar(255), sRDFFile_file longblob, Investigation integer not null, primary key (id))
@@ -464,10 +455,9 @@ create table InvestDetails_Protocols (InvestDetails integer not null, Protocols 
 create table InvestDetails_QualityControls (InvestDetails integer not null, QualityControls integer not null)
 create table InvestDetails_ReplicateTypes (InvestDetails integer not null, ReplicateTypes integer not null)
 create table InvestDetails_publicationsID (InvestDetails integer not null, publicationsID integer not null)
-create table Investigation (id integer not null auto_increment, accession varchar(255), description longtext, endDate datetime, name varchar(255) not null, startDate datetime, canRead integer, canWrite integer, owns integer, primary key (id), unique (name))
+create table Investigation (id integer not null auto_increment, accession varchar(255), description longtext, endDate datetime, name varchar(255) not null, startDate datetime, canRead integer, canWrite integer, owns integer not null, primary key (id), unique (name))
 create table InvestigationFile (id integer not null, Investigation integer not null, primary key (id))
 create table Investigation_contacts (Investigation integer not null, contacts integer not null)
-create table Investigator (id integer not null, primary key (id))
 create table Job (id integer not null auto_increment, ComputeResource varchar(255) not null, OutputDataName varchar(255) not null, Timestamp varchar(255) not null, Analysis integer not null, primary key (id), unique (OutputDataName))
 create table LibraryBarcode (id integer not null auto_increment, barcode varchar(255) not null, primary key (id), unique (barcode))
 create table LibraryCapturing (id integer not null auto_increment, capturing varchar(255) not null, primary key (id), unique (capturing))
@@ -495,10 +485,9 @@ create table MutationGene (aaSequence longtext, genbankId varchar(255) not null,
 create table MutationPhenotype (majortype varchar(255) not null, name varchar(255) not null, subtype varchar(255) not null, id integer not null, primary key (id))
 create table NMRBin (id integer not null, primary key (id))
 create table NameValueType (id integer not null auto_increment, Name varchar(255) not null, Value longtext not null, ArrayDesign integer, Investigation integer, Type integer, primary key (id), unique (Name))
-create table NgsPerson (labworker bit, id integer not null, primary key (id))
 create table NgsSample (description longtext, sampletype varchar(255) not null, id integer not null, primary key (id))
 create table ObservableFeature (id integer not null, primary key (id))
-create table ObservationElement (id integer not null auto_increment, __Type varchar(255) not null, description longtext, name varchar(255) not null, canRead integer, canWrite integer, Investigation integer, ontologyReference integer, owns integer, primary key (id), unique (Investigation, name))
+create table ObservationElement (id integer not null auto_increment, __Type varchar(255) not null, description longtext, name varchar(255) not null, canRead integer, canWrite integer, Investigation integer, ontologyReference integer, owns integer not null, primary key (id))
 create table ObservationTarget (name varchar(255) not null, id integer not null, primary key (id), unique (name))
 create table ObservedInference (id integer not null, inferenceType integer, primary key (id))
 create table ObservedInference_derivedFrom (ObservedInference integer not null, derivedFrom integer not null)
@@ -513,17 +502,16 @@ create table Panel_Individuals (Panel integer not null, Individuals integer not 
 create table ParameterName (id integer not null auto_increment, name varchar(255) not null, ParameterSet integer not null, primary key (id), unique (name, ParameterSet))
 create table ParameterSet (id integer not null auto_increment, name varchar(255) not null, primary key (id), unique (name))
 create table ParameterValue (id integer not null auto_increment, name varchar(255) not null, Value varchar(255) not null, ParameterName integer not null, primary key (id), unique (name, ParameterName))
-create table Patient (age varchar(255), consent varchar(255) not null, death_cause varchar(255), deceased varchar(255) not null, ethnicity varchar(255), gender varchar(255) not null, identifier varchar(255) not null, mmp1_allele1 varchar(255), mmp1_allele2 varchar(255), mutation2remark varchar(255), number_ varchar(255) not null, id integer not null, mutation1 integer, mutation2 integer, phenotype integer not null, phenotype_details integer, submission integer not null, primary key (id), unique (identifier))
+create table Patient (age varchar(255), consent varchar(255) not null, death_cause varchar(255), deceased varchar(255) not null, ethnicity varchar(255), gender varchar(255) not null, identifier varchar(255) not null, mmp1_allele1 varchar(255), mmp1_allele2 varchar(255), mutation2remark varchar(255), number_ varchar(255) not null, id integer not null, mutation1 integer, mutation2 integer, phenotype integer not null, submission integer not null, primary key (id), unique (identifier))
 create table Patient_material (Patient integer not null, material integer not null)
-create table Patient_publicationsPatient (Patient integer not null, publicationsPatient integer not null)
-create table Person (id integer not null auto_increment, __Type varchar(255) not null, Address longtext, Email varchar(255), Fax varchar(255), FirstName varchar(255), LastName varchar(255) not null, MidInitials varchar(255), Phone varchar(255), Title varchar(255), tollFreePhone varchar(255), Affiliation integer, primary key (id), unique (FirstName, MidInitials, LastName))
+create table Patient_patientreferences (Patient integer not null, patientreferences integer not null)
+create table Person (id integer not null auto_increment, Address longtext, Email varchar(255), Fax varchar(255), FirstName varchar(255), LastName varchar(255) not null, MidInitials varchar(255), Phone varchar(255), Title varchar(255), tollFreePhone varchar(255), Affiliation integer, primary key (id), unique (FirstName, MidInitials, LastName))
 create table Person_Roles (Person integer not null, Roles integer not null)
-create table PhenotypeDetails (id integer not null auto_increment, albopapuloid_papules varchar(255) not null, alopecia varchar(255) not null, anemia varchar(255) not null, ankyloglossia varchar(255) not null, arms varchar(255) not null, blistering varchar(255) not null, choanal_anomaly varchar(255) not null, clp varchar(255) not null, cn_dysfunction varchar(255) not null, coloboma varchar(255) not null, congenital_heart_defect varchar(255) not null, dilated_cardiomyopathy varchar(255) not null, dysphagia varchar(255) not null, external_ear_anomaly varchar(255) not null, feet varchar(255) not null, flexion_contractures varchar(255) not null, genital_hypoplasia varchar(255) not null, growth_retardation varchar(255) not null, hands varchar(255) not null, hearing_loss varchar(255) not null, legs varchar(255) not null, location varchar(255) not null, mechanism varchar(255), mental_retardation varchar(255) not null, microstomia varchar(255) not null, milia varchar(255) not null, mucous_membranes varchar(255) not null, nail_dystrophy varchar(255) not null, other varchar(255), proximal_body_flexures varchar(255) not null, pruritic_papules varchar(255) not null, pseudosyndactyly_hands varchar(255) not null, renal_failure varchar(255) not null, revertant_skin_patch varchar(255) not null, semicircular_canal_anomaly varchar(255) not null, skin_atrophy varchar(255) not null, squamous_cell_carcinomas varchar(255) not null, te_anomaly varchar(255) not null, trunk varchar(255) not null, primary key (id))
 create table Probe (bpEnd bigint, bpStart bigint, cM double precision, Mismatch bit not null, Seq longtext, Symbol varchar(255), id integer not null, Chromosome integer, ProbeSet integer, primary key (id))
 create table ProbeSet (id integer not null, primary key (id))
 create table Protein (AminoSequence longtext, Mass double precision, id integer not null, Gene integer, primary key (id))
 create table ProteinDomain (id integer not null auto_increment, name varchar(255) not null, superDomain integer, primary key (id), unique (name))
-create table Protocol (id integer not null auto_increment, __Type varchar(255) not null, description longtext, name varchar(255) not null, TargetFilter varchar(255), Contact integer, Investigation integer, ontologyReference integer, ProtocolType integer, primary key (id))
+create table Protocol (id integer not null auto_increment, __Type varchar(255) not null, description varchar(255), name varchar(255) not null, TargetFilter varchar(255), Contact integer, Investigation integer, ontologyReference integer, ProtocolType integer, primary key (id))
 create table ProtocolApplication (id integer not null auto_increment, __Type varchar(255) not null, description longtext, name varchar(255) not null, time datetime not null, Investigation integer, ontologyReference integer, protocol integer not null, primary key (id))
 create table ProtocolApplication_Performer (ProtocolApplication integer not null, Performer integer not null)
 create table ProtocolDocument (id integer not null, protocol integer not null, primary key (id))
@@ -548,7 +536,7 @@ create table TextDataElement (id integer not null auto_increment, FeatureIndex i
 create table Tissue (id integer not null, primary key (id))
 create table UseCase (UseCaseId integer not null auto_increment, SearchType varchar(255) not null, UseCaseName varchar(255) not null, primary key (UseCaseId))
 create table Workflow (name varchar(255) not null, id integer not null, primary key (id), unique (name))
-create table WorkflowElement (id integer not null auto_increment, ExecutionTime longtext, name varchar(255) not null, protocol integer not null, primary key (id), unique (name))
+create table WorkflowElement (id integer not null auto_increment, name varchar(255) not null, protocol integer not null, primary key (id), unique (name))
 create table WorkflowElementParameter (id integer not null, WorkflowElement integer not null, primary key (id))
 create table WorkflowElement_PreviousSteps (WorkflowElement integer not null, PreviousSteps integer not null)
 create table WorkflowElement_Workflow (WorkflowElement integer not null, Workflow integer not null)
@@ -596,7 +584,7 @@ alter table Code add index FK20220DCDC19DD2 (ontologyReference), add constraint 
 alter table Code_feature add index FKD089E6C47748C8EE (Code), add constraint FKD089E6C47748C8EE foreign key (Code) references Code (id)
 alter table Code_feature add index FKD089E6C468E42A95 (feature), add constraint FKD089E6C468E42A95 foreign key (feature) references ObservableFeature (id)
 alter table CompositeElement add index FK19E8F29594609C8F (id), add constraint FK19E8F29594609C8F foreign key (id) references DesignElement (id)
-alter table CompositeElement_Comments add index FKC1D987E5159D986 (Comments), add constraint FKC1D987E5159D986 foreign key (Comments) references NameValueType (id)
+alter table CompositeElement_Comments add index FKC1D987ED9060012 (Comments), add constraint FKC1D987ED9060012 foreign key (Comments) references NameValueType (id)
 alter table CompositeElement_Comments add index FKC1D987E7F18D934 (CompositeElement), add constraint FKC1D987E7F18D934 foreign key (CompositeElement) references CompositeElement (id)
 alter table CompositeElement_Reporters add index FKBBA24E687F18D934 (CompositeElement), add constraint FKBBA24E687F18D934 foreign key (CompositeElement) references CompositeElement (id)
 alter table CompositeElement_Reporters add index FKBBA24E682B087ABD (Reporters), add constraint FKBBA24E682B087ABD foreign key (Reporters) references Reporter (id)
@@ -605,14 +593,17 @@ alter table CompositeElement_dbEntryDE add index FKC8954EB7404A92B (dbEntryDE), 
 alter table ComputeApplication add index FKDDCF68B99A9D4272 (protocol), add constraint FKDDCF68B99A9D4272 foreign key (protocol) references Protocol (id)
 alter table ComputeApplication add index FKDDCF68B9DF23FA31 (id), add constraint FKDDCF68B9DF23FA31 foreign key (id) references ProtocolApplication (id)
 alter table ComputeApplication add index FKDDCF68B9E56A2918 (WorkflowElement), add constraint FKDDCF68B9E56A2918 foreign key (WorkflowElement) references WorkflowElement (id)
-alter table ComputeApplication_PrevSteps add index FK94D5588EB652402F (PrevSteps), add constraint FK94D5588EB652402F foreign key (PrevSteps) references ComputeApplication (id)
-alter table ComputeApplication_PrevSteps add index FK94D5588EF401AC14 (ComputeApplication), add constraint FK94D5588EF401AC14 foreign key (ComputeApplication) references ComputeApplication (id)
+alter table ComputeApplication add index FKDDCF68B9E113D85F (ComputeResource), add constraint FKDDCF68B9E113D85F foreign key (ComputeResource) references ComputeResource (id)
+alter table ComputeApplication_PrevSteps add index FK94D5588E6CD8C398 (PrevSteps), add constraint FK94D5588E6CD8C398 foreign key (PrevSteps) references ComputeApplication (id)
+alter table ComputeApplication_PrevSteps add index FK94D5588EAA882F7D (ComputeApplication), add constraint FK94D5588EAA882F7D foreign key (ComputeApplication) references ComputeApplication (id)
+alter table ComputeCredentials add index FK926486655A429048 (MolgenisUser), add constraint FK926486655A429048 foreign key (MolgenisUser) references MolgenisUser (id)
+alter table ComputeCredentials add index FK92648665E113D85F (ComputeResource), add constraint FK92648665E113D85F foreign key (ComputeResource) references ComputeResource (id)
 alter table ComputeFeature add index FKEBD1FADF8C5A5D43 (id), add constraint FKEBD1FADF8C5A5D43 foreign key (id) references Measurement (id)
 alter table ComputeProtocol add index FK64CB0BCFD592C0F5 (id), add constraint FK64CB0BCFD592C0F5 foreign key (id) references Protocol (id)
-alter table ComputeProtocol_Inputs add index FK811A68795698103C (ComputeProtocol), add constraint FK811A68795698103C foreign key (ComputeProtocol) references ComputeProtocol (id)
-alter table ComputeProtocol_Inputs add index FK811A6879556E7C6A (Inputs), add constraint FK811A6879556E7C6A foreign key (Inputs) references ComputeFeature (id)
-alter table ComputeProtocol_Outputs add index FKEBC013025698103C (ComputeProtocol), add constraint FKEBC013025698103C foreign key (ComputeProtocol) references ComputeProtocol (id)
-alter table ComputeProtocol_Outputs add index FKEBC013025A10E213 (Outputs), add constraint FKEBC013025A10E213 foreign key (Outputs) references ComputeFeature (id)
+alter table ComputeProtocol_Inputs add index FK811A687993D16D73 (ComputeProtocol), add constraint FK811A687993D16D73 foreign key (ComputeProtocol) references ComputeProtocol (id)
+alter table ComputeProtocol_Inputs add index FK811A6879DB891C53 (Inputs), add constraint FK811A6879DB891C53 foreign key (Inputs) references ComputeFeature (id)
+alter table ComputeProtocol_Outputs add index FKEBC0130293D16D73 (ComputeProtocol), add constraint FKEBC0130293D16D73 foreign key (ComputeProtocol) references ComputeProtocol (id)
+alter table ComputeProtocol_Outputs add index FKEBC01302E02B81FC (Outputs), add constraint FKEBC01302E02B81FC foreign key (Outputs) references ComputeFeature (id)
 alter table CustomLabelFeature add index FK8B1393937349F2B9 (featureId), add constraint FK8B1393937349F2B9 foreign key (featureId) references Measurement (id)
 alter table CustomLabelFeature add index FK8B1393932B9FF6F3 (userId), add constraint FK8B1393932B9FF6F3 foreign key (userId) references MolgenisUser (id)
 alter table Data add index FK2063CA495FE564 (id), add constraint FK2063CA495FE564 foreign key (id) references ObservationTarget (id)
@@ -633,8 +624,6 @@ alter table DecimalDataElement add index FK9235780183C095C4 (Data), add constrai
 alter table DerivedTrait add index FKD24A0A11A341BCBA (id), add constraint FKD24A0A11A341BCBA foreign key (id) references ObservableFeature (id)
 alter table DesignElement add index FKC325533EA341BCBA (id), add constraint FKC325533EA341BCBA foreign key (id) references ObservableFeature (id)
 alter table DesignElement add index FKC325533EF3BE0064 (ArrayDesign), add constraint FKC325533EF3BE0064 foreign key (ArrayDesign) references ArrayDesign (id)
-alter table E_M add index FK10ED3DF9A6399 (patient), add constraint FK10ED3DF9A6399 foreign key (patient) references Patient (id)
-alter table E_M add index FK10ED346AE1C59 (antibody), add constraint FK10ED346AE1C59 foreign key (antibody) references Antibody (id)
 alter table Exon add index FK212DF2F341D444 (gene), add constraint FK212DF2F341D444 foreign key (gene) references MutationGene (id)
 alter table Exon_proteinDomain add index FK5D475A9ABF4C4E7D (proteinDomain), add constraint FK5D475A9ABF4C4E7D foreign key (proteinDomain) references ProteinDomain (id)
 alter table Exon_proteinDomain add index FK5D475A9ADA576875 (Exon), add constraint FK5D475A9ADA576875 foreign key (Exon) references Exon (id)
@@ -643,26 +632,24 @@ alter table Flowcell add index FK7CD8A7B0495FE564 (id), add constraint FK7CD8A7B
 alter table Flowcell add index FK7CD8A7B0F4EDABE6 (machine), add constraint FK7CD8A7B0F4EDABE6 foreign key (machine) references Machine (id)
 alter table Gene add index FK21CF35A341BCBA (id), add constraint FK21CF35A341BCBA foreign key (id) references ObservableFeature (id)
 alter table Gene add index FK21CF352202292C (Chromosome), add constraint FK21CF352202292C foreign key (Chromosome) references Chromosome (id)
-alter table I_F add index FK11DD0DF9A6399 (patient), add constraint FK11DD0DF9A6399 foreign key (patient) references Patient (id)
-alter table I_F add index FK11DD046AE1C59 (antibody), add constraint FK11DD046AE1C59 foreign key (antibody) references Antibody (id)
 alter table Individual add index FK740F7EB9495FE564 (id), add constraint FK740F7EB9495FE564 foreign key (id) references ObservationTarget (id)
 alter table Individual add index FK740F7EB94172AB70 (Mother), add constraint FK740F7EB94172AB70 foreign key (Mother) references Individual (id)
 alter table Individual add index FK740F7EB934BB7609 (Father), add constraint FK740F7EB934BB7609 foreign key (Father) references Individual (id)
 alter table InvestDetails add index FKC0EDAC6DACA1B35D (Investigation), add constraint FKC0EDAC6DACA1B35D foreign key (Investigation) references Investigation (id)
 alter table InvestDetails_ExperDesigns add index FKD93BC63DF67322A1 (ExperDesigns), add constraint FKD93BC63DF67322A1 foreign key (ExperDesigns) references OntologyTerm (id)
-alter table InvestDetails_ExperDesigns add index FKD93BC63DBDE196CC (InvestDetails), add constraint FKD93BC63DBDE196CC foreign key (InvestDetails) references InvestDetails (id)
-alter table InvestDetails_Factors add index FK4E585F1220CF3501 (Factors), add constraint FK4E585F1220CF3501 foreign key (Factors) references Factor (id)
-alter table InvestDetails_Factors add index FK4E585F12BDE196CC (InvestDetails), add constraint FK4E585F12BDE196CC foreign key (InvestDetails) references InvestDetails (id)
-alter table InvestDetails_NormaliTypes add index FKD051DFE9BDE196CC (InvestDetails), add constraint FKD051DFE9BDE196CC foreign key (InvestDetails) references InvestDetails (id)
+alter table InvestDetails_ExperDesigns add index FKD93BC63D458DBD58 (InvestDetails), add constraint FKD93BC63D458DBD58 foreign key (InvestDetails) references InvestDetails (id)
+alter table InvestDetails_Factors add index FK4E585F1212C13F5 (Factors), add constraint FK4E585F1212C13F5 foreign key (Factors) references Factor (id)
+alter table InvestDetails_Factors add index FK4E585F12458DBD58 (InvestDetails), add constraint FK4E585F12458DBD58 foreign key (InvestDetails) references InvestDetails (id)
+alter table InvestDetails_NormaliTypes add index FKD051DFE9458DBD58 (InvestDetails), add constraint FKD051DFE9458DBD58 foreign key (InvestDetails) references InvestDetails (id)
 alter table InvestDetails_NormaliTypes add index FKD051DFE95284C44D (NormaliTypes), add constraint FKD051DFE95284C44D foreign key (NormaliTypes) references OntologyTerm (id)
 alter table InvestDetails_Protocols add index FK45212769B1D9F8B5 (Protocols), add constraint FK45212769B1D9F8B5 foreign key (Protocols) references Protocol (id)
-alter table InvestDetails_Protocols add index FK45212769BDE196CC (InvestDetails), add constraint FK45212769BDE196CC foreign key (InvestDetails) references InvestDetails (id)
+alter table InvestDetails_Protocols add index FK45212769458DBD58 (InvestDetails), add constraint FK45212769458DBD58 foreign key (InvestDetails) references InvestDetails (id)
 alter table InvestDetails_QualityControls add index FK76683CE35C63F7AB (QualityControls), add constraint FK76683CE35C63F7AB foreign key (QualityControls) references OntologyTerm (id)
-alter table InvestDetails_QualityControls add index FK76683CE3BDE196CC (InvestDetails), add constraint FK76683CE3BDE196CC foreign key (InvestDetails) references InvestDetails (id)
-alter table InvestDetails_ReplicateTypes add index FK3B69AF02BDE196CC (InvestDetails), add constraint FK3B69AF02BDE196CC foreign key (InvestDetails) references InvestDetails (id)
+alter table InvestDetails_QualityControls add index FK76683CE3458DBD58 (InvestDetails), add constraint FK76683CE3458DBD58 foreign key (InvestDetails) references InvestDetails (id)
+alter table InvestDetails_ReplicateTypes add index FK3B69AF02458DBD58 (InvestDetails), add constraint FK3B69AF02458DBD58 foreign key (InvestDetails) references InvestDetails (id)
 alter table InvestDetails_ReplicateTypes add index FK3B69AF0290CC77E6 (ReplicateTypes), add constraint FK3B69AF0290CC77E6 foreign key (ReplicateTypes) references OntologyTerm (id)
 alter table InvestDetails_publicationsID add index FK382B9134BD612153 (publicationsID), add constraint FK382B9134BD612153 foreign key (publicationsID) references Publication (id)
-alter table InvestDetails_publicationsID add index FK382B9134BDE196CC (InvestDetails), add constraint FK382B9134BDE196CC foreign key (InvestDetails) references InvestDetails (id)
+alter table InvestDetails_publicationsID add index FK382B9134458DBD58 (InvestDetails), add constraint FK382B9134458DBD58 foreign key (InvestDetails) references InvestDetails (id)
 alter table Investigation add index FK689AD2E2573B9387 (canWrite), add constraint FK689AD2E2573B9387 foreign key (canWrite) references MolgenisRole (id)
 alter table Investigation add index FK689AD2E25DA79B25 (owns), add constraint FK689AD2E25DA79B25 foreign key (owns) references MolgenisRole (id)
 alter table Investigation add index FK689AD2E27E45CADE (canRead), add constraint FK689AD2E27E45CADE foreign key (canRead) references MolgenisRole (id)
@@ -670,7 +657,6 @@ alter table InvestigationFile add index FK2773FB7E5C063302 (id), add constraint 
 alter table InvestigationFile add index FK2773FB7EACA1B35D (Investigation), add constraint FK2773FB7EACA1B35D foreign key (Investigation) references Investigation (id)
 alter table Investigation_contacts add index FK6FD9DD10ACA1B35D (Investigation), add constraint FK6FD9DD10ACA1B35D foreign key (Investigation) references Investigation (id)
 alter table Investigation_contacts add index FK6FD9DD1026B5F06F (contacts), add constraint FK6FD9DD1026B5F06F foreign key (contacts) references Person (id)
-alter table Investigator add index FKA0470FC948889D37 (id), add constraint FKA0470FC948889D37 foreign key (id) references Person (id)
 alter table Job add index FK1239DE0D74F40 (Analysis), add constraint FK1239DE0D74F40 foreign key (Analysis) references Analysis (id)
 alter table LibraryLane add index FK3F0EFD27B0D5CEC8 (flowcell), add constraint FK3F0EFD27B0D5CEC8 foreign key (flowcell) references Flowcell (id)
 alter table LibraryLane add index FK3F0EFD27DB2E9C5F (id), add constraint FK3F0EFD27DB2E9C5F foreign key (id) references ObservationElement (id)
@@ -704,7 +690,6 @@ alter table NMRBin add index FK897D5D94A341BCBA (id), add constraint FK897D5D94A
 alter table NameValueType add index FKA663F5E0ACA1B35D (Investigation), add constraint FKA663F5E0ACA1B35D foreign key (Investigation) references Investigation (id)
 alter table NameValueType add index FKA663F5E0F3BE0064 (ArrayDesign), add constraint FKA663F5E0F3BE0064 foreign key (ArrayDesign) references ArrayDesign (id)
 alter table NameValueType add index FKA663F5E02429EE30 (Type), add constraint FKA663F5E02429EE30 foreign key (Type) references OntologyTerm (id)
-alter table NgsPerson add index FK4A2805AF48889D37 (id), add constraint FK4A2805AF48889D37 foreign key (id) references Person (id)
 alter table NgsSample add index FK4F0BE004495FE564 (id), add constraint FK4F0BE004495FE564 foreign key (id) references ObservationTarget (id)
 alter table ObservableFeature add index FK1AE47C13DB2E9C5F (id), add constraint FK1AE47C13DB2E9C5F foreign key (id) references ObservationElement (id)
 alter table ObservationElement add index FK57E55150573B9387 (canWrite), add constraint FK57E55150573B9387 foreign key (canWrite) references MolgenisRole (id)
@@ -717,7 +702,7 @@ alter table ObservedInference add index FK56499A11938AE210 (id), add constraint 
 alter table ObservedInference add index FK56499A11661225C9 (inferenceType), add constraint FK56499A11661225C9 foreign key (inferenceType) references OntologyTerm (id)
 alter table ObservedInference_derivedFrom add index FKF4923239D3D92C3C (derivedFrom), add constraint FKF4923239D3D92C3C foreign key (derivedFrom) references ObservedValue (id)
 alter table ObservedInference_derivedFrom add index FKF492323969D5D412 (ObservedInference), add constraint FKF492323969D5D412 foreign key (ObservedInference) references ObservedInference (id)
-alter table ObservedValue add index FK46CDFB692853D245 (relation), add constraint FK46CDFB692853D245 foreign key (relation) references ObservationTarget (id)
+alter table ObservedValue add index FK46CDFB69BA228940 (relation), add constraint FK46CDFB69BA228940 foreign key (relation) references ObservationElement (id)
 alter table ObservedValue add index FK46CDFB69A0D10A3A (Feature), add constraint FK46CDFB69A0D10A3A foreign key (Feature) references ObservationElement (id)
 alter table ObservedValue add index FK46CDFB69ACA1B35D (Investigation), add constraint FK46CDFB69ACA1B35D foreign key (Investigation) references Investigation (id)
 alter table ObservedValue add index FK46CDFB69A6AD00D5 (Target), add constraint FK46CDFB69A6AD00D5 foreign key (Target) references ObservationElement (id)
@@ -744,12 +729,11 @@ alter table Patient add index FK340C82E5811FFDC8 (id), add constraint FK340C82E5
 alter table Patient add index FK340C82E5F37179A2 (mutation1), add constraint FK340C82E5F37179A2 foreign key (mutation1) references Mutation (id)
 alter table Patient add index FK340C82E5F37179A3 (mutation2), add constraint FK340C82E5F37179A3 foreign key (mutation2) references Mutation (id)
 alter table Patient add index FK340C82E5AFB7BB26 (submission), add constraint FK340C82E5AFB7BB26 foreign key (submission) references Submission (id)
-alter table Patient add index FK340C82E5E0FCC176 (phenotype_details), add constraint FK340C82E5E0FCC176 foreign key (phenotype_details) references PhenotypeDetails (id)
 alter table Patient add index FK340C82E5740FA276 (phenotype), add constraint FK340C82E5740FA276 foreign key (phenotype) references MutationPhenotype (id)
 alter table Patient_material add index FK81D08541DF9A6399 (Patient), add constraint FK81D08541DF9A6399 foreign key (Patient) references Patient (id)
 alter table Patient_material add index FK81D08541A405EE9F (material), add constraint FK81D08541A405EE9F foreign key (material) references Material (id)
-alter table Patient_publicationsPatient add index FK198A0CE4DF9A6399 (Patient), add constraint FK198A0CE4DF9A6399 foreign key (Patient) references Patient (id)
-alter table Patient_publicationsPatient add index FK198A0CE4AAFA0F8F (publicationsPatient), add constraint FK198A0CE4AAFA0F8F foreign key (publicationsPatient) references Publication (id)
+alter table Patient_patientreferences add index FK8A6AB073DF9A6399 (Patient), add constraint FK8A6AB073DF9A6399 foreign key (Patient) references Patient (id)
+alter table Patient_patientreferences add index FK8A6AB073E170997E (patientreferences), add constraint FK8A6AB073E170997E foreign key (patientreferences) references Publication (id)
 alter table Person add index FK8E48877513B63EDE (Affiliation), add constraint FK8E48877513B63EDE foreign key (Affiliation) references Institute (id)
 alter table Person_Roles add index FKF5945D53D6C2B71 (Person), add constraint FKF5945D53D6C2B71 foreign key (Person) references Person (id)
 alter table Person_Roles add index FKF5945D532A6DEDB3 (Roles), add constraint FKF5945D532A6DEDB3 foreign key (Roles) references OntologyTerm (id)
@@ -772,7 +756,7 @@ alter table ProtocolApplication_Performer add index FKF001BA765362FEA (Performer
 alter table ProtocolDocument add index FK1E39EFF39A9D4272 (protocol), add constraint FK1E39EFF39A9D4272 foreign key (protocol) references Protocol (id)
 alter table ProtocolDocument add index FK1E39EFF35C063302 (id), add constraint FK1E39EFF35C063302 foreign key (id) references MolgenisFile (id)
 alter table Protocol_Features add index FKF14116049A9D4272 (Protocol), add constraint FKF14116049A9D4272 foreign key (Protocol) references Protocol (id)
-alter table Protocol_Features add index FKF141160491EE93DC (Features), add constraint FKF141160491EE93DC foreign key (Features) references ObservableFeature (id)
+alter table Protocol_Features add index FKF1411604C9DB7381 (Features), add constraint FKF1411604C9DB7381 foreign key (Features) references ObservationElement (id)
 alter table Publication add index FK23254A0CEEC12EE8 (Status), add constraint FK23254A0CEEC12EE8 foreign key (Status) references OntologyTerm (id)
 alter table Publication add index FK23254A0C23F4E434 (DOI), add constraint FK23254A0C23F4E434 foreign key (DOI) references OntologyTerm (id)
 alter table Publication add index FK23254A0C711A7200 (PubmedID), add constraint FK23254A0C711A7200 foreign key (PubmedID) references OntologyTerm (id)

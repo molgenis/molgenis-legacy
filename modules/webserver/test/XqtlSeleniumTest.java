@@ -109,7 +109,8 @@ public class XqtlSeleniumTest
 		Assert.assertEquals(selenium.getText("link=Marker (117)"), "Marker (117)");
 		selenium.click("link=metaboliteexpression");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertEquals(selenium.getText("//div[@id='Datas_screen']/div[2]/form/div/div[2]/div/table/tbody/tr[3]/td/table/tbody/tr[3]/td[4]"),"942");
+		//Assert.assertEquals(selenium.getText("//div[@id='Datas_screen']/div[2]/form/div/div[2]/div/table/tbody/tr[3]/td/table/tbody/tr[3]/td[1]"),"942");
+		Assert.assertTrue(selenium.isTextPresent("942") && selenium.isTextPresent("4857") && selenium.isTextPresent("20716"));
 		sleepHelper("exploreExampleData");
 	}
 	
@@ -216,7 +217,7 @@ public class XqtlSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=Investigations_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.click("link=View data");
+		selenium.click("id=Datas_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=Datas_collapse_button_id");
 		
