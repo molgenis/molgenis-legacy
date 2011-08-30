@@ -55,7 +55,7 @@ public class MatrixRendererHelper<R, C, V> {
 		StringBuffer result = new StringBuffer();
 		for (C col : rm.getVisibleCols())
 		{
-			result.append(rm.renderColSimple(col)+" ");
+			result.append(rm.getRenderDescriptor().renderColSimple(col)+" ");
 		}
 		return result.toString();
 	}
@@ -65,7 +65,7 @@ public class MatrixRendererHelper<R, C, V> {
 		StringBuffer result = new StringBuffer();
 		for (R row : rm.getVisibleRows())
 		{
-			result.append(rm.renderRowSimple(row)+" ");
+			result.append(rm.getRenderDescriptor().renderRowSimple(row)+" ");
 		}
 		return result.toString();
 	}
@@ -78,7 +78,7 @@ public class MatrixRendererHelper<R, C, V> {
 		{
 			for (int colIndex = 0; colIndex < elements[rowIndex].length; colIndex++)
 			{
-				result.append(rm.renderValue(elements[rowIndex][colIndex])+" ");
+				result.append(rm.getRenderDescriptor().renderValue(elements[rowIndex][colIndex])+" ");
 			}
 		}
 		return result.toString();
@@ -91,13 +91,13 @@ public class MatrixRendererHelper<R, C, V> {
 		{
 			for (C col : rm.getVisibleCols())
 			{
-				result.append("\t" + rm.renderColSimple(col));
+				result.append("\t" + rm.getRenderDescriptor().renderColSimple(col));
 			}
 			result.append("\n");
 			V[][] elements = rm.getVisibleValues();
 			for (int rowIndex = 0; rowIndex < elements.length; rowIndex++)
 			{
-				result.append(rm.renderRowSimple(rm.getVisibleRows().get(rowIndex)));
+				result.append(rm.getRenderDescriptor().renderRowSimple(rm.getVisibleRows().get(rowIndex)));
 				for (int colIndex = 0; colIndex < elements[rowIndex].length; colIndex++)
 				{
 					if (elements[rowIndex][colIndex] == null)
@@ -106,7 +106,7 @@ public class MatrixRendererHelper<R, C, V> {
 					}
 					else
 					{
-						result.append("\t" + rm.renderValue(elements[rowIndex][colIndex]));
+						result.append("\t" + rm.getRenderDescriptor().renderValue(elements[rowIndex][colIndex]));
 					}
 				}
 				result.append("\n");

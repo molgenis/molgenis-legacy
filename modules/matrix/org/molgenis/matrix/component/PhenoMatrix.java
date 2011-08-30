@@ -10,6 +10,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.component.general.AbstractSliceableMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
+import org.molgenis.matrix.component.interfaces.RenderDescriptor;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 import org.molgenis.matrix.component.interfaces.SourceMatrix;
 import org.molgenis.pheno.ObservableFeature;
@@ -18,7 +19,7 @@ import org.molgenis.pheno.ObservedValue;
 
 public class PhenoMatrix extends AbstractSliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>>
 		implements BasicMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>>,
-		SourceMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>>
+		SourceMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>>, RenderDescriptor<ObservationTarget, ObservableFeature, List<ObservedValue>>
 {
 
 	private Database db;
@@ -251,6 +252,12 @@ public class PhenoMatrix extends AbstractSliceableMatrix<ObservationTarget, Obse
 		returnList.add(ObservableFeature.NAME);
 		returnList.add(ObservableFeature.__TYPE);
 		return returnList;
+	}
+
+	@Override
+	public RenderDescriptor<ObservationTarget, ObservableFeature, List<ObservedValue>> getRenderDescriptor()
+			throws Exception {
+		return this;
 	}
 
 }

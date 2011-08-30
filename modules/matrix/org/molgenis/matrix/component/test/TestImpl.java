@@ -7,11 +7,12 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.matrix.component.general.AbstractSliceableMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
+import org.molgenis.matrix.component.interfaces.RenderDescriptor;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 import org.molgenis.matrix.component.interfaces.SourceMatrix;
 
 public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, SomeValueType> implements
-		BasicMatrix<SomeRowType, SomeColType, SomeValueType>, SourceMatrix<SomeRowType, SomeColType, SomeValueType>
+		BasicMatrix<SomeRowType, SomeColType, SomeValueType>, SourceMatrix<SomeRowType, SomeColType, SomeValueType>, RenderDescriptor<SomeRowType, SomeColType, SomeValueType>
 {
 	
 	public TestImpl()
@@ -141,6 +142,12 @@ public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, 
 		}
 		
 		return visibleValues;
+	}
+
+	@Override
+	public RenderDescriptor<SomeRowType, SomeColType, SomeValueType> getRenderDescriptor()
+			throws Exception {
+		return this;
 	}
 
 	

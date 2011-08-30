@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
+import org.molgenis.matrix.component.interfaces.RenderDescriptor;
 import org.molgenis.matrix.component.interfaces.RenderableMatrix;
 import org.molgenis.matrix.component.interfaces.SourceMatrix;
 import org.molgenis.matrix.component.test.SomeColType;
@@ -70,36 +71,6 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>
 	public String getColType() throws Exception
 	{
 		return source.getColType();
-	}
-
-	@Override
-	public String renderValue(V value) throws Exception
-	{
-		return source.renderValue(value);
-	}
-
-	@Override
-	public String renderRow(R row)
-	{
-		return source.renderRow(row);
-	}
-
-	@Override
-	public String renderCol(C col)
-	{
-		return source.renderCol(col);
-	}
-
-	@Override
-	public String renderRowSimple(R row)
-	{
-		return source.renderRowSimple(row);
-	}
-
-	@Override
-	public String renderColSimple(C col)
-	{
-		return source.renderColSimple(col);
 	}
 
 	@Override
@@ -176,6 +147,11 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>
 	public String getScreenName()
 	{
 		return screenName;
+	}
+
+	@Override
+	public RenderDescriptor<R, C, V> getRenderDescriptor() throws Exception {
+		return source.getRenderDescriptor();
 	}
 	
 }

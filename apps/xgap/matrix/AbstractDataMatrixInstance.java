@@ -26,8 +26,12 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.component.general.AbstractSliceableMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
+import org.molgenis.matrix.component.interfaces.RenderDescriptor;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 import org.molgenis.matrix.component.interfaces.SourceMatrix;
+import org.molgenis.matrix.component.test.SomeColType;
+import org.molgenis.matrix.component.test.SomeRowType;
+import org.molgenis.matrix.component.test.SomeValueType;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.util.CsvWriter;
 
@@ -41,7 +45,7 @@ import org.molgenis.util.CsvWriter;
  * @param <E>
  *            the generic type of the matrix. E.g. String, Double etc.
  */
-public abstract class AbstractDataMatrixInstance<E> extends AbstractSliceableMatrix<ObservationElement, ObservationElement, Object> implements DataMatrixInstance, SourceMatrix<ObservationElement, ObservationElement, Object>, BasicMatrix<ObservationElement, ObservationElement, Object>
+public abstract class AbstractDataMatrixInstance<E> extends AbstractSliceableMatrix<ObservationElement, ObservationElement, Object> implements DataMatrixInstance, SourceMatrix<ObservationElement, ObservationElement, Object>, BasicMatrix<ObservationElement, ObservationElement, Object>, RenderDescriptor<ObservationElement, ObservationElement, Object>
 {
 
 	/**
@@ -629,6 +633,12 @@ public abstract class AbstractDataMatrixInstance<E> extends AbstractSliceableMat
 	@Override
 	public BasicMatrix<ObservationElement, ObservationElement, Object> getResult() throws Exception
 	{
+		return this;
+	}
+	
+	@Override
+	public RenderDescriptor<ObservationElement, ObservationElement, Object> getRenderDescriptor()
+			throws Exception {
 		return this;
 	}
 	
