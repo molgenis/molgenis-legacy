@@ -18,7 +18,7 @@ public class TablePanel extends HtmlWidget
 
 	public TablePanel()
 	{
-		this(null, null);
+		this("", "");
 	}
 	
 	public TablePanel(String name, String label)
