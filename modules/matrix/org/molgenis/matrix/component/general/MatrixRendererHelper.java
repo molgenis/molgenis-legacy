@@ -84,7 +84,7 @@ public class MatrixRendererHelper<R, C, V> {
 		return result.toString();
 	}
 	
-	public String toString(RenderableMatrix<R, C, V> rm)
+	public String matrixToString(RenderableMatrix<R, C, V> rm)
 	{
 		StringBuffer result = new StringBuffer();
 		try
