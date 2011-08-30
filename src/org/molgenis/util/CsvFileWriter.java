@@ -26,4 +26,16 @@ public class CsvFileWriter extends CsvWriter
 		super(new PrintWriter(new BufferedWriter(new FileWriter(f))), fields);
 	}
 
+	/**
+	 * Append to existing csv using custom headers.
+	 * @param file
+	 * @param fields
+	 * @param append
+	 * @throws IOException 
+	 */
+	public CsvFileWriter(File file, List<String> fields, boolean append) throws IOException
+	{
+		super(new PrintWriter(new BufferedWriter(new FileWriter(file,append))), fields);
+	}
+
 }
