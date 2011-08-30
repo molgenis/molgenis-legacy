@@ -42,11 +42,12 @@ public class AddBatchCommand<E extends Entity> extends SimpleCommand
 	{
 		List<ActionInput> inputs = new ArrayList<ActionInput>();
 		
-		ActionInput submit = new ActionInput("add", ActionInput.Type.SAVE);
+		ActionInput submit = new ActionInput("Add", ActionInput.Type.SAVE);
+		submit.setValue("upload_csv");
 		submit.setIcon("generated-res/img/save.png");
 		inputs.add(submit);
 
-		ActionInput cancel = new ActionInput("", ActionInput.Type.CLOSE);
+		ActionInput cancel = new ActionInput("Cancel", ActionInput.Type.CLOSE);
 		cancel.setIcon("generated-res/img/cancel.png");
 		inputs.add(cancel);
 
