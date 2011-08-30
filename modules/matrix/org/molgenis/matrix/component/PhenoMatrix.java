@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.matrix.component.general.GenericFunctions;
+import org.molgenis.matrix.component.general.AbstractSliceableMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
@@ -16,7 +16,7 @@ import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 
-public class PhenoMatrix extends GenericFunctions<ObservationTarget, ObservableFeature, List<ObservedValue>>
+public class PhenoMatrix extends AbstractSliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>>
 		implements BasicMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>>,
 		SourceMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>>
 {

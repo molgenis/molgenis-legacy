@@ -14,12 +14,12 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>
 
 	SourceMatrix<R, C, V> source;
 	BasicMatrix<R, C, V> basic;
-	List<Filter> filters;
+	List<MatrixQueryRule> filters;
 	String constraintLogic;
 	int stepSize;
 	String screenName;
 
-	public RenderableMatrixImpl(SourceMatrix<R, C, V> source, BasicMatrix<R, C, V> basic, List<Filter> filters,
+	public RenderableMatrixImpl(SourceMatrix<R, C, V> source, BasicMatrix<R, C, V> basic, List<MatrixQueryRule> filters,
 			String constraintLogic, int stepSize, String screenName)
 	{
 		this.source = source;
@@ -127,18 +127,18 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>
 	}
 
 	@Override
-	public List<Filter> getFilters()
+	public List<MatrixQueryRule> getRules()
 	{
 		return this.filters;
 	}
 
 	// BAD: not part of Renderable interface...
-	public List<Filter> getPagingFilters()
+	public List<MatrixQueryRule> getPagingFilters()
 	{
-		List<Filter> returnList = new ArrayList<Filter>();
-		for (Filter f : this.filters)
+		List<MatrixQueryRule> returnList = new ArrayList<MatrixQueryRule>();
+		for (MatrixQueryRule f : this.filters)
 		{
-			if (f.getFilterType().equals(Filter.Type.paging))
+			if (f.getFilterType().equals(MatrixQueryRule.Type.paging))
 			{
 				returnList.add(f);
 			}
@@ -147,12 +147,12 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>
 	}
 
 	// BAD: not part of Renderable interface...
-	public List<Filter> getOtherFilters()
+	public List<MatrixQueryRule> getOtherFilters()
 	{
-		List<Filter> returnList = new ArrayList<Filter>();
-		for (Filter f : this.filters)
+		List<MatrixQueryRule> returnList = new ArrayList<MatrixQueryRule>();
+		for (MatrixQueryRule f : this.filters)
 		{
-			if (!f.getFilterType().equals(Filter.Type.paging))
+			if (!f.getFilterType().equals(MatrixQueryRule.Type.paging))
 			{
 				returnList.add(f);
 			}

@@ -6,7 +6,7 @@ import java.util.List;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 
-public abstract class GenericFunctions<R, C, V> implements SliceableMatrix<R, C, V>
+public abstract class AbstractSliceableMatrix<R, C, V> implements SliceableMatrix<R, C, V>
 {
 	// set once
 	public List<R> originalRows;

@@ -12,20 +12,20 @@ public class Mover<R, C, V>
 	 */
 	public void moveLeft(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
-		Filter f = MatrixRendererHelper.getFilterWhere(renderMe.getFilters(), Filter.Type.paging, "col",
+		MatrixQueryRule f = MatrixRendererHelper.getFilterWhere(renderMe.getRules(), MatrixQueryRule.Type.paging, "col",
 				Operator.OFFSET);
 
 		if (f != null)
 		{
-			f.getQueryRule().setValue((Integer) f.getQueryRule().getValue() - renderMe.getStepSize());
+			f.setValue((Integer) f.getValue() - renderMe.getStepSize());
 		}
 		else
 		{
 			// will result in error message, but is consistent/expected
 			// behaviour
-			renderMe.getFilters().add(
-					new Filter(Filter.Type.paging, new MatrixQueryRule("col", Operator.OFFSET, 0 - renderMe
-							.getStepSize())));
+			renderMe.getRules().add(
+					new MatrixQueryRule(MatrixQueryRule.Type.paging, "col", Operator.OFFSET, 0 - renderMe
+							.getStepSize()));
 		}
 	}
 
@@ -37,18 +37,18 @@ public class Mover<R, C, V>
 	public void moveRight(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
 
-		Filter f = MatrixRendererHelper.getFilterWhere(renderMe.getFilters(), Filter.Type.paging, "col",
+		MatrixQueryRule f = MatrixRendererHelper.getFilterWhere(renderMe.getRules(), MatrixQueryRule.Type.paging, "col",
 				Operator.OFFSET);
 
 		if (f != null)
 		{
-			f.getQueryRule().setValue((Integer) f.getQueryRule().getValue() + renderMe.getStepSize());
+			f.setValue((Integer) f.getValue() + renderMe.getStepSize());
 		}
 		else
 		{
-			renderMe.getFilters()
-					.add(new Filter(Filter.Type.paging, new MatrixQueryRule("col", Operator.OFFSET, renderMe
-							.getStepSize())));
+			renderMe.getRules()
+					.add(new MatrixQueryRule(MatrixQueryRule.Type.paging, "col", Operator.OFFSET, renderMe
+							.getStepSize()));
 		}
 	}
 
@@ -60,18 +60,18 @@ public class Mover<R, C, V>
 	public void moveDown(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
 
-		Filter f = MatrixRendererHelper.getFilterWhere(renderMe.getFilters(), Filter.Type.paging, "row",
+		MatrixQueryRule f = MatrixRendererHelper.getFilterWhere(renderMe.getRules(), MatrixQueryRule.Type.paging, "row",
 				Operator.OFFSET);
 
 		if (f != null)
 		{
-			f.getQueryRule().setValue((Integer) f.getQueryRule().getValue() + renderMe.getStepSize());
+			f.setValue((Integer) f.getValue() + renderMe.getStepSize());
 		}
 		else
 		{
-			renderMe.getFilters()
-					.add(new Filter(Filter.Type.paging, new MatrixQueryRule("row", Operator.OFFSET, renderMe
-							.getStepSize())));
+			renderMe.getRules()
+					.add(new MatrixQueryRule(MatrixQueryRule.Type.paging, "row", Operator.OFFSET, renderMe
+							.getStepSize()));
 		}
 	}
 
@@ -82,20 +82,20 @@ public class Mover<R, C, V>
 	 */
 	public void moveUp(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
-		Filter f = MatrixRendererHelper.getFilterWhere(renderMe.getFilters(), Filter.Type.paging, "row",
+		MatrixQueryRule f = MatrixRendererHelper.getFilterWhere(renderMe.getRules(), MatrixQueryRule.Type.paging, "row",
 				Operator.OFFSET);
 
 		if (f != null)
 		{
-			f.getQueryRule().setValue((Integer) f.getQueryRule().getValue() - renderMe.getStepSize());
+			f.setValue((Integer) f.getValue() - renderMe.getStepSize());
 		}
 		else
 		{
 			// will result in error message, but is consistent/expected
 			// behaviour
-			renderMe.getFilters().add(
-					new Filter(Filter.Type.paging, new MatrixQueryRule("row", Operator.OFFSET, 0 - renderMe
-							.getStepSize())));
+			renderMe.getRules().add(
+					new MatrixQueryRule(MatrixQueryRule.Type.paging, "row", Operator.OFFSET, 0 - renderMe
+							.getStepSize()));
 		}
 	}
 
@@ -104,17 +104,17 @@ public class Mover<R, C, V>
 	 */
 	public void moveFarLeft(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
-		Filter f = MatrixRendererHelper.getFilterWhere(renderMe.getFilters(), Filter.Type.paging, "col",
+		MatrixQueryRule f = MatrixRendererHelper.getFilterWhere(renderMe.getRules(), MatrixQueryRule.Type.paging, "col",
 				Operator.OFFSET);
 
 		if (f != null)
 		{
-			f.getQueryRule().setValue(0);
+			f.setValue(0);
 		}
 		else
 		{
 			// default situation, but make explicit for consistency
-			renderMe.getFilters().add(new Filter(Filter.Type.paging, new MatrixQueryRule("col", Operator.OFFSET, 0)));
+			renderMe.getRules().add(new MatrixQueryRule(MatrixQueryRule.Type.paging, "col", Operator.OFFSET, 0));
 		}
 	}
 
@@ -126,18 +126,18 @@ public class Mover<R, C, V>
 	 */
 	public void moveFarRight(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
-		Filter f = MatrixRendererHelper.getFilterWhere(renderMe.getFilters(), Filter.Type.paging, "col",
+		MatrixQueryRule f = MatrixRendererHelper.getFilterWhere(renderMe.getRules(), MatrixQueryRule.Type.paging, "col",
 				Operator.OFFSET);
 
 		if (f != null)
 		{
-			f.getQueryRule().setValue(renderMe.getTotalNumberOfCols() - renderMe.getVisibleCols().size());
+			f.setValue(renderMe.getTotalNumberOfCols() - renderMe.getVisibleCols().size());
 		}
 		else
 		{
-			renderMe.getFilters().add(
-					new Filter(Filter.Type.paging, new MatrixQueryRule("col", Operator.OFFSET, renderMe
-							.getTotalNumberOfCols() - renderMe.getVisibleCols().size())));
+			renderMe.getRules().add(
+					new MatrixQueryRule(MatrixQueryRule.Type.paging, "col", Operator.OFFSET, renderMe
+							.getTotalNumberOfCols() - renderMe.getVisibleCols().size()));
 		}
 	}
 
@@ -150,17 +150,17 @@ public class Mover<R, C, V>
 	 */
 	public void moveFarDown(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
-		Filter f = MatrixRendererHelper.getFilterWhere(renderMe.getFilters(), Filter.Type.paging, "row",
+		MatrixQueryRule f = MatrixRendererHelper.getFilterWhere(renderMe.getRules(), MatrixQueryRule.Type.paging, "row",
 				Operator.OFFSET);
 
 		if (f != null)
 		{
-			f.getQueryRule().setValue(renderMe.getTotalNumberOfRows() - renderMe.getVisibleRows().size());
+			f.setValue(renderMe.getTotalNumberOfRows() - renderMe.getVisibleRows().size());
 		}
 		else
 		{
-			renderMe.getFilters().add(
-					new Filter(Filter.Type.paging, new MatrixQueryRule("row", Operator.OFFSET, renderMe.getTotalNumberOfRows() - renderMe.getVisibleRows().size())));
+			renderMe.getRules().add(
+					new MatrixQueryRule(MatrixQueryRule.Type.paging, "row", Operator.OFFSET, renderMe.getTotalNumberOfRows() - renderMe.getVisibleRows().size()));
 		}
 	}
 
@@ -169,17 +169,17 @@ public class Mover<R, C, V>
 	 */
 	public void moveFarUp(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
-		Filter f = MatrixRendererHelper.getFilterWhere(renderMe.getFilters(), Filter.Type.paging, "row",
+		MatrixQueryRule f = MatrixRendererHelper.getFilterWhere(renderMe.getRules(), MatrixQueryRule.Type.paging, "row",
 				Operator.OFFSET);
 
 		if (f != null)
 		{
-			f.getQueryRule().setValue(0);
+			f.setValue(0);
 		}
 		else
 		{
-			renderMe.getFilters().add(
-					new Filter(Filter.Type.paging, new MatrixQueryRule("row", Operator.OFFSET, 0)));
+			renderMe.getRules().add(
+					new MatrixQueryRule(MatrixQueryRule.Type.paging, "row", Operator.OFFSET, 0));
 		}
 	}
 }

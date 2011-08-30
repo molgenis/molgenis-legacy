@@ -2,7 +2,7 @@ package org.molgenis.matrix.component.interfaces;
 
 import java.util.List;
 
-import org.molgenis.matrix.component.general.Filter;
+import org.molgenis.matrix.component.general.MatrixQueryRule;
 
 
 /**
@@ -19,7 +19,7 @@ public interface RenderableMatrix<R, C, V> extends BasicMatrix<R, C, V>, SourceM
 	/**
 	 * The list of filters that was applied to reach the currently rendered matrix.
 	 */
-	public List<Filter> getFilters();
+	public List<MatrixQueryRule> getRules();
 	
 	/**
 	 * The constraint logic that was used to parse the filters in a special way.

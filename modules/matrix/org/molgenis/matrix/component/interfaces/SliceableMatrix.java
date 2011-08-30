@@ -1,5 +1,7 @@
 package org.molgenis.matrix.component.interfaces;
 
+import java.util.List;
+
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 
@@ -7,6 +9,11 @@ import org.molgenis.matrix.component.general.MatrixQueryRule;
 
 public interface SliceableMatrix<R, C, V>
 {
+
+	/** Get list of current rules */
+	//public List<MatrixQueryRule> getFilter();
+	
+	
 	/**
 	 * Example 1: QueryRule("col", Operator.GREATER, 20) Grab a matrix slice by
 	 * column index. Remember indices start from 0. GREATER 20 on a matrix with

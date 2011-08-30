@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.QueryRule;
-import org.molgenis.matrix.component.general.GenericFunctions;
+import org.molgenis.matrix.component.general.AbstractSliceableMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 import org.molgenis.matrix.component.interfaces.SourceMatrix;
 
-public class TestImpl extends GenericFunctions<SomeRowType, SomeColType, SomeValueType> implements
+public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, SomeValueType> implements
 		BasicMatrix<SomeRowType, SomeColType, SomeValueType>, SourceMatrix<SomeRowType, SomeColType, SomeValueType>
 {
 	
@@ -142,6 +142,7 @@ public class TestImpl extends GenericFunctions<SomeRowType, SomeColType, SomeVal
 		
 		return visibleValues;
 	}
+
 	
 	
 

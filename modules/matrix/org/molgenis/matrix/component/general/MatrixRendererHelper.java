@@ -29,21 +29,20 @@ public class MatrixRendererHelper<R, C, V> {
 		return ops;
 	}
 
-	public static List<Filter> copyFilterList(List<Filter> original){
-		List<Filter> copy = new ArrayList<Filter>();
-		for(Filter f : original){
-			MatrixQueryRule q = new MatrixQueryRule(f.getQueryRule().getField(), f.getQueryRule().getOperator(), f.getQueryRule().getValue());
-			Filter fCopy = new Filter(f.getFilterType(), q);
-			copy.add(fCopy);
+	public static List<MatrixQueryRule> copyMatrixQueryRuleList(List<MatrixQueryRule> original){
+		List<MatrixQueryRule> copy = new ArrayList<MatrixQueryRule>();
+		for(MatrixQueryRule f : original){
+			MatrixQueryRule q = new MatrixQueryRule(f.getFilterType(), f.getField(), f.getOperator(), f.getValue());
+			copy.add(q);
 		}
 		return copy;
 	}
 	
-	public static Filter getFilterWhere(List<Filter> filters, Filter.Type type, String field, Operator operator){
+	public static MatrixQueryRule getFilterWhere(List<MatrixQueryRule> filters, MatrixQueryRule.Type type, String field, Operator operator){
 		for (int filterIndex = 0; filterIndex < filters.size(); filterIndex++)
 		{
-			Filter f = filters.get(filterIndex);
-			if(f.getFilterType().equals(type) && f.getQueryRule().getField().equals(field) && f.getQueryRule().getOperator().equals(operator))
+			MatrixQueryRule f = filters.get(filterIndex);
+			if(f.getFilterType().equals(type) && f.getField().equals(field) && f.getOperator().equals(operator))
 			{
 				return f;
 			}

@@ -10,16 +10,16 @@ import org.molgenis.matrix.component.interfaces.RenderableMatrix;
 
 public class Validate<R, C, V>
 {
-	public void validateFilter(Filter f, RenderableMatrix<R, C, V> rm) throws Exception
+	public void validateFilter(MatrixQueryRule f, RenderableMatrix<R, C, V> rm) throws Exception
 	{
-		List<Filter> fList = new ArrayList<Filter>();
+		List<MatrixQueryRule> fList = new ArrayList<MatrixQueryRule>();
 		fList.add(f);
 		validateFilters(fList, rm);
 	}
 	
-	public void validateFilters(List<Filter> filters, RenderableMatrix<R, C, V> rm) throws Exception
+	public void validateFilters(List<MatrixQueryRule> filters, RenderableMatrix<R, C, V> rm) throws Exception
 	{
-		for (Filter f : filters)
+		for (MatrixQueryRule f : filters)
 		{
 			System.out.println("checking filter: " + f.toString());
 
@@ -29,20 +29,20 @@ public class Validate<R, C, V>
 					// TODO
 					break;
 				case paging:
-					switch (f.getQueryRule().getOperator())
+					switch (f.getOperator())
 					{
 						case OFFSET:
-							if ((Integer) f.getQueryRule().getValue() < 0)
+							if ((Integer) f.getValue() < 0)
 							{
 								throw new MatrixException("You cannot page below 0.");
 							}
-							if (f.getQueryRule().getField().equals("row")
-									&& (Integer) f.getQueryRule().getValue() > rm.getTotalNumberOfRows()-1)
+							if (f.getField().equals("row")
+									&& (Integer) f.getValue() > rm.getTotalNumberOfRows()-1)
 							{
 								throw new MatrixException("You cannot page beyond " + (rm.getTotalNumberOfRows()-1));
 							}
-							if (f.getQueryRule().getField().equals("col")
-									&& (Integer) f.getQueryRule().getValue() > rm.getTotalNumberOfCols()-1)
+							if (f.getField().equals("col")
+									&& (Integer) f.getValue() > rm.getTotalNumberOfCols()-1)
 							{
 								throw new MatrixException("You cannot page beyond " + (rm.getTotalNumberOfCols()-1));
 							}
