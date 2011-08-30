@@ -3,6 +3,7 @@ package org.molgenis.util;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -303,5 +304,11 @@ public class CsvWriter implements SpreadsheetWriter
 	public void writeEndOfLine()
 	{
 		this.writer.println();
+	}
+
+	public void setHeaders(String[] fields)
+	{
+		this.setHeaders(Arrays.asList(fields));
+		
 	}
 }
