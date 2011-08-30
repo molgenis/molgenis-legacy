@@ -32,13 +32,14 @@ import org.molgenis.framework.security.Login;
 import org.molgenis.framework.security.SimpleLogin;
 import org.molgenis.framework.ui.commands.AddBatchCommand;
 import org.molgenis.framework.ui.commands.AddCommand;
+import org.molgenis.framework.ui.commands.AddCsvFileCommand;
 import org.molgenis.framework.ui.commands.ChangeListLimitCommand;
 import org.molgenis.framework.ui.commands.CommandMenu;
 import org.molgenis.framework.ui.commands.DownloadAllCommand;
+import org.molgenis.framework.ui.commands.DownloadAllXlsCommand;
 import org.molgenis.framework.ui.commands.DownloadSelectedCommand;
 import org.molgenis.framework.ui.commands.DownloadSelectedXlsCommand;
 import org.molgenis.framework.ui.commands.DownloadVisibleCommand;
-import org.molgenis.framework.ui.commands.DownloadAllXlsCommand;
 import org.molgenis.framework.ui.commands.DownloadVisibleXlsCommand;
 import org.molgenis.framework.ui.commands.EditSelectedCommand;
 import org.molgenis.framework.ui.commands.GalaxyCommand;
@@ -277,6 +278,9 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 
 		// File: Add batch
 		super.addCommand(new AddBatchCommand("upload_csv", this.getController()));
+		
+		// File: Add batch
+		super.addCommand(new AddCsvFileCommand("upload_csvfile", this.getController()));
 		
 		// File: Send to galaxy
 		super.addCommand(new GalaxyCommand("send_to_galaxy", this.getController()));

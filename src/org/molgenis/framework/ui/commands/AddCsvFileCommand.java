@@ -14,25 +14,25 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
+import org.molgenis.framework.ui.html.FileInput;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.framework.ui.html.TextInput;
-import org.molgenis.util.CsvStringReader;
+import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 /**
  * The command to add in batch/upload csv
  */
-public class AddBatchCommand<E extends Entity> extends SimpleCommand
+public class AddCsvFileCommand<E extends Entity> extends SimpleCommand
 {
 	private static final long serialVersionUID = -4067952586340535730L;
 	public static final transient Logger logger = Logger
-			.getLogger(AddBatchCommand.class);
+			.getLogger(AddCsvFileCommand.class);
 
-	public AddBatchCommand(String name, ScreenController<?> owner)
+	public AddCsvFileCommand(String name, ScreenController<?> owner)
 	{
 		super(name, owner);
-		this.setLabel("Add in batch/upload CSV");
+		this.setLabel("Upload CSV file");
 		this.setIcon("generated-res/img/upload.png");
 		this.setDialog(true);
 		this.setMenu("File");
@@ -44,7 +44,7 @@ public class AddBatchCommand<E extends Entity> extends SimpleCommand
 		List<ActionInput> inputs = new ArrayList<ActionInput>();
 
 		ActionInput submit = new ActionInput("Add", ActionInput.Type.SAVE);
-		submit.setValue("upload_csv");
+		submit.setValue("upload_csvfile");
 		submit.setIcon("generated-res/img/save.png");
 		inputs.add(submit);
 
@@ -66,11 +66,10 @@ public class AddBatchCommand<E extends Entity> extends SimpleCommand
 		for (HtmlInput<?> i : inputs)
 			i.setNillable(true);
 
-		// add the textarea for csv
-		TextInput csvInput = new TextInput("__csvdata",
-				"put here your data in comma-separated format.");
-		csvInput.setLabel("CSV data");
-		csvInput.setTooltip("put here your data in comma-separated format.");
+		// add the file input for csv
+		FileInput csvInput = new FileInput("__csvdata");
+		csvInput.setLabel("CSV file");
+		csvInput.setTooltip("choose here your data in comma-separated format.");
 		inputs.add(csvInput);
 
 		return inputs;
@@ -91,8 +90,8 @@ public class AddBatchCommand<E extends Entity> extends SimpleCommand
 				CsvToDatabase<? extends Entity> csvReader = this
 						.getFormScreen().getCsvReader();
 
-				int updatedRows = csvReader.importCsv(db, new CsvStringReader(
-						request.getString("__csvdata")), request,
+				int updatedRows = csvReader.importCsv(db, new CsvFileReader(
+						request.getFile("filefor___csvdata")), request,
 						DatabaseAction.ADD);
 				// for (E entity : entities)
 				// logger.debug("parsed: " + entity);
