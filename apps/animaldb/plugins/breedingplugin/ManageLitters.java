@@ -447,7 +447,7 @@ public class ManageLitters extends PluginModel<Entity>
 		if (animalBackgroundId != -1) {
 			animalBackgroundName = ct.getObservationTargetById(animalBackgroundId).getName();
 		}
-		returnString += ("background: " + animalBackgroundName);
+		returnString += ("background: " + animalBackgroundName + "\n");
 		Query<ObservedValue> q = this.db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, ct.getMeasurementId("GeneName")));
@@ -468,8 +468,7 @@ public class ManageLitters extends PluginModel<Entity>
 						geneState = geneStateValueList.get(0).getValue();
 					}
 				}
-				returnString += (", gene: " + geneName + ", ");
-				returnString += ("state: " + geneState);
+				returnString += ("gene: " + geneName + ": " + geneState + "\n");
 			}
 		}
 		
@@ -936,11 +935,43 @@ public class ManageLitters extends PluginModel<Entity>
 		int fatherId = findParentForParentgroup(parentgroupId, "Father");
 		String fatherInfo = this.getGenoInfo(fatherId);
 		
+		List<String> elementLabelList;	
 		List<String> elementList;
 		
 		for (Individual animal : this.getAnimalsInLitter(litter)) {
 			int animalId = animal.getId();
 			elementList = new ArrayList<String>();
+			elementLabelList = new ArrayList<String>();
+			
+			// Earmark
+			elementLabelList.add ("Earmark:");
+			elementList.add(ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("Earmark")));
+			// Name / custom label
+			elementLabelList.add ("Name:");
+			elementList.add(ct.getObservationTargetLabel(animalId));
+			// Line
+			elementLabelList.add ("Line:");
+			elementList.add(line);
+			// Background + GeneName + GeneState
+			elementLabelList.add ("Genotype:");
+			elementList.add(this.getGenoInfo(animalId));
+			// Color + Sex
+			elementLabelList.add ("Color and Sex:");
+			String colorSex = ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("Color"));
+			colorSex += "\t\t";
+			int sexId = ct.getMostRecentValueAsXref(animalId, ct.getMeasurementId("Sex"));
+			colorSex += ct.getObservationTargetById(sexId).getName();
+			elementList.add(colorSex);
+			//Birthdate
+			elementLabelList.add ("Birthdate: ");
+			elementList.add(ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("DateOfBirth")));
+			// Geno mother
+			elementLabelList.add ("Background Mother: ");
+			elementList.add(motherInfo);
+			// Geno father
+			elementLabelList.add ("Background Father: ");
+			elementList.add(fatherInfo);
+			/*
 			// Earmark
 			elementList.add("Earmark: " + ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("Earmark")));
 			// Name / custom label
@@ -964,14 +995,16 @@ public class ManageLitters extends PluginModel<Entity>
 			elementList.add("Father: " + fatherInfo);
 			// OldUliDbExperimentator
 			elementList.add("Experimenter: " + ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("OldUliDbExperimentator")));
+			*/
 			
-			labelgenerator.addLabelToDocument(elementList);
+			labelgenerator.addLabelToDocument(elementLabelList, elementList);
 		}
 		
 		// In case of an odd number of animals, add extra label to make row full
 		if (this.getAnimalsInLitter(litter).size() %2 != 0) {
+			elementLabelList = new ArrayList<String>();
 			elementList = new ArrayList<String>();
-			labelgenerator.addLabelToDocument(elementList);
+			labelgenerator.addLabelToDocument(elementLabelList, elementList);
 		}
 		
 		labelgenerator.finishDocument();
@@ -986,7 +1019,9 @@ public class ManageLitters extends PluginModel<Entity>
 		String filename = pdfFile.getName();
 		LabelGenerator labelgenerator = new LabelGenerator(2);
 		labelgenerator.startDocument(pdfFile);
+		List<String> elementLabelList;
 		List<String> elementList;
+		elementLabelList = new ArrayList<String>();
 		
 		// Selected litter stuff
 		int parentgroupId = ct.getMostRecentValueAsXref(litter, ct.getMeasurementId("Parentgroup"));
@@ -1030,7 +1065,7 @@ public class ManageLitters extends PluginModel<Entity>
 				elementList.add(i + ".");
 			}
 			
-			labelgenerator.addLabelToDocument(elementList);
+			labelgenerator.addLabelToDocument(elementLabelList, elementList);
 			nrOfFemales -= cageSize;
 			nrOfCages++;
 		}
@@ -1055,7 +1090,7 @@ public class ManageLitters extends PluginModel<Entity>
 				elementList.add(i + ".");
 			}
 			
-			labelgenerator.addLabelToDocument(elementList);
+			labelgenerator.addLabelToDocument(elementLabelList, elementList);
 			nrOfMales -= 2;
 			nrOfCages++;
 		}
@@ -1063,7 +1098,7 @@ public class ManageLitters extends PluginModel<Entity>
 		// In case of an odd number of cages, add extra label to make row full
 		if (nrOfCages %2 != 0) {
 			elementList = new ArrayList<String>();
-			labelgenerator.addLabelToDocument(elementList);
+			labelgenerator.addLabelToDocument(elementLabelList, elementList);
 		}
 		
 		labelgenerator.finishDocument();

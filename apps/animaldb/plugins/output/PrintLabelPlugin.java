@@ -90,9 +90,12 @@ public class PrintLabelPlugin extends GenericPlugin
         for (Individual ind : individualList) {
         	
         	List<String> lineList = new ArrayList<String>();
+        	List<String> lineLabelList = new ArrayList<String>();
         	
-        	lineList.add("Database ID: " + ind.getId().toString());
-        	lineList.add("Name: " + ind.getName());
+        	lineLabelList.add("Database ID:");
+        	lineList.add(ind.getId().toString());
+        	lineLabelList.add("Name:");
+        	lineList.add(ind.getName());
         	List<ObservedValue> valueList = cs.getObservedValuesByTargetAndFeatures(ind.getId(), measurementList,
         			investigationIds, ownInvId);
         	for (ObservedValue value : valueList) {
@@ -103,15 +106,17 @@ public class PrintLabelPlugin extends GenericPlugin
         		} else {
         			actualValue = value.getRelation_Name();
         		}
-        		lineList.add(featName + ": " + actualValue);
+        		lineLabelList.add(featName);
+        		lineList.add(actualValue);
         	}
         	
-        	labelGenerator.addLabelToDocument(lineList);
+        	labelGenerator.addLabelToDocument(lineLabelList, lineList);
         }
         if (individualList.size() % 2 != 0) {
         	// In case of uneven number of animals, add empty label to make row full
+        	List<String> lineLabelList = new ArrayList<String>();
         	List<String> lineList = new ArrayList<String>();
-        	labelGenerator.addLabelToDocument(lineList);
+        	labelGenerator.addLabelToDocument(lineLabelList, lineList);
         }
 		
 		labelGenerator.finishDocument();
