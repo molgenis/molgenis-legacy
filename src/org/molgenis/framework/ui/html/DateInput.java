@@ -134,7 +134,7 @@ public class DateInput extends HtmlInput<Date>
 		}
 
 		return "<input type=\"text\" id=\"" + this.getId() + "\" name=\""
-				+ this.getName() + "\" value=\"" + this.getValue() + "\" "
+				+ this.getName() + "\" value=\"" + this.getObjectString()+ "\" "
 				+ readonly + "\" size=\"32\" autocomplete=\"off\"/>";
 
 	}
@@ -203,7 +203,7 @@ public class DateInput extends HtmlInput<Date>
 		if (!this.isReadonly()) result += "<script>"
 				+ "\n	"
 				+ "$(\"#"
-				+ this.getName()
+				+ this.getId()
 				+ "\").datepicker({"
 				+ options
 				+ "}).click(function(){$(this).datepicker('show')});"

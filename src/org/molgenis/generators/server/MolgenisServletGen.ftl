@@ -116,7 +116,7 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 	public ApplicationController createUserInterface( Login userLogin )
 	{
 		//enhance the ApplicationController with a method to getDatabase 
-		ApplicationController app = new ApplicationController( userLogin)
+		ApplicationController app = new ApplicationController( usedOptions, userLogin)
 		{
 			@Override
 			public Database getDatabase()

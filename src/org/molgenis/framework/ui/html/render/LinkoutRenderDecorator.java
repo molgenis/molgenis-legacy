@@ -1,16 +1,16 @@
-package org.molgenis.framework.server;
+package org.molgenis.framework.ui.html.render;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class LinkOutOverlay
+public class LinkoutRenderDecorator implements RenderDecorator
 {
 
 	Map<String,String> mypatterns = new HashMap<String, String>();
 	
-	LinkOutOverlay(){
+	public LinkoutRenderDecorator(){
 		mypatterns.put("K[0-9]{5}", "http://www.genome.jp/dbget-bin/www_bget?");
 		mypatterns.put("LOC[0-9]{6}", "http://www.ncbi.nlm.nih.gov/gene?term=");
 		mypatterns.put("N[CGTW]{1}_[0-9]{6}.[0-9]+", "http://www.ncbi.nlm.nih.gov/sites/gquery?term=");
@@ -21,7 +21,7 @@ public class LinkOutOverlay
 		mypatterns.put("WBGene[0-9]+", "http://www.wormbase.org/db/gene/gene?class=Gene&name=");
 	}
 	
-	String addlinkouts(String in){
+	public String render(String in){
 		String out = in;
 		for (String key : this.mypatterns.keySet()) { 
 			StringBuffer sb = new StringBuffer();
@@ -31,7 +31,7 @@ public class LinkOutOverlay
 			
 			while (matcher.find()) {
 				//System.out.println( matcher.group() + " at index "+matcher.start()+" and ending at index "+matcher.end()+".\n");
-				matcher.appendReplacement(sb, "\n<a href="+mypatterns.get(key)+matcher.group()+ ">" + matcher.group() + "</a>");
+				matcher.appendReplacement(sb, "<a href="+mypatterns.get(key)+matcher.group()+ ">" + matcher.group() + "</a>");
 			}
 			matcher.appendTail(sb);
 			out = sb.toString();
