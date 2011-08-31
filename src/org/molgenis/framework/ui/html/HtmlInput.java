@@ -1,9 +1,13 @@
 package org.molgenis.framework.ui.html;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.molgenis.framework.ui.html.render.LinkoutRenderDecorator;
+import org.molgenis.framework.ui.html.render.RenderDecorator;
 import org.molgenis.util.Tuple;
 
 /**
@@ -81,6 +85,8 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 
 	/** Style to render in */
 	protected UiToolkit uiToolkit = HtmlSettings.uiToolkit;
+	
+	protected RenderDecorator renderDecorator = HtmlSettings.defaultRenderDecorator;
 
 	/**
 	 * Standard constructor, which sets the name and value of the input
@@ -206,6 +212,12 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	{
 		return value;
 	}
+	
+	public String getObjectString()
+	{
+		if(this.value == null) return "";
+		else return value.toString();
+	}
 
 	// TODO: This *needs* to be renamed to getValueToString() or removed!!!
 	public String getValue()
@@ -228,29 +240,58 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 		}
 
 		// todo: why different from getHtmlValue()??
-		if (replaceSpechialChars)
-		{
-			return getObject().toString().replace("\n", "<br>")
-					.replace("\r", "").replace(">", "&gt;")
-					.replace("<", "&lt;");
-		}
-		else
-		{
-			return getObject().toString();
-		}
+//		if (replaceSpechialChars)
+//		{
+//			return  this.renderDecorator.render(getObject().toString().replace("\n", "<br>")
+//					.replace("\r", "").replace(">", "&gt;")
+//					.replace("<", "&lt;"));
+//		}
+//		else
+//		{
+		return getObject().toString();
+//		}
 	}
 	
 	public String getHtmlValue(int maxLength)
 	{
-		return this.getHtmlValue().substring(0, 100);
+		//we render all tags, but we stop rendering text outside tags after maxLength
+		String result = "";
+		List<String> tags = new ArrayList<String>();
+		boolean inTag = false;
+		int count = 0;
+		for(char c: this.getHtmlValue().toCharArray())
+		{
+			//check if we go into tag
+			if('<' == c)
+			{
+				inTag = true; 
+
+			}
+				
+			if(inTag || count < maxLength)
+			{
+				result += c;
+			}
+			
+			if('>' == c)
+			{
+				inTag = false;
+			}
+			
+			if(!inTag) count++;
+		}
+
+		
+		return result;
 	}
 
 	public String getHtmlValue()
 	{
 		String value = null;
-		value = this.getValue().replace("\n", "<br>").replace("\r", "")
-				.replace(">", "&gt;").replace("<", "&lt;");
-		return value;
+		value = this.getValue();
+				//.replace("\n", "<br>").replace("\r", "")
+				//.replace(">", "&gt;").replace("<", "&lt;");
+		return this.renderDecorator.render(value);
 	}
 
 	public String getJavaScriptValue()

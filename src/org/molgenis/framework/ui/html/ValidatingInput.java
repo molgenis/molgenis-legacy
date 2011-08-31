@@ -107,7 +107,7 @@ public class ValidatingInput<E> extends HtmlInput<E>
 					|| this.uiToolkit == UiToolkit.JQUERY)
 			{
 				return "<input name=\"" + this.getName()
-						+ "\"type=\"hidden\" value=\"" + this.getValue()
+						+ "\"type=\"hidden\" value=\"" + this.getObjectString()
 						+ "\"/>";
 			}
 			else if (this.uiToolkit == UiToolkit.DOJO)
@@ -142,7 +142,7 @@ public class ValidatingInput<E> extends HtmlInput<E>
 							+ getSize() + ")\" onblur=\"endcounter()\""
 							: "") + " cols=\"" + this.getWidth() + "\" rows=\""
 					+ this.getHeight() + "\" " + readonly + " >"
-					+ this.getValue() + "</textarea>";
+					+ this.getObjectString() + "</textarea>";
 
 			result += "<script>showTextInput(document.getElementById('"
 					+ this.getId() + "')," + this.getMinHeight() + ","
@@ -161,7 +161,7 @@ public class ValidatingInput<E> extends HtmlInput<E>
 					+ "\"  "
 					+ (this.getSize() != null && this.getSize() > 0 ? "onfocus=\"startcounter(this, "
 							+ getSize() + ")\" onblur=\"endcounter()\""
-							: "") + readonly + " value=\"" + this.getValue()
+							: "") + readonly + " value=\"" + this.getObjectString()
 					+ "\">";
 
 			result += "<script>$('#" + this.getId()

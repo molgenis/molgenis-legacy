@@ -63,6 +63,12 @@ public interface Input<E>
 	 * @return Object value
 	 */
 	public abstract E getObject();
+	
+	/**
+	 * Retrieve the toString version of getObject(). In case getObject() == null then the result =="
+	 */
+	public String getObjectString();
+	
 
 	/**
 	 * Retrieve the value of this input as a String.

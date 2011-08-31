@@ -6,11 +6,14 @@ import java.io.OutputStream;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.MolgenisService;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.security.Login;
 import org.molgenis.framework.ui.html.FreemarkerInput;
+import org.molgenis.framework.ui.html.HtmlSettings;
 import org.molgenis.framework.ui.html.RichtextInput;
+import org.molgenis.framework.ui.html.render.RenderDecorator;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.FileLink;
 import org.molgenis.util.RedirectedException;
@@ -42,6 +45,8 @@ public class ApplicationController extends
 	private String baseUrl;
 	/** Galaxy url*/
 	private String galaxyUrl;
+	/** Molgenis options from generted*/
+	private MolgenisOptions options;
 
 	/**
 	 * Construct a user interface for a database.
@@ -49,7 +54,7 @@ public class ApplicationController extends
 	 * @param login
 	 *            for authentication/authorization
 	 */
-	public ApplicationController(Login login)
+	public ApplicationController(MolgenisOptions options, Login login)
 	{
 		super("molgenis_userinterface_root", null, null); // this is the root of
 															// the screen tree.
@@ -60,11 +65,23 @@ public class ApplicationController extends
 
 		// this.database = db;
 		this.setLogin(login);
+		this.setOptions(options);
+		
+		//set default render decorators
+		try
+		{
+			HtmlSettings.defaultRenderDecorator =(RenderDecorator) Class.forName(options.render_decorator).newInstance();
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
-	public ApplicationController(Login login, EmailService email)
+	public ApplicationController(MolgenisOptions options, Login login, EmailService email)
 	{
-		this(login);
+		this(options, login);
 		this.setLogin(login);
 		this.setEmailService(email);
 	}
@@ -328,5 +345,15 @@ public class ApplicationController extends
 		new FreemarkerInput("dummy").getCustomHtmlHeaders()+
 		new RichtextInput("dummy").getCustomHtmlHeaders() +
 		super.getCustomHtmlHeaders();
+	}
+
+	public MolgenisOptions getOptions()
+	{
+		return options;
+	}
+
+	public void setOptions(MolgenisOptions options)
+	{
+		this.options = options;
 	}
 }
