@@ -8,9 +8,9 @@ import org.molgenis.util.Tuple;
 public class HiddenInput extends StringInput
 {
 
-	public HiddenInput(String name, String value)
+	public HiddenInput(String name, Object value)
 	{
-		super(name, value);
+		super(name, value == null ? "" : value.toString());
 		this.setHidden(true);
 	}
 
