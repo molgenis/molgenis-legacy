@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.molgenis.designgg.CalculateDesignScreen;
 import org.molgenis.framework.ui.ApplicationController;
 
 
@@ -30,7 +31,7 @@ public class TestClient {
         try {
         	String name = "designGG";
 					
-        	ApplicationController ui = new ApplicationController(null);
+        	ApplicationController ui = new ApplicationController(null,null);
         	CalculateDesignScreen s = new CalculateDesignScreen("test",ui);
 			
 			List<String> rscript = new ArrayList<String>();

@@ -76,7 +76,7 @@
 				<tr>
 					<td colspan="2"><#--Apply filter on row header:--></td>
 					<#list matrix.visibleCols as col>
-						<td class="matrixTableCell colorOfTitle"><b>${matrix.renderCol(col)}</b></td>
+						<td class="matrixTableCell colorOfTitle"><b>${matrix.renderDescriptor.renderCol(col)}</b></td>
 					</#list>
 				</tr>
 				<tr>
@@ -104,7 +104,7 @@
 				</tr>
 				<#list matrix.visibleRows as row> 
 					<tr>
-						<td class="matrixTableCell colorOfTitle"><b>${matrix.renderRow(row)}</b></td>
+						<td class="matrixTableCell colorOfTitle"><b>${matrix.renderDescriptor.renderRow(row)}</b></td>
 						<td>
 							<div style="font-family: Courier, 'Courier New', monospace">${matrix.rowIndices[row_index]}</div>
 							<#--nobr>
@@ -114,7 +114,7 @@
 							<input type="text" size="4" name="FILTER_VALUE_ROW_${row_index}"></input></nobr-->
 						</td>
 						<#list 0..matrix.visibleCols?size-1 as i>								
-			  				<td class="matrixTableCell matrixRowColor<#if row_index%2==0>1<#else>0</#if>">${matrix.renderValue(matrix.visibleValues[row_index][i])}</td>
+			  				<td class="matrixTableCell matrixRowColor<#if row_index%2==0>1<#else>0</#if>">${matrix.renderDescriptor.renderValue(matrix.visibleValues[row_index][i])}</td>
 						</#list> 
 					</tr>
 				</#list>
@@ -221,7 +221,7 @@
 			</td>
 			<td>
 				<select name="${req_tag}add_filter_by_col_valueFILTER_FIELD">
-					<#list matrix.visibleCols as col><option value="col_${matrix.colIndices[col_index]}">${matrix.renderColSimple(col)}</option></#list>
+					<#list matrix.visibleCols as col><option value="col_${matrix.colIndices[col_index]}">${matrix.renderDescriptor.renderColSimple(col)}</option></#list>
 				</select>
 			</td>
 			<td>
@@ -246,7 +246,7 @@
 			</td>
 			<td>
 				<select name="${req_tag}add_filter_by_row_valueFILTER_FIELD">
-					<#list matrix.visibleRows as row><option value="row_${matrix.rowIndices[row_index]}">${matrix.renderRowSimple(row)}</option></#list>
+					<#list matrix.visibleRows as row><option value="row_${matrix.rowIndices[row_index]}">${matrix.renderDescriptor.renderRowSimple(row)}</option></#list>
 				</select>
 			</td>
 			<td>
