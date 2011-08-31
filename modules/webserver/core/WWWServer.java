@@ -51,8 +51,9 @@ public class WWWServer extends Webserver implements Runnable
 		addServlet(variant + "/xref", "app.servlet.MolgenisServlet");
 		addServlet(variant + "/cgi-bin", "core.servlets.CGIServlet");
 		addServlet(variant + "/tmpfile", "core.servlets.tmpfileservlet");
-		addServlet(variant + "/", "core.servlets.FileServlet");
 		addServlet(variant + "/bot", "core.servlets.BotServlet");
+		addServlet(variant + "/captchaImg", "nl.captcha.servlet.SimpleCaptchaServlet");
+		addServlet(variant + "/", "core.servlets.FileServlet");
 	}
 
 	public void run()
