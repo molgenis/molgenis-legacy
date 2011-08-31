@@ -17,7 +17,7 @@ public class ProteinDomainPanel extends HtmlInput
 
 	public ProteinDomainPanel()
 	{
-		this(null, null);
+		this("", "");
 	}
 	
 	public ProteinDomainPanel(String name, String label)

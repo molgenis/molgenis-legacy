@@ -23,7 +23,7 @@ public class SequencePanel extends HtmlInput
 
 	public SequencePanel()
 	{
-		this(null, null);
+		this("", "");
 	}
 	
 	public SequencePanel(String name, String label)
