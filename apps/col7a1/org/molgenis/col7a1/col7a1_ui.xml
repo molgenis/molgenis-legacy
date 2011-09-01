@@ -3,10 +3,10 @@
 		DOCTYPE molgenis PUBLIC "MOLGENIS 1.0"
 		"http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd"
 	-->
-<molgenis name="col7a1">
+<molgenis name="col7a1" label="International dystrophic eb Patient Registry">
 	<plugin name="MolgenisHeader" type="org.molgenis.mutation.ui.header.Col7a1Header"/>
 	<menu name="View" startswith="SearchPlugin">
-		<plugin name="SearchPlugin" type="org.molgenis.mutation.ui.search.Col7a1Search" label="Search">
+		<plugin name="SearchPlugin" type="org.molgenis.mutation.ui.search.col7a1.Search" label="Search">
 			<plugin name="NewsBar" type="org.molgenis.news.ui.News" label="News"/>
 		</plugin>
 		<plugin name="UploadPlugin" type="org.molgenis.mutation.ui.upload.Col7a1Upload" label="Submit data"/>
@@ -20,9 +20,9 @@
 			<form name="Exon" entity="Exon"/>
 			<form name="Mutation" entity="Mutation"/>
 			<form name="Phenotype" entity="MutationPhenotype"/>
-			<form name="Workflow" entity="Workflow" label="DEB Workflow">
-				<form name="WorkflowElement" entity="WorkflowElement" hide_fields="ExecutionTime">
-					<form name="Protocol" entity="Protocol" label="DEB Protocol" hide_fields="Investigation,ontologyReference,TargetFilter"/>
+			<form name="Workflow" entity="Workflow" label="Patient Workflow">
+				<form name="WorkflowElement" entity="WorkflowElement">
+					<form name="Protocol" entity="Protocol" label="Patient Protocol" hide_fields="Investigation,ontologyReference,TargetFilter"/>
 				</form>
 			</form>
 			<form name="Measurement" entity="Measurement" label="Phenotypic Feature" hide_fields="Investigation,ontologyReference,targettypeAllowedForRelation,panelLabelAllowedForRelation"/>
@@ -34,6 +34,7 @@
 			</form>
 			<form name="News" entity="MolgenisNews"/>
 			<plugin name="ExportCsv" type="org.molgenis.mutation.ui.export.Export" label="Export CSV"/>
+			<!-- <form name="FrontEndElement" entity="FrontEndElement" label="Front End Elements"/> -->
 		</menu>
 		<plugin name="myCOL7A1" type="org.molgenis.mutation.ui.mycol7a1.MyCOL7A1" label="Submissions"/>
 		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="myCOL7A1"/>

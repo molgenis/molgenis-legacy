@@ -150,9 +150,11 @@
 			<field name="gene" type="xref" xref_field="MutationGene.id"
 				xref_label="name" nillable="true" label="Gene" />
 		</entity>
+<!--
 		<entity name="FrontEndElement">
 			<field name="usertext" type="text" label="Text to display"/>
 			<field name="type_" type="enum" enum_options="[welcome,search,remarks,support]" unique="true"/>
 		</entity>
+-->
 	</module>
 </molgenis>

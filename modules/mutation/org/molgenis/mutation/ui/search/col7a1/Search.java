@@ -38,7 +38,7 @@ public class Search extends SearchPlugin
 
 		try
 		{
-			List<FrontEndElement> fee;
+//			List<FrontEndElement> fee;
 	
 			StrBuilder text = new StrBuilder();
 			text.appendln("<h3>");
@@ -54,14 +54,14 @@ public class Search extends SearchPlugin
 			
 			this.getModel().setTextWelcome(text.toString());
 	
-			fee = db.query(FrontEndElement.class).equals(FrontEndElement.TYPE_, "search").find();
-			
-			if (fee.size() == 1)
-			{
-				this.getModel().setTextSearch(fee.get(0).getUsertext());
-			}
-			else
-			{
+//			fee = db.query(FrontEndElement.class).equals(FrontEndElement.TYPE_, "search").find();
+//			
+//			if (fee.size() == 1)
+//			{
+//				this.getModel().setTextSearch(fee.get(0).getUsertext());
+//			}
+//			else
+//			{
 				text = new StrBuilder();
 				text.appendln("<h3>Search registry</h3>");
 				text.appendln("<p>");
@@ -69,16 +69,16 @@ public class Search extends SearchPlugin
 				text.appendln("</p>");
 
 				this.getModel().setTextSearch(text.toString());
-			}
-
-			fee = db.query(FrontEndElement.class).equals(FrontEndElement.TYPE_, "remarks").find();
-			
-			if (fee.size() == 1)
-			{
-				this.getModel().setTextRemarks(fee.get(0).getUsertext());
-			}
-			else
-			{
+//			}
+//
+//			fee = db.query(FrontEndElement.class).equals(FrontEndElement.TYPE_, "remarks").find();
+//			
+//			if (fee.size() == 1)
+//			{
+//				this.getModel().setTextRemarks(fee.get(0).getUsertext());
+//			}
+//			else
+//			{
 				text = new StrBuilder();
 				text.appendln("<h4>General remarks</h4>");
 				text.appendln("<ol>");
@@ -87,16 +87,16 @@ public class Search extends SearchPlugin
 				text.appendln("</ol>");
 				
 				this.getModel().setTextRemarks(text.toString());
-			}
-
-			fee = db.query(FrontEndElement.class).equals(FrontEndElement.TYPE_, "support").find();
-			
-			if (fee.size() == 1)
-			{
-				this.getModel().setTextCollaborations(fee.get(0).getUsertext());
-			}
-			else
-			{
+//			}
+//
+//			fee = db.query(FrontEndElement.class).equals(FrontEndElement.TYPE_, "support").find();
+//			
+//			if (fee.size() == 1)
+//			{
+//				this.getModel().setTextCollaborations(fee.get(0).getUsertext());
+//			}
+//			else
+//			{
 				text = new StrBuilder();
 				text.appendln("<h4>Collaborators and supporters</h4>");
 				text.appendln("<table width=\"100%\">");
@@ -111,7 +111,7 @@ public class Search extends SearchPlugin
 				text.appendln("</table>");
 				
 				this.getModel().setTextCollaborations(text.toString());
-			}
+//			}
 		}
 		catch (Exception e)
 		{
