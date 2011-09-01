@@ -3,6 +3,8 @@
 	<menu name="InvestigationMenu" label="Investigations">
 		<form name="Investigations" entity="Investigation">
 			<menu name="DetailsMenu" label="Details">
+				<form name="Individuals" entity="Individual" />
+				<form name="Panels" entity="Panel" />
 				<form name="Protocols" entity="Protocol" />
 				<form name="ProtocolApplications" entity="ProtocolApplication" />
 				<form name="OntologyTerms" entity="OntologyTerm" />

@@ -28,7 +28,6 @@ public class LoadInvestigationFromDirectory {
 		CsvImport.importAll(new File(directory), db, new SimpleTuple(), null,
 				DatabaseAction.ADD, "N/A");
 
-
 		System.out.println("Done");
 	}
 }
