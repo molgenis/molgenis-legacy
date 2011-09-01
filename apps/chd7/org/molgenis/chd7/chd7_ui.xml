@@ -6,7 +6,7 @@
 <molgenis name="chd7" label="CHD7 Database">
 	<plugin name="MolgenisHeader" type="org.molgenis.mutation.ui.header.Chd7Header"/>
 	<menu name="View" startswith="SearchPlugin">
-		<plugin name="SearchPlugin" type="org.molgenis.mutation.ui.search.Chd7Search" label="Search">
+		<plugin name="SearchPlugin" type="org.molgenis.mutation.ui.search.chd7.Search" label="Search">
 			<plugin name="NewsBar" type="org.molgenis.news.ui.News" label="News"/>
 		</plugin>
 		<!--
@@ -35,7 +35,7 @@
 				<form name="OntologyTerm" entity="OntologyTerm" label="Ontology term"/>
 			</form>
 			<form name="News" entity="MolgenisNews"/>
-			<form name="FrontEndElement" entity="FrontEndElement" label="Front End Elements"/>
+			<!-- <form name="FrontEndElement" entity="FrontEndElement" label="Front End Elements"/> -->
 		</menu>
 		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="myCHD7"/>
 	</menu>

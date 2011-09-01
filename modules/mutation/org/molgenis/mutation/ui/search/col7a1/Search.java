@@ -13,7 +13,7 @@ import org.apache.commons.lang.text.StrBuilder;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.mutation.FrontEndElement;
+//import org.molgenis.mutation.FrontEndElement;
 import org.molgenis.mutation.ui.search.SearchModel;
 import org.molgenis.mutation.ui.search.SearchPlugin;
 
