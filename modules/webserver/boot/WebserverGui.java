@@ -37,12 +37,12 @@ public class WebserverGui extends JFrame implements MouseListener{
 	boolean init=false;
 
 	WebserverGui(Integer port) throws IOException{
+		WWWServer.DEF_PORT = port;
 		setSize(300,150); 
 		setTitle(title);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	    setVisible(true);
 	    addMouseListener(this);
-	    if(port != null){ WWWServer.DEF_PORT = port; }
 	    (webserverthread = new Thread(web = new WWWServer(variant))).start();
 	    if(usedOptions.generate_BOT){
 	    	web.setAttribute("bot", botentry);

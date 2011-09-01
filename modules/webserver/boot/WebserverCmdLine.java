@@ -18,7 +18,7 @@ public class WebserverCmdLine implements Runnable{
 	final String url = "http://localhost:" + WWWServer.DEF_PORT + "/" + variant;
 
 	WebserverCmdLine(Integer port) throws IOException{
-		if(port != null){ WWWServer.DEF_PORT = port; }
+		WWWServer.DEF_PORT = port;
 	    (webserverthread = new Thread(web = new WWWServer(variant))).start();
 	    if(usedOptions.generate_BOT){
 	    	web.setAttribute("bot", botentry);

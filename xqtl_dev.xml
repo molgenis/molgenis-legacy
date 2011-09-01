@@ -211,6 +211,22 @@
 	</target>
 	
 	<!--
+	Deploy help: run on a specific port, and on that port only
+	Usage: ant -f xqtl_dev.xml runOn -Dport=9000
+	-->
+	<target name="runOn" description="Start the application">
+		<java classname="boot.RunStandalone" fork="yes" failonerror="true">
+			<arg value="${port}"/>
+			<classpath>
+				<path refid="molgenis-libs" />
+				<path refid="app-libs" />
+				<path location="${mol_build_dir}" />
+				<path location="${app_build_dir}" />
+			</classpath>
+		</java>
+	</target>
+	
+	<!--
 	MAKE WRAPPER - All instructions to make the application in one bundle
 	-->
 	<target name="make"  description="Make the application">
