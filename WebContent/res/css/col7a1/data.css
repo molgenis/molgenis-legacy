@@ -186,7 +186,7 @@ label {
 	position: absolute;
 }
 .listtable {
-	/*width: 100%;*/
+	width: 100%;
     font-family: arial;
     font-size: 9pt;
     border-collapse: collapse;
@@ -210,6 +210,37 @@ label {
 	white-space: nowrap;
 	text-align: left;
 	padding: 5px;
+}
+
+.listtable2 {
+	width: 100%;
+    font-family: arial;
+    font-size: 9pt;
+    border-collapse: collapse;
+    border-spacing: 0px;
+    margin: 0px;
+    border-style: solid;
+    border-width: 1px;
+}
+
+.listtable2 th {
+	font-family: arial;
+    font-size: 9pt;
+	white-space: nowrap;
+	text-align: left;
+	padding: 5px;
+	border-style: solid;
+    border-width: 1px;
+}
+
+.listtable2 td {
+	font-family: arial;
+    font-size: 9pt;
+	white-space: nowrap;
+	text-align: left;
+	padding: 5px;
+	border-style: solid;
+    border-width: 1px;
 }
 
 .form_listrow0 {
