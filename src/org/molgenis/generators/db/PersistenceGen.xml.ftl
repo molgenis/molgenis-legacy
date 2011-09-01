@@ -31,11 +31,11 @@
             <class>${entity.namespace}.${JavaName(entity)}</class>
 </#list>
 	    <properties>
-	      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/test_molgenis_test?innodb_autoinc_lock_mode=2"/>
-	      <property name="javax.persistence.jdbc.password" value="molgenis"/>
-	      <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
-	      <property name="javax.persistence.jdbc.user" value="molgenis"/>
-	      <property name="javax.persistence.validation.mode" value="none"/>
+	      <property name="javax.persistence.jdbc.url" value="${options.dbUri}_test"/>
+	      <property name="javax.persistence.jdbc.password" value="${options.dbPassword}"/>
+	      <property name="javax.persistence.jdbc.driver" value="${options.dbDriver}"/>
+	      <property name="javax.persistence.jdbc.user" value="${options.dbUser}"/>
+          <property name="javax.persistence.validation.mode" value="none"/>    
           <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/>
           <property name="hibernate.show_sql" value="true"/>
 	    
