@@ -55,7 +55,7 @@ import org.testng.annotations.Test;
 import ${entity.namespace}.${JavaName(entity)};
 </#list>
 
-<#if db_mode = 'standalone' && databaseImp != 'jpa'>
+<#if db_mode = 'standalone'>
 import plugins.emptydb.emptyDatabase;
 </#if>
 
