@@ -55,10 +55,6 @@ import org.testng.annotations.Test;
 import ${entity.namespace}.${JavaName(entity)};
 </#list>
 
-<#if db_mode = 'standalone'>
-import plugins.emptydb.emptyDatabase;
-</#if>
-
 public class TestDatabase
 {
 	private static int total = 10;
@@ -84,7 +80,6 @@ public class TestDatabase
 			((JpaDatabase)db).getEntityManager().setFlushMode(FlushModeType.AUTO);
 		<#else>
 			<#if db_mode = 'standalone'>
-			new emptyDatabase(new MolgenisServlet().getDatabase(), false);
 			db = new MolgenisServlet().getDatabase();
 			<#else>
 			db = new JDBCDatabase("${options.molgenis_properties}");	
