@@ -109,9 +109,7 @@
 			<field name="event" type="enum"
 				enum_options="[deletion,duplication,insertion,insertion/deletion,point mutation,other]"
 				default="other" label="Event" />
-			<field name="type_" type="enum"
-				enum_options="[chromosomal micro-deletion, insertion/deletion frame-shift, insertion/deletion in frame, large deletion frame-shift, large deletion in-frame, large duplication frame-shift, large duplication in-frame, large insertion frame-shift, large insertion in-frame, missense mutation, nonsense mutation, small deletion frame-shift, small deletion in-frame, small duplication frame-shift, small duplication in-frame, small insertion frame-shift, small insertion in-frame, promoter/regulary mutation, other, splice-site mutation, unknown]"
-				nillable="false" default="unknown" label="Type" />
+			<field name="type_" nillable="false" default="unknown" label="Type" />
 			<field name="ntchange" description="Changed nucleotide(s) at given position."
 				label="Nt change" />
 			<field name="codonchange" description="Changed codon at given position."
@@ -151,6 +149,10 @@
 				nillable="true" label="Population" />
 			<field name="gene" type="xref" xref_field="MutationGene.id"
 				xref_label="name" nillable="true" label="Gene" />
+		</entity>
+		<entity name="FrontEndElement">
+			<field name="usertext" type="text" label="Text to display"/>
+			<field name="type_" type="enum" enum_options="[welcome,search,remarks,support]" unique="true"/>
 		</entity>
 	</module>
 </molgenis>
