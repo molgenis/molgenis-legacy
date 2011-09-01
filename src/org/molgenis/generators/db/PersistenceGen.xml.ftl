@@ -15,7 +15,7 @@
 	      <property name="javax.persistence.jdbc.user" value="${options.dbUser}"/>
           <property name="javax.persistence.validation.mode" value="none"/>    
           <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/>
-          <property name="hibernate.show_sql" value="true"/>
+          <property name="hibernate.show_sql" value="false"/>
           
           <!--
           Automatically validates or exports schema DDL to the database when the SessionFactory is created. 
@@ -37,7 +37,7 @@
 	      <property name="javax.persistence.jdbc.user" value="${options.dbUser}"/>
           <property name="javax.persistence.validation.mode" value="none"/>    
           <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/>
-          <property name="hibernate.show_sql" value="true"/>
+          <property name="hibernate.show_sql" value="false"/>
 	    
           <!--
           Automatically validates or exports schema DDL to the database when the SessionFactory is created. 
