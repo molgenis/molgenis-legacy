@@ -51,10 +51,18 @@ public class RunStandalone
 		}
 		else if (args.length == 1)
 		{
-			
+
 			// run the app the selected port, and on this port only
-			new RunStandalone(Integer.valueOf(args[0]));
-						
+			int port = Integer.valueOf(args[0]);
+			
+			if (Helper.isAvailable(port))
+			{
+				new RunStandalone(port);
+			}
+			else
+			{
+				throw new IOException("Port " + port + " already in use!");
+			}
 		}
 		else
 		{
