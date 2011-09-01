@@ -31,7 +31,7 @@
 
 	<#include "mbrowse.ftl">
 
-	<#include "mutations.ftl">
+	${vo.rawOutput}
 
 <#elseif vo.action?starts_with("showExon")>
 
@@ -39,7 +39,7 @@
 
 	<#include "mbrowse.ftl">
 
-	<#include "mutations.ftl">
+	${vo.rawOutput}
 
 <#elseif vo.action?starts_with("showMutation")>
 
@@ -63,7 +63,11 @@
 
 <#elseif vo.action?starts_with("showPatient")>
 
-	<#include "patient.ftl">
+	<#if vo.geneName == "COL7A1">
+		<#include "col7a1/patient.ftl">
+	<#else>
+		<#include "patient.ftl">
+	</#if>
 
 <#elseif vo.action?starts_with("showPhenotypeDetails")>
 
@@ -109,11 +113,11 @@ ${vo.result} found in "${field}".
 
 <#elseif vo.action?starts_with("find")>
 
-	<#include "mutations.ftl">
+	${vo.rawOutput}
 
 <#elseif vo.action?starts_with("listAllMutations") || vo.action?starts_with("mutations")>
 
-	<#include "mutations.ftl">
+	${vo.rawOutput}
 
 <#elseif vo.action?starts_with("listAllPatient") || vo.action?starts_with("patients")>
 

@@ -10,7 +10,7 @@ Data will be inserted after curation by the curator. If your patient does not fi
 You need to indicate that the patient consented for inclusion in the database, even if the data in the database are anonymised. If no consent is given, only a phenotype, genotype, and results of immunofluorescence and electron microscopy analyses will be shown, without any details.
 </p>
 <p>
-For obtaining consent, you can download the provided <a href="res/mutation/consent_form.pdf">consent form</a>. We do currently not require you to upload the consent forms to our system. If you indicate that the patient consented, you confirm that a signed consent form is in your possession.
+For obtaining consent, you can download the provided <a href="res/mutation/col7a1/consent_form.pdf">consent form</a>. We do currently not require you to upload the consent forms to our system. If you indicate that the patient consented, you confirm that a signed consent form is in your possession.
 </p>
 <hr/>
 <p>* Field is required.</p>

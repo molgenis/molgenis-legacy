@@ -5,7 +5,7 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package org.molgenis.mutation.ui.search;
+package org.molgenis.mutation.ui.search.chd7;
 
 import org.apache.commons.lang.text.StrBuilder;
 import org.molgenis.framework.db.Database;
@@ -13,19 +13,21 @@ import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.mutation.service.MutationService;
 import org.molgenis.mutation.service.PatientService;
+import org.molgenis.mutation.ui.search.SearchModel;
+import org.molgenis.mutation.ui.search.SearchPlugin;
 
-public class Chd7Search extends SearchPlugin
+public class Search extends SearchPlugin
 {
 	private static final long serialVersionUID = 4159412082076885902L;
 
-	public Chd7Search(String name, ScreenController<?> parent)
+	public Search(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 		this.setModel(new SearchModel(this));
 		this.setView(new FreemarkerView("SearchPlugin.ftl", this.getModel()));
 		this.getModel().setGeneName("CHD7");
-		this.getModel().setPatientPager("res/mutation/chd7PatientPager.jsp");
-		this.getModel().setMutationPager("res/mutation/chd7MutationPager.jsp");
+		this.getModel().setPatientPager("res/mutation/patientPager.jsp");
+		this.getModel().setMutationPager("res/mutation/mutationPager.jsp");
 	}
 	
 	@Override
@@ -43,7 +45,7 @@ public class Chd7Search extends SearchPlugin
 			text.appendln("Welcome to the <b>open-access database on CHD7-mutations</b>.");
 			text.appendln("</h3>");
 			text.appendln("<p>");
-			text.appendln("The CHD7 mutation database contains anonymised data on both published and unpublished CHD7 variations and phenotype.");
+			text.appendln("The CHD7 mutation database contains anonymised data on both published and unpublished CHD7 variations and phenotype. The CHD7 mutation database is under construction. Additions and improvements are still being made.");
 			text.appendln("</p>");
 			text.appendln("<p>");
 			text.appendln("The database currently contains " + mutationService.getNumMutationsByPathogenicity("pathogenic") + " pathogenic mutations in " + patientService.getNumPatientsByPathogenicity("pathogenic") + " patients, " + mutationService.getNumMutationsByPathogenicity("unclassified variant") + " unclassified variants in " + patientService.getNumPatientsByPathogenicity("unclassified variant") + " patients, and " + mutationService.getNumMutationsByPathogenicity("polymorphism") + " polymorphism.");
