@@ -1,4 +1,4 @@
-package test;
+package test.webtestframeworks;
 
 import java.io.IOException;
 import java.net.ServerSocket;

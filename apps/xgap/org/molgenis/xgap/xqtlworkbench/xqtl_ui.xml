@@ -1,4 +1,4 @@
-<molgenis name="molgenis_apps" label="xQTL workbench">
+<molgenis name="xqtl" label="xQTL workbench">
 	<plugin name="molgenis_header" type="plugins.cluster.demo.header.MolgenisHeader" />
 	<menu name="main">
 

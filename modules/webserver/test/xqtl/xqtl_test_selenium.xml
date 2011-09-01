@@ -3,7 +3,7 @@
 <suite name="Selenium test suite">
 	<test name="xQTL workbench walkthrough" preserve-order="true">
 		<classes>
-			<class name="test.XqtlSeleniumTest">
+			<class name="test.xqtl.XqtlSeleniumTest">
 				<methods>
 					<include name="startup" />
 					<include name="login" />

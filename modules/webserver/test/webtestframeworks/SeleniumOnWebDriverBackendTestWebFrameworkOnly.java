@@ -1,4 +1,4 @@
-package test;
+package test.webtestframeworks;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverBackedSelenium;

@@ -1,4 +1,4 @@
-package test;
+package test.webtestframeworks;
 
 import junit.framework.Assert;
 

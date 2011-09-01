@@ -1,4 +1,4 @@
-package test;
+package test.xqtl;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +14,9 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import test.Helper;
+
+import app.servlet.MolgenisServlet;
 import boot.RunStandalone;
 
 import com.thoughtworks.selenium.DefaultSelenium;
@@ -27,11 +30,12 @@ public class XqtlSeleniumTest
 	Integer sleepTime = 100;
 	String pageLoadTimeout = "30000";
 	boolean tomcat = false;
+	String appName;
 
 	@BeforeClass
 	public void start() throws Exception
 	{
-		
+		appName = MolgenisServlet.getMolgenisVariantID();
 		int webserverPort = 8080;
 		if(!tomcat) webserverPort = Helper.getAvailablePort(11000, 100);
 		
@@ -66,7 +70,7 @@ public class XqtlSeleniumTest
 	@Test
 	public void startup() throws InterruptedException
 	{
-		selenium.open("/molgenis_apps/molgenis.do");
+		selenium.open("/"+appName+"/molgenis.do");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertEquals(selenium.getTitle(), "xQTL workbench");
 		Assert.assertTrue(selenium.isTextPresent("Welcome"));
@@ -213,7 +217,7 @@ public class XqtlSeleniumTest
 	@Test
 	public void enumInput() throws Exception {
 		//browse to 'Data' view and expand compact view
-		selenium.open("/molgenis_apps/molgenis.do?__target=InvestigationMenu&select=Datas");
+		selenium.open("/"+appName+"/molgenis.do?__target=InvestigationMenu&select=Datas");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=Investigations_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);

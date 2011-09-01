@@ -2,7 +2,7 @@
 <suite name="Test to see if Selenium is working">
 	<test name="Assert Google">
 		<classes>
-			<class name="test.SeleniumTestWebFrameworkOnly" />
+			<class name="test.webtestframeworks.SeleniumTestWebFrameworkOnly" />
 		</classes>
 	</test>
 </suite>
