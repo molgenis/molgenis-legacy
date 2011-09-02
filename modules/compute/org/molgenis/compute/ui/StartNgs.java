@@ -143,15 +143,15 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         Worksheet data = parentForm.getRecords().get(0);
         //data.
 
-        Date date = data.getCreationDate();
+        Date date = data.getSequenceStartDate();
         String strDate = formatDate("" + date);
 
         String strLane = data.getLane();
-        String strMachine = data.getMachine();
+        String strMachine = data.getSequencer();
         String strFlowcell = data.getFlowcell();
         String strBarcode = data.getBarcode();
-        String strSample = data.getSample();
-        String strCapturing = data.getCapturing();
+        String strSample = data.getExternalSampleID();
+        String strCapturing = data.getCapturingKit();
 
         //application for the whole workflow
         wholeWorkflowApp = new ComputeApplication();
@@ -456,7 +456,8 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         weaver.setVerificationCommand("\n");
         //finish extra
 
-        String remoteLocation = computeFeatures.get("outputdir").getDefaultValue();
+        //String remoteLocation = computeFeatures.get("outputdir").getDefaultValue();
+        String remoteLocation = "/data/gcc/test_george/";
 
         System.out.println("remote location: " + remoteLocation);
 
@@ -468,7 +469,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         String logfile = weaver.getLogfilename();
         pipeline.setPipelinelogpath(logfile);
 
-        weaver.writeToFile("/test/" + pipelineElementNumber + scriptID, scriptFile);
+        weaver.writeToFile("/Users/mdijkstra/tmp/" + pipelineElementNumber + scriptID, scriptFile);
 
         //todo rewrite pipeline generation
         //look into proper choose of logfile and all path settings
