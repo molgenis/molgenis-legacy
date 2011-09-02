@@ -37,7 +37,7 @@
 			<td>
 				<i>Input your list of 'name' fields here:</i><br>
 				<textarea name="input" ROWS="30" COLS="40"><#if screen.input?exists>${screen.input}</#if></textarea>
-				<br>
+				<br><br>
 				<input type="submit" value="Load example" onclick="document.forms.${screen.name}.__action.value = 'loadExample'; document.forms.${screen.name}.submit();"/>
 				<input type="submit" value="Clear" onclick="document.forms.${screen.name}.__action.value = 'clear'; document.forms.${screen.name}.submit();"/>
 				<input type="submit" value="Convert" onclick="document.forms.${screen.name}.__action.value = 'convertNames'; document.forms.${screen.name}.submit();"/>
@@ -51,7 +51,7 @@
 		</tr>
 	</table>
 
-	
+	<br>
 <#--end of your plugin-->	
 			</div>
 		</div>

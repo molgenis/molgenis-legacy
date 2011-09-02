@@ -62,7 +62,7 @@
 
 		<plugin label="Search" name="SimpleDbSearch" type="plugin.search.SimpleWholeDatabaseSearch" group="biologist" />
 
-		<menu label="Admin" name="Admin">
+		<menu label="Settings" name="Settings">
 			<menu name="Auth" label="Users and permissions">
 				<menu label="Basic management" name="Management">
 					<form name="MolgenisUser" entity="MolgenisUser" />
@@ -74,18 +74,18 @@
 				<plugin label="My permissions" name="PermissionManagementPlugin" type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin" />
 			</menu>
 			<plugin label="Database status" name="DatabaseSettings" type="plugins.system.database.Settings" />
-			<plugin label="File storage" name="Settings" type="plugins.system.settings.Settings" />
+			<plugin label="File storage" name="FileStorage" type="plugins.system.settings.Settings" />
 			<plugin label="Install R packages" name="DependencyManager" type="plugins.cluster.demo.dependencymanager.DependencyManager" />
-			<menu name="Ontologies" label="Ontologies" >
-				<form name="Species" entity="Species" />
-				<form name="OntologyTerms" entity="OntologyTerm" />
+			<menu name="Ontologies" label="Ontologies" group="biologist">
+				<form name="Species" entity="Species" group="biologist" />
+				<form name="OntologyTerms" entity="OntologyTerm" group="biologist" />
 			</menu>
 			<menu name="OtherAdmin" label="Utilities">
-				<plugin label="Excel import" name="ExcelWizard" type="plugins.genericwizard.GenericWizard" />
-				<plugin label="Format names" name="NamingPolicy" type="plugins.help.naming.NamingPlugin" />
-				<plugin label="Rename duplicates" name="DuplicateRenaming" type="plugins.help.duplicates.DuplicatesPlugin" />
-				<plugin label="KEGG converter" name="KeggConverter" type="plugins.keggplugin.KeggToolsPlugin" />
-				<plugin label="Matrix wizard" name="MatrixWizard" type="plugins.xgapwizard.MatrixWizard" />
+				<plugin label="Advanced import" name="ExcelWizard" type="plugins.genericwizard.GenericWizard" group="biologist" />
+				<plugin label="Format names" name="NamingPolicy" type="plugins.help.naming.NamingPlugin" group="biologist" />
+				<plugin label="Rename duplicates" name="DuplicateRenaming" type="plugins.help.duplicates.DuplicatesPlugin" group="biologist" />
+				<plugin label="KEGG converter" name="KeggConverter" type="plugins.keggplugin.KeggToolsPlugin" group="bioinformatician" />
+				<plugin label="Matrix wizard" name="MatrixWizard" type="plugins.xgapwizard.MatrixWizard" group="bioinformatician" />
 				<!--plugin name="DatabaseArchiver" type="plugins.archiveexportimport.ArchiveExportImportPlugin" /-->
 			</menu>
 		</menu>
