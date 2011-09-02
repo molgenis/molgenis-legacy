@@ -31,9 +31,10 @@
 				entity="LibraryLane"> <plugin name="StartTarget"
 				type="org.molgenis.compute.StartNgs" label="Run" /> </form
 			-->
-			<plugin name="ImportWorksheet" label="Upload worksheet"
-				type="org.molgenis.ngs.ui.ImportWorksheet" />
-		</menu>
+            </menu>
+            <menu name="NGSUpload">
+			    <plugin name="ImportWorksheet" label="Upload worksheet" type="org.molgenis.ngs.ui.ImportWorksheet" />
+		    </menu>
 		<menu name="Compute">
 			<form name="ComputeResources" entity="ComputeResource" />
 			<form name="ComputeProtocols" entity="ComputeProtocol"
