@@ -27,18 +27,16 @@
 			</#if>
 		</#list>
 		
-	<h3>Help getting rid of duplicates</h3>
-	[explanation]
+	<h3>Help getting duplicates renamed</h3>
 	
-	Here, you can paste lists of strings and [explanation]<br><br>
-	<h2><font color="red">Please disable linkout_overlay, or the example and possibly your inputs (if ID's) will get mangled</font></h2>
-	<br><br>
+	Here you can paste a list of strings and get rid of duplicates. This renames duplicate entries so xQTL can store them. Try 'Load example' and use 'Convert' to see what happens.<br><br>
+
 	
 	<table>
 		<tr>
 			<td>
 				<i>Input your list of 'name' fields here:</i><br>
-				<textarea name="input" ROWS="40" COLS="40"><#if screen.input?exists>${screen.input}</#if></textarea>
+				<textarea name="input" ROWS="30" COLS="40"><#if screen.input?exists>${screen.input}</#if></textarea>
 				<br>
 				<input type="submit" value="Load example" onclick="document.forms.${screen.name}.__action.value = 'loadExample'; document.forms.${screen.name}.submit();"/>
 				<input type="submit" value="Clear" onclick="document.forms.${screen.name}.__action.value = 'clear'; document.forms.${screen.name}.submit();"/>
@@ -47,7 +45,7 @@
 			</td>
 			<td>
 				<i>Output with renamed duplicates:</i><br>
-				<textarea name="output" ROWS="40" COLS="40"><#if screen.output?exists>${screen.output}</#if></textarea>
+				<textarea name="output" ROWS="30" COLS="40"><#if screen.output?exists>${screen.output}</#if></textarea>
 				<#-- possible TODO ><br>Are the items in this list unique? <#if screen.unique?exists><b>${screen.unique}</b><#else>bla</#if>-->
 			</td>
 		</tr>

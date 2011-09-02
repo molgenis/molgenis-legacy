@@ -1,4 +1,7 @@
 <molgenis>
+
+	<plugin label="Login" name="UserLogin" type="org.molgenis.auth.ui.UserLogin" />
+	
 	<form label="Browse data" name="Investigations" entity="Investigation" compact_view="name" group="biologist">
 			<menu name="InvestigationMenu">
 				<plugin name="Overview" type="plugins.investigationoverview.InvestigationOverviewPlugin" group="biologist"/>
@@ -78,12 +81,13 @@
 				<form name="OntologyTerms" entity="OntologyTerm" />
 			</menu>
 			<menu name="OtherAdmin" label="Utilities">
-				<plugin name="ExcelWizard" type="plugins.genericwizard.GenericWizard" />
-				<plugin name="NamingPolicy" type="plugins.help.naming.NamingPlugin" />
-				<plugin name="DuplicateRemover" type="plugins.help.duplicates.DuplicatesPlugin" />
-				<plugin name="KeggConverter" type="plugins.keggplugin.KeggToolsPlugin" />
-				<plugin name="MatrixWizard" type="plugins.xgapwizard.MatrixWizard" />
-				<plugin name="DatabaseArchiver" type="plugins.archiveexportimport.ArchiveExportImportPlugin" />
+				<plugin label="Excel import" name="ExcelWizard" type="plugins.genericwizard.GenericWizard" />
+				<plugin label="Format names" name="NamingPolicy" type="plugins.help.naming.NamingPlugin" />
+				<plugin label="Rename duplicates" name="DuplicateRenaming" type="plugins.help.duplicates.DuplicatesPlugin" />
+				<plugin label="KEGG converter" name="KeggConverter" type="plugins.keggplugin.KeggToolsPlugin" />
+				<plugin label="Matrix wizard" name="MatrixWizard" type="plugins.xgapwizard.MatrixWizard" />
+				<!--plugin name="DatabaseArchiver" type="plugins.archiveexportimport.ArchiveExportImportPlugin" /-->
 			</menu>
 		</menu>
+		
 </molgenis>
