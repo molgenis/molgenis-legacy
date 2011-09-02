@@ -34,8 +34,10 @@ import org.molgenis.util.Tuple;
  * ImportWorksheetView holds the template to show the layout. Get/set it via
  * this.getView()/setView(..).
  */
-public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> {
-	public ImportWorksheet(String name, ScreenController<?> parent) {
+public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
+{
+	public ImportWorksheet(String name, ScreenController<?> parent)
+	{
 		super(name, null, parent);
 		this.setModel(new ImportWorksheetModel(this)); // the default model
 		this.setView(new FreemarkerView("ImportWorksheetView.ftl", getModel())); // <plugin
@@ -49,19 +51,22 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 	 * setMessages(). All db actions are within one transaction.
 	 */
 	@Override
-	public void reload(Database db) throws Exception {
-		//reload the worksheet table after import...
-		
+	public void reload(Database db) throws Exception
+	{
+		// reload the worksheet table after import...
+
 		// empty worksheet table
 		List<Worksheet> wsl = db.query(Worksheet.class).find();
-		for (Worksheet ws : wsl) {
+		for (Worksheet ws : wsl)
+		{
 			db.remove(ws);
 		}
 
 		// fill worksheet table
 		List<LibraryLane> libraryLaneList = db.query(LibraryLane.class).find();
-		for (LibraryLane libraryList : libraryLaneList) {
-			
+		for (LibraryLane libraryList : libraryLaneList)
+		{
+
 			// get data
 			Flowcell flowcell = db.findById(Flowcell.class, libraryList.getFlowcell_Id());
 			NgsSample sample = db.findById(NgsSample.class, libraryList.getSample());
@@ -69,22 +74,21 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 			LibraryBarcode lb = db.findById(LibraryBarcode.class, libraryList.getBarcode());
 			Investigation inv = db.findById(Investigation.class, sample.getInvestigation());
 			Person i = null;
-			if(inv.getContacts_Id().size() > 0) i = db.findById(Person.class, inv.getContacts_Id().get(0));
+			if (inv.getContacts_Id().size() > 0) i = db.findById(Person.class, inv.getContacts_Id().get(0));
 			Machine m = db.findById(Machine.class, flowcell.getMachine());
 
 			// create sheet
 			Worksheet ws = new Worksheet();
-			ws.setStatus(libraryList.getStatus());
-			ws.setSample(sample.getName());
+			ws.setExternalSampleID(sample.getName());
 			ws.setBarcode(lb.getBarcode());
 			ws.setProject(inv.getName());
-			if(inv.getContacts_Id().size() > 0) ws.setInvestigator(i.getLastName());
+			if (inv.getContacts_Id().size() > 0) ws.setContact(i.getLastName());
 			ws.setLane(libraryList.getLane());
-			ws.setCreationDate(flowcell.getRunDate());
-			ws.setMachine(m.getMachine());
+			ws.setSequenceStartDate(flowcell.getRunDate());
+			ws.setSequencer(m.getMachine());
 			ws.setFlowcell(flowcell.getName());
-			ws.setCapturing(lc.getCapturing());
-			ws.setRemark(libraryList.getDescription());
+			ws.setCapturingKit(lc.getCapturing());
+			ws.setComments(libraryList.getDescription());
 			// add sheet
 			db.add(ws);
 		}
@@ -96,8 +100,10 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 		CsvFileWriter writer = new CsvFileWriter(f);
 		writer.setSeparator(",");
 		Boolean first = true;
-		for (Worksheet ws : db.query(Worksheet.class).find()) {
-			if (first) {
+		for (Worksheet ws : db.query(Worksheet.class).find())
+		{
+			if (first)
+			{
 				writer.setHeaders(ws.getFields());
 				writer.writeHeader();
 				print("Header: " + ws.getFields().toString());
@@ -110,15 +116,21 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 
 	}
 
-	public void uploadaction(final Database db, Tuple request) throws Exception {
-		String duplicateaction = request.getString("duplicates"); // update, ignore, error
-		
+	public void uploadaction(final Database db, Tuple request) throws Exception
+	{
+		String duplicateaction = request.getString("duplicates"); // update,
+																	// ignore,
+																	// error
+
 		File file = request.getFile("upload");
 		// File file = new File(request.getString("upload"));
 
-		if (file == null) {
+		if (file == null)
+		{
 			throw new Exception("No file selected.");
-		} else if (!file.getName().endsWith(".csv")) {
+		}
+		else if (!file.getName().endsWith(".csv"))
+		{
 			throw new Exception("File does not end with '.csv', other formats are not supported.");
 		}
 
@@ -130,170 +142,200 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 		reader.setSeparator(',');
 		System.out.println(">> " + reader.colnames());
 
-		reader.parse(new CsvReaderListener() {
+		reader.parse(new CsvReaderListener()
+		{
 			@Override
-			public void handleLine(int line_number, Tuple tuple) throws Exception {
-				System.out.println(">> Parsing line " + line_number);
-				
-				
-				// _investigator_
-				String investigatorname = tuple.getString("investigator");
-				Person inv = (Person) getObject(db, Person.class, "LastName", investigatorname);
-				if (inv == null) {
-					inv = new Person();
-					inv.setLastName(investigatorname);
-					db.add(inv);
-				}
+			public void handleLine(int line_number, Tuple tuple) throws Exception
+			{
+				if (!tuple.isNull(Worksheet.FLOWCELL) && !tuple.isNull(Worksheet.PROJECT))
+				{
+					System.out.println(">> Parsing line " + line_number);
 
-				// _project_
-				String projectname = tuple.getString("project");
-				Investigation investigation = (Investigation) getObject(db, Investigation.class, "name", projectname);
-				if (investigation == null) {
-					investigation = new Investigation();
-					investigation.setName(projectname);
-					investigation.getContacts_Id().add(inv.getId());
-					db.add(investigation);
-				}
-
-				// _library_ Capturing
-				String capturing = tuple.getString("capturing");
-				LibraryCapturing libcap = (LibraryCapturing) getObject(db, LibraryCapturing.class, "capturing", capturing);
-				if (libcap == null) {
-					libcap = new LibraryCapturing();
-					libcap.setCapturing(capturing);
-					db.add(libcap);
-				}
-
-				// _libary_ Barcode
-				String barcode = tuple.getString("barcode");
-				if (barcode == null)
-					barcode = "NA";
-				LibraryBarcode libbar = (LibraryBarcode) getObject(db, LibraryBarcode.class, "barcode", barcode);
-
-				if (libbar == null) {
-					libbar = new LibraryBarcode();
-					libbar.setBarcode(barcode);
-					db.add(libbar);
-				}
-
-				// _library_ (1)
-				//Query q = db.query(Library.class);
-				// q.addRules(new QueryRule("capturing", Operator.EQUALS,
-				// capturing));
-				// q.addRules(new QueryRule("barcode", Operator.EQUALS,
-				// barcode));
-				//List<Library> liblist = q.find();
-
-				// first select the target library, if available (... the
-				// q.addRules statements don't work...)
-//				LibraryLane lib = null;
-//				for (LibraryLane thislib : liblist) {
-//					if (thislib.getCapturing_Id() == libcap.getId() && thislib.getBarcode_Id() == libbar.getId()) {
-//						lib = thislib;
-//					}
-//				}
-//
-//				if (lib == null) {
-//					lib = new Library();
-//
-//					lib.setCapturing(libcap);
-//					lib.setBarcode(libbar);
-//
-//					// Why is library an ObservatgionTarget?! OT has field name
-//					// which lib shouldnt have... :-s
-//					lib.setName("lib_" + capturing + barcode);
-//
-//					db.add(lib);
-//				}
-
-				// // add the sample to the library (if not there yet)
-				// List<Integer> libsamples = lib.getSamples();
-				// if (!libsamples.contains(sample.getId())) {
-				// libsamples.add(sample.getId());
-				// lib.setSamples(libsamples);
-				// db.update(lib);
-				// }
-
-				// _sample_
-				// assume that a sample names occurs in only one line
-				String samplename = tuple.getString("sample");
-				NgsSample sample = (NgsSample) getObject(db, NgsSample.class, "name", samplename);
-				if (sample == null) {
-					sample = new NgsSample();
-					sample.setName(samplename);
-					sample.setInvestigation(investigation);
-					db.add(sample);
-				}
-
-				// _machine-
-				String machinename = tuple.getString("machine");
-				Machine machine = (Machine) getObject(db, Machine.class, "machine", machinename);
-				if (machine == null) {
-					machine = new Machine();
-					machine.setMachine(machinename);
-					db.add(machine);
-				}
-				
-				// _flowcell_
-				String flowcellname = tuple.getString("flowcell");
-				Flowcell flowcell = (Flowcell) getObject(db, Flowcell.class, "name", flowcellname);
-				if (flowcell == null) {
-					print(">> We create a new flowcell");
-					flowcell = new Flowcell();
-					flowcell.setName(flowcellname);
-					String date = tuple.getString("date");
-					// Calendar cal = Calendar.getInstance();
-					// cal.set(2000 + Integer.parseInt(date.substring(0, 2)),
-					// Integer.parseInt(date.substring(2, 4)),
-					// Integer.parseInt(date.substring(4, 6)));
-					// print(cal.getTime().toString());
-					java.util.Date date_tmp = new java.util.Date(2000 - 1900 + Integer.parseInt(date.substring(0, 2)), Integer.parseInt(date.substring(2, 4)) - 1, Integer.parseInt(date
-							.substring(4, 6)));
-					print(date_tmp.toString());
-					flowcell.setRunDate(date_tmp);
-					flowcell.setMachine(machine);
-					db.add(flowcell);
-				}
-
-				// _flowcell lane library_
-				Query<LibraryLane> q = db.query(LibraryLane.class);
-				List<LibraryLane> flslst = q.find();
-				LibraryLane fls = null;
-				for (LibraryLane thisfls : flslst) {
-					Boolean equal = (thisfls.getFlowcell_Id().equals(flowcell.getId())) && (thisfls.getLane().substring(1).equals(tuple.getString("lane")))
-							&& (thisfls.getSample_Id().equals(sample.getId()));
-					if (equal) {
-						fls = thisfls;
-						print(" ALERT !!! >> Flowcell-Lane-s object was already found: " + fls.toString());
-						break;
+					// _investigator_
+					String investigatorname = tuple.getString(Worksheet.CONTACT);
+					Person inv = null;
+					if (investigatorname != null)
+					{
+						inv = (Person) getObject(db, Person.class, Person.LASTNAME, investigatorname);
+						if (inv == null)
+						{
+							inv = new Person();
+							inv.setLastName(investigatorname);
+							db.add(inv);
+						}
 					}
+
+					// _project_
+					String projectname = tuple.getString(Worksheet.PROJECT);
+					Investigation investigation = (Investigation) getObject(db, Investigation.class,
+							Investigation.NAME, projectname);
+					if (investigation == null)
+					{
+						investigation = new Investigation();
+						investigation.setName(projectname);
+						if(inv != null) investigation.getContacts_Id().add(inv.getId());
+						db.add(investigation);
+					}
+
+					// _library_ Capturing
+					LibraryCapturing libcap = null;
+					String capturing = tuple.getString(Worksheet.CAPTURINGKIT);
+					if (capturing != null)
+					{
+						libcap = (LibraryCapturing) getObject(db, LibraryCapturing.class, LibraryCapturing.CAPTURING,
+								capturing);
+						if (libcap == null)
+						{
+							libcap = new LibraryCapturing();
+							libcap.setCapturing(capturing);
+							db.add(libcap);
+						}
+					}
+
+					// _libary_ Barcode
+					String barcode = tuple.getString(Worksheet.BARCODE);
+					if (barcode == null) barcode = "NA";
+					LibraryBarcode libbar = (LibraryBarcode) getObject(db, LibraryBarcode.class,
+							LibraryBarcode.BARCODE, barcode);
+
+					if (libbar == null)
+					{
+						libbar = new LibraryBarcode();
+						libbar.setBarcode(barcode);
+						db.add(libbar);
+					}
+
+					// _library_ (1)
+					// Query q = db.query(Library.class);
+					// q.addRules(new QueryRule("capturing", Operator.EQUALS,
+					// capturing));
+					// q.addRules(new QueryRule("barcode", Operator.EQUALS,
+					// barcode));
+					// List<Library> liblist = q.find();
+
+					// first select the target library, if available (... the
+					// q.addRules statements don't work...)
+					// LibraryLane lib = null;
+					// for (LibraryLane thislib : liblist) {
+					// if (thislib.getCapturing_Id() == libcap.getId() &&
+					// thislib.getBarcode_Id() == libbar.getId()) {
+					// lib = thislib;
+					// }
+					// }
+					//
+					// if (lib == null) {
+					// lib = new Library();
+					//
+					// lib.setCapturing(libcap);
+					// lib.setBarcode(libbar);
+					//
+					// // Why is library an ObservatgionTarget?! OT has field
+					// name
+					// // which lib shouldnt have... :-s
+					// lib.setName("lib_" + capturing + barcode);
+					//
+					// db.add(lib);
+					// }
+
+					// // add the sample to the library (if not there yet)
+					// List<Integer> libsamples = lib.getSamples();
+					// if (!libsamples.contains(sample.getId())) {
+					// libsamples.add(sample.getId());
+					// lib.setSamples(libsamples);
+					// db.update(lib);
+					// }
+
+					// _sample_
+					// assume that a sample names occurs in only one line
+					String samplename = tuple.getString(Worksheet.EXTERNALSAMPLEID);
+					NgsSample sample = (NgsSample) getObject(db, NgsSample.class, NgsSample.NAME, samplename);
+					if (sample == null)
+					{
+						sample = new NgsSample();
+						sample.setName(samplename);
+						sample.setInvestigation(investigation);
+						db.add(sample);
+					}
+
+					// _machine-
+					String machinename = tuple.getString(Worksheet.SEQUENCER);
+					Machine machine = (Machine) getObject(db, Machine.class, Machine.MACHINE, machinename);
+					if (machine == null)
+					{
+						machine = new Machine();
+						machine.setMachine(machinename);
+						db.add(machine);
+					}
+
+					// _flowcell_
+					String flowcellname = tuple.getString(Worksheet.FLOWCELL);
+					Flowcell flowcell = (Flowcell) getObject(db, Flowcell.class, Flowcell.NAME, flowcellname);
+					if (flowcell == null)
+					{
+						print(">> We create a new flowcell");
+						flowcell = new Flowcell();
+						flowcell.setName(flowcellname);
+						String date = tuple.getString(Worksheet.SEQUENCESTARTDATE);
+						// Calendar cal = Calendar.getInstance();
+						// cal.set(2000 + Integer.parseInt(date.substring(0,
+						// 2)),
+						// Integer.parseInt(date.substring(2, 4)),
+						// Integer.parseInt(date.substring(4, 6)));
+						// print(cal.getTime().toString());
+						if (date != null && "".equals(date))
+						{
+							java.util.Date date_tmp = new java.util.Date(2000 - 1900 + Integer.parseInt(date.substring(
+									0, 2)), Integer.parseInt(date.substring(2, 4)) - 1, Integer.parseInt(date
+									.substring(4, 6)));
+							print(date_tmp.toString());
+							flowcell.setRunDate(date_tmp);
+						}
+						flowcell.setMachine(machine);
+						db.add(flowcell);
+					}
+
+					// _flowcell lane library_
+					Query<LibraryLane> q = db.query(LibraryLane.class);
+					List<LibraryLane> flslst = q.find();
+					LibraryLane fls = null;
+					for (LibraryLane thisfls : flslst)
+					{
+						Boolean equal = (thisfls.getFlowcell_Id().equals(flowcell.getId()))
+								&& (thisfls.getLane().substring(1).equals(tuple.getString("lane")))
+								&& (thisfls.getSample_Id().equals(sample.getId()));
+						if (equal)
+						{
+							fls = thisfls;
+							print(" ALERT !!! >> Flowcell-Lane-s object was already found: " + fls.toString());
+							break;
+						}
+					}
+
+					if (fls == null)
+					{
+						// if fll is still null, then it doesn't exist in the DB
+						// yet, so we will add it
+						fls = new LibraryLane();
+						// if ("g".equalsIgnoreCase(status))
+						// status = "to do";
+						// else
+						// status = "done";
+						fls.setFlowcell(flowcell);
+						fls.setLane(tuple.getString(Worksheet.LANE));
+						fls.setSample(sample);
+						fls.setName(samplename);
+						fls.setDescription(tuple.getString(Worksheet.COMMENTS));
+						fls.setBarcode(libbar);
+						if (libcap != null) fls.setCapturing(libcap);
+
+						print("Before adding flowcell lane lib");
+						db.add(fls);
+						print("Flowcell-Lane-Library object added");
+					}
+
+					// getModel().investigations = q.find();
+
 				}
-
-				if (fls == null) {
-					// if fll is still null, then it doesn't exist in the DB
-					// yet, so we will add it
-					fls = new LibraryLane();
-					String status = tuple.getString("status");
-					if ("g".equalsIgnoreCase(status))
-						status = "to do";
-					else
-						status = "done";
-					fls.setStatus(status);
-					fls.setFlowcell(flowcell);
-					fls.setLane(tuple.getString("lane"));
-					fls.setSample(sample);
-					fls.setName(samplename);
-					fls.setDescription(tuple.getString("remark"));
-					fls.setBarcode(libbar);
-					fls.setCapturing(libcap);
-
-					print("Before adding flowcell lane lib");
-					db.add(fls);
-					print("Flowcell-Lane-Library object added");
-				}
-
-				// getModel().investigations = q.find();
-
 			}
 		});
 
@@ -301,21 +343,27 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 		getModel().setSuccess("UPLOAD " + request.getString("uploadOriginalFileName"));
 	}
 
-	private void print(String str) {
+	private void print(String str)
+	{
 		System.out.println(">> " + str);
 	}
 
-	public Object getObject(Database db, Class c, String uniquefield, String fieldvalue) {
+	public Object getObject(Database db, Class c, String uniquefield, String fieldvalue)
+	{
 		Query q = db.query(c);
 		q.equals(uniquefield, fieldvalue);
 		List<Object> objlist;
 
-		try {
+		try
+		{
 			objlist = q.find();
-			if (objlist.size() == 1) {
+			if (objlist.size() == 1)
+			{
 				return objlist.get(0);
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			System.out.println(">> Exception <<");
 			e.printStackTrace();
 		}
@@ -331,7 +379,8 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel> 
 	 * Exceptions will be logged and shown to the user automatically. All db
 	 * actions are within one transaction.
 	 */
-	public void updateDate(Database db, Tuple request) throws Exception {
+	public void updateDate(Database db, Tuple request) throws Exception
+	{
 		getModel().date = request.getDate("date");
 
 		// //Easily create object from request and add to database
