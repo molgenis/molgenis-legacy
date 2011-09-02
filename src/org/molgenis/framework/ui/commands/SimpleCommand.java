@@ -250,10 +250,7 @@ public abstract class SimpleCommand extends SimpleScreenModel implements ScreenC
 	public abstract List<ActionInput> getActions();
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception
-	{
-		return ScreenModel.Show.SHOW_MAIN;
-	}
+	public abstract Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception;
 
 	@Override
 	public boolean isDownload()

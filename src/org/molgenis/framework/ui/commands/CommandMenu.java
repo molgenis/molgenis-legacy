@@ -1,15 +1,19 @@
 package org.molgenis.framework.ui.commands;
 
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
+import org.molgenis.util.Tuple;
 
 
 public class CommandMenu extends SimpleCommand
@@ -73,6 +77,13 @@ public class CommandMenu extends SimpleCommand
 	{
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Show handleRequest(Database db, Tuple request,
+			OutputStream downloadStream) throws Exception
+	{
+		return ScreenModel.Show.SHOW_DIALOG;
 	}
 
 }
