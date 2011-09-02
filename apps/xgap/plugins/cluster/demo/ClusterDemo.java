@@ -204,7 +204,7 @@ public class ClusterDemo extends PluginModel<Entity>
 	 * entity are automatically added by the molgenis parser. But we can't reach them all.
 	 * @throws DatabaseException 
 	 */
-	public void giveExtraNeededPermissions(Database db) throws DatabaseException{
+	public static void giveExtraNeededPermissions(Database db) throws DatabaseException{
 		String[] entities = new String[]{
 				"org.molgenis.core.MolgenisFile",
 				"org.molgenis.data.BinaryDataMatrix",
@@ -227,7 +227,7 @@ public class ClusterDemo extends PluginModel<Entity>
 	 * @param db
 	 * @throws DatabaseException
 	 */
-	public void addExampleUsers(Database db) throws DatabaseException{
+	public static void addExampleUsers(Database db) throws DatabaseException{
 		MolgenisUser bioUser = new MolgenisUser();
 		bioUser.setName("bio-user");
 		bioUser.setPassword("bio");

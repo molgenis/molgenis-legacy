@@ -25,7 +25,7 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->	
 
-<br><br>
+<h2>Reset & loading</h2>
 
 <@action name="loadExampleData" label="load example data (may take a minute)"/>
 
@@ -41,7 +41,24 @@ ${screen.console}
 </div>
 </#if>	
 	
-<br><br>
+
+<h2>Current connection & settings</h2>
+<table cellpadding="4" border="1">
+	<tr>
+		<td><h3>Option</h3></td>
+		<td><h3>Value</h3></td>
+	</tr>
+	<#list screen.info?keys as key>
+	<tr>
+		<td style="font-family: Courier, 'Courier New', monospace">${key}</td>
+		<td style="font-family: Courier, 'Courier New', monospace">${screen.info[key]}</td>
+	</tr>
+	</#list>
+</table>
+
+
+<h2>Manage connection & database</h2>
+
 TODO: Allow admin user to setup a database connection! merge with some kind of larger ADMIN panel.<br>
 <br>
 TODO: Allow admin to run some informative queries about the database.<br>
