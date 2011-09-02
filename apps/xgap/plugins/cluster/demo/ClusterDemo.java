@@ -209,17 +209,17 @@ public class ClusterDemo extends PluginModel<Entity>
 				"org.molgenis.core.MolgenisFile",
 				"org.molgenis.data.BinaryDataMatrix",
 				"org.molgenis.data.CSVDataMatrix",
-				"org.molgenis.pheno.ObservationElement"
+				"org.molgenis.pheno.ObservationElement",
+				"org.molgenis.cluster.Analysis"
 				};
 		
 		for(String e : entities){
 			MolgenisPermission mp = new MolgenisPermission();
 			mp.setEntity_ClassName(e);
 			mp.setRole_Name("biologist");
-			mp.setPermission("write");
+			mp.setPermission("read"); //might fail? need Selenium test!!
 			db.add(mp);
 		}
-		
 	}
 	
 	/**
