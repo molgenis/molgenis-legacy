@@ -16,6 +16,14 @@ public abstract class EasyPluginController<M extends ScreenModel> extends
 {
 	private static final long serialVersionUID = 1L;
 
+	// hack to be able to 'correctly' handle redirects (do not continue handling
+	// this request after HandleRequest in AbstMolgServlet is done - contrary to
+	// usual response serving which is 'fall through' and therefore wrong) and
+	// at the same time allow EasyPlugins to throw exceptions which are all
+	// thrown as InvocationTargetException due to reflection, while being able
+	// to render the resulting page + the exception on screen
+	public static Boolean HTML_WAS_ALREADY_SERVED;
+
 	public EasyPluginController(String name, M model, ScreenController<?> parent)
 	{
 		super(name, model, parent);
@@ -24,23 +32,27 @@ public abstract class EasyPluginController<M extends ScreenModel> extends
 	/**
 	 * If a user sends a request it can be handled here. Default, it will be
 	 * automatically mapped to methods based request.getAction();
-	 * @throws RedirectedException 
+	 * 
+	 * @throws RedirectedException
 	 */
 	@Override
-	public void handleRequest(Database db, Tuple request) throws RedirectedException
-	{
-		// automatically calls functions with same name as action
-		delegate(request.getAction(), db, request);
-	}
-	
-	@Override
-	public void handleRequest(Database db, Tuple request, OutputStream out) throws RedirectedException
+	public void handleRequest(Database db, Tuple request)
+			throws RedirectedException
 	{
 		// automatically calls functions with same name as action
 		delegate(request.getAction(), db, request);
 	}
 
-	public void delegate(String action, Database db, Tuple request) throws RedirectedException
+	@Override
+	public void handleRequest(Database db, Tuple request, OutputStream out)
+			throws RedirectedException
+	{
+		// automatically calls functions with same name as action
+		delegate(request.getAction(), db, request);
+	}
+
+	public void delegate(String action, Database db, Tuple request)
+			throws RedirectedException
 	{
 		// try/catch for db.rollbackTx
 		try
@@ -66,9 +78,13 @@ public abstract class EasyPluginController<M extends ScreenModel> extends
 						+ this.getName() + ")." + action
 						+ "(db,tuple) failed: " + e1.getMessage());
 				db.rollbackTx();
-			}catch (InvocationTargetException e){
-				throw new RedirectedException(e);
-			}catch (Exception e)
+				// useless - can't do this on every error! we cannot distinguish
+				// exceptions because they are all InvocationTargetException
+				// anyway
+				// }catch (InvocationTargetException e){
+				// throw new RedirectedException(e);
+			}
+			catch (Exception e)
 			{
 				logger.error("call of " + this.getClass().getName() + "(name="
 						+ this.getName() + ")." + action + " failed: "
@@ -79,23 +95,23 @@ public abstract class EasyPluginController<M extends ScreenModel> extends
 				db.rollbackTx();
 			}
 		}
-		catch (RedirectedException e){
-			throw e;
-		}
+		// catch (RedirectedException e){
+		// throw e;
+		// }
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void setError(String message)
 	{
-		this.getModel().setMessages(new ScreenMessage(message,false));
+		this.getModel().setMessages(new ScreenMessage(message, false));
 	}
-	
+
 	public void setSucces(String message)
 	{
-		this.getModel().setMessages(new ScreenMessage(message,true));
+		this.getModel().setMessages(new ScreenMessage(message, true));
 	}
 
 }
