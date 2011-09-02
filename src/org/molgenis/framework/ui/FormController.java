@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -314,6 +315,10 @@ public abstract class FormController<E extends Entity> extends
 				.getString("__filter_operator"));
 		System.out.println(">>>>>>>>>>>>Operator" + operator);
 		String value = request.getString("__filter_value");
+		if(StringUtils.isEmpty(value)) { //to prevent null-pointer exception
+			value = "";
+		}
+		
 		System.out.println(">>>>>>>>>>>>value" + value);
 		// automatically add LIKE delimiters %
 		if (operator.equals(Operator.LIKE) && !value.contains("%"))
