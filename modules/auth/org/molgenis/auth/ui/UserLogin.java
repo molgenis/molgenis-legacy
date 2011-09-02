@@ -115,7 +115,10 @@ public class UserLogin extends EasyPluginController<UserLoginModel>
 			{
 				String redirectURL = httpRequest.getRequestURL() + "?__target=main" + "&select=" + this.getApplicationController().getLogin().getRedirect();
 				httpResponse.sendRedirect(redirectURL);
-				throw new RedirectedException();
+				//workaround - see comment @ EasyPluginController.HTML_WAS_ALREADY_SERVED
+				EasyPluginController.HTML_WAS_ALREADY_SERVED = true;
+				//no use: all caught as InvocationTargetException
+				//throw new RedirectedException();
 			}
 		} else {
 			throw new DatabaseException("Login failed: username or password empty");
