@@ -98,7 +98,7 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	 */
 	public HtmlInput(String name, E value)
 	{
-		assert (name != null);
+		if(name == null) name = UUID.randomUUID().toString().replace("-","");
 		this.setId(name.replace(" ", ""));
 		this.setName(name.replace(" ", ""));
 		this.setLabel(name);
