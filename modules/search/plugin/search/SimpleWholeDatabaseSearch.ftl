@@ -48,10 +48,11 @@ Found ${model.results?size} result(s) in ${model.time} seconds.
 <#list model.results as r>
 	<#if currentType != r.get("__Type")>
 	<#if currentType != "null">
-		</table>
+		</table></div>
 	</#if>
 	<h4>Type: <i>${r.get("__Type")}</i></h4>
-	<table border="1" bgcolor="white" cellpadding="3">
+	<div style="width:inherit;overflow:auto;">
+	<table border="1" bgcolor="#F5F5F5" bordercolor="silver" cellpadding="3">
 		<tr>
 		<td><i><b><nobr>Go there</nobr></b></i></td>
 		<#list r.getFields() as f>
@@ -90,8 +91,7 @@ Found ${model.results?size} result(s) in ${model.time} seconds.
 	</tr>
 	<#assign currentType = r.get("__Type")>
 </#list>
-</table>
-
+</table></div>
 </#if>
 
 <#--end of your plugin-->	
