@@ -134,7 +134,17 @@ public class Molgenis {
     Model model = null;
     List<Generator> generators = new ArrayList<Generator>();
 
-    public Molgenis(String propertiesFile, Class<? extends Generator>... generatorsToUse) throws Exception {
+    public List<Generator> getGenerators()
+	{
+		return generators;
+	}
+
+	public void setGenerators(List<Generator> generators)
+	{
+		this.generators = generators;
+	}
+
+	public Molgenis(String propertiesFile, Class<? extends Generator>... generatorsToUse) throws Exception {
         this(new MolgenisOptions(propertiesFile), generatorsToUse);
     }
 
