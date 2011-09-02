@@ -67,7 +67,7 @@
 				measurement on the Illumina Genome Analyzer</description>
 			<field name="machine" type="xref" xref_entity="Machine"
 				description="The Illumina machine it was run on" />
-			<field name="runDate" type="date"
+			<field name="runDate" type="date" nillable="true"
 				description="The date the flowcell was run on the machine" />
 		</entity>
 		<entity name="LibraryLane" extends="ObservationElement">
@@ -87,24 +87,26 @@
 			<field name="lane" type="enum" enum_options="[1,2,3,4,5,6,7,8]"
 				description="The lane number that is unique within a flow cell. Typically in range 1-8" />
 			<field name="barcode" type="xref" xref_entity="LibraryBarcode"/>
-			<field name="capturing" type="xref" xref_entity="LibraryCapturing" />
+			<field name="capturing" type="xref" xref_entity="LibraryCapturing" nillable="true"/>
 			<unique fields="flowcell,lane,name" description="Lane and sample is unique per flowcell" />
 		</entity>
 		<entity name="Worksheet">
 			<!-- simple placeholder of above structure -->
 			<field name="id" type="autoid"/>
-			<field name="status" type="string" />
-			<field name="sample" type="string" />
-			<field name="barcode" type="string" />
+			<field name="externalSampleID" type="string" />
+			<field name="barcode" type="string" nillable="true"/>
 			<field name="project" type="string" />
-			<field name="investigator" type="string" />
+			<field name="contact" type="string" nillable="true"/>
 			<field name="lane" type="string" />
-			<field name="creationDate" type="date" /> <!-- renamed for Oracle, date -->
-			<field name="machine" type="string" />
+			<field name="sequenceStartDate" type="date" nillable="true"/> <!-- renamed for Oracle, date -->
+			<field name="sequencer" type="string" />
 			<field name="flowcell" type="string" />
-			<field name="capturing" type="string" />
-			<field name="remark" type="string" />
-			<unique fields="flowcell,lane,sample" />
+			<field name="library" type="string" nillable="true"/>
+			<field name="capturingKit" type="string" nillable="true"/>
+			<field name="comments" type="string" nillable="true"/>
+			<field name="arrayFile" type="string" nillable="true"/>
+			<field name="arrayID" type="string" nillable="true"/>
+			<unique fields="flowcell,lane,barcode" />
 		</entity>
 		<!--
 			entity name="ProjectWorkflow" label="Project Workflow"
