@@ -20,7 +20,6 @@ import java.util.Locale;
 import java.util.Vector;
 
 import javax.naming.NamingException;
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,7 +30,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.cxf.Bus;
 import org.apache.cxf.BusFactory;
 import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.Database;
@@ -40,6 +38,7 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.security.Login;
 import org.molgenis.framework.ui.ApplicationController;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
@@ -577,14 +576,15 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					}
 				}
 
-				try{
+			
 				molgenis.handleRequest(db, requestTuple);
-				}catch(RedirectedException e){
-					System.out.println("So bad, we could have handled it");
+				
+				//workaround - see comment @ EasyPluginController.HTML_WAS_ALREADY_SERVED
+				if(EasyPluginController.HTML_WAS_ALREADY_SERVED != null && EasyPluginController.HTML_WAS_ALREADY_SERVED){
+					EasyPluginController.HTML_WAS_ALREADY_SERVED = null;
 					return;
-				}catch(Exception e){
-					System.out.println("When a normal exception comes do nothing ??? Done");
 				}
+				
 				// handle request
 				molgenis.reload(db); // reload the application
 				logger.debug("reloaded " + molgenis.getName()
