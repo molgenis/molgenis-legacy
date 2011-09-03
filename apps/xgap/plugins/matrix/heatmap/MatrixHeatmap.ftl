@@ -300,10 +300,10 @@ Scaled between <b>NA - NA</b><br>
 				<img src="res/img/pulldown.gif"/><br>
 				<div class="submenu" id="matrix_plugin_FileSub">
 					<table>
-						<tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.forms.${screen.name}.__target.value='${screen.name}';document.forms.${screen.name}.__action.value='download_visible';document.forms.${screen.name}.__show.value='download';document.forms.${screen.name}.submit();"><img src="res/img/download.png" align="left" />Download visible as text</td></tr>
+						<#-->tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.forms.${screen.name}.__target.value='${screen.name}';document.forms.${screen.name}.__action.value='download_visible';document.forms.${screen.name}.__show.value='download';document.forms.${screen.name}.submit();"><img src="res/img/download.png" align="left" />Download visible as text</td></tr>
 						<tr><td class="submenuitem" onclick="location.href='downloadmatrixasexcel?id=${model.selectedData.id?c}&download=some&coff=${browser.colStart}&clim=${browser.colStop-browser.colStart}&roff=${browser.rowStart}&rlim=${browser.rowStop-browser.rowStart}'"><img src="res/img/download.png" align="left" />Download visible as Excel</td></tr>
 						<tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.forms.${screen.name}.__target.value='${screen.name}';document.forms.${screen.name}.__action.value='download_all';document.forms.${screen.name}.__show.value='download';document.forms.${screen.name}.submit();"><img src="res/img/download.png" align="left" />Download all as text</td></tr>
-						<tr><td class="submenuitem" onclick="location.href='downloadmatrixasexcel?id=${model.selectedData.id?c}&download=all'"><img src="res/img/download.png" align="left" />Download all as Excel</td></tr>
+						<tr><td class="submenuitem" onclick="location.href='downloadmatrixasexcel?id=${model.selectedData.id?c}&download=all'"><img src="res/img/download.png" align="left" />Download all as Excel</td></tr-->
 						<#if model.selectedData.source == "BinaryFile" && model.hasBackend == true><tr><td class="submenuitem" onclick="location.href='downloadfile?id=${model.selectedData.id?c}'"><img src="res/img/download.png" align="left" />Download all as binary</td></tr></#if>
 						<tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.forms.${screen.name}.__target.value='${screen.name}';document.forms.${screen.name}.__action.value = 'refresh';document.forms.${screen.name}.submit();"><img src="res/img/update.gif" align="left" />Reset viewer</td></tr>
 					</table>
@@ -330,7 +330,7 @@ Scaled between <b>NA - NA</b><br>
 					<tr><td><font class="fontColor">Stepsize</font></td><td><input type="text" name="stepSize" value="${browser.stepSize?c}" size="1"></td></tr>
 					<tr><td><font class="fontColor">Width</font></td><td><input type="text" name="width" value="${browser.width?c}" size="1"></td></tr>
 					<tr><td><font class="fontColor">Height</font></td><td><input type="text" name="height" value="${browser.height?c}" size="1"></td></tr>
-					<tr><td><input type="submit" value="Change" onclick="document.forms.${screen.name}.__action.value = 'changeSubmatrixSize'; document.forms.${screen.name}.submit();"></td></tr>
+					<tr><td><input type="submit" value="Update" onclick="document.forms.${screen.name}.__action.value = 'changeSubmatrixSize'; document.forms.${screen.name}.submit();"></td></tr>
 				</table>
 			</td>
 			<td>

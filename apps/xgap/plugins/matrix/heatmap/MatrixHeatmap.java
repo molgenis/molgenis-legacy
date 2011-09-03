@@ -122,7 +122,7 @@ public class MatrixHeatmap extends PluginModel
 				else
 				{
 					getAndSetBrowserSettings(request);
-					RequestHandler.handle(this.model, request.getString("__action"), new PrintWriter(out));
+					RequestHandler.handle(this.model, request.getString("__action"), null);
 				}
 
 				this.setMessages();
