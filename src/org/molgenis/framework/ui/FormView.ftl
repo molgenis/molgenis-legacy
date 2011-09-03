@@ -470,47 +470,38 @@ var molgenis_required = new Array(${required});
 	<input type="hidden" name="filter_id" />
 <@form_header screen/>
 	<!-- put in table so we can collapse the content panel-->
-	<table width="100%">
-		<tr>
-			<!--<td class="form_collapse" style="width: 12px;float:right;clear:right; margin:5px;"><img src="generated-res/img/minus.png" id="${screen.name}_toggleImage" onclick="javascript:toggleForm('${screen.name}')"/></td>-->
-			<td id="${screen.name}_contentPanel">
-			  <tr>
-					<#list screen.getFilters() as filter>			
-						<label>Search results <#if filter_index=0>where: <#else></#if>${filter}</label><image height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="setInput('${screen.name}_form','_self','','${screen.name}','filter_remove','iframe'); document.forms.${screen.name}_form.filter_id.value='${filter_index}'; document.forms.${screen.name}_form.submit();" title="remove filter"/>
-					    <br />
-					</#list>
-			  </tr>
-			<@form_toolbar screen/>
-				<div class="screenbody">
-					<div class="screenpadding">
-					<#if screen.mode.toString() == "editview">
-			<@editview screen />
-					<#else> 
-			<@listview screen /> 
-					</#if>
+	<@form_toolbar screen/>
+	<!--<td class="form_collapse" style="width: 12px;float:right;clear:right; margin:5px;"><img src="generated-res/img/minus.png" id="${screen.name}_toggleImage" onclick="javascript:toggleForm('${screen.name}')"/></td>-->
+	<#list screen.getFilters() as filter>			
+		<div style="float: right;">
+			<label>Search results <#if filter_index=0>where: <#else></#if>${filter}</label><image height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="setInput('${screen.name}_form','_self','','${screen.name}','filter_remove','iframe'); document.forms.${screen.name}_form.filter_id.value='${filter_index}'; document.forms.${screen.name}_form.submit();" title="remove filter"/>
+		</div>
+	</#list>
+
+	<div class="screenbody">
+		<div class="screenpadding">
+			<#if screen.mode.toString() == "editview">
+				<@editview screen />
+			<#else> 
+				<div style="overflow-x: auto;">
+					<@listview screen /> 
+				</div>
+			</#if>
 			</form>		
 			<script>
 				$('#${screen.name}_form').validate();
 			</script>
 					
 <!-- subforms -->
-		<#if (screen.mode.toString() == "editview") && screen.count &gt; 0>
-			<#list screen.children as subscreen>
-<div class="subscreen">
-<@layout subscreen/>
-</div>
-			</#list>
-		</#if>
+			<#if (screen.mode.toString() == "editview") && screen.count &gt; 0>
+				<#list screen.children as subscreen>
+					<div class="subscreen">
+						<@layout subscreen/>
 					</div>
-					
-			
-					
-				</div>
-
-
+				</#list>
+			</#if>
+		</div>
+	</div>
 	</#if>
 <!-- end of FormScreen ${screen.getName()}-->
-			</td>
-		</tr>
-	</table>
 </div>
