@@ -1,8 +1,8 @@
 function showHideGenotypeDiv(animalType) {
-	if (animalType == "B. Transgeen dier" && document.getElementById("GMO").style.display == "none") {
-		document.getElementById("GMO").style.display = "block";
+	if (animalType == "B. Transgeen dier" && document.getElementById("divGMO").style.display == "none") {
+		document.getElementById("divGMO").style.display = "block";
 	} else {
-		document.getElementById("GMO").style.display = "none";
+		document.getElementById("divGMO").style.display = "none";
 	}
 }
 
