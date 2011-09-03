@@ -56,11 +56,11 @@
 				This class maps to XGAP.DataMatrix and MAGE-TAB.Data.
 			</description>
 			<field name="FeatureType" type="enum"
-				enum_options="[Chromosome,ClassicalPhenotype,DerivedTrait,Factor,Gene,Individual,Marker,MassPeak,Metabolite,Panel,Probe,Sample,Spot]"
+				enum_options="[Chromosome,ClassicalPhenotype,DerivedTrait,EnvironmentalFactor,Gene,Individual,Marker,MassPeak,Metabolite,Panel,Probe,Sample,Spot]"
 				description="DISCUSSION: needs to be replaced with xref to MolgenisEntity. Type of the columns of this matrix. Each column refers to a Feature or Subject (DimensionElement). " />
 				<!-- enum_options="[Marker,Probe,ProbeSet,Individual,Sample,PairedSample,MassPeak,Gene,Clone,Trait,Subject,Strain,Metabolite,Spot,Phenotype,NMRBin,Factor,Derived]" -->
 			<field name="TargetType" type="enum"
-				enum_options="[Chromosome,ClassicalPhenotype,DerivedTrait,Factor,Gene,Individual,Marker,MassPeak,Metabolite,Panel,Probe,Sample,Spot]"
+				enum_options="[Chromosome,ClassicalPhenotype,DerivedTrait,EnvironmentalFactor,Gene,Individual,Marker,MassPeak,Metabolite,Panel,Probe,Sample,Spot]"
 				description="DISCUSSION: needs to be replaced with xref to MolgenisEntity. Type of the rows of this matrix. Each row refers to a Feature or Subject (DimensionElement)" />
 				<!-- enum_options="[Marker,Probe,ProbeSet,Individual,Sample,PairedSample,MassPeak,Gene,Clone,Trait,Subject,Strain,Metabolite,Spot,Phenotype,NMRBin,Factor,Derived]" -->
 			<field name="ValueType" type="enum" enum_options="[Text,Decimal]"

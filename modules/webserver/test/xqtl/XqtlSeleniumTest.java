@@ -173,7 +173,7 @@ public class XqtlSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		
 		//check some values here
-		Assert.assertEquals(selenium.getText("//form[@id='Individuals_form']/table[2]/tbody/tr[7]/td[4]"), "X7");
+		Assert.assertEquals(selenium.getText("//form[@id='Individuals_form']/div[3]/div/div/table/tbody/tr[7]/td[4]"), "X7");
 		Assert.assertTrue(selenium.isTextPresent("xgap_rqtl_straintype_riself"));
 		
 		//switch to edit view and check some values there too
@@ -226,11 +226,11 @@ public class XqtlSeleniumTest
 		selenium.click("id=Datas_collapse_button_id");
 		
 		//assert content of enum fields
-		Assert.assertEquals(selenium.getTable("//form[@id='Datas_form']/table[2]/tbody/tr/td/table.8.1"), "Individual\n\nChromosomeClassicalPhenotypeDerivedTraitFactorGeneIndividualMarkerMassPeakMetabolitePanelProbeSampleSpot");
-		Assert.assertEquals(selenium.getTable("//form[@id='Datas_form']/table[2]/tbody/tr/td/table.9.1"), "Metabolite\n\nChromosomeClassicalPhenotypeDerivedTraitFactorGeneIndividualMarkerMassPeakMetabolitePanelProbeSampleSpot");
+		Assert.assertEquals(selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.8.1"), "Individual\n\nChromosomeClassicalPhenotypeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMetabolitePanelProbeSampleSpot");
+		Assert.assertEquals(selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.9.1"), "Metabolite\n\nChromosomeClassicalPhenotypeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMetabolitePanelProbeSampleSpot");
 		
 		//change Individual to Gene and save
-		selenium.click("css=#Data_FeatureType_chzn > a.chzn-single > div > b");
+		selenium.click("css=#Data_FeatureType_chzn > a.chzn-single > span");
 		selenium.click("id=Data_FeatureType_chzn_o_4");
 		selenium.click("//img[@onclick=\"if ($('#Datas_form').valid() && validateForm(document.forms.Datas_form,new Array())) {setInput('Datas_form','_self','','Datas','update','iframe'); document.forms.Datas_form.submit();}\"]");
 		selenium.waitForPageToLoad(pageLoadTimeout);

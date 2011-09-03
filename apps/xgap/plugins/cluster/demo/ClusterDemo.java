@@ -206,11 +206,29 @@ public class ClusterDemo extends PluginModel<Entity>
 	 */
 	public static void giveExtraNeededPermissions(Database db) throws DatabaseException{
 		String[] entities = new String[]{
+				
+				//TODO: UNTESTED !!!
+				
+				//needed to view files
 				"org.molgenis.core.MolgenisFile",
+				//needed to view matrices
 				"org.molgenis.data.BinaryDataMatrix",
 				"org.molgenis.data.CSVDataMatrix",
+				//needed to view investigation overview and other things
 				"org.molgenis.pheno.ObservationElement",
-				"org.molgenis.cluster.Analysis"
+				//needed to start jobs
+				"org.molgenis.cluster.Analysis",
+				//needed to view job status
+				"org.molgenis.cluster.Job",
+				"org.molgenis.cluster.Subjob",
+				"org.molgenis.cluster.DataName",
+				"org.molgenis.cluster.DataSet",
+				"org.molgenis.cluster.DataValue",
+				"org.molgenis.cluster.ParameterName",
+				"org.molgenis.cluster.ParameterSet",
+				"org.molgenis.cluster.ParameterValue",
+				"org.molgenis.cluster.SelectedData",
+				"org.molgenis.cluster.SelectedParameter"
 				};
 		
 		for(String e : entities){

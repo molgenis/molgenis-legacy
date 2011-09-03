@@ -41,11 +41,24 @@
 				thresholds.</description>
 		</entity>
 		<!--
-			instead use mage.factor <entity name="Factor"
-			extends="ObservableFeature"> <description> Experimental conditions,
-			such as temperature differences, batch effects etc.</description>
-			</entity>
+		EnvironmentalFactor was previously magetab_idf.Factor which was xgap.Factor.
+		The MAGE-TAB Factor only applies to intended (predefined) experimental
+		conditions. For example: in a study where we want to find out what causes
+		a certain disease, the disease is the factor. This is a bit too restrictive
+		for XGAP/xQTL: we also want to model 'unforeseen' experimental conditions
+		in the form of environmental factors. For example: the age/diet/weight/
+		sex/bloodtype of subjects, time of drawing a sample, the day of harvesting
+		an organ or plant, the lab worker which processed the sample or microarray,
+		the normalization method used, and so on. The 'factor of interest' can also
+		be included here, though usually it is simply added as a (binary) phenotype.
+		For example: a ClassicalPhenotype named 'HasDisease'. EnvironmentalFactor is
+		a special phenotype (ObservableFeature) because the value of the factor
+		itself is also 'measured'.
 		-->
+		<entity name="EnvironmentalFactor" extends="ObservableFeature">
+			<description>Experimental conditions,
+			such as temperature differences, batch effects etc.</description>
+		</entity>
 		<entity name="Gene" extends="ObservableFeature" implements="Locus">
 			<description> Trait annotations specific for genes.</description>
 			<field name="Symbol" nillable="true"

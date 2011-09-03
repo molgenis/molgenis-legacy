@@ -24,7 +24,7 @@
 					<form name="ClassicalPhenotypes" entity="ClassicalPhenotype" group="biologist" />
 					<menu name="AdvancedAnnotations" label="More annotations" group="biologist">
 						<form name="DerivedTraits" entity="DerivedTrait" group="biologist" />
-						<form name="Factors" entity="Factor" group="biologist" />
+						<form name="EnvironmentalFactors" entity="EnvironmentalFactor" group="biologist" />
 						<form name="MassPeaks" entity="MassPeak" group="biologist" />
 						<form name="Metabolites" entity="Metabolite" group="biologist" />
 						<form name="Probes" entity="Probe" group="biologist" />
