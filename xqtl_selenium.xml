@@ -38,7 +38,8 @@
 	-->
 	<target name="webtest" description="Start the Selenium test">
 		<testng haltOnFailure="true">
-			<xmlfileset dir="${app_build_dir}" includes="**/xqtl_test_selenium.xml" />
+			<!--xmlfileset dir="${app_build_dir}" includes="**/xqtl_test_selenium.xml" /-->
+			<classfileset dir="${app_build_dir}" includes="**/XqtlSeleniumTest.class"/>
 			<classpath>
 				<path refid="molgenis-libs" />
 				<path refid="app-libs" />
@@ -75,7 +76,7 @@
 			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />
 		</copy>
 		<testng haltOnFailure="true">
-			<xmlfileset dir="${app_build_dir}/test/webtestframeworks" includes="*_testwebframeworkonly.xml" />
+			<classfileset dir="${app_build_dir}/test/webtestframeworks" includes="*TestWebFrameworkOnly.class" />
 			<classpath>
 				<path refid="app-libs" />
 				<path location="${app_build_dir}" />

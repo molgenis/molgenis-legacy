@@ -30,7 +30,7 @@ import app.servlet.MolgenisServlet;
  * To be used in xQTL automated test cases
  *
  */
-public class RunTestMatrix {
+public class Matrix_XqtlTestNG {
 
 	@DataProvider(name = "params")
 	public static Object[][] data() {

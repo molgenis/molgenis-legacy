@@ -1,8 +1,0 @@
-<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
-<suite name="Test to see if Selenium is working">
-	<test name="Assert Google">
-		<classes>
-			<class name="test.webtestframeworks.SeleniumTestWebFrameworkOnly" />
-		</classes>
-	</test>
-</suite>

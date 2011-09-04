@@ -1,12 +1,8 @@
 package test.xqtl;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.ServerSocket;
 
 import org.molgenis.util.DetectOS;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.server.RemoteControlConfiguration;
 import org.openqa.selenium.server.SeleniumServer;
 import org.testng.Assert;
@@ -15,7 +11,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import test.Helper;
-
 import app.servlet.MolgenisServlet;
 import boot.RunStandalone;
 
@@ -280,18 +275,18 @@ public class XqtlSeleniumTest
 		}
 	}
 	
-	private void printAllWindows(String what)
-	{
-		System.out.println("printAllWindows - "+ what);
-		for(String s : selenium.getAllWindowNames()){
-			System.out.println("window name = "+s);
-		}
-		for(String s : selenium.getAllWindowIds()){
-			System.out.println("window id = "+s);
-		}
-		for(String s : selenium.getAllWindowTitles()){
-			System.out.println("window title = "+s);
-		}
-	}
+//	private void printAllWindows(String what)
+//	{
+//		System.out.println("printAllWindows - "+ what);
+//		for(String s : selenium.getAllWindowNames()){
+//			System.out.println("window name = "+s);
+//		}
+//		for(String s : selenium.getAllWindowIds()){
+//			System.out.println("window id = "+s);
+//		}
+//		for(String s : selenium.getAllWindowTitles()){
+//			System.out.println("window title = "+s);
+//		}
+//	}
 
 }

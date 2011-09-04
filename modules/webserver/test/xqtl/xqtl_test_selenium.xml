@@ -1,9 +1,0 @@
-
-<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
-<suite name="Selenium test suite">
-	<test name="xQTL workbench walkthrough" preserve-order="true">
-		<classes>
-			<class name="test.xqtl.XqtlSeleniumTest"/>
-		</classes>
-	</test>
-</suite>
