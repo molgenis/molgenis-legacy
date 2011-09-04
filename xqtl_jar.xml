@@ -255,7 +255,7 @@
 	-->
 	<target name="webtest_jar" description="Start the Selenium test">
 		<testng haltOnFailure="true">
-			<xmlfileset dir="${jarme}" includes="**/xqtl_test_selenium.xml" />
+			<classfileset dir="${app_build_dir}" includes="**/XqtlSeleniumTest.class"/>
 			<classpath path="${jarme}" />
 		</testng>
 	</target>
