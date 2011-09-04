@@ -487,12 +487,12 @@ var molgenis_required = new Array(${required});
 							<@listview screen /> 
 						</div>
 					</#if>
-					</form>		
-					<script>
-						$('#${screen.name}_form').validate();
-					</script>
 				</div>
 			</div>
+		</form>		
+		<script>
+			$('#${screen.name}_form').validate();
+		</script>
 							
 		<!-- subforms -->
 			<#if (screen.mode.toString() == "editview") && screen.count &gt; 0>
@@ -503,5 +503,5 @@ var molgenis_required = new Array(${required});
 				</#list>
 			</#if>
 		<!-- end of FormScreen ${screen.getName()}-->
-	</div>
+	</div>	
 </#if>
