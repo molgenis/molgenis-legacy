@@ -68,11 +68,11 @@
 			 	</ul>
 			 </li>
 			 <li>Automatic annotation of identifiers
-			     <ul><li>A Thaliana: AT3G1000 At1g10000 At5G20000</li>
+			 ${screen.linkouter.render("<ul><li>A Thaliana: AT3G1000 At1g10000 At5G20000</li>
 			         <li>C. Elegans: WBGene00000083</li>
 					 <li>NCBI: NG_006560.2 LOC729998 AC008038.1</li>
 					 <li>KEGG: K06560 K00134 K29897</li>
-				</ul>
+				</ul>")}
 			</li>
 			<li>Build using the <b>software generation</b> allowing for easy tailoring to your needs</li>
 			</ul>

@@ -24,6 +24,8 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.html.render.LinkoutRenderDecorator;
+import org.molgenis.framework.ui.html.render.RenderDecorator;
 import org.molgenis.organization.Investigation;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -45,8 +47,15 @@ public class ClusterDemo extends PluginModel<Entity>
 	private boolean userIsAdminAndDatabaseIsEmpty;
 	private String validpath;
 	private boolean loggedIn;
+	private RenderDecorator linkouter;
 	
 	
+	
+	public RenderDecorator getLinkouter()
+	{
+		return linkouter;
+	}
+
 	public boolean isLoggedIn()
 	{
 		return loggedIn;
@@ -286,6 +295,10 @@ public class ClusterDemo extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
+		if(linkouter == null)
+		{
+			linkouter = new LinkoutRenderDecorator();
+		}
 				
 		//HtmlSettings.uiToolkit = UiToolkit.ORIGINAL;
 		
