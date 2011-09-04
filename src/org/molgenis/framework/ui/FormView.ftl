@@ -432,67 +432,69 @@ var molgenis_required = new Array(${required});
 </body>
 </#macro>
 
-	<#if show == "popup">
-		<#--@form_popup screen/-->
-		${screen.getCurrentCommand().render()}	
-	<#elseif show == "newrecord">
-		<@molgenis_header screen/>
-		<@form_new screen/>
-		<@molgenis_footer />
-	<#elseif show == "upload">
-		<@molgenis_header screen/>
-		<@form_upload screen/>
-		<@molgenis_footer />
-	<#elseif show == "filterrecord">
-		<@molgenis_header screen/>
-		<@form_filter screen/>
-		<@molgenis_footer />
-	<#elseif show == "massupdate">
-		<@molgenis_header screen/>
-		MASSUPDATE
-		<@form_massupdate screen=screen.getCurrentCommand() massupdate=massupdate />
-		<@molgenis_footer />
-	<#else>
-<!--FormScreen ${screen.getName()}-->
-<div class="formscreen" id="${screen.getName()}_screen">
-<a name="${screen.name}"/>
-<div style="position: absolute; left: -10000px; top: -10000px;" id="popup_${screen.getName()}" class="popup" position="absolute"></div>
-<form name="${screen.name}_form"  id="${screen.name}_form" target="#${screen.name}" action="" method="post" style="margin: 0px;" enctype="multipart/form-data">
-	<input type="hidden" name="__target"  value="${screen.name}" />
-	<input type="hidden" name="__action">
-	<input type="hidden" name="__filename" />
-	<input type="hidden" name="__show">
-	<input type="hidden" name="__offset">
-	<input type="hidden" name="__sortattribute">
-	<!--input type="hidden" name="operator" />
-	<input type="hidden" name="value" />-->
-	<input type="hidden" name="limit">
-	<input type="hidden" name="filter_id" />
-<@form_header screen/>
-	<!-- put in table so we can collapse the content panel-->
-	<@form_toolbar screen/>
-	<!--<td class="form_collapse" style="width: 12px;float:right;clear:right; margin:5px;"><img src="generated-res/img/minus.png" id="${screen.name}_toggleImage" onclick="javascript:toggleForm('${screen.name}')"/></td>-->
-	<#list screen.getFilters() as filter>			
-		<div style="float: right;">
-			<label>Search results <#if filter_index=0>where: <#else></#if>${filter}</label><image height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="setInput('${screen.name}_form','_self','','${screen.name}','filter_remove','iframe'); document.forms.${screen.name}_form.filter_id.value='${filter_index}'; document.forms.${screen.name}_form.submit();" title="remove filter"/>
-		</div>
-	</#list>
-
-	<div class="screenbody">
-		<div class="screenpadding">
-			<#if screen.mode.toString() == "editview">
-				<@editview screen />
-			<#else> 
-				<div style="overflow-x: auto;">
-					<@listview screen /> 
+<#if show == "popup">
+	<#--@form_popup screen/-->
+	${screen.getCurrentCommand().render()}	
+<#elseif show == "newrecord">
+	<@molgenis_header screen/>
+	<@form_new screen/>
+	<@molgenis_footer />
+<#elseif show == "upload">
+	<@molgenis_header screen/>
+	<@form_upload screen/>
+	<@molgenis_footer />
+<#elseif show == "filterrecord">
+	<@molgenis_header screen/>
+	<@form_filter screen/>
+	<@molgenis_footer />
+<#elseif show == "massupdate">
+	<@molgenis_header screen/>
+	MASSUPDATE
+	<@form_massupdate screen=screen.getCurrentCommand() massupdate=massupdate />
+	<@molgenis_footer />
+<#else>
+	<!--FormScreen ${screen.getName()}-->
+	<div class="formscreen" id="${screen.getName()}_screen">
+		<a name="${screen.name}"/>
+		<div style="position: absolute; left: -10000px; top: -10000px;" id="popup_${screen.getName()}" class="popup" position="absolute"></div>
+		<form name="${screen.name}_form"  id="${screen.name}_form" target="#${screen.name}" action="" method="post" style="margin: 0px;" enctype="multipart/form-data">
+			<input type="hidden" name="__target"  value="${screen.name}" />
+			<input type="hidden" name="__action">
+			<input type="hidden" name="__filename" />
+			<input type="hidden" name="__show">
+			<input type="hidden" name="__offset">
+			<input type="hidden" name="__sortattribute">
+			<!--input type="hidden" name="operator" />
+			<input type="hidden" name="value" />-->
+			<input type="hidden" name="limit">
+			<input type="hidden" name="filter_id" />
+			<@form_header screen/>
+			<!-- put in table so we can collapse the content panel-->
+			<@form_toolbar screen/>
+			<!--<td class="form_collapse" style="width: 12px;float:right;clear:right; margin:5px;"><img src="generated-res/img/minus.png" id="${screen.name}_toggleImage" onclick="javascript:toggleForm('${screen.name}')"/></td>-->
+			<#list screen.getFilters() as filter>			
+				<div style="float: right;">
+					<label>Search results <#if filter_index=0>where: <#else></#if>${filter}</label><image height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="setInput('${screen.name}_form','_self','','${screen.name}','filter_remove','iframe'); document.forms.${screen.name}_form.filter_id.value='${filter_index}'; document.forms.${screen.name}_form.submit();" title="remove filter"/>
 				</div>
-			</#if>
-			</form>		
-			<script>
-				$('#${screen.name}_form').validate();
-			</script>
-					
-<!-- subforms -->
+			</#list>
+		
+			<div class="screenbody">
+				<div class="screenpadding">
+					<#if screen.mode.toString() == "editview">
+						<@editview screen />
+					<#else> 
+						<div style="overflow-x: auto;">
+							<@listview screen /> 
+						</div>
+					</#if>
+					</form>		
+					<script>
+						$('#${screen.name}_form').validate();
+					</script>
+				</div>
+			</div>
+							
+		<!-- subforms -->
 			<#if (screen.mode.toString() == "editview") && screen.count &gt; 0>
 				<#list screen.children as subscreen>
 					<div class="subscreen">
@@ -500,8 +502,6 @@ var molgenis_required = new Array(${required});
 					</div>
 				</#list>
 			</#if>
-		</div>
+		<!-- end of FormScreen ${screen.getName()}-->
 	</div>
-	</#if>
-<!-- end of FormScreen ${screen.getName()}-->
-</div>
+</#if>
