@@ -222,7 +222,7 @@ public class ActionInput extends HtmlInput<Object>
 			}
 			else if (this.type == Type.CUSTOM)
 			{
-				return "__action.value = \'" + getName() + "'; return true;";
+				return "$(this).closest('form').find('input[name=__action]').val('"+this.getName()+"');; $(this).closest('form').submit();";
 			}
 		}
 		return JavaScriptAction;
