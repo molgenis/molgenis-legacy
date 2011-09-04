@@ -3,17 +3,7 @@
 <suite name="Selenium test suite">
 	<test name="xQTL workbench walkthrough" preserve-order="true">
 		<classes>
-			<class name="test.xqtl.XqtlSeleniumTest">
-				<methods>
-					<include name="startup" />
-					<include name="login" />
-					<include name="loadExampleData" />
-					<include name="exploreExampleData" />
-					<include name="compactView" />
-					<include name="individualForms" />
-					<include name="enumInput" />
-				</methods>
-			</class>
+			<class name="test.xqtl.XqtlSeleniumTest"/>
 		</classes>
 	</test>
 </suite>

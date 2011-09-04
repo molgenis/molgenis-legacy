@@ -78,7 +78,7 @@ public class XqtlSeleniumTest
 		sleepHelper("startup");
 	}
 
-	@Test
+	@Test(dependsOnMethods={"startup"})
 	public void login() throws InterruptedException
 	{
 		selenium.click("id=UserLogin_tab_button");
@@ -93,7 +93,7 @@ public class XqtlSeleniumTest
 		sleepHelper("login");
 	}
 
-	@Test
+	@Test(dependsOnMethods={"login"})
 	public void loadExampleData() throws InterruptedException
 	{
 		selenium.type("id=inputBox", storagePath());
@@ -104,7 +104,7 @@ public class XqtlSeleniumTest
 		sleepHelper("loadExampleData");
 	}
 
-	@Test
+	@Test(dependsOnMethods={"loadExampleData"})
 	public void exploreExampleData() throws InterruptedException
 	{
 		//selenium.click("//div[@onclick=\"document.forms.main.__target.value='main';document.forms.main.select.value='Investigations';document.forms.main.submit();\"]");
@@ -118,7 +118,7 @@ public class XqtlSeleniumTest
 		sleepHelper("exploreExampleData");
 	}
 	
-	@Test
+	@Test(dependsOnMethods={"exploreExampleData"})
 	public void compactView() throws InterruptedException
 	{
 		/*
@@ -166,7 +166,7 @@ public class XqtlSeleniumTest
 	
 	}
 	
-	@Test
+	@Test(dependsOnMethods={"compactView"})
 	public void individualForms() throws Exception {
 		//browse to basic annotations, individuals is the first form
 		selenium.click("id=BasicAnnotations_tab_button");
@@ -214,7 +214,7 @@ public class XqtlSeleniumTest
 		sleepHelper("individualForms");
 	}
 	
-	@Test
+	@Test(dependsOnMethods={"individualForms"})
 	public void enumInput() throws Exception {
 		//browse to 'Data' view and expand compact view
 		selenium.open("/"+appName+"/molgenis.do?__target=InvestigationMenu&select=Datas");
@@ -232,24 +232,24 @@ public class XqtlSeleniumTest
 		//change Individual to Gene and save
 		selenium.click("css=#Data_FeatureType_chzn > a.chzn-single > span");
 		selenium.click("id=Data_FeatureType_chzn_o_4");
-		selenium.click("//img[@onclick=\"if ($('#Datas_form').valid() && validateForm(document.forms.Datas_form,new Array())) {setInput('Datas_form','_self','','Datas','update','iframe'); document.forms.Datas_form.submit();}\"]");
+		selenium.click("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td.edit_button_area > img.edit_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("UPDATE SUCCESS: affected 1"));
 		
 		//expand compact view again and check value has changed
 		selenium.click("id=Datas_collapse_button_id");
-		Assert.assertEquals(selenium.getTable("//form[@id='Datas_form']/table[2]/tbody/tr/td/table.8.1"), "Gene\n\nChromosomeClassicalPhenotypeDerivedTraitFactorGeneIndividualMarkerMassPeakMetabolitePanelProbeSampleSpot");
+		Assert.assertEquals(selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.8.1"), "Gene\n\nChromosomeClassicalPhenotypeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMetabolitePanelProbeSampleSpot");
 		
 		//change back to Individual and save
 		selenium.click("css=#Data_FeatureType_chzn > a.chzn-single > div > b");
 		selenium.click("id=Data_FeatureType_chzn_o_5");
-		selenium.click("//img[@onclick=\"if ($('#Datas_form').valid() && validateForm(document.forms.Datas_form,new Array())) {setInput('Datas_form','_self','','Datas','update','iframe'); document.forms.Datas_form.submit();}\"]");
+		selenium.click("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td.edit_button_area > img.edit_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("UPDATE SUCCESS: affected 1"));
 		
 		//expand compact view again and check value is back to normal again
 		selenium.click("id=Datas_collapse_button_id");
-		Assert.assertEquals(selenium.getTable("//form[@id='Datas_form']/table[2]/tbody/tr/td/table.8.1"), "Individual\n\nChromosomeClassicalPhenotypeDerivedTraitFactorGeneIndividualMarkerMassPeakMetabolitePanelProbeSampleSpot");
+		Assert.assertEquals(selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.8.1"), "Individual\n\nChromosomeClassicalPhenotypeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMetabolitePanelProbeSampleSpot");
 
 	}
 
