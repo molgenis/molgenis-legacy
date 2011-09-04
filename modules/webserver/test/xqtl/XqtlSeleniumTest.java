@@ -232,7 +232,7 @@ public class XqtlSeleniumTest
 		//change Individual to Gene and save
 		selenium.click("css=#Data_FeatureType_chzn > a.chzn-single > span");
 		selenium.click("id=Data_FeatureType_chzn_o_4");
-		selenium.click("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td.edit_button_area > img.edit_button");
+		selenium.click("id=save_Datas");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("UPDATE SUCCESS: affected 1"));
 		
@@ -243,7 +243,7 @@ public class XqtlSeleniumTest
 		//change back to Individual and save
 		selenium.click("css=#Data_FeatureType_chzn > a.chzn-single > div > b");
 		selenium.click("id=Data_FeatureType_chzn_o_5");
-		selenium.click("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td.edit_button_area > img.edit_button");
+		selenium.click("id=save_Datas");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("UPDATE SUCCESS: affected 1"));
 		
