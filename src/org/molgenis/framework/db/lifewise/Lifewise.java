@@ -1,12 +1,10 @@
 package org.molgenis.framework.db.lifewise;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
 import java.sql.ResultSet;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +21,6 @@ import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.FileSourceHelper;
 import org.molgenis.framework.db.JoinQuery;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryImp;
@@ -33,8 +30,8 @@ import org.molgenis.framework.db.jdbc.JDBCMapper;
 import org.molgenis.framework.security.Login;
 import org.molgenis.model.elements.Model;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.SpreadsheetWriter;
 import org.molgenis.util.Entity;
+import org.molgenis.util.SpreadsheetWriter;
 import org.molgenis.util.Tuple;
 
 public class Lifewise implements Database
@@ -500,12 +497,6 @@ public class Lifewise implements Database
 
 	@Override
 	public EntityManager getEntityManager()
-	{
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public FileSourceHelper getFileSourceHelper() throws Exception
 	{
 		throw new UnsupportedOperationException();
 	}

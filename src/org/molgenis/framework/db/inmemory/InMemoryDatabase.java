@@ -1,9 +1,7 @@
 package org.molgenis.framework.db.inmemory;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.ResultSet;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -12,10 +10,9 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
-import org.molgenis.framework.db.FileSourceHelper;
-import org.molgenis.framework.db.JoinQuery;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.JoinQuery;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryImp;
 import org.molgenis.framework.db.QueryRule;
@@ -23,9 +20,9 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.security.Login;
 import org.molgenis.model.elements.Model;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.SpreadsheetWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
+import org.molgenis.util.SpreadsheetWriter;
 import org.molgenis.util.Tuple;
 
 /***
@@ -369,12 +366,6 @@ public class InMemoryDatabase implements Database
 
 	@Override
 	public EntityManager getEntityManager()
-	{
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public FileSourceHelper getFileSourceHelper() throws Exception
 	{
 		throw new UnsupportedOperationException();
 	}

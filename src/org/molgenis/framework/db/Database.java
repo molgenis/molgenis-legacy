@@ -391,22 +391,11 @@ public interface Database
 	/**
 	 * Get the path to the file directory that this database uses to store file
 	 * attachments. In a MOLGENIS model these fields are specified as &lt;field
-	 * type="file" ... &gt; Moved to FileSourceHelper.
+	 * type="file" ... &gt;
 	 * 
 	 * @throws Exception
 	 */
-	@Deprecated
 	public File getFilesource() throws Exception;
-
-	/**
-	 * Get helper object FileSourceHelper used to get, set and validate
-	 * potential a file source. This is a directory that this database uses to
-	 * store file attachments. In a MOLGENIS model these fields are specified as
-	 * &lt;field type="file" ... &gt;
-	 * 
-	 * @throws Exception
-	 */
-	public FileSourceHelper getFileSourceHelper() throws Exception;
 
 	/**
 	 * Stop using the database. Optional method.

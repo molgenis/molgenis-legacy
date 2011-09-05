@@ -64,13 +64,11 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 		
 			DataSource dataSource = (DataSource)data_src;
 			Database db = new ${package}.JDBCDatabase(dataSource, new File("${db_filepath}"));
-			db.getFileSourceHelper().setVariantId("${model.name}");
 			return db;
 		<#else>
 			//The datasource is created by the servletcontext	
 			DataSource dataSource = (DataSource)getServletContext().getAttribute("DataSource");
 			Database db = DatabaseFactory.create(dataSource, new File("${db_filepath}"));
-			db.getFileSourceHelper().setVariantId("${model.name}");
 			return db;
 		</#if>
 	}
@@ -138,13 +136,11 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 					
 						DataSource dataSource = (DataSource)data_src;
 						Database db = new ${package}.JDBCDatabase(dataSource, new File("${db_filepath}"));
-						db.getFileSourceHelper().setVariantId("${model.name}");
 						return db;
 					<#else>
 						//The datasource is created by the servletcontext	
 						DataSource dataSource = (DataSource)getServletContext().getAttribute("DataSource");
 						Database db = DatabaseFactory.create(dataSource, new File("${db_filepath}"));
-						db.getFileSourceHelper().setVariantId("${model.name}");
 						return db;
 					</#if>
 				}
