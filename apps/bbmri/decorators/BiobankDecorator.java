@@ -87,7 +87,7 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 			try {
 				
 				ChangeLog changeLog = new ChangeLog();
-				changeLog.setChangeDate(date.toString());
+				changeLog.setDate(date.toString());
 				changeLog.setEntity_Id(e.getId());
 				this.getDatabase().add(changeLog);
 				
@@ -127,7 +127,7 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 			try {
 				
 				ChangeLog changeLog = new ChangeLog();
-				changeLog.setChangeDate(date.toString());
+				changeLog.setDate(date.toString());
 				changeLog.setEntity_Id(e.getId());
 				this.getDatabase().update(changeLog);
 				

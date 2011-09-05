@@ -66,7 +66,7 @@ public class BbmriWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>
 	public void reload(Database db)
 	{
 		try {
-			mostRecentChangeLogEntry = db.query(ChangeLog.class).sortDESC(ChangeLog.CHANGEDATE).find().get(0);
+			mostRecentChangeLogEntry = db.query(ChangeLog.class).sortDESC(ChangeLog.DATE).find().get(0);
 		} catch (Exception e) {
 			// no entries (yet), so mostRecentChangeLogEntry will remain null
 		}
