@@ -7,27 +7,27 @@
 
 package plugins.system.settings;
 
-import java.io.PrintWriter;
-
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.FileSourceHelper;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import app.servlet.MolgenisServlet;
+import filehandling.storage.Report;
+import filehandling.storage.StorageHandler;
 
 public class Settings<E extends Entity> extends PluginModel<E>
 {
 
 	private static final long serialVersionUID = 4037475429590054858L;
-	private FileSourceHelper model;
+	private Report report;
+	
+	private StorageHandler sh;
 
-	public FileSourceHelper getVO()
+	public Report getReport()
 	{
-		return model;
+		return report;
 	}
 
 	public Settings(String name, ScreenController<?> parent)
@@ -56,15 +56,15 @@ public class Settings<E extends Entity> extends PluginModel<E>
 			{
 				if (request.getString("__action").equals("setFileDirPath"))
 				{
-					db.getFileSourceHelper().setFilesource(request.getString("fileDirPath"));
+					sh.setFileStorage(request.getString("fileDirPath"));
 				}
 				else if (request.getString("__action").equals("deleteFileDirPath"))
 				{
-					db.getFileSourceHelper().deleteFilesource();
+					sh.deleteFileStorage();
 				}
 				else if (request.getString("__action").equals("validate"))
 				{
-					db.getFileSourceHelper().validateFileSource();
+					sh.validateFileStorage();
 				}
 				this.setMessages();
 			}
@@ -84,10 +84,12 @@ public class Settings<E extends Entity> extends PluginModel<E>
 	@Override
 	public void reload(Database db)
 	{
+		sh = new StorageHandler(db);
+		
 		try
 		{
-			model = db.getFileSourceHelper();
-			model.hasValidFileSource();
+			report = sh.getReport();
+		//	sh.validateFileStorage();
 		}
 		catch (Exception e)
 		{

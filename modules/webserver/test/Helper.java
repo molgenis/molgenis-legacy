@@ -8,6 +8,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.util.TarGz;
 
 import app.servlet.MolgenisServlet;
+import filehandling.storage.StorageHandler;
 
 public class Helper
 {
@@ -37,7 +38,7 @@ public class Helper
 		// throws exceptions if anything goes wrong
 		Database db = new MolgenisServlet().getDatabase();
 		int appNameLength = MolgenisServlet.getMolgenisVariantID().length();
-		String storagePath = db.getFileSourceHelper().getFilesource(true).getAbsolutePath();
+		String storagePath = new StorageHandler(db).getFileStorage(true).getAbsolutePath();
 		File storageRoot = new File(storagePath.substring(0, storagePath.length() - appNameLength));
 		System.out.println("Removing content of " + storageRoot);
 		TarGz.recursiveDeleteContent(new File(storagePath));

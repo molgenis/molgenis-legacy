@@ -40,7 +40,7 @@ public class RunTestMatrixQuery extends TestCase {
 		Database db = new MolgenisServlet().getDatabase();
 
 		// assert db is empty
-		Assert.assertFalse(db.getFileSourceHelper().hasFilesource(false));
+//		Assert.assertFalse(db.getFileSourceHelper().hasFilesource(false));
 		try {
 			db.find(Investigation.class).get(0);
 			Assert.fail("DatabaseException expected");
@@ -53,10 +53,10 @@ public class RunTestMatrixQuery extends TestCase {
 		Assert.assertTrue(report.endsWith("SUCCESS"));
 
 		// setup file storage
-		String path = "./tmp_matrix_test_data";
-		db.getFileSourceHelper().setFilesource(path);
-		db.getFileSourceHelper().validateFileSource();
-		Assert.assertTrue(db.getFileSourceHelper().hasValidFileSource());
+//		String path = "./tmp_matrix_test_data";
+//		db.getFileSourceHelper().setFilesource(path);
+//		db.getFileSourceHelper().validateFileSource();
+//		Assert.assertTrue(db.getFileSourceHelper().hasValidFileSource());
 	}
 
 	@Test

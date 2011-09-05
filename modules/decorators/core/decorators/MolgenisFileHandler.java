@@ -11,20 +11,16 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.db.jdbc.JDBCFileSourceHelper;
 import org.molgenis.util.ValueLabel;
 
-import app.servlet.MolgenisServlet;
+import filehandling.storage.StorageHandler;
 
-import decorators.NameConvention;
-
-public class MolgenisFileHandler extends JDBCFileSourceHelper
+public class MolgenisFileHandler extends StorageHandler
 {
-	
+
 	public MolgenisFileHandler(Database db)
 	{
 		super(db);
-		setVariantId(MolgenisServlet.getMolgenisVariantID());
 	}
 
 	/**
@@ -70,7 +66,7 @@ public class MolgenisFileHandler extends JDBCFileSourceHelper
 		}
 
 		// create pointer to storage location, try to mkdir if not exists
-		File storageDir = getFilesource();
+		File storageDir = getFileStorage();
 		File typeStorageDir = new File(storageDir.getAbsolutePath() + File.separator + type);
 		if (!typeStorageDir.exists())
 		{

@@ -1,5 +1,5 @@
 <#macro Settings screen>
-<#assign model = screen.VO>
+<#assign model = screen.report>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -59,29 +59,29 @@
 <h1>System settings</h1>
 
 
-System database table status:<br>
+File storage property status:<br>
 <font style="font-size:medium; font-family: Courier, 'Courier New', monospace">
-<#if model.hasSystemSettingsTable == "true">
-	<font style="color: green">System table exists</font>
-<#elseif model.hasSystemSettingsTable == "false">
-	<font style="color: red">System table does not exist</font>
+<#if model.fileStoragePropsPresent == true>
+	<font style="color: green">Properties are set</font>
+<#elseif model.fileStoragePropsPresent == false>
+	<font style="color: red">Properties are not set</font>
 <#else>
-	<font style="color: red">ERROR: System table cannot be queried</font>
+	<font style="color: red">ERROR: Properties cannot be queried</font>
 </#if>
 </font>
 
 <br><br>
 
-System file directory path:<br>
+System file storage path:<br>
 <font style="font-size:medium; font-family: Courier, 'Courier New', monospace">
-<#if model.hasSystemSettingsTable == "true">
-	<#if model.getFilesource()?exists>
-		<font style="color: blue">${model.getFilesource().getAbsolutePath()}</font>
+<#if model.fileStoragePropsPresent == true>
+	<#if model.fileStorage?exists>
+		<font style="color: blue">${model.getFileStorage().getAbsolutePath()}</font>
 	<#else>
 		<font style="color: red">NULL</font>
 	</#if>
 	
-<#elseif model.hasSystemSettingsTable == "false">
+<#elseif model.fileStoragePropsPresent == false>
 	<font style="color: red">N/A</font>
 <#else>
 	<font style="color: red">N/A</font>
@@ -94,7 +94,7 @@ System file directory path:<br>
 
 <br><br>
 
-Set your file directory root path:<br>
+Set your file storage root path:<br>
 <input type="text" size="30" style="border:2px solid black; color:blue; display:inline; font-size:medium; font-family: Courier, 'Courier New', monospace" id="inputBox" name="fileDirPath" value="./data" onkeypress="if(window.event.keyCode==13){document.forms.${screen.name}.__action.value = 'setFileDirPath';}">
 
 <input type="submit" value="Set path" onclick="document.forms.${screen.name}.__action.value = 'setFileDirPath'; document.forms.${screen.name}.submit();"/>

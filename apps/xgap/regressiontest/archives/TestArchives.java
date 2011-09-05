@@ -12,6 +12,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import filehandling.storage.StorageHandler;
+
 import plugins.archiveexportimport.XgapExcelExport;
 
 import app.servlet.MolgenisServlet;
@@ -29,9 +31,10 @@ public class TestArchives {
 	public void setup() throws Exception {
 		
 		Database db = new MolgenisServlet().getDatabase();
+		StorageHandler sh = new StorageHandler(db);
 		
 		//assert db is empty
-		Assert.assertFalse(db.getFileSourceHelper().hasFilesource(false));
+		Assert.assertFalse(sh.hasFileStorage(false));
 		try{
 			db.find(Investigation.class).get(0);
 			Assert.fail("DatabaseException expected");
@@ -45,9 +48,9 @@ public class TestArchives {
 		
 		//setup file storage
 		String path = "./tmp_archives_test_data";
-		db.getFileSourceHelper().setFilesource(path);
-		db.getFileSourceHelper().validateFileSource();
-		Assert.assertTrue(db.getFileSourceHelper().hasValidFileSource());
+		sh.setFileStorage(path);
+		sh.validateFileStorage();
+		Assert.assertTrue(sh.hasValidFileStorage());
 	}
 
 	@Test

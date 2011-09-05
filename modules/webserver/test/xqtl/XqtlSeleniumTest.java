@@ -94,7 +94,7 @@ public class XqtlSeleniumTest
 		selenium.type("id=inputBox", storagePath());
 		sleepHelper("loadExampleData page loaded, now pressing button to load users, data, permissions etc");
 		selenium.click("id=loadExamples");
-		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.waitForPageToLoad("60000");
 		Assert.assertTrue(selenium.isTextPresent("File path '"+storagePath()+"' was validated and the dataloader succeeded"));
 		sleepHelper("loadExampleData");
 	}

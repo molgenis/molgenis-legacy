@@ -12,6 +12,7 @@ import org.molgenis.organization.Investigation;
 
 import plugins.emptydb.emptyDatabase;
 import app.DatabaseFactory;
+import filehandling.storage.StorageHandler;
 
 public class DataLoader
 {
@@ -26,7 +27,7 @@ public class DataLoader
 		// check storage location
 		try
 		{
-			File storage = db.getFileSourceHelper().getFilesource(true);
+			File storage = new StorageHandler(db).getFileStorage(true);
 			result.add("Storage location found. Path: " + storage.getAbsolutePath());
 		}
 		catch (Exception e)

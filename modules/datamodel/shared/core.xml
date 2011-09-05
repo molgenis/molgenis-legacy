@@ -148,8 +148,9 @@
 			<field name="Extension" nillable="false" length="8"
 				description="The file extension. This will be mapped to MIME type at runtime. For example, a type 'png' will be served out as 'image/png'." />
 		</entity>
-		<entity name="RuntimeProperties" abstract="false" system="true" implements="Nameable">
+		<entity name="RuntimeProperty" abstract="false" system="true" implements="Nameable">
 			<field name="Value" length="127" type="varchar" nillable="false" />
+			<unique fields="name" description="Name is unique within its type " />
 		</entity>
 		<entity name="Publication" implements="Nameable">
 			<description>

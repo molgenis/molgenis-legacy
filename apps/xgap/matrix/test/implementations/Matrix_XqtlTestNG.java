@@ -19,6 +19,8 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Test;
 
+import filehandling.storage.StorageHandler;
+
 import test.Helper;
 
 import app.servlet.MolgenisServlet;
@@ -52,9 +54,10 @@ public class Matrix_XqtlTestNG {
 		Helper.deleteDatabase();
 		
 		Database db = new MolgenisServlet().getDatabase();
+		StorageHandler sh = new StorageHandler(db);
 		
 		//assert db is empty
-		Assert.assertFalse(db.getFileSourceHelper().hasFilesource(false));
+		Assert.assertFalse(sh.hasFileStorage(false));
 		try{
 			db.find(Investigation.class).get(0);
 			Assert.fail("DatabaseException expected");
@@ -68,9 +71,9 @@ public class Matrix_XqtlTestNG {
 		
 		//setup file storage
 		String path = new File(".").getAbsolutePath() + File.separator + "tmp_matrix_test_data";
-		db.getFileSourceHelper().setFilesource(path);
-		db.getFileSourceHelper().validateFileSource();
-		Assert.assertTrue(db.getFileSourceHelper().hasValidFileSource());
+		sh.setFileStorage(path);
+		sh.validateFileStorage();
+		Assert.assertTrue(sh.hasValidFileStorage());
 	}
 	
 	@AfterClass(alwaysRun = true)

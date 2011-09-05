@@ -45,7 +45,7 @@
 				<br><br></td></tr></table>
 			</#if>
 			<br><br>
-			Welcome to the xQTL workbench, a platform for the storage and analysis of genetic and phenotype data.<br> 
+			Welcome to xQTL workbench, a platform for the storage and analysis of genetic and phenotype data.<br> 
 			
 			For manuals and	more information, see <a href="http://www.xgap.org/wiki/xQTL">xQTL workbench wiki</a>.<br><br> xQTL workbench aims to provide the following features: 
 			<ul>

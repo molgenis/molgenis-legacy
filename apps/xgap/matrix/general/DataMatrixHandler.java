@@ -40,7 +40,6 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	public DataMatrixHandler(Database db)
 	{
 		super(db);
-		this.setVariantId(MolgenisServlet.getMolgenisVariantID());
 	}
 
 	/**

@@ -32,6 +32,7 @@ import org.molgenis.util.Tuple;
 import org.molgenis.xgap.xqtlworkbench.ResetXgapDb;
 
 import regressiontest.cluster.DataLoader;
+import filehandling.storage.StorageHandler;
 
 
 
@@ -48,6 +49,7 @@ public class ClusterDemo extends PluginModel<Entity>
 	private String validpath;
 	private boolean loggedIn;
 	private RenderDecorator linkouter;
+	private StorageHandler sh;
 	
 	
 	
@@ -146,7 +148,7 @@ public class ClusterDemo extends PluginModel<Entity>
 			}
 			
 			// case 1
-			if(db.getFileSourceHelper().hasValidFileSource())
+			if(sh.hasValidFileStorage())
 			{
 				// don't do anything extra, but prevents from going
 				// into case 2 which also applies to valid paths..
@@ -154,21 +156,21 @@ public class ClusterDemo extends PluginModel<Entity>
 				
 				//however - request.getString("fileDirPath") is now null
 				//so set string here for nice output
-				path = db.getFileSourceHelper().getFilesource(true).getAbsolutePath();
+				path = sh.getFileStorage(true).getAbsolutePath();
 			}
 			//case 2 (not a validated path: just delete and use input)
-			else if(db.getFileSourceHelper().hasFilesource(false))
+			else if(sh.hasFileStorage(false))
 			{
-				db.getFileSourceHelper().deleteFilesource();
-				db.getFileSourceHelper().setFilesource(path);
-				db.getFileSourceHelper().validateFileSource();
+				sh.deleteFileStorage();
+				sh.setFileStorage(path);
+				sh.validateFileStorage();
 			}else{
-				db.getFileSourceHelper().setFilesource(path);
-				db.getFileSourceHelper().validateFileSource();
+				sh.setFileStorage(path);
+				sh.validateFileStorage();
 			}
 
 			//if the case 2 or 3 path proves valid, continue to load data
-			if(db.getFileSourceHelper().hasValidFileSource()){
+			if(sh.hasValidFileStorage()){
 				
 				//run example data loader
 				ArrayList<String> result = DataLoader.load(db, false);
@@ -299,6 +301,8 @@ public class ClusterDemo extends PluginModel<Entity>
 		{
 			linkouter = new LinkoutRenderDecorator();
 		}
+
+		sh = new StorageHandler(db);
 				
 		//HtmlSettings.uiToolkit = UiToolkit.ORIGINAL;
 		
@@ -338,8 +342,8 @@ public class ClusterDemo extends PluginModel<Entity>
 					
 					// since we're now showing the special box,
 					// find out if there is a validated path and save this info
-					if(db.getFileSourceHelper().hasValidFileSource()){
-						this.setValidpath(db.getFileSourceHelper().getFilesource(true).getAbsolutePath());
+					if(sh.hasValidFileStorage()){
+						this.setValidpath(sh.getFileStorage(true).getAbsolutePath());
 					}else{
 						this.setValidpath(null);
 					}

@@ -2,7 +2,7 @@
 	<plugin name="molgenis_header" type="plugins.cluster.demo.xwbllheader.MolgenisHeader" />
 	<menu name="main">
 	
-		<plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.homepage.LifeLines" />
+		<plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.ClusterDemo" />
 		
 		<include file="apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl_shared_ui.xml"/>
 		
