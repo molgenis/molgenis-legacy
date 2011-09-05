@@ -98,7 +98,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("Bring in animals"));
 		// Add 10 female Syrian hamsters
 		selenium.select("id=species", "label=Syrian hamster");
-		selenium.select("id=namebase", "value=Female");
+		selenium.select("id=namebase", "value=");
 		selenium.type("id=numberofanimals", "10");
 		selenium.click("id=Add");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -106,7 +106,7 @@ public class AnimaldbSeleniumTest
 		// Add 10 male Syrian hamsters
 		selenium.select("id=species", "label=Syrian hamster");
 		selenium.select("id=sex", "label=Male");
-		selenium.select("id=namebase", "value=Male");
+		selenium.select("id=namebase", "value=");
 		selenium.type("id=startnumber", "21");
 		selenium.type("id=numberofanimals", "10");
 		selenium.click("id=Add");
@@ -240,11 +240,11 @@ public class AnimaldbSeleniumTest
 		// Add animals to DEC (multiple select does not seem to work in Selenium so there is some duplication here
 		selenium.select("id=subproject", "label=MyProject");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		addAnimalToDec("Male21");
-		addAnimalToDec("Male22");
-		addAnimalToDec("Male23");
-		addAnimalToDec("Male24");
-		addAnimalToDec("Male25");
+		addAnimalToDec("21");
+		addAnimalToDec("22");
+		addAnimalToDec("23");
+		addAnimalToDec("24");
+		addAnimalToDec("25");
 		// Remove animals from DEC
 		selenium.click("id=rem0");
 		selenium.click("id=rem1");

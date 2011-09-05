@@ -366,20 +366,23 @@ public class AddAnimalPlugin extends GenericPlugin
 
 		// Populate animal species list
 		// DISCUSSION: why is this not ontology???
-		species = new SelectInput("species", "Species:");
+		species = new SelectInput("species");
+		species.setLabel("Species:");
 		species.setOptions(ct.getAllMarkedPanels("Species", investigationIds), "id", "name");
 		species.setNillable(false);
 
 		// Populate sexes list
 		// DISCUSSION: why is this not ontology???
-		sex = new SelectInput("sex", "Sex:");
+		sex = new SelectInput("sex");
+		sex.setLabel("Sex:");
 		sex.setOptions(ct.getAllMarkedPanels("Sex", investigationIds), "id", "name");
 		sex.setNillable(false);
 
 		// Populate source list
 		// All source types except "Eigen fok binnen uw organisatorische werkeenheid",
 		// which is taken care of in the Breeding Module
-		source = new SelectInput("source", "Source:");
+		source = new SelectInput("source");
+		source.setLabel("Source:");
 		List<ObservationTarget> tmpSourceList = ct.getAllMarkedPanels("Source", investigationIds);
 		for (ObservationTarget tmpSource : tmpSourceList)
 		{
@@ -396,7 +399,8 @@ public class AddAnimalPlugin extends GenericPlugin
 		source.setNillable(false);
 		
 		// Populate animaltype list
-		animaltype = new SelectInput("animaltype", "Animal type:");
+		animaltype = new SelectInput("animaltype");
+		animaltype.setLabel("Animal type:");
 		for (Code c : ct.getAllCodesForFeature("AnimalType")) {
 			animaltype.addOption(c.getDescription(), c.getCode_String() + " ("
 					+ c.getDescription() + ")");
@@ -409,19 +413,22 @@ public class AddAnimalPlugin extends GenericPlugin
 		gmoPanel = new DivPanel("GMO", "Genotype(s):");
 		gmoPanel.setId("GMO");
 		
-		background = new SelectInput("background", "Background:");
+		background = new SelectInput("background");
+		background.setLabel("Background:");
 		background.setOptions(ct.getAllMarkedPanels("Background", investigationIds), "id", "name");
 		gmoPanel.add(background);
 		
 		genePanel = new RepeatingPanel("geneinput", "GMO information:");
 		
-		gene = new SelectInput("gene", "Gene:");
+		gene = new SelectInput("gene");
+		gene.setLabel("Gene:");
 		for (String option : ct.getAllCodesForFeatureAsStrings("GeneName")) {
 			gene.addOption(option, option);
 		}
 		genePanel.add(gene);
 
-		genestate = new SelectInput("genestate", "Gene state:");
+		genestate = new SelectInput("genestate");
+		genestate.setLabel("Gene state:");
 		for (String option : ct.getAllCodesForFeatureAsStrings("GeneState")) {
 			genestate.addOption(option, option);
 		}
@@ -430,16 +437,19 @@ public class AddAnimalPlugin extends GenericPlugin
 		gmoPanel.add(genePanel);
 		gmoPanel.setHidden(true);
 
-		birthdate = new DateInput("birthdate", "Date of birth (if known):");
+		birthdate = new DateInput("birthdate");
+		birthdate.setLabel("Date of birth (if known):");
 		birthdate.setValue(null);
 
-		entrydate = new DateInput("entrydate", "Date of entry:");
+		entrydate = new DateInput("entrydate");
+		entrydate.setLabel("Date of entry:");
 		entrydate.setValue(new Date());
 		entrydate.setNillable(false);
 		
 		namePanel = new DivPanel("Name", "Name:");
 		
-		namebase = new SelectInput("namebase", "Name base (may be empty):");
+		namebase = new SelectInput("namebase");
+		namebase.setLabel("Name base (may be empty):");
 		namebase.setId("namebase");
 		namebase.addOption("New", "New (specify below)");
 		for (String base : bases) {
@@ -468,12 +478,14 @@ public class AddAnimalPlugin extends GenericPlugin
 		newnamebase.setLabel("New name base:");
 		namePanel.add(newnamebase);
 	
-		startnumber = new IntInput("startnumber", "Start numbering at:");
+		startnumber = new IntInput("startnumber");
+		startnumber.setLabel("Start numbering at:");
 		startnumber.setId("startnumber");
 		startnumber.setValue(1); // start with highest number for new base (comes first in jQuery select box)
 		namePanel.add(startnumber);
 		
-		numberofanimals = new IntInput("numberofanimals", "Number of animals:");
+		numberofanimals = new IntInput("numberofanimals");
+		numberofanimals.setLabel("Number of animals:");
 		numberofanimals.setValue(1);
 		numberofanimals.setNillable(false);
 
