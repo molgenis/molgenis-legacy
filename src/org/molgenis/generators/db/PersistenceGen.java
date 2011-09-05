@@ -31,7 +31,9 @@ public class PersistenceGen extends Generator
 		Template template = createTemplate( "/"+getClass().getSimpleName()+".xml.ftl" );
 		Map<String, Object> templateArgs = createTemplateArguments(options);
 		
-		File target = new File( this.getHandWrittenPath(options) + "/META-INF/persistence.xml" );
+		
+		File target = new File( this.getSourcePath(options) + "/META-INF/persistence.xml" );
+		//File target = new File( this.getHandWrittenPath(options) + "/META-INF/persistence.xml" );
 		target.getParentFile().mkdirs();
 		
 		templateArgs.put("options", options);
