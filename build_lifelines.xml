@@ -1,28 +1,18 @@
-<project>
-	<!-- this name is used to name the war file -->
-	<property name="app_name" value="lifelines" />
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="build_lifelines" default="run" basedir=".">
+	
+	<description>
+        ANT file for LifeLines xQTL
+    </description>
 
-	<!-- this holds all the settings for the generator -->
+	<!--
+	The properties file supplied to the generator
+	-->
 	<property name="app_properties" value="apps/xgap/org/molgenis/xgap/other/xqtlworkbench_lifelines/xwbll.properties"/>
-	<!-- this determines what handwritten modules should be loaded -->
-	<path id="app.class.path">
-		<pathelement location="apps/xgap" />
-		<pathelement location="modules/datamodel" />
-		<pathelement location="modules/auth" />
-		<pathelement location="modules/file" />
-		<pathelement location="modules/import" />
-		<pathelement location="modules/webserver" />
-		<pathelement location="modules/settings" />
-		<pathelement location="modules/pheno" />
-		<pathelement location="modules/search" />
-		<pathelement location="modules/matrix" />
-		<pathelement location="modules/decorators/core" />
-		<pathelement location="modules/decorators/auth" />
-		<pathelement location="modules/decorators/pheno" />
-		<pathelement location="modules/decorators/data" />
-	</path>
 
-	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
-	<import file="build_common.xml" />
+	<!--
+	Import original xQTL script
+	-->
+	<import file="xqtl_dev.xml" />
 
 </project>

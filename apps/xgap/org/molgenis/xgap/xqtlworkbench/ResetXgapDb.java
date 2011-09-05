@@ -2,9 +2,13 @@ package org.molgenis.xgap.xqtlworkbench;
 
 import java.util.List;
 
+import org.molgenis.MolgenisOptions;
 import org.molgenis.core.MolgenisFile;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+
+import app.FillMetadata;
+import app.servlet.UsedMolgenisOptions;
 
 import plugins.emptydb.emptyDatabase;
 
@@ -52,7 +56,12 @@ public class ResetXgapDb
 					}
 				}
 				report += "Now resetting datamodel/database.\n";
-				new emptyDatabase(db, true);
+				if(new UsedMolgenisOptions().mapper_implementation.equals(MolgenisOptions.MapperImplementation.JPA))
+				{
+					FillMetadata.fillMetadata(db);
+				} else {
+					new emptyDatabase(db, true);
+				}
 				report += "Reset datamodel SUCCESS";
 				// resetSuccess = true;
 			}
