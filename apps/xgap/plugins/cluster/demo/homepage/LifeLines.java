@@ -86,13 +86,13 @@ public class LifeLines extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_cluster_demo_ClusterDemo";
+		return "plugins_cluster_demo_homepage_LifeLines";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/cluster/demo/ClusterDemo.ftl";
+		return "plugins/cluster/demo/homepage/LifeLines.ftl";
 	}
 
 	@Override
