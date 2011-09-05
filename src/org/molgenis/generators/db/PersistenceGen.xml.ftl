@@ -6,7 +6,9 @@
              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
 	<persistence-unit name="molgenis" transaction-type="RESOURCE_LOCAL">
 <#list model.entities as entity>
+	<#if !entity.isAbstract()>
             <class>${entity.namespace}.${JavaName(entity)}</class>
+	</#if>
 </#list>
 	    <properties>
 	      <property name="javax.persistence.jdbc.url" value="${options.dbUri}"/>
@@ -14,7 +16,7 @@
 	      <property name="javax.persistence.jdbc.driver" value="${options.dbDriver}"/>
 	      <property name="javax.persistence.jdbc.user" value="${options.dbUser}"/>
           <property name="javax.persistence.validation.mode" value="none"/>    
-          <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/>
+          <property name="hibernate.dialect" value="org.hibernate.dialect.${options.hibernateDialect}"/>
           <property name="hibernate.show_sql" value="false"/>
           
           <!--
@@ -26,9 +28,14 @@
            
 	    </properties>
 	</persistence-unit>
+	
+	
+	<#-- refactor out in next sprint? -->
 	<persistence-unit name="molgenis_test" transaction-type="RESOURCE_LOCAL">
 <#list model.entities as entity>
+	<#if !entity.isAbstract()>
             <class>${entity.namespace}.${JavaName(entity)}</class>
+	</#if>
 </#list>
 	    <properties>
 	      <property name="javax.persistence.jdbc.url" value="${options.dbUri}_test"/>
@@ -36,7 +43,7 @@
 	      <property name="javax.persistence.jdbc.driver" value="${options.dbDriver}"/>
 	      <property name="javax.persistence.jdbc.user" value="${options.dbUser}"/>
           <property name="javax.persistence.validation.mode" value="none"/>    
-          <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/>
+          <property name="hibernate.dialect" value="org.hibernate.dialect.${options.hibernateDialect}"/>
           <property name="hibernate.show_sql" value="false"/>
 	    
           <!--
