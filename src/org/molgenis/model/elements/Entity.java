@@ -927,7 +927,7 @@ public class Entity extends DBSchema implements Record
 
 		for (Field field : getFields())
 		{
-			if (field.getType() == type)
+			if (field.getType().getClass() == type.getClass())
 			{
 				results.add(field);
 			}
