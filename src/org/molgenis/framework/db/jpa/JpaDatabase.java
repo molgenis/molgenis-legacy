@@ -17,7 +17,6 @@ import javax.persistence.metamodel.EntityType;
 import org.molgenis.framework.db.CsvToDatabase.IntegerWrapper;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.FileSourceHelper;
 import org.molgenis.framework.db.JoinQuery;
 import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.Query;
@@ -27,9 +26,9 @@ import org.molgenis.framework.security.Login;
 import org.molgenis.model.elements.Model;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvReaderListener;
+import org.molgenis.util.Entity;
 import org.molgenis.util.HandleException;
 import org.molgenis.util.SpreadsheetWriter;
-import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 /**
@@ -588,12 +587,6 @@ public abstract class JpaDatabase extends AbstractDatabase implements Database {
     public String getPersistenceUnitName() {
         return persistenceUnitName;
     }
-
-    @Override
-    public FileSourceHelper getFileSourceHelper() throws Exception {
-        throw new UnsupportedOperationException();
-    }
-   
 
 	@Override
 	public List<Tuple> sql(String query, QueryRule ...queryRules) throws DatabaseException {

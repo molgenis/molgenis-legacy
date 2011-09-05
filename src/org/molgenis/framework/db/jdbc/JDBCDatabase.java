@@ -5,8 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -23,7 +23,6 @@ import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.FileSourceHelper;
 import org.molgenis.framework.db.JoinQuery;
 import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.Query;
@@ -31,10 +30,10 @@ import org.molgenis.framework.db.QueryImp;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.security.Login;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.SpreadsheetWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.ResultSetTuple;
 import org.molgenis.util.SimpleTuple;
+import org.molgenis.util.SpreadsheetWriter;
 import org.molgenis.util.Tuple;
 
 /**
@@ -70,8 +69,6 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	File fileSource;
 	/** Login object */
 	Login login;
-	/** File source helper */
-	private FileSourceHelper fsh;
 	/** Logger for this database */
 	private static final transient Logger logger = Logger
 			.getLogger(JDBCDatabase.class.getSimpleName());
@@ -94,7 +91,6 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 		if (file_source == null) logger
 				.warn("JDBCDatabase: fileSource is missing");
 		this.fileSource = file_source;
-		fsh = new JDBCFileSourceHelper(this);
 	}
 
 	public JDBCDatabase(DataSourceWrapper data_src, File file_source)
@@ -105,7 +101,6 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 		if (file_source == null) logger
 				.warn("JDBCDatabase: fileSource is missing");
 		this.fileSource = file_source;
-		fsh = new JDBCFileSourceHelper(this);
 	}
 
 	public JDBCDatabase(MolgenisOptions options)
@@ -120,7 +115,6 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 
 		File file_source = new File(options.db_filepath);
 		this.fileSource = file_source;
-		fsh = new JDBCFileSourceHelper(this);
 		
 		logger.debug("JDBCDatabase(uri=" + options.db_uri + ") created");
 	}
@@ -128,17 +122,6 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	public JDBCDatabase(Properties p)
 	{
 		this(new MolgenisOptions(p));
-//		BasicDataSource dSource = new BasicDataSource();
-//		dSource.setDriverClassName(p.getProperty("db_driver"));
-//		dSource.setUsername(p.getProperty("db_user"));
-//		dSource.setPassword(p.getProperty("db_password"));
-//		dSource.setUrl(p.getProperty("db_uri"));
-//
-//		this.source = new SimpleDataSourceWrapper(dSource);
-//
-//		File file_source = new File(p.getProperty("db_filepath"));
-//		this.fileSource = file_source;
-//		fsh = new JDBCFileSourceHelper(this);
 	}
 
 	public JDBCDatabase(File propertiesFilePath) throws FileNotFoundException,
@@ -157,7 +140,6 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 
 		File file_source = new File(p.getProperty("db_filepath"));
 		this.fileSource = file_source;
-		fsh = new JDBCFileSourceHelper(this);
 
 	}
 
@@ -187,7 +169,6 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 		{
 			File file_source = new File(p.getProperty("db_filepath"));
 			this.fileSource = file_source;
-			fsh = new JDBCFileSourceHelper(this);
 		}
 		else
 		{
@@ -486,11 +467,6 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	public File getFilesource()
 	{
 		return this.fileSource;
-	}
-	
-	public FileSourceHelper getFileSourceHelper() throws Exception
-	{
-		return fsh;
 	}
 
 	/**
