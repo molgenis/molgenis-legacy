@@ -29,7 +29,6 @@ import org.molgenis.util.Pair;
 
 import java.sql.*;
 
-
 public class MolgenisModelValidator
 {
 	private static final Logger logger = Logger
@@ -43,13 +42,13 @@ public class MolgenisModelValidator
 		// validate the model
 		validateNamesAndReservedWords(model, options);
 		validateExtendsAndImplements(model);
-		
+
 		if (options.object_relational_mapping
 				.equals(MolgenisOptions.SUBCLASS_PER_TABLE))
 		{
 			addTypeFieldInSubclasses(model);
 		}
-		
+
 		validateKeys(model);
 		addXrefLabelsToEntities(model);
 		validatePrimaryKeys(model);
@@ -59,9 +58,11 @@ public class MolgenisModelValidator
 
 		// enhance the model
 		correctXrefCaseSensitivity(model);
-//		if(!options.mapper_implementation.equals(MolgenisOptions.MapperImplementation.JPA)) {
-			createLinkTablesForMrefs(model);
-//		}
+		// if(!options.mapper_implementation.equals(MolgenisOptions.MapperImplementation.JPA))
+		// {
+		moveMrefsFromInterfaceAndCopyToSubclass(model);
+		createLinkTablesForMrefs(model);
+		// }
 		copyDefaultXrefLabels(model);
 		copyDecoratorsToSubclass(model);
 
@@ -72,33 +73,81 @@ public class MolgenisModelValidator
 		}
 
 		copyFieldsToSubclassToEnforceConstraints(model);
-                
-                validateNameSize(model);
+
+		validateNameSize(model);
 
 	}
 
-	/** Subclasses can override fields of superclasses. This should only be used with caution!
-	 * Only good motivation is to limit xref type.
+	/**
+	 * As mrefs are a linking table between to other tables, interfaces cannot
+	 * be part of mrefs (as they don't have a linking table). To solve this
+	 * issue, mrefs will be removed from interface class and copied to subclass.
+	 * 
+	 * @throws MolgenisModelException
+	 */
+	public static void moveMrefsFromInterfaceAndCopyToSubclass(Model model)
+			throws MolgenisModelException
+	{
+		logger.debug("copy fields to subclass for constrain checking...");
+
+		// copy mrefs from interfaces to implementing entities
+		// also rename the target from interface to entity
+		for (Entity entity : model.getEntities())
+		{
+			for (Entity iface : entity.getImplements())
+			{
+				for (Field mref : iface.getFieldsOf(new MrefField()))
+				{
+					Field f = new Field(mref);
+					f.setEntity(entity);
+					f.setMrefName(entity.getName()+"_"+f.getName());
+					entity.addField(0, f);
+				}
+			}
+		}
+
+		// remove interfaces from entities
+		for (Entity entity : model.getEntities())
+		{
+			if (entity.isAbstract()) for (Field mref : entity
+					.getFieldsOf(new MrefField()))
+			{
+				entity.removeField(mref);
+			}
+		}
+	}
+
+	/**
+	 * Subclasses can override fields of superclasses. This should only be used
+	 * with caution! Only good motivation is to limit xref type.
 	 */
 	public static void validateOveride(Model model)
 	{
-		// TODO 
-		
+		// TODO
+
 	}
-        
-        public static void validateNameSize(Model model) throws MolgenisModelException {
-            for(Entity e : model.getEntities()) {
-                //maximum num of chars in oracle table name of column is 30
-                if(e.getName().length() > 30) {
-                    throw new MolgenisModelException(String.format("table name %s is longer than %d", e.getName(), 30));
-                }
-                for(Field f : e.getFields()) {
-                    if(f.getName().length() > 30) {
-                        throw new MolgenisModelException(String.format("field name %s is longer than %d", f.getName(), 30));
-                    }
-                }
-            }
-        }
+
+	public static void validateNameSize(Model model)
+			throws MolgenisModelException
+	{
+		for (Entity e : model.getEntities())
+		{
+			// maximum num of chars in oracle table name of column is 30
+			if (e.getName().length() > 30)
+			{
+				throw new MolgenisModelException(String.format(
+						"table name %s is longer than %d", e.getName(), 30));
+			}
+			for (Field f : e.getFields())
+			{
+				if (f.getName().length() > 30)
+				{
+					throw new MolgenisModelException(String.format(
+							"field name %s is longer than %d", f.getName(), 30));
+				}
+			}
+		}
+	}
 
 	public static void validateUI(Model model, MolgenisOptions options)
 			throws MolgenisModelException, DatabaseException
@@ -129,7 +178,8 @@ public class MolgenisModelValidator
 				}
 				else
 				{
-					if (!	form.getReadOnly() && field.isNillable() == false && !field.isAuto()
+					if (!form.getReadOnly() && field.isNillable() == false
+							&& !field.isAuto()
 							&& field.getDefaultValue().equals(""))
 					{
 						throw new MolgenisModelException(
@@ -206,8 +256,8 @@ public class MolgenisModelValidator
 						|| f.getType() instanceof MrefField)
 				{
 					if (f.getXrefLabelNames().size() > 0
-							&& f.getXrefLabelNames().get(0).equals(
-									f.getXrefFieldName()))
+							&& f.getXrefLabelNames().get(0)
+									.equals(f.getXrefFieldName()))
 					{
 						Entity xref_entity = f.getXrefEntity();
 						if (xref_entity.getXrefLabels() != null)
@@ -237,8 +287,7 @@ public class MolgenisModelValidator
 	public static void addTypeFieldInSubclasses(Model model)
 			throws MolgenisModelException
 	{
-		logger
-				.debug("add a 'type' field in subclasses to enable instanceof at database level...");
+		logger.debug("add a 'type' field in subclasses to enable instanceof at database level...");
 		for (Entity e : model.getEntities())
 		{
 			if (e.isRootAncestor())
@@ -320,8 +369,8 @@ public class MolgenisModelValidator
 					// if mref entity doesn't exist: create
 					if (mrefEntity == null)
 					{
-						mrefEntity = new Entity(mref_name, mref_name, model
-								.getDatabase());
+						mrefEntity = new Entity(mref_name, mref_name,
+								model.getDatabase());
 						mrefEntity
 								.setNamespace(xref_entity_from.getNamespace());
 						mrefEntity.setAssociation(true);
@@ -336,8 +385,7 @@ public class MolgenisModelValidator
 						Field idField = new Field(mrefEntity, new IntField(),
 								"autoid", "autoid", true, false, false, null);
 						idField.setHidden(true);
-						idField
-								.setDescription("automatic id field to ensure ordering of mrefs");
+						idField.setDescription("automatic id field to ensure ordering of mrefs");
 						mrefEntity.addField(idField);
 						mrefEntity.addKey(idField.getName(),
 								"unique auto key to ensure ordering of mrefs");
@@ -346,12 +394,12 @@ public class MolgenisModelValidator
 						Field field;
 						Vector<String> unique = new Vector<String>();
 
-						field = new Field(mrefEntity,new XrefField(),
+						field = new Field(mrefEntity, new XrefField(),
 								xref_field_from.getMrefRemoteid(), null, false,
 								false, false, null);
 						field.setXRefVariables(xref_entity_to.getName(),
-								xref_field_to.getName(), xref_field_from
-										.getXrefLabelNames());
+								xref_field_to.getName(),
+								xref_field_from.getXrefLabelNames());
 						if (xref_field_from.isXrefCascade()) field
 								.setXrefCascade(true);
 						mrefEntity.addField(field);
@@ -362,10 +410,9 @@ public class MolgenisModelValidator
 						for (Field key : xref_entity_from
 								.getKeyFields(Entity.PRIMARY_KEY))
 						{
-							field = new Field(mrefEntity,
-									new XrefField(), xref_field_from
-											.getMrefLocalid(), null, false,
-									false, false, null);
+							field = new Field(mrefEntity, new XrefField(),
+									xref_field_from.getMrefLocalid(), null,
+									false, false, false, null);
 
 							// null xreflabel
 							field.setXRefVariables(xref_entity_from.getName(),
@@ -440,7 +487,7 @@ public class MolgenisModelValidator
 			{
 				for (Field field : entity.getFields())
 				{
-					if ( !(field.getType() instanceof XrefField) ) continue;
+					if (!(field.getType() instanceof XrefField)) continue;
 
 					// get the entity, which is referenced by the field
 					Entity referenced = null;
@@ -507,7 +554,7 @@ public class MolgenisModelValidator
 		for (Entity entity : model.getEntities())
 		{
 			String entityname = entity.getName();
-			
+
 			for (Field field : entity.getFields())
 			{
 				String fieldname = field.getName();
@@ -553,10 +600,11 @@ public class MolgenisModelValidator
 										+ entityname + "." + fieldname);
 					}
 
-					if (entity.isAbstract()
-							&& field.getType() instanceof MrefField) throw new MolgenisModelException(
-							"interfaces cannot have mref therefore remove '"
-									+ entityname + "." + fieldname + "'");
+					// if (entity.isAbstract()
+					// && field.getType() instanceof MrefField) throw new
+					// MolgenisModelException(
+					// "interfaces cannot have mref therefore remove '"
+					// + entityname + "." + fieldname + "'");
 
 					Field xref_field = xref_entity.getField(xref_field_name,
 							false, true, true);
@@ -566,7 +614,8 @@ public class MolgenisModelValidator
 									+ "' does not exist for field "
 									+ entityname + "." + fieldname);
 
-					//if (xref_field == null) xref_field = xref_entity.getPrimaryKey();
+					// if (xref_field == null) xref_field =
+					// xref_entity.getPrimaryKey();
 					// throw new MolgenisModelException("xref field '" +
 					// xref_field_name
 					// + "' does not exist for field " + entityname + "." +
@@ -612,9 +661,8 @@ public class MolgenisModelValidator
 								if (xref_label_name.equals(validLabel))
 								{
 									xref_label = candidates.get(validLabel)
-											.get(
-													candidates.get(validLabel)
-															.size() - 1);
+											.get(candidates.get(validLabel)
+													.size() - 1);
 								}
 								validFields += "," + validLabel;
 							}
@@ -760,7 +808,7 @@ public class MolgenisModelValidator
 		// validate the extends and implements relations
 		for (Entity entity : model.getEntities())
 		{
-			
+
 			List<Entity> ifaces = entity.getAllImplements();
 			for (Entity iface : ifaces)
 			{
@@ -774,11 +822,12 @@ public class MolgenisModelValidator
 				// usually it is a auto_number int
 				// composite keys are ignored
 				try
-				{ 
+				{
 					Field pkeyField = null;
-					if(iface.getKeyFields(Entity.PRIMARY_KEY).size() == 1) 
+					if (iface.getKeyFields(Entity.PRIMARY_KEY).size() == 1)
 					{
-						pkeyField = iface.getKeyFields(Entity.PRIMARY_KEY).get(0);
+						pkeyField = iface.getKeyFields(Entity.PRIMARY_KEY).get(
+								0);
 						// if not already exists
 						if (entity.getField(pkeyField.getName()) == null)
 						{
@@ -789,8 +838,8 @@ public class MolgenisModelValidator
 							field.setReadonly(pkeyField.isReadOnly());
 
 							field.setSystem(true);
-							field.setXRefVariables(iface.getName(), pkeyField
-									.getName(), null);
+							field.setXRefVariables(iface.getName(),
+									pkeyField.getName(), null);
 							field.setHidden(true);
 
 							logger.debug("copy primary key " + field.getName()
@@ -893,8 +942,8 @@ public class MolgenisModelValidator
 
 					// generate a new interface
 					rootAncestor = new Entity("_" + entity.getName()
-							+ "Interface", entity.getName(), model
-							.getDatabase());
+							+ "Interface", entity.getName(),
+							model.getDatabase());
 					rootAncestor
 							.setDescription("Identity map table for "
 									+ entity.getName()
@@ -910,9 +959,9 @@ public class MolgenisModelValidator
 					for (Field f : keyfields)
 					{
 						Field key_field = new Field(rootAncestor, f.getType(),
-								f.getName(), f.getName(), f.isAuto(), f
-										.isNillable(), f.isReadOnly(), f
-										.getDefaultValue());
+								f.getName(), f.getName(), f.isAuto(),
+								f.isNillable(), f.isReadOnly(),
+								f.getDefaultValue());
 						key_field.setDescription("Primary key field unique in "
 								+ entity.getName() + " and its subclasses.");
 						if (key_field.getType() instanceof StringField) key_field
@@ -963,13 +1012,15 @@ public class MolgenisModelValidator
 	{
 		logger.debug("check for JAVA and SQL reserved words...");
 		List<String> keywords = new ArrayList<String>();
-		//keywords.addAll(Arrays.asList(MOLGENIS_KEYWORDS));
+		// keywords.addAll(Arrays.asList(MOLGENIS_KEYWORDS));
 		keywords.addAll(Arrays.asList(JAVA_KEYWORDS));
 		keywords.addAll(Arrays.asList(JAVASCRIPT_KEYWORDS));
 		keywords.addAll(Arrays.asList(ORACLE_KEYWORDS));
-			
-		if (options.db_driver.contains("mysql")) keywords.addAll(Arrays.asList(MYSQL_KEYWORDS));
-		if (options.db_driver.contains("hsql")) keywords.addAll(Arrays.asList(HSQL_KEYWORDS));
+
+		if (options.db_driver.contains("mysql")) keywords.addAll(Arrays
+				.asList(MYSQL_KEYWORDS));
+		if (options.db_driver.contains("hsql")) keywords.addAll(Arrays
+				.asList(HSQL_KEYWORDS));
 
 		if (model.getName().contains(" "))
 		{
@@ -1037,7 +1088,8 @@ public class MolgenisModelValidator
 									+ "' cannot contain spaces. Use 'label' if you want to show a name with spaces.");
 				}
 
-				if (keywords.contains(f.getName().toUpperCase()) || keywords.contains(f.getName().toLowerCase()))
+				if (keywords.contains(f.getName().toUpperCase())
+						|| keywords.contains(f.getName().toLowerCase()))
 				{
 					// f.setName(f.getName() + "_");
 					// logger.warn("field name '" + f.getName() + "' illegal:" +
@@ -1122,7 +1174,6 @@ public class MolgenisModelValidator
 			}
 		}
 	}
-
 
 	/** test for case sensitivity */
 	public static void correctXrefCaseSensitivity(Model model)
@@ -1241,15 +1292,16 @@ public class MolgenisModelValidator
 			}
 		}
 	}
-	
-	public static final String[] MOLGENIS_KEYWORDS = {"entity","field","form","menu","screen","plugin"};
+
+	public static final String[] MOLGENIS_KEYWORDS =
+	{ "entity", "field", "form", "menu", "screen", "plugin" };
 
 	public static final String[] HSQL_KEYWORDS =
 	{ "ALIAS", "ALTER", "AUTOCOMMIT", "CALL", "CHECKPOINT", "COMMIT",
 			"CONNECT", "CREATE", "COLLATION", "COUNT", "DATABASE", "DEFRAG",
-			"DELAY", "DELETE", "DISCONNECT", "DROP", "END", "EXPLAIN", "EXTRACT",
-			"GRANT", "IGNORECASE", "INDEX", "INSERT", "INTEGRITY", "LOGSIZE",
-			"PASSWORD", "POSITION", "PLAN", "PROPERTY", "READONLY",
+			"DELAY", "DELETE", "DISCONNECT", "DROP", "END", "EXPLAIN",
+			"EXTRACT", "GRANT", "IGNORECASE", "INDEX", "INSERT", "INTEGRITY",
+			"LOGSIZE", "PASSWORD", "POSITION", "PLAN", "PROPERTY", "READONLY",
 			"REFERENTIAl", "REVOKE", "ROLE", "ROLLBACK", "SAVEPOINT", "SCHEMA",
 			"SCRIPT", "SCRIPTFORMAT", "SELECT", "SEQUENCE", "SET", "SHUTDOWN",
 			"SOURCE", "TABLE", "TRIGGER", "UPDATE", "USER", "VIEW", "WRITE" };
@@ -1311,39 +1363,27 @@ public class MolgenisModelValidator
 
 	protected static final String[] JAVASCRIPT_KEYWORDS =
 	{ "function" };
-	
-	protected static String[] ORACLE_KEYWORDS = {
 
-		"ACCESS", "ELSE", "MODIFY", "START",
-		"ADD", "EXCLUSIVE", "NOAUDIT", "SELECT",
-		"ALL", "EXISTS", "NOCOMPRESS", "SESSION",
-		"ALTER", "FILE", "NOT", "SET",
-		"AND", "FLOAT", "NOTFOUND",	"SHARE",
-		"ANY", "FOR", "NOWAIT", "SIZE",
-		"ARRAYLEN",	"FROM", "NULL", "SMALLINT",
-		"AS", "GRANT", "NUMBER","SQLBUF",
-		"ASC", "GROUP", "OF", "SUCCESSFUL",
-		"AUDIT", "HAVING", "OFFLINE", "SYNONYM",
-		"BETWEEN", "IDENTIFIED", "ON", "SYSDATE",
-		"BY", "IMMEDIATE", "ONLINE", "TABLE",
-		"CHAR",	"IN", "OPTION","THEN",
-		"CHECK", "INCREMENT", "OR",	"TO",
-		"CLUSTER", "INDEX",	"ORDER", "TRIGGER",
-		"COLUMN", "INITIAL", "PCTFREE", "UID",
-		"COMMENT", "INSERT", "PRIOR", "UNION",
-		"COMPRESS",	"INTEGER", "PRIVILEGES", "UNIQUE",
-		"CONNECT",	"INTERSECT", "PUBLIC", "UPDATE",
-		"CREATE", "INTO", "RAW", "USER",
-		"CURRENT", "IS", "RENAME",	"VALIDATE",
-		"DATE", "LEVEL", "RESOURCE", "VALUES",
-		"DECIMAL", "LIKE", "REVOKE", "VARCHAR",
-		"DEFAULT", "LOCK", "ROW", "VARCHAR2",
-		"DELETE", "LONG", "ROWID", "VIEW",
-		"DESC",	"MAXEXTENTS", "ROWLABEL", "WHENEVER",
-		"DISTINCT",	"MINUS", "ROWNUM", "WHERE",
-		"DROP",	"MODE",	"ROWS",	"WITH"
-	};
-	
+	protected static String[] ORACLE_KEYWORDS =
+	{
+
+	"ACCESS", "ELSE", "MODIFY", "START", "ADD", "EXCLUSIVE", "NOAUDIT",
+			"SELECT", "ALL", "EXISTS", "NOCOMPRESS", "SESSION", "ALTER",
+			"FILE", "NOT", "SET", "AND", "FLOAT", "NOTFOUND", "SHARE", "ANY",
+			"FOR", "NOWAIT", "SIZE", "ARRAYLEN", "FROM", "NULL", "SMALLINT",
+			"AS", "GRANT", "NUMBER", "SQLBUF", "ASC", "GROUP", "OF",
+			"SUCCESSFUL", "AUDIT", "HAVING", "OFFLINE", "SYNONYM", "BETWEEN",
+			"IDENTIFIED", "ON", "SYSDATE", "BY", "IMMEDIATE", "ONLINE",
+			"TABLE", "CHAR", "IN", "OPTION", "THEN", "CHECK", "INCREMENT",
+			"OR", "TO", "CLUSTER", "INDEX", "ORDER", "TRIGGER", "COLUMN",
+			"INITIAL", "PCTFREE", "UID", "COMMENT", "INSERT", "PRIOR", "UNION",
+			"COMPRESS", "INTEGER", "PRIVILEGES", "UNIQUE", "CONNECT",
+			"INTERSECT", "PUBLIC", "UPDATE", "CREATE", "INTO", "RAW", "USER",
+			"CURRENT", "IS", "RENAME", "VALIDATE", "DATE", "LEVEL", "RESOURCE",
+			"VALUES", "DECIMAL", "LIKE", "REVOKE", "VARCHAR", "DEFAULT",
+			"LOCK", "ROW", "VARCHAR2", "DELETE", "LONG", "ROWID", "VIEW",
+			"DESC", "MAXEXTENTS", "ROWLABEL", "WHENEVER", "DISTINCT", "MINUS",
+			"ROWNUM", "WHERE", "DROP", "MODE", "ROWS", "WITH" };
 
 	private static String firstToUpper(String string)
 	{
