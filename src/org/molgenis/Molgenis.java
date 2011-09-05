@@ -257,7 +257,7 @@ public class Molgenis {
                 }
                 
                 //generators.add(new FillMetadataTablesGen());
-                generators.add(new FillMetadataGen());
+
                 
             } else {
                 // DATABASE
@@ -307,6 +307,8 @@ public class Molgenis {
                 generators.add(new CountPerTableGen());
                 generators.add(new FillMetadataTablesGen());
             }
+            
+            generators.add(new FillMetadataGen());
             
             // authorization
             if (!options.auth_loginclass.endsWith("SimpleLogin")) {
