@@ -9,6 +9,7 @@
 	<path id="app.class.path">
 		<pathelement location="apps/${app_name}" />
 		<pathelement location="modules/datamodel" />
+		<pathelement location="modules/file" />
 		<pathelement location="modules/decorators/core" />
 		<pathelement location="modules/decorators/pheno" />
 	</path>
