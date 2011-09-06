@@ -3,6 +3,11 @@ package org.molgenis.matrix.component.interfaces;
 import java.util.List;
 
 // TODO merge this with the rendere as it is MatrixMetadata
+// J: in the original design we wanted to keep this seperate.
+// A RenderableMatrix is created by the logic in MatrixRenderer
+// and contains the GUI-display-ready, validated result. To achieve this,
+// MatrixRenderer uses a 'minimal set' of user-supplied information
+// in the form of Source- and Sliceable matrix.
 public interface SourceMatrix<R, C, V>
 {
 
