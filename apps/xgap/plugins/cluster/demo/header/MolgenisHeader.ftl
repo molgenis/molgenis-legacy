@@ -10,14 +10,14 @@
 
 <div id="sample_div" style="background-image:url(clusterdemo/bg/bc_fog4.png); width: 900px; height: 125px; line-height:7.5em;">
 <font style="color: white; font-family: verdana,arial,sans-serif; font-weight: bold; letter-spacing: 0.25em; font-size:50px; font-variant: small-caps">
-&nbsp;<a style="text-decoration:none; color: #FFFFFF;" href="http://www.molgenis.org/wiki/xQTL">xQTL workbench</a></font>
+&nbsp;<a href="#" style="text-decoration:none; color: #FFFFFF;" onClick="document.forms.main.__target.value='main';document.forms.main.select.value='ClusterDemo';document.forms.main.submit();">xQTL workbench</a></font>
 </div>
 
 <!-- url broken for DJTJWS-->
 <div align="right">
-	<font style="font-size:10px;">
+	<font style="font-size:14px;">
 		<#-->| <a href="api/REST/">JSON api</a> | <a href="api/SOAP/">SOAP api</a> | <a href="api/REST/">REST api</a> | -->
-		<a href="api/R/">R api</a>
+		<a href="http://www.molgenis.org/wiki/xQTL">Help</a> | <a href="api/R/">R api</a>
 		  
 	</font>
 </div>

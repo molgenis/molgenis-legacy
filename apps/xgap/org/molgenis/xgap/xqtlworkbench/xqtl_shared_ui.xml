@@ -45,7 +45,7 @@
 		<menu name="AnalysisSettings" label="Add analysis" group="bioinformatician">
 			<form name="RScripts" label="Add R script" entity="RScript" group="bioinformatician">
 				<plugin name="RViewer" type="plugins.molgenisfile.MolgenisFileManager" group="bioinformatician"/>
-				<plugin label="Help" name="AddNewToolsHelp" type="plugins.cluster.addnewtoolshelp" group="bioinformatician" />
+				<!--plugin label="Help" name="AddNewToolsHelp" type="plugins.cluster.addnewtoolshelp" group="bioinformatician" /-->
 			</form>
 			<form name="Analysis" label="Add new analysis" entity="Analysis" group="bioinformatician" />
 			<form name="ParameterSets" label="Configure parameters" entity="ParameterSet" group="bioinformatician">
@@ -86,6 +86,9 @@
 				<plugin label="Rename duplicates" name="DuplicateRenaming" type="plugins.help.duplicates.DuplicatesPlugin" group="biologist" />
 				<plugin label="KEGG converter" name="KeggConverter" type="plugins.keggplugin.KeggToolsPlugin" group="bioinformatician" />
 				<plugin label="Matrix wizard" name="MatrixWizard" type="plugins.xgapwizard.MatrixWizard" group="bioinformatician" />
+				<form label="Job table" name="Jobs" entity="Job" group="admin">
+					<form name="Subjobs" entity="Subjob" group="admin" />
+				</form>
 				<!--plugin name="DatabaseArchiver" type="plugins.archiveexportimport.ArchiveExportImportPlugin" /-->
 			</menu>
 		</menu>

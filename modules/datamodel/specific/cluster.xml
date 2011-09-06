@@ -24,7 +24,7 @@
 			<field name="Nr" nillable="false" type="int"
 				description="Number of this subjob within the job." />
 		</entity>
-		<entity name="Analysis" implements="Nameable">
+		<entity name="Analysis" implements="Nameable" xref_label="name">
 			<field name="Description" nillable="true" type="varchar"
 				length="127" description="Optional description of this type of analysis." />
 			<field name="ParameterSet" type="xref" nillable="false"
@@ -36,30 +36,30 @@
 				description="The function used to start a specific type of analysis on the cluster." />
 			<unique fields="name" description="Name is unique" />
 		</entity>
-		<entity name="ParameterSet" implements="Nameable">
+		<entity name="ParameterSet" implements="Nameable" xref_label="name">
 			<unique fields="name" description="Name is unique" />
 		</entity>
-		<entity name="ParameterName" implements="Nameable">
+		<entity name="ParameterName" implements="Nameable" xref_label="name">
 			<field name="ParameterSet" type="xref" nillable="false"
 				xref_entity="ParameterSet" xref_field="id" xref_label="name" />
 			<unique fields="name,ParameterSet" description="Name is unique within a ParameterSet" />
 		</entity>
-		<entity name="ParameterValue" implements="Nameable">
+		<entity name="ParameterValue" implements="Nameable" xref_label="name">
 			<field name="ParameterName" type="xref" nillable="false"
 				xref_entity="ParameterName" xref_field="id" xref_label="name" />
 			<field name="Value" nillable="false" type="varchar" length="127"
 				description="Possible value of this parameter." />
 			<unique fields="name,ParameterName" description="Name is unique within a ParameterName" />
 		</entity>
-		<entity name="DataSet" implements="Nameable">
+		<entity name="DataSet" implements="Nameable" xref_label="name">
 			<unique fields="name" description="Name is unique" />
 		</entity>
-		<entity name="DataName" implements="Nameable">
+		<entity name="DataName" implements="Nameable" xref_label="name">
 			<field name="DataSet" type="xref" nillable="false" xref_entity="DataSet"
 				xref_field="id" xref_label="name" />
 			<unique fields="name,DataSet" description="Name is unique within a dataset" />
 		</entity>
-		<entity name="DataValue" implements="Nameable">
+		<entity name="DataValue" implements="Nameable" xref_label="name">
 			<field name="DataName" type="xref" nillable="false"
 				xref_entity="DataName" xref_field="id" xref_label="name" />
 			<field name="Value" type="xref" nillable="false" xref_entity="Data"
