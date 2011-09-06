@@ -630,7 +630,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 		{
 			model.setState("main");
 		}
-		else if (model.getState() == "newjob1")
+		else if (model.getState().equals("newjob1"))
 		{
 			try
 			{
@@ -643,7 +643,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 				e.printStackTrace();
 			}
 		}
-		else if (model.getState() == "newjob2")
+		else if (model.getState().equals("newjob2"))
 		{
 			try
 			{
@@ -687,7 +687,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 				e.printStackTrace();
 			}
 		}
-		else if (model.getState() == "jobmanager")
+		else if (model.getState().equals("jobmanager"))
 		{
 			try
 			{
@@ -755,6 +755,11 @@ public class ClusterPlugin extends PluginModel<Entity>
 			{
 				e.printStackTrace();
 			}
+		}
+		
+		if(model.getState().equals("main"))
+		{
+			this.getMyModel().setRefreshRate("off"); //FIXME: stops refreshing outside of Job manager??
 		}
 	}
 

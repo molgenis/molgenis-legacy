@@ -57,23 +57,23 @@
 
 <#if model.state="main">
 <br>
-<h1>Run QTL analysis jobs</h1><br><br>
+<h1>Run QTL mapping</h1><br><br>
 <input type="submit" value="Create new job" onclick="__action.value='newClusterJob';return true;">
 <br><br>
-<input type="submit" value="Job manager" onclick="__action.value='viewJobManager';return true;">
+<input type="submit" value="Go to job manager" onclick="__action.value='viewJobManager';return true;">
 <br><br>
 
 <table>
 	<tr>
 		<td>
-			Compute resource:
+			Select compute resource:
 		</td>
 		<td>
 			<input type="radio" name="computeResource" value="local" checked>Local<br>
 			<input type="radio" name="computeResource" value="cluster">Cluster<br>
-			<input type="radio" DISABLED name="computeResource" value="bot">IRC BOT network<br>
+			<!--input type="radio" DISABLED name="computeResource" value="bot">IRC BOT network<br>
 			<input type="radio" DISABLED name="computeResource" value="cloud">Cloud<br>
-			<input type="radio" DISABLED name="computeResource" value="image">Image
+			<input type="radio" DISABLED name="computeResource" value="image">Image-->
 		</td>
 	</tr>
 </table>
@@ -104,7 +104,7 @@
 	</tr>
 	<tr>
 		<td>
-			Select # of sub jobs (limited to 50):
+			Select amount of subjobs (limited to 50):
 		</td>
 		<td>
 			<select name="nJobs">
@@ -192,58 +192,74 @@
 
 Select input data:<br><br>
 <table>
-<tr>
-<td><b>Name</b></td><td><b>Option</b></td><td><b>Split by</b></td></tr>
-</tr>
-<#list model.datanames as d_n>
-<tr>
-<td>
-${d_n.getName()}:
-</td>
-<td>
-
-	<#--select name="dataNameID${d_n.getId()}"-->
-	<select name="${d_n.getName()}">
-		<#list model.datavalues as d_v>
-			<#if d_v.getValue()??>
-			<#if d_v.dataname == d_n.getId()>
-				<#--option value="dataValueID${d_v.getId()}">${d_v.getName()}</option-->
-				<option value="${d_v.getValue()?c}">${d_v.getName()}</option>
-			</#if>
-			</#if>
-		</#list>
-	</select>
-</td>
-<td>
-	<#if d_n.getName() == "phenotypes">
-	<INPUT id="iterator" type="radio" value="${d_n.getName()}_r" name="itteratorGroup">rows
-	<INPUT id="iterator" type="radio" value="${d_n.getName()}_c" name="itteratorGroup" CHECKED>cols<BR>
-	<#else>
-	<INPUT id="iterator" type="radio" value="${d_n.getName()}_r" name="itteratorGroup">rows
-	<INPUT id="iterator" type="radio" value="${d_n.getName()}_c" name="itteratorGroup">cols<BR>
-	</#if>
-</td>
-</tr>
-</#list>
+	<tr>
+		<td>
+			<b>Name</b>
+		</td>
+		<td>
+			<b>Option</b>
+		</td>
+		<!--td><b>Split by</b></td-->
+	</tr>
+	<#list model.datanames as d_n>
+	<tr>
+		<td>
+			${d_n.getName()}:
+		</td>
+		<td>
+			<#--select name="dataNameID${d_n.getId()}"-->
+			<select name="${d_n.getName()}">
+				<#list model.datavalues as d_v>
+					<#if d_v.getValue()??>
+					<#if d_v.dataname == d_n.getId()>
+						<#--option value="dataValueID${d_v.getId()}">${d_v.getName()}</option-->
+						<option value="${d_v.getValue()?c}">${d_v.getName()}</option>
+					</#if>
+					</#if>
+				</#list>
+			</select>
+		</td>
+	<!--td>
+		<#if d_n.getName() == "phenotypes">
+		<INPUT id="iterator" type="radio" value="${d_n.getName()}_r" name="itteratorGroup">rows
+		<INPUT id="iterator" type="radio" value="${d_n.getName()}_c" name="itteratorGroup" CHECKED>cols<BR>
+		<#else>
+		<INPUT id="iterator" type="radio" value="${d_n.getName()}_r" name="itteratorGroup">rows
+		<INPUT id="iterator" type="radio" value="${d_n.getName()}_c" name="itteratorGroup">cols<BR>
+		</#if>
+	</td-->
+	</tr>
+	</#list>
 </table>
 <br>
 Select parameters:<br><br>
 <table>
-<#list model.parameternames as p_n>
-<tr><td>
-${p_n.getName()}:
-</td><td>
-	<#--select name="parameterNameID${p_n.getId()}"-->
-	<select name="${p_n.getName()}">
-		<#list model.parametervalues as p_v>
-			<#if p_v.parametername == p_n.getId()>
-				<#--option value="parameterValueID${p_v.getId()}">${p_v.getName()}</option-->
-				<option value="${p_v.getValue()}">${p_v.getName()}</option>
-			</#if>
-		</#list>
-	</select>
-</td></tr>
-</#list>
+	<tr>
+		<td>
+			<b>Parameter</b>
+		</td>
+		<td>
+			<b>Value</b>
+		</td>
+	</tr>
+	<#list model.parameternames as p_n>
+	<tr>
+		<td>
+			${p_n.getName()}:
+		</td>
+		<td>
+		<#--select name="parameterNameID${p_n.getId()}"-->
+		<select name="${p_n.getName()}">
+			<#list model.parametervalues as p_v>
+				<#if p_v.parametername == p_n.getId()>
+					<#--option value="parameterValueID${p_v.getId()}">${p_v.getName()}</option-->
+					<option value="${p_v.getValue()}">${p_v.getName()}</option>
+				</#if>
+			</#list>
+		</select>
+		</td>
+	</tr>
+	</#list>
 </table>
 <br>
 <input type="submit" value="Previous" onclick="__action.value='toStep1';return true;"/>
@@ -263,7 +279,7 @@ ${p_n.getName()}:
 seconds.
 <input type="submit" value="Change" onclick="__action.value='changeRefresh';return true;"/>
 
-<br>
+<br><br>
 <div style="text-align: center; overflow: scroll;">
 <table class="listtable">
 	<#if model.maxSubjobs == 0>
@@ -380,8 +396,8 @@ seconds.
 	</#if>
 </table>
 </div>
-<br><br>
-<font color="red"><i>Resubmission of subjobs on cluster not possible due to demo constraints</i></font>
+<br>
+<!--font color="red"><i>Resubmission of subjobs on cluster not possible due to demo constraints</i></font-->
 <br><br>
 <input type="submit" value="Go back" onclick="__action.value='goBack';return true;"/>
 <br>
