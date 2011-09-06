@@ -40,10 +40,10 @@ public class WorksheetBatchCommand extends SimpleCommand
         this.setMenu("Edit");
         this.setDialog(true);
         this.setToolbar(true);
-        this.setIcon("/");
+        this.setIcon("generated-res/img/run.png");
 
-        runButton = new ActionInput("run", ActionInput.Type.NEXT);
-//        runButton.setLabel("Run analysis for selected lanes");
+        runButton = new ActionInput("Generate", ActionInput.Type.NEXT);
+        runButton.setLabel("Generate code for selected lines!");
     }
 
     @Override
@@ -80,26 +80,16 @@ public class WorksheetBatchCommand extends SimpleCommand
     	System.out.println(">> In handleRequest!");
         logger.debug("worksheet batch command button clicked: " + request.toString());
 
-        currentRequest = request.toString();
-
-        System.out.println("here handleRequest");
-
         String action = request.getString("__action");
+        String lines = request.getString("massUpdate");
+        System.out.println(">> Selected lines: " + lines);
 
-
-        if (action.equals("run"))
-        {
-            System.out.println("... pushed");
-        }
-        else
-        {
-            System.out.println("what the fuck: " + action);
-        }
+        System.out.println(">> Action: " + action);
 
         for(int i = 0; i < this.getActions().size(); i++)
         {
             ActionInput input = this.getActions().get(i);
-            System.out.println("action " + input.toString());
+            System.out.println(">> >> Action " + input.toString());
         }
 
 

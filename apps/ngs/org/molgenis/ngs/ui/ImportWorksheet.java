@@ -66,7 +66,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 		List<LibraryLane> libraryLaneList = db.query(LibraryLane.class).find();
 		for (LibraryLane libraryList : libraryLaneList)
 		{
-
+			print("LibraryLane: " + libraryList);
 			// get data
 			Flowcell flowcell = db.findById(Flowcell.class, libraryList.getFlowcell_Id());
 			NgsSample sample = db.findById(NgsSample.class, libraryList.getSample());
@@ -84,10 +84,16 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 			ws.setProject(inv.getName());
 			if (inv.getContacts_Id().size() > 0) ws.setContact(i.getLastName());
 			ws.setLane(libraryList.getLane());
-			ws.setSequenceStartDate(flowcell.getRunDate());
+			ws.setSequencingStartDate(flowcell.getRunDate());
 			ws.setSequencer(m.getMachine());
 			ws.setFlowcell(flowcell.getName());
-			ws.setCapturingKit(lc.getCapturing());
+			if (lc == null) {
+				ws.setCapturingKit("NA");
+			} else {
+				ws.setCapturingKit(lc.getCapturing());
+			}
+			print("LibraryList.getname(): " + libraryList.getName());
+			ws.setLibrary(libraryList.getName());
 			ws.setComments(libraryList.getDescription());
 			// add sheet
 			db.add(ws);
@@ -180,8 +186,9 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 					// _library_ Capturing
 					LibraryCapturing libcap = null;
 					String capturing = tuple.getString(Worksheet.CAPTURINGKIT);
-					if (capturing != null)
-					{
+					if (capturing == null) {
+						capturing = "NA";
+					} else {
 						libcap = (LibraryCapturing) getObject(db, LibraryCapturing.class, LibraryCapturing.CAPTURING,
 								capturing);
 						if (libcap == null)
@@ -275,19 +282,18 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 						print(">> We create a new flowcell");
 						flowcell = new Flowcell();
 						flowcell.setName(flowcellname);
-						String date = tuple.getString(Worksheet.SEQUENCESTARTDATE);
+						String date = tuple.getString(Worksheet.SEQUENCINGSTARTDATE);
 						// Calendar cal = Calendar.getInstance();
 						// cal.set(2000 + Integer.parseInt(date.substring(0,
 						// 2)),
 						// Integer.parseInt(date.substring(2, 4)),
 						// Integer.parseInt(date.substring(4, 6)));
 						// print(cal.getTime().toString());
-						if (date != null && "".equals(date))
+						if (date != null && !"".equals(date))
 						{
 							java.util.Date date_tmp = new java.util.Date(2000 - 1900 + Integer.parseInt(date.substring(
 									0, 2)), Integer.parseInt(date.substring(2, 4)) - 1, Integer.parseInt(date
 									.substring(4, 6)));
-							print(date_tmp.toString());
 							flowcell.setRunDate(date_tmp);
 						}
 						flowcell.setMachine(machine);
@@ -313,6 +319,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 
 					if (fls == null)
 					{
+						print("The library is: " + tuple.getString(Worksheet.LIBRARY));
 						// if fll is still null, then it doesn't exist in the DB
 						// yet, so we will add it
 						fls = new LibraryLane();
@@ -323,12 +330,20 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 						fls.setFlowcell(flowcell);
 						fls.setLane(tuple.getString(Worksheet.LANE));
 						fls.setSample(sample);
-						fls.setName(samplename);
+						
+						String library = tuple.getString(Worksheet.LIBRARY);
+						if (library != null && !library.equals("")) {
+							fls.setName(library);
+						} else {
+							fls.setName("NA");
+						}
+						
 						fls.setDescription(tuple.getString(Worksheet.COMMENTS));
 						fls.setBarcode(libbar);
 						if (libcap != null) fls.setCapturing(libcap);
-
+						
 						print("Before adding flowcell lane lib");
+						print("fls: " + fls);
 						db.add(fls);
 						print("Flowcell-Lane-Library object added");
 					}

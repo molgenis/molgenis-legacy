@@ -88,7 +88,7 @@
 				description="The lane number that is unique within a flow cell. Typically in range 1-8" />
 			<field name="barcode" type="xref" xref_entity="LibraryBarcode"/>
 			<field name="capturing" type="xref" xref_entity="LibraryCapturing" nillable="true"/>
-			<unique fields="flowcell,lane,name" description="Lane and sample is unique per flowcell" />
+			<unique fields="flowcell,lane,sample" description="Lane and sample is unique per flowcell" />
 		</entity>
 		<entity name="Worksheet">
 			<!-- simple placeholder of above structure -->
@@ -98,7 +98,7 @@
 			<field name="project" type="string" />
 			<field name="contact" type="string" nillable="true"/>
 			<field name="lane" type="string" />
-			<field name="sequenceStartDate" type="date" nillable="true"/> <!-- renamed for Oracle, date -->
+			<field name="sequencingStartDate" type="date" nillable="true"/> <!-- renamed for Oracle, date -->
 			<field name="sequencer" type="string" />
 			<field name="flowcell" type="string" />
 			<field name="library" type="string" nillable="true"/>
