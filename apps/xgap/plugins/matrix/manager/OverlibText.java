@@ -7,77 +7,35 @@ import java.util.Map;
 
 import org.molgenis.core.Nameable;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservationTarget;
 
 public class OverlibText {
-	public static Map<String, String> getOverlibText(Database db, List<String> rowNames, List<String> colNames) throws Exception
+	
+	public static Map<String, ObservationElement> getObservationElements(Database db, List<String> names) throws DatabaseException
 	{
-		List<ObservationElement> rows = db.find(ObservationElement.class, new QueryRule("name", Operator.IN, rowNames));
-		List<ObservationElement> cols = db.find(ObservationElement.class, new QueryRule("name", Operator.IN, colNames));
-		
-		List<String> foundRows = new ArrayList<String>();
-		List<String> foundCols = new ArrayList<String>();
-		
-		for (Nameable iden : rows)
+		Map<String, ObservationElement> res = new HashMap<String, ObservationElement>();
+		List<ObservationElement> obsvElem = db.find(ObservationElement.class, new QueryRule("name", Operator.IN, names));
+		List<String> found = new ArrayList<String>();
+		for (ObservationElement el : obsvElem)
 		{
-			foundRows.add(iden.getName());
+			found.add(el.getName());
 		}
-		for (Nameable iden : cols)
-		{
-			foundCols.add(iden.getName());
-		}
-		
-		for(String rowName : rowNames){
-			if(!foundRows.contains(rowName)){
-				ObservationElement nullIden = new ObservationElement();
-				nullIden.setName(rowName);
-				nullIden.set("id", "-1");
-				rows.add(nullIden);
-			}
-		}
-		for(String colName : colNames){
-			if(!foundCols.contains(colName)){
-				ObservationElement nullIden = new ObservationElement();
-				nullIden.setName(colName);
-				nullIden.set("id", "-1");
-				cols.add(nullIden);
-			}
-		}
-
-		Map<String, String> overlibText = new HashMap<String, String>();
-		for (Nameable iden : rows)
-		{
-			String text = appendFields(iden);
-			overlibText.put(iden.getName(), org.apache.commons.lang.StringEscapeUtils.escapeHtml(text));
-		}
-		for (Nameable iden : cols)
-		{
-			String text = appendFields(iden);
-			overlibText.put(iden.getName(), org.apache.commons.lang.StringEscapeUtils.escapeHtml(text));
-			//overlibText.put(iden.getName(), text);
-		}
-		return overlibText;
-	}
-
-	private static String appendFields(Nameable iden){
-		String text = "";
-		
-		if(iden.getId().intValue() == -1){
-			text = "ERROR" + iden.getName() + ", ";
-		}else{
-		
-		for (String field : iden.getFields())
-		{
-			if(iden.get(field) == null){
-				text += field + " = " + "null, ";
+		for(String name : names){
+			if(found.contains(name)){
+				for(ObservationElement o : obsvElem){
+					if(o.getName().equals(name)){
+						res.put(name, o);
+						break;
+					}
+				}
 			}else{
-				text += field + " = " + iden.get(field).toString() + ", ";
+				res.put(name, null);
 			}
 		}
-		}
-		return text;
+		return res;
 	}
 }

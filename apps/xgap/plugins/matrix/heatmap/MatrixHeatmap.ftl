@@ -352,13 +352,15 @@ Scaled between <b>NA - NA</b><br>
 					<tr>
 						<td></td>
 						<#list model.heatMatrix.colNames as n>
-							<td class="matrixTableCell colorOfTitle" onmouseover="return overlib(escape('${model.overlibText[n]}', CAPTION, '${n}'))" onmouseout="return nd();"><b>${n}</b></td>
+							<td class="matrixTableCell colorOfTitle">
+								${model.renderCol(n)}
+							</td>
 						</#list>
 					</tr>
 					<#list model.heatMatrix.rowNames as n> 
 						<tr>
 							<td class="matrixTableCell colorOfTitle">
-								<div style="display: inline;text-align:center;" onmouseover="return overlib(escape('${model.overlibText[n]}', CAPTION, '${n}'))" onmouseout="return nd();"><b>${n}</b></div>
+								${model.renderRow(n)}
 							</td>
 							<#assign x = model.heatMatrix.numberOfCols>
 							<#list 0..x-1 as i>								

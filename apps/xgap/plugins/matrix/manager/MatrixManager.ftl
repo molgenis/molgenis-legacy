@@ -61,6 +61,7 @@
 	<input type="submit" value="Upload" onclick="__action.value='uploadTextArea';return true;"/><br>
 				
 <#else>
+<div style="overflow: auto; width: inherit;">
 	<table>
 		<tr>
 			<td class="menuitem shadeHeader" onclick="mopen('matrix_plugin_FileSub');">
@@ -122,7 +123,9 @@
 					<tr>
 						<td></td><td></td>
 						<#list browser.subMatrix.colNames as n>
-							<td class="matrixTableCell colorOfTitle" onmouseover="return overlib(escape('${model.overlibText[n]}', CAPTION, '${n}'))" onmouseout="return nd();"><b>${n}</b></td>
+							<td class="matrixTableCell colorOfTitle">
+								${model.renderCol(n)}
+							</td>
 						</#list>
 					</tr>
 					<tr>
@@ -134,7 +137,7 @@
 					<#list browser.subMatrix.rowNames as n> 
 						<tr>
 							<td class="matrixTableCell colorOfTitle">
-								<div style="display: inline;text-align:center;" onmouseover="return overlib(escape('${model.overlibText[n]}', CAPTION, '${n}'))" onmouseout="return nd();"><b>${n}</b></div>
+								${model.renderRow(n)}
 							</td>
 
 							<td><nobr><select name="FILTER_OPERATOR_ROW_${n}"><#if model.selectedData.valuetype == "Decimal"><option value="GREATER">&gt;</option><option value="GREATER_EQUAL">&gt;=</option><option value="LESS">&lt;</option><option value="LESS_EQUAL">&lt;=</option></#if><option value="EQUALS">==</option></select><input type="text" size="4" name="FILTER_VALUE_ROW_${n}"></input></nobr></td>
@@ -181,6 +184,7 @@
 			</td>
 		</tr>
 	</table>
+</div>
 </#if>
 
 </#if>

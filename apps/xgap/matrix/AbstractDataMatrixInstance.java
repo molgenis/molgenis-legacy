@@ -546,7 +546,7 @@ public abstract class AbstractDataMatrixInstance<E> extends
 		}
 	}
 
-	private String render(ObservationElement o)
+	public static String render(ObservationElement o)
 	{
 		String head = o.getName();
 		String content = "";
@@ -564,7 +564,7 @@ public abstract class AbstractDataMatrixInstance<E> extends
 			}
 
 		}
-		return "<div style=\"display: inline; font-size: x-small; text-align: center;\" onmouseover=\"return overlib('"
+		return "<div style=\"display: inline; text-align: center;\" onmouseover=\"return overlib('"
 				+ content
 				+ "', CAPTION, '"
 				+ head

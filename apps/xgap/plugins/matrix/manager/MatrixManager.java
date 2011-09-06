@@ -7,10 +7,7 @@
 
 package plugins.matrix.manager;
 
-import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.util.List;
-import java.util.Vector;
 
 import matrix.AbstractDataMatrixInstance;
 import matrix.general.DataMatrixHandler;
@@ -23,7 +20,7 @@ import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.pheno.ObservationElement;
 import org.molgenis.util.Tuple;
 
 public class MatrixManager extends PluginModel
@@ -47,7 +44,6 @@ public class MatrixManager extends PluginModel
 	public String getCustomHtmlHeaders()
 	{
 		return "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>";
-
 	}
 
 	@Override
@@ -133,9 +129,11 @@ public class MatrixManager extends PluginModel
 		// System.out.println("*** createOverLibText");
 		List<String> rowNames = this.model.getBrowser().getModel().getSubMatrix().getRowNames();
 		List<String> colNames = this.model.getBrowser().getModel().getSubMatrix().getColNames();
-		this.model.setOverlibText(OverlibText.getOverlibText(db, rowNames, colNames));
+		this.model.setRowObsElem((OverlibText.getObservationElements(db, rowNames)));
+		this.model.setColObsElem((OverlibText.getObservationElements(db, colNames)));
 	}
 
+	
 	public void clearMessage()
 	{
 		this.setMessages();
@@ -242,13 +240,6 @@ public class MatrixManager extends PluginModel
 					logger.info("*** creating browser instance");
 					Browser br = createBrowserInstance(db, data);
 					this.model.setBrowser(br);
-
-					// moved to Inspector
-					// this.model.setWarningsAndErrors(new
-					// WarningsAndErrors(data,
-					// db, this.model.getBrowser().getModel()
-					// .getInstance()));
-
 				}
 			}
 
