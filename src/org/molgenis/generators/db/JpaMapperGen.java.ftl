@@ -103,6 +103,12 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 	public void setEntityManager(EntityManager em) {
 		this.em = em;
 	}
+	
+	@Override
+	public String createFindSql(QueryRule[] rules) throws DatabaseException
+	{
+		throw new UnsupportedOperationException();
+	}	
 
 
 	@Override
