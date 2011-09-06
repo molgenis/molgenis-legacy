@@ -153,4 +153,10 @@ public class JpaMappingDecorator<E extends Entity> implements JpaMapper<E>
 	{
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public String createFindSql(QueryRule[] rules) throws DatabaseException
+	{
+		return mapper.createFindSql(rules);
+	}
 }

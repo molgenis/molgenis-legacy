@@ -520,4 +520,11 @@ public class Lifewise implements Database
 	{
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public <E extends Entity> String createFindSql(Class<E> entityClass,
+			QueryRule... rules) throws DatabaseException
+	{
+		throw new UnsupportedOperationException();
+	}
 }

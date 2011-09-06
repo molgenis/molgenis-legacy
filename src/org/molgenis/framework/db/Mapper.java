@@ -42,4 +42,6 @@ public interface Mapper<E extends Entity> {
 	public FieldType getFieldType(String field);
 	
 	public void resolveForeignKeys(List<E> enteties) throws ParseException, DatabaseException;
+
+	public String createFindSql(QueryRule[] rules) throws DatabaseException;
 }

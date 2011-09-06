@@ -119,4 +119,10 @@ public class MappingDecorator<E extends Entity> implements Mapper<E>
 	{
 		mapper.resolveForeignKeys(enteties);
 	}
+
+	@Override
+	public String createFindSql(QueryRule[] rules) throws DatabaseException
+	{
+		return mapper.createFindSql(rules);
+	}
 }

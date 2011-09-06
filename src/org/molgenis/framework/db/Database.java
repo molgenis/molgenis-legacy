@@ -478,4 +478,9 @@ public interface Database
 	 */
 	@Deprecated	
 	public ResultSet executeQuery(String query, QueryRule ... queryRules) throws DatabaseException;
+
+	/**
+	 * Generate the find SQL (use with caution!)
+	 */
+	public <E extends Entity>  String createFindSql(Class<E> entityClass, QueryRule... rules) throws DatabaseException;
 }

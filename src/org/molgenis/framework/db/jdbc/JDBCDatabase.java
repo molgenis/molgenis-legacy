@@ -1007,4 +1007,11 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	{
 		throw new UnsupportedOperationException();
 	}
+	
+	@Override
+	public <E extends Entity> String createFindSql(Class<E> entityClass, QueryRule... rules) throws DatabaseException
+	{
+		return getMapperFor(entityClass).createFindSql(rules);
+		
+	} 
 }
