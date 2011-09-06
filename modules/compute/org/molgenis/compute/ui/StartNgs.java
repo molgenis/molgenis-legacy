@@ -144,7 +144,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         FormModel<Worksheet> parentForm = (FormModel<Worksheet>) ((FormController) parentController).getModel();
         Worksheet data = parentForm.getRecords().get(0);
 
-        Date date = data.getSequenceStartDate();
+        Date date = data.getSequencingStartDate();
 
         //should be removed later
         String strDate = "00.00.0000";
