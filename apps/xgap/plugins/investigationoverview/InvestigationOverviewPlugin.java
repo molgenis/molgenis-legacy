@@ -142,7 +142,7 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 			for (ObservationElement of : ofList)
 			{
 				// System.out.println(of.get__Type() + " " + of.getName());
-				if (!of.get__Type().equals("Data"))
+				if (!(of.get__Type().equals("Data") || of.get__Type().equals("ObservationElement")))
 				{
 					if (annotationTypeAndNr.containsKey(of.get__Type()))
 					{

@@ -214,22 +214,27 @@ public class ClusterDemo extends PluginModel<Entity>
 	 * By default, when setting a group="biologist" on a form, permissions on that form and its
 	 * entity are automatically added by the molgenis parser. But we can't reach them all.
 	 * @throws DatabaseException 
+	 * 
+	 * TODO: make more fine grained for biologist vs bioinformatician
+	 * 
 	 */
 	public static void giveExtraNeededPermissions(Database db) throws DatabaseException{
 		String[] entities = new String[]{
 				
-				//TODO: UNTESTED !!!
-				
-				//needed to view files
+				//needed to view/add files
 				"org.molgenis.core.MolgenisFile",
-				//needed to view matrices
+				
+				//needed to view/add matrices
 				"org.molgenis.data.BinaryDataMatrix",
 				"org.molgenis.data.CSVDataMatrix",
-				//needed to view investigation overview and other things
+				
+				//needed to add most data and view investigation overview
 				"org.molgenis.pheno.ObservationElement",
-				//needed to start jobs
+				
+				//needed to be able to start jobs
 				"org.molgenis.cluster.Analysis",
-				//needed to view job status
+				
+				//needed to view/delete job status
 				"org.molgenis.cluster.Job",
 				"org.molgenis.cluster.Subjob",
 				"org.molgenis.cluster.DataName",
@@ -239,14 +244,17 @@ public class ClusterDemo extends PluginModel<Entity>
 				"org.molgenis.cluster.ParameterSet",
 				"org.molgenis.cluster.ParameterValue",
 				"org.molgenis.cluster.SelectedData",
-				"org.molgenis.cluster.SelectedParameter"
+				"org.molgenis.cluster.SelectedParameter",
+				
+				//needed to get file storage location
+				"org.molgenis.core.RuntimeProperty"
 				};
 		
 		for(String e : entities){
 			MolgenisPermission mp = new MolgenisPermission();
 			mp.setEntity_ClassName(e);
 			mp.setRole_Name("biologist");
-			mp.setPermission("read"); //might fail? need Selenium test!!
+			mp.setPermission("write"); //might fail? need Selenium test!!
 			db.add(mp);
 		}
 	}
