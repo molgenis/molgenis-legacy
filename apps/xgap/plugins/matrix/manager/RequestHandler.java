@@ -9,17 +9,9 @@ import org.molgenis.util.Tuple;
 
 public class RequestHandler {
 	
-	public static void handle(MatrixManagerModel screenModel, Tuple request, OutputStream out) throws Exception {
+	public static void handle(MatrixManagerModel screenModel, Tuple request) throws Exception {
 		String action = request.getString("__action");
-		if (action.equals("download_visible")) {
-			screenModel.getBrowser().getModel().getSubMatrix().writeToCsvWriter(new PrintWriter(out));
-			//FIXME: close 'out'?
-		}
-		else if (action.equals("download_all")) {
-			screenModel.getBrowser().getModel().getInstance().writeToCsvWriter(new PrintWriter(out));
-			//FIXME: close 'out'?
-		}
-		else if (action.equals("refresh")) {
+		if (action.equals("refresh")) {
 			screenModel.setSelectedData(null);
 		}
 		else if (action.equals("changeSubmatrixSize")) {

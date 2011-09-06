@@ -108,10 +108,11 @@ public class downloadmatrixasexcel extends app.servlet.MolgenisServlet {
 			OutputStream outFile = response.getOutputStream();
 			try {
 				File excelFile = null;
-				if (req.getString("download").equals("all"))
+				String download = req.getString("download");
+				if (download.equals("all"))
 				{
 					excelFile = instance.getAsExcelFile();
-				}else if (req.getString("download").equals("some"))
+				}else if (download.equals("some"))
 				{
 					int colOffset = req.getInt("coff");
 					int colLimit = req.getInt("clim");
@@ -124,6 +125,7 @@ public class downloadmatrixasexcel extends app.servlet.MolgenisServlet {
 				InputStream in = new BufferedInputStream(conn.getInputStream());
 				response.setContentType("application/vnd.ms-excel");
 				response.setContentLength((int) excelFile.length());
+				response.setHeader("Content-disposition","attachment; filename=\""+instance.getData().getName()+"_"+download+".xls"+"\"");
 				byte[] buffer = new byte[2048];
 				for (;;) {
 					int nBytes = in.read(buffer);

@@ -68,7 +68,7 @@ public class MatrixManager extends PluginModel
 		return true;
 	}
 
-	public void handleRequest(Database db, Tuple request, OutputStream out)
+	public void handleRequest(Database db, Tuple request)
 	{
 		if (request.getString("__action") != null)
 		{
@@ -97,7 +97,7 @@ public class MatrixManager extends PluginModel
 					this.model.getBrowser().getModel().setWidth(width);
 					this.model.getBrowser().getModel().setHeight(height);
 
-					RequestHandler.handle(this.model, request, out);
+					RequestHandler.handle(this.model, request);
 				}
 
 				this.setMessages();
@@ -271,11 +271,6 @@ public class MatrixManager extends PluginModel
 			this.model.setBrowser(null);
 		}
 
-	}
-
-	@Override
-	public void handleRequest(Database db, Tuple request) {
-		handleRequest(db, request, null);
 	}
 
 }
