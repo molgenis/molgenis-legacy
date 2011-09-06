@@ -594,6 +594,10 @@ public abstract class JpaDatabase extends AbstractDatabase implements Database {
 		throw new UnsupportedOperationException();
 	}
 
+	public <E extends Entity>  String createFindSql(Class<E> entityClass, QueryRule... rules) throws DatabaseException
+	{
+		throw new UnsupportedOperationException();
+	}
 
 
 	@Override
