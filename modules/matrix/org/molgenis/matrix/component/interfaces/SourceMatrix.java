@@ -26,8 +26,14 @@ public interface SourceMatrix<R, C, V>
 	 * renders can decide to render otherwise.
 	 */
 	@Deprecated
-	//In my mind this should be part of renderable matrix?
-	//In particular because you can derive this from ColType, RowType
+	// In my mind this should be part of renderable matrix?
+	// J: sounds more logical, but 'RenderableMatrix' is a model-only type of
+	// object which only contains values to be visualized on screen, and no
+	// logic such as 'how to render the values'. Also, the renderablematrix is
+	// created by the component and not supplied. But yeah, I don't know where
+	// to put this really..
+	// In particular because you can derive this from ColType, RowType
+	// J: how?
 	public RenderDescriptor<R, C, V> getRenderDescriptor() throws Exception;
 
 	/**
@@ -45,7 +51,7 @@ public interface SourceMatrix<R, C, V>
 	// rename to getColHeaderPropertyNames
 	@Deprecated
 	public List<String> getRowHeaderFilterAttributes();
-	
+
 	/**
 	 * Tells the renderer on which row header attributes the user can filter. If
 	 * the row headers are strings, you could implement this with just "value".
@@ -53,11 +59,11 @@ public interface SourceMatrix<R, C, V>
 	 * attributes of the entity.
 	 */
 	public List<String> getRowPropertyNames();
-	
+
 	// rename to getColHeaderPropertyNames
 	@Deprecated
 	public List<String> getColHeaderFilterAttributes();
-	
+
 	/**
 	 * Same as getRowHeaderFilterAttributes() except for columns.
 	 */
