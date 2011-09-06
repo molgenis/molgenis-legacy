@@ -259,4 +259,9 @@ public interface Query<E extends Entity>
 	public Query<E> example(Entity example);
 	
 	public abstract void removeRule(QueryRule ruleToBeRemoved);
+
+	/** Produce the sql that would be used to query 
+	 * @return 
+	 * @throws DatabaseException */
+	public abstract String createFindSql() throws DatabaseException;
 }

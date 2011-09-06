@@ -270,5 +270,12 @@ public class QueryImp<E extends Entity> implements Query<E> {
         {
             System.out.println("ArrayIndexOutOfBoundsException " + e.getLocalizedMessage());
         }
-    } 
+    }
+
+	@Override
+	public String createFindSql() throws DatabaseException
+	{
+		return database.createFindSql(klazz, this.getRules());
+		
+	} 
 }
