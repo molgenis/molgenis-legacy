@@ -4,251 +4,121 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 
-public abstract class AbstractSliceableMatrix<R, C, V> implements SliceableMatrix<R, C, V>
+/**
+ * @See SliceableMatrix
+ * @param <R>
+ * @param <C>
+ * @param <V>
+ */
+public abstract class AbstractSliceableMatrix<R, C, V> implements
+		SliceableMatrix<R, C, V>
 {
 	// set once
 	public List<R> originalRows;
 	public List<C> originalCols;
 
 	// set in createFresh() and modify with slice functions
+	
+	//slices of rows/cols
 	public List<R> rowCopy;
 	public List<C> colCopy;
+	
+	//slices of the indexes of rows/cols in source
 	public List<Integer> rowIndicesCopy;
 	public List<Integer> colIndicesCopy;
 
-	/**
-	 * Can be a generic implementation. Take the current list of generic row/col
-	 * elements and slice off a part. TODO: We must identify the elements by
-	 * their original index in the source matrix here. Complex filtering is not
-	 * possible if we don't keep track of the actual indices somehow.
-	 * 
-	 * TODO: super horrible code duplication!!
-	 * 
-	 * @throws Exception
-	 */
-	public SliceableMatrix<R, C, V> sliceByIndex(MatrixQueryRule rule) throws Exception
+	@Override
+	public SliceableMatrix<R, C, V> sliceByColIndex(
+			QueryRule.Operator operator, int index) throws Exception
 	{
-		System.out.println("GenericFunctions sliceByIndex(QueryRule rule) start");
-		int val = Integer.valueOf(rule.getValue().toString());
-		int total = colCopy.size();
-		switch (rule.getOperator())
-		{
-			case EQUALS:
-				if (rule.getField().equals("row"))
-				{
-					List<Integer> resultIndices = new ArrayList<Integer>();
-					List<R> resultR = new ArrayList<R>();
-					for (int i = 0; i < rowIndicesCopy.size(); i++)
-					{
-						if (rowIndicesCopy.get(i).intValue() == val)
-						{
-							resultIndices.add(rowIndicesCopy.get(i));
-							resultR.add(rowCopy.get(i));
-						}
-					}
-					rowIndicesCopy = resultIndices;
-					rowCopy = resultR;
-				}
-				if (rule.getField().equals("col"))
-				{
-					List<Integer> resultIndices = new ArrayList<Integer>();
-					List<C> resultC = new ArrayList<C>();
-					for (int i = 0; i < colIndicesCopy.size(); i++)
-					{
-						if (colIndicesCopy.get(i).intValue() == val)
-						{
-							resultIndices.add(colIndicesCopy.get(i));
-							resultC.add(colCopy.get(i));
-						}
-					}
-					colIndicesCopy = resultIndices;
-					colCopy = resultC;
-				}
-				break;
-			case LESS_EQUAL:
-				if (rule.getField().equals("row"))
-				{
-					List<Integer> resultIndices = new ArrayList<Integer>();
-					List<R> resultR = new ArrayList<R>();
-					for (int i = 0; i < rowIndicesCopy.size(); i++)
-					{
-						if (rowIndicesCopy.get(i).intValue() <= val)
-						{
-							resultIndices.add(rowIndicesCopy.get(i));
-							resultR.add(rowCopy.get(i));
-						}
-					}
-					rowIndicesCopy = resultIndices;
-					rowCopy = resultR;
-				}
-				if (rule.getField().equals("col"))
-				{
-					List<Integer> resultIndices = new ArrayList<Integer>();
-					List<C> resultC = new ArrayList<C>();
-					for (int i = 0; i < colIndicesCopy.size(); i++)
-					{
-						if (colIndicesCopy.get(i).intValue() <= val)
-						{
-							resultIndices.add(colIndicesCopy.get(i));
-							resultC.add(colCopy.get(i));
-						}
-					}
-					colIndicesCopy = resultIndices;
-					colCopy = resultC;
-				}
-				break;
-			case GREATER_EQUAL:
-				if (rule.getField().equals("row"))
-				{
-					List<Integer> resultIndices = new ArrayList<Integer>();
-					List<R> resultR = new ArrayList<R>();
-					for (int i = 0; i < rowIndicesCopy.size(); i++)
-					{
-						if (rowIndicesCopy.get(i).intValue() >= val)
-						{
-							resultIndices.add(rowIndicesCopy.get(i));
-							resultR.add(rowCopy.get(i));
-						}
-					}
-					rowIndicesCopy = resultIndices;
-					rowCopy = resultR;
-				}
-				if (rule.getField().equals("col"))
-				{
-					List<Integer> resultIndices = new ArrayList<Integer>();
-					List<C> resultC = new ArrayList<C>();
-					for (int i = 0; i < colIndicesCopy.size(); i++)
-					{
-						if (colIndicesCopy.get(i).intValue() >= val)
-						{
-							resultIndices.add(colIndicesCopy.get(i));
-							resultC.add(colCopy.get(i));
-						}
-					}
-					colIndicesCopy = resultIndices;
-					colCopy = resultC;
-				}
-				break;
-			case LESS:
-				if (rule.getField().equals("row"))
-				{
-					List<Integer> resultIndices = new ArrayList<Integer>();
-					List<R> resultR = new ArrayList<R>();
-					for (int i = 0; i < rowIndicesCopy.size(); i++)
-					{
-						if (rowIndicesCopy.get(i).intValue() < val)
-						{
-							resultIndices.add(rowIndicesCopy.get(i));
-							resultR.add(rowCopy.get(i));
-						}
-					}
-					rowIndicesCopy = resultIndices;
-					rowCopy = resultR;
-				}
-				if (rule.getField().equals("col"))
-				{
-					List<Integer> resultIndices = new ArrayList<Integer>();
-					List<C> resultC = new ArrayList<C>();
-					for (int i = 0; i < colIndicesCopy.size(); i++)
-					{
-						if (colIndicesCopy.get(i).intValue() < val)
-						{
-							resultIndices.add(colIndicesCopy.get(i));
-							resultC.add(colCopy.get(i));
-						}
-					}
-					colIndicesCopy = resultIndices;
-					colCopy = resultC;
-				}
-				break;
-			case GREATER:
-				if (rule.getField().equals("row"))
-				{
-					List<Integer> resultIndices = new ArrayList<Integer>();
-					List<R> resultR = new ArrayList<R>();
-					for (int i = 0; i < rowIndicesCopy.size(); i++)
-					{
-						if (rowIndicesCopy.get(i).intValue() > val)
-						{
-							resultIndices.add(rowIndicesCopy.get(i));
-							resultR.add(rowCopy.get(i));
-						}
-					}
-					rowIndicesCopy = resultIndices;
-					rowCopy = resultR;
-				}
-				if (rule.getField().equals("col"))
-				{
-					List<Integer> resultIndices = new ArrayList<Integer>();
-					List<C> resultC = new ArrayList<C>();
-					for (int i = 0; i < colIndicesCopy.size(); i++)
-					{
-						if (colIndicesCopy.get(i).intValue() > val)
-						{
-							resultIndices.add(colIndicesCopy.get(i));
-							resultC.add(colCopy.get(i));
-						}
-					}
-					colIndicesCopy = resultIndices;
-					colCopy = resultC;
-				}
-				break;
-			case SORTASC:
-				//
-				break;
-			case SORTDESC:
-				//
-				break;
-			case NOT:
-				if (rule.getField().equals("row"))
-				{
-					List<Integer> resultIndices = new ArrayList<Integer>();
-					List<R> resultR = new ArrayList<R>();
-					for (int i = 0; i < rowIndicesCopy.size(); i++)
-					{
-						if (rowIndicesCopy.get(i).intValue() != val)
-						{
-							resultIndices.add(rowIndicesCopy.get(i));
-							resultR.add(rowCopy.get(i));
-						}
-					}
-					rowIndicesCopy = resultIndices;
-					rowCopy = resultR;
-				}
-				if (rule.getField().equals("col"))
-				{
-					List<Integer> resultIndices = new ArrayList<Integer>();
-					List<C> resultC = new ArrayList<C>();
-					for (int i = 0; i < colIndicesCopy.size(); i++)
-					{
-						if (colIndicesCopy.get(i).intValue() != val)
-						{
-							resultIndices.add(colIndicesCopy.get(i));
-							resultC.add(colCopy.get(i));
-						}
-					}
-					colIndicesCopy = resultIndices;
-					colCopy = resultC;
-				}
-				break;
-			default:
-				throw new Exception("unsupported operator for index filter");
-		}
-		System.out.println("GenericFunctions sliceByIndex(QueryRule rule) ended");
-		return this;
 
+		List<Integer> resultIndices = new ArrayList<Integer>();
+		List<C> resultC = new ArrayList<C>();
+		
+		this.sliceByIndex(colCopy, colIndicesCopy, resultIndices, resultC, operator, index);
+	
+		colIndicesCopy = resultIndices;
+		colCopy = resultC;
+		
+		return this;
+	}
+	
+	@Override
+	public SliceableMatrix<R, C, V> sliceByRowIndex(
+			QueryRule.Operator operator, int index) throws Exception
+	{
+
+		List<Integer> resultIndices = new ArrayList<Integer>();
+		List<R> resultR = new ArrayList<R>();
+		
+		this.sliceByIndex(rowCopy, rowIndicesCopy, resultIndices, resultR, operator, index);
+	
+		rowIndicesCopy = resultIndices;
+		rowCopy = resultR;
+		
+		return this;
 	}
 
+	@Deprecated
+	public SliceableMatrix<R, C, V> sliceByIndex(MatrixQueryRule rule)
+			throws Exception
+	{
+		if (rule.getField().equals("row"))
+		{	
+			return this.sliceByRowIndex(rule.getOperator(), Integer.valueOf(rule.getValue().toString()));
+		}	
+		else
+		{
+			return this.sliceByColIndex(rule.getOperator(), Integer.valueOf(rule.getValue().toString()));
+		}
+	}
+
+	public SliceableMatrix<R, C, V> sliceByColOffsetLimit(int offset, int limit) throws Exception
+	{
+		System.out
+				.println("GenericFunctions sliceByPaging(QueryRule rule) start");
+
+		offset = offset > colCopy.size() ? rowCopy.size() : offset;
+		limit = (offset + limit) > colCopy.size() ? rowCopy.size() - offset: limit;
+		
+		colCopy = colCopy.subList(offset, limit);
+		colIndicesCopy = colIndicesCopy.subList(offset, limit);
+		
+		System.out
+				.println("GenericFunctions sliceByPaging(QueryRule rule) ended");
+		return this;
+	}
+	
+	public SliceableMatrix<R, C, V> sliceByRowOffsetLimit(int offset, int limit) throws Exception
+	{
+		System.out
+				.println("GenericFunctions sliceByPaging(QueryRule rule) start");
+
+		offset = offset > colCopy.size() ? rowCopy.size() : offset;
+		limit = (offset + limit) > colCopy.size() ? rowCopy.size() - offset: limit;
+		
+		colCopy = colCopy.subList(offset, limit);
+		colIndicesCopy = colIndicesCopy.subList(offset, limit);
+		
+		System.out
+				.println("GenericFunctions sliceByPaging(QueryRule rule) ended");
+		return this;
+	}
+	
 	/**
 	 * TODO Order of filters matters, but we take care of this in our own logic!
 	 * 
 	 * @throws Exception
 	 */
-	public SliceableMatrix<R, C, V> sliceByPaging(MatrixQueryRule rule) throws Exception
+	@Deprecated
+	public SliceableMatrix<R, C, V> sliceByPaging(MatrixQueryRule rule)
+			throws Exception
 	{
-		System.out.println("GenericFunctions sliceByPaging(QueryRule rule) start");
+		System.out
+				.println("GenericFunctions sliceByPaging(QueryRule rule) start");
 		int val = (Integer) rule.getValue();
 		int colTotal = colCopy.size();
 		int rowTotal = rowCopy.size();
@@ -257,16 +127,20 @@ public abstract class AbstractSliceableMatrix<R, C, V> implements SliceableMatri
 			case LIMIT:
 				if (rule.getField().equals("row"))
 				{
-					rowCopy = rowCopy.subList(0, val > rowCopy.size() ? rowCopy.size() : val); // right
-																								// place
-																								// ??
-					rowIndicesCopy = rowIndicesCopy.subList(0, val > rowCopy.size() ? rowCopy.size() : val);
+					rowCopy = rowCopy.subList(0,
+							val > rowCopy.size() ? rowCopy.size() : val); // right
+																			// place
+																			// ??
+					rowIndicesCopy = rowIndicesCopy.subList(0,
+							val > rowCopy.size() ? rowCopy.size() : val);
 				}
 				if (rule.getField().equals("col"))
 				{
-					colCopy = colCopy.subList(0, val > colCopy.size() ? colCopy.size() : val);
-					colIndicesCopy = colIndicesCopy.subList(0, val > colIndicesCopy.size() ? colIndicesCopy.size()
-							: val);
+					colCopy = colCopy.subList(0,
+							val > colCopy.size() ? colCopy.size() : val);
+					colIndicesCopy = colIndicesCopy.subList(0,
+							val > colIndicesCopy.size() ? colIndicesCopy.size()
+									: val);
 				}
 				break;
 			case OFFSET:
@@ -284,11 +158,12 @@ public abstract class AbstractSliceableMatrix<R, C, V> implements SliceableMatri
 			default:
 				throw new Exception("unsupported operator for paging filter");
 		}
-		System.out.println("GenericFunctions sliceByPaging(QueryRule rule) ended");
+		System.out
+				.println("GenericFunctions sliceByPaging(QueryRule rule) ended");
 		return this;
 	}
 
-	public void createFresh()
+	public void reset()
 	{
 		this.rowCopy = new ArrayList<R>(this.getTotalNumberOfRows());
 		for (R item : this.originalRows)
@@ -300,32 +175,52 @@ public abstract class AbstractSliceableMatrix<R, C, V> implements SliceableMatri
 		{
 			this.colCopy.add(item);
 		}
-		this.rowIndicesCopy = new ArrayList<Integer>(this.getTotalNumberOfRows());
+		this.rowIndicesCopy = new ArrayList<Integer>(
+				this.getTotalNumberOfRows());
 		for (int i = 0; i < this.getTotalNumberOfRows(); i++)
 		{
 			this.rowIndicesCopy.add(i);
 		}
-		this.colIndicesCopy = new ArrayList<Integer>(this.getTotalNumberOfCols());
+		this.colIndicesCopy = new ArrayList<Integer>(
+				this.getTotalNumberOfCols());
 		for (int i = 0; i < this.getTotalNumberOfCols(); i++)
 		{
 			this.colIndicesCopy.add(i);
 		}
 	}
+	
+	@Deprecated
+	public void createFresh()
+	{
+		this.reset();
+	}
 
 	/*
 	 * Implement some BasicMatrix functions
 	 */
-
+	@Deprecated
 	public List<R> getVisibleRows() throws Exception
+	{
+		return this.getRowHeaders();
+	}
+	
+	public List<R> getRowHeaders() throws Exception
 	{
 		return rowCopy;
 	}
 
+	@Deprecated
+	@Override
 	public List<C> getVisibleCols() throws Exception
+	{
+		return this.getColHeaders();
+	}
+
+	@Override
+	public List<C> getColHeaders() throws Exception
 	{
 		return colCopy;
 	}
-
 	public List<Integer> getRowIndices() throws Exception
 	{
 		return rowIndicesCopy;
@@ -348,6 +243,100 @@ public abstract class AbstractSliceableMatrix<R, C, V> implements SliceableMatri
 	public int getTotalNumberOfCols()
 	{
 		return originalCols.size();
+	}
+	
+	private <T> void  sliceByIndex(List<T> indices, List<Integer> indicesCopy, List<Integer> resultIndices, List<T> resultC,
+			Operator operator, int index) throws Exception
+	{
+		System.out
+		.println("GenericFunctions sliceByIndex(QueryRule rule) start");
+		
+		switch (operator)
+		{
+			case EQUALS:
+
+				for (int i = 0; i < indicesCopy.size(); i++)
+				{
+					if (indicesCopy.get(i).intValue() == index)
+					{
+						resultIndices.add(indicesCopy.get(i));
+						resultC.add(indices.get(i));
+					}
+				}
+
+				break;
+			case LESS_EQUAL:
+				for (int i = 0; i < indicesCopy.size(); i++)
+				{
+					if (indicesCopy.get(i).intValue() <= index)
+					{
+						resultIndices.add(indicesCopy.get(i));
+						resultC.add(indices.get(i));
+					}
+				}
+
+				break;
+			case GREATER_EQUAL:
+
+				for (int i = 0; i < indicesCopy.size(); i++)
+				{
+					if (indicesCopy.get(i).intValue() >= index)
+					{
+						resultIndices.add(indicesCopy.get(i));
+						resultC.add(indices.get(i));
+					}
+				}
+
+				break;
+			case LESS:
+
+				for (int i = 0; i < indicesCopy.size(); i++)
+				{
+					if (indicesCopy.get(i).intValue() < index)
+					{
+						resultIndices.add(indicesCopy.get(i));
+						resultC.add(indices.get(i));
+					}
+				}
+
+				break;
+			case GREATER:
+
+				for (int i = 0; i < indicesCopy.size(); i++)
+				{
+					if (indicesCopy.get(i).intValue() > index)
+					{
+						resultIndices.add(indicesCopy.get(i));
+						resultC.add(indices.get(i));
+					}
+				}
+
+				break;
+			case SORTASC:
+				//
+				break;
+			case SORTDESC:
+				//
+				break;
+			case NOT:
+
+				for (int i = 0; i < indicesCopy.size(); i++)
+				{
+					if (indicesCopy.get(i).intValue() != index)
+					{
+						resultIndices.add(indicesCopy.get(i));
+						resultC.add(indices.get(i));
+					}
+				}
+
+				break;
+			default:
+				throw new Exception("unsupported operator for index filter");
+		}
+		
+		System.out
+		.println("GenericFunctions sliceByIndex(QueryRule rule) ended");
+		
 	}
 
 }

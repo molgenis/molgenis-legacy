@@ -2,7 +2,9 @@ package org.molgenis.matrix.component.interfaces;
 
 import java.util.List;
 
-public interface SourceMatrix<R, C, V> {
+// TODO merge this with the rendere as it is MatrixMetadata
+public interface SourceMatrix<R, C, V>
+{
 
 	/**
 	 * Describes what is in the rows. Displayed at the row pager. E.g. when
@@ -20,8 +22,12 @@ public interface SourceMatrix<R, C, V> {
 
 	/**
 	 * Get an instance of RenderDescriptor which tells the render how to
-	 * visualize matrix headers and values
+	 * visualize matrix headers and values. This is only a default, individual
+	 * renders can decide to render otherwise.
 	 */
+	@Deprecated
+	//In my mind this should be part of renderable matrix?
+	//In particular because you can derive this from ColType, RowType
 	public RenderDescriptor<R, C, V> getRenderDescriptor() throws Exception;
 
 	/**
@@ -36,17 +42,25 @@ public interface SourceMatrix<R, C, V> {
 	 */
 	public int getTotalNumberOfCols();
 
+	// rename to getColHeaderPropertyNames
+	@Deprecated
+	public List<String> getRowHeaderFilterAttributes();
+	
 	/**
 	 * Tells the renderer on which row header attributes the user can filter. If
 	 * the row headers are strings, you could implement this with just "value".
 	 * If your headers are entities, you might want to fill this list with the
 	 * attributes of the entity.
 	 */
-	public List<String> getRowHeaderFilterAttributes();
-
+	public List<String> getRowPropertyNames();
+	
+	// rename to getColHeaderPropertyNames
+	@Deprecated
+	public List<String> getColHeaderFilterAttributes();
+	
 	/**
 	 * Same as getRowHeaderFilterAttributes() except for columns.
 	 */
-	public List<String> getColHeaderFilterAttributes();
+	public List<String> getColPropertyNames();
 
 }

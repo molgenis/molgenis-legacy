@@ -12,12 +12,24 @@ import org.molgenis.matrix.component.test.SomeValueType;
 
 public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>
 {
-
 	SourceMatrix<R, C, V> source;
+	
+	//good, so Render uses a decorator design pattern
 	BasicMatrix<R, C, V> basic;
+	
+	//currently used filters
 	List<MatrixQueryRule> filters;
+	
+	//TODO very unclear
+	@Deprecated
 	String constraintLogic;
+	
+	//size of steps used for X and Y 
+	//TODO should they not be set indepently
 	int stepSize;
+	
+	//this is out of place!
+	@Deprecated
 	String screenName;
 
 	public RenderableMatrixImpl(SourceMatrix<R, C, V> source, BasicMatrix<R, C, V> basic, List<MatrixQueryRule> filters,
@@ -32,15 +44,30 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>
 	}
 
 	@Override
+	@Deprecated
 	public List<R> getVisibleRows() throws Exception
 	{
 		return basic.getVisibleRows();
 	}
+	
+	@Override
+	public List<R> getRowHeaders() throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
+	@Deprecated
 	public List<C> getVisibleCols() throws Exception
 	{
 		return basic.getVisibleCols();
+	}
+	
+	@Override
+	public List<C> getColHeaders() throws Exception
+	{
+		return basic.getColHeaders();
 	}
 
 	@Override
@@ -56,6 +83,7 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>
 	}
 
 	@Override
+	@Deprecated
 	public V[][] getVisibleValues() throws Exception
 	{
 		return basic.getVisibleValues();
@@ -86,16 +114,34 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>
 	}
 
 	@Override
+	@Deprecated
 	public List<String> getRowHeaderFilterAttributes()
 	{
-		return source.getRowHeaderFilterAttributes();
+		return this.getRowPropertyNames();
+	}
+	
+	@Override
+	public List<String> getRowPropertyNames()
+	{
+		// TODO Auto-generated method stub
+		return source.getRowPropertyNames();
 	}
 
 	@Override
+	@Deprecated
 	public List<String> getColHeaderFilterAttributes()
 	{
-		return source.getColHeaderFilterAttributes();
+		return this.getColPropertyNames();
 	}
+	
+
+	@Override
+	public List<String> getColPropertyNames()
+	{
+		return source.getColPropertyNames();
+	}
+	
+	
 
 	@Override
 	public List<MatrixQueryRule> getRules()
@@ -152,6 +198,11 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>
 	@Override
 	public RenderDescriptor<R, C, V> getRenderDescriptor() throws Exception {
 		return source.getRenderDescriptor();
+	}
+	@Override
+	public V[][] getValues() throws Exception
+	{
+		return this.getVisibleValues();
 	}
 	
 }

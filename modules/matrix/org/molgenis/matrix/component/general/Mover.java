@@ -12,6 +12,8 @@ public class Mover<R, C, V>
 	 */
 	public void moveLeft(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
+		
+		
 		MatrixQueryRule f = MatrixRendererHelper.getFilterWhere(renderMe.getRules(), MatrixQueryRule.Type.paging, "col",
 				Operator.OFFSET);
 

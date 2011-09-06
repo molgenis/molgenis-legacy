@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.component.general.AbstractSliceableMatrix;
@@ -17,9 +18,13 @@ import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 
-public class PhenoMatrix extends AbstractSliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>>
-		implements BasicMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>>,
-		SourceMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>>, RenderDescriptor<ObservationTarget, ObservableFeature, List<ObservedValue>>
+public class PhenoMatrix
+		extends
+		AbstractSliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>>
+		implements
+		BasicMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>>,
+		SourceMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>>,
+		RenderDescriptor<ObservationTarget, ObservableFeature, List<ObservedValue>>
 {
 
 	private Database db;
@@ -41,9 +46,10 @@ public class PhenoMatrix extends AbstractSliceableMatrix<ObservationTarget, Obse
 	/************************************************************/
 
 	@Override
-	public List<ObservedValue>[][] getVisibleValues() throws Exception
+	public List<ObservedValue>[][] getValues() throws Exception
 	{
-		List<ObservedValue>[][] visibleValues = new List[rowCopy.size()][colCopy.size()];
+		List<ObservedValue>[][] visibleValues = new List[rowCopy.size()][colCopy
+				.size()];
 
 		List<Integer> targetIdList = new ArrayList<Integer>();
 		for (ObservationTarget t : rowCopy)
@@ -57,8 +63,10 @@ public class PhenoMatrix extends AbstractSliceableMatrix<ObservationTarget, Obse
 			featureIdList.add(f.getId());
 		}
 
-		List<ObservedValue> vals = db.find(ObservedValue.class, new QueryRule(ObservedValue.TARGET, Operator.IN,
-				targetIdList), new QueryRule(ObservedValue.FEATURE, Operator.IN, featureIdList));
+		List<ObservedValue> vals = db
+				.find(ObservedValue.class, new QueryRule(ObservedValue.TARGET,
+						Operator.IN, targetIdList), new QueryRule(
+						ObservedValue.FEATURE, Operator.IN, featureIdList));
 
 		int i = 0;
 		for (ObservationTarget target : rowCopy)
@@ -68,8 +76,10 @@ public class PhenoMatrix extends AbstractSliceableMatrix<ObservationTarget, Obse
 			{
 				for (ObservedValue val : vals)
 				{
-					if (val.getTarget_Id().intValue() == target.getId().intValue()
-							&& val.getFeature_Id().intValue() == feature.getId().intValue())
+					if (val.getTarget_Id().intValue() == target.getId()
+							.intValue()
+							&& val.getFeature_Id().intValue() == feature
+									.getId().intValue())
 					{
 						if (visibleValues[i][j] == null)
 						{
@@ -88,13 +98,29 @@ public class PhenoMatrix extends AbstractSliceableMatrix<ObservationTarget, Obse
 		return visibleValues;
 	}
 
+	@Override
+	@Deprecated
+	public List<ObservedValue>[][] getVisibleValues() throws Exception
+	{
+		return this.getValues();
+	}
+
 	/****************************************************************/
 	/**************** SliceableMatrix implementation ****************/
 	/****************************************************************/
 
 	@Override
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByRowValues(QueryRule rule)
-			throws Exception
+	@Deprecated
+	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByRowValues(
+			QueryRule rule) throws Exception
+	{
+		return this.sliceByRowValues(Integer.getInteger(rule.getField()),
+				rule.getOperator(), rule.getValue());
+	}
+
+	@Override
+	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByRowValues(
+			int index, Operator operator, Object value) throws Exception
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -103,26 +129,33 @@ public class PhenoMatrix extends AbstractSliceableMatrix<ObservationTarget, Obse
 	/**
 	 * PROOF OF PRINCIPLE! Needs rework.
 	 */
+
 	@Override
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColValues(MatrixQueryRule rule)
-			throws Exception
+	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColValues(
+			int featureIndex, Operator operator, Object filterTerm) throws Exception
 	{
-		int featureIndex = Integer.parseInt(rule.getField().substring(4));
-		String filterTerm = rule.getValue().toString();
 		List<ObservationTarget> targetsToKeep = new ArrayList<ObservationTarget>();
 		List<Integer> indicesToKeep = new ArrayList<Integer>();
 		List<ObservedValue>[][] values = this.getVisibleValues();
-		
+
 		int i = 0;
-		for (ObservationTarget target : rowCopy) {
+		for (ObservationTarget target : rowCopy)
+		{
 			List<ObservedValue> valueList = values[i][featureIndex];
-			if (valueList != null && valueList.size() > 0) {
+			if (valueList != null && valueList.size() > 0)
+			{
 				ObservedValue value = valueList.get(0);
-				if (value.getValue() != null && value.getValue().equals(filterTerm)) {
+				if (value.getValue() != null
+						&& value.getValue().equals(filterTerm))
+				{
 					targetsToKeep.add(target);
 					indicesToKeep.add(i);
-				} else {
-					if (value.getRelation_Name() != null && value.getRelation_Name().equals(filterTerm)) {
+				}
+				else
+				{
+					if (value.getRelation_Name() != null
+							&& value.getRelation_Name().equals(filterTerm))
+					{
 						targetsToKeep.add(target);
 						indicesToKeep.add(i);
 					}
@@ -130,29 +163,48 @@ public class PhenoMatrix extends AbstractSliceableMatrix<ObservationTarget, Obse
 			}
 			i++;
 		}
-		
+
 		this.rowCopy = targetsToKeep;
 		this.rowIndicesCopy = indicesToKeep;
 		return this;
 	}
 
 	@Override
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByRowHeader(MatrixQueryRule rule)
-			throws Exception
+	@Deprecated
+	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColValues(
+			MatrixQueryRule rule) throws Exception
+	{
+		return this.sliceByColValues(Integer.getInteger(rule.getField()),
+				rule.getOperator(), rule.getValue());
+	}
+
+	@Override
+	@Deprecated
+	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByRowHeader(
+			MatrixQueryRule rule) throws Exception
+	{
+		return this.sliceByRowProperty(rule.getField(), rule.getOperator(),
+				rule.getValue());
+	}
+
+	@Override
+	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByRowProperty(
+			String property, Operator operator, Object value)
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColHeader(MatrixQueryRule rule)
-			throws Exception
+	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColProperty(
+			String property, Operator operator, Object value) throws Exception
 	{
 		List<ObservableFeature> featuresToKeep = new ArrayList<ObservableFeature>();
 		List<Integer> indicesToKeep = new ArrayList<Integer>();
-		String filterTerm = rule.getValue().toString();
-		List<ObservableFeature> featList = db.find(ObservableFeature.class, 
-				new QueryRule(ObservableFeature.NAME, Operator.EQUALS, filterTerm));
+		Object filterTerm = value;
+		List<ObservableFeature> featList = db.find(ObservableFeature.class,
+				new QueryRule(ObservableFeature.NAME, Operator.EQUALS,
+						filterTerm));
 		ObservableFeature featToKeep = featList.get(0);
 		int featIndex = this.originalCols.indexOf(featToKeep);
 		featuresToKeep.add(featToKeep);
@@ -163,7 +215,17 @@ public class PhenoMatrix extends AbstractSliceableMatrix<ObservationTarget, Obse
 	}
 
 	@Override
-	public BasicMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> getResult() throws Exception
+	@Deprecated
+	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColHeader(
+			MatrixQueryRule rule) throws Exception
+	{
+		return this.sliceByColProperty(rule.getField(), rule.getOperator(),
+				rule.getValue());
+	}
+
+	@Override
+	public BasicMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> getResult()
+			throws Exception
 	{
 		return this;
 	}
@@ -176,14 +238,14 @@ public class PhenoMatrix extends AbstractSliceableMatrix<ObservationTarget, Obse
 	public String getRowType()
 	{
 		return "ObservationTarget";
-		//return originalRows.get(0).get__Type();
+		// return originalRows.get(0).get__Type();
 	}
 
 	@Override
 	public String getColType()
 	{
 		return "ObservableFeature";
-		//return originalCols.get(0).get__Type();
+		// return originalCols.get(0).get__Type();
 	}
 
 	@Override
@@ -224,7 +286,7 @@ public class PhenoMatrix extends AbstractSliceableMatrix<ObservationTarget, Obse
 	{
 		return col.getName();
 	}
-	
+
 	@Override
 	public String renderRowSimple(ObservationTarget row)
 	{
@@ -238,14 +300,20 @@ public class PhenoMatrix extends AbstractSliceableMatrix<ObservationTarget, Obse
 	}
 
 	@Override
+	@Deprecated
 	public List<String> getRowHeaderFilterAttributes()
 	{
-		List<String> returnList = new ArrayList<String>();
-		returnList.add(ObservationTarget.NAME);
-		return returnList;
+		return this.getRowPropertyNames();
+	}
+	
+	@Override
+	public List<String> getRowPropertyNames()
+	{
+		return new ObservationTarget().getFields();
 	}
 
 	@Override
+	@Deprecated
 	public List<String> getColHeaderFilterAttributes()
 	{
 		List<String> returnList = new ArrayList<String>();
@@ -253,11 +321,35 @@ public class PhenoMatrix extends AbstractSliceableMatrix<ObservationTarget, Obse
 		returnList.add(ObservableFeature.__TYPE);
 		return returnList;
 	}
+	
+	public List<String> getColPropertyNames()
+	{
+		return new ObservableFeature().getFields();
+	}
 
 	@Override
 	public RenderDescriptor<ObservationTarget, ObservableFeature, List<ObservedValue>> getRenderDescriptor()
-			throws Exception {
+			throws Exception
+	{
 		return this;
+	}
+
+	@Override
+	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByRowValues(
+			ObservationTarget row, Operator operator, Object value)
+			throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColValues(
+			ObservableFeature col, Operator operator, Object value)
+			throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

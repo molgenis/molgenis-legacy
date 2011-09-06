@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.component.general.AbstractSliceableMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
@@ -22,6 +23,7 @@ public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, 
 	}
 
 	@Override
+	@Deprecated
 	public SliceableMatrix<SomeRowType, SomeColType, SomeValueType> sliceByRowValues(QueryRule rule) throws Exception
 	{
 		// TODO Auto-generated method stub
@@ -29,6 +31,7 @@ public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, 
 	}
 
 	@Override
+	@Deprecated
 	public SliceableMatrix<SomeRowType, SomeColType, SomeValueType> sliceByColValues(MatrixQueryRule rule)
 			throws Exception
 	{
@@ -37,6 +40,7 @@ public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, 
 	}
 
 	@Override
+	@Deprecated
 	public SliceableMatrix<SomeRowType, SomeColType, SomeValueType> sliceByRowHeader(MatrixQueryRule rule)
 			throws Exception
 	{
@@ -45,8 +49,17 @@ public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, 
 	}
 
 	@Override
+	@Deprecated
 	public SliceableMatrix<SomeRowType, SomeColType, SomeValueType> sliceByColHeader(MatrixQueryRule rule)
 			throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public SliceableMatrix<SomeRowType, SomeColType, SomeValueType> sliceByColProperty(
+			String property, Operator operator, Object value)
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -101,7 +114,14 @@ public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, 
 	}
 
 	@Override
+	@Deprecated
 	public List<String> getRowHeaderFilterAttributes()
+	{
+		return this.getRowPropertyNames();
+	}
+	
+	@Override
+	public List<String> getRowPropertyNames()
 	{
 		List<String> attr = new ArrayList<String>();
 		attr.add("id");
@@ -113,7 +133,13 @@ public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, 
 	}
 
 	@Override
+	@Deprecated
 	public List<String> getColHeaderFilterAttributes()
+	{
+		return this.getColPropertyNames();
+	}
+	
+	public List<String> getColPropertyNames()
 	{
 		List<String> attr = new ArrayList<String>();
 		attr.add("id");
@@ -126,9 +152,8 @@ public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, 
 	}
 
 	@Override
-	public SomeValueType[][] getVisibleValues() throws Exception
+	public SomeValueType[][] getValues() throws Exception
 	{
-		
 		SomeValueType[][] visibleValues = new SomeValueType[rowIndicesCopy.size()][colIndicesCopy.size()];
 		//equivalent: new List[rowCopy.size()][colCopy.size()];
 		
@@ -143,6 +168,13 @@ public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, 
 		
 		return visibleValues;
 	}
+	
+	@Override
+	@Deprecated
+	public SomeValueType[][] getVisibleValues() throws Exception
+	{
+		return this.getValues();
+	}
 
 	@Override
 	public RenderDescriptor<SomeRowType, SomeColType, SomeValueType> getRenderDescriptor()
@@ -150,7 +182,48 @@ public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, 
 		return this;
 	}
 
-	
-	
+	@Override
+	public SliceableMatrix<SomeRowType, SomeColType, SomeValueType> sliceByRowValues(
+			int index, Operator operator, Object value) throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SliceableMatrix<SomeRowType, SomeColType, SomeValueType> sliceByColValues(
+			int index, Operator operator, Object value) throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SliceableMatrix<SomeRowType, SomeColType, SomeValueType> sliceByRowProperty(
+			String property, Operator operator, Object value)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SliceableMatrix<SomeRowType, SomeColType, SomeValueType> sliceByRowValues(
+			SomeRowType row, Operator operator, Object value) throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SliceableMatrix<SomeRowType, SomeColType, SomeValueType> sliceByColValues(
+			SomeColType col, Operator operator, Object value) throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+
 
 }
