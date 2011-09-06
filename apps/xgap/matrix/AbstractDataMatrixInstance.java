@@ -45,7 +45,12 @@ import org.molgenis.util.CsvWriter;
  * @param <E>
  *            the generic type of the matrix. E.g. String, Double etc.
  */
-public abstract class AbstractDataMatrixInstance<E> extends AbstractSliceableMatrix<ObservationElement, ObservationElement, Object> implements DataMatrixInstance, SourceMatrix<ObservationElement, ObservationElement, Object>, BasicMatrix<ObservationElement, ObservationElement, Object>, RenderDescriptor<ObservationElement, ObservationElement, Object>
+public abstract class AbstractDataMatrixInstance<E> extends
+		AbstractSliceableMatrix<ObservationElement, ObservationElement, Object>
+		implements DataMatrixInstance,
+		SourceMatrix<ObservationElement, ObservationElement, Object>,
+		BasicMatrix<ObservationElement, ObservationElement, Object>,
+		RenderDescriptor<ObservationElement, ObservationElement, Object>
 {
 
 	/**
@@ -120,24 +125,27 @@ public abstract class AbstractDataMatrixInstance<E> extends AbstractSliceableMat
 	/**
 	 * Helper to convert ObservationElement to String
 	 */
-	public AbstractDataMatrixInstance<Object> getSubMatrixByObservationElement(List<ObservationElement> rows, List<ObservationElement> cols)
+	public AbstractDataMatrixInstance<Object> getSubMatrixByObservationElement(
+			List<ObservationElement> rows, List<ObservationElement> cols)
 			throws Exception
 	{
 		List<String> rowNames = new ArrayList<String>();
-		for(ObservationElement row : rows){
+		for (ObservationElement row : rows)
+		{
 			rowNames.add(row.getName());
 		}
-		
+
 		List<String> colNames = new ArrayList<String>();
-		for(ObservationElement col : cols){
+		for (ObservationElement col : cols)
+		{
 			colNames.add(col.getName());
 		}
-		
+
 		return getSubMatrix(rowNames, colNames);
 	}
-	
-	public AbstractDataMatrixInstance<Object> getSubMatrix(List<String> rowNames, List<String> colNames)
-			throws Exception
+
+	public AbstractDataMatrixInstance<Object> getSubMatrix(
+			List<String> rowNames, List<String> colNames) throws Exception
 	{
 		int[] rowIndices = new int[rowNames.size()];
 		int[] colIndices = new int[colNames.size()];
@@ -155,27 +163,32 @@ public abstract class AbstractDataMatrixInstance<E> extends AbstractSliceableMat
 		return getSubMatrix(rowIndices, colIndices);
 	}
 
-	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(String rowName, int nRows, String colName, int nCols)
+	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(
+			String rowName, int nRows, String colName, int nCols)
 			throws Exception
 	{
-		return getSubMatrixByOffset(this.rowNames.indexOf(rowName), nRows, this.colNames.indexOf(colName), nCols);
+		return getSubMatrixByOffset(this.rowNames.indexOf(rowName), nRows,
+				this.colNames.indexOf(colName), nCols);
 	}
 
 	public int getRowIndexForName(String rowName) throws Exception
 	{
-		if (!rowNames.contains(rowName)) throw new MatrixReadException("rowname " + rowName + " not known in matrix");
+		if (!rowNames.contains(rowName)) throw new MatrixReadException(
+				"rowname " + rowName + " not known in matrix");
 		return this.rowNames.indexOf(rowName);
 	}
 
 	public int getColIndexForName(String colName) throws Exception
 	{
-		if (!colNames.contains(colName)) throw new MatrixReadException("colname " + colName + " not known in matrix");
+		if (!colNames.contains(colName)) throw new MatrixReadException(
+				"colname " + colName + " not known in matrix");
 		return this.colNames.indexOf(colName);
 	}
 
 	public Object getElement(String rowName, String colName) throws Exception
 	{
-		return getElement(this.getRowIndexForName(rowName), this.getColIndexForName(colName));
+		return getElement(this.getRowIndexForName(rowName),
+				this.getColIndexForName(colName));
 	}
 
 	public String toString()
@@ -216,8 +229,8 @@ public abstract class AbstractDataMatrixInstance<E> extends AbstractSliceableMat
 	public File getAsExcelFile() throws Exception
 	{
 		/* Create tmp file */
-		File excelFile = new File(System.getProperty("java.io.tmpdir") + File.separator + this.getData().getName()
-				+ ".xls");
+		File excelFile = new File(System.getProperty("java.io.tmpdir")
+				+ File.separator + this.getData().getName() + ".xls");
 
 		/* Create new Excel workbook and sheet */
 		WorkbookSettings ws = new WorkbookSettings();
@@ -226,10 +239,12 @@ public abstract class AbstractDataMatrixInstance<E> extends AbstractSliceableMat
 		WritableSheet s = workbook.createSheet("Sheet1", 0);
 
 		/* Format the fonts */
-		WritableFont headerFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.BOLD);
+		WritableFont headerFont = new WritableFont(WritableFont.ARIAL, 10,
+				WritableFont.BOLD);
 		WritableCellFormat headerFormat = new WritableCellFormat(headerFont);
 		headerFormat.setWrap(false);
-		WritableFont cellFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.NO_BOLD);
+		WritableFont cellFont = new WritableFont(WritableFont.ARIAL, 10,
+				WritableFont.NO_BOLD);
 		WritableCellFormat cellFormat = new WritableCellFormat(cellFont);
 		cellFormat.setWrap(false);
 
@@ -258,7 +273,8 @@ public abstract class AbstractDataMatrixInstance<E> extends AbstractSliceableMat
 			{
 				for (int j = 0; j < this.getNumberOfRows(); j++)
 				{
-					Label l = new Label(i + 1, j + 1, elements[j][i].toString(), cellFormat);
+					Label l = new Label(i + 1, j + 1,
+							elements[j][i].toString(), cellFormat);
 					s.addCell(l);
 				}
 			}
@@ -271,7 +287,8 @@ public abstract class AbstractDataMatrixInstance<E> extends AbstractSliceableMat
 				{
 					if (elements[j][i] != null)
 					{
-						Label l = new Label(i + 1, j + 1, elements[j][i].toString(), cellFormat);
+						Label l = new Label(i + 1, j + 1,
+								elements[j][i].toString(), cellFormat);
 						s.addCell(l);
 					}
 					else
@@ -309,34 +326,43 @@ public abstract class AbstractDataMatrixInstance<E> extends AbstractSliceableMat
 	{
 		return rowNames;
 	}
-	
-	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowEntityValues(Database db, QueryRule... rules) throws Exception
+
+	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowEntityValues(
+			Database db, QueryRule... rules) throws Exception
 	{
-		return AbstractDataMatrixQueries.getSubMatrixFilterByRowEntityValues((AbstractDataMatrixInstance<Object>) this, db, rules);
+		return AbstractDataMatrixQueries.getSubMatrixFilterByRowEntityValues(
+				(AbstractDataMatrixInstance<Object>) this, db, rules);
 	}
 
-	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByColEntityValues(Database db, QueryRule... rules) throws Exception
+	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByColEntityValues(
+			Database db, QueryRule... rules) throws Exception
 	{
-		return AbstractDataMatrixQueries.getSubMatrixFilterByColEntityValues((AbstractDataMatrixInstance<Object>) this, db, rules);
+		return AbstractDataMatrixQueries.getSubMatrixFilterByColEntityValues(
+				(AbstractDataMatrixInstance<Object>) this, db, rules);
 	}
 
-	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowMatrixValues(QueryRule... rules) throws Exception
+	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowMatrixValues(
+			QueryRule... rules) throws Exception
 	{
-		return AbstractDataMatrixQueries.getSubMatrixFilterByRowMatrixValues((AbstractDataMatrixInstance<Object>) this, rules);
+		return AbstractDataMatrixQueries.getSubMatrixFilterByRowMatrixValues(
+				(AbstractDataMatrixInstance<Object>) this, rules);
 	}
 
-	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByColMatrixValues(QueryRule... rules) throws Exception
+	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByColMatrixValues(
+			QueryRule... rules) throws Exception
 	{
-		return AbstractDataMatrixQueries.getSubMatrixFilterByColMatrixValues((AbstractDataMatrixInstance<Object>) this, rules);
+		return AbstractDataMatrixQueries.getSubMatrixFilterByColMatrixValues(
+				(AbstractDataMatrixInstance<Object>) this, rules);
 	}
 
-	public AbstractDataMatrixInstance<Object> getMatrixSortByRowEntityValues(boolean asc) throws Exception
+	public AbstractDataMatrixInstance<Object> getMatrixSortByRowEntityValues(
+			boolean asc) throws Exception
 	{
 		throw new Exception("Unimplemented.");
 	}
 
-	public AbstractDataMatrixInstance<Object> getMatrixSortByColEntityValues(Database db, boolean asc)
-			throws Exception
+	public AbstractDataMatrixInstance<Object> getMatrixSortByColEntityValues(
+			Database db, boolean asc) throws Exception
 	{
 		QueryRule sorting = null;
 		if (asc)
@@ -348,7 +374,8 @@ public abstract class AbstractDataMatrixInstance<E> extends AbstractSliceableMat
 			sorting = new QueryRule(Operator.SORTDESC);
 		}
 		List<String> rowNames = this.getRowNames();
-		List<Nameable> subCol = (List<Nameable>) db.find(db.getClassForName(this.getData().getFeatureType()), sorting);
+		List<Nameable> subCol = (List<Nameable>) db.find(
+				db.getClassForName(this.getData().getFeatureType()), sorting);
 		List<String> colNames = new ArrayList<String>();
 		for (Nameable i : subCol)
 		{
@@ -358,15 +385,17 @@ public abstract class AbstractDataMatrixInstance<E> extends AbstractSliceableMat
 		return res;
 	}
 
-	public AbstractDataMatrixInstance<Object> getMatrixSortByRowMatrixValues(boolean asc) throws Exception
+	public AbstractDataMatrixInstance<Object> getMatrixSortByRowMatrixValues(
+			boolean asc) throws Exception
 	{
 		throw new Exception("Unimplemented.");
 	}
 
-	public AbstractDataMatrixInstance<Object> getMatrixSortByColMatrixValues(Database db, boolean asc)
-			throws Exception
+	public AbstractDataMatrixInstance<Object> getMatrixSortByColMatrixValues(
+			Database db, boolean asc) throws Exception
 	{
-		List<Data> result = db.find(Data.class, new QueryRule("name", Operator.EQUALS, this.getData().getName()));
+		List<Data> result = db.find(Data.class, new QueryRule("name",
+				Operator.EQUALS, this.getData().getName()));
 		Data thisData = null;
 		if (result.size() < 1)
 		{
@@ -376,7 +405,8 @@ public abstract class AbstractDataMatrixInstance<E> extends AbstractSliceableMat
 		else if (result.size() > 1)
 		{
 			// multiple Data objects!
-			throw new Exception("Multiple 'Data' descriptions for name '" + this.getData().getName() + "'.");
+			throw new Exception("Multiple 'Data' descriptions for name '"
+					+ this.getData().getName() + "'.");
 		}
 		else
 		{
@@ -388,29 +418,32 @@ public abstract class AbstractDataMatrixInstance<E> extends AbstractSliceableMat
 		throw new Exception("Unimplemented.");
 	}
 
-	public AbstractDataMatrixInstance<Object> performUnion(AbstractDataMatrixInstance<Object> N) throws Exception
+	public AbstractDataMatrixInstance<Object> performUnion(
+			AbstractDataMatrixInstance<Object> N) throws Exception
 	{
 		throw new Exception("Unimplemented.");
 	}
 
-	public AbstractDataMatrixInstance<Object> performIntersection(AbstractDataMatrixInstance<Object> N)
-			throws Exception
+	public AbstractDataMatrixInstance<Object> performIntersection(
+			AbstractDataMatrixInstance<Object> N) throws Exception
 	{
 		throw new Exception("Unimplemented.");
 	}
 
-	public AbstractDataMatrixInstance<Object> performDifference(AbstractDataMatrixInstance<Object> I) throws Exception
+	public AbstractDataMatrixInstance<Object> performDifference(
+			AbstractDataMatrixInstance<Object> I) throws Exception
 	{
 		throw new Exception("Unimplemented.");
 	}
 
-	public AbstractDataMatrixInstance<Object> performExclusion(AbstractDataMatrixInstance<Object> I) throws Exception
+	public AbstractDataMatrixInstance<Object> performExclusion(
+			AbstractDataMatrixInstance<Object> I) throws Exception
 	{
 		throw new Exception("Unimplemented.");
 	}
 
-	public AbstractDataMatrixInstance<Object> performTransposition(AbstractDataMatrixInstance<Object> I)
-			throws Exception
+	public AbstractDataMatrixInstance<Object> performTransposition(
+			AbstractDataMatrixInstance<Object> I) throws Exception
 	{
 		throw new Exception("Unimplemented.");
 	}
@@ -456,73 +489,92 @@ public abstract class AbstractDataMatrixInstance<E> extends AbstractSliceableMat
 	 * @return
 	 * @throws Exception
 	 */
-	public List<String> getAsObservedValueList() throws Exception{
+	public List<String> getAsObservedValueList() throws Exception
+	{
 		List<String> res = new ArrayList<String>();
-		
-		//get a shorthand to all the matrix values
+
+		// get a shorthand to all the matrix values
 		Object[][] elements = getElements();
-		
-		//add header
-		//TODO: finish this part
-		res.add(this.getData().getTarget_Name() + "\t" + this.getData().getFeature_Name() + "\t" + "etc");
-		
-		//iterate over all the values and add in the form of a list
+
+		// add header
+		// TODO: finish this part
+		res.add(this.getData().getTarget_Name() + "\t"
+				+ this.getData().getFeature_Name() + "\t" + "etc");
+
+		// iterate over all the values and add in the form of a list
 		for (int rowIndex = 0; rowIndex < elements.length; rowIndex++)
 		{
 			for (int colIndex = 0; colIndex < elements[rowIndex].length; colIndex++)
 			{
-				res.add(getRowNames().get(rowIndex) + "\t" + getColNames().get(colIndex) + "\t" + elements[rowIndex][colIndex]);
+				res.add(getRowNames().get(rowIndex) + "\t"
+						+ getColNames().get(colIndex) + "\t"
+						+ elements[rowIndex][colIndex]);
 			}
 		}
-		
+
 		return res;
 	}
-	
+
 	/*************************************************************/
 	/**************** SourceMatrix implementation ****************/
 	/*************************************************************/
 
-	
 	@Override
 	public String getRowType() throws Exception
 	{
-		//return this.getVisibleRows().get(0).get__Type();
+		// return this.getVisibleRows().get(0).get__Type();
 		return this.getData().getTargetType();
 	}
 
 	@Override
 	public String getColType() throws Exception
 	{
-		//return this.getVisibleCols().get(0).get__Type();
+		// return this.getVisibleCols().get(0).get__Type();
 		return this.getData().getFeatureType();
 	}
 
 	@Override
 	public String renderValue(Object value)
 	{
-		if(value != null){
+		if (value != null)
+		{
 			return value.toString();
-		}else{
+		}
+		else
+		{
 			return "";
 		}
 	}
-	
+
 	private String render(ObservationElement o)
 	{
 		String head = o.getName();
 		String content = "";
-		for(String f : o.getFields()){
-			
-			if(!o.getFields().contains(f+"_name"))
+		for (String f : o.getFields())
+		{
+
+			if (!o.getFields().contains(f + "_name"))
 			{
-				
+
 			}
-			if(!o.getFields().contains(f+"_name") && !f.equals("name") && !f.equals("__Type") && o.get(f) != null){
+			if (!o.getFields().contains(f + "_name") && !f.equals("name")
+					&& !f.equals("__Type") && o.get(f) != null)
+			{
 				content += f + " = " + o.get(f) + "<br>";
 			}
-			
+
 		}
-		return "<div style=\"display: inline; font-size: x-small; text-align: center;\" onmouseover=\"return overlib('"+content+"', CAPTION, '"+head+"')\" onmouseout=\"return nd();\"><nobr>"+"<a href=?__target="+o.get__Type()+"s&__action=filter_set&__filter_attribute="+o.get__Type()+"_name&__filter_operator=EQUALS&__filter_value="+o.getName()+">"+o.getName()+"</a></nobr></div>";
+		return "<div style=\"display: inline; font-size: x-small; text-align: center;\" onmouseover=\"return overlib('"
+				+ content
+				+ "', CAPTION, '"
+				+ head
+				+ "')\" onmouseout=\"return nd();\"><nobr>"
+				+ "<a href=?__target="
+				+ o.get__Type()
+				+ "s&__action=filter_set&__filter_attribute="
+				+ o.get__Type()
+				+ "_name&__filter_operator=EQUALS&__filter_value="
+				+ o.getName() + ">" + o.getName() + "</a></nobr></div>";
 
 	}
 
@@ -537,7 +589,7 @@ public abstract class AbstractDataMatrixInstance<E> extends AbstractSliceableMat
 	{
 		return render(col);
 	}
-	
+
 	@Override
 	public String renderRowSimple(ObservationElement row)
 	{
@@ -550,14 +602,14 @@ public abstract class AbstractDataMatrixInstance<E> extends AbstractSliceableMat
 		return col.getName();
 	}
 
-	//FIXME: when GenericFunctions' originalRows is set, this can be removed!
+	// FIXME: when GenericFunctions' originalRows is set, this can be removed!
 	@Override
 	public int getTotalNumberOfRows()
 	{
 		return this.getNumberOfRows();
 	}
 
-	//FIXME: when GenericFunctions' originalCols is set, this can be removed!
+	// FIXME: when GenericFunctions' originalCols is set, this can be removed!
 	@Override
 	public int getTotalNumberOfCols()
 	{
@@ -565,81 +617,161 @@ public abstract class AbstractDataMatrixInstance<E> extends AbstractSliceableMat
 	}
 
 	@Override
+	@Deprecated
 	public List<String> getRowHeaderFilterAttributes()
 	{
-		ArrayList<String> attr = new ArrayList<String>();
-		attr.add("name");
-		attr.add("etc");
-		return attr;
+		return this.getRowPropertyNames();
 	}
 
 	@Override
+	@Deprecated
 	public List<String> getColHeaderFilterAttributes()
 	{
-		ArrayList<String> attr = new ArrayList<String>();
-		attr.add("name");
-		attr.add("etc");
-		return attr;
+		return this.getColPropertyNames();
 	}
-	
+
 	/************************************************************/
 	/**************** BasicMatrix implementation ****************/
 	/************************************************************/
 
 	public void setup(Database db) throws DatabaseException
 	{
-		this.originalCols = db.find(ObservationElement.class, new QueryRule(ObservationElement.NAME, Operator.IN, this.getColNames()));
-		this.originalRows = db.find(ObservationElement.class, new QueryRule(ObservationElement.NAME, Operator.IN, this.getRowNames()));
+		this.originalCols = db.find(ObservationElement.class, new QueryRule(
+				ObservationElement.NAME, Operator.IN, this.getColNames()));
+		this.originalRows = db.find(ObservationElement.class, new QueryRule(
+				ObservationElement.NAME, Operator.IN, this.getRowNames()));
 	}
 
 	@Override
 	public Object[][] getVisibleValues() throws Exception
 	{
-		return this.getSubMatrixByObservationElement(rowCopy, colCopy).getElements();
+		return this.getSubMatrixByObservationElement(rowCopy, colCopy)
+				.getElements();
 	}
-	
+
 	/****************************************************************/
 	/**************** SliceableMatrix implementation ****************/
 	/****************************************************************/
 
 	@Override
-	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByRowValues(QueryRule rule)
-			throws Exception
+	@Deprecated
+	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByRowValues(
+			QueryRule rule) throws Exception
 	{
 		return null;
 	}
 
 	@Override
-	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByColValues(MatrixQueryRule rule)
-			throws Exception
+	@Deprecated
+	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByColValues(
+			MatrixQueryRule rule) throws Exception
 	{
 		return null;
 	}
 
 	@Override
-	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByRowHeader(MatrixQueryRule rule)
-			throws Exception
+	@Deprecated
+	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByRowHeader(
+			MatrixQueryRule rule) throws Exception
 	{
 		return null;
 	}
 
 	@Override
-	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByColHeader(MatrixQueryRule rule)
-			throws Exception
+	@Deprecated
+	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByColHeader(
+			MatrixQueryRule rule) throws Exception
 	{
 		return null;
 	}
 
 	@Override
-	public BasicMatrix<ObservationElement, ObservationElement, Object> getResult() throws Exception
+	public BasicMatrix<ObservationElement, ObservationElement, Object> getResult()
+			throws Exception
 	{
 		return this;
 	}
-	
+
 	@Override
 	public RenderDescriptor<ObservationElement, ObservationElement, Object> getRenderDescriptor()
-			throws Exception {
+			throws Exception
+	{
 		return this;
 	}
-	
+
+	@Override
+	public List<String> getRowPropertyNames()
+	{
+		ArrayList<String> attr = new ArrayList<String>();
+		attr.add("name");
+		attr.add("etc");
+		return attr;
+	}
+
+	@Override
+	public List<String> getColPropertyNames()
+	{
+		ArrayList<String> attr = new ArrayList<String>();
+		attr.add("name");
+		attr.add("etc");
+		return attr;
+	}
+
+	@Override
+	public Object[][] getValues() throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByRowValues(
+			int index, Operator operator, Object value) throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByRowValues(
+			ObservationElement row, Operator operator, Object value)
+			throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByColValues(
+			int index, Operator operator, Object value) throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByColValues(
+			ObservationElement col, Operator operator, Object value)
+			throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByRowProperty(
+			String property, Operator operator, Object value)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByColProperty(
+			String property, Operator operator, Object value) throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
