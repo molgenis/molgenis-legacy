@@ -59,6 +59,8 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
     private String strCurrentPipelineStep = "INITIAL";
     private int pipelineElementNumber = 0;
 
+    private List<ComputeFeature> allComputeFeatures = null;
+
     //compute
     private MCF mcf = null;
 
@@ -83,7 +85,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
 
     private enum UserParameter
     {
-        sample, flowcell, lane, barcode, machine, date, capturing;
+        sample, flowcell, lane, barcode, machine, date, capturing, project;
     }
 
     public StartNgs(String name, ScreenController<?> parent)
@@ -101,7 +103,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
 
     public void buttonTest(Database db, Tuple request) throws Exception
     {
-        int stepID =  request.getInt("inputStep");
+        int stepID = request.getInt("inputStep");
         System.out.println("step to debug: " + stepID);
 
         Pipeline testPipeline = new Pipeline();
@@ -141,10 +143,13 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         ScreenController<?> parentController = (ScreenController<?>) this.getParent();
         FormModel<Worksheet> parentForm = (FormModel<Worksheet>) ((FormController) parentController).getModel();
         Worksheet data = parentForm.getRecords().get(0);
-        //data.
 
         Date date = data.getSequenceStartDate();
-        String strDate = formatDate("" + date);
+
+        //should be removed later
+        String strDate = "00.00.0000";
+        if (date != null)
+            strDate = formatDate("" + date);
 
         String strLane = data.getLane();
         String strMachine = data.getSequencer();
@@ -152,6 +157,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         String strBarcode = data.getBarcode();
         String strSample = data.getExternalSampleID();
         String strCapturing = data.getCapturingKit();
+        String strProject = data.getProject();
 
         //application for the whole workflow
         wholeWorkflowApp = new ComputeApplication();
@@ -164,14 +170,12 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         //take all compute features, not so many for ngs pipeline
         // having one workflow makes life easy
         //otherwise - select all features of workflow
-        List<ComputeFeature> allComputeFeatures = db.query(ComputeFeature.class).find();
+        allComputeFeatures = db.query(ComputeFeature.class).find();
         System.out.println("we have so many features: " + allComputeFeatures.size());
 
         //creating map feature/value
         for (ComputeFeature computeFeature : allComputeFeatures)
         {
-            System.out.println("feature: " + computeFeature.getName() + " --> " + computeFeature.getDefaultValue());
-
             computeFeatures.put(computeFeature.getName(), computeFeature);
 
             if (computeFeature.getIsUser())
@@ -199,11 +203,10 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
                     case capturing:
                         userValues.put(computeFeature.getName(), strCapturing);
                         break;
+                    case project:
+                        userValues.put(computeFeature.getName(), strProject);
+                        break;
                 }
-            }
-            else
-            {
-                //allFeatureValues.put(computeFeature.getName(), computeFeature.getDefaultValue());
             }
         }
 
@@ -237,7 +240,6 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         }
 
         String logfile = weaver.getLogfilename();
-        //System.out.println("logfile: " + logfile);
 
         pipeline.setPipelinelogpath(logfile);
 
@@ -278,57 +280,35 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         System.out.println(">>> workflow element: " + workflowElement.getName());
 
         //create complex features, which will be processed after simple features
-        Vector<ComputeFeature> featuresToIterate = new Vector<ComputeFeature>();
         Vector<ComputeFeature> featuresToDerive = new Vector<ComputeFeature>();
 
         //get protocol and template
         ComputeProtocol protocol = db.findById(ComputeProtocol.class, workflowElement.getProtocol_Id());
 
         //fill vectors/hashtable with complex/simple compute features
-        if (protocol.getInputs().size() > 0)
+        //only one feature to iterate over is hardcoded
+        ComputeFeature fastqcFeature = null;
+
+        for (ComputeFeature computeFeature : allComputeFeatures)
         {
-            List<ComputeFeature> computeFeatures = db.query(ComputeFeature.class).in(ComputeFeature.ID, protocol.getInputs_Id()).find();
-            for (ComputeFeature computeFeature : computeFeatures)
+            System.out.println("input feature: " + computeFeature.getName() + " --> " + computeFeature.getDefaultValue());
+            if (computeFeature.getIsUser())// || computeFeature.getDefaultValue().equalsIgnoreCase(PARAMETER))
+                continue;
+            else if (computeFeature.getIsDerived())
             {
-                //System.out.println("input feature: " + computeFeature.getName() + " --> " + computeFeature.getDefaultValue());
-                if (computeFeature.getIsUser() || computeFeature.getDefaultValue().equalsIgnoreCase(PARAMETER))
-                    continue;
-                else if (computeFeature.getIsDerived())
-                {
-                    featuresToDerive.addElement(computeFeature);
-                }
-                else if (computeFeature.getIterateOver())
-                {
-                    featuresToIterate.addElement(computeFeature);
-                }
-                else
-                {
-                    weavingValues.put(computeFeature.getName(), computeFeature.getDefaultValue());
-                }
+                featuresToDerive.addElement(computeFeature);
+            }
+            else if (computeFeature.getIterateOver())
+            {
+                fastqcFeature = computeFeature;
+                weavingValues.put(computeFeature.getName(), computeFeature.getDefaultValue());
+            }
+            else
+            {
+                weavingValues.put(computeFeature.getName(), computeFeature.getDefaultValue());
             }
         }
 
-        if (protocol.getOutputs().size() > 0)
-        {
-            List<ComputeFeature> computeFeatures = db.query(ComputeFeature.class).in(ComputeFeature.ID, protocol.getOutputs_Id()).find();
-            for (ComputeFeature computeFeature : computeFeatures)
-            {
-                //System.out.println("output feature: " + computeFeature.getName() + " --> " + computeFeature.getDefaultValue());
-                if (computeFeature.getIsDerived())
-                {
-                    featuresToDerive.addElement(computeFeature);
-                }
-                else if (computeFeature.getIterateOver())
-                {
-                    featuresToIterate.addElement(computeFeature);
-                }
-                else
-                {
-                    weavingValues.put(computeFeature.getName(), computeFeature.getDefaultValue());
-                }
-
-            }
-        }
 
         //find value of workflowelementparameter
         List<WorkflowElementParameter> workflowElementParameters = db.query(WorkflowElementParameter.class).
@@ -336,23 +316,19 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
 
         for (WorkflowElementParameter par : workflowElementParameters)
         {
-            //System.out.println("par: " + par.getFeature_Name() + " --> " + par.getTarget_Name());
-
+            System.out.println("par: " + par.getFeature_Name() + " --> " + par.getTarget_Name());
             ComputeFeature feature = computeFeatures.get(par.getTarget_Name());
+            System.out.println("par: " + par.getFeature_Name() + " --> " + feature.getDefaultValue());
             weavingValues.put(par.getFeature_Name(), feature.getDefaultValue());
-
         }
 
         //create compute applications
         //todo iterate over several features
         //now just hardcoded for fastqc index (only one feature to iterate over)
-
-        if (featuresToIterate.size() > 0)
+        if (workflowElement.getName().equalsIgnoreCase("FastqcElement"))
         {
-            ComputeFeature fastqcFeature = featuresToIterate.elementAt(0);
             for (int i = 1; i < 3; i++)
             {
-                System.out.println(">>>>>>>> fastQC : " + fastqcFeature.getName());
                 weavingValues.put(fastqcFeature.getName(), i + "");
                 generateComApp(db, request, workflowElement, protocol, weavingValues, featuresToDerive);
             }
@@ -392,7 +368,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
             String featureTemplate = feature.getDefaultValue();
 
             String featureValue = weaver.weaveFreemarker(featureTemplate, weavingValues);
-            //System.out.println("complex-feature: " + featureName + " --> " + featureValue);
+            System.out.println("complex-feature: " + featureName + " --> " + featureValue);
             weavingValues.put(featureName, featureValue);
         }
 
@@ -420,7 +396,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
             String name = (String) entry.getKey();
             String value = (String) entry.getValue();
 
-            System.out.println("feature: " + name + " ---> " + value);
+            //System.out.println("feature: " + name + " ---> " + value);
             ObservedValue observedValue = new ObservedValue();
             observedValue.setValue(value);
             observedValue.setProtocolApplication(app);
@@ -456,20 +432,20 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         weaver.setVerificationCommand("\n");
         //finish extra
 
-        //String remoteLocation = computeFeatures.get("outputdir").getDefaultValue();
-        String remoteLocation = "/data/gcc/test_george/";
-
-        System.out.println("remote location: " + remoteLocation);
+        //String remoteLocation = "/data/gcc/test_george/";
+        String remoteLocation = "/target/gpfs2/gcc/home/fvandijk/computescripts/";
 
         weaver.setDatasetLocation(remoteLocation);
+
         //write file for testing purposes
         String scriptFile = weaver.makeScript();
-
 
         String logfile = weaver.getLogfilename();
         pipeline.setPipelinelogpath(logfile);
 
-        weaver.writeToFile("/Users/mdijkstra/tmp/" + pipelineElementNumber + scriptID, scriptFile);
+        weaver.writeToFile("/test/" + pipelineElementNumber + scriptID, scriptFile);
+        //weaver.writeToFile("/home/gbyelas/test/" + pipelineElementNumber + scriptID, scriptFile);
+        //weaver.writeToFile("/home/fvandijk/test/" + pipelineElementNumber + scriptID, scriptFile);
 
         //todo rewrite pipeline generation
         //look into proper choose of logfile and all path settings
@@ -488,6 +464,9 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
             }
 
             Script pipelineScript = new Script(scriptID, scriptRemoteLocation, scriptFile.getBytes());
+
+            System.out.println("scriptID" + scriptID);
+
             currentStep.addScript(pipelineScript);
         }
         else //scripts depends on previous scripts
