@@ -221,8 +221,8 @@ public class XqtlSeleniumTest
 		selenium.click("id=Datas_collapse_button_id");
 		
 		//assert content of enum fields
-		Assert.assertEquals(selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.8.1"), "Individual\n\nChromosomeClassicalPhenotypeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMetabolitePanelProbeSampleSpot");
-		Assert.assertEquals(selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.9.1"), "Metabolite\n\nChromosomeClassicalPhenotypeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMetabolitePanelProbeSampleSpot");
+		Assert.assertEquals(selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.5.1"), "Individual\n\nChromosomeClassicalPhenotypeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMetabolitePanelProbeSampleSpot");
+		Assert.assertEquals(selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.6.1"), "Metabolite\n\nChromosomeClassicalPhenotypeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMetabolitePanelProbeSampleSpot");
 		
 		//change Individual to Gene and save
 		selenium.click("css=#Data_FeatureType_chzn > a.chzn-single > span");
@@ -233,7 +233,7 @@ public class XqtlSeleniumTest
 		
 		//expand compact view again and check value has changed
 		selenium.click("id=Datas_collapse_button_id");
-		Assert.assertEquals(selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.8.1"), "Gene\n\nChromosomeClassicalPhenotypeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMetabolitePanelProbeSampleSpot");
+		Assert.assertEquals(selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.5.1"), "Gene\n\nChromosomeClassicalPhenotypeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMetabolitePanelProbeSampleSpot");
 		
 		//change back to Individual and save
 		selenium.click("css=#Data_FeatureType_chzn > a.chzn-single > div > b");
@@ -244,7 +244,7 @@ public class XqtlSeleniumTest
 		
 		//expand compact view again and check value is back to normal again
 		selenium.click("id=Datas_collapse_button_id");
-		Assert.assertEquals(selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.8.1"), "Individual\n\nChromosomeClassicalPhenotypeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMetabolitePanelProbeSampleSpot");
+		Assert.assertEquals(selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.5.1"), "Individual\n\nChromosomeClassicalPhenotypeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMetabolitePanelProbeSampleSpot");
 
 	}
 
