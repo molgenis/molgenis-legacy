@@ -58,9 +58,9 @@
 <#if model.state="main">
 <br>
 <h1>Run QTL mapping</h1><br><br>
-<input type="submit" value="Create new job" onclick="__action.value='newClusterJob';return true;">
+<input type="submit" value="Start new analysis" onclick="__action.value='newClusterJob';return true;">
 <br><br>
-<input type="submit" value="Go to job manager" onclick="__action.value='viewJobManager';return true;">
+<input type="submit" value="View running analysis" onclick="__action.value='viewJobManager';return true;">
 <br><br>
 
 <table>
@@ -84,7 +84,7 @@
 <table>
 	<tr>
 		<td>
-			Enter name of output datamatrix:
+			Provide a name for the result:
 		</td>
 		<td>
 			<input type="text" name="outputDataName" value="MyOutput"/>
@@ -92,7 +92,7 @@
 	</tr>
 	<tr>
 		<td>
-			Select analysis type:
+			Select the analysis to be run:
 		</td>
 		<td>
 			<select name="selectedAnalysis">
@@ -117,7 +117,7 @@
 				<option value="25">25</option>
 				<option value="50">50</option>
 			</select>
-			<#if model.selectedComputeResource == "cluster">
+			<#--if model.selectedComputeResource == "cluster">
 			or choose a queue
 			<select name="clusterQueue">
 				<option value="jobs" SELECTED># of sub jobs</option>
@@ -126,7 +126,7 @@
 				<option value="nodeslong">long queue</option>
 				<option value="quadlong">long queue (Quad Cores)</option>
 			</select>
-			</#if>
+			</#if-->
 		</td>
 	</tr>
 	<#if model.selectedComputeResource == "cluster" || model.selectedComputeResource == "cloud">
@@ -285,17 +285,17 @@ seconds.
 	<#if model.maxSubjobs == 0>
 		<tr>
 			<td>
-				No jobs to display.
+				No running analysis to display.
 			</td>
 		</tr>
 	<#else>
 	
 	<tr class="form_listrow0">
 		<td colspan="7">
-			<font size="3"><b>Jobs</b></font>
+			<font size="3"><b>Running analysis</b></font>
 		</td>
 		<td colspan="${model.maxSubjobs}">
-			<font size="3"><b>Subjobs</b></font><br>
+			<font size="3"><b>Parts</b></font><br>
 			<font size="1"><nobr>Hover for status</nobr><br>
 			<nobr>Click to resubmit</nobr></font>
 		</td>

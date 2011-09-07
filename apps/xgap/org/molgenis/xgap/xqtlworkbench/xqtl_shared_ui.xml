@@ -12,7 +12,7 @@
 						<plugin name="Rplot" type="plugins.rplot.RplotPlugin" group="biologist" />
 						<plugin name="Inspector" type="plugins.matrix.inspector.MatrixInspector" group="biologist" />
 						<plugin name="MatrixAdmin" label="Delete storage" type="plugins.matrix.admin.MatrixAdmin" group="biologist" />
-						<plugin name="ManagerDev" type="plugins.matrix_dev.manager.MatrixManager" group="biologist" />
+						<!--plugin name="ManagerDev" type="plugins.matrix_dev.manager.MatrixManager" group="biologist" /-->
 					</menu>
 				</form>
 				<menu name="BasicAnnotations" label="View annotations">
@@ -21,7 +21,7 @@
 					<form name="Chromosomes" entity="Chromosome" group="biologist" />
 					<form name="Markers" entity="Marker" group="biologist" />
 					<form name="Genes" entity="Gene" group="biologist" />
-					<form name="ClassicalPhenotypes" entity="ClassicalPhenotype" group="biologist" />
+					<form name="Measurements" entity="Measurement" hide_fields="targettypeAllowedForRelation,panelLabelAllowedForRelation" group="biologist" />
 					<menu name="AdvancedAnnotations" label="More annotations" group="biologist">
 						<form name="DerivedTraits" entity="DerivedTrait" group="biologist" />
 						<form name="EnvironmentalFactors" entity="EnvironmentalFactor" group="biologist" />
@@ -42,22 +42,23 @@
 
 		<plugin label="Run QTL mapping" name="Cluster" type="plugins.cluster.ClusterPlugin" group="biologist" />
 
-		<menu name="AnalysisSettings" label="Add analysis" group="bioinformatician">
-			<form name="RScripts" label="Add R script" entity="RScript" group="bioinformatician">
-				<plugin name="RViewer" type="plugins.molgenisfile.MolgenisFileManager" group="bioinformatician"/>
-				<!--plugin label="Help" name="AddNewToolsHelp" type="plugins.cluster.addnewtoolshelp" group="bioinformatician" /-->
-			</form>
-			<form name="Analysis" label="Add new analysis" entity="Analysis" group="bioinformatician" />
-			<form name="ParameterSets" label="Configure parameters" entity="ParameterSet" group="bioinformatician">
+		<menu name="AnalysisSettings" label="Configure analysis" group="bioinformatician">
+			<form name="Analysis" label="Analyses" entity="Analysis" group="bioinformatician" />
+			<form name="ParameterSets" label="Parameters" entity="ParameterSet" group="bioinformatician">
 				<form name="ParameterNames" entity="ParameterName" group="bioinformatician">
 					<form name="ParameterValues" entity="ParameterValue" group="bioinformatician" />
 				</form>
 			</form>
-			<form name="DataSets" label="Configure datasets" entity="DataSet" group="bioinformatician">
+			<form name="DataSets" label="Datasets" entity="DataSet" group="bioinformatician">
 				<form name="DataNames" entity="DataName" group="bioinformatician">
 					<form name="DataValues" entity="DataValue" group="bioinformatician" />
 				</form>
 			</form>
+			<form name="RScripts" label="R scripts" entity="RScript" group="bioinformatician">
+				<plugin name="RViewer" type="plugins.molgenisfile.MolgenisFileManager" group="bioinformatician"/>
+				<!--plugin label="Help" name="AddNewToolsHelp" type="plugins.cluster.addnewtoolshelp" group="bioinformatician" /-->
+			</form>
+			<plugin label="Tag data" name="MatrixWizard" type="plugins.xgapwizard.MatrixWizard" group="bioinformatician" />
 		</menu>
 
 		<plugin label="Search" name="SimpleDbSearch" type="plugin.search.SimpleWholeDatabaseSearch" group="biologist" />
@@ -85,7 +86,6 @@
 				<plugin label="Format names" name="NamingPolicy" type="plugins.help.naming.NamingPlugin" group="biologist" />
 				<plugin label="Rename duplicates" name="DuplicateRenaming" type="plugins.help.duplicates.DuplicatesPlugin" group="biologist" />
 				<plugin label="KEGG converter" name="KeggConverter" type="plugins.keggplugin.KeggToolsPlugin" group="bioinformatician" />
-				<plugin label="Matrix wizard" name="MatrixWizard" type="plugins.xgapwizard.MatrixWizard" group="bioinformatician" />
 				<form label="Job table" name="Jobs" entity="Job" group="admin">
 					<form name="Subjobs" entity="Subjob" group="admin" />
 				</form>

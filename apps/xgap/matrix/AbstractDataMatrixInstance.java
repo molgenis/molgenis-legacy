@@ -498,8 +498,8 @@ public abstract class AbstractDataMatrixInstance<E> extends
 
 		// add header
 		// TODO: finish this part
-		res.add(this.getData().getTarget_Name() + "\t"
-				+ this.getData().getFeature_Name() + "\t" + "etc");
+//		res.add(this.getData().getTarget_Name() + "\t"
+//				+ this.getData().getFeature_Name() + "\t" + "etc");
 
 		// iterate over all the values and add in the form of a list
 		for (int rowIndex = 0; rowIndex < elements.length; rowIndex++)

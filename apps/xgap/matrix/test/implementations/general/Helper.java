@@ -74,8 +74,8 @@ public class Helper
 		d.setTargetType(rowType);
 		d.setFeatureType(colType);
 		d.setStorage(source);
-		d.setFeature(feature);
-		d.setTarget(target);
+//		d.setFeature(feature);
+//		d.setTarget(target);
 		return d;
 	}
 
@@ -165,8 +165,8 @@ public class Helper
 		d.setTargetType(rowType);
 		d.setFeatureType(colType);
 		d.setStorage(source);
-		d.setFeature(feature);
-		d.setTarget(target);
+//		d.setFeature(feature);
+//		d.setTarget(target);
 		return d;
 	}
 

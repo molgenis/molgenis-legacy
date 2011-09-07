@@ -78,7 +78,6 @@
 					</table>
 				</div>											
 			</td>
-			
 			<td align="center" class="shadeHeader" valign="center">
 				<input type="image" src="res/img/first.png" onclick="document.forms.${screen.name}.__action.value = 'moveFarLeft';" />
 				<input type="image" src="res/img/prev.png" onclick="document.forms.${screen.name}.__action.value = 'moveLeft';"/>
@@ -99,14 +98,11 @@
 					<tr><td><font class="fontColor">Stepsize</font></td><td><input type="text" name="stepSize" value="${browser.stepSize?c}" size="1"></td></tr>
 					<tr><td><font class="fontColor">Width</font></td><td><input type="text" name="width" value="${browser.width?c}" size="1"></td></tr>
 					<tr><td><font class="fontColor">Height</font></td><td><input type="text" name="height" value="${browser.height?c}" size="1"></td></tr>
-					<tr><td><input type="submit" value="Change" onclick="document.forms.${screen.name}.__action.value = 'changeSubmatrixSize'; document.forms.${screen.name}.submit();"></td></tr>
-					<tr><td><input type="submit" value="Filter visible" onclick="document.forms.${screen.name}.__action.value = 'filterVisible'; document.forms.${screen.name}.submit();"></td></tr>
-					<tr><td><input type="submit" value="Filter all" onclick="document.forms.${screen.name}.__action.value = 'filterAll'; document.forms.${screen.name}.submit();"></td></tr>
+					<tr><td colspan="2"><input type="submit" value="Change size" onclick="document.forms.${screen.name}.__action.value = 'changeSubmatrixSize'; document.forms.${screen.name}.submit();"></td></tr>
+					<tr><td colspan="2"><br><input type="submit" value="Apply filter to visible" onclick="document.forms.${screen.name}.__action.value = 'filterVisible'; document.forms.${screen.name}.submit();"></td></tr>
+					<tr><td colspan="2"><input type="submit" value="Apply filter to all" onclick="document.forms.${screen.name}.__action.value = 'filterAll'; document.forms.${screen.name}.submit();"></td></tr>
 				</table>
 			</td>
-			<td>
-				<!-- leeg -->
-			<td/>
 			<td valign="top">
 				<#if model.message?exists>
 					<#if model.message.success>
@@ -118,7 +114,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2">
+			<td>
 				<table class="tableBorder">
 					<tr>
 						<td></td><td></td>

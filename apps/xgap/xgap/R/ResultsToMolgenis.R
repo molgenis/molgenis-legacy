@@ -50,7 +50,7 @@ PermToMolgenis <- function(investigationname,resultsname,results,Trait_num=0,num
       #No find, so we'll create one
       if(verbose) cat("INFO: No matrix named",name,"found in the current database\n")
       if(verbose) cat("INFO: Creating:",name,"in the current database\n")
-      matri <- add.data(name = name,storage="Database",investigation_name=investigationname,targettype="Marker",featuretype="Trait",feature_name="QTLResults",target_name="Ler_x_Cvi",valuetype="Decimal",.verbose=verbose)
+      matri <- add.data(name = name,storage="Database",investigation_name=investigationname,targettype="Marker",featuretype="Trait",ontologyreference_name="qtl_matrix",valuetype="Decimal",.verbose=verbose)
     }else{
       if(verbose)cat("INFO: Matrix named",name,"found in the current database\n")
       matri <- find.data(name=name,.verbose=verbose)
@@ -153,7 +153,7 @@ ResultsToMolgenis <- function(investigationname = "", resultname = "", result=NU
 		if(verbose)cat("INFO: Not matrix named",name,"found in the current database\n")
 		if(verbose)cat("INFO: Creating:",name,"in the current database\n")
 		cat("BEFORE TRYCATCH")
-		tryCatch(aaa <- add.data(name = name,storage="Database",investigation_name=investigationname,targettype="Marker",featuretype="DerivedTrait",feature_name="QTLResults_matrix",target_name="QTLResults_matrix",valuetype="Decimal",.verbose=verbose), error=function(e){cat("Upload failed.")})
+		tryCatch(aaa <- add.data(name = name,storage="Database",investigation_name=investigationname,targettype="Marker",featuretype="DerivedTrait",ontologyreference_name="qtl_matrix",valuetype="Decimal",.verbose=verbose), error=function(e){cat("Upload failed.")})
 		cat("AFTER TRYCATCH")
 		}else{
 		   cat("FOUND")

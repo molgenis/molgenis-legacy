@@ -20,6 +20,7 @@ import matrix.implementations.binary.BinaryDataMatrixWriter;
 import org.molgenis.cluster.DataName;
 import org.molgenis.cluster.DataSet;
 import org.molgenis.cluster.DataValue;
+import org.molgenis.core.OntologyTerm;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -400,16 +401,17 @@ public class QTLDataSetWizard extends PluginModel<Entity>
 			IOException, ParseException
 	{
 		Data phenoData = new Data();
-		ObservationElement feature  = ObservationElement.findByNameInvestigation(db, "Phenotypes_matrix", invSelect);
-		if(feature == null)
+		OntologyTerm onto  = db.find(OntologyTerm.class ,new QueryRule(OntologyTerm.NAME, Operator.EQUALS, "phenotype_matrix")).get(0);
+		if(onto == null)
 		{
-			feature = new ObservationElement();
-			feature.setName("Phenotypes_matrix");
-			feature.setInvestigation(invSelect);
-			db.add(feature);
+			onto = new OntologyTerm();
+			onto.setName("phenotype_matrix");
+			onto.setDefinition("Phenotypes");
+			db.add(onto);
 		}
-		phenoData.setFeature(feature);
-		phenoData.setTarget(feature);
+//		phenoData.setFeature(feature);
+//		phenoData.setTarget(feature);
+		phenoData.setOntologyReference(onto);
 		phenoData.setName(originalFileName);
 		phenoData.setFeatureType("Individual");
 		phenoData.setTargetType("ClassicalPhenotype");
@@ -436,16 +438,17 @@ public class QTLDataSetWizard extends PluginModel<Entity>
 			IOException, ParseException
 	{
 		Data genoData = new Data();
-		ObservationElement feature  = ObservationElement.findByNameInvestigation(db, "Genotypes_matrix", invSelect);
-		if(feature == null)
+		OntologyTerm onto  = db.find(OntologyTerm.class ,new QueryRule(OntologyTerm.NAME, Operator.EQUALS, "genotype_matrix")).get(0);
+		if(onto == null)
 		{
-			feature = new ObservationElement();
-			feature.setName("Genotypes_matrix");
-			feature.setInvestigation(invSelect);
-			db.add(feature);
+			onto = new OntologyTerm();
+			onto.setName("genotype_matrix");
+			onto.setDefinition("Genotypes");
+			db.add(onto);
 		}
-		genoData.setFeature(feature);
-		genoData.setTarget(feature);
+//		genoData.setFeature(feature);
+//		genoData.setTarget(feature);
+		genoData.setOntologyReference(onto);
 		genoData.setName(originalFileName);
 		genoData.setFeatureType("Individual");
 		genoData.setTargetType("Marker");

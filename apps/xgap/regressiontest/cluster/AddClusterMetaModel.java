@@ -138,6 +138,7 @@ public class AddClusterMetaModel
 			
 			Analysis rqtlScan = new Analysis();
 			rqtlScan.setName("Rqtl_analysis");
+			rqtlScan.setDescription("This is a basic QTL analysis performed in the R environment for statistical computing, powered by the R/qtl package.");
 			rqtlScan.setDataSet(rqtlData);
 			rqtlScan.setParameterSet(rqtlParams);
 			rqtlScan.setTargetFunctionName("QTL");

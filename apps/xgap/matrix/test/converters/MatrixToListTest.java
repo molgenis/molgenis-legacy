@@ -28,8 +28,8 @@ public class MatrixToListTest
 		//define a dataset, set some properties
 		Data def = new Data();
 		def.setName("mydata");
-		def.setFeature_Name("measurement");
-		def.setTarget_Name("patient");
+//		def.setFeature_Name("measurement");
+//		def.setTarget_Name("patient");
 		
 		//create an instance of CSV matrix using the file and the data definition
 		CSVDataMatrixInstance matrix = new CSVDataMatrixInstance(def, src);
