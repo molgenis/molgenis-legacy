@@ -76,21 +76,25 @@ public class AddClusterMetaModel
 
 			ParameterName map = new ParameterName();
 			map.setName("map");
+			map.setDescription("The mapping method to use. For example: scanone, scanall, scanoneboot, scantwo, cim, mqmscan, mqmscanall, mqmscanfdr.");
 			map.setParameterSet(rqtlParams);
 			db.add(map);
 
 			ParameterName method = new ParameterName();
 			method.setName("method");
+			method.setDescription("Indicates whether to use the EM algorithm, imputation, Haley-Knott regression, the extended Haley-Knott method, or marker regression. Not all methods are available for all models.");
 			method.setParameterSet(rqtlParams);
 			db.add(method);
 
 			ParameterName model = new ParameterName();
 			model.setName("model");
+			model.setDescription("The phenotype model: the usual normal model, a model for binary traits, a two-part model or non-parametric analysis.");
 			model.setParameterSet(rqtlParams);
 			db.add(model);
 			
 			ParameterName stepsize = new ParameterName();
 			stepsize.setName("stepsize");
+			stepsize.setDescription("The marker interval used in some methods of mapping. For example, composite interval mapping on marker intervals of 1, 2 or 5 cM.");
 			stepsize.setParameterSet(rqtlParams);
 			db.add(stepsize);
 				
@@ -138,7 +142,7 @@ public class AddClusterMetaModel
 			
 			Analysis rqtlScan = new Analysis();
 			rqtlScan.setName("Rqtl_analysis");
-			rqtlScan.setDescription("This is a basic QTL analysis performed in the R environment for statistical computing, powered by the R/qtl package. R/qtl is an extensible, interactive environment for mapping quantitative trait loci (QTL) in experimental crosses. For more information, please visit the <a href=\"http://www.rqtl.org\">R/qtl website</a>.");
+			rqtlScan.setDescription("This is a basic QTL analysis performed in the R environment for statistical computing, powered by the R/qtl package. R/qtl is an extensible, interactive environment for mapping quantitative trait loci (QTL) in experimental crosses. For more information, please visit the <a target=\"_blank\" href=\"http://www.rqtl.org\">R/qtl website</a>.");
 			rqtlScan.setDataSet(rqtlData);
 			rqtlScan.setParameterSet(rqtlParams);
 			rqtlScan.setTargetFunctionName("QTL");
@@ -153,6 +157,7 @@ public class AddClusterMetaModel
 
 			ParameterName minName = new ParameterName();
 			minName.setName("message");
+			minName.setDescription("Example parameter. Sets the name to be 'helloed'.");
 			minName.setParameterSet(minjobParams);
 			db.add(minName);
 				

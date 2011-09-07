@@ -34,7 +34,7 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->
 
-<h2>XGAP data matrix overview</h2>
+<h2>Tag data</h2>
 <h5>This screen provides an overview of all data matrices stored in your database.
 The status of the storage is checked and displayed. You can import matrices here if there is no
 associated storage for Data (matrix) definition. These tags are taken from the 'Add analysis' menu: Datasets and Datanames. In addition, you can tag matrices and view some

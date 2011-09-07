@@ -42,6 +42,8 @@
 		<entity name="ParameterName" implements="Nameable" xref_label="name">
 			<field name="ParameterSet" type="xref" nillable="false"
 				xref_entity="ParameterSet" xref_field="id" xref_label="name" />
+			<field name="Description" nillable="true" type="varchar"
+				length="127" description="Optional description of this parameter." />
 			<unique fields="name,ParameterSet" description="Name is unique within a ParameterSet" />
 		</entity>
 		<entity name="ParameterValue" implements="Nameable" xref_label="name">

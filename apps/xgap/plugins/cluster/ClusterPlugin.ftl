@@ -240,6 +240,7 @@ You have selected: <b>${model.selectedAnalysis.name}</b><br><br>
 		<tr>
 			<td>
 				${p_n.getName()}:
+				<div style="display: inline; font-size: x-small; text-align: center;" onmouseover="return overlib('${p_n.description}', CAPTION, 'Description')" onmouseout="return nd();"><nobr><u>[info]</u></nobr></div>
 			</td>
 			<td>
 			<#--select name="parameterNameID${p_n.getId()}"-->
