@@ -227,6 +227,8 @@ public class ClusterDemo extends PluginModel<Entity>
 				//needed to view/add matrices
 				"org.molgenis.data.BinaryDataMatrix",
 				"org.molgenis.data.CSVDataMatrix",
+				"org.molgenis.data.DecimalDataElement",
+				"org.molgenis.data.TextDataElement",
 				
 				//needed to add most data and view investigation overview
 				"org.molgenis.pheno.ObservationElement",
