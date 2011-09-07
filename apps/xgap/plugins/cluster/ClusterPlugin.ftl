@@ -239,8 +239,7 @@ You have selected: <b>${model.selectedAnalysis.name}</b><br><br>
 		<#list model.parameternames as p_n>
 		<tr>
 			<td>
-				${p_n.getName()}:
-				<div style="display: inline; font-size: x-small; text-align: center;" onmouseover="return overlib('${p_n.description}', CAPTION, 'Description')" onmouseout="return nd();"><nobr><u>[info]</u></nobr></div>
+				${p_n.getName()}: <#if p_n.description?exists><div style="display: inline; font-size: x-small; text-align: center;" onmouseover="return overlib('${p_n.description}', CAPTION, 'Description')" onmouseout="return nd();"><nobr><u>[info]</u></nobr></div></#if>
 			</td>
 			<td>
 			<#--select name="parameterNameID${p_n.getId()}"-->
