@@ -138,7 +138,7 @@ public class AddClusterMetaModel
 			
 			Analysis rqtlScan = new Analysis();
 			rqtlScan.setName("Rqtl_analysis");
-			rqtlScan.setDescription("This is a basic QTL analysis performed in the R environment for statistical computing, powered by the R/qtl package.");
+			rqtlScan.setDescription("This is a basic QTL analysis performed in the R environment for statistical computing, powered by the R/qtl package. R/qtl is an extensible, interactive environment for mapping quantitative trait loci (QTL) in experimental crosses. For more information, please visit the <a href=\"http://www.rqtl.org\">R/qtl website</a>.");
 			rqtlScan.setDataSet(rqtlData);
 			rqtlScan.setParameterSet(rqtlParams);
 			rqtlScan.setTargetFunctionName("QTL");
@@ -188,6 +188,7 @@ public class AddClusterMetaModel
 			minjob.setName("Hello_analysis");
 			minjob.setDataSet(emptyDataSet);
 			minjob.setParameterSet(minjobParams);
+			minjob.setDescription("This is a minimal example analysis which only prints a name to the running analysis status messages.");
 			minjob.setTargetFunctionName("MIN");
 			db.add(minjob);
 			

@@ -57,7 +57,8 @@
 
 <#if model.state="main">
 <br>
-<h1>Run QTL mapping</h1><br><br>
+<h1>Run QTL mapping</h1><br>
+This is the main menu for starting a new analysis or viewing the progress of running analysis. Analyses use preconfigured sets of data and parameters, and calculate results using R scripts. When successfully completed, you can continue to browse the results. For more information, take a look at <a target="_blank" href="http://www.molgenis.org/wiki/xQTLBiologistRun">the xQTL wiki</a>.<br><br><br>
 <input type="submit" value="Start new analysis" onclick="__action.value='newClusterJob';return true;">
 <br><br>
 <input type="submit" value="View running analysis" onclick="__action.value='viewJobManager';return true;">
@@ -80,7 +81,7 @@
 
 <#elseif model.state="newjob1">
 <br>
-<h3>Step 1</h3><br><br>
+<h3>Step 1</h3>Define result, choose analysis and in how many parts the computations should be chopped up. <a target="_blank" href="http://www.molgenis.org/wiki/xQTLBiologistRun">More detail</a>.<br><br>
 <table>
 	<tr>
 		<td>
@@ -104,7 +105,7 @@
 	</tr>
 	<tr>
 		<td>
-			Select amount of subjobs (limited to 50):
+			Select amount of divided parts:
 		</td>
 		<td>
 			<select name="nJobs">
@@ -190,82 +191,77 @@
 <b>Step 2</b><br>
 <br>
 
-Select input data:<br><br>
-<table>
-	<tr>
-		<td>
-			<b>Name</b>
-		</td>
-		<td>
-			<b>Option</b>
-		</td>
-		<!--td><b>Split by</b></td-->
-	</tr>
-	<#list model.datanames as d_n>
-	<tr>
-		<td>
-			${d_n.getName()}:
-		</td>
-		<td>
-			<#--select name="dataNameID${d_n.getId()}"-->
-			<select name="${d_n.getName()}">
-				<#list model.datavalues as d_v>
-					<#if d_v.getValue()??>
-					<#if d_v.dataname == d_n.getId()>
-						<#--option value="dataValueID${d_v.getId()}">${d_v.getName()}</option-->
-						<option value="${d_v.getValue()?c}">${d_v.getName()}</option>
-					</#if>
+You have selected: <b>${model.selectedAnalysis.name}</b><br><br>
+<#if model.selectedAnalysis.description?exists><i>${model.selectedAnalysis.description}</i><br><br></#if>
+
+<#if model.datanames?size gt 0>
+	Select input data:<br>
+	<table cellpadding="2">
+		<tr>
+			<!--td><b>Split by</b></td-->
+		</tr>
+		<#list model.datanames as d_n>
+		<tr>
+			<td>
+				${d_n.getName()}:
+			</td>
+			<td>
+				<#--select name="dataNameID${d_n.getId()}"-->
+				<select name="${d_n.getName()}">
+					<#list model.datavalues as d_v>
+						<#if d_v.getValue()??>
+						<#if d_v.dataname == d_n.getId()>
+							<#--option value="dataValueID${d_v.getId()}">${d_v.getName()}</option-->
+							<option value="${d_v.getValue()?c}">${d_v.getName()}</option>
+						</#if>
+						</#if>
+					</#list>
+				</select>
+			</td>
+		<!--td>
+			<#if d_n.getName() == "phenotypes">
+			<INPUT id="iterator" type="radio" value="${d_n.getName()}_r" name="itteratorGroup">rows
+			<INPUT id="iterator" type="radio" value="${d_n.getName()}_c" name="itteratorGroup" CHECKED>cols<BR>
+			<#else>
+			<INPUT id="iterator" type="radio" value="${d_n.getName()}_r" name="itteratorGroup">rows
+			<INPUT id="iterator" type="radio" value="${d_n.getName()}_c" name="itteratorGroup">cols<BR>
+			</#if>
+		</td-->
+		</tr>
+		</#list>
+	</table>
+	<br>
+</#if>
+
+<#if model.parameternames?size gt 0>
+	Select parameters:<br>
+	<table cellpadding="2">
+		<#list model.parameternames as p_n>
+		<tr>
+			<td>
+				${p_n.getName()}:
+			</td>
+			<td>
+			<#--select name="parameterNameID${p_n.getId()}"-->
+			<select name="${p_n.getName()}">
+				<#list model.parametervalues as p_v>
+					<#if p_v.parametername == p_n.getId()>
+						<#--option value="parameterValueID${p_v.getId()}">${p_v.getName()}</option-->
+						<option value="${p_v.getValue()}">${p_v.getName()}</option>
 					</#if>
 				</#list>
 			</select>
-		</td>
-	<!--td>
-		<#if d_n.getName() == "phenotypes">
-		<INPUT id="iterator" type="radio" value="${d_n.getName()}_r" name="itteratorGroup">rows
-		<INPUT id="iterator" type="radio" value="${d_n.getName()}_c" name="itteratorGroup" CHECKED>cols<BR>
-		<#else>
-		<INPUT id="iterator" type="radio" value="${d_n.getName()}_r" name="itteratorGroup">rows
-		<INPUT id="iterator" type="radio" value="${d_n.getName()}_c" name="itteratorGroup">cols<BR>
-		</#if>
-	</td-->
-	</tr>
-	</#list>
-</table>
-<br>
-Select parameters:<br><br>
-<table>
-	<tr>
-		<td>
-			<b>Parameter</b>
-		</td>
-		<td>
-			<b>Value</b>
-		</td>
-	</tr>
-	<#list model.parameternames as p_n>
-	<tr>
-		<td>
-			${p_n.getName()}:
-		</td>
-		<td>
-		<#--select name="parameterNameID${p_n.getId()}"-->
-		<select name="${p_n.getName()}">
-			<#list model.parametervalues as p_v>
-				<#if p_v.parametername == p_n.getId()>
-					<#--option value="parameterValueID${p_v.getId()}">${p_v.getName()}</option-->
-					<option value="${p_v.getValue()}">${p_v.getName()}</option>
-				</#if>
-			</#list>
-		</select>
-		</td>
-	</tr>
-	</#list>
-</table>
-<br>
+			</td>
+		</tr>
+		</#list>
+	</table>
+	<br>
+</#if>
+
 <input type="submit" value="Previous" onclick="__action.value='toStep1';return true;"/>
 <input type="submit" value="Start" onclick="__action.value='startClusterJob';return true;"/>
 
-<br>
+
 
 <#elseif model.state="jobmanager">
 <br>Refresh page every

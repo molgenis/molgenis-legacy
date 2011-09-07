@@ -649,7 +649,8 @@ public class ClusterPlugin extends PluginModel<Entity>
 			{
 				Analysis analysis = db.find(Analysis.class,
 						new QueryRule("id", Operator.EQUALS, model.getCandidateJob().getAnalysis())).get(0);
-
+				model.setSelectedAnalysis(analysis);
+				
 				ParameterSet paramset = db.find(ParameterSet.class,
 						new QueryRule("id", Operator.EQUALS, analysis.getParameterSet())).get(0);
 				DataSet dataset = db.find(DataSet.class, new QueryRule("id", Operator.EQUALS, analysis.getDataSet()))

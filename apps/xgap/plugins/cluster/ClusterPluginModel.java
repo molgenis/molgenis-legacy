@@ -32,6 +32,7 @@ public class ClusterPluginModel
 	
 	String state;
 	String selectedComputeResource;
+	Analysis selectedAnalysis;
 	
 	HashMap<String, String> jobParamMap = new HashMap<String, String>();
 	
@@ -51,6 +52,14 @@ public class ClusterPluginModel
 	
 	
 
+	public Analysis getSelectedAnalysis()
+	{
+		return selectedAnalysis;
+	}
+	public void setSelectedAnalysis(Analysis selectedAnalysis)
+	{
+		this.selectedAnalysis = selectedAnalysis;
+	}
 	public String getDeployName()
 	{
 		return deployName;
