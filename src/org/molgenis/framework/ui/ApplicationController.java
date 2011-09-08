@@ -171,17 +171,22 @@ public class ApplicationController extends
 			}
 			return;
 		}
-		//no target set, handle centrally
+		// No target set -> handle centrally.
 		else
 		{
 			if(!request.isNull("GALAXY_URL"))
 			{
+				// If a user navigated to Molgenis from a session on a Galaxy server, 
+				// we keep track of the Galaxy server address, so when this user wants 
+				// to send (upload) data to Galaxy we know which one to send the data to.
+				// (In fact we do not send the data directly, but an URL that can be used 
+				// by Galaxy to fetch the data)
 				this.setGalaxyUrl(request.getString("GALAXY_URL"));
-				logger.info("set galaxy url to "+this.getGalaxyUrl());
+				logger.info("User was forwarded to Molgenis by Galaxy server "+this.getGalaxyUrl());
 			}
 		}
 
-		// delegate
+		// Delegate
 		ScreenController<?> target = get(screen);
 		if (target != null)
 		{
