@@ -40,7 +40,9 @@
 		<pathelement location="apps/bioshare" />
 		<pathelement location="apps/cvdb" />
 		<pathelement location="apps/gids" />
+		<!--
 		<pathelement location="apps/lifelines" />
+		-->
 		<pathelement location="apps/maze" />
 		<pathelement location="apps/xgap" />
 		<pathelement location="publicdata" />
