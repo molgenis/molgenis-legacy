@@ -12,13 +12,13 @@ import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.auth.MolgenisRoleGroupLink;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.core.MolgenisEntity;
-import java.text.ParseException;
 </#if>
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import java.text.ParseException;
 
 public class FillMetadata {
 	protected static final transient Logger logger = Logger.getLogger(FillMetadata.class);
