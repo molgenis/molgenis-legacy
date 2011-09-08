@@ -19,7 +19,7 @@ public class PipelineThread implements Runnable
     private Pipeline pipeline = null;
     private LoggingReader monitor = new LoggingReader();
     private Grid grid = null;
-
+    private ExecutorService exec = null;
 
     public PipelineThread(Pipeline pipeline, Grid grid, String logfile)
     {
@@ -38,7 +38,7 @@ public class PipelineThread implements Runnable
         this.pipeline = pipeline;
         this.grid = grid;
 
-                //to monitor pipeline execution from outside
+        //to monitor pipeline execution from outside
         pipeline.setMonitor(monitor);
 
         //set pipeline for demo purposes
@@ -50,7 +50,7 @@ public class PipelineThread implements Runnable
 
     public void run()
     {
-        ExecutorService exec = grid.newGridExecutorService();
+        exec = grid.newGridExecutorService();
 
         int numberOfSteps = pipeline.getNumberOfSteps();
 
@@ -65,37 +65,33 @@ public class PipelineThread implements Runnable
 
             for (int j = 0; j < step.getNumberOfScripts(); j++)
             {
-                Script script = step.getScript(j);
+               Script script = step.getScript(j);
+               boolean error = submitScript(script);
 
-                Future<RemoteResult> future = exec.submit(new RemoteScriptSubmitter(script));
-
-                RemoteResult back = null;
-                try
+                while (error)
                 {
-                    back = future.get();
+                    System.out.println("error occurs");
+                    try
+                    {
+                        Thread.sleep(3000);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
+                    error = submitScript(script);
                 }
-                catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
-                catch (ExecutionException e)
-                {
-                    e.printStackTrace();
-                }
-
-                System.out.println("output: " + back.getOutString());
-                System.out.println("error: " + back.getErrString());
 
             }
 
             //here monitor step execution
             monitor.setStep(step);
 
-            while(!step.isFinished())
+            while (!step.isFinished())
             {
                 boolean isFinished = monitor.isStepFinished();
 
-                if(isFinished)
+                if (isFinished)
                 {
                     step.setFinished(true);
                     step.setActive(false);
@@ -117,5 +113,34 @@ public class PipelineThread implements Runnable
         pipeline.setFinished(true);
         System.out.println("... pipeline " + pipeline.getId() + "finished");
 
+    }
+
+    private boolean submitScript(Script script)
+    {
+        Future<RemoteResult> future = exec.submit(new RemoteScriptSubmitter(script));
+
+        RemoteResult back = null;
+        try
+        {
+            back = future.get();
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+        catch (ExecutionException e)
+        {
+            e.printStackTrace();
+        }
+
+        String output = back.getOutString();
+        String error = back.getErrString();
+
+        System.out.println("output: " + output);
+        System.out.println("error: " + error);
+
+        if(error.toCharArray().length > 0 || output.toCharArray().length == 0)
+            return true;
+        return false;
     }
 }

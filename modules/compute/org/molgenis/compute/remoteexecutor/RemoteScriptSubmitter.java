@@ -39,16 +39,17 @@ public class RemoteScriptSubmitter implements Callable<RemoteResult>, Serializab
         }
 
         //sumbit script
-        System.out.print(">>> submit " + script.getRemoteDir() + script.getRemotename());
         SysCommandExecutor cmdExecutor = new SysCommandExecutor();
 
+        String command;
         if(script.isShort())
-            cmdExecutor.runCommand(SUB_SHORT + script.getRemoteDir() + script.getRemotename());
+            command = SUB_SHORT + script.getRemoteDir() + script.getRemotename();
         else
-            cmdExecutor.runCommand(SUB + script.getRemoteDir() + script.getRemotename());
+            command = SUB + script.getRemoteDir() + script.getRemotename();
 
-        //cmdExecutor.runCommand("sh " + script.getRemoteDir() + script.getRemotename() + " &");
-        //System.out.print("sh " + script.getRemoteDir() + script.getRemotename() + " &");
+        cmdExecutor.runCommand(command);
+        System.out.println(command);
+
         System.out.println("...done");
 
         String cmdError = cmdExecutor.getCommandError();
