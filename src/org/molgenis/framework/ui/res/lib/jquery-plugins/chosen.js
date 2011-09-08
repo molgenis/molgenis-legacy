@@ -58,6 +58,7 @@
       this.default_text = this.form_field_jq.data('placeholder') ? this.form_field_jq.data('placeholder') : this.default_text_default;
       container_div = $("<div />", {
         id: this.container_id,
+        title: this.form_field_jq.attr('title'),
         "class": "chzn-container ui-widget-content ui-corner-all" + (this.is_rtl ? 'chzn-rtl' : ''),
         style: 'width: ' + this.f_width + 'px;'
       });
