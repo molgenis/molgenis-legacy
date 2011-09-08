@@ -34,11 +34,12 @@ public class GenericWizard extends PluginModel<Entity> {
 		super(name, parent);
 	}
 
-	@Override
-	public String getCustomHtmlHeaders() {
-		return "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>";
-
-	}
+// moved overlib to molgenis core
+//	@Override
+//	public String getCustomHtmlHeaders() {
+//		return "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>";
+//
+//	}
 
 	@Override
 	public String getViewName() {

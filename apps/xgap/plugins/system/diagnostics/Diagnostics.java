@@ -28,12 +28,13 @@ public class Diagnostics<E extends Entity> extends PluginModel<E> {
 	public Diagnostics(String name, ScreenController<?> parent) {
 		super(name, parent);
 	}
-
-	@Override
-	public String getCustomHtmlHeaders() {
-		return "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>";
-
-	}
+	
+// moved overlib to molgenis core
+//	@Override
+//	public String getCustomHtmlHeaders() {
+//		return "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>";
+//
+//	}
 
 	@Override
 	public String getViewName() {

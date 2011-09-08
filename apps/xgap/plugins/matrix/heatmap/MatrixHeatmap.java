@@ -53,8 +53,8 @@ public class MatrixHeatmap extends PluginModel
 		return "<script type=\"text/javascript\" src=\"res/scripts/range.js\"></script>\n"
 				+ "<script type=\"text/javascript\" src=\"res/scripts/timer.js\"></script>\n"
 				+ "<script type=\"text/javascript\" src=\"res/scripts/slider.js\"></script>\n"
-				+ "<link type=\"text/css\" rel=\"StyleSheet\" href=\"res/css/bluecurve/bluecurve.css\" />\n"
-				+ "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>\n";
+				+ "<link type=\"text/css\" rel=\"StyleSheet\" href=\"res/css/bluecurve/bluecurve.css\" />\n";
+				// moved overlib to molgenis core+ "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>\n";
 	}
 
 	@Override
