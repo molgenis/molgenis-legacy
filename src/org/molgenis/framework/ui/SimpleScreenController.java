@@ -17,6 +17,7 @@ import java.io.Serializable;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.FileLink;
 import org.molgenis.util.RedirectedException;
@@ -232,7 +233,7 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
 		this.view = view;
 	}
 
-	public String render()
+	public String render() throws HtmlInputException
 	{
 		return this.getView().render();
 	}

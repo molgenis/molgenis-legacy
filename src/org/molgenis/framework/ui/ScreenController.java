@@ -17,6 +17,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.FileLink;
 import org.molgenis.util.RedirectedException;
@@ -130,7 +131,7 @@ public interface ScreenController<MODEL extends ScreenModel> extends
 
 	public FileLink getTempFile() throws IOException;
 
-	String render();
+	String render() throws HtmlInputException;
 
 	String getCustomHtmlHeaders();
 

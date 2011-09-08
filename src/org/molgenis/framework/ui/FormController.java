@@ -111,6 +111,10 @@ public abstract class FormController<E extends Entity> extends
 		try
 		{
 			String action = request.getString(FormModel.INPUT_ACTION);
+			if (request.getString(FormModel.INPUT_COMMAND) != null)
+			{
+				action = request.getString(FormModel.INPUT_COMMAND);
+			}
 
 			// get the selected ids into the screen list (if any)
 			model.setSelectedIds(request.getList(FormModel.INPUT_SELECTED));
@@ -124,7 +128,7 @@ public abstract class FormController<E extends Entity> extends
 
 			if (action == null || action == "")
 			{
-				logger.debug("action does not exist");
+				logger.debug("action or command does not exist");
 				return;
 			}
 			// delegate to a command
@@ -147,7 +151,8 @@ public abstract class FormController<E extends Entity> extends
 
 				// reset the filters...
 				pager.resetFilters();
-				for(QueryRule rewrittenRule: this.rewriteAllRules(db, model.getUserRules()))
+				for (QueryRule rewrittenRule : this.rewriteAllRules(db,
+						model.getUserRules()))
 				{
 					pager.addFilter(rewrittenRule);
 				}
@@ -315,10 +320,11 @@ public abstract class FormController<E extends Entity> extends
 				.getString("__filter_operator"));
 		System.out.println(">>>>>>>>>>>>Operator" + operator);
 		String value = request.getString("__filter_value");
-		if(StringUtils.isEmpty(value)) { //to prevent null-pointer exception
+		if (StringUtils.isEmpty(value))
+		{ // to prevent null-pointer exception
 			value = "";
 		}
-		
+
 		System.out.println(">>>>>>>>>>>>value" + value);
 		// automatically add LIKE delimiters %
 		if (operator.equals(Operator.LIKE) && !value.contains("%"))
@@ -332,18 +338,18 @@ public abstract class FormController<E extends Entity> extends
 		// //System.out.println(">>>>>>>getMetaData().getClass" +
 		// db.getMetaData());
 		// Class<? extends Entity> entityClass = this.getEntityClass();
-		//		
-		//			
+		//
+		//
 		// //System.out.println(">>>>>>>getMetaData().getClass" +
 		// entityClass.getSuperclass().toString());
-		//			
+		//
 		// //entityClass.getClassLoader();
 		//
 		// //entityClass.getSuperclass();
 		// //entityClass.getSuperclass().getTypeParameters();
 		// //System.out.println(">>>>>>> getSimpleName " +
 		// entityClass.getSuperclass().getSimpleName());
-		//			
+		//
 		// // 1 - get the possible fields for the entity that were looking at
 		// System.out.println(">>>>>>>entityLabel" + entityLabel);
 		// System.out.println(">>>>>>>entityControllerClassName"+
@@ -355,7 +361,7 @@ public abstract class FormController<E extends Entity> extends
 		//
 		// QueryRule orRule = new QueryRule(Operator.OR);
 		// boolean first = true;
-		//			
+		//
 		// // 2 - iterate fields and build the queryrules - if field != "__Type"
 		// for (Field field : eType.getFields()) {
 		// System.out.println("*** FIELD NAME : " +
@@ -389,7 +395,8 @@ public abstract class FormController<E extends Entity> extends
 
 		// reload the filters...
 		pager.resetFilters();
-		for(QueryRule rewrittenRule: this.rewriteAllRules(db, model.getUserRules()))
+		for (QueryRule rewrittenRule : this.rewriteAllRules(db,
+				model.getUserRules()))
 		{
 			pager.addFilter(rewrittenRule);
 		}
@@ -407,8 +414,9 @@ public abstract class FormController<E extends Entity> extends
 	 * @throws DatabaseException
 	 * @throws MolgenisModelException
 	 */
-	public QueryRule[] rewriteAllRules(Database db, List<QueryRule> rulesToRewrite)
-			throws DatabaseException, MolgenisModelException
+	public QueryRule[] rewriteAllRules(Database db,
+			List<QueryRule> rulesToRewrite) throws DatabaseException,
+			MolgenisModelException
 	{
 		List<QueryRule> result = new ArrayList<QueryRule>();
 		for (QueryRule r : rulesToRewrite)
@@ -436,7 +444,9 @@ public abstract class FormController<E extends Entity> extends
 
 						// getsSearchField will map the field to field_name in
 						// case of xref/mref
-						QueryRule fieldRule = new QueryRule(this.getSearchField(field.getName()), r.getOperator(), r.getValue());
+						QueryRule fieldRule = new QueryRule(
+								this.getSearchField(field.getName()),
+								r.getOperator(), r.getValue());
 						// if(field.getType().getClass().getSimpleName().equals("XrefField")
 						// ||
 						// field.getType().getClass().getSimpleName().equals("MrefField")
@@ -455,12 +465,12 @@ public abstract class FormController<E extends Entity> extends
 					}
 				}
 
-				//return pager.addFilter(new QueryRule(all));
+				// return pager.addFilter(new QueryRule(all));
 				result.add(new QueryRule(all));
 			}
 			else
 			{
-				//pager.addFilter(r);
+				// pager.addFilter(r);
 				result.add(r);
 			}
 		}
@@ -497,26 +507,25 @@ public abstract class FormController<E extends Entity> extends
 
 				model.setSystemRules(newSystemRules);
 
-				
-				 for (QueryRule rule : this.rewriteAllRules(db, model.getUserRules()))
-				 {
-					 pager.addFilter(rule);
-				 }
+				for (QueryRule rule : this.rewriteAllRules(db,
+						model.getUserRules()))
+				{
+					pager.addFilter(rule);
+				}
 			}
 
 			// check view and set limit accordingly
 			// if (view.getMode().equals(Mode.EDIT_VIEW) && !view.isReadonly())
 			// view.setMode(Mode.RECORD_VIEW);
 
-			if (model.getMode().equals(Mode.EDIT_VIEW))
-				pager.setLimit(1);
+			if (model.getMode().equals(Mode.EDIT_VIEW)) pager.setLimit(1);
 			else
 				pager.setLimit(model.getLimit());
 
 			// refresh pager and options
 			if (model.isReadonly())
 			// view.getDatabase().cacheXrefOptions(view.getEntityClass());
-				pager.refresh(db);
+			pager.refresh(db);
 
 			// update view
 
@@ -589,8 +598,7 @@ public abstract class FormController<E extends Entity> extends
 			boolean rowReadonly = formReadonly
 					|| !model.getSecurity().canWrite(record.getClass());
 
-			if (rowReadonly) 
-				record.setReadonly(true);
+			if (rowReadonly) record.setReadonly(true);
 			// else
 			// recordreadonly = false;
 

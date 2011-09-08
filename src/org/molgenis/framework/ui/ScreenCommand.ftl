@@ -14,6 +14,7 @@
 	<table>
 			<input type="hidden" name="__target" value="${model.target}"/>
 			<input type="hidden" name="__action" value="${model.name}"/> 
+			<input type="hidden" name="__command" value="${model.name}"/> 
 			<input type="hidden" name="__show"/> 
 	<#assign requiredcount = 0 />
 	<#assign required = "" />

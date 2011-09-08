@@ -156,6 +156,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 
 	// CONSTANTS
 	public static final String INPUT_SHOW = "__show";
+	public static final String INPUT_COMMAND = "__command";
 	public static final String INPUT_OFFSET = "__offset";
 	public static final String INPUT_DOWNLOADFILENAME = "__filename";
 	public static final String INPUT_BATCHADD = "__batchadd";

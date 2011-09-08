@@ -25,6 +25,7 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.ui.commands.CommandMenu;
 import org.molgenis.framework.ui.commands.ScreenCommand;
+import org.molgenis.framework.ui.html.HtmlInputException;
 
 /**
  * Base-class for a screen displaying information from the invengine system to
@@ -86,7 +87,7 @@ public abstract class SimpleScreenModel implements
 
 	}
 	
-	public String render()
+	public String render() throws HtmlInputException
 	{
 		return this.getController().render();
 	}
