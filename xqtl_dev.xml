@@ -205,7 +205,7 @@
 	RUN - Step 8: Start the application.
 	-->
 	<target name="run" description="Start the application">
-		<java classname="boot.RunStandalone" fork="yes" failonerror="true">
+		<java maxmemory="512m" classname="boot.RunStandalone" fork="yes" failonerror="true">
 			<classpath>
 				<path refid="molgenis-libs" />
 				<path refid="app-libs" />
@@ -220,7 +220,7 @@
 	Usage: ant -f xqtl_dev.xml runOn -Dport=9000
 	-->
 	<target name="runOn" description="Start the application">
-		<java classname="boot.RunStandalone" fork="yes" failonerror="true">
+		<java maxmemory="512m" classname="boot.RunStandalone" fork="yes" failonerror="true">
 			<arg value="${port}"/>
 			<classpath>
 				<path refid="molgenis-libs" />

@@ -280,7 +280,7 @@
 		<!--delete includeemptydirs="true">
 			<fileset dir="${dist}" includes="**/*" />
 		</delete-->
-		<java jar="Application.jar" fork="yes" failonerror="true" />
+		<java maxmemory="512m" jar="Application.jar" fork="yes" failonerror="true" />
 	</target>
 
 </project>
