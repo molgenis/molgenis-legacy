@@ -171,12 +171,14 @@ public class UserLogin extends EasyPluginController<UserLoginModel>
 			
 			MolgenisUserService userService = MolgenisUserService.getInstance(db);
 			MolgenisUser user               = this.toMolgenisUser(request);
-			userService.insert(user);
 			
 			// Get the email address of admin user.
 			MolgenisUser admin              = userService.findById(this.getApplicationController().getLogin().getUserId());
 			if (StringUtils.isEmpty(admin.getEmailaddress()))
-				throw new DatabaseException("Internal error. Please contact the owner of the site per email.");
+				throw new DatabaseException("Registration failed: the administrator has no email address set used to confirm your registration. Please contact your administrator about this.");
+			
+			//only insert if admin has an email set
+			userService.insert(user);
 
 			// Email the admin
 			String activationURL =
