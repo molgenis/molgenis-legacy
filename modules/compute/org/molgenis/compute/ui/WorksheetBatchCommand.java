@@ -32,6 +32,7 @@ public class WorksheetBatchCommand extends SimpleCommand
     String currentRequest = "";
 
     private ActionInput runButton;
+    private ActionInput runButton2;
 
     public WorksheetBatchCommand(ScreenController<?> parentController)
     {
@@ -42,8 +43,13 @@ public class WorksheetBatchCommand extends SimpleCommand
         this.setToolbar(true);
         this.setIcon("generated-res/img/run.png");
 
-        runButton = new ActionInput("Generate", ActionInput.Type.NEXT);
+        runButton = new ActionInput("knop1", ActionInput.Type.NEXT);
+        runButton.setButtonValue("Generate");
         runButton.setLabel("Generate code for selected lines!");
+        
+        runButton2 = new ActionInput("knop2", ActionInput.Type.NEXT);
+        runButton2.setButtonValue("Generate2");
+        runButton2.setLabel("Generate code for selected lines!");
     }
 
     @Override
@@ -54,6 +60,7 @@ public class WorksheetBatchCommand extends SimpleCommand
 
         TextInput request = new TextInput("request");
         request.setValue(currentRequest);
+        request.setDescription("");
         inputs.add(request);
 
         return inputs;
@@ -65,6 +72,7 @@ public class WorksheetBatchCommand extends SimpleCommand
     {
         List<ActionInput> inputs = new ArrayList<ActionInput>();
         inputs.add(runButton);
+        inputs.add(runButton2);
         return inputs;
     }
 
@@ -85,6 +93,7 @@ public class WorksheetBatchCommand extends SimpleCommand
         System.out.println(">> Selected lines: " + lines);
 
         System.out.println(">> Action: " + action);
+        System.out.println(">> request==" + request.toString());
 
         for(int i = 0; i < this.getActions().size(); i++)
         {
