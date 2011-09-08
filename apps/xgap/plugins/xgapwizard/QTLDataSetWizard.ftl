@@ -54,7 +54,7 @@
 				mar2	A	A	B	A	B<br>
 				mar3	A	A	A	A	B</font>
 			</td></tr></table>
-			</div><br>
+			</div><br><b>Your individuals must be in the first line.</b> If they are not, please have a look at <a target="_blank" href="http://www.molgenis.org/wiki/xQTLBiologistImport">the manual</a>.<br><br>
 		</td>
 	</tr>
 	<tr>
@@ -68,7 +68,7 @@
 				trt2	13	673	867	754	234<br>
 				trt3	347	34	375	56	345</font>
 			</td></tr></table>
-			</div><br>
+			</div><br><b>Again, your individuals must be in the first line.</b> If they are not, please have a look at <a target="_blank" href="http://www.molgenis.org/wiki/xQTLBiologistImport">the manual</a>.<br><br>
 		</td>
 	</tr>
 	<tr>
@@ -84,21 +84,13 @@
 				mar4	2	1.913<br>
 				mar5	2	15.059</font>
 			</td></tr></table>
-			</div><br>
+			</div><br><b>Please use this exact first line.</b><br>
 		</td>
 	</tr>
 </table>
-
-<br>
-<b>Important notes:</b><br>
-<ul>
-<li>For a correct new set, the <b>same</b> individual names must be used in the genotype and phenotype file.</li>
-<li>The genotype and phenotype matrix 'rotation' is arbitrary. It does not matter if the individuals are on the rows or columns.</li>
-<li>Multiple seperators can be used in all file uploads. Usual ones include tab, whitespace or comma.</li>
-<li>The markers in the genotype matrix <b>must</b> be annotated in the map file, or QTL analysis will fail.</li>
-<li>It is good practice to also annotate your individuals and traits. In fact, for certain analysis types this is required. (Genetical Genomics, trait heritability estimation, etc)</li>
-</ul>
-
+<br><br>
+<i>For additional information and notes, please refer to the <a target="_blank" href="http://www.molgenis.org/wiki/xQTLBiologistImport">the manual</a>.</i>
+<br><br>
 <#--end of your plugin-->	
 			</div>
 		</div>
