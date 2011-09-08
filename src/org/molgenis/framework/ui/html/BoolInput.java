@@ -114,11 +114,12 @@ public class BoolInput extends HtmlInput<Boolean>
 
 	private String toJquery()
 	{
+		String description = " title=\"" + this.getDescription() + "\"";	
 		if (isReadonly()) return "<select data-placeholder=\"?\" style=\"width: 100px;\" class=\"readonly chzn-no-search ui-widget-content ui-corner-all\" id=\""
 				+ this.getId()
 				+ "\" name=\""
 				+ this.getName()
-				+ "\" readonly=\"readonly\">"
+				+ "\" readonly=\"readonly\" "+description+">"
 				+ "<option value=\""
 				+ getValue()
 				+ "\" selected>"
@@ -131,7 +132,7 @@ public class BoolInput extends HtmlInput<Boolean>
 					+ this.getId()
 					+ "\" name=\""
 					+ this.getName()
-					+ "\">"
+					+ "\" "+ description +">"
 					+ "<option value=\"true\""
 					+ (getValue().equals("yes") ? "selected" : "")
 					+ ">yes</option>"

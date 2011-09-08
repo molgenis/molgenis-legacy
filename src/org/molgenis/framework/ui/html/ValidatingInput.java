@@ -128,10 +128,12 @@ public class ValidatingInput<E> extends HtmlInput<E>
 		String cssClass = this.uiToolkit == UiToolkit.JQUERY ? " class=\"text ui-widget-content ui-corner-all"
 				+ validate + " " + readonly + "\""
 				: "";
+	
+		String description = " title=\""+this.getDescription()+"\"";
 
 		if (this.maxHeight > 1)
 		{
-			String result = "<textarea "
+			String result = "<textarea "+description
 					+ cssClass
 					+ " id=\""
 					+ this.getId()
@@ -144,7 +146,7 @@ public class ValidatingInput<E> extends HtmlInput<E>
 					+ this.getHeight() + "\" " + readonly + " >"
 					+ this.getObjectString() + "</textarea>";
 
-			result += "<script>showTextInput(document.getElementById('"
+			result += "<script>$('#"+getId()+"').bt(); showTextInput(document.getElementById('"
 					+ this.getId() + "')," + this.getMinHeight() + ","
 					+ this.getMaxHeight() + ");</script>";
 
@@ -152,7 +154,7 @@ public class ValidatingInput<E> extends HtmlInput<E>
 		}
 		else
 		{
-			String result = "<input "
+			String result = "<input "+description
 					+ cssClass
 					+ " id=\""
 					+ this.getId()
@@ -165,7 +167,7 @@ public class ValidatingInput<E> extends HtmlInput<E>
 					+ "\">";
 
 			result += "<script>$('#" + this.getId()
-					+ "').autoGrowInput({comfortZone: 16, minWidth:" + this.getWidth()
+					+ "').bt().autoGrowInput({comfortZone: 16, minWidth:" + this.getWidth()
 					* this.fontsize + ", maxWidth: " + this.getMaxWidth()
 					* this.fontsize + "});</script>";
 

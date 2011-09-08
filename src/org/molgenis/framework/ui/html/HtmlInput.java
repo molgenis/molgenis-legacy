@@ -102,7 +102,7 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 		this.setId(name.replace(" ", ""));
 		this.setName(name.replace(" ", ""));
 		this.setLabel(name);
-		this.setDescription(name);
+		//this.setDescription(name);
 		this.setId(name);
 		this.setValue(value);
 	}
@@ -114,7 +114,7 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 		this.setId(name.replace(" ", ""));
 		this.setName(name.replace(" ", ""));
 		this.setLabel(label);
-		this.setDescription(name);
+		//this.setDescription(name);
 		this.setId(name);
 		this.setValue(value);		
 	}

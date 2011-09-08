@@ -89,20 +89,21 @@ public class HyperlinkInput extends HtmlInput<String>
 	@Override
 	public String toHtml()
 	{
-		String readonly = (isReadonly() ? "readonly class=\"readonly\" " : "");
+//		String readonly = (isReadonly() ? "readonly class=\"readonly\" " : "");
 
-		if (this.isHidden())
-		{
+//		if (this.isHidden())
+//		{
 			StringInput input = new StringInput(this.getName(), super
 					.getValue());
 			input.setLabel(this.getLabel());
 			input.setDescription(this.getDescription());
-			input.setHidden(true);
-			return input.toHtml();
-		}
+			input.setHidden(this.isHidden());
+			input.setReadonly(this.isReadonly());
+			return input.toHtml() + this.getValue();
+//		}
 
-		return "<input id=\"" + getId() + "\" name=\"" + getName()
-				+ "\" value=\"" + super.getValue() + "\" " + readonly + " />";
+//		return "<input id=\"" + getId() + "\" name=\"" + getName()
+//				+ "\" value=\"" + super.getValue() + "\" " + readonly + " />";
 	}
 
 	@Override

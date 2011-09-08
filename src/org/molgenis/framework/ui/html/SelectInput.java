@@ -120,10 +120,11 @@ public class SelectInput extends OptionInput<Object>
 		}
 		else if(this.uiToolkit == UiToolkit.JQUERY)
 		{
+			String description = " title=\"" + this.getDescription() + "\"";
 			readonly = this.isReadonly() ? "readonly " : "";
 			return "<select class=\""+readonly+" ui-widget-content ui-corner-all\" id=\"" 
 			+ this.getId() + "\" name=\"" + this.getName() + "\" "
-			+ onchange + " style=\"width:350px;\">\n" + optionsHtml.toString()
+			+ onchange + " style=\"width:350px;\" "+description+">\n" + optionsHtml.toString()
 			+ "</select><script>$(\"#"+this.getId()+"\").chosen();</script>\n";
 		}
 			return "STYLE NOT AVAILABLE";

@@ -18,6 +18,12 @@ input.ui-widget-content, textarea.ui-widget-content {
 	font-size: 13px;
 }
 
+label, label.ui-widget {
+	line-height: 22px;
+	font-size: 13px;
+	font-weight: normal;
+}
+
 /* css for timepicker */
 .ui-timepicker-div .ui-widget-header {
 	margin-bottom: 8px;
