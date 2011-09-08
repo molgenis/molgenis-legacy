@@ -280,8 +280,8 @@ var molgenis_required = new Array(${required});
 			</#if>
 			
 			<#if !input.isHidden()>
-	<tr title="${input.getDescription()}" <#if input.collapse>class="${screen.name}_collapse" id="${screen.name}_collapse_tr_id" </#if>>
-		<td><label>${input.label}<#if !input.isNillable() && !input.isReadonly()> *</#if></label></td>
+	<tr <#if input.collapse>class="${screen.name}_collapse" id="${screen.name}_collapse_tr_id" </#if>>
+		<td style="vertical-align:middle"><label class="ui-widget">${input.label} <#if !input.isNillable() && !input.isReadonly()> *</#if></label></td>
 				<#if screen.readonly >
 					<#if input.getTarget() != "" && input.getObject()?exists >
 					<td class="link" onClick="setInput('${screen.name}_form','_self','','${input.getTarget()}','xref_select','iframe'); document.forms.${screen.name}_form.attribute.value='${input.getTargetfield()}'; document.forms.${screen.name}_form.operator.value='EQUALS'; document.forms.${screen.name}_form.value.value='${input.getObject()}'; document.forms.${screen.name}_form.submit();">${input.getHtmlValue()}</td>	
