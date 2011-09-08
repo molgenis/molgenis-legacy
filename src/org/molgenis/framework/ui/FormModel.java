@@ -282,9 +282,17 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		// File: Add batch
 		super.addCommand(new AddCsvFileCommand("upload_csvfile", this.getController()));
 		
-		// File: Send to galaxy
-		super.addCommand(new GalaxyCommand("send_to_galaxy", this.getController()));
-
+		// Sending data to a Galaxy server.
+		// Note: We do not send the actual data.
+		//       Instead we send a link that Galaxy can GET or POST to fetch the data.
+				
+		// Todo: add option to send only selected records/fields to Galaxy.
+		// File: Send Selected to Galaxy
+		//super.addCommand(new GalaxyCommand("send_selected_to_galaxy", this.getController()));
+		
+		// File: Send All to Galaxy
+		super.addCommand(new GalaxyCommand("send_all_to_galaxy", this.getController()));
+		
 		// EDIT MENU
 		// EDIT: Add new record
 		super.addCommand(new AddCommand("edit_new", this.getController()));
