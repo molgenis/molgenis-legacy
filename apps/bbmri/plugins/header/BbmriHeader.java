@@ -6,8 +6,11 @@
 
 package plugins.header;
 
+import java.text.ParseException;
+
 import org.molgenis.auth.DatabaseLogin;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
@@ -49,11 +52,11 @@ public class BbmriHeader extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, Tuple request) throws Exception
 	{
 		if ("doLogout".equals(request.getAction())) {
 
-				getLogin().logout();
+				getLogin().logout(db);
 		}
 		
 		
@@ -76,11 +79,11 @@ public class BbmriHeader extends PluginModel<Entity>
 		return true;
 	}
 
-	public void Logout() {
-		if (this.getLogin().isAuthenticated()) {
-			getLogin().logout();
-		}	
-	}
+//	public void Logout() {
+//		if (this.getLogin().isAuthenticated()) {
+//			getLogin().logout();
+//		}	
+//	}
 	
 	public void setUserLogin() {
 		if (this.getLogin().isAuthenticated()) {

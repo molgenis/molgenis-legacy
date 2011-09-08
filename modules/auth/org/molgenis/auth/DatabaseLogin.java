@@ -161,11 +161,13 @@ public class DatabaseLogin implements Login, Serializable {
 
 	/**
 	 * {@inheritDoc}
+	 * @throws Exception 
 	 */
 	@Override
-	public void logout()
+	public void logout(Database db) throws Exception
 	{
 		this.user = null;
+		this.reload(db);
 	}
 
 	/** Reloads all permission settings for this user from database.
@@ -221,10 +223,12 @@ public class DatabaseLogin implements Login, Serializable {
 		MolgenisUserService service          = MolgenisUserService.getInstance(db);
 		
 		List<Integer> roleIdList             = service.findGroupIds(role);
+		System.out.println(">>>> roleIdList==" +roleIdList.toString());
 		List<MolgenisPermission> permissions = db.query(MolgenisPermission.class).in(MolgenisPermission.ROLE_, roleIdList).find();
 
 		for (MolgenisPermission permission : permissions)
 		{
+			System.out.println(">>> permission==" + permission + ", role==" + role);
 			if ("read".equals(permission.getPermission()))
 				this.readMap.put(permission.getEntity_ClassName(), Permission.read);
 			else if ("write".equals(permission.getPermission()))
@@ -290,6 +294,8 @@ public class DatabaseLogin implements Login, Serializable {
 	@Override
 	public boolean canRead(Class<? extends Entity> entityClass)	throws DatabaseException
 	{
+		System.out.println("User name >>>>>>>>>>>>>" + this.user);
+		System.out.println("Screen name >>>>>>>>>>>>>" + entityClass.getName() + "Classname >>>>>>>>>> " + this.readMap.containsKey(entityClass.getName()));
 		if (this.isAuthenticated() && this.user.getSuperuser())
 			return true;
 
@@ -355,6 +361,9 @@ public class DatabaseLogin implements Login, Serializable {
 	@Override
 	public boolean canRead(Entity entity) throws DatabaseException
 	{
+		System.out.println("User name >>>>>>>>>>>>>" + this.user);
+		System.out.println("Screen name >>>>>>>>>>>>>" + entity.getClass().getName() + "Classname >>>>>>>>>> " + this.readMap.containsKey(entity.getClass()));
+
 		if (this.isAuthenticated() && this.user.getSuperuser())
 			return true;
 
@@ -441,10 +450,15 @@ public class DatabaseLogin implements Login, Serializable {
 	@Override
 	public boolean canRead(org.molgenis.framework.ui.ScreenController<?> screen)
 	{
+		System.out.println("User name >>>>>>>>>>>>>" + this.user);
+		System.out.println("Screen name >>>>>>>>>>>>>" + screen.getClass().getName() + "Classname >>>>>>>>>> " + this.readMap.containsKey(screen.getClass().getName()));
 		if (this.isAuthenticated() && this.user.getSuperuser())
 			return true;
 
 		String className = screen.getClass().getName();
+
+		
+
 
 		//if (className.equals("app.ui.UserLoginPlugin"))
 		//	return true;

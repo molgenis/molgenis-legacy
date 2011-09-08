@@ -128,8 +128,11 @@ public class UserLogin extends EasyPluginController<UserLoginModel>
 	public void Logout(Database db, Tuple request) throws Exception
 	{
 		this.getModel().setAction("Logout");
-		this.getApplicationController().getLogin().logout();
+		System.out.println(">>> Logging out user==" + this.getApplicationController().getLogin());
+		this.getApplicationController().getLogin().logout(db);
+		System.out.println(">>> Logged out user==" + this.getApplicationController().getLogin());
 		this.getApplicationController().getLogin().reload(db);
+		System.out.println(">>> Called reload");
 	}
 
 	public void Register(Database db, Tuple request)
@@ -142,7 +145,7 @@ public class UserLogin extends EasyPluginController<UserLoginModel>
 		this.getModel().setAction("Cancel");
 	}
 
-	public void AddUser(Database db, Tuple request) throws DatabaseException
+	public void AddUser(Database db, Tuple request) throws Exception
 	{
 		this.getModel().setAction("AddUser");
 
@@ -160,7 +163,7 @@ public class UserLogin extends EasyPluginController<UserLoginModel>
 			if (this.getApplicationController().getLogin().isAuthenticated())
 			{
 				 // if logged in, log out first
-				this.getApplicationController().getLogin().logout();
+				this.getApplicationController().getLogin().logout(db);
 			}
 			
 			// login as admin
@@ -203,12 +206,12 @@ public class UserLogin extends EasyPluginController<UserLoginModel>
 		}
 		finally
 		{
-			this.getApplicationController().getLogin().logout();
+			this.getApplicationController().getLogin().logout(db);
 			this.reload(db);
 		}
 	}
 
-	public void Activate(Database db, Tuple request)
+	public void Activate(Database db, Tuple request) throws Exception
 	{
 		this.getModel().setAction("Activate");
 
@@ -218,7 +221,7 @@ public class UserLogin extends EasyPluginController<UserLoginModel>
     		if (this.getApplicationController().getLogin().isAuthenticated())
     		{
     			 // if logged in, log out first
-    			this.getApplicationController().getLogin().logout();
+    			this.getApplicationController().getLogin().logout(db);
     		}
     		
     		// login as admin
@@ -255,18 +258,18 @@ public class UserLogin extends EasyPluginController<UserLoginModel>
 		}
 		finally
 		{
-			this.getApplicationController().getLogin().logout();
+			this.getApplicationController().getLogin().logout(db);
 		}
 	}
 	
-	public void sendPassword(Database db, Tuple request)
+	public void sendPassword(Database db, Tuple request) throws Exception
 	{
 	    try
 		{
     		if (this.getApplicationController().getLogin().isAuthenticated())
     		{
     			 // if logged in, log out first
-    			this.getApplicationController().getLogin().logout();
+    			this.getApplicationController().getLogin().logout(db);
     		}
     		
     		// login as admin
@@ -309,7 +312,7 @@ public class UserLogin extends EasyPluginController<UserLoginModel>
 		}
 		finally
 		{
-			this.getApplicationController().getLogin().logout();
+			this.getApplicationController().getLogin().logout(db);
 		}
 	}
 

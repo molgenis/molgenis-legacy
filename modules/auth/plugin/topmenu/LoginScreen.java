@@ -209,9 +209,9 @@ public class LoginScreen extends PluginModel<Entity>
 		}
 	}
 
-	private void doLogout(Database db, Tuple request)
+	private void doLogout(Database db, Tuple request) throws Exception
 	{
-		getLogin().logout();
+		getLogin().logout(db);
 		this.state = State.Login;
 	}
 
