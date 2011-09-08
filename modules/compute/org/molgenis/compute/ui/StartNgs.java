@@ -46,7 +46,7 @@ import org.molgenis.util.Tuple;
  * <li>StartNgsModel holds application state and business logic on top of domain model. Get it via this.getModel()/setModel(..)
  * <li>StartNgsView holds the template to show the layout. Get/set it via this.getView()/setView(..).
  */
-public class StartNgs extends EasyPluginController<StartNgsModel>
+public class StartNgs extends EasyPluginController<StartNgsView>
 {
     private static final String PARAMETER = "parameter";//reserved word to show that ComputeFeatureValue goes from WorkflowElementParameter
     private static final String LOG = "log";// reserved word for logging feature type used in ComputeFeature
@@ -91,7 +91,7 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
     public StartNgs(String name, ScreenController<?> parent)
     {
         super(name, null, parent);
-        this.setModel(new StartNgsModel(this)); //the default model
+        this.setModel(new StartNgsView(this)); //the default model
         this.setView(new FreemarkerView("StartNgsView.ftl", getModel())); //<plugin flavor="freemarker"
     }
 
@@ -155,9 +155,12 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         String strMachine = data.getSequencer();
         String strFlowcell = data.getFlowcell();
         String strBarcode = data.getBarcode();
+        strBarcode = adjustBarcode(strBarcode);
         String strSample = data.getExternalSampleID();
         String strCapturing = data.getCapturingKit();
         String strProject = data.getProject();
+
+
 
         //application for the whole workflow
         wholeWorkflowApp = new ComputeApplication();
@@ -247,6 +250,13 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         getModel().setSuccess("update succesfull");
 
         executePipeline(db, pipeline);
+    }
+
+    private String adjustBarcode(String strBarcode)
+    {
+        int start = strBarcode.lastIndexOf(" ");
+        String result =  strBarcode.substring(start + 1);
+        return result;
     }
 
     private void executePipeline(Database db, Pipeline pipeline)
@@ -432,8 +442,8 @@ public class StartNgs extends EasyPluginController<StartNgsModel>
         weaver.setVerificationCommand("\n");
         //finish extra
 
-        //String remoteLocation = "/data/gcc/test_george/";
-        String remoteLocation = "/target/gpfs2/gcc/home/fvandijk/computescripts/";
+        String remoteLocation = "/data/gcc/test_george/";
+        //String remoteLocation = "/target/gpfs2/gcc/home/fvandijk/computescripts/";
 
         weaver.setDatasetLocation(remoteLocation);
 

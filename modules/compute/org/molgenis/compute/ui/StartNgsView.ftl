@@ -3,7 +3,8 @@
 	<!--needed in every form: to redirect the request to the right screen-->
 	<input type="hidden" name="__target" value="${model.name}">
 	<!--needed in every form: to define the action. This can be set by the submit button-->
-	<input type="hidden" name="__action" value="buttonGenerate">
+	<!-- input type="hidden" name="__action" value="buttonGenerate" -->
+    <input type="hidden" name="__action">
 	
 <!-- this shows a title and border -->
 	<div class="formscreen">
@@ -24,14 +25,13 @@
 			<div class="screenpadding">	
 			
 <#--begin your plugin-->	
-${model.buttonStart}
+
+<input type="submit" value="Run analysis" onclick="__action.value='buttonStart';return true;"/>
 <br/>
-${model.buttonGenerate}
+<input type="submit" value="Generate" onclick="__action.value='buttonGenerate';return true;"/>
 <br/>
 ${model.inputStep}
-${model.buttonTest}
-
-<input type="submit" value="Generate pipeline2">
+<input type="submit" value="Test script" onclick="__action.value='buttonTest';return true;"/>
 
 <#--end of your plugin-->	
 			</div>
