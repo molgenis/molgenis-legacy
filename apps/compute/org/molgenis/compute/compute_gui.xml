@@ -110,5 +110,8 @@
 		<menu name="Pbs">
 			<plugin name="QSTAT" type="org.molgenis.compute.ui.QstatPlugin" />
 		</menu>
+		<menu name="AdminDB">
+			<plugin name="AdminDBPlugin" type="org.molgenis.ngs.ui.AdminDBPlugin" />
+		</menu>
 	</menu>
 </molgenis>

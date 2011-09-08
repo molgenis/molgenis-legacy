@@ -107,7 +107,7 @@ public class emptyDatabase
 		}
 		finally
 		{
-			conn.close();
+//			conn.close();
 		}
 	}
 }
