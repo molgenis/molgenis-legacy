@@ -361,8 +361,8 @@ public class DatabaseLogin implements Login, Serializable {
 	@Override
 	public boolean canRead(Entity entity) throws DatabaseException
 	{
-		System.out.println("User name >>>>>>>>>>>>>" + this.user);
-		System.out.println("Screen name >>>>>>>>>>>>>" + entity.getClass().getName() + "Classname >>>>>>>>>> " + this.readMap.containsKey(entity.getClass()));
+		//System.out.println("User name >>>>>>>>>>>>>" + this.user);
+		//System.out.println("Screen name >>>>>>>>>>>>>" + entity.getClass().getName() + "Classname >>>>>>>>>> " + this.readMap.containsKey(entity.getClass()));
 
 		if (this.isAuthenticated() && this.user.getSuperuser())
 			return true;
