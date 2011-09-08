@@ -45,9 +45,7 @@
 				<br><br></td></tr></table>
 			</#if>
 			<br><br>
-			Welcome to <b>xQTL workbench</b>, a platform for the storage and analysis of geno- and phenotypic data.<br> 
-			
-			For manuals and	more information, see <a href="http://www.xgap.org/wiki/xQTL">xQTL workbench wiki</a>.<br><br> xQTL workbench provides the following features: 
+			Welcome to <b>xQTL workbench</b>, a platform for the storage and analysis of geno- and phenotypic data. For manuals and	more information, see <a href="http://www.xgap.org/wiki/xQTL">xQTL workbench wiki</a>.<br><br> xQTL workbench provides the following features: 
 			<ul>
 				<li>Available as an <b>'in-house tool'</b> or used in a <b>collaborative setting</b> via web interfaces</li>
 				<li><b>Customizable</b> database for genetics data using software generators</li>
@@ -216,7 +214,7 @@
 					</td>
 				</tr>
 			</table>
-			<font size=1>(c) 2009-2010 GBIC Groningen</font>
+			<font size=1>(c) 2009-2011 GBIC Groningen</font>
 		</td>
 	</tr>
 </table>

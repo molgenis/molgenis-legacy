@@ -21,8 +21,6 @@
 			</#if>
 		</#list>
 		
-		<div class="screenbody">
-			<div class="screenpadding">	
 <#--begin your plugin-->
 <div align="center">
 <table width="700px">
@@ -47,36 +45,34 @@
 				<br><br></td></tr></table>
 			</#if>
 			<br><br>
-			Welcome to the LifeLines xQTL workbench, a platform for the storage and analysis of genetic and phenotype data.<br> 
-			
-			For manuals and	more information, see <a href="http://www.xgap.org/wiki/xQTL">xQTL workbench wiki</a>.<br><br> xQTL workbench aims to provide the following features: 
+			Welcome to <b>LifeLines Research Platform</b>, based on xQTL workbench, a platform for the storage and analysis of geno- and phenotypic data. For manuals and	more information, see <a href="http://www.xgap.org/wiki/xQTL">xQTL workbench wiki</a>.<br><br> xQTL workbench provides the following features: 
 			<ul>
-				<li>Available as an <b>'In-House tool'</b> or usable in a <b>collaborative setting</b> via web interfaces</li>
-				<li><b>Customizable database</b> for genetics/phenotype data using software generators</li>
-			 	<li>High performance xQTL analysis</li>
+				<li>Available as an <b>'in-house tool'</b> or used in a <b>collaborative setting</b> via web interfaces</li>
+				<li><b>Customizable</b> database for genetics data using software generators</li>
+			 	<li>High <b>performance</b> xQTL analysis</li>
 				<li>Three levels of users:
 					<ul>
-						<li><b>Biologists</b> - Running analysis</li>
-			        	<li><b>Bio-informaticians</b> - Adding new analysis and tools</li>
-					 	<li><b>Administrators</b> - Checks for the infrastructure guys</li>
+						<li><b>Biologists</b> - Import, browse and analyze data</li>
+			        	<li><b>Bio-informaticians</b> - Add new analysis and tools</li>
+					 	<li><b>Administrators</b> - User and database management</li>
 					</ul>
-					And user management to data and analysis tools
 				</li>
 			 	<li>Extensible computation interface</li>
 			 	<ul>
-			 		<li>Biologists can run <b>pre-defined analysis</b></li>
-			     	<li>Bio-informaticians can <b>add their own (R) analysis</b></li>
-			     	<li>Manage previous analysis and their settings</li>
+			 		<li>Biologists can run <b>pre-defined analyses</b></li>
+			     	<li>Bio-informaticians can <b>add their own (R) scripts</b></li>
+			     	<li><b>Recombine</b> datasets and scripts into new analyses</li>
 			 	</ul>
 			 </li>
-			 <li>Automatic annotation of identifiers
+			 <li><b>Automatic annotation</b> of identifiers
 			 ${screen.linkouter.render("<ul><li>A Thaliana: AT3G1000 At1g10000 At5G20000</li>
 			         <li>C. Elegans: WBGene00000083</li>
 					 <li>NCBI: NG_006560.2 LOC729998 AC008038.1</li>
 					 <li>KEGG: K06560 K00134 K29897</li>
 				</ul>")}
 			</li>
-			<li>Build using the <b>software generation</b> allowing for easy tailoring to your needs</li>
+			<li>Fully <b>open</b> user management and permission system</li>
+			<li>Created using <b>software generation</b> allowing for quick tailoring to your needs</li>
 			</ul>
 			</div>
 			<div style="height: 10px">&nbsp;</div>
@@ -187,7 +183,7 @@
 		<td colspan="7" width="675">
 			<div style="height: 20px">&nbsp;</div>
 		
-			References:
+			<i>References:</i>
 			<br><br>
 			<a href="http://www.ncbi.nlm.nih.gov/pubmed/20214801">XGAP: a uniform and extensible data model and software platform for genotype and phenotype experiments.</a> Swertz MA, Velde KJ, Tesson BM, Scheltema RA, Arends D, Vera G, Alberts R, Dijkstra M, Schofield P, Schughart K, Hancock JM, Smedley D, Wolstencroft K, Goble C, de Brock EO, Jones AR, Parkinson HE; Coordination of Mouse Informatics Resources (CASIMIR); Genotype-To-Phenotype (GEN2PHEN) Consortiums, Jansen RC.
 			<br><br>
@@ -200,7 +196,7 @@
 	</tr>	
 	<tr>
 		<td align="center" colspan="7" >
-			<div style="height: 50px">&nbsp;</div>
+			<div style="height: 25px">&nbsp;</div>
 		</td>
 	</tr>
 	<tr>
@@ -208,17 +204,17 @@
 			<table style="background: #FFFFFF;" cellpadding="10" cellspacing="10" border="2" width="700px">
 				<tr>
 					<td align="center">
-						<img src="clusterdemo/logos/molgenis_logo.png" width="75px" height="50px" alt="logo Molgenis">
-						<img src="clusterdemo/logos/xgap_logo.png" width="75px" height="50px" alt="logo XGAP">
-						<img src="clusterdemo/logos/gcc_logo.png" width="300px" height="50px" alt="logo GCC"><br>
-						
-						<img src="clusterdemo/logos/rug_logo.png" width="150px" height="50px" alt="logo RUG">
-						<img src="clusterdemo/logos/umcg_logo.png" width="150px" height="50px" alt="logo UMCG">
-						<img src="clusterdemo/logos/cbsg_logo.png" width="150px" height="50px" alt="logo CBSG">
+						<a target="_blank" href="http://www.molgenis.org/"><img src="clusterdemo/logos/molgenis_logo.png" width="75px" height="50px" alt="logo Molgenis"></a>
+						<a target="_blank" href="http://wiki.gcc.rug.nl/"><img src="clusterdemo/logos/gcc_logo.png" width="300px" height="50px" alt="logo GCC"></a>
+						<a target="_blank" href="http://www.rug.nl/"><img src="clusterdemo/logos/rug_logo.png" width="150px" height="50px" alt="logo RUG"></a><br>
+						<a target="_blank" href="http://www.xgap.org/"><img src="clusterdemo/logos/xgap_logo.png" width="75px" height="50px" alt="logo XGAP"></a>
+						<a target="_blank" href="http://www.umcg.nl/"><img src="clusterdemo/logos/umcg_logo.png" width="150px" height="50px" alt="logo UMCG"></a>
+						<a target="_blank" href="http://www.cbsg.nl/"><img src="clusterdemo/logos/cbsg_logo.png" width="150px" height="50px" alt="logo CBSG"></a>
+						<a target="_blank" href="http://www.panaceaproject.eu/"><img src="clusterdemo/logos/panacea_logo.gif" width="150px" height="50px" alt="logo Panacea"></a>
 					</td>
 				</tr>
 			</table>
-			<font size=1>(c) 2009-2010 GBIC Groningen</font>
+			<font size=1>(c) 2009-2011 GBIC Groningen</font>
 		</td>
 	</tr>
 </table>
@@ -226,8 +222,6 @@
 
 
 <#--end of your plugin-->	
-			</div>
-		</div>
-	</div>
+</div>
 </form>
 </#macro>
