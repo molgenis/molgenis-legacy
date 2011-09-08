@@ -330,7 +330,7 @@ function postData(entityClass) {
 
 
 function setXrefOption(field, id_field, label_field, entity) {
-	alert($.param(entity) + 'label_field = '+label_field);
+	//alert($.param(entity) + 'label_field = '+label_field);
 	var label = entity[label_field];
 	var id    = entity[id_field];
 
