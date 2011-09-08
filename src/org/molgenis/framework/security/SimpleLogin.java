@@ -19,7 +19,7 @@ public SimpleLogin(Database db)
 	{
 	}
 
-	public void logout()
+	public void logout(Database db)
 	{
 	}
 
