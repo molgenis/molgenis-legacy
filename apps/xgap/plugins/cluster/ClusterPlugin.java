@@ -100,7 +100,8 @@ public class ClusterPlugin extends PluginModel<Entity>
 		}else{
 			refresh = "\n<meta http-equiv=\"refresh\" content=\"" + this.getMyModel().getRefreshRate() + "\">";
 		}
-		return "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>" + refresh;
+		// moved overlib to molgenis core //return "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>" + refresh;
+		return refresh;
 	}
 
 	public ClusterPluginModel getMyModel(){
