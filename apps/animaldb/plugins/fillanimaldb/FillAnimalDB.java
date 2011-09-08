@@ -641,7 +641,7 @@ public class FillAnimalDB {
 		
 		logger.info("AnimalDB database updated successfully!");
 		
-		login.logout();
+		login.logout(db);
 		login.login(db, "anonymous", "anonymous");
 	}
 }
