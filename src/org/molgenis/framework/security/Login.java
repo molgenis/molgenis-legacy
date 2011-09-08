@@ -43,7 +43,7 @@ public interface Login
 	/**
 	 * Un-authenticate the user. Now the user will be perceived as 'guest'.
 	 */
-	public void logout();
+	public void logout(Database db) throws Exception;
 
 	/**
 	 * Reloads all permission settings for this user from database.
