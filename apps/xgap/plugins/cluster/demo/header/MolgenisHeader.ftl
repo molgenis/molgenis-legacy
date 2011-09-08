@@ -17,7 +17,7 @@
 <div align="right">
 	<font style="font-size:14px;">
 		<#-->| <a href="api/REST/">JSON api</a> | <a href="api/SOAP/">SOAP api</a> | <a href="api/REST/">REST api</a> | -->
-		<a href="http://www.molgenis.org/wiki/xQTL">Help</a> | <a href="api/R/">R api</a>
+		<a target="_blank" href="http://www.molgenis.org/wiki/xQTL">Help</a> | <a href="api/R/">R api</a>
 		  
 	</font>
 </div>
