@@ -22,8 +22,8 @@
 		</entity>
 		<entity name="Chromosome" extends="ObservableFeature">
 			<field name="orderNr" type="int" />
-			<field name="isAutosomal" type="bool" />
-			<field name="bpLength" type="int" nillable="true" />
+			<field name="isAutosomal" type="bool" description="Is 'yes' when number of chromosomes is equal in male and female individuals, i.e., if not a sex chromosome."/>
+			<field name="bpLength" type="int" nillable="true" description="Lenght of the chromsome in base pairs."/>
 			<field name="Species" label="Species" type="xref" xref_entity="Species"
 				xref_field="id" xref_label="name" nillable="true"
 				description="Reference to the species this

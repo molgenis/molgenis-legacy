@@ -49,9 +49,7 @@
 					(if feature is that concrete). E.g. mmHg" />
 			<field name="dataType" type="enum" default="string"
 				enum_options="[xref,string,datetime,int,code,image,decimal,bool]"
-				description="(Optional) Reference to the technical data type. FIXME: should be mref to MolgenisTypes 
-					so we can everything molgenis can. For example then you could also have as type 'Individual'. 
-					Or maybe rather an expression so you could say 'Individual()'" />
+				description="(Optional) Reference to the technical data type. E.g. 'int'" />
 			<field name="temporal" type="boolean" default="false"
 				description="Whether this feature is time dependent and can have different values when measured 
 					on different times (e.g. weight, temporal=true) or generally only measured once (e.g. birth date, 
