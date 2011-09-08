@@ -36,7 +36,7 @@ public class ConsolePlugin extends GenericPlugin
 
 
     private MCF mcf = null;
-    private TablePanel tablePanel = new TablePanel();
+    private TablePanel tablePanel = new TablePanel("","");
 
     private ActionInput buttonRefresh = new ActionInput("buttonRefresh", "Refresh");
 
@@ -52,14 +52,14 @@ public class ConsolePlugin extends GenericPlugin
         {
             int numberOfActive = mcf.getNumberActivePipelines();
 
-            Table finishedTable = new Table("Finished Pipelines");
+            Table finishedTable = new Table("Finished Pipelines","");
             finishedTable.addRow("");
             finishedTable.addColumn("");
             finishedTable.setCellStyle(0, 0, "background-color: " + COLOR_SUMMARY_FINISHED + ";");
             finishedTable.setCell(0,0, "pipelines finished: " + mcf.getNumberFinishedPipelines());
             tablePanel.add(finishedTable);
 
-            Table activeTable = new Table("Active Pipelines");
+            Table activeTable = new Table("Active Pipelines","");
             activeTable.addRow("");
             activeTable.addColumn("");
             activeTable.setCellStyle(0, 0, "background-color: " + COLOR_SUMMARY_ACTIVE + ";");
@@ -68,7 +68,7 @@ public class ConsolePlugin extends GenericPlugin
 
             if (numberOfActive > 0)
             {
-                Table progressTable = new Table("progress");
+                Table progressTable = new Table("progress","");
 
                 int numberOfRows = -1;
 
@@ -120,7 +120,7 @@ public class ConsolePlugin extends GenericPlugin
 
                 tablePanel.add(progressTable);
 
-                Table legendTable = new Table("legend");
+                Table legendTable = new Table("legend","");
                 for (int i = 0; i < 0; i++)
                     legendTable.addRow("");
                 for (int i = 0; i < 3; i++)
@@ -136,26 +136,27 @@ public class ConsolePlugin extends GenericPlugin
                 }
 
                 tablePanel.add(legendTable);
-                tablePanel.add(buttonRefresh);
+                //tablePanel.add(buttonRefresh);
             }
         }
         else
         {
-            Table finishedTable = new Table("Finished Pipelines");
+
+            Table finishedTable = new Table("Finished Pipelines","");
             finishedTable.addRow("");
             finishedTable.addColumn("");
             finishedTable.setCellStyle(0, 0, "background-color: " + COLOR_SUMMARY_FINISHED + ";");
             finishedTable.setCell(0,0, "pipelines finished: 0");
             tablePanel.add(finishedTable);
 
-            Table activeTable = new Table("Active Pipelines");
+            Table activeTable = new Table("Active Pipelines","");
             activeTable.addRow("");
             activeTable.addColumn("");
             activeTable.setCellStyle(0, 0, "background-color: " + COLOR_SUMMARY_ACTIVE + ";");
             activeTable.setCell(0,0, "pipelines active: 0");
             tablePanel.add(activeTable);
         }
-
+        tablePanel.add(buttonRefresh);
 
         return tablePanel.toHtml();
     }

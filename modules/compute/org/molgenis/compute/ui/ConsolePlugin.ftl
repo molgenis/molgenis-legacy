@@ -24,12 +24,7 @@
 		<div class="screenbody">
 			<div class="screenpadding">	
 <#--begin your plugin-->	
-
-Create your plugin layout code here.
-<#--<input name="myinput" value="${screen.getMyValue()}">
-<input type="submit" value="Change name" onclick="__action.value='do_myaction';return true;"/-->
-	
-<#--end of your plugin-->	
+<#--end of your plugin-->
 			</div>
 		</div>
 	</div>

@@ -52,7 +52,9 @@ public class StartNgs extends EasyPluginController<StartNgsView>
     private static final String LOG = "log";// reserved word for logging feature type used in ComputeFeature
 
 
-    public static final String DATE_FORMAT_NOW = "yyyy-MM-dd-HH:mm:ss";
+    public static final String DATE_FORMAT_NOW = "yyyy-MM-dd-HH-mm-ss";
+    private SimpleDateFormat sdf = null;
+
     //format to run pipeline in compute
     private Pipeline pipeline = null;
     private Step currentStep = null;
@@ -75,7 +77,7 @@ public class StartNgs extends EasyPluginController<StartNgsView>
     //whole workflow application
     private ComputeApplication wholeWorkflowApp = null;
 
-    private Calendar cal = Calendar.getInstance();
+//    private Calendar cal = Calendar.getInstance();
     private WorkflowParametersWeaver weaver = new WorkflowParametersWeaver();
 
     //responsible for updating DB with progress
@@ -223,10 +225,11 @@ public class StartNgs extends EasyPluginController<StartNgsView>
 
         //add few parameters
         // wholeWorkflowApp.setComputeResource("cluster");//for time being
-        wholeWorkflowApp.setTime(cal.getTime());
+        wholeWorkflowApp.setTime(now());
 
         //set app name everywhere and add to database
-        String appName = strLane + "_" + strFlowcell + "_" + strSample + "_" + now();
+        sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+        String appName = strLane + "_" + strFlowcell + "_" + strSample + "_" + sdf.format(now());
         wholeWorkflowApp.setName(appName);
         pipeline.setId(appName);
         weaver.setJobID(appName);
@@ -359,10 +362,10 @@ public class StartNgs extends EasyPluginController<StartNgsView>
         app.setProtocol(protocol);
         //test setting of workflow element
         app.setWorkflowElement(workflowElement);
-        app.setTime(cal.getTime());
+        app.setTime(now());
         //app.setComputeResource("cluster");
 
-        String appName = "ngs_" + pipeline.getId() + "_" + workflowElement.getName() + "_" + pipelineElementNumber;
+        String appName = "ngs_" + pipeline.getId() + "_" + workflowElement.getName() + "_" + pipelineElementNumber; // + "_" + sdf.format(now());
         app.setName(appName);
         System.out.println("---application---> " + appName);
 
@@ -387,6 +390,7 @@ public class StartNgs extends EasyPluginController<StartNgsView>
         app.setInterpreter("bash");
         //app.setPrevSteps();
         db.add(app);
+
         List<ComputeApplication> res = db.query(ComputeApplication.class).equals(ComputeApplication.NAME, app.getName()).find();
         if (res.size() != 1)
             throw new DatabaseException("ERROR while inserting into db");
@@ -415,7 +419,6 @@ public class StartNgs extends EasyPluginController<StartNgsView>
             if (feature.getFeatureType().equalsIgnoreCase(LOG))
             {
                 logpathfiles.addElement(value);
-                //logpathfile = value;
             }
 
             observedValue.setFeature(feature);
@@ -423,7 +426,6 @@ public class StartNgs extends EasyPluginController<StartNgsView>
         }
 
         System.out.println("script \n " + result);
-
 
         pipelineElementNumber++;
 
@@ -463,6 +465,9 @@ public class StartNgs extends EasyPluginController<StartNgsView>
 
         String scriptRemoteLocation = remoteLocation + "/scripts/";
 
+         Script pipelineScript = new Script(scriptID, scriptRemoteLocation, scriptFile.getBytes());
+         pipelineScript.setShort(true);
+
         if (strPreviousWorkflowElements.size() == 0)//script does not depend on other scripts
         {
             if (currentStep == null) //it is a first script in the pipeline
@@ -472,8 +477,6 @@ public class StartNgs extends EasyPluginController<StartNgsView>
                 currentStep = step;
                 pipeline.addStep(step);
             }
-
-            Script pipelineScript = new Script(scriptID, scriptRemoteLocation, scriptFile.getBytes());
 
             System.out.println("scriptID" + scriptID);
 
@@ -491,11 +494,7 @@ public class StartNgs extends EasyPluginController<StartNgsView>
                 pipeline.addStep(step);
             }
 
-            Script pipelineScript = new Script(scriptID, scriptRemoteLocation, scriptFile.getBytes());
-            //for demo
-            pipelineScript.setShort(true);
             currentStep.addScript(pipelineScript);
-
             strCurrentPipelineStep = strPrevious;
         }
 
@@ -519,11 +518,10 @@ public class StartNgs extends EasyPluginController<StartNgsView>
         return date.substring(2, 4) + date.substring(5, 7) + date.substring(8, 10);
     }
 
-    public String now()
+    public Date now()
     {
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
-        return sdf.format(cal.getTime());
-
-    }
+        Calendar cal = Calendar.getInstance();
+        return cal.getTime();
+   }
 
 }

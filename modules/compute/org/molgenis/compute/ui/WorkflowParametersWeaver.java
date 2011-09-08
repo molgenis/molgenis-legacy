@@ -76,6 +76,12 @@ public class WorkflowParametersWeaver
         return out.toString();
     }
 
+
+    public String weaveFeature(String template)
+    {
+        return weaveFreemarker(template, scriptParameters);
+    }
+
     //extra to test read
     public String makeVerificationScript()
     {

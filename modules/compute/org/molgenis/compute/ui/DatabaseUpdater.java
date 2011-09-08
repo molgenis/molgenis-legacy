@@ -129,11 +129,9 @@ public class DatabaseUpdater
                 }
 
                 activeComputeApps.removeAll(appToRemove);
+                mcf.removeFinishedPipelines();
                 if (activeComputeApps.size() == 0)
                     cancel();
-
-                //maybe here is a correct place to remove pipelines
-                mcf.removeFinishedPipelines();
 
             }
         }, delay * 1000, period * 1000);
