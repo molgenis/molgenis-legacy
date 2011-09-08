@@ -43,11 +43,11 @@ public class WorksheetBatchCommand extends SimpleCommand
         this.setToolbar(true);
         this.setIcon("generated-res/img/run.png");
 
-        runButton = new ActionInput("knop1", ActionInput.Type.NEXT);
+        runButton = new ActionInput("knop1");
         runButton.setButtonValue("Generate");
         runButton.setLabel("Generate code for selected lines!");
         
-        runButton2 = new ActionInput("knop2", ActionInput.Type.NEXT);
+        runButton2 = new ActionInput("knop2");
         runButton2.setButtonValue("Generate2");
         runButton2.setLabel("Generate code for selected lines!");
     }
