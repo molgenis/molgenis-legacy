@@ -14,9 +14,11 @@ public class DatabaseAuthenticationForm extends Container
 	{
 		StringInput usernameInput   = new StringInput("username");
 		usernameInput.setNillable(false);
+		usernameInput.setDescription("The name of a registered user.");
 		this.add(usernameInput);
 		PasswordInput passwordInput   = new PasswordInput("password");
 		passwordInput.setNillable(false);
+		passwordInput.setDescription("The password of a registered user."); //FIXME: does not show
 		this.add(passwordInput);
 		ActionInput loginInput        = new ActionInput("Login");
 		loginInput.setTooltip("Login");
