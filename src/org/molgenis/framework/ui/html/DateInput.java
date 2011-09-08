@@ -180,6 +180,7 @@ public class DateInput extends HtmlInput<Date>
 
 	public String toJquery()
 	{
+		String description = getName().equals(getDescription()) ? "" : " title=\""+getDescription()+"\"";
 		String options = "dateFormat: 'dd-mm-yy', changeMonth: true, changeYear: true, showButtonPanel: true";
 		// add clear button if nillable
 		if (this.isNillable()) options += ", beforeShow: function( input ) {"
@@ -196,7 +197,7 @@ public class DateInput extends HtmlInput<Date>
 				+ "text ui-widget-content ui-corner-all" + validate
 				+ "\" id=\"" + this.getName() + "\" value=\""
 				+ this.getValue("dd-MM-yyyy") + "\" name=\"" + this.getName()
-				+ "\" autocomplete=\"off\"/>";
+				+ "\" autocomplete=\"off\""+description+"/>";
 
 		// add the dialog unless readonly (input is always readonly, i.e.,
 		// cannot be typed in).
@@ -204,7 +205,7 @@ public class DateInput extends HtmlInput<Date>
 				+ "\n	"
 				+ "$(\"#"
 				+ this.getId()
-				+ "\").datepicker({"
+				+ "\").bt().datepicker({"
 				+ options
 				+ "}).click(function(){$(this).datepicker('show')});"
 				+ "\n</script>";

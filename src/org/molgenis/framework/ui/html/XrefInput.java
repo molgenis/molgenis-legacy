@@ -111,16 +111,15 @@ public class XrefInput extends EntityInput<Entity>
 
 		String xrefLabelString = this.toCsv(getXrefLabels());
 		String readonly = (this.isReadonly()) ? " readonly class=\"readonly\" "
-				: String
-						.format(
-								" onfocus=\"showXrefInput(this,'%s','%s','%s','%s'); return false;\" ",
-								getXrefEntity(), getXrefField(),
-								xrefLabelString, getXrefFilters());
+				: String.format(
+						" onfocus=\"showXrefInput(this,'%s','%s','%s','%s'); return false;\" ",
+						getXrefEntity(), getXrefField(), xrefLabelString,
+						getXrefFilters());
 
 		if (this.isHidden())
 		{
-			StringInput input = new StringInput(this.getName(), super
-					.getValue());
+			StringInput input = new StringInput(this.getName(),
+					super.getValue());
 
 			if (super.getObject() instanceof Entity)
 			{
@@ -158,8 +157,8 @@ public class XrefInput extends EntityInput<Entity>
 					+ ">\n"
 					+ optionsHtml.toString()
 					+ "</select>\n"
-					+ (includeAddButton && !this.isReadonly() ? this.createAddButton()
-							: "");
+					+ (includeAddButton && !this.isReadonly() ? this
+							.createAddButton() : "");
 		}
 		else if (this.uiToolkit == UiToolkit.JQUERY)
 		{
@@ -180,6 +179,7 @@ public class XrefInput extends EntityInput<Entity>
 
 			String readonly = this.isReadonly() ? "readonly " : "";
 			String required = this.isNillable() ? "" : "required ";
+			String description = " title=\"" + this.getDescription() + "\"";
 
 			return "<select data-placeholder=\"Choose some "
 					+ name
@@ -193,7 +193,9 @@ public class XrefInput extends EntityInput<Entity>
 					+ "\" name=\""
 					+ this.getName()
 					+ "\" "
-					+ " style=\"width:350px;\">\n"
+					+ " style=\"width:350px;\" "
+					+ description
+					+ " >\n"
 					+ optionsHtml.toString()
 					+ "</select>"
 					+ "\n<script>$(\"#"
@@ -219,8 +221,8 @@ public class XrefInput extends EntityInput<Entity>
 					+ "\n	return terms;"
 					+ "\n});"
 					+ "\n</script>\n"
-					+ (includeAddButton && !this.isReadonly() ? this.createAddButton()
-							: "");
+					+ (includeAddButton && !this.isReadonly() ? this
+							.createAddButton() : "");
 
 		}
 		catch (HtmlInputException e)

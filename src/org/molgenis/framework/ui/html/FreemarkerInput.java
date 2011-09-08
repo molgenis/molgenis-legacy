@@ -45,7 +45,7 @@ public class FreemarkerInput extends StringInput
 		// borrow style from mce
 		return "\n<link rel=\"stylesheet\" style=\"text/css\" type=\"text/css\" href=\"generated-res/lib/tinymce-3.4.4/themes/advanced/skins/o2k7/ui_silver.css\">"
 				+ "\n<link rel=\"stylesheet\" style=\"text/css\" type=\"text/css\" href=\"generated-res/lib/tinymce-3.4.4/themes/advanced/skins/o2k7/ui.css\">"
-				+ "\n<script src=\"generated-res/lib/codemirror-1.0/js/codemirror.js\"></script>\n"
+				+ "\n<script src=\"generated-res/lib/codemirror-1.0/js/codemirror.js\" type=\"text/javascript\"></script>\n"
 				+ "\n<style type=\"text/css\">"
 				+ "\n.CodeMirror-line-numbers {"
 				+ "\n 	width: 2em;"

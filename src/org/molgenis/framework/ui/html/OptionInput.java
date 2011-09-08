@@ -34,7 +34,7 @@ public abstract class OptionInput<E> extends HtmlInput<E>
 	public void setOptions(List<String> options, List<String> optionLabels)
 			throws HtmlInputException
 	{
-		if(options == null) throw new HtmlInputException("parameter options=\"opt1,opt2,...\" is required");
+		if(options == null) throw new RuntimeException("parameter options=\"opt1,opt2,...\" is required");
 		
 		List<ValueLabel> valueLabels = new ArrayList<ValueLabel>();
 		if (optionLabels == null)

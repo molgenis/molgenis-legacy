@@ -191,6 +191,8 @@ public class MrefInput extends EntityInput<List<? extends Entity>>
 	{
 		String options = "";
 		String xrefLabelString = this.toCsv(getXrefLabels());
+		String description = getName().equals(getDescription()) ? "" : " title=\""+getDescription()+"\"";
+
 
 		for (Entity e : (List<Entity>) this.getObject())
 		{
@@ -214,8 +216,8 @@ public class MrefInput extends EntityInput<List<? extends Entity>>
 					+ "\" name=\""
 					+ this.getName()
 					+ "\" "
-					+ " style=\"width:350px;\">\n"
-					+ options
+					+ " style=\"width:350px;\" "+ description+">\n"
+					+ options 
 					+ "</select>"
 					+ "\n<script>$(\"#"
 					+ this.getId()

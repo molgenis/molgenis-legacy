@@ -93,6 +93,8 @@ public class DatetimeInput extends HtmlInput<Date>
 
 	public String toJquery()
 	{	
+		String description = getName().equals(getDescription()) ? "" : " title=\""+getDescription()+"\"";
+
 		String options = "dateFormat: 'dd-mm-yy', changeMonth: true, changeYear: true, showButtonPanel: true";
 		//add clear button if nillable
 		String createScript = "function( input ) {setTimeout(function() {var buttonPane = $( input ).datepicker( \"widget\" ).find( \".ui-datepicker-buttonpane\" );" +
@@ -106,12 +108,12 @@ public class DatetimeInput extends HtmlInput<Date>
 		if(!this.isNillable()) validate = " required";
 		String result = "<input type=\"text\" readonly=\"readonly\" class=\""+(this.isReadonly() ? "readonly ": "")+"text ui-widget-content ui-corner-all"+validate+"\" id=\"" + this.getName()
 				+ "\" value=\""+this.getValue("dd-MM-yyyy HH:mm")+"\" name=\"" + this.getName()
-				+ "\" autocomplete=\"off\"/>";
+				+ "\" autocomplete=\"off\" "+description+"/>";
 		
 		//add the dialog unless readonly (input is always readonly, i.e., cannot be typed in).
 		if(!this.isReadonly())
 			result += "<script>" + "$(\"#" + this.getName()
-				+ "\").datetimepicker({" + options + "}).click(function(){$(this).datetimepicker('show')});</script>";
+				+ "\").bt().datetimepicker({" + options + "}).click(function(){$(this).datetimepicker('show')});</script>";
 		return result;
 	}
 	
