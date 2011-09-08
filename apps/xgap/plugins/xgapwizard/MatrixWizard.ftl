@@ -35,15 +35,17 @@
 <#--begin your plugin-->
 
 <h2>Tag data</h2>
-<h5>This screen provides an overview of all data matrices stored in your database.
+This screen provides an overview of all data matrices stored in your database.
 The status of the storage is checked and displayed. You can import matrices here if there is no
 associated storage for Data (matrix) definition. These tags are taken from the 'Add analysis' menu: Datasets and Datanames. In addition, you can tag matrices and view some
-examples.</h5>
-
+examples.
+<br><br>
+<a target="_blank" href="http://www.molgenis.org/wiki/xQTLBioinformaticianTag">Learn more about tagging..</a>
+<br><br>
 <#if model.getShowVerified() == true>
-	<input type="submit" value="Hide verified" onclick="__action.value='hideVerified';return true;"/>
+	<input type="submit" value="Hide verified in list" onclick="__action.value='hideVerified';return true;"/>
 <#else>
-	<input type="submit" value="Show verified" onclick="__action.value='showVerified';return true;"/>
+	<input type="submit" value="Show verified in list" onclick="__action.value='showVerified';return true;"/>
 </#if>
 
 <br><br>
@@ -74,16 +76,16 @@ examples.</h5>
 	<table class="listtable">
 		<tr class="form_listrow0">
 			<td>
-				<b>Investigation: datamatrix name</b>
+				<b>Investigation / Data</b>
 			</td>
-			<td>
+			<#-->td>
 				<b>Properties</b>
+			</td-->
+			<td>
+				<b>Tagged as..</b>
 			</td>
 			<td>
-				<b>Tagging</b>
-			</td>
-			<td>
-				<b>Verified backend</b>
+				<b>Verified as..</b>
 			</td>
 		</tr>
 		
@@ -99,12 +101,12 @@ examples.</h5>
 			<#if show == true>
 			<tr class="form_listrow1">
 				<td>
-					${di.data.investigation_name}: ${di.data.name}
+					${di.data.investigation_name} / ${di.data.name}
 				</td>
-				<td>
+				<#--td>
 					rows = ${di.data.rowtype}<br>columns = ${di.data.coltype}<br>
 					values = ${di.data.valuetype}<br>source = ${di.data.source}<br><br>
-				</td>
+				</td-->
 				<td>
 					<#if di.tags?size == 0>
 						<b>Matrix is not tagged</b><br>
