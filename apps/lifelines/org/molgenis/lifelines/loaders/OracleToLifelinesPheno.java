@@ -13,12 +13,13 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.model.jaxb.Field;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 
-import app.JpaDatabase;
+import app.DatabaseFactory;
 
 /**
  *
@@ -223,7 +224,7 @@ public class OracleToLifelinesPheno {
     	String sql = "SELECT Count(*) FROM %s.%s";
     	EntityManager em = null;
     	try {
-	        JpaDatabase db = new JpaDatabase();
+	        Database db = DatabaseFactory.create();
 	        em = db.getEntityManager();
 	        
 	        sql = String.format(sql, schemaName, tableName);

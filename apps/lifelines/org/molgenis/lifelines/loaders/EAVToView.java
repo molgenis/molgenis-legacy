@@ -2,17 +2,17 @@ package org.molgenis.lifelines.loaders;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.pheno.Measurement;
 
-import app.JpaDatabase;
+import app.DatabaseFactory;
 
 /**
  *
@@ -39,7 +39,7 @@ public class EAVToView {
     }    
     
     private void load() throws DatabaseException, Exception {
-        JpaDatabase db = new JpaDatabase();
+        Database db = DatabaseFactory.create();
         EntityManager em = db.getEntityManager();
             
         String column = "max(case when feature = %d then %s end) as %s \n";

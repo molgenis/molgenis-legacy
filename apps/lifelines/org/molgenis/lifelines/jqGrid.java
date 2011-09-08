@@ -1,4 +1,4 @@
-package lifelines;
+package org.molgenis.lifelines;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -7,10 +7,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -20,18 +17,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import lifelines.matrix.Column;
+import lifelines.matrix.Exporter.ExportExcelSimple;
+
 import org.apache.commons.lang.StringUtils;
-import org.hsqldb.DatabaseManager;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.util.HandleException;
 
 import app.DatabaseFactory;
-
-import lifelines.loaders.LoaderUtils;
-import lifelines.matrix.Column;
-import lifelines.matrix.Exporter.ExportExcelSimple;
 
 /**
  * Servlet implementation class jqGrid
@@ -57,6 +51,7 @@ public class jqGrid extends HttpServlet {
 		String tableName = request.getParameter("tableName");
 		String operation = request.getParameter("op");
 		
+		@SuppressWarnings("unchecked")
 		Enumeration<String> en = request.getParameterNames();
 		while (en.hasMoreElements()) {
 			String name = en.nextElement();
@@ -165,6 +160,7 @@ public class jqGrid extends HttpServlet {
 			String sql = "SELECT * FROM %s %s ORDER BY %s %s";
 			sql = String.format(sql, tableName, whereCondition, sidx, sord);
 
+			@SuppressWarnings("unchecked")
 			List<Object[]> rs = em.createNativeQuery(sql).setFirstResult(start)
 					.setMaxResults(limit).getResultList();
 
@@ -237,8 +233,7 @@ public class jqGrid extends HttpServlet {
 			// }
 			// int position = rsColumns.getInt("ORDINAL_POSITION"); // column
 			// pos
-			columns.add(new Column(columName, Column.getColumnType(columnType),
-					null));
+			columns.add(new Column(columName, Column.getColumnType(columnType), null));
 		}
 		return columns;
 	}
