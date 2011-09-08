@@ -450,8 +450,8 @@ public class DatabaseLogin implements Login, Serializable {
 	@Override
 	public boolean canRead(org.molgenis.framework.ui.ScreenController<?> screen)
 	{
-		System.out.println("User name >>>>>>>>>>>>>" + this.user);
-		System.out.println("Screen name >>>>>>>>>>>>>" + screen.getClass().getName() + "Classname >>>>>>>>>> " + this.readMap.containsKey(screen.getClass().getName()));
+		//System.out.println("User name >>>>>>>>>>>>>" + this.user);
+		//System.out.println("Screen name >>>>>>>>>>>>>" + screen.getClass().getName() + "Classname >>>>>>>>>> " + this.readMap.containsKey(screen.getClass().getName()));
 		if (this.isAuthenticated() && this.user.getSuperuser())
 			return true;
 
