@@ -12,6 +12,7 @@ import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.auth.MolgenisRoleGroupLink;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.core.MolgenisEntity;
+import java.text.ParseException;
 </#if>
 
 import org.molgenis.framework.db.Database;
@@ -22,11 +23,11 @@ import org.molgenis.framework.db.QueryRule.Operator;
 public class FillMetadata {
 	protected static final transient Logger logger = Logger.getLogger(FillMetadata.class);
 <#if !metaData>
-	public static void fillMetadata(Database db) throws DatabaseException {
+	public static void fillMetadata(Database db) throws DatabaseException,ParseException {
 		logger.info("fillMetadata is Empty!");
 	}
 <#else>
-	public static void fillMetadata(Database db) throws DatabaseException {
+	public static void fillMetadata(Database db) throws DatabaseException,ParseException {
 		logger.info("fillMetadata start");
 		db.beginTx();
 		MolgenisUser user1 = new MolgenisUser();
@@ -101,7 +102,7 @@ public class FillMetadata {
 		//INSERT INTO MolgenisPermission (role_, entity, permission) SELECT (
 		//SELECT id FROM MolgenisRole WHERE name = '${screen.getGroup()}'), id, 'write' FROM MolgenisEntity WHERE MolgenisEntity.name = '${screen.getName()}${screen.getType()?lower_case?cap_first}Controller';
 		{
-			MolgenisEntity role = db.find(MolgenisEntity.class, new QueryRule("name", Operator.EQUALS, "${screen.getGroup()}")).get(0);		
+			MolgenisGroup role = MolgenisGroup.findByName(db, "${screen.getGroup()}");	
 			MolgenisEntity entity = db.find(MolgenisEntity.class, new QueryRule("name", Operator.EQUALS, "${screen.getName()}${screen.getType()?lower_case?cap_first}Controller")).get(0);
 			
 			MolgenisPermission mp = new MolgenisPermission();
@@ -115,7 +116,7 @@ public class FillMetadata {
 		//			FROM MolgenisEntity WHERE MolgenisEntity.id = (SELECT id FROM MolgenisEntity WHERE className = '${screen.getEntity().namespace}.${screen.getEntity().name}');		
 		{
 			MolgenisEntity id = db.find(MolgenisEntity.class, new QueryRule("className", Operator.EQUALS, "${screen.getEntity().namespace}.${screen.getEntity().name}")).get(0);
-			MolgenisEntity role = db.find(MolgenisEntity.class, new QueryRule("name", Operator.EQUALS, "${screen.getGroup()}")).get(0);		
+			MolgenisGroup role = MolgenisGroup.findByName(db, "${screen.getGroup()}");
 			MolgenisEntity entity = db.find(MolgenisEntity.class, new QueryRule("id", Operator.EQUALS, id.getId())).get(0);
 			
 			MolgenisPermission mp = new MolgenisPermission();
@@ -128,7 +129,7 @@ public class FillMetadata {
 		//INSERT INTO MolgenisPermission (role_, entity, permission) SELECT (
 		//	SELECT id FROM MolgenisRole WHERE name = '${screen.getGroup()}'), id, 'write' FROM MolgenisEntity WHERE MolgenisEntity.name = '${screen.getName()}${screen.getType()?lower_case?cap_first}';
 		{
-			MolgenisEntity role = db.find(MolgenisEntity.class, new QueryRule("name", Operator.EQUALS, "${screen.getGroup()}")).get(0);		
+			MolgenisGroup role = MolgenisGroup.findByName(db,"${screen.getGroup()}");		
 			MolgenisEntity entity = db.find(MolgenisEntity.class, new QueryRule("name", Operator.EQUALS, "${screen.getName()}${screen.getType()?lower_case?cap_first}")).get(0);
 			
 			MolgenisPermission mp = new MolgenisPermission();
