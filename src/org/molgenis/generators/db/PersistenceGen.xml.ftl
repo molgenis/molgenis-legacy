@@ -24,7 +24,7 @@
           With create-drop, the database schema will be dropped when the SessionFactory is closed explicitly.
 		e.g. validate | update | create | create-drop
            -->
-            <property name="hibernate.hbm2ddl.auto" value="create"/>
+            <property name="hibernate.hbm2ddl.auto" value="validate"/>
            
 	    </properties>
 	</persistence-unit>
