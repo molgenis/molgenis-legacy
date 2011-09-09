@@ -11,6 +11,7 @@ import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.TextInput;
+import org.molgenis.ngs.Worksheet;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -21,60 +22,56 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: georgebyelas
- * Date: 28/07/2011
- * Time: 09:13
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: georgebyelas Date: 28/07/2011 Time: 09:13 To
+ * change this template use File | Settings | File Templates.
  */
 public class WorksheetBatchCommand extends SimpleCommand
 {
-    String currentRequest = "";
+	String currentRequest = "";
 
-    private ActionInput runButton;
-    private ActionInput runButton2;
+	private ActionInput runButton;
+	private ActionInput runButton2;
 
-    public WorksheetBatchCommand(ScreenController<?> parentController)
-    {
-        super("runbatch", parentController);
-        this.setLabel("Run analysis on selected");
-        this.setMenu("Edit");
-        this.setDialog(true);
-        this.setToolbar(true);
-        this.setIcon("generated-res/img/run.png");
+	public WorksheetBatchCommand(ScreenController<?> parentController)
+	{
+		super("runbatch", parentController);
+		this.setLabel("Run analysis on selected");
+		this.setMenu("Edit");
+		this.setDialog(true);
+		this.setToolbar(true);
+		this.setIcon("generated-res/img/run.png");
 
-        runButton = new ActionInput("knop1");
-        runButton.setButtonValue("Generate");
-        runButton.setLabel("Generate code for selected lines!");
-        
-        runButton2 = new ActionInput("knop2");
-        runButton2.setButtonValue("Generate2");
-        runButton2.setLabel("Generate code for selected lines!");
-    }
+		runButton = new ActionInput("knop1", ActionInput.Type.SAVE);
+		runButton.setButtonValue("Generate");
+		runButton.setLabel("Generate code for selected lines!");
 
-    @Override
-    public List<HtmlInput<?>> getInputs() throws DatabaseException
-    {
+		runButton2 = new ActionInput("knop2", ActionInput.Type.CANCEL);
+		runButton2.setButtonValue("Generate2");
+		runButton2.setLabel("Generate code for selected lines!");
+	}
 
-    	List<HtmlInput<?>> inputs = new ArrayList<HtmlInput<?>>();
+	@Override
+	public List<HtmlInput<?>> getInputs() throws DatabaseException
+	{
 
-        TextInput request = new TextInput("request");
-        request.setValue(currentRequest);
-        request.setDescription("");
-        inputs.add(request);
+		List<HtmlInput<?>> inputs = new ArrayList<HtmlInput<?>>();
 
-        return inputs;
-    }
+		TextInput request = new TextInput("request");
+		request.setValue(currentRequest);
+		request.setDescription("");
+		inputs.add(request);
 
+		return inputs;
+	}
 
-    @Override
-    public List<ActionInput> getActions()
-    {
-        List<ActionInput> inputs = new ArrayList<ActionInput>();
-        inputs.add(runButton);
-        inputs.add(runButton2);
-        return inputs;
-    }
+	@Override
+	public List<ActionInput> getActions()
+	{
+		List<ActionInput> inputs = new ArrayList<ActionInput>();
+		inputs.add(runButton);
+		inputs.add(runButton2);
+		return inputs;
+	}
 
 	@Override
 	public boolean isVisible()
@@ -82,28 +79,69 @@ public class WorksheetBatchCommand extends SimpleCommand
 		FormModel<? extends Entity> view = this.getFormScreen();
 		return view.getMode().equals(Mode.LIST_VIEW);
 	}
-    
-    public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream)
-    {
-    	System.out.println(">> In handleRequest!");
-        logger.debug("worksheet batch command button clicked: " + request.toString());
 
-        String action = request.getString("__action");
-        String lines = request.getString("massUpdate");
-        System.out.println(">> Selected lines: " + lines);
+	public List<Worksheet> getWorksheetList(Database db, List<Integer> ids)
+	{
+		return null;
+	}
 
-        System.out.println(">> Action: " + action);
-        System.out.println(">> request==" + request.toString());
+	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream)
+	{
+		System.out.println(">> In handleRequest!");
+		logger.debug("worksheet batch command button clicked: " + request.toString());
 
-        for(int i = 0; i < this.getActions().size(); i++)
-        {
-            ActionInput input = this.getActions().get(i);
-            System.out.println(">> >> Action " + input.toString());
-        }
+		String action = request.getString("__action");
 
+		List<Integer> idlist = new ArrayList<Integer>();
 
-        return ScreenModel.Show.SHOW_MAIN; //  ScreenModel.Show.SHOW_DIALOG;
-    }
+		String lines = request.getString("massUpdate");
+		System.out.println(">> Selected lines: " + lines);
+
+		if (lines != null)
+		{
+			// there is >= 1 line selected
+			
+			if (lines.indexOf(',') == -1) {
+				// only one line was selected
+				idlist.add(Integer.parseInt(lines.trim()));
+			} else {
+				// multiple lines were selected
+
+				// strip off the starting '[' and ending ']'
+				lines = lines.substring(1, lines.length() - 1);
+				String tmp = null;
+				
+				// iteratively get all ids
+				int i = lines.indexOf(',');				
+				while (-1 < i)
+				{
+					tmp = lines.substring(0, i);
+					idlist.add(Integer.parseInt(tmp.trim()));
+					lines = lines.substring(i + 2);
+					i = lines.indexOf(',');
+				}
+				
+				// get last id
+				idlist.add(Integer.parseInt(lines.trim()));
+			}			
+		}
+
+		print("The selected ids are: " + idlist.toString());
+		
+		System.out.println(">> Action: " + action);
+		System.out.println(">> request==" + request.toString());
+
+		// for(int k = 0; k < this.getActions().size(); k++)
+		// {
+		// ActionInput input = this.getActions().get(k);
+		// System.out.println(">> >> Action " + input.toString());
+		// }
+
+		return ScreenModel.Show.SHOW_MAIN; // ScreenModel.Show.SHOW_DIALOG;
+	}
+
+	private void print(String string)
+	{
+		System.out.println(">> " + string);
+	}
 }
-
-
