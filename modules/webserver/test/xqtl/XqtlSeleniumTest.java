@@ -221,11 +221,14 @@ public class XqtlSeleniumTest extends XqtlSeleniumInit
 		selenium.type("id=RScript_name", "test");
 		selenium.type("id=RScript_Extension", "r");
 		selenium.click("css=span");
-		selenium.click("id=RScript_Investigation_chzn_o_0");
+		selenium.click("css=span");
+		//selenium.click("id=RScript_Investigation_chzn_o_0");
 		clickAndWait("id=Add");
 
 		// add content and save
 		selenium.selectWindow("title=xQTL workbench");
+		Assert.assertTrue(selenium.isTextPresent("ADD SUCCESS: affected 1"))
+		;
 		Assert.assertTrue(selenium.isTextPresent("No file found. Please upload it here."));
 		selenium.type("name=inputTextArea", "content");
 		clickAndWait("id=uploadTextArea");
