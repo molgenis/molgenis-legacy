@@ -134,10 +134,12 @@ public class EditSelectedCommand extends SimpleCommand
 		ActionInput submit = new ActionInput("Update", ActionInput.Type.SAVE);
 		submit.setValue(this.getName());
 		submit.setIcon("generated-res/img/save.png");
+		submit.setDescription("Save the changes.");
 		inputs.add(submit);
 
 		ActionInput cancel = new ActionInput("Cancel", ActionInput.Type.CLOSE);
 		cancel.setIcon("generated-res/img/cancel.png");
+		submit.setDescription("Cancel the changes.");
 		inputs.add(cancel);
 
 		return inputs;
@@ -148,12 +150,23 @@ public class EditSelectedCommand extends SimpleCommand
 	{
 		List<HtmlInput<?>> inputs = new ArrayList<HtmlInput<?>>();
 		
-		inputs.add(new TextParagraph("Selected ids:"+ this.selectedIds.toString()));
+		if(this.selectedIds == null || this.selectedIds.size() == 0){
+			TextParagraph t = new TextParagraph("No records were selected for updating.");
+			t.setDescription("Error.");
+			inputs.add(t);
+			return inputs;
+		}
+		
+		TextParagraph t = new TextParagraph("Selected ids:"+ this.selectedIds.toString());
+		t.setDescription("The IDs you have selected for updating.");
+		inputs.add(t);
 
 		// put ids of selected rows in hidden field
 		for (Object id : this.selectedIds)
 		{
-			inputs.add(new HiddenInput(FormModel.INPUT_SELECTED, id));
+			HiddenInput h = new HiddenInput(FormModel.INPUT_SELECTED, id);
+			h.setDescription("Hidden input");
+			inputs.add(h);
 		}
 
 		// get inputs from formscreen
@@ -162,7 +175,9 @@ public class EditSelectedCommand extends SimpleCommand
 		{
 			if (!input.isHidden() && !input.isReadonly())
 			{
-				inputs.add( new EditSelectedInput(input) );
+				EditSelectedInput e = new EditSelectedInput(input);
+				e.setDescription("EditSelectedInput");
+				inputs.add(e);
 			}
 
 		}
