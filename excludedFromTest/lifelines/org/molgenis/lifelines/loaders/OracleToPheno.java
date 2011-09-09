@@ -13,6 +13,7 @@ import java.util.concurrent.CountDownLatch;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+import org.apache.log4j.Logger;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
@@ -21,10 +22,14 @@ import org.molgenis.pheno.ObservedValue;
 
 /**
  *
- * @author jorislops
+ * @author joris lops
  */
 public class OracleToPheno implements Runnable {
-	private final String sql = "SELECT %s FROM %s.%s WHERE pa_id > %s and pa_id <= %s and STID = %s";
+	private final static int FLUSH_MOD = 1000; //number of records to process before flushed to database and removed from cache. 
+	
+	private static Logger log = Logger.getLogger(OracleToPheno.class);
+	
+	private final String selectBucketSql = "SELECT %s FROM %s.%s WHERE pa_id > %s and pa_id <= %s and STID = %s";
 	
     private final String tableName;
     private final String schemaName;
@@ -36,8 +41,6 @@ public class OracleToPheno implements Runnable {
     
     private final int startPA_ID;
     private final int endPA_ID;
-    
-    private static int activeThreadCount = 0;
     
     private final CountDownLatch doneSignal;
 
@@ -60,10 +63,6 @@ public class OracleToPheno implements Runnable {
         this.protocolId = protocolId;
         
         this.doneSignal = doneSignal;
-        
-        synchronized(OracleToPheno.class) {
-        	activeThreadCount++;
-        }
     }
     
     private static int recordId  = 0;
@@ -74,42 +73,25 @@ public class OracleToPheno implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.println("start!!!");
+		log.trace(String.format("[%d-%s] Thread started", studyId, tableName));
         int targetCount = 0;
         Map<Integer, ObservationTarget> paidTargets = null;
 		try {
-		       Connection con = LoaderUtils.getConnection();
-		        Statement stm = con.createStatement();
-		        String exec = String.format(sql, fields, schemaName, tableName, startPA_ID, endPA_ID, studyId);
-		        System.out.println(exec);
-		        ResultSet rs = stm.executeQuery(exec);
-		        ResultSetMetaData rsmd = rs.getMetaData();
+		       	final Connection con = LoaderUtils.getConnection();
+		        final Statement stm = con.createStatement();
+		        final String exec = String.format(selectBucketSql, fields, schemaName, tableName, startPA_ID, endPA_ID, studyId);
+            	log.debug(String.format("[%d-%s] %s", studyId, tableName, exec));
+		        final ResultSet rs = stm.executeQuery(exec);
+		        final ResultSetMetaData rsmd = rs.getMetaData();
 		        
+		        final EntityManager em = emf.createEntityManager();
+		        final Investigation investigation = em.find(Investigation.class, investigationId);
 		        
-
-		        
-//		        JpaDatabase db = new JpaDatabase();
-//		        EntityManager em = db.getEntityManager();
-		        
-//		        EntityManager em = db.createEntityManager();
-	        
-		       
-		        EntityManager em = emf.createEntityManager();
-		        Investigation investigation = em.find(Investigation.class, investigationId);
-		        
-//		        Investigation investigation = em.createQuery("SELECT Inv FROM Investigation Inv WHERE Inv.name = :name", Investigation.class)
-//		                .setParameter("name", investigationName)
-//		                .getSingleResult();
-		        
-
-		        List<Measurement> measurements = new ArrayList<Measurement>();
+		        final List<Measurement> measurements = new ArrayList<Measurement>();
 		        for(int i = 1; i <= rsmd.getColumnCount(); ++i) {
-		        	if(rsmd.getColumnName(i).equals("RNUM")) {
-		        		continue;
-		        	}
-		        	
-		            String columnName = rsmd.getColumnName(i);        
-		            Measurement m = em.createQuery("SELECT m FROM Measurement m WHERE m.name = :name AND m.investigation.id = :investigation", Measurement.class)
+		            final String columnName = rsmd.getColumnName(i);        
+		            final String jql = "SELECT m FROM Measurement m WHERE m.name = :name AND m.investigation.id = :investigation";
+		            final Measurement m = em.createQuery(jql, Measurement.class)
 		              .setParameter("name", columnName)
 		              .setParameter("investigation", investigation.getId())
 		              .getSingleResult();
@@ -128,12 +110,11 @@ public class OracleToPheno implements Runnable {
 		        }
 		        
 		        //retrieve targets from this investigation between the boundray's of PA_ID
-		        List<ObservationTarget> targets = em.createQuery("SELECT t FROM ObservationTarget t WHERE t.paid > :startPA_ID and t.paid <= :endPA_ID AND t.investigation.id = :invId", ObservationTarget.class)
+		        final List<ObservationTarget> targets = em.createQuery("SELECT t FROM ObservationTarget t WHERE t.paid > :startPA_ID and t.paid <= :endPA_ID AND t.investigation.id = :invId", ObservationTarget.class)
 		        									.setParameter("startPA_ID", this.startPA_ID)
 		        									.setParameter("endPA_ID", this.endPA_ID)
 		        									.setParameter("invId", this.investigationId)
 		        									.getResultList();
-//		        List<ObservationTarget> targets = (List<ObservationTarget>) investigation.getInvestigationObservationTargetCollection();
 		        paidTargets = new HashMap<Integer, ObservationTarget>();
 		        for(ObservationTarget t : targets) {
 		        	paidTargets.put(t.getPaid(), t);
@@ -181,16 +162,12 @@ public class OracleToPheno implements Runnable {
 		                }
 		            }		            
 		            
-		            if(w % 1000 == 0) {
+		            if(w % FLUSH_MOD == 0) {
+		            	log.trace(String.format("[%d-%s] RecordId %d flushed", studyId, tableName, recordId));
 		            	em.flush();
 		            	em.clear();
-		            }
-		            
-		            if(recordId % 100 == 0) {
-		            	System.out.println(recordId);
-		            }          
+		            }		            
 		        }  
-		        
 		        rs.close();
 		        con.close();
 		        
@@ -200,16 +177,7 @@ public class OracleToPheno implements Runnable {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-        synchronized(OracleToPheno.class) {
-        	activeThreadCount--;
-        }
         doneSignal.countDown();
-	}
-    
-    public static int getActiveTHreadCount() {
-        synchronized(OracleToPheno.class) {
-        	return activeThreadCount;
-        }    	
-    }
-    
+		log.trace(String.format("[%d-%s] Thread ended", studyId, tableName));
+	}    
 }

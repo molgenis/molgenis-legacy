@@ -13,6 +13,7 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 
+import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.model.jaxb.Field;
@@ -26,9 +27,8 @@ import app.DatabaseFactory;
  * @author joris lops
  */
 public class OracleToLifelinesPheno {
-
-    public class Column {
-
+	
+    private class Column {
         private String name;
         private String type;
         private int length;
@@ -80,26 +80,32 @@ public class OracleToLifelinesPheno {
             return "Column{" + "name=" + name + ", type=" + type + ", length=" + length + ", precision=" + precision + ", comment=" + comment + '}';
         }
     }
+    
+    private static final Logger log = Logger.getLogger(OracleToLifelinesPheno.class);
+
+    private final String columnQuery =
+        "SELECT atc.column_name, atc.data_type, atc.data_length, atc.data_precision,  comments.comments "
+        + "FROM all_col_comments comments "
+        + "JOIN all_tab_columns atc ON (comments.column_name = atc.column_name AND comments.table_name = atc.table_name) "
+        + "WHERE comments.table_name = '%s' "
+        + "ORDER BY atc.column_id";
+    private final String commentQuery =
+        "SELECT comments.column_name, comments.comments "
+        + "FROM all_col_comments comments "
+        + "WHERE comments.table_name = '%s'";
+    
     private final Integer investigationId;
     private final String schemaName;
     private final String tableName;
     private final String fields;
-    private final String columnQuery =
-            "SELECT atc.column_name, atc.data_type, atc.data_length, atc.data_precision,  comments.comments "
-            + "FROM all_col_comments comments "
-            + "JOIN all_tab_columns atc ON (comments.column_name = atc.column_name AND comments.table_name = atc.table_name) "
-            + "WHERE comments.table_name = '%s' "
-            + "ORDER BY atc.column_id";
-    private final String commentQuery =
-            "SELECT comments.column_name, comments.comments "
-            + "FROM all_col_comments comments "
-            + "WHERE comments.table_name = '%s'";
     private Investigation investigation;
+    private final int studyId;
     
     private List<Measurement> measurements;
     private EntityManager em;
 
-    public OracleToLifelinesPheno(EntityManager em, String schemaName, String tableName, String fields, Integer investigationId) throws Exception {
+    public OracleToLifelinesPheno(int studyId, EntityManager em, String schemaName, String tableName, String fields, Integer investigationId) throws Exception {
+    	this.studyId = studyId;
     	this.em = em;
     	this.schemaName = schemaName;
     	this.tableName = tableName;
@@ -113,7 +119,9 @@ public class OracleToLifelinesPheno {
     private void loadComments() throws Exception {
         Connection con = LoaderUtils.getConnection();
         Statement stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery(String.format(commentQuery, tableName));
+        String sql = String.format(commentQuery, tableName);
+        log.debug(String.format("[%d-%s] %s", studyId, tableName, sql));
+        ResultSet rs = stmt.executeQuery(sql);
         while (rs.next()) {
             columnComment.put(rs.getString(1), rs.getString(2));
         }
@@ -133,12 +141,16 @@ public class OracleToLifelinesPheno {
         investigation = em.find(Investigation.class, investigationId);
 
         Statement stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery(String.format("SELECT %s FROM %s.%s", fields, schemaName, tableName));
+        String sql = String.format("SELECT %s FROM %s.%s", fields, schemaName, tableName);
+        log.debug(String.format("[%d-%s] %s", studyId, tableName, sql));
+        ResultSet rs = stmt.executeQuery(sql);
         ResultSetMetaData rsm = rs.getMetaData();
 
         List<Measurement> measurements = new ArrayList<Measurement>();
         for (int i = 1; i <= rsm.getColumnCount(); ++i) {
-        	Long count = em.createQuery("SELECT Count(m) FROM Measurement m WHERE m.investigation.id = :invId AND m.name = :name", Long.class)
+        	String jql = "SELECT Count(m) FROM Measurement m WHERE m.investigation.id = :invId AND m.name = :name";
+        	log.debug(String.format("[%d-%s] %s", studyId, tableName, jql));
+        	Long count = em.createQuery(jql, Long.class)
         		.setParameter("invId", investigationId)
         		.setParameter("name", rsm.getColumnName(i))        		
         		.getSingleResult();
@@ -152,10 +164,11 @@ public class OracleToLifelinesPheno {
             measurements.add(m);
 
             m.setInvestigation(investigation);
-            investigation.getInvestigationMeasurementCollection().add(m);
+            investigation.getInvestigationObservationElementCollection().add(m);
+            //investigation.getInvestigationMeasurementCollection().add(m);
             m.setName(rsm.getColumnName(i));
 
-            System.out.println(rsm.getColumnName(i) + "\t" + rsm.getPrecision(i) + "\t"   + rsm.getScale(i));
+            log.debug(String.format("[%d-%s] %s \t %s \t %s", studyId, tableName, rsm.getColumnName(i), rsm.getPrecision(i), rsm.getScale(i)));
             
             m.setDataType(Field.Type.getType(rsm.getColumnType(i)).toString());
             if(m.getDataType().equals("decimal")) {
@@ -171,7 +184,6 @@ public class OracleToLifelinesPheno {
         em.getTransaction().begin();
         em.merge(investigation);
         em.getTransaction().commit();
-        System.out.println(investigation.getId());
         return measurements;
     }
 
@@ -183,7 +195,9 @@ public class OracleToLifelinesPheno {
         try {
             con = LoaderUtils.getConnection();
             st = con.createStatement();
-            rs = st.executeQuery(String.format(columnQuery, tableName));
+            String sql = String.format(columnQuery, tableName);
+            log.debug(String.format("[%d-%s] %s", studyId, tableName, sql));
+            rs = st.executeQuery(sql);
             while (rs.next()) {
                 Column col = new Column();
                 col.setName(rs.getString(1));
@@ -191,7 +205,7 @@ public class OracleToLifelinesPheno {
                 col.setLength(rs.getInt(3));
                 col.setPrecision(rs.getInt(4));
                 col.setComment(rs.getString(5));
-                System.out.println(col.toString());
+                log.info(String.format("[%d-%s] %s", studyId, tableName, col.toString()));
                 result.add(col);
             }
             rs.close();
@@ -228,6 +242,7 @@ public class OracleToLifelinesPheno {
 	        em = db.getEntityManager();
 	        
 	        sql = String.format(sql, schemaName, tableName);
+	        log.debug(String.format("[%d-%s] %s", studyId, tableName, sql));
 	        Object result = em.createNativeQuery(sql).getSingleResult();
 	        return ((BigDecimal)result);
     	} catch (DatabaseException ex) {

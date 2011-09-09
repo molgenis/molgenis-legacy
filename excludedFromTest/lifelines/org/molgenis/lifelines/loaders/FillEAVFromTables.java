@@ -15,11 +15,22 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.molgenis.organization.Investigation;
 
 public class FillEAVFromTables {
-	public static String sqlNumerBuckets = "select ceil(count(*)/%d) from %s.%s";
-	public static String sqlBucketsByPA_ID = 
+	private static Logger log = Logger.getLogger(FillEAVFromTables.class);
+	
+    private static final int RECORDS_PER_THREAD = 500; 	//records each thread can process!
+    private static final int MAX_THREADS = 10;			//number of thread executing concurrently
+    private static final int THREAD_TIME_OUT_TIME = 200; //thread times out after 200 seconds
+		
+	//select number of buckets
+	private static String sqlNumerBuckets = "select ceil(count(*)/%d) from %s.%s";
+	
+	//divided table into N bucktes
+	private static String sqlBucketsByPA_ID = 
 		 "select  pa_idm, max(bucket) bucketm "
 		+" from    ( "
 	    +"	select  bucket, max(pa_id) pa_idm "
@@ -34,68 +45,76 @@ public class FillEAVFromTables {
 	    +"    group by pa_idm "
 	    +"   order by bucketm ";
 	
-	public static String sqlGetTableWithColumns = 
-		"select 'll_' || tabnaam, LISTAGG(veld, ',') WITHIN GROUP (ORDER BY veld) AS velden "
+	//result is of (tablename, a1,...,an')
+	private static String sqlGetTableWithColumns = 
+		"select tabnaam, LISTAGG(veld, ',') WITHIN GROUP (ORDER BY veld) AS velden "
 		+" from LLPOPER.publ_dict_studie "
 		+" group by tabnaam ";
 	
     public static void main(String[] args) throws Exception {
+    	PropertyConfigurator.configure("log4j.properties");
+    	
     	int studyId = 101;
+    	
+    	log.info(String.format("[%s] Imported started into EAV (pheno model)", studyId));
+    	
     	String schemaName = "llpoper";
         String schemaToExportView = null;
-        String[] tableNames = new String[]{"ll_bloeddrukavg", "ll_ecgparam"};    	
-   	
-        String databaseTarget = "oracle";
-        
+       
         Investigation inv = new Investigation();
-        inv.setName(String.format("StudyId: %d Loaded: %s",studyId, new Date().toString()));        
+        inv.setName(String.format("StudyId: %d Loaded: %s",studyId, new Date().toString()));    
         
         Map<String, Object> configOverrides = new HashMap<String, Object>();
-        configOverrides.put("hibernate.hbm2ddl.auto", "create-drop");		        
+        configOverrides.put("hibernate.hbm2ddl.auto", "create-drop"); //FIXME: should be changed to validate for production		        
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("molgenis", configOverrides);
         EntityManager em = emf.createEntityManager();
-
+        
         em.getTransaction().begin();
         em.persist(inv);
         em.getTransaction().commit();
        
+        log.info(String.format("[%s] Investigation.name = %s", studyId, inv.getName()));
+        
         long start = System.currentTimeMillis();
-        int protocolId = 0;
-        
-        final int RECORDS_PER_THREAD = 500;
-        final int MAX_THREADS = 10;
-        
+        int protocolId = 0; //FIXME: should be determined globally over multiple runs! (runtime)        
         
         @SuppressWarnings("unchecked")
 		List<Object[]> tables = em.createNativeQuery(sqlGetTableWithColumns).getResultList();
-        
+		
         for(Object[] tableRec : tables) {
         	String tableName = (String)tableRec[0];
         	String fieldNames = (String)tableRec[1];
+        	
+        	log.info(String.format("[%d-%s] Start importing table: %s", studyId, tableName));
+        	
         	if(!fieldNames.toUpperCase().contains("PA_ID"))
         	{
-        		System.err.println(String.format("Table: %s doesn't contain PA_ID column! So data is not loaded into EAV!", tableName));
+        		log.warn(String.format("[%d-%s] Doesn't contain PA_ID column! So data is not loaded into EAV!", studyId, tableName));
         		continue;
         	}
         	if(!fieldNames.toUpperCase().contains("STID"))
         	{        	
-        		System.err.println(String.format("Table: %s doesn't contain STID column! So data is not loaded into EAV!", tableName));        		        		
-        	}
+        		log.warn(String.format("[%d-%s] Table: %s doesn't contain STID column! So data is not loaded into EAV!", studyId, tableName));
+        		continue;
+        	}        	
         	
-        	
-        	new OracleToLifelinesPheno(em, schemaName, tableName, fieldNames, inv.getId());
+        	log.trace(String.format("[%d-%s]Start creating metaData.", studyId, tableName));
+        	new OracleToLifelinesPheno(studyId, em, schemaName, tableName, fieldNames, inv.getId());
+        	log.trace(String.format("[%d-%s] Meta data succesfully stored.", studyId, tableName));
         	
         	BigDecimal numberOfBuckets = (BigDecimal) em.createNativeQuery(
         			String.format(sqlNumerBuckets, RECORDS_PER_THREAD, schemaName, tableName))
         			.getSingleResult();
         	int N = numberOfBuckets.toBigInteger().intValue();
         	
+        	log.info(String.format("[%d-%s] Table is divided into %d buckets", studyId, tableName, N));
+        	        	
         	@SuppressWarnings("unchecked")
 			List<Object[]> results = em.createNativeQuery(
         				String.format(sqlBucketsByPA_ID, N, schemaName, tableName, studyId)).getResultList();
         	
             BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<Runnable>(N);
-            ThreadPoolExecutor executor = new ThreadPoolExecutor(MAX_THREADS, MAX_THREADS, 200, TimeUnit.SECONDS, workQueue);
+            ThreadPoolExecutor executor = new ThreadPoolExecutor(MAX_THREADS, MAX_THREADS, THREAD_TIME_OUT_TIME, TimeUnit.SECONDS, workQueue);
             
             CountDownLatch doneSignal = new CountDownLatch(N);
             int prevPA_ID = 0;
@@ -105,19 +124,26 @@ public class FillEAVFromTables {
         	   prevPA_ID = endPA_ID;
         	}
             
-            Thread monitor = new Thread(new MyMonitorThread(executor));
+            Thread monitor = new Thread(new MyMonitorThread(executor, tableName));
             monitor.start();
 
-        	//int N = 5;
-            executor.shutdown(); //when all task are complete ThreadPoolExecutor is terminated --> program can end!!
-       	   	doneSignal.await();  //wait for all tasks to finish
+            executor.shutdown(); //when all task are complete ThreadPoolExecutor is terminated 
+       	   	doneSignal.await();  //wait for all tasks to finish (what will happen in case of timeout?)
        	   
-       	   	new EAVToView(schemaName, tableName, fieldNames, schemaToExportView, protocolId, databaseTarget, inv.getId());
+       	   	log.trace(String.format("[%d-%s] Data for Table is loaded", studyId, tableName));
+       	   	
+       	   	log.trace(String.format("[%d-%s] Start EAVToView", studyId, tableName));
+       	   	new EAVToView(studyId, schemaName, tableName, fieldNames, schemaToExportView, protocolId, inv.getId());
+       	   	log.trace(String.format("[%d-%s] End EAVToView", studyId, tableName));
+       	   	       	   	
+       	   	log.info(String.format("[%d-%s] Processing of data is completed!", studyId, tableName));
        	   	protocolId++;
         }
         em.close();
         
         long end = System.currentTimeMillis();        
-        System.out.println("Time: " + (end - start) / 1000);
+        long seconds = (end - start) / 1000;
+        log.info(String.format("[%d] Data Loading completed in %d seconds", studyId, seconds));
+        log.info(String.format("[%d] End of import", studyId));
     }
 }

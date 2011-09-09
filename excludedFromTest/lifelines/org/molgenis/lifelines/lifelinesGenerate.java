@@ -8,6 +8,6 @@ public class lifelinesGenerate
 {
 	public static void main(String[] args) throws Exception
 	{
-		new Molgenis("apps/lifelines/org/molgenis/lifelines/lifelines.molgenis.properties").generate();
+		new Molgenis("excludedFromTest/lifelines/org/molgenis/lifelines/lifelines.molgenis.properties").generate();
 	}
 }

@@ -111,6 +111,8 @@
 				ObservationTarget class maps to XGAP:Subject, METABASE:Patient and
 				maps to Page:Abstract_Observation_Target. The name of
 				observationTargets is unique.</description>
+				<field name="paid" type="int" index="true" nillable="false"/>
+				
 			<!-- <unique fields="name" /> -->
 		</entity>
 		<entity name="Measurement" implements="InvestigationElement" 
