@@ -226,7 +226,7 @@ public class XqtlSeleniumTest
 		
 		//change Individual to Gene and save
 		selenium.click("css=#Data_FeatureType_chzn > a.chzn-single > span");
-		selenium.click("id=Data_FeatureType_chzn_o_4");
+		selenium.click("id=Data_FeatureType_chzn_o_3");
 		selenium.click("id=save_Datas");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("UPDATE SUCCESS: affected 1"));
@@ -236,8 +236,8 @@ public class XqtlSeleniumTest
 		Assert.assertEquals(selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.5.1"), "Gene\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeSampleSpot");
 		
 		//change back to Individual and save
-		selenium.click("css=#Data_FeatureType_chzn > a.chzn-single > div > b");
-		selenium.click("id=Data_FeatureType_chzn_o_5");
+		selenium.click("css=#Data_FeatureType_chzn > a.chzn-single > span");
+		selenium.click("id=Data_FeatureType_chzn_o_4");
 		selenium.click("id=save_Datas");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("UPDATE SUCCESS: affected 1"));
