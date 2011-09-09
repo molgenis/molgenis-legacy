@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import nl.captcha.Captcha;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.RedirectException;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.auth.OpenIdLogin;
 import org.molgenis.auth.service.MolgenisUserException;
@@ -43,7 +42,6 @@ import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.TablePanel;
 import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.RedirectedException;
 import org.molgenis.util.Tuple;
 
 //import commonservice.CommonService;
@@ -128,11 +126,8 @@ public class UserLogin extends EasyPluginController<UserLoginModel>
 	public void Logout(Database db, Tuple request) throws Exception
 	{
 		this.getModel().setAction("Logout");
-		System.out.println(">>> Logging out user==" + this.getApplicationController().getLogin());
 		this.getApplicationController().getLogin().logout(db);
-		System.out.println(">>> Logged out user==" + this.getApplicationController().getLogin());
 		this.getApplicationController().getLogin().reload(db);
-		System.out.println(">>> Called reload");
 	}
 
 	public void Register(Database db, Tuple request)
