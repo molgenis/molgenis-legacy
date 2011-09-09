@@ -57,11 +57,11 @@
 				This class maps to XGAP.DataMatrix and MAGE-TAB.Data.
 			</description>
 			<field name="FeatureType" type="enum"
-				enum_options="[Chromosome,ClassicalPhenotype,DerivedTrait,EnvironmentalFactor,Gene,Individual,Marker,MassPeak,Metabolite,Panel,Probe,Sample,Spot]"
+				enum_options="[Chromosome,DerivedTrait,EnvironmentalFactor,Gene,Individual,Marker,MassPeak,Measurement,Metabolite,Panel,Probe,Sample,Spot]"
 				description="Defines the type of the columns of this data set. Each column refers to a Feature or Subject. " />
 				<!-- enum_options="[Marker,Probe,ProbeSet,Individual,Sample,PairedSample,MassPeak,Gene,Clone,Trait,Subject,Strain,Metabolite,Spot,Phenotype,NMRBin,Factor,Derived]" -->
 			<field name="TargetType" type="enum"
-				enum_options="[Chromosome,ClassicalPhenotype,DerivedTrait,EnvironmentalFactor,Gene,Individual,Marker,MassPeak,Metabolite,Panel,Probe,Sample,Spot]"
+				enum_options="[Chromosome,DerivedTrait,EnvironmentalFactor,Gene,Individual,Marker,MassPeak,Measurement,Metabolite,Panel,Probe,Sample,Spot]"
 				description="Defines the type of the rows of this matrix. Each row refers to a Feature or Subject." />
 				<!-- enum_options="[Marker,Probe,ProbeSet,Individual,Sample,PairedSample,MassPeak,Gene,Clone,Trait,Subject,Strain,Metabolite,Spot,Phenotype,NMRBin,Factor,Derived]" -->
 			<field name="ValueType" type="enum" enum_options="[Text,Decimal]"

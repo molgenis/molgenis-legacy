@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import matrix.DataMatrixInstance;
+import matrix.general.DataMatrixHandler;
 import matrix.implementations.binary.BinaryDataMatrixWriter;
 
 import org.molgenis.cluster.DataName;
@@ -31,10 +33,12 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.organization.Investigation;
-import org.molgenis.pheno.ObservationElement;
+import org.molgenis.pheno.Individual;
+import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Entity;
+import org.molgenis.util.TarGz;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.Chromosome;
 import org.molgenis.xgap.Marker;
@@ -42,6 +46,9 @@ import org.molgenis.xgap.Marker;
 public class QTLDataSetWizard extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -1810993111211947419L;
+
+	// if db rollbacks, delete this matrix file!
+	private File dataFileRollback = null;
 
 	public QTLDataSetWizard(String name, ScreenController<?> parent)
 	{
@@ -119,6 +126,32 @@ public class QTLDataSetWizard extends PluginModel<Entity>
 			{
 				try
 				{
+					// should never be null
+					if (dataFileRollback != null)
+					{
+						// should exist
+						if (dataFileRollback.exists())
+						{
+							try
+							{
+								TarGz.delete(dataFileRollback, true);
+							}
+							catch (InterruptedException i)
+							{
+								System.out.println("SEVERE ERROR: dataFileRollback delete FAILED");
+								i.printStackTrace();
+							}
+						}
+						else
+						{
+							System.out.println("SEVERE ERROR: dataFileRollback does not exist");
+						}
+					}
+					else
+					{
+						System.out.println("SEVERE ERROR: dataFileRollback was NULL");
+					}
+
 					db.rollbackTx();
 				}
 				catch (DatabaseException e1)
@@ -143,12 +176,33 @@ public class QTLDataSetWizard extends PluginModel<Entity>
 		{
 			List<Investigation> invList = db.find(Investigation.class);
 			this.model.setInvestigations(invList);
+
+			// FIXME: hardcoded for now, must be replaced with combination of
+			// Metadb and enum in Data.. (pick out the ObservableFeatures)
+			// if possible? may not have other required fields than Name..
+			List<String> xof = new ArrayList<String>();
+			// xof.add("Chromosome"); needs other required
+			xof.add("Measurement");
+			xof.add("DerivedTrait");
+			xof.add("EnvironmentalFactor");
+			xof.add("Gene");
+			xof.add("Marker");
+			xof.add("MassPeak");
+			xof.add("Metabolite");
+			xof.add("Probe");
+			// xof.add("Spot"); needs other required
+			this.model.setXqtlObservableFeatureTypes(xof);
+
+			List<OntologyTerm> crosses = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.LIKE,
+					"xgap_rqtl_straintype_"));
+			this.model.setCrosses(crosses);
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 		}
+
 	}
 
 	/**
@@ -203,10 +257,119 @@ public class QTLDataSetWizard extends PluginModel<Entity>
 		// tag matrix as Rqtl_data -> genotypes
 		tagMatrix("Rqtl_data", type.toLowerCase() + "types", data, db);
 
+		// create an instance of this matrix
+		DataMatrixHandler handler = new DataMatrixHandler(db);
+		DataMatrixInstance instance = handler.createInstance(data);
+		dataFileRollback = handler.findSourceFile(data);
+
+		if (type.equals("Geno"))
+		{
+			// add missing individuals with this cross type
+			addMissingIndividuals(instance, db, request.getString("cross"), invSelect);
+		}
+		if (type.equals("Pheno"))
+		{
+			// add missing traits of this type
+			String traitType = request.getString("trait");
+			boolean traitsAdded = addMissingTraits(instance, db,traitType, invSelect);
+			if(traitsAdded)
+			{
+				data.setTargetType(traitType);
+				db.update(data);
+			}
+		}
+
 		db.commitTx();
+		dataFileRollback = null;
 
 		this.setMessages(new ScreenMessage(type + "types succesfully uploaded as '" + data.getName()
 				+ "' and tagged for QTL analysis", true));
+	}
+
+	/**
+	 * Add missing traits of this type if needed. Naive and straight
+	 * implementation, similar to addMissingIndividuals
+	 * 
+	 * @param instance
+	 * @param db
+	 * @param type
+	 * @param invId
+	 * @throws DatabaseException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 */
+	private boolean addMissingTraits(DataMatrixInstance instance, Database db, String type, int invId)
+			throws DatabaseException, InstantiationException, IllegalAccessException
+	{
+		List<String> traitsNeeded = instance.getRowNames();
+		Class traitClass = db.getClassForName(type);
+
+		List<ObservableFeature> traitsInDb = db.find(ObservableFeature.class, new QueryRule(ObservableFeature.NAME,
+				Operator.IN, traitsNeeded));
+
+		for (ObservableFeature traitInDb : traitsInDb)
+		{
+			traitsNeeded.remove(traitsNeeded.indexOf(traitInDb.getName()));
+		}
+
+		List<ObservableFeature> addThese = new ArrayList<ObservableFeature>();
+
+		for (String traitNeeded : traitsNeeded)
+		{
+			ObservableFeature missingTrait = (ObservableFeature) traitClass.newInstance();
+			missingTrait.setInvestigation(invId);
+			missingTrait.setName(traitNeeded);
+			addThese.add(missingTrait);
+		}
+		db.add(addThese);
+		
+		if (addThese.size() > 0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	/**
+	 * Add missing individuals of this cross type if needed. Naive: only looks
+	 * for Individuals, not other ObservationTargets. Assumes the individuals
+	 * are on the columns. Assumes your list of input Individuals has no
+	 * duplicates, good names, etc. Assumes the cross exists as a uniquely named
+	 * ontologyterm.
+	 * 
+	 * @param instance
+	 * @param db
+	 * @param cross
+	 * @throws DatabaseException
+	 */
+	private void addMissingIndividuals(DataMatrixInstance instance, Database db, String cross, int invId)
+			throws DatabaseException
+	{
+		List<String> indvNamesNeeded = instance.getColNames();
+		List<Individual> indInDb = db.find(Individual.class, new QueryRule(Individual.NAME, Operator.IN,
+				indvNamesNeeded));
+
+		OntologyTerm crossType = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.ID, Operator.EQUALS, cross))
+				.get(0);
+
+		for (Individual inDb : indInDb)
+		{
+			indvNamesNeeded.remove(indvNamesNeeded.indexOf(inDb.getName()));
+		}
+
+		List<Individual> addThese = new ArrayList<Individual>();
+		for (String indName : indvNamesNeeded)
+		{
+			Individual addMe = new Individual();
+			addMe.setName(indName);
+			addMe.setInvestigation(invId);
+			addMe.setOntologyReference(crossType);
+			addThese.add(addMe);
+		}
+		db.add(addThese);
 	}
 
 	/**
@@ -303,7 +466,8 @@ public class QTLDataSetWizard extends PluginModel<Entity>
 					chromosome.setIsAutosomal(true);
 					chromosome.setInvestigation(inv);
 					chromoToBeAdded.put(chromoName, chromosome);
-					//add chromo to db right now, so the ID of the object is set!
+					// add chromo to db right now, so the ID of the object is
+					// set!
 					db.add(chromosome);
 				}
 				else
@@ -395,22 +559,23 @@ public class QTLDataSetWizard extends PluginModel<Entity>
 	 * @return
 	 * @throws DatabaseException
 	 * @throws IOException
-	 * @throws ParseException 
+	 * @throws ParseException
 	 */
 	private Data makePhenoData(Database db, String originalFileName, int invSelect) throws DatabaseException,
 			IOException, ParseException
 	{
 		Data phenoData = new Data();
-		OntologyTerm onto  = db.find(OntologyTerm.class ,new QueryRule(OntologyTerm.NAME, Operator.EQUALS, "phenotype_matrix")).get(0);
-		if(onto == null)
+		OntologyTerm onto = db.find(OntologyTerm.class,
+				new QueryRule(OntologyTerm.NAME, Operator.EQUALS, "phenotype_matrix")).get(0);
+		if (onto == null)
 		{
 			onto = new OntologyTerm();
 			onto.setName("phenotype_matrix");
 			onto.setDefinition("Phenotypes");
 			db.add(onto);
 		}
-//		phenoData.setFeature(feature);
-//		phenoData.setTarget(feature);
+		// phenoData.setFeature(feature);
+		// phenoData.setTarget(feature);
 		phenoData.setOntologyReference(onto);
 		phenoData.setName(originalFileName);
 		phenoData.setFeatureType("Individual");
@@ -432,22 +597,23 @@ public class QTLDataSetWizard extends PluginModel<Entity>
 	 * @return
 	 * @throws DatabaseException
 	 * @throws IOException
-	 * @throws ParseException 
+	 * @throws ParseException
 	 */
 	private Data makeGenoData(Database db, String originalFileName, int invSelect) throws DatabaseException,
 			IOException, ParseException
 	{
 		Data genoData = new Data();
-		OntologyTerm onto  = db.find(OntologyTerm.class ,new QueryRule(OntologyTerm.NAME, Operator.EQUALS, "genotype_matrix")).get(0);
-		if(onto == null)
+		OntologyTerm onto = db.find(OntologyTerm.class,
+				new QueryRule(OntologyTerm.NAME, Operator.EQUALS, "genotype_matrix")).get(0);
+		if (onto == null)
 		{
 			onto = new OntologyTerm();
 			onto.setName("genotype_matrix");
 			onto.setDefinition("Genotypes");
 			db.add(onto);
 		}
-//		genoData.setFeature(feature);
-//		genoData.setTarget(feature);
+		// genoData.setFeature(feature);
+		// genoData.setTarget(feature);
 		genoData.setOntologyReference(onto);
 		genoData.setName(originalFileName);
 		genoData.setFeatureType("Individual");

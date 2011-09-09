@@ -223,12 +223,12 @@ public class DatabaseLogin implements Login, Serializable {
 		MolgenisUserService service          = MolgenisUserService.getInstance(db);
 		
 		List<Integer> roleIdList             = service.findGroupIds(role);
-		System.out.println(">>>> roleIdList==" +roleIdList.toString());
+		//System.out.println(">>>> roleIdList==" +roleIdList.toString());
 		List<MolgenisPermission> permissions = db.query(MolgenisPermission.class).in(MolgenisPermission.ROLE_, roleIdList).find();
 
 		for (MolgenisPermission permission : permissions)
 		{
-			System.out.println(">>> permission==" + permission + ", role==" + role);
+			//System.out.println(">>> permission==" + permission + ", role==" + role);
 			if ("read".equals(permission.getPermission()))
 				this.readMap.put(permission.getEntity_ClassName(), Permission.read);
 			else if ("write".equals(permission.getPermission()))
