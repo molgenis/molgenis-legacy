@@ -51,7 +51,7 @@
 			Genotypes:
 		</td>
 		<td>
-			<input type="file" name="GenoFile"><input type="submit" value="Upload" onclick="__action.value='uploadGeno';return true;"/><#-->input type="button" value="Show example" onclick="mopen('genoExample');return true;"/-->
+			<input type="file" name="GenoFile"><input type="submit" id="upload_genotypes" value="Upload" onclick="__action.value='uploadGeno';return true;"/><#-->input type="button" value="Show example" onclick="mopen('genoExample');return true;"/-->
 			<div class="wizardfoldout" id="genoExample">
 			<i>Example</i><br>
 			<table><tr><td class="matrixTableCell matrixRowColor1" style="background: white"><FONT FACE= "Courier New">
@@ -71,7 +71,7 @@
 		<td style="white-space: nowrap;">
 			Phenotypes:
 		</td>
-		<td><input type="file" name="PhenoFile"><input type="submit" value="Upload" onclick="__action.value='uploadPheno';return true;"/><#--input type="button" value="Show example" onclick="mopen('phenoExample');return true;"/-->
+		<td><input type="file" name="PhenoFile"><input type="submit" id="upload_phenotypes" value="Upload" onclick="__action.value='uploadPheno';return true;"/><#--input type="button" value="Show example" onclick="mopen('phenoExample');return true;"/-->
 			<div class="wizardfoldout" id="phenoExample">
 			<i>Example</i><br>
 			<table><tr><td class="matrixTableCell matrixRowColor1" style="background: white"><FONT FACE= "Courier New">
@@ -91,7 +91,7 @@
 		<td style="white-space: nowrap;">
 			Map:
 		</td>
-		<td><input type="file" name="MapFile"><input type="submit" value="Upload" onclick="__action.value='uploadMap';return true;"/><#--input type="button" value="Show example" onclick="mopen('mapExample');return true;"/-->
+		<td><input type="file" name="MapFile"><input type="submit" id="upload_map" value="Upload" onclick="__action.value='uploadMap';return true;"/><#--input type="button" value="Show example" onclick="mopen('mapExample');return true;"/-->
 			<div class="wizardfoldout" id="mapExample">
 			<i>Example</i><br>
 			<table><tr><td class="matrixTableCell matrixRowColor1" style="background: white"><FONT FACE= "Courier New">

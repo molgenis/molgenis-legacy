@@ -38,7 +38,7 @@
 
 <h3><u>Find</u></h3>
 <input type="text" name="searchThis" <#if model.searchThis?exists>value="${model.searchThis}"</#if>/>
-<input type="submit" value="Go" onclick="__action.value='doSearch';return true;"/><br>
+<input type="submit" id="simple_search" value="Go" onclick="__action.value='doSearch';return true;"/><br>
 <br>
 <br>
 <#if model.results?exists>

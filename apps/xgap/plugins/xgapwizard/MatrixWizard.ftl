@@ -43,9 +43,9 @@ examples.
 <a target="_blank" href="http://www.molgenis.org/wiki/xQTLBioinformaticianTag">Learn more about tagging..</a>
 <br><br>
 <#if model.getShowVerified() == true>
-	<input type="submit" value="Hide verified in list" onclick="__action.value='hideVerified';return true;"/>
+	<input type="submit" id="hide_verified" value="Hide verified in list" onclick="__action.value='hideVerified';return true;"/>
 <#else>
-	<input type="submit" value="Show verified in list" onclick="__action.value='showVerified';return true;"/>
+	<input type="submit" id="show_verified" value="Show verified in list" onclick="__action.value='showVerified';return true;"/>
 </#if>
 
 <br><br>

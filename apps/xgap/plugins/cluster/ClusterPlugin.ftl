@@ -59,9 +59,9 @@
 <br>
 <h1>Run QTL mapping</h1><br>
 This is the main menu for starting a new analysis or viewing the progress of running analysis. Analyses use preconfigured sets of data and parameters, and calculate results using R scripts. When successfully completed, you can continue to browse the results. For more information, take a look at <a target="_blank" href="http://www.molgenis.org/wiki/xQTLBiologistRun">the xQTL wiki</a>.<br><br><br>
-<input type="submit" value="Start new analysis" onclick="__action.value='newClusterJob';return true;">
+<input type="submit" value="Start new analysis" id="start_new_analysis" onclick="__action.value='newClusterJob';return true;">
 <br><br>
-<input type="submit" value="View running analysis" onclick="__action.value='viewJobManager';return true;">
+<input type="submit" value="View running analysis" id="view_running_analysis" onclick="__action.value='viewJobManager';return true;">
 <br><br>
 
 <table>
@@ -182,8 +182,8 @@ This is the main menu for starting a new analysis or viewing the progress of run
 	
 <br>
 
-<input type="submit" value="Previous" onclick="__action.value='goBack';return true;"/>
-<input type="submit" value="Next" onclick="__action.value='toStep2';return true;"/>
+<input type="submit" id="toStep0" value="Previous" onclick="__action.value='goBack';return true;"/>
+<input type="submit" id="toStep2" value="Next" onclick="__action.value='toStep2';return true;"/>
 
 	
 <#elseif model.state="newjob2">
@@ -258,7 +258,7 @@ You have selected: <b>${model.selectedAnalysis.name}</b><br><br>
 	<br>
 </#if>
 
-<input type="submit" value="Previous" onclick="__action.value='toStep1';return true;"/>
+<input type="submit" id="toStep1" value="Previous" onclick="__action.value='toStep1';return true;"/>
 <input type="submit" value="Start" onclick="__action.value='startClusterJob';return true;"/>
 
 
@@ -395,7 +395,7 @@ seconds.
 <br>
 <!--font color="red"><i>Resubmission of subjobs on cluster not possible due to demo constraints</i></font-->
 <br><br>
-<input type="submit" value="Go back" onclick="__action.value='goBack';return true;"/>
+<input type="submit" value="Go back" id="back_to_start" onclick="__action.value='goBack';return true;"/>
 <br>
 
 </#if>
