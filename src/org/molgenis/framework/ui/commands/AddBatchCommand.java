@@ -46,10 +46,12 @@ public class AddBatchCommand<E extends Entity> extends SimpleCommand
 		ActionInput submit = new ActionInput("Add", ActionInput.Type.SAVE);
 		submit.setValue("upload_csv");
 		submit.setIcon("generated-res/img/save.png");
+		submit.setDescription("Store the data");
 		inputs.add(submit);
 
 		ActionInput cancel = new ActionInput("Cancel", ActionInput.Type.CLOSE);
 		cancel.setIcon("generated-res/img/cancel.png");
+		cancel.setDescription("Cancel adding data");
 		inputs.add(cancel);
 
 		return inputs;
@@ -71,6 +73,7 @@ public class AddBatchCommand<E extends Entity> extends SimpleCommand
 				"put here your data in comma-separated format.");
 		csvInput.setLabel("CSV data");
 		csvInput.setTooltip("put here your data in comma-separated format.");
+		csvInput.setDescription("Put your CSV data here.");
 		inputs.add(csvInput);
 
 		return inputs;
