@@ -46,10 +46,12 @@ public class AddCsvFileCommand<E extends Entity> extends SimpleCommand
 		ActionInput submit = new ActionInput("Add", ActionInput.Type.SAVE);
 		submit.setValue("upload_csvfile");
 		submit.setIcon("generated-res/img/save.png");
+		submit.setDescription("Store the data from the CSV file");
 		inputs.add(submit);
 
 		ActionInput cancel = new ActionInput("Cancel", ActionInput.Type.CLOSE);
 		cancel.setIcon("generated-res/img/cancel.png");
+		submit.setDescription("Cancel the CSV upload");
 		inputs.add(cancel);
 
 		return inputs;
@@ -70,6 +72,7 @@ public class AddCsvFileCommand<E extends Entity> extends SimpleCommand
 		FileInput csvInput = new FileInput("__csvdata");
 		csvInput.setLabel("CSV file");
 		csvInput.setTooltip("choose here your data in comma-separated format.");
+		csvInput.setDescription("Select your CSV file here.");
 		inputs.add(csvInput);
 
 		return inputs;
