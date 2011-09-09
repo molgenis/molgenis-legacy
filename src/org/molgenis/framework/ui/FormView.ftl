@@ -29,7 +29,7 @@
 									<table>
 		<#list menu.getCommands() as command>
 			<#if command.isVisible()>
-										<tr><td class="submenuitem" onclick="${command.getJavaScriptAction()}"><#if command.icon?exists><img src="${command.icon}" align="left" alt="${command.label}"><#else>&nbsp; </#if>${command.label}</td></tr>
+										<tr><td id="${screen.name}_${command.name}_submenuitem" class="submenuitem" onclick="${command.getJavaScriptAction()}"><#if command.icon?exists><img src="${command.icon}" align="left" alt="${command.label}"><#else>&nbsp; </#if>${command.label}</td></tr>
 			</#if>
 		</#list>
 									</table>
