@@ -1,6 +1,8 @@
 package matrix;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +31,10 @@ import org.molgenis.matrix.component.interfaces.BasicMatrix;
 import org.molgenis.matrix.component.interfaces.RenderDescriptor;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 import org.molgenis.matrix.component.interfaces.SourceMatrix;
-import org.molgenis.matrix.component.test.SomeColType;
-import org.molgenis.matrix.component.test.SomeRowType;
-import org.molgenis.matrix.component.test.SomeValueType;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.util.CsvWriter;
+
+import com.pmstation.spss.SPSSWriter;
 
 /**
  * Abstract implementation for MatrixInterface. Some functions require XGAP
@@ -224,6 +225,80 @@ public abstract class AbstractDataMatrixInstance<E> extends
 			e.printStackTrace();
 		}
 		return result.toString();
+	}
+	
+	public File getAsSpssFile() throws Exception
+	{
+		File spssFile = new File(System.getProperty("java.io.tmpdir")
+				+ File.separator + this.getData().getName() + ".sav");
+		
+		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(spssFile));
+		SPSSWriter spssWriter = new SPSSWriter(out, "windows-1252");
+		spssWriter.setCalculateNumberOfCases(false);
+		spssWriter.addDictionarySection(-1);
+		
+		Object[][] elements = this.getElements();
+		
+		if(this.getData().getValueType().equals("Decimal"))
+		{
+			for(String colName : this.colNames)
+			{
+				spssWriter.addNumericVar(colName, 10, 10, colName);
+			}
+			
+			spssWriter.addDataSection();
+			
+			for(int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
+			{
+				for(int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
+				{
+					Object val = elements[rowIndex][colIndex];
+					if(val == null)
+					{
+						spssWriter.addData(0.0); //FIXME: has to be added to prevent shifts, I suppose?
+					}
+					else
+					{
+						spssWriter.addData(Double.valueOf(val.toString()));
+					}
+				}
+			}
+		}
+		else if (this.getData().getValueType().equals("Text"))
+		{
+			for(String colName : this.colNames)
+			{
+				spssWriter.addStringVar(colName, 10, colName);
+			}
+			
+			spssWriter.addDataSection();
+			
+			for(int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
+			{
+				for(int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
+				{
+					Object val = elements[rowIndex][colIndex];
+					if(val == null)
+					{
+						spssWriter.addData(""); //FIXME: correct?
+					}
+					else
+					{
+						spssWriter.addData(val.toString());	
+					}
+					
+				}
+			}
+		}
+		else
+		{
+			throw new Exception("Value type '" + this.getData().getValueType() + "' unknown");
+		}
+		
+		spssWriter.addFinishSection();
+		out.close();
+		
+		return spssFile;
 	}
 
 	public File getAsExcelFile() throws Exception
