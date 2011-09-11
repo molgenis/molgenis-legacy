@@ -67,11 +67,15 @@ public class FamFileDriver
 		final ArrayList<FamEntry> result = new ArrayList<FamEntry>();
 		reader.parse(new CsvReaderListener()
 		{
-			public void handleLine(int line_number, Tuple tuple)
+			public void handleLine(int line_number, Tuple tuple) throws Exception
 			{
-				FamEntry fe = new FamEntry(tuple.getInt(0), tuple.getInt(1),
-						tuple.getInt(2), tuple.getInt(3), tuple.getInt(4)
-								.byteValue(), tuple.getDouble(5));
+				for(int objIndex = 0; objIndex < 6; objIndex++)
+				{
+					if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number,objIndex));
+				}
+				FamEntry fe = new FamEntry(tuple.getString(0),
+						tuple.getString(1), tuple.getString(2), tuple.getString(3),
+						tuple.getInt(4).byteValue(), tuple.getDouble(5));
 				result.add(fe);
 			}
 		});
@@ -95,12 +99,16 @@ public class FamFileDriver
 		final ArrayList<FamEntry> result = new ArrayList<FamEntry>();
 		reader.parse(new CsvReaderListener()
 		{
-			public void handleLine(int line_number, Tuple tuple)
+			public void handleLine(int line_number, Tuple tuple) throws Exception
 			{
 				if (line_number - 1 >= from && line_number - 1 < to)
 				{
-					FamEntry fe = new FamEntry(tuple.getInt(0),
-							tuple.getInt(1), tuple.getInt(2), tuple.getInt(3),
+					for(int objIndex = 0; objIndex < 6; objIndex++)
+					{
+						if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number,objIndex));
+					}
+					FamEntry fe = new FamEntry(tuple.getString(0),
+							tuple.getString(1), tuple.getString(2), tuple.getString(3),
 							tuple.getInt(4).byteValue(), tuple.getDouble(5));
 					result.add(fe);
 				}

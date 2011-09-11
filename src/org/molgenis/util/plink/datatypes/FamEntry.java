@@ -2,18 +2,18 @@ package org.molgenis.util.plink.datatypes;
 
 public class FamEntry
 {
-	int family;
-	int individual;
-	int father;
-	int mother;
-	byte sex;
-	//"A PED file must have 1 and only 1 phenotype in the sixth column."
 	//see: http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml
+	String family;
+	String individual;
+	String father;
+	String mother;
+	byte sex;
 	double phenotype;
-
-	public FamEntry(int family, int individual, int father,
-			int mother, byte sex, double phenotype)
+	
+	public FamEntry(String family, String individual, String father,
+			String mother, byte sex, double phenotype)
 	{
+		super();
 		this.family = family;
 		this.individual = individual;
 		this.father = father;
@@ -21,32 +21,27 @@ public class FamEntry
 		this.sex = sex;
 		this.phenotype = phenotype;
 	}
-
-	public int getFamily()
+	
+	public String getFamily()
 	{
 		return family;
 	}
-
-	public int getIndividual()
+	public String getIndividual()
 	{
 		return individual;
 	}
-
-	public int getFather()
+	public String getFather()
 	{
 		return father;
 	}
-
-	public int getMother()
+	public String getMother()
 	{
 		return mother;
 	}
-
 	public byte getSex()
 	{
 		return sex;
 	}
-
 	public double getPhenotype()
 	{
 		return phenotype;

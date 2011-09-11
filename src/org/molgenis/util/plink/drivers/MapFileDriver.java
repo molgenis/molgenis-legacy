@@ -88,6 +88,10 @@ public class MapFileDriver
 			{
 				if (line_number - 1 >= from && line_number - 1 < to)
 				{
+					for(int objIndex = 0; objIndex < 4; objIndex++)
+					{
+						if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number,objIndex));
+					}
 					MapEntry me = new MapEntry(tuple.getString(0), tuple
 							.getString(1), tuple.getDouble(2), tuple.getLong(3));
 					result.add(me);
@@ -112,6 +116,10 @@ public class MapFileDriver
 			public void handleLine(int line_number, Tuple tuple)
 					throws Exception
 			{
+				for(int objIndex = 0; objIndex < 4; objIndex++)
+				{
+					if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number,objIndex));
+				}
 				MapEntry me = new MapEntry(tuple.getString(0), tuple
 						.getString(1), tuple.getDouble(2), tuple.getLong(3));
 				result.add(me);
