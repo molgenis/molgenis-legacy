@@ -214,11 +214,11 @@ public class PlinkTest
 		Assert.assertEquals(2, famfd.getEntries(0, 2).size());
 		Assert.assertEquals(6, famfd.getEntries(0, 6).size());
 		
-		Assert.assertEquals(1, famfd.getEntries(0, 1).get(0).getFamily());
-		Assert.assertEquals(2, famfd.getEntries(0, 2).get(1).getFamily());
+		Assert.assertEquals("1", famfd.getEntries(0, 1).get(0).getFamily());
+		Assert.assertEquals("2", famfd.getEntries(0, 2).get(1).getFamily());
 		
-		Assert.assertEquals(5, famfd.getEntries(3, 5).get(1).getFamily());
-		Assert.assertEquals(6, famfd.getEntries(0, 6).get(5).getFamily());
+		Assert.assertEquals("5", famfd.getEntries(3, 5).get(1).getFamily());
+		Assert.assertEquals("6", famfd.getEntries(0, 6).get(5).getFamily());
 		
 		Assert.assertEquals(1.0, famfd.getAllEntries().get(2).getPhenotype());
 		Assert.assertEquals(2.0, famfd.getAllEntries().get(3).getPhenotype());
@@ -228,9 +228,41 @@ public class PlinkTest
 	@Test
 	public void PED_getEntries() throws Exception
 	{
-		Assert.assertEquals(1, pedfd.getAllEntries());
-		//TODO
-		Assert.assertTrue(false);
+		//1 1 0 0 1 1 A A G T
+		Assert.assertEquals('A', pedfd.getAllEntries().get(0).getBialleles().get(0).getAllele1());
+		Assert.assertEquals('A', pedfd.getAllEntries().get(0).getBialleles().get(0).getAllele2());
+		Assert.assertEquals('G', pedfd.getAllEntries().get(0).getBialleles().get(1).getAllele1());
+		Assert.assertEquals('T', pedfd.getAllEntries().get(0).getBialleles().get(1).getAllele2());
+		
+		Assert.assertEquals('A', pedfd.getAllEntries().get(1).getBialleles().get(0).getAllele1());
+		Assert.assertEquals('C', pedfd.getAllEntries().get(1).getBialleles().get(0).getAllele2());
+		Assert.assertEquals('T', pedfd.getAllEntries().get(1).getBialleles().get(1).getAllele1());
+		Assert.assertEquals('G', pedfd.getAllEntries().get(1).getBialleles().get(1).getAllele2());
+		
+		Assert.assertEquals('C', pedfd.getAllEntries().get(5).getBialleles().get(0).getAllele1());
+		Assert.assertEquals('C', pedfd.getAllEntries().get(5).getBialleles().get(0).getAllele2());
+		Assert.assertEquals('T', pedfd.getAllEntries().get(5).getBialleles().get(1).getAllele1());
+		Assert.assertEquals('T', pedfd.getAllEntries().get(5).getBialleles().get(1).getAllele2());
+
+		Assert.assertEquals("3", pedfd.getAllEntries().get(2).getFamily());
+		Assert.assertEquals("0", pedfd.getAllEntries().get(2).getFather());
+		Assert.assertEquals("0", pedfd.getAllEntries().get(2).getMother());
+		Assert.assertEquals(1.0, pedfd.getAllEntries().get(2).getPhenotype());
+		Assert.assertEquals("1", pedfd.getAllEntries().get(2).getIndividual());
+		Assert.assertEquals(1, pedfd.getAllEntries().get(2).getSex());
+
+		Assert.assertEquals("3", pedfd.getEntries(2, 3).get(0).getFamily());
+		Assert.assertEquals('G', pedfd.getEntries(2, 3).get(0).getBialleles().get(1).getAllele2());
+		Assert.assertEquals("3", pedfd.getEntries(0, 3).get(2).getFamily());
+		Assert.assertEquals('G', pedfd.getEntries(0, 3).get(2).getBialleles().get(1).getAllele1());
+		Assert.assertEquals("4", pedfd.getEntries(2, 4).get(1).getFamily());
+		Assert.assertEquals(2.0, pedfd.getEntries(2, 4).get(1).getPhenotype());
+		
+		Assert.assertEquals('C', pedfd.getEntries(0, 6).get(4).getBialleles().get(0).getAllele1());
+		Assert.assertEquals('C', pedfd.getEntries(1, 6).get(3).getBialleles().get(0).getAllele2());
+		Assert.assertEquals('G', pedfd.getEntries(2, 6).get(2).getBialleles().get(1).getAllele1());
+		Assert.assertEquals('T', pedfd.getEntries(3, 6).get(1).getBialleles().get(1).getAllele2());
+		
 	}
 	
 	@Test

@@ -88,6 +88,10 @@ public class BimFileDriver
 			{
 				if (line_number - 1 >= from && line_number - 1 < to)
 				{
+					for(int objIndex = 0; objIndex < 6; objIndex++)
+					{
+						if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number,objIndex));
+					}
 					BimEntry be = new BimEntry(tuple.getString(0), tuple
 							.getString(1), tuple.getDouble(2),
 							tuple.getLong(3), new Biallele(tuple.getString(4),
@@ -114,6 +118,10 @@ public class BimFileDriver
 			public void handleLine(int line_number, Tuple tuple)
 					throws Exception
 			{
+				for(int objIndex = 0; objIndex < 6; objIndex++)
+				{
+					if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number,objIndex));
+				}
 				BimEntry be = new BimEntry(tuple.getString(0), tuple
 						.getString(1), tuple.getDouble(2), tuple.getLong(3),
 						new Biallele(tuple.getString(4), tuple.getString(5)));

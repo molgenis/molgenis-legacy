@@ -8,6 +8,7 @@ import java.util.List;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.plink.datatypes.Biallele;
 import org.molgenis.util.plink.datatypes.PedEntry;
 
 /**
@@ -50,7 +51,8 @@ public class PedFileDriver
 
 		if (reader.fileEndsWithNewlineChar())
 		{
-			this.nrOfElements = reader.getNumberOfLines() - reader.getAmountOfNewlinesAtFileEnd();
+			this.nrOfElements = reader.getNumberOfLines()
+					- reader.getAmountOfNewlinesAtFileEnd();
 		}
 		else
 		{
@@ -69,43 +71,34 @@ public class PedFileDriver
 	{
 		reader.reset();
 		final ArrayList<PedEntry> result = new ArrayList<PedEntry>();
-		final ArrayList<Integer> nullFields = new ArrayList<Integer>();
 		reader.parse(new CsvReaderListener()
 		{
 			public void handleLine(int line_number, Tuple tuple)
+					throws Exception
 			{
-				// System.out.println(tuple.getNrColumns());
-				int trueIndex = 0; // correct for null columns
-				for (int col = 0; col < tuple.getNrColumns(); col++)
+
+				List<Biallele> bialleles = new ArrayList<Biallele>();
+
+				for (int col = 6; col < tuple.getNrColumns(); col += 2)
 				{
-					if (!nullFields.contains(col))
-					{
-						Object o = tuple.getObject(col);
-						if (o == null)
-						{
-							// file formatting may contain double spacing or so
-							// add this index to list of null column indices to
-							// be skipped
-							// in next iteration
-							nullFields.add(col);
-						}
-						else
-						{
-							// grab stuff..
-							// iterate over N number of genotypes, add as
-							// Bialleles to PedEntry
-							// etc..
-							trueIndex++;
-						}
-					}
-					System.out.println(col + " - " + tuple.getObject(col));
+					String al1 = tuple.getString(col);
+					String al2 = tuple.getString(col+1);
+					if (al1 == null) throw new Exception(Helper.errorMsg(line_number,col));
+					if (al2 == null) throw new Exception(Helper.errorMsg(line_number,col+1));
+					Biallele biallele = new Biallele(al1, al2);
+					bialleles.add(biallele);				
 				}
-				// PedEntry pe = new PedEntry(tuple.getInt(0), tuple.getInt(1),
-				// tuple.getInt(2), tuple.getInt(3), tuple.getInt(4)
-				// .byteValue(), tuple.getDouble(5), new
-				// Biallele(tuple.getString(6),
-				// tuple.getString(7)));
-				// result.add(pe);
+				
+				for(int objIndex = 0; objIndex < 6; objIndex++)
+				{
+					if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number,objIndex));
+				}
+				PedEntry pe = new PedEntry(tuple.getString(0),
+						tuple.getString(1), tuple.getString(2), tuple.getString(3),
+						tuple.getInt(4).byteValue(), tuple.getDouble(5),
+						bialleles);
+				result.add(pe);
+
 			}
 		});
 		return result;
@@ -129,13 +122,31 @@ public class PedFileDriver
 		reader.parse(new CsvReaderListener()
 		{
 			public void handleLine(int line_number, Tuple tuple)
+					throws Exception
 			{
 				if (line_number - 1 >= from && line_number - 1 < to)
 				{
-					// PedEntry pe = new PedEntry(tuple.getInt(0),
-					// tuple.getInt(1), tuple.getInt(2), tuple.getInt(3),
-					// tuple.getInt(4).byteValue(), tuple.getDouble(5));
-					// result.add(pe);
+					List<Biallele> bialleles = new ArrayList<Biallele>();
+					
+					for (int col = 6; col < tuple.getNrColumns(); col += 2)
+					{
+						String al1 = tuple.getString(col);
+						String al2 = tuple.getString(col+1);
+						if (al1 == null) throw new Exception(Helper.errorMsg(line_number,col));
+						if (al2 == null) throw new Exception(Helper.errorMsg(line_number,col+1));
+						Biallele biallele = new Biallele(al1, al2);
+						bialleles.add(biallele);			
+					}
+					
+					for(int objIndex = 0; objIndex < 6; objIndex++)
+					{
+						if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number,objIndex));
+					}
+					PedEntry pe = new PedEntry(tuple.getString(0),
+							tuple.getString(1), tuple.getString(2), tuple.getString(3),
+							tuple.getInt(4).byteValue(), tuple.getDouble(5),
+							bialleles);
+					result.add(pe);
 				}
 			}
 		});
