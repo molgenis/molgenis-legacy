@@ -96,7 +96,7 @@ public class DependencyManager extends PluginModel<Entity>
 		this.model.setBitops(false);
 		this.model.setRcurl(false);
 		this.model.setRqtl(false);
-		this.model.setClusterjobs(false);
+//		this.model.setClusterjobs(false);
 		
 		File usrHomeLibs = new File(System.getProperty("user.home")
 				+ File.separator + "libs");
@@ -107,13 +107,13 @@ public class DependencyManager extends PluginModel<Entity>
 				+ File.separator + "qtl");
 		File rcurlDir = new File(usrHomeLibs.getAbsolutePath()
 				+ File.separator + "RCurl");
-		File clusterJobsDir = new File(usrHomeLibs.getAbsolutePath()
-				+ File.separator + "ClusterJobs");
+//		File clusterJobsDir = new File(usrHomeLibs.getAbsolutePath()
+//				+ File.separator + "ClusterJobs");
 		
 		System.out.println("checking dir: " + bitopsDir.getAbsolutePath());
 		System.out.println("checking dir: " + qtlDir.getAbsolutePath());
 		System.out.println("checking dir: " + rcurlDir.getAbsolutePath());
-		System.out.println("checking dir: " + clusterJobsDir.getAbsolutePath());
+//		System.out.println("checking dir: " + clusterJobsDir.getAbsolutePath());
 
 		if(bitopsDir.exists()){
 			System.out.println("bitopsDir exists");
@@ -130,10 +130,10 @@ public class DependencyManager extends PluginModel<Entity>
 			this.model.setRcurl(true);
 		}
 		
-		if(clusterJobsDir.exists()){
-			System.out.println("clusterJobsDir exists");
-			this.model.setClusterjobs(true);
-		}
+//		if(clusterJobsDir.exists()){
+//			System.out.println("clusterJobsDir exists");
+//			this.model.setClusterjobs(true);
+//		}
 
 	}
 

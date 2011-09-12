@@ -119,6 +119,7 @@ public class LocalComputationResource implements ComputationResource {
 		return true;
 	}
 
+	/*
 	private void installBiocPackage(String pkg, File usrHomeLibs, String OS) throws IOException{
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 		File tmpFile = new File(tmpDir.getAbsoluteFile() + File.separator + "tmpRfile_" + System.nanoTime() + ".R");
@@ -137,6 +138,7 @@ public class LocalComputationResource implements ComputationResource {
 		executeOSDependantCommand(new Command("R CMD BATCH " + tmpFile.getAbsolutePath(), true, false, false), OS);
 		tmpFile.delete();
 	}
+	*/
 	
 	private void installRPackage(String pkg, String repos, File usrHomeLibs, String OS) throws Exception {
 		System.out.println("Going to install: " + pkg);
@@ -168,6 +170,8 @@ public class LocalComputationResource implements ComputationResource {
 		System.out.println("Done installing " + pkg);
 	}
 	
+	
+	
 	private String msWindowsSafePath(String path){
 		String res = path.replace("\\", "\"/\"");
 		res = "\"" + res + "\"";
@@ -180,6 +184,7 @@ public class LocalComputationResource implements ComputationResource {
 	 */
 	public void installQtl() throws Exception{
 		File usrHomeLibs = new File(System.getProperty("user.home")	+ File.separator + "libs");
+		usrHomeLibs.mkdir();
 		String OS = DetectOS.getOS();
 		installRPackage("qtl", defaultRepos, usrHomeLibs, OS);
 	}
@@ -190,8 +195,10 @@ public class LocalComputationResource implements ComputationResource {
 	 */
 	public void installRCurl() throws Exception{
 		File usrHomeLibs = new File(System.getProperty("user.home")	+ File.separator + "libs");
+		usrHomeLibs.mkdir();
 		String OS = DetectOS.getOS();
-		installBiocPackage("RCurl", usrHomeLibs, OS);
+		//installBiocPackage("RCurl", usrHomeLibs, OS);
+		installRPackage("RCurl", defaultRepos, usrHomeLibs, OS);
 	}
 	
 	/**
@@ -200,6 +207,7 @@ public class LocalComputationResource implements ComputationResource {
 	 */
 	public void installBitops() throws Exception{
 		File usrHomeLibs = new File(System.getProperty("user.home")	+ File.separator + "libs");
+		usrHomeLibs.mkdir();
 		String OS = DetectOS.getOS();
 		installRPackage("bitops", defaultRepos, usrHomeLibs, OS);
 	}
@@ -208,7 +216,8 @@ public class LocalComputationResource implements ComputationResource {
 	public boolean installDependencies() throws Exception {
 		File usrHomeLibs = new File(System.getProperty("user.home")	+ File.separator + "libs");
 		File xgapRsources = new File(this.getClass().getResource("../R").getFile());
-
+		usrHomeLibs.mkdir();
+		
 		System.out.println("User home libs = " + usrHomeLibs.getAbsolutePath());
 		System.out.println("XGAP resources = " + xgapRsources.getAbsolutePath());
 
@@ -241,7 +250,8 @@ public class LocalComputationResource implements ComputationResource {
 		}
 
 		if (installRCurl) {
-			installBiocPackage("RCurl", usrHomeLibs, OS);
+			//installBiocPackage("RCurl", usrHomeLibs, OS);
+			installRPackage("RCurl", defaultRepos, usrHomeLibs, OS);
 		}
 
 		if (installQtl) {
