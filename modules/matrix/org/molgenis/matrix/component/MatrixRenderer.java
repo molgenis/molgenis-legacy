@@ -103,11 +103,9 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		this.mover = new Mover<R, C, V>();
 
 		int nrOfPagingFilters = 0;
-		if (filters != null)
-		{
-			for (MatrixQueryRule f : filters)
-			{
-				{
+		if (filters != null) {
+			for (MatrixQueryRule f : filters) {
+				if (f.getFilterType().equals(MatrixQueryRule.Type.paging)) {
 					nrOfPagingFilters++;
 				}
 			}
