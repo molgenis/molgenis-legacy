@@ -7,5 +7,7 @@
 		
 		<include file="apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl_shared_ui.xml"/>
 		
+		<plugin name="Plink" type="plugins.molgenisfile.plink.PlinkFileManager" group="biologist" />
+		
 	</menu>
 </molgenis>
