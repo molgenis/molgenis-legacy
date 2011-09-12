@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
 //import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 //import com.itextpdf.text.Chunk;
@@ -50,59 +51,49 @@ public class LabelGenerator {
         document.close();
 	}
 	
-	public void addLabelToDocument(List<String> elementLabelList, List<String> elementList) {
+	/**
+	 * Add a two-column label to the document: first column contains the headers,
+	 * second the values.
+	 * 
+	 * @param elementHeaderList
+	 * @param elementList
+	 */
+	public void addLabelToDocument(List<String> elementHeaderList, List<String> elementList) {
 		
-    	//create new label as a tablecell in the document
+    	// create new label as a tablecell in the document
 		PdfPCell labelCell = new PdfPCell();
-		
-		//PdfPCell newElementCell = new PdfPCell();
-		//PdfPCell newElementLabelCell = new PdfPCell();
     	PdfPTable elementTable = new PdfPTable(2);
     	
-        	
     	int elementCtr = 0;
-    	for (String labelLine : elementLabelList) {
-    		//Chunk blaat = new Chunk();
-    		elementTable.addCell(new Phrase(labelLine));
-    		elementTable.addCell(new Phrase(elementList.get(elementCtr)));
-    		//newElementLabelCell.addElement(new Paragraph(labelLine));
-    		elementCtr++;
-    	//for (String line : elementList) {
-    		//labelCell.addElement(new Paragraph(line));
-    		//labelCell.addElement(new Paragraph(line));
-    		//labelCell.setPadding(0);
-    		//labelTable.addCell(labelCell);
-    	//}
-    	//newCell.addElement(labelTable);
+    	for (String header : elementHeaderList) {
+    		elementTable.addCell(new Phrase(header));
+    		elementTable.addCell(new Phrase(elementList.get(elementCtr++)));
     	}
-    	//elementTable.addCell(newElementLabelCell);
-		//elementTable.addCell(newElementCell);
 		elementTable.setWidthPercentage(100);
 		labelCell.setPadding(0);
 		labelCell.setBorderWidth(2);
     	labelCell.addElement(elementTable);
     	table.addCell(labelCell);
 	}
+	
+	
+	/**
+	 * Add a one-column label to the document with only the values.
+	 * 
+	 * @param elementHeaderList
+	 * @param elementList
+	 */
+	public void addLabelToDocument(List<String> elementList) {
+		
+    	// create new label as a tablecell in the document
+		PdfPCell labelCell = new PdfPCell();
+		
+    	for (String line : elementList) {
+    		labelCell.addElement(new Paragraph(line));
+    	}
+		labelCell.setPadding(1);
+		labelCell.setBorderWidth(1);
+    	table.addCell(labelCell);
+	}
+	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
