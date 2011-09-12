@@ -273,8 +273,8 @@ public class MutationService implements Serializable
 				mutationCriteria.add(cb.equal(mutation.get("id"), criteria.getMutationId()));
 			if (criteria.getPid() != null || criteria.getPhenotypeId() != null || StringUtils.length(criteria.getPhenotypeName()) > 2 || StringUtils.length(criteria.getPublication()) > 2)
 			{
-				Join<Mutation, Patient> patient1 = mutation.join("patientMutation1Collection", JoinType.LEFT);
-				Join<Mutation, Patient> patient2 = mutation.join("patientMutation2Collection", JoinType.LEFT);
+				Join<Mutation, Patient> patient1 = mutation.join("mutation1PatientCollection", JoinType.LEFT);
+				Join<Mutation, Patient> patient2 = mutation.join("mutation2PatientCollection", JoinType.LEFT);
 
 				if (criteria.getPid() != null)
 					mutationCriteria.add(cb.or(cb.equal(patient1.get("identifier"), criteria.getPid()), cb.equal(patient2.get("identifier"), criteria.getPid())));
@@ -292,8 +292,8 @@ public class MutationService implements Serializable
 				
 				if (StringUtils.length(criteria.getPublication()) > 2)
 				{
-					Join<Patient, Publication> publication1 = patient1.join("publication", JoinType.LEFT);
-					Join<Patient, Publication> publication2 = patient2.join("publication", JoinType.LEFT);
+					Join<Patient, Publication> publication1 = patient1.join("patientreferences", JoinType.LEFT);
+					Join<Patient, Publication> publication2 = patient2.join("patientreferences", JoinType.LEFT);
 					
 					mutationCriteria.add(cb.or(cb.like(publication1.<String>get("name"), "%" + criteria.getPublication() + "%"), cb.like(publication1.<String>get("title"), "%" + criteria.getPublication() + "%"), cb.like(publication2.<String>get("name"), "%" + criteria.getPublication() + "%"), cb.like(publication2.<String>get("title"), "%" + criteria.getPublication() + "%")));
 				}
@@ -301,7 +301,7 @@ public class MutationService implements Serializable
 			if (criteria.getReportedAsSNP() != null)
 				mutationCriteria.add(cb.equal(mutation.get("reportedsnp"), criteria.getMutationId()));
 			if (StringUtils.length(criteria.getType()) > 2)
-				mutationCriteria.add(cb.like(mutation.<String>get("type"), criteria.getType() + "%"));
+				mutationCriteria.add(cb.like(mutation.<String>get("type_"), criteria.getType() + "%"));
 			if (StringUtils.length(criteria.getVariation()) > 0)
 				mutationCriteria.add(cb.or(cb.equal(mutation.get("cdna_notation"), criteria.getVariation()), cb.equal(mutation.<String>get("cdna_notation"), "c." + criteria.getExonNumber()), cb.equal(mutation.get("aa_notation"), criteria.getVariation()), cb.equal(mutation.get("cdna_notation"), "p." + criteria.getVariation())));
 
