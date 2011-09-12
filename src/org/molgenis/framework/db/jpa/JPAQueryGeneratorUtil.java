@@ -13,6 +13,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -131,11 +132,11 @@ public class JPAQueryGeneratorUtil {
 					} else {
 					    try {
 						// it's a xref attribute which is joined to root
-						if (root.get(attributeName).getJavaType().newInstance() instanceof Entity) {
+						if (root.get(attributeName).getJavaType().getName().equals("java.util.List") || root.get(attributeName).getJavaType().newInstance() instanceof Entity) {
 						    Entity entity = root.getJavaType().newInstance();
 						    String xrefAttribtename = entity.getXrefIdFieldName(attributeName);
 						    
-						    Join join = root.join(attributeName);
+						    Join join = root.join(attributeName, JoinType.LEFT);
 						    Expression attribute = join.get(xrefAttribtename);
 						    Object value = rule.getValue();
 						    predicate = cb.equal(attribute, value);
