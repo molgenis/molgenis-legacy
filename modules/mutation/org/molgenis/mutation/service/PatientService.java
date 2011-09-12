@@ -331,7 +331,7 @@ public class PatientService implements Serializable
 			return ((JDBCDatabase) this.db).sql("SELECT DISTINCT p.id FROM Patient p LEFT JOIN Mutation m ON (p.mutation1 = m.id) WHERE m.pathogenicity = '" + pathogenicity + "'").size();
 		else if (this.db instanceof JpaDatabase)
 		{
-			javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT COUNT(DISTINCT p.id) FROM Patient p LEFT JOIN Mutation m ON (p.mutation1 = m.id) WHERE m.pathogenicity = " + pathogenicity);
+			javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT COUNT(DISTINCT p.id) FROM Patient p LEFT JOIN Mutation m ON (p.mutation1 = m.id) WHERE m.pathogenicity = '" + pathogenicity + "'");
 			return Integer.valueOf(q.getSingleResult().toString());
 		}
 		else
