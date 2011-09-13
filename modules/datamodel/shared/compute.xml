@@ -8,9 +8,12 @@
 				description="the interpreter used to run this command. For example 'shellTemplate'" />
 			<field name="ComputationalTime" nillable="true"
 				description="the passage of time from the start to the completion of a task" />
-			<!--
-            <field name="interpreter" type="enum" enum_options="[bash,R,Python,WorkflowInterpreter]" description="the interpreter used to run this command. For example 'shellTemplate'" /-->
-			<field name="walltime" nillable="true" type="string" description="the expected maximum runtime of this job" />
+
+            <field name="walltime" nillable="true" type="string" description="the expected maximum runtime of this job" />
+            <field name="clusterQueue" nillable="true" type="string" description="the name of the queue for the cluster" />
+            <field name="memoryReq" nillable="true" type="int" description="required RAM" />
+            <field name="cores" nillable="true" type="int" description="# required cores" />
+
 			<!-- discussion: rename Features to Inputs and Outputs -->
 		</entity>
 		<entity name="ComputeResource" implements="Identifiable,Nameable" xref_label="name">

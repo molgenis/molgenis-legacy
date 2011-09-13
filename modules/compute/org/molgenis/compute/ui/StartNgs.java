@@ -432,8 +432,19 @@ public class StartNgs extends EasyPluginController<StartNgsView>
         //create compute pipeline
         String scriptID = app.getName();
         weaver.setScriptID(scriptID);
-        weaver.setWalltime(protocol.getWalltime());
         weaver.setActualCommand(result);
+
+        weaver.setDefaults();
+
+        if(protocol.getWalltime() != null)
+            weaver.setWalltime(protocol.getWalltime());
+        if(protocol.getClusterQueue() != null)
+            weaver.setClusterQueue(protocol.getClusterQueue());
+        if(protocol.getCores() != null)
+            weaver.setCores(protocol.getCores()+"");
+        if(protocol.getMemoryReq() != null)
+            weaver.setMemoryReq(protocol.getMemoryReq()+"");
+
         //extra for verification test (count # reads)
 //        if (app.getWorkflowElement_Name().equalsIgnoreCase("BamIndexElement1"))
 //        {

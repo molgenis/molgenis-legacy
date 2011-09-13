@@ -22,15 +22,24 @@ public class WorkflowParametersWeaver
     private static final String ACTUAL_COMMAND = "actualcommand";
     private static final String SCRIPT_ID = "scriptID";
     private static final String WALLTIME = "walltime";
+    private static final String CLUSTER_QUEUE = "clusterqueue";
+    private static final String CORES = "cores";
+    private static final String MEMORY_REQ = "memory";
+
+    private static final String DEF_WALLTIME = "23:59:00";
+    private static final String DEF_CLUSTER_QUEUE = "nodes";
+    private static final String DEF_CORES = "1";
+    private static final String DEF_MEMORY_REQ = "7";
+
     private static final String VERIFICATION_COMMAND = "verificationcommand";
 
     private Hashtable<String, String> scriptParameters = new Hashtable<String, String>();
 
     private String scriptTemplate = "#!/bin/bash \n" +
-            "#PBS -q short\n" +
-            "#PBS -l nodes=1:ppn=1\n" +
+            "#PBS -q ${clusterqueue}\n" +
+            "#PBS -l nodes=1:ppn=${cores}\n" +
             "#PBS -l walltime=${walltime}\n" +
-            "#PBS -l mem=7gb\n" +
+            "#PBS -l mem=${memory}gb\n" +
             "#PBS -e ${location}/err/err_${scriptID}.err\n" +
             "#PBS -o ${location}/out/out_${scriptID}.out\n" +
             "printf \"${scriptID}_started \" >>${location}/log_${jobID}.txt\n" +
@@ -63,10 +72,12 @@ public class WorkflowParametersWeaver
         {
             t = new Template("name", new StringReader(strTemplate), new Configuration());
             t.process(parameters, out);
-        } catch (TemplateException e)
+        }
+        catch (TemplateException e)
         {
             e.printStackTrace();
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
         }
@@ -132,6 +143,30 @@ public class WorkflowParametersWeaver
     public void setWalltime(String str)
     {
         scriptParameters.put(WALLTIME, str);
+    }
+
+    public void setClusterQueue(String str)
+    {
+        scriptParameters.put(CLUSTER_QUEUE, str);
+    }
+
+    public void setCores(String str)
+    {
+        scriptParameters.put(CORES, str);
+    }
+
+    public void setMemoryReq(String str)
+    {
+        scriptParameters.put(MEMORY_REQ, str);
+    }
+
+    public void setDefaults()
+    {
+        scriptParameters.put(WALLTIME, DEF_WALLTIME);
+        scriptParameters.put(CLUSTER_QUEUE, DEF_CLUSTER_QUEUE);
+        scriptParameters.put(CORES, DEF_CORES);
+        scriptParameters.put(MEMORY_REQ, DEF_MEMORY_REQ);
+
     }
 
     public void setVerificationCommand(String str)
