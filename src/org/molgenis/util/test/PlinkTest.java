@@ -5,12 +5,15 @@ import java.io.IOException;
 
 import junit.framework.Assert;
 
+import org.molgenis.util.DirectoryCompare;
 import org.molgenis.util.plink.datatypes.Biallele;
 import org.molgenis.util.plink.drivers.BedFileDriver;
 import org.molgenis.util.plink.drivers.BimFileDriver;
 import org.molgenis.util.plink.drivers.FamFileDriver;
 import org.molgenis.util.plink.drivers.MapFileDriver;
 import org.molgenis.util.plink.drivers.PedFileDriver;
+import org.molgenis.util.plink.writers.BimFileWriter;
+import org.molgenis.util.plink.writers.MapFileWriter;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -278,6 +281,26 @@ public class PlinkTest
 		Assert.assertEquals(1, mapfd.getAllEntries().get(0).getBpPos());
 		Assert.assertEquals(2, mapfd.getAllEntries().get(1).getBpPos());
 		Assert.assertEquals("snp2", mapfd.getAllEntries().get(1).getSNP());
+	}
+	
+	@Test
+	public void BIM_writer() throws Exception
+	{
+		File newBim = new File(testBim.getAbsolutePath().replace(testBim.getName(), "new.bim"));
+		BimFileWriter w = new BimFileWriter(newBim);
+		w.writeAll(bimfd.getAllEntries());
+		boolean filesAreEqual = DirectoryCompare.compareFileContent(testBim, newBim);
+		Assert.assertTrue(filesAreEqual);
+	}
+	
+	@Test
+	public void MAP_writer() throws Exception
+	{
+		File newMap = new File(testMap.getAbsolutePath().replace(testMap.getName(), "new.map"));
+		MapFileWriter w = new MapFileWriter(newMap);
+		w.writeAll(mapfd.getAllEntries());
+		boolean filesAreEqual = DirectoryCompare.compareFileContent(testMap, newMap);
+		Assert.assertTrue(filesAreEqual);
 	}
 	
 	@AfterClass
