@@ -20,7 +20,6 @@ import com.thoughtworks.selenium.Selenium;
 
 public class AnimaldbSeleniumTest
 {
-	
 	Selenium selenium;
 	Integer sleepTime = 1000;
 	String pageLoadTimeout = "120000";
@@ -30,7 +29,6 @@ public class AnimaldbSeleniumTest
 	@BeforeClass
 	public void start() throws Exception
 	{
-		
 		int webserverPort = 8080;
 		if(!this.tomcat) webserverPort = Helper.getAvailablePort(11000, 100);
 		
@@ -267,18 +265,6 @@ public class AnimaldbSeleniumTest
 		sleepHelper("decWorkflow");
 	}
 	
-	private void addAnimalToDec(String name) {
-		selenium.click("id=startadd");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.select("id=animal", "label=" + name);
-		selenium.click("id=doadd");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("Animal(s) successfully added"));
-		selenium.click("link=Back to overview");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("Manage animals in DEC subprojects"));
-	}
-	
 	@Test(dependsOnMethods={"decWorkflow"})
 	public void yearlyReports() throws Exception {
 		// Go to Report plugin
@@ -319,6 +305,40 @@ public class AnimaldbSeleniumTest
 	}
 	
 	@Test(dependsOnMethods={"yearlyReports"})
+	public void applyProtocol() throws Exception {
+		// Go to Protocol plugin
+		selenium.click("id=valuemenu_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=ApplyProtocol_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		// Apply 'SetWeight' protocol on animal '1'
+		selenium.select("id=Protocols", "label=SetWeight");
+		selenium.select("id=Targets", "label=1");
+		selenium.check("name=NewOrEdit value=New");
+		selenium.click("id=TimeBox");
+		selenium.click("id=Select");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/tbody/tr/th[2]"), "Weight");
+		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/tbody/tr/th[3]"), "Weight start");
+		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/tbody/tr/th[4]"), "Weight end");
+		selenium.type("id=0_1_0", "200");
+		selenium.click("id=ApplyStartTime_1");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=Apply");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Protocol applied successfully"));
+		// Check in Timeline value viewer
+		selenium.click("id=EventViewer_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.select("id=animal", "label=1");
+		sleepHelper("applyProtocol - Timeline value viewer Ajax call"); // We have to wait here, but it's Ajax, so it's faster than a normal full page load
+		Assert.assertTrue(selenium.isTextPresent("Weight"));
+		Assert.assertTrue(selenium.isTextPresent("200"));
+		
+		sleepHelper("applyProtocol");
+	}
+	
+	@Test(dependsOnMethods={"applyProtocol"})
 	public void logout() throws InterruptedException
 	{
 		selenium.click("id=securitymenu_tab_button");
@@ -336,10 +356,12 @@ public class AnimaldbSeleniumTest
 		
 		//added to fix TestDatabase which runs after this one...
 		//see comment in TestDatabase!
-		if(!this.tomcat) new emptyDatabase(new MolgenisServlet().getDatabase(), false);
-		else new emptyDatabase(DatabaseFactory.create("apps/animaldb/org/molgenis/animaldb/animaldb.properties"), false);
+		if (!this.tomcat) {
+			new emptyDatabase(new MolgenisServlet().getDatabase(), false);
+		} else {
+			new emptyDatabase(DatabaseFactory.create("apps/animaldb/org/molgenis/animaldb/animaldb.properties"), false);
+		}
 
-		
 		//Helper.deleteStorage();
 		//Helper.deleteDatabase();
 	}
@@ -348,6 +370,23 @@ public class AnimaldbSeleniumTest
 	{
 		System.out.println(who + " done, now sleeping for " + sleepTime + " msec");
 		Thread.sleep(sleepTime);
+	}
+	
+	/**
+	 * Helper method to add an animal to a DEC subproject.
+	 * 
+	 * @param name
+	 */
+	private void addAnimalToDec(String name) {
+		selenium.click("id=startadd");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.select("id=animal", "label=" + name);
+		selenium.click("id=doadd");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Animal(s) successfully added"));
+		selenium.click("link=Back to overview");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Manage animals in DEC subprojects"));
 	}
 
 }

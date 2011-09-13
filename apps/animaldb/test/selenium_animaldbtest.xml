@@ -3,9 +3,7 @@
 <suite name="Selenium test suite">
 	<test name="AnimalDB walkthrough" preserve-order="true">
 		<classes>
-			<class name="test.AnimaldbSeleniumTest">
-
-			</class>
+			<class name="test.AnimaldbSeleniumTest" />
 		</classes>
 	</test>
 </suite>

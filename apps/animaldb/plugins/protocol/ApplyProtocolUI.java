@@ -1,6 +1,7 @@
 package plugins.protocol;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DatetimeInput;
 import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.HtmlInput;
+import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.framework.ui.html.OptionInput;
 import org.molgenis.framework.ui.html.RadioInput;
 import org.molgenis.framework.ui.html.SelectInput;
@@ -55,7 +57,7 @@ public class ApplyProtocolUI {
 		this.model = model;
     }
     
-    public void initScreen() {
+    public void initScreen() throws HtmlInputException {
     	model.setNewProtocolApplication(false);
     	model.setTimeInfo(false);
 		protocolApplicationContainer = new Container();
@@ -241,14 +243,19 @@ public class ApplyProtocolUI {
     
     /**
      * Create radio buttons to select the way to apply the protocol.
+     * @throws HtmlInputException 
      */
-    private void makeNewOrEditButtons() {
-    	Vector<ValueLabel> options = new Vector<ValueLabel>();
-    	options.add(new ValueLabel("New", "Make new values"));
-    	options.add(new ValueLabel("Edit", "Edit existing values"));
-    	String value = "New";
-    	newOrEditButtons = new RadioInput("NewOrEdit", "", 
-				"Indicate whether you want to fill in new values or edit existing ones.", options, value);
+    private void makeNewOrEditButtons() throws HtmlInputException {
+    	List<String> options = new ArrayList<String>();
+    	options.add("New");
+    	options.add("Edit");
+    	List<String> optionLabels = new ArrayList<String>();
+    	optionLabels.add("Make new values");
+    	optionLabels.add("Edit existing values");
+    	
+    	newOrEditButtons = new RadioInput("NewOrEdit", "", "New", false, false,
+				"Indicate whether you want to fill in new values or edit existing ones.", options, optionLabels);
+    	
 		protocolDiv.add(newOrEditButtons);
 	}
     
@@ -265,7 +272,7 @@ public class ApplyProtocolUI {
     }
     
     /**
-     * Create a checkbox to toggle time fields with the values.
+     * Create a checkbox to toggle showing all values, not only the most recent one(s).
      */
     private void makeAllValuesSelectbox() {
     	Vector<ValueLabel> options = new Vector<ValueLabel>();

@@ -18,6 +18,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
@@ -47,33 +48,37 @@ public class ApplyProtocolPlugin extends GenericPlugin
     	ScreenMessage message = null;
 	    String action = request.getString("__action");
 
-	    if( action.equals("Select") )
-	    {
-	    	message = handleSelect(request);
-	    }
-	    if( action.equals("Clear") )
-	    {
-	    	ui.initScreen();
-	    }
-	    if( action.equals("Apply") )
-	    {
-	    	message = handleApply(request, db);
-	    }
-	    if( action.equals("ApplyAllDefaults") )
-	    {
-	    	message = handleApplyAllDefaults(request);
-	    }
-	    if( action.contains("ApplyDefault_"))
-	    {
-	    	message = handleApplyDefaults(request, Integer.parseInt(action.substring(13)));
-	    }
-	    if( action.contains("ApplyStartTime_"))
-	    {
-	    	message = handleApplyStartTime(request, Integer.parseInt(action.substring(15)));
-	    }
-	    if( action.contains("ApplyEndTime_"))
-	    {
-	    	message = handleApplyEndTime(request, Integer.parseInt(action.substring(13)));
+	    try {
+		    if( action.equals("Select") )
+		    {
+		    	message = handleSelect(request);
+		    }
+		    if( action.equals("Clear") )
+		    {
+		    	ui.initScreen();
+		    }
+		    if( action.equals("Apply") )
+		    {
+		    	message = handleApply(request, db);
+		    }
+		    if( action.equals("ApplyAllDefaults") )
+		    {
+		    	message = handleApplyAllDefaults(request);
+		    }
+		    if( action.contains("ApplyDefault_"))
+		    {
+		    	message = handleApplyDefaults(request, Integer.parseInt(action.substring(13)));
+		    }
+		    if( action.contains("ApplyStartTime_"))
+		    {
+		    	message = handleApplyStartTime(request, Integer.parseInt(action.substring(15)));
+		    }
+		    if( action.contains("ApplyEndTime_"))
+		    {
+		    	message = handleApplyEndTime(request, Integer.parseInt(action.substring(13)));
+		    }
+	    } catch (Exception e) {
+	    	message = new ScreenMessage("Something went wrong while handling your request: " + e.getMessage(), false);
 	    }
 
 	    if (message != null) {
@@ -95,7 +100,11 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		// Only first time or if user changed:
 		if (ui.getProtocolApplicationContainer() == null || userId != model.getUserId()) {
 			model.setUserAndInvestigationIds(userId);
-		    ui.initScreen();
+		    try {
+				ui.initScreen();
+			} catch (HtmlInputException e) {
+				e.printStackTrace();
+			}
 		}
     }
 
