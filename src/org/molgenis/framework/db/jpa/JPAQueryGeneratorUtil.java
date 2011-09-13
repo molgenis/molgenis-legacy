@@ -88,10 +88,11 @@ public class JPAQueryGeneratorUtil {
 		for (int i = 0; i < rules.size(); ++i) {			
 		    QueryRule rule = rules.get(i);
 		    if (mapper != null) {
+		    	rule.setField(mapper.getTableFieldName(rule.getField()));
 		    
 	    	Operator operator = rule.getOperator();
 		    if(operator == Operator.SORTASC || operator == Operator.SORTDESC) {
-		    	rule.setField(rule.getValue().toString());
+		    	rule.setField(mapper.getTableFieldName(rule.getValue().toString()));
 		    }
 		    	
 			String attributeName = rule.getField();
