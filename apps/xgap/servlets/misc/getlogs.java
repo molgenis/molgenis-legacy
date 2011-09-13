@@ -21,6 +21,7 @@ public class getlogs extends app.servlet.MolgenisServlet
 	{
 
 		PrintWriter out = response.getWriter();
+		response.setContentType("text/html");
 
 		out.println("<html><head></head><body>");
 		out.println("<div style=\"font-family: Courier, 'Courier New', monospace\">");
