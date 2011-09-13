@@ -59,27 +59,28 @@ public class uploadfile extends app.servlet.MolgenisServlet
 		}
 		catch (Exception e)
 		{
-			out.println("upload fail");
-			out.println("usage: see https://stat.ethz.ch/pipermail/bioconductor/2010-March/032550.html");
-			out.println("with arguments:'name', 'investigationid', 'type', 'file'");
+			out.println("Upload failed.");
+			out.println("Usage: see https://stat.ethz.ch/pipermail/bioconductor/2010-March/032550.html");
+			out.println("With minimal arguments: 'name', 'type', 'file', where:");
+			out.println("\tname = The file name plus extension to be put in the database.");
+			out.println("\ttype = The type of file, use 'MolgenisFile' for minimal upload. Corresponds to a subclass of MolgenisFile. Other examples: 'RScript', 'InvestigationFile', 'BinaryDataMatrix'.");
+			out.println("\tfile = The file (location) you wish to upload the contents of.");
 			out.println();
-			out.println("Example for RCurl:");
+			out.println("Example for RCurl when uploading an 'InvestigationFile':");
 			out.println("library(\"bitops\", lib.loc=\"/Users/joerivandervelde/libs\")");
 			out.println("library(\"RCurl\", lib.loc=\"/Users/joerivandervelde/libs\")");
-			out.println("uri <- \"http://255.255.255.255:8080/xgap_1_4_distro/uploadfile\");");
+			out.println("uri <- \"http://mydomain.org/xqtl/uploadfile\");");
 			out.println("postForm(uri,");
 			out.println("\tname = \"harry.png\",");
 			out.println("\tinvestigation_name = \"ClusterDemo\",");
-			out.println("\ttype = \"Image\",");
-			out.println("\tfile = fileUpload(filename = \"/danny/harry.png\"),");
+			out.println("\ttype = \"InvestigationFile\",");
+			out.println("\tfile = fileUpload(filename = \"usr/home/danny/harry.png\"),");
 			out.println("\tstyle = \"HTTPPOST\"");
 			out.println(")");
-
 			out.println();
-			out.println("Example for Curl:");
+			out.println("Example for commandline Curl when uploading an 'InvestigationFile':");
 			out
-					.println("curl -F \"file=@/pictures/mypicture.jpg\" -F \"name=mypicture.jpg\" -F \"investigation_name=ClusterDemo\" -F \"type=Image\" http://255.255.255.255:8080/xgap_1_4_distro/uploadfile");
-
+					.println("curl -F \"file=@/pictures/mypicture.jpg\" -F \"name=mypicture.jpg\" -F \"investigation_name=ClusterDemo\" -F \"type=InvestigationFile\" http://mydomain.org/xqtl/uploadfile");
 			out.println();
 			e.printStackTrace(out);
 		}
