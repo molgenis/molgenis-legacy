@@ -1,0 +1,6 @@
+
+Convert from TriTyper to xQTL binary format:
+java -jar -Xmx1g TriToBin.jar ./BrainsetTriTyper example.bin example_data ExampleInv
+
+Get help:
+java -jar TriToBin.jar
