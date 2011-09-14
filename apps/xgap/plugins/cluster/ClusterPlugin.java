@@ -44,6 +44,7 @@ import org.molgenis.util.DetectOS;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HtmlTools;
 import org.molgenis.util.Tuple;
+import org.molgenis.xgap.InvestigationFile;
 
 import plugins.cluster.demo.Millipede;
 import plugins.cluster.helper.Command;
@@ -751,7 +752,48 @@ public class ClusterPlugin extends PluginModel<Entity>
 				model.setSubjobs(subjobList);
 				model.setJobs(jobList);
 				model.setMaxSubjobs(HelperFunctions.countMaxSubjobs(subjobList, jobList));
-
+				
+				//map job output to Data or File
+				HashMap<String, String> jobToOutputLink = new HashMap<String, String>();
+				List<Data> dataInDb = db.find(Data.class);
+				List<InvestigationFile> filesInDb = db.find(InvestigationFile.class);
+				for (Job j : jobList)
+				{
+					boolean dataFound = false;
+					boolean fileFound = false;
+					for(Data d : dataInDb)
+					{
+						if(j.getOutputDataName().equals(d.getName()))
+						{
+							jobToOutputLink.put(j.getId().toString(), "/molgenis.do?__target=Datas&__action=filter_set&__filter_attribute=Data_name&__filter_operator=EQUALS&__filter_value=");
+							dataFound = true;
+							break;
+						}
+					}
+					if(!dataFound){
+						for(InvestigationFile f : filesInDb)
+						{
+							if(j.getOutputDataName().equals(f.getName()))
+							{
+								jobToOutputLink.put(j.getId().toString(), "/molgenis.do?__target=Files&__action=filter_set&__filter_attribute=InvestigationFile_name&__filter_operator=EQUALS&__filter_value=");
+								fileFound = true;
+								break;
+							}
+						}
+					}
+					if(dataFound == false && fileFound == false)
+					{
+						jobToOutputLink.put(j.getId().toString(), "leeg");
+					}
+				}
+				for(String key : jobToOutputLink.keySet())
+				{
+					System.out.println(key + " -> " + jobToOutputLink.get(key));
+				}
+				this.model.setJobToOutputLink(jobToOutputLink);
+				
+				
+				
 			}
 			catch (Exception e)
 			{

@@ -35,6 +35,7 @@ public class ClusterPluginModel
 	Analysis selectedAnalysis;
 	
 	HashMap<String, String> jobParamMap = new HashMap<String, String>();
+	HashMap<String, String> jobToOutputLink = new HashMap<String, String>();
 	
 	Job candidateJob;
 	LoginSettings ls;
@@ -52,6 +53,14 @@ public class ClusterPluginModel
 	
 	
 
+	public HashMap<String, String> getJobToOutputLink()
+	{
+		return jobToOutputLink;
+	}
+	public void setJobToOutputLink(HashMap<String, String> jobToOutputLink)
+	{
+		this.jobToOutputLink = jobToOutputLink;
+	}
 	public Analysis getSelectedAnalysis()
 	{
 		return selectedAnalysis;

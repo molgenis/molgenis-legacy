@@ -337,7 +337,17 @@ seconds.
 		</td>
 		<td style="vertical-align:middle;">
 			<#--nobr><#if t.outputDataName?length gt 10>${t.outputDataName?substring(0, 10)}...<#else>${t.outputDataName}</#if></nobr-->
-			<nobr><#if t.outputDataName?length gt 10><a href="/${model.deployName}/molgenis.do?__target=Datas&__action=filter_set&__filter_attribute=Data_name&__filter_operator=EQUALS&__filter_value=${t.outputDataName}">${t.outputDataName?substring(0, 10)}...</a><#else><a href="/${model.deployName}/molgenis.do?__target=Datas&__action=filter_set&__filter_attribute=Data_name&__filter_operator=EQUALS&__filter_value=${t.outputDataName}">${t.outputDataName}</a></#if></nobr>			
+			<#assign found = false>
+			<#list model.getJobToOutputLink()?keys as key>
+				<#if model.getJobToOutputLink()[t.id] != 'leeg'>
+					<nobr><#if t.outputDataName?length gt 10><a href="/${model.deployName}${model.getJobToOutputLink()[key]}${t.outputDataName}">${t.outputDataName?substring(0, 10)}...</a><#else><a href="/${model.deployName}${model.getJobToOutputLink()[key]}${t.outputDataName}">${t.outputDataName}</a></#if></nobr>			
+					<#assign found = true>
+					<#break>
+				</#if>
+			</#list>		
+			<#if found == false>
+				<nobr><#if t.outputDataName?length gt 10>${t.outputDataName?substring(0, 10)}...<#else>${t.outputDataName}</#if></nobr>
+			</#if>
 		</td>
 		<td style="vertical-align:middle;">
 			<nobr>${t.computeResource} <#if t.computeResource == 'local'><a target="_blank" href="/${model.deployName}/getlogs?job=${t.getId()?c}">[view logs]</a></#if></nobr>
