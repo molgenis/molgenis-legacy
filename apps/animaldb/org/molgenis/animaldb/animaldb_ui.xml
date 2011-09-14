@@ -9,15 +9,14 @@
 	<plugin name="AnimalDBHeader" type="plugins.header.AnimalDBHeader" />
 
 	<menu name="mainmenu" position="left" startswith="WelcomeScreen">
-
+		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Logout/settings"/>
 		<plugin name="AnimalDBWelcomeScreen" type="plugins.welcome.AnimalDBWelcomeScreenPlugin"
 			label="Welcome" />
-			
 		<plugin name="News" type="plugins.news.News" label="News"/>
 			
 		<menu name="securitymenu" position="left" label="Security">
-			<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Logout/settings"/>
-			<menu name="usermanagement" position="left" label="Security menu" >
+			<!--<plugin name="UserSettings" type="org.molgenis.auth.ui.UserLogin" label="Logout/settings"/>
+			  <menu name="usermanagement" position="left" label="Security menu" > -->
 				<form name="MolgenisUser" entity="MolgenisUser" view="list" label="Users"/>
 				<form name="MolgenisGroup" entity="MolgenisGroup" view="list" label="Groups"/>
 				<form name="MolgenisRoleGroupLink" entity="MolgenisRoleGroupLink" view="list" label="Users in groups"/>
@@ -26,7 +25,7 @@
 				<plugin name="PermissionManagementPlugin" type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin"
 					label="Permission management" />
 				<plugin name="AnimalDbUsers" type="plugins.system.AnimalDbUsers" label="Manage users and investigations" />
-			</menu>
+			<!--</menu>-->
 		</menu>
 
 		<menu name="systemmenu" position="left" label="System">

@@ -7,6 +7,7 @@
 
 package plugins.header;
 
+import org.molgenis.auth.DatabaseLogin;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
@@ -26,6 +27,7 @@ public class AnimalDBHeader extends PluginModel<Entity>
 {
 
 	private static final long serialVersionUID = 4701628601897969977L;
+	private String userLogin = new String();
 
 	public AnimalDBHeader(String name, ScreenController<?> parent)
 	{
@@ -45,15 +47,32 @@ public class AnimalDBHeader extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
-		//static
-	}
-
-	@Override
 	public void reload(Database db)
 	{
-		//static
+		this.setUserLogin();
+	}
+	
+	@Override
+	public void handleRequest(Database db, Tuple request) throws Exception
+	{
+		if ("doLogout".equals(request.getAction())) {
+
+				getLogin().logout(db);
+		}
+	}
+	
+	public void setUserLogin() {
+		if (this.getLogin().isAuthenticated()) {
+			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Logged in as: " + ((DatabaseLogin)this.getLogin()).getFullUserName() + "</a>";
+			this.userLogin += "<a href='molgenis.do?__target=MolgenisHeader&select=UserLogin&__action=doLogout'>" + " | Logout " + "</a>";
+		} else {
+			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Login" + "</a>";
+		}	
+	}
+
+	public String getUserLogin() {
+		
+		return userLogin;
 	}
 
 	@Override

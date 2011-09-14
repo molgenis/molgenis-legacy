@@ -25,10 +25,9 @@
 		</div>
 	</#if>
 	
-	<div align="right" style="clear:left; color: maroon; font-size: 25%; font-family: arial, sans-serif; font-style: italic;">
-		<a href="http://www.animaldb.org"><b>AnimalDB<b></a>:&nbsp;
-		<a href="http://www.animaldb.org/milestone/AnimalDB%200.9.0">Version 0.9.3</a>&nbsp;|&nbsp;
-		<a href="http://www.animaldb.org/timeline">build 7102</a>
+	<div align="right" style="clear:left; color: maroon; font-size: 35%; font-family: arial, sans-serif; font-style: italic;">
+		   	${screen.setUserLogin()}
+   			${screen.getUserLogin()}
 	</div>
 	
 	
