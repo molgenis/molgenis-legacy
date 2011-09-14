@@ -77,8 +77,10 @@ public class AnimaldbSeleniumTest
 	@Test(dependsOnMethods={"startup"})
 	public void login() throws InterruptedException
 	{
-		selenium.click("id=securitymenu_tab_button");
-		selenium.waitForPageToLoad(pageLoadTimeout);
+		// No longer needed since Login is now start screen:
+		//selenium.click("id=securitymenu_tab_button");
+		//selenium.waitForPageToLoad(pageLoadTimeout);
+		
 		Assert.assertEquals(selenium.getText("link=Register"), "Register");
 		selenium.type("id=username", "admin");
 		selenium.type("id=password", "admin");
