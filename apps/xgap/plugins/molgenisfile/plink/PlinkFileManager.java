@@ -266,7 +266,7 @@ public class PlinkFileManager extends PluginModel<Entity>
 		ParameterValue val = new ParameterValue();
 		val.setParameterName(inputName.get(0));
 		val.setValue(paramValue);
-		val.setName(paramValue+"_dataset_name");
+		val.setName("Plink_"+paramValue);
 		this.getDatabase().add(val);
 	
 		System.out.println("Tagged '"+paramValue+"' in ParameterSet '"+paramSet+"' under ParameterName '"+paramName+"'.");
