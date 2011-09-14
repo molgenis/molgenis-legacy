@@ -45,7 +45,7 @@ public class NodeManager
                 }
 
             }
-        }, delay * 1000, period * 1000);
+        }, delay * 1000 * 60, period * 1000 * 60);
     }
 
     //set settings in days

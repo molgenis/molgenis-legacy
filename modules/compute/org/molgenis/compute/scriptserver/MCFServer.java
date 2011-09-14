@@ -57,7 +57,7 @@ public class MCFServer implements MCF
             }
             else
             {
-                System.out.println(">>> wait for remote node");
+                System.out.println(">>> waiting for remote node");
                 try
                 {
                     Thread.sleep(10000);
@@ -123,7 +123,8 @@ public class MCFServer implements MCF
 
         NodeManager nodeManager = new NodeManager();
         nodeManager.setGrid(grid);
-        nodeManager.setSettings(30, 30);
+        //first parameter is delay, second period in minutes
+        nodeManager.setSettings(15, 1);
         nodeManager.start();
 
         gridStarter.startRemoteNode();
