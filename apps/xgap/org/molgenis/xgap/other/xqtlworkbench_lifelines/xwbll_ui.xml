@@ -1,13 +1,10 @@
 <molgenis name="xqtl_lifelines" label="LifeLines xQTL workbench">
 	<plugin name="molgenis_header" type="plugins.cluster.demo.xwbllheader.MolgenisHeader" />
 	<menu name="main">
-	
-		<!--plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.ClusterDemo" /-->
+		
 		<plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.homepage.LifeLines" />
 		
 		<include file="apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl_shared_ui.xml"/>
-		
-		<plugin name="Plink" type="plugins.molgenisfile.plink.PlinkFileManager" group="biologist" />
 		
 	</menu>
 </molgenis>

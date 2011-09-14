@@ -1,19 +1,19 @@
 #####################################################################
 #
-# QTLjob.R
+# PLINKjob.R
 #
 # copyright (c) 2009-2011, Danny Arends
-# last modified Jan, 2011
-# first written Feb, 2010
+# last modified Sep, 2011
+# first written Sep, 2011
 # 
 # Part of the ClusterJobs package
-# Contains: run_QTL
+# Contains: run_PLINK
 #
 ######################################################################
 
 ######################################################################
 #
-# run_QTL: Generates a QTL file which is executed (R CMD BATCH <qtlfile>) by a cluster
+# run_PLINK: Download Plink data files, run simple association analysis, upload results.
 #
 ######################################################################
 

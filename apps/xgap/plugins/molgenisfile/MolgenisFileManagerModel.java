@@ -12,8 +12,30 @@ public class MolgenisFileManagerModel
 	private boolean hasFile;
 	private String uploadTextAreaContent;
 	private String ipURl;
+	private Boolean showApplet;
+	private long fileSize;
 	
 	
+
+	public Boolean getShowApplet()
+	{
+		return showApplet;
+	}
+
+	public void setShowApplet(Boolean showApplet)
+	{
+		this.showApplet = showApplet;
+	}
+
+	public long getFileSize()
+	{
+		return fileSize;
+	}
+
+	public void setFileSize(long fileSize)
+	{
+		this.fileSize = fileSize;
+	}
 
 	public String getUploadTextAreaContent()
 	{

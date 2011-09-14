@@ -38,7 +38,10 @@
 			</menu>
 		</form>
 		
-		<plugin label="Import data" name="QTLWizard" type="plugins.xgapwizard.QTLDataSetWizard" group="biologist" />
+		<menu name="ImportDataMenu" label="Import data" group="biologist">
+			<plugin label="R/qtl" name="QTLWizard" type="plugins.xgapwizard.QTLDataSetWizard" group="biologist" />
+			<plugin label="Plink" name="PlinkFileManager" type="plugins.molgenisfile.plink.PlinkFileManager" group="biologist" />
+		</menu>
 
 		<plugin label="Run QTL mapping" name="Cluster" type="plugins.cluster.ClusterPlugin" group="biologist" />
 

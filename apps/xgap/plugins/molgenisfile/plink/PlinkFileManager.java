@@ -207,9 +207,4 @@ public class PlinkFileManager extends PluginModel<Entity>
 		}
 	}
 
-	@Override
-	public boolean isVisible()
-	{
-		return true;
-	}
 }

@@ -148,8 +148,6 @@ public class AddClusterMetaModel
 			rqtlScan.setTargetFunctionName("QTL");
 			db.add(rqtlScan);
 			
-			
-			
 			//MINJOB
 			ParameterSet minjobParams = new ParameterSet();
 			minjobParams.setName("Min_params");
@@ -196,6 +194,32 @@ public class AddClusterMetaModel
 			minjob.setDescription("This is a minimal example analysis which only prints a name to the running analysis status messages.");
 			minjob.setTargetFunctionName("MIN");
 			db.add(minjob);
+			
+			//PLINK job
+			
+			ParameterSet plinkParams = new ParameterSet();
+			plinkParams.setName("Plink_params");
+			db.add(plinkParams);
+
+			ParameterName plinkName = new ParameterName();
+			plinkName.setName("inputname");
+			plinkName.setDescription("Name of the two input files retrieved from the database.");
+			plinkName.setParameterSet(minjobParams);
+			db.add(plinkName);
+				
+			ParameterValue plinkVal = new ParameterValue();
+			plinkVal.setName("HapMap_example_data");
+			plinkVal.setValue("hapmap1");
+			plinkVal.setParameterName(minName);
+			db.add(plinkVal);
+			
+			Analysis plink = new Analysis();
+			plink.setName("Plink_analysis");
+			plink.setDescription("This is a basic PLINK association analysis. The input parameter 'inputname' must correspond to files in your database: 'inputname'_map.map and 'inputname'_ped.ped. For more information, please visit the <a target=\"_blank\" href=\"http://pngu.mgh.harvard.edu/~purcell/plink/\">Plink website</a>.");
+			plink.setDataSet(emptyDataSet);
+			plink.setParameterSet(rqtlParams);
+			plink.setTargetFunctionName("PLINK");
+			db.add(plink);
 			
 			
 			/*

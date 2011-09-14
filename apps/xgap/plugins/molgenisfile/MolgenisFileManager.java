@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 
+import javax.servlet.ServletContext;
+
 import org.molgenis.core.MolgenisFile;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FormController;
@@ -83,6 +85,14 @@ public class MolgenisFileManager extends PluginModel<Entity>
 				{
 					file = request.getFile("upload");
 				}
+				else if (action.equals("showApplet"))
+				{
+					this.model.setShowApplet(true);
+				}
+				else if (action.equals("hideApplet"))
+				{
+					this.model.setShowApplet(false);
+				}
 				
 				if (file == null)
 				{
@@ -115,6 +125,10 @@ public class MolgenisFileManager extends PluginModel<Entity>
 		try
 		{
 			
+			if(this.model.getShowApplet() == null){
+				this.model.setShowApplet(false);
+			}
+			
 			ScreenController<?> parentController = (ScreenController<?>) this.getParent();
 			FormModel<MolgenisFile> parentForm = (FormModel<MolgenisFile>) ((FormController)parentController).getModel();
 			MolgenisFile molgenisFile = parentForm.getRecords().get(0);
@@ -127,10 +141,11 @@ public class MolgenisFileManager extends PluginModel<Entity>
 			}
 
 			boolean hasFile = false;
-
+			File theFile = null;
+			
 			try
 			{
-				mfh.getFile(molgenisFile);
+				theFile = mfh.getFile(molgenisFile);
 				hasFile = true;
 			}
 			catch (FileNotFoundException e)
@@ -163,7 +178,10 @@ public class MolgenisFileManager extends PluginModel<Entity>
 			// db_path = "http://" + "localhost" + ":8080/" +
 			// MolgenisServlet.getMolgenisVariantID();
 
-			
+			if(hasFile)
+			{
+				this.model.setFileSize(theFile.length());
+			}
 
 			
 		}

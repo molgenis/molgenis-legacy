@@ -44,39 +44,48 @@
 
 <#if model.hasFile == true>
 	<#if model.molgenisFile.extension == 'fig'>
-		<center>
-		<applet 
-		  code=jfig.gui.JFigViewerApplet
-		  codebase=clusterdemo/
-		  archive=jfig-bean.jar
-		  width=600
-		  height=500
-		>
-		
-		<!--param name="xxxURL" value="http://tams-www.informatik.uni-hamburg.de/applets/jfig/gallery/taurus-antrieb.fig"--> 
-		<param name="URL" value="${dbUrl}/downloadfile?name=${model.molgenisFile.name}"> 
-		<param name="debug" value="true"> 
-		<param name="zoomfit" value="true"> 
-		<param name="antialias" value="true"> 
-		<param name="renderquality" value="false"> 
-		<param name="defaultPopupMenu" value="true"> 
-		<param name="defaultKeyHandler" value="true"> 
-		<param name="defaultDragHandler" value="true"> 
-		<param name="positionAndZoomPanel" value="true"> 
-		<param name="showRulers" value="false"> 
-		<param name="zoomfit" value="true"> 
-		<param name="units" value="inches"> 
-		
-		If you see this text, your browser does not support Java-applets.
-		</applet>
-		
-		<br />If no picture appears, use IP adress, for example: ${model.getIpURl()}<br />
-		If that does not help, your port 8080 is probably blocked and the applet cannot serve its content.
-		
+		<#if model.showApplet == false>
+			An applet can visualize this FIG file for you.<br><b>Beware:</b> not all browsers appreciate applets. Press <i>Show applet</i> to continue.<br><br>
+			<input type="submit" id="showApplet" onclick="__action.value='showApplet';return true;" value="Show applet" />
+		<#else>
+			<input type="submit" id="hideApplet" onclick="__action.value='hideApplet';return true;" value="Hide applet" />
+			<center>
+			<applet 
+			  code=jfig.gui.JFigViewerApplet
+			  codebase=clusterdemo/
+			  archive=jfig-bean.jar
+			  width=600
+			  height=500
+			>
+			
+			<!--param name="xxxURL" value="http://tams-www.informatik.uni-hamburg.de/applets/jfig/gallery/taurus-antrieb.fig"--> 
+			<param name="URL" value="${dbUrl}/downloadfile?name=${model.molgenisFile.name}"> 
+			<param name="debug" value="true"> 
+			<param name="zoomfit" value="true"> 
+			<param name="antialias" value="true"> 
+			<param name="renderquality" value="false"> 
+			<param name="defaultPopupMenu" value="true"> 
+			<param name="defaultKeyHandler" value="true"> 
+			<param name="defaultDragHandler" value="true"> 
+			<param name="positionAndZoomPanel" value="true"> 
+			<param name="showRulers" value="false"> 
+			<param name="zoomfit" value="true"> 
+			<param name="units" value="inches"> 
+			
+			If you see this text, your browser does not support Java-applets.
+			</applet>
+			
+			<br />If no picture appears, use IP adress, for example: ${model.getIpURl()}<br />
+			If that does not help, your port is probably blocked and the applet cannot serve its content.
+		</#if>
 	<#elseif model.molgenisFile.extension == 'xxx'>
 		<#-- make more exceptions to view certain file extensions here-->
 	<#else>
-		<iframe width="750px" height="600px" src="downloadfile?name=${model.molgenisFile.name}"></iframe>
+		<#--iframe width="750px" height="600px" src="downloadfile?name=${model.molgenisFile.name}"></iframe-->
+		<h3>${model.molgenisFile.name}.${model.molgenisFile.extension}</h3>
+		<a target="_blank" href="downloadfile?name=${model.molgenisFile.name}">View this file</a><br><br>
+		Size: ${model.fileSize} bytes<br>
+		
 	</#if>
 <#else>
 	No file found. Please upload it here.<br>
