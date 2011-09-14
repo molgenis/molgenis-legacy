@@ -130,6 +130,10 @@ public class ValidatingInput<E> extends HtmlInput<E>
 				: "";
 	
 		String description = " title=\""+this.getDescription()+"\"";
+		
+		String descriptionJS = HtmlSettings.showDescription ? ".bt()" : "";
+		
+		
 
 		if (this.maxHeight > 1)
 		{
@@ -146,7 +150,7 @@ public class ValidatingInput<E> extends HtmlInput<E>
 					+ this.getHeight() + "\" " + readonly + " >"
 					+ this.getObjectString() + "</textarea>";
 
-			result += "<script>$('#"+getId()+"').bt(); showTextInput(document.getElementById('"
+			result += "<script>$('#"+getId()+"')"+descriptionJS+"; showTextInput(document.getElementById('"
 					+ this.getId() + "')," + this.getMinHeight() + ","
 					+ this.getMaxHeight() + ");</script>";
 
@@ -167,7 +171,7 @@ public class ValidatingInput<E> extends HtmlInput<E>
 					+ "\">";
 
 			result += "<script>$('#" + this.getId()
-					+ "').bt().autoGrowInput({comfortZone: 16, minWidth:" + this.getWidth()
+					+ "')"+descriptionJS+".autoGrowInput({comfortZone: 16, minWidth:" + this.getWidth()
 					* this.fontsize + ", maxWidth: " + this.getMaxWidth()
 					* this.fontsize + "});</script>";
 
