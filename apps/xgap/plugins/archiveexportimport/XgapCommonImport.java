@@ -7,8 +7,11 @@ import java.util.List;
 
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.db.jdbc.JDBCDatabase;
+import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.organization.Investigation;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReaderListener;
@@ -61,7 +64,19 @@ public class XgapCommonImport {
 				String type = data.getStorage() + "DataMatrix";
 				File content = new File(dataDir + File.separator + dataFileName);
 				HashMap<String, String> extraFields = new HashMap<String, String>();
-				extraFields.put("data_name", data.getName());
+				if (db instanceof JDBCDatabase)
+				{
+					extraFields.put("data_name", data.getName());
+				}
+				else if (db instanceof JpaDatabase)
+				{
+					extraFields.put("data_" + Data.ID, data.getId().toString());
+					extraFields.put("data_" + Data.NAME, data.getName());
+				}
+				else
+				{
+					throw new DatabaseException("Unsupported database mapper");
+				}
 				PerformUpload.doUpload(db, useTx, dataFileName, type, content, extraFields, skipWhenDestExists);
 			}
 		}

@@ -20,11 +20,12 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.db.jdbc.JDBCDatabase;
+import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.util.Entity;
 import org.molgenis.util.ValueLabel;
 
 import app.DatabaseFactory;
-import app.servlet.MolgenisServlet;
 import decorators.MolgenisFileHandler;
 
 /**
@@ -208,7 +209,8 @@ public class DataMatrixHandler extends MolgenisFileHandler
 			for (Entity e : test)
 			{
 				// used to be: if ((e.get("data_name").toString()).equals(data.getName()))
-				if (new Integer(e.get("data").toString()).intValue() == data.getId().intValue())
+				if ((this.getDb() instanceof JDBCDatabase && new Integer(e.get("data").toString()).intValue() == data.getId().intValue()) ||
+				(this.getDb() instanceof JpaDatabase && ((Data) e.get("data")).getId().intValue() == data.getId().intValue()))
 				{
 					try
 					{
@@ -327,7 +329,8 @@ public class DataMatrixHandler extends MolgenisFileHandler
 		for (Entity e : mfSubclasses)
 		{
 			// used to be: if ((e.get("data_name").toString()).equals(data.getName()))
-			if (new Integer(e.get("data").toString()).intValue() == data.getId().intValue())
+			if ((this.getDb() instanceof JDBCDatabase && new Integer(e.get("data").toString()).intValue() == data.getId().intValue()) ||
+			(this.getDb() instanceof JpaDatabase && ((Data) e.get("data")).getId().intValue() == data.getId().intValue()))
 			{
 				return this.getFile(e.get("name").toString());
 			}
