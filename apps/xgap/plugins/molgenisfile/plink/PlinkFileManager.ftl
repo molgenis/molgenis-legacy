@@ -29,9 +29,6 @@
 			</#if>
 		</#list>
 		
-		<#-- Hack to immediatly clear the message so it doesn't "stick". -->
-		${screen.clearMessage()}
-		
 		<div class="screenbody">
 			<div class="screenpadding">	
 <#--begin your plugin-->
@@ -55,7 +52,7 @@
 <br>
 
 <div id="bin" <#if model.uploadMode != 'bin'>style="display:none"</#if>>
-	<table>
+	<table cellpadding="5">
 		<tr>
 			<td>
 				BIM file:
@@ -94,7 +91,7 @@
 </div>
 
 <div id="csv" <#if model.uploadMode != 'csv'>style="display:none"</#if>>
-	<table>
+	<table cellpadding="5">
 		<tr>
 			<td>
 				MAP file:
@@ -125,7 +122,7 @@
 </div>
 
 <div id="other" <#if model.uploadMode != 'other'>style="display:none"</#if>>
-	<table>
+	<table cellpadding="5">
 		<tr>
 			<td>
 				Other file:

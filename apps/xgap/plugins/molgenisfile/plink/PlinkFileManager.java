@@ -8,10 +8,17 @@
 package plugins.molgenisfile.plink;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.molgenis.cluster.ParameterName;
+import org.molgenis.cluster.ParameterSet;
+import org.molgenis.cluster.ParameterValue;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
@@ -77,9 +84,10 @@ public class PlinkFileManager extends PluginModel<Entity>
 					
 					String fileSetName = request.getString("binFileSetName");
 					
-					if (fileSetName == null)
+					if (fileSetName != null)
 					{
 						NameConvention.validateFileName(fileSetName);
+					}else{
 						throw new Exception("Please provide a name for this set of files.");
 					}
 
@@ -92,29 +100,61 @@ public class PlinkFileManager extends PluginModel<Entity>
 						throw new Exception("One or more files were empty. Please provide them all.");
 					}
 					
-					InvestigationFile bimInvFile = new InvestigationFile();
-					bimInvFile.setName(fileSetName+"_bim_plink_file");
-					bimInvFile.setExtension("bim");
-					bimInvFile.setInvestigation(this.model.getSelectedInv());
-					db.add(bimInvFile);
+					boolean molgenisFilesAdded = false;
+					InvestigationFile bimInvFile = null;
+					InvestigationFile famInvFile = null;
+					InvestigationFile bedInvFile = null;
 					
-					InvestigationFile famInvFile = new InvestigationFile();
-					famInvFile.setName(fileSetName+"_fam_plink_file");
-					famInvFile.setExtension("fam");
-					famInvFile.setInvestigation(this.model.getSelectedInv());
-					db.add(famInvFile);
+					db.beginTx();
 					
-					InvestigationFile bedInvFile = new InvestigationFile();
-					bedInvFile.setName(fileSetName+"_bed_plink_file");
-					bedInvFile.setExtension("bed");
-					bedInvFile.setInvestigation(this.model.getSelectedInv());
-					db.add(bedInvFile);
+					try{
+						bimInvFile = new InvestigationFile();
+						bimInvFile.setName(fileSetName+"_bim");
+						bimInvFile.setExtension("bim");
+						bimInvFile.setInvestigation(this.model.getSelectedInv());
+						db.add(bimInvFile);
+						
+						famInvFile = new InvestigationFile();
+						famInvFile.setName(fileSetName+"_fam");
+						famInvFile.setExtension("fam");
+						famInvFile.setInvestigation(this.model.getSelectedInv());
+						db.add(famInvFile);
+						
+						bedInvFile = new InvestigationFile();
+						bedInvFile.setName(fileSetName+"_bed");
+						bedInvFile.setExtension("bed");
+						bedInvFile.setInvestigation(this.model.getSelectedInv());
+						db.add(bedInvFile);
+						
+						db.commitTx();
+						
+						molgenisFilesAdded = true;
+					}
+					catch(Exception e)
+					{
+						db.rollbackTx();
+						this.setMessages(new ScreenMessage(e.getMessage(), false));
+					}
 					
-					PerformUpload.doUpload(db, bimInvFile, bimFile, false);
-					PerformUpload.doUpload(db, famInvFile, famFile, false);
-					PerformUpload.doUpload(db, bedInvFile, bedFile, false);
+					if(molgenisFilesAdded)
+					{
+						PerformUpload.doUpload(db, bimInvFile, bimFile, false);
+						PerformUpload.doUpload(db, famInvFile, famFile, false);
+						PerformUpload.doUpload(db, bedInvFile, bedFile, false);
+						
+						boolean tagged = tagParameter("Plink_params", "inputname", fileSetName);
+						
+						if(tagged)
+						{
+							this.setMessages(new ScreenMessage("Files successfully uploaded and tagged in Plink parameters.", true));
+						}
+						else
+						{
+							this.setMessages(new ScreenMessage("Files successfully uploaded.", true));
+						}
+					}
 					
-					this.setMessages(new ScreenMessage("Files successfully uploaded", true));
+					
 
 				}
 				else if (action.equals("uploadCsvPlink"))
@@ -123,9 +163,10 @@ public class PlinkFileManager extends PluginModel<Entity>
 					
 					String fileSetName = request.getString("csvFileSetName");
 					
-					if (fileSetName == null)
+					if (fileSetName != null)
 					{
 						NameConvention.validateFileName(fileSetName);
+					}else{
 						throw new Exception("Please provide a name for this set of files.");
 					}
 					
@@ -137,28 +178,58 @@ public class PlinkFileManager extends PluginModel<Entity>
 						throw new Exception("One or more files were empty. Please provide them all.");
 					}
 					
-					InvestigationFile mapInvFile = new InvestigationFile();
-					mapInvFile.setName(fileSetName+"_map_plink_file");
-					mapInvFile.setExtension("map");
-					mapInvFile.setInvestigation(this.model.getSelectedInv());
-					db.add(mapInvFile);
+					boolean molgenisFilesAdded = false;
+					InvestigationFile mapInvFile = null;
+					InvestigationFile pedInvFile = null;
 					
-					InvestigationFile pedInvFile = new InvestigationFile();
-					pedInvFile.setName(fileSetName+"_ped_plink_file");
-					pedInvFile.setExtension("ped");
-					pedInvFile.setInvestigation(this.model.getSelectedInv());
-					db.add(pedInvFile);
+					db.beginTx();
 					
-					PerformUpload.doUpload(db, mapInvFile, mapFile, false);
-					PerformUpload.doUpload(db, pedInvFile, pedFile, false);
+					try{
+						mapInvFile = new InvestigationFile();
+						mapInvFile.setName(fileSetName+"_map");
+						mapInvFile.setExtension("map");
+						mapInvFile.setInvestigation(this.model.getSelectedInv());
+						db.add(mapInvFile);
+						
+						pedInvFile = new InvestigationFile();
+						pedInvFile.setName(fileSetName+"_ped");
+						pedInvFile.setExtension("ped");
+						pedInvFile.setInvestigation(this.model.getSelectedInv());
+						db.add(pedInvFile);
+						
+						db.commitTx();
+						
+						molgenisFilesAdded = true;
+					}
+					catch(Exception e)
+					{
+						db.rollbackTx();
+						this.setMessages(new ScreenMessage(e.getMessage(), false));
+					}
 					
-					this.setMessages(new ScreenMessage("Files successfully uploaded", true));
-
+					if(molgenisFilesAdded)
+					{
+						PerformUpload.doUpload(db, mapInvFile, mapFile, false);
+						PerformUpload.doUpload(db, pedInvFile, pedFile, false);
+						
+						boolean tagged = tagParameter("Plink_params", "inputname", fileSetName);
+						
+						if(tagged)
+						{
+							this.setMessages(new ScreenMessage("Files successfully uploaded and tagged in Plink parameters.", true));
+						}
+						else
+						{
+							this.setMessages(new ScreenMessage("Files successfully uploaded.", true));
+						}
+						
+					}
 					
 				}
 				else if (action.equals("uploadOtherPlink"))
 				{
 					this.getMyModel().setUploadMode("other");
+					this.setMessages(new ScreenMessage("Not supported yet.", false));
 				}
 
 			}
@@ -170,10 +241,37 @@ public class PlinkFileManager extends PluginModel<Entity>
 			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 		}
 	}
-
-	public void clearMessage()
+	
+	private boolean tagParameter(String paramSet, String paramName, String paramValue) throws DatabaseException,
+	ParseException, IOException
 	{
-		this.setMessages();
+		List<ParameterSet> plinkParams = this.getDatabase().find(ParameterSet.class, new QueryRule(ParameterSet.NAME, Operator.EQUALS, paramSet));
+		if(plinkParams.size() == 0)
+		{
+			System.out.println("Trying to tag Plink fileset as '"+paramValue+"', but no ParameterSet found with name '"+paramSet+"'.");
+			return false;
+		}
+		
+		Query<ParameterName> q = this.getDatabase().query(ParameterName.class);
+		q.addRules(new QueryRule(ParameterName.NAME, Operator.EQUALS, paramName));
+		q.addRules(new QueryRule(ParameterName.PARAMETERSET, Operator.EQUALS, plinkParams.get(0).getId()));
+		List<ParameterName> inputName = q.find();
+		
+		if(inputName.size() == 0)
+		{
+			System.out.println("Trying to tag Plink fileset as '"+paramValue+"', but no ParameterName found with name '"+paramName+"'.");
+			return false;
+		}
+
+		ParameterValue val = new ParameterValue();
+		val.setParameterName(inputName.get(0));
+		val.setValue(paramValue);
+		val.setName(paramValue+"_dataset_name");
+		this.getDatabase().add(val);
+	
+		System.out.println("Tagged '"+paramValue+"' in ParameterSet '"+paramSet+"' under ParameterName '"+paramName+"'.");
+		
+		return true;
 	}
 
 	@Override

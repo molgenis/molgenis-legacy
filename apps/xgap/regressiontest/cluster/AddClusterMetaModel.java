@@ -204,20 +204,20 @@ public class AddClusterMetaModel
 			ParameterName plinkName = new ParameterName();
 			plinkName.setName("inputname");
 			plinkName.setDescription("Name of the two input files retrieved from the database.");
-			plinkName.setParameterSet(minjobParams);
+			plinkName.setParameterSet(plinkParams);
 			db.add(plinkName);
 				
 			ParameterValue plinkVal = new ParameterValue();
 			plinkVal.setName("HapMap_example_data");
 			plinkVal.setValue("hapmap1");
-			plinkVal.setParameterName(minName);
+			plinkVal.setParameterName(plinkName);
 			db.add(plinkVal);
 			
 			Analysis plink = new Analysis();
 			plink.setName("Plink_analysis");
 			plink.setDescription("This is a basic PLINK association analysis. The input parameter 'inputname' must correspond to files in your database: 'inputname'_map.map and 'inputname'_ped.ped. For more information, please visit the <a target=\"_blank\" href=\"http://pngu.mgh.harvard.edu/~purcell/plink/\">Plink website</a>.");
 			plink.setDataSet(emptyDataSet);
-			plink.setParameterSet(rqtlParams);
+			plink.setParameterSet(plinkParams);
 			plink.setTargetFunctionName("PLINK");
 			db.add(plink);
 			
