@@ -760,7 +760,6 @@ public class ClusterPlugin extends PluginModel<Entity>
 				for (Job j : jobList)
 				{
 					boolean dataFound = false;
-					boolean fileFound = false;
 					for(Data d : dataInDb)
 					{
 						if(j.getOutputDataName().equals(d.getName()))
@@ -776,19 +775,10 @@ public class ClusterPlugin extends PluginModel<Entity>
 							if(j.getOutputDataName().equals(f.getName()))
 							{
 								jobToOutputLink.put(j.getId().toString(), "/molgenis.do?__target=Files&__action=filter_set&__filter_attribute=InvestigationFile_name&__filter_operator=EQUALS&__filter_value=");
-								fileFound = true;
 								break;
 							}
 						}
 					}
-					if(dataFound == false && fileFound == false)
-					{
-						jobToOutputLink.put(j.getId().toString(), "leeg");
-					}
-				}
-				for(String key : jobToOutputLink.keySet())
-				{
-					System.out.println(key + " -> " + jobToOutputLink.get(key));
 				}
 				this.model.setJobToOutputLink(jobToOutputLink);
 				
