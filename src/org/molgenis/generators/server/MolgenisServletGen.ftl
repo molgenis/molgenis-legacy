@@ -43,16 +43,14 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 {
 
 	private static final long serialVersionUID = 3141439968743510237L;
+	private Database db                        = null;
 	
-	public MolgenisServlet(){
+	public MolgenisServlet() {
 		this.usedOptions = new UsedMolgenisOptions();
-	}
-
-	public Database getDatabase() throws Exception
-	{
+		try
+		{
 		<#if databaseImp = 'jpa'>
-			Database db = DatabaseFactory.create();
-			return db;		
+			this.db = DatabaseFactory.create();	
 		<#elseif db_mode = 'standalone'>
 			BasicDataSource data_src = new BasicDataSource();
 			data_src.setDriverClassName("${db_driver}");
@@ -63,14 +61,23 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 			data_src.setMaxWait(1000);
 		
 			DataSource dataSource = (DataSource)data_src;
-			Database db = new ${package}.JDBCDatabase(dataSource, new File("${db_filepath}"));
-			return db;
+			this.db = DatabaseFactory.create(dataSource, new File("${db_filepath}"));
 		<#else>
 			//The datasource is created by the servletcontext	
 			DataSource dataSource = (DataSource)getServletContext().getAttribute("DataSource");
-			Database db = DatabaseFactory.create(dataSource, new File("${db_filepath}"));
-			return db;
+			this.db = DatabaseFactory.create(dataSource, new File("${db_filepath}"));
 		</#if>
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
+	}
+
+	public Database getDatabase() throws Exception
+	{
+		return this.db;
 	}
 	
 	<#if generate_BOT>
@@ -119,37 +126,7 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 			@Override
 			public Database getDatabase()
 			{
-				try
-				{
-
-					<#if databaseImp = 'jpa'>
-						Database db = DatabaseFactory.create();
-						return db;		
-					<#elseif db_mode = 'standalone'>
-						BasicDataSource data_src = new BasicDataSource();
-						data_src.setDriverClassName("${db_driver}");
-						data_src.setUsername("${db_user}");
-						data_src.setPassword("${db_password}");
-						data_src.setUrl("${db_uri}"); // a path within the src folder?
-						data_src.setMaxIdle(10);
-						data_src.setMaxWait(1000);
-					
-						DataSource dataSource = (DataSource)data_src;
-						Database db = new ${package}.JDBCDatabase(dataSource, new File("${db_filepath}"));
-						return db;
-					<#else>
-						//The datasource is created by the servletcontext	
-						DataSource dataSource = (DataSource)getServletContext().getAttribute("DataSource");
-						Database db = DatabaseFactory.create(dataSource, new File("${db_filepath}"));
-						return db;
-					</#if>
-				}
-				catch (Exception e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					throw new RuntimeException();
-				}
+				return db;
 			}
 		};
 		app.getModel().setLabel("${model.label}");
