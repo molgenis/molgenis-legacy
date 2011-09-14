@@ -48,7 +48,7 @@ public class EAVToView {
         Database db = DatabaseFactory.create();
         EntityManager em = db.getEntityManager();
             
-        String column = "max(case when feature = %d then %s end) as %s \n";
+        String column = "max(case when o.feature = %d then %s end) as %s \n";
                 
         StringBuilder query = new StringBuilder("SELECT ");    
         
@@ -72,7 +72,7 @@ public class EAVToView {
                 query.append(",");
             }
         }        
-        query.append(String.format(" FROM \n observedvalue \n WHERE investigation = %d AND protocolId = %d \n GROUP BY recordId", investigationId, protocolId));
+        query.append(String.format(" FROM \n  observedvalue o join protocolapplication pa on (o.protocolapplication = pa.id) \n WHERE o.investigation = %d AND pa.protocol = %d \n GROUP BY o.protocolapplication", investigationId, protocolId));
         String viewQuery = "";
     	String tempTableName = (schemaToExportView != null) ? "" + schemaToExportView + "." : "";
     	tempTableName += tableName;        

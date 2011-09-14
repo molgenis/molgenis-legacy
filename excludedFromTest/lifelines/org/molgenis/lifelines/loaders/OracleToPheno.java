@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,8 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.protocol.Protocol;
+import org.molgenis.protocol.ProtocolApplication;
 
 
 /**
@@ -37,7 +40,8 @@ public class OracleToPheno implements Runnable {
     private final Integer investigationId;
     private final Integer studyId;
     
-    private final int protocolId;
+    //private final int protocolId;
+    private final Protocol protocol;
     
     private final int startPA_ID;
     private final int endPA_ID;
@@ -45,12 +49,15 @@ public class OracleToPheno implements Runnable {
     private final CountDownLatch doneSignal;
 
     private final EntityManagerFactory emf;
+    private final EntityManager em;
     
     public OracleToPheno(EntityManagerFactory emf, String schemaName, String tableName, String fields, Integer studyId, Integer investigationId, 
     		int protocolId, int startPA_ID, int endPA_ID,
     			CountDownLatch doneSignal
     		) throws Exception {
     	this.emf = emf;
+    	this.em = emf.createEntityManager();
+    	
     	this.schemaName = schemaName;
     	this.tableName = tableName;
     	this.fields = fields;
@@ -60,16 +67,18 @@ public class OracleToPheno implements Runnable {
     	this.startPA_ID = startPA_ID;
     	this.endPA_ID = endPA_ID;
     	
-        this.protocolId = protocolId;
+        //this.protocolId = protocolId;
+        
+        this.protocol = em.find(Protocol.class, protocolId); 
         
         this.doneSignal = doneSignal;
     }
     
     private static int recordId  = 0;
 
-	public int getProtocolId() {
-		return protocolId;
-	}
+//	public int getProtocolId() {
+//		return protocolId;
+//	}
 
 	@Override
 	public void run() {
@@ -84,7 +93,6 @@ public class OracleToPheno implements Runnable {
 		        final ResultSet rs = stm.executeQuery(exec);
 		        final ResultSetMetaData rsmd = rs.getMetaData();
 		        
-		        final EntityManager em = emf.createEntityManager();
 		        final Investigation investigation = em.find(Investigation.class, investigationId);
 		        
 		        final List<Measurement> measurements = new ArrayList<Measurement>();
@@ -131,6 +139,14 @@ public class OracleToPheno implements Runnable {
 		            	recId = recordId;
 		            	recordId++;
 		            }
+		            
+		            Date time = new Date();
+		            ProtocolApplication pa = new ProtocolApplication();
+		            pa.setDescription(tableName + new Date().toString());
+		            pa.setInvestigation(investigationId);
+		            pa.setName(tableName + time.toString());
+		            pa.setProtocol(protocol);
+		            pa.setTime(time);
 
                 	Integer paId = rs.getInt(patientIdColumn);
                 	if(paidTargets.containsKey(paId)) {
@@ -151,7 +167,8 @@ public class OracleToPheno implements Runnable {
 		                ov.setFeature(measurements.get(i-1));
 		                if(value != null) {
 		                	ov.setRecordId(recId);
-		                	ov.setProtocolId(protocolId);
+		                	ov.setProtocolApplication(pa);
+		                	//ov.setProtocolId(protocolId);
 		                    ov.setValue(value.toString());
 		                } 
 		                ov.setInvestigation(investigation);

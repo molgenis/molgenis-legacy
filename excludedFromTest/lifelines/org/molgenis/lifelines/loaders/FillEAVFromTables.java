@@ -1,6 +1,8 @@
 package org.molgenis.lifelines.loaders;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +20,10 @@ import javax.persistence.Persistence;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.molgenis.organization.Investigation;
+import org.molgenis.pheno.ObservableFeature;
+import org.molgenis.pheno.ObservationElement;
+import org.molgenis.protocol.Protocol;
+import org.molgenis.protocol.ProtocolApplication;
 
 public class FillEAVFromTables {
 	private static Logger log = Logger.getLogger(FillEAVFromTables.class);
@@ -52,9 +58,10 @@ public class FillEAVFromTables {
 		+" group by tabnaam ";
 	
     public static void main(String[] args) throws Exception {
-    	PropertyConfigurator.configure("log4j.properties");
+ //   	PropertyConfigurator.configure("log4j.properties");
     	
-    	int studyId = 101;
+    	int studyId = 101; //should be parameterized!
+    	
     	
     	log.info(String.format("[%s] Imported started into EAV (pheno model)", studyId));
     	
@@ -65,9 +72,11 @@ public class FillEAVFromTables {
         inv.setName(String.format("StudyId: %d Loaded: %s",studyId, new Date().toString()));    
         
         Map<String, Object> configOverrides = new HashMap<String, Object>();
-        configOverrides.put("hibernate.hbm2ddl.auto", "create-drop"); //FIXME: should be changed to validate for production		        
+        //configOverrides.put("hibernate.hbm2ddl.auto", "create-drop"); //FIXME: should be changed to validate for production		        
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("molgenis", configOverrides);
         EntityManager em = emf.createEntityManager();
+        
+        String studyName = getStudyName(studyId, em);
         
         em.getTransaction().begin();
         em.persist(inv);
@@ -76,7 +85,7 @@ public class FillEAVFromTables {
         log.info(String.format("[%s] Investigation.name = %s", studyId, inv.getName()));
         
         long start = System.currentTimeMillis();
-        int protocolId = 0; //FIXME: should be determined globally over multiple runs! (runtime)        
+       
         
         @SuppressWarnings("unchecked")
 		List<Object[]> tables = em.createNativeQuery(sqlGetTableWithColumns).getResultList();
@@ -85,7 +94,7 @@ public class FillEAVFromTables {
         	String tableName = (String)tableRec[0];
         	String fieldNames = (String)tableRec[1];
         	
-        	log.info(String.format("[%d-%s] Start importing table: %s", studyId, tableName));
+        	log.info(String.format("[%d-%s] Start importing table: %s", studyId, tableName, tableName));
         	
         	if(!fieldNames.toUpperCase().contains("PA_ID"))
         	{
@@ -94,13 +103,15 @@ public class FillEAVFromTables {
         	}
         	if(!fieldNames.toUpperCase().contains("STID"))
         	{        	
-        		log.warn(String.format("[%d-%s] Table: %s doesn't contain STID column! So data is not loaded into EAV!", studyId, tableName));
+        		log.warn(String.format("[%d-%s] Table: %s doesn't contain STID column! So data is not loaded into EAV!", studyId, tableName, tableName));
         		continue;
         	}        	
         	
         	log.trace(String.format("[%d-%s]Start creating metaData.", studyId, tableName));
-        	new OracleToLifelinesPheno(studyId, em, schemaName, tableName, fieldNames, inv.getId());
+        	OracleToLifelinesPheno oracleToLifelinesPheno =	new OracleToLifelinesPheno(studyId, em, schemaName, tableName, fieldNames, inv.getId());
         	log.trace(String.format("[%d-%s] Meta data succesfully stored.", studyId, tableName));
+
+        	int protocolId = oracleToLifelinesPheno.getProtocolId();
         	
         	BigDecimal numberOfBuckets = (BigDecimal) em.createNativeQuery(
         			String.format(sqlNumerBuckets, RECORDS_PER_THREAD, schemaName, tableName))
@@ -129,15 +140,15 @@ public class FillEAVFromTables {
 
             executor.shutdown(); //when all task are complete ThreadPoolExecutor is terminated 
        	   	doneSignal.await();  //wait for all tasks to finish (what will happen in case of timeout?)
-       	   
        	   	log.trace(String.format("[%d-%s] Data for Table is loaded", studyId, tableName));
+
        	   	
        	   	log.trace(String.format("[%d-%s] Start EAVToView", studyId, tableName));
-       	   	new EAVToView(studyId, schemaName, tableName, fieldNames, schemaToExportView, protocolId, inv.getId());
+       	   	String viewName = studyName + "_" + tableName;
+       	   	new EAVToView(studyId, schemaName, viewName, fieldNames, schemaToExportView, protocolId, inv.getId());
        	   	log.trace(String.format("[%d-%s] End EAVToView", studyId, tableName));
        	   	       	   	
        	   	log.info(String.format("[%d-%s] Processing of data is completed!", studyId, tableName));
-       	   	protocolId++;
         }
         em.close();
         
@@ -145,5 +156,13 @@ public class FillEAVFromTables {
         long seconds = (end - start) / 1000;
         log.info(String.format("[%d] Data Loading completed in %d seconds", studyId, seconds));
         log.info(String.format("[%d] End of import", studyId));
+    }
+    
+    private static String getStudyName(int stid, EntityManager em) {
+    	String sql = "select studie from llpoper.studie where stid = :stid";
+    	
+    	String studyName = (String)em.createNativeQuery(sql).setParameter("stid", stid).getSingleResult();
+    	return studyName;
+    	
     }
 }

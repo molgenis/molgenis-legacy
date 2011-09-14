@@ -52,7 +52,6 @@ public class LoaderUtils {
         return measurements;
     }
     
-    
     public static Connection getConnection() throws Exception {
         String driver = "oracle.jdbc.driver.OracleDriver";
         String url = "jdbc:oracle:thin:@//localhost:2000/llp";

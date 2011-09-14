@@ -19,6 +19,8 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.model.jaxb.Field;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservationElement;
+import org.molgenis.protocol.Protocol;
 
 import app.DatabaseFactory;
 
@@ -100,8 +102,10 @@ public class OracleToLifelinesPheno {
     private final String fields;
     private Investigation investigation;
     private final int studyId;
+
+    private Protocol protocol;
     
-    private List<Measurement> measurements;
+    private List<ObservationElement> measurements;
     private EntityManager em;
 
     public OracleToLifelinesPheno(int studyId, EntityManager em, String schemaName, String tableName, String fields, Integer investigationId) throws Exception {
@@ -133,11 +137,27 @@ public class OracleToLifelinesPheno {
     private void load() throws Exception {
         Connection con = LoaderUtils.getConnection();
         loadComments();
-
+        
+        em.getTransaction().begin();
         measurements  = loadInvestigationAndMeasurement(con, em);
+        
+       	protocol = new Protocol();
+    	protocol.setDescription(tableName);
+    	//make features for protocol
+//    	List<ObservationElement> f = new ArrayList<ObservationElement>();
+//    	for(ObservationElement e : measurements) {
+//    		f.add(e);
+//    	}    	
+    	protocol.setFeatures(measurements);
+    	protocol.setInvestigation(investigation);
+    	protocol.setName(tableName);
+
+    	em.persist(protocol);
+    	em.getTransaction().commit();
+
     }
 
-    private List<Measurement> loadInvestigationAndMeasurement(Connection con, EntityManager em) throws SQLException {
+    private List<ObservationElement> loadInvestigationAndMeasurement(Connection con, EntityManager em) throws SQLException {
         investigation = em.find(Investigation.class, investigationId);
 
         Statement stmt = con.createStatement();
@@ -146,7 +166,7 @@ public class OracleToLifelinesPheno {
         ResultSet rs = stmt.executeQuery(sql);
         ResultSetMetaData rsm = rs.getMetaData();
 
-        List<Measurement> measurements = new ArrayList<Measurement>();
+        List<ObservationElement> measurements = new ArrayList<ObservationElement>();
         for (int i = 1; i <= rsm.getColumnCount(); ++i) {
         	String jql = "SELECT Count(m) FROM Measurement m WHERE m.investigation.id = :invId AND m.name = :name";
         	log.debug(String.format("[%d-%s] %s", studyId, tableName, jql));
@@ -160,7 +180,7 @@ public class OracleToLifelinesPheno {
         		throw new IllegalArgumentException("two measurments with same name in investigation");
         	}
         	
-            Measurement m = new Measurement();
+            ObservationElement m = new Measurement();
             measurements.add(m);
 
             m.setInvestigation(investigation);
@@ -170,20 +190,20 @@ public class OracleToLifelinesPheno {
 
             log.debug(String.format("[%d-%s] %s \t %s \t %s", studyId, tableName, rsm.getColumnName(i), rsm.getPrecision(i), rsm.getScale(i)));
             
-            m.setDataType(Field.Type.getType(rsm.getColumnType(i)).toString());
-            if(m.getDataType().equals("decimal")) {
+            ((Measurement)m).setDataType(Field.Type.getType(rsm.getColumnType(i)).toString());
+            if(((Measurement)m).getDataType().equals("decimal")) {
             	int precision = rsm.getPrecision(i);           
             	if(precision == 0) {
-            		m.setDataType(Field.Type.INT.toString());
+            		((Measurement)m).setDataType(Field.Type.INT.toString());
             	}
             }
             
             m.setDescription(columnComment.get(rsm.getColumnName(i)));
         }
 
-        em.getTransaction().begin();
-        em.merge(investigation);
-        em.getTransaction().commit();
+        //em.getTransaction().begin();
+        //em.merge(investigation);
+        //em.getTransaction().commit();
         return measurements;
     }
 
@@ -230,7 +250,8 @@ public class OracleToLifelinesPheno {
     	return investigation.getId();
     }
     
-    public List<Measurement> getMeasurements() {
+    
+    public List<ObservationElement> getMeasurements() {
     	return this.measurements;
     }
     
@@ -250,5 +271,9 @@ public class OracleToLifelinesPheno {
     	} finally {
     		em.close();
     	}
-    }    
+    }
+
+	public int getProtocolId() {
+		return this.protocol.getId();		
+	}    
 }

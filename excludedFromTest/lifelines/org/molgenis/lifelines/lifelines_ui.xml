@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <molgenis name="lifelines.ui" label="LifeLines Research Platform">
+	<plugin name="Matrix" type="plugins.RenderableMatrixPlugin" />
 <!--
 	<plugin name="MolgenisHeader" type="plugins.header.MolgenisHeader" />
 	<menu name="TopMenu" position="left">
