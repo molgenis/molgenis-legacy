@@ -347,7 +347,7 @@ public class AnimaldbSeleniumTest
 	@Test(dependsOnMethods={"applyProtocol"})
 	public void logout() throws InterruptedException
 	{
-		selenium.click("id=securitymenu_tab_button");
+		selenium.click("id=UserLogin_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=Logout");
 		selenium.waitForPageToLoad(pageLoadTimeout);
