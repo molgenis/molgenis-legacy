@@ -65,7 +65,11 @@ public class AnimaldbSeleniumTest
 	@Test
 	public void startup() throws InterruptedException
 	{
+		// Start page is now login screen
 		selenium.open("/molgenis_apps/molgenis.do");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		// But we need to go to the welcome screen first because there the DB gets pre-filled! (TODO: fix)
+		selenium.click("id=AnimalDBWelcomeScreen_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertEquals(selenium.getTitle(), "AnimalDB");
 		Assert.assertTrue(selenium.isTextPresent("Welcome to AnimalDB!"));
@@ -77,10 +81,10 @@ public class AnimaldbSeleniumTest
 	@Test(dependsOnMethods={"startup"})
 	public void login() throws InterruptedException
 	{
-		// No longer needed since Login is now start screen:
-		//selenium.click("id=securitymenu_tab_button");
-		//selenium.waitForPageToLoad(pageLoadTimeout);
-		
+		// Go back to login screen first
+		selenium.click("id=UserLogin_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		// Login
 		Assert.assertEquals(selenium.getText("link=Register"), "Register");
 		selenium.type("id=username", "admin");
 		selenium.type("id=password", "admin");
