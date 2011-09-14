@@ -6,8 +6,8 @@
 			will be 'Individual {- observation -} SequenceFeature. (analogues for
 			Samples, Panels). Also details on SequenceFeatures, such as allele
 			counts, can be reported using a 3-way relationship. E.g.
-			SequenceFeature {- observation(relation=Panel(gonl), value=6) -}
-			AlleleCount.
+			Panel(gonl) {- observation(relation=Feature(name=AlleleCount)), value=6) -} SequenceFeature
+			.
 		</description>
 		<entity name="GenomeBuild" extends="ObservationElement">
 			<description>Reference to the genome build used. TODO: expand with
@@ -50,7 +50,7 @@
 		<entity name="SequenceVariant" implements="SequenceFeature"
 			extends="ObservableFeature">
 			<description>
-				Describe sequence variants respective to another sequence. Example
+				Describe sequence variants respective to a reference chromosome/contig. Example
 				usage:
 				<table>
 					<tr>
@@ -80,18 +80,6 @@
 			<field name="alt"
 				description="alternative sequences observed, if multiple then seperated by ','" />
 		</entity>
-		<!-- entity name="SequenceCnv" implements="SequenceFeature" extends="ObservableFeature"> 
-			<description> Describe sequence variants respective to another sequence. 
-			Example usage: <table> <tr> <td>target</td> <td>feature</td> <td>relation</td> 
-			<td>value</td> </tr> <tr> <td>Individual(Patient1)</td> <td>SequenceVariant(variantType=snp,ref=A,alt=T)</td> 
-			<td>OntologyTerm(Phased Genotype)</td> <td>T/A</td> </tr> <tr> <td>Panel(GoNL)</td> 
-			<td>SequenceVariant(variantType=snp,ref=A,alt=T)</td> <td>OntologyTerm(Allele 
-			Count)</td> <td>6</td> </tr> </table> </description> <field name="variantType" 
-			type="enum" enum_options="[snp,indel,cnv]" default="snp" description="type 
-			of the variant" /> <field name="ref" description="sequence in the reference. 
-			Very long sequences will be stored elsewhere and then only IDs will be reported 
-			here." /> <field name="alt" description="alternative sequences observed, 
-			if multiple then seperated by ','" /> </entity -->
 		<entity name="Gene" implements="SequenceFeature" extends="ObservableFeature">
 			<field name="nuclSequence" type="text"
 				description="Nucleotide sequence (bases) of the gene." label="Nucleotide sequence" />
