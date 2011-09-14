@@ -24,8 +24,9 @@ run_PLINK <- function(dbpath = "", subjob, item, jobid, outname, myanalysisfile,
   cat("info: Get your parameters\n")
   inputname <- getparameter("inputname",jobparams)
   
-  cat(Generate_Statement(paste("system(paste(\"wget ",paste(dbpath,"/downloadfile",sep=""),"?name=\",inputname,\"_ped \",inputname,\".ped\",sep=\"\"))\n",sep="")),file=myanalysisfile,append=T)
-  cat(Generate_Statement(paste("system(paste(\"wget ",paste(dbpath,"/downloadfile",sep=""),"?name=\",inputname,\"_map \",inputname,\".map\",sep=\"\"))\n",sep="")),file=myanalysisfile,append=T)
-  cat(Generate_Statement(paste("system(paste(\"plink --noweb --file \",inputname,\" --assoc --out \",outname,\"\",sep=\"\"))\n",sep="")),file=myanalysisfile,append=T)
+  cat(Generate_Statement(paste("system(paste(\"wget ",paste(dbpath,"/downloadfile",sep=""),"?name=",inputname,"_ped ",inputname,".ped\",sep=\"\"))\n",sep="")),file=myanalysisfile,append=T)
+  cat("info: Get your parameters\n")
+  cat(Generate_Statement(paste("system(paste(\"wget ",paste(dbpath,"/downloadfile",sep=""),"?name=",inputname,"_map ",inputname,".map\",sep=\"\"))\n",sep="")),file=myanalysisfile,append=T)
+  cat(Generate_Statement(paste("system(paste(\"plink --noweb --file ",inputname," --assoc --out \",outname,\"\",sep=\"\"))\n",sep="")),file=myanalysisfile,append=T)
   cat(Generate_Statement(paste("postForm('",paste(dbpath,"/uploadfile",sep=""),"',investigation_name='",investigationname,"', name='",outname,"', type = 'InvestigationFile', file = fileUpload(filename='",outname,".assoc'), style='HTTPPOST')","\n",sep="")),file=myanalysisfile,append=T)
 }
