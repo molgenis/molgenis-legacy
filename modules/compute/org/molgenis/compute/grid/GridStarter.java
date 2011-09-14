@@ -97,13 +97,8 @@ public class GridStarter
 
         try
         {
-            Ssh ssh = new Ssh("millipede.service.rug.nl", "byelas","uzib9Nee");
-            //Ssh ssh = new Ssh("application30.target.rug.nl", "fvandijk","Aiki7kah");
-            //SshResult result = ssh.executeCommand("qsub /data/byelas/scripts/gridgain/workervm7.sh");
-            SshResult result = ssh.executeCommand("qsub -q short /data/byelas/scripts/gridgain/manual_worker_script.sh");
-            //SshResult result = ssh.executeCommand("qsub -q gcc /target/gpfs2/gcc/home/fvandijk/scripts/workervm7.sh");
-            System.out.println("err: " + result.getStdErr());
-            System.out.println("out: " + result.getStdOut());
+            Ssh ssh = new Ssh("lala", "lala","lala");
+
         }
         catch (IOException e)
         {
