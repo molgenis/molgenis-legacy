@@ -339,7 +339,7 @@ seconds.
 			<#--nobr><#if t.outputDataName?length gt 10>${t.outputDataName?substring(0, 10)}...<#else>${t.outputDataName}</#if></nobr-->
 			<#assign found = false>
 			<#list model.getJobToOutputLink()?keys as key>
-				<#if model.getJobToOutputLink()[t.id] != 'leeg'>
+				<#if model.getJobToOutputLink()[key] != 'leeg'>
 					<nobr><#if t.outputDataName?length gt 10><a href="/${model.deployName}${model.getJobToOutputLink()[key]}${t.outputDataName}">${t.outputDataName?substring(0, 10)}...</a><#else><a href="/${model.deployName}${model.getJobToOutputLink()[key]}${t.outputDataName}">${t.outputDataName}</a></#if></nobr>			
 					<#assign found = true>
 					<#break>
