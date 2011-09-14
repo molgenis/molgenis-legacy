@@ -26,7 +26,8 @@
 <#--begin your plugin-->	
 <#--p>The currently selected date: ${model.date?date}</p-->
 <#--p>text ${model.getHelloWorld()} </p-->
-<@action name="resetDatabase" label="reset database (all data will be deleted!!!)"/>
+<#--@action name="resetDatabase" label="reset database (all data will be deleted!!!)"/-->
+<input type="submit" value="reset database (all data will be deleted!!!" onclick="__action.value='resetDatabase';return true;"/>
 <#--label>Change date:</label><@date name="date" value=model.date/> <@action name="updateDate"/-->
 	
 <#--end of your plugin-->	

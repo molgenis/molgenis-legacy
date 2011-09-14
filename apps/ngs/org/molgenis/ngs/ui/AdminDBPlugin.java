@@ -1,16 +1,20 @@
 
 package org.molgenis.ngs.ui;
 
-import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Tuple;
 
-import plugins.emptydb.emptyDatabase;
-
-import app.servlet.UsedMolgenisOptions;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.Statement;
 
 /**
  * AdminDBPluginController takes care of all user requests and application logic.
@@ -38,43 +42,81 @@ public class AdminDBPlugin extends EasyPluginController<AdminDBPluginModel>
 	@Override
 	public void reload(Database db) throws Exception
 	{	
-//		//example: update model with data from the database
-//		Query q = db.query(Investigation.class);
-//		q.like("name", "molgenis");
-//		getModel().investigations = q.find();
 	}
 	
-	/**
-	 * When action="updateDate": update model and/or view accordingly.
-	 *
-	 * Exceptions will be logged and shown to the user automatically.
-	 * All db actions are within one transaction.
-	 */
 	public void updateDate(Database db, Tuple request) throws Exception
 	{
 		getModel().date = request.getDate("date");
-	
-//		//Easily create object from request and add to database
-//		Investigation i = new Investigation(request);
-//		db.add(i);
-//		this.setMessage("Added new investigation");
-
 		getModel().setSuccess("update succesfull");
 	}
 	
 	public void resetDatabase(Database db, Tuple request) throws Exception
 	{
 
-		
-		
 		print("resetDatabase pressed");
-		
-		new emptyDatabase(db, true);
-		
-		print("done with resetDatabase");
+
+        //hardcoded to working directory
+        String strSQL = readFile("create_tables.sql");
+        execute(db, strSQL);
+        strSQL = readFile("insert_metadata.sql");
+		execute(db, strSQL);
+        print("done with resetDatabase");
+        getModel().setSuccess("reset successful");
+
 	}
 	
 	private void print(String str) {
 		System.out.println(">> " + str);
 	}
+
+    private String readFile(String filename) throws IOException
+    {
+        File file = new File(filename);
+
+        if (!file.exists())
+        {
+            System.out.println("sql script does not exist");
+            return null;
+        }
+        final BufferedInputStream bis = new BufferedInputStream(
+                new FileInputStream(file));
+        final byte[] bytes = new byte[(int) file.length()];
+        bis.read(bytes);
+        bis.close();
+        return new String(bytes);
+    }
+
+    private void execute(Database db, String sqlFile) throws Exception
+    {
+        Connection conn = null;
+        try
+        {
+            conn = ((JDBCDatabase) db).getConnection();
+
+            Statement stmt = conn.createStatement();
+            int i = 0;
+            for (String command : sqlFile.split(";"))
+            {
+                if (command.trim().length() > 0)
+                {
+                    stmt.executeUpdate(command + ";");
+                    if (i++ % 10 == 0)
+                    {
+                        // System.out.print(".");
+                    }
+
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            throw e;
+        }
+        finally
+        {
+//			conn.close();
+        }
+    }
+
 }

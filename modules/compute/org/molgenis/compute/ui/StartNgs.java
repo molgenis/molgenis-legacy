@@ -304,7 +304,7 @@ public class StartNgs extends EasyPluginController<StartNgsView>
 
         for (ComputeFeature computeFeature : allComputeFeatures)
         {
-            System.out.println("input feature: " + computeFeature.getName() + " --> " + computeFeature.getDefaultValue());
+//            System.out.println("input feature: " + computeFeature.getName() + " --> " + computeFeature.getDefaultValue());
             if (computeFeature.getIsUser())// || computeFeature.getDefaultValue().equalsIgnoreCase(PARAMETER))
                 continue;
             else if (computeFeature.getIsDerived())
@@ -329,9 +329,9 @@ public class StartNgs extends EasyPluginController<StartNgsView>
 
         for (WorkflowElementParameter par : workflowElementParameters)
         {
-            System.out.println("par: " + par.getFeature_Name() + " --> " + par.getTarget_Name());
+//            System.out.println("par: " + par.getFeature_Name() + " --> " + par.getTarget_Name());
             ComputeFeature feature = computeFeatures.get(par.getTarget_Name());
-            System.out.println("par: " + par.getFeature_Name() + " --> " + feature.getDefaultValue());
+//            System.out.println("par: " + par.getFeature_Name() + " --> " + feature.getDefaultValue());
             weavingValues.put(par.getFeature_Name(), feature.getDefaultValue());
         }
 
@@ -365,13 +365,13 @@ public class StartNgs extends EasyPluginController<StartNgsView>
         app.setTime(now());
         //app.setComputeResource("cluster");
 
-        String appName = "ngs_" + pipeline.getId() + "_" + workflowElement.getName() + "_" + pipelineElementNumber; // + "_" + sdf.format(now());
+        String appName = "ngs_" + pipeline.getId() + "_" + workflowElement.getName() + "_" + pipelineElementNumber;
         app.setName(appName);
         System.out.println("---application---> " + appName);
 
         String protocolTemplate = protocol.getScriptTemplate();
 
-        System.out.println("--- template \n" + protocolTemplate);
+//        System.out.println("--- template \n" + protocolTemplate);
 
         //weave complex features
         for (int i = 0; i < featuresToDerive.size(); i++)
@@ -381,14 +381,13 @@ public class StartNgs extends EasyPluginController<StartNgsView>
             String featureTemplate = feature.getDefaultValue();
 
             String featureValue = weaver.weaveFreemarker(featureTemplate, weavingValues);
-            System.out.println("complex-feature: " + featureName + " --> " + featureValue);
+//            System.out.println("complex-feature: " + featureName + " --> " + featureValue);
             weavingValues.put(featureName, featureValue);
         }
 
         String result = weaver.weaveFreemarker(protocolTemplate, weavingValues);
         app.setComputeScript(result);
         app.setInterpreter("bash");
-        //app.setPrevSteps();
         db.add(app);
 
         List<ComputeApplication> res = db.query(ComputeApplication.class).equals(ComputeApplication.NAME, app.getName()).find();
@@ -402,7 +401,6 @@ public class StartNgs extends EasyPluginController<StartNgsView>
 
         //this is used for database update with ComputeAppPaths
         Vector<String> logpathfiles = new Vector<String>();
-        //logpathfile = null;
 
         while (it.hasNext())
         {
@@ -410,7 +408,6 @@ public class StartNgs extends EasyPluginController<StartNgsView>
             String name = (String) entry.getKey();
             String value = (String) entry.getValue();
 
-            //System.out.println("feature: " + name + " ---> " + value);
             ObservedValue observedValue = new ObservedValue();
             observedValue.setValue(value);
             observedValue.setProtocolApplication(app);
@@ -466,8 +463,8 @@ public class StartNgs extends EasyPluginController<StartNgsView>
         String logfile = weaver.getLogfilename();
         pipeline.setPipelinelogpath(logfile);
 
-        weaver.writeToFile("/test/" + pipelineElementNumber + scriptID, scriptFile);
-        //weaver.writeToFile("/home/gbyelas/test/" + pipelineElementNumber + scriptID, scriptFile);
+        //weaver.writeToFile("/test/" + pipelineElementNumber + scriptID, scriptFile);
+        weaver.writeToFile("/home/gbyelas/test/" + pipelineElementNumber + scriptID, scriptFile);
         //weaver.writeToFile("/home/fvandijk/test/" + pipelineElementNumber + scriptID, scriptFile);
 
         //todo rewrite pipeline generation
@@ -477,7 +474,9 @@ public class StartNgs extends EasyPluginController<StartNgsView>
         String scriptRemoteLocation = remoteLocation + "/scripts/";
 
          Script pipelineScript = new Script(scriptID, scriptRemoteLocation, scriptFile.getBytes());
-         pipelineScript.setShort(true);
+
+         if(protocol.getClusterQueue().equalsIgnoreCase("short"))
+            pipelineScript.setShort(true);
 
         if (strPreviousWorkflowElements.size() == 0)//script does not depend on other scripts
         {

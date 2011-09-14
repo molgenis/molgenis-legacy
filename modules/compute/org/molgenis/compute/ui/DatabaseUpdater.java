@@ -134,7 +134,7 @@ public class DatabaseUpdater
                     cancel();
 
             }
-        }, delay * 1000, period * 1000);
+        }, delay * 10000, period * 10000);
     }
 
     private ComputeAppPaths.AppStatus findStatus(String name, Vector<String> allLogs)

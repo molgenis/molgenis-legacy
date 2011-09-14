@@ -33,8 +33,9 @@ public class GridStarter
         GridJgroupsDiscoverySpi spi = new GridJgroupsDiscoverySpi();
 
         // Override default JGroups configuration file.
-        spi.setConfigurationFile("/config/jgroups/tcp/jgroups.xml");
-        //spi.setConfigurationFile("/home/gbyelas/gridgain/config/jgroups/tcp/jgroups.xml");
+        //spi.setConfigurationFile("/config/jgroups/tcp/jgroups.xml");
+        spi.setConfigurationFile("/home/gbyelas/gridgain/config/jgroups/tcp/jgroups.xml");
+        //spi.setConfigurationFile("/home/fvandijk/gridgain/config/jgroups/tcp/jgroups.xml");
 
         // Override default discovery SPI.
         cfg.setDiscoverySpi(spi);
@@ -43,8 +44,9 @@ public class GridStarter
         GridJgroupsCommunicationSpi commSpi = new GridJgroupsCommunicationSpi();
 
         // Override default JGroups configuration file.
-        commSpi.setConfigurationFile("/config/jgroups/tcp/jgroups.xml");
-        //commSpi.setConfigurationFile("/home/gbyelas/gridgain/config/jgroups/tcp/jgroups.xml");
+        //commSpi.setConfigurationFile("/config/jgroups/tcp/jgroups.xml");
+        commSpi.setConfigurationFile("/home/gbyelas/gridgain/config/jgroups/tcp/jgroups.xml");
+        //commSpi.setConfigurationFile("/home/fvandijk/gridgain/config/jgroups/tcp/jgroups.xml");
         cfg.setCommunicationSpi(commSpi);
 
         try
@@ -95,8 +97,11 @@ public class GridStarter
 
         try
         {
-            Ssh ssh = new Ssh("millipede.service.rug.nl", "lala","lala");
+            Ssh ssh = new Ssh("millipede.service.rug.nl", "byelas","uzib9Nee");
+            //Ssh ssh = new Ssh("application30.target.rug.nl", "fvandijk","Aiki7kah");
+            //SshResult result = ssh.executeCommand("qsub /data/byelas/scripts/gridgain/workervm7.sh");
             SshResult result = ssh.executeCommand("qsub -q short /data/byelas/scripts/gridgain/manual_worker_script.sh");
+            //SshResult result = ssh.executeCommand("qsub -q gcc /target/gpfs2/gcc/home/fvandijk/scripts/workervm7.sh");
             System.out.println("err: " + result.getStdErr());
             System.out.println("out: " + result.getStdOut());
         }
