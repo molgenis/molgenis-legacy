@@ -18,15 +18,14 @@
 ######################################################################
 
 
-run_PLINK <- function(dbpath = "", subjob, item, jobid, outname, myanalysisfile, jobparams=list(c("map","scanone"),c("method","hk"),c("model","normal"),c("stepsize","0")), investigationname="", libraryloc=NULL){
+run_PLINK <- function(dbpath = "", subjob, item, jobid, outname, myanalysisfile, jobparams=list(c("inputname","hapmap1")), investigationname="", libraryloc=NULL){
   cat("info: Start by sending a message (so we know we're running)\n")
   
   cat("info: Get your parameters\n")
   inputname <- getparameter("inputname",jobparams)
-  outputname <- getparameter("outputname",jobparams)
   
-  cat(Generate_Statement(paste("shell(paste(\"wget http://vm7.target.rug.nl/xqtl_lifelines/downloadfile?name=\",inputname,\"_ped \",inputname,\".ped\",sep=\"\"))\n",sep="")),file=myanalysisfile,append=T)
-  cat(Generate_Statement(paste("shell(paste(\"wget http://vm7.target.rug.nl/xqtl_lifelines/downloadfile?name=\",inputname,\"_map \",inputname,\".map\",sep=\"\"))\n",sep="")),file=myanalysisfile,append=T)
-  cat(Generate_Statement(paste("shell(paste(\"plink --noweb --file \",inputname,\" --assoc --out \",outputname,\"\",sep=\"\"))\n",sep="")),file=myanalysisfile,append=T)
-  cat(Generate_Statement(paste("postForm('",paste(dbpath,"/uploadfile",sep=""),"',investigation_name='",investigationname,"', name='",outputname,"', type = 'InvestigationFile', file = fileUpload(filename='",outputname,".assoc'), style='HTTPPOST')","\n",sep="")),file=myanalysisfile,append=T)
+  cat(Generate_Statement(paste("shell(paste(\"wget ",paste(dbpath,"/downloadfile",sep=""),"?name=\",inputname,\"_ped \",inputname,\".ped\",sep=\"\"))\n",sep="")),file=myanalysisfile,append=T)
+  cat(Generate_Statement(paste("shell(paste(\"wget ",paste(dbpath,"/downloadfile",sep=""),"?name=\",inputname,\"_map \",inputname,\".map\",sep=\"\"))\n",sep="")),file=myanalysisfile,append=T)
+  cat(Generate_Statement(paste("shell(paste(\"plink --noweb --file \",inputname,\" --assoc --out \",outname,\"\",sep=\"\"))\n",sep="")),file=myanalysisfile,append=T)
+  cat(Generate_Statement(paste("postForm('",paste(dbpath,"/uploadfile",sep=""),"',investigation_name='",investigationname,"', name='",outname,"', type = 'InvestigationFile', file = fileUpload(filename='",outname,".assoc'), style='HTTPPOST')","\n",sep="")),file=myanalysisfile,append=T)
 }
