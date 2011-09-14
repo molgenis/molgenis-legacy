@@ -32,7 +32,7 @@ public class TriTyperToBinaryMatrix
 		}
 
 		FileOutputStream fos = new FileOutputStream(dest);
-		final DataOutputStream dos = new DataOutputStream(fos);
+		DataOutputStream dos = new DataOutputStream(fos);
 
 		// 0) write nullCharacter
 		dos.writeBytes(this.nullChar);
@@ -80,7 +80,7 @@ public class TriTyperToBinaryMatrix
 		return dest;
 	}
 
-	private void writeBinary(final DataOutputStream dos, TriTyperGenotypeData data) throws ParseException, IOException
+	private void writeBinary(DataOutputStream dos, TriTyperGenotypeData data) throws ParseException, IOException
 	{
 		SNPLoader loader = data.createSNPLoader();
 		for (int m = 0; m < markers.length; m++)
@@ -91,13 +91,12 @@ public class TriTyperToBinaryMatrix
 			byte[] all1 = snpObject.getAllele1();
 			byte[] all2 = snpObject.getAllele2();
 			
-			String alleles = "";
 			for (int i = 0; i < individuals.length; i++)
 			{
-				String allele = new String(new char[]{(char)all1[i], (char)all2[i]});
-				alleles += allele;
+				//dos.writeBytes(new String(new char[]{(char)all1[i], (char)all2[i]}));
+				dos.write(all1[i]);
+				dos.write(all2[i]);
 			}
-			dos.writeBytes(alleles);
 		}
 	}
 
