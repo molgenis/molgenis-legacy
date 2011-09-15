@@ -25,10 +25,13 @@ import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.IntInput;
 import org.molgenis.framework.ui.html.RepeatingPanel;
 import org.molgenis.framework.ui.html.SelectInput;
+import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.TextLineInput;
+
 import org.molgenis.pheno.Code;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Tuple;
 
@@ -53,12 +56,13 @@ public class AddAnimalPlugin extends GenericPlugin
 	public DateInput entrydate = null;
 	public SelectInput namebase = null;
 	public TextLineInput<String> startnumberhelper = null;
-	public TextLineInput<String> newnamebase = null;
+	public StringInput newnamebase = null;
 	public IntInput startnumber = null;
 	public IntInput numberofanimals = null;
 	public SelectInput actor = null;
 	public ActionInput addbutton = null;
 
+	
 	// container that renders whole form as divs (left labels, right inputs)
 	public DivPanel containingPanel = null;
 	// subpanel to conditionally show the genetic modification questions (background, genotype)
@@ -136,6 +140,15 @@ public class AddAnimalPlugin extends GenericPlugin
 		} else {
 			throw(new Exception("No species given - animal(s) not added"));
 		}
+		species.setDescription("Provide the species name here.");
+		
+		int backgroundId = 0;
+		if (background.getObject() != null) {
+			Integer.parseInt(background.getObject().toString());
+			
+		} else {
+			throw(new Exception("No background given - animal(s) not added"));
+		}
 		
 		int sexId = 0;
 		if (sex.getObject() != null) {
@@ -159,7 +172,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		}
 		
 		// GMO info
-		int backgroundId = 0;
 		List<String> geneList = new ArrayList<String>();
 		List<String> genestateList = new ArrayList<String>();
 		// User may have filled in fields and then switched the AnimalType from GMO again,
@@ -168,11 +180,7 @@ public class AddAnimalPlugin extends GenericPlugin
 			// GMO panel already made visible through JavaScript, now make permanent
 			gmoPanel.setHidden(false);
 			
-			if (background.getObject() != null) {
-				backgroundId = Integer.parseInt(background.getObject().toString());
-			} else {
-				throw(new Exception("No background given - animal(s) not added"));
-			}
+			
 			// Check gene name/state pairs
 			List<String> tmpGeneList = new ArrayList<String>();
 			if (gene.getObject() instanceof String) {
@@ -370,12 +378,29 @@ public class AddAnimalPlugin extends GenericPlugin
 		species.setLabel("Species:");
 		species.setOptions(ct.getAllMarkedPanels("Species", investigationIds), "id", "name");
 		species.setNillable(false);
-
+		species.setDescription(" Give the species.");
+		species.setTooltip(" Give the species.");
+		
+		background = new SelectInput("background");
+		background.setLabel("Background:");
+		//background.setOptions(ct.getAllMarkedPanels("Background", investigationIds), "id", "name");
+		background.setDescription("Give the genetic background of the animal, for instance C57black6/j, if applicable.");
+		background.setTooltip("Give the genetic background of the animal, for instance C57black6/j, if applicable.");
+		
+		background.addOption("0", "no background");
+		ArrayList<ObservationTarget> backgroundslist= new ArrayList<ObservationTarget>(ct.getAllMarkedPanels("Background", investigationIds));
+		for (ObservationTarget each : backgroundslist) {
+				background.addOption(each.getId(), each.getName());
+			}
+		background.setNillable(false);
+		
 		// Populate sexes list
 		// DISCUSSION: why is this not ontology???
 		sex = new SelectInput("sex");
 		sex.setLabel("Sex:");
 		sex.setOptions(ct.getAllMarkedPanels("Sex", investigationIds), "id", "name");
+		sex.setDescription("Give the sex of the new animal(s).");
+		sex.setTooltip("Give the sex of the new animal(s).");
 		sex.setNillable(false);
 
 		// Populate source list
@@ -396,6 +421,8 @@ public class AddAnimalPlugin extends GenericPlugin
 				}
 			}
 		}
+		source.setDescription("give the source from which the new animal(s) originate(s).");
+		source.setTooltip("give the source from which the new animal(s) originate(s).");
 		source.setNillable(false);
 		
 		// Populate animaltype list
@@ -405,6 +432,7 @@ public class AddAnimalPlugin extends GenericPlugin
 			animaltype.addOption(c.getDescription(), c.getCode_String() + " ("
 					+ c.getDescription() + ")");
 		}
+		animaltype.setDescription("Give the animaltype of the new animal(s). Select GMO to modify the genotype of the animal(s).");
 		animaltype.setOnchange("showHideGenotypeDiv(this.value);");
 		animaltype.setNillable(false);
 
@@ -412,11 +440,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		
 		gmoPanel = new DivPanel("GMO", "Genotype(s):");
 		gmoPanel.setId("GMO");
-		
-		background = new SelectInput("background");
-		background.setLabel("Background:");
-		background.setOptions(ct.getAllMarkedPanels("Background", investigationIds), "id", "name");
-		gmoPanel.add(background);
 		
 		genePanel = new RepeatingPanel("geneinput", "GMO information:");
 		
@@ -440,17 +463,20 @@ public class AddAnimalPlugin extends GenericPlugin
 		birthdate = new DateInput("birthdate");
 		birthdate.setLabel("Date of birth (if known):");
 		birthdate.setValue(null);
+		birthdate.setDescription("The date of birth of the animal(s)");
 
 		entrydate = new DateInput("entrydate");
 		entrydate.setLabel("Date of entry:");
 		entrydate.setValue(new Date());
 		entrydate.setNillable(false);
+		entrydate.setDescription("The date of arrival of these animals in the animal facility. This date will be used as start date to count the presence of animals in the yearly report");
 		
 		namePanel = new DivPanel("Name", "Name:");
 		
 		namebase = new SelectInput("namebase");
 		namebase.setLabel("Name base (may be empty):");
 		namebase.setId("namebase");
+		namebase.setDescription("The default prefix string that will be put infront of your name.");
 		namebase.addOption("New", "New (specify below)");
 		for (String base : bases) {
 			if (!base.equals("")) {
@@ -472,9 +498,10 @@ public class AddAnimalPlugin extends GenericPlugin
 		helperContents += (";" + (ct.getHighestNumberForNameBase("") + 1)); // start number for empty base (comes last in jQuery select box)
 		startnumberhelper.setValue(helperContents);
 		startnumberhelper.setHidden(true);
+		startnumberhelper.setDescription("The number from which your name prefix will be incremented, when adding animals." );
 		namePanel.add(startnumberhelper);
 		
-		newnamebase = new TextLineInput<String>("newnamebase");
+		newnamebase = new StringInput("newnamebase");
 		newnamebase.setLabel("New name base:");
 		namePanel.add(newnamebase);
 	
@@ -482,17 +509,20 @@ public class AddAnimalPlugin extends GenericPlugin
 		startnumber.setLabel("Start numbering at:");
 		startnumber.setId("startnumber");
 		startnumber.setValue(1); // start with highest number for new base (comes first in jQuery select box)
+		startnumber.setDescription("Set the inital number to increment the name with. The correct number is automatically set when a name prefix is selected");
 		namePanel.add(startnumber);
 		
 		numberofanimals = new IntInput("numberofanimals");
-		numberofanimals.setLabel("Number of animals:");
+		numberofanimals.setLabel("Number of animals to add:");
 		numberofanimals.setValue(1);
 		numberofanimals.setNillable(false);
+		numberofanimals.setDescription("Give the number of animals to add to the database");
 
 		addbutton = new ActionInput("Add", "", "Add animal(s)");
 
 		// add everything to the panel
 		containingPanel.add(species);
+		containingPanel.add(background);
 		containingPanel.add(sex);
 		containingPanel.add(source);
 		containingPanel.add(animaltype);
