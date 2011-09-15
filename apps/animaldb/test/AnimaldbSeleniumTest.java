@@ -337,7 +337,10 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=EventViewer_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.select("id=animal", "label=1");
-		sleepHelper("applyProtocol - Timeline value viewer Ajax call"); // We have to wait here, but it's Ajax, so it's faster than a normal full page load
+		
+		//sleepHelper("applyProtocol - Timeline value viewer Ajax call"); // We have to wait here, but it's Ajax, so it's faster than a normal full page load
+		Thread.sleep(10000);
+		
 		Assert.assertTrue(selenium.isTextPresent("Weight"));
 		Assert.assertTrue(selenium.isTextPresent("200"));
 		
