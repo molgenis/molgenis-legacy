@@ -8,7 +8,7 @@
 
 	<plugin name="AnimalDBHeader" type="plugins.header.AnimalDBHeader" />
 
-	<menu name="mainmenu" position="left" startswith="WelcomeScreen">
+	<menu name="mainmenu" position="left">
 		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Logout/settings"/>
 		<plugin name="AnimalDBWelcomeScreen" type="plugins.welcome.AnimalDBWelcomeScreenPlugin"
 			label="Welcome" />

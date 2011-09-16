@@ -378,8 +378,8 @@ public class AddAnimalPlugin extends GenericPlugin
 		species.setLabel("Species:");
 		species.setOptions(ct.getAllMarkedPanels("Species", investigationIds), "id", "name");
 		species.setNillable(false);
-		species.setDescription(" Give the species.");
-		species.setTooltip(" Give the species.");
+		species.setDescription("Give the species.");
+		species.setTooltip("Give the species.");
 		
 		background = new SelectInput("background");
 		background.setLabel("Background:");
@@ -421,22 +421,22 @@ public class AddAnimalPlugin extends GenericPlugin
 				}
 			}
 		}
-		source.setDescription("give the source from which the new animal(s) originate(s).");
-		source.setTooltip("give the source from which the new animal(s) originate(s).");
+		source.setDescription("Give the source from which the new animal(s) originate(s).");
+		source.setTooltip("Give the source from which the new animal(s) originate(s).");
 		source.setNillable(false);
 		
-		// Populate animaltype list
+		// Populate animal type list
 		animaltype = new SelectInput("animaltype");
 		animaltype.setLabel("Animal type:");
 		for (Code c : ct.getAllCodesForFeature("AnimalType")) {
 			animaltype.addOption(c.getDescription(), c.getCode_String() + " ("
 					+ c.getDescription() + ")");
 		}
-		animaltype.setDescription("Give the animaltype of the new animal(s). Select GMO to modify the genotype of the animal(s).");
+		animaltype.setDescription("Give the type of the new animal(s). Select type 2 (GMO) to modify the genotype of the animal(s).");
 		animaltype.setOnchange("showHideGenotypeDiv(this.value);");
 		animaltype.setNillable(false);
 
-		// background, gene and genestate are REPEATING and CONDITIONAL on (animaltype = Transgeen dier)
+		// gene and genestate are REPEATING and CONDITIONAL on (animaltype = Transgeen dier)
 		
 		gmoPanel = new DivPanel("GMO", "Genotype(s):");
 		gmoPanel.setId("GMO");
@@ -463,26 +463,27 @@ public class AddAnimalPlugin extends GenericPlugin
 		birthdate = new DateInput("birthdate");
 		birthdate.setLabel("Date of birth (if known):");
 		birthdate.setValue(null);
-		birthdate.setDescription("The date of birth of the animal(s)");
+		birthdate.setDescription("The date of birth of the animal(s).");
 
 		entrydate = new DateInput("entrydate");
 		entrydate.setLabel("Date of entry:");
 		entrydate.setValue(new Date());
 		entrydate.setNillable(false);
-		entrydate.setDescription("The date of arrival of these animals in the animal facility. This date will be used as start date to count the presence of animals in the yearly report");
+		entrydate.setDescription("The date of arrival of these animals in the animal facility. This date will be used as start date to count the presence of animals in the yearly report.");
 		
 		namePanel = new DivPanel("Name", "Name:");
 		
 		namebase = new SelectInput("namebase");
-		namebase.setLabel("Name base (may be empty):");
+		namebase.setLabel("Name prefix (may be empty):");
 		namebase.setId("namebase");
-		namebase.setDescription("The default prefix string that will be put infront of your name.");
+		namebase.setDescription("The default prefix string that will be put in front of your name.");
 		namebase.addOption("New", "New (specify below)");
 		for (String base : bases) {
 			if (!base.equals("")) {
 				namebase.addOption(base, base);
 			}
 		}
+		namebase.setValue(""); // default empty prefix
 		namebase.setOnchange("updateStartNumber(this.value)");
 		namePanel.add(namebase);
 		
@@ -498,7 +499,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		helperContents += (";" + (ct.getHighestNumberForNameBase("") + 1)); // start number for empty base (comes last in jQuery select box)
 		startnumberhelper.setValue(helperContents);
 		startnumberhelper.setHidden(true);
-		startnumberhelper.setDescription("The number from which your name prefix will be incremented, when adding animals." );
 		namePanel.add(startnumberhelper);
 		
 		newnamebase = new StringInput("newnamebase");
@@ -508,15 +508,15 @@ public class AddAnimalPlugin extends GenericPlugin
 		startnumber = new IntInput("startnumber");
 		startnumber.setLabel("Start numbering at:");
 		startnumber.setId("startnumber");
-		startnumber.setValue(1); // start with highest number for new base (comes first in jQuery select box)
-		startnumber.setDescription("Set the inital number to increment the name with. The correct number is automatically set when a name prefix is selected");
+		startnumber.setValue(ct.getHighestNumberForNameBase("") + 1); // start with highest number for empty prefix (default selected)
+		startnumber.setDescription("Set the inital number to increment the name with. The correct number is automatically set when a name prefix is selected.");
 		namePanel.add(startnumber);
 		
 		numberofanimals = new IntInput("numberofanimals");
 		numberofanimals.setLabel("Number of animals to add:");
 		numberofanimals.setValue(1);
 		numberofanimals.setNillable(false);
-		numberofanimals.setDescription("Give the number of animals to add to the database");
+		numberofanimals.setDescription("Give the number of animals to add to the database.");
 
 		addbutton = new ActionInput("Add", "", "Add animal(s)");
 

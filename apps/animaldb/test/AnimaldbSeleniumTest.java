@@ -65,31 +65,24 @@ public class AnimaldbSeleniumTest
 	@Test
 	public void startup() throws InterruptedException
 	{
-		// Start page is now login screen
 		selenium.open("/molgenis_apps/molgenis.do");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		// But we need to go to the welcome screen first because there the DB gets pre-filled! (TODO: fix)
-		selenium.click("id=AnimalDBWelcomeScreen_tab_button");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertEquals(selenium.getTitle(), "AnimalDB");
-		Assert.assertTrue(selenium.isTextPresent("Welcome to AnimalDB!"));
-		Assert.assertTrue(selenium.isTextPresent("Your database was empty, so it was prefilled with entities needed to make AnimalDB run"));
-		
+			
 		sleepHelper("startup");
 	}
 
 	@Test(dependsOnMethods={"startup"})
 	public void login() throws InterruptedException
 	{
-		// Go back to login screen first
-		selenium.click("id=UserLogin_tab_button");
-		selenium.waitForPageToLoad(pageLoadTimeout);
 		// Login
 		Assert.assertEquals(selenium.getText("link=Register"), "Register");
 		selenium.type("id=username", "admin");
 		selenium.type("id=password", "admin");
 		selenium.click("id=Login");
 		selenium.waitForPageToLoad(pageLoadTimeout);
+		// Now we get to the Welcome screen
+		Assert.assertEquals(selenium.getTitle(), "AnimalDB");
+		Assert.assertTrue(selenium.isTextPresent("Welcome to AnimalDB!"));
 		
 		sleepHelper("login");
 	}
@@ -101,8 +94,8 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Bring in animals"));
 		// Add 10 female Syrian hamsters
+		// Set species and nr. of animals; other values are default
 		selenium.select("id=species", "label=Syrian hamster");
-		selenium.select("id=namebase", "value=");
 		selenium.type("id=numberofanimals", "10");
 		selenium.click("id=Add");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -110,8 +103,6 @@ public class AnimaldbSeleniumTest
 		// Add 10 male Syrian hamsters
 		selenium.select("id=species", "label=Syrian hamster");
 		selenium.select("id=sex", "label=Male");
-		selenium.select("id=namebase", "value=");
-		selenium.type("id=startnumber", "21");
 		selenium.type("id=numberofanimals", "10");
 		selenium.click("id=Add");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -337,10 +328,9 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=EventViewer_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.select("id=animal", "label=1");
-		
-		//sleepHelper("applyProtocol - Timeline value viewer Ajax call"); // We have to wait here, but it's Ajax, so it's faster than a normal full page load
+		// We have to wait here, but it's Ajax, so it's faster than a normal full page load
+		// (however, 1 sec. is not (always) enough on Hudson, so set to 10 sec.)
 		Thread.sleep(10000);
-		
 		Assert.assertTrue(selenium.isTextPresent("Weight"));
 		Assert.assertTrue(selenium.isTextPresent("200"));
 		

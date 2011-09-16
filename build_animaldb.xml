@@ -37,7 +37,8 @@
 		</path>
 		<!-- run the tests -->
 		<testng classpathref="combined.class.path" outputDir="${testng.report.dir}" haltOnFailure="true">
-			<xmlfileset dir="${build.dir}" includes="**/*testng.xml,**/*_animaldbtest.xml" />
+			<xmlfileset dir="${build.dir}" includes="**/*testng.xml" />
+			<classfileset dir="${build.dir}" includes="**/AnimaldbSeleniumTest.class" />
 			<jvmarg value="-ea" />
 		</testng>			
 	</target>

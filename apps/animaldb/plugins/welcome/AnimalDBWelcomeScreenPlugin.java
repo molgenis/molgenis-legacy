@@ -67,45 +67,10 @@ public class AnimalDBWelcomeScreenPlugin extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
-		try {
-			int nrOfUsersInDb = db.count(MolgenisUser.class);
-			if (nrOfUsersInDb > 0) { // Check if DB is filled by counting the nr. of users (should always be >= 2)
-				// Entry point when logging in, so good place to (re)set the ObservationTarget label map
-				CommonService cs = CommonService.getInstance();
-				cs.setDatabase(db);
-				cs.makeObservationTargetNameMap(this.getLogin().getUserId(), true);
-			} else {
-				prefillDb(db);
-			}
-		} catch (Exception e) {
-			prefillDb(db);
-		}
+		// Entry point when logging in, so good place to (re)set the ObservationTarget label map
+		CommonService cs = CommonService.getInstance();
+		cs.setDatabase(db);
+		cs.makeObservationTargetNameMap(this.getLogin().getUserId(), true);
 	}
 	
-	private void prefillDb(Database db) {
-		try {
-			// Empty DB and run generated sql scripts
-			new emptyDatabase(db, true);
-			
-			// Populate db with targets, features, values etc. needed to make AnimalDB run
-			FillAnimalDB myFillAnimalDB = new FillAnimalDB(db);
-			myFillAnimalDB.populateDB(this.getLogin());
-			
-			this.getMessages().add(new ScreenMessage("Your database was empty, so it was prefilled with entities needed to make AnimalDB run", true));
-		} catch (Exception e) {
-			String message = "Something went wrong while trying to prefill your database";
-			if (e.getMessage() != null) {
-				message += (": " + e.getMessage());
-			}
-			this.getMessages().add(new ScreenMessage(message, false));
-			e.printStackTrace();
-		}
-	}
-	
-	@Override
-	public boolean isVisible()
-	{
-		// Always show the welcome screen
-		return true;
-	}
 }

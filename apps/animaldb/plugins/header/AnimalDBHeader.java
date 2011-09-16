@@ -7,13 +7,22 @@
 
 package plugins.header;
 
+import mx4j.log.Logger;
+
 import org.molgenis.auth.DatabaseLogin;
+import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+
+import plugins.emptydb.emptyDatabase;
+import plugins.fillanimaldb.FillAnimalDB;
+
+import commonservice.CommonService;
 
 
 /**
@@ -50,6 +59,35 @@ public class AnimalDBHeader extends PluginModel<Entity>
 	public void reload(Database db)
 	{
 		this.setUserLogin();
+		
+		try {
+			int nrOfUsersInDb = db.count(MolgenisUser.class);
+			if (nrOfUsersInDb == 0) { // Check if DB is filled by counting the nr. of users (should always be >= 2)
+				prefillDb(db);
+			}
+		} catch (Exception e) {
+			prefillDb(db);
+		}
+	}
+	
+	private void prefillDb(Database db) {
+		try {
+			// Empty DB and run generated sql scripts
+			new emptyDatabase(db, true);
+			
+			// Populate db with targets, features, values etc. needed to make AnimalDB run
+			FillAnimalDB myFillAnimalDB = new FillAnimalDB(db);
+			myFillAnimalDB.populateDB(this.getLogin());
+			
+			logger.info("Your database was empty, so it was prefilled with entities needed to make AnimalDB run");
+		} catch (Exception e) {
+			String message = "Something went wrong while trying to prefill your database";
+			if (e.getMessage() != null) {
+				message += (": " + e.getMessage());
+			}
+			logger.info(message);
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
