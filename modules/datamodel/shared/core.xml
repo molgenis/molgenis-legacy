@@ -83,7 +83,7 @@
 				description="EXTENSION. The Ontology Lookup Service path that contains this term." />
 			<unique fields="ontology,name" description="ADDITION: Name is unique within its type " />
 		</entity>
-		<entity name="Ontology" implements="Nameable" system="true" xref_label="name">
+		<entity name="Ontology" implements="Nameable" xref_label="name">
 			<description> Ontology defines a reference to a an ontology or
 				controlled vocabulary from which well-defined and stable (ontology)
 				terms can be obtained. Each Ontology should have a unique name, for
