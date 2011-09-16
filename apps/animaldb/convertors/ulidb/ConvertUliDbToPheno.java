@@ -83,9 +83,16 @@ public class ConvertUliDbToPheno
 	public void writeToDb() {
 		try {
 			db.add(protocolAppsToAddList);
+			logger.debug("Protocols successfully added");
 			db.add(animalsToAddList);
+			logger.debug("Animals successfully added");
 			db.add(panelsToAddList);
-			db.add(valuesToAddList);
+			logger.debug("Panels successfully added");
+			for (int valueStart = 0; valueStart < valuesToAddList.size(); valueStart += 1000) {
+				int valueEnd = Math.min(valuesToAddList.size(), valueStart + 1000);
+				db.add(valuesToAddList.subList(valueStart, valueEnd));
+				logger.debug("Values " + valueStart + " through " + valueEnd + " successfully added");
+			}
 		} catch (Exception e) {
 			logger.error("Writing to DB failed: " + e.getMessage());
 			e.printStackTrace();
@@ -498,7 +505,7 @@ public class ConvertUliDbToPheno
 			{
 				// Every gene becomes a code for the 'GeneName' feature
 				String geneName = tuple.getString("Gen");
-				ct.makeCode(geneName, geneName, "Genename");
+				ct.makeCode(geneName, geneName, "GeneName");
 			}
 		});
 	}
