@@ -95,6 +95,26 @@ public class CsvExport
 		logger.debug("done");
 	}
 	
+   /**
+	* Export without system tables.
+	*/
+	public void exportRegular(File directory, Database db, boolean skipAutoId) throws Exception
+	{
+		exportRegular(directory, db, skipAutoId, new QueryRule[]{});
+	}
+	
+   /**
+	* Export without system tables.
+	*/
+	public void exportRegular(File directory, Database db, boolean skipAutoId, QueryRule ... rules) throws Exception
+	{				
+		<#list entities as entity><#if !entity.abstract && !entity.system && entity.association==false>
+		export${Name(entity)}(db, new File(directory+"/${entity.name?lower_case}.txt"), skipAutoId ? Arrays.asList(new String[]{<#assign first = true><#list entity.allFields as f><#if !(f.type = "int" && f.auto)><#if first><#assign first=false><#else>,</#if><#if f.type="mref" || f.type="xref"><#list f.xrefLabelNames as label>"${f.name}_${label}"<#if label_has_next>,</#if></#list><#else>"${f.name}"</#if></#if></#list>}) : null, rules);		
+		</#if></#list>
+			
+		logger.debug("done");
+	}
+	
 	public void exportAll(File directory, List ... entityLists) throws Exception
 	{				
 		for(List<? extends Entity> l: entityLists) if(l.size()>0)

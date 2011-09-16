@@ -70,9 +70,9 @@ public class CsvImport
 		}
 	}
 	
-	public static void importAll(File directory, Database db, Tuple defaults) throws Exception
+	public static ImportResult importAll(File directory, Database db, Tuple defaults) throws Exception
 	{
-		importAll(directory, db, defaults, true);
+		return importAll(directory, db, defaults, true);
 	}
 	
 	public static ImportResult importAll(File directory, Database db, Tuple defaults, List<String> components, DatabaseAction dbAction, String missingValue) throws Exception
@@ -80,10 +80,10 @@ public class CsvImport
 		return importAll(directory, db, defaults, components, dbAction, missingValue, true);
 	}
 	
-	public static void importAll(File directory, Database db, Tuple defaults, boolean useDbTransaction) throws Exception
+	public static ImportResult importAll(File directory, Database db, Tuple defaults, boolean useDbTransaction) throws Exception
 	{
 		//set default missing value to ""
-		importAll(directory, db, defaults, null, DatabaseAction.ADD, "", useDbTransaction);
+		return importAll(directory, db, defaults, null, DatabaseAction.ADD, "", useDbTransaction);
 	}
 
 	/**
