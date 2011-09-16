@@ -32,25 +32,29 @@
 	<#if screen.litterList?exists>
 		<#if screen.litterList?size gt 0>
 			<h2>Unweaned litters</h2>
-			<table cellpadding="10" cellspacing="2" border="1">
-				<tr>
-					<th>Name</th>
-					<th>Parentgroup</th>
-					<th>Birth date</th>
-					<th>Size</th>
-					<th>Size approximate?</th>
-					<th></th>
-				</tr>
-			<#list screen.litterList as litter>
-				<tr>
-					<td style='padding:5px'>${litter.name}</td>
-					<td style='padding:5px'>${litter.parentgroup}</td>
-					<td style='padding:5px'>${litter.birthDate}</td>
-					<td style='padding:5px'>${litter.size}</td>
-					<td style='padding:5px'>${litter.isSizeApproximate}</td>
-					<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=ShowWean&id=${litter.id?string.computer}">Wean</a></td>
-				</tr>
-			</#list>
+			<table cellpadding="0" cellspacing="0" border="0" class="display" id="unweanedlitterstable">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Parentgroup</th>
+						<th>Birth date</th>
+						<th>Size</th>
+						<th>Size approximate?</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+				<#list screen.litterList as litter>
+					<tr>
+						<td style='padding:5px'>${litter.name}</td>
+						<td style='padding:5px'>${litter.parentgroup}</td>
+						<td style='padding:5px'>${litter.birthDate}</td>
+						<td style='padding:5px'>${litter.size}</td>
+						<td style='padding:5px'>${litter.isSizeApproximate}</td>
+						<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=ShowWean&id=${litter.id?string.computer}">Wean</a></td>
+					</tr>
+				</#list>
+				</tbody>
 			</table>
 		</#if>
 	</#if>
@@ -58,60 +62,38 @@
 	<#if screen.genoLitterList?exists>
 		<#if screen.genoLitterList?size gt 0>
 			<h2>Weaned litters that have not been genotyped yet</h2>
-			<table cellpadding="10" cellspacing="2" border="1">
-				<tr>
-					<th>Name</th>
-					<th>Parentgroup</th>
-					<th>Birth date</th>
-					<th>Wean date</th>
-					<th>Size at birth</th>
-					<th>Size at weaning</th>
-					<th></th>
-					<th></th>
-				</tr>
-			<#list screen.genoLitterList as litter>
-				<tr>
-					<td style='padding:5px'>${litter.name}</td>
-					<td style='padding:5px'>${litter.parentgroup}</td>
-					<td style='padding:5px'>${litter.birthDate}</td>
-					<td style='padding:5px'>${litter.weanDate}</td>
-					<td style='padding:5px'>${litter.size}</td>
-					<td style='padding:5px'>${litter.weanSize}</td>
-					<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=MakeTmpLabels&id=${litter.id?string.computer}">Make temporary cage labels</a></td>
-					<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=ShowGenotype&id=${litter.id?string.computer}">Genotype</a></td>
-				</tr>
-			</#list>
+			<table cellpadding="0" cellspacing="0" border="0" class="display" id="ungenotypedlitterstable">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Parentgroup</th>
+						<th>Birth date</th>
+						<th>Wean date</th>
+						<th>Size at birth</th>
+						<th>Size at weaning</th>
+						<th></th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+				<#list screen.genoLitterList as litter>
+					<tr>
+						<td style='padding:5px'>${litter.name}</td>
+						<td style='padding:5px'>${litter.parentgroup}</td>
+						<td style='padding:5px'>${litter.birthDate}</td>
+						<td style='padding:5px'>${litter.weanDate}</td>
+						<td style='padding:5px'>${litter.size}</td>
+						<td style='padding:5px'>${litter.weanSize}</td>
+						<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=MakeTmpLabels&id=${litter.id?string.computer}">Make temporary cage labels</a></td>
+						<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=ShowGenotype&id=${litter.id?string.computer}">Genotype</a></td>
+					</tr>
+				</#list>
+				</tbody>
 			</table>
 		</#if>
 	</#if>
 	
-	<#if screen.doneLitterList?exists>
-		<#if screen.doneLitterList?size gt 0>
-			<h2>Weaned and genotyped litters</h2>
-			<table cellpadding="10" cellspacing="2" border="1">
-				<tr>
-					<th>Name</th>
-					<th>Parentgroup</th>
-					<th>Birth date</th>
-					<th>Wean date</th>
-					<th>Size at birth</th>
-					<th>Size at weaning</th>
-					<th></th>
-				</tr>
-			<#list screen.doneLitterList as litter>
-				<tr>
-					<td style='padding:5px'>${litter.name}</td>
-					<td style='padding:5px'>${litter.parentgroup}</td>
-					<td style='padding:5px'>${litter.birthDate}</td>
-					<td style='padding:5px'>${litter.weanDate}</td>
-					<td style='padding:5px'>${litter.size}</td>
-					<td style='padding:5px'>${litter.weanSize}</td>
-					<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=MakeDefLabels&id=${litter.id?string.computer}">Make definitive cage labels</a></td>
-				</tr>
-			</#list>
-			</table>
-		</#if>
-	</#if>
+	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowDoneLitters">Show weaned and genotyped litters</a></p>
 	
 <#elseif screen.action == "MakeTmpLabels">
 
@@ -133,10 +115,12 @@
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowLitters">Back to overview</a></p>
 
+	<!-- Auto-generate name
 	<div id='newlitter_name_part' class='row' style="width:700px">
 		<label for='littername'>Litter name:</label>
 		<input type='text' class='textbox' name='littername' id='littername' value='<#if screen.litterName?exists>${screen.getLitterName()}</#if>' />
 	</div>
+	-->
 	
 	<!-- Parent group -->
 	<div id="parentgroupselect" class="row" style='clear:left'>
@@ -166,6 +150,12 @@
 	<div id="sizeapp_div" class="row">
 		<label for="sizeapp_toggle">Size approximate:</label>
 		<input type="checkbox" id="sizeapp_toggle" name="sizeapp_toggle" value="sizeapp" checked="yes" />
+	</div>
+	
+	<!-- Remarks -->
+	<div class='row'>
+		<label for='remarks'>Remarks:</label>
+		<input type='text' class='textbox' name='remarks' id='remarks' value='<#if screen.remarks?exists>${screen.getRemarks()}</#if>' />
 	</div>
 	
 	<!-- Add button -->
@@ -330,6 +320,42 @@
 	<div class='row'>
 		<input type='submit' id='save' class='addbutton' value='Save' onclick="__action.value='Genotype'" />
 	</div>
+
+<#elseif screen.action == "ShowDoneLitters">
+
+	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowLitters">Back to overview</a></p>
+	
+	<#if screen.doneLitterList?exists>
+		<#if screen.doneLitterList?size gt 0>
+			<h2>Weaned and genotyped litters</h2>
+			<table cellpadding="0" cellspacing="0" border="0" class="display" id="donelitterstable">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Parentgroup</th>
+						<th>Birth date</th>
+						<th>Wean date</th>
+						<th>Size at birth</th>
+						<th>Size at weaning</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+				<#list screen.doneLitterList as litter>
+					<tr>
+						<td>${litter.name}</td>
+						<td>${litter.parentgroup}</td>
+						<td>${litter.birthDate}</td>
+						<td>${litter.weanDate}</td>
+						<td>${litter.size}</td>
+						<td>${litter.weanSize}</td>
+						<td><a href="molgenis.do?__target=${screen.name}&__action=MakeDefLabels&id=${litter.id?string.computer}">Make definitive cage labels</a></td>
+					</tr>
+				</#list>
+				</tbody>
+			</table>
+		</#if>
+	</#if>
 	
 </#if>
 	
@@ -338,4 +364,31 @@
 		</div>
 	</div>
 </form>
+
+<script>
+	var oTable = jQuery('#donelitterstable').dataTable(
+	{ "bProcessing": true,
+	  "bServerSide": false,
+	  "sPaginationType": "full_numbers",
+	  "bSaveState": true,
+	  "bAutoWidth": false }
+	);
+	
+	var oTable = jQuery('#unweanedlitterstable').dataTable(
+	{ "bProcessing": true,
+	  "bServerSide": false,
+	  "sPaginationType": "full_numbers",
+	  "bSaveState": true,
+	  "bAutoWidth": false }
+	);
+	
+	var oTable = jQuery('#ungenotypedlitterstable').dataTable(
+	{ "bProcessing": true,
+	  "bServerSide": false,
+	  "sPaginationType": "full_numbers",
+	  "bSaveState": true,
+	  "bAutoWidth": false }
+	);
+</script>
+
 </#macro>

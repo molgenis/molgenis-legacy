@@ -71,6 +71,7 @@ public class AddAnimalPlugin extends GenericPlugin
 	public DivPanel genePanel = null;
 	// subpanel to conditionally show the custom name questions (base, start number)
 	public DivPanel namePanel = null;
+	public DivPanel newnamebasePanel = null;
 
 	public AddAnimalPlugin(String name, ScreenController<?> parent)
 	{
@@ -484,26 +485,29 @@ public class AddAnimalPlugin extends GenericPlugin
 			}
 		}
 		namebase.setValue(""); // default empty prefix
-		namebase.setOnchange("updateStartNumber(this.value)");
+		namebase.setOnchange("updateStartNumberAndNewNameBase(this.value)");
 		namePanel.add(namebase);
 		
 		startnumberhelper = new TextLineInput<String>("startnumberhelper");
 		startnumberhelper.setLabel("");
-		String helperContents = "";
+		String helperContents = ((ct.getHighestNumberForNameBase("") + 1) + ";"); // start number for empty base (comes first in jQuery select box because default)
 		helperContents += "1"; // start number for new base
 		for (String base : bases) {
 			if (!base.equals("")) {
 				helperContents += (";" + (ct.getHighestNumberForNameBase(base) + 1));
 			}
 		}
-		helperContents += (";" + (ct.getHighestNumberForNameBase("") + 1)); // start number for empty base (comes last in jQuery select box)
 		startnumberhelper.setValue(helperContents);
 		startnumberhelper.setHidden(true);
 		namePanel.add(startnumberhelper);
 		
 		newnamebase = new StringInput("newnamebase");
-		newnamebase.setLabel("New name base:");
-		namePanel.add(newnamebase);
+		newnamebase.setLabel("New name prefix:");
+		newnamebasePanel = new DivPanel("Namebase", "");
+		newnamebasePanel.add(newnamebase);
+		newnamebasePanel.setId("newnamebasePanel");
+		newnamebasePanel.setHidden(true);
+		namePanel.add(newnamebasePanel);
 	
 		startnumber = new IntInput("startnumber");
 		startnumber.setLabel("Start numbering at:");
@@ -521,6 +525,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		addbutton = new ActionInput("Add", "", "Add animal(s)");
 
 		// add everything to the panel
+		containingPanel.add(numberofanimals);
 		containingPanel.add(species);
 		containingPanel.add(background);
 		containingPanel.add(sex);
@@ -530,7 +535,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		containingPanel.add(birthdate);
 		containingPanel.add(entrydate);
 		containingPanel.add(namePanel);
-		containingPanel.add(numberofanimals);
 		containingPanel.add(addbutton);
 	}
 	

@@ -6,7 +6,9 @@ function showHideGenotypeDiv(animalType) {
 	}
 }
 
-function updateStartNumber(nameBase) {
+function updateStartNumberAndNewNameBase(nameBase) {
+	
+	// Update start number:
 	var nameBases = document.getElementById("namebase").options;
 	var startNumberString = document.getElementById("startnumberhelper").value;
 	var startNumbers = startNumberString.split(";");
@@ -19,4 +21,11 @@ function updateStartNumber(nameBase) {
 	}
 	var startNumber = startNumbers[index];
 	document.getElementById("startnumber").value = startNumber;
+	
+	// Update new name base:
+	if (nameBase === "New") {
+		document.getElementById("divnewnamebasePanel").style.display = "block";
+	} else {
+		document.getElementById("divnewnamebasePanel").style.display = "none";
+	}
 }

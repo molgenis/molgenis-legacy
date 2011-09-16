@@ -46,7 +46,7 @@ public class ManageLitters extends PluginModel<Entity>
 	private List<Litter> doneLitterList = new ArrayList<Litter>();
 	private int selectedParentgroup;
 	private int litter;
-	private String litterName = "";
+//	private String litterName = "";
 	private String birthdate = null;
 	private String weandate = null;
 	private int litterSize;
@@ -70,6 +70,7 @@ public class ManageLitters extends PluginModel<Entity>
 	private Database db;
 	private boolean firstTime = true;
 	private List<String> bases = null;
+	private String remarks = null;
 
 	public ManageLitters(String name, ScreenController<?> parent)
 	{
@@ -77,8 +78,11 @@ public class ManageLitters extends PluginModel<Entity>
 	}
 	
 	public String getCustomHtmlHeaders() {
-		return "<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n" +
+		return "<script type=\"text/javascript\" src=\"res/scripts/custom/jquery.dataTables.js\"></script>\n" +
+				"<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n" +
 				"<script src=\"res/scripts/custom/litters.js\" language=\"javascript\"></script>\n" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/demo_table.css\">\n" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/demo_page.css\">\n" +
 				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
 	}
 
@@ -124,12 +128,12 @@ public class ManageLitters extends PluginModel<Entity>
 		this.doneLitterList = doneLitterList;
 	}
 
-	public String getLitterName() {
-		return litterName;
-	}
-	public void setLitterName(String litterName) {
-		this.litterName = litterName;
-	}
+//	public String getLitterName() {
+//		return litterName;
+//	}
+//	public void setLitterName(String litterName) {
+//		this.litterName = litterName;
+//	}
 	
 	public String getBirthdate() {
 		if (birthdate != null) {
@@ -297,7 +301,7 @@ public class ManageLitters extends PluginModel<Entity>
 			}
 			
 		} else {
-			setLitterName(request.getString("littername"));
+			//setLitterName(request.getString("littername"));
 			String parentgroupIdString = request.getString("parentgroup");
 			parentgroupIdString = parentgroupIdString.replace(".", "");
 			parentgroupIdString = parentgroupIdString.replace(",", "");
@@ -314,6 +318,7 @@ public class ManageLitters extends PluginModel<Entity>
 			} else {
 				setLitterSizeApproximate(false);
 			}
+			this.setRemarks(request.getString("remarks"));
 		}
 	}
 	
@@ -326,7 +331,7 @@ public class ManageLitters extends PluginModel<Entity>
 			String parentgroupName = ct.getObservationTargetById(parentgroupId).getName();
 			
 			returnString += ("Parentgroup: " + parentgroupName + "<br />");
-			returnString += (getLineInfo(parentgroupId) + "<br />");
+			returnString += ("Line: " + getLineInfo(parentgroupId) + "<br />");
 			
 			int motherId = findParentForParentgroup(parentgroupId, "Mother");
 			returnString += ("Mother: " + getGenoInfo(motherId) + "<br />");
@@ -478,7 +483,7 @@ public class ManageLitters extends PluginModel<Entity>
 	private String getLineInfo(int parentgroupId) throws DatabaseException, ParseException {
 		int lineId = ct.getMostRecentValueAsXref(parentgroupId, ct.getMeasurementId("Line"));
 		String lineName = ct.getObservationTargetById(lineId).getName();
-		return ("Line: " + lineName);
+		return lineName;
 	}
 
 	public List<String> getBases() {
@@ -513,6 +518,14 @@ public class ManageLitters extends PluginModel<Entity>
 		}
 	}
 
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
@@ -545,10 +558,14 @@ public class ManageLitters extends PluginModel<Entity>
 				setUserFields(request, false);
 				Date eventDate = newDateOnlyFormat.parse(birthdate);
 				
+				int lineId = ct.getMostRecentValueAsXref(selectedParentgroup, ct.getMeasurementId("Line"));
+				
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
 				
 				// Make group
+				String litterName = "LT_" + ct.getObservationTargetLabel(lineId) + "_";
+				litterName += (ct.getHighestNumberForNameBase(litterName) + 1);
 				int litterid = ct.makePanel(invid, litterName, this.getLogin().getUserId());
 				// Mark group as a litter
 				int protocolId = ct.getProtocolId("SetTypeOfGroup");
@@ -581,10 +598,16 @@ public class ManageLitters extends PluginModel<Entity>
 				measurementId = ct.getMeasurementId("Certain");
 				valuesToAddList.add(ct.createObservedValue(invid, eventid, eventDate, null, measurementId, litterid, 
 						valueString, 0));
+				// Remarks
+				if (remarks != null) {
+					protocolId = ct.getProtocolId("SetRemark");
+					measurementId = ct.getMeasurementId("Remark");
+					db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+							protocolId, measurementId, litterid, remarks, 0));
+				}
 				// Get Source via Line
 				measurementId = ct.getMeasurementId("Source");
 				try {
-					int lineId = ct.getMostRecentValueAsXref(selectedParentgroup, ct.getMeasurementId("Line"));
 					int sourceId = ct.getMostRecentValueAsXref(lineId, measurementId);
 					protocolId = ct.getProtocolId("SetSource");
 					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, 
@@ -597,9 +620,9 @@ public class ManageLitters extends PluginModel<Entity>
 				
 				this.action = "ShowLitters";
 				this.reload(db);
-				this.reloadLitterLists(db);
+				this.reloadLitterLists(db, false);
 				this.getMessages().clear();
-				this.getMessages().add(new ScreenMessage("Litter successfully added", true));
+				this.getMessages().add(new ScreenMessage("Litter " + litterName + " successfully added", true));
 			}
 			
 			if (action.equals("ShowWean")) {
@@ -783,7 +806,7 @@ public class ManageLitters extends PluginModel<Entity>
 				
 				this.action = "ShowLitters";
 				this.reload(db);
-				this.reloadLitterLists(db);
+				this.reloadLitterLists(db, false);
 				this.getMessages().add(new ScreenMessage("All " + weanSize + " animals successfully weaned", true));
 			}
 			
@@ -899,8 +922,12 @@ public class ManageLitters extends PluginModel<Entity>
 				
 				this.action = "ShowLitters";
 				this.reload(db);
-				this.reloadLitterLists(db);
+				this.reloadLitterLists(db, false);
 				this.getMessages().add(new ScreenMessage("All " + animalCount + " animals successfully genotyped", true));
+			}
+			
+			if (action.equals("ShowDoneLitters")) {
+				reloadLitterLists(db, true);
 			}
 
 		} catch (Exception e) {
@@ -1089,7 +1116,7 @@ public class ManageLitters extends PluginModel<Entity>
 	{	
 		if (firstTime == true) {
 			firstTime = false;
-			reloadLitterLists(db);
+			reloadLitterLists(db, false);
 		}
 		
 		try {
@@ -1120,7 +1147,7 @@ public class ManageLitters extends PluginModel<Entity>
 		}
 	}
 	
-	private void reloadLitterLists(Database db) {
+	private void reloadLitterLists(Database db, boolean includeDone) {
 		this.db = db;
 		
 		ct.setDatabase(this.db);
@@ -1132,7 +1159,7 @@ public class ManageLitters extends PluginModel<Entity>
 			// Populate litter lists
 			litterList.clear();
 			genoLitterList.clear();
-			doneLitterList.clear();
+			if (includeDone) doneLitterList.clear();
 			
 			// Make list of ID's of weaned litters
 			List<Integer> weanedLitterIdList = new ArrayList<Integer>();
@@ -1162,6 +1189,13 @@ public class ManageLitters extends PluginModel<Entity>
 			List<ObservationTarget> allLitterList = ct.getAllMarkedPanels("Litter", investigationIds);
 			for (ObservationTarget litter : allLitterList) {
 				int litterId = litter.getId();
+				
+				if (!includeDone) {
+					if (!weanedLitterIdList.contains(litterId) && !genotypedLitterIdList.contains(litterId)) {
+						continue;
+					}
+				}
+				
 				// Make a temporary litter and set all relevant values
 				Litter litterToAdd = new Litter();
 				// ID

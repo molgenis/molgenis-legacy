@@ -75,8 +75,9 @@ public class Litter {
 	public void setWeanSize(int weanSize) {
 		this.weanSize = weanSize;
 	}
-	public int getWeanSize() {
-		return weanSize;
+	public String getWeanSize() {
+		if (weanSize == -1) return "";
+		return Integer.toString(weanSize);
 	}
 	public void setParentgroup(String parentgroup) {
 		this.parentgroup = parentgroup;

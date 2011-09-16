@@ -46,6 +46,8 @@ public class ConvertUliDbToPheno
 	private SimpleDateFormat dbFormat = new SimpleDateFormat("d-M-yyyy H:mm", Locale.US);
 	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 	//private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
+	private Map<String, Integer> parentgroupNrMap;
+	private Map<String, Integer> litterNrMap;
 
 	public ConvertUliDbToPheno(Database db, Login login) throws Exception
 	{
@@ -78,6 +80,8 @@ public class ConvertUliDbToPheno
 		
 		oldUliDbIdMap = new HashMap<String, String>();
 		appMap = new HashMap<String, String>();
+		parentgroupNrMap = new HashMap<String, Integer>();
+		litterNrMap = new HashMap<String, Integer>();
 	}
 	
 	public void writeToDb() {
@@ -149,6 +153,7 @@ public class ConvertUliDbToPheno
 		makeProtocolApplication("SetLine");
 		makeProtocolApplication("SetParentgroup");
 		makeProtocolApplication("SetLitter");
+		makeProtocolApplication("SetLine");
 		makeProtocolApplication("SetWeanDate");
 		makeProtocolApplication("SetGenotypeDate");
 	}
@@ -400,7 +405,7 @@ public class ConvertUliDbToPheno
 					}
 				}
 				
-				// Put date of birth, mother info and father info into one string and chack if we've
+				// Put date of birth, mother info and father info into one string and check if we've
 				// seen this combination before
 				String litterInfo = birthDateString + motherList.toString() + fatherList.toString();
 				if (litterMap.containsKey(litterInfo)) {
@@ -414,9 +419,16 @@ public class ConvertUliDbToPheno
 					
 					// This combination of birth date and parents has not been seen before,
 					// so start a new parentgroup and litter
+					
+					String lineName = tuple.getString("Linie");
 				
 					// Create a parentgroup
-					String parentgroupName = "OldUliDbParentgroup_" + newAnimalName;
+					int parentgroupNr = 1;
+					if (parentgroupNrMap.containsKey(lineName)) {
+						parentgroupNr = parentgroupNrMap.get(lineName) + 1;
+					}
+					parentgroupNrMap.put(lineName, parentgroupNr);
+					String parentgroupName = "PG_" + lineName + "_" + parentgroupNr;
 					panelsToAddList.add(ct.createPanel(invName, parentgroupName, userName));
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), 
 							now, null, "TypeOfGroup", parentgroupName, "Parentgroup", null));
@@ -432,14 +444,18 @@ public class ConvertUliDbToPheno
 					}
 					
 					// Set line (Linie) of parentgroup
-					String line = tuple.getString("Linie");
-					if (line != null) {
+					if (lineName != null) {
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
-								now, null, "Line", parentgroupName, null, line));
+								now, null, "Line", parentgroupName, null, lineName));
 					}
 					
 					// Make a litter and set wean and genotype dates
-					String litterName = "OldUliDbLitter_" + newAnimalName;
+					int litterNr = 1;
+					if (litterNrMap.containsKey(lineName)) {
+						litterNr = litterNrMap.get(lineName) + 1;
+					}
+					litterNrMap.put(lineName, litterNr);
+					String litterName = "LT_" + lineName + "_" + litterNr;
 					panelsToAddList.add(ct.createPanel(invName, litterName, userName));
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), 
 							now, null, "TypeOfGroup", litterName, "Litter", null));
@@ -455,6 +471,10 @@ public class ConvertUliDbToPheno
 					// Link animal to litter
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLitter"), 
 							now, null, "Litter", newAnimalName, null, litterName));
+					
+					// Set litter also on animal
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
+							now, null, "Line", newAnimalName, null, lineName));
 					
 					// Add litter to hashmap for reuse with siblings of this animal
 					litterMap.put(litterInfo, litterName);
