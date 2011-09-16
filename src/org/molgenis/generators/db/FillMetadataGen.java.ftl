@@ -19,6 +19,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import java.text.ParseException;
+import javax.persistence.EntityManager;
 
 public class FillMetadata {
 	protected static final transient Logger logger = Logger.getLogger(FillMetadata.class);
@@ -29,7 +30,10 @@ public class FillMetadata {
 <#else>
 	public static void fillMetadata(Database db) throws DatabaseException,ParseException {
 		logger.info("fillMetadata start");
-		db.beginTx();
+            EntityManager em = db.getEntityManager();
+            em.getTransaction().begin();
+
+//		db.beginTx();
 		MolgenisUser user1 = new MolgenisUser();
 		user1.setName("admin");
 		user1.setPassword("md5_21232f297a57a5a743894a0e4a801fc3");
@@ -52,10 +56,19 @@ public class FillMetadata {
 		MolgenisGroup group2 = new MolgenisGroup();
 		group2.setName("AllUsers");
 
-		db.add(user1);
-		db.add(user2);
-		db.add(group1);
-		db.add(group2);
+                em.persist(user1);
+                em.persist(user2);
+                em.persist(group1);
+                em.persist(group2);
+
+            em.getTransaction().commit();
+
+//		db.add(user1);
+//		db.add(user2);
+//		db.add(group1);
+//		db.add(group2);
+
+            db.beginTx();
 
 <#list model.getUserinterface().getAllUniqueGroups() as group>
 		{
