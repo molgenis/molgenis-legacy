@@ -166,10 +166,7 @@ public class CsvImport
 					logger.debug("Db not in transaction");
 				}
 			}
-			e.printStackTrace();
-			
-			//Don't throw to avoid 'try-catch' on usage. No harm done.
-			//throw e;
+			throw e;
 		}
 		return result;
 	}
