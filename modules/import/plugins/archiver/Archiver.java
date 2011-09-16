@@ -9,6 +9,7 @@ package plugins.archiver;
 
 import java.io.File;
 
+import org.molgenis.framework.db.CsvToDatabase.ImportResult;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -71,7 +72,7 @@ public class Archiver extends PluginModel<Entity>
 						throw new Exception("Could not create tmp folder: " + tmpDir.getAbsolutePath());
 					}
 
-					new CsvExport().exportAll(tmpDir, db, true);
+					new CsvExport().exportRegular(tmpDir, db, true);
 					File tarFile = TarGz.tarDir(tmpDir);
 					this.model.setDownload(tarFile.getName());
 					this.setMessages(new ScreenMessage("Export successful!", true));
@@ -80,8 +81,18 @@ public class Archiver extends PluginModel<Entity>
 				{
 					File importFile = request.getFile("importFile");
 					File extractDir = TarGz.tarExtract(importFile);
-					CsvImport.importAll(extractDir, db, new SimpleTuple(), true);
-					this.setMessages(new ScreenMessage("Import successful!", true));
+					ImportResult i = CsvImport.importAll(extractDir, db, new SimpleTuple(), true);
+					if (i.getErrorItem().equals("no error found"))
+					{
+						this.setMessages(new ScreenMessage("Import successful!", true));
+					}
+					else
+					{
+						String msg = i.getMessages().get(i.getErrorItem());
+						this.setMessages(new ScreenMessage(
+								"Import failed on entity '" + i.getErrorItem() + "': " + msg, false));
+					}
+
 				}
 
 			}
