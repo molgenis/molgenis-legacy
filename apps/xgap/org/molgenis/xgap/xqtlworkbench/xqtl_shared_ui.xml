@@ -93,6 +93,7 @@
 					<form name="Subjobs" entity="Subjob" />
 				</form>
 				<!--plugin name="DatabaseArchiver" type="plugins.archiveexportimport.ArchiveExportImportPlugin" /-->
+				<plugin label="Archiver" name="SimpleArchiver" type="plugins.archiver.Archiver" />
 			</menu>
 		</menu>
 		

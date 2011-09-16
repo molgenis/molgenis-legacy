@@ -24,8 +24,7 @@
 			<field name="description" type="text" nillable="true"
 				description="description field" />
 		</entity>
-		<entity name="OntologyTerm" xref_label="name" implements="Nameable"
-			system="true">
+		<entity name="OntologyTerm" xref_label="name" implements="Nameable">
 			<description>
 				OntologyTerm defines a single entry (term) from an ontology or a
 				controlled vocabulary (defined by Ontology). The name is the
