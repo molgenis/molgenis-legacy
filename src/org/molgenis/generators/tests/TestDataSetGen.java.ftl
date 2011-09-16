@@ -85,7 +85,7 @@ public class TestDataSet
             public TestDataSet(int size, int mrefSize)  
         </#if>
 	{
-		<#list entities as entity><#if !entity.abstract && !entity.system && !entity.association>
+		<#list entities as entity><#if !entity.abstract && !entity.association>
 		//generating ${entity.name} data:
 		for(Integer i = 0; i < size; i++)
 		{
