@@ -129,14 +129,13 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Manage parent groups"));
 		// Add a parent group
-		selenium.type("id=groupname", "MyParentgroup");
 		selenium.click("id=addmother");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=addfather");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=addpg");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("Parent group successfully added"));
+		Assert.assertTrue(selenium.isTextPresent("successfully added"));
 		// Go to Litter plugin
 		selenium.click("ManageLitters_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -145,12 +144,10 @@ public class AnimaldbSeleniumTest
 		// Add new litter
 		selenium.click("link=Make new litter");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.type("id=littername", "MyLitter");
 		selenium.type("id=littersize", "5");
 		selenium.click("id=addlitter");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("Litter successfully added"));
-		Assert.assertTrue(selenium.isTextPresent("MyLitter"));
+		Assert.assertTrue(selenium.isTextPresent("successfully added"));
 		// Wean litter
 		selenium.click("link=Wean");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -159,7 +156,7 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=wean");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("All 5 animals successfully weaned"));
-		Assert.assertTrue(selenium.isTextPresent("MyLitter"));
+		Assert.assertTrue(selenium.isTextPresent("LT_MyLine_1"));
 		// Check cage labels link
 		selenium.click("link=Make temporary cage labels");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -170,13 +167,15 @@ public class AnimaldbSeleniumTest
 		// TODO: expand
 		selenium.click("link=Genotype");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("Parentgroup: MyParentgroup"));
+		Assert.assertTrue(selenium.isTextPresent("Parentgroup: PG_MyLine_1"));
 		Assert.assertTrue(selenium.isTextPresent("Line: MyLine"));
 		selenium.click("id=save");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("All 5 animals successfully genotyped"));
-		Assert.assertTrue(selenium.isTextPresent("MyLitter"));
 		// Check definitive cage labels link
+		selenium.click("link=Show weaned and genotyped litters");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("LT_MyLine_1"));
 		selenium.click("link=Make definitive cage labels");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Download definitive cage labels as pdf"));

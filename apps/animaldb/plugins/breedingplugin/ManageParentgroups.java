@@ -387,8 +387,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			firstTime = false;
 			ct.setDatabase(db);
 			ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
-			this.resetUserFields();
-			
+			this.setStartdate(dateOnlyFormat.format(new Date()));
 			try {
 				lineList = ct.getAllMarkedPanels("Line", investigationIds);
 			} catch (Exception e) {

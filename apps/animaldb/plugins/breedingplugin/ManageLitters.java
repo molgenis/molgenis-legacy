@@ -1190,10 +1190,8 @@ public class ManageLitters extends PluginModel<Entity>
 			for (ObservationTarget litter : allLitterList) {
 				int litterId = litter.getId();
 				
-				if (!includeDone) {
-					if (!weanedLitterIdList.contains(litterId) && !genotypedLitterIdList.contains(litterId)) {
-						continue;
-					}
+				if (!includeDone && genotypedLitterIdList.contains(litterId)) {
+					continue;
 				}
 				
 				// Make a temporary litter and set all relevant values
@@ -1247,7 +1245,7 @@ public class ManageLitters extends PluginModel<Entity>
 				}
 				litterToAdd.setSizeApproximate(isApproximate);
 				// Add to the right list
-				if (!weanedLitterIdList.contains(litterId)) {
+				if (!weanedLitterIdList.contains(litterId) && !genotypedLitterIdList.contains(litterId)) {
 					litterList.add(litterToAdd);
 				} else {
 					if (!genotypedLitterIdList.contains(litterId)) {
