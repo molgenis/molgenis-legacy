@@ -1781,7 +1781,7 @@ public class CommonService
 		List<NamePrefix> prefixList = db.find(NamePrefix.class);
 		if (prefixList != null && prefixList.size() > 0) {
 			for (NamePrefix prefix : prefixList) {
-				if (prefix.getUserId().intValue() == userId) {
+				if (prefix.getUserId_Id().intValue() == userId) {
 					returnList.add(prefix.getPrefix());
 				}
 			}
