@@ -497,11 +497,11 @@ public class ManageLitters extends PluginModel<Entity>
 	public String getStartNumberHelperContent() {
 		try {
 			String helperContents = "";
-			helperContents += (ct.getHighestNumberForNameBase("") + 1);
+			helperContents += (ct.getHighestNumberForPrefix("") + 1);
 			helperContents += ";1";
 			for (String base : this.bases) {
 				if (!base.equals("")) {
-					helperContents += (";" + (ct.getHighestNumberForNameBase(base) + 1));
+					helperContents += (";" + (ct.getHighestNumberForPrefix(base) + 1));
 				}
 			}
 			return helperContents;
@@ -512,7 +512,7 @@ public class ManageLitters extends PluginModel<Entity>
 	
 	public int getStartNumberForEmptyBase() {
 		try {
-			return ct.getHighestNumberForNameBase("") + 1;
+			return ct.getHighestNumberForPrefix("") + 1;
 		} catch (DatabaseException e) {
 			return 1;
 		}
@@ -557,6 +557,7 @@ public class ManageLitters extends PluginModel<Entity>
 				int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
 				setUserFields(request, false);
 				Date eventDate = newDateOnlyFormat.parse(birthdate);
+				int userId = this.getLogin().getUserId();
 				
 				int lineId = ct.getMostRecentValueAsXref(selectedParentgroup, ct.getMeasurementId("Line"));
 				
@@ -564,9 +565,11 @@ public class ManageLitters extends PluginModel<Entity>
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
 				
 				// Make group
-				String litterName = "LT_" + ct.getObservationTargetLabel(lineId) + "_";
-				litterName += (ct.getHighestNumberForNameBase(litterName) + 1);
-				int litterid = ct.makePanel(invid, litterName, this.getLogin().getUserId());
+				String litterPrefix = "LT_" + ct.getObservationTargetLabel(lineId) + "_";
+				int litterNr = ct.getHighestNumberForPrefix(litterPrefix) + 1;
+				int litterid = ct.makePanel(invid, litterPrefix + litterNr, userId);
+				// Make or update name prefix entry
+				ct.updatePrefix(userId, litterPrefix, litterNr);
 				// Mark group as a litter
 				int protocolId = ct.getProtocolId("SetTypeOfGroup");
 				int measurementId = ct.getMeasurementId("TypeOfGroup");
@@ -622,7 +625,7 @@ public class ManageLitters extends PluginModel<Entity>
 				this.reload(db);
 				this.reloadLitterLists(db, false);
 				this.getMessages().clear();
-				this.getMessages().add(new ScreenMessage("Litter " + litterName + " successfully added", true));
+				this.getMessages().add(new ScreenMessage("Litter " + (litterPrefix + litterNr) + " successfully added", true));
 			}
 			
 			if (action.equals("ShowWean")) {
@@ -634,6 +637,7 @@ public class ManageLitters extends PluginModel<Entity>
 				int invid = ct.getObservationTargetById(litter).getInvestigation_Id();
 				setUserFields(request, true);
 				Date weanDate = newDateOnlyFormat.parse(weandate);
+				int userId = this.getLogin().getUserId();
 				
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
@@ -707,10 +711,13 @@ public class ManageLitters extends PluginModel<Entity>
 				// Link animals to litter and set wean dates etc.
 				for (int animalNumber = 0; animalNumber < weanSize; animalNumber++) {
 					ObservationTarget animalToAdd = ct.createIndividual(invid, nameBase + (startNumber + animalNumber), 
-							this.getLogin().getUserId());
+							userId);
 					animalsToAddList.add(animalToAdd);
 				}
 				db.add(animalsToAddList);
+				
+				// Make or update name prefix entry
+				ct.updatePrefix(userId, nameBase, startNumber + weanSize - 1);
 				
 				int animalNumber = 0;
 				for (ObservationTarget animal : animalsToAddList) {
@@ -1120,7 +1127,8 @@ public class ManageLitters extends PluginModel<Entity>
 		}
 		
 		try {
-			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
+			int userId = this.getLogin().getUserId();
+			List<Integer> investigationIds = ct.getAllUserInvestigationIds(userId);
 			
 			// Populate parent group list
 			this.setParentgroupList(ct.getAllMarkedPanels("Parentgroup", investigationIds));
@@ -1136,8 +1144,14 @@ public class ManageLitters extends PluginModel<Entity>
 			this.setColorList(ct.getAllCodesForFeatureAsStrings("Color"));
 			// Populate earmark list
 			this.setEarmarkList(ct.getAllCodesForFeature("Earmark"));
-			// Populate name bases list
-			this.setBases(ct.getNameBases());
+			// Populate name prefixes list
+			this.bases = new ArrayList<String>();
+			List<String> tmpPrefixes = ct.getPrefixes(userId);
+			for (String tmpPrefix : tmpPrefixes) {
+				if (!tmpPrefix.equals("")) {
+					this.bases.add(tmpPrefix);
+				}
+			}
 		} catch (Exception e) {
 			if (e.getMessage() != null) {
 				this.getMessages().clear();

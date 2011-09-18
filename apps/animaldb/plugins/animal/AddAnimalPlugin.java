@@ -89,10 +89,12 @@ public class AddAnimalPlugin extends GenericPlugin
 	{
 		try
 		{
-			ct.setDatabase(db);
-			ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
+			int userId = this.getLogin().getUserId();
 			
-			bases = ct.getNameBases();
+			ct.setDatabase(db);
+			ct.makeObservationTargetNameMap(userId, false);
+			
+			bases = ct.getPrefixes(userId);
 			
 			//if (tablePanel == null) {
 				populateTablePanel(db);
@@ -259,7 +261,8 @@ public class AddAnimalPlugin extends GenericPlugin
 		}
 		
 		// Investigation
-		int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
+		int userId = this.getLogin().getUserId();
+		int invid = ct.getOwnUserInvestigationIds(userId).get(0);
 		
 		db.beginTx();
 		
@@ -276,6 +279,9 @@ public class AddAnimalPlugin extends GenericPlugin
 			animalsToAddList.add(newAnimal);
 		}
 		db.add(animalsToAddList);
+		
+		// Make or update name prefix entry
+		ct.updatePrefix(userId, nameBase, startNumber + nrOfAnimals - 1);
 		
 		// Make all protocol applications
 		List<Integer> protocolIdList = new ArrayList<Integer>();
@@ -490,11 +496,11 @@ public class AddAnimalPlugin extends GenericPlugin
 		
 		startnumberhelper = new TextLineInput<String>("startnumberhelper");
 		startnumberhelper.setLabel("");
-		String helperContents = ((ct.getHighestNumberForNameBase("") + 1) + ";"); // start number for empty base (comes first in jQuery select box because default)
+		String helperContents = ((ct.getHighestNumberForPrefix("") + 1) + ";"); // start number for empty base (comes first in jQuery select box because default)
 		helperContents += "1"; // start number for new base
 		for (String base : bases) {
 			if (!base.equals("")) {
-				helperContents += (";" + (ct.getHighestNumberForNameBase(base) + 1));
+				helperContents += (";" + (ct.getHighestNumberForPrefix(base) + 1));
 			}
 		}
 		startnumberhelper.setValue(helperContents);
@@ -512,7 +518,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		startnumber = new IntInput("startnumber");
 		startnumber.setLabel("Start numbering at:");
 		startnumber.setId("startnumber");
-		startnumber.setValue(ct.getHighestNumberForNameBase("") + 1); // start with highest number for empty prefix (default selected)
+		startnumber.setValue(ct.getHighestNumberForPrefix("") + 1); // start with highest number for empty prefix (default selected)
 		startnumber.setDescription("Set the inital number to increment the name with. The correct number is automatically set when a name prefix is selected.");
 		namePanel.add(startnumber);
 		

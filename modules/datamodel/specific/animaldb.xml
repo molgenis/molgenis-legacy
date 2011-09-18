@@ -8,5 +8,12 @@
 			<field name="userId" type="xref" xref_entity="MolgenisUser" nillable="false" unique="true" />
 			<field name="featureId" type="xref" xref_entity="Measurement" nillable="false" />
 		</entity>
+		<entity name="NamePrefix">
+			<description>Stores the prefixes users use when naming their animals.</description>
+			<field name="id" type="autoid" description="automatically generated id" />
+			<field name="userId" type="xref" xref_entity="MolgenisUser" nillable="false" />
+			<field name="prefix" type="string" nillable="true" />
+			<field name="highestNumber" type="int" />
+		</entity>
 	</module>
 </molgenis>

@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.molgenis.animaldb.CustomLabelFeature;
+import org.molgenis.animaldb.NamePrefix;
 import org.molgenis.batch.MolgenisBatch;
 import org.molgenis.batch.MolgenisBatchEntity;
 import org.molgenis.core.MolgenisEntity;
@@ -1767,26 +1768,35 @@ public class CommonService
 	}
 	
 	/**
-	 * Get all the bases (non-numeric parts) of the ObservationTarget names that are in the DB.
+	 * Get all the prefixes (non-numeric parts) of the ObservationTarget names that are in the DB.
 	 * Example: say there are ObservationTargets with names Morris1, Morris2 and Jessica99. This
 	 * method will then return [Morris, Jessica].
 	 * 
 	 * @return
 	 */
-	public List<String> getNameBases() throws DatabaseException {
+	public List<String> getPrefixes(int userId) throws DatabaseException {
 		
 		List<String> returnList = new ArrayList<String>();
 		
-		List<ObservationTarget> allTargetList = db.find(ObservationTarget.class);
-		for (ObservationTarget target : allTargetList) {
-			String name = target.getName();
-			name = name.replaceAll("\\d+$", "");
-			if (!name.equals("") && !returnList.contains(name)) {
-				returnList.add(name);
+		List<NamePrefix> prefixList = db.find(NamePrefix.class);
+		if (prefixList != null && prefixList.size() > 0) {
+			for (NamePrefix prefix : prefixList) {
+				if (prefix.getUserId().intValue() == userId) {
+					returnList.add(prefix.getPrefix());
+				}
 			}
 		}
 		
 		return returnList;
+		
+//		List<ObservationTarget> allTargetList = db.find(ObservationTarget.class);
+//		for (ObservationTarget target : allTargetList) {
+//			String name = target.getName();
+//			name = name.replaceAll("\\d+$", "");
+//			if (!name.equals("") && !returnList.contains(name)) {
+//				returnList.add(name);
+//			}
+//		}
 	}
 	
 	/**
@@ -1798,36 +1808,58 @@ public class CommonService
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public int getHighestNumberForNameBase(String base) throws DatabaseException {
+	public int getHighestNumberForPrefix(String prefix) throws DatabaseException {
 		
-		int maxTrailingNumber = 0;
-		
-		List<ObservationTarget> targetList = db.find(ObservationTarget.class, 
-				new QueryRule(ObservationTarget.NAME, Operator.LIKE, base));
-		for (ObservationTarget target : targetList) {
-			String name = target.getName();
-			// Extra check on name
-			if (!name.startsWith(base)) {
-				continue;
-			}
-			Pattern p;
-			if (base.equals("")) {
-				// With an empty base, name may consist of numbers only
-				p = Pattern.compile("^\\d+$");
-			} else {
-				p = Pattern.compile("\\d+$");
-			}
-			Matcher m = p.matcher(name);
-			if (!m.find()) {
-				continue;
-			}
-			int trailingNumber = Integer.parseInt(m.group());
-			if (trailingNumber > maxTrailingNumber) {
-				maxTrailingNumber = trailingNumber;
-			}
+		List<NamePrefix> prefixList = db.find(NamePrefix.class, new QueryRule(NamePrefix.PREFIX, Operator.EQUALS, prefix));
+		if (prefixList != null && prefixList.size() > 0) {
+			return prefixList.get(0).getHighestNumber();
 		}
+		return 0;
 		
-		return maxTrailingNumber;
+//		int maxTrailingNumber = 0;
+//		List<ObservationTarget> targetList = db.find(ObservationTarget.class, 
+//				new QueryRule(ObservationTarget.NAME, Operator.LIKE, base));
+//		for (ObservationTarget target : targetList) {
+//			String name = target.getName();
+//			// Extra check on name
+//			if (!name.startsWith(base)) {
+//				continue;
+//			}
+//			Pattern p;
+//			if (base.equals("")) {
+//				// With an empty base, name may consist of numbers only
+//				p = Pattern.compile("^\\d+$");
+//			} else {
+//				p = Pattern.compile("\\d+$");
+//			}
+//			Matcher m = p.matcher(name);
+//			if (!m.find()) {
+//				continue;
+//			}
+//			int trailingNumber = Integer.parseInt(m.group());
+//			if (trailingNumber > maxTrailingNumber) {
+//				maxTrailingNumber = trailingNumber;
+//			}
+//		}
+//		return maxTrailingNumber;
+	}
+	
+	public void updatePrefix(int userId, String prefix, int highestNr) throws DatabaseException {
+		
+		List<NamePrefix> prefixList = db.find(NamePrefix.class, new QueryRule(NamePrefix.PREFIX, Operator.EQUALS, prefix));
+		if (prefixList != null && prefixList.size() > 0) {
+			// Update
+			NamePrefix namePrefix = prefixList.get(0);
+			namePrefix.setHighestNumber(highestNr);
+			db.update(namePrefix);
+		} else {
+			// New
+			NamePrefix namePrefix = new NamePrefix();
+			namePrefix.setUserId_Id(userId);
+			namePrefix.setPrefix(prefix);
+			namePrefix.setHighestNumber(highestNr);
+			db.add(namePrefix);
+		}
 	}
 
 }

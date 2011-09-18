@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.molgenis.animaldb.NamePrefix;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.security.Login;
@@ -88,15 +89,26 @@ public class ConvertUliDbToPheno
 		try {
 			db.add(protocolAppsToAddList);
 			logger.debug("Protocols successfully added");
+			
 			db.add(animalsToAddList);
+			// Make entry in name prefix table with Nr. of last animal
+			int highestNr = Integer.parseInt(animalsToAddList.get(animalsToAddList.size() - 1).getName());
+			NamePrefix namePrefix = new NamePrefix();
+			namePrefix.setUserId_Name(userName);
+			namePrefix.setPrefix("");
+			namePrefix.setHighestNumber(highestNr);
+			db.add(namePrefix);
 			logger.debug("Animals successfully added");
+			
 			db.add(panelsToAddList);
 			logger.debug("Panels successfully added");
+			
 			for (int valueStart = 0; valueStart < valuesToAddList.size(); valueStart += 1000) {
 				int valueEnd = Math.min(valuesToAddList.size(), valueStart + 1000);
 				db.add(valuesToAddList.subList(valueStart, valueEnd));
 				logger.debug("Values " + valueStart + " through " + valueEnd + " successfully added");
 			}
+			
 		} catch (Exception e) {
 			logger.error("Writing to DB failed: " + e.getMessage());
 			e.printStackTrace();

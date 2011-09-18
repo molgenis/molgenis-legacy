@@ -248,11 +248,14 @@ public class ManageParentgroups extends PluginModel<Entity>
 					throw new Exception("No mother(s) and/or no father(s) selected");
 				}
 				setUserFields(request);
-				Date eventDate = dateOnlyFormat.parse(startdate);	
+				Date eventDate = dateOnlyFormat.parse(startdate);
+				int userId = this.getLogin().getUserId();
 				// Make group
-				String groupName = "PG_" + ct.getObservationTargetLabel(line) + "_";
-				groupName += (ct.getHighestNumberForNameBase(groupName) + 1);
-				int groupId = ct.makePanel(invid, groupName, this.getLogin().getUserId());
+				String groupPrefix = "PG_" + ct.getObservationTargetLabel(line) + "_";
+				int groupNr = ct.getHighestNumberForPrefix(groupPrefix) + 1;
+				int groupId = ct.makePanel(invid, groupPrefix + groupNr, userId);
+				// Make or update name prefix entry
+				ct.updatePrefix(userId, groupPrefix, groupNr);
 				// Mark group as parent group using a special event
 				int protocolId = ct.getProtocolId("SetTypeOfGroup");
 				int measurementId = ct.getMeasurementId("TypeOfGroup");
@@ -278,7 +281,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 				
 				// Success: empty selected lists and show success message
 				this.resetUserFields();
-				this.getMessages().add(new ScreenMessage("Parent group " + groupName + " successfully added", true));
+				this.getMessages().add(new ScreenMessage("Parent group " + (groupPrefix + groupNr) + " successfully added", true));
 			}
 			
 			if (action.equals("addIndMother")) {
