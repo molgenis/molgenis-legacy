@@ -6,7 +6,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.molgenis.data.TextDataElement;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
@@ -286,14 +285,14 @@ public class SliceablePhenoMatrix implements SliceableMatrix<ObservationTarget, 
 		try
 		{
 			// parameterize the refresh of the dim, either TARGET or FEATURE
-			String xDim = TextDataElement.TARGET;
+			String xDim = ObservedValue.TARGET;
 			MatrixQueryRule.Type xIndexFilterType = MatrixQueryRule.Type.rowIndex;
 			MatrixQueryRule.Type xHeaderFilterType = MatrixQueryRule.Type.rowHeader;
 			MatrixQueryRule.Type xValuesFilterType = MatrixQueryRule.Type.colValues;
 			MatrixQueryRule.Type xValuePropertyFilterType = MatrixQueryRule.Type.colValueProperty;
 			if (xClass.equals(getColClass()))
 			{
-				xDim = TextDataElement.FEATURE;
+				xDim = ObservedValue.FEATURE;
 				xIndexFilterType = MatrixQueryRule.Type.colIndex;
 				xHeaderFilterType = MatrixQueryRule.Type.colHeader;
 				xValuesFilterType = MatrixQueryRule.Type.rowValues;
@@ -608,7 +607,7 @@ public class SliceablePhenoMatrix implements SliceableMatrix<ObservationTarget, 
 		// slice by rowIndex means effectively ObservedValue.target=index &&
 		// ObervedValue.value=value!
 		return this.slice(new MatrixRowValueFilter(rowIndex,
-				TextDataElement.VALUE, operator, value));
+				ObservedValue.VALUE, operator, value));
 	}
 
 	@Override
@@ -620,7 +619,7 @@ public class SliceablePhenoMatrix implements SliceableMatrix<ObservationTarget, 
 		if (row.getId() == null) throw new MatrixException(
 				"row.getId() not set for sliceByRowValues(" + row + ")");
 		return this.slice(new MatrixRowValueFilter(row.getId(),
-				TextDataElement.VALUE, operator, value));
+				ObservedValue.VALUE, operator, value));
 	}
 
 	@Override
@@ -630,7 +629,7 @@ public class SliceablePhenoMatrix implements SliceableMatrix<ObservationTarget, 
 		// slice by rowIndex means effectively ObservedValue.feature=index &&
 		// ObervedValue.value=value!
 		return this.slice(new MatrixColValueFilter(colIndex,
-				TextDataElement.VALUE, operator, value));
+				ObservedValue.VALUE, operator, value));
 	}
 
 	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sortCol(int colIndex, Operator operator)
@@ -639,7 +638,7 @@ public class SliceablePhenoMatrix implements SliceableMatrix<ObservationTarget, 
 		//
 		// sort by value
 		return this.slice(new MatrixColValueFilter(colIndex,
-				TextDataElement.VALUE, operator));
+				ObservedValue.VALUE, operator));
 	}
 
 	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sortCol(Integer colIndex,
@@ -658,7 +657,7 @@ public class SliceablePhenoMatrix implements SliceableMatrix<ObservationTarget, 
 		if (col.getId() == null) throw new MatrixException(
 				"col.getId() not set for sliceByColValues(" + col + ")");
 		return this.slice(new MatrixColValueFilter(col.getId(),
-				TextDataElement.VALUE, operator, value));
+				ObservedValue.VALUE, operator, value));
 	}
 
 	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sortByColValues(ObservableFeature col, Operator operator)
@@ -667,7 +666,7 @@ public class SliceablePhenoMatrix implements SliceableMatrix<ObservationTarget, 
 		if (col.getId() == null) throw new MatrixException(
 				"col.getId() not set for sortByColValues(" + col + ")");
 		return this.slice(new MatrixColValueFilter(col.getId(),
-				TextDataElement.VALUE, operator, col.getId()));
+				ObservedValue.VALUE, operator, col.getId()));
 	}
 
 	@Override
@@ -677,7 +676,7 @@ public class SliceablePhenoMatrix implements SliceableMatrix<ObservationTarget, 
 		if (col.getId() == null) throw new MatrixException(
 				"col.getId() not set for sortByColValues(" + col + ")");
 		return this.slice(new MatrixColValueFilter(col.getId(),
-				TextDataElement.VALUE, operator, value));
+				ObservedValue.VALUE, operator, value));
 	}
 	
 	@Override
@@ -685,7 +684,7 @@ public class SliceablePhenoMatrix implements SliceableMatrix<ObservationTarget, 
 			Operator operator, Object value) throws MatrixException
 	{
 		return this.slice(new MatrixColValueFilter(colIndex,
-				TextDataElement.VALUE, operator, value));
+				ObservedValue.VALUE, operator, value));
 	}
 
 	@Override

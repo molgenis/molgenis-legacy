@@ -10,7 +10,7 @@ package decorators;
 import java.util.ArrayList;
 import java.util.List;
 
-//import matrix.general.DataMatrixHandler; *** Commented out by ER on 19-09-2011, to remove XGAP dependency ***
+import matrix.general.DataMatrixHandler;
 
 import org.molgenis.core.MolgenisFile;
 import org.molgenis.data.Data;
@@ -72,7 +72,7 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MappingDeco
 		}
 
 		// get datamatrixhandler and make molgenisfile list
-		//DataMatrixHandler dmh = new DataMatrixHandler(this.getDatabase()); *** Commented out by ER on 19-09-2011 ***
+		DataMatrixHandler dmh = new DataMatrixHandler(this.getDatabase());
 		List<MolgenisFile> mfList = new ArrayList<MolgenisFile>();
 
 		// try to get the files for the matrices and change their names
@@ -80,7 +80,7 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MappingDeco
 		{
 			MolgenisFile mf = null;
 			try{
-				//mf = dmh.findMolgenisFile(dm); *** Commented out by ER on 19-09-2011 ***
+				mf = dmh.findMolgenisFile(dm);
 			}catch(NullPointerException npe){
 				//backend not a file
 			}
@@ -117,10 +117,10 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MappingDeco
 		
 		//try to find a MolgenisFile for this Data
 		Data dm = entities.get(0);
-		//DataMatrixHandler dmh = new DataMatrixHandler(this.getDatabase()); *** Commented out by ER on 19-09-2011 ***
+		DataMatrixHandler dmh = new DataMatrixHandler(this.getDatabase());
 		MolgenisFile mf = null;
 		try{
-			//mf = dmh.findMolgenisFile(dm); *** Commented out by ER on 19-09-2011 ***
+			mf = dmh.findMolgenisFile(dm);
 		}catch(NullPointerException npe){
 			//backend not a file
 		}
