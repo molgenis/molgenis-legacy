@@ -94,7 +94,7 @@ public class MolgenisOptions
 
 	/** Database user */
 	@Option(name = "db_user", param = Option.Param.STRING, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Username for the database. Default: ''")
-	public String db_user = "";
+	public String db_user = "molgenis";
 
 	/** Class folder with overrides for decorators */
 	@Option(name = "decorator_overriders", param = Option.Param.CLASS, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Points to an application package with overriding classes for entity decorators, mapped by name. Default: ''")
@@ -102,7 +102,7 @@ public class MolgenisOptions
 
 	/** Database user password */
 	@Option(name = "db_password", param = Option.Param.PASSWORD, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Password for database. Default: ''")
-	public String db_password = "";
+	public String db_password = "molgenis";
 
 	/** Database uri. For example: jdbc:mysql://localhost/molgenis" */
 	@Option(name = "db_uri", param = Option.Param.STRING, type = Option.Type.REQUIRED_ARGUMENT, usage = "Uri of the database. Default: 'jdbc:mysql://localhost/molgenis?innodb_autoinc_lock_mode=2'")
