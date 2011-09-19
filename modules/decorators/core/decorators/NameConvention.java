@@ -177,7 +177,7 @@ public class NameConvention
 		//pattern for bbmri ([a-zA-Z0-9_\\s\\-:.(),;\\+])
 		String pattern = "([<>/a-zA-Z0-9_\\s\\-:.(),;\\+\\*])";
 		
-		if (name.length() == 0)
+		if (name == null || name.length() == 0)
 		{
 			throw new DatabaseException("Name is empty.");
 		}
