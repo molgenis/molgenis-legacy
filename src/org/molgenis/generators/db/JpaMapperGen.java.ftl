@@ -105,7 +105,7 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 	}
 	
 	@Override
-	public String createFindSql(QueryRule[] rules) throws DatabaseException
+	public String createFindSqlInclRules(QueryRule[] rules) throws DatabaseException
 	{
 		throw new UnsupportedOperationException();
 	}	
