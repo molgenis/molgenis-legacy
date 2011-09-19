@@ -6,7 +6,9 @@ import java.util.List;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
+import org.molgenis.matrix.component.interfaces.BasicMatrix;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
+import org.molgenis.pheno.ObservedValue;
 
 /**
  * @See SliceableMatrix
@@ -317,4 +319,17 @@ public abstract class AbstractSliceableMatrix<R, C, V> implements
 		
 	}
 
+	@Override
+	public V[][] getValues() throws MatrixException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public List<ObservedValue>[][] getValueLists() throws MatrixException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

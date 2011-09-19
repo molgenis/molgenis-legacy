@@ -7,6 +7,7 @@ import java.util.List;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.matrix.MatrixException;
 
 public interface DataMatrixInstance
 {
@@ -90,7 +91,7 @@ public interface DataMatrixInstance
 	 * @return Array of size nrows x ncols
 	 * @throws Exception
 	 */
-	public Object[][] getElements() throws Exception;
+	public Object[][] getElements() throws MatrixException;
 
 	/**
 	 * Retrieve a matrix column by index.
@@ -169,7 +170,7 @@ public interface DataMatrixInstance
 	 * @throws Exception
 	 *             if row or column names are not known
 	 */
-	public AbstractDataMatrixInstance<Object> getSubMatrix(int[] rowIndices, int[] colIndices) throws Exception;
+	public AbstractDataMatrixInstance<Object> getSubMatrix(int[] rowIndices, int[] colIndices) throws MatrixException;
 	
 	/**
 	 * Retrieve a partition of the matrix by listing rowname(s) and colname(s).

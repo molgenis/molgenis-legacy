@@ -7,6 +7,7 @@ import org.molgenis.matrix.component.interfaces.BasicMatrix;
 import org.molgenis.matrix.component.interfaces.RenderDescriptor;
 import org.molgenis.matrix.component.interfaces.RenderableMatrix;
 import org.molgenis.matrix.component.interfaces.SourceMatrix;
+import org.molgenis.pheno.ObservedValue;
 
 public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>
 {
@@ -170,6 +171,13 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>
 	{
 		// TODO Auto-generated method stub
 		return this.filters;
+	}
+
+	@Override
+	public List<ObservedValue>[][] getValueLists() throws MatrixException
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

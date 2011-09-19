@@ -12,6 +12,7 @@ import org.molgenis.matrix.component.interfaces.BasicMatrix;
 import org.molgenis.matrix.component.interfaces.RenderDescriptor;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 import org.molgenis.matrix.component.interfaces.SourceMatrix;
+import org.molgenis.pheno.ObservedValue;
 
 public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, SomeValueType> implements
 		BasicMatrix<SomeRowType, SomeColType, SomeValueType>, SourceMatrix<SomeRowType, SomeColType, SomeValueType>, RenderDescriptor<SomeRowType, SomeColType, SomeValueType>
@@ -273,6 +274,13 @@ public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, 
 	{
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public List<ObservedValue>[][] getValueLists() throws MatrixException
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

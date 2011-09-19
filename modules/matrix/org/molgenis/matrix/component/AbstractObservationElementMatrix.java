@@ -12,18 +12,19 @@ import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.general.MatrixRowHeaderFilter;
 import org.molgenis.matrix.component.general.MatrixRowValueFilter;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
+import org.molgenis.pheno.Observation;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
 
 /** Abstract observation matrix */
-public abstract class AbstractObservationElementMatrix<R extends ObservationElement, C extends ObservationElement, V> implements
+public abstract class AbstractObservationElementMatrix<R extends ObservationElement, C extends ObservationElement, V extends Observation> implements
 		SliceableMatrix<R, C, V>
 {
 
 	protected Database database;
 	protected Class<R> rowClass;
 	protected Class<C> colClass;
-	protected Class<ObservedValue> valueClass;
+	protected Class<V> valueClass;
 	protected List<C> colHeaders = null;
 	protected List<R> rowHeaders = null;
 	protected List<MatrixQueryRule> rules = new ArrayList<MatrixQueryRule>();
@@ -209,12 +210,12 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 		this.colClass = colClass;
 	}
 
-	protected Class<ObservedValue> getValueClass()
+	protected Class<V> getValueClass()
 	{
 		return valueClass;
 	}
 
-	protected void setValueClass(Class<ObservedValue> valueClass)
+	protected void setValueClass(Class<V> valueClass)
 	{
 		this.valueClass = valueClass;
 	}
@@ -398,5 +399,19 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 	public void refresh() throws MatrixException
 	{
 		this.reset();
+	}
+	
+	@Override
+	public void reset() throws MatrixException
+	{
+		// empty the rules
+		this.rules = new ArrayList<MatrixQueryRule>();
+
+		// empty the caches
+		colDirty = true;
+		colOffset = 0;
+		rowDirty = true;
+		rowOffset = 0;
+
 	}
 }

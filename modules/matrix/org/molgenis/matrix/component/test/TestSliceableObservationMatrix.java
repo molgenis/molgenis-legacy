@@ -120,7 +120,7 @@ public class TestSliceableObservationMatrix
 		matrix.reset();
 		logger.debug("testValues: load data");
 		
-		List<ObservedValue>[][] valueMatrix = matrix.getValues();
+		List<ObservedValue>[][] valueMatrix = matrix.getValueLists();
 		logger.debug("testValues: verifying...");
 		
 		for(Integer row = 0; row < matrix.getRowLimit(); row++ )
@@ -246,7 +246,16 @@ public class TestSliceableObservationMatrix
 				Measurement meas = new Measurement();
 				meas.setInvestigation(investigation.getId());
 				meas.setName("meas" + i);
-				meas.setOwns_Id(2);
+				//to help compile
+				try
+				{
+					meas.set("Owns",2);
+				}
+				catch (Exception e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 				features.add(meas);
 			}
@@ -259,7 +268,15 @@ public class TestSliceableObservationMatrix
 				Individual inv = new Individual();
 				inv.setInvestigation(investigation.getId());
 				inv.setName("inv" + i);
-				inv.setOwns_Id(2);
+				try
+				{
+					inv.set("Owner",2);
+				}
+				catch (Exception e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				targets.add(inv);
 			}
 

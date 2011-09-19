@@ -129,7 +129,7 @@ public abstract class AbstractDataMatrixInstance<E> extends
 	 */
 	public AbstractDataMatrixInstance<Object> getSubMatrixByObservationElement(
 			List<ObservationElement> rows, List<ObservationElement> cols)
-			throws Exception
+			throws MatrixException
 	{
 		List<String> rowNames = new ArrayList<String>();
 		for (ObservationElement row : rows)
@@ -147,7 +147,7 @@ public abstract class AbstractDataMatrixInstance<E> extends
 	}
 
 	public AbstractDataMatrixInstance<Object> getSubMatrix(
-			List<String> rowNames, List<String> colNames) throws Exception
+			List<String> rowNames, List<String> colNames) throws MatrixException
 	{
 		int[] rowIndices = new int[rowNames.size()];
 		int[] colIndices = new int[colNames.size()];
@@ -705,7 +705,7 @@ public abstract class AbstractDataMatrixInstance<E> extends
 	}
 
 	@Override
-	public Object[][] getValues() throws Exception
+	public Object[][] getValues() throws MatrixException
 	{
 		return this.getSubMatrixByObservationElement(rowCopy, colCopy)
 				.getElements();
@@ -798,13 +798,13 @@ public abstract class AbstractDataMatrixInstance<E> extends
 	}
 	
 	@Override
-	public Integer getColCount() throws Exception
+	public Integer getColCount() throws MatrixException
 	{
 		return this.getColHeaders().size();
 	}
 
 	@Override
-	public Integer getRowCount() throws Exception
+	public Integer getRowCount() throws MatrixException
 	{
 		return this.getRowHeaders().size();
 	}

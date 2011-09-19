@@ -34,9 +34,9 @@ import org.molgenis.pheno.ObservedValue;
  */
 public class SliceablePhenoMatrix<R extends ObservationElement,C extends ObservationElement>
 		extends
-		AbstractObservationElementMatrix<R, C, List<ObservedValue>>
+		AbstractObservationElementMatrix<R, C, ObservedValue>
 		implements
-		SliceableMatrix<R, C, List<ObservedValue>>
+		SliceableMatrix<R, C, ObservedValue>
 {
 	/**
 	 * Construct sliceable matrix for one Data set.
@@ -121,24 +121,10 @@ public class SliceablePhenoMatrix<R extends ObservationElement,C extends Observa
 	}
 
 	@Override
-	public BasicMatrix<R, C, List<ObservedValue>> getResult()
+	public BasicMatrix<R, C, ObservedValue> getResult()
 			throws Exception
 	{
 		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void reset() throws MatrixException
-	{
-		// empty the rules
-		this.rules = new ArrayList<MatrixQueryRule>();
-
-		// empty the caches
-		colDirty = true;
-		colOffset = 0;
-		rowDirty = true;
-		rowOffset = 0;
-
 	}
 
 	/**
@@ -271,7 +257,7 @@ public class SliceablePhenoMatrix<R extends ObservationElement,C extends Observa
 	}
 
 	@Override
-	public List<ObservedValue>[][] getValues() throws MatrixException
+	public List<ObservedValue>[][] getValueLists() throws MatrixException
 	{
 		try
 		{
@@ -322,5 +308,11 @@ public class SliceablePhenoMatrix<R extends ObservationElement,C extends Observa
 		}
 	
 		return data;
+	}
+
+	@Override
+	public ObservedValue[][] getValues() throws MatrixException
+	{
+		throw new UnsupportedOperationException("use getValueLists");
 	}
 }

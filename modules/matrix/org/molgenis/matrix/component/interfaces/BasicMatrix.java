@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
+import org.molgenis.pheno.ObservedValue;
 
 /**
  * Basic abstraction to deal with matrix formed data.
@@ -72,6 +73,13 @@ public interface BasicMatrix<R, C, V>
 	 * @throws MatrixException 
 	 */
 	void refresh() throws MatrixException;
+
+	/**
+	 * For multivalued results
+	 * @return
+	 * @throws MatrixException
+	 */
+	List<ObservedValue>[][] getValueLists() throws MatrixException;
 
 
 
