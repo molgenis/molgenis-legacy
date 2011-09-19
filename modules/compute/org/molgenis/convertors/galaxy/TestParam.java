@@ -1,17 +1,18 @@
-package convertors.galaxy;
+package org.molgenis.convertors.galaxy;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class TestOutput
+public class TestParam
 {
 	@XmlAttribute
 	String name;
-	
 	@XmlAttribute
-	String file;
+	String value;
+	
+
 
 	public String getName()
 	{
@@ -22,19 +23,20 @@ public class TestOutput
 	{
 		this.name = name;
 	}
-
-	public String getFile()
-	{
-		return file;
-	}
-
-	public void setFile(String file)
-	{
-		this.file = file;
-	}
 	
+	public String getValue()
+	{
+		return value;
+	}
+
+	public void setValue(String value)
+	{
+		this.value = value;
+	}
+
 	public String toString()
 	{
-		return String.format("Output(name='%s',file='%s'", name,file);
+		return String.format("Param(name='%s', value='%s')", name,value);
 	}
+
 }

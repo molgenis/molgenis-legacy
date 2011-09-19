@@ -1,4 +1,4 @@
-package convertors.galaxy;
+package org.molgenis.convertors.galaxy;
 
 import java.util.ArrayList;
 import java.util.List;

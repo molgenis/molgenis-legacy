@@ -1,4 +1,4 @@
-package convertors.galaxy;
+package org.molgenis.convertors.galaxy;
 
 public class Action
 {
