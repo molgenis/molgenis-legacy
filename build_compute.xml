@@ -14,7 +14,6 @@
 		<pathelement location="modules/import" />
 		<pathelement location="modules/settings" />
 		<pathelement location="modules/file" />
-		<pathelement location="modules/matrix" />
 		<pathelement location="apps/ngs" />
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/decorators/core" />
