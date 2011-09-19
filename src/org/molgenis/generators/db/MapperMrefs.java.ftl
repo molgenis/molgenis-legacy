@@ -7,7 +7,7 @@ Common parts for saving multiplicative references (mrefs) to an entity.
 	 */
 	public void mapMrefs( List<${JavaName(entity)}> entities ) throws DatabaseException			
 	{
-<#if entity.getImplementedFieldsOf("mref")?size &gt; 0>	
+<#if entity.getAllFieldsOf("mref")?size &gt; 0>	
 		try
 		{
 			//list the ${name(entity)} ids to query
@@ -17,7 +17,7 @@ Common parts for saving multiplicative references (mrefs) to an entity.
 				${name(entity)}Ids.add(entity.get${JavaName(pkey(entity))}());
 			}
 			
-<#list entity.getImplementedFieldsOf("mref") as f>
+<#list entity.getAllFieldsOf("mref") as f>
 <#assign mref_entity = f.mrefName>
 <#assign mref_remote_field = f.mrefRemoteid/>
 <#assign mref_local_field = f.mrefLocalid/>			
@@ -43,7 +43,7 @@ Common parts for saving multiplicative references (mrefs) to an entity.
 			for(${JavaName(entity)} entity: entities)
 			{
 				${pkeyJavaType(entity)} id = entity.get${JavaName(pkey(entity))}();
-<#list entity.getImplementedFields() as f><#if f.type.toString() == "mref" >
+<#list entity.getAllFieldsOf("mref") as f>
 <#assign mref_entity = f.mrefName>
 <#assign mref_remote_field = f.mrefRemoteid/>
 <#assign mref_local_field = f.mrefLocalid/>	
@@ -57,7 +57,7 @@ Common parts for saving multiplicative references (mrefs) to an entity.
 					entity.set${JavaName(f)}_${JavaName(label)}(${name(f)}_${label}_map.get(id));
 				}
 				</#list></#if>
-</#if></#list>			
+</#list>			
 			}
 		} 
 		catch(Exception e)

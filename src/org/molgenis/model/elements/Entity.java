@@ -936,6 +936,27 @@ public class Entity extends DBSchema implements Record
 
 		return results;
 	}
+	
+	public Vector<Field> getAllFieldsOf(FieldType type) throws MolgenisModelException
+	{
+		Vector<Field> results = new Vector<Field>();
+
+		for (Field field : this.getAllFields())
+		{
+			if (field.getType().getClass().equals(type.getClass()))
+			{
+				results.add(field);
+			}
+		}
+
+		return results;
+		
+	}
+	public Vector<Field> getAllFieldsOf(String typeName) throws MolgenisModelException
+	{
+		return this.getAllFieldsOf(MolgenisFieldTypes.getType(typeName));
+
+	}
 
 	public Vector<Field> getImplementedFieldsOf(FieldType type)
 			throws MolgenisModelException
@@ -952,6 +973,7 @@ public class Entity extends DBSchema implements Record
 
 		return results;
 	}
+	
 	
 	
 	public Vector<Field> getImplementedFieldsOf(String typeName)
