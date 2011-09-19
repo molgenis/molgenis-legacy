@@ -759,8 +759,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 	 */
 	private ResultSet executeSelect(QueryRule... rules) throws DatabaseException, SQLException
 	{
-		String sql = createFindSql()
-				+ JDBCDatabase.createWhereSql((JDBCMapper<?>) this, false, true, this.rewriteRules(getDatabase(), rules));
+		String sql = createFindSqlInclRules(rules);
 		if(rules != null){
 		// FIXME too complicated
 			for (QueryRule rule : rules)
@@ -776,6 +775,13 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 		// execute the query
 		logger.info("TEST\n"+sql);
 		return getDatabase().executeQuery(sql);
+	}
+	
+	@Override
+	public String createFindSqlInclRules(QueryRule ... rules) throws DatabaseException
+	{
+		 return createFindSql()
+			+ JDBCDatabase.createWhereSql((JDBCMapper<?>) this, false, true, this.rewriteRules(getDatabase(), rules));
 	}
 
 	/**
