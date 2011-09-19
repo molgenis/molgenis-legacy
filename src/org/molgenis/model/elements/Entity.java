@@ -12,10 +12,11 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.Map.Entry;
+import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.molgenis.MolgenisFieldTypes;
 import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.fieldtypes.IntField;
 import org.molgenis.fieldtypes.MrefField;
@@ -950,6 +951,13 @@ public class Entity extends DBSchema implements Record
 		}
 
 		return results;
+	}
+	
+	
+	public Vector<Field> getImplementedFieldsOf(String typeName)
+			throws MolgenisModelException
+	{
+		return this.getImplementedFieldsOf(MolgenisFieldTypes.getType(typeName));
 	}
 
 	/**
