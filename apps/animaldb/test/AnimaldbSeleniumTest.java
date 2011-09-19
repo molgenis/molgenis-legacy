@@ -156,7 +156,7 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=wean");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("All 5 animals successfully weaned"));
-		Assert.assertTrue(selenium.isTextPresent("LT_MyLine_1"));
+		Assert.assertTrue(selenium.isTextPresent("LT_MyLine_000001"));
 		// Check cage labels link
 		selenium.click("link=Make temporary cage labels");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -167,7 +167,7 @@ public class AnimaldbSeleniumTest
 		// TODO: expand
 		selenium.click("link=Genotype");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("Parentgroup: PG_MyLine_1"));
+		Assert.assertTrue(selenium.isTextPresent("Parentgroup: PG_MyLine_000001"));
 		Assert.assertTrue(selenium.isTextPresent("Line: MyLine"));
 		selenium.click("id=save");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -175,7 +175,7 @@ public class AnimaldbSeleniumTest
 		// Check definitive cage labels link
 		selenium.click("link=Show weaned and genotyped litters");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("LT_MyLine_1"));
+		Assert.assertTrue(selenium.isTextPresent("LT_MyLine_000001"));
 		selenium.click("link=Make definitive cage labels");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Download definitive cage labels as pdf"));
@@ -234,11 +234,11 @@ public class AnimaldbSeleniumTest
 		// Add animals to DEC (multiple select does not seem to work in Selenium so there is some duplication here
 		selenium.select("id=subproject", "label=MyProject");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		addAnimalToDec("21");
-		addAnimalToDec("22");
-		addAnimalToDec("23");
-		addAnimalToDec("24");
-		addAnimalToDec("25");
+		addAnimalToDec("000021");
+		addAnimalToDec("000022");
+		addAnimalToDec("000023");
+		addAnimalToDec("000024");
+		addAnimalToDec("000025");
 		// Remove animals from DEC
 		selenium.click("id=rem0");
 		selenium.click("id=rem1");
@@ -309,7 +309,7 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		// Apply 'SetWeight' protocol on animal '1'
 		selenium.select("id=Protocols", "label=SetWeight");
-		selenium.select("id=Targets", "label=1");
+		selenium.select("id=Targets", "label=000001");
 		selenium.check("name=NewOrEdit value=New");
 		selenium.click("id=TimeBox");
 		selenium.click("id=Select");
@@ -326,7 +326,7 @@ public class AnimaldbSeleniumTest
 		// Check in Timeline value viewer
 		selenium.click("id=EventViewer_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.select("id=animal", "label=1");
+		selenium.select("id=animal", "label=000001");
 		// We have to wait here, but it's Ajax, so it's faster than a normal full page load
 		// (however, 1 sec. is not (always) enough on Hudson, so set to 10 sec.)
 		Thread.sleep(10000);
