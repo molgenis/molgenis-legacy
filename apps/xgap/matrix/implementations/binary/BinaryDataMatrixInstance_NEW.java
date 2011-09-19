@@ -18,6 +18,7 @@ import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 import org.molgenis.pheno.ObservationElement;
+import org.molgenis.pheno.ObservedValue;
 
 public class BinaryDataMatrixInstance_NEW<E> extends AbstractDataMatrixInstance<E>
 {
@@ -483,7 +484,7 @@ public class BinaryDataMatrixInstance_NEW<E> extends AbstractDataMatrixInstance<
 	 * @status: TODO
 	 */
 	@Override
-	public AbstractDataMatrixInstance<Object> getSubMatrix(int[] rowIndices, int[] colIndices) throws Exception
+	public AbstractDataMatrixInstance<Object> getSubMatrix(int[] rowIndices, int[] colIndices) throws MatrixException
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -505,7 +506,7 @@ public class BinaryDataMatrixInstance_NEW<E> extends AbstractDataMatrixInstance<
 	}
 
 	@Override
-	public Object[][] getElements() throws Exception
+	public Object[][] getElements() throws MatrixException
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -531,7 +532,7 @@ public class BinaryDataMatrixInstance_NEW<E> extends AbstractDataMatrixInstance<
 	}
 
 	@Override
-	public void refresh() throws Exception
+	public void refresh() throws MatrixException
 	{
 		// TODO Auto-generated method stub
 		

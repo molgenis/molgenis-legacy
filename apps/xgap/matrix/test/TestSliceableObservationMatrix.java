@@ -1,9 +1,11 @@
-package org.molgenis.matrix.component.test;
+package matrix.test;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import matrix.component.SliceableObservationMatrix;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -12,9 +14,6 @@ import org.molgenis.data.TextDataElement;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.matrix.MatrixException;
-import org.molgenis.matrix.component.ObservationMatrix;
-import org.molgenis.matrix.component.SliceableObservationMatrix;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;

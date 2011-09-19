@@ -9,6 +9,7 @@ import matrix.AbstractDataMatrixInstance;
 import matrix.general.MatrixReadException;
 
 import org.molgenis.data.Data;
+import org.molgenis.matrix.MatrixException;
 
 import decorators.NameConvention;
 
@@ -22,16 +23,16 @@ public class MemoryDataMatrixInstance<E> extends AbstractDataMatrixInstance<E>
 	// matrix of row,col
 	E[][] values;
 	
-	public MemoryDataMatrixInstance(List<String> rownames, List<String> colnames, E[][] values, Data data) throws Exception
+	public MemoryDataMatrixInstance(List<String> rownames, List<String> colnames, E[][] values, Data data) throws MatrixException
 	{
 		// checks
-		if (rownames.size() != values.length) throw new MatrixReadException(
+		if (rownames.size() != values.length) throw new MatrixException(
 				"rownames.length and values[] (rows) are of different sizes: " + rownames.size() + " vs "
 						+ values.length);
 		int i = 0;
 		for (E[] row : values)
 		{
-			if (colnames.size() != row.length) throw new MatrixReadException("colnames.length and values[" + i
+			if (colnames.size() != row.length) throw new MatrixException("colnames.length and values[" + i
 					+ "].length (col) are of different sizes: " + colnames.size() + " vs " + row.length);
 			i++;
 		}
@@ -58,7 +59,7 @@ public class MemoryDataMatrixInstance<E> extends AbstractDataMatrixInstance<E>
 	}
 
 	@Override
-	public Object[] getCol(int i) throws MatrixReadException
+	public Object[] getCol(int i) throws MatrixException
 	{
 		// E[] result = create(values.length);
 		Object[] result = new Object[values.length];
@@ -71,7 +72,7 @@ public class MemoryDataMatrixInstance<E> extends AbstractDataMatrixInstance<E>
 		}
 		catch (ArrayIndexOutOfBoundsException e)
 		{
-			throw new MatrixReadException("column with index " + i + " doesn't exist");
+			throw new MatrixException("column with index " + i + " doesn't exist");
 		}
 		return result;
 	}
@@ -128,7 +129,7 @@ public class MemoryDataMatrixInstance<E> extends AbstractDataMatrixInstance<E>
 	}
 
 	@Override
-	public AbstractDataMatrixInstance<Object> getSubMatrix(int[] rowIndices, int[] colIndices) throws Exception
+	public AbstractDataMatrixInstance<Object> getSubMatrix(int[] rowIndices, int[] colIndices) throws MatrixException
 	{
 		List<String> rows = new ArrayList<String>(rowIndices.length);
 		List<String> cols = new ArrayList<String>(colIndices.length);
@@ -150,7 +151,7 @@ public class MemoryDataMatrixInstance<E> extends AbstractDataMatrixInstance<E>
 	}
 
 	@Override
-	public E[][] getElements() throws MatrixReadException
+	public E[][] getElements() throws MatrixException
 	{
 		return values;
 	}
@@ -190,7 +191,7 @@ public class MemoryDataMatrixInstance<E> extends AbstractDataMatrixInstance<E>
 	}
 
 	@Override
-	public void refresh() throws Exception
+	public void refresh() throws MatrixException
 	{
 		// TODO Auto-generated method stub
 		

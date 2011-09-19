@@ -19,7 +19,9 @@ import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 import org.molgenis.pheno.ObservationElement;
 
-public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance<Object> {
+public class BinaryDataMatrixInstance extends
+		AbstractDataMatrixInstance<Object>
+{
 	Logger logger = Logger.getLogger(getClass().getSimpleName());
 
 	private int textElementLength;
@@ -29,9 +31,10 @@ public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 	private String nullChar;
 	private Pattern nullCharPattern;
 
-	public BinaryDataMatrixInstance(File bin) throws Exception {
+	public BinaryDataMatrixInstance(File bin) throws Exception
+	{
 		this.setBin(bin);
-		//this.setName(bin.getName().replace(".bin", ""));
+		// this.setName(bin.getName().replace(".bin", ""));
 
 		FileInputStream fis;
 		DataInputStream dis;
@@ -47,10 +50,12 @@ public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 
 		this.setNullChar(readNextChars(dis, 1));
 		dataDescription.setName(readNextChars(dis, dis.readUnsignedByte()));
-		dataDescription.setInvestigation_Name(readNextChars(dis, dis
-				.readUnsignedByte()));
-		dataDescription.setFeatureType(readNextChars(dis, dis.readUnsignedByte()));
-		dataDescription.setTargetType(readNextChars(dis, dis.readUnsignedByte()));
+		dataDescription.setInvestigation_Name(readNextChars(dis,
+				dis.readUnsignedByte()));
+		dataDescription.setFeatureType(readNextChars(dis,
+				dis.readUnsignedByte()));
+		dataDescription
+				.setTargetType(readNextChars(dis, dis.readUnsignedByte()));
 		dataDescription.setValueType(dis.readBoolean() == true ? "Decimal"
 				: "Text");
 		this.setNumberOfCols(dis.readInt());
@@ -70,28 +75,32 @@ public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 		int[] colNameLengths = new int[this.getNumberOfCols()];
 		int[] rowNameLengths = new int[this.getNumberOfRows()];
 
-		for (int i = 0; i < colNameLengths.length; i++) {
+		for (int i = 0; i < colNameLengths.length; i++)
+		{
 			colNameLengths[i] = dis.readUnsignedByte();
 		}
 
-		for (int i = 0; i < rowNameLengths.length; i++) {
+		for (int i = 0; i < rowNameLengths.length; i++)
+		{
 			rowNameLengths[i] = dis.readUnsignedByte();
 		}
 
 		startOfElements += colNameLengths.length;
 		startOfElements += rowNameLengths.length;
 
-		ArrayList<String> colNames = new ArrayList<String>(this
-				.getNumberOfCols());
-		ArrayList<String> rowNames = new ArrayList<String>(this
-				.getNumberOfRows());
+		ArrayList<String> colNames = new ArrayList<String>(
+				this.getNumberOfCols());
+		ArrayList<String> rowNames = new ArrayList<String>(
+				this.getNumberOfRows());
 
-		for (int i = 0; i < this.getNumberOfCols(); i++) {
+		for (int i = 0; i < this.getNumberOfCols(); i++)
+		{
 			colNames.add(i, readNextChars(dis, colNameLengths[i]));
 			startOfElements += colNameLengths[i];
 		}
 
-		for (int i = 0; i < this.getNumberOfRows(); i++) {
+		for (int i = 0; i < this.getNumberOfRows(); i++)
+		{
 			rowNames.add(i, readNextChars(dis, rowNameLengths[i]));
 			startOfElements += rowNameLengths[i];
 		}
@@ -99,12 +108,14 @@ public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 		this.setColNames(colNames);
 		this.setRowNames(rowNames);
 
-		if (dataDescription.getValueType().equals("Text")) {
+		if (dataDescription.getValueType().equals("Text"))
+		{
 			this.setTextElementLength(dis.readUnsignedByte());
 			logger.debug("this.getTextElementLength() = "
 					+ this.getTextElementLength());
 			startOfElements += 1;
-			if (this.getTextElementLength() == 0) {
+			if (this.getTextElementLength() == 0)
+			{
 				byte[] textDataElementLengths = new byte[this.getNumberOfCols()
 						* this.getNumberOfRows()];
 				dis.read(textDataElementLengths);
@@ -121,45 +132,56 @@ public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 	}
 
 	public Double readNextDoubleFromRAF(RandomAccessFile raf)
-			throws IOException {
+			throws IOException
+	{
 		byte[] arr = new byte[8];
 		raf.read(arr);
 		double d = byteArrayToDouble(arr);
-		if (d == Double.MAX_VALUE) {
+		if (d == Double.MAX_VALUE)
+		{
 			return null;
 		}
 		return d;
 	}
 
 	public Double[] readNextDoublesFromRAF(RandomAccessFile raf, int nr)
-			throws IOException {
+			throws IOException
+	{
 		byte[] arr = new byte[nr * 8];
 		raf.read(arr);
 		return byteArrayToDoubles(arr);
 	}
 
-	public static Double[] byteArrayToDoubles(byte[] arr) {
+	public static Double[] byteArrayToDoubles(byte[] arr)
+	{
 		int nr = arr.length / 8;
 		Double[] res = new Double[nr];
-		for (int i = 0; i < arr.length; i += 8) {
+		for (int i = 0; i < arr.length; i += 8)
+		{
 			long longBits = 0;
-			for (int j = 0; j < 8; j++) {
+			for (int j = 0; j < 8; j++)
+			{
 				longBits <<= 8;
 				longBits |= (long) arr[i + j] & 255;
 			}
 			double d = Double.longBitsToDouble(longBits);
-			if (d == Double.MAX_VALUE) {
+			if (d == Double.MAX_VALUE)
+			{
 				res[i / 8] = null;
-			} else {
+			}
+			else
+			{
 				res[i / 8] = d;
 			}
 		}
 		return res;
 	}
 
-	public static double byteArrayToDouble(byte[] arr) {
+	public static double byteArrayToDouble(byte[] arr)
+	{
 		long longBits = 0;
-		for (int i = 0; i < arr.length; i++) {
+		for (int i = 0; i < arr.length; i++)
+		{
 			longBits <<= 8;
 			longBits |= (long) arr[i] & 255;
 		}
@@ -167,65 +189,79 @@ public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 	}
 
 	public String readNextCharsFromRAF(RandomAccessFile raf, int stringLength)
-			throws IOException {
+			throws IOException
+	{
 		byte[] string = new byte[stringLength];
 		raf.read(string);
-		
-		//FIXME: little experiment..
-//		byte[] newStr = new byte[string.length];
-//		int count = 0;
-//		for(byte b : string){
-//			newStr[count] = (byte) (b - 100);
-//			count++;
-//		}
-//		String result = new String(newStr);
+
+		// FIXME: little experiment..
+		// byte[] newStr = new byte[string.length];
+		// int count = 0;
+		// for(byte b : string){
+		// newStr[count] = (byte) (b - 100);
+		// count++;
+		// }
+		// String result = new String(newStr);
 		String result = new String(string);
-		
-		if (this.getNullCharPattern().matcher(result).matches()) {
+
+		if (this.getNullCharPattern().matcher(result).matches())
+		{
 			result = "";
 		}
 		return result;
 	}
 
 	public String readNextChars(DataInputStream dis, int stringLength)
-			throws IOException {
+			throws IOException
+	{
 		byte[] string = new byte[stringLength];
 		dis.read(string);
 		return new String(string);
 	}
 
 	@Override
-	public Object[] getCol(int colindex) throws Exception {
+	public Object[] getCol(int colindex) throws Exception
+	{
 		RandomAccessFile raf;
 
 		Object[] result = new Object[this.getNumberOfRows()];
 
 		raf = new RandomAccessFile(this.getBin(), "r");
 
-		if (this.getData().getValueType().equals("Decimal")) {
-			for (int i = 0; i < result.length; i++) {
+		if (this.getData().getValueType().equals("Decimal"))
+		{
+			for (int i = 0; i < result.length; i++)
+			{
 				raf.seek(this.startOfElementsPointer + (colindex * 8)
 						+ (i * 8 * this.getNumberOfCols()));
 				// result[i] = raf.readDouble();
 				result[i] = readNextDoubleFromRAF(raf);
 			}
-		} else {
-			if (this.getTextElementLength() != 0) {
-				for (int i = 0; i < result.length; i++) {
+		}
+		else
+		{
+			if (this.getTextElementLength() != 0)
+			{
+				for (int i = 0; i < result.length; i++)
+				{
 					raf.seek(this.startOfElementsPointer
 							+ (colindex * this.getTextElementLength())
 							+ (i * this.getTextElementLength() * this
 									.getNumberOfCols()));
-					result[i] = readNextCharsFromRAF(raf, this
-							.getTextElementLength());
+					result[i] = readNextCharsFromRAF(raf,
+							this.getTextElementLength());
 				}
-			} else {
+			}
+			else
+			{
 				long bytePos = 0;
 				int nextindex = 0;
 				int lastindex = 0;
-				for (int i = 0; i < result.length; i++) {
+				for (int i = 0; i < result.length; i++)
+				{
 					nextindex = colindex + (i * this.getNumberOfCols());
-					for (int j = lastindex; j < nextindex; j++) {
+					for (int j = lastindex; j < nextindex; j++)
+					{
 						bytePos += this.getTextDataElementLengths()[j];
 					}
 					lastindex = nextindex + 1;
@@ -242,36 +278,47 @@ public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 	}
 
 	@Override
-	public Object[] getRow(int rowindex) throws Exception {
+	public Object[] getRow(int rowindex) throws Exception
+	{
 		Object[] result = new Object[this.getNumberOfCols()];
 		RandomAccessFile raf = new RandomAccessFile(this.getBin(), "r");
 
-		if (this.getData().getValueType().equals("Decimal")) {
+		if (this.getData().getValueType().equals("Decimal"))
+		{
 			raf.seek(this.startOfElementsPointer
 					+ (rowindex * this.getNumberOfCols() * 8));
-			for (int i = 0; i < result.length; i++) {
+			for (int i = 0; i < result.length; i++)
+			{
 				// result[i] = raf.readDouble();
 				result[i] = readNextDoubleFromRAF(raf);
 			}
-		} else {
-			if (this.getTextElementLength() != 0) {
+		}
+		else
+		{
+			if (this.getTextElementLength() != 0)
+			{
 				raf.seek(this.startOfElementsPointer
 						+ (rowindex * this.getNumberOfCols() * this
 								.getTextElementLength()));
-				for (int i = 0; i < result.length; i++) {
-					result[i] = readNextCharsFromRAF(raf, this
-							.getTextElementLength());
+				for (int i = 0; i < result.length; i++)
+				{
+					result[i] = readNextCharsFromRAF(raf,
+							this.getTextElementLength());
 				}
-			} else {
+			}
+			else
+			{
 				int startIndex = rowindex * this.getNumberOfCols();
 				long byteOffset = 0;
-				for (int i = 0; i < startIndex; i++) {
+				for (int i = 0; i < startIndex; i++)
+				{
 					byteOffset += this.getTextDataElementLengths()[i];
 				}
 				raf.seek(this.startOfElementsPointer + byteOffset);
-				for (int i = 0; i < result.length; i++) {
-					result[i] = readNextCharsFromRAF(raf, this
-							.getTextDataElementLengths()[startIndex + i]);
+				for (int i = 0; i < result.length; i++)
+				{
+					result[i] = readNextCharsFromRAF(raf,
+							this.getTextDataElementLengths()[startIndex + i]);
 				}
 			}
 		}
@@ -280,29 +327,37 @@ public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 	}
 
 	@Override
-	public Object getElement(int rowindex, int colindex) throws Exception {
+	public Object getElement(int rowindex, int colindex) throws Exception
+	{
 		Object result = new Object();
 
 		RandomAccessFile raf = new RandomAccessFile(this.getBin(), "r");
 
 		int startIndex = (rowindex * this.getNumberOfCols()) + colindex;
-		if (this.getData().getValueType().equals("Decimal")) {
+		if (this.getData().getValueType().equals("Decimal"))
+		{
 			raf.seek(this.startOfElementsPointer + (startIndex * 8));
 			// result = raf.readDouble();
 			result = readNextDoubleFromRAF(raf);
-		} else {
-			if (this.getTextElementLength() != 0) {
+		}
+		else
+		{
+			if (this.getTextElementLength() != 0)
+			{
 				raf.seek(this.startOfElementsPointer
 						+ (startIndex * this.getTextElementLength()));
 				result = readNextCharsFromRAF(raf, this.getTextElementLength());
-			} else {
+			}
+			else
+			{
 				long byteOffset = 0;
-				for (int i = 0; i < startIndex; i++) {
+				for (int i = 0; i < startIndex; i++)
+				{
 					byteOffset += this.getTextDataElementLengths()[i];
 				}
 				raf.seek(this.startOfElementsPointer + byteOffset);
-				result = readNextCharsFromRAF(raf, this
-						.getTextDataElementLengths()[startIndex]);
+				result = readNextCharsFromRAF(raf,
+						this.getTextDataElementLengths()[startIndex]);
 			}
 		}
 		raf.close();
@@ -311,110 +366,143 @@ public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 	}
 
 	@Override
-	public AbstractDataMatrixInstance getSubMatrix(int[] rowIndices, int[] colIndices)
-			throws Exception {
-		
-		//the optimized way: find out of indices form a single block
-		//if so, used offset retrieval instead
-		boolean offsetAble = true;
-		for(int i=0; i < rowIndices.length-1; i++){
-			if(rowIndices[i] != (rowIndices[i+1]+1)){
-				offsetAble = false;
-				break;
-			}
-			
-		}
-		if(offsetAble){
-			for(int i=0; i<colIndices.length-1; i++){
-				if(colIndices[i] != (colIndices[i+1]+1)){
+	public AbstractDataMatrixInstance getSubMatrix(int[] rowIndices,
+			int[] colIndices) throws MatrixException
+	{
+		try
+		{
+			// the optimized way: find out of indices form a single block
+			// if so, used offset retrieval instead
+			boolean offsetAble = true;
+			for (int i = 0; i < rowIndices.length - 1; i++)
+			{
+				if (rowIndices[i] != (rowIndices[i + 1] + 1))
+				{
 					offsetAble = false;
 					break;
 				}
+
 			}
-		}
-		if(offsetAble)
-		{
-			return getSubMatrixByOffset(rowIndices[0], rowIndices.length, colIndices[0], colIndices.length);
-		}
-		
-		//the usual way: get single elements at the crossing sections of indices
-		//very inefficient but always works
-		AbstractDataMatrixInstance<Object> result = null;
-		Object[][] elements = new Object[rowIndices.length][colIndices.length];
-		RandomAccessFile raf = new RandomAccessFile(this.getBin(), "r");
-
-		int rowCount = 0;
-		int colCount = 0;
-
-		if (this.getData().getValueType().equals("Decimal")) {
-			for (int rowindex : rowIndices) {
-				for (int colindex : colIndices) {
-					int index = (rowindex * this.getNumberOfCols()) + colindex;
-					raf.seek(this.startOfElementsPointer + (index * 8));
-					elements[rowCount][colCount] = readNextDoubleFromRAF(raf);
-					colCount++;
+			if (offsetAble)
+			{
+				for (int i = 0; i < colIndices.length - 1; i++)
+				{
+					if (colIndices[i] != (colIndices[i + 1] + 1))
+					{
+						offsetAble = false;
+						break;
+					}
 				}
-				rowCount++;
-				colCount = 0;
 			}
-		} else {
-			if (this.getTextElementLength() != 0) {
-				for (int rowIndex : rowIndices) {
-					for (int colIndex : colIndices) {
-						int index = (rowIndex * this.getNumberOfCols())
-								+ colIndex;
-						raf.seek(this.startOfElementsPointer
-								+ (index * this.getTextElementLength()));
-						elements[rowCount][colCount] = readNextCharsFromRAF(
-								raf, this.getTextElementLength());
+			if (offsetAble)
+			{
+				return getSubMatrixByOffset(rowIndices[0], rowIndices.length,
+						colIndices[0], colIndices.length);
+			}
+
+			// the usual way: get single elements at the crossing sections of
+			// indices
+			// very inefficient but always works
+			AbstractDataMatrixInstance<Object> result = null;
+			Object[][] elements = new Object[rowIndices.length][colIndices.length];
+			RandomAccessFile raf = new RandomAccessFile(this.getBin(), "r");
+
+			int rowCount = 0;
+			int colCount = 0;
+
+			if (this.getData().getValueType().equals("Decimal"))
+			{
+				for (int rowindex : rowIndices)
+				{
+					for (int colindex : colIndices)
+					{
+						int index = (rowindex * this.getNumberOfCols())
+								+ colindex;
+						raf.seek(this.startOfElementsPointer + (index * 8));
+						elements[rowCount][colCount] = readNextDoubleFromRAF(raf);
 						colCount++;
 					}
 					rowCount++;
 					colCount = 0;
 				}
-			} else {
-				for (int rowIndex : rowIndices) {
-					for (int colIndex : colIndices) {
-						int index = (rowIndex * this.getNumberOfCols())
-								+ colIndex;
-						long byteOffset = 0;
-						for (int i = 0; i < index; i++) {
-							byteOffset += this.getTextDataElementLengths()[i];
+			}
+			else
+			{
+				if (this.getTextElementLength() != 0)
+				{
+					for (int rowIndex : rowIndices)
+					{
+						for (int colIndex : colIndices)
+						{
+							int index = (rowIndex * this.getNumberOfCols())
+									+ colIndex;
+							raf.seek(this.startOfElementsPointer
+									+ (index * this.getTextElementLength()));
+							elements[rowCount][colCount] = readNextCharsFromRAF(
+									raf, this.getTextElementLength());
+							colCount++;
 						}
-						raf.seek(this.startOfElementsPointer + byteOffset);
-						elements[rowCount][colCount] = readNextCharsFromRAF(
-								raf, this.getTextDataElementLengths()[index]);
-						colCount++;
+						rowCount++;
+						colCount = 0;
 					}
-					rowCount++;
-					colCount = 0;
+				}
+				else
+				{
+					for (int rowIndex : rowIndices)
+					{
+						for (int colIndex : colIndices)
+						{
+							int index = (rowIndex * this.getNumberOfCols())
+									+ colIndex;
+							long byteOffset = 0;
+							for (int i = 0; i < index; i++)
+							{
+								byteOffset += this.getTextDataElementLengths()[i];
+							}
+							raf.seek(this.startOfElementsPointer + byteOffset);
+							elements[rowCount][colCount] = readNextCharsFromRAF(
+									raf,
+									this.getTextDataElementLengths()[index]);
+							colCount++;
+						}
+						rowCount++;
+						colCount = 0;
+					}
 				}
 			}
+
+			// end fill elements
+
+			List<String> rowNames = new ArrayList<String>();
+			List<String> colNames = new ArrayList<String>();
+
+			for (int rowIndex : rowIndices)
+			{
+				rowNames.add(this.getRowNames().get(rowIndex).toString());
+			}
+
+			for (int colIndex : colIndices)
+			{
+				colNames.add(this.getColNames().get(colIndex).toString());
+			}
+
+			result = new MemoryDataMatrixInstance(rowNames, colNames, elements,
+					this.getData());
+
+			raf.close();
+
+			return result;
 		}
-
-		// end fill elements
-
-		List<String> rowNames = new ArrayList<String>();
-		List<String> colNames = new ArrayList<String>();
-
-		for (int rowIndex : rowIndices) {
-			rowNames.add(this.getRowNames().get(rowIndex).toString());
+		catch (Exception e)
+		{
+			throw new MatrixException(e);
 		}
-
-		for (int colIndex : colIndices) {
-			colNames.add(this.getColNames().get(colIndex).toString());
-		}
-
-		result = new MemoryDataMatrixInstance(rowNames, colNames, elements, this.getData());
-
-		raf.close();
-
-		return result;
 	}
 
 	@Override
-	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(int row, int nrows, int col, int ncols)
-			throws Exception {
+	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(int row,
+			int nrows, int col, int ncols) throws Exception
+	{
 		AbstractDataMatrixInstance<Object> result = null;
 		Object[][] elements = new Object[nrows][ncols];
 
@@ -425,46 +513,56 @@ public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 		int rowCount = 0;
 		int colCount = 0;
 
-		if (this.getData().getValueType().equals("Decimal")) {
-			if (ncols == getNumberOfCols()) {
+		if (this.getData().getValueType().equals("Decimal"))
+		{
+			if (ncols == getNumberOfCols())
+			{
 				// no seeking between rows
 				int startIndex = (row * this.getNumberOfCols());
 				int amountOfDoubles = nrows * ncols;
 				raf.seek(this.startOfElementsPointer + (startIndex * 8));
 				Double[] res = readNextDoublesFromRAF(raf, amountOfDoubles);
-				for (int i = 0; i < res.length; i += ncols) {
+				for (int i = 0; i < res.length; i += ncols)
+				{
 					Double[] chunk = new Double[ncols];
-					for (int j = 0; j < ncols; j++) {
+					for (int j = 0; j < ncols; j++)
+					{
 						chunk[j] = res[i + j];
 					}
 					elements[i / ncols] = chunk;
 				}
 
-			} else {
-				// must use some seeking here!!! this is the old way still (like the rest of this implementation)
-				 for (int rowIndex = row; rowIndex < row + nrows; rowIndex++)
-				 {
-				 int startIndex = (rowIndex * this.getNumberOfCols()) + col;
-				 raf.seek(this.startOfElementsPointer + (startIndex * 8));
-				 for (int colIndex = col; colIndex < col + ncols; colIndex++)
-				 {
-				 elements[rowCount][colCount] = readNextDoubleFromRAF(raf);
-				 colCount++;
-				 }
-				 rowCount++;
-				 colCount = 0;
+			}
+			else
+			{
+				// must use some seeking here!!! this is the old way still (like
+				// the rest of this implementation)
+				for (int rowIndex = row; rowIndex < row + nrows; rowIndex++)
+				{
+					int startIndex = (rowIndex * this.getNumberOfCols()) + col;
+					raf.seek(this.startOfElementsPointer + (startIndex * 8));
+					for (int colIndex = col; colIndex < col + ncols; colIndex++)
+					{
+						elements[rowCount][colCount] = readNextDoubleFromRAF(raf);
+						colCount++;
+					}
+					rowCount++;
+					colCount = 0;
 				}
 			}
 
-
-
-		} else {
-			if (this.getTextElementLength() != 0) {
-				for (int rowIndex = row; rowIndex < row + nrows; rowIndex++) {
+		}
+		else
+		{
+			if (this.getTextElementLength() != 0)
+			{
+				for (int rowIndex = row; rowIndex < row + nrows; rowIndex++)
+				{
 					int startIndex = (rowIndex * this.getNumberOfCols()) + col;
 					raf.seek(this.startOfElementsPointer
 							+ (startIndex * this.getTextElementLength()));
-					for (int colIndex = col; colIndex < col + ncols; colIndex++) {
+					for (int colIndex = col; colIndex < col + ncols; colIndex++)
+					{
 						elements[rowCount][colCount] = readNextCharsFromRAF(
 								raf, this.getTextElementLength());
 						colCount++;
@@ -472,19 +570,24 @@ public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 					rowCount++;
 					colCount = 0;
 				}
-			} else {
+			}
+			else
+			{
 				long byteOffset = 0;
 				int nextIndex = 0;
 				int lastIndex = 0;
 				int currentIndex = 0;
-				for (int rowIndex = row; rowIndex < row + nrows; rowIndex++) {
+				for (int rowIndex = row; rowIndex < row + nrows; rowIndex++)
+				{
 					nextIndex = (rowIndex * this.getNumberOfCols()) + col;
-					for (int i = lastIndex; i < nextIndex; i++) {
+					for (int i = lastIndex; i < nextIndex; i++)
+					{
 						byteOffset += this.getTextDataElementLengths()[i];
 					}
 					lastIndex = nextIndex + ncols;
 					raf.seek(this.startOfElementsPointer + byteOffset);
-					for (int colIndex = col; colIndex < col + ncols; colIndex++) {
+					for (int colIndex = col; colIndex < col + ncols; colIndex++)
+					{
 						currentIndex = (rowIndex * this.getNumberOfCols())
 								+ colIndex;
 						byte elementLength = this.getTextDataElementLengths()[currentIndex];
@@ -504,50 +607,61 @@ public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 		List<String> rowNames = getRowNames().subList(row, row + nrows);
 		List<String> colNames = getColNames().subList(col, col + ncols);
 
-		result = new MemoryDataMatrixInstance(rowNames, colNames, elements, this.getData());
+		result = new MemoryDataMatrixInstance(rowNames, colNames, elements,
+				this.getData());
 
 		raf.close();
 		return result;
 	}
 
-	public byte[] getTextDataElementLengths() {
+	public byte[] getTextDataElementLengths()
+	{
 		return textDataElementLengths;
 	}
 
-	private void setTextDataElementLengths(byte[] textDataElementLengths) {
+	private void setTextDataElementLengths(byte[] textDataElementLengths)
+	{
 		this.textDataElementLengths = textDataElementLengths;
 	}
 
-	public int getTextElementLength() {
+	public int getTextElementLength()
+	{
 		return textElementLength;
 	}
 
-	private void setTextElementLength(int textElementLength) {
+	private void setTextElementLength(int textElementLength)
+	{
 		this.textElementLength = textElementLength;
 	}
 
-	//redundant with getAsFile(), but used internally
-	private File getBin() {
+	// redundant with getAsFile(), but used internally
+	private File getBin()
+	{
 		return bin;
 	}
 
-	private void setBin(File bin) {
+	private void setBin(File bin)
+	{
 		this.bin = bin;
 	}
 
-	public String getNullChar() {
+	public String getNullChar()
+	{
 		return nullChar;
 	}
 
-	private void setNullChar(String nullChar) {
+	private void setNullChar(String nullChar)
+	{
 		this.nullChar = nullChar;
 	}
 
-	public Pattern getNullCharPattern() {
+	public Pattern getNullCharPattern()
+	{
 		return nullCharPattern;
 	}
 
-	private void setNullCharPattern(Pattern nullCharPattern) {
+	private void setNullCharPattern(Pattern nullCharPattern)
+	{
 		this.nullCharPattern = nullCharPattern;
 	}
 
@@ -557,104 +671,129 @@ public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 	 * duplicate right now. (done for safety)
 	 */
 	@Override
-	public Object[][] getElements() throws Exception {
-		int row = 0;
-		int col = 0;
-		int nrows = this.getNumberOfRows();
-		int ncols = this.getNumberOfCols();
-		Object[][] elements = new Object[nrows][ncols];
+	public Object[][] getElements() throws MatrixException
+	{
+		try
+		{
+			int row = 0;
+			int col = 0;
+			int nrows = this.getNumberOfRows();
+			int ncols = this.getNumberOfCols();
+			Object[][] elements = new Object[nrows][ncols];
 
-		// fill elements
+			// fill elements
 
-		RandomAccessFile raf = new RandomAccessFile(this.getBin(), "r");
+			RandomAccessFile raf = new RandomAccessFile(this.getBin(), "r");
 
-		int rowCount = 0;
-		int colCount = 0;
+			int rowCount = 0;
+			int colCount = 0;
 
-		if (this.getData().getValueType().equals("Decimal")) {
-			for (int rowIndex = row; rowIndex < row + nrows; rowIndex++) {
-				int startIndex = (rowIndex * this.getNumberOfCols()) + col;
-				raf.seek(this.startOfElementsPointer + (startIndex * 8));
-				for (int colIndex = col; colIndex < col + ncols; colIndex++) {
-					elements[rowCount][colCount] = readNextDoubleFromRAF(raf);
-					colCount++;
-				}
-				rowCount++;
-				colCount = 0;
-			}
-		} else {
-			if (this.getTextElementLength() != 0) {
-				for (int rowIndex = row; rowIndex < row + nrows; rowIndex++) {
+			if (this.getData().getValueType().equals("Decimal"))
+			{
+				for (int rowIndex = row; rowIndex < row + nrows; rowIndex++)
+				{
 					int startIndex = (rowIndex * this.getNumberOfCols()) + col;
-					raf.seek(this.startOfElementsPointer
-							+ (startIndex * this.getTextElementLength()));
-					for (int colIndex = col; colIndex < col + ncols; colIndex++) {
-						elements[rowCount][colCount] = readNextCharsFromRAF(
-								raf, this.getTextElementLength());
-						colCount++;
-					}
-					rowCount++;
-					colCount = 0;
-				}
-			} else {
-				long byteOffset = 0;
-				int nextIndex = 0;
-				int lastIndex = 0;
-				int currentIndex = 0;
-				for (int rowIndex = row; rowIndex < row + nrows; rowIndex++) {
-					nextIndex = (rowIndex * this.getNumberOfCols()) + col;
-					for (int i = lastIndex; i < nextIndex; i++) {
-						byteOffset += this.getTextDataElementLengths()[i];
-					}
-					lastIndex = nextIndex + ncols;
-					raf.seek(this.startOfElementsPointer + byteOffset);
-					for (int colIndex = col; colIndex < col + ncols; colIndex++) {
-						currentIndex = (rowIndex * this.getNumberOfCols())
-								+ colIndex;
-						byte elementLength = this.getTextDataElementLengths()[currentIndex];
-						elements[rowCount][colCount] = readNextCharsFromRAF(
-								raf, elementLength);
-						byteOffset += elementLength;
+					raf.seek(this.startOfElementsPointer + (startIndex * 8));
+					for (int colIndex = col; colIndex < col + ncols; colIndex++)
+					{
+						elements[rowCount][colCount] = readNextDoubleFromRAF(raf);
 						colCount++;
 					}
 					rowCount++;
 					colCount = 0;
 				}
 			}
+			else
+			{
+				if (this.getTextElementLength() != 0)
+				{
+					for (int rowIndex = row; rowIndex < row + nrows; rowIndex++)
+					{
+						int startIndex = (rowIndex * this.getNumberOfCols())
+								+ col;
+						raf.seek(this.startOfElementsPointer
+								+ (startIndex * this.getTextElementLength()));
+						for (int colIndex = col; colIndex < col + ncols; colIndex++)
+						{
+							elements[rowCount][colCount] = readNextCharsFromRAF(
+									raf, this.getTextElementLength());
+							colCount++;
+						}
+						rowCount++;
+						colCount = 0;
+					}
+				}
+				else
+				{
+					long byteOffset = 0;
+					int nextIndex = 0;
+					int lastIndex = 0;
+					int currentIndex = 0;
+					for (int rowIndex = row; rowIndex < row + nrows; rowIndex++)
+					{
+						nextIndex = (rowIndex * this.getNumberOfCols()) + col;
+						for (int i = lastIndex; i < nextIndex; i++)
+						{
+							byteOffset += this.getTextDataElementLengths()[i];
+						}
+						lastIndex = nextIndex + ncols;
+						raf.seek(this.startOfElementsPointer + byteOffset);
+						for (int colIndex = col; colIndex < col + ncols; colIndex++)
+						{
+							currentIndex = (rowIndex * this.getNumberOfCols())
+									+ colIndex;
+							byte elementLength = this
+									.getTextDataElementLengths()[currentIndex];
+							elements[rowCount][colCount] = readNextCharsFromRAF(
+									raf, elementLength);
+							byteOffset += elementLength;
+							colCount++;
+						}
+						rowCount++;
+						colCount = 0;
+					}
+				}
+			}
+
+			raf.close();
+
+			return elements;
 		}
-
-		raf.close();
-
-		return elements;
+		catch (Exception e)
+		{
+			throw new MatrixException(e);
+		}
 	}
 
 	@Override
-	public File getAsFile() throws Exception {
+	public File getAsFile() throws Exception
+	{
 		return bin;
 	}
 
 	@Override
-	public void addColumn() throws Exception {
+	public void addColumn() throws Exception
+	{
 		throw new Exception("Action not possible");
 	}
 
 	@Override
-	public void addRow() throws Exception {
+	public void addRow() throws Exception
+	{
 		throw new Exception("Action not possible");
 	}
 
 	@Override
-	public void updateElement() throws Exception {
+	public void updateElement() throws Exception
+	{
 		throw new Exception("Action not possible");
 	}
 
 	@Override
-	public void refresh() throws Exception
+	public void refresh() throws MatrixException
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
-
-
 
 }

@@ -1,4 +1,4 @@
-package org.molgenis.matrix.component;
+package matrix.component;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -9,6 +9,7 @@ import org.molgenis.data.DecimalDataElement;
 import org.molgenis.data.TextDataElement;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
+import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Observation;
@@ -55,116 +56,151 @@ public class ObservationMatrix<R extends ObservationElement, C extends Observati
 	}
 
 	@Override
-	public List<R> getRowHeaders() throws Exception
+	public List<R> getRowHeaders() throws MatrixException
 	{
-		if (rowHeaders == null)
+		try
 		{
-			// use the rowindexes to retrieve the correct headers
-			List<Integer> rowIndices = this.getRowIndices();
-			List<R> temp = database.query(rowClass)
-					.in(ObservationElement.ID, rowIndices).find();
-
-			// sort according to indices
-			rowHeaders = temp;
-			for (R rowHeader : temp)
+			if (rowHeaders == null)
 			{
-				rowHeaders
-						.set(rowIndices.indexOf(rowHeader.getId()), rowHeader);
+				// use the rowindexes to retrieve the correct headers
+				List<Integer> rowIndices = this.getRowIndices();
+				List<R> temp = database.query(rowClass)
+						.in(ObservationElement.ID, rowIndices).find();
+
+				// sort according to indices
+				rowHeaders = temp;
+				for (R rowHeader : temp)
+				{
+					rowHeaders.set(rowIndices.indexOf(rowHeader.getId()),
+							rowHeader);
+				}
 			}
+			return rowHeaders;
 		}
-		return rowHeaders;
+		catch (Exception e)
+		{
+			throw new MatrixException(e);
+		}
 	}
 
 	@Override
-	public List<C> getColHeaders() throws Exception
+	public List<C> getColHeaders() throws MatrixException
 	{
-		if (colHeaders == null)
+		try
 		{
-			// use the colIndexes to retrieve the headers
-			List<Integer> colIndices = this.getColIndices();
-			List<C> temp = database.query(colClass)
-					.in(ObservationElement.ID, colIndices).find();
-
-			// sort according to indices
-			colHeaders = temp;
-			for (C colHeader : temp)
+			if (colHeaders == null)
 			{
-				colHeaders
-						.set(colIndices.indexOf(colHeader.getId()), colHeader);
+				// use the colIndexes to retrieve the headers
+				List<Integer> colIndices = this.getColIndices();
+				List<C> temp = database.query(colClass)
+						.in(ObservationElement.ID, colIndices).find();
+
+				// sort according to indices
+				colHeaders = temp;
+				for (C colHeader : temp)
+				{
+					colHeaders.set(colIndices.indexOf(colHeader.getId()),
+							colHeader);
+				}
 			}
+			return colHeaders;
 		}
-		return colHeaders;
+		catch (Exception e)
+		{
+			throw new MatrixException(e);
+		}
 	}
 
 	@Override
-	public List<Integer> getRowIndices() throws Exception
+	public List<Integer> getRowIndices() throws MatrixException
 	{
-		if (rowIndices == null)
+		try
 		{
-			// query one column to get the ordering right
-			List<V> firstCol = database.query(valueClass)
-					.eq(TextDataElement.FEATUREINDEX, 1)
-					.sortASC(TextDataElement.TARGETINDEX).find();
-
-			// get the target ids
-			rowIndices = new ArrayList<Integer>();
-			for (V row : firstCol)
+			if (rowIndices == null)
 			{
-				rowIndices.add(row.getTarget());
+				// query one column to get the ordering right
+				List<V> firstCol = database.query(valueClass)
+						.eq(TextDataElement.FEATUREINDEX, 1)
+						.sortASC(TextDataElement.TARGETINDEX).find();
+
+				// get the target ids
+				rowIndices = new ArrayList<Integer>();
+				for (V row : firstCol)
+				{
+					rowIndices.add(row.getTarget());
+				}
 			}
+			return rowIndices;
 		}
-		return rowIndices;
+		catch (Exception e)
+		{
+			throw new MatrixException(e);
+		}
 	}
 
 	@Override
-	public List<Integer> getColIndices() throws Exception
+	public List<Integer> getColIndices() throws MatrixException
 	{
-		if (colIndices == null)
+		try
 		{
-			// query one row to get the ordering right
-			List<V> firstRow = database.query(valueClass)
-					.eq(TextDataElement.TARGETINDEX, 1)
-					.sortASC(TextDataElement.FEATUREINDEX).find();
-
-			// get the feature ids
-			colIndices = new ArrayList<Integer>();
-			for (V col : firstRow)
+			if (colIndices == null)
 			{
-				colIndices.add(col.getFeature());
+				// query one row to get the ordering right
+				List<V> firstRow = database.query(valueClass)
+						.eq(TextDataElement.TARGETINDEX, 1)
+						.sortASC(TextDataElement.FEATUREINDEX).find();
+
+				// get the feature ids
+				colIndices = new ArrayList<Integer>();
+				for (V col : firstRow)
+				{
+					colIndices.add(col.getFeature());
+				}
 			}
+			return colIndices;
 		}
-		return colIndices;
+		catch (Exception e)
+		{
+			throw new MatrixException(e);
+		}
 	}
 
 	@Override
 	// default sorted by featureIndex and rowIndex
-	public V[][] getValues() throws Exception
+	public V[][] getValues() throws MatrixException
 	{
-		// TODO: do this in batches?
-
-		// get the indices (map to real coordinates)
-		final List<Integer> rowIndexes = getRowIndices();
-		final List<Integer> colIndexes = getColIndices();
-
-		// create matrix of suitable size
-		final V[][] valueMatrix = create(getRowIndices().size(), getColIndices().size(),
-				valueClass);
-
-		// retrieve values matching the selected indexes
-		Query<V> query = database.query(valueClass);
-		query.in(ObservedValue.FEATURE, this.getColIndices());
-		query.in(ObservedValue.TARGET, this.getRowIndices());
-
-		// use the streaming interface?
-		List<V> values = query.find();
-
-		for (V value : values)
+		try
 		{
-			valueMatrix[rowIndexes.indexOf(value.getTarget())][colIndexes
-					.indexOf(value.getFeature())] = value;
-		}
+			// TODO: do this in batches?
 
-		return valueMatrix;
+			// get the indices (map to real coordinates)
+			final List<Integer> rowIndexes = getRowIndices();
+			final List<Integer> colIndexes = getColIndices();
+
+			// create matrix of suitable size
+			final V[][] valueMatrix = create(getRowIndices().size(),
+					getColIndices().size(), valueClass);
+
+			// retrieve values matching the selected indexes
+			Query<V> query = database.query(valueClass);
+			query.in(ObservedValue.FEATURE, this.getColIndices());
+			query.in(ObservedValue.TARGET, this.getRowIndices());
+
+			// use the streaming interface?
+			List<V> values = query.find();
+
+			for (V value : values)
+			{
+				valueMatrix[rowIndexes.indexOf(value.getTarget())][colIndexes
+						.indexOf(value.getFeature())] = value;
+			}
+
+			return valueMatrix;
+		}
+		catch (Exception e)
+		{
+			throw new MatrixException(e);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -187,55 +223,69 @@ public class ObservationMatrix<R extends ObservationElement, C extends Observati
 	}
 
 	@Override
-	public Integer getColCount() throws Exception
+	public Integer getColCount() throws MatrixException
 	{
-		if (colCount == null)
+		try
 		{
-			// in case of XGAP filter using 'data'
-			if (data != null
-					&& (valueClass.equals(TextDataElement.class) || valueClass
-							.equals(DecimalDataElement.class)))
+			if (colCount == null)
 			{
-				colCount = database.query(valueClass)
-						.equals(TextDataElement.TARGETINDEX, 0)
-						.equals(TextDataElement.DATA, data.getId()).count();
+				// in case of XGAP filter using 'data'
+				if (data != null
+						&& (valueClass.equals(TextDataElement.class) || valueClass
+								.equals(DecimalDataElement.class)))
+				{
+					colCount = database.query(valueClass)
+							.equals(TextDataElement.TARGETINDEX, 0)
+							.equals(TextDataElement.DATA, data.getId()).count();
+				}
+				// else, filter on investigation
+				else
+				{
+					colCount = database
+							.query(colClass)
+							.equals(ObservedValue.INVESTIGATION,
+									investigation.getId()).count();
+				}
 			}
-			// else, filter on investigation
-			else
-			{
-				colCount = database
-						.query(colClass)
-						.equals(ObservedValue.INVESTIGATION,
-								investigation.getId()).count();
-			}
+			return colCount;
 		}
-		return colCount;
+		catch (Exception e)
+		{
+			throw new MatrixException(e);
+		}
 	}
 
 	@Override
-	public Integer getRowCount() throws Exception
+	public Integer getRowCount() throws MatrixException
 	{
-		if (rowCount == null)
+		try
 		{
-			// in case of XGAP filter using 'data'
-			if (data != null
-					&& (valueClass.equals(TextDataElement.class) || valueClass
-							.equals(DecimalDataElement.class)))
+			if (rowCount == null)
 			{
-				rowCount = database.query(valueClass)
-						.equals(TextDataElement.FEATUREINDEX, 0)
-						.equals(TextDataElement.DATA, data.getId()).count();
+				// in case of XGAP filter using 'data'
+				if (data != null
+						&& (valueClass.equals(TextDataElement.class) || valueClass
+								.equals(DecimalDataElement.class)))
+				{
+					rowCount = database.query(valueClass)
+							.equals(TextDataElement.FEATUREINDEX, 0)
+							.equals(TextDataElement.DATA, data.getId()).count();
+				}
+				// else, filter on investigation
+				else
+				{
+					rowCount = database
+							.query(rowClass)
+							.equals(ObservedValue.INVESTIGATION,
+									investigation.getId()).count();
+				}
 			}
-			// else, filter on investigation
-			else
-			{
-				rowCount = database
-						.query(rowClass)
-						.equals(ObservedValue.INVESTIGATION,
-								investigation.getId()).count();
-			}
+			return rowCount;
 		}
-		return rowCount;
+		catch (Exception e)
+		{
+			throw new MatrixException(e);
+		}
 	}
 
 	protected Class<R> getRowClass()
@@ -253,8 +303,6 @@ public class ObservationMatrix<R extends ObservationElement, C extends Observati
 		return valueClass;
 	}
 
-	
-	
 	protected Database getDatabase()
 	{
 		return database;
@@ -270,6 +318,12 @@ public class ObservationMatrix<R extends ObservationElement, C extends Observati
 		rowIndices = null;
 		colCount = null;
 		rowCount = null;
+	}
+
+	@Override
+	public List<ObservedValue>[][] getValueLists() throws MatrixException
+	{
+		throw new UnsupportedOperationException("use getValues()");
 	}
 
 }
