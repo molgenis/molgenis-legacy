@@ -229,7 +229,7 @@ public interface SliceableMatrix<R, C, V> extends BasicMatrix<R, C, V>
 	 * SliceableMatrix to a fresh state where slice actions are once again
 	 * performed on the original matrix data instead of a sliced subset.
 	 */
-	public void reset() throws Exception;
+	public void reset() throws MatrixException;
 	
 	public int getRowLimit();
 

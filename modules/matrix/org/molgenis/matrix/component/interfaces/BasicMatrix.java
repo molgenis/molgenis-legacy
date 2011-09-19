@@ -24,12 +24,12 @@ public interface BasicMatrix<R, C, V>
 	/**
 	 * Row metadata of this matrix
 	 */
-	public List<R> getRowHeaders() throws Exception;
+	public List<R> getRowHeaders() throws MatrixException;
 
 	/**
 	 * Column metadata of this matrix.
 	 */
-	public List<C> getColHeaders() throws Exception;
+	public List<C> getColHeaders() throws MatrixException;
 
 	/**
 	 * The unique indices of the row elements.
@@ -37,7 +37,7 @@ public interface BasicMatrix<R, C, V>
 	 * These do not be 0-rowCount but can be any identifiers that are convenient
 	 * (e.g. database identifiers).
 	 */
-	public List<Integer> getRowIndices() throws Exception;
+	public List<Integer> getRowIndices() throws MatrixException;
 
 	/**
 	 * The unique indices of the column elements.
@@ -45,33 +45,33 @@ public interface BasicMatrix<R, C, V>
 	 * These do not be 0-colCount but can be any identifiers that are convenient
 	 * (e.g. database identifiers).
 	 */
-	public List<Integer> getColIndices() throws Exception;
+	public List<Integer> getColIndices() throws MatrixException;
 
 	/**
 	 * The currently selected matrix values that are going to be rendered in the
 	 * view.
 	 */
-	public V[][] getValues() throws Exception;
+	public V[][] getValues() throws MatrixException;
 
 	/**
 	 * Efficiently return the column count of this matrix.
 	 * 
 	 * @return columnCount
 	 */
-	public Integer getColCount() throws Exception;
+	public Integer getColCount() throws MatrixException;
 
 	/**
 	 * Efficiently return the row count of this matrix
 	 * 
 	 * @return rowCount
 	 */
-	public Integer getRowCount() throws Exception;
+	public Integer getRowCount() throws MatrixException;
 
 	/**
 	 * Will reload the matrix from backend (if applicable).
-	 * @throws Exception 
+	 * @throws MatrixException 
 	 */
-	void refresh() throws Exception;
+	void refresh() throws MatrixException;
 
 
 
