@@ -63,7 +63,8 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 			if (action.equals("Save")) {
 				RenderableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> currentMatrixSlice = 
 						matrixRenderer.getRendered();
-				this.setSelectedTargetList(currentMatrixSlice.getVisibleRows());
+				// TODO: how to do this now??
+				//this.setSelectedTargetList(currentMatrixSlice.getVisibleRows());
 			}
 			
 			if (action.equals("resetMatrixRenderer")) {

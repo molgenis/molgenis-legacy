@@ -335,6 +335,7 @@ public class CommonService
 			if (type != null) {
 				targetQuery.addRules(new QueryRule(ObservationTarget.__TYPE, Operator.EQUALS, type));
 			}
+			targetQuery.addRules(new QueryRule(Operator.SORTASC, ObservationTarget.NAME));
 			List<ObservationTarget> targetList = targetQuery.find();
 			for (ObservationTarget target : targetList) {
 				returnList.add(target.getId());
@@ -358,6 +359,7 @@ public class CommonService
 				Query<ObservationTarget> targetQuery = db.query(ObservationTarget.class);
 				targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION, Operator.IN, investigationIds));
 				targetQuery.addRules(new QueryRule(ObservationTarget.__TYPE, Operator.EQUALS, type));
+				targetQuery.addRules(new QueryRule(Operator.SORTASC, ObservationTarget.NAME));
 				List<ObservationTarget> targetList = targetQuery.find();
 				for (ObservationTarget target : targetList) {
 					typeIdList.add(target.getId());
@@ -1774,14 +1776,14 @@ public class CommonService
 	 * 
 	 * @return
 	 */
-	public List<String> getPrefixes(int userId) throws DatabaseException {
+	public List<String> getPrefixes(int userId, String targetType) throws DatabaseException {
 		
 		List<String> returnList = new ArrayList<String>();
 		
 		List<NamePrefix> prefixList = db.find(NamePrefix.class);
 		if (prefixList != null && prefixList.size() > 0) {
 			for (NamePrefix prefix : prefixList) {
-				if (prefix.getUserId_Id().intValue() == userId) {
+				if (prefix.getUserId_Id().intValue() == userId && prefix.getTargetType().equals(targetType)) {
 					returnList.add(prefix.getPrefix());
 				}
 			}
@@ -1844,7 +1846,7 @@ public class CommonService
 //		return maxTrailingNumber;
 	}
 	
-	public void updatePrefix(int userId, String prefix, int highestNr) throws DatabaseException {
+	public void updatePrefix(int userId, String targetType, String prefix, int highestNr) throws DatabaseException {
 		
 		List<NamePrefix> prefixList = db.find(NamePrefix.class, new QueryRule(NamePrefix.PREFIX, Operator.EQUALS, prefix));
 		if (prefixList != null && prefixList.size() > 0) {
@@ -1856,10 +1858,27 @@ public class CommonService
 			// New
 			NamePrefix namePrefix = new NamePrefix();
 			namePrefix.setUserId_Id(userId);
+			namePrefix.setTargetType(targetType);
 			namePrefix.setPrefix(prefix);
 			namePrefix.setHighestNumber(highestNr);
 			db.add(namePrefix);
 		}
+	}
+	
+	public String prependZeros(String name, int totalNrOfChars) {
+		char[] nameChars = name.toCharArray();
+		if (nameChars.length >= totalNrOfChars) {
+			return name;
+		}
+		char[] fullNameChars = new char[totalNrOfChars];
+		int i = 0;
+		for (; i < totalNrOfChars - nameChars.length; i++) {
+			fullNameChars[i] = '0';
+		}
+		for (; i < totalNrOfChars; i++) {
+			fullNameChars[i] = nameChars[i - (totalNrOfChars - nameChars.length)];
+		}
+		return String.valueOf(fullNameChars);
 	}
 
 }

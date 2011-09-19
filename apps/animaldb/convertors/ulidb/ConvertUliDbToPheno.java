@@ -49,6 +49,7 @@ public class ConvertUliDbToPheno
 	//private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
 	private Map<String, Integer> parentgroupNrMap;
 	private Map<String, Integer> litterNrMap;
+	private int highestNr = 0;
 
 	public ConvertUliDbToPheno(Database db, Login login) throws Exception
 	{
@@ -91,10 +92,10 @@ public class ConvertUliDbToPheno
 			logger.debug("Protocols successfully added");
 			
 			db.add(animalsToAddList);
-			// Make entry in name prefix table with Nr. of last animal
-			int highestNr = Integer.parseInt(animalsToAddList.get(animalsToAddList.size() - 1).getName());
+			// Make entry in name prefix table with highest animal nr. (Tiernummer)
 			NamePrefix namePrefix = new NamePrefix();
 			namePrefix.setUserId_Name(userName);
+			namePrefix.setTargetType("animal");
 			namePrefix.setPrefix("");
 			namePrefix.setHighestNumber(highestNr);
 			db.add(namePrefix);
@@ -125,10 +126,24 @@ public class ConvertUliDbToPheno
 			{
 				// Tiernummer -> make new animal
 				String animalName = tuple.getString("Tiernummer");
+				// Store highest animal nr. for later storage in name prefix table
+				try {
+					int animalNr = Integer.parseInt(animalName);
+					if (animalNr > highestNr) {
+						highestNr = animalNr;
+					}
+				} catch (NumberFormatException e) {
+					// Not a parseable animal nr.: ignore
+				}
+				// Deal with empty names (of which there are a few in Uli's DB
 				if (animalName == null) {
 					animalName = "OldUliId_" + tuple.getString("laufende Nr");
+				} else {
+					// Prepend 0's to name
+					animalName = ct.prependZeros(animalName, 6);
 				}
-				while (animalNames.contains(animalName)) { // make sure we have a unique name
+				// Make sure we have a unique name
+				while (animalNames.contains(animalName)) {
 					animalName = ("Dup_" + animalName);
 				}
 				animalNames.add(animalName);
@@ -440,7 +455,8 @@ public class ConvertUliDbToPheno
 						parentgroupNr = parentgroupNrMap.get(lineName) + 1;
 					}
 					parentgroupNrMap.put(lineName, parentgroupNr);
-					String parentgroupName = "PG_" + lineName + "_" + parentgroupNr;
+					String parentgroupNrPart = ct.prependZeros("" + parentgroupNr, 6);
+					String parentgroupName = "PG_" + lineName + "_" + parentgroupNrPart;
 					panelsToAddList.add(ct.createPanel(invName, parentgroupName, userName));
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), 
 							now, null, "TypeOfGroup", parentgroupName, "Parentgroup", null));
@@ -467,7 +483,8 @@ public class ConvertUliDbToPheno
 						litterNr = litterNrMap.get(lineName) + 1;
 					}
 					litterNrMap.put(lineName, litterNr);
-					String litterName = "LT_" + lineName + "_" + litterNr;
+					String litterNrPart = ct.prependZeros("" + litterNr, 6);
+					String litterName = "LT_" + lineName + "_" + litterNrPart;
 					panelsToAddList.add(ct.createPanel(invName, litterName, userName));
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), 
 							now, null, "TypeOfGroup", litterName, "Litter", null));

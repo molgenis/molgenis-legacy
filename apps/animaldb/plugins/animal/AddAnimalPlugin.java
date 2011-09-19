@@ -94,7 +94,7 @@ public class AddAnimalPlugin extends GenericPlugin
 			ct.setDatabase(db);
 			ct.makeObservationTargetNameMap(userId, false);
 			
-			bases = ct.getPrefixes(userId);
+			bases = ct.getPrefixes(userId, "animal");
 			
 			//if (tablePanel == null) {
 				populateTablePanel(db);
@@ -274,14 +274,16 @@ public class AddAnimalPlugin extends GenericPlugin
 		// Make all animals
 		for (int i = 0; i < nrOfAnimals; i++) {
 			// Make and add animal
-			ObservationTarget newAnimal = ct.createIndividual(invid, nameBase + (startNumber + i), 
+			String nrPart = "" + (startNumber + i);
+			nrPart = ct.prependZeros(nrPart, 6);
+			ObservationTarget newAnimal = ct.createIndividual(invid, nameBase + nrPart, 
 					this.getLogin().getUserId());
 			animalsToAddList.add(newAnimal);
 		}
 		db.add(animalsToAddList);
 		
 		// Make or update name prefix entry
-		ct.updatePrefix(userId, nameBase, startNumber + nrOfAnimals - 1);
+		ct.updatePrefix(userId, "animal", nameBase, startNumber + nrOfAnimals - 1);
 		
 		// Make all protocol applications
 		List<Integer> protocolIdList = new ArrayList<Integer>();

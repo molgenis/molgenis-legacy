@@ -253,9 +253,11 @@ public class ManageParentgroups extends PluginModel<Entity>
 				// Make group
 				String groupPrefix = "PG_" + ct.getObservationTargetLabel(line) + "_";
 				int groupNr = ct.getHighestNumberForPrefix(groupPrefix) + 1;
-				int groupId = ct.makePanel(invid, groupPrefix + groupNr, userId);
+				String groupNrPart = "" + groupNr;
+				groupNrPart = ct.prependZeros(groupNrPart, 6);
+				int groupId = ct.makePanel(invid, groupPrefix + groupNrPart, userId);
 				// Make or update name prefix entry
-				ct.updatePrefix(userId, groupPrefix, groupNr);
+				ct.updatePrefix(userId, "parentgroup", groupPrefix, groupNr);
 				// Mark group as parent group using a special event
 				int protocolId = ct.getProtocolId("SetTypeOfGroup");
 				int measurementId = ct.getMeasurementId("TypeOfGroup");
@@ -281,7 +283,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 				
 				// Success: empty selected lists and show success message
 				this.resetUserFields();
-				this.getMessages().add(new ScreenMessage("Parent group " + (groupPrefix + groupNr) + " successfully added", true));
+				this.getMessages().add(new ScreenMessage("Parent group " + (groupPrefix + groupNrPart) + " successfully added", true));
 			}
 			
 			if (action.equals("addIndMother")) {
