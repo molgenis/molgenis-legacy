@@ -6,7 +6,9 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.AccordeonLayout;
+import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.LabelInput;
+import org.molgenis.framework.ui.html.MenuInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.MultipanelLayout;
 import org.molgenis.framework.ui.html.Newline;
@@ -39,6 +41,36 @@ public class LayoutTests extends EasyPluginController<LayoutTestsModel>
 	{
 		MolgenisForm mf = new MolgenisForm(this);
 		
+		MenuInput menu = new MenuInput("mymenu","My menu");
+		menu.AddAction(new ActionInput("blaat1"));
+		menu.AddAction(new ActionInput("blaat2"));
+		
+		MenuInput smenu = new MenuInput("submenu","Submenu");
+		
+		MenuInput ssmenu = new MenuInput("subsubmenu","SubSubmenu");
+		
+		ssmenu.AddAction(new ActionInput("sub-sub1"));
+		ssmenu.AddAction(new ActionInput("sub=sub2"));
+		
+		smenu.AddMenu(ssmenu);
+		
+		smenu.AddAction(new ActionInput("sub1"));
+		smenu.AddAction(new ActionInput("sub2"));
+		
+		menu.AddMenu(smenu);
+		
+		menu.AddAction(new ActionInput("blaat3"));
+		
+		
+		
+		mf.add(new LabelInput("Demo of menu:"));
+		
+		mf.add(new Newline());
+		
+		mf.add(menu);
+		
+		mf.add(new Newline());
+		
 		mf.add(new TextParagraph("Demo of accordeon"));
 		
 		MultipanelLayout l = new AccordeonLayout("demo1");
@@ -51,11 +83,10 @@ public class LayoutTests extends EasyPluginController<LayoutTestsModel>
 		
 		TabbedLayout t = new TabbedLayout("demo2");
 		
-		t.add("Panel1", new TextParagraph("hello world 1"));
-		
-		t.add("Panel2", new TextParagraph("hello world 2"));
-		
-		t.add("Panel3", new TextParagraph("hello world 3"));
+		for(int i = 0; i < 20;i++)
+		{
+		t.add("Panel value"+i, new TextParagraph("hello world "+i));
+		}
 		
 		
 		mf.add(l);
