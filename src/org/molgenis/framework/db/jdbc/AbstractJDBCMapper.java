@@ -585,7 +585,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 	}
 	
 	/**
-	 * Helper function to write an already known list of entites to a SpreadsheetWriter.
+	 * Helper function to write an already known list of entites to a TupleWriter.
 	 * @param entities
 	 * @param writer
 	 * @param fieldsToExport
@@ -734,7 +734,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 			rs.close();
 			writer.close();
 
-			logger.debug("find(" + create().getClass().getSimpleName() + ", SpreadsheetWriter, " + 
+			logger.debug("find(" + create().getClass().getSimpleName() + ", TupleWriter, " + 
 					Arrays.asList(rules) + "): wrote " + i + " lines.");
 		}
 		catch (Exception e)
