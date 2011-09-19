@@ -7,7 +7,6 @@
 
 package decorators;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +40,7 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MappingDeco
 	@Override
 	public int add(List<E> entities) throws DatabaseException
 	{
-		System.out.println("** DataDecorator - ADD");
+		//System.out.println("** DataDecorator - ADD");
 		// default check
 		if(strict){
 			System.out.println("** DataDecorator - strict");
@@ -62,7 +61,7 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MappingDeco
 	@Override
 	public int update(List<E> entities) throws DatabaseException
 	{
-		System.out.println("** DataDecorator - UPDATE");
+		//System.out.println("** DataDecorator - UPDATE");
 		// default check
 		if(strict){
 			System.out.println("** DataDecorator - strict");
@@ -111,7 +110,7 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MappingDeco
 	@Override
 	public int remove(List<E> entities) throws DatabaseException
 	{
-		System.out.println("** DataDecorator - REMOVE");
+		// System.out.println("** DataDecorator - REMOVE");
 		if(entities.size() > 1){
 			throw new DatabaseException("You can only remove one 'Data' at a time");
 		}
