@@ -3,18 +3,14 @@ package servlets.xgap;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.molgenis.core.MolgenisFile;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.xgap.xqtlworkbench.ResetXgapDb;
 
-import plugins.emptydb.emptyDatabase;
 import regressiontest.cluster.DataLoader;
 
 public class resetdatabase_loadexampledata_4EE1D7A3E73C504183B69F7D20108853 extends app.servlet.MolgenisServlet

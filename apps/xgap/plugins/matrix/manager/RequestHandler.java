@@ -1,8 +1,5 @@
 package plugins.matrix.manager;
 
-import java.io.OutputStream;
-import java.io.PrintWriter;
-
 import org.molgenis.util.Tuple;
 
 

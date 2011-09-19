@@ -13,8 +13,6 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.xgap.Gene;
 
-import app.DatabaseFactory;
-
 import uk.ac.ebi.mydas.exceptions.BadReferenceObjectException;
 import uk.ac.ebi.mydas.exceptions.DataSourceException;
 import uk.ac.ebi.mydas.model.DasAnnotatedSegment;
@@ -22,6 +20,7 @@ import uk.ac.ebi.mydas.model.DasComponentFeature;
 import uk.ac.ebi.mydas.model.DasFeature;
 import uk.ac.ebi.mydas.model.DasMethod;
 import uk.ac.ebi.mydas.model.DasType;
+import app.DatabaseFactory;
 
 public class EnsemblTestManager2 {
 	private ArrayList<DasType> types;

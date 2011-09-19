@@ -1,6 +1,5 @@
 package regressiontest.dependencysort;
 
-import java.util.ArrayList;
 import java.util.Vector;
 
 import org.junit.Test;

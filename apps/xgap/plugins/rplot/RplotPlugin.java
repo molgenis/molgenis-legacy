@@ -8,12 +8,10 @@
 package plugins.rplot;
 
 import java.io.File;
-import java.io.PrintWriter;
 
 import matrix.AbstractDataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
-import org.molgenis.core.MolgenisFile;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FormController;

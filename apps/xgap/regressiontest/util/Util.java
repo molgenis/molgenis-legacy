@@ -1,6 +1,5 @@
 package regressiontest.util;
 
-import java.text.DecimalFormat;
 import java.util.Random;
 
 public class Util {

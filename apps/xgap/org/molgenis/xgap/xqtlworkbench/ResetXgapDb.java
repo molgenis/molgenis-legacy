@@ -7,10 +7,9 @@ import org.molgenis.core.MolgenisFile;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 
+import plugins.emptydb.emptyDatabase;
 import app.FillMetadata;
 import app.servlet.UsedMolgenisOptions;
-
-import plugins.emptydb.emptyDatabase;
 
 public class ResetXgapDb
 {

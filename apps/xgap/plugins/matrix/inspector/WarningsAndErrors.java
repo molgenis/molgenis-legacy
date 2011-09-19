@@ -13,7 +13,6 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.pheno.ObservationElement;
-import org.molgenis.pheno.ObservationTarget;
 
 public class WarningsAndErrors {
 	

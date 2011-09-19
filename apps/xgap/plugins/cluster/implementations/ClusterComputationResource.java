@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import plugins.cluster.helper.Command;
+import plugins.cluster.helper.LoginSettings;
+import plugins.cluster.interfaces.ComputationResource;
+
 import com.mindbright.jca.security.SecureRandom;
 import com.mindbright.ssh2.SSH2ConsoleRemote;
 import com.mindbright.ssh2.SSH2HostKeyVerifier;
@@ -16,10 +20,6 @@ import com.mindbright.ssh2.SSH2Transport;
 import com.mindbright.util.RandomSeed;
 import com.mindbright.util.SecureRandomAndPad;
 import com.mindbright.util.Util;
-
-import plugins.cluster.helper.Command;
-import plugins.cluster.helper.LoginSettings;
-import plugins.cluster.interfaces.ComputationResource;
 
 /**
  * PBS cluster implementation of ComputeResource

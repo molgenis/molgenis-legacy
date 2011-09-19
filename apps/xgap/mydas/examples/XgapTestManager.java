@@ -1,7 +1,5 @@
 package mydas.examples;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -10,7 +8,6 @@ import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
-import org.molgenis.util.cmdline.CmdLineException;
 import org.molgenis.xgap.Chromosome;
 import org.molgenis.xgap.Gene;
 

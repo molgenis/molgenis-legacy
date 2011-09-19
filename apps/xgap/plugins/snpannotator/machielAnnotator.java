@@ -11,6 +11,8 @@ import org.molgenis.util.Tuple;
 
 import app.DatabaseFactory;
 
+import com.opera.core.systems.scope.exceptions.FatalException;
+
 
 public class machielAnnotator {
 

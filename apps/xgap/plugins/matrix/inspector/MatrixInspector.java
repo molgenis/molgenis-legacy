@@ -7,8 +7,6 @@
 
 package plugins.matrix.inspector;
 
-import java.io.PrintWriter;
-
 import matrix.general.DataMatrixHandler;
 
 import org.molgenis.data.Data;

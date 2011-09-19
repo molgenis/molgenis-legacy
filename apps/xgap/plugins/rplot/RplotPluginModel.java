@@ -6,8 +6,6 @@ import java.util.List;
 import matrix.AbstractDataMatrixInstance;
 
 import org.molgenis.data.Data;
-import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.SimpleScreenModel;
 
 public class RplotPluginModel{
 

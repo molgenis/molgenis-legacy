@@ -2,7 +2,6 @@ package org.molgenis.xgap.other.xqtlworkbench_panacea;
 
 
 import org.molgenis.Molgenis;
-import org.molgenis.generators.server.MolgenisServletGen;
 import org.molgenis.generators.ui.EasyPluginControllerGen;
 import org.molgenis.generators.ui.EasyPluginModelGen;
 import org.molgenis.generators.ui.EasyPluginViewGen;

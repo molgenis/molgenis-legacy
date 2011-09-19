@@ -7,7 +7,6 @@
 
 package plugins.investigationoverview;
 
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 

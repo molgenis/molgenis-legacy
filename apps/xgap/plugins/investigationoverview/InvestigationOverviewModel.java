@@ -1,6 +1,7 @@
 package plugins.investigationoverview;
 
 import java.util.HashMap;
+
 import org.molgenis.organization.Investigation;
 
 public class InvestigationOverviewModel{

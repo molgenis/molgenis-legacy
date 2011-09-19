@@ -1,8 +1,6 @@
 package plugins.matrix.admin;
 
 import org.molgenis.data.Data;
-import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.SimpleScreenModel;
 
 
 public class MatrixAdminModel{

@@ -9,14 +9,11 @@ import org.molgenis.util.TarGz;
 import org.molgenis.xgap.xqtlworkbench.ResetXgapDb;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import filehandling.storage.StorageHandler;
-
 import plugins.archiveexportimport.XgapExcelExport;
-
 import app.servlet.MolgenisServlet;
+import filehandling.storage.StorageHandler;
 
 /**
  * Test data matrix import and export across all backends, all retrieval functions,

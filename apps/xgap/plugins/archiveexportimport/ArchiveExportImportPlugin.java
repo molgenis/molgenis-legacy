@@ -15,7 +15,6 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.organization.Investigation;
 import org.molgenis.util.Entity;
 import org.molgenis.util.TarGz;

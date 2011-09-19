@@ -1,20 +1,17 @@
 package org.molgenis.xgap.xqtlworkbench;
-import java.io.File;
-import java.util.ArrayList;
-
 import org.molgenis.Molgenis;
-import org.molgenis.framework.db.Database;
 
-import regressiontest.cluster.DataLoader;
-
-import app.servlet.MolgenisServlet;
+import app.FillMetadata;
+import app.JDBCDatabase;
 
 public class XqtlUpdateDatabase
 {
 	public static void main(String[] args) throws Exception
 	{
 		
-		new Molgenis("org/molgenis/xgap/xqtlworkbench/xqtl.properties").updateDb(true);
+		new Molgenis("org/molgenis/xgap/xqtlworkbench/xqtl.properties").updateDb(false);
+		//ResetXgapDb.reset(new JDBCDatabase("org/molgenis/xgap/xqtlworkbench/xqtl.properties"), true);
+		FillMetadata.fillMetadata(new JDBCDatabase("org/molgenis/xgap/xqtlworkbench/xqtl.properties"));
 		
 		// FOR SOME UNEXPLAINABLE REASON, THIS CLASS DOESN'T WORK AT ALL
 		

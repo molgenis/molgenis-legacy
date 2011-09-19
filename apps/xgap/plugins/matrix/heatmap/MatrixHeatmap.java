@@ -8,9 +8,7 @@
 package plugins.matrix.heatmap;
 
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.util.List;
-import java.util.Vector;
 
 import matrix.AbstractDataMatrixInstance;
 import matrix.general.DataMatrixHandler;
@@ -24,7 +22,6 @@ import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Tuple;
 
 import plugins.matrix.manager.Browser;

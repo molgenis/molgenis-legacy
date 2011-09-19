@@ -2,8 +2,6 @@ package regressiontest.csv;
 
 import java.io.File;
 
-import plugins.emptydb.emptyDatabase;
-
 public class TMP
 {
 

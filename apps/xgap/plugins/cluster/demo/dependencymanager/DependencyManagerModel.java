@@ -1,7 +1,5 @@
 package plugins.cluster.demo.dependencymanager;
 
-import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.SimpleScreenModel;
 
 public class DependencyManagerModel
 {

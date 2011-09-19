@@ -2,11 +2,12 @@ package regressiontest.processes;
 
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import junit.framework.TestCase;
 import plugins.ronline.RProcess;
 
 public class RProcessTest extends TestCase{

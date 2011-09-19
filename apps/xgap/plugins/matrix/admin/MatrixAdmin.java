@@ -7,8 +7,6 @@
 
 package plugins.matrix.admin;
 
-import java.io.PrintWriter;
-
 import matrix.general.DataMatrixHandler;
 
 import org.molgenis.data.Data;

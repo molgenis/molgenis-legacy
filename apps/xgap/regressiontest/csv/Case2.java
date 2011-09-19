@@ -5,11 +5,10 @@ import java.io.File;
 import org.molgenis.framework.db.Database;
 import org.molgenis.util.TarGz;
 
-import app.DatabaseFactory;
-
 import plugins.archiveexportimport.XgapCsvExport;
 import plugins.archiveexportimport.XgapCsvImport;
 import plugins.emptydb.emptyDatabase;
+import app.DatabaseFactory;
 
 public class Case2
 {

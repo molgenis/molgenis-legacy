@@ -1,7 +1,5 @@
 package plugins.matrix.heatmap;
 
-import org.molgenis.framework.ui.ScreenController;
-
 import matrix.AbstractDataMatrixInstance;
 import plugins.matrix.manager.MatrixManagerModel;
 
