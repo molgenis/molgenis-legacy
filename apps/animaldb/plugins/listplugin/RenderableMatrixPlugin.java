@@ -31,8 +31,8 @@ import org.molgenis.util.Tuple;
 public class RenderableMatrixPlugin extends PluginModel<Entity> {
 	
 	private static final long serialVersionUID = -8306984451248484959L;
-	private AbstractObservationElementMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> matrix = null;
-	private MatrixRenderer<ObservationTarget, ObservableFeature, List<ObservedValue>> matrixRenderer = null;
+	private AbstractObservationElementMatrix<ObservationTarget, ObservableFeature, ObservedValue> matrix = null;
+	private MatrixRenderer<ObservationTarget, ObservableFeature, ObservedValue> matrixRenderer = null;
 	private List<ObservationTarget> selectedTargetList = null;
 	
 	public RenderableMatrixPlugin(String name, ScreenController<?> parent) {
@@ -49,7 +49,7 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 		return "plugins/listplugin/RenderableMatrixPlugin.ftl";
 	}
 	
-	public MatrixRenderer<ObservationTarget, ObservableFeature, List<ObservedValue>> getMatrixRenderer() {
+	public MatrixRenderer<ObservationTarget, ObservableFeature, ObservedValue> getMatrixRenderer() {
 		return this.matrixRenderer;
 	}
 	
@@ -63,7 +63,7 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 			}
 			
 			if (action.equals("Save")) {
-				RenderableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> currentMatrixSlice = 
+				RenderableMatrix<ObservationTarget, ObservableFeature, ObservedValue> currentMatrixSlice = 
 						matrixRenderer.getRendered();
 				// TODO: how to do this now??
 				//this.setSelectedTargetList(currentMatrixSlice.getVisibleRows());
@@ -103,7 +103,7 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 //		preFilterList.add(preFilter);
 		// 'Normal' code from here on:
 		matrix = new SliceablePhenoMatrix(db, ObservationTarget.class, ObservableFeature.class);
-		matrixRenderer = new MatrixRenderer<ObservationTarget, ObservableFeature, List<ObservedValue>>("Pheno Matrix", 
+		matrixRenderer = new MatrixRenderer<ObservationTarget, ObservableFeature, ObservedValue>("Pheno Matrix", 
 				matrix, null, this.getName());
 	}
 
