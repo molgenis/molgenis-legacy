@@ -228,7 +228,7 @@ public class GeneratorHelper
 
 	public String getHsqlType(Field field) throws Exception
 	{
-		Logger.getLogger("TEST").debug("tryiung " + field);
+		Logger.getLogger("TEST").debug("trying " + field);
 		return MolgenisFieldTypes.get(field).getHsqlType();
 	}
 
