@@ -51,6 +51,8 @@ public interface JDBCMapper<E extends Entity> extends Mapper<E>
 
 	public FieldType getFieldType(String field);
 
+	String createFindSqlInclRules(QueryRule[] rules) throws DatabaseException;
+
 //	/**
 //	 * Helper method for retrieving keys.
 //	 * 

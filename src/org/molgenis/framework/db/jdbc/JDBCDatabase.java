@@ -1015,7 +1015,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	@Override
 	public <E extends Entity> String createFindSql(Class<E> entityClass, QueryRule... rules) throws DatabaseException
 	{
-		return getMapperFor(entityClass).createFindSql(rules);
+ 		return getMapperFor(entityClass).createFindSqlInclRules(rules);
 		
 	} 
 }

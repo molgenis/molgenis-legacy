@@ -121,8 +121,8 @@ public class MappingDecorator<E extends Entity> implements Mapper<E>
 	}
 
 	@Override
-	public String createFindSql(QueryRule[] rules) throws DatabaseException
+	public String createFindSqlInclRules(QueryRule[] rules) throws DatabaseException
 	{
-		return mapper.createFindSql(rules);
+		return mapper.createFindSqlInclRules(rules);
 	}
 }
