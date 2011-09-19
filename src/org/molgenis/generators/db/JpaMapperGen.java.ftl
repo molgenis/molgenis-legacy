@@ -30,7 +30,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jpa.JpaMapper;
 import org.molgenis.fieldtypes.*;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.SpreadsheetWriter;
+import org.molgenis.util.TupleWriter;
 
 <#list allFields(entity) as f><#if f.type == "file">
 import org.apache.commons.io.FileUtils;
@@ -505,7 +505,7 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 	}
 
 	@Override
-	public int add(CsvReader reader, SpreadsheetWriter writer)
+	public int add(CsvReader reader, TupleWriter writer)
 	{
 		throw new UnsupportedOperationException();
 	}
@@ -529,13 +529,13 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 	}
 
 	@Override
-	public void find(SpreadsheetWriter writer, QueryRule[] rules)
+	public void find(TupleWriter writer, QueryRule[] rules)
 	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void find(SpreadsheetWriter writer, List<String> fieldsToExport,	QueryRule[] rules)
+	public void find(TupleWriter writer, List<String> fieldsToExport,	QueryRule[] rules)
 	{
 		throw new UnsupportedOperationException();
 	}
