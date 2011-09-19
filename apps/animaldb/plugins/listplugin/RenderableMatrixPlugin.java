@@ -15,6 +15,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.matrix.component.AbstractObservationElementMatrix;
 import org.molgenis.matrix.component.MatrixRenderer;
 import org.molgenis.matrix.component.PhenoMatrix;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
@@ -30,7 +31,7 @@ import org.molgenis.util.Tuple;
 public class RenderableMatrixPlugin extends PluginModel<Entity> {
 	
 	private static final long serialVersionUID = -8306984451248484959L;
-	private SliceablePhenoMatrix matrix = null;
+	private AbstractObservationElementMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> matrix = null;
 	private MatrixRenderer<ObservationTarget, ObservableFeature, List<ObservedValue>> matrixRenderer = null;
 	private List<ObservationTarget> selectedTargetList = null;
 	
@@ -101,7 +102,7 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 //		List<MatrixQueryRule> preFilterList = new ArrayList<MatrixQueryRule>();
 //		preFilterList.add(preFilter);
 		// 'Normal' code from here on:
-		matrix = new SliceablePhenoMatrix(db);
+		matrix = new SliceablePhenoMatrix(db, ObservationTarget.class, ObservableFeature.class);
 		matrixRenderer = new MatrixRenderer<ObservationTarget, ObservableFeature, List<ObservedValue>>("Pheno Matrix", 
 				matrix, null, this.getName());
 	}
