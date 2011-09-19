@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.util.SpreadsheetWriter;
+import org.molgenis.util.TupleWriter;
 import org.molgenis.util.Entity;
 
 /**
@@ -59,6 +59,13 @@ public class QueryImp<E extends Entity> implements Query<E> {
 		}
 		return this;
 	}
+	
+	@Override
+	public Query<E> subquery(String field, String sql)
+	{
+		rules.add(new QueryRule(field, Operator.IN_SUBQUERY, sql));
+		return this;
+	} 
 
 	@Override
 	public Query<E> greater(String field, Object value) {
@@ -194,12 +201,12 @@ public class QueryImp<E extends Entity> implements Query<E> {
 	}
 
 	@Override
-	public void find(SpreadsheetWriter writer) throws DatabaseException, ParseException {
+	public void find(TupleWriter writer) throws DatabaseException, ParseException {
 		find(writer, null);
 	}
 
 	@Override
-	public void find(SpreadsheetWriter writer, List<String> fieldsToExport)
+	public void find(TupleWriter writer, List<String> fieldsToExport)
 			throws DatabaseException, ParseException {
 		if (this.klazz != null && this.database != null) {
 			database.find(this.klazz, writer, fieldsToExport, this.getRules());
@@ -210,7 +217,7 @@ public class QueryImp<E extends Entity> implements Query<E> {
 	}
 
 	@Override
-	public void find(SpreadsheetWriter writer, boolean skipAutoId)
+	public void find(TupleWriter writer, boolean skipAutoId)
 			throws DatabaseException, ParseException, InstantiationException,
 			IllegalAccessException {
 		this.find(writer, this.klazz.newInstance().getFields(skipAutoId));
@@ -277,5 +284,5 @@ public class QueryImp<E extends Entity> implements Query<E> {
 	{
 		return database.createFindSql(klazz, this.getRules());
 		
-	} 
+	}
 }

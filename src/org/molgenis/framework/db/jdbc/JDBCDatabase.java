@@ -33,7 +33,7 @@ import org.molgenis.util.CsvReader;
 import org.molgenis.util.Entity;
 import org.molgenis.util.ResultSetTuple;
 import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.SpreadsheetWriter;
+import org.molgenis.util.TupleWriter;
 import org.molgenis.util.Tuple;
 
 /**
@@ -69,6 +69,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	File fileSource;
 	/** Login object */
 	Login login;
+	protected MolgenisOptions options;
 	/** Logger for this database */
 	private static final transient Logger logger = Logger
 			.getLogger(JDBCDatabase.class.getSimpleName());
@@ -105,6 +106,9 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 
 	public JDBCDatabase(MolgenisOptions options)
 	{
+		super();
+		this.options = options;
+		
 		BasicDataSource dSource = new BasicDataSource();
 		dSource.setDriverClassName(options.db_driver);
 		dSource.setUsername(options.db_user);
@@ -360,14 +364,14 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 //	}
 
 	// @Override
-	public <E extends Entity> void find(Class<E> klazz, SpreadsheetWriter writer,
+	public <E extends Entity> void find(Class<E> klazz, TupleWriter writer,
 			QueryRule... rules) throws DatabaseException
 	{
 		getMapperFor(klazz).find(writer, rules);
 	}
 
 	// @Override
-	public <E extends Entity> void find(Class<E> klazz, SpreadsheetWriter writer,
+	public <E extends Entity> void find(Class<E> klazz, TupleWriter writer,
 			List<String> fieldsToExport, QueryRule... rules)
 			throws DatabaseException
 	{
@@ -406,7 +410,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 
 	// @Override
 	public <E extends Entity> int add(Class<E> klazz, CsvReader reader,
-			SpreadsheetWriter writer) throws DatabaseException
+			TupleWriter writer) throws DatabaseException
 	{
 		return getMapperFor(klazz).add(reader, writer);
 	}

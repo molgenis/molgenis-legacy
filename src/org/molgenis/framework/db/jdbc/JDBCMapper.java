@@ -8,7 +8,7 @@ import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.Entity;
-import org.molgenis.util.SpreadsheetWriter;
+import org.molgenis.util.TupleWriter;
 
 /**
  * Factory for creating SQL statements
@@ -27,7 +27,7 @@ public interface JDBCMapper<E extends Entity> extends Mapper<E>
 	// iterator of some kind?
 	public E create();
 	
-	public int add(CsvReader reader, SpreadsheetWriter writer) throws DatabaseException;
+	public int add(CsvReader reader, TupleWriter writer) throws DatabaseException;
 	
 	public int update(List<E> entities) throws DatabaseException;
 	
@@ -39,9 +39,9 @@ public interface JDBCMapper<E extends Entity> extends Mapper<E>
 
 	public List<E> find(QueryRule ...rules) throws DatabaseException;
 
-	public void find(SpreadsheetWriter writer, QueryRule ... rules) throws DatabaseException;
+	public void find(TupleWriter writer, QueryRule ... rules) throws DatabaseException;
 	
-	public void find(SpreadsheetWriter writer, List<String> fieldsToExport, QueryRule ... rules) throws DatabaseException;
+	public void find(TupleWriter writer, List<String> fieldsToExport, QueryRule ... rules) throws DatabaseException;
 
 	public int remove(CsvReader reader) throws DatabaseException;
 

@@ -19,10 +19,10 @@ import org.apache.log4j.Logger;
  * FIXME make Tuple and Entity both inherit from the same interface so this
  * writer can be simplified.
  */
-public class CsvWriter implements SpreadsheetWriter
+public class CsvWriter implements TupleWriter
 {
 	/** to send log messages on progress to */
-	private static final transient Logger logger = Logger.getLogger(SpreadsheetWriter.class.getSimpleName());
+	private static final transient Logger logger = Logger.getLogger(TupleWriter.class.getSimpleName());
 	/** writer the output is written to */
 	protected PrintWriter writer = null;
 	/** separator used to separate columns, default "\t" */

@@ -21,7 +21,7 @@ import org.molgenis.model.elements.Field;
 /**
  * Write values to an Excel file
  */
-public class XlsWriter implements SpreadsheetWriter
+public class XlsWriter implements TupleWriter
 {
 	private WritableWorkbook workbook;
 	private WritableSheet sheet;
