@@ -16,14 +16,11 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
-import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Test;
 
-import filehandling.storage.StorageHandler;
-
 import test.Helper;
-
 import app.servlet.MolgenisServlet;
+import filehandling.storage.StorageHandler;
 
 /**
  * Test data matrix import and export across all backends, all retrieval functions,

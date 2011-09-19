@@ -278,6 +278,14 @@ public class CSVDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 		throw new Exception("Action not possible");
 	}
 
+
+	@Override
+	public void refresh() throws Exception
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }
 
 class finalObject

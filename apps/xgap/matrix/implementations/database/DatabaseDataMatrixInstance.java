@@ -339,4 +339,11 @@ public class DatabaseDataMatrixInstance extends AbstractDataMatrixInstance<Objec
 		throw new Exception("Action not possible");
 	}
 
+	@Override
+	public void refresh() throws Exception
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }

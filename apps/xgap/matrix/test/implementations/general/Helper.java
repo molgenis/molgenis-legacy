@@ -10,11 +10,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import loaders.XgapLoadPanelTypes;
-import matrix.general.MatrixReadException;
 import matrix.implementations.binary.BinaryDataMatrixInstance;
 import matrix.implementations.memory.MemoryDataMatrixInstance;
 

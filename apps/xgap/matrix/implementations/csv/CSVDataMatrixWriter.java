@@ -11,7 +11,6 @@ import java.util.zip.DataFormatException;
 import matrix.general.VerifyCsv;
 import matrix.general.VerifyCsvException;
 import matrix.implementations.binary.BinaryDataMatrixInstance;
-import matrix.implementations.binary.BinaryDataMatrixWriter;
 
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.log4j.Logger;

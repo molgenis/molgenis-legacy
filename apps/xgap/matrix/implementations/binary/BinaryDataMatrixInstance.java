@@ -14,6 +14,10 @@ import matrix.implementations.memory.MemoryDataMatrixInstance;
 
 import org.apache.log4j.Logger;
 import org.molgenis.data.Data;
+import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.matrix.MatrixException;
+import org.molgenis.matrix.component.interfaces.SliceableMatrix;
+import org.molgenis.pheno.ObservationElement;
 
 public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance<Object> {
 	Logger logger = Logger.getLogger(getClass().getSimpleName());
@@ -643,5 +647,14 @@ public class BinaryDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 	public void updateElement() throws Exception {
 		throw new Exception("Action not possible");
 	}
+
+	@Override
+	public void refresh() throws Exception
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+
 
 }

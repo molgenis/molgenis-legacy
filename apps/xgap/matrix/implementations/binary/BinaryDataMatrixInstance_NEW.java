@@ -6,12 +6,18 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import matrix.AbstractDataMatrixInstance;
 
 import org.apache.log4j.Logger;
 import org.molgenis.data.Data;
+import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.matrix.MatrixException;
+import org.molgenis.matrix.component.general.MatrixQueryRule;
+import org.molgenis.matrix.component.interfaces.SliceableMatrix;
+import org.molgenis.pheno.ObservationElement;
 
 public class BinaryDataMatrixInstance_NEW<E> extends AbstractDataMatrixInstance<E>
 {
@@ -522,5 +528,109 @@ public class BinaryDataMatrixInstance_NEW<E> extends AbstractDataMatrixInstance<
 	@Override
 	public void updateElement() throws Exception {
 		throw new Exception("Action not possible");
+	}
+
+	@Override
+	public void refresh() throws Exception
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByColIndex(
+			Operator operator, Integer index) throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByRowIndex(
+			Operator operator, Integer index) throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByColValueProperty(
+			ObservationElement col, String property, Operator operator,
+			Object value) throws MatrixException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByColValueProperty(
+			int colIndex, String property, Operator operator, Object value)
+			throws MatrixException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<String> getValuePropertyNames()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getRowLimit()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setRowLimit(int rowLimit)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getRowOffset()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setRowOffset(int rowOffset)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getColLimit()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setColLimit(int colLimit)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getColOffset()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setColOffset(int colOffset)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }
