@@ -53,25 +53,6 @@ public interface SourceMatrix<R, C, V>
 	 */
 	public int getTotalNumberOfCols();
 
-	// rename to getColHeaderPropertyNames
-	@Deprecated
-	public List<String> getRowHeaderFilterAttributes();
 
-	/**
-	 * Tells the renderer on which row header attributes the user can filter. If
-	 * the row headers are strings, you could implement this with just "value".
-	 * If your headers are entities, you might want to fill this list with the
-	 * attributes of the entity.
-	 */
-	public List<String> getRowPropertyNames();
-
-	// rename to getColHeaderPropertyNames
-	@Deprecated
-	public List<String> getColHeaderFilterAttributes();
-
-	/**
-	 * Same as getRowHeaderFilterAttributes() except for columns.
-	 */
-	public List<String> getColPropertyNames();
 
 }

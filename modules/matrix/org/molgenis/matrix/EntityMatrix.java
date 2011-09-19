@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 /**
  * Matrix for a uniform set of entities. 

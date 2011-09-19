@@ -6,8 +6,10 @@
 //
 //import org.molgenis.MolgenisOptions;
 //import org.molgenis.framework.db.DatabaseException;
+//import org.molgenis.framework.db.QueryRule.Operator;
 //import org.molgenis.matrix.component.ObservedValueMatrix;
 //import org.molgenis.pheno.ObservableFeature;
+//import org.molgenis.pheno.ObservationElement;
 //import org.molgenis.util.cmdline.CmdLineException;
 //import org.molgenis.variant.SequenceVariant;
 //import org.testng.annotations.BeforeClass;
@@ -32,6 +34,19 @@
 //	@Test
 //	public void testRowHeaders() throws Exception
 //	{
+//		//set row properties
+//		m.sliceByRowProperty(SequenceVariant.CHR, Operator.EQUALS, 1);
+//		//end of variant must be in start of range
+//		m.sliceByRowProperty(SequenceVariant.ENDBP, Operator.GREATER_EQUAL, 1000);
+//		//start of variant must be in end of range
+//		m.sliceByRowProperty(SequenceVariant.STARTBP, Operator.LESS_EQUAL, 2000);
+//		
+//		//set column proporty, which is actual column
+//		ObservationElement e = new ObservationElement();
+//		e.setId(1);
+//		e.setName("AlleleCount");
+//		m.sliceByColValues(e, Operator.GREATER_EQUAL, 2);
+//		
 //		List<SequenceVariant> rows = m.getRowHeaders();
 //	}
 //}

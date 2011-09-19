@@ -9,7 +9,6 @@ import org.molgenis.core.Nameable;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.organization.InvestigationElement;
 import org.molgenis.pheno.ObservationTarget;
 
 public class OverlibText {

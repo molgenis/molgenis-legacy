@@ -7,7 +7,6 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.FilterableMatrix;
 import org.molgenis.matrix.Matrix;
 import org.molgenis.matrix.MatrixException;
-import org.molgenis.matrix.TargetFeatureMemoryMatrix;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;

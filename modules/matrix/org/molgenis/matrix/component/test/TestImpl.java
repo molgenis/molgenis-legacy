@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.general.AbstractSliceableMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
@@ -22,41 +23,6 @@ public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, 
 		originalCols = Helper.getSomeColumns();
 	}
 
-	@Override
-	@Deprecated
-	public SliceableMatrix<SomeRowType, SomeColType, SomeValueType> sliceByRowValues(QueryRule rule) throws Exception
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	@Deprecated
-	public SliceableMatrix<SomeRowType, SomeColType, SomeValueType> sliceByColValues(MatrixQueryRule rule)
-			throws Exception
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	@Deprecated
-	public SliceableMatrix<SomeRowType, SomeColType, SomeValueType> sliceByRowHeader(MatrixQueryRule rule)
-			throws Exception
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	@Deprecated
-	public SliceableMatrix<SomeRowType, SomeColType, SomeValueType> sliceByColHeader(MatrixQueryRule rule)
-			throws Exception
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
 	@Override
 	public SliceableMatrix<SomeRowType, SomeColType, SomeValueType> sliceByColProperty(
 			String property, Operator operator, Object value)
@@ -112,13 +78,6 @@ public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, 
 	{
 		return col.getCommonName();
 	}
-
-	@Override
-	@Deprecated
-	public List<String> getRowHeaderFilterAttributes()
-	{
-		return this.getRowPropertyNames();
-	}
 	
 	@Override
 	public List<String> getRowPropertyNames()
@@ -130,13 +89,6 @@ public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, 
 		attr.add("city");
 		attr.add("yearOfBirth");
 		return attr;
-	}
-
-	@Override
-	@Deprecated
-	public List<String> getColHeaderFilterAttributes()
-	{
-		return this.getColPropertyNames();
 	}
 	
 	public List<String> getColPropertyNames()
@@ -167,13 +119,6 @@ public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, 
 		}
 		
 		return visibleValues;
-	}
-	
-	@Override
-	@Deprecated
-	public SomeValueType[][] getVisibleValues() throws Exception
-	{
-		return this.getValues();
 	}
 
 	@Override
@@ -220,6 +165,114 @@ public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, 
 	{
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Integer getColCount() throws Exception
+	{
+		return this.getColHeaders().size();
+	}
+
+	@Override
+	public Integer getRowCount() throws Exception
+	{
+		return this.getRowHeaders().size();
+	}
+
+	@Override
+	public SliceableMatrix<SomeRowType, SomeColType, SomeValueType> slice(
+			MatrixQueryRule rule) throws MatrixException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<String> getValuePropertyNames()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void refresh()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public SliceableMatrix<SomeRowType, SomeColType, SomeValueType> sliceByColValueProperty(
+			SomeColType col, String property, Operator operator, Object value)
+			throws MatrixException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SliceableMatrix<SomeRowType, SomeColType, SomeValueType> sliceByColValueProperty(
+			int colIndex, String property, Operator operator, Object value)
+			throws MatrixException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getRowLimit()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setRowLimit(int rowLimit)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getRowOffset()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setRowOffset(int rowOffset)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getColLimit()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setColLimit(int colLimit)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getColOffset()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setColOffset(int colOffset)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 

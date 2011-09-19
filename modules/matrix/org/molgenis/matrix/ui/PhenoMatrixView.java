@@ -3,8 +3,6 @@ package org.molgenis.matrix.ui;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.matrix.Matrix;
 import org.molgenis.matrix.PhenoMemoryMatrix;
-//import org.molgenis.ngs.LibraryLane;
-import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
 

@@ -7,10 +7,10 @@ import java.util.List;
 
 import org.molgenis.matrix.convertors.ValueConvertor;
 import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.CsvWriter;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvReaderListener;
-import org.molgenis.util.SpreadsheetWriter;
+import org.molgenis.util.CsvWriter;
+import org.molgenis.util.TupleWriter;
 import org.molgenis.util.Tuple;
 
 /**
@@ -138,7 +138,7 @@ public class CsvMemoryMatrix<E, A, V> extends MemoryMatrix<E, A, V> {
 		}
 	}
 
-	public void write(SpreadsheetWriter writer) throws Exception {
+	public void write(TupleWriter writer) throws Exception {
 		// NB this only works if names are unique!!!
 		// set headers
 		List<String> headers = new ArrayList<String>();

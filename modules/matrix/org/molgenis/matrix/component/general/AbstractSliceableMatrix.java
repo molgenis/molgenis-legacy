@@ -32,9 +32,8 @@ public abstract class AbstractSliceableMatrix<R, C, V> implements
 
 	@Override
 	public SliceableMatrix<R, C, V> sliceByColIndex(
-			QueryRule.Operator operator, int index) throws Exception
+			QueryRule.Operator operator, Integer index) throws Exception
 	{
-
 		List<Integer> resultIndices = new ArrayList<Integer>();
 		List<C> resultC = new ArrayList<C>();
 		
@@ -48,7 +47,7 @@ public abstract class AbstractSliceableMatrix<R, C, V> implements
 	
 	@Override
 	public SliceableMatrix<R, C, V> sliceByRowIndex(
-			QueryRule.Operator operator, int index) throws Exception
+			QueryRule.Operator operator, Integer index) throws Exception
 	{
 
 		List<Integer> resultIndices = new ArrayList<Integer>();
@@ -189,31 +188,9 @@ public abstract class AbstractSliceableMatrix<R, C, V> implements
 		}
 	}
 	
-	@Deprecated
-	public void createFresh()
-	{
-		this.reset();
-	}
-
-	/*
-	 * Implement some BasicMatrix functions
-	 */
-	@Deprecated
-	public List<R> getVisibleRows() throws Exception
-	{
-		return this.getRowHeaders();
-	}
-	
 	public List<R> getRowHeaders() throws Exception
 	{
 		return rowCopy;
-	}
-
-	@Deprecated
-	@Override
-	public List<C> getVisibleCols() throws Exception
-	{
-		return this.getColHeaders();
 	}
 
 	@Override

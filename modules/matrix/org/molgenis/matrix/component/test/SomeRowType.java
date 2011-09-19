@@ -1,6 +1,5 @@
 package org.molgenis.matrix.component.test;
 
-import java.util.Date;
 
 public class SomeRowType
 {

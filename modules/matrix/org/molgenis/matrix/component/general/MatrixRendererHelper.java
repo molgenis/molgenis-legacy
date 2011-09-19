@@ -53,7 +53,7 @@ public class MatrixRendererHelper<R, C, V> {
 	public String colHeaderToStringForTest(RenderableMatrix<R, C, V> rm) throws Exception
 	{
 		StringBuffer result = new StringBuffer();
-		for (C col : rm.getVisibleCols())
+		for (C col : rm.getColHeaders())
 		{
 			result.append(rm.getRenderDescriptor().renderColSimple(col)+" ");
 		}
@@ -63,7 +63,7 @@ public class MatrixRendererHelper<R, C, V> {
 	public String rowHeaderToStringForTest(RenderableMatrix<R, C, V> rm) throws Exception
 	{
 		StringBuffer result = new StringBuffer();
-		for (R row : rm.getVisibleRows())
+		for (R row : rm.getRowHeaders())
 		{
 			result.append(rm.getRenderDescriptor().renderRowSimple(row)+" ");
 		}
@@ -73,7 +73,7 @@ public class MatrixRendererHelper<R, C, V> {
 	public String valuesToStringForTest(RenderableMatrix<R, C, V> rm) throws Exception
 	{
 		StringBuffer result = new StringBuffer();
-		V[][] elements = rm.getVisibleValues();
+		V[][] elements = rm.getValues();
 		for (int rowIndex = 0; rowIndex < elements.length; rowIndex++)
 		{
 			for (int colIndex = 0; colIndex < elements[rowIndex].length; colIndex++)
@@ -89,15 +89,15 @@ public class MatrixRendererHelper<R, C, V> {
 		StringBuffer result = new StringBuffer();
 		try
 		{
-			for (C col : rm.getVisibleCols())
+			for (C col : rm.getColHeaders())
 			{
 				result.append("\t" + rm.getRenderDescriptor().renderColSimple(col));
 			}
 			result.append("\n");
-			V[][] elements = rm.getVisibleValues();
+			V[][] elements = rm.getValues();
 			for (int rowIndex = 0; rowIndex < elements.length; rowIndex++)
 			{
-				result.append(rm.getRenderDescriptor().renderRowSimple(rm.getVisibleRows().get(rowIndex)));
+				result.append(rm.getRenderDescriptor().renderRowSimple(rm.getRowHeaders().get(rowIndex)));
 				for (int colIndex = 0; colIndex < elements[rowIndex].length; colIndex++)
 				{
 					if (elements[rowIndex][colIndex] == null)

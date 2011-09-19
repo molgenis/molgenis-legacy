@@ -4,8 +4,6 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.framework.db.QueryRule;
-
 /**
  * Simple 'in-memory' implementation of the Matrix. Data is stored as
  * two-dimensional array.

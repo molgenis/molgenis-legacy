@@ -40,8 +40,8 @@ public class TestMatrixComponent
 	@Test
 	public void creation() throws Exception
 	{
-		Assert.assertEquals(renderer.getRendered().getVisibleValues()[0][0].getValue().intValue(), 56);
-		Assert.assertEquals(renderer.getRendered().getVisibleValues()[1][1].getValue().intValue(), 114);
+		Assert.assertEquals(renderer.getRendered().getValues()[0][0].getValue().intValue(), 56);
+		Assert.assertEquals(renderer.getRendered().getValues()[1][1].getValue().intValue(), 114);
 
 		
 		//etc
@@ -68,11 +68,11 @@ public class TestMatrixComponent
 		
 	//	System.out.println(renderer.getRendered().toString());
 		
-		Assert.assertEquals(renderer.getRendered().getVisibleRows().size(), 1);
-		Assert.assertEquals(renderer.getRendered().getVisibleCols().size(), 1);
-		Assert.assertEquals(renderer.getRendered().getVisibleValues().length, 1);
-		Assert.assertEquals(renderer.getRendered().getVisibleValues()[0].length, 1);
-		Assert.assertEquals(renderer.getRendered().getVisibleValues()[0][0].getValue().intValue(), 56);
+		Assert.assertEquals(renderer.getRendered().getRowHeaders().size(), 1);
+		Assert.assertEquals(renderer.getRendered().getColHeaders().size(), 1);
+		Assert.assertEquals(renderer.getRendered().getValues().length, 1);
+		Assert.assertEquals(renderer.getRendered().getValues()[0].length, 1);
+		Assert.assertEquals(renderer.getRendered().getValues()[0][0].getValue().intValue(), 56);
 		
 		//etc
 	}
@@ -87,7 +87,7 @@ public class TestMatrixComponent
 		renderer.moveDown();
 		renderer.filterAndRender();
 			
-		Assert.assertEquals(renderer.getRendered().getVisibleValues()[0][0].getValue().intValue(), 174);
+		Assert.assertEquals(renderer.getRendered().getValues()[0][0].getValue().intValue(), 174);
 	
 		//etc
 	}

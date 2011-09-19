@@ -2,7 +2,6 @@ package org.molgenis.matrix.ui;
 
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.matrix.Matrix;
-import org.molgenis.matrix.StringMatrix;
 
 public class StringMatrixView extends HtmlInput<Matrix<String,String,String>>
 {

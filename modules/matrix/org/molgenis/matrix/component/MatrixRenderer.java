@@ -30,7 +30,8 @@ import org.molgenis.util.Tuple;
  */
 public class MatrixRenderer<R, C, V> extends HtmlWidget
 {
-
+	
+	
 	private SliceableMatrix<R, C, V> sliceable;
 	private RenderableMatrix<R, C, V> renderMe;
 	private SourceMatrix<R, C, V> source;
@@ -103,13 +104,14 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		this.mover = new Mover<R, C, V>();
 
 		int nrOfPagingFilters = 0;
-		if (filters != null) {
-			for (MatrixQueryRule f : filters) {
-				if (f.getFilterType().equals(MatrixQueryRule.Type.paging)) {
-					nrOfPagingFilters++;
-				}
-			}
-		}
+		if(true) throw new UnsupportedOperationException("fixme using limit/offset");
+//		if (filters != null) {
+//			for (MatrixQueryRule f : filters) {
+//				if (f.getFilterType().equals(MatrixQueryRule.Type.paging)) {
+//					nrOfPagingFilters++;
+//				}
+//			}
+//		}
 
 		// set default index filters if no (index) filters are specified
 		if (filters == null || nrOfPagingFilters == 0)
@@ -121,8 +123,8 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 					.getTotalNumberOfCols() - 1 : MatrixRendererHelper.COL_STOP_DEFAULT;
 
 			if (filters == null) filters = new ArrayList<MatrixQueryRule>();
-			filters.add(new MatrixQueryRule(MatrixQueryRule.Type.paging, "row", Operator.LIMIT, rowStop));
-			filters.add(new MatrixQueryRule(MatrixQueryRule.Type.paging, "col", Operator.LIMIT, colStop));
+			this.sliceable.setRowLimit(rowStop);
+			this.sliceable.setColLimit( colStop);
 		}
 
 		filterAndRenderRequest(sliceable, filters);
@@ -213,7 +215,7 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 
 		if (action.equals("add_filter_by_index"))
 		{
-			newFilter = new MatrixQueryRule(MatrixQueryRule.Type.index, field, operator, value);
+			newFilter = new MatrixQueryRule(MatrixQueryRule.Type.colIndex, field, operator, value);
 		}
 		else if (action.equals("add_filter_by_col_value"))
 		{
@@ -288,10 +290,10 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 
 		new Validate<R, C, V>().validateFilters(filters, renderMe);
 		filters = orderFilters(filters);
-		sliceable.createFresh();
+		sliceable.reset();
 
-		System.out.println("sliceable: colsize: " + sliceable.getResult().getVisibleCols().size());
-		System.out.println("sliceable: rowsize: " + sliceable.getResult().getVisibleRows().size());
+		System.out.println("sliceable: colsize: " + sliceable.getResult().getColCount());
+		System.out.println("sliceable: rowsize: " + sliceable.getResult().getRowCount());
 
 		// apply filters in order
 		for (MatrixQueryRule f : filters)
@@ -300,32 +302,32 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 
 			switch (f.getFilterType())
 			{
-				case index:
-					sliceable.sliceByIndex(f);
-					break;
-				case paging:
-					sliceable.sliceByPaging(f);
-					break;
-				case rowHeader:
-					sliceable.sliceByRowHeader(f);
-					break;
-				case colHeader:
-					sliceable.sliceByColHeader(f);
-					break;
-				case rowValues:
-					sliceable.sliceByRowValues(f);
-					break;
-				case colValues:
-					sliceable.sliceByColValues(f);
-					break;
+//				case index:
+//					sliceable.sliceByIndex(f);
+//					break;
+//				case paging:
+//					sliceable.sliceByPaging(f);
+//					break;
+//				case rowHeader:
+//					sliceable.sliceByRowProperty(property, operator, value);
+//					break;
+//				case colHeader:
+//					sliceable.sliceByColHeader(f);
+//					break;
+//				case rowValues:
+//					sliceable.sliceByRowValues(f);
+//					break;
+//				case colValues:
+//					sliceable.sliceByColValues(f);
+//					break;
 			}
 		}
 
 		BasicMatrix<R, C, V> basic = sliceable.getResult();
 		new Validate<R, C, V>().validateResult(basic);
 
-		System.out.println("result 'basic': colsize: " + basic.getVisibleCols().size());
-		System.out.println("result 'basic': rowsize: " + basic.getVisibleRows().size());
+		System.out.println("result 'basic': colsize: " + basic.getColHeaders().size());
+		System.out.println("result 'basic': rowsize: " + basic.getRowHeaders().size());
 
 		renderMe = new RenderableMatrixImpl<R, C, V>(source, basic, filters, "", stepSize, screenName);
 	}
@@ -363,21 +365,22 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		for (int filterIndex = 0; filterIndex < filters.size(); filterIndex++)
 		{
 			MatrixQueryRule f = filters.get(filterIndex);
-			if (f.getFilterType().equals(MatrixQueryRule.Type.paging))
-			{
-				if (f.getOperator().equals(Operator.LIMIT))
-				{
-					limitFilters.add(f);
-				}
-				if (f.getOperator().equals(Operator.OFFSET))
-				{
-					offsetFilters.add(f);
-				}
-			}
-			else
-			{
-				otherFilters.add(f);
-			}
+			if(true) throw new UnsupportedOperationException("use limit and offset on sliceable");
+//			if (f.getFilterType().equals(MatrixQueryRule.Type.paging))
+//			{
+//				if (f.getOperator().equals(Operator.LIMIT))
+//				{
+//					limitFilters.add(f);
+//				}
+//				if (f.getOperator().equals(Operator.OFFSET))
+//				{
+//					offsetFilters.add(f);
+//				}
+//			}
+//			else
+//			{
+//				otherFilters.add(f);
+//			}
 		}
 		result.addAll(otherFilters);
 		result.addAll(offsetFilters);
@@ -410,8 +413,8 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 	public void pushFilter(int index, boolean pushDown) throws MatrixException
 	{
 		MatrixQueryRule filter = renderMe.getRules().get(index);
-		if (filter.getFilterType() == MatrixQueryRule.Type.paging) throw new MatrixException(
-				"You cannot move paging filters yet!");
+//		if (filter.getFilterType() == MatrixQueryRule.Type.paging) throw new MatrixException(
+//				"You cannot move paging filters yet!");
 		renderMe.getRules().remove(index);
 		if (pushDown)
 		{
@@ -450,14 +453,16 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		for (int filterIndex = 0; filterIndex < renderMe.getRules().size(); filterIndex++)
 		{
 			MatrixQueryRule f = renderMe.getRules().get(filterIndex);
-			if (!(f.getFilterType().equals(MatrixQueryRule.Type.paging) && f.getOperator().equals(Operator.LIMIT)))
-			{
-				newFilters.add(f);
-			}
+//			if (!(f.getFilterType().equals(MatrixQueryRule.Type.paging) && f.getOperator().equals(Operator.LIMIT)))
+//			{
+//				newFilters.add(f);
+//			}
 		}
 	
-		newFilters.add(new MatrixQueryRule(MatrixQueryRule.Type.paging, "row", Operator.LIMIT, height));
-		newFilters.add(new MatrixQueryRule(MatrixQueryRule.Type.paging, "col", Operator.LIMIT, width));
+		
+//		
+//		newFilters.add(new MatrixQueryRule(MatrixQueryRule.Type.paging, "row", Operator.LIMIT, height));
+//		newFilters.add(new MatrixQueryRule(MatrixQueryRule.Type.paging, "col", Operator.LIMIT, width));
 	
 		renderMe.getRules().clear();
 		renderMe.getRules().addAll(newFilters);
@@ -563,5 +568,17 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 	{
 		return this.renderMe;
 	}
+	
+	public void setRowOffsetLimit(int offset, int limit)
+	{
+		this.sliceable.setRowLimit(limit);
+		this.sliceable.setRowOffset(offset);
+	}
 
+	
+	public void setColOffsetLimit(int offset, int limit)
+	{
+		this.sliceable.setColLimit(limit);
+		this.sliceable.setColOffset(offset);
+	}
 }

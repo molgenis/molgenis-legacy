@@ -2,7 +2,6 @@ package org.molgenis.matrix.test;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;

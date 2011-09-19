@@ -1,3 +1,10 @@
+//PAGING should be done using limit/offset
+//this should not be a queryrule as you can do this only 1x for row and 1x for col.
+
+
+
+
+
 package org.molgenis.matrix.component.general;
 
 import org.molgenis.framework.db.QueryRule.Operator;
@@ -12,23 +19,9 @@ public class Mover<R, C, V>
 	 */
 	public void moveLeft(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
+		//TODO reimplement using limit/offset
 		
-		
-		MatrixQueryRule f = MatrixRendererHelper.getFilterWhere(renderMe.getRules(), MatrixQueryRule.Type.paging, "col",
-				Operator.OFFSET);
 
-		if (f != null)
-		{
-			f.setValue((Integer) f.getValue() - renderMe.getStepSize());
-		}
-		else
-		{
-			// will result in error message, but is consistent/expected
-			// behaviour
-			renderMe.getRules().add(
-					new MatrixQueryRule(MatrixQueryRule.Type.paging, "col", Operator.OFFSET, 0 - renderMe
-							.getStepSize()));
-		}
 	}
 
 	/**
@@ -39,19 +32,7 @@ public class Mover<R, C, V>
 	public void moveRight(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
 
-		MatrixQueryRule f = MatrixRendererHelper.getFilterWhere(renderMe.getRules(), MatrixQueryRule.Type.paging, "col",
-				Operator.OFFSET);
-
-		if (f != null)
-		{
-			f.setValue((Integer) f.getValue() + renderMe.getStepSize());
-		}
-		else
-		{
-			renderMe.getRules()
-					.add(new MatrixQueryRule(MatrixQueryRule.Type.paging, "col", Operator.OFFSET, renderMe
-							.getStepSize()));
-		}
+		//TODO reimplement using limit/offset
 	}
 
 	/**
@@ -62,19 +43,7 @@ public class Mover<R, C, V>
 	public void moveDown(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
 
-		MatrixQueryRule f = MatrixRendererHelper.getFilterWhere(renderMe.getRules(), MatrixQueryRule.Type.paging, "row",
-				Operator.OFFSET);
-
-		if (f != null)
-		{
-			f.setValue((Integer) f.getValue() + renderMe.getStepSize());
-		}
-		else
-		{
-			renderMe.getRules()
-					.add(new MatrixQueryRule(MatrixQueryRule.Type.paging, "row", Operator.OFFSET, renderMe
-							.getStepSize()));
-		}
+		//TODO reimplement using limit/offset
 	}
 
 	/**
@@ -84,21 +53,7 @@ public class Mover<R, C, V>
 	 */
 	public void moveUp(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
-		MatrixQueryRule f = MatrixRendererHelper.getFilterWhere(renderMe.getRules(), MatrixQueryRule.Type.paging, "row",
-				Operator.OFFSET);
-
-		if (f != null)
-		{
-			f.setValue((Integer) f.getValue() - renderMe.getStepSize());
-		}
-		else
-		{
-			// will result in error message, but is consistent/expected
-			// behaviour
-			renderMe.getRules().add(
-					new MatrixQueryRule(MatrixQueryRule.Type.paging, "row", Operator.OFFSET, 0 - renderMe
-							.getStepSize()));
-		}
+		//TODO reimplement using limit/offset
 	}
 
 	/**
@@ -106,18 +61,7 @@ public class Mover<R, C, V>
 	 */
 	public void moveFarLeft(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
-		MatrixQueryRule f = MatrixRendererHelper.getFilterWhere(renderMe.getRules(), MatrixQueryRule.Type.paging, "col",
-				Operator.OFFSET);
-
-		if (f != null)
-		{
-			f.setValue(0);
-		}
-		else
-		{
-			// default situation, but make explicit for consistency
-			renderMe.getRules().add(new MatrixQueryRule(MatrixQueryRule.Type.paging, "col", Operator.OFFSET, 0));
-		}
+		//TODO reimplement using limit/offset
 	}
 
 	/**
@@ -128,19 +72,7 @@ public class Mover<R, C, V>
 	 */
 	public void moveFarRight(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
-		MatrixQueryRule f = MatrixRendererHelper.getFilterWhere(renderMe.getRules(), MatrixQueryRule.Type.paging, "col",
-				Operator.OFFSET);
-
-		if (f != null)
-		{
-			f.setValue(renderMe.getTotalNumberOfCols() - renderMe.getVisibleCols().size());
-		}
-		else
-		{
-			renderMe.getRules().add(
-					new MatrixQueryRule(MatrixQueryRule.Type.paging, "col", Operator.OFFSET, renderMe
-							.getTotalNumberOfCols() - renderMe.getVisibleCols().size()));
-		}
+		//TODO reimplement using limit/offset
 	}
 
 	/**
@@ -152,18 +84,7 @@ public class Mover<R, C, V>
 	 */
 	public void moveFarDown(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
-		MatrixQueryRule f = MatrixRendererHelper.getFilterWhere(renderMe.getRules(), MatrixQueryRule.Type.paging, "row",
-				Operator.OFFSET);
-
-		if (f != null)
-		{
-			f.setValue(renderMe.getTotalNumberOfRows() - renderMe.getVisibleRows().size());
-		}
-		else
-		{
-			renderMe.getRules().add(
-					new MatrixQueryRule(MatrixQueryRule.Type.paging, "row", Operator.OFFSET, renderMe.getTotalNumberOfRows() - renderMe.getVisibleRows().size()));
-		}
+		//TODO reimplement using limit/offset
 	}
 
 	/**
@@ -171,17 +92,6 @@ public class Mover<R, C, V>
 	 */
 	public void moveFarUp(RenderableMatrix<R, C, V> renderMe) throws Exception
 	{
-		MatrixQueryRule f = MatrixRendererHelper.getFilterWhere(renderMe.getRules(), MatrixQueryRule.Type.paging, "row",
-				Operator.OFFSET);
-
-		if (f != null)
-		{
-			f.setValue(0);
-		}
-		else
-		{
-			renderMe.getRules().add(
-					new MatrixQueryRule(MatrixQueryRule.Type.paging, "row", Operator.OFFSET, 0));
-		}
+		//TODO reimplement using limit/offset
 	}
 }

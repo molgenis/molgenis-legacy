@@ -25,32 +25,13 @@ public class Validate<R, C, V>
 
 			switch (f.getFilterType())
 			{
-				case index:
+				case rowIndex:
 					// TODO
-					break;
-				case paging:
-					switch (f.getOperator())
-					{
-						case OFFSET:
-							if ((Integer) f.getValue() < 0)
-							{
-								throw new MatrixException("You cannot page below 0.");
-							}
-							if (f.getField().equals("row")
-									&& (Integer) f.getValue() > rm.getTotalNumberOfRows()-1)
-							{
-								throw new MatrixException("You cannot page beyond " + (rm.getTotalNumberOfRows()-1));
-							}
-							if (f.getField().equals("col")
-									&& (Integer) f.getValue() > rm.getTotalNumberOfCols()-1)
-							{
-								throw new MatrixException("You cannot page beyond " + (rm.getTotalNumberOfCols()-1));
-							}
-							break;
-					}
 					break;
 				case rowHeader:
 					// TODO
+					break;
+				case colIndex:
 					break;
 				case colHeader:
 					// TODO
@@ -69,11 +50,11 @@ public class Validate<R, C, V>
 
 	public void validateResult(BasicMatrix<R, C, V> bm) throws Exception
 	{
-		if (bm.getVisibleCols().size() < 0)
+		if (bm.getColHeaders().size() < 0)
 		{
 			throw new MatrixException("No visible cols in the matrix");
 		}
-		if (bm.getVisibleRows().size() < 0)
+		if (bm.getRowHeaders().size() < 0)
 		{
 			throw new MatrixException("No visible rows in the matrix");
 		}
@@ -85,25 +66,25 @@ public class Validate<R, C, V>
 		{
 			throw new MatrixException("No row indices in the matrix");
 		}
-		if (bm.getColIndices().size() != bm.getVisibleCols().size())
+		if (bm.getColIndices().size() != bm.getColHeaders().size())
 		{
 			throw new MatrixException("Number of col indices (" + bm.getColIndices().size()
-					+ ") does not match number of visible cols (" + bm.getVisibleCols().size() + ")");
+					+ ") does not match number of visible cols (" + bm.getColHeaders().size() + ")");
 		}
-		if (bm.getRowIndices().size() != bm.getVisibleRows().size())
+		if (bm.getRowIndices().size() != bm.getRowHeaders().size())
 		{
 			throw new MatrixException("Number of row indices (" + bm.getRowIndices().size()
-					+ ") does not match number of visible rows (" + bm.getVisibleRows().size() + ")");
+					+ ") does not match number of visible rows (" + bm.getRowHeaders().size() + ")");
 		}
-		if (bm.getRowIndices().size() != bm.getVisibleValues().length)
+		if (bm.getRowIndices().size() != bm.getValues().length)
 		{
 			throw new MatrixException("Number of rows (" + bm.getRowIndices().size()
-					+ ") does not match number of visible row elements (" + bm.getVisibleValues().length + ")");
+					+ ") does not match number of visible row elements (" + bm.getValues().length + ")");
 		}
-		if (bm.getColIndices().size() != bm.getVisibleValues()[0].length)
+		if (bm.getColIndices().size() != bm.getValues()[0].length)
 		{
 			throw new MatrixException("Number of cols (" + bm.getColIndices().size()
-					+ ") does not match number of visible col elements (" + bm.getVisibleValues()[0].length + ")");
+					+ ") does not match number of visible col elements (" + bm.getValues()[0].length + ")");
 		}
 	}
 
