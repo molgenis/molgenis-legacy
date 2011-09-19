@@ -12,7 +12,7 @@ import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.Entity;
-import org.molgenis.util.SpreadsheetWriter;
+import org.molgenis.util.TupleWriter;
 
 public class JpaMappingDecorator<E extends Entity> implements JpaMapper<E>
 {
@@ -42,7 +42,7 @@ public class JpaMappingDecorator<E extends Entity> implements JpaMapper<E>
 	}
 
 	@Override
-	public int add(CsvReader reader, SpreadsheetWriter writer) throws DatabaseException
+	public int add(CsvReader reader, TupleWriter writer) throws DatabaseException
 	{
 		return mapper.add(reader, writer);
 	}
@@ -60,7 +60,7 @@ public class JpaMappingDecorator<E extends Entity> implements JpaMapper<E>
 	}
 
 	@Override
-	public void find(SpreadsheetWriter writer, QueryRule ...rules) throws DatabaseException
+	public void find(TupleWriter writer, QueryRule ...rules) throws DatabaseException
 	{
 		mapper.find(writer, rules);
 	}
@@ -110,7 +110,7 @@ public class JpaMappingDecorator<E extends Entity> implements JpaMapper<E>
 	}
 
 	@Override
-	public void find(SpreadsheetWriter writer, List<String> fieldsToExport, QueryRule ...rules) throws DatabaseException
+	public void find(TupleWriter writer, List<String> fieldsToExport, QueryRule ...rules) throws DatabaseException
 	{
 		mapper.find(writer, fieldsToExport, rules);
 	}

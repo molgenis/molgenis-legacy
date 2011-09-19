@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.DataFormatException;
 
-import org.apache.log4j.Logger;
 
 /**
  * Generic superclass that implements CsvReader based on BufferedReader. Users
@@ -15,43 +14,13 @@ import org.apache.log4j.Logger;
  * 
  * @see CsvReader
  */
-public class CsvBufferedReader implements CsvReader
+public class CsvBufferedReader extends AbstractTupleReader implements CsvReader
 {
 	/** default separators */
 	public static char[] separators = {',', '\t', ';', ' '};
 
 	/** Wrapper around the resource that is read */
 	public BufferedReader reader = null;
-
-	/** for log messages */
-	private static final transient Logger logger = Logger.getLogger(CsvFileReader.class.getSimpleName());
-
-	/**
-	 * a matching String that indicates where the Csv starts; empty means first
-	 * line
-	 */
-	private String blockStart = "";
-
-	/**
-	 * a matching String that inidicates where the Csv is terminated; empty
-	 * means last line
-	 */
-	private String blockEnd = "";
-
-	/** a string that translates to a null value when parsed */
-	private String missingValueIndicator = "";
-
-	/** cache of the column names, may have duplicates */
-	private List<String> columnnames;
-
-	/** guessed separator */
-	private char separator = 0;
-
-	/** boolean indicating the parser is working */
-	private boolean isParsing = false;
-
-	/** booleain indicating that the resource parsed has headers... */
-	private boolean hasHeader = true;
 
 	/**
 	 * Constructor
@@ -60,30 +29,6 @@ public class CsvBufferedReader implements CsvReader
 	 */
 	public CsvBufferedReader(BufferedReader reader) {
 		this.reader = reader;
-	}
-
-	// @Override
-	public String getBlockEnd()
-	{
-		return blockEnd;
-	}
-
-	// @Override
-	public void setBlockEnd(String blockEnd)
-	{
-		this.blockEnd = blockEnd;
-	}
-
-	// @Override
-	public String getBlockStart()
-	{
-		return blockStart;
-	}
-
-	// @Override
-	public void setBlockStart(String blockStart)
-	{
-		this.blockStart = blockStart;
 	}
 
 	// @Override
@@ -188,11 +133,6 @@ public class CsvBufferedReader implements CsvReader
 		// TODO: very simple function, just return a single column in the form
 		// of a list by a header name
 		return null;
-	}
-
-	public int parse(int noElements, CsvReaderListener... listeners) throws Exception
-	{
-		return this.parse(noElements, null, listeners);
 	}
 
 	// @Override
@@ -326,12 +266,6 @@ public class CsvBufferedReader implements CsvReader
 		}
 
 		return lineCount;
-	}
-
-	@Override
-	public int parse(CsvReaderListener... listeners) throws Exception
-	{
-		return this.parse(Integer.MAX_VALUE, listeners);
 	}
 
 	@Override
@@ -524,18 +458,6 @@ public class CsvBufferedReader implements CsvReader
 	}
 
 	// @Override
-	public void setMissingValues(String missingValue)
-	{
-		this.missingValueIndicator = missingValue;
-	}
-
-	// @Override
-	public String getMissingValues()
-	{
-		return this.missingValueIndicator;
-	}
-
-	// @Override
 	public void reset() throws IOException
 	{
 		this.columnnames = null; // force to read colnames also!
@@ -543,35 +465,9 @@ public class CsvBufferedReader implements CsvReader
 	}
 
 	@Override
-	public void setColnames(List<String> fields)
-	{
-		this.columnnames = fields;
-	}
-
-	@Override
 	public void setSeparator(char string)
 	{
 		this.separator = string;
-
-	}
-
-	public void renameField(String from, String to) throws Exception
-	{
-		List<String> colnames = this.colnames();
-		if (colnames.contains(from))
-			colnames.set(colnames.indexOf(from), to);
-		else
-		{
-			logger.warn("renameField(" + from + "," + to + ") failed. Known columns are: " + colnames);
-		}
-		this.setColnames(colnames);
-
-	}
-
-	@Override
-	public void disableHeader(boolean header)
-	{
-		this.hasHeader = header;
 
 	}
 }

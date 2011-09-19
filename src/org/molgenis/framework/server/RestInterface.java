@@ -14,7 +14,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.util.CsvWriter;
-import org.molgenis.util.SpreadsheetWriter;
+import org.molgenis.util.TupleWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
@@ -109,7 +109,7 @@ public class RestInterface
 				else
 				{
 
-					SpreadsheetWriter writer = new CsvWriter(out);
+					TupleWriter writer = new CsvWriter(out);
 					// CsvWriter writer = new CsvFileWriter( new
 					// File("c:/testout.txt") );
 					if (rulesList != null) db.find(getClassForName(entityName), writer, rulesList

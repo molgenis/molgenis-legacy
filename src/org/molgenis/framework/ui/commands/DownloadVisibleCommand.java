@@ -20,7 +20,7 @@ import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
-import org.molgenis.util.SpreadsheetWriter;
+import org.molgenis.util.TupleWriter;
 import org.molgenis.util.Tuple;
 
 /**

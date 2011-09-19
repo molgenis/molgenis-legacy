@@ -301,6 +301,22 @@ public class JDBCConnectionHelper
 						where_clause.append(")");
 					}
 				}
+				//experimental: subqery
+				else if (rule.getOperator() == QueryRule.Operator.IN_SUBQUERY)
+				{
+					if (where_clause.length() > 0)
+					{
+						if (previousRule != null && Operator.OR.equals(previousRule.getOperator()))
+						{
+							where_clause.append(" OR ");
+						}
+						else
+						{
+							where_clause.append(" AND ");
+						}
+					}
+					where_clause.append(rule.getField() + " IN("+rule.getValue()+")");
+				}
 				else if (rule.getOperator() == QueryRule.Operator.IN)
 				{
 					// only add if nonempty condition???

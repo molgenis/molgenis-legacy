@@ -70,6 +70,8 @@ public class QueryRule implements Cloneable {
 		EQUALS("="),
 		/** 'field' in 'value' (value being a list). */
 		IN("IN"),
+		/** 'field in (value)' with value being a subquery */
+		IN_SUBQUERY("IN_SUB"),
 		/** 'field' less-than 'value' */
 		LESS("<"),
 		/** 'field' equal-or-less-than 'value' */

@@ -50,7 +50,7 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.RedirectedException;
 import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.SpreadsheetWriter;
+import org.molgenis.util.TupleWriter;
 import org.molgenis.util.Tuple;
 
 /**
@@ -1086,7 +1086,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				// TODO: when is this reached??
 
 				// execute query
-				SpreadsheetWriter writer = new CsvWriter(out);
+				TupleWriter writer = new CsvWriter(out);
 				// CsvWriter writer = new CsvFileWriter( new
 				// File("c:/testout.txt") );
 				db.find(getClassForName(entityName), writer, rulesList
@@ -1266,7 +1266,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					if (action.equals("ADD"))
 					{
 						File temp = File.createTempFile("molgenis", "tab");
-						SpreadsheetWriter writer = new CsvWriter(
+						TupleWriter writer = new CsvWriter(
 								new PrintWriter(new BufferedWriter(
 										new FileWriter(temp))));
 						if (requestTuple.getObject(INPUT_SILENT) != null

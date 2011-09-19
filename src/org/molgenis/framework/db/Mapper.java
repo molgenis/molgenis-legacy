@@ -6,7 +6,7 @@ import java.util.List;
 import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.Entity;
-import org.molgenis.util.SpreadsheetWriter;
+import org.molgenis.util.TupleWriter;
 
 public interface Mapper<E extends Entity> {
 	public Database getDatabase();
@@ -17,7 +17,7 @@ public interface Mapper<E extends Entity> {
 	// iterator of some kind?
 	public E create();
 	
-	public int add(CsvReader reader, SpreadsheetWriter writer) throws DatabaseException;
+	public int add(CsvReader reader, TupleWriter writer) throws DatabaseException;
 	
 	public int update(List<E> entities) throws DatabaseException;
 	
@@ -29,9 +29,9 @@ public interface Mapper<E extends Entity> {
 
 	public List<E> find(QueryRule ...rules) throws DatabaseException;
 
-	public void find(SpreadsheetWriter writer, QueryRule[] rules) throws DatabaseException;
+	public void find(TupleWriter writer, QueryRule[] rules) throws DatabaseException;
 	
-	public void find(SpreadsheetWriter writer, List<String> fieldsToExport, QueryRule[] rules) throws DatabaseException;
+	public void find(TupleWriter writer, List<String> fieldsToExport, QueryRule[] rules) throws DatabaseException;
 
 	public int remove(CsvReader reader) throws DatabaseException;
 

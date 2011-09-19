@@ -2,9 +2,7 @@ package org.molgenis.util;
 
 import java.util.List;
 
-import jxl.write.WritableSheet;
-
-public interface SpreadsheetWriter
+public interface TupleWriter
 {
 
 	/**
