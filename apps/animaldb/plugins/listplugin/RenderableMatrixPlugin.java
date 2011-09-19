@@ -17,6 +17,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.matrix.component.MatrixRenderer;
 import org.molgenis.matrix.component.PhenoMatrix;
+import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.general.MatrixRendererHelper;
 import org.molgenis.matrix.component.interfaces.RenderableMatrix;
@@ -29,7 +30,7 @@ import org.molgenis.util.Tuple;
 public class RenderableMatrixPlugin extends PluginModel<Entity> {
 	
 	private static final long serialVersionUID = -8306984451248484959L;
-	private PhenoMatrix matrix = null;
+	private SliceablePhenoMatrix matrix = null;
 	private MatrixRenderer<ObservationTarget, ObservableFeature, List<ObservedValue>> matrixRenderer = null;
 	private List<ObservationTarget> selectedTargetList = null;
 	
@@ -96,13 +97,13 @@ public class RenderableMatrixPlugin extends PluginModel<Entity> {
 	
 	private void initMatrix(Database db) throws Exception {
 		// To test the initialization of the matrix with a predefined filter (set):
-		MatrixQueryRule preFilter = new MatrixQueryRule(MatrixQueryRule.Type.colHeader, "col_att_name", Operator.EQUALS, "TypeOfGroup");
-		List<MatrixQueryRule> preFilterList = new ArrayList<MatrixQueryRule>();
-		preFilterList.add(preFilter);
+//		MatrixQueryRule preFilter = new MatrixQueryRule(MatrixQueryRule.Type.colHeader, "col_att_name", Operator.EQUALS, "TypeOfGroup");
+//		List<MatrixQueryRule> preFilterList = new ArrayList<MatrixQueryRule>();
+//		preFilterList.add(preFilter);
 		// 'Normal' code from here on:
-		matrix = new PhenoMatrix(db);
+		matrix = new SliceablePhenoMatrix(db);
 		matrixRenderer = new MatrixRenderer<ObservationTarget, ObservableFeature, List<ObservedValue>>("Pheno Matrix", 
-				"Pheno Matrix", matrix, matrix, preFilterList, null, 5, this.getName());
+				matrix, null, this.getName());
 	}
 
 	public List<ObservationTarget> getSelectedTargetList() {

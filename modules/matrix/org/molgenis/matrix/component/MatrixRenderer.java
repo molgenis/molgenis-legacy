@@ -102,9 +102,11 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 		this.screenName = screenName;
 		this.stepSize = stepSize;
 		this.mover = new Mover<R, C, V>();
+	
+		// Why was the statement below inserted?
+//		if(true) throw new UnsupportedOperationException("fixme using limit/offset");
 
-		int nrOfPagingFilters = 0;
-		if(true) throw new UnsupportedOperationException("fixme using limit/offset");
+//		int nrOfPagingFilters = 0;
 //		if (filters != null) {
 //			for (MatrixQueryRule f : filters) {
 //				if (f.getFilterType().equals(MatrixQueryRule.Type.paging)) {
@@ -114,7 +116,7 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 //		}
 
 		// set default index filters if no (index) filters are specified
-		if (filters == null || nrOfPagingFilters == 0)
+		if (filters == null /*|| nrOfPagingFilters == 0*/)
 		{
 			// use -1 to compensate for totals to indices
 			int rowStop = MatrixRendererHelper.ROW_STOP_DEFAULT > source.getTotalNumberOfRows() - 1 ? source
@@ -359,13 +361,13 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 	private List<MatrixQueryRule> orderFilters(List<MatrixQueryRule> filters)
 	{
 		List<MatrixQueryRule> result = new ArrayList<MatrixQueryRule>();
-		List<MatrixQueryRule> limitFilters = new ArrayList<MatrixQueryRule>();
-		List<MatrixQueryRule> offsetFilters = new ArrayList<MatrixQueryRule>();
+//		List<MatrixQueryRule> limitFilters = new ArrayList<MatrixQueryRule>();
+//		List<MatrixQueryRule> offsetFilters = new ArrayList<MatrixQueryRule>();
 		List<MatrixQueryRule> otherFilters = new ArrayList<MatrixQueryRule>();
-		for (int filterIndex = 0; filterIndex < filters.size(); filterIndex++)
-		{
-			MatrixQueryRule f = filters.get(filterIndex);
-			if(true) throw new UnsupportedOperationException("use limit and offset on sliceable");
+//		for (int filterIndex = 0; filterIndex < filters.size(); filterIndex++)
+//		{
+//			MatrixQueryRule f = filters.get(filterIndex);
+//			if(true) throw new UnsupportedOperationException("use limit and offset on sliceable");
 //			if (f.getFilterType().equals(MatrixQueryRule.Type.paging))
 //			{
 //				if (f.getOperator().equals(Operator.LIMIT))
@@ -381,10 +383,10 @@ public class MatrixRenderer<R, C, V> extends HtmlWidget
 //			{
 //				otherFilters.add(f);
 //			}
-		}
+//		}
 		result.addAll(otherFilters);
-		result.addAll(offsetFilters);
-		result.addAll(limitFilters);
+		//result.addAll(offsetFilters);
+		//result.addAll(limitFilters);
 		return result;
 	}
 	

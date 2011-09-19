@@ -19,6 +19,7 @@ import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 
+@Deprecated
 public class PhenoMatrix
 		extends
 		AbstractSliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>>
