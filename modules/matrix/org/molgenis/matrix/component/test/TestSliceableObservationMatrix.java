@@ -128,7 +128,7 @@ public class TestSliceableObservationMatrix
 			for(Integer col = 0; col < matrix.getColLimit(); col++)
 			{
 				List<ObservedValue> e = valueMatrix[row][col];
-				Assert.assertEquals(e.get(0).getValue(), null);
+				Assert.assertEquals(e.get(0).getValue(), this.values.get(row*matrix.getColCount() + col).getValue());
 				//TODO 
 				//Assert.assertEquals(e.get(0), col);
 				//Assert.assertEquals(e.getValue(), "val"+row+","+col);
@@ -165,15 +165,15 @@ public class TestSliceableObservationMatrix
 		logger.debug("testColValuePropertyFilters");		
 		
 		//filter on 5th column (values 'val4,4' and higher), we expect first result target to be row5
-		matrix.sliceByColValues(5, Operator.GREATER, "val44");
-		matrix.sortCol(5, ObservedValue.VALUE, Operator.SORTASC);
-		Assert.assertEquals(matrix.getRowHeaders().get(0), targets.get(6));
+		matrix.sliceByColValues(features.get(5), Operator.GREATER, "val44");
+		matrix.sortCol(features.get(5).getId(), ObservedValue.VALUE, Operator.SORTASC);
+		Assert.assertEquals(matrix.getRowHeaders().get(0), targets.get(5));
 		
 		//repeate but now explicity property chosing
-//		matrix.reset();
-//		matrix.sliceByColValueProperty(5, TextDataElement.VALUE, Operator.GREATER, "val44");
-//		matrix.sortCol(5, TextDataElement.VALUE, Operator.SORTASC);
-//		Assert.assertEquals(matrix.getRowHeaders().get(0).getIdValue(), targets.get(6).getIdValue());
+		matrix.reset();
+		matrix.sliceByColValueProperty(features.get(5), ObservedValue.VALUE, Operator.GREATER, "val44");
+		matrix.sortCol(features.get(5).getId(), ObservedValue.VALUE, Operator.SORTASC);
+		Assert.assertEquals(matrix.getRowHeaders().get(0).getIdValue(), targets.get(5).getIdValue());
 	}
 
 	@Test

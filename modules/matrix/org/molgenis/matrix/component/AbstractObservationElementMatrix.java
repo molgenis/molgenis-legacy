@@ -1,6 +1,5 @@
 package org.molgenis.matrix.component;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +12,6 @@ import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.general.MatrixRowHeaderFilter;
 import org.molgenis.matrix.component.general.MatrixRowValueFilter;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
-
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
 
@@ -225,21 +223,6 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 	protected V[] create(int rows)
 	{
 		return (V[]) new Object[rows];
-	}
-
-	@SuppressWarnings("unchecked")
-	public V[][] create(int rows, int cols, Class valueType)
-	{
-		// create all empty rows as well
-		V[][] data = (V[][]) Array
-				.newInstance(valueType, rows, cols);
-		for (int i = 0; i < data.length; i++)
-		{
-			data[i] = (V[]) Array
-					.newInstance(valueType, cols);
-		}
-	
-		return data;
 	}
 
 	@Override
