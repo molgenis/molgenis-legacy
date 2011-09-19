@@ -4,20 +4,18 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.BasicConfigurator;
-import org.molgenis.pheno.Individual;
-import org.molgenis.pheno.ObservableFeature;
-import org.molgenis.pheno.Panel;
 import org.molgenis.util.CsvFileWriter;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
-import org.molgenis.util.vcf.VcfInfo;
 import org.molgenis.util.vcf.VcfReader;
 import org.molgenis.util.vcf.VcfReaderListener;
 import org.molgenis.util.vcf.VcfRecord;
-import org.molgenis.variant.SequenceFeature;
+import org.molgenis.variant.Chromosome;
+import org.molgenis.variant.SequenceVariant;
 
 /**
  * This method can extract cohort level or individual level data from vcf files
@@ -27,19 +25,7 @@ import org.molgenis.variant.SequenceFeature;
  */
 public class ConvertVcfToPheno
 {
-	// buffer of variants
-	List<SequenceFeature> variants = new ArrayList<SequenceFeature>();
-
-	// buffer of variant features
-	List<ObservableFeature> features = new ArrayList<ObservableFeature>();
-
-	// buffer of individuals
-	List<Individual> individuals = new ArrayList<Individual>();
-
-	// cohort
-	Panel cohort = null;
-
-	// List of observations should go into a matrix???
+	public static final int BATCH_SIZE = 10000;
 
 	public static void main(String[] args) throws Exception
 	{
@@ -53,7 +39,7 @@ public class ConvertVcfToPheno
 		}
 		else
 		{
-			vcfFile = new File("/Users/mswertz/test.vcf");
+			vcfFile = new File("/Users/mswertz/merged.vcf");
 			outputDir = new File("/Users/mswertz/test");
 		}
 
@@ -61,16 +47,30 @@ public class ConvertVcfToPheno
 		convert.convertVariants(vcfFile, outputDir);
 	}
 
-	public void convertVariants(File vcfFile, File outputDir) throws Exception
+	public void convertVariants(final File vcfFile, final File outputDir)
+			throws Exception
 	{
 		System.out.println("converting aggregate data from vcf=" + vcfFile
 				+ " to directory " + outputDir);
 		VcfReader vcf = new VcfReader(vcfFile);
 
-		final List<SequenceFeature> variants = new ArrayList<SequenceFeature>();
-		
-		int maxAlleles = vcf.getSampleList().size() * 2;
+		final List<SequenceVariant> variants = new ArrayList<SequenceVariant>();
+		final List<String> chromosomes = new ArrayList<String>();
 
+		// create filename
+		final File file = new File(outputDir.getAbsolutePath()
+				+ File.separatorChar + "SequenceVariant.txt");
+
+		final String[] headers = new String[]
+		{ SequenceVariant.NAME, SequenceVariant.CHR_NAME,
+				SequenceVariant.STARTBP, SequenceVariant.REF,
+				SequenceVariant.ALT, SequenceVariant.DESCRIPTION,
+				SequenceVariant.DBREFS_NAME };
+
+		final List<Integer> count = new ArrayList<Integer>();
+		count.add(0);
+
+		create(file, headers);
 		vcf.parse(new VcfReaderListener()
 		{
 
@@ -78,38 +78,85 @@ public class ConvertVcfToPheno
 			public void handleLine(int lineNumber, VcfRecord record)
 					throws Exception
 			{
-				SequenceFeature v = new SequenceFeature();
-				//create hgvs notation
-				v.setName("chr" + record.getChrom() + ":g." + record.getPos()
-						+ record.getRef() + ">" + toCsv(record.getAlt()));
-				
+				SequenceVariant v = new SequenceVariant();
+				// create hgvs notation
+				// chr1:g.[12345A>T];[12345A>G]
+				if (record.getAlt().size() > 1)
+				{
+					String result = "chr" + record.getChrom() + ":g.";
+					int  i = 0;
+					for (String alt : record.getAlt())
+					{
+						if(i++ > 0) result += ";";
+						result += "[" + record.getPos() + record.getRef() + ">"
+								+ alt + "]";
+					}
+					v.setName(result);
+				}
+				else
+				{
+					v.setName("chr" + record.getChrom() + ":g."
+							+ record.getPos() + record.getRef() + ">"
+							+ record.getAlt().get(0));
+				}
+
 				// ref
 				v.setRef(record.getRef());
-				
+
 				// alt
+
 				v.setAlt(toCsv(record.getAlt()));
-				
+
 				// chr
 				v.setChr_Name(record.getChrom());
-				
+
+				if (!chromosomes.contains(record.getChrom())) chromosomes
+						.add(record.getChrom());
+
 				// pos
 				v.setStartBP(record.getPos());
-				
+
 				// dbrefs name
-				if (record.getId().size() > 0 && !".".equals(record.getId().get(0)))
+				if (record.getId().size() > 0
+						&& !".".equals(record.getId().get(0)))
 				{
 					v.setDbRefs_Name(record.getId());
 				}
 
-				//put alt allele counts in description
+				// put alt allele counts in description
 				v.setDescription(record.getInfo("AC").toString());
-				
+
 				variants.add(v);
 
+				if (variants.size() == BATCH_SIZE)
+				{
+					writeBatch(variants, file, headers);
+					variants.clear();
+					count.set(0, count.get(0) + BATCH_SIZE);
+
+					System.out.println(new Date() + ":" + count.get(0));
+				}
 			}
 		});
-		
-		this.write(variants, outputDir, new String[]{SequenceFeature.NAME, SequenceFeature.CHR_NAME, SequenceFeature.STARTBP, SequenceFeature.REF, SequenceFeature.ALT, SequenceFeature.DESCRIPTION, SequenceFeature.DBREFS_NAME});
+
+		// write remaining
+		writeBatch(variants, file, headers);
+
+		// write chromsomes
+		List<Chromosome> chrList = new ArrayList<Chromosome>();
+		for (String chr : chromosomes)
+		{
+			Chromosome c = new Chromosome();
+			c.setName(chr);
+			chrList.add(c);
+		}
+
+		File chrFile = new File(outputDir.getAbsolutePath()
+				+ File.separatorChar + "chromosome.txt");
+		String[] chrHeader = new String[]
+		{ "name" };
+		create(chrFile, chrHeader);
+		writeBatch(chrList, chrFile, chrHeader);
 	}
 
 	private String toCsv(List<String> values)
@@ -131,65 +178,30 @@ public class ConvertVcfToPheno
 		return result;
 	}
 
-	public void convertAggregateData(File vcfFile, File outputDir)
-			throws IOException
+	private void create(File file, String[] fields) throws IOException
 	{
-		System.out.println("converting aggregate data from vcf=" + vcfFile
-				+ " to directory " + outputDir);
-		VcfReader vcf = new VcfReader(vcfFile);
-
-		// first extract the features and write to outputDir
-		for (VcfInfo format : vcf.getInfos())
-		{
-			ObservableFeature feature = new ObservableFeature();
-			feature.setName(format.getId());
-			feature.setDescription(format.getDescription());
-			// TODO: format.getNumber() format.getType()
-			features.add(feature);
-		}
-
-		write(features, outputDir, new String[]
-		{ "name", "description" });
-
+		CsvWriter writer = new CsvFileWriter(file, Arrays.asList(fields));
+		writer.writeHeader();
+		writer.close();
 	}
 
-	private void append(List<? extends Entity> entities, File directory,
+	private void writeBatch(List<? extends Entity> entities, File file,
 			String[] fields) throws IOException
-	{
-		this.write(entities, directory, fields, true);
-	}
-
-	private void write(List<? extends Entity> entities, File directory,
-			String[] fields) throws IOException
-	{
-		this.write(entities, directory, fields, false);
-	}
-
-	private void write(List<? extends Entity> entities, File directory,
-			String[] fields, boolean append) throws IOException
 	{
 		if (entities.size() > 0)
 		{
-			// create filename
-			File file = new File(directory.getAbsolutePath() + File.separatorChar
-					+ entities.get(0).getClass().getSimpleName().toLowerCase()
-					+ ".txt");
-			
-			System.out.println("Writing to "+file);
+			System.out.println("Writing to " + file);
 
-			// create csvWriter using the selected headers
+			// create appending csvWriter using the selected headers
 			CsvWriter writer = new CsvFileWriter(file, Arrays.asList(fields),
-					append);
+					true);
 
-			// if !append write headers
-			if (!append) writer.writeHeader();
-
-			// write all to csv
+			// write batch to csv
 			for (Entity e : entities)
 			{
 				writer.writeRow(e);
 			}
-			
+
 			writer.close();
 
 		}

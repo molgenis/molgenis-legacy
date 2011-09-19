@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<molgenis name="org.molgenis.patho" label="Variant and pathogenecity database">
+<molgenis name="org.molgenis.patho" label="Genome NL Variant Catalogue">
 	<description>
 		This database firstly allows efficient storage of variants reported in
 		individuals and/or cohorts. (TODO pathogenecity).
@@ -22,25 +22,24 @@
 		report families. That is a type of panel?? User interfaces: * search
 		by
 	</description>
-	<menu name="PathoApp" position="left">
+	<plugin name="PathoHeader" type="org.molgenis.patho.ui.PathoHeader"/>
+		<plugin name="PathoSearch" label="Find variants" type="org.molgenis.patho.ui.PathoSearch"/>
+		<form name="PathoVariants" label="Variants" entity="SequenceVariant" />
+					
 		<menu name="PathoDataTables" label="Data Tables" position="left">
 			<form name="PathoSpecies" label="Species" entity="Species" />
 			<form name="OntologyTerm" label="Ontology Terms" entity="OntologyTerm" />
 			<form name="PathoBuilds" label="Genome builds" entity="GenomeBuild" />
 			<form name="PathoChromosomes" label="Chromosomes" entity="Chromosome" />
-			<form name="PathoVariants" label="Variants" entity="SequenceFeature" />
 			<form name="PathoPanels" label="Panels" entity="Panel" />
 			<form name="PathoIndividuals" label="Individuals" entity="Individual" />
-			<!--
-				form name="PathoSubmission" label="Submissions" entity="Submission"
-				/
-			-->
+			<!-- form name="PathoSubmission" label="Submissions" entity="Submission"
+				/-->
 			<form name="PathoObservation" label="Observed Values" entity="ObservedValue" />
 		</menu>
-		<menu name="PathoImport" label="Import data">
+		<!--  menu name="PathoImport" label="Import data">
 			<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard"
 				label="Import Excel" />
 			<plugin name="ImportVCF" type="org.molgenis.patho.ui.ImportVCF"/>
-		</menu>
-	</menu>
+		</menu -->
 </molgenis>
