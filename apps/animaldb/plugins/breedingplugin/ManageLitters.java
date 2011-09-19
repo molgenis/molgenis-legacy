@@ -981,6 +981,9 @@ public class ManageLitters extends PluginModel<Entity>
 			elementList = new ArrayList<String>();
 			elementLabelList = new ArrayList<String>();
 			
+			//ID
+			elementLabelList.add("Animal ID:");
+			elementList.add(Integer.toString(animalId));
 			// Earmark
 			elementLabelList.add("Earmark:");
 			elementList.add(ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("Earmark")));
@@ -1009,6 +1012,11 @@ public class ManageLitters extends PluginModel<Entity>
 			// Geno father
 			elementLabelList.add("Genotype father:");
 			elementList.add(fatherInfo);
+			
+			// Add DEC nr, if present, or empty if not
+			elementLabelList.add("DEC:");
+			String DecNr = ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("DecNr")) + " " + ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("ExperimentNr"));
+			elementList.add(DecNr);
 			
 			// Not needed at this time, maybe later:
 			// Birthdate
