@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 
 /**
@@ -188,22 +189,22 @@ public abstract class AbstractSliceableMatrix<R, C, V> implements
 		}
 	}
 	
-	public List<R> getRowHeaders() throws Exception
+	public List<R> getRowHeaders() throws MatrixException
 	{
 		return rowCopy;
 	}
 
 	@Override
-	public List<C> getColHeaders() throws Exception
+	public List<C> getColHeaders() throws MatrixException
 	{
 		return colCopy;
 	}
-	public List<Integer> getRowIndices() throws Exception
+	public List<Integer> getRowIndices() throws MatrixException
 	{
 		return rowIndicesCopy;
 	}
 
-	public List<Integer> getColIndices() throws Exception
+	public List<Integer> getColIndices() throws MatrixException
 	{
 		return colIndicesCopy;
 	}

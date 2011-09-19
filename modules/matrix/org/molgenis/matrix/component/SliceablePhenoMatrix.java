@@ -1,6 +1,5 @@
 package org.molgenis.matrix.component;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -9,13 +8,8 @@ import java.util.Map;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
-import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
-import org.molgenis.matrix.component.general.MatrixColHeaderFilter;
-import org.molgenis.matrix.component.general.MatrixColValueFilter;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
-import org.molgenis.matrix.component.general.MatrixRowHeaderFilter;
-import org.molgenis.matrix.component.general.MatrixRowValueFilter;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 import org.molgenis.organization.Investigation;
@@ -25,96 +19,48 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 
 /**
- * Sliceable version of the ObservationMatrix
+ * Sliceable version of the PhenoMatrix. This assumes the rows are
+ * ObservationTarget, the columns ObservableFeature and there can be zero or
+ * more ObservedValue for each combination (hence return List &lt; ObservedValue &gt; for
+ * each value 'V')
  * 
+ * Slicing will be done by setting filters.
+ * 
+ * The data is retrieved by (a) retrieving visible columns and rows and (2)
+ * retrieval of the matching data using columns and rows as filters. The whole
+ * set is filtered by investigation.
  * 
  */
-public class SliceablePhenoMatrix implements SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>>
+public class SliceablePhenoMatrix<R extends ObservationElement,C extends ObservationElement>
+		extends
+		AbstractObservationElementMatrix<R, C, List<ObservedValue>>
+		implements
+		SliceableMatrix<R, C, List<ObservedValue>>
 {
-	// required
-	private Investigation investigation;
-	private Database database;
-	private Class<ObservationTarget> rowClass;
-	private Class<ObservableFeature> colClass;
-	private Class<ObservedValue> valueClass;
-
-	// caches, may result in performance issues
-	private List<ObservableFeature> colHeaders = null;
-	private List<ObservationTarget> rowHeaders = null;
-
-	// collection of all rules except limit/offset
-	List<MatrixQueryRule> rules = new ArrayList<MatrixQueryRule>();
-
-	// indicator if rowHeader, rowIndices or colHeader, colIndices are dirty
-	private boolean rowDirty = true;
-	private boolean colDirty = true;
-
-	private int rowLimit = 10;
-	private int rowOffset = 0;
-	private int colLimit = 10;
-	private int colOffset = 0;
-
 	/**
 	 * Construct sliceable matrix for one Data set.
 	 * 
 	 * @param database
 	 * @param data
 	 */
-	public SliceablePhenoMatrix(Database database)
+	public SliceablePhenoMatrix(Database database, Class<R> rowClass, Class<C> colClass)
 	{
 		this.database = database;
-		this.rowClass = ObservationTarget.class;
-		this.colClass = ObservableFeature.class;
+		this.rowClass = rowClass;
+		this.colClass = colClass;
 		this.valueClass = ObservedValue.class;
 	}
 
 	@Override
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> slice(MatrixQueryRule rule)
-			throws MatrixException
-	{
-		this.validate(rule);
-		switch (rule.getFilterType())
-		{
-		// row headers need to be refreshed in case of:
-			case rowIndex:
-				this.rowDirty = true;
-				break;
-			case rowHeader:
-				this.rowDirty = true;
-				break;
-			case colValues:
-				this.rowDirty = true;
-				break;
-			case colValueProperty:
-				this.rowDirty = true;
-				break;
-			// col headers need to be refreshed in case of:
-			case colIndex:
-				this.colDirty = true;
-				break;
-			case colHeader:
-				this.colDirty = true;
-				break;
-			case rowValues:
-				this.colDirty = true;
-				break;
-			case rowValueProperty:
-				this.rowDirty = true;
-				break;
-		}
-		rules.add(rule);
-		return this;
-	}
-
-	@Override
-	public List<ObservationTarget> getRowHeaders() throws MatrixException
+	public List<R> getRowHeaders() throws MatrixException
 	{
 		// reload the rowheaders if filters have changed.
 		if (rowDirty)
 		{
 			try
 			{
-				Query<ObservationTarget> query = this.createSelectQuery(getRowClass());
+				Query<R> query = this
+						.createSelectQuery(getRowClass());
 				this.rowHeaders = query.find();
 				rowDirty = false;
 			}
@@ -140,26 +86,15 @@ public class SliceablePhenoMatrix implements SliceableMatrix<ObservationTarget, 
 	}
 
 	@Override
-	public List<Integer> getRowIndices() throws MatrixException
-	{
-		// retrieve the indices from the headers (we use the id value).
-		List<Integer> rowIndices = new ArrayList<Integer>();
-		for (ObservationTarget row : getRowHeaders())
-		{
-			rowIndices.add(row.getId());
-		}
-		return rowIndices;
-	}
-
-	@Override
-	public List<ObservableFeature> getColHeaders() throws MatrixException
+	public List<C> getColHeaders() throws MatrixException
 	{
 		// reload the rowheaders if filters have changed.
 		if (colDirty)
 		{
 			try
 			{
-				Query<ObservableFeature> query = this.createSelectQuery(getColClass());
+				Query<C> query = this
+						.createSelectQuery(getColClass());
 				this.colHeaders = query.find();
 				colDirty = false;
 			}
@@ -169,18 +104,6 @@ public class SliceablePhenoMatrix implements SliceableMatrix<ObservationTarget, 
 			}
 		}
 		return colHeaders;
-	}
-
-	@Override
-	public List<Integer> getColIndices() throws MatrixException
-	{
-		// get col indexes from col headers
-		List<Integer> colIndices = new ArrayList<Integer>();
-		for (ObservableFeature col : getColHeaders())
-		{
-			colIndices.add(col.getId());
-		}
-		return colIndices;
 	}
 
 	public Integer getColCount() throws MatrixException
@@ -197,15 +120,18 @@ public class SliceablePhenoMatrix implements SliceableMatrix<ObservationTarget, 
 	}
 
 	@Override
-	public BasicMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> getResult() throws Exception
+	public BasicMatrix<R, C, List<ObservedValue>> getResult()
+			throws Exception
 	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void reset() throws Exception
+	public void reset() throws MatrixException
 	{
+		// empty the rules
 		this.rules = new ArrayList<MatrixQueryRule>();
+
 		// empty the caches
 		colDirty = true;
 		colOffset = 0;
@@ -214,54 +140,17 @@ public class SliceablePhenoMatrix implements SliceableMatrix<ObservationTarget, 
 
 	}
 
-	@Override
-	public List<String> getRowPropertyNames()
-	{
-		try
-		{
-			return this.getRowClass().newInstance().getFields();
-		}
-		catch (Exception e)
-		{
-			// should never happen
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
-	public List<String> getColPropertyNames()
-	{
-		try
-		{
-			return this.getColClass().newInstance().getFields();
-		}
-		catch (Exception e)
-		{
-			// should never happen
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
-	public List<String> getValuePropertyNames()
-	{
-		try
-		{
-			return this.getValueClass().newInstance().getFields();
-		}
-		catch (Exception e)
-		{
-			// should never happen
-			throw new RuntimeException(e);
-		}
-	}
-
+	/**
+	 * Helper method to create a 'count' query. Difference with a normal query
+	 * is that there is no limit/offset on it
+	 */
 	private <D extends ObservationElement> Query<D> createCountQuery(
 			Class<D> xClass) throws MatrixException
 	{
 		return this.createQuery(xClass, true);
 	}
 
+	/** Helper method to produce a selection query for columns or rows */
 	private <D extends ObservationElement> Query<D> createSelectQuery(
 			Class<D> xClass) throws MatrixException
 	{
@@ -334,11 +223,12 @@ public class SliceablePhenoMatrix implements SliceableMatrix<ObservationTarget, 
 					// create a new subquery for each colValues column
 					if (subQueries.get(rule.getDimIndex()) == null)
 					{
-						Query<ObservedValue> subQuery = database.query(this.getValueClass());
-						//filter on data
-						//if(data != null)
-						//	subQuery.eq(TextDataElement.DATA, data.getIdValue());
-						//filter on the column/row
+						Query<ObservedValue> subQuery = database.query(this
+								.getValueClass());
+						// filter on data
+						// if(data != null)
+						// subQuery.eq(TextDataElement.DATA, data.getIdValue());
+						// filter on the column/row
 						subQuery.eq(xDim, rule.getDimIndex());
 						subQueries.put(rule.getDimIndex(), subQuery);
 					}
@@ -346,23 +236,13 @@ public class SliceablePhenoMatrix implements SliceableMatrix<ObservationTarget, 
 				}
 				// ignore all other rules
 			}
-			
-			//if no queries where made we still need one for the right 'data'
-//			if(data != null && subQueries.size() == 0)
-//			{
-//				Query<V> subQuery = database.query(this.getValueClass());
-//				//filter on data and first column
-//				subQuery.eq(TextDataElement.DATA, data.getIdValue());
-//				subQuery.eq(xDim, 0);
-//				subQuery.sortASC(xDim+"Index");
-//				subQueries.put(0, subQuery);
-//			}
-			// add each subquery as condition on ID
+
+			// add each subquery as condition on ObservedValue.FEATURE/ObservedValue.TARGET
 			for (Query<ObservedValue> q : subQueries.values())
 			{
 				String sql = q.createFindSql();
 				// strip 'select ... from' and replace with 'select id from'
-				sql = "SELECT TextDataElement."+xDim+" "
+				sql = "SELECT TextDataElement." + xDim + " "
 						+ sql.substring(sql.indexOf("FROM"));
 				// use QueryRule.Operator.IN_SUBQUERY
 				xQuery.subquery(ObservationElement.ID, sql);
@@ -391,313 +271,44 @@ public class SliceablePhenoMatrix implements SliceableMatrix<ObservationTarget, 
 		}
 	}
 
-	private void validate(MatrixQueryRule rule) throws MatrixException
+	@Override
+	public List<ObservedValue>[][] getValues() throws MatrixException
 	{
 		try
 		{
-			switch (rule.getFilterType())
+			// get the indices (map to real coordinates)
+			final List<Integer> rowIndexes = getRowIndices();
+			final List<Integer> colIndexes = getColIndices();
+
+			// create matrix of suitable size
+			final List<ObservedValue>[][] valueMatrix = create(getRowLimit(),
+					getColLimit(), valueClass);
+
+			// retrieve values matching the selected indexes
+			Query<ObservedValue> query = database.query(valueClass);
+			query.in(ObservedValue.FEATURE, this.getColIndices());
+			query.in(ObservedValue.TARGET, this.getRowIndices());
+
+			// use the streaming interface?
+			List<ObservedValue> values = query.find();
+
+			for (ObservedValue value : values)
 			{
-			// rowheader and colheader can do all operators
-				case rowHeader:
-					if (!this.getRowPropertyNames().contains(rule.getField()))
-					{
-						throw new MatrixException(
-								"rule.field not in matrix.rowPropertyNames: "
-										+ rule);
-					}
-					break;
-				case colHeader:
-					if (!this.getColPropertyNames().contains(rule.getField()))
-					{
-						throw new MatrixException(
-								"rule.field not in matrix.rowPropertyNames: "
-										+ rule);
-					}
-					break;
-				case rowValueProperty:
-					break;
-				case colValueProperty:
-					break;					
-				default:
-					throw new MatrixException("rule not supported: " + rule);
+				if (valueMatrix[rowIndexes.indexOf(value.getTarget())][colIndexes
+						.indexOf(value.getFeature())] == null)
+				{
+					valueMatrix[rowIndexes.indexOf(value.getTarget())][colIndexes
+							.indexOf(value.getFeature())] = new ArrayList<ObservedValue>();
+				}
+				valueMatrix[rowIndexes.indexOf(value.getTarget())][colIndexes
+						.indexOf(value.getFeature())].add(value);
 			}
+
+			return valueMatrix;
 		}
 		catch (Exception e)
 		{
-			throw new MatrixException("rule not supported: " + rule);
+			throw new MatrixException(e);
 		}
-	}
-
-	@Override
-	public int getRowLimit()
-	{
-		return rowLimit;
-	}
-
-	@Override
-	public void setRowLimit(int rowLimit)
-	{
-		this.rowDirty = true;
-		this.rowLimit = rowLimit;
-	}
-
-	@Override
-	public int getRowOffset()
-	{
-		return rowOffset;
-	}
-
-	@Override
-	public void setRowOffset(int rowOffset)
-	{
-		this.rowDirty = true;
-		this.rowOffset = rowOffset;
-	}
-
-	@Override
-	public int getColLimit()
-	{
-		return colLimit;
-	}
-
-	@Override
-	public void setColLimit(int colLimit)
-	{
-		this.colDirty = true;
-		this.colLimit = colLimit;
-	}
-
-	@Override
-	public int getColOffset()
-	{
-		return colOffset;
-	}
-
-	@Override
-	public void setColOffset(int colOffset)
-	{
-		this.colDirty = true;
-		this.colOffset = colOffset;
-	}
-
-	protected Class<ObservationTarget> getRowClass()
-	{
-		return rowClass;
-	}
-
-	protected void setRowClass(Class<ObservationTarget> rowClass)
-	{
-		this.rowClass = rowClass;
-	}
-
-	protected Class<ObservableFeature> getColClass()
-	{
-		return colClass;
-	}
-
-	protected void setColClass(Class<ObservableFeature> colClass)
-	{
-		this.colClass = colClass;
-	}
-
-	protected Class<ObservedValue> getValueClass()
-	{
-		return valueClass;
-	}
-
-	protected void setValueClass(Class<ObservedValue> valueClass)
-	{
-		this.valueClass = valueClass;
-	}
-
-	@Override
-	public List<ObservedValue>[][] getValues() throws Exception
-	{
-		// get the indices (map to real coordinates)
-		final List<Integer> rowIndexes = getRowIndices();
-		final List<Integer> colIndexes = getColIndices();
-
-		// create matrix of suitable size
-		final List<ObservedValue>[][] valueMatrix = create(getRowLimit(), getColLimit(),
-				valueClass);
-
-		// retrieve values matching the selected indexes
-		Query<ObservedValue> query = database.query(valueClass);
-		query.in(ObservedValue.FEATURE, this.getColIndices());
-		query.in(ObservedValue.TARGET, this.getRowIndices());
-
-		// use the streaming interface?
-		List<ObservedValue> values = query.find();
-
-		for (ObservedValue value : values)
-		{
-			if (valueMatrix[rowIndexes.indexOf(value.getTarget())][colIndexes.indexOf(value.getFeature())] == null) {
-				valueMatrix[rowIndexes.indexOf(value.getTarget())][colIndexes.indexOf(value.getFeature())] = new ArrayList<ObservedValue>();
-			}
-			valueMatrix[rowIndexes.indexOf(value.getTarget())][colIndexes.indexOf(value.getFeature())].add(value);
-		}
-
-		return valueMatrix;
-	}
-
-	@Override
-	public void refresh() throws Exception
-	{
-		this.reset();
-
-	}
-
-	@SuppressWarnings("unchecked")
-	protected List<ObservedValue>[] create(int rows)
-	{
-		return (List<ObservedValue>[]) new Object[rows];
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<ObservedValue>[][] create(int rows, int cols, Class valueType)
-	{
-		// create all empty rows as well
-		List<ObservedValue>[][] data = (List<ObservedValue>[][]) Array.newInstance(valueType, rows, cols);
-		for (int i = 0; i < data.length; i++)
-		{
-			data[i] = (List<ObservedValue>[]) Array.newInstance(valueType, cols);
-		}
-
-		return data;
-	}
-
-	@Override
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColIndex(Operator operator,
-			Integer index) throws Exception
-	{
-		// rewrite as sliceByColProperty(id)
-		return this.sliceByColProperty(ObservedValue.ID, operator, index);
-	}
-
-	@Override
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByRowIndex(Operator operator,
-			Integer index) throws Exception
-	{
-		// this is actually a rowProperty slice!
-		return this.sliceByRowProperty(ObservedValue.ID, operator, index);
-	}
-
-	@Override
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByRowOffsetLimit(int limit, int offset)
-			throws Exception
-	{
-		this.rowLimit = limit;
-		this.rowOffset = offset;
-		return this;
-	}
-
-	@Override
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColOffsetLimit(int limit, int offset)
-			throws Exception
-	{
-		this.colLimit = limit;
-		this.colOffset = offset;
-		return this;
-	}
-
-	@Override
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByRowValues(int rowIndex,
-			Operator operator, Object value) throws Exception
-	{
-		// slice by rowIndex means effectively ObservedValue.target=index &&
-		// ObervedValue.value=value!
-		return this.slice(new MatrixRowValueFilter(rowIndex,
-				ObservedValue.VALUE, operator, value));
-	}
-
-	@Override
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByRowValues(ObservationTarget row, Operator operator,
-			Object value) throws Exception
-	{
-		// slice by rowIndex means effectively ObservedValue.target=row.getId()
-		// && ObervedValue.value=value!
-		if (row.getId() == null) throw new MatrixException(
-				"row.getId() not set for sliceByRowValues(" + row + ")");
-		return this.slice(new MatrixRowValueFilter(row.getId(),
-				ObservedValue.VALUE, operator, value));
-	}
-
-	@Override
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColValues(int colIndex,
-			Operator operator, Object value) throws Exception
-	{
-		// slice by rowIndex means effectively ObservedValue.feature=index &&
-		// ObervedValue.value=value!
-		return this.slice(new MatrixColValueFilter(colIndex,
-				ObservedValue.VALUE, operator, value));
-	}
-
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sortCol(int colIndex, Operator operator)
-			throws MatrixException
-	{
-		//
-		// sort by value
-		return this.slice(new MatrixColValueFilter(colIndex,
-				ObservedValue.VALUE, operator));
-	}
-
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sortCol(Integer colIndex,
-			String colProperty, Operator operator) throws MatrixException
-	{
-		return this.slice(new MatrixColValueFilter(colIndex, colProperty,
-				operator));
-	}
-
-	@Override
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColValues(ObservableFeature col, Operator operator,
-			Object value) throws Exception
-	{
-		// slice by rowIndex means effectively ObservedValue.target=row.getId()
-		// && ObervedValue.value=value!
-		if (col.getId() == null) throw new MatrixException(
-				"col.getId() not set for sliceByColValues(" + col + ")");
-		return this.slice(new MatrixColValueFilter(col.getId(),
-				ObservedValue.VALUE, operator, value));
-	}
-
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sortByColValues(ObservableFeature col, Operator operator)
-			throws MatrixException
-	{
-		if (col.getId() == null) throw new MatrixException(
-				"col.getId() not set for sortByColValues(" + col + ")");
-		return this.slice(new MatrixColValueFilter(col.getId(),
-				ObservedValue.VALUE, operator, col.getId()));
-	}
-
-	@Override
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColValueProperty(ObservableFeature col, String property,
-			Operator operator, Object value) throws MatrixException
-	{
-		if (col.getId() == null) throw new MatrixException(
-				"col.getId() not set for sortByColValues(" + col + ")");
-		return this.slice(new MatrixColValueFilter(col.getId(),
-				ObservedValue.VALUE, operator, value));
-	}
-	
-	@Override
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColValueProperty(int colIndex, String property,
-			Operator operator, Object value) throws MatrixException
-	{
-		return this.slice(new MatrixColValueFilter(colIndex,
-				ObservedValue.VALUE, operator, value));
-	}
-
-	@Override
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByRowProperty(String property,
-			Operator operator, Object value) throws MatrixException
-	{
-		return this.slice(new MatrixRowHeaderFilter(property, operator, value));
-	}
-
-	@Override
-	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColProperty(String property,
-			Operator operator, Object value) throws Exception
-	{
-		return this.slice(new MatrixColHeaderFilter(property, operator, value));
 	}
 }

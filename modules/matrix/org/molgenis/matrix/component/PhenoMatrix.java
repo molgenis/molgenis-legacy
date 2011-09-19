@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
@@ -48,8 +47,10 @@ public class PhenoMatrix
 	/************************************************************/
 
 	@Override
-	public List<ObservedValue>[][] getValues() throws Exception
+	public List<ObservedValue>[][] getValues() throws MatrixException
 	{
+		try
+		{
 		List<ObservedValue>[][] visibleValues = new List[rowCopy.size()][colCopy
 				.size()];
 
@@ -98,6 +99,10 @@ public class PhenoMatrix
 		}
 
 		return visibleValues;
+		} catch(Exception e)
+		{
+			throw new MatrixException(e);
+		}
 	}
 
 	@Deprecated
@@ -425,21 +430,25 @@ public class PhenoMatrix
 	}
 
 	@Override
-	public Integer getColCount() throws Exception {
+	public Integer getColCount() throws MatrixException
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Integer getRowCount() throws Exception {
+	public Integer getRowCount() throws MatrixException
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void refresh() throws Exception {
+	public void refresh() throws MatrixException
+	{
 		// TODO Auto-generated method stub
 		
 	}
+
 
 }

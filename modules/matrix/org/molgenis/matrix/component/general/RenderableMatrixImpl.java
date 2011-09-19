@@ -1,8 +1,8 @@
 package org.molgenis.matrix.component.general;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
 import org.molgenis.matrix.component.interfaces.RenderDescriptor;
 import org.molgenis.matrix.component.interfaces.RenderableMatrix;
@@ -42,26 +42,26 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>
 	}
 	
 	@Override
-	public List<R> getRowHeaders() throws Exception
+	public List<R> getRowHeaders() throws MatrixException
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	@Override
-	public List<C> getColHeaders() throws Exception
+	public List<C> getColHeaders() throws MatrixException
 	{
 		return basic.getColHeaders();
 	}
 
 	@Override
-	public List<Integer> getRowIndices() throws Exception
+	public List<Integer> getRowIndices() throws MatrixException
 	{
 		return basic.getRowIndices();
 	}
 
 	@Override
-	public List<Integer> getColIndices() throws Exception
+	public List<Integer> getColIndices() throws MatrixException
 	{
 		return basic.getColIndices();
 	}
@@ -141,25 +141,25 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>
 		return source.getRenderDescriptor();
 	}
 	@Override
-	public V[][] getValues() throws Exception
+	public V[][] getValues() throws MatrixException
 	{
 		return basic.getValues();
 	}
 
 	@Override
-	public Integer getColCount() throws Exception
+	public Integer getColCount() throws MatrixException
 	{
 		return this.getRowHeaders().size();
 	}
 
 	@Override
-	public Integer getRowCount() throws Exception
+	public Integer getRowCount() throws MatrixException
 	{
 		return this.getColHeaders().size();
 	}
 
 	@Override
-	public void refresh() throws Exception
+	public void refresh() throws MatrixException
 	{
 		// TODO Auto-generated method stub
 		

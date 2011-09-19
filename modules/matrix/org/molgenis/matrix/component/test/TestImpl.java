@@ -104,7 +104,7 @@ public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, 
 	}
 
 	@Override
-	public SomeValueType[][] getValues() throws Exception
+	public SomeValueType[][] getValues() throws MatrixException
 	{
 		SomeValueType[][] visibleValues = new SomeValueType[rowIndicesCopy.size()][colIndicesCopy.size()];
 		//equivalent: new List[rowCopy.size()][colCopy.size()];
@@ -168,13 +168,13 @@ public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, 
 	}
 
 	@Override
-	public Integer getColCount() throws Exception
+	public Integer getColCount() throws MatrixException
 	{
 		return this.getColHeaders().size();
 	}
 
 	@Override
-	public Integer getRowCount() throws Exception
+	public Integer getRowCount() throws MatrixException
 	{
 		return this.getRowHeaders().size();
 	}
