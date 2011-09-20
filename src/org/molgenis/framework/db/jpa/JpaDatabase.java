@@ -106,7 +106,19 @@ public abstract class JpaDatabase extends AbstractDatabase implements Database {
     	this.em = EMFactory.createEntityManager();
     }
 
-    protected void setEntityManager(EntityManager em) {
+    public JpaDatabase(EntityManager em,
+			Model model)
+	{
+		this.em = em;
+		this.model = model;
+	}
+
+	public JpaDatabase(Model model)
+	{
+		this.model = model;
+	}
+
+	protected void setEntityManager(EntityManager em) {
         this.em = em;
     }
 
