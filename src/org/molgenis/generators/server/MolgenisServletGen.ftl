@@ -36,6 +36,7 @@ import ${package}.DatabaseFactory;
 <#if db_mode = 'standalone'>
 import org.apache.commons.dbcp.BasicDataSource;
 <#else>
+import javax.servlet.ServletContext;
 import org.molgenis.framework.db.jdbc.JndiDataSourceWrapper;
 </#if>
 
@@ -64,7 +65,8 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 			this.db = DatabaseFactory.create(dataSource, new File("${db_filepath}"));
 		<#else>
 			//The datasource is created by the servletcontext	
-			DataSource dataSource = (DataSource)getServletContext().getAttribute("DataSource");
+			ServletContext sc = MolgenisContextListener.getInstance().getContext();
+			DataSource dataSource = (DataSource)sc.getAttribute("DataSource");
 			this.db = DatabaseFactory.create(dataSource, new File("${db_filepath}"));
 		</#if>
 		}
