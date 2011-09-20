@@ -1880,5 +1880,26 @@ public class CommonService
 		}
 		return String.valueOf(fullNameChars);
 	}
+	
+	/**
+	 * Get a list of all the remarks that have been set on the target with ID 'targetId'.
+	 * 
+	 * @param targetId
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public List<String> getRemarks(int targetId) throws DatabaseException {
+		Query<ObservedValue> q = db.query(ObservedValue.class);
+		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Remark"));
+		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetId));
+		List<ObservedValue> valueList = q.find();
+		List<String> returnList = new ArrayList<String>();
+		if (valueList != null && valueList.size() > 0) {
+			for (ObservedValue value : valueList) {
+				returnList.add(value.getValue());
+			}
+		}
+		return returnList;
+	}
 
 }

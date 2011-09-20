@@ -14,6 +14,7 @@ public class Litter {
 	private String isSizeApproximate;
 	private int weanSize;
 	private String parentgroup;
+	private String remarks;
 	private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
 	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 	
@@ -86,5 +87,11 @@ public class Litter {
 	public String getParentgroup() {
 		if (parentgroup == null) return "";
 		return parentgroup;
+	}
+	public String getRemarks() {
+		return remarks;
+	}
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
 	}
 }

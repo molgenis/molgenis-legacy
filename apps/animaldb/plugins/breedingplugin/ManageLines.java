@@ -7,12 +7,14 @@
 
 package plugins.breedingplugin;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
@@ -44,8 +46,11 @@ public class ManageLines extends PluginModel<Entity>
 	}
 	
 	public String getCustomHtmlHeaders() {
-		return "<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n"
-				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
+		return "<script type=\"text/javascript\" src=\"res/scripts/custom/jquery.dataTables.js\"></script>\n" +
+				"<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/demo_table.css\">\n" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/demo_page.css\">\n" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
 	}
 
 	@Override
@@ -59,6 +64,30 @@ public class ManageLines extends PluginModel<Entity>
 	{
 		return "plugins/breedingplugin/ManageLines.ftl";
 	}
+	
+	public String getSourceName(int lineId) {
+		String sourceName;
+		try {
+			int sourceId = cs.getMostRecentValueAsXref(lineId, cs.getMeasurementId("Source"));
+			sourceName = cs.getObservationTargetLabel(sourceId);
+		} catch (Exception e) {
+			e.printStackTrace();
+			sourceName = "Error when retrieving source";
+		}
+		return sourceName;
+	}
+	
+	public String getRemarks(int lineId) throws DatabaseException {
+		List<String> remarksList = cs.getRemarks(lineId);
+		String returnString = "";
+		for (String remark : remarksList) {
+			returnString += (remark + "<br>");
+		}
+		if (returnString.length() > 0) {
+			returnString = returnString.substring(0, returnString.length() - 4);
+		}
+		return returnString;
+	}
 
 	@Override
 	public void handleRequest(Database db, Tuple request)
@@ -70,18 +99,25 @@ public class ManageLines extends PluginModel<Entity>
 				this.setLineName(request.getString("lineName"));
 				// Make group
 				int invid = cs.getOwnUserInvestigationId(this.getLogin().getUserId());
-				int groupid = cs.makePanel(invid, lineName, this.getLogin().getUserId());
+				int lineId = cs.makePanel(invid, lineName, this.getLogin().getUserId());
 				// Mark group as Line using a special event
 				int protocolId = cs.getProtocolId("SetTypeOfGroup");
 				int measurementId = cs.getMeasurementId("TypeOfGroup");
 				db.add(cs.createObservedValueWithProtocolApplication(invid, now, null, 
-						protocolId, measurementId, groupid, "Line", 0));
+						protocolId, measurementId, lineId, "Line", 0));
 				// Set source
 				this.setSource(request.getInt("source"));
 				protocolId = cs.getProtocolId("SetSource");
 				measurementId = cs.getMeasurementId("Source");
 				db.add(cs.createObservedValueWithProtocolApplication(invid, now, null, 
-						protocolId, measurementId, groupid, null, source));
+						protocolId, measurementId, lineId, null, source));
+				// Set remark
+				if (request.getString("remarks") != null) {
+					protocolId = cs.getProtocolId("SetRemark");
+					measurementId = cs.getMeasurementId("Remark");
+					db.add(cs.createObservedValueWithProtocolApplication(invid, now, null, 
+							protocolId, measurementId, lineId, request.getString("remarks"), 0));
+				}
 				
 				this.getMessages().clear();
 				this.getMessages().add(new ScreenMessage("Line successfully added", true));

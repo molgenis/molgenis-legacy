@@ -42,12 +42,14 @@ public class ManageParentgroups extends PluginModel<Entity>
 	private List<Integer> selectedFatherIdList = new ArrayList<Integer>();
 	private CommonService ct = CommonService.getInstance();
 	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+	private SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 //	private String groupName = null;
 	private String startdate = null;
 	private List<ObservationTarget> lineList;
 	private int line = 0;
 	private String remarks = null;
 	private boolean firstTime = true;
+	private List<ObservationTarget> pgList;
 	
 	public ManageParentgroups(String name, ScreenController<?> parent)
 	{
@@ -55,8 +57,11 @@ public class ManageParentgroups extends PluginModel<Entity>
 	}
 	
 	public String getCustomHtmlHeaders() {
-		return "<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n"
-				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
+		return "<script type=\"text/javascript\" src=\"res/scripts/custom/jquery.dataTables.js\"></script>\n" +
+				"<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/demo_table.css\">\n" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/demo_page.css\">\n" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
 	}
 	
 	// Mother related methods:
@@ -153,6 +158,35 @@ public class ManageParentgroups extends PluginModel<Entity>
 
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
+	}
+
+	public List<ObservationTarget> getPgList() {
+		return pgList;
+	}
+
+	public void setPgList(List<ObservationTarget> pgList) {
+		this.pgList = pgList;
+	}
+	
+	public String getPgStartDate(int pgId) {
+		try {
+			return ct.getMostRecentValueAsString(pgId, ct.getMeasurementId("StartDate"));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Error when retrieving start date";
+		}
+	}
+	
+	public String getPgRemarks(int pgId) throws DatabaseException {
+		List<String> remarksList = ct.getRemarks(pgId);
+		String returnString = "";
+		for (String remark : remarksList) {
+			returnString += (remark + "<br>");
+		}
+		if (returnString.length() > 0) {
+			returnString = returnString.substring(0, returnString.length() - 4);
+		}
+		return returnString;
 	}
 
 	@Override
@@ -273,6 +307,11 @@ public class ManageParentgroups extends PluginModel<Entity>
 				measurementId = ct.getMeasurementId("Line");
 				db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 						protocolId, measurementId, groupId, null, line));
+				// Set start date
+				protocolId = ct.getProtocolId("SetStartDate");
+				measurementId = ct.getMeasurementId("StartDate");
+				db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+						protocolId, measurementId, groupId, dbFormat.format(eventDate), 0));
 				// Set remarks
 				if (remarks != null) {
 					protocolId = ct.getProtocolId("SetRemark");
@@ -405,6 +444,8 @@ public class ManageParentgroups extends PluginModel<Entity>
 		}
 		
 		try {
+			// Populate existing PG list
+			pgList =  ct.getAllMarkedPanels("Parentgroup", investigationIds);
 			// Populate line list
 			lineList = ct.getAllMarkedPanels("Line", investigationIds);
 			// Populate mother list

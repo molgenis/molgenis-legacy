@@ -25,12 +25,14 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->	
 
-<div style='float:left'>
+<div>
+
 	<p><h2>Add new breeding line</h2></p>
 	<div id='name_part' class='row' style="width:700px">
 		<label for='linename'>Line name:</label>
 		<input type='text' class='textbox' name='linename' id='linename' value='<#if screen.lineName?exists>${screen.getLineName()}</#if>' />
 	</div>
+	
 	<!-- Source -->
 	<div id="sourceselect" class="row" style='clear:left'>
 		<label for="source">Source:</label>
@@ -42,26 +44,45 @@
 			</#if>
 		</select>
 	</div>
+	
+	<!-- Remarks -->
+	<div class='row'>
+		<label for='remarks'>Remarks:</label>
+		<input type='text' class='textbox' name='remarks' id='remarks' />
+	</div>
+	
 	<!-- Add button -->
 	<div id='buttons_part' class='row'>
 		<input type='submit' id='add' class='addbutton' value='Add' onclick="__action.value='addLine'" />
 	</div>
+	
 </div>
 
-<div style='float:left'>
+<div>
 	<p><h2>Existing breeding lines</h2></p>
-	<#if screen.lineList??>
-		<ul>
-		<#list screen.lineList as line>
-			<li>${line.name}</li>
-		</#list>
-		</ul>
+	<#if screen.lineList?size gt 0>
+		<table cellpadding="0" cellspacing="0" border="0" class="display" id="linestable">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Source</th>
+					<th>Remarks</th>
+				</tr>
+			</thead>
+			<tbody>
+			<#list screen.lineList as line>
+				<#assign lineId = line.getId()>
+				<tr>
+					<td>${line.name}</td>
+					<td>${screen.getSourceName(lineId)}</td>
+					<td>${screen.getRemarks(lineId)}</td>
+				</tr>
+			</#list>
+			</tbody>
+		</table>
 	<#else>
 		<p>There are no breeding lines yet.</p>
 	</#if>
-</div>
-
-<div style='clear:both'>
 </div>
 
 <#--end of your plugin-->	
@@ -69,4 +90,15 @@
 		</div>
 	</div>
 </form>
+
+<script>
+	var oTable = jQuery('#linestable').dataTable(
+	{ "bProcessing": true,
+	  "bServerSide": false,
+	  "sPaginationType": "full_numbers",
+	  "bSaveState": true,
+	  "bAutoWidth": false }
+	);
+</script>
+
 </#macro>

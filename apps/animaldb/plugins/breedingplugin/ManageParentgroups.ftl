@@ -25,6 +25,8 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->	
 
+<div>
+
 	<!-- Line -->
 	<div id="lineselect" class="row" style='clear:left'>
 		<label for="line">Breeding line:</label>
@@ -146,9 +148,51 @@
 		<input type='submit' id='addpg' class='addbutton' value='Add' onclick="__action.value='addParentgroup'" />
 	</div>
 	
+</div>
+
+<div>
+
+	<p><h2>Existing parent groups</h2></p>
+	<#if screen.pgList?size gt 0>
+		<table cellpadding="0" cellspacing="0" border="0" class="display" id="pgstable">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Start date</th>
+					<th>Remarks</th>
+				</tr>
+			</thead>
+			<tbody>
+			<#list screen.pgList as pg>
+				<#assign pgId = pg.getId()>
+				<tr>
+					<td>${pg.name}</td>
+					<td>${screen.getPgStartDate(pgId)}</td>
+					<td>${screen.getPgRemarks(pgId)}</td>
+				</tr>
+			</#list>
+			</tbody>
+		</table>
+	<#else>
+		<p>There are no parent groups yet.</p>
+	</#if>
+
+</div>
+	
 <#--end of your plugin-->	
 			</div>
 		</div>
 	</div>
 </form>
+
+<script>
+	var oTable = jQuery('#pgstable').dataTable(
+	{ "bProcessing": true,
+	  "bServerSide": false,
+	  "sPaginationType": "full_numbers",
+	  "bSaveState": true,
+	  "bAutoWidth": false }
+	);
+</script>
+
 </#macro>

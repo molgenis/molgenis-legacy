@@ -281,6 +281,7 @@ public class ManageLitters extends PluginModel<Entity>
 			setWeandate(newDateOnlyFormat.format(tmpWeanDate));
 			setWeanSizeFemale(request.getInt("weansizefemale"));
 			setWeanSizeMale(request.getInt("weansizemale"));
+			this.setRemarks(request.getString("remarks"));
 			
 			if (request.getString("namebase") != null) {
 				nameBase = request.getString("namebase");
@@ -707,6 +708,13 @@ public class ManageLitters extends PluginModel<Entity>
 				measurementId = ct.getMeasurementId("WeanDate");
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
 						null, protocolId, measurementId, litter, weandate, 0));
+				// Set weaning remarks on litter
+				if (remarks != null) {
+					protocolId = ct.getProtocolId("SetRemark");
+					measurementId = ct.getMeasurementId("Remark");
+					db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+							protocolId, measurementId, litter, remarks, 0));
+				}
 				
 				db.beginTx();
 				
@@ -836,6 +844,14 @@ public class ManageLitters extends PluginModel<Entity>
 				int measurementId = ct.getMeasurementId("GenotypeDate");
 				db.add(ct.createObservedValueWithProtocolApplication(invid, now, 
 						null, protocolId, measurementId, this.genoLitterId, weandate, 0));
+				
+				// Set genotyping remarks on litter
+				if (request.getString("remarks") != null) {
+					protocolId = ct.getProtocolId("SetRemark");
+					measurementId = ct.getMeasurementId("Remark");
+					db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+							protocolId, measurementId, this.genoLitterId, request.getString("remarks"), 0));
+				}
 				
 				int animalCount = 0;
 				for (Individual animal : this.getAnimalsInLitter()) {
@@ -1270,6 +1286,16 @@ public class ManageLitters extends PluginModel<Entity>
 					isApproximate = "Yes";
 				}
 				litterToAdd.setSizeApproximate(isApproximate);
+				// Remarks
+				List<String> remarksList = ct.getRemarks(litterId);
+				String remarks = "";
+				for (String remark : remarksList) {
+					remarks += (remark + "<br>");
+				}
+				if (remarks.length() > 0) {
+					remarks = remarks.substring(0, remarks.length() - 4);
+				}
+				litterToAdd.setRemarks(remarks);
 				// Add to the right list
 				if (!weanedLitterIdList.contains(litterId) && !genotypedLitterIdList.contains(litterId)) {
 					litterList.add(litterToAdd);

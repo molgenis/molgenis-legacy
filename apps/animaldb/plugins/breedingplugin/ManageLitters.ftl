@@ -40,18 +40,20 @@
 						<th>Birth date</th>
 						<th>Size</th>
 						<th>Size approximate?</th>
+						<th>Remarks</th>
 						<th></th>
 					</tr>
 				</thead>
 				<tbody>
 				<#list screen.litterList as litter>
 					<tr>
-						<td style='padding:5px'>${litter.name}</td>
-						<td style='padding:5px'>${litter.parentgroup}</td>
-						<td style='padding:5px'>${litter.birthDate}</td>
-						<td style='padding:5px'>${litter.size}</td>
-						<td style='padding:5px'>${litter.isSizeApproximate}</td>
-						<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=ShowWean&id=${litter.id?string.computer}">Wean</a></td>
+						<td>${litter.name}</td>
+						<td>${litter.parentgroup}</td>
+						<td>${litter.birthDate}</td>
+						<td>${litter.size}</td>
+						<td>${litter.isSizeApproximate}</td>
+						<td>${litter.remarks}</td>
+						<td><a href="molgenis.do?__target=${screen.name}&__action=ShowWean&id=${litter.id?string.computer}">Wean</a></td>
 					</tr>
 				</#list>
 				</tbody>
@@ -71,6 +73,7 @@
 						<th>Wean date</th>
 						<th>Size at birth</th>
 						<th>Size at weaning</th>
+						<th>Remarks</th>
 						<th></th>
 						<th></th>
 					</tr>
@@ -78,14 +81,15 @@
 				<tbody>
 				<#list screen.genoLitterList as litter>
 					<tr>
-						<td style='padding:5px'>${litter.name}</td>
-						<td style='padding:5px'>${litter.parentgroup}</td>
-						<td style='padding:5px'>${litter.birthDate}</td>
-						<td style='padding:5px'>${litter.weanDate}</td>
-						<td style='padding:5px'>${litter.size}</td>
-						<td style='padding:5px'>${litter.weanSize}</td>
-						<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=MakeTmpLabels&id=${litter.id?string.computer}">Make temporary cage labels</a></td>
-						<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=ShowGenotype&id=${litter.id?string.computer}">Genotype</a></td>
+						<td>${litter.name}</td>
+						<td>${litter.parentgroup}</td>
+						<td>${litter.birthDate}</td>
+						<td>${litter.weanDate}</td>
+						<td>${litter.size}</td>
+						<td>${litter.weanSize}</td>
+						<td>${litter.remarks}</td>
+						<td><a href="molgenis.do?__target=${screen.name}&__action=MakeTmpLabels&id=${litter.id?string.computer}">Make temporary cage labels</a></td>
+						<td><a href="molgenis.do?__target=${screen.name}&__action=ShowGenotype&id=${litter.id?string.computer}">Genotype</a></td>
 					</tr>
 				</#list>
 				</tbody>
@@ -199,6 +203,11 @@
 	<div id="divstartnumber" class="row">
 		<label for="startnumber">Start numbering at:</label>
 		<input type="text" name="startnumber" id="startnumber" class="textbox" value="${screen.getStartNumberForEmptyBase()?string.computer}" />
+	</div>
+	<!-- Remarks -->
+	<div class='row'>
+		<label for='remarks'>Weaning remarks:</label>
+		<input type='text' class='textbox' name='remarks' id='remarks' />
 	</div>
 	<!-- Add button -->
 	<div id='addlitter' class='row'>
@@ -317,6 +326,12 @@
 	<!-- "+" button for extra geneName + geneState columns, TODO get working
 	<input type='submit' class='addbutton' value='+' onclick="" /> -->
 	
+	<!-- Remarks -->
+	<div class='row'>
+		<label for='remarks'>Genotyping remarks:</label>
+		<input type='text' class='textbox' name='remarks' id='remarks' />
+	</div>
+	
 	<!-- Save button -->
 	<div class='row'>
 		<input type='submit' id='save' class='addbutton' value='Save' onclick="__action.value='Genotype'" />
@@ -338,6 +353,7 @@
 						<th>Wean date</th>
 						<th>Size at birth</th>
 						<th>Size at weaning</th>
+						<th>Remarks</th>
 						<th></th>
 					</tr>
 				</thead>
@@ -350,11 +366,14 @@
 						<td>${litter.weanDate}</td>
 						<td>${litter.size}</td>
 						<td>${litter.weanSize}</td>
+						<td>${litter.remarks}</td>
 						<td><a href="molgenis.do?__target=${screen.name}&__action=MakeDefLabels&id=${litter.id?string.computer}">Make definitive cage labels</a></td>
 					</tr>
 				</#list>
 				</tbody>
 			</table>
+		<#else>
+			<p>There are currently no litters that have been weaned and genotyped.</p>
 		</#if>
 	</#if>
 	
