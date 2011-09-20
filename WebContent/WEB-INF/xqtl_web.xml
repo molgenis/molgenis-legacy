@@ -6,7 +6,7 @@
 	id="WebApp_ID">
 	<display-name>molgenis</display-name>
 	<listener>
-		<listener-class>app.servlet.ContextListener</listener-class>
+		<listener-class>app.servlet.MolgenisContextListener</listener-class>
 	</listener>
 	<resource-ref>
 		<res-ref-name>jdbc/molgenisdb</res-ref-name>
