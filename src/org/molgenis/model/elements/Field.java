@@ -42,7 +42,7 @@ import org.molgenis.util.Tree;
  */
 public class Field implements Serializable {
 
-    public final static String TYPE_FIELD = "DType";
+    public final static String TYPE_FIELD = "__Type";
     public final transient Logger logger = Logger.getLogger(Field.class);
 
     /**
