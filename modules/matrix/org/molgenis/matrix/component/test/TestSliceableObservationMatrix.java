@@ -1,5 +1,6 @@
 package org.molgenis.matrix.component.test;
 
+import app.DatabaseFactory;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,8 +20,6 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import app.JDBCDatabase;
 
 public class TestSliceableObservationMatrix
 {
@@ -45,7 +44,7 @@ public class TestSliceableObservationMatrix
 	{
 		BasicConfigurator.configure();
 		
-		JDBCDatabase db = new JDBCDatabase(properties);
+                Database db = DatabaseFactory.create(properties);
 
 		this.generateData(db);
 
@@ -206,7 +205,7 @@ public class TestSliceableObservationMatrix
 	public void tearDown() throws DatabaseException, FileNotFoundException, IOException
 	{
 		logger.debug("++++++++++TEST COMPLETE, REMOVING DATA ++++++++++++");
-		JDBCDatabase db = new JDBCDatabase(properties);
+		Database db = DatabaseFactory.create(properties);
 		
 		try
 		{
