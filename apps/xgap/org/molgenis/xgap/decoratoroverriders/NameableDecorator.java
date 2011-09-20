@@ -8,6 +8,6 @@ public class NameableDecorator<E extends Nameable> extends decorators.NameableDe
 	public NameableDecorator(Mapper<E> generatedMapper)
 	{
 		super(generatedMapper);
-		this.strict = false;
+		this.strict = true;
 	}
 }

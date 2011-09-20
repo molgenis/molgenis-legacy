@@ -7,6 +7,6 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends decorators.
 	public DataDecorator(Mapper<E> generatedMapper)
 	{
 		super(generatedMapper);
-		this.strict = false;
+		this.strict = true;
 	}
 }
