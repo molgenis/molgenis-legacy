@@ -15,14 +15,13 @@
 			<description> Elements that are the targets or features we are
 				looking at of our research.</description>
 		</entity>
-		<entity name="ObservationTarget" extends="ObservationElement" allocationSize="1000">
+		<entity name="ObservationTarget" extends="ObservationElement">
 			<description> An ObservationTarget class defines the subjects of
 				observation. For instance: individual 1 from Investigation x. The
 				ObservationTarget class maps to XGAP:Subject, METABASE:Patient and
 				maps to Page:Abstract_Observation_Target. The name of
 				observationTargets is unique.</description>
-				<field name="paid" type="int" index="true" nillable="false"/>
-			<!-- <unique fields="name"/> -->
+			<unique fields="name"/>
 		</entity>
 		<entity name="ObservableFeature" extends="ObservationElement">
 			<description>ObservableFeature defines anything that can be observed
@@ -41,7 +40,7 @@
 				diastolic blood pressure. There may be many alternative protocols to
 				measure a feature. See Protocol section.</description>
 		</entity>
-		<entity name="Measurement" extends="ObservableFeature" decorator="decorators.MeasurementDecorator" allocationSize="50"> 
+		<entity name="Measurement" extends="ObservableFeature" decorator="decorators.MeasurementDecorator"> 
 			<description>Generic obserable feature to flexibly define a
 				measurement</description>
 			<field name="unit" type="xref" xref_entity="OntologyTerm"
@@ -188,7 +187,7 @@
 				xref_field="id" xref_label="name"
 				description="References the ObservationTarget that this feature was made on. For example 'individual1'. In a correlation matrix this could be also 'probe123'." />
 		</entity>
-		<entity name="ObservedValue" implements="Identifiable,Observation"  allocationSize="10000">
+		<entity name="ObservedValue" implements="Identifiable,Observation">
 			<description>
 				Generic storage of values, relationships and optional ontology
 				mapping of the value/relation. Values can be atomatic observations,
@@ -206,10 +205,6 @@
 				description="(Optional) Reference to the
 				ontology definition or 'code' for this value (recommended for non-numeric
 				values such as codes)" />
-				
-			<field name="recordId" type="int" index="true"/>
-			<!-- <field name="protocolId" type="int" index="true"/> -->
-			
 			<field nillable="true" name="value" description="The value observed" />
 			<field nillable="true" name="relation" type="xref" xref_entity="ObservationElement"
 				description="Reference to other end of the relationship, if any. For example to a 'brother' or from 'sample' to 'derivedSample'." />
