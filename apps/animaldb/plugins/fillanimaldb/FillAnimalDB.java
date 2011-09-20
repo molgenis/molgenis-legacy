@@ -318,25 +318,9 @@ public class FillAnimalDB {
 		ct.makeCode("1", "+/-", "GeneState");
 		ct.makeCode("2", "+/+", "GeneState");
 		ct.makeCode("3", "ntg", "GeneState");
-		ct.makeCode("4", "WT", "GeneState");
-		ct.makeCode("5", "-/- -/-", "GeneState");
-		ct.makeCode("6", "-/- +/-", "GeneState");
-		ct.makeCode("7", "-/- +/+", "GeneState");
-		ct.makeCode("8", "-/- ntg", "GeneState");
-		ct.makeCode("9", "+/- -/-", "GeneState");
-		ct.makeCode("10", "+/- +/-", "GeneState");
-		ct.makeCode("11", "+/- +/+", "GeneState");
-		ct.makeCode("12", "+/- ntg", "GeneState");
-		ct.makeCode("13", "+/+ -/-", "GeneState");
-		ct.makeCode("14", "+/+ +/-", "GeneState");
-		ct.makeCode("15", "+/+ +/+", "GeneState");
-		ct.makeCode("16", "+/+ ntg", "GeneState");
-		ct.makeCode("17", "ntg ntg", "GeneState");
-		ct.makeCode("18", "ntg -/-", "GeneState");
-		ct.makeCode("19", "ntg +/-", "GeneState");
-		ct.makeCode("20", "ntg +/+", "GeneState");
-		ct.makeCode("21", "unknown", "GeneState");
-		ct.makeCode("22", "transgenic", "GeneState");
+		ct.makeCode("4", "wt", "GeneState");
+		ct.makeCode("5", "unknown", "GeneState");
+		ct.makeCode("6", "transgenic", "GeneState");
 		// Codes for VWASpecies
 		ct.makeCode("01", "Muizen", "VWASpecies");
 		ct.makeCode("02", "Ratten", "VWASpecies");

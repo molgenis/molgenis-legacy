@@ -102,6 +102,24 @@ public class ConvertUliDbToPheno
 			logger.debug("Animals successfully added");
 			
 			db.add(panelsToAddList);
+			// Make entries in name prefix table with highest parentgroup nrs.
+			for (String lineName : parentgroupNrMap.keySet()) {
+				namePrefix = new NamePrefix();
+				namePrefix.setUserId_Name(userName);
+				namePrefix.setTargetType("parentgroup");
+				namePrefix.setPrefix("PG_" + lineName + "_");
+				namePrefix.setHighestNumber(parentgroupNrMap.get(lineName));
+				db.add(namePrefix);
+			}
+			// Make entries in name prefix table with highest litter nrs.
+			for (String lineName : litterNrMap.keySet()) {
+				namePrefix = new NamePrefix();
+				namePrefix.setUserId_Name(userName);
+				namePrefix.setTargetType("litter");
+				namePrefix.setPrefix("LT_" + lineName + "_");
+				namePrefix.setHighestNumber(litterNrMap.get(lineName));
+				db.add(namePrefix);
+			}
 			logger.debug("Panels successfully added");
 			
 			for (int valueStart = 0; valueStart < valuesToAddList.size(); valueStart += 1000) {
@@ -170,7 +188,8 @@ public class ConvertUliDbToPheno
 		makeProtocolApplication("SetSex");
 		makeProtocolApplication("SetColor");
 		makeProtocolApplication("SetEarmark");
-		makeProtocolApplication("SetGenotype");
+		makeProtocolApplication("SetGenotype", "SetGenotype1");
+		makeProtocolApplication("SetGenotype", "SetGenotype2");
 		makeProtocolApplication("SetBackground");
 		makeProtocolApplication("SetOldUliDbMotherInfo");
 		makeProtocolApplication("SetOldUliDbFatherInfo");
@@ -340,13 +359,43 @@ public class ConvertUliDbToPheno
 							now, null, "Earmark", newAnimalName, earmark, null));
 				}
 				
-				// Gen and tg -> Gene and GeneState (in a SetGenotype protocol application)
-				String gene = tuple.getString("Gen");
-				String geneState = tuple.getString("tg");
-				if (gene != null && geneState != null) {
-					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype"), 
-							now, null, "GeneName", newAnimalName, gene, null));
-					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype"), 
+				// Gen and tg -> Gene and GeneState (in one or more SetGenotype protocol applications)
+				String geneName = tuple.getString("Gen");
+				if (geneName == null) {
+					geneName = "unknown";
+				}
+				String geneState = tuple.getString("tg"); // Allowed flavors: -/- +/- +/+ ntg wt unknown transgenic
+				if (geneState == null || geneState.equals("Unknown")) {
+					geneState = "unknown";
+				}
+				if (!geneState.equals("+/+") && !geneState.equals("+/-") && !geneState.equals("-/-") && 
+						!geneState.equals("ntg") && !geneState.equals("transgenic") && !geneState.equals("unknown")) {
+					// Double geneState, so split (first 3 chars and last 3 chars, ignoring all the spaces and slashes in between)
+					String geneState1 = geneState.substring(0, 3);
+					String geneState2 = geneState.substring(geneState.length() - 3, geneState.length());
+					// Try to split geneName, on slash (if present)
+					// TODO: find out if this is OK!
+					String geneName1 = geneName;
+					String geneName2 = geneName;
+					String[] geneNames = geneName.split("/");
+					if (geneNames.length == 2) {
+						geneName1 = geneNames[0];
+						geneName2 = geneNames[1];
+					}
+					// Add to values list
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), 
+							now, null, "GeneName", newAnimalName, geneName1, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), 
+							now, null, "GeneState", newAnimalName, geneState1, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype2"), 
+							now, null, "GeneName", newAnimalName, geneName2, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype2"), 
+							now, null, "GeneState", newAnimalName, geneState2, null));
+				} else {
+					// geneName and geneState can remain as is
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), 
+							now, null, "GeneName", newAnimalName, geneName, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), 
 							now, null, "GeneState", newAnimalName, geneState, null));
 				}
 				
@@ -619,8 +668,12 @@ public class ConvertUliDbToPheno
 	}
 	
 	public void makeProtocolApplication(String protocolName) throws ParseException, DatabaseException, IOException {
+		makeProtocolApplication(protocolName, protocolName);
+	}
+	
+	public void makeProtocolApplication(String protocolName, String protocolLabel) throws ParseException, DatabaseException, IOException {
 		ProtocolApplication app = ct.createProtocolApplication(invName, protocolName);
 		protocolAppsToAddList.add(app);
-		appMap.put(protocolName, app.getName());
+		appMap.put(protocolLabel, app.getName());
 	}
 }

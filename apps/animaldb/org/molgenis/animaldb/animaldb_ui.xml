@@ -47,6 +47,7 @@
 				label="Reset database" />
 			<plugin name="FillDatabase" type="plugins.fillanimaldb.FillDatabasePlugin"
 				label="Load legacy data" />
+			<plugin name="SimpleArchiver" type="plugins.archiver.Archiver" label="Import/export database" />
 			<plugin name="CascadingDeleteAnimals" type="plugins.system.CascadingDeleteAnimalsPlugin"
 				label="Delete targets" />
 			<plugin name="SetCustomLabelFeature" type="plugins.system.SetCustomLabelFeaturePlugin"
