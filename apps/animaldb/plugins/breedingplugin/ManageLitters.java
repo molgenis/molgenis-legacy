@@ -24,6 +24,9 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.html.DateInput;
+import org.molgenis.framework.ui.html.SelectInput;
+import org.molgenis.framework.ui.html.Table;
 import org.molgenis.pheno.Code;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.ObservationTarget;
@@ -71,6 +74,8 @@ public class ManageLitters extends PluginModel<Entity>
 	private boolean firstTime = true;
 	private List<String> bases = null;
 	private String remarks = null;
+	private Table genotypeTable = null;
+	private int nrOfGenotypes = 1;
 
 	public ManageLitters(String name, ScreenController<?> parent)
 	{
@@ -390,7 +395,16 @@ public class ManageLitters extends PluginModel<Entity>
 		}
 	}
 	
-	public String getAnimalBirthDate(int animalId) {
+	public Date getAnimalBirthDate(int animalId) {
+		try {
+			String birthDateString = ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("DateOfBirth"));
+			return newDateOnlyFormat.parse(birthDateString);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public String getAnimalBirthDateAsString(int animalId) {
 		try {
 			String birthDateString = ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("DateOfBirth"));
 			Date tmpBirthDate = newDateOnlyFormat.parse(birthDateString);
@@ -416,18 +430,19 @@ public class ManageLitters extends PluginModel<Entity>
 		}
 	}
 	
-	public String getAnimalGeneName(int animalId) {
+	public String getAnimalGeneInfo(String measurementName, int animalId, int genoNr) {
+		Query<ObservedValue> q = db.query(ObservedValue.class);
+		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
+		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, measurementName));
+		List<ObservedValue> valueList;
 		try {
-			return ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("GeneName"));
-		} catch (Exception e) {
+			valueList = q.find();
+		} catch (DatabaseException e) {
 			return "";
 		}
-	}
-	
-	public String getAnimalGeneState(int animalId) {
-		try {
-			return ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("GeneState"));
-		} catch (Exception e) {
+		if (valueList.size() > genoNr) {
+			return valueList.get(genoNr).getValue();
+		} else {
 			return "";
 		}
 	}
@@ -453,7 +468,7 @@ public class ManageLitters extends PluginModel<Entity>
 		if (animalBackgroundId != -1) {
 			animalBackgroundName = ct.getObservationTargetById(animalBackgroundId).getName();
 		}
-		returnString += ("background: " + animalBackgroundName + "\n");
+		returnString += ("background: " + animalBackgroundName + "; ");
 		Query<ObservedValue> q = this.db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, ct.getMeasurementId("GeneName")));
@@ -474,10 +489,12 @@ public class ManageLitters extends PluginModel<Entity>
 						geneState = geneStateValueList.get(0).getValue();
 					}
 				}
-				returnString += ("gene: " + geneName + ": " + geneState + "\n");
+				returnString += ("gene: " + geneName + ": " + geneState + "; ");
 			}
 		}
-		
+		if (returnString.length() > 0) {
+			returnString = returnString.substring(0, returnString.length() - 2);
+		}
 		return returnString;
 	}
 	
@@ -624,6 +641,7 @@ public class ManageLitters extends PluginModel<Entity>
 				// Add everything to DB
 				db.add(valuesToAddList);
 				
+				birthdate = null;
 				this.action = "ShowLitters";
 				this.reload(db);
 				this.reloadLitterLists(db, false);
@@ -823,6 +841,7 @@ public class ManageLitters extends PluginModel<Entity>
 				// Update custom label map now new animals have been added
 				ct.makeObservationTargetNameMap(this.getLogin().getUserId(), true);
 				
+				weandate = null;
 				this.action = "ShowLitters";
 				this.reload(db);
 				this.reloadLitterLists(db, false);
@@ -830,7 +849,104 @@ public class ManageLitters extends PluginModel<Entity>
 			}
 			
 			if (action.equals("ShowGenotype")) {
+				nrOfGenotypes = 1;
 				this.setGenoLitterId(request.getInt("id"));
+				// Prepare table
+				genotypeTable = new Table("GenoTable", "");
+				genotypeTable.addColumn("Birth date");
+				genotypeTable.addColumn("Sex");
+				genotypeTable.addColumn("Color");
+				genotypeTable.addColumn("Earmark");
+				genotypeTable.addColumn("Background");
+				genotypeTable.addColumn("Gene name");
+				genotypeTable.addColumn("Gene state");
+				int row = 0;
+				for (Individual animal : getAnimalsInLitter()) {
+					int animalId = animal.getId();
+					genotypeTable.addRow(animal.getName());
+					// Birth date
+					DateInput dateInput = new DateInput("0_" + row);
+					dateInput.setValue(getAnimalBirthDate(animalId));
+					genotypeTable.setCell(0, row, dateInput);
+					// Sex
+					SelectInput sexInput = new SelectInput("1_" + row);
+					for (ObservationTarget sex : this.sexList) {
+						sexInput.addOption(sex.getId(), sex.getName());
+					}
+					sexInput.setValue(getAnimalSex(animalId));
+					genotypeTable.setCell(1, row, sexInput);
+					// Color
+					SelectInput colorInput = new SelectInput("2_" + row);
+					for (String color : this.colorList) {
+						colorInput.addOption(color, color);
+					}
+					colorInput.setValue(getAnimalColor(animalId));
+					genotypeTable.setCell(2, row, colorInput);
+					// Earmark
+					SelectInput earmarkInput = new SelectInput("3_" + row);
+					for (Code earmark : this.earmarkList) {
+						earmarkInput.addOption(earmark.getCode_String(), earmark.getCode_String());
+					}
+					earmarkInput.setValue(getAnimalEarmark(animalId));
+					genotypeTable.setCell(3, row, earmarkInput);
+					// Background
+					SelectInput backgroundInput = new SelectInput("4_" + row);
+					for (ObservationTarget background : this.backgroundList) {
+						backgroundInput.addOption(background.getId(), background.getName());
+					}
+					backgroundInput.setValue(getAnimalBackground(animalId));
+					genotypeTable.setCell(4, row, backgroundInput);
+					// Gene name (1)
+					SelectInput geneNameInput = new SelectInput("5_" + row);
+					for (String geneName : this.geneNameList) {
+						geneNameInput.addOption(geneName, geneName);
+					}
+					geneNameInput.setValue(getAnimalGeneInfo("GeneName", animalId, 0));
+					genotypeTable.setCell(5, row, geneNameInput);
+					// Gene state (1)
+					SelectInput geneStateInput = new SelectInput("6_" + row);
+					for (String geneState : this.geneStateList) {
+						geneStateInput.addOption(geneState, geneState);
+					}
+					geneStateInput.setValue(getAnimalGeneInfo("GeneState", animalId, 0));
+					genotypeTable.setCell(6, row, geneStateInput);
+					row++;
+				}
+			}
+			
+			if (action.equals("AddGenoCol")) {
+				nrOfGenotypes++;
+				genotypeTable.addColumn("Gene name");
+				genotypeTable.addColumn("Gene state");
+				int row = 0;
+				for (Individual animal : getAnimalsInLitter()) {
+					int animalId = animal.getId();
+					// Gene name (n)
+					int newCol = 5 + ((nrOfGenotypes - 1) * 2);
+					SelectInput geneNameInput = new SelectInput(newCol + "_" + row);
+					for (String geneName : this.geneNameList) {
+						geneNameInput.addOption(geneName, geneName);
+					}
+					geneNameInput.setValue(getAnimalGeneInfo("GeneName", animalId, nrOfGenotypes));
+					genotypeTable.setCell(newCol, row, geneNameInput);
+					// Gene state (n)
+					SelectInput geneStateInput = new SelectInput((newCol + 1) + "_" + row);
+					for (String geneState : this.geneStateList) {
+						geneStateInput.addOption(geneState, geneState);
+					}
+					geneStateInput.setValue(getAnimalGeneInfo("GeneState", animalId, nrOfGenotypes));
+					genotypeTable.setCell(newCol + 1, row, geneStateInput);
+					row++;
+				}
+			}
+			
+			if (action.equals("RemGenoCol")) {
+				if (nrOfGenotypes > 1) {
+					int currCol = 5 + ((nrOfGenotypes - 1) * 2);
+					genotypeTable.removeColumn(currCol); // NB: nr. of cols is now 1 lower!
+					genotypeTable.removeColumn(currCol);
+					nrOfGenotypes--;
+				}
 			}
 			
 			if (action.equals("Genotype")) {
@@ -859,7 +975,7 @@ public class ManageLitters extends PluginModel<Entity>
 					// Here we (re)set the values from the genotyping
 					
 					// Set sex
-					int sexId = request.getInt("sex_" + animalCount);
+					int sexId = request.getInt("1_" + animalCount);
 					ObservedValue value = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
 							ct.getMeasurementByName("Sex"), investigationIds, invid).get(0);
 					value.setRelation_Id(sexId);
@@ -872,11 +988,10 @@ public class ManageLitters extends PluginModel<Entity>
 						db.update(value);
 					}
 					// Set birth date
-					String dob = request.getString("dob_" + animalCount);
-					Date tmpDob = oldDateOnlyFormat.parse(dob);
+					String dob = request.getString("0_" + animalCount); // already in new format
 					value = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
-							ct.getMeasurementByName("DateOfBirth"), investigationIds, invid).get(0);
-					value.setValue(newDateOnlyFormat.format(tmpDob));
+								ct.getMeasurementByName("DateOfBirth"), investigationIds, invid).get(0);
+					value.setValue(dob);
 					if (value.getProtocolApplication_Id() == null) {
 						int paId = ct.makeProtocolApplication(invid, ct.getProtocolId("SetDateOfBirth"));
 						value.setProtocolApplication_Id(paId);
@@ -885,7 +1000,7 @@ public class ManageLitters extends PluginModel<Entity>
 						db.update(value);
 					}
 					// Set color
-					String color = request.getString("color_" + animalCount);
+					String color = request.getString("2_" + animalCount);
 					value = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
 							ct.getMeasurementByName("Color"), investigationIds, invid).get(0);
 					value.setValue(color);
@@ -897,7 +1012,7 @@ public class ManageLitters extends PluginModel<Entity>
 						db.update(value);
 					}
 					// Set earmark
-					String earmark = request.getString("earmark_" + animalCount);
+					String earmark = request.getString("3_" + animalCount);
 					value = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
 							ct.getMeasurementByName("Earmark"), investigationIds, invid).get(0);
 					value.setValue(earmark);
@@ -909,7 +1024,7 @@ public class ManageLitters extends PluginModel<Entity>
 						db.update(value);
 					}
 					// Set background
-					int backgroundId = request.getInt("background_" + animalCount);
+					int backgroundId = request.getInt("4_" + animalCount);
 					value = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
 							ct.getMeasurementByName("Background"), investigationIds, invid).get(0);
 					value.setRelation_Id(backgroundId);
@@ -921,27 +1036,46 @@ public class ManageLitters extends PluginModel<Entity>
 					} else {
 						db.update(value);
 					}
-					// Set genotype
-					int paId = ct.makeProtocolApplication(invid, ct.getProtocolId("SetGenotype"));
-					String geneName = request.getString("geneName_" + animalCount);
-					value = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
-							ct.getMeasurementByName("GeneName"), investigationIds, invid).get(0);
-					value.setValue(geneName);
-					if (value.getProtocolApplication_Id() == null) {
-						value.setProtocolApplication_Id(paId);
-						db.add(value);
-					} else {
-						db.update(value);
-					}
-					String geneState = request.getString("geneState_" + animalCount);
-					value = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
-							ct.getMeasurementByName("GeneState"), investigationIds, invid).get(0);
-					value.setValue(geneState);
-					if (value.getProtocolApplication_Id() == null) {
-						value.setProtocolApplication_Id(paId);
-						db.add(value);
-					} else {
-						db.update(value);
+					// Set genotype(s)
+					for (int genoNr = 0; genoNr < nrOfGenotypes; genoNr++) {
+						int currCol = 5 + (genoNr * 2);
+						int paId = ct.makeProtocolApplication(invid, ct.getProtocolId("SetGenotype"));
+						String geneName = request.getString(currCol + "_" + animalCount);
+						List<ObservedValue> valueList = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
+								ct.getMeasurementByName("GeneName"), investigationIds, invid);
+						if (genoNr < valueList.size()) {
+							value = valueList.get(genoNr);
+						} else {
+							value = new ObservedValue();
+							value.setFeature_Id(ct.getMeasurementId("GeneName"));
+							value.setTarget_Id(animal.getId());
+							value.setInvestigation_Id(invid);
+						}
+						value.setValue(geneName);
+						if (value.getProtocolApplication_Id() == null) {
+							value.setProtocolApplication_Id(paId);
+							db.add(value);
+						} else {
+							db.update(value);
+						}
+						String geneState = request.getString((currCol + 1) + "_" + animalCount);
+						valueList = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
+								ct.getMeasurementByName("GeneState"), investigationIds, invid);
+						if (genoNr < valueList.size()) {
+							value = valueList.get(genoNr);
+						} else {
+							value = new ObservedValue();
+							value.setFeature_Id(ct.getMeasurementId("GeneState"));
+							value.setTarget_Id(animal.getId());
+							value.setInvestigation_Id(invid);
+						}
+						value.setValue(geneState);
+						if (value.getProtocolApplication_Id() == null) {
+							value.setProtocolApplication_Id(paId);
+							db.add(value);
+						} else {
+							db.update(value);
+						}
 					}
 					
 					animalCount++;
@@ -1315,6 +1449,10 @@ public class ManageLitters extends PluginModel<Entity>
 			}
 			e.printStackTrace();
 		}
+	}
+
+	public String getGenotypeTable() {
+		return genotypeTable.render();
 	}
 	
 }

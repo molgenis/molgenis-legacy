@@ -214,7 +214,7 @@
 		<input type='submit' id='wean' class='addbutton' value='Wean' onclick="__action.value='Wean'" />
 	</div>
 
-<#elseif screen.action == "ShowGenotype">
+<#elseif screen.action == "ShowGenotype" || screen.action == "AddGenoCol" || screen.action == "RemGenoCol">
 	
 	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowLitters">Back to overview</a></p>
 	
@@ -222,6 +222,13 @@
 	
 	<p>${screen.parentInfo}</p>
 	
+	${screen.getGenotypeTable()}
+	
+	<input type='submit' id='addgenocol' class='addbutton' value='Add Gene name + state' onclick="__action.value='AddGenoCol'" />
+	<input type='submit' id='remgenocol' class='addbutton' value='Remove Gene name + state' onclick="__action.value='RemGenoCol'" />
+	
+	<#--
+	<p>OLD TABLE</p>
 	<table>
 		<tr>
 			<th><strong>Animal name</strong></th>
@@ -239,7 +246,7 @@
 		<tr>
 			<td>${animal.name}</td>
 			<td>
-				<input type='text' id='dob_${animalCount}' name='dob_${animalCount}' value='${screen.getAnimalBirthDate(animalId)}' onclick='showDateInput(this)' autocomplete='off' />
+				<input type='text' id='dob_${animalCount}' name='dob_${animalCount}' value='${screen.getAnimalBirthDateAsString(animalId)}' onclick='showDateInput(this)' autocomplete='off' />
 			</td>
 			<td>
 				<select id='sex_${animalCount}' name='sex_${animalCount}'>
@@ -322,9 +329,7 @@
 		</tr>
 		<#assign animalCount = animalCount + 1>
 	</#list>
-	</table>
-	<!-- "+" button for extra geneName + geneState columns, TODO get working
-	<input type='submit' class='addbutton' value='+' onclick="" /> -->
+	</table -->
 	
 	<!-- Remarks -->
 	<div class='row'>
