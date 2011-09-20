@@ -64,6 +64,4 @@ public interface JpaMapper<E extends Entity> extends Mapper<E>
 	public FieldType getFieldType(String field);
 	
 	public String getTableFieldName(String field);
-	
-
 }
