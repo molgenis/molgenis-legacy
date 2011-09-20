@@ -274,7 +274,11 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	@Lob()
 	@Column(name="${SqlName(field)}"<#if !field.nillable>, nullable=false</#if>)
 				<#else>
+        <#if SqlName(field) == '__Type'>
+	@Column(name="DType"<#if !field.nillable>, nullable=false</#if>)            
+        <#else>
 	@Column(name="${SqlName(field)}"<#if !field.nillable>, nullable=false</#if>)
+        </#if>
 	@XmlElement(name="${name(field)}")
 				</#if>
 			</#if>   	
