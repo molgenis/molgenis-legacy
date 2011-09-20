@@ -40,11 +40,13 @@ public class ShowDecProjects extends PluginModel<Entity>
 		super(name, parent);
 	}
 	
-	public String getCustomHtmlHeaders()
-    {
-        return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
-    }
-
+	public String getCustomHtmlHeaders() {
+		return "<script type=\"text/javascript\" src=\"res/scripts/custom/jquery.dataTables.js\"></script>\n" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/demo_table.css\">\n" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/demo_page.css\">\n" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
+	}
+	
 	@Override
 	public String getViewName()
 	{

@@ -161,49 +161,53 @@
 <div id="experimentlist">
 	<p><strong>DEC Subprojects</strong></p>
 	<p><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=0">Add</a></p>
-	<table cellpadding="10" cellspacing="2" border="1">
-	<tr>
-		<th>Name</th>
-		<th>Start date</th>
-		<th>End date</th>
-		<th>DEC project (application)</th>
-		<th>DEC subproject code</th>
-		<th>DEC subproject application PDF</th>
-		<th>Concern</th>
-		<th>Goal</th>
-		<th>Special techniques</th>
-		<th>Law definition</th>
-		<th>Toxic research</th>
-		<th>Anaesthesia</th>
-		<th>Pain management</th>
-		<th>Expected animal end status</th>
-		<th>Remarks</th>
-		<th>Nr. of animals currently in</th>
-		<th></th>
-	</tr>
-	<#if screen.experimentList?exists>
-		<#list screen.experimentList as expl>
+	<table cellpadding="0" cellspacing="0" border="0" class="display" id="decSubProjectsTable">
+		<thead>
 			<tr>
-				<td style='padding:5px'>${expl.name}</td>
-				<td style='padding:5px'>${expl.startDate}</td>
-				<td style='padding:5px'>${expl.endDate}</td>
-				<td style='padding:5px'>${expl.decApplication}</td>
-				<td style='padding:5px'>${expl.experimentNr}</td>
-				<td style='padding:5px'>${expl.decSubprojectApplicationPDF}</td>
-				<td style='padding:5px'>${expl.concern}</td>
-				<td style='padding:5px'>${expl.goal}</td>
-				<td style='padding:5px'>${expl.specialTechn}</td>
-				<td style='padding:5px'>${expl.lawDef}</td>
-				<td style='padding:5px'>${expl.toxRes}</td>
-				<td style='padding:5px'>${expl.anaesthesia}</td>
-				<td style='padding:5px'>${expl.painManagement}</td>
-				<td style='padding:5px'>${expl.animalEndStatus}</td>
-				<td style='padding:5px'>${expl.oldAnimalDBRemarks}</td>
-				<td style='padding:5px'>${expl.nrOfAnimals}</td>
-				<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=${expl.decExpListId}">Edit</a>&nbsp;</td>
+				<th>Name</th>
+				<th>Start date</th>
+				<th>End date</th>
+				<th>DEC project (application)</th>
+				<th>DEC subproject code</th>
+				<th>DEC subproject application PDF</th>
+				<th>Concern</th>
+				<th>Goal</th>
+				<th>Special techniques</th>
+				<th>Law definition</th>
+				<th>Toxic research</th>
+				<th>Anaesthesia</th>
+				<th>Pain management</th>
+				<th>Expected animal end status</th>
+				<th>Remarks</th>
+				<th>Nr. of animals currently in</th>
+				<th></th>
 			</tr>
-		</#list>
-	</#if>
+		</thead>
+		<tbody>
+			<#if screen.experimentList?exists>
+				<#list screen.experimentList as expl>
+					<tr>
+						<td>${expl.name}</td>
+						<td>${expl.startDate}</td>
+						<td>${expl.endDate}</td>
+						<td>${expl.decApplication}</td>
+						<td>${expl.experimentNr}</td>
+						<td>${expl.decSubprojectApplicationPDF}</td>
+						<td>${expl.concern}</td>
+						<td>${expl.goal}</td>
+						<td>${expl.specialTechn}</td>
+						<td>${expl.lawDef}</td>
+						<td>${expl.toxRes}</td>
+						<td>${expl.anaesthesia}</td>
+						<td>${expl.painManagement}</td>
+						<td>${expl.animalEndStatus}</td>
+						<td>${expl.oldAnimalDBRemarks}</td>
+						<td>${expl.nrOfAnimals}</td>
+						<td><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=${expl.decExpListId}">Edit</a>&nbsp;</td>
+					</tr>
+				</#list>
+			</#if>
+		</tbody>
 	</table>
 </div>
 
@@ -213,5 +217,15 @@
 			</div>
 		</div>
 	</div>
+
+<script>
+	var oTable = jQuery('#decSubProjectsTable').dataTable(
+	{ "bProcessing": true,
+	  "bServerSide": false,
+	  "sPaginationType": "full_numbers",
+	  "bSaveState": true,
+	  "bAutoWidth": false }
+	);
+</script>
 	
 </#macro>

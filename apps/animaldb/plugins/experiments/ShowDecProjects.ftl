@@ -95,31 +95,35 @@
 <div id="decapplist">
 	<p><strong>DEC Projects</strong></p>
 	<p><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=0">Add</a></p>
-	<table cellpadding="10" cellspacing="2" border="1">
-	<tr>
-		<th>Name</th>
-		<th>Start date</th>
-		<th>End date</th>
-		<th>DEC number</th>
-		<th>DEC applicant</th>
-		<th>DEC application PDF</th>
-		<th>DEC approval PDF</th>
-		<th></th>
-	</tr>
-	<#if screen.decappList?exists>
-		<#list screen.decappList as decl>
+	<table cellpadding="0" cellspacing="0" border="0" class="display" id="decProjectsTable">
+		<thead>
 			<tr>
-				<td style='padding:5px'>${decl.name}</td>
-				<td style='padding:5px'>${decl.startDate}</td>
-				<td style='padding:5px'>${decl.endDate}</td>
-				<td style='padding:5px'>${decl.decNr}</td>
-				<td style='padding:5px'>${decl.decApplicantName}</td>
-				<td style='padding:5px'>${decl.pdfDecApplication}</td>
-				<td style='padding:5px'>${decl.pdfDecApproval}</td>
-				<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=${decl.decAppListId}">Edit</a></td>
+				<th>Name</th>
+				<th>Start date</th>
+				<th>End date</th>
+				<th>DEC number</th>
+				<th>DEC applicant</th>
+				<th>DEC application PDF</th>
+				<th>DEC approval PDF</th>
+				<th></th>
 			</tr>
-		</#list>
-	</#if>
+		</thead>
+		<tbody>
+		<#if screen.decappList?exists>
+			<#list screen.decappList as decl>
+				<tr>
+					<td style='padding:5px'>${decl.name}</td>
+					<td style='padding:5px'>${decl.startDate}</td>
+					<td style='padding:5px'>${decl.endDate}</td>
+					<td style='padding:5px'>${decl.decNr}</td>
+					<td style='padding:5px'>${decl.decApplicantName}</td>
+					<td style='padding:5px'>${decl.pdfDecApplication}</td>
+					<td style='padding:5px'>${decl.pdfDecApproval}</td>
+					<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=${decl.decAppListId}">Edit</a></td>
+				</tr>
+			</#list>
+		</#if>
+		</tbody>
 	</table>
 
 </div>
@@ -130,5 +134,17 @@
 			</div>
 		</div>
 	</div>
+
+<script>
+	var oTable = jQuery('#decProjectsTable').dataTable(
+	{ "bProcessing": true,
+	  "bServerSide": false,
+	  "sPaginationType": "full_numbers",
+	  "bSaveState": true,
+	  "bAutoWidth": false }
+	);
+	
+	
+</script>
 
 </#macro>

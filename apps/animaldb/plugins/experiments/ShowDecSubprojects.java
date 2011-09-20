@@ -53,10 +53,14 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	}
 	
 	public String getCustomHtmlHeaders() {
-		return "<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n"
-				+ "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
+		return "<script type=\"text/javascript\" src=\"res/scripts/custom/jquery.dataTables.js\"></script>\n" +
+				"<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/demo_table.css\">\n" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/demo_page.css\">\n" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
 	}
-
+	
+	
 	@Override
 	public String getViewName()
 	{
