@@ -14,7 +14,7 @@
             <class>org.molgenis.pheno.Observation</class>
             <class>org.molgenis.pheno.ObservedValue</class>
 	    <properties>
-	      <property name="javax.persistence.jdbc.url" value="jdbc:oracle:thin:@//localhost:2000/llp"/>
+	      <property name="javax.persistence.jdbc.url" value="jdbc:oracle:thin:@//localhost:2000/llptest"/>
 	      <property name="javax.persistence.jdbc.password" value="molTagtGen24Ora"/>
 	      <property name="javax.persistence.jdbc.driver" value="oracle.jdbc.driver.OracleDriver"/>
 	      <property name="javax.persistence.jdbc.user" value="molgenis"/>

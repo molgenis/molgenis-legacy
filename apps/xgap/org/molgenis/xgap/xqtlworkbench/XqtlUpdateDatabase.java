@@ -1,8 +1,9 @@
 package org.molgenis.xgap.xqtlworkbench;
+import app.DatabaseFactory;
 import org.molgenis.Molgenis;
 
 import app.FillMetadata;
-import app.JDBCDatabase;
+import org.molgenis.framework.db.Database;
 
 public class XqtlUpdateDatabase
 {
@@ -11,7 +12,8 @@ public class XqtlUpdateDatabase
 		
 		new Molgenis("org/molgenis/xgap/xqtlworkbench/xqtl.properties").updateDb(false);
 		//ResetXgapDb.reset(new JDBCDatabase("org/molgenis/xgap/xqtlworkbench/xqtl.properties"), true);
-		FillMetadata.fillMetadata(new JDBCDatabase("org/molgenis/xgap/xqtlworkbench/xqtl.properties"));
+		Database db = DatabaseFactory.create("org/molgenis/xgap/xqtlworkbench/xqtl.properties");
+                FillMetadata.fillMetadata(db);
 		
 		// FOR SOME UNEXPLAINABLE REASON, THIS CLASS DOESN'T WORK AT ALL
 		

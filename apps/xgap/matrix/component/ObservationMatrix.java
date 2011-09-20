@@ -127,7 +127,7 @@ public class ObservationMatrix<R extends ObservationElement, C extends Observati
 				rowIndices = new ArrayList<Integer>();
 				for (V row : firstCol)
 				{
-					rowIndices.add(row.getTarget());
+					rowIndices.add(row.getTarget_Id());
 				}
 			}
 			return rowIndices;
@@ -154,7 +154,7 @@ public class ObservationMatrix<R extends ObservationElement, C extends Observati
 				colIndices = new ArrayList<Integer>();
 				for (V col : firstRow)
 				{
-					colIndices.add(col.getFeature());
+					colIndices.add(col.getFeature_Id());
 				}
 			}
 			return colIndices;

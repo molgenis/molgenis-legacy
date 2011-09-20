@@ -398,7 +398,7 @@ public class XqtlSeleniumTest
 			selenium.type("id=RScript_Extension", "r");
 			selenium.click("css=span");
 			//from: http://blog.browsermob.com/2011/03/selenium-tips-wait-with-waitforcondition/
-			//"Now for the killer part, for sites that use jQuery, if all you need is to confirm there aren’t any active asynchronous requests, then the following does the trick:"
+			//"Now for the killer part, for sites that use jQuery, if all you need is to confirm there aren't any active asynchronous requests, then the following does the trick:"
 			selenium.waitForCondition("selenium.browserbot.getUserWindow().$.active == 0", "10000");
 			selenium.click("css=span");
 			clickAndWait("id=Add");

@@ -1,8 +1,6 @@
 package org.molgenis.lifelines.loaders;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,12 +16,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.molgenis.organization.Investigation;
-import org.molgenis.pheno.ObservableFeature;
-import org.molgenis.pheno.ObservationElement;
-import org.molgenis.protocol.Protocol;
-import org.molgenis.protocol.ProtocolApplication;
 
 public class FillEAVFromTables {
 	private static Logger log = Logger.getLogger(FillEAVFromTables.class);
@@ -55,6 +48,7 @@ public class FillEAVFromTables {
 	private static String sqlGetTableWithColumns = 
 		"select tabnaam, LISTAGG(veld, ',') WITHIN GROUP (ORDER BY veld) AS velden "
 		+" from LLPOPER.publ_dict_studie "
+		+" where stid = %d "
 		+" group by tabnaam ";
 	
     public static void main(String[] args) throws Exception {
@@ -88,7 +82,7 @@ public class FillEAVFromTables {
        
         
         @SuppressWarnings("unchecked")
-		List<Object[]> tables = em.createNativeQuery(sqlGetTableWithColumns).getResultList();
+		List<Object[]> tables = em.createNativeQuery(String.format(sqlGetTableWithColumns, studyId)).getResultList();
 		
         for(Object[] tableRec : tables) {
         	String tableName = (String)tableRec[0];
@@ -129,18 +123,23 @@ public class FillEAVFromTables {
             
             CountDownLatch doneSignal = new CountDownLatch(N);
             int prevPA_ID = 0;
-            for(int i = 0; i < N; ++i) {        		
-        	   int endPA_ID = ((BigDecimal) results.get(i)[0]).intValue();
-        	   executor.execute(new OracleToPheno(emf, schemaName, tableName, fieldNames, studyId, inv.getId(), protocolId, prevPA_ID, endPA_ID, doneSignal));
-        	   prevPA_ID = endPA_ID;
-        	}
-            
-            Thread monitor = new Thread(new MyMonitorThread(executor, tableName));
-            monitor.start();
+            if(results.size() > 0) {
+	            for(int i = 0; i < N; ++i) { 
+	        	   int endPA_ID = ((BigDecimal) results.get(i)[0]).intValue();
+	        	   executor.execute(new OracleToPheno(emf, schemaName, tableName, fieldNames, studyId, inv.getId(), protocolId, prevPA_ID, endPA_ID, doneSignal));
+	        	   prevPA_ID = endPA_ID;
+	        	}
+	            Thread monitor = new Thread(new MyMonitorThread(executor, tableName));
+	            monitor.start();
 
-            executor.shutdown(); //when all task are complete ThreadPoolExecutor is terminated 
-       	   	doneSignal.await();  //wait for all tasks to finish (what will happen in case of timeout?)
-       	   	log.trace(String.format("[%d-%s] Data for Table is loaded", studyId, tableName));
+	            executor.shutdown(); //when all task are complete ThreadPoolExecutor is terminated 
+	       	   	doneSignal.await();  //wait for all tasks to finish (what will happen in case of timeout?)
+	       	   	log.trace(String.format("[%d-%s] Data for Table is loaded", studyId, tableName));
+            } else {
+            	log.trace(String.format("[%d-%s] There is no Data in Table for study ", studyId, tableName));
+            }
+            
+
 
        	   	
        	   	log.trace(String.format("[%d-%s] Start EAVToView", studyId, tableName));

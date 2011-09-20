@@ -4,6 +4,8 @@ package org.molgenis.xgap.xqtlworkbench;
 import java.io.File;
 
 import org.molgenis.Molgenis;
+import org.molgenis.generators.db.FillMetadataGen;
+import org.molgenis.generators.server.MolgenisServletGen;
 import org.molgenis.util.TarGz;
 
 public class XqtlGenerate
@@ -29,7 +31,8 @@ public class XqtlGenerate
 		try
 		{
 			TarGz.recursiveDeleteContentIgnoreSvn(new File("hsqldb"));
-			new Molgenis("apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl.properties").generate();
+//                        new Molgenis("apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl.properties", MolgenisServletGen.class).generate();
+                    new Molgenis("apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl.properties").generate();
 			
 		} catch(Exception e)
 		{

@@ -1,5 +1,6 @@
 package matrix.test;
 
+import app.DatabaseFactory;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,8 +23,6 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import app.JDBCDatabase;
-
 public class TestSliceableObservationMatrix
 {
 	//data and metadata
@@ -44,7 +43,8 @@ public class TestSliceableObservationMatrix
 	{
 		BasicConfigurator.configure();
 		
-		JDBCDatabase db = new JDBCDatabase("apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl.properties");
+                Database db = DatabaseFactory.create("apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl.properties");
+
 
 		this.generateData(db);
 
@@ -204,7 +204,7 @@ public class TestSliceableObservationMatrix
 	public void tearDown() throws DatabaseException, FileNotFoundException, IOException
 	{
 		logger.debug("++++++++++TEST COMPLETE, REMOVING DATA ++++++++++++");
-		JDBCDatabase db = new JDBCDatabase("apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl.properties");
+                Database db = DatabaseFactory.create("apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl.properties");
 		
 		try
 		{

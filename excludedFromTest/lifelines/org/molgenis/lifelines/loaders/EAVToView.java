@@ -52,8 +52,9 @@ public class EAVToView {
                 
         StringBuilder query = new StringBuilder("SELECT ");    
         
-        List<Measurement> measurements = em.createQuery("SELECT m FROM Measurement m where m.name IN (:measurementNames)", Measurement.class)
+        List<Measurement> measurements = em.createQuery("SELECT m FROM Measurement m where m.name IN (:measurementNames) AND investigation.id = :invId", Measurement.class)
         	.setParameter("measurementNames", Arrays.asList(fields))
+        	.setParameter("invId", investigationId)
         	.getResultList();
         	
         	//LoaderUtils.getMeasurementsByInvestigationId(investigationId, em, this.schemaName, this.tableName);
@@ -113,6 +114,7 @@ public class EAVToView {
         		s.createSQLQuery(String.format("DROP VIEW %s", tableName)).executeUpdate();	
         	}
         	log.debug(String.format("[%d-%s] %s", studyId, tableName, viewQuery.toString()));
+        	System.out.println(viewQuery);
         	s.createSQLQuery(viewQuery).executeUpdate();
 //        }        
         t.commit();
