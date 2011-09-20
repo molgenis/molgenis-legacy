@@ -30,7 +30,7 @@ public class MolgenisContextListenerGen extends Generator
 		Template template = createTemplate( this.getClass().getSimpleName()+".ftl" );
 		Map<String, Object> templateArgs = createTemplateArguments(options);
 		
-		File target = new File( this.getSourcePath(options)+ APP_DIR+"/servlet/ContextListener.java" );
+		File target = new File( this.getSourcePath(options)+ APP_DIR+"/servlet/MolgenisContextListener.java" );
 		target.getParentFile().mkdirs();
 		
 		templateArgs.put("model", model);		
