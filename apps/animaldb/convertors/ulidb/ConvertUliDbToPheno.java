@@ -65,7 +65,7 @@ public class ConvertUliDbToPheno
 		userName = login.getUserName();
 		
 		// If needed, make investigation
-		invName = "UliEisel";
+		invName = "UliEiselLegacyImport";
 		if (ct.getInvestigationId(invName) == -1) {
 			Investigation newInv = new Investigation();
 			newInv.setName(invName);
@@ -180,11 +180,8 @@ public class ConvertUliDbToPheno
 		makeProtocolApplication("SetDateOfBirth");
 		makeProtocolApplication("SetDeathDate");
 		makeProtocolApplication("SetSource");
-		makeProtocolApplication("SetOldUliDbKuerzel");
-		makeProtocolApplication("SetRemark");
-		makeProtocolApplication("SetOldUliDbAktenzeichen");
-		makeProtocolApplication("SetOldUliDbExperimentator");
-		makeProtocolApplication("SetOldUliDbTierschutzrecht");
+		//makeProtocolApplication("SetOldUliDbExperimentator");
+		//makeProtocolApplication("SetOldUliDbTierschutzrecht");
 		makeProtocolApplication("SetSex");
 		makeProtocolApplication("SetColor");
 		makeProtocolApplication("SetEarmark");
@@ -196,7 +193,7 @@ public class ConvertUliDbToPheno
 		makeProtocolApplication("SetTypeOfGroup");
 		makeProtocolApplication("SetMother");
 		makeProtocolApplication("SetFather");
-		makeProtocolApplication("SetLine");
+		//makeProtocolApplication("SetLine");
 		makeProtocolApplication("SetParentgroup");
 		makeProtocolApplication("SetLitter");
 		makeProtocolApplication("SetLine");
@@ -266,7 +263,7 @@ public class ConvertUliDbToPheno
 				if (uliSourceId != null) {
 					String sourceName = null;
 					if (uliSourceId == 51 || uliSourceId == 52) {
-						// 51: Zucht- oder Liefereinrichtung innerhalb Deutschlands, die für ihre Tätigkeit eine Erlaubnis nach § 11 Abs. 1 Satz 1 Nr. 1 des Tierschutzgesetzes erhalten hat
+						// 51: Zucht- oder Liefereinrichtung innerhalb Deutschlands, die fï¿½r ihre Tï¿½tigkeit eine Erlaubnis nach ï¿½ 11 Abs. 1 Satz 1 Nr. 1 des Tierschutzgesetzes erhalten hat
 						// 52: andere amtlich registrierte oder zugelassene Einrichtung innerhalb der EU
 						// --> SourceType for both: Van EU-lid-staten
 						sourceName = "UliEisel51and52";
@@ -282,12 +279,15 @@ public class ConvertUliDbToPheno
 					}
 				}
 				
-				// Kürzel -> OldUliDbKuerzel
-				String kuerzel = tuple.getString("Kürzel");
-				if (kuerzel != null) {
-					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbKuerzel"), 
-							now, null, "OldUliDbKuerzel", newAnimalName, kuerzel, null));
-				}
+				//  not needed, skip import (update ate @ 2011-09-20)
+				// Kï¿½rzel -> OldUliDbKuerzel
+				/*
+				 * String kuerzel = tuple.getString("Kï¿½rzel");
+				 * if (kuerzel != null) {
+				 * 	valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbKuerzel"), 
+				 * 		now, null, "OldUliDbKuerzel", newAnimalName, kuerzel, null));
+				 * }
+				*/
 				
 				// Bemerkungen -> Remark
 				String remark = tuple.getString("Bemerkungen");
@@ -296,29 +296,32 @@ public class ConvertUliDbToPheno
 							now, null, "Remark", newAnimalName, remark, null));
 				}
 				
-				// Aktenzeichen -> OldUliDbAktenzeichen
+				//  not needed, skip import (update ate @ 2011-09-20)
+				/*// Aktenzeichen -> OldUliDbAktenzeichen
 				String aktenzeichen = tuple.getString("Aktenzeichen");
 				if (aktenzeichen != null) {
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbAktenzeichen"), 
 							now, null, "OldUliDbAktenzeichen", newAnimalName, aktenzeichen, null));
-				}
+				}*/
 				
-				// Experimentator -> OldUliDbExperimentator
+				//  not needed, skip import (update ate @ 2011-09-20)
+				/*// Experimentator -> OldUliDbExperimentator
 				String experimentator = tuple.getString("Experimentator");
 				if (experimentator != null) {
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbExperimentator"), 
 							now, null, "OldUliDbExperimentator", newAnimalName, experimentator, null));
-				}
+				}*/
 				
+				//  not needed, skip import (update ate @ 2011-09-20)
 				// Tierschutzrecht -> OldUliDbTierschutzrecht
 				// TODO: actually this corresponds to Goal, but in AnimalDB that is linked
 				// to a DEC subproject (Experiment) instead of to the individual animals.
 				// For now, store in OldUliDbTierschutzrecht.
-				String tierschutzrecht = tuple.getString("Tierschutzrecht");
+				/*String tierschutzrecht = tuple.getString("Tierschutzrecht");
 				if (tierschutzrecht != null) {;
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbTierschutzrecht"), 
 							now, null, "OldUliDbTierschutzrecht", newAnimalName, tierschutzrecht, null));
-				}
+				}*/
 				
 				// BeschrGeschlecht -> Sex
 				String sex = tuple.getString("BeschrGeschlecht");
@@ -368,8 +371,10 @@ public class ConvertUliDbToPheno
 				if (geneState == null || geneState.equals("Unknown")) {
 					geneState = "unknown";
 				}
+				logger.info(geneState);
+				logger.debug(geneState);
 				if (!geneState.equals("+/+") && !geneState.equals("+/-") && !geneState.equals("-/-") && 
-						!geneState.equals("ntg") && !geneState.equals("transgenic") && !geneState.equals("unknown")) {
+						!geneState.equals("ntg") && !geneState.equals("transgenic") && !geneState.equals("Unknown") && !geneState.equals("WT")) {
 					// Double geneState, so split (first 3 chars and last 3 chars, ignoring all the spaces and slashes in between)
 					String geneState1 = geneState.substring(0, 3);
 					String geneState2 = geneState.substring(geneState.length() - 3, geneState.length());
