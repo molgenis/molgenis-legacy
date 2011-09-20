@@ -16,6 +16,7 @@ package org.molgenis.framework.ui;
 //jdk
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * This class describes the functionality needed for a menu-screen. The
@@ -87,7 +88,7 @@ public class MenuModel extends SimpleScreenModel
 	 */
 	public List<ScreenModel> getVisibleChildren()
 	{
-		List<ScreenController<? extends ScreenModel>> subscreens = (List<ScreenController<? extends ScreenModel>>) this.getController().getChildren();
+		Vector<ScreenController<? extends ScreenModel>> subscreens = this.getController().getChildren();
 		List<ScreenModel> result = new ArrayList<ScreenModel>();
 
 		// remove hidden children from the list, and also commands
