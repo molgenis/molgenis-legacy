@@ -178,6 +178,18 @@ public class SelectInput extends OptionInput<Object>
 			this.addOption(e.get(valueField), e.get(labelField));
 		}
 	}
+	
+	public void setEntityOptions(List<? extends Entity> entities)
+	{
+		// clear list
+		this.getOptions().clear();
+
+		// add new values and labels
+		for (Entity e : entities)
+		{
+			this.addOption(e.getIdValue(), e.getLabelValue());
+		}
+	}
 
 	@Override
 	public String toHtml(Tuple params) throws ParseException,
