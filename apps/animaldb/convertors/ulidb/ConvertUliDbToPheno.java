@@ -368,18 +368,23 @@ public class ConvertUliDbToPheno
 					geneName = "unknown";
 				}
 				String geneState = tuple.getString("tg"); // Allowed flavors: -/- +/- +/+ ntg wt unknown transgenic
+				// First do some normalization
 				if (geneState == null || geneState.equals("Unknown")) {
 					geneState = "unknown";
 				}
-				logger.info(geneState);
+				if (geneState.equals("WT")) {
+					geneState = "wt";
+				}
 				logger.debug(geneState);
+				// Then check if geneState is singular or double
 				if (!geneState.equals("+/+") && !geneState.equals("+/-") && !geneState.equals("-/-") && 
-						!geneState.equals("ntg") && !geneState.equals("transgenic") && !geneState.equals("Unknown") && !geneState.equals("WT")) {
+						!geneState.equals("ntg") && !geneState.equals("transgenic") && !geneState.equals("unknown") && 
+						!geneState.equals("wt")) {
 					// Double geneState, so split (first 3 chars and last 3 chars, ignoring all the spaces and slashes in between)
 					String geneState1 = geneState.substring(0, 3);
 					String geneState2 = geneState.substring(geneState.length() - 3, geneState.length());
 					// Try to split geneName, on slash (if present)
-					// TODO: find out if this is OK!
+					// TODO: find out from Uli if this is OK!
 					String geneName1 = geneName;
 					String geneName2 = geneName;
 					String[] geneNames = geneName.split("/");
