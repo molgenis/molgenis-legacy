@@ -28,7 +28,6 @@ public class RemoteFileReader implements Callable<RemoteResult>, Serializable
     //probably monitor logic should be performed remotely!!!
     public RemoteResult call() throws Exception
     {
-        System.out.println(">>> read file");
         returnData.setData(getFileAsBytes(filename));
         return returnData;
     }

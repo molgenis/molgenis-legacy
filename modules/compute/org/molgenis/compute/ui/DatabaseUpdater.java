@@ -56,7 +56,7 @@ public class DatabaseUpdater
                 //this is more efficient than read it every log file to find application status later
                 Vector<String> allLogs = readAllLogs();
 
-                System.out.println("size of active compute apps" + activeComputeApps.size());
+                //System.out.println("size of active compute apps" + activeComputeApps.size());
 
                 Vector<ComputeAppPaths> appToRemove = new Vector<ComputeAppPaths>();
                 for (int i = 0; i < activeComputeApps.size(); i++)

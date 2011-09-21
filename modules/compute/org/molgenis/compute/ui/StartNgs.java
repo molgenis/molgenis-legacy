@@ -135,10 +135,12 @@ public class StartNgs extends EasyPluginController<StartNgsView>
             mcf = (MCF) servletContext.getAttribute("MCF");
         }
 
-
         System.out.println(">>> generate apps");
 
+        //create new pipeline and set current step to null
         pipeline = new Pipeline();
+        currentStep = null;
+
         userValues = new Hashtable<String, String>();
         pipelineElementNumber = 0;
 
@@ -422,7 +424,7 @@ public class StartNgs extends EasyPluginController<StartNgsView>
             db.add(observedValue);
         }
 
-        System.out.println("script \n " + result);
+        //System.out.println("script \n " + result);
 
         pipelineElementNumber++;
 
@@ -463,8 +465,8 @@ public class StartNgs extends EasyPluginController<StartNgsView>
         String logfile = weaver.getLogfilename();
         pipeline.setPipelinelogpath(logfile);
 
-        //weaver.writeToFile("/test/" + pipelineElementNumber + scriptID, scriptFile);
-        weaver.writeToFile("/home/gbyelas/test/" + pipelineElementNumber + scriptID, scriptFile);
+        weaver.writeToFile("/test/" + pipelineElementNumber + scriptID, scriptFile);
+        //weaver.writeToFile("/home/gbyelas/test/" + pipelineElementNumber + scriptID, scriptFile);
         //weaver.writeToFile("/home/fvandijk/test/" + pipelineElementNumber + scriptID, scriptFile);
 
         //todo rewrite pipeline generation
@@ -475,8 +477,9 @@ public class StartNgs extends EasyPluginController<StartNgsView>
 
          Script pipelineScript = new Script(scriptID, scriptRemoteLocation, scriptFile.getBytes());
 
-         if(protocol.getClusterQueue().equalsIgnoreCase("short"))
-            pipelineScript.setShort(true);
+         if(protocol.getClusterQueue() != null)
+            if(protocol.getClusterQueue().equalsIgnoreCase("short"))
+                pipelineScript.setShort(true);
 
         if (strPreviousWorkflowElements.size() == 0)//script does not depend on other scripts
         {
@@ -488,7 +491,7 @@ public class StartNgs extends EasyPluginController<StartNgsView>
                 pipeline.addStep(step);
             }
 
-            System.out.println("scriptID" + scriptID);
+            //System.out.println("scriptID" + scriptID);
 
             currentStep.addScript(pipelineScript);
         }

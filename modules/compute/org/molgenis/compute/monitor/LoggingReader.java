@@ -14,7 +14,6 @@ import java.util.concurrent.ExecutionException;
 
 public class LoggingReader
 {
-    private Grid grid = null;
     private ExecutorService exec = null;
 
     public static final String _STARTED = "_started";
@@ -23,7 +22,6 @@ public class LoggingReader
     private String log_location = null;
 
     private Step currentStep = null;
-    //private boolean isStepFinished = false;
 
     private Summary summary = new Summary();
     private String pipelineName;
@@ -32,7 +30,6 @@ public class LoggingReader
 
     public void setGrid(Grid grid)
     {
-        this.grid = grid;
         exec = grid.newGridExecutorService();
     }
 
@@ -52,7 +49,6 @@ public class LoggingReader
     public void setStep(Step step)
     {
         currentStep = step;
-        //isStepFinished = false;
         currentStep.setScriptsStarted(0);
         currentStep.setScriptsFinished(0);
     }
@@ -60,12 +56,6 @@ public class LoggingReader
     public void setLogFile(String demoLog)
     {
         log_location = demoLog;
-    }
-
-    public boolean isNotFinishedStep()
-    {
-        //return isStepFinished;
-        return currentStep.isFinished();
     }
 
     public boolean isStepFinished()
@@ -127,8 +117,8 @@ public class LoggingReader
         currentStep.setScriptsStarted(summary.scripts_started);
         currentStep.setScriptsFinished(summary.scripts_finished);
 
-        System.out.println(pipelineName +"  scripts started: " + summary.scripts_started + "\t|  finished: "
-                + summary.scripts_finished + "\t| out of " + summary.scripts_all);
+//        System.out.println(pipelineName +"  scripts started: " + summary.scripts_started + "\t|  finished: "
+//                + summary.scripts_finished + "\t| out of " + summary.scripts_all);
 
         if (summary.scripts_finished == summary.scripts_all)
         {
@@ -137,20 +127,6 @@ public class LoggingReader
         
 
         return false;
-    }
-
-    //temporary for demo purposes
-    public String getTestSummary()
-    {
-        if(currentStep != null)
-        return "current Step: " + currentStep.getId() + "   subjobs started-" + summary.scripts_started +
-                "    finished-" + summary.scripts_finished + "    from-" + summary.scripts_all;
-        return "... starting";
-    }
-
-    public Summary getStepSummary()
-    {
-        return summary;
     }
 
     public String getLogFile()

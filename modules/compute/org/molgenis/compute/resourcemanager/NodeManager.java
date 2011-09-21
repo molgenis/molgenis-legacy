@@ -30,7 +30,7 @@ public class NodeManager
                 for (GridNode node : grid.getRemoteNodes())
                 {
                     String name = node.getAttribute("org.gridgain.grid.name");
-                    System.out.println("node " + name);
+                    //System.out.println("node " + name);
                     if (name != null)
                         if (name.equals(WORKER))
                         {
