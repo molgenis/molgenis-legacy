@@ -46,6 +46,10 @@
   		<script src="generated-res/lib/jquery-plugins/jquery.bt.js" type="text/javascript"></script>
   		<link rel="stylesheet" href="generated-res/lib/jquery-plugins/jquery.bt.css">
   		<script src="generated-res/lib/jquery-plugins/jquery.hoverintent.js" type="text/javascript"></script>
+  		<script src="generated-res/lib/jquery-plugins/jquery.dataTables.js" type="text/javascript"></script>
+  		<link rel="stylesheet" href="generated-res/lib/jquery-plugins/jquery.dataTables.css">
+  		<link rel="stylesheet" href="generated-res/lib/jquery-plugins/jquery.dataTables_jui.css">
+  		<link rel="stylesheet" href="generated-res/lib/jquery-plugins/jquery.dataTables_demo_page.css">
   		
   		<!--script src="generated-res/lib/jquery-plugins/jquery-xqs-flyoutmenu.js"></script>
   		<script src="generated-res/lib/jquery-plugins/jquery-xqs-flyoutmenu.css"></script>
