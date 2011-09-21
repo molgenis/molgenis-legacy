@@ -11,4 +11,9 @@ public abstract class HtmlWidget extends HtmlInput<String>
 		super(name,label);
 	}
 
+	public HtmlWidget(String name)
+	{
+		super(name,name);
+	}
+
 }
