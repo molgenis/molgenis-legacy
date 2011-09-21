@@ -97,7 +97,7 @@ public abstract class SimpleCommand extends SimpleScreenModel implements ScreenC
 						.append("molgenis_window = window.open('','"
 								+ "molgenis_"
 								+ this.getName()
-								+ "','height=800,width=600,location=no,status=no,menubar=no,directories=no,toolbar=no,resizable=yes,scrollbars=yes');");
+								+ "','height=800,width=800,location=no,status=no,menubar=no,directories=no,toolbar=no,resizable=yes,scrollbars=yes');");
 
 				// make this new screen the target of this form
 				jScript.append("document.forms." + this.getController().getName() + "_form.target='" + "molgenis_"
