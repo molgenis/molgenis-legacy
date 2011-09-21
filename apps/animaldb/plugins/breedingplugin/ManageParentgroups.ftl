@@ -191,7 +191,8 @@
 	  "bServerSide": false,
 	  "sPaginationType": "full_numbers",
 	  "bSaveState": true,
-	  "bAutoWidth": false }
+	  "bAutoWidth": false,
+	  "bJQueryUI" : true }
 	);
 </script>
 

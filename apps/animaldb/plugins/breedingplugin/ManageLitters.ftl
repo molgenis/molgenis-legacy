@@ -396,7 +396,8 @@
 	  "bServerSide": false,
 	  "sPaginationType": "full_numbers",
 	  "bSaveState": true,
-	  "bAutoWidth": false }
+	  "bAutoWidth": false,
+	  "bJQueryUI" : true }
 	);
 	
 	var oTable = jQuery('#unweanedlitterstable').dataTable(
@@ -404,7 +405,7 @@
 	  "bServerSide": false,
 	  "sPaginationType": "full_numbers",
 	  "bSaveState": true,
-	  "bAutoWidth": false }
+	  "bJQueryUI" : true }
 	);
 	
 	var oTable = jQuery('#ungenotypedlitterstable').dataTable(
@@ -412,7 +413,7 @@
 	  "bServerSide": false,
 	  "sPaginationType": "full_numbers",
 	  "bSaveState": true,
-	  "bAutoWidth": false }
+	  "bJQueryUI" : true }
 	);
 </script>
 
