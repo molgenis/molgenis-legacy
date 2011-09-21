@@ -457,5 +457,23 @@ public class PhenoMatrix
 		return null;
 	}
 
+	@Override
+	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByRowValueProperty(
+			ObservationTarget row, String property, Operator operator,
+			Object value) throws MatrixException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByRowValueProperty(
+			int rowIndex, String property, Operator operator, Object value)
+			throws MatrixException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 }

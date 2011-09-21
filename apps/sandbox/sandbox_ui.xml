@@ -1,28 +1,29 @@
 <molgenis name="ngs" label="Sandbox for testing small things :-)">
-	<!--
-		plugin name="molgenis_header" type="plugins.header.MolgenisHeader" /
-	-->
+	<!-- plugin name="molgenis_header" type="plugins.header.MolgenisHeader" 
+		/ -->
 	<menu name="sandboxmain" position="left">
-	<plugin name="LayoutTests" type="org.molgenis.sandbox.ui.LayoutTests" />
-	<plugin name="InputsTest" type="org.molgenis.sandbox.ui.InputsTest" />
-		<!--
-			plugin name="Test" type="org.molgenis.sandbox.plugins.Test" />
-			<plugin name="TestTwo" flavor="easy"
-			type="org.molgenis.sandbox.plugins.TestTwo" /> <plugin
-			name="TestThree" flavor="freemarker"
-			type="org.molgenis.sandbox.plugins.TestThree" /> <plugin
-			name="FreermarkerTaglibExamples"
-			type="org.molgenis.sandbox.plugins.FreemarkerTaglibExamples"/> <form
-			name="Investigations" entity="Investigation"/> <form
-			name="MolgenisUsers" entity="MolgenisUser"/> <form name="Persons"
-			entity="Person"/> <plugin name="TestMatrixView"
-			type="org.molgenis.matrix.example.MatrixViewExample1"/> <plugin
-			name="StringMatrixView"
-			type="org.molgenis.matrix.example.StringMatrixViewExample"/
-		-->
-		<plugin name="HtmlEditor" type="org.molgenis.sandbox.ui.HtmlEditor" />
-		<plugin name="FreemarkerEditor" type="org.molgenis.sandbox.ui.FreemarkerEditor" />
-		<form name="fieldtest" entity="FieldTest"  compact_view="name"/>
-		<form name="Investigations" entity="Investigation" />
+		<form name="ExampleInvestigationData" entity="Investigation">
+			<menu name="ExampleData">
+				<form name="Individuals" entity="Individual" />
+				<form name="Measurements" entity="Measurement" />
+				<form name="ObservedValues" entity="ObservedValue" />
+			</menu>
+		</form>
+		<menu name="WidgetExamples">
+			<plugin name="MatrixTests" type="org.molgenis.sandbox.ui.MatrixTests" />
+			<plugin name="LayoutTests" type="org.molgenis.sandbox.ui.LayoutTests" />
+			<plugin name="InputsTest" type="org.molgenis.sandbox.ui.InputsTest" />
+			<!-- plugin name="Test" type="org.molgenis.sandbox.plugins.Test" /> <plugin 
+				name="TestTwo" flavor="easy" type="org.molgenis.sandbox.plugins.TestTwo" 
+				/> <plugin name="TestThree" flavor="freemarker" type="org.molgenis.sandbox.plugins.TestThree" 
+				/> <plugin name="FreermarkerTaglibExamples" type="org.molgenis.sandbox.plugins.FreemarkerTaglibExamples"/> 
+				<form name="Investigations" entity="Investigation"/> <form name="MolgenisUsers" 
+				entity="MolgenisUser"/> <form name="Persons" entity="Person"/> <plugin name="TestMatrixView" 
+				type="org.molgenis.matrix.example.MatrixViewExample1"/> <plugin name="StringMatrixView" 
+				type="org.molgenis.matrix.example.StringMatrixViewExample"/ -->
+			<plugin name="HtmlEditor" type="org.molgenis.sandbox.ui.HtmlEditor" />
+			<plugin name="FreemarkerEditor" type="org.molgenis.sandbox.ui.FreemarkerEditor" />
+			<form name="fieldtest" entity="FieldTest" compact_view="name" />
+		</menu>
 	</menu>
 </molgenis>

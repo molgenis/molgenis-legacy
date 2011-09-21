@@ -246,4 +246,11 @@ public interface SliceableMatrix<R, C, V> extends BasicMatrix<R, C, V>
 	public int getColOffset();
 
 	public void setColOffset(int colOffset);
+
+	SliceableMatrix<R, C, V> sliceByRowValueProperty(R row, String property,
+			Operator operator, Object value) throws MatrixException;
+
+	SliceableMatrix<R, C, V> sliceByRowValueProperty(int rowIndex,
+			String property, Operator operator, Object value)
+			throws MatrixException;
 }

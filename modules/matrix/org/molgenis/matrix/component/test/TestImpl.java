@@ -283,6 +283,24 @@ public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, 
 		return null;
 	}
 
+	@Override
+	public SliceableMatrix<SomeRowType, SomeColType, SomeValueType> sliceByRowValueProperty(
+			SomeRowType row, String property, Operator operator, Object value)
+			throws MatrixException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SliceableMatrix<SomeRowType, SomeColType, SomeValueType> sliceByRowValueProperty(
+			int rowIndex, String property, Operator operator, Object value)
+			throws MatrixException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 
 

@@ -913,5 +913,21 @@ public abstract class AbstractDataMatrixInstance<E> extends
 		// TODO Auto-generated method stub
 		
 	}
+	@Override
+	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByRowValueProperty(
+			ObservationElement row, String property, Operator operator,
+			Object value) throws MatrixException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	@Override
+	public SliceableMatrix<ObservationElement, ObservationElement, Object> sliceByRowValueProperty(
+			int rowIndex, String property, Operator operator, Object value)
+			throws MatrixException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

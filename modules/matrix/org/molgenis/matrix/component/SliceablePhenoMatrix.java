@@ -9,6 +9,7 @@ import java.util.Map;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
@@ -22,8 +23,8 @@ import org.molgenis.pheno.ObservedValue;
 /**
  * Sliceable version of the PhenoMatrix. This assumes the rows are
  * ObservationTarget, the columns ObservableFeature and there can be zero or
- * more ObservedValue for each combination (hence return List &lt; ObservedValue &gt; for
- * each value 'V')
+ * more ObservedValue for each combination (hence return List &lt; ObservedValue
+ * &gt; for each value 'V')
  * 
  * Slicing will be done by setting filters.
  * 
@@ -32,10 +33,8 @@ import org.molgenis.pheno.ObservedValue;
  * set is filtered by investigation.
  * 
  */
-public class SliceablePhenoMatrix<R extends ObservationElement,C extends ObservationElement>
-		extends
-		AbstractObservationElementMatrix<R, C, ObservedValue>
-		implements
+public class SliceablePhenoMatrix<R extends ObservationElement, C extends ObservationElement>
+		extends AbstractObservationElementMatrix<R, C, ObservedValue> implements
 		SliceableMatrix<R, C, ObservedValue>
 {
 	/**
@@ -44,7 +43,8 @@ public class SliceablePhenoMatrix<R extends ObservationElement,C extends Observa
 	 * @param database
 	 * @param data
 	 */
-	public SliceablePhenoMatrix(Database database, Class<R> rowClass, Class<C> colClass)
+	public SliceablePhenoMatrix(Database database, Class<R> rowClass,
+			Class<C> colClass)
 	{
 		this.database = database;
 		this.rowClass = rowClass;
@@ -60,8 +60,7 @@ public class SliceablePhenoMatrix<R extends ObservationElement,C extends Observa
 		{
 			try
 			{
-				Query<R> query = this
-						.createSelectQuery(getRowClass());
+				Query<R> query = this.createSelectQuery(getRowClass());
 				this.rowHeaders = query.find();
 				rowDirty = false;
 			}
@@ -94,8 +93,7 @@ public class SliceablePhenoMatrix<R extends ObservationElement,C extends Observa
 		{
 			try
 			{
-				Query<C> query = this
-						.createSelectQuery(getColClass());
+				Query<C> query = this.createSelectQuery(getColClass());
 				this.colHeaders = query.find();
 				colDirty = false;
 			}
@@ -121,8 +119,7 @@ public class SliceablePhenoMatrix<R extends ObservationElement,C extends Observa
 	}
 
 	@Override
-	public BasicMatrix<R, C, ObservedValue> getResult()
-			throws Exception
+	public BasicMatrix<R, C, ObservedValue> getResult() throws Exception
 	{
 		throw new UnsupportedOperationException();
 	}
@@ -214,7 +211,10 @@ public class SliceablePhenoMatrix<R extends ObservationElement,C extends Observa
 						// if(data != null)
 						// subQuery.eq(TextDataElement.DATA, data.getIdValue());
 						// filter on the column/row
-						subQuery.eq(xValuePropertyFilterType == MatrixQueryRule.Type.colValueProperty ? ObservedValue.FEATURE : ObservedValue.TARGET, rule.getDimIndex());
+						subQuery.eq(
+								xValuePropertyFilterType == MatrixQueryRule.Type.colValueProperty ? ObservedValue.FEATURE
+										: ObservedValue.TARGET, rule
+										.getDimIndex());
 						subQueries.put(rule.getDimIndex(), subQuery);
 					}
 					subQueries.get(rule.getDimIndex()).addRules(rule);
@@ -222,12 +222,15 @@ public class SliceablePhenoMatrix<R extends ObservationElement,C extends Observa
 				// ignore all other rules
 			}
 
-			// add each subquery as condition on ObservedValue.FEATURE/ObservedValue.TARGET
+			// add each subquery as condition on
+			// ObservedValue.FEATURE/ObservedValue.TARGET
 			for (Query<ObservedValue> q : subQueries.values())
 			{
 				String sql = q.createFindSql();
 				// strip 'select ... from' and replace with 'select id from'
-				sql = "SELECT ObservedValue." + (xClass.equals(rowClass) ? ObservedValue.TARGET : ObservedValue.FEATURE) + " "
+				sql = "SELECT ObservedValue."
+						+ (xClass.equals(rowClass) ? ObservedValue.TARGET
+								: ObservedValue.FEATURE) + " "
 						+ sql.substring(sql.indexOf("FROM"));
 				// use QueryRule.Operator.IN_SUBQUERY
 				xQuery.subquery(ObservationElement.ID, sql);
@@ -265,9 +268,14 @@ public class SliceablePhenoMatrix<R extends ObservationElement,C extends Observa
 			final List<Integer> rowIndexes = getRowIndices();
 			final List<Integer> colIndexes = getColIndices();
 
+			if (rowIndexes.size() == 0 || colIndexes.size() == 0)
+			{
+				return create(rowIndexes.size(), colIndexes.size());
+			}
+
 			// create matrix of suitable size
-			final List<ObservedValue>[][] valueMatrix = create(getRowLimit(),
-					getColLimit());
+			final List<ObservedValue>[][] valueMatrix = create(
+					rowIndexes.size(), colIndexes.size());
 
 			// retrieve values matching the selected indexes
 			Query<ObservedValue> query = database.query(valueClass);
@@ -303,10 +311,10 @@ public class SliceablePhenoMatrix<R extends ObservationElement,C extends Observa
 		List<ObservedValue>[][] data = new ArrayList[rows][cols];
 		for (int i = 0; i < data.length; i++)
 		{
-			for(int j = 0; j < cols; j++)
+			for (int j = 0; j < cols; j++)
 				data[i][j] = new ArrayList<ObservedValue>();
 		}
-	
+
 		return data;
 	}
 

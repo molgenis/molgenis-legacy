@@ -345,6 +345,24 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 	}
 
 	@Override
+	public SliceableMatrix<R, C, V> sliceByRowValueProperty(R row, String property,
+			Operator operator, Object value) throws MatrixException
+	{
+		if (row.getId() == null) throw new MatrixException(
+				"row.getId() not set for sortByColValues(" + row + ")");
+		return this.slice(new MatrixRowValueFilter(row.getId(),
+				ObservedValue.VALUE, operator, value));
+	}
+
+	@Override
+	public SliceableMatrix<R, C, V> sliceByRowValueProperty(int rowIndex, String property,
+			Operator operator, Object value) throws MatrixException
+	{
+		return this.slice(new MatrixRowValueFilter(rowIndex,
+				ObservedValue.VALUE, operator, value));
+	}
+	
+	@Override
 	public SliceableMatrix<R, C, V> sliceByRowProperty(String property, Operator operator, Object value)
 			throws MatrixException
 	{
