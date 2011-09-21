@@ -52,11 +52,10 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 		super(name, parent);
 	}
 	
-	public String getCustomHtmlHeaders() {
-		return "<script type=\"text/javascript\" src=\"res/scripts/custom/jquery.dataTables.js\"></script>\n" +
+		public String getCustomHtmlHeaders() {
+		return "<script type=\"text/javascript\" src=\"res/jquery-plugins/datatables/js/jquery.dataTables.js\"></script>\n" +
 				"<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n" +
-				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/demo_table.css\">\n" +
-				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/demo_page.css\">\n" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/datatables/css/demo_table_jui.css\">\n" +
 				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
 	}
 	

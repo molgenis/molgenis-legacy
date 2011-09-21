@@ -41,9 +41,8 @@ public class ShowDecProjects extends PluginModel<Entity>
 	}
 	
 	public String getCustomHtmlHeaders() {
-		return "<script type=\"text/javascript\" src=\"res/scripts/custom/jquery.dataTables.js\"></script>\n" +
-				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/demo_table.css\">\n" +
-				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/demo_page.css\">\n" +
+		return "<script type=\"text/javascript\" src=\"res/jquery-plugins/datatables/js/jquery.dataTables.js\"></script>\n" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/datatables/css/demo_table_jui.css\">\n" +
 				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
 	}
 	

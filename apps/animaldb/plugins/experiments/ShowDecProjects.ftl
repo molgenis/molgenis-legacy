@@ -112,14 +112,14 @@
 		<#if screen.decappList?exists>
 			<#list screen.decappList as decl>
 				<tr>
-					<td style='padding:5px'>${decl.name}</td>
-					<td style='padding:5px'>${decl.startDate}</td>
-					<td style='padding:5px'>${decl.endDate}</td>
-					<td style='padding:5px'>${decl.decNr}</td>
-					<td style='padding:5px'>${decl.decApplicantName}</td>
-					<td style='padding:5px'>${decl.pdfDecApplication}</td>
-					<td style='padding:5px'>${decl.pdfDecApproval}</td>
-					<td style='padding:5px'><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=${decl.decAppListId}">Edit</a></td>
+					<td>${decl.name}</td>
+					<td>${decl.startDate}</td>
+					<td>${decl.endDate}</td>
+					<td>${decl.decNr}</td>
+					<td>${decl.decApplicantName}</td>
+					<td>${decl.pdfDecApplication}</td>
+					<td>${decl.pdfDecApproval}</td>
+					<td><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=${decl.decAppListId}">Edit</a></td>
 				</tr>
 			</#list>
 		</#if>
@@ -141,7 +141,8 @@
 	  "bServerSide": false,
 	  "sPaginationType": "full_numbers",
 	  "bSaveState": true,
-	  "bAutoWidth": false }
+	  "bAutoWidth": false,
+	  "bJQueryUI": true }
 	);
 	
 	

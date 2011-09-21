@@ -143,7 +143,8 @@ var oTable = jQuery('#listtable').dataTable(
 	  },
 	  "sPaginationType": "full_numbers",
 	  "bSaveState": true,
-	  "bAutoWidth": false }
+	  "bAutoWidth": false,
+	  "bJQueryUI" : true }
 );
 
 <!-- piece of code to set the headers and footers, and initially hide all columns except the one with the targets -->
