@@ -53,14 +53,18 @@ public class MatrixViewer extends HtmlWidget
 						boolean first = true;
 						for(ObservedValue val: rowValues[col])
 						{
+							String valueToShow = val.getValue();
+							if (valueToShow == null) {
+								valueToShow = val.getRelation_Name();
+							}
 							if(first) 
 							{
 								first = false;
-								result += val.getValue();
+								result += valueToShow;
 							}
 							else
 							{
-								result += "," + val.getValue();
+								result += ("," + valueToShow);
 							}
 						}
 					}

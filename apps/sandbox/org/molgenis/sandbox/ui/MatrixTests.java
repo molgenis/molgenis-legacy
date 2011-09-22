@@ -61,24 +61,6 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 
 	}
 
-	/**
-	 * When action="updateDate": update model and/or view accordingly.
-	 * 
-	 * Exceptions will be logged and shown to the user automatically. All db
-	 * actions are within one transaction.
-	 */
-	public void updateDate(Database db, Tuple request) throws Exception
-	{
-		getModel().date = request.getDate("date");
-
-		// //Easily create object from request and add to database
-		// Investigation i = new Investigation(request);
-		// db.add(i);
-		// this.setMessage("Added new investigation");
-
-		getModel().setSuccess("update succesfull");
-	}
-
 	public String render()
 	{
 		matrixViewer = new MatrixViewer("mymatrix", matrix);
@@ -86,13 +68,14 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 		MolgenisForm f = new MolgenisForm(this);
 
 		f.add(new ActionInput("generateData"));
+		f.add(new Newline());
 		// rowlimit
 		f.add(new IntInput("rowLimit", matrix.getRowLimit()));
 		f.add(new ActionInput("changeRowLimit"));
+		f.add(new Newline());
 		// colLimit
 		f.add(new IntInput("colLimit", matrix.getColLimit()));
 		f.add(new ActionInput("changeColLimit"));
-
 		f.add(new Newline());
 
 		// move horizontal
@@ -100,7 +83,6 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 		f.add(new ActionInput("moveLeft"));
 		f.add(new ActionInput("moveRight"));
 		f.add(new ActionInput("moveRightEnd"));
-
 		f.add(new Newline());
 
 		// move vertical
@@ -108,10 +90,11 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 		f.add(new ActionInput("moveUp"));
 		f.add(new ActionInput("moveDown"));
 		f.add(new ActionInput("moveDownEnd"));
+		f.add(new Newline());
 		
 		try
 		{
-			// test collumn filters, currently only 'equals' and 'sort'. Of
+			// test column filters, currently only 'equals' and 'sort'. Of
 			// course this should only show fields in the list
 			f.add(new LabelInput("Add column filter:"));
 			f.add(new Newline());
@@ -121,7 +104,6 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 			f.add(colIndex);
 			f.add(new StringInput("colValue"));
 			f.add(new ActionInput("colEquals"));
-
 			f.add(new Newline());
 
 			// test collumn filters, currently only 'equals' and 'sort'
@@ -133,8 +115,9 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 			f.add(rowIndex);
 			f.add(new StringInput("rowValue"));
 			f.add(new ActionInput("rowEquals"));
+			f.add(new Newline());
 
-			f.add(new ActionInput("clearFilters"));
+			f.add(new ActionInput("clearFilters", "", "Reset"));
 
 		}
 		catch (Exception e)
@@ -145,8 +128,6 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 
 		// add the matrix
 		f.add(matrixViewer);
-
-
 
 		return f.render();
 	}

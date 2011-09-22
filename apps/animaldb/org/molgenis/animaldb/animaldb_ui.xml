@@ -96,11 +96,13 @@
 			<plugin name="ApplyProtocol" type="plugins.protocol.ApplyProtocolPlugin"
 				label="Make/edit values" />
 			<plugin name="ListPlugin" type="plugins.listplugin.ListPlugin"
-				label="View value matrix" />
-			<plugin name="RenderableMatrixPlugin" type="plugins.listplugin.RenderableMatrixPlugin"
-				label="View renderable matrix" />
+				label="View values in matrix" />
 			<plugin name="EventViewer" type="plugins.protocol.EventViewerPlugin"
-				label="View value timeline" />
+				label="View values in timeline" />
+			<plugin name="MatrixTests" type="org.molgenis.sandbox.ui.MatrixTests"
+				label="Sliceable PhenoMatrix (TESTING)" />
+			<plugin name="RenderableMatrixPlugin" type="plugins.listplugin.RenderableMatrixPlugin"
+				label="Renderable matrix (TESTING)" />
 		</menu>
 		
 		<menu name="projectmenu" position="left" label="DEC (sub)projects">
