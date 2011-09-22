@@ -237,9 +237,11 @@ public class XqtlSeleniumTest
 		{ "returnHome" })
 		public void individualForms() throws Exception
 		{
-			// browse to basic annotations, individuals is the first form
+			// browse to individuals
 			clickAndWait("id=Investigations_tab_button");
 			clickAndWait("id=BasicAnnotations_tab_button");
+			clickAndWait("id=Individuals_tab_button");
+			clickAndWait("id=first_Individuals");
 
 			// check some values here
 			Assert.assertEquals(selenium.getText("//form[@id='Individuals_form']/div[3]/div/div/table/tbody/tr[7]/td[4]"),
@@ -538,7 +540,7 @@ public class XqtlSeleniumTest
 			
 				//find out of the strict policy is in effect for entities
 				
-				// browse to basic annotations, individuals is the first form
+				// browse to individuals
 				clickAndWait("id=Investigations_tab_button");
 				clickAndWait("id=BasicAnnotations_tab_button");
 				clickAndWait("Individuals_tab_button");
@@ -620,6 +622,47 @@ public class XqtlSeleniumTest
 			{
 				// find out if nested forms by XREF display this relation by default
 				// when adding new entities
+				
+				
+				// browse to individuals
+				clickAndWait("id=Investigations_tab_button");
+				clickAndWait("id=BasicAnnotations_tab_button");
+				clickAndWait("Individuals_tab_button");
+				
+				// click add new, wait for popup, and select it
+				selenium.click("id=Individuals_edit_new");
+				selenium.waitForPopUp("molgenis_edit_new", "30000");
+				selenium.selectWindow("name=molgenis_edit_new");
+				
+				//check if the proper xreffed investigation is selected
+				Assert.assertEquals(selenium.getText("css=span"), "ClusterDemo");
+				
+				//cancel and return
+				selenium.click("id=cancel");
+				selenium.selectWindow("title=xQTL workbench");
+				
+				//change and save
+				selenium.type("id=Investigation_name", "TestIfThisWorks");
+				clickAndWait("id=save_Investigations");
+				Assert.assertTrue(selenium.isTextPresent("UPDATE SUCCESS: affected 1"));
+
+				// click add new, wait for popup, and select it
+				selenium.click("id=Individuals_edit_new");
+				selenium.waitForPopUp("molgenis_edit_new", "30000");
+				selenium.selectWindow("name=molgenis_edit_new");
+				
+				//check if the proper xreffed investigation is selected
+				Assert.assertEquals(selenium.getText("css=span"), "TestIfThisWorks");
+				
+				//cancel and return
+				selenium.click("id=cancel");
+				selenium.selectWindow("title=xQTL workbench");
+				
+				//revert and save
+				selenium.type("id=Investigation_name", "ClusterDemo");
+				clickAndWait("id=save_Investigations");
+				Assert.assertTrue(selenium.isTextPresent("UPDATE SUCCESS: affected 1"));
+
 			}
 			
 			@Test(dependsOnMethods =
@@ -628,6 +671,26 @@ public class XqtlSeleniumTest
 			{
 				// start a default analysis and check if jobs have
 				// been created, regardless of further outcome
+				
+				// start QTL mapping
+				clickAndWait("id=Cluster_tab_button");
+				clickAndWait("id=start_new_analysis");
+				clickAndWait("id=toStep2");
+				clickAndWait("id=startAnalysis");
+				
+				Assert.assertTrue(selenium.isTextPresent("Refresh page every"));
+				Assert.assertTrue(selenium.isTextPresent("Running analysis"));
+				Assert.assertTrue(selenium.isTextPresent("[view all local logs]"));
+				
+				//check created job/subjobs
+				clickAndWait("id=Settings_tab_button");
+				clickAndWait("id=OtherAdmin_tab_button");
+				clickAndWait("id=Jobs_tab_button");
+				
+				Assert.assertEquals(selenium.getText("css=span"), "Rqtl_analysis");
+				Assert.assertEquals(selenium.getText("css=#Job_ComputeResource_chzn > a.chzn-single > span"), "local");
+				Assert.assertTrue(selenium.isTextPresent("MyOutput*Subjobs*1 - 6 of 6"));
+
 			}
 			
 			@Test(dependsOnMethods =

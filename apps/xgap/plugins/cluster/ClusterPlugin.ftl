@@ -259,7 +259,7 @@ You have selected: <b>${model.selectedAnalysis.name}</b><br><br>
 </#if>
 
 <input type="submit" id="toStep1" value="Previous" onclick="__action.value='toStep1';return true;"/>
-<input type="submit" value="Start" onclick="__action.value='startClusterJob';return true;"/>
+<input id="startAnalysis" type="submit" value="Start" onclick="__action.value='startClusterJob';return true;"/>
 
 
 
