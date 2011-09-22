@@ -57,8 +57,8 @@
 	<input type="submit" value="Upload" onclick="__action.value='upload';return true;"/><br>
 	<br>
 	Alternatively, use this textarea to input your data.<br>
-	<textarea name="inputTextArea" rows="7" cols="30"><#if model.uploadTextAreaContent?exists>${model.uploadTextAreaContent}</#if></textarea>
-	<input type="submit" value="Upload" onclick="__action.value='uploadTextArea';return true;"/><br>
+	<textarea id="matrixInputTextArea" name="inputTextArea" rows="7" cols="30"><#if model.uploadTextAreaContent?exists>${model.uploadTextAreaContent}</#if></textarea>
+	<input id="matrixUploadTextArea" type="submit" value="Upload" onclick="__action.value='uploadTextArea';return true;"/><br>
 				
 <#else>
 <div style="overflow: auto; width: inherit;">

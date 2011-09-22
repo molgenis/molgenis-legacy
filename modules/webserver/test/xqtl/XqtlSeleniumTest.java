@@ -198,6 +198,9 @@ public class XqtlSeleniumTest
 			clickAndWait("link=metaboliteexpression");
 			Assert.assertTrue(selenium.isTextPresent("942") && selenium.isTextPresent("4857")
 					&& selenium.isTextPresent("20716"));
+			
+			//restore state
+			clickAndWait("id=remove_filter_0");
 		}
 
 		@Test(dependsOnMethods =
@@ -477,5 +480,174 @@ public class XqtlSeleniumTest
 
 			// TODO: Upload CSV file (as best as possible w/o uploading)
 		}
+		
+		@Test(dependsOnMethods =
+			{ "returnHome" })
+			public void userRoleMenuVisibility() throws Exception
+			{
+				//find out if admin can see the correct tabs
+				Assert.assertTrue(selenium.isTextPresent("Home*Login*Browse data*Import data*Run QTL mapping*Configure analysis*Search*Settings"));
+				clickAndWait("id=Settings_tab_button");
+				Assert.assertTrue(selenium.isTextPresent("Users and permissions*Database status*File storage*Install R packages*Ontologies*Utilities"));
+				clickAndWait("id=OtherAdmin_tab_button");
+				Assert.assertTrue(selenium.isTextPresent("Job table"));
+				
+				//logout and see if the correct tabs are visible
+				clickAndWait("id=UserLogin_tab_button");
+				clickAndWait("id=Logout");
+				Assert.assertTrue(selenium.isTextPresent("Home*Login"));
+				Assert.assertFalse(selenium.isTextPresent("Browse data*Import data*Run QTL mapping*Configure analysis*Search*Settings"));
+				
+				//login as biologist and see if the correct tabs are visible
+				selenium.type("id=username", "bio-user");
+				selenium.type("id=password", "bio");
+				clickAndWait("id=Login");
+				Assert.assertTrue(selenium.isTextPresent("Home*Login*Browse data*Import data*Run QTL mapping*Search*Settings"));
+				Assert.assertFalse(selenium.isTextPresent("Configure analysis"));
+				clickAndWait("id=Settings_tab_button");
+				clickAndWait("id=OtherAdmin_tab_button");
+				Assert.assertTrue(selenium.isTextPresent("Advanced import*Format names*Rename duplicates"));
+				Assert.assertFalse(selenium.isTextPresent("Job table"));
+				Assert.assertFalse(selenium.isTextPresent("KEGG converter"));
+
+				//login as bioinformatician and see if the correct tabs are visible
+				clickAndWait("id=UserLogin_tab_button");
+				clickAndWait("id=Logout");
+				selenium.type("id=username", "bioinfo-user");
+				selenium.type("id=password", "bioinfo");
+				clickAndWait("id=Login");
+				Assert.assertTrue(selenium.isTextPresent("Home*Login*Browse data*Import data*Run QTL mapping*Configure analysis*Search*Settings"));
+				clickAndWait("id=Settings_tab_button");
+				clickAndWait("id=OtherAdmin_tab_button");
+				Assert.assertTrue(selenium.isTextPresent("Advanced import*Format names*Rename duplicates*KEGG converter"));
+				Assert.assertFalse(selenium.isTextPresent("Job table"));
+				
+				//log back in as admin
+				clickAndWait("id=UserLogin_tab_button");
+				clickAndWait("id=Logout");
+				selenium.type("id=username", "admin");
+				selenium.type("id=password", "admin");
+				clickAndWait("id=Login");
+
+			}
+			
+			@Test(dependsOnMethods =
+			{ "returnHome" })
+			public void namePolicy() throws Exception
+			{
+			
+				//find out of the strict policy is in effect for entities
+				
+				// browse to basic annotations, individuals is the first form
+				clickAndWait("id=Investigations_tab_button");
+				clickAndWait("id=BasicAnnotations_tab_button");
+				clickAndWait("Individuals_tab_button");
+				
+				// click add new, wait for popup, and select it
+				selenium.click("id=Individuals_edit_new");
+				selenium.waitForPopUp("molgenis_edit_new", "30000");
+				selenium.selectWindow("name=molgenis_edit_new");
+
+				// fill in the form and click add
+				selenium.type("id=Individual_name", "#");
+				clickAndWait("id=Add");
+
+				// select main window and check if add failed
+				selenium.selectWindow("title=xQTL workbench");
+				Assert.assertTrue(selenium.isTextPresent("ADD FAILED: Illegal character (#) in name '#'. Use only a-z, A-Z, 0-9, and underscore."));
+
+				// click add new, wait for popup, and select it
+				selenium.click("id=Individuals_edit_new");
+				selenium.waitForPopUp("molgenis_edit_new", "30000");
+				selenium.selectWindow("name=molgenis_edit_new");
+
+				// fill in the form and click add
+				selenium.type("id=Individual_name", "1");
+				clickAndWait("id=Add");
+				
+				// select main window and check if add failed
+				selenium.selectWindow("title=xQTL workbench");
+				Assert.assertTrue(selenium.isTextPresent("ADD FAILED: Name '1' is not allowed to start with a numeral (1)."));
+
+				//find out of the strict policy is in effect for data matrix (files)
+				clickAndWait("id=Datas_tab_button");
+				Assert.assertTrue(selenium.isTextPresent("metaboliteexpression"));
+				
+				// click add new, wait for popup, and select it
+				selenium.click("id=Datas_edit_new");
+				selenium.waitForPopUp("molgenis_edit_new", "30000");
+				selenium.selectWindow("name=molgenis_edit_new");
+				
+				// fill in the form and click add
+				selenium.type("id=Data_name", "#");
+				clickAndWait("id=Add");
+				
+				// select main window and check if add failed
+				selenium.selectWindow("title=xQTL workbench");
+				Assert.assertTrue(selenium.isTextPresent("ADD FAILED: Illegal character (#) in name '#'. Use only a-z, A-Z, 0-9, and underscore."));
+
+				// click add new, wait for popup, and select it
+				selenium.click("id=Datas_edit_new");
+				selenium.waitForPopUp("molgenis_edit_new", "30000");
+				selenium.selectWindow("name=molgenis_edit_new");
+				
+				// fill in the form and click add
+				// notice the name is allowed, but not OK for files!
+				selenium.type("id=Data_name", "metaboliteExpression");
+				clickAndWait("id=Add");
+				
+				// select main window and check if add succeeded
+				selenium.selectWindow("title=xQTL workbench");
+				Assert.assertTrue(selenium.isTextPresent("ADD SUCCESS: affected 1"));
+				
+				//add some content and try to save - this must fail
+				selenium.type("id=matrixInputTextArea", "qw er\nty 1 2");
+				clickAndWait("id=matrixUploadTextArea");
+				Assert.assertTrue(selenium.isTextPresent("File name 'metaboliteExpression' already exists in database when escaped to filesafe format. ('metaboliteexpression')"));
+				
+				// delete the test data and check if it happened
+				selenium.click("id=delete_Datas");
+				Assert.assertEquals(selenium.getConfirmation(),
+						"You are about to delete a record. If you click [yes] you won't be able to undo this operation.");
+				selenium.waitForPageToLoad(pageLoadTimeout);
+				Assert.assertTrue(selenium.isTextPresent("REMOVE SUCCESS: affected 1"));
+				
+			}
+			
+			@Test(dependsOnMethods =
+			{ "returnHome" })
+			public void guiNestingXrefDefault() throws Exception
+			{
+				// find out if nested forms by XREF display this relation by default
+				// when adding new entities
+			}
+			
+			@Test(dependsOnMethods =
+			{ "returnHome" })
+			public void startAnalysis() throws Exception
+			{
+				// start a default analysis and check if jobs have
+				// been created, regardless of further outcome
+			}
+			
+			@Test(dependsOnMethods =
+			{ "returnHome" })
+			public void pageMatrix() throws Exception
+			{
+				// page around in the matrix and see if the correct
+				// values are displayed in the viewer
+			}
+			
+			@Test(dependsOnMethods =
+			{ "returnHome" })
+			public void addMatrix() throws Exception
+			{
+				// add a new matrix record
+				// add data by typing in the text area and store
+				// - as binary
+				// - as database
+				// - as csv
+				// backend deletes inbetween
+			}
 
 }
