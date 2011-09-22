@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.MolgenisService;
@@ -16,6 +19,7 @@ import org.molgenis.framework.ui.html.RichtextInput;
 import org.molgenis.framework.ui.html.render.RenderDecorator;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.FileLink;
+import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.RedirectedException;
 import org.molgenis.util.Tuple;
 
@@ -176,13 +180,16 @@ public class ApplicationController extends
 		{
 			if(!request.isNull("GALAXY_URL"))
 			{
+				//
 				// If a user navigated to Molgenis from a session on a Galaxy server, 
 				// we keep track of the Galaxy server address, so when this user wants 
 				// to send (upload) data to Galaxy we know which one to send the data to.
 				// (In fact we do not send the data directly, but an URL that can be used 
 				// by Galaxy to fetch the data)
+				//
 				this.setGalaxyUrl(request.getString("GALAXY_URL"));
-				logger.info("User was forwarded to Molgenis by Galaxy server "+this.getGalaxyUrl());
+				logger.info("User was forwarded to Molgenis running @ "+this.getApplicationUrl());
+				logger.info("User was forwarded to Molgenis by Galaxy running @ "+this.getGalaxyUrl());
 			}
 		}
 

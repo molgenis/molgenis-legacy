@@ -57,10 +57,9 @@ public class GalaxyCommand extends SimpleCommand {
 		if(this.getController().getApplicationController().getGalaxyUrl() != null) {
 		
 			String galaxy_url = this.getController().getApplicationController().getGalaxyUrl();
-			//BIG TODO the url of current MOLGENIS must be easily accessible to use here.
-			String molgenis_site = "http://localhost:8082/molgenis_apps/";
-			String molgenis_download_all = molgenis_site+"molgenis.do?__target="+this.getController().getName()+"&__action=download_txt_all&__show=download";
-			String molgenis_download_selected = molgenis_site+"molgenis.do?__target="+this.getController().getName()+"&__action=download_txt_selected&__show=download";
+			String molgenis_site = this.getController().getApplicationController().getApplicationUrl();
+			String molgenis_download_all = molgenis_site+"/molgenis.do?__target="+this.getController().getName()+"&__action=download_txt_all&__show=download";
+			String molgenis_download_selected = molgenis_site+"/molgenis.do?__target="+this.getController().getName()+"&__action=download_txt_selected&__show=download";
 			
 			jScript.append("var form = document.createElement('form');");
 			jScript.append("form.setAttribute('method', 'post');");
