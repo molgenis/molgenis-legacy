@@ -19,7 +19,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Created by IntelliJ IDEA. User: georgebyelas Date: 28/07/2011 Time: 09:13 To
@@ -31,6 +33,12 @@ public class WorksheetBatchCommand extends SimpleCommand
 
 	private ActionInput runButton;
 	private ActionInput runButton2;
+
+    private boolean isFirstClick = true;
+    private Vector<Integer> numbers = null;
+
+    private NGSProcessing processing = new NGSProcessing();
+
 
 	public WorksheetBatchCommand(ScreenController<?> parentController)
 	{
@@ -85,59 +93,79 @@ public class WorksheetBatchCommand extends SimpleCommand
 		return null;
 	}
 
-	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream)
-	{
+	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception
+    {
 		System.out.println(">> In handleRequest!");
 		logger.debug("worksheet batch command button clicked: " + request.toString());
 
 		String action = request.getString("__action");
 
-		List<Integer> idlist = new ArrayList<Integer>();
-
 		String lines = request.getString("massUpdate");
 		System.out.println(">> Selected lines: " + lines);
 
-		if (lines != null)
-		{
-			// there is >= 1 line selected
-			
-			if (lines.indexOf(',') == -1) {
-				// only one line was selected
-				idlist.add(Integer.parseInt(lines.trim()));
-			} else {
-				// multiple lines were selected
+        System.out.println(">> Action: " + action);
+        System.out.println(">> request==" + request.toString());
 
-				// strip off the starting '[' and ending ']'
-				lines = lines.substring(1, lines.length() - 1);
-				String tmp = null;
-				
-				// iteratively get all ids
-				int i = lines.indexOf(',');				
-				while (-1 < i)
-				{
-					tmp = lines.substring(0, i);
-					idlist.add(Integer.parseInt(tmp.trim()));
-					lines = lines.substring(i + 2);
-					i = lines.indexOf(',');
-				}
-				
-				// get last id
-				idlist.add(Integer.parseInt(lines.trim()));
-			}			
-		}
+        if(isFirstClick)
+        {
+            System.out.println("first click");
+            numbers = new Vector<Integer>();
+            if (lines != null)
+            {
+                // there is >= 1 line selected
 
-		print("The selected ids are: " + idlist.toString());
-		
-		System.out.println(">> Action: " + action);
-		System.out.println(">> request==" + request.toString());
+                if (lines.indexOf(',') == -1) {
+                    // only one line was selected
+                    numbers.addElement(Integer.parseInt(lines.trim()));
 
-		// for(int k = 0; k < this.getActions().size(); k++)
-		// {
-		// ActionInput input = this.getActions().get(k);
-		// System.out.println(">> >> Action " + input.toString());
-		// }
+                } else {
+                    // multiple lines were selected
 
-		return ScreenModel.Show.SHOW_MAIN; // ScreenModel.Show.SHOW_DIALOG;
+                    // strip off the starting '[' and ending ']'
+                    lines = lines.substring(1, lines.length() - 1);
+                    String tmp = null;
+
+                    // iteratively get all ids
+                    int i = lines.indexOf(',');
+                    while (-1 < i)
+                    {
+                        tmp = lines.substring(0, i);
+                        numbers.addElement(Integer.parseInt(tmp.trim()));
+                        lines = lines.substring(i + 2);
+                        i = lines.indexOf(',');
+                    }
+
+                    // get last id
+                    numbers.addElement(Integer.parseInt(tmp.trim()));
+
+                }
+            }
+            isFirstClick = false;
+            return ScreenModel.Show.SHOW_DIALOG;
+        }
+        else
+        {
+            System.out.println("second click");
+
+            Iterator it = numbers.iterator();
+            while (it.hasNext())
+            {
+                Integer worksheetID = (Integer) it.next ();
+                try
+                {
+                    Worksheet w = db.findById(Worksheet.class, worksheetID);
+                    //System.out.println(w.toString());
+                    processing.processSingleWorksheet(db, request, w);
+                }
+                catch (DatabaseException e)
+                {
+                    e.printStackTrace();                }
+            }
+
+            isFirstClick = true;
+            return ScreenModel.Show.SHOW_MAIN; // ScreenModel.Show.SHOW_DIALOG;
+
+        }
 	}
 
 	private void print(String string)
