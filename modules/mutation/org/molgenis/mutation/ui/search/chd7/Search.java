@@ -48,7 +48,7 @@ public class Search extends SearchPlugin
 			text.appendln("The CHD7 mutation database contains anonymised data on both published and unpublished CHD7 variations and phenotype. The CHD7 mutation database is under construction. Additions and improvements are still being made.");
 			text.appendln("</p>");
 			text.appendln("<p>");
-			text.appendln("The database currently contains " + mutationService.getNumMutationsByPathogenicity("pathogenic") + " pathogenic mutations in " + patientService.getNumPatientsByPathogenicity("pathogenic") + " patients, " + mutationService.getNumMutationsByPathogenicity("unclassified variant") + " unclassified variants in " + patientService.getNumPatientsByPathogenicity("unclassified variant") + " patients, and " + mutationService.getNumMutationsByPathogenicity("polymorphism") + " polymorphism.");
+			text.appendln("The database currently contains " + mutationService.getNumMutationsByPathogenicity("pathogenic") + " pathogenic mutations in " + patientService.getNumPatientsByPathogenicity("pathogenic") + " patients, " + mutationService.getNumMutationsByPathogenicity("unclassified variant") + " unclassified variants in " + patientService.getNumPatientsByPathogenicity("unclassified variant") + " patients, and " + mutationService.getNumMutationsByPathogenicity("benign") + " benign variants.");
 			text.appendln("</p>");
 			text.appendln("<p>");
 			text.appendln("You can search or browse below.");
