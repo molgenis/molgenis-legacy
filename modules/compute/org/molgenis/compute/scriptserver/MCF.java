@@ -1,9 +1,8 @@
 package org.molgenis.compute.scriptserver;
 
 
-import java.util.concurrent.ExecutorService;
-
 import org.molgenis.compute.pipelinemodel.Pipeline;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,6 +13,9 @@ import org.molgenis.compute.pipelinemodel.Pipeline;
  */
 public interface MCF
 {
+
+    public static final String GRID = "gridgain";
+    public static final String SSH = "ssh";
     //set pipeline for execution
     void setPipeline(Pipeline pipeline);
 
@@ -28,4 +30,6 @@ public interface MCF
     ExecutorService getExecutor();
 
     void removeFinishedPipelines();
+
+    String getBasis();
 }

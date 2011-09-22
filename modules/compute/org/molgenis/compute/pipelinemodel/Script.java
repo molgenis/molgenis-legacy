@@ -1,7 +1,6 @@
 package org.molgenis.compute.pipelinemodel;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.Vector;
 
 //now script has
@@ -171,9 +170,9 @@ public class Script implements Serializable
     {
         return "\nScript{" +
                 "ID='" + ID + '\'' +
-                ", \nremotename='" + remotename + '\'' +
-                ", \nscriptData=" + new String(scriptData) +
-                ", \nremoteDir='" + remoteDir + '\'' +
+                //", \nremotename='" + remotename + '\'' +
+                //", \nscriptData=" + new String(scriptData) +
+                //", \nremoteDir='" + remoteDir + '\'' +
                 '}';
     }
 }

@@ -52,6 +52,7 @@ public class NGSProcessing
 
     //compute
     private MCF mcf = null;
+    private DatabaseUpdater updater = null;
 
 
     //map of all compute features/values
@@ -68,7 +69,6 @@ public class NGSProcessing
     private WorkflowParametersWeaver weaver = new WorkflowParametersWeaver();
 
     //responsible for updating DB with progress
-    private DatabaseUpdater updater = new DatabaseUpdater();
 
     private enum UserParameter
     {
@@ -85,6 +85,8 @@ public class NGSProcessing
             HttpServletRequestTuple req = (HttpServletRequestTuple) request;
             ServletContext servletContext = req.getRequest().getSession().getServletContext();
             mcf = (MCF) servletContext.getAttribute("MCF");
+
+            createDatabaseUpdater(mcf);
         }
 
         System.out.println(">>> generate apps");
@@ -204,6 +206,14 @@ public class NGSProcessing
         executePipeline(db, pipeline);
     }
 
+    private void createDatabaseUpdater(MCF mcf)
+    {
+        if(mcf.getBasis().equalsIgnoreCase(MCF.GRID))
+            updater = new DatabaseUpdaterGridGain(mcf);
+        else if ((mcf.getBasis().equalsIgnoreCase(MCF.SSH)))
+            updater = new DatabaseUpdaterSsh(mcf);
+    }
+
     private String adjustBarcode(String strBarcode)
     {
         int start = strBarcode.lastIndexOf(" ");
@@ -222,7 +232,7 @@ public class NGSProcessing
             {
                 updater.setSettings(10, 10);
                 updater.setDatabase(db);
-                updater.setMCF(mcf);
+                //updater.setMCF(mcf);
                 updater.start();
             }
         }
@@ -420,7 +430,7 @@ public class NGSProcessing
         //look into proper choose of logfile and all path settings
         List<String> strPreviousWorkflowElements = workflowElement.getPreviousSteps_Name();
 
-        String scriptRemoteLocation = remoteLocation + "/scripts/";
+        String scriptRemoteLocation = remoteLocation + "scripts/";
 
         Script pipelineScript = new Script(scriptID, scriptRemoteLocation, scriptFile.getBytes());
 

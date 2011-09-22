@@ -1,19 +1,16 @@
 package org.molgenis.compute.ui;
 
 
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.Vector;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-
 import org.molgenis.compute.ComputeApplication;
-import org.molgenis.compute.monitor.LoggingReader;
+import org.molgenis.compute.monitor.LoggingReaderGridGain;
 import org.molgenis.compute.monitor.RemoteFileToStringReader;
 import org.molgenis.compute.scriptserver.MCF;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.Vector;
 
 
 /**
@@ -24,23 +21,18 @@ import org.molgenis.framework.db.DatabaseException;
  * To change this template use File | Settings | File Templates.
  */
 
-public class DatabaseUpdater
+public abstract class DatabaseUpdater
 {
-    private int delay = -1;
-    private int period = -1;  // repeat every sec.
+    protected int delay = -1;
+    protected int period = -1;  // repeat every sec.
 
-    private Timer timer = new Timer();
+    protected Timer timer = new Timer();
 
-    private Vector<ComputeAppPaths> activeComputeApps = new Vector<ComputeAppPaths>();
-    private Database db = null;
+    protected Vector<ComputeAppPaths> activeComputeApps = new Vector<ComputeAppPaths>();
+    protected Database db = null;
 
-    private boolean isStarted = false;
-    private MCF mcf = null;
-
-    private ExecutorService executor = null;
-
-    private RemoteFileToStringReader fileReader = new RemoteFileToStringReader();
-
+    protected boolean isStarted = false;
+    protected MCF mcf = null;
 
     public void start()
     {
@@ -137,7 +129,7 @@ public class DatabaseUpdater
         }, delay * 10000, period * 10000);
     }
 
-    private ComputeAppPaths.AppStatus findStatus(String name, Vector<String> allLogs)
+    protected ComputeAppPaths.AppStatus findStatus(String name, Vector<String> allLogs)
     {
 
         for (int i = 0; i < allLogs.size(); i++)
@@ -145,8 +137,8 @@ public class DatabaseUpdater
             String logfile = allLogs.elementAt(i);
             if (!logfile.equalsIgnoreCase(RemoteFileToStringReader.FILE_IS_NOT_EXISTS))
             {
-                int index_started = logfile.indexOf(name + LoggingReader._STARTED);
-                int index_finished = logfile.indexOf(name + LoggingReader._FINISHED);
+                int index_started = logfile.indexOf(name + LoggingReaderGridGain._STARTED);
+                int index_finished = logfile.indexOf(name + LoggingReaderGridGain._FINISHED);
 
                 if (index_finished > -1)
                     return ComputeAppPaths.AppStatus.finished;
@@ -158,7 +150,7 @@ public class DatabaseUpdater
         return ComputeAppPaths.AppStatus.idle;
     }
 
-    private Vector<String> readAllLogs()
+    protected Vector<String> readAllLogs()
     {
         Vector<String> allLogs = new Vector<String>();
 
@@ -172,26 +164,7 @@ public class DatabaseUpdater
         return allLogs;
     }
 
-    private String readRemoteFile(String path)
-    {
-        fileReader.setFilename(path);
-        Future<String> future = executor.submit(fileReader);
-
-        String result = null;
-        try
-        {
-            result = future.get();
-        }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
-        catch (ExecutionException e)
-        {
-            e.printStackTrace();
-        }
-        return result;
-    }
+    abstract String readRemoteFile(String path);
 
     public void stop()
     {
@@ -221,14 +194,4 @@ public class DatabaseUpdater
         this.db = db;
     }
 
-    public void setMCF(MCF mcf)
-    {
-        this.mcf = mcf;
-        executor = mcf.getExecutor();
-
-        if (executor == null)
-        {
-            System.out.println("executor does not exist");
-        }
-    }
 }

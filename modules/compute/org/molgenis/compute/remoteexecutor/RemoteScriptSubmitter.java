@@ -1,17 +1,17 @@
 package org.molgenis.compute.remoteexecutor;
 
-import java.util.concurrent.Callable;
-import java.io.*;
-
 import org.molgenis.compute.pipelinemodel.FileToSaveRemotely;
 import org.molgenis.compute.pipelinemodel.Script;
 import org.molgenis.compute.sysexecutor.SysCommandExecutor;
 
+import java.io.*;
+import java.util.concurrent.Callable;
+
 
 public class RemoteScriptSubmitter implements Callable<RemoteResult>, Serializable
 {
-    private static final String SUB_SHORT = "qsub -q short ";
-    private static final String SUB = "qsub ";
+    public static final String SUB_SHORT = "qsub -q short ";
+    public static final String SUB = "qsub ";
 
     RemoteResult returnData = new RemoteResult();
 

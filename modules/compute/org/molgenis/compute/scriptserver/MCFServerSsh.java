@@ -1,19 +1,9 @@
 package org.molgenis.compute.scriptserver;
 
-import org.gridgain.grid.Grid;
-import org.gridgain.grid.GridNode;
-import org.molgenis.compute.grid.GridStarter;
 import org.molgenis.compute.pipelinemodel.Pipeline;
-import org.molgenis.compute.resourcemanager.NodeManager;
-import org.molgenis.compute.resourcemanager.ResourceManager;
-import org.molgenis.util.Ssh;
-import org.molgenis.util.SshResult;
 
-
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.Vector;
-import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -24,58 +14,27 @@ import java.util.concurrent.ExecutorService;
  * To change this template use File | Settings | File Templates.
  */
 
-public class MCFServer implements MCF
+public class MCFServerSsh implements MCF
 {
-    private Grid grid = null;
-    private ResourceManager resourceManager = null;
 
     private Vector<Pipeline> pipelines = new Vector<Pipeline>();
     private Vector<Pipeline> archivePipelines = new Vector<Pipeline>();
 
-    public MCFServer()
+    public MCFServerSsh()
     {
         start();
     }
 
-    public MCFServer(Grid grid)
-    {
-        this.grid = grid;
-    }
 
     public void setPipeline(Pipeline pipeline)
     {
-        //maybe temporary
-        boolean remoteNodeExists = false;
-
-        while (!remoteNodeExists)
-        {
-            Collection<GridNode> remoteNodes = grid.getRemoteNodes();
-
-            if (remoteNodes.size() > 0)
-            {
-                remoteNodeExists = true;
-            }
-            else
-            {
-                System.out.println(">>> waiting for remote node");
-                try
-                {
-                    Thread.sleep(10000);
-                }
-                catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
         System.out.println(">>> start pipeline execution");
-
 
         pipelines.add(pipeline);
 
         //todo logging properly!!!
-        PipelineThread pipelineThread = new PipelineThread(pipeline, grid);
-        new PipelineExecutor().execute(pipelineThread);
+        PipelineThreadSsh pipelineThreadSsh = new PipelineThreadSsh(pipeline);
+        new PipelineExecutor().execute(pipelineThreadSsh);
     }
 
     public Pipeline getPipeline(String id)
@@ -112,22 +71,7 @@ public class MCFServer implements MCF
 
     public void start()
     {
-        //start gridgain
-        GridStarter gridStarter = new GridStarter();
-        grid = gridStarter.startGrid();
 
-        //start resource manager
-        resourceManager = new ResourceManager();
-        resourceManager.setGrid(grid);
-        resourceManager.setSettings(8, 10);
-
-        NodeManager nodeManager = new NodeManager();
-        nodeManager.setGrid(grid);
-        //first parameter is delay, second period in minutes
-        nodeManager.setSettings(15, 1);
-        nodeManager.start();
-
-        gridStarter.startRemoteNode();
     }
 
     public void removePipeline(String id)
@@ -137,7 +81,7 @@ public class MCFServer implements MCF
 
     public ExecutorService getExecutor()
     {
-        return grid.newGridExecutorService();
+        return null;
     }
 
     public void removeFinishedPipelines()
@@ -155,6 +99,11 @@ public class MCFServer implements MCF
             }
         }
         pipelines.removeAll(toRemove);
+    }
+
+    public String getBasis()
+    {
+        return MCF.SSH;
     }
 
 

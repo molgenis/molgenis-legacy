@@ -1,9 +1,9 @@
 package org.molgenis.compute.pipelinemodel;
 
 
-import java.util.Vector;
-
 import org.molgenis.compute.monitor.LoggingReader;
+
+import java.util.Vector;
 
 
 public class Pipeline
