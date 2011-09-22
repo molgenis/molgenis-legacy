@@ -1,20 +1,9 @@
 package org.molgenis.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
+import ch.ethz.ssh2.*;
 import org.apache.log4j.Logger;
 
-import ch.ethz.ssh2.ChannelCondition;
-import ch.ethz.ssh2.Connection;
-import ch.ethz.ssh2.InteractiveCallback;
-import ch.ethz.ssh2.LocalPortForwarder;
-import ch.ethz.ssh2.SCPClient;
-import ch.ethz.ssh2.Session;
+import java.io.*;
 
 /**
  * Wrapper arround ssh. Build on top of
@@ -298,20 +287,24 @@ public class Ssh
 		logger.debug("upload file complete");
 	}
 
-	public void uploadStringToFile(String string, String remoteFile)
+	public void uploadStringToFile(String string, String remoteFile, String remoteDir)
 			throws IOException
 	{
 		logger.debug("upload string to remote file '" + remoteFile + "'");
 
 		SCPClient scp = conn.createSCPClient();
+		scp.put(string.getBytes(), remoteFile, remoteDir, "0600");
+		logger.debug("upload file complete");
 
-		OutputStream out = new FileOutputStream(remoteFile);
+	}
 
+    public void uploadStringToFile(String string, String remoteFile)
+			throws IOException
+	{
+		logger.debug("upload string to remote file '" + remoteFile + "'");
+
+		SCPClient scp = conn.createSCPClient();
 		scp.put(string.getBytes(), remoteFile, "", "0600");
-
-		out.flush();
-		out.close();
-
 		logger.debug("upload file complete");
 
 	}
@@ -339,6 +332,20 @@ public class Ssh
 
 		logger.debug("download file complete");
 	}
+
+    public String downloadFileIntoString(String remoteFile)
+			throws IOException
+	{
+		logger.debug("download remote file '" + remoteFile);
+		SCPClient scp = conn.createSCPClient();
+
+		OutputStream out = new ByteArrayOutputStream();
+
+		scp.get(remoteFile, out);
+
+        return out.toString();
+	}
+
 
 	@Override
 	public void finalize()
