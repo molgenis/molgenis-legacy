@@ -68,7 +68,8 @@ public abstract class EasyPluginController<M extends ScreenModel> extends
 				m.invoke(this, db, request);
 				logger.debug("call of " + this.getClass().getName() + "(name="
 						+ this.getName() + ")." + action + " completed");
-				db.commitTx();
+				if(db.inTx())
+                    db.commitTx();
 			}
 			catch (NoSuchMethodException e1)
 			{
