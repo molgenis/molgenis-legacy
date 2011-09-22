@@ -474,7 +474,7 @@ var molgenis_required = new Array(${required});
 			<!--<td class="form_collapse" style="width: 12px;float:right;clear:right; margin:5px;"><img src="generated-res/img/minus.png" id="${screen.name}_toggleImage" onclick="javascript:toggleForm('${screen.name}')"/></td>-->
 			<#list screen.getFilters() as filter>			
 				<div style="float: right;">
-					<label>Search results <#if filter_index=0>where: <#else></#if>${filter}</label><image height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="setInput('${screen.name}_form','_self','','${screen.name}','filter_remove','iframe'); document.forms.${screen.name}_form.filter_id.value='${filter_index}'; document.forms.${screen.name}_form.submit();" title="remove filter"/>
+					<label>Search results <#if filter_index=0>where: <#else></#if>${filter}</label><image id="remove_filter_${filter_index}" height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="setInput('${screen.name}_form','_self','','${screen.name}','filter_remove','iframe'); document.forms.${screen.name}_form.filter_id.value='${filter_index}'; document.forms.${screen.name}_form.submit();" title="remove filter"/>
 				</div>
 			</#list>
 		
