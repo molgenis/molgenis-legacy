@@ -1,14 +1,21 @@
 package org.molgenis.sandbox.ui;
 
+import java.util.List;
+
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
+import org.molgenis.framework.ui.html.TextParagraph;
+import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.ObservationElementMatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservationElement;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
@@ -25,7 +32,9 @@ import org.molgenis.util.Tuple;
 public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 {
 	private static final long serialVersionUID = 2924809526072222758L;
-	ObservationElementMatrixViewer matrixViewer;
+	ObservationElementMatrixViewer matrixViewer = null;
+	MolgenisForm form = null;
+	TextParagraph selection = null;
 
 	public MatrixTests(String name, ScreenController<?> parent)
 	{
@@ -33,6 +42,7 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 		this.setModel(new MatrixTestsModel(this));
 		this.setView(new FreemarkerView("MatrixTestsView.ftl", getModel()));
 
+		// TODO: add constructor to restrict the rows and/or columns
 		matrixViewer = new ObservationElementMatrixViewer(this, "mymatrix", new SliceablePhenoMatrix(this.getDatabase(),
 				Individual.class, Measurement.class));
 	}
@@ -61,16 +71,30 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 	@Override
 	public void reload(Database db) throws Exception
 	{
-
+		form = new MolgenisForm(this);
+		// add the matrix
+		form.add(matrixViewer);
+		// add a button to save the current selection
+		form.add(new ActionInput("saveSelection", "", "Save current selection to plugin"));
+		// add selection (if any)
+		if (selection != null) {
+			form.add(selection);
+		}
 	}
 
 	public String render()
 	{
-
-		MolgenisForm f = new MolgenisForm(this);
-		// add the matrix
-		f.add(matrixViewer);
-		return f.render();
+		return form.render();
+	}
+	
+	public void saveSelection(Database db, Tuple t) throws DatabaseException, MatrixException {
+		List<? extends ObservationElement> rows = matrixViewer.getSelection();
+		String selectionItems = "<ul>";
+		for (ObservationElement row : rows) {
+			selectionItems += "<li>" + row.getName() + "</li>";
+		}
+		selectionItems += "</ul>";
+		selection = new TextParagraph("selection", "You selected from the Matrix component:" + selectionItems);
 	}
 
 //	public void generateData(Database db, Tuple t) throws DatabaseException

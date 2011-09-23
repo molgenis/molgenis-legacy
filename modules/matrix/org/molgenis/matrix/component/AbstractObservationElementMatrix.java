@@ -333,7 +333,7 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 		if (col.getId() == null) throw new MatrixException(
 				"col.getId() not set for sortByColValues(" + col + ")");
 		return this.slice(new MatrixColValueFilter(col.getId(),
-				ObservedValue.VALUE, operator, value));
+				property, operator, value));
 	}
 
 	@Override
@@ -341,7 +341,7 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 			Operator operator, Object value) throws MatrixException
 	{
 		return this.slice(new MatrixColValueFilter(colIndex,
-				ObservedValue.VALUE, operator, value));
+				property, operator, value));
 	}
 
 	@Override
@@ -351,7 +351,7 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 		if (row.getId() == null) throw new MatrixException(
 				"row.getId() not set for sortByColValues(" + row + ")");
 		return this.slice(new MatrixRowValueFilter(row.getId(),
-				ObservedValue.VALUE, operator, value));
+				property, operator, value));
 	}
 
 	@Override
@@ -359,7 +359,7 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 			Operator operator, Object value) throws MatrixException
 	{
 		return this.slice(new MatrixRowValueFilter(rowIndex,
-				ObservedValue.VALUE, operator, value));
+				property, operator, value));
 	}
 	
 	@Override

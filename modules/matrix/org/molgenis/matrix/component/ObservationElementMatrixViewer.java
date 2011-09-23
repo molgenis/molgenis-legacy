@@ -19,6 +19,7 @@ import org.molgenis.framework.ui.html.Newline;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.matrix.MatrixException;
+import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.HandleRequestDelegationException;
@@ -46,9 +47,9 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	public String COLINDEX = getName() + "_colIndex";
 	public String COLVALUE = getName() + "_colValue";
 	public String COLEQUALS = getName() + "_colEquals";
-	public String ROWINDEX = getName() + "_rowIndex";
-	public String ROWVALUE = getName() + "_rowValue";
-	public String ROWEQUALS = getName() + "_rowEquals";
+//	public String ROWINDEX = getName() + "_rowIndex";
+//	public String ROWVALUE = getName() + "_rowValue";
+//	public String ROWEQUALS = getName() + "_rowEquals";
 	public String CLEARFILTERS = getName() + "_clearFilters";
 
 	public ObservationElementMatrixViewer(ScreenController<?> callingScreenController, String name, SliceablePhenoMatrix<? extends ObservationElement, ? extends ObservationElement> matrix)
@@ -100,8 +101,8 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 		
 		try
 		{
-			// test column filters, currently only 'equals' and 'sort'. Of
-			// course this should only show fields in the list
+			// test column filters, currently only 'equals'.
+			// Of course this should only show fields in the list
 			SelectInput colIndex = new SelectInput(COLINDEX);
 			colIndex.setLabel("Add column filter:");
 			colIndex.setEntityOptions(matrix.getColHeaders());
@@ -113,17 +114,17 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 			f.add(new ActionInput(COLEQUALS, "", "Equals"));
 			f.add(new Newline());
 
-			// test column filters, currently only 'equals' and 'sort'
-			SelectInput rowIndex = new SelectInput(ROWINDEX);
-			rowIndex.setLabel("Add row filter:");
-			rowIndex.setEntityOptions(matrix.getRowHeaders());
-			colIndex.setNillable(true);
-			f.add(rowIndex);
-			StringInput rowValue = new StringInput(ROWVALUE);
-			rowValue.setLabel("");
-			f.add(rowValue);
-			f.add(new ActionInput(ROWEQUALS, "", "Equals"));
-			f.add(new Newline());
+			// test row filters, currently only 'equals'
+//			SelectInput rowIndex = new SelectInput(ROWINDEX);
+//			rowIndex.setLabel("Add row filter:");
+//			rowIndex.setEntityOptions(matrix.getRowHeaders());
+//			colIndex.setNillable(true);
+//			f.add(rowIndex);
+//			StringInput rowValue = new StringInput(ROWVALUE);
+//			rowValue.setLabel("");
+//			f.add(rowValue);
+//			f.add(new ActionInput(ROWEQUALS, "", "Equals"));
+//			f.add(new Newline());
 
 			f.add(new ActionInput(CLEARFILTERS, "", "Reset"));
 
@@ -201,17 +202,26 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 
 	public void colEquals(Database db, Tuple t) throws MatrixException
 	{
-		matrix.sliceByColValueProperty(t.getInt(COLINDEX),
-				ObservedValue.VALUE, QueryRule.Operator.LIKE,
+		String valuePropertyToUse = ObservedValue.VALUE;
+		int colIndex = t.getInt(COLINDEX);
+		int rowLimit = t.getInt(ROWLIMIT);
+		int measurementIndex = colIndex % rowLimit;
+		// NB: be sure that you use Measurements for the columns!
+		Measurement filterMeasurement = (Measurement)matrix.getColHeaders().get(measurementIndex);
+		if (filterMeasurement.getDataType().equals("xref")) {
+			valuePropertyToUse = ObservedValue.RELATION_NAME;
+		}
+		matrix.sliceByColValueProperty(colIndex,
+				valuePropertyToUse, QueryRule.Operator.LIKE,
 				t.getObject(COLVALUE));
 	}
 	
-	public void rowEquals(Database db, Tuple t) throws MatrixException
-	{
-		matrix.sliceByRowValueProperty(t.getInt(ROWINDEX),
-				ObservedValue.VALUE, QueryRule.Operator.LIKE,
-				t.getObject(ROWVALUE));
-	}
+//	public void rowEquals(Database db, Tuple t) throws MatrixException
+//	{
+//		matrix.sliceByRowValueProperty(t.getInt(ROWINDEX),
+//				ObservedValue.VALUE, QueryRule.Operator.LIKE,
+//				t.getObject(ROWVALUE));
+//	}
 
 	public void changeRowLimit(Database db, Tuple t)
 	{
@@ -338,6 +348,10 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	public List<? extends ObservationElement> getSelection() throws MatrixException {
+		return matrix.getRowHeaders();
 	}
 
 }

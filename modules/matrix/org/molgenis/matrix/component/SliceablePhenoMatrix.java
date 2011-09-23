@@ -208,8 +208,7 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 						// filter on the column/row
 						subQuery.eq(
 								xValuePropertyFilterType == MatrixQueryRule.Type.colValueProperty ? ObservedValue.FEATURE
-										: ObservedValue.TARGET, rule
-										.getDimIndex());
+										: ObservedValue.TARGET, rule.getDimIndex());
 						subQueries.put(rule.getDimIndex(), subQuery);
 					}
 					subQueries.get(rule.getDimIndex()).addRules(rule);
