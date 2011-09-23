@@ -439,7 +439,7 @@ public abstract class FormController<E extends Entity> extends
 				{
 					System.out.println("*** FIELD NAME : "
 							+ field.getName().toLowerCase());
-					if (!field.getName().equals("__Type"))
+					if (!field.getName().equals(Field.TYPE_FIELD))
 					{
 
 						// getsSearchField will map the field to field_name in
