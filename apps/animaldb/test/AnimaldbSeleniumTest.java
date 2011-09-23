@@ -253,10 +253,10 @@ public class AnimaldbSeleniumTest
 		selenium.click("DecStatus_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("DEC status portal"));
-		Assert.assertEquals(selenium.getText("//div[@id='StatusTable']/table/tbody/tr[2]/th"), "12345");
-		Assert.assertEquals(selenium.getText("//div[@id='StatusTable']/table/tbody/tr[3]/td[3]"), "A");
-		Assert.assertEquals(selenium.getText("//div[@id='StatusTable']/table/tbody/tr[3]/td[6]"), "3");
-		Assert.assertEquals(selenium.getText("//div[@id='StatusTable']/table/tbody/tr[3]/td[7]"), "2");
+		Assert.assertEquals(selenium.getText("//div[@id='StatusTable']/table/tbody/tr[1]/th"), "12345");
+		Assert.assertEquals(selenium.getText("//div[@id='StatusTable']/table/tbody/tr[2]/td[3]"), "A");
+		Assert.assertEquals(selenium.getText("//div[@id='StatusTable']/table/tbody/tr[2]/td[6]"), "3");
+		Assert.assertEquals(selenium.getText("//div[@id='StatusTable']/table/tbody/tr[2]/td[7]"), "2");
 		
 		sleepHelper("decWorkflow");
 	}
@@ -314,9 +314,9 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=TimeBox");
 		selenium.click("id=Select");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/tbody/tr/th[2]"), "Weight");
-		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/tbody/tr/th[3]"), "Weight start");
-		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/tbody/tr/th[4]"), "Weight end");
+		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/thead/tr/th[2]"), "Weight");
+		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/thead/tr/th[3]"), "Weight start");
+		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/thead/tr/th[4]"), "Weight end");
 		selenium.type("id=0_1_0", "200");
 		selenium.click("id=ApplyStartTime_1");
 		selenium.waitForPageToLoad(pageLoadTimeout);
