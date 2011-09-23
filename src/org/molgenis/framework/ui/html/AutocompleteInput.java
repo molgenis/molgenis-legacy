@@ -16,7 +16,7 @@ public class AutocompleteInput<E> extends HtmlInput<E>
 	public String toHtml()
 	{
 		return
-				"<input id=\"" + this.getId() + "\" type=\"text\" onfocus=\"autoComplete(this)\"/>" +
+				"<input id=\"" + this.getId() + "\" name=\"" + getName() + "\" type=\"text\" onfocus=\"autoComplete(this)\"/>" +
 				"<script type=\"text/javascript\">\n" +
 				"function autoComplete(elem) {\n" +
 				"	$(elem).autocomplete({\n" +
