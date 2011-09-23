@@ -101,8 +101,6 @@
 				label="View values in timeline" />
 			<plugin name="MatrixTests" type="org.molgenis.sandbox.ui.MatrixTests"
 				label="Sliceable PhenoMatrix (TESTING)" />
-			<plugin name="RenderableMatrixPlugin" type="plugins.listplugin.RenderableMatrixPlugin"
-				label="Renderable matrix (TESTING)" />
 		</menu>
 		
 		<menu name="projectmenu" position="left" label="DEC (sub)projects">
