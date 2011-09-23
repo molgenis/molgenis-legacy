@@ -1,12 +1,10 @@
-package org.molgenis.matrix.component.general;
+package org.molgenis.matrix.component.legacy;
 
 import java.util.List;
 
 import org.molgenis.matrix.MatrixException;
+import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
-import org.molgenis.matrix.component.interfaces.RenderDescriptor;
-import org.molgenis.matrix.component.interfaces.RenderableMatrix;
-import org.molgenis.matrix.component.interfaces.SourceMatrix;
 import org.molgenis.pheno.ObservedValue;
 
 public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>

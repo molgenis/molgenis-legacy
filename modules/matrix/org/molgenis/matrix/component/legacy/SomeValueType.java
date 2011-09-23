@@ -1,4 +1,4 @@
-package org.molgenis.matrix.component.test;
+package org.molgenis.matrix.component.legacy;
 
 public class SomeValueType
 {

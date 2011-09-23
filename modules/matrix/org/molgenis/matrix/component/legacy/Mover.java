@@ -5,10 +5,9 @@
 
 
 
-package org.molgenis.matrix.component.general;
+package org.molgenis.matrix.component.legacy;
 
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.matrix.component.interfaces.RenderableMatrix;
 
 public class Mover<R, C, V>
 {

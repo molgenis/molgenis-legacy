@@ -10,14 +10,8 @@ import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
-import org.molgenis.matrix.component.general.MatrixRendererHelper;
-import org.molgenis.matrix.component.general.Mover;
-import org.molgenis.matrix.component.general.RenderableMatrixImpl;
-import org.molgenis.matrix.component.general.Validate;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
-import org.molgenis.matrix.component.interfaces.RenderableMatrix;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
-import org.molgenis.matrix.component.interfaces.SourceMatrix;
 import org.molgenis.util.Tuple;
 
 /**

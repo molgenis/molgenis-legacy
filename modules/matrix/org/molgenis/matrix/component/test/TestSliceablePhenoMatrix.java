@@ -21,7 +21,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class TestSliceableObservationMatrix
+public class TestSliceablePhenoMatrix
 {
 	//SETTINGS!
 	String properties = "apps/animaldb/org/molgenis/animaldb/animaldb.properties";

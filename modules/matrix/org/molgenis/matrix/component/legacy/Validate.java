@@ -1,12 +1,12 @@
-package org.molgenis.matrix.component.general;
+package org.molgenis.matrix.component.legacy;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
+import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
-import org.molgenis.matrix.component.interfaces.RenderableMatrix;
 
 public class Validate<R, C, V>
 {

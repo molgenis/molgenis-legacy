@@ -1,8 +1,9 @@
-package org.molgenis.matrix.component.interfaces;
+package org.molgenis.matrix.component.legacy;
 
 import java.util.List;
 
 import org.molgenis.matrix.component.general.MatrixQueryRule;
+import org.molgenis.matrix.component.interfaces.BasicMatrix;
 
 
 /**

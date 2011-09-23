@@ -1,3 +1,4 @@
+package org.molgenis.matrix.component.legacy;
 //package org.molgenis.matrix.component.test;
 //
 //import java.io.FileNotFoundException;

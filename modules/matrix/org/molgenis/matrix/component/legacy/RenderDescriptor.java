@@ -1,4 +1,4 @@
-package org.molgenis.matrix.component.interfaces;
+package org.molgenis.matrix.component.legacy;
 
 public interface RenderDescriptor<R, C, V> {
 	

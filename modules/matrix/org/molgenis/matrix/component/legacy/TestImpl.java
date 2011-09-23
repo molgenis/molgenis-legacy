@@ -1,4 +1,4 @@
-package org.molgenis.matrix.component.test;
+package org.molgenis.matrix.component.legacy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,12 +6,9 @@ import java.util.List;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
-import org.molgenis.matrix.component.general.AbstractSliceableMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
-import org.molgenis.matrix.component.interfaces.RenderDescriptor;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
-import org.molgenis.matrix.component.interfaces.SourceMatrix;
 import org.molgenis.pheno.ObservedValue;
 
 public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, SomeValueType> implements

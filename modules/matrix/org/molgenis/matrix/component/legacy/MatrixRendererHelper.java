@@ -1,11 +1,12 @@
-package org.molgenis.matrix.component.general;
+package org.molgenis.matrix.component.legacy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.matrix.component.interfaces.RenderableMatrix;
+import org.molgenis.matrix.component.general.MatrixQueryRule;
+import org.molgenis.matrix.component.general.MatrixQueryRule.Type;
 
 
 public class MatrixRendererHelper<R, C, V> {

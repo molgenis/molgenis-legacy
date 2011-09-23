@@ -1,7 +1,8 @@
-package org.molgenis.matrix.component.test;
+package org.molgenis.matrix.component.legacy;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class Helper
 {
