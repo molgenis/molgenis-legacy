@@ -17,8 +17,8 @@ public class Table extends HtmlWidget
 	LinkedHashMap<Pair<Integer, Integer>, String> cellStyles = new LinkedHashMap<Pair<Integer, Integer>, String>();
 	List<String> cols = new ArrayList<String>();
 	List<String> rows = new ArrayList<String>();
-	private String defaultCellStyle = "border: 1px solid black; padding:2px";
-	private String headerCellStyle = "border: 1px solid black; padding:2px; background-color: #5B82A4; color: white";
+	protected String defaultCellStyle = "border: 1px solid black; padding:2px";
+	protected String headerCellStyle = "border: 1px solid black; padding:2px; background-color: #5B82A4; color: white";
 	
 	public Table(String name)
 	{
@@ -37,28 +37,31 @@ public class Table extends HtmlWidget
 	 */
 	public String toHtml()
 	{
-		String result = "<table>";
-		
+		String result = "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" class=\"display\" id=\"" + this.getId() + "\">";
 		result += printHeaders();
-		
-		int rowCount = 0;
-		for (String row : rows) {
-			result += printRow(row, rowCount);
-			rowCount++;
-		}
-		
+		result += printBody();
 		result += "</table>";
 		
 		return result;
 	}
 	
 	private String printHeaders() {
-		String result = "<tr><th></th>";
+		String result = "<thead><tr><th></th>";
 		for (String col : cols) {
 			result += ("<th style=\"" + getHeaderCellStyle() + "\">" + col + "</th>");
 		}
-		result += "</tr>";
-		
+		result += "</tr></thead>";
+		return result;
+	}
+	
+	private String printBody() {
+		String result = "<tbody>";
+		int rowCount = 0;
+		for (String row : rows) {
+			result += printRow(row, rowCount);
+			rowCount++;
+		}
+		result += "</tbody>";
 		return result;
 	}
 	
@@ -70,7 +73,6 @@ public class Table extends HtmlWidget
 					getCellString(colCount, rowCount) + "</td>");
 		}
 		result += "</tr>";
-		
 		return result;
 	}
 	
