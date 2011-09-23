@@ -48,7 +48,6 @@ import org.molgenis.util.CsvStringReader;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.RedirectedException;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.TupleWriter;
 import org.molgenis.util.Tuple;

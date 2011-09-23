@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.util.RedirectedException;
+import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
 /**
@@ -33,11 +33,11 @@ public abstract class EasyPluginController<M extends ScreenModel> extends
 	 * If a user sends a request it can be handled here. Default, it will be
 	 * automatically mapped to methods based request.getAction();
 	 * 
-	 * @throws RedirectedException
+	 * @throws HandleRequestDelegationException
 	 */
 	@Override
 	public void handleRequest(Database db, Tuple request)
-			throws RedirectedException
+			throws HandleRequestDelegationException
 	{
 		// automatically calls functions with same name as action
 		delegate(request.getAction(), db, request);
@@ -45,14 +45,14 @@ public abstract class EasyPluginController<M extends ScreenModel> extends
 
 	@Override
 	public void handleRequest(Database db, Tuple request, OutputStream out)
-			throws RedirectedException
+			throws HandleRequestDelegationException
 	{
 		// automatically calls functions with same name as action
 		delegate(request.getAction(), db, request);
 	}
 
 	public void delegate(String action, Database db, Tuple request)
-			throws RedirectedException
+			throws HandleRequestDelegationException
 	{
 		// try/catch for db.rollbackTx
 		try

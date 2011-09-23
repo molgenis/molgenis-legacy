@@ -2,12 +2,12 @@ package org.molgenis.util;
 
 import java.lang.reflect.InvocationTargetException;
 
-public class RedirectedException extends Exception{
-	public RedirectedException(InvocationTargetException e)	{
+public class HandleRequestDelegationException extends Exception{
+	public HandleRequestDelegationException(InvocationTargetException e)	{
 		super(e);
 	}
 
-	public RedirectedException()
+	public HandleRequestDelegationException()
 	{
 		// TODO Auto-generated constructor stub
 	}

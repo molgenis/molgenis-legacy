@@ -20,7 +20,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.FileLink;
-import org.molgenis.util.RedirectedException;
+import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.SimpleTree;
 import org.molgenis.util.Tuple;
 
@@ -77,10 +77,10 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
 	 * 
 	 * @param request
 	 *            The http-request in a convenient map.
-	 * @throws RedirectedException 
+	 * @throws HandleRequestDelegationException 
 	 * @throws Exception 
 	 */
-	public abstract void handleRequest(Database db, Tuple request) throws Exception, RedirectedException;
+	public abstract void handleRequest(Database db, Tuple request) throws Exception, HandleRequestDelegationException;
 
 	// public String getFromRequest(Tuple request, String name)
 	// {

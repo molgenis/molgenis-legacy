@@ -21,7 +21,7 @@ public class HandleException
 		printSimpleStackTrace(t, l);
 		l.error("Detailed stack trace:");
 		ExceptionUtils.printRootCauseStackTrace(t);
-		System.exit(1);		
+		//System.exit(1);		
 	}
 	
 	public static void handle(Throwable t) {
@@ -32,7 +32,7 @@ public class HandleException
 		printSimpleStackTrace(t, out);
 		out.println("Detailed stack trace:");
 		ExceptionUtils.printRootCauseStackTrace(t);
-		System.exit(1);		
+		//System.exit(1);		
 	}
 	
 	private static void printSimpleStackTrace(Throwable t, PrintStream o) {
