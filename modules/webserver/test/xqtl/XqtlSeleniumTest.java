@@ -635,6 +635,7 @@ public class XqtlSeleniumTest
 				selenium.selectWindow("name=molgenis_edit_new");
 				
 				//check if the proper xreffed investigation is selected
+				selenium.waitForCondition("selenium.browserbot.getUserWindow().$.active == 0", "10000");
 				Assert.assertEquals(selenium.getText("css=span"), "ClusterDemo");
 				
 				//cancel and return
@@ -652,6 +653,7 @@ public class XqtlSeleniumTest
 				selenium.selectWindow("name=molgenis_edit_new");
 				
 				//check if the proper xreffed investigation is selected
+				selenium.waitForCondition("selenium.browserbot.getUserWindow().$.active == 0", "10000");
 				Assert.assertEquals(selenium.getText("css=span"), "TestIfThisWorks");
 				
 				//cancel and return
