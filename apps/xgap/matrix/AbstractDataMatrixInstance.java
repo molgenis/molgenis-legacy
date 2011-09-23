@@ -26,12 +26,12 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
-import org.molgenis.matrix.component.general.AbstractSliceableMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
-import org.molgenis.matrix.component.interfaces.RenderDescriptor;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
-import org.molgenis.matrix.component.interfaces.SourceMatrix;
+import org.molgenis.matrix.component.legacy.AbstractSliceableMatrix;
+import org.molgenis.matrix.component.legacy.RenderDescriptor;
+import org.molgenis.matrix.component.legacy.SourceMatrix;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.util.CsvWriter;
 
