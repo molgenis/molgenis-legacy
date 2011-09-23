@@ -7,8 +7,9 @@
 
 package org.molgenis.core.ui;
 
-import java.util.Date;
+import java.util.List;
 
+import org.molgenis.core.vo.PublicationVO;
 import org.molgenis.framework.ui.EasyPluginModel;
 
 /**
@@ -18,21 +19,37 @@ import org.molgenis.framework.ui.EasyPluginModel;
  */
 public class AllPublicationsModel extends EasyPluginModel
 {
-	//a system veriable that is needed by tomcat
 	private static final long serialVersionUID = 1L;
-	//this string can be referenced from AllPublicationsView.ftl template as ${model.helloWorld}
-	public String helloWorld = "hello World";
-	//this date can be referenced from AllPublicationsView.ftl template as ${model.date}
-	public Date date = new Date();
-	
-	//another example, you can also use getInvestigations() and setInvestigations(...)
-	//public List<Investigation> investigations = new ArrayList<Investigation>();
+	private List<PublicationVO> publicationVOList;
+	private String publicationPager;
+	private String rawOutput = "";
 
 	public AllPublicationsModel(AllPublications controller)
 	{
-		//each Model can access the controller to notify it when needed.
 		super(controller);
 	}
-	
-	
+
+	public String getPublicationPager() {
+		return publicationPager;
+	}
+
+	public void setPublicationPager(String publicationPager) {
+		this.publicationPager = publicationPager;
+	}
+
+	public List<PublicationVO> getPublicationVOList() {
+		return publicationVOList;
+	}
+
+	public void setPublicationVOList(List<PublicationVO> publicationVOList) {
+		this.publicationVOList = publicationVOList;
+	}
+
+	public String getRawOutput() {
+		return rawOutput;
+	}
+
+	public void setRawOutput(String rawOutput) {
+		this.rawOutput = rawOutput;
+	}
 }

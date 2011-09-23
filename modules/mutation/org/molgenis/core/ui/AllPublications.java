@@ -7,51 +7,56 @@
 
 package org.molgenis.core.ui;
 
-import java.util.List;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.molgenis.core.service.PublicationService;
-import org.molgenis.core.vo.PublicationVO;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.util.Entity;
+import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
-public class AllPublications extends PluginModel<Entity>
+public class AllPublications extends EasyPluginController<AllPublicationsModel>
 {
-
 	private static final long serialVersionUID = -5252927756111530842L;
-	private List<PublicationVO> publications;
 
 	public AllPublications(String name, ScreenController<?> parent)
 	{
-		super(name, parent);
+		super(name, null, parent);
+		this.setModel(new AllPublicationsModel(this));
+		this.setView(new FreemarkerView("AllPublications.ftl", getModel()));
+		this.getModel().setPublicationPager("res/mutation/publicationPager.jsp");
 	}
 
 	@Override
-	public String getViewName()
+	public String getCustomHtmlHeaders()
 	{
-		return "org_molgenis_core_ui_AllPublications";
-	}
+		String result = super.getCustomHtmlHeaders();
+		
+		if (CollectionUtils.isEmpty(this.getModel().getPublicationVOList()))
+				result += "<meta http-equiv=\"refresh\" content=\"0; URL=molgenis.do?select=Publications&__target=Publications&__action=\">";
 
-	@Override
-	public String getViewTemplate()
-	{
-		return "org/molgenis/core/ui/AllPublications.ftl";
+		return result;
 	}
 
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-	}
-
-	@Override
-	public void reload(Database db)
-	{
 		try
 		{
-			PublicationService service = PublicationService.getInstance(db);
-			this.publications          = service.getAll();
+			PublicationService publicationService = PublicationService.getInstance(db);
+			this.getModel().setPublicationVOList(publicationService.getAll());
+			((HttpServletRequestTuple) request).getRequest().setAttribute("publicationVOList", this.getModel().getPublicationVOList());
+			this.getModel().setRawOutput(this.include(request, this.getModel().getPublicationPager()));
+			
 		}
 		catch (Exception e)
 		{
@@ -59,17 +64,56 @@ public class AllPublications extends PluginModel<Entity>
 		}
 	}
 	
-	@Override
-	public boolean isVisible()
+	public String include(Tuple request, String path)
 	{
-		//you can use this to hide this plugin, e.g. based on user rights.
-		//e.g.
-		//if(!this.getLogin().hasEditPermission(myEntity)) return false;
-		return true;
+		HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
+		HttpServletRequest httpRequest   = rt.getRequest();
+		HttpServletResponse httpResponse = rt.getResponse();
+		RedirectTextWrapper respWrapper  = new RedirectTextWrapper(httpResponse);
+			
+		// Call/include page
+		try
+		{
+			RequestDispatcher dispatcher = httpRequest.getRequestDispatcher(path);
+			if (dispatcher != null)
+				dispatcher.include(httpRequest, respWrapper);
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return respWrapper.getOutput();
 	}
 	
-	public List<PublicationVO> getPublicationVOs()
+	private class RedirectTextWrapper extends HttpServletResponseWrapper
 	{
-		return this.publications;
+		private PrintWriter printWriter;
+		private StringWriter stringWriter;
+
+		public RedirectTextWrapper(HttpServletResponse response)
+		{
+			super(response);
+			this.stringWriter = new StringWriter();
+			this.printWriter  = new PrintWriter(stringWriter);
+		}
+
+		@Override
+		public PrintWriter getWriter()
+		{
+			return this.printWriter;
+		}
+
+		public String getOutput()
+		{
+			return this.stringWriter.toString();
+		}
+	}
+
+	@Override
+	public void reload(Database db) throws Exception
+	{
+		// nothing to do here
 	}
 }
