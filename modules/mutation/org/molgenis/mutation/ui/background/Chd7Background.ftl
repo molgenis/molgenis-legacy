@@ -27,7 +27,7 @@ Heterozygous mutations and deletions of the CHD7 gene (OMIM 608892) result in CH
 </p>
 <h3>About the data</h3>
 <p>
-The CHD7 mutation database is maintained by the department of Genetics of the University Medical Center Groningen, the Netherlands. The CHD7 mutation database currently contains ... pathogenic CHD7 mutations in É patients, É unclassified variants of CHD7 in É. patients, and É polymorphism of CHD7. Of these, 0 are unpublished CHARGE patients and 0 are unpublished variants. This database is a work in progress. New publications will be added monthly. The institutes that are currently working together in this database are:
+The CHD7 mutation database is maintained by the department of Genetics of the University Medical Center Groningen, the Netherlands. The CHD7 mutation database currently contains ${model.numPathogenicMutations} pathogenic CHD7 mutations in ${model.numPathogenicPatients} patients, ${model.numUnclassifiedMutations} unclassified variants of CHD7 in ${model.numUnclassifiedPatients} patients, and ${model.numBenignMutations} benign variants. This database is a work in progress. New publications will be added monthly. The institutes that are currently working together in this database are:
 </p>
 <ul>
 <li>Departments of Genetics, University Medical Center Groningen, Groningen, the Netherlands</li>
