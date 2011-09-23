@@ -68,6 +68,11 @@ public class NGSProcessing
     //    private Calendar cal = Calendar.getInstance();
     private WorkflowParametersWeaver weaver = new WorkflowParametersWeaver();
 
+    public Pipeline getCurrectPipeline()
+    {
+        return pipeline;  //To change body of created methods use File | Settings | File Templates.
+    }
+
     //responsible for updating DB with progress
 
     private enum UserParameter
@@ -221,7 +226,7 @@ public class NGSProcessing
         return result;
     }
 
-    private void executePipeline(Database db, Pipeline pipeline)
+    public void executePipeline(Database db, Pipeline pipeline)
     {
         if (mcf != null && !flagJustGenerate)
         {
