@@ -1,6 +1,5 @@
 package org.molgenis.matrix.component;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -9,15 +8,11 @@ import java.util.Map;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
-import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
-import org.molgenis.organization.Investigation;
-import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationElement;
-import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 
 /**

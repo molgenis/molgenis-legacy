@@ -1,4 +1,4 @@
-package org.molgenis.matrix.component;
+package org.molgenis.matrix.component.legacy;
 
 import java.util.ArrayList;
 import java.util.List;

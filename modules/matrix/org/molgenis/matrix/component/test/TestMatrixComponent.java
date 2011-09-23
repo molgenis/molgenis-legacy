@@ -1,7 +1,7 @@
 package org.molgenis.matrix.component.test;
 
-import org.molgenis.matrix.component.MatrixRenderer;
 import org.molgenis.matrix.component.general.MatrixRendererHelper;
+import org.molgenis.matrix.component.legacy.MatrixRenderer;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;

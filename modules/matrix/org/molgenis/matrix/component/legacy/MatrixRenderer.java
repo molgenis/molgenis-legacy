@@ -1,4 +1,4 @@
-package org.molgenis.matrix.component;
+package org.molgenis.matrix.component.legacy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +28,7 @@ import org.molgenis.util.Tuple;
  * @param <C>
  * @param <V>
  */
+@Deprecated
 public class MatrixRenderer<R, C, V> extends HtmlWidget
 {
 	

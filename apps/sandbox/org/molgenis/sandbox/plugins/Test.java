@@ -12,7 +12,7 @@ import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.organization.Investigation;
-import org.molgenis.util.RedirectedException;
+import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
 /**
@@ -68,7 +68,7 @@ public class Test extends EasyPluginController<TestModel>
 		//automatically calls functions with same name as action
 		try {
 			delegate(request.getAction(), db, request);
-		} catch (RedirectedException e) {
+		} catch (HandleRequestDelegationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
