@@ -8,7 +8,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Entity;
-import org.molgenis.util.RedirectedException;
+import org.molgenis.util.HandleRequestDelegationException;
 
 /**
  * Simple authentication and authorization interface that enables MOLGENIS
@@ -38,7 +38,7 @@ public interface Login
 	 * @return true if succesfully authenticated
 	 * @throws Exception,RedirectedException 
 	 */
-	public boolean login(Database db, String name, String password) throws Exception,RedirectedException;
+	public boolean login(Database db, String name, String password) throws Exception,HandleRequestDelegationException;
 
 	/**
 	 * Un-authenticate the user. Now the user will be perceived as 'guest'.

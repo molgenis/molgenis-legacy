@@ -20,7 +20,7 @@ import org.molgenis.framework.ui.html.render.RenderDecorator;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.FileLink;
 import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.RedirectedException;
+import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
 /**
@@ -145,7 +145,7 @@ public class ApplicationController extends
 	 * @param request
 	 *            with the event
 	 */
-	public void handleRequest(Database db, Tuple request) throws Exception, RedirectedException
+	public void handleRequest(Database db, Tuple request) throws Exception, HandleRequestDelegationException
 	{
 		logger.info("delegating handleRequest(" + request.toString() + ")");
 		String screen = request.getString(ScreenModel.INPUT_TARGET);
@@ -253,7 +253,7 @@ public class ApplicationController extends
 	// }
 
 	@Override
-	public void handleRequest(Database db, Tuple request, OutputStream out) throws RedirectedException, Exception
+	public void handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException, Exception
 	{
 		this.handleRequest(db, request);
 

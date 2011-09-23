@@ -20,7 +20,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.FileLink;
-import org.molgenis.util.RedirectedException;
+import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tree;
 import org.molgenis.util.Tuple;
 
@@ -74,10 +74,10 @@ public interface ScreenController<MODEL extends ScreenModel> extends
 	 * 
 	 * @param request
 	 *            a request
-	 * @throws RedirectedException 
+	 * @throws HandleRequestDelegationException 
 	 * @throws Exception 
 	 */
-	public void handleRequest(Database db, Tuple request) throws Exception, RedirectedException;
+	public void handleRequest(Database db, Tuple request) throws Exception, HandleRequestDelegationException;
 
 	/**
 	 * Handle a user request (typically implemented in the subclass).
@@ -88,9 +88,9 @@ public interface ScreenController<MODEL extends ScreenModel> extends
 	 *            additional parameter that allows you to write downloadable
 	 *            output
 	 * @throws Exception 
-	 * @throws RedirectedException 
+	 * @throws HandleRequestDelegationException 
 	 */
-	public void handleRequest(Database db, Tuple request, OutputStream out) throws RedirectedException, Exception;
+	public void handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException, Exception;
 
 	/**
 	 * Get the view
