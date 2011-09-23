@@ -20,11 +20,13 @@
 				<form name="Categories" sortby="name" view="list" entity="BiobankCategory" />
 				<form name="DataTypes" entity="BiobankDataType" />
 				<form name="Topics" entity="BiobankTopic" />
+				<form name="OntologyTerm" entity="OntologyTerm" />
+				<form name="BiobankDataType" entity="BiobankDataType" />
 				<form name="ChangeLog" entity="ChangeLog" />
 			</menu>
 			<plugin name="Settings" type="plugins.system.settings.Settings" />
 			<menu name="usermanagement" position="left" label="User management">
-				<form name="MolgenisUser" entity="MolgenisUser" label="User" hide_fields="password_"/>
+				<form name="MolgenisUser" entity="MolgenisUser" label="User" />
 				<form name="MolgenisGroup" entity="MolgenisGroup" label="Group" />
 				<form name="MolgenisEntity" entity="MolgenisEntity" label="Entity" />
 				<form name="MolgenisPermission" entity="MolgenisPermission" label="Permission" />
