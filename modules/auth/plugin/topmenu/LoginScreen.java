@@ -19,7 +19,7 @@ import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.PasswordInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.util.Entity;
-import org.molgenis.util.RedirectedException;
+import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
 //import plugin.login.DatabaseLogin;
@@ -54,7 +54,7 @@ public class LoginScreen extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request) throws RedirectedException, Exception
+	public void handleRequest(Database db, Tuple request) throws HandleRequestDelegationException, Exception
 	{
 		// reset messages
 		this.setMessages();
@@ -215,7 +215,7 @@ public class LoginScreen extends PluginModel<Entity>
 		this.state = State.Login;
 	}
 
-	private void doLogin(Database db, Tuple request) throws RedirectedException, Exception
+	private void doLogin(Database db, Tuple request) throws HandleRequestDelegationException, Exception
 	{
 		if (!getLogin().login(db, request.getString("name"), request.getString("password")))
 		{

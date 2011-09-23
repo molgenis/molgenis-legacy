@@ -16,7 +16,7 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.security.Login;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.util.RedirectedException;
+import org.molgenis.util.HandleRequestDelegationException;
 
 import app.DatabaseFactory;
 
@@ -39,7 +39,7 @@ public class FillAnimalDB {
 		ct.setDatabase(this.db);
 	}
 	
-	public void populateDB(Login login) throws Exception, RedirectedException,DatabaseException, ParseException, IOException {
+	public void populateDB(Login login) throws Exception, HandleRequestDelegationException,DatabaseException, ParseException, IOException {
 		
 		// Login as admin to have enough rights to do this
 		login.login(db, "admin", "admin");
