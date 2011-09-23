@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="xqtl_jar" default="create_jar" basedir=".">
+<project name="xqtl_jar" default="create_zip" basedir=".">
 	<description>
         Build a runnable JAR with a standalone xQTL application.
 		Work in progress, but must be kept stable to ensure the dependencies don't break.
@@ -163,80 +163,7 @@
 		</copy>
 	</target>
 	
-	<target name="package_jar" description="Package the distribution">
-		
-		<mkdir dir="${dist}" />
-
-		<!-- not needed: not used -->
-		<!--pathconvert property="app_path" refid="app.class.path" pathsep="/**/*.ftl,">
-			<map from="${user.dir}/" to="" />
-		</pathconvert-->
-	
-		<!--echo message="path: ${app_path}" /-->
-	
-		<!-- not needed: already copied ??? -->
-		<!--copy todir="${build}" verbose="true">
-			<fileset dir="." includes="${app_path}/**/*.ftl" />
-			<fileset dir="." includes="**/plugins/**/*.ftl" />
-			<fileset dir="." includes="**/*.sql" />
-			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />
-		</copy-->
-		
-		<!-- copy example data -->
-		<copy todir="${jarme}">
-			<fileset dir="publicdata/xqtl">
-				<include name="**/*.*" />
-			</fileset>
-		</copy>
-	
-		<!-- not needed: already copied -->
-		<!--copy todir="${build}" verbose="true">
-			<fileset dir="." includes="**/*.sql" />
-			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />
-		</copy-->
-
-
-		<!-- not needed: already copied -->
-		<!--copy todir="${build}">
-			<fileset dir="modules/webserver">
-				<include name="**/mime.*" />
-			</fileset>
-		</copy-->
-
-		<copy todir="${dist}/WebContent">
-			<fileset dir="WebContent">
-				<exclude name="WebContent/doc/*" />
-				<exclude name="WebContent/VAADIN/*" />
-				<include name="**/*.*" />
-			</fileset>
-		</copy>
-		
-		<!-- not needed: automatically created? -->
-		<!--copy todir="${dist}/hsqldb">
-			<fileset dir="hsqldb">
-				<exclude name="**/.svn/*" />
-				<include name="**/*.*" />
-			</fileset>
-		</copy-->
-		
-		<!-- copy run.bat / run.sh -->
-		<copy todir="${dist}">
-			<fileset dir="handwritten/standalone">
-				<include name="**/*.*" />
-			</fileset>
-		</copy>
-
-		<!-- JAR the jarme folder into dist/Application.jar -->
-		<jar jarfile="${dist}/Application.jar" basedir="${jarme}" update="false">
-			<manifest>
-				<attribute name="Built-By" value="GCC" />
-				<attribute name="Main-Class" value="boot.RunStandalone" />
-			</manifest>
-		</jar>
-
-	</target>
-	
-	<target name="create_jar">
+	<target name="build_jarme">
 		<antcall target="clean_jarme" />
 		<antcall target="unjar" />
 		<antcall target="compile_molgenis_jarme" />
@@ -245,7 +172,74 @@
 		<antcall target="compile_app_jarme" />
 		<antcall target="compile_other_jarme" />
 		<antcall target="copy_resources_jarme" />
-		<antcall target="package_jar" />
+	</target>
+	
+	<target name="jar_jarme">
+		<mkdir dir="${dist}" />
+		
+		<!-- copy resources to JAR specific locations -->
+		<copy todir="${dist}">
+			<fileset dir="handwritten/standalone">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		
+		<copy todir="${dist}/WebContent">
+			<fileset dir="WebContent">
+				<exclude name="WebContent/doc/*" />
+				<exclude name="WebContent/VAADIN/*" />
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		
+		<copy todir="${jarme}">
+			<fileset dir="publicdata/xqtl">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+			
+		<!-- JAR the jarme folder into dist/Application.jar -->
+		<jar jarfile="${dist}/Application.jar" basedir="${jarme}" update="false">
+			<manifest>
+				<attribute name="Built-By" value="GCC" />
+				<attribute name="Main-Class" value="boot.RunStandalone" />
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="zip_jarme" description="Package the distribution into a ZIP">
+		<mkdir dir="${dist}" />
+		
+		<!-- copy resources to ZIP specific locations -->
+		<copy todir="${jarme}/WebContent">
+			<fileset dir="WebContent">
+				<exclude name="WebContent/doc/*" />
+				<exclude name="WebContent/VAADIN/*" />
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		
+		<copy todir="${jarme}/publicdata/xqtl">
+			<fileset dir="publicdata/xqtl">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		
+		<!-- Windows/Unix startup scripts-->
+		<echo file="${jarme}/run.sh">java -Xmx512m boot/RunStandalone</echo>
+		<echo file="${jarme}/run.bat">java -Xmx512m boot/RunStandalone</echo>
+		
+		<zip destfile="${dist}/xqtl_workbench.zip" basedir="${jarme}" update="false" />
+	</target>
+	
+	<target name="create_zip">
+		<antcall target="build_jarme" />
+		<antcall target="zip_jarme" />
+	</target>
+	
+	<target name="create_jar">
+		<antcall target="build_jarme" />
+		<antcall target="jar_jarme" />
 	</target>
 	
 	<!--
@@ -260,11 +254,28 @@
 		</testng>
 	</target>
 	
+	<!-- Unzip and run webtest -->
+	<target name="webtest_zip" description="Start the Selenium test on unzipped app">
+		
+		<unzip src="${dist}/xqtl_workbench.zip" dest="${dist}/xqtl_unzipped" />
+		
+		<testng haltOnFailure="true">
+			<classfileset dir="${dist}/xqtl_unzipped" includes="**/XqtlSeleniumTest.class"/>
+			<classpath path="${dist}/xqtl_unzipped" />
+		</testng>
+	</target>
+	
 	<!-- Wrapper to make the JAR and run the webtest -->
 	<target name="create_jar_webtest">
 		<antcall target="create_jar" />
 		<antcall target="webtest_jar" />
 	</target>
+	
+	<!-- Wrapper to make the ZIP and run the webtest -->
+		<target name="create_zip_webtest">
+			<antcall target="create_zip" />
+			<antcall target="webtest_zip" />
+		</target>
 	
 	<!-- Run the application from JAR file. Not efficient because
 	when running from here we need to make a copy first. (JAR needs
