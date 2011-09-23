@@ -64,8 +64,8 @@ sub main() {
 
 	write_ontology_term();
 
-	#write_measurement();
-	write_features();
+	write_measurement();
+	#write_features();
 
 	write_observedvalue();
 

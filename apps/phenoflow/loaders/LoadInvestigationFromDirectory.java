@@ -19,12 +19,16 @@ public class LoadInvestigationFromDirectory {
 		String directory;
 		
 		// europhenome
-		directory = "../phenoflow_data/Europhenome2";
-		CsvImport.importAll(new File(directory), db, new SimpleTuple(), null,
-				DatabaseAction.ADD, "N/A");
+		//directory = "../phenoflow_data/Europhenome2";
+		
+		//CsvImport.importAll(new File(directory), db, new SimpleTuple(), null,
+		//		DatabaseAction.ADD, "N/A");
 
 		// MPD
 		directory = "../phenoflow_data/MPD";
+		CsvImport.importAll(new File(directory), db, new SimpleTuple(), null,
+				DatabaseAction.ADD, "N/A");
+		directory = "../phenoflow_data/MPD/temp";
 		CsvImport.importAll(new File(directory), db, new SimpleTuple(), null,
 				DatabaseAction.ADD, "N/A");
 
