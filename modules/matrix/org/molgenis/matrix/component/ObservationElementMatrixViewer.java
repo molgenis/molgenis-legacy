@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -18,7 +19,9 @@ import org.molgenis.framework.ui.html.JQueryDataTable;
 import org.molgenis.framework.ui.html.Newline;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
+import org.molgenis.framework.ui.html.TextParagraph;
 import org.molgenis.matrix.MatrixException;
+import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
@@ -44,7 +47,7 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	public String MOVEUP = getName() + "_moveUp";
 	public String MOVEDOWN = getName() + "_moveDown";
 	public String MOVEDOWNEND = getName() + "_moveDownEnd";
-	public String COLINDEX = getName() + "_colIndex";
+	public String COLID = getName() + "_colId";
 	public String COLVALUE = getName() + "_colValue";
 	public String COLEQUALS = getName() + "_colEquals";
 //	public String ROWINDEX = getName() + "_rowIndex";
@@ -52,12 +55,39 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 //	public String ROWEQUALS = getName() + "_rowEquals";
 	public String CLEARFILTERS = getName() + "_clearFilters";
 
-	public ObservationElementMatrixViewer(ScreenController<?> callingScreenController, String name, SliceablePhenoMatrix<? extends ObservationElement, ? extends ObservationElement> matrix)
+	/**
+	 * Default constructor.
+	 * 
+	 * @param callingScreenController
+	 * @param name
+	 * @param matrix
+	 */
+	public ObservationElementMatrixViewer(ScreenController<?> callingScreenController, String name, 
+			SliceablePhenoMatrix<? extends ObservationElement, ? extends ObservationElement> matrix)
 	{
 		super(name);
 		super.setLabel("");
 		this.callingScreenController = callingScreenController;
 		this.matrix = matrix;
+	}
+	
+	/**
+	 * Constructor where you immediately restrict the column set by applying a column filter.
+	 * TODO: make suitable for multiple column filters combined using OR, e.g.:
+	 * measurementName = Species OR measurementName = Sex.
+	 * 
+	 * @param callingScreenController
+	 * @param name
+	 * @param matrix
+	 * @param measurementName
+	 * @throws Exception
+	 */
+	public ObservationElementMatrixViewer(ScreenController<?> callingScreenController, String name, 
+			SliceablePhenoMatrix<? extends ObservationElement, ? extends ObservationElement> matrix,
+			String measurementName) throws Exception
+	{
+		this(callingScreenController, name, matrix);
+		this.matrix.sliceByColProperty(Measurement.NAME, Operator.EQUALS, measurementName);
 	}
 	
 	public void handleRequest(Database db, Tuple t) throws HandleRequestDelegationException
@@ -103,11 +133,12 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 		{
 			// test column filters, currently only 'equals'.
 			// Of course this should only show fields in the list
-			SelectInput colIndex = new SelectInput(COLINDEX);
-			colIndex.setLabel("Add column filter:");
-			colIndex.setEntityOptions(matrix.getColHeaders());
-			colIndex.setNillable(true);
-			f.add(colIndex);
+			SelectInput colId = new SelectInput(COLID);
+			colId.setLabel("Add column filter:");
+			colId.setEntityOptions(matrix.getColHeaders());
+			// Options are added with ID's as values and labels as labels
+			colId.setNillable(true);
+			f.add(colId);
 			StringInput colValue = new StringInput(COLVALUE);
 			colValue.setLabel("");
 			f.add(colValue);
@@ -118,15 +149,24 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 //			SelectInput rowIndex = new SelectInput(ROWINDEX);
 //			rowIndex.setLabel("Add row filter:");
 //			rowIndex.setEntityOptions(matrix.getRowHeaders());
-//			colIndex.setNillable(true);
+//			rowIndex.setNillable(true);
 //			f.add(rowIndex);
 //			StringInput rowValue = new StringInput(ROWVALUE);
 //			rowValue.setLabel("");
 //			f.add(rowValue);
 //			f.add(new ActionInput(ROWEQUALS, "", "Equals"));
 //			f.add(new Newline());
-
-			f.add(new ActionInput(CLEARFILTERS, "", "Reset"));
+			
+			// show applied filter rules
+			String filterRules = "<ul>";
+			for (MatrixQueryRule mqr : this.matrix.rules) {
+				filterRules += "<li>" + mqr.toString() + "</li>";
+			}
+			filterRules += "</ul>";
+			f.add(new TextParagraph("filterRules", "Applied filter rules:" + filterRules));
+			
+			// button to clear all filter rules
+			f.add(new ActionInput(CLEARFILTERS, "", "Clear all filters"));
 
 		}
 		catch (Exception e)
@@ -200,18 +240,16 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 		matrix.reset();
 	}
 
-	public void colEquals(Database db, Tuple t) throws MatrixException
+	public void colEquals(Database db, Tuple t) throws Exception
 	{
 		String valuePropertyToUse = ObservedValue.VALUE;
-		int colIndex = t.getInt(COLINDEX);
-		int rowLimit = t.getInt(ROWLIMIT);
-		int measurementIndex = colIndex % rowLimit;
+		int measurementId = t.getInt(COLID);
+		Measurement filterMeasurement = db.findById(Measurement.class, measurementId);
 		// NB: be sure that you use Measurements for the columns!
-		Measurement filterMeasurement = (Measurement)matrix.getColHeaders().get(measurementIndex);
 		if (filterMeasurement.getDataType().equals("xref")) {
 			valuePropertyToUse = ObservedValue.RELATION_NAME;
 		}
-		matrix.sliceByColValueProperty(colIndex,
+		matrix.sliceByColValueProperty(measurementId,
 				valuePropertyToUse, QueryRule.Operator.LIKE,
 				t.getObject(COLVALUE));
 	}

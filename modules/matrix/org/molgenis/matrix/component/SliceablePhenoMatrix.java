@@ -32,12 +32,7 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 		extends AbstractObservationElementMatrix<R, C, ObservedValue> implements
 		SliceableMatrix<R, C, ObservedValue>
 {
-	/**
-	 * Construct sliceable matrix for one Data set.
-	 * 
-	 * @param database
-	 * @param data
-	 */
+
 	public SliceablePhenoMatrix(Database database, Class<R> rowClass,
 			Class<C> colClass)
 	{
@@ -171,13 +166,13 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 			Query<D> xQuery = database.query(xClass);
 			for (MatrixQueryRule rule : rules)
 			{
-				// rewrite rule(type=rowIndex) to rule(type=rowHeader, field=id)
+				// rewrite rule(type=row/colIndex) to rule(type=row/colHeader, field=id)
 				if (rule.getFilterType().equals(xIndexFilterType))
 				{
-					rule.setField(ObservedValue.ID);
+					rule.setField("id");
 					rule.setFilterType(xHeaderFilterType);
 				}
-				// add rowHeader filters to query / remember sort rules
+				// add row/colHeader filters to query / remember sort rules
 				if (rule.getFilterType().equals(xHeaderFilterType))
 				{
 					xQuery.addRules(rule);

@@ -42,9 +42,13 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 		this.setModel(new MatrixTestsModel(this));
 		this.setView(new FreemarkerView("MatrixTestsView.ftl", getModel()));
 
-		// TODO: add constructor to restrict the rows and/or columns
-		matrixViewer = new ObservationElementMatrixViewer(this, "mymatrix", new SliceablePhenoMatrix(this.getDatabase(),
-				Individual.class, Measurement.class));
+		try {
+			matrixViewer = new ObservationElementMatrixViewer(this, "mymatrix", new SliceablePhenoMatrix(this.getDatabase(),
+					Individual.class, Measurement.class), "Species");
+		} catch (Exception e) {
+			e.printStackTrace();
+			this.setError(e.getMessage());
+		}
 	}
 
 	public void handleRequest(Database db, Tuple t)
