@@ -337,8 +337,9 @@ public class ActionInput extends HtmlInput<Object>
 		}
 		String result = iconClassCss + "<button id=\"" + this.getId() + "\"" + " onClick=\""
 				+ this.getJavaScriptAction() + "\">" + this.getButtonValue()
-				+ "</button>" + "<script>$(\"#" + this.getId()
-				+ "\").button(" + icons + ");</script>\n";
+				+ "</button>" + "<script>$(\"#" + this.getId() + "\")"
+				+ (getIcon() != null ? ".height(" + (this.getIconHeight() + 10) + ").width(" + (this.getIconWidth() + 10) + ")" : "")
+				+ ".button(" + icons + ");</script>\n";
 
 		return result;
 	}
