@@ -327,8 +327,8 @@ public class QueryRule implements Cloneable {
 			}
 			result += ")";
 		} else {
-			result = (this.getField() == null ? "" : this.getField())
-					+ this.getOperator() + (this.value == null ? "" : "'" + this.value + "' ");
+			result = (this.getField() == null ? "" : (this.getField() + " "))
+					+ this.getOperator() + (this.value == null ? "" : " '" + this.value + "'");
 		}
 		return result;
 	}
