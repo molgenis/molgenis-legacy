@@ -8,7 +8,7 @@ public class DependencyManagerModel
 	private Boolean bitops;
 	private Boolean rcurl;
 	private Boolean clusterjobs;
-	
+	private Boolean qtlbim;
 	
 	public Boolean getRqtl()
 	{
@@ -41,6 +41,14 @@ public class DependencyManagerModel
 	public void setClusterjobs(Boolean clusterjobs)
 	{
 		this.clusterjobs = clusterjobs;
+	}
+	public Boolean getQtlbim()
+	{
+		return qtlbim;
+	}
+	public void setQtlbim(Boolean qtlbim)
+	{
+		this.qtlbim = qtlbim;
 	}
 	
 }

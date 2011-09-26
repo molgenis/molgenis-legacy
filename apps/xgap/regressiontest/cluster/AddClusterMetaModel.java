@@ -148,6 +148,11 @@ public class AddClusterMetaModel
 			rqtlScan.setTargetFunctionName("QTL");
 			db.add(rqtlScan);
 			
+			//EMPTY PARAMS
+			ParameterSet emptyParams = new ParameterSet();
+			emptyParams.setName("Empty");
+			db.add(emptyParams);
+			
 			//MINJOB
 			ParameterSet minjobParams = new ParameterSet();
 			minjobParams.setName("Min_params");
@@ -220,6 +225,17 @@ public class AddClusterMetaModel
 			plink.setParameterSet(plinkParams);
 			plink.setTargetFunctionName("PLINK");
 			db.add(plink);
+			
+			// QTL BIM JOB
+			
+			Analysis qtlBim = new Analysis();
+			qtlBim.setName("QtlBim_analysis");
+			qtlBim.setDescription("QTLBIM, a library for QTL Bayesian Interval Mapping, provides a Bayesian model selection approach to map multiple interacting QTL. For more information, please visit the <a target=\"_blank\" href=\"http://www.qtlbim.org/\">QTLBIM website</a>.");
+			qtlBim.setDataSet(rqtlData);
+			qtlBim.setParameterSet(emptyParams);
+			qtlBim.setTargetFunctionName("QTLBIM");
+			db.add(qtlBim);
+			
 			
 			
 			/*

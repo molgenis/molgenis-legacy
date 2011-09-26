@@ -183,10 +183,11 @@ public class LocalComputationResource implements ComputationResource {
 	 * @throws Exception
 	 */
 	public void installQtl() throws Exception{
-		File usrHomeLibs = new File(System.getProperty("user.home")	+ File.separator + "libs");
-		usrHomeLibs.mkdir();
-		String OS = DetectOS.getOS();
-		installRPackage("qtl", defaultRepos, usrHomeLibs, OS);
+		installWrapper("qtl");
+//		File usrHomeLibs = new File(System.getProperty("user.home")	+ File.separator + "libs");
+//		usrHomeLibs.mkdir();
+//		String OS = DetectOS.getOS();
+//		installRPackage("qtl", defaultRepos, usrHomeLibs, OS);
 	}
 	
 	/**
@@ -194,11 +195,16 @@ public class LocalComputationResource implements ComputationResource {
 	 * @throws Exception
 	 */
 	public void installRCurl() throws Exception{
-		File usrHomeLibs = new File(System.getProperty("user.home")	+ File.separator + "libs");
-		usrHomeLibs.mkdir();
-		String OS = DetectOS.getOS();
-		//installBiocPackage("RCurl", usrHomeLibs, OS);
-		installRPackage("RCurl", defaultRepos, usrHomeLibs, OS);
+		installWrapper("RCurl");
+//		File usrHomeLibs = new File(System.getProperty("user.home")	+ File.separator + "libs");
+//		usrHomeLibs.mkdir();
+//		String OS = DetectOS.getOS();
+//		//installBiocPackage("RCurl", usrHomeLibs, OS);
+//		installRPackage("RCurl", defaultRepos, usrHomeLibs, OS);
+	}
+	
+	public void installQtlbim() throws Exception{
+		installWrapper("qtlbim");
 	}
 	
 	/**
@@ -206,10 +212,19 @@ public class LocalComputationResource implements ComputationResource {
 	 * @throws Exception
 	 */
 	public void installBitops() throws Exception{
+		installWrapper("bitops");
+//		File usrHomeLibs = new File(System.getProperty("user.home")	+ File.separator + "libs");
+//		usrHomeLibs.mkdir();
+//		String OS = DetectOS.getOS();
+//		installRPackage("bitops", defaultRepos, usrHomeLibs, OS);
+	}
+	
+	public void installWrapper(String installMe) throws Exception
+	{
 		File usrHomeLibs = new File(System.getProperty("user.home")	+ File.separator + "libs");
 		usrHomeLibs.mkdir();
 		String OS = DetectOS.getOS();
-		installRPackage("bitops", defaultRepos, usrHomeLibs, OS);
+		installRPackage(installMe, defaultRepos, usrHomeLibs, OS);
 	}
 	
 	@Override

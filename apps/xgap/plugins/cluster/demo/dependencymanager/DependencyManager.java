@@ -77,6 +77,11 @@ public class DependencyManager extends PluginModel<Entity>
 			{
 				lcr.installBitops();
 			}
+			
+			else if (action.equals("installQtlbim"))
+			{
+				lcr.installQtlbim();
+			}
 
 //			else if (action.equals("installClusterJobs"))
 //			{
@@ -96,6 +101,7 @@ public class DependencyManager extends PluginModel<Entity>
 		this.model.setBitops(false);
 		this.model.setRcurl(false);
 		this.model.setRqtl(false);
+		this.model.setQtlbim(false);
 //		this.model.setClusterjobs(false);
 		
 		File usrHomeLibs = new File(System.getProperty("user.home")
@@ -107,12 +113,15 @@ public class DependencyManager extends PluginModel<Entity>
 				+ File.separator + "qtl");
 		File rcurlDir = new File(usrHomeLibs.getAbsolutePath()
 				+ File.separator + "RCurl");
+		File qtlbimDir = new File(usrHomeLibs.getAbsolutePath()
+				+ File.separator + "qtlbim");
 //		File clusterJobsDir = new File(usrHomeLibs.getAbsolutePath()
 //				+ File.separator + "ClusterJobs");
 		
 		System.out.println("checking dir: " + bitopsDir.getAbsolutePath());
 		System.out.println("checking dir: " + qtlDir.getAbsolutePath());
 		System.out.println("checking dir: " + rcurlDir.getAbsolutePath());
+		System.out.println("checking dir: " + qtlbimDir.getAbsolutePath());
 //		System.out.println("checking dir: " + clusterJobsDir.getAbsolutePath());
 
 		if(bitopsDir.exists()){
@@ -128,6 +137,11 @@ public class DependencyManager extends PluginModel<Entity>
 		if(rcurlDir.exists()){
 			System.out.println("rcurlDir exists");
 			this.model.setRcurl(true);
+		}
+		
+		if(qtlbimDir.exists()){
+			System.out.println("qtlbimDir exists");
+			this.model.setQtlbim(true);
 		}
 		
 //		if(clusterJobsDir.exists()){

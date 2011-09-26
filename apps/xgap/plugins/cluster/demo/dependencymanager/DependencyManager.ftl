@@ -74,6 +74,17 @@
 			<#if model.bitops == false><input type="submit" value="Install" onclick="__action.value='installBitops';return true;"/><#else>N/A</#if>
 		</td>
 	</tr>
+	<tr class="form_listrow1">
+		<td>
+			QTLbim (packages 'qtlbim')
+		</td>
+		<td>
+			<#if model.bitops == true><p class="successmessage">Yes</p><#else><p class="errormessage">No</p></#if>
+		</td>
+		<td>
+			<#if model.bitops == false><input type="submit" value="Install" onclick="__action.value='installQtlbim';return true;"/><#else>N/A</#if>
+		</td>
+	</tr>
 	<#-- no longer needed>
 	<tr class="form_listrow1">
 		<td>
