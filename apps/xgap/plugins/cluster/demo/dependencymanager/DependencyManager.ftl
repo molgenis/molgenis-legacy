@@ -79,10 +79,10 @@
 			QTLbim (packages 'qtlbim')
 		</td>
 		<td>
-			<#if model.bitops == true><p class="successmessage">Yes</p><#else><p class="errormessage">No</p></#if>
+			<#if model.qtlbim == true><p class="successmessage">Yes</p><#else><p class="errormessage">No</p></#if>
 		</td>
 		<td>
-			<#if model.bitops == false><input type="submit" value="Install" onclick="__action.value='installQtlbim';return true;"/><#else>N/A</#if>
+			<#if model.qtlbim == false><input type="submit" value="Install" onclick="__action.value='installQtlbim';return true;"/><#else>N/A</#if>
 		</td>
 	</tr>
 	<#-- no longer needed>
