@@ -522,7 +522,7 @@ public abstract class AbstractDatabase implements Database {
         //logger.debug("added mapper for klazz " + klazz.getName());
         mappers.put(klazz.getName(), mapper);
         //logger.debug("added mapper for klazz " + klazz.getSimpleName());
-        mappers.put(klazz.getSimpleName(), mapper);
+        //mappers.put(klazz.getSimpleName(), mapper);
     }
 
     /**
