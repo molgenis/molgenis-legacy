@@ -111,7 +111,10 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	public void set${JavaName(field)}(${type(field)} _${name(field)});
 		<#if type_label == "enum">
 	public java.util.List<ValueLabel> get${JavaName(field)}Options();
-		<#elseif type_label="xref">			
+		<#elseif type_label="xref">		
+    public ${type(field.xrefField)} get${JavaName(field)}_${JavaName(field.xrefField)}();
+    public void set${JavaName(field)}_${JavaName(field.xrefField)}(${type(field.xrefField)} ${name(field)});
+			
 			<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>
 	public ${type(field.xrefLabels[label_index])} get${JavaName(field)}_${JavaName(label)}();
 	public void set${JavaName(field)}_${JavaName(label)}(${type(field.xrefLabels[label_index])} ${name(field)}_${label});
