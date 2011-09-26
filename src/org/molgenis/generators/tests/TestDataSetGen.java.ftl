@@ -153,7 +153,7 @@ public class TestDataSet
 	<#else> 
 			JpaMapper ${name(entity)}Save = (JpaMapper)db
 	</#if>
-		.getMapper("${JavaName(entity)}");	
+		.getMapper("${entity.namespace}.${JavaName(entity)}");	
         
             //((JpaDatabase)db).getEntityManager().getTransaction().begin();
             db.add(this.${name(entity)});
