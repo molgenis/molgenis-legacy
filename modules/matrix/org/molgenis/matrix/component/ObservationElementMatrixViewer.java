@@ -49,7 +49,7 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	public String MOVEDOWNEND = getName() + "_moveDownEnd";
 	public String COLID = getName() + "_colId";
 	public String COLVALUE = getName() + "_colValue";
-	public String COLEQUALS = getName() + "_colEquals";
+	public String COLLIKE = getName() + "_colLike";
 //	public String ROWINDEX = getName() + "_rowIndex";
 //	public String ROWVALUE = getName() + "_rowValue";
 //	public String ROWEQUALS = getName() + "_rowEquals";
@@ -84,10 +84,10 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	 */
 	public ObservationElementMatrixViewer(ScreenController<?> callingScreenController, String name, 
 			SliceablePhenoMatrix<? extends ObservationElement, ? extends ObservationElement> matrix,
-			String measurementName) throws Exception
+			List<String> measurementNames) throws Exception
 	{
 		this(callingScreenController, name, matrix);
-		this.matrix.sliceByColProperty(Measurement.NAME, Operator.EQUALS, measurementName);
+		this.matrix.sliceByColProperty(Measurement.NAME, Operator.IN, measurementNames);
 	}
 	
 	public void handleRequest(Database db, Tuple t) throws HandleRequestDelegationException
@@ -142,7 +142,7 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 			StringInput colValue = new StringInput(COLVALUE);
 			colValue.setLabel("");
 			f.add(colValue);
-			f.add(new ActionInput(COLEQUALS, "", "Equals"));
+			f.add(new ActionInput(COLLIKE, "", "Like"));
 			f.add(new Newline());
 
 			// test row filters, currently only 'equals'
@@ -158,11 +158,14 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 //			f.add(new Newline());
 			
 			// show applied filter rules
-			String filterRules = "<ul>";
-			for (MatrixQueryRule mqr : this.matrix.rules) {
-				filterRules += "<li>" + mqr.toString() + "</li>";
+			String filterRules = " none";
+			if (this.matrix.rules.size() > 0) {
+				filterRules = "<ul>";
+				for (MatrixQueryRule mqr : this.matrix.rules) {
+					filterRules += "<li>" + mqr.toString() + "</li>";
+				}
+				filterRules += "</ul>";
 			}
-			filterRules += "</ul>";
 			f.add(new TextParagraph("filterRules", "Applied filter rules:" + filterRules));
 			
 			// button to clear all filter rules
@@ -240,7 +243,7 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 		matrix.reset();
 	}
 
-	public void colEquals(Database db, Tuple t) throws Exception
+	public void colLike(Database db, Tuple t) throws Exception
 	{
 		String valuePropertyToUse = ObservedValue.VALUE;
 		int measurementId = t.getInt(COLID);

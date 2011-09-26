@@ -1,5 +1,6 @@
 package org.molgenis.sandbox.ui;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
@@ -41,10 +42,16 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 		super(name, null, parent);
 		this.setModel(new MatrixTestsModel(this));
 		this.setView(new FreemarkerView("MatrixTestsView.ftl", getModel()));
+		
+		List<String> measurementsToShow = new ArrayList<String>();
+		measurementsToShow.add("Species");
+		measurementsToShow.add("Sex");
+		measurementsToShow.add("Active");
 
 		try {
-			matrixViewer = new ObservationElementMatrixViewer(this, "mymatrix", new SliceablePhenoMatrix(this.getDatabase(),
-					Individual.class, Measurement.class), "Species");
+			matrixViewer = new ObservationElementMatrixViewer(this, "mymatrix", 
+					new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
+					measurementsToShow);
 		} catch (Exception e) {
 			e.printStackTrace();
 			this.setError(e.getMessage());
