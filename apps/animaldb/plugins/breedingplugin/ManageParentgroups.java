@@ -23,6 +23,11 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.matrix.component.ObservationElementMatrixViewer;
+import org.molgenis.matrix.component.SliceablePhenoMatrix;
+import org.molgenis.pheno.Individual;
+import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.ProtocolApplication;
@@ -50,6 +55,8 @@ public class ManageParentgroups extends PluginModel<Entity>
 	private String remarks = null;
 	private boolean firstTime = true;
 	private List<ObservationTarget> pgList;
+	ObservationElementMatrixViewer motherMatrixViewer = null;
+	ObservationElementMatrixViewer fatherMatrixViewer = null;
 	
 	public ManageParentgroups(String name, ScreenController<?> parent)
 	{
@@ -187,6 +194,22 @@ public class ManageParentgroups extends PluginModel<Entity>
 		}
 		return returnString;
 	}
+	
+	public String renderMotherMatrixViewer() {
+		if (motherMatrixViewer != null) {
+			return motherMatrixViewer.render();
+		} else {
+			return "No viewer available, matrix for selecting mother(s) cannot be rendered.";
+		}
+	}
+	
+	public String renderFatherMatrixViewer() {
+		if (fatherMatrixViewer != null) {
+			return fatherMatrixViewer.render();
+		} else {
+			return "No viewer available, matrix for selecting father(s) cannot be rendered.";
+		}
+	}
 
 	@Override
 	public String getViewName()
@@ -267,13 +290,18 @@ public class ManageParentgroups extends PluginModel<Entity>
 
 	@Override
 	public void handleRequest(Database db, Tuple request)
-	{
+	{	
 		try {
 			Date now = new Date();
-			
 			int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
-			
 			String action = request.getString("__action");
+			
+			if (action.startsWith(motherMatrixViewer.getName())) {
+				motherMatrixViewer.handleRequest(db, request);
+			}
+			if (action.startsWith(fatherMatrixViewer.getName())) {
+				fatherMatrixViewer.handleRequest(db, request);
+			}
 			
 			if (action.equals("addParentgroup")) {
 				// Check if at least one mother and father selected:
@@ -370,6 +398,27 @@ public class ManageParentgroups extends PluginModel<Entity>
 				setUserFields(request);
 			}
 			
+			if (action.equals("addMothersFromMatrix")) {
+				setUserFields(request);
+				List<? extends ObservationElement> rows = motherMatrixViewer.getSelection();
+				for (ObservationElement row : rows) {
+					int motherId = row.getId();
+					if (!this.selectedMotherIdList.contains(motherId)) {
+						this.selectedMotherIdList.add(motherId);
+					}
+				}
+			}
+			if (action.equals("addFathersFromMatrix")) {
+				setUserFields(request);
+				List<? extends ObservationElement> rows = fatherMatrixViewer.getSelection();
+				for (ObservationElement row : rows) {
+					int fatherId = row.getId();
+					if (!this.selectedFatherIdList.contains(fatherId)) {
+						this.selectedFatherIdList.add(fatherId);
+					}
+				}
+			}
+			
 		} catch (Exception e) {
 			this.getMessages().clear();
 			if (e.getMessage() != null) {
@@ -439,6 +488,27 @@ public class ManageParentgroups extends PluginModel<Entity>
 			// Default selected is first line
 			if (lineList.size() > 0) {
 				line = lineList.get(0).getId();
+			}
+			// Set up Matrix viewer
+			List<String> measurementsToShow = new ArrayList<String>();
+			measurementsToShow.add("Species");
+			measurementsToShow.add("Sex");
+			measurementsToShow.add("Active");
+			measurementsToShow.add("Line");
+			try {
+				motherMatrixViewer = new ObservationElementMatrixViewer(this, "mothermatrix", 
+						new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
+						false, measurementsToShow);
+				fatherMatrixViewer = new ObservationElementMatrixViewer(this, "fathermatrix", 
+						new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
+						false, measurementsToShow);
+			} catch (Exception e) {
+				String message = "Something went wrong while loading matrix viewesr";
+				if (e.getMessage() != null) {
+					message += (": " + e.getMessage());
+				}
+				this.getMessages().add(new ScreenMessage(message, false));
+				e.printStackTrace();
 			}
 		}
 		

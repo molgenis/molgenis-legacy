@@ -22,6 +22,7 @@ import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.TextParagraph;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
+import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
@@ -34,6 +35,8 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	
 	SliceablePhenoMatrix<? extends ObservationElement, ? extends ObservationElement> matrix;
 	Logger logger = Logger.getLogger(this.getClass());
+	
+	private boolean showLimitControls = true;
 	
 	public String ROWLIMIT = getName() + "_rowLimit";
 	public String CHANGEROWLIMIT = getName() + "_changeRowLimit";
@@ -50,9 +53,8 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	public String COLID = getName() + "_colId";
 	public String COLVALUE = getName() + "_colValue";
 	public String COLLIKE = getName() + "_colLike";
-//	public String ROWINDEX = getName() + "_rowIndex";
-//	public String ROWVALUE = getName() + "_rowValue";
-//	public String ROWEQUALS = getName() + "_rowEquals";
+	public String ROWHEADER = getName() + "_rowHeader";
+	public String ROWHEADEREQUALS = getName() + "_rowHeaderEquals";
 	public String CLEARFILTERS = getName() + "_clearFilters";
 
 	/**
@@ -63,12 +65,14 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	 * @param matrix
 	 */
 	public ObservationElementMatrixViewer(ScreenController<?> callingScreenController, String name, 
-			SliceablePhenoMatrix<? extends ObservationElement, ? extends ObservationElement> matrix)
+			SliceablePhenoMatrix<? extends ObservationElement, ? extends ObservationElement> matrix,
+			boolean showLimitControls)
 	{
 		super(name);
 		super.setLabel("");
 		this.callingScreenController = callingScreenController;
 		this.matrix = matrix;
+		this.showLimitControls = showLimitControls;
 	}
 	
 	/**
@@ -84,9 +88,9 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	 */
 	public ObservationElementMatrixViewer(ScreenController<?> callingScreenController, String name, 
 			SliceablePhenoMatrix<? extends ObservationElement, ? extends ObservationElement> matrix,
-			List<String> measurementNames) throws Exception
+			boolean showLimitControls, List<String> measurementNames) throws Exception
 	{
-		this(callingScreenController, name, matrix);
+		this(callingScreenController, name, matrix, showLimitControls);
 		this.matrix.sliceByColProperty(Measurement.NAME, Operator.IN, measurementNames);
 	}
 	
@@ -99,65 +103,36 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	{	
 		FlowLayout f = new FlowLayout();
 		
-		// TODO: set images on buttons (using setIcon())
-		
-		//create all the buttons
-		// rowlimit
-		IntInput rowLimitInput = new IntInput(ROWLIMIT, matrix.getRowLimit());
-		rowLimitInput.setLabel("Row limit:");
-		f.add(rowLimitInput);
-		f.add(new ActionInput(CHANGEROWLIMIT, "", "Change"));
-		f.add(new Newline());
-		// colLimit
-		IntInput colLimitInput = new IntInput(COLLIMIT, matrix.getColLimit());
-		colLimitInput.setLabel("Column limit:");
-		f.add(colLimitInput);
-		f.add(new ActionInput(CHANGECOLLIMIT, "", "Change"));
-		f.add(new Newline());
-
-		// move horizontal
-		f.add(new ActionInput(MOVELEFTEND, "", "Move left end"));
-		f.add(new ActionInput(MOVELEFT, "", "Move left"));
-		f.add(new ActionInput(MOVERIGHT, "", "Move right"));
-		f.add(new ActionInput(MOVERIGHTEND, "", "Move right end"));
-		f.add(new Newline());
-
-		// move vertical
-		f.add(new ActionInput(MOVEUPEND, "", "Move up end"));
-		f.add(new ActionInput(MOVEUP, "", "Move up"));
-		f.add(new ActionInput(MOVEDOWN, "", "Move down"));
-		f.add(new ActionInput(MOVEDOWNEND, "", "Move down end"));
-		f.add(new Newline());
-		
 		try
 		{
-			// test column filters, currently only 'equals'.
+			// Option to add column filters, currently only 'like'.
 			// Of course this should only show fields in the list
 			SelectInput colId = new SelectInput(COLID);
 			colId.setLabel("Add column filter:");
 			colId.setEntityOptions(matrix.getColHeaders());
-			// Options are added with ID's as values and labels as labels
+			// NB: options are added with Measurement ID's as values and Names as labels
 			colId.setNillable(true);
 			f.add(colId);
+			f.add(new Newline());
 			StringInput colValue = new StringInput(COLVALUE);
-			colValue.setLabel("");
+			colValue.setLabel("Like");
 			f.add(colValue);
-			f.add(new ActionInput(COLLIKE, "", "Like"));
+			f.add(new Newline());
+			f.add(new ActionInput(COLLIKE, "", "Apply"));
 			f.add(new Newline());
 
-			// test row filters, currently only 'equals'
-//			SelectInput rowIndex = new SelectInput(ROWINDEX);
-//			rowIndex.setLabel("Add row filter:");
-//			rowIndex.setEntityOptions(matrix.getRowHeaders());
-//			rowIndex.setNillable(true);
-//			f.add(rowIndex);
-//			StringInput rowValue = new StringInput(ROWVALUE);
-//			rowValue.setLabel("");
-//			f.add(rowValue);
-//			f.add(new ActionInput(ROWEQUALS, "", "Equals"));
-//			f.add(new Newline());
+			// Option to add row header filters, currently only 'equals'.
+			SelectInput rowHeader = new SelectInput(ROWHEADER);
+			rowHeader.setLabel("Add row header (target name) filter:");
+			rowHeader.setEntityOptions(matrix.getRowHeaders());
+			// NB: options are added with Individual ID's as values and Names as labels
+			rowHeader.setNillable(true);
+			f.add(rowHeader);
+			f.add(new Newline());
+			f.add(new ActionInput(ROWHEADEREQUALS, "", "Apply"));
+			f.add(new Newline());
 			
-			// show applied filter rules
+			// Show applied filter rules
 			String filterRules = " none";
 			if (this.matrix.rules.size() > 0) {
 				filterRules = "<ul>";
@@ -170,6 +145,7 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 			
 			// button to clear all filter rules
 			f.add(new ActionInput(CLEARFILTERS, "", "Clear all filters"));
+			f.add(new Newline());
 
 		}
 		catch (Exception e)
@@ -177,12 +153,73 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 			((EasyPluginController)this.callingScreenController).setError(e.getMessage());
 			e.printStackTrace();
 		}
+		
+		if (showLimitControls) {
+			// rowlimit
+			IntInput rowLimitInput = new IntInput(ROWLIMIT, matrix.getRowLimit());
+			rowLimitInput.setLabel("Row limit:");
+			f.add(rowLimitInput);
+			f.add(new ActionInput(CHANGEROWLIMIT, "", "Change"));
+			f.add(new Newline());
+			// colLimit
+			IntInput colLimitInput = new IntInput(COLLIMIT, matrix.getColLimit());
+			colLimitInput.setLabel("Column limit:");
+			f.add(colLimitInput);
+			f.add(new ActionInput(CHANGECOLLIMIT, "", "Change"));
+			f.add(new Newline());
+		}
+		
+		// move horizontal
+		ActionInput moveLeftEnd = new ActionInput(MOVELEFTEND, "", "");
+		moveLeftEnd.setIcon("generated-res/img/first.png");
+		moveLeftEnd.setIconWidth(22);
+		moveLeftEnd.setIconHeight(22);
+		f.add(moveLeftEnd);
+		ActionInput moveLeft = new ActionInput(MOVELEFT, "", "");
+		moveLeft.setIcon("generated-res/img/prev.png");
+		moveLeft.setIconWidth(22);
+		moveLeft.setIconHeight(22);
+		f.add(moveLeft);
+		ActionInput moveRight = new ActionInput(MOVERIGHT, "", "");
+		moveRight.setIcon("generated-res/img/next.png");
+		moveRight.setIconWidth(22);
+		moveRight.setIconHeight(22);
+		f.add(moveRight);
+		ActionInput moveRightEnd = new ActionInput(MOVERIGHTEND, "", "");
+		moveRightEnd.setIcon("generated-res/img/last.png");
+		moveRightEnd.setIconWidth(22);
+		moveRightEnd.setIconHeight(22);
+		f.add(moveRightEnd);
+		f.add(new Newline());
+
+		// move vertical
+		ActionInput moveUpEnd = new ActionInput(MOVEUPEND, "", "");
+		moveUpEnd.setIcon("generated-res/img/rowStart.png");
+		moveUpEnd.setIconWidth(22);
+		moveUpEnd.setIconHeight(22);
+		f.add(moveUpEnd);
+		ActionInput moveUp = new ActionInput(MOVEUP, "", "");
+		moveUp.setIcon("generated-res/img/up.png");
+		moveUp.setIconWidth(22);
+		moveUp.setIconHeight(22);
+		f.add(moveUp);
+		ActionInput moveDown = new ActionInput(MOVEDOWN, "", "");
+		moveDown.setIcon("generated-res/img/down.png");
+		moveDown.setIconWidth(22);
+		moveDown.setIconHeight(22);
+		f.add(moveDown);
+		ActionInput moveDownEnd = new ActionInput(MOVEDOWNEND, "", "");
+		moveDownEnd.setIcon("generated-res/img/rowStop.png");
+		moveDownEnd.setIconWidth(22);
+		moveDownEnd.setIconHeight(22);
+		f.add(moveDownEnd);
+		f.add(new Newline());
 
 		String result = f.render();
 		
 		try
 		{
-			JQueryDataTable dataTable = new JQueryDataTable("MatrixDataTable");
+			JQueryDataTable dataTable = new JQueryDataTable(getName() + "DataTable");
 			
 			List<ObservedValue>[][] values = matrix.getValueLists();
 			List<? extends ObservationElement> rows = matrix.getRowHeaders();
@@ -245,24 +282,23 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 
 	public void colLike(Database db, Tuple t) throws Exception
 	{
+		// First find out whether to filter on the value or the relation_Name field
 		String valuePropertyToUse = ObservedValue.VALUE;
 		int measurementId = t.getInt(COLID);
 		Measurement filterMeasurement = db.findById(Measurement.class, measurementId);
-		// NB: be sure that you use Measurements for the columns!
 		if (filterMeasurement.getDataType().equals("xref")) {
 			valuePropertyToUse = ObservedValue.RELATION_NAME;
 		}
+		// Then do the actual slicing
 		matrix.sliceByColValueProperty(measurementId,
 				valuePropertyToUse, QueryRule.Operator.LIKE,
 				t.getObject(COLVALUE));
 	}
 	
-//	public void rowEquals(Database db, Tuple t) throws MatrixException
-//	{
-//		matrix.sliceByRowValueProperty(t.getInt(ROWINDEX),
-//				ObservedValue.VALUE, QueryRule.Operator.LIKE,
-//				t.getObject(ROWVALUE));
-//	}
+	public void rowHeaderEquals(Database db, Tuple t) throws Exception
+	{
+		matrix.sliceByRowProperty(Individual.ID, QueryRule.Operator.EQUALS, t.getString(ROWHEADER));
+	}
 
 	public void changeRowLimit(Database db, Tuple t)
 	{

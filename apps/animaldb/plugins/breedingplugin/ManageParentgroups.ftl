@@ -28,7 +28,7 @@
 <div>
 
 	<!-- Line -->
-	<div id="lineselect" class="row" style='clear:left'>
+	<div>
 		<label for="line">Breeding line:</label>
 		<select name="line" id="line" class="selectbox">
 			<#if screen.lineList??>
@@ -41,14 +41,13 @@
 	</div>
 	
 	<!-- Auto-generate name
-	<div id='name_part' class='row' style="width:700px">
+	<div>
 		<label for='groupname'>Group name:</label>
 		<input type='text' class='textbox' name='groupname' id='groupname' value='<#if screen.groupName?exists>${screen.getGroupName()}</#if>' />
 	</div>
 	-->
-		
-	<!-- (Possible) mother(s) selector -->
-	<div id='motherselect' class='row'>
+	
+	<div>
 		<div style='float:left'>
 			<label for='mother'>(Possible) mother(s):</label>
 			<select id='mother' name='mother' size='10'>
@@ -60,37 +59,45 @@
 			</#if>
 			</select>
 		</div>
-		<div>
-			<div>Select from line<br />
-				<input type='submit' id='addmother_line' value='&lt;&lt;' onclick='__action.value="addIndMotherFromLine"' />
-				<select id='ind_mother_line' name='ind_mother_line'>
-				<#if screen.motherIdListFromLine?exists>
-					<#list screen.motherIdListFromLine as motherId>
-						<#assign name = screen.getAnimalName(motherId)>
-						<option value='${motherId?string.computer}'>${name}</option>
-					</#list>
-				</#if>
-				</select>
-			</div>
-			<div>Select from all<br />
-				<input type='submit' id='addmother' value='&lt;&lt;' onclick='__action.value="addIndMother"' />
-				<select id='ind_mother' name='ind_mother'>
-				<#if screen.motherIdList?exists>
-					<#list screen.motherIdList as motherId>
-						<#assign name = screen.getAnimalName(motherId)>
-						<option value='${motherId?string.computer}'>${name}</option>
-					</#list>
-				</#if>
-				</select>
-			</div>
-			<div>Remove<br />
-				<input type='submit' id='remmother' value='&gt;&gt;' onclick='__action.value="remIndMother"' />
-			</div>
+		<div>Remove<br />
+			<input type='submit' id='remmother' value='&gt;&gt;' onclick='__action.value="remIndMother"' />
 		</div>
 	</div>
-		
-	<!-- (Possible) father(s) selector -->
-	<div id='fatherselect' class='row'>
+	
+	<!-- (Possible) mother(s) selector 1.0 -->
+	<div style='clear:left;border-style:solid;border-color:blue'>
+		<div>Select from line<br />
+			<input type='submit' id='addmother_line' value='&lt;&lt;' onclick='__action.value="addIndMotherFromLine"' />
+			<select id='ind_mother_line' name='ind_mother_line'>
+			<#if screen.motherIdListFromLine?exists>
+				<#list screen.motherIdListFromLine as motherId>
+					<#assign name = screen.getAnimalName(motherId)>
+					<option value='${motherId?string.computer}'>${name}</option>
+				</#list>
+			</#if>
+			</select>
+		</div>
+		<div>Select from all<br />
+			<input type='submit' id='addmother' value='&lt;&lt;' onclick='__action.value="addIndMother"' />
+			<select id='ind_mother' name='ind_mother'>
+			<#if screen.motherIdList?exists>
+				<#list screen.motherIdList as motherId>
+					<#assign name = screen.getAnimalName(motherId)>
+					<option value='${motherId?string.computer}'>${name}</option>
+				</#list>
+			</#if>
+			</select>
+		</div>
+	</div>
+	
+	<!-- (Possible) mother(s) selector 2.0 -->
+	<div style='clear:left;border-style:solid;border-color:red'>
+		<p>Select from matrix</p>
+		${screen.renderMotherMatrixViewer()}<br />
+		<input type='submit' id='addmothersfrommatrix' value='&lt;&lt;' onclick='__action.value="addMothersFromMatrix"' />
+	</div>
+	
+	<div>
 		<div style='float:left'>
 			<label for='father'>(Possible) father(s):</label>
 			<select id='father' name='father' size='10'>
@@ -102,49 +109,58 @@
 			</#if>
 			</select>
 		</div>
-		<div>
-			<div>Select from line<br />
-				<input type='submit' id='addfather_line' value='&lt;&lt;' onclick='__action.value="addIndFatherFromLine"' />
-				<select id='ind_father_line' name='ind_father_line'>
-				<#if screen.fatherIdListFromLine?exists>
-					<#list screen.fatherIdListFromLine as fatherId>
-						<#assign name = screen.getAnimalName(fatherId)>
-						<option value='${fatherId?string.computer}'>${name}</option>
-					</#list>
-				</#if>
-				</select>
-			</div>
-			<div>Select from all<br />
-				<input type='submit' id='addfather' value='&lt;&lt;' onclick='__action.value="addIndFather"' />
-				<select id='ind_father' name='ind_father'>
-				<#if screen.fatherIdList?exists>
-					<#list screen.fatherIdList as fatherId>
-						<#assign name = screen.getAnimalName(fatherId)>
-						<option value='${fatherId?string.computer}'>${name}</option>
-					</#list>
-				</#if>
-				</select>
-			</div>
-			<div>Remove<br />
-				<input type='submit' id='remfather' value='&gt;&gt;' onclick='__action.value="remIndFather"' />
-			</div>
+		<div>Remove<br />
+			<input type='submit' id='remfather' value='&gt;&gt;' onclick='__action.value="remIndFather"' />
 		</div>
 	</div>
 	
+	<!-- (Possible) father(s) selector 1.0 -->
+	<div style='clear:left;border-style:solid;border-color:blue'>
+		<div>Select from line<br />
+			<input type='submit' id='addfather_line' value='&lt;&lt;' onclick='__action.value="addIndFatherFromLine"' />
+			<select id='ind_father_line' name='ind_father_line'>
+			<#if screen.fatherIdListFromLine?exists>
+				<#list screen.fatherIdListFromLine as fatherId>
+					<#assign name = screen.getAnimalName(fatherId)>
+					<option value='${fatherId?string.computer}'>${name}</option>
+				</#list>
+			</#if>
+			</select>
+		</div>
+		<div>Select from all<br />
+			<input type='submit' id='addfather' value='&lt;&lt;' onclick='__action.value="addIndFather"' />
+			<select id='ind_father' name='ind_father'>
+			<#if screen.fatherIdList?exists>
+				<#list screen.fatherIdList as fatherId>
+					<#assign name = screen.getAnimalName(fatherId)>
+					<option value='${fatherId?string.computer}'>${name}</option>
+				</#list>
+			</#if>
+			</select>
+		</div>
+	</div>
+	
+	<!-- (Possible) father(s) selector 2.0 -->
+	<div style='clear:left;border-style:solid;border-color:red'>
+		<p>Select from matrix</p>
+		${screen.renderFatherMatrixViewer()}<br />
+		<input type='submit' id='addfathersfrommatrix' value='&lt;&lt;' onclick='__action.value="addFathersFromMatrix"' />
+	</div>
+	
 	<!-- Start date -->
-	<div id='datevalue_part' class='row'>
+	<div style='clear:left'>
 		<label for='startdate'>Start date:</label>
 		<input type='text' class='textbox' id='startdate' name='startdate' value='<#if screen.startdate?exists>${screen.getStartdate()}</#if>' onclick='showDateInput(this)' autocomplete='off' />
 	</div>
 	
 	<!-- Remarks -->
-	<div class='row'>
+	<div>
 		<label for='remarks'>Remarks:</label>
 		<input type='text' class='textbox' id='remarks' name='remarks' />
 	</div>
 		
 	<!-- Add button -->
-	<div id='buttons_part' class='row'>
+	<div>
 		<input type='submit' id='addpg' class='addbutton' value='Add' onclick="__action.value='addParentgroup'" />
 	</div>
 	
