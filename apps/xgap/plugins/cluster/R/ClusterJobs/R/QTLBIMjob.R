@@ -1,7 +1,9 @@
 run_QTLBIM <- function(dbpath = "", subjob, item, jobid, outname, myanalysisfile, jobparams=list(c("map","scanone"),c("method","hk"),c("model","normal"),c("stepsize","0")), investigationname="", libraryloc=NULL){
   cat("info: Start by sending a message (so we know we're running)\n")
   cat("report(2,\"LoadingCrossobject\")\n",file=myanalysisfile,append=T)
-  
+  cat(Generate_Statement(paste("library('coda', lib.loc='",libraryloc,"')","\n",sep="")),file=myanalysisfile,append=T)
+  cat(Generate_Statement(paste("library('qtl', lib.loc='",libraryloc,"')","\n",sep="")),file=myanalysisfile,append=T)
+  cat(Generate_Statement(paste("library('qtlbim', lib.loc='",libraryloc,"')","\n",sep="")),file=myanalysisfile,append=T)
   cat("info: Get your parameters\n")
   map <- getparameter("map",jobparams)
   method <- getparameter("method",jobparams)
