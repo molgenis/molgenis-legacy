@@ -44,6 +44,8 @@ public class ActionInput extends HtmlInput<Object>
 
 	/** Path to an icon image */
 	private String icon;
+	private int iconHeight = 16;
+	private int iconWidth = 16;
 
 	/** Type of submit */
 	private Type type;
@@ -318,18 +320,22 @@ public class ActionInput extends HtmlInput<Object>
 
 	private String renderJquery()
 	{
-		// String icon = getIcon() != null ? " iconClass=\"dijitEditorIcon "
-		// + getIcon() + "\"" : "";
-		// String showLabel = showLabel() == false ? " showLabel=\"false\"" :
-		// "";
 		String icons = "";
+		String iconClassCss = "";
 		if (getIcon() != null)
 		{
-			String icon = getIcon().replace("generated-res/img/","").replace(".png","");
-			icons += "{ icons: {primary:'" + getIcon() + "'}"
+			// Make a nice CSS class name for the icon
+			String iconClass = getIcon().replace("/", "-").replace(".png", "").replace(".jpg", "");
+			// Make the actual CSS for the icon button
+			iconClassCss = "<style type=\"text/css\">";
+			iconClassCss += "." + iconClass + " { background-image: url(" + getIcon() + ") !important; " +
+				"width: " + this.getIconWidth() + "px; height: " + this.getIconHeight() + "px; }";
+			iconClassCss += "</style>";
+			// Make the jQuery code to be appended to make the button an image button
+			icons += "{ icons: {primary:'" + iconClass + "', secondary: null}"
 					+ (isShowLabel() ? "}" : ", text: false }");
 		}
-		String result = "<button id=\"" + this.getId() + "\"" + " onClick=\""
+		String result = iconClassCss + "<button id=\"" + this.getId() + "\"" + " onClick=\""
 				+ this.getJavaScriptAction() + "\">" + this.getButtonValue()
 				+ "</button>" + "<script>$(\"#" + this.getId()
 				+ "\").button(" + icons + ");</script>\n";
@@ -368,6 +374,22 @@ public class ActionInput extends HtmlInput<Object>
 	public void setShowLabel(boolean showLabel)
 	{
 		this.showLabel = showLabel;
+	}
+	
+	public void setIconHeight(int iconHeight) {
+		this.iconHeight = iconHeight;
+	}
+	
+	public int getIconHeight() {
+		return iconHeight;
+	}
+	
+	public void setIconWidth(int iconWidth) {
+		this.iconWidth = iconWidth;
+	}
+	
+	public int getIconWidth() {
+		return iconWidth;
 	}
 
 }
