@@ -76,15 +76,4 @@ public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
             return EMFactory.getEntityManagerFactoryByName("molgenis");    
         }            
     }
-
-    public Connection createJDBCConnection() throws SQLException, ClassNotFoundException {
-        EntityManagerFactory emf = getEntityManagerFactory();
-        Map<String, Object> p = emf.getProperties();
-        
-        Class.forName((String)p.get("javax.persistence.jdbc.driver "));
-        return DriverManager.getConnection((String)p.get("javax.persistence.jdbc.url"), 
-                (String)p.get("javax.persistence.jdbc.user"), 
-                (String)p.get("javax.persistence.jdbc.password"));
-    }
-
 }

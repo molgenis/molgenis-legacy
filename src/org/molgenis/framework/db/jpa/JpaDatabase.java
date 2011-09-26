@@ -1,5 +1,7 @@
 package org.molgenis.framework.db.jpa;
 
+import java.sql.Connection;
+import org.molgenis.framework.db.AbstractDatabase;
 import java.io.File;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import java.util.TreeMap;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import javax.persistence.metamodel.EntityType;
@@ -42,52 +45,47 @@ import org.molgenis.util.Tuple;
  * @author Morris Swertz
  * @author Joris Lops
  */
-public abstract class JpaDatabase extends AbstractDatabase implements Database {
+public class JpaDatabase extends AbstractDatabase implements Database {
 
-	protected static class EMFactory {
-		private static Map<String, EntityManagerFactory> emfs = new HashMap<String, EntityManagerFactory>(); 
-		private static EMFactory instance = null;
-		
-		private EMFactory(String persistenceUnit) {
-			addEntityManagerFactory(persistenceUnit);
-		}
-		
-		private static void addEntityManagerFactory(String persistenceUnit) {
-			if(!emfs.containsKey(persistenceUnit)) {
-				emfs.put(persistenceUnit, Persistence.createEntityManagerFactory(persistenceUnit));
-			}
-		}
-		
-		public static EntityManager createEntityManager(String persistenceUnit) {
-			if(instance == null) {
-				instance = new EMFactory(persistenceUnit);
-			}		
-			if(!emfs.containsKey(persistenceUnit)) {
-				addEntityManagerFactory(persistenceUnit);
-			}			
-			return emfs.get(persistenceUnit).createEntityManager();		
-		}
-		
-		public static EntityManager createEntityManager() {
-			if(instance == null) {
-				instance = new EMFactory("molgenis");
-			}		
-			return emfs.get("molgenis").createEntityManager();		
-		}		
+    protected static class EMFactory {
+
+        private static Map<String, EntityManagerFactory> emfs = new HashMap<String, EntityManagerFactory>();
+        private static EMFactory instance = null;
+
+        private EMFactory(String persistenceUnit) {
+            addEntityManagerFactory(persistenceUnit);
+        }
+
+        private static void addEntityManagerFactory(String persistenceUnit) {
+            if (!emfs.containsKey(persistenceUnit)) {
+                emfs.put(persistenceUnit, Persistence.createEntityManagerFactory(persistenceUnit));
+            }
+        }
+
+        public static EntityManager createEntityManager(String persistenceUnit) {
+            if (instance == null) {
+                instance = new EMFactory(persistenceUnit);
+            }
+            if (!emfs.containsKey(persistenceUnit)) {
+                addEntityManagerFactory(persistenceUnit);
+            }
+            EntityManager result = emfs.get(persistenceUnit).createEntityManager();
+            return result;
+        }
+
+        public static EntityManager createEntityManager() {
+            if (instance == null) {
+                instance = new EMFactory("molgenis");
+            }
+            EntityManager result = emfs.get("molgenis").createEntityManager();
+            return result;
+        }
 
         public static EntityManagerFactory getEntityManagerFactoryByName(String name) {
             return emfs.get(name);
         }
-	}	
-    /** BATCH SIZE */
-    private int BATCH_SIZE = 10000;
-    private static Map<String, Mapper<? extends Entity>> mappers = new TreeMap<String, Mapper<? extends Entity>>();
+    }
     private EntityManager em = null;
-    /** in transaction */
-    // private boolean inTransaction;
-    /** login */
-    private Login login;
-    private Model model;
     private String persistenceUnitName;
 
     protected JpaDatabase(String persistenceUnitName, EntityManager em, Model jdbcMetaDatabase) {
@@ -100,112 +98,29 @@ public abstract class JpaDatabase extends AbstractDatabase implements Database {
         this.persistenceUnitName = persistenceUnitName;
         this.model = jdbcMetaDatabase;
     }
-    
+
     protected JpaDatabase(String persistenceUnitName) {
-    	this.persistenceUnitName = persistenceUnitName;
-    	this.em = EMFactory.createEntityManager();
+        this.persistenceUnitName = persistenceUnitName;
+        this.em = EMFactory.createEntityManager();
     }
 
     public JpaDatabase(EntityManager em,
-			Model model)
-	{
-		this.em = em;
-		this.model = model;
-	}
+            Model model) {
+        this.em = em;
+        this.model = model;
+    }
 
-	public JpaDatabase(Model model)
-	{
-		this.model = model;
-	}
+    public JpaDatabase(Model model) {
+        this.model = model;
+    }
 
-	protected void setEntityManager(EntityManager em) {
+    protected void setEntityManager(EntityManager em) {
         this.em = em;
     }
 
+    @Override
     public EntityManager getEntityManager() {
         return em;
-    }
-
-    @Override
-    public <E extends Entity> int add(E entity) throws DatabaseException {
-        int count = -1;
-        try {
-            beginTransaction();
-            List<Entity> entities = new ArrayList<Entity>();
-            entities.add(entity);
-            count = add(entities);
-            commitTransaction();
-        } catch (javax.persistence.PersistenceException e) {
-        	HandleException.handle(e);
-            rollbackTx();
-            throw new DatabaseException(e.getCause().getMessage());
-        }
-        return count;
-    }
-    static int i = 0;
-
-    @Override
-    public <E extends Entity> int add(List<E> entities)
-            throws DatabaseException {
-        int count = -1;
-        try {
-            beginTransaction();
-            if (entities != null && entities.size() > 0) {
-                ++i;
-                count = getMapper(entities.get(0).getClass().getName()).add(
-                        (List<Entity>) entities);
-            }
-            commitTransaction();
-        } catch (Exception e) {
-        	HandleException.handle(e);
-            rollbackTx();
-            throw new DatabaseException(e);
-        }
-
-        return count;
-    }
-
-    @Override
-    public <E extends Entity> int add(final Class<E> klazz,
-            final CsvReader reader, final TupleWriter writer) throws DatabaseException {
-        // batch of entities
-        final List<E> entityBatch = new ArrayList<E>();
-        // counter
-        final IntegerWrapper count = new IntegerWrapper(0);
-
-        try {
-            beginTransaction();
-            reader.parse(new CsvReaderListener() {
-
-                @Override
-                public void handleLine(int lineNumber, Tuple tuple)
-                        throws Exception {
-                    E e = klazz.newInstance();
-                    e.set(tuple);
-                    entityBatch.add(e);
-
-                    if (entityBatch.size() > BATCH_SIZE) {
-                        for (E entity : entityBatch) {
-                            em.persist(entity);
-                        }
-
-                        count.set(count.get() + 1);
-                        em.flush();
-
-                        for (E entity : entityBatch) {
-                            writer.writeRow(entity);
-                        }
-
-                    }
-                }
-            });
-            commitTransaction();
-        } catch (Exception e) {
-            rollbackTx();
-            throw new DatabaseException(e);
-        }
-
-        return count.get();
     }
     private int transactionCount = 0;
 
@@ -215,11 +130,14 @@ public abstract class JpaDatabase extends AbstractDatabase implements Database {
             beginTransaction();
         }
         ++transactionCount;
-//		++transactionCount;
-//		if (!inTx())
-//		{
-//			beginTransaction();
-//		}
+    }
+
+    /*
+     * Jpa doesn't support Nested Transactions
+     */
+    @Override
+    public void beginPrivateTx(String ticket) throws DatabaseException {
+        beginTx();
     }
 
     @Override
@@ -228,12 +146,14 @@ public abstract class JpaDatabase extends AbstractDatabase implements Database {
         if (transactionCount == 0) {
             commitTransaction();
         }
+    }
 
-//		if(!localTransaction) {
-//			commitTx();
-//		} else if (inTx()) {
-//			commitTx();
-//		}
+    /*
+     * Jpa doesn't support Nested Transactions
+     */
+    @Override
+    public void commitPrivateTx(String ticket) throws DatabaseException {
+        commitTx();
     }
 
     private void beginTransaction() throws DatabaseException {
@@ -241,6 +161,15 @@ public abstract class JpaDatabase extends AbstractDatabase implements Database {
             if (em.getTransaction() != null && !em.getTransaction().isActive()) {
                 em.getTransaction().begin();
             }
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    @Override
+    public void rollbackPrivateTx(String ticket) throws DatabaseException {
+        try {
+            em.getTransaction().rollback();
         } catch (Exception e) {
             throw new DatabaseException(e);
         }
@@ -268,21 +197,15 @@ public abstract class JpaDatabase extends AbstractDatabase implements Database {
     @Override
     public <E extends Entity> int count(Class<E> entityClass,
             QueryRule... rules) throws DatabaseException {
-        TypedQuery<Long> query = JPAQueryGeneratorUtil.createCount(entityClass, (Mapper<E>) getMapper(entityClass.getName()), em, rules);
+        TypedQuery<Long> query = JPAQueryGeneratorUtil.createCount(entityClass, (Mapper<E>) getMapperFor(entityClass), em, rules);
         Long result = query.getSingleResult();
         return result.intValue();
     }
 
     @Override
-    public <E extends Entity> void find(Class<E> entityClass, TupleWriter writer,
-            QueryRule... rules) throws DatabaseException {
-        try {
-            throw new NoSuchMethodException();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
-        // List<E> result = JPAQueryGeneratorUtil.createWhere(entityClass,
-        // getMapper(entityClass.getName()), em, rules).getResultList();
+    public <E extends Entity> E findById(Class<E> klazz, Object id)
+            throws DatabaseException {
+        return em.find(klazz, id);
     }
 
     @Override
@@ -294,58 +217,33 @@ public abstract class JpaDatabase extends AbstractDatabase implements Database {
         for (Entity e : find(entityClass, rules)) {
             if (first) {
                 writer.setHeaders(fieldsToExport);
-                try
-				{
-					writer.writeHeader();
-				}
-				catch (Exception e1)
-				{
-					throw new DatabaseException(e1);
-				}
+                try {
+                    writer.writeHeader();
+                } catch (Exception e1) {
+                    throw new DatabaseException(e1);
+                }
                 first = false;
             }
-            try
-			{
-				writer.writeRow(e);
-			}
-			catch (Exception e1)
-			{
-				throw new DatabaseException(e1);
-			}
+            try {
+                writer.writeRow(e);
+            } catch (Exception e1) {
+                throw new DatabaseException(e1);
+            }
             count++;
         }
-        logger.debug(String.format("find(%s, writer) wrote %s lines",
-                entityClass.getSimpleName(), count));
+        logger.debug(String.format("find(%s, writer) wrote %s lines", entityClass.getSimpleName(), count));
     }
 
     @Override
     public <E extends Entity> List<E> find(Class<E> entityClass,
             QueryRule... rules) throws DatabaseException {
-        TypedQuery<E> query = JPAQueryGeneratorUtil.createQuery(entityClass, (Mapper<E>) getMapper(entityClass.getName()), em, rules);
+        TypedQuery<E> query = JPAQueryGeneratorUtil.createQuery(entityClass, (Mapper<E>) getMapperFor(entityClass), em, rules);
         return query.getResultList();
-    }
-
-    @Override
-    public <E extends Entity> E findById(Class<E> entityClass, Object id)
-            throws DatabaseException {
-        try {
-            List<E> result = this.query(entityClass).eq(
-                    entityClass.newInstance().getIdField(), id).find();
-            if (result.size() == 1) {
-                return result.get(0);
-            }
-        } catch (Exception e) {
-            throw new DatabaseException(e);
-        }
-        return null;
     }
 
     @Override
     public <E extends Entity> List<E> findByExample(E example) {
         return JpaFrameworkFactory.createFramework().findByExample(em, example);
-//		ReadObjectQuery query = new ReadObjectQuery();
-//		query.setExampleObject(example);
-//		return (List<E>)JpaHelper.getServerSession(em.getEntityManagerFactory()).executeQuery(query);
     }
 
     @Override
@@ -377,31 +275,11 @@ public abstract class JpaDatabase extends AbstractDatabase implements Database {
     }
 
     @Override
-    public File getFilesource() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Model getMetaData() throws DatabaseException {
-        return model;
-    }
-
-    @Override
-    public Login getSecurity() {
-        return login;
-    }
-
-    @Override
     public boolean inTx() {
         if (transactionCount == 0) {
             return false;
         }
         return true;
-
-//		if (em.getTransaction() == null) 
-//                    return false;
-//		
-//        return em.getTransaction().isActive();
     }
 
     @Override
@@ -415,74 +293,6 @@ public abstract class JpaDatabase extends AbstractDatabase implements Database {
     }
 
     @Override
-    public <E extends Entity> int remove(E entity) throws DatabaseException {
-        int count = -1;
-        try {
-            beginTransaction();
-            List<Entity> entities = new ArrayList<Entity>();
-            entities.add(entity);
-            count = remove(entities);
-            commitTransaction();
-        } catch (Exception e) {
-            rollbackTx();
-            throw new DatabaseException(e);
-        }
-        return count;
-    }
-
-    @Override
-    public <E extends Entity> int remove(List<E> entities)
-            throws DatabaseException {
-        int count = -1;
-        try {
-            beginTransaction();
-            count = getMapper(entities.get(0).getClass().getName()).remove(
-                    (List<Entity>) entities);
-            commitTransaction();
-        } catch (Exception e) {
-            rollbackTx();
-            throw new DatabaseException(e);
-        }
-        return count;
-    }
-
-    @Override
-    public <E extends Entity> int remove(final Class<E> entityClass,
-            final CsvReader reader) throws DatabaseException {
-        // batch of entities
-        final List<E> entityBatch = new ArrayList<E>();
-        // counter
-        final IntegerWrapper count = new IntegerWrapper(0);
-
-        try {
-            beginTransaction();
-            reader.parse(new CsvReaderListener() {
-
-                @Override
-                public void handleLine(int lineNumber, Tuple tuple)
-                        throws Exception {
-                    E e = entityClass.newInstance();
-                    e.set(tuple);
-                    entityBatch.add(e);
-
-                    if (entityBatch.size() > BATCH_SIZE) {
-                        for (E entity : entityBatch) {
-                            em.remove(e);
-                        }
-
-                        count.set(count.get() + 1);
-                        em.flush();
-                    }
-                }
-            });
-        } catch (Exception e) {
-            rollbackTx();
-            throw new DatabaseException(e);
-        }
-        return count.get();
-    }
-
-    @Override
     public void rollbackTx() throws DatabaseException {
         try {
             if (em.getTransaction().isActive()) {
@@ -491,52 +301,6 @@ public abstract class JpaDatabase extends AbstractDatabase implements Database {
         } catch (Exception e) {
             throw new DatabaseException(e);
         }
-
-    }
-
-    @Override
-    public void setLogin(Login login) {
-        this.login = login;
-    }
-
-    @Override
-    public <E extends Entity> List<E> toList(Class<E> klazz, CsvReader reader,
-            int noEntities) throws DatabaseException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public <E extends Entity> int update(E entity) throws DatabaseException {
-        int count = -1;
-        try {
-            beginTransaction();
-
-            List<Entity> entities = new ArrayList<Entity>();
-            entities.add(entity);
-            count = update(entities);
-
-            commitTransaction();
-        } catch (Exception e) {
-            rollbackTx();
-            throw new DatabaseException(e);
-        }
-        return count;
-    }
-
-    @Override
-    public <E extends Entity> int update(List<E> entities)
-            throws DatabaseException {
-        try {
-            beginTransaction();
-            getMapper(entities.get(0).getClass().getName()).update(
-                    (List<Entity>) entities);
-            commitTransaction();
-        } catch (Exception e) {
-            rollbackTx();
-            throw new DatabaseException(e);
-        }
-
-        return 1;
     }
 
     @Override
@@ -574,18 +338,6 @@ public abstract class JpaDatabase extends AbstractDatabase implements Database {
             throw new DatabaseException(e);
         }
         return count.get();
-
-    }
-
-    protected static <E extends Entity> void putMapper(Class<E> klazz,
-            Mapper<E> mapper) {
-        mappers.put(klazz.getName(), mapper);
-        mappers.put(klazz.getSimpleName(), mapper);
-        // logger.debug("added mapper for klazz " + klazz.getName());
-    }
-
-    public <E extends Entity> Mapper<E> getMapper(String name) {
-        return (Mapper<E>) mappers.get(name);
     }
 
     public void flush() {
@@ -600,21 +352,9 @@ public abstract class JpaDatabase extends AbstractDatabase implements Database {
         return persistenceUnitName;
     }
 
-	@Override
-	public List<Tuple> sql(String query, QueryRule ...queryRules) throws DatabaseException {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
-	}
-
-	public <E extends Entity>  String createFindSql(Class<E> entityClass, QueryRule... rules) throws DatabaseException
-	{
-		throw new UnsupportedOperationException();
-	}
-
-
-	@Override
-	public ResultSet executeQuery(String query, QueryRule... queryRules)
-			throws DatabaseException {
-		throw new UnsupportedOperationException();
-	}  
+    @Override
+    @Deprecated
+    public Connection getConnection() throws DatabaseException {
+        return JpaFrameworkFactory.createFramework().getConnection(em);
+    }
 }

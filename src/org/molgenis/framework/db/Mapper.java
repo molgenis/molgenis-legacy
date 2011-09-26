@@ -1,5 +1,7 @@
 package org.molgenis.framework.db;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 
@@ -44,4 +46,16 @@ public interface Mapper<E extends Entity> {
 	public void resolveForeignKeys(List<E> enteties) throws ParseException, DatabaseException;
 
 	public String createFindSqlInclRules(QueryRule[] rules) throws DatabaseException;
+        
+        
+//        public abstract int executeAdd(List<E> entities) throws DatabaseException;
+//
+//	public abstract int executeUpdate(List<E> entities) throws DatabaseException;
+//
+//	public abstract int executeRemove(List<E> entities) throws DatabaseException;
+        
+//        public void prepareFileAttachements(List<E> entities, File dir) throws IOException;
+//        
+//        public boolean saveFileAttachements(List<E> entities, File dir) throws IOException;
+        
 }

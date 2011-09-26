@@ -22,6 +22,8 @@ import java.text.ParseException;
 <#if databaseImpl == 'JPA'>
 import javax.persistence.EntityManager;
 </#if>
+import org.molgenis.framework.security.Login;
+
 public class FillMetadata {
 	protected static final transient Logger logger = Logger.getLogger(FillMetadata.class);
 <#if !metaData>
@@ -30,7 +32,15 @@ public class FillMetadata {
 	}
 <#else>
 	public static void fillMetadata(Database db) throws Exception {
-		logger.info("fillMetadata start");
+            logger.info("fillMetadata start");
+
+            Login login = db.getSecurity();
+            if(login == null) {
+                logger.info("login == null --> no meta data added");           
+                return;
+            }
+
+
 <#if databaseImpl == 'JPA'>
             EntityManager em = db.getEntityManager();
             em.getTransaction().begin();
@@ -68,8 +78,9 @@ public class FillMetadata {
         em.persist(group2);
 
         em.getTransaction().commit();
-        
-        db.getSecurity().login(db, "admin", "admin");
+     
+        login.login(db, "admin", "admin");
+
         
 <#else>
 		//doesn't work fix:

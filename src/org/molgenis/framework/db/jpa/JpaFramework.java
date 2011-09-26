@@ -6,6 +6,7 @@ package org.molgenis.framework.db.jpa;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.List;
 import javax.persistence.EntityManager;
 
@@ -20,4 +21,6 @@ public interface JpaFramework {
     public <E extends Entity> List<E> findByExample(EntityManager em, E example);
     public void createTables(String persistenceUnitName);
     public void dropTables(String persistenceUnitName);  
+    @Deprecated
+    public Connection getConnection(EntityManager em);
 }

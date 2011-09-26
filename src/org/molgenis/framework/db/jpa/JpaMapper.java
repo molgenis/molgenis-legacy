@@ -32,34 +32,19 @@ public interface JpaMapper<E extends Entity> extends Mapper<E>
 	 * maps {@link org.molgenis.framework.Database#add(List)}
 	 * @throws DatabaseException 
 	 */
-	public int add(List<E> entities) throws DatabaseException;
+	//public int add(List<E> entities) throws DatabaseException;
 
 	/**
 	 * maps {@link org.molgenis.framework.Database#update(List)}
 	 */
-	public int update(List<E> entities) throws DatabaseException;
+	//public int update(List<E> entities) throws DatabaseException;
 
 	/**
 	 * maps {@link org.molgenis.framework.Database#remove(List)}
 	 */
-	public int remove(List<E> entities) throws DatabaseException;
+	//public int remove(List<E> entities) throws DatabaseException;
 
-	/**
-	 * helper method to prepares file for saving.
-	 * 
-	 * @throws IOException
-	 */
-	public void prepareFileAttachements(List<E> entities, File dir) throws IOException;
 
-	/**
-	 * helper method to do some actions after the transaction. For example:
-	 * write files to disk. FIXME make a listener?
-	 * 
-	 * @return true if files were saved (will cause additional update to the
-	 *         database)
-	 * @throws IOException
-	 */
-	public boolean saveFileAttachements(List<E> entities, File dir) throws IOException;
 	
 	public FieldType getFieldType(String field);
 	

@@ -1,7 +1,6 @@
 package org.molgenis.framework.db.jdbc;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
@@ -12,11 +11,12 @@ import org.molgenis.fieldtypes.DecimalField;
 import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.fieldtypes.IntField;
 import org.molgenis.fieldtypes.LongField;
+import org.molgenis.framework.db.AbstractDatabase;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 
-public class JDBCConnectionHelper
+public abstract class JDBCConnectionHelper extends AbstractDatabase
 {
 	/** The jndi to a data source */
 	DataSourceWrapper source = null;
@@ -45,7 +45,7 @@ public class JDBCConnectionHelper
 		// TODO Auto-generated constructor stub
 	}
 
-	// @Override
+	@Override
 	public void beginTx() throws DatabaseException
 	{
 		getConnection();
@@ -92,28 +92,29 @@ public class JDBCConnectionHelper
 		}
 	}
 
-	// @Override
+	@Override
 	public void rollbackTx() throws DatabaseException
 	{
-		try
-		{
-			if (!inTransaction) throw new DatabaseException("rollbackTx failed: no active transaction");
-			connection.rollback();
-			connection.setAutoCommit(true);
-			inTransaction = false;
-			logger.info("rolled back transaction on "+this.connection.getMetaData().getURL());
-		}
-		catch (SQLException sqle)
-		{
-			logger.error("rollbackTx failed: " + sqle.getMessage());
-			throw new DatabaseException(sqle);
-		}
-		finally
-		{
-			closeConnection();
-		}
+            try
+            {
+                if (!inTransaction) throw new DatabaseException("rollbackTx failed: no active transaction");
+                connection.rollback();
+                connection.setAutoCommit(true);
+                inTransaction = false;
+                logger.info("rolled back transaction on "+this.connection.getMetaData().getURL());
+            }
+            catch (SQLException sqle)
+            {
+                logger.error("rollbackTx failed: " + sqle.getMessage());
+                throw new DatabaseException(sqle);
+            }
+            finally
+            {
+                closeConnection();
+            }
 	}
 
+        @Override
 	public boolean inTx()
 	{
 		return inTransaction;
@@ -178,44 +179,6 @@ public class JDBCConnectionHelper
 	}
 
 	/**
-	 * Executes a JDBC query and returns the resultset.
-	 * 
-	 * @param sql
-	 * @param rules
-	 * @throws SQLException
-	 * @throws DatabaseException
-	 */
-	public ResultSet executeQuery(String sql, QueryRule... rules) throws DatabaseException
-	{
-		getConnection();
-		Statement stmt = null;
-		try
-		{
-			stmt = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-			if (source.getDriverClassName().contains("mysql"))
-			{
-				stmt.setFetchSize(Integer.MIN_VALUE); // trigger streaming of
-			}
-			String allSql = sql;
-			if (rules != null && rules.length > 0) allSql += createWhereSql(null, false, true, rules);
-			ResultSet rs = stmt.executeQuery(allSql);
-			logger.debug("executeQuery: " + allSql);
-			return rs;
-		}
-		catch (NullPointerException npe)
-		{
-			logger.error("executeQuery() failed with " + npe + " on sql: " + sql + "\ncause: " + npe.getCause());
-			npe.printStackTrace();
-			throw new DatabaseException(npe);
-		}
-		catch (SQLException sqle)
-		{
-			logger.error("executeQuery(" + sql + ")" + sqle);
-			throw new DatabaseException(sqle);
-		}
-	}
-
-	/**
 	 * Closes a statement.
 	 * 
 	 * @param stmt
@@ -254,7 +217,7 @@ public class JDBCConnectionHelper
 	public static String createWhereSql(JDBCMapper<?> mapper, boolean isNested, boolean withOffset, QueryRule... rules)
 			throws DatabaseException
 	{
-		StringBuffer where_clause = new StringBuffer("");
+		StringBuilder where_clause = new StringBuilder("");
 		QueryRule previousRule = new QueryRule(Operator.AND);
 		if(rules != null){
 		for (QueryRule r : rules)

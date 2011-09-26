@@ -77,6 +77,18 @@ public interface Database
 	 */
 	public void beginTx() throws DatabaseException;
 
+        
+	/**
+	 * Used to put large transactions in batches while containing transaction
+	 * integrity.
+	 * 
+	 * @param ticket
+	 *            name for the private transaction (to make sure the tx owner
+	 *            commits it)
+	 * @throws DatabaseException
+	 */
+	 public void beginPrivateTx(String ticket) throws DatabaseException;        
+        
 	/**
 	 * Commit transaction.
 	 * <p>
@@ -89,6 +101,29 @@ public interface Database
 	public void commitTx() throws DatabaseException;
 
 	/**
+	 * Used to put large transactions in batches while containing transaction
+	 * integrity.
+	 * 
+	 * @param ticket
+	 *            name for the private transaction (to make sure the tx owner
+	 *            commits it)
+	 * @throws DatabaseException
+	 */
+	public void commitPrivateTx(String ticket) throws DatabaseException;        
+        
+        
+	/**
+	 * Used to put large transactions in batches while containing transaction
+	 * integrity.
+	 * 
+	 * @param ticket
+	 *            name for the private transaction (to make sure the tx owner
+	 *            commits it)
+	 * @throws DatabaseException
+	 */
+	public void rollbackPrivateTx(String ticket) throws DatabaseException;        
+        
+	/**
 	 * Rollback transaction.
 	 * <p>
 	 * All additions, updates and removals that have been executed since beginTx
@@ -98,7 +133,7 @@ public interface Database
 	 * @throws DatabaseException
 	 */
 	public void rollbackTx() throws DatabaseException;
-
+       
 	/**
 	 * Check whether the database is currently in a transaction. Returns true if
 	 * beginTx() was called before.
@@ -204,6 +239,22 @@ public interface Database
 	 */
 	public <E extends Entity> Query<E> query(Class<E> entityClass);
 
+
+        /**
+	 * Create a Query to easily to search the entities by an example.
+	 * 
+	 * @see Query
+	 * 
+	 * @param <E>
+	 *            type of entity
+	 * @param entityClass
+	 *            class of entity
+	 * @return query object for this entityClass. Optionally one can add
+	 *         additional filtering rules on this Query.
+	 */
+        public <E extends Entity> Query<E> queryByExample(E entity);
+        
+        
 	/**
 	 * Create a JoinQuery to freely search across any entity.field within the
 	 * database. Joins between entityClasses are automated although explicit

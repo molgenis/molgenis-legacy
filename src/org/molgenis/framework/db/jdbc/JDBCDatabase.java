@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.TreeMap;
 
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
@@ -28,10 +26,7 @@ import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryImp;
 import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.security.Login;
-import org.molgenis.util.CsvReader;
 import org.molgenis.util.Entity;
-import org.molgenis.util.ResultSetTuple;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.TupleWriter;
 import org.molgenis.util.Tuple;
@@ -61,15 +56,6 @@ import org.molgenis.util.Tuple;
  */
 public abstract class JDBCDatabase extends JDBCConnectionHelper implements Database
 {
-	/** batch size */
-	static final int BATCH_SIZE = 5000;
-	/** List of mappers, mapping entities to a JDBC connection */
-	Map<String, Mapper<? extends Entity>> mappers = new TreeMap<String, Mapper<? extends Entity>>();
-	/** The filesource associated to this database: takes care of "file" fields */
-	File fileSource;
-	/** Login object */
-	Login login;
-	protected MolgenisOptions options;
 	/** Logger for this database */
 	private static final transient Logger logger = Logger
 			.getLogger(JDBCDatabase.class.getSimpleName());
@@ -180,106 +166,14 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 		}
 	}
 
-	/**
-	 * Only use when really needed!
-	 * 
-	 * @throws DatabaseException
-	 * 
-	 * @throws DatabaseException
-	 */
-	public void executeUpdate(String sql) throws DatabaseException
-	{
-		try
-		{
-			Statement stmt = connection.createStatement();
-			stmt.executeUpdate(sql);
-			stmt.close();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			throw new DatabaseException(e);
-		}
-		finally
-		{
-			closeConnection();
-		}
-	}
-
-	/**
-	 * Only use when really needed!
-	 * 
-	 * Executes SQL using stmt.execute(), allowing data manipulation statements but does not return a ResultSet.
-	 * 
-	 * @param sql
-	 * @return
-	 */
-	public boolean executeSql(String sql){
-		logger.info("stmt.execute("+sql+")");
-		boolean success = false;
-		Statement stmt = null;
-		try {
-			stmt = getConnection().createStatement();
-			stmt.execute(sql);
-			success = true;
-			JDBCDatabase.closeStatement(stmt);
-			closeConnection();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} 
-		return success;
-	}
-	
-	/**
-	 * Only use when really needed!
-	 * 
-	 * @throws DatabaseException
-	 */
-	public List<Tuple> sql(String sql, QueryRule... rules)
-			throws DatabaseException
-	{
-
-		ResultSet rs;
-		try
-		{
-			String allSql = sql
-					+ (rules.length > 0 ? createWhereSql(null, false, true,
-							rules) : "");
-			rs = executeQuery(allSql);
-			// transform result set in entity list
-			List<Tuple> tuples = new ArrayList<Tuple>();
-			if (rs != null)
-			{
-				while (rs.next())
-				{
-					tuples.add(new SimpleTuple(new ResultSetTuple(rs)));
-				}
-			}
-			rs.close();
-
-			logger.info("sql(" + allSql + ")" + tuples.size()
-					+ " objects found");
-			return tuples;
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			throw new DatabaseException(e);
-		}
-		finally
-		{
-			closeConnection();
-		}
-	}
-
-	// @Override
+	@Override
 	public <E extends Entity> int count(Class<E> klazz, QueryRule... rules)
 			throws DatabaseException
 	{
 		return getMapperFor(klazz).count(rules);
 	}
-
-	// @Override
+    
+	@Override
 	public <E extends Entity> List<E> findByExample(E example)
 			throws DatabaseException
 	{
@@ -304,28 +198,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 		return q.find();
 	}
 
-	// @Override
-	public <E extends Entity> List<E> find(Class<E> klazz, QueryRule... rules)
-			throws DatabaseException
-	{
-		// add security filters
-		// QueryRule securityRules = null;
-		// if (this.getSecurity() != null) securityRules =
-		// this.getSecurity().getRowlevelSecurityFilters(klazz);
-		// if (securityRules != null)
-		// {
-		// if (rules != null && rules.length > 1)
-		// {
-		// List<QueryRule> all = new ArrayList<QueryRule>();
-		// all.add(securityRules);
-		// all.addAll(Arrays.asList(rules));
-		// return getMapperFor(klazz).find(all.toArray(new
-		// QueryRule[all.size()]));
-		// }
-		// return getMapperFor(klazz).find(securityRules);
-		// }
-		return getMapperFor(klazz).find(rules);
-	}
+
 
 //	private <E extends Entity> QueryRule[] addSecurityFilters(Class<E> klazz,
 //			QueryRule... rules)
@@ -362,13 +235,10 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 //			return rules;
 //		}
 //	}
+        
 
-	// @Override
-	public <E extends Entity> void find(Class<E> klazz, TupleWriter writer,
-			QueryRule... rules) throws DatabaseException
-	{
-		getMapperFor(klazz).find(writer, rules);
-	}
+
+
 
 	// @Override
 	public <E extends Entity> void find(Class<E> klazz, TupleWriter writer,
@@ -378,94 +248,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 		getMapperFor(klazz).find(writer, fieldsToExport, rules);
 	}
 
-	// @Override
-	public <E extends Entity> Query<E> query(Class<E> klazz)
-	{
-		Query<E> q = new QueryImp<E>(this, klazz);
-		// if(this.getSecurity().getRowlevelSecurityFilters(klazz) != null)
-		// {
-		// q.addRules(this.getSecurity().getRowlevelSecurityFilters(klazz));
-		// }
-		return q;
-	}
 
-	// @Override
-	public <E extends Entity> int add(E entity) throws DatabaseException
-	{
-		List<E> entityList = new ArrayList<E>();
-		entityList.add(entity);
-		return this.add(entityList);
-	}
-
-	// @Override
-	public <E extends Entity> int add(List<E> entities)
-			throws DatabaseException
-	{
-		if (entities.size() > 0)
-		{
-			return getMapperFor(entities).add(entities);
-		}
-		return 0;
-	}
-
-	// @Override
-	public <E extends Entity> int add(Class<E> klazz, CsvReader reader,
-			TupleWriter writer) throws DatabaseException
-	{
-		return getMapperFor(klazz).add(reader, writer);
-	}
-
-	// @Override
-	public <E extends Entity> int update(E entity) throws DatabaseException
-	{
-		List<E> entityList = new ArrayList<E>();
-		entityList.add(entity);
-		return this.update(entityList);
-	}
-
-	// @Override
-	public <E extends Entity> int update(List<E> entities)
-			throws DatabaseException
-	{
-		if (entities.size() > 0)
-		{
-			return getMapperFor(entities).update(entities);
-		}
-		return 0;
-	}
-
-	// @Override
-	public <E extends Entity> int update(Class<E> klazz, CsvReader reader)
-			throws DatabaseException
-	{
-		return getMapperFor(klazz).update(reader);
-	}
-
-	// @Override
-	public <E extends Entity> int remove(E entity) throws DatabaseException
-	{
-		List<E> entityList = new ArrayList<E>();
-		entityList.add(entity);
-		return this.remove(entityList);
-	}
-
-	// @Override
-	public <E extends Entity> int remove(List<E> entities)
-			throws DatabaseException
-	{
-		if (entities.size() > 0)
-		{
-			return getMapperFor(entities).remove(entities);
-		}
-		return 0;
-	}
-
-	// @Override
-	public <E extends Entity> int remove(Class<E> klazz, CsvReader reader)
-			throws DatabaseException
-	{
-		return getMapperFor(klazz).remove(reader);
-	}
 
 	@Deprecated
 	public File getFilesource()
@@ -473,60 +256,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 		return this.fileSource;
 	}
 
-	/**
-	 * Find the mapper from this.mappers
-	 * 
-	 * @param klazz
-	 *            the entity class to get the mapper from
-	 * @return a mapper or a exception
-	 * @throws DatabaseException
-	 */
-	@SuppressWarnings("unchecked")
-	private <E extends Entity> Mapper<E> getMapperFor(Class<E> klazz)
-			throws DatabaseException
-	{
-		// transform to generic exception
-		Mapper<E> mapper = (Mapper<E>) mappers.get(klazz.getName());
-		if (mapper == null) throw new DatabaseException(
-				"getMapperFor failed because no mapper available for "
-						+ klazz.getName());
-		return mapper;
-	}
-
-	/**
-	 * Assign a mapper for a certain class.
-	 * 
-	 * <pre>
-	 * putMapper(Example.class, new ExampleMapper());
-	 * </pre>
-	 * 
-	 * @param klazz
-	 *            the class of this Entity
-	 * @param mapper
-	 */
-	protected <E extends Entity> void putMapper(Class<E> klazz,
-			Mapper<E> mapper)
-	{
-		this.mappers.put(klazz.getName(), mapper);
-		// logger.debug("added mapper for klazz " + klazz.getName());
-	}
-
-	// @Override
-	public List<String> getEntityNames()
-	{
-		List<String> entities = new ArrayList<String>();
-		entities.addAll(mappers.keySet());
-		return entities;
-	}
-
-	// @Override
-	public <E extends Entity> List<E> toList(Class<E> klazz, CsvReader reader,
-			int limit) throws DatabaseException
-	{
-		return getMapperFor(klazz).toList(reader, limit);
-	}
-
-	// @Override
+	@Override
 	public void close() throws DatabaseException
 	{
 		closeConnection();
@@ -541,7 +271,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	 *            commits it)
 	 * @throws DatabaseException
 	 */
-	void beginPrivateTx(String ticket) throws DatabaseException
+	public void beginPrivateTx(String ticket) throws DatabaseException
 	{
 		if (!this.inTransaction)
 		{
@@ -565,19 +295,18 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	 *            commits it)
 	 * @throws DatabaseException
 	 */
-	protected void commitPrivateTx(String ticket) throws DatabaseException
+	public void commitPrivateTx(String ticket) throws DatabaseException
 	{
-		if (ticket != null && ticket.equals(this.privateTransaction))
-		{
-			this.commitTx();
-			this.privateTransaction = null;
-			// logger.debug("Commit private TX '" + ticket + "'");
-		}
-		else
-		{
-			// logger.debug("Trying to commit private TX '"+ticket+"' but
-			// another still running with '"+this.privateTransaction+"'");
-		}
+            if (ticket != null && ticket.equals(this.privateTransaction))
+            {
+                this.commitTx();
+                this.privateTransaction = null;
+            }
+            else
+            {
+                    // logger.debug("Trying to commit private TX '"+ticket+"' but
+                    // another still running with '"+this.privateTransaction+"'");
+            }
 	}
 
 	/**
@@ -589,7 +318,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	 *            commits it)
 	 * @throws DatabaseException
 	 */
-	protected void rollbackPrivateTx(String ticket) throws DatabaseException
+	public void rollbackPrivateTx(String ticket) throws DatabaseException
 	{
 		if (ticket != null && ticket.equals(this.privateTransaction))
 		{
@@ -604,51 +333,23 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 		}
 	}
 
-	/**
-	 * Local helper to find mappers for lists.
-	 * 
-	 * @param entities
-	 *            list of entities to find this mapper for.
-	 * @return a mapper or a exception
-	 * @throws SQLException
-	 */
-	@SuppressWarnings("unchecked")
-	private <E extends Entity> Mapper<E> getMapperFor(List<E> entities)
-			throws DatabaseException
-	{
-		try
-		{
-			@SuppressWarnings("rawtypes")
-			Class klazz = entities.get(0).getClass();
-			return getMapperFor(klazz);
-		}
-		catch (NullPointerException e)
-		{
-			// transform to generic exception
-			logger.error("trying to store empty list");
-			throw new DatabaseException(
-					"getMapperFor failed because of empty list");
-		}
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Class<? extends Entity>> getEntityClasses()
 	{
-
-		List<Class<? extends Entity>> classes = new ArrayList<Class<? extends Entity>>();
-		try
-		{
-			for (String klazz : this.getEntityNames())
-			{
-				classes.add((Class<? extends Entity>) Class.forName(klazz));
-			}
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		return classes;
+            List<Class<? extends Entity>> classes = new ArrayList<Class<? extends Entity>>();
+            try
+            {
+                    for (String klazz : this.getEntityNames())
+                    {
+                            classes.add((Class<? extends Entity>) Class.forName(klazz));
+                    }
+            }
+            catch (Exception e)
+            {
+                    e.printStackTrace();
+            }
+            return classes;
 	}
 
 	@Override
@@ -661,38 +362,17 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
-	private <E extends Entity> Class<E> getClassForEntity(E entity)
-	{
-		return (Class<E>) entity.getClass();
-	}
-
-	public Login getSecurity()
-	{
-		return login;
-	}
-
-	public void setLogin(Login login)
-	{
-		this.login = login;
-	}
-
-	@Override
-	public JoinQuery join(Class<? extends Entity>... classes)
-			throws DatabaseException
-	{
-		return new JoinQuery(this, classes);
-	}
-
 	@Override
 	public <E extends Entity> E findById(Class<E> klazz, Object id)
 			throws DatabaseException
 	{
-		Mapper<E> mapper = getMapperFor(klazz);
-		List<E> result = mapper.find(new QueryRule(mapper.create()
-				.getIdField(), QueryRule.Operator.EQUALS, id));
-		if (result.size() > 0) return result.get(0);
-		return null;
+            Mapper<E> mapper = getMapperFor(klazz);
+            List<E> result = mapper.find(new QueryRule(mapper.create()
+                            .getIdField(), QueryRule.Operator.EQUALS, id));
+            if (result.size() > 0) {
+                return result.get(0);
+            }
+            return null;
 	}
 
 	public <E extends Entity> void matchByNameAndUpdateFields(
@@ -1012,10 +692,5 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 		throw new UnsupportedOperationException();
 	}
 	
-	@Override
-	public <E extends Entity> String createFindSql(Class<E> entityClass, QueryRule... rules) throws DatabaseException
-	{
- 		return getMapperFor(entityClass).createFindSqlInclRules(rules);
-		
-	} 
+
 }

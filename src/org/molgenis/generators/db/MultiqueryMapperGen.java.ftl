@@ -72,7 +72,7 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 	Logger logger = Logger.getLogger(this.getClass());
 	
 	@Override
-	public int executeAdd(List<${JavaName(entity)}> entities) throws SQLException, DatabaseException
+	public int executeAdd(List<${JavaName(entity)}> entities) throws DatabaseException
 	{	
 		Connection conn = getDatabase().getConnection();
 		//create big mysql query
@@ -114,14 +114,17 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 		}		
 		
 		//execute sql
-		Statement stmt = conn.createStatement();		
+		Statement stmt = null; 		
 		try
 		{			
+			stmt = conn.createStatement();
 			//logger.debug("created statement: "+sql.toString());
 			int updatedRows = stmt.executeUpdate(sql.toString());
 			getGeneratedKeys(entities, stmt, 0);
 			return updatedRows;			
-		}
+		} catch (SQLException sqlEx) {
+                    throw new DatabaseException(sqlEx);
+                }
 		finally
 		{
 			JDBCDatabase.closeStatement(stmt);
@@ -129,7 +132,7 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 	}
 
 	@Override
-	public int executeUpdate(List<${JavaName(entity)}> entities) throws SQLException, DatabaseException
+	public int executeUpdate(List<${JavaName(entity)}> entities) throws DatabaseException
 	{
 		Connection conn = getDatabase().getConnection();
 		
@@ -190,14 +193,15 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 		sql.append(" ON DUPLICATE KEY UPDATE <#list updateFields(entity) as f>${SqlName(f)}=<#if f.type = "int" && f.isAuto()>LAST_INSERT_ID<#else>VALUES</#if>(${SqlName(f)})<#if f_has_next>,</#if></#list>");
 
 		//execute sql
-		Statement stmt = conn.createStatement();	
+		Statement stmt = null;	
 		try
 		{
+			stmt = conn.createStatement();
 			return stmt.executeUpdate(sql.toString())/2;	
 		}
 		catch(SQLException sqlEx){
-			logger.debug("Query that caused exception:" + sql.toString());
-			throw sqlEx;
+                    logger.debug("Query that caused exception:" + sql.toString());                    
+                    throw new DatabaseException(sqlEx);
 		}
 		finally
 		{
@@ -206,7 +210,7 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 	}
 
 	@Override
-	public int executeRemove(List<${JavaName(entity)}> entities) throws SQLException, DatabaseException
+	public int executeRemove(List<${JavaName(entity)}> entities) throws DatabaseException
 	{
 		Connection conn = getDatabase().getConnection();
 		
@@ -233,11 +237,14 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 </#list>		
 	
 		//execute sql
-		Statement stmt = conn.createStatement();
+		Statement stmt = null;
 		try
 		{	
+			stmt = conn.createStatement();
 			return stmt.executeUpdate(sql.toString());	
-		}
+		} catch (SQLException sqlEx) {
+                    throw new DatabaseException(sqlEx);
+                }
 		finally
 		{
 			JDBCDatabase.closeStatement(stmt);
