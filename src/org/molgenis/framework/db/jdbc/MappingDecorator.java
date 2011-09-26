@@ -125,4 +125,6 @@ public class MappingDecorator<E extends Entity> implements Mapper<E>
 	{
 		return mapper.createFindSqlInclRules(rules);
 	}
+
+
 }

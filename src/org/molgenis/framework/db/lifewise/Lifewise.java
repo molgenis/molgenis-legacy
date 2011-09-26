@@ -527,4 +527,24 @@ public class Lifewise implements Database
 	{
 		throw new UnsupportedOperationException();
 	}
+
+    @Override
+    public <E extends Entity> Query<E> queryByExample(E entity) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void beginPrivateTx(String ticket) throws DatabaseException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void commitPrivateTx(String ticket) throws DatabaseException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void rollbackPrivateTx(String ticket) throws DatabaseException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

@@ -341,19 +341,19 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 	 * 
 	 * @throws DatabaseException
 	 */
-	public abstract int executeAdd(List<E> entities) throws SQLException, DatabaseException;
+	public abstract int executeAdd(List<E> entities) throws DatabaseException;
 
 	/**
 	 * maps {@link org.molgenis.framework.db.Database#update(List)}
 	 * 
 	 * @throws DatabaseException
 	 */
-	public abstract int executeUpdate(List<E> entities) throws SQLException, DatabaseException;
+	public abstract int executeUpdate(List<E> entities) throws DatabaseException;
 
 	/**
 	 * maps {@link org.molgenis.framework.db.Database#remove(List)}
 	 */
-	public abstract int executeRemove(List<E> entities) throws SQLException, DatabaseException;
+	public abstract int executeRemove(List<E> entities) throws DatabaseException;
 
 	/**
 	 * maps {@link org.molgenis.framework.db.Database#find(Class, QueryRule[])}

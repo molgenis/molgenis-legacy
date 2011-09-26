@@ -112,7 +112,7 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 <#include "MapperCommons.subclass_per_table.java.ftl">	
 	
 	@Override
-	public int executeAdd(List<${JavaName(entity)}> entities) throws SQLException, DatabaseException
+	public int executeAdd(List<${JavaName(entity)}> entities) throws DatabaseException
 	{	
 		Connection conn = getDatabase().getConnection();
 		PreparedStatement pstmt = null;
@@ -147,7 +147,9 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 			}					
 		
 			return updatedRows;
-		}
+		} catch (SQLException sqlEx) {
+                    throw new DatabaseException(sqlEx);
+                }
 		finally
 		{
 			JDBCDatabase.closeStatement(pstmt);
@@ -155,7 +157,7 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 	}
 
 	@Override
-	public int executeUpdate(List<${JavaName(entity)}> entities) throws SQLException, DatabaseException
+	public int executeUpdate(List<${JavaName(entity)}> entities) throws DatabaseException
 	{
 		Connection conn = getDatabase().getConnection();
 		PreparedStatement pstmt = null;
@@ -185,15 +187,17 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 			}					
 	
 			return updatedRows;
-		}
+		} catch (SQLException sqlEx) {
+                    throw new DatabaseException(sqlEx);
+                }
 		finally
 		{
-			JDBCDatabase.closeStatement(pstmt);
+                    JDBCDatabase.closeStatement(pstmt);
 		}
 	}
 
 	@Override
-	public int executeRemove(List<${JavaName(entity)}> entities) throws SQLException, DatabaseException
+	public int executeRemove(List<${JavaName(entity)}> entities) throws DatabaseException
 	{
 		Connection conn = getDatabase().getConnection();
 		PreparedStatement pstmt = null;
@@ -214,8 +218,9 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 			}
 	
 			return updatedRows;
-		}
-		finally
+		} catch (SQLException sqlEx) {
+                    throw new DatabaseException(sqlEx);
+                } finally
 		{
 			JDBCDatabase.closeStatement(pstmt);
 		}

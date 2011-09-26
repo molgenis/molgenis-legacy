@@ -140,14 +140,12 @@ public class JpaMappingDecorator<E extends Entity> implements JpaMapper<E>
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public void prepareFileAttachements(List<E> entities, File dir)
 			throws IOException
 	{
 		throw new UnsupportedOperationException();		
 	}
 
-	@Override
 	public boolean saveFileAttachements(List<E> entities, File dir)
 			throws IOException
 	{

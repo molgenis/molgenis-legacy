@@ -83,11 +83,8 @@ import ${e.namespace}.db.*;
 </#list>
 
 
-public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity)}>
+public class ${JavaName(entity)}JpaMapper extends AbstractJpaMapper<${JavaName(entity)}> implements JpaMapper<${JavaName(entity)}>
 {
-	private EntityManager em;
-        private Database db;
-
 	public ${JavaName(entity)}JpaMapper() {}
 
 	public ${JavaName(entity)}JpaMapper(EntityManager em) {
@@ -96,7 +93,7 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 
 	@Deprecated
 	public ${JavaName(entity)}JpaMapper(Database db) {
-            this.db = db;
+            this.database = (JpaDatabase) db;
             this.em = ((JpaDatabase)db).getEntityManager();
         }
 
@@ -260,7 +257,7 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
         }
     }
 
-	public void destroy(${JavaName(entity)} ${name(entity)}, EntityManager em) throws DatabaseException {
+	public void destroy(${JavaName(entity)} ${name(entity)}) throws DatabaseException {
 		try {
 			try {
 				${name(entity)} = em.getReference(${JavaName(entity)}.class, ${name(entity)}.getIdValue());
@@ -396,6 +393,7 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 		} 
 	}
 
+/*
 	@Override
 	public int add(List<${JavaName(entity)}> entities) throws DatabaseException
 	{	
@@ -458,7 +456,7 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
         }
 		return count;
 	}
-	
+*/	
 <#--	public ${JavaName(entity)} create()
 	{
 <#if !entity.abstract>	
@@ -497,12 +495,7 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 		return fieldName;
 	}
 
-	@Override
-        @Deprecated
-	public Database getDatabase()
-	{
-            return db;
-	}
+
 
 	@Override
 	public int add(CsvReader reader, TupleWriter writer)
@@ -562,5 +555,6 @@ public class ${JavaName(entity)}JpaMapper implements JpaMapper<${JavaName(entity
 	}	
 	
 	<#include "MapperCommons.java.ftl">
-	<#include "MapperFileAttachments.java.ftl">
+	
+<#--   <#include "MapperFileAttachments.java.ftl"> -->
 }
