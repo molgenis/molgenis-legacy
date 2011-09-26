@@ -57,7 +57,7 @@ public class FlowLayout extends AbstractHtmlElement implements Layout
 			if (i instanceof HtmlInput) {
 				HtmlInput input = (HtmlInput)i;
 				if (!input.isHidden() && input.getLabel() != null && !input.getLabel().equals("")) {
-					returnString += "<label style=\"width:16em;float:left;\" for=\"" + input.getName() + "\">" + 
+					returnString += "<label style=\"width:16em;\" for=\"" + input.getName() + "\">" + 
 						input.getLabel() + "</label>";
 				}
 			}
