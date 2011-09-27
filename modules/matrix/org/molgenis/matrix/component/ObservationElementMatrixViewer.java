@@ -2,6 +2,7 @@ package org.molgenis.matrix.component;
 
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -12,6 +13,7 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.ActionInput;
+import org.molgenis.framework.ui.html.CheckboxInput;
 import org.molgenis.framework.ui.html.FlowLayout;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.framework.ui.html.IntInput;
@@ -58,7 +60,7 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	public String CLEARFILTERS = getName() + "_clearFilters";
 	public String REMOVEFILTER = getName() + "_removeFilter";
 	public String RELOADMATRIX = getName() + "_reloadMatrix";
-
+	
 	/**
 	 * Default constructor.
 	 * 
@@ -246,6 +248,7 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 			List<? extends ObservationElement> cols = matrix.getColHeaders();
 			
 			//print colHeaders
+			dataTable.addColumn("");
 			for (ObservationElement col: cols)
 			{
 				dataTable.addColumn(col.getName());
@@ -256,9 +259,15 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 			{
 				List<ObservedValue>[] rowValues = values[row];
 				
-				//print rowheader
+				//print rowHeader
 				dataTable.addRow(rows.get(row).getName());
-				
+				// print selectbox for this row
+				List<String> options = new ArrayList<String>();
+				options.add("" + row);
+				List<String> optionLabels = new ArrayList<String>();
+				optionLabels.add("");
+				dataTable.setCell(0, row, new CheckboxInput(getName() + "_selected_" + row, options, 
+						optionLabels, "", null, true, false));
 				for (int col = 0; col < rowValues.length; col++)
 				{
 					if (rowValues[col] != null || rowValues[col].size() == 0)
@@ -273,9 +282,9 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 							if (first) 
 							{
 								first = false;
-								dataTable.setCell(col, row, valueToShow);
+								dataTable.setCell(col + 1, row, valueToShow);
 							} else {
-								dataTable.setCell(col, row, dataTable.getCell(col, row) + ", " + valueToShow);
+								dataTable.setCell(col + 1, row, dataTable.getCell(col + 1, row) + ", " + valueToShow);
 							}
 						}
 					} else {
