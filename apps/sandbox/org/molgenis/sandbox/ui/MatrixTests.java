@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
@@ -14,6 +15,7 @@ import org.molgenis.framework.ui.html.TextParagraph;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.ObservationElementMatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
+import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
@@ -42,16 +44,11 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 		super(name, null, parent);
 		this.setModel(new MatrixTestsModel(this));
 		this.setView(new FreemarkerView("MatrixTestsView.ftl", getModel()));
-		
-		List<String> measurementsToShow = new ArrayList<String>();
-		measurementsToShow.add("Species");
-		measurementsToShow.add("Sex");
-		measurementsToShow.add("Active");
 
 		try {
 			matrixViewer = new ObservationElementMatrixViewer(this, "mymatrix", 
 					new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
-					false, measurementsToShow);
+					true);
 		} catch (Exception e) {
 			e.printStackTrace();
 			this.setError(e.getMessage());

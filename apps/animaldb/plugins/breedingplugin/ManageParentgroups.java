@@ -25,6 +25,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.matrix.component.ObservationElementMatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
+import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
@@ -495,13 +496,21 @@ public class ManageParentgroups extends PluginModel<Entity>
 			measurementsToShow.add("Sex");
 			measurementsToShow.add("Active");
 			measurementsToShow.add("Line");
+			List<MatrixQueryRule> motherFilterRules = new ArrayList<MatrixQueryRule>();
+			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
+					Operator.IN, measurementsToShow));
+			//motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValues, Measurement.NAME, 
+			//		Operator.IN, measurementsToShow));
+			List<MatrixQueryRule> fatherFilterRules = new ArrayList<MatrixQueryRule>();
+			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
+					Operator.IN, measurementsToShow));
 			try {
 				motherMatrixViewer = new ObservationElementMatrixViewer(this, "mothermatrix", 
 						new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
-						false, measurementsToShow);
+						false, motherFilterRules);
 				fatherMatrixViewer = new ObservationElementMatrixViewer(this, "fathermatrix", 
 						new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
-						false, measurementsToShow);
+						false, fatherFilterRules);
 			} catch (Exception e) {
 				String message = "Something went wrong while loading matrix viewesr";
 				if (e.getMessage() != null) {

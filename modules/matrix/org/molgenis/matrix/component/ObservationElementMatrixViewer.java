@@ -63,6 +63,7 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	 * @param callingScreenController
 	 * @param name
 	 * @param matrix
+	 * @param showLimitControls
 	 */
 	public ObservationElementMatrixViewer(ScreenController<?> callingScreenController, String name, 
 			SliceablePhenoMatrix<? extends ObservationElement, ? extends ObservationElement> matrix,
@@ -76,22 +77,22 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	}
 	
 	/**
-	 * Constructor where you immediately restrict the column set by applying a column filter.
-	 * TODO: make suitable for multiple column filters combined using OR, e.g.:
-	 * measurementName = Species OR measurementName = Sex.
+	 * Constructor where you immediately restrict the column set by applying one or more
+	 * filter rules.
 	 * 
 	 * @param callingScreenController
 	 * @param name
 	 * @param matrix
-	 * @param measurementName
+	 * @param showLimitControls
+	 * @param filterRules
 	 * @throws Exception
 	 */
 	public ObservationElementMatrixViewer(ScreenController<?> callingScreenController, String name, 
 			SliceablePhenoMatrix<? extends ObservationElement, ? extends ObservationElement> matrix,
-			boolean showLimitControls, List<String> measurementNames) throws Exception
+			boolean showLimitControls, List<MatrixQueryRule> filterRules) throws Exception
 	{
 		this(callingScreenController, name, matrix, showLimitControls);
-		this.matrix.sliceByColProperty(Measurement.NAME, Operator.IN, measurementNames);
+		this.matrix.rules.addAll(filterRules);
 	}
 	
 	public void handleRequest(Database db, Tuple t) throws HandleRequestDelegationException
