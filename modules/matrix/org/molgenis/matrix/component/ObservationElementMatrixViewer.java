@@ -56,6 +56,8 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	public String ROWHEADER = getName() + "_rowHeader";
 	public String ROWHEADEREQUALS = getName() + "_rowHeaderEquals";
 	public String CLEARFILTERS = getName() + "_clearFilters";
+	public String REMOVEFILTER = getName() + "_removeFilter";
+	public String RELOADMATRIX = getName() + "_reloadMatrix";
 
 	/**
 	 * Default constructor.
@@ -97,7 +99,17 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	
 	public void handleRequest(Database db, Tuple t) throws HandleRequestDelegationException
 	{
-		this.delegate(t.getAction(), db, t);
+		if (t.getAction().startsWith(REMOVEFILTER)) {
+			try {
+				removeFilter(t.getAction());
+			} catch (MatrixException e) {
+				e.printStackTrace();
+				throw new HandleRequestDelegationException();
+			}
+			return;
+		}
+		String action = t.getAction().substring((getName() + "_").length());
+		this.delegate(action, db, t);
 	}
 	
 	public String toHtml()
@@ -136,16 +148,23 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 			// Show applied filter rules
 			String filterRules = " none";
 			if (this.matrix.rules.size() > 0) {
-				filterRules = "<ul>";
+				filterRules = "<br />";
+				int filterCnt = 0;
 				for (MatrixQueryRule mqr : this.matrix.rules) {
-					filterRules += "<li>" + mqr.toString() + "</li>";
+					ActionInput removeButton = new ActionInput(REMOVEFILTER + "_" + filterCnt, "", "");
+					removeButton.setIcon("generated-res/img/delete.png");
+					removeButton.setIconHeight(22);
+					removeButton.setIconHeight(22);
+					filterRules += mqr.toString() + removeButton.renderDefault() + "<br />";
+					filterCnt++;
 				}
-				filterRules += "</ul>";
 			}
 			f.add(new TextParagraph("filterRules", "Applied filter rules:" + filterRules));
 			
 			// button to clear all filter rules
 			f.add(new ActionInput(CLEARFILTERS, "", "Clear all filters"));
+			// button to reload the matrix data, whilst keeping the filters intact
+			f.add(new ActionInput(RELOADMATRIX, "", "Reload data"));
 			f.add(new Newline());
 
 		}
@@ -276,9 +295,21 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 		}
 	}
 	
+	public void removeFilter(String action) throws MatrixException
+	{
+		int filterNr = Integer.parseInt(action.substring(action.lastIndexOf("_") + 1));
+		this.matrix.rules.remove(filterNr);
+		matrix.reload();
+	}
+	
 	public void clearFilters(Database db, Tuple t) throws MatrixException
 	{
 		matrix.reset();
+	}
+	
+	public void reloadMatrix(Database db, Tuple t) throws MatrixException
+	{
+		matrix.reload();
 	}
 
 	public void colLike(Database db, Tuple t) throws Exception
@@ -389,8 +420,6 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 			// try/catch for method calling
 			try
 			{
-				action = request.getAction().substring((getName() + "_").length());
-				
 				db.beginTx();
 				logger.debug("trying to use reflection to call "
 						+ this.getClass().getName() + "." + action);

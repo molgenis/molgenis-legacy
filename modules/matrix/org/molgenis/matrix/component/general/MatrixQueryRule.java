@@ -92,7 +92,9 @@ public class MatrixQueryRule extends QueryRule
 	}
 
 	public String toString(){
-		return "Filter type: " + this.getFilterType() + ", queryrule: " + super.toString();
+		return "Filter type: " + this.getFilterType() +
+				(this.getDimIndex() != null ? ", dimension index: " + this.getDimIndex() : "") +
+				", queryrule: " + super.toString();
 	}
 
 }

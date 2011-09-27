@@ -52,7 +52,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 //	private String groupName = null;
 	private String startdate = null;
 	private List<ObservationTarget> lineList;
-	private int line = 0;
+	private int line = -1;
 	private String remarks = null;
 	private boolean firstTime = true;
 	private List<ObservationTarget> pgList;
@@ -397,6 +397,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			
 			if (action.equals("updateLine")) {
 				setUserFields(request);
+				// reload() will take care of updating matrix viewers
 			}
 			
 			if (action.equals("addMothersFromMatrix")) {
@@ -476,56 +477,16 @@ public class ManageParentgroups extends PluginModel<Entity>
 	{
 		List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
 		
-		if (firstTime == true) {
-			firstTime = false;
-			ct.setDatabase(db);
-			ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
-			this.setStartdate(dateOnlyFormat.format(new Date()));
-			try {
-				lineList = ct.getAllMarkedPanels("Line", investigationIds);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			// Default selected is first line
-			if (lineList.size() > 0) {
-				line = lineList.get(0).getId();
-			}
-			// Set up Matrix viewer
-			List<String> measurementsToShow = new ArrayList<String>();
-			measurementsToShow.add("Species");
-			measurementsToShow.add("Sex");
-			measurementsToShow.add("Active");
-			measurementsToShow.add("Line");
-			List<MatrixQueryRule> motherFilterRules = new ArrayList<MatrixQueryRule>();
-			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
-					Operator.IN, measurementsToShow));
-			//motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValues, Measurement.NAME, 
-			//		Operator.IN, measurementsToShow));
-			List<MatrixQueryRule> fatherFilterRules = new ArrayList<MatrixQueryRule>();
-			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
-					Operator.IN, measurementsToShow));
-			try {
-				motherMatrixViewer = new ObservationElementMatrixViewer(this, "mothermatrix", 
-						new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
-						false, motherFilterRules);
-				fatherMatrixViewer = new ObservationElementMatrixViewer(this, "fathermatrix", 
-						new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
-						false, fatherFilterRules);
-			} catch (Exception e) {
-				String message = "Something went wrong while loading matrix viewesr";
-				if (e.getMessage() != null) {
-					message += (": " + e.getMessage());
-				}
-				this.getMessages().add(new ScreenMessage(message, false));
-				e.printStackTrace();
-			}
-		}
-		
+		// Populate lists (do this on every reload so they keep fresh)
 		try {
 			// Populate existing PG list
 			pgList =  ct.getAllMarkedPanels("Parentgroup", investigationIds);
 			// Populate line list
 			lineList = ct.getAllMarkedPanels("Line", investigationIds);
+			// Default selected is first line
+			if (line == -1 && lineList.size() > 0) {
+				line = lineList.get(0).getId();
+			}
 			// Populate mother list
 			motherIdList = populateParentList(db, "Female", investigationIds);
 			motherIdListFromLine = restrictParentListByLine(db, motherIdList, investigationIds);
@@ -535,6 +496,68 @@ public class ManageParentgroups extends PluginModel<Entity>
 			
 		} catch (Exception e) {
 			String message = "Something went wrong while loading lists";
+			if (e.getMessage() != null) {
+				message += (": " + e.getMessage());
+			}
+			this.getMessages().add(new ScreenMessage(message, false));
+			e.printStackTrace();
+		}
+		// Some init that only needs to be done once
+		if (firstTime == true) {
+			firstTime = false;
+			ct.setDatabase(db);
+			ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
+			this.setStartdate(dateOnlyFormat.format(new Date()));
+			
+			reloadMatrixViewers();
+		}
+	}
+	
+	private void reloadMatrixViewers() {
+		try {
+			List<String> measurementsToShow = new ArrayList<String>();
+			measurementsToShow.add("Species");
+			measurementsToShow.add("Sex");
+			measurementsToShow.add("Active");
+			measurementsToShow.add("Line");
+			// Mother matrix viewer
+			List<MatrixQueryRule> motherFilterRules = new ArrayList<MatrixQueryRule>();
+			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
+					Operator.IN, measurementsToShow));
+			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Sex"),
+					ObservedValue.RELATION_NAME, Operator.EQUALS, "Female"));
+			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
+					ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+			if (line != -1) {
+				motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
+						ct.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS,
+						ct.getObservationTargetLabel(line)));
+				// Setting filter on the RELATION field with value = line would be more efficient,
+				// but gives a very un-userfriendly toString value when shown in the UI
+			}
+			motherMatrixViewer = new ObservationElementMatrixViewer(this, "mothermatrix", 
+					new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
+					false, motherFilterRules);
+			// Father matrix viewer
+			List<MatrixQueryRule> fatherFilterRules = new ArrayList<MatrixQueryRule>();
+			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
+					Operator.IN, measurementsToShow));
+			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Sex"),
+					ObservedValue.RELATION_NAME, Operator.EQUALS, "Male"));
+			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
+					ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+			if (line != -1) {
+				fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
+						ct.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS,
+						ct.getObservationTargetLabel(line)));
+				// Setting filter on the RELATION field with value = line would be more efficient,
+				// but gives a very un-userfriendly toString value when shown in the UI
+			}
+			fatherMatrixViewer = new ObservationElementMatrixViewer(this, "fathermatrix", 
+					new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
+					false, fatherFilterRules);
+		} catch (Exception e) {
+			String message = "Something went wrong while loading matrix viewers";
 			if (e.getMessage() != null) {
 				message += (": " + e.getMessage());
 			}

@@ -413,23 +413,39 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 		}
 	}
 	
+	/**
+	 * Empty filter rules and cached data.
+	 */
 	@Override
 	public void refresh() throws MatrixException
 	{
 		this.reset();
 	}
 	
+	/**
+	 * Empty filter rules and cached data.
+	 */
 	@Override
 	public void reset() throws MatrixException
 	{
-		// empty the rules
+		// first empty the rules
 		this.rules = new ArrayList<MatrixQueryRule>();
 
+		this.reload();
+	}
+	
+	/**
+	 * Empty caches and reload matrix data, whilst keeping any
+	 * filters intact.
+	 * 
+	 * @throws MatrixException
+	 */
+	public void reload() throws MatrixException
+	{
 		// empty the caches
 		colDirty = true;
 		colOffset = 0;
 		rowDirty = true;
 		rowOffset = 0;
-
 	}
 }

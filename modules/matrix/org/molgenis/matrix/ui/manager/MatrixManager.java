@@ -63,7 +63,7 @@ public class MatrixManager extends PluginModel
 		return "org/molgenis/matrix/ui/manager/MatrixManager.ftl";
 	}
 
-	public void handleRequest(Database db, Tuple request, OutputStream out)
+	public Show handleRequest(Database db, Tuple request, OutputStream out)
 	{
 		if (request.getString("__action") != null)
 		{
@@ -103,6 +103,7 @@ public class MatrixManager extends PluginModel
 				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 			}
 		}
+		return Show.SHOW_MAIN;
 	}
 
 	public static Browser createBrowserInstance(Database db) throws Exception
