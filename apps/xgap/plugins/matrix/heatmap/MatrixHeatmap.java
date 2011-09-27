@@ -72,7 +72,7 @@ public class MatrixHeatmap extends PluginModel
 		return true;
 	}
 
-	public void handleRequest(Database db, Tuple request, OutputStream out)
+	public void handleRequest(Database db, Tuple request)
 	{
 		if (request.getString("__action") != null)
 		{
@@ -415,11 +415,6 @@ public class MatrixHeatmap extends PluginModel
 			this.model.setBrowser(null);
 		}
 
-	}
-
-	@Override
-	public void handleRequest(Database db, Tuple request) {
-		handleRequest(db, request, null);
 	}
 
 }
