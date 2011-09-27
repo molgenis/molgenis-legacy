@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.html.FileInput;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvStringReader;
@@ -49,8 +51,8 @@ import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.TupleWriter;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.TupleWriter;
 
 /**
  * Abstract MOLGENIS servlet. Implement abstract methods to get it to work.
@@ -70,9 +72,9 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	public static String INPUT_SUBMIT = "submit_input";
 	/** indicating wether uploads should return added data */
 	public static String INPUT_SILENT = "data_silent";
-	/** keep track of window ids*/
+	/** keep track of window ids */
 	private static long newWindowId;
-	
+
 	// get logger
 	protected final transient Logger logger = Logger.getLogger(this.getClass()
 			.getSimpleName());
@@ -96,9 +98,11 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	/**
 	 * Create a Login specific to the security scheme used in this MOLGENIS. You
 	 * can override this to set a security mechanism.
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
 	 */
-	public abstract Login createLogin(Database db, HttpServletRequest request) throws Exception;
+	public abstract Login createLogin(Database db, HttpServletRequest request)
+			throws Exception;
 
 	/**
 	 * Instantiate an application with the right root screen and optional file
@@ -120,8 +124,9 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	{
 		return null;
 	}
-	
-	public static long getNewWindowId(){
+
+	public static long getNewWindowId()
+	{
 		newWindowId++;
 		return newWindowId;
 	}
@@ -349,7 +354,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			// SingletonResourceProvider(this.getRestImpl()));
 			// sf.setAddress("/rest/");
 			// sf.create();
-			//			
+			//
 			// JAX-WS
 			// Endpoint.publish("/soap/", this.getSoapImpl());
 
@@ -382,7 +387,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			// svrFactory.setServiceBean(this.getSoapImpl());
 			// svrFactory.create();
 
-			//			
+			//
 			// //Ssf.setProvider(new AegisJSONProvider());
 
 			this.cxfLoaded = true;
@@ -475,30 +480,29 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 
 			// action == download an attached file
 			// FIXME move to form controllers handlerequest...
-
 			if (FileInput.ACTION_DOWNLOAD.equals(requestTuple
 					.getString(ScreenModel.INPUT_ACTION)))
 			{
 				logger.info(requestTuple);
 
-				File file = new File(db.getFilesource()
-						+ "/"
-						+ requestTuple
-								.getString(FileInput.INPUT_CURRENT_DOWNLOAD));
+				File file = new File(
+						db.getFilesource()
+								+ "/"
+								+ requestTuple
+										.getString(FileInput.INPUT_CURRENT_DOWNLOAD));
 
 				FileInputStream filestream = new FileInputStream(file);
 
 				response.setContentType("application/x-download");
 				response.setContentLength((int) file.length());
-				response
-						.setHeader(
-								"Content-Disposition",
-								"attachment; filename="
-										+ requestTuple
-												.getString(FileInput.INPUT_CURRENT_DOWNLOAD));
+				response.setHeader(
+						"Content-Disposition",
+						"attachment; filename="
+								+ requestTuple
+										.getString(FileInput.INPUT_CURRENT_DOWNLOAD));
 
-				BufferedOutputStream out = new BufferedOutputStream(response
-						.getOutputStream());
+				BufferedOutputStream out = new BufferedOutputStream(
+						response.getOutputStream());
 				byte[] buffer = new byte[1024];
 				int bytes_read;
 				while ((bytes_read = filestream.read(buffer)) != -1)
@@ -546,8 +550,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 								+ extension);
 
 				// let the handleRequest produce the content
-				controller.handleRequest(db, requestTuple, response
-						.getOutputStream());
+				controller.handleRequest(db, requestTuple,
+						response.getOutputStream());
 
 				// TODO: does this fail when stream is already closed??
 				response.getOutputStream().flush();
@@ -575,15 +579,25 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					}
 				}
 
-			
-				molgenis.handleRequest(db, requestTuple);
-				
-				//workaround - see comment @ EasyPluginController.HTML_WAS_ALREADY_SERVED
-				if(EasyPluginController.HTML_WAS_ALREADY_SERVED != null && EasyPluginController.HTML_WAS_ALREADY_SERVED){
+				if (Show.SHOW_CLOSE.equals(molgenis.handleRequest(db,
+						requestTuple, null)))
+				{
+					//if close, then write a close script
+					PrintWriter writer = response.getWriter();
+					writer.write("<html><head></head><body><script>window.close();</script></body></html>");
+					writer.close();
+					return;
+				}
+
+				// workaround - see comment @
+				// EasyPluginController.HTML_WAS_ALREADY_SERVED
+				if (EasyPluginController.HTML_WAS_ALREADY_SERVED != null
+						&& EasyPluginController.HTML_WAS_ALREADY_SERVED)
+				{
 					EasyPluginController.HTML_WAS_ALREADY_SERVED = null;
 					return;
 				}
-				
+
 				// handle request
 				molgenis.reload(db); // reload the application
 				logger.debug("reloaded " + molgenis.getName()
@@ -769,7 +783,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				// args.put("show", "root");
 				// }
 				// logger.info("applying layout template");
-				//	
+				//
 				// if(usedOptions.linkout_overlay){
 				// logger.info("applying linkout overlay");
 				// Writer result = new StringWriter();
@@ -835,13 +849,11 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					+ request.getLocalPort() + request.getContextPath();
 			String rSource = server + "/api/R/";
 			// getRequestURL omits port!
-			out
-					.println("#step1: (first time only) install RCurl package from omegahat or bioconductor, i.e. <br>");
+			out.println("#step1: (first time only) install RCurl package from omegahat or bioconductor, i.e. <br>");
 			out.println("#source(\"http://bioconductor.org/biocLite.R\")<br>");
 			out.println("#biocLite(\"RCurl\")<br>");
 			out.println();
-			out
-					.println("#step2: source this file to use the MOLGENIS R interface, i.e. <br>");
+			out.println("#step2: source this file to use the MOLGENIS R interface, i.e. <br>");
 			out.println("#source(\"" + rSource + "\")<br>");
 			out.println();
 			out.println("molgenispath <- paste(\"" + rSource + "\")");
@@ -967,10 +979,9 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				{
 					logger.debug("show 'set filters' dialogue");
 					out.println("<html><body><form>");
-					out
-							.println("You choose to download '"
-									+ entityName
-									+ "' data. (<a href=\"../api/find\">back</a>)<br><br> Here you can have to set at least one filter:<br>");
+					out.println("You choose to download '"
+							+ entityName
+							+ "' data. (<a href=\"../api/find\">back</a>)<br><br> Here you can have to set at least one filter:<br>");
 					out.println("<table>");
 					for (String field : ((Entity) Class.forName(entityName)
 							.newInstance()).getFields())
@@ -980,21 +991,20 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 								+ "\" type=\"text\"></td><tr/>");
 					}
 					out.println("</table>");
-					out
-							.println("<SCRIPT>"
-									+ "function createFilterURL(fields)"
-									+ "{	"
-									+ "	var query = '';"
-									+ "	var count = 0;"
-									+ "	for (i = 0; i < fields.length; i++) "
-									+ "	{"
-									+ "		if (fields[i].value != '' && fields[i].name != '__submitbutton')"
-									+ "		{"
-									+ "			if(count > 0)"
-									+ "				query +='&';"
-									+ "			query += fields[i].name + '=' + fields[i].value;"
-									+ "			count++;" + "		}" + "	}"
-									+ "	return query" + "}" + "</SCRIPT>");
+					out.println("<SCRIPT>"
+							+ "function createFilterURL(fields)"
+							+ "{	"
+							+ "	var query = '';"
+							+ "	var count = 0;"
+							+ "	for (i = 0; i < fields.length; i++) "
+							+ "	{"
+							+ "		if (fields[i].value != '' && fields[i].name != '__submitbutton')"
+							+ "		{"
+							+ "			if(count > 0)"
+							+ "				query +='&';"
+							+ "			query += fields[i].name + '=' + fields[i].value;"
+							+ "			count++;" + "		}" + "	}" + "	return query"
+							+ "}" + "</SCRIPT>");
 
 					// with security break out.println( "<input
 					// name=\"__submitbutton\" type=\"submit\" value=\"download
@@ -1004,13 +1014,10 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					// + window.location.pathname +
 					// '?'+createFilterURL(this.form.elements); }return
 					// false;\"><br>" );
-					out
-							.println("<input name=\"__submitbutton\" type=\"submit\" value=\"download tab delimited file\" onclick=\""
-									+ "window.location.href = 'http://' + window.location.host + window.location.pathname + '?'+createFilterURL(this.form.elements);\"><br>");
-					out
-							.println("TIP: notice how the url is bookmarkeable for future downloads!");
-					out
-							.println("TIP: click 'save as...' and name it as '.txt' file.");
+					out.println("<input name=\"__submitbutton\" type=\"submit\" value=\"download tab delimited file\" onclick=\""
+							+ "window.location.href = 'http://' + window.location.host + window.location.pathname + '?'+createFilterURL(this.form.elements);\"><br>");
+					out.println("TIP: notice how the url is bookmarkeable for future downloads!");
+					out.println("TIP: click 'save as...' and name it as '.txt' file.");
 					out.println("</form></body></html>");
 					return;
 				}
@@ -1058,14 +1065,14 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				else
 				{
 					Tuple requestTuple = new HttpServletRequestTuple(request);
-					logger
-							.debug("handle find query via http-post with parameters: "
-									+ requestTuple.getFields());
+					logger.debug("handle find query via http-post with parameters: "
+							+ requestTuple.getFields());
 					for (String name : requestTuple.getFields())
 					{
 						if (requestTuple.getString(name).startsWith("["))
 						{
-							String[] values = requestTuple.getString(name)
+							String[] values = requestTuple
+									.getString(name)
 									.substring(
 											1,
 											requestTuple.getString(name)
@@ -1088,8 +1095,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				TupleWriter writer = new CsvWriter(out);
 				// CsvWriter writer = new CsvFileWriter( new
 				// File("c:/testout.txt") );
-				db.find(getClassForName(entityName), writer, rulesList
-						.toArray(new QueryRule[rulesList.size()]));
+				db.find(getClassForName(entityName), writer,
+						rulesList.toArray(new QueryRule[rulesList.size()]));
 			}
 			catch (Exception e)
 			{
@@ -1107,9 +1114,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		}
 		catch (Exception e)
 		{
-			out
-					.println("<div class='errormessage'>No database available to query: "
-							+ e.getMessage() + "</div>");
+			out.println("<div class='errormessage'>No database available to query: "
+					+ e.getMessage() + "</div>");
 			logger.error(e);
 		}
 		logger.info("servlet took: "
@@ -1155,13 +1161,11 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			{
 				try
 				{
-					out
-							.println("<html><body><form method=\"post\" enctype=\"multipart/form-data\">");
+					out.println("<html><body><form method=\"post\" enctype=\"multipart/form-data\">");
 					out.println("<h1>Data upload (step 1)</h1>");
 					out.println("Choose your data type.");
-					out
-							.println("<table><tr><td><label>Data type:</label></td><td><select name=\""
-									+ INPUT_DATATYPE + "\">");
+					out.println("<table><tr><td><label>Data type:</label></td><td><select name=\""
+							+ INPUT_DATATYPE + "\">");
 
 					for (Class<? extends Entity> c : this.getDatabase()
 							.getEntityClasses())
@@ -1171,10 +1175,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 								+ c.getName() + "</option>");
 					}
 					out.println("</select></td></tr>");
-					out
-							.println("<tr><td></td><td><input type=\"submit\" name=\""
-									+ INPUT_SUBMIT
-									+ "\" value=\"Submit\"></td></tr>");
+					out.println("<tr><td></td><td><input type=\"submit\" name=\""
+							+ INPUT_SUBMIT + "\" value=\"Submit\"></td></tr>");
 					out.println("</table></form></body></html>");
 				}
 				catch (Exception e)
@@ -1191,31 +1193,33 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			{
 				try
 				{
-//					String clazzName = requestTuple.getString(INPUT_DATATYPE);
-//					Class<? extends Entity> entityClass = getClassForName(clazzName);
-//					Entity template = entityClass.newInstance();
-//
-//					out
-//							.println("<html><body><form method=\"post\" enctype=\"multipart/form-data\">");
-//					out.println("<h1>Data upload (step 2)</h1>");
-//					out.println("Enter your data as CSV.");
-//					out
-//							.println("<table><tr><td><label>Data type:</label></td><td><select name=\""
-//									+ INPUT_DATATYPE + "\">");
-//
-//					for (Class<? extends Entity> c : this.getDatabase()
-//							.getEntityClasses())
-//					{
-//						// write to screen
-//						out.println("<option value=\"" + c.getName() + "\">"
-//								+ c.getName() + "</option>");
-//					}
-//					out.println("</select></td></tr>");
-//					out
-//							.println("<tr><td></td><td><input type=\"submit\" name=\""
-//									+ INPUT_SUBMIT
-//									+ "\" value=\"Submit\"></td></tr>");
-//					out.println("</table></form></body></html>");
+					// String clazzName =
+					// requestTuple.getString(INPUT_DATATYPE);
+					// Class<? extends Entity> entityClass =
+					// getClassForName(clazzName);
+					// Entity template = entityClass.newInstance();
+					//
+					// out
+					// .println("<html><body><form method=\"post\" enctype=\"multipart/form-data\">");
+					// out.println("<h1>Data upload (step 2)</h1>");
+					// out.println("Enter your data as CSV.");
+					// out
+					// .println("<table><tr><td><label>Data type:</label></td><td><select name=\""
+					// + INPUT_DATATYPE + "\">");
+					//
+					// for (Class<? extends Entity> c : this.getDatabase()
+					// .getEntityClasses())
+					// {
+					// // write to screen
+					// out.println("<option value=\"" + c.getName() + "\">"
+					// + c.getName() + "</option>");
+					// }
+					// out.println("</select></td></tr>");
+					// out
+					// .println("<tr><td></td><td><input type=\"submit\" name=\""
+					// + INPUT_SUBMIT
+					// + "\" value=\"Submit\"></td></tr>");
+					// out.println("</table></form></body></html>");
 				}
 				catch (Exception e)
 				{
@@ -1247,8 +1251,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 								&& !column.equals(INPUT_SUBMIT)
 								&& !requestTuple.getString(column).equals(""))
 						{
-							constants.set(column, requestTuple
-									.getObject(column));
+							constants.set(column,
+									requestTuple.getObject(column));
 						}
 					}
 					action = requestTuple.getString(INPUT_ACTION);
@@ -1265,9 +1269,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					if (action.equals("ADD"))
 					{
 						File temp = File.createTempFile("molgenis", "tab");
-						TupleWriter writer = new CsvWriter(
-								new PrintWriter(new BufferedWriter(
-										new FileWriter(temp))));
+						TupleWriter writer = new CsvWriter(new PrintWriter(
+								new BufferedWriter(new FileWriter(temp))));
 						if (requestTuple.getObject(INPUT_SILENT) != null
 								&& requestTuple.getBool(INPUT_SILENT) == true)
 						{
@@ -1280,23 +1283,23 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 						if (requestTuple.getObject(INPUT_DATA) != null)
 						{
 							logger.info("processing textarea upload...");
-							nRowsChanged = db.add(entityClass,
+							nRowsChanged = db.add(
+									entityClass,
 									new CsvStringReader(requestTuple
 											.getString(INPUT_DATA)), writer);
 						}
 						else if (requestTuple.getObject(INPUT_FILE) != null)
 						{
 							logger.info("processing file upload...");
-							nRowsChanged = db.add(entityClass,
+							nRowsChanged = db.add(
+									entityClass,
 									new CsvFileReader(requestTuple
 											.getFile(INPUT_FILE)), writer);
 						}
 						else
 						{
-							logger
-									.error("no input data or input file provided.");
-							out
-									.print("ERROR: no input data or input file provided.");
+							logger.error("no input data or input file provided.");
+							out.print("ERROR: no input data or input file provided.");
 						}
 						out.print("Uploaded " + formatter.format(nRowsChanged)
 								+ " rows of " + entityClass.getCanonicalName()
@@ -1316,7 +1319,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					{
 						if (requestTuple.getObject(INPUT_DATA) != null)
 						{
-							nRowsChanged = db.update(entityClass,
+							nRowsChanged = db.update(
+									entityClass,
 									new CsvStringReader(requestTuple
 											.getString(INPUT_DATA)));
 							out.print("Updated "
@@ -1326,7 +1330,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 						}
 						else if (requestTuple.getObject(INPUT_FILE) != null)
 						{
-							nRowsChanged = db.update(entityClass,
+							nRowsChanged = db.update(
+									entityClass,
 									new CsvFileReader(requestTuple
 											.getFile(INPUT_FILE)));
 							out.print("Updated "
@@ -1339,7 +1344,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 					{
 						if (requestTuple.getObject(INPUT_DATA) != null)
 						{
-							nRowsChanged = db.remove(entityClass,
+							nRowsChanged = db.remove(
+									entityClass,
 									new CsvStringReader(requestTuple
 											.getString(INPUT_DATA)));
 							out.print("Removed "
@@ -1349,7 +1355,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 						}
 						else if (requestTuple.getObject(INPUT_FILE) != null)
 						{
-							nRowsChanged = db.remove(entityClass,
+							nRowsChanged = db.remove(
+									entityClass,
 									new CsvFileReader(requestTuple
 											.getFile(INPUT_FILE)));
 							out.print("Removed "
@@ -1418,8 +1425,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	private void writeURLtoOutput(URL source, PrintWriter out)
 			throws IOException
 	{
-		BufferedReader reader = new BufferedReader(new InputStreamReader(source
-				.openStream()));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+				source.openStream()));
 		String sourceLine;
 		while ((sourceLine = reader.readLine()) != null)
 		{
@@ -1451,7 +1458,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	// ClassTemplateLoader(MolgenisOriginalStyle.class, "");
 	// //load templates from plugins, can be anywere
 	// ClassTemplateLoader plugins = new ClassTemplateLoader();
-	//			
+	//
 	// // load templates from molgenis 'style' directory
 	// /*
 	// * FileTemplateLoader plugintl; try { File f = new File(
@@ -1571,7 +1578,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				}
 
 				// write the xref key as set in xref_field
-				json += "\""+result.get(i).get(xref_field).toString() + "\":\"";
+				json += "\"" + result.get(i).get(xref_field).toString()
+						+ "\":\"";
 
 				// write the label(s) as set in xref_label
 				for (int j = 0; j < xref_labels.size(); j++)
@@ -1586,7 +1594,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 				// + result.get(i).get(xref_label) + "\"");
 			}
 			json += "}";
-			
+
 			logger.debug(json);
 
 			// write out

@@ -29,6 +29,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.paging.DatabasePager;
 import org.molgenis.framework.db.paging.LimitOffsetPager;
 import org.molgenis.framework.ui.FormModel.Mode;
+import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.commands.ScreenCommand;
 import org.molgenis.framework.ui.commands.SimpleCommand;
 import org.molgenis.framework.ui.html.HtmlForm;
@@ -100,7 +101,7 @@ public abstract class FormController<E extends Entity> extends
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request, OutputStream out)
+	public Show handleRequest(Database db, Tuple request, OutputStream out)
 	{
 		logger.debug("handleRequest(" + request + ")");
 
@@ -129,14 +130,14 @@ public abstract class FormController<E extends Entity> extends
 			if (action == null || action == "")
 			{
 				logger.debug("action or command does not exist");
-				return;
+				return Show.SHOW_MAIN;
 			}
 			// delegate to a command
 			else if (command != null && command instanceof SimpleCommand)
 			{
 				logger.debug("delegating to PluginCommand");
 				model.setCurrentCommand(command);
-				command.handleRequest(db, request, out);
+				return command.handleRequest(db, request, out);
 			}
 			else if (action.equals("filter_add"))
 			{
@@ -309,9 +310,10 @@ public abstract class FormController<E extends Entity> extends
 			e.printStackTrace();
 			logger.error(e);
 		}
+		return Show.SHOW_MAIN;
 	}
 
-	private void addFilter(DatabasePager<E> pager, Database db, Tuple request)
+	private Show addFilter(DatabasePager<E> pager, Database db, Tuple request)
 			throws DatabaseException, MolgenisModelException
 	{
 		FormModel<E> model = getModel();
@@ -406,6 +408,8 @@ public abstract class FormController<E extends Entity> extends
 			pager.addFilter(r);
 		}
 		pager.first(db);
+		
+		return Show.SHOW_MAIN;
 	}
 
 	/**

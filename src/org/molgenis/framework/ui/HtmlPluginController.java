@@ -16,6 +16,7 @@ package org.molgenis.framework.ui;
 import java.io.OutputStream;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -80,8 +81,10 @@ public class HtmlPluginController<E extends Entity> extends SimpleScreenControll
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request, OutputStream out) {
+	public Show handleRequest(Database db, Tuple request, OutputStream out) {
 		this.handleRequest(db, request);
+		
+		return Show.SHOW_MAIN;
 		
 	}
 
