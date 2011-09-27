@@ -66,7 +66,11 @@ public interface ScreenModel extends Serializable
 		 * Don't layout the screen. Instead pass use the outputstream in handleRequest so it can be
 		 * downloaded. This result in a download file.
 		 */
-		SHOW_DOWNLOAD("download");
+		SHOW_DOWNLOAD("download"),
+		/**
+		 * Don't show anything
+		 */
+		SHOW_CLOSE("close");
 		
 		private String TAG;
 		Show(String name)

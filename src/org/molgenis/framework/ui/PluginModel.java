@@ -36,9 +36,10 @@ public abstract class PluginModel<E extends Entity> extends
 
 	
 	@Override
-	public void handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException, Exception
+	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException, Exception
 	{
 		this.handleRequest(db, request);
+		return Show.SHOW_MAIN;
 	}
 
 	/**

@@ -13,6 +13,7 @@ import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.MolgenisService;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.security.Login;
+import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.html.FreemarkerInput;
 import org.molgenis.framework.ui.html.HtmlSettings;
 import org.molgenis.framework.ui.html.RichtextInput;
@@ -147,62 +148,7 @@ public class ApplicationController extends
 	 */
 	public void handleRequest(Database db, Tuple request) throws Exception, HandleRequestDelegationException
 	{
-		logger.info("delegating handleRequest(" + request.toString() + ")");
-		String screen = request.getString(ScreenModel.INPUT_TARGET);
-
-		// action for me?
-		if (screen != null && screen.equals(this.getName()))
-		{
-			if (request.getString("select") != null)
-			{
-				// the screen to select
-				ScreenController<?> selected = this.get(request
-						.getString("select"));
-
-				// now we must make sure that alle menu's above select 'me'
-				ScreenController<?> currentParent = selected.getParent();
-				ScreenController<?> currentChild = selected;
-				while (currentParent != null)
-				{
-					if (currentParent instanceof MenuController)
-					{
-						((MenuController) currentParent)
-								.setSelected(currentChild.getName());
-					}
-					currentChild = currentParent;
-					currentParent = currentParent.getParent();
-				}
-			}
-			return;
-		}
-		// No target set -> handle centrally.
-		else
-		{
-			if(!request.isNull("GALAXY_URL"))
-			{
-				//
-				// If a user navigated to Molgenis from a session on a Galaxy server, 
-				// we keep track of the Galaxy server address, so when this user wants 
-				// to send (upload) data to Galaxy we know which one to send the data to.
-				// (In fact we do not send the data directly, but an URL that can be used 
-				// by Galaxy to fetch the data)
-				//
-				this.setGalaxyUrl(request.getString("GALAXY_URL"));
-				logger.info("User was forwarded to Molgenis running @ "+this.getApplicationUrl());
-				logger.info("User was forwarded to Molgenis by Galaxy running @ "+this.getGalaxyUrl());
-			}
-		}
-
-		// Delegate
-		ScreenController<?> target = get(screen);
-		if (target != null)
-		{
-			if (!target.equals(this)) target.handleRequest(db, request);
-		}
-		else
-			logger.debug("handleRequest(" + request
-					+ "): no request needs to be handled");
-
+		this.handleRequest(db, request, null);
 	}
 
 	/**
@@ -253,10 +199,65 @@ public class ApplicationController extends
 	// }
 
 	@Override
-	public void handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException, Exception
+	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException, Exception
 	{
-		this.handleRequest(db, request);
+		logger.info("delegating handleRequest(" + request.toString() + ")");
+		String screen = request.getString(ScreenModel.INPUT_TARGET);
 
+		// action for me?
+		if (screen != null && screen.equals(this.getName()))
+		{
+			if (request.getString("select") != null)
+			{
+				// the screen to select
+				ScreenController<?> selected = this.get(request
+						.getString("select"));
+
+				// now we must make sure that alle menu's above select 'me'
+				ScreenController<?> currentParent = selected.getParent();
+				ScreenController<?> currentChild = selected;
+				while (currentParent != null)
+				{
+					if (currentParent instanceof MenuController)
+					{
+						((MenuController) currentParent)
+								.setSelected(currentChild.getName());
+					}
+					currentChild = currentParent;
+					currentParent = currentParent.getParent();
+				}
+			}
+			return Show.SHOW_MAIN;
+		}
+		// No target set -> handle centrally.
+		else
+		{
+			if(!request.isNull("GALAXY_URL"))
+			{
+				//
+				// If a user navigated to Molgenis from a session on a Galaxy server, 
+				// we keep track of the Galaxy server address, so when this user wants 
+				// to send (upload) data to Galaxy we know which one to send the data to.
+				// (In fact we do not send the data directly, but an URL that can be used 
+				// by Galaxy to fetch the data)
+				//
+				this.setGalaxyUrl(request.getString("GALAXY_URL"));
+				logger.info("User was forwarded to Molgenis running @ "+this.getApplicationUrl());
+				logger.info("User was forwarded to Molgenis by Galaxy running @ "+this.getGalaxyUrl());
+			}
+		}
+
+		// Delegate
+		ScreenController<?> target = get(screen);
+		if (target != null)
+		{
+			if (!target.equals(this)) return target.handleRequest(db, request, null);
+		}
+		else
+			logger.debug("handleRequest(" + request
+					+ "): no request needs to be handled");
+		
+		return Show.SHOW_MAIN;
 	}
 
 	public EmailService getEmailService()

@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
@@ -44,11 +45,14 @@ public abstract class EasyPluginController<M extends ScreenModel> extends
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request, OutputStream out)
+	public Show handleRequest(Database db, Tuple request, OutputStream out)
 			throws HandleRequestDelegationException
 	{
 		// automatically calls functions with same name as action
 		delegate(request.getAction(), db, request);
+		
+		//default show
+		return Show.SHOW_MAIN;
 	}
 
 	public void delegate(String action, Database db, Tuple request)

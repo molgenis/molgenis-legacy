@@ -17,6 +17,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.FileLink;
@@ -87,10 +88,11 @@ public interface ScreenController<MODEL extends ScreenModel> extends
 	 * @param out
 	 *            additional parameter that allows you to write downloadable
 	 *            output
+	 * @return 
 	 * @throws Exception 
 	 * @throws HandleRequestDelegationException 
 	 */
-	public void handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException, Exception;
+	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException, Exception;
 
 	/**
 	 * Get the view
