@@ -17,8 +17,6 @@ import java.util.Locale;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Query;
-import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -40,16 +38,11 @@ import commonservice.CommonService;
 public class ManageParentgroups extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 203412348106990472L;
-	private List<Integer> motherIdList = new ArrayList<Integer>();
-	private List<Integer> motherIdListFromLine = new ArrayList<Integer>();
-	private List<Integer> selectedMotherIdList = new ArrayList<Integer>();
-	private List<Integer> fatherIdList = new ArrayList<Integer>();
-	private List<Integer> fatherIdListFromLine = new ArrayList<Integer>();
-	private List<Integer> selectedFatherIdList = new ArrayList<Integer>();
+	private List<Integer> selectedMotherIdList = null;
+	private List<Integer> selectedFatherIdList = null;
 	private CommonService ct = CommonService.getInstance();
 	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
 	private SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-//	private String groupName = null;
 	private String startdate = null;
 	private List<ObservationTarget> lineList;
 	private int line = -1;
@@ -60,6 +53,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 	ObservationElementMatrixViewer fatherMatrixViewer = null;
 	private static String MOTHERMATRIX = "mothermatrix";
 	private static String FATHERMATRIX = "fathermatrix";
+	private String action = "init";
 	
 	public ManageParentgroups(String name, ScreenController<?> parent)
 	{
@@ -72,37 +66,17 @@ public class ManageParentgroups extends PluginModel<Entity>
 				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/datatables/css/demo_table_jui.css\">\n" +
 				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
 	}
-	
-	// Mother related methods:
-	public List<Integer> getMotherIdList() {
-		return motherIdList;
-	}
-
-	public void setMotherList(List<Integer> motherIdList) {
-		this.motherIdList = motherIdList;
-	}
 
 	public List<Integer> getSelectedMotherIdList() {
 		return selectedMotherIdList;
 	}
-
 	public void setSelectedMotherList(List<Integer> selectedMotherIdList) {
 		this.selectedMotherIdList = selectedMotherIdList;
-	}
-	
-	// Father related methods:
-	public List<Integer> getFatherIdList() {
-		return fatherIdList;
-	}
-
-	public void setFatherIdList(List<Integer> fatherIdList) {
-		this.fatherIdList = fatherIdList;
 	}
 
 	public List<Integer> getSelectedFatherIdList() {
 		return selectedFatherIdList;
 	}
-
 	public void setSelectedFatherList(List<Integer> selectedFatherIdList) {
 		this.selectedFatherIdList = selectedFatherIdList;
 	}
@@ -115,13 +89,6 @@ public class ManageParentgroups extends PluginModel<Entity>
 		}
 	}
 	
-//	public String getGroupName() {
-//		return groupName;
-//	}
-//	public void setGroupName(String groupName) {
-//		this.groupName = groupName;
-//	}
-	
 	public String getStartdate() {
 		return startdate;
 	}
@@ -132,7 +99,6 @@ public class ManageParentgroups extends PluginModel<Entity>
 	public void setLine(int line) {
 		this.line = line;
 	}
-
 	public int getLine() {
 		return line;
 	}
@@ -140,31 +106,13 @@ public class ManageParentgroups extends PluginModel<Entity>
 	public List<ObservationTarget> getLineList() {
 		return lineList;
 	}
-
 	public void setLineList(List<ObservationTarget> lineList) {
 		this.lineList = lineList;
-	}
-
-	public List<Integer> getMotherIdListFromLine() {
-		return motherIdListFromLine;
-	}
-
-	public void setMotherIdListFromLine(List<Integer> motherIdListFromLine) {
-		this.motherIdListFromLine = motherIdListFromLine;
-	}
-
-	public List<Integer> getFatherIdListFromLine() {
-		return fatherIdListFromLine;
-	}
-
-	public void setFatherIdListFromLine(List<Integer> fatherIdListFromLine) {
-		this.fatherIdListFromLine = fatherIdListFromLine;
 	}
 
 	public String getRemarks() {
 		return remarks;
 	}
-
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
@@ -172,7 +120,6 @@ public class ManageParentgroups extends PluginModel<Entity>
 	public List<ObservationTarget> getPgList() {
 		return pgList;
 	}
-
 	public void setPgList(List<ObservationTarget> pgList) {
 		this.pgList = pgList;
 	}
@@ -198,6 +145,13 @@ public class ManageParentgroups extends PluginModel<Entity>
 		return returnString;
 	}
 	
+	public String getAction() {
+		return action;
+	}
+	public void setAction(String action) {
+		this.action = action;
+	}
+
 	public String renderMotherMatrixViewer() {
 		if (motherMatrixViewer != null) {
 			return motherMatrixViewer.render();
@@ -294,16 +248,26 @@ public class ManageParentgroups extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{	
+		action = request.getString("__action");
 		try {
 			Date now = new Date();
 			int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
-			String action = request.getString("__action");
 			
 			if (action.startsWith(motherMatrixViewer.getName())) {
 				motherMatrixViewer.handleRequest(db, request);
+				this.setAction("showAddParentgroup");
 			}
 			if (action.startsWith(fatherMatrixViewer.getName())) {
 				fatherMatrixViewer.handleRequest(db, request);
+				this.setAction("showAddParentgroup");
+			}
+			
+			if (action.equals("init")) {
+				// do nothing
+			}
+			
+			if (action.equals("showAddParentgroup")) {
+				// do nothing
 			}
 			
 			if (action.equals("addParentgroup")) {
@@ -351,54 +315,28 @@ public class ManageParentgroups extends PluginModel<Entity>
 				}
 				
 				// Success: empty selected lists and show success message
+				this.setAction("init");
 				this.resetUserFields();
 				this.getMessages().add(new ScreenMessage("Parent group " + (groupPrefix + groupNrPart) + " successfully added", true));
-			}
-			
-			if (action.equals("addIndMother")) {
-				setUserFields(request);
-				int motherId = request.getInt("ind_mother");
-				if (!this.selectedMotherIdList.contains(motherId)) {
-					this.selectedMotherIdList.add(motherId);
-				}
-			}
-			if (action.equals("addIndMotherFromLine")) {
-				setUserFields(request);
-				int motherId = request.getInt("ind_mother_line");
-				if (!this.selectedMotherIdList.contains(motherId)) {
-					this.selectedMotherIdList.add(motherId);
-				}
 			}
 			
 			if (action.equals("remIndMother")) {
 				setUserFields(request);
 				int motherId = request.getInt("mother");
 				this.selectedMotherIdList.remove(this.selectedMotherIdList.indexOf(motherId));
-			}
-			
-			if (action.equals("addIndFather")) {
-				setUserFields(request);
-				int fatherId = request.getInt("ind_father");
-				if (!this.selectedFatherIdList.contains(fatherId)) {
-					this.selectedFatherIdList.add(fatherId);
-				}
-			}
-			if (action.equals("addIndFatherFromLine")) {
-				setUserFields(request);
-				int fatherId = request.getInt("ind_father_line");
-				if (!this.selectedFatherIdList.contains(fatherId)) {
-					this.selectedFatherIdList.add(fatherId);
-				}
+				this.setAction("showAddParentgroup");
 			}
 			
 			if (action.equals("remIndFather")) {
 				setUserFields(request);
 				int fatherId = request.getInt("father");
 				this.selectedFatherIdList.remove(this.selectedFatherIdList.indexOf(fatherId));
+				this.setAction("showAddParentgroup");
 			}
 			
 			if (action.equals("updateLine")) {
 				setUserFields(request);
+				this.setAction("showAddParentgroup");
 				// reload() will take care of updating matrix viewers
 			}
 			
@@ -415,6 +353,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 					}
 					rowCnt++;
 				}
+				this.setAction("showAddParentgroup");
 			}
 			if (action.equals("addFathersFromMatrix")) {
 				setUserFields(request);
@@ -429,6 +368,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 					}
 					rowCnt++;
 				}
+				this.setAction("showAddParentgroup");
 			}
 			
 		} catch (Exception e) {
@@ -438,48 +378,6 @@ public class ManageParentgroups extends PluginModel<Entity>
 			}
 			e.printStackTrace();
 		}
-	}
-	
-	public List<Integer> populateParentList(Database db, String sexName, List<Integer> investigationIds) 
-		throws DatabaseException, ParseException {
-		
-		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Sex"));
-		q.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, sexName));
-		q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
-		q.addRules(new QueryRule(Operator.SORTASC, ObservedValue.TARGET_NAME));
-		List<ObservedValue> valueList = q.find();
-		List<Integer> parentIdList = new ArrayList<Integer>();
-		for (ObservedValue value : valueList) {
-			// TODO: filter out the dead ones!
-			parentIdList.add(value.getTarget_Id());
-		}
-		return parentIdList;
-	}
-	
-	public List<Integer> restrictParentListByLine(Database db, List<Integer> allParentIds, List<Integer> investigationIds) throws DatabaseException, ParseException {
-		
-		if (line == 0) {
-			return allParentIds;
-		}
-		
-		List<Integer> returnList = new ArrayList<Integer>();
-		
-		String lineName = ct.getObservationTargetLabel(line);
-		
-		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Line"));
-		q.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, lineName));
-		q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
-		q.addRules(new QueryRule(Operator.SORTASC, ObservedValue.TARGET_NAME));
-		List<ObservedValue> valueList = q.find();
-		for (ObservedValue value : valueList) {
-			if (allParentIds.contains(value.getTarget_Id())) {
-				returnList.add(value.getTarget_Id());
-			}
-		}
-		
-		return returnList;
 	}
 
 	@Override
@@ -497,12 +395,12 @@ public class ManageParentgroups extends PluginModel<Entity>
 			if (line == -1 && lineList.size() > 0) {
 				line = lineList.get(0).getId();
 			}
-			// Populate mother list
-			motherIdList = populateParentList(db, "Female", investigationIds);
-			motherIdListFromLine = restrictParentListByLine(db, motherIdList, investigationIds);
-			// Populate father list
-			fatherIdList = populateParentList(db, "Male", investigationIds);
-			fatherIdListFromLine = restrictParentListByLine(db, fatherIdList, investigationIds);
+			if (selectedMotherIdList == null) {
+				selectedMotherIdList = new ArrayList<Integer>();
+			}
+			if (selectedFatherIdList == null) {
+				selectedFatherIdList = new ArrayList<Integer>();
+			}
 			
 		} catch (Exception e) {
 			String message = "Something went wrong while loading lists";

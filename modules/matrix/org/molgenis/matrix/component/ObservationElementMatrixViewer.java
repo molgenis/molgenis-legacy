@@ -60,6 +60,7 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	public String CLEARFILTERS = getName() + "_clearFilters";
 	public String REMOVEFILTER = getName() + "_removeFilter";
 	public String RELOADMATRIX = getName() + "_reloadMatrix";
+	public String SELECTED = getName() + "_selected";
 	
 	/**
 	 * Default constructor.
@@ -266,8 +267,10 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 				options.add("" + row);
 				List<String> optionLabels = new ArrayList<String>();
 				optionLabels.add("");
-				dataTable.setCell(0, row, new CheckboxInput(getName() + "_selected_" + row, options, 
-						optionLabels, "", null, true, false));
+				CheckboxInput rowCheckbox = new CheckboxInput(SELECTED + "_" + row, options, 
+						optionLabels, "", null, true, false);
+				rowCheckbox.setId(SELECTED + "_" + row);
+				dataTable.setCell(0, row, rowCheckbox);
 				for (int col = 0; col < rowValues.length; col++)
 				{
 					if (rowValues[col] != null || rowValues[col].size() == 0)

@@ -25,7 +25,11 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->	
 
+<#if screen.action == "showAddParentgroup">
+
 <div>
+
+	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
 
 	<!-- Line -->
 	<div>
@@ -40,12 +44,7 @@
 		<input type='submit' id='updateline' value='Update' onclick='__action.value="updateLine"' />
 	</div>
 	
-	<!-- Auto-generate name
-	<div>
-		<label for='groupname'>Group name:</label>
-		<input type='text' class='textbox' name='groupname' id='groupname' value='<#if screen.groupName?exists>${screen.getGroupName()}</#if>' />
-	</div>
-	-->
+	<hr />
 	
 	<div>
 		<div style='float:left'>
@@ -63,39 +62,13 @@
 			<input type='submit' id='remmother' value='&gt;&gt;' onclick='__action.value="remIndMother"' />
 		</div>
 	</div>
-	
-	<!-- (Possible) mother(s) selector 1.0 -->
-	<div style='clear:left;border-style:solid;border-color:blue'>
-		<div>Select from line<br />
-			<input type='submit' id='addmother_line' value='&lt;&lt;' onclick='__action.value="addIndMotherFromLine"' />
-			<select id='ind_mother_line' name='ind_mother_line'>
-			<#if screen.motherIdListFromLine?exists>
-				<#list screen.motherIdListFromLine as motherId>
-					<#assign name = screen.getAnimalName(motherId)>
-					<option value='${motherId?string.computer}'>${name}</option>
-				</#list>
-			</#if>
-			</select>
-		</div>
-		<div>Select from all<br />
-			<input type='submit' id='addmother' value='&lt;&lt;' onclick='__action.value="addIndMother"' />
-			<select id='ind_mother' name='ind_mother'>
-			<#if screen.motherIdList?exists>
-				<#list screen.motherIdList as motherId>
-					<#assign name = screen.getAnimalName(motherId)>
-					<option value='${motherId?string.computer}'>${name}</option>
-				</#list>
-			</#if>
-			</select>
-		</div>
-	</div>
-	
-	<!-- (Possible) mother(s) selector 2.0 -->
-	<div style='clear:left;border-style:solid;border-color:red'>
-		<p>Select from matrix</p>
+	<!-- (Possible) mother(s) selector -->
+	<div style='clear:left'>
 		${screen.renderMotherMatrixViewer()}<br />
-		<input type='submit' id='addmothersfrommatrix' value='&lt;&lt;' onclick='__action.value="addMothersFromMatrix"' />
+		<input type='submit' id='addmothersfrommatrix' value='&lt;&lt; Add selected mother(s)' onclick='__action.value="addMothersFromMatrix"' />
 	</div>
+	
+	<hr />
 	
 	<div>
 		<div style='float:left'>
@@ -114,38 +87,13 @@
 		</div>
 	</div>
 	
-	<!-- (Possible) father(s) selector 1.0 -->
-	<div style='clear:left;border-style:solid;border-color:blue'>
-		<div>Select from line<br />
-			<input type='submit' id='addfather_line' value='&lt;&lt;' onclick='__action.value="addIndFatherFromLine"' />
-			<select id='ind_father_line' name='ind_father_line'>
-			<#if screen.fatherIdListFromLine?exists>
-				<#list screen.fatherIdListFromLine as fatherId>
-					<#assign name = screen.getAnimalName(fatherId)>
-					<option value='${fatherId?string.computer}'>${name}</option>
-				</#list>
-			</#if>
-			</select>
-		</div>
-		<div>Select from all<br />
-			<input type='submit' id='addfather' value='&lt;&lt;' onclick='__action.value="addIndFather"' />
-			<select id='ind_father' name='ind_father'>
-			<#if screen.fatherIdList?exists>
-				<#list screen.fatherIdList as fatherId>
-					<#assign name = screen.getAnimalName(fatherId)>
-					<option value='${fatherId?string.computer}'>${name}</option>
-				</#list>
-			</#if>
-			</select>
-		</div>
+	<!-- (Possible) father(s) selector -->
+	<div style='clear:left'>
+		${screen.renderFatherMatrixViewer()}<br />
+		<input type='submit' id='addfathersfrommatrix' value='&lt;&lt; Add selected father(s)' onclick='__action.value="addFathersFromMatrix"' />
 	</div>
 	
-	<!-- (Possible) father(s) selector 2.0 -->
-	<div style='clear:left;border-style:solid;border-color:red'>
-		<p>Select from matrix</p>
-		${screen.renderFatherMatrixViewer()}<br />
-		<input type='submit' id='addfathersfrommatrix' value='&lt;&lt;' onclick='__action.value="addFathersFromMatrix"' />
-	</div>
+	<hr />
 	
 	<!-- Start date -->
 	<div style='clear:left'>
@@ -166,10 +114,13 @@
 	
 </div>
 
-<div>
+<#else>
 
-	<p><h2>Existing parent groups</h2></p>
+<div>
+	<p><a href="molgenis.do?__target=${screen.name}&__action=showAddParentgroup">Make new parent group</a></p>
+	
 	<#if screen.pgList?size gt 0>
+		<p><h2>Existing parent groups</h2></p>
 		<table cellpadding="0" cellspacing="0" border="0" class="display" id="pgstable">
 			<thead>
 				<tr>
@@ -194,6 +145,8 @@
 	</#if>
 
 </div>
+
+</#if>
 	
 <#--end of your plugin-->	
 			</div>

@@ -129,9 +129,21 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Manage parent groups"));
 		// Add a parent group
-		selenium.click("id=addmother");
+		selenium.click("link=Make new parent group");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.click("id=addfather");
+		selenium.click("id=mothermatrix_removeFilter_3"); // remove filter on line (line is not set for new animals)
+		// We have to wait here, but it's Ajax, so it's faster than a normal full page load
+		// (however, 1 sec. is not (always) enough on Hudson, so set to 5 sec.)
+		Thread.sleep(5000);
+		selenium.click("id=mothermatrix_selected_0"); // toggle selectbox for first female in list
+		selenium.click("id=addmothersfrommatrix");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=fathermatrix_removeFilter_3"); // remove filter on line (line is not set for new animals)
+		// We have to wait here, but it's Ajax, so it's faster than a normal full page load
+		// (however, 1 sec. is not (always) enough on Hudson, so set to 5 sec.)
+		Thread.sleep(5000);
+		selenium.click("id=fathermatrix_selected_0"); // toggle selectbox for first male in list
+		selenium.click("id=addfathersfrommatrix");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=addpg");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -141,7 +153,7 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Manage litters"));
 		Assert.assertTrue(selenium.isTextPresent("Make new litter"));
-		// Add new litter
+		// Add a litter
 		selenium.click("link=Make new litter");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.type("id=littersize", "5");
@@ -328,8 +340,8 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.select("id=animal", "label=000001");
 		// We have to wait here, but it's Ajax, so it's faster than a normal full page load
-		// (however, 1 sec. is not (always) enough on Hudson, so set to 10 sec.)
-		Thread.sleep(10000);
+		// (however, 1 sec. is not (always) enough on Hudson, so set to 5 sec.)
+		Thread.sleep(5000);
 		Assert.assertTrue(selenium.isTextPresent("Weight"));
 		Assert.assertTrue(selenium.isTextPresent("200"));
 		
