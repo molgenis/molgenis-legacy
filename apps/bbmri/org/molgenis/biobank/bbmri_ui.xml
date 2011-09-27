@@ -33,6 +33,7 @@
 				<form name="MolgenisRoleGroupLink" entity="MolgenisRoleGroupLink"/>
 			</menu>
 			<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard" label="Batch Upload" />
+			<plugin label="Data Exporter" name="SimpleArchiver" type="plugins.archiver.Archiver" />
 			<plugin name="GenerateN3andRDF" type="plugins.mapping.GenerateN3andRDF"	label="Mapping" />
 		</menu>
 		<menu name="submenu" position="left" label="Index powered Search">
