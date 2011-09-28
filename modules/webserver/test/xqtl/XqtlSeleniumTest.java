@@ -345,12 +345,10 @@ public class XqtlSeleniumTest
 			clickAndWait("id=QTLWizard_tab_button");
 			
 			Assert.assertTrue(selenium.isTextPresent("Again, your individuals must be in the first line."));
-			Assert.assertEquals(selenium.getText("name=invSelect"), "ClusterDemo");
-			Assert.assertEquals(
-					selenium.getText("name=cross"),
-					"xgap_rqtl_straintype_f2xgap_rqtl_straintype_bcxgap_rqtl_straintype_riselfxgap_rqtl_straintype_risibxgap_rqtl_straintype_4wayxgap_rqtl_straintype_dhxgap_rqtl_straintype_specialxgap_rqtl_straintype_naturalxgap_rqtl_straintype_parentalxgap_rqtl_straintype_f1xgap_rqtl_straintype_rccxgap_rqtl_straintype_cssxgap_rqtl_straintype_unknownxgap_rqtl_straintype_other");
-			Assert.assertEquals(selenium.getText("name=trait"),
-					"MeasurementDerivedTraitEnvironmentalFactorGeneMarkerMassPeakMetaboliteProbe");
+			
+			if(!excused) Assert.assertEquals(selenium.getText("name=invSelect"), "ClusterDemo");
+			if(!excused) Assert.assertEquals(selenium.getText("name=cross"),"xgap_rqtl_straintype_f2xgap_rqtl_straintype_bcxgap_rqtl_straintype_riselfxgap_rqtl_straintype_risibxgap_rqtl_straintype_4wayxgap_rqtl_straintype_dhxgap_rqtl_straintype_specialxgap_rqtl_straintype_naturalxgap_rqtl_straintype_parentalxgap_rqtl_straintype_f1xgap_rqtl_straintype_rccxgap_rqtl_straintype_cssxgap_rqtl_straintype_unknownxgap_rqtl_straintype_other");
+			if(!excused) Assert.assertEquals(selenium.getText("name=trait"),"MeasurementDerivedTraitEnvironmentalFactorGeneMarkerMassPeakMetaboliteProbe");
 
 			// try pressing a button and see if the error pops up
 			clickAndWait("id=upload_genotypes");
