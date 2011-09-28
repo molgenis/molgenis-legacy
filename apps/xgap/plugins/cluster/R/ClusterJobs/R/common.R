@@ -211,8 +211,8 @@ run_cluster_new_new <- function(name="test", investigation="ClusterDemo", totali
     	first <- FALSE
   	}
   	cat(")","\n",file=myanalysisfile,append=T)
+    report(dbpath,jobid,0,2,paste("Generating_QTL",x,"_item",item,sep=""))
     for(item in todo){
-      report(dbpath,jobid,0,2,paste("Generated_QTL",x,"_item",item,sep=""))
       cat("subjob <- ",x,"\n",file=myanalysisfile,append=T)
       cat("item <- ",item,"\n",file=myanalysisfile,append=T)
       tryCatch(do.call(paste("run_",job,sep=""),list(dbpath=dbpath, subjob=x, item=item, jobid=jobid, outname=name, myanalysisfile=myanalysisfile, jobparams=jobparams, investigationname=investigation, libraryloc=libraryloc))
