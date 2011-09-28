@@ -211,7 +211,7 @@ run_cluster_new_new <- function(name="test", investigation="ClusterDemo", totali
     	first <- FALSE
   	}
   	cat(")","\n",file=myanalysisfile,append=T)
-    report(dbpath,jobid,0,2,paste("Generating_QTL",x,"_item",item,sep=""))
+    report(dbpath,jobid,0,2,paste("Generating_QTL_",min(todo),"_",max(todo),item,sep=""))
     for(item in todo){
       cat("subjob <- ",x,"\n",file=myanalysisfile,append=T)
       cat("item <- ",item,"\n",file=myanalysisfile,append=T)
