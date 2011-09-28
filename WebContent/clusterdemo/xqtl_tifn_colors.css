@@ -24,19 +24,19 @@
 
 /**shade header*/
 .shadeHeader,.leftNavigationSelected,.navigationSelected,.form_header, td.submenuitem:hover {
-	background: #275A36;
+	background: #114291;
 	color: #FFFFFF;
 }
 
 /**highlight*/
 .highlight,.leftNavigationNotSelected,.navigationNotSelected, .form_menu, .submenuitem   {
-	background: #9EA98E;
+	background: #71A9C2;
 	
 }
 
 .submenuitem{
-	h: expression(onmouseover=new Function("this.style.backgroundColor='#275A36'; this.style.color='#fff';"),
-                       onmouseout=new Function("this.style.backgroundColor='#9EA98E'; this.style.color='black';"));	
+	h: expression(onmouseover=new Function("this.style.backgroundColor='#114291'; this.style.color='#fff';"),
+                       onmouseout=new Function("this.style.backgroundColor='#71A9C2'; this.style.color='black';"));	
 	/*ie hack for td.submenuitem:hover*/
 	
 }
@@ -44,7 +44,7 @@
 /**shade borders*/
 .shadeBorder,.leftNavigationSelected,.navigationSelected,.formscreen,.form_new,.form_filter,.popup, .form_menu 
 {
-	border-color: #275A36;
+	border-color: #114291;
 	
 }
 
@@ -54,11 +54,11 @@
 }
 
 .matrixRowColor0,.form_listrow0 {
-	background: #A9B5B9;
+	background: #DACBDB;
 }
 
 .matrixRowColor1,.form_listrow1 {
-	background: #BAC4AB;
+	background: #C9E2E2;
 }
 
 .matrixRowColorEmpty {
@@ -67,7 +67,7 @@
 
 
 #container {
-	width: 900px;
+	width: 960px;
 	/* text-align: center; */
 	align: center;
 }
