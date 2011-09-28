@@ -4,7 +4,8 @@ public class PublicationVO
 {
 	String name;
 	String title;
-	String pubmed;
+	String pubmedId;
+	String pubmedUrl;
 	String status;
 
 	public String getName() {
@@ -19,11 +20,17 @@ public class PublicationVO
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public String getPubmed() {
-		return pubmed;
+	public String getPubmedId() {
+		return pubmedId;
 	}
-	public void setPubmed(String pubmed) {
-		this.pubmed = pubmed;
+	public void setPubmedId(String pubmedId) {
+		this.pubmedId = pubmedId;
+	}
+	public String getPubmedUrl() {
+		return pubmedUrl;
+	}
+	public void setPubmedUrl(String pubmedUrl) {
+		this.pubmedUrl = pubmedUrl;
 	}
 	public String getStatus() {
 		return status;

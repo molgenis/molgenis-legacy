@@ -49,9 +49,10 @@ public class PublicationService
 	{
 		PublicationVO publicationVO = new PublicationVO();
 		publicationVO.setName(publication.getName());
-		publicationVO.setPubmed(PublicationService.PUBMED_URL + publication.getPubmedID_Name());
+		publicationVO.setPubmedId(publication.getPubmedID_Name());
+		publicationVO.setPubmedUrl(PublicationService.PUBMED_URL + publication.getPubmedID_Name());
 		publicationVO.setStatus(publication.getStatus_Name());
-		publicationVO.setTitle(publication.getName());
+		publicationVO.setTitle(publication.getTitle());
 		
 		return publicationVO;
 	}
