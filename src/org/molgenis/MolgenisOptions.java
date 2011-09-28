@@ -259,6 +259,10 @@ public class MolgenisOptions
 	@Option(name = "authorizable", param = Option.Param.COLLECTION, type = Option.Type.OPTIONAL_ARGUMENT, usage = "For use in molgenis_apps! Tells the generator on which entities to append an implements='Authorizable'. Default: new ArrayList<String>()")
 	public ArrayList<String> authorizable = new ArrayList<String>();
 
+	
+	@Option(name="show_registration", param = Option.Param.COLLECTION, type = Option.Type.OPTIONAL_ARGUMENT, usage="true indicates that the registration link appears in the User Login Page. Default: true")
+	public boolean show_registration = true;
+
 	// @Option(name = "force_lowercase_names", param = "force_lowercase_names",
 	// type = Option.Type.REQUIRED_ARGUMENT, usage =
 	// "Expert option. Wether all names should be converted to lowercase. Default: true"
