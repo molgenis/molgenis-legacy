@@ -303,7 +303,7 @@ public class MutationService implements Serializable
 			if (StringUtils.length(criteria.getType()) > 2)
 				mutationCriteria.add(cb.like(mutation.<String>get("type_"), criteria.getType() + "%"));
 			if (StringUtils.length(criteria.getVariation()) > 0)
-				mutationCriteria.add(cb.or(cb.equal(mutation.get("cdna_notation"), criteria.getVariation()), cb.equal(mutation.<String>get("cdna_notation"), "c." + criteria.getExonNumber()), cb.equal(mutation.get("aa_notation"), criteria.getVariation()), cb.equal(mutation.get("cdna_notation"), "p." + criteria.getVariation())));
+				mutationCriteria.add(cb.or(cb.equal(mutation.get("cdna_notation"), criteria.getVariation()), cb.equal(mutation.<String>get("cdna_notation"), "c." + criteria.getVariation()), cb.equal(mutation.get("aa_notation"), criteria.getVariation()), cb.equal(mutation.get("cdna_notation"), "p." + criteria.getVariation())));
 
 			if (mutationCriteria.size() > 0)
 			{
@@ -412,7 +412,7 @@ public class MutationService implements Serializable
 					PublicationVO publicationVO = new PublicationVO();
 					publicationVO.setName(publication.getName());
 					publicationVO.setTitle(publication.getTitle());
-					publicationVO.setPubmed(publication.getPubmedID_Name());
+					publicationVO.setPubmedId(publication.getPubmedID_Name());
 					patientSummaryVO.getPublicationVOList().add(publicationVO);
 					publicationVOHash.put(publication.getId(), publicationVO);
 				}
