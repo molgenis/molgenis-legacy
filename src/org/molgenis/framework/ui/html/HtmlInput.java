@@ -78,7 +78,7 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	private String target = "";
 
 	/** Description. Defaults to 'name'. */
-	private String description;
+	private String description = "";
 
 	/** Tab index of this input (optionl) */
 	protected String tabIndex = "";
