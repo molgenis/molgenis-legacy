@@ -243,7 +243,7 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 					for (int i = 0; i < pubmeds.length; i++)
 					{
 						PublicationVO publicationVO = new PublicationVO();
-						publicationVO.setPubmed(pubmeds[i]);
+						publicationVO.setPubmedId(pubmeds[i]);
 						publicationVO.setName(titles[i]);
 						publicationVO.setTitle(titles[i]);
 						publicationVOs.add(publicationVO);
