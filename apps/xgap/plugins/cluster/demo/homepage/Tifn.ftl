@@ -45,7 +45,7 @@
 				<br><br></td></tr></table>
 			</#if>
 			<br><br>
-			Welcome to <b>TI Food Nutricion</b>, based on xQTL workbench, a platform for the storage and analysis of geno- and phenotypic data. For manuals and	more information, see <a href="http://www.xgap.org/wiki/xQTL">xQTL workbench wiki</a>.<br><br> xQTL workbench provides the following features: 
+			Welcome to the <b>TI Food Nutrition research portal</b>, based on xQTL workbench, a platform for the storage and analysis of geno- and phenotypic data. For manuals and	more information, see <a href="http://www.xgap.org/wiki/xQTL">xQTL workbench wiki</a>.<br><br> xQTL workbench provides the following features: 
 			<ul>
 				<li>Available as an <b>'in-house tool'</b> or used in a <b>collaborative setting</b> via web interfaces</li>
 				<li><b>Customizable</b> database for genetics data using software generators</li>
