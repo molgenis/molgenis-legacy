@@ -1,4 +1,4 @@
-<molgenis name="xqtl_tifn" label="TI Food Nutricion">
+<molgenis name="xqtl_tifn" label="TI Food Nutrition research portal">
 	<plugin name="molgenis_header" type="plugins.cluster.demo.xqtltifnheader.MolgenisHeader" />
 	<menu name="main">
 		
