@@ -7,24 +7,16 @@
 
 package org.molgenis.core.ui;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.molgenis.core.service.PublicationService;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
+import org.molgenis.framework.ui.IntegratedPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
-public class AllPublications extends EasyPluginController<AllPublicationsModel>
+public class AllPublications extends IntegratedPluginController<AllPublicationsModel>
 {
 	private static final long serialVersionUID = -5252927756111530842L;
 
@@ -42,13 +34,12 @@ public class AllPublications extends EasyPluginController<AllPublicationsModel>
 		String result = super.getCustomHtmlHeaders();
 		
 		if (CollectionUtils.isEmpty(this.getModel().getPublicationVOList()))
-				result += "<meta http-equiv=\"refresh\" content=\"0; URL=molgenis.do?select=Publications&__target=Publications&__action=\">";
+				result += "<meta http-equiv=\"refresh\" content=\"0; URL=molgenis.do?select=Publications&__target=Publications&__action=show\">";
 
 		return result;
 	}
 
-	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void show(Database db, Tuple request)
 	{
 		try
 		{
@@ -63,57 +54,13 @@ public class AllPublications extends EasyPluginController<AllPublicationsModel>
 			e.printStackTrace();
 		}
 	}
-	
-	public String include(Tuple request, String path)
-	{
-		HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
-		HttpServletRequest httpRequest   = rt.getRequest();
-		HttpServletResponse httpResponse = rt.getResponse();
-		RedirectTextWrapper respWrapper  = new RedirectTextWrapper(httpResponse);
-			
-		// Call/include page
-		try
-		{
-			RequestDispatcher dispatcher = httpRequest.getRequestDispatcher(path);
-			if (dispatcher != null)
-				dispatcher.include(httpRequest, respWrapper);
-		}
-		catch (Exception e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return respWrapper.getOutput();
-	}
-	
-	private class RedirectTextWrapper extends HttpServletResponseWrapper
-	{
-		private PrintWriter printWriter;
-		private StringWriter stringWriter;
-
-		public RedirectTextWrapper(HttpServletResponse response)
-		{
-			super(response);
-			this.stringWriter = new StringWriter();
-			this.printWriter  = new PrintWriter(stringWriter);
-		}
-
-		@Override
-		public PrintWriter getWriter()
-		{
-			return this.printWriter;
-		}
-
-		public String getOutput()
-		{
-			return this.stringWriter.toString();
-		}
-	}
 
 	@Override
 	public void reload(Database db) throws Exception
 	{
-		// nothing to do here
+		// Dirty hack: Actually the PublicationPager should be included here.
+		// But we need the HttpServletRequest which is not passed to reload().
+		// So the customHtmlHeaders will issue a request with action==show
+		// which does the work for us.
 	}
 }
