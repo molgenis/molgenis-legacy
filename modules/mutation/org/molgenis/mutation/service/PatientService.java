@@ -1,9 +1,7 @@
 package org.molgenis.mutation.service;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
-import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,14 +15,12 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.xml.bind.JAXBException;
 
 import jxl.Workbook;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.auth.MolgenisUser;
-import org.molgenis.core.OntologyTerm;
 import org.molgenis.core.Publication;
 import org.molgenis.core.service.PublicationService;
 import org.molgenis.core.vo.PublicationVO;
@@ -47,13 +43,10 @@ import org.molgenis.mutation.vo.PatientSummaryVO;
 import org.molgenis.mutation.vo.PhenotypeDetailsVO;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.pheno.db.ObservableFeatureJpaMapper;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.protocol.service.WorkflowService;
-import org.molgenis.services.PubmedService;
-import org.molgenis.services.pubmed.PubmedArticle;
 import org.molgenis.submission.Submission;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
