@@ -8,9 +8,9 @@
 
 <div style="height:10px;">&nbsp;</div>
 
-<div id="sample_div" style="background-image:url(clusterdemo/bg/tifn_dark.png); width: 960px; height: 125px; line-height:7.5em;">
+<div id="sample_div" style="background-image:url(clusterdemo/bg/tifn_dark_logo.png); width: 960px; height: 124px; line-height:7.5em;">
 <font style="color: white; font-family: verdana,arial,sans-serif; font-weight: bold; letter-spacing: 0.15em; font-size: xx-large; font-variant: small-caps">
-&nbsp;TI Food Nutricion</font>
+&nbsp;</font>
 </div>
 
 
