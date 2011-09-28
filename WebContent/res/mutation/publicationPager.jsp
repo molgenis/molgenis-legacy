@@ -18,8 +18,11 @@
 
 <display:column title="No."><c:out value="${current_rowNum}"/></display:column>
 <display:column title="Title" property="title" sortable="true"/>
-<display:column title="External link" sortable="true">
-	<a href="${current.pubmedUrl}" target="_new">PubMed:<c:out value="${current.pubmedId}"/></a><br/>
+<display:column media="html" title="External link" sortable="true">
+	<a href="${current.pubmedUrl}" title="${current.title}" target="_new">PM:<c:out value="${current.pubmedId}"/></a>
+</display:column>
+<display:column media="csv excel pdf" title="External link" sortable="true">
+	PM:<c:out value="${current.pubmedId}"/>
 </display:column>
 </display:table>  
 
