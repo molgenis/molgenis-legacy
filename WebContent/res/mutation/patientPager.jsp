@@ -17,7 +17,8 @@
 <display:setProperty name="export.pdf.filename" value="patients.pdf"/>
 
 <display:column title="No."><c:out value="${current_rowNum}"/></display:column>
-<display:column property="patientIdentifier" title="Patient ID" sortable="true" headerClass="sortable" href="molgenis.do?__target=SearchPlugin&__action=showPatient&pid=#results" paramId="pid" paramProperty="patientIdentifier"/>
+<display:column media="html" property="patientIdentifier" title="Patient ID" sortable="true" headerClass="sortable" href="molgenis.do?__target=SearchPlugin&__action=showPatient&pid=#results" paramId="pid" paramProperty="patientIdentifier"/>
+<display:column media="csv excel pdf" property="patientIdentifier" title="Patient ID" sortable="true" headerClass="sortable"/>
 <display:column title="Phenotype" sortable="true">
 	<c:out value="${current.phenotypeMajor}"/><c:if test="${fn:length(current.phenotypeSub) > 1}">, <c:out value="${current.phenotypeSub}"/></c:if>
 </display:column>
@@ -39,7 +40,7 @@
 	<c:choose>
 	<c:when test="${fn:length(current.publicationVOList) > 0}">
 	<c:forEach var="publicationVO" items="${current.publicationVOList}">
-	<a href="${current.pubmedURL}${publicationVO.pubmed}" target="_new"><c:out value="${publicationVO.name}"/></a><br/>
+	<a href="${current.pubmedURL}${publicationVO.pubmedId}" title="${publicationVO.title}" target="_new"><c:out value="PM:${publicationVO.pubmedId}"/></a><br/>
 	</c:forEach>
 	</c:when>
 	<c:otherwise>
@@ -67,7 +68,7 @@
 </display:column>
 <display:column media="csv excel pdf" title="PubMed ID">
 <c:forEach var="publicationVO" items="${current.publicationVOList}">
-	<c:out value="PubMed ${publicationVO.pubmed}" escapeXml="false"/>;
+	<c:out value="PM:${publicationVO.pubmedId}" escapeXml="false"/>;
 </c:forEach>
 </display:column>
 

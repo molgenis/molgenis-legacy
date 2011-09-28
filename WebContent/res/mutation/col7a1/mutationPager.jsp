@@ -135,7 +135,7 @@
 <div class="unwrapped">
 	<c:choose>
 	<c:when test="${fn:length(patientVO.publicationVOList) > 0}">
-	<a href="${current.pubmedURL}${patientVO.publicationVOList[0].pubmed}" target="_new"><c:out value="${patientVO.publicationVOList[0].name}"/></a>
+	<a href="${patientVO.publicationVOList[0].pubmedUrl}" target="_new"><c:out value="${patientVO.publicationVOList[0].name}"/></a>
 	</c:when>
 	<c:otherwise>
 	<c:out value="Unpublished"/>, <c:out value="${patientVO.submitterDepartment}, ${patientVO.submitterInstitute}, ${patientVO.submitterCity}, ${patientVO.submitterCountry}"/>

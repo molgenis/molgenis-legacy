@@ -16,7 +16,7 @@
 <display:setProperty name="export.excel.filename" value="mutations.xls"/>
 <display:setProperty name="export.pdf.filename" value="mutations.pdf"/>
 
-<display:column property="identifier" title="Mutation ID" sortable="true" headerClass="sortable" href="molgenis.do?__target=SearchPlugin&__action=showMutation&mid=#results" paramId="mid" paramProperty="identifier"/>
+<display:column media="html" property="identifier" title="Mutation ID" sortable="true" headerClass="sortable" href="molgenis.do?__target=SearchPlugin&__action=showMutation&mid=#results" paramId="mid" paramProperty="identifier"/>
 <display:column property="cdnaNotation" title="cDNA change" sortable="true" headerClass="sortable"/>
 <display:column property="aaNotation" title="Protein change" sortable="true" headerClass="sortable"/>
 <display:column property="exonName" title="Exon/Intron" sortable="true" headerClass="sortable"/>
@@ -31,7 +31,7 @@
 	<c:choose>
 	<c:when test="${fn:length(current.publicationVOList) > 0}">
 	<c:forEach var="publicationVO" items="${current.publicationVOList}">
-	<a href="${current.pubmedURL}${publicationVO.pubmed}" target="_new"><c:out value="${publicationVO.name}"/></a><br/>
+	<a href="${current.pubmedURL}${publicationVO.pubmedId}" title="${publicationVO.title}" target="_new"><c:out value="PM:${publicationVO.pubmedId}"/></a><br/>
 	</c:forEach>
 	</c:when>
 	<c:otherwise>
@@ -40,6 +40,7 @@
 	</c:choose>
 </display:column>
 
+<display:column media="csv excel pdf" property="identifier" title="Mutation ID" sortable="true" headerClass="sortable"/>
 <display:column media="csv excel pdf" title="Patient ID">
 	<c:forEach var="patientVO" items="${current.patientSummaryVOList}"><c:out value="${patientVO.patientIdentifier}"/> </c:forEach>
 </display:column>
