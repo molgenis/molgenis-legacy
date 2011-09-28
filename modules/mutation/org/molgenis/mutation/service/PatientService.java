@@ -47,6 +47,7 @@ import org.molgenis.mutation.vo.PatientSummaryVO;
 import org.molgenis.mutation.vo.PhenotypeDetailsVO;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.pheno.db.ObservableFeatureJpaMapper;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.protocol.WorkflowElement;
@@ -203,11 +204,13 @@ public class PatientService implements Serializable
 		if (CollectionUtils.isEmpty(patients))
 			throw new IllegalArgumentException("Unknown patient identifier '" + pid + "'");
 		
+		Patient patient        = patients.get(0);
+		
 		if (this.db instanceof JDBCDatabase)
 		{
 			PhenotypeDetailsVO phenotypeDetailsVO = new PhenotypeDetailsVO();
-			phenotypeDetailsVO.setPatientId(patients.get(0).getId());
-			phenotypeDetailsVO.setPatientIdentifier(patients.get(0).getIdentifier());
+			phenotypeDetailsVO.setPatientId(patient.getId());
+			phenotypeDetailsVO.setPatientIdentifier(patient.getIdentifier());
 			phenotypeDetailsVO.setProtocolNames(new ArrayList<String>());
 			phenotypeDetailsVO.setObservedValues(new HashMap<String, List<ObservedValueVO>>());
 
@@ -230,13 +233,13 @@ public class PatientService implements Serializable
 				Protocol protocol = this.db.findById(Protocol.class, workflowElement.getProtocol_Id());
 
 				// ignore protocols without features
-				if (protocol.getFeatures_Id().size() == 0)
+				if (CollectionUtils.isEmpty(protocol.getFeatures_Id()))
 					continue;
 
 				phenotypeDetailsVO.getProtocolNames().add(protocol.getName());
 				phenotypeDetailsVO.getObservedValues().put(protocol.getName(), new ArrayList<ObservedValueVO>());
 
-				List<ObservedValue> observedValues = this.db.query(ObservedValue.class).equals(ObservedValue.TARGET, patients.get(0).getId()).in(ObservedValue.FEATURE, protocol.getFeatures_Id()).find();
+				List<ObservedValue> observedValues = this.db.query(ObservedValue.class).equals(ObservedValue.TARGET, patient.getId()).in(ObservedValue.FEATURE, protocol.getFeatures_Id()).find();
 				for (ObservedValue observedValue : observedValues)
 				{
 					ObservedValueVO observedValueVO = new ObservedValueVO();
@@ -251,8 +254,8 @@ public class PatientService implements Serializable
 		{
 			//TODO: Use navigatable objects here. Would currently break JDBCMapper build.
 			PhenotypeDetailsVO phenotypeDetailsVO = new PhenotypeDetailsVO();
-			phenotypeDetailsVO.setPatientId(patients.get(0).getId());
-			phenotypeDetailsVO.setPatientIdentifier(patients.get(0).getIdentifier());
+			phenotypeDetailsVO.setPatientId(patient.getId());
+			phenotypeDetailsVO.setPatientIdentifier(patient.getIdentifier());
 			phenotypeDetailsVO.setProtocolNames(new ArrayList<String>());
 			phenotypeDetailsVO.setObservedValues(new HashMap<String, List<ObservedValueVO>>());
 
@@ -274,26 +277,21 @@ public class PatientService implements Serializable
 			{
 				Protocol protocol = this.db.findById(Protocol.class, workflowElement.getProtocol_Id());
 
-				// ignore protocols without features
-				if (protocol.getFeatures_Id().size() == 0)
+				javax.persistence.Query query = this.db.getEntityManager().createNativeQuery("SELECT ov.id, f.name, ov.value FROM ObservedValue ov JOIN Protocol_Features pf ON (ov.Feature = pf.Features) JOIN ObservationElement f ON (pf.Features = f.id) WHERE ov.target = " + patient.getId() + " AND pf.Protocol = " + protocol.getId());
+				List observedValueList        = query.getResultList();
+				
+				if (observedValueList.size() == 0)
 					continue;
 
 				phenotypeDetailsVO.getProtocolNames().add(protocol.getName());
 				phenotypeDetailsVO.getObservedValues().put(protocol.getName(), new ArrayList<ObservedValueVO>());
 
-				List<ObservedValue> observedValues = new ArrayList<ObservedValue>();
-				if (this.db instanceof JDBCDatabase)
-					observedValues = this.db.query(ObservedValue.class).equals(ObservedValue.TARGET, patients.get(0).getId()).in(ObservedValue.FEATURE, protocol.getFeatures_Id()).find();
-				else if (this.db instanceof JpaDatabase)
-					observedValues = this.db.query(ObservedValue.class).equals("target", patients.get(0)).in("feature", protocol.getFeatures()).find();
-				else
-					throw new UnsupportedOperationException("Unsupported database mapper");
-
-				for (ObservedValue observedValue : observedValues)
+				for (Object row : observedValueList)
 				{
+					Object[] columns = (Object[]) row;
 					ObservedValueVO observedValueVO = new ObservedValueVO();
-					observedValueVO.setFeatureName(observedValue.getFeature_Name());
-					observedValueVO.setValue(observedValue.getValue());
+					observedValueVO.setFeatureName(columns[1].toString());
+					observedValueVO.setValue(columns[2].toString());
 					phenotypeDetailsVO.getObservedValues().get(protocol.getName()).add(observedValueVO);
 				}
 			}
@@ -510,13 +508,13 @@ public class PatientService implements Serializable
 
 			for (PublicationVO publicationVO : patientSummaryVO.getPublicationVOList())
 			{
-				if (publicationVO.getPubmed() == null)
+				if (publicationVO.getPubmedId() == null)
 					continue;
 
-				List<Publication> publications = this.db.query(Publication.class).equals(Publication.PUBMEDID_NAME,	publicationVO.getPubmed()).find();
+				List<Publication> publications = this.db.query(Publication.class).equals(Publication.PUBMEDID_NAME,	publicationVO.getPubmedId()).find();
 
 				if (publications.size() != 1)
-					throw new Exception("No publication found for Pubmed ID " + publicationVO.getPubmed());
+					throw new Exception("No publication found for Pubmed ID " + publicationVO.getPubmedId());
 					
 				publicationIds.add(publications.get(0).getId());
 			}
@@ -875,7 +873,7 @@ public class PatientService implements Serializable
 				PublicationVO publicationVO = new PublicationVO();
 				publicationVO.setName(publication.getName());
 				publicationVO.setTitle(publication.getTitle());
-				publicationVO.setPubmed(publication.getPubmedID_Name());
+				publicationVO.setPubmedId(publication.getPubmedID_Name());
 				patientSummaryVO.getPublicationVOList().add(publicationVO);
 			}
 		}
