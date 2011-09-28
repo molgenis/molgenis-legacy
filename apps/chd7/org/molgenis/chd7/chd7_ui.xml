@@ -14,7 +14,7 @@
 		-->
 		<plugin name="Contact" type="org.molgenis.feedback.ui.Contact" label="Contact"/>
 		<plugin name="Publications" type="org.molgenis.core.ui.AllPublications" label="References"/>
-		<plugin name="Background" type="org.molgenis.mutation.ui.background.Chd7Background" label="Background"/>
+		<plugin name="Background" type="org.molgenis.chd7.ui.Background" label="Background"/>
 		<plugin name="NewsPlugin" type="org.molgenis.news.ui.News" label="News"/>
 		<menu name="Management" label="Management">
 			<form name="Gene" entity="MutationGene"/>
