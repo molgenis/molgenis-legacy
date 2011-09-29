@@ -157,30 +157,61 @@ public class CommonService
 	}
 	
 	/**
-	 * Gets the ID's of the investigation owned, readable or writable by the user with ID 'userId'.
+	 * Gets the investigations owned, readable or writable by the user with ID 'userId'.
 	 * 
 	 * @param userId
 	 * @return
-	 * @throws DatabaseException
-	 * @throws ParseException
 	 */
-	public List<Integer> getAllUserInvestigationIds(int userId) {
+	public List<Investigation> getAllUserInvestigations(int userId) {
 		Query<Investigation> q = db.query(Investigation.class);
 		q.addRules(new QueryRule(Investigation.OWNS, Operator.EQUALS, userId));
 		q.addRules(new QueryRule(Operator.OR));
 		q.addRules(new QueryRule(Investigation.CANREAD, Operator.EQUALS, userId));
 		q.addRules(new QueryRule(Operator.OR));
 		q.addRules(new QueryRule(Investigation.CANWRITE, Operator.EQUALS, userId));
-		List<Integer> returnList = new ArrayList<Integer>();
 		List<Investigation> invList;
 		try {
 			invList = q.find();
 		} catch (Exception e) {
 			return null;
 		}
-		for (Investigation inv : invList) {
-			if (!returnList.contains(inv.getId())) {
-				returnList.add(inv.getId());
+		return invList;
+	}
+	
+	/**
+	 * Gets the names of the investigations owned, readable or writable by the user with ID 'userId'.
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	public List<String> getAllUserInvestigationNames(int userId) {
+		
+		List<String> returnList = new ArrayList<String>();
+		List<Investigation> invList = getAllUserInvestigations(userId);
+		if (invList != null) {
+			for (Investigation inv : invList) {
+				if (!returnList.contains(inv.getName())) {
+					returnList.add(inv.getName());
+				}
+			}
+		}
+		return returnList;
+	}
+	
+	/**
+	 * Gets the ID's of the investigations owned, readable or writable by the user with ID 'userId'.
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	public List<Integer> getAllUserInvestigationIds(int userId) {
+		List<Integer> returnList = new ArrayList<Integer>();
+		List<Investigation> invList = getAllUserInvestigations(userId);
+		if (invList != null) {
+			for (Investigation inv : invList) {
+				if (!returnList.contains(inv.getId())) {
+					returnList.add(inv.getId());
+				}
 			}
 		}
 		return returnList;
