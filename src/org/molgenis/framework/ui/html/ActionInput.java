@@ -330,8 +330,8 @@ public class ActionInput extends HtmlInput<Object>
 			String iconClass = getIcon().replace("/", "-").replace(".png", "").replace(".jpg", "");
 			// Make the actual CSS for the icon button
 			iconClassCss = "<style type=\"text/css\">";
-			iconClassCss += "." + iconClass + " { background-image: url(" + getIcon() + ") !important; " +
-				"width: " + this.getIconWidth() + "px; height: " + this.getIconHeight() + "px; }";
+			iconClassCss += "." + iconClass + " { background-image: url(" + getIcon() + ") !important; ";// +
+				//"width: " + this.getIconWidth() + "px; height: " + this.getIconHeight() + "px; }";
 			iconClassCss += "</style>";
 			// Make the jQuery code to be appended to make the button an image button
 			icons += "{ icons: {primary:'" + iconClass + "', secondary: null}"
@@ -340,7 +340,7 @@ public class ActionInput extends HtmlInput<Object>
 		String result = iconClassCss + "<button id=\"" + this.getId() + "\"" + " onClick=\""
 				+ this.getJavaScriptAction() + "\">" + this.getButtonValue()
 				+ "</button>" + "<script>$(\"#" + this.getId() + "\")"
-				+ (getIcon() != null ? ".height(" + (this.getIconHeight() + 10) + ").width(" + (this.getIconWidth() + 10) + ")" : "")
+				//+ (getIcon() != null ? ".height(" + (this.getIconHeight() + 10) + ").width(" + (this.getIconWidth() + 10) + ")" : "")
 				+ ".button(" + icons + ");</script>\n";
 
 		return result;

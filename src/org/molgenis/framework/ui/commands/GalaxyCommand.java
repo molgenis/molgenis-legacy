@@ -18,7 +18,7 @@ import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.StringInput;
-import org.molgenis.framework.ui.html.TextParagraph;
+import org.molgenis.framework.ui.html.Paragraph;
 //import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Tuple;
 
