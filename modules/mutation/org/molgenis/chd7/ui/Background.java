@@ -39,6 +39,7 @@ public class Background extends EasyPluginController<BackgroundModel>
 			this.getModel().setNumUnclassifiedMutations(mutationService.getNumMutationsByPathogenicity("unclassified variant"));
 			this.getModel().setNumUnclassifiedPatients(patientService.getNumPatientsByPathogenicity("unclassified variant"));
 			this.getModel().setNumBenignMutations(mutationService.getNumMutationsByPathogenicity("benign"));
+			this.getModel().setNumPatientsUnpub(patientService.getNumUnpublishedPatients());
 		}
 		catch (Exception e)
 		{

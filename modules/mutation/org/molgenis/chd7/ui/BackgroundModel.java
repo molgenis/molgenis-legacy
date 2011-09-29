@@ -24,6 +24,7 @@ public class BackgroundModel extends EasyPluginModel
 	private int numUnclassifiedMutations;
 	private int numUnclassifiedPatients;
 	private int numBenignMutations;
+	private int numPatientsUnpub;
 
 	public int getNumPathogenicMutations() {
 		return numPathogenicMutations;
@@ -56,6 +57,12 @@ public class BackgroundModel extends EasyPluginModel
 		this.numBenignMutations = numBenignMutations;
 	}
 
+	public int getNumPatientsUnpub() {
+		return numPatientsUnpub;
+	}
+	public void setNumPatientsUnpub(int numPatientsUnpub) {
+		this.numPatientsUnpub = numPatientsUnpub;
+	}
 	public BackgroundModel(Background controller)
 	{
 		super(controller);
