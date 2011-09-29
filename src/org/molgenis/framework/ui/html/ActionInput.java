@@ -132,10 +132,12 @@ public class ActionInput extends HtmlInput<Object>
 	@Override
 	public String toHtml()
 	{
-		if (this.uiToolkit == UiToolkit.ORIGINAL)
+		// Use plain HTML rendering if chosen by user OR if there is only an icon and no text to be shown
+		// on the button. Reason for this is that jQuery does not render image-only buttons well, messing up
+		// the alignment.
+		if (this.uiToolkit == UiToolkit.ORIGINAL || (this.getIcon() != null && this.buttonValue.equals("")))
 		{
 			return this.renderDefault();
-
 		}
 		else if (this.uiToolkit == UiToolkit.DOJO)
 		{
