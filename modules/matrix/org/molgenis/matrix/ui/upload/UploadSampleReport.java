@@ -6,7 +6,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.TextInput;
-import org.molgenis.framework.ui.html.TextParagraph;
+import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.matrix.Matrix;
 import org.molgenis.matrix.StringCsvMemoryMatrix;
 import org.molgenis.matrix.ui.StringMatrixView;
@@ -79,7 +79,7 @@ public class UploadSampleReport extends
 	{
 		MolgenisForm f = new MolgenisForm(this.getModel());
 
-		f.add(new TextParagraph("t",
+		f.add(new Paragraph("t",
 				"Done. TODO: show result."));
 		
 //		f.add(new PhenoMatrixView<LibraryLane, ObservableFeature> ("test",phenoMatrix));
@@ -96,7 +96,7 @@ public class UploadSampleReport extends
 
 		MolgenisForm f = new MolgenisForm(this.getModel());
 
-		f.add(new TextParagraph("t",
+		f.add(new Paragraph("t",
 				"Check here your parsed matrix. Click save if you are happy."));
 		
 		f.add(new StringMatrixView("test", csvMatrix));
@@ -116,7 +116,7 @@ public class UploadSampleReport extends
 		MolgenisForm f = new MolgenisForm(this.getModel());
 
 		f
-				.add(new TextParagraph(
+				.add(new Paragraph(
 						"t",
 						"paste here your data matrix in CSV or TAB format. First row is column headers and has 1 value less. First column matches the names of the Targets."));
 

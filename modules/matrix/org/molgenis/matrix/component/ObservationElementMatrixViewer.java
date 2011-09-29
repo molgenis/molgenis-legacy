@@ -14,6 +14,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.CheckboxInput;
+import org.molgenis.framework.ui.html.Division;
 import org.molgenis.framework.ui.html.FlowLayout;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.framework.ui.html.IntInput;
@@ -22,7 +23,7 @@ import org.molgenis.framework.ui.html.MrefInput;
 import org.molgenis.framework.ui.html.Newline;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
-import org.molgenis.framework.ui.html.TextParagraph;
+import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.XrefInput;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
@@ -58,7 +59,7 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	public String MOVEDOWNEND = getName() + "_moveDownEnd";
 	public String COLID = getName() + "_colId";
 	public String COLVALUE = getName() + "_colValue";
-	public String COLLIKE = getName() + "_colLike";
+	public String FILTERCOL = getName() + "_filterCol";
 	public String ROWHEADER = getName() + "_rowHeader";
 	public String ROWHEADEREQUALS = getName() + "_rowHeaderEquals";
 	public String CLEARFILTERS = getName() + "_clearValueFilters";
@@ -67,6 +68,7 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	public String SELECTED = getName() + "_selected";
 	public String UPDATECOLHEADERFILTER = getName() + "_updateColHeaderFilter";
 	public String MEASUREMENTCHOOSER = getName() + "_measurementChooser";
+	public String OPERATOR = getName() + "_operator";
 	
 	/**
 	 * Default constructor.
@@ -85,7 +87,9 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 		this.callingScreenController = callingScreenController;
 		this.matrix = matrix;
 		this.showLimitControls = showLimitControls;
-		this.matrix.rules.addAll(filterRules);
+		if (filterRules != null) {
+			this.matrix.rules.addAll(filterRules);
+		}
 	}
 	
 	/**
@@ -127,200 +131,217 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	
 	public String toHtml()
 	{	
-		FlowLayout f = new FlowLayout();
-		
-		try
-		{
-			// Option to add column filters
-			SelectInput colId = new SelectInput(COLID);
-			colId.setLabel("Add column filter:");
-			colId.setEntityOptions(matrix.getColHeaders());
-			// NB: options are added with Measurement ID's as values and Names as labels
-			colId.setNillable(true);
-			f.add(colId);
-			f.add(new Newline());
-			StringInput colValue = new StringInput(COLVALUE);
-			colValue.setLabel("Like");
-			f.add(colValue);
-			f.add(new Newline());
-			f.add(new ActionInput(COLLIKE, "", "Apply"));
-			f.add(new Newline());
-
-			// Option to add row header filters, currently only 'equals'.
-//			SelectInput rowHeader = new SelectInput(ROWHEADER);
-//			rowHeader.setLabel("Add row header (target name) filter:");
-//			rowHeader.setEntityOptions(matrix.getRowHeaders());
-//			// NB: options are added with Individual ID's as values and Names as labels
-//			rowHeader.setNillable(true);
-//			f.add(rowHeader);
-//			f.add(new Newline());
-//			f.add(new ActionInput(ROWHEADEREQUALS, "", "Apply"));
-//			f.add(new Newline());
-			
-			// Show applied filter rules
-			String filterRules = " none";
-			if (this.matrix.rules.size() > 0) {
-				filterRules = "<br />";
-				int filterCnt = 0;
-				for (MatrixQueryRule mqr : this.matrix.rules) {
-					// Show only column value filters to user
-					if (mqr.getFilterType().equals(MatrixQueryRule.Type.colValueProperty)) {
-						String measurementName = "";
-						for (ObservationElement meas : matrix.getColHeaders()) {
-							if (meas.getId().intValue() == mqr.getDimIndex().intValue()) {
-								measurementName = meas.getName();
-							}
-						}
-						filterRules +=  measurementName + " " + mqr.getOperator().toString() + " " + mqr.getValue();
-						ActionInput removeButton = new ActionInput(REMOVEFILTER + "_" + filterCnt, "", "");
-						removeButton.setIcon("generated-res/img/delete.png");
-						filterRules += removeButton.render() + "<br />";
-					}
-					filterCnt++;
-				}
-			}
-			f.add(new TextParagraph("filterRules", "Applied filter rules:" + filterRules));
-			
-			// button to clear all value filter rules
-			f.add(new ActionInput(CLEARFILTERS, "", "Clear filters"));
-			// button to reload the matrix data, whilst keeping the filters intact
-			f.add(new ActionInput(RELOADMATRIX, "", "Reload data"));
-			f.add(new Newline());
-
-		}
-		catch (Exception e)
-		{
+		try {
+			String result = "<table><tr><td>";
+			result += renderReload();
+			result += "</td><td>";
+			result += renderHeader();
+			result += "</td></tr><tr><td>";
+			result += renderVerticalMovers();
+			result += "</td><td>";
+			result += renderTable();
+			result += "</td></tr><tr><td></td><td>";
+			result += renderFilterPart();
+			result += "</td></tr></table>";
+			return result;
+		} catch (Exception e) {
 			((EasyPluginController)this.callingScreenController).setError(e.getMessage());
 			e.printStackTrace();
+			return new Paragraph("error", e.getMessage()).render();
 		}
-		
-		if (columnsRestricted) {
-			List<Entity> selectedMeasurements = new ArrayList<Entity>();
-			try {
-				selectedMeasurements.addAll(matrix.getColHeaders());
-			} catch (MatrixException e) {
-				e.printStackTrace();
-			}
-			MrefInput measurementChooser = new MrefInput(MEASUREMENTCHOOSER, "Add/remove measurements:", 
-					selectedMeasurements, false, false, 
-					"Choose one or more measurements to be displayed in the matrix viewer", Measurement.class);
-			f.add(measurementChooser);
-			f.add(new ActionInput(UPDATECOLHEADERFILTER, "", "Update"));
-			f.add(new Newline());
-		}
-		
-		if (showLimitControls) {
-			// rowlimit
-			IntInput rowLimitInput = new IntInput(ROWLIMIT, matrix.getRowLimit());
-			rowLimitInput.setLabel("Row limit:");
-			f.add(rowLimitInput);
-			f.add(new ActionInput(CHANGEROWLIMIT, "", "Change"));
-			f.add(new Newline());
-			// colLimit
-			IntInput colLimitInput = new IntInput(COLLIMIT, matrix.getColLimit());
-			colLimitInput.setLabel("Column limit:");
-			f.add(colLimitInput);
-			f.add(new ActionInput(CHANGECOLLIMIT, "", "Change"));
-			f.add(new Newline());
-		}
-		
+	}
+	
+	public String renderReload() {
+		// button to reload the matrix data, whilst keeping the filters intact
+		ActionInput reload = new ActionInput(RELOADMATRIX, "", "");
+		reload.setIcon("generated-res/img/update.gif");
+		return reload.render();
+	}
+	
+	public String renderHeader() throws MatrixException {
+		String divContents = "";
 		// move horizontal
 		ActionInput moveLeftEnd = new ActionInput(MOVELEFTEND, "", "");
 		moveLeftEnd.setIcon("generated-res/img/first.png");
-		f.add(moveLeftEnd);
+		divContents += moveLeftEnd.render();
 		ActionInput moveLeft = new ActionInput(MOVELEFT, "", "");
 		moveLeft.setIcon("generated-res/img/prev.png");
-		f.add(moveLeft);
+		divContents += moveLeft.render();
+		int colOffset = this.matrix.getColOffset();
+		int colLimit = this.matrix.getColLimit();
+		int colCount = this.matrix.getColCount();
+		int colMax = Math.min(colOffset + colLimit, colCount);
+		divContents += "&nbsp;Showing " + colOffset + " - " + colMax + " of " + colCount + "&nbsp;";
+		// rowlimit
+		if (showLimitControls) {
+			IntInput rowLimitInput = new IntInput(ROWLIMIT, matrix.getRowLimit());
+			divContents += "Row limit:";
+			divContents += rowLimitInput.render();
+			divContents += new ActionInput(CHANGEROWLIMIT, "", "Change").render();
+		}
 		ActionInput moveRight = new ActionInput(MOVERIGHT, "", "");
 		moveRight.setIcon("generated-res/img/next.png");
-		f.add(moveRight);
+		divContents += moveRight.render();
 		ActionInput moveRightEnd = new ActionInput(MOVERIGHTEND, "", "");
 		moveRightEnd.setIcon("generated-res/img/last.png");
-		f.add(moveRightEnd);
-		f.add(new Newline());
-
+		divContents += moveRightEnd.render();
+		
+		return divContents;
+	}
+	
+	public String renderVerticalMovers() throws MatrixException {
+		String divContents = "";
 		// move vertical
 		ActionInput moveUpEnd = new ActionInput(MOVEUPEND, "", "");
 		moveUpEnd.setIcon("generated-res/img/rowStart.png");
-		f.add(moveUpEnd);
+		divContents += moveUpEnd.render();
+		divContents += new Newline().render();
 		ActionInput moveUp = new ActionInput(MOVEUP, "", "");
 		moveUp.setIcon("generated-res/img/up.png");
-		f.add(moveUp);
+		divContents += moveUp.render();
+		divContents += new Newline().render();
+		int rowOffset = this.matrix.getRowOffset();
+		int rowLimit = this.matrix.getRowLimit();
+		int rowCount = this.matrix.getRowCount();
+		int rowMax = Math.min(rowOffset + rowLimit, rowCount);
+		divContents += "Showing " + rowOffset + " - " + rowMax + " of " + rowCount;
+		divContents += new Newline().render();
+		// colLimit
+		if (showLimitControls) {
+			IntInput colLimitInput = new IntInput(COLLIMIT, matrix.getColLimit());
+			divContents += "Column limit:";
+			divContents += new Newline().render();
+			divContents += colLimitInput.render();
+			divContents += new Newline().render();
+			divContents += new ActionInput(CHANGECOLLIMIT, "", "Change").render();
+			divContents += new Newline().render();
+		}
 		ActionInput moveDown = new ActionInput(MOVEDOWN, "", "");
 		moveDown.setIcon("generated-res/img/down.png");
-		f.add(moveDown);
+		divContents += moveDown.render();
+		divContents += new Newline().render();
 		ActionInput moveDownEnd = new ActionInput(MOVEDOWNEND, "", "");
 		moveDownEnd.setIcon("generated-res/img/rowStop.png");
-		f.add(moveDownEnd);
-		f.add(new Newline());
-
-		String result = f.render();
+		divContents += moveDownEnd.render();
 		
-		try
+		return divContents;
+	}
+	
+	public String renderTable() throws MatrixException {
+		JQueryDataTable dataTable = new JQueryDataTable(getName() + "DataTable");
+		
+		List<ObservedValue>[][] values = matrix.getValueLists();
+		List<? extends ObservationElement> rows = matrix.getRowHeaders();
+		List<? extends ObservationElement> cols = matrix.getColHeaders();
+		
+		//print colHeaders
+		dataTable.addColumn("");
+		for (ObservationElement col: cols)
 		{
-			JQueryDataTable dataTable = new JQueryDataTable(getName() + "DataTable");
+			dataTable.addColumn(col.getName());
+		}
+		
+		//print rowHeader + colValues
+		for (int row = 0; row < values.length; row++)
+		{
+			List<ObservedValue>[] rowValues = values[row];
 			
-			List<ObservedValue>[][] values = matrix.getValueLists();
-			List<? extends ObservationElement> rows = matrix.getRowHeaders();
-			List<? extends ObservationElement> cols = matrix.getColHeaders();
-			
-			//print colHeaders
-			dataTable.addColumn("");
-			for (ObservationElement col: cols)
+			//print rowHeader
+			dataTable.addRow(rows.get(row).getName());
+			// print selectbox for this row
+			List<String> options = new ArrayList<String>();
+			options.add("" + row);
+			List<String> optionLabels = new ArrayList<String>();
+			optionLabels.add("");
+			CheckboxInput rowCheckbox = new CheckboxInput(SELECTED + "_" + row, options, 
+					optionLabels, "", null, true, false);
+			rowCheckbox.setId(SELECTED + "_" + row);
+			dataTable.setCell(0, row, rowCheckbox);
+			for (int col = 0; col < rowValues.length; col++)
 			{
-				dataTable.addColumn(col.getName());
-			}
-			
-			//print rowHeader + colValues
-			for (int row = 0; row < values.length; row++)
-			{
-				List<ObservedValue>[] rowValues = values[row];
-				
-				//print rowHeader
-				dataTable.addRow(rows.get(row).getName());
-				// print selectbox for this row
-				List<String> options = new ArrayList<String>();
-				options.add("" + row);
-				List<String> optionLabels = new ArrayList<String>();
-				optionLabels.add("");
-				CheckboxInput rowCheckbox = new CheckboxInput(SELECTED + "_" + row, options, 
-						optionLabels, "", null, true, false);
-				rowCheckbox.setId(SELECTED + "_" + row);
-				dataTable.setCell(0, row, rowCheckbox);
-				for (int col = 0; col < rowValues.length; col++)
+				if (rowValues[col] != null || rowValues[col].size() == 0)
 				{
-					if (rowValues[col] != null || rowValues[col].size() == 0)
+					boolean first = true;
+					for(ObservedValue val: rowValues[col])
 					{
-						boolean first = true;
-						for(ObservedValue val: rowValues[col])
-						{
-							String valueToShow = val.getValue();
-							if (valueToShow == null) {
-								valueToShow = val.getRelation_Name();
-							}
-							if (first) 
-							{
-								first = false;
-								dataTable.setCell(col + 1, row, valueToShow);
-							} else {
-								dataTable.setCell(col + 1, row, dataTable.getCell(col + 1, row) + ", " + valueToShow);
-							}
+						String valueToShow = val.getValue();
+						if (valueToShow == null) {
+							valueToShow = val.getRelation_Name();
 						}
-					} else {
-						dataTable.setCell(col, row, "NA");
+						if (first) {
+							first = false;
+							dataTable.setCell(col + 1, row, valueToShow);
+						} else {
+							dataTable.setCell(col + 1, row, dataTable.getCell(col + 1, row) + ", " + valueToShow);
+						}
 					}
+				} else {
+					dataTable.setCell(col, row, "NA");
 				}
 			}
-			
-			result += dataTable.toHtml();
-			
-			return result;
 		}
-		catch (MatrixException e)
-		{
-			e.printStackTrace();
-			return "ERROR: " + e.getMessage();
+		
+		return dataTable.toHtml();
+	}
+	
+	public String renderFilterPart() throws MatrixException {
+		String divContents = "";
+					
+		// Show applied filter rules
+		String filterRules = " none";
+		if (this.matrix.rules.size() > 0) {
+			filterRules = "<br />";
+			int filterCnt = 0;
+			for (MatrixQueryRule mqr : this.matrix.rules) {
+				// Show only column value filters to user
+				if (mqr.getFilterType().equals(MatrixQueryRule.Type.colValueProperty)) {
+					String measurementName = "";
+					for (ObservationElement meas : matrix.getColHeaders()) {
+						if (meas.getId().intValue() == mqr.getDimIndex().intValue()) {
+							measurementName = meas.getName();
+						}
+					}
+					filterRules +=  measurementName + " " + mqr.getOperator().toString() + " " + mqr.getValue();
+					ActionInput removeButton = new ActionInput(REMOVEFILTER + "_" + filterCnt, "", "");
+					removeButton.setIcon("generated-res/img/delete.png");
+					filterRules += removeButton.render() + "<br />";
+				}
+				filterCnt++;
+			}
 		}
+		divContents += new Paragraph("filterRules", "Applied filters:" + filterRules).render();
+		// button to clear all value filter rules
+		//divContents += new ActionInput(CLEARFILTERS, "", "Clear all filters").render();
+		// add column filter
+		SelectInput colId = new SelectInput(COLID);
+		divContents += "Add filter:";
+		colId.setEntityOptions(matrix.getColHeaders());
+		// NB: options are added with Measurement ID's as values and Names as labels
+		colId.setNillable(true);
+		divContents += colId.render();
+		SelectInput operator = new SelectInput(OPERATOR);
+		operator.addOption("Like", "Like");
+		operator.addOption("Equals", "Equals");
+		divContents += operator.render();
+		StringInput colValue = new StringInput(COLVALUE);
+		divContents += colValue.render();
+		divContents += new ActionInput(FILTERCOL, "", "Apply").render();
+		// column header filter
+		if (columnsRestricted) {
+			List<Entity> selectedMeasurements = new ArrayList<Entity>();
+			selectedMeasurements.addAll(matrix.getColHeaders());
+			MrefInput measurementChooser = new MrefInput(MEASUREMENTCHOOSER, "Add/remove columns:", 
+					selectedMeasurements, false, false, 
+					"Choose one or more columns (i.e. measurements) to be displayed in the matrix viewer", 
+					Measurement.class);
+			divContents += new Newline().render();
+			divContents += new Newline().render();
+			divContents += "Add/remove columns:";
+			divContents += measurementChooser.render();
+			divContents += new ActionInput(UPDATECOLHEADERFILTER, "", "Update").render();
+		}
+		
+		return divContents;
 	}
 	
 	public void removeFilter(String action) throws MatrixException
@@ -359,7 +380,7 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 		matrix.reload();
 	}
 
-	public void colLike(Database db, Tuple t) throws Exception
+	public void filterCol(Database db, Tuple t) throws Exception
 	{
 		// First find out whether to filter on the value or the relation_Name field
 		String valuePropertyToUse = ObservedValue.VALUE;
@@ -368,10 +389,16 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 		if (filterMeasurement.getDataType().equals("xref")) {
 			valuePropertyToUse = ObservedValue.RELATION_NAME;
 		}
+		// Find out operator to use
+		QueryRule.Operator op;
+		if (t.getString(OPERATOR).equals("Equals")) {
+			op = QueryRule.Operator.EQUALS;
+		} else {
+			op = QueryRule.Operator.LIKE;
+		}
 		// Then do the actual slicing
 		matrix.sliceByColValueProperty(measurementId,
-				valuePropertyToUse, QueryRule.Operator.LIKE,
-				t.getObject(COLVALUE));
+				valuePropertyToUse, op, t.getObject(COLVALUE));
 	}
 	
 	public void updateColHeaderFilter(Database db, Tuple t) throws Exception

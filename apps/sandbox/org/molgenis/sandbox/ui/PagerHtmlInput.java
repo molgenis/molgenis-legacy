@@ -3,7 +3,7 @@ package org.molgenis.sandbox.ui;
 import org.molgenis.framework.db.paging.DatabasePager;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.framework.ui.html.TextParagraph;
+import org.molgenis.framework.ui.html.Paragraph;
 
 public class PagerHtmlInput extends HtmlInput
 {

@@ -21,7 +21,7 @@ import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.SelectMultipleInput;
-import org.molgenis.framework.ui.html.TextParagraph;
+import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
@@ -38,7 +38,7 @@ public class PrintLabelPlugin extends GenericPlugin
 	private SelectMultipleInput targets;
 	private SelectMultipleInput features;
 	private ActionInput printButton;
-	private TextParagraph text = null;
+	private Paragraph text = null;
 	private CommonService cs = CommonService.getInstance();
 	private LabelGenerator labelGenerator = null;
 	
@@ -121,7 +121,7 @@ public class PrintLabelPlugin extends GenericPlugin
 		
 		labelGenerator.finishDocument();
 		
-        text = new TextParagraph("pdfFilename", "<a href=\"tmpfile/" + filename + "\">Download pdf</a>");
+        text = new Paragraph("pdfFilename", "<a href=\"tmpfile/" + filename + "\">Download pdf</a>");
 		text.setLabel("");
 		// text is added to panel on reload()
 	}

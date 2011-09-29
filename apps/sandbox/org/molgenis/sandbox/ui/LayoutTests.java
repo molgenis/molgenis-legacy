@@ -13,7 +13,7 @@ import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.MultipanelLayout;
 import org.molgenis.framework.ui.html.Newline;
 import org.molgenis.framework.ui.html.TabbedLayout;
-import org.molgenis.framework.ui.html.TextParagraph;
+import org.molgenis.framework.ui.html.Paragraph;
 
 /**
  * LayoutTestsController takes care of all user requests and application logic.
@@ -71,21 +71,21 @@ public class LayoutTests extends EasyPluginController<LayoutTestsModel>
 		
 		mf.add(new Newline());
 		
-		mf.add(new TextParagraph("Demo of accordeon"));
+		mf.add(new Paragraph("Demo of accordeon"));
 		
 		MultipanelLayout l = new AccordeonLayout("demo1");
 		
-		l.add("Panel1", new TextParagraph("hello world 1"));
+		l.add("Panel1", new Paragraph("hello world 1"));
 		
-		l.add("Panel2", new TextParagraph("hello world 2"));
+		l.add("Panel2", new Paragraph("hello world 2"));
 		
-		l.add("Panel3", new TextParagraph("hello world 3"));
+		l.add("Panel3", new Paragraph("hello world 3"));
 		
 		TabbedLayout t = new TabbedLayout("demo2");
 		
 		for(int i = 0; i < 20;i++)
 		{
-		t.add("Panel value"+i, new TextParagraph("hello world "+i));
+		t.add("Panel value"+i, new Paragraph("hello world "+i));
 		}
 		
 		

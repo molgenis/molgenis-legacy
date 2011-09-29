@@ -25,7 +25,7 @@ import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.SelectMultipleInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.Table;
-import org.molgenis.framework.ui.html.TextParagraph;
+import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.XrefInput;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
@@ -267,7 +267,7 @@ public class ApplyProtocolUI {
     	options.add(new ValueLabel("Time", "Show date-time fields with values"));
     	timeBox = new CheckboxInput("TimeBox", "", 
     			"Indicate whether you want date-time fields next to the values", options, null);
-    	protocolDiv.add(new TextParagraph("", "")); // gives empty <p></p>
+    	protocolDiv.add(new Paragraph("", "")); // gives empty <p></p>
 		protocolDiv.add(timeBox);
     }
     
@@ -282,7 +282,7 @@ public class ApplyProtocolUI {
     	allValuesBox = new CheckboxInput("AllValuesBox", "", 
     			"Indicate whether you want to see all values for every target-measurement combination", 
     			options, null);
-    	protocolDiv.add(new TextParagraph("", "")); // gives empty <p></p>
+    	protocolDiv.add(new Paragraph("", "")); // gives empty <p></p>
 		protocolDiv.add(allValuesBox);
     }
 

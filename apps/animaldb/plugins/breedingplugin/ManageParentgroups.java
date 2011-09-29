@@ -447,7 +447,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			}
 			motherMatrixViewer = new ObservationElementMatrixViewer(this, MOTHERMATRIX, 
 					new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
-					false, motherFilterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
+					true, motherFilterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 							Operator.IN, measurementsToShow));
 			// Father matrix viewer
 			List<MatrixQueryRule> fatherFilterRules = new ArrayList<MatrixQueryRule>();
@@ -466,7 +466,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			}
 			fatherMatrixViewer = new ObservationElementMatrixViewer(this, FATHERMATRIX, 
 					new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
-					false, fatherFilterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
+					true, fatherFilterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 							Operator.IN, measurementsToShow));
 		} catch (Exception e) {
 			String message = "Something went wrong while loading matrix viewers";

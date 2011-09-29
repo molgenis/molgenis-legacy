@@ -1,21 +1,18 @@
 package org.molgenis.sandbox.ui;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
-import org.molgenis.framework.ui.html.TextParagraph;
+import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.ObservationElementMatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
-import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
@@ -37,7 +34,7 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 	private static final long serialVersionUID = 2924809526072222758L;
 	ObservationElementMatrixViewer matrixViewer = null;
 	MolgenisForm form = null;
-	TextParagraph selection = null;
+	Paragraph selection = null;
 
 	public MatrixTests(String name, ScreenController<?> parent)
 	{
@@ -102,7 +99,7 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 			selectionItems += "<li>" + row.getName() + "</li>";
 		}
 		selectionItems += "</ul>";
-		selection = new TextParagraph("selection", "You selected from the Matrix component:" + selectionItems);
+		selection = new Paragraph("selection", "You selected from the Matrix component:" + selectionItems);
 	}
 
 //	public void generateData(Database db, Tuple t) throws DatabaseException
