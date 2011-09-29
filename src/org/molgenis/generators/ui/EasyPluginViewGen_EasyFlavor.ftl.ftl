@@ -31,7 +31,7 @@ public class ${clazzName}View extends EasyPluginView<${clazzName}Model>
 		//we use d.getValue() to render the dates in a nicer formatting.
 		DateInput d = new DateInput("date",model.date);
 		
-		f.add(new TextParagraph("desc","currently selected date: "+d.getValue()));
+		f.add(new Paragraph("desc","currently selected date: "+d.getValue()));
 		f.add(new LabelInput("label","Change date: "+d.getValue()));
 		f.add(new DateInput("date", model.date));
 		f.add(new ActionInput("updateDate","Update date"));
