@@ -4,7 +4,7 @@
 	<plugin name="MolgenisHeader" type="plugins.header.BbmriHeader" />
 	<menu name="main" position="left" startswith="WelcomeScreen">
 		<plugin name="BbmriWelcomeScreen" type="plugins.welcome.BbmriWelcomeScreenPlugin" label="Welcome" />
-		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Login" />
+		<plugin name="SimpleUserLogin" type="org.molgenis.auth.ui.SimpleUserLogin" label="Login" />
          <!--  		<menu name="BiobankOverview" label="Biobank Overview">
 			<plugin name="CohortPlugin" type="plugins.listplugin.CohortsPlugin" label="Biobank Overview " />
 		</menu>
