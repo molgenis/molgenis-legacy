@@ -27,7 +27,7 @@
 <tr class="form_listrow1"><th>Pathogenicity</th><td>${mutationSummaryVO.pathogenicity}</td></tr>
 <tr class="form_listrow0"><th>Found in number of patients</th><td><a href="molgenis.do?__target=${screen.name}&__action=findPatients&mid=${mutationSummaryVO.identifier}#results">${mutationSummaryVO.patientSummaryVOList?size}</a></td></tr>
 <tr class="form_listrow1"><th>Phenotypes associated with mutation</th><td><#list mutationSummaryVO.phenotypeNameList as phenotypeName>${phenotypeName}<br/></#list></td></tr>
-<tr class="form_listrow0"><th>References</th><td><#list mutationSummaryVO.publicationVOList as publicationVO><a href="${mutationSummaryVO.pubmedURL}${publicationVO.pubmed}" target="_new">${publicationVO.title}</a><#--<a href="${publication.pdf}" target="_new"><img src="res/img/pdf.gif"></a>--><br/></#list></td></tr>
+<tr class="form_listrow0"><th>References</th><td><#list mutationSummaryVO.publicationVOList as publicationVO><a href="${mutationSummaryVO.pubmedURL}${publicationVO.pubmedId}" target="_new">${publicationVO.title}</a><#--<a href="${publication.pdf}" target="_new"><img src="res/img/pdf.gif"></a>--><br/></#list></td></tr>
 <#--
 <tr class="form_listrow0"><th>Conserved amino acid?</th><td><#if mutationSummaryVO.mutation.conservedAA??>${mutationSummaryVO.mutation.conservedAA?string("yes", "no")}</#if></td></tr>
 <tr class="form_listrow1"><th>Predicted effect on splicing?</th><td><#if mutationSummaryVO.mutation.effectOnSplicing??>${mutationSummaryVO.mutation.effectOnSplicing?string("yes", "no")}</#if></td></tr>

@@ -816,6 +816,7 @@ public class PatientService implements Serializable
 		variantSummaryVO1.setIdentifier(mutation1.getIdentifier());
 		variantSummaryVO1.setCdnaNotation(mutation1.getCdna_Notation());
 		variantSummaryVO1.setAaNotation(mutation1.getAa_Notation());
+		variantSummaryVO1.setExonId(mutation1.getExon_Id());
 		variantSummaryVO1.setExonName(mutation1.getExon_Name());
 		variantSummaryVO1.setConsequence(mutation1.getConsequence());
 		variantSummaryVO1.setPathogenicity(mutation1.getPathogenicity());
@@ -827,6 +828,7 @@ public class PatientService implements Serializable
 			variantSummaryVO2.setIdentifier(mutation2.getIdentifier());
 			variantSummaryVO2.setCdnaNotation(mutation2.getCdna_Notation());
 			variantSummaryVO2.setAaNotation(mutation2.getAa_Notation());
+			variantSummaryVO2.setExonId(mutation2.getExon_Id());
 			variantSummaryVO2.setExonName(mutation2.getExon_Name());
 			variantSummaryVO2.setConsequence(mutation2.getConsequence());
 			variantSummaryVO2.setPathogenicity(mutation2.getPathogenicity());
