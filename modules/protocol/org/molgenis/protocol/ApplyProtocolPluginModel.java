@@ -5,7 +5,7 @@
  * 
  * This class is the model for the ApplyProtocolPlugin
  */
-package plugins.protocol;
+package org.molgenis.protocol;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -38,30 +38,30 @@ public class ApplyProtocolPluginModel {
 	private Map<Measurement, List<String>> codeMapString = new HashMap<Measurement, List<String>>();
 	private Map<Measurement, List<ObservationTarget>> panelMap = new HashMap<Measurement, List<ObservationTarget>>();
 	private Map<Measurement, String> typeMap = new HashMap<Measurement, String>();
-	private CommonService cs;
+	private ApplyProtocolService service;
 	
 	public ApplyProtocolPluginModel() {
 	}
 	
-	public void setCommonService(CommonService cs) {
-		this.cs = cs;
+	public void setService(ApplyProtocolService service) {
+		this.service = service;
 	}
 
 	public void setFeaturesLists(List<Measurement> featuresList) throws DatabaseException, ParseException {
 		this.featuresList = featuresList;
 		
 		for (Measurement m : featuresList) {
-			codeMap.put(m, cs.getAllCodesForFeature(m.getName()));
+			codeMap.put(m, service.getAllCodesForFeature(m.getName()));
 			
-			codeMapString.put(m, cs.getAllCodesForFeatureAsStrings(m.getName()));
+			codeMapString.put(m, service.getAllCodesForFeatureAsStrings(m.getName()));
 			
 			String panelLabel = m.getPanelLabelAllowedForRelation();
-			panelMap.put(m, cs.getAllMarkedPanels(panelLabel, investigationIds));
+			panelMap.put(m, service.getAllMarkedPanels(panelLabel, investigationIds));
 			
 			String observationTargetType = "ObservationTarget";
 			if (m.getTargettypeAllowedForRelation() != null) {
 				int entityId = m.getTargettypeAllowedForRelation_Id();
-				observationTargetType = cs.getEntityName(entityId);
+				observationTargetType = service.getEntityName(entityId);
 			}
 			typeMap.put(m, observationTargetType);
 		}
@@ -141,7 +141,7 @@ public class ApplyProtocolPluginModel {
 
 	public void setUserAndInvestigationIds(int userId) {
 		this.userId = userId;
-		this.investigationIds = cs.getWritableUserInvestigationIds(userId);
+		this.investigationIds = service.getWritableUserInvestigationIds(userId);
 	}
 
 	public int getUserId() {
@@ -149,7 +149,7 @@ public class ApplyProtocolPluginModel {
 	}
 	
 	public int getOwnInvestigationId() {
-		return cs.getOwnUserInvestigationId(userId);
+		return service.getOwnUserInvestigationId(userId);
 	}
 	
 	public List<Integer> getInvestigationIds() {
@@ -157,7 +157,7 @@ public class ApplyProtocolPluginModel {
 	}
 	
 	public Database getDatabase() {
-		return cs.getDatabase();
+		return service.getDatabase();
 	}
 
 	public void setAllValues(boolean allValues) {

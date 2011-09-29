@@ -20,6 +20,7 @@
 		<pathelement location="modules/matrix"/>
 		<pathelement location="modules/batch"/>
 		<pathelement location="modules/search"/>
+		<pathelement location="modules/protocol"/>
 		<pathelement location="modules/decorators/core" />
 		<pathelement location="modules/decorators/auth" />
 		<pathelement location="modules/decorators/pheno" />

@@ -1,4 +1,4 @@
-package plugins.protocol;
+package org.molgenis.protocol;
 
 import java.text.ParseException;
 import java.util.ArrayList;

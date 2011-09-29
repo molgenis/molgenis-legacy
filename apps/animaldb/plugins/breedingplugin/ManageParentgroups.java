@@ -451,8 +451,6 @@ public class ManageParentgroups extends PluginModel<Entity>
 							Operator.IN, measurementsToShow));
 			// Father matrix viewer
 			List<MatrixQueryRule> fatherFilterRules = new ArrayList<MatrixQueryRule>();
-			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
-					Operator.IN, measurementsToShow));
 			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
 					Operator.IN, investigationNames));
 			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Sex"),

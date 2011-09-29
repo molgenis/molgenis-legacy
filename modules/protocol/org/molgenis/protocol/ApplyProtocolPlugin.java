@@ -5,7 +5,7 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package plugins.protocol;
+package org.molgenis.protocol;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -23,15 +23,13 @@ import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
 
-import commonservice.CommonService;
-
 public class ApplyProtocolPlugin extends GenericPlugin
 {
     private static final long serialVersionUID = -5500131586262572567L;
     private ApplyProtocolPluginModel model;
     private ApplyProtocolUI ui;
-    private CommonService cs = CommonService.getInstance();
     private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm", Locale.US);
+    private ApplyProtocolService service = new ApplyProtocolService();
 
     public ApplyProtocolPlugin(String name, ScreenController<?> parent)
     {
@@ -92,10 +90,9 @@ public class ApplyProtocolPlugin extends GenericPlugin
     {
     	int userId = this.getLogin().getUserId();
     	
-		cs.setDatabase(db);
-		cs.makeObservationTargetNameMap(userId, false);
+		service.setDatabase(db);
 		
-		model.setCommonService(cs);
+		model.setService(service);
 		
 		// Only first time or if user changed:
 		if (ui.getProtocolApplicationContainer() == null || userId != model.getUserId()) {
@@ -119,9 +116,9 @@ public class ApplyProtocolPlugin extends GenericPlugin
     	
 		try {
 			int userId = this.getLogin().getUserId();
-			int ownInvId = cs.getOwnUserInvestigationIds(userId).get(0);
-			List<Integer> investigationIds = cs.getWritableUserInvestigationIds(userId);
-		    int paId = cs.makeProtocolApplication(ownInvId, model.getProtocolId());
+			int ownInvId = service.getOwnUserInvestigationIds(userId).get(0);
+			List<Integer> investigationIds = service.getWritableUserInvestigationIds(userId);
+		    int paId = service.makeProtocolApplication(ownInvId, model.getProtocolId());
 		    
 		    for (int row = 1; row <= model.getFullTargetList().size(); row++) {
 		    	
@@ -137,7 +134,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 						colNrInTable *= 3;
 					}
 					
-					List<ObservedValue> originalValues = cs.getObservedValuesByTargetAndFeature(
+					List<ObservedValue> originalValues = service.getObservedValuesByTargetAndFeature(
 							targetId, measurement, investigationIds, ownInvId);
 					
 					if (!model.isNewProtocolApplication()) {
@@ -183,7 +180,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 						    if (!oldValue.equals(newValue) || oldStartTime != startTime || oldEndTime != endTime) {
 								if (dataType.equals("xref")) {
 									// Set _Id instead of _Name because db.update() doesn't resolve foreign keys
-									originalObservedValue.setRelation_Id(cs.getObservationTargetId(newValue));
+									originalObservedValue.setRelation_Id(service.getObservationTargetId(newValue));
 								    originalObservedValue.setValue(null);
 								} else {
 								    originalObservedValue.setValue(newValue);
@@ -370,7 +367,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		model.setProtocolId(Integer.parseInt(protocol.toString()));
 		// Set some feature info only once
 		try {
-			model.setFeaturesLists(cs.getMeasurementsByProtocol(model.getProtocolId()));
+			model.setFeaturesLists(service.getMeasurementsByProtocol(model.getProtocolId()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ScreenMessage("Error: could not retrieve measurements for chosen protocol", false);
@@ -399,7 +396,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		if (model.getBatchesList() != null) {
 			for (Object o : model.getBatchesList()) {
 			    Integer id = Integer.parseInt((String)o);
-			    fullTargetList.addAll(cs.getTargetsFromBatch(id));
+			    fullTargetList.addAll(service.getTargetsFromBatch(id));
 			}
 		}
 		if (fullTargetList.size() == 0) {

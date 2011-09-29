@@ -85,16 +85,7 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 		this.callingScreenController = callingScreenController;
 		this.matrix = matrix;
 		this.showLimitControls = showLimitControls;
-		// Make sure we add only col value filters:
-		if (filterRules != null) {
-			for (MatrixQueryRule mqr : filterRules) {
-				if (mqr.getFilterType().equals(MatrixQueryRule.Type.colValueProperty)) {
-					this.matrix.rules.add(mqr);
-				} else {
-					logger.warn("Attempt to add a non-colValueProperty filter!");
-				}
-			}
-		}
+		this.matrix.rules.addAll(filterRules);
 	}
 	
 	/**
