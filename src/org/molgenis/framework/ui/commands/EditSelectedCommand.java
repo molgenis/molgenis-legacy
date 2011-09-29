@@ -16,7 +16,7 @@ import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HiddenInput;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.framework.ui.html.TextParagraph;
+import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
@@ -151,13 +151,13 @@ public class EditSelectedCommand extends SimpleCommand
 		List<HtmlInput<?>> inputs = new ArrayList<HtmlInput<?>>();
 		
 		if(this.selectedIds == null || this.selectedIds.size() == 0){
-			TextParagraph t = new TextParagraph("No records were selected for updating.");
+			Paragraph t = new Paragraph("No records were selected for updating.");
 			t.setDescription("Error.");
 			inputs.add(t);
 			return inputs;
 		}
 		
-		TextParagraph t = new TextParagraph("Selected ids:"+ this.selectedIds.toString());
+		Paragraph t = new Paragraph("Selected ids:"+ this.selectedIds.toString());
 		t.setDescription("The IDs you have selected for updating.");
 		inputs.add(t);
 

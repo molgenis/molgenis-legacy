@@ -19,13 +19,16 @@ public class JQueryDataTable extends Table
 	@Override
 	public String toHtml() {
 		String result = super.toHtml();
-		result += "<script>$('#"+getId()+"').dataTable({" +
+		result += "<script>$('#"+getId()+"')" +
+				".css('min-height','100px')" +
+				".dataTable({" +
 				"\n\"bPaginate\": false," +
-				"\n\"bLengthChange\": false," +
+				"\n\"bLengthChange\": true," +
 				"\n\"bFilter\": false," +
 				"\n\"bSort\": false," +
 				"\n\"bInfo\": false," +
-				"\n\"bJQueryUI\": true,});</script>";
+				"\n\"bJQueryUI\": true})" +
+				"</script>";
 		return result;
 	}
 
