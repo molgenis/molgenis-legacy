@@ -140,7 +140,7 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 			result += renderVerticalMovers();
 			result += "</td><td>";
 			result += renderTable();
-			result += "</td></tr><tr><td></td><td>";
+			result += "</td></tr><tr><td colspan='2'>";
 			result += renderFilterPart();
 			result += "</td></tr></table>";
 			return result;
@@ -171,13 +171,13 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 		int colLimit = this.matrix.getColLimit();
 		int colCount = this.matrix.getColCount();
 		int colMax = Math.min(colOffset + colLimit, colCount);
-		divContents += "&nbsp;Showing " + colOffset + " - " + colMax + " of " + colCount + "&nbsp;";
-		// rowlimit
+		divContents += "&nbsp;Showing " + (colOffset + 1) + " - " + colMax + " of " + colCount + "&nbsp;";
+		// collimit
 		if (showLimitControls) {
-			IntInput rowLimitInput = new IntInput(ROWLIMIT, matrix.getRowLimit());
-			divContents += "Row limit:";
-			divContents += rowLimitInput.render();
-			divContents += new ActionInput(CHANGEROWLIMIT, "", "Change").render();
+			IntInput colLimitInput = new IntInput(COLLIMIT, colLimit);
+			divContents += "Column limit:";
+			divContents += colLimitInput.render();
+			divContents += new ActionInput(CHANGECOLLIMIT, "", "Change").render();
 		}
 		ActionInput moveRight = new ActionInput(MOVERIGHT, "", "");
 		moveRight.setIcon("generated-res/img/next.png");
@@ -204,16 +204,16 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 		int rowLimit = this.matrix.getRowLimit();
 		int rowCount = this.matrix.getRowCount();
 		int rowMax = Math.min(rowOffset + rowLimit, rowCount);
-		divContents += "Showing " + rowOffset + " - " + rowMax + " of " + rowCount;
+		divContents += "Showing " + (rowOffset + 1) + " - " + rowMax + " of " + rowCount;
 		divContents += new Newline().render();
-		// colLimit
+		// rowLimit
 		if (showLimitControls) {
-			IntInput colLimitInput = new IntInput(COLLIMIT, matrix.getColLimit());
-			divContents += "Column limit:";
+			IntInput rowLimitInput = new IntInput(ROWLIMIT, rowLimit);
+			divContents += "Row limit:";
 			divContents += new Newline().render();
-			divContents += colLimitInput.render();
+			divContents += rowLimitInput.render();
 			divContents += new Newline().render();
-			divContents += new ActionInput(CHANGECOLLIMIT, "", "Change").render();
+			divContents += new ActionInput(CHANGEROWLIMIT, "", "Change").render();
 			divContents += new Newline().render();
 		}
 		ActionInput moveDown = new ActionInput(MOVEDOWN, "", "");

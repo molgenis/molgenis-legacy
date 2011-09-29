@@ -13,7 +13,7 @@ import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.StringInput;
-import org.molgenis.framework.ui.html.TextParagraph;
+import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.XrefInput;
 import org.molgenis.util.Pbs;
 import org.molgenis.util.PbsJob;
@@ -132,7 +132,7 @@ public class PbsSubmitApplication extends
 		// if already submitted, we expect here to see it running?
 		if (currentjob != null)
 		{
-			mf.add(new TextParagraph("removeme", currentjob.toString()));
+			mf.add(new Paragraph("removeme", currentjob.toString()));
 		}
 
 		return mf.render();
