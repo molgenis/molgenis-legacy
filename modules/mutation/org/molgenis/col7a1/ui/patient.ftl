@@ -1,4 +1,4 @@
-<#assign patientSummaryVO = vo.patientSummaryVO>
+<#assign patientSummaryVO = model.patientSummaryVO>
 <table class="listtable">
 <tr class="form_listrow0"><th>Patient ID</th><td>${patientSummaryVO.patientIdentifier}</td></tr>
 <tr class="form_listrow1"><th>Genotype</th><td>
