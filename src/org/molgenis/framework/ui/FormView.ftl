@@ -11,7 +11,7 @@
 		<!--
 			<td colspan="3" class="form_title">
 	<#list screen.getFilters() as filter>
-				<label><#if filter_index=0>where: <#else></#if>${filter}</label><image height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="setInput('${screen.name}_form','_self','','${screen.name}','filter_remove','iframe'); document.forms.${screen.name}_form.filter_id.value='${filter_index}'; document.forms.${screen.name}_form.submit();" title="remove filter"/>
+				<label><#if filter_index=0>where: <#else></#if>${filter}</label><img height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="setInput('${screen.name}_form','_self','','${screen.name}','filter_remove','iframe'); document.forms.${screen.name}_form.filter_id.value='${filter_index}'; document.forms.${screen.name}_form.submit();" title="remove filter"/>
 	</#list>
 			</td>
         -->
@@ -253,9 +253,9 @@ var molgenis_required = new Array(${required});
 		</form>
 	</table>
 	<p align="right">
-		<!--<image class="edit_button" src="generated-res/img/save.png" alt="Save" onclick="document.forms.${screen.name}_massupdate.submit(); window.opener.location.href = window.opener.location.href; window.close();" title="update records"/>-->
-		<image class="edit_button" src="generated-res/img/save.png" alt="Save" onclick="document.forms.${screen.name}_massupdate.target = window.opener.name; document.forms.${screen.name}_massupdate.submit(); window.close();" title="update records"/>
-		<image class="edit_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="window.close();" title="cancel updating records"/>
+		<!--<img class="edit_button" src="generated-res/img/save.png" alt="Save" onclick="document.forms.${screen.name}_massupdate.submit(); window.opener.location.href = window.opener.location.href; window.close();" title="update records"/>-->
+		<img class="edit_button" src="generated-res/img/save.png" alt="Save" onclick="document.forms.${screen.name}_massupdate.target = window.opener.name; document.forms.${screen.name}_massupdate.submit(); window.close();" title="update records"/>
+		<img class="edit_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="window.close();" title="cancel updating records"/>
 	</p>
 	
 	<#else>
@@ -309,10 +309,10 @@ var molgenis_required = new Array(${required});
 </#list>		
 </table></td><td  class="edit_button_area">
 <#if readonly != "true">
-<image class="edit_button" id="save_${screen.name}" src="generated-res/img/save.png" alt="Save" onclick="if ($('#${screen.name}_form').valid() && validateForm(document.forms.${screen.name}_form,new Array(${required}))) {setInput('${screen.name}_form','_self','','${screen.name}','update','iframe'); document.forms.${screen.name}_form.submit();}" title="save the changes" />
+<img class="edit_button" id="save_${screen.name}" src="generated-res/img/save.png" alt="Save" onclick="if ($('#${screen.name}_form').valid() && validateForm(document.forms.${screen.name}_form,new Array(${required}))) {setInput('${screen.name}_form','_self','','${screen.name}','update','iframe'); document.forms.${screen.name}_form.submit();}" title="save the changes" />
 <#-->image class="edit_button" src="generated-res/img/save.png" alt="Save" onclick="setInput('${screen.name}_form','_self','','${screen.name}','update','iframe'); document.forms.${screen.name}_form.submit();}" title="save the changes" /-->
-<image class="edit_button" id="reset_${screen.name}" src="generated-res/img/reset.png" alt="Reset" onClick="setInput('${screen.name}_form','_self','','${screen.name}','listview','iframe'); document.forms.${screen.name}_form.submit();" title="stop editing and go to list view" />
-<image class="edit_button" id="delete_${screen.name}" src="generated-res/img/delete.png" alt="Delete" onclick="if (confirm('You are about to delete a record. If you click [yes] you won\'t be able to undo this operation.')) { setInput('${screen.name}_form','_self','','${screen.name}','remove','iframe'); document.forms.${screen.name}_form.submit(); }" title="delete current record" />
+<img class="edit_button" id="reset_${screen.name}" src="generated-res/img/reset.png" alt="Reset" onClick="setInput('${screen.name}_form','_self','','${screen.name}','listview','iframe'); document.forms.${screen.name}_form.submit();" title="stop editing and go to list view" />
+<img class="edit_button" id="delete_${screen.name}" src="generated-res/img/delete.png" alt="Delete" onclick="if (confirm('You are about to delete a record. If you click [yes] you won\'t be able to undo this operation.')) { setInput('${screen.name}_form','_self','','${screen.name}','remove','iframe'); document.forms.${screen.name}_form.submit(); }" title="delete current record" />
 </#if>
 </td></tr></table>		
 	</#list>
@@ -474,7 +474,7 @@ var molgenis_required = new Array(${required});
 			<!--<td class="form_collapse" style="width: 12px;float:right;clear:right; margin:5px;"><img src="generated-res/img/minus.png" id="${screen.name}_toggleImage" onclick="javascript:toggleForm('${screen.name}')"/></td>-->
 			<#list screen.getFilters() as filter>			
 				<div style="float: right;">
-					<label>Search results <#if filter_index=0>where: <#else></#if>${filter}</label><image id="remove_filter_${filter_index}" height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="setInput('${screen.name}_form','_self','','${screen.name}','filter_remove','iframe'); document.forms.${screen.name}_form.filter_id.value='${filter_index}'; document.forms.${screen.name}_form.submit();" title="remove filter"/>
+					<label>Search results <#if filter_index=0>where: <#else></#if>${filter}</label><img id="remove_filter_${filter_index}" height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="setInput('${screen.name}_form','_self','','${screen.name}','filter_remove','iframe'); document.forms.${screen.name}_form.filter_id.value='${filter_index}'; document.forms.${screen.name}_form.submit();" title="remove filter"/>
 				</div>
 			</#list>
 		
