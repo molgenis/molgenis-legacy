@@ -118,24 +118,13 @@
 <#elseif screen.action == "AddLitter">
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowLitters">Back to overview</a></p>
-
-	<!-- Auto-generate name
-	<div id='newlitter_name_part' class='row' style="width:700px">
-		<label for='littername'>Litter name:</label>
-		<input type='text' class='textbox' name='littername' id='littername' value='<#if screen.litterName?exists>${screen.getLitterName()}</#if>' />
-	</div>
-	-->
 	
-	<!-- Parent group -->
-	<div id="parentgroupselect" class="row" style='clear:left'>
-		<label for="parentgroup">Parent group:</label>
-		<select id='parentgroup' name='parentgroup'>
-		<#if screen.parentgroupList?exists>
-			<#list screen.parentgroupList as pgl>
-				<option value='${pgl.id?string.computer}'>${pgl.name}</option>
-			</#list>
-		</#if>
-		</select>
+	<!-- Parent group selector -->
+	<div style='clear:left'>
+		<label for='selectedpg'>Selected parent group:</label>
+		<input id='selectedpg' name='selectedpg' type='text' readonly='readonly' value='${screen.getSelectedParentgroupName()}' />
+		${screen.renderMatrixViewer()}<br />
+		<input type='submit' id='selectpg' value='Select parent group' onclick='__action.value="selectParentgroup"' />
 	</div>
 	
 	<!-- Date of birth -->

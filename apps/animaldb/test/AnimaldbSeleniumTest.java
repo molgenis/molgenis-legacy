@@ -156,6 +156,9 @@ public class AnimaldbSeleniumTest
 		// Add a litter
 		selenium.click("link=Make new litter");
 		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=matrix_selected_0"); // toggle selectbox for first parent group in list
+		selenium.click("id=selectpg");
+		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.type("id=littersize", "5");
 		selenium.click("id=addlitter");
 		selenium.waitForPageToLoad(pageLoadTimeout);

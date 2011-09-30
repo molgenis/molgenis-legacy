@@ -221,9 +221,6 @@ public class ManageParentgroups extends PluginModel<Entity>
 		if (request.getString("startdate") != null) {
 			setStartdate(request.getString("startdate"));
 		}
-//		if (request.getString("groupname") != null) {
-//			setGroupName(request.getString("groupname"));
-//		}
 		if (request.getInt("line") != null) {
 			setLine(request.getInt("line"));
 		}
@@ -236,7 +233,6 @@ public class ManageParentgroups extends PluginModel<Entity>
 		this.selectedMotherIdList.clear();
 		this.selectedFatherIdList.clear();
 		this.setStartdate(dateOnlyFormat.format(new Date()));
-//		this.setGroupName(null);
 		this.setRemarks(null);
 		if (lineList.size() > 0) {
 			this.setLine(lineList.get(0).getId());

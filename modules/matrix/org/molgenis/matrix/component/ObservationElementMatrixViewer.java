@@ -8,26 +8,21 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.CheckboxInput;
-import org.molgenis.framework.ui.html.Division;
-import org.molgenis.framework.ui.html.FlowLayout;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.framework.ui.html.IntInput;
 import org.molgenis.framework.ui.html.JQueryDataTable;
 import org.molgenis.framework.ui.html.MrefInput;
 import org.molgenis.framework.ui.html.Newline;
+import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
-import org.molgenis.framework.ui.html.Paragraph;
-import org.molgenis.framework.ui.html.XrefInput;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
-import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
@@ -419,7 +414,7 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	
 	public void rowHeaderEquals(Database db, Tuple t) throws Exception
 	{
-		matrix.sliceByRowProperty(Individual.ID, QueryRule.Operator.EQUALS, t.getString(ROWHEADER));
+		matrix.sliceByRowProperty(ObservationElement.ID, QueryRule.Operator.EQUALS, t.getString(ROWHEADER));
 	}
 
 	public void changeRowLimit(Database db, Tuple t)

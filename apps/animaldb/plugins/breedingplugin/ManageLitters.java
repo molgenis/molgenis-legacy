@@ -27,10 +27,16 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.Table;
+import org.molgenis.matrix.component.ObservationElementMatrixViewer;
+import org.molgenis.matrix.component.SliceablePhenoMatrix;
+import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.pheno.Code;
 import org.molgenis.pheno.Individual;
+import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -71,11 +77,13 @@ public class ManageLitters extends PluginModel<Entity>
 	private List<Code> earmarkList;
 	private int genoLitterId;
 	private Database db;
-	private boolean firstTime = true;
 	private List<String> bases = null;
 	private String remarks = null;
 	private Table genotypeTable = null;
 	private int nrOfGenotypes = 1;
+	ObservationElementMatrixViewer matrixViewer = null;
+	private static String MATRIX = "matrix";
+	private int userId = -1;
 
 	public ManageLitters(String name, ScreenController<?> parent)
 	{
@@ -131,13 +139,6 @@ public class ManageLitters extends PluginModel<Entity>
 	public void setDoneLitterList(List<Litter> doneLitterList) {
 		this.doneLitterList = doneLitterList;
 	}
-
-//	public String getLitterName() {
-//		return litterName;
-//	}
-//	public void setLitterName(String litterName) {
-//		this.litterName = litterName;
-//	}
 	
 	public String getBirthdate() {
 		if (birthdate != null) {
@@ -183,6 +184,13 @@ public class ManageLitters extends PluginModel<Entity>
 
 	public int getSelectedParentgroup() {
 		return selectedParentgroup;
+	}
+	public String getSelectedParentgroupName() {
+		try {
+			return ct.getObservationTargetLabel(selectedParentgroup);
+		} catch (Exception e) {
+			return "None";
+		}
 	}
 	public void setSelectedParentgroup(int selectedParentgroup) {
 		this.selectedParentgroup = selectedParentgroup;
@@ -274,15 +282,21 @@ public class ManageLitters extends PluginModel<Entity>
 	public void setEarmarkList(List<Code> earmarkList) {
 		this.earmarkList = earmarkList;
 	}
+	
+	public String renderMatrixViewer() {
+		if (matrixViewer != null) {
+			return matrixViewer.render();
+		} else {
+			return "No viewer available, matrix for selecting parent group cannot be rendered.";
+		}
+	}
 
 	private void setUserFields(Tuple request, boolean wean) throws Exception {
 		if (wean == true) {
 			if (request.getString("weandate") == null || request.getString("weandate").equals("")) {
 				throw new Exception("Wean date cannot be empty");
 			}
-			String weanDateString = request.getString("weandate");
-			Date tmpWeanDate = oldDateOnlyFormat.parse(weanDateString);
-			setWeandate(newDateOnlyFormat.format(tmpWeanDate));
+			weandate = request.getString("weandate"); // in old date format!
 			setWeanSizeFemale(request.getInt("weansizefemale"));
 			setWeanSizeMale(request.getInt("weansizemale"));
 			this.setRemarks(request.getString("remarks"));
@@ -306,17 +320,10 @@ public class ManageLitters extends PluginModel<Entity>
 			}
 			
 		} else {
-			//setLitterName(request.getString("littername"));
-			String parentgroupIdString = request.getString("parentgroup");
-			parentgroupIdString = parentgroupIdString.replace(".", "");
-			parentgroupIdString = parentgroupIdString.replace(",", "");
-			setSelectedParentgroup(Integer.parseInt(parentgroupIdString));
 			if (request.getString("birthdate") == null || request.getString("birthdate").equals("")) {
 				throw new Exception("Birth date cannot be empty");
 			}
-			String birthDateString = request.getString("birthdate");
-			Date tmpBirthDate = oldDateOnlyFormat.parse(birthDateString);
-			setBirthdate(newDateOnlyFormat.format(tmpBirthDate));
+			birthdate = request.getString("birthdate"); // in old date format!
 			setLitterSize(request.getInt("littersize"));
 			if (request.getBool("sizeapp_toggle") != null) {
 				setLitterSizeApproximate(true);
@@ -552,6 +559,11 @@ public class ManageLitters extends PluginModel<Entity>
 			
 			this.action = request.getString("__action");
 			
+			if (action.startsWith(matrixViewer.getName())) {
+				matrixViewer.handleRequest(db, request);
+				this.setAction("AddLitter");
+			}
+			
 			if (action.equals("MakeTmpLabels")) {
 				setLitter(request.getInt("id"));
 				makeTempCageLabels();
@@ -573,7 +585,7 @@ public class ManageLitters extends PluginModel<Entity>
 			if (action.equals("ApplyAddLitter")) {
 				int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
 				setUserFields(request, false);
-				Date eventDate = newDateOnlyFormat.parse(birthdate);
+				Date eventDate = oldDateOnlyFormat.parse(birthdate);
 				int userId = this.getLogin().getUserId();
 				
 				int lineId = ct.getMostRecentValueAsXref(selectedParentgroup, ct.getMeasurementId("Line"));
@@ -607,7 +619,7 @@ public class ManageLitters extends PluginModel<Entity>
 				// Date of Birth
 				measurementId = ct.getMeasurementId("DateOfBirth");
 				valuesToAddList.add(ct.createObservedValue(invid, eventid, eventDate, null, measurementId, 
-						litterid, birthdate, 0));
+						litterid, newDateOnlyFormat.format(eventDate), 0));
 				// Size
 				measurementId = ct.getMeasurementId("Size");
 				valuesToAddList.add(ct.createObservedValue(invid, eventid, eventDate, null, measurementId, litterid, 
@@ -656,7 +668,7 @@ public class ManageLitters extends PluginModel<Entity>
 			if (action.equals("Wean")) {
 				int invid = ct.getObservationTargetById(litter).getInvestigation_Id();
 				setUserFields(request, true);
-				Date weanDate = newDateOnlyFormat.parse(weandate);
+				Date weanDate = oldDateOnlyFormat.parse(weandate);
 				int userId = this.getLogin().getUserId();
 				
 				// Init lists that we can later add to the DB at once
@@ -724,7 +736,7 @@ public class ManageLitters extends PluginModel<Entity>
 				protocolId = ct.getProtocolId("SetWeanDate");
 				measurementId = ct.getMeasurementId("WeanDate");
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
-						null, protocolId, measurementId, litter, weandate, 0));
+						null, protocolId, measurementId, litter, newDateOnlyFormat.format(weanDate), 0));
 				// Set weaning remarks on litter
 				if (remarks != null) {
 					protocolId = ct.getProtocolId("SetRemark");
@@ -777,7 +789,7 @@ public class ManageLitters extends PluginModel<Entity>
 					protocolId = ct.getProtocolId("SetWeanDate");
 					measurementId = ct.getMeasurementId("WeanDate");
 					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
-							null, protocolId, measurementId, animalId, weandate, 0));
+							null, protocolId, measurementId, animalId, newDateOnlyFormat.format(weanDate), 0));
 					// Set 'Active'
 					protocolId = ct.getProtocolId("SetActive");
 					measurementId = ct.getMeasurementId("Active");
@@ -1089,6 +1101,20 @@ public class ManageLitters extends PluginModel<Entity>
 			if (action.equals("ShowDoneLitters")) {
 				reloadLitterLists(db, true);
 			}
+			
+			if (action.equals("selectParentgroup")) {
+				setUserFields(request, false);
+				List<? extends ObservationElement> rows = matrixViewer.getSelection();
+				int rowCnt = 0;
+				for (ObservationElement row : rows) {
+					if (request.getBool(MATRIX + "_selected_" + rowCnt) != null) {
+						this.selectedParentgroup = row.getId();
+						break; // take only first selected parent group; TODO: allow only one PG to be selected
+					}
+					rowCnt++;
+				}
+				this.setAction("AddLitter");
+			}
 
 		} catch (Exception e) {
 			try {
@@ -1282,9 +1308,10 @@ public class ManageLitters extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{	
-		if (firstTime == true) {
-			firstTime = false;
+		if (this.getLogin().getUserId().intValue() != userId) {
+			userId = this.getLogin().getUserId().intValue();
 			reloadLitterLists(db, false);
+			reloadMatrixViewer();
 		}
 		
 		try {
@@ -1452,6 +1479,32 @@ public class ManageLitters extends PluginModel<Entity>
 
 	public String getGenotypeTable() {
 		return genotypeTable.render();
+	}
+	
+	private void reloadMatrixViewer() {
+		try {
+			List<String> investigationNames = ct.getAllUserInvestigationNames(userId);
+			
+			List<String> measurementsToShow = new ArrayList<String>();
+			measurementsToShow.add("TypeOfGroup");
+			measurementsToShow.add("Line");
+			List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
+			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
+					Operator.IN, investigationNames));
+			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("TypeOfGroup"),
+					ObservedValue.VALUE, Operator.EQUALS, "Parentgroup"));
+			matrixViewer = new ObservationElementMatrixViewer(this, MATRIX, 
+					new SliceablePhenoMatrix(this.getDatabase(), Panel.class, Measurement.class), 
+					true, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
+							Operator.IN, measurementsToShow));
+		} catch (Exception e) {
+			String message = "Something went wrong while loading matrix viewer";
+			if (e.getMessage() != null) {
+				message += (": " + e.getMessage());
+			}
+			this.getMessages().add(new ScreenMessage(message, false));
+			e.printStackTrace();
+		}
 	}
 	
 }
