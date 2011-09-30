@@ -56,7 +56,7 @@ public class RadioInput extends OptionInput<String>
 			return input.toHtml();
 		}
 
-		StringBuffer optionString = new StringBuffer("");
+		String optionString = "";
 		String readonly = (isReadonly() ? " class=\"readonly\" readonly " : "");
 		String checked;
 
@@ -66,22 +66,24 @@ public class RadioInput extends OptionInput<String>
 			{
 				checked = this.getValue().equals(option.getValue().toString()) ? " checked "
 						: "";
-				optionString.append("<input id=\"" + this.getId()
+				optionString += "<input id=\"" + this.getId()
 						+ "\" type=\"radio\" " + readonly + checked
 						+ " name=\"" + this.getName() + "\" value=\""
 						+ option.getValue() + "\">" + option.getLabel()
-						+ "<br />\n");
+						+ "<br />";
 			}
+			// remove trailing <br />
+			optionString = optionString.substring(0, optionString.length() - 6);
 		}
 		else
 		{
 			checked = this.getValue().equals(this.getName()) ? " checked " : "";
-			optionString.append("<input id=\"" + this.getId()
+			optionString += "<input id=\"" + this.getId()
 					+ "\" type=\"radio\" " + readonly + checked + " name=\""
-					+ this.getName() + "\">" + this.getLabel());
+					+ this.getName() + "\">" + this.getLabel();
 		}
 
-		return optionString.toString();
+		return optionString;
 	}
 
 	@Override

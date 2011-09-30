@@ -13,6 +13,7 @@ import org.molgenis.util.ValueLabel;
 public class CheckboxInput extends OptionInput<List<String>>
 {
 	public static final String VALUES = "values";
+	private String onchange = null;
 	
 	/**
 	 * Construct a checkbox input with a name, a label and a description, as
@@ -95,6 +96,16 @@ public class CheckboxInput extends OptionInput<List<String>>
 		super();
 	}
 
+	public String getOnchange()
+	{
+		return onchange;
+	}
+
+	public void setOnchange(String onchange)
+	{
+		this.onchange = onchange;
+	}
+
 	@Override
 	public String toHtml()
 	{
@@ -108,6 +119,8 @@ public class CheckboxInput extends OptionInput<List<String>>
 		StringBuffer optionString = new StringBuffer("");
 		String readonly = (isReadonly() ? " class=\"readonly\" readonly " : "");
 		String checked = "";
+		String onchange = (this.onchange != null) ? " onchange=\""
+				+ this.onchange + "\"" : "";
 
 		if (!(getOptions().isEmpty()))
 		{
@@ -119,7 +132,7 @@ public class CheckboxInput extends OptionInput<List<String>>
 							.getValue().toString()) ? " checked " : "");
 				}
 				optionString.append("<input id=\"" + this.getId()
-						+ "\" type=\"checkbox\" " + readonly + checked
+						+ "\" type=\"checkbox\" " + onchange + readonly + checked
 						+ " name=\"" + this.getName() + "\" value=\""
 						+ option.getValue() + "\">" + option.getLabel()
 						+ "<br />\n");
@@ -133,7 +146,7 @@ public class CheckboxInput extends OptionInput<List<String>>
 						.getName()) ? " checked " : "");
 			}
 			optionString.append("<input id=\"" + this.getId()
-					+ "\" type=\"checkbox\" " + readonly + checked + " name=\""
+					+ "\" type=\"checkbox\" " + onchange + readonly + checked + " name=\""
 					+ this.getName() + "\">" + this.getLabel());
 		}
 
