@@ -5,15 +5,15 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package org.molgenis.mutation.ui.header;
+package org.molgenis.col7a1.ui;
 
 import org.molgenis.framework.ui.EasyPluginModel;
 
-public class Col7a1HeaderModel extends EasyPluginModel
+public class HeaderModel extends EasyPluginModel
 {
 	private static final long serialVersionUID = 1L; //a system veriable that is needed by tomcat
 
-	public Col7a1HeaderModel(Col7a1Header controller)
+	public HeaderModel(Header controller)
 	{
 		super(controller);
 	}

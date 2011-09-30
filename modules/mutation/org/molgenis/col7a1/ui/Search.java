@@ -5,9 +5,7 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package org.molgenis.mutation.ui.search.col7a1;
-
-import java.util.List;
+package org.molgenis.col7a1.ui;
 
 import org.apache.commons.lang.text.StrBuilder;
 import org.molgenis.framework.db.Database;

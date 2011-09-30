@@ -5,11 +5,12 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package org.molgenis.mutation.ui.background;
+package org.molgenis.col7a1.ui;
 
 import java.util.HashMap;
 
 import org.molgenis.framework.ui.EasyPluginModel;
+import org.molgenis.col7a1.ui.Background;
 
 /**
  * BackgroundModel takes care of all state and it can have helper methods to query the database.
@@ -25,6 +26,7 @@ public class BackgroundModel extends EasyPluginModel
 	private int numMutationsUnpub;
 	private int numPatients;
 	private int numPatientsUnpub;
+
 	private HashMap<String, Integer> phenotypeCountHash;
 
 	public int getNumMutations() {
@@ -48,6 +50,9 @@ public class BackgroundModel extends EasyPluginModel
 	public int getNumPatientsUnpub() {
 		return numPatientsUnpub;
 	}
+	public HashMap<String, Integer> getPhenotypeCountHash() {
+		return phenotypeCountHash;
+	}
 	public void setNumPatientsUnpub(int numPatientsUnpub) {
 		this.numPatientsUnpub = numPatientsUnpub;
 	}
@@ -59,12 +64,6 @@ public class BackgroundModel extends EasyPluginModel
 	}
 
 	public BackgroundModel(Background controller)
-	{
-		//each Model can access the controller to notify it when needed.
-		super(controller);
-	}
-	
-	public BackgroundModel(Chd7Background controller)
 	{
 		//each Model can access the controller to notify it when needed.
 		super(controller);

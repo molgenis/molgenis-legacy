@@ -16,7 +16,7 @@ ${variantSummaryVO.cdnaNotation}<#if variantSummaryVO.aaNotation??> (${variantSu
 <tr class="form_listrow1"><th>Reference</th><td>
 <#if patientSummaryVO.publicationVOList?? && patientSummaryVO.publicationVOList?size &gt; 0>
 <#list patientSummaryVO.publicationVOList as publicationVO>
-<a href="${patientSummaryVO.pubmedURL}${publicationVO.pubmed}" target="_new">${publicationVO.title}</a><br/>
+<a href="${patientSummaryVO.pubmedURL}${publicationVO.pubmedId}" target="_new">${publicationVO.title}</a><br/>
 </#list>
 <#if patientSummaryVO.submitterDepartment??>
 First submitted as unpublished case by

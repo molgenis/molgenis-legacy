@@ -5,22 +5,22 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package org.molgenis.mutation.ui.header;
+package org.molgenis.col7a1.ui;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 
-public class Col7a1Header extends EasyPluginController<Col7a1HeaderModel>
+public class Header extends EasyPluginController<HeaderModel>
 {
 	private static final long serialVersionUID = 5933871906981851063L;
 
-	public Col7a1Header(String name, ScreenController<?> parent)
+	public Header(String name, ScreenController<?> parent)
 	{
 		super(name, null, parent);
-		this.setModel(new Col7a1HeaderModel(this));
-		this.setView(new FreemarkerView("Col7a1Header.ftl", getModel()));
+		this.setModel(new HeaderModel(this));
+		this.setView(new FreemarkerView("Header.ftl", getModel()));
 	}
 
 	@Override

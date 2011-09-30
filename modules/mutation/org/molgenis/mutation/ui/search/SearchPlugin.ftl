@@ -64,7 +64,7 @@
 <#elseif vo.action?starts_with("showPatient")>
 
 	<#if vo.geneName == "COL7A1">
-		<#include "col7a1/patient.ftl">
+		<#include "/org/molgenis/col7a1/ui/patient.ftl">
 	<#else>
 		<#include "patient.ftl">
 	</#if>
