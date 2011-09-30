@@ -253,7 +253,7 @@ public class ApplyProtocolUI {
     	optionLabels.add("Make new values");
     	optionLabels.add("Edit existing values");
     	
-    	newOrEditButtons = new RadioInput("NewOrEdit", "", "New", false, false,
+    	newOrEditButtons = new RadioInput("NewOrEdit", "", "Make new values", false, false,
 				"Indicate whether you want to fill in new values or edit existing ones.", options, optionLabels);
     	
 		protocolDiv.add(newOrEditButtons);

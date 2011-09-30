@@ -368,10 +368,11 @@ public class ManageParentgroups extends PluginModel<Entity>
 			}
 			
 		} catch (Exception e) {
-			this.getMessages().clear();
+			String message = "Something went wrong";
 			if (e.getMessage() != null) {
-				this.getMessages().add(new ScreenMessage(e.getMessage(), false));
+				message += ": " + e.getMessage();
 			}
+			this.getMessages().add(new ScreenMessage(message, false));
 			e.printStackTrace();
 		}
 	}
@@ -443,7 +444,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			}
 			motherMatrixViewer = new ObservationElementMatrixViewer(this, MOTHERMATRIX, 
 					new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
-					true, motherFilterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
+					true, true, motherFilterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 							Operator.IN, measurementsToShow));
 			// Father matrix viewer
 			List<MatrixQueryRule> fatherFilterRules = new ArrayList<MatrixQueryRule>();
@@ -462,7 +463,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			}
 			fatherMatrixViewer = new ObservationElementMatrixViewer(this, FATHERMATRIX, 
 					new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
-					true, fatherFilterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
+					true, true, fatherFilterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 							Operator.IN, measurementsToShow));
 		} catch (Exception e) {
 			String message = "Something went wrong while loading matrix viewers";

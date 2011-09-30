@@ -1105,14 +1105,8 @@ public class ManageLitters extends PluginModel<Entity>
 			if (action.equals("selectParentgroup")) {
 				setUserFields(request, false);
 				List<? extends ObservationElement> rows = matrixViewer.getSelection();
-				int rowCnt = 0;
-				for (ObservationElement row : rows) {
-					if (request.getBool(MATRIX + "_selected_" + rowCnt) != null) {
-						this.selectedParentgroup = row.getId();
-						break; // take only first selected parent group; TODO: allow only one PG to be selected
-					}
-					rowCnt++;
-				}
+				int row = request.getInt(MATRIX + "_selected");
+				this.selectedParentgroup = rows.get(row).getId();
 				this.setAction("AddLitter");
 			}
 
@@ -1495,7 +1489,7 @@ public class ManageLitters extends PluginModel<Entity>
 					ObservedValue.VALUE, Operator.EQUALS, "Parentgroup"));
 			matrixViewer = new ObservationElementMatrixViewer(this, MATRIX, 
 					new SliceablePhenoMatrix(this.getDatabase(), Panel.class, Measurement.class), 
-					true, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
+					true, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 							Operator.IN, measurementsToShow));
 		} catch (Exception e) {
 			String message = "Something went wrong while loading matrix viewer";

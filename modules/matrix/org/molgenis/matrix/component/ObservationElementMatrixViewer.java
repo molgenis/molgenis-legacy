@@ -2,8 +2,10 @@ package org.molgenis.matrix.component;
 
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
@@ -36,9 +38,11 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	
 	SliceablePhenoMatrix<? extends ObservationElement, ? extends ObservationElement> matrix;
 	Logger logger = Logger.getLogger(this.getClass());
+	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 	
 	private boolean showLimitControls = true;
 	private boolean columnsRestricted = false;
+	private boolean selectMultiple = true;
 	
 	public String ROWLIMIT = getName() + "_rowLimit";
 	public String CHANGEROWLIMIT = getName() + "_changeRowLimit";
@@ -75,13 +79,14 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	 */
 	public ObservationElementMatrixViewer(ScreenController<?> callingScreenController, String name, 
 			SliceablePhenoMatrix<? extends ObservationElement, ? extends ObservationElement> matrix,
-			boolean showLimitControls, List<MatrixQueryRule> filterRules)
+			boolean showLimitControls, boolean selectMultiple, List<MatrixQueryRule> filterRules)
 	{
 		super(name);
 		super.setLabel("");
 		this.callingScreenController = callingScreenController;
 		this.matrix = matrix;
 		this.showLimitControls = showLimitControls;
+		this.selectMultiple = selectMultiple;
 		if (filterRules != null) {
 			this.matrix.rules.addAll(filterRules);
 		}
@@ -99,10 +104,10 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	 */
 	public ObservationElementMatrixViewer(ScreenController<?> callingScreenController, String name, 
 			SliceablePhenoMatrix<? extends ObservationElement, ? extends ObservationElement> matrix,
-			boolean showLimitControls, List<MatrixQueryRule> filterRules, MatrixQueryRule columnRule) 
-					throws Exception
+			boolean showLimitControls, boolean selectMultiple, List<MatrixQueryRule> filterRules, 
+			MatrixQueryRule columnRule) throws Exception
 	{
-		this(callingScreenController, name, matrix, showLimitControls, filterRules);
+		this(callingScreenController, name, matrix, showLimitControls, selectMultiple, filterRules);
 		if (columnRule != null && columnRule.getFilterType().equals(MatrixQueryRule.Type.colHeader)) {
 			columnsRestricted = true;
 			this.matrix.rules.add(columnRule);
@@ -241,15 +246,22 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 		{
 			// print rowHeader
 			dataTable.addRow(rows.get(row).getName());
-			// print selectbox for this row
-			List<String> options = new ArrayList<String>();
-			options.add("" + row);
-			List<String> optionLabels = new ArrayList<String>();
-			optionLabels.add("");
-			CheckboxInput rowCheckbox = new CheckboxInput(SELECTED + "_" + row, options, 
-					optionLabels, "", null, true, false);
-			rowCheckbox.setId(SELECTED + "_" + row);
-			dataTable.setCell(0, row, rowCheckbox);
+			// print checkbox or radio input for this row
+			if (selectMultiple) {
+				List<String> options = new ArrayList<String>();
+				options.add("" + row);
+				List<String> optionLabels = new ArrayList<String>();
+				optionLabels.add("");
+				CheckboxInput rowCheckbox = new CheckboxInput(SELECTED + "_" + row, options, 
+						optionLabels, "", null, true, false);
+				rowCheckbox.setId(SELECTED + "_" + row);
+				dataTable.setCell(0, row, rowCheckbox);
+			} else {
+				// When the user may select only one, use a radio button group, which is mutually exclusive
+				String radioButtonCode = "<input type='radio' name='" + SELECTED + "' id='" + 
+						(SELECTED + "_" + row) + "' value='" + row + "'></input>";
+				dataTable.setCell(0, row, radioButtonCode);
+			}
 			// get the data for this row
 			List<ObservedValue>[] rowValues = values[row];
 			for (int col = 0; col < rowValues.length; col++) {
@@ -261,10 +273,10 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 							valueToShow = val.getRelation_Name();
 						}
 						if (val.getTime() != null) {
-							valueToShow += " (valid from " + val.getTime();
+							valueToShow += " (valid from " + newDateOnlyFormat.format(val.getTime());
 						}
 						if (val.getEndtime() != null) {
-							valueToShow += " through " + val.getEndtime() + ")";
+							valueToShow += " through " + newDateOnlyFormat.format(val.getEndtime()) + ")";
 						} else if (val.getTime() != null) {
 							valueToShow += ")";
 						}

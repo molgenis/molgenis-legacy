@@ -8,11 +8,11 @@
 <div id="header">
 
 	<div style="float:left">
-		<a href="http://www.animaldb.org"><img src="res/img/animaldb.png" width="361px" height="90px" /></a>
+		<a href="http://www.animaldb.org"><img src="res/img/animaldb.png" width="361px" height="90px"></a>
 	</div>
 	
 	<div style="float:right; margin-top:20px">
-		<a href="http://www.molgenis.org"><img src="generated-res/img/logo_molgenis.gif" height="70px" /></a>
+		<a href="http://www.molgenis.org"><img src="generated-res/img/logo_molgenis.gif" height="70px"></a>
 	</div>
 	
 	<div style="clear:both"></div>
