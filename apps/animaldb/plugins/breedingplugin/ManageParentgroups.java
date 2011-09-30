@@ -42,7 +42,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 	private List<Integer> selectedFatherIdList = null;
 	private CommonService ct = CommonService.getInstance();
 	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
-	private SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+	private SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	private String startdate = null;
 	private List<ObservationTarget> lineList;
 	private int line = -1;
@@ -217,18 +217,6 @@ public class ManageParentgroups extends PluginModel<Entity>
 		db.add(valuesToAddList);
 	}
 	
-	private void setUserFields(Tuple request) {
-		if (request.getString("startdate") != null) {
-			setStartdate(request.getString("startdate"));
-		}
-		if (request.getInt("line") != null) {
-			setLine(request.getInt("line"));
-		}
-		if (request.getString("remarks") != null) {
-			setRemarks(request.getString("remarks"));
-		}
-	}
-	
 	private void resetUserFields() {
 		this.selectedMotherIdList.clear();
 		this.selectedFatherIdList.clear();
@@ -251,27 +239,79 @@ public class ManageParentgroups extends PluginModel<Entity>
 			
 			if (action.startsWith(motherMatrixViewer.getName())) {
 				motherMatrixViewer.handleRequest(db, request);
-				this.setAction("showAddParentgroup");
+				this.setAction("addParentgroupScreen2"); // return to mother selection screen
 			}
 			if (action.startsWith(fatherMatrixViewer.getName())) {
 				fatherMatrixViewer.handleRequest(db, request);
-				this.setAction("showAddParentgroup");
+				this.setAction("addParentgroupScreen3"); // return to father selection screen
 			}
 			
 			if (action.equals("init")) {
-				// do nothing
+				// do nothing here
 			}
 			
-			if (action.equals("showAddParentgroup")) {
-				// do nothing
+			if (action.equals("addParentgroupScreen1")) {
+				// do nothing here
+			}
+			
+			if (action.equals("addParentgroupScreen2")) {
+				// Save line that was set in screen 1
+				if (request.getInt("line") != null) {
+					this.line = request.getInt("line");
+				}
+				this.getMessages().add(new ScreenMessage("Line successfully set", true));
+			}
+			
+			if (action.equals("addParentgroupScreen3")) {
+				String motherNames = "";
+				List<? extends ObservationElement> rows = motherMatrixViewer.getSelection();
+				int rowCnt = 0;
+				for (ObservationElement row : rows) {
+					if (request.getBool(MOTHERMATRIX + "_selected_" + rowCnt) != null) {
+						int motherId = row.getId();
+						if (!this.selectedMotherIdList.contains(motherId)) {
+							this.selectedMotherIdList.add(motherId);
+							motherNames += row.getName() + " ";
+						}
+					}
+					rowCnt++;
+				}
+				// Check if at least one mother selected:
+				if (this.selectedMotherIdList.size() == 0) {
+					throw new Exception("No mother(s) selected");
+				}
+				this.getMessages().add(new ScreenMessage("Mother(s) " + motherNames + "successfully added", true));
+			}
+			
+			if (action.equals("addParentgroupScreen4")) {
+				String fatherNames = "";
+				List<? extends ObservationElement> rows = fatherMatrixViewer.getSelection();
+				int rowCnt = 0;
+				for (ObservationElement row : rows) {
+					if (request.getBool(FATHERMATRIX + "_selected_" + rowCnt) != null) {
+						int fatherId = row.getId();
+						if (!this.selectedFatherIdList.contains(fatherId)) {
+							this.selectedFatherIdList.add(fatherId);
+							fatherNames += row.getName() + " ";
+						}
+					}
+					rowCnt++;
+				}
+				// Check if at least one father selected:
+				if (this.selectedFatherIdList.size() == 0) {
+					throw new Exception("No father(s) selected");
+				}
+				this.getMessages().add(new ScreenMessage("Father(s) " + fatherNames + "successfully added", true));
 			}
 			
 			if (action.equals("addParentgroup")) {
-				// Check if at least one mother and father selected:
-				if (this.selectedMotherIdList.size() == 0 || this.selectedFatherIdList.size() == 0) {
-					throw new Exception("No mother(s) and/or no father(s) selected");
+				// Save start date and remarks that were set in screen 4
+				if (request.getString("startdate") != null) {
+					setStartdate(request.getString("startdate"));
 				}
-				setUserFields(request);
+				if (request.getString("remarks") != null) {
+					setRemarks(request.getString("remarks"));
+				}
 				Date eventDate = dateOnlyFormat.parse(startdate);
 				int userId = this.getLogin().getUserId();
 				// Make group
@@ -314,57 +354,6 @@ public class ManageParentgroups extends PluginModel<Entity>
 				this.setAction("init");
 				this.resetUserFields();
 				this.getMessages().add(new ScreenMessage("Parent group " + (groupPrefix + groupNrPart) + " successfully added", true));
-			}
-			
-			if (action.equals("remIndMother")) {
-				setUserFields(request);
-				int motherId = request.getInt("mother");
-				this.selectedMotherIdList.remove(this.selectedMotherIdList.indexOf(motherId));
-				this.setAction("showAddParentgroup");
-			}
-			
-			if (action.equals("remIndFather")) {
-				setUserFields(request);
-				int fatherId = request.getInt("father");
-				this.selectedFatherIdList.remove(this.selectedFatherIdList.indexOf(fatherId));
-				this.setAction("showAddParentgroup");
-			}
-			
-			if (action.equals("updateLine")) {
-				setUserFields(request);
-				this.setAction("showAddParentgroup");
-				// reload() will take care of updating matrix viewers
-			}
-			
-			if (action.equals("addMothersFromMatrix")) {
-				setUserFields(request);
-				List<? extends ObservationElement> rows = motherMatrixViewer.getSelection();
-				int rowCnt = 0;
-				for (ObservationElement row : rows) {
-					if (request.getBool(MOTHERMATRIX + "_selected_" + rowCnt) != null) {
-						int motherId = row.getId();
-						if (!this.selectedMotherIdList.contains(motherId)) {
-							this.selectedMotherIdList.add(motherId);
-						}
-					}
-					rowCnt++;
-				}
-				this.setAction("showAddParentgroup");
-			}
-			if (action.equals("addFathersFromMatrix")) {
-				setUserFields(request);
-				List<? extends ObservationElement> rows = fatherMatrixViewer.getSelection();
-				int rowCnt = 0;
-				for (ObservationElement row : rows) {
-					if (request.getBool(FATHERMATRIX + "_selected_" + rowCnt) != null) {
-						int fatherId = row.getId();
-						if (!this.selectedFatherIdList.contains(fatherId)) {
-							this.selectedFatherIdList.add(fatherId);
-						}
-					}
-					rowCnt++;
-				}
-				this.setAction("showAddParentgroup");
 			}
 			
 		} catch (Exception e) {

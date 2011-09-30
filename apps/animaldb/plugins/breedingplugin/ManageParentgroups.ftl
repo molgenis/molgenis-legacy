@@ -25,13 +25,11 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->	
 
-<#if screen.action == "showAddParentgroup">
+<#if screen.action == "addParentgroupScreen1">
 
 <div>
-
-	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
-
-	<!-- Line -->
+	<p><h2>Make new parent group, step 1/4: set line</h2></p>
+	
 	<div>
 		<label for="line">Breeding line:</label>
 		<select name="line" id="line" class="selectbox">
@@ -41,83 +39,63 @@
 				</#list>
 			</#if>
 		</select>
-		<input type='submit' id='updateline' value='Update' onclick='__action.value="updateLine"' />
 	</div>
 	
-	<hr />
-	
-	<div>
-		<div style='float:left'>
-			<label for='mother'>(Possible) mother(s):</label>
-			<select id='mother' name='mother' size='10'>
-			<#if screen.selectedMotherIdList?exists>
-				<#list screen.selectedMotherIdList as selectedMotherId>
-					<#assign name = screen.getAnimalName(selectedMotherId)>
-					<option value='${selectedMotherId?string.computer}'>${name}</option>
-				</#list>
-			</#if>
-			</select>
-		</div>
-		<div>Remove<br />
-			<input type='submit' id='remmother' value='&gt;&gt;' onclick='__action.value="remIndMother"' />
-		</div>
+	<div style="clear:both">
+		<input type='submit' id='from1to2' class='addbutton' value='Next' onclick="__action.value='addParentgroupScreen2'" />
 	</div>
-	<!-- (Possible) mother(s) selector -->
-	<div style='clear:left'>
-		${screen.renderMotherMatrixViewer()}<br />
-		<input type='submit' id='addmothersfrommatrix' value='&lt;&lt; Add selected mother(s)' onclick='__action.value="addMothersFromMatrix"' />
+	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
+	
+</div>
+
+<#elseif screen.action == "addParentgroupScreen2">
+
+	<p><h2>Make new parent group, step 2/4: select mother(s)</h2></p>
+
+	${screen.renderMotherMatrixViewer()}<br />
+	
+	<div style="clear:both">
+		<input type='submit' id='from2to1' class='addbutton' value='Previous' onclick="__action.value='addParentgroupScreen1'" />
+		<input type='submit' id='from2to3' class='addbutton' value='Next' onclick="__action.value='addParentgroupScreen3'" />
 	</div>
+	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
+
+<#elseif screen.action == "addParentgroupScreen3">
 	
-	<hr />
+	<p><h2>Make new parent group, step 3/4: select father(s)</h2></p>
 	
-	<div>
-		<div style='float:left'>
-			<label for='father'>(Possible) father(s):</label>
-			<select id='father' name='father' size='10'>
-			<#if screen.selectedFatherIdList?exists>
-				<#list screen.selectedFatherIdList as selectedFatherId>
-					<#assign name = screen.getAnimalName(selectedFatherId)>
-					<option value='${selectedFatherId?string.computer}'>${name}</option>
-				</#list>
-			</#if>
-			</select>
-		</div>
-		<div>Remove<br />
-			<input type='submit' id='remfather' value='&gt;&gt;' onclick='__action.value="remIndFather"' />
-		</div>
+	${screen.renderFatherMatrixViewer()}<br />
+	
+	<div style="clear:both">
+		<input type='submit' id='from3to2' class='addbutton' value='Previous' onclick="__action.value='addParentgroupScreen2'" />
+		<input type='submit' id='from3to4' class='addbutton' value='Next' onclick="__action.value='addParentgroupScreen4'" />
 	</div>
+	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
+
+<#elseif screen.action == "addParentgroupScreen4">
+
+	<p><h2>Make new parent group, step 4/4: set start date and remarks</h2></p>
 	
-	<!-- (Possible) father(s) selector -->
-	<div style='clear:left'>
-		${screen.renderFatherMatrixViewer()}<br />
-		<input type='submit' id='addfathersfrommatrix' value='&lt;&lt; Add selected father(s)' onclick='__action.value="addFathersFromMatrix"' />
-	</div>
-	
-	<hr />
-	
-	<!-- Start date -->
 	<div style='clear:left'>
 		<label for='startdate'>Start date:</label>
 		<input type='text' class='textbox' id='startdate' name='startdate' value='<#if screen.startdate?exists>${screen.getStartdate()}</#if>' onclick='showDateInput(this)' autocomplete='off' />
 	</div>
 	
-	<!-- Remarks -->
 	<div>
 		<label for='remarks'>Remarks:</label>
 		<input type='text' class='textbox' id='remarks' name='remarks' />
 	</div>
 		
-	<!-- Add button -->
 	<div>
+		<input type='submit' id='from4to3' class='addbutton' value='Previous' onclick="__action.value='addParentgroupScreen3'" />
 		<input type='submit' id='addpg' class='addbutton' value='Add' onclick="__action.value='addParentgroup'" />
 	</div>
-	
-</div>
+	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
 
 <#else>
 
 <div>
-	<p><a href="molgenis.do?__target=${screen.name}&__action=showAddParentgroup">Make new parent group</a></p>
+	<p><a href="molgenis.do?__target=${screen.name}&__action=addParentgroupScreen1">Make new parent group</a></p>
 	
 	<#if screen.pgList?size gt 0>
 		<p><h2>Existing parent groups</h2></p>

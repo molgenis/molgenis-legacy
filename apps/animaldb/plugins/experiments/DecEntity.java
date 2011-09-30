@@ -11,7 +11,7 @@ public class DecEntity {
 	private Date startDate;
 	private Date endDate;
 	private SimpleDateFormat oldDateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US); // for showing in the old date box
-	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US); // how it comes out of the DB nowadays
+	private SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US); // how it comes out of the DB nowadays
 	
 	public void setId(int id) {
 		this.id = id;
@@ -29,7 +29,7 @@ public class DecEntity {
 	
 	public void setStartDate(String startDate) throws ParseException
 	{
-		this.startDate = newDateOnlyFormat.parse(startDate);
+		this.startDate = dbFormat.parse(startDate);
 	}
 	public String getStartDate()
 	{
@@ -39,7 +39,7 @@ public class DecEntity {
 	
 	public void setEndDate(String endDate) throws ParseException
 	{
-		this.endDate = newDateOnlyFormat.parse(endDate);
+		this.endDate = dbFormat.parse(endDate);
 	}
 	public String getEndDate()
 	{

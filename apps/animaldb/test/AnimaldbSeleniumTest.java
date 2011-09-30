@@ -131,20 +131,26 @@ public class AnimaldbSeleniumTest
 		// Add a parent group
 		selenium.click("link=Make new parent group");
 		selenium.waitForPageToLoad(pageLoadTimeout);
+		// Screen 1: line
+		selenium.click("id=from1to2");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		// Screen 2: mothers
 		selenium.click("id=mothermatrix_removeFilter_3"); // remove filter on line (line is not set for new animals)
 		// We have to wait here, but it's Ajax, so it's faster than a normal full page load
 		// (however, 1 sec. is not (always) enough on Hudson, so set to 5 sec.)
 		Thread.sleep(5000);
 		selenium.click("id=mothermatrix_selected_0"); // toggle selectbox for first female in list
-		selenium.click("id=addmothersfrommatrix");
+		selenium.click("id=from2to3");
 		selenium.waitForPageToLoad(pageLoadTimeout);
+		// Screen 3: fathers
 		selenium.click("id=fathermatrix_removeFilter_3"); // remove filter on line (line is not set for new animals)
 		// We have to wait here, but it's Ajax, so it's faster than a normal full page load
 		// (however, 1 sec. is not (always) enough on Hudson, so set to 5 sec.)
 		Thread.sleep(5000);
 		selenium.click("id=fathermatrix_selected_0"); // toggle selectbox for first male in list
-		selenium.click("id=addfathersfrommatrix");
+		selenium.click("id=from3to4");
 		selenium.waitForPageToLoad(pageLoadTimeout);
+		// Screen 4: start date and remarks
 		selenium.click("id=addpg");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("successfully added"));
@@ -237,7 +243,8 @@ public class AnimaldbSeleniumTest
 		selenium.type("id=decapppdf", "/home/test/subapp.pdf");
 		int thisMonth = calendar.get(Calendar.MONTH);
 		selenium.type("id=startdate", months[thisMonth] + " 1, " + thisYear);
-		selenium.type("id=enddate", months[thisMonth] + " "+calendar.getActualMaximum(Calendar.DAY_OF_MONTH)+", " + thisYear);		
+		selenium.type("id=enddate", months[thisMonth] + " " + calendar.getActualMaximum(Calendar.DAY_OF_MONTH) + 
+				", " + thisYear);		
 		selenium.click("id=addsubproject");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("DEC Subproject successfully added"));

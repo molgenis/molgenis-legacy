@@ -34,12 +34,12 @@ public class VWAReport5 extends AnimalDBReport {
 	public void makeReport(int year, String type) {
 		try {
 			this.year = year;
-			SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-			SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+			SimpleDateFormat fullFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+			SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 			String startOfYearString = year + "-01-01 00:00:00";
-			Date startOfYear = dbFormat.parse(startOfYearString);
+			Date startOfYear = fullFormat.parse(startOfYearString);
 			String endOfYearString = (year + 1) + "-01-01 00:00:00";
-			Date endOfYear = dbFormat.parse(endOfYearString);
+			Date endOfYear = fullFormat.parse(endOfYearString);
 			
 			List<Integer> investigationIds = ct.getOwnUserInvestigationIds(userId);
 			List<ObservationTarget> decappList = ct.getAllMarkedPanels("DecApplication", investigationIds);
@@ -49,7 +49,7 @@ public class VWAReport5 extends AnimalDBReport {
 				int MeasurementId = ct.getMeasurementId("StartDate");
 				String startOfDecString = ct.getMostRecentValueAsString(d.getId(), MeasurementId);
 				if (startOfDecString != null && !startOfDecString.equals("")) {
-					startOfDec = dateOnlyFormat.parse(startOfDecString);
+					startOfDec = dbFormat.parse(startOfDecString);
 					if (startOfDec.after(endOfYear)) {
 						continue;
 					}
@@ -60,7 +60,7 @@ public class VWAReport5 extends AnimalDBReport {
 				MeasurementId = ct.getMeasurementId("EndDate");
 				String endOfDecString = ct.getMostRecentValueAsString(d.getId(), MeasurementId);
 				if (endOfDecString != null && !endOfDecString.equals("")) {
-					endOfDec = dateOnlyFormat.parse(endOfDecString);
+					endOfDec = dbFormat.parse(endOfDecString);
 					if (endOfDec.before(startOfYear)) {
 						continue;
 					}
@@ -276,7 +276,7 @@ public class VWAReport5 extends AnimalDBReport {
 						ArrayList<String> newRow = new ArrayList<String>();
 						newRow.add(decNr + expCode + " - " + d.getName());
 						if (endOfDec != null) {
-							newRow.add(dateOnlyFormat.format(endOfDec));
+							newRow.add(dbFormat.format(endOfDec));
 						} else {
 							newRow.add("");
 						}

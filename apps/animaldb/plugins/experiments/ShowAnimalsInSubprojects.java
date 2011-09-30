@@ -375,15 +375,15 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 			if (action.equals("ApplyAddAnimalToSubproject"))
 			{
 				SimpleDateFormat oldDateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
-				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+				SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 				
 				// Get Subproject start and end dates
 				String subprojectStartDateString = ct.getMostRecentValueAsString(subproject.getId(), ct.getMeasurementId("StartDate"));
-				Date subprojectStartDate = newDateOnlyFormat.parse(subprojectStartDateString);
+				Date subprojectStartDate = dbFormat.parse(subprojectStartDateString);
 				Date subprojectEndDate = null;
 				String subprojectEndDateString = ct.getMostRecentValueAsString(subproject.getId(), ct.getMeasurementId("EndDate"));
 				if (!subprojectEndDateString.equals("")) {
-					subprojectEndDate = newDateOnlyFormat.parse(subprojectEndDateString);
+					subprojectEndDate = dbFormat.parse(subprojectEndDateString);
 				}
 				
 				// Get values from form for one or more animals

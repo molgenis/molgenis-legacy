@@ -203,7 +203,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 			}
 			if (action.equals("addEditDecSubproject")) {
 				SimpleDateFormat oldDateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
-				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+				SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 				
 				// Get values from form
 				
@@ -280,12 +280,12 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				// Get most recent Project start and end dates
 				featureId = ct.getMeasurementId("StartDate");
 				String projectStartDateString = ct.getMostRecentValueAsString(decappId, featureId);
-				Date projectStartDate = newDateOnlyFormat.parse(projectStartDateString);
+				Date projectStartDate = dbFormat.parse(projectStartDateString);
 				featureId = ct.getMeasurementId("EndDate");
 				Date projectEndDate = null;
 				String projectEndDateString = ct.getMostRecentValueAsString(decappId, featureId);
 				if (!projectEndDateString.equals("")) {
-					projectEndDate = newDateOnlyFormat.parse(projectEndDateString);
+					projectEndDate = dbFormat.parse(projectEndDateString);
 				}
 				
 				// Start date
@@ -396,11 +396,11 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				}
 				measurementId = ct.getMeasurementId("StartDate");
 				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
-						enddate, measurementId, projectId, newDateOnlyFormat.format(startdate), 0));
+						enddate, measurementId, projectId, dbFormat.format(startdate), 0));
 				if (enddate != null) {
 					measurementId = ct.getMeasurementId("EndDate");
 					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
-							enddate, measurementId, projectId, newDateOnlyFormat.format(enddate), 0));
+							enddate, measurementId, projectId, dbFormat.format(enddate), 0));
 				}
 				
 				// Add everything to DB

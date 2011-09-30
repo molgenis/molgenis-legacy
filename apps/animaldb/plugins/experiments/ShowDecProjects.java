@@ -102,6 +102,7 @@ public class ShowDecProjects extends PluginModel<Entity>
 			if (action.equals("addEditDecProject")) {
 				SimpleDateFormat oldDateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
 				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+				SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 				
 				// Get values from form
 				
@@ -202,11 +203,11 @@ public class ShowDecProjects extends PluginModel<Entity>
 				}
 				measurementId = ct.getMeasurementId("StartDate");
 				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
-						enddate, measurementId, projectId, newDateOnlyFormat.format(startdate), 0));
+						enddate, measurementId, projectId, dbFormat.format(startdate), 0));
 				if (enddate != null) {
 					measurementId = ct.getMeasurementId("EndDate");
 					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
-							enddate, measurementId, projectId,  newDateOnlyFormat.format(enddate), 0));
+							enddate, measurementId, projectId,  dbFormat.format(enddate), 0));
 				}
 				// Add everything to DB
 				db.add(valuesToAddList);
