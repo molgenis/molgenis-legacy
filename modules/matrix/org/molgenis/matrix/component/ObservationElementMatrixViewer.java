@@ -239,9 +239,7 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 		//print rowHeader + colValues
 		for (int row = 0; row < values.length; row++)
 		{
-			List<ObservedValue>[] rowValues = values[row];
-			
-			//print rowHeader
+			// print rowHeader
 			dataTable.addRow(rows.get(row).getName());
 			// print selectbox for this row
 			List<String> options = new ArrayList<String>();
@@ -252,26 +250,34 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 					optionLabels, "", null, true, false);
 			rowCheckbox.setId(SELECTED + "_" + row);
 			dataTable.setCell(0, row, rowCheckbox);
-			for (int col = 0; col < rowValues.length; col++)
-			{
-				if (rowValues[col] != null || rowValues[col].size() == 0)
-				{
+			// get the data for this row
+			List<ObservedValue>[] rowValues = values[row];
+			for (int col = 0; col < rowValues.length; col++) {
+				if (rowValues[col] != null && rowValues[col].size() > 0) {
 					boolean first = true;
-					for(ObservedValue val: rowValues[col])
-					{
+					for (ObservedValue val : rowValues[col]) {
 						String valueToShow = val.getValue();
 						if (valueToShow == null) {
 							valueToShow = val.getRelation_Name();
+						}
+						if (val.getTime() != null) {
+							valueToShow += " (valid from " + val.getTime();
+						}
+						if (val.getEndtime() != null) {
+							valueToShow += " through " + val.getEndtime() + ")";
+						} else if (val.getTime() != null) {
+							valueToShow += ")";
 						}
 						if (first) {
 							first = false;
 							dataTable.setCell(col + 1, row, valueToShow);
 						} else {
-							dataTable.setCell(col + 1, row, dataTable.getCell(col + 1, row) + ", " + valueToShow);
+							// Append to contents of cell, on new line
+							dataTable.setCell(col + 1, row, dataTable.getCell(col + 1, row) + "<br />" + valueToShow);
 						}
 					}
 				} else {
-					dataTable.setCell(col, row, "NA");
+					dataTable.setCell(col + 1, row, "NA");
 				}
 			}
 		}

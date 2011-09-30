@@ -1,5 +1,6 @@
 package org.molgenis.sandbox.ui;
 
+import java.io.OutputStream;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
@@ -7,6 +8,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.Paragraph;
@@ -52,19 +54,17 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 		}
 	}
 
-	public void handleRequest(Database db, Tuple t)
+	@Override
+	public Show handleRequest(Database db, Tuple request, OutputStream out)
+			throws HandleRequestDelegationException
 	{
-		try {
-			if (t.getAction().startsWith(matrixViewer.getName())) {
-				matrixViewer.handleRequest(db, t);
-			} else {
-				this.delegate(t.getAction(), db, t);
-			}
-		} catch (HandleRequestDelegationException e) {
-			e.printStackTrace();
-			this.setError(e.getMessage());
+		if (request.getAction().startsWith(matrixViewer.getName())) {
+			matrixViewer.handleRequest(db, request);
+		} else {
+			this.delegate(request.getAction(), db, request);
 		}
-
+		//default show
+		return Show.SHOW_MAIN;
 	}
 
 	/**
