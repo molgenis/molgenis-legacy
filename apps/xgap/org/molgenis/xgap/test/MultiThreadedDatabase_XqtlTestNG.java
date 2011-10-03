@@ -1,34 +1,46 @@
-package tmp;
+package org.molgenis.xgap.test;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.molgenis.Molgenis;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.pheno.Individual;
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import app.servlet.MolgenisServlet;
 
-public class MultiThreadedDatabaseTest
+public class MultiThreadedDatabase_XqtlTestNG
 {
 	int amountInBatch = 100; //amount of Individuals per add/remove test
 	int amountOfTests = 100; //amount of test threads running simultaneously
 
+	MolgenisServlet molgServ;
 
-
+	@BeforeClass
+	public void cleanDb() throws FileNotFoundException, SQLException, IOException, Exception{
+		new Molgenis("org/molgenis/xgap/xqtlworkbench/xqtl.properties").updateDb(false);
+	}
+	
 	@Test
-	public void test() throws Exception
+	public void multiThreadAddRemove() throws Exception
 	{
+		
+		molgServ = new MolgenisServlet();
 
-		boolean testCompletedSuccessfully = false;
+		final Bool testCompletedSuccessfully = new Bool(true);
 
 		List<TestDbThread> tests = new ArrayList<TestDbThread>();
 		for (int i = 0; i < amountOfTests; i++)
 		{
-			tests.add(new TestDbThread(amountInBatch));
+			tests.add(new TestDbThread(molgServ, amountInBatch));
 			System.out.println("Added new thread " + (i+1) + "/" + amountOfTests);
 		}
 
@@ -48,11 +60,10 @@ public class MultiThreadedDatabaseTest
 					catch (Exception e)
 					{
 						e.printStackTrace();
-						System.exit(-1);
+						testCompletedSuccessfully.setVal(false);
 					}
 				}
 			};
-			// executor.execute(runnable);
 			Thread thread = new Thread(runnable);
 			thread.start();
 			System.out.println("Started thread");
@@ -62,20 +73,34 @@ public class MultiThreadedDatabaseTest
 		// wait for all threads to complete
 		for (Thread thread : threads)
 		{
-			try
-			{
-				thread.join();
-			}
-			catch (InterruptedException ignore)
-			{
-			}
+			thread.join();
 		}
-
-		testCompletedSuccessfully = true;
-
-		Assert.assertTrue(testCompletedSuccessfully);
+		
+		Assert.assertTrue(testCompletedSuccessfully.getVal());
 
 	}
+}
+
+class Bool
+{
+	boolean val;
+	
+	public Bool(boolean val)
+	{
+		this.val = val;
+	}
+
+	public boolean getVal()
+	{
+		return val;
+	}
+
+	public void setVal(boolean val)
+	{
+		this.val = val;
+	}
+	
+	
 }
 
 class TestDbThread
@@ -84,9 +109,9 @@ class TestDbThread
 	List<Individual> individuals;
 	int amount = 1000;
 
-	public TestDbThread(int amount) throws Exception
+	public TestDbThread(MolgenisServlet molgServ, int amount) throws Exception
 	{
-		db = new MolgenisServlet().getDatabase();
+		this.db = molgServ.getDatabase();
 		individuals = new ArrayList<Individual>();
 		this.amount = amount;
 		for (int i = 0; i < amount; i++)
@@ -100,12 +125,12 @@ class TestDbThread
 	public void add() throws DatabaseException
 	{
 		db.add(individuals);
-		System.out.println("Added " + amount + " individuals, starting with '" + individuals.get(0) + "'");
+		//System.out.println("Added " + amount + " individuals, starting with '" + individuals.get(0) + "'");
 	}
 
 	public void remove() throws DatabaseException
 	{
 		db.remove(individuals);
-		System.out.println("Removed " + amount + " individuals, starting with '" + individuals.get(0) + "'");
+		//System.out.println("Removed " + amount + " individuals, starting with '" + individuals.get(0) + "'");
 	}
 }
