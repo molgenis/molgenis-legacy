@@ -20,6 +20,7 @@ import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
 
+import app.DatabaseFactory;
 import app.JDBCDatabase;
 
 /*
@@ -34,7 +35,7 @@ public class ConvertMageTabToPheno
 		// in Investigation.
 		File sdrfFile = new File("data/ArrayExpress/E-TABM-325.sdrf.txt");
 
-		final Database db = new JDBCDatabase("molgenis.properties");
+		final Database db = DatabaseFactory.create("molgenis.properties");
 
 		String INVESTIGATION_NAME = "MOLPAGE";
 

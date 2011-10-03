@@ -3,6 +3,7 @@ package org.molgenis.phenoflow;
 
 import org.molgenis.Molgenis;
 
+import app.DatabaseFactory;
 import app.JDBCDatabase;
 
 
@@ -12,7 +13,7 @@ public class PhenoflowUpdateDatabase
 	{
 		new Molgenis("apps/phenoflow/phenoflow.properties").updateDb(true);
 		
-		JDBCDatabase db = new JDBCDatabase("apps/phenoflow/phenoflow.properties");
+		Database db = DatabaseFactory.create("apps/phenoflow/phenoflow.properties");
 		
 		//TODO : do batch import
 	}

@@ -7,6 +7,7 @@ import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.Database;
 
 import app.CsvImport;
+import app.DatabaseFactory;
 import app.JDBCDatabase;
 
 public class LoadDbGapDownloads
@@ -16,7 +17,7 @@ public class LoadDbGapDownloads
 		//it is assumed that DbGapToPheno has put its results here
 		File rootDir = new File("D:/Data/dbgap");
 		
-		Database db = new JDBCDatabase(new MolgenisOptions("molgenis.properties"));
+		Database db = DatabaseFactory.create(new MolgenisOptions("molgenis.properties"));
 		for(String investigationDir: rootDir.list( new FilenameFilter(){
 
 			@Override

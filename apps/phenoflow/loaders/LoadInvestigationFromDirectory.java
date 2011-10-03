@@ -8,6 +8,7 @@ import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.util.SimpleTuple;
 
 import app.CsvImport;
+import app.DatabaseFactory;
 import app.JDBCDatabase;
 
 public class LoadInvestigationFromDirectory {
@@ -15,7 +16,7 @@ public class LoadInvestigationFromDirectory {
 		
 		new Molgenis("apps/phenoflow/phenoflow.properties").updateDb(true);
 
-		Database db = new JDBCDatabase("apps/phenoflow/phenoflow.properties");
+		Database db = DatabaseFactory.create("apps/phenoflow/phenoflow.properties");
 		String directory;
 		
 		// europhenome

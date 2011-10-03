@@ -12,6 +12,7 @@ import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
 
 import app.CsvImport;
+import app.DatabaseFactory;
 import app.JDBCDatabase;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
@@ -40,7 +41,7 @@ public class LoadDbGap
 		}
 		
 		File directory = new File("D:\\Data\\dbgap");
-		Database db = new JDBCDatabase(options);
+		Database db = DatabaseFactory.create(options);
 
 		for (File dir : directory.listFiles())
 		{

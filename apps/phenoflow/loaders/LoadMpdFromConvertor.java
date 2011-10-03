@@ -8,12 +8,13 @@ import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
 import app.CsvImport;
+import app.DatabaseFactory;
 import app.JDBCDatabase;
 
 public class LoadMpdFromConvertor {
 	public static void main(String[] args) throws Exception {
 		
-		Database db = new JDBCDatabase("handwritten/apps/org/molgenis/pheno/pheno.properties");
+		Database db = DatabaseFactory.create("handwritten/apps/org/molgenis/pheno/pheno.properties");
 		
 		Tuple defaults = new SimpleTuple();
 		
