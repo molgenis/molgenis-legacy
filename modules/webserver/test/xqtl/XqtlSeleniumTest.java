@@ -32,10 +32,6 @@ public class XqtlSeleniumTest
 	 *************************  Init and helpers  **********************
 	 *******************************************************************
 	 */
-	
-	// skip asserts which may always succeed locally, but for some reason give
-	// unpredictable results when running elsewhere (i.e. Hudson)
-	boolean excused = true;
 
 	Selenium selenium;
 	String pageLoadTimeout = "30000";
@@ -346,9 +342,9 @@ public class XqtlSeleniumTest
 			
 			Assert.assertTrue(selenium.isTextPresent("Again, your individuals must be in the first line."));
 			
-			if(!excused) Assert.assertEquals(selenium.getText("name=invSelect"), "ClusterDemo");
-			if(!excused) Assert.assertEquals(selenium.getText("name=cross"),"xgap_rqtl_straintype_f2xgap_rqtl_straintype_bcxgap_rqtl_straintype_riselfxgap_rqtl_straintype_risibxgap_rqtl_straintype_4wayxgap_rqtl_straintype_dhxgap_rqtl_straintype_specialxgap_rqtl_straintype_naturalxgap_rqtl_straintype_parentalxgap_rqtl_straintype_f1xgap_rqtl_straintype_rccxgap_rqtl_straintype_cssxgap_rqtl_straintype_unknownxgap_rqtl_straintype_other");
-			if(!excused) Assert.assertEquals(selenium.getText("name=trait"),"MeasurementDerivedTraitEnvironmentalFactorGeneMarkerMassPeakMetaboliteProbe");
+			Assert.assertEquals(selenium.getText("name=invSelect"), "ClusterDemo");
+			Assert.assertEquals(selenium.getText("name=cross"),"xgap_rqtl_straintype_f2xgap_rqtl_straintype_bcxgap_rqtl_straintype_riselfxgap_rqtl_straintype_risibxgap_rqtl_straintype_4wayxgap_rqtl_straintype_dhxgap_rqtl_straintype_specialxgap_rqtl_straintype_naturalxgap_rqtl_straintype_parentalxgap_rqtl_straintype_f1xgap_rqtl_straintype_rccxgap_rqtl_straintype_cssxgap_rqtl_straintype_unknownxgap_rqtl_straintype_other");
+			Assert.assertEquals(selenium.getText("name=trait"),"MeasurementDerivedTraitEnvironmentalFactorGeneMarkerMassPeakMetaboliteProbe");
 
 			// try pressing a button and see if the error pops up
 			clickAndWait("id=upload_genotypes");
@@ -646,7 +642,7 @@ public class XqtlSeleniumTest
 				//change and save
 				selenium.type("id=Investigation_name", "TestIfThisWorks");
 				clickAndWait("id=save_Investigations");
-				if(!excused) Assert.assertTrue(selenium.isTextPresent("UPDATE SUCCESS: affected 1"));
+				Assert.assertTrue(selenium.isTextPresent("UPDATE SUCCESS: affected 1"));
 
 				// click add new, wait for popup, and select it
 				selenium.click("id=Individuals_edit_new");
@@ -663,7 +659,7 @@ public class XqtlSeleniumTest
 				//revert and save
 				selenium.type("id=Investigation_name", "ClusterDemo");
 				clickAndWait("id=save_Investigations");
-				if(!excused) Assert.assertTrue(selenium.isTextPresent("UPDATE SUCCESS: affected 1"));
+				Assert.assertTrue(selenium.isTextPresent("UPDATE SUCCESS: affected 1"));
 
 			}
 			
