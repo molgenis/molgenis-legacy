@@ -33,6 +33,7 @@ import generic.JavaCompiler;
 import generic.JavaCompiler.CompileUnit;
 </#if>
 <#if db_mode = 'standalone'>
+import ${package}.DatabaseFactory;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.molgenis.framework.db.DatabaseException;
 <#else>
@@ -151,7 +152,7 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 				Database db;
 				try
 				{
-					db = new app.JDBCDatabase(dataSource, new File("./data/"));
+					db = DatabaseFactory.create(dataSource, new File("./data/"));
 					return db;
 				}
 				catch (DatabaseException e)
