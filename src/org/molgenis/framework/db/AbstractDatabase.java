@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.jdbc.JDBCQueryGernatorUtil;
 import org.molgenis.framework.security.Login;
+import org.molgenis.framework.security.SimpleLogin;
 import org.molgenis.model.elements.Model;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.ResultSetTuple;
@@ -50,6 +51,13 @@ public abstract class AbstractDatabase implements Database {
     @Override
     abstract public <E extends Entity> int      count(Class<E> klazz, QueryRule... rules) throws DatabaseException;
    
+    public AbstractDatabase() {
+    	//always simpleLogin unless option in molgenisoption is different
+    	//the when database is created in servlet the login will be set!
+    	this.login = new SimpleLogin(); 
+    }
+    
+    
     /**
      * Only use when really needed!
      * 
