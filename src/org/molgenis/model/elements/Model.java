@@ -154,10 +154,15 @@ public class Model
 		return views;
 	}
 
+	
+	public Vector<Entity> getEntities() {
+		return getEntities(true);
+	}
+	
 	/**
 	 * 
 	 */
-	public Vector<Entity> getEntities()
+	public Vector<Entity> getEntities(boolean includeSystemTable)
 	{
 		Vector<Entity> entities = new Vector<Entity>();
 
@@ -165,7 +170,9 @@ public class Model
 		{
 			if (element.getClass().equals(Entity.class))
 			{
-				entities.add((Entity) element);
+				if(includeSystemTable || !((Entity) element).isSystem()) {
+					entities.add((Entity) element);
+				} 
 			}
 		}
 		return entities;

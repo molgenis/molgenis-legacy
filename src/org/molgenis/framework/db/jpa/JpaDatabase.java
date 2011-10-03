@@ -2,17 +2,13 @@ package org.molgenis.framework.db.jpa;
 
 import java.sql.Connection;
 import org.molgenis.framework.db.AbstractDatabase;
-import java.io.File;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import javax.persistence.metamodel.EntityType;
@@ -30,7 +26,6 @@ import org.molgenis.model.elements.Model;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Entity;
-import org.molgenis.util.HandleException;
 import org.molgenis.util.TupleWriter;
 import org.molgenis.util.Tuple;
 
@@ -88,29 +83,33 @@ public class JpaDatabase extends AbstractDatabase implements Database {
     private EntityManager em = null;
     private String persistenceUnitName;
 
-    protected JpaDatabase(String persistenceUnitName, EntityManager em, Model jdbcMetaDatabase) {
+    protected JpaDatabase(String persistenceUnitName, EntityManager em, Model jdbcMetaDatabase, final Login login) {
+        super(login);
         this.persistenceUnitName = persistenceUnitName;
         this.em = em;
         this.model = jdbcMetaDatabase;
     }
 
-    protected JpaDatabase(String persistenceUnitName, Model jdbcMetaDatabase) {
+    protected JpaDatabase(String persistenceUnitName, Model jdbcMetaDatabase, final Login login) {
+        super(login);
         this.persistenceUnitName = persistenceUnitName;
         this.model = jdbcMetaDatabase;
     }
 
-    protected JpaDatabase(String persistenceUnitName) {
+    protected JpaDatabase(String persistenceUnitName, final Login login) {
+        super(login);
         this.persistenceUnitName = persistenceUnitName;
         this.em = EMFactory.createEntityManager();
     }
 
-    public JpaDatabase(EntityManager em,
-            Model model) {
+    public JpaDatabase(EntityManager em, Model model, final Login login) {
+        super(login);
         this.em = em;
         this.model = model;
     }
 
-    public JpaDatabase(Model model) {
+    public JpaDatabase(Model model, final Login login) {
+        super(login);
         this.model = model;
     }
 

@@ -466,10 +466,10 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		// ((UserInterface)molgenis).setDatabase(db);
 		userLogin = ((ApplicationController) molgenis).getLogin();
 
-		if (dbAvailable)
-		{
-			db.setLogin(userLogin);
-		}
+//		if (dbAvailable)
+//		{
+//			db.setLogin(userLogin);
+//		}
 
 		// handle request
 		try
@@ -941,7 +941,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		try
 		{
 			db = this.getDatabase();
-			db.setLogin(new org.molgenis.framework.security.SimpleLogin(db));
+			//db.setLogin(new org.molgenis.framework.security.SimpleLogin(db));
 			try
 			{
 
@@ -1545,8 +1545,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			HttpSession session = request.getSession();
 			ScreenController<?> molgenis = (ApplicationController) session
 					.getAttribute("application");
-			Login login = molgenis.getApplicationController().getLogin();
-			db.setLogin(login);
+//			Login login = molgenis.getApplicationController().getLogin();
+//			db.setLogin(login);
 			Query<?> q = db.query(xref_entity);
 
 			// create a CustomQuery

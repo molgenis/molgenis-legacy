@@ -483,12 +483,6 @@ public class Lifewise implements Database
 	}
 
 	@Override
-	public void setLogin(Login login)
-	{
-		// TODO Auto-generated method stub
-	}
-
-	@Override
 	public Class<Entity> getClassForName(String simpleName)
 	{
 		// TODO Auto-generated method stub

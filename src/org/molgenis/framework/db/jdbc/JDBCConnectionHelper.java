@@ -15,6 +15,7 @@ import org.molgenis.framework.db.AbstractDatabase;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.security.Login;
 
 public abstract class JDBCConnectionHelper extends AbstractDatabase
 {
@@ -35,14 +36,15 @@ public abstract class JDBCConnectionHelper extends AbstractDatabase
 	/** Logger for this database */
 	private static final transient Logger logger = Logger.getLogger(JDBCDatabase.class.getSimpleName());
 
-	public JDBCConnectionHelper(DataSourceWrapper source)
+	public JDBCConnectionHelper(DataSourceWrapper source, final Login login)
 	{
-		this.source = source;
+            super(login);
+            this.source = source;
 	}
 
-	public JDBCConnectionHelper()
+	public JDBCConnectionHelper(final Login login)
 	{
-		// TODO Auto-generated constructor stub
+            super(login);
 	}
 
 	@Override

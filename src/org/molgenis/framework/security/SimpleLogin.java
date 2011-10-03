@@ -1,18 +1,18 @@
 package org.molgenis.framework.security;
 
+import java.util.List;
+
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Entity;
 
 public class SimpleLogin implements Login
 {
-public SimpleLogin(Database db)
-{
-	
-}
+        public SimpleLogin()
+        {
+
+        }
 	
 	@Override
 	public void reload(Database db)
@@ -66,11 +66,13 @@ public SimpleLogin(Database db)
 		return false;
 	}
 
+        @Override
 	public String getUserName()
 	{
 		return "";
 	}
 
+        @Override
 	public Integer getUserId()
 	{
 		return 0;
@@ -128,6 +130,12 @@ public SimpleLogin(Database db)
 	{
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void setAdmin(List<? extends Entity> entities, Database db) throws DatabaseException
+	{
+		// TODO Auto-generated method stub
 	}
 
 }

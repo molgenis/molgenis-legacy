@@ -18,6 +18,7 @@ package ${package};
 
 import app.CsvExport;
 import app.CsvImport;
+import app.DatabaseFactory;
 
 <#if databaseImp != 'jpa'>	
 import app.JDBCDatabase;
@@ -78,9 +79,8 @@ public class TestCsv
 	{
 		try
 		{		
-			db = new app.JpaDatabase(true);
+			db = DatabaseFactory.createTest();
                         JpaUtil.createTables((JpaDatabase)db);
-			((JpaDatabase)db).getEntityManager().setFlushMode(FlushModeType.AUTO);
 <#if !options.getAuthLoginclass()?ends_with("SimpleLogin")>
 			app.FillMetadata.fillMetadata(db);
 </#if>			
@@ -100,8 +100,9 @@ public class TestCsv
 	public static void oneTimeSetUp()   
 	{
 		try
-		{		
-			db = new app.JDBCDatabase("${options.molgenis_properties}");
+		{
+        		
+			db = DatabaseFactory.createTest("${options.molgenis_properties}");
 			new Molgenis("${options.molgenis_properties}");
 		}
 		catch (Exception e)

@@ -1,6 +1,7 @@
 package org.molgenis.framework.security;
 
 import java.text.ParseException;
+import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -152,4 +153,6 @@ public interface Login
 	 * @return name of form/plugin
 	 */
 	public String getRedirect();
+	
+	public void setAdmin(List<? extends Entity> entities, Database db) throws DatabaseException;
 }
