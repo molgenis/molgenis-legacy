@@ -30,32 +30,40 @@ import org.molgenis.framework.security.SimpleLogin;
 public class DatabaseFactory
 {
     private static class SecurityFactory {
+    	private static Login testLogin = null;
+    	private static Login login = null;
+    
         public static Login create() throws Exception {
             return create(false);
         }
         
         public static Login create(boolean test) throws Exception {
             if(test) {
-                return new SimpleLogin();
+            	if(testLogin == null) {
+            		testLogin = new SimpleLogin();
+            	}
+            	return testLogin;                
             } else {
-                Login login = ${auth_loginclass}.class.newInstance();
-               	<#if auth_redirect??>
-               	login.setRedirect("${auth_redirect}");
-               	</#if>
+            	if(login == null) {
+            		login = ${auth_loginclass}.class.newInstance();
+               		<#if auth_redirect??>
+               		login.setRedirect("${auth_redirect}");
+               		</#if>
+            	} 
                 return login;
             }
         }
         
         public static Login create(Class<? extends  Login> loginClass) throws Exception {
-            Login login = loginClass.newInstance();
-           	<#if auth_redirect??>
-           	login.setRedirect("${auth_redirect}");
-           	</#if>
+            if(login == null) {
+            	login = loginClass.newInstance();
+            	<#if auth_redirect??>
+           		login.setRedirect("${auth_redirect}");
+           		</#if>
+            }
             return login;
         }
     }
-
-
 
 <#if databaseImp == "jpa">
     private static Database createJpaDatabase(boolean test) throws DatabaseException {
