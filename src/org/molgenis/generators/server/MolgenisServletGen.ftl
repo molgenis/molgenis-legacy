@@ -111,11 +111,18 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 	@Deprecated //use getLogin instead!
 	public Login createLogin( Database db, HttpServletRequest request ) throws Exception
 	{
-		return db.getSecurity();
-	}
+		Login login = (Login)request.getSession().getAttribute("login");
+		if(login == null) {
+			<#if auth_redirect != ''>
+			login = new ${loginclass}(db, "${auth_redirect}");
+			<#else>
+			login = new ${loginclass}(db);
+			</#if>			
+			request.getSession().setAttribute("login", login);
+		}
+		return login;	
 	
-	public Login getLogin() throws Exception {
-		return getDatabase().getSecurity();
+
 	}
 
 	public ApplicationController createUserInterface( Login userLogin )
