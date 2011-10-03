@@ -2,8 +2,13 @@ package org.molgenis.compute.ui;
 
 import org.molgenis.compute.pipelinemodel.Pipeline;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.*;
+import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.FormController;
+import org.molgenis.framework.ui.FormModel;
+import org.molgenis.framework.ui.FreemarkerView;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.ngs.Worksheet;
+import org.molgenis.protocol.Workflow;
 import org.molgenis.util.Tuple;
 
 /**
@@ -50,8 +55,8 @@ public class StartNgs extends EasyPluginController<StartNgsView>
     public void buttonGenerate(Database db, Tuple request) throws Exception
     {
         processing.setFlagJustGenerate(true);
-        buttonStart(db, request);
-        processing.setFlagJustGenerate(true);
+        buttonStart(db, request); // we will only generate the scripts in this case
+        processing.setFlagJustGenerate(false);
     }
 
 
@@ -61,7 +66,8 @@ public class StartNgs extends EasyPluginController<StartNgsView>
         FormModel<Worksheet> parentForm = (FormModel<Worksheet>) ((FormController) parentController).getModel();
         Worksheet data = parentForm.getRecords().get(0);
 
-        processing.processSingleWorksheet(db, request, data);
+        Workflow wf = db.query(Workflow.class).find().get(0);
+        processing.processSingleWorksheet(db, request, data, wf); // <<< NB First workflow will be applied!
 
     }
 

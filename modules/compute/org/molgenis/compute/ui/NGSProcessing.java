@@ -80,7 +80,7 @@ public class NGSProcessing
         sample, flowcell, lane, barcode, machine, date, capturing, project;
     }
 
-    public void processSingleWorksheet(Database db, Tuple request, Worksheet data) throws Exception
+    public void processSingleWorksheet(Database db, Tuple request, Worksheet data, Workflow workflow) throws Exception
     {
         if(!db.inTx())
             db.beginTx();
@@ -123,8 +123,8 @@ public class NGSProcessing
         //application for the whole workflow
         wholeWorkflowApp = new ComputeApplication();
 
-        //we have only one workflow
-        Workflow workflow = db.query(Workflow.class).find().get(0);
+        //get the chosen workflow
+//        Workflow workflow = db.query(Workflow.class).find().get(0);
         wholeWorkflowApp.setProtocol(workflow);
         wholeWorkflowApp.setInterpreter("WorkflowInterpreter");
 
@@ -427,7 +427,7 @@ public class NGSProcessing
         String logfile = weaver.getLogfilename();
         pipeline.setPipelinelogpath(logfile);
 
-        weaver.writeToFile("/test/" + pipelineElementNumber + scriptID, scriptFile);
+        weaver.writeToFile("/Users/mdijkstra/Dropbox/NGS/compute/local_scripts/" + pipelineElementNumber + scriptID, scriptFile);
         //weaver.writeToFile("/home/gbyelas/test/" + pipelineElementNumber + scriptID, scriptFile);
         //weaver.writeToFile("/home/fvandijk/test/" + pipelineElementNumber + scriptID, scriptFile);
 

@@ -56,9 +56,9 @@ public class AdminDBPlugin extends EasyPluginController<AdminDBPluginModel>
 		print("resetDatabase pressed");
 
         //hardcoded to working directory
-        String strSQL = readFile("create_tables.sql");
+        String strSQL = readFile("/Users/mdijkstra/Documents/workspace/molgenis_apps/generated/sql/create_tables.sql");
         execute(db, strSQL);
-        strSQL = readFile("insert_metadata.sql");
+        strSQL = readFile("/Users/mdijkstra/Documents/workspace/molgenis_apps/generated/sql/insert_metadata.sql");
 		execute(db, strSQL);
         print("done with resetDatabase");
         getModel().setSuccess("reset successful");
