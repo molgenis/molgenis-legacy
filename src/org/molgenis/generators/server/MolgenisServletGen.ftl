@@ -83,7 +83,7 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 		data_src.setMaxWait(1000);
 	
 		DataSource dataSource = (DataSource)data_src;
-		Database db = new ${package}.JDBCDatabase(dataSource, new File("${db_filepath}"));
+		Database db = DatabaseFactory.create(dataSource, new File("${db_filepath}"));
 		return db;
 		</#if>
 	}
