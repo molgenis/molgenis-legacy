@@ -37,10 +37,10 @@ public abstract class AbstractDatabase implements Database {
     protected Map<String, Mapper<? extends Entity>> mappers = new TreeMap<String, Mapper<? extends Entity>>();
     /** The filesource associated to this database: takes care of "file" fields */
     public File fileSource; //should be changed to protected or private
-    /** Login object */
-    protected final Login login;
     protected MolgenisOptions options;
     protected Model model;    
+   
+    protected Login login;
     
     @Override
     abstract public <E extends Entity> List<E>  findByExample(E example) throws DatabaseException;
@@ -49,12 +49,7 @@ public abstract class AbstractDatabase implements Database {
     abstract public <E extends Entity> E        findById(Class<E> klazz, Object id) throws DatabaseException;
     @Override
     abstract public <E extends Entity> int      count(Class<E> klazz, QueryRule... rules) throws DatabaseException;
-    
-    protected AbstractDatabase(Login login) {
-        this.login = login;
-    }
-    
-    
+   
     /**
      * Only use when really needed!
      * 
@@ -598,12 +593,6 @@ public abstract class AbstractDatabase implements Database {
     }
 
     @Override
-    public Login getSecurity()
-    {
-        return login;
-    }
-
-    @Override
     public <E extends Entity> Query<E> query(Class<E> klazz)
     {
             Query<E> q = new QueryImp<E>(this, klazz);
@@ -670,5 +659,25 @@ public abstract class AbstractDatabase implements Database {
     @Override
     public File getFilesource() {
         return fileSource;
-    }    
+    }
+    
+	public Login getLogin()
+	{
+		return login;
+	}
+
+	public Login getSecurity() {
+		return login;
+	}	
+	
+	public void setLogin(Login login)
+	{
+		this.login = login;
+	}
+	
+
+	
+	
+    
+    
 }

@@ -488,8 +488,8 @@ public interface Database
 	 * Return the security strategy object that takes care of authorization in
 	 * this Database
 	 */
-	public Login getSecurity();
-
+	public Login getSecurity();	
+	
 	/**
 	 * Retrieve the full class object for an entity name. For example:
 	 * "Experiment" may produce a "my.package.Experiment" class. This works
