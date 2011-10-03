@@ -77,6 +77,8 @@ public class DatabaseLogin implements Login, Serializable {
 		this(db);
 		this.redirect = redirect;
 	}
+	
+	
 
 	/**
 	 * {@inheritDoc}
@@ -548,5 +550,10 @@ public class DatabaseLogin implements Login, Serializable {
 				throw new DatabaseException(e1);
 			}
 		}
+	}
+
+	@Override
+	public void setRedirect(String redirect) {
+		this.redirect = redirect;
 	}
 }
