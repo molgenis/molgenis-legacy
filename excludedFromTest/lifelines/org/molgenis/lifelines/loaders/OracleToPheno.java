@@ -125,7 +125,7 @@ public class OracleToPheno implements Runnable {
 		        									.getResultList();
 		        paidTargets = new HashMap<Integer, ObservationTarget>();
 		        for(ObservationTarget t : targets) {
-		        	paidTargets.put(t.getPaid(), t);
+                            paidTargets.put(t.getPaid(), t);
 		        }        	
 		        
 		        int w = 0;
@@ -166,7 +166,7 @@ public class OracleToPheno implements Runnable {
 		                ObservedValue ov = new ObservedValue();
 		                ov.setFeature(measurements.get(i-1));
 		                if(value != null) {
-		                	ov.setRecordId(recId);
+		                	//ov.setRecordId(recId);
 		                	ov.setProtocolApplication(pa);
 		                	//ov.setProtocolId(protocolId);
 		                    ov.setValue(value.toString());

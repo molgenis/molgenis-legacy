@@ -8,6 +8,7 @@
 package org.molgenis.auth;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.security.Login;
 import org.molgenis.util.Entity;
 
@@ -514,5 +516,37 @@ public class DatabaseLogin implements Login, Serializable {
 		}
 		
 		return false;
+	}
+
+	@Override
+	public void setAdmin(List<? extends Entity> entities, Database db) throws DatabaseException {
+		// Set owner to 'admin' if not set by user
+		for (Entity e : entities)
+		{
+			try
+			{
+				Class entityClass = e.getClass();
+				Method getOwns = entityClass.getMethod("getOwns_Id");
+				Object result = getOwns.invoke(e);
+				if (result == null)
+				{
+					Integer adminId = db
+							.find(MolgenisRole.class, new QueryRule(MolgenisRole.NAME, Operator.EQUALS, "admin"))
+							.get(0).getId();
+					Object arglist[] = new Object[1];
+					arglist[0] = adminId;
+					
+					Class partypes[] = new Class[1];
+					partypes[0] = Integer.class;
+					Method setOwns = entityClass.getMethod("setOwns_Id", partypes);
+					setOwns.invoke(e, arglist);
+				}
+			}
+			catch (Exception e1)
+			{
+				e1.printStackTrace();
+				throw new DatabaseException(e1);
+			}
+		}
 	}
 }

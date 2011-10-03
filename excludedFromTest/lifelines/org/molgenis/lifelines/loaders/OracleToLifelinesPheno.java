@@ -148,7 +148,8 @@ public class OracleToLifelinesPheno {
 //    	for(ObservationElement e : measurements) {
 //    		f.add(e);
 //    	}    	
-    	protocol.setFeatures(measurements);
+        
+        protocol.setFeatures(measurements);
     	protocol.setInvestigation(investigation);
     	protocol.setName(tableName);
 

@@ -36,35 +36,7 @@ public class AuthorizableDecorator<E extends Entity> extends MappingDecorator<E>
 	public int add(List<E> entities) throws DatabaseException
 	{
 		// add your pre-processing here
-
-		// Set owner to 'admin' if not set by user
-		for (E e : entities)
-		{
-			try
-			{
-				Class entityClass = e.getClass();
-				Method getOwns = entityClass.getMethod("getOwns_Id");
-				Object result = getOwns.invoke(e);
-				if (result == null)
-				{
-					Integer adminId = getDatabase()
-							.find(MolgenisRole.class, new QueryRule(MolgenisRole.NAME, Operator.EQUALS, "admin"))
-							.get(0).getId();
-					Object arglist[] = new Object[1];
-					arglist[0] = adminId;
-					
-					Class partypes[] = new Class[1];
-					partypes[0] = Integer.class;
-					Method setOwns = entityClass.getMethod("setOwns_Id", partypes);
-					setOwns.invoke(e, arglist);
-				}
-			}
-			catch (Exception e1)
-			{
-				e1.printStackTrace();
-				throw new DatabaseException(e1);
-			}
-		}
+		this.getDatabase().getSecurity().setAdmin(entities, this.getDatabase());
 
 		// here we call the standard 'add'
 		int count = super.add(entities);

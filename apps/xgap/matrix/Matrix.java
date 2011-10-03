@@ -26,11 +26,7 @@ public class Matrix<T> {
 	static {
 		try {
 			db = DatabaseFactory.create("molgenis.properties");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (DatabaseException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
