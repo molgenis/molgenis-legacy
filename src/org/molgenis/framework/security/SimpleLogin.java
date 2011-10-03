@@ -9,11 +9,16 @@ import org.molgenis.util.Entity;
 
 public class SimpleLogin implements Login
 {
-        public SimpleLogin()
-        {
+    public SimpleLogin()
+    {
 
-        }
-	
+    }
+
+    public SimpleLogin(Database db)
+    {
+
+    }        
+        
 	@Override
 	public void reload(Database db)
 	{
