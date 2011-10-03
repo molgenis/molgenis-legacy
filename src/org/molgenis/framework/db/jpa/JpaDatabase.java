@@ -21,7 +21,6 @@ import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryImp;
 import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.security.Login;
 import org.molgenis.model.elements.Model;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvReaderListener;
@@ -83,33 +82,28 @@ public class JpaDatabase extends AbstractDatabase implements Database {
     private EntityManager em = null;
     private String persistenceUnitName;
 
-    protected JpaDatabase(String persistenceUnitName, EntityManager em, Model jdbcMetaDatabase, final Login login) {
-        super(login);
+    protected JpaDatabase(String persistenceUnitName, EntityManager em, Model jdbcMetaDatabase) {
         this.persistenceUnitName = persistenceUnitName;
         this.em = em;
         this.model = jdbcMetaDatabase;
     }
 
-    protected JpaDatabase(String persistenceUnitName, Model jdbcMetaDatabase, final Login login) {
-        super(login);
+    protected JpaDatabase(String persistenceUnitName, Model jdbcMetaDatabase) {
         this.persistenceUnitName = persistenceUnitName;
         this.model = jdbcMetaDatabase;
     }
 
-    protected JpaDatabase(String persistenceUnitName, final Login login) {
-        super(login);
+    protected JpaDatabase(String persistenceUnitName) {
         this.persistenceUnitName = persistenceUnitName;
         this.em = EMFactory.createEntityManager();
     }
 
-    public JpaDatabase(EntityManager em, Model model, final Login login) {
-        super(login);
+    public JpaDatabase(EntityManager em, Model model) {
         this.em = em;
         this.model = model;
     }
 
-    public JpaDatabase(Model model, final Login login) {
-        super(login);
+    public JpaDatabase(Model model) {
         this.model = model;
     }
 

@@ -24,51 +24,15 @@ import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jdbc.DataSourceWrapper;
-import org.molgenis.framework.security.Login;
-import org.molgenis.framework.security.SimpleLogin;
+
 
 public class DatabaseFactory
 {
-    private static class SecurityFactory {
-    	private static Login testLogin = null;
-    	private static Login login = null;
-    
-        public static Login create() throws Exception {
-            return create(false);
-        }
-        
-        public static Login create(boolean test) throws Exception {
-            if(test) {
-            	if(testLogin == null) {
-            		testLogin = new SimpleLogin();
-            	}
-            	return testLogin;                
-            } else {
-            	if(login == null) {
-            		login = ${auth_loginclass}.class.newInstance();
-               		<#if auth_redirect??>
-               		login.setRedirect("${auth_redirect}");
-               		</#if>
-            	} 
-                return login;
-            }
-        }
-        
-        public static Login create(Class<? extends  Login> loginClass) throws Exception {
-            if(login == null) {
-            	login = loginClass.newInstance();
-            	<#if auth_redirect??>
-           		login.setRedirect("${auth_redirect}");
-           		</#if>
-            }
-            return login;
-        }
-    }
 
 <#if databaseImp == "jpa">
     private static Database createJpaDatabase(boolean test) throws DatabaseException {
         try {
-            return new app.JpaDatabase(test, SecurityFactory.create(test)); 
+            return new app.JpaDatabase(test); 
         } catch (Exception ex) {
             throw new DatabaseException(ex);
         }
@@ -77,7 +41,7 @@ public class DatabaseFactory
     // ignore parameters, everything is declared in persistence.xml
     private static Database createJpaDatabase() throws DatabaseException {
         try {            
-            return new app.JpaDatabase(SecurityFactory.create()); 
+            return new app.JpaDatabase(); 
         } catch (Exception ex) {
             throw new DatabaseException(ex);
         }
@@ -85,29 +49,21 @@ public class DatabaseFactory
 
     private static Database createJpaDatabase(String propertiesFilePath) throws DatabaseException {
         try {
-            return new app.JpaDatabase(propertiesFilePath, SecurityFactory.create()); 
+            return new app.JpaDatabase(propertiesFilePath); 
         } catch (Exception ex) {
             throw new DatabaseException(ex);
         }
-    } 
-
-    private static Database createJpaDatabase(Class<? extends Login> loginClass) throws DatabaseException {
-        try {
-            return new app.JpaDatabase(false, SecurityFactory.create(loginClass)); 
-        } catch (Exception ex) {
-            throw new DatabaseException(ex);
-        }
-    }   
+    }  
 </#if>
         public static Database createInsecure(DataSource data_src, File file_src) throws DatabaseException {
 <#if databaseImp == "jdbc">
             try {
-                return new app.JDBCDatabase(data_src, file_src, SecurityFactory.create(SimpleLogin.class));
+                return new app.JDBCDatabase(data_src, file_src);
             } catch (Exception ex) {
                 throw new DatabaseException(ex);
             }
 <#elseif databaseImp == "jpa">
-            return createJpaDatabase(SimpleLogin.class);
+            return createJpaDatabase();
 <#else>
             throw new UnsupportedOperationException();
 </#if>
@@ -116,12 +72,12 @@ public class DatabaseFactory
         public static Database createInsecure() throws DatabaseException {
 <#if databaseImp == "jdbc">
             try {
-                return new app.JDBCDatabase(SecurityFactory.create(SimpleLogin.class));
+                return new app.JDBCDatabase();
             } catch (Exception ex) {
                 throw new DatabaseException(ex);
             }
 <#elseif databaseImp == "jpa">
-            return createJpaDatabase(SimpleLogin.class);
+            return createJpaDatabase();
 <#else>
             throw new UnsupportedOperationException();
 </#if>
@@ -131,7 +87,7 @@ public class DatabaseFactory
 	{
 <#if databaseImp == "jdbc">
             try {
-                return new ${package}.JDBCDatabase(data_src, file_source, SecurityFactory.create());            
+                return new ${package}.JDBCDatabase(data_src, file_source);            
             } catch (Exception ex) {
                 throw new DatabaseException(ex);
             }
@@ -146,7 +102,7 @@ public class DatabaseFactory
 	{
 <#if databaseImp == "jdbc">
             try {
-                return new ${package}.JDBCDatabase(data_src, file_src, SecurityFactory.create());            
+                return new ${package}.JDBCDatabase(data_src, file_src);            
             } catch (Exception ex) {
                 throw new DatabaseException(ex);
             }
@@ -161,7 +117,7 @@ public class DatabaseFactory
 	{
 <#if databaseImp == "jdbc">
             try {
-                return new ${package}.JDBCDatabase(p, SecurityFactory.create());            
+                return new ${package}.JDBCDatabase(p);            
             } catch (Exception ex) {
                 throw new DatabaseException(ex);
             }
@@ -176,7 +132,7 @@ public class DatabaseFactory
 	{
 <#if databaseImp == "jdbc">
             try {
-                return new ${package}.JDBCDatabase(options, SecurityFactory.create());            
+                return new ${package}.JDBCDatabase(options);            
             } catch (Exception ex) {
                 throw new DatabaseException(ex);
             }
@@ -191,7 +147,7 @@ public class DatabaseFactory
 	{
 <#if databaseImp == "jdbc">
             try {
-                return new ${package}.JDBCDatabase(SecurityFactory.create());            
+                return new ${package}.JDBCDatabase();            
             } catch (Exception ex) {
                 throw new DatabaseException(ex);
             }
@@ -206,7 +162,7 @@ public class DatabaseFactory
 	{
 <#if databaseImp == "jdbc">
             try {
-                return new ${package}.JDBCDatabase(SecurityFactory.create());            
+                return new ${package}.JDBCDatabase();            
             } catch (Exception ex) {
                 throw new DatabaseException(ex);
             }
@@ -234,7 +190,7 @@ public class DatabaseFactory
 	{
 <#if databaseImp == "jdbc">
             try {
-                return new ${package}.JDBCDatabase(propertiesFilePath, SecurityFactory.create(test));
+                return new ${package}.JDBCDatabase(propertiesFilePath);
             } catch (Exception ex) {
                 throw new DatabaseException(ex);
             }
@@ -245,17 +201,5 @@ public class DatabaseFactory
 </#if>
 	}
 
-        public static Database create(Class<? extends Login> loginClass) throws DatabaseException{
-<#if databaseImp == "jdbc">
-            try {
-                return new ${package}.JDBCDatabase(SecurityFactory.create(loginClass));            
-            } catch (Exception ex) {
-                throw new DatabaseException(ex);
-            }
-<#elseif databaseImp == "jpa">
-            return createJpaDatabase(loginClass);
-<#else>
-            throw new UnsupportedOperationException();
-</#if>
-        }
+
 }

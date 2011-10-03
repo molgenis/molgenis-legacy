@@ -26,7 +26,6 @@ import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryImp;
 import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.security.Login;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.TupleWriter;
@@ -70,10 +69,10 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	 *            File directory where file attachements can be stored.
 	 * @throws DatabaseException
 	 */
-	public JDBCDatabase(DataSource data_src, File file_source, final Login login)
+	public JDBCDatabase(DataSource data_src, File file_source)
 			throws DatabaseException
 	{
-		super(new SimpleDataSourceWrapper(data_src), login);
+		super(new SimpleDataSourceWrapper(data_src));
 
 		// optional: requires a fileSource
 		if (file_source == null) logger
@@ -81,9 +80,9 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 		this.fileSource = file_source;
 	}
 
-	public JDBCDatabase(DataSourceWrapper data_src, File file_source, final Login login)
+	public JDBCDatabase(DataSourceWrapper data_src, File file_source)
 	{
-		super(data_src, login);
+		super(data_src);
 
 		// optional: requires a fileSource
 		if (file_source == null) logger
@@ -91,9 +90,8 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 		this.fileSource = file_source;
 	}
 
-	public JDBCDatabase(MolgenisOptions options, final Login login)
+	public JDBCDatabase(MolgenisOptions options)
 	{
-		super(login);
 		this.options = options;
 		
 		BasicDataSource dSource = new BasicDataSource();
@@ -110,15 +108,15 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 		logger.debug("JDBCDatabase(uri=" + options.db_uri + ") created");
 	}
 
-	public JDBCDatabase(Properties p, final Login login)
+	public JDBCDatabase(Properties p)
 	{
-		this(new MolgenisOptions(p), login);
+		this(new MolgenisOptions(p));
 	}
 
-	public JDBCDatabase(File propertiesFilePath, final Login login) throws FileNotFoundException,
+	public JDBCDatabase(File propertiesFilePath) throws FileNotFoundException,
 			IOException
 	{
-            super(login);
+        super();
 		Properties p = new Properties();
 		p.load(new FileInputStream(propertiesFilePath));
 
@@ -135,10 +133,10 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 
 	}
 
-	public JDBCDatabase(String propertiesFilePath, final Login login)
+	public JDBCDatabase(String propertiesFilePath)
 			throws FileNotFoundException, IOException
 	{
-            super(login);
+        super();
 		Properties p = new Properties();
 		try
 		{

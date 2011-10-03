@@ -319,11 +319,6 @@ public class InMemoryDatabase implements Database
 		return buff.toString();
 	}
 
-	@Override
-	public Login getSecurity()
-	{
-		throw new UnsupportedOperationException();
-	}
 
 //	@Override
 //	public void setLogin(Login login)
@@ -371,14 +366,6 @@ public class InMemoryDatabase implements Database
 	}
 
 	@Override
-	public <E extends Entity> void find(Class<E> entityClass, TupleWriter writer,
-			List<String> fieldsToExport, QueryRule... rules)
-			throws DatabaseException
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public List<Tuple> sql(String query, QueryRule ...queryRules) throws DatabaseException
 	{
 		throw new UnsupportedOperationException();
@@ -417,4 +404,20 @@ public class InMemoryDatabase implements Database
     public void rollbackPrivateTx(String ticket) throws DatabaseException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+	@Override
+	public <E extends Entity> void find(Class<E> entityClass,
+			TupleWriter writer, List<String> fieldsToExport, QueryRule... rules)
+			throws DatabaseException
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Login getSecurity()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
