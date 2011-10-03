@@ -155,4 +155,6 @@ public interface Login
 	public String getRedirect();
 	
 	public void setAdmin(List<? extends Entity> entities, Database db) throws DatabaseException;
+	
+	public void setRedirect(String redirect);
 }

@@ -135,7 +135,11 @@ public class SimpleLogin implements Login
 	@Override
 	public void setAdmin(List<? extends Entity> entities, Database db) throws DatabaseException
 	{
-		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void setRedirect(String redirect)
+	{
 	}
 
 }
