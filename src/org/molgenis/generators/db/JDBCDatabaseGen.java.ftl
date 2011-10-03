@@ -35,48 +35,49 @@ import java.net.URL;
 import java.util.ArrayList;
 import org.molgenis.util.JarClass;
 </#if>
+import org.molgenis.framework.security.Login;
 
 public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 {
 	private JDBCMetaDatabase metaData = null;
 	<#if decorator_overriders != ''>private Logger logger = Logger.getLogger(JDBCDatabase.class.getSimpleName());</#if>
 
-	public JDBCDatabase(DataSource data_src, File file_source) throws DatabaseException
+	public JDBCDatabase(DataSource data_src, File file_source, final Login login) throws DatabaseException
 	{
-		this(new SimpleDataSourceWrapper(data_src), file_source);
+		this(new SimpleDataSourceWrapper(data_src), file_source, login);
 	}
 
-	public JDBCDatabase(DataSourceWrapper data_src, File file_src) throws DatabaseException
+	public JDBCDatabase(DataSourceWrapper data_src, File file_src, final Login login) throws DatabaseException
 	{
-		super(data_src, file_src);
+		super(data_src, file_src, login);
 		this.setup();
 		<#if decorator_overriders != ''>this.overrideDecorators();</#if>
 	}
 
-	public JDBCDatabase(Properties p) throws DatabaseException
+	public JDBCDatabase(Properties p, final Login login) throws DatabaseException
 	{
-		super(p);
+		super(p, login);
 		this.setup();
 		<#if decorator_overriders != ''>this.overrideDecorators();</#if>
 	}
 	
-	public JDBCDatabase(MolgenisOptions options) throws DatabaseException
+	public JDBCDatabase(MolgenisOptions options, final Login login) throws DatabaseException
 	{
-		super(options);
+		super(options, login);
 		this.setup();
 		<#if decorator_overriders != ''>this.overrideDecorators();</#if>
 	}
 	
-	public JDBCDatabase() throws DatabaseException
+	public JDBCDatabase(final Login login) throws DatabaseException
 	{
-		super(new MolgenisOptions());
+		super(new MolgenisOptions(), login);
 		this.setup();
 		<#if decorator_overriders != ''>this.overrideDecorators();</#if>
 	}
 
-	public JDBCDatabase(String propertiesFilePath) throws FileNotFoundException, IOException, DatabaseException
+	public JDBCDatabase(String propertiesFilePath, final Login login) throws FileNotFoundException, IOException, DatabaseException
 	{
-		super(propertiesFilePath);
+		super(propertiesFilePath, login);
 		this.setup();
 		<#if decorator_overriders != ''>this.overrideDecorators();</#if>
 	}

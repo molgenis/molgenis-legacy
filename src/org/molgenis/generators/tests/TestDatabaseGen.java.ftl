@@ -17,6 +17,7 @@
 
 package ${package};
 
+import app.DatabaseFactory;
 <#if databaseImp != 'jpa'>	
 import app.JDBCDatabase;
 <#else>
@@ -75,14 +76,14 @@ public class TestDatabase
 		//this means the previous test will need to end with e.g.
 		//new emptyDatabase(new MolgenisServlet().getDatabase(), false);	
 		<#if databaseImp = 'jpa'>		
-			db = new app.JpaDatabase(true);
+			db = DatabaseFactory.createTest();
                         JpaUtil.dropAndCreateTables( (JpaDatabase)db);
-			((JpaDatabase)db).getEntityManager().setFlushMode(FlushModeType.AUTO);
 		<#else>
 			<#if db_mode = 'standalone'>
-			db = new MolgenisServlet().getDatabase();
+			//db = new MolgenisServlet().getDatabase();
+                        db = DatabaseFactory.createTest("${options.molgenis_properties}"); //correct?	
 			<#else>
-			db = new JDBCDatabase("${options.molgenis_properties}");	
+			db = DatabaseFactory.createTest("${options.molgenis_properties}");	
 			//create the database
 			new Molgenis("${options.molgenis_properties}").updateDb();
 			</#if>

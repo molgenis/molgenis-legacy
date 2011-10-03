@@ -491,14 +491,6 @@ public interface Database
 	public Login getSecurity();
 
 	/**
-	 * Set the security strategy for this database
-	 * 
-	 * @param login
-	 *            strategy
-	 */
-	public void setLogin(Login login);
-
-	/**
 	 * Retrieve the full class object for an entity name. For example:
 	 * "Experiment" may produce a "my.package.Experiment" class. This works
 	 * because MOLGENIS requires unique Class names (ignoring package names).

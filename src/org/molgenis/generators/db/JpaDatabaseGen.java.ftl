@@ -14,6 +14,7 @@ import javax.persistence.Persistence;
 
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.DatabaseMapper;
+import org.molgenis.framework.security.Login;
 
 public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
 {
@@ -37,20 +38,20 @@ public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
 		</#if></#list>	
 	}	
 
-    public JpaDatabase() throws DatabaseException {
-        super("molgenis", EMFactory.createEntityManager(), new JDBCMetaDatabase());
+    public JpaDatabase(final Login login) throws DatabaseException {
+        super("molgenis", EMFactory.createEntityManager(), new JDBCMetaDatabase(), login);
         this.persistenceUnitName = "molgenis";
         initMappers(this);
     }
 
-    public JpaDatabase(String persistenceUnitName) throws DatabaseException {
-        super(persistenceUnitName, EMFactory.createEntityManager(persistenceUnitName), new JDBCMetaDatabase());
+    public JpaDatabase(String persistenceUnitName, final Login login) throws DatabaseException {
+        super(persistenceUnitName, EMFactory.createEntityManager(persistenceUnitName), new JDBCMetaDatabase(), login);
         this.persistenceUnitName = persistenceUnitName;
         initMappers(this);
     }
 
-    public JpaDatabase(boolean testDatabase) throws DatabaseException {
-        super(testDatabase ? "molgenis_test" : "molgenis", new JDBCMetaDatabase());
+    public JpaDatabase(boolean testDatabase, final Login login) throws DatabaseException {
+        super(testDatabase ? "molgenis_test" : "molgenis", new JDBCMetaDatabase(), login);
         persistenceUnitName = testDatabase ? "molgenis_test" : "molgenis";
         if (testDatabase) {
             super.setEntityManager(EMFactory.createEntityManager("molgenis_test"));

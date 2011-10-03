@@ -23,6 +23,7 @@ import java.text.ParseException;
 import javax.persistence.EntityManager;
 </#if>
 import org.molgenis.framework.security.Login;
+import org.molgenis.framework.security.SimpleLogin;
 
 public class FillMetadata {
 	protected static final transient Logger logger = Logger.getLogger(FillMetadata.class);
@@ -38,6 +39,9 @@ public class FillMetadata {
             if(login == null) {
                 logger.info("login == null --> no meta data added");           
                 return;
+            } else if (login instanceof SimpleLogin) {
+            	logger.info("login instanceof SimpleLogin --> no meta data added");
+            	return;
             }
 
 

@@ -325,11 +325,11 @@ public class InMemoryDatabase implements Database
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
-	public void setLogin(Login login)
-	{
-		throw new UnsupportedOperationException();
-	}
+//	@Override
+//	public void setLogin(Login login)
+//	{
+//		throw new UnsupportedOperationException();
+//	}
 
 	@Override
 	public Class<? extends Entity> getClassForName(String name)
