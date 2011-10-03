@@ -10,6 +10,6 @@ package org.molgenis.compute.ssh;
 public class SshData
 {
     public static final String SERVER = "millipede.service.rug.nl";
-    public static final String USER = "byelas";
-    public static final String PASS = "1d1otsuper";
+    public static final String USER = "oops";
+    public static final String PASS = "different";
 }
