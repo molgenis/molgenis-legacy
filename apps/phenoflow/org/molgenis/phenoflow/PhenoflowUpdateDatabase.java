@@ -2,9 +2,10 @@ package org.molgenis.phenoflow;
 
 
 import org.molgenis.Molgenis;
+import org.molgenis.framework.db.Database;
 
 import app.DatabaseFactory;
-import app.JDBCDatabase;
+
 
 
 public class PhenoflowUpdateDatabase
