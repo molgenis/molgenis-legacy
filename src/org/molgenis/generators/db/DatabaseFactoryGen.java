@@ -35,7 +35,9 @@ public class DatabaseFactoryGen extends Generator
 
 		templateArgs.put("package", APP_DIR);
 		templateArgs.put("databaseImp", options.mapper_implementation.equals(MolgenisOptions.MapperImplementation.JPA) ? "jpa" : "jdbc");
-                templateArgs.put("auth_loginclass", options.auth_loginclass);
+        templateArgs.put("auth_loginclass", options.auth_loginclass);
+        templateArgs.put("auth_redirect", options.auth_redirect);
+        
 		OutputStream targetOut = new FileOutputStream( target );
 		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
 		targetOut.close();

@@ -38,13 +38,19 @@ public class DatabaseFactory
             if(test) {
                 return new SimpleLogin();
             } else {
-                Login login = ${auth_loginclass}.class.newInstance();    
+                Login login = ${auth_loginclass}.class.newInstance();
+               	<#if auth_redirect??>
+               	login.setRedirect("${auth_redirect}");
+               	</#if>
                 return login;
             }
         }
         
         public static Login create(Class<? extends  Login> loginClass) throws Exception {
             Login login = loginClass.newInstance();
+           	<#if auth_redirect??>
+           	login.setRedirect("${auth_redirect}");
+           	</#if>
             return login;
         }
     }
