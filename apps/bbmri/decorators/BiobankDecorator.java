@@ -39,11 +39,21 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 	@Override
 	public int add(List<E> entities) throws DatabaseException
 	{
+		// First a check to see if Hudson is running (if so, there will be no user "admin" present).
+		// If yes, bail out, because Hudson cannot handle the ChangeLog entries.
+		try {
+			if (getDatabase().query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().size() == 0) {
+				return count;
+			}
+		} catch (Exception e1) {
+			return count;
+		}
+				
 		Date date = new Date(); 
 		
 		// add your pre-processing here
 		Login login = this.getDatabase().getSecurity();
-		if (login != null) {
+		if (login != null && !(login instanceof SimpleLogin)) {
 			if (login.getUserId() != null) {
 				int userId = this.getDatabase().getSecurity().getUserId();
 				
@@ -70,17 +80,6 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 
 		// add your post-processing here
 		// if you throw and exception the previous add will be rolled back
-		
-		// First a check to see if Hudson is running (if so, there will be no user "admin" present).
-		// If yes, bail out, because Hudson cannot handle the ChangeLog entries.
-		try {
-			if (getDatabase().query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().size() == 0) {
-				return count;
-			}
-		} catch (Exception e1) {
-			return count;
-		}
-		
 		for (Biobank e : entities) {
 	
 			//on every new entity update changelog table 
@@ -142,6 +141,16 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 	@Override
 	public int remove(List<E> entities) throws DatabaseException
 	{
+		// First a check to see if Hudson is running (if so, there will be no user "admin" present).
+		// If yes, bail out, because Hudson cannot handle the ChangeLog entries.
+		try {
+			if (getDatabase().query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().size() == 0) {
+				return count;
+			}
+		} catch (Exception e1) {
+			return count;
+		}
+				
 		// add your pre-processing here
 		// first remove corresponding ChangeLog entries, so we will be allowed to remove the entities themselves
 		for (Biobank e : entities)
