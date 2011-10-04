@@ -21,6 +21,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.jdbc.MappingDecorator;
 import org.molgenis.framework.security.Login;
+import org.molgenis.framework.security.SimpleLogin;
 
 public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 {
@@ -39,6 +40,8 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 	@Override
 	public int add(List<E> entities) throws DatabaseException
 	{
+		int count = super.add(entities);
+		
 		// First a check to see if Hudson is running (if so, there will be no user "admin" present).
 		// If yes, bail out, because Hudson cannot handle the ChangeLog entries.
 		try {
@@ -76,7 +79,7 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 		}
 		
 		// here we call the standard 'add'
-		int count = super.add(entities);
+		count = super.add(entities);
 
 		// add your post-processing here
 		// if you throw and exception the previous add will be rolled back
@@ -141,6 +144,8 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 	@Override
 	public int remove(List<E> entities) throws DatabaseException
 	{
+		int count = super.remove(entities);
+
 		// First a check to see if Hudson is running (if so, there will be no user "admin" present).
 		// If yes, bail out, because Hudson cannot handle the ChangeLog entries.
 		try {
@@ -164,7 +169,7 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 			}
 		}
 		// here we call the standard 'remove'
-		int count = super.remove(entities);
+		count = super.remove(entities);
 
 		// add your post-processing here
 
