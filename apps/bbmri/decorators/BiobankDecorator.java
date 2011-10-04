@@ -43,7 +43,7 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 		// add your pre-processing here
 		
 		// here we call the standard 'add'
-		count = super.add(entities);
+		int count = super.add(entities);
 		
 		// Check to see if Hudson is running (if so, there will be no user "admin" present).
 		// If yes, bail out now, because Hudson cannot handle the setOwns() and the ChangeLog entries.
@@ -157,7 +157,7 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 		}
 		
 		// here we call the standard 'remove'
-		count = super.remove(entities);
+		int count = super.remove(entities);
 		
 		// add your post-processing here
 
