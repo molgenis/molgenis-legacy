@@ -40,10 +40,13 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 	@Override
 	public int add(List<E> entities) throws DatabaseException
 	{
-		int count = super.add(entities);
+		// add your pre-processing here
 		
-		// First a check to see if Hudson is running (if so, there will be no user "admin" present).
-		// If yes, bail out, because Hudson cannot handle the ChangeLog entries.
+		// here we call the standard 'add'
+		count = super.add(entities);
+		
+		// Check to see if Hudson is running (if so, there will be no user "admin" present).
+		// If yes, bail out now, because Hudson cannot handle the setOwns() and the ChangeLog entries.
 		try {
 			if (getDatabase().query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().size() == 0) {
 				return count;
@@ -51,10 +54,10 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 		} catch (Exception e1) {
 			return count;
 		}
-				
-		Date date = new Date(); 
 		
-		// add your pre-processing here
+		// add your post-processing here
+		// if you throw and exception the previous add will be rolled back
+		Date date = new Date(); 
 		Login login = this.getDatabase().getSecurity();
 		if (login != null && !(login instanceof SimpleLogin)) {
 			if (login.getUserId() != null) {
@@ -77,14 +80,8 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 				}
 			}
 		}
-		
-		// here we call the standard 'add'
-		count = super.add(entities);
 
-		// add your post-processing here
-		// if you throw and exception the previous add will be rolled back
 		for (Biobank e : entities) {
-	
 			//on every new entity update changelog table 
 			try {
 				
@@ -108,12 +105,9 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 
 		// here we call the standard 'update'
 		int count = super.update(entities);
-
-		// add your post-processing here
-		// if you throw and exception the previous add will be rolled back
 		
 		// First a check to see if Hudson is running (if so, there will be no user "admin" present).
-		// If yes, bail out, because Hudson cannot handle the ChangeLog entries.
+		// If yes, bail out now, because Hudson cannot handle the ChangeLog entries.
 		try {
 			if (getDatabase().query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().size() == 0) {
 				return count;
@@ -122,6 +116,8 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 			return count;
 		}
 		
+		// add your post-processing here
+		// if you throw and exception the previous add will be rolled back
 		Date date = new Date(); 
 		for (Biobank e : entities)
 		{
@@ -144,33 +140,25 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 	@Override
 	public int remove(List<E> entities) throws DatabaseException
 	{
-		int count = super.remove(entities);
-
-		// First a check to see if Hudson is running (if so, there will be no user "admin" present).
-		// If yes, bail out, because Hudson cannot handle the ChangeLog entries.
-		try {
-			if (getDatabase().query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().size() == 0) {
-				return count;
-			}
-		} catch (Exception e1) {
-			return count;
-		}
-				
 		// add your pre-processing here
-		// first remove corresponding ChangeLog entries, so we will be allowed to remove the entities themselves
-		for (Biobank e : entities)
-		{
-			try {
-				List<ChangeLog> changelogList = getDatabase().query(ChangeLog.class).eq(ChangeLog.ENTITY_ID,
-						e.getId()).find();
-				getDatabase().remove(changelogList);
-			} catch (Exception e1) {
-				e1.printStackTrace();
+		// First remove corresponding ChangeLog entries, so we will be allowed to remove the entities themselves
+		// First a check to see if Hudson is running (if so, there will be no user "admin" present).
+		if (getDatabase().query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().size() > 0) {
+			for (Biobank e : entities)
+			{
+				try {
+					List<ChangeLog> changelogList = getDatabase().query(ChangeLog.class).eq(ChangeLog.ENTITY_ID,
+							e.getId()).find();
+					getDatabase().remove(changelogList);
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
 			}
 		}
+		
 		// here we call the standard 'remove'
 		count = super.remove(entities);
-
+		
 		// add your post-processing here
 
 		return count;
