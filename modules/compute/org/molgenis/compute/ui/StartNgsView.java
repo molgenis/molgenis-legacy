@@ -25,6 +25,11 @@ public class StartNgsView extends EasyPluginModel
     private ActionInput buttonGenerate = new ActionInput("buttonGenerate", "Generate Pipeline");
     private IntInput inputStep = new IntInput("inputStep");
 
+    private IntInput inputFromStep = new IntInput("inputFromStep");
+    private ActionInput buttonTestFrom = new ActionInput("buttonTestFrom", "Test From Step");
+
+
+
     //a system veriable that is needed by tomcat
     private static final long serialVersionUID = 1L;
 
@@ -76,5 +81,25 @@ public class StartNgsView extends EasyPluginModel
     public void setButtonGenerate(ActionInput buttonGenerate)
     {
         this.buttonGenerate = buttonGenerate;
+    }
+
+    public ActionInput getButtonTestFrom()
+    {
+        return buttonTestFrom;
+    }
+
+    public void setButtonTestFrom(ActionInput buttonTestFrom)
+    {
+        this.buttonTestFrom = buttonTestFrom;
+    }
+
+    public IntInput getInputFromStep()
+    {
+        return inputFromStep;
+    }
+
+    public void setInputFromStep(IntInput i)
+    {
+        this.inputFromStep = i;
     }
 }

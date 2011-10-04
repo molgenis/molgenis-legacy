@@ -48,6 +48,8 @@ public class NGSProcessing
     private String strCurrentPipelineStep = "INITIAL";
     private int pipelineElementNumber = 0;
 
+    private int stepNumber = 0;
+
     private List<ComputeFeature> allComputeFeatures = null;
 
     //compute
@@ -99,6 +101,7 @@ public class NGSProcessing
         //create new pipeline and set current step to null
         pipeline = new Pipeline();
         currentStep = null;
+        stepNumber = 0;
 
         userValues = new Hashtable<String, String>();
         pipelineElementNumber = 0;
@@ -222,6 +225,7 @@ public class NGSProcessing
     private String adjustBarcode(String strBarcode)
     {
         int start = strBarcode.lastIndexOf(" ");
+
         String result = strBarcode.substring(start + 1);
         return result;
     }
@@ -449,6 +453,8 @@ public class NGSProcessing
             {
                 //Step step = new Step("step_" + app.getName());
                 Step step = new Step(workflowElement.getName());
+                step.setNumber(stepNumber);
+                stepNumber++;
                 currentStep = step;
                 pipeline.addStep(step);
             }
@@ -465,6 +471,8 @@ public class NGSProcessing
             {
                 //Step step = new Step("step_" + app.getName());
                 Step step = new Step(workflowElement.getName());
+                step.setNumber(stepNumber);
+                stepNumber++;
                 currentStep = step;
                 pipeline.addStep(step);
             }

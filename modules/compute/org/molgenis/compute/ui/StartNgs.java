@@ -71,4 +71,24 @@ public class StartNgs extends EasyPluginController<StartNgsView>
 
     }
 
+    public void buttonTestFrom(Database db, Tuple request) throws Exception
+    {
+        int stepID = request.getInt("inputFromStep");
+        System.out.println("debug from step: " + stepID);
+
+        Pipeline testPipeline = new Pipeline();
+        Pipeline pipeline = processing.getCurrectPipeline();
+        testPipeline.setId("debugfrom" + stepID + "_" + pipeline.getId());
+        testPipeline.setPipelinelogpath(pipeline.getPipelinelogpath());
+        testPipeline.setMonitor(pipeline.getMonitor());
+        System.out.println("!! step " + pipeline.getStep(stepID).toString());
+
+        for(int i = stepID; i < pipeline.getNumberOfSteps(); i++)
+        {
+            testPipeline.addStep(pipeline.getStep(i));
+        }
+
+        processing.executePipeline(db, testPipeline);
+    }
+
 }

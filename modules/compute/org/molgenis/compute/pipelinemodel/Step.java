@@ -16,6 +16,9 @@ public class Step
     private int scriptsStarted = 0;
     private int scriptsFinished = 0;
 
+    //step serial number
+    private int stepNumber = -1;
+
     public Step(String id)
     {
         this.id = id;
@@ -111,9 +114,14 @@ public class Step
     @Override
     public String toString()
     {
-        return "\nStep of size: "+ scripts.size() +"  {\n" + ", id='" + id + '\'' +
+        return "\nnumber: "+ stepNumber +" size: "+ scripts.size() +"  {\n" + ", id='" + id + '\'' +
                 "\nscripts=" + scripts +
 
                 '}';
+    }
+
+    public void setNumber(int stepNumber)
+    {
+        this.stepNumber = stepNumber;
     }
 }

@@ -31,7 +31,11 @@
 <input type="submit" value="Generate" onclick="__action.value='buttonGenerate';return true;"/>
 <br/>
 ${model.inputStep}
-<input type="submit" value="Test script" onclick="__action.value='buttonTest';return true;"/>
+<input type="submit" value="Test step" onclick="__action.value='buttonTest';return true;"/>
+<br/>
+${model.inputFromStep}
+<input type="submit" value="Test from step" onclick="__action.value='buttonTestFrom';return true;"/>
+
 
 <#--end of your plugin-->	
 			</div>
