@@ -17,6 +17,8 @@ public class Browser
 	 * viewer.
 	 */
 	private BrowserModel model = new BrowserModel();
+	
+	public static AbstractDataMatrixInstance<Object> inmemory;
 
 	public BrowserModel getModel()
 	{
@@ -73,6 +75,10 @@ public class Browser
 		AbstractDataMatrixInstance<Object> subMatrix = model.getInstance().getSubMatrixByOffset(model.getRowStart(),
 				nRows, model.getColStart(), nCols);
 		model.setSubMatrix(subMatrix);
+		
+		//store static pointer for csv download 'visible'
+		inmemory = this.model.getSubMatrix();
+		
 		//System.out.println("*** submatrix updated, cols: " + subMatrix.getNumberOfCols() + ", rows: "
 		//		+ subMatrix.getNumberOfRows() + ", first element: " + subMatrix.getElement(0, 0));
 	}
@@ -294,64 +300,57 @@ public class Browser
 			throw new Exception("filter not prepended with filter_all_ or filter_visible_");
 		}
 		
+		String field = null;
+		String operator = null;
+		Object value = null;
+		
 		if(action.endsWith("by_index"))
 		{
-			String field = request.getString("add_filter_by_indexFILTER_FIELD");
-			String operator = request.getString("add_filter_by_indexFILTER_OPERATOR");
-			Object value = request.getObject("add_filter_by_indexFILTER_VALUE");
+			field = request.getString("add_filter_by_indexFILTER_FIELD");
+			operator = request.getString("add_filter_by_indexFILTER_OPERATOR");
+			value = request.getObject("add_filter_by_indexFILTER_VALUE");
 			QueryRule q = new QueryRule(field, Operator.valueOf(operator), value);
 			filterMatrix = filterMatrix.getSubMatrixFilterByIndex(q);
-			this.model.setSubMatrix(filterMatrix);
-			
-			filter = action.replace("_", " ") + ", " + field + " " + operator + " " + value;
-			
 		}
 		else if(action.endsWith("by_col_value"))
 		{
-			String field = request.getString("add_filter_by_col_valueFILTER_FIELD");
-			String operator = request.getString("add_filter_by_col_valueFILTER_OPERATOR");
-			Object value = request.getObject("add_filter_by_col_valueFILTER_VALUE");
+			field = request.getString("add_filter_by_col_valueFILTER_FIELD");
+			operator = request.getString("add_filter_by_col_valueFILTER_OPERATOR");
+			value = request.getObject("add_filter_by_col_valueFILTER_VALUE");
 			QueryRule q = new QueryRule(field, Operator.valueOf(operator), value);
 			filterMatrix = filterMatrix.getSubMatrixFilterByColMatrixValues(q);
-			this.model.setSubMatrix(filterMatrix);
-			
-			filter = action.replace("_", " ") + ", " + field + " " + operator + " " + value;
-
 		}
 		else if(action.endsWith("by_row_value"))
 		{
-			String field = request.getString("add_filter_by_row_valueFILTER_FIELD");
-			String operator = request.getString("add_filter_by_row_valueFILTER_OPERATOR");
-			Object value = request.getObject("add_filter_by_row_valueFILTER_VALUE");
+			field = request.getString("add_filter_by_row_valueFILTER_FIELD");
+			operator = request.getString("add_filter_by_row_valueFILTER_OPERATOR");
+			value = request.getObject("add_filter_by_row_valueFILTER_VALUE");
 			QueryRule q = new QueryRule(field, Operator.valueOf(operator), value);
 			filterMatrix = filterMatrix.getSubMatrixFilterByRowMatrixValues(q);
-			this.model.setSubMatrix(filterMatrix);
-			
-			filter = action.replace("_", " ") + ", " + field + " " + operator + " " + value;
-		
 		}
 		else if(action.endsWith("by_col_attrb"))
 		{
-			String field = request.getString("add_filter_by_col_attrbFILTER_FIELD");
-			String operator = request.getString("add_filter_by_col_attrbFILTER_OPERATOR");
-			Object value = request.getObject("add_filter_by_col_attrbFILTER_VALUE");
+			field = request.getString("add_filter_by_col_attrbFILTER_FIELD");
+			operator = request.getString("add_filter_by_col_attrbFILTER_OPERATOR");
+			value = request.getObject("add_filter_by_col_attrbFILTER_VALUE");
 			QueryRule q = new QueryRule(field, Operator.valueOf(operator), value);
 			filterMatrix = filterMatrix.getSubMatrixFilterByColEntityValues(db, q);
-			this.model.setSubMatrix(filterMatrix);
-			
-			filter = action.replace("_", " ") + ", " + field + " " + operator + " " + value;
 		}
 		else if(action.endsWith("by_row_attrb"))
 		{
-			String field = request.getString("add_filter_by_row_attrbFILTER_FIELD");
-			String operator = request.getString("add_filter_by_row_attrbFILTER_OPERATOR");
-			Object value = request.getObject("add_filter_by_row_attrbFILTER_VALUE");
+			field = request.getString("add_filter_by_row_attrbFILTER_FIELD");
+			operator = request.getString("add_filter_by_row_attrbFILTER_OPERATOR");
+			value = request.getObject("add_filter_by_row_attrbFILTER_VALUE");
 			QueryRule q = new QueryRule(field, Operator.valueOf(operator), value);
 			filterMatrix = filterMatrix.getSubMatrixFilterByRowEntityValues(db, q);
-			this.model.setSubMatrix(filterMatrix);
-			
-			filter = action.replace("_", " ") + ", " + field + " " + operator + " " + value;
 		}
+		
+		this.model.setSubMatrix(filterMatrix);
+		
+		filter = action.replace("_", " ") + ", " + field + " " + operator.toLowerCase() + " " + value;
+		
+		//store static pointer for csv download 'visible'
+		inmemory = this.model.getSubMatrix();
 		
 		model.setWidth(this.model.getSubMatrix().getNumberOfCols());
 		model.setHeight(this.model.getSubMatrix().getNumberOfRows());

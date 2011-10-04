@@ -65,9 +65,12 @@
 				<img src="res/img/pulldown.gif"/><br>
 				<div class="submenu" id="matrix_plugin_FileSub">
 					<table>
-						<tr><td class="submenuitem" onclick="location.href='downloadmatrixascsv?id=${model.selectedData.getId()?c}&download=some&coff=${browser.colStart}&clim=${browser.colStop-browser.colStart}&roff=${browser.rowStart}&rlim=${browser.rowStop-browser.rowStart}&stream=false'"><img src="res/img/download.png" align="left" />Download visible as text</td></tr>
-						<tr><td class="submenuitem" onclick="location.href='downloadmatrixasexcel?id=${model.selectedData.getId()?c}&download=some&coff=${browser.colStart}&clim=${browser.colStop-browser.colStart}&roff=${browser.rowStart}&rlim=${browser.rowStop-browser.rowStart}'"><img src="res/img/download.png" align="left" />Download visible as Excel</td></tr>
-						<tr><td class="submenuitem" onclick="location.href='downloadmatrixasspss?id=${model.selectedData.getId()?c}&download=some&coff=${browser.colStart}&clim=${browser.colStop-browser.colStart}&roff=${browser.rowStart}&rlim=${browser.rowStop-browser.rowStart}'"><img src="res/img/download.png" align="left" />Download visible as SPSS</td></tr>
+						<#--tr><td class="submenuitem" onclick="location.href='downloadmatrixascsv?id=${model.selectedData.getId()?c}&download=some&coff=${browser.colStart}&clim=${browser.colStop-browser.colStart}&roff=${browser.rowStart}&rlim=${browser.rowStop-browser.rowStart}&stream=false'"><img src="res/img/download.png" align="left" />Download visible as text</td></tr-->
+						<#--tr><td class="submenuitem" onclick="location.href='downloadmatrixasexcel?id=${model.selectedData.getId()?c}&download=some&coff=${browser.colStart}&clim=${browser.colStop-browser.colStart}&roff=${browser.rowStart}&rlim=${browser.rowStop-browser.rowStart}'"><img src="res/img/download.png" align="left" />Download visible as Excel</td></tr-->
+						<#--tr><td class="submenuitem" onclick="location.href='downloadmatrixasspss?id=${model.selectedData.getId()?c}&download=some&coff=${browser.colStart}&clim=${browser.colStop-browser.colStart}&roff=${browser.rowStart}&rlim=${browser.rowStop-browser.rowStart}'"><img src="res/img/download.png" align="left" />Download visible as SPSS</td></tr-->
+						<tr><td class="submenuitem" onclick="location.href='downloadmatrixascsv?id=inmemory'"><img src="res/img/download.png" align="left" />Download visible as text</td></tr>
+						<tr><td class="submenuitem" onclick="location.href='downloadmatrixasexcel?id=inmemory'"><img src="res/img/download.png" align="left" />Download visible as Excel</td></tr>
+						<tr><td class="submenuitem" onclick="location.href='downloadmatrixasspss?id=inmemory'"><img src="res/img/download.png" align="left" />Download visible as SPSS</td></tr>
 						<tr><td class="submenuitem" onclick="location.href='downloadmatrixascsv?id=${model.selectedData.getId()?c}&download=all&stream=false'"><img src="res/img/download.png" align="left" />Download all as text</td></tr>
 						<tr><td class="submenuitem" onclick="location.href='downloadmatrixasexcel?id=${model.selectedData.getId()?c}&download=all'"><img src="res/img/download.png" align="left" />Download all as Excel</td></tr>
 						<tr><td class="submenuitem" onclick="location.href='downloadmatrixasspss?id=${model.selectedData.getId()?c}&download=all'"><img src="res/img/download.png" align="left" />Download all as SPSS</td></tr>
@@ -97,8 +100,8 @@
 					<tr><td><font class="fontColor">Width</font></td><td><input type="text" name="width" value="${browser.width?c}" size="1"></td></tr>
 					<tr><td><font class="fontColor">Height</font></td><td><input type="text" name="height" value="${browser.height?c}" size="1"></td></tr>
 					<tr><td colspan="2"><input type="submit" value="Change size" onclick="document.forms.${screen.name}.__action.value = 'changeSubmatrixSize'; document.forms.${screen.name}.submit();"></td></tr>
-					<tr><td colspan="2"><br><input type="submit" value="Apply filter to visible" onclick="document.forms.${screen.name}.__action.value = 'filterVisible'; document.forms.${screen.name}.submit();"></td></tr>
-					<tr><td colspan="2"><input type="submit" value="Apply filter to all" onclick="document.forms.${screen.name}.__action.value = 'filterAll'; document.forms.${screen.name}.submit();"></td></tr>
+					<#-->tr><td colspan="2"><br><input type="submit" value="Apply filter to visible" onclick="document.forms.${screen.name}.__action.value = 'filterVisible'; document.forms.${screen.name}.submit();"></td></tr>
+					<tr><td colspan="2"><input type="submit" value="Apply filter to all" onclick="document.forms.${screen.name}.__action.value = 'filterAll'; document.forms.${screen.name}.submit();"></td></tr-->
 				</table>
 			</td>
 			<td valign="top">
@@ -176,18 +179,18 @@
 <br>
 
 <table cellpadding="5">
-	<#if model.filter?exists>
+	
 	<tr>
+		<#if model.filter?exists>
 		<td>
-			<i>Last applied:</i> ${model.filter}
+			<i>Last applied:</i> <b>${model.filter}.</b>
 		</td>
-	</tr>
-	</#if>
-	<tr>
+		</#if>
 		<td>
 			<i>Add a new filter:</i>
 		</td>
 	</tr>
+	
 </table>
 
 

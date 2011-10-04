@@ -162,8 +162,8 @@ public class MatrixHeatmap extends PluginModel
 		// System.out.println("*** createOverLibText");
 		List<String> rowNames = this.model.getBrowser().getModel().getSubMatrix().getRowNames();
 		List<String> colNames = this.model.getBrowser().getModel().getSubMatrix().getColNames();
-		this.model.setRowObsElem((OverlibText.getObservationElements(db, rowNames)));
-		this.model.setColObsElem((OverlibText.getObservationElements(db, colNames)));
+		this.model.setRowObsElem((OverlibText.getObservationElements(db, rowNames, this.model.getSelectedData().getTargetType())));
+		this.model.setColObsElem((OverlibText.getObservationElements(db, colNames, this.model.getSelectedData().getFeatureType())));
 	}
 
 	public void clearMessage()

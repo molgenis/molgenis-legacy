@@ -247,10 +247,18 @@ public class AbstractDataMatrixQueries
 		Operator op = rules[0].getOperator();
 		int value = Integer.parseInt(rules[0].getValue().toString());
 		
+		if(value < 0)
+		{
+			throw new Exception("Negative numbers not allowed");
+		}
+		
 		if(field.equals("row"))
 		{
 			int row = getOffset(op, value);
 			int nRows = getLimit(matrix.getNumberOfRows(), op, value);
+			if(nRows < 1){
+				throw new Exception("No rows in resultset, empty matrix!");
+			}
 			System.out.println("submatrix: " + row + " " + nRows + " " + 0 + " " + matrix.getNumberOfCols());
 			return matrix.getSubMatrixByOffset(row, nRows, 0, matrix.getNumberOfCols());
 		}
@@ -258,6 +266,9 @@ public class AbstractDataMatrixQueries
 		{
 			int col = getOffset(op, value);
 			int nCols = getLimit(matrix.getNumberOfCols(), op, value);
+			if(nCols < 1){
+				throw new Exception("No cols in resultset, empty matrix!");
+			}
 			System.out.println("submatrix: " + 0 + " " + matrix.getNumberOfRows() + " " + col + " " + nCols);
 			return matrix.getSubMatrixByOffset(0, matrix.getNumberOfRows(), col, nCols);
 		}

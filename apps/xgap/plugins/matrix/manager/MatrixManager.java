@@ -24,10 +24,8 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.model.MolgenisModelException;
-import org.molgenis.model.elements.Field;
+import org.molgenis.pheno.ObservationElement;
 import org.molgenis.util.Tuple;
-
-import app.JDBCMetaDatabase;
 
 public class MatrixManager extends PluginModel
 {
@@ -45,13 +43,6 @@ public class MatrixManager extends PluginModel
 	{
 		super(name, parent);
 	}
-
-// moved overlib to molgenis core
-//	@Override
-//	public String getCustomHtmlHeaders()
-//	{
-//		return "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>";
-//	}
 
 	@Override
 	public String getViewName()
@@ -131,24 +122,13 @@ public class MatrixManager extends PluginModel
 		}
 	}
 	
-	private void setHeaderAttr() throws DatabaseException, MolgenisModelException
+	private void setHeaderAttr(Database db) throws DatabaseException, MolgenisModelException, InstantiationException, IllegalAccessException
 	{
-		JDBCMetaDatabase metadb = new JDBCMetaDatabase();
-		org.molgenis.model.elements.Entity tar = metadb.getEntity(this.model.getSelectedData().getTargetType());
-		ArrayList<String> rowHeaderAttr = new ArrayList<String>();
-		for(Field f : tar.getAllFields())
-		{
-			rowHeaderAttr.add(f.getName());
-		}
-		this.model.setRowHeaderAttr(rowHeaderAttr);
 		
-		org.molgenis.model.elements.Entity feat = metadb.getEntity(this.model.getSelectedData().getFeatureType());
-		ArrayList<String> colHeaderAttr = new ArrayList<String>();
-		for(Field f : feat.getAllFields())
-		{
-			colHeaderAttr.add(f.getName());
-		}
-		this.model.setColHeaderAttr(colHeaderAttr);
+		ObservationElement target = (ObservationElement) db.getClassForName(this.model.getSelectedData().getTargetType()).newInstance();
+		ObservationElement feature = (ObservationElement) db.getClassForName(this.model.getSelectedData().getFeatureType()).newInstance();
+		this.model.setRowHeaderAttr(target.getFields());
+		this.model.setColHeaderAttr(feature.getFields());
 	}
 
 	private void createOverLibText(Database db) throws Exception
@@ -156,8 +136,8 @@ public class MatrixManager extends PluginModel
 		// System.out.println("*** createOverLibText");
 		List<String> rowNames = this.model.getBrowser().getModel().getSubMatrix().getRowNames();
 		List<String> colNames = this.model.getBrowser().getModel().getSubMatrix().getColNames();
-		this.model.setRowObsElem((OverlibText.getObservationElements(db, rowNames)));
-		this.model.setColObsElem((OverlibText.getObservationElements(db, colNames)));
+		this.model.setRowObsElem((OverlibText.getObservationElements(db, rowNames, this.model.getSelectedData().getTargetType())));
+		this.model.setColObsElem((OverlibText.getObservationElements(db, colNames,  this.model.getSelectedData().getFeatureType())));
 	}
 
 	private void createHeaders()
@@ -281,21 +261,6 @@ public class MatrixManager extends PluginModel
 			}
 
 			this.model.setSelectedData(data);
-			
-			if(model.getRowHeaderAttr() == null || model.getColHeaderAttr() == null)
-			{
-				setHeaderAttr();
-			}
-			
-			if(model.getAllOperators() == null)
-			{
-				setAllOperators();
-			}
-			
-			if(model.getValueOperators() == null)
-			{
-				setValueOperators();
-			}
 
 			if (newOrOtherData)
 			{
@@ -307,6 +272,13 @@ public class MatrixManager extends PluginModel
 					logger.info("*** creating browser instance");
 					Browser br = createBrowserInstance(db, data);
 					this.model.setBrowser(br);
+					
+					//refresh attributes, operators, filter
+					this.model.setRowHeaderAttr(null);
+					this.model.setColHeaderAttr(null);
+					this.model.setAllOperators(null);
+					this.model.setValueOperators(null);
+					this.model.setFilter(null);
 				}
 			}
 
@@ -315,6 +287,21 @@ public class MatrixManager extends PluginModel
 				this.model.setUploadMode(false);
 				createOverLibText(db);
 				createHeaders();
+				
+				if(model.getRowHeaderAttr() == null || model.getColHeaderAttr() == null)
+				{
+					setHeaderAttr(db);
+				}
+				
+				if(model.getAllOperators() == null)
+				{
+					setAllOperators();
+				}
+				
+				if(model.getValueOperators() == null)
+				{
+					setValueOperators();
+				}
 			}
 			else
 			{

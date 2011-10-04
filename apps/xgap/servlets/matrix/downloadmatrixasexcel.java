@@ -24,6 +24,8 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
+import plugins.matrix.manager.Browser;
+
 public class downloadmatrixasexcel extends app.servlet.MolgenisServlet {
 
 	private static final long serialVersionUID = -6004240016846336249L;
@@ -57,6 +59,29 @@ public class downloadmatrixasexcel extends app.servlet.MolgenisServlet {
 		if (databaseIsAvailable) {
 			try {
 				req = new HttpServletRequestTuple(request);
+				
+				//special exception for filtered content: get matrix instance from memory and do complete handle
+				if(req.getString("id").equals("inmemory"))
+				{
+					OutputStream outSpecial = response.getOutputStream();
+					File excelFile = Browser.inmemory.getAsExcelFile();
+					URL localURL = excelFile.toURI().toURL();
+					URLConnection conn = localURL.openConnection();
+					InputStream in = new BufferedInputStream(conn.getInputStream());
+					response.setContentType("application/vnd.ms-excel");
+					response.setContentLength((int) excelFile.length());
+					response.setHeader("Content-disposition","attachment; filename=\""+Browser.inmemory.getData().getName()+"_"+"some"+".xls"+"\"");
+					byte[] buffer = new byte[2048];
+					for (;;) {
+						int nBytes = in.read(buffer);
+						if (nBytes <= 0)
+							break;
+						outSpecial.write(buffer, 0, nBytes);
+					}
+					outSpecial.flush();
+					outSpecial.close();
+				}
+				
 				int matrixId = req.getInt("id");
 				QueryRule q = new QueryRule("id", Operator.EQUALS, matrixId);
 				List<Data> dataList = db.find(Data.class, q);

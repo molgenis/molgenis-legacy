@@ -13,10 +13,11 @@ import org.molgenis.pheno.ObservationElement;
 
 public class OverlibText {
 	
-	public static Map<String, ObservationElement> getObservationElements(Database db, List<String> names) throws DatabaseException
+	public static Map<String, ObservationElement> getObservationElements(Database db, List<String> names, String type) throws DatabaseException
 	{
+		Class subClass = db.getClassForName(type);
 		Map<String, ObservationElement> res = new HashMap<String, ObservationElement>();
-		List<ObservationElement> obsvElem = db.find(ObservationElement.class, new QueryRule("name", Operator.IN, names));
+		List<ObservationElement> obsvElem = db.find(subClass, new QueryRule("name", Operator.IN, names));
 		List<String> found = new ArrayList<String>();
 		for (ObservationElement el : obsvElem)
 		{

@@ -669,17 +669,7 @@ public abstract class AbstractDataMatrixInstance<E> extends
 		String content = "";
 		for (String f : o.getFields())
 		{
-
-//			if (!o.getFields().contains(f + "_name"))
-//			{
-//
-//			}
-//			if (!o.getFields().contains(f + "_name") && !f.equals("name")
-//					&& !f.equals("__Type") && o.get(f) != null)
-//			{
-				content += f + " = " + o.get(f) + "<br>";
-//			}
-
+			content += f + " = " + o.get(f) + "<br>";
 		}
 		return "<div style=\"display: inline; text-align: center;\" onmouseover=\"return overlib('"
 				+ content
@@ -696,13 +686,13 @@ public abstract class AbstractDataMatrixInstance<E> extends
 	}
 
 	@Override
-	public String renderRow(ObservationElement row)
+	public String renderRow(ObservationElement row) throws Exception
 	{
 		return render(row);
 	}
 
 	@Override
-	public String renderCol(ObservationElement col)
+	public String renderCol(ObservationElement col) throws Exception
 	{
 		return render(col);
 	}

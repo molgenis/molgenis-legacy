@@ -21,6 +21,8 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
+import plugins.matrix.manager.Browser;
+
 /**
  * Serves static files such as images, css files and javascript from classpath.
  * This is servlet is used when serving from a Jar file in the Mortbay server.
@@ -62,6 +64,17 @@ public class downloadmatrixascsv extends app.servlet.MolgenisServlet
 			try
 			{
 				Tuple req = new HttpServletRequestTuple(request);
+				
+				//special exception for filtered content: get matrix instance from memory and do complete handle
+				if(req.getString("id").equals("inmemory"))
+				{
+					PrintStream p = new PrintStream(new BufferedOutputStream(out), false, "UTF8");
+					p.print(Browser.inmemory.toString());
+					p.flush();
+					p.close();
+					return;
+				}
+				
 				int matrixId = req.getInt("id");
 				QueryRule q = new QueryRule("id", Operator.EQUALS, matrixId);
 				Data data = db.find(Data.class, q).get(0);
@@ -106,7 +119,7 @@ public class downloadmatrixascsv extends app.servlet.MolgenisServlet
 					else if (req.getString("stream").equals("false"))
 					{
 						PrintStream p = new PrintStream(new BufferedOutputStream(out), false, "UTF8");
-						p.print(instance.getSubMatrixByOffset(rowOffset, rowLimit, colOffset, colLimit).toString() + "\n"); //FIXME: newline???
+						p.print(instance.getSubMatrixByOffset(rowOffset, rowLimit, colOffset, colLimit).toString());
 						p.flush();
 						p.close();
 						return;
