@@ -259,6 +259,9 @@ public class MolgenisOptions
 	@Option(name = "authorizable", param = Option.Param.COLLECTION, type = Option.Type.OPTIONAL_ARGUMENT, usage = "For use in molgenis_apps! Tells the generator on which entities to append an implements='Authorizable'. Default: new ArrayList<String>()")
 	public ArrayList<String> authorizable = new ArrayList<String>();
 
+	@Option(name = "disable_decorators", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage="disables all decorators for generated test")
+	public boolean disable_decorators = false;
+	
 	// @Option(name = "force_lowercase_names", param = "force_lowercase_names",
 	// type = Option.Type.REQUIRED_ARGUMENT, usage =
 	// "Expert option. Wether all names should be converted to lowercase. Default: true"
@@ -656,4 +659,15 @@ public class MolgenisOptions
 		molgenis_properties = molgenisProperties;
 	}
 
+	public boolean isDisable_decorators()
+	{
+		return disable_decorators;
+	}
+
+	public void setDisable_decorators(boolean disable_decorators)
+	{
+		this.disable_decorators = disable_decorators;
+	}
+
+	
 }

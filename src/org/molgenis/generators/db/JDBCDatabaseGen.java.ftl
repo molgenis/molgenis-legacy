@@ -84,7 +84,9 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 	private void setup()
 	{
 		<#list model.entities as entity><#if !entity.isAbstract()>
-			<#if entity.decorator?exists>
+			<#if disable_decorators>
+		this.putMapper(${entity.namespace}.${JavaName(entity)}.class, new ${entity.namespace}.db.${JavaName(entity)}Mapper(this));				
+			<#elseif entity.decorator?exists>
 				<#if auth_loginclass?ends_with("SimpleLogin")>
 		this.putMapper(${entity.namespace}.${JavaName(entity)}.class, new ${entity.decorator}(new ${entity.namespace}.db.${JavaName(entity)}Mapper(this)));
 				<#else>

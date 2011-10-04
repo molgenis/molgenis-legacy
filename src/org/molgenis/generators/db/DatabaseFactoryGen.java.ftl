@@ -190,7 +190,10 @@ public class DatabaseFactory
 	{
 <#if databaseImp == "jdbc">
             try {
-                return new ${package}.JDBCDatabase(propertiesFilePath);
+            	if(test) {
+                	new org.molgenis.Molgenis(propertiesFilePath).updateDb(false);
+            	} 
+            	return new ${package}.JDBCDatabase(propertiesFilePath);
             } catch (Exception ex) {
                 throw new DatabaseException(ex);
             }
