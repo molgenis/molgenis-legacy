@@ -113,8 +113,7 @@ public class MolgenisUserDecorator<E extends MolgenisUser> extends MappingDecora
 			for (E e : entities)
 			{
 				try {
-					//List<MolgenisRoleGroupLink> MolgenisRoleGroupLink = getDatabase().query(MolgenisRoleGroupLink.class).eq(MolgenisRoleGroupLink.USER__NAME,  e.getIdValue()).find();
-					MolgenisRoleGroupLink molgenisRoleGroupLink = getDatabase().findById(MolgenisRoleGroupLink.class, e.getId());
+					List<MolgenisRoleGroupLink> molgenisRoleGroupLink = getDatabase().query(MolgenisRoleGroupLink.class).eq(MolgenisRoleGroupLink.ROLE_, e.getIdValue()).find();
 					getDatabase().remove(molgenisRoleGroupLink);
 				} catch (Exception e1) {
 					// Apparently this user was in no groups
