@@ -42,11 +42,9 @@ public class DatabaseUpdaterSsh extends DatabaseUpdater
     protected String readRemoteFile(String path)
     {
         String result = null;
-               try
+        try
         {
-            ssh = new Ssh(SshData.SERVER, SshData.USER, SshData.PASS);
             result = ssh.downloadFileIntoString(path);
-            ssh.close();
         }
         catch (IOException e)
         {
