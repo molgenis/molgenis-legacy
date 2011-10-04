@@ -235,7 +235,9 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 		List<? extends ObservationElement> cols = matrix.getColHeaders();
 		
 		//print colHeaders
-		dataTable.addColumn("");
+		dataTable.addColumn("ID");
+		dataTable.addColumn("Name");
+		dataTable.addColumn(""); // for checkbox / radio input
 		for (ObservationElement col: cols)
 		{
 			dataTable.addColumn(col.getName());
@@ -244,8 +246,11 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 		//print rowHeader + colValues
 		for (int row = 0; row < values.length; row++)
 		{
-			// print rowHeader
-			dataTable.addRow(rows.get(row).getName());
+			// print empty rowHeader
+			dataTable.addRow("");
+			// print ID and name
+			dataTable.setCell(0, row, rows.get(row).getId());
+			dataTable.setCell(1, row, rows.get(row).getName());
 			// print checkbox or radio input for this row
 			if (selectMultiple) {
 				List<String> options = new ArrayList<String>();
@@ -255,12 +260,12 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 				CheckboxInput rowCheckbox = new CheckboxInput(SELECTED + "_" + row, options, 
 						optionLabels, "", null, true, false);
 				rowCheckbox.setId(SELECTED + "_" + row);
-				dataTable.setCell(0, row, rowCheckbox);
+				dataTable.setCell(2, row, rowCheckbox);
 			} else {
 				// When the user may select only one, use a radio button group, which is mutually exclusive
 				String radioButtonCode = "<input type='radio' name='" + SELECTED + "' id='" + 
 						(SELECTED + "_" + row) + "' value='" + row + "'></input>";
-				dataTable.setCell(0, row, radioButtonCode);
+				dataTable.setCell(2, row, radioButtonCode);
 			}
 			// get the data for this row
 			List<ObservedValue>[] rowValues = values[row];
@@ -282,14 +287,14 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 						}
 						if (first) {
 							first = false;
-							dataTable.setCell(col + 1, row, valueToShow);
+							dataTable.setCell(col + 3, row, valueToShow);
 						} else {
 							// Append to contents of cell, on new line
-							dataTable.setCell(col + 1, row, dataTable.getCell(col + 1, row) + "<br />" + valueToShow);
+							dataTable.setCell(col + 3, row, dataTable.getCell(col + 3, row) + "<br />" + valueToShow);
 						}
 					}
 				} else {
-					dataTable.setCell(col + 1, row, "NA");
+					dataTable.setCell(col + 3, row, "NA");
 				}
 			}
 		}
