@@ -7,7 +7,6 @@
 
 package decorators;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +19,6 @@ import org.molgenis.framework.db.jdbc.MappingDecorator;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
-import org.molgenis.protocol.Protocol_Features;
 
 public class MeasurementDecorator<E extends Measurement> extends MappingDecorator<E> {
 	Logger logger  = Logger.getLogger("MeasurementDecorator");
@@ -36,13 +34,14 @@ public class MeasurementDecorator<E extends Measurement> extends MappingDecorato
 		super(generatedMapper);
 	}
 	
-	private boolean makeCorrespondingProtocol(List<E> entities) throws DatabaseException, ParseException {
+	private boolean makeCorrespondingProtocols(List<E> entities) throws DatabaseException
+	{
 		String protocolName;
 		String featureName;
 		Database db = this.getDatabase();
 		
-		// Dirty trick to prevent Protocols from being made when calling from Hudson test:
-		if (db.query(Investigation.class).eq(Investigation.NAME,"System").count() == 0)
+		// To prevent Protocols from being made when calling from Hudson test:
+		if (db.query(Investigation.class).eq(Investigation.NAME, "System").count() == 0)
 		{
 			// In Hudson, there is no pre-generated Investigation 'System' present in the DB, 
 			// so we happily return true so the test will not fail.
@@ -64,16 +63,27 @@ public class MeasurementDecorator<E extends Measurement> extends MappingDecorato
 				db.add(newProtocol);	
 				
 			} catch (Exception e2) {
+				// Something really went wrong so we return false
+				e2.printStackTrace();
 				return false;
 			}
 		}
 		return true;
 	}
 	
-	private boolean removeCorrespondingProtocol(List<E> entities) {
+	private boolean removeCorrespondingProtocols(List<E> entities) throws DatabaseException
+	{
 		String protocolName;
 		String featureName;
 		Database db = this.getDatabase();
+		
+		// To prevent Protocols from being removed when calling from Hudson test:
+		if (db.query(Investigation.class).eq(Investigation.NAME, "System").count() == 0)
+		{
+			// In Hudson, there is no pre-generated Investigation 'System' present in the DB, 
+			// so we happily return true so the test will not fail.
+			return true;
+		}
 	
 		for (E e : entities) {
 			featureName = e.getName();
@@ -81,10 +91,11 @@ public class MeasurementDecorator<E extends Measurement> extends MappingDecorato
 			protocolName = "Set" + featureName;
 			try {
 				Protocol et = Protocol.findByNameInvestigation(db, protocolName, null);
-				if(et != null)
+				if (et != null) {
 					db.remove(et);
-				else return true;
+				}
 			} catch (Exception e1) {
+				// Something really went wrong so we return false
 				e1.printStackTrace();
 				return false;
 			}
@@ -92,48 +103,51 @@ public class MeasurementDecorator<E extends Measurement> extends MappingDecorato
 		return true;
 	}
 	
-	private boolean updateCorrespondingProtocol(List<E> entities) {
+	private boolean updateCorrespondingProtocols(List<E> entities) throws DatabaseException
+	{
+		Database db = this.getDatabase();
+		// To prevent Protocols from being updated when calling from Hudson test:
+		if (db.query(Investigation.class).eq(Investigation.NAME, "System").count() == 0)
+		{
+			// In Hudson, there is no pre-generated Investigation 'System' present in the DB, 
+			// so we happily return true so the test will not fail.
+			return true;
+		}
+				
 		/*
 		String eventTypeName;
 		String featureName;
-		Database db = this.getDatabase();
-		ct.setDatabase(db);
 	
 		for (Measurement e : entities) {
 			featureName = e.getName();
-			// TODO: Do something?
+			// TODO: Do something here
 		}
 		*/
 		return true;
 	}
 
-	public int add(List<E> entities) throws DatabaseException {
+	public int add(List<E> entities) throws DatabaseException
+	{	
+		// add your pre-processing here
+
+		// here we call the standard 'add'
+		int count = super.add(entities);
 		
-		try {
-			// add your pre-processing here
-
-			// here we call the standard 'add'
-			int count = super.add(entities);
-			
-			// post-processing:
-			if (!makeCorrespondingProtocol(entities)) {
-				logger.warn("Could not make corresponding protocol");
-				//throw new DatabaseException("Could not make corresponding protocol - observable feature not added");
-			}
-
-			return count;
-		} catch (ParseException e) {
-			e.printStackTrace();
-			return 0;
+		// post-processing:
+		if (!makeCorrespondingProtocols(entities)) {
+			logger.warn("Could not make corresponding protocol(s)");
+			throw new DatabaseException("Could not make corresponding protocol(s) - measurement(s) not added");
 		}
+
+		return count;
 	}
 
-	public int update(List<E> entities) throws DatabaseException {
-
+	public int update(List<E> entities) throws DatabaseException
+	{
 		// add your pre-processing here TODO: shouldn't we do this after the update?
-		if (!updateCorrespondingProtocol(entities)) {
-			logger.warn("Could not update corresponding protocol");
-			//throw new DatabaseException("Could not update corresponding protocol - observable feature not updated");
+		if (!updateCorrespondingProtocols(entities)) {
+			logger.warn("Could not update corresponding protocol(s)");
+			throw new DatabaseException("Could not update corresponding protocol(s) - measurement(s) not updated");
 		}
 
 		// here we call the standard 'update'
@@ -144,11 +158,12 @@ public class MeasurementDecorator<E extends Measurement> extends MappingDecorato
 		return count;
 	}
 
-	public int remove(List<E> entities) throws DatabaseException {
+	public int remove(List<E> entities) throws DatabaseException
+	{
 		// add your pre-processing here
-		if (!removeCorrespondingProtocol(entities)) {
-			logger.warn("Could not remove corresponding protocol");
-			//throw new DatabaseException("Could not remove corresponding protocol - observable feature not removed");
+		if (!removeCorrespondingProtocols(entities)) {
+			logger.warn("Could not remove corresponding protocol(s)");
+			throw new DatabaseException("Could not remove corresponding protocol(s) - measurement(s) not removed");
 		}
 
 		// here we call the standard 'remove'
