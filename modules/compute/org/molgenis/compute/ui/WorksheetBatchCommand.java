@@ -16,7 +16,7 @@ import org.molgenis.protocol.Workflow;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import app.ui.ComputeWorkflowsFormController;
+//import app.ui.ComputeWorkflowsFormController;
 
 import java.io.IOException;
 import java.io.OutputStream;
