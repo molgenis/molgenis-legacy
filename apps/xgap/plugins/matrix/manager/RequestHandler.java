@@ -1,12 +1,13 @@
 package plugins.matrix.manager;
 
+import org.molgenis.framework.db.Database;
 import org.molgenis.util.Tuple;
 
 
 
 public class RequestHandler {
 	
-	public static void handle(MatrixManagerModel screenModel, Tuple request) throws Exception {
+	public static void handle(MatrixManagerModel screenModel, Tuple request, Database db) throws Exception {
 		String action = request.getString("__action");
 		if (action.equals("refresh")) {
 			screenModel.setSelectedData(null);
@@ -15,8 +16,8 @@ public class RequestHandler {
 			screenModel.getBrowser().update();
 		}
 		else if (action.startsWith("filter")) {
-			screenModel.getBrowser().applyFilters(request);
-			//TODO: Save filters in screenModel !!
+			String filter = screenModel.getBrowser().applyFilters(request, db);
+			screenModel.setFilter(filter);
 		}
 		else if (action.equals("moveRight")) {
 			screenModel.getBrowser().moveRight();

@@ -7,6 +7,8 @@
 
 package plugins.matrix.manager;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import matrix.AbstractDataMatrixInstance;
@@ -15,12 +17,17 @@ import matrix.general.Importer;
 
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.model.MolgenisModelException;
+import org.molgenis.model.elements.Field;
 import org.molgenis.util.Tuple;
+
+import app.JDBCMetaDatabase;
 
 public class MatrixManager extends PluginModel
 {
@@ -93,7 +100,7 @@ public class MatrixManager extends PluginModel
 					this.model.getBrowser().getModel().setWidth(width);
 					this.model.getBrowser().getModel().setHeight(height);
 
-					RequestHandler.handle(this.model, request);
+					RequestHandler.handle(this.model, request, db);
 				}
 
 				this.setMessages();
@@ -123,6 +130,26 @@ public class MatrixManager extends PluginModel
 			throw new Exception("Could not verify existence of data source");
 		}
 	}
+	
+	private void setHeaderAttr() throws DatabaseException, MolgenisModelException
+	{
+		JDBCMetaDatabase metadb = new JDBCMetaDatabase();
+		org.molgenis.model.elements.Entity tar = metadb.getEntity(this.model.getSelectedData().getTargetType());
+		ArrayList<String> rowHeaderAttr = new ArrayList<String>();
+		for(Field f : tar.getAllFields())
+		{
+			rowHeaderAttr.add(f.getName());
+		}
+		this.model.setRowHeaderAttr(rowHeaderAttr);
+		
+		org.molgenis.model.elements.Entity feat = metadb.getEntity(this.model.getSelectedData().getFeatureType());
+		ArrayList<String> colHeaderAttr = new ArrayList<String>();
+		for(Field f : feat.getAllFields())
+		{
+			colHeaderAttr.add(f.getName());
+		}
+		this.model.setColHeaderAttr(colHeaderAttr);
+	}
 
 	private void createOverLibText(Database db) throws Exception
 	{
@@ -131,12 +158,6 @@ public class MatrixManager extends PluginModel
 		List<String> colNames = this.model.getBrowser().getModel().getSubMatrix().getColNames();
 		this.model.setRowObsElem((OverlibText.getObservationElements(db, rowNames)));
 		this.model.setColObsElem((OverlibText.getObservationElements(db, colNames)));
-	}
-
-	
-	public void clearMessage()
-	{
-		this.setMessages();
 	}
 
 	private void createHeaders()
@@ -149,6 +170,37 @@ public class MatrixManager extends PluginModel
 				+ (this.model.getBrowser().getModel().getRowStart() + 1) + "-"
 				+ this.model.getBrowser().getModel().getRowStop() + " of "
 				+ this.model.getBrowser().getModel().getRowMax());
+	}
+	
+	private void setAllOperators()
+	{
+		HashMap<String, String> ops = new HashMap<String, String>();
+		ops.put("GREATER", "greater than");
+		ops.put("GREATER_EQUAL", "greater and equal");
+		ops.put("LESS", "less than");
+		ops.put("LESS_EQUAL", "less and equal");
+		ops.put("EQUALS", "equals exactly");
+//		ops.put("SORTASC", "sort asc");
+//		ops.put("SORTDESC", "sort desc");
+//		ops.put("NOT", "is not");
+		this.model.setAllOperators(ops);
+	}
+	
+	private void setValueOperators()
+	{
+		HashMap<String, String> ops = new HashMap<String, String>();
+		if(this.model.getSelectedData().getValueType().equals("Decimal"))
+		{
+			ops.put("GREATER", "greater than");
+			ops.put("GREATER_EQUAL", "greater and equal");
+			ops.put("LESS", "less than");
+			ops.put("LESS_EQUAL", "less and equal");
+		}
+		ops.put("EQUALS", "equals exactly");
+//		ops.put("SORTASC", "sort asc");
+//		ops.put("SORTDESC", "sort desc");
+//		ops.put("NOT", "is not");
+		this.model.setValueOperators(ops);
 	}
 
 	public static boolean dataHasChanged(Data newData, Data oldData)
@@ -229,6 +281,21 @@ public class MatrixManager extends PluginModel
 			}
 
 			this.model.setSelectedData(data);
+			
+			if(model.getRowHeaderAttr() == null || model.getColHeaderAttr() == null)
+			{
+				setHeaderAttr();
+			}
+			
+			if(model.getAllOperators() == null)
+			{
+				setAllOperators();
+			}
+			
+			if(model.getValueOperators() == null)
+			{
+				setValueOperators();
+			}
 
 			if (newOrOtherData)
 			{

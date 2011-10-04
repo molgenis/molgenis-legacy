@@ -22,10 +22,6 @@
 		<p class="errormessage">${message.text}</p>
 			</#if>
 		</#list>
-		
-		<#-- Hack to immediatly clear the message so it doesn't "stick". -->
-		${screen.clearMessage()}
-
 
 <#if screen.myModel?exists>
 	<#assign modelExists = true>
@@ -119,26 +115,19 @@
 			<td>
 				<table class="tableBorder">
 					<tr>
-						<td></td><td></td>
+						<td></td>
 						<#list browser.subMatrix.colNames as n>
 							<td class="matrixTableCell colorOfTitle">
 								${model.renderCol(n)}
 							</td>
 						</#list>
 					</tr>
-					<tr>
-						<td></td><td></td>
-						<#list browser.subMatrix.colNames as n>
-							<td><nobr><select name="FILTER_OPERATOR_COL_${n}"><#if model.selectedData.valuetype == "Decimal"><option value="GREATER">&gt;</option><option value="GREATER_EQUAL">&gt;=</option><option value="LESS">&lt;</option><option value="LESS_EQUAL">&lt;=</option></#if><option value="EQUALS">==</option></select><input type="text" size="4" name="FILTER_VALUE_COL_${n}"></input></nobr></td>
-						</#list>
-					</tr>
+			
 					<#list browser.subMatrix.rowNames as n> 
 						<tr>
 							<td class="matrixTableCell colorOfTitle">
 								${model.renderRow(n)}
 							</td>
-
-							<td><nobr><select name="FILTER_OPERATOR_ROW_${n}"><#if model.selectedData.valuetype == "Decimal"><option value="GREATER">&gt;</option><option value="GREATER_EQUAL">&gt;=</option><option value="LESS">&lt;</option><option value="LESS_EQUAL">&lt;=</option></#if><option value="EQUALS">==</option></select><input type="text" size="4" name="FILTER_VALUE_ROW_${n}"></input></nobr></td>
 							
 							<#assign x = browser.subMatrix.numberOfCols>
 							<#list 0..x-1 as i>								
@@ -179,6 +168,171 @@
 						</tr>
 					</#list>
 				</table>
+			</td>
+		</tr>
+	</table>
+</div>
+
+<br>
+
+<table cellpadding="5">
+	<#if model.filter?exists>
+	<tr>
+		<td>
+			<i>Last applied:</i> ${model.filter}
+		</td>
+	</tr>
+	</#if>
+	<tr>
+		<td>
+			<i>Add a new filter:</i>
+		</td>
+	</tr>
+</table>
+
+
+<table cellpadding="10"><tr>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');" checked>By index</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter2');display('hide', 'filter1');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');">By ${model.selectedData.featureType?lower_case} values</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter3');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter4');display('hide', 'filter5');">By ${model.selectedData.targetType?lower_case} values</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter4');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter5');">By ${model.selectedData.featureType?lower_case} attributes</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter5');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');">By ${model.selectedData.targetType?lower_case} attributes</td>
+</tr></table>
+
+<br>
+
+<div id="filter1">
+	<table>
+		<tr>
+			<td>
+				Filter by index:
+			</td>
+			<td>
+				<select name="add_filter_by_indexFILTER_FIELD">
+					<option value="row">${model.selectedData.targetType} index</option>
+					<option value="col">${model.selectedData.featureType} index</option>
+				</select>
+			</td>
+			<td>
+				<select name="add_filter_by_indexFILTER_OPERATOR">
+					<#list model.allOperators?keys as op><option value="${op}">${model.allOperators[op]}</option></#list>
+				</select>
+			</td>
+			<td>
+				<input type="text" size="8" name="add_filter_by_indexFILTER_VALUE" />
+			</td>
+			<td>
+				<input type="submit" value="Apply to visible" onclick="document.forms.${screen.name}.__action.value = 'filter_visible_by_index'; document.forms.${screen.name}.submit();">
+				<input type="submit" value="Apply to all" onclick="document.forms.${screen.name}.__action.value = 'filter_all_by_index'; document.forms.${screen.name}.submit();">
+			</td>
+		</tr>
+		<tr>
+	</table>
+</div>
+<div id="filter2" style="display:none">
+	<table>
+		<tr>
+			<td>
+				Filter by ${model.selectedData.featureType?lower_case} values:
+			</td>
+			<td>
+				<select name="add_filter_by_col_valueFILTER_FIELD">
+					<#list browser.subMatrix.colNames as col><option value="${col}">${col}</option></#list>
+				</select>
+			</td>
+			<td>
+				<select name="add_filter_by_col_valueFILTER_OPERATOR">
+					<#list model.valueOperators?keys as op><option value="${op}">${model.valueOperators[op]}</option></#list>
+				</select>
+			</td>
+			<td>
+				<input type="text" size="8" name="add_filter_by_col_valueFILTER_VALUE" />
+			</td>
+			<td>
+				<input type="submit" value="Apply to visible" onclick="document.forms.${screen.name}.__action.value = 'filter_visible_by_col_value'; document.forms.${screen.name}.submit();">
+				<input type="submit" value="Apply to all" onclick="document.forms.${screen.name}.__action.value = 'filter_all_by_col_value'; document.forms.${screen.name}.submit();">
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="filter3" style="display:none">
+	<table>
+		<tr>
+			<td>
+				Filter by ${model.selectedData.targetType?lower_case} values:
+			</td>
+			<td>
+				<select name="add_filter_by_row_valueFILTER_FIELD">
+					<#list browser.subMatrix.rowNames as row><option value="${row}">${row}</option></#list>
+				</select>
+			</td>
+			<td>
+				<select name="add_filter_by_row_valueFILTER_OPERATOR">
+					<#list model.valueOperators?keys as op><option value="${op}">${model.valueOperators[op]}</option></#list>
+				</select>
+			</td>
+			<td>
+				<input type="text" size="8" name="add_filter_by_row_valueFILTER_VALUE" />
+			</td>
+			<td>
+				<input type="submit" value="Apply to visible" onclick="document.forms.${screen.name}.__action.value = 'filter_visible_by_row_value'; document.forms.${screen.name}.submit();">
+				<input type="submit" value="Apply to all" onclick="document.forms.${screen.name}.__action.value = 'filter_all_by_row_value'; document.forms.${screen.name}.submit();">
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="filter4" style="display:none">
+	<table>
+		<tr>
+			<td>
+				Filter by ${model.selectedData.featureType?lower_case} attributes:
+			</td>
+			<td>
+				<select name="add_filter_by_col_attrbFILTER_FIELD">
+					<#list model.colHeaderAttr as cha>
+						<option value="${cha}">${cha}</option>
+					</#list>
+				</select>
+			</td>
+			<td>
+				<select name="add_filter_by_col_attrbFILTER_OPERATOR">
+					<#list model.allOperators?keys as op><option value="${op}">${model.allOperators[op]}</option></#list>
+				</select>
+			</td>
+			<td>
+				<input type="text" size="8" name="add_filter_by_col_attrbFILTER_VALUE" />
+			</td>
+			<td>
+				<input type="submit" value="Apply to visible" onclick="document.forms.${screen.name}.__action.value = 'filter_visible_by_col_attrb'; document.forms.${screen.name}.submit();">
+				<input type="submit" value="Apply to all" onclick="document.forms.${screen.name}.__action.value = 'filter_all_by_col_attrb'; document.forms.${screen.name}.submit();">
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="filter5" style="display:none">
+	<table>
+		<tr>
+			<td>
+				Filter by ${model.selectedData.targetType?lower_case} attributes:
+			</td>
+			<td>
+				<select name="add_filter_by_row_attrbFILTER_FIELD">
+					<#list model.rowHeaderAttr as rha>
+						<option value="${rha}">${rha}</option>
+					</#list>
+				</select>
+			</td>
+			<td>
+				<select name="add_filter_by_row_attrbFILTER_OPERATOR">
+					<#list model.allOperators?keys as op><option value="${op}">${model.allOperators[op]}</option></#list>
+				</select>
+			</td>
+			<td>
+				<input type="text" size="8" name="add_filter_by_row_attrbFILTER_VALUE" />
+			</td>
+			<td>
+				<input type="submit" value="Apply to visible" onclick="document.forms.${screen.name}.__action.value = 'filter_visible_by_row_attrb'; document.forms.${screen.name}.submit();">
+				<input type="submit" value="Apply to all" onclick="document.forms.${screen.name}.__action.value = 'filter_all_by_row_attrb'; document.forms.${screen.name}.submit();">
 			</td>
 		</tr>
 	</table>

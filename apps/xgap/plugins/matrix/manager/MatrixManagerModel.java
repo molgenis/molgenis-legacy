@@ -1,5 +1,7 @@
 package plugins.matrix.manager;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import matrix.AbstractDataMatrixInstance;
@@ -9,6 +11,8 @@ import org.molgenis.pheno.ObservationElement;
 
 public class MatrixManagerModel {
 
+	private HashMap<String, String> allOperators;
+	private HashMap<String, String> valueOperators;
 	
 	private Data selectedData;
 	private Browser browser;
@@ -18,9 +22,14 @@ public class MatrixManagerModel {
 	private Map<String, ObservationElement> rowObsElem;
 	private Map<String, ObservationElement> colObsElem;
 	
+	private List<String> rowHeaderAttr;
+	private List<String> colHeaderAttr;
+	
 	private boolean hasBackend;
 	private boolean uploadMode;
+	
 	private String uploadTextAreaContent;
+	private String filter;
 	
 	public String renderRow(String name){
 		ObservationElement o = rowObsElem.get(name);
@@ -40,6 +49,60 @@ public class MatrixManagerModel {
 		}
 	}
 	
+	
+	
+	public String getFilter()
+	{
+		return filter;
+	}
+
+	public void setFilter(String filter)
+	{
+		this.filter = filter;
+	}
+
+	public List<String> getRowHeaderAttr()
+	{
+		return rowHeaderAttr;
+	}
+
+	public void setRowHeaderAttr(List<String> rowHeaderAttr)
+	{
+		this.rowHeaderAttr = rowHeaderAttr;
+	}
+
+	public List<String> getColHeaderAttr()
+	{
+		return colHeaderAttr;
+	}
+
+	public void setColHeaderAttr(List<String> colHeaderAttr)
+	{
+		this.colHeaderAttr = colHeaderAttr;
+	}
+
+
+
+	public HashMap<String, String> getAllOperators()
+	{
+		return allOperators;
+	}
+
+	public void setAllOperators(HashMap<String, String> allOperators)
+	{
+		this.allOperators = allOperators;
+	}
+
+	public HashMap<String, String> getValueOperators()
+	{
+		return valueOperators;
+	}
+
+	public void setValueOperators(HashMap<String, String> valueOperators)
+	{
+		this.valueOperators = valueOperators;
+	}
+
 	public Data getSelectedData()
 	{
 		return selectedData;

@@ -147,6 +147,11 @@ public class AbstractDataMatrixQueries
 		{
 			rowNames.add(i.getName());
 		}
+		if (rowNames.size() == 0)
+		{
+			throw new Exception("No rownames in resultset, empty matrix!");
+		}
+		
 		AbstractDataMatrixInstance res = dm.getSubMatrix(rowNames, colNames);
 		return res;
 	}
@@ -167,7 +172,10 @@ public class AbstractDataMatrixQueries
 		for (Nameable i : subCol)
 		{
 			colNames.add(i.getName());
-			System.out.println("ADDED: " + i.getName());
+		}
+		if (colNames.size() == 0)
+		{
+			throw new Exception("No colnames in resultset, empty matrix!");
 		}
 		AbstractDataMatrixInstance res = dm.getSubMatrix(rowNames, colNames);
 		return res;
@@ -223,10 +231,93 @@ public class AbstractDataMatrixQueries
 	
 	}
 	
+	public static AbstractDataMatrixInstance<Object> getSubMatrixFilterByIndex(
+			AbstractDataMatrixInstance<Object> matrix, QueryRule... rules) throws Exception
+	{
+		checkQueryRules(rules);
+		
+		if(rules.length != 1)
+		{
+			throw new Exception("at the moment supports only 1 QueryRule at a time");
+		}
+		
+		System.out.println("src size: rows " + matrix.getNumberOfRows() + " cols " + matrix.getNumberOfCols());
+		
+		String field = rules[0].getField();
+		Operator op = rules[0].getOperator();
+		int value = Integer.parseInt(rules[0].getValue().toString());
+		
+		if(field.equals("row"))
+		{
+			int row = getOffset(op, value);
+			int nRows = getLimit(matrix.getNumberOfRows(), op, value);
+			System.out.println("submatrix: " + row + " " + nRows + " " + 0 + " " + matrix.getNumberOfCols());
+			return matrix.getSubMatrixByOffset(row, nRows, 0, matrix.getNumberOfCols());
+		}
+		else if(field.equals("col"))
+		{
+			int col = getOffset(op, value);
+			int nCols = getLimit(matrix.getNumberOfCols(), op, value);
+			System.out.println("submatrix: " + 0 + " " + matrix.getNumberOfRows() + " " + col + " " + nCols);
+			return matrix.getSubMatrixByOffset(0, matrix.getNumberOfRows(), col, nCols);
+		}
+		else
+		{
+			throw new Exception("field is not 'row' or 'col'");
+		}
+		
+	}
 	
 	
 	
+	private static int getOffset(Operator op, int value) throws Exception
+	{
+		if (op == Operator.EQUALS || op == Operator.GREATER_EQUAL)
+		{
+			return value;
+		}
+		else if (op == Operator.GREATER)
+		{
+			return value + 1;
+		}
+		else if(op == Operator.LESS || op == Operator.LESS_EQUAL)
+		{
+			return 0;
+		}
+		else
+		{
+			throw new Exception("unsupported operator " + op);
+		}
+	}
 	
+	private static int getLimit(int numberOfDimElems, Operator op, int value) throws Exception
+	{
+		if (op == Operator.LESS_EQUAL)
+		{
+			return value;
+		}
+		else if (op == Operator.EQUALS)
+		{
+			return 1;
+		}
+		else if (op == Operator.GREATER)
+		{
+			return numberOfDimElems - value - 1;
+		}
+		else if (op == Operator.GREATER_EQUAL)
+		{
+			return numberOfDimElems - value ;
+		}
+		else if (op == Operator.LESS)
+		{
+			return value - 1;
+		}
+		else
+		{
+			throw new Exception("unsupported operator " + op);
+		}
+	}
+
 	public static List<String> selectUsingText(Object[] values, String value, Operator op, List<String> dimNames)
 			throws Exception
 	{
@@ -257,6 +348,8 @@ public class AbstractDataMatrixQueries
 		}
 		return resultNames;
 	}
+	
+	
 
 	public static List<String> selectUsingDecimal(Object[] values, double value, Operator op, List<String> dimNames)
 			throws Exception

@@ -3,6 +3,7 @@ package matrix;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -191,6 +192,40 @@ public abstract class AbstractDataMatrixInstance<E> extends
 	{
 		return getElement(this.getRowIndexForName(rowName),
 				this.getColIndexForName(colName));
+	}
+	
+	public void toPrintStream(PrintStream p)
+	{
+		try
+		{
+			for (String col : getColNames())
+			{
+				p.append("\t" + col);
+			}
+			p.append("\n");
+			Object[][] elements = getElements();
+			for (int rowIndex = 0; rowIndex < elements.length; rowIndex++)
+			{
+				p.append(getRowNames().get(rowIndex));
+				for (int colIndex = 0; colIndex < elements[rowIndex].length; colIndex++)
+				{
+					if (elements[rowIndex][colIndex] == null)
+					{
+						p.append("\t");
+					}
+					else
+					{
+						p.append("\t" + elements[rowIndex][colIndex]);
+					}
+				}
+				p.append("\n");
+				p.flush();
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public String toString()
@@ -401,6 +436,12 @@ public abstract class AbstractDataMatrixInstance<E> extends
 	public List<String> getRowNames()
 	{
 		return rowNames;
+	}
+	
+	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByIndex(QueryRule... rules) throws Exception
+	{
+		return AbstractDataMatrixQueries.getSubMatrixFilterByIndex(
+				(AbstractDataMatrixInstance<Object>) this, rules);
 	}
 
 	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowEntityValues(
@@ -629,15 +670,15 @@ public abstract class AbstractDataMatrixInstance<E> extends
 		for (String f : o.getFields())
 		{
 
-			if (!o.getFields().contains(f + "_name"))
-			{
-
-			}
-			if (!o.getFields().contains(f + "_name") && !f.equals("name")
-					&& !f.equals("__Type") && o.get(f) != null)
-			{
+//			if (!o.getFields().contains(f + "_name"))
+//			{
+//
+//			}
+//			if (!o.getFields().contains(f + "_name") && !f.equals("name")
+//					&& !f.equals("__Type") && o.get(f) != null)
+//			{
 				content += f + " = " + o.get(f) + "<br>";
-			}
+//			}
 
 		}
 		return "<div style=\"display: inline; text-align: center;\" onmouseover=\"return overlib('"

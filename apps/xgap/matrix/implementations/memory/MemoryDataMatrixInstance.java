@@ -118,12 +118,16 @@ public class MemoryDataMatrixInstance<E> extends AbstractDataMatrixInstance<E>
 		rows = this.getRowNames().subList(row, row + nrows);
 		cols = this.getColNames().subList(col, col + ncols);
 
+		int rowPos = 0;
 		for (int rowIndex = row; rowIndex < row + nrows; rowIndex++)
 		{
+			int colPos = 0;
 			for (int colIndex = col; colIndex < col + ncols; colIndex++)
 			{
-				elements[rowIndex][colIndex] = allAlements[rowIndex][colIndex];
+				elements[rowPos][colPos] = allAlements[rowIndex][colIndex];
+				colPos++;
 			}
+			rowPos++;
 		}
 		return new MemoryDataMatrixInstance(rows, cols, elements, this.getData());
 	}

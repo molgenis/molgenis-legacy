@@ -1,10 +1,9 @@
 package plugins.matrix.manager;
 
-import java.util.List;
-
 import matrix.AbstractDataMatrixInstance;
 
 import org.molgenis.data.Data;
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
@@ -278,48 +277,80 @@ public class Browser
 	 * @param request
 	 * @throws Exception
 	 */
-	public void applyFilters(Tuple request) throws Exception
+	public String applyFilters(Tuple request, Database db) throws Exception
 	{
+		String filter = null;
 		
 		AbstractDataMatrixInstance<Object> filterMatrix = null;
-		
-		if(request.getString("__action").equals("filterVisible")){
+		String action = request.getString("__action");
+		if(action.startsWith("filter_visible_")){
 			// get the current submatrix (view)
 			filterMatrix = this.getModel().getSubMatrix();
 		}
-		else if(request.getString("__action").equals("filterAll")){
+		else if(action.startsWith("filter_all_")){
 			// get the original complete matrix
 			filterMatrix = this.getModel().getInstance();
 		}else{
-			//unrecognized filter?
+			throw new Exception("filter not prepended with filter_all_ or filter_visible_");
 		}
 		
-		List<String> colNames = filterMatrix.getColNames();
-		for (String colName : colNames)
+		if(action.endsWith("by_index"))
 		{
-			Object filterValue = request.getObject("FILTER_VALUE_COL_" + colName);
-			if (filterValue != null)
-			{
-				System.out.println("value for colName " + colName + ": " + filterValue);
-				String filterOperator = request.getString("FILTER_OPERATOR_COL_" + colName);
-				QueryRule q = new QueryRule(colName, Operator.valueOf(filterOperator), filterValue);
-				filterMatrix = filterMatrix.getSubMatrixFilterByColMatrixValues(q);
-				this.model.setSubMatrix(filterMatrix);	
-			}
+			String field = request.getString("add_filter_by_indexFILTER_FIELD");
+			String operator = request.getString("add_filter_by_indexFILTER_OPERATOR");
+			Object value = request.getObject("add_filter_by_indexFILTER_VALUE");
+			QueryRule q = new QueryRule(field, Operator.valueOf(operator), value);
+			filterMatrix = filterMatrix.getSubMatrixFilterByIndex(q);
+			this.model.setSubMatrix(filterMatrix);
+			
+			filter = action.replace("_", " ") + ", " + field + " " + operator + " " + value;
+			
 		}
-		
-		List<String> rowNames = filterMatrix.getRowNames();
-		for (String rowName : rowNames)
+		else if(action.endsWith("by_col_value"))
 		{
-			Object filterValue = request.getObject("FILTER_VALUE_ROW_" + rowName);
-			if (filterValue != null)
-			{
-				System.out.println("value for rowName " + rowName + ": " + filterValue);
-				String filterOperator = request.getString("FILTER_OPERATOR_ROW_" + rowName);
-				QueryRule q = new QueryRule(rowName, Operator.valueOf(filterOperator), filterValue);
-				filterMatrix = filterMatrix.getSubMatrixFilterByRowMatrixValues(q);
-				this.model.setSubMatrix(filterMatrix);
-			}
+			String field = request.getString("add_filter_by_col_valueFILTER_FIELD");
+			String operator = request.getString("add_filter_by_col_valueFILTER_OPERATOR");
+			Object value = request.getObject("add_filter_by_col_valueFILTER_VALUE");
+			QueryRule q = new QueryRule(field, Operator.valueOf(operator), value);
+			filterMatrix = filterMatrix.getSubMatrixFilterByColMatrixValues(q);
+			this.model.setSubMatrix(filterMatrix);
+			
+			filter = action.replace("_", " ") + ", " + field + " " + operator + " " + value;
+
+		}
+		else if(action.endsWith("by_row_value"))
+		{
+			String field = request.getString("add_filter_by_row_valueFILTER_FIELD");
+			String operator = request.getString("add_filter_by_row_valueFILTER_OPERATOR");
+			Object value = request.getObject("add_filter_by_row_valueFILTER_VALUE");
+			QueryRule q = new QueryRule(field, Operator.valueOf(operator), value);
+			filterMatrix = filterMatrix.getSubMatrixFilterByRowMatrixValues(q);
+			this.model.setSubMatrix(filterMatrix);
+			
+			filter = action.replace("_", " ") + ", " + field + " " + operator + " " + value;
+		
+		}
+		else if(action.endsWith("by_col_attrb"))
+		{
+			String field = request.getString("add_filter_by_col_attrbFILTER_FIELD");
+			String operator = request.getString("add_filter_by_col_attrbFILTER_OPERATOR");
+			Object value = request.getObject("add_filter_by_col_attrbFILTER_VALUE");
+			QueryRule q = new QueryRule(field, Operator.valueOf(operator), value);
+			filterMatrix = filterMatrix.getSubMatrixFilterByColEntityValues(db, q);
+			this.model.setSubMatrix(filterMatrix);
+			
+			filter = action.replace("_", " ") + ", " + field + " " + operator + " " + value;
+		}
+		else if(action.endsWith("by_row_attrb"))
+		{
+			String field = request.getString("add_filter_by_row_attrbFILTER_FIELD");
+			String operator = request.getString("add_filter_by_row_attrbFILTER_OPERATOR");
+			Object value = request.getObject("add_filter_by_row_attrbFILTER_VALUE");
+			QueryRule q = new QueryRule(field, Operator.valueOf(operator), value);
+			filterMatrix = filterMatrix.getSubMatrixFilterByRowEntityValues(db, q);
+			this.model.setSubMatrix(filterMatrix);
+			
+			filter = action.replace("_", " ") + ", " + field + " " + operator + " " + value;
 		}
 		
 		model.setWidth(this.model.getSubMatrix().getNumberOfCols());
@@ -329,6 +360,8 @@ public class Browser
 		verifyRowStart();
 		determineColStop();
 		determineRowStop();
+		
+		return filter;
 	}
 
 }

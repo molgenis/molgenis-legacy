@@ -213,6 +213,12 @@ public interface DataMatrixInstance
 	 */
 	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(String rowName, int nRows, String colName, int nCols) throws Exception;
 	
+	
+	/**
+	 * QueryRules version of index retrieve
+	 */
+	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByIndex(QueryRule... rules) throws Exception;
+	
 	/**
 	 * Get a submatrix from this matrix by applying a generic filter ('where')
 	 * to the row entities. For example, a matrix where rows are Patients and
