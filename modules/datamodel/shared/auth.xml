@@ -16,7 +16,7 @@
 			<field name="role_" type="xref" xref_field="MolgenisRole.id" xref_label="name" />
 		</entity>
 		
-		<entity name="MolgenisUser" extends="MolgenisRole" decorator="decorators.MolgenisUserDecorator" system="true">
+		<entity name="MolgenisUser" extends="MolgenisRole" system="true"> <!-- decorator="decorators.MolgenisUserDecorator" -->
 			<description>Anyone who can login</description>
 			<field name="password_" type="string" default="secret" description="big fixme: password type" />
 			<field name="emailaddress" type="string" />
