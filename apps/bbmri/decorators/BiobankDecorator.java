@@ -7,7 +7,6 @@
 
 package decorators;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -41,22 +40,6 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 	public int add(List<E> entities) throws DatabaseException
 	{
 		// add your pre-processing here
-		
-		// here we call the standard 'add'
-		int count = super.add(entities);
-		
-		// Check to see if Hudson is running (if so, there will be no user "admin" present).
-		// If yes, bail out now, because Hudson cannot handle the setOwns() and the ChangeLog entries.
-		try {
-			if (getDatabase().query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().size() == 0) {
-				return count;
-			}
-		} catch (Exception e1) {
-			return count;
-		}
-		
-		// add your post-processing here
-		// if you throw and exception the previous add will be rolled back
 		Date date = new Date(); 
 		Login login = this.getDatabase().getSecurity();
 		if (login != null && !(login instanceof SimpleLogin)) {
@@ -80,7 +63,21 @@ public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
 				}
 			}
 		}
-
+		
+		// here we call the standard 'add'
+		int count = super.add(entities);
+		
+		// add your post-processing here
+		// if you throw and exception the previous add will be rolled back
+		// First check to see if Hudson is running (if so, there will be no user "admin" present).
+		// If yes, bail out now, because Hudson cannot handle the ChangeLog entries.
+		try {
+			if (getDatabase().query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().size() == 0) {
+				return count;
+			}
+		} catch (Exception e1) {
+			return count;
+		}
 		for (Biobank e : entities) {
 			//on every new entity update changelog table 
 			try {
