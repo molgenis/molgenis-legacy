@@ -7,7 +7,6 @@
 
 package decorators;
 
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
@@ -20,8 +19,9 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.db.jdbc.MappingDecorator;
 import org.molgenis.framework.db.jdbc.JDBCMapper;
+import org.molgenis.framework.db.jdbc.MappingDecorator;
+import org.molgenis.framework.security.SimpleLogin;
 
 
 public class MolgenisUserDecorator<E extends MolgenisUser> extends MappingDecorator<E>
@@ -52,28 +52,31 @@ public class MolgenisUserDecorator<E extends MolgenisUser> extends MappingDecora
 		
 		// add your post-processing here
 		// if you throw and exception the previous add will be rolled back
-		for (MolgenisUser e : entities)
-		{
-			// Try to add the user to the AllUsers group
-			MolgenisGroup mg;
-			try {
-				mg = getDatabase().find(MolgenisGroup.class, new QueryRule(MolgenisGroup.NAME, Operator.EQUALS, "AllUsers")).get(0);
-			} catch (Exception ex) {
-				// When running from Hudson, there will be no group "AllUsers" so we return without giving
-				// an error, to keep our friend Hudson from breaking
-				return count;
-			}
-			
-			MolgenisRoleGroupLink mugl = new MolgenisRoleGroupLink();
-			mugl.setRole_Id(e.getId());
-			mugl.setGroup_Id(mg.getId());
-			try {
-				getDatabase().add(mugl);
-			} catch (DatabaseException e1) {
+		// First check if we have the kind of Login that allows the following actions!
+		if (!(this.getDatabase().getSecurity() instanceof SimpleLogin)) {
+			for (MolgenisUser e : entities)
+			{
+				// Try to add the user to the AllUsers group
+				MolgenisGroup mg;
 				try {
-					throw new Exception(e1.getMessage());
-				} catch (Exception e2) {
-					e2.printStackTrace();
+					mg = getDatabase().find(MolgenisGroup.class, new QueryRule(MolgenisGroup.NAME, Operator.EQUALS, "AllUsers")).get(0);
+				} catch (Exception ex) {
+					// When running from Hudson, there will be no group "AllUsers" so we return without giving
+					// an error, to keep our friend Hudson from breaking
+					return count;
+				}
+				
+				MolgenisRoleGroupLink mugl = new MolgenisRoleGroupLink();
+				mugl.setRole_Id(e.getId());
+				mugl.setGroup_Id(mg.getId());
+				try {
+					getDatabase().add(mugl);
+				} catch (DatabaseException e1) {
+					try {
+						throw new Exception(e1.getMessage());
+					} catch (Exception e2) {
+						e2.printStackTrace();
+					}
 				}
 			}
 		}
@@ -105,23 +108,25 @@ public class MolgenisUserDecorator<E extends MolgenisUser> extends MappingDecora
 	{
 		// add your pre-processing here
 		// first remove corresponding MolgenisRoleGroupLink entries, so we will be allowed to remove the User entities
-		for (E e : entities)
-		{
-			try {
-				//List<MolgenisRoleGroupLink> MolgenisRoleGroupLink = getDatabase().query(MolgenisRoleGroupLink.class).eq(MolgenisRoleGroupLink.USER__NAME,  e.getIdValue()).find();
-				MolgenisRoleGroupLink molgenisRoleGroupLink = getDatabase().findById(MolgenisRoleGroupLink.class, e.getId());
-				getDatabase().remove(molgenisRoleGroupLink);
-			} catch (Exception e1) {
-				// Apparently this user was in no groups
-				e1.printStackTrace();
+		// First check if we have the kind of Login that allows the following actions!
+		if (!(this.getDatabase().getSecurity() instanceof SimpleLogin)) {
+			for (E e : entities)
+			{
+				try {
+					//List<MolgenisRoleGroupLink> MolgenisRoleGroupLink = getDatabase().query(MolgenisRoleGroupLink.class).eq(MolgenisRoleGroupLink.USER__NAME,  e.getIdValue()).find();
+					MolgenisRoleGroupLink molgenisRoleGroupLink = getDatabase().findById(MolgenisRoleGroupLink.class, e.getId());
+					getDatabase().remove(molgenisRoleGroupLink);
+				} catch (Exception e1) {
+					// Apparently this user was in no groups
+					e1.printStackTrace();
+				}
 			}
 		}
-		// here we call the standard 'remove'
 		
+		// here we call the standard 'remove'
 		int count = super.remove(entities);
 
-		// add your post-processing here, e.g.
-		// if(true) throw new SQLException("Because of a post trigger the remove is cancelled.");
+		// add your post-processing here
 
 		return count;
 	}
@@ -135,9 +140,7 @@ public class MolgenisUserDecorator<E extends MolgenisUser> extends MappingDecora
 		try
 		{
 			PasswordHasher md5 = new PasswordHasher();
-
 			String newPassword = md5.toMD5(user.getPassword());
-
 			user.setPassword(newPassword);
 		}
 		catch (NoSuchAlgorithmException e)
