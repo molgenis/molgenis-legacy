@@ -24,6 +24,7 @@ import java.text.ParseException;
 
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.auth.service.MolgenisUserService;
+import org.molgenis.framework.security.SimpleLogin;
 
 <#if databaseImp = 'jpa'>
 import org.molgenis.framework.db.jpa.JpaMappingDecorator;
@@ -41,7 +42,7 @@ public class ${clazzName}<E extends ${entityClass}> extends <#if databaseImp = '
 	@Override
 	public int add(List<E> entities) throws DatabaseException
 	{
-		if (this.getDatabase().getSecurity() != null)
+		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
 		{
 			if (!this.getDatabase().getSecurity().canWrite(${entityClass}.class))
 				throw new DatabaseException("No write permission on ${entityClass}");
@@ -57,7 +58,7 @@ public class ${clazzName}<E extends ${entityClass}> extends <#if databaseImp = '
 	@Override
 	public int update(List<E> entities) throws DatabaseException
 	{
-		if (this.getDatabase().getSecurity() != null)
+		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
 		{
 			if (!this.getDatabase().getSecurity().canWrite(${entityClass}.class))
 				throw new DatabaseException("No write permission on ${entityClass}");
@@ -73,7 +74,7 @@ public class ${clazzName}<E extends ${entityClass}> extends <#if databaseImp = '
 	@Override
 	public int remove(List<E> entities) throws DatabaseException
 	{
-		if (this.getDatabase().getSecurity() != null)
+		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
 		{
 			if (!this.getDatabase().getSecurity().canWrite(${entityClass}.class))
 				throw new DatabaseException("No write permission on ${entityClass}");
@@ -87,7 +88,7 @@ public class ${clazzName}<E extends ${entityClass}> extends <#if databaseImp = '
 
 	public int add(CsvReader reader, CsvFileWriter writer) throws DatabaseException
 	{
-		if (this.getDatabase().getSecurity() != null)
+		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
 		{
 			if (!this.getDatabase().getSecurity().canWrite(${entityClass}.class))
 				throw new DatabaseException("No write permission on ${entityClass}");
@@ -100,7 +101,7 @@ public class ${clazzName}<E extends ${entityClass}> extends <#if databaseImp = '
 	@Override
 	public int count(QueryRule... rules) throws DatabaseException
 	{
-		if (this.getDatabase().getSecurity() != null)
+		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
 		{
 			if (!this.getDatabase().getSecurity().canRead(${entityClass}.class))
 				return 0;
@@ -115,7 +116,7 @@ public class ${clazzName}<E extends ${entityClass}> extends <#if databaseImp = '
 	@Override
 	public List<E> find(QueryRule ...rules) throws DatabaseException
 	{
-		if (this.getDatabase().getSecurity() != null)
+		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
 		{
 			if (!this.getDatabase().getSecurity().canRead(${entityClass}.class))
 				return new ArrayList<E>();
@@ -134,7 +135,7 @@ public class ${clazzName}<E extends ${entityClass}> extends <#if databaseImp = '
 
 	public void find(CsvFileWriter writer, QueryRule ...rules) throws DatabaseException
 	{
-		if (this.getDatabase().getSecurity() != null)
+		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
 		{
 			if (!this.getDatabase().getSecurity().canRead(${entityClass}.class))
 				return;
@@ -151,7 +152,7 @@ public class ${clazzName}<E extends ${entityClass}> extends <#if databaseImp = '
 	@Override
 	public int remove(CsvReader reader) throws DatabaseException
 	{
-		if (this.getDatabase().getSecurity() != null)
+		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
 		{
 			if (!this.getDatabase().getSecurity().canWrite(${entityClass}.class))
 				throw new DatabaseException("No write permission on ${entityClass}");
@@ -164,7 +165,7 @@ public class ${clazzName}<E extends ${entityClass}> extends <#if databaseImp = '
 	@Override
 	public int update(CsvReader reader) throws DatabaseException
 	{
-		if (this.getDatabase().getSecurity() != null)
+		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
 		{
 			if (!this.getDatabase().getSecurity().canWrite(${entityClass}.class))
 				throw new DatabaseException("No write permission on ${entityClass}");
@@ -177,7 +178,7 @@ public class ${clazzName}<E extends ${entityClass}> extends <#if databaseImp = '
 
 	public void find(CsvFileWriter writer, List<String> fieldsToExport, QueryRule ...rules) throws DatabaseException
 	{
-		if (this.getDatabase().getSecurity() != null)
+		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
 		{
 			if (!this.getDatabase().getSecurity().canRead(${entityClass}.class))
 				return;
