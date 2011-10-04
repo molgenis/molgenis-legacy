@@ -14,6 +14,7 @@ import javax.persistence.Persistence;
 
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.DatabaseMapper;
+import org.molgenis.framework.security.SimpleLogin;
 
 
 public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
@@ -21,8 +22,9 @@ public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
 	public void initMappers(JpaDatabase db)
 	{
 		<#list model.entities as entity><#if !entity.isAbstract()>
-//		putMapper(${entity.namespace}.${JavaName(entity)}.class, new ${entity.namespace}.db.${JavaName(entity)}JpaMapper(db));
-		<#if entity.decorator?exists>
+			<#if disable_decorators>
+				this.putMapper(${entity.namespace}.${JavaName(entity)}.class, new ${entity.namespace}.db.${JavaName(entity)}JpaMapper(db));			
+			<#elseif entity.decorator?exists>
 				<#if auth_loginclass?ends_with("SimpleLogin")>
 		this.putMapper(${entity.namespace}.${JavaName(entity)}.class, new ${entity.decorator}(new ${entity.namespace}.db.${JavaName(entity)}JpaMapper(db)));
 				<#else>
@@ -55,6 +57,7 @@ public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
         persistenceUnitName = testDatabase ? "molgenis_test" : "molgenis";
         if (testDatabase) {
             super.setEntityManager(EMFactory.createEntityManager("molgenis_test"));
+            this.setLogin(new SimpleLogin());
         } else {
             super.setEntityManager(EMFactory.createEntityManager());
         }

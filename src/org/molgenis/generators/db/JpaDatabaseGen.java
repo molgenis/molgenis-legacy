@@ -44,6 +44,7 @@ public class JpaDatabaseGen extends Generator
 		String packageName = model.getName().toLowerCase();
 		templateArgs.put("package", packageName);
 		templateArgs.put("auth_loginclass", options.auth_loginclass);
+		templateArgs.put("disable_decorators", options.disable_decorators);
 		OutputStream targetOut = new FileOutputStream( target );
 		template.process( templateArgs, new OutputStreamWriter( targetOut ) );
 		targetOut.close();
