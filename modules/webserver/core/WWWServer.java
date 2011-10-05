@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Hashtable;
 
 public class WWWServer extends Webserver implements Runnable
 {
@@ -53,6 +54,11 @@ public class WWWServer extends Webserver implements Runnable
 		addServlet(variant + "/tmpfile", "core.servlets.tmpfileservlet");
 		addServlet(variant + "/bot", "core.servlets.BotServlet");
 		addServlet(variant + "/captchaImg", "nl.captcha.servlet.SimpleCaptchaServlet");
+		
+		Hashtable<String,Object> restParams = new Hashtable<String,Object>();
+		restParams.put("jaxrs.serviceClasses", "app.servlet.RestApi");
+		addServlet(variant + "/api/rest/", "org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet", restParams);
+
 		addServlet(variant + "/", "core.servlets.FileServlet");
 	}
 
