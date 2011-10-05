@@ -65,9 +65,9 @@ CrossFromMolgenis <- function(investigationname="",genotypematrixname=NULL,pheno
 	}
 	
 	if(verbose) cat(DBmarkerID,"\n")
-	marker_data <- downloadmatrixascsv(DBmarkerID)
+	marker_data <- downloadmatrixascsvCURL(DBmarkerID)
 	if(verbose) cat(DBtraitID,"\n")
-	trait_data <- downloadmatrixascsv(DBtraitID)
+	trait_data <- downloadmatrixascsvCURL(DBtraitID)
 	
 	temp <- matrix(as.numeric(as.matrix(trait_data)),c(dim(trait_data)[1],dim(trait_data)[2]))
 	rownames(temp) <- rownames(trait_data)

@@ -86,7 +86,10 @@ public class downloadmatrixascsv extends app.servlet.MolgenisServlet
 				if (req.getString("download").equals("all"))
 				{
 					if (req.getString("stream").equals("true"))	{
-						content += instance.toString();
+						//content += instance.toString();
+						instance.toPrintStream(p);
+						p.close();
+						return;
 					}
 					else if (req.getString("stream").equals("false"))
 					{

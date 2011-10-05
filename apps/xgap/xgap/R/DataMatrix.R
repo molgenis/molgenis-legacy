@@ -129,6 +129,26 @@ downloadmatrixascsv<-function(id=NULL)
 	return(data)
 }
 
+downloadmatrixascsvCURL<-function(id=NULL)
+{
+	data_url <- paste(serverpath,"/downloadmatrixascsv?id=",id,"&download=all&stream=true",sep="")
+	tetsing <- getURL(data_url)
+	tmpfile <- tempfile()
+	cat(tetsing,file=tmpfile)
+	data <- read.table(tmpfile,sep="\t",header=T,row.names=1,colClasses=c("character"),check.names=FALSE)
+	data <- as.matrix(data)
+	colnames <- colnames(data)
+	rownames <- rownames(data)
+	if(find.data(id=id)$valuetype == "Decimal"){
+		data <- matrix(as.numeric(as.matrix(data)),c(dim(data)[1],dim(data)[2]))
+	}else{
+		data <- matrix(as.matrix(data),c(dim(data)[1],dim(data)[2]))
+	}
+	colnames(data) <- colnames
+	rownames(data) <- rownames
+	return(data)
+}
+
 #find by pkey or skey container and remove
 remove.datamatrix <- function(id=NULL, name=NULL, investigation_id=NULL)
 {     
