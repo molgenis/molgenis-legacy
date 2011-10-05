@@ -30,6 +30,11 @@ public class MatrixManagerModel {
 	
 	private String uploadTextAreaContent;
 	private String filter;
+	private String selectedFilterDiv;
+	
+	private String tmpImgName;
+	private int selectedWidth;
+	private int selectedHeight;
 	
 	public String renderRow(String name){
 		ObservationElement o = rowObsElem.get(name);
@@ -51,6 +56,46 @@ public class MatrixManagerModel {
 	
 	
 	
+	public String getSelectedFilterDiv()
+	{
+		return selectedFilterDiv;
+	}
+
+	public void setSelectedFilterDiv(String selectedFilterDiv)
+	{
+		this.selectedFilterDiv = selectedFilterDiv;
+	}
+
+	public int getSelectedWidth()
+	{
+		return selectedWidth;
+	}
+
+	public void setSelectedWidth(int selectedWidth)
+	{
+		this.selectedWidth = selectedWidth;
+	}
+
+	public int getSelectedHeight()
+	{
+		return selectedHeight;
+	}
+
+	public void setSelectedHeight(int selectedHeight)
+	{
+		this.selectedHeight = selectedHeight;
+	}
+
+	public String getTmpImgName()
+	{
+		return tmpImgName;
+	}
+
+	public void setTmpImgName(String tmpImgName)
+	{
+		this.tmpImgName = tmpImgName;
+	}
+
 	public String getFilter()
 	{
 		return filter;

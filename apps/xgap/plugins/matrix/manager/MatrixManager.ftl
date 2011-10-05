@@ -187,7 +187,7 @@
 		</td>
 		</#if>
 		<td>
-			<i>Add a new filter:</i>
+			<i>Perform action:</i>
 		</td>
 	</tr>
 	
@@ -195,16 +195,17 @@
 
 
 <table cellpadding="10"><tr>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');" checked>By index</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter2');display('hide', 'filter1');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');">By ${model.selectedData.featureType?lower_case} values</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter3');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter4');display('hide', 'filter5');">By ${model.selectedData.targetType?lower_case} values</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter4');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter5');">By ${model.selectedData.featureType?lower_case} attributes</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter5');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');">By ${model.selectedData.targetType?lower_case} attributes</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');" <#if model.selectedFilterDiv == 'filter1'>checked</#if>>Filter on index</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter2');display('hide', 'filter1');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');" <#if model.selectedFilterDiv == 'filter2'>checked</#if>>Filter on ${model.selectedData.featureType?lower_case} values</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter3');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');" <#if model.selectedFilterDiv == 'filter3'>checked</#if>>Filter on ${model.selectedData.targetType?lower_case} values</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter4');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter5');display('hide', 'filter6');" <#if model.selectedFilterDiv == 'filter4'>checked</#if>>Filter on ${model.selectedData.featureType?lower_case} attributes</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter5');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter6');" <#if model.selectedFilterDiv == 'filter5'>checked</#if>>Filter on ${model.selectedData.targetType?lower_case} attributes</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter6');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');" <#if model.selectedFilterDiv == 'filter6'>checked</#if>>Make an R plot</td>
 </tr></table>
 
 <br>
 
-<div id="filter1">
+<div id="filter1" <#if model.selectedFilterDiv != 'filter1'>style="display:none"</#if>>
 	<table>
 		<tr>
 			<td>
@@ -232,7 +233,7 @@
 		<tr>
 	</table>
 </div>
-<div id="filter2" style="display:none">
+<div id="filter2" <#if model.selectedFilterDiv != 'filter2'>style="display:none"</#if>>
 	<table>
 		<tr>
 			<td>
@@ -258,7 +259,7 @@
 		</tr>
 	</table>
 </div>
-<div id="filter3" style="display:none">
+<div id="filter3" <#if model.selectedFilterDiv != 'filter3'>style="display:none"</#if>>
 	<table>
 		<tr>
 			<td>
@@ -284,7 +285,7 @@
 		</tr>
 	</table>
 </div>
-<div id="filter4" style="display:none">
+<div id="filter4" <#if model.selectedFilterDiv != 'filter4'>style="display:none"</#if>>
 	<table>
 		<tr>
 			<td>
@@ -312,7 +313,7 @@
 		</tr>
 	</table>
 </div>
-<div id="filter5" style="display:none">
+<div id="filter5" <#if model.selectedFilterDiv != 'filter5'>style="display:none"</#if>>
 	<table>
 		<tr>
 			<td>
@@ -339,6 +340,72 @@
 			</td>
 		</tr>
 	</table>
+</div>
+<div id="filter6" <#if model.selectedFilterDiv != 'filter6'>style="display:none"</#if>>
+	<table cellpadding="2">
+		<tr>
+			<td colspan="4">
+				Make R plot:
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<select name="r_plot_row_select">
+					<#list browser.subMatrix.rowNames as row><option value="${row}">${row}</option></#list>
+				</select>
+			</td>
+			<td>
+				<input type="submit" value="Plot full row" onclick="document.forms.${screen.name}.__action.value = 'r_plot_full_row'; document.forms.${screen.name}.submit();">
+			</td>
+			<td>
+				<input type="submit" value="Plot visible row" onclick="document.forms.${screen.name}.__action.value = 'r_plot_visible_row'; document.forms.${screen.name}.submit();">
+			</td>
+			<td>
+			Type of plot:
+				<select name="r_plot_type">
+					<#if model.selectedData.valueType == "Decimal">
+						<option <#if model.selectedPlotType?exists && model.selectedPlotType == "p">SELECTED</#if> value="p">Points</option>
+						<option <#if model.selectedPlotType?exists && model.selectedPlotType == "l">SELECTED</#if> value="l">Lines</option>
+						<option <#if model.selectedPlotType?exists && model.selectedPlotType == "o">SELECTED</#if> value="o">Overplotted</option>
+						<option <#if model.selectedPlotType?exists && model.selectedPlotType == "s">SELECTED</#if> value="s">Stairs</option>
+						<option <#if model.selectedPlotType?exists && model.selectedPlotType == "boxplot">SELECTED</#if> value="boxplot">Boxplot</option>
+					</#if>
+					<option <#if model.selectedPlotType?exists && model.selectedPlotType == "h">SELECTED</#if> value="h">Histogram</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<select name="r_plot_col_select">
+					<#list browser.subMatrix.colNames as col><option value="${col}">${col}</option></#list>
+				</select>
+			</td>
+			<td>
+				<input type="submit" value="Plot full column" onclick="document.forms.${screen.name}.__action.value = 'r_plot_full_col'; document.forms.${screen.name}.submit();">
+			</td>
+			<td>
+				<input type="submit" value="Plot visible column" onclick="document.forms.${screen.name}.__action.value = 'r_plot_visible_col'; document.forms.${screen.name}.submit();">
+			</td>
+			<td>
+				Resolution (pixels):
+				<select name="r_plot_resolution">
+					<option <#if model.selectedWidth?exists && model.selectedWidth == 480>SELECTED</#if> value="480x640">480 x 640</option>
+					<option <#if model.selectedWidth?exists && model.selectedWidth == 600>SELECTED</#if> value="600x800">600 x 800</option>
+					<option <#if model.selectedWidth?exists && model.selectedWidth == 640>SELECTED</#if> value="640x480">640 x 480</option>
+					<option <#if model.selectedWidth?exists && model.selectedWidth == 768>SELECTED</#if> value="768x1024">768 x 1024</option>
+					<option <#if model.selectedWidth?exists && model.selectedWidth == 800>SELECTED</#if> value="800x600">800 x 600</option>
+					<option <#if model.selectedWidth?exists && model.selectedWidth == 1024>SELECTED</#if> value="1024x768">1024 x 768</option>
+					<option <#if model.selectedWidth?exists && model.selectedWidth == 1680>SELECTED</#if> value="1680x1050">1680 x 1050</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+	<#if model.tmpImgName?exists>
+	<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + model.tmpImgName + "></body></html>">
+	<a href="#" onclick="var generate = window.open('', '', 'width=${model.selectedWidth+50},height=${model.selectedHeight+50},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
+		<img src="tmpfile/${model.tmpImgName}" width="${model.selectedWidth/5}" height="${model.selectedHeight/5}">
+	</a>
+</#if>
 </div>
 </#if>
 

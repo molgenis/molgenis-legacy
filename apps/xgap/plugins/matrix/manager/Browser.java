@@ -283,7 +283,7 @@ public class Browser
 	 * @param request
 	 * @throws Exception
 	 */
-	public String applyFilters(Tuple request, Database db) throws Exception
+	public String applyFilters(Tuple request, Database db, MatrixManagerModel screenModel) throws Exception
 	{
 		String filter = null;
 		
@@ -306,6 +306,7 @@ public class Browser
 		
 		if(action.endsWith("by_index"))
 		{
+			screenModel.setSelectedFilterDiv("filter1");
 			field = request.getString("add_filter_by_indexFILTER_FIELD");
 			operator = request.getString("add_filter_by_indexFILTER_OPERATOR");
 			value = request.getObject("add_filter_by_indexFILTER_VALUE");
@@ -314,6 +315,7 @@ public class Browser
 		}
 		else if(action.endsWith("by_col_value"))
 		{
+			screenModel.setSelectedFilterDiv("filter2");
 			field = request.getString("add_filter_by_col_valueFILTER_FIELD");
 			operator = request.getString("add_filter_by_col_valueFILTER_OPERATOR");
 			value = request.getObject("add_filter_by_col_valueFILTER_VALUE");
@@ -322,6 +324,7 @@ public class Browser
 		}
 		else if(action.endsWith("by_row_value"))
 		{
+			screenModel.setSelectedFilterDiv("filter3");
 			field = request.getString("add_filter_by_row_valueFILTER_FIELD");
 			operator = request.getString("add_filter_by_row_valueFILTER_OPERATOR");
 			value = request.getObject("add_filter_by_row_valueFILTER_VALUE");
@@ -330,6 +333,7 @@ public class Browser
 		}
 		else if(action.endsWith("by_col_attrb"))
 		{
+			screenModel.setSelectedFilterDiv("filter4");
 			field = request.getString("add_filter_by_col_attrbFILTER_FIELD");
 			operator = request.getString("add_filter_by_col_attrbFILTER_OPERATOR");
 			value = request.getObject("add_filter_by_col_attrbFILTER_VALUE");
@@ -338,6 +342,7 @@ public class Browser
 		}
 		else if(action.endsWith("by_row_attrb"))
 		{
+			screenModel.setSelectedFilterDiv("filter5");
 			field = request.getString("add_filter_by_row_attrbFILTER_FIELD");
 			operator = request.getString("add_filter_by_row_attrbFILTER_OPERATOR");
 			value = request.getObject("add_filter_by_row_attrbFILTER_VALUE");

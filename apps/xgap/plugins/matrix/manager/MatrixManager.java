@@ -239,6 +239,11 @@ public class MatrixManager extends PluginModel
 			if(this.dmh == null){
 				dmh = new DataMatrixHandler(db);
 			}
+			
+			if(this.model.getSelectedFilterDiv() == null)
+			{
+				this.model.setSelectedFilterDiv("filter1");
+			}
 
 			boolean newOrOtherData;
 			// boolean createBrowserSuccess = true; //assume success, can be

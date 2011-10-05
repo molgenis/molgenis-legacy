@@ -9,7 +9,7 @@
 					<menu name="Select" group="biologist">
 						<plugin name="Manager" type="plugins.matrix.manager.MatrixManager" group="biologist" />
 						<plugin name="Heatmap" type="plugins.matrix.heatmap.MatrixHeatmap" group="biologist" />
-						<plugin name="Rplot" type="plugins.rplot.RplotPlugin" group="biologist" />
+						<!--plugin name="Rplot" type="plugins.rplot.RplotPlugin" group="biologist" /-->
 						<plugin name="Inspector" type="plugins.matrix.inspector.MatrixInspector" group="biologist" />
 						<plugin name="MatrixAdmin" label="Delete storage" type="plugins.matrix.admin.MatrixAdmin" group="biologist" />
 						<!--plugin name="ManagerDev" type="plugins.matrix_dev.manager.MatrixManager" group="biologist" /-->
