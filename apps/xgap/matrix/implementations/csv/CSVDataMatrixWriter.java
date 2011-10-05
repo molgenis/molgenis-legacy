@@ -16,6 +16,9 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.log4j.Logger;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.jdbc.JDBCDatabase;
+import org.molgenis.framework.db.jpa.JpaDatabase;
 
 import decorators.NameConvention;
 import filehandling.generic.PerformUpload;
@@ -109,8 +112,15 @@ public class CSVDataMatrixWriter
 			VerifyCsv.verify(src, data.getValueType());
 					
 			//upload as a MolgenisFile, type 'CSVDataMatrix'
-			HashMap<String, String> extraFields = new HashMap<String, String>();
-			extraFields.put("data_name", data.getName());
+            HashMap<String, String> extraFields = new HashMap<String, String>();
+            if (db instanceof JDBCDatabase) {
+                extraFields.put("data_"+ Data.NAME, data.getName());
+            } else if (db instanceof JpaDatabase) {
+                extraFields.put("data_" + Data.ID, data.getId().toString());
+                extraFields.put("data_" + Data.NAME, data.getName());
+            } else {
+                throw new DatabaseException("Unsupported database mapper");
+            }
 			
 			PerformUpload.doUpload(db, true, data.getName() + ".txt", "CSVDataMatrix", src, extraFields, false);
 		}

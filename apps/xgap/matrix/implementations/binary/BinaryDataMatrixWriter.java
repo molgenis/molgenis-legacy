@@ -22,6 +22,9 @@ import org.apache.log4j.Logger;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.CsvToDatabase.IntegerWrapper;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.jdbc.JDBCDatabase;
+import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
@@ -115,9 +118,16 @@ public class BinaryDataMatrixWriter
 			File dest = new File(System.getProperty("java.io.tmpdir") + File.separator + "tmp_binmatrix_" + System.nanoTime());
 			File binFile = makeBinaryBackend(data, src, dest, rowAndColLength[0], rowAndColLength[1]);
 		
-			//upload as a MolgenisFile, type 'BinaryDataMatrix'
-			HashMap<String, String> extraFields = new HashMap<String, String>();
-			extraFields.put("data_name", data.getName());
+            //upload as a MolgenisFile, type 'BinaryDataMatrix'
+            HashMap<String, String> extraFields = new HashMap<String, String>();
+            if (db instanceof JDBCDatabase) {
+                extraFields.put("data_" + Data.NAME, data.getName());
+            } else if (db instanceof JpaDatabase) {
+                extraFields.put("data_" + Data.ID, data.getId().toString());
+                extraFields.put("data_" + Data.NAME, data.getName());
+            } else {
+                throw new DatabaseException("Unsupported database mapper");
+            }
 			
 			PerformUpload.doUpload(db, true, data.getName()+".bin", "BinaryDataMatrix", binFile, extraFields, false);
 
