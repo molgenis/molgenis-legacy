@@ -1,42 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <molgenis name="org.molgenis.patho" label="Genome NL Variant Catalogue">
-	<description>
-		This database firstly allows efficient storage of variants reported in
-		individuals and/or cohorts. (TODO pathogenecity).
-		<ol>
-			<li>list of genome builds + ref to file E.g. 'hg19'.</li>
-			<li>list of chromosomes. E.g. 'chr1'.</li>
-			<li>list of variants incl xref(build), xref(chr), start, end, hgvs
-				notation (e.g. 'G>T'), rsNumber,type(=snp).</li>
-			<li>list of panels, incl. name and type. E.g. 'gonl (type=cohort)' or
-				'fam1(type=family)'.</li>
-			<li>list of individuals. E.g. A102, optionally having
-				father/mother/family relationships. Family is a panel?</li>
-			<li>optionally, individual genotypes (variant - value(type=) -
-				individual). E.g. 1/1 (numbers indicate variant, 0 means reference)
+  <description>
+    This database firstly allows efficient storage of variants reported in
+    individuals and/or cohorts. (TODO pathogenecity).
+    <ol>
+      <li>list of genome builds + ref to file E.g. 'hg19'.</li>
+      <li>list of chromosomes. E.g. 'chr1'.</li>
+      <li>list of variants incl xref(build), xref(chr), start, end, hgvs
+        notation (e.g. 'G>T'), rsNumber,type(=snp).</li>
+      <li>list of panels, incl. name and type. E.g. 'gonl (type=cohort)' or
+        'fam1(type=family)'.</li>
+      <li>list of individuals. E.g. A102, optionally having
+        father/mother/family relationships. Family is a panel?</li>
+      <li>optionally, individual genotypes (variant - value(type=) -
+        individual). E.g. 1/1 (numbers indicate variant, 0 means reference)
 			</li>
-			<li>allele counts (variant - value (type=AC) - cohort)</li>
-		</ol>
-		Aspects: * we want to record who submitted a set of values * we want
-		to record the protocol of data production (== set??) * we want to
-		report families. That is a type of panel?? User interfaces: * search
-		by
-	</description>
-	<plugin name="PathoHeader" type="org.molgenis.patho.ui.PathoHeader"/>
-		<plugin name="PathoSearch" label="Find variants" type="org.molgenis.patho.ui.PathoSearch"/>
-		<form name="PathoVariants" label="Variants" entity="SequenceVariant" />
-					
-		<menu name="PathoDataTables" label="Data Tables" position="left">
-			<form name="PathoSpecies" label="Species" entity="Species" />
-			<form name="OntologyTerm" label="Ontology Terms" entity="OntologyTerm" />
-			<form name="PathoBuilds" label="Genome builds" entity="GenomeBuild" />
-			<form name="PathoChromosomes" label="Chromosomes" entity="Chromosome" />
-			<form name="PathoPanels" label="Panels" entity="Panel" />
-			<form name="PathoIndividuals" label="Individuals" entity="Individual" />
+      <li>allele counts (variant - value (type=AC) - cohort)</li>
+    </ol>
+    Aspects: * we want to record who submitted a set of values * we want
+    to record the protocol of data production (== set??) * we want to
+    report families. That is a type of panel?? User interfaces: * search
+    by
+  </description>
+  <plugin name="PathoHeader" type="org.molgenis.patho.ui.PathoHeader" />
+  <menu name="PathoDataTables" label="Data Tables" position="left">
+    <form name="PathoVariants" label="Variants" entity="SequenceVariant" />
+    <form name="PathoMeasurements" label="Measurements" entity="Measurement" />
+    <form name="PathoSpecies" label="Species" entity="Species" />
+    <form name="OntologyTerm" label="Ontology Terms" entity="OntologyTerm" />
+    <form name="PathoBuilds" label="Genome builds" entity="GenomeBuild" />
+    <form name="PathoChromosomes" label="Chromosomes" entity="Chromosome" />
+    <form name="PathoPanels" label="Panels" entity="Panel" />
+    <form name="PathoIndividuals" label="Individuals" entity="Individual" />
 			<!-- form name="PathoSubmission" label="Submissions" entity="Submission"
 				/-->
-			<form name="PathoObservation" label="Observed Values" entity="ObservedValue" />
-		</menu>
+    <form name="PathoObservation" label="Observed Values" entity="ObservedValue" />
+  </menu>
 		<!--  menu name="PathoImport" label="Import data">
 			<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard"
 				label="Import Excel" />
