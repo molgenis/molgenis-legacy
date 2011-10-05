@@ -41,6 +41,7 @@ public class downloadmatrixascsv extends app.servlet.MolgenisServlet
 
 		// OutputStream out = response.getOutputStream();
 		OutputStream out = response.getOutputStream();
+		PrintStream p = new PrintStream(new BufferedOutputStream(out), false, "UTF8");
 		response.setStatus(HttpServletResponse.SC_OK);
 		
 		boolean databaseIsAvailable = false;
@@ -68,8 +69,9 @@ public class downloadmatrixascsv extends app.servlet.MolgenisServlet
 				//special exception for filtered content: get matrix instance from memory and do complete handle
 				if(req.getString("id").equals("inmemory"))
 				{
-					PrintStream p = new PrintStream(new BufferedOutputStream(out), false, "UTF8");
-					p.print(Browser.inmemory.toString());
+					content = Browser.inmemory.toString();
+					response.setContentLength(content.length());
+					p.print(content);
 					p.flush();
 					p.close();
 					return;
@@ -83,20 +85,12 @@ public class downloadmatrixascsv extends app.servlet.MolgenisServlet
 
 				if (req.getString("download").equals("all"))
 				{
-					if (req.getString("stream").equals("true"))
-					{
-						PrintStream p = new PrintStream(out, false, "UTF8");
-						instance.toPrintStream(p);
-						p.close();
-						return;
+					if (req.getString("stream").equals("true"))	{
+						content += instance.toString();
 					}
 					else if (req.getString("stream").equals("false"))
 					{
-						PrintStream p = new PrintStream(new BufferedOutputStream(out), false, "UTF8");
-						p.print(instance.toString());
-						p.flush();
-						p.close();
-						return;
+						content +=  instance.toString() ;
 					}
 					else
 					{
@@ -111,18 +105,11 @@ public class downloadmatrixascsv extends app.servlet.MolgenisServlet
 					int rowLimit = req.getInt("rlim");
 					if (req.getString("stream").equals("true"))
 					{
-						PrintStream p = new PrintStream(out, false, "UTF8");
-						instance.getSubMatrixByOffset(rowOffset, rowLimit, colOffset, colLimit).toPrintStream(p);
-						p.close();
-						return;
+						content += instance.getSubMatrixByOffset(rowOffset, rowLimit, colOffset, colLimit).toString();
 					}
 					else if (req.getString("stream").equals("false"))
 					{
-						PrintStream p = new PrintStream(new BufferedOutputStream(out), false, "UTF8");
-						p.print(instance.getSubMatrixByOffset(rowOffset, rowLimit, colOffset, colLimit).toString());
-						p.flush();
-						p.close();
-						return;
+						content += instance.getSubMatrixByOffset(rowOffset, rowLimit, colOffset, colLimit).toString();
 					}
 					else
 					{
@@ -143,14 +130,10 @@ public class downloadmatrixascsv extends app.servlet.MolgenisServlet
 				content += e.getStackTrace();
 			}
 		}
-		
-		//someting went wrong: print the error + usage
 		response.setContentLength(content.length());
-		PrintStream p = new PrintStream(new BufferedOutputStream(out), false, "UTF8");
 		p.print(content);
 		p.flush();
 		p.close();
-		
 	}
 
 	public String displayUsage(Database db)
