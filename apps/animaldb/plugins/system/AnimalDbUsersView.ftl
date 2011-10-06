@@ -60,7 +60,7 @@
 <div id="investigationdiv" class="row">
 	<label for="investigation">Investigation:</label>
 	<select name="investigation" id="investigation">
-		<option value="0">New (specify name below)...</option>
+		<option value="-1">New (specify name below)...</option>
 		<#list screen.investigations as investigation>
 			<option value="${investigation.id?string.computer}">${investigation.name}</option>
 		</#list>
@@ -73,13 +73,13 @@
 </div>
 
 <div id='buttons_part' class='row'>
-	<input type='submit' class='addbutton' value='Add' onclick="__action.value='Add'" />
-	<input type='submit' class='addbutton' value='Cancel' onclick="__action.value='Cancel'" />
+	<input id='adduser' type='submit' class='addbutton' value='Add' onclick="__action.value='Add'" />
+	<input id='canceluser' type='submit' class='addbutton' value='Cancel' onclick="__action.value='Cancel'" />
 </div>
 
 <#else>
 
-<p><a href="molgenis.do?__target=${screen.name}&__action=New">Make new user...</a></p>
+<p><a href="molgenis.do?__target=${screen.name}&__action=New">Make new user</a></p>
 
 <p>Welcome, ${screen.userName}. You own the following investigation(s):</p>
 <table>

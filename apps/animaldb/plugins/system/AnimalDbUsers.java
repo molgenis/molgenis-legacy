@@ -181,14 +181,14 @@ public class AnimalDbUsers extends PluginModel<Entity>
 				Investigation chosenInv;
 				if (request.getInt("investigation") != null) {
 					int invId = request.getInt("investigation");
-					if (invId == 0) {
+					if (invId == -1) {
 						String newinv = request.getString("newinv");
 						if (newinv == null) {
 							throw new Exception("No name given for new investigation");
 						}
 						chosenInv = new Investigation();
 						chosenInv.setName(newinv);
-						db.add(chosenInv); // owner is defaulted to the one logged in!
+						db.add(chosenInv); // owner is now defaulted to Admin (AuthorizableDecorator)
 						
 					} else {
 						Query<Investigation> q = db.query(Investigation.class);
@@ -200,7 +200,7 @@ public class AnimalDbUsers extends PluginModel<Entity>
 							throw new Exception("No (valid) investigation chosen");
 						}
 					}
-					chosenInv.setOwns_Id(userId); // TODO: this fails when you're not admin
+					chosenInv.setOwns_Id(userId); // set the right owner
 					db.update(chosenInv); // chosenInv is always already in the DB, so db.update() is fine here
 				} else {
 					throw new Exception("No (valid) investigation chosen");
@@ -222,7 +222,7 @@ public class AnimalDbUsers extends PluginModel<Entity>
 				db.add(permList);
 				
 				this.setMessages(new ScreenMessage("User " + username + 
-						" succesfully added and assigned ownership of investigation " + 
+						" successfully added and assigned ownership of investigation " + 
 						chosenInv.getName(), true));
 				
 				action = "init";

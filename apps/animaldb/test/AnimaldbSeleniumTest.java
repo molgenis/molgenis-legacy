@@ -72,7 +72,7 @@ public class AnimaldbSeleniumTest
 	}
 
 	@Test(dependsOnMethods={"startup"})
-	public void login() throws InterruptedException
+	public void loginAdmin() throws InterruptedException
 	{
 		// Login
 		Assert.assertEquals(selenium.getText("link=Register"), "Register");
@@ -84,10 +84,61 @@ public class AnimaldbSeleniumTest
 		Assert.assertEquals(selenium.getTitle(), "AnimalDB");
 		Assert.assertTrue(selenium.isTextPresent("Welcome to AnimalDB!"));
 		
-		sleepHelper("login");
+		sleepHelper("loginAdmin");
 	}
 	
-	@Test(dependsOnMethods={"login"})
+	@Test(dependsOnMethods={"loginAdmin"})
+	public void makeUser() throws InterruptedException
+	{
+		// Go to AnimalDB user mgmt. plugin
+		selenium.click("id=securitymenu_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=AnimalDbUsers_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		// Make user 'test'
+		selenium.click("link=Make new user");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.type("id=firstname", "test");
+		selenium.type("id=lastname", "test");
+		selenium.type("id=email", "test@test.org");
+		selenium.type("id=password1", "test");
+		selenium.type("id=password2", "test");
+		selenium.type("id=newinv", "testInv");
+		selenium.click("id=adduser");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("User test successfully added and assigned ownership of investigation testInv"));
+		
+		sleepHelper("makeUser");
+	}
+	
+	@Test(dependsOnMethods={"makeUser"})
+	public void logoutAdmin() throws InterruptedException
+	{
+		selenium.click("id=UserLogin_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=Logout");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		
+		sleepHelper("logoutAdmin");
+	}
+	
+	@Test(dependsOnMethods={"logoutAdmin"})
+	public void loginUser() throws InterruptedException
+	{
+		// Login
+		Assert.assertEquals(selenium.getText("link=Register"), "Register");
+		selenium.type("id=username", "test");
+		selenium.type("id=password", "test");
+		selenium.click("id=Login");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		// Now we get to the Welcome screen
+		Assert.assertEquals(selenium.getTitle(), "AnimalDB");
+		Assert.assertTrue(selenium.isTextPresent("Welcome to AnimalDB!"));
+		
+		sleepHelper("loginUser");
+	}
+	
+	@Test(dependsOnMethods={"loginUser"})
 	public void addAnimals() throws Exception {
 		// Go to Add Animal plugin
 		selenium.click("id=animalmenu_tab_button");
@@ -359,7 +410,7 @@ public class AnimaldbSeleniumTest
 	}
 	
 	@Test(dependsOnMethods={"applyProtocol"})
-	public void logout() throws InterruptedException
+	public void logoutUser() throws InterruptedException
 	{
 		selenium.click("id=UserLogin_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
