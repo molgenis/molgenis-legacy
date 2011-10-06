@@ -500,4 +500,136 @@ public class AbstractDataMatrixQueries
 		}
 	}
 
+	public static AbstractDataMatrixInstance<Object> getSubMatrix2DFilterByRow(
+			AbstractDataMatrixInstance<Object> matrix, QueryRule... rules) throws Exception
+	{
+		checkQueryRules(rules);
+		
+		if(rules.length != 1)
+		{
+			throw new Exception("at the moment supports only 1 QueryRule at a time");
+		}
+		
+		// we want new row ('target') names, get colnames here to reuse selectUsingDecimal/selectUsingText
+		List<String> colNames = matrix.getColNames();
+		
+		int amount = Integer.parseInt(rules[0].getField());
+		Operator op = rules[0].getOperator();
+		Object value = rules[0].getValue();
+		
+		List<Integer> rowResult = new ArrayList<Integer>();
+		if (matrix.getData().getValueType().equals("Decimal"))
+		{
+			double valueDbl = Double.parseDouble(rules[0].getValue().toString());
+			for(int row = 0; row < matrix.getNumberOfRows(); row++)
+			{
+				List<String> result = selectUsingDecimal(matrix.getRow(row), valueDbl, op, colNames);
+				if(result.size() >= amount)
+				{
+					rowResult.add(row);
+				}
+			}
+		}
+		else
+		{
+			String valueStr = value.toString();
+			for(int row = 0; row < matrix.getNumberOfRows(); row++)
+			{
+				List<String> result = selectUsingText(matrix.getRow(row), valueStr, op, colNames);
+				if(result.size() >= amount)
+				{
+					rowResult.add(row);
+				}
+			}
+		}
+		
+		if (rowResult.size() == 0)
+		{
+			throw new Exception("No rows in resultset, empty matrix!");
+		}
+		
+		int[] rowIndices = new int[rowResult.size()];
+		int[] colIndices = new int[matrix.getNumberOfCols()];
+		
+		for(int col = 0; col < matrix.getNumberOfCols(); col++)
+		{
+			colIndices[col] = col;
+		}
+		
+		int rowIndex = 0;
+		for(int row = 0; row < rowResult.size(); row++)
+		{
+			rowIndices[rowIndex] = rowResult.get(row);
+			rowIndex++;
+		}
+		
+		return matrix.getSubMatrix(rowIndices, colIndices);
+	}
+
+	public static AbstractDataMatrixInstance<Object> getSubMatrix2DFilterByCol(
+			AbstractDataMatrixInstance<Object> matrix, QueryRule... rules) throws Exception
+	{
+		checkQueryRules(rules);
+		
+		if(rules.length != 1)
+		{
+			throw new Exception("at the moment supports only 1 QueryRule at a time");
+		}
+		
+		// we want new col ('feature') names, get rownames here to reuse selectUsingDecimal/selectUsingText
+		List<String> rowNames = matrix.getRowNames();
+		
+		int amount = Integer.parseInt(rules[0].getField());
+		Operator op = rules[0].getOperator();
+		Object value = rules[0].getValue();
+		
+		List<Integer> colResult = new ArrayList<Integer>();
+		if (matrix.getData().getValueType().equals("Decimal"))
+		{
+			double valueDbl = Double.parseDouble(rules[0].getValue().toString());
+			for(int col = 0; col < matrix.getNumberOfCols(); col++)
+			{
+				List<String> result = selectUsingDecimal(matrix.getCol(col), valueDbl, op, rowNames);
+				if(result.size() >= amount)
+				{
+					colResult.add(col);
+				}
+			}
+		}
+		else
+		{
+			String valueStr = value.toString();
+			for(int col = 0; col < matrix.getNumberOfCols(); col++)
+			{
+				List<String> result = selectUsingText(matrix.getCol(col), valueStr, op, rowNames);
+				if(result.size() >= amount)
+				{
+					colResult.add(col);
+				}
+			}
+		}
+		
+		if (colResult.size() == 0)
+		{
+			throw new Exception("No cols in resultset, empty matrix!");
+		}
+		
+		int[] rowIndices = new int[matrix.getNumberOfRows()];
+		int[] colIndices = new int[colResult.size()];
+		
+		for(int row = 0; row < matrix.getNumberOfRows(); row++)
+		{
+			rowIndices[row] = row;
+		}
+		
+		int colIndex = 0;
+		for(int col = 0; col < colResult.size(); col++)
+		{
+			colIndices[colIndex] = colResult.get(col);
+			colIndex++;
+		}
+		
+		return matrix.getSubMatrix(rowIndices, colIndices);
+	}
+
 }

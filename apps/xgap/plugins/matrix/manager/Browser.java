@@ -368,4 +368,61 @@ public class Browser
 		return filter;
 	}
 
+	// kept seperate from regular filters for now - highly experimental stuff :)
+	public String apply2DFilter(Tuple request, Database db) throws Exception
+	{
+		String filter = null;
+		
+		AbstractDataMatrixInstance<Object> filterMatrix = null;
+		String action = request.getString("__action");
+		if(action.startsWith("2d_filter_visible_")){
+			// get the current submatrix (view)
+			filterMatrix = this.getModel().getSubMatrix();
+		}
+		else if(action.startsWith("2d_filter_all_")){
+			// get the original complete matrix
+			filterMatrix = this.getModel().getInstance();
+		}else{
+			throw new Exception("filter not prepended with 2d_filter_all_ or 2d_filter_visible_");
+		}
+		
+		String amount = null;
+		String operator = null;
+		Object value = null;
+		
+		if(action.endsWith("row"))
+		{
+			amount = request.getString("2d_filter_by_row_AMOUNT");
+			operator = request.getString("2d_filter_by_row_FILTER_OPERATOR");
+			value = request.getObject("2d_filter_by_row_FILTER_VALUE");
+			QueryRule q = new QueryRule(amount, Operator.valueOf(operator), value);
+			filterMatrix = filterMatrix.getSubMatrix2DFilterByRow(q);
+		}
+		else if(action.endsWith("col"))
+		{
+			amount = request.getString("2d_filter_by_col_AMOUNT");
+			operator = request.getString("2d_filter_by_col_FILTER_OPERATOR");
+			value = request.getObject("2d_filter_by_col_FILTER_VALUE");
+			QueryRule q = new QueryRule(amount, Operator.valueOf(operator), value);
+			filterMatrix = filterMatrix.getSubMatrix2DFilterByCol(q);
+		}
+		
+		this.model.setSubMatrix(filterMatrix);
+		
+		filter = action.replace("_", " ") + ", " + amount + " " + operator.toLowerCase() + " " + value;
+		
+		//store static pointer for csv download 'visible'
+		inmemory = this.model.getSubMatrix();
+		
+		model.setWidth(this.model.getSubMatrix().getNumberOfCols());
+		model.setHeight(this.model.getSubMatrix().getNumberOfRows());
+		
+		verifyColStart();
+		verifyRowStart();
+		determineColStop();
+		determineRowStop();
+		
+		return filter;
+	}
+
 }

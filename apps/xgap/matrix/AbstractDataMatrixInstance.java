@@ -471,6 +471,18 @@ public abstract class AbstractDataMatrixInstance<E> extends
 		return AbstractDataMatrixQueries.getSubMatrixFilterByColMatrixValues(
 				(AbstractDataMatrixInstance<Object>) this, rules);
 	}
+	
+	public AbstractDataMatrixInstance<Object> getSubMatrix2DFilterByRow(QueryRule... rules) throws Exception
+	{
+		return AbstractDataMatrixQueries.getSubMatrix2DFilterByRow(
+				(AbstractDataMatrixInstance<Object>) this, rules);
+	}
+	
+	public AbstractDataMatrixInstance<Object> getSubMatrix2DFilterByCol(QueryRule... rules) throws Exception
+	{
+		return AbstractDataMatrixQueries.getSubMatrix2DFilterByCol(
+				(AbstractDataMatrixInstance<Object>) this, rules);
+	}
 
 	public AbstractDataMatrixInstance<Object> getMatrixSortByRowEntityValues(
 			boolean asc) throws Exception

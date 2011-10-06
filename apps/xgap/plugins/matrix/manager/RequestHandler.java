@@ -21,6 +21,11 @@ public class RequestHandler {
 			String filter = screenModel.getBrowser().applyFilters(request, db, screenModel);
 			screenModel.setFilter(filter);
 		}
+		else if (action.startsWith("2d_filter")) {
+			screenModel.setSelectedFilterDiv("filter7");
+			String filter = screenModel.getBrowser().apply2DFilter(request, db);
+			screenModel.setFilter(filter);
+		}
 		else if(action.startsWith("r_plot")){
 			
 			String rowName = request.getString("r_plot_row_select");

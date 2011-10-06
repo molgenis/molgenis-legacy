@@ -195,12 +195,13 @@
 
 
 <table cellpadding="10"><tr>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');" <#if model.selectedFilterDiv == 'filter1'>checked</#if>>Filter on index</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter2');display('hide', 'filter1');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');" <#if model.selectedFilterDiv == 'filter2'>checked</#if>>Filter on ${model.selectedData.featureType?lower_case} values</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter3');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');" <#if model.selectedFilterDiv == 'filter3'>checked</#if>>Filter on ${model.selectedData.targetType?lower_case} values</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter4');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter5');display('hide', 'filter6');" <#if model.selectedFilterDiv == 'filter4'>checked</#if>>Filter on ${model.selectedData.featureType?lower_case} attributes</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter5');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter6');" <#if model.selectedFilterDiv == 'filter5'>checked</#if>>Filter on ${model.selectedData.targetType?lower_case} attributes</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter6');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');" <#if model.selectedFilterDiv == 'filter6'>checked</#if>>Make an R plot</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');" <#if model.selectedFilterDiv == 'filter1'>checked</#if>>Filter on index</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter2');display('hide', 'filter1');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');" <#if model.selectedFilterDiv == 'filter2'>checked</#if>>Filter on ${model.selectedData.featureType?lower_case} values</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter3');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');" <#if model.selectedFilterDiv == 'filter3'>checked</#if>>Filter on ${model.selectedData.targetType?lower_case} values</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter4');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');" <#if model.selectedFilterDiv == 'filter4'>checked</#if>>Filter on ${model.selectedData.featureType?lower_case} attributes</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter5');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter6');display('hide', 'filter7');" <#if model.selectedFilterDiv == 'filter5'>checked</#if>>Filter on ${model.selectedData.targetType?lower_case} attributes</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter6');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter7');" <#if model.selectedFilterDiv == 'filter6'>checked</#if>>Make an R plot</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter7');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');" <#if model.selectedFilterDiv == 'filter7'>checked</#if>>2D filter</td>
 </tr></table>
 
 <br>
@@ -401,11 +402,80 @@
 		</tr>
 	</table>
 	<#if model.tmpImgName?exists>
+	<br><table><tr><td><i>Click to enlarge</i></td></tr></table>
 	<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + model.tmpImgName + "></body></html>">
 	<a href="#" onclick="var generate = window.open('', '', 'width=${model.selectedWidth+50},height=${model.selectedHeight+50},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
 		<img src="tmpfile/${model.tmpImgName}" width="${model.selectedWidth/5}" height="${model.selectedHeight/5}">
 	</a>
 </#if>
+</div>
+<div id="filter7" <#if model.selectedFilterDiv != 'filter7'>style="display:none"</#if>>
+	<table>
+		<tr>
+			<td cellpadding="2">
+				Two-dimensional filtering:
+			</td>
+		</tr>
+		<tr>
+			<td>
+				&nbsp;
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Select all
+				${model.selectedData.targetType?lower_case}s
+				with at least
+				<select name="2d_filter_by_row_AMOUNT">
+					<#list 1..25 as a>
+					<option value="${a}">${a}</option>
+					</#list>
+				</select>
+				${model.selectedData.featureType?lower_case}(s)
+				having a value
+				<select name="2d_filter_by_row_FILTER_OPERATOR">
+					<#list model.allOperators?keys as op><option value="${op}">${model.allOperators[op]}</option></#list>
+				</select>
+				<input type="text" size="8" name="2d_filter_by_row_FILTER_VALUE" />
+			</td>
+		</tr>
+		<tr>
+			<td align="right">
+				<input type="submit" value="Apply to visible" onclick="document.forms.${screen.name}.__action.value = '2d_filter_visible_row'; document.forms.${screen.name}.submit();">
+				<input type="submit" value="Apply to all" onclick="document.forms.${screen.name}.__action.value = '2d_filter_all_row'; document.forms.${screen.name}.submit();">
+			</td>
+		</tr>
+		<tr>
+			<td>
+				&nbsp;
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Select all
+				${model.selectedData.featureType?lower_case}s
+				with at least
+				<select name="2d_filter_by_col_AMOUNT">
+					<#list 1..25 as a>
+					<option value="${a}">${a}</option>
+					</#list>
+				</select>
+				${model.selectedData.targetType?lower_case}(s)
+				having a value
+				<select name="2d_filter_by_col_FILTER_OPERATOR">
+					<#list model.allOperators?keys as op><option value="${op}">${model.allOperators[op]}</option></#list>
+				</select>
+				<input type="text" size="8" name="2d_filter_by_col_FILTER_VALUE" />
+				
+			</td>
+		</tr>
+		<tr>
+			<td align="right">
+				<input type="submit" value="Apply to visible" onclick="document.forms.${screen.name}.__action.value = '2d_filter_visible_col'; document.forms.${screen.name}.submit();">
+				<input type="submit" value="Apply to all" onclick="document.forms.${screen.name}.__action.value = '2d_filter_all_col'; document.forms.${screen.name}.submit();">
+			</td>
+		</tr>
+	</table>
 </div>
 </#if>
 
