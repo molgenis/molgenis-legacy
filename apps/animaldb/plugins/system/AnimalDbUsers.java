@@ -177,8 +177,8 @@ public class AnimalDbUsers extends PluginModel<Entity>
 				db.add(newUser);
 				int userId = newUser.getId();
 				
-				// Make owner of chosen investigation
-				Investigation chosenInv;
+				// Make new user owner of new or selected investigation
+				Investigation chosenInv = null;
 				if (request.getInt("investigation") != null) {
 					int invId = request.getInt("investigation");
 					if (invId == -1) {
@@ -188,7 +188,8 @@ public class AnimalDbUsers extends PluginModel<Entity>
 						}
 						chosenInv = new Investigation();
 						chosenInv.setName(newinv);
-						db.add(chosenInv); // owner is now defaulted to Admin (AuthorizableDecorator)
+						chosenInv.setOwns_Id(userId);
+						db.add(chosenInv);
 						
 					} else {
 						Query<Investigation> q = db.query(Investigation.class);
@@ -199,14 +200,14 @@ public class AnimalDbUsers extends PluginModel<Entity>
 						} else {
 							throw new Exception("No (valid) investigation chosen");
 						}
+						chosenInv.setOwns_Id(userId);
+						db.update(chosenInv);
 					}
-					chosenInv.setOwns_Id(userId); // set the right owner
-					db.update(chosenInv); // chosenInv is always already in the DB, so db.update() is fine here
 				} else {
 					throw new Exception("No (valid) investigation chosen");
 				}
 				
-				// Give rights on ALL entities, forms, menus and plugins (TODO: leave some out?)
+				// Give new user rights on ALL entities, forms, menus and plugins (TODO: leave some out?)
 				List<MolgenisPermission> permList = new ArrayList<MolgenisPermission>();
 				Query<MolgenisEntity> q = db.query(MolgenisEntity.class);
 				List<MolgenisEntity> entList = q.find();

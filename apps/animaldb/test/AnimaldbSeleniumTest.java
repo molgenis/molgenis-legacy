@@ -101,6 +101,7 @@ public class AnimaldbSeleniumTest
 		selenium.type("id=firstname", "test");
 		selenium.type("id=lastname", "test");
 		selenium.type("id=email", "test@test.org");
+		selenium.type("id=username", "test");
 		selenium.type("id=password1", "test");
 		selenium.type("id=password2", "test");
 		selenium.type("id=newinv", "testInv");
