@@ -109,7 +109,7 @@
 					<input type="submit" value="Show all" onclick="document.forms.${screen.name}.__action.value = 'showAllAnnotations'; document.forms.${screen.name}.submit();"/>
 				</#if>
 			</#if>
-			<input type="submit" value="Add" onClick="document.forms.InvestigationMenu.__target.value='InvestigationMenu';document.forms.InvestigationMenu.select.value='BasicAnnotations';document.forms.InvestigationMenu.submit();"/>
+			<input type="button" value="Browse / Add" onclick="window.location.href='molgenis.do?__target=InvestigationMenu&select=BasicAnnotations'">
 		</td>
 	</tr>
 </table>
@@ -176,7 +176,7 @@
 					<input type="submit" value="Show all" onclick="document.forms.${screen.name}.__action.value = 'showAllExperiments'; document.forms.${screen.name}.submit();"/>
 				</#if>
 			</#if>
-			<input type="submit" value="Add" onClick="document.forms.InvestigationMenu.__target.value='InvestigationMenu';document.forms.InvestigationMenu.select.value='Datas';document.forms.InvestigationMenu.submit();"/>
+			<input type="button" value="Browse / Add" onclick="window.location.href='molgenis.do?__target=InvestigationMenu&select=Datas'">
 		</td>
 	</tr>
 </table>
@@ -244,7 +244,7 @@
 					<input type="submit" value="Show all" onclick="document.forms.${screen.name}.__action.value = 'showAllOther'; document.forms.${screen.name}.submit();"/>
 				</#if>
 			</#if>
-			<input type="submit" value="Add" onClick="document.forms.InvestigationMenu.__target.value='InvestigationMenu';document.forms.InvestigationMenu.select.value='Files';document.forms.InvestigationMenu.submit();"/>
+			<input type="button" value="Browse / Add" onclick="window.location.href='molgenis.do?__target=InvestigationMenu&select=Files'">
 		</td>
 	</tr>
 </table>
