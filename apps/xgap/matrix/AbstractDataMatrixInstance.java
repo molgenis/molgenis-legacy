@@ -336,6 +336,76 @@ public abstract class AbstractDataMatrixInstance<E> extends
 		
 		return spssFile;
 	}
+	
+	public String getAsRobject() throws Exception
+	{
+		//e.g.
+//		mdat <- matrix(
+//				  nrow = 2,
+//				  ncol=3,
+//				  byrow=TRUE,
+//				dimnames = list(c(
+//				  "row1","row2"),c(
+//				  "C.1","C.2","C.3")),
+//				data = c(
+//				  1,2,3,
+//				  11,12,13))
+
+		
+		StringBuffer result = new StringBuffer();
+		result.append(this.getData().getName() + " <- matrix(\n");
+		result.append("\tnrow = " + this.getNumberOfRows() + ",\n");
+		result.append("\tncol = " + this.getNumberOfCols() + ",\n");
+		result.append("\tbyrow=TRUE,\n");
+		result.append("dimnames = list(c(\n");
+		
+		for(String rowName : this.getRowNames()){
+			result.append("\""+rowName+"\",");
+		}
+		result.insert(result.length()-1, ")");
+		result.append("c(\n");
+		for(String colName : this.getColNames()){
+			result.append("\""+colName+"\",");
+		}
+		result.insert(result.length()-1, "))");
+		result.append("\n");
+		result.append("data = c(");
+		
+		try
+		{
+			Object[][] elements = getElements();
+			for (int rowIndex = 0; rowIndex < elements.length; rowIndex++)
+			{
+				for (int colIndex = 0; colIndex < elements[rowIndex].length; colIndex++)
+				{
+					Object val = elements[rowIndex][colIndex];
+					if (val == null)
+					{
+						result.append("NA,");
+					}
+					else
+					{
+						if(val instanceof Number)
+						{
+							result.append(val+",");
+						}
+						else
+						{
+							result.append("\""+val+"\",");
+						}
+					}
+				}
+				result.append("\n");
+			}
+			result.setCharAt(result.length()-2, ')');
+			result.append(")\n");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return result.toString();
+	}
 
 	public File getAsExcelFile() throws Exception
 	{
