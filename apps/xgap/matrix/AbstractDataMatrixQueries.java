@@ -329,6 +329,7 @@ public class AbstractDataMatrixQueries
 		}
 	}
 
+	//TODO: merge with selectUsingDecimal? or does it have special needs?
 	public static List<String> selectUsingText(Object[] values, String value, Operator op, List<String> dimNames)
 			throws Exception
 	{
@@ -340,7 +341,39 @@ public class AbstractDataMatrixQueries
 				boolean add = false;
 				if (op == Operator.EQUALS)
 				{
+					//using .equals here has the same effect for doubles as ==
 					if (values[i].toString().equals(value))
+					{
+						add = true;
+					}
+				}
+				
+				//attempt to parse to double and compare in non-EQUAL cases!
+				//for non-numerics: fails with java.lang.NumberFormatException: For input string "lalala"
+				else if (op == Operator.GREATER)
+				{
+					if (Double.parseDouble(values[i].toString()) > Double.parseDouble(value))
+					{
+						add = true;
+					}
+				}
+				else if (op == Operator.LESS)
+				{
+					if (Double.parseDouble(values[i].toString()) < Double.parseDouble(value))
+					{
+						add = true;
+					}
+				}
+				else if (op == Operator.GREATER_EQUAL)
+				{
+					if (Double.parseDouble(values[i].toString()) >= Double.parseDouble(value))
+					{
+						add = true;
+					}
+				}
+				else if (op == Operator.LESS_EQUAL)
+				{
+					if (Double.parseDouble(values[i].toString()) <= Double.parseDouble(value))
 					{
 						add = true;
 					}

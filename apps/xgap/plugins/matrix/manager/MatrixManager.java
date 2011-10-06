@@ -169,13 +169,13 @@ public class MatrixManager extends PluginModel
 	private void setValueOperators()
 	{
 		HashMap<String, String> ops = new HashMap<String, String>();
-		if(this.model.getSelectedData().getValueType().equals("Decimal"))
-		{
+		//if(this.model.getSelectedData().getValueType().equals("Decimal"))
+		//{
 			ops.put("GREATER", "greater than");
 			ops.put("GREATER_EQUAL", "greater and equal");
 			ops.put("LESS", "less than");
 			ops.put("LESS_EQUAL", "less and equal");
-		}
+		//}
 		ops.put("EQUALS", "equals exactly");
 //		ops.put("SORTASC", "sort asc");
 //		ops.put("SORTDESC", "sort desc");
