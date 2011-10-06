@@ -29,7 +29,7 @@
 		
 	<h3>Help getting duplicates renamed</h3>
 	
-	Here you can paste a list of strings and get rid of duplicates. This renames duplicate entries so xQTL can store them. Try 'Load example' and use 'Convert' to see what happens.<br><br>
+	Here you can paste a list of strings and get rid of duplicates. This renames duplicate entries so xQTL can store them. Your strings are also escaped to xQTL 'safe' versions if applicable. (see 'Format names' for details) Try 'Load example' and use 'Convert' to see what happens.<br><br>
 
 	
 	<table>

@@ -43,7 +43,7 @@
 		</li>
 	</ul>
 	
-	Here, you can paste lists of strings and convert ('escape') them to the XGAP 'strong name' format. If the escaped name is empty, the result will be an error in capitals. (rather obvious)
+	Here, you can paste lists of strings and convert ('escape') them to the xQTL 'strong name' format. If the escaped name is empty, the result will be an error in capitals. (rather obvious)
 	<br><br>
 	<table>
 		<tr>
@@ -57,7 +57,7 @@
 				
 			</td>
 			<td>
-				<i>Output of XGAP accepted names:</i><br>
+				<i>Output of xQTL accepted names:</i><br>
 				<textarea name="output" ROWS="30" COLS="40"><#if screen.output?exists>${screen.output}</#if></textarea>
 				<#-- possible TODO ><br>Are the items in this list unique? <#if screen.unique?exists><b>${screen.unique}</b><#else>bla</#if>-->
 			</td>
