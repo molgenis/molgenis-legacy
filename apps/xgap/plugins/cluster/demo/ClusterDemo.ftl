@@ -107,7 +107,7 @@
 		
 		<td align="center"
 		<#if screen.loggedIn>
-			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='QTLWizard';document.forms.main.submit();">
+			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='ImportDataMenu';document.forms.main.submit();">
 		<#else>
 			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='UserLogin';document.forms.main.submit();">
 		</#if>
