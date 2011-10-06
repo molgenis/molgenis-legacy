@@ -363,13 +363,13 @@
 			<td>
 			Type of plot:
 				<select name="r_plot_type">
-					<#if model.selectedData.valueType == "Decimal">
+					<#--if model.selectedData.valueType == "Decimal"-->
 						<option <#if model.selectedPlotType?exists && model.selectedPlotType == "p">SELECTED</#if> value="p">Points</option>
 						<option <#if model.selectedPlotType?exists && model.selectedPlotType == "l">SELECTED</#if> value="l">Lines</option>
 						<option <#if model.selectedPlotType?exists && model.selectedPlotType == "o">SELECTED</#if> value="o">Overplotted</option>
 						<option <#if model.selectedPlotType?exists && model.selectedPlotType == "s">SELECTED</#if> value="s">Stairs</option>
 						<option <#if model.selectedPlotType?exists && model.selectedPlotType == "boxplot">SELECTED</#if> value="boxplot">Boxplot</option>
-					</#if>
+					<#--if-->
 					<option <#if model.selectedPlotType?exists && model.selectedPlotType == "h">SELECTED</#if> value="h">Histogram</option>
 				</select>
 			</td>
