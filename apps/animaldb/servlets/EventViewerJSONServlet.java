@@ -76,7 +76,11 @@ public class EventViewerJSONServlet extends app.servlet.MolgenisServlet {
 			// Get user ID
 			userId = req.getInt("userId");
 			
-			Database db = getDatabase();
+			// Get database and login
+			Database db = this.createDatabase();
+			this.createLogin(db, request);
+			
+			// Init pheno matrix
 			if (pm.getDatabase() == null) {
 				pm.init(db, storedTargetType, userId);
 				totalNrOfFeatures = pm.getTotalNrOfFeatures();

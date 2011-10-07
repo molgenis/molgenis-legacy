@@ -22,26 +22,21 @@ import org.molgenis.protocol.Protocol_Features;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
-import commonservice.CommonService;
-
 @Deprecated
 public class AddEventMenuServlet extends app.servlet.MolgenisServlet {
 	private static final long serialVersionUID = -9148847518626490722L;
 	private static Logger logger = Logger.getLogger(AddEventMenuServlet.class);
-	private CommonService ct = null;
-
+	
 	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		ct = CommonService.getInstance();
-		
 		PrintWriter out = response.getWriter();
 		try
 		{
 			Tuple req = new HttpServletRequestTuple(request);
 			
-			Database db = getDatabase();
-			ct.setDatabase(db);
-
+			Database db = this.createDatabase();
+			this.createLogin(db, request);
+			
 			int eventTypeId = req.getInt("etype");
 			if (eventTypeId == 0) {
 				out.print("");

@@ -18,32 +18,28 @@ import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
-import commonservice.CommonService;
-
 public class ViewEventsServlet extends app.servlet.MolgenisServlet {
 	private static final long serialVersionUID = -5860101269122494304L;
 	private static Logger logger = Logger.getLogger(ViewEventsServlet.class);
-	private CommonService ct = null;
-
+	
 	public void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
-		ct = CommonService.getInstance();
 
 		PrintWriter out = response.getWriter();
 		try {
 			Tuple req = new HttpServletRequestTuple(request);
 
-			Database db = getDatabase();
-			ct.setDatabase(db);
+			Database db = this.createDatabase();
+			this.createLogin(db, request);
 
 			String tmpString = req.getString("animal").replace(".", "");
 			tmpString = tmpString.replace(",", "");
-			int animalId = Integer.parseInt(tmpString);
-			if (animalId == 0) {
+			int targetId = Integer.parseInt(tmpString);
+			if (targetId == 0) {
 				out.print("");
 			} else {
-				List<ObservedValue> valList = db.find(ObservedValue.class, new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
+				List<ObservedValue> valList = db.find(ObservedValue.class, new QueryRule(ObservedValue.TARGET, 
+						Operator.EQUALS, targetId));
 				if (!valList.isEmpty()) {
 					out.print("<table class='listtable'>");
 					int rowCount = 0;
@@ -57,11 +53,16 @@ public class ViewEventsServlet extends app.servlet.MolgenisServlet {
 						// Get the corresponding protocol (application):
 						if (currentValue.getProtocolApplication_Id() != null) {
 							int eventId = currentValue.getProtocolApplication_Id();
-							ProtocolApplication currentEvent = ct.getProtocolApplicationById(eventId);
+							ProtocolApplication currentEvent = db.find(ProtocolApplication.class, 
+									new QueryRule(ProtocolApplication.ID, Operator.EQUALS, eventId)).get(0);
 							out.print(currentEvent.getProtocol_Name() + "<br />");
 						}
-						if (currentValue.getTime() != null) out.print(" Valid from " + currentValue.getTime().toString());
-						if (currentValue.getEndtime() != null) out.print(" through " + currentValue.getEndtime().toString());
+						if (currentValue.getTime() != null) {
+							out.print(" Valid from " + currentValue.getTime().toString());
+						}
+						if (currentValue.getEndtime() != null) {
+							out.print(" through " + currentValue.getEndtime().toString());
+						}
 						out.print("</td>");
 						// Feature name
 						String featureName = currentValue.getFeature_Name();
@@ -73,13 +74,15 @@ public class ViewEventsServlet extends app.servlet.MolgenisServlet {
 							String currentValueContents = "";
 							// Find out what the unit is:
 							int featureId = currentValue.getFeature_Id();
-							Measurement currentFeature = ct.getMeasurementById(featureId);
+							Measurement currentFeature = db.find(Measurement.class, 
+									new QueryRule(Measurement.ID, Operator.EQUALS, featureId)).get(0);
 							if (currentFeature.getDataType().equals("xref")) {
 								try {
 									currentValueContents = currentValue.getRelation_Name();
 								} catch(Exception e) {
-									int targetId = currentValue.getRelation_Id();
-									currentValueContents = "Value (Target id " + targetId + ") no longer in database";
+									int relationId = currentValue.getRelation_Id();
+									currentValueContents = "Value (Target with ID " + relationId + 
+											") not found in database";
 								}
 							} else {
 								currentValueContents = currentValue.getValue();

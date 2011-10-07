@@ -2,7 +2,6 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -20,24 +19,20 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
-import commonservice.CommonService;
-
 public class TerminateAnimalsServlet extends app.servlet.MolgenisServlet {
 	private static final long serialVersionUID = -5860101269122494304L;
 	private static Logger logger = Logger.getLogger(TerminateAnimalsServlet.class);
-	private CommonService ct = null;
-
+	
 	public void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		ct = CommonService.getInstance();
-
+		
 		PrintWriter out = response.getWriter();
 		try {
 			Tuple req = new HttpServletRequestTuple(request);
 
-			Database db = getDatabase();
-			ct.setDatabase(db);
-
+			Database db = this.createDatabase();
+			this.createLogin(db, request);
+			
 			String tmpString = req.getString("animal").replace(".", "");
 			tmpString = tmpString.replace(",", "");
 			int animalId = Integer.parseInt(tmpString);
@@ -45,18 +40,16 @@ public class TerminateAnimalsServlet extends app.servlet.MolgenisServlet {
 				out.print("");
 			} else {
 				java.sql.Date nowDb = new java.sql.Date(new Date().getTime());
-				int featureId = ct.getMeasurementId("Experiment");
 				Query<ObservedValue> q = db.query(ObservedValue.class);
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
-				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 				q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, nowDb));
 				q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 				List<ObservedValue> valueList = q.find();
 				if (valueList.size() == 1) {
 					// Generate selectbox for Actual Discomfort
-					featureId = ct.getMeasurementId("ActualDiscomfort");
 					Query<Code> codeQuery = db.query(Code.class);
-					codeQuery.addRules(new QueryRule("feature", Operator.EQUALS, featureId));
+					codeQuery.addRules(new QueryRule(Code.FEATURE_NAME, Operator.EQUALS, "ActualDiscomfort"));
 					List<Code> codeList = codeQuery.find();
 					out.print("<div class='row'>");
 					out.print("<label for='discomfort'>Actual discomfort:</label>");
@@ -68,9 +61,8 @@ public class TerminateAnimalsServlet extends app.servlet.MolgenisServlet {
 					out.print("</div>");
 						
 					// Generate selectbox for ActualAnimalEndStatus
-					featureId = ct.getMeasurementId("ActualAnimalEndStatus");
 					codeQuery = db.query(Code.class);
-					codeQuery.addRules(new QueryRule("feature", Operator.EQUALS, featureId));
+					codeQuery.addRules(new QueryRule(Code.FEATURE_NAME, Operator.EQUALS, "ActualAnimalEndStatus"));
 					codeList = codeQuery.find();
 					out.print("<div class='row'>");
 					out.print("<label for='endstatus'>Actual animal end status:</label>");

@@ -16,30 +16,25 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.pheno.ObservationTarget;
+import org.molgenis.pheno.Location;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
-import commonservice.CommonService;
-
 public class LocationInformationServlet extends app.servlet.MolgenisServlet {
 	private static final long serialVersionUID = -5115596071747077428L;
 	private static Logger logger = Logger.getLogger(LocationInformationServlet.class);
-	private CommonService ct = null;
-
+	
 	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		ct = CommonService.getInstance();
-		
 		PrintWriter out = response.getWriter();
 		try
 		{
 			Tuple req = new HttpServletRequestTuple(request);
 			
-			Database db = getDatabase();
-			ct.setDatabase(db);
+			Database db = this.createDatabase();
+			this.createLogin(db, request);
 			
 			String tmpString = req.getString("loc").replace(".", "");
 			tmpString = tmpString.replace(",", "");
@@ -47,9 +42,10 @@ public class LocationInformationServlet extends app.servlet.MolgenisServlet {
 			if (locid == 0) {
 				out.print("");
 			} else {
-				ObservationTarget currentLocation = ct.getObservationTargetById(locid);	
+				Location currentLocation = db.find(Location.class, 
+						new QueryRule(Location.ID, Operator.EQUALS, locid)).get(0);
 				out.print(currentLocation.getName());
-				ObservationTarget superloc = new ObservationTarget();
+				Location superloc = new Location();
 				boolean firstTime = true;
 				while (true) {
 					superloc = getSuperloc(db, locid);
@@ -80,18 +76,18 @@ public class LocationInformationServlet extends app.servlet.MolgenisServlet {
 		}
 	}
 	
-	ObservationTarget getSuperloc(Database db, int locid) throws DatabaseException, ParseException {
+	Location getSuperloc(Database db, int locid) throws DatabaseException, ParseException {
 		
-		ObservationTarget emptyLocation = null;
+		Location emptyLocation = null;
 		
-		int etid = ct.getProtocolId("SetSublocationOf");
-		List<ProtocolApplication> eventList = ct.getAllProtocolApplicationsByType(etid);
+		List<ProtocolApplication> eventList = db.find(ProtocolApplication.class, 
+				new QueryRule(ProtocolApplication.PROTOCOL_NAME, Operator.EQUALS, "SetSublocationOf"));
 		
 		for (ProtocolApplication e : eventList) {
 			Query<ObservedValue> q = db.query(ObservedValue.class);
 			q.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, e.getId()));
 			q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, locid));
-			q.addRules(new QueryRule(Operator.SORTDESC, "time"));
+			q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
 			// TODO: check for endtime?
 			List<ObservedValue> valueList = new ArrayList<ObservedValue>();
 			try {
@@ -104,12 +100,12 @@ public class LocationInformationServlet extends app.servlet.MolgenisServlet {
 				ObservedValue currentValue = valueList.get(0);
 				if (currentValue != null) {
 					int superlocid = 0;
-					if (currentValue.getRelation() != null) {
+					if (currentValue.getRelation_Id() != null) {
 						superlocid = currentValue.getRelation_Id();
 					}
 					if (superlocid > 0) {
-						ObservationTarget superloc = ct.getObservationTargetById(superlocid);
-						return superloc;
+						return db.find(Location.class, 
+								new QueryRule(Location.ID, Operator.EQUALS, superlocid)).get(0);
 					}
 				}
 			}
