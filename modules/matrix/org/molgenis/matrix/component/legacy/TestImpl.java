@@ -274,7 +274,7 @@ public class TestImpl extends AbstractSliceableMatrix<SomeRowType, SomeColType, 
 	}
 
 	@Override
-	public List<ObservedValue>[][] getValueLists() throws MatrixException
+	public List<? extends SomeValueType>[][] getValueLists() throws MatrixException
 	{
 		// TODO Auto-generated method stub
 		return null;

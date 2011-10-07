@@ -24,7 +24,7 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 	protected Database database;
 	protected Class<R> rowClass;
 	protected Class<C> colClass;
-	protected Class<V> valueClass;
+	protected Class<? extends V> valueClass;
 	protected List<C> colHeaders = null;
 	protected List<R> rowHeaders = null;
 	protected List<MatrixQueryRule> rules = new ArrayList<MatrixQueryRule>();
@@ -210,7 +210,7 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 		this.colClass = colClass;
 	}
 
-	protected Class<V> getValueClass()
+	protected Class<? extends V> getValueClass()
 	{
 		return valueClass;
 	}

@@ -3,9 +3,12 @@ package org.molgenis.sandbox.ui;
 import java.io.OutputStream;
 import java.util.List;
 
+import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.FormController;
+import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel.Show;
@@ -15,8 +18,6 @@ import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.ObservationElementMatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
-import org.molgenis.pheno.Individual;
-import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
@@ -37,33 +38,27 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 	ObservationElementMatrixViewer matrixViewer = null;
 	MolgenisForm form = null;
 	Paragraph selection = null;
+	Data data =  null;
 
 	public MatrixTests(String name, ScreenController<?> parent)
 	{
 		super(name, null, parent);
 		this.setModel(new MatrixTestsModel(this));
 		this.setView(new FreemarkerView("MatrixTestsView.ftl", getModel()));
-
-		try {
-			matrixViewer = new ObservationElementMatrixViewer(this, "mymatrix", 
-					new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
-					true, true, null);
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.setError(e.getMessage());
-		}
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out)
-			throws HandleRequestDelegationException
+	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException
 	{
-		if (request.getAction().startsWith(matrixViewer.getName())) {
+		if (request.getAction().startsWith(matrixViewer.getName()))
+		{
 			matrixViewer.handleRequest(db, request);
-		} else {
+		}
+		else
+		{
 			this.delegate(request.getAction(), db, request);
 		}
-		//default show
+		// default show
 		return Show.SHOW_MAIN;
 	}
 
@@ -76,13 +71,42 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 	@Override
 	public void reload(Database db) throws Exception
 	{
+		ScreenController<?> parentController = (ScreenController<?>) this.getParent().getParent();
+		FormModel<Data> parentForm = (FormModel<Data>) ((FormController) parentController).getModel();
+		Data data = parentForm.getRecords().get(0);
+		
+		if (matrixViewer == null || !data.equals(this.data));
+		{
+			Class<?> rowClass = db.getClassForName(data.getTargetType());
+			Class<?> colClass = db.getClassForName(data.getFeatureType());
+			Class<?> valueClass = db.getClassForName(data.getValueType() + "DataElement");
+
+			this.data = data;
+			
+			try
+			{
+				//decide what to use? Database, Binary, etc
+				matrixViewer = new ObservationElementMatrixViewer(this, "mymatrix", new SliceablePhenoMatrix(
+						this.getDatabase(), rowClass, colClass, valueClass), true, true, null);
+			}
+			
+
+			
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				this.setError(e.getMessage());
+			}
+		}
+
 		form = new MolgenisForm(this);
 		// add the matrix
 		form.add(matrixViewer);
 		// add a button to save the current selection
 		form.add(new ActionInput("saveSelection", "", "Save current selection to plugin"));
 		// add selection (if any)
-		if (selection != null) {
+		if (selection != null)
+		{
 			form.add(selection);
 		}
 	}
@@ -91,60 +115,64 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 	{
 		return form.render();
 	}
-	
-	public void saveSelection(Database db, Tuple t) throws DatabaseException, MatrixException {
+
+	public void saveSelection(Database db, Tuple t) throws DatabaseException, MatrixException
+	{
 		List<? extends ObservationElement> rows = matrixViewer.getSelection();
 		String selectionItems = "<ul>";
-		for (ObservationElement row : rows) {
+		for (ObservationElement row : rows)
+		{
 			selectionItems += "<li>" + row.getName() + "</li>";
 		}
 		selectionItems += "</ul>";
 		selection = new Paragraph("selection", "You selected from the Matrix component:" + selectionItems);
 	}
 
-//	public void generateData(Database db, Tuple t) throws DatabaseException
-//	{
-//		// individuals
-//		List<Individual> individuals = new ArrayList<Individual>();
-//		for (int i = 0; i < 25; i++)
-//		{
-//			if (db.query(Individual.class).eq(Individual.NAME, "inv" + i).count() == 0)
-//			{
-//				Individual inv = new Individual();
-//				inv.setName("inv" + i);
-//				inv.setOwns(2);
-//				individuals.add(inv);
-//			}
-//		}
-//		// measurements
-//		List<Measurement> measurements = new ArrayList<Measurement>();
-//		for (int i = 0; i < 25; i++)
-//		{
-//			if (db.query(Measurement.class).eq(Measurement.NAME, "meas" + i).count() == 0)
-//			{
-//				Measurement meas = new Measurement();
-//				meas.setName("meas" + i);
-//				meas.setOwns(2);
-//				measurements.add(meas);
-//			}
-//		}
-//		db.add(individuals);
-//		db.add(measurements);
-//
-//		// values
-//		List<ObservedValue> values = new ArrayList<ObservedValue>();
-//		for (Individual i : individuals)
-//		{
-//			for (Measurement m : measurements)
-//			{
-//				ObservedValue v = new ObservedValue();
-//				v.setFeature(m);
-//				v.setTarget(i);
-//				v.setValue("val" + i.getId() + "," + m.getId());
-//				values.add(v);
-//			}
-//		}
-//		db.add(values);
-//
-//	}
+	// public void generateData(Database db, Tuple t) throws DatabaseException
+	// {
+	// // individuals
+	// List<Individual> individuals = new ArrayList<Individual>();
+	// for (int i = 0; i < 25; i++)
+	// {
+	// if (db.query(Individual.class).eq(Individual.NAME, "inv" + i).count() ==
+	// 0)
+	// {
+	// Individual inv = new Individual();
+	// inv.setName("inv" + i);
+	// inv.setOwns(2);
+	// individuals.add(inv);
+	// }
+	// }
+	// // measurements
+	// List<Measurement> measurements = new ArrayList<Measurement>();
+	// for (int i = 0; i < 25; i++)
+	// {
+	// if (db.query(Measurement.class).eq(Measurement.NAME, "meas" + i).count()
+	// == 0)
+	// {
+	// Measurement meas = new Measurement();
+	// meas.setName("meas" + i);
+	// meas.setOwns(2);
+	// measurements.add(meas);
+	// }
+	// }
+	// db.add(individuals);
+	// db.add(measurements);
+	//
+	// // values
+	// List<ObservedValue> values = new ArrayList<ObservedValue>();
+	// for (Individual i : individuals)
+	// {
+	// for (Measurement m : measurements)
+	// {
+	// ObservedValue v = new ObservedValue();
+	// v.setFeature(m);
+	// v.setTarget(i);
+	// v.setValue("val" + i.getId() + "," + m.getId());
+	// values.add(v);
+	// }
+	// }
+	// db.add(values);
+	//
+	// }
 }

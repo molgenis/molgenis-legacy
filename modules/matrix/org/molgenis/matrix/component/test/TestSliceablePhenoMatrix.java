@@ -1,6 +1,5 @@
 package org.molgenis.matrix.component.test;
 
-import app.DatabaseFactory;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,11 +14,14 @@ import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.Observation;
 import org.molgenis.pheno.ObservedValue;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import app.DatabaseFactory;
 
 public class TestSliceablePhenoMatrix
 {
@@ -119,15 +121,15 @@ public class TestSliceablePhenoMatrix
 		matrix.reset();
 		logger.debug("testValues: load data");
 		
-		List<ObservedValue>[][] valueMatrix = matrix.getValueLists();
+		List<? extends Observation>[][] valueMatrix = matrix.getValueLists();
 		logger.debug("testValues: verifying...");
 		
 		for(Integer row = 0; row < matrix.getRowLimit(); row++ )
 		{
 			for(Integer col = 0; col < matrix.getColLimit(); col++)
 			{
-				List<ObservedValue> e = valueMatrix[row][col];
-				Assert.assertEquals(e.get(0).getValue(), this.values.get(row*matrix.getColCount() + col).getValue());
+				List<? extends Observation> e = valueMatrix[row][col];
+				Assert.assertEquals(e.get(0).get(ObservedValue.VALUE), this.values.get(row*matrix.getColCount() + col).getValue());
 				//TODO 
 				//Assert.assertEquals(e.get(0), col);
 				//Assert.assertEquals(e.getValue(), "val"+row+","+col);

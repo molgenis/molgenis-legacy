@@ -172,7 +172,7 @@ public class RenderableMatrixImpl<R, C, V> implements RenderableMatrix<R, C, V>
 	}
 
 	@Override
-	public List<ObservedValue>[][] getValueLists() throws MatrixException
+	public List<? extends V>[][] getValueLists() throws MatrixException
 	{
 		// TODO Auto-generated method stub
 		return null;

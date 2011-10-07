@@ -25,6 +25,7 @@
 	-->
 	<path id="app.class.path">
 		<pathelement location="apps/xgap" />
+		<pathelement location="apps/sandbox" />
 		<pathelement location="generated/java" />
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/auth" />

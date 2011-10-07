@@ -26,6 +26,7 @@ import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.Observation;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
@@ -230,7 +231,7 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 	public String renderTable() throws MatrixException {
 		JQueryDataTable dataTable = new JQueryDataTable(getName() + "DataTable");
 		
-		List<ObservedValue>[][] values = matrix.getValueLists();
+		List<? extends Observation>[][] values = matrix.getValueLists();
 		List<? extends ObservationElement> rows = matrix.getRowHeaders();
 		List<? extends ObservationElement> cols = matrix.getColHeaders();
 		
@@ -268,23 +269,24 @@ public class ObservationElementMatrixViewer extends HtmlWidget
 				dataTable.setCell(2, row, radioButtonCode);
 			}
 			// get the data for this row
-			List<ObservedValue>[] rowValues = values[row];
+			List<Observation>[] rowValues = (List<Observation>[]) values[row];
 			for (int col = 0; col < rowValues.length; col++) {
 				if (rowValues[col] != null && rowValues[col].size() > 0) {
 					boolean first = true;
-					for (ObservedValue val : rowValues[col]) {
-						String valueToShow = val.getValue();
-						if (valueToShow == null) {
-							valueToShow = val.getRelation_Name();
+					for (Observation val : rowValues[col]) {
+						String valueToShow = (String) val.get("value");
+						
+						if (val instanceof ObservedValue && valueToShow == null) {
+							valueToShow = ((ObservedValue)val).getRelation_Name();
 						}
-						if (val.getTime() != null) {
-							valueToShow += " (valid from " + newDateOnlyFormat.format(val.getTime());
-						}
-						if (val.getEndtime() != null) {
-							valueToShow += " through " + newDateOnlyFormat.format(val.getEndtime()) + ")";
-						} else if (val.getTime() != null) {
-							valueToShow += ")";
-						}
+//						if (val.get(ObservedValue.ENDTIME) != null) {
+//							valueToShow += " (valid from " + newDateOnlyFormat.format(val.get(ObservedValue.ENDTIME));
+//						}
+//						if (val.get(ObservedValue.TIME) != null) {
+//							valueToShow += " through " + newDateOnlyFormat.format(val.get(ObservedValue.TIME)) + ")";
+//						} else if (((ObservedValue)val).getTime() != null) {
+//							valueToShow += ")";
+//						}
 						if (first) {
 							first = false;
 							dataTable.setCell(col + 3, row, valueToShow);

@@ -448,7 +448,7 @@ public class PhenoMatrix
 	}
 
 	@Override
-	public List<ObservedValue>[][] getValueLists() throws MatrixException
+	public List<? extends List<ObservedValue>>[][] getValueLists() throws MatrixException
 	{
 		// TODO Auto-generated method stub
 		return null;

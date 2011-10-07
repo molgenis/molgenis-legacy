@@ -7,9 +7,8 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
-import org.molgenis.matrix.component.interfaces.BasicMatrix;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
-import org.molgenis.pheno.ObservedValue;
+import org.molgenis.pheno.Observation;
 
 /**
  * @See SliceableMatrix
@@ -328,7 +327,7 @@ public abstract class AbstractSliceableMatrix<R, C, V> implements
 	}
 	
 	@Override
-	public List<ObservedValue>[][] getValueLists() throws MatrixException
+	public List<? extends V>[][] getValueLists() throws MatrixException
 	{
 		// TODO Auto-generated method stub
 		return null;

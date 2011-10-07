@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
+import org.molgenis.pheno.Observation;
 import org.molgenis.pheno.ObservedValue;
 
 /**
@@ -79,7 +80,7 @@ public interface BasicMatrix<R, C, V>
 	 * @return
 	 * @throws MatrixException
 	 */
-	List<ObservedValue>[][] getValueLists() throws MatrixException;
+	List<? extends V>[][] getValueLists() throws MatrixException;
 
 
 
