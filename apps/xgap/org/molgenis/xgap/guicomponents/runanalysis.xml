@@ -1,0 +1,4 @@
+<molgenis>
+	<plugin label="Run QTL mapping" name="Cluster"
+		type="plugins.cluster.ClusterPlugin" group="biologist" />
+</molgenis>

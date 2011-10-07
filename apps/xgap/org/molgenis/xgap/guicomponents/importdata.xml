@@ -1,0 +1,8 @@
+<molgenis>
+	<menu name="ImportDataMenu" label="Import data" group="biologist">
+		<plugin label="R/qtl" name="QTLWizard"
+			type="plugins.xgapwizard.QTLDataSetWizard" group="biologist" />
+		<plugin label="Plink" name="PlinkFileManager"
+			type="plugins.molgenisfile.plink.PlinkFileManager" group="biologist" />
+	</menu>
+</molgenis>

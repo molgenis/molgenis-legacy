@@ -1,0 +1,24 @@
+<molgenis>
+	<menu name="AnalysisSettings" label="Configure analysis" group="bioinformatician">
+		<form name="Analysis" label="Analyses" entity="Analysis" group="bioinformatician" />
+		<form name="ParameterSets" label="Parameters" entity="ParameterSet"
+			group="bioinformatician">
+			<form name="ParameterNames" entity="ParameterName" group="bioinformatician">
+				<form name="ParameterValues" entity="ParameterValue" group="bioinformatician" />
+			</form>
+		</form>
+		<form name="DataSets" label="Datasets" entity="DataSet" group="bioinformatician">
+			<form name="DataNames" entity="DataName" group="bioinformatician">
+				<form name="DataValues" entity="DataValue" group="bioinformatician" />
+			</form>
+		</form>
+		<form name="RScripts" label="R scripts" entity="RScript" group="bioinformatician">
+			<plugin name="RViewer" type="plugins.molgenisfile.MolgenisFileManager"
+				group="bioinformatician" />
+			<!--plugin label="Help" name="AddNewToolsHelp" type="plugins.cluster.addnewtoolshelp" 
+				group="bioinformatician" / -->
+		</form>
+		<plugin label="Tag data" name="MatrixWizard" type="plugins.xgapwizard.MatrixWizard"
+			group="bioinformatician" />
+	</menu>
+</molgenis>

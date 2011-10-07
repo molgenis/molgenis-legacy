@@ -1,0 +1,4 @@
+<molgenis>
+	<plugin label="Search" name="SimpleDbSearch"
+		type="plugin.search.SimpleWholeDatabaseSearch" group="biologist" />
+</molgenis>

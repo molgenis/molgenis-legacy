@@ -1,0 +1,3 @@
+<molgenis>
+	<plugin label="Login" name="UserLogin" type="org.molgenis.auth.ui.UserLogin" />
+</molgenis>

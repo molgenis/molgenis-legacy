@@ -1,0 +1,42 @@
+<molgenis>
+	<menu label="Settings" name="Settings">
+		<menu name="Auth" label="Users and permissions">
+			<menu label="Basic management" name="Management">
+				<form name="MolgenisUser" entity="MolgenisUser" />
+				<form name="MolgenisGroup" entity="MolgenisGroup" />
+				<form name="MolgenisRoleGroupLink" entity="MolgenisRoleGroupLink" />
+				<form name="MolgenisEntity" entity="MolgenisEntity" view="list"
+					label="Entities" />
+				<form name="MolgenisPermission" entity="MolgenisPermission" />
+			</menu>
+			<plugin label="My permissions" name="PermissionManagementPlugin"
+				type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin" />
+		</menu>
+		<plugin label="Database status" name="DatabaseSettings"
+			type="plugins.system.database.Settings" />
+		<plugin label="File storage" name="FileStorage"
+			type="plugins.system.settings.Settings" />
+		<plugin label="Install R packages" name="DependencyManager"
+			type="plugins.cluster.demo.dependencymanager.DependencyManager" />
+		<menu name="Ontologies" label="Ontologies" group="biologist">
+			<form name="Species" entity="Species" group="biologist" />
+			<form name="OntologyTerms" entity="OntologyTerm" group="biologist" />
+		</menu>
+		<menu name="OtherAdmin" label="Utilities">
+			<plugin label="Advanced import" name="ExcelWizard"
+				type="plugins.genericwizard.GenericWizard" group="biologist" />
+			<plugin label="Format names" name="NamingPolicy"
+				type="plugins.help.naming.NamingPlugin" group="biologist" />
+			<plugin label="Rename duplicates" name="DuplicateRenaming"
+				type="plugins.help.duplicates.DuplicatesPlugin" group="biologist" />
+			<plugin label="KEGG converter" name="KeggConverter"
+				type="plugins.keggplugin.KeggToolsPlugin" group="bioinformatician" />
+			<form label="Job table" name="Jobs" entity="Job">
+				<form name="Subjobs" entity="Subjob" />
+			</form>
+			<!--plugin name="DatabaseArchiver" type="plugins.archiveexportimport.ArchiveExportImportPlugin" 
+				/ -->
+			<plugin label="Archiver" name="SimpleArchiver" type="plugins.archiver.Archiver" />
+		</menu>
+	</menu>
+</molgenis>
