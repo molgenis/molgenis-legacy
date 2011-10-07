@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.molgenis.cluster.RScript;
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 
@@ -91,7 +92,7 @@ public class RApiServlet extends app.servlet.MolgenisServlet
 			//MolgenisServlet ms = new MolgenisServlet();
 			try
 			{
-				List<RScript> scripts = this.getDatabase().find(RScript.class);
+				List<RScript> scripts = this.createDatabase().find(RScript.class);
 				for(RScript script : scripts){
 					s +=("source(\""+rSource+"userscripts/"+script.getName()+".R\")\n");
 				}
@@ -110,11 +111,12 @@ public class RApiServlet extends app.servlet.MolgenisServlet
 			//MolgenisServlet ms = new MolgenisServlet();
 			try
 			{
+				Database db = this.createDatabase();
 				String name = filename.substring(12, filename.length()-2);
 				Utils.console("getting '"+name+".r'");
 				QueryRule q = new QueryRule("name", Operator.EQUALS, name);
-				RScript script = this.getDatabase().find(RScript.class, q).get(0);
-				MolgenisFileHandler mfh = new MolgenisFileHandler(this.getDatabase());
+				RScript script = db.find(RScript.class, q).get(0);
+				MolgenisFileHandler mfh = new MolgenisFileHandler(db);
 				File source = mfh.getFile(script);
 				Utils.console("printing file: '"+source.getAbsolutePath()+"'");
 				String str = this.printUserScript(source.toURI().toURL(), "", name);
