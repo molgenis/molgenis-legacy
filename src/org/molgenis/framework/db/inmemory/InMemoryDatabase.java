@@ -420,4 +420,11 @@ public class InMemoryDatabase implements Database
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public void setLogin(Login login)
+	{
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -526,4 +526,6 @@ public interface Database
 	 * Generate the find SQL (use with caution!)
 	 */
 	public <E extends Entity>  String createFindSql(Class<E> entityClass, QueryRule... rules) throws DatabaseException;
+
+	public void setLogin(Login login);
 }

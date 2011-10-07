@@ -37,6 +37,17 @@ public class JDBCDatabaseGen extends Generator
 		File target = new File( this.getSourcePath(options) + APP_DIR +"/JDBCDatabase.java" );
 		target.getParentFile().mkdirs();
 		
+		templateArgs.put("db_filepath", options.db_filepath);
+		templateArgs.put("loginclass", options.auth_loginclass);
+		templateArgs.put("auth_redirect", options.auth_redirect);
+		templateArgs.put("databaseImp", options.mapper_implementation.equals(MolgenisOptions.MapperImplementation.JPA) ? "jpa" : "jdbc");
+		templateArgs.put("db_mode", options.db_mode);
+		templateArgs.put("generate_BOT", options.generate_BOT);
+		templateArgs.put("db_driver", options.db_driver);
+		templateArgs.put("db_uri", options.db_uri);
+		templateArgs.put("db_user", options.db_user);
+		templateArgs.put("db_password", options.db_password);
+		
 		templateArgs.put("model", model );
 		templateArgs.put("entities",entityList);
 		templateArgs.put("package", APP_DIR);

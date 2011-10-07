@@ -43,22 +43,36 @@ import org.molgenis.framework.db.jdbc.JndiDataSourceWrapper;
 
 public class MolgenisServlet extends AbstractMolgenisServlet
 {
-
 	private static final long serialVersionUID = 3141439968743510237L;
-	<#if db_mode != 'standalone'>private Database db = null;</#if>
-	
+
 	public MolgenisServlet() {
 		this.usedOptions = new UsedMolgenisOptions();
-		<#if db_mode != 'standalone'>
+	}
+	
+	protected Database createDatabase() {
 		try
 		{
 		<#if databaseImp = 'jpa'>
-			this.db = DatabaseFactory.create();	
+			return DatabaseFactory.create();	
 		<#else>
 			//The datasource is created by the servletcontext	
+			<#if db_mode != 'standalone'>
 			ServletContext sc = MolgenisContextListener.getInstance().getContext();
 			DataSource dataSource = (DataSource)sc.getAttribute("DataSource");
-			this.db = DatabaseFactory.create(dataSource, new File("${db_filepath}"));
+			return DatabaseFactory.create(dataSource, new File("${db_filepath}"));
+			<#else>
+			BasicDataSource data_src = new BasicDataSource();
+			data_src.setDriverClassName("${db_driver}");
+			data_src.setUsername("${db_user}");
+			data_src.setPassword("${db_password}");
+			data_src.setUrl("${db_uri}"); // a path within the src folder?
+			data_src.setMaxIdle(10);
+			data_src.setMaxWait(1000);
+		
+			DataSource dataSource = (DataSource)data_src;
+			Database db = new ${package}.JDBCDatabase(dataSource, new File("${db_filepath}"));
+			return db;			
+			</#if>
 		</#if>
 		}
 		catch (Exception e)
@@ -66,26 +80,11 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 			e.printStackTrace();
 			throw new RuntimeException();
 		}
-		</#if>
 	}
 
 	public Database getDatabase() throws Exception
 	{
-		<#if db_mode != 'standalone'>
-		return this.db;
-		<#else>
-		BasicDataSource data_src = new BasicDataSource();
-		data_src.setDriverClassName("${db_driver}");
-		data_src.setUsername("${db_user}");
-		data_src.setPassword("${db_password}");
-		data_src.setUrl("${db_uri}"); // a path within the src folder?
-		data_src.setMaxIdle(10);
-		data_src.setMaxWait(1000);
-	
-		DataSource dataSource = (DataSource)data_src;
-		Database db = new ${package}.JDBCDatabase(dataSource, new File("${db_filepath}"));
-		return db;
-		</#if>
+		return super.getDatabase();
 	}
 	
 	<#if generate_BOT>
@@ -117,7 +116,6 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 
 	</#if>
 
-	@Deprecated //use getLogin instead!
 	public Login createLogin( Database db, HttpServletRequest request ) throws Exception
 	{
 		Login login = (Login)request.getSession().getAttribute("login");
@@ -129,9 +127,8 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 			</#if>			
 			request.getSession().setAttribute("login", login);
 		}
+		db.setLogin(login);
 		return login;	
-	
-
 	}
 
 	public ApplicationController createUserInterface( Login userLogin )
@@ -145,7 +142,7 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 			public Database getDatabase()
 			{
 				<#if db_mode != 'standalone'>
-				return db;
+				return super.getDatabase();
 				<#else>
 				BasicDataSource data_src = new BasicDataSource();
 				data_src.setDriverClassName("${db_driver}");

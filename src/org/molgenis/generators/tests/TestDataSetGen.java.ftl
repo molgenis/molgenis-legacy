@@ -147,13 +147,7 @@ public class TestDataSet
 
 
 <#if databaseImp = 'jpa'>
-
-	<#if entity.decorator?exists >
-            ${entity.decorator} ${name(entity)}Save = (${entity.decorator})db
-	<#else> 
-			JpaMapper ${name(entity)}Save = (JpaMapper)db
-	</#if>
-		.getMapper("${entity.namespace}.${JavaName(entity)}");	
+			JpaMapper ${name(entity)}Save = (JpaMapper)db.getMapper("${entity.namespace}.${JavaName(entity)}");	
         
             //((JpaDatabase)db).getEntityManager().getTransaction().begin();
             db.add(this.${name(entity)});

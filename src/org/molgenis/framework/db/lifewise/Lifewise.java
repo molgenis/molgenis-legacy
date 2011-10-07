@@ -545,4 +545,11 @@ public class Lifewise implements Database
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public void setLogin(Login login)
+	{
+		// TODO Auto-generated method stub
+		
+	}
 }
