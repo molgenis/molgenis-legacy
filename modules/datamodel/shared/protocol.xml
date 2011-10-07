@@ -50,7 +50,7 @@
 			<field name="TargetFilter" type="string" nillable="true"
 				description="Expression that filters the InvestigationElements that can be targetted using this protocol. This helps the user to only select from targets that matter when setting observedvalues. For example: type='individual' AND species = 'human'" />
 			
-			<field name="Contact" type="xref" nillable="true" xref_entity="DeprecatedPerson"
+			<field name="Contact" type="xref" nillable="true" xref_entity="Person"
 				description="TODO Check if there can be multiple contacts." />
 			
 			<!-- TODO/discussion: add the fields below? -->
@@ -102,7 +102,7 @@
 				description="time when the protocol was applied." />
 			<field name="protocol" type="xref" xref_entity="Protocol" nillable="true"
 				description="Reference to the protocol that is being used." />
-			<field name="Performer" type="mref" xref_entity="DeprecatedPerson"
+			<field name="Performer" type="mref" xref_entity="Person"
 				nillable="true" />
 		</entity>
 		<entity name="ProtocolDocument" extends="MolgenisFile">
