@@ -68,8 +68,8 @@ public class MutationService implements Serializable
 	
 	public static MutationService getInstance(Database db)
 	{
-		if (mutationService == null)
-			mutationService = new MutationService(db);
+		//if (mutationService == null)
+		mutationService = new MutationService(db);
 		
 		return mutationService;
 	}

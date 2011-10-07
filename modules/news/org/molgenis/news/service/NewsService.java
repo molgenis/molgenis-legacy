@@ -23,8 +23,8 @@ public class NewsService
 	
 	public static NewsService getInstance(Database db)
 	{
-		if (newsService == null)
-			newsService = new NewsService(db);
+		//if (newsService == null)
+		newsService = new NewsService(db);
 		
 		return newsService;
 	}

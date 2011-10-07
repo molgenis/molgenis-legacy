@@ -12,6 +12,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import plugins.archiveexportimport.XgapExcelExport;
+import app.DatabaseFactory;
 import app.servlet.MolgenisServlet;
 import filehandling.storage.StorageHandler;
 
@@ -27,7 +28,7 @@ public class TestArchives {
 	@BeforeClass
 	public void setup() throws Exception {
 		
-		Database db = new MolgenisServlet().getDatabase();
+		Database db = DatabaseFactory.create();;
 		StorageHandler sh = new StorageHandler(db);
 		
 		//assert db is empty
@@ -54,7 +55,7 @@ public class TestArchives {
 	public void exportExcelArchive() throws Exception{
 		System.out.println("** exportExcelArchive **");
 		Thread.sleep(1000);
-		Database db = new MolgenisServlet().getDatabase();
+		Database db = DatabaseFactory.create();;
 		File tmpDir = new File(System.getProperty("java.io.tmpdir") + File.separator
 				+ "everyinvestigation" + "_export_" + System.nanoTime());
 		tmpDir.mkdir();
@@ -65,7 +66,7 @@ public class TestArchives {
 	
 	@Test
 	public void importExcelArchive() throws Exception{
-		Database db = new MolgenisServlet().getDatabase();
+		Database db = DatabaseFactory.create();;
 		
 	}
 	

@@ -19,6 +19,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import test.Helper;
+import app.DatabaseFactory;
 import app.servlet.MolgenisServlet;
 import filehandling.storage.StorageHandler;
 
@@ -49,8 +50,8 @@ public class Matrix_XqtlTestNG {
 	public void setupBeforeClass() throws Exception {
 		
 		Helper.deleteDatabase();
-		
-		Database db = new MolgenisServlet().getDatabase();
+
+		Database db = DatabaseFactory.create();
 		StorageHandler sh = new StorageHandler(db);
 		
 		//assert db is empty
@@ -81,25 +82,25 @@ public class Matrix_XqtlTestNG {
 
 	@Test(dataProvider = "params")
 	public void binary(Params params) throws Exception{
-		Database db = new MolgenisServlet().getDatabase();
+		Database db = DatabaseFactory.create();
 		new TestBinMatrix(db, params);
 	}
 
 	@Test(dataProvider = "params")
 	public void database(Params params) throws Exception {
-		Database db = new MolgenisServlet().getDatabase();
+		Database db = DatabaseFactory.create();
 		new TestDatabaseMatrix(db, params);
 	}
 
 	@Test(dataProvider = "params")
 	public void file(Params params) throws Exception {
-		Database db = new MolgenisServlet().getDatabase();
+		Database db = DatabaseFactory.create();
 		new TestFileMatrix(db, params);
 	}
 	
 	@Test(dataProvider = "params")
 	public void memory(Params params) throws Exception {
-		Database db = new MolgenisServlet().getDatabase();
+		Database db = DatabaseFactory.create();
 		new TestMemoryMatrix(db, params);
 	}
 	

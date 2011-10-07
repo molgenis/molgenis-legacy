@@ -15,6 +15,7 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.xgap.xqtlworkbench.ResetXgapDb;
 import org.testng.Assert;
 
+import app.DatabaseFactory;
 import app.servlet.MolgenisServlet;
 
 /**
@@ -37,7 +38,7 @@ public class RunTestMatrixQuery extends TestCase {
 
 	public RunTestMatrixQuery() throws Exception {
 		
-		Database db = new MolgenisServlet().getDatabase();
+		Database db = DatabaseFactory.create();;
 
 		// assert db is empty
 //		Assert.assertFalse(db.getFileSourceHelper().hasFilesource(false));

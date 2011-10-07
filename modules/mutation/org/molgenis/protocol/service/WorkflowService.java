@@ -28,8 +28,8 @@ public class WorkflowService implements Serializable
 
 	public static WorkflowService getInstance(Database db)
 	{
-		if (workflowService == null)
-			workflowService = new WorkflowService(db);
+		//if (workflowService == null)
+		workflowService = new WorkflowService(db);
 
 		return workflowService;
 	}

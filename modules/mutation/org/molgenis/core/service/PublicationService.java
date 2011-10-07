@@ -24,8 +24,8 @@ public class PublicationService
 	
 	public static PublicationService getInstance(Database db)
 	{
-		if (publicationService == null)
-			publicationService = new PublicationService(db);
+		//if (publicationService == null)
+		publicationService = new PublicationService(db);
 		
 		return publicationService;
 	}

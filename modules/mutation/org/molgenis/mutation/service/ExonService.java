@@ -39,8 +39,8 @@ public class ExonService implements Serializable
 	
 	public static ExonService getInstance(Database db)
 	{
-		if (exonService == null)
-			exonService = new ExonService(db);
+		//if (exonService == null)
+		exonService = new ExonService(db);
 		
 		return exonService;
 	}

@@ -24,8 +24,8 @@ public class PhenotypeService implements Serializable
 	
 	public static PhenotypeService getInstance(Database db)
 	{
-		if (phenotypeService == null)
-			phenotypeService = new PhenotypeService(db);
+		//if (phenotypeService == null)
+		phenotypeService = new PhenotypeService(db);
 		
 		return phenotypeService;
 	}

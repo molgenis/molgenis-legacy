@@ -67,8 +67,8 @@ public class PatientService implements Serializable
 
 	public static PatientService getInstance(Database db)
 	{
-		if (patientService == null)
-			patientService = new PatientService(db);
+		//if (patientService == null)
+		patientService = new PatientService(db);
 
 		return patientService;
 	}

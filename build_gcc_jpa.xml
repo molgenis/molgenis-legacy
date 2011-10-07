@@ -61,6 +61,7 @@
 		<testng classpathref="combined.class.path" outputDir="${testng.report.dir}" haltOnFailure="true">
 			<xmlfileset dir="${build.dir}" includes="**/*testngJpa.xml" />
 			<jvmarg value="-ea" />
+			<jvmarg value="-Xmx1024m" />
 		</testng>			
 	</target>
 	

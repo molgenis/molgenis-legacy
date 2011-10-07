@@ -7,6 +7,7 @@ import java.net.ServerSocket;
 import org.molgenis.framework.db.Database;
 import org.molgenis.util.TarGz;
 
+import app.DatabaseFactory;
 import app.servlet.MolgenisServlet;
 import filehandling.storage.StorageHandler;
 
@@ -36,7 +37,7 @@ public class Helper
 	{
 		// get storage folder and delete it completely
 		// throws exceptions if anything goes wrong
-		Database db = new MolgenisServlet().getDatabase();
+		Database db = DatabaseFactory.create();
 		int appNameLength = MolgenisServlet.getMolgenisVariantID().length();
 		String storagePath = new StorageHandler(db).getFileStorage(true).getAbsolutePath();
 		File storageRoot = new File(storagePath.substring(0, storagePath.length() - appNameLength));

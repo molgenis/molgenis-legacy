@@ -29,8 +29,8 @@ public class ProteinDomainService implements Serializable
 	
 	public static ProteinDomainService getInstance(Database db)
 	{
-		if (domainService == null)
-			domainService = new ProteinDomainService(db);
+		//if (domainService == null)
+		domainService = new ProteinDomainService(db);
 		
 		return domainService;
 	}

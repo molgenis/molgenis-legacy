@@ -37,7 +37,7 @@ public class MolgenisUserService
 	 */
 	public static MolgenisUserService getInstance(Database db)
 	{
-		if (molgenisUserService == null)
+		//if (molgenisUserService == null)
 			molgenisUserService = new MolgenisUserService(db);
 		
 		return molgenisUserService;

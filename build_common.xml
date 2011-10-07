@@ -69,7 +69,7 @@ plus passing of properties
 		</condition>
 
 		<!-- check if molgenis is compiled into ${build.dir}, otherwise compile now -->
-		<javac srcdir="${molgenis.dir}/src" destdir="${build.dir}" nowarn="on" debug="on">
+		<javac srcdir="${molgenis.dir}/src" destdir="${build.dir}" nowarn="on" debug="true">
 			<classpath refid="molgenis.classpath" />
 		</javac>
 
@@ -120,7 +120,7 @@ plus passing of properties
 
 		<!-- compile the generated results, use fork to run it with its own memory settings -->
 		<!-- NB: under Windows, forking works only if the javac path is in your PATH variable -->
-		<javac fork="true" srcdir="${output_src}:${app_src}" destdir="${build.dir}" nowarn="on" memoryinitialsize="256m" memorymaximumsize="512m" debug="on">
+		<javac fork="true" srcdir="${output_src}:${app_src}" destdir="${build.dir}" nowarn="on" memoryinitialsize="256m" memorymaximumsize="512m" debug="true">
 			<classpath refid="molgenis.classpath" />
 		</javac>
 
@@ -139,6 +139,7 @@ plus passing of properties
 		<testng classpathref="combined.class.path" outputDir="${testng.report.dir}" haltOnFailure="true">
 			<xmlfileset dir="${build.dir}" includes="**/*testng.xml" />
 			<jvmarg value="-ea" />
+			<jvmarg value="-Xmx1512m"/>
 		</testng>
 
 		<!--junitreport todir="${testng.report.dir}">
