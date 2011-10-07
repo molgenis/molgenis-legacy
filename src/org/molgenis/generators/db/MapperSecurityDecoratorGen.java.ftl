@@ -48,7 +48,7 @@ public class ${clazzName}<E extends ${entityClass}> extends <#if databaseImp = '
 				throw new DatabaseException("No write permission on ${entityClass}");
 
 <#if authorizable??>
-			this.addRowLevelSecurityDefaults(entities);
+			//this.addRowLevelSecurityDefaults(entities); Commented out 07-10-2011 by ER because of unwanted behavior
 </#if>
 			//TODO: Add column level security filters
 		}
@@ -236,12 +236,12 @@ public class ${clazzName}<E extends ${entityClass}> extends <#if databaseImp = '
 		}
 	}
 
-	private void addRowLevelSecurityDefaults(List<E> entities)
+	/*private void addRowLevelSecurityDefaults(List<E> entities)
 	{
 		for (E entity : entities)
 		{
 			entity.setOwns(this.getDatabase().getSecurity().getUserId());
 		}
-	}
+	}*/
 </#if>
 }
