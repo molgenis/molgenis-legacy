@@ -15,7 +15,7 @@
 		<menu name="Admin">
 		    <menu name="DataViews">
 		    	<form name="AdminCohorts" entity="Biobank" label="Admin Biobank" hide_fields="id" />
-				<form name="Coordinators" entity="Person" view="list" sortby="LastName" />
+				<form name="Coordinators" entity="DeprecatedPerson" label="Person" view="list" sortby="LastName" />
 				<form name="Institutes" entity="Institute" view="list" />
 				<form name="Categories" sortby="name" view="list" entity="BiobankCategory" />
 				<form name="DataTypes" entity="BiobankDataType" />

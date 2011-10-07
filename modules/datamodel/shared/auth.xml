@@ -16,15 +16,9 @@
 			<field name="role_" type="xref" xref_field="MolgenisRole.id" xref_label="name" />
 		</entity>
 		
-		<entity name="MolgenisUser" extends="MolgenisRole" decorator="decorators.MolgenisUserDecorator" system="true">
-			<description>Anyone who can login</description>
-			<field name="password_" type="string" default="secret" description="big fixme: password type" />
-			<field name="emailaddress" type="string" />
-			<field name="activationCode" type="string"
-				description="Used as alternative authentication mechanism to verify user email and/or if user has lost password."
-				nillable="true" />
-			<field name="active" type="bool" default="false"
-				description="Boolean to indicate if this account can be used to login" />
+		<entity name="Person" extends="MolgenisRole" system="true">
+		<!-- TODO: Factor in DeprecatedPerson from organization.xml: a more 'detailed'
+			version of person, and refactor apps to use this one instead -->
 			<field name="title" type="string" nillable="true" />
 			<field name="lastname" type="string" />
 			<field name="firstname" type="string" />
@@ -33,6 +27,18 @@
 			<field name="position_" type="string" nillable="true" />
 			<field name="city" type="string" nillable="true" />
 			<field name="country" type="string" nillable="true" />
+			<field name="emailaddress" type="string" />
+		</entity>
+		
+		<entity name="MolgenisUser" extends="Person" decorator="decorators.MolgenisUserDecorator" system="true">
+			<description>Anyone who can login</description>
+			<field name="password_" type="string" default="secret" description="big fixme: password type" />
+			<field name="activationCode" type="string"
+				description="Used as alternative authentication mechanism to verify user email and/or if user has lost password."
+				nillable="true" />
+			<field name="active" type="bool" default="false"
+				description="Boolean to indicate if this account can be used to login" />
+
 			<field name="superuser" type="bool" default="false" />
 			<!-- todo: profile: picture, field, address, zip, timezone, flag to set public email, website, other details -->
 		</entity>

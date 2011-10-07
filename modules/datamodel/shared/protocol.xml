@@ -100,7 +100,7 @@
 			</description>
 			<field auto="true" name="time" type="datetime"
 				description="time when the protocol was applied." />
-			<field name="protocol" type="xref" xref_entity="Protocol"
+			<field name="protocol" type="xref" xref_entity="Protocol" nillable="true"
 				description="Reference to the protocol that is being used." />
 			<field name="Performer" type="mref" xref_entity="Person"
 				nillable="true" />

@@ -15,8 +15,8 @@ import org.molgenis.ngs.LibraryLane;
 import org.molgenis.ngs.Machine;
 import org.molgenis.ngs.NgsSample;
 import org.molgenis.ngs.Worksheet;
+import org.molgenis.organization.DeprecatedPerson;
 import org.molgenis.organization.Investigation;
-import org.molgenis.organization.Person;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvFileWriter;
 import org.molgenis.util.CsvReader;
@@ -73,8 +73,8 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 			LibraryCapturing lc = db.findById(LibraryCapturing.class, libraryList.getCapturing());
 			LibraryBarcode lb = db.findById(LibraryBarcode.class, libraryList.getBarcode());
 			Investigation inv = db.findById(Investigation.class, sample.getInvestigation());
-			Person i = null;
-			if (inv.getContacts_Id().size() > 0) i = db.findById(Person.class, inv.getContacts_Id().get(0));
+			DeprecatedPerson i = null;
+			if (inv.getContacts_Id().size() > 0) i = db.findById(DeprecatedPerson.class, inv.getContacts_Id().get(0));
 			Machine m = db.findById(Machine.class, flowcell.getMachine());
 
 			// create sheet
@@ -159,13 +159,13 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 
 					// _investigator_
 					String investigatorname = tuple.getString(Worksheet.CONTACT);
-					Person inv = null;
+					DeprecatedPerson inv = null;
 					if (investigatorname != null)
 					{
-						inv = (Person) getObject(db, Person.class, Person.LASTNAME, investigatorname);
+						inv = (DeprecatedPerson) getObject(db, DeprecatedPerson.class, DeprecatedPerson.LASTNAME, investigatorname);
 						if (inv == null)
 						{
-							inv = new Person();
+							inv = new DeprecatedPerson();
 							inv.setLastName(investigatorname);
 							db.add(inv);
 						}

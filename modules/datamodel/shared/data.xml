@@ -36,7 +36,7 @@
 				description="format of the file. Discussion: is this not already solved in MolgenisFile" />
 		</entity>
 		<!-- Data no longer implements="Observation" -->
-		<entity name="Data" extends="ObservationTarget" xref_label="name"  decorator="decorators.DataDecorator">
+		<entity name="Data" extends="ProtocolApplication" xref_label="name"  decorator="decorators.DataDecorator">
 			<description>
 				Data is a data structure to store a homogeneous matrix of
 				observedvalues as one unit, that is, all data elements in the set

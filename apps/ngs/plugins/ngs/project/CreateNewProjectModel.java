@@ -12,9 +12,9 @@ import java.util.List;
 
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.SimpleScreenModel;
+import org.molgenis.organization.DeprecatedPerson;
 import org.molgenis.organization.Institute;
 import org.molgenis.organization.Investigation;
-import org.molgenis.organization.Person;
 import org.molgenis.protocol.Workflow;
 import org.testng.collections.Lists;
 
@@ -26,9 +26,9 @@ public class CreateNewProjectModel extends SimpleScreenModel {
 	}
 
 	private Investigation project;
-    private Person person;
+    private DeprecatedPerson person;
     private Institute institute;
-    private List<Person> labworkers = Lists.newArrayList();
+    private List<DeprecatedPerson> labworkers = Lists.newArrayList();
     private String action = "init";
     private List<Investigation> investigation = new ArrayList<Investigation>();
     private Investigation invest;
@@ -37,12 +37,12 @@ public class CreateNewProjectModel extends SimpleScreenModel {
 
 
 
-    public void setLabworkers(List<Person> labworkers)
+    public void setLabworkers(List<DeprecatedPerson> labworkers)
     {
 	this.labworkers = labworkers;
     }
 
-    public List<Person> getLabworkers()
+    public List<DeprecatedPerson> getLabworkers()
     {
 	return labworkers;
     }
@@ -95,11 +95,11 @@ public class CreateNewProjectModel extends SimpleScreenModel {
 	return project;
     }
 
-    public void setPerson(Person person) {
+    public void setPerson(DeprecatedPerson person) {
 	this.person = person;
     }
 
-    public Person getPerson() {
+    public DeprecatedPerson getPerson() {
 	return person;
     }
 

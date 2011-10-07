@@ -50,7 +50,8 @@
 			<field name="tollFreePhone" nillable="true" type="string"
 				description="A toll free phone number for the Contact, including suitable area codes." />
 		</entity>
-		<entity name="Person" implements="Contact" xref_label="LastName">
+		<entity name="DeprecatedPerson" implements="Contact" xref_label="LastName">
+			<!-- TODO: Factor in this 'detailed' version of 'person' with Person in auth.xml and delete this one! -->
 			<!-- we may want to add a 'screen name' to use as xref_label -->
 			<description>
 				Person represents one or more people involved with an Investigation.

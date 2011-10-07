@@ -94,7 +94,7 @@ public class XqtlSeleniumTest
 	{
 		selenium.open("/" + appName + "/molgenis.do");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-	//	Assert.assertTrue(selenium.getTitle().toLowerCase().contains("xQTL workbench".toLowerCase()));
+		Assert.assertTrue(selenium.getTitle().toLowerCase().contains("xQTL workbench".toLowerCase()));
 		Assert.assertTrue(selenium.isTextPresent("Welcome"));
 		Assert.assertEquals(selenium.getText("link=R api"), "R api");
 	}
@@ -296,10 +296,10 @@ public class XqtlSeleniumTest
 
 			// assert content of enum fields
 			Assert.assertEquals(
-					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.5.1"),
+					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.8.1"),
 					"Individual\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeSampleSpot");
 			Assert.assertEquals(
-					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.6.1"),
+					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.9.1"),
 					"Metabolite\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeSampleSpot");
 
 			// change Individual to Gene and save
@@ -312,7 +312,7 @@ public class XqtlSeleniumTest
 			// expand compact view again and check value has changed
 			selenium.click("id=Datas_collapse_button_id");
 			Assert.assertEquals(
-					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.5.1"),
+					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.8.1"),
 					"Gene\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeSampleSpot");
 
 			// change back to Individual and save
@@ -324,7 +324,7 @@ public class XqtlSeleniumTest
 			// expand compact view again and check value is back to normal again
 			selenium.click("id=Datas_collapse_button_id");
 			Assert.assertEquals(
-					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.5.1"),
+					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.8.1"),
 					"Individual\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeSampleSpot");
 
 		}
