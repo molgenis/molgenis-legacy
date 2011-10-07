@@ -15,7 +15,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import app.DatabaseFactory;
 import app.servlet.MolgenisServlet;
 
 public class MultiThreadedDatabase_XqtlTestNG
@@ -112,7 +111,8 @@ class TestDbThread
 
 	public TestDbThread(MolgenisServlet molgServ, int amount) throws Exception
 	{
-		this.db = DatabaseFactory.create(); //molgServ.getDatabase();
+		//this is the behaviour of e.g. handleUpload in AbstrMolgenisServlet
+		this.db = molgServ.getDatabase();
 		individuals = new ArrayList<Individual>();
 		this.amount = amount;
 		for (int i = 0; i < amount; i++)
