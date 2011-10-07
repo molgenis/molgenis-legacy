@@ -37,19 +37,21 @@ public class FillMetadata {
 	}
 	
 	public static void fillMetadata(Database db, boolean useLogin) throws Exception {
-            System.out.println("fillMetadata start");
+        System.out.println("fillMetadata start");
 
-            if(useLogin)
-            {
-	            Login login = db.getSecurity();
-	            if(login == null) {
-	                System.out.println("login == null --> no meta data added");           
-	                return;
-	            } else if (login instanceof SimpleLogin) {
-	            	System.out.println("login instanceof SimpleLogin --> no meta data added");
-	            	return;
-	            }
+		Login login = db.getSecurity();
+        if(useLogin)
+        {
+            if(login == null) {
+                System.out.println("login == null --> no meta data added");           
+                return;
+            } else if (login instanceof SimpleLogin) {
+            	System.out.println("login instanceof SimpleLogin --> no meta data added");
+            	return;
             }
+        } else {
+    		db.setLogin(null); // so we don't run into trouble with the Security Decorators
+        }
 
 
 <#if databaseImpl == 'JPA'>
@@ -195,7 +197,10 @@ public class FillMetadata {
 			db.add(mp);
 		}
 		
-		db.commitTx();	
+		db.commitTx();
+		
+		db.setLogin(login); // restore login
+		
 		logger.info("fillMetadata end");
 	}
 	
