@@ -212,4 +212,13 @@ MOLGENIS.update <- function(entityName, dataMatrix, action, is_matrix=F, row_typ
     }  
 }
 
-
+MOLGENIS.login <- function(username, password)
+{
+servlet <- paste( .MOLGENIS$servletURL, "/api/add", sep="" )
+curl_params = list(data_action = "__remote__login__request",data_input = username,data_silent = password)
+webResponse <- postForm( servlet, .params = curl_params)
+handle <- textConnection(webResponse)
+status <- readLines(handle, 1)
+cat(status, "\n")
+close( handle )
+}
