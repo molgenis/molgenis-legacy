@@ -99,8 +99,8 @@
 				label="View values in matrix" />
 			<plugin name="EventViewer" type="plugins.protocol.EventViewerPlugin"
 				label="View values in timeline" />
-			<plugin name="MatrixTests" type="org.molgenis.sandbox.ui.MatrixTests"
-				label="Sliceable PhenoMatrix (TESTING)" />
+			<!--plugin name="MatrixTests" type="org.molgenis.sandbox.ui.MatrixTests"
+				label="Sliceable PhenoMatrix (TESTING)" /-->
 		</menu>
 		
 		<menu name="projectmenu" position="left" label="DEC (sub)projects">
