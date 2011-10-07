@@ -102,7 +102,7 @@
 				<br />
 				The FuGE generalization of Source is FuGE:Material.
 			</description>
-			<field name="Providers" type="mref" xref_entity="Person" />
+			<field name="Providers" type="mref" xref_entity="DeprecatedPerson" />
 		</entity>
 		<!--
 			FIXME entity name="Sample" extends="BioMaterial" xref_label="Name">

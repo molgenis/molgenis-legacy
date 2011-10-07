@@ -13,7 +13,7 @@
 				Investigation, MAGE-TAB Experiment and METABASE:Study.</description>
 			<field name="startDate" nillable="true"  type="datetime" description="The start point of the study." auto="true" />
 			<field name="endDate" nillable="true" auto="false" type="datetime" description="The end point of the study." />
-			<field name="contacts" type="mref" xref_entity="Person"
+			<field name="contacts" type="mref" xref_entity="DeprecatedPerson"
 				nillable="true" description="Contact persons for this study"/>	
 			<!-- field name="description" type="text" nillable="true"
 				description="(Optional) Rudimentary meta data about the Investigation" / -->>
