@@ -31,6 +31,9 @@ public class FillMetadata {
 	public static void fillMetadata(Database db) throws Exception {
 		logger.info("fillMetadata is Empty!");
 	}
+	public static void fillMetadata(Database db, boolean useLogin) throws Exception {
+		logger.info("fillMetadata is Empty!");
+	}
 <#else>
 	public static void fillMetadata(Database db) throws Exception {
 		fillMetadata(db, true);
