@@ -32,6 +32,7 @@ import org.molgenis.util.Tuple;
 import plugins.emptydb.emptyDatabase;
 
 import app.CsvImport;
+import app.FillMetadata;
 
 import convertors.GenericConvertor;
 
@@ -133,8 +134,15 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		
 		if (action.equals("emptyDB") ){
 			try {
-				if(db.count(Investigation.class)!=0){				
-					new emptyDatabase(db, true);					
+				if(db.count(Investigation.class)!=0){
+					
+					//OLD
+					//new emptyDatabase(db, true);
+					
+					//NEW
+					new emptyDatabase(db, false);
+					FillMetadata.fillMetadata(db, false);
+					
 					this.setMessages(new ScreenMessage("empty database succesfully", true));
 				}
 				else{

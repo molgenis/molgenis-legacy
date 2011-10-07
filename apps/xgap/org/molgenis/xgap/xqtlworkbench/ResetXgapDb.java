@@ -55,12 +55,13 @@ public class ResetXgapDb
 					}
 				}
 				report += "Now resetting datamodel/database.\n";
-				if(new UsedMolgenisOptions().mapper_implementation.equals(MolgenisOptions.MapperImplementation.JPA))
-				{
-					FillMetadata.fillMetadata(db);
-				} else {
-					new emptyDatabase(db, true);
-				}
+//				if(new UsedMolgenisOptions().mapper_implementation.equals(MolgenisOptions.MapperImplementation.JPA))
+//				{
+				new emptyDatabase(db, false);
+				FillMetadata.fillMetadata(db, false);
+//				} else {
+//					new emptyDatabase(db, true);
+//				}
 				report += "Reset datamodel SUCCESS";
 				// resetSuccess = true;
 			}

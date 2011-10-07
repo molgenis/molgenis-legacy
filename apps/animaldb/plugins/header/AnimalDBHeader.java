@@ -19,6 +19,8 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
+import app.FillMetadata;
+
 import plugins.emptydb.emptyDatabase;
 import plugins.fillanimaldb.FillAnimalDB;
 
@@ -73,7 +75,13 @@ public class AnimalDBHeader extends PluginModel<Entity>
 	private void prefillDb(Database db) {
 		try {
 			// Empty DB and run generated sql scripts
-			new emptyDatabase(db, true);
+			
+			//OLD
+			//new emptyDatabase(db, true);
+			
+			//NEW
+			new emptyDatabase(db, false);
+			FillMetadata.fillMetadata(db, false);
 			
 			// Populate db with targets, features, values etc. needed to make AnimalDB run
 			FillAnimalDB myFillAnimalDB = new FillAnimalDB(db);
