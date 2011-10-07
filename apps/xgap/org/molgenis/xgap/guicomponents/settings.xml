@@ -21,6 +21,8 @@
 		<menu name="Ontologies" label="Ontologies" group="biologist">
 			<form name="Species" entity="Species" group="biologist" />
 			<form name="OntologyTerms" entity="OntologyTerm" group="biologist" />
+			<form label="Protocols" entity="Protocol" group="biologist" />
+			<form label="Persons" entity="Person" group="biologist" />
 		</menu>
 		<menu name="OtherAdmin" label="Utilities">
 			<plugin label="Advanced import" name="ExcelWizard"

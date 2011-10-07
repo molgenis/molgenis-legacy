@@ -16,7 +16,7 @@
 			<field name="role_" type="xref" xref_field="MolgenisRole.id" xref_label="name" />
 		</entity>
 		
-		<entity name="Person" extends="MolgenisRole" system="true">
+		<entity name="Person" extends="MolgenisRole">
 		<!-- TODO: Factor in DeprecatedPerson from organization.xml: a more 'detailed'
 			version of person, and refactor apps to use this one instead -->
 			<field name="title" type="string" nillable="true" />
