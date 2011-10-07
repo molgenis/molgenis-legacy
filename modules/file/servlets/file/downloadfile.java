@@ -44,7 +44,7 @@ public class downloadfile extends app.servlet.MolgenisServlet {
 		String name = null;
 
 		try {
-			db = this.getDatabase();
+			db = this.createDatabase();
 			databaseIsAvailable = true;
 		} catch (Exception e) {
 			PrintWriter out = response.getWriter();

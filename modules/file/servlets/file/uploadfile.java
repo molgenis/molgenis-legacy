@@ -30,10 +30,11 @@ public class uploadfile extends app.servlet.MolgenisServlet
 
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/plain");
+		Database db = null;
 
 		try
 		{
-			Database db = getDatabase();
+			db = this.createDatabase();
 			Tuple req = new HttpServletRequestTuple(request);
 
 			String fileName = req.getString("name"); // the 'real' file name
