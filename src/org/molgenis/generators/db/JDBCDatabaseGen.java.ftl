@@ -35,6 +35,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import org.molgenis.util.JarClass;
 </#if>
+import org.apache.commons.dbcp.BasicDataSource;
+
 
 public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 {
@@ -67,11 +69,24 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 		<#if decorator_overriders != ''>this.overrideDecorators();</#if>
 	}
 	
+	@Deprecated
 	public JDBCDatabase() throws DatabaseException
 	{
-		super(new MolgenisOptions());
+		super((DataSource)JDBCDatabase.createDataSource(), new File("${db_filepath}"));
 		this.setup();
 		<#if decorator_overriders != ''>this.overrideDecorators();</#if>
+	}
+
+	@Deprecated
+	private static DataSource createDataSource() {
+		BasicDataSource data_src = new BasicDataSource();
+		data_src.setDriverClassName("${db_driver}");
+		data_src.setUsername("${db_user}");
+		data_src.setPassword("${db_password}");
+		data_src.setUrl("${db_uri}"); // a path within the src folder?
+		data_src.setMaxIdle(10);
+		data_src.setMaxWait(1000);
+		return (DataSource)data_src;	
 	}
 
 	public JDBCDatabase(String propertiesFilePath) throws FileNotFoundException, IOException, DatabaseException

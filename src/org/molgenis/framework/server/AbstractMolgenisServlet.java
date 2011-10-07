@@ -74,6 +74,14 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	public static String INPUT_SILENT = "data_silent";
 	/** keep track of window ids */
 	private static long newWindowId;
+	
+	private Database db;
+	
+	public Database getDatabase() throws Exception
+	{
+		return this.db;
+	}
+	
 
 	// get logger
 	protected final transient Logger logger = Logger.getLogger(this.getClass()
@@ -85,15 +93,6 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 
 	// the used molgenisoptions, set by generated MolgenisServlet
 	protected MolgenisOptions usedOptions = null;
-
-	/**
-	 * You can override this method for alternative loading strategies.
-	 * 
-	 * @throws NamingException
-	 * @throws IOException
-	 * @throws FileNotFoundException
-	 */
-	public abstract Database getDatabase() throws Exception;
 
 	/**
 	 * Create a Login specific to the security scheme used in this MOLGENIS. You
@@ -198,7 +197,9 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			e.printStackTrace();
 		}
 	}
-
+	
+	protected abstract Database createDatabase(); 
+	
 	/**
 	 * Frontcontroller of the MOLGENIS application. Based on paths, requests are
 	 * delegated to the particular handlers.
@@ -218,7 +219,10 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 
 		try
 		{
-
+			this.db = createDatabase();
+			createLogin(db, request); //set login to database!
+			
+			
 			if (path != null && path.contains("/api/find"))
 			{
 				this.handleDownload(request, response);
@@ -265,6 +269,16 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		catch (Exception e)
 		{
 			e.printStackTrace();
+		} finally {
+			try
+			{
+				this.db.close();
+			}
+			catch (DatabaseException e)
+			{
+				// TODO Auto-generated catch block
+				throw new ServletException(e);
+			}
 		}
 
 		// end timing the service
