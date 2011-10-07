@@ -48,8 +48,6 @@ public class FillMetadata {
 <#if databaseImpl == 'JPA'>
             EntityManager em = db.getEntityManager();
             em.getTransaction().begin();
-<#else>
-	 db.beginTx();
 </#if>
 
 
@@ -85,15 +83,16 @@ public class FillMetadata {
      
         login.login(db, "admin", "admin");
 
-        
+        db.beginTx();
 <#else>
+        db.beginTx();
 		//doesn't work fix:
 		db.add(user1);
 		db.add(user2);
 		db.add(group1);
 		db.add(group2);	
 </#if>
-            db.beginTx();
+
 
 <#list model.getUserinterface().getAllUniqueGroups() as group>
 		{
