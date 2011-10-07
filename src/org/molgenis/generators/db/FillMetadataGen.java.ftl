@@ -33,15 +33,22 @@ public class FillMetadata {
 	}
 <#else>
 	public static void fillMetadata(Database db) throws Exception {
-            logger.info("fillMetadata start");
+		fillMetadata(db, true);
+	}
+	
+	public static void fillMetadata(Database db, boolean useLogin) throws Exception {
+            System.out.println("fillMetadata start");
 
-            Login login = db.getSecurity();
-            if(login == null) {
-                logger.info("login == null --> no meta data added");           
-                return;
-            } else if (login instanceof SimpleLogin) {
-            	logger.info("login instanceof SimpleLogin --> no meta data added");
-            	return;
+            if(useLogin)
+            {
+	            Login login = db.getSecurity();
+	            if(login == null) {
+	                System.out.println("login == null --> no meta data added");           
+	                return;
+	            } else if (login instanceof SimpleLogin) {
+	            	System.out.println("login instanceof SimpleLogin --> no meta data added");
+	            	return;
+	            }
             }
 
 
