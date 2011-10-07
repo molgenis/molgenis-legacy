@@ -158,6 +158,7 @@ public class CommonService
 	
 	/**
 	 * Gets the investigations owned, readable or writable by the user with ID 'userId'.
+	 * TODO: also take groups into account.
 	 * 
 	 * @param userId
 	 * @return
@@ -167,6 +168,8 @@ public class CommonService
 		q.addRules(new QueryRule(Investigation.OWNS, Operator.EQUALS, userId));
 		q.addRules(new QueryRule(Operator.OR));
 		q.addRules(new QueryRule(Investigation.CANREAD, Operator.EQUALS, userId));
+		q.addRules(new QueryRule(Operator.OR));
+		q.addRules(new QueryRule(Investigation.CANREAD_NAME, Operator.EQUALS, "AllUsers")); // FIXME evil!!!
 		q.addRules(new QueryRule(Operator.OR));
 		q.addRules(new QueryRule(Investigation.CANWRITE, Operator.EQUALS, userId));
 		List<Investigation> invList;

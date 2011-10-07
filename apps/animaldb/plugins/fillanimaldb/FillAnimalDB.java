@@ -8,11 +8,14 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.molgenis.auth.MolgenisGroup;
 import org.molgenis.core.MolgenisEntity;
 import org.molgenis.core.Ontology;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.security.Login;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservedValue;
@@ -54,7 +57,9 @@ public class FillAnimalDB {
 		logger.info("Create investigation");
 		Investigation inv = new Investigation();
 		inv.setName("System");
-		inv.setOwns(login.getUserId());
+		inv.setOwns_Id(login.getUserId());
+		int allUsersId = db.find(MolgenisGroup.class, new QueryRule(MolgenisGroup.NAME, Operator.EQUALS, "AllUsers")).get(0).getId();
+		inv.setCanRead_Id(allUsersId);
 		db.add(inv);
 		int invid = inv.getId();
 		
