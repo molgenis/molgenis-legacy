@@ -55,13 +55,15 @@ public class RApiServlet extends app.servlet.MolgenisServlet
 			String server = "http://" + request.getLocalName() + ":" + request.getLocalPort() + "/"+MolgenisServlet.getMolgenisVariantID();
 			String rSource = server + "/api/R/";
 			// getRequestURL omits port!
-			s +=("#step1: (first time only) install RCurl package from omegahat or bioconductor\n");
-			s +=("#source(\"http://bioconductor.org/biocLite.R\")\n");
-			s +=("#biocLite(\"RCurl\")\n");
+			s +=("#first time only: install RCurl and bitops\n");
+			s +=("#install.packages(\"RCurl\", lib=\"~/libs\")\n");
+			s +=("#install.packages(\"bitops\", lib=\"~/libs\")\n");
 			s +=("\n");
-			s +=("#step2: source this file to use the MOLGENIS R interface\n");
-			s +=("#source(\"" + rSource + "\")\n");
+			s +=("#load RCurl and bitops\n");
+			s +=("library(bitops, lib.loc=\"~/libs\")\n");
+			s +=("library(RCurl, lib.loc=\"~/libs\")\n");
 			s +=("\n");
+			s +=("#get server paths to R API\n");
 			s +=("molgenispath <- paste(\"" + rSource + "\")\n");
 			s +=("serverpath <- paste(\"" + server + "\")\n");
 			s +=("\n");
@@ -99,6 +101,8 @@ public class RApiServlet extends app.servlet.MolgenisServlet
 				s +=("\n");
 				s +=("#connect to the server\n");
 				s +=("MOLGENIS.connect(\"" + server + "\")\n");
+				s +=("\n");
+				s +=("#Use 'MOLGENIS.login(\"username\",\"password\")' to authenticate.\n");
 			}
 			catch (Exception e)
 			{
