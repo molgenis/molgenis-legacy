@@ -36,7 +36,7 @@ public class getmatrixinfo extends app.servlet.MolgenisServlet {
 		AbstractDataMatrixInstance<Object> instance = null;
 		
 		try {
-			db = this.getDatabase();
+			db = this.createDatabase();
 			databaseIsAvailable = true;
 		} catch (Exception e) {
 			PrintWriter out = response.getWriter();

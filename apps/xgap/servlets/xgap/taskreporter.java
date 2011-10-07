@@ -54,7 +54,7 @@ public class taskreporter extends app.servlet.MolgenisServlet
 
 			String statusText = req.getString("statustext"); // text
 
-			Database db = this.getDatabase();
+			Database db = this.createDatabase();
 
 			QueryRule jobQuery0 = new QueryRule("id", Operator.EQUALS, jobID);
 			QueryRule subjobQuery0 = new QueryRule("job", Operator.EQUALS, jobID);

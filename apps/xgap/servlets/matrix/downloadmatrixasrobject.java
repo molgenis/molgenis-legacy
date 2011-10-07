@@ -51,7 +51,7 @@ public class downloadmatrixasrobject extends app.servlet.MolgenisServlet
 
 		try
 		{
-			db = this.getDatabase();
+			db = this.createDatabase();
 			databaseIsAvailable = true;
 		}
 		catch (Exception e)
