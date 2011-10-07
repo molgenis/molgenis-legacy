@@ -32,7 +32,7 @@ public class ApplyProtocolPluginModel {
 	private boolean newProtocolApplication = false;
 	private boolean timeInfo = false;
 	private boolean allValues = false;
-	private int userId;
+	private int userId = -1;
 	private List<Integer> investigationIds;
 	private Map<Measurement, List<Code>> codeMap = new HashMap<Measurement, List<Code>>();
 	private Map<Measurement, List<String>> codeMapString = new HashMap<Measurement, List<String>>();

@@ -49,12 +49,16 @@ public class ApplyProtocolUI {
     private CheckboxInput allValuesBox;
     
     private ApplyProtocolPluginModel model;
-    private CommonService cs = CommonService.getInstance();
+    private ApplyProtocolService service;
     
     private static transient Logger logger = Logger.getLogger(ApplyProtocolUI.class);
 
     public ApplyProtocolUI(ApplyProtocolPluginModel model) {
 		this.model = model;
+    }
+    
+    public void setService(ApplyProtocolService service) {
+    	this.service = service;
     }
     
     public void initScreen() throws HtmlInputException {
@@ -194,7 +198,7 @@ public class ApplyProtocolUI {
 		try {
 		    protocols = new SelectInput("Protocols");
 		    protocols.setLabel("Choose Protocol:");
-		    protocols.setOptions(cs.getAllProtocolsSorted(Protocol.NAME, "ASC", model.getInvestigationIds()), 
+		    protocols.setOptions(service.getAllProtocolsSorted(Protocol.NAME, "ASC", model.getInvestigationIds()), 
 		    		Protocol.ID, Protocol.NAME);
 		    protocolDiv.add(protocols);
 	
@@ -211,9 +215,9 @@ public class ApplyProtocolUI {
 		try {
 		    targets = new SelectMultipleInput("Targets", null);
 		    targets.setLabel("Choose Targets:");
-		    List<Integer> investigationIds = cs.getWritableUserInvestigationIds(model.getUserId());
-		    for (ObservationTarget o : cs.getAllObservationTargets(investigationIds)) {
-		    	targets.addOption(o.getId(), this.getTargetName(o.getId()));
+		    List<Integer> investigationIds = service.getWritableUserInvestigationIds(model.getUserId());
+		    for (ObservationTarget o : service.getAllObservationTargets(investigationIds)) {
+		    	targets.addOption(o.getId(), service.getObservationTargetById(o.getId()).getName());
 		    }
 		    protocolDiv.add(targets);
 	
@@ -230,7 +234,7 @@ public class ApplyProtocolUI {
 		try {
 		    batches = new SelectMultipleInput("Batches", null);
 		    batches.setLabel("Choose Batches:");
-		    for (MolgenisBatch o : cs.getAllBatches()) {
+		    for (MolgenisBatch o : service.getAllBatches()) {
 		    	batches.addOption(o.getId(), o.getName());
 		    }
 		    protocolDiv.add(batches);
@@ -364,7 +368,7 @@ public class ApplyProtocolUI {
 		for (String o : model.getFullTargetList()) {
 		    Integer targetId = Integer.parseInt(o);
 		    model.getTargetsIdList().add(targetId);
-		    valueTable.addRow(this.getTargetName(targetId));
+		    valueTable.addRow(service.getObservationTargetById(targetId).getName());
 		}
     }
     
@@ -419,8 +423,8 @@ public class ApplyProtocolUI {
 			}
 		    
 			int userId = model.getUserId();
-			int ownInvId = cs.getOwnUserInvestigationId(userId);
-		    List<Integer> investigationIds = cs.getWritableUserInvestigationIds(userId);
+			int ownInvId = service.getOwnUserInvestigationId(userId);
+		    List<Integer> investigationIds = service.getWritableUserInvestigationIds(userId);
 	
 		    // Rest of the rows contain inputs for each target-feature combination
 		    for (int row = 1; row <= model.getFullTargetList().size(); row++) {
@@ -437,7 +441,7 @@ public class ApplyProtocolUI {
 		    			DivPanel starttimeDiv = new DivPanel();
 		    			DivPanel endtimeDiv = new DivPanel();
 		    			int valueCounter = 0;
-			    		List<ObservedValue> values = cs.getObservedValuesByTargetAndFeature(
+			    		List<ObservedValue> values = service.getObservedValuesByTargetAndFeature(
 			    			model.getTargetsIdList().get(row - 1), model.getFeaturesList().get(col), 
 			    			investigationIds, ownInvId);
 			    		for (ObservedValue value : values) {
@@ -490,20 +494,6 @@ public class ApplyProtocolUI {
 		}
     }
     
-    /**
-     * Get the custom label (if available) or name for the ObservationTarget with id 'id'
-     * 
-     * @param id
-     * @return
-     */
-    public String getTargetName(Integer id) {
-    	try {
-			return cs.getObservationTargetLabel(id);
-		} catch (Exception e) {
-			return id.toString();
-		}
-    }
-    
     public void addTableDiv() {
     	this.protocolApplicationContainer.add(tableDiv);
     }
@@ -548,7 +538,7 @@ public class ApplyProtocolUI {
     	if (valueTable.getCell(col, row) instanceof XrefInput) {
     		try {
     			int targetId = Integer.parseInt(value.toString());
-				((XrefInput) input).setValue(cs.getObservationTargetById(targetId));
+				((XrefInput) input).setValue(service.getObservationTargetById(targetId));
 			} catch (Exception e) {
 				// Do nothing, no value will be set
 			}

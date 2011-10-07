@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.molgenis.batch.MolgenisBatch;
 import org.molgenis.batch.MolgenisBatchEntity;
 import org.molgenis.core.MolgenisEntity;
 import org.molgenis.framework.db.Database;
@@ -266,6 +267,46 @@ public class ApplyProtocolService {
 		} catch (DatabaseException e) {
 			return null;
 		}
+	}
+	
+	public List<Protocol> getAllProtocolsSorted(String sortField,
+			String sortOrder, List<Integer> investigationIds) throws DatabaseException, ParseException
+	{
+		Query<Protocol> q = db.query(Protocol.class);
+		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.IN, investigationIds);
+		QueryRule qr2 = new QueryRule(Operator.OR);
+		QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
+		q.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
+		if (sortOrder.equals("ASC")) {
+			q.sortASC(sortField);
+		} else {
+			q.sortDESC(sortField);
+		}
+		return q.find();
+	}
+	
+	public List<ObservationTarget> getAllObservationTargets(List<Integer> investigationIds) {
+		try {
+		    return db.query(ObservationTarget.class).in(ObservationTarget.INVESTIGATION, investigationIds).find();
+		} catch (Exception e) {
+		    return new ArrayList<ObservationTarget>();
+		}
+		
+	}
+	
+	public List<MolgenisBatch> getAllBatches() {
+	    try {
+		    List<MolgenisBatch> batches = db.find(MolgenisBatch.class);
+		    return batches;
+		} catch(DatabaseException dbe) {
+		    return new ArrayList<MolgenisBatch>();
+		}
+	}
+	
+	public ObservationTarget getObservationTargetById(int targetId)
+			throws DatabaseException, ParseException
+	{
+		return db.findById(ObservationTarget.class, targetId);
 	}
 
 }

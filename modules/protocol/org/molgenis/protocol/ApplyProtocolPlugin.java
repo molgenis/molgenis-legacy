@@ -88,12 +88,11 @@ public class ApplyProtocolPlugin extends GenericPlugin
     @Override
     public void reload(Database db)
     {
-    	int userId = this.getLogin().getUserId();
-    	
-		service.setDatabase(db);
-		
+    	service.setDatabase(db);
 		model.setService(service);
+		ui.setService(service);
 		
+		int userId = this.getLogin().getUserId();
 		// Only first time or if user changed:
 		if (ui.getProtocolApplicationContainer() == null || userId != model.getUserId()) {
 			model.setUserAndInvestigationIds(userId);
