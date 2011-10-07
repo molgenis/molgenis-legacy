@@ -82,6 +82,11 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		return this.db;
 	}
 	
+	//seems to be the only way to store login info from e.g. R API
+	//(standalone) database seems to be refreshed for every request
+	//and even request.getSession().setAttribute("user", user) has no effect
+	private String __remote__login__request__username = "anonymous";
+	private String __remote__login__request__password = "anonymous";
 
 	// get logger
 	protected final transient Logger logger = Logger.getLogger(this.getClass()
@@ -1170,6 +1175,27 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			PrintWriter out = response.getWriter();
 			// EntityReaderFactory readerFactory = new CsvReaderFactory();
 
+			//"hack" to be able to log in via R (default R API has been overridden for xQTL)
+			if(requestTuple.getString(INPUT_ACTION) != null && requestTuple.getString(INPUT_ACTION).equals("__remote__login__request"))
+			{
+				String username = requestTuple.getString(INPUT_DATA);
+				String password = requestTuple.getString(INPUT_SILENT);
+				boolean loggedIn = db.getSecurity().login(db, username, password);
+				if(loggedIn)
+				{
+					out.println("Welcome, " + username + "!");
+					this.__remote__login__request__username = username;
+					this.__remote__login__request__password = password;
+				}
+				else
+				{
+					out.println("Login failed: username or password unknown");
+				}
+				out.flush();
+				out.close();
+				return;
+			}
+			
 			// if no type selected: show data type choice
 			if (requestTuple.getString(INPUT_DATATYPE) == null)
 			{
@@ -1297,10 +1323,12 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 						if (requestTuple.getObject(INPUT_DATA) != null)
 						{
 							logger.info("processing textarea upload...");
-							nRowsChanged = db.add(
-									entityClass,
-									new CsvStringReader(requestTuple
-											.getString(INPUT_DATA)), writer);
+							
+							//allows secure uploading of data from R API
+							String username = this.__remote__login__request__username;
+							String password = this.__remote__login__request__password;
+							db.getSecurity().login(db, username, password);
+							nRowsChanged = db.add(entityClass, new CsvStringReader(requestTuple.getString(INPUT_DATA)), writer);
 						}
 						else if (requestTuple.getObject(INPUT_FILE) != null)
 						{
