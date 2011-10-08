@@ -140,6 +140,7 @@
 	MAKE - Step 5: Compile the actual application using the components specified in app.class.path.
 	-->
 	<target name="compile_app" description="Compile application">
+		<antcall target="fix_multithreading_db" />
 		<pathconvert targetos="unix" property="app_src" refid="app.class.path" />
 		<javac srcdir="${app_src}" destdir="${app_build_dir}" includeantruntime="false">
 			<classpath>
@@ -415,5 +416,23 @@
 		</echo>
 	</target>
 
+	<!--
+	Helper function to overwrite part of MolgenisServlet.java.
+	This enables calling the database in rapid succession when e.g.
+	uploading high throughput results from multiple threads/cores/nodes.
+	However, login/security information is not available this way.
+	-->
+	<target name="fix_multithreading_db">
+		<replace file="generated/java/app/servlet/MolgenisServlet.java" token="return super.getDatabase();" value="
+			BasicDataSource data_src = new BasicDataSource();
+			data_src.setDriverClassName(&quot;org.hsqldb.jdbcDriver&quot;);
+			data_src.setUsername(&quot;sa&quot;);
+			data_src.setPassword(&quot;&quot;);
+			data_src.setUrl(&quot;jdbc:hsqldb:file:hsqldb/molgenisdb;shutdown=true&quot;);
+			data_src.setMaxIdle(10);data_src.setMaxWait(1000);
+			DataSource dataSource = (DataSource)data_src;
+			Database db = new app.JDBCDatabase(dataSource, new File(&quot;./data/&quot;));
+			return db;"/>
+	</target>
 
 </project>
