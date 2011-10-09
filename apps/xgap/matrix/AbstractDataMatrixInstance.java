@@ -204,10 +204,10 @@ public abstract class AbstractDataMatrixInstance<E> extends
 			}
 			p.append("\n");
 			Object[][] elements = getElements();
-			for (int rowIndex = 0; rowIndex < elements.length; rowIndex++)
+			for(int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
 			{
 				p.append(getRowNames().get(rowIndex));
-				for (int colIndex = 0; colIndex < elements[rowIndex].length; colIndex++)
+				for(int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
 				{
 					if (elements[rowIndex][colIndex] == null)
 					{
@@ -239,10 +239,10 @@ public abstract class AbstractDataMatrixInstance<E> extends
 			}
 			result.append("\n");
 			Object[][] elements = getElements();
-			for (int rowIndex = 0; rowIndex < elements.length; rowIndex++)
+			for(int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
 			{
 				result.append(getRowNames().get(rowIndex));
-				for (int colIndex = 0; colIndex < elements[rowIndex].length; colIndex++)
+				for(int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
 				{
 					if (elements[rowIndex][colIndex] == null)
 					{
@@ -374,9 +374,9 @@ public abstract class AbstractDataMatrixInstance<E> extends
 		try
 		{
 			Object[][] elements = getElements();
-			for (int rowIndex = 0; rowIndex < elements.length; rowIndex++)
+			for(int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
 			{
-				for (int colIndex = 0; colIndex < elements[rowIndex].length; colIndex++)
+				for(int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
 				{
 					Object val = elements[rowIndex][colIndex];
 					if (val == null)
@@ -447,36 +447,19 @@ public abstract class AbstractDataMatrixInstance<E> extends
 
 		/* Write elements */
 		Object[][] elements = getElements();
-		if (elements[0][0] instanceof Number)
+		for (int i = 0; i < this.getNumberOfCols(); i++)
 		{
-			// TODO: format numbers?
-			for (int i = 0; i < this.getNumberOfCols(); i++)
+			for (int j = 0; j < this.getNumberOfRows(); j++)
 			{
-				for (int j = 0; j < this.getNumberOfRows(); j++)
+				if (elements[j][i] != null)
 				{
 					Label l = new Label(i + 1, j + 1,
 							elements[j][i].toString(), cellFormat);
 					s.addCell(l);
 				}
-			}
-		}
-		else
-		{
-			for (int i = 0; i < this.getNumberOfCols(); i++)
-			{
-				for (int j = 0; j < this.getNumberOfRows(); j++)
+				else
 				{
-					if (elements[j][i] != null)
-					{
-						Label l = new Label(i + 1, j + 1,
-								elements[j][i].toString(), cellFormat);
-						s.addCell(l);
-					}
-					else
-					{
-						s.addCell(new Label(i + 1, j + 1, "", cellFormat));
-					}
-
+					s.addCell(new Label(i + 1, j + 1, "", cellFormat));
 				}
 			}
 		}
@@ -662,10 +645,10 @@ public abstract class AbstractDataMatrixInstance<E> extends
 			out.write("\t" + col);
 		}
 		out.write("\n");
-		for (int rowIndex = 0; rowIndex < elements.length; rowIndex++)
+		for(int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
 		{
 			out.write(getRowNames().get(rowIndex));
-			for (int colIndex = 0; colIndex < elements[rowIndex].length; colIndex++)
+			for(int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
 			{
 				if (elements[rowIndex][colIndex] == null)
 				{
@@ -701,9 +684,9 @@ public abstract class AbstractDataMatrixInstance<E> extends
 //				+ this.getData().getFeature_Name() + "\t" + "etc");
 
 		// iterate over all the values and add in the form of a list
-		for (int rowIndex = 0; rowIndex < elements.length; rowIndex++)
+		for(int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
 		{
-			for (int colIndex = 0; colIndex < elements[rowIndex].length; colIndex++)
+			for(int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
 			{
 				res.add(getRowNames().get(rowIndex) + "\t"
 						+ getColNames().get(colIndex) + "\t"

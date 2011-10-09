@@ -150,13 +150,32 @@ public class DatabaseDataMatrixInstance extends
 	{
 		try
 		{
+			String maxRowSql = String.format("SELECT MAX(" + rowIndexString + ") AS maxrow FROM " + type
+					+ dataElement + " WHERE " + dataString + "=%s", matrixId);
+			ResultSetTuple rsMaxRow = new ResultSetTuple(db.executeQuery(maxRowSql));
+			int maxRow = -1;
+			while (rsMaxRow.next())
+			{
+				maxRow = rsMaxRow.getInt("maxrow") + 1;
+			}
+			rsMaxRow.close();
+			
+			String maxColSql = String.format("SELECT MAX(" + colIndexString + ") AS maxcol FROM " + type
+					+ dataElement + " WHERE " + dataString + "=%s", matrixId);
+			ResultSetTuple rsMaxCol = new ResultSetTuple(db.executeQuery(maxColSql));
+			int maxCol = -1;
+			while (rsMaxCol.next())
+			{
+				maxCol = rsMaxCol.getInt("maxcol") + 1;
+			}
+			rsMaxCol.close();
+			
 			String sql = String.format("SELECT " + rowIndexString + ","
 					+ colIndexString + "," + valueString + " FROM " + type
 					+ dataElement + " WHERE " + dataString + "=%s", matrixId);
 			ResultSetTuple rs = new ResultSetTuple(db.executeQuery(sql));
 
-			Object[][] data = new Object[this.getNumberOfRows()][this
-					.getNumberOfCols()];
+			Object[][] data = new Object[maxRow][maxCol];
 			if (type.equals("Decimal"))
 			{
 				while (rs.next())

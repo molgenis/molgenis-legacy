@@ -57,29 +57,78 @@
 	<input id="matrixUploadTextArea" type="submit" value="Upload" onclick="__action.value='uploadTextArea';return true;"/><br>
 				
 <#else>
-<div style="overflow: auto; width: inherit;">
+<div style="overflow: auto; width: inherit;">				
 	<table>
 		<tr>
-			<td class="menuitem shadeHeader" onclick="mopen('matrix_plugin_FileSub');">
-				Menu
-				<img src="res/img/pulldown.gif"/><br>
-				<div class="submenu" id="matrix_plugin_FileSub">
-					<table>
-						<#--tr><td class="submenuitem" onclick="location.href='downloadmatrixascsv?id=${model.selectedData.getId()?c}&download=some&coff=${browser.colStart}&clim=${browser.colStop-browser.colStart}&roff=${browser.rowStart}&rlim=${browser.rowStop-browser.rowStart}&stream=false'"><img src="res/img/download.png" align="left" />Download visible as text</td></tr-->
-						<#--tr><td class="submenuitem" onclick="location.href='downloadmatrixasexcel?id=${model.selectedData.getId()?c}&download=some&coff=${browser.colStart}&clim=${browser.colStop-browser.colStart}&roff=${browser.rowStart}&rlim=${browser.rowStop-browser.rowStart}'"><img src="res/img/download.png" align="left" />Download visible as Excel</td></tr-->
-						<#--tr><td class="submenuitem" onclick="location.href='downloadmatrixasspss?id=${model.selectedData.getId()?c}&download=some&coff=${browser.colStart}&clim=${browser.colStop-browser.colStart}&roff=${browser.rowStart}&rlim=${browser.rowStop-browser.rowStart}'"><img src="res/img/download.png" align="left" />Download visible as SPSS</td></tr-->
-						<tr><td class="submenuitem" onclick="location.href='downloadmatrixascsv?id=inmemory'"><img src="res/img/download.png" align="left" />Download visible as text</td></tr>
-						<tr><td class="submenuitem" onclick="location.href='downloadmatrixasexcel?id=inmemory'"><img src="res/img/download.png" align="left" />Download visible as Excel</td></tr>
-						<tr><td class="submenuitem" onclick="location.href='downloadmatrixasspss?id=inmemory'"><img src="res/img/download.png" align="left" />Download visible as SPSS</td></tr>
-						<tr><td class="submenuitem" onclick="location.href='downloadmatrixascsv?id=${model.selectedData.getId()?c}&download=all&stream=false'"><img src="res/img/download.png" align="left" />Download all as text</td></tr>
-						<tr><td class="submenuitem" onclick="location.href='downloadmatrixasexcel?id=${model.selectedData.getId()?c}&download=all'"><img src="res/img/download.png" align="left" />Download all as Excel</td></tr>
-						<tr><td class="submenuitem" onclick="location.href='downloadmatrixasspss?id=${model.selectedData.getId()?c}&download=all'"><img src="res/img/download.png" align="left" />Download all as SPSS</td></tr>
-						<#if model.selectedData.source == "Binary" && model.hasBackend == true><tr><td class="submenuitem" onclick="location.href='downloadfile?name=${model.selectedData.name}'"><img src="res/img/download.png" align="left" />Download all as binary</td></tr></#if>
-						<tr><td class="submenuitem" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.forms.${screen.name}.__target.value='${screen.name}';document.forms.${screen.name}.__action.value = 'refresh';document.forms.${screen.name}.submit();"><img src="res/img/update.gif" align="left" />Reset viewer</td></tr>
-					</table>
-				</div>											
+			<td class="menuitem shadeHeader">
+				<div onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.forms.${screen.name}.__target.value='${screen.name}';document.forms.${screen.name}.__action.value = 'refresh';document.forms.${screen.name}.submit();"><img src="res/img/update.gif" align="left" />Reset</div>
 			</td>
-			<td align="center" class="shadeHeader" valign="center">
+			<td class="menuitem shadeHeader" onclick="mopen('matrix_plugin_FileSub');">
+				Download
+				<img src="res/img/pulldown.gif"/><br>
+				<div class="submenu" style="width:400px" id="matrix_plugin_FileSub">
+				<table cellpadding="3">
+				<#assign icon_size = 30>
+					<tr>
+						<td class="submenuitem">
+							<b><i><font size="3">Visible values</font></i></b>
+						</td>
+						<td class="submenuitem">
+							<b><i><font size="3">All values</font></i></b>
+						</td>
+					</tr>
+					<tr>
+						<td class="submenuitem" onclick="location.href='downloadmatrixascsv?id=inmemory'">
+							<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/txt_icon.png" align="left" />&nbsp;&nbsp;CSV format
+						</td>
+						<td class="submenuitem" onclick="location.href='downloadmatrixascsv?id=${model.selectedData.getId()?c}&download=all&stream=false'">
+							<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/txt_icon.png" align="left" />&nbsp;&nbsp;CSV format
+						</td>		
+					</tr>	
+					<tr>
+						<td class="submenuitem" onclick="location.href='downloadmatrixasexcel?id=inmemory'">
+							<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/excel_icon.png" align="left" />&nbsp;&nbsp;Excel file
+						</td>
+						<td class="submenuitem" onclick="location.href='downloadmatrixasexcel?id=${model.selectedData.getId()?c}&download=all'">
+							<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/excel_icon.png" align="left" />&nbsp;&nbsp;Excel file
+						</td>
+					</tr>
+					<tr>
+						<td class="submenuitem" onclick="location.href='downloadmatrixasspss?id=inmemory'">
+							<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/spss_icon.png" align="left" />&nbsp;&nbsp;SPSS file
+						</td>
+						<td class="submenuitem" onclick="location.href='downloadmatrixasspss?id=${model.selectedData.getId()?c}&download=all'">
+							<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/spss_icon.png" align="left" />&nbsp;&nbsp;SPSS file
+						</td>
+					</tr>
+					<tr>
+						<td class="submenuitem" onclick="location.href='downloadmatrixasrobject?id=inmemory'">
+							<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/r_icon.gif" align="left" />&nbsp;&nbsp;R matrix object
+						</td>
+						<td class="submenuitem" onclick="location.href='downloadmatrixasrobject?id=${model.selectedData.getId()?c}&download=all'">
+							<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/r_icon.gif" align="left" />&nbsp;&nbsp;R matrix object
+						</td>
+					</tr>
+					
+					<#if model.selectedData.storage == "Binary" && model.hasBackend == true>
+					<tr>
+						<td class="submenuitem">
+							&nbsp;
+						</td>
+						<td class="submenuitem" onclick="location.href='downloadfile?name=${model.selectedData.name}'">
+							<img ${icon_size}" height="${icon_size}" src="res/img/download.png" align="left" />&nbsp;&nbsp;Binary file
+						</td>
+					</tr>
+					</#if>
+					
+				</table>
+				
+					
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" align="center" class="shadeHeader" valign="center">
 				<input type="image" src="res/img/first.png" onclick="document.forms.${screen.name}.__action.value = 'moveFarLeft';" />
 				<input type="image" src="res/img/prev.png" onclick="document.forms.${screen.name}.__action.value = 'moveLeft';"/>
 				<b><font class="fontColor"><#if model.getColHeader()?exists>${model.getColHeader()}<#else>0-0 of 0</#if></font></b>

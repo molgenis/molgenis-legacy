@@ -23,6 +23,8 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
+import plugins.matrix.manager.Browser;
+
 import decorators.MolgenisFileHandler;
 
 public class downloadfile extends app.servlet.MolgenisServlet {
@@ -131,6 +133,7 @@ public class downloadfile extends app.servlet.MolgenisServlet {
 				ServletContext sc = getServletContext();
 				response.setContentType(sc.getMimeType(mf.getExtension()));
 				response.setContentLength((int) file.length());
+				response.setHeader("Content-disposition","attachment; filename=\""+mf.getName()+"."+mf.getExtension()+"\"");
 				//response.setStatus(arg0)
 				byte[] buffer = new byte[(int) file.length()];
 				while (in.available() != 0) {

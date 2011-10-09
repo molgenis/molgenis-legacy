@@ -77,6 +77,7 @@ public class downloadmatrixasspss extends app.servlet.MolgenisServlet {
 					}
 					outSpecial.flush();
 					outSpecial.close();
+					return;
 				}
 				
 				int matrixId = req.getInt("id");
