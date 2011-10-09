@@ -337,7 +337,7 @@ public abstract class AbstractDataMatrixInstance<E> extends
 		return spssFile;
 	}
 	
-	public String getAsRobject() throws Exception
+	public String getAsRobject(boolean replaceNaWithZero) throws Exception
 	{
 		//e.g.
 //		mdat <- matrix(
@@ -381,7 +381,8 @@ public abstract class AbstractDataMatrixInstance<E> extends
 					Object val = elements[rowIndex][colIndex];
 					if (val == null)
 					{
-						result.append("NA,");
+						if( replaceNaWithZero){ result.append("0,"); }
+						else{ result.append("NA,"); }
 					}
 					else
 					{

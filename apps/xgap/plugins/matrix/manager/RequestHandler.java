@@ -31,6 +31,7 @@ public class RequestHandler {
 			String rowName = request.getString("r_plot_row_select");
 			String colName = request.getString("r_plot_col_select");
 			String type = request.getString("r_plot_type");
+			if(action.endsWith("heatmap")) type = request.getString("r_heatmap_type");
 			int width = Integer.parseInt(request.getString("r_plot_resolution").split("x")[0]);
 			int height = Integer.parseInt(request.getString("r_plot_resolution").split("x")[1]);
 			screenModel.setSelectedWidth(width);

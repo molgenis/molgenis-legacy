@@ -64,6 +64,16 @@ public class MakeRPlot
 			}
 			plotThis = instance.getCol(colName);
 		}
+		else if(action.endsWith("heatmap"))
+		{
+			params.setTitle(instance.getData().getName());
+			params.setxLabel("");
+			params.setyLabel("");
+		}
+		else
+		{
+			throw new Exception("unrecognized action: " + action);
+		}
 		
 
 			File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + "rplot"
@@ -72,16 +82,24 @@ public class MakeRPlot
 			params.setWidth(width);
 			params.setHeight(height);
 
-			if (type.equals("boxplot"))
+			if(action.endsWith("col") || action.endsWith("row"))
 			{
-				params.setFunction("boxplot");
-			}
-			else
-			{
-				params.setFunction("plot");
-			}
+				if (type.equals("boxplot"))
+				{
+					params.setFunction("boxplot");
+				}
+				else
+				{
+					params.setFunction("plot");
+				}
 
-			new ScriptInstance(plotThis, tmpImg, params);
+				new ScriptInstance(plotThis, tmpImg, params);
+			}
+			else if(action.endsWith("heatmap"))
+			{
+				new HeatmapScriptInstance(instance, tmpImg, params);
+			}
+			
 			model.setTmpImgName(tmpImg.getName());
 		
 	}

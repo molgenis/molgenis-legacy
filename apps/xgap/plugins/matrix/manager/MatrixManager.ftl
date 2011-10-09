@@ -53,7 +53,9 @@
 	<input type="submit" value="Upload" onclick="__action.value='upload';return true;"/><br>
 	<br>
 	Alternatively, use this textarea to input your data.<br>
-	<textarea id="matrixInputTextArea" name="inputTextArea" rows="7" cols="30"><#if model.uploadTextAreaContent?exists>${model.uploadTextAreaContent}</#if></textarea>
+	<textarea id="matrixInputTextArea" name="inputTextArea" rows="10" cols="50">	feat1	feat2	feat3
+targ1	val1	val2	val3
+targ2	val4	val5	val6</textarea>
 	<input id="matrixUploadTextArea" type="submit" value="Upload" onclick="__action.value='uploadTextArea';return true;"/><br>
 				
 <#else>
@@ -128,7 +130,10 @@
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2" align="center" class="shadeHeader" valign="center">
+			<td class="shadeHeader">
+				&nbsp;
+			</td>
+			<td align="left" class="shadeHeader" valign="center">
 				<input type="image" src="res/img/first.png" onclick="document.forms.${screen.name}.__action.value = 'moveFarLeft';" />
 				<input type="image" src="res/img/prev.png" onclick="document.forms.${screen.name}.__action.value = 'moveLeft';"/>
 				<b><font class="fontColor"><#if model.getColHeader()?exists>${model.getColHeader()}<#else>0-0 of 0</#if></font></b>
@@ -249,7 +254,7 @@
 <td><input name="filterSelect" type="radio" onclick="display('show', 'filter3');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');" <#if model.selectedFilterDiv == 'filter3'>checked</#if>>Filter on ${model.selectedData.targetType?lower_case} values</td>
 <td><input name="filterSelect" type="radio" onclick="display('show', 'filter4');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');" <#if model.selectedFilterDiv == 'filter4'>checked</#if>>Filter on ${model.selectedData.featureType?lower_case} attributes</td>
 <td><input name="filterSelect" type="radio" onclick="display('show', 'filter5');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter6');display('hide', 'filter7');" <#if model.selectedFilterDiv == 'filter5'>checked</#if>>Filter on ${model.selectedData.targetType?lower_case} attributes</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter6');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter7');" <#if model.selectedFilterDiv == 'filter6'>checked</#if>>Make an R plot</td>
+<td><input name="filterSelect" type="radio" onclick="display('show', 'filter6');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter7');" <#if model.selectedFilterDiv == 'filter6'>checked</#if>>Plot with R</td>
 <td><input name="filterSelect" type="radio" onclick="display('show', 'filter7');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');" <#if model.selectedFilterDiv == 'filter7'>checked</#if>>2D filter</td>
 </tr></table>
 
@@ -394,24 +399,31 @@
 <div id="filter6" <#if model.selectedFilterDiv != 'filter6'>style="display:none"</#if>>
 	<table cellpadding="2">
 		<tr>
-			<td colspan="4">
-				Make R plot:
+			<td>
+				Make R plot of resolution (pixels):
+			</td>
+			<td colspan="2">
+				<select name="r_plot_resolution">
+					<option <#if model.selectedWidth?exists && model.selectedWidth == 480>SELECTED</#if> value="480x640">480 x 640</option>
+					<option <#if model.selectedWidth?exists && model.selectedWidth == 600>SELECTED</#if> value="600x800">600 x 800</option>
+					<option <#if model.selectedWidth?exists && model.selectedWidth == 640>SELECTED</#if> value="640x480">640 x 480</option>
+					<option <#if model.selectedWidth?exists && model.selectedWidth == 768>SELECTED</#if> value="768x1024">768 x 1024</option>
+					<option <#if model.selectedWidth?exists && model.selectedWidth == 800>SELECTED</#if> value="800x600">800 x 600</option>
+					<option <#if model.selectedWidth?exists && model.selectedWidth == 1024>SELECTED</#if> value="1024x768">1024 x 768</option>
+					<option <#if model.selectedWidth?exists && model.selectedWidth == 1680>SELECTED</#if> value="1680x1050">1680 x 1050</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				&nbsp;
 			</td>
 		</tr>
 		<tr>
 			<td>
-				<select name="r_plot_row_select">
-					<#list browser.subMatrix.rowNames as row><option value="${row}">${row}</option></#list>
-				</select>
+				<i>Regular plot of type:</i>
 			</td>
-			<td>
-				<input type="submit" value="Plot full row" onclick="document.forms.${screen.name}.__action.value = 'r_plot_full_row'; document.forms.${screen.name}.submit();">
-			</td>
-			<td>
-				<input type="submit" value="Plot visible row" onclick="document.forms.${screen.name}.__action.value = 'r_plot_visible_row'; document.forms.${screen.name}.submit();">
-			</td>
-			<td>
-			Type of plot:
+			<td colspan="2">
 				<select name="r_plot_type">
 					<#--if model.selectedData.valueType == "Decimal"-->
 						<option <#if model.selectedPlotType?exists && model.selectedPlotType == "p">SELECTED</#if> value="p">Points</option>
@@ -426,6 +438,19 @@
 		</tr>
 		<tr>
 			<td>
+				<select name="r_plot_row_select">
+					<#list browser.subMatrix.rowNames as row><option value="${row}">${row}</option></#list>
+				</select>
+			</td>
+			<td>
+				<input type="submit" value="Plot full row" onclick="document.forms.${screen.name}.__action.value = 'r_plot_full_row'; document.forms.${screen.name}.submit();">
+			</td>
+			<td>
+				<input type="submit" value="Plot visible row" onclick="document.forms.${screen.name}.__action.value = 'r_plot_visible_row'; document.forms.${screen.name}.submit();">
+			</td>
+		</tr>
+		<tr>
+			<td>
 				<select name="r_plot_col_select">
 					<#list browser.subMatrix.colNames as col><option value="${col}">${col}</option></#list>
 				</select>
@@ -436,17 +461,34 @@
 			<td>
 				<input type="submit" value="Plot visible column" onclick="document.forms.${screen.name}.__action.value = 'r_plot_visible_col'; document.forms.${screen.name}.submit();">
 			</td>
+		</tr>
+		<tr>
+			<td colspan="3">
+				&nbsp;
+			</td>
+		</tr>
+		<tr>
 			<td>
-				Resolution (pixels):
-				<select name="r_plot_resolution">
-					<option <#if model.selectedWidth?exists && model.selectedWidth == 480>SELECTED</#if> value="480x640">480 x 640</option>
-					<option <#if model.selectedWidth?exists && model.selectedWidth == 600>SELECTED</#if> value="600x800">600 x 800</option>
-					<option <#if model.selectedWidth?exists && model.selectedWidth == 640>SELECTED</#if> value="640x480">640 x 480</option>
-					<option <#if model.selectedWidth?exists && model.selectedWidth == 768>SELECTED</#if> value="768x1024">768 x 1024</option>
-					<option <#if model.selectedWidth?exists && model.selectedWidth == 800>SELECTED</#if> value="800x600">800 x 600</option>
-					<option <#if model.selectedWidth?exists && model.selectedWidth == 1024>SELECTED</#if> value="1024x768">1024 x 768</option>
-					<option <#if model.selectedWidth?exists && model.selectedWidth == 1680>SELECTED</#if> value="1680x1050">1680 x 1050</option>
+				<i>Heatmap plot with clustering on:</i>
+			</td>
+			<td colspan="2">
+				<select name="r_heatmap_type">
+					<option value="rowscols">Rows and cols</option>
+					<option value="rows">Just rows</option>
+					<option value="cols">Just cols</option>
+					<option value="none">None</option>
 				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<i>(NA values are replaced with 0)</i>
+			</td>
+			<td>
+				<input type="submit" value="Plot full values" onclick="document.forms.${screen.name}.__action.value = 'r_plot_full_heatmap'; document.forms.${screen.name}.submit();">
+			</td>
+			<td>
+				<input type="submit" value="Plot visible values" onclick="document.forms.${screen.name}.__action.value = 'r_plot_visible_heatmap'; document.forms.${screen.name}.submit();">
 			</td>
 		</tr>
 	</table>

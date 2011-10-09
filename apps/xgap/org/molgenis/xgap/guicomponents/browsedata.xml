@@ -10,8 +10,6 @@
 				<menu name="Select" group="biologist">
 					<plugin name="Manager" type="plugins.matrix.manager.MatrixManager"
 						group="biologist" />
-					<plugin name="Heatmap" type="plugins.matrix.heatmap.MatrixHeatmap"
-						group="biologist" />
 					<plugin name="Inspector" type="plugins.matrix.inspector.MatrixInspector"
 						group="biologist" />
 					<plugin name="MatrixAdmin" label="Delete storage"

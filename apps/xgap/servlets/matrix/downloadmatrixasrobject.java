@@ -69,7 +69,7 @@ public class downloadmatrixasrobject extends app.servlet.MolgenisServlet
 				//special exception for filtered content: get matrix instance from memory and do complete handle
 				if(req.getString("id").equals("inmemory"))
 				{
-					content = Browser.inmemory.getAsRobject();
+					content = Browser.inmemory.getAsRobject(false);
 					response.setContentLength(content.length());
 					p.print(content);
 					p.flush();
@@ -85,7 +85,7 @@ public class downloadmatrixasrobject extends app.servlet.MolgenisServlet
 
 				if (req.getString("download").equals("all"))
 				{
-					content +=  instance.getAsRobject() ;
+					content +=  instance.getAsRobject(false) ;
 				}
 				else if (req.getString("download").equals("some"))
 				{
@@ -93,7 +93,7 @@ public class downloadmatrixasrobject extends app.servlet.MolgenisServlet
 					int colLimit = req.getInt("clim");
 					int rowOffset = req.getInt("roff");
 					int rowLimit = req.getInt("rlim");
-					content += instance.getSubMatrixByOffset(rowOffset, rowLimit, colOffset, colLimit).getAsRobject();	
+					content += instance.getSubMatrixByOffset(rowOffset, rowLimit, colOffset, colLimit).getAsRobject(false);	
 				}
 				else
 				{
