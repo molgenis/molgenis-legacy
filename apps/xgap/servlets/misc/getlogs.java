@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -85,17 +86,18 @@ public class getlogs extends app.servlet.MolgenisServlet
 	{
 		for (File f : dir.listFiles())
 		{
+			Date lastMod = new Date(f.lastModified());
 			if (listJob != -1)
 			{
 				if (f.getName().startsWith("runmij"+listJob) || f.getName().startsWith("subjob") || f.getName().equals("download.Rout")|| f.getName().equals("ESTtime.Rout"))
 				{
-					out.println("FILE: <a href=\"/" + getMolgenisVariantID() + "/getlogs?file=" + path + f.getName() + "\">"
-							+ f.getName() + "</a><br><br>");
+					out.println("file: <a href=\"/" + getMolgenisVariantID() + "/getlogs?file=" + path + f.getName() + "\">"
+							+ f.getName() + "</a> / size (bytes): " + f.length() + " / lastmod: "+lastMod+"<br><br>");
 				}
 				else if ((f.isDirectory() && f.getName().startsWith("run"+listJob)))
 				{
-					out.println("DIR > <a href=\"/" + getMolgenisVariantID() + "/getlogs?file=" + path + f.getName()
-							+ "/" + "\">" + f.getName() + "</a><br><br>");
+					out.println("dir > <a href=\"/" + getMolgenisVariantID() + "/getlogs?file=" + path + f.getName()
+							+ "/" + "\">" + f.getName() + "</a> / size (bytes): " + f.length() + " / lastmod: "+lastMod+"<br><br>");
 				}
 			}
 			else
@@ -103,13 +105,13 @@ public class getlogs extends app.servlet.MolgenisServlet
 				if (f.getName().endsWith(".Rout") || f.getName().endsWith(".R") || f.getName().endsWith(".sh")
 						|| f.getName().endsWith(".RData"))
 				{
-					out.println("FILE: <a href=\"/" + getMolgenisVariantID() + "/getlogs?file=" + path + f.getName() + "\">"
-							+ f.getName() + "</a><br><br>");
+					out.println("file: <a href=\"/" + getMolgenisVariantID() + "/getlogs?file=" + path + f.getName() + "\">"
+							+ f.getName() + "</a> / size (bytes): " + f.length() + " / lastmod: "+lastMod+"<br><br>");
 				}
 				else if ((f.isDirectory() && f.getName().startsWith("run")))
 				{
-					out.println("DIR > <a href=\"/" + getMolgenisVariantID() + "/getlogs?file=" + path + f.getName()
-							+ "/" + "\">" + f.getName() + "</a><br><br>");
+					out.println("dir > <a href=\"/" + getMolgenisVariantID() + "/getlogs?file=" + path + f.getName()
+							+ "/" + "\">" + f.getName() + "</a> / size (bytes): " + f.length() + " / lastmod: "+lastMod+"<br><br>");
 				}
 			}
 		}
