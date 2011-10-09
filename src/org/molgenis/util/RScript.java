@@ -139,7 +139,8 @@ public class RScript {
 		} catch (Exception e) {
 			logger.debug("Script failed: return code " + e.getMessage()
 					+ "\nScript:\n" + scriptCode + "\nOutput:\n" + result);
-			throw new RScriptException(result + "\n\nScript:\n" + scriptCode);
+			//throw new RScriptException(result + "\n\nScript:\n" + scriptCode);
+			throw new RScriptException(result);
 		} finally {
 			// inputfile.delete();
 			// outputfile.delete();
