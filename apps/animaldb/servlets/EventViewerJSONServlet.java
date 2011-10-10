@@ -12,10 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
@@ -26,7 +23,7 @@ public class EventViewerJSONServlet extends app.servlet.MolgenisServlet {
 	private static final long serialVersionUID = -5860101269122494304L;
 	private static Logger logger = Logger.getLogger(EventViewerJSONServlet.class);
 	
-	private static PhenoMatrix pm = new PhenoMatrix();
+	private static PhenoMatrix pm;
 	private static int storedTargetStart;
 	private static int storedTargetLength;
 	private static String storedTargetType = "All";
@@ -80,8 +77,8 @@ public class EventViewerJSONServlet extends app.servlet.MolgenisServlet {
 			Database db = this.createDatabase();
 			this.createLogin(db, request);
 			
-			// Init pheno matrix
-			if (pm.getDatabase() == null) {
+			// Init OLD pheno matrix (not to be confused with the new matrix component)
+			if (pm.getDatabase() == null) { // if matrix has no DB yet, initialize it first
 				pm.init(db, storedTargetType, userId);
 				totalNrOfFeatures = pm.getTotalNrOfFeatures();
 			}
@@ -223,8 +220,11 @@ public class EventViewerJSONServlet extends app.servlet.MolgenisServlet {
 			}
 			
 			matrixPart = pm.getRows(idx);
+			int nrOfFeatures = 0;
 			List<Measurement> featList = pm.getFeatureList();
-			int nrOfFeatures = featList.size();
+			if (featList != null) {
+				nrOfFeatures = featList.size();
+			}
 			String[] targetNames = pm.getTargetNames(idx);
 			Integer[] targetIds = pm.getTargetIds(idx);
 			
