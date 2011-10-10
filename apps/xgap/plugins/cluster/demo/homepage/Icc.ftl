@@ -1,4 +1,4 @@
-<#macro plugins_cluster_demo_xqtlpanaceaheader_HomePage screen>
+<#macro plugins_cluster_demo_homepage_Icc screen>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -45,7 +45,7 @@
 				<br><br></td></tr></table>
 			</#if>
 			<br><br>
-			Welcome to <b>Panacea xQTL workbench</b>, a platform for the storage and analysis of geno- and phenotypic data. For manuals and	more information, see <a href="http://www.xgap.org/wiki/xQTL">xQTL workbench wiki</a>.<br><br> xQTL workbench provides the following features: 
+			Welcome to <b>Initiative on Crohn and Colitis xQTL workbench</b>, a platform for the storage and analysis of geno- and phenotypic data. For manuals and	more information, see <a href="http://www.xgap.org/wiki/xQTL">xQTL workbench wiki</a>.<br><br> xQTL workbench provides the following features: 
 			<ul>
 				<li>Available as an <b>'in-house tool'</b> or used in a <b>collaborative setting</b> via web interfaces</li>
 				<li><b>Customizable</b> database for genetics data using software generators</li>
