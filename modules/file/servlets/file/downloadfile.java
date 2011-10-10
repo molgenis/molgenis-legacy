@@ -23,8 +23,6 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
-import plugins.matrix.manager.Browser;
-
 import decorators.MolgenisFileHandler;
 
 public class downloadfile extends app.servlet.MolgenisServlet {
