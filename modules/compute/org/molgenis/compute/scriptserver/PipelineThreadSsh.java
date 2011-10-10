@@ -79,8 +79,12 @@ public class PipelineThreadSsh extends PipelineThread
         output = result.getStdOut();
         error = result.getStdErr();
 
-        System.out.println("output: " + output);
-        System.out.println("error: " + error);
+        System.out.println("Output: " + output);
+        if (error == null || "".equalsIgnoreCase(error)) {
+        	System.out.println("Error: none!");
+        } else {
+        	System.out.println("Error: " + error);
+        }
 
         if (error.toCharArray().length > 0 || output.toCharArray().length == 0)
             return true;
