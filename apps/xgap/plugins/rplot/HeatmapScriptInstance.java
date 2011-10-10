@@ -31,11 +31,8 @@ public class HeatmapScriptInstance
 		}
 			
 		script.append("heatmap("+plotThis.getData().getName()+",main=\"" + params.getTitle() + "\",xlab=\""
-				+ params.getxLabel() + "\",ylab=\"" + params.getyLabel() + "\"" + clustering + ")");
+				+ params.getxLabel() + "\",ylab=\"" + params.getyLabel() + "\"" + clustering + ", scale=\"none\")");
 		script.append("dev.off()");
 		script.execute();
-		System.out.println("****");
-		System.out.println(script.toString());
-		System.out.println("****");
 	}
 }
