@@ -69,14 +69,14 @@ public class CsvWriter implements TupleWriter
 	 */
 	public void writeMatrix(List<String> rowNames, List<String> colNames, Object[][] elements)
 	{
-		logger.info("writeMatrix called");
+		//logger.info("writeMatrix called");
 		String cols = "";
 		for (String col : colNames)
 		{
 			cols += "\t" + col;
 		}
 		writer.println(cols);
-		logger.info("printing: " + cols);
+		//logger.info("printing: " + cols);
 		for (int rowIndex = 0; rowIndex < rowNames.size(); rowIndex++)
 		{
 			String row = rowNames.get(rowIndex);
@@ -92,7 +92,7 @@ public class CsvWriter implements TupleWriter
 				}
 			}
 			writer.println(row);
-			logger.info("printing: " + row);
+			//logger.info("printing: " + row);
 		}
 	}
 
