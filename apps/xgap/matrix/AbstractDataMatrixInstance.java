@@ -203,19 +203,20 @@ public abstract class AbstractDataMatrixInstance<E> extends
 				p.append("\t" + col);
 			}
 			p.append("\n");
-			Object[][] elements = getElements();
+		//	Object[][] elements = getElements();
 			for(int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
 			{
+				Object[] row = this.getRow(rowIndex);
 				p.append(getRowNames().get(rowIndex));
 				for(int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
 				{
-					if (elements[rowIndex][colIndex] == null)
+					if (row[colIndex] == null)
 					{
 						p.append("\t");
 					}
 					else
 					{
-						p.append("\t" + elements[rowIndex][colIndex]);
+						p.append("\t" + row[colIndex]);
 					}
 				}
 				p.append("\n");
