@@ -78,7 +78,14 @@ public class PreProcessMatrix
 			for (int col = 0; col < this.colNames.size(); col++)
 			{
 				Object o = this.elements[row][col];
-				newElements[row][col] = o.toString().length() > 127 ? o.toString().substring(0, 127) : o;
+				if(o != null)
+				{
+					newElements[row][col] = o.toString().length() > 127 ? o.toString().substring(0, 127) : o;
+				}
+				else
+				{
+					newElements[row][col] = "";
+				}
 			}
 		}
 		this.elements = newElements;
