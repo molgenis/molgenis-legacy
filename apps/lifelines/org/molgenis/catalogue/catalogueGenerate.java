@@ -8,6 +8,6 @@ public class catalogueGenerate
 {
 	public static void main(String[] args) throws Exception
 	{
-		new Molgenis("apps/lifelines/org/molgenis/Catalogue/Catalogue.molgenis.properties").generate();
+		new Molgenis("apps/lifelines/org/molgenis/catalogue/catalogue.molgenis.properties").generate();
 	}
 }

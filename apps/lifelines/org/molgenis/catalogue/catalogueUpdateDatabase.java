@@ -13,9 +13,9 @@ public class catalogueUpdateDatabase
 {
 	public static void main(String[] args) throws Exception
 	{
-		new Molgenis("apps/lifelines/org/molgenis/Catalogue/Catalogue.molgenis.properties").updateDb(true);
+		new Molgenis("apps/lifelines/org/molgenis/catalogue/catalogue.molgenis.properties").updateDb(true);
 		
-		Database db = DatabaseFactory.create("apps/lifelines/org/molgenis/Catalogue/Catalogue.molgenis.properties");
+		Database db = DatabaseFactory.create("apps/lifelines/org/molgenis/catalogue/catalogue.molgenis.properties");
 		
 		// Only add  user if type of Login allows for this
 		if (!(db.getSecurity() instanceof SimpleLogin)) {

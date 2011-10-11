@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- DOCTYPE molgenis PUBLIC "MOLGENIS 1.0" "http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd" -->
 <molgenis name="Catalogue" label="Lifelines Catalogue">
-	<plugin name="MolgenisHeader" type="plugins.header.CatalogueHeader" />
+	<plugin name="MolgenisHeader" type="plugins.header.catalogueHeader" />
 	<menu name="main" position="left" startswith="WelcomeScreen">
-		<plugin name="CatalogueWelcomeScreen" type="plugins.welcome.CatalogueWelcomeScreenPlugin" label="Welcome" />
+		<plugin name="catalogueWelcomeScreen" type="plugins.welcome.catalogueWelcomeScreenPlugin" label="Welcome" />
 		<plugin name="SimpleUserLogin" type="org.molgenis.auth.ui.SimpleUserLogin" label="Login" />
     
-		<menu name="CatalogueOverview" label="Catalogue Overview">
-			<form name="Catalogue" entity="BiobankData" label="Catalogue Overview" />
+		<menu name="catalogueOverview" label="Catalogue Overview">
+			<form name="catalogue" entity="BiobankData" label="Catalogue Overview" />
 		</menu>
 		<menu name="Admin">
 		    <menu name="DataViews">
@@ -31,8 +31,8 @@
 			<plugin name="OntoCatIndexPlugin" label="OntoCAT Index" type="plugins.LuceneIndex.OntoCatIndexPlugin" />
 			<plugin name="AdminIndex" label="Admin Indexes"	type="plugins.LuceneIndex.AdminIndexes" />
 		</menu>
-		<plugin name="CatalogueHelp" type="plugins.help.CatalogueHelpPlugin" label="Help"  />
-		<plugin name="CatalogueContact" type="plugins.contact.CatalogueContactPlugin" label="Contact" />
+		<plugin name="catalogueHelp" type="plugins.help.catalogueHelpPlugin" label="Help"  />
+		<plugin name="catalogueContact" type="plugins.contact.catalogueContactPlugin" label="Contact" />
 		
 	</menu>
 </molgenis>
