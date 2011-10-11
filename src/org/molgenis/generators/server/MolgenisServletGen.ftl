@@ -133,6 +133,27 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 
 	public ApplicationController createUserInterface( Login userLogin )
 	{
+		<#if db_mode != 'standalone'>
+		ApplicationController app = null;
+		try {
+			final Database dbForController = this.getDatabase();
+			//enhance the ApplicationController with a method to getDatabase 
+			app = new ApplicationController( usedOptions, userLogin)
+			{
+				private static final long serialVersionUID = 6962189567229247434L;
+			
+				@Override
+				public Database getDatabase()
+				{
+					return dbForController;
+				}
+			};
+			app.getModel().setLabel("${model.label}");
+			app.getModel().setVersion("${version}");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		<#else>
 		//enhance the ApplicationController with a method to getDatabase 
 		ApplicationController app = new ApplicationController( usedOptions, userLogin)
 		{
@@ -141,9 +162,6 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 			@Override
 			public Database getDatabase()
 			{
-				<#if db_mode != 'standalone'>
-				return super.getDatabase();
-				<#else>
 				BasicDataSource data_src = new BasicDataSource();
 				data_src.setDriverClassName("${db_driver}");
 				data_src.setUsername("${db_user}");
@@ -163,11 +181,12 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 					e.printStackTrace();
 					return null;
 				}
-				</#if>
+				
 			}
 		};
 		app.getModel().setLabel("${model.label}");
 		app.getModel().setVersion("${version}");
+		</#if>
 		
 <#if mail_smtp_user != '' && mail_smtp_au != ''>
 		EmailService service = new SimpleEmailService();
