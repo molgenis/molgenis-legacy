@@ -12,6 +12,7 @@
 		<pathelement location="modules/file" />
 		<pathelement location="modules/decorators/core" />
 		<pathelement location="modules/decorators/pheno" />
+		<pathelement location="modules/decorators/auth" />
 	</path>
 
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
