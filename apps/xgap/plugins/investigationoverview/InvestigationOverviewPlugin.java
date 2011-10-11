@@ -170,8 +170,9 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 			List<Data> dataList = db.find(Data.class, thisInv);
 			for (Data d : dataList)
 			{
-				// + " ("+d.getFeature_name()+" x "+d.getTarget_name()+")"
-				expList.put(d.getName(),
+				String name = d.getName();
+				if(name.length() > 25) name = name.substring(0, 10) + "(..)"+name.substring(name.length()-10);
+				expList.put(name,
 						"?__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value="
 								+ d.getId());
 			}
@@ -182,7 +183,9 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 			List<InvestigationFile> ifList = db.find(InvestigationFile.class, thisInv);
 			for (InvestigationFile invFile : ifList)
 			{
-				otherList.put(invFile.getName() + "." + invFile.getExtension(),
+				String name = invFile.getName();
+				if(name.length() > 25) name = name.substring(0, 10) + "(..)"+name.substring(name.length()-10);
+				otherList.put(name + "." + invFile.getExtension(),
 						"?__target=Files&__action=filter_set&__filter_attribute=id&__filter_operator=EQUALS&__filter_value="
 								+ invFile.getId());
 

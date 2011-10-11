@@ -83,7 +83,8 @@
 	<#else>
 		<#--iframe width="750px" height="600px" src="downloadfile?name=${model.molgenisFile.name}"></iframe-->
 		<h3>${model.molgenisFile.name}.${model.molgenisFile.extension}</h3>
-		<a target="_blank" href="downloadfile?name=${model.molgenisFile.name}">View this file</a><br><br>
+		<a target="_blank" href="viewfile?name=${model.molgenisFile.name}">View this file</a><br><br>
+		<a target="_blank" href="downloadfile?name=${model.molgenisFile.name}">Download this file</a><br><br>
 		Size: ${model.fileSize} bytes<br>
 		
 	</#if>
