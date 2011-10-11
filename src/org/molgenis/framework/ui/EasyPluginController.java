@@ -1,11 +1,11 @@
 package org.molgenis.framework.ui;
 
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel.Show;
+import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
@@ -117,6 +117,23 @@ public abstract class EasyPluginController<M extends ScreenModel> extends
 	public void setSucces(String message)
 	{
 		this.getModel().setMessages(new ScreenMessage(message, true));
+	}
+	
+	public <E extends Entity> FormModel<E> getParentForm(Class<E> entityClass) {
+		//here we gonna put the parent
+		ScreenController parent = getParent();
+		while(parent != null)
+		{
+			if(parent instanceof FormController && ((FormController<?>)parent).getEntityClass().equals(entityClass))
+			{
+				return (FormModel<E>) parent.getModel();
+			}
+			else
+			{
+				parent = (ScreenController) parent.getParent();
+			}
+		}
+		throw new RuntimeException("Parent form of class "+entityClass.getName()+" is unknown in plugin name="+getName());
 	}
 
 }
