@@ -51,7 +51,7 @@ public class XqtlSeleniumTest
 		String seleniumUrl = "http://localhost:" + webserverPort + "/";
 		String seleniumHost = "localhost";
 		String seleniumBrowser = "firefox";
-		int seleniumPort = Helper.getAvailablePort(9080, 100);
+		int seleniumPort = Helper.getAvailablePort(9100, 100);
 
 		RemoteControlConfiguration rcc = new RemoteControlConfiguration();
 		rcc.setSingleWindow(true);
