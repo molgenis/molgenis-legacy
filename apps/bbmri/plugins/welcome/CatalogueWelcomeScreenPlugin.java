@@ -2,29 +2,24 @@
  * Template:	PluginScreenJavaTemplateGen.java.ftl
  * generator:   org.molgenis.generators.ui.PluginScreenJavaTemplateGen 3.3.3
  * 
- * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
 package plugins.welcome;
 
-import java.text.ParseException;
 
-import org.molgenis.bbmri.ChangeLog;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class BbmriWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>
+public class CatalogueWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>
 {
 	
-	ChangeLog mostRecentChangeLogEntry; 
-
+	
 	private static final long serialVersionUID = -2848815736940818733L;
 
-	public BbmriWelcomeScreenPlugin(String name, ScreenController<?> parent)
+	public CatalogueWelcomeScreenPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
@@ -63,25 +58,9 @@ public class BbmriWelcomeScreenPlugin<E extends Entity> extends PluginModel<E>
 	}
 
 	@Override
-	public void reload(Database db)
-	{
-		try {
-			mostRecentChangeLogEntry = db.query(ChangeLog.class).sortDESC(ChangeLog.CHANGEDATE).find().get(0);
-		} catch (Exception e) {
-			// no entries (yet), so mostRecentChangeLogEntry will remain null
-		}
-		
-		
+	public void reload(Database db){			
 	}
 	
-	public ChangeLog getMostRecentChangeLogEntry() {
-		return mostRecentChangeLogEntry;
-	}
-
-	public void setMostRecentChangeLogEntry(ChangeLog mostRecentChangeLogEntry) {
-		this.mostRecentChangeLogEntry = mostRecentChangeLogEntry;
-	}
-
 	@Override
 	public boolean isVisible()
 	{

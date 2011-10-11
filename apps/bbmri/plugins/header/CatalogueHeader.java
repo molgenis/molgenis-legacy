@@ -6,11 +6,8 @@
 
 package plugins.header;
 
-import java.text.ParseException;
-
 import org.molgenis.auth.DatabaseLogin;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
@@ -19,7 +16,7 @@ import org.molgenis.util.Tuple;
 
 
 
-public class BbmriHeader extends PluginModel<Entity>
+public class CatalogueHeader extends PluginModel<Entity>
 {
 	/**
 	 * 
@@ -27,7 +24,7 @@ public class BbmriHeader extends PluginModel<Entity>
 	private static final long serialVersionUID = 5516712543692105018L;
 	private String userLogin = new String();
 	
-	public BbmriHeader(String name, ScreenController<?> parent)
+	public CatalogueHeader(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
