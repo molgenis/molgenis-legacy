@@ -48,11 +48,17 @@
 <#--begin your plugin-->
 
 <#if model.uploadMode>
-	No data storage backend for selected source type found. Please select your data matrix file and proceed with upload into this source.<br>
+	<b>No data storage for selected source type found. Please upload data.</b>
+	<br><br><i>Select the upload options you want:</i><br>
+	<input type="checkbox" name="prependToRows" value="true" /> Prepend underscore to row names (e.g. to preserve heading numerals)<br />
+	<input type="checkbox" name="prependToCols" value="true" /> Prepend underscore to column names (e.g. to preserve heading numerals)<br />
+	<input type="checkbox" name="escapeRows" value="true" /> Escape row names to safe format where needed<br />
+	<input type="checkbox" name="escapeCols" value="true" /> Escape column names to safe format where needed<br />
+	<br /><i>Select your data matrix file and press 'upload'.</i><br /> 
 	<input type="file" name="upload"/>
 	<input type="submit" value="Upload" onclick="__action.value='upload';return true;"/><br>
 	<br>
-	Alternatively, use this textarea to input your data.<br>
+	<i>Alternatively, use this textarea to input your data.</i><br>
 	<textarea id="matrixInputTextArea" name="inputTextArea" rows="10" cols="50">	feat1	feat2	feat3
 targ1	val1	val2	val3
 targ2	val4	val5	val6</textarea>

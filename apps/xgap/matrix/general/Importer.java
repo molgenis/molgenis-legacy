@@ -35,15 +35,51 @@ public class Importer
 		{
 			importFile = request.getFile("upload");
 		}
-
-		System.out.println("importFile: " + importFile.getAbsolutePath());
-		System.out.println("exists: " + importFile.exists());
-
-		if(!importFile.exists()){
-			throw new Exception("Import file '" + importFile.getAbsolutePath() + " does not exist");
+		
+		//apply preprocessing if called for
+		PreProcessMatrix pm = null;
+		if(request.getString("prependToRows") != null || request.getString("prependToCols") != null || request.getString("escapeRows") != null || request.getString("escapeCols") != null)
+		{
+			pm = new PreProcessMatrix(importFile);
+		}
+		if(request.getString("prependToRows") != null)
+		{
+			System.out.println("prependToRows");
+			pm.prependUnderscoreToRowNames();
+		}
+		if(request.getString("prependToCols") != null)
+		{
+			System.out.println("prependToCols");
+			pm.prependUnderscoreToColNames();
+		}
+		if(request.getString("escapeRows") != null)
+		{
+			System.out.println("escapeRows");
+			pm.escapeRowNames();
+		}
+		if(request.getString("escapeCols") != null)
+		{
+			System.out.println("escapeCols");
+			pm.escapeColNames();
 		}
 		
-		performImport(importFile, data, db);
+		if(request.getString("prependToRows") != null || request.getString("prependToCols") != null || request.getString("escapeRows") != null || request.getString("escapeCols") != null)
+		{
+			File result = pm.getResult();
+			if(!result.exists())
+			{
+				throw new Exception("Import file '" + result.getAbsolutePath() + " does not exist");
+			}
+			performImport(result, data, db);
+		}
+		else
+		{
+			if(!importFile.exists())
+			{
+				throw new Exception("Import file '" + importFile.getAbsolutePath() + " does not exist");
+			}
+			performImport(importFile, data, db);
+		}
 	}
 
 	public static void performImport(File uploadedFile, Data data, Database db) throws Exception
