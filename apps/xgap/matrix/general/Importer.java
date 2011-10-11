@@ -35,38 +35,47 @@ public class Importer
 		{
 			importFile = request.getFile("upload");
 		}
-		
-		//apply preprocessing if called for
+
+		// apply preprocessing if called for
 		PreProcessMatrix pm = null;
-		if(request.getString("prependToRows") != null || request.getString("prependToCols") != null || request.getString("escapeRows") != null || request.getString("escapeCols") != null)
+		if (request.getString("prependToRows") != null || request.getString("prependToCols") != null
+				|| request.getString("escapeRows") != null || request.getString("escapeCols") != null
+				|| request.getString("trimTextElements") != null)
 		{
 			pm = new PreProcessMatrix(importFile);
 		}
-		if(request.getString("prependToRows") != null)
+		if (request.getString("prependToRows") != null)
 		{
 			System.out.println("prependToRows");
 			pm.prependUnderscoreToRowNames();
 		}
-		if(request.getString("prependToCols") != null)
+		if (request.getString("prependToCols") != null)
 		{
 			System.out.println("prependToCols");
 			pm.prependUnderscoreToColNames();
 		}
-		if(request.getString("escapeRows") != null)
+		if (request.getString("escapeRows") != null)
 		{
 			System.out.println("escapeRows");
 			pm.escapeRowNames();
 		}
-		if(request.getString("escapeCols") != null)
+		if (request.getString("escapeCols") != null)
 		{
 			System.out.println("escapeCols");
 			pm.escapeColNames();
 		}
-		
-		if(request.getString("prependToRows") != null || request.getString("prependToCols") != null || request.getString("escapeRows") != null || request.getString("escapeCols") != null)
+		if (request.getString("trimTextElements") != null)
+		{
+			System.out.println("trimTextElements");
+			pm.trimTextElements();
+		}
+
+		if (request.getString("prependToRows") != null || request.getString("prependToCols") != null
+				|| request.getString("escapeRows") != null || request.getString("escapeCols") != null
+				|| request.getString("trimTextElements") != null)
 		{
 			File result = pm.getResult();
-			if(!result.exists())
+			if (!result.exists())
 			{
 				throw new Exception("Import file '" + result.getAbsolutePath() + " does not exist");
 			}
@@ -74,7 +83,7 @@ public class Importer
 		}
 		else
 		{
-			if(!importFile.exists())
+			if (!importFile.exists())
 			{
 				throw new Exception("Import file '" + importFile.getAbsolutePath() + " does not exist");
 			}
@@ -98,7 +107,8 @@ public class Importer
 		{
 			if (dmh.isDataMatrixStoredInDatabase(data))
 			{
-				throw new DatabaseException("Database source already exists for source type '" + data.getStorage() + "'");
+				throw new DatabaseException("Database source already exists for source type '" + data.getStorage()
+						+ "'");
 			}
 		}
 		else
@@ -112,7 +122,7 @@ public class Importer
 		// do import
 		if (data.getStorage().equals("Database"))
 		{
-			//new DatabaseDataMatrixWriter(data, uploadedFile, db, false);
+			// new DatabaseDataMatrixWriter(data, uploadedFile, db, false);
 			new DatabaseDataMatrixWriter(data, uploadedFile, db);
 		}
 		else if (data.getStorage().equals("Binary"))
@@ -130,5 +140,4 @@ public class Importer
 
 	}
 
-	
 }

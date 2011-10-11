@@ -24,7 +24,7 @@ public class PreProcessMatrix
 	{
 		CsvFileReader reader = new CsvFileReader(in);
 		this.colNames = reader.colnames();
-		if(this.colNames.get(0).isEmpty()) this.colNames.remove(0);
+		if (this.colNames.get(0).isEmpty()) this.colNames.remove(0);
 		this.rowNames = reader.rownames();
 		this.elements = getElementsFromCsv(in, rowNames.size(), colNames.size());
 		reader.close();
@@ -35,7 +35,7 @@ public class PreProcessMatrix
 		ArrayList<String> newRowNames = new ArrayList<String>();
 		for (String s : this.rowNames)
 		{
-			newRowNames.add("_"+s);
+			newRowNames.add("_" + s);
 		}
 		this.rowNames = newRowNames;
 	}
@@ -45,7 +45,7 @@ public class PreProcessMatrix
 		ArrayList<String> newColNames = new ArrayList<String>();
 		for (String s : this.colNames)
 		{
-			newColNames.add("_"+s);
+			newColNames.add("_" + s);
 		}
 		this.colNames = newColNames;
 	}
@@ -68,6 +68,20 @@ public class PreProcessMatrix
 			newColNames.add(NameConvention.escapeEntityNameStrict(s));
 			this.colNames = newColNames;
 		}
+	}
+
+	public void trimTextElements() throws Exception
+	{
+		Object[][] newElements = new Object[this.rowNames.size()][this.colNames.size()];
+		for (int row = 0; row < this.rowNames.size(); row++)
+		{
+			for (int col = 0; col < this.colNames.size(); col++)
+			{
+				Object o = this.elements[row][col];
+				newElements[row][col] = o.toString().length() > 127 ? o.toString().substring(0, 127) : o;
+			}
+		}
+		this.elements = newElements;
 	}
 
 	public File getResult() throws IOException
@@ -97,7 +111,7 @@ public class PreProcessMatrix
 				{
 					for (int columnIndex = 1; columnIndex < line.size(); columnIndex++)
 					{
-						elements[line_number-1][columnIndex-1] = line.getObject(columnIndex);
+						elements[line_number - 1][columnIndex - 1] = line.getObject(columnIndex);
 					}
 				}
 			}

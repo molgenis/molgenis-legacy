@@ -54,6 +54,7 @@
 	<input type="checkbox" name="prependToCols" value="true" /> Prepend underscore to column names (e.g. to preserve heading numerals)<br />
 	<input type="checkbox" name="escapeRows" value="true" /> Escape row names to safe format where needed<br />
 	<input type="checkbox" name="escapeCols" value="true" /> Escape column names to safe format where needed<br />
+	<input type="checkbox" name="trimTextElements" value="true" /> Trim text elements to max length (127 chars)<br />
 	<br /><i>Select your data matrix file and press 'upload'.</i><br /> 
 	<input type="file" name="upload"/>
 	<input type="submit" value="Upload" onclick="__action.value='upload';return true;"/><br>
