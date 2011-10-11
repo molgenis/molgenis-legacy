@@ -2,11 +2,6 @@ package org.molgenis.biobank.test;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
-
-import org.molgenis.util.XlsWriter;
-
 import jxl.write.WriteException;
 
 public class TestXlsWriter {

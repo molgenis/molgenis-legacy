@@ -13,12 +13,12 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-public class CatalogueContactPlugin extends PluginModel<Entity>
+public class BbmriContactPlugin extends PluginModel<Entity>
 {
 
 	private static final long serialVersionUID = -6143910771849972946L;
 
-	public CatalogueContactPlugin(String name, ScreenController<?> parent)
+	public BbmriContactPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

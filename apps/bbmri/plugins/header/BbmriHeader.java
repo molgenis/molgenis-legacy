@@ -16,7 +16,7 @@ import org.molgenis.util.Tuple;
 
 
 
-public class CatalogueHeader extends PluginModel<Entity>
+public class BbmriHeader extends PluginModel<Entity>
 {
 	/**
 	 * 
@@ -24,7 +24,7 @@ public class CatalogueHeader extends PluginModel<Entity>
 	private static final long serialVersionUID = 5516712543692105018L;
 	private String userLogin = new String();
 	
-	public CatalogueHeader(String name, ScreenController<?> parent)
+	public BbmriHeader(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}

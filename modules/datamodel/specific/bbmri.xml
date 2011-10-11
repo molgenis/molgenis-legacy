@@ -21,7 +21,8 @@
 		
 		<entity name="Biobank" implements="Identifiable,Authorizable" decorator="decorators.BiobankDecorator">
 			<description>This describes a panel (or: cohort) of individuals for which data was collected within the biobank.</description>
-			<field name="Cohort" nillable="false" description="the name of the Cohort/biobank [in investigation the name is unique], For example: Netherlands Twin Registry" unique="true"/>
+			<field name="Cohort" nillable="false" description="the name of the Cohort/biobank [in investigation the name is unique], For example: Netherlands Twin Registry" />
+<!-- 		<field name="Cohort" nillable="false" description="the name of the Cohort/biobank [in investigation the name is unique], For example: Netherlands Twin Registry" unique="true"/>   -->
 			<field name="Acronym" nillable="true" description="Acronym for this biobank. For example: NTR" label="Acronym" />
 			<field name="Category" type="xref" xref_entity="BiobankCategory" description="A. Core Biobanks, DNA available, B. Supporting biobanks (DNA not yet available)" />
 			<field name="SubCategory" type="xref" xref_entity="BiobankCategory" description="For example: Population, development, birth and growth" />

@@ -2,8 +2,6 @@ package org.molgenis.biobank.test;
 
 import java.io.File;
 
-import org.molgenis.util.XlsWriter;
-
 import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.write.WritableCellFormat;

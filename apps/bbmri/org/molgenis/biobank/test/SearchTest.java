@@ -1,10 +1,5 @@
 package org.molgenis.biobank.test;
 
-import java.io.File;
-import jxl.WorkbookSettings;
-
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.server.RemoteControlConfiguration;
 import org.openqa.selenium.server.SeleniumServer;
 import org.testng.Assert;

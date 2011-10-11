@@ -1,12 +1,9 @@
 package org.molgenis.biobank.test;
 
-import java.awt.HeadlessException;
 import java.io.File;
-import java.io.IOException;
 
 import jxl.WorkbookSettings;
 
-import org.molgenis.util.XlsWriter;
 import org.openqa.selenium.server.RemoteControlConfiguration;
 import org.openqa.selenium.server.SeleniumServer;
 import org.testng.Assert;

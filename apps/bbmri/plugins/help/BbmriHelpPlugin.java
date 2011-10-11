@@ -12,14 +12,14 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.util.Tuple;
 
-public class CatalogueHelpPlugin extends PluginModel
+public class BbmriHelpPlugin extends PluginModel
 {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public CatalogueHelpPlugin(String name, ScreenController parent)
+	public BbmriHelpPlugin(String name, ScreenController parent)
 	{
 		super(name, parent);
 	}
