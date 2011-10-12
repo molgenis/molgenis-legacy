@@ -892,7 +892,7 @@ public class MolgenisModelParser {
 
         if (element.getTagName().equals("include")) {
             String fileName = element.getAttribute("file");
-            if (fileName == null) {
+            if (fileName == null || fileName.equals("")) {
                 throw new MolgenisModelException(
                         "include failed: no file attribute set");
             }
