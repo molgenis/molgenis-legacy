@@ -9,10 +9,11 @@ package org.molgenis.patho.ui;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.molgenis.framework.ui.EasyPluginModel;
-import org.molgenis.matrix.component.PhenoMatrix;
-import org.molgenis.variant.Chromosome;
+import org.molgenis.pheno.ObservedValue;
+import org.molgenis.variant.SequenceVariant;
 
 /**
  * PathoSearchModel allows the user to choose chromosome, startpos and range.
@@ -29,9 +30,13 @@ public class PathoSearchModel extends EasyPluginModel
 
 	// selected parameters
 	private int selectedChrId;
-	private int selectedPos;
-	private int selectedRange;
-	private PhenoMatrix resultMatrix;
+	private int selectedFrom;
+	private int selectedTo;
+	
+	// results
+	private int count;
+	private List<SequenceVariant> variants;
+	private Map<String,ObservedValue> alleleCounts;
 
 	public PathoSearchModel(PathoSearch controller)
 	{
@@ -48,49 +53,66 @@ public class PathoSearchModel extends EasyPluginModel
 		this.chromosomes = chromosomes;
 	}
 
-	public int getSelectedPos()
-	{
-		return selectedPos;
-	}
-
-	public void setSelectedPos(int selectedPos)
-	{
-		this.selectedPos = selectedPos;
-	}
-
-	public int getSelectedRange()
-	{
-		return selectedRange;
-	}
-
-	public void setSelectedRange(int selectedRange)
-	{
-		this.selectedRange = selectedRange;
-	}
-
-	public PhenoMatrix getVisibleMatrix()
-	{
-		return resultMatrix;
-	}
-
-	public void setVisibleMatrix(PhenoMatrix visibleMatrix)
-	{
-		this.resultMatrix = visibleMatrix;
-	}
-
-	public static long getSerialversionuid()
-	{
-		return serialVersionUID;
-	}
-
-	public int getSelectedChrId()
+	protected int getSelectedChrId()
 	{
 		return selectedChrId;
 	}
 
-	public void setSelectedChrId(int selectedChrId)
+	protected void setSelectedChrId(int selectedChrId)
 	{
 		this.selectedChrId = selectedChrId;
 	}
+
+	protected int getSelectedFrom()
+	{
+		return selectedFrom;
+	}
+
+	protected void setSelectedFrom(int selectedFrom)
+	{
+		this.selectedFrom = selectedFrom;
+	}
+
+	protected int getSelectedTo()
+	{
+		return selectedTo;
+	}
+
+	protected void setSelectedTo(int selectedTo)
+	{
+		this.selectedTo = selectedTo;
+	}
+
+	protected int getCount()
+	{
+		return count;
+	}
+
+	protected void setCount(int count)
+	{
+		this.count = count;
+	}
+
+	protected Map<String,ObservedValue> getAlleleCounts()
+	{
+		return alleleCounts;
+	}
+
+	protected void setAlleleCounts(Map<String,ObservedValue> alleleCounts)
+	{
+		this.alleleCounts = alleleCounts;
+	}
+
+	protected List<SequenceVariant> getVariants()
+	{
+		return variants;
+	}
+
+	protected void setVariants(List<SequenceVariant> variants)
+	{
+		this.variants = variants;
+	}
+	
+	
 
 }
