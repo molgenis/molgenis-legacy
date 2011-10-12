@@ -28,7 +28,7 @@ public abstract class EntityInput<E> extends HtmlInput<E>
 			E value)
 	{
 		//used to be: "this(name, null" which is wrong, labels are asserted to be not null!
-		this(name, name+"_label", value, false, false, null, xrefEntityClass);
+		this(name, name, value, false, false, null, xrefEntityClass);
 
 	}
 	
