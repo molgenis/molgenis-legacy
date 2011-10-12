@@ -14,18 +14,18 @@
 		<#else>
 			//set ${JavaName(f)}
 			<#if f.type == "nsequence">
-			this.set${JavaName(f)}(tuple.getNSequence("${name(f)}"));
+			this.set${JavaName(f)}(tuple.getNSequence("${f.name}"));
 			<#elseif f.type == "onoff">
-			this.set${JavaName(f)}(tuple.getOnoff("${name(f)}"));
+			this.set${JavaName(f)}(tuple.getOnoff("${f.name}"));
 			<#else>
-			this.set${JavaName(f)}(tuple.get${settertype(f)}("${name(f)}"));
+			this.set${JavaName(f)}(tuple.get${settertype(f)}("${f.name}"));
 		</#if>
 		<#if f.type == "file"  || type_label=="image" >
 		</#if>			
 		<#if f.type == "xref">			
 			<#if f.xrefLabelNames[0] != f.xrefFieldName><#list f.xrefLabelNames as label>		
 			//set label ${label} for xref field ${JavaName(f)}
-			this.set${JavaName(f)}_${JavaName(label)}(tuple.get${settertype(f.xrefLabels[label_index])}("${name(f)}_${name(label)}"));	
+			this.set${JavaName(f)}_${JavaName(label)}(tuple.get${settertype(f.xrefLabels[label_index])}("${f.name}_${label}"));	
 			</#list></#if>			
 		</#if>				
 		</#if>
@@ -37,10 +37,10 @@
 		<#assign type_label = f.getType().toString()>
 		<#if f.type == "mref">
 			//set ${JavaName(f)}
-			if( tuple.getObject("${name(f)}")!= null || tuple.getObject("${entity.name}_${f.name}")!= null) 
+			if( tuple.getObject("${f.name}")!= null || tuple.getObject("${entity.name}_${f.name}")!= null) 
 			{
 				java.util.List<${type(f.xrefField)}> values = new java.util.ArrayList<${type(f.xrefField)}>();
-				java.util.List<?> mrefs = tuple.getList("${name(f)}");
+				java.util.List<?> mrefs = tuple.getList("${f.name}");
 				if(tuple.getObject("${entity.name}_${f.name}")!= null) mrefs = tuple.getList("${entity.name}_${f.name}");
 				if(mrefs != null) for(Object ref: mrefs)
 				{
@@ -100,19 +100,19 @@
 			if( tuple.get${settertype(f)}("${entity.name}_${f.name}_${f.xrefField.name}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${entity.name}_${f.name}_${f.xrefField.name}"));
 			//alias of xref
 			<#if databaseImp = 'JPA'>
-			if( tuple.getObject("${name(f)}") != null) { 
-				if(AbstractEntity.isObjectRepresentation(tuple.getObject("${name(f)}").toString())) {
-					${JavaName(f.xrefEntity)} instance = AbstractEntity.setValuesFromString((String)tuple.getObject("${name(f)}"), ${JavaName(f.xrefEntity)}.class);
+			if( tuple.getObject("${f.name}") != null) { 
+				if(AbstractEntity.isObjectRepresentation(tuple.getObject("${f.name}").toString())) {
+					${JavaName(f.xrefEntity)} instance = AbstractEntity.setValuesFromString((String)tuple.getObject("${f.name}"), ${JavaName(f.xrefEntity)}.class);
 					this.set${JavaName(f)}(instance);				
 				} else {
 					this.set${JavaName(f)}_${JavaName(f.xrefField)}(tuple.get${settertype(f.xrefField)}("investigation"));
 				}
 			}
-			if( tuple.getObject("${name(entity)}_${name(f)}") != null)
-				this.set${JavaName(f)}_${JavaName(f.xrefField)}(tuple.get${settertype(f.xrefField)}("${name(entity)}_${name(f)}"));			
+			if( tuple.getObject("${entity.name}_${f.name}") != null)
+				this.set${JavaName(f)}_${JavaName(f.xrefField)}(tuple.get${settertype(f.xrefField)}("${entity.name}_${f.name}"));			
 			
-			if( tuple.getObject("${name(entity)}.${name(f)}") != null) 
-				this.set${JavaName(f)}((${JavaName(f.xrefEntity)})tuple.getObject("${name(entity)}.${name(f)}_${name(f.xrefField)}"));
+			if( tuple.getObject("${entity.name}.${f.name}") != null) 
+				this.set${JavaName(f)}((${JavaName(f.xrefEntity)})tuple.getObject("${entity.name}.${f.name}_${f.xrefField.name}"));
 			<#else>			
 			if( tuple.getObject("${f.name}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${f.name}"));
 			if( tuple.getObject("${entity.name}_${f.name}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${entity.name}_${f.name}"));
@@ -151,7 +151,7 @@
 				<#--
 				<#list f.xrefLabelNames as label>
 				//guess the value for ${label} from other labels, if not set to null on purpose in the tuple
-				if( this.get${JavaName(f)}_${JavaName(label)}() == null && !tuple.getFields().contains("${name(f)}_${name(label)}") )
+				if( this.get${JavaName(f)}_${JavaName(label)}() == null && !tuple.getFields().contains("${f.name}_${label}") )
 				{
 					<#list f.labelsToSameEndpoint(label) as otherLabel>
 						//${otherLabel}
