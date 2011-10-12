@@ -638,11 +638,11 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		if(!skipAutoIds)
 		</#if>
 		{
-			fields.add("${field.name}");
+			fields.add("${name(field)}");
 		}
 		<#if field.type="xref" || field.type="mref">
 			<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>
-		fields.add("${field.name}_${label}");
+		fields.add("${name(field)}_${name(label)}");
 			</#list></#if>
 		</#if>
 	</#list>		
