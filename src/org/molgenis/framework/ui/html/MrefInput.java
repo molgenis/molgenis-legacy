@@ -194,7 +194,7 @@ public class MrefInput extends EntityInput<List<? extends Entity>>
 		String description = getName().equals(getDescription()) ? "" : " title=\""+getDescription()+"\"";
 
 
-		for (Entity e : (List<Entity>) this.getObject())
+		if(this.getObject()!= null) for (Entity e : (List<Entity>) this.getObject())
 		{
 			options += "<option selected=\"selected\" value=\""
 					+ e.getIdValue() + "\">" + e.getLabelValue()
