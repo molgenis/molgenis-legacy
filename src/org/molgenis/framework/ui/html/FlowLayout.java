@@ -54,7 +54,7 @@ public class FlowLayout extends AbstractHtmlElement implements Layout
 		for (HtmlElement i : this.getElements())
 		{
 			// If the element is an HtmlInput, also include the label (render() does not do this for you) 
-			if (i instanceof HtmlInput) {
+			if (i instanceof HtmlInput && !(i instanceof ActionInput)) {
 				HtmlInput input = (HtmlInput)i;
 				if (!input.isHidden() && input.getLabel() != null && !input.getLabel().equals("")) {
 					returnString += "<label style=\"width:16em;\" for=\"" + input.getName() + "\">" + 
