@@ -114,10 +114,10 @@ public class CSVDataMatrixWriter
 			//upload as a MolgenisFile, type 'CSVDataMatrix'
             HashMap<String, String> extraFields = new HashMap<String, String>();
             if (db instanceof JDBCDatabase) {
-                extraFields.put("data_"+ Data.NAME, data.getName());
+                extraFields.put("Data_"+ Data.NAME, data.getName());
             } else if (db instanceof JpaDatabase) {
-                extraFields.put("data_" + Data.ID, data.getId().toString());
-                extraFields.put("data_" + Data.NAME, data.getName());
+                extraFields.put("Data_" + Data.ID, data.getId().toString());
+                extraFields.put("Data_" + Data.NAME, data.getName());
             } else {
                 throw new DatabaseException("Unsupported database mapper");
             }
