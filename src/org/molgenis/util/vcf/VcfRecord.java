@@ -12,7 +12,7 @@ public class VcfRecord
 	VcfReader reader;
 	Tuple record;
 	// cache for the info map
-	private Map<String, Object> infoMap = null;
+	private Map<String, List<String>> infoMap = null;
 
 	public VcfRecord(VcfReader reader, Tuple record)
 	{
@@ -65,22 +65,20 @@ public class VcfRecord
 		return reader.getInfos();
 	}
 
-	public Object getInfo(String key)
+	public List<String> getInfo(String key)
 	{
 		if (this.infoMap == null)
 		{
-			this.infoMap = new LinkedHashMap<String, Object>();
+			this.infoMap = new LinkedHashMap<String, List<String>>();
 
 			String[] keyvalues = this.getInfo().split(";");
 			for (String keyvalue : keyvalues)
 			{
 				String[] kv = keyvalue.split("=");
-				// boolean value
-				if (kv.length == 1) this.infoMap.put(kv[0], true);
+				if(kv.length == 1)
+					this.infoMap.put(kv[0], Arrays.asList(new String[]{"TRUE"}));
 				else
-				{
-					this.infoMap.put(kv[0], kv[1]);
-				}
+					this.infoMap.put(kv[0], Arrays.asList(kv[1].split(",")));
 			}
 		}
 		return this.infoMap.get(key);
