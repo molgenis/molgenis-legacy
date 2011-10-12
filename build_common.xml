@@ -205,6 +205,8 @@ plus passing of properties
 	
 	<target name="clean-generate-compile" depends="clean,generate,compile"/>
 	
+	<target name="clean-generate-compile-run" depends="clean,generate,compile,run"/>
+	
 	<target name="clean-generate-compile-test" depends="clean,generate,compile,test"/>
 	
 	<target name="testcopy">
@@ -226,6 +228,16 @@ plus passing of properties
 			<fileset dir="${output_sql}" includes="**/*.sql" />
 			<fileset dir="${output_src}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
 		</copy>
+	</target>
+	
+	<target name="run" description="Start the application">
+		<java maxmemory="512m" classname="boot.RunStandalone" fork="yes" failonerror="true">
+			<classpath>
+				<path refid="molgenis.classpath" />
+				<path location="${build.dir}" />
+
+			</classpath>
+		</java>
 	</target>
 	
 </project>
