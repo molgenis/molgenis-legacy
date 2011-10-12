@@ -1,5 +1,6 @@
 package org.molgenis.framework.ui.html;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -9,12 +10,12 @@ import org.molgenis.util.Tuple;
 
 /**
  * EntityForm extends HtmlForm optimized for showing entities.
- *<ul>
+ * <ul>
  * <li>The field names within the entity are used for input names
- *<li>Input creation can be influenced by setNewrecord setHiddenColumns and
+ * <li>Input creation can be influenced by setNewrecord setHiddenColumns and
  * setCollapsedColumns
- *<li>designed to be used with a generator to create the inputs
- *</ul>
+ * <li>designed to be used with a generator to create the inputs
+ * </ul>
  * 
  * @param <E>
  *            entity class
@@ -69,7 +70,7 @@ public abstract class EntityForm<E extends Entity> extends HtmlForm
 	 * 
 	 * @param name
 	 * @param value
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public void set(String name, Object value) throws Exception
 	{
@@ -91,4 +92,30 @@ public abstract class EntityForm<E extends Entity> extends HtmlForm
 	 */
 	public abstract Vector<String> getHeaders();
 
+	public List<HtmlInput<?>> getInputs(String ... fieldNames)
+	{
+		Entity entity = this.getEntity();
+		List<HtmlInput<?>> inputs = this.getInputs();
+				List<HtmlInput<?>> result = new ArrayList<HtmlInput<?>>();
+		
+		for(String fieldName: fieldNames)
+		{
+			if(!entity.getFields().contains(fieldName))
+			{
+				throw new RuntimeException(fieldName +" not known in "+this.getClass().getSimpleName());
+			}
+			
+			for(HtmlInput<?> input: inputs)
+			{
+				//will this work always??
+				if(input.getName().equalsIgnoreCase(entity.getClass().getSimpleName()+"_"+fieldName))
+				{
+					result.add(input);
+				}
+			}
+		}
+
+		return result;
+		
+	}
 }
