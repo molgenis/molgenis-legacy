@@ -10,9 +10,12 @@ INSERT INTO MolgenisRole (__Type, id, name) values ('MolgenisGroup', 4, 'AllUser
 INSERT INTO MolgenisGroup (id) values (1);
 INSERT INTO MolgenisGroup (id) values (4);
 
+INSERT INTO Person(title, lastname, firstname, institute, department, position_, city, country, emailaddress, id ) values ("", "admin", "admin", "", "", "", "", "", "please_fill_in_@somewhere.com", 2);
+INSERT INTO MolgenisUser ( password_, activationCode, active, superuser, id) values ('md5_21232f297a57a5a743894a0e4a801fc3', '', true, true, 2);
+<#-- 
 INSERT INTO MolgenisUser (id, password_, emailaddress, firstname, lastname, active, superuser) values (2, 'md5_21232f297a57a5a743894a0e4a801fc3', '', 'admin', 'admin', true, true);
 INSERT INTO MolgenisUser (id, password_, emailaddress, firstname, lastname, active) values (3, 'md5_294de3557d9d00b3d2d8a1e6aab028cf', '', 'anonymous','anonymous', true);
-
+-->
 <#list model.getUserinterface().getAllUniqueGroups() as group>
 INSERT INTO MolgenisRole (__Type, id, name) values ('MolgenisGroup', ${group_index+5}, '${group}');
 INSERT INTO MolgenisGroup (id) values (${group_index+5});
