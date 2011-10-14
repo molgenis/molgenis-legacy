@@ -1,5 +1,4 @@
 <molgenis name="org.molgenis">
-	<module name="pheno">
 		<description>
 			<h1>
 				GEN2PHEN Phenoflow Reference Implementation Documentation
@@ -36,6 +35,14 @@
 				Parkinson.
 		</p>
 			<p>
+			
+			changelog/decisions 2011-10-13
+				<ol>
+					<li>ObservationElement has a 1..1 xref with Investigation. It was impossible to
+observe the same feature across multiple investigations. Name should be unique within investigation. 
+Changed unique(name) on Observation element to unique(investigation,name)</li>
+				</ol>
+				
 				changelog/decisions 2011-08-03
 				<ol>
 					<li>Merging ObservableFeature and ObservationTarget into
@@ -422,6 +429,7 @@
 				</ol>
 			</p>
 		</description>
+	<module name="pheno">
 		<entity name="Species" extends="OntologyTerm">
 			<description>Ontology terms for species. E.g. Arabidopsis thaliana.
 				DISCUSSION: should we avoid subclasses of OntologyTerm and instead
@@ -470,7 +478,7 @@
 				measure a feature. See
 				Protocol section.
 			</description>
-			<unique fields="name" />
+			<unique fields="investigation_name,name" />
 		</entity>
 		<!-- <entity name="ObservationTarget" extends="ObservationElement"> <description> 
 			An ObservationTarget class defines the subjects of observation. For instance: 
