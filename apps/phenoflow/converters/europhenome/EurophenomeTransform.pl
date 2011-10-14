@@ -43,7 +43,7 @@ Main function. Nothing fancy.
 
 my @datapoints;
 my %warn;
-my $basedir  = '../../../../../phenoflow_data/Europhenome2';
+my $basedir  = '../../../../../pheno_data/Europhenome2';
 my @features = (
 	'Line name',
 	'Sex',
@@ -62,8 +62,8 @@ my %terms = (
 	'MGI Allele Name'                        => 'MGI Allele Accession ID',
 	'MGI Gene Name'                          => 'MGI Gene Accession ID',
 	'Ensembl Gene ID'                        => 'Ensembl Gene ID',
-	'Phenotype Procedure'                    => 'Phenotype Procedure ESLIM ID',
-	'Parameter Name'                         => 'Parameter ESLIM ID',
+	'Procedure Name'    	                => 'Procedure eslim id',
+	'Parameter name'                         => 'Parameter eslim id',
 );
 
 sub main() {
@@ -131,9 +131,9 @@ sub write_protocol($$) {
 	my %protocol;
 	my %temp;
 	for my $datapoint (@datapoints) {
-		my $name    = $datapoint->{'Phenotype Procedure'};
-		my $feature = $datapoint->{'Parameter Name'};
-		$temp{$name}->{description} = $datapoint->{'Phenotype Pipeline'};
+		my $name    = $datapoint->{'Procedure Name'};
+		my $feature = $datapoint->{'Parameter name'};
+		$temp{$name}->{description} = $datapoint->{'Pipeline'};
 		$temp{$name}->{features}->{$feature}++;
 	}
 
@@ -165,7 +165,7 @@ sub write_features() {
 	# write headers
 	print $fh1 join (
 		"\t",
-		qw/name ontologyreference_name/
+		qw/name ontologyreference_name investigation_name/
 	);
 
 	my %observationelement;
@@ -178,9 +178,10 @@ sub write_features() {
 
 	# protocol parameters
 	for my $datapoint (@datapoints) {
-		my $feature_name = $datapoint->{'Parameter Name'};
-		my $ontology_ref = $datapoint->{'Parameter Name'};
-		my $key          = join( "\t", $feature_name, $ontology_ref );
+		my $investigation_name = get_investigation_nameDP($datapoint);
+		my $feature_name = $datapoint->{'Parameter name'};
+		my $ontology_ref = $datapoint->{'Parameter name'};
+		my $key          = join( "\t", $feature_name, $ontology_ref, $investigation_name );
 		$observationelement{$key}++;
 	}
 
@@ -238,7 +239,7 @@ sub write_observedvalue() {
 	for my $datapoint (@datapoints) {
 		my $investigation_name = get_investigation_nameDP($datapoint);
 		my $target_name        = get_panel_nameDP($datapoint);
-		my $feature_name       = $datapoint->{'Parameter Name'};
+		my $feature_name       = $datapoint->{'Parameter name'};
 		my $protocol_app = get_protocolapplication_nameDP($datapoint);
 		my $ref = $datapoint->{ 'Mammalian Phenotype Ontology Term Name' };
 		next unless defined $ref;
@@ -298,7 +299,7 @@ sub write_investigation() {
 	# create a hash of uniqe project names
 	my %project;
 	for my $datapoint (@datapoints) {
-		$project{ $datapoint->{'Europhenome ID'} }++;
+		$project{ $datapoint->{'Europhenome id'} }++;
 	}
 
 	my $description_suffix = q{[Source: http://www.europhenome.org/]};
@@ -325,7 +326,7 @@ sub write_protocolapplication() {
 	my %protocolapp;
 	for my $datapoint (@datapoints) {
 		my $name = get_protocolapplication_nameDP($datapoint);
-		my $protocol = $datapoint->{'Phenotype Procedure'};
+		my $protocol = $datapoint->{'Procedure Name'};
 		my $key = join ( "\t", $name, $protocol );
 		$protocolapp{$key}++;
 	}
@@ -427,9 +428,10 @@ sub load_datapoints($) {
 	until ( $csv->eof() ) {
 		my $row = trim_row( $csv->getline_hr($fh_in) );
 		check_parser_for_errors( \$csv, \$row );
+		$c++;
 
 		# skip empty lines
-		unless ( defined $row->{'Europhenome ID'} ) {
+		unless ( defined $row->{'Europhenome id'} ) {
 			WARN "Skipping row $c";
 			next;
 		}
@@ -448,18 +450,18 @@ sub load_datapoints($) {
 		push @datapoints, $row;
 
 		#print Dumper($row) if $row->{'Europhenome id'} eq '27';
-		INFO $c . "/$progress" if ++$c % 20000 == 0;
+		INFO $c . "/$progress" if $c % 20000 == 0;
 	}
 	close($fh_in);
 	
 	# fix duplicated parameter names
 	my %parameters;
 	for my $datapoint (@datapoints){
-		my $param = $datapoint->{'Parameter Name'};
+		my $param = $datapoint->{'Parameter name'};
 		next unless defined $param;
 		if ( defined $parameters{ uc($param) } && $param ne $parameters{ uc($param) }){
 			$warn {"duplicated param name " . $param . " - " . $parameters{ uc($param) } }++;
-			$datapoint->{'Parameter Name'} = $datapoint->{'Parameter Name'} . "_";
+			$datapoint->{'Parameter name'} = $datapoint->{'Parameter name'} . "_";
 		} else {
 			$parameters{ uc($param) } = $param;
 		}
@@ -519,7 +521,7 @@ sub check_parser_for_errors {
 }
 
 # NOTE: europhenomeID required as e.g. Line: Gnas Sex: Male reused between
-# Europhenome ID: 10221 and Europhenome ID: 127
+# Europhenome id: 10221 and Europhenome id: 127
 sub get_panel_nameDP {
 	my $datapoint = shift;
 	return get_investigation_nameDP($datapoint)
@@ -533,19 +535,19 @@ sub get_panel_nameDP {
 
 sub get_protocolapplication_nameDP {
 	my $datapoint = shift;
-	return $datapoint->{'Phenotype Pipeline'}
-	  . " " . $datapoint->{'Phenotype Procedure'}
-	  . " " . $datapoint->{'Parameter Name'};
+	return $datapoint->{'Pipeline'}
+	  . " " . $datapoint->{'Procedure Name'}
+	  . " " . $datapoint->{'Parameter name'};
 }
 
 sub get_investigation_name {
 	my $name = shift;
-	return "Europhenome ID: " . $name;
+	return "Europhenome id: " . $name;
 }
 
 sub get_investigation_nameDP {
 	my $datapoint = shift;
-	return get_investigation_name( $datapoint->{'Europhenome ID'} );
+	return get_investigation_name( $datapoint->{'Europhenome id'} );
 }
 
 =back
