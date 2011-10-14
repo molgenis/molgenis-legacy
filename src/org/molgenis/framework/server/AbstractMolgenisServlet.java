@@ -150,7 +150,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			BasicConfigurator.configure();
 		} else {
 			String webAppPath = sc.getRealPath("/");
-			String log4jProp = webAppPath + log4jLocation;
+			String log4jProp = webAppPath + File.separator + log4jLocation;
 			File yoMamaYesThisSaysYoMama = new File(log4jProp);
 			if (yoMamaYesThisSaysYoMama.exists()) {
 				System.out.println("Initializing log4j with: " + log4jProp);
