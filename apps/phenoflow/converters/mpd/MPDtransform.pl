@@ -36,7 +36,7 @@ Main function. Nothing fancy.
 
 =cut
 
-my $basedir = '../../../../../phenoflow_data/MPD';
+my $basedir = '../../../../../pheno_data/MPD';
 
 # Declare object that will hold the structure
 my %datapoint   = ();
@@ -487,6 +487,7 @@ sub load_measurements($) {
 
 		# assign variables
 		$measurement{ $row->{measnum} }->{projsym} = 'MPD: ' . $row->{projsym};
+		# TODO this compound key is possibly no longer needed
 		$measurement{ $row->{measnum} }->{varname} =
 		    $measurement{ $row->{measnum} }->{projsym} . ' - '
 		  . $row->{varname};    # . ': ' .. $row->{desc};
