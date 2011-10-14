@@ -193,11 +193,4 @@ public class MemoryDataMatrixInstance<E> extends AbstractDataMatrixInstance<E>
 	{
 		throw new Exception("Action not possible");
 	}
-
-	@Override
-	public void refresh() throws MatrixException
-	{
-		// TODO Auto-generated method stub
-		
-	}
 }

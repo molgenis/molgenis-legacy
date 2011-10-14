@@ -2,13 +2,13 @@ package plugins.rplot;
 
 import java.io.File;
 
-import matrix.AbstractDataMatrixInstance;
+import matrix.DataMatrixInstance;
 
 import org.molgenis.util.RScript;
 
 public class HeatmapScriptInstance
 {
-	public HeatmapScriptInstance(AbstractDataMatrixInstance<Object> plotThis, File tmpImg, PlotParameters params) throws Exception
+	public HeatmapScriptInstance(DataMatrixInstance plotThis, File tmpImg, PlotParameters params) throws Exception
 	{
 		RScript script = new RScript();
 		RScript.R_COMMAND = "R CMD BATCH --vanilla --slave";

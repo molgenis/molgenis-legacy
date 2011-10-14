@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import matrix.AbstractDataMatrixInstance;
+import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 import matrix.general.Importer;
 
@@ -111,7 +111,7 @@ public class MatrixManager extends PluginModel
 		verifiedBackend = dmh.isDataStoredIn(data, data.getStorage());
 		if (verifiedBackend)
 		{
-			AbstractDataMatrixInstance<Object> m = dmh.createInstance(data);
+			DataMatrixInstance m = dmh.createInstance(data);
 			Browser br = new Browser(data, m);
 			// this.model.setBrowser(br);
 			return br;

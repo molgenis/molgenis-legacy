@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import matrix.AbstractDataMatrixInstance;
+import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
 import org.molgenis.data.Data;
@@ -33,7 +34,7 @@ public class getmatrixinfo extends app.servlet.MolgenisServlet {
 		boolean databaseIsAvailable = false;
 		boolean setupSuccess = false;
 		Database db = null;
-		AbstractDataMatrixInstance<Object> instance = null;
+		DataMatrixInstance instance = null;
 		
 		try {
 			db = this.createDatabase();

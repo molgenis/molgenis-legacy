@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import matrix.AbstractDataMatrixInstance;
+import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
 import org.molgenis.data.Data;
@@ -39,7 +40,7 @@ public class downloadmatrixasspss extends app.servlet.MolgenisServlet {
 		boolean argumentsAreCorrect = false;
 		
 		Database db = null;
-		AbstractDataMatrixInstance<Object> instance = null;
+		DataMatrixInstance instance = null;
 
 		try {
 			db = this.createDatabase();

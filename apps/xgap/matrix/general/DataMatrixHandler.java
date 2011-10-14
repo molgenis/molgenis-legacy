@@ -6,7 +6,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import matrix.AbstractDataMatrixInstance;
+import matrix.DataMatrixInstance;
 import matrix.implementations.binary.BinaryDataMatrixInstance;
 import matrix.implementations.csv.CSVDataMatrixInstance;
 import matrix.implementations.database.DatabaseDataMatrixInstance;
@@ -51,9 +51,9 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * @return
 	 * @throws Exception
 	 */
-	public AbstractDataMatrixInstance<Object> createInstance(Data data) throws Exception
+	public DataMatrixInstance createInstance(Data data) throws Exception
 	{
-		AbstractDataMatrixInstance<Object> instance = null;
+		DataMatrixInstance instance = null;
 		File source = null;
 
 		if (data.getStorage().equals("Database"))

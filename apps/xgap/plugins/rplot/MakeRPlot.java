@@ -2,7 +2,7 @@ package plugins.rplot;
 
 import java.io.File;
 
-import matrix.AbstractDataMatrixInstance;
+import matrix.DataMatrixInstance;
 
 import org.molgenis.data.Data;
 
@@ -16,7 +16,7 @@ public class MakeRPlot
 		String colType = model.getSelectedData().getFeatureType(); //shorthand
 		Data data = model.getSelectedData(); //shorthand
 		
-		AbstractDataMatrixInstance<Object> instance = null;
+		DataMatrixInstance instance = null;
 		if(action.startsWith("r_plot_full"))
 		{
 			instance = model.getBrowser().getModel().getInstance();

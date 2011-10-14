@@ -12,7 +12,6 @@ import org.molgenis.framework.db.QueryRule.Operator;
 public class AbstractDataMatrixQueries
 {
 
-	@Deprecated
 	/**
 	 * Apply filters (query rules) to the values of a matrix, to get a new
 	 * subset matrix back. The 'field' specifies the row name where the filter is
@@ -24,8 +23,8 @@ public class AbstractDataMatrixQueries
 	 * @return AbstractDataMatrixInstance
 	 * @throws Exception
 	 */
-	public static AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowMatrixValues(
-			AbstractDataMatrixInstance<Object> dm, QueryRule ... rules) throws Exception
+	public static DataMatrixInstance getSubMatrixFilterByRowMatrixValues(
+			DataMatrixInstance dm, QueryRule ... rules) throws Exception
 	{
 		checkQueryRulesOld(dm, false, rules);
 
@@ -66,12 +65,11 @@ public class AbstractDataMatrixQueries
 			}
 		}
 
-		AbstractDataMatrixInstance<Object> res = dm.getSubMatrix(rowNames, colNames);
+		DataMatrixInstance res = dm.getSubMatrix(rowNames, colNames);
 
 		return res;
 	}
 
-	@Deprecated
 	/**
 	 * Apply filters (query rules) to the values of a matrix, to get a new
 	 * subset matrix back. The 'field' specifies the column name where the filter is
@@ -83,8 +81,8 @@ public class AbstractDataMatrixQueries
 	 * @return AbstractDataMatrixInstance
 	 * @throws Exception
 	 */
-	public static AbstractDataMatrixInstance<Object> getSubMatrixFilterByColMatrixValues(
-			AbstractDataMatrixInstance<Object> dm, QueryRule ... rules) throws Exception
+	public static DataMatrixInstance getSubMatrixFilterByColMatrixValues(
+			DataMatrixInstance dm, QueryRule ... rules) throws Exception
 	{
 		checkQueryRulesOld(dm, true, rules);
 
@@ -125,14 +123,13 @@ public class AbstractDataMatrixQueries
 			}
 		}
 
-		AbstractDataMatrixInstance<Object> res = dm.getSubMatrix(rowNames, colNames);
+		DataMatrixInstance res = dm.getSubMatrix(rowNames, colNames);
 
 		return res;
 	}
 
-	@Deprecated
-	public static AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowEntityValues(
-			AbstractDataMatrixInstance<Object> dm, Database db, QueryRule... rules) throws Exception
+	public static DataMatrixInstance getSubMatrixFilterByRowEntityValues(
+			DataMatrixInstance dm, Database db, QueryRule... rules) throws Exception
 	{
 		List<String> colNames = dm.getColNames();
 		// 1. query on row type entities
@@ -152,13 +149,12 @@ public class AbstractDataMatrixQueries
 			throw new Exception("No rownames in resultset, empty matrix!");
 		}
 		
-		AbstractDataMatrixInstance res = dm.getSubMatrix(rowNames, colNames);
+		DataMatrixInstance res = dm.getSubMatrix(rowNames, colNames);
 		return res;
 	}
 
-	@Deprecated
-	public static AbstractDataMatrixInstance<Object> getSubMatrixFilterByColEntityValues(
-			AbstractDataMatrixInstance<Object> dm, Database db, QueryRule... rules) throws Exception
+	public static DataMatrixInstance getSubMatrixFilterByColEntityValues(
+			DataMatrixInstance dm, Database db, QueryRule... rules) throws Exception
 	{
 		List<String> rowNames = dm.getRowNames();
 		// 1. query on column type entities
@@ -177,14 +173,14 @@ public class AbstractDataMatrixQueries
 		{
 			throw new Exception("No colnames in resultset, empty matrix!");
 		}
-		AbstractDataMatrixInstance res = dm.getSubMatrix(rowNames, colNames);
+		DataMatrixInstance res = dm.getSubMatrix(rowNames, colNames);
 		return res;
 	}
 
 
 
-	public static AbstractDataMatrixInstance getSubMatrixByRowValueFilter(
-			AbstractDataMatrixInstance matrix, QueryRule ... rules) throws Exception {
+	public static DataMatrixInstance getSubMatrixByRowValueFilter(
+			DataMatrixInstance matrix, QueryRule ... rules) throws Exception {
 		
 		checkQueryRules(rules);
 		
@@ -225,14 +221,14 @@ public class AbstractDataMatrixQueries
 			}
 		}
 		
-		AbstractDataMatrixInstance<Object> res = matrix.getSubMatrix(rowNames, colNames);
+		DataMatrixInstance res = matrix.getSubMatrix(rowNames, colNames);
 
 		return res;
 	
 	}
 	
-	public static AbstractDataMatrixInstance<Object> getSubMatrixFilterByIndex(
-			AbstractDataMatrixInstance<Object> matrix, QueryRule... rules) throws Exception
+	public static DataMatrixInstance getSubMatrixFilterByIndex(
+			DataMatrixInstance matrix, QueryRule... rules) throws Exception
 	{
 		checkQueryRules(rules);
 		
@@ -472,8 +468,7 @@ public class AbstractDataMatrixQueries
 		}
 	}
 
-	@Deprecated
-	private static void checkQueryRulesOld(AbstractDataMatrixInstance<Object> dm, boolean appliedOnColumns, QueryRule... rules) throws Exception
+	private static void checkQueryRulesOld(DataMatrixInstance dm, boolean appliedOnColumns, QueryRule... rules) throws Exception
 	{
 		for (QueryRule rule : rules)
 		{
@@ -500,8 +495,8 @@ public class AbstractDataMatrixQueries
 		}
 	}
 
-	public static AbstractDataMatrixInstance<Object> getSubMatrix2DFilterByRow(
-			AbstractDataMatrixInstance<Object> matrix, QueryRule... rules) throws Exception
+	public static DataMatrixInstance getSubMatrix2DFilterByRow(
+			DataMatrixInstance matrix, QueryRule... rules) throws Exception
 	{
 		checkQueryRules(rules);
 		
@@ -566,8 +561,8 @@ public class AbstractDataMatrixQueries
 		return matrix.getSubMatrix(rowIndices, colIndices);
 	}
 
-	public static AbstractDataMatrixInstance<Object> getSubMatrix2DFilterByCol(
-			AbstractDataMatrixInstance<Object> matrix, QueryRule... rules) throws Exception
+	public static DataMatrixInstance getSubMatrix2DFilterByCol(
+			DataMatrixInstance matrix, QueryRule... rules) throws Exception
 	{
 		checkQueryRules(rules);
 		

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import matrix.AbstractDataMatrixInstance;
+import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
 import org.apache.log4j.Logger;
@@ -81,7 +82,7 @@ public class downloadmatrixascsv extends app.servlet.MolgenisServlet
 				QueryRule q = new QueryRule("id", Operator.EQUALS, matrixId);
 				Data data = db.find(Data.class, q).get(0);
 				DataMatrixHandler dmh = new DataMatrixHandler(db);
-				AbstractDataMatrixInstance<Object> instance = dmh.createInstance(data);
+				DataMatrixInstance instance = dmh.createInstance(data);
 
 				if (req.getString("download").equals("all"))
 				{

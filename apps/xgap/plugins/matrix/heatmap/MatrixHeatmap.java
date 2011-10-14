@@ -7,10 +7,9 @@
 
 package plugins.matrix.heatmap;
 
-import java.io.OutputStream;
 import java.util.List;
 
-import matrix.AbstractDataMatrixInstance;
+import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 import matrix.general.Importer;
 import matrix.implementations.memory.MemoryDataMatrixInstance;
@@ -195,7 +194,7 @@ public class MatrixHeatmap extends PluginModel
 			this.model.setStop(new RGB(255, 0, 0));
 		}
 
-		AbstractDataMatrixInstance oldSubMatrix = this.model.getBrowser().getModel().getSubMatrix();
+		DataMatrixInstance oldSubMatrix = this.model.getBrowser().getModel().getSubMatrix();
 
 		Double lowestVal = null;
 		Double highestVal = null;
@@ -299,7 +298,7 @@ public class MatrixHeatmap extends PluginModel
 			}
 		}
 
-		AbstractDataMatrixInstance heatMatrix = new MemoryDataMatrixInstance(oldSubMatrix.getRowNames(), oldSubMatrix.getColNames(), newVals, this.getMyModel().getSelectedData());
+		DataMatrixInstance heatMatrix = new MemoryDataMatrixInstance(oldSubMatrix.getRowNames(), oldSubMatrix.getColNames(), newVals, this.getMyModel().getSelectedData());
 
 		this.model.setHeatMatrix(heatMatrix);
 		this.model.setLowestVal(lowestVal);

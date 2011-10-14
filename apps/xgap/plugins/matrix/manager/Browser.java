@@ -1,6 +1,6 @@
 package plugins.matrix.manager;
 
-import matrix.AbstractDataMatrixInstance;
+import matrix.DataMatrixInstance;
 
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
@@ -18,14 +18,14 @@ public class Browser
 	 */
 	private BrowserModel model = new BrowserModel();
 	
-	public static AbstractDataMatrixInstance<Object> inmemory;
+	public static DataMatrixInstance inmemory;
 
 	public BrowserModel getModel()
 	{
 		return model;
 	}
 
-	public Browser(Data selectedData, AbstractDataMatrixInstance<Object> instance) throws Exception
+	public Browser(Data selectedData, DataMatrixInstance instance) throws Exception
 	{
 		// create instance of complete matrix and run checks
 		model.setInstance(instance);
@@ -72,7 +72,7 @@ public class Browser
 		int nCols = model.getColStop() - model.getColStart();
 
 		// create and set submatrix
-		AbstractDataMatrixInstance<Object> subMatrix = model.getInstance().getSubMatrixByOffset(model.getRowStart(),
+		DataMatrixInstance subMatrix = model.getInstance().getSubMatrixByOffset(model.getRowStart(),
 				nRows, model.getColStart(), nCols);
 		model.setSubMatrix(subMatrix);
 		
@@ -287,7 +287,7 @@ public class Browser
 	{
 		String filter = null;
 		
-		AbstractDataMatrixInstance<Object> filterMatrix = null;
+		DataMatrixInstance filterMatrix = null;
 		String action = request.getString("__action");
 		if(action.startsWith("filter_visible_")){
 			// get the current submatrix (view)
@@ -373,7 +373,7 @@ public class Browser
 	{
 		String filter = null;
 		
-		AbstractDataMatrixInstance<Object> filterMatrix = null;
+		DataMatrixInstance filterMatrix = null;
 		String action = request.getString("__action");
 		if(action.startsWith("2d_filter_visible_")){
 			// get the current submatrix (view)

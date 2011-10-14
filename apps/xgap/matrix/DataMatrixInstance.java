@@ -1,6 +1,7 @@
 package matrix;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.List;
 
@@ -170,7 +171,7 @@ public interface DataMatrixInstance
 	 * @throws Exception
 	 *             if row or column names are not known
 	 */
-	public AbstractDataMatrixInstance<Object> getSubMatrix(int[] rowIndices, int[] colIndices) throws MatrixException;
+	public DataMatrixInstance getSubMatrix(int[] rowIndices, int[] colIndices) throws MatrixException;
 	
 	/**
 	 * Retrieve a partition of the matrix by listing rowname(s) and colname(s).
@@ -183,7 +184,7 @@ public interface DataMatrixInstance
 	 * @throws Exception
 	 *             if row or column names are not known
 	 */
-	public AbstractDataMatrixInstance<Object> getSubMatrix(List<String> rowNames, List<String> colNames) throws Exception;
+	public DataMatrixInstance getSubMatrix(List<String> rowNames, List<String> colNames) throws Exception;
 	
 	/**
 	 * Retrieve a partition of the matrix by listing rowindex, rownlenght,
@@ -197,7 +198,7 @@ public interface DataMatrixInstance
 	 * @throws Exception
 	 * 
 	 */
-	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(int row, int nRows, int col, int nCols) throws Exception;
+	public DataMatrixInstance getSubMatrixByOffset(int row, int nRows, int col, int nCols) throws Exception;
 
 	/**
 	 * Retrieve a partition of the matrix, using row/colnames and offsets.
@@ -211,13 +212,13 @@ public interface DataMatrixInstance
 	 * @return A submatrix, which is a new matrix itself
 	 * @throws Exception
 	 */
-	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(String rowName, int nRows, String colName, int nCols) throws Exception;
+	public DataMatrixInstance getSubMatrixByOffset(String rowName, int nRows, String colName, int nCols) throws Exception;
 	
 	
 	/**
 	 * QueryRules version of index retrieve
 	 */
-	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByIndex(QueryRule... rules) throws Exception;
+	public DataMatrixInstance getSubMatrixFilterByIndex(QueryRule... rules) throws Exception;
 	
 	/**
 	 * Get a submatrix from this matrix by applying a generic filter ('where')
@@ -235,7 +236,7 @@ public interface DataMatrixInstance
 	 * @return A new matrix
 	 * @throws Exception
 	 */
-	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowEntityValues(Database db, QueryRule... rules) throws Exception;
+	public DataMatrixInstance getSubMatrixFilterByRowEntityValues(Database db, QueryRule... rules) throws Exception;
 
 	/**
 	 * Get a submatrix from this matrix by applying a generic filter ('where')
@@ -253,7 +254,7 @@ public interface DataMatrixInstance
 	 * @return A new matrix
 	 * @throws Exception
 	 */
-	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByRowMatrixValues(QueryRule... rules) throws Exception;
+	public DataMatrixInstance getSubMatrixFilterByRowMatrixValues(QueryRule... rules) throws Exception;
 
 	/**
 	 * Get a submatrix from this matrix by applying a generic filter ('where')
@@ -271,7 +272,7 @@ public interface DataMatrixInstance
 	 * @return A new matrix
 	 * @throws Exception
 	 */
-	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByColEntityValues(Database db, QueryRule... rules) throws Exception;
+	public DataMatrixInstance getSubMatrixFilterByColEntityValues(Database db, QueryRule... rules) throws Exception;
 
 	/**
 	 * Get a submatrix from this matrix by applying a generic filter ('where')
@@ -289,7 +290,7 @@ public interface DataMatrixInstance
 	 * @return A new matrix
 	 * @throws Exception
 	 */
-	public AbstractDataMatrixInstance<Object> getSubMatrixFilterByColMatrixValues(QueryRule... rules) throws Exception;
+	public DataMatrixInstance getSubMatrixFilterByColMatrixValues(QueryRule... rules) throws Exception;
 
 	/**
 	 * Get a sorted copy of this matrix. The sorting is applied to the
@@ -309,7 +310,7 @@ public interface DataMatrixInstance
 	 * @return
 	 * @throws Exception
 	 */
-	public AbstractDataMatrixInstance<Object> getMatrixSortByRowEntityValues(boolean asc) throws Exception;
+	public DataMatrixInstance getMatrixSortByRowEntityValues(boolean asc) throws Exception;
 
 	/**
 	 * Get a sorted copy of this matrix. The sorting is applied to the
@@ -328,7 +329,7 @@ public interface DataMatrixInstance
 	 * @return
 	 * @throws Exception
 	 */
-	public AbstractDataMatrixInstance<Object> getMatrixSortByColEntityValues(Database db, boolean asc) throws Exception;
+	public DataMatrixInstance getMatrixSortByColEntityValues(Database db, boolean asc) throws Exception;
 	
 	/**
 	 * Get a sorted copy of this matrix. The sorting is applied to a row of
@@ -344,7 +345,7 @@ public interface DataMatrixInstance
 	 * @return
 	 * @throws Exception
 	 */
-	public AbstractDataMatrixInstance<Object> getMatrixSortByRowMatrixValues(boolean asc) throws Exception;
+	public DataMatrixInstance getMatrixSortByRowMatrixValues(boolean asc) throws Exception;
 
 	/**
 	 * Get a sorted copy of this matrix. The sorting is applied to a column of
@@ -360,7 +361,7 @@ public interface DataMatrixInstance
 	 * @return
 	 * @throws Exception
 	 */
-	public AbstractDataMatrixInstance<Object> getMatrixSortByColMatrixValues(Database db, boolean asc) throws Exception;
+	public DataMatrixInstance getMatrixSortByColMatrixValues(Database db, boolean asc) throws Exception;
 
 	/**
 	 * Make a logical union with another matrix and return the resulting matrix.
@@ -372,7 +373,7 @@ public interface DataMatrixInstance
 	 * @return
 	 * @throws Exception
 	 */
-	public AbstractDataMatrixInstance<Object> performUnion(AbstractDataMatrixInstance<Object> N) throws Exception;
+	public DataMatrixInstance performUnion(DataMatrixInstance N) throws Exception;
 	
 	/**
 	 * Make a logical intersection with another matrix and return the resulting
@@ -384,7 +385,7 @@ public interface DataMatrixInstance
 	 * @return
 	 * @throws Exception
 	 */
-	public AbstractDataMatrixInstance<Object> performIntersection(AbstractDataMatrixInstance<Object> N) throws Exception;
+	public DataMatrixInstance performIntersection(DataMatrixInstance N) throws Exception;
 	
 	/**
 	 * Make a logical difference with another matrix and return the resulting
@@ -397,7 +398,7 @@ public interface DataMatrixInstance
 	 * 
 	 * @return
 	 */
-	public AbstractDataMatrixInstance<Object> performDifference(AbstractDataMatrixInstance<Object> N) throws Exception;
+	public DataMatrixInstance performDifference(DataMatrixInstance N) throws Exception;
 	
 	/**
 	 * Make a logical exclusion with another matrix and return the resulting
@@ -410,7 +411,7 @@ public interface DataMatrixInstance
 	 * 
 	 * @return
 	 */
-	public AbstractDataMatrixInstance<Object> performExclusion(AbstractDataMatrixInstance<Object> N) throws Exception;
+	public DataMatrixInstance performExclusion(DataMatrixInstance N) throws Exception;
 	
 	/**
 	 * Transpose this matrix into a new matrix.
@@ -421,7 +422,7 @@ public interface DataMatrixInstance
 	 * @return
 	 * @throws Exception
 	 */
-	public AbstractDataMatrixInstance<Object> performTransposition(AbstractDataMatrixInstance<Object> N) throws Exception;
+	public DataMatrixInstance performTransposition(DataMatrixInstance N) throws Exception;
 
 	
 	/**
@@ -504,5 +505,40 @@ public interface DataMatrixInstance
 	 * @return The matrix formatted as a string.
 	 */
 	public String toString();
+
+	/**
+	 * TODO: 2D filter doc
+	 * @param q
+	 * @return
+	 */
+	public DataMatrixInstance getSubMatrix2DFilterByRow(QueryRule... rules)  throws Exception;
+
+	/**
+	 * TODO: 2D filter doc
+	 * @param q
+	 * @return
+	 */
+	public DataMatrixInstance getSubMatrix2DFilterByCol(QueryRule... rules)  throws Exception;
+
+	/**
+	 * Get this matrix as an R 'matrix' object
+	 * @param b
+	 * @return
+	 * @throws Exception 
+	 */
+	public String getAsRobject(boolean b) throws Exception;
+
+	/**
+	 * Get this matrix as an SPSS file (*.sav)
+	 * @return
+	 * @throws Exception 
+	 */
+	public File getAsSpssFile() throws Exception;
+
+	/**
+	 * Write this matrix to a PrintStream
+	 * @param p
+	 */
+	public void toPrintStream(PrintStream p);
 
 }

@@ -1,6 +1,6 @@
 package plugins.matrix.heatmap;
 
-import matrix.AbstractDataMatrixInstance;
+import matrix.DataMatrixInstance;
 import plugins.matrix.manager.MatrixManagerModel;
 
 public class MatrixHeatmapModel extends MatrixManagerModel{
@@ -10,7 +10,7 @@ public class MatrixHeatmapModel extends MatrixManagerModel{
 	private Double highestVal;
 	private RGB start;
 	private RGB stop;
-	private AbstractDataMatrixInstance heatMatrix;
+	private DataMatrixInstance heatMatrix;
 	private Boolean autoScale;
 	private Double customStart;
 	private Double customStop;
@@ -72,11 +72,11 @@ public class MatrixHeatmapModel extends MatrixManagerModel{
 	{
 		this.stop = stop;
 	}
-	public AbstractDataMatrixInstance getHeatMatrix()
+	public DataMatrixInstance getHeatMatrix()
 	{
 		return heatMatrix;
 	}
-	public void setHeatMatrix(AbstractDataMatrixInstance heatMatrix)
+	public void setHeatMatrix(DataMatrixInstance heatMatrix)
 	{
 		this.heatMatrix = heatMatrix;
 	}

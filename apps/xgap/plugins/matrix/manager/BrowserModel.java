@@ -1,6 +1,6 @@
 package plugins.matrix.manager;
 
-import matrix.AbstractDataMatrixInstance;
+import matrix.DataMatrixInstance;
 
 import org.molgenis.data.Data;
 
@@ -15,8 +15,8 @@ public class BrowserModel {
 	private int height; //intented height; always user controlled.
 	private int stepSize; //intented stepsize; always user controlled.
 	private Data selectedData; //passed on instantiation
-	private AbstractDataMatrixInstance instance; //passed on instantiation
-	private AbstractDataMatrixInstance subMatrix; //retrieved from instance using most other variables
+	private DataMatrixInstance instance; //passed on instantiation
+	private DataMatrixInstance subMatrix; //retrieved from instance using most other variables
 	
 	public int getColStart() {
 		return colStart;
@@ -78,16 +78,16 @@ public class BrowserModel {
 	public void setSelectedData(Data selectedData) {
 		this.selectedData = selectedData;
 	}
-	public AbstractDataMatrixInstance getInstance() {
+	public DataMatrixInstance getInstance() {
 		return instance;
 	}
-	public void setInstance(AbstractDataMatrixInstance instance) {
+	public void setInstance(DataMatrixInstance instance) {
 		this.instance = instance;
 	}
-	public AbstractDataMatrixInstance getSubMatrix() {
+	public DataMatrixInstance getSubMatrix() {
 		return subMatrix;
 	}
-	public void setSubMatrix(AbstractDataMatrixInstance subMatrix) {
+	public void setSubMatrix(DataMatrixInstance subMatrix) {
 		this.subMatrix = subMatrix;
 	}
 

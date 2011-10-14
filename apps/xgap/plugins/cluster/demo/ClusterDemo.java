@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import matrix.AbstractDataMatrixInstance;
+import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
 import org.molgenis.auth.MolgenisPermission;
@@ -180,7 +181,7 @@ public class ClusterDemo extends PluginModel<Entity>
 					//query the data to find out if it is really there
 					Data metab = db.find(Data.class, new QueryRule("name", Operator.EQUALS, "metaboliteexpression")).get(0);
 					DataMatrixHandler dmh = new DataMatrixHandler(db);
-					AbstractDataMatrixInstance<Object> instance = dmh.createInstance(metab);
+					DataMatrixInstance instance = dmh.createInstance(metab);
 					double element = (Double) instance.getSubMatrixByOffset(1, 1, 1, 1).getElement(0, 0);
 					
 					if(element == 4.0){

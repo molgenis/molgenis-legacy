@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import matrix.AbstractDataMatrixInstance;
+import matrix.DataMatrixInstance;
 
 import org.molgenis.data.Data;
 
@@ -22,15 +23,15 @@ public class RplotPluginModel{
 	private String tmpImgName;
 	private String selectedPlotType;
 	
-	private AbstractDataMatrixInstance<Object> matrixInstance;
+	private DataMatrixInstance matrixInstance;
 	
 	
 	
-	public AbstractDataMatrixInstance<Object> getMatrixInstance()
+	public DataMatrixInstance getMatrixInstance()
 	{
 		return matrixInstance;
 	}
-	public void setMatrixInstance(AbstractDataMatrixInstance<Object> matrixInstance)
+	public void setMatrixInstance(DataMatrixInstance matrixInstance)
 	{
 		this.matrixInstance = matrixInstance;
 	}

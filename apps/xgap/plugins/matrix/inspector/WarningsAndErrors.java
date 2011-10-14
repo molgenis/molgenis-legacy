@@ -3,7 +3,7 @@ package plugins.matrix.inspector;
 import java.util.ArrayList;
 import java.util.List;
 
-import matrix.AbstractDataMatrixInstance;
+import matrix.DataMatrixInstance;
 import matrix.implementations.binary.BinaryDataMatrixInstance;
 
 import org.molgenis.core.Nameable;
@@ -21,7 +21,7 @@ public class WarningsAndErrors {
 	private List<String> missingRowAnnotations;
 	private List<String> missingColumnAnnotations;
 	
-	public WarningsAndErrors(Data data, Database db, AbstractDataMatrixInstance<Object> modelInstance) throws DatabaseException{
+	public WarningsAndErrors(Data data, Database db, DataMatrixInstance modelInstance) throws DatabaseException{
 		
 		List<String> rowNamesOfInstance = modelInstance.getRowNames();
 		List<String> colNamesOfInstance = modelInstance.getColNames();
@@ -65,7 +65,7 @@ public class WarningsAndErrors {
 		return missing;
 	}
 	
-	private List<String> checkForWarnings(Data data, Database db, AbstractDataMatrixInstance<Object> modelInstance, List<ObservationElement> rows, List<ObservationElement> cols) throws DatabaseException{
+	private List<String> checkForWarnings(Data data, Database db, DataMatrixInstance modelInstance, List<ObservationElement> rows, List<ObservationElement> cols) throws DatabaseException{
 		List<String> warnings = new ArrayList<String>();
 		
 		if(data.getStorage().equals("BinaryFile")){

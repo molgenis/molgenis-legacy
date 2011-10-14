@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.List;
 
 import matrix.AbstractDataMatrixInstance;
+import matrix.DataMatrixInstance;
 
 import org.apache.log4j.Logger;
 import org.molgenis.data.Data;
@@ -16,7 +17,7 @@ import decorators.NameConvention;
 
 public class TestingMethods
 {
-	public static boolean parseToPlainAndCompare(Logger logger, AbstractDataMatrixInstance<Object> m, Data description, File inputMatrixDir, String method,
+	public static boolean parseToPlainAndCompare(Logger logger, DataMatrixInstance m, Data description, File inputMatrixDir, String method,
 			boolean fileWrite, boolean simpleOutput) throws Exception
 	{
 		long start = System.currentTimeMillis();
@@ -41,7 +42,7 @@ public class TestingMethods
 		if (method.substring(0, 9).equals("submatrix"))
 		{
 
-			AbstractDataMatrixInstance<Object> newMatrix = null;
+			DataMatrixInstance newMatrix = null;
 
 			if (method.equals("submatrixbyindexlist"))
 			{
@@ -207,7 +208,7 @@ public class TestingMethods
 		return filesAreEqual;
 	}
 
-	public static int readSpeed_elementbyindex(Logger logger, AbstractDataMatrixInstance<Object> m, Data description, File inputMatrixDir) throws Exception
+	public static int readSpeed_elementbyindex(Logger logger, DataMatrixInstance m, Data description, File inputMatrixDir) throws Exception
 	{
 		long start = System.currentTimeMillis();
 		int rows = m.getNumberOfRows();
@@ -226,7 +227,7 @@ public class TestingMethods
 		return elementsPerSec;
 	}
 
-	public static int readSpeed_rowbyindex(Logger logger, AbstractDataMatrixInstance<Object> m, Data description, File inputMatrixDir)
+	public static int readSpeed_rowbyindex(Logger logger, DataMatrixInstance m, Data description, File inputMatrixDir)
 			throws Exception
 	{
 		long start = System.currentTimeMillis();
@@ -242,7 +243,7 @@ public class TestingMethods
 		return elementsPerSec;
 	}
 
-	public static int readSpeed_colbyindex(Logger logger, AbstractDataMatrixInstance<Object> m, Data description, File inputMatrixDir)
+	public static int readSpeed_colbyindex(Logger logger, DataMatrixInstance m, Data description, File inputMatrixDir)
 			throws Exception
 	{
 		long start = System.currentTimeMillis();
@@ -258,7 +259,7 @@ public class TestingMethods
 		return elementsPerSec;
 	}
 
-	public static int readSpeed_submatrixbyindexlist(Logger logger, AbstractDataMatrixInstance<Object> m, Data description, File inputMatrixDir)
+	public static int readSpeed_submatrixbyindexlist(Logger logger, DataMatrixInstance m, Data description, File inputMatrixDir)
 			throws Exception
 	{
 		long start = System.currentTimeMillis();
@@ -283,7 +284,7 @@ public class TestingMethods
 		return elementsPerSec;
 	}
 
-	public static int readSpeed_submatrixbyindexoffset(Logger logger, AbstractDataMatrixInstance<Object> m, Data description, File inputMatrixDir)
+	public static int readSpeed_submatrixbyindexoffset(Logger logger, DataMatrixInstance m, Data description, File inputMatrixDir)
 			throws Exception
 	{
 		long start = System.currentTimeMillis();
@@ -307,7 +308,7 @@ public class TestingMethods
 		bfw.write(write + "\n");
 	}
 
-	public static void simplePrint(Logger logger, AbstractDataMatrixInstance<Object> m, Data description, long time, String method)
+	public static void simplePrint(Logger logger, DataMatrixInstance m, Data description, long time, String method)
 	{
 		int elementsPerSec = (int) ((m.getNumberOfCols() * m.getNumberOfRows()) / (time / 1000.0));
 		logger.info("readSpeed_" + method + " (" + description.getValueType() + "): " + time + " ms. ("

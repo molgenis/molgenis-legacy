@@ -4,6 +4,7 @@ import java.io.File;
 
 import junit.framework.TestCase;
 import matrix.AbstractDataMatrixInstance;
+import matrix.DataMatrixInstance;
 import matrix.test.implementations.general.Helper;
 
 import org.junit.Test;
@@ -66,7 +67,7 @@ public class RunTestMatrixQuery extends TestCase {
 		QueryRule or = new QueryRule(Operator.OR);
 		QueryRule q2 = new QueryRule("name", Operator.EQUALS,
 				"Methylthiopentyl");
-		AbstractDataMatrixInstance<Object> testMatrix = baseMatrix
+		DataMatrixInstance testMatrix = baseMatrix
 				.getSubMatrixFilterByRowEntityValues(db, q1, or, q2);
 
 		File testAgainstFile = new File(this.getClass()
@@ -82,7 +83,7 @@ public class RunTestMatrixQuery extends TestCase {
 		QueryRule q1 = new QueryRule("name", Operator.EQUALS, "X4");
 		QueryRule or = new QueryRule(Operator.OR);
 		QueryRule q2 = new QueryRule("name", Operator.EQUALS, "X193");
-		AbstractDataMatrixInstance<Object> testMatrix = baseMatrix
+		DataMatrixInstance testMatrix = baseMatrix
 				.getSubMatrixFilterByColEntityValues(db, q1, or, q2);
 
 		File testAgainstFile = new File(this.getClass()
@@ -96,7 +97,7 @@ public class RunTestMatrixQuery extends TestCase {
 	@Test
 	public void testSubMatrixFilterByRowMatrixValues() throws Exception {
 		QueryRule q1 = new QueryRule("Butenyl", Operator.GREATER, "10000");
-		AbstractDataMatrixInstance testMatrix = baseMatrix
+		DataMatrixInstance testMatrix = baseMatrix
 				.getSubMatrixFilterByRowMatrixValues(q1);
 		System.out.println(testMatrix.toString());
 
@@ -111,7 +112,7 @@ public class RunTestMatrixQuery extends TestCase {
 	@Test
 	public void testSubMatrixFilterByColMatrixValues() throws Exception {
 		QueryRule q1 = new QueryRule("X10", Operator.GREATER, "1000");
-		AbstractDataMatrixInstance testMatrix = baseMatrix
+		DataMatrixInstance testMatrix = baseMatrix
 				.getSubMatrixFilterByColMatrixValues(q1);
 
 		File testAgainstFile = new File(this.getClass()

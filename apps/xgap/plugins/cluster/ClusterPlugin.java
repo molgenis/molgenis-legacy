@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import matrix.AbstractDataMatrixInstance;
+import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
 import org.molgenis.cluster.Analysis;
@@ -357,7 +358,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 						phenoRef = Integer.parseInt(s.getDataValue());
 
 						Data phenoMatrix = db.find(Data.class, new QueryRule("id", Operator.EQUALS, phenoRef)).get(0);
-						AbstractDataMatrixInstance<Object> instance = dmh.createInstance(phenoMatrix);
+						DataMatrixInstance instance = dmh.createInstance(phenoMatrix);
 						Class<?> cols = db.getClassForName(phenoMatrix.getFeatureType());
 					
 						if (cols.newInstance() instanceof ObservableFeature)

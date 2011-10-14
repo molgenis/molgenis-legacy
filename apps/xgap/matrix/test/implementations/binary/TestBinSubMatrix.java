@@ -3,7 +3,7 @@ package matrix.test.implementations.binary;
 import java.util.ArrayList;
 import java.util.List;
 
-import matrix.AbstractDataMatrixInstance;
+import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 import matrix.implementations.binary.BinaryDataMatrixInstance;
 
@@ -29,7 +29,7 @@ public class TestBinSubMatrix {
 			int halfCols = bm.getNumberOfCols()/2;
 			int halfRows = bm.getNumberOfRows()/2;
 			
-			AbstractDataMatrixInstance<Object> sub = bm.getSubMatrixByOffset(0, halfRows, 0, halfCols);
+			DataMatrixInstance sub = bm.getSubMatrixByOffset(0, halfRows, 0, halfCols);
 			
 			List<String> originalComplete = bm.getColNames();
 			List<String> originalHalf = bm.getColNames().subList(0, halfCols);

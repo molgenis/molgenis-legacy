@@ -10,6 +10,7 @@ package plugins.rplot;
 import java.io.File;
 
 import matrix.AbstractDataMatrixInstance;
+import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
 import org.molgenis.data.Data;
@@ -88,7 +89,7 @@ public class RplotPlugin<E extends Entity> extends PluginModel<E>
 				String colType = this.model.getSelectedData().getFeatureType(); //shorthand
 				String rowName = this.model.getSelectedRow(); //shorthand
 				String colName = this.model.getSelectedCol(); //shorthand
-				AbstractDataMatrixInstance<Object> instance = this.model.getMatrixInstance(); //shorthand
+				DataMatrixInstance instance = this.model.getMatrixInstance(); //shorthand
 				Data data = this.model.getSelectedData(); //shorthand
 				String action = request.getString("__action"); //shorthand
 				
@@ -185,7 +186,7 @@ public class RplotPlugin<E extends Entity> extends PluginModel<E>
 				this.model.setSelectedData(newSelectedData);
 
 				
-				AbstractDataMatrixInstance<Object> m = dmh.createInstance(newSelectedData);
+				DataMatrixInstance m = dmh.createInstance(newSelectedData);
 
 				this.model.setMatrixCols(m.getColNames());
 				this.model.setMatrixRows(m.getRowNames());

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 import matrix.AbstractDataMatrixInstance;
+import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
 import org.molgenis.data.Data;
@@ -40,7 +41,7 @@ public class XgapMatrixExport {
 					}
 					
 					
-					AbstractDataMatrixInstance<Object> instance = dmh.createInstance(data);
+					DataMatrixInstance instance = dmh.createInstance(data);
 					File matrixFile = instance.getAsFile();
 					File newLoc = new File(dataDir.getAbsolutePath() + File.separator + matrixFile.getName());
 //					boolean createDestSuccess = newLoc.createNewFile();
@@ -67,7 +68,7 @@ public class XgapMatrixExport {
 				for (Data data : dataList)
 				{
 					
-					AbstractDataMatrixInstance<Object> instance = dmh.createInstance(data);
+					DataMatrixInstance instance = dmh.createInstance(data);
 					File matrixFile = instance.getAsFile();
 					File newLoc = new File(dataDir.getAbsolutePath() + 
 							File.separator + matrixFile.getName());
