@@ -30,6 +30,6 @@ run_PLINK <- function(dbpath = "", subjob, item, jobid, outname, myanalysisfile,
   cat("report(2,\"MAPDownloaded\")\n",file=myanalysisfile,append=T)
   cat(Generate_Statement(paste("system(paste(\"plink --noweb --file ",inputname," --assoc --out \",outname,\"\",sep=\"\"))\n",sep="")),file=myanalysisfile,append=T)
   cat("report(2,\"beforeUpload\")\n",file=myanalysisfile,append=T)
-  cat(Generate_Statement(paste("postForm('",paste(dbpath,"/uploadfile",sep=""),"',investigation_name='",investigationname,"', name='",outname,".assoc', type = 'InvestigationFile', file = fileUpload(filename='",outname,".assoc'), style='HTTPPOST')","\n",sep="")),file=myanalysisfile,append=T)
+  cat(Generate_Statement(paste("postForm('",paste(dbpath,"/uploadfile",sep=""),"',Investigation_name='",investigationname,"', name='",outname,".assoc', type = 'InvestigationFile', file = fileUpload(filename='",outname,".assoc'), style='HTTPPOST')","\n",sep="")),file=myanalysisfile,append=T)
   cat("report(3,\"PLINKfinished\")\n",file=myanalysisfile,append=T)
 }

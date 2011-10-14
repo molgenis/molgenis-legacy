@@ -22,6 +22,9 @@ run_QTL <- function(dbpath = "", subjob, item, jobid, outname, myanalysisfile, j
   cat("info: Start by sending a message (so we know we're running)\n")
   cat("report(2,\"LoadingCrossobject\")\n",file=myanalysisfile,append=T)
   
+  cat("info: authenticating\n")
+  MOLGENIS.login("admin","admin")
+  
   cat("info: Get your parameters\n")
   map <- getparameter("map",jobparams)
   method <- getparameter("method",jobparams)
@@ -42,7 +45,7 @@ run_QTL <- function(dbpath = "", subjob, item, jobid, outname, myanalysisfile, j
   cat(Generate_Statement(paste("plot(results)","\n",sep="")),file=myanalysisfile,append=T)
   cat(paste("dev.off()","\n",sep=""),file=myanalysisfile,append=T)
   cat("report(2,\"PlotInTemp.fig\")\n",file=myanalysisfile,append=T)
-  cat(Generate_Statement(paste("postForm('",paste(dbpath,"/uploadfile",sep=""),"',investigation_name='",investigationname,"', name='",imagefilename,"', type = 'InvestigationFile', file = fileUpload(filename='",imagefilename,"'), style='HTTPPOST')","\n",sep="")),file=myanalysisfile,append=T)
+  cat(Generate_Statement(paste("postForm('",paste(dbpath,"/uploadfile",sep=""),"',Investigation_name='",investigationname,"', name='",imagefilename,"', type = 'InvestigationFile', file = fileUpload(filename='",imagefilename,"'), style='HTTPPOST')","\n",sep="")),file=myanalysisfile,append=T)
   cat("report(2,\"UploadedFIGtoDatabase\")\n",file=myanalysisfile,append=T)
   cat("report(2,\"StoringQTLResults\")\n",file=myanalysisfile,append=T)
   cat("info: Store QTL results by using ResultsToMolgenis function or any other function provided in the molgenis R API\n")

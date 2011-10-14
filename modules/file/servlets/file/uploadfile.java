@@ -73,7 +73,7 @@ public class uploadfile extends app.servlet.MolgenisServlet
 			out.println("uri <- \"http://mydomain.org/xqtl/uploadfile\");");
 			out.println("postForm(uri,");
 			out.println("\tname = \"harry.png\",");
-			out.println("\tinvestigation_name = \"ClusterDemo\",");
+			out.println("\tInvestigation_name = \"ClusterDemo\",");
 			out.println("\ttype = \"InvestigationFile\",");
 			out.println("\tfile = fileUpload(filename = \"usr/home/danny/harry.png\"),");
 			out.println("\tstyle = \"HTTPPOST\"");
@@ -81,7 +81,7 @@ public class uploadfile extends app.servlet.MolgenisServlet
 			out.println();
 			out.println("Example for commandline Curl when uploading an 'InvestigationFile':");
 			out
-					.println("curl -F \"file=@/pictures/mypicture.jpg\" -F \"name=mypicture.jpg\" -F \"investigation_name=ClusterDemo\" -F \"type=InvestigationFile\" http://mydomain.org/xqtl/uploadfile");
+					.println("curl -F \"file=@/pictures/mypicture.jpg\" -F \"name=mypicture.jpg\" -F \"Investigation_name=ClusterDemo\" -F \"type=InvestigationFile\" http://mydomain.org/xqtl/uploadfile");
 			out.println();
 			e.printStackTrace(out);
 		}
