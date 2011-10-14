@@ -236,7 +236,7 @@ public class EventViewerJSONServlet extends app.servlet.MolgenisServlet {
 			header += "\"iTotalDisplayRecords\": " + displaySize + ",";
 			header += "\"asFeatureNames\": [";
 			header += ("\"" + storedTargetType + "\",");
-			if (featList.size() > 0) {
+			if (featList != null && featList.size() > 0) {
 				Iterator<Measurement> featIt = featList.iterator();
 				while (featIt.hasNext()) {
 					header += ("\"" + featIt.next().getName() + "\"");
@@ -247,7 +247,7 @@ public class EventViewerJSONServlet extends app.servlet.MolgenisServlet {
 			header += "],";
 			header += "\"aiFeatureIds\": [";
 			header += ("\"0\",");
-			if (featList.size() > 0) {
+			if (featList != null && featList.size() > 0) {
 				Iterator<Measurement> featIt = featList.iterator();
 				while (featIt.hasNext()) {
 					header += ("\"" + featIt.next().getId() + "\"");
@@ -280,44 +280,46 @@ public class EventViewerJSONServlet extends app.servlet.MolgenisServlet {
 				currentLine += ("\"" + targetIds[targetCounter] + "\",");
 				currentLine += ("\"" + targetNames[targetCounter] + "\"");
 				int featureCounter = 0;
-				Iterator<Measurement> featIt = featList.iterator();
-				while (featIt.hasNext()) {
-					Measurement currentFeature = featIt.next();
-					// Find out what the unit is:
-					String dataType = currentFeature.getDataType();
-					currentLine += ",\"";
-					ObservedValue[] valueArray = matrixPart[targetCounter][featureCounter];
-					if (valueArray != null) {
-						if (valueArray.length > 0) {
-							for (int valueCounter = 0; valueCounter < valueArray.length; valueCounter++) {
-								ObservedValue currentValue = valueArray[valueCounter];
-								if (currentValue != null) {
-									// Get the real value:
-									String valueToAdd = currentValue.getValue();
-									if (dataType != null && dataType.equals("xref")) {
-										// If so, find the corresponding target name:
-										valueToAdd = currentValue.getRelation_Name();
-									}
-									// Make neat output:
-									currentLine += valueToAdd;
-									if (printValInfo == true) {
-										currentLine += (" (valid from: " + currentValue.getTime());
-										if (currentValue.getEndtime() != null) {
-											currentLine += (" through: " + currentValue.getEndtime());
+				if (featList != null) {
+					Iterator<Measurement> featIt = featList.iterator();
+					while (featIt.hasNext()) {
+						Measurement currentFeature = featIt.next();
+						// Find out what the unit is:
+						String dataType = currentFeature.getDataType();
+						currentLine += ",\"";
+						ObservedValue[] valueArray = matrixPart[targetCounter][featureCounter];
+						if (valueArray != null) {
+							if (valueArray.length > 0) {
+								for (int valueCounter = 0; valueCounter < valueArray.length; valueCounter++) {
+									ObservedValue currentValue = valueArray[valueCounter];
+									if (currentValue != null) {
+										// Get the real value:
+										String valueToAdd = currentValue.getValue();
+										if (dataType != null && dataType.equals("xref")) {
+											// If so, find the corresponding target name:
+											valueToAdd = currentValue.getRelation_Name();
 										}
-										currentLine += ")";
-									}
-									currentLine += "<br />";
-									
-									if (limitVal) {
-										break; // show only most recent
+										// Make neat output:
+										currentLine += valueToAdd;
+										if (printValInfo == true) {
+											currentLine += (" (valid from: " + currentValue.getTime());
+											if (currentValue.getEndtime() != null) {
+												currentLine += (" through: " + currentValue.getEndtime());
+											}
+											currentLine += ")";
+										}
+										currentLine += "<br />";
+										
+										if (limitVal) {
+											break; // show only most recent
+										}
 									}
 								}
 							}
 						}
-					}
-					currentLine += "\"";
-					featureCounter++;
+						currentLine += "\"";
+						featureCounter++;
+					} // end of while loop through all features
 				}
 				
 				for (int i = featureCounter; i < totalNrOfFeatures; i++) {
@@ -325,7 +327,7 @@ public class EventViewerJSONServlet extends app.servlet.MolgenisServlet {
 				}
 				currentLine += "],";
 				body += currentLine;
-			}  
+			}  // end of for loop through all targets
 			// End output:
 			String tmpBody = "";
 			if (body.length() > 0) tmpBody = body.substring(0, body.length() - 1);
