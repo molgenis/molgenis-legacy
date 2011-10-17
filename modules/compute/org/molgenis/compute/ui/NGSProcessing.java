@@ -79,7 +79,7 @@ public class NGSProcessing
 
     private enum UserParameter
     {
-        sample, flowcell, lane, barcode, machine, date, capturing, project;
+        sample, flowcell, lane, barcode, machine, date, capturing, project, run;
     }
 
     public void processSingleWorksheet(Database db, Tuple request, Worksheet data, Workflow workflow) throws Exception
@@ -122,7 +122,8 @@ public class NGSProcessing
         String strSample = data.getExternalSampleID();
         String strCapturing = data.getCapturingKit();
         String strProject = data.getProject();
-
+        String strRun = data.getRun();
+        
         //application for the whole workflow
         wholeWorkflowApp = new ComputeApplication();
 
@@ -169,6 +170,9 @@ public class NGSProcessing
                         break;
                     case project:
                         userValues.put(computeFeature.getName(), strProject);
+                        break;
+                    case run:
+                        userValues.put(computeFeature.getName(), strRun);
                         break;
                 }
             }
@@ -314,6 +318,10 @@ public class NGSProcessing
                 generateComApp(db, request, workflowElement, protocol, weavingValues, featuresToDerive);
             }
         }
+//        else if (workflowElement.getName().equalsIgnoreCase("BwaElement"))
+//        {
+//        	
+//        }
         else
         {
             generateComApp(db, request, workflowElement, protocol, weavingValues, featuresToDerive);
@@ -420,7 +428,8 @@ public class NGSProcessing
         weaver.setVerificationCommand("\n");
         //finish extra
 
-        String remoteLocation = "/data/gcc/test_george/";
+        String remoteLocation = "/home/mdijkstra/computescripts/";
+//        String remoteLocation = "/data/gcc/test_george/";
         //String remoteLocation = "/target/gpfs2/gcc/home/fvandijk/computescripts/";
 
         weaver.setDatasetLocation(remoteLocation);

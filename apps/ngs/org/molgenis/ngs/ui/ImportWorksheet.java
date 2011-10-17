@@ -1,7 +1,12 @@
 package org.molgenis.ngs.ui;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
@@ -15,6 +20,7 @@ import org.molgenis.ngs.LibraryLane;
 import org.molgenis.ngs.Machine;
 import org.molgenis.ngs.NgsSample;
 import org.molgenis.ngs.Worksheet;
+import org.molgenis.ngs.WorksheetLaneLevel;
 import org.molgenis.organization.DeprecatedPerson;
 import org.molgenis.organization.Investigation;
 import org.molgenis.util.CsvFileReader;
@@ -86,10 +92,14 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 			ws.setLane(libraryList.getLane());
 			ws.setSequencingStartDate(flowcell.getRunDate());
 			ws.setSequencer(m.getMachine());
+			ws.setRun(flowcell.getRun());
 			ws.setFlowcell(flowcell.getName());
-			if (lc == null) {
+			if (lc == null)
+			{
 				ws.setCapturingKit("NA");
-			} else {
+			}
+			else
+			{
 				ws.setCapturingKit(lc.getCapturing());
 			}
 			print("LibraryList.getname(): " + libraryList.getName());
@@ -97,8 +107,60 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 			ws.setComments(libraryList.getDescription());
 			// add sheet
 			db.add(ws);
+			
 		}
 
+		// put data in lane level worksheet, too:
+
+		// 1. collect all library lanes
+		List<LibraryLane> ll_list_all = db.query(LibraryLane.class).find();
+//		print(" 111 " + ll_list_all);
+		
+		// 2. create {string flowcell, map {string lane, string barcodes}}
+		HashMap<String, HashMap> flowlane = new HashMap<String, HashMap>();
+		for (LibraryLane ll : ll_list_all) {
+			String flowcellname = ll.getFlowcell_Name();
+			String bc = ll.getBarcode_Barcode().split(" ")[2];
+			
+			HashMap lanebarcodes;
+			if (flowlane.containsKey(flowcellname)) { // flowcell was already found
+				lanebarcodes = flowlane.get(flowcellname); // get map{lane, barcodes}
+				
+				if (lanebarcodes.containsKey(ll.getLane())) {
+					// lane was already found
+					lanebarcodes.put(ll.getLane(), lanebarcodes.get(ll.getLane()) + "," + bc); // with comma
+				} else {
+					// we found a new lane
+					lanebarcodes.put(ll.getLane(), bc);
+				}
+				
+			} else { // we found a new flowcell
+				print("First time we see lane nr " + ll.getLane());
+				lanebarcodes = new HashMap<String, String>();
+				lanebarcodes.put(ll.getLane(), bc); // first without comma
+			}
+
+//			print(" 222 " + flowcellname + lanebarcodes);
+			flowlane.put(flowcellname, lanebarcodes);			
+		}
+		
+		for (String flowcell : flowlane.keySet()) {
+			print("Different lanes and barcodes on flowcell (" + flowcell + "): " + flowlane.get(flowcell));
+		}
+
+		// also collect date,machine,run,info 
+//		WorksheetLaneLevel wsll = new WorksheetLaneLevel();
+//		wsll.setSequencingStartDate(f.getRunDate());
+//		wsll.setSequencer(m.getMachine());
+//		wsll.setRun(f.getRun());
+//		wsll.setFlowcell(f.getName());
+//		wsll.setLane(.getLane());
+//		String barcodes = 
+//		wsll.setBarcodes();
+		
+		
+		
+		// create file for download
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 		File f = new File(tmpDir + File.separator + "worksheet.csv");
 		// getModel().worksheetpath = tmpDir + File.separator + "worksheet.csv";
@@ -129,7 +191,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 																	// error
 
 		File file = request.getFile("upload");
-		// File file = new File(request.getString("upload"));
+//		File file = new File("/Users/mdijkstra/Dropbox/NGS/compute/GAF.csv");
 
 		if (file == null)
 		{
@@ -153,7 +215,11 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 			@Override
 			public void handleLine(int line_number, Tuple tuple) throws Exception
 			{
-				if (!tuple.isNull(Worksheet.FLOWCELL) && !tuple.isNull(Worksheet.PROJECT))
+				// only import this line if GCC_Analysis is set to "Yes"
+				Boolean importthis = tuple.getString("GCC_Analysis") != null;
+				if (importthis) importthis = tuple.getString("GCC_Analysis").equals("Yes");
+
+				if (!tuple.isNull(Worksheet.FLOWCELL) && !tuple.isNull(Worksheet.PROJECT) && importthis)
 				{
 					System.out.println(">> Parsing line " + line_number);
 
@@ -179,16 +245,19 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 					{
 						investigation = new Investigation();
 						investigation.setName(projectname);
-						if(inv != null) investigation.getContacts_Id().add(inv.getId());
+						if (inv != null) investigation.getContacts_Id().add(inv.getId());
 						db.add(investigation);
 					}
 
 					// _library_ Capturing
 					LibraryCapturing libcap = null;
 					String capturing = tuple.getString(Worksheet.CAPTURINGKIT);
-					if (capturing == null) {
+					if (capturing == null)
+					{
 						capturing = "NA";
-					} else {
+					}
+					else
+					{
 						libcap = (LibraryCapturing) getObject(db, LibraryCapturing.class, LibraryCapturing.CAPTURING,
 								capturing);
 						if (libcap == null)
@@ -211,46 +280,6 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 						libbar.setBarcode(barcode);
 						db.add(libbar);
 					}
-
-					// _library_ (1)
-					// Query q = db.query(Library.class);
-					// q.addRules(new QueryRule("capturing", Operator.EQUALS,
-					// capturing));
-					// q.addRules(new QueryRule("barcode", Operator.EQUALS,
-					// barcode));
-					// List<Library> liblist = q.find();
-
-					// first select the target library, if available (... the
-					// q.addRules statements don't work...)
-					// LibraryLane lib = null;
-					// for (LibraryLane thislib : liblist) {
-					// if (thislib.getCapturing_Id() == libcap.getId() &&
-					// thislib.getBarcode_Id() == libbar.getId()) {
-					// lib = thislib;
-					// }
-					// }
-					//
-					// if (lib == null) {
-					// lib = new Library();
-					//
-					// lib.setCapturing(libcap);
-					// lib.setBarcode(libbar);
-					//
-					// // Why is library an ObservatgionTarget?! OT has field
-					// name
-					// // which lib shouldnt have... :-s
-					// lib.setName("lib_" + capturing + barcode);
-					//
-					// db.add(lib);
-					// }
-
-					// // add the sample to the library (if not there yet)
-					// List<Integer> libsamples = lib.getSamples();
-					// if (!libsamples.contains(sample.getId())) {
-					// libsamples.add(sample.getId());
-					// lib.setSamples(libsamples);
-					// db.update(lib);
-					// }
 
 					// _sample_
 					// assume that a sample names occurs in only one line
@@ -276,12 +305,22 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 
 					// _flowcell_
 					String flowcellname = tuple.getString(Worksheet.FLOWCELL);
+					if (flowcellname == null) flowcellname = "FLOWCELLNAME";
 					Flowcell flowcell = (Flowcell) getObject(db, Flowcell.class, Flowcell.NAME, flowcellname);
 					if (flowcell == null)
 					{
 						print(">> We create a new flowcell");
 						flowcell = new Flowcell();
 						flowcell.setName(flowcellname);
+						String flowcellrun = tuple.getString(Worksheet.RUN);
+						if (flowcellrun == null) flowcellrun = "FLOWCELLRUN";
+						
+						// prefix leading 0's so that run length is always 4
+						for (int i = flowcellrun.length(); i < 4; i++) {
+							flowcellrun = "0" + flowcellrun;
+						}
+						
+						flowcell.setRun(flowcellrun);
 						String date = tuple.getString(Worksheet.SEQUENCINGSTARTDATE);
 						// Calendar cal = Calendar.getInstance();
 						// cal.set(2000 + Integer.parseInt(date.substring(0,
@@ -330,18 +369,21 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 						fls.setFlowcell(flowcell);
 						fls.setLane(tuple.getString(Worksheet.LANE));
 						fls.setSample(sample);
-						
+
 						String library = tuple.getString(Worksheet.LIBRARY);
-						if (library != null && !library.equals("")) {
+						if (library != null && !library.equals(""))
+						{
 							fls.setName(library);
-						} else {
+						}
+						else
+						{
 							fls.setName("NA");
 						}
-						
+
 						fls.setDescription(tuple.getString(Worksheet.COMMENTS));
 						fls.setBarcode(libbar);
 						if (libcap != null) fls.setCapturing(libcap);
-						
+
 						print("Before adding flowcell lane lib");
 						print("fls: " + fls);
 						db.add(fls);

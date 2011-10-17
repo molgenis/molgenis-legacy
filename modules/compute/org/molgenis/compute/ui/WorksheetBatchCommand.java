@@ -37,7 +37,6 @@ public class WorksheetBatchCommand extends SimpleCommand
 	private ActionInput runButton;
 	private ActionInput runButton2;
 
-	private boolean isFirstClick = true;
 	private Vector<Integer> numbers = null;
 
 	private NGSProcessing processing = new NGSProcessing();
@@ -100,24 +99,25 @@ public class WorksheetBatchCommand extends SimpleCommand
 	{
 		return null;
 	}
+	
+	
+	public void findVariants(Database db, Tuple request) throws Exception
+	{
+		print("WE ARE IN FINDVARIANTS!");
+//		getModel().setSuccess("Clean successful");
+	}
+	
+	
 
 	public ScreenModel.Show handleRequest(Database db, Tuple request, OutputStream downloadStream) throws Exception
 	{
-		System.out.println(">> In handleRequest!");
-		logger.debug("worksheet batch command button clicked: " + request.toString());
-
 		String action = request.getString("__action");
 		String command = request.getString("__command");
-
 		String lines = request.getString("massUpdate");
-		System.out.println(">> Selected lines: " + lines);
 
-		System.out.println(">> Action: " + action);
-		System.out.println(">> request==" + request.toString());
-
-		if (isFirstClick)
+		if ("runbatch".equalsIgnoreCase(action))
 		{
-			System.out.println("first click");
+
 			numbers = new Vector<Integer>();
 			if (lines != null)
 			{
@@ -152,45 +152,42 @@ public class WorksheetBatchCommand extends SimpleCommand
 
 				}
 			}
-			isFirstClick = false;
+
 			return ScreenModel.Show.SHOW_DIALOG;
 		}
 		else
 		{
-			System.out.println("second click");
-			print("NUmbers are: " + numbers);
+			print("You chose to run workflow " + request.getAction() + "on the following IDs: " + numbers);
 			Iterator it = numbers.iterator();
+			Boolean workflowFound = false;
 			while (it.hasNext())
 			{
 				Integer worksheetID = (Integer) it.next();
 				try
 				{
 					Worksheet w = db.findById(Worksheet.class, worksheetID);
-					print("You chose to do: " + request.getAction());
-					print("Starting analysis for worksheetID " + worksheetID);
 					// start the chosen pipeline
-					Boolean pipelineFound = false;
 					List<Workflow> workflowlist = db.query(Workflow.class).find();
 					for (Workflow wf : workflowlist)
 					{
 						if (wf.getName().equalsIgnoreCase(request.getAction()))
 						{
-							print("Starting workflow: " + wf.getName());
-							processing.processSingleWorksheet(db, request, w, wf);
-							pipelineFound = true;
+							print("Starting workflow " + request.getAction() + " for ID " + worksheetID) ;
+//							processing.processSingleWorksheet(db, request, w, wf);
+							workflowFound = true;
 						}
-					}
-					if (!pipelineFound) {
-						print("Pipeline not found!");
 					}
 				}
 				catch (DatabaseException e)
 				{
 					e.printStackTrace();
 				}
+				
+				if (!workflowFound) {
+					print("Workflow " + request.getAction() + " not found!");
+				}
 			}
 
-			isFirstClick = true;
 			return ScreenModel.Show.SHOW_CLOSE; // ScreenModel.Show.SHOW_DIALOG;
 
 		}

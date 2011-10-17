@@ -15,6 +15,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * AdminDBPluginController takes care of all user requests and application logic.
@@ -52,17 +54,52 @@ public class AdminDBPlugin extends EasyPluginController<AdminDBPluginModel>
 	
 	public void resetDatabase(Database db, Tuple request) throws Exception
 	{
-
 		print("resetDatabase pressed");
-
-        //hardcoded to working directory
-        String strSQL = readFile("/Users/mdijkstra/Documents/workspace/molgenis_apps/generated/sql/create_tables.sql");
-        execute(db, strSQL);
-        strSQL = readFile("/Users/mdijkstra/Documents/workspace/molgenis_apps/generated/sql/insert_metadata.sql");
+//        hardcoded to working directory
+      String strSQL = readFile("/Users/mdijkstra/Documents/workspace/molgenis_apps/generated/sql/create_tables.sql");
+//		String strSQL = readFile("create_tables.sql");
+      execute(db, strSQL);
+      strSQL = readFile("/Users/mdijkstra/Documents/workspace/molgenis_apps/generated/sql/insert_metadata.sql");
+//      strSQL = readFile("insert_metadata.sql");
 		execute(db, strSQL);
         print("done with resetDatabase");
         getModel().setSuccess("reset successful");
+	}
+	
+	public void emptyCompute(Database db, Tuple request) throws Exception
+	{
 
+		
+
+		List<String> tables = new ArrayList();
+		tables.add("ObservedValue");		
+		tables.add("Panel");
+		tables.add("ComputeApplication_PrevSteps");
+		tables.add("ComputeApplication");
+		tables.add("ComputeProtocol_Outputs");
+		tables.add("ComputeProtocol");
+		tables.add("ObservableFeature");		
+//		tables.add("ObservationTarget");
+		tables.add("ObservationElement");
+		tables.add("WorkflowElementParameter");
+		tables.add("WorkflowElement_PreviousSteps");		
+		tables.add("WorkflowElement_Workflow");
+		tables.add("WorkflowElement");
+		tables.add("Workflow");		
+		tables.add("ComputeFeature");		
+		tables.add("Protocol");
+		tables.add("ProtocolApplication");
+		tables.add("ProtocolApplication_Performer");
+		
+		String strSQL = "";
+		for (String table : tables) {
+			strSQL = strSQL + "delete from " + table + ";"; 
+		}
+		
+		print(strSQL);
+		
+		execute(db, strSQL);
+		getModel().setSuccess("Clean successful");
 	}
 	
 	private void print(String str) {
