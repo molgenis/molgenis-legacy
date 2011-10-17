@@ -40,5 +40,7 @@ public class ${clazzName}Model extends EasyPluginModel
 		super(controller);
 	}
 	
-	
+	public Date getDate() {
+		return date;
+	}
 }

@@ -66,6 +66,6 @@ public class ${clazzName} extends EasyPluginController<${clazzName}Model>
 //		db.add(i);
 //		this.setMessage("Added new investigation");
 
-		getModel().setSuccess("update succesfull");
+		getModel().setSuccess("Update successful");
 	}
 }
