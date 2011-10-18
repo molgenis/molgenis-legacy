@@ -27,7 +27,7 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.Table;
-import org.molgenis.matrix.component.ObservationElementMatrixViewer;
+import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.pheno.Code;
@@ -81,7 +81,7 @@ public class ManageLitters extends PluginModel<Entity>
 	private String remarks = null;
 	private Table genotypeTable = null;
 	private int nrOfGenotypes = 1;
-	ObservationElementMatrixViewer matrixViewer = null;
+	MatrixViewer matrixViewer = null;
 	private static String MATRIX = "matrix";
 	private int userId = -1;
 
@@ -1112,9 +1112,9 @@ public class ManageLitters extends PluginModel<Entity>
 			
 			if (action.equals("selectParentgroup")) {
 				setUserFields(request, false);
-				List<? extends ObservationElement> rows = matrixViewer.getSelection();
+				List rows = matrixViewer.getSelection();
 				int row = request.getInt(MATRIX + "_selected");
-				this.selectedParentgroup = rows.get(row).getId();
+				this.selectedParentgroup = ((ObservationElement) rows.get(row)).getId();
 				this.setAction("AddLitter");
 			}
 
@@ -1495,7 +1495,7 @@ public class ManageLitters extends PluginModel<Entity>
 					Operator.IN, investigationNames));
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("TypeOfGroup"),
 					ObservedValue.VALUE, Operator.EQUALS, "Parentgroup"));
-			matrixViewer = new ObservationElementMatrixViewer(this, MATRIX, 
+			matrixViewer = new MatrixViewer(this, MATRIX, 
 					new SliceablePhenoMatrix(this.getDatabase(), Panel.class, Measurement.class), 
 					true, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 							Operator.IN, measurementsToShow));

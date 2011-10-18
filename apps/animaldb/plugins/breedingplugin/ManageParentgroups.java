@@ -21,7 +21,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.matrix.component.ObservationElementMatrixViewer;
+import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.pheno.Individual;
@@ -48,8 +48,8 @@ public class ManageParentgroups extends PluginModel<Entity>
 	private int line = -1;
 	private String remarks = null;
 	private List<ObservationTarget> pgList;
-	ObservationElementMatrixViewer motherMatrixViewer = null;
-	ObservationElementMatrixViewer fatherMatrixViewer = null;
+	MatrixViewer motherMatrixViewer = null;
+	MatrixViewer fatherMatrixViewer = null;
 	private static String MOTHERMATRIX = "mothermatrix";
 	private static String FATHERMATRIX = "fathermatrix";
 	private String action = "init";
@@ -264,7 +264,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			
 			if (action.equals("addParentgroupScreen3")) {
 				String motherNames = "";
-				List<? extends ObservationElement> rows = motherMatrixViewer.getSelection();
+				List<ObservationElement> rows = (List<ObservationElement>) motherMatrixViewer.getSelection();
 				int rowCnt = 0;
 				for (ObservationElement row : rows) {
 					if (request.getBool(MOTHERMATRIX + "_selected_" + rowCnt) != null) {
@@ -285,7 +285,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			
 			if (action.equals("addParentgroupScreen4")) {
 				String fatherNames = "";
-				List<? extends ObservationElement> rows = fatherMatrixViewer.getSelection();
+				List<ObservationElement> rows = (List<ObservationElement>) fatherMatrixViewer.getSelection();
 				int rowCnt = 0;
 				for (ObservationElement row : rows) {
 					if (request.getBool(FATHERMATRIX + "_selected_" + rowCnt) != null) {
@@ -431,7 +431,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 				// Setting filter on the RELATION field with value = line would be more efficient,
 				// but gives a very un-userfriendly toString value when shown in the UI
 			}
-			motherMatrixViewer = new ObservationElementMatrixViewer(this, MOTHERMATRIX, 
+			motherMatrixViewer = new MatrixViewer(this, MOTHERMATRIX, 
 					new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
 					true, true, motherFilterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 							Operator.IN, measurementsToShow));
@@ -450,7 +450,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 				// Setting filter on the RELATION field with value = line would be more efficient,
 				// but gives a very un-userfriendly toString value when shown in the UI
 			}
-			fatherMatrixViewer = new ObservationElementMatrixViewer(this, FATHERMATRIX, 
+			fatherMatrixViewer = new MatrixViewer(this, FATHERMATRIX, 
 					new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
 					true, true, fatherFilterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 							Operator.IN, measurementsToShow));

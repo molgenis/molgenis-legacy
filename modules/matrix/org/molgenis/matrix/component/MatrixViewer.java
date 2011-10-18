@@ -316,14 +316,14 @@ public class MatrixViewer extends HtmlWidget
 							if (val instanceof ObservedValue && valueToShow == null) {
 								valueToShow = ((ObservedValue)val).getRelation_Name();
 							}
-//							if (val.get(ObservedValue.ENDTIME) != null) {
-//								valueToShow += " (valid from " + newDateOnlyFormat.format(val.get(ObservedValue.ENDTIME));
-//							}
-//							if (val.get(ObservedValue.TIME) != null) {
-//								valueToShow += " through " + newDateOnlyFormat.format(val.get(ObservedValue.TIME)) + ")";
-//							} else if (((ObservedValue)val).getTime() != null) {
-//								valueToShow += ")";
-//							}
+							if (val.get(ObservedValue.ENDTIME) != null) {
+								valueToShow += " (valid from " + newDateOnlyFormat.format(val.get(ObservedValue.ENDTIME));
+							}
+							if (val.get(ObservedValue.TIME) != null) {
+								valueToShow += " through " + newDateOnlyFormat.format(val.get(ObservedValue.TIME)) + ")";
+							} else if (((ObservedValue)val).getTime() != null) {
+								valueToShow += ")";
+							}
 							if (first) {
 								first = false;
 								dataTable.setCell(col + 3, row, valueToShow);
