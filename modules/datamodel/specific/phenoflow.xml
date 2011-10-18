@@ -478,7 +478,7 @@ Changed unique(name) on Observation element to unique(investigation,name)</li>
 				measure a feature. See
 				Protocol section.
 			</description>
-			<unique fields="investigation_name,name" />
+			<unique fields="Investigation,name" />
 		</entity>
 		<!-- <entity name="ObservationTarget" extends="ObservationElement"> <description> 
 			An ObservationTarget class defines the subjects of observation. For instance: 
