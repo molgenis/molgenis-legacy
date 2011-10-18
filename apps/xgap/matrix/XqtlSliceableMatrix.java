@@ -14,6 +14,7 @@ import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Object>
 {
 	DataMatrixInstance wrappedMatrix;
+	List<MatrixQueryRule> rules;
 	
 	//keep track of names being used
 	List<String> copiedRowNames;
@@ -29,9 +30,11 @@ public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Obje
 	int colLimit;
 	int rowLimit;
 	
-	public XqtlSliceableMatrix(DataMatrixInstance wrappedMatrix) throws MatrixException
+	public XqtlSliceableMatrix(DataMatrixInstance wrappedMatrix) throws Exception
 	{
+		//wrappedMatrix.getSubMatrixByOffset(0, 5, 0, 5);
 		this.wrappedMatrix = wrappedMatrix;
+		rules = new ArrayList<MatrixQueryRule>();
 		this.reset();
 	}
 
@@ -145,13 +148,27 @@ public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Obje
 	@Override
 	public SliceableMatrix<String, String, Object> sliceByColIndex(Operator operator, Integer index) throws Exception
 	{
-		throw new MatrixException("Unimplemented");
+		int col = AbstractDataMatrixQueries.getOffset(operator, index);
+		int nCols = AbstractDataMatrixQueries.getLimit(this.copiedColIndices.size(), operator, index);
+		if(nCols < 1){
+			throw new Exception("No cols in resultset, empty matrix!");
+		}
+		this.copiedColNames = this.copiedColNames.subList(col, col+nCols);
+		this.copiedColIndices = this.copiedColIndices.subList(col, col+nCols);
+		return this;
 	}
 
 	@Override
 	public SliceableMatrix<String, String, Object> sliceByRowIndex(Operator operator, Integer index) throws Exception
 	{
-		throw new MatrixException("Unimplemented");
+		int row = AbstractDataMatrixQueries.getOffset(operator, index);
+		int nRows = AbstractDataMatrixQueries.getLimit(this.copiedRowIndices.size(), operator, index);
+		if(nRows < 1){
+			throw new Exception("No rows in resultset, empty matrix!");
+		}
+		this.copiedRowNames = this.copiedRowNames.subList(row, row+nRows);
+		this.copiedRowIndices = this.copiedRowIndices.subList(row, row+nRows);
+		return this;
 	}
 
 	@Override
@@ -165,7 +182,9 @@ public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Obje
 	@Override
 	public SliceableMatrix<String, String, Object> sliceByColOffsetLimit(int limit, int offset) throws Exception
 	{
-		throw new MatrixException("Unimplemented");
+		this.copiedColNames = this.copiedColNames.subList(offset, offset+limit);
+		this.copiedColIndices = this.copiedColIndices.subList(offset, offset+limit);
+		return this;
 	}
 
 	@Override
@@ -207,21 +226,49 @@ public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Obje
 	public SliceableMatrix<String, String, Object> sliceByRowValues(String row, Operator operator, Object value)
 			throws Exception
 	{
-		throw new MatrixException("Unimplemented");
+		return sliceByRowValues(wrappedMatrix.getRowIndexForName(row), operator, value);
 	}
 
 	@Override
 	public SliceableMatrix<String, String, Object> sliceByColValues(int index, Operator operator, Object value)
 			throws Exception
 	{
-		throw new MatrixException("Unimplemented");
+		List<String> result = null;
+		if (this.wrappedMatrix.getData().getValueType().equals("Decimal"))
+		{
+			double valueD = Double.parseDouble(value.toString());
+			result = AbstractDataMatrixQueries.selectUsingDecimal(this.getCol(index), valueD, operator, this.copiedRowNames);
+		}
+		else
+		{
+			String valueS = value.toString();
+			result = AbstractDataMatrixQueries.selectUsingText(this.getCol(index), valueS, operator, this.copiedRowNames);
+		}
+		
+		if (result.size() == 0)
+		{
+			throw new Exception("No rownames in resultset, empty matrix!");
+		}
+		
+		//update names
+		this.copiedRowNames = result;
+		
+		//update indices
+		List<Integer> rowIndices = new ArrayList<Integer>();
+		for(String s : result)
+		{
+			rowIndices.add(wrappedMatrix.getRowIndexForName(s));
+		}
+		this.copiedRowIndices = rowIndices;
+		
+		return this;
 	}
 
 	@Override
 	public SliceableMatrix<String, String, Object> sliceByColValues(String col, Operator operator, Object value)
 			throws Exception
 	{
-		throw new MatrixException("Unimplemented");
+		return sliceByColValues(wrappedMatrix.getColIndexForName(col), operator, value);
 	}
 
 	@Override
@@ -242,14 +289,21 @@ public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Obje
 	public SliceableMatrix<String, String, Object> sliceByColValueProperty(String col, String property,
 			Operator operator, Object value) throws MatrixException
 	{
-		throw new MatrixException("Unimplemented");
+		try
+		{
+			return sliceByColValueProperty(wrappedMatrix.getColIndexForName(col), property, operator, value);
+		}
+		catch (Exception e)
+		{
+			throw new MatrixException(e);
+		}
 	}
 
 	@Override
 	public SliceableMatrix<String, String, Object> sliceByColValueProperty(int colIndex, String property,
 			Operator operator, Object value) throws MatrixException
 	{
-		throw new MatrixException("Unimplemented");
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -284,6 +338,8 @@ public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Obje
 	{
 		this.copiedColNames = this.wrappedMatrix.getColNames();
 		this.copiedRowNames = this.wrappedMatrix.getRowNames();
+		copiedRowIndices = new ArrayList<Integer>();
+		copiedColIndices = new ArrayList<Integer>();
 		
 		for(int row = 0; row < copiedRowNames.size(); row++)
 		{
@@ -361,6 +417,19 @@ public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Obje
 			Operator operator, Object value) throws MatrixException
 	{
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<MatrixQueryRule> getRules()
+	{
+		return rules;
+	}
+
+	@Override
+	public void reload() throws MatrixException
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 

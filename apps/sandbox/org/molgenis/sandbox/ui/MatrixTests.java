@@ -3,6 +3,10 @@ package org.molgenis.sandbox.ui;
 import java.io.OutputStream;
 import java.util.List;
 
+import matrix.DataMatrixInstance;
+import matrix.XqtlSliceableMatrix;
+import matrix.general.DataMatrixHandler;
+
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -16,9 +20,11 @@ import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.matrix.MatrixException;
+import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.ObservationElementMatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.pheno.ObservationElement;
+import org.molgenis.sandbox.ui.MatrixTestsModel;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
@@ -35,7 +41,7 @@ import org.molgenis.util.Tuple;
 public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 {
 	private static final long serialVersionUID = 2924809526072222758L;
-	ObservationElementMatrixViewer matrixViewer = null;
+	MatrixViewer matrixViewer = null;
 	MolgenisForm form = null;
 	Paragraph selection = null;
 	Data data =  null;
@@ -86,8 +92,11 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 			try
 			{
 				//decide what to use? Database, Binary, etc
-				matrixViewer = new ObservationElementMatrixViewer(this, "mymatrix", new SliceablePhenoMatrix(
-						this.getDatabase(), rowClass, colClass, valueClass), true, true, null);
+				
+				DataMatrixInstance matrix = new DataMatrixHandler(db).createInstance(data);
+				XqtlSliceableMatrix xs = new XqtlSliceableMatrix(matrix);
+				
+				matrixViewer = new MatrixViewer(this, "mymatrix", xs, true, true, null);
 			}
 			
 
@@ -118,12 +127,18 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 
 	public void saveSelection(Database db, Tuple t) throws DatabaseException, MatrixException
 	{
-		List<? extends ObservationElement> rows = matrixViewer.getSelection();
+		List<? extends Object> rows = matrixViewer.getSelection();
 		String selectionItems = "<ul>";
-		for (ObservationElement row : rows)
+//		for (ObservationElement row : rows)
+//		{
+//			selectionItems += "<li>" + row.getName() + "</li>";
+//		}
+		
+		for(Object rowName : matrixViewer.getMatrix().getRowHeaders())
 		{
-			selectionItems += "<li>" + row.getName() + "</li>";
+			selectionItems += "<li>" + rowName.toString() + "</li>";
 		}
+		
 		selectionItems += "</ul>";
 		selection = new Paragraph("selection", "You selected from the Matrix component:" + selectionItems);
 	}

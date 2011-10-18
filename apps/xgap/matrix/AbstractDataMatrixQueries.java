@@ -277,7 +277,7 @@ public class AbstractDataMatrixQueries
 	
 	
 	
-	private static int getOffset(Operator op, int value) throws Exception
+	public static int getOffset(Operator op, int value) throws Exception
 	{
 		if (op == Operator.EQUALS || op == Operator.GREATER_EQUAL)
 		{
@@ -297,7 +297,7 @@ public class AbstractDataMatrixQueries
 		}
 	}
 	
-	private static int getLimit(int numberOfDimElems, Operator op, int value) throws Exception
+	public static int getLimit(int numberOfDimElems, Operator op, int value) throws Exception
 	{
 		if (op == Operator.LESS_EQUAL)
 		{

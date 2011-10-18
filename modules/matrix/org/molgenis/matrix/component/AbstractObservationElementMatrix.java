@@ -413,6 +413,12 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 		}
 	}
 	
+	@Override
+	public List<MatrixQueryRule> getRules()
+	{
+		return rules;
+	}
+	
 	/**
 	 * Empty filter rules and cached data.
 	 */
@@ -440,6 +446,7 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 	 * 
 	 * @throws MatrixException
 	 */
+	@Override
 	public void reload() throws MatrixException
 	{
 		// empty the caches
