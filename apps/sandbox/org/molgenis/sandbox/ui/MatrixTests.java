@@ -21,7 +21,6 @@ import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.MatrixViewer;
-import org.molgenis.matrix.component.ObservationElementMatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.sandbox.ui.MatrixTestsModel;
