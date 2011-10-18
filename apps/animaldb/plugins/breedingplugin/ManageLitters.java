@@ -53,7 +53,7 @@ public class ManageLitters extends PluginModel<Entity>
 	private List<Litter> litterList = new ArrayList<Litter>();
 	private List<Litter> genoLitterList = new ArrayList<Litter>();
 	private List<Litter> doneLitterList = new ArrayList<Litter>();
-	private int selectedParentgroup;
+	private int selectedParentgroup = -1;
 	private int litter;
 //	private String litterName = "";
 	private String birthdate = null;
@@ -583,6 +583,11 @@ public class ManageLitters extends PluginModel<Entity>
 			}
 			
 			if (action.equals("ApplyAddLitter")) {
+				
+				if (selectedParentgroup == -1) {
+					throw new Exception("No parent group selected - litter not added");
+				}
+				
 				int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
 				setUserFields(request, false);
 				Date eventDate = oldDateOnlyFormat.parse(birthdate);
@@ -652,7 +657,8 @@ public class ManageLitters extends PluginModel<Entity>
 				// Add everything to DB
 				db.add(valuesToAddList);
 				
-				birthdate = null;
+				this.birthdate = null;
+				this.selectedParentgroup = -1;
 				this.action = "ShowLitters";
 				this.reload(db);
 				this.reloadLitterLists(db, false);
@@ -852,7 +858,8 @@ public class ManageLitters extends PluginModel<Entity>
 				// Update custom label map now new animals have been added
 				ct.makeObservationTargetNameMap(this.getLogin().getUserId(), true);
 				
-				weandate = null;
+				this.weandate = null;
+				this.selectedParentgroup = -1;
 				this.action = "ShowLitters";
 				this.reload(db);
 				this.reloadLitterLists(db, false);
@@ -1093,6 +1100,7 @@ public class ManageLitters extends PluginModel<Entity>
 				}
 				
 				this.action = "ShowLitters";
+				this.selectedParentgroup = -1;
 				this.reload(db);
 				this.reloadLitterLists(db, false);
 				this.getMessages().add(new ScreenMessage("All " + animalCount + " animals successfully genotyped", true));
