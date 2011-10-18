@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <molgenis name="gcc" label="Lifelines Catalogue">
 
-<module name="Catalogue" label="Lifelines Catalogue">
+<module name="catalogue" label="Lifelines Catalogue">
 <!-- decorator="decorators.DBIndexUpdateDecorator" -->
 	<entity name="BiobankData" >
 			<description>This entity includes the dictionary from lifelines </description>
