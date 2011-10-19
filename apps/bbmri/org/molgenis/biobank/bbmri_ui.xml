@@ -43,6 +43,8 @@
 		</menu>
 		<plugin name="BbmriHelp" type="plugins.help.BbmriHelpPlugin" label="Help"  />
 		<plugin name="BbmriContact" type="plugins.contact.BbmriContactPlugin" label="Contact" />
+		<plugin name="HtmlTreePlugin" type="plugins.HtmlTree.HtmlTreePlugin" label="HtmlTree" />
+
 		
 	</menu>
 </molgenis>
