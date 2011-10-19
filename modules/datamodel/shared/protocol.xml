@@ -42,7 +42,7 @@
 			<!-- TOMASZ: Changed xref_entity=ObservableFeature to ObservationElement, 
 			as ObservableFeature/ObservationTarget was merged into ObservationElement 
 			in the phenoflow model -->
-			<field name="Features" type="mref" xref_entity="ObservationElement" 
+			<field name="Features" type="mref" xref_entity="ObservableFeature" 
 				nillable="true"
 				description="The features that can be observed using this protocol. For example 'length' or 'rs123534' or 'probe123'. Also protocol parameters are considered observable features as they are important to the interpretation of the observed values." />
 			

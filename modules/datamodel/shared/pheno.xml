@@ -180,9 +180,11 @@
 			<field name="protocolApplication" type="xref" xref_entity="ProtocolApplication"
 				nillable="true"
 				description="Reference to the protocol application that was used to produce this observation. For example a particular patient visit or the application of a microarray or the calculation of a QTL model" />
+			<description>FIXME: change to ObservableFeature?</description>
 			<field name="Feature" type="xref" xref_entity="ObservationElement"
 				xref_field="id" xref_label="name"
 				description="References the ObservableFeature that this observation was made on. For example 'probe123'. Can be ommited for 1D data (i.e., a data list)." />
+			<description>FIXME: change to ObservationTarget?</description>
 			<field name="Target" type="xref" xref_entity="ObservationElement"
 				xref_field="id" xref_label="name"
 				description="References the ObservationTarget that this feature was made on. For example 'individual1'. In a correlation matrix this could be also 'probe123'." />
