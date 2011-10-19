@@ -130,5 +130,12 @@
 			<field name="Queue" nillable="true" type="text"
 				description="ADDED TO FIX THE BUILD - NEEDED IN PbsSubmitApplication.java: currentjob.setQueue(app.getQueue());" />
 		</entity>
+        <entity name="UserParameter" description="metadata: initial version (fast solution) mapper of the database field to the feature name in the workflow description">
+            <field name="id" type="autoid" />
+            <field name="FeatureName" type="string" nillable="false" description="The name of the feature in workflow description"/>
+            <field name="DatabaseField" type="string" nillable="false" description="corresponding field in the database"/>
+            <field name="DatabaseTable" type="string" nillable="false" description="corresponding table"/>
+            <unique fields="FeatureName"/>
+        </entity>
 	</module>
 </molgenis>
