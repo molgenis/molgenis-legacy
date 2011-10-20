@@ -72,5 +72,8 @@
 		<menu name="AdminDB">
 			<plugin name="AdminDBPlugin" type="org.molgenis.ngs.ui.AdminDBPlugin" />
 		</menu>
+        <menu name="TestingR">
+            <plugin name="TestR" type="org.molgenis.compute.ui.TestR" />
+        </menu>
 	</menu>
 </molgenis>
