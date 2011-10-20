@@ -42,6 +42,8 @@ public class ParameterWeaver
             "#PBS -l mem=${memory}gb\n" +
             "#PBS -e ${location}/err/err_${scriptID}.err\n" +
             "#PBS -o ${location}/out/out_${scriptID}.out\n" +
+            "mkdir -p ${location}/err\n" +
+            "mkdir -p ${location}/out\n" +
             "printf \"${scriptID}_started \" >>${location}/log_${jobID}.txt\n" +
             "date \"+DATE: %m/%d/%y%tTIME: %H:%M:%S\" >>${location}/log_${jobID}.txt\n" +
             "date \"+start time: %m/%d/%y%t %H:%M:%S\" >>${location}/extra/${scriptID}.txt\n" +

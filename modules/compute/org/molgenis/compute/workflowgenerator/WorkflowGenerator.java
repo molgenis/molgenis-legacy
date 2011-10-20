@@ -3,6 +3,7 @@ package org.molgenis.compute.workflowgenerator;
 import org.molgenis.compute.ComputeApplication;
 import org.molgenis.compute.ComputeFeature;
 import org.molgenis.compute.ComputeProtocol;
+import org.molgenis.compute.pipelinemodel.FileToSaveRemotely;
 import org.molgenis.compute.pipelinemodel.Pipeline;
 import org.molgenis.compute.pipelinemodel.Script;
 import org.molgenis.compute.pipelinemodel.Step;
@@ -35,12 +36,16 @@ import java.util.*;
  */
 public class WorkflowGenerator
 {
+    private static final String INTERPRETER_BASH = "bash";
+    private static final String INTERPRETER_R = "R";
+    
+    
     private boolean flagJustGenerate = false;
 
     private static final String LOG = "log";// reserved word for logging feature type used in ComputeFeature
 
-    public static final String DATE_FORMAT_NOW = "yyyy-MM-dd-HH-mm-ss";
-    private SimpleDateFormat sdf = null;
+    private static final String DATE_FORMAT_NOW = "yyyy-MM-dd-HH-mm-ss";
+    private SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
 
     //format to run pipeline in compute
     private Pipeline pipeline = null;
@@ -58,7 +63,6 @@ public class WorkflowGenerator
 
     //map of all compute features/values
     private Hashtable<String, String> weavingValues = null;
-    private HashMap<String, ComputeFeature> computeFeatures = new HashMap<String, ComputeFeature>();
     Hashtable<String, String> userValues = null;
 
     //whole workflow application
@@ -74,6 +78,8 @@ public class WorkflowGenerator
     private boolean isToWriteLocally = false;
     private String localLocation = "/";
 
+    private Workflow workflow = null;
+
     public void processSingleWorksheet(Database db, Tuple request,
                                        Hashtable<String, String> userValues,
                                        Workflow workflow,
@@ -81,6 +87,7 @@ public class WorkflowGenerator
     {
         this.userValues = userValues;
         this.target = workflow;
+        this.workflow = workflow;
         this.applicationName = applicationName;
 
         if (!db.inTx())
@@ -114,7 +121,7 @@ public class WorkflowGenerator
         wholeWorkflowApp.setInterpreter("WorkflowInterpreter");
 
         //it would be nice to select compute features of only selected workflow
-        allComputeFeatures = db.query(ComputeFeature.class).find();
+        allComputeFeatures = db.query(ComputeFeature.class).equals(ComputeFeature.WORKFLOW, workflow.getId()).find();
         System.out.println("we have so many features: " + allComputeFeatures.size());
 
         System.out.println("workflow" + workflow.getName());
@@ -123,7 +130,6 @@ public class WorkflowGenerator
         wholeWorkflowApp.setTime(now());
 
         //set app name everywhere and add to database
-        sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
         wholeWorkflowApp.setName(applicationName);
         pipeline.setId(applicationName);
         weaver.setJobID(applicationName);
@@ -224,7 +230,7 @@ public class WorkflowGenerator
 
         for (WorkflowElementParameter par : workflowElementParameters)
         {
-            ComputeFeature feature = computeFeatures.get(par.getTarget_Name());
+            ComputeFeature feature = findComputeFeature(par.getTarget_Name()); //computeFeatures.get(par.getTarget_Name());
             weavingValues.put(par.getFeature_Name(), feature.getDefaultValue());
         }
 
@@ -239,8 +245,20 @@ public class WorkflowGenerator
         }
         else
         {
+            if(workflow.getName().equalsIgnoreCase("findVariants"))
+                weavingValues.put("fastqc_index", "pizdec");
             generateComputeApplication(db, request, workflowElement, protocol, weavingValues, featuresToDerive);
         }
+    }
+
+    private ComputeFeature findComputeFeature(String targetName)
+    {
+        for(ComputeFeature f : allComputeFeatures)
+        {
+            if(f.getName().equalsIgnoreCase(targetName))
+                return f;
+        }
+        return null;
     }
 
     private void generateComputeApplication(Database db, Tuple request,
@@ -261,8 +279,6 @@ public class WorkflowGenerator
 
         String protocolTemplate = protocol.getScriptTemplate();
 
-//        System.out.println("--- template \n" + protocolTemplate);
-
         //weave complex features
         for (int i = 0; i < featuresToDerive.size(); i++)
         {
@@ -271,7 +287,6 @@ public class WorkflowGenerator
             String featureTemplate = feature.getDefaultValue();
 
             String featureValue = weaver.weaveFreemarker(featureTemplate, weavingValues);
-//            System.out.println("complex-feature: " + featureName + " --> " + featureValue);
             weavingValues.put(featureName, featureValue);
         }
 
@@ -302,13 +317,15 @@ public class WorkflowGenerator
             observedValue.setValue(value);
             observedValue.setProtocolApplication(app);
             observedValue.setTarget(target.getId());
-            ComputeFeature feature = computeFeatures.get(name);
+            ComputeFeature feature = findComputeFeature(name); //computeFeatures.get(name);
             if (feature.getFeatureType().equalsIgnoreCase(LOG))
             {
                 logpathfiles.addElement(value);
             }
 
             observedValue.setFeature(feature);
+            System.out.println(feature.getName() + "->" + value);
+
             db.add(observedValue);
         }
 
@@ -317,7 +334,7 @@ public class WorkflowGenerator
         //create compute pipeline
         String scriptID = app.getName();
         weaver.setScriptID(scriptID);
-        weaver.setActualCommand(result);
+
 
         weaver.setDefaults();
 
@@ -336,23 +353,25 @@ public class WorkflowGenerator
         weaver.setDatasetLocation(remoteLocation);
         String scriptRemoteLocation = remoteLocation + "scripts/";
 
-        String scriptFile = weaver.makeScript();
-
         String logfile = weaver.getLogfilename();
+
+        Script pipelineScript = null;
+        
+        if(protocol.getInterpreter().equalsIgnoreCase(INTERPRETER_BASH))
+        {
+            pipelineScript = makeShScript(scriptID, scriptRemoteLocation, result);
+        }
+        else if(protocol.getInterpreter().equalsIgnoreCase(INTERPRETER_R))
+        {
+            pipelineScript = makeRScript(scriptID, scriptRemoteLocation, result);
+        }
+
         pipeline.setPipelinelogpath(logfile);
 
         if(isToWriteLocally)
-            weaver.writeToFile(localLocation + pipelineElementNumber + scriptID, scriptFile);
+            weaver.writeToFile(localLocation + pipelineElementNumber + scriptID, new String(pipelineScript.getScriptData()));
 
-        //todo rewrite pipeline generation
-        //look into proper choose of logfile and all path settings
         List<String> strPreviousWorkflowElements = workflowElement.getPreviousSteps_Name();
-
-        Script pipelineScript = new Script(scriptID, scriptRemoteLocation, scriptFile.getBytes());
-
-        if (protocol.getClusterQueue() != null)
-            if (protocol.getClusterQueue().equalsIgnoreCase("short"))
-                pipelineScript.setShort(true);
 
         if (strPreviousWorkflowElements.size() == 0)//script does not depend on other scripts
         {
@@ -399,6 +418,25 @@ public class WorkflowGenerator
         updater.addComputeAppPath(appPaths);
     }
 
+    private Script makeRScript(String scriptID, String scriptRemoteLocation, String result)
+    {
+        weaver.setActualCommand("cd " + scriptRemoteLocation + "\n R CMD BATCH "+ scriptRemoteLocation +"myscript.R");
+        String scriptFile = weaver.makeScript();
+        Script script = new Script(scriptID, scriptRemoteLocation, scriptFile.getBytes());
+        FileToSaveRemotely rScript = new FileToSaveRemotely("myscript.R", result.getBytes());
+        script.addFileToTransfer(rScript);
+        System.out.println("Rscript" + result);
+        return script;
+
+    }
+
+    private Script makeShScript(String scriptID, String scriptRemoteLocation, String result)
+    {
+        weaver.setActualCommand(result);
+        String scriptFile = weaver.makeScript();
+        return new Script(scriptID, scriptRemoteLocation, scriptFile.getBytes());
+    }
+
     //root remote location should be set
     public void setRemoteLocation(String remoteLocation)
     {
@@ -413,5 +451,21 @@ public class WorkflowGenerator
     public void setLocalLocation(String localLocation)
     {
         this.localLocation = localLocation;
+    }
+
+    public Pipeline getCurrectPipeline()
+    {
+        return pipeline;
+    }
+
+    public void setFlagJustGenerate(boolean b)
+    {
+        flagJustGenerate = b;
+    }
+
+    public String getFormattedTime()
+    {
+        //SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+        return sdf.format(now());
     }
 }

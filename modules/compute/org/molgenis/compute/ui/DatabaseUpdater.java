@@ -126,7 +126,7 @@ public abstract class DatabaseUpdater
                     cancel();
 
             }
-        }, delay * 10000, period * 10000);
+        }, delay * 1000, period * 1000);
     }
 
     protected ComputeAppPaths.AppStatus findStatus(String name, Vector<String> allLogs)

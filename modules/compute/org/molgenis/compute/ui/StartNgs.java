@@ -1,15 +1,16 @@
 package org.molgenis.compute.ui;
 
+import org.molgenis.compute.UserParameter;
 import org.molgenis.compute.pipelinemodel.Pipeline;
+import org.molgenis.compute.workflowgenerator.WorkflowGenerator;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.EasyPluginController;
-import org.molgenis.framework.ui.FormController;
-import org.molgenis.framework.ui.FormModel;
-import org.molgenis.framework.ui.FreemarkerView;
-import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.*;
 import org.molgenis.ngs.Worksheet;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.util.Tuple;
+
+import java.util.Hashtable;
+import java.util.List;
 
 /**
  * StartNgsController takes care of all user requests and application logic.
@@ -21,7 +22,7 @@ import org.molgenis.util.Tuple;
  */
 public class StartNgs extends EasyPluginController<StartNgsView>
 {
-    private NGSProcessing processing = new NGSProcessing();
+    private WorkflowGenerator processing = new WorkflowGenerator();
 
     public StartNgs(String name, ScreenController<?> parent)
     {
@@ -50,6 +51,8 @@ public class StartNgs extends EasyPluginController<StartNgsView>
         testPipeline.addStep(pipeline.getStep(stepID));
 
         processing.executePipeline(db, testPipeline);
+        getModel().setSuccess("start test succesfull");
+
     }
 
     public void buttonGenerate(Database db, Tuple request) throws Exception
@@ -63,11 +66,42 @@ public class StartNgs extends EasyPluginController<StartNgsView>
     public void buttonStart(Database db, Tuple request) throws Exception
     {
         ScreenController<?> parentController = this.getParent();
+
+        //user values and applicationName goes from Worksheet form here
+        String applicationName = null;
+        Hashtable<String, String> userValues = new Hashtable<String, String>();
+
         FormModel<Worksheet> parentForm = (FormModel<Worksheet>) ((FormController) parentController).getModel();
         Worksheet data = parentForm.getRecords().get(0);
 
-        Workflow wf = db.query(Workflow.class).find().get(0);
-        processing.processSingleWorksheet(db, request, data, wf); // <<< NB First workflow will be applied!
+        List<UserParameter> userParameterList = db.query(UserParameter.class).find();
+        for (UserParameter userParameter : userParameterList)
+        {
+            String featureName = userParameter.getFeatureName();
+            String databaseField = userParameter.getDatabaseField();
+
+            userValues.put(featureName, "" + data.get(databaseField));//casting to String does not work for sql.Date
+        }
+
+        //I have no idea how to specify constraction of the application name
+        applicationName = data.get("lane") + "_"
+                        + data.get("flowcell") + "_"
+                        + data.get("externalSampleID")
+                        + "_" + processing.getFormattedTime();
+
+        //get NGS workflow
+        Workflow workflow = db.query(Workflow.class).equals(Workflow.NAME, "findVariants").find().get(0);
+
+        //set few necessary parameters
+        //should it come from some settings file
+        processing.setRemoteLocation("/data/gcc/test_george/");
+
+        //and local settings for debugging
+        processing.setToWriteLocally(true);
+        processing.setLocalLocation("/test/");
+
+        processing.processSingleWorksheet(db, request, userValues, workflow, applicationName);
+        getModel().setSuccess("start workflow succesfull");
 
     }
 
@@ -89,6 +123,8 @@ public class StartNgs extends EasyPluginController<StartNgsView>
         }
 
         processing.executePipeline(db, testPipeline);
+        getModel().setSuccess("start test succesfull");
+
     }
 
 }
