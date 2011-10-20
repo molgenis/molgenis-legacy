@@ -40,7 +40,7 @@
 <#if !entity.isAbstract()>
 	<#list dbFields(entity) as f>
 	<#if f.type == "xref">
-		ALTER TABLE ${SqlName(entity)} ADD FOREIGN KEY (${SqlName(f)}) REFERENCES ${SqlName((f.xrefEntity))} (${SqlName(f.xrefField)}) ON DELETE CASCADE;
+		ALTER TABLE ${SqlName(entity)} ADD FOREIGN KEY (${SqlName(f)}) REFERENCES ${SqlName((f.xrefEntity))} (${SqlName(f.xrefField)}) ON DELETE <#if f.xrefCascade>CASCADE<#else>RESTRICT</#if>;
 	</#if>
 	</#list>
 	<#if entity.hasAncestor()>
