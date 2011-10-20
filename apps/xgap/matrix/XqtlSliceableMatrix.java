@@ -25,10 +25,10 @@ public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Obje
 	List<Integer> copiedColIndices;
 	
 	// ????????
-	int colOffset;
-	int rowOffset;
-	int colLimit;
-	int rowLimit;
+	int colOffset = -1;
+	int rowOffset = -1;
+	int colLimit = -1;
+	int rowLimit = -1;
 	
 	public XqtlSliceableMatrix(DataMatrixInstance wrappedMatrix) throws Exception
 	{
@@ -36,30 +36,53 @@ public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Obje
 		this.wrappedMatrix = wrappedMatrix;
 		rules = new ArrayList<MatrixQueryRule>();
 		this.reset();
+		
+		/*
+		System.out.println("colOffset " + this.colOffset);
+		System.out.println("rowOffset " + this.rowOffset);
+		System.out.println("colLimit " + this.colLimit);
+		System.out.println("colLimit " + this.rowLimit);
+		
+		System.out.print("copiedColNames ");
+		for(String h : this.copiedColNames){ System.out.print(h); }
+		System.out.println();
+		
+		System.out.print("copiedRowNames ");
+		for(String h : this.copiedRowNames){ System.out.print(h); }
+		System.out.println();
+		
+		System.out.print("getColHeaders ");
+		for(String h : this.getColHeaders()){ System.out.print(h); }
+		System.out.println();
+		
+		System.out.print("getRowHeaders ");
+		for(String h : this.getRowHeaders()){ System.out.print(h); }
+		System.out.println();
+		*/
 	}
 
 	@Override
 	public List<String> getRowHeaders() throws MatrixException
 	{
-		return this.copiedRowNames;
+		return this.copiedRowNames.subList(rowOffset, rowOffset+rowLimit);
 	}
 
 	@Override
 	public List<String> getColHeaders() throws MatrixException
 	{
-		return this.copiedColNames;
+		return this.copiedColNames.subList(colOffset, colOffset+colLimit);
 	}
 
 	@Override
 	public List<Integer> getRowIndices() throws MatrixException
 	{
-		return this.copiedRowIndices;
+		return this.copiedRowIndices.subList(rowOffset, rowOffset+rowLimit);
 	}
 
 	@Override
 	public List<Integer> getColIndices() throws MatrixException
 	{
-		return this.copiedColIndices;
+		return this.copiedColIndices.subList(colOffset, colOffset+colLimit);
 	}
 	
 	public Object[] getRow(int index) throws Exception
@@ -107,7 +130,7 @@ public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Obje
 	{
 		try
 		{
-			return wrappedMatrix.getSubMatrix(this.copiedRowNames, this.copiedColNames).getElements();
+			return wrappedMatrix.getSubMatrix(this.copiedRowNames.subList(rowOffset, rowOffset+rowLimit), this.copiedColNames.subList(colOffset, colOffset+colLimit)).getElements();
 		}
 		catch(Exception e)
 		{
@@ -350,9 +373,9 @@ public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Obje
 			copiedColIndices.add(col);
 		}
 		
-		this.colLimit = this.copiedColNames.size()-1;
+		this.colLimit = Math.min(this.copiedColNames.size() - 1, 5);
+		this.rowLimit = Math.min(this.copiedRowNames.size() - 1, 10);
 		this.colOffset = 0;
-		this.rowLimit = this.copiedRowNames.size()-1;
 		this.rowOffset = 0;
 		
 	}
