@@ -3,28 +3,25 @@ package org.molgenis.compute.ui;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.FormModel;
+import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.FormModel.Mode;
 import org.molgenis.framework.ui.commands.SimpleCommand;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.TextInput;
 import org.molgenis.ngs.Worksheet;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-//import app.ui.ComputeWorkflowsFormController;
-
-import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+
+//import app.ui.ComputeWorkflowsFormController;
 
 /**
  * Created by IntelliJ IDEA. User: georgebyelas Date: 28/07/2011 Time: 09:13 To
@@ -38,8 +35,6 @@ public class WorksheetBatchCommand extends SimpleCommand
 	private ActionInput runButton2;
 
 	private Vector<Integer> numbers = null;
-
-	private NGSProcessing processing = new NGSProcessing();
 
 	public WorksheetBatchCommand(ScreenController<?> parentController)
 	{
