@@ -437,6 +437,12 @@ Changed unique(name) on Observation element to unique(investigation,name)</li>
 				dependent (e.g. to only show particular subqueries of ontologies).
 			</description>
 		</entity>
+		
+		<entity name="ObservableFeature" extends="ObservationElement">
+			<description>Trick to allow the regular protocol to reference ObservableFeature,
+			while keeping the generalized use of ObservationElement in this model intact.</description>
+		</entity>
+		
 		<entity name="ObservationElement" implements="InvestigationElement"
 			xref_label="name">
 			<description>
