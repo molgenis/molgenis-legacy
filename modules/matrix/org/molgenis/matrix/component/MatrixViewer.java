@@ -282,9 +282,6 @@ public class MatrixViewer extends HtmlWidget
 				dataTable.setCell(1, row, rowobj.toString());
 			}
 			
-			
-			
-			
 			// print checkbox or radio input for this row
 			if (selectMultiple) {
 				List<String> options = new ArrayList<String>();
@@ -302,10 +299,8 @@ public class MatrixViewer extends HtmlWidget
 				dataTable.setCell(2, row, radioButtonCode);
 			}
 			// get the data for this row
-
-			Object lala = values[row][0];
-			if(lala instanceof List)
-			{
+			Object valueObject = values[row][0];
+			if (valueObject instanceof List) {
 				List<Observation>[] rowValues = (List<Observation>[]) values[row];
 				for (int col = 0; col < rowValues.length; col++) {
 					if (rowValues[col] != null && rowValues[col].size() > 0) {
@@ -316,12 +311,12 @@ public class MatrixViewer extends HtmlWidget
 							if (val instanceof ObservedValue && valueToShow == null) {
 								valueToShow = ((ObservedValue)val).getRelation_Name();
 							}
-							if (val.get(ObservedValue.ENDTIME) != null) {
-								valueToShow += " (valid from " + newDateOnlyFormat.format(val.get(ObservedValue.ENDTIME));
-							}
 							if (val.get(ObservedValue.TIME) != null) {
-								valueToShow += " through " + newDateOnlyFormat.format(val.get(ObservedValue.TIME)) + ")";
-							} else if (((ObservedValue)val).getTime() != null) {
+								valueToShow += " (valid from " + newDateOnlyFormat.format(val.get(ObservedValue.TIME));
+							}
+							if (val.get(ObservedValue.ENDTIME) != null) {
+								valueToShow += " through " + newDateOnlyFormat.format(val.get(ObservedValue.ENDTIME)) + ")";
+							} else if (val.get(ObservedValue.TIME) != null) {
 								valueToShow += ")";
 							}
 							if (first) {
