@@ -215,13 +215,13 @@ public class rawdataimporter extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugin_animaldb_mazeexperiment_rawdataimporter";
+		return "plugins_mazeexperiment_rawdataimporter";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/animaldb/mazeexperiment/rawdataimporter.ftl";
+		return "plugins/mazeexperiment/rawdataimporter.ftl";
 	}
 
 	@Override

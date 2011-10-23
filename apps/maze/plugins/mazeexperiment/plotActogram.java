@@ -135,13 +135,13 @@ public class plotActogram extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugin_animaldb_mazeexperiment_plotActogram";
+		return "plugins_mazeexperiment_plotActogram";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/animaldb/mazeexperiment/plotActogram.ftl";
+		return "plugins/mazeexperiment/plotActogram.ftl";
 	}
 
 	@Override

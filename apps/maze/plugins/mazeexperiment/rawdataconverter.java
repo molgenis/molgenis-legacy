@@ -63,13 +63,13 @@ public class rawdataconverter extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugin_animaldb_mazeexperiment_rawdataconverter";
+		return "plugins_mazeexperiment_rawdataconverter";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/animaldb/mazeexperiment/rawdataconverter.ftl";
+		return "plugins/mazeexperiment/rawdataconverter.ftl";
 	}
 
 	@Override

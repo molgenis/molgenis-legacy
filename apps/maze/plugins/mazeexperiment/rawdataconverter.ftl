@@ -1,4 +1,4 @@
-<#macro plugin_animaldb_mazeexperiment_rawdataconverter screen>
+<#macro plugins_mazeexperiment_rawdataconverter screen>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}">
 	<!--needed in every form: to redirect the request to the right screen-->
