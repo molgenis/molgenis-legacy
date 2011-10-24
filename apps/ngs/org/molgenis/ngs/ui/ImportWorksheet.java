@@ -1,13 +1,10 @@
 package org.molgenis.ngs.ui;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
+import org.molgenis.auth.Person;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.ui.EasyPluginController;
@@ -20,8 +17,6 @@ import org.molgenis.ngs.LibraryLane;
 import org.molgenis.ngs.Machine;
 import org.molgenis.ngs.NgsSample;
 import org.molgenis.ngs.Worksheet;
-import org.molgenis.ngs.WorksheetLaneLevel;
-import org.molgenis.organization.DeprecatedPerson;
 import org.molgenis.organization.Investigation;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvFileWriter;
@@ -79,8 +74,8 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 			LibraryCapturing lc = db.findById(LibraryCapturing.class, libraryList.getCapturing());
 			LibraryBarcode lb = db.findById(LibraryBarcode.class, libraryList.getBarcode());
 			Investigation inv = db.findById(Investigation.class, sample.getInvestigation());
-			DeprecatedPerson i = null;
-			if (inv.getContacts_Id().size() > 0) i = db.findById(DeprecatedPerson.class, inv.getContacts_Id().get(0));
+			Person i = null;
+			if (inv.getContacts_Id().size() > 0) i = db.findById(Person.class, inv.getContacts_Id().get(0));
 			Machine m = db.findById(Machine.class, flowcell.getMachine());
 
 			// create sheet
@@ -225,13 +220,13 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 
 					// _investigator_
 					String investigatorname = tuple.getString(Worksheet.CONTACT);
-					DeprecatedPerson inv = null;
+					Person inv = null;
 					if (investigatorname != null)
 					{
-						inv = (DeprecatedPerson) getObject(db, DeprecatedPerson.class, DeprecatedPerson.LASTNAME, investigatorname);
+						inv = (Person) getObject(db, Person.class, Person.LASTNAME, investigatorname);
 						if (inv == null)
 						{
-							inv = new DeprecatedPerson();
+							inv = new Person();
 							inv.setLastName(investigatorname);
 							db.add(inv);
 						}

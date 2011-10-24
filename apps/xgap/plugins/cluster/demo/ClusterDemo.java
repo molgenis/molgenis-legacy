@@ -230,6 +230,7 @@ public class ClusterDemo extends PluginModel<Entity>
 				"org.molgenis.data.CSVDataMatrix",
 				"org.molgenis.data.DecimalDataElement",
 				"org.molgenis.data.TextDataElement",
+				"org.molgenis.protocol.ProtocolApplication_Performer",
 				
 				//needed to add most data and view investigation overview
 				"org.molgenis.pheno.ObservationElement",
@@ -271,17 +272,17 @@ public class ClusterDemo extends PluginModel<Entity>
 		MolgenisUser bioUser = new MolgenisUser();
 		bioUser.setName("bio-user");
 		bioUser.setPassword("bio");
-		bioUser.setFirstname("bio_firstname");
-		bioUser.setLastname("bio_lastname");
-		bioUser.setEmailaddress("bio_email");
+		bioUser.setFirstName("bio_firstname");
+		bioUser.setLastName("bio_lastname");
+		bioUser.setEmail("bio_email");
 		bioUser.setActive(true);
 		
 		MolgenisUser bioInfoUser = new MolgenisUser();
 		bioInfoUser.setName("bioinfo-user");
 		bioInfoUser.setPassword("bioinfo");
-		bioInfoUser.setFirstname("bioinfo_firstname");
-		bioInfoUser.setLastname("bioinfo_lastname");
-		bioInfoUser.setEmailaddress("bioinfo_email");
+		bioInfoUser.setFirstName("bioinfo_firstname");
+		bioInfoUser.setLastName("bioinfo_lastname");
+		bioInfoUser.setEmail("bioinfo_email");
 		bioInfoUser.setActive(true);
 		
 		db.add(bioUser);

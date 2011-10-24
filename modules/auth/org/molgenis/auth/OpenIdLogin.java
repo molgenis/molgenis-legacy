@@ -150,9 +150,9 @@ public class OpenIdLogin extends DatabaseLogin
 	{
 	    MolgenisUser user = new MolgenisUser();
 	    user.setName(authentication.getEmail());
-	    user.setFirstname(authentication.getFirstname());
-	    user.setLastname(authentication.getLastname());
-	    user.setEmailaddress(authentication.getEmail());
+	    user.setFirstName(authentication.getFirstname());
+	    user.setLastName(authentication.getLastname());
+	    user.setEmail(authentication.getEmail());
 	    user.setPassword(UUID.randomUUID().toString());
 
 	    db.beginTx();

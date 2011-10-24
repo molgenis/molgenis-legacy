@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import nl.captcha.Captcha;
 
 import org.apache.commons.lang.StringUtils;
+import org.molgenis.auth.Institute;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.auth.OpenIdLogin;
 import org.molgenis.auth.service.MolgenisUserException;
@@ -23,8 +24,11 @@ import org.molgenis.auth.ui.form.ForgotForm;
 import org.molgenis.auth.ui.form.OpenIdAuthenticationForm;
 import org.molgenis.auth.ui.form.UserAreaForm;
 import org.molgenis.auth.vo.MolgenisUserSearchCriteriaVO;
+import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
@@ -148,11 +152,11 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 			this.getApplicationController().getLogin().reload(db);
 			
 			MolgenisUserService userService = MolgenisUserService.getInstance(db);
-			MolgenisUser user               = this.toMolgenisUser(request);
+			MolgenisUser user               = this.toMolgenisUser(db, request);
 			
 			// Get the email address of admin user.
 			MolgenisUser admin              = userService.findById(this.getApplicationController().getLogin().getUserId());
-			if (StringUtils.isEmpty(admin.getEmailaddress()))
+			if (StringUtils.isEmpty(admin.getEmail()))
 				throw new DatabaseException("Registration failed: the administrator has no email address set used to confirm your registration. Please contact your administrator about this.");
 			
 			//only insert if admin has an email set
@@ -169,7 +173,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 			emailContents       += activationURL + "\n\n";
 			
 			//assuming: 'encoded' p.w. (setting deObf = true)
-			this.getEmailService().email("User registration for " + this.getRoot().getLabel(), emailContents, admin.getEmailaddress(), true);
+			this.getEmailService().email("User registration for " + this.getRoot().getLabel(), emailContents, admin.getEmail(), true);
 			
 			this.getModel().getMessages().add(new ScreenMessage("Thank you for registering. Your request has been sent to the adminstrator for approval.", true));
 		}
@@ -221,10 +225,10 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 			this.getModel().getMessages().add(new ScreenMessage("Activation successful", true));
 
 			// Email the user
-			String emailContents = "Dear " + user.getFirstname() + " " + user.getLastname() + ",\n\n";
+			String emailContents = "Dear " + user.getFirstName() + " " + user.getLastName() + ",\n\n";
 			emailContents       += "your registration request for " + this.getRoot().getLabel() + " was approved.\n";
 			emailContents       += "Your account is now active.\n";
-			this.getEmailService().email("Your registration request", emailContents, user.getEmailaddress(), true);
+			this.getEmailService().email("Your registration request", emailContents, user.getEmail(), true);
 		}
 		catch (Exception e)
 		{
@@ -276,7 +280,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
     		// TODO: make this mandatory (password that was sent is valid only once)
 
     		//assuming: 'encoded' p.w. (setting deObf = true)
-    		this.getEmailService().email("Your new password request", emailContents, user.getEmailaddress(), true);
+    		this.getEmailService().email("Your new password request", emailContents, user.getEmail(), true);
     		
     		this.getModel().getMessages().add(new ScreenMessage("Sending new password successful", true));
 		}
@@ -307,7 +311,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		}
 
 		MolgenisUser user = userService.findById(this.getApplicationController().getLogin().getUserId());
-		this.toMolgenisUser(request, user);
+		this.toMolgenisUser(request, user, db);
 		userService.update(user);
 
 		this.getModel().getMessages().add(new ScreenMessage("Changes successfully applied", true));
@@ -318,7 +322,55 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		this.getModel().setAction("Forgot");
 	}
 	
-	private MolgenisUser toMolgenisUser(Tuple request) throws MolgenisUserException
+	private Institute getInstitute(String instName, Database db) throws DatabaseException
+	{
+		if(!instName.isEmpty())
+		{
+			List<Institute> institutes = db.find(Institute.class, new QueryRule(Institute.NAME, Operator.EQUALS, instName));
+			if(institutes.size() == 0)
+			{
+				Institute newInst = new Institute();
+				newInst.setName(instName);
+				db.add(newInst);
+				return newInst;
+			}
+			else if(institutes.size() == 1)
+			{
+				return institutes.get(0);
+			}
+			else
+			{
+				throw new DatabaseException("Multiple institutes named '"+instName+"' found");
+			}
+		}
+		throw new DatabaseException("Error when finding/creating Institute");
+	}
+	
+	private OntologyTerm getRole(String roleName, Database db) throws DatabaseException
+	{
+		if(!roleName.isEmpty())
+		{
+			List<OntologyTerm> roles = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.EQUALS, roleName));
+			if(roles.size() == 0)
+			{
+				OntologyTerm newRole = new OntologyTerm();
+				newRole.setName(roleName);
+				db.add(newRole);
+				return newRole;
+			}
+			else if(roles.size() == 1)
+			{
+				return roles.get(0);
+			}
+			else
+			{
+				throw new DatabaseException("Multiple ontologyTerms for role '"+roleName+"' found");
+			}
+		}
+		throw new DatabaseException("Error when finding/creating Role");
+	}
+	
+	private MolgenisUser toMolgenisUser(Database db, Tuple request) throws MolgenisUserException, DatabaseException
 	{
 		MolgenisUser user  = new MolgenisUser();
 
@@ -327,13 +379,13 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 
 		user.setName(request.getString("username"));
 		user.setPassword(request.getString("password"));
-		user.setEmailaddress(request.getString("email"));
+		user.setEmail(request.getString("email"));
 		user.setTitle(request.getString("title"));
-		user.setLastname(request.getString("lastname"));
-		user.setFirstname(request.getString("firstname"));
-		user.setInstitute(request.getString("institute"));
+		user.setLastName(request.getString("lastname"));
+		user.setFirstName(request.getString("firstname"));
+		user.setAffiliation(getInstitute(request.getString("institute"), db));
 		user.setDepartment(request.getString("department"));
-		user.setPosition(request.getString("position"));
+		user.setRoles(getRole(request.getString("position"), db));
 		user.setCity(request.getString("city"));
 		user.setCountry(request.getString("country"));
 		Calendar cal   = Calendar.getInstance();
@@ -345,24 +397,24 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		return user;
 	}
 
-	private void toMolgenisUser(Tuple request, MolgenisUser user)
+	private void toMolgenisUser(Tuple request, MolgenisUser user, Database db) throws DatabaseException
 	{
 		if (StringUtils.isNotEmpty(request.getString("newpwd")))
 			user.setPassword(request.getString("newpwd"));
 		if (StringUtils.isNotEmpty(request.getString("emailaddress")))
-			user.setEmailaddress(request.getString("emailaddress"));
+			user.setEmail(request.getString("emailaddress"));
 		if (StringUtils.isNotEmpty(request.getString("title")))
 			user.setTitle(request.getString("title"));
 		if (StringUtils.isNotEmpty(request.getString("lastname")))
-			user.setLastname(request.getString("lastname"));
+			user.setLastName(request.getString("lastname"));
 		if (StringUtils.isNotEmpty(request.getString("firstname")))
-			user.setFirstname(request.getString("firstname"));
+			user.setFirstName(request.getString("firstname"));
 		if (StringUtils.isNotEmpty(request.getString("institute")))
-			user.setInstitute(request.getString("institute"));
+			user.setAffiliation(getInstitute(request.getString("institute"), db));
 		if (StringUtils.isNotEmpty(request.getString("department")))
 			user.setDepartment(request.getString("department"));
 		if (StringUtils.isNotEmpty(request.getString("position")))
-			user.setPosition(request.getString("position"));
+			user.setRoles(getRole(request.getString("position"), db));
 		if (StringUtils.isNotEmpty(request.getString("city")))
 			user.setCity(request.getString("city"));
 		if (StringUtils.isNotEmpty(request.getString("country")))
@@ -400,13 +452,13 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 			MolgenisUser user               = userService.findById(this.getApplicationController().getLogin().getUserId());
 			
 			UserAreaForm userAreaForm       = new UserAreaForm();
-			((TablePanel) userAreaForm.get("personal")).get("emailaddress").setValue(user.getEmailaddress());
+			((TablePanel) userAreaForm.get("personal")).get("emailaddress").setValue(user.getEmail());
 			((TablePanel) userAreaForm.get("personal")).get("title").setValue(user.getTitle());
-			((TablePanel) userAreaForm.get("personal")).get("firstname").setValue(user.getFirstname());
-			((TablePanel) userAreaForm.get("personal")).get("lastname").setValue(user.getLastname());
-			((TablePanel) userAreaForm.get("personal")).get("institute").setValue(user.getInstitute());
+			((TablePanel) userAreaForm.get("personal")).get("firstname").setValue(user.getFirstName());
+			((TablePanel) userAreaForm.get("personal")).get("lastname").setValue(user.getLastName());
+			((TablePanel) userAreaForm.get("personal")).get("institute").setValue(user.getAffiliation_Name());
 			((TablePanel) userAreaForm.get("personal")).get("department").setValue(user.getDepartment());
-			((TablePanel) userAreaForm.get("personal")).get("position").setValue(user.getPosition());
+			((TablePanel) userAreaForm.get("personal")).get("position").setValue(user.getRoles_Name());
 			((TablePanel) userAreaForm.get("personal")).get("city").setValue(user.getCity());
 			((TablePanel) userAreaForm.get("personal")).get("country").setValue(user.getCountry());
 			

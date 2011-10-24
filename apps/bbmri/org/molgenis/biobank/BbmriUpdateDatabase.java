@@ -23,9 +23,9 @@ public class BbmriUpdateDatabase
 			u.setName("bbmri");
 			u.setPassword("bbmri");
 			u.setSuperuser(true);
-			u.setFirstname("Margreet");
-			u.setLastname("Brandsma");
-			u.setEmailaddress("m.brandsma@bbmri.nl");
+			u.setFirstName("Margreet");
+			u.setLastName("Brandsma");
+			u.setEmail("m.brandsma@bbmri.nl");
 			db.add(u);
 		}
 		

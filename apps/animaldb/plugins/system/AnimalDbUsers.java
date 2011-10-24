@@ -169,9 +169,9 @@ public class AnimalDbUsers extends PluginModel<Entity>
 				// Make user
 				MolgenisUser newUser = new MolgenisUser();
 				newUser.setName(username);
-				newUser.setFirstname(firstname);
-				newUser.setLastname(lastname);
-				newUser.setEmailaddress(email);
+				newUser.setFirstName(firstname);
+				newUser.setLastName(lastname);
+				newUser.setEmail(email);
 				newUser.setPassword(passwordHashed);
 				newUser.setActive(true); // no extra registration required
 				db.add(newUser);

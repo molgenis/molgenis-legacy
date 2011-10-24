@@ -11,7 +11,7 @@
 		</menu>
 		<menu name="Admin">
 		    <menu name="DataViews">
-				<form name="Coordinators" entity="DeprecatedPerson" label="Person" view="list" sortby="LastName" />
+				<form name="Coordinators" entity="Person" label="Person" view="list" sortby="LastName" />
 				<form name="Institutes" entity="Institute" view="list" />
 			</menu>
 			<plugin name="Settings" type="plugins.system.settings.Settings" />

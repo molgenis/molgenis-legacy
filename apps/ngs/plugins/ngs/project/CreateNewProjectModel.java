@@ -10,10 +10,10 @@ package plugins.ngs.project;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.molgenis.auth.Institute;
+import org.molgenis.auth.Person;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.SimpleScreenModel;
-import org.molgenis.organization.DeprecatedPerson;
-import org.molgenis.organization.Institute;
 import org.molgenis.organization.Investigation;
 import org.molgenis.protocol.Workflow;
 import org.testng.collections.Lists;
@@ -26,9 +26,9 @@ public class CreateNewProjectModel extends SimpleScreenModel {
 	}
 
 	private Investigation project;
-    private DeprecatedPerson person;
+    private Person person;
     private Institute institute;
-    private List<DeprecatedPerson> labworkers = Lists.newArrayList();
+    private List<Person> labworkers = Lists.newArrayList();
     private String action = "init";
     private List<Investigation> investigation = new ArrayList<Investigation>();
     private Investigation invest;
@@ -37,12 +37,12 @@ public class CreateNewProjectModel extends SimpleScreenModel {
 
 
 
-    public void setLabworkers(List<DeprecatedPerson> labworkers)
+    public void setLabworkers(List<Person> labworkers)
     {
 	this.labworkers = labworkers;
     }
 
-    public List<DeprecatedPerson> getLabworkers()
+    public List<Person> getLabworkers()
     {
 	return labworkers;
     }
@@ -95,11 +95,11 @@ public class CreateNewProjectModel extends SimpleScreenModel {
 	return project;
     }
 
-    public void setPerson(DeprecatedPerson person) {
+    public void setPerson(Person person) {
 	this.person = person;
     }
 
-    public DeprecatedPerson getPerson() {
+    public Person getPerson() {
 	return person;
     }
 

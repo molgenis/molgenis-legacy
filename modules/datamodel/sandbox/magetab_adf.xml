@@ -49,7 +49,7 @@
 			-->
 			<field name="ArrayDesignName" type="text" nillable="true" />
 			<field name="Version" type="text" nillable="true" />
-			<field name="Provider" type="xref" xref_entity="DeprecatedPerson"
+			<field name="Provider" type="xref" xref_entity="Person"
 				nillable="true" />
 			<field name="printingProtocol" type="xref" xref_entity="Protocol"
 				nillable="true" />

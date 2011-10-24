@@ -104,13 +104,15 @@ public class MolgenisUserService
 	{
 		try
 		{
-			this.db.beginTx();
+		//not possible: already in transaction
+		//jpa-jdbc difference?
+		//	this.db.beginTx();
 			this.db.update(user);
-			this.db.commitTx();
+		//	this.db.commitTx();
 		}
 		catch (DatabaseException e)
 		{
-			this.db.rollbackTx();
+		//	this.db.rollbackTx();
 			throw e;
 		}
 	}

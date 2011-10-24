@@ -101,7 +101,7 @@ public class DatabaseLogin implements Login, Serializable {
 	}
 	
 	public String getFullUserName() {
-		return user.getFirstname() + " " + user.getLastname();
+		return user.getFirstName() + " " + user.getLastName();
 	}
 
 	/**

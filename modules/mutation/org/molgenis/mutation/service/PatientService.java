@@ -855,7 +855,7 @@ public class PatientService implements Serializable
 		Submission submission  = this.db.findById(Submission.class, patient.getSubmission_Id());
 		MolgenisUser submitter = this.db.findById(MolgenisUser.class, submission.getSubmitters_Id().get(0));
 		patientSummaryVO.setSubmitterDepartment(submitter.getDepartment());
-		patientSummaryVO.setSubmitterInstitute(submitter.getInstitute());
+		patientSummaryVO.setSubmitterInstitute(submitter.getAffiliation_Name());
 		patientSummaryVO.setSubmitterCity(submitter.getCity());
 		patientSummaryVO.setSubmitterCountry(submitter.getCountry());
 			
