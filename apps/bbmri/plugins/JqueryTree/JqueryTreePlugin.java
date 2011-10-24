@@ -12,6 +12,7 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.JQueryTreeView;
 import org.molgenis.util.Entity;
+import org.molgenis.util.SimpleTree;
 import org.molgenis.util.Tuple;
 
 public class JqueryTreePlugin extends PluginModel<Entity>
@@ -25,7 +26,12 @@ public class JqueryTreePlugin extends PluginModel<Entity>
 	{
 		super(name, parent);
 		
-		treeView = new JQueryTreeView("Example tree viewer");
+		SimpleTree myTree = new SimpleTree("myTree", null);
+		SimpleTree mySubTree1 = new SimpleTree("mySubTree1", myTree);
+		SimpleTree mySubTree2 = new SimpleTree("mySubTree2", myTree);
+		SimpleTree mySubSubTree = new SimpleTree("mySubSubTree", mySubTree1);
+		
+		treeView = new JQueryTreeView("Example tree viewer", myTree);
 	}
 
 	@Override
