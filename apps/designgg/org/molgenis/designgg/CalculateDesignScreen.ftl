@@ -1,6 +1,5 @@
 <#macro screens_CalculateDesignScreen screen>
 <hr>
-<#assign parameters=screen.getDesignParameters()/>
 
 <#if screen.isBCalculationFail() >
 

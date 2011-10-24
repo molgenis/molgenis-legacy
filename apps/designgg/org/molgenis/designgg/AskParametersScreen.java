@@ -21,7 +21,7 @@ public class AskParametersScreen extends PluginModel
 	 * 
 	 */
 	private static final long serialVersionUID = -3386893658115378317L;
-	private DesignParameters designParameters;
+	public DesignParameters designParameters;
 	private boolean bArgumentsOK = true;
 	private boolean bReady2Go = false;
 	private String argMissing = null;

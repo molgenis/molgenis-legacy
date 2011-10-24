@@ -18,8 +18,21 @@ public class MainScreen extends PluginModel
 	
 	private AskParametersScreen screen1;
 	private CalculateDesignScreen screen2;
+	
+	public AskParametersScreen getScreen1()
+	{
+		return screen1;
+	}
+
+	public void setScreen1(AskParametersScreen screen1)
+	{
+		this.screen1 = screen1;
+	}
+
 	private ShowResultsScreen screen3;
 	private int autoRefresh;
+	
+	private int selectedScreen = -1;
 
 	public MainScreen(String string, ScreenController<?> parent)
 	{
@@ -31,6 +44,8 @@ public class MainScreen extends PluginModel
 		screen3 = new ShowResultsScreen(Steps.show_results.name(), this);
 		// TODO Auto-generated constructor stub
 	}
+	
+	
 
 	@Override
 	public ScreenModel getSelected()
@@ -39,24 +54,26 @@ public class MainScreen extends PluginModel
 		//if(screen2.getIndPerCondition() != null && screen2.getIndPerSlide() != null)
 		if( screen2.calculationDone() )
 		{
+			this.selectedScreen = 3;
 			this.autoRefresh = 0;
 			screen3.setIndPerCondition(	screen2.getIndPerCondition());
 			screen3.setIndPerSlide(		screen2.getIndPerSlide());
 			screen3.setImageLink(		screen2.getImageLink());
 			screen3.setIndXCondLink(	screen2.getIndXCondLink());
 			screen3.setIndXSlideLink(	screen2.getIndXSlideLink()); 
-			screen3.setDesignParameters(screen2.getDesignParameters() );
 			screen3.setOutputR(			screen2.getOutputR());
 			return screen3;
 		}
 		if( screen1.isBReady2Go() ) 
 				//screen1.getDesignParameters() != null)
 		{
+			this.selectedScreen = 2;
 			this.autoRefresh = 60;
-			screen2.setDesignParameters(screen1.getDesignParameters() );
 			screen2.setImagePath(this.getImagePath());
+			screen2.reload(null);
 			return screen2;
 		}
+		this.selectedScreen = 1;
 		this.autoRefresh = 0;
 		return screen1;
 
@@ -86,6 +103,7 @@ public class MainScreen extends PluginModel
 			
 			if(getSelected().equals(screen2))
 			{				
+
 				screen2.setBCalculationDone(false);
 				screen2.setBCalculationFail(false);
 				screen2.setBCooking(false);
@@ -94,6 +112,7 @@ public class MainScreen extends PluginModel
 				screen1.setBReady2Go(false);				
 				setBInvalidateSession(true); 
 			}
+			this.selectedScreen = -1;
 		}
 	}
 
@@ -119,6 +138,18 @@ public class MainScreen extends PluginModel
 
 	public String getImagePath() {
 		return imagePath;
+	}
+
+	
+	
+	public int getSelectedScreen()
+	{
+		return selectedScreen;
+	}
+
+	public void setSelectedScreen(int selectedScreen)
+	{
+		this.selectedScreen = selectedScreen;
 	}
 
 	public void setImagePath(String imagePath) {

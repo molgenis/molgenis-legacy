@@ -4,6 +4,6 @@
 		"http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd"
 	-->
 
-<molgenis name="molgenis_apps" label="Genetical Genomics Experiment Designer">
+<molgenis name="designgg" label="Genetical Genomics Experiment Designer">
 	<plugin name="designgg" type="org.molgenis.designgg.MainScreen"/>
 </molgenis>

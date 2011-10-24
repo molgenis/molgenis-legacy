@@ -11,7 +11,6 @@ public class ShowResultsScreen extends PluginModel
 {
 	private static final long serialVersionUID = 7479201455882238849L;
 	/**IN parameters*/
-	private DesignParameters designParameters;
 	private String outputR;
 	private List<Tuple> indPerSlide;
 	private List<Tuple> indPerCondition;
@@ -71,15 +70,9 @@ public class ShowResultsScreen extends PluginModel
 	 * @return the designParameters
 	 */
 	public DesignParameters getDesignParameters() {
-		return designParameters;
+		return ((MainScreen)this.getParent()).getScreen1().getDesignParameters();
 	}
 
-	/**
-	 * @param designParameters the designParameters to set
-	 */
-	public void setDesignParameters(DesignParameters designParameters) {
-		this.designParameters = designParameters;
-	}
 
 	/**
 	 * @return the outputR

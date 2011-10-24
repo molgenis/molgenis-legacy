@@ -6,28 +6,44 @@
 <h2>Results for <i><b>two channel</b></i> platform</h2>
 <hr>
 	<tr><td>
-	<fieldset><legend>Individuals per Slide</legend>	
-	<a href="${screen.indXSlideLink}" style="font-size:70%;"><b>Download</b></a>
+	<fieldset><legend>Individuals per Slide</legend>
+	<#if screen.indXSlideLink?exists>
+	<a href="tmpfile/${screen.indXSlideLink}" style="font-size:70%;"><b>Download</b></a>
 	<div align="center">
 	&nbsp;
 	<@renderTable screen.indPerSlide/>
 	</div>	
+	<#else>
+	  No 'Individuals per Slide' file
+	</#if>
+		
 	</fieldset>	
 	</td></tr>
 	
 	<tr><td>	
 	<fieldset><legend>Individuals per Condition</legend>
-	<a href="${screen.indXCondLink}" style="font-size:70%;"><b>Download</b></a>
+	
+	<#if screen.indXCondLink?exists>
+	<a href="tmpfile/${screen.indXCondLink}" style="font-size:70%;"><b>Download</b></a>
 	<div align="center">
 	&nbsp;
 	<@renderTable screen.indPerCondition/>
 	</div>	
+	<#else>
+		No 'Individuals per Condition' file
+	</#if>
+	
+
 	</fieldset>
 	</td></tr>
 	
 	<tr><td>	
 	<fieldset><legend>R output</legend>
+	<#if screen.outputR?exists>
 	${screen.outputR}
+	<#else>
+	No output R file
+	</#if>
 	</fieldset>
 	</td></tr>
 
@@ -36,17 +52,25 @@
 <hr>
 	<tr><td>		
 	<fieldset><legend>Individuals per Condition</legend>
-	<a href="${screen.indXCondLink}" style="font-size:70%;"><b>Download</b></a>
+	<#if screen.indXCondLink?exists>
+	<a href="tmpfile/${screen.indXCondLink}" style="font-size:70%;"><b>Download</b></a>
 	<div align="center">
 	&nbsp;
 	<@renderTable screen.indPerCondition/>
 	</div>	
+	<#else>
+	  No 'Individuals per Condition' file
+	</#if>
 	</fieldset>
 	</td></tr>		
 		
 	<tr><td>
 	<fieldset><legend>R output</legend>
+	<#if screen.outputR?exists>
 	${screen.outputR}
+	<#else>
+	No output R file
+	</#if>
 	</fieldset>
 	</td></tr>
 </#if>
