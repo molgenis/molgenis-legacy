@@ -11,6 +11,9 @@
 			</menu>
 			<plugin label="My permissions" name="PermissionManagementPlugin"
 				type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin" />
+			<plugin label="Upgrade person to user" name="UserToPersonPlugin"
+				type="org.molgenis.auth.service.persontouser.PersonToUser" />
+			
 		</menu>
 		<plugin label="Database status" name="DatabaseSettings"
 			type="plugins.system.database.Settings" />
@@ -19,10 +22,13 @@
 		<plugin label="Install R packages" name="DependencyManager"
 			type="plugins.cluster.demo.dependencymanager.DependencyManager" />
 		<menu name="Ontologies" label="Ontologies" group="biologist">
+			<form name="Protocols" entity="Protocol" group="biologist" />
+			<form name="Persons" entity="Person" group="biologist" />
+			<form name="Institutes" entity="Institute" group="biologist" />
 			<form name="Species" entity="Species" group="biologist" />
-			<form name="OntologyTerms" entity="OntologyTerm" group="biologist" />
-			<form label="Protocols" entity="Protocol" group="biologist" />
-			<form label="Persons" entity="Person" group="biologist" />
+			<form name="Tissues" entity="Tissue" group="biologist" />
+			<form label="Other" name="OntologyTerms" entity="OntologyTerm" group="biologist" />
+			
 		</menu>
 		<menu name="OtherAdmin" label="Utilities">
 			<plugin label="Advanced import" name="ExcelWizard"
