@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-	<!--
-		DOCTYPE molgenis PUBLIC "MOLGENIS 1.0"
-		"http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd"
-	-->
 
 <molgenis name="molgenis_apps" label="AnimalDB">
 
@@ -12,20 +8,20 @@
 		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Logout/settings"/>
 		<plugin name="AnimalDBWelcomeScreen" type="plugins.welcome.AnimalDBWelcomeScreenPlugin"
 			label="Welcome" />
-		<plugin name="News" type="plugins.news.News" label="News"/>
+		<!-- plugin name="News" type="plugins.news.News" label="News"/ -->
 			
 		<menu name="securitymenu" position="left" label="Security">
-			<!--<plugin name="UserSettings" type="org.molgenis.auth.ui.UserLogin" label="Logout/settings"/>
-			  <menu name="usermanagement" position="left" label="Security menu" > -->
-				<form name="MolgenisUser" entity="MolgenisUser" view="list" label="Users"/>
-				<form name="MolgenisGroup" entity="MolgenisGroup" view="list" label="Groups"/>
-				<form name="MolgenisRoleGroupLink" entity="MolgenisRoleGroupLink" view="list" label="Users in groups"/>
-				<form name="MolgenisEntity" entity="MolgenisEntity" view="list" label="Entities"/>
-				<form name="MolgenisPermission" entity="MolgenisPermission" view="list" label="Permissions"/>
-				<plugin name="PermissionManagementPlugin" type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin"
-					label="Permission management" />
-				<plugin name="AnimalDbUsers" type="plugins.system.AnimalDbUsers" label="Manage users and investigations" />
-			<!--</menu>-->
+			<plugin name="AnimalDbUsers" type="plugins.system.AnimalDbUsers" label="Manage users and investigations" />
+			<plugin label="Upgrade persons to users" name="UserToPersonPlugin" type="org.molgenis.auth.service.persontouser.PersonToUser" />
+			<form name="MolgenisUser" entity="MolgenisUser" view="list" label="Users"/>
+			<form name="Persons" entity="Person" />
+			<form name="Institutes" entity="Institute" /> 
+			<form name="MolgenisGroup" entity="MolgenisGroup" view="list" label="Groups"/>
+			<form name="MolgenisRoleGroupLink" entity="MolgenisRoleGroupLink" view="list" label="Users in groups"/>
+			<form name="MolgenisEntity" entity="MolgenisEntity" view="list" label="Entities"/>
+			<form name="MolgenisPermission" entity="MolgenisPermission" view="list" label="Permissions"/>
+			<plugin name="PermissionManagementPlugin" type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin"
+				label="Permission management" />
 		</menu>
 
 		<menu name="systemmenu" position="left" label="System">
@@ -82,15 +78,15 @@
 				label="Make (cage) labels" />
 		</menu>
 		
-		<plugin name="AddSpecialGroup" type="plugins.specialgroups.AddSpecialGroupPlugin"
-			label="Groups" />
+		<!-- plugin name="AddSpecialGroup" type="plugins.specialgroups.AddSpecialGroupPlugin"
+			label="Groups" /-->
 		
-		<menu name="locationmenu" position="left" label="Locations">
+		<!-- menu name="locationmenu" position="left" label="Locations">
 			<plugin name="AddLocation" type="plugins.location.AddLocationPlugin"
 				label="Add locations" />
 			<plugin name="LocationInfo" type="plugins.location.LocationInfoPlugin"
 				label="Location info" />
-		</menu>
+		</menu -->
 
 		<menu name="valuemenu" position="left" label="Values">
 			<plugin name="ApplyProtocol" type="org.molgenis.protocol.ApplyProtocolPlugin"
@@ -117,14 +113,9 @@
 		<plugin name="YearlyReportModule" type="plugins.report.YearlyReportModule"
 			label="Yearly report" />
 
-		<menu name="searchmenu" position="left" label="Search">
+		<!-- menu name="searchmenu" position="left" label="Search">
 			<plugin name="SimpleDbSearch" label="Simple search" type="plugin.search.SimpleWholeDatabaseSearch" />
-	        <!-- <menu name="indexmenu" position="left" label="Index search">
-		       	<plugin name="DBIndex" label="DB index" type="plugins.LuceneIndex.DBIndexPlugin" />
-				<plugin name="OntoCatIndexPlugin" label="OntoCAT index" type="plugins.LuceneIndex.OntoCatIndexPlugin" /> 
-				<plugin name="AdminIndex" label="Admin indices" type="plugins.LuceneIndex.AdminIndexes" />
-			</menu> -->
-		</menu>
+		</menu -->
 	       
 	</menu>
 

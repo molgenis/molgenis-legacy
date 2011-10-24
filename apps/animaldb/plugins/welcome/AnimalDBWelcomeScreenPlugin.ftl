@@ -33,9 +33,6 @@
 	
 <h1>Welcome to AnimalDB!</h1>
 
-<p>Tree view test</p>
-${screen.renderTreeViewer()}
-
 <#--end of your plugin-->
 			</div>
 		</div>
