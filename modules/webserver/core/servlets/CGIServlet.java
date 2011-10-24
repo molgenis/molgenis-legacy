@@ -123,7 +123,7 @@ public class CGIServlet extends Servlet {
 			o.write(err.getBytes());
 			o.flush();
 		}else{
-			Utils.console("Served file: " + file + " " +  length + " bytes");
+			//Utils.console("Served file: " + file + " " +  length + " bytes");
 		}
 		o.close();
 	}

@@ -1,4 +1,4 @@
-package test;
+package org.molgenis.xgap.test;
 
 import java.io.File;
 

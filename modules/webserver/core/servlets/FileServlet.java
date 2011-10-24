@@ -100,7 +100,7 @@ public class FileServlet extends Servlet {
 		if (file.exists()) {
 			if (!file.isDirectory()){
 				serveFile(req, res, headOnly, file);
-				Utils.console("Served file: " + file + " " +  file.length()/1024 + " Kb");
+				//Utils.console("Served file: " + file + " " +  file.length()/1024 + " Kb");
 			} else {
 				if (isLogenabled()) Utils.console("showing dir " + file);
 				if (redirectDirectory(req, res, path, file) == false){

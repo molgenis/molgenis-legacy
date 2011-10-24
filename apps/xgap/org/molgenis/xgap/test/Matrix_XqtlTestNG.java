@@ -1,4 +1,4 @@
-package matrix.test.implementations;
+package org.molgenis.xgap.test;
 
 import java.io.File;
 
@@ -18,9 +18,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import test.Helper;
 import app.DatabaseFactory;
-import app.servlet.MolgenisServlet;
 import filehandling.storage.StorageHandler;
 
 /**
@@ -49,7 +47,7 @@ public class Matrix_XqtlTestNG {
 	@BeforeClass(alwaysRun = true)
 	public void setupBeforeClass() throws Exception {
 		
-		Helper.deleteDatabase();
+		XqtlSeleniumTest.deleteDatabase();
 
 		Database db = DatabaseFactory.create();
 		StorageHandler sh = new StorageHandler(db);
@@ -77,7 +75,7 @@ public class Matrix_XqtlTestNG {
 	@AfterClass(alwaysRun = true)
 	public void cleanupAfterClass() throws InterruptedException, Exception
 	{
-		Helper.deleteStorage();
+		XqtlSeleniumTest.deleteStorage();
 	}
 
 	@Test(dataProvider = "params")
