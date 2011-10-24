@@ -66,18 +66,18 @@ public class FillMetadata {
 		MolgenisUser user1 = new MolgenisUser();
 		user1.setName("admin");
 		user1.setPassword("md5_21232f297a57a5a743894a0e4a801fc3");
-		user1.setEmailaddress("");
-		user1.setFirstname("admin");
-		user1.setLastname("admin");
+		user1.setEmail("");
+		user1.setFirstName("admin");
+		user1.setLastName("admin");
 		user1.setActive(true);
 		user1.setSuperuser(true);
 		
 		MolgenisUser user2 = new MolgenisUser();
 		user2.setName("anonymous");
 		user2.setPassword("md5_294de3557d9d00b3d2d8a1e6aab028cf");
-		user2.setEmailaddress("");
-		user2.setFirstname("anonymous");
-		user2.setLastname("anonymous");
+		user2.setEmail("");
+		user2.setFirstName("anonymous");
+		user2.setLastName("anonymous");
 		user2.setActive(true);
 
 		MolgenisGroup group1 = new MolgenisGroup();
