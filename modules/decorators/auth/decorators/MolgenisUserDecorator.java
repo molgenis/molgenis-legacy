@@ -21,6 +21,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.jdbc.JDBCMapper;
 import org.molgenis.framework.db.jdbc.MappingDecorator;
+import org.molgenis.framework.security.Login;
 import org.molgenis.framework.security.SimpleLogin;
 
 
@@ -89,9 +90,22 @@ public class MolgenisUserDecorator<E extends MolgenisUser> extends MappingDecora
 		{
 			this.hashPassword(e);
 		}
-
-		// here we call the standard 'update'
-		int count = super.update(entities);
+		
+		int count = -1;
+		
+		//make security exception if the currently logged in user wants to update him/herself
+		if(entities.size() == 1 && this.getDatabase().getSecurity().getUserName().equals(entities.get(0).getName()))
+		{
+			Login saveLogin = this.getDatabase().getSecurity();
+			this.getDatabase().setLogin(null);
+			count = super.update(entities);
+			this.getDatabase().setLogin(saveLogin);
+		}
+		else
+		{
+			// here we call the standard 'update'
+			count = super.update(entities);
+		}
 
 		// add your post-processing here
 		// if you throw and exception the previous add will be rolled back
