@@ -18,6 +18,8 @@ import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.HttpCommandProcessor;
 import com.thoughtworks.selenium.Selenium;
 
+import core.Helper;
+
 public class AnimaldbSeleniumTest
 {
 	Selenium selenium;
