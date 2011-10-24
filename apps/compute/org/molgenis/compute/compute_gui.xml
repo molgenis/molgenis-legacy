@@ -18,15 +18,12 @@
 			<form name="Worksheet" label="Analysis Worksheet" entity="Worksheet" commands="org.molgenis.compute.ui.WorksheetBatchCommand">
 				<plugin name="Button" type="org.molgenis.compute.ui.StartNgs" />
 			</form>
-			<form name="WorksheetLaneLevel" label="Lane level worksheet" entity="WorksheetLaneLevel" commands="org.molgenis.compute.ui.WorksheetBatchCommand">
+			<!-- form name="WorksheetLaneLevel" label="Lane level worksheet" entity="WorksheetLaneLevel" commands="org.molgenis.compute.ui.WorksheetBatchCommand">
 				<plugin name="ButtonLaneLevel" type="org.molgenis.compute.ui.StartNgs" />
-			</form>
-
-			<!-- form name="Lane" label="Run analysis on target" entity="LibraryLane"> <plugin name="StartTarget" type="org.molgenis.compute.StartNgs" label="Run" /> </form -->
-		</menu>
-		<menu name="NGSUpload">
+			</form-->
 			<plugin name="ImportWorksheet" label="Upload worksheet" type="org.molgenis.ngs.ui.ImportWorksheet" />
 		</menu>
+		<include file="apps/compute/org/molgenis/compute/ngs_lims_ui.xml"/>
 		<menu name="Compute">
 			<form name="ComputeResources" entity="ComputeResource" />
 			<form name="ComputeProtocols" entity="ComputeProtocol" hide_fields="Investigation,ontologyReference,TargetFilter,Contact,ProtocolType,Features" viewtype="record">
@@ -45,15 +42,6 @@
 			<form name="ComputeFeatures" hide_fields="id,Investigation,ontologyReference,targettypeAllowedForRelation,panelLabelAllowedForRelation,temporal,featureType" entity="ComputeFeature" viewtype="list" />
 			<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard" label="Upload pipelines" />
 			<plugin name="console" label="Monitor" type="org.molgenis.compute.ui.ConsolePlugin" />
-		</menu>
-		<!-- <form name="CreateComputeApplication" label="Select pipeline to run" entity="Workflow" viewtype="record" hide_fields="description,Investigation,ontologyReference,ProtocolType,TargetFilter,Contact,Features" 
-			> -->
-		<!-- <menu name="SelectPipeline" label="Select pipeline to run"> <plugin name="ComputePlugin" label="Choose pipeline to run" type="org.molgenis.compute.ComputePlugin" /> </menu> -->
-		<menu name="Reports">
-			<!-- DIRTY DEPENDENCIES <plugin name="console" label="Job monitoring" type="org.molgenis.compute.ui.ConsolePlugin" /> <menu name="Logs" label="Compute Logs"> <form name="ComputeApplications" entity="ComputeApplication" 
-				viewtype="record" hide_fields="Investigation,Performer,ontologyReference"> <form name="ObservedValues" entity="ObservedValue" viewtype="list" hide_fields="ontologyReference,relation" /> </form> </menu> 
-				<plugin name="MatrixViewExample" label="View Lane reports" type="org.molgenis.matrix.example.MatrixViewExample1" /> <plugin name="MatrixViewer" label="View Sample reports" type="org.molgenis.matrix.ui.manager.MatrixManager" 
-				/> <plugin name="UploadReport" label="Upload Reports" type="org.molgenis.matrix.ui.upload.UploadSampleReport" /> -->
 		</menu>
 		<menu name="Admin">
 			label="View value matrix" />
