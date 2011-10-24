@@ -14,7 +14,9 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.html.JQueryTreeView;
 import org.molgenis.util.Entity;
+import org.molgenis.util.SimpleTree;
 import org.molgenis.util.Tuple;
 
 import plugins.emptydb.emptyDatabase;
@@ -25,10 +27,23 @@ import commonservice.CommonService;
 public class AnimalDBWelcomeScreenPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -5861419875983400033L;
+	
+	private JQueryTreeView treeViewer;
 
 	public AnimalDBWelcomeScreenPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
+		
+		SimpleTree myTree = new SimpleTree("myTree", null);
+		SimpleTree mySubTree1 = new SimpleTree("mySubTree1", myTree);
+		SimpleTree mySubTree2 = new SimpleTree("mySubTree2", myTree);
+		SimpleTree mySubSubTree = new SimpleTree("mySubSubTree", mySubTree1);
+		
+		treeViewer = new JQueryTreeView("myTreeViewer", myTree);
+	}
+	
+	public String renderTreeViewer() {
+		return treeViewer.render();
 	}
 
 	@Override
