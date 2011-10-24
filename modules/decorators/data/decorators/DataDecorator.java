@@ -49,6 +49,15 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MappingDeco
 			System.out.println("** DataDecorator - loose");
 			NameConvention.validateEntityNames(entities);
 		}
+		
+		for(Data e : entities)
+		{
+			System.out.println(e.toString());
+			if(e.getPerformer().size() == 0)
+			{
+				e.setPerformer_Id(this.getDatabase().getSecurity().getUserId());
+			}
+		}
 
 		int count = super.add(entities);
 		return count;
