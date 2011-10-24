@@ -1,37 +1,43 @@
 package org.molgenis.framework.ui.html;
 
+import java.util.Vector;
+
+import org.molgenis.util.SimpleTree;
+import org.molgenis.util.Tree;
+
 
 public class JQueryTreeView extends HtmlWidget
 {
+	private SimpleTree treeData;
 
-	public JQueryTreeView(String name)
+	public JQueryTreeView(String name, SimpleTree treeData)
 	{
 		super(name);
+		this.treeData = treeData;
+	}
+	
+	private String renderTree(Tree node) {
+		String returnString;
+		if (node.hasChildren()) {
+			returnString = "<li><span class=\"folder\">" + node.getName() + "</span>";
+			returnString += "<ul>";
+			Vector<Tree> children = node.getChildren();
+			for (Tree child : children) {
+				returnString += renderTree(child);
+			}
+			returnString += "</ul></li>";
+		} else {
+			returnString = "<li><span class=\"point\">" + node.getName() + "</span></li>";
+		}
+		return returnString;
 	}
 	
 	@Override
 	public String toHtml(){
 		
-		String html = "<ul id=\"browser\" class=\"pointtree\">"
-	 	+ "<li><span class=\"folder\">Folder 1</span>"
-	 	+ "<ul>"
-	 	+ "<li><span class=\"point\">Item 1.1</span></li>"
-	 	+ "</ul>"
-	 	+ "</li>"
-	 	+ "<li><span class=\"folder\">Folder 2</span>"
-	 	+ "<ul>"
-	 	+ "<li><span class=\"folder\">Subfolder 2.1</span>"
-	 	+ "<ul id=\"folder21\">"
-	 	+ "<li><span class=\"point\">point 2.1.1</span></li>"
-	 	+ "<li><span class=\"point\">point 2.1.2</span></li>"
-	 	+ "</ul>"
-	 	+ "</li>"
-	 	+ "<li><span class=\"point\">point 2.2</span></li>"
-	 	+ "</ul>"
-	 	+ "</li>"
-	 	+ "<li><span class=\"point\">Folder 3</span></li>"
-	    + "</ul>";
-	    
+		String html = "<ul id=\"browser\" class=\"pointtree\">";
+		html += renderTree(treeData.getRoot());
+		html += "</ul>";
 	    html += "<script src=\"res/jquery-plugins/datatables/js/jquery.js\"></script>\n"
 		+ "<link rel=\"stylesheet\" href=\"res/jquery-plugins/Treeview/jquery.treeview.css\" type=\"text/css\" media=\"screen\" />\n" 
 		+ "<script src=\"res/jquery-plugins/Treeview/jquery.treeview.js\" language=\"javascript\"></script>"
@@ -43,17 +49,7 @@ public class JQueryTreeView extends HtmlWidget
 		+"</style>\n"
 		+"<script>\n"
 		+"$(document).ready(function(){\n"
-		+"$(\"#browser\").treeview();\n"
-		+" $(\"#add\").click(function() {\n"
-		+" 	var branches = $(\"<li><span class='folder'>New Sublist</span><ul>\" + \n"
-		+" 		\"<li><span class='file'>Item1</span></li>\" + \n"
-		+" 		\"<li><span class='file'>Item2</span></li>\" +\n"
-		+" 		\"</ul></li>\").appendTo(\"#browser\");\n"
-		+" 	$(\"#browser\").treeview({\n"
-		+" 		add: branches\n"
-		+" 	});\n"
-		+" });\n"
-		+"  });\n"
+		+"$(\"#browser\").treeview();});\n"
 		+"</script>\n";
 		
 	    return html;
