@@ -223,11 +223,12 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 					Person inv = null;
 					if (investigatorname != null)
 					{
-						inv = (Person) getObject(db, Person.class, Person.LASTNAME, investigatorname);
+						inv = (Person) getObject(db, Person.class, Person.NAME, investigatorname);
 						if (inv == null)
 						{
 							inv = new Person();
-							inv.setLastName(investigatorname);
+							inv.setName(investigatorname);
+							//inv.setLastName(investigatorname);
 							db.add(inv);
 						}
 					}
