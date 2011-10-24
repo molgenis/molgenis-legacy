@@ -1,4 +1,4 @@
-package org.molgenis.gids;
+ package org.molgenis.gids;
 
 import org.molgenis.Molgenis;
 
