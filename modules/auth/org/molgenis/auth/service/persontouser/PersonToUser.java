@@ -20,6 +20,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.protocol.ProtocolApplication_Performer;
 import org.molgenis.util.Tuple;
 
 public class PersonToUser extends PluginModel
@@ -85,12 +86,36 @@ public class PersonToUser extends PluginModel
 					mu.setActive(true);
 					mu.setPassword("changeme");
 					
-					//remove person
-					db.remove(p);
-					
-					//add as user
-					db.add(mu);
-					
+					try{
+						//remove person
+						db.remove(p);
+						//add as user
+						db.add(mu);	
+					}//FIXME: Hack to allow referenced persons to be upgraded
+					catch(org.molgenis.framework.db.DatabaseException de){
+						//if this person is referred to, this happens:
+						//Integrity constraint violation SYS_FK_1350 table: PROTOCOLAPPLICATION_PERFORMER in statement [DELETE FROM person WHERE id=?]
+
+						//first add as user, need other name not to conflict
+						mu.setName(mu.getName() + "tmp");
+						db.add(mu);
+						
+						//re-ref the ProtocolApplication_Performer
+						List<ProtocolApplication_Performer> paLinks = db.find(ProtocolApplication_Performer.class, new QueryRule(ProtocolApplication_Performer.PERFORMER, Operator.EQUALS, p.getId()));
+						for(ProtocolApplication_Performer paLink : paLinks)
+						{
+							paLink.setPerformer_Id(mu.getId());
+						}
+						db.update(paLinks);
+						
+						//now remove person
+						db.remove(p);
+						
+						//now set proper name for user
+						mu.setName(mu.getName().substring(0, mu.getName().length()-3));
+						db.update(mu);
+					}
+
 					//put user in the group if applicable
 					if(gid != -1)
 					{
