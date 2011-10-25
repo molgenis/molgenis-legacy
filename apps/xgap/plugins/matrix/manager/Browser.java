@@ -1,5 +1,8 @@
 package plugins.matrix.manager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import matrix.DataMatrixInstance;
 
 import org.molgenis.data.Data;
@@ -423,6 +426,100 @@ public class Browser
 		determineRowStop();
 		
 		return filter;
+	}
+
+	public String applySelect(Tuple request, Database db, MatrixManagerModel screenModel) throws Exception
+	{
+		String action = request.getString("__action");
+		
+		if(action.endsWith("cols"))
+		{
+			screenModel.setSelectedFilterDiv("filter8");
+			
+			List<String> colNames = new ArrayList<String>();
+			for(String colName : this.getModel().getInstance().getColNames())
+			{
+				if(request.getString("colselect_"+colName) != null){
+					colNames.add(colName);
+				}
+			}
+			if(colNames.size() == 0)
+			{
+				throw new Exception("No column names were selected!");
+			}
+			
+			List<String> rowNames = null;
+			if(action.contains("preserverows"))
+			{
+				rowNames = this.getModel().getSubMatrix().getRowNames();
+			}
+			else
+			{
+				rowNames = this.getModel().getInstance().getRowNames();
+			}
+						
+			this.model.setSubMatrix(this.model.getInstance().getSubMatrix(rowNames, colNames));
+			
+			//store static pointer for csv download 'visible'
+			inmemory = this.model.getSubMatrix();
+			
+			model.setWidth(this.model.getSubMatrix().getNumberOfCols());
+			model.setHeight(this.model.getSubMatrix().getNumberOfRows());
+			
+			verifyColStart();
+			verifyRowStart();
+			determineColStop();
+			determineRowStop();
+			
+			return "custom column selection";
+			
+		}
+		else if(action.endsWith("rows"))
+		{
+			screenModel.setSelectedFilterDiv("filter9");
+			
+			List<String> rowNames = new ArrayList<String>();
+			for(String rowName : this.getModel().getInstance().getRowNames())
+			{
+				if(request.getString("rowselect_"+rowName) != null){
+					rowNames.add(rowName);
+				}
+			}
+			if(rowNames.size() == 0)
+			{
+				throw new Exception("No row names were selected!");
+			}
+			
+			List<String> colNames = null;
+			if(action.contains("preservecols"))
+			{
+				colNames = this.getModel().getSubMatrix().getColNames();
+			}
+			else
+			{
+				colNames = this.getModel().getInstance().getColNames();
+			}
+						
+			this.model.setSubMatrix(this.model.getInstance().getSubMatrix(rowNames, colNames));
+			
+			//store static pointer for csv download 'visible'
+			inmemory = this.model.getSubMatrix();
+			
+			model.setWidth(this.model.getSubMatrix().getNumberOfCols());
+			model.setHeight(this.model.getSubMatrix().getNumberOfRows());
+			
+			verifyColStart();
+			verifyRowStart();
+			determineColStop();
+			determineRowStop();
+			
+			return "custom row selection";
+		}
+
+		
+		
+		
+		return null;
 	}
 
 }

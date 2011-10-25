@@ -242,7 +242,7 @@ public class MatrixManager extends PluginModel
 			
 			if(this.model.getSelectedFilterDiv() == null)
 			{
-				this.model.setSelectedFilterDiv("filter1");
+				this.model.setSelectedFilterDiv("filter8");
 			}
 
 			boolean newOrOtherData;

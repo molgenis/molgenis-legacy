@@ -21,6 +21,10 @@ public class RequestHandler {
 			String filter = screenModel.getBrowser().applyFilters(request, db, screenModel);
 			screenModel.setFilter(filter);
 		}
+		else if (action.startsWith("select_")) {
+			String filter = screenModel.getBrowser().applySelect(request, db, screenModel);
+			screenModel.setFilter(filter);
+		}
 		else if (action.startsWith("2d_filter")) {
 			screenModel.setSelectedFilterDiv("filter7");
 			String filter = screenModel.getBrowser().apply2DFilter(request, db);

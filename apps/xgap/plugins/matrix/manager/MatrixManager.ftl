@@ -255,17 +255,19 @@ targ2	val4	val5	val6</textarea>
 </table>
 
 
-<table cellpadding="10"><tr>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');" <#if model.selectedFilterDiv == 'filter1'>checked</#if>>Filter on index</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter2');display('hide', 'filter1');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');" <#if model.selectedFilterDiv == 'filter2'>checked</#if>>Filter on ${model.selectedData.featureType?lower_case} values</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter3');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');" <#if model.selectedFilterDiv == 'filter3'>checked</#if>>Filter on ${model.selectedData.targetType?lower_case} values</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter4');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');" <#if model.selectedFilterDiv == 'filter4'>checked</#if>>Filter on ${model.selectedData.featureType?lower_case} attributes</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter5');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter6');display('hide', 'filter7');" <#if model.selectedFilterDiv == 'filter5'>checked</#if>>Filter on ${model.selectedData.targetType?lower_case} attributes</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter6');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter7');" <#if model.selectedFilterDiv == 'filter6'>checked</#if>>Plot with R</td>
-<td><input name="filterSelect" type="radio" onclick="display('show', 'filter7');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');" <#if model.selectedFilterDiv == 'filter7'>checked</#if>>2D filter</td>
-</tr></table>
+<table>
+<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter8');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter8'>checked</#if>>Select ${model.selectedData.featureType?lower_case}s (columns)</td></tr>
+<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter9');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');" <#if model.selectedFilterDiv == 'filter9'>checked</#if>>Select ${model.selectedData.targetType?lower_case}s (rows)</td></tr>
+<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter1'>checked</#if>>Filter on index (rows & columns)</td></tr>
+<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter2');display('hide', 'filter1');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter2'>checked</#if>>Filter on ${model.selectedData.featureType?lower_case} values (columns)</td></tr>
+<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter3');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter3'>checked</#if>>Filter on ${model.selectedData.targetType?lower_case} values (rows)</td></tr>
+<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter4');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter4'>checked</#if>>Filter on ${model.selectedData.featureType?lower_case} attributes (columns)</td></tr>
+<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter5');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter5'>checked</#if>>Filter on ${model.selectedData.targetType?lower_case} attributes (rows)</td></tr>
+<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter7');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter7'>checked</#if>>Filter twodimensionally (rows & columns)</td></tr>
+<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter6');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter6'>checked</#if>>Make a plot/heatmap with R</td></tr>
+</table>
 
-<br>
+<hr>
 
 <div id="filter1" <#if model.selectedFilterDiv != 'filter1'>style="display:none"</#if>>
 	<table>
@@ -404,10 +406,10 @@ targ2	val4	val5	val6</textarea>
 	</table>
 </div>
 <div id="filter6" <#if model.selectedFilterDiv != 'filter6'>style="display:none"</#if>>
-	<table cellpadding="2">
+	<table>
 		<tr>
 			<td>
-				Make R plot of resolution (pixels):
+				Make R plot of size (pixels):
 			</td>
 			<td colspan="2">
 				<select name="r_plot_resolution">
@@ -510,7 +512,7 @@ targ2	val4	val5	val6</textarea>
 <div id="filter7" <#if model.selectedFilterDiv != 'filter7'>style="display:none"</#if>>
 	<table>
 		<tr>
-			<td cellpadding="2">
+			<td>
 				Two-dimensional filtering:
 			</td>
 		</tr>
@@ -575,6 +577,102 @@ targ2	val4	val5	val6</textarea>
 		</tr>
 	</table>
 </div>
+<div id="filter8" <#if model.selectedFilterDiv != 'filter8'>style="display:none"</#if>>
+	<table>
+		<tr>
+			<td colspan="2">
+				Select ${model.selectedData.featureType?lower_case}s to be displayed and click 'Apply selection':
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+				<input type="submit" value="Apply selection, preserve current rows" onclick="document.forms.${screen.name}.__action.value = 'select_preserverows_cols'; document.forms.${screen.name}.submit();">
+				<br><br>
+				<input type="submit" value="Apply selection, get all rows" onclick="document.forms.${screen.name}.__action.value = 'select_allrows_cols'; document.forms.${screen.name}.submit();">
+				<br><br>
+			</td>
+		</tr>
+		<tr>
+			<#if model.browser.model.instance.colNames?size gt 100>
+			<td>
+				<i>More than 100 columns, showing visible:</i><br>
+				<div style="overflow: scroll; height: 300px;">
+					<#list browser.subMatrix.colNames as colName>
+						<input type="checkbox" name="colselect_${colName}" value="true" /> ${colName}<br>
+					</#list>
+				</div>
+			</td>
+			<td>
+				<i>And the first 100:</i><br>
+				<div style="overflow: scroll; height: 300px;">
+					<#list model.browser.model.instance.colNames[0..99] as colName>
+						<input type="checkbox" name="colselect_${colName}" value="true" /> ${colName}<br>
+					</#list>
+				</div>
+			</td>
+			<#else>
+			<td colspan="2">
+				<i>Less than 100 columns, showing all</i><br>
+				<div style="overflow: scroll; height: 300px;">
+					<#list model.browser.model.instance.colNames as colName>
+						<input type="checkbox" name="colselect_${colName}" value="true" /> ${colName}<br>
+					</#list>
+				</div>
+			</td>
+			</#if>
+		</tr>
+	</table>
+</div>
+<div id="filter9" <#if model.selectedFilterDiv != 'filter9'>style="display:none"</#if>>
+	<table>
+		<tr>
+			<td colspan="2">
+				Select ${model.selectedData.targetType?lower_case}s to be displayed and click 'Apply selection':
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+				<input type="submit" value="Apply selection, preserve current columns" onclick="document.forms.${screen.name}.__action.value = 'select_preservecols_rows'; document.forms.${screen.name}.submit();">
+				<br><br>
+				<input type="submit" value="Apply selection, get all columns" onclick="document.forms.${screen.name}.__action.value = 'select_allcols_rows'; document.forms.${screen.name}.submit();">
+				<br><br>
+			</td>
+		</tr>
+		<tr>
+			<#if model.browser.model.instance.rowNames?size gt 100>
+			<td>
+				<i>More than 100 rows, showing visible:</i><br>
+				<div style="overflow: scroll; height: 300px;">
+					<#list browser.subMatrix.rowNames as rowName>
+						<input type="checkbox" name="rowselect_${rowName}" value="true" /> ${rowName}<br>
+					</#list>
+				</div>
+			</td>
+			<td>
+				<i>And the first 100:</i><br>
+				<div style="overflow: scroll; height: 300px;">
+					<#list model.browser.model.instance.rowNames[0..99] as rowName>
+						<input type="checkbox" name="rowselect_${rowName}" value="true" /> ${rowName}<br>
+					</#list>
+				</div>
+			</td>
+			<#else>
+			<td colspan="2">
+				<i>Less than 100 rows, showing all</i><br>
+				<div style="overflow: scroll; height: 300px;">
+					<#list model.browser.model.instance.rowNames as rowName>
+						<input type="checkbox" name="rowselect_${rowName}" value="true" /> ${rowName}<br>
+					</#list>
+				</div>
+			</td>
+			</#if>
+		</tr>
+	</table>
+</div>
+
+
 </#if>
 
 </#if>
