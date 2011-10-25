@@ -75,7 +75,7 @@
 				<option <#if model.selectedPlotType?exists && model.selectedPlotType == "h">SELECTED</#if> value="h">Histogram</option>
 			</select>
 			<br>
-			Resolution (pixels):
+			Size (pixels):
 			<select name="resolution">
 				<option <#if model.selectedWidth?exists && model.selectedWidth == 480>SELECTED</#if> value="480x640">480 x 640</option>
 				<option <#if model.selectedWidth?exists && model.selectedWidth == 600>SELECTED</#if> value="600x800">600 x 800</option>
