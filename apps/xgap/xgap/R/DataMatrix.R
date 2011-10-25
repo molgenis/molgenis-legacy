@@ -4,16 +4,13 @@
 #
 
 
-add.datamatrix <- function(.data_matrix, name=NULL , investigation_id=NULL , rowtype=NULL , coltype=NULL , valuetype=NULL , source="Database", .usesession=T, .verbose=F)
+add.datamatrix <- function(.data_matrix, name=NULL , investigation_id=NULL , rowtype=NULL , coltype=NULL , valuetype=NULL , .usesession=T, .verbose=F)
 {
 	starttime=Sys.time()
     #TODO check for reasonable rowtype and coltype values.
 	if(is.null(rowtype)) stop("rowtype has to be provided")
 	if(is.null(coltype)) stop("coltype has to be provided")
 	if(is.null(valuetype)) stop("valuetype has to be provided")
-    rowtype   <- tolower(rowtype)
-    coltype   <- tolower(coltype)
-    valuetype <- tolower(valuetype)
 	
 	#check matrix structure
     if(is.null(rownames(.data_matrix)) || is.null(colnames(.data_matrix)) )
@@ -38,7 +35,7 @@ add.datamatrix <- function(.data_matrix, name=NULL , investigation_id=NULL , row
     #todo: trim the spaces of rownames, otherwise comparison fails...
     #todo: add the missing parts for this query [or check that this never happens]
     #dynamic call, e.g. find.marker()
-    call1 <- call(paste("find.",rowtype,sep=""), name=rownames(.data_matrix), investigation_id=investigation_id, .verbose=.verbose )
+    call1 <- call(paste("find.",tolower(rowtype),sep=""), name=rownames(.data_matrix), investigation_id=investigation_id, .verbose=.verbose )
     row_labels <- eval(call1)   
     missing_row_labels <- setdiff( rownames(.data_matrix), row_labels$name)
     if(length(missing_row_labels)>0)
@@ -50,7 +47,7 @@ add.datamatrix <- function(.data_matrix, name=NULL , investigation_id=NULL , row
     #todo: trim the spaces of rownames, otherwise comparison fails...
     #todo: add the missing parts for this query [or check that this never happens]
     #dynamic call, e.g. find.marker()
-    call2<- call(paste("find.",coltype,sep=""), name=colnames(.data_matrix), investigation_id=investigation_id, .verbose=.verbose )
+    call2<- call(paste("find.",tolower(coltype),sep=""), name=colnames(.data_matrix), investigation_id=investigation_id, .verbose=.verbose )
     col_labels <- eval(call2)
     missing_col_labels <- setdiff( colnames(.data_matrix), col_labels$name)
     if(length(missing_col_labels)>0)
@@ -58,7 +55,7 @@ add.datamatrix <- function(.data_matrix, name=NULL , investigation_id=NULL , row
         stop("not all ",coltype," are known in database, missing cols: ", toString(missing_col_labels),". Use add.",coltype,"() to correct.")
     }
     
-    container <- add.data(container_arguments, .verbose=.verbose)
+	container <- add.data(investigation_id=investigation_id, name=name, featuretype=coltype, targettype=rowtype, valuetype=valuetype, storage="Database", .verbose=.verbose)
     if( !is.logical(container) )
     {     
         MAX_BATCH <- 10000 #todo: centralize this parameter
@@ -83,13 +80,14 @@ add.datamatrix <- function(.data_matrix, name=NULL , investigation_id=NULL , row
         	cat("uploading rows ",i,":",until,"...\n")
         	#transform into RCV
 			content_rows <- cbind(
-        		data = container$id,
-        		row = rows$id[i:until],
-        		col = rep(cols$id, each=(until - i + 1)),
-        		rowindex = (i:until)-1,
-        		colindex = rep((i:until)-1, each=(until - i + 1)), 	
+				investigation_id = investigation_id,
+        		data_name = name,
+        		target = rows$id[i:until],
+        		feature = rep(cols$id, each=(until - i + 1)),
+        		targetindex = (i:until)-1,
+        		featureindex = rep((i:until)-1, each=(until - i + 1)), 	
     			value=c(.data_matrix[i:until,]))
-			cat(content_rows)
+			#cat(content_rows)
 			
 			#add to database or handle error
             call3 <- call(paste("add.",tolower(valuetype),"dataelement",sep=""), content_rows , .verbose=.verbose)
@@ -97,7 +95,7 @@ add.datamatrix <- function(.data_matrix, name=NULL , investigation_id=NULL , row
         	if( is.logical(result) )
         	{
             	cat('addition failed, rolling back\n')
-                call4 <- call(paste("remove.",tolower(valuetype),"dataelement",sep=""), data=container$id)
+                call4 <- call(paste("remove.",valuetype,"dataelement",sep=""), data=container$id)
                 result <- eval(call4)            	
             	remove.data(container)
             	return(FALSE)
