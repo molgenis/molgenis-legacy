@@ -1,27 +1,21 @@
 <molgenis>
-	<form label="Browse data" name="Investigations" entity="Investigation"
+	<form label="Browse data" header="Navigate studies (investigations)" name="Investigations" entity="Investigation"
 		compact_view="name" group="biologist">
 		<menu name="InvestigationMenu">
 			<plugin name="Overview"
 				type="plugins.investigationoverview.InvestigationOverviewPlugin"
 				group="biologist" />
-			<form name="Datas" label="View data" entity="Data" compact_view="name"
+			<form name="Datas" label="View data" header="Navigate datasets" entity="Data" compact_view="name"
 				group="biologist">
 				<menu name="Select" group="biologist">
 					<plugin name="Manager" type="plugins.matrix.manager.MatrixManager"
 						group="biologist" />
-					<!--plugin name="Heatmap" type="plugins.matrix.heatmap.MatrixHeatmap"
-						group="biologist" /-->
-					<!--plugin name="Rplot" type="plugins.rplot.RplotPlugin" group="biologist" 
-						/ -->
 					<plugin name="Inspector" type="plugins.matrix.inspector.MatrixInspector"
 						group="biologist" />
 					<plugin name="MatrixAdmin" label="Delete storage"
 						type="plugins.matrix.admin.MatrixAdmin" group="biologist" />
-					<!--plugin name="ManagerDev" type="plugins.matrix_dev.manager.MatrixManager" 
-						group="biologist" / -->
 					<plugin name="MatrixTests" type="org.molgenis.sandbox.ui.MatrixTests"
-						label="Sliceable PhenoMatrix (TESTING)" group="biologist" />
+						label="Viewer v2 (IN DEV)" group="biologist" />
 				</menu>
 			</form>
 			<menu name="BasicAnnotations" label="View annotations">
