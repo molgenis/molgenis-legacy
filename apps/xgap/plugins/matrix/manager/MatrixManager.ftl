@@ -175,14 +175,14 @@ targ2	val4	val5	val6</textarea>
 
 <table cellpadding="5" cellmargin="5">
 	<tr>
-		<td onMouseOver="this.style.background='#CCCCCC'" onMouseOut="this.style.background='#EAEAEA'" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.forms.${screen.name}.__target.value='${screen.name}';document.forms.${screen.name}.__action.value = 'refresh';document.forms.${screen.name}.submit();" style="text-align:center;width:75px">
-			<img width="32" height="32" src="res/img/update.gif"/><br/>Reset
-		</td>
 		<td onMouseOver="this.style.background='#CCCCCC'" onMouseOut="this.style.background='#EAEAEA'" onclick="mopen('matrix_plugin_Actions');" style="text-align:center;width:75px">
-			<img width="32" height="32" src="clusterdemo/icons/action.gif"/><br/>Actions
+			<img width="32" height="32" src="clusterdemo/icons/action.gif"/><br/>Action
 		</td>
 		<td onMouseOver="this.style.background='#CCCCCC'" onMouseOut="this.style.background='#EAEAEA'" onclick="mopen('matrix_plugin_FileSub');" style="text-align:center;width:70px">
-			<img width="32" height="32" src="res/img/download.png" /><br/>Download
+			<img width="32" height="32" src="clusterdemo/icons/download64.png" /><br/>Download
+		</td>
+		<td onMouseOver="this.style.background='#CCCCCC'" onMouseOut="this.style.background='#EAEAEA'" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.forms.${screen.name}.__target.value='${screen.name}';document.forms.${screen.name}.__action.value = 'refresh';document.forms.${screen.name}.submit();" style="text-align:center;width:75px">
+			<img width="32" height="32" src="clusterdemo/icons/reset64.png"/><br/>Reset
 		</td>
 	</tr>
 </table>
@@ -506,13 +506,6 @@ targ2	val4	val5	val6</textarea>
 				</td>
 			</tr>
 		</table>
-		<#if model.tmpImgName?exists>
-		<br><table><tr><td><i>Click to enlarge</i></td></tr></table>
-		<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + model.tmpImgName + "></body></html>">
-		<a href="#" onclick="var generate = window.open('', '', 'width=${model.selectedWidth+50},height=${model.selectedHeight+50},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
-			<img src="tmpfile/${model.tmpImgName}" width="${model.selectedWidth/5}" height="${model.selectedHeight/5}">
-		</a>
-	</#if>
 	</div>
 	<div id="filter7" <#if model.selectedFilterDiv != 'filter7'>style="display:none"</#if>>
 		<table>
@@ -677,6 +670,14 @@ targ2	val4	val5	val6</textarea>
 		</table>
 	</div>
 </div>
+
+<#if model.tmpImgName?exists>
+	<br><table><tr><td><i>Click to enlarge</i></td></tr></table>
+	<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + model.tmpImgName + "></body></html>">
+	<a href="#" onclick="var generate = window.open('', '', 'width=${model.selectedWidth+50},height=${model.selectedHeight+50},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
+		<img src="tmpfile/${model.tmpImgName}" width="${model.selectedWidth/5}" height="${model.selectedHeight/5}">
+	</a>
+</#if>
 
 
 </#if>

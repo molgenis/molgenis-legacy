@@ -13,6 +13,7 @@ public class RequestHandler {
 		String action = request.getString("__action");
 		if (action.equals("refresh")) {
 			screenModel.setSelectedData(null);
+			screenModel.setTmpImgName(null);
 		}
 		else if (action.equals("changeSubmatrixSize")) {
 			screenModel.getBrowser().update();
