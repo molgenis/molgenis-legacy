@@ -472,12 +472,17 @@ var molgenis_required = new Array(${required});
 			<!-- put in table so we can collapse the content panel-->
 			<@form_toolbar screen/>
 			<!--<td class="form_collapse" style="width: 12px;float:right;clear:right; margin:5px;"><img src="generated-res/img/minus.png" id="${screen.name}_toggleImage" onclick="javascript:toggleForm('${screen.name}')"/></td>-->
-			<#list screen.getFilters() as filter>			
-				<div style="float: right;">
-					<label>Search results <#if filter_index=0>where: <#else></#if>${filter}</label><img id="remove_filter_${filter_index}" height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="setInput('${screen.name}_form','_self','','${screen.name}','filter_remove','iframe'); document.forms.${screen.name}_form.filter_id.value='${filter_index}'; document.forms.${screen.name}_form.submit();" title="remove filter"/>
+			
+			<#if screen.getFilters()?size gt 0>
+				<div style="float: right;font-size-adjust: 0.5;font-style:italic;background:#C0C0C0;border: .2em dotted #000;padding:4px;">
+					Search results where:
+					<#list screen.getFilters() as filter>			
+						<b>${filter}</b> <img id="remove_filter_${filter_index}" height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="setInput('${screen.name}_form','_self','','${screen.name}','filter_remove','iframe'); document.forms.${screen.name}_form.filter_id.value='${filter_index}'; document.forms.${screen.name}_form.submit();" title="remove filter"/>
+					<#if filter_has_next> and </#if>
+					</#list>
 				</div>
-			</#list>
-		
+			</#if>
+
 			<div class="screenbody">
 				<div class="screenpadding">
 					<#if screen.mode.toString() == "editview">
