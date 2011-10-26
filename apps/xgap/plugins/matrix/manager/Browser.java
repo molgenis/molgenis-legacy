@@ -67,6 +67,36 @@ public class Browser
 			throw new DatabaseException("Datamatrix '" + selectedData.getName() + "' has no rows.");
 		}
 	}
+	
+	public void updateSubmatrixKeepRows() throws Exception
+	{
+		setStartAndStops();
+		
+		List<String> rowNames = this.getModel().getSubMatrix().getRowNames();
+		List<String> colNames = this.getModel().getInstance().getColNames().subList(model.getColStart(), model.getColStop());
+		
+		// create and set submatrix
+		DataMatrixInstance subMatrix = model.getInstance().getSubMatrix(rowNames, colNames);
+		model.setSubMatrix(subMatrix);
+		
+		//store static pointer for csv download 'visible'
+		inmemory = this.model.getSubMatrix();
+	}
+	
+	public void updateSubmatrixKeepCols() throws Exception
+	{
+		setStartAndStops();
+		
+		List<String> rowNames = this.getModel().getInstance().getRowNames().subList(model.getRowStart(), model.getRowStop());
+		List<String> colNames = this.getModel().getSubMatrix().getColNames();
+		
+		// create and set submatrix
+		DataMatrixInstance subMatrix = model.getInstance().getSubMatrix(rowNames, colNames);
+		model.setSubMatrix(subMatrix);
+		
+		//store static pointer for csv download 'visible'
+		inmemory = this.model.getSubMatrix();
+	}
 
 	private void updateSubmatrix() throws Exception
 	{
@@ -81,17 +111,20 @@ public class Browser
 		
 		//store static pointer for csv download 'visible'
 		inmemory = this.model.getSubMatrix();
-		
-		//System.out.println("*** submatrix updated, cols: " + subMatrix.getNumberOfCols() + ", rows: "
-		//		+ subMatrix.getNumberOfRows() + ", first element: " + subMatrix.getElement(0, 0));
-	}
 
-	private void moveActionFollowup() throws Exception
+	}
+	
+	private void setStartAndStops()
 	{
 		verifyColStart();
 		verifyRowStart();
 		determineColStop();
 		determineRowStop();
+	}
+
+	private void moveActionFollowup() throws Exception
+	{
+		setStartAndStops();
 		updateSubmatrix();
 	}
 
@@ -363,10 +396,7 @@ public class Browser
 		model.setWidth(this.model.getSubMatrix().getNumberOfCols());
 		model.setHeight(this.model.getSubMatrix().getNumberOfRows());
 		
-		verifyColStart();
-		verifyRowStart();
-		determineColStop();
-		determineRowStop();
+		setStartAndStops();
 		
 		return filter;
 	}
@@ -420,10 +450,7 @@ public class Browser
 		model.setWidth(this.model.getSubMatrix().getNumberOfCols());
 		model.setHeight(this.model.getSubMatrix().getNumberOfRows());
 		
-		verifyColStart();
-		verifyRowStart();
-		determineColStop();
-		determineRowStop();
+		setStartAndStops();
 		
 		return filter;
 	}
@@ -466,10 +493,7 @@ public class Browser
 			model.setWidth(this.model.getSubMatrix().getNumberOfCols());
 			model.setHeight(this.model.getSubMatrix().getNumberOfRows());
 			
-			verifyColStart();
-			verifyRowStart();
-			determineColStop();
-			determineRowStop();
+			setStartAndStops();
 			
 			return "custom column selection";
 			
@@ -508,10 +532,7 @@ public class Browser
 			model.setWidth(this.model.getSubMatrix().getNumberOfCols());
 			model.setHeight(this.model.getSubMatrix().getNumberOfRows());
 			
-			verifyColStart();
-			verifyRowStart();
-			determineColStop();
-			determineRowStop();
+			setStartAndStops();
 			
 			return "custom row selection";
 		}

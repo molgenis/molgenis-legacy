@@ -15,8 +15,39 @@ public class RequestHandler {
 			screenModel.setSelectedData(null);
 			screenModel.setTmpImgName(null);
 		}
-		else if (action.equals("changeSubmatrixSize")) {
-			screenModel.getBrowser().update();
+		else if (action.equals("changeSubmatrixSize"))
+		{
+			int stepSize = request.getInt("stepSize") < 1 ? 1 : request.getInt("stepSize");
+			int width = request.getInt("width") < 1 ? 1 : request.getInt("width");
+			int height = request.getInt("height") < 1 ? 1 : request.getInt("height");
+			
+			//if only width has changed, do special update of submatrix to preserve rows
+			if(width != screenModel.getBrowser().getModel().getWidth() && height == screenModel.getBrowser().getModel().getHeight())
+			{
+				setStepWidthHeight(screenModel, stepSize, width, height);
+				screenModel.getBrowser().updateSubmatrixKeepRows();
+				screenModel.setFilter("width updated, row selection was preserved");
+			}
+			//if only height has changed, do special update of submatrix to preserve columns
+			else if(width == screenModel.getBrowser().getModel().getWidth() && height != screenModel.getBrowser().getModel().getHeight())
+			{
+				setStepWidthHeight(screenModel, stepSize, width, height);
+				screenModel.getBrowser().updateSubmatrixKeepCols();
+				screenModel.setFilter("height updated, column selection was preserved");
+			}
+			//nothing has changed, do not update submatrix (just stepsize)
+			else if(width == screenModel.getBrowser().getModel().getWidth() && height == screenModel.getBrowser().getModel().getHeight())
+			{
+				screenModel.getBrowser().getModel().setStepSize(stepSize);
+				screenModel.setFilter("stepsize updated");
+			}
+			//both have changed, do a regular update of submatrix, resetting row/col to limit/offset defaults
+			else
+			{
+				setStepWidthHeight(screenModel, stepSize, width, height);
+				screenModel.getBrowser().update();
+				screenModel.setFilter("width and height updated, " + moveMsg);
+			}
 		}
 		else if (action.startsWith("filter")) {
 			String filter = screenModel.getBrowser().applyFilters(request, db, screenModel);
@@ -46,30 +77,47 @@ public class RequestHandler {
 		}
 		else if (action.equals("moveRight")) {
 			screenModel.getBrowser().moveRight();
+			screenModel.setFilter("moved right, " + moveMsg);
 		}
 		else if (action.equals("moveLeft")) {
 			screenModel.getBrowser().moveLeft();
+			screenModel.setFilter("moved left, " + moveMsg);
 		}
 		else if (action.equals("moveDown")) {
 			screenModel.getBrowser().moveDown();
+			screenModel.setFilter("moved down, " + moveMsg);
 		}
 		else if (action.equals("moveUp")) {
 			screenModel.getBrowser().moveUp();
+			screenModel.setFilter("moved up, " + moveMsg);
 		}
 		else if (action.equals("moveFarRight")) {
 			screenModel.getBrowser().moveFarRight();
+			screenModel.setFilter("moved far right, " + moveMsg);
 		}
 		else if (action.equals("moveFarLeft")) {
 			screenModel.getBrowser().moveFarLeft();
+			screenModel.setFilter("moved far left, " + moveMsg);
 		}
 		else if (action.equals("moveFarDown")) {
 			screenModel.getBrowser().moveFarDown();
+			screenModel.setFilter("moved far down, " + moveMsg);
 		}
 		else if (action.equals("moveFarUp")) {
 			screenModel.getBrowser().moveFarUp();
+			screenModel.setFilter("moved far up, " + moveMsg);
 		}else{
 			throw new Exception("Action '"+action+"' unknown.");
 		}
+	}
+	
+	static String moveMsg = "restored matrix to unfiltered state (paging by index)";
+	
+	private static void setStepWidthHeight(MatrixManagerModel screenModel, int stepSize, int width, int height)
+	{
+		screenModel.getBrowser().getModel().setStepSize(stepSize);
+		screenModel.getBrowser().getModel().setWidth(width);
+		screenModel.getBrowser().getModel().setHeight(height);
 	}
 
 }

@@ -83,14 +83,6 @@ public class MatrixManager extends PluginModel
 				}
 				else
 				{
-					int stepSize = request.getInt("stepSize") < 1 ? 1 : request.getInt("stepSize");
-					int width = request.getInt("width") < 1 ? 1 : request.getInt("width");
-					int height = request.getInt("height") < 1 ? 1 : request.getInt("height");
-
-					this.model.getBrowser().getModel().setStepSize(stepSize);
-					this.model.getBrowser().getModel().setWidth(width);
-					this.model.getBrowser().getModel().setHeight(height);
-
 					RequestHandler.handle(this.model, request, db);
 				}
 
