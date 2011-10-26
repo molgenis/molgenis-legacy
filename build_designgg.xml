@@ -13,6 +13,19 @@
 	
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
 	<import file="build_common.xml"/>
-	<import file="xqtl_dev.xml"/>
-
+	
+	<!--
+	Deploy help: run on a specific port, and on that port only
+	Usage: ant -f xqtl_dev.xml runOn -Dport=9000
+	-->
+	<target name="runOn" description="Start the application">
+		<java maxmemory="512m" classname="boot.RunStandalone" fork="yes" failonerror="true">
+			<arg value="${port}"/>
+			<classpath>
+				<path refid="molgenis.classpath" />
+				<path location="${build.dir}" />
+			</classpath>
+		</java>
+	</target>
+	
 </project>
