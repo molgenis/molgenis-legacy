@@ -4,7 +4,7 @@
 	<table width="100%">
 		<tr>
 			<td colspan="3" class="form_title">
-				${screen.label}
+				<#if screen.header?exists>${screen.header}<#else>${screen.label}</#if>
 			</td>
 		</tr>
 		<tr>

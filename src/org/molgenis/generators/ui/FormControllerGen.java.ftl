@@ -68,6 +68,7 @@ public class ${JavaName(form.className)}FormController extends FormController<${
 		super( "${form.getVelocityName()}", parent );
 		getModel().setLabel("${form.label}");
 		getModel().setLimit(${form.limit});
+		<#if form.header?exists>getModel().setHeader("${form.header}");</#if>
 
 		<#if form.sortby?exists>
 		//sort is a bit hacky awaiting redesign of the Form classes
