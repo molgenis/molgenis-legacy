@@ -64,78 +64,12 @@
 targ1	val1	val2	val3
 targ2	val4	val5	val6</textarea>
 	<input id="matrixUploadTextArea" type="submit" value="Upload" onclick="__action.value='uploadTextArea';return true;"/><br>
-				
 <#else>
-<div style="overflow: auto; width: inherit;">				
+
+
+
+<div style="overflow: auto; width: inherit; max-height: 500px;">				
 	<table>
-		<tr>
-			<td class="menuitem shadeHeader">
-				<div onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.forms.${screen.name}.__target.value='${screen.name}';document.forms.${screen.name}.__action.value = 'refresh';document.forms.${screen.name}.submit();"><img src="res/img/update.gif" align="left" />Reset</div>
-			</td>
-			<td class="menuitem shadeHeader" onclick="mopen('matrix_plugin_FileSub');">
-				Download
-				<img src="res/img/pulldown.gif"/><br>
-				<div class="submenu" style="width:400px" id="matrix_plugin_FileSub">
-				<table cellpadding="3">
-				<#assign icon_size = 30>
-					<tr>
-						<td class="submenuitem">
-							<b><i><font size="3">Visible values</font></i></b>
-						</td>
-						<td class="submenuitem">
-							<b><i><font size="3">All values</font></i></b>
-						</td>
-					</tr>
-					<tr>
-						<td class="submenuitem" onclick="location.href='downloadmatrixascsv?id=inmemory'">
-							<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/txt_icon.png" align="left" />&nbsp;&nbsp;CSV format
-						</td>
-						<td class="submenuitem" onclick="location.href='downloadmatrixascsv?id=${model.selectedData.getId()?c}&download=all&stream=false'">
-							<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/txt_icon.png" align="left" />&nbsp;&nbsp;CSV format
-						</td>		
-					</tr>	
-					<tr>
-						<td class="submenuitem" onclick="location.href='downloadmatrixasexcel?id=inmemory'">
-							<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/excel_icon.png" align="left" />&nbsp;&nbsp;Excel file
-						</td>
-						<td class="submenuitem" onclick="location.href='downloadmatrixasexcel?id=${model.selectedData.getId()?c}&download=all'">
-							<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/excel_icon.png" align="left" />&nbsp;&nbsp;Excel file
-						</td>
-					</tr>
-					<tr>
-						<td class="submenuitem" onclick="location.href='downloadmatrixasspss?id=inmemory'">
-							<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/spss_icon.png" align="left" />&nbsp;&nbsp;SPSS file
-						</td>
-						<td class="submenuitem" onclick="location.href='downloadmatrixasspss?id=${model.selectedData.getId()?c}&download=all'">
-							<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/spss_icon.png" align="left" />&nbsp;&nbsp;SPSS file
-						</td>
-					</tr>
-					<tr>
-						<td class="submenuitem" onclick="location.href='downloadmatrixasrobject?id=inmemory'">
-							<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/r_icon.gif" align="left" />&nbsp;&nbsp;R matrix object
-						</td>
-						<td class="submenuitem" onclick="location.href='downloadmatrixasrobject?id=${model.selectedData.getId()?c}&download=all'">
-							<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/r_icon.gif" align="left" />&nbsp;&nbsp;R matrix object
-						</td>
-					</tr>
-					
-					<#if model.selectedData.storage == "Binary" && model.hasBackend == true>
-					<tr>
-						<td class="submenuitem">
-							&nbsp;
-						</td>
-						<td class="submenuitem" onclick="location.href='downloadfile?name=${model.selectedData.name}'">
-							<img ${icon_size}" height="${icon_size}" src="res/img/download.png" align="left" />&nbsp;&nbsp;Binary file
-						</td>
-					</tr>
-					</#if>
-					
-				</table>
-				
-					
-				</div>
-			</td>
-		</tr>
 		<tr>
 			<td class="shadeHeader">
 				&nbsp;
@@ -235,441 +169,513 @@ targ2	val4	val5	val6</textarea>
 			</td>
 		</tr>
 	</table>
-</div>
+</div><br>
 
-<br>
 
-<table cellpadding="5">
-	
+
+<table cellpadding="5" cellmargin="5">
 	<tr>
-		<#if model.filter?exists>
-		<td>
-			<i>Last applied:</i> <b>${model.filter}.</b>
+		<td onMouseOver="this.style.background='#CCCCCC'" onMouseOut="this.style.background='#EAEAEA'" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.forms.${screen.name}.__target.value='${screen.name}';document.forms.${screen.name}.__action.value = 'refresh';document.forms.${screen.name}.submit();" style="text-align:center;width:75px">
+			<img width="32" height="32" src="res/img/update.gif"/><br/>Reset
 		</td>
-		</#if>
-		<td>
-			<i>Perform action:</i>
+		<td onMouseOver="this.style.background='#CCCCCC'" onMouseOut="this.style.background='#EAEAEA'" onclick="mopen('matrix_plugin_Actions');" style="text-align:center;width:75px">
+			<img width="32" height="32" src="clusterdemo/icons/action.gif"/><br/>Actions
+		</td>
+		<td onMouseOver="this.style.background='#CCCCCC'" onMouseOut="this.style.background='#EAEAEA'" onclick="mopen('matrix_plugin_FileSub');" style="text-align:center;width:70px">
+			<img width="32" height="32" src="res/img/download.png" /><br/>Download
 		</td>
 	</tr>
-	
 </table>
 
 
-<table>
-<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter8');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter8'>checked</#if>>Select ${model.selectedData.featureType?lower_case}s (columns)</td></tr>
-<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter9');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');" <#if model.selectedFilterDiv == 'filter9'>checked</#if>>Select ${model.selectedData.targetType?lower_case}s (rows)</td></tr>
-<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter1'>checked</#if>>Filter on index (rows & columns)</td></tr>
-<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter2');display('hide', 'filter1');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter2'>checked</#if>>Filter on ${model.selectedData.featureType?lower_case} values (columns)</td></tr>
-<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter3');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter3'>checked</#if>>Filter on ${model.selectedData.targetType?lower_case} values (rows)</td></tr>
-<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter4');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter4'>checked</#if>>Filter on ${model.selectedData.featureType?lower_case} attributes (columns)</td></tr>
-<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter5');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter5'>checked</#if>>Filter on ${model.selectedData.targetType?lower_case} attributes (rows)</td></tr>
-<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter7');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter7'>checked</#if>>Filter twodimensionally (rows & columns)</td></tr>
-<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter6');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter6'>checked</#if>>Make a plot/heatmap with R</td></tr>
+
+<#if model.filter?exists>
+<table cellpadding="5">
+	<tr>
+		<td>
+			<i>Last action:</i> <b>${model.filter}.</b>
+		</td>
+	</tr>
 </table>
-
-<hr>
-
-<div id="filter1" <#if model.selectedFilterDiv != 'filter1'>style="display:none"</#if>>
-	<table>
-		<tr>
-			<td>
-				Filter by index:
-			</td>
-			<td>
-				<select name="add_filter_by_indexFILTER_FIELD">
-					<option value="row">${model.selectedData.targetType} index</option>
-					<option value="col">${model.selectedData.featureType} index</option>
-				</select>
-			</td>
-			<td>
-				<select name="add_filter_by_indexFILTER_OPERATOR">
-					<#list model.allOperators?keys as op><option value="${op}">${model.allOperators[op]}</option></#list>
-				</select>
-			</td>
-			<td>
-				<input type="text" size="8" name="add_filter_by_indexFILTER_VALUE" />
-			</td>
-			<td>
-				<input type="submit" value="Apply to visible" onclick="document.forms.${screen.name}.__action.value = 'filter_visible_by_index'; document.forms.${screen.name}.submit();">
-				<input type="submit" value="Apply to all" onclick="document.forms.${screen.name}.__action.value = 'filter_all_by_index'; document.forms.${screen.name}.submit();">
-			</td>
-		</tr>
-		<tr>
-	</table>
-</div>
-<div id="filter2" <#if model.selectedFilterDiv != 'filter2'>style="display:none"</#if>>
-	<table>
-		<tr>
-			<td>
-				Filter by ${model.selectedData.featureType?lower_case} values:
-			</td>
-			<td>
-				<select name="add_filter_by_col_valueFILTER_FIELD">
-					<#list browser.subMatrix.colNames as col><option value="${col}">${col}</option></#list>
-				</select>
-			</td>
-			<td>
-				<select name="add_filter_by_col_valueFILTER_OPERATOR">
-					<#list model.valueOperators?keys as op><option value="${op}">${model.valueOperators[op]}</option></#list>
-				</select>
-			</td>
-			<td>
-				<input type="text" size="8" name="add_filter_by_col_valueFILTER_VALUE" />
-			</td>
-			<td>
-				<input type="submit" value="Apply to visible" onclick="document.forms.${screen.name}.__action.value = 'filter_visible_by_col_value'; document.forms.${screen.name}.submit();">
-				<input type="submit" value="Apply to all" onclick="document.forms.${screen.name}.__action.value = 'filter_all_by_col_value'; document.forms.${screen.name}.submit();">
-			</td>
-		</tr>
-	</table>
-</div>
-<div id="filter3" <#if model.selectedFilterDiv != 'filter3'>style="display:none"</#if>>
-	<table>
-		<tr>
-			<td>
-				Filter by ${model.selectedData.targetType?lower_case} values:
-			</td>
-			<td>
-				<select name="add_filter_by_row_valueFILTER_FIELD">
-					<#list browser.subMatrix.rowNames as row><option value="${row}">${row}</option></#list>
-				</select>
-			</td>
-			<td>
-				<select name="add_filter_by_row_valueFILTER_OPERATOR">
-					<#list model.valueOperators?keys as op><option value="${op}">${model.valueOperators[op]}</option></#list>
-				</select>
-			</td>
-			<td>
-				<input type="text" size="8" name="add_filter_by_row_valueFILTER_VALUE" />
-			</td>
-			<td>
-				<input type="submit" value="Apply to visible" onclick="document.forms.${screen.name}.__action.value = 'filter_visible_by_row_value'; document.forms.${screen.name}.submit();">
-				<input type="submit" value="Apply to all" onclick="document.forms.${screen.name}.__action.value = 'filter_all_by_row_value'; document.forms.${screen.name}.submit();">
-			</td>
-		</tr>
-	</table>
-</div>
-<div id="filter4" <#if model.selectedFilterDiv != 'filter4'>style="display:none"</#if>>
-	<table>
-		<tr>
-			<td>
-				Filter by ${model.selectedData.featureType?lower_case} attributes:
-			</td>
-			<td>
-				<select name="add_filter_by_col_attrbFILTER_FIELD">
-					<#list model.colHeaderAttr as cha>
-						<option value="${cha}">${cha}</option>
-					</#list>
-				</select>
-			</td>
-			<td>
-				<select name="add_filter_by_col_attrbFILTER_OPERATOR">
-					<#list model.allOperators?keys as op><option value="${op}">${model.allOperators[op]}</option></#list>
-				</select>
-			</td>
-			<td>
-				<input type="text" size="8" name="add_filter_by_col_attrbFILTER_VALUE" />
-			</td>
-			<td>
-				<input type="submit" value="Apply to visible" onclick="document.forms.${screen.name}.__action.value = 'filter_visible_by_col_attrb'; document.forms.${screen.name}.submit();">
-				<input type="submit" value="Apply to all" onclick="document.forms.${screen.name}.__action.value = 'filter_all_by_col_attrb'; document.forms.${screen.name}.submit();">
-			</td>
-		</tr>
-	</table>
-</div>
-<div id="filter5" <#if model.selectedFilterDiv != 'filter5'>style="display:none"</#if>>
-	<table>
-		<tr>
-			<td>
-				Filter by ${model.selectedData.targetType?lower_case} attributes:
-			</td>
-			<td>
-				<select name="add_filter_by_row_attrbFILTER_FIELD">
-					<#list model.rowHeaderAttr as rha>
-						<option value="${rha}">${rha}</option>
-					</#list>
-				</select>
-			</td>
-			<td>
-				<select name="add_filter_by_row_attrbFILTER_OPERATOR">
-					<#list model.allOperators?keys as op><option value="${op}">${model.allOperators[op]}</option></#list>
-				</select>
-			</td>
-			<td>
-				<input type="text" size="8" name="add_filter_by_row_attrbFILTER_VALUE" />
-			</td>
-			<td>
-				<input type="submit" value="Apply to visible" onclick="document.forms.${screen.name}.__action.value = 'filter_visible_by_row_attrb'; document.forms.${screen.name}.submit();">
-				<input type="submit" value="Apply to all" onclick="document.forms.${screen.name}.__action.value = 'filter_all_by_row_attrb'; document.forms.${screen.name}.submit();">
-			</td>
-		</tr>
-	</table>
-</div>
-<div id="filter6" <#if model.selectedFilterDiv != 'filter6'>style="display:none"</#if>>
-	<table>
-		<tr>
-			<td>
-				Make R plot of size (pixels):
-			</td>
-			<td colspan="2">
-				<select name="r_plot_resolution">
-					<option <#if model.selectedWidth?exists && model.selectedWidth == 480>SELECTED</#if> value="480x640">480 x 640</option>
-					<option <#if model.selectedWidth?exists && model.selectedWidth == 600>SELECTED</#if> value="600x800">600 x 800</option>
-					<option <#if model.selectedWidth?exists && model.selectedWidth == 640>SELECTED</#if> value="640x480">640 x 480</option>
-					<option <#if model.selectedWidth?exists && model.selectedWidth == 768>SELECTED</#if> value="768x1024">768 x 1024</option>
-					<option <#if model.selectedWidth?exists && model.selectedWidth == 800>SELECTED</#if> value="800x600">800 x 600</option>
-					<option <#if model.selectedWidth?exists && model.selectedWidth == 1024>SELECTED</#if> value="1024x768">1024 x 768</option>
-					<option <#if model.selectedWidth?exists && model.selectedWidth == 1680>SELECTED</#if> value="1680x1050">1680 x 1050</option>
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td colspan="3">
-				&nbsp;
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<i>Regular plot of type:</i>
-			</td>
-			<td colspan="2">
-				<select name="r_plot_type">
-					<#--if model.selectedData.valueType == "Decimal"-->
-						<option <#if model.selectedPlotType?exists && model.selectedPlotType == "p">SELECTED</#if> value="p">Points</option>
-						<option <#if model.selectedPlotType?exists && model.selectedPlotType == "l">SELECTED</#if> value="l">Lines</option>
-						<option <#if model.selectedPlotType?exists && model.selectedPlotType == "o">SELECTED</#if> value="o">Overplotted</option>
-						<option <#if model.selectedPlotType?exists && model.selectedPlotType == "s">SELECTED</#if> value="s">Stairs</option>
-						<option <#if model.selectedPlotType?exists && model.selectedPlotType == "boxplot">SELECTED</#if> value="boxplot">Boxplot</option>
-					<#--if-->
-					<option <#if model.selectedPlotType?exists && model.selectedPlotType == "h">SELECTED</#if> value="h">Histogram</option>
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<select name="r_plot_row_select">
-					<#list browser.subMatrix.rowNames as row><option value="${row}">${row}</option></#list>
-				</select>
-			</td>
-			<td>
-				<input type="submit" value="Plot full row" onclick="document.forms.${screen.name}.__action.value = 'r_plot_full_row'; document.forms.${screen.name}.submit();">
-			</td>
-			<td>
-				<input type="submit" value="Plot visible row" onclick="document.forms.${screen.name}.__action.value = 'r_plot_visible_row'; document.forms.${screen.name}.submit();">
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<select name="r_plot_col_select">
-					<#list browser.subMatrix.colNames as col><option value="${col}">${col}</option></#list>
-				</select>
-			</td>
-			<td>
-				<input type="submit" value="Plot full column" onclick="document.forms.${screen.name}.__action.value = 'r_plot_full_col'; document.forms.${screen.name}.submit();">
-			</td>
-			<td>
-				<input type="submit" value="Plot visible column" onclick="document.forms.${screen.name}.__action.value = 'r_plot_visible_col'; document.forms.${screen.name}.submit();">
-			</td>
-		</tr>
-		<tr>
-			<td colspan="3">
-				&nbsp;
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<i>Heatmap plot with clustering on:</i>
-			</td>
-			<td colspan="2">
-				<select name="r_heatmap_type">
-					<option value="rowscols">Rows and cols</option>
-					<option value="rows">Just rows</option>
-					<option value="cols">Just cols</option>
-					<option value="none">None</option>
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<i>(NA values are replaced with 0)</i>
-			</td>
-			<td>
-				<input type="submit" value="Plot full values" onclick="document.forms.${screen.name}.__action.value = 'r_plot_full_heatmap'; document.forms.${screen.name}.submit();">
-			</td>
-			<td>
-				<input type="submit" value="Plot visible values" onclick="document.forms.${screen.name}.__action.value = 'r_plot_visible_heatmap'; document.forms.${screen.name}.submit();">
-			</td>
-		</tr>
-	</table>
-	<#if model.tmpImgName?exists>
-	<br><table><tr><td><i>Click to enlarge</i></td></tr></table>
-	<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + model.tmpImgName + "></body></html>">
-	<a href="#" onclick="var generate = window.open('', '', 'width=${model.selectedWidth+50},height=${model.selectedHeight+50},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
-		<img src="tmpfile/${model.tmpImgName}" width="${model.selectedWidth/5}" height="${model.selectedHeight/5}">
-	</a>
 </#if>
-</div>
-<div id="filter7" <#if model.selectedFilterDiv != 'filter7'>style="display:none"</#if>>
-	<table>
+
+
+<div style="width:400px; display:none" id="matrix_plugin_FileSub">
+	<table cellpadding="3">
+	<#assign icon_size = 30>
 		<tr>
-			<td>
-				Two-dimensional filtering:
+			<td class="submenuitem">
+				<b><i><font size="3">Visible values</font></i></b>
+			</td>
+			<td class="submenuitem">
+				<b><i><font size="3">All values</font></i></b>
 			</td>
 		</tr>
 		<tr>
-			<td>
+			<td class="submenuitem" onclick="location.href='downloadmatrixascsv?id=inmemory'">
+				<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/txt_icon.png" align="left" />&nbsp;&nbsp;CSV format
+			</td>
+			<td class="submenuitem" onclick="location.href='downloadmatrixascsv?id=${model.selectedData.getId()?c}&download=all&stream=false'">
+				<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/txt_icon.png" align="left" />&nbsp;&nbsp;CSV format
+			</td>		
+		</tr>	
+		<tr>
+			<td class="submenuitem" onclick="location.href='downloadmatrixasexcel?id=inmemory'">
+				<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/excel_icon.png" align="left" />&nbsp;&nbsp;Excel file
+			</td>
+			<td class="submenuitem" onclick="location.href='downloadmatrixasexcel?id=${model.selectedData.getId()?c}&download=all'">
+				<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/excel_icon.png" align="left" />&nbsp;&nbsp;Excel file
+			</td>
+		</tr>
+		<tr>
+			<td class="submenuitem" onclick="location.href='downloadmatrixasspss?id=inmemory'">
+				<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/spss_icon.png" align="left" />&nbsp;&nbsp;SPSS file
+			</td>
+			<td class="submenuitem" onclick="location.href='downloadmatrixasspss?id=${model.selectedData.getId()?c}&download=all'">
+				<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/spss_icon.png" align="left" />&nbsp;&nbsp;SPSS file
+			</td>
+		</tr>
+		<tr>
+			<td class="submenuitem" onclick="location.href='downloadmatrixasrobject?id=inmemory'">
+				<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/r_icon.gif" align="left" />&nbsp;&nbsp;R matrix object
+			</td>
+			<td class="submenuitem" onclick="location.href='downloadmatrixasrobject?id=${model.selectedData.getId()?c}&download=all'">
+				<img width="${icon_size}" height="${icon_size}" src="clusterdemo/icons/r_icon.gif" align="left" />&nbsp;&nbsp;R matrix object
+			</td>
+		</tr>
+		
+		<#if model.selectedData.storage == "Binary" && model.hasBackend == true>
+		<tr>
+			<td class="submenuitem">
 				&nbsp;
 			</td>
-		</tr>
-		<tr>
-			<td>
-				Select all
-				${model.selectedData.targetType?lower_case}s
-				with at least
-				<select name="2d_filter_by_row_AMOUNT">
-					<#list 1..25 as a>
-					<option value="${a}">${a}</option>
-					</#list>
-				</select>
-				${model.selectedData.featureType?lower_case}(s)
-				having a value
-				<select name="2d_filter_by_row_FILTER_OPERATOR">
-					<#list model.allOperators?keys as op><option value="${op}">${model.allOperators[op]}</option></#list>
-				</select>
-				<input type="text" size="8" name="2d_filter_by_row_FILTER_VALUE" />
+			<td class="submenuitem" onclick="location.href='downloadfile?name=${model.selectedData.name}'">
+				<img width="${icon_size}" height="${icon_size}" src="res/img/download.png" align="left" />&nbsp;&nbsp;Binary file
 			</td>
 		</tr>
-		<tr>
-			<td align="right">
-				<input type="submit" value="Apply to visible" onclick="document.forms.${screen.name}.__action.value = '2d_filter_visible_row'; document.forms.${screen.name}.submit();">
-				<input type="submit" value="Apply to all" onclick="document.forms.${screen.name}.__action.value = '2d_filter_all_row'; document.forms.${screen.name}.submit();">
-			</td>
-		</tr>
-		<tr>
-			<td>
-				&nbsp;
-			</td>
-		</tr>
-		<tr>
-			<td>
-				Select all
-				${model.selectedData.featureType?lower_case}s
-				with at least
-				<select name="2d_filter_by_col_AMOUNT">
-					<#list 1..25 as a>
-					<option value="${a}">${a}</option>
-					</#list>
-				</select>
-				${model.selectedData.targetType?lower_case}(s)
-				having a value
-				<select name="2d_filter_by_col_FILTER_OPERATOR">
-					<#list model.allOperators?keys as op><option value="${op}">${model.allOperators[op]}</option></#list>
-				</select>
-				<input type="text" size="8" name="2d_filter_by_col_FILTER_VALUE" />
-				
-			</td>
-		</tr>
-		<tr>
-			<td align="right">
-				<input type="submit" value="Apply to visible" onclick="document.forms.${screen.name}.__action.value = '2d_filter_visible_col'; document.forms.${screen.name}.submit();">
-				<input type="submit" value="Apply to all" onclick="document.forms.${screen.name}.__action.value = '2d_filter_all_col'; document.forms.${screen.name}.submit();">
-			</td>
-		</tr>
+		</#if>
 	</table>
 </div>
-<div id="filter8" <#if model.selectedFilterDiv != 'filter8'>style="display:none"</#if>>
+
+
+
+<div id="matrix_plugin_Actions" style="display:none">
 	<table>
-		<tr>
-			<td colspan="2">
-				Select ${model.selectedData.featureType?lower_case}s to be displayed and click 'Apply selection':
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<br>
-				<input type="submit" value="Apply selection, preserve current rows" onclick="document.forms.${screen.name}.__action.value = 'select_preserverows_cols'; document.forms.${screen.name}.submit();">
-				<br><br>
-				<input type="submit" value="Apply selection, get all rows" onclick="document.forms.${screen.name}.__action.value = 'select_allrows_cols'; document.forms.${screen.name}.submit();">
-				<br><br>
-			</td>
-		</tr>
-		<tr>
-			<#if model.browser.model.instance.colNames?size gt 100>
-			<td>
-				<i>More than 100 columns, showing visible:</i><br>
-				<div style="overflow: scroll; height: 300px;">
-					<#list browser.subMatrix.colNames as colName>
-						<input type="checkbox" name="colselect_${colName}" value="true" /> ${colName}<br>
-					</#list>
-				</div>
-			</td>
-			<td>
-				<i>And the first 100:</i><br>
-				<div style="overflow: scroll; height: 300px;">
-					<#list model.browser.model.instance.colNames[0..99] as colName>
-						<input type="checkbox" name="colselect_${colName}" value="true" /> ${colName}<br>
-					</#list>
-				</div>
-			</td>
-			<#else>
-			<td colspan="2">
-				<i>Less than 100 columns, showing all</i><br>
-				<div style="overflow: scroll; height: 300px;">
-					<#list model.browser.model.instance.colNames as colName>
-						<input type="checkbox" name="colselect_${colName}" value="true" /> ${colName}<br>
-					</#list>
-				</div>
-			</td>
-			</#if>
-		</tr>
+		<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter8');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter8'>checked</#if>>Select ${model.selectedData.featureType?lower_case}s (columns)</td></tr>
+		<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter9');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');" <#if model.selectedFilterDiv == 'filter9'>checked</#if>>Select ${model.selectedData.targetType?lower_case}s (rows)</td></tr>
+		<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter1'>checked</#if>>Filter on index (rows & columns)</td></tr>
+		<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter2');display('hide', 'filter1');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter2'>checked</#if>>Filter on ${model.selectedData.featureType?lower_case} values (columns)</td></tr>
+		<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter3');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter3'>checked</#if>>Filter on ${model.selectedData.targetType?lower_case} values (rows)</td></tr>
+		<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter4');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter4'>checked</#if>>Filter on ${model.selectedData.featureType?lower_case} attributes (columns)</td></tr>
+		<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter5');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter5'>checked</#if>>Filter on ${model.selectedData.targetType?lower_case} attributes (rows)</td></tr>
+		<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter7');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter7'>checked</#if>>Filter twodimensionally (rows & columns)</td></tr>
+		<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter6');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter6'>checked</#if>>Make a plot/heatmap with R</td></tr>
 	</table>
-</div>
-<div id="filter9" <#if model.selectedFilterDiv != 'filter9'>style="display:none"</#if>>
-	<table>
-		<tr>
-			<td colspan="2">
-				Select ${model.selectedData.targetType?lower_case}s to be displayed and click 'Apply selection':
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<br>
-				<input type="submit" value="Apply selection, preserve current columns" onclick="document.forms.${screen.name}.__action.value = 'select_preservecols_rows'; document.forms.${screen.name}.submit();">
-				<br><br>
-				<input type="submit" value="Apply selection, get all columns" onclick="document.forms.${screen.name}.__action.value = 'select_allcols_rows'; document.forms.${screen.name}.submit();">
-				<br><br>
-			</td>
-		</tr>
-		<tr>
-			<#if model.browser.model.instance.rowNames?size gt 100>
-			<td>
-				<i>More than 100 rows, showing visible:</i><br>
-				<div style="overflow: scroll; height: 300px;">
-					<#list browser.subMatrix.rowNames as rowName>
-						<input type="checkbox" name="rowselect_${rowName}" value="true" /> ${rowName}<br>
-					</#list>
-				</div>
-			</td>
-			<td>
-				<i>And the first 100:</i><br>
-				<div style="overflow: scroll; height: 300px;">
-					<#list model.browser.model.instance.rowNames[0..99] as rowName>
-						<input type="checkbox" name="rowselect_${rowName}" value="true" /> ${rowName}<br>
-					</#list>
-				</div>
-			</td>
-			<#else>
-			<td colspan="2">
-				<i>Less than 100 rows, showing all</i><br>
-				<div style="overflow: scroll; height: 300px;">
-					<#list model.browser.model.instance.rowNames as rowName>
-						<input type="checkbox" name="rowselect_${rowName}" value="true" /> ${rowName}<br>
-					</#list>
-				</div>
-			</td>
-			</#if>
-		</tr>
-	</table>
+	
+	<hr>
+	
+	<div id="filter1" <#if model.selectedFilterDiv != 'filter1'>style="display:none"</#if>>
+		<table>
+			<tr>
+				<td>
+					Filter by index:
+				</td>
+				<td>
+					<select name="add_filter_by_indexFILTER_FIELD">
+						<option value="row">${model.selectedData.targetType} index</option>
+						<option value="col">${model.selectedData.featureType} index</option>
+					</select>
+				</td>
+				<td>
+					<select name="add_filter_by_indexFILTER_OPERATOR">
+						<#list model.allOperators?keys as op><option value="${op}">${model.allOperators[op]}</option></#list>
+					</select>
+				</td>
+				<td>
+					<input type="text" size="8" name="add_filter_by_indexFILTER_VALUE" />
+				</td>
+				<td>
+					<input type="submit" value="Apply to visible" onclick="document.forms.${screen.name}.__action.value = 'filter_visible_by_index'; document.forms.${screen.name}.submit();">
+					<input type="submit" value="Apply to all" onclick="document.forms.${screen.name}.__action.value = 'filter_all_by_index'; document.forms.${screen.name}.submit();">
+				</td>
+			</tr>
+			<tr>
+		</table>
+	</div>
+	<div id="filter2" <#if model.selectedFilterDiv != 'filter2'>style="display:none"</#if>>
+		<table>
+			<tr>
+				<td>
+					Filter by ${model.selectedData.featureType?lower_case} values:
+				</td>
+				<td>
+					<select name="add_filter_by_col_valueFILTER_FIELD">
+						<#list browser.subMatrix.colNames as col><option value="${col}">${col}</option></#list>
+					</select>
+				</td>
+				<td>
+					<select name="add_filter_by_col_valueFILTER_OPERATOR">
+						<#list model.valueOperators?keys as op><option value="${op}">${model.valueOperators[op]}</option></#list>
+					</select>
+				</td>
+				<td>
+					<input type="text" size="8" name="add_filter_by_col_valueFILTER_VALUE" />
+				</td>
+				<td>
+					<input type="submit" value="Apply to visible" onclick="document.forms.${screen.name}.__action.value = 'filter_visible_by_col_value'; document.forms.${screen.name}.submit();">
+					<input type="submit" value="Apply to all" onclick="document.forms.${screen.name}.__action.value = 'filter_all_by_col_value'; document.forms.${screen.name}.submit();">
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="filter3" <#if model.selectedFilterDiv != 'filter3'>style="display:none"</#if>>
+		<table>
+			<tr>
+				<td>
+					Filter by ${model.selectedData.targetType?lower_case} values:
+				</td>
+				<td>
+					<select name="add_filter_by_row_valueFILTER_FIELD">
+						<#list browser.subMatrix.rowNames as row><option value="${row}">${row}</option></#list>
+					</select>
+				</td>
+				<td>
+					<select name="add_filter_by_row_valueFILTER_OPERATOR">
+						<#list model.valueOperators?keys as op><option value="${op}">${model.valueOperators[op]}</option></#list>
+					</select>
+				</td>
+				<td>
+					<input type="text" size="8" name="add_filter_by_row_valueFILTER_VALUE" />
+				</td>
+				<td>
+					<input type="submit" value="Apply to visible" onclick="document.forms.${screen.name}.__action.value = 'filter_visible_by_row_value'; document.forms.${screen.name}.submit();">
+					<input type="submit" value="Apply to all" onclick="document.forms.${screen.name}.__action.value = 'filter_all_by_row_value'; document.forms.${screen.name}.submit();">
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="filter4" <#if model.selectedFilterDiv != 'filter4'>style="display:none"</#if>>
+		<table>
+			<tr>
+				<td>
+					Filter by ${model.selectedData.featureType?lower_case} attributes:
+				</td>
+				<td>
+					<select name="add_filter_by_col_attrbFILTER_FIELD">
+						<#list model.colHeaderAttr as cha>
+							<option value="${cha}">${cha}</option>
+						</#list>
+					</select>
+				</td>
+				<td>
+					<select name="add_filter_by_col_attrbFILTER_OPERATOR">
+						<#list model.allOperators?keys as op><option value="${op}">${model.allOperators[op]}</option></#list>
+					</select>
+				</td>
+				<td>
+					<input type="text" size="8" name="add_filter_by_col_attrbFILTER_VALUE" />
+				</td>
+				<td>
+					<input type="submit" value="Apply to visible" onclick="document.forms.${screen.name}.__action.value = 'filter_visible_by_col_attrb'; document.forms.${screen.name}.submit();">
+					<input type="submit" value="Apply to all" onclick="document.forms.${screen.name}.__action.value = 'filter_all_by_col_attrb'; document.forms.${screen.name}.submit();">
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="filter5" <#if model.selectedFilterDiv != 'filter5'>style="display:none"</#if>>
+		<table>
+			<tr>
+				<td>
+					Filter by ${model.selectedData.targetType?lower_case} attributes:
+				</td>
+				<td>
+					<select name="add_filter_by_row_attrbFILTER_FIELD">
+						<#list model.rowHeaderAttr as rha>
+							<option value="${rha}">${rha}</option>
+						</#list>
+					</select>
+				</td>
+				<td>
+					<select name="add_filter_by_row_attrbFILTER_OPERATOR">
+						<#list model.allOperators?keys as op><option value="${op}">${model.allOperators[op]}</option></#list>
+					</select>
+				</td>
+				<td>
+					<input type="text" size="8" name="add_filter_by_row_attrbFILTER_VALUE" />
+				</td>
+				<td>
+					<input type="submit" value="Apply to visible" onclick="document.forms.${screen.name}.__action.value = 'filter_visible_by_row_attrb'; document.forms.${screen.name}.submit();">
+					<input type="submit" value="Apply to all" onclick="document.forms.${screen.name}.__action.value = 'filter_all_by_row_attrb'; document.forms.${screen.name}.submit();">
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="filter6" <#if model.selectedFilterDiv != 'filter6'>style="display:none"</#if>>
+		<table>
+			<tr>
+				<td>
+					Make R plot of size (pixels):
+				</td>
+				<td colspan="2">
+					<select name="r_plot_resolution">
+						<option <#if model.selectedWidth?exists && model.selectedWidth == 480>SELECTED</#if> value="480x640">480 x 640</option>
+						<option <#if model.selectedWidth?exists && model.selectedWidth == 600>SELECTED</#if> value="600x800">600 x 800</option>
+						<option <#if model.selectedWidth?exists && model.selectedWidth == 640>SELECTED</#if> value="640x480">640 x 480</option>
+						<option <#if model.selectedWidth?exists && model.selectedWidth == 768>SELECTED</#if> value="768x1024">768 x 1024</option>
+						<option <#if model.selectedWidth?exists && model.selectedWidth == 800>SELECTED</#if> value="800x600">800 x 600</option>
+						<option <#if model.selectedWidth?exists && model.selectedWidth == 1024>SELECTED</#if> value="1024x768">1024 x 768</option>
+						<option <#if model.selectedWidth?exists && model.selectedWidth == 1680>SELECTED</#if> value="1680x1050">1680 x 1050</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					&nbsp;
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<i>Regular plot of type:</i>
+				</td>
+				<td colspan="2">
+					<select name="r_plot_type">
+						<#--if model.selectedData.valueType == "Decimal"-->
+							<option <#if model.selectedPlotType?exists && model.selectedPlotType == "p">SELECTED</#if> value="p">Points</option>
+							<option <#if model.selectedPlotType?exists && model.selectedPlotType == "l">SELECTED</#if> value="l">Lines</option>
+							<option <#if model.selectedPlotType?exists && model.selectedPlotType == "o">SELECTED</#if> value="o">Overplotted</option>
+							<option <#if model.selectedPlotType?exists && model.selectedPlotType == "s">SELECTED</#if> value="s">Stairs</option>
+							<option <#if model.selectedPlotType?exists && model.selectedPlotType == "boxplot">SELECTED</#if> value="boxplot">Boxplot</option>
+						<#--if-->
+						<option <#if model.selectedPlotType?exists && model.selectedPlotType == "h">SELECTED</#if> value="h">Histogram</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<select name="r_plot_row_select">
+						<#list browser.subMatrix.rowNames as row><option value="${row}">${row}</option></#list>
+					</select>
+				</td>
+				<td>
+					<input type="submit" value="Plot full row" onclick="document.forms.${screen.name}.__action.value = 'r_plot_full_row'; document.forms.${screen.name}.submit();">
+				</td>
+				<td>
+					<input type="submit" value="Plot visible row" onclick="document.forms.${screen.name}.__action.value = 'r_plot_visible_row'; document.forms.${screen.name}.submit();">
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<select name="r_plot_col_select">
+						<#list browser.subMatrix.colNames as col><option value="${col}">${col}</option></#list>
+					</select>
+				</td>
+				<td>
+					<input type="submit" value="Plot full column" onclick="document.forms.${screen.name}.__action.value = 'r_plot_full_col'; document.forms.${screen.name}.submit();">
+				</td>
+				<td>
+					<input type="submit" value="Plot visible column" onclick="document.forms.${screen.name}.__action.value = 'r_plot_visible_col'; document.forms.${screen.name}.submit();">
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					&nbsp;
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<i>Heatmap plot with clustering on:</i>
+				</td>
+				<td colspan="2">
+					<select name="r_heatmap_type">
+						<option value="rowscols">Rows and cols</option>
+						<option value="rows">Just rows</option>
+						<option value="cols">Just cols</option>
+						<option value="none">None</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<i>(NA values are replaced with 0)</i>
+				</td>
+				<td>
+					<input type="submit" value="Plot full values" onclick="document.forms.${screen.name}.__action.value = 'r_plot_full_heatmap'; document.forms.${screen.name}.submit();">
+				</td>
+				<td>
+					<input type="submit" value="Plot visible values" onclick="document.forms.${screen.name}.__action.value = 'r_plot_visible_heatmap'; document.forms.${screen.name}.submit();">
+				</td>
+			</tr>
+		</table>
+		<#if model.tmpImgName?exists>
+		<br><table><tr><td><i>Click to enlarge</i></td></tr></table>
+		<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + model.tmpImgName + "></body></html>">
+		<a href="#" onclick="var generate = window.open('', '', 'width=${model.selectedWidth+50},height=${model.selectedHeight+50},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
+			<img src="tmpfile/${model.tmpImgName}" width="${model.selectedWidth/5}" height="${model.selectedHeight/5}">
+		</a>
+	</#if>
+	</div>
+	<div id="filter7" <#if model.selectedFilterDiv != 'filter7'>style="display:none"</#if>>
+		<table>
+			<tr>
+				<td>
+					Two-dimensional filtering:
+				</td>
+			</tr>
+			<tr>
+				<td>
+					&nbsp;
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Select all
+					${model.selectedData.targetType?lower_case}s
+					with at least
+					<select name="2d_filter_by_row_AMOUNT">
+						<#list 1..25 as a>
+						<option value="${a}">${a}</option>
+						</#list>
+					</select>
+					${model.selectedData.featureType?lower_case}(s)
+					having a value
+					<select name="2d_filter_by_row_FILTER_OPERATOR">
+						<#list model.allOperators?keys as op><option value="${op}">${model.allOperators[op]}</option></#list>
+					</select>
+					<input type="text" size="8" name="2d_filter_by_row_FILTER_VALUE" />
+				</td>
+			</tr>
+			<tr>
+				<td align="right">
+					<input type="submit" value="Apply to visible" onclick="document.forms.${screen.name}.__action.value = '2d_filter_visible_row'; document.forms.${screen.name}.submit();">
+					<input type="submit" value="Apply to all" onclick="document.forms.${screen.name}.__action.value = '2d_filter_all_row'; document.forms.${screen.name}.submit();">
+				</td>
+			</tr>
+			<tr>
+				<td>
+					&nbsp;
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Select all
+					${model.selectedData.featureType?lower_case}s
+					with at least
+					<select name="2d_filter_by_col_AMOUNT">
+						<#list 1..25 as a>
+						<option value="${a}">${a}</option>
+						</#list>
+					</select>
+					${model.selectedData.targetType?lower_case}(s)
+					having a value
+					<select name="2d_filter_by_col_FILTER_OPERATOR">
+						<#list model.allOperators?keys as op><option value="${op}">${model.allOperators[op]}</option></#list>
+					</select>
+					<input type="text" size="8" name="2d_filter_by_col_FILTER_VALUE" />
+					
+				</td>
+			</tr>
+			<tr>
+				<td align="right">
+					<input type="submit" value="Apply to visible" onclick="document.forms.${screen.name}.__action.value = '2d_filter_visible_col'; document.forms.${screen.name}.submit();">
+					<input type="submit" value="Apply to all" onclick="document.forms.${screen.name}.__action.value = '2d_filter_all_col'; document.forms.${screen.name}.submit();">
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="filter8" <#if model.selectedFilterDiv != 'filter8'>style="display:none"</#if>>
+		<table>
+			<tr>
+				<td colspan="2">
+					Select ${model.selectedData.featureType?lower_case}s to be displayed and click 'Apply selection':
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<br>
+					<input type="submit" value="Apply selection, preserve current rows" onclick="document.forms.${screen.name}.__action.value = 'select_preserverows_cols'; document.forms.${screen.name}.submit();">
+					<br><br>
+					<input type="submit" value="Apply selection, get all rows" onclick="document.forms.${screen.name}.__action.value = 'select_allrows_cols'; document.forms.${screen.name}.submit();">
+					<br><br>
+				</td>
+			</tr>
+			<tr>
+				<#if model.browser.model.instance.colNames?size gt 100>
+				<td>
+					<i>More than 100 columns, showing visible:</i><br>
+					<div style="overflow: scroll; height: 300px;">
+						<#list browser.subMatrix.colNames as colName>
+							<input type="checkbox" name="colselect_${colName}" value="true" /> ${colName}<br>
+						</#list>
+					</div>
+				</td>
+				<td>
+					<i>And the first 100:</i><br>
+					<div style="overflow: scroll; height: 300px;">
+						<#list model.browser.model.instance.colNames[0..99] as colName>
+							<input type="checkbox" name="colselect_${colName}" value="true" /> ${colName}<br>
+						</#list>
+					</div>
+				</td>
+				<#else>
+				<td colspan="2">
+					<i>Less than 100 columns, showing all</i><br>
+					<div style="overflow: scroll; height: 300px;">
+						<#list model.browser.model.instance.colNames as colName>
+							<input type="checkbox" name="colselect_${colName}" value="true" /> ${colName}<br>
+						</#list>
+					</div>
+				</td>
+				</#if>
+			</tr>
+		</table>
+	</div>
+	<div id="filter9" <#if model.selectedFilterDiv != 'filter9'>style="display:none"</#if>>
+		<table>
+			<tr>
+				<td colspan="2">
+					Select ${model.selectedData.targetType?lower_case}s to be displayed and click 'Apply selection':
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<br>
+					<input type="submit" value="Apply selection, preserve current columns" onclick="document.forms.${screen.name}.__action.value = 'select_preservecols_rows'; document.forms.${screen.name}.submit();">
+					<br><br>
+					<input type="submit" value="Apply selection, get all columns" onclick="document.forms.${screen.name}.__action.value = 'select_allcols_rows'; document.forms.${screen.name}.submit();">
+					<br><br>
+				</td>
+			</tr>
+			<tr>
+				<#if model.browser.model.instance.rowNames?size gt 100>
+				<td>
+					<i>More than 100 rows, showing visible:</i><br>
+					<div style="overflow: scroll; height: 300px;">
+						<#list browser.subMatrix.rowNames as rowName>
+							<input type="checkbox" name="rowselect_${rowName}" value="true" /> ${rowName}<br>
+						</#list>
+					</div>
+				</td>
+				<td>
+					<i>And the first 100:</i><br>
+					<div style="overflow: scroll; height: 300px;">
+						<#list model.browser.model.instance.rowNames[0..99] as rowName>
+							<input type="checkbox" name="rowselect_${rowName}" value="true" /> ${rowName}<br>
+						</#list>
+					</div>
+				</td>
+				<#else>
+				<td colspan="2">
+					<i>Less than 100 rows, showing all</i><br>
+					<div style="overflow: scroll; height: 300px;">
+						<#list model.browser.model.instance.rowNames as rowName>
+							<input type="checkbox" name="rowselect_${rowName}" value="true" /> ${rowName}<br>
+						</#list>
+					</div>
+				</td>
+				</#if>
+			</tr>
+		</table>
+	</div>
 </div>
 
 
