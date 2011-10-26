@@ -1,11 +1,11 @@
 <molgenis>
-	<form label="Browse data" name="Investigations" entity="Investigation"
+	<form label="Browse data" header="Navigate studies (investigations)" name="Investigations" entity="Investigation"
 		compact_view="name" group="biologist">
 		<menu name="InvestigationMenu">
 			<plugin name="Overview"
 				type="plugins.investigationoverview.InvestigationOverviewPlugin"
 				group="biologist" />
-			<form name="Datas" label="View data" entity="Data" compact_view="name"
+			<form name="Datas" label="View data" header="Navigate datasets" entity="Data" compact_view="name"
 				group="biologist">
 				<menu name="Select" group="biologist">
 					<plugin name="Manager" type="plugins.matrix.manager.MatrixManager"
