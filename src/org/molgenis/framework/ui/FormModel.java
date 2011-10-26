@@ -170,6 +170,9 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	/** List of actions of this screen */
 	private Map<String, ScreenCommand> commands = new LinkedHashMap<String, ScreenCommand>();
 
+	/** Optional custom header for the selected form screen */
+	private String header;
+	
 	/** entity csv reader */
 	private CsvToDatabase<E> csvReader;
 
@@ -712,6 +715,17 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	public List<E> getRecords()
 	{
 		return records;
+	}
+	
+	/** Getter/setter for optional custom header for the selected form screen */
+	public String getHeader()
+	{
+		return this.header;
+	}
+	
+	public void setHeader(String header)
+	{
+		this.header = header;
 	}
 
 	/**

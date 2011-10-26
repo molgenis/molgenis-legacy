@@ -69,6 +69,17 @@ public class Form extends UISchema
 	{
 		this.record = record;
 	}
+	
+	/** Getter/setter for optional custom header for the selected form screen */
+	public String getHeader()
+	{
+		return this.header;
+	}
+	
+	public void setHeader(String header)
+	{
+		this.header = header;
+	}
 
 	/**
 	 * 
@@ -183,6 +194,9 @@ public class Form extends UISchema
 	/** */
 	private boolean readonly;
 
+	/** Optional custom header for the selected form screen */
+	private String header;
+	
 	private boolean filter;
 	private String filterfield;
 	private String filtertype;

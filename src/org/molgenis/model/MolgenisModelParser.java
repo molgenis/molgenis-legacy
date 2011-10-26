@@ -967,6 +967,11 @@ public class MolgenisModelParser {
                 Form form = new Form(name, parent);
                 form.setLabel(label);
                 form.setGroup(group);
+                
+                /** Optional custom header for the selected form screen */
+                String header = element.getAttribute("header");
+                if(!header.isEmpty()) form.setHeader(header);
+                
                 form.setNamespace(namespace);
                 new_parent = form;
 
