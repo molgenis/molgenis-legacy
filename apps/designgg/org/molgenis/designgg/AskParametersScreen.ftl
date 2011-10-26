@@ -14,7 +14,7 @@
 		</#if>
 			<tr>
 				<td>
-				<fieldset><legend>1. Define analysis platform <a href="help.html"><img src="res/img/designgg/helpicon.png" height="24" align="top" border="0"/></a>
+				<fieldset><legend>1. Define analysis platform <a href="designgg/help.html"><img src="res/img/designgg/helpicon.png" height="24" align="top" border="0"/></a>
 				</legend>
 				<table width="100%">
 					<tr>
@@ -31,11 +31,11 @@
 			</tr>
 			<tr>
 				<td align="left">
-				<fieldset><legend>2. Define individual genotypes <a href="help.html"> <img src="res/img/designgg/helpicon.png" height="24" align="top" border="0"/></a>
+				<fieldset><legend>2. Define individual genotypes <a href="designgg/help.html"> <img src="res/img/designgg/helpicon.png" height="24" align="top" border="0"/></a>
 						  </legend><label><br/><i>Upload tab delimited file, e.g.</i></label> <img
 					src="res/img/designgg/rils150px.gif" valign="bottom"/>
 					<input type="file" name="genotype" style="display: inline" />
-					<a href="genotype_example.txt" style="text-decoration: none"> 
+					<a href="designgg/genotype_example.txt" style="text-decoration: none"> 
 						<p style="font-size:small;display: inline;color: black;">
 						&nbsp;&nbsp;&nbsp;<u>Example file</u>&nbsp;</p></a>
 					<script type="text/javascript">
@@ -162,7 +162,7 @@
 					}
 				</script>
 				<td align="center">
-				<fieldset><legend>3. Define experimental factors <a href="help.html"> <img src="res/img/designgg/helpicon.png" height="24" align="top" border="0"/></a>
+				<fieldset><legend>3. Define experimental factors <a href="designgg/help.html"> <img src="res/img/designgg/helpicon.png" height="24" align="top" border="0"/></a>
 						  </legend>
 				<table class="darkblue" cellspacing="0">
 					<tr>
@@ -211,7 +211,7 @@
 			</tr>
 			<tr>
 				<td>
-				<fieldset><legend>4. Set constraints <a href="help.html"><img src="res/img/designgg/helpicon.png" height="24" align="top" border="0"/></a></legend> 
+				<fieldset><legend>4. Set constraints <a href="designgg/help.html"><img src="res/img/designgg/helpicon.png" height="24" align="top" border="0"/></a></legend> 
 				<table>
 				<tr><td>
 				<input
@@ -225,8 +225,6 @@
 		</table>
 		<input type="submit" value="Optimize Experiment Design"	style="font: 14pt Arial">
 		<input type="submit" value="Test" name="test" style="font: 14pt Arial">
-		<div style="text-align: center;	font: menu;"><i>This tool was generated with help of the open source <a href="http://www.molgenis.org" target="_blank">MOLGENIS database generator</i></a>.
-	</div>
 		</td>
 		<td>
 		<div class="description">Understanding the functioning of biological systems is 
@@ -239,17 +237,17 @@
 		</p>
 		<p>Help:
 		<ul>
-		<li><a href="help.html" style="text-decoration: underline">manual of this web tool</a>
-		<li><a href="parameters.html" style="text-decoration: underline">explanation of designGG parameters</a> 
-		<li><a href="examples.html" ref="help.html" style="text-decoration: underline">example inputs/outputs</a>
-		<li><a href="references.html" style="text-decoration: underline">literature references</a> 
+		<li><a href="designgg/help.html" style="text-decoration: underline">manual of this web tool</a>
+		<li><a href="designgg/parameters.html" style="text-decoration: underline">explanation of designGG parameters</a> 
+		<li><a href="designgg/examples.html" ref="help.html" style="text-decoration: underline">example inputs/outputs</a>
+		<li><a href="designgg/references.html" style="text-decoration: underline">literature references</a> 
 		</ul>
 		<p/>		
-		Credits:<br/><i> Yang Li, Morris Swertz, Gonzalo Vera, Danny Arends, 
+		Credits:<br/><i> Yang Li, <a href='http://www.molgenis.org' target='_morris'>Morris Swertz</a>, Gonzalo Vera, <a href='http://www.dannyarends.nl' target='_danny'>Danny Arends</a>, 
 		Rainer Breitling, Ritsert Jansen.</i><br>
 		<br>
-		Download: <br/><a href="designGG_1.0-02.zip">designGG R package</a> and <a href="designGG.pdf">package manual</a><br/><br/> 
-		<center><img src="res/img/designgg/rug_logo.png"></center>
+		Download: <br/><a href="designgg/designGG_1.0-02.zip">designGG R package</a> and <a href="designgg/designGG.pdf">package manual</a><br/><br/> 
+		<center><a href="http://www.rug.nl" target="_rug"><img src="res/img/designgg/rug_logo.png"></a></center>
 		</div>
 		</td>
 	</tr>

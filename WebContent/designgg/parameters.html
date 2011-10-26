@@ -1,0 +1,43 @@
+<html>
+<head>
+<link href="designgg.css" rel="stylesheet" type="text/css" />
+<title>designGG : Parameters</title>
+</head>
+
+<body>
+<h2>Detailed description of each designGG parameter</h2>
+<center>
+<div style="text-align: center;"><input type="submit"
+		name="__action" value="back" onclick="window.location='../molgenis.do';" /></div>
+<table width="80%" cellspacing="0" border="1">
+<tr><td>
+<b>Arguments</b></td><td><b>Description</b></td><td><b>Possible value(s)</b>
+</td></tr>
+<tr><td>
+bTwoColorArray*</td><td>The type of platform</td><td>T(RUE) or F(ALSE) for the dual- or single-channel option, respectively. For example, F for one-color and T for two-color gene expression microarrays (the dual-channel option is also used for any other technology profiling pairs of samples)
+</td></tr>
+<tr><td>genotype*</td><td>Genotype information</td><td>A matrix of marker genotypes for each marker and each strain. The values can be numeric: "1" and "0" for two homozygous genotypes, respectively (optionally, "0.5" for  heterozygous allele). They can also be characters: "A"  "B" or "H" and "H" is for heterozygous allele; NA for missing data. The column names are strain names, such as "Strain 1", "Strain 2", etc. The row names are marker names, such as "C1M1", "C2M2", etc.
+</td></tr>
+<tr><td>nEnvFactors*</td><td>Number of environmental factors in the study</td><td>A numeric integer value between 1 and 3 which indicates the number of environmental factors to be studied. Experiments with more than three environmental factor are not recommended here since the power to estimate the high-order interactions is very limited for a realistic number of samples (several hundreds).
+</td></tr>
+<tr><td>nLevels*</td><td>Number of levels for each environmental factor </td><td>A numeric integer vector. For example, there are two different levels for two environmental factors under study, then we use nLevels &lt;- c( 2, 2 )
+</td></tr>
+<tr><td>levels</td><td>Level values for each environmental factor</td><td>A list which specifies the levels for each factor in the experiment. The element is a vector describing all levels of the environmental factor. In the given example, temperature levels are 16 and 24 and drug treatment levels are 5 and 10. The we use:
+levels &lt;- list( c(16, 24), c(5, 10) )
+</td></tr>
+<tr><td>nSlides**</td><td>Total number of slides available for the experiment.</td><td>A numeric integer value 
+</td></tr>
+<tr><td>nTuple**</td><td>Average number of strains to be assigned onto each condition</td><td>A numeric value which is larger than 1
+</td></tr>
+<tr><td>region</td><td>Genome region of biological interest</td><td>A numeric integer vector which indicates the markers of biological interest, for example those previously detected for phenotypic quantitative trait loci. The value is the marker index (i.e., the row number in the genotype data table), not the marker name.
+</td></tr>
+<tr><td>weights</td><td>The weights for estimating genetic and environmental factors, and their interaction terms</td><td>A numeric vector which indicates the parameters of biological interest. Higher weights correspond to higher interest, and the optimization is adjusted in such a way as to result in a higher accuracy of the estimate for the parameters with higher weight. Prior knowledge about expected effect sizes of interesting factors can also be incorporated as weight parameters for the algorithm. The weight is inversely proportional to the expected effect size of the corresponding parameter, if the same relative accuracy is intended. When there is no environmental perturbation (nEnvFactor = 0) weights is 1, as there is only one parameter of interest (genotype); When nEnvFactor = 1, weights = c( wQ, wF1, wQF1 ); When nEnvFactor = 2, weights = c( wQ, wF1, wF2, wQF1, wQF2, wF1F2, wQF1F2); When nEnvFactor = 3, weight = c( wQ, wF1, wF2, wF2, wQF1, wQF2, wQF3, wF1F2, wF1F3, wF2F3,  wQF1F2, wQF1F3, wQF2F3, wQF1F2F3 ). Here wQ represents the weight for genotype effect, wF1 represents the weight for environmental factor F1 effect and wQF1 represents the weight for interaction between genotype and F1 effect, etc.
+</td></tr>
+<tr><td>directory</td><td>Output file directory</td><td>The path where output files will be saved.
+</td></tr>
+<tr><td>fileName</td><td>Output file names</td><td>The name for output tables in CSV format to be produced.
+</td></tr></table>
+*Required input arguments from users<br/>
+**Alternative arguments: either of them is required 
+</center>
+</body>

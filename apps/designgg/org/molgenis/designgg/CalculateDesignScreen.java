@@ -170,7 +170,8 @@ public class CalculateDesignScreen extends PluginModel
 					{
 						 // 1. Set Individuals per Condition
 						 try{
-							 setIndPerCondition(readCsv(workingDir+"/myDesignGG_conditionDesign.csv"));
+							 setIndPerCondition(readCsv(new
+									 String(toByteArrayFromalyMap(workingDir.getAbsolutePath() + File.separator + "myDesignGG_conditionDesign.csv"))));
 		        			 Utils.setFile(workingDir+File.separator+ "myDesignGG_conditionDesign.csv", toByteArrayFromalyMap(workingDir.getAbsolutePath() + File.separator + "myDesignGG_conditionDesign.csv"));
 		        			 setIndXCondLink(workingDir.getName() + File.separator + "myDesignGG_conditionDesign.csv");
 						 }catch(Exception exp){
@@ -179,8 +180,8 @@ public class CalculateDesignScreen extends PluginModel
 
 						 // 2. Set Individuals per Slide
 						 try{
-						 setIndPerSlide(readCsv(workingDir+"/myDesignGG_arrayDesign.csv"));
-													
+						 setIndPerSlide(readCsv(new
+								 String(toByteArrayFromalyMap(workingDir.getAbsolutePath() + File.separator + "myDesignGG_arrayDesign.csv"))));							
 						 Utils.setFile(workingDir+File.separator+"myDesignGG_arrayDesign.csv",
 						 toByteArrayFromalyMap(workingDir.getAbsolutePath() + File.separator + "myDesignGG_arrayDesign.csv"));
 													

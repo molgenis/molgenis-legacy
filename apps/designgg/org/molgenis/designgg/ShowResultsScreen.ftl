@@ -8,7 +8,7 @@
 	<tr><td>
 	<fieldset><legend>Individuals per Slide</legend>
 	<#if screen.indXSlideLink?exists>
-	<a href="tmpfile/${screen.indXSlideLink}" style="font-size:70%;"><b>Download</b></a>
+	<a href="tmpfile/${screen.indXSlideLink}" style="font-size:90%;"><b>Download</b></a>
 	<div align="center">
 	&nbsp;
 	<@renderTable screen.indPerSlide/>
@@ -24,7 +24,7 @@
 	<fieldset><legend>Individuals per Condition</legend>
 	
 	<#if screen.indXCondLink?exists>
-	<a href="tmpfile/${screen.indXCondLink}" style="font-size:70%;"><b>Download</b></a>
+	<a href="tmpfile/${screen.indXCondLink}" style="font-size:90%;"><b>Download</b></a>
 	<div align="center">
 	&nbsp;
 	<@renderTable screen.indPerCondition/>
@@ -53,7 +53,7 @@
 	<tr><td>		
 	<fieldset><legend>Individuals per Condition</legend>
 	<#if screen.indXCondLink?exists>
-	<a href="tmpfile/${screen.indXCondLink}" style="font-size:70%;"><b>Download</b></a>
+	<a href="tmpfile/${screen.indXCondLink}" style="font-size:90%;"><b>Download</b></a>
 	<div align="center">
 	&nbsp;
 	<@renderTable screen.indPerCondition/>

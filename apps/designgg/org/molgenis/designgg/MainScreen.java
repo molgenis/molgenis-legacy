@@ -64,18 +64,30 @@ public class MainScreen extends PluginModel
 			screen3.setOutputR(			screen2.getOutputR());
 			return screen3;
 		}
-		if( screen1.isBReady2Go() ) 
-				//screen1.getDesignParameters() != null)
-		{
+		else if(screen1.isBReady2Go()){
 			this.selectedScreen = 2;
 			this.autoRefresh = 60;
 			screen2.setImagePath(this.getImagePath());
 			screen2.reload(null);
 			return screen2;
+		}else{
+		  this.selectedScreen = 1;
+		  this.autoRefresh = 0;
+		  return screen1;
 		}
-		this.selectedScreen = 1;
-		this.autoRefresh = 0;
-		return screen1;
+
+	}
+	
+	public void changeState(){
+		//returns the active screen. This depend on the status of the program
+		//if(screen2.getIndPerCondition() != null && screen2.getIndPerSlide() != null)
+		if( screen2.calculationDone() ){
+			this.selectedScreen = 3;
+		}else if(screen1.isBReady2Go()){
+			this.selectedScreen = 2;
+		}else{
+		  this.selectedScreen = 1;
+		}
 
 	}
 	

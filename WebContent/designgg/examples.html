@@ -1,0 +1,39 @@
+<html>
+<head>
+<link href="designgg.css" rel="stylesheet" type="text/css" />
+<title>designGG : Examples</title>
+</head>
+
+<body>
+<h2>Examples of data input/results</h2>
+<center>
+<div style="text-align: center;"><input type="submit"
+		name="__action" value="back" onclick="window.location='../molgenis.do';" /></div>
+<h3>Example input table of genotype data</h3>
+<table width="80%" cellspacing="0" border="1">
+<tr><td>&nbsp;	</td><td>Strain 1	</td><td>Strain 2	</td><td>Strain 3	</td><td>Strain 5	</td><td>Strain 6	</td><td>...</td></tr>
+<tr><td>C1M1	</td><td>A	</td><td>B	</td><td>B	</td><td>B	</td><td>A	</td><td>...</td></tr>
+<tr><td>C1M2	</td><td>A	</td><td>H	</td><td>A	</td><td>B	</td><td>A	</td><td>...</td></tr>
+<tr><td>C1M3	</td><td>A	</td><td>A	</td><td>B	</td><td>H	</td><td>A	</td><td>...</td></tr>
+<tr><td>...	</td><td>...	</td><td>...	</td><td>...	</td><td>...	</td><td>...	</td><td>...</td></tr>
+</table>
+<h3>Example result table of the allocation of strains to arrays</h3>
+This is applicable for technologies that profile samples in pairs, e.g. two-color microarrays.
+<table width="80%" cellspacing="0" border="1">
+<tr><td>&nbsp;	</td><td><b>Channel 1</b></td><td><b>Channel 2</b></td></tr>
+<tr><td><b>array 1</b>	</td><td>Strain 28	</td><td>Strain 92</td></tr>
+<tr><td><b>array 2</b>	</td><td>Strain 70	</td><td>Strain 47</td></tr>
+<tr><td><b>array 3</b>	</td><td>Strain 22	</td><td>Strain 89</td></tr>
+<tr><td><b>...</b></td><td>	...</td><td>	...</td></tr>
+</table>
+<h3>Example result table the allocation of strains to experimental conditions</h3>
+If the number of strains is smaller than the number of combinations of factors, the same strain can be used multiple times.
+<table width="80%" cellspacing="0" border="1">
+<tr><td>&nbsp;	</td><td><b>Temperature</b>	</td><td><b>Drug</b> 	</td><td colspan="5" align="center"><b>Selected Strains</b></td></tr>
+<tr><td><b>condition 1</b>	</td><td>16	</td><td>5	</td><td>Strain 28	</td><td>Strain 81	</td><td>Strain 18	</td><td>Strain 61	</td><td>...</td></tr>
+<tr><td><b>condition 2</b>	</td><td>24	</td><td>5	</td><td>Strain 70	</td><td>Strain 40	</td><td>Strain 83	</td><td>Strain 92	</td><td>...</td></tr>
+<tr><td><b>condition 3</b>	</td><td>24	</td><td>10	</td><td>Strain 14	</td><td>Strain 3	</td><td>Strain 89	</td><td>Strain 22	</td><td>...</td></tr>
+<tr><td><b>...</b>	</td><td>...	</td><td>...	</td><td>...	</td><td>...	</td><td>...	</td><td>...	</td><td>...</td></tr>
+</table>
+</center>
+</body>
