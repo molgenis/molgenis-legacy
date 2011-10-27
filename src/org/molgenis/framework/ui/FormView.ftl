@@ -17,8 +17,8 @@
         -->
 		</tr>
 		<tr>
-			<td width="33%" valign="middle" style="white-space: nowrap">				
-				<div class="formmenu">
+			<td width="33%" align="left" style="white-space: nowrap">				
+				<!--div class="formmenu" formmenu doesn't exist in menu.css, form_menu does but has style display:none, so it is hidden. WTF? -->
 					<table class="formmenutable">
 						<tr>			
 	<#list screen.getMenus() as menu>
@@ -38,9 +38,9 @@
 	</#list>
 						</tr>
 					</table>					
-				</div>			
+				<!--/div-->			
 	 		</td>				
-			<td class="form_title">
+			<td width="34%" class="form_title">
 				<img class="navigation_button" id="first_${screen.name}" src="generated-res/img/first.png" onclick="setInput('${screen.name}_form','_self','','${screen.name}','first','iframe'); document.forms.${screen.name}_form.submit();" title="go to first record"/>
 				<img class="navigation_button" id="prev_${screen.name}" src="generated-res/img/prev.png" onclick="setInput('${screen.name}_form','_self','','${screen.name}','prev','iframe'); document.forms.${screen.name}_form.submit();" title="go to previous record"/>
 	<#assign from = screen.offset + 1>
@@ -55,7 +55,7 @@
 				<img class="navigation_button" id="next_${screen.name}" src="generated-res/img/next.png" onclick="setInput('${screen.name}_form','_self','','${screen.name}','next','iframe'); document.forms.${screen.name}_form.submit()" title="go to next record"/>
 				<img class="navigation_button" id="last_${screen.name}" src="generated-res/img/last.png" onclick="setInput('${screen.name}_form','_self','','${screen.name}','last','iframe'); document.forms.${screen.name}_form.submit()" title="go to last record"/>	
 			</td>	
-			<td width="33%" valign="middle">
+			<td width="33%">
 				<!--to counter the menu size on the right-->
 			</td>											
 		</tr>		 				

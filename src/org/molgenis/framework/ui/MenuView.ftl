@@ -57,24 +57,26 @@
 <#--difficulty is nested menus, then the information should show the selection of subform-->
 
 <table class="leftNavigation">
-	<td>
-		<form name="${screen.getName()}" method="get" action="">
-			<input type="hidden" name="__target" value="">
-			<input type="hidden" name="select" value="">
-			<div class="leftNavigationMenu">
-				<@MenuScreenLeft name=screen.getName() screen=screen submenu="false" />
-			</div>
-		</form>	
-	</td>
-	<td valign="top" width="100%">
-		<@layout findFirstNonLeftMenu(screen)/>
-	
-		<#--if screen.getSelected().getViewName() == "MenuView" >
-			<@layout screen.getSelected().getSelected() />
-		<#else>
-			<@layout screen.getSelected() />
-		</#if-->
-	</td>
+	<tr>
+		<td>
+			<form name="${screen.getName()}" method="get" action="">
+				<input type="hidden" name="__target" value="">
+				<input type="hidden" name="select" value="">
+				<div class="leftNavigationMenu">
+					<@MenuScreenLeft name=screen.getName() screen=screen submenu="false" />
+				</div>
+			</form>	
+		</td>
+		<td valign="top" align="left" width="100%">
+			<@layout findFirstNonLeftMenu(screen)/>
+		
+			<#--if screen.getSelected().getViewName() == "MenuView" >
+				<@layout screen.getSelected().getSelected() />
+			<#else>
+				<@layout screen.getSelected() />
+			</#if-->
+		</td>
+	</tr>
 </table>
 
 <#elseif screen.position == "TOP_LEFT" || screen.position == "TOP_RIGHT">
