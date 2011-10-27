@@ -483,7 +483,7 @@ var molgenis_required = new Array(${required});
 				</div>
 			</#if>
 
-			<div class="screenbody">
+			<div class="screenbody" style="clear:both">
 				<div class="screenpadding">
 					<#if screen.mode.toString() == "editview">
 						<@editview screen />
