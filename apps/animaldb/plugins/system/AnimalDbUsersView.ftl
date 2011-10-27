@@ -99,7 +99,7 @@
 		<#else>
 			Currently none<br />
 		</#if>
-			<select name="shareread" id="shareread">
+			<select name="shareread_${i}" id="shareread_${i}">
 				<#list screen.users as moluser>
 					<option value="${moluser.id?string.computer}">${moluser.name}</option>
 				</#list>
@@ -112,7 +112,7 @@
 		<#else>
 			Currently none<br />
 		</#if>
-			<select name="sharewrite" id="sharewrite">
+			<select name="sharewrite_${i}" id="sharewrite_${i}">
 				<#list screen.users as moluser>
 					<option value="${moluser.id?string.computer}">${moluser.name}</option>
 				</#list>

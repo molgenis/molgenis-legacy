@@ -118,18 +118,18 @@ public class AnimalDbUsers extends PluginModel<Entity>
 			if (action.startsWith("ShareRead")) {
 				int invNr = Integer.parseInt(action.substring(9));
 				Investigation inv = investigations.get(invNr);
-				int userId = request.getInt("shareread");
+				int userId = request.getInt("shareread_" + invNr);
 				inv.setCanRead_Id(userId);
 				db.update(inv);
-				this.setMessages(new ScreenMessage("Investigation succesfully shared.", true));
+				this.setMessages(new ScreenMessage("Investigation successfully shared.", true));
 			}
 			if (action.startsWith("ShareWrite")) {
 				int invNr = Integer.parseInt(action.substring(10));
 				Investigation inv = investigations.get(invNr);
-				int userId = request.getInt("sharewrite");
+				int userId = request.getInt("sharewrite_" + invNr);
 				inv.setCanWrite_Id(userId);
 				db.update(inv);
-				this.setMessages(new ScreenMessage("Investigation succesfully shared.", true));
+				this.setMessages(new ScreenMessage("Investigation successfully shared.", true));
 			}
 			if (action.equals("Add")) {
 				

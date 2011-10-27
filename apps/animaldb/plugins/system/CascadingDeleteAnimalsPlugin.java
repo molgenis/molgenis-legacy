@@ -76,8 +76,7 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 	}
 
 	public void removeValues(Database db, CommonService ct, int targetId, 
-			List<ProtocolApplication> protocolApplicationList, List<Integer> investigationIds) 
-		throws DatabaseException, ParseException, IOException {
+			List<ProtocolApplication> protocolApplicationList, List<Integer> investigationIds) throws DatabaseException {
 		// Values related to the target itself
 		Query<ObservedValue> q = db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetId));
@@ -85,9 +84,15 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 		List<ObservedValue> valueList = q.find();
 		for (ObservedValue value : valueList) {
 			int paId = value.getProtocolApplication_Id();
-			ProtocolApplication pa = ct.getProtocolApplicationById(paId);
-			if (!protocolApplicationList.contains(pa)) {
-				protocolApplicationList.add(pa);
+			try {
+				ProtocolApplication pa = ct.getProtocolApplicationById(paId);
+				if (!protocolApplicationList.contains(pa)) {
+					protocolApplicationList.add(pa);
+				}
+			} catch (DatabaseException e) {
+				e.printStackTrace();
+			} catch (ParseException e) {
+				e.printStackTrace();
 			}
 		}
 		db.remove(valueList);
@@ -98,9 +103,15 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 		valueList = q.find();
 		for (ObservedValue value : valueList) {
 			int paId = value.getProtocolApplication_Id();
-			ProtocolApplication pa = ct.getProtocolApplicationById(paId);
-			if (!protocolApplicationList.contains(pa)) {
-				protocolApplicationList.add(pa);
+			try {
+				ProtocolApplication pa = ct.getProtocolApplicationById(paId);
+				if (!protocolApplicationList.contains(pa)) {
+					protocolApplicationList.add(pa);
+				}
+			} catch (DatabaseException e) {
+				e.printStackTrace();
+			} catch (ParseException e) {
+				e.printStackTrace();
 			}
 		}
 		db.remove(valueList);
