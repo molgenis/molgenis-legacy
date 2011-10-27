@@ -14,7 +14,10 @@
 		<link rel="stylesheet" style="text/css" type="text/css" href="generated-res/css/colors.css">
 		<link rel="stylesheet" style="text/css" type="text/css" href="generated-res/css/dateinput.css">
 		<link rel="stylesheet" style="text/css" type="text/css" href="generated-res/css/xrefinput.css">		
-		<link rel="stylesheet" style="text/css" type="text/css" href="generated-res/css/menu.css">		
+		<link rel="stylesheet" style="text/css" type="text/css" href="generated-res/css/menu.css">
+		<!--[if lt IE 8]>
+			<link rel="stylesheet" style="text/css" type="text/css" href="generated-res/css/data_ie.css">
+		<![endif]-->
 		<script src="generated-res/scripts/all.js" type="text/javascript" ></script>	
 		<script src="generated-res/scripts/popup.js" type="text/javascript" language="javascript"></script>	
 		<script src="generated-res/scripts/textinput.js" type="text/javascript" language="javascript"></script>		
