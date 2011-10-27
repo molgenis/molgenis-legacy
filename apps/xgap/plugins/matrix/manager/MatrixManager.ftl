@@ -260,16 +260,30 @@ targ2	val4	val5	val6</textarea>
 
 
 <div id="matrix_plugin_Actions" style="display:none">
-	<table>
-		<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter8');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter8'>checked</#if>>Select ${model.selectedData.featureType?lower_case}s (columns)</td></tr>
-		<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter9');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');" <#if model.selectedFilterDiv == 'filter9'>checked</#if>>Select ${model.selectedData.targetType?lower_case}s (rows)</td></tr>
-		<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter1'>checked</#if>>Filter on index (rows & columns)</td></tr>
-		<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter2');display('hide', 'filter1');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter2'>checked</#if>>Filter on ${model.selectedData.featureType?lower_case} values (columns)</td></tr>
-		<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter3');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter3'>checked</#if>>Filter on ${model.selectedData.targetType?lower_case} values (rows)</td></tr>
-		<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter4');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter4'>checked</#if>>Filter on ${model.selectedData.featureType?lower_case} attributes (columns)</td></tr>
-		<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter5');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter5'>checked</#if>>Filter on ${model.selectedData.targetType?lower_case} attributes (rows)</td></tr>
-		<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter7');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter7'>checked</#if>>Filter twodimensionally (rows & columns)</td></tr>
-		<tr><td><input name="filterSelect" type="radio" onclick="display('show', 'filter6');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter6'>checked</#if>>Make a plot/heatmap with R</td></tr>
+	<table cellpadding="10">
+		<tr>
+			<td>
+				Select:<br>
+				<nobr><input name="filterSelect" type="radio" onclick="display('show', 'filter8');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter8'>checked</#if>><b>C</b> ${model.selectedData.featureType?lower_case}s</nobr><br>
+				<nobr><input name="filterSelect" type="radio" onclick="display('show', 'filter9');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');" <#if model.selectedFilterDiv == 'filter9'>checked</#if>><b>R</b> ${model.selectedData.targetType?lower_case}s</nobr>
+			</td>
+			<td>
+				Filter on values:<br>
+				<nobr><input name="filterSelect" type="radio" onclick="display('show', 'filter2');display('hide', 'filter1');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter2'>checked</#if>><b>C</b> ${model.selectedData.featureType?lower_case}s</nobr><br>
+				<nobr><input name="filterSelect" type="radio" onclick="display('show', 'filter3');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter3'>checked</#if>><b>R</b> ${model.selectedData.targetType?lower_case}s</nobr>
+			</td>
+			<td>
+				Filter on attributes:<br>
+				<nobr><input name="filterSelect" type="radio" onclick="display('show', 'filter4');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter4'>checked</#if>><b>C</b> ${model.selectedData.featureType?lower_case}s</nobr><br>
+				<nobr><input name="filterSelect" type="radio" onclick="display('show', 'filter5');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter5'>checked</#if>><b>R</b> ${model.selectedData.targetType?lower_case}s</nobr>
+			</td>
+			<td>
+				Special:<br>
+				<nobr><input name="filterSelect" type="radio" onclick="display('show', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter1'>checked</#if>><b>RC</b> Filter on index</nobr><br>
+				<nobr><input name="filterSelect" type="radio" onclick="display('show', 'filter7');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter6');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter7'>checked</#if>><b>RC</b> Filter on two dimensions</nobr><br>
+				<nobr><input name="filterSelect" type="radio" onclick="display('show', 'filter6');display('hide', 'filter1');display('hide', 'filter2');display('hide', 'filter3');display('hide', 'filter4');display('hide', 'filter5');display('hide', 'filter7');display('hide', 'filter8');display('hide', 'filter9');" <#if model.selectedFilterDiv == 'filter6'>checked</#if>>Graph / heatmap with R</nobr>
+			</td>
+		</tr>
 	</table>
 	
 	<hr>
