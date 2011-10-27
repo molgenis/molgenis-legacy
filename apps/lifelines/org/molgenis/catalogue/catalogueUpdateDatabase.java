@@ -3,6 +3,7 @@ package org.molgenis.catalogue;
 
 import org.molgenis.Molgenis;
 import org.molgenis.auth.MolgenisUser;
+import org.molgenis.auth.Person;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.security.SimpleLogin;
 
@@ -23,10 +24,12 @@ public class catalogueUpdateDatabase
 			u.setName("biobank");
 			u.setPassword("biobank");
 			u.setSuperuser(true);
-			u.setFirstname("Despoina");
-			u.setLastname("Antonakaki");
-			u.setEmailaddress("despoina.antonakaki@gmail.com");
 			db.add(u);
+			Person p = new Person();
+			p.setFirstName("Despoina");
+			p.setLastName("Antonakaki");
+			p.setEmail("despoina.antonakaki@gmail.com");
+			db.add(p);
 		}
 		
 		//TODO : do batch import

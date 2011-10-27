@@ -45,7 +45,5 @@
 		<plugin name="BbmriContact" type="plugins.contact.BbmriContactPlugin" label="Contact" />
 		<plugin name="HtmlTreePlugin" type="plugins.HtmlTree.HtmlTreePlugin" label="HtmlTree" />
 		<plugin name="JqueryTreePlugin" type="plugins.JqueryTree.JqueryTreePlugin" label="JqueryTree" />
-
-		
 	</menu>
 </molgenis>

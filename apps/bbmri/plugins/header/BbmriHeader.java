@@ -52,19 +52,14 @@ public class BbmriHeader extends PluginModel<Entity>
 	public void handleRequest(Database db, Tuple request) throws Exception
 	{
 		if ("doLogout".equals(request.getAction())) {
-
 				getLogin().logout(db);
 		}
-		
-		
-
 	}
 
 	@Override
 	public void reload(Database db)
 	{
 		this.setUserLogin();
-
 	}
 	
 	@Override

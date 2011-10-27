@@ -19,16 +19,20 @@
 				ontology.</description>
 		</entity>
 		
+		<entity name="BiobankContact" extends="Person">
+			<description>This is the values of the coordinators.</description>
+		</entity>
+		
 		<entity name="Biobank" implements="Identifiable,Authorizable" decorator="decorators.BiobankDecorator">
 			<description>This describes a panel (or: cohort) of individuals for which data was collected within the biobank.</description>
-			<field name="Cohort" nillable="false" description="the name of the Cohort/biobank [in investigation the name is unique], For example: Netherlands Twin Registry" />
-<!-- 		<field name="Cohort" nillable="false" description="the name of the Cohort/biobank [in investigation the name is unique], For example: Netherlands Twin Registry" unique="true"/>   -->
+			<field name="Cohort" nillable="false" description="the name of the Cohort/biobank [in investigation the name is unique], For example: Netherlands Twin Registry" /><!--  unique="true"/>   -->
 			<field name="Acronym" nillable="true" description="Acronym for this biobank. For example: NTR" label="Acronym" />
 			<field name="Category" type="xref" xref_entity="BiobankCategory" description="A. Core Biobanks, DNA available, B. Supporting biobanks (DNA not yet available)" />
 			<field name="SubCategory" type="xref" xref_entity="BiobankCategory" description="For example: Population, development, birth and growth" />
 			<field name="Topic" type="mref" nillable="true" xref_entity="BiobankTopic" />
 			<field name="Institutes" nillable="true" type="string" label="Institutions" description="Institute that are custodian of this biobankPanel (found in xls as Institutions). For example: VU" />
-			<field name="Coordinators" type="mref" nillable="true" xref_entity="Person" mref_name="BiobankContact" description="One or more contact persons for this biobank" />
+			<!--  <field name="Coordinators" type="mref" nillable="true" xref_entity="Person" mref_name="BiobankContact" description="One or more contact persons for this biobank" /> -->
+			<field name="Coordinators" type="mref" nillable="true" xref_entity="BiobankContact" description="One or more contact persons for this biobank" />
 			<field name="PanelSize" label="Current n=" nillable="true" description="Current n= in xls" />
 			<field name="Biodata" type="mref" nillable="true" xref_entity="BiobankDataType" description="Biodata in xls" />
 			<field name="GwaDataNum" label="GWA data n=" type="string" nillable="true" description="GWA data n=" />
