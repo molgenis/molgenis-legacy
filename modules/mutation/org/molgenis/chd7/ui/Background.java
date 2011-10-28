@@ -31,8 +31,10 @@ public class Background extends EasyPluginController<BackgroundModel>
 	{
 		try
 		{
-			MutationService mutationService = MutationService.getInstance(db);
-			PatientService patientService   = PatientService.getInstance(db);
+			MutationService mutationService = new MutationService();
+			mutationService.setDatabase(db);
+			PatientService patientService   = new PatientService();
+			patientService.setDatabase(db);
 			
 			this.getModel().setNumPathogenicMutations(mutationService.getNumMutationsByPathogenicity("pathogenic"));
 			this.getModel().setNumPathogenicPatients(patientService.getNumPatientsByPathogenicity("pathogenic"));

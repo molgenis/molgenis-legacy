@@ -15,7 +15,6 @@ import org.molgenis.mutation.service.MutationService;
 import org.molgenis.mutation.service.PatientService;
 import org.molgenis.mutation.vo.BackgroundSummaryVO;
 
-
 public class Background extends EasyPluginController<BackgroundModel>
 {
 
@@ -36,8 +35,10 @@ public class Background extends EasyPluginController<BackgroundModel>
 	{
 		try
 		{
-			this.mutationService = MutationService.getInstance(db);
-			this.patientService  = PatientService.getInstance(db);
+			this.mutationService = new MutationService();
+			this.mutationService.setDatabase(db);
+			this.patientService  = new PatientService();
+			this.patientService.setDatabase(db);
 			this.getModel().setNumMutations(this.mutationService.getNumMutations());
 			this.getModel().setNumPatients(this.patientService.getNumPatients());
 			this.getModel().setNumPatientsUnpub(this.patientService.getNumUnpublishedPatients());

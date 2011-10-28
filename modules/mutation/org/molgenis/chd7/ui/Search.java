@@ -37,8 +37,10 @@ public class Search extends SearchPlugin
 
 		try
 		{
-			MutationService mutationService = MutationService.getInstance(db);
-			PatientService patientService   = PatientService.getInstance(db);
+			MutationService mutationService = new MutationService();
+			mutationService.setDatabase(db);
+			PatientService patientService   = new PatientService();
+			patientService.setDatabase(db);
 	
 			StrBuilder text = new StrBuilder();
 			text.appendln("<h3>");

@@ -7,19 +7,12 @@
 
 package org.molgenis.col7a1.ui;
 
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-//import org.molgenis.mutation.FrontEndElement;
 import org.molgenis.mutation.ui.search.SearchModel;
 import org.molgenis.mutation.ui.search.SearchPlugin;
-import org.molgenis.mutation.vo.PatientSearchCriteriaVO;
-import org.molgenis.mutation.vo.PatientSummaryVO;
-import org.molgenis.util.Tuple;
 
 public class Search extends SearchPlugin
 {
