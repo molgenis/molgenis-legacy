@@ -94,7 +94,7 @@
 	<c:choose>
 	<c:when test="${fn:length(current.publicationVOList) > 0}">
 	<c:forEach var="publicationVO" items="${current.publicationVOList}">
-	<a href="${current.pubmedURL}${publicationVO.pubmedId}" title="${publicationVO.title}" target="_new"><c:out value="PubMed ${publicationVO.pubmedId}"/></a><br/>
+	<a href="${current.pubmedURL}${publicationVO.pubmedId}" title="${publicationVO.title}" target="_new"><c:out value="${publicationVO.name}"/></a><br/>
 	</c:forEach>
 	</c:when>
 	<c:otherwise>
@@ -143,7 +143,7 @@
 </display:column>
 <display:column media="csv excel pdf" title="PubMed ID">
 <c:forEach var="publicationVO" items="${current.publicationVOList}">
-	<c:out value="PubMed ${publicationVO.pubmedId}" escapeXml="false"/>;
+	<c:out value="PM:${publicationVO.pubmedId}" escapeXml="false"/>;
 </c:forEach>
 </display:column>
 
