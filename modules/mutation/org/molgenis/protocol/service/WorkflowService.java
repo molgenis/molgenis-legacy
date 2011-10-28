@@ -16,24 +16,14 @@ import org.molgenis.util.Tuple;
 
 public class WorkflowService implements Serializable
 {
-	private static final long serialVersionUID     = -262659898183648343L;
-	private Database db                            = null;
-	private static WorkflowService workflowService = null;
+	private static final long serialVersionUID = -262659898183648343L;
+	private Database db                        = null;
 
-	// private constructor, use singleton instance
-	private WorkflowService(Database db)
+	public void setDatabase(Database db)
 	{
 		this.db = db;
 	}
 
-	public static WorkflowService getInstance(Database db)
-	{
-		//if (workflowService == null)
-		workflowService = new WorkflowService(db);
-
-		return workflowService;
-	}
-	
 	/**
 	 * Find workflow elements in the order they have been specified inside a workflow
 	 * @param workflow
@@ -48,9 +38,11 @@ public class WorkflowService implements Serializable
 		List<Integer> weIds          = new ArrayList<Integer>();
 		List<WorkflowElement> elements;
 
+		String sql                   = "SELECT DISTINCT we.id FROM WorkflowElement we JOIN WorkflowElement_Workflow wew ON (we.id = wew.WorkflowElement) LEFT JOIN WorkflowElement_PreviousSteps wep ON (we.id = wep.WorkflowElement) WHERE wep.WorkflowElement IS NULL AND wew.Workflow = " + workflow.getId();
+
 		if (this.db instanceof JDBCDatabase)
 		{
-			List<Tuple> ids = ((JDBCDatabase) this.db).sql("SELECT DISTINCT we.id FROM WorkflowElement we JOIN WorkflowElement_Workflow wew ON (we.id = wew.WorkflowElement) LEFT JOIN WorkflowElement_PreviousSteps wep ON (we.id = wep.WorkflowElement) WHERE wep.WorkflowElement IS NULL AND wew.Workflow = " + workflow.getId());
+			List<Tuple> ids = ((JDBCDatabase) this.db).sql(sql);
 			
 			for (Tuple entry : ids)
 				weIds.add(entry.getInt(0));
@@ -58,7 +50,7 @@ public class WorkflowService implements Serializable
 		}
 		else if (this.db instanceof JpaDatabase)
 		{
-			weIds = this.db.getEntityManager().createNativeQuery("SELECT DISTINCT we.id FROM WorkflowElement we JOIN WorkflowElement_Workflow wew ON (we.id = wew.WorkflowElement) LEFT JOIN WorkflowElement_PreviousSteps wep ON (we.id = wep.WorkflowElement) WHERE wep.WorkflowElement IS NULL AND wew.Workflow = " + workflow.getId()).getResultList();
+			weIds = this.db.getEntityManager().createNativeQuery(sql).getResultList();
 		}
 		else
 			throw new UnsupportedOperationException("Unsupported database mapper");
@@ -89,16 +81,18 @@ public class WorkflowService implements Serializable
 		{
 			List<Integer> weIds = new ArrayList<Integer>();
 
+			String sql          = "SELECT WorkflowElement FROM WorkflowElement_PreviousSteps WHERE PreviousSteps = " + element.getId();
+
 			if (this.db instanceof JDBCDatabase)
 			{
-				List<Tuple> ids = ((JDBCDatabase) this.db).sql("SELECT WorkflowElement FROM WorkflowElement_PreviousSteps WHERE PreviousSteps = " + element.getId());
+				List<Tuple> ids = ((JDBCDatabase) this.db).sql(sql);
 				
 				for (Tuple entry : ids)
 					weIds.add(entry.getInt(0));
 			}
 			else if (this.db instanceof JpaDatabase)
 			{
-				weIds = this.db.getEntityManager().createNativeQuery("SELECT WorkflowElement FROM WorkflowElement_PreviousSteps WHERE PreviousSteps = " + element.getId()).getResultList();
+				weIds = this.db.getEntityManager().createNativeQuery(sql).getResultList();
 			}
 			else
 				throw new UnsupportedOperationException("Unsupported database mapper");
