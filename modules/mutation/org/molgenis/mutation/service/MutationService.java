@@ -1,12 +1,10 @@
 package org.molgenis.mutation.service;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -37,7 +35,6 @@ import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.Patient;
 import org.molgenis.mutation.MutationPhenotype;
 import org.molgenis.mutation.ProteinDomain;
-import org.molgenis.mutation.util.MutationComparator;
 import org.molgenis.mutation.util.SequenceUtils;
 import org.molgenis.mutation.vo.ExonSearchCriteriaVO;
 import org.molgenis.mutation.vo.ExonSummaryVO;
@@ -56,22 +53,12 @@ public class MutationService implements Serializable
 {
 	private static final long serialVersionUID        = -5234460093223923754L;
 	private Database db                               = null;
-	private static MutationService mutationService    = null;
 	private HashMap<Integer, MutationSummaryVO> cache = new HashMap<Integer, MutationSummaryVO>();
 	private static final transient Logger logger      = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());
 
-	// private constructor, use singleton instance
-	private MutationService(Database db)
+	public void setDatabase(Database db)
 	{
 		this.db = db;
-	}
-	
-	public static MutationService getInstance(Database db)
-	{
-		//if (mutationService == null)
-		mutationService = new MutationService(db);
-		
-		return mutationService;
 	}
 
 	public List<MutationSummaryVO> findMutations(MutationSearchCriteriaVO criteria) throws DatabaseException
@@ -90,7 +77,8 @@ public class MutationService implements Serializable
 		
 		if (mutations.size() > 0)
 		{
-			PatientService patientService = PatientService.getInstance(this.db);
+			PatientService patientService = new PatientService();
+			patientService.setDatabase(db);
 			List<PatientSummaryVO> result = new ArrayList<PatientSummaryVO>();
 
 			for (Mutation mutation : mutations)
@@ -476,16 +464,6 @@ public class MutationService implements Serializable
 		return result;
 	}
 
-	public Mutation findMutation(Integer id) throws DatabaseException
-	{
-		Mutation mutation = this.db.findById(Mutation.class, id);
-		
-		if (mutation == null)
-			mutation = new Mutation();
-
-		return mutation;
-	}
-
 	private MutationSummaryVO findPrevMutation(Mutation mutation) throws DatabaseException
 	{
 		List<Mutation> mutations = this.db.query(Mutation.class).lt(Mutation.CDNA_POSITION, mutation.getCdna_Position()).sortDESC(Mutation.CDNA_POSITION).limit(1).find();
@@ -504,17 +482,6 @@ public class MutationService implements Serializable
 			return this.toMutationSummaryVO(mutations.get(0));
 		else
 			return this.toMutationSummaryVO(mutation);
-	}
-
-	/**
-	 * Get all mutations sorted by their position
-	 * @return mutations
-	 * @throws java.text.ParseException 
-	 * @throws DatabaseException 
-	 */
-	public List<Mutation> getAllMutations() throws DatabaseException, java.text.ParseException
-	{
-		return this.db.query(Mutation.class).sortASC(Mutation.CDNA_POSITION).find();
 	}
 
 	public MutationSummaryVO getFirstMutation() throws DatabaseException
@@ -537,23 +504,6 @@ public class MutationService implements Serializable
 	public MutationSummaryVO getLastMutation() throws DatabaseException
 	{
 		return this.toMutationSummaryVO(this.db.query(Mutation.class).sortDESC(Mutation.CDNA_POSITION).limit(1).find().get(0));
-	}
-
-	/**
-	 * Get the biggest identifier without the leading 'P'
-	 * @return biggest identifier without the leading 'P'
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-	public Integer getMaxIdentifier() throws DatabaseException, ParseException
-	{
-		List<Mutation> mutations = this.db.query(Mutation.class).find();
-		
-		if (CollectionUtils.isEmpty(mutations))
-			return 0;
-
-		Collections.sort(mutations, new MutationComparator());
-		return Integer.valueOf(mutations.get(mutations.size() - 1).getIdentifier().substring(1));
 	}
 
 	/**
@@ -619,49 +569,6 @@ public class MutationService implements Serializable
 		}
 		else
 			throw new DatabaseException("Unsupported database mapper");
-	}
-
-	/**
-	 * Insert mutation and set primary key
-	 * @param mutation
-	 * @return number of mutations inserted
-	 * @throws IOException 
-	 * @throws Exception 
-	 */
-	public int insert(MutationUploadVO mutationUploadVO) throws Exception
-	{
-		int count = 0;
-		try
-		{
-			// Exons are never inserted via mutations, just select
-			logger.debug(">>> exon==" + mutationUploadVO.getExonId());
-			mutationUploadVO.getMutation().setExon(this.db.findById(Exon.class, mutationUploadVO.getExonId()));
-
-			// Genes are never inserted via mutations, just select
-			mutationUploadVO.getMutation().setGene(this.db.query(MutationGene.class).equals(MutationGene.SYMBOL, mutationUploadVO.getGeneSymbol()).find().get(0));
-
-			// Insert mutation and set primary key
-			count = this.db.add(mutationUploadVO.getMutation());
-
-			List<Mutation> mutations = this.db.findByExample(mutationUploadVO.getMutation());
-			if (mutations.size() == 1)
-			{
-				mutationUploadVO.getMutation().setId(mutations.get(0).getId());
-			}
-
-			return count;
-		}
-		catch (Exception e)
-		{
-			logger.debug(">>> insert: e==" + e.toString());
-//			try {
-//				this.db.rollbackTx();
-//			} catch (DatabaseException e1) {
-//				e1.printStackTrace();
-//			}
-//			throw e;
-		}
-		return count;
 	}
 
 	/**
@@ -823,7 +730,8 @@ public class MutationService implements Serializable
 			criteria.setIsIntron(false);
 //		logger.debug(">>> assignValues: vor findExons");
 		
-		ExonService exonService = ExonService.getInstance(this.db);
+		ExonService exonService = new ExonService();
+		exonService.setDatabase(db);
 //		logger.debug(">>> position==" + mutationUploadVO.getMutation().getPosition() + ", criteria==" + criteria.toString());
 		List<ExonSummaryVO> exonSummaryVOs = exonService.findExons(criteria);
 //		logger.debug(">>> assignValues: nach findExons: exonSummaryVOs==" + exonSummaryVOs.size());

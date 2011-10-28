@@ -3,7 +3,6 @@ package org.molgenis.mutation.vo;
 import java.io.Serializable;
 import java.util.List;
 
-import org.molgenis.mutation.Exon;
 import org.molgenis.mutation.ui.html.ExonIntronPanel;
 import org.molgenis.mutation.ui.html.GenePanel;
 import org.molgenis.mutation.ui.html.ProteinDomainPanel;
@@ -14,7 +13,7 @@ public class MBrowseVO implements Serializable
 	private static final long serialVersionUID = -8585452283787495693L;
 	List<ProteinDomainSummaryVO> proteinDomainList;
 	ProteinDomainSummaryVO proteinDomainSummaryVO;
-	List<Exon> exonList;
+	List<ExonSummaryVO> exonList;
 	ExonSummaryVO exonSummaryVO;
 	GenePanel genePanel                   = new GenePanel();
 	ProteinDomainPanel proteinDomainPanel = new ProteinDomainPanel();
@@ -34,10 +33,10 @@ public class MBrowseVO implements Serializable
 			ProteinDomainSummaryVO proteinDomainSummaryVO) {
 		this.proteinDomainSummaryVO = proteinDomainSummaryVO;
 	}
-	public List<Exon> getExonList() {
+	public List<ExonSummaryVO> getExonList() {
 		return exonList;
 	}
-	public void setExonList(List<Exon> exonList) {
+	public void setExonList(List<ExonSummaryVO> exonList) {
 		this.exonList = exonList;
 	}
 	public ExonSummaryVO getExonSummaryVO() {

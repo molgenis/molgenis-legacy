@@ -1,11 +1,9 @@
 package org.molgenis.mutation.service;
 
-import java.io.File;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -16,17 +14,12 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import jxl.Workbook;
-
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.core.Publication;
 import org.molgenis.core.service.PublicationService;
 import org.molgenis.core.vo.PublicationVO;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.Database.DatabaseAction;
-import org.molgenis.framework.db.CsvToDatabase;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.jdbc.JDBCDatabase;
@@ -34,43 +27,28 @@ import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.MutationPhenotype;
 import org.molgenis.mutation.Patient;
-import org.molgenis.mutation.excel.UploadBatchExcelReader;
-import org.molgenis.mutation.util.PatientComparator;
 import org.molgenis.mutation.vo.MutationSummaryVO;
 import org.molgenis.mutation.vo.ObservedValueVO;
 import org.molgenis.mutation.vo.PatientSearchCriteriaVO;
 import org.molgenis.mutation.vo.PatientSummaryVO;
 import org.molgenis.mutation.vo.PhenotypeDetailsVO;
-import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.protocol.service.WorkflowService;
 import org.molgenis.submission.Submission;
-import org.molgenis.util.Entity;
-import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
 public class PatientService implements Serializable
 {
 	private static final long serialVersionUID       = -5343468595949980106L;
 	private Database db                              = null;
-	private static PatientService patientService     = null;
 	private HashMap<Integer, PatientSummaryVO> cache = new HashMap<Integer, PatientSummaryVO>();
 
-	// private constructor, use singleton instance
-	private PatientService(Database db)
+	public void setDatabase(Database db)
 	{
 		this.db = db;
-	}
-
-	public static PatientService getInstance(Database db)
-	{
-		//if (patientService == null)
-		patientService = new PatientService(db);
-
-		return patientService;
 	}
 
 	public List<PatientSummaryVO> findPatients(PatientSearchCriteriaVO criteria) throws DatabaseException, java.text.ParseException
@@ -166,10 +144,10 @@ public class PatientService implements Serializable
 				patientCriteria.add(cb.equal(patient.get("submission"), criteria.getSubmissionId()));
 			if (criteria.getUserId() != null)
 			{
-				Join<Patient, Submission> submission  = patient.join("submission", JoinType.LEFT);
-				Join<Patient, MolgenisUser> submitter = submission.join("submitter", JoinType.LEFT);
+				Join<Patient, Submission> submission   = patient.join("submission", JoinType.LEFT);
+				Join<Patient, MolgenisUser> submitters = submission.join("submitters", JoinType.LEFT);
 
-				patientCriteria.add(cb.equal(submitter.get("id"), criteria.getUserId()));
+				patientCriteria.add(cb.equal(submitters.get("id"), criteria.getUserId()));
 			}
 
 			if (patientCriteria.size() > 0)
@@ -183,11 +161,6 @@ public class PatientService implements Serializable
 		}
 		else
 			throw new DatabaseException("Unsupported database mapper");
-	}
-
-	public PatientSummaryVO findPatientById(Integer id) throws Exception
-	{
-		return this.toPatientSummaryVO(this.db.findById(Patient.class, id));
 	}
 
 	public PhenotypeDetailsVO findPhenotypeDetails(String pid) throws DatabaseException, ParseException
@@ -215,7 +188,8 @@ public class PatientService implements Serializable
 			// Use only first workflow
 			// TODO: What to do in case more than one workflow was found???
 			
-			WorkflowService workflowService        = WorkflowService.getInstance(this.db);
+			WorkflowService workflowService        = new WorkflowService();
+			workflowService.setDatabase(db);
 			List<WorkflowElement> workflowElements = workflowService.findWorkflowElements(workflows.get(0));
 
 			if (CollectionUtils.isEmpty(workflowElements))
@@ -260,7 +234,8 @@ public class PatientService implements Serializable
 			// Use only first workflow
 			// TODO: What to do in case more than one workflow was found???
 			
-			WorkflowService workflowService        = WorkflowService.getInstance(this.db);
+			WorkflowService workflowService        = new WorkflowService();
+			workflowService.setDatabase(this.db);
 			List<WorkflowElement> workflowElements = workflowService.findWorkflowElements(workflows.get(0));
 
 			if (CollectionUtils.isEmpty(workflowElements))
@@ -349,73 +324,6 @@ public class PatientService implements Serializable
 			throw new DatabaseException("Unsupported database mapper");
 	}
 
-	/**
-	 * Get the biggest identifier without the leading 'P'
-	 * 
-	 * @return biggest identifier without the leading 'P'
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-	public Integer getMaxIdentifier() throws DatabaseException, ParseException {
-		List<Patient> patients = this.db.query(Patient.class).find();
-
-		if (CollectionUtils.isEmpty(patients)) {
-			return 0;
-		}
-
-		Collections.sort(patients, new PatientComparator());
-		return Integer.valueOf(patients.get(patients.size() - 1).getIdentifier().substring(1));
-	}
-
-	/**
-	 * Insert batch of patients. To be refactored.
-	 * 
-	 * @param file
-	 * @return number of patients inserted
-	 * @throws Exception
-	 */
-	public int insertBatch(File file, CsvToDatabase<Entity> uploadBatchCsvReader) throws Exception {
-		try {
-			db.beginTx();
-			Workbook workbook             = Workbook.getWorkbook(file);
-			UploadBatchExcelReader reader = new UploadBatchExcelReader();
-			reader.setUploadBatchCsvReader(uploadBatchCsvReader);
-			int count                     = reader.importSheet(db, workbook.getSheet("Patients"), new SimpleTuple(), DatabaseAction.ADD_IGNORE_EXISTING, "");
-			db.commitTx();
-			return count;
-		} catch (Exception e) {
-			db.rollbackTx();
-			throw e;
-		}
-	}
-/*
-	public void insert(PublicationVO publicationVO) throws DatabaseException, IOException
-	{
-		if (publicationVO == null)
-			return;
-		
-		OntologyTerm ontologyTerm = new OntologyTerm();
-		ontologyTerm.setDefinition("PubMed ID");
-		ontologyTerm.setName(publicationVO.getPubmed());
-		
-		List<OntologyTerm> terms  = this.db.findByExample(ontologyTerm);
-		
-		if (terms.size() != 1)
-			this.db.add(ontologyTerm);
-		else
-			ontologyTerm = terms.get(0);
-
-		Publication publication   = new Publication();
-		publication.setName(publicationVO.getName());
-		publication.setTitle(publicationVO.getTitle());
-		publication.setPubmedID(ontologyTerm);
-		
-		List<Publication> publications = this.db.findByExample(publication);
-
-		if (publications.size() != 1)
-			this.db.add(publication);
-	}
-*/
 //	public void insertObservedValues(PatientSummaryVO patientSummaryVO) throws DatabaseException, ParseException, IOException
 //	{
 //		if (observedValueVO == null)
@@ -440,286 +348,8 @@ public class PatientService implements Serializable
 //		this.db.add(observedValue);
 //	}
 
-	/**
-	 * Insert patient and set primary key
-	 * 
-	 * @param patient
-	 * @return number of patients inserted
-	 * @throws Exception
-	 */
-	public void insert(PatientSummaryVO patientSummaryVO) throws Exception
-	{
-		if (patientSummaryVO == null)
-			return;
 
-		Patient patient = this.toPatient(patientSummaryVO);
 
-		// submissions are never inserted via patients, just select newest
-		// by date
-		//TODO: Do we still need that???
-//		List<Submission> submissions = this.db.query(Submission.class).equals(Submission.DATE_,	patientSummaryVO.getSubmissionDate()).sortDESC("id").find();
-//
-//		if (submissions.size() > 0)
-//		{
-//			patientSummaryVO.getPatient().setSubmission(submissions.get(0));
-//		}
-
-		// mutations are never inserted via patients, just select
-		int i = 1;
-		for (MutationSummaryVO mutationSummaryVO : patientSummaryVO.getVariantSummaryVOList())
-		{
-			List<Mutation> mutations = this.db.query(Mutation.class).equals(Mutation.CDNA_NOTATION, mutationSummaryVO.getCdnaNotation()).find();
-
-//			System.out.println(">>> Queried: " + mutationSummaryVO.getCdnaNotation() + ", found: " + mutations.size());
-			if (mutations.size() != 1)
-				throw new Exception("ERROR: No mutation found for " + mutationSummaryVO.getCdnaNotation());
-
-			if (i == 1)
-				patient.setMutation1_Id(mutations.get(0).getId());
-			else
-				patient.setMutation2_Id(mutations.get(0).getId());
-			
-			i++;
-		}
-
-		// phenotypes are never inserted via patients, just select
-		if (patientSummaryVO.getPhenotypeId() == null)
-		{
-			List<MutationPhenotype> phenotypes = this.db.query(MutationPhenotype.class).equals(MutationPhenotype.MAJORTYPE, patientSummaryVO.getPhenotypeMajor()).equals(MutationPhenotype.SUBTYPE, patientSummaryVO.getPhenotypeSub()).find();
-
-			if (phenotypes.size() != 1)
-				throw new Exception("No phenotype found for " + patientSummaryVO.getPhenotypeMajor() + ", " + patientSummaryVO.getPhenotypeSub());
-
-			patientSummaryVO.setPhenotypeId(phenotypes.get(0).getId());
-		}
-		patient.setPhenotype_Id(patientSummaryVO.getPhenotypeId());
-
-		// Publications are never inserted via patients, just select
-		if (CollectionUtils.isNotEmpty(patientSummaryVO.getPublicationVOList()))
-		{
-			List<Integer> publicationIds = new ArrayList<Integer>();
-
-			for (PublicationVO publicationVO : patientSummaryVO.getPublicationVOList())
-			{
-				if (publicationVO.getPubmedId() == null)
-					continue;
-
-				List<Publication> publications = this.db.query(Publication.class).equals(Publication.PUBMEDID_NAME,	publicationVO.getPubmedId()).find();
-
-				if (publications.size() != 1)
-					throw new Exception("No publication found for Pubmed ID " + publicationVO.getPubmedId());
-					
-				publicationIds.add(publications.get(0).getId());
-			}
-				
-			patient.setPatientreferences_Id(publicationIds);
-		}
-		patient.setSubmission_Id(1);
-		// Insert patient
-		this.db.add(patient);
-		
-		// Insert ObservedValues
-		
-		for (ObservedValueVO observedValueVO : patientSummaryVO.getObservedValueVOList())
-		{
-			if (observedValueVO == null)
-				return;
-			
-			List<ObservableFeature> features = this.db.query(ObservableFeature.class).equals(ObservableFeature.NAME, observedValueVO.getFeatureName()).find();
-			
-			if (features.size() != 1)
-				return;
-			
-			List<Patient> patients = this.db.query(Patient.class).equals(Patient.IDENTIFIER, observedValueVO.getTargetName()).find();
-			
-			if (patients.size() != 1)
-				return;
-	
-			ObservedValue observedValue = new ObservedValue();
-			observedValue.setFeature(features.get(0));
-			observedValue.setInvestigation(1);
-			observedValue.setTarget(patient.getId());
-			observedValue.setValue(observedValueVO.getValue());
-			
-			this.db.add(observedValue);
-		}
-	}
-
-	public String exportCsv() throws DatabaseException, ParseException
-	{
-		List<Patient> patients = this.db.query(Patient.class).equals(Patient.CONSENT, "publication").sortASC(Patient.IDENTIFIER).find();
-		
-		String result          = "";
-
-		List<String> header = this.exportHeader();
-		result += StringUtils.join(header, ",") + "\n";
-
-		for (Patient patient : patients)
-		{
-			List<String> columns = this.exportRow(patient);
-			result += StringUtils.join(columns, ",") + "\n";
-		}
-		
-		return result;
-	}
-	
-	public List<String> exportHeader()
-	{
-		List<String> row = new ArrayList<String>();
-		row.add("Identifier");
-		row.add("Local patient number");
-		row.add("Patient Consent");
-		row.add("Phenotype major type");
-		row.add("Phenotype Subtype");
-		row.add("cDNA change_1");
-		row.add("Protein change_1");
-		row.add("Exon/Intron_1");
-		row.add("Consequence_1");
-		row.add("Inheritance_1");
-		row.add("cDNA change_2");
-		row.add("Protein change_2");
-		row.add("Exon/Intron_2");
-		row.add("Consequence_2");
-		row.add("Inheritance_2");
-		row.add("IF LH7:2");
-		row.add("IF Retention COLVII");
-		row.add("EM AF_no");
-		row.add("EM AF_structure");
-		row.add("EM_Retention COLVII");
-		row.add("MMP1 Allele1(rs1799750)");
-		row.add("MMP1 Allele2 (rs1799750)");
-		row.add("Reference");
-		row.add("PubMed ID");
-		row.add("Gender");
-		row.add("Age");
-		row.add("Ethnicity");
-		row.add("Deceased");
-		row.add("Cause of death");
-		row.add("Blistering");
-		row.add("Location");
-		row.add("Hands");
-		row.add("Feet");
-		row.add("Arms");
-		row.add("Legs");
-		row.add("Proximal body flexures");
-		row.add("Trunk");
-		row.add("Mucosa");
-		row.add("Skin atrophy");
-		row.add("Milia");
-		row.add("Nail dystrophy");
-		row.add("Albopapuloid papules");
-		row.add("Pruritic papules");
-		row.add("Alopecia");
-		row.add("Squamous cell carcinoma(s)");
-		row.add("Revertant skin patch(es)");
-		row.add("Mechanism");
-		row.add("Flexion contractures");
-		row.add("Pseudosyndactyly (hands)");
-		row.add("Microstomia");
-		row.add("Ankyloglossia");
-		row.add("Swallowing difficulties/ dysphagia/ oesophagus strictures");
-		row.add("Growth retardation");
-		row.add("Anaemia");
-		row.add("Renal failure");
-		row.add("Dilated cardiomyopathy");
-		row.add("Other");
-		
-		return row;
-	}
-
-	public List<String> exportRow(Patient patient) throws DatabaseException, ParseException
-	{
-		List<String> row = new ArrayList<String>();
-		row.add(patient.getIdentifier());
-		row.add(patient.getNumber());
-		row.add(patient.getConsent());
-		MutationPhenotype phenotype = this.db.findById(MutationPhenotype.class, patient.getPhenotype_Id());
-		row.add(phenotype.getMajortype());
-		row.add(phenotype.getSubtype());
-		Mutation mutation1          = this.db.findById(Mutation.class, patient.getMutation1_Id());
-		row.add(mutation1.getCdna_Notation());
-		row.add(mutation1.getAa_Notation());
-		row.add(mutation1.getExon_Name());
-		row.add(mutation1.getConsequence());
-		row.add(mutation1.getInheritance());
-		Mutation mutation2          = this.db.findById(Mutation.class, patient.getMutation2_Id());
-		if (mutation2 != null)
-		{
-			row.add(mutation2.getCdna_Notation());
-			row.add(mutation2.getAa_Notation());
-			row.add(mutation2.getExon_Name());
-			row.add(mutation2.getConsequence());
-			row.add(mutation2.getInheritance());
-		}
-		else
-		{
-			row.add(patient.getMutation2remark());
-			row.add("");
-			row.add("");
-			row.add("");
-			row.add("");
-		}
-//		List<I_F> ifs               = this.db.query(I_F.class).equals(I_F.PATIENT, patient.getId()).find();
-//		row.add(ifs.get(0).getValue());
-//		row.add(ifs.get(0).getRetention());
-//
-//		List<E_M> ems               = this.db.query(E_M.class).equals(E_M.PATIENT, patient.getId()).find();
-//		row.add(ems.get(0).getNumber());
-//		row.add(ems.get(0).getAppearance());
-//		row.add(ems.get(0).getRetention());
-
-		row.add(patient.getMmp1_Allele1());
-		row.add(patient.getMmp1_Allele2());
-
-		List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPatientreferences_Id()).find();
-		List<String> publicationNames  = new ArrayList<String>();
-		List<String> publicationPudmed = new ArrayList<String>();
-		for (Publication publication : publications)
-		{
-			publicationNames.add(publication.getName());
-			publicationPudmed.add(publication.getPubmedID_Name());
-		}
-		row.add(StringUtils.join(publicationNames, ";"));
-		row.add(StringUtils.join(publicationPudmed, ";"));
-
-		row.add(patient.getGender());
-		row.add(patient.getAge());
-		row.add(patient.getEthnicity());
-		row.add(patient.getDeceased());
-		row.add(patient.getDeath_Cause());
-
-//		PhenotypeDetails phenotypeDetails = this.db.findById(PhenotypeDetails.class, patient.getPhenotype_Details_Id());
-//		row.add(phenotypeDetails.getBlistering());
-//		row.add(phenotypeDetails.getLocation());
-//		row.add(phenotypeDetails.getHands());
-//		row.add(phenotypeDetails.getFeet());
-//		row.add(phenotypeDetails.getArms());
-//		row.add(phenotypeDetails.getLegs());
-//		row.add(phenotypeDetails.getProximal_Body_Flexures());
-//		row.add(phenotypeDetails.getTrunk());
-//		row.add(phenotypeDetails.getMucous_Membranes());
-//		row.add(phenotypeDetails.getSkin_Atrophy());
-//		row.add(phenotypeDetails.getMilia());
-//		row.add(phenotypeDetails.getNail_Dystrophy());
-//		row.add(phenotypeDetails.getAlbopapuloid_Papules());
-//		row.add(phenotypeDetails.getPruritic_Papules());
-//		row.add(phenotypeDetails.getAlopecia());
-//		row.add(phenotypeDetails.getSquamous_Cell_Carcinomas());
-//		row.add(phenotypeDetails.getRevertant_Skin_Patch());
-//		row.add(phenotypeDetails.getMechanism());
-//		row.add(phenotypeDetails.getFlexion_Contractures());
-//		row.add(phenotypeDetails.getPseudosyndactyly_Hands());
-//		row.add(phenotypeDetails.getMicrostomia());
-//		row.add(phenotypeDetails.getAnkyloglossia());
-//		row.add(phenotypeDetails.getDysphagia());
-//		row.add(phenotypeDetails.getGrowth_Retardation());
-//		row.add(phenotypeDetails.getAnemia());
-//		row.add(phenotypeDetails.getRenal_Failure());
-//		row.add(phenotypeDetails.getDilated_Cardiomyopathy());
-//		row.add(phenotypeDetails.getOther());
-
-		return row;
-	}
 
 //	public void setDefaults(PatientSummaryVO patientSummaryVO)
 //			throws DatabaseException, ParseException, MalformedURLException,
@@ -759,37 +389,9 @@ public class PatientService implements Serializable
 //		}
 //	}
 
-	private Patient toPatient(PatientSummaryVO patientSummaryVO) throws DatabaseException, ParseException
-	{
-		Patient patient = new Patient();
 
-		patient.setIdentifier(patientSummaryVO.getPatientIdentifier());
-		patient.setName(patientSummaryVO.getPatientName());
-		patient.setNumber(patientSummaryVO.getPatientNumber());
-		patient.setConsent(patientSummaryVO.getPatientConsent());
-		patient.setAge(patientSummaryVO.getPatientAge());
-		patient.setGender(patientSummaryVO.getPatientGender());
-		patient.setEthnicity(patientSummaryVO.getPatientEthnicity());
-		patient.setDeceased(patientSummaryVO.getPatientDeceased());
-		patient.setDeath_Cause(patientSummaryVO.getPatientDeathCause());
-		patient.setMmp1_Allele1(patientSummaryVO.getPatientMmp1Allele1());
-		patient.setMmp1_Allele2(patientSummaryVO.getPatientMmp1Allele2());
-		if (StringUtils.isNotEmpty(patientSummaryVO.getVariantComment()))
-			patient.setMutation2remark(patientSummaryVO.getVariantComment());
 
-//		patientSummaryVO.setPatientMaterialList(patient.getMaterial_Name());
-//			
-//		Submission submission  = this.db.findById(Submission.class, patient.getSubmission_Id());
-//		MolgenisUser submitter = this.db.findById(MolgenisUser.class, submission.getSubmitters_Id().get(0));
-//		patientSummaryVO.setSubmitterDepartment(submitter.getDepartment());
-//		patientSummaryVO.setSubmitterInstitute(submitter.getInstitute());
-//		patientSummaryVO.setSubmitterCity(submitter.getCity());
-//		patientSummaryVO.setSubmitterCountry(submitter.getCountry());
-
-		return patient;
-	}
-
-	private PatientSummaryVO toPatientSummaryVO(Patient patient) throws DatabaseException, ParseException
+	private PatientSummaryVO toPatientSummaryVO(Patient patient) throws DatabaseException
 	{
 		if (this.cache.containsKey(patient.getId()))
 		{
@@ -883,7 +485,7 @@ public class PatientService implements Serializable
 		return patientSummaryVO;
 	}
 
-	private List<PatientSummaryVO> toPatientSummaryVOList(List<Patient> patients) throws DatabaseException, ParseException
+	private List<PatientSummaryVO> toPatientSummaryVOList(List<Patient> patients) throws DatabaseException
 	{
 		List<PatientSummaryVO> result = new ArrayList<PatientSummaryVO>();
 

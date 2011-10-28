@@ -3,21 +3,22 @@ package org.molgenis.mutation.ui.html;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.mutation.Exon;
+import org.molgenis.mutation.vo.ExonSummaryVO;
 
 /*
  * A panel that prints clickable exon-intron boxes
  */
 public class ExonIntronPanel extends HtmlInput
 {
-	private List<Exon> exons     = new ArrayList<Exon>();
-	private boolean showNames    = true;
-	private boolean showExons    = true;
-	private boolean showIntrons  = true;
-	private boolean showPosition = true;
-	private String screenName    = "";
+	private List<ExonSummaryVO> exons = new ArrayList<ExonSummaryVO>();
+	private boolean showNames         = true;
+	private boolean showExons         = true;
+	private boolean showIntrons       = true;
+	private boolean showPosition      = true;
+	private String baseUrl            = "";
 
 	@Override
 	public String toHtml()
@@ -32,9 +33,9 @@ public class ExonIntronPanel extends HtmlInput
 		{
 			result.appendln("<tr>");
 
-			for (Exon exon : exons)
+			for (ExonSummaryVO exonSummaryVO : exons)
 			{
-				result.appendln("<td id=\"exon" + exon.getId() + "\" width=\"" + exon.getLength() + "px\" align=\"center\">" + exon.getName() + "</td>");
+				result.appendln("<td id=\"exon" + exonSummaryVO.getId() + "\" width=\"" + exonSummaryVO.getLength() + "px\" align=\"center\">" + exonSummaryVO.getName() + "</td>");
 			}
 	
 			result.appendln("</tr>");
@@ -43,17 +44,18 @@ public class ExonIntronPanel extends HtmlInput
 		// second row: boxes
 		result.appendln("<tr>");
 		
-		for (Exon exon : exons)
+		for (ExonSummaryVO exonSummaryVO : exons)
 		{
-			String url   = "molgenis.do?__target=" + this.screenName + "&select=" + this.screenName + "&__action=showExon&exon_id=" + exon.getId() + "#results";
-			String title = "Go to " + exon.getName();
+			String url     = this.baseUrl;
+			url = StringUtils.replace(url, "exon_id=", "exon_id=" + exonSummaryVO.getId());
+			String title = "Go to " + exonSummaryVO.getName();
 
-			if (exon.getIsIntron())
+			if (exonSummaryVO.getIsIntron())
 			{
 				if (this.showIntrons)
 				{
 					result.appendln("<td>");
-					result.append("<a href=\"" + url + "\" alt=\"[]\" title=\"" + title + "\"><img src=\"res/img/col7a1/intron.png\" width=\"" + exon.getLength() + "px\" height=\"30px\"/></a>");
+					result.append("<a href=\"" + url + "\" alt=\"[]\" title=\"" + title + "\"><img src=\"res/img/col7a1/intron.png\" width=\"" + exonSummaryVO.getLength() + "px\" height=\"30px\"/></a>");
 					result.appendln("</td>");
 				}
 			}
@@ -62,7 +64,7 @@ public class ExonIntronPanel extends HtmlInput
 				if (this.showExons)
 				{
 					result.appendln("<td>");
-					result.append("<div class=\"pd" + exon.getProteinDomain_Id().get(0) + "\" style=\"display: block; width: " + exon.getLength() + "px; height: 26px; border-width:2px; border-style:solid;\">");
+					result.append("<div class=\"pd" + exonSummaryVO.getDomainId() + "\" style=\"display: block; width: " + exonSummaryVO.getLength() + "px; height: 26px; border-width:2px; border-style:solid;\">");
 					result.append("<a class=\"clickable_block\" href=\"" + url + "\" alt=\"[]\" title=\"" + title + "\"></a>");
 					result.append("</div>");
 					result.appendln("</td>");
@@ -77,9 +79,9 @@ public class ExonIntronPanel extends HtmlInput
 		{
 			result.appendln("<tr>");
 			
-			for (Exon exon : exons)
+			for (ExonSummaryVO exonSummaryVO : exons)
 			{
-				result.appendln("<td width=\"" + exon.getLength() + "px\" align=\"left\">" + (!exon.getIsIntron() ? "<span style=\"font-size:6pt;\">" + exon.getCdna_Position() + "</span>" : "") + "</td>");
+				result.appendln("<td width=\"" + exonSummaryVO.getLength() + "px\" align=\"left\">" + (!exonSummaryVO.getIsIntron() ? "<span style=\"font-size:6pt;\">" + exonSummaryVO.getCdnaPosition() + "</span>" : "") + "</td>");
 			}
 	
 			result.appendln("</tr>");
@@ -91,7 +93,7 @@ public class ExonIntronPanel extends HtmlInput
 		return result.toString();
 	}
 
-	public void setExons(List<Exon> exons)
+	public void setExons(List<ExonSummaryVO> exons)
 	{
 		this.exons = exons;
 	}
@@ -113,8 +115,8 @@ public class ExonIntronPanel extends HtmlInput
 		this.showPosition = showPosition;
 	}
 
-	public void setScreenName(String screenName)
+	public void setBaseUrl(String baseUrl)
 	{
-		this.screenName = screenName;
+		this.baseUrl = baseUrl;
 	}
 }

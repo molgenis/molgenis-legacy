@@ -8,6 +8,12 @@ public class ExonSummaryVO implements Serializable
 {
 	private static final long serialVersionUID = 419557906940623900L;
 	Exon exon;
+	Integer id;
+	String name;
+	Boolean isIntron;
+	Integer length;
+	Integer cdnaPosition;
+	Integer domainId;
 	String orientation;
 	Integer numFullAminoAcids;
 	Integer numPartAminoAcids;
@@ -27,6 +33,42 @@ public class ExonSummaryVO implements Serializable
 	}
 	public void setExon(Exon exon) {
 		this.exon = exon;
+	}
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public Boolean getIsIntron() {
+		return isIntron;
+	}
+	public void setIsIntron(Boolean isIntron) {
+		this.isIntron = isIntron;
+	}
+	public Integer getLength() {
+		return length;
+	}
+	public void setLength(Integer length) {
+		this.length = length;
+	}
+	public Integer getCdnaPosition() {
+		return cdnaPosition;
+	}
+	public void setCdnaPosition(Integer cdnaPosition) {
+		this.cdnaPosition = cdnaPosition;
+	}
+	public Integer getDomainId() {
+		return domainId;
+	}
+	public void setDomainId(Integer domainId) {
+		this.domainId = domainId;
 	}
 	public String getOrientation() {
 		return orientation;

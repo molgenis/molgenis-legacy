@@ -5,7 +5,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.EasyPluginController;
-import org.molgenis.mutation.service.PatientService;
+import org.molgenis.mutation.service.ExportService;
 
 /**
  * ExportController takes care of all user requests and application logic.
@@ -28,8 +28,9 @@ public class Export extends EasyPluginController<ExportModel>
 
 	@Override
 	public void reload(Database db) throws Exception
-	{	
-		PatientService patientService = PatientService.getInstance(db);
-		this.getModel().setCsv(patientService.exportCsv());
+	{
+		ExportService exportService = new ExportService();
+		exportService.setDatabase(db);
+		this.getModel().setCsv(exportService.exportCsv());
 	}
 }

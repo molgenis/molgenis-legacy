@@ -3,6 +3,7 @@ package org.molgenis.mutation.ui.html;
 import java.util.Formatter;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.mutation.Exon;
@@ -19,7 +20,7 @@ public class SequencePanel extends HtmlInput
 	boolean showNuclSequence  = true;
 	boolean showAaSequence    = true;
 	boolean showBasePositions = true;
-	private String screenName = "bla";
+	private String baseUrl    = "";
 
 	public SequencePanel()
 	{
@@ -59,7 +60,8 @@ public class SequencePanel extends HtmlInput
 				boolean hasMutation = false;
 				for (MutationSummaryVO mutationSummaryVO : mutationSummaryVOs)
 				{
-					String url     = "molgenis.do?__target=" + this.screenName + "&select=" + this.screenName + "&__action=showMutation&mid=" + mutationSummaryVO.getIdentifier() + "#results";
+					String url     = this.baseUrl;
+					url = StringUtils.replace(url, "mid=", "mid=" + mutationSummaryVO.getIdentifier());
 					String tooltip = mutationSummaryVO.getNiceNotation();
 					if (mutationSummaryVO.getGdnaPosition() == i)
 					{
@@ -135,9 +137,9 @@ public class SequencePanel extends HtmlInput
 		this.showBasePositions = showBasePositions;
 	}
 
-	public void setScreenName(String screenName)
+	public void setBaseUrl(String baseUrl)
 	{
-		this.screenName = screenName;
+		this.baseUrl = baseUrl;
 	}
 
 	private String printBasePositions(Exon exon)

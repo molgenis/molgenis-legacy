@@ -2,6 +2,7 @@ package org.molgenis.mutation.ui.html;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.mutation.Exon;
@@ -13,7 +14,7 @@ import org.molgenis.mutation.vo.ProteinDomainSummaryVO;
 public class ProteinDomainPanel extends HtmlInput
 {
 	private ProteinDomainSummaryVO proteinDomainSummaryVO;
-	private String screenName = "";
+	private String baseUrl = "";
 
 	public ProteinDomainPanel()
 	{
@@ -44,7 +45,10 @@ public class ProteinDomainPanel extends HtmlInput
 			int width = exon.getLength() / 10;
 			result.appendln("<td>");
 			result.appendln("<div class=\"pd" + this.proteinDomainSummaryVO.getProteinDomain().getId() + "\" style=\"display: block; width: " + width + "px; height: 26px;\">");
-			result.appendln("<a class=\"clickable_block\" href=\"molgenis.do?__target=" + this.screenName + "&select=" + this.screenName + "&__action=showProteinDomain&domain_id=" + proteinDomainSummaryVO.getProteinDomain().getId() + "&snpbool=1#exon" + exon.getId() + "\" alt=\"" + exon.getName() + "\" title=\"" + exon.getName() + "\"></a>");
+			String url = this.baseUrl;
+			url = StringUtils.replace(url, "domain_id=", "domain_id=" + proteinDomainSummaryVO.getProteinDomain().getId());
+			url = StringUtils.replace(url, "#exon", "#exon" + exon.getId());
+			result.appendln("<a class=\"clickable_block\" href=\"" + url + "\" alt=\"" + exon.getName() + "\" title=\"" + exon.getName() + "\"></a>");
 			result.appendln("</div>");
 			result.appendln("</td>");
 		}
@@ -60,9 +64,9 @@ public class ProteinDomainPanel extends HtmlInput
 		this.proteinDomainSummaryVO = proteinDomainSummaryVO;
 	}
 
-	public void setScreenName(String screenName)
+	public void setBaseUrl(String baseUrl)
 	{
-		this.screenName = screenName;
+		this.baseUrl = baseUrl;
 	}
 
 }

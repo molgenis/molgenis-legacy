@@ -12,7 +12,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -28,22 +27,20 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.SelectInput;
-import org.molgenis.mutation.Exon;
 import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.MutationGene;
 import org.molgenis.mutation.MutationPhenotype;
 import org.molgenis.mutation.Patient;
 import org.molgenis.mutation.service.ExonService;
 import org.molgenis.mutation.service.MutationService;
-import org.molgenis.mutation.service.PatientService;
-import org.molgenis.mutation.service.PhenotypeService;
+import org.molgenis.mutation.service.SearchService;
+import org.molgenis.mutation.service.UploadService;
 import org.molgenis.mutation.ui.upload.form.MutationForm;
 import org.molgenis.mutation.ui.upload.form.PatientForm;
+import org.molgenis.mutation.vo.ExonSummaryVO;
 import org.molgenis.mutation.vo.MutationSummaryVO;
 import org.molgenis.mutation.vo.MutationUploadVO;
-import org.molgenis.mutation.vo.ObservedValueVO;
 import org.molgenis.mutation.vo.PatientSummaryVO;
-import org.molgenis.mutation.vo.PhenotypeDetailsVO;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
@@ -56,10 +53,6 @@ public abstract class Upload extends PluginModel<Entity>
 	private static final transient Logger logger = Logger.getLogger(Upload.class.getSimpleName());
 	protected String GENENAME;
 	private String action = "newBatch";
-	private ExonService exonService;
-	private MutationService mutationService;
-	private PatientService patientService;
-	private PhenotypeService phenotypeService;
 	private MutationUploadVO mutationUploadVO;
 	private PatientSummaryVO patientSummaryVO;
 	private int referer ; // referer for patient.mutation{1,2} => 1 or 2, 0 initially
@@ -76,17 +69,18 @@ public abstract class Upload extends PluginModel<Entity>
 		super(name, parent);
 	}
 
-	private void initMutationUploadVO() throws DatabaseException
+	private void initMutationUploadVO(Database db) throws DatabaseException
 	{
 		this.mutationUploadVO = new MutationUploadVO();
 		this.mutationUploadVO.setGeneSymbol(this.GENENAME);
-		this.mutationService.setDefaults(this.mutationUploadVO);
+		MutationService mutationService = new MutationService();
+		mutationService.setDatabase(db);
+		mutationService.setDefaults(this.mutationUploadVO);
 	}
 	
 	private void initPatientSummaryVO()
 	{
 		this.patientSummaryVO = new PatientSummaryVO();
-//		this.patientService.setDefaults(this.patientSummaryVO);
 		this.referer          = 0;
 	}
 
@@ -117,14 +111,12 @@ public abstract class Upload extends PluginModel<Entity>
 				this.handlePatient(db, request);
 			else if (StringUtils.endsWith(this.action, "Mutation"))
 				this.handleMutation(db, request);
-//			else if (StringUtils.endsWith(this.action, "Mutations"))
-//				;
-//			logger.debug(">>> handleRequest: messages==" + this.getMessages().size() + ".");
 		}
 		catch(Exception e)
 		{
 			String message = "Oops, an error occurred. We apologize and will work on fixing it as soon as possible. <a href=\"molgenis.do?__target=Upload&__action=newBatch\">Return to home page</a>";
 			this.getMessages().add(new ScreenMessage(message, false));
+			logger.error(e.getMessage());
 			for (StackTraceElement el : e.getStackTrace())
 				logger.error(el.toString());
 		}
@@ -143,9 +135,11 @@ public abstract class Upload extends PluginModel<Entity>
 		else if (this.action.equals("insertBatch"))
 		{
 			File file = request.getFile("upload");
-			int count = this.patientService.insertBatch(file, this.uploadBatchCsvReader);
+			UploadService uploadService = new UploadService();
+			uploadService.setDatabase(db);
+			int count = uploadService.insertBatch(file, this.uploadBatchCsvReader);
 			this.getMessages().add(new ScreenMessage("Successfully inserted " + count + " patients", true));
-			this.initMutationUploadVO();
+			this.initMutationUploadVO(db);
 			this.initPatientSummaryVO();
 		}
 		else if (this.action.equals("emailBatch"))
@@ -177,7 +171,7 @@ public abstract class Upload extends PluginModel<Entity>
 
 		if (this.action.equals("newPatient"))
 		{
-			this.populatePatientForm();
+			this.populatePatientForm(db);
 		}
 		else if (this.action.equals("insertPatient"))
 		{
@@ -201,12 +195,14 @@ public abstract class Upload extends PluginModel<Entity>
 
 		if (this.action.equals("newMutation"))
 		{
-			this.populateMutationForm();
+			this.populateMutationForm(db);
 		}
 		else if (this.action.equals("assignMutation"))
 		{
-			this.mutationService.assignValuesFromPosition(this.mutationUploadVO);
-			this.populateMutationForm();
+			MutationService mutationService = new MutationService();
+			mutationService.setDatabase(db);
+			mutationService.assignValuesFromPosition(this.mutationUploadVO);
+			this.populateMutationForm(db);
 		}
 		else if (this.action.equals("checkMutation"))
 		{
@@ -229,18 +225,21 @@ public abstract class Upload extends PluginModel<Entity>
 
 			this.getMessages().add(new ScreenMessage("Mutation successfully inserted", true));
 
-			this.initMutationUploadVO();
+			this.initMutationUploadVO(db);
 		}
 	}
 
-	private void populatePatientForm() throws Exception
+	private void populatePatientForm(Database db) throws Exception
 	{
+		SearchService searchService       = new SearchService();
+		searchService.setDatabase(db);
+
 		List<ValueLabel> mutationOptions  = new ArrayList<ValueLabel>();
-		for (Mutation mutation : this.mutationService.getAllMutations())
+		for (Mutation mutation : searchService.getAllMutations())
 			mutationOptions.add(new ValueLabel(mutation.getId(), mutation.getCdna_Notation()));
 
 		List<ValueLabel> phenotypeOptions = new ArrayList<ValueLabel>();
-		for (MutationPhenotype phenotype : this.phenotypeService.getAllPhenotypes())
+		for (MutationPhenotype phenotype : searchService.getAllPhenotypes())
 			phenotypeOptions.add(new ValueLabel(phenotype.getId(), phenotype.getMajortype() + ", " + phenotype.getSubtype() + " (" + phenotype.getName() + ")"));
 
 		Vector<String> deceasedValue      = new Vector<String>();
@@ -251,9 +250,11 @@ public abstract class Upload extends PluginModel<Entity>
 		this.patientForm.get("deceased").setValue(deceasedValue);
 		this.patientForm.get("identifier").setValue(this.patientSummaryVO.getPatientIdentifier());
 		((SelectInput) this.patientForm.get("mutation1")).setOptions(mutationOptions);
-		this.patientForm.get("mutation1").setValue(this.patientSummaryVO.getVariantSummaryVOList().get(0).getId());
+		if (this.patientSummaryVO.getVariantSummaryVOList().size() > 0)
+			this.patientForm.get("mutation1").setValue(this.patientSummaryVO.getVariantSummaryVOList().get(0).getId());
 		((SelectInput) this.patientForm.get("mutation2")).setOptions(mutationOptions);
-		this.patientForm.get("mutation2").setValue(this.patientSummaryVO.getVariantSummaryVOList().get(1).getId());
+		if (this.patientSummaryVO.getVariantSummaryVOList().size() > 1)
+			this.patientForm.get("mutation2").setValue(this.patientSummaryVO.getVariantSummaryVOList().get(1).getId());
 		this.patientForm.get("number").setValue(this.patientSummaryVO.getPatientNumber());
 		((SelectInput) this.patientForm.get("phenotype")).setOptions(phenotypeOptions);
 		this.patientForm.get("phenotype").setValue(this.patientSummaryVO.getPhenotypeId());
@@ -304,7 +305,7 @@ public abstract class Upload extends PluginModel<Entity>
 		return this.patientForm;
 	}
 
-	private void populateMutationForm() throws DatabaseException, ParseException
+	private void populateMutationForm(Database db) throws DatabaseException, ParseException
 	{
 		Vector<String> conservedValue         = new Vector<String>();
 		if (this.mutationUploadVO.getMutation().getConservedAA() != null)
@@ -328,8 +329,10 @@ public abstract class Upload extends PluginModel<Entity>
 				snpValue.add("");
 
 		List<ValueLabel> exonOptions  = new ArrayList<ValueLabel>();
-		for (Exon exon : this.exonService.getAllExons())
-			exonOptions.add(new ValueLabel(exon.getId(), exon.getName()));
+		ExonService exonService       = new ExonService();
+		exonService.setDatabase(db);
+		for (ExonSummaryVO exonSummaryVO : exonService.getAllExons())
+			exonOptions.add(new ValueLabel(exonSummaryVO.getId(), exonSummaryVO.getName()));
 
 		this.mutationForm.get("gene").setValue(this.GENENAME);
 		this.mutationForm.get("refseq").setValue("NM_000094.3");
@@ -589,16 +592,11 @@ public abstract class Upload extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
-		this.exonService      = ExonService.getInstance(db);
-		this.mutationService  = MutationService.getInstance(db);
-		this.patientService   = PatientService.getInstance(db);
-		this.phenotypeService = PhenotypeService.getInstance(db);
-
 		try
 		{
 			if (mutationUploadVO == null)
 			{
-				this.initMutationUploadVO();
+				this.initMutationUploadVO(db);
 				this.mutationUploadVO.setGeneSymbol(db.query(MutationGene.class).equals(MutationGene.NAME, this.GENENAME).find().get(0).getSymbol());
 			}
 
@@ -614,9 +612,6 @@ public abstract class Upload extends PluginModel<Entity>
 	@Override
 	public boolean isVisible()
 	{
-		//you can use this to hide this plugin, e.g. based on user rights.
-		//e.g.
-		//if(!this.getLogin().hasEditPermission(myEntity)) return false;
 		return true;
 	}
 	
@@ -635,53 +630,3 @@ public abstract class Upload extends PluginModel<Entity>
 		return new org.molgenis.mutation.util.StringUtils();
 	}
 }
-
-///**
-// * Send a multipart message
-// * @param subject
-// * @param body
-// * @param attachment
-// * @param toEmail
-// * @return true if sending was successful
-// * @throws EmailException
-// */
-//public boolean email(String subject, String body, File attachment, String toEmail) throws EmailException
-//{
-//	try
-//	{
-//		// Create the attachment
-//		EmailAttachment emailAttachment = new EmailAttachment();
-//		emailAttachment.setPath(attachment.getPath());
-//		emailAttachment.setDisposition(EmailAttachment.ATTACHMENT);
-//		emailAttachment.setName(attachment.getName());
-//
-//		// Create the email message
-//		MultiPartEmail email = new MultiPartEmail();
-//		email.setHostName(smtpHostname);
-//		if (smtpProtocol.equals("smtps"))
-//		{
-//			email.setSmtpPort(smtpPort);
-//			email.setSslSmtpPort(smtpPort.toString());
-//			email.setSSL(true);
-//			email.setTLS(true);
-//		}
-//		email.setAuthentication(smtpUser, smtpPassword);
-//		email.addTo(toEmail);
-//		email.setFrom(smtpFromAddress);
-//		email.setSubject(subject);
-//		email.setMsg(body);
-//
-//		// add the attachment
-//		email.attach(emailAttachment);
-//
-//		// send the email
-//		email.send();
-//
-//		return true;
-//	}
-//	catch (Exception e)
-//	{
-//		e.printStackTrace();
-//		throw new EmailException(e);
-//	}
-//}

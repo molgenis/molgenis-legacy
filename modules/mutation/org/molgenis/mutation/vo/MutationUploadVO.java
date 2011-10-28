@@ -2,16 +2,12 @@ package org.molgenis.mutation.vo;
 
 import java.io.Serializable;
 
-import org.molgenis.mutation.Exon;
 import org.molgenis.mutation.Mutation;
-import org.molgenis.mutation.MutationGene;
 import org.molgenis.util.ValueLabel;
 
 public class MutationUploadVO implements Serializable
 {
 	private static final long serialVersionUID = 1070160510535611854L;
-	//TODO: Danny: Use or loose
-	/*private static final transient Logger logger = Logger.getLogger(MutationUploadVO.class.getSimpleName());*/
 	private Mutation mutation;
 	private Integer exonId;
 	private Boolean exonIsIntron;

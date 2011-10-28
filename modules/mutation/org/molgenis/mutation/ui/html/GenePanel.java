@@ -3,6 +3,7 @@ package org.molgenis.mutation.ui.html;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.mutation.Exon;
@@ -14,7 +15,7 @@ import org.molgenis.mutation.vo.ProteinDomainSummaryVO;
 public class GenePanel extends HtmlInput
 {
 	private List<ProteinDomainSummaryVO> proteinDomainSummaryVOList = new ArrayList<ProteinDomainSummaryVO>();
-	private String screenName                                       = "";
+	private String baseUrl                                          = "";
 
 	@Override
 	public String toHtml()
@@ -46,7 +47,10 @@ public class GenePanel extends HtmlInput
 			{
 				result.append("<td align=\"left\">");
 				result.append("<div class=\"pd" + proteinDomainSummaryVO.getProteinDomain().getId() + "\" style=\"display: block; width: " + exon.getLength() / 10 + "px; height: 26px;\">");
-				result.append("<a style=\"display: block; height: 100%; width: 100%;\" href=\"molgenis.do?__target=" + this.screenName + "&select=" + this.screenName + "&__action=showProteinDomain&domain_id=" + proteinDomainSummaryVO.getProteinDomain().getId() + "&snpbool=1#exon" + exon.getId() + "\" alt=\"" + exon.getName() + "\" title=\"" + exon.getName() + "\"></a>");
+				String url = this.baseUrl;
+				url = StringUtils.replace(url, "domain_id=", "domain_id=" + proteinDomainSummaryVO.getProteinDomain().getId());
+				url = StringUtils.replace(url, "#exon", "#exon" + exon.getId());
+				result.append("<a style=\"display: block; height: 100%; width: 100%;\" href=\"" + url + "\" alt=\"" + exon.getName() + "\" title=\"" + exon.getName() + "\"></a>");
 				result.append("</div>");
 				result.appendln("</td>");
 			}
@@ -68,12 +72,8 @@ public class GenePanel extends HtmlInput
 		this.proteinDomainSummaryVOList = proteinDomainSummaryVOList;
 	}
 
-	public String getScreenName() {
-		return screenName;
-	}
-
-	public void setScreenName(String screenName) {
-		this.screenName = screenName;
+	public void setBaseUrl(String baseUrl) {
+		this.baseUrl = baseUrl;
 	}
 
 

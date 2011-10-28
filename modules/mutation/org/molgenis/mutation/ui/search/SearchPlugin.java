@@ -8,43 +8,39 @@
 package org.molgenis.mutation.ui.search;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.OutputStream;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.regexp.RESyntaxException;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
+import org.molgenis.framework.ui.IntegratedPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.html.IntInput;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
-import org.molgenis.mutation.Exon;
 import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.MutationGene;
 import org.molgenis.mutation.MutationPhenotype;
 import org.molgenis.mutation.service.ExonService;
 import org.molgenis.mutation.service.MutationService;
 import org.molgenis.mutation.service.PatientService;
-import org.molgenis.mutation.service.PhenotypeService;
-import org.molgenis.mutation.service.ProteinDomainService;
+import org.molgenis.mutation.service.SearchService;
 import org.molgenis.mutation.vo.ExonSearchCriteriaVO;
+import org.molgenis.mutation.vo.ExonSummaryVO;
 import org.molgenis.mutation.vo.MutationSearchCriteriaVO;
 import org.molgenis.mutation.vo.MutationSummaryVO;
 import org.molgenis.mutation.vo.PatientSearchCriteriaVO;
@@ -56,14 +52,13 @@ import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
-public abstract class SearchPlugin extends EasyPluginController<SearchModel>
+public abstract class SearchPlugin extends IntegratedPluginController<SearchModel>
 {
 	private static final long serialVersionUID                = 651270609185006020L;
 	private ExonService exonService;
 	private MutationService mutationService;
 	private PatientService patientService;
-	private PhenotypeService phenotypeService;
-	private ProteinDomainService domainService;
+	private SearchService searchService;
 
 	private ExonSearchCriteriaVO exonSearchCriteriaVO         = new ExonSearchCriteriaVO();
 	private MutationSearchCriteriaVO mutationSearchCriteriaVO = new MutationSearchCriteriaVO();
@@ -76,10 +71,11 @@ public abstract class SearchPlugin extends EasyPluginController<SearchModel>
 		this.setView(new FreemarkerView("SearchPlugin.ftl", getModel()));
 		this.getModel().setPatientPager("res/mutation/patientPager.jsp");
 		this.getModel().setMutationPager("res/mutation/mutationPager.jsp");
+		this.getModel().setPatientViewer("patient.ftl");
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public Show handleRequest(Database db, Tuple request, OutputStream out)
 	{
 		this.reload(db);
 
@@ -264,13 +260,8 @@ public abstract class SearchPlugin extends EasyPluginController<SearchModel>
 				logger.error(el.toString());
 //				this.getMessages().add(new ScreenMessage(el.toString(), false));
 		}
-		try{
-		for (ScreenController<?> child : this.getChildren())
-			child.handleRequest(db, request);
-		}catch(Exception e){
-			System.out.println("UNHANDLED EXCEPTIONSSSS!!!!");
-			e.printStackTrace();
-		}
+
+		return Show.SHOW_MAIN;
 	}
 
 	private void handleFindPatients(Tuple request) throws DatabaseException, ParseException
@@ -437,7 +428,7 @@ public abstract class SearchPlugin extends EasyPluginController<SearchModel>
 			if (request.getString("snpbool").equals("hide"))
 				this.mutationSearchCriteriaVO.setReportedAsSNP(false);
 
-		this.getModel().setProteinDomainSummaryVO(this.domainService.findProteinDomain(request.getInt("domain_id"), false));
+		this.getModel().setProteinDomainSummaryVO(this.searchService.findProteinDomain(request.getInt("domain_id"), false));
 		this.getModel().setMutationSummaryVOs(this.mutationService.findMutations(mutationSearchCriteriaVO));
 		((HttpServletRequestTuple) request).getRequest().setAttribute("mutationSummaryVOList", this.getModel().getMutationSummaryVOs());
 		this.getModel().setRawOutput(this.include(request, this.getModel().getMutationPager()));
@@ -449,12 +440,12 @@ public abstract class SearchPlugin extends EasyPluginController<SearchModel>
 		else
 		{
 			if ("R".equals(this.getModel().getGene().getOrientation()))
-				this.domainService.reverseExons(this.getModel().getProteinDomainSummaryVO());
+				this.reverseExons(this.getModel().getProteinDomainSummaryVO());
 			this.getModel().setHeader("");
 		}
 		if (this.getModel().getmBrowseVO().getExonList() == null)
 		{
-			List<Exon> exonList = exonService.getAllExons();
+			List<ExonSummaryVO> exonList = exonService.getAllExons();
 			if ("R".equals(this.getModel().getGene().getOrientation()))
 				Collections.reverse(exonList);
 			this.getModel().getmBrowseVO().setExonList(exonList);
@@ -490,11 +481,14 @@ public abstract class SearchPlugin extends EasyPluginController<SearchModel>
 	@Override
 	public void reload(Database db)
 	{
-		this.exonService              = ExonService.getInstance(db);
-		this.mutationService          = MutationService.getInstance(db);
-		this.patientService           = PatientService.getInstance(db);
-		this.phenotypeService         = PhenotypeService.getInstance(db);
-		this.domainService            = ProteinDomainService.getInstance(db);
+		this.exonService              = new ExonService();
+		this.exonService.setDatabase(db);
+		this.mutationService          = new MutationService();
+		this.mutationService.setDatabase(db);
+		this.patientService           = new PatientService();
+		this.patientService.setDatabase(db);
+		this.searchService            = new SearchService();
+		this.searchService.setDatabase(db);
 
 		try
 		{
@@ -506,11 +500,11 @@ public abstract class SearchPlugin extends EasyPluginController<SearchModel>
 
 			if (this.getModel().getmBrowseVO().getProteinDomainList() == null)
 			{
-				this.getModel().getmBrowseVO().setProteinDomainList(this.domainService.getAllProteinDomains());
+				this.getModel().getmBrowseVO().setProteinDomainList(this.searchService.getAllProteinDomains());
 				//TODO Move this to business logic
 //				System.out.println(">>> exons before reverse: " + this.genomeBrowserVO.getProteinDomainList().get(0).getAllExons().toString());
 				if ("R".equals(this.getModel().getGene().getOrientation()))
-					this.domainService.reverseExons(this.getModel().getmBrowseVO().getProteinDomainList());
+					this.reverseExons(this.getModel().getmBrowseVO().getProteinDomainList());
 //				System.out.println(">>> exons after reverse: " + this.genomeBrowserVO.getProteinDomainList().get(0).getAllExons().toString());
 			}
 
@@ -661,7 +655,7 @@ public abstract class SearchPlugin extends EasyPluginController<SearchModel>
 		this.getModel().getListAllMutationsForm().get("select").setValue(this.getName());
 		List<ValueLabel> mutationIdOptions  = new ArrayList<ValueLabel>();
 		mutationIdOptions.add(new ValueLabel("", "Select mutation"));
-		for (Mutation mutation : this.mutationService.getAllMutations())
+		for (Mutation mutation : this.searchService.getAllMutations())
 			mutationIdOptions.add(new ValueLabel(mutation.getIdentifier(), mutation.getCdna_Notation() + " (" + mutation.getAa_Notation() + ")"));
 		((SelectInput) this.getModel().getShowMutationForm().get("mid")).setOptions(mutationIdOptions);
 		((SelectInput) this.getModel().getShowMutationForm().get("mid")).setValue("Select mutation");
@@ -685,8 +679,8 @@ public abstract class SearchPlugin extends EasyPluginController<SearchModel>
 
 		List<ValueLabel> exonIdOptions      = new ArrayList<ValueLabel>();
 		exonIdOptions.add(new ValueLabel("", "Select exon/intron"));
-		for (Exon exon : this.exonService.getAllExons())
-			exonIdOptions.add(new ValueLabel(exon.getId(), exon.getName()));
+		for (ExonSummaryVO exonSummaryVO : this.exonService.getAllExons())
+			exonIdOptions.add(new ValueLabel(exonSummaryVO.getExon().getId(), exonSummaryVO.getExon().getName()));
 		((SelectInput) this.getModel().getExpertSearchForm().get("exon_id")).setOptions(exonIdOptions);
 		if (this.mutationSearchCriteriaVO.getExonId() != null)
 			((SelectInput) this.getModel().getExpertSearchForm().get("exon_id")).setValue(this.mutationSearchCriteriaVO.getExonId());
@@ -713,7 +707,7 @@ public abstract class SearchPlugin extends EasyPluginController<SearchModel>
 
 		List<ValueLabel> domainOptions      = new ArrayList<ValueLabel>();
 		domainOptions.add(new ValueLabel("", "Select protein domain"));
-		for (ProteinDomainSummaryVO domainVO : this.domainService.getAllProteinDomains())
+		for (ProteinDomainSummaryVO domainVO : this.searchService.getAllProteinDomains())
 			domainOptions.add(new ValueLabel(domainVO.getProteinDomain().getId(), domainVO.getProteinDomain().getName()));
 		((SelectInput) this.getModel().getExpertSearchForm().get("domain_id")).setOptions(domainOptions);
 		if (this.mutationSearchCriteriaVO.getProteinDomainId() != null)
@@ -723,7 +717,7 @@ public abstract class SearchPlugin extends EasyPluginController<SearchModel>
 		
 		List<ValueLabel> phenotypeOptions   = new ArrayList<ValueLabel>();
 		phenotypeOptions.add(new ValueLabel("", "Select phenotype"));
-		for (MutationPhenotype phenotype : this.phenotypeService.getAllPhenotypes())
+		for (MutationPhenotype phenotype : this.searchService.getAllPhenotypes())
 			phenotypeOptions.add(new ValueLabel(phenotype.getId(), phenotype.getMajortype() + ", " + phenotype.getSubtype()));
 		((SelectInput) this.getModel().getExpertSearchForm().get("phenotype_id")).setOptions(phenotypeOptions);
 		if (this.mutationSearchCriteriaVO.getPhenotypeId() != null)
@@ -781,73 +775,41 @@ public abstract class SearchPlugin extends EasyPluginController<SearchModel>
 	private void populateGenePanel()
 	{
 		this.getModel().getmBrowseVO().getGenePanel().setProteinDomainSummaryVOList(this.getModel().getmBrowseVO().getProteinDomainList());
-		this.getModel().getmBrowseVO().getGenePanel().setScreenName(this.getName());
+		this.getModel().getmBrowseVO().getGenePanel().setBaseUrl("molgenis.do?__target=" + this.getName() + "&select=" + this.getName() + "&__action=showProteinDomain&domain_id=&snpbool=1#exon");
 	}
 
 	private void populateProteinDomainPanel()
 	{
 		this.getModel().getmBrowseVO().getProteinDomainPanel().setProteinDomainSummaryVO(this.getModel().getProteinDomainSummaryVO());
-		this.getModel().getmBrowseVO().getProteinDomainPanel().setScreenName(this.getName());
+		this.getModel().getmBrowseVO().getProteinDomainPanel().setBaseUrl("molgenis.do?__target=" + this.getName() + "&select=" + this.getName() + "&__action=showProteinDomain&domain_id=&snpbool=1#exon");
 	}
 
 	private void populateExonIntronPanel()
 	{
 		this.getModel().getmBrowseVO().getExonIntronPanel().setExons(this.getModel().getmBrowseVO().getExonList());
 		this.getModel().getmBrowseVO().getExonIntronPanel().setShowIntrons(this.getModel().getQueryParametersVO().getShowIntrons());
-		this.getModel().getmBrowseVO().getExonIntronPanel().setScreenName(this.getName());
+		this.getModel().getmBrowseVO().getExonIntronPanel().setBaseUrl("molgenis.do?__target=" + this.getName() + "&select=" + this.getName() + "&__action=showExon&exon_id=#results");
 	}
 
 	private void populateSequencePanel()
 	{
 		this.getModel().getmBrowseVO().getSequencePanel().setExonSummaryVO(this.getModel().getExonSummaryVO());
 		this.getModel().getmBrowseVO().getSequencePanel().setMutationSummaryVOs(this.getModel().getMutationSummaryVOs());
-		this.getModel().getmBrowseVO().getSequencePanel().setScreenName(this.getName());
-	}
-
-	public String include(Tuple request, String path)
-	{
-		HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
-		HttpServletRequest httpRequest   = rt.getRequest();
-		HttpServletResponse httpResponse = rt.getResponse();
-		RedirectTextWrapper respWrapper  = new RedirectTextWrapper(httpResponse);
-			
-		// Call/include page
-		try
-		{
-			RequestDispatcher dispatcher = httpRequest.getRequestDispatcher(path);
-			if (dispatcher != null)
-				dispatcher.include(httpRequest, respWrapper);
-		}
-		catch (Exception e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return respWrapper.getOutput();
+		this.getModel().getmBrowseVO().getSequencePanel().setBaseUrl("molgenis.do?__target=" + this.getName() + "&select=" + this.getName() + "&__action=showMutation&mid=#results");
 	}
 	
-	private class RedirectTextWrapper extends HttpServletResponseWrapper
+	private void reverseExons(List<ProteinDomainSummaryVO> proteinDomainList)
 	{
-		private PrintWriter printWriter;
-		private StringWriter stringWriter;
-
-		public RedirectTextWrapper(HttpServletResponse response)
+		Iterator<ProteinDomainSummaryVO> it = proteinDomainList.iterator();
+		while (it.hasNext())
 		{
-			super(response);
-			this.stringWriter = new StringWriter();
-			this.printWriter  = new PrintWriter(stringWriter);
+			ProteinDomainSummaryVO proteinDomainSummaryVO = it.next();
+			this.reverseExons(proteinDomainSummaryVO);
 		}
-
-		@Override
-		public PrintWriter getWriter()
-		{
-			return this.printWriter;
-		}
-
-		public String getOutput()
-		{
-			return this.stringWriter.toString();
-		}
+	}
+	
+	private void reverseExons(ProteinDomainSummaryVO proteinDomainSummaryVO)
+	{
+		Collections.reverse(proteinDomainSummaryVO.getExons());
 	}
 }
