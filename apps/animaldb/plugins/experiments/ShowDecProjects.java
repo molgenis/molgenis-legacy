@@ -122,9 +122,6 @@ public class ShowDecProjects extends PluginModel<Entity>
 					throw(new Exception("No DEC number given - project not added"));
 				}
 				
-				// DEC applicant
-				String decapplicant = this.getLogin().getUserId().toString();
-				
 				// DEC application PDF
 				String decapplicationpdf = null;
 				if (request.getString("decapplicationpdf") != null && !request.getString("decapplicationpdf").equals("")) {
@@ -154,9 +151,9 @@ public class ShowDecProjects extends PluginModel<Entity>
 				}
 				
 				// Some variables we need later on
-				int investigationId = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
-				Calendar myCal = Calendar.getInstance();
-				Date now = myCal.getTime();
+				Integer decapplicantId = this.getLogin().getUserId();
+				int investigationId = ct.getOwnUserInvestigationId(decapplicantId);
+				Date now = new Date();
 				
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
@@ -190,7 +187,7 @@ public class ShowDecProjects extends PluginModel<Entity>
 						enddate, measurementId, projectId, decnumber, 0));
 				measurementId = ct.getMeasurementId("DecApplicantId");
 				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
-						enddate, measurementId, projectId, decapplicant, 0));
+						enddate, measurementId, projectId, decapplicantId.toString(), 0));
 				if (decapplicationpdf != null) {
 					measurementId = ct.getMeasurementId("DecApplicationPdf");
 					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
