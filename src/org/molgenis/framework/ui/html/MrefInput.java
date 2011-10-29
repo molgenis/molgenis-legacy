@@ -161,19 +161,23 @@ public class MrefInput extends EntityInput<List<? extends Entity>>
 			}
 			else
 			{
-				//String xrefLabelString = this.toCsv(getXrefLabels());
+				// String xrefLabelString = this.toCsv(getXrefLabels());
 
 				String buttons = String
-						.format(
-								"<button style=\"\" type=\"button\" onclick=\"mref_addInput('%s','%s','%s','%s','%s',this.parentNode);\">+</button>",
+						.format("<button style=\"\" type=\"button\" onclick=\"mref_addInput('%s','%s','%s','%s','%s',this.parentNode);\">+</button>",
 								getName(), getXrefEntity(), getXrefField(),
 								getXrefLabels().get(0),
 								getXrefFilterRESTString());
 				buttons += "<button type=\"button\" onclick=\"mref_removeInput(this.parentNode);\">-</button>";
 
-				return "<div id=\"" + getName() + "\">" + html.toString()
-						+ buttons 
-						+ "</div>"+ (includeAddButton && !this.isReadonly() ? this.createAddButton() : "");
+				return "<div id=\""
+						+ getName()
+						+ "\">"
+						+ html.toString()
+						+ buttons
+						+ "</div>"
+						+ (includeAddButton && !this.isReadonly() ? this
+								.createAddButton() : "");
 			}
 		}
 		else if (uiToolkit == UiToolkit.JQUERY)
@@ -189,65 +193,83 @@ public class MrefInput extends EntityInput<List<? extends Entity>>
 	@SuppressWarnings("unchecked")
 	private String toJquery()
 	{
-		String options = "";
-		String xrefLabelString = this.toCsv(getXrefLabels());
-		String description = getName().equals(getDescription()) ? "" : " title=\""+getDescription()+"\"";
-
-
-		if(this.getObject()!= null) for (Entity e : (List<Entity>) this.getObject())
+		if (isHidden() || isReadonly())
 		{
-			options += "<option selected=\"selected\" value=\""
-					+ e.getIdValue() + "\">" + e.getLabelValue()
-					+ "</option>";
+			return "<div id=\"" + getName() + "\">" + this.getValue()
+					+ "</div>";
 		}
-
-		String name;
-		try
+		else
 		{
-			name = getEntityClass(getXrefEntity())
-					.getSimpleName();
 
-			String readonly = this.isReadonly() ? "readonly " : "";
-			
-			return "<select multiple=\"multiple\" "+readonly+" data-placeholder=\"Choose some "
-					+ name
-					+ "\" class=\""+readonly+"ui-widget-content ui-corner-all\" id=\""
-					+ this.getId()
-					+ "\" name=\""
-					+ this.getName()
-					+ "\" "
-					+ " style=\"width:350px;\" "+ description+">\n"
-					+ options 
-					+ "</select>"
-					+ "\n<script>$(\"#"
-					+ this.getId()
-					+ "\").ajaxChosen("
-					+ "\n{ "
-					+ "\n	method: 'GET', "
-					+ "\n	url: 'xref/find',"
-					+ "\n	xref_entity: '"
-					+ this.getXrefEntity()
-					+ "',"
-					+ "\n	xref_field: '"
-					+ this.getXrefField()
-					+ "',"
-					+ "\n	xref_label: '"
-					+ xrefLabelString
-					+ "',"
-					+ "\n	dataType: 'json', "
-					+ "\n},"
-					+ "\nfunction (data) {"
-					+ "\n	var terms = {}; "
-					+ "\n	$.each(data, function (i, val) {terms[i] = val;});"
-					+ "\n	return terms;" + "\n});" + "\n</script>\n"
-					+ (includeAddButton && !this.isReadonly() ? this.createAddButton() : "");
+			String options = "";
+			String xrefLabelString = this.toCsv(getXrefLabels());
+			String description = getName().equals(getDescription()) ? ""
+					: " title=\"" + getDescription() + "\"";
 
-		}
-		catch (HtmlInputException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return "ERROR";
+			if (this.getObject() != null) for (Entity e : (List<Entity>) this
+					.getObject())
+			{
+				options += "<option selected=\"selected\" value=\""
+						+ e.getIdValue() + "\">" + e.getLabelValue()
+						+ "</option>";
+			}
+
+			String name;
+			try
+			{
+				name = getEntityClass(getXrefEntity()).getSimpleName();
+
+				String readonly = this.isReadonly() ? "readonly " : "";
+
+				return "<select multiple=\"multiple\" "
+						+ readonly
+						+ " data-placeholder=\"Choose some "
+						+ name
+						+ "\" class=\""
+						+ readonly
+						+ "ui-widget-content ui-corner-all\" id=\""
+						+ this.getId()
+						+ "\" name=\""
+						+ this.getName()
+						+ "\" "
+						+ " style=\"width:350px;\" "
+						+ description
+						+ ">\n"
+						+ options
+						+ "</select>"
+						+ "\n<script>$(\"#"
+						+ this.getId()
+						+ "\").ajaxChosen("
+						+ "\n{ "
+						+ "\n	method: 'GET', "
+						+ "\n	url: 'xref/find',"
+						+ "\n	xref_entity: '"
+						+ this.getXrefEntity()
+						+ "',"
+						+ "\n	xref_field: '"
+						+ this.getXrefField()
+						+ "',"
+						+ "\n	xref_label: '"
+						+ xrefLabelString
+						+ "',"
+						+ "\n	dataType: 'json', "
+						+ "\n},"
+						+ "\nfunction (data) {"
+						+ "\n	var terms = {}; "
+						+ "\n	$.each(data, function (i, val) {terms[i] = val;});"
+						+ "\n	return terms;"
+						+ "\n});"
+						+ "\n</script>\n"
+						+ (includeAddButton && !this.isReadonly() ? this
+								.createAddButton() : "");
+
+			}
+			catch (HtmlInputException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return "ERROR";
+			}
 		}
 	}
 
