@@ -87,7 +87,7 @@ public class TableBeta extends HtmlWidget
 	 * @param rowspan the number of row elements to span
 	 * @param colspan the number of col elements to span
 	 */
-	public void setHeader(int row, int col, HtmlElement value, int rowspan,
+	public void setHead(int row, int col, HtmlElement value, int rowspan,
 			int colspan)
 	{
 		header.set(row, col, value, rowspan, colspan);
@@ -96,22 +96,56 @@ public class TableBeta extends HtmlWidget
 	/**
 	 * Set the cel(row,col) to String value including row and/or column spanning
 	 */
-	public void setHeader(int row, int col, String value)
+	public void setHead(int row, int col, String value)
 	{
-		setHeader(row, col, new CustomHtml(value));
+		setHead(row, col, new CustomHtml(value));
 	}
 
 	/** Set the cel(row,col) to value */
-	public void setHeader(int row, int col, HtmlElement value)
+	public void setHead(int row, int col, HtmlElement value)
 	{
-		setHeader(row, col, value, 1, 1);
+		setHead(row, col, value, 1, 1);
 	}
 	
-	public void setHeader(int row, int col, String string, int rowspan, int colspan)
+	public void setHead(int row, int col, String string, int rowspan, int colspan)
 	{
-		setHeader(row, col, new CustomHtml(string), rowspan, colspan);
+		setHead(row, col, new CustomHtml(string), rowspan, colspan);
 	}
 
+	/**
+	 * Set the cel(row,col) to value including row and/or column spanning
+	 * 
+	 * @param row index
+	 * @param col index
+	 * @param value 
+	 * @param rowspan the number of row elements to span
+	 * @param colspan the number of col elements to span
+	 */
+	public void setFoot(int row, int col, HtmlElement value, int rowspan,
+			int colspan)
+	{
+		footer.set(row, col, value, rowspan, colspan);
+	}
+
+	/**
+	 * Set the cel(row,col) to String value including row and/or column spanning
+	 */
+	public void setFoot(int row, int col, String value)
+	{
+		setFoot(row, col, new CustomHtml(value));
+	}
+
+	/** Set the cel(row,col) to value */
+	public void setFoot(int row, int col, HtmlElement value)
+	{
+		setFoot(row, col, value, 1, 1);
+	}
+	
+	public void setFoot(int row, int col, String string, int rowspan, int colspan)
+	{
+		setFoot(row, col, new CustomHtml(string), rowspan, colspan);
+	}
+	
 	@Override
 	public String toHtml()
 	{
