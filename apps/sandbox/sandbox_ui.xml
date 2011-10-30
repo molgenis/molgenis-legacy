@@ -1,6 +1,9 @@
 <molgenis name="ngs" label="Sandbox for testing small things :-)">
 	<!-- plugin name="molgenis_header" type="plugins.header.MolgenisHeader" 
 		/ -->
+		
+	<plugin name="sandboxMatrix" type="org.molgenis.sandbox.ui.AnotherMatrix"/>	
+		
 	<menu name="sandboxmain" position="left">
 		<form name="ExampleInvestigationData" entity="Investigation">
 			<menu name="ExampleData">
@@ -10,7 +13,6 @@
 			</menu>
 		</form>
 		<menu name="WidgetExamples">
-			<plugin name="MatrixTests" type="org.molgenis.sandbox.ui.MatrixTests" />
 			<plugin name="LayoutTests" type="org.molgenis.sandbox.ui.LayoutTests" />
 			<plugin name="InputsTest" type="org.molgenis.sandbox.ui.InputsTest" />
 			<!-- plugin name="Test" type="org.molgenis.sandbox.plugins.Test" /> <plugin 
