@@ -90,7 +90,7 @@ public class TableBeta extends HtmlWidget
 	public void setHead(int row, int col, HtmlElement value, int rowspan,
 			int colspan)
 	{
-		header.set(row, col, value, rowspan, colspan);
+		header.set(row, col, value, rowspan, colspan); 
 	}
 
 	/**
