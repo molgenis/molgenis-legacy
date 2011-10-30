@@ -10,9 +10,15 @@ import org.molgenis.util.Tuple;
 
 /*
  * Provides an html table with input components in the cells.
+ * 
+ * THIS MUST BE DOCUMENTED!!!
+ * HOW ABOUT ROW/COLSPAN?
  */
 public class Table extends HtmlWidget
 {
+
+	
+	
 	LinkedHashMap<Pair<Integer, Integer>, Object> cells = new LinkedHashMap<Pair<Integer, Integer>, Object>();
 	LinkedHashMap<Pair<Integer, Integer>, String> cellStyles = new LinkedHashMap<Pair<Integer, Integer>, String>();
 	List<String> cols = new ArrayList<String>();
