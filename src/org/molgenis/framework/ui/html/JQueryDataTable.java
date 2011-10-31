@@ -1,5 +1,12 @@
 package org.molgenis.framework.ui.html;
 
+/**
+ * An extension of Table that renders as a jQuery DataTable instead of
+ * a plain HTML table.
+ * 
+ * @author erikroos
+ *
+ */
 public class JQueryDataTable extends Table
 {
 

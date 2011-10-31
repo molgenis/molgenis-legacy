@@ -9,16 +9,15 @@ import org.molgenis.util.Pair;
 import org.molgenis.util.Tuple;
 
 /*
- * Provides an html table with input components in the cells.
- * 
- * THIS MUST BE DOCUMENTED!!!
- * HOW ABOUT ROW/COLSPAN?
+ * Provides an html table with objects, e.g. input components, in the cells.
+ * First you add columns (addColumn) and rows (addRows), then you set the contents
+ * of the cells (setCell).
+ * You can set/override the default CSS styles for the header and for the individual cells
+ * (setHeaderCellStyle, setDefaultCellStyle and setCellStyle).
+ * Row and colspan are currently not supported.
  */
 public class Table extends HtmlWidget
 {
-
-	
-	
 	LinkedHashMap<Pair<Integer, Integer>, Object> cells = new LinkedHashMap<Pair<Integer, Integer>, Object>();
 	LinkedHashMap<Pair<Integer, Integer>, String> cellStyles = new LinkedHashMap<Pair<Integer, Integer>, String>();
 	List<String> cols = new ArrayList<String>();
@@ -26,9 +25,14 @@ public class Table extends HtmlWidget
 	protected String defaultCellStyle = "border: 1px solid black; padding:2px";
 	protected String headerCellStyle = "border: 1px solid black; padding:2px; background-color: #5B82A4; color: white";
 	
+	/**
+	 * Constructor with empty label.
+	 * 
+	 * @param name
+	 */
 	public Table(String name)
 	{
-		this(name, null);
+		this(name, "");
 	}
 	
 	public Table(String name, String label)
@@ -82,20 +86,44 @@ public class Table extends HtmlWidget
 		return result;
 	}
 	
+	/**
+	 * Add a column to the Table.
+	 * 
+	 * @param colName
+	 * @return
+	 */
 	public Integer addColumn(String colName) {
 		cols.add(colName);
 		return cols.size() - 1;
 	}
 	
+	/**
+	 * Remove the column at 'colNr' from the Table.
+	 * 
+	 * @param colNr
+	 * @return
+	 */
 	public String removeColumn(int colNr) {
 		return cols.remove(colNr);
 	}
 	
+	/**
+	 * Add a row to the Table.
+	 * 
+	 * @param rowName
+	 * @return
+	 */
 	public Integer addRow(String rowName) {
 		rows.add(rowName);
 		return rows.size() - 1;
 	}
 	
+	/**
+	 * Remove the row at 'rowNr' from the Table.
+	 * 
+	 * @param rowNr
+	 * @return
+	 */
 	public String removeRow(int rowNr) {
 		return rows.remove(rowNr);
 	}

@@ -1,7 +1,7 @@
 package org.molgenis.framework.ui.html;
 
 /**
- * Apparantly the DataTable doesn't support rowspanning and colspanning. So we
+ * Apparently DataTable doesn't support rowspanning and colspanning. So we
  * should look out to another method. Probably best to css ourselves
  */
 public class JQueryDataTableBeta extends TableBeta
