@@ -80,7 +80,7 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 		FormModel<Data> parentForm = (FormModel<Data>) ((FormController) parentController).getModel();
 		Data data = parentForm.getRecords().get(0);
 		
-		if (matrixViewer == null || !data.equals(this.data));
+		if (matrixViewer == null || !data.equals(this.data))
 		{
 			Class<?> rowClass = db.getClassForName(data.getTargetType());
 			Class<?> colClass = db.getClassForName(data.getFeatureType());
