@@ -66,18 +66,23 @@ public class importOwlToPheno extends PluginModel<Entity>
 			        //load a local copy 
 		            File file = new File("/Users/despoina/Documents/Datashaper/generic.owl");
 		
-		            //load local copy 
-		            // Now load the local copy
-		            OWLOntology dataShaperOntology = manager.loadOntologyFromOntologyDocument(file);
-		            System.out.println("Loaded ontology: " + dataShaperOntology);
-		            this.setStatus("Loaded ontology: " + dataShaperOntology);
-		            
-		            IRI documentIRI = manager.getOntologyDocumentIRI(dataShaperOntology);
-		            System.out.println("    from: " + documentIRI);
-		            this.setStatus("     from: " + documentIRI);
-		            
-		            // Remove the ontology again so we can reload it later
-		            manager.removeOntology(dataShaperOntology);
+			            if (file.exists()) {
+				            //load local copy 
+				            // Now load the local copy
+				            OWLOntology dataShaperOntology = manager.loadOntologyFromOntologyDocument(file);
+				            System.out.println("Loaded ontology: " + dataShaperOntology);
+				            this.setStatus("Loaded ontology: " + dataShaperOntology);
+				            
+				            IRI documentIRI = manager.getOntologyDocumentIRI(dataShaperOntology);
+				            System.out.println("    from: " + documentIRI);
+				            this.setStatus("     from: " + documentIRI);
+				            
+				            // Remove the ontology again so we can reload it later
+				            manager.removeOntology(dataShaperOntology);
+			            } else {
+			            	System.out.println("The ontology file is not available!");
+			            	this.setStatus("The ontology file is not available!");
+			            }
 		            } catch (OWLOntologyCreationIOException e) {
             		            // IOExceptions during loading get wrapped in an OWLOntologyCreationIOException
             		            IOException ioException = e.getCause();
