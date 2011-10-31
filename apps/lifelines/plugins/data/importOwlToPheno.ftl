@@ -27,8 +27,11 @@
 			    <h3> Import Owl to pheno model  </h3>
 		        <input type="submit" value="Import" onclick="__action.value='ImportOwlToPheno';return true;"/><br /><br />
 
+ 				<label> 	<#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>	
+
 			</div>
 		</div>
 	</div>
+	
 </form>
 </#macro>
