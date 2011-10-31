@@ -121,7 +121,7 @@ public class WorkflowGenerator
         wholeWorkflowApp.setInterpreter("WorkflowInterpreter");
 
         //it would be nice to select compute features of only selected workflow
-        allComputeFeatures = db.query(ComputeFeature.class).equals(ComputeFeature.WORKFLOW, workflow.getId()).find();
+        //allComputeFeatures = db.query(ComputeFeature.class).equals(ComputeFeature.WORKFLOW, workflow.getId()).find();
         System.out.println("we have so many features: " + allComputeFeatures.size());
 
         System.out.println("workflow" + workflow.getName());
@@ -213,10 +213,11 @@ public class WorkflowGenerator
             {
                 featuresToDerive.addElement(computeFeature);
             }
-            else if (computeFeature.getIterateOver())
-            {
-                featuresToIterate.addElement(computeFeature);
-            }
+            //need to move to workflowelementparameter
+//            else if (computeFeature.getIterateOver())
+//            {
+//                featuresToIterate.addElement(computeFeature);
+//            }
             else
             {
                 weavingValues.put(computeFeature.getName(), computeFeature.getDefaultValue());
@@ -228,11 +229,11 @@ public class WorkflowGenerator
         List<WorkflowElementParameter> workflowElementParameters = db.query(WorkflowElementParameter.class).
                 equals(WorkflowElementParameter.WORKFLOWELEMENT, workflowElement.getId()).find();
 
-        for (WorkflowElementParameter par : workflowElementParameters)
-        {
-            ComputeFeature feature = findComputeFeature(par.getTarget_Name()); //computeFeatures.get(par.getTarget_Name());
-            weavingValues.put(par.getFeature_Name(), feature.getDefaultValue());
-        }
+//        for (WorkflowElementParameter par : workflowElementParameters)
+//        {
+//            ComputeFeature feature = findComputeFeature(par.getTarget_Name()); //computeFeatures.get(par.getTarget_Name());
+//            weavingValues.put(par.getFeature_Name(), feature.getDefaultValue());
+//        }
 
         //still hardcoded fastQC iteration
         if (workflowElement.getName().equalsIgnoreCase("FastqcElement"))
@@ -318,7 +319,7 @@ public class WorkflowGenerator
             observedValue.setProtocolApplication(app);
             observedValue.setTarget(target.getId());
             ComputeFeature feature = findComputeFeature(name); //computeFeatures.get(name);
-            if (feature.getFeatureType().equalsIgnoreCase(LOG))
+            if (feature.getDataType().equalsIgnoreCase(LOG))
             {
                 logpathfiles.addElement(value);
             }
@@ -340,8 +341,8 @@ public class WorkflowGenerator
 
         if (protocol.getWalltime() != null)
             weaver.setWalltime(protocol.getWalltime());
-        if (protocol.getClusterQueue() != null)
-            weaver.setClusterQueue(protocol.getClusterQueue());
+//        if (protocol.getClusterQueue() != null)
+//            weaver.setClusterQueue(protocol.getClusterQueue());
         if (protocol.getCores() != null)
             weaver.setCores(protocol.getCores() + "");
         if (protocol.getMemoryReq() != null)

@@ -48,8 +48,9 @@
 				description="(Optional) Reference to the well-defined measurement unit used to observe this feature 
 					(if feature is that concrete). E.g. mmHg" />
 			<field name="dataType" type="enum" default="string"
-				enum_options="[xref,string,datetime,int,code,image,decimal,bool]"
+				enum_options="[xref,string,datetime,int,code,image,decimal,bool,file,log,data]"
 				description="(Optional) Reference to the technical data type. E.g. 'int'" />
+			<!-- each enum code is defined in MolgenisFieldTypes to automatically generate UI. -->
 			<field name="temporal" type="boolean" default="false"
 				description="Whether this feature is time dependent and can have different values when measured 
 					on different times (e.g. weight, temporal=true) or generally only measured once (e.g. birth date, 

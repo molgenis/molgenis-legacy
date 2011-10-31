@@ -58,7 +58,7 @@ public class ComputeLoadExample
 			p1.setName("beagle");
 			p1.setScriptTemplate("beagle ${chr1} ${pedfile} > ${imputedfile}");
 			p1.setInterpreter("bash");
-			p1.setInputs_Id(Arrays.asList(new Integer[]{f1.getId(), f2.getId()}));
+			//p1.setInputs_Id(Arrays.asList(new Integer[]{f1.getId(), f2.getId()}));
 			p1.setFeatures_Id(Arrays.asList(new Integer[]{f3.getId()}));
 			
 			db.add(p1);
@@ -68,7 +68,7 @@ public class ComputeLoadExample
 			p2.setName("impute");
 			p2.setScriptTemplate("impute ${chr1} ${pedfile}  > ${imputedfile}");
 			p2.setInterpreter("bash");
-			p2.setInputs_Id(Arrays.asList(new Integer[]{f1.getId(), f2.getId()}));
+			//p2.setInputs_Id(Arrays.asList(new Integer[]{f1.getId(), f2.getId()}));
 			
 			p2.setFeatures_Id(Arrays.asList(new Integer[]{(f3.getId())}));
 		
