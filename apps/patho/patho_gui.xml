@@ -54,6 +54,7 @@
 			<!-- form name="PathoSubmission" label="Submissions" entity="Submission" 
 				/ -->
 			<form name="PathoObservation" label="Observed Values" entity="ObservedValue" />
+			<plugin name="PathoLoadFromDir" label="DirectoryImport" type="org.molgenis.patho.ui.LoadFromDirectory"/>
 		</menu>
 	</menu>
 </molgenis>

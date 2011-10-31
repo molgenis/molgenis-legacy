@@ -31,7 +31,7 @@ import org.molgenis.variant.SequenceVariant;
  */
 public class ConvertVcfToPheno
 {
-	public static final int BATCH_SIZE = 10000;
+	public static final int BATCH_SIZE = 100000;
 
 	public static void main(String[] args) throws Exception
 	{
@@ -45,7 +45,7 @@ public class ConvertVcfToPheno
 		}
 		else
 		{
-			vcfFile = new File("/tmp/gonl_small_debug_variants.vcf");
+			vcfFile = new File("/tmp/merged20110920_stripped.vcf");
 			outputDir = new File("/tmp/");
 		}
 
@@ -85,6 +85,7 @@ public class ConvertVcfToPheno
 		final String[] ovHeaders = new String[]
 		{ ObservedValue.TARGET_NAME, ObservedValue.RELATION_NAME,
 				ObservedValue.FEATURE_NAME, ObservedValue.VALUE };
+		
 
 		// create files
 		createFileAndHeader(sequenceVariants, svHeaders);
@@ -130,16 +131,16 @@ public class ConvertVcfToPheno
 					v.setEndBP(record.getPos());
 
 					// dbrefs name
-					if (record.getId().size() > 0
-							&& !".".equals(record.getId().get(0)))
-					{
-						v.setDbRefs_Name(record.getId());
-						for (String ref : record.getId())
-						{
-							if (!dbXrefs.contains(ref)) dbXrefs.add(ref);
-						}
-
-					}
+//					if (record.getId().size() > 0
+//							&& !".".equals(record.getId().get(0)))
+//					{
+//						v.setDbRefs_Name(record.getId());
+//						for (String ref : record.getId())
+//						{
+//							if (!dbXrefs.contains(ref)) dbXrefs.add(ref);
+//						}
+//					}
+					v.setDescription(""+record.getId());
 
 					// put alt allele counts in description
 					o.setValue(record.getInfo("AC").get(i));
@@ -153,7 +154,7 @@ public class ConvertVcfToPheno
 					values.add(o);
 				}
 
-				if (variants.size() == BATCH_SIZE)
+				if (variants.size() >= BATCH_SIZE)
 				{
 					writeBatch(variants, sequenceVariants, svHeaders);
 					variants.clear();
@@ -162,7 +163,7 @@ public class ConvertVcfToPheno
 
 					count.set(0, count.get(0) + BATCH_SIZE);
 
-					System.out.println(new Date() + ":" + count.get(0));
+					System.out.println(new Date() + " converted variants:" + count.get(0));
 				}
 			}
 		});
@@ -186,12 +187,12 @@ public class ConvertVcfToPheno
 
 		// write dbXrefs
 		List<OntologyTerm> ontoList = new ArrayList<OntologyTerm>();
-		for (String dbXref : dbXrefs)
-		{
-			OntologyTerm t = new OntologyTerm();
-			t.setName(dbXref);
-			ontoList.add(t);
-		}
+//		for (String dbXref : dbXrefs)
+//		{
+//			OntologyTerm t = new OntologyTerm();
+//			t.setName(dbXref);
+//			ontoList.add(t);
+//		}
 		
 		//add ontlogy terms
 		Species s = new Species();
