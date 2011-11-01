@@ -1,7 +1,7 @@
 package org.molgenis.compute.workflowgenerator;
 
 import org.molgenis.compute.ComputeApplication;
-import org.molgenis.compute.ComputeFeature;
+import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.compute.pipelinemodel.FileToSaveRemotely;
 import org.molgenis.compute.pipelinemodel.Pipeline;
@@ -55,7 +55,7 @@ public class WorkflowGenerator
 
     private int stepNumber = 0;
 
-    private List<ComputeFeature> allComputeFeatures = null;
+    private List<ComputeParameter> allComputeFeatures = null;
 
     //compute
     private MCF mcf = null;
@@ -195,17 +195,17 @@ public class WorkflowGenerator
         System.out.println(">>> workflow element: " + workflowElement.getName());
 
         //create complex features, which will be processed after simple features
-        Vector<ComputeFeature> featuresToDerive = new Vector<ComputeFeature>();
+        Vector<ComputeParameter> featuresToDerive = new Vector<ComputeParameter>();
 
         //features to iterate
-        Vector<ComputeFeature> featuresToIterate = new Vector<ComputeFeature>();
+        Vector<ComputeParameter> featuresToIterate = new Vector<ComputeParameter>();
 
         //get protocol and template
         ComputeProtocol protocol = db.findById(ComputeProtocol.class, workflowElement.getProtocol_Id());
 
 
         //process compute features
-        for (ComputeFeature computeFeature : allComputeFeatures)
+        for (ComputeParameter computeFeature : allComputeFeatures)
         {
             if (computeFeature.getIsUser())
                 continue;
@@ -252,9 +252,9 @@ public class WorkflowGenerator
         }
     }
 
-    private ComputeFeature findComputeFeature(String targetName)
+    private ComputeParameter findComputeFeature(String targetName)
     {
-        for(ComputeFeature f : allComputeFeatures)
+        for(ComputeParameter f : allComputeFeatures)
         {
             if(f.getName().equalsIgnoreCase(targetName))
                 return f;
@@ -266,7 +266,7 @@ public class WorkflowGenerator
                                             WorkflowElement workflowElement,
                                             ComputeProtocol protocol,
                                             Hashtable<String, String> weavingValues,
-                                            Vector<ComputeFeature> featuresToDerive)
+                                            Vector<ComputeParameter> featuresToDerive)
             throws IOException, DatabaseException, ParseException
     {
         ComputeApplication app = new ComputeApplication();
@@ -283,7 +283,7 @@ public class WorkflowGenerator
         //weave complex features
         for (int i = 0; i < featuresToDerive.size(); i++)
         {
-            ComputeFeature feature = featuresToDerive.elementAt(i);
+            ComputeParameter feature = featuresToDerive.elementAt(i);
             String featureName = feature.getName();
             String featureTemplate = feature.getDefaultValue();
 
@@ -318,7 +318,7 @@ public class WorkflowGenerator
             observedValue.setValue(value);
             observedValue.setProtocolApplication(app);
             observedValue.setTarget(target.getId());
-            ComputeFeature feature = findComputeFeature(name); //computeFeatures.get(name);
+            ComputeParameter feature = findComputeFeature(name); //computeFeatures.get(name);
             if (feature.getDataType().equalsIgnoreCase(LOG))
             {
                 logpathfiles.addElement(value);

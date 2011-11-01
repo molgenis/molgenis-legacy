@@ -3,7 +3,7 @@ package org.molgenis.compute.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.compute.ComputeFeature;
+import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
@@ -59,9 +59,9 @@ public class RunWorkflow extends EasyPluginController<RunWorkflowModel>
 					.in(Protocol.ID, protocolIds).find();
 
 			// get features where isUser=true and check if they are in this workflow by looking in templates
-			List<ComputeFeature> allFeatures = db.query(ComputeFeature.class).eq(ComputeFeature.ISUSER, true).find();
-			List<ComputeFeature> usedFeatures = new ArrayList<ComputeFeature>();
-			for (ComputeFeature f : allFeatures)
+			List<ComputeParameter> allFeatures = db.query(ComputeParameter.class).eq(ComputeParameter.ISUSER, true).find();
+			List<ComputeParameter> usedFeatures = new ArrayList<ComputeParameter>();
+			for (ComputeParameter f : allFeatures)
 			{
 				for(ComputeProtocol p: protocols)
 				{

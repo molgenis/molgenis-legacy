@@ -31,7 +31,7 @@ public class ComputeLoadExample
 			db.add(panel);
 			
 			//feature: chr
-			ComputeFeature f1 = new ComputeFeature();
+			ComputeParameter f1 = new ComputeParameter();
 			//Measurement f1 = new Measurement();
 			f1.setName("chr");
 			f1.setDescription("Chromosome");
@@ -40,14 +40,14 @@ public class ComputeLoadExample
 			db.add(f1);
 			
 			//feature: pedfile
-			ComputeFeature f2 = new ComputeFeature();
+			ComputeParameter f2 = new ComputeParameter();
 			//Measurement f2 = new Measurement();
 			f2.setName("pedfile");
 			
 			db.add(f2);
 			
 			//feature: imputed.plink
-			ComputeFeature f3 = new ComputeFeature();
+			ComputeParameter f3 = new ComputeParameter();
 			//Measurement f2 = new Measurement();
 			f3.setName("imputedfile");
 			

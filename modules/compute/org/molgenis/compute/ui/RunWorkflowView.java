@@ -1,7 +1,7 @@
 package org.molgenis.compute.ui;
 
 import org.molgenis.MolgenisFieldTypes;
-import org.molgenis.compute.ComputeFeature;
+import org.molgenis.compute.ComputeParameter;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
@@ -31,7 +31,7 @@ public class RunWorkflowView implements ScreenView
 		f.add(new ActionInput("runWorkflow"));
 		
 		//display inputs for all ComputeFeature that are in template.
-		for(ComputeFeature feature: model.getFeatures())
+		for(ComputeParameter feature: model.getFeatures())
 		{
 			f.add(MolgenisFieldTypes.createInput(feature.getDataType(), feature.getName(), null));
 		}

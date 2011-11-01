@@ -9,7 +9,7 @@ package org.molgenis.compute.ui;
 
 import java.util.List;
 
-import org.molgenis.compute.ComputeFeature;
+import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.framework.ui.EasyPluginModel;
 import org.molgenis.protocol.Workflow;
@@ -18,7 +18,7 @@ import org.molgenis.protocol.WorkflowElement;
 public class RunWorkflowModel extends EasyPluginModel
 {
 	Workflow workflow;
-	List<ComputeFeature> features;
+	List<ComputeParameter> features;
 	List<WorkflowElement> elements;
 	List<ComputeProtocol> protocols;
 
@@ -37,12 +37,12 @@ public class RunWorkflowModel extends EasyPluginModel
 		this.workflow = workflow;
 	}
 
-	protected List<ComputeFeature> getFeatures()
+	protected List<ComputeParameter> getFeatures()
 	{
 		return features;
 	}
 
-	protected void setFeatures(List<ComputeFeature> features)
+	protected void setFeatures(List<ComputeParameter> features)
 	{
 		this.features = features;
 	}
