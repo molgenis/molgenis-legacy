@@ -1,4 +1,4 @@
-package org.molgenis.framework.server;
+package org.molgenis.framework.server.services;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,6 +10,9 @@ import java.net.URL;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.molgenis.framework.server.MolgenisRequest;
+import org.molgenis.framework.server.MolgenisResponse;
+import org.molgenis.framework.server.MolgenisService;
 
 public class MolgenisRapiService implements MolgenisService
 {

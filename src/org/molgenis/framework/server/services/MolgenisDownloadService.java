@@ -1,4 +1,4 @@
-package org.molgenis.framework.server;
+package org.molgenis.framework.server.services;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,6 +13,9 @@ import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.server.MolgenisRequest;
+import org.molgenis.framework.server.MolgenisResponse;
+import org.molgenis.framework.server.MolgenisService;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
