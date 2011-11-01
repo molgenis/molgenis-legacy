@@ -8,7 +8,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.gids.Sample;
+import org.molgenis.gids.GidsSample;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
@@ -26,7 +26,7 @@ public class GidsConvertor
 	final List<Measurement> totalMeasurementsList  = new ArrayList<Measurement>();
 	final List<ObservedValue> valuesList  = new ArrayList<ObservedValue>();
 	final List<Investigation> investigationList = new ArrayList<Investigation>();
-	final List<Sample> samplesList = new ArrayList<Sample>();
+	final List<GidsSample> samplesList = new ArrayList<GidsSample>();
 	private String invName;
 	
 	public File tmpDir = null;
@@ -130,7 +130,7 @@ public class GidsConvertor
 				String sampleName = tuple.getString(sample);
 
 				if(sampleName!=null){
-					Sample newSample = new Sample();
+					GidsSample newSample = new GidsSample();
 					newSample.setInvestigation_Name(getInvestigation());
 					newSample.setName(sampleName);
 					newSample.setIndividualID_Name(indName);
