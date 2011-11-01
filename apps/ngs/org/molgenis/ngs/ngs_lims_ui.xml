@@ -1,0 +1,21 @@
+<molgenis>
+	<menu name="LIMS">
+		<form name="LimsProtocols" label="Protocols" entity="Protocol"
+			hide_fields="Investigation,TargetFilter,OntologyReference">
+			<menu name="LimsProtocolsMenu">
+				<form name="LimsProtocolFeatures" label="Feature descriptions" entity="Measurement" readonly="true"
+					hide_fields="Investigation,OntologyReference,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
+			</menu>
+		</form>
+		<form name="LimsWorkflows" label="Workflows" entity="Workflow"
+			hide_fields="Investigation,OntologyReference,TargetFilter">
+			<form name="LimsWorkflowElements" label="Workflow Elements"
+				entity="WorkflowElement" />
+		</form>
+		<plugin name="LimsApplyProocol" label="Apply protocol"
+			type="org.molgenis.compute.ui.ApplyProtocol" />
+		<form name="LimsFeatures" label="Features" entity="Measurement"/>
+		<!-- plugin name="SampleMatrix" type="org.molgenis.compute.ui.SampleMatrix"
+			label="Sample report" /-->
+	</menu>
+</molgenis>

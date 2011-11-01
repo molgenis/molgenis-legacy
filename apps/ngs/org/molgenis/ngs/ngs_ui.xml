@@ -1,7 +1,4 @@
 <molgenis name="molgenis_apps" label="Next Generation Sequencing">
 	<plugin name="molgenis_header" type="plugins.header.MolgenisHeader" />
-	<menu name="main" position="left">
-		<form name="Worksheet" label="Worksheet" entity="Worksheet" />
-		<plugin name="ImportWorksheet" label="Import worksheet" type="org.molgenis.ngs.ui.ImportWorksheet" />
-	</menu>
+	<include file="org/molgenis/ngs/ngs_ui_lims.xml"/>
 </molgenis>
