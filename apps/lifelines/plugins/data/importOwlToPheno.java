@@ -18,6 +18,7 @@ import org.molgenis.util.Tuple;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.*;
 import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
 
 
@@ -79,6 +80,34 @@ public class importOwlToPheno extends PluginModel<Entity>
 				            
 				            // Remove the ontology again so we can reload it later
 				            manager.removeOntology(dataShaperOntology);
+				            
+				            /////////////////////////////////////////////////
+				            //obtain references to entities (classes, properties, individuals etc.)
+				            // We can get a reference to a data factory from an OWLOntologyManager.
+				            OWLDataFactory factory = manager.getOWLDataFactory();
+				            
+				            // The first is by specifying the full IRI.  First we create an IRI object:
+				            OWLClass clsAMethodA = factory.getOWLClass(iri); //TODO : recheck the argument 
+				            
+				            // The first is by specifying the full IRI.  First we create an IRI object:
+				            // Now we create the class
+				            
+				            //we''ll need to build a prefix manager . 
+				            PrefixManager pm = new DefaultPrefixManager("http://www.semanticweb.org/owlapi/ontologies/ontology#");
+				            OWLClass clsAMethodB = factory.getOWLClass(":A", pm);
+				          
+				            OWLOntology ontology = manager.createOntology(IRI.create("http://www.semanticweb.org/owlapi/ontologies/ontology"));
+				            OWLDeclarationAxiom declarationAxiom = factory.getOWLDeclarationAxiom(clsAMethodA);
+				            manager.addAxiom(ontology, declarationAxiom);
+				            
+				            //////////////////////////////////////////////
+				            //work with literals
+				            OWLLiteral literal1 = factory.getOWLLiteral("My string literal", "");
+				            OWLLiteral literal2 = factory.getOWLLiteral("My string literal", "en");
+
+				            System.out.println(">>>>>test " + literal1 + ">>>>>>"+ literal2);	
+				            
+				            
 			            } else {
 			            	System.out.println("The ontology file is not available!");
 			            	this.setStatus("The ontology file is not available!");
@@ -96,7 +125,7 @@ public class importOwlToPheno extends PluginModel<Entity>
             		                System.out.println("Could not load ontology: " + ioException.getClass().getSimpleName() + " " + ioException.getMessage());
             		            }
             		        }
-            		        catch (UnparsableOntologyException e) {
+            		   catch (UnparsableOntologyException e) {
             		            // If there was a problem loading an ontology because there are syntax errors in the document (file) that
             		            // represents the ontology then an UnparsableOntologyException is thrown
             		            System.out.println("Could not parse the ontology: " + e.getMessage());
@@ -108,7 +137,7 @@ public class importOwlToPheno extends PluginModel<Entity>
             		                System.out.println("Failed because: " + exceptions.get(parser).getMessage());
             		            }
             		        }
-            		        catch (UnloadableImportException e) {
+            		   catch (UnloadableImportException e) {
             		            // If our ontology contains imports and one or more of the imports could not be loaded then an
             		            // UnloadableImportException will be thrown (depending on the missing imports handling policy)
             		            System.out.println("Could not load import: " + e.getImportsDeclaration());
@@ -116,10 +145,10 @@ public class importOwlToPheno extends PluginModel<Entity>
             		            OWLOntologyCreationException cause = e.getOntologyCreationException();
             		            System.out.println("Reason: " + cause.getMessage());
             		        }
-            		        catch (OWLOntologyCreationException e) {
+            		   catch (OWLOntologyCreationException e) {
             		            System.out.println("Could not load ontology: " + e.getMessage());
             		        }
-            		    }
+		}
 		
 	}
 
