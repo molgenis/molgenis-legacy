@@ -158,6 +158,7 @@
 			<classpath>
 				<path refid="molgenis-libs" />
 				<path location="${mol_build_dir}" />
+				<path location="WebContent/WEB-INF/lib/simplecaptcha-1.1.1.jar" />
 			</classpath>
 		</javac>
 		<javac srcdir="generated/java/test" destdir="${app_build_dir}" includeantruntime="false">
