@@ -7,13 +7,14 @@
 
 package org.molgenis.compute.ui;
 
-import java.util.List;
-
 import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.framework.ui.EasyPluginModel;
+import org.molgenis.ngs.NgsSample;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.protocol.WorkflowElement;
+
+import java.util.List;
 
 public class RunWorkflowModel extends EasyPluginModel
 {
@@ -21,6 +22,18 @@ public class RunWorkflowModel extends EasyPluginModel
 	List<ComputeParameter> features;
 	List<WorkflowElement> elements;
 	List<ComputeProtocol> protocols;
+
+    protected List<NgsSample> getSamples()
+    {
+        return samples;
+    }
+
+    protected void setSamples(List<NgsSample> samples)
+    {
+        this.samples = samples;
+    }
+
+    List<NgsSample> samples;
 
 	public RunWorkflowModel(RunWorkflow controller)
 	{
