@@ -1,4 +1,4 @@
-package convertors;
+package org.molgenis.gids.converters;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.gids.Sample;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
@@ -17,7 +18,7 @@ import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
 import app.CsvExport;
 
-public class GenericConvertor
+public class GidsConvertor
 {
 	private Logger logger;
 	final List<Individual> individualsList  = new ArrayList<Individual>();
@@ -25,6 +26,7 @@ public class GenericConvertor
 	final List<Measurement> totalMeasurementsList  = new ArrayList<Measurement>();
 	final List<ObservedValue> valuesList  = new ArrayList<ObservedValue>();
 	final List<Investigation> investigationList = new ArrayList<Investigation>();
+	final List<Sample> samplesList = new ArrayList<Sample>();
 	private String invName;
 	
 	public File tmpDir = null;
@@ -54,7 +56,7 @@ public class GenericConvertor
 			logger.info("Measurement.txt was not in de tmpdirectory");
 		}
 		try{
-			export.exportAll(tmpDir, individualsList, measurementsList, valuesList);
+			export.exportAll(tmpDir, individualsList, samplesList, measurementsList, valuesList);
 		} catch(Exception e){
 			logger.info("CANNOT EXPORT DATA");
 		}
@@ -74,11 +76,15 @@ public class GenericConvertor
 		return valuesList.size();
 	}
 	
+	public Integer getListSizeSamples (){
+		return samplesList.size();
+	}
+	
 	public File getDir(){
 		return tmpDir;
 	}
 	
-	public GenericConvertor() throws Exception
+	public GidsConvertor() throws Exception
 	{
 		logger = Logger.getLogger("Generic Convertor");
 	}
@@ -93,6 +99,7 @@ public class GenericConvertor
 	public void populateIndividualAndSample(File file, String invName,final String individual, final String father, final String mother, final String sample) throws Exception
 	{
 		individualsList.clear();
+		samplesList.clear();
 		
 		final List<String> namesSeen = new ArrayList<String>();
 		this.invName = invName;
@@ -117,6 +124,19 @@ public class GenericConvertor
 					newIndividual.setFather_Name(father_Name);	
 					
 					individualsList.add(newIndividual);
+				}
+				
+				// Create new sample and link to individual
+				String sampleName = tuple.getString(sample);
+
+				if(sampleName!=null){
+					Sample newSample = new Sample();
+					newSample.setInvestigation_Name(getInvestigation());
+					newSample.setName(sampleName);
+					newSample.setIndividualID_Name(indName);
+					// TODO: set sample values
+					
+					samplesList.add(newSample);
 				}
 			}
 			

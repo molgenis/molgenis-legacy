@@ -5,7 +5,7 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package plugins.phenoModelconverterandloader;
+package org.molgenis.gids.converters.phenoModelconverterandloader;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -100,13 +100,13 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_phenoModelconverterandloader_PMconverterandloaderPlugin";
+		return "org_molgenis_gids_converters_phenoModelconverterandloader_PMconverterandloaderPlugin";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/phenoModelconverterandloader/PMconverterandloaderPlugin.ftl";
+		return "org/molgenis/gids/converters/phenoModelconverterandloader/PMconverterandloaderPlugin.ftl";
 	}
 
 	@Override

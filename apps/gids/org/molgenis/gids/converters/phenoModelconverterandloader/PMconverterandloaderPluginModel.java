@@ -5,7 +5,7 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package plugins.phenoModelconverterandloader;
+package org.molgenis.gids.converters.phenoModelconverterandloader;
 
 import java.util.Date;
 
