@@ -8,9 +8,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.molgenis.framework.MolgenisService;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisService;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.NameNotUniqueException;
 import org.molgenis.framework.ui.ScreenController;
@@ -39,7 +39,7 @@ import org.molgenis.util.Tuple;
  * (using Matrix interface)
  * 
  */
-public class MatrixViewer extends HtmlInput<Matrix> implements MolgenisService
+public class MatrixViewer extends HtmlInput<Matrix>
 {	
 	// map of rowids and the widget to show as rowheader
 	private Map<String, AbstractHtmlElement> rows = null;
@@ -78,7 +78,6 @@ public class MatrixViewer extends HtmlInput<Matrix> implements MolgenisService
 		this.setValue(values);
 	}
 
-	@Override
 	public Show handleRequest(Database db, Tuple request,
 			PrintWriter outputStream) throws ParseException,
 			DatabaseException, IOException
