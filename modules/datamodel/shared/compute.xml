@@ -64,13 +64,14 @@
 				are considered observable features as they are important to the interpretation 
 				of the observed values." / -->
 		</entity>
-		<entity name="ComputeFeature" extends="Measurement">
+		<entity name="ComputeParameter" extends="Measurement">
 			<description>Parameter are the inputs or outputs into an
 				ComputeProtocol. It reuses all of ObservableFeature to define the
 				type of the parameters. It extends ObserveableFeature with the
 				marking whether the parameter is input, output or both. It is good
-				practice to name ComputeFeature that are specific to a ComputeProtocol by using ComputeProtocol.name as a
-				prefix. E.g. bwa_param1.
+				practice to name ComputeFeature that are specific to a
+				ComputeProtocol by using ComputeProtocol.name as a prefix. E.g.
+				bwa_param1.
 			</description>
 			<!-- field name="iterateOver" type="boolean" default="false" description="Use 
 				this parameter to iterate over the values in this parameter. Only holds for 
@@ -139,8 +140,9 @@
 			<field name="Queue" nillable="true" type="text"
 				description="ADDED TO FIX THE BUILD - NEEDED IN PbsSubmitApplication.java: currentjob.setQueue(app.getQueue());" />
 		</entity>
-		<!-- What is this?? -->
-		<!-- entity name="UserParameter"
+		<!-- BELOW TO BE DISCUSSED: WE CAN JUST QUERY METADATA OF ENTITIES SO WE 
+			DON"T NEED UNLESS RENAMING STUFF -->
+		<entity name="UserParameter"
 			description="metadata: initial version (fast solution) mapper of the database field to the feature name in the workflow description">
 			<field name="id" type="autoid" />
 			<field name="FeatureName" type="string" nillable="false"
@@ -149,8 +151,8 @@
 				description="corresponding field in the database" />
 			<field name="DatabaseTable" type="string" nillable="false"
 				description="corresponding table" />
-			<unique fields="FeatureName" >
-		</entity-->
+			<unique fields="FeatureName"/>
+		</entity>
 		<entity name="ComputeResource" implements="Identifiable,Nameable"
 			xref_label="name">
 			<description>Declaration of a compute resource such as a PBS cluster,

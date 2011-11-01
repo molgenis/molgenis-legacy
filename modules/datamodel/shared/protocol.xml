@@ -137,11 +137,11 @@
 			</description>
 			<field name="WorkflowElement" type="xref" xref_entity="WorkflowElement"
 				description="To attach a parameter to a WorkflowElement" />
-			<field name="Feature" type="xref" xref_entity="ObservableFeature"
+			<field name="Parameter" type="xref" xref_entity="ObservableFeature"
 				description="Parameter definition." />
 			<field name="Value"
 				description="Value of this parameter. Can be a template of form ${other} refering to previous values in context." />
-			<unique fields="WorkflowElement,Feature" description="Feature value is set only once per element"/>
+			<unique fields="WorkflowElement,Parameter" description="Feature value is set only once per element"/>
 		</entity>
 		<!-- DISCUSSION: we added ComputeFeature, ComputeElement and ComputeValue 
 			for understandability. But I think we don't need them (and actually we are 
