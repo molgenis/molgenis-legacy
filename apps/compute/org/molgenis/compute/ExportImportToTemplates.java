@@ -1,23 +1,23 @@
 package org.molgenis.compute;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.List;
-
+import app.DatabaseFactory;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.ngs.LibraryLane;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.protocol.WorkflowElement;
+import org.molgenis.protocol.WorkflowElementParameter;
 import org.molgenis.util.CsvFileWriter;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Tuple;
 
-import app.DatabaseFactory;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This class can import/export data out of compute into/from
@@ -63,9 +63,9 @@ public class ExportImportToTemplates
 		// retrieve the data
 		List<ComputeProtocol> protocols = db.find(ComputeProtocol.class);
 		List<ComputeParameter> parameters = db.find(ComputeParameter.class);
-		List<WorkflowElement> elements = db
-				.find(WorkflowElement.class);
+		List<WorkflowElement> elements = db.find(WorkflowElement.class);
 		List<Tuple> worksheet = this.generateWorksheet(db, LibraryLane.class);
+        List<WorkflowElementParameter> elementParameters = db.find(WorkflowElementParameter.class);
 
 		// write out parameters and workflowelements just as before to
 		// ComputeParameter.txt and WorkflowElements.txt
@@ -79,9 +79,12 @@ public class ExportImportToTemplates
 
 		// export protocols
 		this.exportProtocols(dir, protocols);
+
+        //export parameters (WorkflowElement level)
+        this.exportWorkflowElementParameters(dir, elementParameters);
 	}
 
-	private void exportProtocols(File dir, List<ComputeProtocol> protocols) throws FileNotFoundException
+    private void exportProtocols(File dir, List<ComputeProtocol> protocols) throws FileNotFoundException
 	{
 		// TODO Auto-generated method stub
 		for (ComputeProtocol p : protocols)
@@ -137,7 +140,21 @@ public class ExportImportToTemplates
 			writer.writeRow(e);
 		writer.close();
 	}
-	
+
+    private void exportWorkflowElementParameters(File dir, List<WorkflowElementParameter> elementParameters) throws IOException
+    {
+        File paramFile = new File(dir.getAbsoluteFile() + File.separator
+                + "workflowelementparameter.txt");
+        List<String> paramFields = Arrays.asList(new String[]
+        {"parameter_name", "value"});
+
+        CsvWriter writer = new CsvFileWriter(paramFile, paramFields);
+        writer.writeHeader();
+        for (WorkflowElementParameter e : elementParameters)
+            writer.writeRow(e);
+        writer.close();
+
+    }
 	
 
 	/**
