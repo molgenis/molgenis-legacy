@@ -10,21 +10,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.services.MolgenisDownloadService;
+import org.molgenis.framework.server.services.MolgenisRapiService;
 
 public class MolgenisFrontController extends HttpServlet implements
 		MolgenisService
 {
 	private Database db;
-	private Map<String, MolgenisService> services = new LinkedHashMap<String,MolgenisService>();
+	protected Map<String, MolgenisService> services;
 	Logger logger = Logger.getLogger(MolgenisFrontController.class);
-
-	public MolgenisFrontController()
-	{
-		services.put("/api/find", new MolgenisDownloadService());
-		services.put("/api/R", new MolgenisRapiService());
-	}
+	
+	// the used molgenisoptions, set by generated MolgenisServlet
+	protected MolgenisOptions usedOptions = null;
 
 	public void service(HttpServletRequest request, HttpServletResponse response)
 	{
