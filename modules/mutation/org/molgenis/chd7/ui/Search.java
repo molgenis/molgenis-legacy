@@ -28,6 +28,7 @@ public class Search extends SearchPlugin
 		this.getModel().setGeneName("CHD7");
 		this.getModel().setPatientPager("res/mutation/patientPager.jsp");
 		this.getModel().setMutationPager("res/mutation/mutationPager.jsp");
+		this.getModel().setPatientViewer("/org/molgenis/mutation/ui/search/patient.ftl");
 	}
 	
 	@Override
