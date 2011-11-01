@@ -56,6 +56,7 @@ public class GidsConvertor
 			logger.info("Measurement.txt was not in de tmpdirectory");
 		}
 		try{
+			System.out.println("samplesList.size(): " + samplesList.size());
 			export.exportAll(tmpDir, individualsList, samplesList, measurementsList, valuesList);
 		} catch(Exception e){
 			logger.info("CANNOT EXPORT DATA");
@@ -200,12 +201,12 @@ public class GidsConvertor
 					newValue.setFeature_Name(featureName);
 					
 					if(samplemeaslist.contains(featureName)){
-						System.out.println("featureName(Sample): " + featureName);
+						
 						newValue.setTarget_Name(sampleName);
 					}
 					else{
 						newValue.setTarget_Name(targetName);
-						System.out.println("featureName(individual): " + featureName);
+
 					}
 					newValue.setValue(value);
 					newValue.setInvestigation_Name(getInvestigation());					

@@ -26,6 +26,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.gids.converters.GidsConvertor;
 import org.molgenis.organization.Investigation;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
@@ -61,7 +62,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	 */
 	private String state = "start";
 	public String status = "bla";
-	public GenericConvertor gc;
+	public GidsConvertor gc;
 	public String wait = "no";
 	public String invName = "";
 	public String [] arrayMeasurements;
@@ -93,7 +94,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		super(name, parent);
 	}
 	
-	public GenericConvertor getGC() {
+	public GidsConvertor getGC() {
 		return this.gc;
 	}
 
@@ -332,7 +333,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	
 	public void runGenerConver(File file, String invName, Database db,String target, String father, String mother, String sample,List<String> samplemeaslist){
 		try {
-			gc = new GenericConvertor();
+			gc = new GidsConvertor();
 			gc.converter(file, invName, db, target,father,mother, sample, samplemeaslist);				
 			
 		} catch (Exception e) {
@@ -359,7 +360,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		}
 	}
 	
-	public GenericConvertor getGc() {
+	public GidsConvertor getGc() {
 		return gc;
 	}
 
