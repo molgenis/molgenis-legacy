@@ -23,6 +23,8 @@ import org.molgenis.pheno.ObservationElement;
 import org.molgenis.protocol.Protocol;
 
 import app.DatabaseFactory;
+import javax.persistence.NoResultException;
+import org.molgenis.pheno.ObservableFeature;
 
 /**
  *
@@ -143,13 +145,14 @@ public class OracleToLifelinesPheno {
         
        	protocol = new Protocol();
     	protocol.setDescription(tableName);
-    	//make features for protocol
-//    	List<ObservationElement> f = new ArrayList<ObservationElement>();
+
+        //make features for protocol
+//    	List<ObservableFeature> f = new ArrayList<ObservableFeature>();
 //    	for(ObservationElement e : measurements) {
-//    		f.add(e);
+//    		f.add((ObservableFeature)e);
 //    	}    	
-        
-        protocol.setFeatures(measurements);
+
+        protocol.setFeatures(((List<ObservableFeature>)((List)measurements)));
     	protocol.setInvestigation(investigation);
     	protocol.setName(tableName);
 
@@ -169,18 +172,20 @@ public class OracleToLifelinesPheno {
 
         List<ObservationElement> measurements = new ArrayList<ObservationElement>();
         for (int i = 1; i <= rsm.getColumnCount(); ++i) {
-        	String jql = "SELECT Count(m) FROM Measurement m WHERE m.investigation.id = :invId AND m.name = :name";
-        	log.debug(String.format("[%d-%s] %s", studyId, tableName, jql));
-        	Long count = em.createQuery(jql, Long.class)
-        		.setParameter("invId", investigationId)
-        		.setParameter("name", rsm.getColumnName(i))        		
-        		.getSingleResult();
-        	if(count == 1) {
-        		continue;
-        	} else if(count > 1) {
-        		throw new IllegalArgumentException("two measurments with same name in investigation");
-        	}
+            String jql = "SELECT m FROM Measurement m WHERE m.investigation.id = :invId AND m.name = :name";
+            log.debug(String.format("[%d-%s] %s", studyId, tableName, jql));
         	
+            try {
+                Measurement m = em.createQuery(jql, Measurement.class)
+                        .setParameter("invId", investigationId)
+                        .setParameter("name", rsm.getColumnName(i))
+                        .getSingleResult();
+                measurements.add(m);
+                continue;
+            } catch (NoResultException nre) {
+                //if object is not in database just create new on, code below
+            }
+                    
             ObservationElement m = new Measurement();
             measurements.add(m);
 

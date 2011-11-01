@@ -38,7 +38,7 @@ public class MyMonitorThread implements Runnable
             while (this.executor.getCompletedTaskCount() - this.executor.getTaskCount() != 0);
             
             log.info(
-                    String.format("[monitor-s] [%d/%d] Active: %d, Completed: %d, Task: %d, isShutdown: %s, isTerminated: %s",
+                    String.format("[monitor-s] [%s/%d] Active: %d, Completed: %d, Task: %d, isShutdown: %s, isTerminated: %s",
                     	this.tableName,
                     	this.executor.getPoolSize(),
                         this.executor.getCorePoolSize(),

@@ -66,7 +66,7 @@ public class FillEAVFromTables {
         inv.setName(String.format("StudyId: %d Loaded: %s",studyId, new Date().toString()));    
         
         Map<String, Object> configOverrides = new HashMap<String, Object>();
-        //configOverrides.put("hibernate.hbm2ddl.auto", "create-drop"); //FIXME: should be changed to validate for production		        
+        configOverrides.put("hibernate.hbm2ddl.auto", "create-drop"); //FIXME: should be changed to validate for production		        
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("molgenis", configOverrides);
         EntityManager em = emf.createEntityManager();
         
@@ -105,7 +105,9 @@ public class FillEAVFromTables {
         	OracleToLifelinesPheno oracleToLifelinesPheno =	new OracleToLifelinesPheno(studyId, em, schemaName, tableName, fieldNames, inv.getId());
         	log.trace(String.format("[%d-%s] Meta data succesfully stored.", studyId, tableName));
 
-        	int protocolId = oracleToLifelinesPheno.getProtocolId();
+                int protocolId = oracleToLifelinesPheno.getProtocolId();
+                
+
         	
         	BigDecimal numberOfBuckets = (BigDecimal) em.createNativeQuery(
         			String.format(sqlNumerBuckets, RECORDS_PER_THREAD, schemaName, tableName))
@@ -120,28 +122,24 @@ public class FillEAVFromTables {
         	
             BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<Runnable>(N);
             ThreadPoolExecutor executor = new ThreadPoolExecutor(MAX_THREADS, MAX_THREADS, THREAD_TIME_OUT_TIME, TimeUnit.SECONDS, workQueue);
-            
-            CountDownLatch doneSignal = new CountDownLatch(N);
-            int prevPA_ID = 0;
-            if(results.size() > 0) {
-	            for(int i = 0; i < N; ++i) { 
-	        	   int endPA_ID = ((BigDecimal) results.get(i)[0]).intValue();
-	        	   executor.execute(new OracleToPheno(emf, schemaName, tableName, fieldNames, studyId, inv.getId(), protocolId, prevPA_ID, endPA_ID, doneSignal));
-	        	   prevPA_ID = endPA_ID;
-	        	}
-	            Thread monitor = new Thread(new MyMonitorThread(executor, tableName));
-	            monitor.start();
+                    CountDownLatch doneSignal = new CountDownLatch(N);
+                    int prevPA_ID = 0;
+                    if (results.size() > 0) {
+                        for (int i = 0; i < N; ++i) {
+                            int endPA_ID = ((BigDecimal) results.get(i)[0]).intValue();
+                            executor.execute(new OracleToPheno(emf, schemaName, tableName, fieldNames, studyId, inv.getId(), protocolId, prevPA_ID, endPA_ID, doneSignal));
+                            prevPA_ID = endPA_ID;
+                        }
+                        Thread monitor = new Thread(new MyMonitorThread(executor, tableName));
+                        monitor.start();
 
-	            executor.shutdown(); //when all task are complete ThreadPoolExecutor is terminated 
-	       	   	doneSignal.await();  //wait for all tasks to finish (what will happen in case of timeout?)
-	       	   	log.trace(String.format("[%d-%s] Data for Table is loaded", studyId, tableName));
-            } else {
-            	log.trace(String.format("[%d-%s] There is no Data in Table for study ", studyId, tableName));
-            }
-            
-
-
-       	   	
+                        executor.shutdown(); //when all task are complete ThreadPoolExecutor is terminated 
+                        doneSignal.await();  //wait for all tasks to finish (what will happen in case of timeout?)
+                        log.trace(String.format("[%d-%s] Data for Table is loaded", studyId, tableName));
+                    } else {
+                        log.trace(String.format("[%d-%s] There is no Data in Table for study ", studyId, tableName));
+                    }
+ 
        	   	log.trace(String.format("[%d-%s] Start EAVToView", studyId, tableName));
        	   	String viewName = studyName + "_" + tableName;
        	   	new EAVToView(studyId, schemaName, viewName, fieldNames, schemaToExportView, protocolId, inv.getId());

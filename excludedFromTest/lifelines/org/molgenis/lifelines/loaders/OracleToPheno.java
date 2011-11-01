@@ -125,7 +125,7 @@ public class OracleToPheno implements Runnable {
 		        									.getResultList();
 		        paidTargets = new HashMap<Integer, ObservationTarget>();
 		        for(ObservationTarget t : targets) {
-                            paidTargets.put(t.getPaid(), t);
+                    paidTargets.put(t.getPaid(), t);
 		        }        	
 		        
 		        int w = 0;
