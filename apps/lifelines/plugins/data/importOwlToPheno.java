@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.Map;
 
+import org.molgenis.catalogue.OntologyBuilder;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -20,6 +21,7 @@ import org.semanticweb.owlapi.io.*;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 
 public class importOwlToPheno extends PluginModel<Entity>
@@ -55,7 +57,7 @@ public class importOwlToPheno extends PluginModel<Entity>
 					
 					//get hold of ontology manager
 		            OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		
+		            String base = "http://www.datashaper.org/datashaper/owl/2009/10/generic.owl";
 		            //if ontology available from the web 
 		            IRI iri = IRI.create("http://www.datashaper.org/datashaper/owl/2009/10/generic.owl");
 		            OWLOntology dataShaperOntologyWeb = manager.loadOntology(iri);
@@ -106,6 +108,45 @@ public class importOwlToPheno extends PluginModel<Entity>
 				            OWLLiteral literal2 = factory.getOWLLiteral("My string literal", "en");
 
 				            System.out.println(">>>>>test " + literal1 + ">>>>>>"+ literal2);	
+				            //////////////////////////////////////////////
+				            //
+
+				            OWLClass domain = factory.getOWLClass(":Domain", pm);
+				            // Get the reference to the :GENERIC19 class 
+				            OWLNamedIndividual generic19 = factory.getOWLNamedIndividual(":GENERIC_19", pm);
+				            
+				            // Now create a ClassAssertion to specify that :GENERIC19 is an instance of :DOMAIN
+				            OWLClassAssertionAxiom classAssertion = factory.getOWLClassAssertionAxiom(domain, generic19);
+				            // We need to add the class assertion to the ontology that we want specify that :generic_19Mary is a :Domain
+				            // Add the class assertion
+				            manager.addAxiom(ontology, classAssertion);
+				            	
+				            // Dump the ontology to stdout
+				            manager.saveOntology(ontology, new SystemOutDocumentTarget());
+
+				            OntologyBuilder ob = new OntologyBuilder(manager, base);
+				            System.out.println(">>>>>label " + ob.getLabel(domain, ontology));
+				            
+				      
+				            try{
+				                OWLAnnotationProperty label = factory.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI());
+					            System.out.println(">>HERE>>>>>> " );
+
+				                for (OWLAnnotation annotation : domain.getAnnotations(ontology, label)) {
+						            System.out.println(">>HERE>>>>>> " );
+
+				                    if (annotation.getValue() instanceof OWLLiteral) {
+				                        OWLLiteral val = (OWLLiteral) annotation.getValue();
+				                        String labelValue = val.getLiteral().toString();
+
+							            System.out.println(">>>>>label>>>>>> " + labelValue);
+								         
+				                    }      
+				                }       
+				            }catch(Exception e){
+				                System.out.println("The annotation is null!");
+				            }
+				               
 				            
 				            
 			            } else {
