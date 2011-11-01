@@ -39,7 +39,7 @@ public class GidsConvertor
 		this.db = db;
 		makeInvestigation(invName);
 		populateIndividualAndSample(file,invName,individual, father, mother,sample);
-		populateMeasurement(file,invName,individual, father, mother);
+		populateMeasurement(file,invName,individual, father, mother, sample);
 		
 		populateValue(file,invName, individual, sample, samplemeaslist);
 		
@@ -144,7 +144,7 @@ public class GidsConvertor
 		});
 	}
 	
-	public void populateMeasurement(File file, String invName,final String target, final String father, final String mother) throws Exception {
+	public void populateMeasurement(File file, String invName,final String target, final String father, final String mother, final String sample) throws Exception {
 		
 		measurementsList.clear();
 		totalMeasurementsList.clear();
@@ -152,9 +152,8 @@ public class GidsConvertor
 		CsvFileReader reader = new CsvFileReader(file);
 
 		for (String header : reader.colnames()) {
-			//optionally
-			//if (!header.equals("id_individual")) {
-			if (!header.equals(target) && !header.equals(mother) && !header.equals(father)) {
+
+			if (!header.equals(target) && !header.equals(mother) && !header.equals(father)&& !header.equals(sample)) {
 				if(db.query(Measurement.class).eq(Measurement.NAME, header).count() == 0){
 					Measurement measurement = new Measurement();
 					measurement.setName(header);
@@ -188,30 +187,28 @@ public class GidsConvertor
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{			
 				//Change targetname into the targetname/target id column
-				String targetName = tuple.getString(individual);
-				
+				String targetName = tuple.getString(individual);				
 				String sampleName = tuple.getString(sample);
-				System.out.println(sampleName);
 				if(sampleName!=null){
-				for (Measurement m : totalMeasurementsList) {
-					String featureName = m.getName();
-					
-					String value = tuple.getString(featureName);
-					ObservedValue newValue = new ObservedValue();
-					newValue.setFeature_Name(featureName);
-					
-					if(samplemeaslist.contains(featureName)){
+					for (Measurement m : totalMeasurementsList) {
+						String featureName = m.getName();
 						
-						newValue.setTarget_Name(sampleName);
+						String value = tuple.getString(featureName);
+						ObservedValue newValue = new ObservedValue();
+						newValue.setFeature_Name(featureName);
+						
+						if(samplemeaslist.contains(featureName)){
+							
+							newValue.setTarget_Name(sampleName);
+						}
+						else{
+							newValue.setTarget_Name(targetName);
+	
+						}
+						newValue.setValue(value);
+						newValue.setInvestigation_Name(getInvestigation());					
+						valuesList.add(newValue);	
 					}
-					else{
-						newValue.setTarget_Name(targetName);
-
-					}
-					newValue.setValue(value);
-					newValue.setInvestigation_Name(getInvestigation());					
-					valuesList.add(newValue);	
-				}
 				}
 			}
 		});
