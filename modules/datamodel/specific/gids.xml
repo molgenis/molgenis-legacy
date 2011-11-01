@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="org.molgenis">
+	<module name="gids">
+		<description>achterwege</description>
+		
+		<entity name="Sample" extends="ObservationTarget">
+			<field name="individualID" type="xref" xref_entity="Individual" />
+		</entity>
+	</module>
+</molgenis>
