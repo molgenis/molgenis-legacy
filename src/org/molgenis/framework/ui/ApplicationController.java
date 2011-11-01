@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
-import org.molgenis.framework.MolgenisService;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.security.Login;
+import org.molgenis.framework.server.MolgenisService;
 import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.html.FreemarkerInput;
 import org.molgenis.framework.ui.html.HtmlSettings;
@@ -311,16 +311,16 @@ public class ApplicationController extends
 				"getDatabase must be implemented for use");
 	}
 
-	/**
-	 * Add a MolgenisService. TODO: we would like to refactor this to also take
-	 * cxf annotated services
-	 * @throws Exception 
-	 */
-	public void addService(MolgenisService matrixView) throws NameNotUniqueException
-	{
-		if(this.services.containsKey(matrixView.getName())) throw new NameNotUniqueException("addService failed: path already exists");
-		this.services.put(matrixView.getName(), matrixView);
-	}
+//	/**
+//	 * Add a MolgenisService. TODO: we would like to refactor this to also take
+//	 * cxf annotated services
+//	 * @throws Exception 
+//	 */
+//	public void addService(MolgenisService matrixView) throws NameNotUniqueException
+//	{
+//		if(this.services.containsKey(matrixView.getName())) throw new NameNotUniqueException("addService failed: path already exists");
+//		this.services.put(matrixView.getName(), matrixView);
+//	}
 
 	/**
 	 * The base url of this app. Generally the path up to %/molgenis.do

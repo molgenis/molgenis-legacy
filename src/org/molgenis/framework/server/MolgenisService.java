@@ -1,13 +1,10 @@
-package org.molgenis.framework;
+package org.molgenis.framework.server;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.ParseException;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.ui.ScreenModel.Show;
-import org.molgenis.util.Tuple;
 
 /**
  * MolgenisService defines the generic 'handleRequest' framework that builds on
@@ -25,7 +22,7 @@ public interface MolgenisService
 	 * HandleRequest is the standard way how MOLGENIS treats requests that come
 	 * in from a user interface (web, script). Typically these requests come
 	 * from the web.
-	 * 
+	 * s
 	 * @param db
 	 *            a MOLGENIS database that can be used by the service
 	 * @param request
@@ -43,14 +40,7 @@ public interface MolgenisService
 	 *             because of problems with file uploads in the request or
 	 *             outputStream
 	 */
-	public Show handleRequest(Database db, Tuple request,
-			PrintWriter outputStream) throws ParseException, DatabaseException,
+	public void handleRequest(MolgenisRequest request,
+			MolgenisResponse response) throws ParseException, DatabaseException,
 			IOException;
-
-	/**
-	 * The path on which the service is registered. E.g. api/R.
-	 * 
-	 * @return
-	 */
-	public String getName();
 }
