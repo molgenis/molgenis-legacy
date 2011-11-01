@@ -14,7 +14,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,6 +30,7 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
+
 
 import plugins.emptydb.emptyDatabase;
 
@@ -63,14 +66,27 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	public String invName = "";
 	public String [] arrayMeasurements;
 	private File fileData;
-	private String target;
+	private String individualName;
 	private String father;
 	private String mother;
+	private String sampleName;
 	private String TAB = "\t";
 	private String COMMA = ",";
 	private String SEMICOLON = ";";
 	private String delimeter;
 	private String [] arrayDelimeter = {",","tab",";"};
+	private String [] arrayChooseTable = {"Individuals", "Samples"};
+	private HashMap<String,String> hashStep2 = new HashMap<String, String>();
+	private HashMap<String,String> hashTargets = new HashMap<String, String>();
+	private List<String> sampleMeasList = new ArrayList<String>();
+	
+	public String[] getArrayChooseTable() {
+		return arrayChooseTable;
+	}
+
+	public void setArrayChooseTable(String[] arrayChooseTable) {
+		this.arrayChooseTable = arrayChooseTable;
+	}
 
 	public PMconverterandloaderPlugin(String name, ScreenController<?> parent)
 	{
@@ -113,7 +129,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		}
 		
 		//goes to the load files into database screen
-		if(action.equals("step3")){
+		if(action.equals("step4")){
 			state = "skip";
 			status = "bla";
 		}
@@ -132,38 +148,19 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 			status = "bla";
 		}
 		
-		if (action.equals("emptyDB") ){
-			try {
-				if(db.count(Investigation.class)!=0){
-					
-					//OLD
-					//new emptyDatabase(db, true);
-					
-					//NEW
-					new emptyDatabase(db, false);
-					FillMetadata.fillMetadata(db, false);
-					
-					this.setMessages(new ScreenMessage("empty database succesfully", true));
-				}
-				else{
-					this.setMessages(new ScreenMessage("database is empty already", true));
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}	
-		}
+		
 		
 		/* 
 		 * Runs pipeline, data will be converted to 3 different files; individual.txt, measurement.txt and observedvalue.txt
 		 * if all the measurements already exist, then there will be no measurement.txt made.
 		 */
-		if(action.equals("update")){		
+		if(action.equals("goToStep2")){		
 			fileData = request.getFile("convertData");	
 			String fileName = fileData.toString();
 			try {
 				BufferedReader buffy = new BufferedReader(new FileReader (fileName));
 				delimeter = request.getString("delimeter");
-				logger.info("$$$$$#########" + delimeter);
+				
 				if(delimeter.equals("tab")){
 					delimeter = TAB;
 				}
@@ -182,7 +179,8 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 						String line = buffy.readLine();
 						arrayMeasurements = line.split(delimeter);
 						checkInvestigation(db, request);
-						state="updated";
+						state="inStep2";
+						System.out.println("########### " + state);
 						
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
@@ -195,14 +193,35 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 			} 
 			
 		}
-		if(action.equals("pipeline")){	
+		
+		if(action.equals("goToStep3")){	
+			
+			hashStep2.put("individual",request.getString("individual"));
+			hashStep2.put("sample",request.getString("sample"));
+			hashStep2.put("father",request.getString("father"));
+			hashStep2.put("mother",request.getString("mother"));
+			//System.out.println("########### " + request.getString("target"));
+			
+			state= "inStep3";
+		}
+		
+		if(action.equals("run pipeline")){	
 			try {
 				//convert csv file into different txt files
-				target = request.getString("target");	
-				father = request.getString("father");
-				mother = request.getString("mother");
+				individualName = hashStep2.get("individual");
+				sampleName = hashStep2.get("sample");
+				father = hashStep2.get("father");
+				mother = hashStep2.get("mother");
+				
 				try{
-					runGenerConver(fileData,invName,db,target,father,mother);		    
+					
+					for (String e : arrayMeasurements){
+						String bla = request.getString(e);
+						if(bla.equals("Samples")){
+							sampleMeasList.add(e);
+						}
+					}
+					runGenerConver(fileData,invName,db,individualName, father, mother,sampleName,sampleMeasList);		    
 					state = "pipeline";
 					
 					//get the server path
@@ -230,17 +249,19 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 			}
 		}
 		
+		
 		/*
 		 * Create downloadable links
 		 */
 		if (action.equals("downloads") ){
 			try {
-				target = request.getString("target");
+				individualName = request.getString("individual");
 				father = request.getString("father");
 				mother = request.getString("mother");
+				sampleName = request.getString("sample");
 				//convert csv file into different txt files
 				
-				runGenerConver(fileData,invName,db,target,father,mother);				
+				runGenerConver(fileData,invName,db,individualName,father,mother, sampleName,sampleMeasList);				
 				status = "downloaded";
 				
 			} catch (Exception e) {
@@ -248,7 +269,28 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 			}
 
-		}		
+		}	
+		
+		if (action.equals("emptyDB") ){
+			try {
+				if(db.count(Investigation.class)!=0){
+					
+					//OLD
+					//new emptyDatabase(db, true);
+					
+					//NEW
+					new emptyDatabase(db, false);
+					FillMetadata.fillMetadata(db, false);
+					
+					this.setMessages(new ScreenMessage("empty database succesfully", true));
+				}
+				else{
+					this.setMessages(new ScreenMessage("database is empty already", true));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
+		}
 						
 	}
 	
@@ -288,10 +330,10 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		}
 	}
 	
-	public void runGenerConver(File file, String invName, Database db,String target, String father, String mother){
+	public void runGenerConver(File file, String invName, Database db,String target, String father, String mother, String sample,List<String> samplemeaslist){
 		try {
 			gc = new GenericConvertor();
-			gc.converter(file, invName, db, target,father,mother);				
+			gc.converter(file, invName, db, target,father,mother, sample, samplemeaslist);				
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

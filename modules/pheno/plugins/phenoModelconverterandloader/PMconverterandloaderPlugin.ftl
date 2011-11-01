@@ -64,9 +64,9 @@
 			    <br />
 			</div>
 		
+		<#-- select investigation and inputfile -->
 		<#elseif screen.state ="start">
 			<h2>Convert csv to phenomodel</h2>
-			
 			<div id="investigationdiv" class="row">
 				<label for="investigation">Investigation:</label>
 				<select name="investigation" id="investigation"> 
@@ -75,8 +75,7 @@
 						<option value="${investigation.name}">${investigation.name}</option>	
 					</#list>
 				</select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <label for="createNewInvest">or create a new investigation</label>
-				<input name='createNewInvest' id='createNewInvest'type='text'><br /><br /><br /> 
-				
+				<input name='createNewInvest' id='createNewInvest'type='text'><br /><br /><br /> 	
 			</div>
 			
 			<label for="convertData"> Upload here the file you want to prepare for the phenomodel in Molgenis:</label><br />
@@ -90,44 +89,103 @@
 				</select>
 			<label>(default is semicolon) </label>
 			<br / ><br / ><br / >
-			<input type='submit' class='addbutton' value='next' onclick="__action.value='update'; createNew.getText()"/>
-			<input type='submit' class='addbutton' value='skip this step' onclick="__action.value='skip'"/>
-		<#elseif screen.state = "updated">	
+			<input type='submit' class='addbutton' value='go to step2' onclick="__action.value='goToStep2'; createNew.getText()"/>
+			<input type='submit' class='addbutton' value='upload your files' onclick="__action.value='skip'"/>
+		
+		<#-- select individual, father and mother -->
+		<#elseif screen.state = "inStep2">	
 			<br />
-			<label for="target"> Select the target:</label><br />
-			<select name="target" id="target"> 
-			<option value="select target"</option>
-				<#list screen.arrayMeasurements as target>
-					<option value="${target}">${target}</option>			
-				</#list>
-			</select>
+			<table>
+				<tr>
+					<td width="250px"><label for="target"> Select the target for Individual:</label></td><td><label for="sample"> Select the target for Sample:</label>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<select name="individual" id="individual"> 
+							<#if screen.arrayMeasurements?seq_contains('id_individual')>
+								<option value="id_individual">id_individual</option>
+							<#else>
+								<#list screen.arrayMeasurements as individual>
+									<option value="${individual}">${individual}</option>			
+								</#list>
+							</#if>
+						</select>
+						<#if screen.arrayMeasurements?seq_contains('id_individual')>
+							<a style="color:green; font-size:9px">individual found</a>
+							<#else>
+								<br>
+								<a style="color:red; font-size:9px">&nbsp; individual not found, please select from dropdown</a>
+						</#if>
+					</td>
+					<td>
+						<select name="sample" id="sample"> 
+							<#if screen.arrayMeasurements?seq_contains('id_sample')>
+								<option value="id_sample">id_sample</option>
+								
+							<#else>
+								<#list screen.arrayMeasurements as sample>
+									<option value="${sample}">${sample}</option>			
+								</#list>
+							</#if>
+						</select>
+						<#if screen.arrayMeasurements?seq_contains('id_sample')>
+							<a style="color:green; font-size:9px">sample found</a>
+							<#else>
+								<br>
+								<a style="color:red; font-size:9px">&nbsp; sample not found, please select from dropdown</a>
+						</#if>
+					</td>
+				</tr>
+			</table>
 			<br /><br />
 			
-			<div style="margin-top:6px; border-style:outset; border-width:3px; width:300px" >
+			<div style="margin-top:6px; border-style:outset; border-width:3px; width:330px" >
 				<label>*Optional</label><br />
 				<div> 
 					<label for="mother"> Select the mother:</label>
 					<select name="mother" id="mother" style="margin-right:10px">
-						<option value="select mother"</option>
-						<#list screen.arrayMeasurements as mother>
-							<option value="${mother}">${mother}</option>			
-						</#list>		
+						<#if screen.arrayMeasurements?seq_contains('id_mother')>
+							<option value="id_mother">id_mother</option>
+						<#else>
+						<option value="select father"</option>
+							<#list screen.arrayMeasurements as mother>
+								<option value="${mother}">${mother}</option>			
+							</#list>
+						</#if>
 					</select>
+					<#if screen.arrayMeasurements?seq_contains('id_mother')>
+						<a style="color:green; font-size:9px">mother found</a>
+						<#else>
+						<br>
+						<a style="color:red; font-size:9px">&nbsp; mother not found, please select from dropdown or leave it blank</a>
+					</#if>
 				</div>
 				<br />
 				<div style="margin-bottom:10px">
 					<label for="father"> Select the father:&nbsp;&nbsp;</label>
 					<select name="father" id="father" style="margin-right:5px"> 
+						<#if screen.arrayMeasurements?seq_contains('id_father')>
+							<option value="id_father">id_father</option>
+						<#else>
 						<option value="select father"</option>
-						<#list screen.arrayMeasurements as father>
-							<option value="${father}">${father}</option>			
-						</#list>
+							<#list screen.arrayMeasurements as father>
+								<option value="${father}">${father}</option>			
+							</#list>
+							
+						</#if>
 					</select>
+					<#if screen.arrayMeasurements?seq_contains('id_father')>
+						<a style="color:green; font-size:9px">&nbsp; father found</a>
+						<#else>
+						<br>
+						<a style="color:red; font-size:9px">&nbsp; father not found, please select from dropdown or leave it blank</a>
+					</#if>
 				</div>
 			</div>
 			<br />
 			<div style="margin-top:20px" id="converter" class="row" >			
-				<input type='submit' class='addbutton' value='run pipeline' onclick="__action.value='pipeline'"/>	
+				<input type='submit' class='addbutton' value='next' onclick="__action.value='goToStep3'"/>	
 				<input type='submit' class='addbutton' value='download files' onclick="__action.value='downloads'"/>
 				
 				<br />
@@ -145,8 +203,61 @@
 					</#if>
 				</div>
 				<br />
-				<input type='submit' class='addbutton' value='next' onclick="__action.value='step3'"/>
+				<input type='submit' class='addbutton' value='next' onclick="__action.value='step4'"/>
 			</#if>
+			
+		<#--select Individuals or Samples -->
+		<#elseif screen.state = "inStep3">	
+			<table border="1">
+				<tr>
+					<td><b>Measurement</b></td>
+					<td><b>Individuals</b></td>
+					<td><b>Samples</b></td>
+					
+				</tr>
+				
+				<#list screen.arrayMeasurements as target>
+			 	<tr>
+			 				 		
+			 		<td>${target}</td> 
+			 		
+			 		<#if target?contains("sample") || 
+			 			 target?contains("isolat") ||
+			 			 target?contains("hla") ||
+			 			 target?contains("rna") ||
+			 			 target?contains("dna") ||
+			 			 target?contains("serum") ||
+			 			 target?contains("plasma") ||
+			 			 target?contains("biopsy") ||
+			 			 target?contains("sscp") ||
+			 			 target?contains("mix") ||
+			 			 target?contains("storage") ||
+			 			 target?contains("box") ||
+			 			 target?contains("arrival") ||
+			 			 target?contains("picogreen") ||
+			 			 target?contains("nanodrop") ||
+			 			 target?contains("serology") ||
+			 			 target?contains("biopsies") ||
+			 			 target?contains("biopt") ||
+			 			 target?contains("physician") ||
+			 			 target?matches('rs[0-9-]+') ||
+			 			 target?contains("hemolytic")>
+			 			 
+				 		<td align="center"><input type="radio" name="${target}" value="Individuals"></td>
+				 		<td align="center"><input type="radio" name="${target}" value="Samples" checked></td>
+			 		
+			 		<#else>
+			 			<td align="center"><input type="radio" name="${target}" value="Individuals" checked></td>
+				 		<td align="center"><input type="radio" name="${target}" value="Samples" ></td>
+			 		</#if>
+		 		</tr>
+			</#list>
+				
+			</table>
+			<input type='submit' class='addbutton' value='next' onclick="__action.value='run pipeline'"/>
+		<br /><br />
+			
+			
 			
 			
 	</#if>

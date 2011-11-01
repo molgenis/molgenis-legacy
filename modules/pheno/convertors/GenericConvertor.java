@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.gids.Sample;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
@@ -25,20 +26,22 @@ public class GenericConvertor
 	final List<Measurement> totalMeasurementsList  = new ArrayList<Measurement>();
 	final List<ObservedValue> valuesList  = new ArrayList<ObservedValue>();
 	final List<Investigation> investigationList = new ArrayList<Investigation>();
+	final List<Sample> samplesList = new ArrayList<Sample>();
 	private String invName;
 	
 	public File tmpDir = null;
 	
 	Database db;
 
-	public void converter(File file, String invName, Database db, String target, String father, String mother) throws Exception{
+	public void converter(File file, String invName, Database db, String individual, String father, String mother,String sample, List<String> samplemeaslist) throws Exception{
 		
 		this.invName = invName;
 		this.db = db;
 		makeInvestigation(invName);
-		populateIndividual(file,invName,target, father, mother);
-		populateMeasurement(file,invName,target, father, mother);
-		populateValue(file,invName, target);
+		populateIndividualAndSample(file,invName,individual, father, mother,sample);
+		populateMeasurement(file,invName,individual, father, mother);
+		
+		populateValue(file,invName, individual, sample, samplemeaslist);
 		
 		CsvExport export = new CsvExport();
 		tmpDir = new File(System.getProperty("java.io.tmpdir"));
@@ -53,7 +56,7 @@ public class GenericConvertor
 			logger.info("Measurement.txt was not in de tmpdirectory");
 		}
 		try{
-			export.exportAll(tmpDir, individualsList, measurementsList, valuesList);
+			export.exportAll(tmpDir, individualsList, samplesList, measurementsList, valuesList);
 		} catch(Exception e){
 			logger.info("CANNOT EXPORT DATA");
 		}
@@ -73,6 +76,10 @@ public class GenericConvertor
 		return valuesList.size();
 	}
 	
+	public Integer getListSizeSamples (){
+		return samplesList.size();
+	}
+	
 	public File getDir(){
 		return tmpDir;
 	}
@@ -89,9 +96,10 @@ public class GenericConvertor
 		return newInvest;
 	}
 	
-	public void populateIndividual(File file, String invName,final String target, final String father, final String mother) throws Exception
+	public void populateIndividualAndSample(File file, String invName,final String individual, final String father, final String mother, final String sample) throws Exception
 	{
 		individualsList.clear();
+		samplesList.clear();
 		
 		final List<String> namesSeen = new ArrayList<String>();
 		this.invName = invName;
@@ -101,25 +109,37 @@ public class GenericConvertor
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
 				//Change id into the targetname/target id column
-				String id = tuple.getString(target);
+				String indName = tuple.getString(individual);
 				
-				// Optionally
-				String mother_Name = tuple.getString(mother);
-				String father_Name = tuple.getString(father);
-								
-				
-				if (!namesSeen.contains(id)) {
-					namesSeen.add(id);
+				// If individual not seen yet, create new
+				if (!namesSeen.contains(indName)) {
+					namesSeen.add(indName);
 					Individual newIndividual = new Individual();
-					newIndividual.setName(id);
+					newIndividual.setName(indName);
 					newIndividual.setInvestigation_Name(getInvestigation());
 					// Optionally
+					String mother_Name = tuple.getString(mother);
+					String father_Name = tuple.getString(father);
 					newIndividual.setMother_Name(mother_Name);					
 					newIndividual.setFather_Name(father_Name);	
 					
 					individualsList.add(newIndividual);
 				}
+				
+				// Create new sample and link to individual
+				String sampleName = tuple.getString(sample);
+
+				if(sampleName!=null){
+					Sample newSample = new Sample();
+					newSample.setInvestigation_Name(getInvestigation());
+					newSample.setName(sampleName);
+					newSample.setIndividualID_Name(indName);
+					// TODO: set sample values
+					
+					samplesList.add(newSample);
+				}
 			}
+			
 		});
 	}
 	
@@ -148,10 +168,8 @@ public class GenericConvertor
 					meas.setInvestigation_Id(invID);
 					db.update(meas);
 					totalMeasurementsList.add(meas);
-
 				}
 			}		
-			
 		}
 	}
 	
@@ -159,8 +177,7 @@ public class GenericConvertor
 		return invName;
 	}
 	
-	
-	public void populateValue(File file, String invName,final String target) throws Exception
+	public void populateValue(File file, String invName,final String individual, final String sample, final List<String> samplemeaslist) throws Exception
 	{
 		valuesList.clear();
 		
@@ -170,16 +187,30 @@ public class GenericConvertor
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{			
 				//Change targetname into the targetname/target id column
-				String targetName = tuple.getString(target);				
+				String targetName = tuple.getString(individual);
+				
+				String sampleName = tuple.getString(sample);
+				System.out.println(sampleName);
+				if(sampleName!=null){
 				for (Measurement m : totalMeasurementsList) {
-					String featureName = m.getName();	
+					String featureName = m.getName();
+					
 					String value = tuple.getString(featureName);
 					ObservedValue newValue = new ObservedValue();
 					newValue.setFeature_Name(featureName);
-					newValue.setTarget_Name(targetName);
+					
+					if(samplemeaslist.contains(featureName)){
+						System.out.println("featureName(Sample): " + featureName);
+						newValue.setTarget_Name(sampleName);
+					}
+					else{
+						newValue.setTarget_Name(targetName);
+						System.out.println("featureName(individual): " + featureName);
+					}
 					newValue.setValue(value);
 					newValue.setInvestigation_Name(getInvestigation());					
-					valuesList.add(newValue);					
+					valuesList.add(newValue);	
+				}
 				}
 			}
 		});
