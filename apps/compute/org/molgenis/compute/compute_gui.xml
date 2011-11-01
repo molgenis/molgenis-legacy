@@ -87,5 +87,8 @@
 		<menu name="TestingR">
 			<plugin name="TestR" type="org.molgenis.compute.ui.TestR" />
 		</menu>
+        <menu name="RunOnGrid">
+            <plugin name="HelloGridWorld" type="org.molgenis.compute.ui.HelloGridWorld" />
+        </menu>
 	</menu>
 </molgenis>

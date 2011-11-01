@@ -38,7 +38,8 @@ public class WorkflowGenerator
 {
     private static final String INTERPRETER_BASH = "bash";
     private static final String INTERPRETER_R = "R";
-    
+    private static final String INTERPRETER_JDL = "jdl";
+
     
     private boolean flagJustGenerate = false;
 
@@ -55,7 +56,7 @@ public class WorkflowGenerator
 
     private int stepNumber = 0;
 
-    private List<ComputeParameter> allComputeFeatures = null;
+    private List<ComputeParameter> allComputeParameters = null;
 
     //compute
     private MCF mcf = null;
@@ -121,8 +122,8 @@ public class WorkflowGenerator
         wholeWorkflowApp.setInterpreter("WorkflowInterpreter");
 
         //it would be nice to select compute features of only selected workflow
-        //allComputeFeatures = db.query(ComputeFeature.class).equals(ComputeFeature.WORKFLOW, workflow.getId()).find();
-        System.out.println("we have so many features: " + allComputeFeatures.size());
+        allComputeParameters = db.query(ComputeParameter.class).equals(ComputeParameter.WORKFLOW, workflow.getId()).find();
+        System.out.println("we have so many features: " + allComputeParameters.size());
 
         System.out.println("workflow" + workflow.getName());
 
@@ -205,7 +206,7 @@ public class WorkflowGenerator
 
 
         //process compute features
-        for (ComputeParameter computeFeature : allComputeFeatures)
+        for (ComputeParameter computeFeature : allComputeParameters)
         {
             if (computeFeature.getIsUser())
                 continue;
@@ -213,11 +214,6 @@ public class WorkflowGenerator
             {
                 featuresToDerive.addElement(computeFeature);
             }
-            //need to move to workflowelementparameter
-//            else if (computeFeature.getIterateOver())
-//            {
-//                featuresToIterate.addElement(computeFeature);
-//            }
             else
             {
                 weavingValues.put(computeFeature.getName(), computeFeature.getDefaultValue());
@@ -229,32 +225,18 @@ public class WorkflowGenerator
         List<WorkflowElementParameter> workflowElementParameters = db.query(WorkflowElementParameter.class).
                 equals(WorkflowElementParameter.WORKFLOWELEMENT, workflowElement.getId()).find();
 
-//        for (WorkflowElementParameter par : workflowElementParameters)
-//        {
-//            ComputeFeature feature = findComputeFeature(par.getTarget_Name()); //computeFeatures.get(par.getTarget_Name());
-//            weavingValues.put(par.getFeature_Name(), feature.getDefaultValue());
-//        }
+        for (WorkflowElementParameter par : workflowElementParameters)
+        {
+            ComputeParameter feature = findComputeFeature(par.getParameter_Name());
+            weavingValues.put(par.getParameter_Name(), feature.getDefaultValue());
+        }
 
-        //still hardcoded fastQC iteration
-        if (workflowElement.getName().equalsIgnoreCase("FastqcElement"))
-        {
-            for (int i = 1; i < 3; i++)
-            {
-                weavingValues.put(featuresToIterate.elementAt(0).getName(), i + "");
-                generateComputeApplication(db, request, workflowElement, protocol, weavingValues, featuresToDerive);
-            }
-        }
-        else
-        {
-            if(workflow.getName().equalsIgnoreCase("findVariants"))
-                weavingValues.put("fastqc_index", "pizdec");
-            generateComputeApplication(db, request, workflowElement, protocol, weavingValues, featuresToDerive);
-        }
+        generateComputeApplication(db, request, workflowElement, protocol, weavingValues, featuresToDerive);
     }
 
     private ComputeParameter findComputeFeature(String targetName)
     {
-        for(ComputeParameter f : allComputeFeatures)
+        for(ComputeParameter f : allComputeParameters)
         {
             if(f.getName().equalsIgnoreCase(targetName))
                 return f;
@@ -318,13 +300,13 @@ public class WorkflowGenerator
             observedValue.setValue(value);
             observedValue.setProtocolApplication(app);
             observedValue.setTarget(target.getId());
-            ComputeParameter feature = findComputeFeature(name); //computeFeatures.get(name);
+            ComputeParameter feature = findComputeFeature(name);
             if (feature.getDataType().equalsIgnoreCase(LOG))
             {
                 logpathfiles.addElement(value);
             }
 
-            observedValue.setFeature(feature);
+            observedValue.setFeature(feature.getId());
             System.out.println(feature.getName() + "->" + value);
 
             db.add(observedValue);
@@ -340,9 +322,17 @@ public class WorkflowGenerator
         weaver.setDefaults();
 
         if (protocol.getWalltime() != null)
+        {
             weaver.setWalltime(protocol.getWalltime());
-//        if (protocol.getClusterQueue() != null)
-//            weaver.setClusterQueue(protocol.getClusterQueue());
+
+            //quick fix for the cluster queue
+            if(protocol.getWalltime().equalsIgnoreCase("00:30:00"))
+            {
+                weaver.setClusterQueue("short");
+            }
+            else
+                weaver.setClusterQueue("nodes");
+        }
         if (protocol.getCores() != null)
             weaver.setCores(protocol.getCores() + "");
         if (protocol.getMemoryReq() != null)
@@ -365,6 +355,10 @@ public class WorkflowGenerator
         else if(protocol.getInterpreter().equalsIgnoreCase(INTERPRETER_R))
         {
             pipelineScript = makeRScript(scriptID, scriptRemoteLocation, result);
+        }
+        else if(protocol.getInterpreter().equalsIgnoreCase(INTERPRETER_JDL))
+        {
+            pipelineScript = makeJDLScript(scriptID, scriptRemoteLocation, result);
         }
 
         pipeline.setPipelinelogpath(logfile);
@@ -419,6 +413,44 @@ public class WorkflowGenerator
         updater.addComputeAppPath(appPaths);
     }
 
+    //here the first trial of generation for the grid
+    //will be refactored later
+    private Script makeJDLScript(String scriptID, String scriptRemoteLocation, String result)
+    {
+        String gridHeader = weaver.makeGridHeader();
+
+        String downloadTop = weaver.makeGridDownload(weavingValues);
+        String uploadBottom = weaver.makeGridUpload(weavingValues);
+
+        //some special fields should be specified for the jdl file
+        //error and output logs
+        weavingValues.put("error_log", "err_" + scriptID +".log");
+        weavingValues.put("output_log", "out_" + scriptID + ".log");
+        //extra files to be download and upload - now empty
+        weavingValues.put("extra_input","");
+        weavingValues.put("extra_output","");
+
+        String jdlfile = weaver.makeJDL(weavingValues);
+
+        System.out.println("name: " + scriptID);
+        System.out.println("remote location: " +scriptRemoteLocation);
+        System.out.println("command: " + result);
+
+        String script = gridHeader + "\n"
+                      + downloadTop + "\n"
+                      + result + "\n"
+                      + uploadBottom;
+
+        System.out.println("jdl-file: \n" +jdlfile);
+        System.out.println("-------\nscript: \n" + script);
+
+        Script scriptFile = new Script(scriptID, scriptRemoteLocation, script.getBytes());
+        FileToSaveRemotely jdlFile = new FileToSaveRemotely(scriptID + ".jdl", jdlfile.getBytes());
+        scriptFile.addFileToTransfer(jdlFile);
+
+        return scriptFile;
+    }
+
     private Script makeRScript(String scriptID, String scriptRemoteLocation, String result)
     {
         weaver.setActualCommand("cd " + scriptRemoteLocation + "\n R CMD BATCH "+ scriptRemoteLocation +"myscript.R");
@@ -428,6 +460,9 @@ public class WorkflowGenerator
         script.addFileToTransfer(rScript);
         System.out.println("Rscript" + result);
         return script;
+
+        //todo test it!!!!
+
 
     }
 

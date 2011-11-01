@@ -47,7 +47,7 @@
 			<field name="scriptTemplate" type="freemarker"
 				description="Commandline or (template of) an script, e.g. in R. Templating engine is freemarker." />
 			<field name="interpreter" type="enum"
-				enum_options="[bash,R,Python,WorkflowInterpreter]"
+				enum_options="[bash,R,Python,WorkflowInterpreter,jdl]"
 				description="the interpreter used to run this command. For example 'shellTemplate'" />
 			<field name="walltime" nillable="true" type="string"
 				description="the expected maximum runtime of this job" />
@@ -85,8 +85,8 @@
 				features" / -->
 			<field name="isDerived" type="boolean"
 				description="a flag to indicate if the ComputeFeature consists of other ComputeFeatures" />
-			<!-- field name="Workflow" type="xref" xref_entity="Workflow" xref_label="name" 
-				description="Workflow this element is part of" / -->
+			<field name="Workflow" type="xref" xref_entity="Workflow" xref_label="name"
+				description="Workflow this element is part of" />
 		</entity>
 		<entity name="ComputeApplication" extends="ProtocolApplication"
 			implements="ComputeDetails">
@@ -97,7 +97,7 @@
 			<!-- <field name="StartTime" auto="true" nillable="false" type="datetime" 
 				description="Datatime when the job was started." /> -->
 			<field name="interpreter" type="enum"
-				enum_options="[bash,R,Python,WorkflowInterpreter]"
+				enum_options="[bash,R,Python,WorkflowInterpreter,jdl]"
 				description="the interpreter used to run this command. For example 'shellTemplate'" />
 			<field name="clusterQueue" nillable="true" type="string"
 				description="the name of the queue for the cluster" />

@@ -35,7 +35,7 @@ public class ParameterWeaver
 
     private Hashtable<String, String> scriptParameters = new Hashtable<String, String>();
 
-    private String scriptTemplate = "#!/bin/bash \n" +
+    private String scriptClusterTemplate = "#!/bin/bash \n" +
             "#PBS -q ${clusterqueue}\n" +
             "#PBS -l nodes=1:ppn=${cores}\n" +
             "#PBS -l walltime=${walltime}\n" +
@@ -54,6 +54,26 @@ public class ParameterWeaver
             "date \"+finish time: %m/%d/%y%t %H:%M:%S\" >>${location}/extra/${scriptID}.txt\n" +
             "date \"+DATE: %m/%d/%y%tTIME: %H:%M:%S\" >>${location}/log_${jobID}.txt\n";
 
+    private String downloadGridTemplate = "#download input data\n" +
+            "srmcp -server_mode=passive srm://srm.grid.sara.nl:8443/pnfs/grid.sara.nl/data/lsgrid/${input_path}${input_name} \\\n" +
+            "file:////scratch/${input_name}\n";
+
+    private String uploadGridTemplate = "#upload result data\n" +
+            "srmcp -server_mode=passive file:////scratch/output3.txt \\\n" +
+            "srm://srm.grid.sara.nl:8443/pnfs/grid.sara.nl/data/lsgrid/${output_path}${output_name}\n";
+
+    private String jdlTemplate = "Type=\"Job\";\n" +
+            "JobType=\"Normal\";\n" +
+            "\n" +
+            "Executable = \"/bin/sh\";\n" +
+            "Arguments = \"${script_name}.sh\";\n" +
+            "\n" +
+            "StdError = \"${error_log}\";\n" +
+            "StdOutput = \"${output_log}\";\n" +
+            "\n" +
+            "InputSandbox = {${script_location}${script_name}.sh${extra_inputs}};\n" +
+            "OutputSandbox = {${error_log},${output_log}${extra_outputs}};";
+
     private String logfilename = "${location}/log_${jobID}.txt";
     private String errfilename = "${location}/err/err_${scriptID}.err";
     private String outfilename = "${location}/out/out_${scriptID}.out";
@@ -64,6 +84,8 @@ public class ParameterWeaver
             "-I /data/gcc/test_george/819/110214_SN163_391A80MTLABXX_4_AGAGAT.sorted.bam " +
             "-T CountReads " +
             ">>${location}/extra/${scriptID}.txt\n";
+
+    private String gridHeader = "#!/bin/bash\n";
 
 
     public String weaveFreemarker(String strTemplate, Hashtable<String, String> parameters)
@@ -101,7 +123,7 @@ public class ParameterWeaver
 
     public String makeScript()
     {
-        return weaveFreemarker(scriptTemplate, scriptParameters);
+        return weaveFreemarker(scriptClusterTemplate, scriptParameters);
     }
 
     public String getLogfilename()
@@ -193,4 +215,26 @@ public class ParameterWeaver
         return weaveFreemarker(extrafilename, scriptParameters);
     }
 
+    public String makeGridDownload(Hashtable<String, String> weavingValues)
+    {
+        String result = weaveFreemarker(downloadGridTemplate, weavingValues);
+        return result;
+    }
+
+    public String makeGridUpload(Hashtable<String, String> weavingValues)
+    {
+        String result = weaveFreemarker(uploadGridTemplate, weavingValues);
+        return result;
+    }
+
+    public String makeJDL(Hashtable<String, String> weavingValues)
+    {
+        String result = weaveFreemarker(jdlTemplate, weavingValues);
+        return result;
+    }
+
+    public String makeGridHeader()
+    {
+        return gridHeader;  //To change body of created methods use File | Settings | File Templates.
+    }
 }
