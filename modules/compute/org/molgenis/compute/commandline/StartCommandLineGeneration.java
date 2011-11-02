@@ -42,6 +42,8 @@ public class StartCommandLineGeneration
         {
             Hashtable<String, String> userValues = new Hashtable<String, String>();
             generator.processSingleWorksheet(computeBundle, userValues, "findVariants", applicationName);
+            //add generated applications to the bundle
+            computeBundle.setComputeJobs(generator.getComputeApplications());
 
             //every sample can be processed and monitored in the separated pipeline
 //            MCF mcf = new MCFServerSsh();
