@@ -11,6 +11,11 @@
 			2010-20-10 10:34:56)" unique="false" /> <field name="enddate" type="string" auto="false" nillable="false" description="End date of the project (e.g. 2010-30-10 14:42:11)" unique="false" /> <field name="investigator_id" 
 			type="xref" xref_entity="Investigator" nillable="true" description="Researcher in this project" xref_label="id" unique="false" /> <field name="labworker_id" type="xref" xref_entity="NgsPerson" nillable="true" 
 			description="Lab technician in charge of project" xref_label="id" unique="false" field name="workflow" type="xref" xref_entity="Workflow" nillable="false" description="Project Workflow" / </entity -->
+        <entity name="Trio" extends="ObservationElement">
+			<description>Description of the sample/library</description>
+            <field name="samples" type="mref" xref_entity="NgsSample" description="Samples part of this trio"/>
+			<field name="description" type="text" auto="false" readonly="true" nillable="true" description="Description/Notes about the trio" unique="false" />
+		</entity>
 		<entity name="NgsSample" extends="ObservationTarget">
 			<description>Description of the sample/library</description>
 			<field name="sampletype" type="enum" default="dna" enum_options="[dna,rna]" auto="false" nillable="false" description="Type of sample (dna/rna). Will become ontologyReference" unique="false" />
@@ -31,7 +36,11 @@
 			<field name="run" type="text" auto="false" readonly="true" nillable="false" description="The run number (string), always use 4 digits (with leading 0's)" unique="false" />
 			<field name="runDate" type="date" nillable="true" description="The date the flowcell was run on the machine" />
 		</entity>
-		<entity name="LibraryLane" extends="ObservationElement">
+		<entity name="Library" extends="ObservationElement">
+            <description></description>
+		</entity>
+
+        <entity name="LibraryLane" extends="ObservationElement">
 			<description>This is actually our worksheet. Name is typically
 				library name, or of there is only one sample per library it may be
 				sample name. Description of the sample library that has been
@@ -42,6 +51,7 @@
 			<field name="status" type="enum" enum_options="[to do,done]" default="to do" nillable="false" description="Status of the analysis of this flowcell-lane-sample combination" />
 			<field name="sample" type="xref" xref_entity="NgsSample" description="The sample which is measured on this lane+library combination." />
 			<field name="flowcell" type="xref" xref_entity="Flowcell" description="The flowcell to which this lane belongs" />
+            <field name="library" type="xref" xref_entity="Library" description="Name of the library put in this lane"/>
 			<field name="lane" type="enum" enum_options="[1,2,3,4,5,6,7,8]" description="The lane number that is unique within a flow cell. Typically in range 1-8" />
 			<field name="barcode" type="xref" xref_entity="LibraryBarcode" />
 			<field name="capturing" type="xref" xref_entity="LibraryCapturing" nillable="true" />
@@ -59,6 +69,7 @@
 			<field name="sequencer" type="string" />
 			<field name="run" type="text" auto="false" readonly="true" nillable="false" description="The run number (string), always use 4 digits (with leading 0's)" unique="false" />
 			<field name="flowcell" type="string" />
+            <field name="trio" type="string" nillable="true"/>
 			<field name="library" type="string" nillable="true" />
 			<field name="capturingKit" type="string" nillable="true" />
 			<field name="comments" type="string" nillable="true" />
