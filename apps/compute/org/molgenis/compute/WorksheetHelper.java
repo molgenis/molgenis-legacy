@@ -1,5 +1,7 @@
 package org.molgenis.compute;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,7 +12,11 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.ngs.LibraryLane;
 import org.molgenis.ngs.NgsSample;
+import org.molgenis.ngs.Trio;
 import org.molgenis.pheno.ObservationElement;
+import org.molgenis.util.CsvFileReader;
+import org.molgenis.util.CsvReader;
+import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
@@ -31,56 +37,58 @@ import app.DatabaseFactory;
  */
 public class WorksheetHelper
 {
+	static List<String> fieldsToInclude = Arrays
+			.asList(new String[]
+			{ "sample_name", "status", "sampletype", "investigation_name",
+					"flowcell_name", "lane", "barcode_barcode",
+					"capturing_capturing" });
+
+	/** Read tuples of user parameters from a file*/
+	public List<Tuple> readTuplesFromFile(File worksheetFile) throws Exception
+	{
+		// load the worksheet file into a list of tuple
+		// todo: make work for Excel.
+		CsvReader reader = new CsvFileReader(worksheetFile);
+		final List<Tuple> tuples = new ArrayList<Tuple>();
+		reader.parse(new CsvReaderListener()
+		{
+			@Override
+			public void handleLine(int line_number, Tuple tuple)
+					throws Exception
+			{
+				tuples.add(tuple);
+			}
+		});
+		return tuples;
+	}
 
 	/**
-	 * Convert lists of samples and lists of lanes into a worksheet (list of
-	 * tuples)
+	 * Default convertor. Assumes the worksheet is build up based on Lane only.
+	 * 
+	 * @param worksheet
+	 * @param sampleList
+	 * @param laneList
+	 * @param trioList 
+	 * @throws Exception
 	 */
-	public List<Tuple> entitiesToWorkheet(
-			Class<? extends ObservationElement> iterationLevel,
-			List<NgsSample> sampleList, List<LibraryLane> laneList)
+	public void convertTuplesToEntites(List<Tuple> worksheet,
+
+	List<NgsSample> sampleList, List<LibraryLane> laneList, List<Trio> trioList) throws Exception
 	{
-		List<String> fieldsToInclude = Arrays.asList(new String[]
-		{ "sample_name", "status", "sampletype", "investigation_name",
-				"flowcell_name", "lane", "barcode_barcode",
-				"capturing_capturing" });
-
-		// TODO: create Trio entity
-
-		// load samples into hashmap of id -> Sample
-		Map<Integer, NgsSample> samples = this.createMap(sampleList);
-		// are we already regretting not having libraries?
-		Map<Integer, LibraryLane> lanes = this.createMap(laneList);
-		// do we need separate lane vs laneBarcode???
-
-		// ugly, TODO is generalization using JDBCMetaDatabase
-		List<Tuple> worksheet = new ArrayList<Tuple>();
-		if (iterationLevel.equals(NgsSample.class))
-		{
-			worksheet = this.samplesToTuples(fieldsToInclude, samples, lanes);
-		}
-		else if (iterationLevel.equals(LibraryLane.class))
-		{
-			worksheet = this.lanesToTuples(fieldsToInclude, lanes, samples);
-		}
-		else
-		{
-			throw new RuntimeException("iterationLevel "
-					+ iterationLevel.getSimpleName() + " not yet supported");
-		}
-
-		return worksheet;
+		this.convertTuplesToEntites(worksheet, LibraryLane.class, sampleList,
+				laneList, trioList);
 	}
 
 	/**
 	 * Load a worksheet into list of NgsSampe and LaneList. We need that for
 	 * generation of the workflow to allow both Sample and Lane iteration.
+	 * @param trioList 
 	 * 
 	 * @throws Exception
 	 */
-	public void worksheetToEntites(List<Tuple> worksheet,
+	public void convertTuplesToEntites(List<Tuple> worksheet,
 			Class<? extends ObservationElement> iterationLevel,
-			List<NgsSample> sampleList, List<LibraryLane> laneList)
+			List<NgsSample> sampleList, List<LibraryLane> laneList, List<Trio> trioList)
 			throws Exception
 	{
 		// problem is that LibraryLane don't have unique names. To be solved
@@ -95,6 +103,11 @@ public class WorksheetHelper
 
 			for (Tuple t : worksheet)
 			{
+				//rename 'flowcell' to 'flowcell_name'
+				SimpleTuple mapped = new SimpleTuple(t);
+//				mapped.setString("flowcell_name", t.getString("flowcell"));
+//				mapped.setObject("flowcell",null);
+				
 				LibraryLane lane = new LibraryLane();
 				lane.set(t);
 				laneList.add(lane);
@@ -117,27 +130,22 @@ public class WorksheetHelper
 	}
 
 	/**
-	 * Same method as entitiesToWorksheet but then loading al data data from
-	 * database
-	 */
-	public List<Tuple> databaseToWorksheet(
-			Class<? extends ObservationElement> iterationLevel, Database db)
-			throws DatabaseException
-	{
-		List<NgsSample> samples = db.find(NgsSample.class);
-		List<LibraryLane> lanes = db.find(LibraryLane.class);
-		return entitiesToWorkheet(iterationLevel, samples, lanes);
-	}
-
-	/**
 	 * Project all data on lanes. Each row is one laneBarcode. Sample info
 	 * associated to LaneBarcode are repeated over each associated lane.
 	 * 
 	 * @param fieldsToInclude
 	 */
-	private List<Tuple> lanesToTuples(List<String> fieldsToInclude,
-			Map<Integer, LibraryLane> lanes, Map<Integer, NgsSample> samples)
+	public List<Tuple> convertLanesToTuples(List<LibraryLane> laneList,
+			List<NgsSample> sampleList, List<Trio> trioList)
 	{
+		// load trios into hashmap
+		Map<Integer, Trio> trios = this.createMap(trioList);
+		// load samples into hashmap of id -> Sample
+		Map<Integer, NgsSample> samples = this.createMap(sampleList);
+		// are we already regretting not having libraries?
+		Map<Integer, LibraryLane> lanes = this.createMap(laneList);
+		// do we need separate lane vs laneBarcode???
+
 		List<Tuple> result = new ArrayList<Tuple>();
 
 		for (LibraryLane l : lanes.values())
@@ -189,9 +197,14 @@ public class WorksheetHelper
 	 * @param dir
 	 * @return
 	 */
-	private List<Tuple> samplesToTuples(List<String> fieldsToInclude,
-			Map<Integer, NgsSample> samples, Map<Integer, LibraryLane> lanes)
+	public List<Tuple> convertSamplesToTuples(List<NgsSample> sampleList,
+			List<LibraryLane> laneList)
 	{
+		// load samples into hashmap of id -> Sample
+		Map<Integer, NgsSample> samples = this.createMap(sampleList);
+		// are we already regretting not having libraries?
+		Map<Integer, LibraryLane> lanes = this.createMap(laneList);
+		// do we need separate lane vs laneBarcode???
 
 		List<Tuple> result = new ArrayList<Tuple>();
 
@@ -261,6 +274,11 @@ public class WorksheetHelper
 		}
 		return entityMap;
 	}
+	
+	public List<Tuple> convertTriosToTuples(List<Trio> trios, List<NgsSample> samples, List<LibraryLane> lanes)
+	{
+		throw new UnsupportedOperationException("This method is not yet implemented but planned");
+	}
 
 	/**
 	 * JUST FOR TESTING
@@ -271,40 +289,65 @@ public class WorksheetHelper
 	{
 		Database db = DatabaseFactory.create();
 
-		List<Tuple> worksheet = new WorksheetHelper().databaseToWorksheet(
-				NgsSample.class, db);
-		System.out.println("SAMPLES (tuples)");
-		for (Tuple t : worksheet)
+		WorksheetHelper test = new WorksheetHelper();
+
+		System.out.println("Part 1: load from file into Trio, NgsSample, LaneLibrary");
+		
+		System.out.println("Load worksheet");
+		File f = new File("/Users/mswertz/Dropbox/NGS quality report/compute/New_Molgenis_Compute_for_GoNL/TestSampleList.csv");
+		List<Tuple> tuples = test.readTuplesFromFile(f);
+		System.out.println("Tuples in file ("+f.getPath()+")");
+		for (Tuple t : tuples)
 		{
 			System.out.println(t);
 		}
-
-		System.out.println("LANES (tuples)");
-		worksheet = new WorksheetHelper().databaseToWorksheet(
-				LibraryLane.class, db);
-		for (Tuple t : worksheet)
-		{
-			System.out.println(t);
-		}
-
-		// convert worksheet back to lanes
-		System.out.println("converting to NgsSample and LibraryLane");
-		List<NgsSample> sampleList = new ArrayList<NgsSample>();
-		List<LibraryLane> laneList = new ArrayList<LibraryLane>();
-		new WorksheetHelper().worksheetToEntites(worksheet, LibraryLane.class,
-				sampleList, laneList);
-
-		System.out.println("LANES (entities)");
-		for (LibraryLane l : laneList)
-		{
-			System.out.println(l);
-		}
-
-		System.out.println("SAMPLES (entities)");
-		for (NgsSample s : sampleList)
-		{
-			System.out.println(s);
-		}
+		
+//		System.out.println("Convert into Trio, NgsSample, LaneLibrary");
+//		List<Trio> trioList = new ArrayList<Trio>();
+//		List<NgsSample> sampleList = new ArrayList<NgsSample>();
+//		List<LibraryLane> laneList = new ArrayList<LibraryLane>();
+//		
+//		test.convertTuplesToEntites(tuples, sampleList, laneList, trioList);
+//		
+//		
+//		sampleList = db.find(NgsSample.class);
+//		laneList = db.find(LibraryLane.class);
+//		trioList = db.find(Trio.class);
+//
+//		tuples = test.convertSamplesToTuples(sampleList, laneList);
+//		System.out.println("SAMPLES (tuples)");
+//		for (Tuple t : tuples)
+//		{
+//			System.out.println(t);
+//		}
+//
+//		System.out.println("LANES (tuples)");
+//		tuples = test.convertLanesToTuples(laneList, sampleList, trioList);
+//		for (Tuple t : tuples)
+//		{
+//			System.out.println(t);
+//		}
+//
+//		// convert worksheet back to lanes
+//		System.out.println("converting to NgsSample and LibraryLane");
+//
+//		// reset the lists
+//		sampleList = new ArrayList<NgsSample>();
+//		laneList = new ArrayList<LibraryLane>();
+//
+//		test.convertTuplesToEntites(tuples, LibraryLane.class, sampleList, laneList, trioList);
+//
+//		System.out.println("LANES (entities)");
+//		for (LibraryLane l : laneList)
+//		{
+//			System.out.println(l);
+//		}
+//
+//		System.out.println("SAMPLES (entities)");
+//		for (NgsSample s : sampleList)
+//		{
+//			System.out.println(s);
+//		}
 
 	}
 }
