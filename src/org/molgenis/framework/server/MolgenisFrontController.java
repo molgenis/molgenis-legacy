@@ -19,6 +19,10 @@ import org.molgenis.framework.server.services.MolgenisRapiService;
 public class MolgenisFrontController extends HttpServlet implements
 		MolgenisService
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2141508157810793106L;
 	private Database db;
 	protected Map<String, MolgenisService> services;
 	Logger logger = Logger.getLogger(MolgenisFrontController.class);
@@ -30,7 +34,7 @@ public class MolgenisFrontController extends HttpServlet implements
 	{
 		try
 		{
-			MolgenisRequest req = new MolgenisRequest(getDatabase(), request);
+			MolgenisRequest req = new MolgenisRequest(getDatabase(), request, this.getServletContext());
 			MolgenisResponse res = new MolgenisResponse(response);
 			this.handleRequest(req, res);
 		}
