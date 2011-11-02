@@ -1,6 +1,7 @@
 package org.molgenis.compute.workflowgenerator;
 
 import org.molgenis.compute.ComputeApplication;
+import org.molgenis.compute.ComputeBundle;
 import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.compute.pipelinemodel.FileToSaveRemotely;
@@ -80,10 +81,7 @@ public class WorkflowGeneratorCommandLine
 
     List<ComputeApplication> applications = null;
 
-    public void processSingleWorksheet(List<WorkflowElement> wfElements,
-                                       List<ComputeProtocol> cProtocols,
-                                       List<ComputeParameter> parameters,
-                                       List<WorkflowElementParameter> wfeParameters,
+    public void processSingleWorksheet(ComputeBundle bundle,
                                        Hashtable<String, String> userValues,
                                        String workflowName,
                                        String applicationName /* should be unique somehow */) throws IOException, ParseException
@@ -91,8 +89,8 @@ public class WorkflowGeneratorCommandLine
         applications = new Vector<ComputeApplication>();
 
         this.workflowName = workflowName;
-        this.cProtocols = cProtocols;
-        this.wfeParameters = wfeParameters;
+        this.cProtocols = bundle.getComputeProtocols();
+        this.wfeParameters = bundle.getWorkflowElementParameters();
         this.userValues = userValues;
         this.applicationName = applicationName;
 
@@ -116,7 +114,7 @@ public class WorkflowGeneratorCommandLine
 //        wholeWorkflowApp.setInterpreter("WorkflowInterpreter");
 
         //it would be nice to select compute features of only selected workflow
-        allComputeParameters = parameters;
+        allComputeParameters = bundle.getComputeParameters();
         System.out.println("we have so many features: " + allComputeParameters.size());
 
         //add few parameters
@@ -130,7 +128,7 @@ public class WorkflowGeneratorCommandLine
 //        db.add(wholeWorkflowApp);
 
         //process workflow elements
-        List<WorkflowElement> workflowElements = wfElements;
+        List<WorkflowElement> workflowElements = bundle.getWorkflowElements();
 
         for (int i = 0; i < workflowElements.size(); i++)
         {
