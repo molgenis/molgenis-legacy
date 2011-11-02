@@ -1,5 +1,6 @@
 package org.molgenis.compute.ui;
 
+import org.molgenis.compute.UserParameter;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
@@ -22,14 +23,39 @@ public class RunWorkflow extends EasyPluginController<RunWorkflowModel>
 	{
 		super(name, null, parent);
 		this.setModel(new RunWorkflowModel(this)); // the default model
-		this.setView(new RunWorkflowView(this.getModel())); // <plugin													// flavor="freemarker"
+		this.setView(new RunWorkflowView(this.getModel()));
 	}
 
     public void buttonRun(Database db, Tuple request) throws Exception
     {
      System.out.println("...pushed!!!");
-     //TODO George: here generate for selected samples
+     //TODO George: here run for selected samples
     }
+
+    public void buttonGenerate(Database db, Tuple request) throws Exception
+    {
+        System.out.println(">>> generate");
+        List<String> sampleIds = (List<String>) request.getList("samples");
+
+        List<UserParameter> userParameterList = db.query(UserParameter.class).find();
+        System.out.println(">>> user parameters:");
+        for (UserParameter userParameter : userParameterList)
+        {
+            String featureName = userParameter.getFeatureName();
+            String databaseField = userParameter.getDatabaseField();
+            System.out.println("feature: " + featureName + " -> " + databaseField);
+        }
+
+        //List<Tuple> worksheet = new WorksheetHelper().re
+//        for(Tuple t: worksheet )
+//        {
+//            List<String> fields = t.getFields();
+//            for(String s: fields)
+//                System.out.println("-->" + s);
+//        }
+    }
+
+
 
 	@Override
 	public void reload(Database db) throws Exception
