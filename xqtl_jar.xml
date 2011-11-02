@@ -84,17 +84,10 @@
 		<unjar src="${alibs}keggapi.jar" dest="${jarme}" overwrite="false" />
 		<unjar src="${alibs}mydas-1.6.0.jar" dest="${jarme}" overwrite="false" />
 		<unjar src="${alibs}mindterm.jar" dest="${jarme}" overwrite="false" />
-		<unjar src="${alibs}ontocat-0.9.7.6.jar" dest="${jarme}" overwrite="false" />
-		<unjar src="${alibs}charts4j-1.2.jar" dest="${jarme}" overwrite="false" />
 		<unjar src="${alibs}jopenid-1.07.jar" dest="${jarme}" overwrite="false" />
-		<unjar src="${alibs}iText-5.0.6.jar" dest="${jarme}" overwrite="false" />
-		<unjar src="${alibs}lucene-core-3.0.2.jar" dest="${jarme}" overwrite="false" />
-		<unjar src="${alibs}lucene-highlighter-3.0.1.jar" dest="${jarme}" overwrite="false" />
 		<unjar src="${alibs}spssw-1.66.jar" dest="${jarme}" overwrite="false" />
 		<unjar src="${alibs}simplecaptcha-1.1.1.jar" dest="${jarme}" overwrite="false" />
 		<unjar src="${alibs}pircbot.jar" dest="${jarme}" overwrite="false" />
-		<unjar src="${alibs}vaadin-6.5.2.jar" dest="${jarme}" overwrite="false" />
-		<unjar src="${alibs}vaadin-externallayout-0.5.jar" dest="${jarme}" overwrite="false" />
 		<unjar src="${alibs}selenium-server-standalone-2.2.0.jar" dest="${jarme}" overwrite="false" />
 	</target>
 	
