@@ -8,20 +8,12 @@ import org.molgenis.compute.pipelinemodel.Pipeline;
 import org.molgenis.compute.pipelinemodel.Script;
 import org.molgenis.compute.pipelinemodel.Step;
 import org.molgenis.compute.scriptserver.MCF;
-import org.molgenis.compute.ui.ComputeAppPaths;
 import org.molgenis.compute.ui.DatabaseUpdater;
-import org.molgenis.compute.ui.DatabaseUpdaterGridGain;
-import org.molgenis.compute.ui.DatabaseUpdaterSsh;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.protocol.WorkflowElementParameter;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
 
-import javax.servlet.ServletContext;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,7 +26,7 @@ import java.util.*;
  * Time: 10:43
  * To change this template use File | Settings | File Templates.
  */
-public class WorkflowGenerator
+public class WorkflowGeneratorCommandLine
 {
     private static final String INTERPRETER_BASH = "bash";
     private static final String INTERPRETER_R = "R";
@@ -79,27 +71,31 @@ public class WorkflowGenerator
     private boolean isToWriteLocally = false;
     private String localLocation = "/";
 
+    private String workflowName = null;
+    private List<ComputeProtocol> cProtocols = null;
+    private List<WorkflowElementParameter> wfeParameters = null;
 
-    public void processSingleWorksheet(Database db, Tuple request,
+    //quick solution
+    //can be refactored later to have the same basis for command-line and db solutions
+
+    List<ComputeApplication> applications = null;
+
+    public void processSingleWorksheet(List<WorkflowElement> wfElements,
+                                       List<ComputeProtocol> cProtocols,
+                                       List<ComputeParameter> parameters,
+                                       List<WorkflowElementParameter> wfeParameters,
                                        Hashtable<String, String> userValues,
-                                       Workflow workflow,
-                                       String applicationName /* should be unique somehow */) throws Exception
+                                       String workflowName,
+                                       String applicationName /* should be unique somehow */) throws IOException, ParseException
     {
+        applications = new Vector<ComputeApplication>();
+
+        this.workflowName = workflowName;
+        this.cProtocols = cProtocols;
+        this.wfeParameters = wfeParameters;
         this.userValues = userValues;
-        this.target = workflow;
         this.applicationName = applicationName;
 
-        if (!db.inTx())
-            db.beginTx();
-
-        if (mcf == null)
-        {
-            HttpServletRequestTuple req = (HttpServletRequestTuple) request;
-            ServletContext servletContext = req.getRequest().getSession().getServletContext();
-            mcf = (MCF) servletContext.getAttribute("MCF");
-
-            createDatabaseUpdater(mcf);
-        }
 
         System.out.println(">>> generate apps");
 
@@ -110,19 +106,18 @@ public class WorkflowGenerator
 
         pipelineElementNumber = 0;
 
-        //application for the whole workflow
-        wholeWorkflowApp = new ComputeApplication();
+
+        //!!!!commented application for the whole workflow
+//        wholeWorkflowApp = new ComputeApplication();
 
         //get the chosen workflow
 //        Workflow workflow = db.query(Workflow.class).find().get(0);
-        wholeWorkflowApp.setProtocol(workflow);
-        wholeWorkflowApp.setInterpreter("WorkflowInterpreter");
+//        wholeWorkflowApp.setProtocol(workflow);
+//        wholeWorkflowApp.setInterpreter("WorkflowInterpreter");
 
         //it would be nice to select compute features of only selected workflow
-        allComputeParameters = db.query(ComputeParameter.class).equals(ComputeParameter.WORKFLOW, workflow.getId()).find();
+        allComputeParameters = parameters;
         System.out.println("we have so many features: " + allComputeParameters.size());
-
-        System.out.println("workflow" + workflow.getName());
 
         //add few parameters
         wholeWorkflowApp.setTime(now());
@@ -132,31 +127,21 @@ public class WorkflowGenerator
         pipeline.setId(applicationName);
         weaver.setJobID(applicationName);
 //        db.beginTx();
-        db.add(wholeWorkflowApp);
+//        db.add(wholeWorkflowApp);
 
         //process workflow elements
-        List<WorkflowElement> workflowElements = db.query(WorkflowElement.class).equals(WorkflowElement.WORKFLOW, workflow.getId()).find();
+        List<WorkflowElement> workflowElements = wfElements;
 
         for (int i = 0; i < workflowElements.size(); i++)
         {
             WorkflowElement workflowElement = workflowElements.get(i);
-            processWorkflowElement(db, request, workflowElement);
+            processWorkflowElement(workflowElement);
         }
 
         String logfile = weaver.getLogfilename();
 
         pipeline.setPipelinelogpath(logfile);
-
-        db.commitTx();
-        executePipeline(db, pipeline);
-    }
-
-    private void createDatabaseUpdater(MCF mcf)
-    {
-        if (mcf.getBasis().equalsIgnoreCase(MCF.GRID))
-            updater = new DatabaseUpdaterGridGain(mcf);
-        else if ((mcf.getBasis().equalsIgnoreCase(MCF.SSH)))
-            updater = new DatabaseUpdaterSsh(mcf);
+        //executePipeline(db, pipeline);
     }
 
     public Date now()
@@ -170,21 +155,14 @@ public class WorkflowGenerator
         if (mcf != null && !flagJustGenerate)
         {
             mcf.setPipeline(pipeline);
-
-            if (!updater.isStarted())
-            {
-                updater.setSettings(10, 10);
-                updater.setDatabase(db);
-                updater.start();
-            }
         }
         else
             System.out.println(pipeline.toString());
 
     }
 
-    private void processWorkflowElement(Database db, Tuple request, WorkflowElement workflowElement)
-            throws DatabaseException, ParseException, IOException
+    private void processWorkflowElement(WorkflowElement workflowElement)
+            throws ParseException, IOException
     {
 
         weavingValues = new Hashtable<String, String>();
@@ -196,7 +174,7 @@ public class WorkflowGenerator
         Vector<ComputeParameter> featuresToDerive = new Vector<ComputeParameter>();
 
         //get protocol and template
-        ComputeProtocol protocol = db.findById(ComputeProtocol.class, workflowElement.getProtocol_Id());
+        ComputeProtocol protocol = findProtocol(workflowElement.getProtocol_Name());
 
 
         //process compute features
@@ -216,8 +194,7 @@ public class WorkflowGenerator
 
 
         //process workflow element parameters
-        List<WorkflowElementParameter> workflowElementParameters = db.query(WorkflowElementParameter.class).
-                equals(WorkflowElementParameter.WORKFLOWELEMENT, workflowElement.getId()).find();
+        List<WorkflowElementParameter> workflowElementParameters = findWorkflowElementParameters(workflowElement.getName());
 
         for (WorkflowElementParameter par : workflowElementParameters)
         {
@@ -225,7 +202,28 @@ public class WorkflowGenerator
             weavingValues.put(par.getParameter_Name(), feature.getDefaultValue());
         }
 
-        generateComputeApplication(db, request, workflowElement, protocol, weavingValues, featuresToDerive);
+        generateComputeApplication(workflowElement, protocol, weavingValues, featuresToDerive);
+    }
+
+    private List<WorkflowElementParameter> findWorkflowElementParameters(String name)
+    {
+        List<WorkflowElementParameter> result = new Vector<WorkflowElementParameter>();
+        for(WorkflowElementParameter p: wfeParameters)
+        {
+            if(p.getWorkflowElement_Name().equalsIgnoreCase(name))
+                result.add(p);
+        }
+        return result;
+    }
+
+    private ComputeProtocol findProtocol(String protocol_name)
+    {
+        for(ComputeProtocol c: cProtocols)
+        {
+            if(c.getName().equalsIgnoreCase(protocol_name))
+                return c;
+        }
+        return null;
     }
 
     private ComputeParameter findComputeFeature(String targetName)
@@ -238,12 +236,11 @@ public class WorkflowGenerator
         return null;
     }
 
-    private void generateComputeApplication(Database db, Tuple request,
-                                            WorkflowElement workflowElement,
+    private void generateComputeApplication(WorkflowElement workflowElement,
                                             ComputeProtocol protocol,
                                             Hashtable<String, String> weavingValues,
                                             Vector<ComputeParameter> featuresToDerive)
-            throws IOException, DatabaseException, ParseException
+            throws IOException, ParseException
     {
         ComputeApplication app = new ComputeApplication();
         app.setProtocol(protocol);
@@ -270,48 +267,13 @@ public class WorkflowGenerator
         String result = weaver.weaveFreemarker(protocolTemplate, weavingValues);
         app.setComputeScript(result);
         app.setInterpreter(protocol.getInterpreter());
-        db.add(app);
-
-        List<ComputeApplication> res = db.query(ComputeApplication.class).equals(ComputeApplication.NAME, app.getName()).find();
-        if (res.size() != 1)
-            throw new DatabaseException("ERROR while inserting into db");
-
-        app = res.get(0);
-
-        Set entries = weavingValues.entrySet();
-        Iterator it = entries.iterator();
-
-        //this is used for database update with ComputeAppPaths
-        Vector<String> logpathfiles = new Vector<String>();
-
-        while (it.hasNext())
-        {
-            Map.Entry entry = (Map.Entry) it.next();
-            String name = (String) entry.getKey();
-            String value = (String) entry.getValue();
-
-            ObservedValue observedValue = new ObservedValue();
-            observedValue.setValue(value);
-            observedValue.setProtocolApplication(app);
-            observedValue.setTarget(target.getId());
-            ComputeParameter feature = findComputeFeature(name);
-            if (feature.getDataType().equalsIgnoreCase(LOG))
-            {
-                logpathfiles.addElement(value);
-            }
-
-            observedValue.setFeature(feature.getId());
-            System.out.println(feature.getName() + "->" + value);
-
-            db.add(observedValue);
-        }
+        applications.add(app);
 
         pipelineElementNumber++;
 
         //create compute pipeline
         String scriptID = app.getName();
         weaver.setScriptID(scriptID);
-
 
         weaver.setDefaults();
 
@@ -392,19 +354,6 @@ public class WorkflowGenerator
             currentStep.addScript(pipelineScript);
             strCurrentPipelineStep = strPrevious;
         }
-
-        //here ComputeAppPaths generation
-        ComputeAppPaths appPaths = new ComputeAppPaths();
-        appPaths.setApplication(app);
-        appPaths.setErrpath(weaver.getErrfilename());
-        appPaths.setOutpath(weaver.getOutfilename());
-        appPaths.setExtralog(weaver.getExtralogfilename());
-
-        if (logpathfiles.size() > 0)
-            for (int iii = 0; iii < logpathfiles.size(); iii++)
-                appPaths.addLogpath(logpathfiles.elementAt(iii));
-
-        updater.addComputeAppPath(appPaths);
     }
 
     //here the first trial of generation for the grid
@@ -497,5 +446,15 @@ public class WorkflowGenerator
     {
         //SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
         return sdf.format(now());
+    }
+
+    public List<ComputeApplication> getComputeApplications()
+    {
+        return applications;
+    }
+
+    public Pipeline getPipeline()
+    {
+        return pipeline;
     }
 }
