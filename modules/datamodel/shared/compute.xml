@@ -46,6 +46,7 @@
 			</description>
 			<field name="scriptTemplate" type="freemarker"
 				description="Commandline or (template of) an script, e.g. in R. Templating engine is freemarker." />
+			<field name="targetType" type="enum" enum_options="NgsSample,LibraryLane"/>
 			<field name="interpreter" type="enum"
 				enum_options="[bash,R,Python,WorkflowInterpreter,jdl]"
 				description="the interpreter used to run this command. For example 'shellTemplate'" />
