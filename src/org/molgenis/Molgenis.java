@@ -82,6 +82,7 @@ import org.molgenis.generators.excel.ImportWizardExcelPrognosisGen;
 import org.molgenis.generators.python.PythonDataTypeGen;
 import org.molgenis.generators.server.FrontControllerGen;
 import org.molgenis.generators.server.MolgenisContextListenerGen;
+import org.molgenis.generators.server.MolgenisGuiServiceGen;
 import org.molgenis.generators.server.MolgenisResourceCopyGen;
 import org.molgenis.generators.server.MolgenisServletContextGen;
 import org.molgenis.generators.server.MolgenisServletGen;
@@ -365,8 +366,10 @@ public class Molgenis {
             // SERVER SETTINGS
             generators.add(new MolgenisServletContextGen());
             generators.add(new MolgenisContextListenerGen());
-            generators.add(new FrontControllerGen()); //will replace MolgenisServletGen in the future
             generators.add(new MolgenisServletGen());
+            generators.add(new FrontControllerGen()); //will replace MolgenisServlet (service mapping, database & security)
+            generators.add(new MolgenisGuiServiceGen()); //will replace MolgenisServlet (gui service)
+            
         } else {
             logger.info("Skipping MolgenisServlet ....");
         }

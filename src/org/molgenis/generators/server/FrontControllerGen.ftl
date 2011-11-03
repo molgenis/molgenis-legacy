@@ -14,17 +14,12 @@ package ${package}.servlet;
 
 import java.io.File;
 import java.util.LinkedHashMap;
-import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
-import org.molgenis.framework.security.Login;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ApplicationController;
+import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisFrontController;
 import org.molgenis.framework.server.MolgenisService;
 
-
-import org.molgenis.util.EmailService;
-import org.molgenis.util.SimpleEmailService;
 <#if generate_BOT>
 import java.io.IOException;
 import ircbot.IRCHandler;
@@ -34,10 +29,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import generic.JavaCompiler;
 import generic.JavaCompiler.CompileUnit;
-</#if>
-<#if db_mode = 'standalone'>
+</#if><#if db_mode = 'standalone'>
 import org.apache.commons.dbcp.BasicDataSource;
-import org.molgenis.framework.db.DatabaseException;
 <#else>
 import ${package}.DatabaseFactory;
 import javax.servlet.ServletContext;
@@ -47,15 +40,33 @@ import org.molgenis.framework.db.jdbc.JndiDataSourceWrapper;
 public class FrontController extends MolgenisFrontController
 {
 	private static final long serialVersionUID = 3141439968743510237L;
-
-	public FrontController() {
-		this.usedOptions = new UsedMolgenisOptions();
+	
+	private MolgenisContext context;
+	
+	@Override
+	public void init(javax.servlet.ServletConfig conf) throws javax.servlet.ServletException
+	{
+		//first, we initialize so the ServletContext is created from the webserver
+		super.init(conf);
 		
+		//now we can create the MolgenisContext with objects reusable over many requests
+		context = new MolgenisContext(createDatabase(), this.getServletContext());
+		
+		//finally, we store all mapped services, and pass them the context used for databasing, serving, etc.
 		LinkedHashMap<String,MolgenisService> services = new LinkedHashMap<String,MolgenisService>();
 		
-		<#list services as service>
-		services.put("${service?split('@')[1]}", new ${service?split('@')[0]}());
-		</#list>
+		try
+		{
+			<#list services as service>
+			services.put("${service?split('@')[1]}", new ${service?split('@')[0]}(context));
+			</#list>
+		}
+		catch(Exception e)
+		{
+			System.err.println("FATAL EXCEPTION: failure in starting services in FrontController. Check your services and/or mapping and try again.");
+			e.printStackTrace();
+			System.exit(0);
+		}
 		
 		this.services = services;
 	}
@@ -93,9 +104,16 @@ public class FrontController extends MolgenisFrontController
 		}
 	}
 
-	public Database getDatabase() throws Exception
+	@Override
+	public Database getDatabase()
 	{
-		return super.getDatabase();
+		<#if db_mode != 'standalone'>
+		return context.getDatabase();
+		<#else>
+		//FIXME: multithreading/instances problem
+		return createDatabase();
+		//return context.getDatabase();
+		</#if>
 	}
 	
 }

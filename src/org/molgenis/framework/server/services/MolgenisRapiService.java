@@ -27,7 +27,7 @@ public class MolgenisRapiService implements MolgenisService
 	public void handleRequest(MolgenisRequest r,
 			MolgenisResponse response) throws IOException
 	{
-		PrintWriter out = response.getWriter();
+		PrintWriter out = response.getResponse().getWriter();
 
 		HttpServletRequest request = r.getRequest();
 		String filename = request.getRequestURI().substring(
