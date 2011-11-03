@@ -1,6 +1,0 @@
-Compute framework is built on foundations:
-
-1. ComputeProtocol templates
-2. ComputeFeature list with all parameters
-3. ComputeWorkflowElements listing workflows, incl iterator
-4. 
