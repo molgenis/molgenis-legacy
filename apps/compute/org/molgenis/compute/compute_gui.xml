@@ -15,7 +15,7 @@
 			<form name="Flowcells" entity="Flowcell" label="Flowcell, Lanes" hide_fields="Investigation,ontologyReference">
 				<form name="Lanes" entity="LibraryLane" hide_fields="Investigation,ontologyReference" />
 			</form>
-			<form name="Trios" entity="Trio">
+			<form name="Trios" entity="Trio" label="Trios, Samples">
 				<form name="TrioSamples" label="Samples" entity="NgsSample" />
 			</form>
 			<form name="Worksheet" label="Analysis Worksheet" entity="Worksheet" commands="org.molgenis.compute.ui.WorksheetBatchCommand">

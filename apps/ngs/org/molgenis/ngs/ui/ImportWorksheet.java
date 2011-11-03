@@ -336,14 +336,8 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 					
 					// GoNL data with trio's
 					
-					Trio trio = (Trio) getObject(db, Trio.class, "name", thistrio);
-					
-					print(trio.NAME);
-					print("---hier");
-					print(thistrio);
-					if (trio != null) print(trio.toString());
-					print("---stop");
-					
+					Trio trio = (Trio) getObject(db, Trio.class, "name", thistrio); // FIXME: replace "name" by some 'constant'
+										
 					if (trio == null) {
 						// trio did not exist yet, so create
 						trio = new Trio();
@@ -383,7 +377,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 					flowcell = new Flowcell();
 					flowcell.setName(flowcellname);
 					String flowcellrun = tuple.getString(Worksheet.RUN);
-					if (flowcellrun == null) flowcellrun = "FLOWCELLRUN";
+					if (flowcellrun == null) flowcellrun = "NA";
 
 					// prefix leading 0's so that run length is always 4
 					for (int i = flowcellrun.length(); i < 4; i++)
