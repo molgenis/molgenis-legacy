@@ -1,289 +1,533 @@
-//package org.molgenis.lifelines;
-//
-//import java.io.IOException;
-//import java.io.OutputStream;
-//import java.io.PrintWriter;
-//import java.math.BigDecimal;
-//import java.sql.Connection;
-//import java.sql.DatabaseMetaData;
-//import java.sql.ResultSet;
-//import java.util.ArrayList;
-//import java.util.Enumeration;
-//import java.util.List;
-//
-//import javax.persistence.EntityManager;
-//import javax.servlet.ServletException;
-//import javax.servlet.http.HttpServlet;
-//import javax.servlet.http.HttpServletRequest;
-//import javax.servlet.http.HttpServletResponse;
-//
-//import lifelines.matrix.Column;
-//import lifelines.matrix.Exporter.ExportExcelSimple;
-//
-//import org.apache.commons.lang.StringUtils;
-//import org.molgenis.framework.db.Database;
-//import org.molgenis.framework.db.DatabaseException;
-//import org.molgenis.util.HandleException;
-//
-//import app.DatabaseFactory;
-//
-///**
-// * Servlet implementation class jqGrid
-// */
-//public class jqGrid extends HttpServlet {
-//	private static final long serialVersionUID = 1L;
-//
-//	/**
-//	 * @see HttpServlet#HttpServlet()
-//	 */
-//	public jqGrid() {
-//		super();
-//		// TODO Auto-generated constructor stub
-//	}
-//
-//	/**
-//	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-//	 *      response)
-//	 */
-//	protected void doGet(HttpServletRequest request,
-//			HttpServletResponse response) throws ServletException, IOException {
-//		String schema = request.getParameter("schema");
-//		String tableName = request.getParameter("tableName");
-//		String operation = request.getParameter("op");
-//		
-//		@SuppressWarnings("unchecked")
-//		Enumeration<String> en = request.getParameterNames();
-//		while (en.hasMoreElements()) {
-//			String name = en.nextElement();
-//			System.out.println("name: " + name + " value: "
-//					+ request.getParameter(name));
-//		}
-//
-//		if (StringUtils.isNotEmpty(operation) && operation.equals("tree")) {
-//			treeView(request, response);
-//			return;
-//		}
-//		
-//		Database db = null;
-//		try {
-//			db = DatabaseFactory.create();
-//		} catch (DatabaseException e1) {
-//			HandleException.handle(e1);
-//		}
-//		EntityManager em = db.getEntityManager();
-//		List<Column> columns = new ArrayList<Column>();
-//		try {
-//			columns = getColumns(schema, tableName,
-//					((app.JpaDatabase) db).createJDBCConnection());
-//		} catch (Exception ex) {
-//			HandleException.handle(ex);
-//		}
-//
-//		if (StringUtils.isNotEmpty(operation) && operation.equals("getColumns")) {
-//			PrintWriter out = response.getWriter();
-//			out.println("{");
-//			out.print("\"columns\": [");
-//			for (int i = 0; i < columns.size(); ++i) {
-//				out.print(String.format("\"%s\"", columns.get(i).getName()));
-//				if (i + 1 < columns.size()) {
-//					out.print(",");
-//				}
-//			}
-//			out.println("]");
-//
-//			out.println("}");
-//			out.flush();
-//			return;
-//		}
-//
-//		String pageParam = request.getParameter("page");
-//		String limitParam = request.getParameter("rows");
-//		String sidx = request.getParameter("sidx");
-//		String sord = request.getParameter("sord");
-//
-//		int page = 1;
-//		if (StringUtils.isNotEmpty(pageParam)) {
-//			page = Integer.parseInt(pageParam);
-//		}
-//		int limit = 10;
-//		if (StringUtils.isNotEmpty(limitParam)) {
-//			limit = Integer.parseInt(limitParam);
-//		}
-//
-//		if (StringUtils.isEmpty(sidx)) {
-//			sidx = "PA_ID";
-//		}
-//		if (StringUtils.isEmpty(sord)) {
-//			sord = "DESC";
-//		}
-//
-//		String whereCondition = "";
-//		String searchOn = request.getParameter("_search");
-//		if (StringUtils.isNotEmpty(searchOn) && Boolean.parseBoolean(searchOn)) {
-//			for (int i = 0; i < columns.size(); ++i) {
-//				String column = columns.get(i).getName();
-//				String value = request.getParameter(column);
-//				if (value != null) {
-//					String condition = String
-//							.format(" %s = %s ", column, value);
-//					if (i + 1 < columns.size() && !whereCondition.equals("")) {
-//						whereCondition += " AND ";
-//					}
-//					whereCondition += condition;
-//				}
-//			}
-//		}
-//
-//		if (!whereCondition.equals("")) {
-//			whereCondition = " WHERE " + whereCondition;
-//		}
-//
-//		String countQuery = String.format("SELECT COUNT(*) FROM %s %s",
-//				tableName, whereCondition);
-//
-//		int count = -1;
-//		try {
-//			count = ((BigDecimal) em.createNativeQuery(countQuery)
-//					.getSingleResult()).intValue();
-//
-//			int totalPages = 0;
-//			if (count > 0) {
-//				totalPages = (int) Math.ceil(count / limit);
-//			}
-//
-//			if (page > totalPages) {
-//				page = totalPages;
-//			}
-//
-//			int start = limit * page - limit;
-//
-//			String sql = "SELECT * FROM %s %s ORDER BY %s %s";
-//			sql = String.format(sql, tableName, whereCondition, sidx, sord);
-//
-//			@SuppressWarnings("unchecked")
-//			List<Object[]> rs = em.createNativeQuery(sql).setFirstResult(start)
-//					.setMaxResults(limit).getResultList();
-//
-//			if (StringUtils.isNotEmpty(operation)
-//					&& operation.equals("excelExport")) {
-//				response.setContentType(ExportExcelSimple.getContentType());
-//				response.setHeader(
-//						"Content-disposition",
-//						"attachment; filename=Matrix."
-//								+ ExportExcelSimple.getFileExtenstion());
-//				OutputStream out = response.getOutputStream();
-//				ExportExcelSimple.export(columns, out, db, sql);
-//				out.flush();
-//			} else {
-//				PrintWriter out = response.getWriter();
-//				out.println("<?xml version='1.0' encoding='utf-8'?>");
-//				out.println("<rows>");
-//
-//				out.println(String.format("<page>%s</page>", page));
-//				out.println(String.format("<total>%s</total>", totalPages));
-//				out.println(String.format("<records>%s</records>", count));
-//
-//				for (Object[] objs : rs) {
-//					out.println(String.format("<row id=\"%s\">",
-//							objs[0].toString()));
-//					for (Object obj : objs) {
-//						if (obj != null) {
-//							out.println(String.format("<cell>%s</cell>",
-//									obj.toString()));
-//						} else {
-//							out.println(String.format("<cell>%s</cell>", ""));
-//						}
-//					}
-//					out.println("</row>");
-//				}
-//				out.println("</rows>");
-//				out.flush();
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			HandleException.handle(e);
-//		}
-//	}
-//
-//	/**
-//	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-//	 *      response)
-//	 */
-//	protected void doPost(HttpServletRequest request,
-//			HttpServletResponse response) throws ServletException, IOException {
-//		doGet(request, response);
-//	}
-//
-//	private static List<Column> getColumns(String schema, String tableName,
-//			Connection connection) throws Exception {
-//		List<Column> columns = new ArrayList<Column>();
-//		DatabaseMetaData metaData = connection.getMetaData();
-//		ResultSet rs = metaData.getColumns(null, schema.toUpperCase(),
-//				tableName.toUpperCase(), null);
-//		while (rs.next()) {
-//			String columName = rs.getString("COLUMN_NAME");
-//			String columnType = rs.getString("TYPE_NAME");
-//			// int size = rsColumns.getInt("COLUMN_SIZE");
-//			// boolean isNull = false;
-//			// int nullable = rsColumns.getInt("NULLABLE");
-//			// if (nullable == DatabaseMetaData.columnNullable) {
-//			// isNull = true;
-//			// } else {
-//			// isNull = false;
-//			// }
-//			// int position = rsColumns.getInt("ORDINAL_POSITION"); // column
-//			// pos
-//			columns.add(new Column(columName, Column.getColumnType(columnType), null));
-//		}
-//		return columns;
-//	}
-//
-//	private static void treeView(HttpServletRequest request, HttpServletResponse response) throws IOException {
-//		PrintWriter out = response.getWriter();
-//		out.println("<rows>");
-//		out.println("<page>1</page>");
-//		out.println("<total>1</total>");
-//		out.println("<records>1</records>");
-//		out.println("<row>");
-//		out.println("<cell>1</cell>");
-//		out.println("<cell>Cash</cell>");
-//		out.println("<cell>100</cell>");
-//		out.println("<cell>400.00</cell>");
-//		out.println("<cell>250.00</cell>");
-//		out.println("<cell>150.00</cell>");
-//		out.println("<cell>0</cell>");
-//		out.println("<cell>1</cell>");
-//		out.println("<cell>8</cell>");
-//		out.println("<cell>false</cell>");
-//		out.println("<cell>false</cell>");
-//		out.println("</row>");
-//		out.println("<row>");
-//		out.println("<cell>5</cell>");
-//		out.println("<cell>Bank's</cell>");
-//		out.println("<cell>200</cell>");
-//		out.println("<cell>1500.00</cell>");
-//		out.println("<cell>1000.00</cell>");
-//		out.println("<cell>500.00</cell>");
-//		out.println("<cell>0</cell>");
-//		out.println("<cell>9</cell>");
-//		out.println("<cell>14</cell>");
-//		out.println("<cell>false</cell>");
-//		out.println("<cell>false</cell>");
-//		out.println("</row>");
-//		out.println("<row>");
-//		out.println("<cell>8</cell>");
-//		out.println("<cell>Fixed asset</cell>");
-//		out.println("<cell>300</cell>");
-//		out.println("<cell>0.00</cell>");
-//		out.println("<cell>1000.00</cell>");
-//		out.println("<cell>-1000.00</cell>");
-//		out.println("<cell>0</cell>");
-//		out.println("<cell>15</cell>");
-//		out.println("<cell>16</cell>");
-//		out.println("<cell>true</cell>");
-//		out.println("<cell>false</cell>");
-//		out.println("</row>");
-//		out.println("</rows>");		
-//		out.flush();
-//	}
-//}
+package org.molgenis.lifelines;
+
+import org.molgenis.pheno.ObservationElement;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.persistence.EntityManager;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import lifelines.matrix.Column;
+
+import org.apache.commons.lang.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.util.HandleException;
+
+import app.DatabaseFactory;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import org.gridgain.grid.util.GridBoundedLinkedHashMap;
+import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.matrix.component.SliceablePhenoMatrix;
+import org.molgenis.organization.Investigation;
+import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservationTarget;
+import org.molgenis.pheno.ObservedValue;
+import org.molgenis.protocol.Protocol;
+
+import static ch.lambdaj.Lambda.*;
+import static org.hamcrest.core.IsEqual.*;
+
+/**
+ * Servlet implementation class jqGrid
+ */
+public class jqGrid extends HttpServlet {
+
+    private static final long serialVersionUID = 1L;
+
+    private static Map<String, Integer> countByColumnName(LinkedHashMap<Protocol, List<Measurement>> measurementByProtocol) {
+        Map<String, Integer> countByColumName = new HashMap<String, Integer>();
+        for (Map.Entry<Protocol, List<Measurement>> entry : measurementByProtocol.entrySet()) {
+            for(Measurement m : entry.getValue()) {
+                if(countByColumName.containsKey(m.getName())) {
+                    countByColumName.put(m.getName(), countByColumName.get(m.getName()) +1);
+                } else {
+                    countByColumName.put(m.getName(), 1);
+                }
+            }
+        }
+        return countByColumName;
+    }
+    private SliceablePhenoMatrix<ObservationTarget, Measurement> matrix;
+    int investigationId = 50;
+
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public jqGrid() {
+        super();
+    }
+
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+     *      response)
+     */
+    protected void doGet(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException, IOException {
+        Database db = null;
+        try {
+            String schema = request.getParameter("schema");
+            String tableName = request.getParameter("tableName");
+            String operation = request.getParameter("op");
+            String selectedColumnsPar = request.getParameter("selectedCols");
+
+
+            //        @SuppressWarnings("unchecked")
+            //        Enumeration<String> en = request.getParameterNames();
+            //        while (en.hasMoreElements()) {
+            //            String name = en.nextElement();
+            //            System.out.println("name: " + name + " value: "
+            //                    + request.getParameter(name));
+            //        }        
+
+            EntityManager em = null;
+            db = DatabaseFactory.create();
+            em = db.getEntityManager();
+
+            LinkedHashMap<Protocol, List<Measurement>> selectedMeasurementByProtocol = getSelectedMeasurements(em, selectedColumnsPar);
+            Investigation investigation = em.find(Investigation.class, investigationId);
+            LinkedHashMap<Protocol, List<Measurement>> measurementByProtocol = getMeasurementByProtocol(em, investigation);
+
+            try {
+                if (StringUtils.isNotEmpty(operation) && operation.equals("jsTreeJson")) {
+                    jsTreeJson(response, measurementByProtocol);
+                    return;
+                }
+            } catch (Exception ex) {
+                HandleException.handle(ex);
+            }
+
+            
+            if (selectedMeasurementByProtocol.isEmpty()) {
+                //first time only, when data is loadeded!
+                Protocol protocolBezoek1 = em.find(Protocol.class, 50);
+                selectedMeasurementByProtocol = new LinkedHashMap<Protocol, List<Measurement>>();
+                selectedMeasurementByProtocol.put(protocolBezoek1, (List<Measurement>) (List) protocolBezoek1.getFeatures());
+            }
+
+            //initalize matrix!
+            matrix = new SliceablePhenoMatrix<ObservationTarget, Measurement>(db, ObservationTarget.class, Measurement.class, investigation, selectedMeasurementByProtocol);
+            List<Column> columns = matrix.getColumns();
+
+            if (StringUtils.isNotEmpty(operation) && operation.equals("getColModel")) {
+                getColModel(response.getWriter(), selectedMeasurementByProtocol);
+                return;
+            } else if (StringUtils.isNotEmpty(operation) && operation.equals("getColumnsNames")) {
+                getColumnNames(response.getWriter(), selectedMeasurementByProtocol);
+                return;
+            }
+
+            renderMatrix(request, response, em, "", tableName, columns, matrix);
+        } catch (Exception ex) {
+            Logger.getLogger(jqGrid.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                db.close();
+            } catch (DatabaseException dbEx) {
+                Logger.getLogger(jqGrid.class.getName()).log(Level.SEVERE, null, dbEx);
+            }
+        }
+    }
+
+    public void renderMatrix(HttpServletRequest request, HttpServletResponse response, EntityManager em,
+            String exportType, String tableName,
+            List<Column> columns,
+            SliceablePhenoMatrix<ObservationTarget, Measurement> matrix) {
+        String pageParam = request.getParameter("page");
+        String limitParam = request.getParameter("rows");
+        String sidx = request.getParameter("sidx");
+        String sord = request.getParameter("sord");
+
+        int page = 1;
+        if (StringUtils.isNotEmpty(pageParam)) {
+            page = Integer.parseInt(pageParam);
+        }
+        
+        matrix.setRowOffset(page-1);
+        
+        int limit = 10;
+        if (StringUtils.isNotEmpty(limitParam)) {
+            limit = Integer.parseInt(limitParam);
+        }
+        
+        matrix.setRowLimit(limit);
+        
+
+        if (StringUtils.isEmpty(sidx)) {
+            sidx = "PA_ID";
+        }
+        if (StringUtils.isEmpty(sord)) {
+            sord = "ASC";
+        }
+
+        //{"groupOp":"AND","rules":[{"field":"GEWICHT","op":"eq","data":"136"},{"field":"LENGTE","op":"eq","data":"1212"}]}
+
+        String filters = request.getParameter("filters");
+        applyFiltersToMatrix(matrix, filters);
+//        String whereCondition = filterToSql(filters, columns);
+//        if (!whereCondition.equals("")) {
+//            whereCondition = " WHERE " + whereCondition;
+//        }
+
+
+        int count = -1;
+        try {
+            count = matrix.getRowCount();
+
+            int totalPages = 0;
+            if (count > 0) {
+                totalPages = (int) Math.ceil((count - 1) / limit);
+            }
+
+            if (page > totalPages) {
+                page = totalPages;
+            }
+
+            int start = limit * page;
+
+            List<String> colNames = new ArrayList();
+            for (Column c : columns) {
+                colNames.add(c.getName());
+            }
+
+            if (StringUtils.isNotEmpty(exportType)
+                    && exportType.equals("excelExport")) {
+            } else {
+                //renderMatrixDataAsJson(rs, response.getWriter(), page, totalPages, count);
+                renderJsonTable(matrix, response.getWriter());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            HandleException.handle(e);
+        }
+    }
+
+    public void renderJsonTable(SliceablePhenoMatrix<ObservationTarget, Measurement> matrix, PrintWriter outWriter) throws Exception {
+        List<ObservedValue>[][] values = matrix.getValueLists();
+        List<? extends ObservationElement> rows = matrix.getRowHeaders();
+        List<? extends ObservationElement> cols = matrix.getColHeaders();
+
+        StringBuilder out = new StringBuilder();
+        
+        out.append("<?xml version='1.0' encoding='utf-8'?>");
+        out.append("<rows>");
+
+        int rowLimit = matrix.getRowLimit();
+        int rowCount = matrix.getRowCount();
+        int rowOffset = matrix.getRowOffset();
+
+        int currentPage = (int) Math.ceil((float) rowOffset / (float) rowLimit);
+        int totalPages = (int) Math.ceil((float) rowCount / (float) rowLimit);
+
+        out.append(String.format("<page>%s</page>", currentPage));
+        out.append(String.format("<total>%s</total>", totalPages));
+        out.append(String.format("<records>%s</records>", rowCount));
+        //print rowHeader + colValues
+        for (int row = 0; row < values.length; row++) {
+            String rowId = rows.get(row).getName(); //patient ID?
+            out.append(String.format("<row id=\"%s\">", rowId));
+
+            List<ObservedValue>[] rowValues = values[row];
+            for (List<ObservedValue> ovRec : rowValues) {
+                for (ObservedValue ov : ovRec) {
+                    if (StringUtils.isNotEmpty(ov.getValue())) {
+                        out.append(String.format("<cell>%s</cell>", ov.getValue()));
+                    } else {
+                        out.append(String.format("<cell>%s</cell>", ""));
+                    }
+                }
+            }
+            out.append("</row>");
+        }        
+        out.append("</rows>");
+        System.out.println(out.toString());
+        outWriter.append(out.toString());
+        outWriter.flush();
+    }
+
+    public void renderMatrixDataAsJson(List<Object[]> rs, PrintWriter outWriter, int page, int totalPages, int count) {
+        StringBuilder out = new StringBuilder();
+        out.append("<?xml version='1.0' encoding='utf-8'?>");
+        out.append("<rows>");
+
+        out.append(String.format("<page>%s</page>", page));
+        out.append(String.format("<total>%s</total>", totalPages));
+        out.append(String.format("<records>%s</records>", count));
+
+        for (Object[] objs : rs) {
+            out.append(String.format("<row id=\"%s\">",
+                    objs[0].toString()));
+            for (Object obj : objs) {
+                if (obj != null) {
+                    out.append(String.format("<cell>%s</cell>",
+                            obj.toString()));
+                } else {
+                    out.append(String.format("<cell>%s</cell>", ""));
+                }
+            }
+            out.append("</row>");
+        }
+        out.append("</rows>");
+        outWriter.append(out.toString());
+        
+        System.out.println(out.toString());
+        
+        outWriter.flush();
+    }
+
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+     *      response)
+     */
+    @Override
+    protected void doPost(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response);
+    }
+
+    private static List<String> getViewNames(Connection conn) throws Exception {
+        List<String> result = new ArrayList<String>();
+        String sql = "select object_name from user_objects where object_type = 'VIEW'";
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery("select object_name from user_objects where object_type = 'VIEW'");
+        while (rs.next()) {
+            String tableName = rs.getString(1);
+            result.add(tableName);
+        }
+        return result;
+    }
+
+    private static List<Column> getColumns(String schema, String tableName,
+            Connection connection) throws Exception {
+        List<Column> columns = new ArrayList<Column>();
+        DatabaseMetaData metaData = connection.getMetaData();
+        ResultSet rs = metaData.getColumns(null, schema.toUpperCase(),
+                tableName.toUpperCase(), null);
+        while (rs.next()) {
+            String columName = rs.getString("COLUMN_NAME");
+            String columnType = rs.getString("TYPE_NAME");
+            // int size = rsColumns.getInt("COLUMN_SIZE");
+            // boolean isNull = false;
+            // int nullable = rsColumns.getInt("NULLABLE");
+            // if (nullable == DatabaseMetaData.columnNullable) {
+            // isNull = true;
+            // } else {
+            // isNull = false;
+            // }
+            // int position = rsColumns.getInt("ORDINAL_POSITION"); // column
+            // pos
+            columns.add(new Column(columName, Column.getColumnType(columnType), null));
+        }
+        return columns;
+    }
+
+    private static void getColModel(PrintWriter out, LinkedHashMap<Protocol, List<Measurement>> measurementByProtocol) {
+        List<JSONObject> data = new ArrayList<JSONObject>();
+        JSONArray result = null;
+        try {
+            for (Map.Entry<Protocol, List<Measurement>> entry : measurementByProtocol.entrySet()) {
+                for (int i = 0; i < entry.getValue().size(); ++i) {
+                    String colName = entry.getValue().get(i).getName();
+                    JSONObject column = new JSONObject();
+                    
+                    column.put("name", colName);
+                    column.put("index", String.format("%s.%s", entry.getKey().getId(), entry.getValue().get(i).getId()));
+                    column.put("width", 100);
+                    data.add(column);
+                }
+            }
+            result = new JSONArray(data);
+        } catch (JSONException e) {
+            HandleException.handle(e);
+        }
+        System.out.println(result.toString());
+        out.println(result.toString());
+        out.flush();
+    }
+
+    private static void getColumnNames(PrintWriter out, LinkedHashMap<Protocol, List<Measurement>> measurementByProtocol) {
+        List<String> values = new ArrayList<String>();
+        
+        for (Map.Entry<Protocol, List<Measurement>> entry : measurementByProtocol.entrySet()) {
+            for (Measurement measurement : entry.getValue()) {
+                values.add(measurement.getName());    
+            }
+        }
+        JSONArray data = new JSONArray(values);
+        out.append(data.toString());
+        out.flush();
+    }
+    
+    private static void applyFiltersToMatrix(SliceablePhenoMatrix<ObservationTarget, Measurement> matrix, String filters) {
+        if (StringUtils.isNotEmpty(filters)) {
+            JSONObject jFilter = null;
+            try {
+                jFilter = new JSONObject(filters);
+
+                String groupOp = (String) jFilter.get("groupOp");
+                JSONArray rules = jFilter.getJSONArray("rules");
+
+                for (int i = 0; i < rules.length(); ++i) {
+                    JSONObject searchRule = (JSONObject) rules.get(i);
+
+                    String field = (String) searchRule.get("field");
+                    
+                    String[] parts = field.split("\\.");
+                    int protocolId = Integer.parseInt(parts[0]);
+                    int measurementId = Integer.parseInt(parts[1]);
+                    
+                    String op = (String) searchRule.get("op");
+                    String value = (String) searchRule.get("data");
+                    matrix.sliceByColValueProperty(protocolId, measurementId, op, Operator.EQUALS, value);
+                }
+                System.out.println(groupOp);
+                System.out.println(rules);
+            } catch (Exception ex) {
+                Logger.getLogger(jqGrid.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    private static String filterToSql(String filters, List<Column> columns) {
+        String whereCondition = "";
+        if (StringUtils.isNotEmpty(filters)) {
+            JSONObject jFilter = null;
+            try {
+                jFilter = new JSONObject(filters);
+
+                String groupOp = (String) jFilter.get("groupOp");
+                JSONArray rules = jFilter.getJSONArray("rules");
+
+                for (int i = 0; i < rules.length(); ++i) {
+                    JSONObject searchRule = (JSONObject) rules.get(i);
+
+                    String column = (String) searchRule.get("field");
+                    String op = (String) searchRule.get("op");
+                    String value = (String) searchRule.get("data");
+
+                    if (value != null) {
+                        String condition = String.format(" %s = %s ", column, value);
+                        if (i + 1 < columns.size() && !whereCondition.equals("")) {
+                            whereCondition += " AND ";
+                        }
+                        whereCondition += condition;
+                    }
+
+                }
+                System.out.println(groupOp);
+                System.out.println(rules);
+            } catch (JSONException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        return whereCondition;
+    }
+
+    private static void jsTreeJson(HttpServletResponse response, LinkedHashMap<Protocol, List<Measurement>> mesurementsByProtocol) throws IOException {
+        try {
+            List<JSONObject> tableNodes = new ArrayList<JSONObject>();
+
+            for (Map.Entry<Protocol, List<Measurement>> entry : mesurementsByProtocol.entrySet()) {
+                String tableName = entry.getKey().getName();
+                Integer protocolId = entry.getKey().getId();
+
+                JSONObject tableNode = new JSONObject();
+                tableNode.put("data", tableName);
+                tableNode.put("attr", new JSONObject().put("id", protocolId));
+                tableNode.put("metadata", new JSONObject().put("id", protocolId));
+
+                List<JSONObject> children = new ArrayList<JSONObject>();
+                for (Measurement measurement : entry.getValue()) {
+                    JSONObject columnNode = new JSONObject();
+                    columnNode.put("data", measurement.getName());
+                    columnNode.put("attr", new JSONObject().put("id", protocolId + "." + measurement.getId()));
+                    columnNode.put("metadata", new JSONObject().put("id", protocolId + "." + measurement.getId()));
+                    children.add(columnNode);
+                }
+                tableNode.put("children", children);
+                tableNodes.add(tableNode);
+            }
+            JSONArray data = new JSONArray(tableNodes);
+
+            PrintWriter out = response.getWriter();
+            System.out.println(data.toString());
+            out.println(data.toString());
+            out.flush();
+        } catch (Exception e) {
+            HandleException.handle(e);
+        }
+    }
+
+    public List<Column> getColumnsFromMeasurementByProtocol(LinkedHashMap<Protocol, List<Measurement>> mesurementsByProtocol) {
+        List<Column> result = new ArrayList<Column>();
+        for (Map.Entry<Protocol, List<Measurement>> entry : mesurementsByProtocol.entrySet()) {
+            for (Measurement measurement : entry.getValue()) {
+                String name = measurement.getName();
+                Column.ColumnType columnType = Column.getColumnType(measurement.getDataType());
+                Column c = new Column(name, columnType, entry.getKey(), measurement, null);
+                result.add(c);
+            }
+        }
+        return result;
+    }
+
+    public LinkedHashMap<Protocol, List<Measurement>> getMeasurementByProtocol(EntityManager em, Investigation investigation) {
+        String ql = "SELECT p FROM Protocol p WHERE p.investigation = :investigation";
+        List<Protocol> protocols = em.createQuery(ql, Protocol.class).setParameter("investigation", investigation).getResultList();
+        LinkedHashMap<Protocol, List<Measurement>> measurementsByProtocol = new LinkedHashMap<Protocol, List<Measurement>>();
+        for (Protocol protocol : protocols) {
+            measurementsByProtocol.put(protocol, (List<Measurement>) (List) protocol.getFeatures());
+        }
+        return measurementsByProtocol;
+    }
+
+    public LinkedHashMap<Protocol, List<Measurement>> getSelectedMeasurements(EntityManager em, String selectedColumnsPar) {
+        LinkedHashMap<Protocol, List<Measurement>> selectedMeasurementByProtocol = new GridBoundedLinkedHashMap<Protocol, List<Measurement>>(investigationId);
+        if (StringUtils.isNotEmpty(selectedColumnsPar) && !selectedColumnsPar.equals("null")) {
+            String[] cols = selectedColumnsPar.substring(2, selectedColumnsPar.length() - 2).replaceAll("\"", "").split(",");
+            for (String c : cols) {
+                String[] parts = c.split("\\.");
+                int protocolId = Integer.parseInt(parts[0]);
+
+                Protocol protocol = em.find(Protocol.class, protocolId);
+
+                if (parts.length > 1) {
+                    int measurementId = Integer.parseInt(parts[1]);
+                    Measurement m = em.find(Measurement.class, measurementId);
+
+                    boolean exists = exists(selectedMeasurementByProtocol.keySet(),
+                            having(on(Protocol.class).getId(), equalTo(protocol.getId())));
+                    if (exists) {
+                        if (!selectedMeasurementByProtocol.get(protocol).contains(m)) {
+                            selectedMeasurementByProtocol.get(protocol).add(m);
+                        }
+                    } else {
+                        List<Measurement> measurments = new ArrayList<Measurement>();
+                        measurments.add(m);
+                        selectedMeasurementByProtocol.put(protocol, measurments);
+                    }
+                } else {
+                    selectedMeasurementByProtocol.put(protocol, (List<Measurement>) (List) protocol.getFeatures());
+                }
+            }
+        }
+        return selectedMeasurementByProtocol;
+    }
+}
