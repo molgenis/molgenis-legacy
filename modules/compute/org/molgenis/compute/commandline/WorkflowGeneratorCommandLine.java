@@ -354,9 +354,9 @@ public class WorkflowGeneratorCommandLine
             String jobSubmitID = submitIDs.get(previousWorkflowElement);
 
             if(strDependancy.equalsIgnoreCase(""))
-                strDependancy += "job_" + jobSubmitID;
+                strDependancy += "$job_" + jobSubmitID;
             else
-                strDependancy += ":job_" + jobSubmitID;
+                strDependancy += ":$job_" + jobSubmitID;
         }
 
         if(!strDependancy.equalsIgnoreCase(""))
