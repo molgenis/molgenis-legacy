@@ -101,7 +101,7 @@ public class ExportImportToTemplates
 			String header = "#";
 			if(p.getWalltime() != null) header += "walltime="+p.getWalltime()+" ";
 			if(p.getCores() != null) header += "cores="+p.getCores()+" ";
-			if(p.getMemoryReq() != null) header += "memory="+p.getMemoryReq()+" "; 
+			if(p.getMem() != null) header += "memory="+p.getMem()+" "; 
 			
 			//write header and script template
 			writer.println(header);

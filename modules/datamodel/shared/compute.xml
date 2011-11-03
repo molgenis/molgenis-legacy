@@ -48,12 +48,14 @@
 				description="Commandline or (template of) an script, e.g. in R. Templating engine is freemarker." />
 			<field name="targetType" type="enum" enum_options="NgsSample,LibraryLane" nillable="true"/>
 			<field name="interpreter" type="enum"
+				default="bash"
 				enum_options="[bash,R,Python,WorkflowInterpreter,jdl]"
 				description="the interpreter used to run this command. For example 'shellTemplate'" />
 			<field name="walltime" nillable="true" type="string"
-				description="the expected maximum runtime of this job" />
-			<field name="memoryReq" nillable="true" type="int" description="required RAM" />
-			<field name="cores" nillable="true" type="int" description="# required cores" />
+				description="# the expected maximum runtime of this job. Notation: 'dd:hh:mm'" />
+			<field name="mem" default="1" type="int" description="# required RAM in Gigabytes" />
+			<field name="cores" default="1" type="int" description="# required cores" />
+			<field name="nodes" default="1" type="int" description="# required nodes" />
 			<!-- field name="Inputs" type="mref" xref_entity="ComputeFeature" label="Inputs" 
 				nillable="true" description="Shadows Protocol.Features (copy):The features 
 				that can be observed using this protocol. For example 'length' or 'rs123534' 

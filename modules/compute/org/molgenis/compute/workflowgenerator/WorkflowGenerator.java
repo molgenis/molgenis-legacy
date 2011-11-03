@@ -329,8 +329,8 @@ public class WorkflowGenerator
         }
         if (protocol.getCores() != null)
             weaver.setCores(protocol.getCores() + "");
-        if (protocol.getMemoryReq() != null)
-            weaver.setMemoryReq(protocol.getMemoryReq() + "");
+        if (protocol.getMem() != null)
+            weaver.setMemoryReq(protocol.getMem() + "");
 
         //at some point of time can be added for the verification
         weaver.setVerificationCommand("\n");

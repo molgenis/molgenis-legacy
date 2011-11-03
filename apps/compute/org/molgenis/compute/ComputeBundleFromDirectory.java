@@ -48,40 +48,81 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 				BufferedReader reader = new BufferedReader( new FileReader (f));
 				String line  = null;
 			    String ls = System.getProperty("line.separator");
+			    boolean foundHeader = false;
+			    
 			    while( ( line = reader.readLine() ) != null ) {
-			    	if(line.trim().startsWith("#"))
+			    	if(line.trim().startsWith("#MOLGENIS"))
 			    	{
-			    		//check against lines without spaces to solve issue of mulitiple spaces
-			    		if(line.replace(" ", "").startsWith("#PBS-wwalltime="))
+			    		foundHeader = true;
+			    		
+			    		String[] keyValues = line.substring(9).split(" ");
+			    		for(String keyValue: keyValues) if(!keyValue.equals(""))
 			    		{
-			    			p.setWalltime(line.substring(line.indexOf("walltime=")+9));
-			    		}
-			    		else if(line.replace(" ", "").startsWith("#PBS-lnodes="))
-			    		{
-			    			logger.error("TODO:" + line);
-			    		}
-			    		else if(line.replace(" ", "").startsWith("#PBS-lmem="))
-			    		{
-			    			//convert to GB
-			    			String mem = line.substring(line.indexOf("mem=")+4).trim();
-			    			if(mem.endsWith("Gb"))
-			    			{	
-			    				Integer memValue = Integer.parseInt(mem.substring(0,mem.length()-2));
-			    				p.setMemoryReq(memValue);
+			    			String[] data = keyValue.split("=");
+			    			
+			    			if(data.length != 2) throw new RuntimeException("error parsing file "+f+", keyValue ='"+keyValue+"': "+line);
+			    			
+			    			if(data[0].equals("mem"))
+			    			{
+			    				p.setMem(Integer.parseInt(data[1]));
+			    			}
+			    			else if(data[0].equals("target"))
+			    			{
+			    				p.setTargetType(data[1]);
+			    			}
+			    			else if(data[0].equals("walltime"))
+			    			{
+			    				p.setWalltime(data[1]);
+			    			}
+			    			else if(data[0].equals("nodes"))
+			    			{
+			    				p.setCores(Integer.parseInt(data[1]));
+			    			}
+			    			else if(data[0].equals("cores"))
+			    			{
+			    				p.setCores(Integer.parseInt(data[1]));
 			    			}
 			    			else
 			    			{
-			    				throw new RuntimeException("error parsing file: memory should be in 'Gb': "+line);
+			    				throw new RuntimeException("error parsing file "+f+", unknown key '"+data[0]+"' in line: "+line);
 			    			}
+			    			
 			    		}
-			    		else if(line.replace(" ", "").startsWith("#MOLGENIStarget="))
-			    		{
-			    			p.setTargetType(line.substring(line.indexOf("target=")));
-			    		}
-			    		else
-			    		{
-			    			logger.error("parsing "+f.getName()+", line: "+line);
-			    		}
+			    	} else if(line.trim().startsWith("#PBS"))
+			    	{
+			    		//ignored?
+			    		
+//			    		//check against lines without spaces to solve issue of mulitiple spaces
+//			    		if(line.replace(" ", "").startsWith("#PBS-wwalltime="))
+//			    		{
+//			    			p.setWalltime(line.substring(line.indexOf("walltime=")+9));
+//			    		}
+//			    		else if(line.replace(" ", "").startsWith("#PBS-lnodes="))
+//			    		{
+//			    			logger.error("TODO:" + line);
+//			    		}
+//			    		else if(line.replace(" ", "").startsWith("#PBS-lmem="))
+//			    		{
+//			    			//convert to GB
+//			    			String mem = line.substring(line.indexOf("mem=")+4).trim();
+//			    			if(mem.endsWith("Gb"))
+//			    			{	
+//			    				Integer memValue = Integer.parseInt(mem.substring(0,mem.length()-2));
+//			    				p.setMemoryReq(memValue);
+//			    			}
+//			    			else
+//			    			{
+//			    				throw new RuntimeException("error parsing file: memory should be in 'Gb': "+line);
+//			    			}
+//			    		}
+//			    		else if(line.replace(" ", "").startsWith("#MOLGENIStarget="))
+//			    		{
+//			    			p.setTargetType(line.substring(line.indexOf("target=")));
+//			    		}
+//			    		else
+//			    		{
+//			    			logger.error("parsing "+f.getName()+", line: "+line);
+//			    		}
 			    	}
 			    	else
 			    	{
@@ -89,6 +130,9 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 			    	}
 			    }
 			    reader.close();
+			    
+			    if(!foundHeader) logger.warn("protocol "+f+" does not contain #MOLGENIS header. Defaults will be used");
+			    
 			    p.setScriptTemplate(scriptTemplate);
 			    
 			    protocols.add(p);
