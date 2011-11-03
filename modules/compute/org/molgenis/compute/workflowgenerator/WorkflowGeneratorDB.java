@@ -34,7 +34,7 @@ import java.util.*;
  * Time: 10:43
  * To change this template use File | Settings | File Templates.
  */
-public class WorkflowGenerator
+public class WorkflowGeneratorDB
 {
     private static final String INTERPRETER_BASH = "bash";
     private static final String INTERPRETER_R = "R";
