@@ -33,7 +33,7 @@ public class WorkflowGeneratorCommandLine
     private static final String INTERPRETER_R = "R";
     private static final String INTERPRETER_JDL = "jdl";
 
-    
+
     private boolean flagJustGenerate = false;
 
     private static final String LOG = "log";// reserved word for logging feature type used in ComputeFeature
@@ -72,23 +72,27 @@ public class WorkflowGeneratorCommandLine
     private boolean isToWriteLocally = false;
     private String localLocation = "/";
 
-    private String workflowName = null;
     private List<ComputeProtocol> cProtocols = null;
     private List<WorkflowElementParameter> wfeParameters = null;
 
     //quick solution
     //can be refactored later to have the same basis for command-line and db solutions
 
-    List<ComputeJob> applications = null;
+    private List<ComputeJob> applications = null;
+
+    private String submit = null;
+    //for the submission script a job should have an id number
+    private Hashtable<String, String> submitIDs = null;
+    int intSubmitID = -1;
 
     public void processSingleWorksheet(ComputeBundle bundle,
                                        Hashtable<String, String> userValues,
-                                       String workflowName,
                                        String applicationName /* should be unique somehow */) throws IOException, ParseException
     {
         applications = new Vector<ComputeJob>();
 
-        this.workflowName = workflowName;
+        submitIDs = new Hashtable<String, String>();
+
         this.cProtocols = bundle.getComputeProtocols();
         this.wfeParameters = bundle.getWorkflowElementParameters();
         this.userValues = userValues;
@@ -186,7 +190,7 @@ public class WorkflowGeneratorCommandLine
             }
             else
             {
-                weavingValues.put(computeFeature.getName(), computeFeature.getDefaultValue()!= null ? computeFeature.getDefaultValue() : "");
+                weavingValues.put(computeFeature.getName(), computeFeature.getDefaultValue() != null ? computeFeature.getDefaultValue() : "");
             }
         }
 
@@ -206,9 +210,9 @@ public class WorkflowGeneratorCommandLine
     private List<WorkflowElementParameter> findWorkflowElementParameters(String name)
     {
         List<WorkflowElementParameter> result = new Vector<WorkflowElementParameter>();
-        for(WorkflowElementParameter p: wfeParameters)
+        for (WorkflowElementParameter p : wfeParameters)
         {
-            if(p.getWorkflowElement_Name().equalsIgnoreCase(name))
+            if (p.getWorkflowElement_Name().equalsIgnoreCase(name))
                 result.add(p);
         }
         return result;
@@ -216,9 +220,9 @@ public class WorkflowGeneratorCommandLine
 
     private ComputeProtocol findProtocol(String protocol_name)
     {
-        for(ComputeProtocol c: cProtocols)
+        for (ComputeProtocol c : cProtocols)
         {
-            if(c.getName().equalsIgnoreCase(protocol_name))
+            if (c.getName().equalsIgnoreCase(protocol_name))
                 return c;
         }
         return null;
@@ -226,9 +230,9 @@ public class WorkflowGeneratorCommandLine
 
     private ComputeParameter findComputeFeature(String targetName)
     {
-        for(ComputeParameter f : allComputeParameters)
+        for (ComputeParameter f : allComputeParameters)
         {
-            if(f.getName().equalsIgnoreCase(targetName))
+            if (f.getName().equalsIgnoreCase(targetName))
                 return f;
         }
         return null;
@@ -245,7 +249,7 @@ public class WorkflowGeneratorCommandLine
         app.setWorkflowElement(workflowElement);
         app.setTime(now());
 
-        String appName = applicationName + "_" + workflowElement.getName() + "_" + pipelineElementNumber;
+        String appName = applicationName + "_" + workflowElement.getName();// + "_" + pipelineElementNumber;
         app.setName(appName);
         System.out.println("---application---> " + appName);
 
@@ -269,8 +273,28 @@ public class WorkflowGeneratorCommandLine
 
         pipelineElementNumber++;
 
+        if (this.weavingValues.containsKey("outputdir"))
+        {
+            remoteLocation = this.weavingValues.get("outputdir");
+            remoteLocation += System.getProperty("file.separator") + applicationName;
+        }
+        else
+        {
+            throw new RuntimeException("remote directory on the cluster is not specified in parameter.txt");
+        }
+
+        String targetId = null;
+        if (this.weavingValues.containsKey("scriptName"))
+        {
+            targetId = this.weavingValues.get("scriptName");
+        }
+        else
+        {
+            throw new RuntimeException("ERROR you have to set scriptName in your parameters.txt");
+        }
+
         //create compute pipeline
-        String scriptID = app.getName();
+        String scriptID = app.getName() + targetId;
         weaver.setScriptID(scriptID);
 
         weaver.setDefaults();
@@ -280,12 +304,12 @@ public class WorkflowGeneratorCommandLine
             weaver.setWalltime(protocol.getWalltime());
 
             //quick fix for the cluster queue
-            if(protocol.getWalltime().equalsIgnoreCase("00:30:00"))
-            {
-                weaver.setClusterQueue("short");
-            }
-            else
-                weaver.setClusterQueue("nodes");
+//            if (protocol.getWalltime().equalsIgnoreCase("00:30:00"))
+//            {
+                weaver.setClusterQueue("test");
+//            }
+//            else
+//                weaver.setClusterQueue("nodes");
         }
         if (protocol.getCores() != null)
             weaver.setCores(protocol.getCores() + "");
@@ -296,42 +320,55 @@ public class WorkflowGeneratorCommandLine
         weaver.setVerificationCommand("\n");
 
         weaver.setDatasetLocation(remoteLocation);
-        String scriptRemoteLocation = remoteLocation + "scripts/";
+        String scriptRemoteLocation = remoteLocation;// + "scripts/";
 
         String logfile = weaver.getLogfilename();
 
         Script pipelineScript = null;
-        
-        if(protocol.getInterpreter().equalsIgnoreCase(INTERPRETER_BASH))
+
+        if (protocol.getInterpreter().equalsIgnoreCase(INTERPRETER_BASH))
         {
             pipelineScript = makeShScript(scriptID, scriptRemoteLocation, result);
         }
-        else if(protocol.getInterpreter().equalsIgnoreCase(INTERPRETER_R))
+        else if (protocol.getInterpreter().equalsIgnoreCase(INTERPRETER_R))
         {
             pipelineScript = makeRScript(scriptID, scriptRemoteLocation, result);
         }
-        else if(protocol.getInterpreter().equalsIgnoreCase(INTERPRETER_JDL))
+        else if (protocol.getInterpreter().equalsIgnoreCase(INTERPRETER_JDL))
         {
             pipelineScript = makeJDLScript(scriptID, scriptRemoteLocation, result);
         }
 
         pipeline.setPipelinelogpath(logfile);
 
-        //
-        String targetId = null;
-        if(this.weavingValues.containsKey("scriptName"))
-        {
-        	targetId = this.weavingValues.get("scriptName");
-        }
-        else
-        {
-        	throw new RuntimeException("ERROR you have to set scriptName in your parameters.txt");
-        }
-       
-        if(isToWriteLocally)
-            weaver.writeToFile(localLocation + targetId + "_"+ pipelineElementNumber +"_"+ scriptID+".sh", new String(pipelineScript.getScriptData()));
+        submitIDs.put(workflowElement.getName(), ""+intSubmitID);
+
+        if (isToWriteLocally)
+            weaver.writeToFile(localLocation + scriptID + ".sh", new String(pipelineScript.getScriptData()));
 
         List<String> strPreviousWorkflowElements = workflowElement.getPreviousSteps_Name();
+
+        String strDependancy = "";
+        for(String previousWorkflowElement : strPreviousWorkflowElements)
+        {
+            String jobSubmitID = submitIDs.get(previousWorkflowElement);
+
+            if(strDependancy.equalsIgnoreCase(""))
+                strDependancy += "job_" + jobSubmitID;
+            else
+                strDependancy += ":job_" + jobSubmitID;
+        }
+
+        if(!strDependancy.equalsIgnoreCase(""))
+            strDependancy = "-W depend=afterok:" + strDependancy;
+
+        weaver.setSubmitID(""+intSubmitID);
+        weaver.setDependancy(strDependancy);
+
+        String depend = weaver.makeSumbit();
+
+        submit +=depend;
+
 
         if (strPreviousWorkflowElements.size() == 0)//script does not depend on other scripts
         {
@@ -363,6 +400,7 @@ public class WorkflowGeneratorCommandLine
             currentStep.addScript(pipelineScript);
             strCurrentPipelineStep = strPrevious;
         }
+        intSubmitID++;
     }
 
     //here the first trial of generation for the grid
@@ -376,24 +414,24 @@ public class WorkflowGeneratorCommandLine
 
         //some special fields should be specified for the jdl file
         //error and output logs
-        weavingValues.put("error_log", "err_" + scriptID +".log");
+        weavingValues.put("error_log", "err_" + scriptID + ".log");
         weavingValues.put("output_log", "out_" + scriptID + ".log");
         //extra files to be download and upload - now empty
-        weavingValues.put("extra_input","");
-        weavingValues.put("extra_output","");
+        weavingValues.put("extra_input", "");
+        weavingValues.put("extra_output", "");
 
         String jdlfile = weaver.makeJDL(weavingValues);
 
         System.out.println("name: " + scriptID);
-        System.out.println("remote location: " +scriptRemoteLocation);
+        System.out.println("remote location: " + scriptRemoteLocation);
         System.out.println("command: " + result);
 
         String script = gridHeader + "\n"
-                      + downloadTop + "\n"
-                      + result + "\n"
-                      + uploadBottom;
+                + downloadTop + "\n"
+                + result + "\n"
+                + uploadBottom;
 
-        System.out.println("jdl-file: \n" +jdlfile);
+        System.out.println("jdl-file: \n" + jdlfile);
         System.out.println("-------\nscript: \n" + script);
 
         Script scriptFile = new Script(scriptID, scriptRemoteLocation, script.getBytes());
@@ -405,7 +443,7 @@ public class WorkflowGeneratorCommandLine
 
     private Script makeRScript(String scriptID, String scriptRemoteLocation, String result)
     {
-        weaver.setActualCommand("cd " + scriptRemoteLocation + "\n R CMD BATCH "+ scriptRemoteLocation +"myscript.R");
+        weaver.setActualCommand("cd " + scriptRemoteLocation + "\n R CMD BATCH " + scriptRemoteLocation + "myscript.R");
         String scriptFile = weaver.makeScript();
         Script script = new Script(scriptID, scriptRemoteLocation, scriptFile.getBytes());
         FileToSaveRemotely rScript = new FileToSaveRemotely("myscript.R", result.getBytes());
@@ -465,5 +503,16 @@ public class WorkflowGeneratorCommandLine
     public Pipeline getPipeline()
     {
         return pipeline;
+    }
+
+    public void setNewRun()
+    {
+        submit = new String();
+        intSubmitID = 1;
+    }
+
+    public void flashSumbitScript()
+    {
+        weaver.writeToFile(localLocation + "submit.sh", submit);
     }
 }

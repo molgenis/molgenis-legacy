@@ -4,7 +4,6 @@ import org.molgenis.util.Tuple;
 
 import java.io.File;
 import java.util.Hashtable;
-import java.util.List;
 
 /**
  * Created by IntelliJ IDEA. User: georgebyelas Date: 02/11/2011 Time: 14:36 To
@@ -31,10 +30,11 @@ public class StartCommandLineGeneration
 				.mkdir();
 		generator.setLocalLocation(path + System.getProperty("file.separator")
 				+ applicationName + System.getProperty("file.separator"));
-		generator.setRemoteLocation("remote");
+		//generator.setRemoteLocation("remote");
 
 		// here the loop over samples/lanes
-		for (Tuple target : computeBundle.getUserParameters())
+		generator.setNewRun();
+        for (Tuple target : computeBundle.getUserParameters())
 		{
 			Hashtable<String, String> userValues = new Hashtable<String, String>();
 			// ugly copy from tuple to hashtable
@@ -46,7 +46,7 @@ public class StartCommandLineGeneration
 				}
 			}
 
-			generator.processSingleWorksheet(computeBundle, userValues, "",
+			generator.processSingleWorksheet(computeBundle, userValues,
 					applicationName);
 			// add generated applications to the bundle
 			computeBundle.setComputeJobs(generator.getComputeApplications());
@@ -56,6 +56,7 @@ public class StartCommandLineGeneration
 			// MCF mcf = new MCFServerSsh();
 			// mcf.setPipeline(generator.getPipeline());
 		}
+        generator.flashSumbitScript();
 
 	}
 
@@ -67,9 +68,9 @@ public class StartCommandLineGeneration
 	{
 		args = new String[]
 		{
-				"/Users/mswertz/Dropbox/NGS quality report/compute/New_Molgenis_Compute_for_GoNL/Example_01/SampleList_A102.csv",
+				"/Users/georgebyelas/Dropbox/NGS quality report/compute/New_Molgenis_Compute_for_GoNL/Example_01/SampleList_A102.csv",
 				"test1",
-				"/Users/mswertz/Dropbox/NGS quality report/compute/New_Molgenis_Compute_for_GoNL/Example_01/"
+				"/Users/georgebyelas/Dropbox/NGS quality report/compute/New_Molgenis_Compute_for_GoNL/Example_01/"
 
 		};
 		if (args.length < 2)
@@ -106,6 +107,8 @@ public class StartCommandLineGeneration
 				e.printStackTrace();
 			}
 		}
+        System.out.println("... done");
+
 	}
 
 	public void setFileWorksheet(File fileWorksheet)

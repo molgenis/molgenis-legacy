@@ -31,6 +31,9 @@ public class ParameterWeaver
     private static final String DEF_CORES = "1";
     private static final String DEF_MEMORY_REQ = "7";
 
+    private static final String DEF_DEPENDANCY = "dependancy";
+    private static final String DEF_SUBMIT_ID = "submitID";
+
     private static final String VERIFICATION_COMMAND = "verificationcommand";
 
     private Hashtable<String, String> scriptParameters = new Hashtable<String, String>();
@@ -46,13 +49,19 @@ public class ParameterWeaver
             "mkdir -p ${location}/out\n" +
             "printf \"${scriptID}_started \" >>${location}/log_${jobID}.txt\n" +
             "date \"+DATE: %m/%d/%y%tTIME: %H:%M:%S\" >>${location}/log_${jobID}.txt\n" +
-            "date \"+start time: %m/%d/%y%t %H:%M:%S\" >>${location}/extra/${scriptID}.txt\n" +
-            "echo running on node: `hostname` >>${location}/extra/${scriptID}.txt\n" +
+            "date \"+start time: %m/%d/%y%t %H:%M:%S\" >>${location}/${scriptID}.txt\n" +
+            "echo running on node: `hostname` >>${location}/${scriptID}.txt\n" +
             "${actualcommand}\n" +
             "${verificationcommand}" +
             "printf \"${scriptID}_finished \" >>${location}/log_${jobID}.txt\n" +
-            "date \"+finish time: %m/%d/%y%t %H:%M:%S\" >>${location}/extra/${scriptID}.txt\n" +
+            "date \"+finish time: %m/%d/%y%t %H:%M:%S\" >>${location}/${scriptID}.txt\n" +
             "date \"+DATE: %m/%d/%y%tTIME: %H:%M:%S\" >>${location}/log_${jobID}.txt\n";
+
+    private String submitTemplate = "#job_${submitID}\n" +
+            "job_${submitID}=$(qsub -N ${scriptID}  ${dependancy}  ${location}/${scriptID}.sh)\n" +
+            "echo $job_${submitID}\n" +
+            "sleep 8\n\n";
+
 
     private String downloadGridTemplate = "#download input data\n" +
             "srmcp -server_mode=passive srm://srm.grid.sara.nl:8443/pnfs/grid.sara.nl/data/lsgrid/${input_path}${input_name} \\\n" +
@@ -236,5 +245,20 @@ public class ParameterWeaver
     public String makeGridHeader()
     {
         return gridHeader;  //To change body of created methods use File | Settings | File Templates.
+    }
+
+    public void setDependancy(String dependancy)
+    {
+        scriptParameters.put(DEF_DEPENDANCY, dependancy);
+    }
+
+    public String makeSumbit()
+    {
+        return weaveFreemarker(submitTemplate, scriptParameters);
+    }
+
+    public void setSubmitID(String s)
+    {
+        scriptParameters.put(DEF_SUBMIT_ID, s);
     }
 }
