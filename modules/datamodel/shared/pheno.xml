@@ -16,7 +16,6 @@
 				looking at of our research.</description>
 		</entity>
 		<entity name="ObservationTarget" extends="ObservationElement">
-			<field name="paid" type="int"/>
 			<description> An ObservationTarget class defines the subjects of
 				observation. For instance: individual 1 from Investigation x. The
 				ObservationTarget class maps to XGAP:Subject, METABASE:Patient and
