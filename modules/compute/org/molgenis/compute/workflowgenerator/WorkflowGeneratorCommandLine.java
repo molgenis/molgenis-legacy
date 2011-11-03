@@ -1,9 +1,9 @@
 package org.molgenis.compute.workflowgenerator;
 
 import org.molgenis.compute.ComputeJob;
-import org.molgenis.compute.ComputeBundle;
 import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
+import org.molgenis.compute.commandline.ComputeBundle;
 import org.molgenis.compute.pipelinemodel.FileToSaveRemotely;
 import org.molgenis.compute.pipelinemodel.Pipeline;
 import org.molgenis.compute.pipelinemodel.Script;

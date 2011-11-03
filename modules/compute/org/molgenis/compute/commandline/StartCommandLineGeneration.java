@@ -1,8 +1,5 @@
 package org.molgenis.compute.commandline;
 
-import org.molgenis.compute.ComputeBundle;
-import org.molgenis.compute.ComputeBundleFromDirectory;
-import org.molgenis.compute.WorksheetHelper;
 import org.molgenis.compute.workflowgenerator.WorkflowGeneratorCommandLine;
 import org.molgenis.util.Tuple;
 
