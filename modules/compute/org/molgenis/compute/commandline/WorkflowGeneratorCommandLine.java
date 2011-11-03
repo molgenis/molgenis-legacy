@@ -1,15 +1,15 @@
-package org.molgenis.compute.workflowgenerator;
+package org.molgenis.compute.commandline;
 
 import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
-import org.molgenis.compute.commandline.ComputeBundle;
 import org.molgenis.compute.pipelinemodel.FileToSaveRemotely;
 import org.molgenis.compute.pipelinemodel.Pipeline;
 import org.molgenis.compute.pipelinemodel.Script;
 import org.molgenis.compute.pipelinemodel.Step;
 import org.molgenis.compute.scriptserver.MCF;
 import org.molgenis.compute.ui.DatabaseUpdater;
+import org.molgenis.compute.workflowgenerator.ParameterWeaver;
 import org.molgenis.framework.db.Database;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.protocol.WorkflowElement;
@@ -118,10 +118,10 @@ public class WorkflowGeneratorCommandLine
         System.out.println("we have so many features: " + allComputeParameters.size());
 
         //add few parameters
-        wholeWorkflowApp.setTime(now());
+        //wholeWorkflowApp.setTime(now());
 
         //set app name everywhere and add to database
-        wholeWorkflowApp.setName(applicationName);
+        //wholeWorkflowApp.setName(applicationName);
         pipeline.setId(applicationName);
         weaver.setJobID(applicationName);
 //        db.beginTx();
@@ -178,15 +178,15 @@ public class WorkflowGeneratorCommandLine
         //process compute features
         for (ComputeParameter computeFeature : allComputeParameters)
         {
-            if (computeFeature.getIsUser())
+            if (computeFeature.getDefaultValue() == null)
                 continue;
-            else if (computeFeature.getIsDerived())
+            else if (computeFeature.getDefaultValue().contains("${"))
             {
                 featuresToDerive.addElement(computeFeature);
             }
             else
             {
-                weavingValues.put(computeFeature.getName(), computeFeature.getDefaultValue());
+                weavingValues.put(computeFeature.getName(), computeFeature.getDefaultValue()!= null ? computeFeature.getDefaultValue() : "");
             }
         }
 

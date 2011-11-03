@@ -12,12 +12,17 @@ import org.molgenis.util.Tuple;
 
 public class ComputeBundle
 {
-	List<ComputeParameter> computeParameters = new ArrayList<ComputeParameter>();
-	List<ComputeProtocol> computeProtocols = new ArrayList<ComputeProtocol>();
-	List<WorkflowElement> workflowElements = new ArrayList<WorkflowElement>();
-	List<WorkflowElementParameter> workflowElementParameters = new ArrayList<WorkflowElementParameter>();
-	List<Tuple> userParameters = new ArrayList<Tuple>();
-	List<ComputeJob> computeJobs = new ArrayList<ComputeJob>();
+	//all parameters needed to describe a workflow
+	private List<ComputeParameter> computeParameters = new ArrayList<ComputeParameter>();
+	private List<ComputeProtocol> computeProtocols = new ArrayList<ComputeProtocol>();
+	private List<WorkflowElement> workflowElements = new ArrayList<WorkflowElement>();
+	private List<WorkflowElementParameter> workflowElementParameters = new ArrayList<WorkflowElementParameter>();
+	
+	//parameters specific to this analysis run
+	private List<Tuple> userParameters = new ArrayList<Tuple>();
+	
+	//generated result of jobs
+	private List<ComputeJob> computeJobs = new ArrayList<ComputeJob>();
 	
 	public List<ComputeParameter> getComputeParameters()
 	{
@@ -76,13 +81,13 @@ public class ComputeBundle
 		{
 			System.out.println(f);
 		}
-		System.out.println("WorkflowElement:");
-		for(WorkflowElement f:this.getWorkflowElements())
+		System.out.println("UserParameter:");
+		for(Tuple f:this.getUserParameters())
 		{
 			System.out.println(f);
 		}
-		System.out.println("WorkflowElementParameter");
-		for(WorkflowElementParameter f:this.getWorkflowElementParameters())
+		System.out.println("WorkflowElement:");
+		for(WorkflowElement f:this.getWorkflowElements())
 		{
 			System.out.println(f);
 		}

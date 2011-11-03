@@ -1,15 +1,14 @@
 package org.molgenis.compute.commandline;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.ngs.LibraryLane;
 import org.molgenis.ngs.NgsSample;
 import org.molgenis.ngs.Trio;
@@ -37,6 +36,8 @@ import app.DatabaseFactory;
  */
 public class WorksheetHelper
 {
+	Logger logger = Logger.getLogger(WorksheetHelper.class);
+	
 	static List<String> fieldsToInclude = Arrays
 			.asList(new String[]
 			{ "sample_name", "status", "sampletype", "investigation_name",
@@ -57,6 +58,11 @@ public class WorksheetHelper
 					throws Exception
 			{
 				tuples.add(tuple);
+				logger.warn("renamed externalSampleId to sample");
+				tuple.set("sample",tuple.getString("externalSampleId"));
+				tuple.set("machine",tuple.getString("sequencer"));
+				tuple.set("date",tuple.getString("sequencingStartDate"));
+				tuple.set("capturing",tuple.getString("capturingKit"));
 			}
 		});
 		return tuples;
