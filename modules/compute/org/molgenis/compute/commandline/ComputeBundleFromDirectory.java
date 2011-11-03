@@ -46,9 +46,13 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 				+ File.separator + "parameters.txt"));
 		this.setWorkflowElements(new File(workflowDir.getAbsolutePath()
 				+ File.separator + "workflow.txt"));
+		
+		try {
 		this.setWorkflowElementParameters(new File(workflowDir.getAbsolutePath()
 				+ File.separator + "workflowparameters.txt"));
-
+		} catch (Exception e) {
+			// if file does not exists, do nothing
+		}
 		// read user parameters
 		this.setUserParameters(new WorksheetHelper()
 				.readTuplesFromFile(worksheetFile));
