@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.protocol.WorkflowElement;
@@ -16,7 +17,7 @@ import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
-import org.testng.log4testng.Logger;
+
 
 public class ComputeBundleFromDirectory extends ComputeBundle
 {
