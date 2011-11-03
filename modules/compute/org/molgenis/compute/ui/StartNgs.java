@@ -2,7 +2,7 @@ package org.molgenis.compute.ui;
 
 import org.molgenis.compute.UserParameter;
 import org.molgenis.compute.pipelinemodel.Pipeline;
-import org.molgenis.compute.workflowgenerator.WorkflowGenerator;
+import org.molgenis.compute.workflowgenerator.WorkflowGeneratorDB;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.*;
 import org.molgenis.ngs.Worksheet;
@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class StartNgs extends EasyPluginController<StartNgsView>
 {
-    private WorkflowGenerator processing = new WorkflowGenerator();
+    private WorkflowGeneratorDB processing = new WorkflowGeneratorDB();
 
     public StartNgs(String name, ScreenController<?> parent)
     {
