@@ -11,7 +11,6 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 
-import lifelines.matrix.Column;
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;

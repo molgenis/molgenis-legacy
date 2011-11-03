@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Locale;
 
 import java.util.logging.Level;
-import lifelines.matrix.Column;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
