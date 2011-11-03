@@ -1,6 +1,5 @@
 package org.molgenis.matrix.component;
 
-import lifelines.matrix.*;
 import java.io.Serializable;
 
 import org.apache.commons.lang.WordUtils;

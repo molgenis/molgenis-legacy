@@ -15,7 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
-import org.molgenis.lifelines.loaders.EAVToView;
+//import org.molgenis.lifelines.loaders.EAVToView;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
@@ -351,7 +351,7 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
                 measurements.add(paIdMes);
             }
             
-            String sql = EAVToView.createQuery(investigation.getId(), entry.getKey(), measurements, database);
+            String sql = "";//EAVToView.createQuery(investigation.getId(), entry.getKey(), measurements, database);
 
             String aliasName = entry.getKey().getName();
 
