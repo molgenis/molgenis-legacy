@@ -113,7 +113,8 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 			
 			// now set trio; i.e. iterate through trios until find a trio pointing to this sample
 			List<Trio> tl = db.find(Trio.class);
-			Trio trio = new Trio(null, "", null);
+			Trio trio = new Trio();
+			trio.setName("");
 			for (Trio t : tl) if (t.getSamples().contains(sample.getId())) trio = t; // assuming only one trio refering to this sample
 			ws.setTrio(trio.getName());
 			
