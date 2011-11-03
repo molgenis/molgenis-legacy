@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.cxf.binding.corba.wsdl.Array;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
@@ -28,6 +29,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.gids.converters.GidsConvertor;
 import org.molgenis.organization.Investigation;
+import org.molgenis.pheno.Measurement;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
@@ -66,6 +68,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	public String wait = "no";
 	public String invName = "";
 	public String [] arrayMeasurements;
+	List<String> listNewMeas = new ArrayList<String>();
 	private File fileData;
 	private String individualName;
 	private String father;
@@ -111,7 +114,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, Tuple request) throws DatabaseException
 	{
 		logger.info("#######################");
 		String action = request.getString("__action");
@@ -196,12 +199,17 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		}
 		
 		if(action.equals("goToStep3")){	
-			
 			hashStep2.put("individual",request.getString("individual"));
 			hashStep2.put("sample",request.getString("sample"));
 			hashStep2.put("father",request.getString("father"));
 			hashStep2.put("mother",request.getString("mother"));
 			//System.out.println("########### " + request.getString("target"));
+			for (String e : arrayMeasurements){
+				if(db.query(Measurement.class).eq(Measurement.NAME, e).count() == 0){
+					//System.out.println(e);
+					listNewMeas.add(e);
+				}
+			}
 			
 			state= "inStep3";
 		}
@@ -215,11 +223,12 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 				mother = hashStep2.get("mother");
 				
 				try{
-					
-					for (String e : arrayMeasurements){
-						String bla = request.getString(e);
-						if(bla.equals("Samples")){
-							sampleMeasList.add(e);
+					if(listNewMeas.size()!=0){
+						for (String e : listNewMeas){
+							String bla = request.getString(e);
+							if(bla.equals("Samples")){
+								sampleMeasList.add(e);
+							}
 						}
 					}
 					runGenerConver(fileData,invName,db,individualName, father, mother,sampleName,sampleMeasList);		    
@@ -254,6 +263,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		/*
 		 * Create downloadable links
 		 */
+		/*
 		if (action.equals("downloads") ){
 			try {
 				individualName = request.getString("individual");
@@ -271,7 +281,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 			}
 
 		}	
-		
+		*/
 		if (action.equals("emptyDB") ){
 			try {
 				if(db.count(Investigation.class)!=0){
@@ -374,6 +384,14 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		return arrayMeasurements;
 	}
 
+
+	public List<String> getListNewMeas() {
+		return listNewMeas;
+	}
+
+	public void setListNewMeas(List<String> listNewMeas) {
+		this.listNewMeas = listNewMeas;
+	}
 
 	public void setStatus(String status) {
 		this.status = status;

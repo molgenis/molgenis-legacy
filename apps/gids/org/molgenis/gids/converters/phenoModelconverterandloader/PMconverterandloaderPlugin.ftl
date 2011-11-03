@@ -209,50 +209,51 @@
 		<#--select Individuals or Samples -->
 		<#elseif screen.state = "inStep3">	
 			<table border="1">
+				
+				<#if screen.listNewMeas?has_content>
+				
 				<tr>
 					<td><b>Measurement</b></td>
 					<td><b>Individuals</b></td>
 					<td><b>Samples</b></td>
 					
 				</tr>
+					<#list screen.listNewMeas as target>
+					<tr> 		
+	 					<td>${target}</td> 	 		
+				 		<#if target?contains("sample") || 
+				 			 target?contains("isolat") ||
+				 			 target?contains("hla") ||
+				 			 target?contains("rna") ||
+				 			 target?contains("dna") ||
+				 			 target?contains("serum") ||
+				 			 target?contains("plasma") ||
+				 			 target?contains("biopsy") ||
+				 			 target?contains("sscp") ||
+				 			 target?contains("mix") ||
+				 			 target?contains("storage") ||
+				 			 target?contains("box") ||
+				 			 target?contains("arrival") ||
+				 			 target?contains("picogreen") ||
+				 			 target?contains("nanodrop") ||
+				 			 target?contains("serology") ||
+				 			 target?contains("biopsies") ||
+				 			 target?contains("biopt") ||
+				 			 target?contains("physician") ||
+				 			 target?matches('rs[0-9-]+') ||
+				 			 target?contains("hemolytic")> 
+					 		<td align="center"><input type="radio" name="${target}" value="Individuals"></td>
+					 		<td align="center"><input type="radio" name="${target}" value="Samples" checked></td>			 		
+				 		<#else>
+				 			<td align="center"><input type="radio" name="${target}" value="Individuals" checked></td>
+					 		<td align="center"><input type="radio" name="${target}" value="Samples" ></td>
+				 		</#if>
+					</tr>
+					</#list>
+				<#else>
+					<p><b>There are no new measurements, please continue</b></p>
 				
-				<#list screen.arrayMeasurements as target>
-			 	<tr>
-			 				 		
-			 		<td>${target}</td> 
-			 		
-			 		<#if target?contains("sample") || 
-			 			 target?contains("isolat") ||
-			 			 target?contains("hla") ||
-			 			 target?contains("rna") ||
-			 			 target?contains("dna") ||
-			 			 target?contains("serum") ||
-			 			 target?contains("plasma") ||
-			 			 target?contains("biopsy") ||
-			 			 target?contains("sscp") ||
-			 			 target?contains("mix") ||
-			 			 target?contains("storage") ||
-			 			 target?contains("box") ||
-			 			 target?contains("arrival") ||
-			 			 target?contains("picogreen") ||
-			 			 target?contains("nanodrop") ||
-			 			 target?contains("serology") ||
-			 			 target?contains("biopsies") ||
-			 			 target?contains("biopt") ||
-			 			 target?contains("physician") ||
-			 			 target?matches('rs[0-9-]+') ||
-			 			 target?contains("hemolytic")>
-			 			 
-				 		<td align="center"><input type="radio" name="${target}" value="Individuals"></td>
-				 		<td align="center"><input type="radio" name="${target}" value="Samples" checked></td>
-			 		
-			 		<#else>
-			 			<td align="center"><input type="radio" name="${target}" value="Individuals" checked></td>
-				 		<td align="center"><input type="radio" name="${target}" value="Samples" ></td>
-			 		</#if>
-		 		</tr>
-			</#list>
-				
+				</#if>			
 			</table>
 			<input type='submit' class='addbutton' value='next' onclick="__action.value='run pipeline'"/>
 		<br /><br />

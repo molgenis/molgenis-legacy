@@ -27,10 +27,17 @@ public class IndividualMatrixModel extends EasyPluginModel
 	MatrixViewer matrixViewerSample = null;
 	static String INDVMATRIX = "indvmatrix";
 	static String SAMPLEMATRIX = "samplematrix";
-	String action = "init";
+	String action = "setIndividual";
+	boolean error = false;
 	String selection = null;
 	String chosenProtocolName = "Individual_info";
 	List<Integer> listIndividuals = null;
+	String individualNavClass;
+	String personalNavClass;
+	String medicalNavClass;
+
+	
+	
 	
 	
 	//another example, you can also use getInvestigations() and setInvestigations(...)
@@ -96,4 +103,38 @@ public class IndividualMatrixModel extends EasyPluginModel
 			return "No viewer available, matrix cannot be rendered.";
 		}
 	}
+	
+	public boolean isError() {
+		return error;
+	}
+
+	public void setError(boolean error) {
+		this.error = error;
+	}
+
+	public String getIndividualNavClass() {
+		return individualNavClass;
+	}
+
+	public void setIndividualNavClass(String individualNavClass) {
+		this.individualNavClass = individualNavClass;
+	}
+
+	public String getPersonalNavClass() {
+		return personalNavClass;
+	}
+
+	public void setPersonalNavClass(String personalNavClass) {
+		this.personalNavClass = personalNavClass;
+	}
+
+	public String getMedicalNavClass() {
+		return medicalNavClass;
+	}
+
+	public void setMedicalNavClass(String medicalNavClass) {
+		this.medicalNavClass = medicalNavClass;
+	}
+
+
 }

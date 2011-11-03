@@ -153,7 +153,7 @@ public class GidsConvertor
 
 		for (String header : reader.colnames()) {
 
-			if (!header.equals(target) && !header.equals(mother) && !header.equals(father)&& !header.equals(sample)) {
+			//if (!header.equals(target) && !header.equals(mother) && !header.equals(father)&& !header.equals(sample)) {
 				if(db.query(Measurement.class).eq(Measurement.NAME, header).count() == 0){
 					Measurement measurement = new Measurement();
 					measurement.setName(header);
@@ -169,7 +169,7 @@ public class GidsConvertor
 					db.update(meas);
 					totalMeasurementsList.add(meas);
 				}
-			}		
+			//}		
 		}
 	}
 	

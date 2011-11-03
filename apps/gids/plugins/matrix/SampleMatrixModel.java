@@ -27,11 +27,19 @@ public class SampleMatrixModel extends EasyPluginModel
 	MatrixViewer matrixViewerSample = null;
 	static String INDVMATRIXS = "indvmatrixs";
 	static String SAMPLEMATRIXS = "samplematrixs";
-	String action = "init";
+	String action = "setSample";
+	boolean error = false;
 	String selection = null;
 	String chosenProtocolName = "Sample_info";
 	List<Integer> listSamples = null;
-	
+	String sampleNavClass;
+	String dnaNavClass;
+	String rnaNavClass;
+	String biopsiesNavClass;
+	String serumNavClass;
+	String plasmaNavClass;
+	String hlaNavClass;
+
 	
 	//another example, you can also use getInvestigations() and setInvestigations(...)
 	//public List<Investigation> investigations = new ArrayList<Investigation>();
@@ -96,4 +104,70 @@ public class SampleMatrixModel extends EasyPluginModel
 			return "No viewer available, matrix cannot be rendered.";
 		}
 	}
+	
+	public boolean isError() {
+		return error;
+	}
+
+	public void setError(boolean error) {
+		this.error = error;
+	}
+
+	public String getSampleNavClass() {
+		return sampleNavClass;
+	}
+
+	public void setSampleNavClass(String sampleNavClass) {
+		this.sampleNavClass = sampleNavClass;
+	}
+
+	public String getDnaNavClass() {
+		return dnaNavClass;
+	}
+
+	public void setDnaNavClass(String dnaNavClass) {
+		this.dnaNavClass = dnaNavClass;
+	}
+
+	public String getRnaNavClass() {
+		return rnaNavClass;
+	}
+
+	public void setRnaNavClass(String rnaNavClass) {
+		this.rnaNavClass = rnaNavClass;
+	}
+
+	public String getBiopsiesNavClass() {
+		return biopsiesNavClass;
+	}
+
+	public void setBiopsiesNavClass(String biopsiesNavClass) {
+		this.biopsiesNavClass = biopsiesNavClass;
+	}
+
+	public String getSerumNavClass() {
+		return serumNavClass;
+	}
+
+	public void setSerumNavClass(String serumNavClass) {
+		this.serumNavClass = serumNavClass;
+	}
+
+	public String getPlasmaNavClass() {
+		return plasmaNavClass;
+	}
+
+	public void setPlasmaNavClass(String plasmaNavClass) {
+		this.plasmaNavClass = plasmaNavClass;
+	}
+
+	public String getHlaNavClass() {
+		return hlaNavClass;
+	}
+
+	public void setHlaNavClass(String hlaNavClass) {
+		this.hlaNavClass = hlaNavClass;
+	}
+
+	
 }

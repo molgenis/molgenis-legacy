@@ -12,6 +12,7 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
@@ -35,11 +36,14 @@ import org.molgenis.util.Tuple;
 public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel>
 {
 	
+
+	
 	public IndividualMatrix(String name, ScreenController<?> parent)
 	{
 		super(name, null, parent);
 		this.setModel(new IndividualMatrixModel(this)); //the default model
 		this.setView(new FreemarkerView("IndividualMatrixView.ftl", getModel())); //<plugin flavor="freemarker"
+		
 	}
 
 	/**
@@ -48,40 +52,81 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 	 * Exceptions will be caught, logged and shown to the user automatically via setMessages().
 	 * All db actions are within one transaction.
 	 */ 
+	
+	public String getCustomHtmlHeaders() {
+		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/gids.css\">";
+	}
+	
+	
 	@Override
 	public void reload(Database db) throws Exception
 	{	
-	
-		if (getModel().matrixViewerIndv == null) {
-			Protocol indvInfoProt = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, getModel().chosenProtocolName)).get(0);
-			List<String> measurementsToShow = indvInfoProt.getFeatures_Name();
-			
-			getModel().matrixViewerIndv = new MatrixViewer(this, getModel().INDVMATRIX, 
-					new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
-					true, true, null, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
-							Operator.IN, measurementsToShow));
+		List<Protocol> listProtocols = db.query(Protocol.class).find();
+		if(listProtocols.size()==0){	
+			getModel().error=true;
 		}
-		if(getModel().getListIndividuals()!=null && getModel().matrixViewerSample == null){
-			Protocol sampleInfoProt = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, "Sample_info")).get(0);
-			List<String> measurementsToShowSamples = sampleInfoProt.getFeatures_Name();
+		else{
+			if(getModel().action.equals("setIndividual")){
+				getModel().individualNavClass="nav1";
+			}
+			else{
+				getModel().individualNavClass="nav";
+			}
+			if(getModel().action.equals("setPersonal")){
+				getModel().personalNavClass="nav1";
+			}
+			else{
+				getModel().personalNavClass="nav";
+			}
+			if(getModel().action.equals("setMedical")){
+				getModel().medicalNavClass="nav1";
+			}
+			else{
+				getModel().medicalNavClass="nav";
+			}
 			
-			List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
-			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.ID, 
-					Operator.IN, getModel().getListIndividuals()));
-			
-			getModel().matrixViewerSample = new MatrixViewer(this, getModel().SAMPLEMATRIX, 
-					new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
-					true, true, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
-							Operator.IN, measurementsToShowSamples));
+			getModel().error=false;
+			try {
+				if (getModel().matrixViewerIndv == null) {
+					Protocol indvInfoProt = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, getModel().chosenProtocolName)).get(0);
+					List<String> measurementsToShow = indvInfoProt.getFeatures_Name();
+					
+					getModel().matrixViewerIndv = new MatrixViewer(this, getModel().INDVMATRIX, 
+							new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
+							true, true, null, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
+									Operator.IN, measurementsToShow));
+				}
+				if(getModel().getListIndividuals()!=null && getModel().matrixViewerSample == null){
+					Protocol sampleInfoProt = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, getModel().chosenProtocolName)).get(0);
+					List<String> measurementsToShowSamples = sampleInfoProt.getFeatures_Name();
+					
+					List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
+					filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.ID, 
+							Operator.IN, getModel().getListIndividuals()));
+					
+					getModel().matrixViewerSample = new MatrixViewer(this, getModel().SAMPLEMATRIX, 
+							new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
+							true, true, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
+									Operator.IN, measurementsToShowSamples));
+				}
+				
+			}catch (Exception e) {
+				logger.error(e.getMessage());
+				
+				//e.printStackTrace();
+			}
 		}
+		
+		
 	}
 	
 	@Override
 	public Show handleRequest(Database db, Tuple request, OutputStream out)
 			throws HandleRequestDelegationException
 	{
-		getModel().action = request.getString("__action");
 		
+		getModel().action = request.getString("__action");
+		System.out.println(getModel().action);
 		try {
 			if (getModel().action.startsWith(getModel().matrixViewerIndv.getName())) {
 				getModel().matrixViewerIndv.handleRequest(db, request);
@@ -104,8 +149,7 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 				}
 				getModel().setListIndividuals(listIndividualIds);
 				getModel().matrixViewerSample = null;
-					
-							
+											
 			}
 			if (getModel().action.equals("setMedical")) {
 				getModel().matrixViewerIndv = null;
@@ -122,13 +166,52 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 				getModel().setChosenProtocolName("Individual_info");
 				
 			}
+			if (getModel().action.equals("setSample")) {
+				getModel().matrixViewerSample = null;
+				getModel().setChosenProtocolName("Sample_info");
+				
+			}
+			if (getModel().action.equals("setDNA")) {
+				getModel().matrixViewerSample = null;
+				getModel().setChosenProtocolName("DNA");
+				
+			}
+			if (getModel().action.equals("setRNA")) {
+				getModel().matrixViewerSample = null;
+				getModel().setChosenProtocolName("RNA");
+				
+			}
+			if (getModel().action.equals("setSerum")) {
+				getModel().matrixViewerSample = null;
+				getModel().setChosenProtocolName("Serum");
+				
+			}
+			if (getModel().action.equals("setPlasma")) {
+				getModel().matrixViewerSample = null;
+				getModel().setChosenProtocolName("Plasma");
+				
+			}
+			if (getModel().action.equals("setBiopsies")) {
+				getModel().matrixViewerSample = null;
+				getModel().setChosenProtocolName("Biopsies");
+				
+			}
+			if (getModel().action.equals("setHLA")) {
+				getModel().matrixViewerSample = null;
+				getModel().setChosenProtocolName("HLA_Typing");
+				
+			}
+			
 			
 		} catch (Exception e) {
 			this.setError(e.getMessage());
-			e.printStackTrace();
+			
+			//e.printStackTrace();
 		}
 		
 		//default show
 		return Show.SHOW_MAIN;
 	}
+
+	
 }
