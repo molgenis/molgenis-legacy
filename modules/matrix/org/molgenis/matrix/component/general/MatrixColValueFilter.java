@@ -22,4 +22,14 @@ public class MatrixColValueFilter extends MatrixQueryRule
 	{
 		super(MatrixQueryRule.Type.colValueProperty, colIndex, colProperty, operator, value);
 	}
+        
+	public MatrixColValueFilter(int protocolId, Integer colIndex, String colProperty, Operator operator, Object value)
+	{
+		super(MatrixQueryRule.Type.colValueProperty, protocolId, colIndex, colProperty, operator, value);
+	}        
+        
+        public MatrixColValueFilter(int protocolId, Integer measurementId, Operator operator, Object value)
+	{
+		super(MatrixQueryRule.Type.colValueProperty, protocolId, measurementId, operator, value);
+        }
 }

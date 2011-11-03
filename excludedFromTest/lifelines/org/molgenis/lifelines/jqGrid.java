@@ -1,5 +1,6 @@
 package org.molgenis.lifelines;
 
+import org.molgenis.matrix.component.SliceablePhenoMatrixMV;
 import org.molgenis.pheno.ObservationElement;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -41,8 +42,8 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 
-import static ch.lambdaj.Lambda.*;
-import static org.hamcrest.core.IsEqual.*;
+//import static ch.lambdaj.Lambda.*;
+//import static org.hamcrest.core.IsEqual.*;
 
 /**
  * Servlet implementation class jqGrid
@@ -51,20 +52,7 @@ public class jqGrid extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private static Map<String, Integer> countByColumnName(LinkedHashMap<Protocol, List<Measurement>> measurementByProtocol) {
-        Map<String, Integer> countByColumName = new HashMap<String, Integer>();
-        for (Map.Entry<Protocol, List<Measurement>> entry : measurementByProtocol.entrySet()) {
-            for(Measurement m : entry.getValue()) {
-                if(countByColumName.containsKey(m.getName())) {
-                    countByColumName.put(m.getName(), countByColumName.get(m.getName()) +1);
-                } else {
-                    countByColumName.put(m.getName(), 1);
-                }
-            }
-        }
-        return countByColumName;
-    }
-    private SliceablePhenoMatrix<ObservationTarget, Measurement> matrix;
+    private SliceablePhenoMatrixMV<ObservationTarget, Measurement> matrix;
     int investigationId = 50;
 
     /**
@@ -78,15 +66,13 @@ public class jqGrid extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
      *      response)
      */
+    @Override
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
         Database db = null;
         try {
-            String schema = request.getParameter("schema");
-            String tableName = request.getParameter("tableName");
             String operation = request.getParameter("op");
             String selectedColumnsPar = request.getParameter("selectedCols");
-
 
             //        @SuppressWarnings("unchecked")
             //        Enumeration<String> en = request.getParameterNames();
@@ -122,7 +108,7 @@ public class jqGrid extends HttpServlet {
             }
 
             //initalize matrix!
-            matrix = new SliceablePhenoMatrix<ObservationTarget, Measurement>(db, ObservationTarget.class, Measurement.class, investigation, selectedMeasurementByProtocol);
+            matrix = new SliceablePhenoMatrixMV<ObservationTarget, Measurement>(db, ObservationTarget.class, Measurement.class, investigation, selectedMeasurementByProtocol);
             List<Column> columns = matrix.getColumns();
 
             if (StringUtils.isNotEmpty(operation) && operation.equals("getColModel")) {
@@ -133,7 +119,7 @@ public class jqGrid extends HttpServlet {
                 return;
             }
 
-            renderMatrix(request, response, em, "", tableName, columns, matrix);
+            renderMatrix(request, response, em, "", columns, matrix);
         } catch (Exception ex) {
             Logger.getLogger(jqGrid.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
@@ -146,9 +132,9 @@ public class jqGrid extends HttpServlet {
     }
 
     public void renderMatrix(HttpServletRequest request, HttpServletResponse response, EntityManager em,
-            String exportType, String tableName,
+            String exportType,
             List<Column> columns,
-            SliceablePhenoMatrix<ObservationTarget, Measurement> matrix) {
+            SliceablePhenoMatrixMV<ObservationTarget, Measurement> matrix) {
         String pageParam = request.getParameter("page");
         String limitParam = request.getParameter("rows");
         String sidx = request.getParameter("sidx");
@@ -159,15 +145,10 @@ public class jqGrid extends HttpServlet {
             page = Integer.parseInt(pageParam);
         }
         
-        matrix.setRowOffset(page-1);
-        
         int limit = 10;
         if (StringUtils.isNotEmpty(limitParam)) {
             limit = Integer.parseInt(limitParam);
         }
-        
-        matrix.setRowLimit(limit);
-        
 
         if (StringUtils.isEmpty(sidx)) {
             sidx = "PA_ID";
@@ -176,52 +157,29 @@ public class jqGrid extends HttpServlet {
             sord = "ASC";
         }
 
+        //put constraints in matrix (offset, limit, filters)
+        matrix.setRowOffset(page-1);
+        matrix.setRowLimit(limit);
+        
         //{"groupOp":"AND","rules":[{"field":"GEWICHT","op":"eq","data":"136"},{"field":"LENGTE","op":"eq","data":"1212"}]}
-
         String filters = request.getParameter("filters");
         applyFiltersToMatrix(matrix, filters);
-//        String whereCondition = filterToSql(filters, columns);
-//        if (!whereCondition.equals("")) {
-//            whereCondition = " WHERE " + whereCondition;
-//        }
 
-
-        int count = -1;
         try {
-            count = matrix.getRowCount();
+            renderJsonTable(matrix, response.getWriter());
 
-            int totalPages = 0;
-            if (count > 0) {
-                totalPages = (int) Math.ceil((count - 1) / limit);
-            }
-
-            if (page > totalPages) {
-                page = totalPages;
-            }
-
-            int start = limit * page;
-
-            List<String> colNames = new ArrayList();
-            for (Column c : columns) {
-                colNames.add(c.getName());
-            }
-
-            if (StringUtils.isNotEmpty(exportType)
-                    && exportType.equals("excelExport")) {
-            } else {
-                //renderMatrixDataAsJson(rs, response.getWriter(), page, totalPages, count);
-                renderJsonTable(matrix, response.getWriter());
-            }
+//            if (StringUtils.isNotEmpty(exportType) && exportType.equals("excelExport")) {
+//            } else {
+//                renderJsonTable(matrix, response.getWriter());
+//            }
         } catch (Exception e) {
-            e.printStackTrace();
             HandleException.handle(e);
         }
     }
 
-    public void renderJsonTable(SliceablePhenoMatrix<ObservationTarget, Measurement> matrix, PrintWriter outWriter) throws Exception {
+    public void renderJsonTable(SliceablePhenoMatrixMV<ObservationTarget, Measurement> matrix, PrintWriter outWriter) throws Exception {
         List<ObservedValue>[][] values = matrix.getValueLists();
         List<? extends ObservationElement> rows = matrix.getRowHeaders();
-        List<? extends ObservationElement> cols = matrix.getColHeaders();
 
         StringBuilder out = new StringBuilder();
         
@@ -261,36 +219,6 @@ public class jqGrid extends HttpServlet {
         outWriter.flush();
     }
 
-    public void renderMatrixDataAsJson(List<Object[]> rs, PrintWriter outWriter, int page, int totalPages, int count) {
-        StringBuilder out = new StringBuilder();
-        out.append("<?xml version='1.0' encoding='utf-8'?>");
-        out.append("<rows>");
-
-        out.append(String.format("<page>%s</page>", page));
-        out.append(String.format("<total>%s</total>", totalPages));
-        out.append(String.format("<records>%s</records>", count));
-
-        for (Object[] objs : rs) {
-            out.append(String.format("<row id=\"%s\">",
-                    objs[0].toString()));
-            for (Object obj : objs) {
-                if (obj != null) {
-                    out.append(String.format("<cell>%s</cell>",
-                            obj.toString()));
-                } else {
-                    out.append(String.format("<cell>%s</cell>", ""));
-                }
-            }
-            out.append("</row>");
-        }
-        out.append("</rows>");
-        outWriter.append(out.toString());
-        
-        System.out.println(out.toString());
-        
-        outWriter.flush();
-    }
-
     /**
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
      *      response)
@@ -299,42 +227,6 @@ public class jqGrid extends HttpServlet {
     protected void doPost(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
-    }
-
-    private static List<String> getViewNames(Connection conn) throws Exception {
-        List<String> result = new ArrayList<String>();
-        String sql = "select object_name from user_objects where object_type = 'VIEW'";
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery("select object_name from user_objects where object_type = 'VIEW'");
-        while (rs.next()) {
-            String tableName = rs.getString(1);
-            result.add(tableName);
-        }
-        return result;
-    }
-
-    private static List<Column> getColumns(String schema, String tableName,
-            Connection connection) throws Exception {
-        List<Column> columns = new ArrayList<Column>();
-        DatabaseMetaData metaData = connection.getMetaData();
-        ResultSet rs = metaData.getColumns(null, schema.toUpperCase(),
-                tableName.toUpperCase(), null);
-        while (rs.next()) {
-            String columName = rs.getString("COLUMN_NAME");
-            String columnType = rs.getString("TYPE_NAME");
-            // int size = rsColumns.getInt("COLUMN_SIZE");
-            // boolean isNull = false;
-            // int nullable = rsColumns.getInt("NULLABLE");
-            // if (nullable == DatabaseMetaData.columnNullable) {
-            // isNull = true;
-            // } else {
-            // isNull = false;
-            // }
-            // int position = rsColumns.getInt("ORDINAL_POSITION"); // column
-            // pos
-            columns.add(new Column(columName, Column.getColumnType(columnType), null));
-        }
-        return columns;
     }
 
     private static void getColModel(PrintWriter out, LinkedHashMap<Protocol, List<Measurement>> measurementByProtocol) {
@@ -374,7 +266,7 @@ public class jqGrid extends HttpServlet {
         out.flush();
     }
     
-    private static void applyFiltersToMatrix(SliceablePhenoMatrix<ObservationTarget, Measurement> matrix, String filters) {
+    private static void applyFiltersToMatrix(SliceablePhenoMatrixMV<ObservationTarget, Measurement> matrix, String filters) {
         if (StringUtils.isNotEmpty(filters)) {
             JSONObject jFilter = null;
             try {
@@ -402,42 +294,6 @@ public class jqGrid extends HttpServlet {
                 Logger.getLogger(jqGrid.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-    }
-
-    private static String filterToSql(String filters, List<Column> columns) {
-        String whereCondition = "";
-        if (StringUtils.isNotEmpty(filters)) {
-            JSONObject jFilter = null;
-            try {
-                jFilter = new JSONObject(filters);
-
-                String groupOp = (String) jFilter.get("groupOp");
-                JSONArray rules = jFilter.getJSONArray("rules");
-
-                for (int i = 0; i < rules.length(); ++i) {
-                    JSONObject searchRule = (JSONObject) rules.get(i);
-
-                    String column = (String) searchRule.get("field");
-                    String op = (String) searchRule.get("op");
-                    String value = (String) searchRule.get("data");
-
-                    if (value != null) {
-                        String condition = String.format(" %s = %s ", column, value);
-                        if (i + 1 < columns.size() && !whereCondition.equals("")) {
-                            whereCondition += " AND ";
-                        }
-                        whereCondition += condition;
-                    }
-
-                }
-                System.out.println(groupOp);
-                System.out.println(rules);
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        return whereCondition;
     }
 
     private static void jsTreeJson(HttpServletResponse response, LinkedHashMap<Protocol, List<Measurement>> mesurementsByProtocol) throws IOException {
@@ -475,20 +331,7 @@ public class jqGrid extends HttpServlet {
         }
     }
 
-    public List<Column> getColumnsFromMeasurementByProtocol(LinkedHashMap<Protocol, List<Measurement>> mesurementsByProtocol) {
-        List<Column> result = new ArrayList<Column>();
-        for (Map.Entry<Protocol, List<Measurement>> entry : mesurementsByProtocol.entrySet()) {
-            for (Measurement measurement : entry.getValue()) {
-                String name = measurement.getName();
-                Column.ColumnType columnType = Column.getColumnType(measurement.getDataType());
-                Column c = new Column(name, columnType, entry.getKey(), measurement, null);
-                result.add(c);
-            }
-        }
-        return result;
-    }
-
-    public LinkedHashMap<Protocol, List<Measurement>> getMeasurementByProtocol(EntityManager em, Investigation investigation) {
+    private LinkedHashMap<Protocol, List<Measurement>> getMeasurementByProtocol(EntityManager em, Investigation investigation) {
         String ql = "SELECT p FROM Protocol p WHERE p.investigation = :investigation";
         List<Protocol> protocols = em.createQuery(ql, Protocol.class).setParameter("investigation", investigation).getResultList();
         LinkedHashMap<Protocol, List<Measurement>> measurementsByProtocol = new LinkedHashMap<Protocol, List<Measurement>>();
@@ -498,7 +341,7 @@ public class jqGrid extends HttpServlet {
         return measurementsByProtocol;
     }
 
-    public LinkedHashMap<Protocol, List<Measurement>> getSelectedMeasurements(EntityManager em, String selectedColumnsPar) {
+    private LinkedHashMap<Protocol, List<Measurement>> getSelectedMeasurements(EntityManager em, String selectedColumnsPar) {
         LinkedHashMap<Protocol, List<Measurement>> selectedMeasurementByProtocol = new GridBoundedLinkedHashMap<Protocol, List<Measurement>>(investigationId);
         if (StringUtils.isNotEmpty(selectedColumnsPar) && !selectedColumnsPar.equals("null")) {
             String[] cols = selectedColumnsPar.substring(2, selectedColumnsPar.length() - 2).replaceAll("\"", "").split(",");
@@ -512,8 +355,17 @@ public class jqGrid extends HttpServlet {
                     int measurementId = Integer.parseInt(parts[1]);
                     Measurement m = em.find(Measurement.class, measurementId);
 
-                    boolean exists = exists(selectedMeasurementByProtocol.keySet(),
-                            having(on(Protocol.class).getId(), equalTo(protocol.getId())));
+//                    boolean exists = exists(selectedMeasurementByProtocol.keySet(),
+//                            having(on(Protocol.class).getId(), equalTo(protocol.getId())));
+                    boolean exists = false;
+                    for(Protocol p : selectedMeasurementByProtocol.keySet()) {
+                    	if(p.getId().equals(protocol.getId())) {
+                    		exists = true;
+                    		break;
+                    	}
+                    }
+                    
+                    
                     if (exists) {
                         if (!selectedMeasurementByProtocol.get(protocol).contains(m)) {
                             selectedMeasurementByProtocol.get(protocol).add(m);

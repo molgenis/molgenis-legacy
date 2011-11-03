@@ -336,6 +336,13 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 				property, operator, value));
 	}
 
+	public SliceableMatrix<R, C, V> sliceByColValueProperty(int protocolId, int colIndex, String property,
+			Operator operator, Object value) throws MatrixException
+	{
+		return this.slice(new MatrixColValueFilter(protocolId, colIndex,
+				property, operator, value));
+        }
+        
 	@Override
 	public SliceableMatrix<R, C, V> sliceByColValueProperty(int colIndex, String property,
 			Operator operator, Object value) throws MatrixException
