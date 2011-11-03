@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -13,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
@@ -26,6 +28,13 @@ import org.molgenis.util.TupleWriter;
 public class MolgenisDownloadService implements MolgenisService
 {
 	Logger logger = Logger.getLogger(MolgenisDownloadService.class);
+	
+	private MolgenisContext mc;
+	
+	public MolgenisDownloadService(MolgenisContext mc)
+	{
+		this.mc = mc;
+	}
 	
 	/**
 	 * Handle use of the download API.
@@ -62,7 +71,7 @@ public class MolgenisDownloadService implements MolgenisService
 			Database db = null;
 			try
 			{
-				db = req.getDatabase();
+				db = mc.getDatabase();
 				//db.setLogin(new org.molgenis.framework.security.SimpleLogin(db));
 				try
 				{

@@ -3,7 +3,6 @@ package org.molgenis.framework.server;
 import java.io.IOException;
 import java.text.ParseException;
 
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 
 /**
