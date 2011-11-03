@@ -2,7 +2,16 @@
 <molgenis name="gcc" label="Lifelines Catalogue">
 
 <module name="catalogue" label="Lifelines Catalogue">
-<!-- decorator="decorators.DBIndexUpdateDecorator" -->
+
+
+<entity name="Categories" >
+	<field name="Category" type="xref" xref_entity="Code" nillable="false" />
+</entity>
+
+<entity name="Individual History of Diabetes" >
+
+</entity>
+<!-- decorator="decorators.DBIndexUpdateDecorator" 
 	<entity name="BiobankData" >
 			<description>This entity includes the dictionary from lifelines </description>
 		    <field name="PatientID"  nillable="true" type="int" description="Unique identifying number(Uniek identificerend nummer)" />
@@ -40,7 +49,7 @@
 		    <field name="SectionVLdemoAvailable" type="int" nillable="true" description="" />
 		    <field name="Race" type="int" nillable="true" description="" />
 			<unique fields="PatientID" />
-	</entity>	
+	</entity>	-->
 </module>
 </molgenis>
 
