@@ -4,63 +4,50 @@
 <molgenis name="compute" label="Compute Testing">
 	<!-- plugin name="MolgenisHeader" type="plugins.header.NgsHeader" / -->
 	<menu name="mainmenu" position="left" startswith="WelcomeScreen">
-		<!-- <menu name="Targets"> <form name="Individuals" entity="Individual" 
-			/> compact_view="Name" <form name="Panels" entity="Panel" /> <form name="Samples" 
-			entity="Sample" /> <form name="Lanes" entity="Lane" /> </menu> -->
+		<!-- <menu name="Targets"> <form name="Individuals" entity="Individual" /> compact_view="Name" <form name="Panels" entity="Panel" /> <form name="Samples" entity="Sample" /> <form name="Lanes" entity="Lane" 
+			/> </menu> -->
 		<menu name="NGS">
-			<form name="Investigations" label="Projects,Samples" entity="Investigation">
+			<form name="Investigations" label="Projects, Samples" entity="Investigation">
 				<menu name="InvestigationsMenu">
 					<form name="Samples" entity="NgsSample" />
 				</menu>
 			</form>
-			<form name="Flowcells" entity="Flowcell" label="Flowcell,Lanes"
-				hide_fields="Investigation,ontologyReference">
+			<form name="Flowcells" entity="Flowcell" label="Flowcell, Lanes" hide_fields="Investigation,ontologyReference">
 				<form name="Lanes" entity="LibraryLane" hide_fields="Investigation,ontologyReference" />
 			</form>
-			<form name="Worksheet" label="Analysis Worksheet" entity="Worksheet"
-				commands="org.molgenis.compute.ui.WorksheetBatchCommand">
+			<form name="Trios" entity="Trio">
+				<form name="TrioSamples" label="Samples" entity="NgsSample" />
+			</form>
+			<form name="Worksheet" label="Analysis Worksheet" entity="Worksheet" commands="org.molgenis.compute.ui.WorksheetBatchCommand">
 				<plugin name="Button" type="org.molgenis.compute.ui.StartNgs" />
 			</form>
-			<!-- form name="WorksheetLaneLevel" label="Lane level worksheet" entity="WorksheetLaneLevel" 
-				commands="org.molgenis.compute.ui.WorksheetBatchCommand"> <plugin name="ButtonLaneLevel" 
-				type="org.molgenis.compute.ui.StartNgs" /> </form -->
-			<plugin name="ImportWorksheet" label="Upload worksheet"
-				type="org.molgenis.ngs.ui.ImportWorksheet" />
+			<!-- form name="WorksheetLaneLevel" label="Lane level worksheet" entity="WorksheetLaneLevel" commands="org.molgenis.compute.ui.WorksheetBatchCommand"> <plugin name="ButtonLaneLevel" type="org.molgenis.compute.ui.StartNgs" 
+				/> </form -->
+			<plugin name="ImportWorksheet" label="Upload worksheet" type="org.molgenis.ngs.ui.ImportWorksheet" />
 		</menu>
 		<include file="apps/compute/org/molgenis/compute/ngs_lims_ui.xml" />
 		<menu name="Compute">
-			<form name="ComputeParameters"
-				hide_fields="id,Investigation,ontologyReference,targettypeAllowedForRelation,panelLabelAllowedForRelation,temporal"
-				entity="ComputeParameter" viewtype="list" />
-			<form name="ComputeProtocols" entity="ComputeProtocol"
-				hide_fields="Investigation,ontologyReference,ProtocolType,Features"
-				viewtype="record">
+			<form name="ComputeParameters" hide_fields="id,Investigation,ontologyReference,targettypeAllowedForRelation,panelLabelAllowedForRelation,temporal" entity="ComputeParameter" viewtype="list" />
+			<form name="ComputeProtocols" entity="ComputeProtocol" hide_fields="Investigation,ontologyReference,ProtocolType,Features" viewtype="record">
 				<menu name="ComputeProtocolsMenu">
 					<form name="ComputeJobs" entity="ComputeJob">
 						<plugin name="PbsSubmitApplication" type="org.molgenis.compute.ui.PbsSubmitApplication" />
 					</form>
 				</menu>
 			</form>
-			<form name="ComputeWorkflows" entity="Workflow" viewtype="record"
-				hide_fields="id,Investigation,ontologyReference,ProtocolType,TargetFilter,Features">
+			<form name="ComputeWorkflows" entity="Workflow" viewtype="record" hide_fields="id,Investigation,ontologyReference,ProtocolType,TargetFilter,Features">
 				<menu name="ComputeWorkflowsMenu">
-					<form name="WorkflowElements" entity="WorkflowElement"
-						viewtype="record">
-						<form name="WorkflowElementParameters" hide_fields="id"
-							entity="WorkflowElementParameter" viewtype="list" />
+					<form name="WorkflowElements" entity="WorkflowElement" viewtype="record">
+						<form name="WorkflowElementParameters" hide_fields="id" entity="WorkflowElementParameter" viewtype="list" />
 					</form>
 					<plugin name="WorkflowRun" label="Run" type="org.molgenis.compute.ui.RunWorkflow" />
-					<form name="WorkflowHistory" label="History" entity="ComputeJob"/>
+					<form name="WorkflowHistory" label="History" entity="ComputeJob" />
 				</menu>
 			</form>
-			<form name="AllComputeJobs" label="ComputeJobs"
-				entity="ComputeJob" />
-			<!-- not yet used form name="ComputeResources" entity="ComputeResource" 
-				/ -->
-			<plugin name="console" label="Monitor Runs"
-				type="org.molgenis.compute.ui.ConsolePlugin" />
-			<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard"
-				label="Upload pipelines" />
+			<form name="AllComputeJobs" label="ComputeJobs" entity="ComputeJob" />
+			<!-- not yet used form name="ComputeResources" entity="ComputeResource" / -->
+			<plugin name="console" label="Monitor Runs" type="org.molgenis.compute.ui.ConsolePlugin" />
+			<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard" label="Upload pipelines" />
 		</menu>
 		<menu name="Admin">
 			label="View value matrix" />
@@ -70,13 +57,11 @@
 			<form name="AllMeasurements" entity="Measurement" viewtype="list" />
 			<form name="AllObservedValues" entity="ObservedValue" viewtype="list" />
 			<!-- form name="Outputs" entity="ProtocolOutput" viewtype="list" /> -->
-			<!-- plugin name="GenericExport" type="plugins.archiveexportimport.ArchiveExportImportPlugin" 
-				label="Excel export" / -->
+			<!-- plugin name="GenericExport" type="plugins.archiveexportimport.ArchiveExportImportPlugin" label="Excel export" / -->
 			<form name="Persons" entity="Person" />
 			<form name="Institutes" entity="Institute" />
 			<form name="OntologyTerms" entity="OntologyTerm" />
-			<plugin label="Upgrade person to user" name="UserToPersonPlugin"
-				type="org.molgenis.auth.service.persontouser.PersonToUser" />
+			<plugin label="Upgrade person to user" name="UserToPersonPlugin" type="org.molgenis.auth.service.persontouser.PersonToUser" />
 		</menu>
 		<menu name="Pbs">
 			<plugin name="QSTAT" type="org.molgenis.compute.ui.QstatPlugin" />
@@ -87,8 +72,8 @@
 		<menu name="TestingR">
 			<plugin name="TestR" type="org.molgenis.compute.ui.TestR" />
 		</menu>
-        <menu name="RunOnGrid">
-            <plugin name="HelloGridWorld" type="org.molgenis.compute.ui.HelloGridWorld" />
-        </menu>
+		<menu name="RunOnGrid">
+			<plugin name="HelloGridWorld" type="org.molgenis.compute.ui.HelloGridWorld" />
+		</menu>
 	</menu>
 </molgenis>

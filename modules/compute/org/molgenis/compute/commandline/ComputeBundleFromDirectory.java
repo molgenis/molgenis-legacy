@@ -28,7 +28,8 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 	 * <ul>
 	 * <li>workflowDir/parameters.txt -> loads ComputeParameter
 	 * <li>workflowDir/workflow.txt -> loads WorkflowElement
-	 * <li>workflowDir/protocols -> reads all ftl in that directory into protocol
+	 * <li>workflowDir/protocols -> reads all ftl in that directory into
+	 * protocol
 	 * <li>workflowDir/workflowelementparameters.txt -> optional: read
 	 * WorkflowElementParameter
 	 * <li>(DISCUSSION: can we not merge with ComputeParameter???)
@@ -38,28 +39,25 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 	 * @param worksheet
 	 * @throws Exception
 	 */
-	public ComputeBundleFromDirectory(File workflowDir, File worksheetFile)
-			throws Exception
+	public ComputeBundleFromDirectory(File workflowDir, File worksheetFile) throws Exception
 	{
 		// load files
-		this.setComputeParameters(new File(workflowDir.getAbsolutePath()
-				+ File.separator + "parameters.txt"));
-		this.setWorkflowElements(new File(workflowDir.getAbsolutePath()
-				+ File.separator + "workflow.txt"));
-		
-		try {
-		this.setWorkflowElementParameters(new File(workflowDir.getAbsolutePath()
-				+ File.separator + "workflowparameters.txt"));
-		} catch (Exception e) {
+		this.setComputeParameters(new File(workflowDir.getAbsolutePath() + File.separator + "parameters.txt"));
+		this.setWorkflowElements(new File(workflowDir.getAbsolutePath() + File.separator + "workflow.txt"));
+
+		try
+		{
+			this.setWorkflowElementParameters(new File(workflowDir.getAbsolutePath() + File.separator + "workflowparameters.txt"));
+		}
+		catch (Exception e)
+		{
 			// if file does not exists, do nothing
 		}
 		// read user parameters
-		this.setUserParameters(new WorksheetHelper()
-				.readTuplesFromFile(worksheetFile));
+		this.setUserParameters(new WorksheetHelper().readTuplesFromFile(worksheetFile));
 
 		// load the templates
-		this.setComputeProtocols(new File(workflowDir.getAbsolutePath()
-				+ File.separator + "protocols"));
+		this.setComputeProtocols(new File(workflowDir.getAbsolutePath() + File.separator + "protocols"));
 	}
 
 	public void setComputeProtocols(File templateFolder) throws IOException
@@ -93,10 +91,8 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 							{
 								String[] data = keyValue.split("=");
 
-								if (data.length != 2) throw new RuntimeException(
-										"error parsing file " + f
-												+ ", keyValue ='" + keyValue
-												+ "': " + line);
+								if (data.length != 2) throw new RuntimeException("error parsing file " + f
+										+ ", keyValue ='" + keyValue + "': " + line);
 
 								if (data[0].equals("mem"))
 								{
@@ -120,11 +116,8 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 								}
 								else
 								{
-									throw new RuntimeException(
-											"error parsing file " + f
-													+ ", unknown key '"
-													+ data[0] + "' in line: "
-													+ line);
+									throw new RuntimeException("error parsing file " + f + ", unknown key '" + data[0]
+											+ "' in line: " + line);
 								}
 
 							}
@@ -180,10 +173,8 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 				}
 				reader.close();
 
-				if (!foundHeader) logger
-						.warn("protocol "
-								+ f
-								+ " does not contain #MOLGENIS header. Defaults will be used");
+				if (!foundHeader) logger.warn("protocol " + f
+						+ " does not contain #MOLGENIS header. Defaults will be used");
 
 				p.setScriptTemplate(scriptTemplate);
 
@@ -195,24 +186,20 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 
 	public void setComputeParameters(File file) throws Exception
 	{
-		this.setComputeParameters(readEntitiesFromFile(file,
-				ComputeParameter.class));
+		this.setComputeParameters(readEntitiesFromFile(file, ComputeParameter.class));
 	}
 
 	public void setWorkflowElements(File file) throws Exception
 	{
-		this.setWorkflowElements(readEntitiesFromFile(file,
-				WorkflowElement.class));
+		this.setWorkflowElements(readEntitiesFromFile(file, WorkflowElement.class));
 	}
 
 	public void setWorkflowElementParameters(File file) throws Exception
 	{
-		this.setWorkflowElementParameters(readEntitiesFromFile(file,
-				WorkflowElementParameter.class));
+		this.setWorkflowElementParameters(readEntitiesFromFile(file, WorkflowElementParameter.class));
 	}
 
-	private <E extends Entity> List<E> readEntitiesFromFile(File file,
-			final Class<E> klazz) throws Exception
+	private <E extends Entity> List<E> readEntitiesFromFile(File file, final Class<E> klazz) throws Exception
 	{
 		final List<E> result = new ArrayList<E>();
 
@@ -229,8 +216,7 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 		{
 
 			@Override
-			public void handleLine(int line_number, Tuple tuple)
-					throws Exception
+			public void handleLine(int line_number, Tuple tuple) throws Exception
 			{
 				E entity = klazz.newInstance();
 				entity.set(tuple);
@@ -264,7 +250,7 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 		File workflowDir = new File(
 				"/Users/mswertz/Dropbox/NGS quality report/compute/New_Molgenis_Compute_for_GoNL/Example_01");
 		File worksheetFile = new File(workflowDir.getAbsolutePath() + File.separator + "SampleList_A102.csv");
-		
+
 		ComputeBundleFromDirectory bundle = new ComputeBundleFromDirectory(workflowDir, worksheetFile);
 
 		// print
