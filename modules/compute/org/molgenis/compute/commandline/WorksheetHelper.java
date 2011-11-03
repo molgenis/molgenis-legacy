@@ -58,11 +58,11 @@ public class WorksheetHelper
 					throws Exception
 			{
 				tuples.add(tuple);
-				logger.warn("renamed externalSampleId to sample");
-				tuple.set("sample",tuple.getString("externalSampleId"));
-				tuple.set("machine",tuple.getString("sequencer"));
-				tuple.set("date",tuple.getString("sequencingStartDate"));
-				tuple.set("capturing",tuple.getString("capturingKit"));
+//				logger.warn("renamed externalSampleId to sample");
+//				tuple.set("sample",tuple.getString("externalSampleId"));
+//				tuple.set("machine",tuple.getString("sequencer"));
+//				tuple.set("date",tuple.getString("sequencingStartDate"));
+//				tuple.set("capturing",tuple.getString("capturingKit"));
 			}
 		});
 		return tuples;

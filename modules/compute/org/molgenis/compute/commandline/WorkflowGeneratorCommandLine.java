@@ -317,8 +317,19 @@ public class WorkflowGeneratorCommandLine
 
         pipeline.setPipelinelogpath(logfile);
 
+        //
+        String targetId = null;
+        if(this.weavingValues.containsKey("scriptName"))
+        {
+        	targetId = this.weavingValues.get("scriptName");
+        }
+        else
+        {
+        	throw new RuntimeException("ERROR you have to set scriptName in your parameters.txt");
+        }
+       
         if(isToWriteLocally)
-            weaver.writeToFile(localLocation + pipelineElementNumber + scriptID, new String(pipelineScript.getScriptData()));
+            weaver.writeToFile(localLocation + targetId + "_"+ pipelineElementNumber +"_"+ scriptID+".sh", new String(pipelineScript.getScriptData()));
 
         List<String> strPreviousWorkflowElements = workflowElement.getPreviousSteps_Name();
 

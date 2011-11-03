@@ -28,7 +28,7 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 	 * <ul>
 	 * <li>workflowDir/parameters.txt -> loads ComputeParameter
 	 * <li>workflowDir/workflow.txt -> loads WorkflowElement
-	 * <li>workflowDir/protocol -> reads all ftl in that directory into protocol
+	 * <li>workflowDir/protocols -> reads all ftl in that directory into protocol
 	 * <li>workflowDir/workflowelementparameters.txt -> optional: read
 	 * WorkflowElementParameter
 	 * <li>(DISCUSSION: can we not merge with ComputeParameter???)
