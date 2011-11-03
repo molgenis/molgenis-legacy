@@ -1,6 +1,6 @@
 package org.molgenis.compute.ui;
 
-import org.molgenis.compute.workflowgenerator.WorkflowGenerator;
+import org.molgenis.compute.workflowgenerator.WorkflowGeneratorDB;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
@@ -14,7 +14,7 @@ import java.util.Hashtable;
 public class HelloGridWorld extends EasyPluginController<HelloGridWorldView>
 {
 
-    private WorkflowGenerator processing = new WorkflowGenerator();
+    private WorkflowGeneratorDB processing = new WorkflowGeneratorDB();
 
     public HelloGridWorld(String name, ScreenController<?> parent)
     {
