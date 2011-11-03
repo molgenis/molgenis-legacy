@@ -1,0 +1,48 @@
+.protocols
+{
+width:130px;
+
+}
+
+span.nav a{
+text-align:center;
+margin-right:15px;
+color:black;
+border: 1px solid white;
+font-family : arial;
+font-size:16px;
+padding-left:5px;
+padding-right:5px;
+background-color:#BDCDDA;
+margin-bottom: 30px;
+/*
+#BDCDDA
+*/
+}
+
+span.nav1 a{
+text-align:center;
+margin-right:15px;
+color:white;
+border: 1px solid white;
+font-family : arial;
+font-size:20px;
+padding-left:5px;
+padding-right:5px;
+background-color:#5B82A4;
+margin-bottom: 30px;
+/*
+#BDCDDA
+*/
+}
+
+
+span a{
+	text-decoration:none;
+	
+}
+span:hover a{
+	background:#5B82A4;
+	color:white;
+	
+}
