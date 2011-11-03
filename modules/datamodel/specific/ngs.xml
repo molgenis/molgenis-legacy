@@ -36,10 +36,6 @@
 			<field name="run" type="text" auto="false" readonly="true" nillable="false" description="The run number (string), always use 4 digits (with leading 0's)" unique="false" />
 			<field name="runDate" type="date" nillable="true" description="The date the flowcell was run on the machine" />
 		</entity>
-		<entity name="Library" extends="ObservationElement">
-            <description></description>
-		</entity>
-
         <entity name="LibraryLane" extends="ObservationElement">
 			<description>This is actually our worksheet. Name is typically
 				library name, or of there is only one sample per library it may be
@@ -51,7 +47,7 @@
 			<field name="status" type="enum" enum_options="[to do,done]" default="to do" nillable="false" description="Status of the analysis of this flowcell-lane-sample combination" />
 			<field name="sample" type="xref" xref_entity="NgsSample" description="The sample which is measured on this lane+library combination." />
 			<field name="flowcell" type="xref" xref_entity="Flowcell" description="The flowcell to which this lane belongs" />
-            <field name="library" type="xref" xref_entity="Library" description="Name of the library put in this lane" nillable="true"/>
+            <field name="library" description="Name of the library put in this lane" nillable="true"/>
 			<field name="lane" type="enum" enum_options="[1,2,3,4,5,6,7,8]" description="The lane number that is unique within a flow cell. Typically in range 1-8" />
 			<field name="barcode" type="xref" xref_entity="LibraryBarcode" />
 			<field name="capturing" type="xref" xref_entity="LibraryCapturing" nillable="true" />
