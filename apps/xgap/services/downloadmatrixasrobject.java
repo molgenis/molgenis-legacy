@@ -18,6 +18,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
@@ -35,15 +36,22 @@ public class downloadmatrixasrobject implements MolgenisService
 {
 	private static Logger logger = Logger.getLogger(downloadmatrixasrobject.class);
 
+	private MolgenisContext mc;
+	
+	public downloadmatrixasrobject(MolgenisContext mc)
+	{
+		this.mc = mc;
+	}
+	
 	@Override
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
 			DatabaseException, IOException
 	{
 
 		// OutputStream out = response.getOutputStream();
-		OutputStream out = response.getOutputStream();
+		OutputStream out = response.getResponse().getOutputStream();
 		PrintStream p = new PrintStream(new BufferedOutputStream(out), false, "UTF8");
-		response.setStatus(HttpServletResponse.SC_OK);
+		response.getResponse().setStatus(HttpServletResponse.SC_OK);
 		
 		boolean databaseIsAvailable = false;
 		Database db = null;
@@ -52,7 +60,7 @@ public class downloadmatrixasrobject implements MolgenisService
 
 		try
 		{
-			db = request.getDatabase();
+			db = mc.getDatabase();
 			databaseIsAvailable = true;
 		}
 		catch (Exception e)
@@ -71,7 +79,7 @@ public class downloadmatrixasrobject implements MolgenisService
 				if(req.getString("id").equals("inmemory"))
 				{
 					content = Browser.inmemory.getAsRobject(false);
-					response.setContentLength(content.length());
+					response.getResponse().setContentLength(content.length());
 					p.print(content);
 					p.flush();
 					p.close();
@@ -101,7 +109,7 @@ public class downloadmatrixasrobject implements MolgenisService
 					content += displayUsage(db);
 				}
 
-				logger.info("serving " + request.getRequestURI());
+				logger.info("serving " + request.getRequest().getRequestURI());
 			}
 			catch (Exception e)
 			{
@@ -110,7 +118,7 @@ public class downloadmatrixasrobject implements MolgenisService
 				content += e.getStackTrace();
 			}
 		}
-		response.setContentLength(content.length());
+		response.getResponse().setContentLength(content.length());
 		p.print(content);
 		p.flush();
 		p.close();

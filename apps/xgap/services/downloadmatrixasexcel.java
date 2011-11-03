@@ -19,6 +19,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
@@ -29,6 +30,13 @@ import plugins.matrix.manager.Browser;
 
 public class downloadmatrixasexcel implements MolgenisService {
 
+	private MolgenisContext mc;
+	
+	public downloadmatrixasexcel(MolgenisContext mc)
+	{
+		this.mc = mc;
+	}
+	
 	@Override
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
 			DatabaseException, IOException
@@ -43,11 +51,11 @@ public class downloadmatrixasexcel implements MolgenisService {
 		DataMatrixInstance instance = null;
 
 		try {
-			db = request.getDatabase();
+			db = mc.getDatabase();
 			databaseIsAvailable = true;
 		} catch (Exception e) {
-			PrintWriter out = response.getWriter();
-			response.setContentType("text/plain");
+			PrintWriter out = response.getResponse().getWriter();
+			response.getResponse().setContentType("text/plain");
 			out.print("Database unavailable.");
 			out.print("\n\n");
 			e.printStackTrace(out);
@@ -61,14 +69,14 @@ public class downloadmatrixasexcel implements MolgenisService {
 				//special exception for filtered content: get matrix instance from memory and do complete handle
 				if(req.getString("id").equals("inmemory"))
 				{
-					OutputStream outSpecial = response.getOutputStream();
+					OutputStream outSpecial = response.getResponse().getOutputStream();
 					File excelFile = Browser.inmemory.getAsExcelFile();
 					URL localURL = excelFile.toURI().toURL();
 					URLConnection conn = localURL.openConnection();
 					InputStream in = new BufferedInputStream(conn.getInputStream());
-					response.setContentType("application/vnd.ms-excel");
-					response.setContentLength((int) excelFile.length());
-					response.setHeader("Content-disposition","attachment; filename=\""+Browser.inmemory.getData().getName()+"_"+"some"+".xls"+"\"");
+					response.getResponse().setContentType("application/vnd.ms-excel");
+					response.getResponse().setContentLength((int) excelFile.length());
+					response.getResponse().setHeader("Content-disposition","attachment; filename=\""+Browser.inmemory.getData().getName()+"_"+"some"+".xls"+"\"");
 					byte[] buffer = new byte[2048];
 					for (;;) {
 						int nBytes = in.read(buffer);
@@ -93,8 +101,8 @@ public class downloadmatrixasexcel implements MolgenisService {
 				instance = dmh.createInstance(data);
 				setupSuccess = true;
 			} catch (Exception e) {
-				PrintWriter out = response.getWriter();
-				response.setContentType("text/plain");
+				PrintWriter out = response.getResponse().getWriter();
+				response.getResponse().setContentType("text/plain");
 				displayUsage(out, db);
 				out.print("\n\n");
 				e.printStackTrace(out);
@@ -119,8 +127,8 @@ public class downloadmatrixasexcel implements MolgenisService {
 				}
 				argumentsAreCorrect = true;
 			}catch (Exception e) {
-				PrintWriter out = response.getWriter();
-				response.setContentType("text/plain");
+				PrintWriter out = response.getResponse().getWriter();
+				response.getResponse().setContentType("text/plain");
 				displayUsage(out, db);
 				out.print("\n\n");
 				e.printStackTrace(out);
@@ -129,7 +137,7 @@ public class downloadmatrixasexcel implements MolgenisService {
 		}
 
 		if (argumentsAreCorrect) {
-			OutputStream outFile = response.getOutputStream();
+			OutputStream outFile = response.getResponse().getOutputStream();
 			try {
 				File excelFile = null;
 				String download = req.getString("download");
@@ -147,9 +155,9 @@ public class downloadmatrixasexcel implements MolgenisService {
 				URL localURL = excelFile.toURI().toURL();
 				URLConnection conn = localURL.openConnection();
 				InputStream in = new BufferedInputStream(conn.getInputStream());
-				response.setContentType("application/vnd.ms-excel");
-				response.setContentLength((int) excelFile.length());
-				response.setHeader("Content-disposition","attachment; filename=\""+instance.getData().getName()+"_"+download+".xls"+"\"");
+				response.getResponse().setContentType("application/vnd.ms-excel");
+				response.getResponse().setContentLength((int) excelFile.length());
+				response.getResponse().setHeader("Content-disposition","attachment; filename=\""+instance.getData().getName()+"_"+download+".xls"+"\"");
 				byte[] buffer = new byte[2048];
 				for (;;) {
 					int nBytes = in.read(buffer);

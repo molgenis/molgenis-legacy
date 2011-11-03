@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
@@ -19,13 +20,21 @@ import app.servlet.MolgenisServlet;
 
 public class getlogs implements MolgenisService
 {
+
+	private MolgenisContext mc;
+	
+	public getlogs(MolgenisContext mc)
+	{
+		this.mc = mc;
+	}
+	
 	@Override
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
 			DatabaseException, IOException
 	{
 
-		PrintWriter out = response.getWriter();
-		response.setContentType("text/html");
+		PrintWriter out = response.getResponse().getWriter();
+		response.getResponse().setContentType("text/html");
 
 		out.println("<html><head></head><body>");
 		out.println("<div style=\"font-family: Courier, 'Courier New', monospace\">");

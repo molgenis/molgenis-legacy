@@ -12,6 +12,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
@@ -31,6 +32,14 @@ import plugins.cluster.interfaces.ComputationResource;
  */
 public class taskreporter  implements MolgenisService
 {
+	
+	private MolgenisContext mc;
+	
+	public taskreporter(MolgenisContext mc)
+	{
+		this.mc = mc;
+	}
+	
 	private static Logger logger = Logger.getLogger(taskreporter.class);
 
 	@Override
@@ -39,7 +48,7 @@ public class taskreporter  implements MolgenisService
 	{
 
 		// OutputStream out = response.getOutputStream();
-		PrintWriter out = response.getWriter();
+		PrintWriter out = response.getResponse().getWriter();
 
 		try
 		{
@@ -53,7 +62,7 @@ public class taskreporter  implements MolgenisService
 
 			String statusText = req.getString("statustext"); // text
 
-			Database db = request.getDatabase();
+			Database db = mc.getDatabase();
 
 			QueryRule jobQuery0 = new QueryRule("id", Operator.EQUALS, jobID);
 			QueryRule subjobQuery0 = new QueryRule("job", Operator.EQUALS, jobID);
@@ -98,7 +107,7 @@ public class taskreporter  implements MolgenisService
 
 			db.close();
 
-			logger.info("serving " + request.getRequestURI());
+			logger.info("serving " + request.getRequest().getRequestURI());
 		}
 		catch (Exception e)
 		{

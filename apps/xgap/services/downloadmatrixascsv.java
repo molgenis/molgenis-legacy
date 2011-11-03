@@ -18,6 +18,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
@@ -33,6 +34,13 @@ import plugins.matrix.manager.Browser;
  */
 public class downloadmatrixascsv implements MolgenisService
 {
+	private MolgenisContext mc;
+	
+	public downloadmatrixascsv(MolgenisContext mc)
+	{
+		this.mc = mc;
+	}
+	
 	private static Logger logger = Logger.getLogger(downloadmatrixascsv.class);
 
 	@Override
@@ -40,9 +48,9 @@ public class downloadmatrixascsv implements MolgenisService
 			DatabaseException, IOException
 	{
 		// OutputStream out = response.getOutputStream();
-		OutputStream out = response.getOutputStream();
+		OutputStream out = response.getResponse().getOutputStream();
 		PrintStream p = new PrintStream(new BufferedOutputStream(out), false, "UTF8");
-		response.setStatus(HttpServletResponse.SC_OK);
+		response.getResponse().setStatus(HttpServletResponse.SC_OK);
 		
 		boolean databaseIsAvailable = false;
 		Database db = null;
@@ -51,7 +59,7 @@ public class downloadmatrixascsv implements MolgenisService
 
 		try
 		{
-			db = request.getDatabase();
+			db = mc.getDatabase();
 			databaseIsAvailable = true;
 		}
 		catch (Exception e)
@@ -70,7 +78,7 @@ public class downloadmatrixascsv implements MolgenisService
 				if(req.getString("id").equals("inmemory"))
 				{
 					content = Browser.inmemory.toString();
-					response.setContentLength(content.length());
+					response.getResponse().setContentLength(content.length());
 					p.print(content);
 					p.flush();
 					p.close();
@@ -124,7 +132,7 @@ public class downloadmatrixascsv implements MolgenisService
 					content += displayUsage(db);
 				}
 
-				logger.info("serving " + request.getRequestURI());
+				logger.info("serving " + request.getRequest().getRequestURI());
 			}
 			catch (Exception e)
 			{
@@ -133,7 +141,7 @@ public class downloadmatrixascsv implements MolgenisService
 				content += e.getStackTrace();
 			}
 		}
-		response.setContentLength(content.length());
+		response.getResponse().setContentLength(content.length());
 		p.print(content);
 		p.flush();
 		p.close();

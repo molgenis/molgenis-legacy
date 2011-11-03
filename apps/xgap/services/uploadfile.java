@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
@@ -22,19 +23,26 @@ public class uploadfile implements MolgenisService
 	 * File upload service. Callable by Curl, RCurl, and other post services.
 	 * Currently used to images, expandable to all other files.
 	 */
+	
+	private MolgenisContext mc;
+	
+	public uploadfile(MolgenisContext mc)
+	{
+		this.mc = mc;
+	}
 
 	@Override
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
 			DatabaseException, IOException
 	{
 
-		PrintWriter out = response.getWriter();
-		response.setContentType("text/plain");
+		PrintWriter out = response.getResponse().getWriter();
+		response.getResponse().setContentType("text/plain");
 		Database db = null;
 
 		try
 		{
-			db = request.getDatabase();
+			db = mc.getDatabase();
 			Tuple req = new HttpServletRequestTuple(request.getRequest());
 
 			String fileName = req.getString("name"); // the 'real' file name

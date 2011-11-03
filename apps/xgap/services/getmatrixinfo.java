@@ -13,6 +13,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
@@ -26,6 +27,13 @@ public class getmatrixinfo  implements MolgenisService {
 	
 	private DataMatrixHandler dmh;
 	
+	private MolgenisContext mc;
+	
+	public getmatrixinfo(MolgenisContext mc)
+	{
+		this.mc = mc;
+	}
+	
 	@Override
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
 			DatabaseException, IOException
@@ -37,11 +45,11 @@ public class getmatrixinfo  implements MolgenisService {
 		DataMatrixInstance instance = null;
 		
 		try {
-			db = request.getDatabase();
+			db = mc.getDatabase();
 			databaseIsAvailable = true;
 		} catch (Exception e) {
-			PrintWriter out = response.getWriter();
-			response.setContentType("text/plain");
+			PrintWriter out = response.getResponse().getWriter();
+			response.getResponse().setContentType("text/plain");
 			out.print("Database unavailable.");
 			out.print("\n\n");
 			e.printStackTrace(out);
@@ -63,8 +71,8 @@ public class getmatrixinfo  implements MolgenisService {
 				instance = dmh.createInstance(data);
 				setupSuccess = true;
 			} catch (Exception e) {
-				PrintWriter out = response.getWriter();
-				response.setContentType("text/plain");
+				PrintWriter out = response.getResponse().getWriter();
+				response.getResponse().setContentType("text/plain");
 				displayUsage(out, db);
 				out.print("\n\n");
 				e.printStackTrace(out);
@@ -73,8 +81,8 @@ public class getmatrixinfo  implements MolgenisService {
 		}
 
 		if (setupSuccess) {
-			PrintWriter out = response.getWriter();
-			response.setContentType("text/plain");
+			PrintWriter out = response.getResponse().getWriter();
+			response.getResponse().setContentType("text/plain");
 			try {
 				
 				out.println("matrix info");

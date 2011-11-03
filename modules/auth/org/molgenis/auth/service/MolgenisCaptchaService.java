@@ -2,10 +2,12 @@ package org.molgenis.auth.service;
 
 import java.io.IOException;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import nl.captcha.servlet.SimpleCaptchaServlet;
 
+import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
@@ -15,6 +17,13 @@ public class MolgenisCaptchaService extends SimpleCaptchaServlet implements Molg
 
 	private static final long serialVersionUID = -7806912993766663119L;
 
+	private MolgenisContext mc;
+	
+	public MolgenisCaptchaService(MolgenisContext mc)
+	{
+		this.mc = mc;
+	}
+	
 	@Override
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws IOException
 	{

@@ -19,6 +19,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
@@ -31,6 +32,13 @@ public class viewfile  implements MolgenisService {
 
 	private static Logger logger = Logger.getLogger(viewfile.class);
 
+	private MolgenisContext mc;
+	
+	public viewfile(MolgenisContext mc)
+	{
+		this.mc = mc;
+	}
+	
 	@Override
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
 			DatabaseException, IOException
@@ -47,11 +55,11 @@ public class viewfile  implements MolgenisService {
 		String name = null;
 
 		try {
-			db = request.getDatabase();
+			db = mc.getDatabase();
 			databaseIsAvailable = true;
 		} catch (Exception e) {
-			PrintWriter out = response.getWriter();
-			response.setContentType("text/plain");
+			PrintWriter out = response.getResponse().getWriter();
+			response.getResponse().setContentType("text/plain");
 			out.print("Database unavailable.");
 			out.print("\n\n");
 			e.printStackTrace(out);
@@ -81,8 +89,8 @@ public class viewfile  implements MolgenisService {
 				paramsPresent = true;
 				
 			} catch (Exception e) {
-				PrintWriter out = response.getWriter();
-				response.setContentType("text/plain");
+				PrintWriter out = response.getResponse().getWriter();
+				response.getResponse().setContentType("text/plain");
 				displayUsage(out, db);
 				out.print("\n\n");
 				e.printStackTrace(out);
@@ -116,8 +124,8 @@ public class viewfile  implements MolgenisService {
 			fileFound = true;
 			
 			}catch (Exception e) {
-				PrintWriter out = response.getWriter();
-				response.setContentType("text/plain");
+				PrintWriter out = response.getResponse().getWriter();
+				response.getResponse().setContentType("text/plain");
 				displayUsage(out, db);
 				out.print("\n\n");
 				e.printStackTrace(out);
@@ -126,14 +134,13 @@ public class viewfile  implements MolgenisService {
 		}
 
 		if (fileFound) {
-			OutputStream outFile = response.getOutputStream();
+			OutputStream outFile = response.getResponse().getOutputStream();
 			try {
 				URL localURL = file.toURI().toURL();
 				URLConnection conn = localURL.openConnection();
 				InputStream in = new BufferedInputStream(conn.getInputStream());
-				ServletContext sc = request.getServletContext();
-				response.setContentType(sc.getMimeType(mf.getExtension()));
-				response.setContentLength((int) file.length());
+				response.getResponse().setContentType(mc.getServletContext().getMimeType(mf.getExtension()));
+				response.getResponse().setContentLength((int) file.length());
 				//response.setHeader("Content-disposition","attachment; filename=\""+mf.getName()+"."+mf.getExtension()+"\"");
 				//response.setStatus(arg0)
 				byte[] buffer = new byte[(int) file.length()];

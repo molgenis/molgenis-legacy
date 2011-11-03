@@ -19,6 +19,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
@@ -29,6 +30,13 @@ import plugins.matrix.manager.Browser;
 
 public class downloadmatrixasspss implements MolgenisService {
 
+	private MolgenisContext mc;
+	
+	public downloadmatrixasspss(MolgenisContext mc)
+	{
+		this.mc = mc;
+	}
+	
 	@Override
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
 			DatabaseException, IOException
@@ -43,11 +51,11 @@ public class downloadmatrixasspss implements MolgenisService {
 		DataMatrixInstance instance = null;
 
 		try {
-			db = request.getDatabase();
+			db = mc.getDatabase();
 			databaseIsAvailable = true;
 		} catch (Exception e) {
-			PrintWriter out = response.getWriter();
-			response.setContentType("text/plain");
+			PrintWriter out = response.getResponse().getWriter();
+			response.getResponse().setContentType("text/plain");
 			out.print("Database unavailable.");
 			out.print("\n\n");
 			e.printStackTrace(out);
@@ -61,14 +69,14 @@ public class downloadmatrixasspss implements MolgenisService {
 				//special exception for filtered content: get matrix instance from memory and do complete handle
 				if(req.getString("id").equals("inmemory"))
 				{
-					OutputStream outSpecial = response.getOutputStream();
+					OutputStream outSpecial = response.getResponse().getOutputStream();
 					File spssFile = Browser.inmemory.getAsSpssFile();
 					URL localURL = spssFile.toURI().toURL();
 					URLConnection conn = localURL.openConnection();
 					InputStream in = new BufferedInputStream(conn.getInputStream());
-					response.setContentType("application/spss");
-					response.setContentLength((int) spssFile.length());
-					response.setHeader("Content-disposition","attachment; filename=\""+Browser.inmemory.getData().getName()+"_"+"some"+".sav"+"\"");
+					response.getResponse().setContentType("application/spss");
+					response.getResponse().setContentLength((int) spssFile.length());
+					response.getResponse().setHeader("Content-disposition","attachment; filename=\""+Browser.inmemory.getData().getName()+"_"+"some"+".sav"+"\"");
 					byte[] buffer = new byte[2048];
 					for (;;) {
 						int nBytes = in.read(buffer);
@@ -93,8 +101,8 @@ public class downloadmatrixasspss implements MolgenisService {
 				instance = dmh.createInstance(data);
 				setupSuccess = true;
 			} catch (Exception e) {
-				PrintWriter out = response.getWriter();
-				response.setContentType("text/plain");
+				PrintWriter out = response.getResponse().getWriter();
+				response.getResponse().setContentType("text/plain");
 				displayUsage(out, db);
 				out.print("\n\n");
 				e.printStackTrace(out);
@@ -119,8 +127,8 @@ public class downloadmatrixasspss implements MolgenisService {
 				}
 				argumentsAreCorrect = true;
 			}catch (Exception e) {
-				PrintWriter out = response.getWriter();
-				response.setContentType("text/plain");
+				PrintWriter out = response.getResponse().getWriter();
+				response.getResponse().setContentType("text/plain");
 				displayUsage(out, db);
 				out.print("\n\n");
 				e.printStackTrace(out);
@@ -129,7 +137,7 @@ public class downloadmatrixasspss implements MolgenisService {
 		}
 
 		if (argumentsAreCorrect) {
-			OutputStream outFile = response.getOutputStream();
+			OutputStream outFile = response.getResponse().getOutputStream();
 			try {
 				File spssFile = null;
 				String download = req.getString("download");
@@ -147,9 +155,9 @@ public class downloadmatrixasspss implements MolgenisService {
 				URL localURL = spssFile.toURI().toURL();
 				URLConnection conn = localURL.openConnection();
 				InputStream in = new BufferedInputStream(conn.getInputStream());
-				response.setContentType("application/spss");
-				response.setContentLength((int) spssFile.length());
-				response.setHeader("Content-disposition","attachment; filename=\""+instance.getData().getName()+"_"+download+".sav"+"\"");
+				response.getResponse().setContentType("application/spss");
+				response.getResponse().setContentLength((int) spssFile.length());
+				response.getResponse().setHeader("Content-disposition","attachment; filename=\""+instance.getData().getName()+"_"+download+".sav"+"\"");
 				byte[] buffer = new byte[2048];
 				for (;;) {
 					int nBytes = in.read(buffer);
