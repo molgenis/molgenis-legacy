@@ -55,10 +55,19 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 			// if file does not exists, do nothing
 		}
 		// read user parameters
-		this.setUserParameters(new WorksheetHelper().readTuplesFromFile(worksheetFile));
+		this.setUserParameters(worksheetFile);
 
 		// load the templates
 		this.setComputeProtocols(new File(workflowDir.getAbsolutePath() + File.separator + "protocols"));
+	}
+
+	public void setUserParameters(File worksheetFile) throws Exception
+	{
+		this.setUserParameters(new WorksheetHelper().readTuplesFromFile(worksheetFile));
+	}
+
+	public ComputeBundleFromDirectory()
+	{
 	}
 
 	public void setComputeProtocols(File templateFolder) throws IOException

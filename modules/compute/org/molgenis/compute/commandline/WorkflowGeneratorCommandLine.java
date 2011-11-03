@@ -344,7 +344,9 @@ public class WorkflowGeneratorCommandLine
         submitIDs.put(workflowElement.getName(), ""+intSubmitID);
 
         if (isToWriteLocally)
+        {
             weaver.writeToFile(localLocation + scriptID + ".sh", new String(pipelineScript.getScriptData()));
+        }
 
         List<String> strPreviousWorkflowElements = workflowElement.getPreviousSteps_Name();
 

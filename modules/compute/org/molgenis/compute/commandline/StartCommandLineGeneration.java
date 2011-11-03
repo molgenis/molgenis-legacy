@@ -66,13 +66,13 @@ public class StartCommandLineGeneration
 	 */
 	public static void main(String[] args)
 	{
-		args = new String[]
-		{
-				"/Users/georgebyelas/Dropbox/NGS quality report/compute/New_Molgenis_Compute_for_GoNL/Example_01/SampleList_A102.csv",
-				"test1",
-				"/Users/georgebyelas/Dropbox/NGS quality report/compute/New_Molgenis_Compute_for_GoNL/Example_01/"
-
-		};
+//		args = new String[]
+//		{
+//				"/Users/mswertz/Dropbox/NGS quality report/compute/New_Molgenis_Compute_for_GoNL/Example_01/SampleList_A102.csv",
+//				"test2",
+//				"/Users/mswertz/Dropbox/NGS quality report/compute/New_Molgenis_Compute_for_GoNL/Example_01/"
+//
+//		};
 		if (args.length < 2)
 		{
 			System.out.println("\n" + "    /*\n"

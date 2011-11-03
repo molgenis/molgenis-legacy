@@ -58,7 +58,7 @@ public class ParameterWeaver
             "date \"+DATE: %m/%d/%y%tTIME: %H:%M:%S\" >>${location}/log_${jobID}.txt\n";
 
     private String submitTemplate = "#job_${submitID}\n" +
-            "job_${submitID}=$(qsub -N ${scriptID}  ${dependancy}  ${location}/${scriptID}.sh)\n" +
+            "job_${submitID}=$(qsub -N ${scriptID} ${dependancy} ${scriptID}.sh)\n" +
             "echo $job_${submitID}\n" +
             "sleep 8\n\n";
 
