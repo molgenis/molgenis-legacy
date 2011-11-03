@@ -16,7 +16,7 @@ public class ComputeBundle
 	List<WorkflowElement> workflowElements = new ArrayList<WorkflowElement>();
 	List<WorkflowElementParameter> workflowElementParameters = new ArrayList<WorkflowElementParameter>();
 	List<Tuple> userParameters = new ArrayList<Tuple>();
-	List<ComputeApplication> computeJobs = new ArrayList<ComputeApplication>();
+	List<ComputeJob> computeJobs = new ArrayList<ComputeJob>();
 	
 	public List<ComputeParameter> getComputeParameters()
 	{
@@ -59,13 +59,42 @@ public class ComputeBundle
 	{
 		this.userParameters = userParameters;
 	}
-	public List<ComputeApplication> getComputeJobs()
+	public List<ComputeJob> getComputeJobs()
 	{
 		return computeJobs;
 	}
-	public void setComputeJobs(List<ComputeApplication> computeJobs)
+	public void setComputeJobs(List<ComputeJob> computeJobs)
 	{
 		this.computeJobs = computeJobs;
+	}
+	
+	public void prettyPrint()
+	{
+		System.out.println("ComputeParameter:");
+		for(ComputeParameter f:this.getComputeParameters())
+		{
+			System.out.println(f);
+		}
+		System.out.println("WorkflowElement:");
+		for(WorkflowElement f:this.getWorkflowElements())
+		{
+			System.out.println(f);
+		}
+		System.out.println("WorkflowElementParameter");
+		for(WorkflowElementParameter f:this.getWorkflowElementParameters())
+		{
+			System.out.println(f);
+		}
+		System.out.println("WorkflowElementParameter");
+		for(WorkflowElementParameter f:this.getWorkflowElementParameters())
+		{
+			System.out.println(f);
+		}
+		System.out.println("Protocol");
+		for(ComputeProtocol f:this.getComputeProtocols())
+		{
+			System.out.println(f);
+		}
 	}
 
 }

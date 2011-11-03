@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.molgenis.compute.ComputeApplication;
+import org.molgenis.compute.ComputeJob;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
@@ -48,9 +48,9 @@ public class ComputeApplicationManager
 	 * 
 	 * @throws DatabaseException
 	 */
-	public void add(ComputeApplication ca) throws DatabaseException
+	public void add(ComputeJob ca) throws DatabaseException
 	{
-		ComputeApplication[] array = new ComputeApplication[]
+		ComputeJob[] array = new ComputeJob[]
 		{ ca };
 		this.add(Arrays.asList(array));
 	}
@@ -60,9 +60,9 @@ public class ComputeApplicationManager
 	 * 
 	 * @throws DatabaseException
 	 */
-	public void add(List<ComputeApplication> tasks) throws DatabaseException
+	public void add(List<ComputeJob> tasks) throws DatabaseException
 	{
-		for (ComputeApplication c : tasks)
+		for (ComputeJob c : tasks)
 		{
 			c.setStatusCode("queued");
 		}
@@ -79,11 +79,11 @@ public class ComputeApplicationManager
 	public void refreshRunningJobs() throws DatabaseException
 	{
 		// retrieve all submitted and running jobs
-		Query<ComputeApplication> q = db.query(ComputeApplication.class);
-		q.equals(ComputeApplication.STATUSCODE, "submitted");
+		Query<ComputeJob> q = db.query(ComputeJob.class);
+		q.equals(ComputeJob.STATUSCODE, "submitted");
 		q.or();
-		q.equals(ComputeApplication.STATUSCODE, "running");
-		List<ComputeApplication> running = q.find();
+		q.equals(ComputeJob.STATUSCODE, "running");
+		List<ComputeJob> running = q.find();
 
 		// get a status update on those running by querying the respective
 		// compute resources
@@ -91,7 +91,7 @@ public class ComputeApplicationManager
 			b.refresh(running);
 
 		// for all completed, retrieve logs etc.
-		for (ComputeApplication ca : running)
+		for (ComputeJob ca : running)
 		{
 			if (ca.getStatusCode().equals("completed"))
 			{
@@ -107,7 +107,7 @@ public class ComputeApplicationManager
 	 * If a computeApplication is just completed then this method takes care of
 	 * retrieving logs ets.
 	 */
-	private void completeApplication(ComputeApplication ca)
+	private void completeApplication(ComputeJob ca)
 	{
 		// TODO Auto-generated method stub
 

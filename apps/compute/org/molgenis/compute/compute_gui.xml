@@ -36,7 +36,7 @@
 				hide_fields="Investigation,ontologyReference,ProtocolType,Features"
 				viewtype="record">
 				<menu name="ComputeProtocolsMenu">
-					<form name="ComputeApplications" entity="ComputeApplication">
+					<form name="ComputeJobs" entity="ComputeJob">
 						<plugin name="PbsSubmitApplication" type="org.molgenis.compute.ui.PbsSubmitApplication" />
 					</form>
 				</menu>
@@ -50,11 +50,11 @@
 							entity="WorkflowElementParameter" viewtype="list" />
 					</form>
 					<plugin name="WorkflowRun" label="Run" type="org.molgenis.compute.ui.RunWorkflow" />
-					<form name="WorkflowHistory" label="History" entity="ComputeApplication"/>
+					<form name="WorkflowHistory" label="History" entity="ComputeJob"/>
 				</menu>
 			</form>
-			<form name="AllComputeApplications" label="ComputeApplications"
-				entity="ComputeApplication" />
+			<form name="AllComputeJobs" label="ComputeJobs"
+				entity="ComputeJob" />
 			<!-- not yet used form name="ComputeResources" entity="ComputeResource" 
 				/ -->
 			<plugin name="console" label="Monitor Runs"

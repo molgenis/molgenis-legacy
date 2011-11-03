@@ -2,7 +2,7 @@ package org.molgenis.compute.ui;
 
 import java.io.IOException;
 
-import org.molgenis.compute.ComputeApplication;
+import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.ComputeResource;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
@@ -77,8 +77,8 @@ public class PbsSubmitApplication extends
 
 			// Create a Pbs and submit the script
 			// get the ComputeApplication
-			FormModel<ComputeApplication> parentForm = (FormModel<ComputeApplication>) this.getParent().getModel();
-			ComputeApplication app = parentForm.getCurrent();
+			FormModel<ComputeJob> parentForm = (FormModel<ComputeJob>) this.getParent().getModel();
+			ComputeJob app = parentForm.getCurrent();
 
 			// create the Job
 			currentjob = new PbsJob(app.getComputeScript());
@@ -142,9 +142,9 @@ public class PbsSubmitApplication extends
 	@Override
 	public void reload(Database db) throws Exception
 	{
-		FormModel<ComputeApplication> parentForm = (FormModel<ComputeApplication>) this
+		FormModel<ComputeJob> parentForm = (FormModel<ComputeJob>) this
 				.getParent().getModel();
-		ComputeApplication app = parentForm.getCurrent();
+		ComputeJob app = parentForm.getCurrent();
 
 		if (currentjob != null && currentjob.getState() != Pbs.State.COMPLETED)
 		{

@@ -1,7 +1,7 @@
 package org.molgenis.compute.ui;
 
 
-import org.molgenis.compute.ComputeApplication;
+import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.monitor.LoggingReaderGridGain;
 import org.molgenis.compute.monitor.RemoteFileToStringReader;
 import org.molgenis.compute.scriptserver.MCF;
@@ -54,7 +54,7 @@ public abstract class DatabaseUpdater
                 for (int i = 0; i < activeComputeApps.size(); i++)
                 {
                     ComputeAppPaths appPaths = activeComputeApps.elementAt(i);
-                    ComputeApplication application = appPaths.getApplication();
+                    ComputeJob application = appPaths.getApplication();
 
                     String name = application.getName();
 

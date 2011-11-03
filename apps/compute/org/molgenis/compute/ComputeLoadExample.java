@@ -98,7 +98,7 @@ public class ComputeLoadExample
 			db.add(e2);
 			
 			//application of wf1 == chain of protocolApps, backward chaining
-			ComputeApplication wf1_e1_run1 = new ComputeApplication();
+			ComputeJob wf1_e1_run1 = new ComputeJob();
 			wf1_e1_run1.setName("wf1_e1_run1");
 			wf1_e1_run1.setProtocol(e2.getProtocol());
 			wf1_e1_run1.setTime(new Date());
@@ -106,7 +106,7 @@ public class ComputeLoadExample
 			
 			db.add(wf1_e1_run1);
 			
-			ComputeApplication wf1_e2_run1 = new ComputeApplication();
+			ComputeJob wf1_e2_run1 = new ComputeJob();
 			wf1_e2_run1.setName("wf1_e2_run1");
 			wf1_e2_run1.setProtocol(e2.getProtocol());
 		    wf1_e2_run1.setPrevSteps_Id(wf1_e1_run1.getId());
@@ -172,14 +172,14 @@ public class ComputeLoadExample
 		    db.add(wf1_e2_run1_f3);
 		    
 		    //second run
-			ComputeApplication wf1_e1_run2 = new ComputeApplication();
+			ComputeJob wf1_e1_run2 = new ComputeJob();
 			wf1_e1_run2.setName("wf1_e1_run2");
 			wf1_e1_run2.setProtocol(e2.getProtocol());
 			wf1_e1_run2.setTime(new Date());
 			wf1_e1_run2.setComputeScript("beagle chr2 file2beagle.map > result2beagle.imputed");
 			db.add(wf1_e1_run2);
 			
-			ComputeApplication wf1_e2_run2 = new ComputeApplication();
+			ComputeJob wf1_e2_run2 = new ComputeJob();
 			wf1_e2_run2.setName("wf1_e2_run2");
 			wf1_e2_run2.setProtocol(e2.getProtocol());
 		    wf1_e2_run2.setPrevSteps_Id(wf1_e1_run2.getId());

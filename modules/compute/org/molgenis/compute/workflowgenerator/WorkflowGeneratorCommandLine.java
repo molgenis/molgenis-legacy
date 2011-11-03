@@ -1,6 +1,6 @@
 package org.molgenis.compute.workflowgenerator;
 
-import org.molgenis.compute.ComputeApplication;
+import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.ComputeBundle;
 import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
@@ -60,7 +60,7 @@ public class WorkflowGeneratorCommandLine
     Hashtable<String, String> userValues = null;
 
     //whole workflow application
-    private ComputeApplication wholeWorkflowApp = null;
+    private ComputeJob wholeWorkflowApp = null;
 
     //some necessary values
     private Workflow target = null;
@@ -79,14 +79,14 @@ public class WorkflowGeneratorCommandLine
     //quick solution
     //can be refactored later to have the same basis for command-line and db solutions
 
-    List<ComputeApplication> applications = null;
+    List<ComputeJob> applications = null;
 
     public void processSingleWorksheet(ComputeBundle bundle,
                                        Hashtable<String, String> userValues,
                                        String workflowName,
                                        String applicationName /* should be unique somehow */) throws IOException, ParseException
     {
-        applications = new Vector<ComputeApplication>();
+        applications = new Vector<ComputeJob>();
 
         this.workflowName = workflowName;
         this.cProtocols = bundle.getComputeProtocols();
@@ -240,7 +240,7 @@ public class WorkflowGeneratorCommandLine
                                             Vector<ComputeParameter> featuresToDerive)
             throws IOException, ParseException
     {
-        ComputeApplication app = new ComputeApplication();
+        ComputeJob app = new ComputeJob();
         app.setProtocol(protocol);
         app.setWorkflowElement(workflowElement);
         app.setTime(now());
@@ -446,7 +446,7 @@ public class WorkflowGeneratorCommandLine
         return sdf.format(now());
     }
 
-    public List<ComputeApplication> getComputeApplications()
+    public List<ComputeJob> getComputeApplications()
     {
         return applications;
     }

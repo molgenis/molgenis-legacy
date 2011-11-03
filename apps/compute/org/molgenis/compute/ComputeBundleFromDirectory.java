@@ -20,9 +20,15 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 {
 	Logger logger = Logger.getLogger(ComputeBundleFromDirectory.class);
 	
-	public ComputeBundleFromDirectory(File directory)
+	public ComputeBundleFromDirectory(File directory) throws Exception
 	{
-
+		//load files
+		this.setComputeParameters(new File(directory.getAbsolutePath() + File.separator + "parameters.txt"));
+		this.setWorkflowElements(new File(directory.getAbsolutePath() + File.separator + "workflow.txt"));
+		this.setWorkflowElementParameters(new File(directory.getAbsolutePath() + File.separator + "workflowparameters.txt"));
+	
+		//load the templates
+		this.setComputeProtocols(new File(directory.getAbsolutePath() + File.separator + "protocols"));
 	}
 
 	public void setComputeProtocols(File templateFolder) throws IOException
@@ -45,18 +51,50 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 			    while( ( line = reader.readLine() ) != null ) {
 			    	if(line.trim().startsWith("#"))
 			    	{
-			    		logger.error("TODO: "+line);
+			    		//check against lines without spaces to solve issue of mulitiple spaces
+			    		if(line.replace(" ", "").startsWith("#PBS-wwalltime="))
+			    		{
+			    			p.setWalltime(line.substring(line.indexOf("walltime=")+9));
+			    		}
+			    		else if(line.replace(" ", "").startsWith("#PBS-lnodes="))
+			    		{
+			    			logger.error("TODO:" + line);
+			    		}
+			    		else if(line.replace(" ", "").startsWith("#PBS-lmem="))
+			    		{
+			    			//convert to GB
+			    			String mem = line.substring(line.indexOf("mem=")+4).trim();
+			    			if(mem.endsWith("Gb"))
+			    			{	
+			    				Integer memValue = Integer.parseInt(mem.substring(0,mem.length()-2));
+			    				p.setMemoryReq(memValue);
+			    			}
+			    			else
+			    			{
+			    				throw new RuntimeException("error parsing file: memory should be in 'Gb': "+line);
+			    			}
+			    		}
+			    		else if(line.replace(" ", "").startsWith("#MOLGENIStarget="))
+			    		{
+			    			p.setTargetType(line.substring(line.indexOf("target=")));
+			    		}
+			    		else
+			    		{
+			    			logger.error("parsing "+f.getName()+", line: "+line);
+			    		}
 			    	}
 			    	else
 			    	{
 			    		scriptTemplate += line + ls; 
 			    	}
 			    }
+			    reader.close();
 			    p.setScriptTemplate(scriptTemplate);
 			    
 			    protocols.add(p);
 			}
 		}
+		this.setComputeProtocols(protocols);
 	}
 
 	public void setComputeParameters(File file) throws Exception
@@ -81,6 +119,15 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 			final Class<E> klazz) throws Exception
 	{
 		final List<E> result = new ArrayList<E>();
+		
+		//check if file exists
+		if(!file.exists()) 
+		{
+			logger.warn("file '"+file.getName()+"' is missing");
+			return result;
+		}
+		
+		//read the file
 		CsvReader reader = new CsvFileReader(file);
 		reader.parse(new CsvReaderListener()
 		{
@@ -115,4 +162,16 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 		reader.close();
 		return fileData.toString();
 	}
+	
+	public static void main(String[] args) throws Exception
+	{
+		//just a test
+		File dir = new File("/Users/mswertz/Dropbox/NGS quality report/compute/New_Molgenis_Compute_for_GoNL/Example_01");
+		ComputeBundleFromDirectory bundle = new ComputeBundleFromDirectory(dir);
+		
+		//print
+		bundle.prettyPrint();
+	}
+
+
 }

@@ -2,7 +2,7 @@ package org.molgenis.compute.ui;
 
 import java.util.Vector;
 
-import org.molgenis.compute.ComputeApplication;
+import org.molgenis.compute.ComputeJob;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,7 +23,7 @@ public class ComputeAppPaths
     private AppStatus prevStatus = AppStatus.idle;
 
 
-    ComputeApplication application = null;
+    ComputeJob application = null;
     Vector<String> logpaths = new Vector<String>();
     String outpath;
     String errpath;
@@ -40,12 +40,12 @@ public class ComputeAppPaths
         this.extralog = extralog;
     }
 
-    public ComputeApplication getApplication()
+    public ComputeJob getApplication()
     {
         return application;
     }
 
-    public void setApplication(ComputeApplication application)
+    public void setApplication(ComputeJob application)
     {
         this.application = application;
     }

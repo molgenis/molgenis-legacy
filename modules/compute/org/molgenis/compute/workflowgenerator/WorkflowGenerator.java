@@ -1,6 +1,6 @@
 package org.molgenis.compute.workflowgenerator;
 
-import org.molgenis.compute.ComputeApplication;
+import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.compute.pipelinemodel.FileToSaveRemotely;
@@ -67,7 +67,7 @@ public class WorkflowGenerator
     Hashtable<String, String> userValues = null;
 
     //whole workflow application
-    private ComputeApplication wholeWorkflowApp = null;
+    private ComputeJob wholeWorkflowApp = null;
 
     //some necessary values
     private Workflow target = null;
@@ -111,7 +111,7 @@ public class WorkflowGenerator
         pipelineElementNumber = 0;
 
         //application for the whole workflow
-        wholeWorkflowApp = new ComputeApplication();
+        wholeWorkflowApp = new ComputeJob();
 
         //get the chosen workflow
 //        Workflow workflow = db.query(Workflow.class).find().get(0);
@@ -245,7 +245,7 @@ public class WorkflowGenerator
                                             Vector<ComputeParameter> featuresToDerive)
             throws IOException, DatabaseException, ParseException
     {
-        ComputeApplication app = new ComputeApplication();
+        ComputeJob app = new ComputeJob();
         app.setProtocol(protocol);
         app.setWorkflowElement(workflowElement);
         app.setTime(now());
@@ -272,7 +272,7 @@ public class WorkflowGenerator
         app.setInterpreter(protocol.getInterpreter());
         db.add(app);
 
-        List<ComputeApplication> res = db.query(ComputeApplication.class).equals(ComputeApplication.NAME, app.getName()).find();
+        List<ComputeJob> res = db.query(ComputeJob.class).equals(ComputeJob.NAME, app.getName()).find();
         if (res.size() != 1)
             throw new DatabaseException("ERROR while inserting into db");
 

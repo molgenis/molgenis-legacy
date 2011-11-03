@@ -104,9 +104,16 @@ public class WorksheetHelper
 			for (Tuple t : worksheet)
 			{
 				//rename 'flowcell' to 'flowcell_name'
-				SimpleTuple mapped = new SimpleTuple(t);
-//				mapped.setString("flowcell_name", t.getString("flowcell"));
-//				mapped.setObject("flowcell",null);
+				t.set("flowcell_name", t.getString("flowcell"));
+				t.set("flowcell",null);
+				
+				//rename 'library' to 'library_name'
+				t.set("library_name", t.getString("library"));
+				t.set("library",null);
+				
+				//rename 'externalSampleId' to 'sample_name'
+				t.set("sample_name", t.getString("externalSampleId"));
+				t.set("externalSampleId",null);
 				
 				LibraryLane lane = new LibraryLane();
 				lane.set(t);
@@ -302,52 +309,52 @@ public class WorksheetHelper
 			System.out.println(t);
 		}
 		
-//		System.out.println("Convert into Trio, NgsSample, LaneLibrary");
-//		List<Trio> trioList = new ArrayList<Trio>();
-//		List<NgsSample> sampleList = new ArrayList<NgsSample>();
-//		List<LibraryLane> laneList = new ArrayList<LibraryLane>();
-//		
-//		test.convertTuplesToEntites(tuples, sampleList, laneList, trioList);
-//		
-//		
-//		sampleList = db.find(NgsSample.class);
-//		laneList = db.find(LibraryLane.class);
-//		trioList = db.find(Trio.class);
-//
-//		tuples = test.convertSamplesToTuples(sampleList, laneList);
-//		System.out.println("SAMPLES (tuples)");
-//		for (Tuple t : tuples)
-//		{
-//			System.out.println(t);
-//		}
-//
-//		System.out.println("LANES (tuples)");
-//		tuples = test.convertLanesToTuples(laneList, sampleList, trioList);
-//		for (Tuple t : tuples)
-//		{
-//			System.out.println(t);
-//		}
-//
-//		// convert worksheet back to lanes
-//		System.out.println("converting to NgsSample and LibraryLane");
-//
-//		// reset the lists
-//		sampleList = new ArrayList<NgsSample>();
-//		laneList = new ArrayList<LibraryLane>();
-//
-//		test.convertTuplesToEntites(tuples, LibraryLane.class, sampleList, laneList, trioList);
-//
-//		System.out.println("LANES (entities)");
-//		for (LibraryLane l : laneList)
-//		{
-//			System.out.println(l);
-//		}
-//
-//		System.out.println("SAMPLES (entities)");
-//		for (NgsSample s : sampleList)
-//		{
-//			System.out.println(s);
-//		}
+		System.out.println("Convert into Trio, NgsSample, LaneLibrary");
+		List<Trio> trioList = new ArrayList<Trio>();
+		List<NgsSample> sampleList = new ArrayList<NgsSample>();
+		List<LibraryLane> laneList = new ArrayList<LibraryLane>();
+		
+		test.convertTuplesToEntites(tuples, sampleList, laneList, trioList);
+		
+		
+		sampleList = db.find(NgsSample.class);
+		laneList = db.find(LibraryLane.class);
+		trioList = db.find(Trio.class);
+
+		tuples = test.convertSamplesToTuples(sampleList, laneList);
+		System.out.println("SAMPLES (tuples)");
+		for (Tuple t : tuples)
+		{
+			System.out.println(t);
+		}
+
+		System.out.println("LANES (tuples)");
+		tuples = test.convertLanesToTuples(laneList, sampleList, trioList);
+		for (Tuple t : tuples)
+		{
+			System.out.println(t);
+		}
+
+		// convert worksheet back to lanes
+		System.out.println("converting to NgsSample and LibraryLane");
+
+		// reset the lists
+		sampleList = new ArrayList<NgsSample>();
+		laneList = new ArrayList<LibraryLane>();
+
+		test.convertTuplesToEntites(tuples, LibraryLane.class, sampleList, laneList, trioList);
+
+		System.out.println("LANES (entities)");
+		for (LibraryLane l : laneList)
+		{
+			System.out.println(l);
+		}
+
+		System.out.println("SAMPLES (entities)");
+		for (NgsSample s : sampleList)
+		{
+			System.out.println(s);
+		}
 
 	}
 }

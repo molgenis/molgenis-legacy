@@ -89,7 +89,7 @@
 			<field name="Workflow" type="xref" xref_entity="Workflow" xref_label="name"
 				description="Workflow this element is part of" />
 		</entity>
-		<entity name="ComputeApplication" extends="ProtocolApplication"
+		<entity name="ComputeJob" extends="ProtocolApplication"
 			implements="ComputeDetails">
 			<description>A protocolApplication that reports the scheduling or
 				application of running a ComputeProtocol. Discussion: how to tie
@@ -111,7 +111,7 @@
 				nillable="true"
 				description="reference
 				to workflow element of the compute application" />
-			<field name="PrevSteps" type="mref" xref_entity="ComputeApplication"
+			<field name="PrevSteps" type="mref" xref_entity="ComputeJob"
 				nillable="true"
 				description="To keep track of calculation dependencies == workflow; Note: can be changed at runtime (name was PreviousSteps)" />
 			<field name="ComputeScript" nillable="true" type="text"
