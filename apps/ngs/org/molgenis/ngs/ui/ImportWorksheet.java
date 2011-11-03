@@ -228,7 +228,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 		String duplicateaction = request.getString("duplicates"); // update,ignore,error
 
 		 File file = request.getFile("upload");
-		String workflowdir = "/Users/mdijkstra/Dropbox/NGS/compute/New_Molgenis_Compute_for_GoNL/Example_01";
+		//String workflowdir = "/Users/mdijkstra/Dropbox/NGS/compute/New_Molgenis_Compute_for_GoNL/Example_01";
 //		File file = new File("/Users/mdijkstra/Dropbox/NGS/compute/GAF.csv");
 //		File file = new File(workflowdir + "/SampleList_A102.csv");
 		
@@ -243,7 +243,8 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 
 		System.out.println(">> Start reading csv " + file.toString());
 
-		ComputeBundle cb = new ComputeBundleFromDirectory(new File(workflowdir), file);
+		ComputeBundleFromDirectory cb = new ComputeBundleFromDirectory();
+		cb.setUserParameters(file);
 		List<Tuple> lt = cb.getUserParameters();
 
 
@@ -337,12 +338,13 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 					
 					// GoNL data with trio's
 					
-					Trio trio = (Trio) getObject(db, Trio.class, "name", thistrio); // FIXME: replace "name" by some 'constant'
+					Trio trio = (Trio) getObject(db, Trio.class, Trio.NAME, thistrio); 
 										
 					if (trio == null) {
 						// trio did not exist yet, so create
 						trio = new Trio();
 						trio.setName(thistrio);
+						trio.setInvestigation(investigation);
 						db.add(trio);
 					}
 					
@@ -435,6 +437,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 					fls.setFlowcell(flowcell);
 					fls.setLane(tuple.getString(Worksheet.LANE));
 					fls.setSample(sample);
+					fls.setLibrary(tuple.getString(Worksheet.LIBRARY));
 
 					String library = tuple.getString(Worksheet.LIBRARY);
 					if (library != null && !library.equals(""))
