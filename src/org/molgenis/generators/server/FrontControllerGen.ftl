@@ -16,9 +16,11 @@ import java.io.File;
 import java.util.LinkedHashMap;
 import javax.sql.DataSource;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisFrontController;
 import org.molgenis.framework.server.MolgenisService;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.security.Login;
 import javax.servlet.http.HttpServletRequest;
 
@@ -52,7 +54,7 @@ public class FrontController extends MolgenisFrontController
 		super.init(conf);
 		
 		//now we can create the MolgenisContext with objects reusable over many requests
-		context = new MolgenisContext(createDatabase(), this.getServletContext());
+		context = new MolgenisContext(this.getServletContext());
 		
 		//finally, we store all mapped services, and pass them the context used for databasing, serving, etc.
 		LinkedHashMap<String,MolgenisService> services = new LinkedHashMap<String,MolgenisService>();
@@ -73,18 +75,35 @@ public class FrontController extends MolgenisFrontController
 		this.services = services;
 	}
 	
-	protected Database createDatabase() {
-		try
-		{
+	@Override
+	public void createLogin(MolgenisRequest request) throws Exception
+	{
+		Login login = (Login)request.getRequest().getSession().getAttribute("login");
+		if(login == null) {
+			<#if auth_redirect != ''>
+			login = new ${loginclass}(request.getDatabase(), "${auth_redirect}");
+			<#else>
+			login = new ${loginclass}(request.getDatabase());
+			</#if>			
+			request.getRequest().getSession().setAttribute("login", login);
+		}
+		request.getDatabase().setLogin(login);
+	}
+	
+	@Override
+	public void createDatabase(MolgenisRequest request) throws DatabaseException
+	{
+		Database db = (Database)request.getRequest().getSession().getAttribute("database");
+		if(db == null) {
 		<#if databaseImp = 'jpa'>
-			return DatabaseFactory.create();	
+			db = DatabaseFactory.create();	
 		<#else>
+		<#if db_mode != 'standalone'>
 			//The datasource is created by the servletcontext	
-			<#if db_mode != 'standalone'>
 			ServletContext sc = MolgenisContextListener.getInstance().getContext();
 			DataSource dataSource = (DataSource)sc.getAttribute("DataSource");
-			return DatabaseFactory.create(dataSource, new File("${db_filepath}"));
-			<#else>
+			db = DatabaseFactory.create(dataSource, new File("${db_filepath}"));
+		<#else>
 			BasicDataSource data_src = new BasicDataSource();
 			data_src.setDriverClassName("${db_driver}");
 			data_src.setUsername("${db_user}");
@@ -92,46 +111,13 @@ public class FrontController extends MolgenisFrontController
 			data_src.setUrl("${db_uri}"); // a path within the src folder?
 			data_src.setMaxIdle(10);
 			data_src.setMaxWait(1000);
-		
 			DataSource dataSource = (DataSource)data_src;
-			Database db = new ${package}.JDBCDatabase(dataSource, new File("${db_filepath}"));
-			return db;			
+			db = new ${package}.JDBCDatabase(dataSource, new File("${db_filepath}"));		
 			</#if>
 		</#if>
+			request.getRequest().getSession().setAttribute("database", db);
 		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			throw new RuntimeException();
-		}
-	}
-	
-	public Login createLogin( Database db, HttpServletRequest request ) throws Exception
-	{
-		Login login = (Login)request.getSession().getAttribute("login");
-		if(login == null) {
-			<#if auth_redirect != ''>
-			login = new ${loginclass}(db, "${auth_redirect}");
-			<#else>
-			login = new ${loginclass}(db);
-			</#if>			
-			request.getSession().setAttribute("login", login);
-		}
-		db.setLogin(login);
-		return login;	
-	}
-
-	@Override
-	public Database getDatabase()
-	{
-		<#if db_mode != 'standalone'>
-		return context.getDatabase();
-		<#else>
-		//FIXME: multithreading/instances problem
-		//return createDatabase();
-		System.out.println("getDatabase FrontController: " + context.getDatabase());
-		return context.getDatabase();
-		</#if>
+		request.setDatabase(db);
 	}
 	
 }

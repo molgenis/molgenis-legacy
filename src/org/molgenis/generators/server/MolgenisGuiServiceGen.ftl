@@ -67,7 +67,7 @@ public class GuiService extends MolgenisGuiService implements MolgenisService
 	{
 		ApplicationController app = null;
 		try {
-			final Database dbForController = super.mc.getDatabase();
+			final Database dbForController = super.db;
 			//enhance the ApplicationController with a method to getDatabase 
 			app = new ApplicationController( new UsedMolgenisOptions(), userLogin)
 			{

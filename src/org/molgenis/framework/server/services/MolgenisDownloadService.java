@@ -71,7 +71,7 @@ public class MolgenisDownloadService implements MolgenisService
 			Database db = null;
 			try
 			{
-				db = mc.getDatabase();
+				db = req.getDatabase();
 				//db.setLogin(new org.molgenis.framework.security.SimpleLogin(db));
 				try
 				{
