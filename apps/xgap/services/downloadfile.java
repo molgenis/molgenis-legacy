@@ -55,7 +55,7 @@ public class downloadfile implements MolgenisService{
 		String name = null;
 
 		try {
-			db = mc.getDatabase();
+			db = request.getDatabase();
 			databaseIsAvailable = true;
 		} catch (Exception e) {
 			PrintWriter out = response.getResponse().getWriter();

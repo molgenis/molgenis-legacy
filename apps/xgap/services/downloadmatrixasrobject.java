@@ -60,7 +60,7 @@ public class downloadmatrixasrobject implements MolgenisService
 
 		try
 		{
-			db = mc.getDatabase();
+			db = request.getDatabase();
 			databaseIsAvailable = true;
 		}
 		catch (Exception e)

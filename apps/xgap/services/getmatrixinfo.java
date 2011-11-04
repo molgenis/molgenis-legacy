@@ -45,7 +45,7 @@ public class getmatrixinfo  implements MolgenisService {
 		DataMatrixInstance instance = null;
 		
 		try {
-			db = mc.getDatabase();
+			db = request.getDatabase();
 			databaseIsAvailable = true;
 		} catch (Exception e) {
 			PrintWriter out = response.getResponse().getWriter();

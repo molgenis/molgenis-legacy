@@ -62,7 +62,7 @@ public class taskreporter  implements MolgenisService
 
 			String statusText = req.getString("statustext"); // text
 
-			Database db = mc.getDatabase();
+			Database db = request.getDatabase();
 
 			QueryRule jobQuery0 = new QueryRule("id", Operator.EQUALS, jobID);
 			QueryRule subjobQuery0 = new QueryRule("job", Operator.EQUALS, jobID);

@@ -107,7 +107,7 @@ public class XqtlRApiService implements MolgenisService
 			//MolgenisServlet ms = new MolgenisServlet();
 			try
 			{
-				List<RScript> scripts = mc.getDatabase().find(RScript.class);
+				List<RScript> scripts = request.getDatabase().find(RScript.class);
 				for(RScript script : scripts){
 					s +=("source(\""+rSource+"userscripts/"+script.getName()+".R\")\n");
 				}
@@ -128,7 +128,7 @@ public class XqtlRApiService implements MolgenisService
 			//MolgenisServlet ms = new MolgenisServlet();
 			try
 			{
-				Database db = mc.getDatabase();
+				Database db = request.getDatabase();
 				String name = filename.substring(12, filename.length()-2);
 				Utils.console("getting '"+name+".r'");
 				QueryRule q = new QueryRule("name", Operator.EQUALS, name);

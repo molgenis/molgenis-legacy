@@ -42,7 +42,7 @@ public class uploadfile implements MolgenisService
 
 		try
 		{
-			db = mc.getDatabase();
+			db = request.getDatabase();
 			Tuple req = new HttpServletRequestTuple(request.getRequest());
 
 			String fileName = req.getString("name"); // the 'real' file name
