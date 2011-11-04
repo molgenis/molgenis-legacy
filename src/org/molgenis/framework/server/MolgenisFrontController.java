@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.security.Login;
 
 public abstract class MolgenisFrontController extends HttpServlet implements
 		MolgenisService
@@ -28,15 +29,20 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 	
 	// generated FrontController implements thid
 	public abstract Database getDatabase();
+	
+	// get login from session and set it to database, or create new login
+	// TODO: DISCUSS: needs to be NOT in context, but in request? or session?
+	public abstract Login createLogin(Database db, HttpServletRequest request) throws Exception;
 
 	// the one and only service() used in the molgenis app
 	public void service(HttpServletRequest request, HttpServletResponse response)
 	{
-		System.out.println("** service **");
+		
 		try
 		{
-			MolgenisRequest req = new MolgenisRequest(request);
+			MolgenisRequest req = new MolgenisRequest(request, response); //TODO: Bad, but needed for redirection. DISCUSS.
 			MolgenisResponse res = new MolgenisResponse(response);
+			this.createLogin(this.getDatabase(), req.getRequest());
 			this.handleRequest(req, res);
 		}
 		catch (Exception e)
@@ -53,14 +59,14 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 		HttpServletRequest req = request.getRequest();
 		String path = req.getRequestURI();
 		
-		System.out.println("** handleRequest for path " + path);
+		//System.out.println("** handleRequest for path " + path);
 
 		// TODO get the most specific path.
 		for (String p : services.keySet())
 		{
 			if (path.contains(p))
 			{
-				System.out.println("** path.contains(p) **");
+				System.out.println("** using path: " + path);
 				services.get(p).handleRequest(request, response);
 				return;
 			}
