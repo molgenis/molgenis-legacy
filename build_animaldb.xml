@@ -45,13 +45,4 @@
 		</testng>			
 	</target>
 	
-	<!--
-	<target name="test_webonly">
-		<testng classpathref="app.class.path" outputDir="${testng.report.dir}" haltOnFailure="true">
-			<xmlfileset dir="apps/animaldb" includes="**/selenium_animaldbtest.xml" />
-			<jvmarg value="-ea" />
-		</testng>
-	</target>
-	-->
-	
 </project>

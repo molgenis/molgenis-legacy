@@ -31,13 +31,8 @@ plus passing of properties
 	</path>
 
 	<!-- path to app src -->
-
-
 	<taskdef resource="testngtasks" classpathref="molgenis.classpath" />
 	<taskdef name="xmltask" classpathref="molgenis.classpath" classname="com.oopsconsultancy.xmltask.ant.XmlTask"/>
-	
-	
-	
 
 	<!-- clean out generated and build folders -->
 	<target name="clean">
@@ -86,17 +81,17 @@ plus passing of properties
 		</java>
 
 		<!-- copy all ftl files from module folders-->
-		<!-- concat all elements of app_path together seperated by /**/*, -->
+		<!-- concat all elements of app_path together separated by /**/*, -->
 		<pathconvert property="app_path" refid="app.class.path" pathsep="/**/*," dirsep="/">
 			<map from="${user.dir}/" to="" />
 		</pathconvert>
-		<echo message="copying ftl files from: ${app_path}" />
+		<echo message="copying ftl files from ${app_path} to ${build.dir}" />
 		<fail unless="app_path">app.class.path is not set</fail>
 		<copy todir="${build.dir}">
-			<!-- watch the traling /**/*.ftl"-->
+			<!-- watch the trailing /**/*.ftl"-->
 			<fileset dir="." includes="${app_path}/**/*" excludes="**/*.java"/>
 			<!-- cut the two leading directories from path -->
-			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />
+			<mapper type="regexp" from="^[-_a-zA-Z0-9]*[/\\][-_a-zA-Z0-9]*[/\\](.*)" to="\1" />
 			<!--cutdirsmapper dirs="2"/-->
 		</copy>
 
@@ -215,7 +210,7 @@ plus passing of properties
 		</pathconvert>
 		
 		<copy todir="${build.dir}">
-			<!-- watch the traling /**/*.ftl"-->
+			<!-- watch the trailing /**/*.ftl"-->
 			<fileset dir="." includes="${app_path}/**/*" excludes="**/*.java"/>
 			<fileset dir="${app_path}/handwritten/java/META-INF"/>
 			<!-- cut the two leading directories from path -->
