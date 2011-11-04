@@ -2,7 +2,7 @@
 <!-- DOCTYPE molgenis PUBLIC "MOLGENIS 1.0" "http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd" -->
 <!--<molgenis name="molgenis_apps" label="Compute Testing"> -->
 <molgenis name="compute" label="Compute Testing">
-	<!-- plugin name="MolgenisHeader" type="plugins.header.NgsHeader" / -->
+	<plugin name="MolgenisHeader" type="org.molgenis.compute.ui.ComputeHeader" />
 	<menu name="mainmenu" position="left" startswith="WelcomeScreen">
 		<!-- <menu name="Targets"> <form name="Individuals" entity="Individual" /> compact_view="Name" <form name="Panels" entity="Panel" /> <form name="Samples" entity="Sample" /> <form name="Lanes" entity="Lane" 
 			/> </menu> -->
@@ -26,7 +26,7 @@
 		<include file="apps/compute/org/molgenis/compute/ngs_lims_ui.xml" />
 		<menu name="Compute">
 			<form name="ComputeParameters" hide_fields="id,Investigation,ontologyReference,targettypeAllowedForRelation,panelLabelAllowedForRelation,temporal" entity="ComputeParameter" viewtype="list" />
-			<form name="ComputeProtocols" entity="ComputeProtocol" hide_fields="Investigation,ontologyReference,ProtocolType,Features" viewtype="record">
+			<form name="ComputeProtocols" entity="ComputeProtocol" hide_fields="Investigation,ontologyReference,ProtocolType,Features,TargetFilter" viewtype="record">
 				<menu name="ComputeProtocolsMenu">
 					<form name="ComputeJobs" entity="ComputeJob">
 						<plugin name="PbsSubmitApplication" type="org.molgenis.compute.ui.PbsSubmitApplication" />
