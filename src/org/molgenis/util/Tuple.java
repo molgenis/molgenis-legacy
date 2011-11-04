@@ -409,4 +409,8 @@ public interface Tuple
 	public boolean isNull(String string);
 	
 	public boolean isNull(int column);
+
+	public List<String> getStringList(String string);
+
+	List<String> getStringList(int column);
 }
