@@ -3,14 +3,28 @@
 
 <module name="catalogue" label="Lifelines Catalogue">
 
-
-<entity name="Categories" >
-	<field name="Category" type="xref" xref_entity="Code" nillable="false" />
+<entity name="Domain" >
+	<field name="id" type="autoid" description="automatically generated id" />
+	<field name="name"  nillable="false" />
 </entity>
 
-<entity name="Individual History of Diabetes" >
-
+<entity name="Variable" >
+	<field name="id" type="autoid" description="automatically generated id" />
+	<field name="name"  nillable="false" />
+	<field name="Description"  nillable="true" />
+	<field name="VariableURI" nillable="true" />
 </entity>
+
+<entity name="Category" >
+	<field name="id" type="autoid" description="automatically generated id" />
+	<field name="name" type="xref" xref_entity="Code" nillable="true" />
+</entity>
+
+<entity name="MissingCategory" >
+	<field name="id" type="autoid" description="automatically generated id" />
+	<field name="name" type="xref" xref_entity="Code" nillable="true" />
+</entity>
+
 <!-- decorator="decorators.DBIndexUpdateDecorator" 
 	<entity name="BiobankData" >
 			<description>This entity includes the dictionary from lifelines </description>

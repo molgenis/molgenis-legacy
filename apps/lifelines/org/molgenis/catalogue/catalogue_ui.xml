@@ -8,7 +8,10 @@
 		<plugin name="SimpleUserLogin" type="org.molgenis.auth.ui.SimpleUserLogin" label="Login" />
     
 		<menu name="catalogueOverview" label="Catalogue Overview">
-			<form name="catalogue" entity="BiobankData" label="Catalogue Overview" />
+			<form name="Domain" entity="Domain" label="Domain" />
+			<form name="Variables" entity="Variable" label="Variables" />
+			<form name="Category" entity="Category" label="Categories" />
+			<form name="MissingCategory" entity="MissingCategory" label="Missing Categories" />
 		</menu>
 		
 		<plugin name="OwlToPheno" label="import owl" type="plugins.data.importOwlToPheno" />
