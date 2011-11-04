@@ -7,12 +7,10 @@
 
 package org.molgenis.ngs.ui;
 
-import java.util.ArrayList;
+
 import java.util.Date;
-import java.util.List;
 
 import org.molgenis.framework.ui.EasyPluginModel;
-import org.molgenis.util.Tuple;
 
 /**
  * ImportWorksheetModel takes care of all state and it can have helper methods to query the database.

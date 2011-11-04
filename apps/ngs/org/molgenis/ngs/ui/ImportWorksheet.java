@@ -1,11 +1,10 @@
 package org.molgenis.ngs.ui;
 
+
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
 
 import org.molgenis.auth.Person;
-import org.molgenis.compute.commandline.ComputeBundle;
 import org.molgenis.compute.commandline.ComputeBundleFromDirectory;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
@@ -21,11 +20,7 @@ import org.molgenis.ngs.NgsSample;
 import org.molgenis.ngs.Trio;
 import org.molgenis.ngs.Worksheet;
 import org.molgenis.organization.Investigation;
-import org.molgenis.protocol.WorkflowElementParameter;
-import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvFileWriter;
-import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
 
 /**
@@ -41,6 +36,8 @@ import org.molgenis.util.Tuple;
  */
 public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 {
+	private static final long serialVersionUID = 6075389492409205677L;
+
 	public ImportWorksheet(String name, ScreenController<?> parent)
 	{
 		super(name, null, parent);
@@ -225,7 +222,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 
 	public void uploadaction(final Database db, Tuple request) throws Exception
 	{
-		String duplicateaction = request.getString("duplicates"); // update,ignore,error
+		//String duplicateaction = request.getString("duplicates"); // update,ignore,error
 
 		 File file = request.getFile("upload");
 		//String workflowdir = "/Users/mdijkstra/Dropbox/NGS/compute/New_Molgenis_Compute_for_GoNL/Example_01";
@@ -349,11 +346,11 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 					}
 					
 					// get samples that already belong to this trio
-					List<Integer> trioSamples = trio.getSamples();
+					List<Integer> trioSamples = trio.getSamples_Id();
 					
 					// add sample to this trio
 					trioSamples.add(sample.getId());
-					trio.setSamples(trioSamples);
+					trio.setSamples_Id(trioSamples);
 					
 					// update database
 					db.update(trio);
