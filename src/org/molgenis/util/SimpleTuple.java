@@ -804,4 +804,30 @@ public class SimpleTuple implements Tuple
 		// TODO Auto-generated method stub
 		return !notNull(column);
 	}
+
+	@Override
+	public List<String> getStringList(String string)
+	{
+		List<String> result = new ArrayList<String>();
+		List<?> objects = this.getList(string);
+		for(Object o: objects)
+		{
+			if(o instanceof String) result.add((String) o);
+			else if(o != null) result.add(o.toString());
+		}
+		return result;
+	}
+	
+	@Override
+	public List<String> getStringList(int column)
+	{
+		List<String> result = new ArrayList<String>();
+		List<?> objects = this.getList(column);
+		for(Object o: objects)
+		{
+			if(o instanceof String) result.add((String) o);
+			else if(o != null) result.add(o.toString());
+		}
+		return result;
+	}
 }
