@@ -15,10 +15,10 @@ import java.util.TreeMap;
 import javax.xml.bind.JAXBException;
 
 import org.apache.log4j.Logger;
-import org.molgenis.core.OntologyTerm;
 import org.molgenis.organization.Investigation;
+import org.molgenis.pheno.Code;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservableFeature;
+import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.Protocol;
 
@@ -34,6 +34,15 @@ import converters.dbgap.jaxb.var_report.VariableSummary;
 
 public class DbGapToPheno
 {
+	static Logger logger = Logger.getLogger(DbGapToPheno.class);
+
+	List<Investigation> investigations = new ArrayList<Investigation>();
+	List<Protocol> protocols = new ArrayList<Protocol>();
+	List<Measurement> features = new ArrayList<Measurement>();
+	Map<String, Code> terms = new TreeMap<String, Code>();
+	List<Panel> panels = new ArrayList<Panel>();
+	List<ObservedValue> inferredValues = new ArrayList<ObservedValue>();
+	
 	public static void main(String[] args) throws Exception
 	{
 		String outputFolder = "d:/Data/dbgap/";
@@ -184,8 +193,8 @@ public class DbGapToPheno
 
 				if (var.unit != null && terms.get(var.unit) == null)
 				{
-					OntologyTerm t = new OntologyTerm();
-					t.setName(var.unit);
+					Code t = new Code();
+					t.setCode_String(var.unit);
 					//t.setInvestigationLabel(i.getName());
 
 					if(terms.containsKey(var.unit)) logger.warn("duplicate term "+var.unit);
@@ -196,10 +205,11 @@ public class DbGapToPheno
 				{
 					for (Value v : var.values)
 					{
-						OntologyTerm code = new OntologyTerm();
-						code.setName(v.code);
-						code.setDefinition(v.value);
-						f.getValueCodesLabels().add(code.getTerm());
+						Code code = new Code();
+						code.setCode_String(v.code);
+						code.setDescription(v.value);
+						code.getFeature().add(f.getId());
+						//f.getValueCodesLabels().add(code.getTerm());
 						
 						//give error on duplicate term
 						if(terms.containsKey(v.code)) logger.warn("duplicate term "+v.code);
@@ -214,15 +224,15 @@ public class DbGapToPheno
 		// var report = observedValues, protocolApplication, panels
 		Panel total_panel = new Panel();
 		total_panel.setName("total");
-		total_panel.setInvestigationLabel(i.getName());
+		total_panel.setInvestigation_Name(i.getName());
 		
 		Panel cases_panel = new Panel();
 		cases_panel.setName("cases");
-		cases_panel.setInvestigationLabel(i.getName());
+		cases_panel.setInvestigation_Name(i.getName());
 		
 		Panel controls_panel = new Panel();
 		controls_panel.setName("controls");
-		controls_panel.setInvestigationLabel(i.getName());
+		controls_panel.setInvestigation_Name(i.getName());
 		
 		this.panels.add(total_panel);
 		this.panels.add(cases_panel);
@@ -266,21 +276,24 @@ public class DbGapToPheno
 
 	private void addInferredValue(Panel p, Investigation i, VariableSummary vs, String value, String inferenceType)
 	{
+		// NB (2011-11-04, ER): InferredValue (or DerivedValue) does not exist at the moment
+		// in the Pheno model. So I temporarily changed it to ObservedValue.
+		
 		if (terms.get(inferenceType) == null)
 		{
-			OntologyTerm t = new OntologyTerm();
-			t.setName(inferenceType);
+			Code t = new Code();
+			t.setCode_String(inferenceType);
 			//t.setInvestigation_Name(i.getName());
 			terms.put(inferenceType, t);
 		}
 
-		InferredValue v = new InferredValue();
-		v.setInvestigationLabel(i.getName());
-		v.setObservableFeatureLabel(vs.var_name.toLowerCase());
+		ObservedValue v = new ObservedValue();
+		v.setInvestigation_Name(i.getName());
+		v.setFeature_Name(vs.var_name.toLowerCase());
 		v.setValue(value);
-		v.setInferenceTypeLabel(inferenceType);
-		v.setObservationTargetLabel(p.getName());
-		//System.out.println("infered value " + v);
+		//v.setInferenceTypeLabel(inferenceType);
+		v.setTarget_Name(p.getName());
+		//System.out.println("inferfed value " + v);
 		this.inferredValues.add(v);
 
 	}
@@ -292,25 +305,16 @@ public class DbGapToPheno
 			result += i + "\n";
 		for (Protocol p2 : protocols)
 			result += p2 + "\n";
-		for (ObservableFeature f2 : features)
+		for (Measurement f2 : features)
 			result += f2 + "\n";
-		for (OntologyTerm t : terms.values())
+		for (Code t : terms.values())
 			result += t + "\n";
 		for (Panel p : panels)
 			result += p + "\n";
-		for (InferredValue i : inferredValues)
+		for (ObservedValue i : inferredValues)
 			result += i + "\n";
 
 		return result;
 	}
-	
-	static Logger logger = Logger.getLogger(DbGapToPheno.class);
-
-	List<Investigation> investigations = new ArrayList<Investigation>();
-	List<Protocol> protocols = new ArrayList<Protocol>();
-	List<ObservableFeature> features = new ArrayList<ObservableFeature>();
-	Map<String, OntologyTerm> terms = new TreeMap<String, OntologyTerm>();
-	List<Panel> panels = new ArrayList<Panel>();
-	List<InferredValue> inferredValues = new ArrayList<InferredValue>();
 
 }
