@@ -28,11 +28,11 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 	protected MolgenisOptions usedOptions = null;
 	
 	// generated FrontController implements thid
-	public abstract Database getDatabase();
+	public abstract void createDatabase(MolgenisRequest request)  throws DatabaseException;
 	
 	// get login from session and set it to database, or create new login
 	// TODO: DISCUSS: needs to be NOT in context, but in request? or session?
-	public abstract Login createLogin(Database db, HttpServletRequest request) throws Exception;
+	public abstract void createLogin(MolgenisRequest request) throws Exception;
 
 	// the one and only service() used in the molgenis app
 	public void service(HttpServletRequest request, HttpServletResponse response)
@@ -40,15 +40,26 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 		
 		try
 		{
+			//wrap request and response
 			MolgenisRequest req = new MolgenisRequest(request, response); //TODO: Bad, but needed for redirection. DISCUSS.
 			MolgenisResponse res = new MolgenisResponse(response);
-			this.createLogin(this.getDatabase(), req.getRequest());
+			
+			//setup database, or reuse from session and set to reques
+			//TODO: somehow skip this for serving files etc?? seems a bit expensivet
+			this.createDatabase(req);
+			
+			//setup login credentials, or reuse from session and apply to database
+			//TODO: same as above
+			this.createLogin(req);
+			
+			//handle the request with current database + login
 			this.handleRequest(req, res);
 		}
 		catch (Exception e)
 		{
             //TODO: send generic error page with details
 			logger.error(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 

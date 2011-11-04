@@ -3,11 +3,13 @@ package org.molgenis.framework.server;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.molgenis.framework.db.Database;
 import org.molgenis.util.HttpServletRequestTuple;
 
 public class MolgenisRequest extends HttpServletRequestTuple
 {
 
+	Database db;
 	
 	public MolgenisRequest(HttpServletRequest request) throws Exception
 	{
@@ -21,4 +23,16 @@ public class MolgenisRequest extends HttpServletRequestTuple
 
 	}
 
+	public Database getDatabase()
+	{
+		return db;
+	}
+
+	public void setDatabase(Database db)
+	{
+		this.db = db;
+	}
+
+	
+	
 }

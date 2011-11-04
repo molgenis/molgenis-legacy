@@ -41,6 +41,7 @@ public abstract class MolgenisGuiService
 	Logger logger = Logger.getLogger(MolgenisGuiService.class);
 	
 	protected MolgenisContext mc;
+	protected Database db;
 	
 	public MolgenisGuiService(MolgenisContext mc)
 	{
@@ -65,11 +66,13 @@ public abstract class MolgenisGuiService
 		// get database session (note: this shouldn't be in the tomcat
 				// session!!!
 				Database db = null;
+				
 				boolean dbAvailable = false;
 				String dbErrorMessage = null;
 				try
 				{
-					db = mc.getDatabase();
+					db = request.getDatabase();
+					this.db = db;
 					// db.beginTx(); DISCUSSION
 					System.err.println("???" + db);
 					if (db != null)
@@ -108,7 +111,7 @@ public abstract class MolgenisGuiService
 				{
 					try
 					{
-						userLogin = mc.getDatabase().getSecurity();
+						userLogin = request.getDatabase().getSecurity();
 					}
 					catch (Exception e)
 					{
