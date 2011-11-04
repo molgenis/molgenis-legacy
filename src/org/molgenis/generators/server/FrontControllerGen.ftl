@@ -19,6 +19,8 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisFrontController;
 import org.molgenis.framework.server.MolgenisService;
+import org.molgenis.framework.security.Login;
+import javax.servlet.http.HttpServletRequest;
 
 <#if generate_BOT>
 import java.io.IOException;
@@ -103,6 +105,21 @@ public class FrontController extends MolgenisFrontController
 			throw new RuntimeException();
 		}
 	}
+	
+	public Login createLogin( Database db, HttpServletRequest request ) throws Exception
+	{
+		Login login = (Login)request.getSession().getAttribute("login");
+		if(login == null) {
+			<#if auth_redirect != ''>
+			login = new ${loginclass}(db, "${auth_redirect}");
+			<#else>
+			login = new ${loginclass}(db);
+			</#if>			
+			request.getSession().setAttribute("login", login);
+		}
+		db.setLogin(login);
+		return login;	
+	}
 
 	@Override
 	public Database getDatabase()
@@ -111,8 +128,9 @@ public class FrontController extends MolgenisFrontController
 		return context.getDatabase();
 		<#else>
 		//FIXME: multithreading/instances problem
-		return createDatabase();
-		//return context.getDatabase();
+		//return createDatabase();
+		System.out.println("getDatabase FrontController: " + context.getDatabase());
+		return context.getDatabase();
 		</#if>
 	}
 	

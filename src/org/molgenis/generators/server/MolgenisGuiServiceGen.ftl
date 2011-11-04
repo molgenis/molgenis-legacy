@@ -63,21 +63,6 @@ public class GuiService extends MolgenisGuiService implements MolgenisService
 		super(mc);
 	}
 
-	public Login createLogin( Database db, HttpServletRequest request ) throws Exception
-	{
-		Login login = (Login)request.getSession().getAttribute("login");
-		if(login == null) {
-			<#if auth_redirect != ''>
-			login = new ${loginclass}(db, "${auth_redirect}");
-			<#else>
-			login = new ${loginclass}(db);
-			</#if>			
-			request.getSession().setAttribute("login", login);
-		}
-		db.setLogin(login);
-		return login;	
-	}
-
 	public ApplicationController createUserInterface( Login userLogin )
 	{
 		ApplicationController app = null;

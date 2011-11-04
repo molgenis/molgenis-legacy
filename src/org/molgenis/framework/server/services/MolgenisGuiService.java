@@ -48,8 +48,7 @@ public abstract class MolgenisGuiService
 	}
 	
 	public abstract ApplicationController createUserInterface(Login userLogin);
-	
-	public abstract Login createLogin(Database db, HttpServletRequest request) throws Exception;
+
 	
 	/**
 	 * Handle use of molgenis GUI
@@ -109,7 +108,7 @@ public abstract class MolgenisGuiService
 				{
 					try
 					{
-						userLogin = createLogin(db, request.getRequest());
+						userLogin = mc.getDatabase().getSecurity();
 					}
 					catch (Exception e)
 					{
@@ -146,7 +145,7 @@ public abstract class MolgenisGuiService
 				{
 					// set the base address
 
-					Tuple requestTuple = new HttpServletRequestTuple(request.getRequest(), response.getResponse());
+					Tuple requestTuple = request;
 
 					// action == download an attached file
 					// FIXME move to form controllers handlerequest...
