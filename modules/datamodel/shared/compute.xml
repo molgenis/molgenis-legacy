@@ -46,7 +46,7 @@
 			</description>
 			<field name="scriptTemplate" type="freemarker"
 				description="Commandline or (template of) an script, e.g. in R. Templating engine is freemarker." />
-			<field name="targetType" type="enum" enum_options="NgsSample,LibraryLane" nillable="true"/>
+			<field name="iterateOver" type="mref" xref_entity="ComputeParameter" nillable="true"/>
 			<field name="interpreter" type="enum"
 				default="bash"
 				enum_options="[bash,R,Python,WorkflowInterpreter,jdl]"
@@ -86,10 +86,10 @@
 			<!-- use 'DataType'field name="featureType" type="enum" enum_options="[default,log,data]" 
 				default="default" description="field to specify the type of input/output 
 				features" / -->
-			<field name="isDerived" type="boolean"
-				description="a flag to indicate if the ComputeFeature consists of other ComputeFeatures" />
-			<field name="Workflow" type="xref" xref_entity="Workflow" xref_label="name"
-				description="Workflow this element is part of" />
+			<!-- field name="isDerived" type="boolean" 
+				description="a flag to indicate if the ComputeFeature consists of other ComputeFeatures" /-->
+			<!-- field name="Workflow" type="xref" xref_entity="Workflow" xref_label="name"
+				description="Workflow this element is part of" /-->
 		</entity>
 		<entity name="ComputeJob" extends="ProtocolApplication"
 			implements="ComputeDetails">

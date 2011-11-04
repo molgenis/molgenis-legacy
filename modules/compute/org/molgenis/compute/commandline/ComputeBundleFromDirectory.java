@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -16,8 +17,8 @@ import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Entity;
+import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
-
 
 public class ComputeBundleFromDirectory extends ComputeBundle
 {
@@ -40,15 +41,21 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 	 * @param worksheet
 	 * @throws Exception
 	 */
-	public ComputeBundleFromDirectory(File workflowDir, File worksheetFile) throws Exception
+	public ComputeBundleFromDirectory(File workflowDir, File worksheetFile)
+			throws Exception
 	{
 		// load files
-		this.setComputeParameters(new File(workflowDir.getAbsolutePath() + File.separator + "parameters.txt"));
-		this.setWorkflowElements(new File(workflowDir.getAbsolutePath() + File.separator + "workflow.txt"));
+		this.setComputeParameters(new File(workflowDir.getAbsolutePath()
+				+ File.separator + "parameters.txt"));
+		this.setWorkflowElements(new File(workflowDir.getAbsolutePath()
+				+ File.separator + "workflow.txt"));
 
 		try
 		{
-			this.setWorkflowElementParameters(new File(workflowDir.getAbsolutePath() + File.separator + "workflowparameters.txt"));
+			this.setWorkflowElementParameters(new File(workflowDir
+					.getAbsolutePath()
+					+ File.separator
+					+ "workflowparameters.txt"));
 		}
 		catch (Exception e)
 		{
@@ -58,12 +65,14 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 		this.setUserParameters(worksheetFile);
 
 		// load the templates
-		this.setComputeProtocols(new File(workflowDir.getAbsolutePath() + File.separator + "protocols"));
+		this.setComputeProtocols(new File(workflowDir.getAbsolutePath()
+				+ File.separator + "protocols"));
 	}
 
 	public void setUserParameters(File worksheetFile) throws Exception
 	{
-		this.setUserParameters(new WorksheetHelper().readTuplesFromFile(worksheetFile));
+		this.setUserParameters(new WorksheetHelper()
+				.readTuplesFromFile(worksheetFile));
 	}
 
 	public ComputeBundleFromDirectory()
@@ -96,41 +105,37 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 						foundHeader = true;
 
 						String[] keyValues = line.substring(9).split(" ");
+						// parse into tuple
+						Tuple params = new SimpleTuple();
 						for (String keyValue : keyValues)
+						{
 							if (!keyValue.equals(""))
 							{
 								String[] data = keyValue.split("=");
 
-								if (data.length != 2) throw new RuntimeException("error parsing file " + f
-										+ ", keyValue ='" + keyValue + "': " + line);
+								if (data.length != 2) throw new RuntimeException(
+										"error parsing file " + f
+												+ ", keyValue ='" + keyValue
+												+ "': " + line);
 
-								if (data[0].equals("mem"))
+								String key = data[0];
+								if (!p.getFields().contains(key))
 								{
-									p.setMem(Integer.parseInt(data[1]));
-								}
-								else if (data[0].equals("target"))
-								{
-									p.setTargetType(data[1]);
-								}
-								else if (data[0].equals("walltime"))
-								{
-									p.setWalltime(data[1]);
-								}
-								else if (data[0].equals("nodes"))
-								{
-									p.setCores(Integer.parseInt(data[1]));
-								}
-								else if (data[0].equals("cores"))
-								{
-									p.setCores(Integer.parseInt(data[1]));
-								}
-								else
-								{
-									throw new RuntimeException("error parsing file " + f + ", unknown key '" + data[0]
-											+ "' in line: " + line);
+									throw new RuntimeException(
+											"error parsing file " + f
+													+ ", unknown key '" + key
+													+ "' in line: " + line);
 								}
 
+								params.set(data[0], data[1]);
 							}
+						}
+						// set the params
+						p.setMem(params.getInt("mem"));
+						p.setIterateOver_Name(params.getStringList("iterateOver"));
+						p.setWalltime(params.getString("walltime"));
+						p.setNodes(params.getInt("nodes"));
+						p.setCores(params.getInt("cores"));
 					}
 					else if (line.trim().startsWith("#PBS"))
 					{
@@ -183,8 +188,10 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 				}
 				reader.close();
 
-				if (!foundHeader) logger.warn("protocol " + f
-						+ " does not contain #MOLGENIS header. Defaults will be used");
+				if (!foundHeader) logger
+						.warn("protocol "
+								+ f
+								+ " does not contain #MOLGENIS header. Defaults will be used");
 
 				p.setScriptTemplate(scriptTemplate);
 
@@ -196,20 +203,24 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 
 	public void setComputeParameters(File file) throws Exception
 	{
-		this.setComputeParameters(readEntitiesFromFile(file, ComputeParameter.class));
+		this.setComputeParameters(readEntitiesFromFile(file,
+				ComputeParameter.class));
 	}
 
 	public void setWorkflowElements(File file) throws Exception
 	{
-		this.setWorkflowElements(readEntitiesFromFile(file, WorkflowElement.class));
+		this.setWorkflowElements(readEntitiesFromFile(file,
+				WorkflowElement.class));
 	}
 
 	public void setWorkflowElementParameters(File file) throws Exception
 	{
-		this.setWorkflowElementParameters(readEntitiesFromFile(file, WorkflowElementParameter.class));
+		this.setWorkflowElementParameters(readEntitiesFromFile(file,
+				WorkflowElementParameter.class));
 	}
 
-	private <E extends Entity> List<E> readEntitiesFromFile(File file, final Class<E> klazz) throws Exception
+	private <E extends Entity> List<E> readEntitiesFromFile(File file,
+			final Class<E> klazz) throws Exception
 	{
 		final List<E> result = new ArrayList<E>();
 
@@ -226,7 +237,8 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 		{
 
 			@Override
-			public void handleLine(int line_number, Tuple tuple) throws Exception
+			public void handleLine(int line_number, Tuple tuple)
+					throws Exception
 			{
 				E entity = klazz.newInstance();
 				entity.set(tuple);
@@ -259,9 +271,11 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 		// just a test
 		File workflowDir = new File(
 				"/Users/mswertz/Dropbox/NGS quality report/compute/New_Molgenis_Compute_for_GoNL/Example_01");
-		File worksheetFile = new File(workflowDir.getAbsolutePath() + File.separator + "SampleList_A102.csv");
+		File worksheetFile = new File(workflowDir.getAbsolutePath()
+				+ File.separator + "SampleList_A102.csv");
 
-		ComputeBundleFromDirectory bundle = new ComputeBundleFromDirectory(workflowDir, worksheetFile);
+		ComputeBundleFromDirectory bundle = new ComputeBundleFromDirectory(
+				workflowDir, worksheetFile);
 
 		// print
 		bundle.prettyPrint();

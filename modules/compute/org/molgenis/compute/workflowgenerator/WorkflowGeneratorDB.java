@@ -119,7 +119,8 @@ public class WorkflowGeneratorDB
         wholeWorkflowApp.setInterpreter("WorkflowInterpreter");
 
         //it would be nice to select compute features of only selected workflow
-        allComputeParameters = db.query(ComputeParameter.class).equals(ComputeParameter.WORKFLOW, workflow.getId()).find();
+        //allComputeParameters = db.query(ComputeParameter.class).equals(ComputeParameter.WORKFLOW, workflow.getId()).find();
+        allComputeParameters = db.query(ComputeParameter.class).find();
         System.out.println("we have so many features: " + allComputeParameters.size());
 
         System.out.println("workflow" + workflow.getName());
@@ -204,10 +205,10 @@ public class WorkflowGeneratorDB
         {
             if (computeFeature.getIsUser())
                 continue;
-            else if (computeFeature.getIsDerived())
-            {
-                featuresToDerive.addElement(computeFeature);
-            }
+//            else if (computeFeature.getIsDerived())
+//            {
+//                featuresToDerive.addElement(computeFeature);
+//            }
             else
             {
                 weavingValues.put(computeFeature.getName(), computeFeature.getDefaultValue());
