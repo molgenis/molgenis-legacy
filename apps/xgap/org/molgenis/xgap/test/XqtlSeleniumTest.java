@@ -85,12 +85,12 @@ public class XqtlSeleniumTest
 	{
 		appName = MolgenisServlet.getMolgenisVariantID();
 		int webserverPort = 8080;
-		if (!tomcat) webserverPort = Helper.getAvailablePort(11000, 100);
+		if (!tomcat) webserverPort = Helper.getAvailablePort(11040, 10);
 
 		String seleniumUrl = "http://localhost:" + webserverPort + "/";
 		String seleniumHost = "localhost";
 		String seleniumBrowser = "firefox";
-		int seleniumPort = Helper.getAvailablePort(9100, 100);
+		int seleniumPort = Helper.getAvailablePort(11050, 10);
 
 		RemoteControlConfiguration rcc = new RemoteControlConfiguration();
 		rcc.setSingleWindow(true);

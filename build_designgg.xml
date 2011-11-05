@@ -28,4 +28,26 @@
 		</java>
 	</target>
 	
+	<!--
+	Wrapper: DesignGG Selenium web test.
+	Clean dirs, make application and run the test.
+	-->
+	<target name="clean_make_webtest" description="Make app and start the web test">
+		<antcall target="clean-generate-compile" />
+		<antcall target="webtest" />
+	</target>
+	
+	<!--
+	Run DesignGG web test.
+	-->
+	<target name="webtest" description="Start the Selenium test">
+		<testng haltOnFailure="true">
+			<classfileset dir="${build.dir}" includes="**/DesignGGSeleniumTest.class"/>
+			<classpath>
+				<path refid="molgenis.classpath" />
+				<path location="${build.dir}" />
+			</classpath>
+		</testng>
+	</target>
+	
 </project>

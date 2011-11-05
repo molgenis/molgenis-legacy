@@ -32,12 +32,12 @@ public class AnimaldbSeleniumTest
 	public void start() throws Exception
 	{
 		int webserverPort = 8080;
-		if(!this.tomcat) webserverPort = Helper.getAvailablePort(11000, 100);
+		if(!this.tomcat) webserverPort = Helper.getAvailablePort(11000, 10);
 		
 		String seleniumUrl = "http://localhost:" + webserverPort + "/";
 		String seleniumHost = "localhost";
 		String seleniumBrowser = "firefox";
-		int seleniumPort = Helper.getAvailablePort(9080, 100);
+		int seleniumPort = Helper.getAvailablePort(11010, 10);
 	
 		RemoteControlConfiguration rcc = new RemoteControlConfiguration();
 		rcc.setSingleWindow(true);
