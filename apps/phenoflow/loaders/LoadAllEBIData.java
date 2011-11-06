@@ -11,7 +11,7 @@ import app.CsvImport;
 import app.DatabaseFactory;
 import app.JDBCDatabase;
 
-public class LoadMPDandEurophenomeFromPerl {
+public class LoadAllEBIData {
 	public static void main(String[] args) throws Exception {
 		
 		new Molgenis("apps/phenoflow/phenoflow.properties").updateDb(true);
@@ -19,7 +19,7 @@ public class LoadMPDandEurophenomeFromPerl {
 		Database db = DatabaseFactory.create("apps/phenoflow/phenoflow.properties");
 		String directory;
 		
-		// europhenome
+		// Europhenome
 		directory = "../pheno_data/Europhenome2";
 		
 		CsvImport.importAll(new File(directory), db, new SimpleTuple(), null,
@@ -32,7 +32,10 @@ public class LoadMPDandEurophenomeFromPerl {
 		directory = "../pheno_data/MPD/temp";
 		CsvImport.importAll(new File(directory), db, new SimpleTuple(), null,
 				DatabaseAction.ADD, "N/A");
-
+		
+		// Load dbGaP
+		LoadDbGapDownloads.loadDbGaPData(db);
+		
 		System.out.println("Done");
 	}
 }
