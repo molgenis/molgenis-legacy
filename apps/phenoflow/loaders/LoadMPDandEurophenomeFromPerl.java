@@ -11,7 +11,7 @@ import app.CsvImport;
 import app.DatabaseFactory;
 import app.JDBCDatabase;
 
-public class LoadInvestigationFromDirectory {
+public class LoadMPDandEurophenomeFromPerl {
 	public static void main(String[] args) throws Exception {
 		
 		new Molgenis("apps/phenoflow/phenoflow.properties").updateDb(true);
