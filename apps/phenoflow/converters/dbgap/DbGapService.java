@@ -27,6 +27,10 @@ import converters.dbgap.jaxb.Study;
 import converters.dbgap.jaxb.data_dict.Data_Dict;
 import converters.dbgap.jaxb.var_report.Var_Report;
 
+
+/**
+ * Used primarily from the DbGapToPheno to access dbGaP ftp and download data
+ */
 public class DbGapService
 {
 	private Document document;
