@@ -45,9 +45,11 @@ public class DbGapToPheno
 	
 	public static void main(String[] args) throws Exception
 	{
-		String outputFolder = "d:/Data/dbgap/";
+		// This will need updating if run on a different machine
+		// String outputFolder = "d:/Data/dbgap/";
+		String outputFolder = "C:/Users/Tomasz/pheno_workspace/pheno_data/dbgap/";
 		String dbgapUrl = outputFolder + "FTP_Table_of_Contents.xml";
-		DbGapService dbgap = new DbGapService(new File(dbgapUrl).toURL(), new File(outputFolder));
+		DbGapService dbgap = new DbGapService(new File(dbgapUrl).toURI().toURL(), new File(outputFolder));
 
 		int count = 1;
 
