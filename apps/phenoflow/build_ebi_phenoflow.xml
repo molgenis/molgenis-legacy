@@ -40,36 +40,41 @@
 	</path>
 
 	<!-- import all tasks from build_common: clean, generate, compile, test, 
-		war, standalone-jar -->
+		war, standalone-jar 
 	<import file="../../build_common.xml" />
-
+	-->
+	
 	<target name="copy-test">
 		<input message="Please enter your username for tc-test-3:"
 			addproperty="tc.user" defaultvalue="tomasz" />
 		<input message="Please enter your password for tc-test-3:"
 			addproperty="tc.pass" />
-		<scp file="dist/pheno.war" trust="true" verbose="true"
-			todir="${tc.user}@tc-test-3.ebi.ac.uk:${deploy.test.path}" password="${tc.pass}">
+		<scp file="dist/pheno.war" trust="true" verbose="true" port="333"
+			todir="${tc.user}@localhost:${deploy.test.path}" password="${tc.pass}">
 		</scp>
-		<sshexec host="tc-test-3.ebi.ac.uk" trust="true" verbose="true"
-			username="${tc.user}" password="${tc.pass}"
+		<sshexec host="localhost" trust="true" verbose="true"
+			username="${tc.user}" password="${tc.pass}" port="333"
 			command="chmod 664 ${deploy.test.path}/pheno.war" />
 	</target>
 
-	<target name="copy-live" depends="copy-test">
-		<sshexec host="tc-test-3.ebi.ac.uk" trust="true" verbose="true"
+	<target name="copy-live">
+		<input message="Please enter your username for tc-test-3:"
+			addproperty="tc.user" defaultvalue="tomasz" />
+		<input message="Please enter your password for tc-test-3:"
+			addproperty="tc.pass" />
+		<sshexec host="localhost" port="333" trust="true" verbose="true"
 			username="${tc.user}" password="${tc.pass}"
 			command="sudo -u tc_user cp ${deploy.test.path}/pheno.war  ${deploy.live.path}/." />
 	</target>
 
 	<target name="deploy-test">
-		<deploy url="http://tc-test-3.ebi.ac.uk:10110/manager"
+		<deploy url="http://localhost:10110/manager"
 			username="tomcat" password="tomcat" path="/microarray-srv/pheno"
 			config="${deploy.test.path}/microarray-srv#pheno.xml" update="true" />
 
 		<property name="running" value="/microarray-srv/pheno:running" />
 
-		<list url="http://tc-test-3.ebi.ac.uk:10110/manager"
+		<list url="http://localhost:10110/manager"
 			outputproperty="ctx.status" username="tomcat" password="tomcat">
 		</list>
 
@@ -91,10 +96,10 @@
 		<input message="Please enter your password for tc-test-3:"
 			addproperty="tc.pass" />
 
-		<undeploy url="http://tomcat-7.ebi.ac.uk:10110/manager"
+		<undeploy url="http://localhost:10117/manager"
 			username="tomcat" password="tomcat" path="/microarray-srv/pheno" />
 
-		<sshexec host="tomcat-7.ebi.ac.uk" trust="true" verbose="false"
+		<sshexec host="localhost" trust="true" verbose="false" port="10117"
 			username="${tc.user}" password="${tc.pass}"
 			command="sudo -u tc_user ${controller.live.path} stop" />
 	</target>
@@ -105,7 +110,7 @@
 		<input message="Please enter your password for tc-test-3:"
 			addproperty="tc.pass" />
 
-		<sshexec host="tomcat-7.ebi.ac.uk" trust="true" verbose="false"
+		<sshexec host="localhost" trust="true" verbose="false" port="10117"
 			username="${tc.user}" password="${tc.pass}"
 			command="sudo -u tc_user ${controller.live.path} start-test" />
 	</target>
@@ -116,13 +121,13 @@
 		<input message="Please enter your password for tc-test-3:"
 			addproperty="tc.pass" />
 
-		<deploy url="http://tomcat-7.ebi.ac.uk:10110/manager" username="tomcat"
+		<deploy url="http://localhost:10117/manager" username="tomcat"
 			password="tomcat" path="/microarray-srv/pheno" config="${deploy.live.path}/microarray-srv#pheno.xml"
 			update="false" />
 
 		<property name="running" value="/microarray-srv/pheno:running" />
 
-		<list url="http://tomcat-7.ebi.ac.uk:10110/manager"
+		<list url="http://localhost:10117/manager"
 			outputproperty="ctx.status" username="tomcat" password="tomcat">
 		</list>
 
@@ -144,10 +149,10 @@
 		<input message="Please enter your password for tc-test-3:"
 			addproperty="tc.pass" />
 
-		<undeploy url="http://tomcat-8.ebi.ac.uk:10110/manager"
+		<undeploy url="http://localhost:10118/manager"
 			username="tomcat" password="tomcat" path="/microarray-srv/pheno" />
 
-		<sshexec host="tomcat-8.ebi.ac.uk" trust="true" verbose="false"
+		<sshexec host="localhost" trust="true" verbose="false" port="10118"
 			username="${tc.user}" password="${tc.pass}"
 			command="sudo -u tc_user ${controller.live.path} stop" />
 	</target>
@@ -158,7 +163,7 @@
 		<input message="Please enter your password for tc-test-3:"
 			addproperty="tc.pass" />
 
-		<sshexec host="tomcat-8.ebi.ac.uk" trust="true" verbose="false"
+		<sshexec host="localhost" trust="true" verbose="false" port="10118"
 			username="${tc.user}" password="${tc.pass}"
 			command="sudo -u tc_user ${controller.live.path} start-test" />
 	</target>
@@ -169,13 +174,13 @@
 		<input message="Please enter your password for tc-test-3:"
 			addproperty="tc.pass" />
 
-		<deploy url="http://tomcat-8.ebi.ac.uk:10110/manager" username="tomcat"
+		<deploy url="http://localhost:10118/manager" username="tomcat"
 			password="tomcat" path="/microarray-srv/pheno" config="${deploy.live.path}/microarray-srv#pheno.xml"
 			update="false" />
 
 		<property name="running" value="/microarray-srv/pheno:running" />
 
-		<list url="http://tomcat-8.ebi.ac.uk:10110/manager"
+		<list url="http://localhost:10118/manager"
 			outputproperty="ctx.status" username="tomcat" password="tomcat">
 		</list>
 
