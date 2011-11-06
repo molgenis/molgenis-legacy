@@ -225,7 +225,7 @@ public class DbGapService
 			url = cachedFile.toURI().toURL();
 			
 		}
-		JAXBContext jaxbContext = JAXBContext.newInstance("convertors.dbgap.jaxb.var_report");
+		JAXBContext jaxbContext = JAXBContext.newInstance("converters.dbgap.jaxb.var_report");
 		Unmarshaller m = jaxbContext.createUnmarshaller();
 		return (Var_Report) m.unmarshal(url.openStream());
 	}
@@ -240,7 +240,7 @@ public class DbGapService
 			if(!cachedFile.exists()) downloadFile(d.url, cachedFile);
 			url = cachedFile.toURI().toURL();
 		}
-		JAXBContext jaxbContext = JAXBContext.newInstance("convertors.dbgap.jaxb.data_dict");
+		JAXBContext jaxbContext = JAXBContext.newInstance("converters.dbgap.jaxb.data_dict");
 		Unmarshaller m = jaxbContext.createUnmarshaller();
 		return (Data_Dict) m.unmarshal(url.openStream());
 
