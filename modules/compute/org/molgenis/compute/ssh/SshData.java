@@ -9,7 +9,13 @@ package org.molgenis.compute.ssh;
  */
 public class SshData
 {
-    public static final String SERVER = "millipede.service.rug.nl";
-    public static final String USER = "oops";
-    public static final String PASS = "different";
+    public static final String SERVER_MILLIPEDE = "a";
+    public static final String USER_MILLIPEDE = "a";
+    public static final String PASS_MILLIPEDE = "a";
+
+    public static final String SERVER_GRID = "a";
+    public static final String USER_GRID = "a";
+    public static final String PASS_GRID = "a";
+
+
 }
