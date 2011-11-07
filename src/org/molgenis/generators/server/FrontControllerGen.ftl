@@ -14,6 +14,10 @@ package ${package}.servlet;
 
 import java.io.File;
 import java.util.LinkedHashMap;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.UUID;
 import javax.sql.DataSource;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -22,7 +26,7 @@ import org.molgenis.framework.server.MolgenisFrontController;
 import org.molgenis.framework.server.MolgenisService;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.security.Login;
-import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.dbcp.BasicDataSource;
 
 <#if generate_BOT>
 import java.io.IOException;
@@ -33,9 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import generic.JavaCompiler;
 import generic.JavaCompiler.CompileUnit;
-</#if><#if db_mode = 'standalone'>
-import org.apache.commons.dbcp.BasicDataSource;
-<#else>
+</#if><#if db_mode != 'standalone' || databaseImp = 'jpa'>
 import ${package}.DatabaseFactory;
 import javax.servlet.ServletContext;
 import org.molgenis.framework.db.jdbc.JndiDataSourceWrapper;
@@ -54,7 +56,10 @@ public class FrontController extends MolgenisFrontController
 		super.init(conf);
 		
 		//now we can create the MolgenisContext with objects reusable over many requests
-		context = new MolgenisContext(this.getServletContext());
+		context = new MolgenisContext(this.getServletContext(), this.createDataSource());
+		
+		//create map of connections
+		connections = new HashMap<UUID, Connection>();
 		
 		//finally, we store all mapped services, and pass them the context used for databasing, serving, etc.
 		LinkedHashMap<String,MolgenisService> services = new LinkedHashMap<String,MolgenisService>();
@@ -91,33 +96,62 @@ public class FrontController extends MolgenisFrontController
 	}
 	
 	@Override
-	public void createDatabase(MolgenisRequest request) throws DatabaseException
+	public UUID createDatabase(MolgenisRequest request) throws DatabaseException, SQLException
 	{
 		Database db = (Database)request.getRequest().getSession().getAttribute("database");
 		if(db == null) {
+		//there is no database object for this session, create it now
 		<#if databaseImp = 'jpa'>
 			db = DatabaseFactory.create();	
 		<#else>
 		<#if db_mode != 'standalone'>
-			//The datasource is created by the servletcontext	
-			ServletContext sc = MolgenisContextListener.getInstance().getContext();
-			DataSource dataSource = (DataSource)sc.getAttribute("DataSource");
-			db = DatabaseFactory.create(dataSource, new File("${db_filepath}"));
+			db = DatabaseFactory.create(context.getDataSource(), new File("${db_filepath}"));
 		<#else>
-			BasicDataSource data_src = new BasicDataSource();
-			data_src.setDriverClassName("${db_driver}");
-			data_src.setUsername("${db_user}");
-			data_src.setPassword("${db_password}");
-			data_src.setUrl("${db_uri}"); // a path within the src folder?
-			data_src.setMaxIdle(10);
-			data_src.setMaxWait(1000);
-			DataSource dataSource = (DataSource)data_src;
-			db = new ${package}.JDBCDatabase(dataSource, new File("${db_filepath}"));		
+			db = new ${package}.JDBCDatabase(context.getDataSource(), new File("${db_filepath}"));		
 			</#if>
 		</#if>
 			request.getRequest().getSession().setAttribute("database", db);
 		}
+		
+		//get a connection and keep track of it
+		Connection conn = context.getDataSource().getConnection();
+		UUID id = UUID.randomUUID();
+		connections.put(id, conn);
+		
+		//give the connection to this database, and only use this connection
+		//(don't allow the database to get more!)
+		//TODO
+		
 		request.setDatabase(db);
+		return id;
+	}
+	
+	@Override
+	public DataSource createDataSource()
+	{
+	<#if databaseImp = 'jpa'>
+		// ??? jpa magic
+		return null;
+	<#else>
+		<#if db_mode != 'standalone'>
+		//The datasource is created by the servletcontext	
+		ServletContext sc = MolgenisContextListener.getInstance().getContext();
+		DataSource dataSource = (DataSource)sc.getAttribute("DataSource");
+		return dataSource;
+		<#else>
+		BasicDataSource data_src = new BasicDataSource();
+		data_src.setDriverClassName("${db_driver}");
+		data_src.setUsername("${db_user}");
+		data_src.setPassword("${db_password}");
+		data_src.setUrl("${db_uri}");
+		//data_src.setMaxIdle(10);
+		//data_src.setMaxWait(1000);
+		data_src.setInitialSize(10);
+		data_src.setTestOnBorrow(true);
+		DataSource dataSource = (DataSource)data_src;
+		return dataSource;
+		</#if>
+	</#if>
 	}
 	
 }
