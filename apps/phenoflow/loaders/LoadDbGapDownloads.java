@@ -1,6 +1,7 @@
 package loaders;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,12 +29,10 @@ public class LoadDbGapDownloads {
 		File rootDir = new File(
 				"C:/Users/Tomasz/pheno_workspace/pheno_data/dbgap/");
 
-		for (String investigationDir : rootDir.list(new FilenameFilter() {
-
-			@Override
-			public boolean accept(File arg0, String arg1) {
-				return arg0.isDirectory() & arg1.startsWith("phs");
-			}
+		for (File investigationDir : rootDir.listFiles(new FileFilter() {
+		    public boolean accept(File file) {
+		        return file.isDirectory() && file.getName().startsWith("phs");
+		    }
 		})) {
 			System.out.println("Loading " + investigationDir);
 
@@ -45,12 +44,10 @@ public class LoadDbGapDownloads {
 			list.add("ontologyterm");
 			list.add("measurement");
 
-			CsvImport.importAll(new File(rootDir.getAbsolutePath() + "\\"
-					+ investigationDir), db, new SimpleTuple(), list,
+			CsvImport.importAll(investigationDir, db, new SimpleTuple(), list,
 					DatabaseAction.ADD_IGNORE_EXISTING, "");
 			// measurements already in, proceed loading a complete set
-			CsvImport.importAll(new File(rootDir.getAbsolutePath() + "\\"
-					+ investigationDir), db, new SimpleTuple(), null,
+			CsvImport.importAll(investigationDir, db, new SimpleTuple(), null,
 					DatabaseAction.ADD_IGNORE_EXISTING, "");
 		}
 
