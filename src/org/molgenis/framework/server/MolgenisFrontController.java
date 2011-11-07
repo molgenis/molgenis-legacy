@@ -1,18 +1,21 @@
 package org.molgenis.framework.server;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.security.Login;
 
 public abstract class MolgenisFrontController extends HttpServlet implements
 		MolgenisService
@@ -24,14 +27,20 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 	// map of all services for this app
 	protected Map<String, MolgenisService> services;
 	
+	// list of all connections
+	protected Map<UUID, Connection> connections;
+	
 	// the used molgenisoptions, set by generated MolgenisServlet
 	protected MolgenisOptions usedOptions = null;
 	
-	// generated FrontController implements thid
-	public abstract void createDatabase(MolgenisRequest request)  throws DatabaseException;
+	// the database given  1 connection per request (setup stored in session, connectionless after request)
+	// return a UUID of the connection that was given to this database and was stored in Map<UUID, Connection> connections
+	public abstract UUID createDatabase(MolgenisRequest request)  throws DatabaseException, SQLException;
+	
+	//the datasource to be put in the context
+	public abstract DataSource createDataSource();
 	
 	// get login from session and set it to database, or create new login
-	// TODO: DISCUSS: needs to be NOT in context, but in request? or session?
 	public abstract void createLogin(MolgenisRequest request) throws Exception;
 
 	// the one and only service() used in the molgenis app
@@ -44,9 +53,9 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 			MolgenisRequest req = new MolgenisRequest(request, response); //TODO: Bad, but needed for redirection. DISCUSS.
 			MolgenisResponse res = new MolgenisResponse(response);
 			
-			//setup database, or reuse from session and set to reques
-			//TODO: somehow skip this for serving files etc?? seems a bit expensivet
-			this.createDatabase(req);
+			//setup database, or reuse from session and set to request
+			//TODO: need to skip this for serving out files and such!!!
+			UUID connId = this.createDatabase(req);
 			
 			//setup login credentials, or reuse from session and apply to database
 			//TODO: same as above
@@ -54,6 +63,19 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 			
 			//handle the request with current database + login
 			this.handleRequest(req, res);
+			
+			//close the connection and check if it really was closed
+			connections.get(connId).close();
+			if(!connections.get(connId).isClosed())
+			{
+				throw new DatabaseException("ERROR: connection was not closed!");
+			}
+			
+			//remove from list
+			connections.remove(connId);
+			
+			System.out.println("# of active connections: " + connections.size());
+			
 		}
 		catch (Exception e)
 		{
