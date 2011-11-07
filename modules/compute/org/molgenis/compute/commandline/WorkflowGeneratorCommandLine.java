@@ -3,10 +3,7 @@ package org.molgenis.compute.commandline;
 import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
-import org.molgenis.compute.pipelinemodel.FileToSaveRemotely;
-import org.molgenis.compute.pipelinemodel.Pipeline;
-import org.molgenis.compute.pipelinemodel.Script;
-import org.molgenis.compute.pipelinemodel.Step;
+import org.molgenis.compute.pipelinemodel.*;
 import org.molgenis.compute.scriptserver.MCF;
 import org.molgenis.compute.ui.DatabaseUpdater;
 import org.molgenis.compute.workflowgenerator.ParameterWeaver;
@@ -436,7 +433,7 @@ public class WorkflowGeneratorCommandLine
         System.out.println("jdl-file: \n" + jdlfile);
         System.out.println("-------\nscript: \n" + script);
 
-        Script scriptFile = new Script(scriptID, scriptRemoteLocation, script.getBytes());
+        Script scriptFile = new GridScript(scriptID, scriptRemoteLocation, script.getBytes());
         FileToSaveRemotely jdlFile = new FileToSaveRemotely(scriptID + ".jdl", jdlfile.getBytes());
         scriptFile.addFileToTransfer(jdlFile);
 
@@ -447,7 +444,7 @@ public class WorkflowGeneratorCommandLine
     {
         weaver.setActualCommand("cd " + scriptRemoteLocation + "\n R CMD BATCH " + scriptRemoteLocation + "myscript.R");
         String scriptFile = weaver.makeScript();
-        Script script = new Script(scriptID, scriptRemoteLocation, scriptFile.getBytes());
+        Script script = new ClusterScript(scriptID, scriptRemoteLocation, scriptFile.getBytes());
         FileToSaveRemotely rScript = new FileToSaveRemotely("myscript.R", result.getBytes());
         script.addFileToTransfer(rScript);
         System.out.println("Rscript" + result);
@@ -462,7 +459,7 @@ public class WorkflowGeneratorCommandLine
     {
         weaver.setActualCommand(result);
         String scriptFile = weaver.makeScript();
-        return new Script(scriptID, scriptRemoteLocation, scriptFile.getBytes());
+        return new ClusterScript(scriptID, scriptRemoteLocation, scriptFile.getBytes());
     }
 
     //root remote location should be set

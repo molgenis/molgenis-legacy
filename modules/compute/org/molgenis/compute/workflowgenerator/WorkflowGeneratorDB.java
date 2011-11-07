@@ -3,10 +3,7 @@ package org.molgenis.compute.workflowgenerator;
 import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
-import org.molgenis.compute.pipelinemodel.FileToSaveRemotely;
-import org.molgenis.compute.pipelinemodel.Pipeline;
-import org.molgenis.compute.pipelinemodel.Script;
-import org.molgenis.compute.pipelinemodel.Step;
+import org.molgenis.compute.pipelinemodel.*;
 import org.molgenis.compute.scriptserver.MCF;
 import org.molgenis.compute.ui.ComputeAppPaths;
 import org.molgenis.compute.ui.DatabaseUpdater;
@@ -174,7 +171,7 @@ public class WorkflowGeneratorDB
 
             if (!updater.isStarted())
             {
-                updater.setSettings(10, 10);
+                updater.setSettings(20, 20);
                 updater.setDatabase(db);
                 updater.start();
             }
@@ -417,6 +414,7 @@ public class WorkflowGeneratorDB
         String downloadTop = weaver.makeGridDownload(weavingValues);
         String uploadBottom = weaver.makeGridUpload(weavingValues);
 
+        //while testing - hardcoded
         //some special fields should be specified for the jdl file
         //error and output logs
         weavingValues.put("error_log", "err_" + scriptID +".log");
@@ -425,6 +423,8 @@ public class WorkflowGeneratorDB
         weavingValues.put("extra_input","");
         weavingValues.put("extra_output","");
 
+        weavingValues.put("script_location", scriptRemoteLocation);
+        //
         String jdlfile = weaver.makeJDL(weavingValues);
 
         System.out.println("name: " + scriptID);
@@ -439,7 +439,7 @@ public class WorkflowGeneratorDB
         System.out.println("jdl-file: \n" +jdlfile);
         System.out.println("-------\nscript: \n" + script);
 
-        Script scriptFile = new Script(scriptID, scriptRemoteLocation, script.getBytes());
+        Script scriptFile = new GridScript(scriptID, scriptRemoteLocation, script.getBytes());
         FileToSaveRemotely jdlFile = new FileToSaveRemotely(scriptID + ".jdl", jdlfile.getBytes());
         scriptFile.addFileToTransfer(jdlFile);
 
@@ -450,14 +450,11 @@ public class WorkflowGeneratorDB
     {
         weaver.setActualCommand("cd " + scriptRemoteLocation + "\n R CMD BATCH "+ scriptRemoteLocation +"myscript.R");
         String scriptFile = weaver.makeScript();
-        Script script = new Script(scriptID, scriptRemoteLocation, scriptFile.getBytes());
+        Script script = new ClusterScript(scriptID, scriptRemoteLocation, scriptFile.getBytes());
         FileToSaveRemotely rScript = new FileToSaveRemotely("myscript.R", result.getBytes());
         script.addFileToTransfer(rScript);
-        System.out.println("Rscript" + result);
+        System.out.println(script.toString());
         return script;
-
-        //todo test it!!!!
-
 
     }
 
@@ -465,7 +462,7 @@ public class WorkflowGeneratorDB
     {
         weaver.setActualCommand(result);
         String scriptFile = weaver.makeScript();
-        return new Script(scriptID, scriptRemoteLocation, scriptFile.getBytes());
+        return new ClusterScript(scriptID, scriptRemoteLocation, scriptFile.getBytes());
     }
 
     //root remote location should be set

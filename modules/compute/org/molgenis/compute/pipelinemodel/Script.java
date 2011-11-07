@@ -10,7 +10,7 @@ import java.util.Vector;
 //remote directory
 
 //data - the listing of the script
-public class Script implements Serializable
+public abstract class Script implements Serializable
 {
     private String ID = null;
 
@@ -28,7 +28,6 @@ public class Script implements Serializable
     private Vector<FileToSaveRemotely> filesToSaveRemotely = new Vector();
 
     private boolean isShort = false;
-
 
     public Script(String scriptID, String outputRemoteLocation, byte[] bytes)
     {
@@ -168,11 +167,19 @@ public class Script implements Serializable
     @Override
     public String toString()
     {
-        return "\nScript{" +
+        return "Script{" +
                 "ID='" + ID + '\'' +
-                //", \nremotename='" + remotename + '\'' +
-                //", \nscriptData=" + new String(scriptData) +
-                //", \nremoteDir='" + remoteDir + '\'' +
+                ", localname='" + localname + '\'' +
+                ", remotename='" + remotename + '\'' +
+                ", scriptData=" + new String(scriptData) +
+                ", remoteDir='" + remoteDir + '\'' +
+                ", hasAdditionalFiles=" + hasAdditionalFiles +
+                ", filesToSaveRemotely=" + filesToSaveRemotely +
                 '}';
+    }
+
+    public String getSubmitCommand()
+    {
+        return null;
     }
 }

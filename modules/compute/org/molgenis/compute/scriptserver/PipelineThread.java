@@ -39,7 +39,9 @@ public abstract class PipelineThread implements Runnable
                Script script = step.getScript(j);
                boolean error = submitScript(script);
 
-                while (error)
+
+                int numberOfAttempts = 0;
+                while (error && numberOfAttempts < 100)
                 {
                     System.out.println("error occurs");
                     try
@@ -51,8 +53,13 @@ public abstract class PipelineThread implements Runnable
                         e.printStackTrace();
                     }
                     error = submitScript(script);
+                    numberOfAttempts++;
                 }
 
+                if(numberOfAttempts == 100)
+                {
+                    throw new RuntimeException("Too many attempts to submit the script");
+                }
             }
 
             //here monitor step execution
@@ -80,7 +87,8 @@ public abstract class PipelineThread implements Runnable
             }
 
         }
-        exec.shutdown();
+        if(exec != null)
+            exec.shutdown();
         pipeline.setFinished(true);
         System.out.println("... pipeline " + pipeline.getId() + "finished");
 

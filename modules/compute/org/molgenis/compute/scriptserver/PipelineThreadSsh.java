@@ -1,9 +1,9 @@
 package org.molgenis.compute.scriptserver;
 
 import org.molgenis.compute.monitor.LoggingReaderSsh;
+import org.molgenis.compute.pipelinemodel.FileToSaveRemotely;
 import org.molgenis.compute.pipelinemodel.Pipeline;
 import org.molgenis.compute.pipelinemodel.Script;
-import org.molgenis.compute.remoteexecutor.RemoteScriptSubmitter;
 import org.molgenis.compute.ssh.SshData;
 import org.molgenis.util.Ssh;
 import org.molgenis.util.SshResult;
@@ -36,7 +36,7 @@ public class PipelineThreadSsh extends PipelineThread
     {
         try
         {
-            ssh = new Ssh(SshData.SERVER, SshData.USER, SshData.PASS);
+            ssh = new Ssh(SshData.SERVER_MILLIPEDE, SshData.USER_MILLIPEDE, SshData.PASS_MILLIPEDE);
         }
         catch (IOException e)
         {
@@ -51,6 +51,19 @@ public class PipelineThreadSsh extends PipelineThread
         String output = null, error = null;
         String remoteName = script.getRemoteDir() + script.getRemotename();
 
+        for(int i = 0; i < script.getNumberFileToSaveRemotely(); i++)
+        {
+            FileToSaveRemotely aFile = script.getFileToSaveRemotely(i);
+            try
+            {
+                ssh.uploadStringToFile(new String(aFile.getFileData()), aFile.getRemoteName(), script.getRemoteDir());
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
         try
         {
             ssh.uploadStringToFile(new String(script.getScriptData()), script.getRemotename(), script.getRemoteDir());
@@ -60,11 +73,7 @@ public class PipelineThreadSsh extends PipelineThread
             e.printStackTrace();
         }
 
-        String command;
-        if (script.isShort())
-            command = RemoteScriptSubmitter.SUB_SHORT + remoteName;
-        else
-            command = RemoteScriptSubmitter.SUB + remoteName;
+        String command = script.getSubmitCommand();
 
         SshResult result = null;
         try

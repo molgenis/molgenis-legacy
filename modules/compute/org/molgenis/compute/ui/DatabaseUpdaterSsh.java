@@ -30,7 +30,7 @@ public class DatabaseUpdaterSsh extends DatabaseUpdater
     {
         try
         {
-            ssh = new Ssh(SshData.SERVER, SshData.USER, SshData.PASS);
+            ssh = new Ssh(SshData.SERVER_MILLIPEDE, SshData.USER_MILLIPEDE, SshData.PASS_MILLIPEDE);
         }
         catch (IOException e)
         {

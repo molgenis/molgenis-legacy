@@ -22,4 +22,13 @@ public class FileToSaveRemotely implements Serializable
     {
         return fileData;
     }
+
+    @Override
+    public String toString()
+    {
+        return "FileToSaveRemotely{" +
+                "remoteName='" + remoteName + '\'' +
+                ", fileData=" + new String(fileData) +
+                '}';
+    }
 }
