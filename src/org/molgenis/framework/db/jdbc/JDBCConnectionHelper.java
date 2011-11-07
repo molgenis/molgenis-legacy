@@ -124,6 +124,13 @@ public abstract class JDBCConnectionHelper extends AbstractDatabase
 	/** open the connection (if not already) */
 	public Connection getConnection() throws DatabaseException
 	{
+		if(source == null){
+			//this JDBCDatabase has been created with just a connection and no source
+			//so, there should be exactly 1 active connection that is handled by the FrontController
+			//System.out.println("No datasource, immediatly returning connection");
+			return connection;
+		}
+		
 		try
 		{
 			if (connection == null || connection.isClosed())
@@ -153,6 +160,15 @@ public abstract class JDBCConnectionHelper extends AbstractDatabase
 	 */
 	protected void closeConnection()
 	{
+		if(source == null)
+		{
+			//this JDBCDatabase has been created with just a connection and no source
+			//so, there should be exactly 1 active connection that is handled by the FrontController
+			//do not close this connection here!
+			//System.out.println("No datasource, not closing connection");
+			return;
+		}
+		
 		if (inTransaction)
 		{
 			// logger.debug("Didn't close connection: transaction active");

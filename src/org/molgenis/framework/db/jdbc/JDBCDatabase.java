@@ -4,8 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -21,10 +20,8 @@ import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.JoinQuery;
 import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.Query;
-import org.molgenis.framework.db.QueryImp;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
@@ -60,6 +57,17 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	private static final transient Logger logger = Logger
 			.getLogger(JDBCDatabase.class.getSimpleName());
 
+	/**
+	 * Construct a JDBCDatabase using this connection alone.
+	 * There is no DataSource, which is used for checks in getConnection and closeConnection.
+	 * Used by the FrontController which manages the database connections itself.
+	 * @param conn
+	 */
+	public JDBCDatabase(Connection conn)
+	{
+		this.connection = conn;
+	}
+	
 	/**
 	 * Construct a JDBCDatabase to query relational database.
 	 * 

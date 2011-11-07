@@ -19,7 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 import javax.sql.DataSource;
-
+import java.sql.Connection;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -28,6 +28,11 @@ import org.molgenis.framework.db.jdbc.DataSourceWrapper;
 
 public class DatabaseFactory
 {
+
+	public static Database create(Connection conn) throws DatabaseException
+	{
+		return new app.<#if databaseImp == "jpa">Jpa<#else>JDBC</#if>Database(conn);
+	}
 
 <#if databaseImp == "jpa">
     private static Database createJpaDatabase(boolean test) throws DatabaseException {

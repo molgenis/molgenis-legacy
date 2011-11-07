@@ -27,6 +27,7 @@ import org.molgenis.framework.server.MolgenisService;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.security.Login;
 import org.apache.commons.dbcp.BasicDataSource;
+import ${package}.DatabaseFactory;
 
 <#if generate_BOT>
 import java.io.IOException;
@@ -37,8 +38,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import generic.JavaCompiler;
 import generic.JavaCompiler.CompileUnit;
-</#if><#if db_mode != 'standalone' || databaseImp = 'jpa'>
-import ${package}.DatabaseFactory;
+</#if>
+
+<#if db_mode != 'standalone' || databaseImp = 'jpa'>
 import javax.servlet.ServletContext;
 import org.molgenis.framework.db.jdbc.JndiDataSourceWrapper;
 </#if>
@@ -58,7 +60,7 @@ public class FrontController extends MolgenisFrontController
 		//now we can create the MolgenisContext with objects reusable over many requests
 		context = new MolgenisContext(this.getServletContext(), this.createDataSource());
 		
-		//create map of connections
+		//keep a map of active connections
 		connections = new HashMap<UUID, Connection>();
 		
 		//finally, we store all mapped services, and pass them the context used for databasing, serving, etc.
@@ -98,30 +100,24 @@ public class FrontController extends MolgenisFrontController
 	@Override
 	public UUID createDatabase(MolgenisRequest request) throws DatabaseException, SQLException
 	{
-		Database db = (Database)request.getRequest().getSession().getAttribute("database");
-		if(db == null) {
-		//there is no database object for this session, create it now
-		<#if databaseImp = 'jpa'>
-			db = DatabaseFactory.create();	
-		<#else>
-		<#if db_mode != 'standalone'>
-			db = DatabaseFactory.create(context.getDataSource(), new File("${db_filepath}"));
-		<#else>
-			db = new ${package}.JDBCDatabase(context.getDataSource(), new File("${db_filepath}"));		
-			</#if>
-		</#if>
-			request.getRequest().getSession().setAttribute("database", db);
-		}
+		//TODO: store db instance in session and reuse, with fresh connection?
+		//Database db = (Database)request.getRequest().getSession().getAttribute("database");
 		
 		//get a connection and keep track of it
 		Connection conn = context.getDataSource().getConnection();
 		UUID id = UUID.randomUUID();
 		connections.put(id, conn);
-		
-		//give the connection to this database, and only use this connection
-		//(don't allow the database to get more!)
-		//TODO
-		
+	<#if databaseImp = 'jpa'>
+		//Database db = DatabaseFactory.create();
+		Database db = DatabaseFactory.create(conn);
+	<#else>
+		<#if db_mode != 'standalone'>
+		Database db = DatabaseFactory.create(conn);
+		<#else>
+		//Database db = new ${package}.JDBCDatabase(conn);
+		Database db = DatabaseFactory.create(conn);	
+		</#if>
+	</#if>	
 		request.setDatabase(db);
 		return id;
 	}
