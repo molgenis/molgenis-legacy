@@ -8,13 +8,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBException;
 
@@ -65,11 +65,12 @@ public class DbGapToPheno {
 		for (Study s : studies) {
 			// System.out.println("filtering "+ s.id + " "+s.version+ " "
 			// +s.description);
-			if (lastversions.get(s.id) == null
-					|| Integer.parseInt(lastversions.get(s.id).version.replace(
-							"v", "")) < Integer.parseInt(s.version.replace("v",
-							"")))
+			// pht000182 no v
+			if (s.version.startsWith("v")
+					&& (lastversions.get(s.id) == null || extractVersion(lastversions
+							.get(s.id).version) < extractVersion(s.version))) {
 				lastversions.put(s.id, s);
+			}
 		}
 
 		// caching all files
@@ -105,7 +106,7 @@ public class DbGapToPheno {
 
 			// debug purposes only
 			count++;
-			if (count > 10)
+			if (count > 6)
 				break;
 		}
 
@@ -218,11 +219,17 @@ public class DbGapToPheno {
 						code.setDescription(v.value);
 						code.getFeature().add(f.getId());
 						// f.getValueCodesLabels().add(code.getTerm());
-
 						// give error on duplicate term
-						if (terms.containsKey(v.code))
+						if (v.code == null) {
+							logger.warn("empty code on " + v.value);
+						}
+						if (v.code != null && terms.containsKey(v.code)) {
 							logger.warn("duplicate term " + v.code);
-						terms.put(v.code, code);
+							if (v.code != null) {
+								terms.put(v.code, code);
+							}
+
+						}
 					}
 
 				}
@@ -344,4 +351,10 @@ public class DbGapToPheno {
 		return result;
 	}
 
+	public static Integer extractVersion(String s) {
+		Pattern p = Pattern.compile("\\d+$");
+		Matcher m = p.matcher(s);
+		m.find();
+		return Integer.parseInt(m.group());
+	}
 }
