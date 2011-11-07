@@ -12,12 +12,11 @@ import org.molgenis.util.SimpleTuple;
 
 import app.CsvImport;
 import app.DatabaseFactory;
+import app.JDBCDatabase;
 
 public class LoadDbGapDownloads {
 	public static void main(String[] args) throws Exception {
-
-		Database db = DatabaseFactory.create(new MolgenisOptions(
-				"apps/phenoflow/phenoflow.properties"));
+		Database db = new JDBCDatabase("apps/phenoflow/phenoflow.properties");
 
 		loadDbGaPData(db);
 	}
