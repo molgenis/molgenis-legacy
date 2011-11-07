@@ -53,7 +53,7 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 			MolgenisRequest req = new MolgenisRequest(request, response); //TODO: Bad, but needed for redirection. DISCUSS.
 			MolgenisResponse res = new MolgenisResponse(response);
 			
-			//setup database, or reuse from session and set to request
+			//create database, add a single connection from the pool and set in request for use
 			//TODO: need to skip this for serving out files and such!!!
 			UUID connId = this.createDatabase(req);
 			
@@ -71,7 +71,7 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 				throw new DatabaseException("ERROR: connection was not closed!");
 			}
 			
-			//remove from list
+			//remove from list (does not happen if Exception was thrown)
 			connections.remove(connId);
 			
 			System.out.println("# of active connections: " + connections.size());

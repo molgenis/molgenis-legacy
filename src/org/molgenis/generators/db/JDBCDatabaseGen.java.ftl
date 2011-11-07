@@ -20,7 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 import javax.sql.DataSource;
-
+import java.sql.Connection;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jdbc.DataSourceWrapper;
@@ -42,6 +42,13 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 {
 	private JDBCMetaDatabase metaData = null;
 	<#if decorator_overriders != ''>private Logger logger = Logger.getLogger(JDBCDatabase.class.getSimpleName());</#if>
+
+	public JDBCDatabase(Connection conn) throws DatabaseException
+	{
+		super(conn);
+		this.setup();
+		<#if decorator_overriders != ''>this.overrideDecorators();</#if>
+	}
 
 	public JDBCDatabase(DataSource data_src, File file_source) throws DatabaseException
 	{

@@ -38,7 +38,16 @@ public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
 				</#if>
 			</#if>
 		</#if></#list>	
-	}	
+	}
+	
+	//TODO: Does not function - Connection conn should be an EntityManager instance or so?
+	//TODO: What about decorator overriders?
+	public JpaDatabase(Connection conn) throws DatabaseException
+	{
+		super("molgenis", EMFactory.createEntityManager(), new JDBCMetaDatabase());
+		this.persistenceUnitName = "molgenis";
+		initMappers(this);
+	}
 
     public JpaDatabase() throws DatabaseException {
         super("molgenis", EMFactory.createEntityManager(), new JDBCMetaDatabase());
