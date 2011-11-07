@@ -20,7 +20,7 @@ public class LoggingReaderSsh extends LoggingReader
     {
         try
         {
-            ssh = new Ssh(SshData.SERVER, SshData.USER, SshData.PASS);
+            ssh = new Ssh(SshData.SERVER_MILLIPEDE, SshData.USER_MILLIPEDE, SshData.PASS_MILLIPEDE);
         }
         catch (IOException e)
         {
@@ -39,7 +39,7 @@ public class LoggingReaderSsh extends LoggingReader
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
 
         //log file is created by the first script of the pipeline;
