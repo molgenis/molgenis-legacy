@@ -61,179 +61,173 @@ public class ImportExcel extends PluginModel<Entity>
 			
 			System.out.println("----------------->");
 			
-			System.out.println(db.query(Investigation.class).eq(Investigation.NAME, " Chao").count());
+			System.out.println(db.query(Investigation.class).eq(Investigation.NAME, " DataShaper").count());
 			
-			if(db.query(Investigation.class).eq(Investigation.NAME, "Chao").count() == 0){
+			if(db.query(Investigation.class).eq(Investigation.NAME, "DataShaper").count() == 0){
 				
 				Investigation inv = new Investigation();
-				inv.setName("Chao");
+				inv.setName("DataShaper");
 				db.add(inv);
 				
 			}
 			loadDataFromExcel(db, request);
-//			Measurement mea = new Measurement();
-//			mea.setDescription("I am typing here for test!");
-//			mea.setDataType("string");			
-//			mea.setName("test");
-//			mea.setInvestigation_Name("ChaoInv"); // xref example
-//			
-//			Protocol prot = new Protocol();
-//			prot.setName("BlaBla");
-//			List<String> cancerFeatures = new ArrayList<String>();
-//			cancerFeatures.add("HighBloodPressure");
-//			cancerFeatures.add("Obese");
-//			prot.setFeatures_Name(cancerFeatures); // mref example
-//			
-//			ObservationElement obs = new ObservationElement();
-//			
-//			obs.setName("whatever");
-//			
-//			obs.setId(2);
-//			
-//			
-//			db.add(obs);
+
 		}
 		
 	}
 	public void loadDataFromExcel(Database db, Tuple request) throws BiffException, IOException, DatabaseException{
 		
-		File file = new File("/Users/pc_iverson/Desktop/DataShaperExcel.xls"); 
-		
-		Workbook workbook = Workbook.getWorkbook(file); 
-		
-		Sheet sheet = workbook.getSheet(0); 
-			
-		System.out.println(sheet.getCell(0, 0).getContents());
-		
-		List<Measurement> measurements = new ArrayList<Measurement>();
-		
-		List<Protocol> protocols = new ArrayList<Protocol>();
-		
-		List<Code> codes = new ArrayList<Code>();
-		
-		int row = sheet.getRows();
-		
-		int column = sheet.getColumns();
-		
-		System.out.println(row);
-		
-		Measurement mea;
-		
-		Protocol prot;
-		
-		Code code;
-		
-		List<String> ProtocolFeatures = new ArrayList<String>();
-		
-		String Protocolname = "";
-		
-		HashMap<String, List> linkProtocolMeasurement = new HashMap<String, List>();
-		
-		for (int i = 1; i < row - 1; i++){
-			
-			mea = new Measurement();
-			
-			prot = new Protocol();
-			
-			code = new Code();
-			
-			for(int j = 0; j < column; j++){
-				
-				if(j == 2){
-				
-					Protocolname = sheet.getCell(j, i).getContents().replaceAll("'", "");
-					
-					if(!linkProtocolMeasurement.containsKey(Protocolname)){
-						ProtocolFeatures.clear();
-						linkProtocolMeasurement.put(Protocolname, ProtocolFeatures);
-					}
-					
-					prot.setName(sheet.getCell(j, i).getContents().replaceAll("'", ""));
-					
-//					if(Protocolname.equals(sheet.getCell(j, i).getContents())){
-//						ProtocolFeatures.add(sheet.getCell(j + 1, i).getContents());
-//					}else{
-//						System.out.println("--------------------->"+sheet.getCell(j, i).getContents());
-//						prot.setName(sheet.getCell(j, i).getContents().replaceAll("'", ""));
-//						prot.setFeatures_Name(ProtocolFeatures);
-//						Protocolname = sheet.getCell(j, i).getContents();
-//						ProtocolFeatures.clear();
-//					}
-				}else if(j == 3){
-					
-					mea.setName(sheet.getCell(j, i).getContents());
-					
-					List<String> temporaryHolder = linkProtocolMeasurement.get(Protocolname);
-					
-					temporaryHolder.add(sheet.getCell(j, i).getContents());
-					
-					linkProtocolMeasurement.put(Protocolname, temporaryHolder);
-					
-				}else if (j == 4){
-					
-					mea.setDescription(sheet.getCell(j, i).getContents());
-				
-				}else if(j == 8){
+		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 
-					if(sheet.getCell(j, i).getContents().length() > 0 && sheet.getCell(j, i).getContents() != null){
+		File file = new File(tmpDir+ "DataShaperExcel.xls"); 
+		
+		if (file.exists()) {
+			
+			System.out.println("The excel file is being imported, please be patient");
+			this.setStatus("The excel file is being imported, please be patient");
+			
+			Workbook workbook = Workbook.getWorkbook(file); 
+			
+			Sheet sheet = workbook.getSheet(0); 
+				
+			System.out.println(sheet.getCell(0, 0).getContents());
+			
+			List<Measurement> measurements = new ArrayList<Measurement>();
+			
+			List<Protocol> protocols = new ArrayList<Protocol>();
+			
+			List<Code> codes = new ArrayList<Code>();
+			
+			int row = sheet.getRows();
+			
+			int column = sheet.getColumns();
+			
+			System.out.println(row);
+			
+			Measurement mea;
+			
+			Protocol prot;
+			
+			Code code;
+			
+			List<String> ProtocolFeatures = new ArrayList<String>();
+			
+			String Protocolname = "";
+			
+			HashMap<String, List> linkProtocolMeasurement = new HashMap<String, List>();
+			
+			for (int i = 1; i < row - 1; i++){
+				
+				mea = new Measurement();
+				
+				prot = new Protocol();
+				
+				code = new Code();
+				
+				for(int j = 0; j < column; j++){
+					
+					if(j == 2){
+					
+						Protocolname = sheet.getCell(j, i).getContents().replaceAll("'", "");
 						
-						String [] codeString = sheet.getCell(j, i).getContents().split("\\|");
-						//System.out.println(sheet.getCell(j, i).getContents());
-						for(int k = 0; k < codeString.length; k++){
-							code.setCode_String(codeString[k]);
-							//System.out.println("--------------------------->!!!!!!!!!!!!" + codeString[k]);
-							code.setDescription(sheet.getCell(j, i).getContents());
+						if(!linkProtocolMeasurement.containsKey(Protocolname)){
+							ProtocolFeatures.clear();
+							linkProtocolMeasurement.put(Protocolname, ProtocolFeatures);
 						}
-						codes.add(code);
+						
+						prot.setName(sheet.getCell(j, i).getContents().replaceAll("'", ""));
+						
+//						if(Protocolname.equals(sheet.getCell(j, i).getContents())){
+//							ProtocolFeatures.add(sheet.getCell(j + 1, i).getContents());
+//						}else{
+//							System.out.println("--------------------->"+sheet.getCell(j, i).getContents());
+//							prot.setName(sheet.getCell(j, i).getContents().replaceAll("'", ""));
+//							prot.setFeatures_Name(ProtocolFeatures);
+//							Protocolname = sheet.getCell(j, i).getContents();
+//							ProtocolFeatures.clear();
+//						}
+					}else if(j == 3){
+						
+						mea.setName(sheet.getCell(j, i).getContents());
+						
+						List<String> temporaryHolder = linkProtocolMeasurement.get(Protocolname);
+						
+						temporaryHolder.add(sheet.getCell(j, i).getContents());
+						
+						linkProtocolMeasurement.put(Protocolname, temporaryHolder);
+						
+					}else if (j == 4){
+						
+						mea.setDescription(sheet.getCell(j, i).getContents());
+					
+					}else if(j == 8){
+
+						if(sheet.getCell(j, i).getContents().length() > 0 && sheet.getCell(j, i).getContents() != null){
+							
+							String [] codeString = sheet.getCell(j, i).getContents().split("\\|");
+							//System.out.println(sheet.getCell(j, i).getContents());
+							for(int k = 0; k < codeString.length; k++){
+								code.setCode_String(codeString[k]);
+								//System.out.println("--------------------------->!!!!!!!!!!!!" + codeString[k]);
+								code.setDescription(sheet.getCell(j, i).getContents());
+							}
+							codes.add(code);
+						}
+					}
+				}
+				measurements.add(mea);
+				protocols.add(prot);
+			}
+			
+			List<Measurement> addedMeasurements = new ArrayList<Measurement>();
+			
+			List<Protocol> addedProtocols = new ArrayList<Protocol>();
+			
+			List<Code> addedCodes = new ArrayList<Code>();
+			
+			for(Measurement measure : measurements){
+				
+				if(db.query(Measurement.class).eq(Measurement.NAME, measure.getName()).count() == 0){
+					
+					if(!addedMeasurements.contains(measure)){
+						addedMeasurements.add(measure);
+					}
+				}
+				
+			}
+			
+			for( Protocol proto : protocols){
+				proto.setFeatures_Name(linkProtocolMeasurement.get(proto.getName()));
+				if(db.query(Protocol.class).eq(Protocol.NAME, proto.getName()).count() == 0){
+					if(!addedProtocols.contains(proto)){
+						
+						addedProtocols.add(proto);
 					}
 				}
 			}
-			measurements.add(mea);
-			protocols.add(prot);
-		}
-		
-		List<Measurement> addedMeasurements = new ArrayList<Measurement>();
-		
-		List<Protocol> addedProtocols = new ArrayList<Protocol>();
-		
-		List<Code> addedCodes = new ArrayList<Code>();
-		
-		for(Measurement measure : measurements){
 			
-			if(db.query(Measurement.class).eq(Measurement.NAME, measure.getName()).count() == 0){
-				
-				if(!addedMeasurements.contains(measure)){
-					addedMeasurements.add(measure);
+			for( Code cod : codes){
+				if(db.query(Code.class).eq(Code.CODE_STRING, cod.getCode_String()).count() == 0){
+					if(!addedCodes.contains(cod)){
+						addedCodes.add(cod);
+					}
 				}
 			}
+			try {
+				db.add(addedMeasurements);
+				db.add(addedProtocols);
+				db.add(addedCodes);
+			} catch (DatabaseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			System.out.println("The file" + tmpDir + " was imported successfully");
+			this.setStatus("The file" + tmpDir + " was imported successfully");
+		} else {
+			System.out.println("The excel file should be located here :"+ tmpDir + " and the name of the file should be DataShaperExcel.xls");
+			this.setStatus("The excel file should be located here :"+ tmpDir + " and the name of the file should be DataShaperExcel.xls");
 			
-		}
-		
-		for( Protocol proto : protocols){
-			proto.setFeatures_Name(linkProtocolMeasurement.get(proto.getName()));
-			if(db.query(Protocol.class).eq(Protocol.NAME, proto.getName()).count() == 0){
-				if(!addedProtocols.contains(proto)){
-					
-					addedProtocols.add(proto);
-				}
-			}
-		}
-		
-		for( Code cod : codes){
-			if(db.query(Code.class).eq(Code.CODE_STRING, cod.getCode_String()).count() == 0){
-				if(!addedCodes.contains(cod)){
-					addedCodes.add(cod);
-				}
-			}
-		}
-		
-		try {
-			db.add(addedMeasurements);
-			db.add(addedProtocols);
-			db.add(addedCodes);
-		} catch (DatabaseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		
 	}
