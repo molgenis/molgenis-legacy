@@ -174,7 +174,10 @@ public class WorkflowGeneratorDB
     {
         if (mcf != null && !flagJustGenerate)
         {
-            mcf.setClusterPipeline(pipeline);
+            if(env.equalsIgnoreCase(ENV_CLUSTER))
+                mcf.setClusterPipeline(pipeline);
+            else if(env.equalsIgnoreCase(ENV_GRID))
+                mcf.setGridPipeline(pipeline);
 
             if (!updater.isStarted())
             {
@@ -431,6 +434,7 @@ public class WorkflowGeneratorDB
         weavingValues.put("extra_outputs","");
 
         weavingValues.put("script_location", scriptRemoteLocation);
+        weavingValues.put("script_name",scriptID + ".sh");
         //
         String jdlfile = weaver.makeJDL(weavingValues);
 

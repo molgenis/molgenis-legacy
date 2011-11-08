@@ -34,10 +34,12 @@ public class GridPipelineThreadSsh extends PipelineThreadSsh
         try
         {
             ssh = new Ssh(SshData.SERVER_GRID, SshData.USER_GRID, SshData.PASS_GRID);
+            System.out.println("... ssh to grid created");
         }
         catch (IOException e)
         {
             e.printStackTrace();
+            System.out.println("... ssh to grid failed");
         }
     }
 

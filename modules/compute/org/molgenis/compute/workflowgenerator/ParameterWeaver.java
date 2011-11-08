@@ -80,8 +80,8 @@ public class ParameterWeaver
             "StdError = \"${error_log}\";\n" +
             "StdOutput = \"${output_log}\";\n" +
             "\n" +
-            "InputSandbox = {${script_location}${script_name}.sh${extra_inputs}};\n" +
-            "OutputSandbox = {${error_log},${output_log}${extra_outputs}};";
+            "InputSandbox = {\"${script_location}${script_name}${extra_inputs}\"};\n" +
+            "OutputSandbox = {\"${error_log}\",\"${output_log}\"${extra_outputs}};";
 
     private String logfilename = "${location}/log_${jobID}.txt";
     private String errfilename = "${location}/err/err_${scriptID}.err";

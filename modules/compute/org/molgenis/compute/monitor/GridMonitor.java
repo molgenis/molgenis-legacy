@@ -29,4 +29,10 @@ public class GridMonitor extends LoggingReaderSsh
 
     }
 
+    public boolean isStepFinished()
+    {
+        System.out.println(">>> have no idea!");
+        return false;
+    }
+
 }

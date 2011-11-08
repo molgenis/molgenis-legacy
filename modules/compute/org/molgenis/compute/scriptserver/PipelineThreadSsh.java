@@ -1,6 +1,5 @@
 package org.molgenis.compute.scriptserver;
 
-import org.molgenis.compute.monitor.LoggingReaderSsh;
 import org.molgenis.compute.pipelinemodel.FileToSaveRemotely;
 import org.molgenis.compute.pipelinemodel.Pipeline;
 import org.molgenis.compute.pipelinemodel.Script;
@@ -24,7 +23,7 @@ public abstract class PipelineThreadSsh extends PipelineThread
         pipeline.setMonitor(monitor);
 
         //set pipeline for demo purposes
-        monitor.setPipeline(pipeline);
+        //monitor.setPipeline(pipeline);
 
         monitor.setLogFile(pipeline.getPipelinelogpath());
         startClusterSsh();
@@ -44,6 +43,7 @@ public abstract class PipelineThreadSsh extends PipelineThread
             FileToSaveRemotely aFile = script.getFileToSaveRemotely(i);
             try
             {
+                System.out.println(">>> uploding dependancies: " + script.getRemoteDir() + aFile.getRemoteName() );
                 ssh.uploadStringToFile(new String(aFile.getFileData()), aFile.getRemoteName(), script.getRemoteDir());
             }
             catch (IOException e)
@@ -54,6 +54,7 @@ public abstract class PipelineThreadSsh extends PipelineThread
 
         try
         {
+            System.out.println(">>> uploading script: " + script.getRemoteDir() + script.getRemotename());
             ssh.uploadStringToFile(new String(script.getScriptData()), script.getRemotename(), script.getRemoteDir());
         }
         catch (IOException e)
