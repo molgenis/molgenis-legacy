@@ -68,14 +68,14 @@ public class ParameterWeaver
             "file:////scratch/${input_name}\n";
 
     private String uploadGridTemplate = "#upload result data\n" +
-            "srmcp -server_mode=passive file:////scratch/output3.txt \\\n" +
+            "srmcp -server_mode=passive file:////scratch/${input_name} \\\n" +
             "srm://srm.grid.sara.nl:8443/pnfs/grid.sara.nl/data/lsgrid/${output_path}${output_name}\n";
 
     private String jdlTemplate = "Type=\"Job\";\n" +
             "JobType=\"Normal\";\n" +
             "\n" +
             "Executable = \"/bin/sh\";\n" +
-            "Arguments = \"${script_name}.sh\";\n" +
+            "Arguments = \"${script_name}\";\n" +
             "\n" +
             "StdError = \"${error_log}\";\n" +
             "StdOutput = \"${output_log}\";\n" +
