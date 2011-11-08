@@ -41,12 +41,12 @@
 	<input type="submit" name="setSelection" value='Get selected from matrix' onclick='__action.value="setSelection"' />
 
 	<#if model.getSelection()??>
-		<div id="bla" style="margin-top:35px">
-			<input type="submit" name="setIndividual" value='Individuals_info' onclick='__action.value="setIndividual"' />
-			<input type="submit" name="setPersonal" value='Personal_info' onclick='__action.value="setPersonal"' />
-			<input type="submit" name="setMedical" value='Medical_info' onclick='__action.value="setMedical"' />
-	
-		</div>	
+		<div id="protocols2">
+			<span><a></a>&nbsp;</span>
+			<span class="${model.getIndividualNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Individual_info">Individual_info</a></span>
+			<span class="${model.getPersonalNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Personal_info">Personal_info</a></span>
+			<span class="${model.getMedicalNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Medical_info">Medical_info</a></span>
+		</div>
 	
 		${model.getMatrixViewerIndv()}
 		<p>You selected from the matrix: ${model.getSelection()}</p>

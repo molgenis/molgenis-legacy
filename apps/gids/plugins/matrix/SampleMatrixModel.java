@@ -39,7 +39,9 @@ public class SampleMatrixModel extends EasyPluginModel
 	String serumNavClass;
 	String plasmaNavClass;
 	String hlaNavClass;
-
+	String individualNavClass;
+	String personalNavClass;
+	String medicalNavClass;
 	
 	//another example, you can also use getInvestigations() and setInvestigations(...)
 	//public List<Investigation> investigations = new ArrayList<Investigation>();
@@ -167,6 +169,30 @@ public class SampleMatrixModel extends EasyPluginModel
 
 	public void setHlaNavClass(String hlaNavClass) {
 		this.hlaNavClass = hlaNavClass;
+	}
+
+	public String getIndividualNavClass() {
+		return individualNavClass;
+	}
+
+	public void setIndividualNavClass(String individualNavClass) {
+		this.individualNavClass = individualNavClass;
+	}
+
+	public String getPersonalNavClass() {
+		return personalNavClass;
+	}
+
+	public void setPersonalNavClass(String personalNavClass) {
+		this.personalNavClass = personalNavClass;
+	}
+
+	public String getMedicalNavClass() {
+		return medicalNavClass;
+	}
+
+	public void setMedicalNavClass(String medicalNavClass) {
+		this.medicalNavClass = medicalNavClass;
 	}
 
 	

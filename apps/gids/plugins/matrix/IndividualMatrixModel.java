@@ -7,11 +7,14 @@
 
 package plugins.matrix;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import org.molgenis.framework.ui.EasyPluginModel;
 import org.molgenis.matrix.component.MatrixViewer;
+
 
 /**
  * GidsMatrixModel takes care of all state and it can have helper methods to query the database.
@@ -27,15 +30,24 @@ public class IndividualMatrixModel extends EasyPluginModel
 	MatrixViewer matrixViewerSample = null;
 	static String INDVMATRIX = "indvmatrix";
 	static String SAMPLEMATRIX = "samplematrix";
-	String action = "setIndividual";
+	String action = "Individual_info";
 	boolean error = false;
 	String selection = null;
-	String chosenProtocolName = "Individual_info";
+	String chosenProtocolNameI = "Individual_info";
+	String chosenProtocolNameS = "Sample_info";
 	List<Integer> listIndividuals = null;
 	String individualNavClass;
 	String personalNavClass;
 	String medicalNavClass;
-
+	String sampleNavClass;
+	String dnaNavClass;
+	String rnaNavClass;
+	String biopsiesNavClass;
+	String serumNavClass;
+	String plasmaNavClass;
+	String hlaNavClass;
+	int selectedScreenI = 1;
+	int selectedScreenS = 1;
 	
 	
 	
@@ -67,12 +79,12 @@ public class IndividualMatrixModel extends EasyPluginModel
 		this.selection = selection;
 	}
 
-	public String getChosenProtocolName() {
-		return chosenProtocolName;
+	public String getChosenProtocolNameI() {
+		return chosenProtocolNameI;
 	}
 
-	public void setChosenProtocolName(String chosenProtocolName) {
-		this.chosenProtocolName = chosenProtocolName;
+	public void setChosenProtocolNameI(String chosenProtocolName) {
+		this.chosenProtocolNameI = chosenProtocolName;
 	}
 
 	
@@ -134,6 +146,86 @@ public class IndividualMatrixModel extends EasyPluginModel
 
 	public void setMedicalNavClass(String medicalNavClass) {
 		this.medicalNavClass = medicalNavClass;
+	}
+
+	public String getSampleNavClass() {
+		return sampleNavClass;
+	}
+
+	public void setSampleNavClass(String sampleNavClass) {
+		this.sampleNavClass = sampleNavClass;
+	}
+
+	public String getDnaNavClass() {
+		return dnaNavClass;
+	}
+
+	public void setDnaNavClass(String dnaNavClass) {
+		this.dnaNavClass = dnaNavClass;
+	}
+
+	public String getRnaNavClass() {
+		return rnaNavClass;
+	}
+
+	public void setRnaNavClass(String rnaNavClass) {
+		this.rnaNavClass = rnaNavClass;
+	}
+
+	public String getBiopsiesNavClass() {
+		return biopsiesNavClass;
+	}
+
+	public void setBiopsiesNavClass(String biopsiesNavClass) {
+		this.biopsiesNavClass = biopsiesNavClass;
+	}
+
+	public String getSerumNavClass() {
+		return serumNavClass;
+	}
+
+	public void setSerumNavClass(String serumNavClass) {
+		this.serumNavClass = serumNavClass;
+	}
+
+	public String getPlasmaNavClass() {
+		return plasmaNavClass;
+	}
+
+	public void setPlasmaNavClass(String plasmaNavClass) {
+		this.plasmaNavClass = plasmaNavClass;
+	}
+
+	public String getHlaNavClass() {
+		return hlaNavClass;
+	}
+
+	public void setHlaNavClass(String hlaNavClass) {
+		this.hlaNavClass = hlaNavClass;
+	}
+
+	public String getChosenProtocolNameS() {
+		return chosenProtocolNameS;
+	}
+
+	public void setChosenProtocolNameS(String chosenProtocolNameS) {
+		this.chosenProtocolNameS = chosenProtocolNameS;
+	}
+
+	public int getSelectedScreenI() {
+		return selectedScreenI;
+	}
+
+	public void setSelectedScreenI(int selectedScreenI) {
+		this.selectedScreenI = selectedScreenI;
+	}
+
+	public int getSelectedScreenS() {
+		return selectedScreenS;
+	}
+
+	public void setSelectedScreenS(int selectedScreenS) {
+		this.selectedScreenS = selectedScreenS;
 	}
 
 

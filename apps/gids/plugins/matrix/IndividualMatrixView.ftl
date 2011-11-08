@@ -8,14 +8,15 @@
 <!-- this shows a title and border -->
 	<div class="formscreen">
 	
-		<div class="form_header" id="${model.getName()}">
+		<div class="form_header" id="${model.getName()} style="margin-bottom:0px"">
 		${model.label}
 		</div>
 		<div id="protocols">
 			<span><a></a>&nbsp;</span>
-			<span class="${model.getIndividualNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=setIndividual">Individuals_info</a></span>
-			<span class="${model.getPersonalNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=setPersonal">Personal_info</a></span>
-			<span class="${model.getMedicalNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=setMedical">Medical_info</a></span>
+			
+			<span class="${model.getIndividualNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Individual_info&selectedScreenI=1">Individual_info</a></span>
+			<span class="${model.getPersonalNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Personal_info&selectedScreenI=2">Personal_info</a></span>
+			<span class="${model.getMedicalNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Medical_info&selectedScreenI=3">Medical_info</a></span>
 		</div>
 		<#--optional: mechanism to show messages-->
 		<#list model.getMessages() as message>
@@ -34,17 +35,18 @@
 	
 	${model.getMatrixViewerIndv()}
 	<input type="submit" name="setSelection" value='Get selected from matrix' onclick='__action.value="setSelection"' />
-	
-	
+	<div id="headerSample">
+		<a>Sample matrix</a>
+	</div>
 	<#if model.getSelection()??>
-		<div id="bla" style="margin-top:35px">
-			<input type="submit" name="setSample" value='Sample_info' onclick='__action.value="setSample"' />
-			<input type="submit" name="setDNA" value='DNA' onclick='__action.value="setDNA"' />
-			<input type="submit" name="setRNA" value='RNA' onclick='__action.value="setRNA"' />
-			<input type="submit" name="setSerum" value='Serum' onclick='__action.value="setSerum"' />
-			<input type="submit" name="setPlasma" value='Plasma' onclick='__action.value="setPlasma"' />
-			<input type="submit" name="setBiopsy" value='Biopsies' onclick='__action.value="setBiopsy"' />
-			<input type="submit" name="setHLA" value='HLA' onclick='__action.value="setHLA"' />
+		<div id="bla">
+			<span class="${model.getSampleNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Sample_info&selectedScreenS=1">Sample_info</a></span>
+			<span class="${model.getDnaNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=DNA&selectedScreenS=2">DNA</a></span>
+			<span class="${model.getRnaNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=RNA&selectedScreenS=3">RNA</a></span>
+			<span class="${model.getSerumNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Serum&selectedScreenS=4">Serum</a></span>
+			<span class="${model.getPlasmaNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Plasma&selectedScreenS=5">Plasma</a></span>
+			<span class="${model.getBiopsiesNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Biopsies&selectedScreenS=6">Biopsies</a></span>
+			<span class="${model.getHlaNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=HLA_Typing&selectedScreenS=7">HLA_Typing</a></span>
 		</div>
 	
 		${model.getMatrixViewerSample()}
