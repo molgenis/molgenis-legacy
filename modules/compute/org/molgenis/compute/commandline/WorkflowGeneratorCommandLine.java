@@ -153,7 +153,7 @@ public class WorkflowGeneratorCommandLine
     {
         if (mcf != null && !flagJustGenerate)
         {
-            mcf.setPipeline(pipeline);
+            mcf.setClusterPipeline(pipeline);
         }
         else
             System.out.println(pipeline.toString());
