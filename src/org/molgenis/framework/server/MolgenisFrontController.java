@@ -33,6 +33,9 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 	// the used molgenisoptions, set by generated MolgenisServlet
 	protected MolgenisOptions usedOptions = null;
 	
+	//context
+	protected MolgenisContext context;
+	
 	// the database given  1 connection per request (setup stored in session, connectionless after request)
 	// return a UUID of the connection that was given to this database and was stored in Map<UUID, Connection> connections
 	public abstract UUID createDatabase(MolgenisRequest request)  throws DatabaseException, SQLException;
@@ -46,36 +49,14 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 	// the one and only service() used in the molgenis app
 	public void service(HttpServletRequest request, HttpServletResponse response)
 	{
-		
 		try
 		{
 			//wrap request and response
 			MolgenisRequest req = new MolgenisRequest(request, response); //TODO: Bad, but needed for redirection. DISCUSS.
 			MolgenisResponse res = new MolgenisResponse(response);
 			
-			//create database, add a single connection from the pool and set in request for use
-			//TODO: need to skip this for serving out files and such!!!
-			UUID connId = this.createDatabase(req);
-			
-			//setup login credentials, or reuse from session and apply to database
-			//TODO: same as above
-			this.createLogin(req);
-			
 			//handle the request with current database + login
 			this.handleRequest(req, res);
-			
-			//close the connection and check if it really was closed
-			connections.get(connId).close();
-			if(!connections.get(connId).isClosed())
-			{
-				throw new DatabaseException("ERROR: connection was not closed!");
-			}
-			
-			//remove from list (does not happen if Exception was thrown)
-			connections.remove(connId);
-			
-			System.out.println("# of active connections: " + connections.size());
-			
 		}
 		catch (Exception e)
 		{
@@ -84,27 +65,79 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 			e.printStackTrace();
 		}
 	}
-
+	
 	@Override
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response)
 			throws ParseException, DatabaseException, IOException
 	{
 		HttpServletRequest req = request.getRequest();
-		String path = req.getRequestURI();
-		
-		//System.out.println("** handleRequest for path " + path);
+		String path = req.getRequestURI().substring(context.getVariant().length()+1);
 
-		// TODO get the most specific path.
 		for (String p : services.keySet())
 		{
-			if (path.contains(p))
+			if (path.startsWith(p))
 			{
-				System.out.println("** using path: " + path);
-				services.get(p).handleRequest(request, response);
+				System.out.println("request '"+path+"' handled by " + services.get(p).getClass().getSimpleName() + " mapped on path " + p);
+				
+				//if mapped to "/", we assume we are serving out a file, and do not manage security/connections
+				if(p.equals("/"))
+				{
+					services.get(p).handleRequest(request, response);
+				}
+				else
+				{
+					UUID connId = getSecuredDatabase(request);
+					services.get(p).handleRequest(request, response);
+					manageConnection(connId);
+				}
+				
 				return;
 			}
 		}
 	}
+	
+	private UUID getSecuredDatabase(MolgenisRequest req) throws DatabaseException
+	{
+		try
+		{
+			//create database, add a single connection from the pool and set in request for use
+			UUID connId = this.createDatabase(req);
+			
+			//setup login credentials, or reuse from session and apply to database
+			this.createLogin(req);
+			
+			//return connection id
+			return connId;
+		}
+		catch(Exception e)
+		{
+			throw new DatabaseException(e);
+		}
+	}
+	
+	private void manageConnection(UUID connId) throws DatabaseException
+	{
+		try
+		{
+			//close the connection and check if it really was closed
+			connections.get(connId).close();
+			if(!connections.get(connId).isClosed())
+			{
+				throw new DatabaseException("ERROR: connection was not closed!");
+			}
+		}
+		catch(SQLException sqle)
+		{
+			throw new DatabaseException(sqle);
+		}
+		
+		//remove from list (does not happen if Exception was thrown)
+		connections.remove(connId);
+		
+		System.out.println("# of active connections: " + connections.size());
+	}
+
+	
 
 
 	// if (path != null && path.contains("/api/find"))
