@@ -88,8 +88,8 @@
 				features" / -->
 			<!-- field name="isDerived" type="boolean" 
 				description="a flag to indicate if the ComputeFeature consists of other ComputeFeatures" /-->
-			<!-- field name="Workflow" type="xref" xref_entity="Workflow" xref_label="name"
-				description="Workflow this element is part of" /-->
+			<field name="Workflow" type="xref" xref_entity="Workflow" xref_label="name"
+				description="Workflow this element is part of" />
 		</entity>
 		<entity name="ComputeJob" extends="ProtocolApplication"
 			implements="ComputeDetails">

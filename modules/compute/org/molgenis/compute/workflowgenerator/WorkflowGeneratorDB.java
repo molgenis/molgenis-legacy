@@ -209,7 +209,7 @@ public class WorkflowGeneratorDB
         {
             if (computeFeature.getIsUser())
                 continue;
-            else if (computeFeature.getIsDerived())
+            else if (computeFeature.getDefaultValue().contains("${"))
             {
                 featuresToDerive.addElement(computeFeature);
             }
@@ -427,8 +427,8 @@ public class WorkflowGeneratorDB
         weavingValues.put("error_log", "err_" + scriptID +".log");
         weavingValues.put("output_log", "out_" + scriptID + ".log");
         //extra files to be download and upload - now empty
-        weavingValues.put("extra_input","");
-        weavingValues.put("extra_output","");
+        weavingValues.put("extra_inputs","");
+        weavingValues.put("extra_outputs","");
 
         weavingValues.put("script_location", scriptRemoteLocation);
         //
