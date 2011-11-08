@@ -66,7 +66,14 @@ public class OntologyBuilder {
     }
     
     
-    /*
+    public OntologyBuilder(OWLOntologyManager manager,String base) {
+
+    	factory = manager.getOWLDataFactory();
+        prefix = base;	
+     }
+
+
+	/*
      * This method is used to save ontology
      * 
      * 

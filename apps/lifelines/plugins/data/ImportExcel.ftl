@@ -1,4 +1,4 @@
-<#macro plugins_data_importOwlToPheno screen>
+<#macro plugins_data_ImportExcel screen>
 
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
@@ -24,8 +24,8 @@
 		
 		<div class="screenbody">
 			<div class="screenpadding">	
-			    <h3> Import Owl to pheno model  </h3>
-		        <input type="submit" value="Import" onclick="__action.value='ImportOwlToPheno';return true;"/><br /><br />
+			    <h3> Import dataShaper data to pheno model  </h3>
+		        <input type="submit" value="Import" onclick="__action.value='ImportDatashaperToPheno';return true;"/><br /><br />
 
  				<label> 	<#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>	
 

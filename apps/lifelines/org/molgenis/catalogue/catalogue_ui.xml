@@ -14,7 +14,9 @@
 			<form name="code" entity="Code" label="Code" />
 		</menu>
 		
+		<plugin name="ImportExcel" type="plugins.data.ImportExcel" label="Import DataShaper data"  />
 		<plugin name="OwlToPheno" label="import owl" type="plugins.data.importOwlToPheno" />
+		
 		<menu name="Admin">
 		  <plugin name="Settings" type="plugins.system.settings.Settings" />
 			<menu name="usermanagement" position="left" label="User management">
@@ -26,7 +28,6 @@
 			</menu>
 			<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard" label="Batch Upload" />
 			<plugin label="Data Exporter" name="SimpleArchiver" type="plugins.archiver.Archiver" />
-			<plugin name="ImportExcel" type="plugins.data.ImportExcel" label="Import your Excel"  />
 		</menu>
 		<!-- 
 		<plugin name="catalogueHelp" type="plugins.help.catalogueHelpPlugin" label="Help"  />

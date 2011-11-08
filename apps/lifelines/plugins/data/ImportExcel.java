@@ -11,7 +11,6 @@ import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 
-import org.apache.cxf.binding.corba.wsdl.Array;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
@@ -19,12 +18,10 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Code;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservationElement;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import decorators.MeasurementDecorator;
 
 
 
@@ -43,13 +40,13 @@ public class ImportExcel extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_data_importOwlToPheno";
+		return "plugins_data_ImportExcel";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/data/importOwlToPheno.ftl";
+		return "plugins/data/ImportExcel.ftl";
 	}
 
 	@Override
@@ -57,7 +54,7 @@ public class ImportExcel extends PluginModel<Entity>
 
 	
 		
-		if ("ImportOwlToPheno".equals(request.getAction())) {
+		if ("ImportDatashaperToPheno".equals(request.getAction())) {
 			
 			System.out.println("----------------->");
 			
@@ -80,9 +77,7 @@ public class ImportExcel extends PluginModel<Entity>
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 
 		File file = new File(tmpDir+ "/DataShaperExcel.xls"); 
-		
-		//File file = new File("/Users/pc_iverson/Desktop/DataShaperExcel.xls"); 
-		
+			
 		if (file.exists()) {
 			
 			System.out.println("The excel file is being imported, please be patient");
