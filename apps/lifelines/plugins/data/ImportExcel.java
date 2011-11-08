@@ -79,7 +79,9 @@ public class ImportExcel extends PluginModel<Entity>
 		
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 
-		File file = new File(tmpDir+ "DataShaperExcel.xls"); 
+		File file = new File(tmpDir+ "/DataShaperExcel.xls"); 
+		
+		//File file = new File("/Users/pc_iverson/Desktop/DataShaperExcel.xls"); 
 		
 		if (file.exists()) {
 			
