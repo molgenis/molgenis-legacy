@@ -1,14 +1,14 @@
-.protocols
+#protocols
 {
-width:130px;
 
+margin-top:0px;
 }
 
 span.nav a{
 text-align:center;
 margin-right:15px;
 color:black;
-border: 1px solid white;
+margin-top:0px;
 font-family : arial;
 font-size:16px;
 padding-left:5px;
@@ -46,3 +46,13 @@ span:hover a{
 	color:white;
 	
 }
+
+#headerSample{
+	margin-top: 35px;
+	color:white;
+	font-family : arial;
+	text-align:center;
+	background:#5B82A4;
+	font-weight:bold;
+}
+
