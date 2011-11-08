@@ -89,7 +89,7 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MappingDeco
 		{
 			MolgenisFile mf = null;
 			try{
-				mf = dmh.findMolgenisFile(dm);
+				mf = dmh.findMolgenisFile(dm, this.getDatabase());
 			}catch(NullPointerException npe){
 				//backend not a file
 			}
@@ -129,7 +129,7 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MappingDeco
 		DataMatrixHandler dmh = new DataMatrixHandler(this.getDatabase());
 		MolgenisFile mf = null;
 		try{
-			mf = dmh.findMolgenisFile(dm);
+			mf = dmh.findMolgenisFile(dm, this.getDatabase());
 		}catch(NullPointerException npe){
 			//backend not a file
 		}

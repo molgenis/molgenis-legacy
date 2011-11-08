@@ -55,7 +55,7 @@ public class TestFileMatrix
 		List<CSVDataMatrixInstance> fmList = new ArrayList<CSVDataMatrixInstance>();
 		for (Data data : h.getDataList())
 		{
-			CSVDataMatrixInstance fm = (CSVDataMatrixInstance) new DataMatrixHandler(db).createInstance(data);
+			CSVDataMatrixInstance fm = (CSVDataMatrixInstance) new DataMatrixHandler(db).createInstance(data, db);
 			fmList.add(fm);
 		}
 

@@ -93,7 +93,7 @@ public class downloadmatrixasexcel extends app.servlet.MolgenisServlet {
 				}
 				Data data = dataList.get(0);
 				DataMatrixHandler dmh = new DataMatrixHandler(db);
-				instance = dmh.createInstance(data);
+				instance = dmh.createInstance(data, db);
 				setupSuccess = true;
 			} catch (Exception e) {
 				PrintWriter out = response.getWriter();

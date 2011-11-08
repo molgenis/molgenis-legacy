@@ -100,10 +100,10 @@ public class MatrixManager extends PluginModel
 	{
 		boolean verifiedBackend = false;
 		DataMatrixHandler dmh = new DataMatrixHandler(db); //must create new because function is static (reused)
-		verifiedBackend = dmh.isDataStoredIn(data, data.getStorage());
+		verifiedBackend = dmh.isDataStoredIn(data, data.getStorage(), db);
 		if (verifiedBackend)
 		{
-			DataMatrixInstance m = dmh.createInstance(data);
+			DataMatrixInstance m = dmh.createInstance(data, db);
 			Browser br = new Browser(data, m);
 			// this.model.setBrowser(br);
 			return br;
@@ -262,7 +262,7 @@ public class MatrixManager extends PluginModel
 			if (newOrOtherData)
 			{
 				logger.info("*** newOrOtherData");
-				this.model.setHasBackend(dmh.isDataStoredIn(data, data.getStorage()));
+				this.model.setHasBackend(dmh.isDataStoredIn(data, data.getStorage(), db));
 				logger.info("hasBackend: " + this.model.isHasBackend());
 				if (this.model.isHasBackend())
 				{

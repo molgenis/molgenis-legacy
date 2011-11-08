@@ -115,7 +115,7 @@ public class downloadfile implements MolgenisService{
 			
 			mf = mfList.get(0);
 			//file = FindBackend.getFileFor(db, mf);
-			file = mfh.getFile(mf);
+			file = mfh.getFile(mf, db);
 
 			if((int) file.length() > Integer.MAX_VALUE){
 				throw new IOException("File too large! > Integer.MAX_VALUE");

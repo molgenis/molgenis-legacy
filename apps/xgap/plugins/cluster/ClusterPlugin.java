@@ -358,7 +358,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 						phenoRef = Integer.parseInt(s.getDataValue());
 
 						Data phenoMatrix = db.find(Data.class, new QueryRule("id", Operator.EQUALS, phenoRef)).get(0);
-						DataMatrixInstance instance = dmh.createInstance(phenoMatrix);
+						DataMatrixInstance instance = dmh.createInstance(phenoMatrix, db);
 						Class<?> cols = db.getClassForName(phenoMatrix.getFeatureType());
 					
 						if (cols.newInstance() instanceof ObservableFeature)

@@ -29,7 +29,7 @@ public class CSVDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 	public CSVDataMatrixInstance(Database db, MolgenisFile mf) throws Exception
 	{
 		DataMatrixHandler dmh = new DataMatrixHandler(db);
-		new CSVDataMatrixInstance(dmh.findData(mf), dmh.getFile(mf));
+		new CSVDataMatrixInstance(dmh.findData(mf, db), dmh.getFile(mf, db));
 	}
 
 	public CSVDataMatrixInstance(Data data, File file) throws Exception

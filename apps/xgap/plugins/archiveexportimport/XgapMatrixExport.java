@@ -41,7 +41,7 @@ public class XgapMatrixExport {
 					}
 					
 					
-					DataMatrixInstance instance = dmh.createInstance(data);
+					DataMatrixInstance instance = dmh.createInstance(data, db);
 					File matrixFile = instance.getAsFile();
 					File newLoc = new File(dataDir.getAbsolutePath() + File.separator + matrixFile.getName());
 //					boolean createDestSuccess = newLoc.createNewFile();
@@ -68,7 +68,7 @@ public class XgapMatrixExport {
 				for (Data data : dataList)
 				{
 					
-					DataMatrixInstance instance = dmh.createInstance(data);
+					DataMatrixInstance instance = dmh.createInstance(data, db);
 					File matrixFile = instance.getAsFile();
 					File newLoc = new File(dataDir.getAbsolutePath() + 
 							File.separator + matrixFile.getName());

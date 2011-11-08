@@ -106,7 +106,7 @@ public class MatrixInspector extends PluginModel
 			//ASSUMING newOrOtherData");
 
 			this.model.setSelectedData(data);
-			this.model.setHasBackend(dmh.isDataStoredIn(data, data.getStorage()));
+			this.model.setHasBackend(dmh.isDataStoredIn(data, data.getStorage(), db));
 			
 			logger.info("hasBackend: " + this.model.isHasBackend());
 			

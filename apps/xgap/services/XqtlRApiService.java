@@ -91,7 +91,7 @@ public class XqtlRApiService implements MolgenisService
 			s +=("\n");
 			s +=("#load cluster calculation scripts\n");
 			
-			File[] listing =  new File((this.getClass().getResource("plugins/cluster/R/ClusterJobs/R")).getFile()).listFiles();
+			File[] listing =  new File((this.getClass().getResource("../plugins/cluster/R/ClusterJobs/R")).getFile()).listFiles();
 			if (listing != null) {
 				for (File f : listing){
 					s +=("source(\""+rSource+"plugins/cluster/R/ClusterJobs/R/"+f.getName()+"\")\n");
@@ -134,7 +134,7 @@ public class XqtlRApiService implements MolgenisService
 				QueryRule q = new QueryRule("name", Operator.EQUALS, name);
 				RScript script = db.find(RScript.class, q).get(0);
 				MolgenisFileHandler mfh = new MolgenisFileHandler(db);
-				File source = mfh.getFile(script);
+				File source = mfh.getFile(script, db);
 				Utils.console("printing file: '"+source.getAbsolutePath()+"'");
 				String str = this.printUserScript(source.toURI().toURL(), "", name);
 				s +=(str);

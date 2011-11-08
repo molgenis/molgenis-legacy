@@ -121,7 +121,7 @@ public class RApiServlet extends app.servlet.MolgenisServlet
 				QueryRule q = new QueryRule("name", Operator.EQUALS, name);
 				RScript script = db.find(RScript.class, q).get(0);
 				MolgenisFileHandler mfh = new MolgenisFileHandler(db);
-				File source = mfh.getFile(script);
+				File source = mfh.getFile(script, db);
 				Utils.console("printing file: '"+source.getAbsolutePath()+"'");
 				String str = this.printUserScript(source.toURI().toURL(), "", name);
 				s +=(str);

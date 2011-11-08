@@ -27,7 +27,7 @@ public class PerformUpload
 	 */
 	public static void doUpload(Database db, MolgenisFile mf, File content, boolean skipWhenDestExists) throws Exception
 	{
-		File storageForFileType = new MolgenisFileHandler(db).getStorageDirFor(mf.get__Type());
+		File storageForFileType = new MolgenisFileHandler(db).getStorageDirFor(mf.get__Type(), db);
 
 		// copy the file in the right place
 		String storageFileName = NameConvention.escapeFileName(mf.getName());
@@ -119,7 +119,7 @@ public class PerformUpload
 			db.add(mfAdd);
 
 			// get storage dir for this MolgenisFile type
-			File storageForFileType = new MolgenisFileHandler(db).getStorageDirFor(type);
+			File storageForFileType = new MolgenisFileHandler(db).getStorageDirFor(type, db);
 
 			// copy the file in the right place
 			String storageFileName = NameConvention.escapeFileName(mfAdd.getName());

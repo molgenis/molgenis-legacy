@@ -92,7 +92,7 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 			{
 				//decide what to use? Database, Binary, etc
 				
-				DataMatrixInstance matrix = new DataMatrixHandler(db).createInstance(data);
+				DataMatrixInstance matrix = new DataMatrixHandler(db).createInstance(data, db);
 				XqtlSliceableMatrix xs = new XqtlSliceableMatrix(matrix);
 				
 				matrixViewer = new MatrixViewer(this, "mymatrix", xs, true, true, null);

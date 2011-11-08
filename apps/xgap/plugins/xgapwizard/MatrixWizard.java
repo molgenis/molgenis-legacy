@@ -174,7 +174,7 @@ public class MatrixWizard extends PluginModel<Entity>
 			//iterate through data and get info
 			for (Data data : dataList)
 			{
-				String eds = dmh.findSource(data);
+				String eds = dmh.findSource(data, db);
 
 				//query the current matrix tags and add to info
 				List<String> tags = new ArrayList<String>();

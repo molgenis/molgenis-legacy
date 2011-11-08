@@ -56,15 +56,15 @@ public class Settings<E extends Entity> extends PluginModel<E>
 			{
 				if (request.getString("__action").equals("setFileDirPath"))
 				{
-					sh.setFileStorage(request.getString("fileDirPath"));
+					sh.setFileStorage(request.getString("fileDirPath"), db);
 				}
 				else if (request.getString("__action").equals("deleteFileDirPath"))
 				{
-					sh.deleteFileStorage();
+					sh.deleteFileStorage(db);
 				}
 				else if (request.getString("__action").equals("validate"))
 				{
-					sh.validateFileStorage();
+					sh.validateFileStorage(db);
 				}
 				this.setMessages();
 			}

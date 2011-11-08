@@ -68,7 +68,7 @@ public class getmatrixinfo  implements MolgenisService {
 				}
 				Data data = dataList.get(0);
 				dmh = new DataMatrixHandler(db);
-				instance = dmh.createInstance(data);
+				instance = dmh.createInstance(data, db);
 				setupSuccess = true;
 			} catch (Exception e) {
 				PrintWriter out = response.getResponse().getWriter();
@@ -114,7 +114,7 @@ public class getmatrixinfo  implements MolgenisService {
 		try {
 			List<Data> dataList = db.find(Data.class);
 			for (Data data : dataList) {
-				if (!dmh.findSource(data)
+				if (!dmh.findSource(data, db)
 						.equals("null")) {
 					res += data.toString() + "\n";
 				}

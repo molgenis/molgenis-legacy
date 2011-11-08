@@ -259,8 +259,8 @@ public class QTLDataSetWizard extends PluginModel<Entity>
 
 		// create an instance of this matrix
 		DataMatrixHandler handler = new DataMatrixHandler(db);
-		DataMatrixInstance instance = handler.createInstance(data);
-		dataFileRollback = handler.findSourceFile(data);
+		DataMatrixInstance instance = handler.createInstance(data, db);
+		dataFileRollback = handler.findSourceFile(data, db);
 
 		if (type.equals("Geno"))
 		{
@@ -641,11 +641,37 @@ public class QTLDataSetWizard extends PluginModel<Entity>
 	private void tagMatrix(String dataSet, String dataName, Data dataValue, Database db) throws DatabaseException,
 			ParseException, IOException
 	{
-		DataSet dsRef = db.find(DataSet.class, new QueryRule("name", Operator.EQUALS, dataSet)).get(0);
+		List<DataSet> dsRefList = db.find(DataSet.class, new QueryRule("name", Operator.EQUALS, dataSet));
+		DataSet dsRef = null;
+		
+		if (dsRefList.size() == 0)
+		{
+			dsRef = new DataSet();
+			dsRef.setName(dataSet);
+			db.add(dsRef);
+		}
+		else{
+			dsRef = dsRefList.get(0);
+		}
+		
 		Query<DataName> q = db.query(DataName.class);
 		q.addRules(new QueryRule("name", Operator.EQUALS, dataName));
 		q.addRules(new QueryRule("dataset", Operator.EQUALS, dsRef.getId()));
-		DataName dnRef = q.find().get(0);
+		
+		List<DataName> dnRefList = q.find();
+		DataName dnRef = null;
+		
+		if (dnRefList.size() == 0)
+		{
+			dnRef = new DataName();
+			dnRef.setName(dataName);
+			dnRef.setDataSet(dsRef);
+			db.add(dnRef);
+		}
+		else{
+			dnRef = dnRefList.get(0);
+		}
+		
 		DataValue dv = new DataValue();
 		dv.setDataName(dnRef);
 		dv.setValue(dataValue);

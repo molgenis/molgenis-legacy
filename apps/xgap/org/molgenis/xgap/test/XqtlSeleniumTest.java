@@ -69,7 +69,7 @@ public class XqtlSeleniumTest
 		// throws exceptions if anything goes wrong
 		Database db = DatabaseFactory.create();
 		int appNameLength = MolgenisServlet.getMolgenisVariantID().length();
-		String storagePath = new StorageHandler(db).getFileStorage(true).getAbsolutePath();
+		String storagePath = new StorageHandler(db).getFileStorage(true, db).getAbsolutePath();
 		File storageRoot = new File(storagePath.substring(0, storagePath.length() - appNameLength));
 		System.out.println("Removing content of " + storageRoot);
 		TarGz.recursiveDeleteContent(new File(storagePath));

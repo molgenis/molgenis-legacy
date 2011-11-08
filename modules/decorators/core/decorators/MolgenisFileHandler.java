@@ -31,9 +31,9 @@ public class MolgenisFileHandler extends StorageHandler
 	 * @return
 	 * @throws Exception
 	 */
-	public File getStorageDirFor(MolgenisFile mf) throws Exception
+	public File getStorageDirFor(MolgenisFile mf, Database db) throws Exception
 	{
-		return getStorageDirFor(mf.get__Type().toLowerCase());
+		return getStorageDirFor(mf.get__Type().toLowerCase(), db);
 	}
 
 	/**
@@ -46,7 +46,7 @@ public class MolgenisFileHandler extends StorageHandler
 	 * @throws Exception 
 	 * @throws Exception
 	 */
-	public File getStorageDirFor(String type) throws Exception
+	public File getStorageDirFor(String type, Database db) throws Exception
 	{
 		// lowercase 'type' for directory usage
 		type = type.toLowerCase();
@@ -66,7 +66,7 @@ public class MolgenisFileHandler extends StorageHandler
 		}
 
 		// create pointer to storage location, try to mkdir if not exists
-		File storageDir = getFileStorage();
+		File storageDir = getFileStorage(db);
 		File typeStorageDir = new File(storageDir.getAbsolutePath() + File.separator + type);
 		if (!typeStorageDir.exists())
 		{
@@ -87,9 +87,9 @@ public class MolgenisFileHandler extends StorageHandler
 	 * @param mf
 	 * @throws Exception 
 	 */
-	public void deleteFile(MolgenisFile mf) throws Exception
+	public void deleteFile(MolgenisFile mf, Database db) throws Exception
 	{
-		File theFile = getFile(mf);
+		File theFile = getFile(mf, db);
 		if (!theFile.exists())
 		{
 			throw new FileNotFoundException("No file found for name '" + mf.getName() + "'");
@@ -119,9 +119,9 @@ public class MolgenisFileHandler extends StorageHandler
 	 * @return
 	 * @throws Exception 
 	 */
-	public File getFile(MolgenisFile mf) throws Exception
+	public File getFile(MolgenisFile mf, Database db) throws Exception
 	{
-		File typeStorage = getStorageDirFor(mf.get__Type().toLowerCase());
+		File typeStorage = getStorageDirFor(mf.get__Type().toLowerCase(), db);
 		File dataSource = new File(typeStorage.getAbsolutePath() + File.separator
 				+ NameConvention.escapeFileName(mf.getName()) + "." + mf.getExtension());
 		if (!dataSource.exists())
@@ -139,10 +139,10 @@ public class MolgenisFileHandler extends StorageHandler
 	 * @return
 	 * @throws Exception 
 	 */
-	public File getFile(String name) throws Exception
+	public File getFile(String name, Database db) throws Exception
 	{
 		QueryRule q = new QueryRule("name", Operator.EQUALS, name);
-		List<MolgenisFile> mfList = getDb().find(MolgenisFile.class, q);
+		List<MolgenisFile> mfList = db.find(MolgenisFile.class, q);
 
 		if (mfList.size() == 0)
 		{
@@ -150,7 +150,7 @@ public class MolgenisFileHandler extends StorageHandler
 		}
 		else
 		{
-			return getFile(mfList.get(0));
+			return getFile(mfList.get(0), db);
 		}
 	}
 
@@ -163,7 +163,7 @@ public class MolgenisFileHandler extends StorageHandler
 	 * @throws Exception 
 	 * @throws Exception
 	 */
-	public String findFile(MolgenisFile mf) throws Exception
+	public String findFile(MolgenisFile mf, Database db) throws Exception
 	{
 		// get all possible options and iterate through the possible directories
 		List<ValueLabel> fileTypes = mf.get__TypeOptions();
@@ -171,7 +171,7 @@ public class MolgenisFileHandler extends StorageHandler
 		{
 			// can also do label in this case
 			String fileType = ft.getValue().toString().toLowerCase();
-			File typeStorage = getStorageDirFor(fileType);
+			File typeStorage = getStorageDirFor(fileType, db);
 			// make file pointer
 			File theFile = new File(typeStorage.getAbsolutePath() + File.separator
 					+ NameConvention.escapeFileName(mf.getName()));

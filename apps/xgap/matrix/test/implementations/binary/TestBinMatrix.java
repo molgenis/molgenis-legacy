@@ -55,7 +55,7 @@ public class TestBinMatrix
 		List<BinaryDataMatrixInstance> bmList = new ArrayList<BinaryDataMatrixInstance>();
 		for (Data data : h.getDataList())
 		{
-			BinaryDataMatrixInstance bm = (BinaryDataMatrixInstance) new DataMatrixHandler(db).createInstance(data);
+			BinaryDataMatrixInstance bm = (BinaryDataMatrixInstance) new DataMatrixHandler(db).createInstance(data, db);
 			bmList.add(bm);
 		}
 

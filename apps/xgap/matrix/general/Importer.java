@@ -105,7 +105,7 @@ public class Importer
 		// check if the matrix elements exists in another source of data first
 		if (data.getStorage().equals("Database"))
 		{
-			if (dmh.isDataMatrixStoredInDatabase(data))
+			if (dmh.isDataMatrixStoredInDatabase(data, db))
 			{
 				throw new DatabaseException("Database source already exists for source type '" + data.getStorage()
 						+ "'");
@@ -113,7 +113,7 @@ public class Importer
 		}
 		else
 		{
-			if (dmh.findSourceFile(data) != null)
+			if (dmh.findSourceFile(data, db) != null)
 			{
 				throw new DatabaseException("File source already exists for source type '" + data.getStorage() + "'");
 			}

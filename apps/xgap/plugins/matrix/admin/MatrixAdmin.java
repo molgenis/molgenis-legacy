@@ -72,7 +72,7 @@ public class MatrixAdmin extends PluginModel
 
 				if (request.getString("__action").equals("deleteBackend"))
 				{
-					dmh.deleteDataMatrixSource(this.model.getSelectedData());
+					dmh.deleteDataMatrixSource(this.model.getSelectedData(), db);
 					this.model.setSelectedData(null);
 				}
 
@@ -108,7 +108,7 @@ public class MatrixAdmin extends PluginModel
 			//ASSUMING newOrOtherData");
 
 			this.model.setSelectedData(data);
-			this.model.setHasBackend(dmh.isDataStoredIn(data, data.getStorage()));
+			this.model.setHasBackend(dmh.isDataStoredIn(data, data.getStorage(), db));
 			
 			logger.info("hasBackend: " + this.model.isHasBackend());
 

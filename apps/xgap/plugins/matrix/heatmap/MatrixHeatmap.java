@@ -384,7 +384,7 @@ public class MatrixHeatmap extends PluginModel
 			if (newOrOtherData)
 			{
 				logger.info("*** newOrOtherData");
-				this.model.setHasBackend(dmh.isDataStoredIn(data, data.getStorage()));
+				this.model.setHasBackend(dmh.isDataStoredIn(data, data.getStorage(), db));
 				logger.info("hasBackend: " + this.model.isHasBackend());
 				if (this.model.isHasBackend())
 				{

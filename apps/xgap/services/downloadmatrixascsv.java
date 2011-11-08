@@ -89,7 +89,7 @@ public class downloadmatrixascsv implements MolgenisService
 				QueryRule q = new QueryRule("id", Operator.EQUALS, matrixId);
 				Data data = db.find(Data.class, q).get(0);
 				DataMatrixHandler dmh = new DataMatrixHandler(db);
-				DataMatrixInstance instance = dmh.createInstance(data);
+				DataMatrixInstance instance = dmh.createInstance(data, db);
 
 				if (req.getString("download").equals("all"))
 				{

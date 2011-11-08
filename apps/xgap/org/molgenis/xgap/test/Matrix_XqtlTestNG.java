@@ -53,7 +53,7 @@ public class Matrix_XqtlTestNG {
 		StorageHandler sh = new StorageHandler(db);
 		
 		//assert db is empty
-		Assert.assertFalse(sh.hasFileStorage(false));
+		Assert.assertFalse(sh.hasFileStorage(false, db));
 		try{
 			db.find(Investigation.class).get(0);
 			Assert.fail("DatabaseException expected");
@@ -67,9 +67,9 @@ public class Matrix_XqtlTestNG {
 		
 		//setup file storage
 		String path = new File(".").getAbsolutePath() + File.separator + "tmp_matrix_test_data";
-		sh.setFileStorage(path);
-		sh.validateFileStorage();
-		Assert.assertTrue(sh.hasValidFileStorage());
+		sh.setFileStorage(path, db);
+		sh.validateFileStorage(db);
+		Assert.assertTrue(sh.hasValidFileStorage(db));
 	}
 	
 	@AfterClass(alwaysRun = true)

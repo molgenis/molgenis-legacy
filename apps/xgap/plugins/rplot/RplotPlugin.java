@@ -186,7 +186,7 @@ public class RplotPlugin<E extends Entity> extends PluginModel<E>
 				this.model.setSelectedData(newSelectedData);
 
 				
-				DataMatrixInstance m = dmh.createInstance(newSelectedData);
+				DataMatrixInstance m = dmh.createInstance(newSelectedData, db);
 
 				this.model.setMatrixCols(m.getColNames());
 				this.model.setMatrixRows(m.getRowNames());

@@ -63,7 +63,7 @@ public class TestDatabaseMatrix
 		List<DatabaseDataMatrixInstance> dmList = new ArrayList<DatabaseDataMatrixInstance>();
 		for (Data data : h.getDataList())
 		{
-			DatabaseDataMatrixInstance dm = (DatabaseDataMatrixInstance) new DataMatrixHandler(db).createInstance(data);
+			DatabaseDataMatrixInstance dm = (DatabaseDataMatrixInstance) new DataMatrixHandler(db).createInstance(data, db);
 			dmList.add(dm);
 		}
 

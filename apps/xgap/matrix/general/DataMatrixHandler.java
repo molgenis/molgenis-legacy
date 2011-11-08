@@ -51,18 +51,18 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * @return
 	 * @throws Exception
 	 */
-	public DataMatrixInstance createInstance(Data data) throws Exception
+	public DataMatrixInstance createInstance(Data data, Database db) throws Exception
 	{
 		DataMatrixInstance instance = null;
 		File source = null;
 
 		if (data.getStorage().equals("Database"))
 		{
-			instance = new DatabaseDataMatrixInstance(this.getDb(), data);
+			instance = new DatabaseDataMatrixInstance(db, data);
 		}
 		else
 		{
-			source = findSourceFile(data);
+			source = findSourceFile(data, db);
 			if (source == null)
 			{
 				throw new FileNotFoundException("No MolgenisFile found referring to DataMatrix '" + data.getName()
@@ -93,17 +93,17 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * @throws Exception
 	 * @throws XGAPStorageException
 	 */
-	public void deleteDataMatrix(Data dm) throws Exception
+	public void deleteDataMatrix(Data dm, Database db) throws Exception
 	{
 		try
 		{
-			deleteDataMatrixSource(dm);
+			deleteDataMatrixSource(dm, db);
 		}
 		catch (FileNotFoundException fnfe)
 		{
 			// no source found, continue to delete 'Data'
 		}
-		this.getDb().remove(dm);
+		db.remove(dm);
 	}
 
 	/**
@@ -114,9 +114,9 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * @throws Exception
 	 * @throws XGAPStorageException
 	 */
-	public void deleteDataMatrixSource(Data dm) throws Exception
+	public void deleteDataMatrixSource(Data dm, Database db) throws Exception
 	{
-		String verifiedSource = findSource(dm);
+		String verifiedSource = findSource(dm, db);
 
 		if (verifiedSource.equals("null"))
 		{
@@ -128,20 +128,20 @@ public class DataMatrixHandler extends MolgenisFileHandler
 			{
 				if (dm.getValueType().equals("Decimal"))
 				{
-					List<DecimalDataElement> dde = this.getDb().find(DecimalDataElement.class,
+					List<DecimalDataElement> dde = db.find(DecimalDataElement.class,
 							new QueryRule("data", Operator.EQUALS, dm.getId()));
-					this.getDb().remove(dde);
+					db.remove(dde);
 				}
 				else
 				{
-					List<TextDataElement> tde = this.getDb().find(TextDataElement.class,
+					List<TextDataElement> tde = db.find(TextDataElement.class,
 							new QueryRule("data", Operator.EQUALS, dm.getId()));
-					this.getDb().remove(tde);
+					db.remove(tde);
 				}
 			}
 			else
 			{
-				this.getDb().remove(findMolgenisFile(dm));
+				db.remove(findMolgenisFile(dm, db));
 			}
 		}
 	}
@@ -155,18 +155,18 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * @throws Exception
 	 * @throws XGAPStorageException
 	 */
-	public boolean hasSource(Data data) throws Exception
+	public boolean hasSource(Data data, Database db) throws Exception
 	{
 		if (data.getStorage().equals("Database"))
 		{
-			if (this.isDataMatrixStoredInDatabase(data))
+			if (this.isDataMatrixStoredInDatabase(data, db))
 			{
 				return true;
 			}
 		}
 		else
 		{
-			if (this.findSourceFile(data) != null)
+			if (this.findSourceFile(data, db) != null)
 			{
 				return true;
 			}
@@ -184,7 +184,7 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * @throws Exception
 	 * @throws XGAPStorageException
 	 */
-	public boolean isDataStoredIn(Data data, String source) throws Exception
+	public boolean isDataStoredIn(Data data, String source, Database db) throws Exception
 	{
 		ArrayList<String> options = new ArrayList<String>();
 		for (ValueLabel option : data.getStorageOptions())
@@ -199,22 +199,22 @@ public class DataMatrixHandler extends MolgenisFileHandler
 
 		if (source.equals("Database"))
 		{
-			return isDataMatrixStoredInDatabase(data);
+			return isDataMatrixStoredInDatabase(data, db);
 		}
 		else
 		{
 			String matrixSource = source + "DataMatrix";
 			// FIXME: pull out?
-			List<? extends Entity> test = this.getDb().find(this.getDb().getClassForName(matrixSource));
+			List<? extends Entity> test = db.find(db.getClassForName(matrixSource));
 			for (Entity e : test)
 			{
 				// used to be: if ((e.get("data_name").toString()).equals(data.getName()))
-				if ((this.getDb() instanceof JDBCDatabase && new Integer(e.get("data").toString()).intValue() == data.getId().intValue()) ||
-				(this.getDb() instanceof JpaDatabase && ((Data) e.get("data")).getId().intValue() == data.getId().intValue()))
+				if ((db instanceof JDBCDatabase && new Integer(e.get("data").toString()).intValue() == data.getId().intValue()) ||
+				(db instanceof JpaDatabase && ((Data) e.get("data")).getId().intValue() == data.getId().intValue()))
 				{
 					try
 					{
-						this.getFile(e.get("name").toString());
+						this.getFile(e.get("name").toString(), db);
 						return true;
 					}
 					catch (FileNotFoundException fnf)
@@ -236,12 +236,12 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public boolean isDataMatrixStoredInDatabase(Data data) throws DatabaseException, ParseException
+	public boolean isDataMatrixStoredInDatabase(Data data, Database db) throws DatabaseException, ParseException
 	{
-		Query<DecimalDataElement> dde = this.getDb().query(DecimalDataElement.class);
+		Query<DecimalDataElement> dde = db.query(DecimalDataElement.class);
 		dde.limit(1);
 		dde.equals("data", data.getId());
-		Query<TextDataElement> tde = this.getDb().query(TextDataElement.class);
+		Query<TextDataElement> tde = db.query(TextDataElement.class);
 		tde.limit(1);
 		tde.equals("data", data.getId());
 		boolean hasDataElements = (dde.find().size() > 0 || tde.find().size() > 0) ? true : false;
@@ -256,11 +256,11 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public Data findData(MolgenisFile mf) throws DatabaseException
+	public Data findData(MolgenisFile mf, Database db) throws DatabaseException
 	{
 
 		QueryRule mfName = new QueryRule("name", Operator.EQUALS, mf.getName());
-		List<? extends Entity> mfToEntity = this.getDb().find(this.getDb().getClassForName(mf.get__Type()), mfName);
+		List<? extends Entity> mfToEntity = db.find(db.getClassForName(mf.get__Type()), mfName);
 
 		if (mfToEntity.size() == 0)
 		{
@@ -274,7 +274,7 @@ public class DataMatrixHandler extends MolgenisFileHandler
 		}
 		String dataMatrixName = mfToEntity.get(0).get("dataMatrix_name").toString();
 		QueryRule dataName = new QueryRule("name", Operator.EQUALS, dataMatrixName);
-		List<Data> dataList = this.getDb().find(Data.class, dataName);
+		List<Data> dataList = db.find(Data.class, dataName);
 
 		if (dataList.size() == 0)
 		{
@@ -298,16 +298,16 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public MolgenisFile findMolgenisFile(Data dm) throws DatabaseException
+	public MolgenisFile findMolgenisFile(Data dm, Database db) throws DatabaseException
 	{
 		String matrixSource = dm.getStorage() + "DataMatrix";
-		List<? extends Entity> test = this.getDb().find(this.getDb().getClassForName(matrixSource));
+		List<? extends Entity> test = db.find(db.getClassForName(matrixSource));
 		for (Entity e : test)
 		{
 			if (Integer.valueOf(e.get("data").toString()).intValue() == dm.getId().intValue())
 			{
 				QueryRule mfId = new QueryRule("id", Operator.EQUALS, e.get(e.getIdField()));
-				return this.getDb().find(MolgenisFile.class, mfId).get(0);
+				return db.find(MolgenisFile.class, mfId).get(0);
 			}
 		}
 		return null;
@@ -322,17 +322,17 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * @throws Exception
 	 * @throws XGAPStorageException
 	 */
-	public File findSourceFile(Data data) throws Exception
+	public File findSourceFile(Data data, Database db) throws Exception
 	{
-		List<? extends Entity> mfSubclasses = this.getDb().find(
-				this.getDb().getClassForName(data.getStorage() + "DataMatrix"));
+		List<? extends Entity> mfSubclasses = db.find(
+				db.getClassForName(data.getStorage() + "DataMatrix"));
 		for (Entity e : mfSubclasses)
 		{
 			// used to be: if ((e.get("data_name").toString()).equals(data.getName()))
-			if ((this.getDb() instanceof JDBCDatabase && new Integer(e.get("data").toString()).intValue() == data.getId().intValue()) ||
-			(this.getDb() instanceof JpaDatabase && ((Data) e.get("data")).getId().intValue() == data.getId().intValue()))
+			if ((db instanceof JDBCDatabase && new Integer(e.get("data").toString()).intValue() == data.getId().intValue()) ||
+			(db instanceof JpaDatabase && ((Data) e.get("data")).getId().intValue() == data.getId().intValue()))
 			{
-				return this.getFile(e.get("name").toString());
+				return this.getFile(e.get("name").toString(), db);
 			}
 
 		}
@@ -348,7 +348,7 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 * @throws Exception
 	 * @throws XGAPStorageException
 	 */
-	public String findSource(Data data) throws Exception
+	public String findSource(Data data, Database db) throws Exception
 	{
 		ArrayList<String> options = new ArrayList<String>();
 		for (ValueLabel option : data.getStorageOptions())
@@ -358,7 +358,7 @@ public class DataMatrixHandler extends MolgenisFileHandler
 
 		for (String option : options)
 		{
-			if (isDataStoredIn(data, option))
+			if (isDataStoredIn(data, option, db))
 			{
 				return option;
 			}
@@ -377,7 +377,7 @@ public class DataMatrixHandler extends MolgenisFileHandler
 		Database db = DatabaseFactory.create("gcc.properties");
 		DataMatrixHandler mh = new DataMatrixHandler(db);
 		Data dm = db.find(Data.class).get(0);
-		mh.isDataStoredIn(dm, "Binary");
+		mh.isDataStoredIn(dm, "Binary", db);
 	}
 
 }

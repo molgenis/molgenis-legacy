@@ -203,7 +203,7 @@ public class MolgenisFileDecorator<E extends MolgenisFile> extends MappingDecora
 
 					try
 					{
-						oldFile = mfh.getFile(oldMF);
+						oldFile = mfh.getFile(oldMF, this.getDatabase());
 					}
 					catch (FileNotFoundException fnfe)
 					{
@@ -285,7 +285,7 @@ public class MolgenisFileDecorator<E extends MolgenisFile> extends MappingDecora
 				{
 					// attempt delete, only catch FileNotFound (this is okay)
 					MolgenisFileHandler mfh = new MolgenisFileHandler(this.getDatabase());
-					mfh.deleteFile(mf);
+					mfh.deleteFile(mf, this.getDatabase());
 					//System.out.println("Deleted MolgenisFile: " + mf.toString());
 				}
 				catch (FileNotFoundException fnfe)

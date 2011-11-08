@@ -7,10 +7,10 @@
 
 package plugins.cluster.demo;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import matrix.AbstractDataMatrixInstance;
 import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
@@ -22,6 +22,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -149,7 +150,7 @@ public class ClusterDemo extends PluginModel<Entity>
 			}
 			
 			// case 1
-			if(sh.hasValidFileStorage())
+			if(sh.hasValidFileStorage(db))
 			{
 				// don't do anything extra, but prevents from going
 				// into case 2 which also applies to valid paths..
@@ -157,21 +158,21 @@ public class ClusterDemo extends PluginModel<Entity>
 				
 				//however - request.getString("fileDirPath") is now null
 				//so set string here for nice output
-				path = sh.getFileStorage(true).getAbsolutePath();
+				path = sh.getFileStorage(true, db).getAbsolutePath();
 			}
 			//case 2 (not a validated path: just delete and use input)
-			else if(sh.hasFileStorage(false))
+			else if(sh.hasFileStorage(false, db))
 			{
-				sh.deleteFileStorage();
-				sh.setFileStorage(path);
-				sh.validateFileStorage();
+				sh.deleteFileStorage(db);
+				sh.setFileStorage(path, db);
+				sh.validateFileStorage(db);
 			}else{
-				sh.setFileStorage(path);
-				sh.validateFileStorage();
+				sh.setFileStorage(path, db);
+				sh.validateFileStorage(db);
 			}
 
 			//if the case 2 or 3 path proves valid, continue to load data
-			if(sh.hasValidFileStorage()){
+			if(sh.hasValidFileStorage(db)){
 				
 				//run example data loader
 				ArrayList<String> result = DataLoader.load(db, false);
@@ -181,7 +182,7 @@ public class ClusterDemo extends PluginModel<Entity>
 					//query the data to find out if it is really there
 					Data metab = db.find(Data.class, new QueryRule("name", Operator.EQUALS, "metaboliteexpression")).get(0);
 					DataMatrixHandler dmh = new DataMatrixHandler(db);
-					DataMatrixInstance instance = dmh.createInstance(metab);
+					DataMatrixInstance instance = dmh.createInstance(metab, db);
 					double element = (Double) instance.getSubMatrixByOffset(1, 1, 1, 1).getElement(0, 0);
 					
 					if(element == 4.0){
@@ -267,8 +268,9 @@ public class ClusterDemo extends PluginModel<Entity>
 	 * Adds example users. Depends on having roles 'biologist' and 'bioinformatician' in the GUI xml.
 	 * @param db
 	 * @throws DatabaseException
+	 * @throws SQLException 
 	 */
-	public static void addExampleUsers(Database db) throws DatabaseException{
+	public static void addExampleUsers(Database db) throws DatabaseException, SQLException{
 		MolgenisUser bioUser = new MolgenisUser();
 		bioUser.setName("bio-user");
 		bioUser.setPassword("bio");
@@ -354,8 +356,8 @@ public class ClusterDemo extends PluginModel<Entity>
 					
 					// since we're now showing the special box,
 					// find out if there is a validated path and save this info
-					if(sh.hasValidFileStorage()){
-						this.setValidpath(sh.getFileStorage(true).getAbsolutePath());
+					if(sh.hasValidFileStorage(db)){
+						this.setValidpath(sh.getFileStorage(true, db).getAbsolutePath());
 					}else{
 						this.setValidpath(null);
 					}

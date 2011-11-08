@@ -27,7 +27,7 @@ public class DataLoader
 		// check storage location
 		try
 		{
-			File storage = new StorageHandler(db).getFileStorage(true);
+			File storage = new StorageHandler(db).getFileStorage(true, db);
 			result.add("Storage location found. Path: " + storage.getAbsolutePath());
 		}
 		catch (Exception e)

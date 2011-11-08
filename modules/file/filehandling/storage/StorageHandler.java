@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.molgenis.core.RuntimeProperty;
@@ -14,6 +15,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.util.DetectOS;
 
 import app.servlet.MolgenisServlet;
@@ -24,7 +26,6 @@ public class StorageHandler
 	static String RUNTIME_FILE_STORAGE_PATH = "file_storage_path";
 	static String RUNTIME_FILE_STORAGE_VALIDATED = "file_storage_validated";
 
-	Database db;
 	Report report;
 
 	/**
@@ -35,7 +36,6 @@ public class StorageHandler
 	 */
 	public StorageHandler(Database db)
 	{
-		this.db = db;
 		report = new Report();
 
 		RuntimeProperty pathRp = null;
@@ -43,8 +43,8 @@ public class StorageHandler
 
 		try
 		{
-			pathRp = getRuntimeProperty(RUNTIME_FILE_STORAGE_PATH);
-			validRp = getRuntimeProperty(RUNTIME_FILE_STORAGE_VALIDATED);
+			pathRp = getRuntimeProperty(RUNTIME_FILE_STORAGE_PATH, db);
+			validRp = getRuntimeProperty(RUNTIME_FILE_STORAGE_VALIDATED, db);
 		}
 		catch (DatabaseException e)
 		{
@@ -65,7 +65,7 @@ public class StorageHandler
 			try
 			{
 				report.setFileStoragePropsPresent(true);
-				File storageDir = getFileStorage();
+				File storageDir = getFileStorage(db);
 				report.setFileStorage(storageDir);
 				report.setFolderExists(storageDir.exists());
 				report.setFolderHasContent(folderHasContent(storageDir));
@@ -92,9 +92,9 @@ public class StorageHandler
 	 * 
 	 * @throws Exception
 	 */
-	public File getFileStorage() throws Exception
+	public File getFileStorage(Database db) throws Exception
 	{
-		return getFileStorage(false);
+		return getFileStorage(false, db);
 	}
 
 	/**
@@ -105,9 +105,9 @@ public class StorageHandler
 	 * @return
 	 * @throws Exception
 	 */
-	public File getFileStorage(boolean mustBeValid) throws Exception
+	public File getFileStorage(boolean mustBeValid, Database db) throws Exception
 	{
-		File storage = getFileStorageRoot(mustBeValid);
+		File storage = getFileStorageRoot(mustBeValid, db);
 		if (storage == null)
 		{
 			throw new Exception("No retrievable or valid file storage location present.");
@@ -120,10 +120,10 @@ public class StorageHandler
 	 * 
 	 * @throws Exception
 	 */
-	public void deleteFileStorage() throws Exception
+	public void deleteFileStorage(Database db) throws Exception
 	{
-		RuntimeProperty pathRp = getRuntimeProperty(RUNTIME_FILE_STORAGE_PATH);
-		RuntimeProperty validRp = getRuntimeProperty(RUNTIME_FILE_STORAGE_VALIDATED);
+		RuntimeProperty pathRp = getRuntimeProperty(RUNTIME_FILE_STORAGE_PATH, db);
+		RuntimeProperty validRp = getRuntimeProperty(RUNTIME_FILE_STORAGE_VALIDATED, db);
 		if (pathRp == null && validRp == null)
 		{
 			throw new Exception("Nothing to delete");
@@ -149,9 +149,9 @@ public class StorageHandler
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean hasFileStorage(boolean mustBeValid) throws Exception
+	public boolean hasFileStorage(boolean mustBeValid, Database db) throws Exception
 	{
-		File storage = getFileStorageRoot(mustBeValid);
+		File storage = getFileStorageRoot(mustBeValid, db);
 		if (storage == null)
 		{
 			return false;
@@ -165,9 +165,9 @@ public class StorageHandler
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean hasValidFileStorage() throws Exception
+	public boolean hasValidFileStorage(Database db) throws Exception
 	{
-		return hasFileStorage(true);
+		return hasFileStorage(true, db);
 	}
 
 	/**
@@ -176,7 +176,7 @@ public class StorageHandler
 	 * @param filesource
 	 * @throws Exception
 	 */
-	public void setFileStorage(String filesource) throws Exception
+	public void setFileStorage(String filesource, Database db) throws Exception
 	{
 		report = new Report();
 
@@ -185,7 +185,7 @@ public class StorageHandler
 
 		filesource = addSepIfneeded(filesource);
 
-		RuntimeProperty rp = getRuntimeProperty(RUNTIME_FILE_STORAGE_PATH);
+		RuntimeProperty rp = getRuntimeProperty(RUNTIME_FILE_STORAGE_PATH, db);
 		if (rp == null)
 		{
 			RuntimeProperty rp1 = new RuntimeProperty();
@@ -213,11 +213,11 @@ public class StorageHandler
 	 * 
 	 * @throws Exception
 	 */
-	public void validateFileStorage() throws Exception
+	public void validateFileStorage(Database db) throws Exception
 	{
 
-		RuntimeProperty pathRp = getRuntimeProperty(RUNTIME_FILE_STORAGE_PATH);
-		RuntimeProperty validRp = getRuntimeProperty(RUNTIME_FILE_STORAGE_VALIDATED);
+		RuntimeProperty pathRp = getRuntimeProperty(RUNTIME_FILE_STORAGE_PATH, db);
+		RuntimeProperty validRp = getRuntimeProperty(RUNTIME_FILE_STORAGE_VALIDATED, db);
 
 		if (pathRp != null && validRp == null)
 		{
@@ -272,7 +272,7 @@ public class StorageHandler
 			throw new Exception("Directory does not exist");
 		}
 
-		RuntimeProperty rp = getRuntimeProperty(RUNTIME_FILE_STORAGE_VALIDATED);
+		RuntimeProperty rp = getRuntimeProperty(RUNTIME_FILE_STORAGE_VALIDATED, db);
 
 		rp.setValue("true");
 		db.update(rp);
@@ -289,9 +289,9 @@ public class StorageHandler
 	 * @throws DatabaseException
 	 * @throws UnsupportedEncodingException
 	 */
-	private File getFileStorageRoot(boolean mustBeValid) throws UnsupportedEncodingException, DatabaseException
+	private File getFileStorageRoot(boolean mustBeValid, Database db) throws UnsupportedEncodingException, DatabaseException
 	{
-		URI loc = getURIStorageRoot(mustBeValid);
+		URI loc = getURIStorageRoot(mustBeValid, db);
 		if (loc == null)
 		{
 			return null;
@@ -307,11 +307,10 @@ public class StorageHandler
 	 * @param mustBeValid
 	 * @return
 	 */
-	private URI getURIStorageRoot(boolean mustBeValid) throws UnsupportedEncodingException, DatabaseException
+	private URI getURIStorageRoot(boolean mustBeValid, Database db) throws UnsupportedEncodingException, DatabaseException
 	{
-
-		RuntimeProperty path = getRuntimeProperty(RUNTIME_FILE_STORAGE_PATH);
-		RuntimeProperty valid = getRuntimeProperty(RUNTIME_FILE_STORAGE_VALIDATED);
+		RuntimeProperty path = getRuntimeProperty(RUNTIME_FILE_STORAGE_PATH, db);
+		RuntimeProperty valid = getRuntimeProperty(RUNTIME_FILE_STORAGE_VALIDATED, db);
 
 		if (path == null || valid == null)
 		{
@@ -344,7 +343,7 @@ public class StorageHandler
 	 * @return
 	 * @throws DatabaseException
 	 */
-	private RuntimeProperty getRuntimeProperty(String propName) throws DatabaseException
+	private RuntimeProperty getRuntimeProperty(String propName, Database db) throws DatabaseException
 	{
 		QueryRule name = new QueryRule(RuntimeProperty.NAME, Operator.EQUALS, propName);
 		List<RuntimeProperty> rpList = null;
@@ -410,11 +409,6 @@ public class StorageHandler
 			}
 		}
 		return false;
-	}
-
-	public Database getDb()
-	{
-		return db;
 	}
 
 	public Report getReport()
