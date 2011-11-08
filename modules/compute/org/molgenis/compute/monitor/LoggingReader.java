@@ -19,8 +19,6 @@ public abstract class LoggingReader
 
     protected String logging = RemoteFileReader.FILE_IS_NOT_EXISTS;
 
-
-
     public void setPipeline(Pipeline pipeline)
     {
         pipelineName = pipeline.getId();

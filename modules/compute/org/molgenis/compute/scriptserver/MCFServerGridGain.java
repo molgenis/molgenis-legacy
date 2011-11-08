@@ -39,7 +39,7 @@ public class MCFServerGridGain implements MCF
         this.grid = grid;
     }
 
-    public void setPipeline(Pipeline pipeline)
+    public void setClusterPipeline(Pipeline pipeline)
     {
         //maybe temporary
         boolean remoteNodeExists = false;
@@ -71,8 +71,13 @@ public class MCFServerGridGain implements MCF
         pipelines.add(pipeline);
 
         //todo logging properly!!!
-        PipelineThreadGridGain pipelineThreadGridGain = new PipelineThreadGridGain(pipeline, grid);
+        ClusterPipelineThreadGridGain pipelineThreadGridGain = new ClusterPipelineThreadGridGain(pipeline, grid);
         new PipelineExecutor().execute(pipelineThreadGridGain);
+    }
+
+    public void setGridPipeline(Pipeline pipeline)
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public Pipeline getPipeline(String id)

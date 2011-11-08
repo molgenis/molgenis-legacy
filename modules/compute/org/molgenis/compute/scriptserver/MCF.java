@@ -17,7 +17,9 @@ public interface MCF
     public static final String GRID = "gridgain";
     public static final String SSH = "ssh";
     //set pipeline for execution
-    void setPipeline(Pipeline pipeline);
+    void setClusterPipeline(Pipeline pipeline);
+
+    void setGridPipeline(Pipeline pipeline);
 
     int getNumberActivePipelines();
     Pipeline getActivePipeline(int i);

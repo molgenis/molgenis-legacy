@@ -37,6 +37,10 @@ public class WorkflowGeneratorDB
     private static final String INTERPRETER_R = "R";
     private static final String INTERPRETER_JDL = "jdl";
 
+    public static final String ENV_CLUSTER = "cluster";
+    public static final String ENV_GRID = "grid";
+
+    private String env = null;
     
     private boolean flagJustGenerate = false;
 
@@ -80,8 +84,11 @@ public class WorkflowGeneratorDB
     public void processSingleWorksheet(Database db, Tuple request,
                                        Hashtable<String, String> userValues,
                                        Workflow workflow,
-                                       String applicationName /* should be unique somehow */) throws Exception
+                                       String applicationName /* should be unique somehow */,
+                                       String environment) throws Exception
     {
+        this.env = environment;
+
         this.userValues = userValues;
         this.target = workflow;
         this.applicationName = applicationName;
@@ -116,8 +123,8 @@ public class WorkflowGeneratorDB
         wholeWorkflowApp.setInterpreter("WorkflowInterpreter");
 
         //it would be nice to select compute features of only selected workflow
-        //allComputeParameters = db.query(ComputeParameter.class).equals(ComputeParameter.WORKFLOW, workflow.getId()).find();
-        allComputeParameters = db.query(ComputeParameter.class).find();
+        allComputeParameters = db.query(ComputeParameter.class).equals(ComputeParameter.WORKFLOW, workflow.getId()).find();
+        //allComputeParameters = db.query(ComputeParameter.class).find();
         System.out.println("we have so many features: " + allComputeParameters.size());
 
         System.out.println("workflow" + workflow.getName());
@@ -167,7 +174,7 @@ public class WorkflowGeneratorDB
     {
         if (mcf != null && !flagJustGenerate)
         {
-            mcf.setPipeline(pipeline);
+            mcf.setClusterPipeline(pipeline);
 
             if (!updater.isStarted())
             {
@@ -202,10 +209,10 @@ public class WorkflowGeneratorDB
         {
             if (computeFeature.getIsUser())
                 continue;
-//            else if (computeFeature.getIsDerived())
-//            {
-//                featuresToDerive.addElement(computeFeature);
-//            }
+            else if (computeFeature.getIsDerived())
+            {
+                featuresToDerive.addElement(computeFeature);
+            }
             else
             {
                 weavingValues.put(computeFeature.getName(), computeFeature.getDefaultValue());

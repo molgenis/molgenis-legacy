@@ -10,7 +10,7 @@ import java.util.concurrent.Future;
 
 
 
-public class LoggingReaderGridGain extends LoggingReader
+public class ClusterLoggingReaderGridGain extends LoggingReader
 {
     private ExecutorService exec = null;
 
@@ -65,7 +65,7 @@ public class LoggingReaderGridGain extends LoggingReader
             int index_finished = logging.indexOf(script_id + _FINISHED);
 
             //todo in principle it is not the correct place to set the script as being started
-            //if does not work move to PipelineThreadGridGain!!!
+            //if does not work move to ClusterPipelineThreadGridGain!!!
             if (index_started > -1)
             {
                 script.setStarted(true);

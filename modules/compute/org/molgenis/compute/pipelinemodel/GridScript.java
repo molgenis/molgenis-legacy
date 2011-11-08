@@ -17,7 +17,7 @@ public class GridScript extends Script
     @Override
     public String getSubmitCommand()
     {
-        String result = "glite-wms-job-submit  -d $USER -o " + getRemotename() + " " + getRemoteDir() + "/" + getRemotename() +".jdl";
+        String result = "glite-wms-job-submit  -d $USER -o " + getID() + " " + getRemoteDir() + "/" + getRemotename() +".jdl";
         return result;
     }
 }

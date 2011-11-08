@@ -101,7 +101,7 @@ public class StartNgs extends EasyPluginController<StartNgsView>
         processing.setToWriteLocally(true);
         processing.setLocalLocation("/test/");
 
-        processing.processSingleWorksheet(db, request, userValues, workflow, applicationName);
+        processing.processSingleWorksheet(db, request, userValues, workflow, applicationName, WorkflowGeneratorDB.ENV_CLUSTER);
         getModel().setSuccess("start workflow succesfull");
 
     }

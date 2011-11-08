@@ -4,7 +4,6 @@ import org.molgenis.compute.monitor.LoggingReaderSsh;
 import org.molgenis.compute.pipelinemodel.FileToSaveRemotely;
 import org.molgenis.compute.pipelinemodel.Pipeline;
 import org.molgenis.compute.pipelinemodel.Script;
-import org.molgenis.compute.ssh.SshData;
 import org.molgenis.util.Ssh;
 import org.molgenis.util.SshResult;
 
@@ -12,16 +11,15 @@ import java.io.IOException;
 
 
 //thread class for a pipeline; every pipeline runs in the separated thread
-public class PipelineThreadSsh extends PipelineThread
+public abstract class PipelineThreadSsh extends PipelineThread
 {
-    private Ssh ssh = null;
+    protected Ssh ssh = null;
 
     public PipelineThreadSsh(Pipeline pipeline)
     {
         this.pipeline = pipeline;
 
-        monitor = new LoggingReaderSsh();
-
+        startMonitor();
         //to monitor pipeline execution from outside
         pipeline.setMonitor(monitor);
 
@@ -29,21 +27,11 @@ public class PipelineThreadSsh extends PipelineThread
         monitor.setPipeline(pipeline);
 
         monitor.setLogFile(pipeline.getPipelinelogpath());
-        startSsh();
+        startClusterSsh();
     }
 
-    private void startSsh()
-    {
-        try
-        {
-            ssh = new Ssh(SshData.SERVER_MILLIPEDE, SshData.USER_MILLIPEDE, SshData.PASS_MILLIPEDE);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-
-    }
+    protected abstract void startMonitor();
+    protected abstract void startClusterSsh();
 
     @Override
     protected boolean submitScript(Script script)

@@ -2,7 +2,7 @@ package org.molgenis.compute.ui;
 
 
 import org.molgenis.compute.ComputeJob;
-import org.molgenis.compute.monitor.LoggingReaderGridGain;
+import org.molgenis.compute.monitor.ClusterLoggingReaderGridGain;
 import org.molgenis.compute.monitor.RemoteFileToStringReader;
 import org.molgenis.compute.scriptserver.MCF;
 import org.molgenis.framework.db.Database;
@@ -137,8 +137,8 @@ public abstract class DatabaseUpdater
             String logfile = allLogs.elementAt(i);
             if (!logfile.equalsIgnoreCase(RemoteFileToStringReader.FILE_IS_NOT_EXISTS))
             {
-                int index_started = logfile.indexOf(name + LoggingReaderGridGain._STARTED);
-                int index_finished = logfile.indexOf(name + LoggingReaderGridGain._FINISHED);
+                int index_started = logfile.indexOf(name + ClusterLoggingReaderGridGain._STARTED);
+                int index_finished = logfile.indexOf(name + ClusterLoggingReaderGridGain._FINISHED);
 
                 if (index_finished > -1)
                     return ComputeAppPaths.AppStatus.finished;

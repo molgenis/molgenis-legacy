@@ -7,28 +7,16 @@ import org.molgenis.util.Ssh;
 import java.io.IOException;
 
 
-public class LoggingReaderSsh extends LoggingReader
+public abstract class LoggingReaderSsh extends LoggingReader
 {
-    private Ssh ssh = null;
+    protected Ssh ssh = null;
 
     public LoggingReaderSsh()
     {
         startSsh();
     }
 
-    private void startSsh()
-    {
-        try
-        {
-            ssh = new Ssh(SshData.SERVER_MILLIPEDE, SshData.USER_MILLIPEDE, SshData.PASS_MILLIPEDE);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-
-    }
-
+    protected abstract void startSsh();
 
     public boolean isStepFinished()
     {
@@ -63,7 +51,7 @@ public class LoggingReaderSsh extends LoggingReader
             int index_finished = logging.indexOf(script_id + _FINISHED);
 
             //todo in principle it is not the correct place to set the script as being started
-            //if does not work move to PipelineThreadGridGain!!!
+            //if does not work move to ClusterPipelineThreadGridGain!!!
             if (index_started > -1)
             {
                 script.setStarted(true);

@@ -26,14 +26,23 @@ public class MCFServerSsh implements MCF
     }
 
 
-    public void setPipeline(Pipeline pipeline)
+    public void setClusterPipeline(Pipeline pipeline)
     {
-        System.out.println(">>> start pipeline execution");
+        System.out.println(">>> start pipeline execution on cluster");
 
         pipelines.add(pipeline);
 
-        //todo logging properly!!!
-        PipelineThreadSsh pipelineThreadSsh = new PipelineThreadSsh(pipeline);
+        PipelineThreadSsh pipelineThreadSsh = new ClusterPipelineThreadSsh(pipeline);
+        new PipelineExecutor().execute(pipelineThreadSsh);
+    }
+
+    public void setGridPipeline(Pipeline pipeline)
+    {
+        System.out.println(">>> start pipeline execution on grid");
+
+        pipelines.add(pipeline);
+
+        GridPipelineThreadSsh pipelineThreadSsh = new GridPipelineThreadSsh(pipeline);
         new PipelineExecutor().execute(pipelineThreadSsh);
     }
 
