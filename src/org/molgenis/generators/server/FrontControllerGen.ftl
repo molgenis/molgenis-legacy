@@ -49,8 +49,6 @@ public class FrontController extends MolgenisFrontController
 {
 	private static final long serialVersionUID = 3141439968743510237L;
 	
-	private MolgenisContext context;
-	
 	@Override
 	public void init(javax.servlet.ServletConfig conf) throws javax.servlet.ServletException
 	{
@@ -58,7 +56,7 @@ public class FrontController extends MolgenisFrontController
 		super.init(conf);
 		
 		//now we can create the MolgenisContext with objects reusable over many requests
-		context = new MolgenisContext(this.getServletContext(), this.createDataSource());
+		context = new MolgenisContext(this.getServletContext(), this.createDataSource(), "${model.name}");
 		
 		//keep a map of active connections
 		connections = new HashMap<UUID, Connection>();

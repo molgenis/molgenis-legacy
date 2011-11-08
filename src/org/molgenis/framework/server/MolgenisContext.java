@@ -12,6 +12,8 @@ public class MolgenisContext
 	
 	private DataSource ds;
 	
+	private String variant;
+	
 	// other static variables here, eg.
 	// String molgenisVariantID
 	// UsedMolgenisOptions
@@ -19,17 +21,27 @@ public class MolgenisContext
 	// date/time of generation
 	// revision number
 	
-	public MolgenisContext(ServletContext sc, DataSource ds)
+	public MolgenisContext(ServletContext sc, DataSource ds, String variant)
 	{
 		//this.db = db;
 		this.sc = sc;
 		this.ds = ds;
+		this.variant = variant;
 	}
+	
+	
 
 //	public Database getDatabase()
 //	{
 //		return db;
 //	}
+
+	public String getVariant()
+	{
+		return variant;
+	}
+
+
 
 	public ServletContext getServletContext()
 	{
