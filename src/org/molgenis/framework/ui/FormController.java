@@ -320,14 +320,14 @@ public abstract class FormController<E extends Entity> extends
 
 		Operator operator = QueryRule.Operator.valueOf(request
 				.getString("__filter_operator"));
-		System.out.println(">>>>>>>>>>>>Operator" + operator);
+		//System.out.println(">>>>>>>>>>>>Operator" + operator);
 		String value = request.getString("__filter_value");
 		if (StringUtils.isEmpty(value))
 		{ // to prevent null-pointer exception
 			value = "";
 		}
 
-		System.out.println(">>>>>>>>>>>>value" + value);
+		//System.out.println(">>>>>>>>>>>>value" + value);
 		// automatically add LIKE delimiters %
 		if (operator.equals(Operator.LIKE) && !value.contains("%"))
 		{
@@ -388,10 +388,10 @@ public abstract class FormController<E extends Entity> extends
 		// //TODO: plugins.LuceneIndex.DBIndexPlugin.searchIndex()
 		// }
 		// else{
-		System.out.println("*** ELSE : ");
+		//System.out.println("*** ELSE : ");
 		QueryRule rule = new QueryRule(request.getString("__filter_attribute"),
 				operator, value);
-		System.out.println(">>>>>>>>>>>>rule" + rule);
+		//System.out.println(">>>>>>>>>>>>rule" + rule);
 		model.getUserRules().add(rule);
 		// }
 
@@ -441,8 +441,7 @@ public abstract class FormController<E extends Entity> extends
 				// "__Type"
 				for (Field field : eType.getFields())
 				{
-					System.out.println("*** FIELD NAME : "
-							+ field.getName().toLowerCase());
+					//System.out.println("*** FIELD NAME : " + field.getName().toLowerCase());
 					if (!field.getName().equals(Field.TYPE_FIELD))
 					{
 
@@ -459,8 +458,7 @@ public abstract class FormController<E extends Entity> extends
 						// fieldRule = new QueryRule(field.getName(),
 						// r.getOperator(), r.getValue());
 						// }
-						System.out.println("*** QUERYRULE : "
-								+ fieldRule.toString());
+						//System.out.println("*** QUERYRULE : " + fieldRule.toString());
 						// add 'or' except for first filter rule
 						if (first) first = false;
 						else
