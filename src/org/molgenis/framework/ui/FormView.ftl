@@ -327,7 +327,14 @@ var molgenis_required = new Array(${required});
 		<#if count == 0>		
 	<tr>
 		<#--empty headers for the browse button and tick boxes -->
-		<th><label>&nbsp;</label></th><th><label>&nbsp;</label></th>		
+		<th><label>&nbsp;</label></th>
+			<th align="left"><label><#-- 'select all' tick box -->
+				<#list screen.getNewRecordForm().inputs as input>
+					<#if input.getName() == screen.getIdField()>
+						<input title="select all visible" type="checkbox" name="checkall" id="checkall" onclick="Javascript:checkAll('${screen.name}_form','massUpdate')" />
+					</#if>
+				</#list>
+			</label></th>		
 			<#list record.inputs as input>				
 				<#if screen.getController().getClass().getSimpleName() != "FormController" && screen.getController().getClass().getSuperclass().getSimpleName() != "FormController">
 					<#if input.isHidden()>
@@ -394,16 +401,6 @@ var molgenis_required = new Array(${required});
 		</#list>
 </tr>
 	</#list>
-	<#if count &gt; 0>
-		<tr>
-			<td></td>
-		<#list screen.getNewRecordForm().inputs as input>
-			<#if input.getName() == screen.getIdField()>
-			<td><input title="select all visible" type="checkbox" name="checkall" id="checkall" onclick="Javascript:checkAll('${screen.name}_form','massUpdate')" /></td>
-			</#if>
-		</#list>
-		</tr>
-	</#if>
 	</table>
 	<label> * = this record is readonly.</label>
 </#macro>
