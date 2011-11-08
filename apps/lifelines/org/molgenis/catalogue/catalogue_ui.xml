@@ -8,10 +8,10 @@
 		<plugin name="SimpleUserLogin" type="org.molgenis.auth.ui.SimpleUserLogin" label="Login" />
     
 		<menu name="catalogueOverview" label="Catalogue Overview">
-			<form name="Domain" entity="Domain" label="Domain" />
-			<form name="Variables" entity="Variable" label="Variables" />
-			<form name="Category" entity="Category" label="Categories" />
-			<form name="MissingCategory" entity="MissingCategory" label="Missing Categories" />
+			<form name="investigation" entity="Investigation" label="Investigation" />
+			<form name="measurement" entity="Measurement" label="Measurement" />
+			<form name="protocol" entity="Protocol" label="Protocol" />
+			<form name="code" entity="Code" label="Code" />
 		</menu>
 		
 		<plugin name="OwlToPheno" label="import owl" type="plugins.data.importOwlToPheno" />
@@ -26,6 +26,7 @@
 			</menu>
 			<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard" label="Batch Upload" />
 			<plugin label="Data Exporter" name="SimpleArchiver" type="plugins.archiver.Archiver" />
+			<plugin name="ImportExcel" type="plugins.data.ImportExcel" label="Import your Excel"  />
 		</menu>
 		<!-- 
 		<plugin name="catalogueHelp" type="plugins.help.catalogueHelpPlugin" label="Help"  />
