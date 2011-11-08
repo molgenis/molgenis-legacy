@@ -13,6 +13,8 @@ import jxl.read.biff.BiffException;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.organization.Investigation;
@@ -72,6 +74,7 @@ public class ImportExcel extends PluginModel<Entity>
 		}
 		
 	}
+	@SuppressWarnings("unchecked")
 	public void loadDataFromExcel(Database db, Tuple request) throws BiffException, IOException, DatabaseException{
 		
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
@@ -81,6 +84,7 @@ public class ImportExcel extends PluginModel<Entity>
 		if (file.exists()) {
 			
 			System.out.println("The excel file is being imported, please be patient");
+			
 			this.setStatus("The excel file is being imported, please be patient");
 			
 			Workbook workbook = Workbook.getWorkbook(file); 
@@ -194,7 +198,9 @@ public class ImportExcel extends PluginModel<Entity>
 			}
 			
 			for( Protocol proto : protocols){
-				proto.setFeatures_Name(linkProtocolMeasurement.get(proto.getName()));
+				
+				//proto.setFeatures_Name(linkProtocolMeasurement.get(proto.getName())); USE WHEN BUG IS FIXED
+				
 				if(db.query(Protocol.class).eq(Protocol.NAME, proto.getName()).count() == 0){
 					if(!addedProtocols.contains(proto)){
 						
@@ -212,6 +218,18 @@ public class ImportExcel extends PluginModel<Entity>
 			}
 			try {
 				db.add(addedMeasurements);
+				
+				// TEMPORARY FIX FOR MREF RESOLVE FOREIGN KEYS BUG
+				for (Protocol p : addedProtocols) {
+					List<String> featureNames = linkProtocolMeasurement.get(p.getName());
+					List<Measurement> measList = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, featureNames));
+					List<Integer> measIdList = new ArrayList<Integer>();
+					for (Measurement m : measList) {
+						measIdList.add(m.getId());
+					}
+					p.setFeatures_Id(measIdList);
+				}
+				
 				db.add(addedProtocols);
 				db.add(addedCodes);
 			} catch (DatabaseException e) {
