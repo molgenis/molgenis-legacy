@@ -1,5 +1,5 @@
-
 package plugins.data;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -113,9 +113,13 @@ public class ImportExcel extends PluginModel<Entity>
 			
 			List<String> ProtocolFeatures = new ArrayList<String>();
 			
-			String Protocolname = "";
+			String protocolName = "";
+			
+			String measurementName = "";
 			
 			HashMap<String, List> linkProtocolMeasurement = new HashMap<String, List>();
+			
+			HashMap<String, List> linkCodeMeasurement = new HashMap<String, List>();
 			
 			for (int i = 1; i < row - 1; i++){
 				
@@ -129,33 +133,26 @@ public class ImportExcel extends PluginModel<Entity>
 					
 					if(j == 2){
 					
-						Protocolname = sheet.getCell(j, i).getContents().replaceAll("'", "");
+						protocolName = sheet.getCell(j, i).getContents().replaceAll("'", "");
 						
-						if(!linkProtocolMeasurement.containsKey(Protocolname)){
+						if(!linkProtocolMeasurement.containsKey(protocolName)){
 							ProtocolFeatures.clear();
-							linkProtocolMeasurement.put(Protocolname, ProtocolFeatures);
+							linkProtocolMeasurement.put(protocolName, ProtocolFeatures);
 						}
 						
 						prot.setName(sheet.getCell(j, i).getContents().replaceAll("'", ""));
-						
-//						if(Protocolname.equals(sheet.getCell(j, i).getContents())){
-//							ProtocolFeatures.add(sheet.getCell(j + 1, i).getContents());
-//						}else{
-//							System.out.println("--------------------->"+sheet.getCell(j, i).getContents());
-//							prot.setName(sheet.getCell(j, i).getContents().replaceAll("'", ""));
-//							prot.setFeatures_Name(ProtocolFeatures);
-//							Protocolname = sheet.getCell(j, i).getContents();
-//							ProtocolFeatures.clear();
-//						}
+
 					}else if(j == 3){
+						
+						measurementName = sheet.getCell(j, i).getContents();
 						
 						mea.setName(sheet.getCell(j, i).getContents());
 						
-						List<String> temporaryHolder = linkProtocolMeasurement.get(Protocolname);
+						List<String> temporaryHolder = linkProtocolMeasurement.get(protocolName);
 						
 						temporaryHolder.add(sheet.getCell(j, i).getContents());
 						
-						linkProtocolMeasurement.put(Protocolname, temporaryHolder);
+						linkProtocolMeasurement.put(protocolName, temporaryHolder);
 						
 					}else if (j == 4){
 						
@@ -166,17 +163,36 @@ public class ImportExcel extends PluginModel<Entity>
 						if(sheet.getCell(j, i).getContents().length() > 0 && sheet.getCell(j, i).getContents() != null){
 							
 							String [] codeString = sheet.getCell(j, i).getContents().split("\\|");
+							
+							for(int index = 0; index < codeString.length; index++){
+								codeString[index] = codeString[index].trim();
+							}
 							//System.out.println(sheet.getCell(j, i).getContents());
 							for(int k = 0; k < codeString.length; k++){
+								
 								code.setCode_String(codeString[k]);
-								//System.out.println("--------------------------->!!!!!!!!!!!!" + codeString[k]);
 								code.setDescription(sheet.getCell(j, i).getContents());
+								
+								if(linkCodeMeasurement.containsKey(codeString[k])){
+									List<String> featuresCode = linkCodeMeasurement.get(codeString[k]);
+									if(!featuresCode.contains(measurementName)){
+										featuresCode.add(measurementName);
+										linkCodeMeasurement.put(codeString[k], featuresCode);
+									}
+								}else{
+									List<String> featuresCode = new ArrayList<String>();
+									featuresCode.add(measurementName);
+									linkCodeMeasurement.put(codeString[k], featuresCode);
+								}
 							}
+							
 							codes.add(code);
 						}
 					}
 				}
+				
 				measurements.add(mea);
+				
 				protocols.add(prot);
 			}
 			
@@ -231,6 +247,17 @@ public class ImportExcel extends PluginModel<Entity>
 				}
 				
 				db.add(addedProtocols);
+				
+				for (Code c : addedCodes){
+					List<String> featureNames = linkCodeMeasurement.get(c.getCode_String());
+					List<Measurement> measList = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, featureNames));
+					List<Integer> meaIdList = new ArrayList<Integer>();
+					for(Measurement m : measList){
+						meaIdList.add(m.getId());
+					}
+					c.setFeature_Id(meaIdList);
+				}
+				
 				db.add(addedCodes);
 			} catch (DatabaseException e) {
 				// TODO Auto-generated catch block
