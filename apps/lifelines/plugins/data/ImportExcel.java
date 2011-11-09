@@ -11,6 +11,7 @@ import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 
+import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
@@ -20,6 +21,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Code;
 import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -99,6 +101,7 @@ public class ImportExcel extends PluginModel<Entity>
 			List<Protocol> protocols = new ArrayList<Protocol>();
 			
 			List<Code> codes = new ArrayList<Code>();
+			List<OntologyTerm> ontologyTerms = new ArrayList<OntologyTerm>();
 			
 			int row = sheet.getRows();
 			
@@ -113,6 +116,8 @@ public class ImportExcel extends PluginModel<Entity>
 			Code code;
 			
 			List<String> ProtocolFeatures = new ArrayList<String>();
+			
+			List<ObservableFeature> ObservableFeatures = new ArrayList<ObservableFeature>();
 			
 			String protocolName = "";
 			
@@ -193,7 +198,30 @@ public class ImportExcel extends PluginModel<Entity>
 						
 						mea.setDescription(sheet.getCell(j, i).getContents());
 					
-					}else if(j == 8){  //9th category column  - code 
+					}else if (j==5) { // Unit is observableFeature (?) and its corresponding description is column 4  
+									  //some of the contain blanks e.g "Live births" so we have to create a variable out of this ...just remove the blanks ..
+									  //others contain / (slash) remove, or substitute met _
+						
+						//ObservableFeature obsfeat = new ObservableFeature();
+						
+						//obsfeat.setName(sheet.getCell(j,i).getContents().replace(" ", "_").replace("/", "_"));
+						//obsfeat.setDescription();
+						//ObservableFeatures.add(obsfeat);
+						
+						//or is it Measurement--> Unit  ??????? (TODO)
+						//create a corresponding ontologyTerm. 
+					
+						OntologyTerm unit = new OntologyTerm();
+						String cell = sheet.getCell(j,i).getContents().replace(" ", "_").replace("/", "_");
+						unit.setName(cell);
+						if (cell !="" && !ontologyTerms.contains(unit)) {
+							ontologyTerms.add(unit);
+							mea.setUnit(unit);
+						}	
+						//mea.setUnit_Name(sheet.getCell(j,i).getContents().replace(" ", "_").replace("/", "_"));
+						//mea.setUnit(unit)
+					}
+					else if(j == 8){  //9th category column  - code 
 
 						if(sheet.getCell(j, i).getContents().length() > 0 && sheet.getCell(j, i).getContents() != null){
 							
@@ -294,6 +322,9 @@ public class ImportExcel extends PluginModel<Entity>
 				}
 				
 				db.add(addedCodes);
+				
+				//TODO: link
+				db.add(ontologyTerms);
 			} catch (DatabaseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
