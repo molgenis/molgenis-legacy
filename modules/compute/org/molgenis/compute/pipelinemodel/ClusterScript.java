@@ -27,4 +27,10 @@ public class ClusterScript extends Script
         System.out.println(">>>" + command);
         return command;
     }
+
+    @Override
+    public String getMonitoringCommand()
+    {
+        return null;
+    }
 }

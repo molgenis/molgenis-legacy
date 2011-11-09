@@ -1,8 +1,8 @@
-package org.molgenis.compute.ui;
-
-import java.util.Vector;
+package org.molgenis.compute.monitor;
 
 import org.molgenis.compute.ComputeJob;
+
+import java.util.Vector;
 
 /**
  * Created by IntelliJ IDEA.

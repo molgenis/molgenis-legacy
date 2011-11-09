@@ -1,9 +1,7 @@
-package org.molgenis.compute.ui;
+package org.molgenis.compute.monitor;
 
 
 import org.molgenis.compute.ComputeJob;
-import org.molgenis.compute.monitor.ClusterLoggingReaderGridGain;
-import org.molgenis.compute.monitor.RemoteFileToStringReader;
 import org.molgenis.compute.scriptserver.MCF;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -21,7 +19,7 @@ import java.util.Vector;
  * To change this template use File | Settings | File Templates.
  */
 
-public abstract class DatabaseUpdater
+public abstract class DatabaseUpdaterCluster implements DatabaseUpdater
 {
     protected int delay = -1;
     protected int period = -1;  // repeat every sec.

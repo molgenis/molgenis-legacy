@@ -19,9 +19,7 @@ public class ClusterPipelineThreadSsh extends PipelineThreadSsh
 
     public ClusterPipelineThreadSsh(Pipeline pipeline)
     {
-
-
-        super(pipeline);
+       super(pipeline);
     }
 
     @Override
@@ -38,8 +36,22 @@ public class ClusterPipelineThreadSsh extends PipelineThreadSsh
 
     }
 
+    @Override
+    protected boolean isSubmissionError(String output, String error)
+    {
+        if (error.toCharArray().length > 0 || output.toCharArray().length == 0)
+            return true;
+        return false;
+    }
+
     protected void startMonitor()
     {
         monitor = new ClusterLoggingReaderSsh();
+    }
+
+    @Override
+    protected int getSleepingInterval()
+    {
+        return 10000;
     }
 }

@@ -72,11 +72,6 @@ public class Pipeline
                 '}';
     }
 
-    public String pipelineLogFile()
-    {
-        return monitor.getLogFile();
-    }
-
     public boolean isFinished()
     {
         return isFinished;

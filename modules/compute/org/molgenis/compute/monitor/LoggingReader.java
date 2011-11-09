@@ -46,8 +46,4 @@ public abstract class LoggingReader
 
     public abstract boolean isStepFinished();
 
-    public String getLogFile()
-    {
-        return logging;
-    }
 }

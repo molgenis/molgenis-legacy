@@ -1,7 +1,6 @@
-package org.molgenis.compute.ui;
+package org.molgenis.compute.monitor;
 
 
-import org.molgenis.compute.monitor.RemoteFileToStringReader;
 import org.molgenis.compute.scriptserver.MCF;
 
 import java.util.concurrent.ExecutionException;
@@ -17,7 +16,7 @@ import java.util.concurrent.Future;
  * To change this template use File | Settings | File Templates.
  */
 
-public class DatabaseUpdaterGridGain extends DatabaseUpdater
+public class DatabaseUpdaterGridGain extends DatabaseUpdaterCluster
 {
     private ExecutorService executor = null;
     private RemoteFileToStringReader fileReader = new RemoteFileToStringReader();

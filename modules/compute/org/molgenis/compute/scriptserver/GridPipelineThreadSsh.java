@@ -43,4 +43,18 @@ public class GridPipelineThreadSsh extends PipelineThreadSsh
         }
     }
 
+    @Override
+    protected boolean isSubmissionError(String output, String error)
+    {
+        if (error.toCharArray().length > 0 || output.toCharArray().length == 0)
+            return true;
+        return false;
+    }
+
+
+    @Override
+    protected int getSleepingInterval()
+    {
+        return 20000;
+    }
 }

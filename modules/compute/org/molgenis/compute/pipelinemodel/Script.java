@@ -178,8 +178,6 @@ public abstract class Script implements Serializable
                 '}';
     }
 
-    public String getSubmitCommand()
-    {
-        return null;
-    }
+    public abstract String getSubmitCommand();
+    public abstract String getMonitoringCommand();
 }

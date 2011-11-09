@@ -1,4 +1,4 @@
-package org.molgenis.compute.ui;
+package org.molgenis.compute.monitor;
 
 
 import org.molgenis.compute.scriptserver.MCF;
@@ -16,7 +16,7 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 
-public class DatabaseUpdaterSsh extends DatabaseUpdater
+public class DatabaseUpdaterSsh extends DatabaseUpdaterCluster
 {
     private Ssh ssh = null;
 
@@ -52,5 +52,4 @@ public class DatabaseUpdaterSsh extends DatabaseUpdater
         }
         return result;
     }
-
 }

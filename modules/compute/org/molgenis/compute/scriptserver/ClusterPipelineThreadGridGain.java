@@ -24,8 +24,6 @@ public class ClusterPipelineThreadGridGain extends PipelineThread
         //to monitor pipeline execution from outside
         pipeline.setMonitor(monitor);
 
-        //set pipeline for demo purposes
-        monitor.setPipeline(pipeline);
 
         monitor.setLogFile(pipeline.getPipelinelogpath());
         ((ClusterLoggingReaderGridGain) monitor).setGrid(grid);
@@ -58,5 +56,11 @@ public class ClusterPipelineThreadGridGain extends PipelineThread
         if (error.toCharArray().length > 0 || output.toCharArray().length == 0)
             return true;
         return false;
+    }
+
+    @Override
+    protected int getSleepingInterval()
+    {
+        return 10000;
     }
 }

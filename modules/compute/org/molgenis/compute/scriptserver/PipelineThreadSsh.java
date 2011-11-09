@@ -35,8 +35,7 @@ public abstract class PipelineThreadSsh extends PipelineThread
     @Override
     protected boolean submitScript(Script script)
     {
-        String output = null, error = null;
-        String remoteName = script.getRemoteDir() + script.getRemotename();
+        String output, error;
 
         for(int i = 0; i < script.getNumberFileToSaveRemotely(); i++)
         {
@@ -84,8 +83,8 @@ public abstract class PipelineThreadSsh extends PipelineThread
         	System.out.println("Error: " + error);
         }
 
-        if (error.toCharArray().length > 0 || output.toCharArray().length == 0)
-            return true;
-        return false;
+        return isSubmissionError(output, error);
     }
+
+    protected abstract boolean isSubmissionError(String output, String error);
 }

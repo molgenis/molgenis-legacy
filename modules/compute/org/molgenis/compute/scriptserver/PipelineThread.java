@@ -78,7 +78,7 @@ public abstract class PipelineThread implements Runnable
                 try
                 {
                     // set 5000 or more for cluster
-                    Thread.sleep(5000);
+                    Thread.sleep(getSleepingInterval());
                 }
                 catch (InterruptedException e)
                 {
@@ -95,6 +95,6 @@ public abstract class PipelineThread implements Runnable
     }
 
     protected abstract boolean submitScript(Script script);
-
+    protected abstract int getSleepingInterval();
 
 }

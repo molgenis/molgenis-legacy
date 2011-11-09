@@ -3,12 +3,10 @@ package org.molgenis.compute.workflowgenerator;
 import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
+import org.molgenis.compute.monitor.*;
 import org.molgenis.compute.pipelinemodel.*;
 import org.molgenis.compute.scriptserver.MCF;
-import org.molgenis.compute.ui.ComputeAppPaths;
-import org.molgenis.compute.ui.DatabaseUpdater;
-import org.molgenis.compute.ui.DatabaseUpdaterGridGain;
-import org.molgenis.compute.ui.DatabaseUpdaterSsh;
+import org.molgenis.compute.monitor.ComputeAppPaths;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.pheno.ObservedValue;
@@ -158,10 +156,17 @@ public class WorkflowGeneratorDB
 
     private void createDatabaseUpdater(MCF mcf)
     {
-        if (mcf.getBasis().equalsIgnoreCase(MCF.GRID))
-            updater = new DatabaseUpdaterGridGain(mcf);
-        else if ((mcf.getBasis().equalsIgnoreCase(MCF.SSH)))
-            updater = new DatabaseUpdaterSsh(mcf);
+        if(env.equalsIgnoreCase(ENV_CLUSTER))
+        {
+            if (mcf.getBasis().equalsIgnoreCase(MCF.GRID))
+                updater = new DatabaseUpdaterGridGain(mcf);
+            else if ((mcf.getBasis().equalsIgnoreCase(MCF.SSH)))
+                updater = new DatabaseUpdaterSsh(mcf);
+        }
+        else if(env.equalsIgnoreCase(ENV_GRID))
+        {
+            updater = new DatabaseUpdaterGrid(mcf);
+        }
     }
 
     public Date now()
@@ -453,6 +458,9 @@ public class WorkflowGeneratorDB
         Script scriptFile = new GridScript(scriptID, scriptRemoteLocation, script.getBytes());
         FileToSaveRemotely jdlFile = new FileToSaveRemotely(scriptID + ".jdl", jdlfile.getBytes());
         scriptFile.addFileToTransfer(jdlFile);
+
+        if(isToWriteLocally)
+            weaver.writeToFile(localLocation + pipelineElementNumber + scriptID + ".jdl", new String(jdlfile.getBytes()));
 
         return scriptFile;
     }
