@@ -126,22 +126,33 @@ public class ImportExcel extends PluginModel<Entity>
 				
 				mea = new Measurement();
 				
-				prot = new Protocol();
 				
 				code = new Code();
 				
 				for(int j = 0; j < column; j++){
 					
 					if ( j == 0) { //1st Group column is a protocol 
+						Protocol GroupProt = new Protocol();
+
 						protocolName = sheet.getCell(j,i).getContents().replace("'", "");
 						
 						if (!linkProtocolMeasurement.containsKey(protocolName)) {
 							ProtocolFeatures.clear();
 							linkProtocolMeasurement.put(protocolName, ProtocolFeatures);
 						}
+						
+						GroupProt.setName(protocolName);
+						
+						//db.beginTx();
+						//db.add(prot);
+						protocols.add(GroupProt);
+						//db.commitTx();
+						//db.close();
 					}
 					if(j == 2){  //3rd Protocol column - is a protocol
 					
+						prot = new Protocol();
+
 						protocolName = sheet.getCell(j, i).getContents().replaceAll("'", "");
 						
 						if(!linkProtocolMeasurement.containsKey(protocolName)){
@@ -151,6 +162,7 @@ public class ImportExcel extends PluginModel<Entity>
 						
 						//prot.setName(sheet.getCell(j, i).getContents().replaceAll("'", ""));
 						prot.setName(protocolName);
+						protocols.add(prot);
 
 					}else if(j == 3){  //4rth measurement column  
 						
@@ -203,7 +215,7 @@ public class ImportExcel extends PluginModel<Entity>
 				
 				measurements.add(mea);
 				
-				protocols.add(prot);
+				//protocols.add(prot);
 			}
 			
 			List<Measurement> addedMeasurements = new ArrayList<Measurement>();
