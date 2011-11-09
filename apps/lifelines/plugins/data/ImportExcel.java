@@ -74,6 +74,7 @@ public class ImportExcel extends PluginModel<Entity>
 		}
 		
 	}
+	
 	@SuppressWarnings("unchecked")
 	public void loadDataFromExcel(Database db, Tuple request) throws BiffException, IOException, DatabaseException{
 		
@@ -131,7 +132,15 @@ public class ImportExcel extends PluginModel<Entity>
 				
 				for(int j = 0; j < column; j++){
 					
-					if(j == 2){
+					if ( j == 0) { //1st Group column is a protocol 
+						protocolName = sheet.getCell(j,i).getContents().replace("'", "");
+						
+						if (!linkProtocolMeasurement.containsKey(protocolName)) {
+							ProtocolFeatures.clear();
+							linkProtocolMeasurement.put(protocolName, ProtocolFeatures);
+						}
+					}
+					if(j == 2){  //3rd Protocol column - is a protocol
 					
 						protocolName = sheet.getCell(j, i).getContents().replaceAll("'", "");
 						
@@ -143,7 +152,7 @@ public class ImportExcel extends PluginModel<Entity>
 						//prot.setName(sheet.getCell(j, i).getContents().replaceAll("'", ""));
 						prot.setName(protocolName);
 
-					}else if(j == 3){
+					}else if(j == 3){  //4rth measurement column  
 						
 						measurementName = sheet.getCell(j, i).getContents();
 						
@@ -155,11 +164,11 @@ public class ImportExcel extends PluginModel<Entity>
 						
 						linkProtocolMeasurement.put(protocolName, temporaryHolder);
 						
-					}else if (j == 4){
+					}else if (j == 4){ //5th description column  
 						
 						mea.setDescription(sheet.getCell(j, i).getContents());
 					
-					}else if(j == 8){
+					}else if(j == 8){  //9th category column  - code 
 
 						if(sheet.getCell(j, i).getContents().length() > 0 && sheet.getCell(j, i).getContents() != null){
 							
