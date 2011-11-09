@@ -131,7 +131,7 @@ public class ImportExcel extends PluginModel<Entity>
 				
 				for(int j = 0; j < column; j++){
 					
-					if ( j == 0) { //1st Group column is a protocol 
+					if (j == 0) { //1st Group column is a protocol 
 						Protocol GroupProt = new Protocol();
 
 						protocolName = sheet.getCell(j,i).getContents().replace("'", "");
@@ -148,6 +148,19 @@ public class ImportExcel extends PluginModel<Entity>
 						protocols.add(GroupProt);
 						//db.commitTx();
 						//db.close();
+					}
+					
+					if (j==1) { //theme is also a protocol 
+						Protocol ThemeProtocol = new Protocol();  
+						
+						String ThemeProtocolname = sheet.getCell(j,i).getContents().replace("'","");
+						if (!linkProtocolMeasurement.containsKey(ThemeProtocolname)) {
+							ProtocolFeatures.clear();
+							linkProtocolMeasurement.put(ThemeProtocolname, ProtocolFeatures);
+						}
+						
+						ThemeProtocol.setName(ThemeProtocolname);
+						protocols.add(ThemeProtocol);
 					}
 					if(j == 2){  //3rd Protocol column - is a protocol
 					
