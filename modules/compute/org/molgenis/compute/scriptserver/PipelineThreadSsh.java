@@ -76,14 +76,14 @@ public abstract class PipelineThreadSsh extends PipelineThread
         output = result.getStdOut();
         error = result.getStdErr();
 
-        System.out.println("Output: " + output);
-        if (error == null || "".equalsIgnoreCase(error)) {
-        	System.out.println("Error: none!");
-        } else {
-        	System.out.println("Error: " + error);
-        }
+        boolean isError = isSubmissionError(output, error);
 
-        return isSubmissionError(output, error);
+        if(isError)
+            System.out.println("Error: " + error);
+        else
+            System.out.println(">>> submission successful: " + script.getID());
+
+        return isError;
     }
 
     protected abstract boolean isSubmissionError(String output, String error);

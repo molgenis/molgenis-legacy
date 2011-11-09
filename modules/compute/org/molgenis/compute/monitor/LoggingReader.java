@@ -3,6 +3,8 @@ package org.molgenis.compute.monitor;
 import org.molgenis.compute.pipelinemodel.Pipeline;
 import org.molgenis.compute.pipelinemodel.Step;
 
+import java.io.IOException;
+
 
 public abstract class LoggingReader
 {
@@ -44,6 +46,6 @@ public abstract class LoggingReader
         log_location = demoLog;
     }
 
-    public abstract boolean isStepFinished();
+    public abstract boolean isStepFinished() throws IOException;
 
 }

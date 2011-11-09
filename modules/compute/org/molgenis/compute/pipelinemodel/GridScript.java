@@ -9,16 +9,15 @@ package org.molgenis.compute.pipelinemodel;
  */
 public class GridScript extends Script
 {
-    static final String STATUS_SUBMIT_SUCCESS =     "glite-wms-job-submit Success";
-    static final String STATUS_RUN =                "glite-wms-job-status Success";
+    //key words produced in the grid report
+    public static final String STATUS_SUBMIT_SUCCESS =     "glite-wms-job-submit Success";
+    public static final String STATUS_RUN =                "glite-wms-job-status Success";
 
-    static final String STATUS_RUN_WAITING =        "Waiting";
-    static final String STATUS_RUN_SCHEDULED =      "Scheduled";
-    static final String STATUS_RUN_RUNNING =        "Running";
-    static final String STATUS_RUN_DONE_SUCCESS =   "Done (Success)";
-    static final String STATUS_RUN_DONE_FAILED =    "Done (Exit Code !=0)";
-
-
+    public static final String STATUS_RUN_WAITING =        "Waiting";
+    public static final String STATUS_RUN_SCHEDULED =      "Scheduled";
+    public static final String STATUS_RUN_RUNNING =        "Running";
+    public static final String STATUS_RUN_DONE_SUCCESS =   "Done (Success)";
+    public static final String STATUS_RUN_DONE_FAILED =    "Done (Exit Code !=0)";
 
     public GridScript(String scriptID, String outputRemoteLocation, byte[] bytes)
     {
@@ -39,4 +38,15 @@ public class GridScript extends Script
         String result = "glite-wms-job-status -i " + getID();
         return result;
     }
+
+    public String getLogsCommand()
+    {
+        return "glite-wms-job-output -i " + getID();
+    }
+
+    public String getCancelCommand()
+    {
+        return "glite-wms-job-cancel -i " + getID();
+    }
+
 }

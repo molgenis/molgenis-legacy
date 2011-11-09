@@ -1,7 +1,6 @@
 package org.molgenis.compute.monitor;
 
 import org.molgenis.compute.pipelinemodel.Script;
-import org.molgenis.compute.ssh.SshData;
 import org.molgenis.util.Ssh;
 
 import java.io.IOException;
@@ -18,7 +17,7 @@ public abstract class LoggingReaderSsh extends LoggingReader
 
     protected abstract void startSsh();
 
-    public boolean isStepFinished()
+    public boolean isStepFinished() throws IOException
     {
 
         try

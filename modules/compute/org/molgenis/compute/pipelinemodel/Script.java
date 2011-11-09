@@ -1,6 +1,8 @@
 package org.molgenis.compute.pipelinemodel;
 
 import java.io.*;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Vector;
 
 //now script has
@@ -23,6 +25,76 @@ public abstract class Script implements Serializable
 
     private boolean isFinished = false;
     private boolean isStarted = false;
+
+    private Timer countdown = new Timer();
+
+    private int maxRunTime = 180; // 3 minutes for testing hello world
+
+    public boolean isExpired()
+    {
+        return expired;
+    }
+
+    private boolean expired = false;
+
+    public void setExpired(boolean b)
+    {
+        System.out.println("... execution time is expired");
+        this.expired = b;
+    }
+
+    public enum Status
+    {
+        IDLE
+                {
+                    public String toString()
+                    {
+                        return "waiting";
+                    }
+                },
+
+
+        WAITING
+                {
+                    public String toString()
+                    {
+                        return "waiting";
+                    }
+                },
+
+        SCHEDULED
+                {
+                    public String toString()
+                    {
+                        return "scheduled";
+                    }
+                },
+        RUNNING
+                {
+                    public String toString()
+                    {
+                        return "running";
+                    }
+                },
+        DONE_SUCCESS
+                {
+                    public String toString()
+                    {
+                        return "done success";
+                    }
+                },
+        DONE_FAILED
+                {
+                    public String toString()
+                    {
+                        return "failed";
+                    }
+                }
+
+
+    }
+
+    private Status status = Status.IDLE;
 
     private boolean hasAdditionalFiles = false;
     private Vector<FileToSaveRemotely> filesToSaveRemotely = new Vector();
@@ -141,7 +213,7 @@ public abstract class Script implements Serializable
 
     public int getNumberFileToSaveRemotely()
     {
-        return filesToSaveRemotely.size(); 
+        return filesToSaveRemotely.size();
     }
 
     public boolean isFinished()
@@ -162,6 +234,7 @@ public abstract class Script implements Serializable
     public void setStarted(boolean started)
     {
         isStarted = started;
+        start();
     }
 
     @Override
@@ -179,5 +252,29 @@ public abstract class Script implements Serializable
     }
 
     public abstract String getSubmitCommand();
+
     public abstract String getMonitoringCommand();
+
+    public Status getStatus()
+    {
+        return status;
+    }
+
+    public void setStatus(Status status)
+    {
+        this.status = status;
+    }
+
+    private void start()
+    {
+
+        isStarted = true;
+        countdown.schedule(new TimerTask()
+        {
+            public void run()
+            {
+                setExpired(true);
+            }
+        }, maxRunTime * 1000);
+    }
 }

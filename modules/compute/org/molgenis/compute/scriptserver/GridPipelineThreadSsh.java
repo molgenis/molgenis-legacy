@@ -1,6 +1,7 @@
 package org.molgenis.compute.scriptserver;
 
 import org.molgenis.compute.monitor.GridMonitor;
+import org.molgenis.compute.pipelinemodel.GridScript;
 import org.molgenis.compute.pipelinemodel.Pipeline;
 import org.molgenis.compute.ssh.SshData;
 import org.molgenis.util.Ssh;
@@ -46,9 +47,15 @@ public class GridPipelineThreadSsh extends PipelineThreadSsh
     @Override
     protected boolean isSubmissionError(String output, String error)
     {
-        if (error.toCharArray().length > 0 || output.toCharArray().length == 0)
+        boolean isOutputCorrect = checkOutput(output);
+        if (error.toCharArray().length > 0 || !isOutputCorrect)
             return true;
         return false;
+    }
+
+    private boolean checkOutput(String output)
+    {
+        return output.contains(GridScript.STATUS_SUBMIT_SUCCESS);
     }
 
 

@@ -5,6 +5,7 @@ import org.molgenis.compute.pipelinemodel.Pipeline;
 import org.molgenis.compute.pipelinemodel.Script;
 import org.molgenis.compute.pipelinemodel.Step;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -67,22 +68,34 @@ public abstract class PipelineThread implements Runnable
 
             while (!step.isFinished())
             {
-                boolean isFinished = monitor.isStepFinished();
+                boolean isFinished = false;
+                try
+                {
+                    isFinished = monitor.isStepFinished();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
 
                 if (isFinished)
                 {
                     step.setFinished(true);
                     step.setActive(false);
+                    //TODO here is the correct place to update the database
                 }
-
-                try
+                else
                 {
-                    // set 5000 or more for cluster
-                    Thread.sleep(getSleepingInterval());
-                }
-                catch (InterruptedException e)
-                {
-                    e.printStackTrace();
+                    //delay before next checking
+                    try
+                    {
+                        // set 5000 or more for cluster
+                        Thread.sleep(getSleepingInterval());
+                    }
+                    catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
             }
 

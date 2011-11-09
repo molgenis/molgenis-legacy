@@ -1,5 +1,6 @@
 package org.molgenis.compute.monitor;
 
+import org.molgenis.compute.pipelinemodel.GridScript;
 import org.molgenis.compute.pipelinemodel.Script;
 import org.molgenis.compute.ssh.SshData;
 import org.molgenis.util.Ssh;
@@ -30,41 +31,117 @@ public class GridMonitor extends LoggingReaderSsh
 
     }
 
-    public boolean isStepFinished()
+    public boolean isStepFinished() throws IOException
     {
         String output, error;
-
+        boolean isStepFinished = true;
         for (int i = 0; i < currentStep.getNumberOfScripts(); i++)
         {
             Script script = currentStep.getScript(i);
-            System.out.println("script " + script.getID());
-
-            SshResult result = null;
-            try
+            if(!script.isFinished())
             {
-                System.out.println("command: " + script.getMonitoringCommand());
-                result = ssh.executeCommand(script.getMonitoringCommand());
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+                System.out.println("script " + script.getID());
 
-            output = result.getStdOut();
-            error = result.getStdErr();
+                    System.out.println("command: " + script.getMonitoringCommand());
+                    SshResult result = ssh.executeCommand(script.getMonitoringCommand());
 
-            System.out.println("Output:\n" + output);
-            if (error == null || "".equalsIgnoreCase(error))
-            {
-                System.out.println("Error: none!");
+                output = result.getStdOut();
+                error = result.getStdErr();
+
+                String status = checkRunStatus(output, error, script);
+
+                System.out.println(">>> " + status);
+                if(!script.isFinished())
+                {
+                    isStepFinished = false;
+                    if(script.getStatus() == Script.Status.DONE_FAILED /*||
+                            script.isExpired()*/)
+                    {
+                        resubmit(script);
+                    }
+                }
+                else
+                {
+                    String getLogsCommand = ((GridScript) script).getLogsCommand();
+
+                    result = ssh.executeCommand(getLogsCommand);
+
+                    System.out.println("output:\n" + result.getStdOut());
+                    System.out.println("error: ");
+                }
             }
             else
-            {
-                System.out.println("Error: " + error);
-            }
+                continue;//skip checking - script is finished already
 
         }
-        return false;
+        return isStepFinished;
+    }
+
+    private void resubmit(Script script) throws IOException
+    {
+        //
+        System.out.println(">>> get logs if exists");
+        String getLogsCommand = ((GridScript) script).getLogsCommand();
+        SshResult result = ssh.executeCommand(getLogsCommand);
+        System.out.println("get logs out:\n" + result.getStdOut());
+        System.out.println("get logs error: " + result.getStdErr());
+
+        //
+        System.out.println(">>> cancel execution");
+        String cancelCommand = ((GridScript)script).getCancelCommand();
+        result = ssh.executeCommand(cancelCommand);
+        System.out.println("cancel out:\n" + result.getStdOut());
+        System.out.println("cancel error: " + result.getStdErr());
+
+        //
+        System.out.println(">>> submit again");
+        result = ssh.executeCommand(script.getSubmitCommand());
+        System.out.println("resubmit out:\n" + result.getStdOut());
+        System.out.println("resubmit error: " + result.getStdErr());
+    }
+
+    //compare with all produced statuses
+    private String checkRunStatus(String output, String error, Script script)
+    {
+        //System.out.println("Output:\n" + output);
+
+        if (error == null || "".equalsIgnoreCase(error))
+        {
+            //System.out.println("Error: none!");
+            if(output.contains(GridScript.STATUS_RUN))
+            {
+                if(output.contains(GridScript.STATUS_RUN_WAITING))
+                {
+                    script.setStatus(Script.Status.WAITING);
+                }
+                else if(output.contains(GridScript.STATUS_RUN_SCHEDULED))
+                {
+                    script.setStatus(Script.Status.SCHEDULED);
+                }
+                else if(output.contains(GridScript.STATUS_RUN_RUNNING))
+                {
+                    script.setStatus(Script.Status.RUNNING);
+                    script.setStarted(true);
+                }
+                else if(output.contains(GridScript.STATUS_RUN_DONE_SUCCESS))
+                {
+                    script.setStatus(Script.Status.DONE_SUCCESS);
+                    script.setFinished(true);
+                }
+                else if(output.contains(GridScript.STATUS_RUN_DONE_FAILED))
+                {
+                    script.setStatus(Script.Status.DONE_FAILED);
+                }
+                return script.getStatus().toString();
+            }
+            return "error in returned status";
+        }
+        else
+        {
+            //System.out.println("Error: " + error);
+            return "error while checking status";
+        }
+
     }
 
 }
