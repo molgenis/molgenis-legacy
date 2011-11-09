@@ -35,6 +35,7 @@
 					<form name="MassPeaks" entity="MassPeak" group="biologist" />
 					<form name="Metabolites" entity="Metabolite" group="biologist" />
 					<form name="Probes" entity="Probe" group="biologist" />
+					<form name="ProbeSets" entity="ProbeSet" group="biologist" />
 					<form name="Samples" entity="Sample" group="biologist" />
 					<form name="Spots" entity="Spot" group="biologist" />
 				</menu>
