@@ -140,7 +140,8 @@ public class ImportExcel extends PluginModel<Entity>
 							linkProtocolMeasurement.put(protocolName, ProtocolFeatures);
 						}
 						
-						prot.setName(sheet.getCell(j, i).getContents().replaceAll("'", ""));
+						//prot.setName(sheet.getCell(j, i).getContents().replaceAll("'", ""));
+						prot.setName(protocolName);
 
 					}else if(j == 3){
 						
