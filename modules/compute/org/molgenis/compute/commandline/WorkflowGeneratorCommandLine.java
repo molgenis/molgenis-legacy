@@ -5,7 +5,7 @@ import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.compute.pipelinemodel.*;
 import org.molgenis.compute.scriptserver.MCF;
-import org.molgenis.compute.ui.DatabaseUpdater;
+import org.molgenis.compute.monitor.DatabaseUpdater;
 import org.molgenis.compute.workflowgenerator.ParameterWeaver;
 import org.molgenis.framework.db.Database;
 import org.molgenis.protocol.Workflow;
