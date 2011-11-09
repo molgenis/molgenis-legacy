@@ -135,7 +135,7 @@ public class ${JavaName(form.className)}FormController extends FormController<${
 
 <#list form.getRecord().getAllFields() as field>
 	<#if field.getType() == "xref" || field.getType() == "mref">
-		getModel().addCommand(new org.molgenis.framework.ui.commands.AddXrefCommand("${entity}_${field.getName()}", this, new ${field.getXrefEntityName()}(), new ${field.getXrefEntityName()}Form()));
+		getModel().addCommand(new org.molgenis.framework.ui.commands.AddXrefCommand("${entity}_${field.getName()}", this, new ${JavaName(field.getXrefEntityName())}(), new ${JavaName(field.getXrefEntityName())}Form()));
 	</#if>
 </#list>
 	}

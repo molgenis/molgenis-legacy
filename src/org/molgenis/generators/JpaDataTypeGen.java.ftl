@@ -121,6 +121,7 @@ public interface ${JavaName(entity)} extends <#if entity.hasImplements()><#list 
 <#-- disables many-to-many relationships (makes it compatible with no-JPA database)   -->
 	<#if !entity.description?contains("Link table for many-to-many relationship") >
 @Entity
+//@org.hibernate.search.annotations.Indexed
 @Table(name = "${SqlName(entity)}"<#list entity.getUniqueKeysWithoutPk() as uniqueKeys ><@compress single_line=true>
 	<#if uniqueKeys_index = 0 >, uniqueConstraints={
 	@UniqueConstraint( columnNames={<#else>), @UniqueConstraint( columnNames={</#if>
@@ -244,6 +245,11 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
     			</#if>
     		</#if>
 		</#if>	
+		<#foreach index in entity.indices>
+			<#if index.name == field.name>
+//	@Field(index=Index.TOKENIZED, store=Store.NO)
+			</#if>
+		</#foreach>
         <#if field.type == "date">
     @Temporal(TemporalType.DATE)
     	<#elseif field.type == "datetime">
@@ -815,15 +821,15 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 			 <#assign multipleXrefs = e.getNumberOfReferencesTo(entity)/>
 //${multipleXrefs}
 	@OneToMany(mappedBy="${name(f)}"/*, cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/)
-    private Collection<${Name(f.entity)}> ${name(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection = new ArrayList<${Name(f.entity)}>();
+    private Collection<${JavaName(f.entity)}> ${name(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection = new ArrayList<${JavaName(f.entity)}>();
 
 	@XmlTransient
-	public Collection<${Name(f.entity)}> get${JavaName(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection()
+	public Collection<${JavaName(f.entity)}> get${JavaName(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection()
 	{
             return ${name(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection;
 	}
 
-    public void set${JavaName(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection(Collection<${Name(f.entity)}> collection)
+    public void set${JavaName(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection(Collection<${JavaName(f.entity)}> collection)
     {
         for (${JavaName(f.entity)} ${name(f.entity)} : collection) {
             ${name(f.entity)}.set${JavaName(f)}(this);
