@@ -2,6 +2,7 @@ package org.molgenis.matrix.component.interfaces;
 
 import java.util.List;
 
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.pheno.Observation;
@@ -26,12 +27,12 @@ public interface BasicMatrix<R, C, V>
 	/**
 	 * Row metadata of this matrix
 	 */
-	public List<R> getRowHeaders() throws MatrixException;
+	public List<R> getRowHeaders(Database db) throws MatrixException;
 
 	/**
 	 * Column metadata of this matrix.
 	 */
-	public List<C> getColHeaders() throws MatrixException;
+	public List<C> getColHeaders(Database db) throws MatrixException;
 
 	/**
 	 * The unique indices of the row elements.
@@ -39,7 +40,7 @@ public interface BasicMatrix<R, C, V>
 	 * These do not be 0-rowCount but can be any identifiers that are convenient
 	 * (e.g. database identifiers).
 	 */
-	public List<Integer> getRowIndices() throws MatrixException;
+	public List<Integer> getRowIndices(Database db) throws MatrixException;
 
 	/**
 	 * The unique indices of the column elements.
@@ -47,7 +48,7 @@ public interface BasicMatrix<R, C, V>
 	 * These do not be 0-colCount but can be any identifiers that are convenient
 	 * (e.g. database identifiers).
 	 */
-	public List<Integer> getColIndices() throws MatrixException;
+	public List<Integer> getColIndices(Database db) throws MatrixException;
 
 	/**
 	 * The currently selected matrix values that are going to be rendered in the
@@ -60,14 +61,14 @@ public interface BasicMatrix<R, C, V>
 	 * 
 	 * @return columnCount
 	 */
-	public Integer getColCount() throws MatrixException;
+	public Integer getColCount(Database db) throws MatrixException;
 
 	/**
 	 * Efficiently return the row count of this matrix
 	 * 
 	 * @return rowCount
 	 */
-	public Integer getRowCount() throws MatrixException;
+	public Integer getRowCount(Database db) throws MatrixException;
 
 	/**
 	 * Will reload the matrix from backend (if applicable).
@@ -80,7 +81,7 @@ public interface BasicMatrix<R, C, V>
 	 * @return
 	 * @throws MatrixException
 	 */
-	List<? extends V>[][] getValueLists() throws MatrixException;
+	List<? extends V>[][] getValueLists(Database db) throws MatrixException;
 
 
 

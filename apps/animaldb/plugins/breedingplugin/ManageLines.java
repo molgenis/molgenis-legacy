@@ -91,6 +91,7 @@ public class ManageLines extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
+		cs.setDatabase(db);
 		try {
 			String action = request.getString("__action");
 			if (action.equals("addLine")) {

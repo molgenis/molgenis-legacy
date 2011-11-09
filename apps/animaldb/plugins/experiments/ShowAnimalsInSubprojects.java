@@ -227,6 +227,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
+		ct.setDatabase(db);
 		try
 		{
 			this.action = request.getString("__action");

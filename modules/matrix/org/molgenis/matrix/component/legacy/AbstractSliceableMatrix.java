@@ -3,6 +3,7 @@ package org.molgenis.matrix.component.legacy;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
@@ -197,7 +198,7 @@ public abstract class AbstractSliceableMatrix<R, C, V> implements
 	}
 
 	@Override
-	public List<C> getColHeaders() throws MatrixException
+	public List<C> getColHeaders(Database db) throws MatrixException
 	{
 		return colCopy;
 	}
@@ -327,7 +328,7 @@ public abstract class AbstractSliceableMatrix<R, C, V> implements
 	}
 	
 	@Override
-	public List<? extends V>[][] getValueLists() throws MatrixException
+	public List<? extends V>[][] getValueLists(Database db) throws MatrixException
 	{
 		// TODO Auto-generated method stub
 		return null;

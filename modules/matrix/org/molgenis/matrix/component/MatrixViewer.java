@@ -10,7 +10,7 @@ import java.util.Locale;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.ActionInput;
@@ -71,6 +71,13 @@ public class MatrixViewer extends HtmlWidget
 	public String MEASUREMENTCHOOSER = getName() + "_measurementChooser";
 	public String OPERATOR = getName() + "_operator";
 	
+	//hack to pass database to toHtml() via toHtml(db)
+	private Database toHtmlDb;
+	public void setToHtmlDb(Database toHtmlDb)
+	{
+		this.toHtmlDb = toHtmlDb;
+	}
+
 	/**
 	 * Default constructor.
 	 * 
@@ -133,21 +140,26 @@ public class MatrixViewer extends HtmlWidget
 	
 	public String toHtml()
 	{	
+		return toHtml(toHtmlDb);
+	}
+	
+	public String toHtml(Database db)
+	{	
 		try {
 			String result = "<table><tr><td>";
 			result += renderReload();
 			result += "</td><td>";
-			result += renderHeader();
+			result += renderHeader(db);
 			result += "</td></tr><tr><td>";
-			result += renderVerticalMovers();
+			result += renderVerticalMovers(db);
 			result += "</td><td>";
-			result += renderTable();
+			result += renderTable(db);
 			result += "</td></tr><tr><td colspan='2'>";
-			result += renderFilterPart();
+			result += renderFilterPart(db);
 			result += "</td></tr></table>";
 			return result;
 		} catch (Exception e) {
-			((EasyPluginController)this.callingScreenController).setError(e.getMessage());
+			((PluginModel)this.callingScreenController).setError(e.getMessage());
 			e.printStackTrace();
 			return new Paragraph("error", e.getMessage()).render();
 		}
@@ -160,7 +172,7 @@ public class MatrixViewer extends HtmlWidget
 		return reload.render();
 	}
 	
-	public String renderHeader() throws MatrixException {
+	public String renderHeader(Database db) throws MatrixException {
 		String divContents = "";
 		// move horizontal
 		ActionInput moveLeftEnd = new ActionInput(MOVELEFTEND, "", "");
@@ -171,7 +183,7 @@ public class MatrixViewer extends HtmlWidget
 		divContents += moveLeft.render();
 		int colOffset = this.matrix.getColOffset();
 		int colLimit = this.matrix.getColLimit();
-		int colCount = this.matrix.getColCount();
+		int colCount = this.matrix.getColCount(db);
 		int colMax = Math.min(colOffset + colLimit, colCount);
 		divContents += "&nbsp;Showing " + (colOffset + 1) + " - " + colMax + " of " + colCount + "&nbsp;";
 		// collimit
@@ -191,7 +203,7 @@ public class MatrixViewer extends HtmlWidget
 		return divContents;
 	}
 	
-	public String renderVerticalMovers() throws MatrixException {
+	public String renderVerticalMovers(Database db) throws MatrixException {
 		String divContents = "";
 		// move vertical
 		ActionInput moveUpEnd = new ActionInput(MOVEUPEND, "", "");
@@ -204,7 +216,7 @@ public class MatrixViewer extends HtmlWidget
 		divContents += new Newline().render();
 		int rowOffset = this.matrix.getRowOffset();
 		int rowLimit = this.matrix.getRowLimit();
-		int rowCount = this.matrix.getRowCount();
+		int rowCount = this.matrix.getRowCount(db);
 		int rowMax = Math.min(rowOffset + rowLimit, rowCount);
 		divContents += "Showing " + (rowOffset + 1) + " - " + rowMax + " of " + rowCount;
 		divContents += new Newline().render();
@@ -229,20 +241,20 @@ public class MatrixViewer extends HtmlWidget
 		return divContents;
 	}
 	
-	public String renderTable() throws MatrixException {
+	public String renderTable(Database db) throws MatrixException {
 		JQueryDataTable dataTable = new JQueryDataTable(getName() + "DataTable");
 		
 		Object[][] values = null;
 		try{
-			values = matrix.getValueLists();
+			values = matrix.getValueLists(db);
 		}
 		catch(UnsupportedOperationException ue)
 		{
 			values = matrix.getValues();
 		}
 		
-		List<?> rows = matrix.getRowHeaders();
-		List<?> cols = matrix.getColHeaders();
+		List<?> rows = matrix.getRowHeaders(db);
+		List<?> cols = matrix.getColHeaders(db);
 		
 		//print colHeaders
 		dataTable.addColumn("ID");
@@ -355,7 +367,7 @@ public class MatrixViewer extends HtmlWidget
 		return dataTable.toHtml();
 	}
 	
-	public String renderFilterPart() throws MatrixException {
+	public String renderFilterPart(Database db) throws MatrixException {
 		String divContents = "";
 					
 		// Show applied filter rules
@@ -367,7 +379,7 @@ public class MatrixViewer extends HtmlWidget
 				// Show only column value filters to user
 				if (mqr.getFilterType().equals(MatrixQueryRule.Type.colValueProperty)) {
 					String measurementName = "";
-					for (Object meas : matrix.getColHeaders()) {
+					for (Object meas : matrix.getColHeaders(db)) {
 						
 						if(meas instanceof ObservationElement)
 						{
@@ -397,7 +409,7 @@ public class MatrixViewer extends HtmlWidget
 		SelectInput colId = new SelectInput(COLID);
 		divContents += "Add filter:";
 		
-		List<? extends Object> colH = matrix.getColHeaders();
+		List<? extends Object> colH = matrix.getColHeaders(db);
 		if(colH.get(0) instanceof Entity)
 		{
 			List<? extends Entity> lala = (List<? extends Entity>) colH;
@@ -421,7 +433,7 @@ public class MatrixViewer extends HtmlWidget
 		// column header filter
 		if (columnsRestricted) {
 			List selectedMeasurements = new ArrayList();
-			selectedMeasurements.addAll(matrix.getColHeaders());
+			selectedMeasurements.addAll(matrix.getColHeaders(db));
 			MrefInput measurementChooser = new MrefInput(MEASUREMENTCHOOSER, "Add/remove columns:", 
 					selectedMeasurements, false, false, 
 					"Choose one or more columns (i.e. measurements) to be displayed in the matrix viewer", 
@@ -541,16 +553,16 @@ public class MatrixViewer extends HtmlWidget
 	{
 		this.matrix
 				.setColOffset(matrix.getColOffset() + matrix.getColLimit() < matrix
-						.getColCount() ? matrix.getColOffset()
+						.getColCount(db) ? matrix.getColOffset()
 						+ matrix.getColLimit() : matrix.getColOffset());
 	}
 
 	public void moveRightEnd(Database db, Tuple t) throws MatrixException
 	{
 		this.matrix
-				.setColOffset((matrix.getColCount() % matrix.getColLimit() == 0 ? new Double(
-						matrix.getColCount() / matrix.getColLimit()).intValue() - 1
-						: new Double(matrix.getColCount()
+				.setColOffset((matrix.getColCount(db) % matrix.getColLimit() == 0 ? new Double(
+						matrix.getColCount(db) / matrix.getColLimit()).intValue() - 1
+						: new Double(matrix.getColCount(db)
 								/ matrix.getColLimit()).intValue())
 						* matrix.getColLimit());
 	}
@@ -572,16 +584,16 @@ public class MatrixViewer extends HtmlWidget
 	{
 		this.matrix
 				.setRowOffset(matrix.getRowOffset() + matrix.getRowLimit() < matrix
-						.getRowCount() ? matrix.getRowOffset()
+						.getRowCount(db) ? matrix.getRowOffset()
 						+ matrix.getRowLimit() : matrix.getRowOffset());
 	}
 
 	public void moveDownEnd(Database db, Tuple t) throws MatrixException
 	{
 		this.matrix
-				.setRowOffset((matrix.getRowCount() % matrix.getRowLimit() == 0 ? new Double(
-						matrix.getRowCount() / matrix.getRowLimit()).intValue() - 1
-						: new Double(matrix.getRowCount()
+				.setRowOffset((matrix.getRowCount(db) % matrix.getRowLimit() == 0 ? new Double(
+						matrix.getRowCount(db) / matrix.getRowLimit()).intValue() - 1
+						: new Double(matrix.getRowCount(db)
 								/ matrix.getRowLimit()).intValue())
 						* matrix.getRowLimit());
 	}
@@ -639,8 +651,8 @@ public class MatrixViewer extends HtmlWidget
 		}
 	}
 	
-	public List<?> getSelection() throws MatrixException {
-		return matrix.getRowHeaders();
+	public List<?> getSelection(Database db) throws MatrixException {
+		return matrix.getRowHeaders(db);
 	}
 	
 	public SliceableMatrix getMatrix()

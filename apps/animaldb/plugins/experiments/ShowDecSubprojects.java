@@ -189,6 +189,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
+		ct.setDatabase(db);
 		try {
 			this.setAction(request.getAction());
 		

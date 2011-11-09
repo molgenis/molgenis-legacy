@@ -110,7 +110,7 @@ public class MatrixTestsMV extends EasyPluginController<MatrixTestsModelMV>
 	}
 	
 	public void saveSelection(Database db, Tuple t) throws DatabaseException, MatrixException {
-		List<? extends ObservationElement> rows = (List<? extends ObservationElement>) matrixViewer.getSelection();
+		List<? extends ObservationElement> rows = (List<? extends ObservationElement>) matrixViewer.getSelection(db);
 		String selectionItems = "<ul>";
 		for (ObservationElement row : rows) {
 			selectionItems += "<li>" + row.getName() + "</li>";

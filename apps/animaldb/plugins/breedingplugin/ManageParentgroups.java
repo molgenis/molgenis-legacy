@@ -55,6 +55,13 @@ public class ManageParentgroups extends PluginModel<Entity>
 	private String action = "init";
 	private int userId = -1;
 	
+	//hack to pass database to toHtml() via toHtml(db)
+	private Database toHtmlDb;
+	public void setToHtmlDb(Database toHtmlDb)
+	{
+		this.toHtmlDb = toHtmlDb;
+	}
+	
 	public ManageParentgroups(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
@@ -154,6 +161,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 
 	public String renderMotherMatrixViewer() {
 		if (motherMatrixViewer != null) {
+			motherMatrixViewer.setToHtmlDb(toHtmlDb);
 			return motherMatrixViewer.render();
 		} else {
 			return "No viewer available, matrix for selecting mother(s) cannot be rendered.";
@@ -162,6 +170,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 	
 	public String renderFatherMatrixViewer() {
 		if (fatherMatrixViewer != null) {
+			fatherMatrixViewer.setToHtmlDb(toHtmlDb);
 			return fatherMatrixViewer.render();
 		} else {
 			return "No viewer available, matrix for selecting father(s) cannot be rendered.";
@@ -232,6 +241,8 @@ public class ManageParentgroups extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{	
+		ct.setDatabase(db);
+		this.toHtmlDb = db;
 		action = request.getString("__action");
 		try {
 			Date now = new Date();
@@ -264,7 +275,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			
 			if (action.equals("addParentgroupScreen3")) {
 				String motherNames = "";
-				List<ObservationElement> rows = (List<ObservationElement>) motherMatrixViewer.getSelection();
+				List<ObservationElement> rows = (List<ObservationElement>) motherMatrixViewer.getSelection(db);
 				int rowCnt = 0;
 				for (ObservationElement row : rows) {
 					if (request.getBool(MOTHERMATRIX + "_selected_" + rowCnt) != null) {
@@ -285,7 +296,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			
 			if (action.equals("addParentgroupScreen4")) {
 				String fatherNames = "";
-				List<ObservationElement> rows = (List<ObservationElement>) fatherMatrixViewer.getSelection();
+				List<ObservationElement> rows = (List<ObservationElement>) fatherMatrixViewer.getSelection(db);
 				int rowCnt = 0;
 				for (ObservationElement row : rows) {
 					if (request.getBool(FATHERMATRIX + "_selected_" + rowCnt) != null) {
@@ -369,6 +380,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
+		ct.setDatabase(db);
 		// Populate lists (do this on every reload so they keep fresh, and do it here
 		// because we need the lineList in the init part that comes after)
 		try {
@@ -432,7 +444,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 				// but gives a very un-userfriendly toString value when shown in the UI
 			}
 			motherMatrixViewer = new MatrixViewer(this, MOTHERMATRIX, 
-					new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
+					new SliceablePhenoMatrix(Individual.class, Measurement.class), 
 					true, true, motherFilterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 							Operator.IN, measurementsToShow));
 			// Father matrix viewer
@@ -451,7 +463,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 				// but gives a very un-userfriendly toString value when shown in the UI
 			}
 			fatherMatrixViewer = new MatrixViewer(this, FATHERMATRIX, 
-					new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
+					new SliceablePhenoMatrix(Individual.class, Measurement.class), 
 					true, true, fatherFilterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 							Operator.IN, measurementsToShow));
 		} catch (Exception e) {

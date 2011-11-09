@@ -4,7 +4,7 @@ function getMatrix(animalbox) {
 	if (!xmlhttp) xmlhttp = aaGetXmlHttpRequest();
 	if (!xmlhttp) return;
 	//var et = eventtypebox.options(eventtypebox.selectedIndex).text;
-	var url = 'ViewEventsServlet?animal='+animalbox.value;
+	var url = 'ViewEventsService?animal='+animalbox.value;
 	xmlhttp.open('GET', url, true);
 	xmlhttp.onreadystatechange = printMatrix;
 	xmlhttp.send(null);

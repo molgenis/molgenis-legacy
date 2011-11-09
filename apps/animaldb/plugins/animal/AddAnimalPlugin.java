@@ -136,7 +136,7 @@ public class AddAnimalPlugin extends GenericPlugin
 	}
 	
 	private void handleAddRequest(Database db, Tuple request) throws Exception {
-		
+		ct.setDatabase(db);
 		int speciesId = 0;
 		if (species.getObject() != null) {
 			speciesId = Integer.parseInt(species.getObject().toString());

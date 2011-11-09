@@ -76,7 +76,7 @@ public class ManageLitters extends PluginModel<Entity>
 	private List<String> colorList;
 	private List<Code> earmarkList;
 	private int genoLitterId;
-	private Database db;
+	//private Database db;
 	private List<String> bases = null;
 	private String remarks = null;
 	private Table genotypeTable = null;
@@ -84,6 +84,13 @@ public class ManageLitters extends PluginModel<Entity>
 	MatrixViewer matrixViewer = null;
 	private static String MATRIX = "matrix";
 	private int userId = -1;
+	
+	//hack to pass database to toHtml() via toHtml(db)
+	private Database toHtmlDb;
+	public void setToHtmlDb(Database toHtmlDb)
+	{
+		this.toHtmlDb = toHtmlDb;
+	}
 
 	public ManageLitters(String name, ScreenController<?> parent)
 	{
@@ -285,6 +292,7 @@ public class ManageLitters extends PluginModel<Entity>
 	
 	public String renderMatrixViewer() {
 		if (matrixViewer != null) {
+			matrixViewer.setToHtmlDb(toHtmlDb);
 			return matrixViewer.render();
 		} else {
 			return "No viewer available, matrix for selecting parent group cannot be rendered.";
@@ -345,10 +353,10 @@ public class ManageLitters extends PluginModel<Entity>
 			returnString += ("Parentgroup: " + parentgroupName + "<br />");
 			returnString += ("Line: " + getLineInfo(parentgroupId) + "<br />");
 			
-			int motherId = findParentForParentgroup(parentgroupId, "Mother");
-			returnString += ("Mother: " + getGenoInfo(motherId) + "<br />");
-			int fatherId = findParentForParentgroup(parentgroupId, "Father");
-			returnString += ("Father: " + getGenoInfo(fatherId) + "<br />");
+			int motherId = findParentForParentgroup(parentgroupId, "Mother", toHtmlDb);
+			returnString += ("Mother: " + getGenoInfo(motherId, toHtmlDb) + "<br />");
+			int fatherId = findParentForParentgroup(parentgroupId, "Father", toHtmlDb);
+			returnString += ("Father: " + getGenoInfo(fatherId, toHtmlDb) + "<br />");
 			
 			return returnString;
 			
@@ -357,19 +365,19 @@ public class ManageLitters extends PluginModel<Entity>
 		}
 	}
 	
-	public List<Individual> getAnimalsInLitter() {
+	public List<Individual> getAnimalsInLitter(Database db) {
 		try {
-			return getAnimalsInLitter(this.getGenoLitterId());
+			return getAnimalsInLitter(this.getGenoLitterId(), db);
 		} catch (Exception e) {
 			// On fail, return empty list to UI
 			return new ArrayList<Individual>();
 		}
 	}
 	
-	public List<Individual> getAnimalsInLitter(int litterId) {
+	public List<Individual> getAnimalsInLitter(int litterId, Database db) {
 		List<Individual> returnList = new ArrayList<Individual>();
 		try {
-			Query<ObservedValue> q = this.db.query(ObservedValue.class);
+			Query<ObservedValue> q = db.query(ObservedValue.class);
 			q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, litterId));
 			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, ct.getMeasurementId("Litter")));
 			List<ObservedValue> valueList = q.find();
@@ -436,7 +444,7 @@ public class ManageLitters extends PluginModel<Entity>
 		}
 	}
 	
-	public String getAnimalGeneInfo(String measurementName, int animalId, int genoNr) {
+	public String getAnimalGeneInfo(String measurementName, int animalId, int genoNr, Database db) {
 		Query<ObservedValue> q = db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, measurementName));
@@ -453,7 +461,8 @@ public class ManageLitters extends PluginModel<Entity>
 		}
 	}
 	
-	private int findParentForParentgroup(int parentgroupId, String parentSex) throws DatabaseException, ParseException {
+	private int findParentForParentgroup(int parentgroupId, String parentSex, Database db) throws DatabaseException, ParseException {
+		ct.setDatabase(db);
 		int measurementId = ct.getMeasurementId(parentSex);
 		Query<ObservedValue> parentQuery = db.query(ObservedValue.class);
 		parentQuery.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, parentgroupId));
@@ -466,7 +475,7 @@ public class ManageLitters extends PluginModel<Entity>
 		}
 	}
 	
-	private String getGenoInfo(int animalId) throws DatabaseException, ParseException {
+	private String getGenoInfo(int animalId, Database db) throws DatabaseException, ParseException {
 		String returnString = "";
 		int measurementId = ct.getMeasurementId("Background");
 		int animalBackgroundId = ct.getMostRecentValueAsXref(animalId, measurementId);
@@ -475,7 +484,7 @@ public class ManageLitters extends PluginModel<Entity>
 			animalBackgroundName = ct.getObservationTargetById(animalBackgroundId).getName();
 		}
 		returnString += ("background: " + animalBackgroundName + "; ");
-		Query<ObservedValue> q = this.db.query(ObservedValue.class);
+		Query<ObservedValue> q = db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, ct.getMeasurementId("GeneName")));
 		List<ObservedValue> valueList = q.find();
@@ -485,7 +494,7 @@ public class ManageLitters extends PluginModel<Entity>
 				String geneName = value.getValue();
 				String geneState = "";
 				protocolApplicationId = value.getProtocolApplication_Id();
-				q = this.db.query(ObservedValue.class);
+				q = db.query(ObservedValue.class);
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, ct.getMeasurementId("GeneState")));
 				q.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, protocolApplicationId));
@@ -553,6 +562,7 @@ public class ManageLitters extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
+		ct.setDatabase(db);
 		try {
 			Calendar calendar = Calendar.getInstance();
 			Date now = calendar.getTime();
@@ -566,12 +576,12 @@ public class ManageLitters extends PluginModel<Entity>
 			
 			if (action.equals("MakeTmpLabels")) {
 				setLitter(request.getInt("id"));
-				makeTempCageLabels();
+				makeTempCageLabels(db);
 			}
 			
 			if (action.equals("MakeDefLabels")) {
 				setLitter(request.getInt("id"));
-				makeDefCageLabels();
+				makeDefCageLabels(db);
 			}
 			
 			if (action.equals("AddLitter")) {
@@ -714,7 +724,7 @@ public class ManageLitters extends PluginModel<Entity>
 				String geneName;
 				String geneState;
 				try {
-					int motherId = findParentForParentgroup(parentgroupId, "Mother");
+					int motherId = findParentForParentgroup(parentgroupId, "Mother", db);
 					speciesId = ct.getMostRecentValueAsXref(motherId, ct.getMeasurementId("Species"));
 					animalType = ct.getMostRecentValueAsString(motherId, ct.getMeasurementId("AnimalType"));
 					color = ct.getMostRecentValueAsString(motherId, ct.getMeasurementId("Color"));
@@ -879,7 +889,7 @@ public class ManageLitters extends PluginModel<Entity>
 				genotypeTable.addColumn("Gene name");
 				genotypeTable.addColumn("Gene state");
 				int row = 0;
-				for (Individual animal : getAnimalsInLitter()) {
+				for (Individual animal : getAnimalsInLitter(db)) {
 					int animalId = animal.getId();
 					genotypeTable.addRow(animal.getName());
 					// Birth date
@@ -919,14 +929,14 @@ public class ManageLitters extends PluginModel<Entity>
 					for (String geneName : this.geneNameList) {
 						geneNameInput.addOption(geneName, geneName);
 					}
-					geneNameInput.setValue(getAnimalGeneInfo("GeneName", animalId, 0));
+					geneNameInput.setValue(getAnimalGeneInfo("GeneName", animalId, 0, db));
 					genotypeTable.setCell(5, row, geneNameInput);
 					// Gene state (1)
 					SelectInput geneStateInput = new SelectInput("6_" + row);
 					for (String geneState : this.geneStateList) {
 						geneStateInput.addOption(geneState, geneState);
 					}
-					geneStateInput.setValue(getAnimalGeneInfo("GeneState", animalId, 0));
+					geneStateInput.setValue(getAnimalGeneInfo("GeneState", animalId, 0, db));
 					genotypeTable.setCell(6, row, geneStateInput);
 					row++;
 				}
@@ -937,7 +947,7 @@ public class ManageLitters extends PluginModel<Entity>
 				genotypeTable.addColumn("Gene name");
 				genotypeTable.addColumn("Gene state");
 				int row = 0;
-				for (Individual animal : getAnimalsInLitter()) {
+				for (Individual animal : getAnimalsInLitter(db)) {
 					int animalId = animal.getId();
 					// Gene name (n)
 					int newCol = 5 + ((nrOfGenotypes - 1) * 2);
@@ -945,14 +955,14 @@ public class ManageLitters extends PluginModel<Entity>
 					for (String geneName : this.geneNameList) {
 						geneNameInput.addOption(geneName, geneName);
 					}
-					geneNameInput.setValue(getAnimalGeneInfo("GeneName", animalId, nrOfGenotypes));
+					geneNameInput.setValue(getAnimalGeneInfo("GeneName", animalId, nrOfGenotypes, db));
 					genotypeTable.setCell(newCol, row, geneNameInput);
 					// Gene state (n)
 					SelectInput geneStateInput = new SelectInput((newCol + 1) + "_" + row);
 					for (String geneState : this.geneStateList) {
 						geneStateInput.addOption(geneState, geneState);
 					}
-					geneStateInput.setValue(getAnimalGeneInfo("GeneState", animalId, nrOfGenotypes));
+					geneStateInput.setValue(getAnimalGeneInfo("GeneState", animalId, nrOfGenotypes, db));
 					genotypeTable.setCell(newCol + 1, row, geneStateInput);
 					row++;
 				}
@@ -988,7 +998,7 @@ public class ManageLitters extends PluginModel<Entity>
 				}
 				
 				int animalCount = 0;
-				for (Individual animal : this.getAnimalsInLitter()) {
+				for (Individual animal : this.getAnimalsInLitter(db)) {
 					
 					// Here we (re)set the values from the genotyping
 					
@@ -1112,7 +1122,7 @@ public class ManageLitters extends PluginModel<Entity>
 			
 			if (action.equals("selectParentgroup")) {
 				setUserFields(request, false);
-				List rows = matrixViewer.getSelection();
+				List rows = matrixViewer.getSelection(db);
 				int row = request.getInt(MATRIX + "_selected");
 				this.selectedParentgroup = ((ObservationElement) rows.get(row)).getId();
 				this.setAction("AddLitter");
@@ -1133,7 +1143,7 @@ public class ManageLitters extends PluginModel<Entity>
 		}
 	}
 
-	private void makeDefCageLabels() throws LabelGeneratorException, DatabaseException, ParseException {
+	private void makeDefCageLabels(Database db) throws LabelGeneratorException, DatabaseException, ParseException {
 		
 		// PDF file stuff
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
@@ -1145,15 +1155,15 @@ public class ManageLitters extends PluginModel<Entity>
 		// Litter stuff
 		int parentgroupId = ct.getMostRecentValueAsXref(litter, ct.getMeasurementId("Parentgroup"));
 		String line = this.getLineInfo(parentgroupId);
-		int motherId = findParentForParentgroup(parentgroupId, "Mother");
-		String motherInfo = this.getGenoInfo(motherId);
-		int fatherId = findParentForParentgroup(parentgroupId, "Father");
-		String fatherInfo = this.getGenoInfo(fatherId);
+		int motherId = findParentForParentgroup(parentgroupId, "Mother", db);
+		String motherInfo = this.getGenoInfo(motherId, db);
+		int fatherId = findParentForParentgroup(parentgroupId, "Father", db);
+		String fatherInfo = this.getGenoInfo(fatherId, db);
 		
 		List<String> elementLabelList;	
 		List<String> elementList;
 		
-		for (Individual animal : this.getAnimalsInLitter(litter)) {
+		for (Individual animal : this.getAnimalsInLitter(litter, db)) {
 			int animalId = animal.getId();
 			elementList = new ArrayList<String>();
 			elementLabelList = new ArrayList<String>();
@@ -1172,7 +1182,7 @@ public class ManageLitters extends PluginModel<Entity>
 			elementList.add(line);
 			// Background + GeneName + GeneState
 			elementLabelList.add("Genotype:");
-			elementList.add(this.getGenoInfo(animalId));
+			elementList.add(this.getGenoInfo(animalId, db));
 			// Color + Sex
 			elementLabelList.add("Color and Sex:");
 			String colorSex = ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("Color"));
@@ -1205,7 +1215,7 @@ public class ManageLitters extends PluginModel<Entity>
 		}
 		
 		// In case of an odd number of animals, add extra label to make row full
-		if (this.getAnimalsInLitter(litter).size() %2 != 0) {
+		if (this.getAnimalsInLitter(litter, db).size() %2 != 0) {
 			elementLabelList = new ArrayList<String>();
 			elementList = new ArrayList<String>();
 			labelgenerator.addLabelToDocument(elementLabelList, elementList);
@@ -1215,7 +1225,7 @@ public class ManageLitters extends PluginModel<Entity>
 		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename + "\">Download definitive cage labels as pdf</a>");
 	}
 
-	private void makeTempCageLabels() throws Exception {
+	private void makeTempCageLabels(Database db) throws Exception {
 		
 		// PDF file stuff
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
@@ -1229,9 +1239,9 @@ public class ManageLitters extends PluginModel<Entity>
 		int parentgroupId = ct.getMostRecentValueAsXref(litter, ct.getMeasurementId("Parentgroup"));
 		int lineId = ct.getMostRecentValueAsXref(parentgroupId, ct.getMeasurementId("Line"));
 		String lineName = ct.getObservationTargetById(lineId).getName();
-		int motherId = findParentForParentgroup(parentgroupId, "Mother");
+		int motherId = findParentForParentgroup(parentgroupId, "Mother", db);
 		String motherName = ct.getObservationTargetById(motherId).getName();
-		int fatherId = findParentForParentgroup(parentgroupId, "Father");
+		int fatherId = findParentForParentgroup(parentgroupId, "Father", db);
 		String fatherName = ct.getObservationTargetById(fatherId).getName();
 		String litterBirthDateString = ct.getMostRecentValueAsString(litter, ct.getMeasurementId("DateOfBirth"));
 		int nrOfAnimals = Integer.parseInt(ct.getMostRecentValueAsString(litter, ct.getMeasurementId("WeanSize")));
@@ -1310,6 +1320,8 @@ public class ManageLitters extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{	
+		ct.setDatabase(db);
+		this.toHtmlDb = db;
 		if (this.getLogin().getUserId().intValue() != userId) {
 			userId = this.getLogin().getUserId().intValue();
 			reloadLitterLists(db, false);
@@ -1352,9 +1364,9 @@ public class ManageLitters extends PluginModel<Entity>
 	}
 	
 	private void reloadLitterLists(Database db, boolean includeDone) {
-		this.db = db;
+		//this.db = db;
 		
-		ct.setDatabase(this.db);
+		ct.setDatabase(db);
 		ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
 		
 		try {
@@ -1496,7 +1508,7 @@ public class ManageLitters extends PluginModel<Entity>
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("TypeOfGroup"),
 					ObservedValue.VALUE, Operator.EQUALS, "Parentgroup"));
 			matrixViewer = new MatrixViewer(this, MATRIX, 
-					new SliceablePhenoMatrix(this.getDatabase(), Panel.class, Measurement.class), 
+					new SliceablePhenoMatrix(Panel.class, Measurement.class), 
 					true, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 							Operator.IN, measurementsToShow));
 		} catch (Exception e) {

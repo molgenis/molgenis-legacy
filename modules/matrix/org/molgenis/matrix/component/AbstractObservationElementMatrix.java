@@ -21,7 +21,7 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 		SliceableMatrix<R, C, V>
 {
 
-	protected Database database;
+	//protected Database database;
 	protected Class<R> rowClass;
 	protected Class<C> colClass;
 	protected Class<? extends V> valueClass;
@@ -73,11 +73,11 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 	}
 
 	@Override
-	public List<Integer> getRowIndices() throws MatrixException
+	public List<Integer> getRowIndices(Database db) throws MatrixException
 	{
 		// retrieve the indices from the headers (we use the id value).
 		List<Integer> rowIndices = new ArrayList<Integer>();
-		for (R row : getRowHeaders())
+		for (R row : getRowHeaders(db))
 		{
 			rowIndices.add(row.getId());
 		}
@@ -85,11 +85,11 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 	}
 
 	@Override
-	public List<Integer> getColIndices() throws MatrixException
+	public List<Integer> getColIndices(Database db) throws MatrixException
 	{
 		// get col indexes from col headers
 		List<Integer> colIndices = new ArrayList<Integer>();
-		for (C col : getColHeaders())
+		for (C col : getColHeaders(db))
 		{
 			colIndices.add(col.getId());
 		}

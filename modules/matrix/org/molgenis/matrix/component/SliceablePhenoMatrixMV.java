@@ -52,7 +52,7 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     public SliceablePhenoMatrixMV(Database database, 
             Class<R> rowClass, Class<C> colClass, 
             Investigation investigation, LinkedHashMap<Protocol, List<Measurement>> mesurementByProtocol) {
-        this.database = database;
+        //this.database = database;
         this.rowClass = rowClass;
         this.colClass = colClass;
         this.valueClass = ObservedValue.class;
@@ -62,11 +62,11 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     }
 
     @Override
-    public List<R> getRowHeaders() throws MatrixException {
+    public List<R> getRowHeaders(Database db) throws MatrixException {
         // reload the rowheaders if filters have changed.
         if (rowDirty) {
             try {
-                Query<R> query = this.createSelectQuery(getRowClass());
+                Query<R> query = this.createSelectQuery(getRowClass(), db);
                 this.rowHeaders = query.find();
                 rowDirty = false;
             } catch (Exception e) {
@@ -77,7 +77,7 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     }
 
     @Override
-    public Integer getRowCount() throws MatrixException {
+    public Integer getRowCount(Database db) throws MatrixException {
         try {
             String query = createCountQuery();
             query = String.format("SELECT count(*) FROM (%s)", query);
@@ -89,7 +89,7 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     }
 
     @Override
-    public List<C> getColHeaders() throws MatrixException {
+    public List<C> getColHeaders(Database db) throws MatrixException {
         List<Measurement> result = new ArrayList<Measurement>();
         for (Map.Entry<Protocol, List<Measurement>> entry : mesurementsByProtocol.entrySet()) {
             result.addAll(entry.getValue());
@@ -111,10 +111,10 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     }
     
     @Override
-    public Integer getColCount() throws MatrixException {
+    public Integer getColCount(Database db) throws MatrixException {
         // fire count query on col headers
         try {
-            return this.createCountQuery(getColClass()).count();
+            return this.createCountQuery(getColClass(), db).count();
         } catch (DatabaseException e) {
             throw new MatrixException(e);
         }
@@ -130,14 +130,14 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
      * is that there is no limit/offset on it
      */
     private <D extends ObservationElement> Query<D> createCountQuery(
-            Class<D> xClass) throws MatrixException {
-        return this.createQuery(xClass, true);
+            Class<D> xClass, Database db) throws MatrixException {
+        return this.createQuery(xClass, true, db);
     }
 
     /** Helper method to produce a selection query for columns or rows */
     private <D extends ObservationElement> Query<D> createSelectQuery(
-            Class<D> xClass) throws MatrixException {
-        return this.createQuery(xClass, false);
+            Class<D> xClass, Database db) throws MatrixException {
+        return this.createQuery(xClass, false, db);
     }
 
     private String getFilterCondition() {
@@ -170,7 +170,7 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
      * @throws MatrixException
      */
     private <D extends ObservationElement> Query<D> createQuery(
-            Class<D> xClass, boolean countAll) throws MatrixException {
+            Class<D> xClass, boolean countAll, Database db) throws MatrixException {
         // If xClass == getRowClass():
         // A. filter on rowIndex + rowHeaderProperty
         // B. filter on colValue: 1 subquery per column
@@ -190,7 +190,7 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
             }
 
 
-            Query<D> xQuery = database.query(xClass);
+            Query<D> xQuery = db.query(xClass);
 //			for (MatrixQueryRule rule : rules)
 //			{
 //                            // only add colValues / rowValues as subquery
@@ -380,7 +380,7 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     }
 
     @Override
-    public List<ObservedValue>[][] getValueLists() throws MatrixException {
+    public List<ObservedValue>[][] getValueLists(Database db) throws MatrixException {
         try {
             int columnCount = getVisableColumnCount();
 

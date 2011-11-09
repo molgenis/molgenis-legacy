@@ -3,6 +3,7 @@ package matrix;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
@@ -62,25 +63,25 @@ public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Obje
 	}
 
 	@Override
-	public List<String> getRowHeaders() throws MatrixException
+	public List<String> getRowHeaders(Database db) throws MatrixException
 	{
 		return this.copiedRowNames.subList(rowOffset, rowOffset+rowLimit);
 	}
 
 	@Override
-	public List<String> getColHeaders() throws MatrixException
+	public List<String> getColHeaders(Database db) throws MatrixException
 	{
 		return this.copiedColNames.subList(colOffset, colOffset+colLimit);
 	}
 
 	@Override
-	public List<Integer> getRowIndices() throws MatrixException
+	public List<Integer> getRowIndices(Database db) throws MatrixException
 	{
 		return this.copiedRowIndices.subList(rowOffset, rowOffset+rowLimit);
 	}
 
 	@Override
-	public List<Integer> getColIndices() throws MatrixException
+	public List<Integer> getColIndices(Database db) throws MatrixException
 	{
 		return this.copiedColIndices.subList(colOffset, colOffset+colLimit);
 	}
@@ -139,13 +140,13 @@ public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Obje
 	}
 
 	@Override
-	public Integer getColCount() throws MatrixException
+	public Integer getColCount(Database db) throws MatrixException
 	{
 		return wrappedMatrix.getNumberOfCols();
 	}
 
 	@Override
-	public Integer getRowCount() throws MatrixException
+	public Integer getRowCount(Database db) throws MatrixException
 	{
 		return wrappedMatrix.getNumberOfRows();
 	}
@@ -157,7 +158,7 @@ public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Obje
 	}
 
 	@Override
-	public List<? extends Object>[][] getValueLists() throws MatrixException
+	public List<? extends Object>[][] getValueLists(Database db) throws MatrixException
 	{
 		throw new UnsupportedOperationException();
 	}

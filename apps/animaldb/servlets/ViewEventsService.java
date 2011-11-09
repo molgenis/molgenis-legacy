@@ -18,9 +18,15 @@ import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
-public class ViewEventsServlet extends app.servlet.MolgenisServlet {
+
+/**
+ * Renamed from ViewEventsServlet to ViewEventsService to be
+ * streamlined with FrontController name!
+ *
+ */
+public class ViewEventsService extends app.servlet.MolgenisServlet {
 	private static final long serialVersionUID = -5860101269122494304L;
-	private static Logger logger = Logger.getLogger(ViewEventsServlet.class);
+	private static Logger logger = Logger.getLogger(ViewEventsService.class);
 	
 	public void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {

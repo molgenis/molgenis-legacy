@@ -139,7 +139,7 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 					List<String> measurementsToShow = indvInfoProt.getFeatures_Name();
 					
 					getModel().matrixViewerIndv = new MatrixViewer(this, getModel().INDVMATRIX, 
-							new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
+							new SliceablePhenoMatrix(Individual.class, Measurement.class), 
 							true, true, null, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 									Operator.IN, measurementsToShow));
 				}
@@ -152,7 +152,7 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 							Operator.IN, getModel().getListIndividuals()));
 					
 					getModel().matrixViewerSample = new MatrixViewer(this, getModel().SAMPLEMATRIX, 
-							new SliceablePhenoMatrix(this.getDatabase(), Individual.class, Measurement.class), 
+							new SliceablePhenoMatrix(Individual.class, Measurement.class), 
 							true, true, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 									Operator.IN, measurementsToShowSamples));
 				}
@@ -194,7 +194,7 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 
 			if (getModel().action.equals("setSelection")) {
 				getModel().selection = "";
-				List<ObservationElement> rows = (List<ObservationElement>) getModel().matrixViewerIndv.getSelection();
+				List<ObservationElement> rows = (List<ObservationElement>) getModel().matrixViewerIndv.getSelection(db);
 				int rowCnt = 0;
 				List<Integer> listIndividualIds = new ArrayList<Integer>();
 				for (ObservationElement row : rows) {

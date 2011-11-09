@@ -43,6 +43,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
     @Override
     public void handleRequest(Database db, Tuple request)
     {
+    	service.setDatabase(db);
     	ScreenMessage message = null;
 	    String action = request.getString("__action");
 
