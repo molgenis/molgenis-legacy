@@ -138,6 +138,15 @@ public interface ${JavaName(entity)} extends <#if entity.hasImplements()><#list 
 </#list>
 
 )
+
+//@org.hibernate.annotations.Table(appliesTo="feature", indexes={@Index(name="testIdx" ,columnNames={"dbxref_id", "organism_id"})})
+		<#foreach index in entity.indices>
+// index.name==${index.name}.
+			<#foreach field in index.fields>
+//	index.field==${field}.
+			</#foreach>
+		</#foreach>
+
 		<#if !entity.hasAncestor() && entity.hasDescendants() >
 @Inheritance(strategy=InheritanceType.JOINED)
 @DiscriminatorColumn(name="DType", discriminatorType=DiscriminatorType.STRING)
