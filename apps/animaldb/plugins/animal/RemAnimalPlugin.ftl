@@ -30,6 +30,7 @@
 <div id="animalselect" class="row">
 <label for="animal">Animal:</label>
 <select name="animal" id="animal" class="selectbox" onchange="getExperiment(this);">
+	<option value="-1"></option>
 	<#list screen.animalIdList as animalId>
 		<#assign name = screen.getAnimalName(animalId)>
 		<option value="${animalId?string.computer}">${name}</option>

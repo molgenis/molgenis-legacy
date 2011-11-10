@@ -101,7 +101,7 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 				SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 				
 				// Get animal ID
-				if (request.getInt("animal") == null) {
+				if (request.getInt("animal") == -1) {
 					throw new Exception("No animal set - animal not terminated");
 				}
 				int animalId = request.getInt("animal");
