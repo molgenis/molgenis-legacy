@@ -117,6 +117,8 @@ public class ImportExcel extends PluginModel<Entity>
 			
 			List<String> ProtocolFeatures = new ArrayList<String>();
 			
+			List<String> UnitMeasurement = new ArrayList<String>();
+			
 			List<ObservableFeature> ObservableFeatures = new ArrayList<ObservableFeature>();
 			
 			String protocolName = "";
@@ -126,6 +128,9 @@ public class ImportExcel extends PluginModel<Entity>
 			HashMap<String, List> linkProtocolMeasurement = new HashMap<String, List>();
 			
 			HashMap<String, List> linkCodeMeasurement = new HashMap<String, List>();
+			
+			HashMap<String, List> linkUnitMeasurement = new HashMap<String, List>();
+			
 			
 			for (int i = 1; i < row - 1; i++){
 				
@@ -194,6 +199,11 @@ public class ImportExcel extends PluginModel<Entity>
 						
 						linkProtocolMeasurement.put(protocolName, temporaryHolder);
 						
+						if(!linkUnitMeasurement.containsKey(measurementName)){
+							UnitMeasurement.clear();
+							linkProtocolMeasurement.put(measurementName, UnitMeasurement);
+						}
+						
 					}else if (j == 4){ //5th description column  
 						
 						mea.setDescription(sheet.getCell(j, i).getContents());
@@ -212,14 +222,28 @@ public class ImportExcel extends PluginModel<Entity>
 						//create a corresponding ontologyTerm. 
 					
 						OntologyTerm unit = new OntologyTerm();
-						String cell = sheet.getCell(j,i).getContents().replace(" ", "_").replace("/", "_");
-						unit.setName(cell);
-						if (cell !="" && !ontologyTerms.contains(unit)) {
+						String unitName = sheet.getCell(j,i).getContents().replace(" ", "_").replace("/", "_");
+						unit.setName(unitName);
+						
+						if (unitName !="" && !ontologyTerms.contains(unit)) {
 							ontologyTerms.add(unit);
-							mea.setUnit(unit);
-						}	
-						//mea.setUnit_Name(sheet.getCell(j,i).getContents().replace(" ", "_").replace("/", "_"));
-						//mea.setUnit(unit)
+							//mea.setUnit(unit);  
+						}
+					
+//						if(!linkUnitMeasurement.containsKey(unitName)){
+//							UnitMeasurement.clear();
+//							linkUnitMeasurement.put(unitName, UnitMeasurement);
+//						}else{
+//						List<String> temporaryHolder = linkUnitMeasurement.get(unitName);
+//						temporaryHolder.add(measurementName);
+//						linkUnitMeasurement.put(unitName, temporaryHolder);
+//					}
+//						
+						List<String> temporaryHolder = linkProtocolMeasurement.get(measurementName);
+						temporaryHolder.add(unitName);
+						linkUnitMeasurement.put(measurementName, temporaryHolder);
+						
+							
 					}
 					else if(j == 8){  //9th category column  - code 
 
@@ -296,7 +320,27 @@ public class ImportExcel extends PluginModel<Entity>
 				}
 			}
 			try {
+				db.add(ontologyTerms);
 				db.add(addedMeasurements);
+
+				
+				//link Unit(ontologyTerm) to measurements 
+				int index=0;
+				for (Measurement m: addedMeasurements) {
+					//List<String> tmp = linkUnitMeasurement.get(unit.name)
+							
+					List<String> tmp = linkUnitMeasurement.get(m.getName());
+					
+					List<OntologyTerm> ontologyTermsList = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.IN, tmp));
+					List<Integer> UnitIdList = new ArrayList<Integer>();
+					for (OntologyTerm ot: ontologyTermsList) {
+						UnitIdList.add(ot.getId());
+					}
+					m.setUnit_Id(UnitIdList.get(index)); //this is weird...
+					m.setUnit(ontologyTermsList.get(index));
+					index++;
+				}
+				
 				
 				// TEMPORARY FIX FOR MREF RESOLVE FOREIGN KEYS BUG
 				for (Protocol p : addedProtocols) {
@@ -323,8 +367,7 @@ public class ImportExcel extends PluginModel<Entity>
 				
 				db.add(addedCodes);
 				
-				//TODO: link
-				db.add(ontologyTerms);
+
 			} catch (DatabaseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
