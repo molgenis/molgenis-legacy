@@ -128,7 +128,7 @@ var nrcols = document.getElementById('listtable').getElementsByTagName('tr')[0].
 var oTable = jQuery('#listtable').dataTable(
 	{ "bProcessing": true,
 	  "bServerSide": true,
-	  "sAjaxSource": "EventViewerJSONServlet",
+	  "sAjaxSource": "EventViewerJSONService",
 	  "fnServerData": function ( sSource, aoData, fnCallback ) {
 		/* Add extra data to the sender */
 		aoData.push( { "name": "printValInfo", "value": document.getElementById('datetimetoggle').checked } );

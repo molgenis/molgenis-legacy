@@ -92,6 +92,7 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 	{
 		try
 		{
+			ct.setDatabase(db);
 			String action = request.getString("__action");
 			if (action.equals("applyDeath"))
 			{
@@ -100,13 +101,22 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 				SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 				
 				// Get animal ID
+				if (request.getInt("animal") == null) {
+					throw new Exception("No animal set - animal not terminated");
+				}
 				int animalId = request.getInt("animal");
 				
 				// Get kind of removal
 				String removal = request.getString("removal");
+				if (removal == null) {
+					throw new Exception("No kind of removal set - animal not terminated");
+				}
 
 				// Get date of removal
 				String deathDateString = request.getString("deathdate");
+				if (deathDateString == null) {
+					throw new Exception("No date of removal set - animal not terminated");
+				}
 				Date deathDate = oldDateOnlyFormat.parse(deathDateString);
 				
 				// Check if animal in experiment

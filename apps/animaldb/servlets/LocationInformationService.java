@@ -22,9 +22,9 @@ import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
-public class LocationInformationServlet extends app.servlet.MolgenisServlet {
+public class LocationInformationService extends app.servlet.MolgenisServlet {
 	private static final long serialVersionUID = -5115596071747077428L;
-	private static Logger logger = Logger.getLogger(LocationInformationServlet.class);
+	private static Logger logger = Logger.getLogger(LocationInformationService.class);
 	
 	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{

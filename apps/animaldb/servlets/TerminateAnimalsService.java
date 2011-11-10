@@ -19,9 +19,9 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
-public class TerminateAnimalsServlet extends app.servlet.MolgenisServlet {
+public class TerminateAnimalsService extends app.servlet.MolgenisServlet {
 	private static final long serialVersionUID = -5860101269122494304L;
-	private static Logger logger = Logger.getLogger(TerminateAnimalsServlet.class);
+	private static Logger logger = Logger.getLogger(TerminateAnimalsService.class);
 	
 	public void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {

@@ -3,7 +3,7 @@ var xmlhttp;
 function getExperiment(animalbox) {
 	if (!xmlhttp) xmlhttp = aaGetXmlHttpRequest();
 	if (!xmlhttp) return;
-	var url = 'TerminateAnimalsServlet?animal='+animalbox.value;
+	var url = 'TerminateAnimalsService?animal='+animalbox.value;
 	xmlhttp.open('GET', url, true);
 	xmlhttp.onreadystatechange = printMatrix;
 	xmlhttp.send(null);

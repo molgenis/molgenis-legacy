@@ -147,7 +147,7 @@ public class ListPlugin extends PluginModel<Entity> {
 				
 				// Reset servlet so state of that remains consistent with ours
 				String url = "http://localhost:" + this.portNumber + "/" + 
-					MolgenisServlet.getMolgenisVariantID() + "/EventViewerJSONServlet?reset=1";
+					MolgenisServlet.getMolgenisVariantID() + "/EventViewerJSONService?reset=1";
 				logger.info("Attempting to reset servlet through call to " + url);
 				URL servletURL = new URL(url);
 				URLConnection servletConn = servletURL.openConnection();

@@ -4,7 +4,7 @@ function getLocationInformation(locationbox) {
 	if (!xmlhttp) xmlhttp = aaGetXmlHttpRequest();
 	if (!xmlhttp) return;
 	//var et = eventtypebox.options(eventtypebox.selectedIndex).text;
-	var url = 'LocationInformationServlet?loc='+locationbox.value;
+	var url = 'LocationInformationService?loc='+locationbox.value;
 	xmlhttp.open('GET', url, true);
 	xmlhttp.onreadystatechange = printLocationInformation;
 	xmlhttp.send(null);

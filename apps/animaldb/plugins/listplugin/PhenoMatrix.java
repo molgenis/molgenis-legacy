@@ -21,7 +21,6 @@ import commonservice.CommonService;
  */
 public class PhenoMatrix extends Matrix<ObservedValue> {
 
-	private Database db = null;
 	private List<Integer> targetIdList;
 	private List<Measurement> featureList;
 	private List<Integer> featureIdList;
@@ -32,15 +31,12 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 	private int totalNrOfMeasurements;
 	private List<Integer> investigationIds;
 	private CommonService cq = null;
-	
-	public Database getDatabase() {
-		return db;
-	}
+	private boolean init = false;
 	
 	public void init(Database db, String targetType, int userId) throws DatabaseException, ParseException {
-		cq = CommonService.getInstance();
+		this.setInit(true);
 		
-		this.db = db;
+		cq = CommonService.getInstance();
 		cq.setDatabase(db);
 		
 		if (targetType.equals("All")) {
@@ -62,18 +58,20 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 		data = new ObservedValue[nrOfTargets][totalNrOfMeasurements][];
 	}
 	
-	public int addRemFeature(int featureId) throws DatabaseException, ParseException {
+	public int addRemFeature(Database db, int featureId) throws DatabaseException, ParseException {
+		cq.setDatabase(db);
 		Measurement meas = cq.getMeasurementById(featureId);
 		if (featureIdList.contains(featureId)) {
-			int colNr = remCol(meas);
+			int colNr = remCol(db, meas);
 			return colNr;
 		} else {
-			addCol(meas);
+			addCol(db, meas);
 			return -1;
 		}
 	}
 	
-	public void addCol(Measurement meas) throws DatabaseException, ParseException {
+	public void addCol(Database db, Measurement meas) throws DatabaseException, ParseException {
+		cq.setDatabase(db);
 		int measurementId = meas.getId();
 		
 		nrOfFeatures++;
@@ -101,7 +99,8 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 		}
 	}
 	
-	public int remCol(Measurement feat) {
+	public int remCol(Database db, Measurement feat) {
+		cq.setDatabase(db);
 		int colNr = featureList.indexOf(feat) + 1;
 		int featNr = allMeasurementList.indexOf(feat);
 		featureList.remove(feat);
@@ -113,7 +112,9 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 		return colNr;
 	}
 	
-	public List<Integer> search(String term, boolean limitVal) {
+	public List<Integer> search(Database db, String term, boolean limitVal) {
+		cq.setDatabase(db);
+		
 		boolean hit;
 		List<Integer> returnList = new ArrayList<Integer>();
 		
@@ -168,7 +169,9 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 		return returnList;
 	}
 	
-	public List<Integer> filterColumn(int colNr, String term, boolean limitVal) {
+	public List<Integer> filterColumn(Database db, int colNr, String term, boolean limitVal) {
+		cq.setDatabase(db);
+		
 		List<Integer> returnList = new ArrayList<Integer>();
 		
 		// Split filter terms
@@ -297,7 +300,9 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 		return featureList;
 	}
 
-	public String[] getTargetNames(int[] idx) {
+	public String[] getTargetNames(Database db, int[] idx) {
+		cq.setDatabase(db);
+		
 		String[] returnData = new String[idx.length];
 		
 		try {
@@ -338,10 +343,18 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 	/**
 	 * Removes all feature columns from the matrix
 	 */
-	public void remAllFeatures() {
+	public void remAllFeatures(Database db) {
 		for (Measurement m : featureList) {
-			remCol(m);
+			remCol(db, m);
 		}
+	}
+
+	public boolean isInit() {
+		return init;
+	}
+
+	public void setInit(boolean init) {
+		this.init = init;
 	}
 
 }

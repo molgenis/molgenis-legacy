@@ -19,9 +19,9 @@ import org.molgenis.util.Tuple;
 
 import plugins.listplugin.PhenoMatrix;
 
-public class EventViewerJSONServlet extends app.servlet.MolgenisServlet {
+public class EventViewerJSONService extends app.servlet.MolgenisServlet {
 	private static final long serialVersionUID = -5860101269122494304L;
-	private static Logger logger = Logger.getLogger(EventViewerJSONServlet.class);
+	private static Logger logger = Logger.getLogger(EventViewerJSONService.class);
 	
 	private static PhenoMatrix pm;
 	private static int storedTargetStart;
@@ -78,7 +78,7 @@ public class EventViewerJSONServlet extends app.servlet.MolgenisServlet {
 			this.createLogin(db, request);
 			
 			// Init OLD pheno matrix (not to be confused with the new matrix component)
-			if (pm.getDatabase() == null) { // if matrix has no DB yet, initialize it first
+			if (pm.isInit() == false) { // if matrix has no DB yet, initialize it first
 				pm.init(db, storedTargetType, userId);
 				totalNrOfFeatures = pm.getTotalNrOfFeatures();
 			}
@@ -135,7 +135,7 @@ public class EventViewerJSONServlet extends app.servlet.MolgenisServlet {
 				featureId = Integer.parseInt(tmpString);
 				if (featureId >= 0) {
 					// Add or remove one feature...
-					int colNr = pm.addRemFeature(featureId);
+					int colNr = pm.addRemFeature(db, featureId);
 					if (colNr >= 0) {
 						// Get rid of search term on column that was just removed
 						filterTermList.remove(colNr);
@@ -145,7 +145,7 @@ public class EventViewerJSONServlet extends app.servlet.MolgenisServlet {
 					}
 				} else {
 					// Remove all features...
-					pm.remAllFeatures();
+					pm.remAllFeatures(db);
 				}
 				start = storedTargetStart;
 				length = storedTargetLength;
@@ -179,14 +179,14 @@ public class EventViewerJSONServlet extends app.servlet.MolgenisServlet {
 			if (req.getString("sSearch") != null && !req.getString("sSearch").equals("")) {
 				searching = true;
 				String searchTerm = req.getString("sSearch");
-				searchIdx = pm.search(searchTerm, limitVal);
+				searchIdx = pm.search(db, searchTerm, limitVal);
 			}	
 			// Filtering?
 			int s = 0;
 			for (String filterTerm : filterTermList) {
 				if (!filterTerm.equals("")) {
 					searching = true;
-					List<Integer> filterIdx = pm.filterColumn(s, filterTerm, limitVal);
+					List<Integer> filterIdx = pm.filterColumn(db, s, filterTerm, limitVal);
 					// Further restrict search results, if any:
 					List<Integer> removeIdx = new ArrayList<Integer>();
 					for (Integer sidx : searchIdx) {
@@ -225,7 +225,7 @@ public class EventViewerJSONServlet extends app.servlet.MolgenisServlet {
 			if (featList != null) {
 				nrOfFeatures = featList.size();
 			}
-			String[] targetNames = pm.getTargetNames(idx);
+			String[] targetNames = pm.getTargetNames(db, idx);
 			Integer[] targetIds = pm.getTargetIds(idx);
 			
 			// Begin output:

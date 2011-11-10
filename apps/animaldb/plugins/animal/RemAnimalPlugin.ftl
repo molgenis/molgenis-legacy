@@ -30,7 +30,6 @@
 <div id="animalselect" class="row">
 <label for="animal">Animal:</label>
 <select name="animal" id="animal" class="selectbox" onchange="getExperiment(this);">
-	<option value="0">&nbsp;</option>
 	<#list screen.animalIdList as animalId>
 		<#assign name = screen.getAnimalName(animalId)>
 		<option value="${animalId?string.computer}">${name}</option>
@@ -39,7 +38,7 @@
 </div>
 
 <div class='row'>
-	<label for='removal'>Death or kind of removal:</label>
+	<label for='removal'>Kind of removal:</label>
 	<select name='removal' id='removal'>
 	<#list screen.removalCodeList as rcl>
 		<option value="${rcl.description}">${rcl.code} (${rcl.description})</option>
@@ -48,7 +47,7 @@
 </div>
 
 <div class="row">
-	<label for="deathdate">Date of death or removal:</label>
+	<label for="deathdate">Date of removal:</label>
 	<input type='text' class='textbox' id='deathdate' name='deathdate' value='' onclick='showDateInput(this)' autocomplete='off' />
 </div>
 

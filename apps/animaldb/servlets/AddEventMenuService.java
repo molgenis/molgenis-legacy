@@ -23,9 +23,9 @@ import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
 @Deprecated
-public class AddEventMenuServlet extends app.servlet.MolgenisServlet {
+public class AddEventMenuService extends app.servlet.MolgenisServlet {
 	private static final long serialVersionUID = -9148847518626490722L;
-	private static Logger logger = Logger.getLogger(AddEventMenuServlet.class);
+	private static Logger logger = Logger.getLogger(AddEventMenuService.class);
 	
 	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{

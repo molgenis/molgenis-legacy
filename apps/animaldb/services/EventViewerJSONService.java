@@ -93,7 +93,7 @@ public class EventViewerJSONService implements MolgenisService{
 //			this.createLogin(db, request); NO LONGER NEEDED
 			
 			// Init OLD pheno matrix (not to be confused with the new matrix component)
-			if (pm.getDatabase() == null) { // if matrix has no DB yet, initialize it first
+			if (pm.isInit() == false) { // if matrix has no DB yet, initialize it first
 				pm.init(db, storedTargetType, userId);
 				totalNrOfFeatures = pm.getTotalNrOfFeatures();
 			}
@@ -150,7 +150,7 @@ public class EventViewerJSONService implements MolgenisService{
 				featureId = Integer.parseInt(tmpString);
 				if (featureId >= 0) {
 					// Add or remove one feature...
-					int colNr = pm.addRemFeature(featureId);
+					int colNr = pm.addRemFeature(db, featureId);
 					if (colNr >= 0) {
 						// Get rid of search term on column that was just removed
 						filterTermList.remove(colNr);
@@ -160,7 +160,7 @@ public class EventViewerJSONService implements MolgenisService{
 					}
 				} else {
 					// Remove all features...
-					pm.remAllFeatures();
+					pm.remAllFeatures(db);
 				}
 				start = storedTargetStart;
 				length = storedTargetLength;
@@ -194,14 +194,14 @@ public class EventViewerJSONService implements MolgenisService{
 			if (req.getString("sSearch") != null && !req.getString("sSearch").equals("")) {
 				searching = true;
 				String searchTerm = req.getString("sSearch");
-				searchIdx = pm.search(searchTerm, limitVal);
+				searchIdx = pm.search(db, searchTerm, limitVal);
 			}	
 			// Filtering?
 			int s = 0;
 			for (String filterTerm : filterTermList) {
 				if (!filterTerm.equals("")) {
 					searching = true;
-					List<Integer> filterIdx = pm.filterColumn(s, filterTerm, limitVal);
+					List<Integer> filterIdx = pm.filterColumn(db, s, filterTerm, limitVal);
 					// Further restrict search results, if any:
 					List<Integer> removeIdx = new ArrayList<Integer>();
 					for (Integer sidx : searchIdx) {
@@ -240,7 +240,7 @@ public class EventViewerJSONService implements MolgenisService{
 			if (featList != null) {
 				nrOfFeatures = featList.size();
 			}
-			String[] targetNames = pm.getTargetNames(idx);
+			String[] targetNames = pm.getTargetNames(db, idx);
 			Integer[] targetIds = pm.getTargetIds(idx);
 			
 			// Begin output:
