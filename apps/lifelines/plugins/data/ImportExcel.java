@@ -129,7 +129,7 @@ public class ImportExcel extends PluginModel<Entity>
 			
 			HashMap<String, List> linkCodeMeasurement = new HashMap<String, List>();
 			
-			HashMap<String, List> linkUnitMeasurement = new HashMap<String, List>();
+			HashMap<String, String> linkUnitMeasurement = new HashMap<String, String>();
 			
 			
 			for (int i = 1; i < row - 1; i++){
@@ -227,7 +227,13 @@ public class ImportExcel extends PluginModel<Entity>
 						
 						if (unitName !="" && !ontologyTerms.contains(unit)) {
 							ontologyTerms.add(unit);
-							//mea.setUnit(unit);  
+							
+							//we have to chcek here if we are in the correct measurement , 
+							if (measurementName == mea.getName()) {
+								mea.setUnit(unit);  
+								linkUnitMeasurement.put(measurementName, unitName);	
+							}
+
 						}
 					
 //						if(!linkUnitMeasurement.containsKey(unitName)){
@@ -239,11 +245,8 @@ public class ImportExcel extends PluginModel<Entity>
 //						linkUnitMeasurement.put(unitName, temporaryHolder);
 //					}
 //						
-						List<String> temporaryHolder = linkProtocolMeasurement.get(measurementName);
-						temporaryHolder.add(unitName);
-						linkUnitMeasurement.put(measurementName, temporaryHolder);
-						
-							
+						//String temporaryHolder = measurementName;
+						//temporaryHolder.add(unitName);
 					}
 					else if(j == 8){  //9th category column  - code 
 
@@ -329,7 +332,7 @@ public class ImportExcel extends PluginModel<Entity>
 				for (Measurement m: addedMeasurements) {
 					//List<String> tmp = linkUnitMeasurement.get(unit.name)
 							
-					List<String> tmp = linkUnitMeasurement.get(m.getName());
+					String tmp = linkUnitMeasurement.get(m.getName());
 					
 					List<OntologyTerm> ontologyTermsList = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.IN, tmp));
 					List<Integer> UnitIdList = new ArrayList<Integer>();
