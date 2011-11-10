@@ -20,6 +20,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.Table;
+import org.molgenis.framework.ui.html.JQueryDataTable;
 import org.molgenis.framework.ui.html.TablePanel;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
@@ -88,7 +89,7 @@ public class DecStatus extends GenericPlugin
 	private void populateTablePanel(Database db) {
 		tablePanel = new TablePanel(this.getName() + "panel", null);
 		
-		Table statusTable = new Table("StatusTable", "");
+		Table statusTable = new JQueryDataTable("StatusTable", "");
 		statusTable.addColumn("Start");
 		statusTable.addColumn("End");
 		statusTable.addColumn("DEC subproject");
@@ -228,6 +229,6 @@ public class DecStatus extends GenericPlugin
 
 	public String render()
 	{
-	   return this.tablePanel.toHtml();
+	  return this.tablePanel.toHtml();
 	}
 }
