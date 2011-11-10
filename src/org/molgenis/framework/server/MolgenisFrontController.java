@@ -72,7 +72,8 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 	{
 		HttpServletRequest req = request.getRequest();
 		String path = req.getRequestURI().substring(context.getVariant().length()+1);
-
+		if(path.equals("")) path = "/";
+	
 		for (String p : services.keySet())
 		{
 			if (path.startsWith(p))
