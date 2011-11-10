@@ -21,7 +21,6 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Code;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -32,7 +31,6 @@ import org.molgenis.util.Tuple;
 public class ImportExcel extends PluginModel<Entity>
 {
 	private String Status = "";
-
 	
 	private static final long serialVersionUID = 6149846107377048848L;
 	
@@ -76,7 +74,6 @@ public class ImportExcel extends PluginModel<Entity>
 		}
 		
 	}
-	
 	@SuppressWarnings("unchecked")
 	public void loadDataFromExcel(Database db, Tuple request) throws BiffException, IOException, DatabaseException{
 		
@@ -100,9 +97,9 @@ public class ImportExcel extends PluginModel<Entity>
 			
 			List<Protocol> protocols = new ArrayList<Protocol>();
 			
-			List<Code> codes = new ArrayList<Code>();
-			
 			List<OntologyTerm> ontologyTerms = new ArrayList<OntologyTerm>();
+			
+			List<Code> codes = new ArrayList<Code>();
 			
 			int row = sheet.getRows();
 			
@@ -116,79 +113,68 @@ public class ImportExcel extends PluginModel<Entity>
 			
 			Code code;
 			
+			Protocol themeProtocol;
+			
 			List<String> ProtocolFeatures = new ArrayList<String>();
 			
-			List<String> UnitMeasurement = new ArrayList<String>();
-			
-			List<ObservableFeature> ObservableFeatures = new ArrayList<ObservableFeature>();
+			List<String> ThemeProtocols = new ArrayList<String> ();
 			
 			String protocolName = "";
+			
+			String ThemeProtocolname = "";
 			
 			String measurementName = "";
 			
 			HashMap<String, List> linkProtocolMeasurement = new HashMap<String, List>();
 			
+			HashMap<String, List> linkThemeProtocol = new HashMap<String, List>();
+			
 			HashMap<String, List> linkCodeMeasurement = new HashMap<String, List>();
 			
 			HashMap<String, String> linkUnitMeasurement = new HashMap<String, String>();
-			
 			
 			for (int i = 1; i < row - 1; i++){
 				
 				mea = new Measurement();
 				
+				prot = new Protocol();
+				
+				themeProtocol = new Protocol();
 				
 				code = new Code();
 				
 				for(int j = 0; j < column; j++){
 					
-					if (j == 0) { //1st Group column is a protocol 
-						Protocol GroupProt = new Protocol();
-
-						protocolName = sheet.getCell(j,i).getContents().replace("'", "");
-						
-						if (!linkProtocolMeasurement.containsKey(protocolName)) {
-							ProtocolFeatures.clear();
-							linkProtocolMeasurement.put(protocolName, ProtocolFeatures);
-						}
-						
-						GroupProt.setName(protocolName);
-						
-						//db.beginTx();
-						//db.add(prot);
-						protocols.add(GroupProt);
-						//db.commitTx();
-						//db.close();
-					}
-					
 					if (j==1) { //theme is also a protocol 
-						Protocol ThemeProtocol = new Protocol();  
 						
-						String ThemeProtocolname = sheet.getCell(j,i).getContents().replace("'","");
-						if (!linkProtocolMeasurement.containsKey(ThemeProtocolname)) {
-							ProtocolFeatures.clear();
-							linkProtocolMeasurement.put(ThemeProtocolname, ProtocolFeatures);
+						ThemeProtocolname = sheet.getCell(j,i).getContents().replace("'","");
+						
+						if (!linkThemeProtocol.containsKey(ThemeProtocolname)) {
+							
+							ThemeProtocols = new ArrayList<String> ();
+							linkThemeProtocol.put(ThemeProtocolname, ThemeProtocols);
 						}
 						
-						ThemeProtocol.setName(ThemeProtocolname);
-						protocols.add(ThemeProtocol);
-					}
-					if(j == 2){  //3rd Protocol column - is a protocol
+						themeProtocol.setName(ThemeProtocolname);
+						
+					}if(j == 2){
 					
-						prot = new Protocol();
-
 						protocolName = sheet.getCell(j, i).getContents().replaceAll("'", "");
 						
 						if(!linkProtocolMeasurement.containsKey(protocolName)){
-							ProtocolFeatures.clear();
+							ProtocolFeatures = new ArrayList<String>();
 							linkProtocolMeasurement.put(protocolName, ProtocolFeatures);
 						}
 						
-						//prot.setName(sheet.getCell(j, i).getContents().replaceAll("'", ""));
-						prot.setName(protocolName);
-						protocols.add(prot);
+						prot.setName(sheet.getCell(j, i).getContents().replaceAll("'", ""));
+						
+						List<String> temporaryHolder = linkThemeProtocol.get(ThemeProtocolname);
+						
+						temporaryHolder.add(sheet.getCell(j, i).getContents());
+						
+						linkThemeProtocol.put(ThemeProtocolname, temporaryHolder);
 
-					}else if(j == 3){  //4rth measurement column  
+					}else if(j == 3){
 						
 						measurementName = sheet.getCell(j, i).getContents();
 						
@@ -200,12 +186,7 @@ public class ImportExcel extends PluginModel<Entity>
 						
 						linkProtocolMeasurement.put(protocolName, temporaryHolder);
 						
-						if(!linkUnitMeasurement.containsKey(measurementName)){
-							UnitMeasurement.clear();
-							linkProtocolMeasurement.put(measurementName, UnitMeasurement);
-						}
-						
-					}else if (j == 4){ //5th description column  
+					}else if (j == 4){
 						
 						mea.setDescription(sheet.getCell(j, i).getContents());
 					
@@ -220,8 +201,7 @@ public class ImportExcel extends PluginModel<Entity>
 							linkUnitMeasurement.put(measurementName, unitName);
 						}
 							
-					}
-					else if(j == 8){  //9th category column  - code 
+					}else if(j == 8){
 
 						if(sheet.getCell(j, i).getContents().length() > 0 && sheet.getCell(j, i).getContents() != null){
 							
@@ -253,10 +233,11 @@ public class ImportExcel extends PluginModel<Entity>
 						}
 					}
 				}
-				
 				measurements.add(mea);
 				
-				//protocols.add(prot);
+				protocols.add(prot);
+				
+				protocols.add(themeProtocol);
 			}
 			
 			List<Measurement> addedMeasurements = new ArrayList<Measurement>();
@@ -264,6 +245,8 @@ public class ImportExcel extends PluginModel<Entity>
 			List<Protocol> addedProtocols = new ArrayList<Protocol>();
 			
 			List<Code> addedCodes = new ArrayList<Code>();
+			
+			List<Protocol> addedThemes = new ArrayList<Protocol>();
 			
 			for(Measurement measure : measurements){
 				
@@ -296,9 +279,8 @@ public class ImportExcel extends PluginModel<Entity>
 				}
 			}
 			try {
-				db.add(ontologyTerms);
 				
-
+				db.add(ontologyTerms);
 				
 				//link Unit(ontologyTerm) to measurements 
 				for (Measurement m: addedMeasurements) {
@@ -315,17 +297,31 @@ public class ImportExcel extends PluginModel<Entity>
 						m.setUnit_Id(ot.getId());
 					}
 				}
+				
 				db.add(addedMeasurements);
 				
 				// TEMPORARY FIX FOR MREF RESOLVE FOREIGN KEYS BUG
 				for (Protocol p : addedProtocols) {
-					List<String> featureNames = linkProtocolMeasurement.get(p.getName());
-					List<Measurement> measList = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, featureNames));
-					List<Integer> measIdList = new ArrayList<Integer>();
-					for (Measurement m : measList) {
-						measIdList.add(m.getId());
+					
+					if(linkProtocolMeasurement.containsKey(p.getName())){
+						List<String> featureNames = linkProtocolMeasurement.get(p.getName());
+						List<Measurement> measList = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, featureNames));
+						List<Integer> measIdList = new ArrayList<Integer>();
+						for (Measurement m : measList) {
+							measIdList.add(m.getId());
+						}
+						p.setFeatures_Id(measIdList);
 					}
-					p.setFeatures_Id(measIdList);
+					
+					if(linkThemeProtocol.containsKey(p.getName())){
+						List<String> protocoleNames = linkThemeProtocol.get(p.getName());
+						List<Protocol> protsList = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.IN, protocoleNames));
+						List<Integer> protIdList = new ArrayList<Integer>();
+						for (Protocol m : protsList) {
+							protIdList.add(m.getId());
+						}
+						p.setFeatures_Id(protIdList);
+					}
 				}
 				
 				db.add(addedProtocols);
@@ -341,8 +337,6 @@ public class ImportExcel extends PluginModel<Entity>
 				}
 				
 				db.add(addedCodes);
-				
-
 			} catch (DatabaseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
