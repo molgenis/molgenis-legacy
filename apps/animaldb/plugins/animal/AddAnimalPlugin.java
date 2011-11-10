@@ -27,6 +27,7 @@ import org.molgenis.framework.ui.html.RepeatingPanel;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.TextLineInput;
+import org.molgenis.framework.ui.html.Newline;
 
 import org.molgenis.pheno.Code;
 import org.molgenis.pheno.ObservationTarget;
@@ -61,6 +62,7 @@ public class AddAnimalPlugin extends GenericPlugin
 	public IntInput numberofanimals = null;
 	public SelectInput actor = null;
 	public ActionInput addbutton = null;
+	
 
 	
 	// container that renders whole form as divs (left labels, right inputs)
@@ -385,7 +387,11 @@ public class AddAnimalPlugin extends GenericPlugin
 		// DISCUSSION: why is this not ontology???
 		species = new SelectInput("species");
 		species.setLabel("Species:");
-		species.setOptions(ct.getAllMarkedPanels("Species", investigationIds), "id", "name");
+		//species.setOptions(ct.getAllMarkedPanels("Species", investigationIds), "id", "name");
+		species.addOption("","");
+		for (ObservationTarget s : ct.getAllMarkedPanels("Species", investigationIds)) {
+			species.addOption(s.getId(), s.getName());
+		}
 		species.setNillable(false);
 		species.setDescription("Give the species.");
 		species.setTooltip("Give the species.");
@@ -395,7 +401,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		//background.setOptions(ct.getAllMarkedPanels("Background", investigationIds), "id", "name");
 		background.setDescription("Give the genetic background of the animal, for instance C57black6/j, if applicable.");
 		background.setTooltip("Give the genetic background of the animal, for instance C57black6/j, if applicable.");
-		
+		background.addOption("","");
 		background.addOption("0", "no background");
 		ArrayList<ObservationTarget> backgroundslist= new ArrayList<ObservationTarget>(ct.getAllMarkedPanels("Background", investigationIds));
 		for (ObservationTarget each : backgroundslist) {
@@ -407,7 +413,11 @@ public class AddAnimalPlugin extends GenericPlugin
 		// DISCUSSION: why is this not ontology???
 		sex = new SelectInput("sex");
 		sex.setLabel("Sex:");
-		sex.setOptions(ct.getAllMarkedPanels("Sex", investigationIds), "id", "name");
+		sex.addOption("","");
+		//sex.setOptions(ct.getAllMarkedPanels("Sex", investigationIds), "id", "name");
+		for (ObservationTarget s : ct.getAllMarkedPanels("Sex", investigationIds)) {
+			sex.addOption(s.getId(), s.getName());
+		}
 		sex.setDescription("Give the sex of the new animal(s).");
 		sex.setTooltip("Give the sex of the new animal(s).");
 		sex.setNillable(false);
@@ -417,6 +427,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		// which is taken care of in the Breeding Module
 		source = new SelectInput("source");
 		source.setLabel("Source:");
+		source.addOption("","");
 		List<ObservationTarget> tmpSourceList = ct.getAllMarkedPanels("Source", investigationIds);
 		for (ObservationTarget tmpSource : tmpSourceList)
 		{
@@ -437,6 +448,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		// Populate animal type list
 		animaltype = new SelectInput("animaltype");
 		animaltype.setLabel("Animal type:");
+		animaltype.addOption("","");
 		for (Code c : ct.getAllCodesForFeature("AnimalType")) {
 			animaltype.addOption(c.getDescription(), c.getCode_String() + " ("
 					+ c.getDescription() + ")");
@@ -533,7 +545,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		addbutton = new ActionInput("Add", "", "Add animal(s)");
 
 		// add everything to the panel
-		containingPanel.add(numberofanimals);
 		containingPanel.add(species);
 		containingPanel.add(background);
 		containingPanel.add(sex);
@@ -543,6 +554,12 @@ public class AddAnimalPlugin extends GenericPlugin
 		containingPanel.add(birthdate);
 		containingPanel.add(entrydate);
 		containingPanel.add(namePanel);
+		
+		Newline newline = new Newline();
+		Newline newline2 = new Newline();
+		containingPanel.add(newline);
+		containingPanel.add(newline2);
+		containingPanel.add(numberofanimals);
 		containingPanel.add(addbutton);
 	}
 	
