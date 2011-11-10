@@ -54,7 +54,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		    }
 		    if( action.equals("Clear") )
 		    {
-		    	ui.initScreen();
+		    	ui.initScreen(this.getLogin().getUserName());
 		    }
 		    if( action.equals("Apply") )
 		    {
@@ -98,7 +98,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		if (ui.getProtocolApplicationContainer() == null || userId != model.getUserId()) {
 			model.setUserAndInvestigationIds(userId);
 		    try {
-				ui.initScreen();
+				ui.initScreen(this.getLogin().getUserName());
 			} catch (HtmlInputException e) {
 				e.printStackTrace();
 			}

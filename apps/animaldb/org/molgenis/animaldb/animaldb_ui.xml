@@ -44,10 +44,12 @@
 			<plugin name="FillDatabase" type="plugins.fillanimaldb.FillDatabasePlugin"
 				label="Load legacy data" />
 			<plugin name="SimpleArchiver" type="plugins.archiver.Archiver" label="Import/export database" />
+			<plugin name="ApplyProtocol" type="org.molgenis.protocol.ApplyProtocolPlugin"
+				label="Make/Edit values" />
 			<plugin name="CascadingDeleteAnimals" type="plugins.system.CascadingDeleteAnimalsPlugin"
 				label="Delete targets" />
-			<plugin name="SetCustomLabelFeature" type="plugins.system.SetCustomLabelFeaturePlugin"
-				label="Set custom label feature" />
+			<!-- <plugin name="SetCustomLabelFeature" type="plugins.system.SetCustomLabelFeaturePlugin"
+				label="Set custom label feature" /> -->
 		</menu>
 		
 		<menu name="batches" position="left" label="Batches">	
@@ -90,7 +92,7 @@
 
 		<menu name="valuemenu" position="left" label="Values">
 			<plugin name="ApplyProtocol" type="org.molgenis.protocol.ApplyProtocolPlugin"
-				label="Make/edit values" />
+				label="Edit values" />
 			<plugin name="ListPlugin" type="plugins.listplugin.ListPlugin"
 				label="View values in matrix" />
 			<plugin name="EventViewer" type="plugins.protocol.EventViewerPlugin"

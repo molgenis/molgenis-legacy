@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.molgenis.batch.MolgenisBatch;
 import org.molgenis.batch.MolgenisBatchEntity;
-import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
@@ -16,29 +15,18 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.pheno.ObservationTarget;
 
 public class BatchService {
-
-    private Database db;
-    //private CommonService cq = CommonService.getInstance();
     
-    public void setDatabase(Database db, int userId)
-    {
-    	this.db = db;
-		
-//    	cq.setDatabase(db);
-//    	cq.makeObservationTargetNameMap(userId, false);
-    }
-    
-    public List<MolgenisBatch> getBatches(int userId) throws DatabaseException, ParseException
+    public List<MolgenisBatch> getBatches(Database db, int userId) throws DatabaseException, ParseException
     {
     	return db.query(MolgenisBatch.class).eq(MolgenisBatch.MOLGENISUSER, userId).find();
     }
     
-    public MolgenisBatch getBatch(int batchId) throws DatabaseException
+    public MolgenisBatch getBatch(Database db, int batchId) throws DatabaseException
     {
     	return db.findById(MolgenisBatch.class, batchId);
     }
     
-    public List<MolgenisBatchEntity> getBatchEntities(int batchId) throws DatabaseException, ParseException
+    public List<MolgenisBatchEntity> getBatchEntities(Database db, int batchId) throws DatabaseException, ParseException
     {
     	return db.query(MolgenisBatchEntity.class).eq(MolgenisBatchEntity.BATCH, batchId).sortASC("name").find();
     }
@@ -50,14 +38,14 @@ public class BatchService {
      * @throws DatabaseException
      * @throws ParseException
      */
-    public List<ObservationTarget> getObservationTargetsNotInBatch() throws DatabaseException, ParseException
+    public List<ObservationTarget> getObservationTargetsNotInBatch(Database db) throws DatabaseException, ParseException
     {
     	List<ObservationTarget> result  = new ArrayList<ObservationTarget>();
-    	List<ObservationTarget> targets = this.db.query(ObservationTarget.class).sortASC("name").find();
+    	List<ObservationTarget> targets = db.query(ObservationTarget.class).sortASC("name").find();
 
     	for (ObservationTarget target : targets)
     	{
-    		List<MolgenisBatchEntity> l = this.db.query(MolgenisBatchEntity.class).equals(MolgenisBatchEntity.OBJECTID, target.getId()).find();
+    		List<MolgenisBatchEntity> l = db.query(MolgenisBatchEntity.class).equals(MolgenisBatchEntity.OBJECTID, target.getId()).find();
     		if (l.size() == 0) {
     			result.add(target);
     		}
@@ -73,10 +61,10 @@ public class BatchService {
      * @throws DatabaseException
      * @throws ParseException
      */
-    public List<ObservationTarget> getObservationTargetsNotInCurrentBatch(int batchId) throws DatabaseException, ParseException
+    public List<ObservationTarget> getObservationTargetsNotInCurrentBatch(Database db, int batchId) throws DatabaseException, ParseException
     {
     	List<ObservationTarget> result  = new ArrayList<ObservationTarget>();
-    	List<ObservationTarget> targets = this.db.query(ObservationTarget.class).sortASC("name").find();
+    	List<ObservationTarget> targets = db.query(ObservationTarget.class).sortASC("name").find();
 
     	for (ObservationTarget target : targets)
     	{
@@ -91,30 +79,25 @@ public class BatchService {
     	return result;
     }
 
-    public void removeFromBatch(Integer batchId, List<Integer> entityIds) throws DatabaseException, IOException
+    public void removeFromBatch(Database db, Integer batchId, List<Integer> entityIds) throws DatabaseException, IOException
     {
-    	this.db.beginTx();
-
     	for (Integer id : entityIds)
     	{
     		MolgenisBatchEntity entity = new MolgenisBatchEntity();
     		entity.setId(id);
     		entity.setBatch(batchId);
-    		this.db.remove(entity);
+    		db.remove(entity);
     	}
-    	this.db.commitTx();
     }
     
-    public void addToBatch(Integer batchId, List<Integer> targetIds) throws DatabaseException, ParseException, IOException
+    public void addToBatch(Database db, Integer batchId, List<Integer> targetIds) throws DatabaseException, ParseException, IOException
     {
-    	this.db.beginTx();
-
     	for (Integer targetId : targetIds)
     	{
-    		ObservationTarget target = this.db.findById(ObservationTarget.class, targetId);
+    		ObservationTarget target = db.findById(ObservationTarget.class, targetId);
         	
     		//TODO: Danny use or loose
-        	/*List<OntologyTerm> terms = */this.db.query(OntologyTerm.class).equals(OntologyTerm.NAME, target.getClass().toString()).find();
+        	/*List<OntologyTerm> terms = db.query(OntologyTerm.class).equals(OntologyTerm.NAME, target.getClass().toString()).find();*/
         	
 //        	if (terms.size() != 1)
 //        		throw new DatabaseException("No OntologyTerm found for " + target.getClass().toString());
@@ -124,9 +107,8 @@ public class BatchService {
     		entity.setBatch(batchId);
     		entity.setName(target.getName());
     		entity.setObjectId(target.getId());
-    		this.db.add(entity);
+    		db.add(entity);
     	}
-    	this.db.commitTx();
     }
     
 //    public String getTargetLabel(int targetId) throws DatabaseException, ParseException {

@@ -61,7 +61,7 @@ public class ApplyProtocolUI {
     	this.service = service;
     }
     
-    public void initScreen() throws HtmlInputException {
+    public void initScreen(String userName) throws HtmlInputException {
     	model.setNewProtocolApplication(false);
     	model.setTimeInfo(false);
 		protocolApplicationContainer = new Container();
@@ -70,7 +70,7 @@ public class ApplyProtocolUI {
 		makeProtocolSelect();
 		makeTargetsSelect();
 		makeBatchSelect();
-		makeNewOrEditButtons();
+		makeNewOrEditButtons(userName);
 		makeTimeSelectbox();
 		makeAllValuesSelectbox();
 		makeSelectButton();
@@ -249,7 +249,7 @@ public class ApplyProtocolUI {
      * Create radio buttons to select the way to apply the protocol.
      * @throws HtmlInputException 
      */
-    private void makeNewOrEditButtons() throws HtmlInputException {
+    private void makeNewOrEditButtons(String userName) throws HtmlInputException {
     	List<String> options = new ArrayList<String>();
     	options.add("New");
     	options.add("Edit");
@@ -257,8 +257,12 @@ public class ApplyProtocolUI {
     	optionLabels.add("Make new values");
     	optionLabels.add("Edit existing values");
     	
-    	newOrEditButtons = new RadioInput("NewOrEdit", "", "Make new values", false, false,
+    	newOrEditButtons = new RadioInput("NewOrEdit", "", "Edit", false, false,
 				"Indicate whether you want to fill in new values or edit existing ones.", options, optionLabels);
+    	
+    	if (!userName.equals("admin")) {
+    		newOrEditButtons.setHidden(true);
+    	}
     	
 		protocolDiv.add(newOrEditButtons);
 	}

@@ -46,8 +46,7 @@ public class BatchPlugin extends GenericPlugin {
     	{
     		try
     		{
-    			service.setDatabase(db, this.getLogin().getUserId());
-    			this.populateBatchSelectForm();
+    			this.populateBatchSelectForm(db);
     		}
     		catch (Exception e)
     		{
@@ -65,15 +64,15 @@ public class BatchPlugin extends GenericPlugin {
 
     		if ( action.equals("Select") )
     		{
-    			this.handleSelectRequest(request);
+    			this.handleSelectRequest(db, request);
     		}
     		else if (action.equals("Add"))
     		{
-    			this.handleAddRequest(request);
+    			this.handleAddRequest(db, request);
     		}
     		else if (action.equals("Remove"))
     		{
-    			this.handleRemoveRequest(request);
+    			this.handleRemoveRequest(db, request);
     		}
     		else if (action.equals("Clear"))
     		{
@@ -93,16 +92,16 @@ public class BatchPlugin extends GenericPlugin {
 	 * @throws ParseException 
 	 * @throws DatabaseException 
      */
-    private void handleAddRequest(Tuple request) throws DatabaseException, ParseException, IOException
+    private void handleAddRequest(Database db, Tuple request) throws DatabaseException, ParseException, IOException
     {
     	List<Integer> ids = new ArrayList<Integer>();
     	
     	for (Object o : request.getList("addId"))
     		ids.add(Integer.parseInt(o.toString()));
 		
-		this.service.addToBatch(this.batchId, ids);
+		this.service.addToBatch(db, this.batchId, ids);
 		
-		this.populateBatchEntitySelectTable();
+		this.populateBatchEntitySelectTable(db);
     }
 
     /**
@@ -112,16 +111,16 @@ public class BatchPlugin extends GenericPlugin {
      * @throws DatabaseException 
      * @throws ParseException 
      */
-	private void handleRemoveRequest(Tuple request) throws DatabaseException, IOException, ParseException
+	private void handleRemoveRequest(Database db, Tuple request) throws DatabaseException, IOException, ParseException
 	{
 		List<Integer> ids = new ArrayList<Integer>();
     	
     	for (Object o : request.getList("removeId"))
     		ids.add(Integer.parseInt(o.toString()));
 		
-		this.service.removeFromBatch(this.batchId, ids);
+		this.service.removeFromBatch(db, this.batchId, ids);
 		
-		this.populateBatchEntitySelectTable();
+		this.populateBatchEntitySelectTable(db);
 	}
 
 	/**
@@ -132,29 +131,29 @@ public class BatchPlugin extends GenericPlugin {
     	return this.container.toHtml();
     }
 
-    private void handleSelectRequest(Tuple request) throws DatabaseException, ParseException
+    private void handleSelectRequest(Database db, Tuple request) throws DatabaseException, ParseException
     {
     	this.batchId = request.getInt("batches");
     	
-    	this.populateBatchEntitySelectTable();
+    	this.populateBatchEntitySelectTable(db);
     }
 
-    private void populateBatchSelectForm() throws DatabaseException, ParseException
+    private void populateBatchSelectForm(Database db) throws DatabaseException, ParseException
     {
     	BatchSelectForm batchSelectForm = new BatchSelectForm();
     	
-    	List<MolgenisBatch> batches = service.getBatches(this.getLogin().getUserId());
+    	List<MolgenisBatch> batches = service.getBatches(db, this.getLogin().getUserId());
     	((SelectInput) ((DivPanel) batchSelectForm.get("batchPanel")).get("batches")).setOptions(batches, "id", "name"); 
     	
     	this.container = batchSelectForm;
     }
 
-    private void populateBatchEntitySelectTable() throws DatabaseException, ParseException
+    private void populateBatchEntitySelectTable(Database db) throws DatabaseException, ParseException
     {
     	BatchEntitySelectForm batchEntitySelectForm = new BatchEntitySelectForm();
 
-    	List<ObservationTarget> targets             = this.service.getObservationTargetsNotInCurrentBatch(this.batchId);
-    	List<MolgenisBatchEntity> entities          = this.service.getBatchEntities(this.batchId);
+    	List<ObservationTarget> targets             = this.service.getObservationTargetsNotInCurrentBatch(db, this.batchId);
+    	List<MolgenisBatchEntity> entities          = this.service.getBatchEntities(db, this.batchId);
 
     	for (int i = 0; i < targets.size(); i++)
     	{

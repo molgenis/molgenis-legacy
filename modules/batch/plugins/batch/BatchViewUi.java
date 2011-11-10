@@ -25,27 +25,16 @@ public class BatchViewUi {
 		
 		// Set up table
 		Table batchTable = new Table("BatchTable");
-		batchTable.addColumn("Batch name");
 		batchTable.addColumn("Entity name");
 		
 		// Show the batches
 		List<Batch> batches = batchContainer.getBatches();
 		int row = 0;
 		for (Batch b : batches) {
-			// Batch name
-			batchTable.addRow("");
-			batchTable.setCell(0, row, b.getName());
-			
-			// Batch entities
-			int startRow = row;
 			List<MolgenisBatchEntity> entityList = b.getMolgenisBatchEntities();
 			for (MolgenisBatchEntity entity : entityList) {
-				if (row > startRow) {
-					batchTable.addRow("");
-				}
-				
-				batchTable.setCell(1, row, entity.getName());
-				
+				batchTable.addRow(b.getName());
+				batchTable.setCell(0, row, entity.getName());
 				row++;
 			}
 			
