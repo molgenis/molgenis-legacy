@@ -101,6 +101,7 @@ public class ImportExcel extends PluginModel<Entity>
 			List<Protocol> protocols = new ArrayList<Protocol>();
 			
 			List<Code> codes = new ArrayList<Code>();
+			
 			List<OntologyTerm> ontologyTerms = new ArrayList<OntologyTerm>();
 			
 			int row = sheet.getRows();
@@ -152,8 +153,12 @@ public class ImportExcel extends PluginModel<Entity>
 						}
 						
 						GroupProt.setName(protocolName);
+						
+						//db.beginTx();
+						//db.add(prot);
 						protocols.add(GroupProt);
-					
+						//db.commitTx();
+						//db.close();
 					}
 					
 					if (j==1) { //theme is also a protocol 
@@ -204,34 +209,17 @@ public class ImportExcel extends PluginModel<Entity>
 						
 						mea.setDescription(sheet.getCell(j, i).getContents());
 					
-					}else if (j==5) { // Unit is observableFeature (?) and its corresponding description is column 4  
-									  //some of the contain blanks e.g "Live births" so we have to create a variable out of this ...just remove the blanks ..
-									  //others contain / (slash) remove, or substitute met _
+					}else if (j==5) {
 						
-						//ObservableFeature obsfeat = new ObservableFeature();
-						
-						//obsfeat.setName(sheet.getCell(j,i).getContents().replace(" ", "_").replace("/", "_"));
-						//obsfeat.setDescription();
-						//ObservableFeatures.add(obsfeat);
-						
-						//or is it Measurement--> Unit  ??????? (TODO)
-						//create a corresponding ontologyTerm. 
-					
 						OntologyTerm unit = new OntologyTerm();
 						String unitName = sheet.getCell(j,i).getContents().replace(" ", "_").replace("/", "_");
 						unit.setName(unitName);
 						
 						if (unitName !="" && !ontologyTerms.contains(unit)) {
 							ontologyTerms.add(unit);
-							
-							//we have to check here if we are in the correct measurement , 
-							if (measurementName == mea.getName() && !linkUnitMeasurement.containsKey(measurementName)) {
-								mea.setUnit(unit);  
-								linkUnitMeasurement.put(measurementName, unitName);	
-								unitName="";
-							}
+							linkUnitMeasurement.put(measurementName, unitName);
 						}
-					
+							
 					}
 					else if(j == 8){  //9th category column  - code 
 
@@ -309,31 +297,25 @@ public class ImportExcel extends PluginModel<Entity>
 			}
 			try {
 				db.add(ontologyTerms);
+				
 
 				
 				//link Unit(ontologyTerm) to measurements 
-				int index=0;
 				for (Measurement m: addedMeasurements) {
-					//List<String> tmp = linkUnitMeasurement.get(unit.name)
 							
 					String tmp = linkUnitMeasurement.get(m.getName());
-					System.out.println(">>>>>>>>>>>>>>>>measurement name : " + m.getName() + " ontology name :" + tmp);
-					List<OntologyTerm> ontologyTermsList = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.IN, tmp));
 					
-					//int ontologyTermId = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.IN, tmp).getValue());
+					List<String> unitHolder = new ArrayList<String>();
 					
-					List<Integer> UnitIdList = new ArrayList<Integer>();
+					unitHolder.add(tmp);
+					
+					List<OntologyTerm> ontologyTermsList = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.IN, unitHolder));
+					
 					for (OntologyTerm ot: ontologyTermsList) {
-						UnitIdList.add(ot.getId());
+						m.setUnit_Id(ot.getId());
 					}
-					m.setUnit_Id(UnitIdList.get(index)); //this is weird...
-					m.setUnit(ontologyTermsList.get(index));
-					index++;
 				}
-				
 				db.add(addedMeasurements);
-
-				
 				
 				// TEMPORARY FIX FOR MREF RESOLVE FOREIGN KEYS BUG
 				for (Protocol p : addedProtocols) {
