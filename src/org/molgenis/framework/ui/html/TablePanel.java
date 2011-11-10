@@ -73,7 +73,7 @@ public class TablePanel extends HtmlWidget
 				result += "display:block\"";
 			}
 			if (i.getId() != null) {
-				result += (" id=\"" + i.getId() + "\"");
+				result += (" id=\"div" + i.getId() + "\"");
 			}
 			result += "><label style=\"width:16em;float:left;\" for=\"" + i.getName() + "\">" + i.getLabel()
 					+ "</label>" + i.toHtml() + (!i.isNillable() ? " *" : "") + "</div>";
