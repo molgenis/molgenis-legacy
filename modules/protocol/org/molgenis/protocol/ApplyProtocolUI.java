@@ -11,12 +11,16 @@ import org.apache.log4j.Logger;
 import org.molgenis.MolgenisFieldTypes;
 import org.molgenis.batch.MolgenisBatch;
 import org.molgenis.fieldtypes.UnknownField;
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.CheckboxInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DatetimeInput;
 import org.molgenis.framework.ui.html.DivPanel;
+import org.molgenis.framework.ui.html.HorizontalRuler;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.framework.ui.html.OptionInput;
@@ -27,6 +31,10 @@ import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.Table;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.XrefInput;
+import org.molgenis.matrix.component.MatrixViewer;
+import org.molgenis.matrix.component.SliceablePhenoMatrix;
+import org.molgenis.matrix.component.general.MatrixQueryRule;
+import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
@@ -42,7 +50,8 @@ public class ApplyProtocolUI {
     private DivPanel tableDiv;
     private Table valueTable;
     private SelectInput protocols;
-    private SelectMultipleInput targets;
+    MatrixViewer targetMatrixViewer = null;
+	static String TARGETMATRIX = "targetmatrix";
     private SelectMultipleInput batches;
     private OptionInput newOrEditButtons;
     private CheckboxInput timeBox;
@@ -61,14 +70,14 @@ public class ApplyProtocolUI {
     	this.service = service;
     }
     
-    public void initScreen(String userName) throws HtmlInputException {
+    public void initScreen(Database db, ScreenController plugin, int userId, String userName) throws Exception {
     	model.setNewProtocolApplication(false);
     	model.setTimeInfo(false);
 		protocolApplicationContainer = new Container();
 		protocolDiv = new DivPanel("ProtocolPanel", null);
 		tableDiv = new DivPanel("TablePanel", null);
 		makeProtocolSelect();
-		makeTargetsSelect();
+		makeTargetsMatrix(db, plugin, userId);
 		makeBatchSelect();
 		makeNewOrEditButtons(userName);
 		makeTimeSelectbox();
@@ -211,20 +220,41 @@ public class ApplyProtocolUI {
     /** Create a select box with ObservationTargets grabbed from the database
      * 
      */
-    public void makeTargetsSelect() {
-		try {
-		    targets = new SelectMultipleInput("Targets", null);
-		    targets.setLabel("Choose Targets:");
-		    List<Integer> investigationIds = service.getWritableUserInvestigationIds(model.getUserId());
-		    for (ObservationTarget o : service.getAllObservationTargets(investigationIds)) {
-		    	targets.addOption(o.getId(), service.getObservationTargetById(o.getId()).getName());
-		    }
-		    protocolDiv.add(targets);
-	
-		} catch(Exception e) {
-			e.printStackTrace();
-		    logger.error("An error occurred while retrieving targets from the database", e);
-		}
+//    public void makeTargetsSelect() {
+//		try {
+//		    targets = new SelectMultipleInput("Targets", null);
+//		    targets.setLabel("Choose Targets:");
+//		    List<Integer> investigationIds = service.getWritableUserInvestigationIds(model.getUserId());
+//		    for (ObservationTarget o : service.getAllObservationTargets(investigationIds)) {
+//		    	targets.addOption(o.getId(), service.getObservationTargetById(o.getId()).getName());
+//		    }
+//		    protocolDiv.add(targets);
+//	
+//		} catch(Exception e) {
+//			e.printStackTrace();
+//		    logger.error("An error occurred while retrieving targets from the database", e);
+//		}
+//    }
+    
+    public void makeTargetsMatrix(Database db, ScreenController plugin, int userId) throws Exception {
+    	
+    	List<String> investigationNames = service.getAllUserInvestigationNames(userId);
+		
+		List<String> measurementsToShow = new ArrayList<String>();
+		measurementsToShow.add("Species");
+		measurementsToShow.add("Sex");
+		measurementsToShow.add("Active");
+		List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
+		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
+				Operator.IN, investigationNames));
+		targetMatrixViewer = new MatrixViewer(plugin, TARGETMATRIX, 
+				new SliceablePhenoMatrix(Individual.class, Measurement.class), 
+				true, true, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
+						Operator.IN, measurementsToShow));
+		targetMatrixViewer.setToHtmlDb(db);
+		protocolDiv.add(new HorizontalRuler());
+		protocolDiv.add(targetMatrixViewer);
+		protocolDiv.add(new HorizontalRuler());
     }
     
     /**
@@ -504,7 +534,6 @@ public class ApplyProtocolUI {
     
     public void setValues() {
 		protocols.setValue(model.getProtocolId());
-		targets.setValue(model.getTargetList());
 		batches.setValue(model.getBatchesList());
 		if (model.isNewProtocolApplication()) {
 			newOrEditButtons.setValue("New");

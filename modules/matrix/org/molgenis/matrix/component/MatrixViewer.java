@@ -148,13 +148,10 @@ public class MatrixViewer extends HtmlWidget
 		try {
 			String result = "<table><tr><td>";
 			result += renderReload();
-			result += "</td><td>";
 			result += renderHeader(db);
 			result += "</td></tr><tr><td>";
-			result += renderVerticalMovers(db);
-			result += "</td><td>";
 			result += renderTable(db);
-			result += "</td></tr><tr><td colspan='2'>";
+			result += "</td></tr><tr><td>";
 			result += renderFilterPart(db);
 			result += "</td></tr></table>";
 			return result;
@@ -174,72 +171,72 @@ public class MatrixViewer extends HtmlWidget
 	
 	public String renderHeader(Database db) throws MatrixException {
 		String divContents = "";
-		// move horizontal
-		ActionInput moveLeftEnd = new ActionInput(MOVELEFTEND, "", "");
-		moveLeftEnd.setIcon("generated-res/img/first.png");
-		divContents += moveLeftEnd.render();
-		ActionInput moveLeft = new ActionInput(MOVELEFT, "", "");
-		moveLeft.setIcon("generated-res/img/prev.png");
-		divContents += moveLeft.render();
-		int colOffset = this.matrix.getColOffset();
-		int colLimit = this.matrix.getColLimit();
-		int colCount = this.matrix.getColCount(db);
-		int colMax = Math.min(colOffset + colLimit, colCount);
-		divContents += "&nbsp;Showing " + (colOffset + 1) + " - " + colMax + " of " + colCount + "&nbsp;";
-		// collimit
-		if (showLimitControls) {
-			IntInput colLimitInput = new IntInput(COLLIMIT, colLimit);
-			divContents += "Column limit:";
-			divContents += colLimitInput.render();
-			divContents += new ActionInput(CHANGECOLLIMIT, "", "Change").render();
-		}
-		ActionInput moveRight = new ActionInput(MOVERIGHT, "", "");
-		moveRight.setIcon("generated-res/img/next.png");
-		divContents += moveRight.render();
-		ActionInput moveRightEnd = new ActionInput(MOVERIGHTEND, "", "");
-		moveRightEnd.setIcon("generated-res/img/last.png");
-		divContents += moveRightEnd.render();
-		
-		return divContents;
-	}
-	
-	public String renderVerticalMovers(Database db) throws MatrixException {
-		String divContents = "";
-		// move vertical
+		// move vertical (row paging)
 		ActionInput moveUpEnd = new ActionInput(MOVEUPEND, "", "");
-		moveUpEnd.setIcon("generated-res/img/rowStart.png");
+		moveUpEnd.setIcon("generated-res/img/first.png");
 		divContents += moveUpEnd.render();
-		divContents += new Newline().render();
 		ActionInput moveUp = new ActionInput(MOVEUP, "", "");
-		moveUp.setIcon("generated-res/img/up.png");
+		moveUp.setIcon("generated-res/img/prev.png");
 		divContents += moveUp.render();
-		divContents += new Newline().render();
 		int rowOffset = this.matrix.getRowOffset();
 		int rowLimit = this.matrix.getRowLimit();
 		int rowCount = this.matrix.getRowCount(db);
 		int rowMax = Math.min(rowOffset + rowLimit, rowCount);
-		divContents += "Showing " + (rowOffset + 1) + " - " + rowMax + " of " + rowCount;
-		divContents += new Newline().render();
-		// rowLimit
+		divContents += "Showing " + (rowOffset + 1) + " - " + rowMax + " of " + rowCount + " ";
+		// collimit
 		if (showLimitControls) {
 			IntInput rowLimitInput = new IntInput(ROWLIMIT, rowLimit);
 			divContents += "Row limit:";
-			divContents += new Newline().render();
 			divContents += rowLimitInput.render();
-			divContents += new Newline().render();
 			divContents += new ActionInput(CHANGEROWLIMIT, "", "Change").render();
-			divContents += new Newline().render();
 		}
 		ActionInput moveDown = new ActionInput(MOVEDOWN, "", "");
-		moveDown.setIcon("generated-res/img/down.png");
+		moveDown.setIcon("generated-res/img/next.png");
 		divContents += moveDown.render();
-		divContents += new Newline().render();
 		ActionInput moveDownEnd = new ActionInput(MOVEDOWNEND, "", "");
-		moveDownEnd.setIcon("generated-res/img/rowStop.png");
+		moveDownEnd.setIcon("generated-res/img/last.png");
 		divContents += moveDownEnd.render();
 		
 		return divContents;
 	}
+	
+//	public String renderVerticalMovers(Database db) throws MatrixException {
+//		String divContents = "";
+//		// move vertical
+//		ActionInput moveUpEnd = new ActionInput(MOVEUPEND, "", "");
+//		moveUpEnd.setIcon("generated-res/img/rowStart.png");
+//		divContents += moveUpEnd.render();
+//		divContents += new Newline().render();
+//		ActionInput moveUp = new ActionInput(MOVEUP, "", "");
+//		moveUp.setIcon("generated-res/img/up.png");
+//		divContents += moveUp.render();
+//		divContents += new Newline().render();
+//		int rowOffset = this.matrix.getRowOffset();
+//		int rowLimit = this.matrix.getRowLimit();
+//		int rowCount = this.matrix.getRowCount(db);
+//		int rowMax = Math.min(rowOffset + rowLimit, rowCount);
+//		divContents += "Showing " + (rowOffset + 1) + " - " + rowMax + " of " + rowCount;
+//		divContents += new Newline().render();
+//		// rowLimit
+//		if (showLimitControls) {
+//			IntInput rowLimitInput = new IntInput(ROWLIMIT, rowLimit);
+//			divContents += "Row limit:";
+//			divContents += new Newline().render();
+//			divContents += rowLimitInput.render();
+//			divContents += new Newline().render();
+//			divContents += new ActionInput(CHANGEROWLIMIT, "", "Change").render();
+//			divContents += new Newline().render();
+//		}
+//		ActionInput moveDown = new ActionInput(MOVEDOWN, "", "");
+//		moveDown.setIcon("generated-res/img/down.png");
+//		divContents += moveDown.render();
+//		divContents += new Newline().render();
+//		ActionInput moveDownEnd = new ActionInput(MOVEDOWNEND, "", "");
+//		moveDownEnd.setIcon("generated-res/img/rowStop.png");
+//		divContents += moveDownEnd.render();
+//		
+//		return divContents;
+//	}
 	
 	public String renderTable(Database db) throws MatrixException {
 		JQueryDataTable dataTable = new JQueryDataTable(getName() + "DataTable");

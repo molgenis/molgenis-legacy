@@ -309,4 +309,35 @@ public class ApplyProtocolService {
 		return db.findById(ObservationTarget.class, targetId);
 	}
 
+	public List<String> getAllUserInvestigationNames(int userId) {
+		List<String> returnList = new ArrayList<String>();
+		List<Investigation> invList = getAllUserInvestigations(userId);
+		if (invList != null) {
+			for (Investigation inv : invList) {
+				if (!returnList.contains(inv.getName())) {
+					returnList.add(inv.getName());
+				}
+			}
+		}
+		return returnList;
+	}
+
+	private List<Investigation> getAllUserInvestigations(int userId) {
+		Query<Investigation> q = db.query(Investigation.class);
+		q.addRules(new QueryRule(Investigation.OWNS, Operator.EQUALS, userId));
+		q.addRules(new QueryRule(Operator.OR));
+		q.addRules(new QueryRule(Investigation.CANREAD, Operator.EQUALS, userId));
+		q.addRules(new QueryRule(Operator.OR));
+		q.addRules(new QueryRule(Investigation.CANREAD_NAME, Operator.EQUALS, "AllUsers")); // FIXME evil!!!
+		q.addRules(new QueryRule(Operator.OR));
+		q.addRules(new QueryRule(Investigation.CANWRITE, Operator.EQUALS, userId));
+		List<Investigation> invList;
+		try {
+			invList = q.find();
+		} catch (Exception e) {
+			return null;
+		}
+		return invList;
+	}
+
 }

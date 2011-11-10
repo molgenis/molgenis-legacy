@@ -19,7 +19,9 @@ import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.HtmlInputException;
+import org.molgenis.matrix.MatrixException;
 import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
 
@@ -43,18 +45,25 @@ public class ApplyProtocolPlugin extends GenericPlugin
     @Override
     public void handleRequest(Database db, Tuple request)
     {
+    	if (ui.targetMatrixViewer != null) {
+    		ui.targetMatrixViewer.setToHtmlDb(db);
+    	}
     	service.setDatabase(db);
     	ScreenMessage message = null;
 	    String action = request.getString("__action");
 
 	    try {
+	    	if (action.startsWith(ui.targetMatrixViewer.getName())) {
+	    		ui.targetMatrixViewer.handleRequest(db, request);
+				action = "init";
+			}
 		    if( action.equals("Select") )
 		    {
-		    	message = handleSelect(request);
+		    	message = handleSelect(db, request);
 		    }
 		    if( action.equals("Clear") )
 		    {
-		    	ui.initScreen(this.getLogin().getUserName());
+		    	ui.initScreen(db, this, this.getLogin().getUserId(), this.getLogin().getUserName());
 		    }
 		    if( action.equals("Apply") )
 		    {
@@ -89,6 +98,9 @@ public class ApplyProtocolPlugin extends GenericPlugin
     @Override
     public void reload(Database db)
     {
+    	if (ui.targetMatrixViewer != null) {
+    		ui.targetMatrixViewer.setToHtmlDb(db);
+    	}
     	service.setDatabase(db);
 		model.setService(service);
 		ui.setService(service);
@@ -98,8 +110,8 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		if (ui.getProtocolApplicationContainer() == null || userId != model.getUserId()) {
 			model.setUserAndInvestigationIds(userId);
 		    try {
-				ui.initScreen(this.getLogin().getUserName());
-			} catch (HtmlInputException e) {
+				ui.initScreen(db, this, userId, this.getLogin().getUserName());
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -354,8 +366,9 @@ public class ApplyProtocolPlugin extends GenericPlugin
      * 
      * @param db
      * @param request
+     * @throws MatrixException 
      */
-    ScreenMessage handleSelect(Tuple request)
+    ScreenMessage handleSelect(Database db, Tuple request) throws MatrixException
     {
 		List<String> fullTargetList = new ArrayList<String>();
 		
@@ -374,14 +387,23 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		}
 		
 		// Get targets
-		List<?> targetListObject = request.getList("Targets");
-		if (targetListObject != null) {
-			for (Object o : targetListObject) {
-				String tmpString = (String)o;
-				model.getTargetList().add(tmpString);
-				fullTargetList.add(tmpString);
+		List<?> targetListObject = request.getList(ui.TARGETMATRIX);
+		List<ObservationElement> rows = (List<ObservationElement>) ui.targetMatrixViewer.getSelection(db);
+		int rowCnt = 0;
+		for (ObservationElement row : rows) {
+			if (request.getBool(ui.TARGETMATRIX + "_selected_" + rowCnt) != null) {
+				model.getTargetList().add(row.getId().toString());
+				fullTargetList.add(row.getId().toString());
 			}
+			rowCnt++;
 		}
+//		if (targetListObject != null) {
+//			for (Object o : targetListObject) {
+//				String tmpString = (String)o;
+//				model.getTargetList().add(tmpString);
+//				fullTargetList.add(tmpString);
+//			}
+//		}
 		
 		// Get batches
 		List<?> batchesListObject = request.getList("Batches");

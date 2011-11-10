@@ -44,7 +44,7 @@
 			<plugin name="FillDatabase" type="plugins.fillanimaldb.FillDatabasePlugin"
 				label="Load legacy data" />
 			<plugin name="SimpleArchiver" type="plugins.archiver.Archiver" label="Import/export database" />
-			<plugin name="ApplyProtocol" type="org.molgenis.protocol.ApplyProtocolPlugin"
+			<plugin name="ApplyProtocolAdmin" type="org.molgenis.protocol.ApplyProtocolPlugin"
 				label="Make/Edit values" />
 			<plugin name="CascadingDeleteAnimals" type="plugins.system.CascadingDeleteAnimalsPlugin"
 				label="Delete targets" />
