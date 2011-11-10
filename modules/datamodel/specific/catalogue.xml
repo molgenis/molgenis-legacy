@@ -1,69 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <molgenis name="gcc" label="Lifelines Catalogue">
-
-<module name="catalogue" label="Lifelines Catalogue">
-
-<entity name="Domain" >
-	<field name="id" type="autoid" description="automatically generated id" />
-	<field name="name"  nillable="false" />
-</entity>
-
-<entity name="Variable" >
-	<field name="id" type="autoid" description="automatically generated id" />
-	<field name="name"  nillable="false" />
-	<field name="Description"  nillable="true" />
-	<field name="VariableURI" nillable="true" />
-</entity>
-
-<entity name="Category" >
-	<field name="id" type="autoid" description="automatically generated id" />
-	<field name="name" type="xref" xref_entity="Code" nillable="true" />
-</entity>
-
-<entity name="MissingCategory" >
-	<field name="id" type="autoid" description="automatically generated id" />
-	<field name="name" type="xref" xref_entity="Code" nillable="true" />
-</entity>
-
-<!-- decorator="decorators.DBIndexUpdateDecorator" 
-	<entity name="BiobankData" >
+	<module name="catalogue" label="Lifelines Catalogue"> 
+		<entity name="datashapermeasurement">
 			<description>This entity includes the dictionary from lifelines </description>
-		    <field name="PatientID"  nillable="true" type="int" description="Unique identifying number(Uniek identificerend nummer)" />
-		    <field name="present_visit" nillable="true" type="int" description="Bezoek1 is aanwezig" />
-		    <field name="datum" nillable="true" type="datetime" description="Date and Time Lifelines outpatient visit(Datum en tijd bezoek aan Lifelines poli)" />
-		    <field name="mmid" nillable="true" type="int" description="" />
-		    <field name="BMI" nillable="true" type="long" description="" />
-		    <field name="weight" nillable="true" type="long" description="" />
-		    <field name="length" nillable="true" type="long" description="" />
-		    <field name="spanw" nillable="true" type="long" description="" />
-		    <field name="ZTgewicht" nillable="true" type="long" description="" />
-		    <field name="MeasuringMode" nillable="true"  type="int"  description="" />
-		    <field name="BloodPressureGEMpresent" nillable="true"  type="int"  description="" />
-		    <field name="SBP" nillable="true"  type="int"  description="" />
-		    <field name="DBP" nillable="true"  type="int"  description="" />
-		    <field name="MAP" nillable="true"  type="int"  description="" />
-		    <field name="HBF" nillable="true"  type="int"  description="" />
-		    <field name="AVGTYPE" nillable="true"  type="int"  description="" />
-		    <field name="BloodPressureMED" nillable="true"  type="int"  description="" />  
-		    <field name="MedHeart" nillable="true"   type="int" description="" />
-		    <field name="ECGPresentParameters"  type="int"  nillable="true" description="" />
-		    <field name="QT" nillable="true"   type="int" description="" />
-		    <field name="QRS" nillable="true"   type="int" description="" />
-		    <field name="QTC" nillable="true"   type="int" description="" />
-		    <field name="P_AXIS" nillable="true"   type="int" description="" />
-		    <field name="QRS_AXIS" nillable="true"  type="int"  description="" />
-		    <field name="T_AXIS" nillable="true"  type="int"  description="" />
-		    <field name="HR" nillable="true"  type="int"  description="" />
-		    <field name="P" nillable="true"  type="int" description="" />
-		    <field name="VLSectionFemalePresent" nillable="true"  type="int" description="" />
-		    <field name="NumberOfPregnancies" nillable="true" type="int"  description="" />
-		    <field name="NumberOfBirths" nillable="true" type="int"  description="" />
-		    <field name="DepartmentOfBirthPresentVL" type="int"  nillable="true" description="" />
-		    <field name="PaceMaker" nillable="true" type="int" description="" />
-		    <field name="SectionVLdemoAvailable" type="int" nillable="true" description="" />
-		    <field name="Race" type="int" nillable="true" description="" />
-			<unique fields="PatientID" />
-	</entity>	-->
-</module>
+		    <field name="id" type="autoid" description="automatically generated id" />
+		    <field name="Interpretation" nillable="true" type="string" />
+			<field name="Contraindication" nillable="true" type="string" />
+			<field name="ComputationSource" type="string" nillable="true" />
+			<field name="SeeAlso" type="string" nillable="true"/>
+			<field name="Classification" type="string" nillable="true"/>
+			<field name="DataShaperClass" type="string" nillable="true"/>
+			<field name="Disease" type="string" nillable="true"/>
+			<field name="Format" type="string" nillable="false"/>
+			<field name="MedicalHealthIntervention" type="string" nillable="true"/>
+			<field name="Period" type="string" nillable="false"/>
+			<field name="Sample" type="string" nillable="true"/>
+			<field name="Sourceofinformation" type="string" nillable="true"/>
+			<field name="Target" type="string" nillable="true"/>
+			<field name="Targetgender" type="string" nillable="true"/>
+			<field name="Type" type="string" nillable="true"/>
+		</entity>
+	</module>
 </molgenis>
 
