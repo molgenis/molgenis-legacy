@@ -59,13 +59,14 @@ public class RadioInput extends OptionInput<String>
 		String optionString = "";
 		String readonly = (isReadonly() ? " class=\"readonly\" readonly " : "");
 		String checked;
+		String selectedValueLabel = this.getValue();
 
 		if (!(getOptions().isEmpty()))
 		{
 			for (ValueLabel option : getOptions())
 			{
-				checked = this.getValue().equals(option.getValue().toString()) ? " checked "
-						: "";
+				String optionLabel = option.getLabel();
+				checked = (selectedValueLabel.equals(optionLabel)) ? " checked " : "";
 				optionString += "<input id=\"" + this.getId()
 						+ "\" type=\"radio\" " + readonly + checked
 						+ " name=\"" + this.getName() + "\" value=\""
