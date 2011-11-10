@@ -48,8 +48,8 @@ public class MatrixViewer extends HtmlWidget
 	
 	public String ROWLIMIT = getName() + "_rowLimit";
 	public String CHANGEROWLIMIT = getName() + "_changeRowLimit";
-	public String COLLIMIT = getName() + "_colLimit";
-	public String CHANGECOLLIMIT = getName() + "_changeColLimit";
+	//public String COLLIMIT = getName() + "_colLimit";
+	//public String CHANGECOLLIMIT = getName() + "_changeColLimit";
 	public String MOVELEFTEND = getName() + "_moveLeftEnd";
 	public String MOVELEFT = getName() + "_moveLeft";
 	public String MOVERIGHT = getName() + "_moveRight";
@@ -504,17 +504,23 @@ public class MatrixViewer extends HtmlWidget
 	
 	public void updateColHeaderFilter(Database db, Tuple t) throws Exception
 	{
-		List<?> chosenMeasurementIds = t.getList(MEASUREMENTCHOOSER);
+		List<?> chosenMeasurementIds;
+		if (t.getList(MEASUREMENTCHOOSER) != null) {
+			chosenMeasurementIds = t.getList(MEASUREMENTCHOOSER);
+		} else {
+			chosenMeasurementIds = new ArrayList<Object>();
+		}
 		List<String> chosenMeasurements = new ArrayList<String>();
 		for (Object measurementId : chosenMeasurementIds) {
 			int measId = Integer.parseInt((String)measurementId);
 			chosenMeasurements.add(db.findById(Measurement.class, measId).getName());
 		}
-		for (MatrixQueryRule mqr : this.matrix.getRules()) {
+		for (MatrixQueryRule mqr : matrix.getRules()) {
 			if (mqr.getFilterType().equals(MatrixQueryRule.Type.colHeader)) {
 				mqr.setValue(chosenMeasurements);
 			}
 		}
+		matrix.setColLimit(chosenMeasurements.size()); // grow with selected measurements
 		matrix.reload();
 	}
 	
@@ -528,10 +534,10 @@ public class MatrixViewer extends HtmlWidget
 		this.matrix.setRowLimit(t.getInt(ROWLIMIT));
 	}
 
-	public void changeColLimit(Database db, Tuple t)
-	{
-		this.matrix.setColLimit(t.getInt(COLLIMIT));
-	}
+//	public void changeColLimit(Database db, Tuple t)
+//	{
+//		this.matrix.setColLimit(t.getInt(COLLIMIT));
+//	}
 
 	public void moveLeftEnd(Database db, Tuple t) throws MatrixException
 	{
