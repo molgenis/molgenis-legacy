@@ -152,12 +152,8 @@ public class ImportExcel extends PluginModel<Entity>
 						}
 						
 						GroupProt.setName(protocolName);
-						
-						//db.beginTx();
-						//db.add(prot);
 						protocols.add(GroupProt);
-						//db.commitTx();
-						//db.close();
+					
 					}
 					
 					if (j==1) { //theme is also a protocol 
@@ -228,25 +224,14 @@ public class ImportExcel extends PluginModel<Entity>
 						if (unitName !="" && !ontologyTerms.contains(unit)) {
 							ontologyTerms.add(unit);
 							
-							//we have to chcek here if we are in the correct measurement , 
-							if (measurementName == mea.getName()) {
+							//we have to check here if we are in the correct measurement , 
+							if (measurementName == mea.getName() && !linkUnitMeasurement.containsKey(measurementName)) {
 								mea.setUnit(unit);  
 								linkUnitMeasurement.put(measurementName, unitName);	
+								unitName="";
 							}
-
 						}
 					
-//						if(!linkUnitMeasurement.containsKey(unitName)){
-//							UnitMeasurement.clear();
-//							linkUnitMeasurement.put(unitName, UnitMeasurement);
-//						}else{
-//						List<String> temporaryHolder = linkUnitMeasurement.get(unitName);
-//						temporaryHolder.add(measurementName);
-//						linkUnitMeasurement.put(unitName, temporaryHolder);
-//					}
-//						
-						//String temporaryHolder = measurementName;
-						//temporaryHolder.add(unitName);
 					}
 					else if(j == 8){  //9th category column  - code 
 
@@ -324,7 +309,6 @@ public class ImportExcel extends PluginModel<Entity>
 			}
 			try {
 				db.add(ontologyTerms);
-				db.add(addedMeasurements);
 
 				
 				//link Unit(ontologyTerm) to measurements 
@@ -333,8 +317,11 @@ public class ImportExcel extends PluginModel<Entity>
 					//List<String> tmp = linkUnitMeasurement.get(unit.name)
 							
 					String tmp = linkUnitMeasurement.get(m.getName());
-					
+					System.out.println(">>>>>>>>>>>>>>>>measurement name : " + m.getName() + " ontology name :" + tmp);
 					List<OntologyTerm> ontologyTermsList = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.IN, tmp));
+					
+					//int ontologyTermId = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.IN, tmp).getValue());
+					
 					List<Integer> UnitIdList = new ArrayList<Integer>();
 					for (OntologyTerm ot: ontologyTermsList) {
 						UnitIdList.add(ot.getId());
@@ -343,6 +330,9 @@ public class ImportExcel extends PluginModel<Entity>
 					m.setUnit(ontologyTermsList.get(index));
 					index++;
 				}
+				
+				db.add(addedMeasurements);
+
 				
 				
 				// TEMPORARY FIX FOR MREF RESOLVE FOREIGN KEYS BUG
