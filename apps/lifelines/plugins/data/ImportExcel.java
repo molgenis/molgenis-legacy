@@ -28,7 +28,10 @@ import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
-import org.springframework.ui.context.Theme;
+
+import app.FillMetadata;
+
+import plugins.emptydb.emptyDatabase;
 
 
 
@@ -59,8 +62,6 @@ public class ImportExcel extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request) throws Exception	{
 
-	
-		
 		if ("ImportDatashaperToPheno".equals(request.getAction())) {
 			
 			System.out.println("----------------->");
@@ -76,6 +77,13 @@ public class ImportExcel extends PluginModel<Entity>
 			}
 			loadDataFromExcel(db, request);
 
+		}
+		
+		if ("fillinDatabase".equals(request.getAction())) {
+			
+			new emptyDatabase(db, false);
+			FillMetadata.fillMetadata(db, false);
+			Status = "The database is empty now";
 		}
 		
 	}
@@ -108,6 +116,8 @@ public class ImportExcel extends PluginModel<Entity>
 			
 			List<OntologyTerm> ontologyTerms = new ArrayList<OntologyTerm>();
 			
+			List<Ontology> ontologyies = new ArrayList<Ontology>();
+			
 			List<Code> codes = new ArrayList<Code>();
 			
 			int row = sheet.getRows();
@@ -117,6 +127,10 @@ public class ImportExcel extends PluginModel<Entity>
 			System.out.println(row);
 			
 			Measurement mea;
+			
+			OntologyTerm ontology_Term;
+			
+			Ontology ontology;
 			
 			Protocol prot;
 			
@@ -153,6 +167,10 @@ public class ImportExcel extends PluginModel<Entity>
 			for (int i = 1; i < row - 1; i++){
 				
 				mea = new Measurement();
+				
+				ontology_Term = new OntologyTerm();
+				
+				ontology = new Ontology();
 				
 				prot = new Protocol();
 				
@@ -218,7 +236,11 @@ public class ImportExcel extends PluginModel<Entity>
 						
 						measurementName = sheet.getCell(j, i).getContents();
 						
+						ontology_Term.setName(measurementName);
+						
 						mea.setName(sheet.getCell(j, i).getContents());
+						
+						mea.setOntologyReference_Name(measurementName);
 						
 						List<String> temporaryHolder = linkProtocolMeasurement.get(protocolName);
 						
@@ -249,7 +271,7 @@ public class ImportExcel extends PluginModel<Entity>
 					}else if ( j == 7) {
 //						//create an ontology for importing ontologyURI.
 //						Ontology ontology = new Ontology();
-//						String variableURIName = sheet.getCell(j,i).getContents(); //TODO: recheck!
+//						
 //
 //						ontology.setName("Datashaper"); //TODO recheck
 //						//ontology.setOntologyAccession()  //TODO : ask!
@@ -261,10 +283,16 @@ public class ImportExcel extends PluginModel<Entity>
 //						if (variableURIName !="" && !ontologyTerms.contains(variableURI)) {
 //							ontologyTerms.add(variableURI);
 //						}
-						
+						String variableURIName = sheet.getCell(j,i).getContents();
+						ontology_Term.setTermPath(variableURIName);
+						String array[] = variableURIName.split("#");
+						String ontologyName = array[0];
+						ontology.setName(ontologyName); //TODO don`t konw the name yet
+						ontology.setOntologyURI(ontologyName);
+						ontology_Term.setOntology_Name(ontologyName);
 					}
 					
-					else if(j == 8){
+					else if(j == 8 || j == 9){
 
 						if(sheet.getCell(j, i).getContents().length() > 0 && sheet.getCell(j, i).getContents() != null){
 							
@@ -299,13 +327,24 @@ public class ImportExcel extends PluginModel<Entity>
 					}
 					
 				}
-				measurements.add(mea);
 				
-				protocols.add(prot);
+				if(!measurements.contains(mea))
+						measurements.add(mea);
 				
-				themeProtocols.add(themeProtocol);
+				if(!protocols.contains(prot))
+					protocols.add(prot);
 				
-				groupThemes.add(groupTheme);
+				if(!themeProtocols.contains(themeProtocol))
+					themeProtocols.add(themeProtocol);
+				
+				if(!groupThemes.contains(groupTheme))
+					groupThemes.add(groupTheme);
+				
+				if(!ontologyTerms.contains(ontology_Term))
+					ontologyTerms.add(ontology_Term);
+				
+				if(!ontologyies.contains(ontology))
+					ontologyies.add(ontology);
 			}
 			
 			List<Measurement> addedMeasurements = new ArrayList<Measurement>();
@@ -372,6 +411,7 @@ public class ImportExcel extends PluginModel<Entity>
 			}
 			try {
 				
+				db.add(ontologyies);
 				db.add(ontologyTerms);
 				
 				//link Unit(ontologyTerm) to measurements 
