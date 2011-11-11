@@ -7,6 +7,7 @@ import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.fieldtypes.IntField;
 import org.molgenis.fieldtypes.LongField;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 
@@ -34,7 +35,7 @@ public class JDBCQueryGernatorUtil {
 	 * @return sql where clause. FIXME: remove the 'withOffset' part?
 	 * @throws DatabaseException
 	 */
-	public static String createWhereSql(JDBCMapper<?> mapper, boolean isNested, boolean withOffset, QueryRule... rules)
+	public static String createWhereSql(Mapper<?> mapper, boolean isNested, boolean withOffset, QueryRule... rules)
 			throws DatabaseException
 	{
 		StringBuilder where_clause = new StringBuilder("");
@@ -55,7 +56,9 @@ public class JDBCQueryGernatorUtil {
 				// logger.debug(rule);
 
 				// String tablePrefix = "";
-				if (mapper != null) rule.setField(mapper.getTableFieldName(rule.getField()));
+				if (mapper != null) {
+                                    rule.setField(mapper.getTableFieldName(rule.getField()));
+                                } 
 
 				if (rule.getOperator() == Operator.LAST || rule.getOperator() == Operator.LIMIT
 						|| rule.getOperator() == Operator.OFFSET || rule.getOperator() == Operator.SORTASC
@@ -249,7 +252,7 @@ public class JDBCQueryGernatorUtil {
 	}
 
 	/** Helper method for creating a sort clause */
-	private static String createSortSql(JDBCMapper<?> mapper, QueryRule... rules)
+	private static String createSortSql(Mapper<?> mapper, QueryRule... rules)
 	{
 		return createSortSql(mapper, false, rules);
 	}
@@ -276,7 +279,7 @@ public class JDBCQueryGernatorUtil {
 	 *            query rules to be translated into sql order by clause.
 	 * @return sql with sort clause
 	 */
-	public static String createSortSql(JDBCMapper<?> mapper, boolean reverseSorting, QueryRule rules[])
+	public static String createSortSql(Mapper<?> mapper, boolean reverseSorting, QueryRule rules[])
 	{
 		// copy parameter into local temp so we can change it
 		String sort_clause = "";

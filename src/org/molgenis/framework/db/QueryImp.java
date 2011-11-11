@@ -66,6 +66,13 @@ public class QueryImp<E extends Entity> implements Query<E> {
 		rules.add(new QueryRule(field, Operator.IN_SUBQUERY, sql));
 		return this;
 	} 
+	
+	public Query<E> subQuery(SubQueryRule subQueryRule) 
+	{
+		rules.add(subQueryRule);
+		return this;
+	}
+	
 
 	@Override
 	public Query<E> greater(String field, Object value) {
