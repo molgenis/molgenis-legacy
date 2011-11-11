@@ -10,6 +10,7 @@ public class MolgenisRequest extends HttpServletRequestTuple
 {
 
 	Database db;
+	String servicePath;
 	
 	public MolgenisRequest(HttpServletRequest request) throws Exception
 	{
@@ -31,6 +32,16 @@ public class MolgenisRequest extends HttpServletRequestTuple
 	public void setDatabase(Database db)
 	{
 		this.db = db;
+	}
+
+	public String getServicePath()
+	{
+		return servicePath;
+	}
+
+	public void setServicePath(String servicePath)
+	{
+		this.servicePath = servicePath;
 	}
 
 	
