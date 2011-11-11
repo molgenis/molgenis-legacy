@@ -91,6 +91,10 @@ public class Settings extends PluginModel
 			{
 				result.add(ResetXgapDb.reset(db, true));
 			}
+			else if ("resetDatabaseSoft".equals(request.getAction()))
+			{
+				result.add(ResetXgapDb.reset(db, false));
+			}
 			else if ("removeExampleData".equals(request.getAction()))
 			{
 				result = deleteExampleInvestigation("ClusterDemo", db);
@@ -150,6 +154,9 @@ public class Settings extends PluginModel
 			DataMatrixHandler dmh = new DataMatrixHandler(db);
 			for(Data d : data){
 				
+				//this is the only link between "cluster metadata" and the example that we need to break
+				//re-importing the example dataset will fail on the last step where the "cluster metadata" is added:
+				//to restore to old situation, add the 2 'DataValue' records manually
 				report.add("Deleting tag for '"+d.getName()+"' first..");
 				List<DataValue> dvlist = db.find(DataValue.class, new QueryRule(DataValue.VALUE_NAME, Operator.EQUALS, d.getName()));
 				report.add(db.remove(dvlist) + " datavalues deleted");

@@ -8,6 +8,8 @@
 package plugins.archiver;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.molgenis.framework.db.CsvToDatabase.ImportResult;
 import org.molgenis.framework.db.Database;
@@ -72,7 +74,13 @@ public class Archiver extends PluginModel<Entity>
 						throw new Exception("Could not create tmp folder: " + tmpDir.getAbsolutePath());
 					}
 
-					new CsvExport().exportRegular(tmpDir, db, true);
+					List<Class<? extends Entity>> specialCases = new ArrayList<Class<? extends Entity>>();
+					specialCases.add(org.molgenis.auth.MolgenisGroup.class);
+					specialCases.add(org.molgenis.auth.MolgenisPermission.class);
+					specialCases.add(org.molgenis.auth.MolgenisRoleGroupLink.class);
+					specialCases.add(org.molgenis.auth.MolgenisUser.class);
+					specialCases.add(org.molgenis.core.MolgenisEntity.class);
+					new CsvExport().exportSpecial(tmpDir, db, specialCases, true);
 					File tarFile = TarGz.tarDir(tmpDir);
 					this.model.setDownload(tarFile.getName());
 					this.setMessages(new ScreenMessage("Export successful!", true));

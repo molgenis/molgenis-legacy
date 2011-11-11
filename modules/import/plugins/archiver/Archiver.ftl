@@ -28,8 +28,8 @@
 
 <h1>Archiver</h1>
 <h3>Export</h3>
-A simple, but complete export of database records into CSV files packaged in a GZipped tarball.<br>
-<b><i>Beware</b> that special data such as files or system tables are not included in this archive.</i><br>
+A simple, but complete export of database records into CSV files, packaged in a GZipped tarball.<br>
+<b><i>Please note</b> that the following metadata is not exported: MolgenisGroup, MolgenisPermission, MolgenisRoleGroupLink, MolgenisUser and MolgenisEntity. This prevents importing conflicts.</i><br>
 Press 'Export' and wait for your download to be prepared.<br><br>
 
 <input type="submit" value="Export" onclick="__action.value='export';return true;"/>

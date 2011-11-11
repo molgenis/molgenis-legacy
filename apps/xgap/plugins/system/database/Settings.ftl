@@ -27,15 +27,13 @@
 
 <h2>Reset & loading</h2>
 
-<@action name="loadExampleData" label="Load example data (may take a minute)"/>
+<@action name="loadExampleData" label="Load example data (may take a minute)"/><br><br>
 
-<#-->a href="loadexampledata_4EE1D7A3E73C504183B69F7D20108853">Load example data</a--><br><br>
+<@action name="removeExampleData" label="Remove example data (investigation 'ClusterDemo' will be deleted)"/><br><br>
 
-<@action name="resetDatabase" label="Reset database (all data will be deleted!!)"/>
-<#-->a href="resetdatabase_4EE1D7A3E73C504183B69F7D20108853">Reset database</a--><br><br>
-<#-->a href="resetdatabase_loadexampledata_4EE1D7A3E73C504183B69F7D20108853">Reset database & Load example data</a><br><br-->
+<@action name="resetDatabase" label="Complete reset database (all data will be deleted!!)"/><br><br>
 
-<@action name="removeExampleData" label="Remove example data (investigation 'ClusterDemo' will be deleted!!)"/>
+<@action name="resetDatabaseSoft" label="Soft reset database (deletes all relational data, but keeps files)"/><br><br>
 
 <#if screen.console?exists>
 <div style="border: 1px black; background: white; width: 100%">
