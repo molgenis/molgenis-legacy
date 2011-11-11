@@ -128,6 +128,32 @@ public class CsvExport
 		logger.debug("done");
 	}
 	
+	/**
+	* Export while excluding or including certain entity types. Defaults set: skip autoId, no QueryRules.
+	* If exclusion is set to true, the specialCases are used to exlude those entities from the export (entities not in list are exported).
+	* If exclusion is set to false, the specialCases are used to include those entities in the export (only entities in list are exported).
+	*/
+	public void exportSpecial(File directory, Database db, List<Class<? extends Entity>> specialCases, boolean exclusion) throws Exception
+	{
+		exportSpecial(directory, db, true, specialCases, exclusion, new QueryRule[]{});
+	}
+	
+	/**
+	* Export while excluding or including certain entity types.
+	* If exclusion is set to true, the specialCases are used to exlude those entities from the export (entities not in list are exported).
+	* If exclusion is set to false, the specialCases are used to include those entities in the export (only entities in list are exported).
+	* TODO: Could maybe replace exportAll(File directory, List ... entityLists) ?
+	*/
+	public void exportSpecial(File directory, Database db, boolean skipAutoId, List<Class<? extends Entity>> specialCases, boolean exclusion, QueryRule ... rules) throws Exception
+	{
+	<#list entities as entity><#if !entity.abstract && entity.association==false>
+		if((exclusion && !specialCases.contains(${JavaName(entity)}.class)) || (!exclusion && specialCases.contains(${JavaName(entity)}.class)))
+			{ export${Name(entity)}(db, new File(directory+"/${entity.name?lower_case}.txt"), skipAutoId ? Arrays.asList(new String[]{<#assign first = true><#list entity.allFields as f><#if !(f.type = "int" && f.auto)><#if first><#assign first=false><#else>,</#if><#if f.type="mref" || f.type="xref"><#list f.xrefLabelNames as label>"${f.name}_${label}"<#if label_has_next>,</#if></#list><#else>"${f.name}"</#if></#if></#list>}) : null, rules); }
+	</#if></#list>
+	
+		logger.debug("done");
+	}
+	
 		private QueryRule[] matchQueryRulesToEntity(org.molgenis.model.elements.Entity e, QueryRule ... rules) throws MolgenisModelException
 	{
 		ArrayList<QueryRule> tmpResult = new ArrayList<QueryRule>();
