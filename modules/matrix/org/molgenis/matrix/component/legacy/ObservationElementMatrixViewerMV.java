@@ -1,12 +1,16 @@
+package org.molgenis.matrix.component.legacy;
 //package org.molgenis.matrix.component;
 //
 //import java.io.OutputStream;
+//import java.io.PrintStream;
 //import java.lang.reflect.Method;
 //import java.text.SimpleDateFormat;
 //import java.util.ArrayList;
 //import java.util.List;
 //import java.util.Locale;
 //
+//import java.util.logging.Level;
+//import org.apache.commons.lang.StringUtils;
 //import org.apache.log4j.Logger;
 //import org.molgenis.framework.db.Database;
 //import org.molgenis.framework.db.QueryRule;
@@ -15,6 +19,7 @@
 //import org.molgenis.framework.ui.ScreenMessage;
 //import org.molgenis.framework.ui.html.ActionInput;
 //import org.molgenis.framework.ui.html.CheckboxInput;
+//import org.molgenis.framework.ui.html.HtmlInputException;
 //import org.molgenis.framework.ui.html.HtmlWidget;
 //import org.molgenis.framework.ui.html.IntInput;
 //import org.molgenis.framework.ui.html.JQueryDataTable;
@@ -26,18 +31,17 @@
 //import org.molgenis.matrix.MatrixException;
 //import org.molgenis.matrix.component.general.MatrixQueryRule;
 //import org.molgenis.pheno.Measurement;
-//import org.molgenis.pheno.Observation;
 //import org.molgenis.pheno.ObservationElement;
 //import org.molgenis.pheno.ObservedValue;
 //import org.molgenis.util.Entity;
 //import org.molgenis.util.HandleRequestDelegationException;
 //import org.molgenis.util.Tuple;
 //
-//public class ObservationElementMatrixViewer extends HtmlWidget
+//public class ObservationElementMatrixViewerMV extends HtmlWidget
 //{
 //	ScreenController<?> callingScreenController;
 //	
-//	SliceablePhenoMatrix<? extends ObservationElement, ? extends ObservationElement> matrix;
+//	SliceablePhenoMatrixMV<? extends ObservationElement, ? extends ObservationElement> matrix;
 //	Logger logger = Logger.getLogger(this.getClass());
 //	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 //	
@@ -78,8 +82,8 @@
 //	 * @param matrix
 //	 * @param showLimitControls
 //	 */
-//	public ObservationElementMatrixViewer(ScreenController<?> callingScreenController, String name, 
-//			SliceablePhenoMatrix<? extends ObservationElement, ? extends ObservationElement> matrix,
+//	public ObservationElementMatrixViewerMV(ScreenController<?> callingScreenController, String name, 
+//			SliceablePhenoMatrixMV<? extends ObservationElement, ? extends ObservationElement> matrix,
 //			boolean showLimitControls, boolean selectMultiple, List<MatrixQueryRule> filterRules)
 //	{
 //		super(name);
@@ -103,8 +107,8 @@
 //	 * @param filterRules
 //	 * @throws Exception
 //	 */
-//	public ObservationElementMatrixViewer(ScreenController<?> callingScreenController, String name, 
-//			SliceablePhenoMatrix<? extends ObservationElement, ? extends ObservationElement> matrix,
+//	public ObservationElementMatrixViewerMV(ScreenController<?> callingScreenController, String name, 
+//			SliceablePhenoMatrixMV<? extends ObservationElement, ? extends ObservationElement> matrix,
 //			boolean showLimitControls, boolean selectMultiple, List<MatrixQueryRule> filterRules, 
 //			MatrixQueryRule columnRule) throws Exception
 //	{
@@ -130,6 +134,7 @@
 //		this.delegate(action, db, t);
 //	}
 //	
+//	
 //	public String toHtml()
 //	{	
 //		try {
@@ -146,7 +151,8 @@
 //			result += "</td></tr></table>";
 //			return result;
 //		} catch (Exception e) {
-//			((EasyPluginController)this.callingScreenController).setError(e.getMessage());
+//			e.toString();
+//		((EasyPluginController)this.callingScreenController).setError(e.getMessage());
 //			e.printStackTrace();
 //			return new Paragraph("error", e.getMessage()).render();
 //		}
@@ -231,7 +237,7 @@
 //	public String renderTable() throws MatrixException {
 //		JQueryDataTable dataTable = new JQueryDataTable(getName() + "DataTable");
 //		
-//		List<? extends Observation>[][] values = matrix.getValueLists();
+//		List<ObservedValue>[][] values = matrix.getValueLists();
 //		List<? extends ObservationElement> rows = matrix.getRowHeaders();
 //		List<? extends ObservationElement> cols = matrix.getColHeaders();
 //		
@@ -269,24 +275,23 @@
 //				dataTable.setCell(2, row, radioButtonCode);
 //			}
 //			// get the data for this row
-//			List<Observation>[] rowValues = (List<Observation>[]) values[row];
+//			List<ObservedValue>[] rowValues = values[row];
 //			for (int col = 0; col < rowValues.length; col++) {
 //				if (rowValues[col] != null && rowValues[col].size() > 0) {
 //					boolean first = true;
-//					for (Observation val : rowValues[col]) {
-//						String valueToShow = (String) val.get("value");
-//						
-//						if (val instanceof ObservedValue && valueToShow == null) {
-//							valueToShow = ((ObservedValue)val).getRelation_Name();
+//					for (ObservedValue val : rowValues[col]) {
+//						String valueToShow = val.getValue();
+//						if (valueToShow == null) {
+//							valueToShow = val.getRelation_Name();
 //						}
-////						if (val.get(ObservedValue.ENDTIME) != null) {
-////							valueToShow += " (valid from " + newDateOnlyFormat.format(val.get(ObservedValue.ENDTIME));
-////						}
-////						if (val.get(ObservedValue.TIME) != null) {
-////							valueToShow += " through " + newDateOnlyFormat.format(val.get(ObservedValue.TIME)) + ")";
-////						} else if (((ObservedValue)val).getTime() != null) {
-////							valueToShow += ")";
-////						}
+//						if (val.getTime() != null) {
+//							valueToShow += " (valid from " + newDateOnlyFormat.format(val.getTime());
+//						}
+//						if (val.getEndtime() != null) {
+//							valueToShow += " through " + newDateOnlyFormat.format(val.getEndtime()) + ")";
+//						} else if (val.getTime() != null) {
+//							valueToShow += ")";
+//						}
 //						if (first) {
 //							first = false;
 //							dataTable.setCell(col + 3, row, valueToShow);
@@ -335,7 +340,24 @@
 //		// add column filter
 //		SelectInput colId = new SelectInput(COLID);
 //		divContents += "Add filter:";
-//		colId.setEntityOptions(matrix.getColHeaders());
+//		
+//                List<Column> columns = matrix.getColumns();
+//                List<String> options = new ArrayList<String>();
+//                List<String> values = new ArrayList<String>();
+//                for(Column c : columns) {
+//                    options.add(c.getName());
+//                    values.add(c.getProtocol().getId() +"." +c.getMeasurement().getId());
+//                }
+//                try {
+//                    colId.setOptions(values, options);
+//                } catch (HtmlInputException ex) {
+//                    java.util.logging.Logger.getLogger(ObservationElementMatrixViewerMV.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//                
+//                //colId.setEntityOptions(matrix.getColHeaders());
+//                
+//
+//                
 //		// NB: options are added with Measurement ID's as values and Names as labels
 //		colId.setNillable(true);
 //		divContents += colId.render();
@@ -362,6 +384,49 @@
 //		}
 //		
 //		return divContents;
+//	}
+//	
+//
+//	
+//	public void renderJsonTable() throws Exception {
+//		List<ObservedValue>[][] values = matrix.getValueLists();
+//		List<? extends ObservationElement> rows = matrix.getRowHeaders();
+//		List<? extends ObservationElement> cols = matrix.getColHeaders();
+//		
+//		PrintStream out = System.out;
+//		out.println("<?xml version='1.0' encoding='utf-8'?>");
+//		out.println("<rows>");
+//
+//		int rowLimit = matrix.getRowLimit();
+//		int rowCount = matrix.getRowCount();
+//		int rowOffset =	matrix.getRowOffset();		
+//		
+//		int currentPage = (int)Math.ceil((float)rowOffset / (float)rowLimit);
+//		int totalPages = (int)Math.ceil((float)rowCount / (float)rowLimit);
+//		
+//		out.println(String.format("<page>%s</page>", currentPage));
+//		out.println(String.format("<total>%s</total>", totalPages));
+//		out.println(String.format("<records>%s</records>", rowCount));
+//
+//		//print rowHeader + colValues
+//		for (int row = 0; row < values.length; row++)
+//		{
+//			String rowId = rows.get(row).getName(); //patient ID?
+//			out.println(String.format("<row id=\"%s\">",rowId));
+//			
+//			List<ObservedValue>[] rowValues = values[row];
+//			for(List<ObservedValue> ovRec : rowValues) {
+//				for(ObservedValue ov : ovRec) {
+//					if(StringUtils.isNotEmpty(ov.getValue())) {
+//						out.println(String.format("<cell>%s</cell>", ov.getValue()));						
+//					} else {
+//						out.println(String.format("<cell>%s</cell>", ""));	
+//					}					
+//				}
+//			}
+//			out.println("</rows>");
+//		}
+//		out.flush();
 //	}
 //	
 //	public void removeFilter(String action) throws MatrixException
@@ -404,7 +469,12 @@
 //	{
 //		// First find out whether to filter on the value or the relation_Name field
 //		String valuePropertyToUse = ObservedValue.VALUE;
-//		int measurementId = t.getInt(COLID);
+//		
+//                String protocolMeasurementName = t.getString(COLID);
+//                String[] pieces = protocolMeasurementName.split("\\.");
+//                int protocolId = Integer.parseInt(pieces[0]);
+//                int measurementId = Integer.parseInt(pieces[1]);
+//                
 //		Measurement filterMeasurement = db.findById(Measurement.class, measurementId);
 //		if (filterMeasurement.getDataType().equals("xref")) {
 //			valuePropertyToUse = ObservedValue.RELATION_NAME;
@@ -417,7 +487,7 @@
 //			op = QueryRule.Operator.LIKE;
 //		}
 //		// Then do the actual slicing
-//		matrix.sliceByColValueProperty(measurementId,
+//		matrix.sliceByColValueProperty(protocolId, measurementId, 
 //				valuePropertyToUse, op, t.getObject(COLVALUE));
 //	}
 //	
@@ -523,7 +593,7 @@
 //
 //	public void delegate(String action, Database db, Tuple request)
 //			throws HandleRequestDelegationException
-//	{
+//    {
 //		// try/catch for db.rollbackTx
 //		try
 //		{

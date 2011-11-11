@@ -1,21 +1,24 @@
-//package org.molgenis.matrix.component.legacy;
+package org.molgenis.matrix.component.legacy;
+//package org.molgenis.matrix.component;
 //
 //import java.util.ArrayList;
 //import java.util.List;
 //
 //import org.apache.log4j.Logger;
 //import org.molgenis.framework.db.Database;
+//import org.molgenis.framework.db.DatabaseException;
 //import org.molgenis.framework.db.QueryRule;
 //import org.molgenis.framework.db.QueryRule.Operator;
-//import org.molgenis.matrix.MatrixException;
+//import org.molgenis.matrix.component.general.AbstractSliceableMatrix;
 //import org.molgenis.matrix.component.general.MatrixQueryRule;
 //import org.molgenis.matrix.component.interfaces.BasicMatrix;
+//import org.molgenis.matrix.component.interfaces.RenderDescriptor;
 //import org.molgenis.matrix.component.interfaces.SliceableMatrix;
+//import org.molgenis.matrix.component.interfaces.SourceMatrix;
 //import org.molgenis.pheno.ObservableFeature;
 //import org.molgenis.pheno.ObservationTarget;
 //import org.molgenis.pheno.ObservedValue;
 //
-//@Deprecated
 //public class PhenoMatrix
 //		extends
 //		AbstractSliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>>
@@ -44,10 +47,8 @@
 //	/************************************************************/
 //
 //	@Override
-//	public List<ObservedValue>[][] getValues() throws MatrixException
+//	public List<ObservedValue>[][] getValues() throws Exception
 //	{
-//		try
-//		{
 //		List<ObservedValue>[][] visibleValues = new List[rowCopy.size()][colCopy
 //				.size()];
 //
@@ -96,12 +97,9 @@
 //		}
 //
 //		return visibleValues;
-//		} catch(Exception e)
-//		{
-//			throw new MatrixException(e);
-//		}
 //	}
 //
+//	@Override
 //	@Deprecated
 //	public List<ObservedValue>[][] getVisibleValues() throws Exception
 //	{
@@ -112,6 +110,7 @@
 //	/**************** SliceableMatrix implementation ****************/
 //	/****************************************************************/
 //
+//	@Override
 //	@Deprecated
 //	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByRowValues(
 //			QueryRule rule) throws Exception
@@ -171,6 +170,7 @@
 //		return this;
 //	}
 //
+//	@Override
 //	@Deprecated
 //	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColValues(
 //			MatrixQueryRule rule) throws Exception
@@ -179,6 +179,7 @@
 //				rule.getOperator(), rule.getValue());
 //	}
 //
+//	@Override
 //	@Deprecated
 //	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByRowHeader(
 //			MatrixQueryRule rule) throws Exception
@@ -214,6 +215,7 @@
 //		return this;
 //	}
 //
+//	@Override
 //	@Deprecated
 //	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColHeader(
 //			MatrixQueryRule rule) throws Exception
@@ -298,6 +300,7 @@
 //		return col.getName();
 //	}
 //
+//	@Override
 //	@Deprecated
 //	public List<String> getRowHeaderFilterAttributes()
 //	{
@@ -310,12 +313,13 @@
 //		return new ObservationTarget().getFields();
 //	}
 //
+//	@Override
 //	@Deprecated
 //	public List<String> getColHeaderFilterAttributes()
 //	{
 //		List<String> returnList = new ArrayList<String>();
 //		returnList.add(ObservableFeature.NAME);
-//		returnList.add(ObservableFeature.__TYPE);
+//		returnList.add(ObservableFeature.DTYPE);
 //		return returnList;
 //	}
 //	
@@ -348,129 +352,5 @@
 //		// TODO Auto-generated method stub
 //		return null;
 //	}
-//
-//	@Override
-//	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> slice(
-//			MatrixQueryRule rule) throws MatrixException {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	@Override
-//	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColValueProperty(
-//			ObservableFeature col, String property, Operator operator,
-//			Object value) throws MatrixException {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	@Override
-//	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByColValueProperty(
-//			int colIndex, String property, Operator operator, Object value)
-//			throws MatrixException {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	@Override
-//	public List<String> getValuePropertyNames() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	@Override
-//	public int getRowLimit() {
-//		// TODO Auto-generated method stub
-//		return 0;
-//	}
-//
-//	@Override
-//	public void setRowLimit(int rowLimit) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-//
-//	@Override
-//	public int getRowOffset() {
-//		// TODO Auto-generated method stub
-//		return 0;
-//	}
-//
-//	@Override
-//	public void setRowOffset(int rowOffset) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-//
-//	@Override
-//	public int getColLimit() {
-//		// TODO Auto-generated method stub
-//		return 0;
-//	}
-//
-//	@Override
-//	public void setColLimit(int colLimit) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-//
-//	@Override
-//	public int getColOffset() {
-//		// TODO Auto-generated method stub
-//		return 0;
-//	}
-//
-//	@Override
-//	public void setColOffset(int colOffset) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-//
-//	@Override
-//	public Integer getColCount() throws MatrixException
-//	{
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	@Override
-//	public Integer getRowCount() throws MatrixException
-//	{
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	@Override
-//	public void refresh() throws MatrixException
-//	{
-//		// TODO Auto-generated method stub
-//		
-//	}
-//
-//	@Override
-//	public List<? extends List<ObservedValue>>[][] getValueLists() throws MatrixException
-//	{
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	@Override
-//	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByRowValueProperty(
-//			ObservationTarget row, String property, Operator operator,
-//			Object value) throws MatrixException
-//	{
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	@Override
-//	public SliceableMatrix<ObservationTarget, ObservableFeature, List<ObservedValue>> sliceByRowValueProperty(
-//			int rowIndex, String property, Operator operator, Object value)
-//			throws MatrixException
-//	{
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
 //
 //}

@@ -148,15 +148,21 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Bring in animals"));
 		// Add 10 female Syrian hamsters
-		// Set species and nr. of animals; other values are default
 		selenium.select("id=species", "label=Syrian hamster");
+		selenium.select("id=background", "label=C57black6J"); // TODO: add useful Hamster background
+		selenium.select("id=sex", "label=Female");
+		selenium.select("id=source", "label=Harlan");
+		selenium.select("id=animaltype", "label=1 (A. Gewoon dier)");
 		selenium.type("id=numberofanimals", "10");
 		selenium.click("id=Add");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("10 animal(s) added succesfully"));
 		// Add 10 male Syrian hamsters
 		selenium.select("id=species", "label=Syrian hamster");
+		selenium.select("id=background", "label=C57black6J");
 		selenium.select("id=sex", "label=Male");
+		selenium.select("id=source", "label=Harlan");
+		selenium.select("id=animaltype", "label=1 (A. Gewoon dier)");
 		selenium.type("id=numberofanimals", "10");
 		selenium.click("id=Add");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -329,10 +335,10 @@ public class AnimaldbSeleniumTest
 		selenium.click("DecStatus_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("DEC status portal"));
-		Assert.assertEquals(selenium.getText("//div[@id='StatusTable']/table/tbody/tr[1]/th"), "12345");
-		Assert.assertEquals(selenium.getText("//div[@id='StatusTable']/table/tbody/tr[2]/td[3]"), "A");
-		Assert.assertEquals(selenium.getText("//div[@id='StatusTable']/table/tbody/tr[2]/td[6]"), "3");
-		Assert.assertEquals(selenium.getText("//div[@id='StatusTable']/table/tbody/tr[2]/td[7]"), "2");
+		Assert.assertEquals(selenium.getText("//table[@id='StatusTable']/tbody/tr[1]/th"), "12345");
+		Assert.assertEquals(selenium.getText("//table[@id='StatusTable']/tbody/tr[2]/td[3]"), "A");
+		Assert.assertEquals(selenium.getText("//table[@id='StatusTable']/tbody/tr[2]/td[6]"), "3");
+		Assert.assertEquals(selenium.getText("//table[@id='StatusTable']/tbody/tr[2]/td[7]"), "2");
 		
 		sleepHelper("decWorkflow");
 	}
@@ -383,10 +389,9 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=ApplyProtocol_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		// Apply 'SetWeight' protocol on animal '1'
+		// Apply 'SetWeight' protocol on animal '000001'
 		selenium.select("id=Protocols", "label=SetWeight");
-		selenium.select("id=Targets", "label=000001");
-		selenium.check("name=NewOrEdit value=New");
+		selenium.click("id=targetmatrix_selected_0"); // toggle selectbox for first animal in matrix
 		selenium.click("id=TimeBox");
 		selenium.click("id=Select");
 		selenium.waitForPageToLoad(pageLoadTimeout);

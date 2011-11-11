@@ -515,9 +515,20 @@ public class MatrixViewer extends HtmlWidget
 			int measId = Integer.parseInt((String)measurementId);
 			chosenMeasurements.add(db.findById(Measurement.class, measId).getName());
 		}
+		// Find and update col header filter rule
 		for (MatrixQueryRule mqr : matrix.getRules()) {
 			if (mqr.getFilterType().equals(MatrixQueryRule.Type.colHeader)) {
-				mqr.setValue(chosenMeasurements);
+				if (chosenMeasurements.size() > 0) {
+					mqr.setValue(chosenMeasurements); // update
+				} else {
+					matrix.getRules().remove(mqr); // remove rule if no measurements selected
+					// Consequence of this is that, if you 'click away' all measurements,
+					// there is no restriction on measurement anymore and you end up with ALL columns.
+					// Is this desirable? A user may not understand this and may expect to see
+					// NO columns. How would this be achievable? Would we have to do some tricks
+					// in createQuery()?
+				}
+				break;
 			}
 		}
 		matrix.setColLimit(chosenMeasurements.size()); // grow with selected measurements
