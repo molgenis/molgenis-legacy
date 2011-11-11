@@ -20,6 +20,14 @@
 			<field name="Targetgender" type="string" nillable="true"/>
 			<field name="Type" type="string" nillable="true"/>
 		</entity>
+		<entity name="themeProtocol" extends="Protocol">
+			<field name="Features" type="mref" xref_entity="Protocol"
+				nillable="true" />
+		</entity>
+		<entity name="groupTheme" extends="themeProtocol">
+			<field name="Features" type="mref" xref_entity="themeProtocol"
+				nillable="true" />
+		</entity>
 	</module>
 </molgenis>
 

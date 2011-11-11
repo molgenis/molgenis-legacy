@@ -1,6 +1,9 @@
 package plugins.data;
 
 
+import gcc.catalogue.GroupTheme;
+import gcc.catalogue.ThemeProtocol;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,6 +27,7 @@ import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+import org.springframework.ui.context.Theme;
 
 
 
@@ -97,6 +101,10 @@ public class ImportExcel extends PluginModel<Entity>
 			
 			List<Protocol> protocols = new ArrayList<Protocol>();
 			
+			List<ThemeProtocol> themeProtocols = new ArrayList<ThemeProtocol>();
+			
+			List<GroupTheme> groupThemes = new ArrayList<GroupTheme>();
+			
 			List<OntologyTerm> ontologyTerms = new ArrayList<OntologyTerm>();
 			
 			List<Code> codes = new ArrayList<Code>();
@@ -113,21 +121,29 @@ public class ImportExcel extends PluginModel<Entity>
 			
 			Code code;
 			
-			Protocol themeProtocol;
+			ThemeProtocol themeProtocol;
+			
+			GroupTheme groupTheme;
 			
 			List<String> ProtocolFeatures = new ArrayList<String>();
 			
 			List<String> ThemeProtocols = new ArrayList<String> ();
 			
+			List<String> GroupThemes = new ArrayList<String>();
+			
 			String protocolName = "";
 			
 			String ThemeProtocolname = "";
+			
+			String GroupThemeName = "";
 			
 			String measurementName = "";
 			
 			HashMap<String, List> linkProtocolMeasurement = new HashMap<String, List>();
 			
 			HashMap<String, List> linkThemeProtocol = new HashMap<String, List>();
+			
+			HashMap<String, List> linkGroupTheme = new HashMap<String, List>();
 			
 			HashMap<String, List> linkCodeMeasurement = new HashMap<String, List>();
 			
@@ -139,13 +155,27 @@ public class ImportExcel extends PluginModel<Entity>
 				
 				prot = new Protocol();
 				
-				themeProtocol = new Protocol();
+				themeProtocol = new ThemeProtocol();
+				
+				groupTheme = new GroupTheme();
 				
 				code = new Code();
 				
 				for(int j = 0; j < column; j++){
 					
-					if (j==1) { //theme is also a protocol 
+					if (j==0) { //theme is also a protocol 
+						
+						GroupThemeName = sheet.getCell(j,i).getContents().replace("'","");
+						
+						if (!linkGroupTheme.containsKey(GroupThemeName)) {
+							
+							GroupThemes = new ArrayList<String> ();
+							linkGroupTheme.put(GroupThemeName, GroupThemes);
+						}
+						
+						groupTheme.setName(GroupThemeName);
+						
+					}if (j==1) { //theme is also a protocol 
 						
 						ThemeProtocolname = sheet.getCell(j,i).getContents().replace("'","");
 						
@@ -157,7 +187,14 @@ public class ImportExcel extends PluginModel<Entity>
 						
 						themeProtocol.setName(ThemeProtocolname);
 						
-					}if(j == 2){
+						List<String> temporaryHolder = linkGroupTheme.get(GroupThemeName);
+						
+						if(!temporaryHolder.contains(ThemeProtocolname)){
+							temporaryHolder.add(ThemeProtocolname);
+							linkGroupTheme.put(GroupThemeName, temporaryHolder);
+						}
+						
+					}else if(j == 2){
 					
 						protocolName = sheet.getCell(j, i).getContents().replaceAll("'", "");
 						
@@ -170,9 +207,11 @@ public class ImportExcel extends PluginModel<Entity>
 						
 						List<String> temporaryHolder = linkThemeProtocol.get(ThemeProtocolname);
 						
-						temporaryHolder.add(sheet.getCell(j, i).getContents());
-						
-						linkThemeProtocol.put(ThemeProtocolname, temporaryHolder);
+						if(!temporaryHolder.contains(protocolName)){
+							
+							temporaryHolder.add(protocolName);
+							linkThemeProtocol.put(ThemeProtocolname, temporaryHolder);
+						}
 
 					}else if(j == 3){
 						
@@ -182,10 +221,13 @@ public class ImportExcel extends PluginModel<Entity>
 						
 						List<String> temporaryHolder = linkProtocolMeasurement.get(protocolName);
 						
-						temporaryHolder.add(sheet.getCell(j, i).getContents());
-						
-						linkProtocolMeasurement.put(protocolName, temporaryHolder);
-						
+						if(!temporaryHolder.contains(protocolName)){
+							
+							temporaryHolder.add(measurementName);
+							
+							linkProtocolMeasurement.put(protocolName, temporaryHolder);
+						}
+							
 					}else if (j == 4){
 						
 						mea.setDescription(sheet.getCell(j, i).getContents());
@@ -237,7 +279,9 @@ public class ImportExcel extends PluginModel<Entity>
 				
 				protocols.add(prot);
 				
-				protocols.add(themeProtocol);
+				themeProtocols.add(themeProtocol);
+				
+				groupThemes.add(groupTheme);
 			}
 			
 			List<Measurement> addedMeasurements = new ArrayList<Measurement>();
@@ -247,6 +291,10 @@ public class ImportExcel extends PluginModel<Entity>
 			List<Code> addedCodes = new ArrayList<Code>();
 			
 			List<Protocol> addedThemes = new ArrayList<Protocol>();
+			
+			List<ThemeProtocol> addedThemeProtocols = new ArrayList<ThemeProtocol>();
+			
+			List<GroupTheme> addedGroupThemes = new ArrayList<GroupTheme>();
 			
 			for(Measurement measure : measurements){
 				
@@ -261,12 +309,32 @@ public class ImportExcel extends PluginModel<Entity>
 			
 			for( Protocol proto : protocols){
 				
-				//proto.setFeatures_Name(linkProtocolMeasurement.get(proto.getName())); USE WHEN BUG IS FIXED
-				
 				if(db.query(Protocol.class).eq(Protocol.NAME, proto.getName()).count() == 0){
 					if(!addedProtocols.contains(proto)){
 						
 						addedProtocols.add(proto);
+					}
+				}
+			}
+			
+			for( GroupTheme group : groupThemes){
+				
+				if(db.query(GroupTheme.class).eq(GroupTheme.NAME, group.getName()).count() == 0){
+					
+					if(!addedGroupThemes.contains(group)){
+						
+						addedGroupThemes.add(group);
+					}
+				}
+			}
+			
+			for( ThemeProtocol theme : themeProtocols){
+				
+				if(db.query(ThemeProtocol.class).eq(ThemeProtocol.NAME, theme.getName()).count() == 0){
+					
+					if(!addedThemeProtocols.contains(theme)){
+						
+						addedThemeProtocols.add(theme);
 					}
 				}
 			}
@@ -312,19 +380,37 @@ public class ImportExcel extends PluginModel<Entity>
 						}
 						p.setFeatures_Id(measIdList);
 					}
+				}
+				
+				db.add(addedProtocols);
+				
+				for (ThemeProtocol theme : addedThemeProtocols) {
 					
-					if(linkThemeProtocol.containsKey(p.getName())){
-						List<String> protocoleNames = linkThemeProtocol.get(p.getName());
+					if(linkThemeProtocol.containsKey(theme.getName())){
+						List<String> protocoleNames = linkThemeProtocol.get(theme.getName());
 						List<Protocol> protsList = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.IN, protocoleNames));
 						List<Integer> protIdList = new ArrayList<Integer>();
 						for (Protocol m : protsList) {
 							protIdList.add(m.getId());
 						}
-						p.setFeatures_Id(protIdList);
+						theme.setFeatures_Id(protIdList);
 					}
 				}
+				db.add(addedThemeProtocols);
 				
-				db.add(addedProtocols);
+				for (GroupTheme group : addedGroupThemes) {
+					
+					if(linkGroupTheme.containsKey(group.getName())){
+						List<String> themeNames = linkGroupTheme.get(group.getName());
+						List<ThemeProtocol> themesList = db.find(ThemeProtocol.class, new QueryRule(ThemeProtocol.NAME, Operator.IN, themeNames));
+						List<Integer> themeIdList = new ArrayList<Integer>();
+						for (ThemeProtocol theme : themesList) {
+							themeIdList.add(theme.getId());
+						}
+						group.setFeatures_Id(themeIdList);
+					}
+				}
+				db.add(addedGroupThemes);
 				
 				for (Code c : addedCodes){
 					List<String> featureNames = linkCodeMeasurement.get(c.getCode_String());
