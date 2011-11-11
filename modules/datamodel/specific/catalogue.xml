@@ -10,23 +10,22 @@
 			<field name="SeeAlso" type="string" nillable="true"/>
 			<field name="Classification" type="string" nillable="true"/>
 			<field name="DataShaperClass" type="string" nillable="true"/>
+			<field name="CollectionMode" type="string" nillable="true"/>
 			<field name="Disease" type="string" nillable="true"/>
 			<field name="Format" type="string" nillable="false"/>
 			<field name="MedicalHealthIntervention" type="string" nillable="true"/>
 			<field name="Period" type="string" nillable="false"/>
 			<field name="Sample" type="string" nillable="true"/>
 			<field name="Sourceofinformation" type="string" nillable="true"/>
-			<field name="Target" type="string" nillable="true"/>
+			<field name="dataShaperTarget" type="string" nillable="true"/>
 			<field name="Targetgender" type="string" nillable="true"/>
-			<field name="Type" type="string" nillable="true"/>
+			<field name="DataShaperType" type="string" nillable="true"/>
 		</entity>
 		<entity name="themeProtocol" extends="Protocol">
-			<field name="Features" type="mref" xref_entity="Protocol"
-				nillable="true" />
+			<field name="Features" type="mref" xref_entity="Protocol" nillable="true" />
 		</entity>
 		<entity name="groupTheme" extends="themeProtocol">
-			<field name="Features" type="mref" xref_entity="themeProtocol"
-				nillable="true" />
+			<field name="Features" type="mref" xref_entity="themeProtocol" nillable="true" />
 		</entity>
 	</module>
 </molgenis>

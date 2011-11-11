@@ -14,6 +14,7 @@ import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 
+import org.molgenis.core.Ontology;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -163,7 +164,7 @@ public class ImportExcel extends PluginModel<Entity>
 				
 				for(int j = 0; j < column; j++){
 					
-					if (j==0) { //theme is also a protocol 
+					if (j==0) { //group is also a protocol 
 						
 						GroupThemeName = sheet.getCell(j,i).getContents().replace("'","");
 						
@@ -243,7 +244,27 @@ public class ImportExcel extends PluginModel<Entity>
 							linkUnitMeasurement.put(measurementName, unitName);
 						}
 							
-					}else if(j == 8){
+					}else  if( j == 6) { //is repeatable refers to the measurement  Erik says it's the temporal field of measurement entity in pheno model . 
+						//TODO
+					}else if ( j == 7) {
+//						//create an ontology for importing ontologyURI.
+//						Ontology ontology = new Ontology();
+//						String variableURIName = sheet.getCell(j,i).getContents(); //TODO: recheck!
+//
+//						ontology.setName("Datashaper"); //TODO recheck
+//						//ontology.setOntologyAccession()  //TODO : ask!
+//						ontology.setOntologyURI("http://www.datashaper.org/owl/2009/10/dataschema.owl#");
+//						
+//						OntologyTerm variableURI = new OntologyTerm();
+//						variableURI.setName(variableURIName);
+//						
+//						if (variableURIName !="" && !ontologyTerms.contains(variableURI)) {
+//							ontologyTerms.add(variableURI);
+//						}
+						
+					}
+					
+					else if(j == 8){
 
 						if(sheet.getCell(j, i).getContents().length() > 0 && sheet.getCell(j, i).getContents() != null){
 							
@@ -273,7 +294,10 @@ public class ImportExcel extends PluginModel<Entity>
 							
 							codes.add(code);
 						}
+					}else if(j==9) {
+						//Missing ontology also code ..
 					}
+					
 				}
 				measurements.add(mea);
 				
