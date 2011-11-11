@@ -190,7 +190,7 @@ public class JpaDatabase extends AbstractDatabase implements Database {
     @Override
     public <E extends Entity> int count(Class<E> entityClass,
             QueryRule... rules) throws DatabaseException {
-        TypedQuery<Long> query = JPAQueryGeneratorUtil.createCount(entityClass, (Mapper<E>) getMapperFor(entityClass), em, rules);
+        TypedQuery<Long> query = JPAQueryGeneratorUtil.createCount(this, entityClass, (Mapper<E>) getMapperFor(entityClass), em, rules);
         Long result = query.getSingleResult();
         return result.intValue();
     }
@@ -230,7 +230,7 @@ public class JpaDatabase extends AbstractDatabase implements Database {
     @Override
     public <E extends Entity> List<E> find(Class<E> entityClass,
             QueryRule... rules) throws DatabaseException {
-        TypedQuery<E> query = JPAQueryGeneratorUtil.createQuery(entityClass, (Mapper<E>) getMapperFor(entityClass), em, rules);
+        TypedQuery<E> query = JPAQueryGeneratorUtil.createQuery(this, entityClass, (Mapper<E>) getMapperFor(entityClass), em, rules);
         return query.getResultList();
     }
 

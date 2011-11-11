@@ -18,12 +18,15 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.persistence.criteria.Subquery;
+
 import org.apache.commons.lang.StringUtils;
 
 import org.apache.commons.logging.LogFactory;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.SubQueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.util.AbstractEntity;
 import org.molgenis.util.Entity;
@@ -33,13 +36,13 @@ import org.molgenis.util.Entity;
  */
 public class JPAQueryGeneratorUtil {
 
-    public static <IN extends Entity> TypedQuery<IN> createQuery(
+    public static <IN extends Entity> TypedQuery<IN> createQuery(JpaDatabase db,
 	    Class<IN> inputClass, Mapper<IN> mapper, EntityManager em,
 	    QueryRule... rules) throws DatabaseException {
-	return createQuery(inputClass, inputClass, mapper, em, rules);
+	return createQuery(db, inputClass, inputClass, mapper, em, rules);
     }
 
-    public static <IN extends Entity, OUT> TypedQuery<OUT> createQuery(
+    public static <IN extends Entity, OUT> TypedQuery<OUT> createQuery(JpaDatabase db,
 	    Class<IN> inputClass, Class<OUT> outputClass, Mapper<IN> mapper,
 	    EntityManager em, QueryRule... rules) throws DatabaseException {
 	CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -54,7 +57,7 @@ public class JPAQueryGeneratorUtil {
 
 	int[] limitOffset = new int[2];
 	Arrays.fill(limitOffset, -1);
-	Predicate wherePredicate = createWhere(mapper, em, root, cq, cb, limitOffset, rules);
+	Predicate wherePredicate = createWhere(db, mapper, em, root, cq, cb, limitOffset, rules);
 	if(wherePredicate != null) {
 		cq.where(wherePredicate);
 	}
@@ -68,13 +71,13 @@ public class JPAQueryGeneratorUtil {
 	return query;
     }    
     
-    public static <IN extends Entity> TypedQuery<Long> createCount(
+    public static <IN extends Entity> TypedQuery<Long> createCount(JpaDatabase db,
 	    Class<IN> inputClass, Mapper<IN> mapper, EntityManager em,
 	    QueryRule... rules) throws DatabaseException {
-	return createQuery(inputClass, Long.class, mapper, em, rules);
+	return createQuery(db, inputClass, Long.class, mapper, em, rules);
     }
 
-    private static <E extends Entity> Predicate createWhere(Mapper<E> mapper, EntityManager em,
+    private static <E extends Entity> Predicate createWhere(JpaDatabase db, Mapper<E> mapper, EntityManager em,
 	    Root<E> root, CriteriaQuery cq, CriteriaBuilder cb, int[] limitOffset,
 	    QueryRule... rul) throws DatabaseException {
 
@@ -95,10 +98,8 @@ public class JPAQueryGeneratorUtil {
 		    	rule.setField(mapper.getTableFieldName(rule.getValue().toString()));
 		    }
 		    	
-			String attributeName = rule.getField();
-            if(!StringUtils.isEmpty(attributeName)) {
-                attributeName = attributeName.substring(0,1).toLowerCase() + attributeName.substring(1);
-            }
+			String attributeName = rule.getJpaAttribute();
+
 			
 			Predicate predicate = null;
 	                          
@@ -188,8 +189,29 @@ public class JPAQueryGeneratorUtil {
 					break;
 				    case NESTED:
 					QueryRule[] nestedrules = rule.getNestedRules();
-					createWhere(mapper, em, root, cq, cb, new int[2], nestedrules);
+					createWhere(db, mapper, em, root, cq, cb, new int[2], nestedrules);
 					break;
+				    case SUBQUERY:
+				    	SubQueryRule sqr = (SubQueryRule)rule;
+				    	
+				    	Subquery sq = cq.subquery(sqr.getSubQueryResultClass());
+				    	Root sqFrom = sq.from(sqr.getSubQueryFromClass());
+				    	
+				    	Mapper sqMapper = db.getMapper(sqr.getSubQueryFromClass().getName()); 
+				    	
+				    	Predicate where = createWhere(db, sqMapper, em, sqFrom, cq, cb, new int[2], (QueryRule[])sqr.getValue());
+				    	sq.select(sqFrom.get(sqr.getSubQueryAttributeJpa())).where(where);
+				    	
+				    	//the operator of subquery should be handled in the right way such that no code duplication should occure
+				    	//for the moment only in will work (more to come)				   
+				    	String fieldForSubQuery = sqr.getJpaAttribute();
+				    	
+				    	if(sqr.getSubQueryOperator().equals(Operator.IN)) {
+				    		predicate = cb.in(root.get(fieldForSubQuery)).value(sq);
+				    	} else {
+				    		throw new UnsupportedOperationException();
+				    	}		
+			    	break;
 				    case IN: // not a query but a list for example SELECT * FROM
 					// x WHERE x.a1 IN (v1, v2, v3)
 					Object[] values = new Object[0];
@@ -215,7 +237,7 @@ public class JPAQueryGeneratorUtil {
 				    if (predicate != null) {
 						if (prevRule != null && prevRule.getOperator().equals(Operator.OR)) {
 							List<QueryRule> restOfQueryRules = rules.subList(i, rules.size());
-							Predicate rightsPred = createWhere(mapper, em, root, cq, cb, limitOffset, restOfQueryRules.toArray(new QueryRule[1]));
+							Predicate rightsPred = createWhere(db, mapper, em, root, cq, cb, limitOffset, restOfQueryRules.toArray(new QueryRule[1]));
 							if(rightsPred != null) {
 								whereClause = cb.or(whereClause, rightsPred);
 							}

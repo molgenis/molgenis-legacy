@@ -267,4 +267,6 @@ public interface Query<E extends Entity>
 
 	/** Method to create 'where field in (select * from ...)' subquery as condition */
 	Query<E> subquery(String field, String sql);
+	
+	public Query<E> subQuery(SubQueryRule subQueryRule);
 }

@@ -12,6 +12,8 @@ package org.molgenis.framework.db;
  
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * With this class an equation model can be described for a database-field (eg a
  * column). By combining this description into a single class a convenient way
@@ -72,6 +74,8 @@ public class QueryRule implements Cloneable {
 		IN("IN"),
 		/** 'field in (value)' with value being a subquery */
 		IN_SUBQUERY("IN_SUB"),
+		/** 'content of subQuery 8 */
+		SUBQUERY("SUBQUERY"),		
 		/** 'field' less-than 'value' */
 		LESS("<"),
 		/** 'field' equal-or-less-than 'value' */
@@ -230,6 +234,16 @@ public class QueryRule implements Cloneable {
 	 */
 	public String getField() {
 		return field;
+	}
+	
+	/**
+	 * Returns the field-name as a JPA Attribute
+	 */
+	public String getJpaAttribute() {
+	    if(!StringUtils.isEmpty(field)) {
+	        return field.substring(0,1).toLowerCase() + field.substring(1);
+	    }
+	    return field;
 	}
 
 	/**
