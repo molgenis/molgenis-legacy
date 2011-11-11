@@ -88,6 +88,7 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 				else
 				{
 					UUID connId = getSecuredDatabase(request);
+					request.setServicePath(p);
 					services.get(p).handleRequest(request, response);
 					manageConnection(connId);
 				}
