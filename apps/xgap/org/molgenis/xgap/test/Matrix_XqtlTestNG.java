@@ -11,6 +11,7 @@ import matrix.test.implementations.memory.TestMemoryMatrix;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.organization.Investigation;
+import org.molgenis.util.DetectOS;
 import org.molgenis.xgap.xqtlworkbench.ResetXgapDb;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -28,7 +29,10 @@ import filehandling.storage.StorageHandler;
  * To be used in xQTL automated test cases
  *
  */
-public class Matrix_XqtlTestNG {
+public class Matrix_XqtlTestNG
+{
+
+	Database db;
 
 	@DataProvider(name = "params")
 	public static Object[][] data() {
@@ -45,60 +49,72 @@ public class Matrix_XqtlTestNG {
 	}
 
 	@BeforeClass(alwaysRun = true)
-	public void setupBeforeClass() throws Exception {
-		
+	public void setupBeforeClass() throws Exception
+	{
+		//cleanup before we start
 		XqtlSeleniumTest.deleteDatabase();
+		db = DatabaseFactory.create();
 
-		Database db = DatabaseFactory.create();
-		StorageHandler sh = new StorageHandler(db);
+		// assert db is empty
+		//(it does seem to have tables here though, which is not really the idea)
+		Assert.assertTrue(db.find(Investigation.class).size() == 0);
 		
-		//assert db is empty
-		Assert.assertFalse(sh.hasFileStorage(false, db));
-		try{
-			db.find(Investigation.class).get(0);
-			Assert.fail("DatabaseException expected");
-		}catch(DatabaseException expected){
-			//DatabaseException was thrown
-		}
-		
-		//setup database
+		//setup database tables
 		String report = ResetXgapDb.reset(db, true);
 		Assert.assertTrue(report.endsWith("SUCCESS"));
-		
-		//setup file storage
-		String path = new File(".").getAbsolutePath() + File.separator + "tmp_matrix_test_data";
-		sh.setFileStorage(path, db);
+		StorageHandler sh = new StorageHandler(db);
+		Assert.assertFalse(sh.hasFileStorage(false, db));
+
+		// setup file storage
+		sh.setFileStorage(storagePath(), db);
 		sh.validateFileStorage(db);
 		Assert.assertTrue(sh.hasValidFileStorage(db));
 	}
-	
+
+	/**
+	 * Helper function. Get the storage path to use in test.
+	 */
+	public String storagePath()
+	{
+		String storagePath = new File(".").getAbsolutePath() + File.separator + "tmp_matrix_test_data";
+		if (DetectOS.getOS().startsWith("windows"))
+		{
+			return storagePath.replace("\\", "/");
+		}
+		else
+		{
+			return storagePath;
+		}
+	}
+
 	@AfterClass(alwaysRun = true)
 	public void cleanupAfterClass() throws InterruptedException, Exception
 	{
+		db.close();
 		XqtlSeleniumTest.deleteStorage();
 	}
 
 	@Test(dataProvider = "params")
-	public void binary(Params params) throws Exception{
-		Database db = DatabaseFactory.create();
+	public void binary(Params params) throws Exception
+	{
 		new TestBinMatrix(db, params);
 	}
 
 	@Test(dataProvider = "params")
-	public void database(Params params) throws Exception {
-		Database db = DatabaseFactory.create();
+	public void database(Params params) throws Exception
+	{
 		new TestDatabaseMatrix(db, params);
 	}
 
 	@Test(dataProvider = "params")
-	public void file(Params params) throws Exception {
-		Database db = DatabaseFactory.create();
+	public void file(Params params) throws Exception
+	{
 		new TestFileMatrix(db, params);
 	}
-	
+
 	@Test(dataProvider = "params")
-	public void memory(Params params) throws Exception {
-		Database db = DatabaseFactory.create();
+	public void memory(Params params) throws Exception
+	{
 		new TestMemoryMatrix(db, params);
 	}
 	

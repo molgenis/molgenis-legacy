@@ -23,6 +23,7 @@ import org.molgenis.util.TarGz;
 import org.molgenis.xgap.Marker;
 import org.molgenis.xgap.xqtlworkbench.ResetXgapDb;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -51,31 +52,37 @@ public class Archiver_XqtlTestNG
 	{
 		//cleanup before we start
 		XqtlSeleniumTest.deleteDatabase();
-
-		//create db and file storage
 		db = DatabaseFactory.create();
-		StorageHandler sh = new StorageHandler(db);
 
-		// assert db is empty
-		Assert.assertFalse(sh.hasFileStorage(false, db));
+		// assert db has no tables
 		try
 		{
-			db.find(Investigation.class).get(0);
+			db.find(Investigation.class);
 			Assert.fail("DatabaseException expected");
 		}
 		catch (DatabaseException expected)
 		{
-			// DatabaseException was thrown
+			// Good: DatabaseException was thrown
+			// FIXME: only because this is the first test to be run?
 		}
-
-		// setup database tables
+		
+		//setup database tables
 		String report = ResetXgapDb.reset(db, true);
 		Assert.assertTrue(report.endsWith("SUCCESS"));
+		StorageHandler sh = new StorageHandler(db);
+		Assert.assertFalse(sh.hasFileStorage(false, db));
 
 		// setup file storage
 		sh.setFileStorage(storagePath(), db);
 		sh.validateFileStorage(db);
 		Assert.assertTrue(sh.hasValidFileStorage(db));
+	}
+	
+	@AfterClass(alwaysRun = true)
+	public void cleanupAfterClass() throws InterruptedException, Exception
+	{
+		db.close();
+		XqtlSeleniumTest.deleteDatabase();
 	}
 
 	@Test
