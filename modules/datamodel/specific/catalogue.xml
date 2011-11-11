@@ -5,7 +5,7 @@
 			<description>This entity includes the dictionary from lifelines </description>
 		    <field name="id" type="autoid" description="automatically generated id" />
 		    <field name="Interpretation" nillable="true" type="string" />
-			<field name="Contraindication" nillable="true" type="string" />
+			<field name="ContraIndication" nillable="true" type="string" />
 			<field name="ComputationSource" type="string" nillable="true" />
 			<field name="SeeAlso" type="string" nillable="true"/>
 			<field name="Classification" type="string" nillable="true"/>
@@ -16,7 +16,7 @@
 			<field name="MedicalHealthIntervention" type="string" nillable="true"/>
 			<field name="Period" type="string" nillable="false"/>
 			<field name="Sample" type="string" nillable="true"/>
-			<field name="Sourceofinformation" type="string" nillable="true"/>
+			<field name="SourceofInformation" type="string" nillable="true"/>
 			<field name="dataShaperTarget" type="string" nillable="true"/>
 			<field name="Targetgender" type="string" nillable="true"/>
 			<field name="DataShaperType" type="string" nillable="true"/>
