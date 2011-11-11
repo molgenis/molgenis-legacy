@@ -46,9 +46,10 @@ public class XqtlRApiService implements MolgenisService
 		OutputStream outs = response.getResponse().getOutputStream();
 		PrintStream out = new PrintStream(new BufferedOutputStream(outs), false, "UTF8"); // 1.4
 		Utils.console("URI path: " +request.getRequest().getRequestURI());
-		Utils.console("servlet path: " +request.getRequest().getServletPath());
-		int loc = request.getRequest().getRequestURI().lastIndexOf(request.getRequest().getServletPath());
-		String filename = request.getRequest().getRequestURI().substring(loc+request.getRequest().getServletPath().length());
+		String fullServicePath = request.getRequest().getServletPath() + request.getServicePath();
+		Utils.console("servlet path: " +fullServicePath);
+		int loc = request.getRequest().getRequestURI().lastIndexOf(fullServicePath);
+		String filename = request.getRequest().getRequestURI().substring(loc+fullServicePath.length());
 
 		Utils.console("filename is now: " + filename);
 		
