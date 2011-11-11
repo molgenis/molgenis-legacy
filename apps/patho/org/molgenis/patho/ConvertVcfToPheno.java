@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.pheno.ObservableFeature;
@@ -181,7 +182,7 @@ public class ConvertVcfToPheno
 			c.setName(chr);
 			c.setGenomeBuild_Name("hg19");
 			c.setOrderNr(++order);
-			c.setAutosomal(chr == "x" || chr == "y" ? true : false);
+			c.setIsAutosomal(StringUtils.isNumeric(chr));
 			chrList.add(c);
 		}
 
