@@ -239,12 +239,16 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					decappIdString = decappIdString.replace(".", "");
 					decappIdString = decappIdString.replace(",", "");
 					decappId = Integer.parseInt(decappIdString);
+					
+					// add decnr to name
+					// Get existing DEC project
+					String decnr = ct.getObservationTargetLabel(decappId);
+					name = decnr;
 				} else {
 					throw(new Exception("No DEC Project (Application) given - Subproject not added"));
 				}
 				
-				//TODO display letter pulldown
-				
+								
 				// DEC Subproject code
 				String expnumber = "";
 				if (request.getString("expnumber") != null && !request.getString("expnumber").equals("")) {
@@ -369,7 +373,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					String previousexpnumber = ct.getMostRecentValueAsString(projectId, ct.getMeasurementId("ExperimentNr"));
 					if (expnumber != previousexpnumber) {
 						ObservationTarget subproject = ct.getObservationTargetById(projectId);
-						subproject.setName("DEC " + expnumber);
+						subproject.setName(name + expnumber);
 						db.update(subproject);
 					}
 				}
