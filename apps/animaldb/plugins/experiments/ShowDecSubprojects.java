@@ -212,7 +212,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				// No action here
 			}
 			if (action.equals("addEditDecSubproject")) {
-				SimpleDateFormat oldDateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 				SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 				
 				// Get values from form
@@ -313,7 +313,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				if (request.getString("startdate") != null) {
 					String startdateString = request.getString("startdate");
 					if (!startdateString.equals("")) {
-						startdate = oldDateOnlyFormat.parse(startdateString);
+						startdate = newDateOnlyFormat.parse(startdateString);
 						// Check against Project time boundaries
 						if (startdate.before(projectStartDate)) {
 							throw(new Exception("Start date outside DEC Project time span - Subproject not added"));
@@ -333,7 +333,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				if (request.getString("enddate") != null) {
 					String enddateString = request.getString("enddate");
 					if (!enddateString.equals("")) {
-						enddate = oldDateOnlyFormat.parse(enddateString);
+						enddate = newDateOnlyFormat.parse(enddateString);
 						// Check against Project time boundaries
 						if (enddate.before(projectStartDate) ||
 								enddate.after(projectEndDate)) {

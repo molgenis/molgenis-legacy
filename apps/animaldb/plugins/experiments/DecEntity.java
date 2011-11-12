@@ -10,7 +10,7 @@ public class DecEntity {
 	private String name;
 	private Date startDate;
 	private Date endDate;
-	private SimpleDateFormat oldDateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US); // for showing in the old date box
+	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US); // for showing in the new date box
 	private SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US); // how it comes out of the DB nowadays
 	
 	public void setId(int id) {
@@ -34,7 +34,7 @@ public class DecEntity {
 	public String getStartDate()
 	{
 		if (startDate == null) return "";
-		return oldDateOnlyFormat.format(startDate);
+		return newDateOnlyFormat.format(startDate);
 	}
 	
 	public void setEndDate(String endDate) throws ParseException
@@ -44,6 +44,6 @@ public class DecEntity {
 	public String getEndDate()
 	{
 		if (endDate == null) return "";
-		return oldDateOnlyFormat.format(endDate);
+		return newDateOnlyFormat.format(endDate);
 	}
 }

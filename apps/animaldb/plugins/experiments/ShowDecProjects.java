@@ -102,9 +102,10 @@ public class ShowDecProjects extends PluginModel<Entity>
 			}
 			if (action.equals("addEditDecProject")) {
 				SimpleDateFormat oldDateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
-				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
-				SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-				
+				//SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+				//SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+				SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd");
 				// Get values from form
 				
 				// Name
@@ -136,8 +137,9 @@ public class ShowDecProjects extends PluginModel<Entity>
 				// Start date
 				Date startdate = null;
 				if (request.getString("startdate") != null) {
-					String startdateString = request.getString("startdate");
-					startdate = oldDateOnlyFormat.parse(startdateString);
+					//String startdateString = request.getString("startdate");
+					startdate = newDateOnlyFormat.parse(request.getString("startdate"));
+					
 				} else {
 					throw(new Exception("No start date given - project not added"));
 				}
@@ -145,8 +147,8 @@ public class ShowDecProjects extends PluginModel<Entity>
 				// End date-time
 				Date enddate = null;
 				if (request.getString("enddate") != null) {
-					String enddateString = request.getString("enddate");
-					enddate = oldDateOnlyFormat.parse(enddateString);
+					//String enddateString = request.getString("enddate");
+					enddate = newDateOnlyFormat.parse(request.getString("enddate"));
 				}
 				
 				// Some variables we need later on

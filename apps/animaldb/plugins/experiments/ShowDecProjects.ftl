@@ -78,12 +78,30 @@
 	
 	<div class="row">
 		<label for="startdate">Project start date:</label>
-		<input type='text' class='textbox' id='startdate' name='startdate' <#if currentDecProject?? && currentDecProject.getStartDate()??> value="${currentDecProject.startDate}"</#if> onclick='showDateInput(this)' autocomplete='off' />
+		<script>
+			$(function() {
+				$( "#startdate" ).datepicker({
+					numberOfMonths: 2,
+					showButtonPanel: true,
+					dateFormat: "yy-mm-dd"
+				});
+			});
+		</script>			
+		<input type='text' id='startdate' name='startdate' <#if currentDecProject?? && currentDecProject.getStartDate()??> value="${currentDecProject.startDate}"</#if> />
 	</div>
 	
 	<div class="row">
+		<script>
+			$(function() {
+				$( "#enddate" ).datepicker({
+					numberOfMonths: 2,
+					showButtonPanel: true,
+					dateFormat: "yy-mm-dd"
+				});
+			});
+		</script>
 		<label for="enddate">Project end date:</label>
-		<input type='text' class='textbox' id='enddate' name='enddate' <#if currentDecProject?? && currentDecProject.getEndDate()??> value="${currentDecProject.endDate}"</#if> onclick='showDateInput(this)' autocomplete='off' />
+		<input type='text' id='enddate' name='enddate' <#if currentDecProject?? && currentDecProject.getEndDate()??> value="${currentDecProject.endDate}"</#if> />
 	</div>
 	
 	<div class='row'>
