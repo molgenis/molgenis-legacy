@@ -119,11 +119,13 @@ public class FillAnimalDB {
 		ct.makeMeasurement(invid, "Remark", stringUnitId, null, null, false, "string", "To store remarks about the animal.", login.getUserId());
 		ct.makeMeasurement(invid, "Litter", targetlinkUnitId, panel, "Litter", false, "xref", "To link an animal to a litter.", login.getUserId());
 		ct.makeMeasurement(invid, "ExperimentNr", stringUnitId, null, null, false, "string", "To set a (sub)experiment's number.", login.getUserId());
+		ct.makeMeasurement(invid, "ExperimentTitle", stringUnitId, null, null, false, "string", "To set a (sub)experiment's number.", login.getUserId());
 		ct.makeMeasurement(invid, "DecSubprojectApplicationPdf", stringUnitId, null, null, false, "string", "To set a link to a PDF file with the (sub)experiment's DEC application.", login.getUserId());
 		ct.makeMeasurement(invid, "DecApplicationPdf", stringUnitId, null, null, false, "string", "To set a link to a PDF file with the DEC application.", login.getUserId());
 		ct.makeMeasurement(invid, "DecApprovalPdf", stringUnitId, null, null, false, "string", "To set a link to a PDF file with the DEC approval.", login.getUserId());
 		ct.makeMeasurement(invid, "DecApplication", targetlinkUnitId, panel, "DecApplication", false, "xref", "To link a DEC subproject (experiment) to a DEC application.", login.getUserId());
 		ct.makeMeasurement(invid, "DecNr", stringUnitId, null, null, false, "string", "To set a DEC application's DEC number.", login.getUserId());
+		ct.makeMeasurement(invid, "DecTitle", stringUnitId, null, null, false, "string", "To set the title of a DEC project.", login.getUserId());
 		ct.makeMeasurement(invid, "DecApplicantId", stringUnitId, null, null, false, "string", "To link a DEC application to a user with this ID in the old version of AnimalDB.", login.getUserId());
 		ct.makeMeasurement(invid, "Anaesthesia", stringUnitId, null, null, false, "string", "To set the Anaesthesia value of (an animal in) an experiment.", login.getUserId());
 		ct.makeMeasurement(invid, "PainManagement", stringUnitId, null, null, false, "string", "To set the PainManagement value of (an animal in) an experiment.", login.getUserId());
@@ -162,7 +164,7 @@ public class FillAnimalDB {
 		ct.makeMeasurement(invid, "OldAnimalDBPresetID", stringUnitId, null, null, false, "string", "To link a targetgroup to a preset this ID in the old version of AnimalDB.", login.getUserId());
 		// For importing old Uli Eisel DB
 		ct.makeMeasurement(invid, "OldUliDbId", stringUnitId, null, null, false, "string", "To set an animal's ID in the old Uli Eisel DB.", login.getUserId());
-		ct.makeMeasurement(invid, "OldUliDbKuerzel", stringUnitId, null, null, false, "string", "To set an animal's 'Kürzel' in the old Uli Eisel DB.", login.getUserId());
+		ct.makeMeasurement(invid, "OldUliDbKuerzel", stringUnitId, null, null, false, "string", "To set an animal's 'Kï¿½rzel' in the old Uli Eisel DB.", login.getUserId());
 		ct.makeMeasurement(invid, "OldUliDbAktenzeichen", stringUnitId, null, null, false, "string", "To set an animal's 'Aktenzeichen' in the old Uli Eisel DB.", login.getUserId());
 		ct.makeMeasurement(invid, "OldUliDbExperimentator", stringUnitId, null, null, false, "string", "To set an animal's experimenter in the old Uli Eisel DB.", login.getUserId());
 		ct.makeMeasurement(invid, "OldUliDbTierschutzrecht", stringUnitId, null, null, false, "string", "To set an animal's 'Tierschutzrecht' (~ DEC subproject Goal) in the old Uli Eisel DB.", login.getUserId());
@@ -172,6 +174,34 @@ public class FillAnimalDB {
 		ct.makeMeasurement(invid, "OldUliDbFatherInfo", stringUnitId, null, null, false, "string", "To set an animal's father info in the old Uli Eisel DB.", login.getUserId());
 		
 		logger.info("Add codes");
+		// Codes for Subprojects
+		ct.makeCode("A", "A", "ExperimentNr");
+		ct.makeCode("B", "B", "ExperimentNr");
+		ct.makeCode("C", "C", "ExperimentNr");
+		ct.makeCode("D", "D", "ExperimentNr");
+		ct.makeCode("E", "E", "ExperimentNr");
+		ct.makeCode("F", "F", "ExperimentNr");
+		ct.makeCode("G", "G", "ExperimentNr");
+		ct.makeCode("H", "H", "ExperimentNr");
+		ct.makeCode("I", "I", "ExperimentNr");
+		ct.makeCode("J", "J", "ExperimentNr");
+		ct.makeCode("K", "K", "ExperimentNr");
+		ct.makeCode("L", "L", "ExperimentNr");
+		ct.makeCode("M", "M", "ExperimentNr");
+		ct.makeCode("N", "N", "ExperimentNr");
+		ct.makeCode("O", "O", "ExperimentNr");
+		ct.makeCode("P", "P", "ExperimentNr");
+		ct.makeCode("Q", "Q", "ExperimentNr");
+		ct.makeCode("R", "R", "ExperimentNr");
+		ct.makeCode("S", "S", "ExperimentNr");
+		ct.makeCode("T", "T", "ExperimentNr");
+		ct.makeCode("U", "U", "ExperimentNr");
+		ct.makeCode("V", "V", "ExperimentNr");
+		ct.makeCode("W", "W", "ExperimentNr");
+		ct.makeCode("X", "X", "ExperimentNr");
+		ct.makeCode("Y", "Y", "ExperimentNr");
+		ct.makeCode("Z", "Z", "ExperimentNr");
+		
 		// Codes for SourceType
 		ct.makeCode("1-1", "Eigen fok binnen uw organisatorische werkeenheid", "SourceType");
 		ct.makeCode("1-2", "Andere organisatorische werkeenheid vd instelling", "SourceType");
@@ -406,6 +436,7 @@ public class FillAnimalDB {
 		// Protocol SetDecProjectSpecs
 		featureIdList = new ArrayList<Integer>();
 		featureIdList.add(ct.getMeasurementId("DecNr"));
+		featureIdList.add(ct.getMeasurementId("DecTitle"));
 		featureIdList.add(ct.getMeasurementId("DecApplicantId"));
 		featureIdList.add(ct.getMeasurementId("DecApplicationPdf"));
 		featureIdList.add(ct.getMeasurementId("DecApprovalPdf"));
@@ -432,6 +463,7 @@ public class FillAnimalDB {
 		// Protocol AnimalInSubproject
 		featureIdList = new ArrayList<Integer>();
 		featureIdList.add(ct.getMeasurementId("Experiment"));
+		featureIdList.add(ct.getMeasurementId("ExperimentTitle"));
 		featureIdList.add(ct.getMeasurementId("SourceTypeSubproject"));
 		featureIdList.add(ct.getMeasurementId("PainManagement"));
 		featureIdList.add(ct.getMeasurementId("Anaesthesia"));
