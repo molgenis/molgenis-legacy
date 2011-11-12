@@ -122,6 +122,14 @@ public class ShowDecProjects extends PluginModel<Entity>
 					throw(new Exception("No DEC number given - project not added"));
 				}
 				
+				// DEC Title
+				String dectitle = "";
+				if (request.getString("dectitle") != null && !request.getString("dectitle").equals("")) {
+					dectitle = request.getString("dectitle");
+				} else {
+					throw(new Exception("No DEC Title given - project not added"));
+				}
+				
 				// DEC application PDF
 				String decapplicationpdf = null;
 				if (request.getString("decapplicationpdf") != null && !request.getString("decapplicationpdf").equals("")) {
@@ -189,6 +197,11 @@ public class ShowDecProjects extends PluginModel<Entity>
 				int measurementId = ct.getMeasurementId("DecNr");
 				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
 						enddate, measurementId, projectId, decnumber, 0));
+				
+				measurementId = ct.getMeasurementId("DecTitle");
+				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
+						enddate, measurementId, projectId, dectitle, 0));
+				
 				measurementId = ct.getMeasurementId("DecApplicantId");
 				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
 						enddate, measurementId, projectId, decapplicantId.toString(), 0));
@@ -253,6 +266,12 @@ public class ShowDecProjects extends PluginModel<Entity>
 				int featureId = ct.getMeasurementId("DecNr");
 				String decNr = ct.getMostRecentValueAsString(currentDec.getId(), featureId);
 				if (decNr != null) tmpDec.setDecNr(decNr);
+				// set dectitle
+				featureId = ct.getMeasurementId("DecTitle");
+				String decTitle = ct.getMostRecentValueAsString(currentDec.getId(), featureId);
+				if (decTitle != null) tmpDec.setDecTitle(decTitle);
+				
+				
 				// set decapplicant
 				featureId = ct.getMeasurementId("DecApplicantId");
 				String decApplicantString = ct.getMostRecentValueAsString(currentDec.getId(), featureId);

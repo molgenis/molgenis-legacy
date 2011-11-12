@@ -53,8 +53,14 @@
 		/>
 	</div>
 	
-	<!--
 	<div class="row">
+		<label for="dectitle">DEC Title:</label>
+		<input type="text" name="dectitle" id="dectitle" class="textbox" 
+		<#if currentDecProject?? && currentDecProject.getDecTitle()??> value="${currentDecProject.decTitle}"</#if>
+		/>
+	</div>
+	
+	<!-- <div class="row">
 		<label for="decapplicant">DEC Applicant:</label>
 		<select name="decapplicant" id="decapplicant"> 
 			<!#list screen.decApplicantList as decApplicant>
@@ -63,8 +69,7 @@
 				value="{decApplicant.id?string.computer}">{decApplicant.name}</option>
 			<!/#list>
 		</select>
-	</div>
-	-->
+	</div> -->
 	
 	<div class="row">
 		<label for="decapplicationpdf">DEC application PDF:</label>
@@ -119,9 +124,10 @@
 		<thead>
 			<tr>
 				<th>Name</th>
+				<th>DEC number</th>
+				<th>DEC Title</th>
 				<th>Start date</th>
 				<th>End date</th>
-				<th>DEC number</th>
 				<th>DEC applicant</th>
 				<th>DEC application PDF</th>
 				<th>DEC approval PDF</th>
@@ -133,9 +139,10 @@
 			<#list screen.decappList as decl>
 				<tr>
 					<td>${decl.name}</td>
-					<td>${decl.startDate}</td>
-					<td>${decl.endDate}</td>
 					<td>${decl.decNr}</td>
+					<td>${decl.decTitle}</td>
+					<td>${decl.startDate}</td>
+					<td>${decl.endDate}</td>					
 					<td>${decl.decApplicantName}</td>
 					<td>${decl.pdfDecApplication}</td>
 					<td>${decl.pdfDecApproval}</td>

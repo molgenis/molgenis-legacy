@@ -280,13 +280,13 @@ public class AnimaldbSeleniumTest
 		// Make a DEC project
 		selenium.click("link=Add");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.type("id=name", "MyDEC");
+		selenium.type("id=dectitle", "MyDEC");
 		selenium.type("id=decnumber", "12345");
 		selenium.type("id=decapppdf", "/home/test/app.pdf");
 		selenium.type("id=decapprovalpdf", "/home/test/app2.pdf");
 		int thisYear = calendar.get(Calendar.YEAR);
-		selenium.type("id=startdate", "January 1, " + thisYear);
-		selenium.type("id=enddate", "December 31, " + thisYear);
+		selenium.type("id=startdate", thisYear + "-01-31");
+		selenium.type("id=enddate", thisYear + "-12-31");
 		selenium.click("id=addproject");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("DEC Project successfully added"));
@@ -298,23 +298,22 @@ public class AnimaldbSeleniumTest
 		// Make a DEC subproject
 		selenium.click("link=Add");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.type("id=name", "MyProject");
-		selenium.type("id=decnumber", "A");
+		selenium.type("id=experimenttitle", "MyProject");
+		selenium.type("id=expnumber", "A");
 		selenium.type("id=decapppdf", "/home/test/subapp.pdf");
-		int thisMonth = calendar.get(Calendar.MONTH);
-		selenium.type("id=startdate", months[thisMonth] + " 1, " + thisYear);
-		selenium.type("id=enddate", months[thisMonth] + " " + calendar.getActualMaximum(Calendar.DAY_OF_MONTH) + 
-				", " + thisYear);		
+		//int thisMonth = calendar.get(Calendar.MONTH);
+		selenium.type("id=startdate", thisYear + "-02-01");
+		selenium.type("id=enddate", thisYear + "-03-01");		
 		selenium.click("id=addsubproject");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("DEC Subproject successfully added"));
-		Assert.assertTrue(selenium.isTextPresent("MyProject"));
+		//Assert.assertTrue(selenium.isTextPresent("MyProject"));
 		// Go to Animals in DEC plugin
 		selenium.click("id=AnimalsInSubprojects_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Manage animals in DEC subprojects"));
 		// Add animals to DEC (multiple select does not seem to work in Selenium so there is some duplication here
-		selenium.select("id=subproject", "label=MyProject");
+		selenium.select("id=subproject", "label=DEC 12345A");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		addAnimalToDec("000021");
 		addAnimalToDec("000022");
@@ -457,9 +456,12 @@ public class AnimaldbSeleniumTest
 	 * @param name
 	 */
 	private void addAnimalToDec(String name) {
+		Calendar calendar = Calendar.getInstance();
 		selenium.click("id=startadd");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.select("id=animal", "label=" + name);
+		int thisYear = calendar.get(Calendar.YEAR);
+		selenium.type("id=subprojectadditiondate", thisYear + "-02-20");
 		selenium.click("id=doadd");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Animal(s) successfully added"));

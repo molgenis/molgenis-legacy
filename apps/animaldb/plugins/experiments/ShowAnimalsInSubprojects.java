@@ -51,7 +51,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 	private ObservationTarget subproject;
 	private List<MolgenisBatch> batchList = new ArrayList<MolgenisBatch>();
 	private SimpleDateFormat oldDateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
-	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
 	public ShowAnimalsInSubprojects(String name, ScreenController<?> parent)
 	{
@@ -77,7 +77,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 	
 	public String getCurrentDate() {
 		Date now = new Date();
-		return oldDateOnlyFormat.format(now);
+		return newDateOnlyFormat.format(now);
 	}
 
 	public void setActualDiscomfortCodeList(List<Code> actualDiscomfortCodeList)
@@ -285,7 +285,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 				Date subProjectRemovalDate = null;
 				if (request.getString("subprojectremovaldate") != null) {
 					String subProjectRemovalDateString = request.getString("subprojectremovaldate");
-					subProjectRemovalDate = oldDateOnlyFormat.parse(subProjectRemovalDateString);
+					subProjectRemovalDate = newDateOnlyFormat.parse(subProjectRemovalDateString);
 				} else {
 					throw(new Exception("No removal date given - animal(s) not removed"));
 				}
@@ -295,7 +295,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 				if (request.getString("deathdate") != null) {
 					String deathDateString = request.getString("deathdate");
 					if (!deathDateString.equals("")) {
-						deathDate = oldDateOnlyFormat.parse(deathDateString);
+						deathDate = newDateOnlyFormat.parse(deathDateString);
 					}
 				}
 				
@@ -375,7 +375,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 			
 			if (action.equals("ApplyAddAnimalToSubproject"))
 			{
-				SimpleDateFormat oldDateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 				SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 				
 				// Get Subproject start and end dates
@@ -394,7 +394,7 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 				Date subProjectAdditionDate = null;
 				if (request.getString("subprojectadditiondate") != null) {
 					String subProjectRemovalDateString = request.getString("subprojectadditiondate");
-					subProjectAdditionDate = oldDateOnlyFormat.parse(subProjectRemovalDateString);
+					subProjectAdditionDate = newDateOnlyFormat.parse(subProjectRemovalDateString);
 					// Check against Subproject time boundaries
 					if (subProjectAdditionDate.before(subprojectStartDate) ||
 						(subprojectEndDate != null && subProjectAdditionDate.after(subprojectEndDate))) {
