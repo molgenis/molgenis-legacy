@@ -119,7 +119,7 @@ public class FillAnimalDB {
 		ct.makeMeasurement(invid, "Remark", stringUnitId, null, null, false, "string", "To store remarks about the animal.", login.getUserId());
 		ct.makeMeasurement(invid, "Litter", targetlinkUnitId, panel, "Litter", false, "xref", "To link an animal to a litter.", login.getUserId());
 		ct.makeMeasurement(invid, "ExperimentNr", stringUnitId, null, null, false, "string", "To set a (sub)experiment's number.", login.getUserId());
-		ct.makeMeasurement(invid, "ExperimentTitle", stringUnitId, null, null, false, "string", "To set a (sub)experiment's number.", login.getUserId());
+		ct.makeMeasurement(invid, "ExperimentTitle", stringUnitId, null, null, false, "string", "To set a (sub)experiment's title.", login.getUserId());
 		ct.makeMeasurement(invid, "DecSubprojectApplicationPdf", stringUnitId, null, null, false, "string", "To set a link to a PDF file with the (sub)experiment's DEC application.", login.getUserId());
 		ct.makeMeasurement(invid, "DecApplicationPdf", stringUnitId, null, null, false, "string", "To set a link to a PDF file with the DEC application.", login.getUserId());
 		ct.makeMeasurement(invid, "DecApprovalPdf", stringUnitId, null, null, false, "string", "To set a link to a PDF file with the DEC approval.", login.getUserId());
@@ -164,7 +164,7 @@ public class FillAnimalDB {
 		ct.makeMeasurement(invid, "OldAnimalDBPresetID", stringUnitId, null, null, false, "string", "To link a targetgroup to a preset this ID in the old version of AnimalDB.", login.getUserId());
 		// For importing old Uli Eisel DB
 		ct.makeMeasurement(invid, "OldUliDbId", stringUnitId, null, null, false, "string", "To set an animal's ID in the old Uli Eisel DB.", login.getUserId());
-		ct.makeMeasurement(invid, "OldUliDbKuerzel", stringUnitId, null, null, false, "string", "To set an animal's 'K�rzel' in the old Uli Eisel DB.", login.getUserId());
+		ct.makeMeasurement(invid, "OldUliDbKuerzel", stringUnitId, null, null, false, "string", "To set an animal's 'Kürzel' in the old Uli Eisel DB.", login.getUserId());
 		ct.makeMeasurement(invid, "OldUliDbAktenzeichen", stringUnitId, null, null, false, "string", "To set an animal's 'Aktenzeichen' in the old Uli Eisel DB.", login.getUserId());
 		ct.makeMeasurement(invid, "OldUliDbExperimentator", stringUnitId, null, null, false, "string", "To set an animal's experimenter in the old Uli Eisel DB.", login.getUserId());
 		ct.makeMeasurement(invid, "OldUliDbTierschutzrecht", stringUnitId, null, null, false, "string", "To set an animal's 'Tierschutzrecht' (~ DEC subproject Goal) in the old Uli Eisel DB.", login.getUserId());
