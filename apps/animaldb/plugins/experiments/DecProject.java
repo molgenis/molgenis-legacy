@@ -3,6 +3,7 @@ package plugins.experiments;
 public class DecProject extends DecEntity {
 	private int decAppListId;
 	private String decNr;
+	private String decTitle;
 	private String decApplicantName;
 	private String pdfDecApplication;
 	private String pdfDecApproval;
@@ -22,6 +23,12 @@ public class DecProject extends DecEntity {
 	}
 	public String getDecNr() {
 		return decNr;
+	}
+	public String getDecTitle() {
+		return decTitle;
+	}
+	public void setDecTitle(String decTitle) {
+		this.decTitle = decTitle;
 	}
 	public void setDecApplicantName(String decApplicantName) {
 		this.decApplicantName = decApplicantName;

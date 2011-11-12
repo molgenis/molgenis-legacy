@@ -3,6 +3,7 @@ package plugins.experiments;
 public class DecSubproject extends DecEntity {
 	private int decExpListId;
 	private String experimentNr;
+	private String experimentTitle;
 	private String decSubprojectApplicationPDF;
 	private String concern;
 	private String goal;
@@ -37,6 +38,12 @@ public class DecSubproject extends DecEntity {
 	}
 	public String getExperimentNr() {
 		return experimentNr;
+	}
+	public void setExperimentTitle(String experimentTitle) {
+		this.experimentTitle = experimentTitle;
+	}
+	public String getExperimentTitle() {
+		return experimentTitle;
 	}
 	public void setDecSubprojectApplicationPDF(
 			String decSubprojectApplicationPDF) {

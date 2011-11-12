@@ -37,10 +37,12 @@
 		<#assign currentDecSubproject = screen.getDecSubprojectByListId()>
 	</#if>
 	
+	<#if currentDecSubproject??>
 	<div class="row">
 		<label for="name">Name:</label>
-		<input type="text" name="name" id="name" class="textbox" <#if currentDecSubproject??> value="${currentDecSubproject.name}"</#if> />
+		<input disabled type="text" name="name" id="name" class="textbox"  value="${currentDecSubproject.name}" />
 	</div>
+	</#if>
 	
 	<div class="row">
 		<label for="decapp">DEC application:</label>
@@ -54,8 +56,19 @@
 	</div>
 	
 	<div class="row">
-		<label for="decnumber">DEC subproject code:</label>
-		<input type="text" name="decnumber" id="decnumber" class="textbox" <#if currentDecSubproject??> value="${currentDecSubproject.experimentNr}"</#if> />
+		<label for="expnumber">DEC subproject code:</label>
+		<!--<input type="text" name="expnumber" id="expnumber" class="textbox" <#if currentDecSubproject??> value="${currentDecSubproject.experimentNr}"</#if> />-->
+		<select name="expnumber" id="expnumber">
+		<#list screen.experimentNrCodeList as encl>
+			<option value="${encl.description}" <#if currentDecSubproject??><#if currentDecSubproject.getExperimentNr() == encl.description>selected="selected"</#if></#if> >${encl.code_string}</option>
+		</#list>
+		</select>
+	
+	</div>
+	
+	<div class="row">
+		<label for="experimenttitle">DEC Title:</label>
+		<input type="text" name="experimenttitle" id="experimenttitle" class="textbox" <#if currentDecSubproject??> value="${currentDecSubproject.experimentTitle}"</#if> />
 	</div>
 	
 	<div class="row">
@@ -67,7 +80,7 @@
 		<label for="concern">Concern:</label>
 		<select name="concern" id="concern">
 		<#list screen.concernCodeList as ccl>
-			<option value="${ccl.description}" <#if currentDecSubproject??><#if currentDecSubproject.getConcern() == ccl.description>selected="selected"</#if></#if> >${ccl.code} (${ccl.description})</option>
+			<option value="${ccl.description}" <#if currentDecSubproject??><#if currentDecSubproject.getConcern() == ccl.description>selected="selected"</#if></#if> >${ccl.code_string} (${ccl.description})</option>
 		</#list>
 		</select>
 	</div>
@@ -76,7 +89,7 @@
 		<label for="goal">Goal:</label>
 		<select name="goal" id="goal">
 		<#list screen.goalCodeList as gcl>
-			<option value="${gcl.description}" <#if currentDecSubproject??><#if currentDecSubproject.getGoal() == gcl.description>selected="selected"</#if></#if> >${gcl.code} (${gcl.description})</option>
+			<option value="${gcl.description}" <#if currentDecSubproject??><#if currentDecSubproject.getGoal() == gcl.description>selected="selected"</#if></#if> >${gcl.code_string} (${gcl.description})</option>
 		</#list>
 		</select>
 	</div>
@@ -85,7 +98,7 @@
 		<label for="specialtechn">Special techniques:</label>
 		<select name="specialtechn" id="specialtechn">
 		<#list screen.specialTechnCodeList as stcl>
-			<option value="${stcl.description}" <#if currentDecSubproject??><#if currentDecSubproject.getSpecialTechn() == stcl.description>selected="selected"</#if></#if> >${stcl.code} (${stcl.description})</option>
+			<option value="${stcl.description}" <#if currentDecSubproject??><#if currentDecSubproject.getSpecialTechn() == stcl.description>selected="selected"</#if></#if> >${stcl.code_string} (${stcl.description})</option>
 		</#list>
 		</select>
 	</div>
@@ -94,7 +107,7 @@
 		<label for="lawdef">Law definition:</label>
 		<select name="lawdef" id="lawdef">
 		<#list screen.lawDefCodeList as ldcl>
-			<option value="${ldcl.description}" <#if currentDecSubproject??><#if currentDecSubproject.getLawDef() == ldcl.description>selected="selected"</#if></#if> >${ldcl.code} (${ldcl.description})</option>
+			<option value="${ldcl.description}" <#if currentDecSubproject??><#if currentDecSubproject.getLawDef() == ldcl.description>selected="selected"</#if></#if> >${ldcl.code_string} (${ldcl.description})</option>
 		</#list>
 		</select>
 	</div>
@@ -103,7 +116,7 @@
 		<label for="toxres">Toxic research:</label>
 		<select name="toxres" id="toxres">
 		<#list screen.toxResCodeList as trcl>
-			<option value="${trcl.description}" <#if currentDecSubproject??><#if currentDecSubproject.getToxRes() == trcl.description>selected="selected"</#if></#if> >${trcl.code} (${trcl.description})</option>
+			<option value="${trcl.description}" <#if currentDecSubproject??><#if currentDecSubproject.getToxRes() == trcl.description>selected="selected"</#if></#if> >${trcl.code_string} (${trcl.description})</option>
 		</#list>
 		</select>
 	</div>
@@ -112,7 +125,7 @@
 		<label for="anaesthesia">Anaesthesia:</label>
 		<select name="anaesthesia" id="anaesthesia">
 		<#list screen.anaesthesiaCodeList as acl>
-			<option value="${acl.description}" <#if currentDecSubproject??><#if currentDecSubproject.getAnaesthesia() == acl.description>selected="selected"</#if></#if> >${acl.code} (${acl.description})</option>
+			<option value="${acl.description}" <#if currentDecSubproject??><#if currentDecSubproject.getAnaesthesia() == acl.description>selected="selected"</#if></#if> >${acl.code_string} (${acl.description})</option>
 		</#list>
 		</select>
 	</div>
@@ -121,7 +134,7 @@
 		<label for="painmanagement">Pain management:</label>
 		<select name="painmanagement" id="painmanagement">
 		<#list screen.painManagementCodeList as pmcl>
-			<option value="${pmcl.description}" <#if currentDecSubproject??><#if currentDecSubproject.getPainManagement() == pmcl.description>selected="selected"</#if></#if> >${pmcl.code} (${pmcl.description})</option>
+			<option value="${pmcl.description}" <#if currentDecSubproject??><#if currentDecSubproject.getPainManagement() == pmcl.description>selected="selected"</#if></#if> >${pmcl.code_string} (${pmcl.description})</option>
 		</#list>
 		</select>
 	</div>
@@ -130,7 +143,7 @@
 		<label for="endstatus">Expected animal end status:</label>
 		<select name="endstatus" id="endstatus">
 		<#list screen.animalEndStatusCodeList as aescl>
-			<option value="${aescl.description}" <#if currentDecSubproject??><#if currentDecSubproject.getAnimalEndStatus() == aescl.description>selected="selected"</#if></#if> >${aescl.code} (${aescl.description})</option>
+			<option value="${aescl.description}" <#if currentDecSubproject??><#if currentDecSubproject.getAnimalEndStatus() == aescl.description>selected="selected"</#if></#if> >${aescl.code_string} (${aescl.description})</option>
 		</#list>
 		</select>
 	</div>
@@ -142,12 +155,36 @@
 	
 	<div class="row">
 		<label for="startdate">Subproject start date:</label>
-		<input type='text' class='textbox' id='startdate' name='startdate' <#if currentDecSubproject??><#if currentDecSubproject.getStartDate()??> value="${currentDecSubproject.startDate}"</#if></#if> onclick='showDateInput(this)' autocomplete='off' />
+		<!--<input type='text' class='textbox' id='startdate' name='startdate' <#if currentDecSubproject??><#if currentDecSubproject.getStartDate()??> value="${currentDecSubproject.startDate}"</#if></#if> onclick='showDateInput(this)' autocomplete='off' />
+-->
+
+		
+				<script>
+					$(function() {
+						$( "#startdate" ).datepicker({
+							numberOfMonths: 1,
+							showButtonPanel: true,
+							dateFormat: "MM d, yy"
+						});
+					});
+					$(function() {
+						$( "#enddate" ).datepicker({
+							numberOfMonths: 1,
+							showButtonPanel: true,
+							dateFormat: "MM d, yy"
+						});
+					});
+				</script>
+				
+		<input type='text' id='startdate' name='startdate' <#if currentDecSubproject??><#if currentDecSubproject.getStartDate()??> value="${currentDecSubproject.startDate}"</#if></#if> />
+		<!--  name='startdate' <#if currentDecSubproject??><#if currentDecSubproject.getStartDate()??> value="${currentDecSubproject.startDate}"</#if></#if> />
+		-->
+	
 	</div>
 	
 	<div class="row">
 		<label for="enddate">Subproject end date:</label>
-		<input type='text' class='textbox' id='enddate' name='enddate' <#if currentDecSubproject??><#if currentDecSubproject.getEndDate()??> value="${currentDecSubproject.endDate}"</#if></#if> onclick='showDateInput(this)' autocomplete='off' />
+		<input type='text' id='enddate' name='enddate' <#if currentDecSubproject??><#if currentDecSubproject.getEndDate()??> value="${currentDecSubproject.endDate}"</#if></#if>  />
 	</div>
 	
 	<div class='row'>
@@ -169,6 +206,7 @@
 				<th>End date</th>
 				<th>DEC project (application)</th>
 				<th>DEC subproject code</th>
+				<th>DEC subproject title</th>
 				<th>DEC subproject application PDF</th>
 				<th>Concern</th>
 				<th>Goal</th>
@@ -192,6 +230,7 @@
 						<td>${expl.endDate}</td>
 						<td>${expl.decApplication}</td>
 						<td>${expl.experimentNr}</td>
+						<td>${expl.experimentTitle}</td>
 						<td>${expl.decSubprojectApplicationPDF}</td>
 						<td>${expl.concern}</td>
 						<td>${expl.goal}</td>

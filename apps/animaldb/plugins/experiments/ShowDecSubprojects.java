@@ -37,6 +37,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	private CommonService ct = CommonService.getInstance();
 	private String action = "init";
 	private int listId = 0;
+	private List<Code> experimentNrCodeList;
 	private List<Code> concernCodeList;
 	private List<Code> goalCodeList;
 	private List<Code> specialTechnCodeList;
@@ -76,7 +77,15 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	{
 		return listId;
 	}
+	
+	public List<Code> getExperimentNrCodeList() {
+		return experimentNrCodeList;
+	}
 
+	public void setExperimentNrCodeList(List<Code> experimentNrCodeList) {
+		this.experimentNrCodeList = experimentNrCodeList;
+	}
+	
 	public void setListId(int listId)
 	{
 		this.listId = listId;
@@ -208,12 +217,19 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				
 				// Get values from form
 				
+				//TODO auto fill name by combination of "DEC"+ DECNr + subproject code
 				// Name
-				String name = "";
+				String name = "DEC ";
 				if (request.getString("name") != null && !request.getString("name").equals("")) {
 					name = request.getString("name");
+				}
+				
+				// Title
+				String title = "";
+				if (request.getString("experimenttitle") != null && !request.getString("experimenttitle").equals("")) {
+					title = request.getString("experimenttitle");
 				} else {
-					throw(new Exception("No name given - Subproject not added"));
+					throw(new Exception("No title given - Subproject not added"));
 				}
 				
 				// DEC Project (Application)
@@ -226,10 +242,13 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				} else {
 					throw(new Exception("No DEC Project (Application) given - Subproject not added"));
 				}
+				
+				//TODO display letter pulldown
+				
 				// DEC Subproject code
-				String decnumber = "";
-				if (request.getString("decnumber") != null && !request.getString("decnumber").equals("")) {
-					decnumber = request.getString("decnumber");
+				String expnumber = "";
+				if (request.getString("expnumber") != null && !request.getString("expnumber").equals("")) {
+					expnumber = request.getString("expnumber");
 				} else {
 					throw(new Exception("No DEC Subproject Code given - Subproject not added"));
 				}
@@ -250,7 +269,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					featureId = ct.getMeasurementId("ExperimentNr");
 					String otherCode = ct.getMostRecentValueAsString(subprojectId, featureId);
 					if (!otherCode.equals("")) {
-						if (otherCode.equals(decnumber)) {
+						if (otherCode.equals(expnumber)) {
 							throw(new Exception("DEC Subproject Code not unique within DEC Project - Subproject not added"));
 						}
 					}
@@ -334,6 +353,8 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				// Check if edit or add
 				int projectId;
 				if (listId == 0) {
+					// autogenerate subprojectname to be "DEC " + decnr + subprojectnr
+					name = name + expnumber;
 					// Make new DEC subproject (experiment)
 					projectId = ct.makePanel(investigationId, name, this.getLogin().getUserId());
 					int protocolId = ct.getProtocolId("SetTypeOfGroup");
@@ -343,6 +364,14 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				} else {
 					// Get existing DEC subproject
 					projectId = ct.getObservationTargetId(getDecSubprojectByListId().getName());
+					
+					// check if the subprojectr changed and modify name of the observationtarget accordingly:
+					String previousexpnumber = ct.getMostRecentValueAsString(projectId, ct.getMeasurementId("ExperimentNr"));
+					if (expnumber != previousexpnumber) {
+						ObservationTarget subproject = ct.getObservationTargetById(projectId);
+						subproject.setName("DEC " + expnumber);
+						db.update(subproject);
+					}
 				}
 				
 				// Set values
@@ -360,7 +389,10 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 						enddate, measurementId, projectId, null, decappId));
 				measurementId = ct.getMeasurementId("ExperimentNr");
 				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
-						enddate, measurementId, projectId, decnumber, 0));
+						enddate, measurementId, projectId, expnumber, 0));
+				measurementId = ct.getMeasurementId("ExperimentTitle");
+				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
+						enddate, measurementId, projectId, title, 0));
 				if (decapppdf != null) {
 					measurementId = ct.getMeasurementId("DecSubprojectApplicationPdf");
 					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
@@ -440,9 +472,13 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 			int pos = 1;
 			for (ObservationTarget currentExp : expList) {
 				String name = currentExp.getName();
-				
+								
 				int featureId = ct.getMeasurementId("ExperimentNr");
 				String experimentNr = ct.getMostRecentValueAsString(currentExp.getId(), featureId);
+				
+				String ExperimentTitle = "";
+				featureId = ct.getMeasurementId("ExperimentTitle");
+				ExperimentTitle = ct.getMostRecentValueAsString(currentExp.getId(), featureId);
 				
 				String DecSubprojectApplicationPDF = "";
 				featureId = ct.getMeasurementId("DecSubprojectApplicationPdf");
@@ -506,6 +542,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				tmpExp.setId(currentExp.getId());
 				tmpExp.setDecExpListId(pos);
 				tmpExp.setName(name);
+				tmpExp.setExperimentTitle(ExperimentTitle);
 				tmpExp.setExperimentNr(experimentNr);
 				tmpExp.setDecSubprojectApplicationPDF(DecSubprojectApplicationPDF);
 				tmpExp.setConcern(concern);
@@ -538,6 +575,8 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 		
 		try {
 			List<Integer> investigationIds = ct.getWritableUserInvestigationIds(this.getLogin().getUserId());
+			// Experimentnrs
+			this.setExperimentNrCodeList(ct.getAllCodesForFeature("ExperimentNr"));
 			// Concern
 			this.setConcernCodeList(ct.getAllCodesForFeature("Concern"));
 			// Goal

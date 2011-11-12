@@ -108,11 +108,9 @@ public class ShowDecProjects extends PluginModel<Entity>
 				// Get values from form
 				
 				// Name
-				String name = "";
+				String name = "DEC ";
 				if (request.getString("name") != null && !request.getString("name").equals("")) {
 					name = request.getString("name");
-				} else {
-					throw(new Exception("No name given - project not added"));
 				}
 					
 				// DEC number
@@ -162,6 +160,9 @@ public class ShowDecProjects extends PluginModel<Entity>
 				// Check if edit or add
 				int projectId;
 				if (listId == 0) {
+					// autogenerate name to be the DEC id prepended with "DEC "
+					name = name + decnumber;
+									
 					// Make new DEC project
 					projectId = ct.makePanel(investigationId, name, this.getLogin().getUserId());
 					int protocolId = ct.getProtocolId("SetTypeOfGroup");

@@ -37,12 +37,14 @@
 		<#assign currentDecProject = screen.getDecProjectByListId()>
 	</#if>
 	
+	<#if currentDecProject?? && currentDecProject.getName()??>
 	<div class="row">
 		<label for="name">Name:</label>
-		<input type="text" name="name" id="name" class="textbox" 
-		<#if currentDecProject?? && currentDecProject.getName()??> value="${currentDecProject.name}"</#if>
+		<input disabled type="text" name="name" id="name" class="textbox" 
+		 value="${currentDecProject.name}"
 		/>
 	</div>
+	</#if>
 	
 	<div class="row">
 		<label for="decnumber">DEC number:</label>
