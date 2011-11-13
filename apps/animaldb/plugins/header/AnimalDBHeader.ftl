@@ -7,18 +7,20 @@
 <#macro plugins_header_AnimalDBHeader screen>
 <div id="header">
 
-	<div style="float:left">
-		<a href="http://www.animaldb.org"><img src="res/img/animaldb.png" width="361px" height="90px"></a>
-	</div>
+	<div id=logo container style="width:100%; height:54px">
+		<div style="float:left; margin-top:3px; margin-bottom:2px">
+			<a href="http://www.animaldb.org"><img src="res/img/rug_fmns_animaldb_header_logo.png" width="620px" height="49px"></a>
+		</div>
 	
-	<div style="float:right; margin-top:20px">
-		<a href="http://www.molgenis.org"><img src="generated-res/img/logo_molgenis.gif" height="70px"></a>
+		<div style="float:right">
+			<a href="http://www.molgenis.org"><img src="generated-res/img/logo_molgenis.gif" height="49px"></a>
+		</div>
 	</div>
-	
 	<div style="clear:both"></div>
-	
-	<div style="float:right; color: maroon; font-size: 35%; font-family: arial, sans-serif; font-style: italic;">
-   		${screen.getUserLogin()}
+	<div class="form_header" id="headermenu" style="width:100%" >
+		<div style="float:right; font-size: 75%; font-family: arial, sans-serif; font-style: italic;">
+	   		${screen.getUserLogin()}
+		</div>
 	</div>
 	
 	<div style="clear:both"></div>
