@@ -48,7 +48,7 @@ public abstract class MolgenisGuiService
 		this.mc = mc;
 	}
 	
-	public abstract ApplicationController createUserInterface(Login userLogin);
+	public abstract ApplicationController createUserInterface();
 
 	
 	/**
@@ -63,267 +63,223 @@ public abstract class MolgenisGuiService
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
 			DatabaseException, IOException
 	{
-		// get database session (note: this shouldn't be in the tomcat
-				// session!!!
-				Database db = null;
-				
-				boolean dbAvailable = false;
-				String dbErrorMessage = null;
-				try
+
+		Database db = request.getDatabase();
+		this.db = db;
+
+		// logout
+		HttpSession session = request.getRequest().getSession();
+		if (request.getRequest().getParameter("__action") != null
+				&& request.getRequest().getParameter("__action").equalsIgnoreCase("Logout"))
+		{
+			session.setAttribute("application", null);
+		}
+		
+		// Get application from session
+		ApplicationController molgenis = (ApplicationController) session
+				.getAttribute("application");
+		
+		// Login credentials from FrontController
+		Login userLogin = request.getDatabase().getSecurity();
+		
+		// Create GUI if null
+		if (molgenis == null)
+		{
+			//FIXME: never reached? isLoginRequired is FALSE in both implementations?
+			// also, what is request.getRequest().getParameter("logout") ?
+			// and when session.isNew() ?
+			if ((!userLogin.isAuthenticated() && userLogin.isLoginRequired())
+					|| (request.getRequest().getParameter("logout") != null && !session
+							.isNew()))
+			{
+				response.getResponse().setHeader("WWW-Authenticate",
+						"BASIC realm=\"MOLGENIS\"");
+				response.getResponse().sendError(HttpServletResponse.SC_UNAUTHORIZED);
+				session.invalidate();
+				return;
+			}
+			molgenis = createUserInterface();
+		}
+		
+		// Always pass login to GUI
+		molgenis.setLogin(userLogin);
+		
+		// this should work unless complicated load balancing without proxy
+		// rewriting...
+		molgenis.setBaseUrl(request.getRequest().getScheme() + "://"
+				+ request.getRequest().getServerName() + getPort(request.getRequest())
+				+ request.getRequest().getContextPath());
+
+		// handle request
+		try
+		{
+		
+			Tuple requestTuple = request;
+
+			// action == download an attached file
+			// FIXME move to form controllers handlerequest...
+			if (FileInput.ACTION_DOWNLOAD.equals(requestTuple
+					.getString(ScreenModel.INPUT_ACTION)))
+			{
+				//logger.info(requestTuple);
+
+				File file = new File(
+						db.getFilesource()
+								+ "/"
+								+ requestTuple
+										.getString(FileInput.INPUT_CURRENT_DOWNLOAD));
+
+				FileInputStream filestream = new FileInputStream(file);
+
+				response.getResponse().setContentType("application/x-download");
+				response.getResponse().setContentLength((int) file.length());
+				response.getResponse().setHeader(
+						"Content-Disposition",
+						"attachment; filename="
+								+ requestTuple
+										.getString(FileInput.INPUT_CURRENT_DOWNLOAD));
+
+				BufferedOutputStream out = new BufferedOutputStream(
+						response.getResponse().getOutputStream());
+				byte[] buffer = new byte[1024];
+				int bytes_read;
+				while ((bytes_read = filestream.read(buffer)) != -1)
 				{
-					db = request.getDatabase();
-					this.db = db;
-					// db.beginTx(); DISCUSSION
-					System.err.println("???" + db);
-					if (db != null)
-					{
-						dbAvailable = true;
-						//logger.info("created database " + db);
-					}
-					else
-					{
-						dbErrorMessage = "database is NULL";
-					}
+					out.write(buffer, 0, bytes_read);
 				}
-				catch (Exception e)
+				filestream.close();
+				out.flush();
+				out.close();
+			}
+
+			// action == download, but now in a standard way, handled by
+			// controller
+			else if (ScreenModel.Show.SHOW_DOWNLOAD.equals(requestTuple
+					.getString(FormModel.INPUT_SHOW)))
+			{
+				// get the screen that will hande the download request
+				ScreenController<? extends ScreenModel> controller = molgenis
+						.get(requestTuple.getString(ScreenModel.INPUT_TARGET));
+
+				// set the headers for the download
+				response.getResponse().setContentType("application/x-download");
+
+				String action = requestTuple
+						.getString(ScreenModel.INPUT_ACTION);
+				String extension = null;
+				if (action.startsWith("download_txt_"))
 				{
-					//logger.error("Database creation failed: " + e.getMessage());
-					e.printStackTrace();
-					// throw new DatabaseException(e);
-					dbErrorMessage = e.getMessage();
+					extension = "txt";
+				}
+				else if (action.startsWith("download_xls_"))
+				{
+					extension = "xls";
+				}
+				else
+				{
+					throw new Exception("Download type '" + action
+							+ "' unsupported!");
 				}
 
-				// login/logout
-				HttpSession session = request.getRequest().getSession();
-				Login userLogin = null;
-				// Get application from session (or create one)
-				ApplicationController molgenis = (ApplicationController) session
-						.getAttribute("application");
+				ScreenModel.Show.values();
+				response.getResponse().setHeader("Content-Disposition",
+						"attachment; filename="
+								+ controller.getName().toLowerCase() + "."
+								+ extension);
 
-				// on logout throw whole session away.
-				if (request.getRequest().getParameter("__action") != null
-						&& request.getRequest().getParameter("__action").equalsIgnoreCase("Logout"))
+				// let the handleRequest produce the content
+				controller.handleRequest(db, requestTuple,
+						response.getResponse().getOutputStream());
+
+				// TODO: does this fail when stream is already closed??
+				response.getResponse().getOutputStream().flush();
+				response.getResponse().getOutputStream().close();
+			}
+
+			// handle normal event and then write the response
+			else
+			{
+				// capture select
+				if (requestTuple.getString("select") != null)
 				{
-					molgenis = null;
-					session.setAttribute("application", null);
-				}
-				if (molgenis == null)
-				{
+					// get the screen to be selected
+					ScreenController<?> toBeSelected = molgenis
+							.get(requestTuple.getString("select"));
+					// select leaf in its parent
 					try
 					{
-						userLogin = request.getDatabase().getSecurity();
+						toBeSelected.getParent().setSelected(
+								requestTuple.getString("select"));
 					}
-					catch (Exception e)
+					catch (NullPointerException npe)
 					{
-						throw new DatabaseException(e);
+						// screen does not exists, ignore request
 					}
-					if ((!userLogin.isAuthenticated() && userLogin.isLoginRequired())
-							|| (request.getRequest().getParameter("logout") != null && !session
-									.isNew()))
-					{
-						response.getResponse().setHeader("WWW-Authenticate",
-								"BASIC realm=\"MOLGENIS\"");
-						response.getResponse().sendError(HttpServletResponse.SC_UNAUTHORIZED);
-						session.invalidate();
-						return;
-					}
-					molgenis = createUserInterface(userLogin);
 				}
-				// this should work unless complicated load balancing without proxy
-				// rewriting...
-				molgenis.setBaseUrl(request.getRequest().getScheme() + "://"
-						+ request.getRequest().getServerName() + getPort(request.getRequest())
-						+ request.getRequest().getContextPath());
 
-				// ((UserInterface)molgenis).setDatabase(db);
-				userLogin = ((ApplicationController) molgenis).getLogin();
+				if (Show.SHOW_CLOSE.equals(molgenis.handleRequest(db,
+						requestTuple, null)))
+				{
+					//if close, then write a close script
+					PrintWriter writer = response.getResponse().getWriter();
+					writer.write("<html><head></head><body><script>window.close();</script></body></html>");
+					writer.close();
+					return;
+				}
 
-//				if (dbAvailable)
-//				{
-//					db.setLogin(userLogin);
-//				}
+				// workaround - see comment @
+				// EasyPluginController.HTML_WAS_ALREADY_SERVED
+				if (EasyPluginController.HTML_WAS_ALREADY_SERVED != null
+						&& EasyPluginController.HTML_WAS_ALREADY_SERVED)
+				{
+					EasyPluginController.HTML_WAS_ALREADY_SERVED = null;
+					return;
+				}
 
 				// handle request
-				try
+				molgenis.reload(db); // reload the application
+
+				// session are automatically synchronized...
+				session.setAttribute("application", molgenis);
+
+				// prepare the response
+				response.getResponse().setContentType("text/html");
+				// response.setBufferSize(10000);
+				PrintWriter writer = response.getResponse().getWriter();
+
+				// Render result
+				String show = requestTuple.getString(FormModel.INPUT_SHOW);
+				if (ScreenModel.Show.SHOW_DIALOG.equals(show))
 				{
-					// set the base address
-
-					Tuple requestTuple = request;
-
-					// action == download an attached file
-					// FIXME move to form controllers handlerequest...
-					if (FileInput.ACTION_DOWNLOAD.equals(requestTuple
-							.getString(ScreenModel.INPUT_ACTION)))
-					{
-						//logger.info(requestTuple);
-
-						File file = new File(
-								db.getFilesource()
-										+ "/"
-										+ requestTuple
-												.getString(FileInput.INPUT_CURRENT_DOWNLOAD));
-
-						FileInputStream filestream = new FileInputStream(file);
-
-						response.getResponse().setContentType("application/x-download");
-						response.getResponse().setContentLength((int) file.length());
-						response.getResponse().setHeader(
-								"Content-Disposition",
-								"attachment; filename="
-										+ requestTuple
-												.getString(FileInput.INPUT_CURRENT_DOWNLOAD));
-
-						BufferedOutputStream out = new BufferedOutputStream(
-								response.getResponse().getOutputStream());
-						byte[] buffer = new byte[1024];
-						int bytes_read;
-						while ((bytes_read = filestream.read(buffer)) != -1)
-						{
-							out.write(buffer, 0, bytes_read);
-						}
-						filestream.close();
-						out.flush();
-						out.close();
-					}
-
-					// action == download, but now in a standard way, handled by
-					// controller
-					else if (ScreenModel.Show.SHOW_DOWNLOAD.equals(requestTuple
-							.getString(FormModel.INPUT_SHOW)))
-					{
-						// get the screen that will hande the download request
-						ScreenController<? extends ScreenModel> controller = molgenis
-								.get(requestTuple.getString(ScreenModel.INPUT_TARGET));
-
-						// set the headers for the download
-						response.getResponse().setContentType("application/x-download");
-
-						String action = requestTuple
-								.getString(ScreenModel.INPUT_ACTION);
-						String extension = null;
-						if (action.startsWith("download_txt_"))
-						{
-							extension = "txt";
-						}
-						else if (action.startsWith("download_xls_"))
-						{
-							extension = "xls";
-						}
-						else
-						{
-							throw new Exception("Download type '" + action
-									+ "' unsupported!");
-						}
-
-						ScreenModel.Show.values();
-						response.getResponse().setHeader("Content-Disposition",
-								"attachment; filename="
-										+ controller.getName().toLowerCase() + "."
-										+ extension);
-
-						// let the handleRequest produce the content
-						controller.handleRequest(db, requestTuple,
-								response.getResponse().getOutputStream());
-
-						// TODO: does this fail when stream is already closed??
-						response.getResponse().getOutputStream().flush();
-						response.getResponse().getOutputStream().close();
-					}
-
-					// handle normal event and then write the response
-					else
-					{
-						// capture select
-						if (requestTuple.getString("select") != null)
-						{
-							// get the screen to be selected
-							ScreenController<?> toBeSelected = molgenis
-									.get(requestTuple.getString("select"));
-							// select leaf in its parent
-							try
-							{
-								toBeSelected.getParent().setSelected(
-										requestTuple.getString("select"));
-							}
-							catch (NullPointerException npe)
-							{
-								// screen does not exists, ignore request
-							}
-						}
-
-						if (Show.SHOW_CLOSE.equals(molgenis.handleRequest(db,
-								requestTuple, null)))
-						{
-							//if close, then write a close script
-							PrintWriter writer = response.getResponse().getWriter();
-							writer.write("<html><head></head><body><script>window.close();</script></body></html>");
-							writer.close();
-							return;
-						}
-
-						// workaround - see comment @
-						// EasyPluginController.HTML_WAS_ALREADY_SERVED
-						if (EasyPluginController.HTML_WAS_ALREADY_SERVED != null
-								&& EasyPluginController.HTML_WAS_ALREADY_SERVED)
-						{
-							EasyPluginController.HTML_WAS_ALREADY_SERVED = null;
-							return;
-						}
-
-						// handle request
-						molgenis.reload(db); // reload the application
-	
-
-						// session are automatically synchronized...
-						session.setAttribute("application", molgenis);
-
-						// prepare the response
-						response.getResponse().setContentType("text/html");
-						// response.setBufferSize(10000);
-						PrintWriter writer = response.getResponse().getWriter();
-
-						
-
-						// Render result
-						String show = requestTuple.getString(FormModel.INPUT_SHOW);
-						if (ScreenModel.Show.SHOW_DIALOG.equals(show))
-						{
-							molgenis.getModel().setShow(show);
-							ScreenController<?> target = molgenis.get(requestTuple
-									.getString("__target"));
-							molgenis.getModel().setTarget(target);
-							writer.write(molgenis.render());
-						}
-						else if ("massupdate".equals(show))
-						{
-							molgenis.getModel().setShow("show");
-							writer.write(molgenis.render());
-
-						}
-						else
-						{
-							molgenis.getModel().setShow("root");
-							writer.write(molgenis.render());
-						}
-
-						
-						writer.close();
-
-						// done, get rid of screen messages here?
-						((ApplicationController) molgenis).clearAllMessages();
-
-					}
-					// db.commitTx(); DISCUSSION
+					molgenis.getModel().setShow(show);
+					ScreenController<?> target = molgenis.get(requestTuple
+							.getString("__target"));
+					molgenis.getModel().setTarget(target);
+					writer.write(molgenis.render());
 				}
-				catch (Exception e)
+				else if ("massupdate".equals(show))
 				{
-					// response.getOutputStream().print(e.getMessage());
-					//logger.error(e.getMessage());
-					e.printStackTrace();
-					// unrecoverable error? does this take down the whole server?
-					// throw new RuntimeException(e);
+					molgenis.getModel().setShow("show");
+					writer.write(molgenis.render());
+
 				}
-		
+				else
+				{
+					molgenis.getModel().setShow("root");
+					writer.write(molgenis.render());
+				}
+				
+				writer.close();
+
+				// done, get rid of screen messages here?
+				((ApplicationController) molgenis).clearAllMessages();
+
+			}
+		}
+		catch (Exception e)
+		{
+			throw new DatabaseException(e);
+		}
 	}	
 	
 	private static String getPort(HttpServletRequest req)

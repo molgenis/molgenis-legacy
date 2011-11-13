@@ -12,7 +12,6 @@
 
 package ${package}.servlet;
 
-import java.io.File;
 import java.util.LinkedHashMap;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -56,7 +55,7 @@ public class FrontController extends MolgenisFrontController
 		super.init(conf);
 		
 		//now we can create the MolgenisContext with objects reusable over many requests
-		context = new MolgenisContext(this.getServletContext(), this.createDataSource(), "${model.name}");
+		context = new MolgenisContext(this.getServletContext(), this.createDataSource(), new UsedMolgenisOptions(), "${model.name}");
 		
 		//keep a map of active connections
 		connections = new HashMap<UUID, Connection>();
