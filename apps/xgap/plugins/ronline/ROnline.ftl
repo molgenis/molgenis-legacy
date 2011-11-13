@@ -1,5 +1,5 @@
 <#macro ROnline screen>
-<#assign model = screen.model>
+<#assign model = screen.myModel>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -48,24 +48,28 @@
 			</#if>
 		</#list>
 		
-		<#-- Hack to immediatly clear the message so it doesn't "stick". -->
-		${screen.clearMessage()}
-		
 		<div class="screenbody">
 			<div class="screenpadding">	
 <#--begin your plugin-->
 
-ROnline
+ROnline<br><br>
+Your R session is kept for ${model.timeOut} seconds after the last entered command.<br>
+Type single commands in the main view and press Enter to submit.<br>
+Use the Multiline input with clicking Execute to submit many commands at once.<br>
+(FIXME: only works if the number of input and output lines are equal)
 
 <br><br>
+
+<#-- no point? -->
+<#--input type="submit" style="display: none;" value="Reset" onclick="document.forms.${screen.name}.__action.value = 'reset'; document.forms.${screen.name}.submit();"/-->
 
 
 <div style="width: 800px; height: 300px; overflow-y: auto; vertical-align:bottom; background-color: #FFFFFF; border: 2px #C0C0C0 solid;">
 	<font style="font-size:medium; font-family: Courier, 'Courier New', monospace">
 	<#if model.results?exists><#list model.results as res>
-		${res}<#if res_has_next><br></#if>
+		<#if res?starts_with("> ")><font color="blue">${res}</font><#else>${res}</#if><#if res_has_next><br></#if>
 	</#list></#if></font>
-	<br><font style="color:red;">&gt;</font><input type="text" size="80" style="border: 0px; color:red; display:inline; font-size:medium; font-family: Courier, 'Courier New', monospace" id="inputBox" name="executeThis" value="" onFocus="this.select();" onkeypress="if(window.event.keyCode==13){document.forms.${screen.name}.__action.value = 'execute';}">
+	<br><font style="color:red;">&gt;</font><input type="text" size="80" style="border: 0px; color:red; display:inline; font-size:medium; font-family: Courier, 'Courier New', monospace" id="inputBoxROnline" name="executeThis" value="" onFocus="this.select();" onkeypress="if(window.event.keyCode==13){document.forms.${screen.name}.__action.value = 'execute';}">
 </div>
 
 <input type="submit" style="display: none;" value="Execute" onclick="document.forms.${screen.name}.__action.value = 'execute'; document.forms.${screen.name}.submit();"/>

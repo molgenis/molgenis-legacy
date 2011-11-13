@@ -8,10 +8,12 @@
 package plugins.ronline;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Entity;
@@ -19,10 +21,15 @@ import org.molgenis.util.Tuple;
 
 public class ROnline<E extends Entity> extends PluginModel<E> {
 	private static final long serialVersionUID = -4016852670578378111L;
-	private ROnlineModel model = new ROnlineModel(this);
-	long timeOut = 60;
+	
+	private ROnlineModel model = new ROnlineModel();
+	
+	public ROnline(String name, ScreenController<?> parent)
+	{
+		super(name, parent);
+	}
 
-	public ROnlineModel getModel() {
+	public ROnlineModel getMyModel() {
 		return model;
 	}
 
@@ -37,7 +44,7 @@ public class ROnline<E extends Entity> extends PluginModel<E> {
 	
 	@Override
 	public String getCustomHtmlBodyOnLoad(){
-		return "document.getElementById('inputBox').focus();";
+		return "document.getElementById('inputBoxROnline').focus();";
 	}
 
 	@Override
@@ -48,11 +55,6 @@ public class ROnline<E extends Entity> extends PluginModel<E> {
 	@Override
 	public String getViewTemplate() {
 		return "plugins/ronline/ROnline.ftl";
-	}
-
-	@Override
-	public boolean isVisible() {
-		return true;
 	}
 
 	public void handleRequest(Database db, Tuple request) {
@@ -70,14 +72,42 @@ public class ROnline<E extends Entity> extends PluginModel<E> {
 					allRes.addAll(this.model.getResults());
 					allRes.add("> " + executeThis);
 					if(!this.model.getRp().isRunning()){
-						newRProcess(timeOut);
+						newRProcess(this.model.getTimeOut());
 					}
 					List<String> newRes = this.model.getRp().execute(executeThis);
 					allRes.addAll(newRes);
 					this.model.setResults(allRes);
 					
 				}else if(request.getString("__action").equals("executeMulti")){
-					
+					String executeThis = request.getString("executeMulti");
+					List<String> executeMulti = new ArrayList<String>();
+					for(String s : executeThis.split("\n"))
+					{
+						executeMulti.add(s.trim());
+					}
+					List<String> allRes = new ArrayList<String>();
+					allRes.addAll(this.model.getResults());
+					if(!this.model.getRp().isRunning()){
+						newRProcess(this.model.getTimeOut());
+					}
+					List<String> newRes = this.model.getRp().executeMulti(executeMulti);
+					for(int i = 0; i < executeMulti.size(); i++)
+					{
+						allRes.add("> " + executeMulti.get(i));
+						allRes.add(newRes.get(i));
+					}
+					if(newRes.size() > executeMulti.size())
+					{
+						throw new Exception("More results than commands");
+					}
+					this.model.setResults(allRes);	
+				}
+				else if(request.getString("__action").equals("reset"))
+				{
+					if(this.model.getRp().isRunning()){
+						this.model.getRp().quit();
+						newRProcess(this.model.getTimeOut());
+					}
 				}
 
 				this.setMessages();
@@ -87,10 +117,6 @@ public class ROnline<E extends Entity> extends PluginModel<E> {
 						.getMessage() : "null", false));
 			}
 		}
-	}
-
-	public void clearMessage() {
-		this.setMessages();
 	}
 	
 	private void newRProcess(long timeOut) throws Exception{
@@ -103,12 +129,15 @@ public class ROnline<E extends Entity> extends PluginModel<E> {
 	@Override
 	public void reload(Database db) {
 
-		
+		if(this.model.getTimeOut() == null)
+		{
+			this.model.setTimeOut((long)600);
+		}
 		
 		try {
 
 			if(this.model.getRp() == null || !this.model.getRp().isRunning()){
-				newRProcess(timeOut);
+				newRProcess(this.model.getTimeOut());
 			}
 			
 

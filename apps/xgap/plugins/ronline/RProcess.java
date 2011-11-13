@@ -199,6 +199,24 @@ public class RProcess implements Runnable {
 		}
 
 	}
+	
+	/**
+	 * Execute multiple commands
+	 * 
+	 * @param commands
+	 * @return
+	 * @throws Exception
+	 */
+	public List<String> executeMulti(List<String> commands) throws Exception {
+		List<String> result = new ArrayList<String>();
+		
+		for(String command : commands)
+		{
+			result.addAll(execute(command));
+		}
+		
+		return result;
+	}
 
 	/**
 	 * Execute a single command
@@ -213,9 +231,15 @@ public class RProcess implements Runnable {
 			throw new Exception(
 					"RProcess is no longer running and as such, no longer accepting new commands.");
 		}
+		
+		// escape \ to \\
+		command = command.replace("\\", "\\\\");
+		
+		//escape " to \"
+		command = command.replace("\"", "\\\"");
 
-		command = "tryCatch({" + command
-				+ " }, error = merrorfun, finally = mfinallyfun );\n";
+		command = "tryCatch({eval(parse(text=\"" + command
+				+ "\"))}, error = merrorfun, finally = mfinallyfun );\n";
 		command += "print(\"" + requestDone + "\");\n";
 
 		bos.write(command.getBytes());

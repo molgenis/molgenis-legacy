@@ -5,23 +5,13 @@ import java.util.List;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.SimpleScreenModel;
 
-public class ROnlineModel extends SimpleScreenModel {
+public class ROnlineModel {
 
-
-	public ROnlineModel(ScreenController controller)
-	{
-		super(controller);
-		// TODO Auto-generated constructor stub
-	}
-
-	String test;
-	String loc;
-	
-	RProcess rp;
-	
-	List<String> results;
-
-
+	private String test;
+	private String loc;
+	private RProcess rp;
+	private List<String> results;
+	private Long timeOut;
 	
 	public List<String> getResults() {
 		return results;
@@ -55,15 +45,14 @@ public class ROnlineModel extends SimpleScreenModel {
 		this.loc = loc;
 	}
 
-	@Override
-	public boolean isVisible()
+	public Long getTimeOut()
 	{
-		// TODO Auto-generated method stub
-		return false;
+		return timeOut;
 	}
-	
-	
-	
-	
+
+	public void setTimeOut(Long timeOut)
+	{
+		this.timeOut = timeOut;
+	}
 
 }

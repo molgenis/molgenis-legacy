@@ -39,6 +39,8 @@
 				type="plugins.help.duplicates.DuplicatesPlugin" group="biologist" />
 			<plugin label="KEGG converter" name="KeggConverter"
 				type="plugins.keggplugin.KeggToolsPlugin" group="bioinformatician" />
+			<plugin label="ROnline" name="ROnline"
+				type="plugins.ronline.ROnline"/>
 			<form label="Job table" name="Jobs" entity="Job">
 				<form name="Subjobs" entity="Subjob" />
 			</form>
