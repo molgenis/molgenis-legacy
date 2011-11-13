@@ -372,7 +372,7 @@ public class AnimaldbSeleniumTest
 		selenium.select("id=form", "value=5");
 		selenium.click("id=generate");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[1]"), "12345A - MyDEC");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[1]"), "12345A - DEC 12345");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[6]"), "2");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[15]"), "A. Dood in het kader van de proef");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[16]"), "12345A");
