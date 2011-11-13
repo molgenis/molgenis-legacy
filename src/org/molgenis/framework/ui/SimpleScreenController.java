@@ -184,8 +184,14 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
 	@Override
 	public String getCustomHtmlBodyOnLoad()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		String result = "";
+		for (ScreenController<?> c : this.getChildren())
+		{
+			//result += "<!--custom body onload: " + c.getName() + "-->";
+			result += c.getCustomHtmlBodyOnLoad();
+		}
+
+		return result;
 	}
 
 	/**

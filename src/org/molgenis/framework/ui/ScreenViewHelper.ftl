@@ -65,7 +65,7 @@
 		<#if screen.controller??>${screen.controller.getCustomHtmlHeaders()}</#if>
 	</head>
 <#--claro is for dojo-->
-	<body class="claro" onload="RecoverScroll.init();<#if screen.customHtmlBodyOnLoad?exists>${screen.getCustomHtmlBodyOnLoad()}</#if>">
+	<body class="claro" onload="RecoverScroll.init();<#if screen.controller??>${screen.controller.getCustomHtmlBodyOnLoad()}</#if>">
 	<#if applicationHtmlError?exists>${applicationHtmlError}</#if>
 </#macro>
 

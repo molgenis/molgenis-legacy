@@ -166,13 +166,6 @@ public abstract class PluginModel<E extends Entity> extends
 
 	}
 
-	@Override
-	public String getCustomHtmlBodyOnLoad()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Deprecated
 	// will be removed
 	public ScreenController<?> getScreen()
