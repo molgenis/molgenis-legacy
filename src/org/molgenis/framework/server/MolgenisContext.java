@@ -3,7 +3,7 @@ package org.molgenis.framework.server;
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
-import org.molgenis.framework.db.Database;
+import org.molgenis.MolgenisOptions;
 
 public class MolgenisContext
 {
@@ -11,6 +11,8 @@ public class MolgenisContext
 	private ServletContext sc;
 	
 	private DataSource ds;
+	
+	private MolgenisOptions usedOptions;
 	
 	private String variant;
 	
@@ -21,11 +23,12 @@ public class MolgenisContext
 	// date/time of generation
 	// revision number
 	
-	public MolgenisContext(ServletContext sc, DataSource ds, String variant)
+	public MolgenisContext(ServletContext sc, DataSource ds, MolgenisOptions usedOptions, String variant)
 	{
 		//this.db = db;
 		this.sc = sc;
 		this.ds = ds;
+		this.usedOptions = usedOptions;
 		this.variant = variant;
 	}
 	
@@ -51,6 +54,20 @@ public class MolgenisContext
 	public DataSource getDataSource()
 	{
 		return ds;
+	}
+
+
+
+	public MolgenisOptions getUsedOptions()
+	{
+		return usedOptions;
+	}
+
+
+
+	public void setUsedOptions(MolgenisOptions usedOptions)
+	{
+		this.usedOptions = usedOptions;
 	}
 	
 	

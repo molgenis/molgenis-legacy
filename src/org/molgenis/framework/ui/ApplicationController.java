@@ -5,13 +5,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.security.Login;
+import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisService;
 import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.html.FreemarkerInput;
@@ -20,7 +18,6 @@ import org.molgenis.framework.ui.html.RichtextInput;
 import org.molgenis.framework.ui.html.render.RenderDecorator;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.FileLink;
-import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
@@ -52,6 +49,9 @@ public class ApplicationController extends
 	private String galaxyUrl;
 	/** Molgenis options from generted*/
 	private MolgenisOptions options;
+	
+	/** MolgenisContext */
+	private MolgenisContext mc;
 
 	/**
 	 * Construct a user interface for a database.
@@ -82,6 +82,22 @@ public class ApplicationController extends
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * New constructor for MolgenisGuiService mapped on FrontController
+	 * @param options
+	 * @throws ClassNotFoundException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 */
+	public ApplicationController(MolgenisContext mc) throws InstantiationException, IllegalAccessException, ClassNotFoundException
+	{
+		super("molgenis_userinterface_root", null, null); // this is the root of the screen tree.
+		this.setModel(new ApplicationModel(this));
+		this.setView(new FreemarkerView("ApplicationView.ftl", this.getModel()));
+		this.setMolgenisContext(mc);
+		HtmlSettings.defaultRenderDecorator =(RenderDecorator) Class.forName(mc.getUsedOptions().render_decorator).newInstance();	
 	}
 
 	public ApplicationController(MolgenisOptions options, Login login, EmailService email)
@@ -351,6 +367,8 @@ public class ApplicationController extends
 		this.galaxyUrl = galaxyUrl;
 	}
 	
+	@Deprecated
+	//why is this here?
 	public String getCustomHtmlHeaders()
 	{
 		//TODO: this should be made more generic
@@ -360,13 +378,25 @@ public class ApplicationController extends
 		super.getCustomHtmlHeaders();
 	}
 
+	@Deprecated
 	public MolgenisOptions getOptions()
 	{
 		return options;
 	}
 
+	@Deprecated
 	public void setOptions(MolgenisOptions options)
 	{
 		this.options = options;
+	}
+
+	public MolgenisContext getMolgenisContext()
+	{
+		return mc;
+	}
+
+	public void setMolgenisContext(MolgenisContext mc)
+	{
+		this.mc = mc;
 	}
 }
