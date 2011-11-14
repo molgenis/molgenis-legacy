@@ -27,7 +27,7 @@ public class JQueryDataTable extends Table
 	public String toHtml() {
 		String result = super.toHtml();
 		result += "<script>$('#"+getId()+"')" +
-				".css('min-height','100px')" +
+				".css('min-height','10px')" +
 				".dataTable({" +
 				"\n\"bPaginate\": false," +
 				"\n\"bLengthChange\": true," +
