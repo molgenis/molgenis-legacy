@@ -25,6 +25,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Code;
 import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -116,7 +117,7 @@ public class ImportExcel extends PluginModel<Entity>
 			
 			List<OntologyTerm> ontologyTerms = new ArrayList<OntologyTerm>();
 			
-			List<Ontology> ontologyies = new ArrayList<Ontology>();
+			List<Ontology> ontologies = new ArrayList<Ontology>();
 			
 			List<Code> codes = new ArrayList<Code>();
 			
@@ -155,6 +156,8 @@ public class ImportExcel extends PluginModel<Entity>
 			String measurementName = "";
 
 			boolean MeasurementTemporal = false;
+			
+			ObservableFeature observableFeature = new ObservableFeature();  
 
 			
 			HashMap<String, List> linkProtocolMeasurement = new HashMap<String, List>();
@@ -353,8 +356,8 @@ public class ImportExcel extends PluginModel<Entity>
 				if(!ontologyTerms.contains(ontology_Term))
 					ontologyTerms.add(ontology_Term);
 				
-				if(!ontologyies.contains(ontology))
-					ontologyies.add(ontology);
+				if(!ontologies.contains(ontology))
+					ontologies.add(ontology);
 			}
 			
 			List<Measurement> addedMeasurements = new ArrayList<Measurement>();
@@ -421,7 +424,7 @@ public class ImportExcel extends PluginModel<Entity>
 			}
 			try {
 				
-				db.add(ontologyies);
+				db.add(ontologies);
 				db.add(ontologyTerms);
 				
 				//link Unit(ontologyTerm) to measurements 
