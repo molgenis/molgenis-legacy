@@ -79,7 +79,7 @@ public class Field implements Serializable {
      * Empty constructor
      */
     public Field(Entity parent, String name, FieldType type) {
-        this(parent, type, name, name, false, false, false, null);
+        this(parent, type, name, name, false, false, false, null, null);
     }
 
     // constructor(s)
@@ -102,9 +102,12 @@ public class Field implements Serializable {
      *            database.
      * @param readonly
      *            Indicates whether this field is readonly.
+     * @param jpaCascade 
+     *            Makes it possible to use JPA Cascade options to streamline object datbase interaction, 
+     *            see JPA documentation for details
      */
     public Field(Entity parent, FieldType type, String name, String label, boolean auto, boolean nillable, boolean readonly,
-            String default_value) {
+            String default_value, String jpaCascade) {
         this.entity = parent;
 
         // global
@@ -130,8 +133,39 @@ public class Field implements Serializable {
         //
         this.system = false;
         this.user_data = null;
+        
+        this.jpaCascade = jpaCascade;
     }
 
+    
+    // constructor(s)
+    /**
+     * Standard constructor, which sets all the common variables for a field.
+     * Extra fields can be set with the appropriate access methods.
+     * 
+     * @param type
+     *            The type of the field.
+     * @param name
+     *            The name of the field, which needs to be unique for the
+     *            entity.
+     * @param label
+     *            The label of the field, which is used for the user interface.
+     * @param auto
+     *            Indicates whether this field needs to assigned a value by the
+     *            database.
+     * @param nillable
+     *            Indicates whether this field can have the value NULL in the
+     *            database.
+     * @param readonly
+     *            Indicates whether this field is readonly.
+     */    
+    public Field(Entity parent, FieldType type, String name, String label, boolean auto, boolean nillable, boolean readonly,
+            String default_value) {
+        this(parent, type, name, label, auto, nillable, readonly, default_value, null);
+    }    
+    
+    
+    
     /**
      * copy-constructor
      */
@@ -906,6 +940,10 @@ public class Field implements Serializable {
      */
     private boolean xref_cascade = false;
     /**
+     * Boolean to indicate cascading delete
+     */    
+    private String jpaCascade = null;
+    /**
      * When this field is of type Type.XREF_MULTIPLE, this is the name of the
      * link-table.
      */
@@ -1113,4 +1151,14 @@ public class Field implements Serializable {
     public synchronized void setXrefCascade(boolean xrefCascade) {
         xref_cascade = xrefCascade;
     }
+
+    public String getJpaCascade() {
+        return jpaCascade;
+    }
+
+    public void setJpaCascade(String jpaCascade) {
+        this.jpaCascade = jpaCascade;
+    }
+    
+    
 }

@@ -270,8 +270,8 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
     	</#if>
         <#if field.type == "mref">
 			<#assign multipleXrefs = entity.getNumberOfReferencesTo(field.xrefEntity)/>
-	@ManyToMany(/*cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/)
-	@JoinColumn(name="${SqlName(field)}", insertable=true, updatable=true, nullable=${field.isNillable()?string})
+    @ManyToMany(<#if field.jpaCascade??>cascade={${field.jpaCascade}}<#else>/*cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/</#if>)
+    @JoinColumn(name="${SqlName(field)}", insertable=true, updatable=true, nullable=${field.isNillable()?string})
 			<#if multipleXrefs &gt; 1>
 	@JoinTable(name="${Name(entity)}_${SqlName(field)}", 
 			joinColumns=@JoinColumn(name="${Name(entity)}"), inverseJoinColumns=@JoinColumn(name="${SqlName(field)}"))
@@ -280,7 +280,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 			joinColumns=@JoinColumn(name="${Name(entity)}"), inverseJoinColumns=@JoinColumn(name="${SqlName(field)}"))			
 			</#if>			
        	<#elseif field.type == "xref">
-    @ManyToOne(/*cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/)
+    @ManyToOne(<#if field.jpaCascade??>cascade={${field.jpaCascade}}<#else>/*cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/</#if>)
     @JoinColumn(name="${SqlName(field)}"<#if !field.nillable>, nullable=false</#if>)   	
        	<#else>
 			<#if isPrimaryKey(field,entity)>
