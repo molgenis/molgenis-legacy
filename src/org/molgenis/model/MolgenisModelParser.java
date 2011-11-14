@@ -1272,7 +1272,7 @@ public class MolgenisModelParser {
             }
             try {
                 // root must be menu
-                if (child.getNodeName().equals("description") || child.getNodeName().equals("form") || child.getNodeName().equals("plugin") || child.getNodeName().equals("menu")) {
+                if (child.getNodeName().equals("description") || child.getNodeName().equals("form") || child.getNodeName().equals("plugin") || child.getNodeName().equals("menu") || child.getNodeName().equals("include")) {
                     parseUiSchema(model, (Element) child, model.getUserinterface());
                 } else {
                     throw new MolgenisModelException("Unrecognized element: " + child.getNodeName());
