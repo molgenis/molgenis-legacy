@@ -37,60 +37,38 @@
 	
 	<target name="unjar" description="Unjar all Molgenis and application jars">
 		<!-- Molgenis jars -->
-		<unjar src="${mlibs}hibernate/hibernate-jpa-2.0-api-1.0.0.Final.jar" dest="${jarme}" overwrite="false"/>
-		<unjar src="${mlibs}hibernate/hibernate3.jar" dest="${jarme}" overwrite="false"/>
-		<unjar src="${mlibs}ganymed-ssh2-build250.jar" dest="${jarme}" overwrite="false"/>
-		<unjar src="${mlibs}ant-1.8.1.jar" dest="${jarme}" overwrite="false"/>
-		<unjar src="${mlibs}ant-apache-log4j.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}commons-codec-1.3.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}commons-collections-3.2.1.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}commons-dbcp-1.2.1.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}commons-fileupload-1.1.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}commons-io-1.3.1.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}commons-logging-1.1.1.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}commons-lang-2.5.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}commons-pool-1.5.2.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}cxf-2.3.3.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}concurrent.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}d2r-server-0.7.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}freemarker.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}hsqldb.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}javax.servlet.jar" dest="${jarme}" overwrite="false"/>
-		<unjar src="${mlibs}json.jar" dest="${jarme}" overwrite="false"/> 
-	  	<unjar src="${mlibs}junit-4.8.2.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}jxl.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}log4j-1.2.15.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}mail.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}serializer-2.7.1.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}tar.jar" dest="${jarme}" overwrite="false"/>
-		<unjar src="${mlibs}testng-5.14.10.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}xalan-2.7.1.jar" dest="${jarme}" overwrite="false"/> 
-	  	<unjar src="${mlibs}xercesImpl.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}xmlrpc-client-3.1.3.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}xmlrpc-common-3.1.3.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}xmlbeans-2.4.0.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}arq.jar" dest="${jarme}" overwrite="false"/> 
-	  	<unjar src="${mlibs}jena.jar" dest="${jarme}" overwrite="false"/> 
-	  	<unjar src="${mlibs}jsr311-api-1.1.1.jar" dest="${jarme}" overwrite="false"/> 
-	  	<unjar src="${mlibs}jakarta-oro-2.0.8.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}icu4j_3_4.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}d2rq-0.7.jar" dest="${jarme}" overwrite="false"/> 
-	  	<unjar src="${mlibs}jopenid-1.07.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}mysql-connector-java-5.1.2-beta-bin.jar" dest="${jarme}" overwrite="false"/>
-	  	<unjar src="${mlibs}wsdl4j-1.6.2.jar" dest="${jarme}" overwrite="false"/>
+		<unjar src="${mlibs}hibernate/hibernate-jpa-2.0-api-1.0.0.Final.jar" dest="${jarme}" overwrite="false"/> <!-- JPA common -->
+		<unjar src="${mlibs}hibernate/hibernate3.jar" dest="${jarme}" overwrite="false"/> <!-- JPA common -->
+		<unjar src="${mlibs}hibernate/hibernate-search-3.4.1.Final.jar" dest="${jarme}" overwrite="false"/> <!-- JPA search-->
+		<unjar src="${mlibs}lucene-core-3.0.2.jar" dest="${jarme}" overwrite="false"/> <!-- JPA search -->
+		<unjar src="${mlibs}ganymed-ssh2-build250.jar" dest="${jarme}" overwrite="false"/> <!-- SSH utils -->
+		<unjar src="${mlibs}ant-1.8.1.jar" dest="${jarme}" overwrite="false"/> <!-- ProjectHelper Molgenis.java -->
+		<unjar src="${mlibs}ant-apache-log4j.jar" dest="${jarme}" overwrite="false"/> <!-- Log4jListener Molgenis.java -->
+	  	<unjar src="${mlibs}commons-dbcp-1.2.1.jar" dest="${jarme}" overwrite="false"/> <!-- BasicDataSource -->
+	  	<unjar src="${mlibs}commons-fileupload-1.1.jar" dest="${jarme}" overwrite="false"/> <!-- HttpServletRequestTuple files -->
+	  	<unjar src="${mlibs}cxf-2.3.3.jar" dest="${jarme}" overwrite="false"/> <!-- CXFNonSpringJaxrsServlet -->
+	  	<unjar src="${mlibs}freemarker.jar" dest="${jarme}" overwrite="false"/> <!-- Template processing -->
+	  	<unjar src="${mlibs}jxl.jar" dest="${jarme}" overwrite="false"/> <!-- Excel import/export -->
+	  	<unjar src="${mlibs}log4j-1.2.15.jar" dest="${jarme}" overwrite="false"/> <!-- org.apache.log4j.Logger -->
+	  	<unjar src="${mlibs}mail.jar" dest="${jarme}" overwrite="false"/> <!-- Email utils -->
+	  	<unjar src="${mlibs}tar.jar" dest="${jarme}" overwrite="false"/> <!-- TarGz utils -->
+		<unjar src="${mlibs}testng-5.14.10.jar" dest="${jarme}" overwrite="false"/> <!-- TestNG -->
+	  	<unjar src="${mlibs}jsr311-api-1.1.1.jar" dest="${jarme}" overwrite="false"/>  <!-- Rest API JSON -->
+		<unjar src="${mlibs}hsqldb.jar" dest="${jarme}" overwrite="false"/> <!-- RUNTIME ??: HyperSQL database-->
+		<unjar src="${mlibs}commons-pool-1.5.2.jar" dest="${jarme}" overwrite="false"/> <!-- RUNTIME FrontController only??: GenericObjectPool -->
+		<unjar src="${mlibs}wsdl4j-1.6.2.jar" dest="${jarme}" overwrite="false"/><!-- RUNTIME AbstractServlet only??: WSDL Locator -->
 		<!-- Application jars -->
-		<unjar src="${alibs}jaxrpc.jar" dest="${jarme}" overwrite="false" />
-		<unjar src="${alibs}axis.jar" dest="${jarme}" overwrite="false" />
-		<unjar src="${alibs}keggapi.jar" dest="${jarme}" overwrite="false" />
-		<unjar src="${alibs}mydas-1.6.0.jar" dest="${jarme}" overwrite="false" />
-		<unjar src="${alibs}mindterm.jar" dest="${jarme}" overwrite="false" />
-		<unjar src="${alibs}jopenid-1.07.jar" dest="${jarme}" overwrite="false" />
-		<unjar src="${alibs}spssw-1.66.jar" dest="${jarme}" overwrite="false" />
-		<unjar src="${alibs}simplecaptcha-1.1.1.jar" dest="${jarme}" overwrite="false" />
-		<unjar src="${alibs}pircbot.jar" dest="${jarme}" overwrite="false" />
-		<unjar src="${alibs}selenium-server-standalone-2.2.0.jar" dest="${jarme}" overwrite="false" />
-		<unjar src="${alibs}lambdaj-2.3.3-with-dependencies.jar" dest="${jarme}" overwrite="false" />
-		<unjar src="${alibs}commons-math-2.2.jar" dest="${jarme}" overwrite="false" />
+		<unjar src="${alibs}selenium-server-standalone-2.2.0.jar" dest="${jarme}" overwrite="false" /> <!-- Selenium webtests -->
+		<unjar src="${alibs}jaxrpc.jar" dest="${jarme}" overwrite="false" /> <!-- xQTL: KEGG tools -->
+		<unjar src="${alibs}axis.jar" dest="${jarme}" overwrite="false" /> <!-- xQTL: KEGG tools -->
+		<unjar src="${alibs}keggapi.jar" dest="${jarme}" overwrite="false" /> <!-- xQTL: KEGG tools -->
+		<unjar src="${alibs}mindterm.jar" dest="${jarme}" overwrite="false" /> <!-- xQTL: Mindterm SSH -->
+		<unjar src="${alibs}commons-math-2.2.jar" dest="${jarme}" overwrite="false" /> <!-- xQTL: Report builder statistics -->
+		<unjar src="${alibs}simplecaptcha-1.1.1.jar" dest="${jarme}" overwrite="false" /> <!-- Auth captcha service -->
+		<unjar src="${alibs}jopenid-1.07.jar" dest="${jarme}" overwrite="false" /> <!-- Auth OpenID login -->
+		<unjar src="${alibs}spssw-1.66.jar" dest="${jarme}" overwrite="false" /> <!-- SPSS writer -->
+		<unjar src="${alibs}pircbot.jar" dest="${jarme}" overwrite="false" /> <!-- IRC client -->
+		<unjar src="${alibs}lambdaj-2.3.3-with-dependencies.jar" dest="${jarme}" overwrite="false" />  <!-- Used in: matrix/component/sqlbackend/EAVBackend.java -->
 	</target>
 	
 	<!-- Compile Molgenis on the unjarred content in jarme -->
@@ -98,6 +76,7 @@
 		<!-- Run javac on molgenis, using the unjarred content as classpath -->
 		<javac srcdir="../molgenis/src" destdir="${jarme}" includeantruntime="false">
 			<classpath path="{jarme}" />
+			<exclude name="**/org/molgenis/framework/db/lifewise**" />
 		</javac>
 		<!-- Copy the res folder to the build dir so it can be found by MolgenisResourceCopyGen -->
 		<copy todir="${jarme}/org/molgenis/framework/ui/res" verbose="true">
