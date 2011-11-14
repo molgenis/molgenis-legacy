@@ -26,6 +26,8 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Code;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservableFeature;
+import org.molgenis.pheno.ObservationElement;
+import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
@@ -161,6 +163,7 @@ public class ImportExcel extends PluginModel<Entity>
 			
 			List<ObservableFeature> observableFeatures = new ArrayList<ObservableFeature>();  
 			List<ObservedValue> observedValues  = new ArrayList<ObservedValue>();
+			List<ObservationTarget> observationTargets = new ArrayList<ObservationTarget>();
 			
 			HashMap<String, List> linkProtocolMeasurement = new HashMap<String, List>();
 			
@@ -342,23 +345,37 @@ public class ImportExcel extends PluginModel<Entity>
 					} else if (j==10) {
 						//added the rest of the fields as observable features 
 						String intepretation = sheet.getCell(j,i).getContents();
+						System.out.println("intepretation ........... " + intepretation); 
+
 						
-						if (intepretation != null) {
+						if (!intepretation.isEmpty()) {
 							ObservableFeature of = new ObservableFeature();
 							ObservedValue ov = new ObservedValue();
-
-							of.setDescription("interpretation");
-							of.setName("interpretation");
-							of.setInvestigation(inv);
+							ObservationElement oe = new ObservationElement();
 							
+							oe.setId(i);
+							oe.setInvestigation(inv.getId());
+
+							of.setId(i);
+							of.setDescription(intepretation);  
+							of.setName("interpretation");      
+							of.setInvestigation(inv.getId());
+							observableFeatures.add(of);
 							//TODO of.setOntologyReference(_ontologyReference);
 							
-							ov.setFeature(of);//TODO
+							ov.setFeature(of);  
+							
 							ov.setInvestigation(inv);
 							//TODO ov.setOntologyReference(_ontologyReference);
 							//TODO ov.setProtocolApplication(_protocolApplication);
-							//TODO ov.setTarget(_target);
 							
+							ObservationTarget target = new ObservationTarget();
+							target.setId(i);
+							target.setInvestigation(inv.getId());
+							
+							ov.setTarget(target);
+							
+							observedValues.add(ov);
 							
 							try {
 								ov.set(intepretation, ov);
@@ -407,6 +424,8 @@ public class ImportExcel extends PluginModel<Entity>
 			List<ObservableFeature> addedObservableFeatures = new ArrayList<ObservableFeature>();
 			
 			List<ObservedValue> addedObservedValues = new ArrayList<ObservedValue>();
+			
+			List<ObservationTarget> addedObservationTarget = new ArrayList<ObservationTarget>();
 			
 			for(Measurement measure : measurements){
 				
@@ -471,12 +490,19 @@ public class ImportExcel extends PluginModel<Entity>
 				}
 			}
 			
+			for (ObservationTarget ot: observationTargets) {
+				if (observationTargets.contains(ot)) {
+					addedObservationTarget.add(ot);
+				}
+			}
 			try {
 				
 				db.add(ontologies);
 				db.add(ontologyTerms);
 
-				System.out.println("Just before observable features are insertd in db : >>>>" + observableFeatures);
+				System.out.println("Just before observable features are insertd in db : >>>>" + addedObservableFeatures);
+				
+				db.add(addedObservationTarget);
 				db.add(addedObservableFeatures);
 				db.add(addedObservedValues);
 				
