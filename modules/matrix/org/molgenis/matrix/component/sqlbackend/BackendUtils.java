@@ -6,7 +6,6 @@ package org.molgenis.matrix.component.sqlbackend;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +13,6 @@ import java.util.HashMap;
 import javax.persistence.EntityManager;
 
 import org.apache.commons.lang.StringUtils;
-import org.molgenis.lifelines.loaders.LoaderUtils;
 import org.molgenis.matrix.component.Column;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.organization.Investigation;
@@ -36,7 +34,7 @@ public class BackendUtils {
 //        	.getResultList();
             for(int i = 0; i < measurements.size(); ++i) {
                 Measurement m = measurements.get(i);
-                String castPart = LoaderUtils.getCast(m.getDataType());
+                String castPart = getCast(m.getDataType());
     //            if(databaseTarget.equals("mysql")) {
     //            	if(castPart.contains("number")) {
     //            		castPart = castPart.replace("number", "DECIMAL");
@@ -65,7 +63,25 @@ public class BackendUtils {
         return query.toString();
     }	
 	
-	
+    public static String getCast(final String dataType) throws Exception {
+        if (dataType.equals("code")) {
+            return "cast(%s as number)";
+        } else if (dataType.equals("int")) {
+            return "cast(%s as number)";
+        } else if (dataType.equals("datetime")) {
+            return "to_date(substr(value,1, 19), 'yyyy-mm-dd hh24:mi:ss') ";
+        } else if (dataType.equals("decimal")) {
+            return "cast(%s as number)";
+        } else if (dataType.equals("string")) {
+            return "%s";
+        } else if(dataType.equals("long")) {
+            return "cast(%s as number)";
+        } else {
+            throw new Exception("DataType not supported!" + dataType);
+        }        
+    }
+    
+    
     public static String getFilterCondition(List<MatrixQueryRule> rules, EntityManager em) {
         return getFilterCondition(rules, em, false, null);
     }
