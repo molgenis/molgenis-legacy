@@ -26,6 +26,7 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Code;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservableFeature;
+import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -69,14 +70,15 @@ public class ImportExcel extends PluginModel<Entity>
 			
 			System.out.println(db.query(Investigation.class).eq(Investigation.NAME, " DataShaper").count());
 			
+			Investigation inv = new Investigation();
+
 			if(db.query(Investigation.class).eq(Investigation.NAME, "DataShaper").count() == 0){
 				
-				Investigation inv = new Investigation();
 				inv.setName("DataShaper");
 				db.add(inv);
 				
 			}
-			loadDataFromExcel(db, request);
+			loadDataFromExcel(db, request, inv);
 
 		}
 		
@@ -89,7 +91,7 @@ public class ImportExcel extends PluginModel<Entity>
 		
 	}
 	@SuppressWarnings("unchecked")
-	public void loadDataFromExcel(Database db, Tuple request) throws BiffException, IOException, DatabaseException{
+	public void loadDataFromExcel(Database db, Tuple request, Investigation inv) throws BiffException, IOException, DatabaseException{
 		
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 
@@ -157,8 +159,8 @@ public class ImportExcel extends PluginModel<Entity>
 
 			boolean MeasurementTemporal = false;
 			
-			ObservableFeature observableFeature = new ObservableFeature();  
-
+			List<ObservableFeature> observableFeatures = new ArrayList<ObservableFeature>();  
+			List<ObservedValue> observedValues  = new ArrayList<ObservedValue>();
 			
 			HashMap<String, List> linkProtocolMeasurement = new HashMap<String, List>();
 			
@@ -337,6 +339,36 @@ public class ImportExcel extends PluginModel<Entity>
 						}
 					}else if(j==9) {
 						//Missing ontology also code ..
+					} else if (j==10) {
+						//added the rest of the fields as observable features 
+						String intepretation = sheet.getCell(j,i).getContents();
+						
+						if (intepretation != null) {
+							ObservableFeature of = new ObservableFeature();
+							ObservedValue ov = new ObservedValue();
+
+							of.setDescription("interpretation");
+							of.setName("interpretation");
+							of.setInvestigation(inv);
+							
+							//TODO of.setOntologyReference(_ontologyReference);
+							
+							ov.setFeature(of);//TODO
+							ov.setInvestigation(inv);
+							//TODO ov.setOntologyReference(_ontologyReference);
+							//TODO ov.setProtocolApplication(_protocolApplication);
+							//TODO ov.setTarget(_target);
+							
+							
+							try {
+								ov.set(intepretation, ov);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							observedValues.add(ov);
+							
+							
+						}
 					}
 					
 				}
@@ -371,6 +403,10 @@ public class ImportExcel extends PluginModel<Entity>
 			List<ThemeProtocol> addedThemeProtocols = new ArrayList<ThemeProtocol>();
 			
 			List<GroupTheme> addedGroupThemes = new ArrayList<GroupTheme>();
+			
+			List<ObservableFeature> addedObservableFeatures = new ArrayList<ObservableFeature>();
+			
+			List<ObservedValue> addedObservedValues = new ArrayList<ObservedValue>();
 			
 			for(Measurement measure : measurements){
 				
@@ -422,10 +458,27 @@ public class ImportExcel extends PluginModel<Entity>
 					}
 				}
 			}
+			
+			for (ObservableFeature of: observableFeatures) {
+				if (observableFeatures.contains(of)) {
+					addedObservableFeatures.add(of);
+				}
+			}
+			
+			for (ObservedValue ov: observedValues) {
+				if (observedValues.contains(ov)) {
+					addedObservedValues.add(ov);
+				}
+			}
+			
 			try {
 				
 				db.add(ontologies);
 				db.add(ontologyTerms);
+
+				System.out.println("Just before observable features are insertd in db : >>>>" + observableFeatures);
+				db.add(addedObservableFeatures);
+				db.add(addedObservedValues);
 				
 				//link Unit(ontologyTerm) to measurements 
 				for (Measurement m: addedMeasurements) {
