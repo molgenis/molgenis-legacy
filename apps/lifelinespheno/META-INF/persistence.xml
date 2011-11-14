@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="1.0" 
+             xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
+	<persistence-unit name="molgenis" transaction-type="RESOURCE_LOCAL">
+            <class>org.molgenis.core.Identifiable</class>
+            <class>org.molgenis.core.Nameable</class>
+            <class>org.molgenis.core.Describable</class>
+            <class>org.molgenis.organization.Investigation</class>
+            <class>org.molgenis.organization.InvestigationElement</class>
+            <class>org.molgenis.pheno.ObservationTarget</class>
+            <class>org.molgenis.pheno.Measurement</class>
+            <class>org.molgenis.pheno.Observation</class>
+            <class>org.molgenis.pheno.ObservedValue</class>
+	    <properties>
+	      <property name="javax.persistence.jdbc.url" value="jdbc:oracle:thin:@//localhost:2000/llptest"/>
+	      <property name="javax.persistence.jdbc.password" value="molTagtGen24Ora"/>
+	      <property name="javax.persistence.jdbc.driver" value="oracle.jdbc.driver.OracleDriver"/>
+	      <property name="javax.persistence.jdbc.user" value="molgenis"/>
+          <property name="javax.persistence.validation.mode" value="none"/>    
+          <property name="hibernate.dialect" value="org.hibernate.dialect.Oracle10gDialect"/>
+          <property name="hibernate.show_sql" value="false"/>
+          
+          <property name="hibernate.c3p0.max_size" value="13"/>
+          <property name="hibernate.c3p0.min_size" value="13"/>
+          <property name="hibernate.c3p0.timeout" value="5000"/>
+          <property name="hibernate.c3p0.max_statements" value="100"/>
+          <property name="hibernate.c3p0.idle_test_period" value="300"/>
+          <property name="hibernate.c3p0.acquire_increment" value="2"/>
+          
+          <!--
+          Automatically validates or exports schema DDL to the database when the SessionFactory is created. 
+          With create-drop, the database schema will be dropped when the SessionFactory is closed explicitly.
+		e.g. validate | update | create | create-drop
+           -->
+            <property name="hibernate.hbm2ddl.auto" value="none"/>
+           
+	    </properties>
+	</persistence-unit>
+	<persistence-unit name="molgenis_test" transaction-type="RESOURCE_LOCAL">
+            <class>org.molgenis.core.Identifiable</class>
+            <class>org.molgenis.core.Nameable</class>
+            <class>org.molgenis.core.Describable</class>
+            <class>org.molgenis.organization.Investigation</class>
+            <class>org.molgenis.organization.InvestigationElement</class>
+            <class>org.molgenis.pheno.ObservationTarget</class>
+            <class>org.molgenis.pheno.Measurement</class>
+            <class>org.molgenis.pheno.Observation</class>
+            <class>org.molgenis.pheno.ObservedValue</class>
+	    <properties>
+	      <property name="javax.persistence.jdbc.url" value="jdbc:oracle:thin:@//localhost:2000/llp_test"/>
+	      <property name="javax.persistence.jdbc.password" value="molTagtGen24Ora"/>
+	      <property name="javax.persistence.jdbc.driver" value="oracle.jdbc.driver.OracleDriver"/>
+	      <property name="javax.persistence.jdbc.user" value="molgenis"/>
+          <property name="javax.persistence.validation.mode" value="none"/>    
+          <property name="hibernate.dialect" value="org.hibernate.dialect.Oracle10gDialect"/>
+          <property name="hibernate.show_sql" value="false"/>
+	    
+          <!--
+          Automatically validates or exports schema DDL to the database when the SessionFactory is created. 
+          With create-drop, the database schema will be dropped when the SessionFactory is closed explicitly.
+		e.g. validate | update | create | create-drop
+           -->
+            <property name="hibernate.hbm2ddl.auto" value="create-drop"/>	    
+	    
+	    </properties>
+	</persistence-unit>		
+</persistence>

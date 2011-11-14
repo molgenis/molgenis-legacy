@@ -21,6 +21,7 @@
 				ObservationTarget class maps to XGAP:Subject, METABASE:Patient and
 				maps to Page:Abstract_Observation_Target. The name of
 				observationTargets is unique.</description>
+                        <field name="paid" type="int" nillable="true"/>
 			<unique fields="name"/>
 		</entity>
 		<entity name="ObservableFeature" extends="ObservationElement">
@@ -179,7 +180,7 @@
 			</description>
 			<field name="Investigation" type="xref" xref_entity="Investigation" nillable="true" />
 			<field name="protocolApplication" type="xref" xref_entity="ProtocolApplication"
-				nillable="true"
+				nillable="true" jpaCascade="CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH"
 				description="Reference to the protocol application that was used to produce this observation. For example a particular patient visit or the application of a microarray or the calculation of a QTL model" />
 			<description>FIXME: change to ObservableFeature?</description>
 			<field name="Feature" type="xref" xref_entity="ObservationElement"
@@ -215,6 +216,25 @@
 				description="(Optional) Time when the value was observed. For example in time series or if feature is time-dependent like 'age'" />
 			<field nillable="true" auto="false" name="endtime" type="datetime"
 				description="(Optional) Time when the value's validity ended" />
+                                
+                        <indices>
+                            <index name="valueIdx">
+                                <indexfield name="value"/> 
+                            </index>
+                            <index name="featureIdx">
+                                <indexfield name="Feature"/> 
+                            </index>   
+                            <index name="targetIdx">
+                                <indexfield name="Target"/> 
+                            </index> 
+                            <index name="protocolApplicationIdx">
+                                <indexfield name="protocolApplication"/> 
+                            </index>                             
+                            <index name="featurePaIdx">
+                                <indexfield name="Feature"/> 
+                                <indexfield name="protocolApplication"/>
+                            </index>                             
+                        </indices>
 		</entity>
 	</module>
 	<!--
