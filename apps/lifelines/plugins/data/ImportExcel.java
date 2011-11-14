@@ -153,6 +153,9 @@ public class ImportExcel extends PluginModel<Entity>
 			String GroupThemeName = "";
 			
 			String measurementName = "";
+
+			boolean MeasurementTemporal = false;
+
 			
 			HashMap<String, List> linkProtocolMeasurement = new HashMap<String, List>();
 			
@@ -267,7 +270,14 @@ public class ImportExcel extends PluginModel<Entity>
 						}
 							
 					}else  if( j == 6) { //is repeatable refers to the measurement  Erik says it's the temporal field of measurement entity in pheno model . 
-						//TODO
+						String tmp = sheet.getCell(j,i).getContents();
+						
+						if (tmp == "No") MeasurementTemporal = false;
+						else if (tmp =="Yes") MeasurementTemporal = true;
+						
+						mea.setTemporal(MeasurementTemporal);
+						
+												
 					}else if ( j == 7) {
 //						//create an ontology for importing ontologyURI.
 //						Ontology ontology = new Ontology();
