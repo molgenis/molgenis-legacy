@@ -1,5 +1,9 @@
 package plugins.matrix.manager;
 
+import java.io.File;
+
+import matrix.DataMatrixInstance;
+
 import org.molgenis.framework.db.Database;
 import org.molgenis.util.Tuple;
 
@@ -73,7 +77,21 @@ public class RequestHandler {
 			screenModel.setSelectedWidth(width);
 			screenModel.setSelectedHeight(height);
 			screenModel.setSelectedFilterDiv("filter6");
-			MakeRPlot.plot(screenModel, rowName, colName, action, type, width, height);
+			
+			DataMatrixInstance instance;
+			if(action.startsWith("r_plot_full"))
+			{
+				instance = screenModel.getBrowser().getModel().getInstance();
+			}else if(action.startsWith("r_plot_visible"))
+			{
+				instance = screenModel.getBrowser().getModel().getSubMatrix();
+			}else
+			{
+				throw new Exception("unrecognized action: " + action);
+			}
+			
+			File img = MakeRPlot.plot(screenModel.getSelectedData(), instance, rowName, colName, action, type, width, height);
+			screenModel.setTmpImgName(img.getName());
 		}
 		else if (action.equals("moveRight")) {
 			screenModel.getBrowser().moveRight();

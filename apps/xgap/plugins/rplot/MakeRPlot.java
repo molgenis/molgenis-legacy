@@ -10,23 +10,11 @@ import plugins.matrix.manager.MatrixManagerModel;
 
 public class MakeRPlot
 {
-	public static void plot(MatrixManagerModel model, String rowName, String colName, String action, String type, int width, int height) throws Exception
+	public static File plot(Data data, DataMatrixInstance instance, String rowName, String colName, String action, String type, int width, int height) throws Exception
 	{
-		String rowType = model.getSelectedData().getTargetType(); //shorthand
-		String colType = model.getSelectedData().getFeatureType(); //shorthand
-		Data data = model.getSelectedData(); //shorthand
-		
-		DataMatrixInstance instance = null;
-		if(action.startsWith("r_plot_full"))
-		{
-			instance = model.getBrowser().getModel().getInstance();
-		}else if(action.startsWith("r_plot_visible"))
-		{
-			instance = model.getBrowser().getModel().getSubMatrix();
-		}else
-		{
-			throw new Exception("unrecognized action: " + action);
-		}
+		String rowType = data.getTargetType(); //shorthand
+		String colType = data.getFeatureType(); //shorthand
+		//Data data = model.getSelectedData(); //shorthand
 		
 		Object[] plotThis = null;
 		PlotParameters params = new PlotParameters();
@@ -100,7 +88,7 @@ public class MakeRPlot
 				new HeatmapScriptInstance(instance, tmpImg, params);
 			}
 			
-			model.setTmpImgName(tmpImg.getName());
+			return tmpImg;
 		
 	}
 }

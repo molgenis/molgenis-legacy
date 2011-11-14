@@ -89,6 +89,8 @@
 		<unjar src="${alibs}simplecaptcha-1.1.1.jar" dest="${jarme}" overwrite="false" />
 		<unjar src="${alibs}pircbot.jar" dest="${jarme}" overwrite="false" />
 		<unjar src="${alibs}selenium-server-standalone-2.2.0.jar" dest="${jarme}" overwrite="false" />
+		<unjar src="${alibs}lambdaj-2.3.3-with-dependencies.jar" dest="${jarme}" overwrite="false" />
+		<unjar src="${alibs}commons-math-2.2.jar" dest="${jarme}" overwrite="false" />
 	</target>
 	
 	<!-- Compile Molgenis on the unjarred content in jarme -->

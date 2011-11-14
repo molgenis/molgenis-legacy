@@ -1,4 +1,8 @@
 <molgenis>
-	<plugin label="Search" name="SimpleDbSearch"
-		type="plugin.search.SimpleWholeDatabaseSearch" group="biologist" />
+	<menu name="SearchMenu" label="Search" group="biologist">
+		<plugin label="Search database" name="SimpleDbSearch"
+			type="plugin.search.SimpleWholeDatabaseSearch" group="biologist" />
+		<plugin label="Build report" name="ReportBuilder"
+			type="plugins.reportbuilder.ReportBuilder" group="biologist" />
+	</menu>
 </molgenis>

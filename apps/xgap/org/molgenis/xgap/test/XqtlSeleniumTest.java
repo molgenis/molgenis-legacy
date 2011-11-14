@@ -478,6 +478,7 @@ public class XqtlSeleniumTest
 		public void search() throws Exception
 		{
 			// browse to Search
+			clickAndWait("id=SearchMenu_tab_button");
 			clickAndWait("id=SimpleDbSearch_tab_button");
 			selenium.type("name=searchThis", "ee");
 			clickAndWait("id=simple_search");

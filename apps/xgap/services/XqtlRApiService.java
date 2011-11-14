@@ -60,10 +60,10 @@ public class XqtlRApiService implements MolgenisService
 			filename = filename.substring(1);
 		}
 		// if R file exists, return that
-		if (!filename.equals("api/R/") && !filename.endsWith(".R")){
+		if (!filename.equals("") && !filename.endsWith(".R")){
 			Utils.console("bad request: no R extension");
 			s += "you can only load .R files\n";
-		} else if (filename.equals("api/R/"))
+		} else if (filename.equals(""))
 		{
 			Utils.console("getting default file");
 			String server = "http://" + request.getRequest().getLocalName() + ":" + request.getRequest().getLocalPort() + "/"+MolgenisServlet.getMolgenisVariantID();
