@@ -1,20 +1,23 @@
-#protocols
-{
-
-margin-top:0px;
+#protocols{
+	margin-bottom:30px;
+	
 }
 
 span.nav a{
 text-align:center;
 margin-right:15px;
 color:black;
-margin-top:0px;
+
 font-family : arial;
 font-size:16px;
 padding-left:5px;
 padding-right:5px;
 background-color:#BDCDDA;
+padding-top:4px;
 margin-bottom: 30px;
+border-right:1px solid black;
+border-left:1px solid black;
+border-bottom:1px solid black;
 /*
 #BDCDDA
 */
@@ -24,13 +27,14 @@ span.nav1 a{
 text-align:center;
 margin-right:15px;
 color:white;
-border: 1px solid white;
 font-family : arial;
 font-size:20px;
 padding-left:5px;
 padding-right:5px;
+padding-top:4px;
 background-color:#5B82A4;
 margin-bottom: 30px;
+
 /*
 #BDCDDA
 */
@@ -56,3 +60,7 @@ span:hover a{
 	font-weight:bold;
 }
 
+#block{
+	margin-bottom:30px;
+	padding-left:0px;
+}
