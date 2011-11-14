@@ -1,6 +1,10 @@
 package org.molgenis.framework.db.jpa;
 
 import java.sql.Connection;
+
+import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.jpa.Search;
+import org.hibernate.search.query.dsl.QueryBuilder;
 import org.molgenis.framework.db.AbstractDatabase;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,6 +84,7 @@ public class JpaDatabase extends AbstractDatabase implements Database {
         }
     }
     private EntityManager em = null;
+    private FullTextEntityManager ftem = null;
     private String persistenceUnitName;
 
     protected JpaDatabase(String persistenceUnitName, EntityManager em, Model jdbcMetaDatabase) {
@@ -349,5 +354,20 @@ public class JpaDatabase extends AbstractDatabase implements Database {
     @Deprecated
     public Connection getConnection() throws DatabaseException {
         return JpaFrameworkFactory.createFramework().getConnection(em);
+    }
+    
+    public void initFullTextSearch() throws InterruptedException
+    {
+		this.ftem = Search.getFullTextEntityManager(this.em);
+		this.ftem.createIndexer().startAndWait();
+    }
+    
+    public <E extends Entity> List<E> findByFullTextSearch(String searchString, Class<E> entityClass, String... fieldList)
+    {
+    	QueryBuilder qb = this.ftem.getSearchFactory().buildQueryBuilder().forEntity(entityClass).get();
+    	org.apache.lucene.search.Query query = qb.keyword().onFields(fieldList).matching(searchString).createQuery();
+    	javax.persistence.Query persistenceQuery = this.ftem.createFullTextQuery(query, entityClass);
+    	List result = persistenceQuery.getResultList();
+    	return result;
     }
 }
