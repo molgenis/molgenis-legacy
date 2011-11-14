@@ -65,77 +65,66 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 			getModel().error =true;
 		}
 		else{
-			if (getModel().action.equals("Sample_info")) {
-				getModel().sampleNavClass="nav1";
-				
-			}
-			else{
-				getModel().sampleNavClass="nav";
-			}
-		
-			if (getModel().action.equals("DNA")) {
-				getModel().dnaNavClass="nav1";
-				
-			}
-			else{
-				getModel().dnaNavClass="nav";
-			}
-			if (getModel().action.equals("RNA")) {
-				getModel().rnaNavClass="nav1";
-				
-			}
-			else{
-				getModel().rnaNavClass="nav";
-
-			}
-			if (getModel().action.equals("Serum")) {
-				getModel().serumNavClass="nav1";
-				
-			}
-			else{
-				getModel().serumNavClass="nav";
-			}
-			if (getModel().action.equals("Plasma")) {
-				getModel().plasmaNavClass="nav1";
-				
-			}
-			else{
-				getModel().plasmaNavClass="nav";
-			}
-			if (getModel().action.equals("Biopsies")) {
-				getModel().biopsiesNavClass="nav1";
-				
-			}
-			else{
-				getModel().biopsiesNavClass="nav";
-			}
-			
-			if (getModel().action.equals("HLA_Typing")) {
-				getModel().hlaNavClass="nav1";
-			}
-			else{
-				getModel().hlaNavClass="nav";
-			}
-			if(getModel().action.equals("Individual_info")){
+			if(getModel().selectedScreenI==1){
+				getModel().matrixViewerIndv = null;
+				getModel().setChosenProtocolNameI("Individual_info");
 				getModel().individualNavClass="nav1";
-			}
-			else{
-				getModel().individualNavClass="nav";
-			}
-			
-			if(getModel().action.equals("Personal_info")){
+			}else{getModel().individualNavClass="nav";}
+					
+			if(getModel().selectedScreenI==2){
+				getModel().setChosenProtocolNameI("Personal_info");
+				getModel().matrixViewerIndv = null;
 				getModel().personalNavClass="nav1";
-			}
-			else{
-				getModel().personalNavClass="nav";
-			}
+			}else{getModel().personalNavClass="nav";}
 
-			if(getModel().action.equals("Medical_info")){
+			if(getModel().selectedScreenI==3){
+				getModel().setChosenProtocolNameI("Medical_info");
+				getModel().matrixViewerIndv = null;
 				getModel().medicalNavClass="nav1";
-			}
-			else{
-				getModel().medicalNavClass="nav";
-			}
+			}else{getModel().medicalNavClass="nav";}
+
+	
+			if (getModel().selectedScreenS==1) {
+				getModel().setChosenProtocolNameS("Sample_info");	
+				getModel().matrixViewerSample = null;
+				getModel().sampleNavClass="nav1";	
+			}else{getModel().sampleNavClass="nav";}
+		
+			if (getModel().selectedScreenS==2) {
+				getModel().setChosenProtocolNameS("DNA");
+				getModel().matrixViewerSample = null;
+				getModel().dnaNavClass="nav1";
+			}else{getModel().dnaNavClass="nav";}
+			
+			if (getModel().selectedScreenS==3) {
+				getModel().setChosenProtocolNameS("RNA");
+				getModel().matrixViewerSample = null;
+				getModel().rnaNavClass="nav1";	
+			}else{getModel().rnaNavClass="nav";}
+			
+			if (getModel().selectedScreenS==4) {
+				getModel().setChosenProtocolNameS("Serum");
+				getModel().matrixViewerSample = null;
+				getModel().serumNavClass="nav1";
+			}else{getModel().serumNavClass="nav";}
+			
+			if (getModel().selectedScreenS==5) {
+				getModel().setChosenProtocolNameS("Plasma");
+				getModel().matrixViewerSample = null;
+				getModel().plasmaNavClass="nav1";	
+			}else{getModel().plasmaNavClass="nav";}
+			
+			if (getModel().selectedScreenS==6) {
+				getModel().setChosenProtocolNameS("Biopsies");
+				getModel().matrixViewerSample = null;
+				getModel().biopsiesNavClass="nav1";
+				}else{getModel().biopsiesNavClass="nav";}
+			
+			if (getModel().selectedScreenS==7) {
+				getModel().setChosenProtocolNameS("HLA_Typing");
+				getModel().matrixViewerSample = null;
+				getModel().hlaNavClass="nav1";
+			}else{getModel().hlaNavClass="nav";}
 			
 			
 			
@@ -143,10 +132,9 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 			getModel().error=false;
 			//Show sampleMatrix, with chosenProtocol name to be shown
 				if (getModel().matrixViewerSample == null) {
-					Protocol sampleInfoProt = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, getModel().chosenProtocolName)).get(0);
+					Protocol sampleInfoProt = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, getModel().chosenProtocolNameS)).get(0);
 					List<String> measurementsToShow = sampleInfoProt.getFeatures_Name();
-					
-					
+	
 					getModel().matrixViewerSample = new MatrixViewer(this, getModel().SAMPLEMATRIXS, 
 							new SliceablePhenoMatrix(GidsSample.class, Measurement.class), 
 							true, true, null, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
@@ -154,7 +142,7 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 				}
 				// if samples are chosen, individualmatrix will be filled with chosenProtocol
 				if(getModel().getListSamples()!=null && getModel().matrixViewerIndv == null){
-					Protocol indvInfoProt = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, getModel().chosenProtocolName)).get(0);
+					Protocol indvInfoProt = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, getModel().chosenProtocolNameI)).get(0);
 					List<String> measurementsToShowIndividuals = indvInfoProt.getFeatures_Name();
 				
 					
@@ -187,6 +175,14 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 	public Show handleRequest(Database db, Tuple request, OutputStream out)
 			throws HandleRequestDelegationException
 	{
+		if(request.getInt("selectedScreenI")!=null){
+			getModel().setSelectedScreenI(request.getInt("selectedScreenI"));
+		}
+		if(request.getInt("selectedScreenS")!=null){
+			getModel().setSelectedScreenS(request.getInt("selectedScreenS"));
+		}
+		
+		
 		getModel().action = request.getString("__action");
 			
 			try {
@@ -210,61 +206,7 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 						rowCnt++;
 					}
 					getModel().setListSamples(listSampleIds);
-					getModel().matrixViewerIndv = null;
-						
-								
-				}
-
-				if (getModel().action.equals("Sample_info")) {
-					getModel().matrixViewerSample = null;
-					getModel().setChosenProtocolName("Sample_info");
-					
-				}
-				  if (getModel().action.equals("DNA")) {
-					getModel().matrixViewerSample = null;
-					getModel().setChosenProtocolName("DNA");
-					
-				}
-				if (getModel().action.equals("RNA")) {
-					getModel().matrixViewerSample = null;
-					getModel().setChosenProtocolName("RNA");
-					
-				}
-				if (getModel().action.equals("Serum")) {
-					getModel().matrixViewerSample = null;
-					getModel().setChosenProtocolName("Serum");
-					
-				}
-				if (getModel().action.equals("Plasma")) {
-					getModel().matrixViewerSample = null;
-					getModel().setChosenProtocolName("Plasma");
-					
-				}
-				if (getModel().action.equals("Biopsies")) {
-					getModel().matrixViewerSample = null;
-					getModel().setChosenProtocolName("Biopsies");
-					
-				}
-				if (getModel().action.equals("HLA_Typing")) {
-					getModel().matrixViewerSample = null;
-					getModel().setChosenProtocolName("HLA_Typing");
-					
-				}
-				
-				if (getModel().action.equals("Individual_info")) {
-					getModel().matrixViewerIndv = null;
-					getModel().setChosenProtocolName("Individual_info");
-					
-				}
-				if (getModel().action.equals("Personal_info")) {
-					getModel().matrixViewerIndv = null;
-					getModel().setChosenProtocolName("Personal_info");
-					
-				}
-				if (getModel().action.equals("Medical_info")) {
-					getModel().matrixViewerIndv = null;
-					getModel().setChosenProtocolName("Medical_info");
-					
+					getModel().matrixViewerIndv = null;				
 				}
 				
 				

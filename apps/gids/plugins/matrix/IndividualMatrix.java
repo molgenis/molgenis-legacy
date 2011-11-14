@@ -46,30 +46,21 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 		this.setView(new FreemarkerView("IndividualMatrixView.ftl", getModel())); //<plugin flavor="freemarker"
 		
 	}
-
-	/**
-	 * At each page view: reload data from database into model and/or change.
-	 *
-	 * Exceptions will be caught, logged and shown to the user automatically via setMessages().
-	 * All db actions are within one transaction.
-	 */ 
 	
 	public String getCustomHtmlHeaders() {
 		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/gids.css\">";
 	}
-	
-	
+		
 	@Override
 	public void reload(Database db) throws Exception
 	{	
 		List<Protocol> listProtocols = db.query(Protocol.class).find();
-
 		
 		if(listProtocols.size()==0){	
 			getModel().error=true;
 		}
-		else{
-			
+		else{		
+			System.out.println( "getModel().selectedScreenI " +getModel().selectedScreenI);
 			if(getModel().selectedScreenI==1){
 				getModel().matrixViewerIndv = null;
 				getModel().setChosenProtocolNameI("Individual_info");
@@ -134,7 +125,12 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 			
 			getModel().error=false;
 			try {
-				if (getModel().matrixViewerIndv == null) {
+				FormModel<Investigation> form = this.getParentForm(Investigation.class);
+				List<Investigation> investigationsList = form.getRecords();
+				String invest = investigationsList.get(0).getName();
+				//List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
+				if (getModel().matrixViewerIndv == null && !invest.equals("System")) {
+					System.out.println("invest: " + invest);
 					Protocol indvInfoProt = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, getModel().chosenProtocolNameI)).get(0);
 					List<String> measurementsToShow = indvInfoProt.getFeatures_Name();
 					
@@ -143,40 +139,65 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 							true, true, null, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 									Operator.IN, measurementsToShow));
 				}
+				
+				
+				
+				
 				if(getModel().getListIndividuals()!=null && getModel().matrixViewerSample == null){
 					Protocol sampleInfoProt = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, getModel().chosenProtocolNameS)).get(0);
 					List<String> measurementsToShowSamples = sampleInfoProt.getFeatures_Name();
 					
-					List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
-					filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.ID, 
-							Operator.IN, getModel().getListIndividuals()));
 					
+					//filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.ID, 
+					//		Operator.IN, getModel().getListIndividuals()));
+					//filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValues, Individual.INVESTIGATION_NAME, 
+					//	Operator.EQUALS, invest));
+				
+				/*filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.values, Individual.INVESTIGATION_NAME, 
+				Operator.EQUALS, invest));
+		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.valueProperty, ObservedValue.INVESTIGATION_NAME, 
+				Operator.EQUALS, invest));
+		*/
 					getModel().matrixViewerSample = new MatrixViewer(this, getModel().SAMPLEMATRIX, 
 							new SliceablePhenoMatrix(Individual.class, Measurement.class), 
-							true, true, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
+							true, true, null, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 									Operator.IN, measurementsToShowSamples));
-				}
-				
+				}			
 			}catch (Exception e) {
 				logger.error(e.getMessage());
-				
-				//e.printStackTrace();
 			}
 		}
 		
 		
+		
+		System.out.println("biteME db null?" + (db == null ? "NULL!!!!" : "not null"));
+
+		if(getModel().matrixViewerIndv != null){
+			getModel().matrixViewerIndv.setToHtmlDb(db);
+			System.out.println("set for: matrixViewerIndv");
+		}
+		if(getModel().matrixViewerSample != null){
+			getModel().matrixViewerSample.setToHtmlDb(db);
+			System.out.println("set for: matrixViewerSample");
+		}
 	}
 	
 	@Override
 	public Show handleRequest(Database db, Tuple request, OutputStream out)
 			throws HandleRequestDelegationException
 	{
-		if(request.getInt("selectedScreenI")!=null){
+		
+		
+		
+		
+		 if(request.getInt("selectedScreenI")!=null){
 			getModel().setSelectedScreenI(request.getInt("selectedScreenI"));
-		}
-		if(request.getInt("selectedScreenS")!=null){
-			getModel().setSelectedScreenS(request.getInt("selectedScreenS"));
-		}
+
+		 }
+		 if(request.getInt("selectedScreenS")!=null){
+
+				getModel().setSelectedScreenS(request.getInt("selectedScreenS"));
+			 }
 		getModel().action = request.getString("__action");
 		if(request.getInt("str")!=null){
 			str2 = request.getInt("str");
@@ -188,9 +209,6 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 				getModel().setAction("init");
 				getModel().individualNavClass="nav1";
 			}
-			//FormModel<Investigation> form = this.getParentForm(Investigation.class);			
-			//List<Investigation> investigations = form.getRecords();
-			//investigations.get(0).getName();
 
 			if (getModel().action.equals("setSelection")) {
 				getModel().selection = "";
@@ -208,11 +226,8 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 				getModel().sampleNavClass="nav1";							
 			}
 			
-			
 		} catch (Exception e) {
 			this.setError(e.getMessage());
-			
-			//e.printStackTrace();
 		}
 		
 		//default show

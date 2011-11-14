@@ -30,7 +30,8 @@ public class SampleMatrixModel extends EasyPluginModel
 	String action = "setSample";
 	boolean error = false;
 	String selection = null;
-	String chosenProtocolName = "Sample_info";
+	String chosenProtocolNameI = "Individual_info";
+	String chosenProtocolNameS = "Sample_info";
 	List<Integer> listSamples = null;
 	String sampleNavClass;
 	String dnaNavClass;
@@ -42,6 +43,8 @@ public class SampleMatrixModel extends EasyPluginModel
 	String individualNavClass;
 	String personalNavClass;
 	String medicalNavClass;
+	int selectedScreenI = 1;
+	int selectedScreenS = 1;
 	
 	//another example, you can also use getInvestigations() and setInvestigations(...)
 	//public List<Investigation> investigations = new ArrayList<Investigation>();
@@ -70,14 +73,20 @@ public class SampleMatrixModel extends EasyPluginModel
 		this.selection = selection;
 	}
 
-	public String getChosenProtocolName() {
-		return chosenProtocolName;
+	public String getChosenProtocolNameI() {
+		return chosenProtocolNameI;
 	}
 
-	public void setChosenProtocolName(String chosenProtocolName) {
-		this.chosenProtocolName = chosenProtocolName;
+	public void setChosenProtocolNameI(String chosenProtocolName) {
+		this.chosenProtocolNameI = chosenProtocolName;
+	}
+	public String getChosenProtocolNameS() {
+		return chosenProtocolNameS;
 	}
 
+	public void setChosenProtocolNameS(String chosenProtocolName) {
+		this.chosenProtocolNameS = chosenProtocolName;
+	}
 	
 	public List<Integer> getListSamples() {
 		return listSamples;
@@ -194,6 +203,20 @@ public class SampleMatrixModel extends EasyPluginModel
 	public void setMedicalNavClass(String medicalNavClass) {
 		this.medicalNavClass = medicalNavClass;
 	}
+	public int getSelectedScreenI() {
+		return selectedScreenI;
+	}
 
+	public void setSelectedScreenI(int selectedScreenI) {
+		this.selectedScreenI = selectedScreenI;
+	}
+
+	public int getSelectedScreenS() {
+		return selectedScreenS;
+	}
+
+	public void setSelectedScreenS(int selectedScreenS) {
+		this.selectedScreenS = selectedScreenS;
+	}
 	
 }

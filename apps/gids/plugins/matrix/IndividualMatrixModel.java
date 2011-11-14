@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginModel;
 import org.molgenis.matrix.component.MatrixViewer;
 
@@ -33,8 +34,8 @@ public class IndividualMatrixModel extends EasyPluginModel
 	String action = "Individual_info";
 	boolean error = false;
 	String selection = null;
-	String chosenProtocolNameI = "Individual_info";
-	String chosenProtocolNameS = "Sample_info";
+	String chosenProtocolNameI;
+	String chosenProtocolNameS;
 	List<Integer> listIndividuals = null;
 	String individualNavClass;
 	String personalNavClass;
@@ -49,7 +50,12 @@ public class IndividualMatrixModel extends EasyPluginModel
 	int selectedScreenI = 1;
 	int selectedScreenS = 1;
 	
-	
+	//hack to pass database to toHtml() via toHtml(db)
+//	Database toHtmlDb;
+//	public void setToHtmlDb(Database toHtmlDb)
+//	{
+//		this.toHtmlDb = toHtmlDb;
+//	}
 	
 	
 	//another example, you can also use getInvestigations() and setInvestigations(...)
@@ -103,6 +109,7 @@ public class IndividualMatrixModel extends EasyPluginModel
 	 */
 	public String getMatrixViewerIndv() {
 		if (matrixViewerIndv != null) {
+			//matrixViewerIndv.setToHtmlDb(toHtmlDb);
 			return matrixViewerIndv.render();
 		} else {
 			return "No viewer available, matrix cannot be rendered.";
