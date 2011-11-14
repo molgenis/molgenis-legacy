@@ -152,7 +152,7 @@ public class OracleToLifelinesPheno {
 //    		f.add((ObservableFeature)e);
 //    	}    	
 
-        protocol.setFeatures(((List<ObservableFeature>)((List)measurements)));
+//        protocol.setFeatures(((List<ObservableFeature>)((List)measurements)));
     	protocol.setInvestigation(investigation);
     	protocol.setName(tableName);
 
@@ -190,7 +190,7 @@ public class OracleToLifelinesPheno {
             measurements.add(m);
 
             m.setInvestigation(investigation);
-            investigation.getInvestigationObservationElementCollection().add(m);
+            //investigation.getInvestigationObservationElementCollection().add(m);
             //investigation.getInvestigationMeasurementCollection().add(m);
             m.setName(rsm.getColumnName(i));
 
