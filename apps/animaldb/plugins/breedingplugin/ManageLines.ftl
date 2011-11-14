@@ -15,7 +15,7 @@
 		<#--optional: mechanism to show messages-->
 		<#list screen.getMessages() as message>
 			<#if message.success>
-			<script>$.ctNotify("${message.text}", {type: 'confirmation', delay: 5000, position: 'relative'});</script>
+			<script>$.ctNotify("${message.text}", {type: 'confirmation', delay: 5000});</script>
 		<!-- <p class="successmessage">${message.text}</p> -->
 			
 			<#else>

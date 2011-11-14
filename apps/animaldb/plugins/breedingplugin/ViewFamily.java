@@ -40,7 +40,9 @@ public class ViewFamily extends PluginModel<Entity>
 	
 	public String getCustomHtmlHeaders()
 	{
-		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
+		return 	"<script src=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.js\" language=\"javascript\"></script>\n" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.css\">" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
 	}
 	
 	// Animal related methods:
