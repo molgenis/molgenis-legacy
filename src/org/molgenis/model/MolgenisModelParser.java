@@ -313,7 +313,7 @@ public class MolgenisModelParser {
             "index", "enum_options", "default_code", "xref", "xref_entity",
             "xref_field", "xref_label", "xref_name", "mref_name",
             "mref_localid", "mref_remoteid", "filter", "filtertype",
-            "filterfield", "filtervalue", "xref_cascade" + "", "allocationSize"};
+            "filterfield", "filtervalue", "xref_cascade" + "", "allocationSize", "jpaCascade"};
         List<String> key_words = new ArrayList<String>(Arrays.asList(keywords));
         for (int i = 0; i < element.getAttributes().getLength(); i++) {
             if (!key_words.contains(element.getAttributes().item(i).getNodeName())) {
@@ -440,11 +440,20 @@ public class MolgenisModelParser {
                     + entity.getName()
                     + "' must have a default value. A field that is not nillable and hidden must have a default value.");
         }
+        
+        
+        String jpaCascade = null;
+        if(type.equals("mref") || type.equals("xref")) {
+            if(element.hasAttribute("jpaCascade")) {
+                jpaCascade = element.getAttribute("jpaCascade");
+            }
+        }
+        
 
         // construct
         Field field = new Field(entity, MolgenisFieldTypes.getType(type), name,
                 label, Boolean.parseBoolean(auto), Boolean.parseBoolean(nillable),
-                Boolean.parseBoolean(readonly), default_value);
+                Boolean.parseBoolean(readonly), default_value, jpaCascade);
         logger.debug("read: " + field.toString());
 
         // add optional properties
