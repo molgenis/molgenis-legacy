@@ -440,6 +440,8 @@ public class MatrixViewer extends HtmlWidget
 					selectedMeasurements, false, false, 
 					"Choose one or more columns (i.e. measurements) to be displayed in the matrix viewer", 
 					Measurement.class);
+			//disable display of button for adding new measurements from here
+			measurementChooser.setIncludeAddButton(false);
 			divContents += new Newline().render();
 			divContents += new Newline().render();
 			divContents += "Add/remove columns:";
