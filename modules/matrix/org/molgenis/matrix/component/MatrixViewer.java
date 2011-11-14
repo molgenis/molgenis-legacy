@@ -45,6 +45,7 @@ public class MatrixViewer extends HtmlWidget
 	private boolean showLimitControls = true;
 	private boolean columnsRestricted = false;
 	private boolean selectMultiple = true;
+	private boolean showValueValidRange = false;
 	
 	public String ROWLIMIT = getName() + "_rowLimit";
 	public String CHANGEROWLIMIT = getName() + "_changeRowLimit";
@@ -320,14 +321,18 @@ public class MatrixViewer extends HtmlWidget
 							if (val instanceof ObservedValue && valueToShow == null) {
 								valueToShow = ((ObservedValue)val).getRelation_Name();
 							}
-							if (val.get(ObservedValue.TIME) != null) {
-								valueToShow += " (valid from " + newDateOnlyFormat.format(val.get(ObservedValue.TIME));
+							// if timing should be shown:
+							if (showValueValidRange) {
+								if (val.get(ObservedValue.TIME) != null) {
+									valueToShow += " (valid from " + newDateOnlyFormat.format(val.get(ObservedValue.TIME));
+								}
+								if (val.get(ObservedValue.ENDTIME) != null) {
+									valueToShow += " through " + newDateOnlyFormat.format(val.get(ObservedValue.ENDTIME)) + ")";
+								} else if (val.get(ObservedValue.TIME) != null) {
+									valueToShow += ")";
+								}
 							}
-							if (val.get(ObservedValue.ENDTIME) != null) {
-								valueToShow += " through " + newDateOnlyFormat.format(val.get(ObservedValue.ENDTIME)) + ")";
-							} else if (val.get(ObservedValue.TIME) != null) {
-								valueToShow += ")";
-							}
+							
 							if (first) {
 								first = false;
 								dataTable.setCell(col + 3, row, valueToShow);
@@ -672,6 +677,14 @@ public class MatrixViewer extends HtmlWidget
 	public SliceableMatrix getMatrix()
 	{
 		return matrix;
+	}
+	
+	public boolean getShowValueValidRange() {
+		return showValueValidRange;
+	}
+
+	public void setShowValueValidRange(boolean showValueValidRange) {
+		this.showValueValidRange = showValueValidRange;
 	}
 
 }
