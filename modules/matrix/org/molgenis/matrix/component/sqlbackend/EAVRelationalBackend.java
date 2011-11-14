@@ -1,15 +1,13 @@
 package org.molgenis.matrix.component.sqlbackend;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.persistence.EntityManager;
+
 import org.apache.commons.lang.StringUtils;
-import org.molgenis.lifelines.loaders.EAVToView;
-import org.molgenis.matrix.component.Column;
 import org.molgenis.matrix.component.SliceablePhenoMatrixMV;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.organization.Investigation;
@@ -98,7 +96,7 @@ public class EAVRelationalBackend implements Backend {
             }
 
             String aliasName = entry.getKey().getName();
-            String sql = EAVToView.createQuery(investigation, entry.getKey(), measurements, em, true);
+            String sql = BackendUtils.createQuery(investigation, entry.getKey(), measurements, em, true);
 
 
             if (first) {

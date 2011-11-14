@@ -1,18 +1,10 @@
 package org.molgenis.matrix.component.sqlbackend;
 
-import ch.lambdaj.collection.LambdaCollection;
-import java.util.Iterator;
-import ch.lambdaj.function.convert.Converter;
-import ch.lambdaj.function.convert.DefaultStringConverter;
-import ch.lambdaj.function.convert.PropertyExtractor;
-import ch.lambdaj.function.convert.StringConverter;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.component.Column;

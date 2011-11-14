@@ -12,8 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import javax.persistence.EntityManager;
+
+import org.apache.commons.lang.StringUtils;
+import org.molgenis.lifelines.loaders.LoaderUtils;
 import org.molgenis.matrix.component.Column;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
+import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
 
@@ -22,6 +26,46 @@ import org.molgenis.protocol.Protocol;
  * @author jorislops
  */
 public class BackendUtils {
+    public static String createQuery(Investigation investigation, Protocol protocol, 
+            List<Measurement> measurements, EntityManager em, boolean tableInAlias) throws Exception {
+        String column = "max(case when o.feature = %d then %s end) %s \n";
+        StringBuilder query = new StringBuilder("SELECT ");    
+//        List<Measurement> measurements = em.createQuery("SELECT m FROM Measurement m where m.name IN (:measurementNames) AND investigation.id = :invId", Measurement.class)
+//        	.setParameter("measurementNames", Arrays.asList(fields))
+//        	.setParameter("invId", investigationId)
+//        	.getResultList();
+            for(int i = 0; i < measurements.size(); ++i) {
+                Measurement m = measurements.get(i);
+                String castPart = LoaderUtils.getCast(m.getDataType());
+    //            if(databaseTarget.equals("mysql")) {
+    //            	if(castPart.contains("number")) {
+    //            		castPart = castPart.replace("number", "DECIMAL");
+    //            	} else if(castPart.contains("to_date")) {
+    //            		castPart = "CAST(substr(value,1, 19) AS DATETIME)";
+    //            	}
+    //            }
+                
+                String fieldAlias = null;
+                if(tableInAlias) {
+                    fieldAlias = String.format("%s_%s", protocol.getName(), m.getName());
+                } else {
+                    fieldAlias = String.format("%s", m.getName());
+                }
+                
+                fieldAlias = StringUtils.substring(fieldAlias, 0, 30);
+                
+                //fieldAlias = StringUtils.substring(fieldAlias, 0, 28);                
+                query.append(String.format(column, m.getId(), String.format(castPart, "value"), fieldAlias));
+                if(i + 1 < measurements.size()) {
+                    query.append(",");
+                }
+            }
+
+        query.append(String.format(" FROM \n  observedvalue o join protocolapplication pa on (o.protocolapplication = pa.id) \n WHERE o.investigation = %d AND pa.protocol = %d \n GROUP BY o.protocolapplication", investigation.getId(), protocol.getId()));
+        return query.toString();
+    }	
+	
+	
     public static String getFilterCondition(List<MatrixQueryRule> rules, EntityManager em) {
         return getFilterCondition(rules, em, false, null);
     }
