@@ -48,8 +48,13 @@ public class ManageLines extends PluginModel<Entity>
 	public String getCustomHtmlHeaders() {
 		return "<script type=\"text/javascript\" src=\"res/jquery-plugins/datatables/js/jquery.dataTables.js\"></script>\n" +
 				"<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n" +
+				"<script src=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.js\" language=\"javascript\"></script>\n" +
 				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/datatables/css/demo_table_jui.css\">\n" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.css\">" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.rounded.css\">" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.roundedBr.css\">" +
 				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
+				
 	}
 
 	@Override

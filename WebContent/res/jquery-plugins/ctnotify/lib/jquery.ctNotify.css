@@ -1,0 +1,63 @@
+.ctNotify{
+  background-color: #000;
+  color:#fff;
+  padding: .5em;
+  margin: 0;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+
+.ctNotify ul{
+  margin: 0;
+  padding: 0;
+
+}
+.ctNotify li{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+  color: #fff;
+  padding: 10px 10px 10px 55px;
+  font-size: 15px;
+  border: 0;
+  background: no-repeat 15px 5px;
+}
+
+.ctNotify .ctNotify_handle{
+  text-align: center;
+  font-size: 11px;
+  margin: 5px 0 0 0;
+}
+
+.ctNotify li.message{
+  background-image: url('images/ok.png');
+}
+
+.ctNotify li.confirmation{
+  background-image: url('images/ok.png');
+  
+}
+
+.ctNotify li.warning{
+  background-image: url('images/warning.png');
+  
+}
+
+.ctNotify li.error{
+  background-image: url('images/error.png');
+  
+}
+.ctNotify li.error, li.error .sticky{
+  color: #ff0000;
+}
+.ctNotify li.confirmation{
+  color: #ffffff;	
+}
+
+.ctNotify li .sticky{
+  color: #4297d7;
+  
+}

@@ -15,9 +15,14 @@
 		<#--optional: mechanism to show messages-->
 		<#list screen.getMessages() as message>
 			<#if message.success>
-		<p class="successmessage">${message.text}</p>
+			<script>$.ctNotify("${message.text}", {type: 'confirmation', delay: 5000, position: 'relative'});</script>
+		<!-- <p class="successmessage">${message.text}</p> -->
+			
 			<#else>
-		<p class="errormessage">${message.text}</p>
+			<script>$.ctNotify("${message.text}", {type: 'error', delay: 7000});</script>	        	
+		<!-- <p class="errormessage">${message.text}</p> -->
+			
+		
 			</#if>
 		</#list>
 		
@@ -85,6 +90,7 @@
 	</#if>
 </div>
 
+
 <#--end of your plugin-->	
 			</div>
 		</div>
@@ -102,4 +108,6 @@
 	);
 </script>
 
+
+    
 </#macro>
