@@ -4,15 +4,15 @@
 		"http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd"
 	-->
 <molgenis name="col7a1" label="International dystrophic eb Patient Registry">
-	<plugin name="MolgenisHeader" type="org.molgenis.mutation.ui.header.Col7a1Header"/>
+	<plugin name="MolgenisHeader" type="org.molgenis.col7a1.ui.Header"/>
 	<menu name="View" startswith="SearchPlugin">
-		<plugin name="SearchPlugin" type="org.molgenis.mutation.ui.search.col7a1.Search" label="Search">
+		<plugin name="SearchPlugin" type="org.molgenis.col7a1.ui.Search" label="Search">
 			<plugin name="NewsBar" type="org.molgenis.news.ui.News" label="News"/>
 		</plugin>
-		<plugin name="UploadPlugin" type="org.molgenis.mutation.ui.upload.Col7a1Upload" label="Submit data"/>
+		<plugin name="UploadPlugin" type="org.molgenis.col7a1.ui.Upload" label="Submit data"/>
 		<plugin name="Contact" type="org.molgenis.feedback.ui.Contact" label="Contact"/>
 		<plugin name="Publications" type="org.molgenis.core.ui.AllPublications" label="References"/>
-		<plugin name="Background" type="org.molgenis.mutation.ui.background.Background" label="Background"/>
+		<plugin name="Background" type="org.molgenis.col7a1.ui.Background" label="Background"/>
 		<plugin name="NewsPlugin" type="org.molgenis.news.ui.News" label="News"/>
 		<menu name="Management" position="left" label="Management">
 			<form name="Gene" entity="MutationGene"/>
@@ -36,7 +36,7 @@
 			<plugin name="ExportCsv" type="org.molgenis.mutation.ui.export.Export" label="Export CSV"/>
 			<!-- <form name="FrontEndElement" entity="FrontEndElement" label="Front End Elements"/> -->
 		</menu>
-		<plugin name="myCOL7A1" type="org.molgenis.mutation.ui.mycol7a1.MyCOL7A1" label="Submissions"/>
+		<plugin name="MyMutation" type="org.molgenis.mutation.ui.mymutation.MyMutation" label="Submissions"/>
 		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="myCOL7A1"/>
 	</menu>
 </molgenis>
