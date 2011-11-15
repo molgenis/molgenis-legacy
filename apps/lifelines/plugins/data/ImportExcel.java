@@ -95,6 +95,90 @@ public class ImportExcel extends PluginModel<Entity>
 	@SuppressWarnings("unchecked")
 	public void loadDataFromExcel(Database db, Tuple request, Investigation inv) throws BiffException, IOException, DatabaseException{
 		
+		List<String> ProtocolFeatures = new ArrayList<String>();
+		
+		List<String> ThemeProtocols = new ArrayList<String> ();
+		
+		List<String> GroupThemes = new ArrayList<String>();
+		
+		String protocolName = "";
+		
+		String ThemeProtocolname = "";
+		
+		String GroupThemeName = "";
+		
+		String measurementName = "";
+
+		boolean MeasurementTemporal = false;
+		
+		List<ObservableFeature> observableFeatures = new ArrayList<ObservableFeature>();  
+		List<ObservedValue> observedValues  = new ArrayList<ObservedValue>();
+		List<ObservationTarget> observationTargets = new ArrayList<ObservationTarget>();
+		List<ObservationElement> observationElements = new ArrayList<ObservationElement>();
+
+		
+		HashMap<String, String> linkObservedValueObservationElement = new HashMap<String, String>();
+		
+		HashMap<String, List> linkProtocolMeasurement = new HashMap<String, List>();
+		
+		HashMap<String, List> linkThemeProtocol = new HashMap<String, List>();
+		
+		HashMap<String, List> linkGroupTheme = new HashMap<String, List>();
+		
+		HashMap<String, List> linkCodeMeasurement = new HashMap<String, List>();
+		
+		HashMap<String, String> linkUnitMeasurement = new HashMap<String, String>();
+		
+		List<Measurement> addedMeasurements = new ArrayList<Measurement>();
+		
+		List<Protocol> addedProtocols = new ArrayList<Protocol>();
+		
+		List<Code> addedCodes = new ArrayList<Code>();
+		
+		List<Protocol> addedThemes = new ArrayList<Protocol>();
+		
+		List<ThemeProtocol> addedThemeProtocols = new ArrayList<ThemeProtocol>();
+		
+		List<GroupTheme> addedGroupThemes = new ArrayList<GroupTheme>();
+		
+		List<ObservableFeature> addedObservableFeatures = new ArrayList<ObservableFeature>();
+		
+		List<ObservedValue> addedObservedValues = new ArrayList<ObservedValue>();
+		
+		List<ObservationTarget> addedObservationTarget = new ArrayList<ObservationTarget>();
+		
+		List<ObservationElement> addedObservationElements = new ArrayList<ObservationElement>();
+		
+		List<Measurement> measurements = new ArrayList<Measurement>();
+		
+		List<Protocol> protocols = new ArrayList<Protocol>();
+		
+		List<ThemeProtocol> themeProtocols = new ArrayList<ThemeProtocol>();
+		
+		List<GroupTheme> groupThemes = new ArrayList<GroupTheme>();
+		
+		List<OntologyTerm> ontologyTerms = new ArrayList<OntologyTerm>();
+		
+		List<Ontology> ontologies = new ArrayList<Ontology>();
+		
+		List<Code> codes = new ArrayList<Code>();
+		
+		Measurement mea;
+		
+		OntologyTerm ontology_Term;
+		
+		Ontology ontology;
+		
+		Protocol prot;
+		
+		Code code;
+		
+		ThemeProtocol themeProtocol;
+		
+		GroupTheme groupTheme;
+		
+		
+		
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 
 		File file = new File(tmpDir+ "/DataShaperExcel.xls"); 
@@ -111,70 +195,13 @@ public class ImportExcel extends PluginModel<Entity>
 				
 			System.out.println(sheet.getCell(0, 0).getContents());
 			
-			List<Measurement> measurements = new ArrayList<Measurement>();
-			
-			List<Protocol> protocols = new ArrayList<Protocol>();
-			
-			List<ThemeProtocol> themeProtocols = new ArrayList<ThemeProtocol>();
-			
-			List<GroupTheme> groupThemes = new ArrayList<GroupTheme>();
-			
-			List<OntologyTerm> ontologyTerms = new ArrayList<OntologyTerm>();
-			
-			List<Ontology> ontologies = new ArrayList<Ontology>();
-			
-			List<Code> codes = new ArrayList<Code>();
 			
 			int row = sheet.getRows();
 			
 			int column = sheet.getColumns();
 			
 			System.out.println(row);
-			
-			Measurement mea;
-			
-			OntologyTerm ontology_Term;
-			
-			Ontology ontology;
-			
-			Protocol prot;
-			
-			Code code;
-			
-			ThemeProtocol themeProtocol;
-			
-			GroupTheme groupTheme;
-			
-			List<String> ProtocolFeatures = new ArrayList<String>();
-			
-			List<String> ThemeProtocols = new ArrayList<String> ();
-			
-			List<String> GroupThemes = new ArrayList<String>();
-			
-			String protocolName = "";
-			
-			String ThemeProtocolname = "";
-			
-			String GroupThemeName = "";
-			
-			String measurementName = "";
-
-			boolean MeasurementTemporal = false;
-			
-			List<ObservableFeature> observableFeatures = new ArrayList<ObservableFeature>();  
-			List<ObservedValue> observedValues  = new ArrayList<ObservedValue>();
-			List<ObservationTarget> observationTargets = new ArrayList<ObservationTarget>();
-			
-			HashMap<String, List> linkProtocolMeasurement = new HashMap<String, List>();
-			
-			HashMap<String, List> linkThemeProtocol = new HashMap<String, List>();
-			
-			HashMap<String, List> linkGroupTheme = new HashMap<String, List>();
-			
-			HashMap<String, List> linkCodeMeasurement = new HashMap<String, List>();
-			
-			HashMap<String, String> linkUnitMeasurement = new HashMap<String, String>();
-			
+						
 			for (int i = 1; i < row - 1; i++){
 				
 				mea = new Measurement();
@@ -354,36 +381,44 @@ public class ImportExcel extends PluginModel<Entity>
 							ObservationElement oe = new ObservationElement();
 							
 							oe.setId(i);
+							System.out.println("investigation id ........... " + inv.getId()); 
 							oe.setInvestigation(inv.getId());
+							oe.setName("interpretation");
 
 							of.setId(i);
 							of.setDescription(intepretation);  
 							of.setName("interpretation");      
 							of.setInvestigation(inv.getId());
-							observableFeatures.add(of);
 							//TODO of.setOntologyReference(_ontologyReference);
-							
-							ov.setFeature(of);  
-							
-							ov.setInvestigation(inv);
-							//TODO ov.setOntologyReference(_ontologyReference);
-							//TODO ov.setProtocolApplication(_protocolApplication);
 							
 							ObservationTarget target = new ObservationTarget();
 							target.setId(i);
 							target.setInvestigation(inv.getId());
+							target.setName(Integer.toString(i));
 							
 							ov.setTarget(target);
+							ov.setFeature(oe);
+							ov.setFeature(of);  
+							ov.setInvestigation(inv);
+							ov.setRelation(oe);
 							
-							observedValues.add(ov);
+							//TODO ov.setOntologyReference(_ontologyReference);
+							//TODO ov.setProtocolApplication(_protocolApplication);
 							
 							try {
 								ov.set(intepretation, ov);
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
-							observedValues.add(ov);
 							
+							observableFeatures.add(of);
+							observedValues.add(ov);
+							observationTargets.add(target);
+							observationElements.add(oe);
+							
+							//link observedvalue, observationelement
+							System.out.println("observed value>>> "+ ov.getValue() + "observation element >>"+ oe.getName());
+							linkObservedValueObservationElement.put(ov.getLabelValue(), oe.getName());
 							
 						}
 					}
@@ -409,23 +444,7 @@ public class ImportExcel extends PluginModel<Entity>
 					ontologies.add(ontology);
 			}
 			
-			List<Measurement> addedMeasurements = new ArrayList<Measurement>();
 			
-			List<Protocol> addedProtocols = new ArrayList<Protocol>();
-			
-			List<Code> addedCodes = new ArrayList<Code>();
-			
-			List<Protocol> addedThemes = new ArrayList<Protocol>();
-			
-			List<ThemeProtocol> addedThemeProtocols = new ArrayList<ThemeProtocol>();
-			
-			List<GroupTheme> addedGroupThemes = new ArrayList<GroupTheme>();
-			
-			List<ObservableFeature> addedObservableFeatures = new ArrayList<ObservableFeature>();
-			
-			List<ObservedValue> addedObservedValues = new ArrayList<ObservedValue>();
-			
-			List<ObservationTarget> addedObservationTarget = new ArrayList<ObservationTarget>();
 			
 			for(Measurement measure : measurements){
 				
@@ -495,6 +514,12 @@ public class ImportExcel extends PluginModel<Entity>
 					addedObservationTarget.add(ot);
 				}
 			}
+			
+			for (ObservationElement oe: observationElements) {
+				if (observationElements.contains(oe)) {
+					addedObservationElements.add(oe);
+				}
+			}
 			try {
 				
 				db.add(ontologies);
@@ -502,6 +527,7 @@ public class ImportExcel extends PluginModel<Entity>
 
 				System.out.println("Just before observable features are insertd in db : >>>>" + addedObservableFeatures);
 				
+				db.add(addedObservationElements);
 				db.add(addedObservationTarget);
 				db.add(addedObservableFeatures);
 				db.add(addedObservedValues);
@@ -579,6 +605,15 @@ public class ImportExcel extends PluginModel<Entity>
 				}
 				
 				db.add(addedCodes);
+				
+				for (ObservedValue ov: observedValues) {
+					String obsElement = linkObservedValueObservationElement.get(ov);
+					List<ObservationElement> tmp = db.find(ObservationElement.class, new QueryRule(ObservationElement.NAME, Operator.IN, obsElement));
+					
+					//for (ObservationElement oe: tmp) oe.set .setFeature(oe);
+					
+				}
+				
 			} catch (DatabaseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
