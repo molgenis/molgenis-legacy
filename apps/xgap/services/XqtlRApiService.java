@@ -19,6 +19,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.FrontControllerAuthenticator;
 import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
@@ -45,6 +46,35 @@ public class XqtlRApiService implements MolgenisService
 		Utils.console("starting RApiServlet");
 		OutputStream outs = response.getResponse().getOutputStream();
 		PrintStream out = new PrintStream(new BufferedOutputStream(outs), false, "UTF8"); // 1.4
+		
+		
+		System.out.println("R API request: " + request.toString());
+		
+		if(request.getString("usr") != null && request.getString("pw") != null )
+		{
+			String usr = request.getString("usr");
+			String pw = request.getString("pw");
+			
+			System.out.println("going to log in with " + usr + " / " + pw);
+			
+			boolean login = FrontControllerAuthenticator.login(request, usr, pw);
+			String s = login ? "Welcome, " + usr + "!" : "User or password unknown.";
+			response.getResponse().setStatus(HttpServletResponse.SC_OK);		
+			response.getResponse().setContentLength(s.length());
+			response.getResponse().setCharacterEncoding("UTF8");
+			response.getResponse().setContentType("text/plain");
+			out.print(s);
+			out.flush();
+			out.close();
+			response.getResponse().flushBuffer();
+			return;
+		}
+		
+		
+		
+		
+		
+		
 		Utils.console("URI path: " +request.getRequest().getRequestURI());
 		String fullServicePath = request.getRequest().getServletPath() + request.getServicePath();
 		Utils.console("servlet path: " +fullServicePath);
