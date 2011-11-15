@@ -18,6 +18,9 @@
           <property name="javax.persistence.validation.mode" value="none"/>    
           <property name="hibernate.dialect" value="org.hibernate.dialect.${options.hibernateDialect}"/>
           <property name="hibernate.show_sql" value="false"/>
+          <property name="hibernate.query.substitutions" value="true=1, false=0"/>
+          <property name="hibernate.search.default.directory_provider" value="filesystem"/>
+          <property name="hibernate.search.default.indexBase" value="/var/lucene/indexes"/>
           
           <!--
           Automatically validates or exports schema DDL to the database when the SessionFactory is created. 
@@ -45,6 +48,9 @@
           <property name="javax.persistence.validation.mode" value="none"/>    
           <property name="hibernate.dialect" value="org.hibernate.dialect.${options.hibernateDialect}"/>
           <property name="hibernate.show_sql" value="false"/>
+          <property name="hibernate.query.substitutions" value="true=1, false=0"/>
+          <property name="hibernate.search.default.directory_provider" value="filesystem"/>
+          <property name="hibernate.search.default.indexBase" value="/var/lucene/indexes"/>
 	    
           <!--
           Automatically validates or exports schema DDL to the database when the SessionFactory is created. 
