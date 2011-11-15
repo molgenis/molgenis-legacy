@@ -357,7 +357,6 @@ public abstract class FormController<E extends Entity> extends
 				//create the rule
 				QueryRule rule = new QueryRule(request.getString("__filter_attribute" + getThisFilter),
 						operator, value);
-				System.out.println("** ADDING RuLE : " + rule.toString());
 				
 				rules.add(rule);
 			}
