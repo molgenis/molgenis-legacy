@@ -8,25 +8,36 @@ import org.molgenis.framework.security.Login;
 
 public class FrontControllerAuthenticator
 {
-	public boolean login(MolgenisRequest request, String username, String password)
-			throws Exception
+	public static boolean login(MolgenisRequest request, String username,
+			String password)
 	{
-		//try to login
-		Database db = request.getDatabase();
-		boolean loggedIn = db.getSecurity().login(db, username, password);
-		
-		if(loggedIn)
+		System.out.println("FrontControllerAuthenticator called");
+		try
 		{
-			//TODO: Missing redirect???
-			//Login login = new org.molgenis.auth.DatabaseLogin(request.getDatabase(), "ClusterDemo");
+			// try to login
+			Database db = request.getDatabase();
+			boolean loggedIn = db.getSecurity().login(db, username, password);
 			
-			//store login in session
-			Login login = db.getSecurity();
-			request.getRequest().getSession().setAttribute("login", login);
-			return true;
+			System.out.println("FrontControllerAuthenticator loggedIn: " + loggedIn);
+
+			if (loggedIn)
+			{
+				//TODO: Missing redirect???
+				//Login login = new org.molgenis.auth.DatabaseLogin(request.getDatabase(), "ClusterDemo");
+
+				// store login in session
+				Login login = db.getSecurity();
+				request.getRequest().getSession().setAttribute("login", login);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
-		else
+		catch (Exception e)
 		{
+			e.printStackTrace();
 			return false;
 		}
 	}

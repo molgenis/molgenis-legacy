@@ -214,11 +214,19 @@ MOLGENIS.update <- function(entityName, dataMatrix, action, is_matrix=F, row_typ
 
 MOLGENIS.login <- function(username, password)
 {
-servlet <- paste( .MOLGENIS$servletURL, "/api/add", sep="" )
-curl_params = list(data_action = "__remote__login__request",data_input = username,data_silent = password)
-webResponse <- postForm( servlet, .params = curl_params)
-handle <- textConnection(webResponse)
-status <- readLines(handle, 1)
-cat(status, "\n")
-close( handle )
+	ch <- getCurlHandle()
+	curlSetOpt(curl = ch,
+            ssl.verifypeer = FALSE,
+            useragent = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13",
+            timeout = 60,
+            followlocation = TRUE,
+            cookiejar = "./cookies",
+            cookiefile = "./cookies")
+	servlet <- paste( .MOLGENIS$servletURL, "/api/R", sep="" )
+	curlParams = list(usr = username, pw = password)
+	response <- postForm( servlet, .params = curlParams, curl = ch)
+	handle <- textConnection(response)
+	status <- readLines(handle, 1)
+	cat(status, "\n")
+	close( handle )
 }
