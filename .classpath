@@ -516,5 +516,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/hibernate/hibernate-search-3.4.1.Final.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-core-3.0.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
