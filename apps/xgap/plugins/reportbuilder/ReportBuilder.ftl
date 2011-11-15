@@ -132,7 +132,7 @@ Present in these matrices:<br><br>
 	
 	<#if ml.rowCorr??>
 		<#list ml.rowCorr?keys as key>
-			${key} has row corr ${ml.rowCorr[key]}<br>
+			${key} has row corr <#if ml.rowCorr[key]??>${ml.rowCorr[key]}<#else>N/A</#if> <br>
 		</#list>
 	</#if>
 	

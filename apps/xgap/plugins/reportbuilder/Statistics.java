@@ -29,7 +29,7 @@ public class Statistics
 		if (isRow)
 		{
 			dimNames = i.getRowNames();
-			i.getRowIndexForName(name);
+			self = i.getRowIndexForName(name);
 		}
 		else
 		{
