@@ -4,13 +4,15 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.List;
+import java.util.Date;
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
@@ -91,6 +93,8 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 					request.setServicePath(p);
 					services.get(p).handleRequest(request, response);
 					manageConnection(connId);
+					
+					printSessionInfo(req.getSession());
 				}
 				
 				return;
@@ -137,6 +141,25 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 		connections.remove(connId);
 		
 		System.out.println("# of active connections: " + connections.size());
+	}
+	
+	private void printSessionInfo(HttpSession session)
+	{
+		Date created = new Date(session.getCreationTime());
+		Date accessed = new Date(session.getLastAccessedTime());
+		System.out.println("SESSION ID " + session.getId());
+		//System.out.println("SESSION Created: " + created);
+		//System.out.println("SESSION Last Accessed: " + accessed);
+
+		// print session contents
+
+		Enumeration e = session.getAttributeNames();
+		while (e.hasMoreElements())
+		{
+			String name = (String) e.nextElement();
+			String value = session.getAttribute(name).toString();
+			System.out.println("SESSION_ATTRIB " + name + " = " + value);
+		}
 	}
 
 	
