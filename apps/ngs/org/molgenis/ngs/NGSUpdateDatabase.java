@@ -7,6 +7,6 @@ public class NGSUpdateDatabase
 {
 	public static void main(String[] args) throws Exception
 	{
-		new Molgenis("handwritten/apps/org/molgenis/ngs/ngs.properties").updateDb();
+		new Molgenis("apps/ngs/org/molgenis/ngs/ngs.properties").updateDb();
 	}
 }

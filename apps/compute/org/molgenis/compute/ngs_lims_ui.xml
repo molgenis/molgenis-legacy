@@ -8,7 +8,7 @@
 			</menu>
 		</form>
 		<form name="LimsWorkflows" label="Workflows" entity="Workflow"
-			hide_fields="Investigation,OntologyReference">
+			hide_fields="Investigation,OntologyReference" compact_view="name,description">
 			<form name="LimsWorkflowElements" label="Workflow Elements"
 				entity="WorkflowElement" />
 		</form>
