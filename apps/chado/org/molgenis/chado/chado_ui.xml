@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="chado" label="Chado Database">
+	<plugin name="MolgenisHeader" type="org.molgenis.chado.ui.Header"/>
+	<menu name="Management" position="left">
+		<form entity="feature" name="feature"/>
+		<form entity="feature_cvterm" name="feature_cvterm"/>
+		<form entity="feature_cvterm_dbxref" name="feature_cvterm_dbxref"/>
+		<form entity="feature_cvterm_pub" name="feature_cvterm_pub"/>
+		<form entity="feature_cvtermprop" name="feature_cvtermprop"/>
+		<form entity="feature_dbxref" name="feature_dbxref"/>
+		<form entity="feature_pub" name="feature_pub"/>
+		<form entity="feature_pubprop" name="feature_pubprop"/>
+		<form entity="feature_relationship" name="feature_relationship"/>
+		<form entity="feature_relationship_pub" name="feature_relationship_pub"/>
+		<form entity="feature_relationshipprop" name="feature_relationshipprop"/>
+		<form entity="feature_relationshipprop_pub" name="feature_relationshipprop_pub"/>
+		<form entity="feature_synonym" name="feature_synonym"/>
+		<form entity="featureloc" name="featureloc"/>
+		<form entity="featureloc_pub" name="featureloc_pub"/>
+		<form entity="featureprop" name="featureprop"/>
+		<form entity="featureprop_pub" name="featureprop_pub"/>
+<!-- 	<form entity="synonym_" name="synonym"/>-->
+		<form entity="pub" name="pub"/>
+		<form entity="cv" name="cv"/>
+		<form entity="cvterm" name="cvterm"/>
+		<form entity="dbxref" name="dbxref"/>
+		<form entity="db" name="db"/>
+		<form entity="organism" name="organism"/>
+	</menu>
+</molgenis>
