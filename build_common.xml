@@ -100,10 +100,23 @@ plus passing of properties
 			<fileset dir="${output_sql}" includes="**/*.sql" />
 			<fileset dir="${output_src}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
 		</copy>
-
-
+		
+		<!-- Copy persistence.xml to rigth location if it's specified in *.properties as persistence_xml_location-->
+		<antcall target="copy-persistence.xml"/>			
 	</target>
 
+	<target name="check_persistence_xml_locaton">
+		<echo>${persistence_xml_location}</echo>
+	    <condition property="condition">
+	    	 <isset property="persistence_xml_location"/>
+	    </condition>
+	</target>
+	
+	<target name="copy-persistence.xml" depends="check_persistence_xml_locaton" if="condition">
+		<copy file="${persistence_xml_location}" todir="${build.dir}/META-INF/" overwrite="true"/>
+		<echo>persistence.xml copied from ${persistence_xml_location} to ${build.dir}/META-INF/</echo>
+	</target>
+	
 	<target name="compile">
 
 		<pathconvert property="app_src" refid="app.class.path" pathsep=":">
