@@ -317,83 +317,57 @@ public abstract class FormController<E extends Entity> extends
 			throws DatabaseException, MolgenisModelException
 	{
 		FormModel<E> model = getModel();
+		
+		List<QueryRule> rules = new ArrayList<QueryRule>();
 
-		Operator operator = QueryRule.Operator.valueOf(request
-				.getString("__filter_operator"));
-		//System.out.println(">>>>>>>>>>>>Operator" + operator);
-		String value = request.getString("__filter_value");
-		if (StringUtils.isEmpty(value))
-		{ // to prevent null-pointer exception
-			value = "";
-		}
-
-		//System.out.println(">>>>>>>>>>>>value" + value);
-		// automatically add LIKE delimiters %
-		if (operator.equals(Operator.LIKE) && !value.contains("%"))
+		//support for multiple filters in a request URL
+		//example and syntax: get all markers between basepair position 150 and 300:
+		//?__target=Markers&__action=filter_set&__filter_attribute=Marker_bpstart&__filter_operator=GREATER&__filter_value=150&__filter_attribute1=Marker_bpstart&__filter_operator1=LESS&__filter_value1=300
+		//keep adding numbers for multiple filters, e.g. __filter_attribute2, __filter_attribute3 and so on
+		for(int filterIndex = 0; filterIndex < 100; filterIndex ++)
 		{
-			value = "%" + value + "%";
+			//for the first filter, usually the only one, keep the normal 'getters':
+			//e.g. "__filter_attribute" and not "__filter_attribute1"
+			//for subsequent ones, add a number to get multiple filters from the request
+			String getThisFilter = "";
+			if(filterIndex != 0)
+			{
+				getThisFilter = filterIndex + "";
+			}
+			
+			try{
+				//get the operator
+				Operator operator = QueryRule.Operator.valueOf(request
+						.getString("__filter_operator" + getThisFilter));
+	
+				//get the value
+				String value = request.getString("__filter_value" + getThisFilter);
+				
+				if (StringUtils.isEmpty(value))
+				{ // to prevent null-pointer exception
+					value = "";
+				}
+	
+				// automatically add LIKE delimiters %
+				if (operator.equals(Operator.LIKE) && !value.contains("%"))
+				{
+					value = "%" + value + "%";
+				}
+			
+				//create the rule
+				QueryRule rule = new QueryRule(request.getString("__filter_attribute" + getThisFilter),
+						operator, value);
+				System.out.println("** ADDING RuLE : " + rule.toString());
+				
+				rules.add(rule);
+			}
+			catch(Exception e)
+			{
+				break;
+			}
 		}
-
-		// if (request.getString("__filter_attribute").equals("all")) {
-		// String entityLabel = request.getString("__target");
-		// String controllerClassName = entityLabel + "FormController";
-		// //System.out.println(">>>>>>>getMetaData().getClass" +
-		// db.getMetaData());
-		// Class<? extends Entity> entityClass = this.getEntityClass();
-		//
-		//
-		// //System.out.println(">>>>>>>getMetaData().getClass" +
-		// entityClass.getSuperclass().toString());
-		//
-		// //entityClass.getClassLoader();
-		//
-		// //entityClass.getSuperclass();
-		// //entityClass.getSuperclass().getTypeParameters();
-		// //System.out.println(">>>>>>> getSimpleName " +
-		// entityClass.getSuperclass().getSimpleName());
-		//
-		// // 1 - get the possible fields for the entity that were looking at
-		// System.out.println(">>>>>>>entityLabel" + entityLabel);
-		// System.out.println(">>>>>>>entityControllerClassName"+
-		// entityClass.getSuperclass().getTypeParameters().toString());
-		// //org.molgenis.model.elements.Entity eType =
-		// db.getMetaData().getEntity(entityName);
-		// org.molgenis.model.elements.Entity eType =
-		// db.getMetaData().getEntity(entityClass.getSimpleName()); //TODO
-		//
-		// QueryRule orRule = new QueryRule(Operator.OR);
-		// boolean first = true;
-		//
-		// // 2 - iterate fields and build the queryrules - if field != "__Type"
-		// for (Field field : eType.getFields()) {
-		// System.out.println("*** FIELD NAME : " +
-		// field.getName().toLowerCase());
-		// if (!field.getName().equals("__Type") ) {
-		//
-		// //getsSearchField will map the field to field_name in case of
-		// xref/mref
-		// QueryRule fieldRule = new QueryRule(field.getName(), operator,
-		// value);
-		// System.out.println("*** QUERYRULE : " + fieldRule.toString());
-		// //add 'or' except for first filter rule
-		// if(first)
-		// first = false;
-		// else
-		// model.getUserRules().add(orRule);
-		// model.getUserRules().add(fieldRule);
-		// }
-		// }
-		// }else if
-		// (request.getString("__filter_attribute").equals("searchIndex")) {
-		// //TODO: plugins.LuceneIndex.DBIndexPlugin.searchIndex()
-		// }
-		// else{
-		//System.out.println("*** ELSE : ");
-		QueryRule rule = new QueryRule(request.getString("__filter_attribute"),
-				operator, value);
-		//System.out.println(">>>>>>>>>>>>rule" + rule);
-		model.getUserRules().add(rule);
-		// }
+		
+		model.getUserRules().addAll(rules);
 
 		// reload the filters...
 		pager.resetFilters();
