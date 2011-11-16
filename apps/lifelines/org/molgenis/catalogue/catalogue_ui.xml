@@ -18,9 +18,7 @@
 			<form name="OntologyTerm" entity="OntologyTerm" label="Ontology Term" />
 		</menu>
 		
-		
-		
-		<plugin name="JqueryTreePlugin" type="plugins.JqueryTree.JqueryTreePlugin" label="OntologyTerms" />  -->
+		<plugin name="LLcatalogueTreePlugin" type="plugins.LLcatalogueTree.LLcatalogueTreePlugin" label="OntologyTerms" />  -->
 		
 		<plugin name="ImportExcel" type="plugins.data.ImportExcel" label="Import DataShaper data"  />
 		<plugin name="OwlToPheno" label="import owl" type="plugins.data.importOwlToPheno" />
