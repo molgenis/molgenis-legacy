@@ -380,10 +380,10 @@ public class ImportExcel extends PluginModel<Entity>
 							ObservedValue ov = new ObservedValue();
 							ObservationElement oe = new ObservationElement();
 							
-							oe.setId(i);
+							oe.setId(i);  //check why the null ones are inserted. 
 							System.out.println("investigation id ........... " + inv.getId()); 
-							oe.setInvestigation(inv.getId());
-							oe.setName("interpretation");
+							oe.setInvestigation(inv.getId());  //TODO
+							oe.setName(intepretation);
 
 							of.setId(i);
 							of.setDescription(intepretation);  
