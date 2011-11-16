@@ -111,11 +111,7 @@ public class ImportExcel extends PluginModel<Entity>
 
 		boolean MeasurementTemporal = false;
 		
-		List<ObservableFeature> observableFeatures = new ArrayList<ObservableFeature>();  
 		List<ObservedValue> observedValues  = new ArrayList<ObservedValue>();
-		List<ObservationTarget> observationTargets = new ArrayList<ObservationTarget>();
-		List<ObservationElement> observationElements = new ArrayList<ObservationElement>();
-
 		
 		HashMap<String, String> linkObservedValueObservationElement = new HashMap<String, String>();
 		
@@ -135,20 +131,12 @@ public class ImportExcel extends PluginModel<Entity>
 		
 		List<Code> addedCodes = new ArrayList<Code>();
 		
-		List<Protocol> addedThemes = new ArrayList<Protocol>();
-		
 		List<ThemeProtocol> addedThemeProtocols = new ArrayList<ThemeProtocol>();
 		
 		List<GroupTheme> addedGroupThemes = new ArrayList<GroupTheme>();
-		
-		List<ObservableFeature> addedObservableFeatures = new ArrayList<ObservableFeature>();
-		
+				
 		List<ObservedValue> addedObservedValues = new ArrayList<ObservedValue>();
-		
-		List<ObservationTarget> addedObservationTarget = new ArrayList<ObservationTarget>();
-		
-		List<ObservationElement> addedObservationElements = new ArrayList<ObservationElement>();
-		
+			
 		List<Measurement> measurements = new ArrayList<Measurement>();
 		
 		List<Protocol> protocols = new ArrayList<Protocol>();
@@ -379,33 +367,11 @@ public class ImportExcel extends PluginModel<Entity>
 							
 							if ((intepretation[k]!="")) {
 
-								System.out.println("Iteration>>>>>>>>>>: "+ k);
-								ObservableFeature of = new ObservableFeature();
 								ObservedValue ov = new ObservedValue();
-								ObservationElement oe = new ObservationElement();
-								
-								oe.setId(i);  //check why the null ones are inserted. 
-								System.out.println("investigation id ........... " + inv.getId()); 
-								oe.setInvestigation(inv.getId());  //TODO
-								oe.setName(intepretation[k].trim());
-	
-								of.setId(i);
-								of.setDescription(intepretation[k].trim());  
-								of.setName("interpretation");      
-								of.setInvestigation(inv.getId());
-								//TODO of.setOntologyReference(_ontologyReference);
-								
-								ObservationTarget target = new ObservationTarget();
-								target.setId(i);
-								target.setInvestigation(inv.getId());
-								target.setName(Integer.toString(i));
-								
-								ov.setTarget(target);
-								ov.setFeature(oe);
-								ov.setFeature(of);  
+								ov.setTarget(mea);
 								ov.setInvestigation(inv);
-								ov.setRelation(oe);
-								
+						
+								System.out.println("DEBUG:>>> measurement for observed value:"+  mea);
 								//TODO ov.setOntologyReference(_ontologyReference);
 								//TODO ov.setProtocolApplication(_protocolApplication);
 								
@@ -414,18 +380,9 @@ public class ImportExcel extends PluginModel<Entity>
 								} catch (Exception e) {
 									e.printStackTrace();
 								}
-								if(!observableFeatures.contains(of))
-								observableFeatures.add(of);
 								if(!observedValues.contains(ov))
 								observedValues.add(ov);
-								if(!observationTargets.contains(target))
-								observationTargets.add(target);
-								if(!observationElements.contains(oe))
-								observationElements.add(oe);
 								
-								//link observedvalue, observationelement
-								System.out.println("observed value>>> "+ ov.getValue() + "observation element >>"+ oe.getName());
-								linkObservedValueObservationElement.put(ov.getLabelValue(), oe.getName());
 							}								
 						}
 					}
@@ -502,46 +459,26 @@ public class ImportExcel extends PluginModel<Entity>
 				}
 			}
 			
-			for (ObservableFeature of: observableFeatures) {
-				if (observableFeatures.contains(of)) {
-					addedObservableFeatures.add(of);
-				}
-			}
+			
 			
 			for (ObservedValue ov: observedValues) {
-				if (observedValues.contains(ov)) {
+				if (!observedValues.contains(ov)) {
 					addedObservedValues.add(ov);
 				}
 			}
 			
-			for (ObservationTarget ot: observationTargets) {
-				if (observationTargets.contains(ot)) {
-					addedObservationTarget.add(ot);
-				}
-			}
 			
-			for (ObservationElement oe: observationElements) {
-				if (observationElements.contains(oe)) {
-					addedObservationElements.add(oe);
-				}
-			}
 			try {
 				
 				
 
-				System.out.println("Just before observable features are insertd in db : >>>>" + addedObservableFeatures);
-				System.out.println("Just before observable features are insertd in db : >>>>" + addedObservationElements);
+				System.out.println("Just before ontologies are insertd in db : >>>>" + ontologies);
+				System.out.println("Just before addedObservedValues  are insertd in db : >>>>" + addedObservedValues);
 				
 				db.add(ontologies);
 				
 				db.add(ontologyTerms);
-				
-				db.add(addedObservationElements);
-				
-				db.add(addedObservationTarget);
-				
-				db.add(addedObservableFeatures);
-				
+								
 				db.add(addedObservedValues);
 				
 				//link Unit(ontologyTerm) to measurements 
