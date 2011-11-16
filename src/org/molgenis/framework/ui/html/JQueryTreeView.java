@@ -6,9 +6,9 @@ import org.molgenis.util.SimpleTree;
 import org.molgenis.util.Tree;
 
 
-public class JQueryTreeView extends HtmlWidget
+public class JQueryTreeView<E> extends HtmlWidget
 {
-	private SimpleTree treeData;
+	private SimpleTree<JQueryTreeViewElement> treeData;
 
 	public JQueryTreeView(String name, SimpleTree treeData)
 	{
