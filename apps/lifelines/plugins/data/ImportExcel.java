@@ -371,55 +371,57 @@ public class ImportExcel extends PluginModel<Entity>
 						//Missing ontology also code ..
 					} else if (j==10) {
 						//added the rest of the fields as observable features 
-						String intepretation = sheet.getCell(j,i).getContents();
-						System.out.println("intepretation ........... " + intepretation); 
+						String cell = sheet.getCell(j,i).getContents();
+						String[] intepretation = cell.split("|");
+						System.out.println("Size, intepretation ........... " + intepretation.length +"...." +intepretation); 
 
-						
-						if (!intepretation.isEmpty()) {
-							ObservableFeature of = new ObservableFeature();
-							ObservedValue ov = new ObservedValue();
-							ObservationElement oe = new ObservationElement();
-							
-							oe.setId(i);  //check why the null ones are inserted. 
-							System.out.println("investigation id ........... " + inv.getId()); 
-							oe.setInvestigation(inv.getId());  //TODO
-							oe.setName(intepretation);
-
-							of.setId(i);
-							of.setDescription(intepretation);  
-							of.setName("interpretation");      
-							of.setInvestigation(inv.getId());
-							//TODO of.setOntologyReference(_ontologyReference);
-							
-							ObservationTarget target = new ObservationTarget();
-							target.setId(i);
-							target.setInvestigation(inv.getId());
-							target.setName(Integer.toString(i));
-							
-							ov.setTarget(target);
-							ov.setFeature(oe);
-							ov.setFeature(of);  
-							ov.setInvestigation(inv);
-							ov.setRelation(oe);
-							
-							//TODO ov.setOntologyReference(_ontologyReference);
-							//TODO ov.setProtocolApplication(_protocolApplication);
-							
-							try {
-								ov.set(intepretation, ov);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-							
-							observableFeatures.add(of);
-							observedValues.add(ov);
-							observationTargets.add(target);
-							observationElements.add(oe);
-							
-							//link observedvalue, observationelement
-							System.out.println("observed value>>> "+ ov.getValue() + "observation element >>"+ oe.getName());
-							linkObservedValueObservationElement.put(ov.getLabelValue(), oe.getName());
-							
+						if (!(intepretation.length == 0)) {
+							for (int k=0; k!=intepretation.length; k++) {
+								System.out.println("Iteration>>>>>>>>>>: "+ k);
+								ObservableFeature of = new ObservableFeature();
+								ObservedValue ov = new ObservedValue();
+								ObservationElement oe = new ObservationElement();
+								
+								oe.setId(i);  //check why the null ones are inserted. 
+								System.out.println("investigation id ........... " + inv.getId()); 
+								oe.setInvestigation(inv.getId());  //TODO
+								oe.setName(intepretation[k]);
+	
+								of.setId(i);
+								of.setDescription(intepretation[k]);  
+								of.setName("interpretation");      
+								of.setInvestigation(inv.getId());
+								//TODO of.setOntologyReference(_ontologyReference);
+								
+								ObservationTarget target = new ObservationTarget();
+								target.setId(i);
+								target.setInvestigation(inv.getId());
+								target.setName(Integer.toString(i));
+								
+								ov.setTarget(target);
+								ov.setFeature(oe);
+								ov.setFeature(of);  
+								ov.setInvestigation(inv);
+								ov.setRelation(oe);
+								
+								//TODO ov.setOntologyReference(_ontologyReference);
+								//TODO ov.setProtocolApplication(_protocolApplication);
+								
+								try {
+									ov.set(intepretation[k], ov);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+								
+								observableFeatures.add(of);
+								observedValues.add(ov);
+								observationTargets.add(target);
+								observationElements.add(oe);
+								
+								//link observedvalue, observationelement
+								System.out.println("observed value>>> "+ ov.getValue() + "observation element >>"+ oe.getName());
+								linkObservedValueObservationElement.put(ov.getLabelValue(), oe.getName());
+							}								
 						}
 					}
 					
