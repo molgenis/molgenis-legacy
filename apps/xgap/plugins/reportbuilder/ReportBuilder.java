@@ -120,6 +120,7 @@ public class ReportBuilder extends PluginModel
 					
 					String dataType = this.model.getSelectedAnnotationTypeAndNr();
 					String entityName = action.substring("disambig_".length());
+					this.model.setSelectedName(entityName);
 					
 					Class<? extends Entity> entityClass = db.getClassForName(dataType);
 					List<? extends Entity> result = db.find(entityClass, new QueryRule(ObservationElement.NAME, Operator.EQUALS, entityName));
@@ -195,7 +196,7 @@ public class ReportBuilder extends PluginModel
 						//make a plot
 						try{
 							File img = MakeRPlot.plot(d, instance, null, name, "col", plotType, 800, 600);
-							ml.setRowImg(img.getName());
+							ml.setColImg(img.getName());
 						}catch(Exception e)
 						{
 							e.printStackTrace();

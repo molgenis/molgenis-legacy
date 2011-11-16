@@ -73,11 +73,11 @@ public class Statistics
 
 		TreeMap<String, Double> sorted_map = new TreeMap(bvc);
 		sorted_map.putAll(map);
-		
-		for (String key : sorted_map.keySet())
-		{
-			System.out.println("k: " + key + ", v: " + sorted_map.get(key));
-		}
+//		
+//		for (String key : sorted_map.keySet())
+//		{
+//			System.out.println("k: " + key + ", v: " + sorted_map.get(key));
+//		}
 
 		return sorted_map;
 	}

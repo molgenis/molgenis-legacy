@@ -31,118 +31,242 @@
 	<#assign modelExists = false>
 </#if>
 
-<br><br><br>
-
-Search box will find substrings (e.g. 'drox' will match 'Hydroxypropyl' and 'Hydroxybutyl') but is case-sensitive, so 'hydro' won't match but 'Hydro' will.<br><br>
-
-Select
-<select name="dataTypeSelect">
-	<#list model.annotationTypeAndNr?keys as key>
-	<option value="${key}" <#if model.selectedAnnotationTypeAndNr?? && model.selectedAnnotationTypeAndNr == key>selected="selected"</#if>>${key} (${model.annotationTypeAndNr[key]})</option>
-	</#list>
-</select>
-
-<input type="text" name="entityName" <#if model.selectedName??>value="${model.selectedName}"</#if> />
-
-<input type="submit" value="Go" onclick="document.forms.${screen.name}.__action.value = 'buildReport'; document.forms.${screen.name}.submit();"/>
-
-<br><br><br>
-
-<#if model.disambiguate??>
-
-Which ${model.selectedAnnotationTypeAndNr} did you mean?
-<ul>
-	<#list model.disambiguate as d>
-		<li><a href="#" onclick="document.forms.${screen.name}.__action.value = 'disambig_${d.name}'; document.forms.${screen.name}.submit();">${d.name}</a></li>
-	</#list>
-</ul>
-
-<br><br><br>
-</#if>
-
-
-<#if model.report??>
-
-${model.report.entity.toString()}
-<#assign r = model.report.entity>
-
-<table cellpadding="5">
+<table cellpadding="30">
 	<tr>
-
-		<#list r.getFields() as f>
-			<#if f != "__Type">
-			<td><b>${f}</b></td>
-			</#if>
-		</#list>
+		<td>
+			<h1>Report builder</h1>
+			<ul>
+			<li>Enter the name of your concept of interest and click 'Go'.</li>
+			<li>The search will find part of names (e.g. 'drox' will match 'Hydroxypropyl' and 'Hydroxybutyl'), though is case-sensitive, so 'hydro' does not match, but 'Hydro' will.</li>
+			<li>You will be prompted to disambiguate your search term if multiple matches occur.</li>
+			</ul>
+		</td>
 	</tr>
 	<tr>
-	
-	<#list r.getFields() as f>
-			<#if f != "__Type">
-			<td>
-				<#if r.get(f)?exists>
-					<#if r.get(f)?is_string || r.get(f)?is_date || r.get(f)?is_number>
-						${r.get(f)}
-					<#elseif r.get(f)?is_boolean>
-						<#if r.get(f) == true>true<#else>false</#if>
-					<#elseif r.get(f)?is_enumerable>
-						<#list r.get(f) as i>
-							${i} 
-							<#if i_index == 3>
-							...<#break>
-							</#if>
-						</#list>
+		<td>
+			Select
+			<select name="dataTypeSelect">
+				<#list model.annotationTypeAndNr?keys as key>
+				<option value="${key}" <#if model.selectedAnnotationTypeAndNr?? && model.selectedAnnotationTypeAndNr == key>selected="selected"</#if>>${key} (${model.annotationTypeAndNr[key]})</option>
+				</#list>
+			</select>
+			
+			<input type="text" name="entityName" <#if model.selectedName??>value="${model.selectedName}"</#if> />
+			
+			<input type="submit" value="Go" onclick="document.forms.${screen.name}.__action.value = 'buildReport'; document.forms.${screen.name}.submit();"/>
+		</td>
+	</tr>
+	<#if model.disambiguate??>
+	<tr>
+		<td>
+			<h2>Which ${model.selectedAnnotationTypeAndNr} did you mean?</h2>
+			<ul>
+				<#list model.disambiguate as d>
+					<li><a href="#" onclick="document.forms.${screen.name}.__action.value = 'disambig_${d.name}'; document.forms.${screen.name}.submit();">${d.name}</a></li>
+				</#list>
+			</ul>
+		</td>
+	</tr>
+	</#if>
+</table>
+
+<#if model.report??>
+<#assign r = model.report.entity>
+
+<table cellpadding="30">
+	<tr>
+		<td>
+			<h1>${model.selectedAnnotationTypeAndNr} "${model.selectedName}"</h1>
+			<h2>Record information</h2>
+			<@printEntity r=r/>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<h2>Present in these matrices:</h2>
+			<#list model.report.matrices as ml>
+				<h2>"${ml.data.name}"</h2>
+				<@printEntity r=ml.data/>
+				
+				<br>
+				<table cellpadding="3" border="1" style="width:700px;">
+					<tr class="form_listrow1">
+						<td>
+							Total number of rows
+						</td>
+						<td>
+							${ml.totalRows}
+						</td>
+					</tr>
+					<tr class="form_listrow1">
+						<td>
+							Total number of columns
+						</td>
+						<td>
+							${ml.totalCols}
+						</td>
+					</tr>
+					<tr class="form_listrow1">
+						<td>
+							"${model.selectedName}" present at row index
+						</td>
+						<td>
+							<#if ml.rowIndex == -1>Not present in rows<#else>${ml.rowIndex}</#if>
+						</td>
+					</tr>
+					<tr class="form_listrow1">
+						<td>
+							"${model.selectedName}" present at column index
+						</td>
+						<td>
+							<#if ml.colIndex == -1>Not present in columns<#else>${ml.colIndex}</#if>
+						</td>
+						
+					</tr>
+				</table>
+					
+					
+				<h2>Plot of the values of ${model.selectedName} in "${ml.data.name}"</h2>
+				<h3>Row plot</h3>
+				<#if ml.rowImg??>
+				<table>
+					<tr>
+						<td>
+							<i>Click to enlarge</i>
+						</td>
+					</tr>
+				</table>
+				
+				<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + ml.rowImg + "></body></html>">
+				<a href="#" onclick="var generate = window.open('', '', 'width=850,height650,resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
+					<img src="tmpfile/${ml.rowImg}" width="160" height="120">
+				</a>
+				
+				<#else>
+					<#if ml.rowIndex == -1>
+						${model.selectedName} not in row values, no row plot was made.
 					<#else>
-						TYPE NOT SUPPORTED, CONTACT JOERI
+						<#if ml.totalRows gt 1000>
+							More than 1000 rows in the matrix, no plot was made.
+						<#else>
+							Image creation failed. Maybe you have missing values, or a wrong value type.
+						</#if>
 					</#if>
 				</#if>
-			</td>
-			</#if>
-		</#list>
+					
+				<h3>Column plot</h3>
+				<#if ml.colImg??>
+				<table>
+					<tr>
+						<td>
+							<i>Click to enlarge</i>
+						</td>
+					</tr>
+				</table>
+				
+				<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + ml.colImg + "></body></html>">
+				<a href="#" onclick="var generate = window.open('', '', 'width=850,height650,resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
+					<img src="tmpfile/${ml.colImg}" width="160" height="120">
+				</a>
+				
+				<#else>
+					<#if ml.colIndex == -1>
+						${model.selectedName} not in column values, no column plot was made.
+					<#else>
+						<#if ml.totalCols gt 1000>
+							More than 1000 columns in the matrix, no plot was made.
+						<#else>
+							Image creation failed. Maybe you have missing values, or a wrong value type.
+						</#if>
+					</#if>
+				</#if>
+					
+					
+				<br>
+				
+				<h2>Spearman correlation results</h2>
+				
+				<h3>Row correlations</h3>
+				
+				<#if ml.rowCorr??>
+				<div style="overflow: auto; max-height: 400px; width: 720px;">
+					<table border="1" cellpadding="3" style="width: 700px;">
+						<tr class="form_listrow0">
+							<td>
+								<b>Other rows in "${ml.data.name}"</b>
+							</td>
+							<td>
+								<b>Spearman's rho</b>
+							</td>
+						</tr>
+					<#list ml.rowCorr?keys as key>
+						<tr class="form_listrow1">
+							<td>
+								<a href="#" onclick="document.forms.${screen.name}.__action.value = 'disambig_${key}'; document.forms.${screen.name}.submit();">${key}</a>
+							</td>
+							<td>
+								<#if ml.rowCorr[key]??>${ml.rowCorr[key]}<#else>N/A</#if>
+							</td>
+						</tr>
+					</#list>
+					</table>
+				</div>
+				<#else>
+					<#if ml.rowIndex == -1>
+						${model.selectedName} not in row values, no row correlations were calculated.
+					<#else>
+						<#if (ml.totalCols * ml.totalRows) gt 1000000>
+							More than 1 million values in the matrix, no correlations were calculated.
+						<#else>
+							Correlation failed.
+						</#if>
+					</#if>
+				</#if>
+				
+				<h3>Column correlations</h3>
+					
+				<#if ml.colCorr??>
+				<div style="overflow: auto; max-height: 400px; width: 720px;">
+					<table border="1" cellpadding="3" style="width: 700px;">
+						<tr class="form_listrow0">
+							<td>
+								<b>Other columns in "${ml.data.name}"</b>
+							</td>
+							<td>
+								<b>Spearman's rho</b>
+							</td>
+						</tr>
+					<#list ml.colCorr?keys as key>
+						<tr class="form_listrow1">
+							<td>
+								<a href="#" onclick="document.forms.${screen.name}.__action.value = 'disambig_${key}'; document.forms.${screen.name}.submit();">${key}</a>
+							</td>
+							<td>
+								<#if ml.colCorr[key]??>${ml.colCorr[key]}<#else>N/A</#if>
+							</td>
+						</tr>
+					</#list>
+					</table>
+				</div>
+				<#else>
+					<#if ml.colIndex == -1>
+						${model.selectedName} not in column values, no column correlations were calculated.
+					<#else>
+						<#if (ml.totalCols * ml.totalRows) gt 1000000>
+							More than 1 million values in the matrix, no correlations were calculated.
+						<#else>
+							Correlation failed.
+						</#if>
+					</#if>
+				</#if>
+				
+				
+			</#list>
+		</td>
 	</tr>
 </table>
 
-<br>
 
-Present in these matrices:<br><br>
-<#list model.report.matrices as ml>
-	${ml.data}<br>
-	${ml.colIndex}<br>
-	${ml.rowIndex}<br>
-	${ml.totalRows}<br>
-	${ml.totalCols}<br><br><br>
-	
-	<#if ml.rowImg??>
-		<br><table><tr><td><i>ROW IMG Click to enlarge</i></td></tr></table>
-		<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + ml.rowImg + "></body></html>">
-		<a href="#" onclick="var generate = window.open('', '', 'width=850,height650,resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
-			<img src="tmpfile/${ml.rowImg}" width="160" height="120">
-		</a>
-	</#if>
-	
-	<#if ml.colImg??>
-		<br><table><tr><td><i>COL IMG Click to enlarge</i></td></tr></table>
-		<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + ml.colImg + "></body></html>">
-		<a href="#" onclick="var generate = window.open('', '', 'width=850,height650,resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
-			<img src="tmpfile/${ml.colImg}" width="160" height="120">
-		</a>
-	</#if>
-	
-	<br>
-	
-	<#if ml.rowCorr??>
-		<#list ml.rowCorr?keys as key>
-			${key} has row corr <#if ml.rowCorr[key]??>${ml.rowCorr[key]}<#else>N/A</#if> <br>
-		</#list>
-	</#if>
-	
-	<#if ml.colCorr??>
-		<#list ml.colCorr?keys as key>
-			${key} has col corr <#if ml.colCorr[key]??>${ml.colCorr[key]}<#else>N/A</#if> <br>
-		</#list>
-	</#if>
-	
-</#list>
 
 
 
@@ -153,4 +277,43 @@ Present in these matrices:<br><br>
 		</div>
 	</div>
 </form>
+</#macro>
+
+
+<#macro printEntity r>
+<table cellpadding="3" border="1" style="width:700px;">
+	<tr class="form_listrow0">
+		<td>
+			<b>Field</b>
+		</td>
+		<td>
+			<b>Value</b>
+		</td>
+	</tr>
+	<#list r.getFields() as f>
+	<#if r.get(f)?exists>
+	<tr class="form_listrow1">
+		<td>
+			${f}
+		</td>
+		<td>
+		<#if r.get(f)?is_string || r.get(f)?is_date || r.get(f)?is_number>
+			${r.get(f)}
+		<#elseif r.get(f)?is_boolean>
+			<#if r.get(f) == true>true<#else>false</#if>
+		<#elseif r.get(f)?is_enumerable>
+			<#list r.get(f) as i>
+				${i} 
+				<#if i_index == 3>
+				...<#break>
+				</#if>
+			</#list>
+		<#else>
+			TYPE NOT SUPPORTED, CONTACT JOERI
+		</#if>
+		</td>
+	</tr>
+	</#if>
+	</#list>
+</table>
 </#macro>
