@@ -13,8 +13,8 @@
 			<form name="protocol" entity="Protocol" label="Protocol" />
 			<form name="code" entity="Code" label="Code" />
 			<form name="ObservedValues" entity="ObservedValue" label="ObservedValue" />
-			<form name="themeProtocol" entity="themeProtocol" label="Theme" />
-			<form name="groupTheme" entity="groupTheme" label="Group" />
+			<!-- <form name="themeProtocol" entity="themeProtocol" label="Theme" />
+			<form name="groupTheme" entity="groupTheme" label="Group" /> -->
 			<form name="OntologyTerm" entity="OntologyTerm" label="Ontology Term" />
 		</menu>
 		
