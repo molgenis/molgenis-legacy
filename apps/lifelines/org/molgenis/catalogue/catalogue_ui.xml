@@ -15,7 +15,11 @@
 			<form name="ObservedValues" entity="ObservedValue" label="ObservedValue" />
 			<form name="themeProtocol" entity="themeProtocol" label="Theme" />
 			<form name="groupTheme" entity="groupTheme" label="Group" />
+			<form name="code" entity="Code" label="Code" />
+			<form name="OntologyTerm" entity="OntologyTerm" label="Ontology Term" />
 		</menu>
+		
+		
 		
 		<plugin name="JqueryTreePlugin" type="plugins.JqueryTree.JqueryTreePlugin" label="OntologyTerms" />  -->
 		
