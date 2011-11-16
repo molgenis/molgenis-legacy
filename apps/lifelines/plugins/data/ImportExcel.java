@@ -372,11 +372,13 @@ public class ImportExcel extends PluginModel<Entity>
 					} else if (j==10) {
 						//added the rest of the fields as observable features 
 						String cell = sheet.getCell(j,i).getContents();
-						String[] intepretation = cell.split("|");
-						System.out.println("Size, intepretation ........... " + intepretation.length +"...." +intepretation); 
+						String[] intepretation = cell.split("\\|");
+						System.out.println("Size, intepretation ........... " + intepretation.length +"...." +intepretation[0] + "......." + cell); 
 
-						if (!(intepretation.length == 0)) {
-							for (int k=0; k!=intepretation.length; k++) {
+						for (int k=0; k!=intepretation.length; k++) {
+							
+							if ((intepretation[k]!="")) {
+
 								System.out.println("Iteration>>>>>>>>>>: "+ k);
 								ObservableFeature of = new ObservableFeature();
 								ObservedValue ov = new ObservedValue();
@@ -385,10 +387,10 @@ public class ImportExcel extends PluginModel<Entity>
 								oe.setId(i);  //check why the null ones are inserted. 
 								System.out.println("investigation id ........... " + inv.getId()); 
 								oe.setInvestigation(inv.getId());  //TODO
-								oe.setName(intepretation[k]);
+								oe.setName(intepretation[k].trim());
 	
 								of.setId(i);
-								of.setDescription(intepretation[k]);  
+								of.setDescription(intepretation[k].trim());  
 								of.setName("interpretation");      
 								of.setInvestigation(inv.getId());
 								//TODO of.setOntologyReference(_ontologyReference);
@@ -408,14 +410,17 @@ public class ImportExcel extends PluginModel<Entity>
 								//TODO ov.setProtocolApplication(_protocolApplication);
 								
 								try {
-									ov.set(intepretation[k], ov);
+									ov.set(intepretation[k].trim(), ov);
 								} catch (Exception e) {
 									e.printStackTrace();
 								}
-								
+								if(!observableFeatures.contains(of))
 								observableFeatures.add(of);
+								if(!observedValues.contains(ov))
 								observedValues.add(ov);
+								if(!observationTargets.contains(target))
 								observationTargets.add(target);
+								if(!observationElements.contains(oe))
 								observationElements.add(oe);
 								
 								//link observedvalue, observationelement
@@ -445,8 +450,6 @@ public class ImportExcel extends PluginModel<Entity>
 				if(!ontologies.contains(ontology))
 					ontologies.add(ontology);
 			}
-			
-			
 			
 			for(Measurement measure : measurements){
 				
@@ -524,14 +527,21 @@ public class ImportExcel extends PluginModel<Entity>
 			}
 			try {
 				
-				db.add(ontologies);
-				db.add(ontologyTerms);
+				
 
 				System.out.println("Just before observable features are insertd in db : >>>>" + addedObservableFeatures);
+				System.out.println("Just before observable features are insertd in db : >>>>" + addedObservationElements);
+				
+				db.add(ontologies);
+				
+				db.add(ontologyTerms);
 				
 				db.add(addedObservationElements);
+				
 				db.add(addedObservationTarget);
+				
 				db.add(addedObservableFeatures);
+				
 				db.add(addedObservedValues);
 				
 				//link Unit(ontologyTerm) to measurements 
