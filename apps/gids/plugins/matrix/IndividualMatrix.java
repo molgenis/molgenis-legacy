@@ -60,7 +60,6 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 			getModel().error=true;
 		}
 		else{		
-			System.out.println( "getModel().selectedScreenI " +getModel().selectedScreenI);
 			if(getModel().selectedScreenI==1){
 				getModel().matrixViewerIndv = null;
 				getModel().setChosenProtocolNameI("Individual_info");
@@ -139,38 +138,31 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 							true, true, null, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 									Operator.IN, measurementsToShow));
 				}
-				
-				
-				
-				
+
 				if(getModel().getListIndividuals()!=null && getModel().matrixViewerSample == null){
 					Protocol sampleInfoProt = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, getModel().chosenProtocolNameS)).get(0);
 					List<String> measurementsToShowSamples = sampleInfoProt.getFeatures_Name();
 					
+					List<MatrixQueryRule> showTheseIndividuals = new ArrayList<MatrixQueryRule>();
+					showTheseIndividuals.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.ID, 
+							Operator.IN, getModel().getListIndividuals()));
 					
-					//filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.ID, 
-					//		Operator.IN, getModel().getListIndividuals()));
-					//filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValues, Individual.INVESTIGATION_NAME, 
-					//	Operator.EQUALS, invest));
-				
-				/*filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.values, Individual.INVESTIGATION_NAME, 
-				Operator.EQUALS, invest));
-		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.valueProperty, ObservedValue.INVESTIGATION_NAME, 
-				Operator.EQUALS, invest));
-		*/
+					System.out.println("going to show: ");
+					for( Integer i : getModel().getListIndividuals())
+					{
+						System.out.println("id " + i);
+					}
+					
 					getModel().matrixViewerSample = new MatrixViewer(this, getModel().SAMPLEMATRIX, 
 							new SliceablePhenoMatrix(Individual.class, Measurement.class), 
-							true, true, null, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
+							true, true, showTheseIndividuals, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 									Operator.IN, measurementsToShowSamples));
 				}			
 			}catch (Exception e) {
 				logger.error(e.getMessage());
 			}
 		}
-		
-		
-		
-		System.out.println("biteME db null?" + (db == null ? "NULL!!!!" : "not null"));
+
 
 		if(getModel().matrixViewerIndv != null){
 			getModel().matrixViewerIndv.setToHtmlDb(db);
@@ -186,10 +178,6 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 	public Show handleRequest(Database db, Tuple request, OutputStream out)
 			throws HandleRequestDelegationException
 	{
-		
-		
-		
-		
 		 if(request.getInt("selectedScreenI")!=null){
 			getModel().setSelectedScreenI(request.getInt("selectedScreenI"));
 
@@ -206,7 +194,7 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 		try {
 			if (getModel().action.startsWith(getModel().matrixViewerIndv.getName())) {
 				getModel().matrixViewerIndv.handleRequest(db, request);
-				getModel().setAction("init");
+				//getModel().setAction("init");
 				getModel().individualNavClass="nav1";
 			}
 
@@ -215,12 +203,16 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 				List<ObservationElement> rows = (List<ObservationElement>) getModel().matrixViewerIndv.getSelection(db);
 				int rowCnt = 0;
 				List<Integer> listIndividualIds = new ArrayList<Integer>();
+				System.out.println("rows.size() " + rows.size());
 				for (ObservationElement row : rows) {
+
 					if (request.getBool(getModel().INDVMATRIX + "_selected_" + rowCnt) != null) {
 						listIndividualIds.add(row.getId());
+
 					}
 					rowCnt++;
 				}
+				
 				getModel().setListIndividuals(listIndividualIds);
 				getModel().matrixViewerSample = null;
 				getModel().sampleNavClass="nav1";							

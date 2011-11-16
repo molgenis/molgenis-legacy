@@ -130,8 +130,11 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 			
 			try{
 			getModel().error=false;
+			FormModel<Investigation> form = this.getParentForm(Investigation.class);
+			List<Investigation> investigationsList = form.getRecords();
+			String invest = investigationsList.get(0).getName();
 			//Show sampleMatrix, with chosenProtocol name to be shown
-				if (getModel().matrixViewerSample == null) {
+				if (getModel().matrixViewerSample == null  && !invest.equals("System"))  {
 					Protocol sampleInfoProt = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, getModel().chosenProtocolNameS)).get(0);
 					List<String> measurementsToShow = sampleInfoProt.getFeatures_Name();
 	
@@ -157,6 +160,7 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 					
 					filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.ID, 
 							Operator.IN, individIdList));
+					
 					getModel().matrixViewerIndv = new MatrixViewer(this, getModel().INDVMATRIXS, 
 							new SliceablePhenoMatrix(Individual.class, Measurement.class), 
 							true, true, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
@@ -169,6 +173,17 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 				//e.printStackTrace();
 			}
 		}
+		if(getModel().matrixViewerIndv != null){
+			getModel().matrixViewerIndv.setToHtmlDb(db);
+			System.out.println("set for: matrixViewerIndv");
+		}
+		if(getModel().matrixViewerSample != null){
+			getModel().matrixViewerSample.setToHtmlDb(db);
+			System.out.println("set for: matrixViewerSample");
+		}
+		
+		
+		
 	}
 	
 	@Override
