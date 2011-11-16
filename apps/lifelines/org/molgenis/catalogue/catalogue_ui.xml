@@ -12,9 +12,9 @@
 			<form name="measurement" entity="Measurement" label="Measurement" />
 			<form name="protocol" entity="Protocol" label="Protocol" />
 			<form name="code" entity="Code" label="Code" />
+			<form name="ObservedValues" entity="ObservedValue" label="ObservedValue" />
 			<form name="themeProtocol" entity="themeProtocol" label="Theme" />
 			<form name="groupTheme" entity="groupTheme" label="Group" />
-			<form name="datashapermeasurement" entity="datashapermeasurement" label="DataShaper Measurement" />
 		</menu>
 		
 		<plugin name="JqueryTreePlugin" type="plugins.JqueryTree.JqueryTreePlugin" label="OntologyTerms" />  -->

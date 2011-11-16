@@ -555,13 +555,7 @@ public class ImportExcel extends PluginModel<Entity>
 				
 				db.add(addedCodes);
 				
-				for (ObservedValue ov: observedValues) {
-					String obsElement = linkObservedValueObservationElement.get(ov);
-					List<ObservationElement> tmp = db.find(ObservationElement.class, new QueryRule(ObservationElement.NAME, Operator.IN, obsElement));
-					
-					//for (ObservationElement oe: tmp) oe.set .setFeature(oe);
-					
-				}
+			
 				
 			} catch (DatabaseException e) {
 				// TODO Auto-generated catch block

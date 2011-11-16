@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <molgenis name="gcc" label="Lifelines Catalogue">
-	<module name="catalogue" label="Lifelines Catalogue"> 
+	<module name="catalogue" label="Lifelines Catalogue"><!-- 
 		<entity name="datashapermeasurement">
 			<description>This entity includes the dictionary from lifelines </description>
 		    <field name="id" type="autoid" description="automatically generated id" />
@@ -21,7 +21,7 @@
 			<field name="Targetgender" type="string" nillable="true"/>
 			<field name="DataShaperType" type="string" nillable="true"/>
 		</entity>
-		<entity name="themeProtocol" extends="Protocol">
+		--><entity name="themeProtocol" extends="Protocol">
 			<field name="Features" type="mref" xref_entity="Protocol" nillable="true" />
 		</entity>
 		<entity name="groupTheme" extends="themeProtocol">
