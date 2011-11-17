@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="org.molgenis">
+	<module name="chado">
+		<description>Chado for our variant databases / GoNL?</description>
+		<entity name="feature">
+			<field name="feature_id" type="autoid" description="primary key" />
+			<field name="dbxref_id" type="xref" xref_field="db.db_id" nillable="true" description="" />
+			<field name="organism_id" type="xref" xref_field="organism.organism_id" nillable="true" description="" />
+			<field name="name" type="varchar" unique="true" nillable="true" description=""/>
+			<field name="uniquename" type="varchar" nillable="true" description="" />
+			<field name="residues" type="text" nillable="true" description="" />
+			<field name="seqlen" type="int" nillable="true" description="" />
+			<field name="md5checksum" type="varchar" nillable="true" description="" />
+			<field name="type_id" type="xref" xref_field="cvterm.cvterm_id" nillable="true" description="" />
+			<field name="is_analysis" type="bool" nillable="true" description="" />
+			<field name="is_obsolete" type="bool" nillable="true" description="" />
+			<field name="timeaccessioned" type="date" nillable="true" description="" />
+			<field name="timelastmodified" type="date" nillable="true" description="" />
+			<!--
+			<indices>
+				<index name="bla">
+					<indexfield name="dbxref_id"/>
+					<indexfield name="organism_id"/>
+				</index>
+			</indices>
+			-->
+		</entity>
+		<entity name="feature_cvterm">
+			<field name="feature_cvterm_id" type="autoid" nillable="true" description="primary key" />
+			<field name="feature_id" type="xref" xref_field="feature.feature_id" nillable="true" description="" />
+			<field name="cvterm_id" type="xref" xref_field="cvterm.cvterm_id" nillable="true" description="" />
+			<field name="pub_id" type="xref" xref_field="pub.pub_id" nillable="true" description="" />
+			<field name="is_not" type="bool" nillable="true" description="" />
+		</entity>
+		<entity name="feature_cvterm_dbxref">
+			<field name="feature_cvterm_dbxref_id" type="autoid" nillable="true" description="" />
+			<field name="feature_cvterm_id" type="xref" xref_field="feature_cvterm.feature_cvterm_id" nillable="true" description="" />
+			<field name="dbxref_id" type="xref" xref_field="dbxref.dbxref_id" nillable="true" description="" />
+		</entity>
+		<entity name="feature_cvterm_pub">
+			<field name="feature_cvterm_pub_id" type="autoid" nillable="true" description="" />
+			<field name="feature_cvterm_id" type="xref" xref_field="feature_cvterm.feature_cvterm_id" nillable="true" description="" />
+			<field name="pub_id" type="xref" xref_field="pub.pub_id" nillable="true" description="" />
+		</entity>
+		<entity name="feature_cvtermprop">
+			<field name="feature_cvtermprop_id" type="autoid" nillable="true" description="" />
+			<field name="feature_cvterm_id" type="xref" xref_field="feature_cvterm.feature_cvterm_id" nillable="true" description="" />
+			<field name="type_id" type="xref" xref_field="cvterm.cvterm_id" nillable="true" description="" />
+			<field name="value" type="text" nillable="true" description="" />
+			<field name="rank" type="int" nillable="true" description="" />
+		</entity>
+		<entity name="feature_dbxref">
+			<field name="feature_dbxref_id" type="autoid" nillable="true" description="" />
+			<field name="feature_id" type="xref" xref_field="feature.feature_id" nillable="true" description="" />
+			<field name="dbxref_id" type="xref" xref_field="dbxref.dbxref_id" nillable="true" description="" />
+			<field name="is_current" type="bool" nillable="true" description="" />
+		</entity>
+		<entity name="feature_pub">
+			<field name="feature_pub_id" type="autoid" nillable="true" description="" />
+			<field name="feature_id" type="xref" xref_field="feature.feature_id" nillable="true" description="" />
+			<field name="pub_id" type="xref" xref_field="pub.pub_id" nillable="true" description="" />
+		</entity>
+		<entity name="feature_pubprop">
+			<field name="feature_pubprop_id" type="autoid" nillable="true" description="" />
+			<field name="feature_pub_id" type="xref" xref_field="feature_pub.feature_pub_id" nillable="true" description="" />
+			<field name="type_id" type="xref" xref_field="cvterm.cvterm_id" nillable="true" description="" />
+			<field name="value" type="text" nillable="true" description="" />
+			<field name="rank" type="int" nillable="true" description="" />
+		</entity>
+		<entity name="feature_relationship">
+			<field name="feature_relationship_id" type="autoid" nillable="true" description="" />
+			<field name="subject_id" type="xref" xref_field="feature.feature_id" nillable="true" description="" />
+			<field name="object_id" type="xref" xref_field="feature.feature_id" nillable="true" description="" />
+			<field name="type_id" type="xref" xref_field="cvterm.cvterm_id" nillable="true" description="" />
+			<field name="value" type="text" nillable="true" description="" />
+			<field name="rank" type="int" nillable="true" description="" />
+		</entity>
+		<entity name="feature_relationship_pub">
+			<field name="feature_relationship_pub_id" type="autoid" nillable="true" description="" />
+			<field name="feature_relationship_id" type="xref" xref_field="feature_relationship.feature_relationship_id" nillable="true" description="" />
+			<field name="pub_id" type="xref" xref_field="pub.pub_id" nillable="true" description="" />
+		</entity>
+		<entity name="feature_relationshipprop">
+			<field name="feature_relationshipprop_id" type="autoid" nillable="true" description="" />
+			<field name="feature_relationship_id" type="xref" xref_field="feature_relationship.feature_relationship_id" nillable="true" description="" />
+			<field name="type_id" type="xref" xref_field="cvterm.cvterm_id" nillable="true" description="" />
+			<field name="value" type="text" nillable="true" description="" />
+			<field name="rank" type="int" nillable="true" description="" />
+		</entity>
+		<entity name="feature_relationshipprop_pub ">
+			<field name="feature_relationshipprop_pub_id" type="autoid" nillable="true" description="" />
+			<field name="feature_relationshipprop_id" type="xref" xref_field="feature_relationshipprop.feature_relationshipprop_id" nillable="true" description="" />
+			<field name="pub_id" type="xref" xref_field="pub.pub_id" nillable="true" description="" />
+		</entity>
+		<entity name="feature_synonym">
+			<field name="feature_synonym_id" type="autoid" nillable="true" description="" />
+			<field name="synonym_id" type="xref" xref_field="synonyme.synonym_id" nillable="true" description="" />
+			<field name="feature_id" type="xref" xref_field="feature.feature_id" nillable="true" description="" />
+			<field name="pub_id" type="xref" xref_field="pub.pub_id" nillable="true" description="" />
+			<field name="is_current" type="bool" nillable="true" description="" />
+			<field name="is_internal" type="bool" nillable="true" description="" />
+		</entity>
+		<entity name="featureloc">
+			<field name="featureloc_id" type="autoid" nillable="true" description="" />
+			<field name="feature_id" type="xref" xref_field="feature.feature_id" nillable="true" description="" />
+			<field name="srcfeature_id" type="xref" xref_field="feature.feature_id" nillable="true" description="" />
+			<field name="fmin" type="int" nillable="true" description="" />
+			<field name="is_fmin_partial" type="bool" nillable="true" description="" />
+			<field name="fmax" type="int" nillable="true" description="" />
+			<field name="is_fmax_partial" type="bool" nillable="true" description="" />
+			<field name="strand" type="int" nillable="true" description="" />
+			<field name="phase" type="int" nillable="true" description="" />
+			<field name="residue_info" type="text" nillable="true" description="" />
+			<field name="locgroup" type="int" nillable="true" description="" />
+			<field name="rank" type="int" nillable="true" description="" />
+		</entity>
+		<entity name="featureloc_pub">
+			<field name="featureloc_pub_id" type="autoid" nillable="true" description="" />
+			<field name="featureloc_id" type="xref" xref_field="featureloc.featureloc_id" nillable="true" description="" />
+			<field name="pub_id" type="xref" xref_field="pub.pub_id" nillable="true" description="" />
+		</entity>
+		<entity name="featureprop">
+			<field name="featureprop_id" type="autoid" nillable="true" description="" />
+			<field name="feature_id" type="xref" xref_field="feature.feature_id" nillable="true" description="" />
+			<field name="type_id" type="xref" xref_field="cvterm.cvterm_id" nillable="true" description="" />
+			<field name="value" type="text" nillable="true" description="" />
+			<field name="rank" type="int" nillable="true" description="" />
+		</entity>
+		<entity name="featureprop_pub">
+			<field name="featureprop_pub_id" type="autoid" nillable="true" description="" />
+			<field name="featureprop_id" type="xref" xref_field="featureprop.featureprop_id" nillable="true" description="" />
+			<field name="pub_id" type="xref" xref_field="pub.pub_id" nillable="true" description="" />
+		</entity>
+		<entity name="synonyme">
+			<field name="synonym_id" type="autoid" nillable="true" description="" />
+			<field name="name" type="varchar" nillable="true" description="" />
+			<field name="type_id" type="xref" xref_field="cvterm.cvterm_id" nillable="true" description="" />
+			<field name="synonym_sgml" type="varchar" nillable="true" description="" />
+		</entity>
+		<entity name="pub">
+			<field name="pub_id" type="autoid" nillable="true" description="" />
+			<field name="title" type="text" nillable="true" description="" />
+			<field name="volumetitle" type="text" nillable="true" description="" />
+			<field name="volume" type="varchar" nillable="true" description="" />
+			<field name="series_name" type="varchar" nillable="true" description="" />
+			<field name="issue" type="varchar" nillable="true" description="" />
+			<field name="pyear" type="varchar" nillable="true" description="" />
+			<field name="pages" type="varchar" nillable="true" description="" />
+			<field name="miniref" type="varchar" nillable="true" description="" />
+			<field name="uniquename" type="text" nillable="true" description="" />
+			<field name="type_id" type="xref" xref_field="cvterm.cvterm_id" nillable="true" description="" />
+			<field name="is_obsolete" type="bool" nillable="true" description="" />
+			<field name="publisher" type="varchar" nillable="true" description="" />
+			<field name="pubplace" type="varchar" nillable="true" description="" />
+		</entity>
+		<entity name="cv">
+			<field name="cv_id" type="autoid" nillable="true" description="" />
+			<field name="name" type="varchar" nillable="true" description="" />
+			<field name="definition" type="text" nillable="true" description="" />
+		</entity>
+		<entity name="cvterm">
+			<field name="cvterm_id" type="autoid" nillable="true" description="" />
+			<field name="cv_id" type="xref" xref_field="cv.cv_id" nillable="true" description="" />
+			<field name="name" type="varchar" unique="true" nillable="true" description="" />
+			<field name="definition" type="text" nillable="true" description="" />
+			<field name="dbxref_id" type="xref" xref_field="dbxref.dbxref_id" nillable="true" description="" />
+			<field name="is_obsolete" type="int" nillable="true" description="" />
+			<field name="is_relationshiptype" type="int" nillable="true" description="" />
+		</entity>
+		<entity name="dbxref">
+			<field name="dbxref_id" type="autoid" nillable="true" description="" />
+			<field name="db_id" type="xref" xref_field="db.db_id" nillable="true" description="" />
+			<field name="accession" type="varchar" nillable="true" description="" />
+			<field name="version" type="varchar" nillable="true" description="" />
+			<field name="description" type="text" nillable="true" description="" />
+		</entity>
+		<entity name="db">
+			<field name="db_id" type="autoid" nillable="true" description="" />
+			<field name="name" type="varchar" nillable="true" description="" />
+			<field name="description" type="varchar" nillable="true" description="" />
+			<field name="urlprefix" type="varchar" nillable="true" description="" />
+			<field name="url" type="varchar" nillable="true" description="" />
+		</entity>
+		<entity name="organism">
+			<field name="organism_id" type="autoid" nillable="true" description="" />
+			<field name="abbreviation" type="varchar" nillable="true" description="" />
+			<field name="genus" type="varchar" nillable="true" description="" />
+			<field name="species" type="varchar" nillable="true" description="" />
+			<field name="common_name" type="varchar" unique="true" nillable="true" description="" />
+			<field name="comment_" type="text" nillable="true" description="" />
+		</entity>
+	</module>
+</molgenis>
