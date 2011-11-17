@@ -25,6 +25,7 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.DateInput;
+import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.Table;
 import org.molgenis.matrix.component.MatrixViewer;
@@ -968,6 +969,8 @@ public class ManageLitters extends PluginModel<Entity>
 					genotypeTable.setCell(newCol + 1, row, geneStateInput);
 					row++;
 				}
+				storeGenotypeTable(db, request);
+				this.getMessages().add(new ScreenMessage("Gene name + state pair successfully added", true));
 			}
 			
 			if (action.equals("RemGenoCol")) {
@@ -976,7 +979,11 @@ public class ManageLitters extends PluginModel<Entity>
 					genotypeTable.removeColumn(currCol); // NB: nr. of cols is now 1 lower!
 					genotypeTable.removeColumn(currCol);
 					nrOfGenotypes--;
+					this.getMessages().add(new ScreenMessage("Gene name + state pair successfully removed", true));
+				} else {
+					this.getMessages().add(new ScreenMessage("Cannot remove - at least one Gene name + state pair has to remain", false));
 				}
+				storeGenotypeTable(db, request);
 			}
 			
 			if (action.equals("Genotype")) {
@@ -1495,6 +1502,68 @@ public class ManageLitters extends PluginModel<Entity>
 
 	public String getGenotypeTable() {
 		return genotypeTable.render();
+	}
+	
+	private void storeGenotypeTable(Database db, Tuple request) {
+		HtmlInput input;
+		int animalCount = 0;
+		for (Individual animal : this.getAnimalsInLitter(db)) {
+			
+			if (request.getString("0_" + animalCount) != null) {
+				String dob = request.getString("0_" + animalCount); // already in new format
+				input = (HtmlInput) genotypeTable.getCell(0, animalCount);
+				input.setValue(dob);
+				genotypeTable.setCell(0, animalCount, input);
+			}
+			
+			if (request.getString("1_" + animalCount) != null) {
+				int sexId = request.getInt("1_" + animalCount);
+				input = (HtmlInput) genotypeTable.getCell(1, animalCount);
+				input.setValue(sexId);
+				genotypeTable.setCell(1, animalCount, input);
+			}
+			
+			if (request.getString("2_" + animalCount) != null) {
+				String color = request.getString("2_" + animalCount);
+				input = (HtmlInput) genotypeTable.getCell(2, animalCount);
+				input.setValue(color);
+				genotypeTable.setCell(2, animalCount, input);
+			}
+			
+			if (request.getString("3_" + animalCount) != null) {
+				String earmark = request.getString("3_" + animalCount);
+				input = (HtmlInput) genotypeTable.getCell(3, animalCount);
+				input.setValue(earmark);
+				genotypeTable.setCell(3, animalCount, input);
+			}
+			
+			if (request.getString("4_" + animalCount) != null) {
+				int backgroundId = request.getInt("4_" + animalCount);
+				input = (HtmlInput) genotypeTable.getCell(4, animalCount);
+				input.setValue(backgroundId);
+				genotypeTable.setCell(4, animalCount, input);
+			}
+			
+			for (int genoNr = 0; genoNr < nrOfGenotypes; genoNr++) {
+				int currCol = 5 + (genoNr * 2);
+				
+				if (request.getString(currCol + "_" + animalCount) != null) {
+					String geneName = request.getString(currCol + "_" + animalCount);
+					input = (HtmlInput) genotypeTable.getCell(currCol, animalCount);
+					input.setValue(geneName);
+					genotypeTable.setCell(currCol, animalCount, input);
+				}
+				
+				if (request.getString((currCol + 1) + "_" + animalCount) != null) {
+					String geneState = request.getString((currCol + 1) + "_" + animalCount);
+					input = (HtmlInput) genotypeTable.getCell(currCol + 1, animalCount);
+					input.setValue(geneState);
+					genotypeTable.setCell(currCol + 1, animalCount, input);
+				}
+			}
+			
+			animalCount++;
+		}
 	}
 	
 	private void reloadMatrixViewer() {
