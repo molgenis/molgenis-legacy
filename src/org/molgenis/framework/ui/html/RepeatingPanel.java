@@ -40,19 +40,26 @@ public class RepeatingPanel extends DivPanel
 		// remove button for each row to remove the div shown above
 		ActionInput removeButton = new ActionInput(this.getName() + "_remove", "Remove row", "Remove");
 		// JavaScript for remove button: Remove child element and make add button visible if necessary
-		removeButton.setJavaScriptAction("this.parentNode.parentNode.removeChild(this.parentNode); " + (this.maxElems > 1 ? "decCount();" : "") + " return false;");
+		removeButton.setJavaScriptAction("this.parentNode.parentNode.removeChild(this.parentNode); " + 
+				(this.maxElems > 1 ? "decCount();" : "") + " return false;");
 		// add button to clone the div
 		ActionInput addButton = new ActionInput(this.getName() + "_add", "Add row", "Add");
 		// repeating block
 		String repeatableDiv = super.toHtml() + removeButton.toHtml();
 
 		// JavaScript for add button: Add child element and make add button invisible if necessary
-		addButton.setJavaScriptAction("var div = document.createElement('DIV'); this.parentNode.insertBefore(div,this); div.innerHTML = '"
-						+ StringEscapeUtils.escapeJavaScript(StringEscapeUtils
-								.escapeHtml(repeatableDiv)) + "'; " + (this.maxElems > 1 ? "incCount();" : "") + " return false");
+		addButton.setJavaScriptAction("var div = document.createElement('DIV'); " +
+				"this.parentNode.insertBefore(div,this); div.innerHTML = '" +
+				StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(repeatableDiv)) + 
+					"'; " + (this.maxElems > 1 ? "incCount();" : "") + " return false");
 
 		// create a div to contain the panel
-		return "<div style=\"clear:both; display:block\"><script type=\"text/javascript\">var numElems = 1; function decCount() { numElems -= 1; if (numElems < " + this.maxElems + ") { document.getElementById('" + addButton.getName() + "').style.display = 'block'; } } function incCount() { numElems += 1; if (numElems >= " + this.maxElems + ") { document.getElementById('" + addButton.getName() + "').style.display = 'none'; } }</script>" + super.toHtml() + addButton.toHtml() + "</div>";
+		return "<div style=\"clear:both; display:block\"><script type=\"text/javascript\">var numElems = 1; " +
+			"function decCount() { numElems -= 1; if (numElems < " + this.maxElems + 
+			") { document.getElementById('" + addButton.getName() + 
+			"').style.display = 'block'; } } function incCount() { numElems += 1; if (numElems >= " + 
+			this.maxElems + ") { document.getElementById('" + addButton.getName() + 
+			"').style.display = 'none'; } }</script>" + super.toHtml() + addButton.toHtml() + "</div>";
 	}
 
 }
