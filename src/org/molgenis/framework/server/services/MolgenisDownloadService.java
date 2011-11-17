@@ -14,10 +14,13 @@ import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.server.FrontControllerAuthenticator;
 import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
+import org.molgenis.framework.server.FrontControllerAuthenticator.LoginStatus;
+import org.molgenis.framework.server.FrontControllerAuthenticator.LogoutStatus;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
@@ -72,47 +75,175 @@ public class MolgenisDownloadService implements MolgenisService
 			try
 			{
 				db = req.getDatabase();
-				//db.setLogin(new org.molgenis.framework.security.SimpleLogin(db));
+
 				try
 				{
-
-					// check whether a class is chosen
-					if (request.getPathInfo() == null
-							|| request.getPathInfo().equals("/find"))
+					
+					System.out.println("REQUEST: " + req.toString());
+					System.out.println("request.getPathInfo(): " + request.getPathInfo());
+					System.out.println("req.getServicePath() " + req.getServicePath());
+					String pathMinusMapping = request.getPathInfo().substring(req.getServicePath().length());
+					System.out.println("pathMinusMapping " + pathMinusMapping);
+					
+					if (pathMinusMapping.startsWith("/")){
+						pathMinusMapping = pathMinusMapping.substring(1);
+					}
+					
+					//login request
+					if(req.getString("usr") != null && req.getString("pwd") != null )
 					{
-						logger.debug("show 'choose entity' dialogue");
+						String usr = req.getString("usr");
+						String pw = req.getString("pwd");
+						
+						System.out.println("going to log in with " + usr + " / " + pw);
+						
+						LoginStatus login = FrontControllerAuthenticator.login(req, usr, pw);	
+						
+						
+						if(login == LoginStatus.ALREADY_LOGGED_IN)
+						{
+							// reach this by using the 'back' button of the browser and click Login again :)
+							out.println("<html><body>");
+							out.println("You are already logged in.<br>");
+							out.println("<form name=\"input\" action=\"\" method=\"post\">");
+							out.println("<input type=\"hidden\" name=\"logout\" value=\"logout\"/><br>");;
+							out.println("<input type=\"submit\" value=\"Logout\" />");
+							out.println("</form>");
+							out.println("<form><input type=\"submit\" value=\"Continue\"/></form>");
+							out.println("</body></html>");
+							return;
+						}
+						else if(login == LoginStatus.SUCCESSFULLY_LOGGED_IN)
+						{
+							out.println("<html><body>");
+							out.println("Welcome, " + usr + "!");
+							out.println("<form><input type=\"submit\" value=\"Continue\"/></form>");
+							out.println("</body></html>");
+							return;
+						}
+						else if(login == LoginStatus.AUTHENTICATION_FAILURE)
+						{
+							out.println("<html><body>");
+							out.println("User or password unknown.");
+							out.println("<form><input type=\"submit\" value=\"Retry\"/></form>");
+							out.println("</body></html>");
+							return;
+						}
+						else if(login == LoginStatus.EXCEPTION_THROWN)
+						{
+							out.println("<html><body>");
+							out.println("An error occurred. Contact your administrator.");
+							out.println("</body></html>");
+							return;
+						}
+						else
+						{
+							throw new IOException("Unknown login status: " + login);
+						}
+					}
+					
+					
+					// logout request
+					if(req.getString("logout") != null && req.getString("logout").equals("logout") )
+					{
+						System.out.println("going to log out..");
+						
+						LogoutStatus logout = FrontControllerAuthenticator.logout(req, res);
+
+						if(logout == LogoutStatus.ALREADY_LOGGED_OUT)
+						{
+							// reach this by using the 'back' button of the browser and click Logout again :)
+							out.println("<html><body>");
+							out.println("You are already logged out.");
+							out.println("<form><input type=\"submit\" value=\"Continue\"/></form>");
+							out.println("</body></html>");
+							return;
+						}
+						else if(logout == LogoutStatus.SUCCESSFULLY_LOGGED_OUT)
+						{
+							out.println("<html><body>");
+							out.println("You are successfully logged out.");
+							out.println("<form><input type=\"submit\" value=\"Continue\"/></form>");
+							out.println("</body></html>");
+							return;
+							
+						}
+						else if(logout == LogoutStatus.EXCEPTION_THROWN)
+						{
+							out.println("<html><body>");
+							out.println("An error occurred. Contact your administrator.");
+							out.println("</body></html>");
+						}
+						else
+						{
+							throw new IOException("Unknown logout status: " + logout);
+						}
+					}
+					
+					// regular request: check if user is authenticated
+					if(!db.getSecurity().isAuthenticated())
+					{
+						out.println("<html><body>");
+						out.println("Please login:<br>");
+						out.println("<form name=\"input\" action=\"\" method=\"post\">");
+						out.println("Username: <input type=\"text\" name=\"usr\" /><br>");
+						out.println("Password: <input type=\"text\" name=\"pwd\" /><br>");
+						out.println("<input type=\"submit\" value=\"OK\" />");
+						out.println("</form>");
+						out.println("</body></html>");
+						return;
+					}
+					
+				
+					
+					// check whether a class is chosen
+					if (pathMinusMapping.equals(""))
+					{
+						System.out.println("show 'choose entity' dialogue");
 						out.println("<html><body>");
 						out.println("You can download data:<br>");
 
 						for (String className : db.getEntityNames())
 						{
 
-							if (request.getPathInfo() == null) out
-									.println("<a href=\"find/" + className
-											+ "?__showQueryDialogue=true\">"
-											+ className + "</a><br>");
+							if (request.getPathInfo() == null)
+							{
+								//if called from 'find/', this works..
+								//if from 'find', this fails..
+								//TODO need to sort out mapping/paths once and for all
+								out.println("<a href=\"" + className
+										+ "?__showQueryDialogue=true\">"
+										+ className + "</a><br>");
+							}
 							else
+							{
 								out.println("<a href=\"" + className + "\">"
 										+ className + "</a><br>");
+							}
+								
 						}
 
 						out.println("</body></html>");
 
-						logger.debug("done");
+						System.out.println("done");
 						return;
 					}
-					String entityName = request.getPathInfo().substring(1);
+					
+					
+					String entityName = pathMinusMapping;
+					System.out.println("entityName = " + entityName);
 
 					// check whether a querystring has to build
+					//FIXME: what does this do???
 					if (request.getQueryString() != null
 							&& request.getQueryString().equals(
 									"__showQueryDialogue=true"))
 					{
-						logger.debug("show 'set filters' dialogue");
+						System.out.println("show 'set filters' dialogue");
 						out.println("<html><body><form>");
 						out.println("You choose to download '"
-								+ entityName
-								+ "' data. (<a href=\"../api/find\">back</a>)<br><br> Here you can have to set at least one filter:<br>");
+								+ entityName //FIXME: bad, hardcoded location!
+								+ "' data. (<a href=\"../find\">back</a>)<br><br> Here you can have to set at least one filter:<br>");
 						out.println("<table>");
 						for (String field : ((Entity) Class.forName(entityName)
 								.newInstance()).getFields())
@@ -159,7 +290,7 @@ public class MolgenisDownloadService implements MolgenisService
 					// use get
 					if (request.getQueryString() != null)
 					{
-						logger.debug("handle find query via http-get: "
+						System.out.println("handle find query via http-get: "
 								+ request.getQueryString());
 						String[] ruleStrings = request.getQueryString().split("&");
 
@@ -196,7 +327,7 @@ public class MolgenisDownloadService implements MolgenisService
 					else
 					{
 						Tuple requestTuple = new HttpServletRequestTuple(request);
-						logger.debug("handle find query via http-post with parameters: "
+						System.out.println("handle find query via http-post with parameters: "
 								+ requestTuple.getFields());
 						for (String name : requestTuple.getFields())
 						{
@@ -220,20 +351,21 @@ public class MolgenisDownloadService implements MolgenisService
 						}
 					}
 
-					// TODO: when is this reached??
-
 					// execute query
 					TupleWriter writer = new CsvWriter(out);
-					// CsvWriter writer = new CsvFileWriter( new
-					// File("c:/testout.txt") );
-					db.find(db.getClassForName(entityName), writer,
+					
+					String simpleEntityName = entityName.substring(entityName.lastIndexOf('.')+1);
+					
+					Class<? extends Entity> klazz = db.getClassForName(simpleEntityName);
+					
+					db.find(klazz, writer,
 							rulesList.toArray(new QueryRule[rulesList.size()]));
 				}
 				catch (Exception e)
 				{
 					out.println("<div class='errormessage'>" + e.getMessage()
 							+ "</div>");
-					// e.printStackTrace();
+					e.printStackTrace();
 					// throw e;
 				}
 				finally

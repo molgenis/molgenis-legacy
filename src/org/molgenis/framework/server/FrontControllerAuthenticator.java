@@ -75,13 +75,15 @@ public class FrontControllerAuthenticator
 			//FIXME: needed??
 			request.getDatabase().getSecurity().logout(request.getDatabase());
 			
+			//set session login to null
+			request.getRequest().getSession().setAttribute("login", null);
+			
 			//invalidate the session
-			//FIXME correct??
-			response.getResponse().setHeader("WWW-Authenticate",
-					"BASIC realm=\"MOLGENIS\"");
-			response.getResponse().sendError(
-					HttpServletResponse.SC_UNAUTHORIZED);
-			request.getRequest().getSession().invalidate();
+//			response.getResponse().setHeader("WWW-Authenticate",
+//					"BASIC realm=\"MOLGENIS\"");
+//			response.getResponse().sendError(
+//					HttpServletResponse.SC_UNAUTHORIZED);
+//			request.getRequest().getSession().invalidate();
 			
 			return LogoutStatus.SUCCESSFULLY_LOGGED_OUT;
 		}
