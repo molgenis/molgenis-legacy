@@ -6,7 +6,9 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.JQueryTreeView;
+import org.molgenis.framework.ui.html.JQueryTreeViewElement;
 import org.molgenis.util.Entity;
+import org.molgenis.util.LinkableTree;
 import org.molgenis.util.SimpleTree;
 import org.molgenis.util.Tuple;
 
@@ -15,16 +17,23 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity>
 
 	private static final long serialVersionUID = -6143910771849972946L;
 	
-	private JQueryTreeView treeView;
+	private JQueryTreeView<?> treeView;
 
 	public LLcatalogueTreePlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 		
-		SimpleTree myTree = new SimpleTree("myTree", null);
-		SimpleTree mySubTree1 = new SimpleTree("mySubTree1", myTree);
+		SimpleTree<JQueryTreeViewElement> myTree = new SimpleTree<JQueryTreeViewElement>("myTree", null);
+		SimpleTree<JQueryTreeViewElement> mySubTree1 = new SimpleTree("mySubTree1", myTree);
+		SimpleTree<JQueryTreeViewElement> mySubSubTree = new SimpleTree("mySubSubTree", mySubTree1);
+		SimpleTree<JQueryTreeViewElement> mySubSubSubtree = new SimpleTree("mySubSubSubtree",mySubSubTree );
+		
+		LinkableTree<?> linkableTree = new LinkableTree("linkabletree", mySubSubSubtree, "http://www.google.com");
+		
+		LinkableTree<JQueryTreeViewElement> anotherTree = new LinkableTree("anothertree",linkableTree, "dsfgsdfgdsfg" );
+
 		SimpleTree mySubTree2 = new SimpleTree("mySubTree2", myTree);
-		SimpleTree mySubSubTree = new SimpleTree("mySubSubTree", mySubTree1);
+
 		
 		treeView = new JQueryTreeView("Example tree viewer", myTree);
 	}
