@@ -8,14 +8,31 @@ import org.molgenis.framework.security.Login;
 
 public class FrontControllerAuthenticator
 {
-	public static boolean login(MolgenisRequest request, String username,
+	
+	public enum LoginStatus {
+		SUCCESSFULLY_LOGGED_IN, ALREADY_LOGGED_IN, AUTHENTICATION_FAILURE, EXCEPTION_THROWN
+	}
+	
+	public enum LogoutStatus {
+		SUCCESSFULLY_LOGGED_OUT, ALREADY_LOGGED_OUT, EXCEPTION_THROWN
+	}
+
+	
+	public static LoginStatus login(MolgenisRequest request, String username,
 			String password)
 	{
-		System.out.println("FrontControllerAuthenticator called");
+		System.out.println("FrontControllerAuthenticator LOGIN called");
 		try
 		{
-			// try to login
+			
 			Database db = request.getDatabase();
+			
+			if(db.getSecurity().isAuthenticated())
+			{
+				return LoginStatus.ALREADY_LOGGED_IN;
+			}
+			
+			// try to login
 			boolean loggedIn = db.getSecurity().login(db, username, password);
 			
 			System.out.println("FrontControllerAuthenticator loggedIn: " + loggedIn);
@@ -26,46 +43,76 @@ public class FrontControllerAuthenticator
 				//Login login = new org.molgenis.auth.DatabaseLogin(request.getDatabase(), "ClusterDemo");
 
 				// store login in session
-				Login login = db.getSecurity();
-				request.getRequest().getSession().setAttribute("login", login);
-				return true;
+				request.getRequest().getSession().setAttribute("login", db.getSecurity());
+				return LoginStatus.SUCCESSFULLY_LOGGED_IN;
 			}
 			else
 			{
-				return false;
+				return LoginStatus.AUTHENTICATION_FAILURE;
 			}
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			return false;
+			return LoginStatus.EXCEPTION_THROWN;
 		}
 	}
 
-	public void logout(MolgenisRequest request, MolgenisResponse response)
-			throws Exception
+	public static LogoutStatus logout(MolgenisRequest request, MolgenisResponse response)
 	{
-		// remove login fron session
-		HttpSession session = request.getRequest().getSession();
-		session.setAttribute("login", null);
-
-		// get current db login and invalidate the session
-		// if user is not logged in, and login is required
-		Login userLogin = null;
-		userLogin = request.getDatabase().getSecurity();
-		
-		if ((!userLogin.isAuthenticated() && userLogin.isLoginRequired()))
+		System.out.println("FrontControllerAuthenticator LOGOUT called");
+		try
 		{
+			
+			Database db = request.getDatabase();
+			
+			if(!db.getSecurity().isAuthenticated())
+			{
+				return LogoutStatus.ALREADY_LOGGED_OUT;
+			}
+			
+			//logout from database
+			//FIXME: needed??
+			request.getDatabase().getSecurity().logout(request.getDatabase());
+			
+			//invalidate the session
+			//FIXME correct??
 			response.getResponse().setHeader("WWW-Authenticate",
 					"BASIC realm=\"MOLGENIS\"");
 			response.getResponse().sendError(
 					HttpServletResponse.SC_UNAUTHORIZED);
-			session.invalidate();
-			return;
+			request.getRequest().getSession().invalidate();
+			
+			return LogoutStatus.SUCCESSFULLY_LOGGED_OUT;
 		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return LogoutStatus.EXCEPTION_THROWN;
+		}
+		
 
-		// logout from db
-		userLogin.logout(request.getDatabase());
+//		// remove login fron session
+//		HttpSession session = request.getRequest().getSession();
+//		session.setAttribute("login", null);
+//
+//		// get current db login and invalidate the session
+//		// if user is not logged in, and login is required
+//		Login userLogin = null;
+//		userLogin = request.getDatabase().getSecurity();
+//		
+//		if ((!userLogin.isAuthenticated() && userLogin.isLoginRequired()))
+//		{
+//			response.getResponse().setHeader("WWW-Authenticate",
+//					"BASIC realm=\"MOLGENIS\"");
+//			response.getResponse().sendError(
+//					HttpServletResponse.SC_UNAUTHORIZED);
+//			session.invalidate();
+//			return;
+//		}
+//
+//		// logout from db
+//		userLogin.logout(request.getDatabase());
 	}
 
 }

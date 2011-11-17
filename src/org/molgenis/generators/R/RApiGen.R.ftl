@@ -30,6 +30,40 @@ source(paste(molgenispath,"${entity.namespace?replace(".","/")}/R/${Name(entity)
 source(paste(molgenispath,"${name(model)}/R/${Name(matrix)}.R", sep=""))
 </#list>
 
+#keep track of the session by emulating a browser
+ch <- getCurlHandle()
+ch <- curlSetOpt(
+	curl = ch,
+	ssl.verifypeer = FALSE,
+	useragent = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13",
+	timeout = 60,
+	followlocation = TRUE,
+	cookiejar = "./cookies",
+	cookiefile = "./cookies"
+)
+
+MOLGENIS.login = function(username, password)
+{
+	servlet <- paste( .MOLGENIS$servletURL, "/api/R", sep="" )
+	curlParams = list(usr = username, pw = password)
+	response <- postForm( servlet, .params = curlParams, curl = ch )
+	handle <- textConnection(response)
+	status <- readLines(handle, 1)
+	cat(status, "\n")
+	close( handle )
+}
+
+MOLGENIS.logout = function()
+{
+	servlet <- paste( .MOLGENIS$servletURL, "/api/R", sep="" )
+	curlParams = list(logout = "logout")
+	response <- postForm( servlet, .params = curlParams, curl = ch )
+	handle <- textConnection(response)
+	status <- readLines(handle, 1)
+	cat(status, "\n")
+	close( handle )
+}
+
 # static helper functions 
 MOLGENIS.connect <- function( servletURL, dbUser=NULL )
 {
@@ -109,7 +143,7 @@ MOLGENIS.find<-function( entityName, conditions, .verbose=T )
     # We query the server
 
     <#--suppressWarnings(-->
-    outputString <- postForm( uri , .params = filter )
+    outputString <- postForm( uri, .params = filter, curl = ch )
     <#--)-->
 	MOLGENIS.debug("Send find to server and got to parse in", format(difftime(Sys.time(),starttime, units="sec"), digits=3),"sec.\n")    
 	
@@ -179,7 +213,7 @@ MOLGENIS.update <- function(entityName, dataMatrix, action, is_matrix=F, row_typ
         close(handle)
     }
     
-    webResponse <- postForm( servlet, .params = curl_params) 
+    webResponse <- postForm( servlet, .params = curl_params, curl = ch ) 
     MOLGENIS.debug("send data to server and got response in", format(difftime(Sys.time(),starttime, units="sec"), digits=3),"\n")
     #remove tempfile      
     unlink(temp)                                              
@@ -210,23 +244,4 @@ MOLGENIS.update <- function(entityName, dataMatrix, action, is_matrix=F, row_typ
         stop(status)
         #return (FALSE);
     }  
-}
-
-MOLGENIS.login <- function(username, password)
-{
-	ch <- getCurlHandle()
-	curlSetOpt(curl = ch,
-            ssl.verifypeer = FALSE,
-            useragent = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13",
-            timeout = 60,
-            followlocation = TRUE,
-            cookiejar = "./cookies",
-            cookiefile = "./cookies")
-	servlet <- paste( .MOLGENIS$servletURL, "/api/R", sep="" )
-	curlParams = list(usr = username, pw = password)
-	response <- postForm( servlet, .params = curlParams, curl = ch)
-	handle <- textConnection(response)
-	status <- readLines(handle, 1)
-	cat(status, "\n")
-	close( handle )
 }
