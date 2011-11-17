@@ -130,4 +130,6 @@ public interface Tree<T> extends Serializable
 	 * @return string with the pat. FIXME: make this return a collection.
 	 */
 	public String getPath( String separator );
+
+	public String getLabel();
 }
