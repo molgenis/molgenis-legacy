@@ -20,6 +20,8 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.FrontControllerAuthenticator;
+import org.molgenis.framework.server.FrontControllerAuthenticator.LoginStatus;
+import org.molgenis.framework.server.FrontControllerAuthenticator.LogoutStatus;
 import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
@@ -57,22 +59,61 @@ public class XqtlRApiService implements MolgenisService
 			
 			System.out.println("going to log in with " + usr + " / " + pw);
 			
-			boolean login = FrontControllerAuthenticator.login(request, usr, pw);
-			String s = login ? "Welcome, " + usr + "!" : "User or password unknown.";
-			response.getResponse().setStatus(HttpServletResponse.SC_OK);		
-			response.getResponse().setContentLength(s.length());
-			response.getResponse().setCharacterEncoding("UTF8");
-			response.getResponse().setContentType("text/plain");
-			out.print(s);
-			out.flush();
-			out.close();
-			response.getResponse().flushBuffer();
+			LoginStatus login = FrontControllerAuthenticator.login(request, usr, pw);
+			
+			String responseLine;
+			if(login == LoginStatus.ALREADY_LOGGED_IN)
+			{
+				responseLine = "You are already logged in. Log out first.";
+			}
+			else if(login == LoginStatus.SUCCESSFULLY_LOGGED_IN)
+			{
+				responseLine = "Welcome, " + usr + "!";
+			}
+			else if(login == LoginStatus.AUTHENTICATION_FAILURE)
+			{
+				responseLine = "User or password unknown.";
+			}
+			else if(login == LoginStatus.EXCEPTION_THROWN)
+			{
+				responseLine = "An error occurred. Contact your administrator.";
+			}
+			else
+			{
+				throw new IOException("Unknown login status: " + login);
+			}
+			
+			writeResponse(response, responseLine, out);
 			return;
 		}
 		
-		
-		
-		
+		if(request.getString("logout") != null && request.getString("logout").equals("logout"))
+		{
+			System.out.println("going to log out..");
+			
+			LogoutStatus logout = FrontControllerAuthenticator.logout(request, response);
+			
+			String responseLine;
+			if(logout == LogoutStatus.ALREADY_LOGGED_OUT)
+			{
+				responseLine = "You are already logged out. Log in first.";
+			}
+			else if(logout == LogoutStatus.SUCCESSFULLY_LOGGED_OUT)
+			{
+				responseLine = "You are successfully logged out.";
+			}
+			else if(logout == LogoutStatus.EXCEPTION_THROWN)
+			{
+				responseLine = "An error occurred. Contact your administrator.";
+			}
+			else
+			{
+				throw new IOException("Unknown logout status: " + logout);
+			}
+			
+			writeResponse(response, responseLine, out);
+			return;
+		}
 		
 		
 		Utils.console("URI path: " +request.getRequest().getRequestURI());
@@ -200,17 +241,21 @@ public class XqtlRApiService implements MolgenisService
 			}
 			Utils.console("done getting specific R file");
 		}
-		response.getResponse().setStatus(HttpServletResponse.SC_OK);		
-		response.getResponse().setContentLength(s.length());
-		response.getResponse().setCharacterEncoding("UTF8");
-		response.getResponse().setContentType("text/plain");
-		out.print(s);
-		out.flush();
-		out.close();
-		response.getResponse().flushBuffer();
+		writeResponse(response, s, out);
 		Utils.console("closed & flushed");
 
 		
+	}
+	
+	private void writeResponse(MolgenisResponse response, String responseLine, PrintStream out) throws IOException{
+		response.getResponse().setStatus(HttpServletResponse.SC_OK);		
+		response.getResponse().setContentLength(responseLine.length());
+		response.getResponse().setCharacterEncoding("UTF8");
+		response.getResponse().setContentType("text/plain");
+		out.print(responseLine);
+		out.flush();
+		out.close();
+		response.getResponse().flushBuffer();
 	}
 
 	private String printScript( URL source, String out ) throws IOException
