@@ -25,6 +25,7 @@ import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.IntInput;
 import org.molgenis.framework.ui.html.RepeatingPanel;
 import org.molgenis.framework.ui.html.SelectInput;
+import org.molgenis.framework.ui.html.SelectMultipleInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.TextLineInput;
 import org.molgenis.framework.ui.html.Newline;
@@ -51,7 +52,7 @@ public class AddAnimalPlugin extends GenericPlugin
 	public SelectInput animaltype = null;
 	public SelectInput source = null;
 	public SelectInput background = null;
-	public SelectInput gene = null;
+	public SelectMultipleInput gene = null;
 	public SelectInput genestate = null;
 	public DateInput birthdate = null;
 	public DateInput entrydate = null;
@@ -62,8 +63,6 @@ public class AddAnimalPlugin extends GenericPlugin
 	public IntInput numberofanimals = null;
 	public SelectInput actor = null;
 	public ActionInput addbutton = null;
-	
-
 	
 	// container that renders whole form as divs (left labels, right inputs)
 	public DivPanel containingPanel = null;
@@ -83,7 +82,11 @@ public class AddAnimalPlugin extends GenericPlugin
 	public String getCustomHtmlHeaders()
     {
         return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">\n" +
-               "<script src=\"res/scripts/custom/addanimals.js\" type=\"text/javascript\" language=\"javascript\"></script>\n";
+               "<script src=\"res/scripts/custom/addanimals.js\" type=\"text/javascript\" language=\"javascript\"></script>\n" +
+               "<script src=\"res/jquery-plugins/multiselect/js/ui.multiselect.js\" type=\"text/javascript\" language=\"javascript\"></script>\n" +
+               "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/multiselect/css/ui.multiselect.css\">\n";
+               //"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/multiselect/css/common.css\">\n";
+        	   // Moved the stuff that's really needed from common.css to ui.multiselect.css
     }
 
 	@Override
@@ -188,23 +191,23 @@ public class AddAnimalPlugin extends GenericPlugin
 			
 			// Check gene name/state pairs
 			List<String> tmpGeneList = new ArrayList<String>();
-			if (gene.getObject() instanceof String) {
-				tmpGeneList.add(gene.getValue());
-			} else {
+//			if (gene.getObject() instanceof String) {
+//				tmpGeneList.add(gene.getValue());
+//			} else {
 				tmpGeneList = (List<String>) gene.getObject();
-			}
-			List<String> tmpGenestateList = new ArrayList<String>();
-			if (genestate.getObject() instanceof String) {
-				tmpGenestateList.add(genestate.getValue());
-			} else {
-				tmpGenestateList = (List<String>) genestate.getObject();
-			}
+//			}
+//			List<String> tmpGenestateList = new ArrayList<String>();
+//			if (genestate.getObject() instanceof String) {
+//				tmpGenestateList.add(genestate.getValue());
+//			} else {
+//				tmpGenestateList = (List<String>) genestate.getObject();
+//			}
 			// Zero or more gene - genestate couples
 			if (tmpGeneList != null) {
 				int nrOfGenes = 0;
 				for (String tmpGene : tmpGeneList) {
 					geneList.add(tmpGene);
-					genestateList.add(tmpGenestateList.get(nrOfGenes++));
+					//genestateList.add(tmpGenestateList.get(nrOfGenes++));
 				}
 			}
 		} else {
@@ -265,8 +268,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		// Investigation
 		int userId = this.getLogin().getUserId();
 		int invid = ct.getOwnUserInvestigationIds(userId).get(0);
-		
-		db.beginTx();
 		
 		// Init lists that we can later add to the DB at once
 		List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
@@ -345,16 +346,14 @@ public class AddAnimalPlugin extends GenericPlugin
 						featureIdList.get(5), animalid, null, backgroundId));
 			}
 			// Set genotype(s)
-			int index = 0;
 			for (String gene : geneList) {
-				String geneState = genestateList.get(index);
+				//String geneState = genestateList.get(index);
 				// Make protocol application
 				app = appsToAddList.get(6);
 				valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
 						featureIdList.get(6), animalid, gene, 0));
-				valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
-						featureIdList.get(7), animalid, geneState, 0));
-				index++;
+				//valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
+				//		featureIdList.get(7), animalid, geneState, 0));
 			}
 			// Set birthdate
 			if (birthDate != null) {
@@ -366,14 +365,12 @@ public class AddAnimalPlugin extends GenericPlugin
 		}	
 		db.add(valuesToAddList);
 		
-		db.commitTx();
-		
 		// Update custom label map now new animals have been added
 		ct.makeObservationTargetNameMap(this.getLogin().getUserId(), true);
 		
 		// Add success message to the screen
 		this.getMessages().clear();
-		this.getMessages().add(new ScreenMessage(animalsToAddList.size() + " animal(s) added succesfully", true));
+		this.getMessages().add(new ScreenMessage(animalsToAddList.size() + " animal(s) successfully added", true));
 	}
 	
 	private void populateTablePanel(Database db) throws DatabaseException, ParseException {
@@ -384,7 +381,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		containingPanel = new DivPanel(this.getName() + "panel", "");
 
 		// Populate animal species list
-		// DISCUSSION: why is this not ontology???
 		species = new SelectInput("species");
 		species.setLabel("Species:");
 		//species.setOptions(ct.getAllMarkedPanels("Species", investigationIds), "id", "name");
@@ -410,7 +406,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		background.setNillable(false);
 		
 		// Populate sexes list
-		// DISCUSSION: why is this not ontology???
 		sex = new SelectInput("sex");
 		sex.setLabel("Sex:");
 		sex.addOption("","");
@@ -458,27 +453,29 @@ public class AddAnimalPlugin extends GenericPlugin
 		animaltype.setNillable(false);
 
 		// gene and genestate are REPEATING and CONDITIONAL on (animaltype = Transgeen dier)
-		
 		gmoPanel = new DivPanel("GMO", "Genotype(s):");
 		gmoPanel.setId("GMO");
 		
-		genePanel = new RepeatingPanel("geneinput", "GMO information:");
+		//genePanel = new RepeatingPanel("geneinput", "GMO information:");
 		
-		gene = new SelectInput("gene");
+		gene = new SelectMultipleInput("gene");
+		gene.setUseJqueryMultiplePlugin(true);
+		gene.setNillable(false); // to avoid the empty option from showing up
 		gene.setLabel("Gene:");
 		for (String option : ct.getAllCodesForFeatureAsStrings("GeneName")) {
 			gene.addOption(option, option);
 		}
-		genePanel.add(gene);
+		//genePanel.add(gene);
+		gmoPanel.add(gene);
 
-		genestate = new SelectInput("genestate");
-		genestate.setLabel("Gene state:");
-		for (String option : ct.getAllCodesForFeatureAsStrings("GeneState")) {
-			genestate.addOption(option, option);
-		}
-		genePanel.add(genestate);
+//		genestate = new SelectInput("genestate");
+//		genestate.setLabel("Gene state:");
+//		for (String option : ct.getAllCodesForFeatureAsStrings("GeneState")) {
+//			genestate.addOption(option, option);
+//		}
+//		genePanel.add(genestate);
 		
-		gmoPanel.add(genePanel);
+		//gmoPanel.add(genePanel);
 		gmoPanel.setHidden(true);
 
 		birthdate = new DateInput("birthdate");

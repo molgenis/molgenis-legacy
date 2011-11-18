@@ -156,7 +156,7 @@ public class AnimaldbSeleniumTest
 		selenium.type("id=numberofanimals", "10");
 		selenium.click("id=Add");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("10 animal(s) added succesfully"));
+		Assert.assertTrue(selenium.isTextPresent("10 animal(s) successfully added"));
 		// Add 10 male Syrian hamsters
 		selenium.select("id=species", "label=Syrian hamster");
 		selenium.select("id=background", "label=C57black6J");
@@ -166,7 +166,7 @@ public class AnimaldbSeleniumTest
 		selenium.type("id=numberofanimals", "10");
 		selenium.click("id=Add");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("10 animal(s) added succesfully"));
+		Assert.assertTrue(selenium.isTextPresent("10 animal(s) successfully added"));
 		
 		sleepHelper("addAnimals");
 	}
