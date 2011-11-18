@@ -149,8 +149,15 @@ public class AddAnimalPlugin extends GenericPlugin
 	
 	private void handleSaveRequest(Database db, Tuple request) throws Exception {
 		genesSaved = true;
+		// first remove existing gene state boxes
+		if (genestateList != null) {
+			for (SelectInput genestateBox : genestateList) {
+				gmoPanel.remove(genestateBox);
+			}
+		}
 		genestateList = new ArrayList<SelectInput>();
-		List<String> geneList = (List<String>) gene.getObject();
+		// then make fresh new gene state boxes for every gene selected
+		List<String> geneList = gene.getObject();
 		for (String geneName : geneList) {
 			SelectInput genestateBox = new SelectInput("genestate_" + geneName);
 			genestateBox.setLabel("State for gene " + geneName + ":");
@@ -208,7 +215,7 @@ public class AddAnimalPlugin extends GenericPlugin
 			// GMO panel already made visible through JavaScript, now make permanent
 			gmoPanel.setHidden(false);
 			// Get gene name/state pairs
-			genes = (List<String>) gene.getObject();
+			genes = gene.getObject();
 			for (SelectInput genestateBox : genestateList) {
 				genestates.add((String) genestateBox.getObject());
 			}
