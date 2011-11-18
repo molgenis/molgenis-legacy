@@ -104,12 +104,19 @@ public class DivPanel extends HtmlWidget
 		Object object;
 		List<HtmlInput<?>> inputList = new ArrayList<HtmlInput<?>>();
 		fillList(inputList, this);
-		for (@SuppressWarnings("rawtypes") HtmlInput input : inputList)
+		for (HtmlInput input : inputList)
 		{
 			object = request.getObject(input.getName());
-			if (object != null)
-			{
-				input.setValue(object);
+			if (input instanceof SelectMultipleInput && object instanceof String) { 
+				// avoid messing up multiple select boxes
+				List<String> stringList = new ArrayList<String>();
+				stringList.add((String) object);
+				input.setValue(stringList);
+			} else {
+				if (object != null)
+				{
+					input.setValue(object);
+				}
 			}
 		}
 	}
