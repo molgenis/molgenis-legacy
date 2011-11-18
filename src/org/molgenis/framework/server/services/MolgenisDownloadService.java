@@ -6,7 +6,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,13 +13,11 @@ import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.server.FrontControllerAuthenticator;
 import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
-import org.molgenis.framework.server.FrontControllerAuthenticator.LoginStatus;
-import org.molgenis.framework.server.FrontControllerAuthenticator.LogoutStatus;
+import org.molgenis.framework.server.MolgenisServiceAuthenticationHelper;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
@@ -52,6 +49,11 @@ public class MolgenisDownloadService implements MolgenisService
 	public void handleRequest(MolgenisRequest req, MolgenisResponse res)
 			throws ParseException, DatabaseException, IOException
 	{
+		if(MolgenisServiceAuthenticationHelper.handleAuthentication(req, res) == false)
+		{
+			return;
+		}
+		
 			HttpServletRequest request = req.getRequest();
 			HttpServletResponse response = res.getResponse();
 			
@@ -89,140 +91,28 @@ public class MolgenisDownloadService implements MolgenisService
 						pathMinusMapping = pathMinusMapping.substring(1);
 					}
 					
-					//login request
-					if(req.getString("usr") != null && req.getString("pwd") != null )
-					{
-						String usr = req.getString("usr");
-						String pw = req.getString("pwd");
-						
-						System.out.println("going to log in with " + usr + " / " + pw);
-						
-						LoginStatus login = FrontControllerAuthenticator.login(req, usr, pw);	
-						
-						
-						if(login == LoginStatus.ALREADY_LOGGED_IN)
-						{
-							// reach this by using the 'back' button of the browser and click Login again :)
-							out.println("<html><body>");
-							out.println("You are already logged in.<br>");
-							out.println("<form name=\"input\" action=\"\" method=\"post\">");
-							out.println("<input type=\"hidden\" name=\"logout\" value=\"logout\"/><br>");;
-							out.println("<input type=\"submit\" value=\"Logout\" />");
-							out.println("</form>");
-							out.println("<form><input type=\"submit\" value=\"Continue\"/></form>");
-							out.println("</body></html>");
-							return;
-						}
-						else if(login == LoginStatus.SUCCESSFULLY_LOGGED_IN)
-						{
-							out.println("<html><body>");
-							out.println("Welcome, " + usr + "!");
-							out.println("<form><input type=\"submit\" value=\"Continue\"/></form>");
-							out.println("</body></html>");
-							return;
-						}
-						else if(login == LoginStatus.AUTHENTICATION_FAILURE)
-						{
-							out.println("<html><body>");
-							out.println("User or password unknown.");
-							out.println("<form><input type=\"submit\" value=\"Retry\"/></form>");
-							out.println("</body></html>");
-							return;
-						}
-						else if(login == LoginStatus.EXCEPTION_THROWN)
-						{
-							out.println("<html><body>");
-							out.println("An error occurred. Contact your administrator.");
-							out.println("</body></html>");
-							return;
-						}
-						else
-						{
-							throw new IOException("Unknown login status: " + login);
-						}
-					}
 					
-					
-					// logout request
-					if(req.getString("logout") != null && req.getString("logout").equals("logout") )
-					{
-						System.out.println("going to log out..");
-						
-						LogoutStatus logout = FrontControllerAuthenticator.logout(req, res);
-
-						if(logout == LogoutStatus.ALREADY_LOGGED_OUT)
-						{
-							// reach this by using the 'back' button of the browser and click Logout again :)
-							out.println("<html><body>");
-							out.println("You are already logged out.");
-							out.println("<form><input type=\"submit\" value=\"Continue\"/></form>");
-							out.println("</body></html>");
-							return;
-						}
-						else if(logout == LogoutStatus.SUCCESSFULLY_LOGGED_OUT)
-						{
-							out.println("<html><body>");
-							out.println("You are successfully logged out.");
-							out.println("<form><input type=\"submit\" value=\"Continue\"/></form>");
-							out.println("</body></html>");
-							return;
-							
-						}
-						else if(logout == LogoutStatus.EXCEPTION_THROWN)
-						{
-							out.println("<html><body>");
-							out.println("An error occurred. Contact your administrator.");
-							out.println("</body></html>");
-						}
-						else
-						{
-							throw new IOException("Unknown logout status: " + logout);
-						}
-					}
-					
-					// regular request: check if user is authenticated
-					if(!db.getSecurity().isAuthenticated())
-					{
-						out.println("<html><body>");
-						out.println("Please login:<br>");
-						out.println("<form name=\"input\" action=\"\" method=\"post\">");
-						out.println("Username: <input type=\"text\" name=\"usr\" /><br>");
-						out.println("Password: <input type=\"text\" name=\"pwd\" /><br>");
-						out.println("<input type=\"submit\" value=\"OK\" />");
-						out.println("</form>");
-						out.println("</body></html>");
-						return;
-					}
-					
-				
 					
 					// check whether a class is chosen
 					if (pathMinusMapping.equals(""))
 					{
 						System.out.println("show 'choose entity' dialogue");
 						out.println("<html><body>");
+						out.println(MolgenisServiceAuthenticationHelper.displayLogoutForm());
 						out.println("You can download data:<br>");
 
+						out.println("<table>");
 						for (String className : db.getEntityNames())
 						{
-
-							if (request.getPathInfo() == null)
-							{
-								//if called from 'find/', this works..
-								//if from 'find', this fails..
-								//TODO need to sort out mapping/paths once and for all
-								out.println("<a href=\"" + className
-										+ "?__showQueryDialogue=true\">"
-										+ className + "</a><br>");
-							}
-							else
-							{
-								out.println("<a href=\"" + className + "\">"
-										+ className + "</a><br>");
-							}
-								
+							out.println("<tr>");
+							out.println("<td><a href=\"" + (request.getPathInfo().endsWith("/") ? "" :  "/" + mc.getVariant() + req.getServicePath() + "/") + className + "\">"
+								+ className + "</a></td>");
+							out.println("<td><a href=\"" + (request.getPathInfo().endsWith("/") ? "" : "/" + mc.getVariant() + req.getServicePath() + "/") + className
+								+ "?__showQueryDialogue=true\">"
+								+ "filter" + "</a></td>");
+							out.println("</tr>");	
 						}
-
+						out.println("</table>");
 						out.println("</body></html>");
 
 						System.out.println("done");
@@ -243,7 +133,7 @@ public class MolgenisDownloadService implements MolgenisService
 						out.println("<html><body><form>");
 						out.println("You choose to download '"
 								+ entityName //FIXME: bad, hardcoded location!
-								+ "' data. (<a href=\"../find\">back</a>)<br><br> Here you can have to set at least one filter:<br>");
+								+ "' data. (<a href=\"../find\">back</a>)<br><br> Here you can set filters before downloading:<br>");
 						out.println("<table>");
 						for (String field : ((Entity) Class.forName(entityName)
 								.newInstance()).getFields())
@@ -276,9 +166,9 @@ public class MolgenisDownloadService implements MolgenisService
 						// + window.location.pathname +
 						// '?'+createFilterURL(this.form.elements); }return
 						// false;\"><br>" );
-						out.println("<input name=\"__submitbutton\" type=\"submit\" value=\"download tab delimited file\" onclick=\""
-								+ "window.location.href = 'http://' + window.location.host + window.location.pathname + '?'+createFilterURL(this.form.elements);\"><br>");
-						out.println("TIP: notice how the url is bookmarkeable for future downloads!");
+						out.println("<input name=\"__submitbutton\" type=\"submit\" value=\"Download tab delimited file\" onclick=\""
+								+ "window.location.href = 'http://' + window.location.host + window.location.pathname + '?'+createFilterURL(this.form.elements);\"><br><br>");
+						out.println("TIP: notice how the url is bookmarkeable for future downloads!<br>");
 						out.println("TIP: click 'save as...' and name it as '.txt' file.");
 						out.println("</form></body></html>");
 						return;
