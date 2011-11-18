@@ -50,6 +50,12 @@
 				label="Delete targets" />
 			<!-- <plugin name="SetCustomLabelFeature" type="plugins.system.SetCustomLabelFeaturePlugin"
 				label="Set custom label feature" /> -->
+			<menu name="locationmenu" position="left" label="Locations">
+			<plugin name="AddLocation" type="plugins.location.AddLocationPlugin"
+				label="Add locations" />
+			<plugin name="LocationInfo" type="plugins.location.LocationInfoPlugin"
+				label="Location info" />
+			</menu>	
 		</menu>
 		
 		<menu name="batches" position="left" label="Batches">	
@@ -83,13 +89,6 @@
 		<!-- plugin name="AddSpecialGroup" type="plugins.specialgroups.AddSpecialGroupPlugin"
 			label="Groups" /-->
 		
-		<!-- menu name="locationmenu" position="left" label="Locations">
-			<plugin name="AddLocation" type="plugins.location.AddLocationPlugin"
-				label="Add locations" />
-			<plugin name="LocationInfo" type="plugins.location.LocationInfoPlugin"
-				label="Location info" />
-		</menu -->
-
 		<menu name="valuemenu" position="left" label="Values">
 			<plugin name="ApplyProtocol" type="org.molgenis.protocol.ApplyProtocolPlugin"
 				label="Edit values" />

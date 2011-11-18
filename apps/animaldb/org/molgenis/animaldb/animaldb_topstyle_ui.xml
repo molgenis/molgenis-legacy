@@ -18,13 +18,13 @@
 				label="Bring in animals" />		
 			<menu name="breedingmodule" position="left" label="Breeding">
 				<plugin name="ViewFamily" type="plugins.breedingplugin.ViewFamily"
-					label="Family info" />
+					label="Family tree" />
 				<plugin name="ManageParentgroups" type="plugins.breedingplugin.ManageParentgroups"
-					label="Manage parent groups" />
+					label="Parent groups" />
 				<plugin name="ManageLitters" type="plugins.breedingplugin.ManageLitters"
-					label="Manage litters" />
+					label="Litters" />
 				<plugin name="ManageLines" type="plugins.breedingplugin.ManageLines"
-					label="Manage breeding lines" />
+					label="Breeding lines" />
 			</menu>
 			<plugin name="RemAnimal" type="plugins.animal.RemAnimalPlugin"
 				label="Remove animals" />
@@ -48,7 +48,7 @@
 			<plugin name="AnimalsInSubprojects" type="plugins.experiments.ShowAnimalsInSubprojects"
 				label="add/remove animals from DEC" />
 			<plugin name="AddProject" type="plugins.experiments.ShowDecProjects"
-				label="DEC applicationss" />
+				label="DEC applications" />
 			<plugin name="AddSubproject" type="plugins.experiments.ShowDecSubprojects"
 				label="DEC subprojects" />
 			
@@ -70,13 +70,6 @@
 		<!-- plugin name="AddSpecialGroup" type="plugins.specialgroups.AddSpecialGroupPlugin"
 			label="Groups" /-->
 		
-		<!-- menu name="locationmenu" position="left" label="Locations">
-			<plugin name="AddLocation" type="plugins.location.AddLocationPlugin"
-				label="Add locations" />
-			<plugin name="LocationInfo" type="plugins.location.LocationInfoPlugin"
-				label="Location info" />
-		</menu -->
-		
 		<menu name="Admin" position="left" label="Admin options">
 			
 			<menu name="securitymenu" position="left" label="Security">
@@ -93,7 +86,13 @@
 					label="Permission management" />
 			</menu>
 			
-
+			<menu name="locationmenu" position="left" label="Locations">
+			<plugin name="AddLocation" type="plugins.location.AddLocationPlugin"
+				label="Add locations" />
+			<plugin name="LocationInfo" type="plugins.location.LocationInfoPlugin"
+				label="Location info" />
+			</menu>	
+			
 			<menu name="systemmenu" position="left" label="System">
 				<menu name="tablemenu" position="left" label="Content tables">
 					<form name="investigation" entity="Investigation" view="list" label="Investigations" />
