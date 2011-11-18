@@ -53,7 +53,7 @@ public class AddAnimalPlugin extends GenericPlugin
 	public SelectInput source = null;
 	public SelectInput background = null;
 	public SelectMultipleInput gene = null;
-	public SelectInput genestate = null;
+	public List<SelectInput> genestateList = null;
 	public DateInput birthdate = null;
 	public DateInput entrydate = null;
 	public SelectInput namebase = null;
@@ -63,6 +63,8 @@ public class AddAnimalPlugin extends GenericPlugin
 	public IntInput numberofanimals = null;
 	public SelectInput actor = null;
 	public ActionInput addbutton = null;
+	public ActionInput savebutton = null;
+	private boolean genesSaved = false;
 	
 	// container that renders whole form as divs (left labels, right inputs)
 	public DivPanel containingPanel = null;
@@ -101,17 +103,18 @@ public class AddAnimalPlugin extends GenericPlugin
 			
 			bases = ct.getPrefixes(userId, "animal");
 			
-			//if (tablePanel == null) {
+			if (!genesSaved) {
 				populateTablePanel(db);
-			//}
+			}
+			
+			genesSaved = false;
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 			this.getMessages().clear();
-			String message = "Something went wrong while loading lists";
-			if (e.getMessage() != null)
-			{
+			String message = "Something went wrong while reloading";
+			if (e.getMessage() != null) {
 				message += (": " + e.getMessage());
 			}
 			this.getMessages().add(new ScreenMessage(message, false));
@@ -121,11 +124,15 @@ public class AddAnimalPlugin extends GenericPlugin
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
+		ct.setDatabase(db);
 		try {
 			String action = request.getAction();
+			containingPanel.setValuesFromRequest(request);
 			if (action.equals("Add")) {
-				containingPanel.setValuesFromRequest(request);
 				handleAddRequest(db, request);
+			}
+			if (action.equals("Save")) {
+				handleSaveRequest(db, request);
 			}
 		} catch (Exception e) {
 			try {
@@ -140,20 +147,33 @@ public class AddAnimalPlugin extends GenericPlugin
 		}
 	}
 	
+	private void handleSaveRequest(Database db, Tuple request) throws Exception {
+		genesSaved = true;
+		genestateList = new ArrayList<SelectInput>();
+		List<String> geneList = (List<String>) gene.getObject();
+		for (String geneName : geneList) {
+			SelectInput genestateBox = new SelectInput("genestate_" + geneName);
+			genestateBox.setLabel("State for gene " + geneName + ":");
+			for (String option : ct.getAllCodesForFeatureAsStrings("GeneState")) {
+				genestateBox.addOption(option, option);
+			}
+			gmoPanel.add(genestateBox);
+			genestateList.add(genestateBox);
+		}
+		gmoPanel.setHidden(false);
+	}
+	
 	private void handleAddRequest(Database db, Tuple request) throws Exception {
-		ct.setDatabase(db);
 		int speciesId = 0;
 		if (species.getObject() != null) {
 			speciesId = Integer.parseInt(species.getObject().toString());
 		} else {
 			throw(new Exception("No species given - animal(s) not added"));
 		}
-		species.setDescription("Provide the species name here.");
 		
 		int backgroundId = 0;
 		if (background.getObject() != null) {
 			Integer.parseInt(background.getObject().toString());
-			
 		} else {
 			throw(new Exception("No background given - animal(s) not added"));
 		}
@@ -180,35 +200,17 @@ public class AddAnimalPlugin extends GenericPlugin
 		}
 		
 		// GMO info
-		List<String> geneList = new ArrayList<String>();
-		List<String> genestateList = new ArrayList<String>();
+		List<String> genes = new ArrayList<String>();
+		List<String> genestates = new ArrayList<String>();
 		// User may have filled in fields and then switched the AnimalType from GMO again,
 		// so we need to check first what the AnimalType is.
 		if (animalType.equals("B. Transgeen dier")) {
 			// GMO panel already made visible through JavaScript, now make permanent
 			gmoPanel.setHidden(false);
-			
-			
-			// Check gene name/state pairs
-			List<String> tmpGeneList = new ArrayList<String>();
-//			if (gene.getObject() instanceof String) {
-//				tmpGeneList.add(gene.getValue());
-//			} else {
-				tmpGeneList = (List<String>) gene.getObject();
-//			}
-//			List<String> tmpGenestateList = new ArrayList<String>();
-//			if (genestate.getObject() instanceof String) {
-//				tmpGenestateList.add(genestate.getValue());
-//			} else {
-//				tmpGenestateList = (List<String>) genestate.getObject();
-//			}
-			// Zero or more gene - genestate couples
-			if (tmpGeneList != null) {
-				int nrOfGenes = 0;
-				for (String tmpGene : tmpGeneList) {
-					geneList.add(tmpGene);
-					//genestateList.add(tmpGenestateList.get(nrOfGenes++));
-				}
+			// Get gene name/state pairs
+			genes = (List<String>) gene.getObject();
+			for (SelectInput genestateBox : genestateList) {
+				genestates.add((String) genestateBox.getObject());
 			}
 		} else {
 			// GMO panel already made invisible through JavaScript, now make permanent
@@ -346,14 +348,16 @@ public class AddAnimalPlugin extends GenericPlugin
 						featureIdList.get(5), animalid, null, backgroundId));
 			}
 			// Set genotype(s)
-			for (String gene : geneList) {
-				//String geneState = genestateList.get(index);
+			int index = 0;
+			for (String gene : genes) {
+				String geneState = genestates.get(index);
 				// Make protocol application
 				app = appsToAddList.get(6);
 				valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
 						featureIdList.get(6), animalid, gene, 0));
-				//valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
-				//		featureIdList.get(7), animalid, geneState, 0));
+				valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
+						featureIdList.get(7), animalid, geneState, 0));
+				index++;
 			}
 			// Set birthdate
 			if (birthDate != null) {
@@ -401,8 +405,8 @@ public class AddAnimalPlugin extends GenericPlugin
 		background.addOption("0", "no background");
 		ArrayList<ObservationTarget> backgroundslist= new ArrayList<ObservationTarget>(ct.getAllMarkedPanels("Background", investigationIds));
 		for (ObservationTarget each : backgroundslist) {
-				background.addOption(each.getId(), each.getName());
-			}
+			background.addOption(each.getId(), each.getName());
+		}
 		background.setNillable(false);
 		
 		// Populate sexes list
@@ -452,30 +456,19 @@ public class AddAnimalPlugin extends GenericPlugin
 		animaltype.setOnchange("showHideGenotypeDiv(this.value);");
 		animaltype.setNillable(false);
 
-		// gene and genestate are REPEATING and CONDITIONAL on (animaltype = Transgeen dier)
-		gmoPanel = new DivPanel("GMO", "Genotype(s):");
+		// gene and genestate are CONDITIONAL on animaltype = B. Transgeen dier
+		gmoPanel = new DivPanel("GMO", "Genotype:");
 		gmoPanel.setId("GMO");
-		
-		//genePanel = new RepeatingPanel("geneinput", "GMO information:");
-		
 		gene = new SelectMultipleInput("gene");
 		gene.setUseJqueryMultiplePlugin(true);
 		gene.setNillable(false); // to avoid the empty option from showing up
-		gene.setLabel("Gene:");
+		gene.setLabel("Gene(s):");
 		for (String option : ct.getAllCodesForFeatureAsStrings("GeneName")) {
 			gene.addOption(option, option);
 		}
-		//genePanel.add(gene);
 		gmoPanel.add(gene);
-
-//		genestate = new SelectInput("genestate");
-//		genestate.setLabel("Gene state:");
-//		for (String option : ct.getAllCodesForFeatureAsStrings("GeneState")) {
-//			genestate.addOption(option, option);
-//		}
-//		genePanel.add(genestate);
-		
-		//gmoPanel.add(genePanel);
+		savebutton = new ActionInput("Save", "", "Save gene(s)");
+		gmoPanel.add(savebutton);
 		gmoPanel.setHidden(true);
 
 		birthdate = new DateInput("birthdate");
@@ -490,7 +483,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		entrydate.setDescription("The date of arrival of these animals in the animal facility. This date will be used as start date to count the presence of animals in the yearly report.");
 		
 		namePanel = new DivPanel("Name", "Name:");
-		
 		namebase = new SelectInput("namebase");
 		namebase.setLabel("Name prefix (may be empty):");
 		namebase.setId("namebase");
@@ -504,7 +496,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		namebase.setValue(""); // default empty prefix
 		namebase.setOnchange("updateStartNumberAndNewNameBase(this.value)");
 		namePanel.add(namebase);
-		
 		startnumberhelper = new TextLineInput<String>("startnumberhelper");
 		startnumberhelper.setLabel("");
 		String helperContents = ((ct.getHighestNumberForPrefix("") + 1) + ";"); // start number for empty base (comes first in jQuery select box because default)
@@ -517,7 +508,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		startnumberhelper.setValue(helperContents);
 		startnumberhelper.setHidden(true);
 		namePanel.add(startnumberhelper);
-		
 		newnamebase = new StringInput("newnamebase");
 		newnamebase.setLabel("New name prefix:");
 		newnamebasePanel = new DivPanel("Namebase", "");
@@ -525,7 +515,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		newnamebasePanel.setId("newnamebasePanel");
 		newnamebasePanel.setHidden(true);
 		namePanel.add(newnamebasePanel);
-	
 		startnumber = new IntInput("startnumber");
 		startnumber.setLabel("Start numbering at:");
 		startnumber.setId("startnumber");
