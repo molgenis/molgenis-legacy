@@ -28,6 +28,8 @@ public class SelectMultipleInput extends OptionInput<List<String>>
 {
 	public static final String VALUES = "values";
 	
+	private boolean useJqueryMultiplePlugin = false;
+	
 	/**
 	 * 
 	 * @param name Name of the Input
@@ -104,16 +106,24 @@ public class SelectMultipleInput extends OptionInput<List<String>>
 		
 		if(uiToolkit == UiToolkit.ORIGINAL)
 		{
-		return "<select id=\"" + this.getId() + "\" multiple name=\""
-				+ this.getName() + "\" " + readonly + " style=\""
-				+ this.getStyle() + "\">\n" + optionsHtml.toString()
-				+ "</select>\n";
-		} else if(uiToolkit == UiToolkit.JQUERY)
-		{
-			return "<select multiple class=\"ui-widget-content ui-corner-all\" id=\"" 
-			+ this.getId() + "\" name=\"" + this.getName() + "\" "
-			+ readonly + " style=\"width:350px;\">\n" + optionsHtml.toString()
-			+ "</select><script>$(\"#"+this.getId()+"\").chosen();</script>\n";
+			return "<select id=\"" + this.getId() + "\" multiple name=\""
+					+ this.getName() + "\" " + readonly + " style=\""
+					+ this.getStyle() + "\">\n" + optionsHtml.toString()
+					+ "</select>\n";
+		} else if(uiToolkit == UiToolkit.JQUERY) {
+			if (useJqueryMultiplePlugin) {
+				return "<select multiple=\"multiple\" class=\"multiselect\"" +
+						"\" id=\"" + this.getId() + "\" name=\"" + this.getName() + "\" " + readonly + 
+						">\n" + optionsHtml.toString() +
+						"</select><script>$(\"#" + this.getId() + "\").multiselect();</script>\n";
+						// don't forget to link res/jquery-plugins/multiselect/js/ui.multiselect.js in your plugin!
+			} else {
+				return "<select multiple=\"multiple\" class=\"ui-widget-content ui-corner-all\"" +
+						" id=\"" + this.getId() + "\" name=\"" + this.getName() + "\" " + readonly + 
+						" style=\"width:350px;\"" +
+						">\n" + optionsHtml.toString() +
+						"</select><script>$(\"#" + this.getId() + "\").chosen();</script>\n";
+			}
 		}
 		else
 		{
@@ -192,5 +202,15 @@ public class SelectMultipleInput extends OptionInput<List<String>>
 			HtmlInputException
 	{
 		return new SelectMultipleInput(params).render();
+	}
+
+	public boolean isUseJqueryMultiplePlugin()
+	{
+		return useJqueryMultiplePlugin;
+	}
+
+	public void setUseJqueryMultiplePlugin(boolean useJqueryMultiplePlugin)
+	{
+		this.useJqueryMultiplePlugin = useJqueryMultiplePlugin;
 	}
 }
