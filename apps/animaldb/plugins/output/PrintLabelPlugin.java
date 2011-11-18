@@ -50,6 +50,7 @@ public class PrintLabelPlugin extends GenericPlugin
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
+		cs.setDatabase(db);
 		try {
 			String action = request.getString("__action");
 			
