@@ -173,7 +173,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		
 		int backgroundId = 0;
 		if (background.getObject() != null) {
-			Integer.parseInt(background.getObject().toString());
+			backgroundId = Integer.parseInt(background.getObject().toString());
 		} else {
 			throw(new Exception("No background given - animal(s) not added"));
 		}
@@ -387,7 +387,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		// Populate animal species list
 		species = new SelectInput("species");
 		species.setLabel("Species:");
-		//species.setOptions(ct.getAllMarkedPanels("Species", investigationIds), "id", "name");
 		species.addOption("","");
 		for (ObservationTarget s : ct.getAllMarkedPanels("Species", investigationIds)) {
 			species.addOption(s.getId(), s.getName());
@@ -398,14 +397,12 @@ public class AddAnimalPlugin extends GenericPlugin
 		
 		background = new SelectInput("background");
 		background.setLabel("Background:");
-		//background.setOptions(ct.getAllMarkedPanels("Background", investigationIds), "id", "name");
-		background.setDescription("Give the genetic background of the animal, for instance C57black6/j, if applicable.");
-		background.setTooltip("Give the genetic background of the animal, for instance C57black6/j, if applicable.");
+		background.setDescription("Give the genetic background of the animal, for instance C57black6/j.");
+		background.setTooltip("Give the genetic background of the animal, for instance C57black6/j.");
 		background.addOption("","");
 		background.addOption("0", "no background");
-		ArrayList<ObservationTarget> backgroundslist= new ArrayList<ObservationTarget>(ct.getAllMarkedPanels("Background", investigationIds));
-		for (ObservationTarget each : backgroundslist) {
-			background.addOption(each.getId(), each.getName());
+		for (ObservationTarget b : ct.getAllMarkedPanels("Background", investigationIds)) {
+			background.addOption(b.getId(), b.getName());
 		}
 		background.setNillable(false);
 		
@@ -413,7 +410,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		sex = new SelectInput("sex");
 		sex.setLabel("Sex:");
 		sex.addOption("","");
-		//sex.setOptions(ct.getAllMarkedPanels("Sex", investigationIds), "id", "name");
 		for (ObservationTarget s : ct.getAllMarkedPanels("Sex", investigationIds)) {
 			sex.addOption(s.getId(), s.getName());
 		}

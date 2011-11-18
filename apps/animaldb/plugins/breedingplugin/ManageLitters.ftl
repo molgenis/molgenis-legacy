@@ -177,6 +177,10 @@
 		<label for='weansizemale'>Nr. of males:</label>
 		<input type='text' class='textbox' name='weansizemale' id='weansizemale' value='<#if screen.weanSizeMale?exists>${screen.getWeanSizeMale()}</#if>' />
 	</div>
+	<div id='weansize_part3' class='row'>
+		<label for='weansizeunknown'>Nr. of unknowns:</label>
+		<input type='text' class='textbox' name='weansizeunknown' id='weansizeunknown' value='<#if screen.weanSizeUnknown?exists>${screen.getWeanSizeUnknown()}</#if>' />
+	</div>
 	<p>Name:</p>
 	<div id="divnamebase" class="row">
 		<label for="namebase">Name prefix (may be empty):</label>

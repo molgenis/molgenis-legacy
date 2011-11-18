@@ -100,6 +100,8 @@ public class FillAnimalDB {
 		ct.makeMeasurement(invid, "Size", numberUnitId, null, null, true, "int", "To set the size of a target-group, for instance a litter.", login.getUserId());
 		ct.makeMeasurement(invid, "WeanSize", numberUnitId, null, null, true, "int", "To set the wean size of a litter.", login.getUserId());
 		ct.makeMeasurement(invid, "WeanSizeFemale", numberUnitId, null, null, true, "int", "To set the number of females in a litter when weaning.", login.getUserId());
+		ct.makeMeasurement(invid, "WeanSizeMale", numberUnitId, null, null, true, "int", "To set the number of males in a litter when weaning.", login.getUserId());
+		ct.makeMeasurement(invid, "WeanSizeUnknown", numberUnitId, null, null, true, "int", "To set the number of animals of unknown sex in a litter when weaning.", login.getUserId());
 		ct.makeMeasurement(invid, "Street", stringUnitId, null, null, false, "string", "To set the street part of an address.", login.getUserId());
 		ct.makeMeasurement(invid, "Housenumber", numberUnitId, null, null, false, "int", "To set the house-number part of an address.", login.getUserId());
 		ct.makeMeasurement(invid, "City", stringUnitId, null, null, false, "string", "To set the city part of an address.", login.getUserId());
