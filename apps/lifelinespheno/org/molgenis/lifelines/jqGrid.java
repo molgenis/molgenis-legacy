@@ -29,6 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gridgain.grid.util.GridBoundedLinkedHashMap;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.matrix.Utils.MatrixExporters;
 import org.molgenis.matrix.component.Column;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
@@ -67,6 +68,7 @@ public class jqGrid extends HttpServlet {
         try {
             String operation = request.getParameter("op");
             String selectedColumnsPar = request.getParameter("selectedCols");
+            String exportType = request.getParameter("exportType");
 
             //        @SuppressWarnings("unchecked")
             //        Enumeration<String> en = request.getParameterNames();
@@ -113,7 +115,7 @@ public class jqGrid extends HttpServlet {
                 return;
             }
 
-            renderMatrix(request, response, em, "", columns, matrix, db);
+            renderMatrix(request, response, em, exportType, columns, matrix, db);
         } catch (Exception ex) {
             Logger.getLogger(jqGrid.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
@@ -183,12 +185,13 @@ public class jqGrid extends HttpServlet {
         applyFiltersToMatrix(matrix, filters);
 
         try {
-            renderJsonTable(matrix, response.getWriter(), db);
 
-//            if (StringUtils.isNotEmpty(exportType) && exportType.equals("excelExport")) {
-//            } else {
-//                renderJsonTable(matrix, response.getWriter());
-//            }
+
+            if (StringUtils.isNotEmpty(exportType) && exportType.equals("excel")) {
+                MatrixExporters.getAsExcel(db, matrix, response.getOutputStream());
+            } else {
+                renderJsonTable(matrix, response.getWriter(), db);
+            }
         } catch (Exception e) {
             HandleException.handle(e);
         }
