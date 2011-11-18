@@ -21,11 +21,13 @@ public class LLcatalogueSplitterPlugin  extends PluginModel<Entity>
 		
 		super(name, parent);
 		
-		splitter = new JQuerySplitter<Object>("splitter");
 		JQuerySplitterContents splitterContents = new JQuerySplitterContents();
 		splitterContents.setLeftPane("<p>This is the left side of the splitter </p> <p>&nbsp;</p>");
 		splitterContents.setRightTopPane("<p> Right Top Pane </p>");
 		splitterContents.setRightBottomPane("<p>right bottom Pane</p>");
+		
+		splitter = new JQuerySplitter<Object>("splitter", splitterContents);
+		
 	}
 
 	@Override
