@@ -946,21 +946,32 @@ public class ManageLitters extends PluginModel<Entity>
 			}
 			
 			if (action.equals("AddGenoCol")) {
+				storeGenotypeTable(db, request);
 				nrOfGenotypes++;
 				genotypeTable.addColumn("Gene name");
 				genotypeTable.addColumn("Gene state");
 				int row = 0;
 				for (Individual animal : getAnimalsInLitter(db)) {
 					int animalId = animal.getId();
-					// Gene name (n)
+					// Check for already selected genes for this animal
+					List<String> selectedGenes = new ArrayList<String>();
+					for (int genoNr = 0; genoNr < nrOfGenotypes - 1; genoNr++) {
+						int currCol = 5 + (genoNr * 2);
+						if (request.getString(currCol + "_" + row) != null) {
+							selectedGenes.add(request.getString(currCol + "_" + row));
+						}
+					}
+					// Make new gene name box
 					int newCol = 5 + ((nrOfGenotypes - 1) * 2);
 					SelectInput geneNameInput = new SelectInput(newCol + "_" + row);
 					for (String geneName : this.geneNameList) {
-						geneNameInput.addOption(geneName, geneName);
+						if (!selectedGenes.contains(geneName)) {
+							geneNameInput.addOption(geneName, geneName);
+						}
 					}
 					geneNameInput.setValue(getAnimalGeneInfo("GeneName", animalId, nrOfGenotypes, db));
 					genotypeTable.setCell(newCol, row, geneNameInput);
-					// Gene state (n)
+					// Make new gene state box
 					SelectInput geneStateInput = new SelectInput((newCol + 1) + "_" + row);
 					for (String geneState : this.geneStateList) {
 						geneStateInput.addOption(geneState, geneState);
@@ -969,7 +980,6 @@ public class ManageLitters extends PluginModel<Entity>
 					genotypeTable.setCell(newCol + 1, row, geneStateInput);
 					row++;
 				}
-				storeGenotypeTable(db, request);
 				this.getMessages().add(new ScreenMessage("Gene name + state pair successfully added", true));
 			}
 			
