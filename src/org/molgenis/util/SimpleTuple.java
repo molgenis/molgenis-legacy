@@ -25,7 +25,6 @@ import java.util.Vector;
 public class SimpleTuple implements Tuple
 {
 	/** Map where values are stored */
-	// private Map<String, Object> values;
 	private List<String> keys = new ArrayList<String>();
 	private Map<String, Integer> lowercaseKeyToId = new LinkedHashMap<String, Integer>();
 	private List<Object> values = new ArrayList<Object>();
