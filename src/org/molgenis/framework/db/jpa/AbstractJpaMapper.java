@@ -4,8 +4,12 @@ package org.molgenis.framework.db.jpa;
 import java.io.File;
 import java.text.ParseException;
 import java.util.List;
+
 import javax.persistence.EntityManager;
+
 import org.apache.log4j.Logger;
+import org.hibernate.FlushMode;
+import org.hibernate.Session;
 import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -73,6 +77,9 @@ public abstract class AbstractJpaMapper<E extends Entity> implements Mapper<E> {
         {
                 // begin transaction for all batches
                 database.beginPrivateTx(TX_TICKET);
+                Session session = (Session) em.getDelegate();
+                session.setFlushMode(FlushMode.MANUAL);
+                
 
                 // prepare all file attachments
                 this.prepareFileAttachements(entities, database.getFilesource());
@@ -90,6 +97,7 @@ public abstract class AbstractJpaMapper<E extends Entity> implements Mapper<E> {
                             ++updatedRows;
                         }
                         em.flush();
+                        em.clear();
                 }
 
                 // commit all batches
