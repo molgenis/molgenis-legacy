@@ -555,7 +555,7 @@ public abstract class JDBCConnectionHelper extends AbstractDatabase
 	 */
 	public static String escapeSql(Object value)
 	{
-		if (value != null) return StringEscapeUtils.escapeSql(value.toString().replace("'", "''"));
+		if (value != null) return StringEscapeUtils.escapeSql(value.toString());
 		return null;
 		// return sql.toString().replace("'", "''");
 	}
