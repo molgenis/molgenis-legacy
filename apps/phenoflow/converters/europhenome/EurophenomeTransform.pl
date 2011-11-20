@@ -64,6 +64,7 @@ my %terms = (
 	'Ensembl Gene ID'                        => 'Ensembl Gene ID',
 	'Procedure Name'    	                => 'Procedure eslim id',
 	'Parameter name'                         => 'Parameter eslim id',
+	 'Mp term name'							=> 'Mp term',
 );
 
 sub main() {
@@ -241,7 +242,7 @@ sub write_observedvalue() {
 		my $target_name        = get_panel_nameDP($datapoint);
 		my $feature_name       = $datapoint->{'Parameter name'};
 		my $protocol_app = get_protocolapplication_nameDP($datapoint);
-		my $ref = $datapoint->{ 'Mammalian Phenotype Ontology Term Name' };
+		my $ref = $datapoint->{ 'Mp term name' };
 		next unless defined $ref;
 		my $key = join( "\t", $investigation_name, $protocol_app, $feature_name, $target_name, $ref, q{N/A} );
 		$observedvalue{$key}++;
