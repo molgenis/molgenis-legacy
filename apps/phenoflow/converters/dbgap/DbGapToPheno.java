@@ -41,16 +41,16 @@ public class DbGapToPheno {
 
 	List<Investigation> investigations = new ArrayList<Investigation>();
 	List<Protocol> protocols = new ArrayList<Protocol>();
-	List<Measurement> features = new ArrayList<Measurement>();
+	List<Measurement> measurements = new ArrayList<Measurement>();
 	Set<OntologyTerm> ontologyterms = new HashSet<OntologyTerm>();
-	Map<String, Category> terms = new TreeMap<String, Category>();
+	Map<String, Category> categories = new TreeMap<String, Category>();
 	List<Panel> panels = new ArrayList<Panel>();
 	List<ObservedValue> observedValues = new ArrayList<ObservedValue>();
 
 	public static void main(String[] args) throws Exception {
 		// This will need updating if run on a different machine
 		// String outputFolder = "d:/Data/dbgap/";
-		String outputFolder = "C:/Users/Tomasz/pheno_workspace/pheno_data/dbgap/";
+		String outputFolder = "../pheno_data/dbgap/";
 		String dbgapUrl = outputFolder + "FTP_Table_of_Contents.xml";
 		DbGapService dbgap = new DbGapService(new File(dbgapUrl).toURI()
 				.toURL(), new File(outputFolder));
@@ -106,8 +106,11 @@ public class DbGapToPheno {
 
 			// debug purposes only
 			count++;
-			if (count > 6)
+			if (count > 5)
+			{
+				System.out.println("skipped other studies!");
 				break;
+			}
 		}
 
 	}
@@ -115,7 +118,7 @@ public class DbGapToPheno {
 	public void write(File dir) throws Exception {
 		new CsvExport().exportAll(dir, investigations,
 				new ArrayList<OntologyTerm>(ontologyterms), protocols,
-				features, new ArrayList(terms.values()), panels, observedValues);
+				measurements, new ArrayList(categories.values()), panels, observedValues);
 	}
 
 	public static void downloadFile(URL url, File destination)
@@ -174,23 +177,51 @@ public class DbGapToPheno {
 			protocols.add(p);
 
 			for (Variable var : dd.variables) {
-				Measurement f = new Measurement();
-				f.setInvestigation_Name(i.getName());
-				f.setName(var.name.toLowerCase());
-				f.setDescription(var.description);
+				Measurement measurement = new Measurement();
+				measurement.setInvestigation_Name(i.getName());
+				measurement.setName(var.name.toLowerCase());
+				measurement.setDescription(var.description);
+				
 				// todo: add annotation feature NVT type?
 				if (var.type != null){
-					f.setDataType(var.type);
+					String dataType;
+					
+					//available types: xref,string,categorical,datetime,int,code,image,decimal,bool,file,log,data
+					if("decimal".equals(var.type))
+					{
+						dataType = "decimal";
+					}
+					else if("integer".equals(var.type))
+					{
+						dataType = "int";
+					}
+					else if("enumerated integer".equals(var.type))
+					{
+						//will have categories I suppose?
+						dataType = "int";
+					}
+					else if("string".equals(var.type))
+					{
+						dataType = "string";
+					}
+					else
+					{
+						throw new RuntimeException("encountered Measurement.dataType=="+var.type);
+					}
+					
+					
+					measurement.setDataType(dataType);
 					//f.set__Type(var.type);
 				}
 				
 				if (var.logical_min != null)
-					f.setDescription(f.getDescription() + " LogicalMin="
+					measurement.setDescription(measurement.getDescription() + " LogicalMin="
 							+ var.logical_min + ".");
 				if (var.logical_min != null)
-					f.setDescription(f.getDescription() + " LogicalMax="
+					measurement.setDescription(measurement.getDescription() + " LogicalMax="
 							+ var.logical_max + ".");
-				f.setUnit_Name(var.unit);
+			
+				measurement.setUnit_Name(var.unit);
 
 				if (var.unit != null && !var.unit.equals("")) {
 					OntologyTerm ot = new OntologyTerm();
@@ -198,36 +229,50 @@ public class DbGapToPheno {
 					ontologyterms.add(ot);
 				}
 
-				features.add(f);
-				p.getFeatures_Name().add(f.getName());
+				measurements.add(measurement);
+				p.getFeatures_Name().add(measurement.getName());
 
-				if (var.unit != null && terms.get(var.unit) == null) {
-					Category t = new Category();
-					t.setCode_String(var.unit);
-					t.setDescription("N/A.");
-					t.getFeature_Name().add(f.getName());
-					// t.setInvestigationLabel(i.getName());
-
-					if (terms.containsKey(var.unit))
-						logger.warn("duplicate term " + var.unit);
-					terms.put(var.unit, t);
-				}
+//				if (var.unit != null && terms.get(var.unit) == null) {
+//					Category t = new Category();
+//					t.setName(var.unit);
+//					t.setCode_String(var.unit);
+//					t.setLabel(var.unit);
+//					t.setDescription("N/A.");
+//					t.setInvestigation_Name(i.getName());
+//					
+//					//link category to measurement
+//					measurement.getCategories_Name().add(t.getName());
+//					//t.getFeature_Name().add(f.getName());
+//					
+//					// t.setInvestigationLabel(i.getName());
+//
+//					if (terms.containsKey(var.unit))
+//						logger.warn("duplicate term " + var.unit);
+//					terms.put(var.unit, t);
+//				}
 
 				if (var.values.size() > 0) {
 					for (Value v : var.values) {
-						Category code = new Category();
-						code.setCode_String(v.code);
-						code.setDescription(v.value);
-						code.getFeature_Name().add(f.getName());
-						// f.getValueCodesLabels().add(code.getTerm());
+						Category category = new Category();
+						category.setCode_String(v.code);
+						category.setLabel(v.value);
+						category.setDescription("NA");
+						category.setName(measurement.getName()+"_"+v.code);
+						category.setInvestigation_Name(i.getName());
+						
+						categories.put(category.getName(), category);
+						
+						//code.getFeature_Name().add(f.getName());
+						measurement.getCategories_Name().add(category.getName());
+						
 						// give error on duplicate term
 						if (v.code == null) {
 							logger.warn("empty code on " + v.value);
 						}
-						if (v.code != null && terms.containsKey(v.code)) {
+						if (v.code != null && categories.containsKey(v.code)) {
 							logger.warn("duplicate term " + v.code);
 							if (v.code != null) {
-								terms.put(v.code, code);
+								categories.put(v.code, category);
 							}
 
 						}
@@ -312,18 +357,28 @@ public class DbGapToPheno {
 	private void addObservedValue(Panel p, Investigation i, VariableSummary vs,
 			String value, String inferenceType) {
 
-		if (terms.get(inferenceType) == null) {
-			Category t = new Category();
-			t.setCode_String(inferenceType);
-			t.setDescription("N/A.");
+		Measurement inference = null;
+		for(Measurement m: this.measurements)
+		{
+			if(m.getName().equals(inferenceType))
+			{
+				inference = m;
+			}
+		}
+		if (inference == null) {
+			inference = new Measurement();
+			inference.setName(inferenceType);
+			inference.setDescription("N/A.");
+			inference.setInvestigation_Name(i.getName());
 			// t.setInvestigation_Name(i.getName());
-			terms.put(inferenceType, t);
+			measurements.add(inference);
 		}
 
 		ObservedValue v = new ObservedValue();
 		v.setInvestigation_Name(i.getName());
 		v.setFeature_Name(vs.var_name.toLowerCase());
 		v.setValue(value);
+		v.setRelation_Name(inferenceType);
 		// v.setInferenceTypeLabel(inferenceType);
 		v.setTarget_Name(p.getName());
 		// System.out.println("inferfed value " + v);
@@ -337,9 +392,9 @@ public class DbGapToPheno {
 			result += i + "\n";
 		for (Protocol p2 : protocols)
 			result += p2 + "\n";
-		for (Measurement f2 : features)
+		for (Measurement f2 : measurements)
 			result += f2 + "\n";
-		for (Category t : terms.values())
+		for (Category t : categories.values())
 			result += t + "\n";
 		for (Panel p : panels)
 			result += p + "\n";

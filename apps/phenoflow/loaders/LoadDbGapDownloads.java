@@ -27,7 +27,7 @@ public class LoadDbGapDownloads {
 		// This will need updating if run on a different machine
 		// File rootDir = new File("D:\\Data\\dbgap");
 		File rootDir = new File(
-				"C:/Users/Tomasz/pheno_workspace/pheno_data/dbgap/");
+				"../pheno_data/dbgap/");
 
 		for (File investigationDir : rootDir.listFiles(new FileFilter() {
 		    public boolean accept(File file) {
@@ -42,6 +42,7 @@ public class LoadDbGapDownloads {
 			List<String> list = new ArrayList<String>();
 			list.add("investigation");
 			list.add("ontologyterm");
+			list.add("category");
 			list.add("measurement");
 
 			CsvImport.importAll(investigationDir, db, new SimpleTuple(), list,
