@@ -37,7 +37,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 	/** log messages */
 	private static transient final Logger logger = Logger.getLogger(AbstractJDBCMapper.class.getSimpleName());
 	/** batch size */
-	static final int BATCH_SIZE = 5000;
+	public static final int BATCH_SIZE = 5000;
 
 	public AbstractJDBCMapper(JDBCDatabase database)
 	{
