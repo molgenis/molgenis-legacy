@@ -18,8 +18,6 @@
 
 </#if>
 
-	<div id="push">
-	</div>
 </div>
 <div id="footer">
 	<i>This database was generated using the open source <a href="http://www.molgenis.org">MOLGENIS database generator</a> version ${screen.getVersion()}.
