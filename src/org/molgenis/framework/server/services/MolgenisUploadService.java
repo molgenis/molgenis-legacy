@@ -178,7 +178,8 @@ public class MolgenisUploadService implements MolgenisService
 					try
 					{
 						String clazzName = requestTuple.getString(INPUT_DATATYPE);
-						entityClass = req.getDatabase().getClassForName(clazzName);
+						String simpleEntityName = clazzName.substring(clazzName.lastIndexOf('.')+1);						
+						entityClass = req.getDatabase().getClassForName(simpleEntityName);
 
 						// get the constants
 						Tuple constants = new SimpleTuple();
