@@ -20,7 +20,7 @@ package org.molgenis.util;
  * 
  * @see org.molgenis.util.CsvReader#parse
  */
-public interface CsvReaderListener
+public interface CsvReaderListener extends TupleReaderListener
 {
 	/**
 	 * Strategy method to be implemented.
