@@ -19,7 +19,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.pheno.Code;
+import org.molgenis.pheno.Category;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
@@ -31,7 +31,7 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 6730055654508843657L;
 	private List<Integer> animalIdList;
-	private List<Code> removalCodeList;
+	private List<Category> removalCodeList;
 	private CommonService ct = CommonService.getInstance();
 
 	public RemAnimalPlugin(String name, ScreenController<?> parent)
@@ -77,12 +77,12 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 		}
 	}
 
-	public void setRemovalCodeList(List<Code> removalCodeList)
+	public void setRemovalCodeList(List<Category> removalCodeList)
 	{
 		this.removalCodeList = removalCodeList;
 	}
 
-	public List<Code> getRemovalCodeList()
+	public List<Category> getRemovalCodeList()
 	{
 		return removalCodeList;
 	}

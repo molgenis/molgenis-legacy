@@ -23,7 +23,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.pheno.Code;
+import org.molgenis.pheno.Category;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.ProtocolApplication;
@@ -39,12 +39,12 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 	private List<Integer> allAnimalIdList;
 	private List<Integer> animalRemoveIdList = new ArrayList<Integer>();
 	private List<Integer> animalIdList = new ArrayList<Integer>();
-	private List<Code> expectedDiscomfortCodeList;
-	private List<Code> painManagementCodeList;
-	private List<Code> anaesthesiaCodeList;
-	private List<Code> expectedEndstatusCodeList;
-	private List<Code> actualDiscomfortCodeList;
-	private List<Code> actualEndstatusCodeList;
+	private List<Category> expectedDiscomfortCodeList;
+	private List<Category> painManagementCodeList;
+	private List<Category> anaesthesiaCodeList;
+	private List<Category> expectedEndstatusCodeList;
+	private List<Category> actualDiscomfortCodeList;
+	private List<Category> actualEndstatusCodeList;
 	private CommonService ct = CommonService.getInstance();
 	private String action = "init";
 	private ObservationTarget animalToAddOrRemove;
@@ -80,62 +80,62 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 		return newDateOnlyFormat.format(now);
 	}
 
-	public void setActualDiscomfortCodeList(List<Code> actualDiscomfortCodeList)
+	public void setActualDiscomfortCodeList(List<Category> actualDiscomfortCodeList)
 	{
 		this.actualDiscomfortCodeList = actualDiscomfortCodeList;
 	}
 
-	public List<Code> getActualDiscomfortCodeList()
+	public List<Category> getActualDiscomfortCodeList()
 	{
 		return actualDiscomfortCodeList;
 	}
 
-	public void setActualEndstatusCodeList(List<Code> actualEndstatusCodeList)
+	public void setActualEndstatusCodeList(List<Category> actualEndstatusCodeList)
 	{
 		this.actualEndstatusCodeList = actualEndstatusCodeList;
 	}
 
-	public List<Code> getActualEndstatusCodeList()
+	public List<Category> getActualEndstatusCodeList()
 	{
 		return actualEndstatusCodeList;
 	}
 
-	public void setExpectedDiscomfortCodeList(List<Code> expectedDiscomfortCodeList)
+	public void setExpectedDiscomfortCodeList(List<Category> expectedDiscomfortCodeList)
 	{
 		this.expectedDiscomfortCodeList = expectedDiscomfortCodeList;
 	}
 
-	public List<Code> getExpectedDiscomfortCodeList()
+	public List<Category> getExpectedDiscomfortCodeList()
 	{
 		return expectedDiscomfortCodeList;
 	}
 
-	public void setExpectedEndstatusCodeList(List<Code> expectedEndstatusCodeList)
+	public void setExpectedEndstatusCodeList(List<Category> expectedEndstatusCodeList)
 	{
 		this.expectedEndstatusCodeList = expectedEndstatusCodeList;
 	}
 
-	public List<Code> getExpectedEndstatusCodeList()
+	public List<Category> getExpectedEndstatusCodeList()
 	{
 		return expectedEndstatusCodeList;
 	}
 
-	public void setPainManagementCodeList(List<Code> painManagementCodeList)
+	public void setPainManagementCodeList(List<Category> painManagementCodeList)
 	{
 		this.painManagementCodeList = painManagementCodeList;
 	}
 
-	public List<Code> getPainManagementCodeList()
+	public List<Category> getPainManagementCodeList()
 	{
 		return painManagementCodeList;
 	}
 
-	public void setAnaesthesiaCodeList(List<Code> anaesthesiaCodeList)
+	public void setAnaesthesiaCodeList(List<Category> anaesthesiaCodeList)
 	{
 		this.anaesthesiaCodeList = anaesthesiaCodeList;
 	}
 
-	public List<Code> getAnaesthesiaCodeList()
+	public List<Category> getAnaesthesiaCodeList()
 	{
 		return anaesthesiaCodeList;
 	}

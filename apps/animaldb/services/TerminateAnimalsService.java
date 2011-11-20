@@ -16,7 +16,7 @@ import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
-import org.molgenis.pheno.Code;
+import org.molgenis.pheno.Category;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
@@ -59,26 +59,26 @@ public class TerminateAnimalsService implements MolgenisService {
 				List<ObservedValue> valueList = q.find();
 				if (valueList.size() == 1) {
 					// Generate selectbox for Actual Discomfort
-					Query<Code> codeQuery = db.query(Code.class);
-					codeQuery.addRules(new QueryRule(Code.FEATURE_NAME, Operator.EQUALS, "ActualDiscomfort"));
-					List<Code> codeList = codeQuery.find();
+					Query<Category> codeQuery = db.query(Category.class);
+					codeQuery.addRules(new QueryRule(Category.FEATURE_NAME, Operator.EQUALS, "ActualDiscomfort"));
+					List<Category> codeList = codeQuery.find();
 					out.print("<div class='row'>");
 					out.print("<label for='discomfort'>Actual discomfort:</label>");
 					out.print("<select name='discomfort' id='discomfort'>");
-					for (Code code : codeList) {
+					for (Category code : codeList) {
 						out.print("<option value='" + code.getDescription() + "'>" + code.getCode_String() + " (" + code.getDescription() + ")" + "</option>");
 					}
 					out.print("</select>");
 					out.print("</div>");
 						
 					// Generate selectbox for ActualAnimalEndStatus
-					codeQuery = db.query(Code.class);
-					codeQuery.addRules(new QueryRule(Code.FEATURE_NAME, Operator.EQUALS, "ActualAnimalEndStatus"));
+					codeQuery = db.query(Category.class);
+					codeQuery.addRules(new QueryRule(Category.FEATURE_NAME, Operator.EQUALS, "ActualAnimalEndStatus"));
 					codeList = codeQuery.find();
 					out.print("<div class='row'>");
 					out.print("<label for='endstatus'>Actual animal end status:</label>");
 					out.print("<select name='endstatus' id='endstatus'>");
-					for (Code code : codeList) {
+					for (Category code : codeList) {
 						out.print("<option value='" + code.getDescription() + "'>" + code.getCode_String() + " (" + code.getDescription() + ")" + "</option>");
 					}
 					out.print("</select>");

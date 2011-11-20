@@ -23,7 +23,7 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.organization.Investigation;
-import org.molgenis.pheno.Code;
+import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Location;
 import org.molgenis.pheno.Measurement;
@@ -1483,7 +1483,7 @@ public class CommonService
 	public void makeCode(String code, String desc, String feat)
 			throws DatabaseException, ParseException, IOException
 	{
-		Code newCode = new Code();
+		Category newCode = new Category();
 		newCode.setCode_String(code);
 		newCode.setDescription(desc);
 		List<Integer> locFeatIdList = new ArrayList<Integer>();
@@ -1504,11 +1504,11 @@ public class CommonService
 			throws DatabaseException, ParseException
 	{
 		int featureid = getMeasurementId(featurename);
-		Query<Code> q = db.query(Code.class);
-		q.eq(Code.FEATURE, featureid);
+		Query<Category> q = db.query(Category.class);
+		q.eq(Category.FEATURE, featureid);
 		List<String> returnList = new ArrayList<String>();
-		List<Code> tmpList = q.find();
-		for (Code code : tmpList) {
+		List<Category> tmpList = q.find();
+		for (Category code : tmpList) {
 			returnList.add(code.getDescription());
 		}
 		return returnList;
@@ -1522,11 +1522,11 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<Code> getAllCodesForFeature(String featureName)
+	public List<Category> getAllCodesForFeature(String featureName)
 			throws DatabaseException, ParseException
 	{
 		int featureId = getMeasurementId(featureName);
-		return db.query(Code.class).eq(Code.FEATURE, featureId).find();
+		return db.query(Category.class).eq(Category.FEATURE, featureId).find();
 	}
 
 	/**

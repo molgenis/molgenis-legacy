@@ -30,7 +30,7 @@ import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.TextLineInput;
 import org.molgenis.framework.ui.html.Newline;
 
-import org.molgenis.pheno.Code;
+import org.molgenis.pheno.Category;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
@@ -451,7 +451,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		animaltype = new SelectInput("animaltype");
 		animaltype.setLabel("Animal type:");
 		animaltype.addOption("","");
-		for (Code c : ct.getAllCodesForFeature("AnimalType")) {
+		for (Category c : ct.getAllCodesForFeature("AnimalType")) {
 			animaltype.addOption(c.getDescription(), c.getCode_String() + " ("
 					+ c.getDescription() + ")");
 		}

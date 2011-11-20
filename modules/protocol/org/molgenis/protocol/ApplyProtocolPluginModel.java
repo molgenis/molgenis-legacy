@@ -15,7 +15,7 @@ import java.util.Map;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.pheno.Code;
+import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 
@@ -34,7 +34,7 @@ public class ApplyProtocolPluginModel {
 	private boolean allValues = false;
 	private int userId = -1;
 	private List<Integer> investigationIds;
-	private Map<Measurement, List<Code>> codeMap = new HashMap<Measurement, List<Code>>();
+	private Map<Measurement, List<Category>> codeMap = new HashMap<Measurement, List<Category>>();
 	private Map<Measurement, List<String>> codeMapString = new HashMap<Measurement, List<String>>();
 	private Map<Measurement, List<ObservationTarget>> panelMap = new HashMap<Measurement, List<ObservationTarget>>();
 	private Map<Measurement, String> typeMap = new HashMap<Measurement, String>();
@@ -67,7 +67,7 @@ public class ApplyProtocolPluginModel {
 		}
 	}
 	
-	public List<Code> getAllCodesForFeature(Measurement measurement) {
+	public List<Category> getAllCodesForFeature(Measurement measurement) {
 		return codeMap.get(measurement);
 	}
 	

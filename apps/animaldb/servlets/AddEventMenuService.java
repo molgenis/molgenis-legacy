@@ -15,7 +15,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.pheno.Code;
+import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.protocol.Protocol_Features;
@@ -87,7 +87,7 @@ public class AddEventMenuService extends app.servlet.MolgenisServlet {
 					
 					boolean targetLink = false;
 					boolean codeValues = false;
-					List<Code> codeList = null;
+					List<Category> codeList = null;
 					List<ObservationTarget> targetList = new ArrayList<ObservationTarget>();
 					// Check if the unit is a TargetLink:
 					if (currentFeature != null) {
@@ -102,7 +102,7 @@ public class AddEventMenuService extends app.servlet.MolgenisServlet {
 							targetList = db.find(ObservationTarget.class);
 						} else {
 							// Check if the feature has codes:
-							Query<Code> q = db.query(Code.class);
+							Query<Category> q = db.query(Category.class);
 							q.addRules(new QueryRule("feature", Operator.EQUALS, currentFeatureId));
 							codeList = q.find();
 							if (codeList.size() > 0) {
@@ -131,7 +131,7 @@ public class AddEventMenuService extends app.servlet.MolgenisServlet {
 						} else {
 							if (codeValues) {
 								out.print("<select name='value" + animalNumber + "_" + valueNr + "' id='value" + animalNumber + "_" + valueNr + "'>");
-								for (Code code : codeList) {
+								for (Category code : codeList) {
 									out.print("<option value='" + code.getDescription() + "'>" + code.getCode_String() + " (" + code.getDescription() + ")" + "</option>");
 								}
 								out.print("</select>");

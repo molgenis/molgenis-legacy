@@ -21,7 +21,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.pheno.Code;
+import org.molgenis.pheno.Category;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.ProtocolApplication;
@@ -37,15 +37,15 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	private CommonService ct = CommonService.getInstance();
 	private String action = "init";
 	private int listId = 0;
-	private List<Code> experimentNrCodeList;
-	private List<Code> concernCodeList;
-	private List<Code> goalCodeList;
-	private List<Code> specialTechnCodeList;
-	private List<Code> lawDefCodeList;
-	private List<Code> toxResCodeList;
-	private List<Code> anaesthesiaCodeList;
-	private List<Code> painManagementCodeList;
-	private List<Code> animalEndStatusCodeList;
+	private List<Category> experimentNrCodeList;
+	private List<Category> concernCodeList;
+	private List<Category> goalCodeList;
+	private List<Category> specialTechnCodeList;
+	private List<Category> lawDefCodeList;
+	private List<Category> toxResCodeList;
+	private List<Category> anaesthesiaCodeList;
+	private List<Category> painManagementCodeList;
+	private List<Category> animalEndStatusCodeList;
 	private List<ObservationTarget> decApplicationList;
 	
 	public ShowDecSubprojects(String name, ScreenController<?> parent)
@@ -78,11 +78,11 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 		return listId;
 	}
 	
-	public List<Code> getExperimentNrCodeList() {
+	public List<Category> getExperimentNrCodeList() {
 		return experimentNrCodeList;
 	}
 
-	public void setExperimentNrCodeList(List<Code> experimentNrCodeList) {
+	public void setExperimentNrCodeList(List<Category> experimentNrCodeList) {
 		this.experimentNrCodeList = experimentNrCodeList;
 	}
 	
@@ -99,82 +99,82 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 		return experimentList;
 	}
 	
-	public void setConcernCodeList(List<Code> concernCodeList)
+	public void setConcernCodeList(List<Category> concernCodeList)
 	{
 		this.concernCodeList = concernCodeList;
 	}
 
-	public List<Code> getConcernCodeList()
+	public List<Category> getConcernCodeList()
 	{
 		return concernCodeList;
 	}
 
-	public void setGoalCodeList(List<Code> goalCodeList)
+	public void setGoalCodeList(List<Category> goalCodeList)
 	{
 		this.goalCodeList = goalCodeList;
 	}
 
-	public List<Code> getGoalCodeList()
+	public List<Category> getGoalCodeList()
 	{
 		return goalCodeList;
 	}
 
-	public void setSpecialTechnCodeList(List<Code> specialTechnCodeList)
+	public void setSpecialTechnCodeList(List<Category> specialTechnCodeList)
 	{
 		this.specialTechnCodeList = specialTechnCodeList;
 	}
 
-	public List<Code> getSpecialTechnCodeList()
+	public List<Category> getSpecialTechnCodeList()
 	{
 		return specialTechnCodeList;
 	}
 
-	public void setLawDefCodeList(List<Code> lawDefCodeList)
+	public void setLawDefCodeList(List<Category> lawDefCodeList)
 	{
 		this.lawDefCodeList = lawDefCodeList;
 	}
 
-	public List<Code> getLawDefCodeList()
+	public List<Category> getLawDefCodeList()
 	{
 		return lawDefCodeList;
 	}
 
-	public void setToxResCodeList(List<Code> toxResCodeList)
+	public void setToxResCodeList(List<Category> toxResCodeList)
 	{
 		this.toxResCodeList = toxResCodeList;
 	}
 
-	public List<Code> getToxResCodeList()
+	public List<Category> getToxResCodeList()
 	{
 		return toxResCodeList;
 	}
 
-	public void setAnaesthesiaCodeList(List<Code> anaesthesiaCodeList)
+	public void setAnaesthesiaCodeList(List<Category> anaesthesiaCodeList)
 	{
 		this.anaesthesiaCodeList = anaesthesiaCodeList;
 	}
 
-	public List<Code> getAnaesthesiaCodeList()
+	public List<Category> getAnaesthesiaCodeList()
 	{
 		return anaesthesiaCodeList;
 	}
 
-	public void setPainManagementCodeList(List<Code> painManagementCodeList)
+	public void setPainManagementCodeList(List<Category> painManagementCodeList)
 	{
 		this.painManagementCodeList = painManagementCodeList;
 	}
 
-	public List<Code> getPainManagementCodeList()
+	public List<Category> getPainManagementCodeList()
 	{
 		return painManagementCodeList;
 	}
 
-	public void setAnimalEndStatusCodeList(List<Code> animalEndStatusCodeList)
+	public void setAnimalEndStatusCodeList(List<Category> animalEndStatusCodeList)
 	{
 		this.animalEndStatusCodeList = animalEndStatusCodeList;
 	}
 
-	public List<Code> getAnimalEndStatusCodeList()
+	public List<Category> getAnimalEndStatusCodeList()
 	{
 		return animalEndStatusCodeList;
 	}

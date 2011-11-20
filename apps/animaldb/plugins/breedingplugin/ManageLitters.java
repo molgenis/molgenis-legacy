@@ -31,7 +31,7 @@ import org.molgenis.framework.ui.html.Table;
 import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
-import org.molgenis.pheno.Code;
+import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
@@ -76,7 +76,7 @@ public class ManageLitters extends PluginModel<Entity>
 	private List<String> geneNameList;
 	private List<String> geneStateList;
 	private List<String> colorList;
-	private List<Code> earmarkList;
+	private List<Category> earmarkList;
 	private int genoLitterId;
 	//private Database db;
 	private List<String> bases = null;
@@ -293,11 +293,11 @@ public class ManageLitters extends PluginModel<Entity>
 		this.colorList = colorList;
 	}
 
-	public List<Code> getEarmarkList() {
+	public List<Category> getEarmarkList() {
 		return earmarkList;
 	}
 
-	public void setEarmarkList(List<Code> earmarkList) {
+	public void setEarmarkList(List<Category> earmarkList) {
 		this.earmarkList = earmarkList;
 	}
 	
@@ -958,7 +958,7 @@ public class ManageLitters extends PluginModel<Entity>
 					genotypeTable.setCell(2, row, colorInput);
 					// Earmark
 					SelectInput earmarkInput = new SelectInput("3_" + row);
-					for (Code earmark : this.earmarkList) {
+					for (Category earmark : this.earmarkList) {
 						earmarkInput.addOption(earmark.getCode_String(), earmark.getCode_String());
 					}
 					earmarkInput.setValue(getAnimalEarmark(animalId));

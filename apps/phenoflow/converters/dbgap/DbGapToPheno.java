@@ -21,7 +21,7 @@ import javax.xml.bind.JAXBException;
 import org.apache.log4j.Logger;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.organization.Investigation;
-import org.molgenis.pheno.Code;
+import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
@@ -43,7 +43,7 @@ public class DbGapToPheno {
 	List<Protocol> protocols = new ArrayList<Protocol>();
 	List<Measurement> features = new ArrayList<Measurement>();
 	Set<OntologyTerm> ontologyterms = new HashSet<OntologyTerm>();
-	Map<String, Code> terms = new TreeMap<String, Code>();
+	Map<String, Category> terms = new TreeMap<String, Category>();
 	List<Panel> panels = new ArrayList<Panel>();
 	List<ObservedValue> observedValues = new ArrayList<ObservedValue>();
 
@@ -202,7 +202,7 @@ public class DbGapToPheno {
 				p.getFeatures_Name().add(f.getName());
 
 				if (var.unit != null && terms.get(var.unit) == null) {
-					Code t = new Code();
+					Category t = new Category();
 					t.setCode_String(var.unit);
 					t.setDescription("N/A.");
 					t.getFeature_Name().add(f.getName());
@@ -215,7 +215,7 @@ public class DbGapToPheno {
 
 				if (var.values.size() > 0) {
 					for (Value v : var.values) {
-						Code code = new Code();
+						Category code = new Category();
 						code.setCode_String(v.code);
 						code.setDescription(v.value);
 						code.getFeature_Name().add(f.getName());
@@ -313,7 +313,7 @@ public class DbGapToPheno {
 			String value, String inferenceType) {
 
 		if (terms.get(inferenceType) == null) {
-			Code t = new Code();
+			Category t = new Category();
 			t.setCode_String(inferenceType);
 			t.setDescription("N/A.");
 			// t.setInvestigation_Name(i.getName());
@@ -339,7 +339,7 @@ public class DbGapToPheno {
 			result += p2 + "\n";
 		for (Measurement f2 : features)
 			result += f2 + "\n";
-		for (Code t : terms.values())
+		for (Category t : terms.values())
 			result += t + "\n";
 		for (Panel p : panels)
 			result += p + "\n";

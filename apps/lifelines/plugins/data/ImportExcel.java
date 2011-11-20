@@ -22,7 +22,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.organization.Investigation;
-import org.molgenis.pheno.Code;
+import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationElement;
@@ -122,7 +122,7 @@ public class ImportExcel extends PluginModel<Entity>
 
 		List<Protocol> addedProtocols = new ArrayList<Protocol>();
 
-		List<Code> addedCodes = new ArrayList<Code>();
+		List<Category> addedCodes = new ArrayList<Category>();
 
 		List<ObservedValue> addedObservedValues = new ArrayList<ObservedValue>();
 
@@ -138,7 +138,7 @@ public class ImportExcel extends PluginModel<Entity>
 
 		List<Ontology> ontologies = new ArrayList<Ontology>();
 
-		List<Code> codes = new ArrayList<Code>();
+		List<Category> codes = new ArrayList<Category>();
 
 		Measurement mea;
 
@@ -148,7 +148,7 @@ public class ImportExcel extends PluginModel<Entity>
 
 		Protocol prot, theme, group;
 
-		Code code;
+		Category code;
 
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 
@@ -189,7 +189,7 @@ public class ImportExcel extends PluginModel<Entity>
 
 				ontology = new Ontology();
 
-				code = new Code();
+				code = new Category();
 
 				prot = new Protocol();
 
@@ -435,8 +435,8 @@ public class ImportExcel extends PluginModel<Entity>
 			}
 
 
-			for( Code cod : codes){
-				if(db.query(Code.class).eq(Code.CODE_STRING, cod.getCode_String()).count() == 0){
+			for( Category cod : codes){
+				if(db.query(Category.class).eq(Category.CODE_STRING, cod.getCode_String()).count() == 0){
 					if(!addedCodes.contains(cod)){
 						addedCodes.add(cod);
 					}
@@ -530,7 +530,7 @@ public class ImportExcel extends PluginModel<Entity>
 
 				db.add(groups);
 
-				for (Code c : addedCodes){
+				for (Category c : addedCodes){
 					List<String> featureNames = linkCodeMeasurement.get(c.getCode_String());
 					List<Measurement> measList = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, featureNames));
 					List<Integer> meaIdList = new ArrayList<Integer>();
