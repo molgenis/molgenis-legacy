@@ -50,6 +50,30 @@ pageTracker._trackPageview();
 		<script src="generated-res/scripts/xrefinput.js" language="javascript"></script>
 		<script src="generated-res/scripts/mrefinput.js" language="javascript"></script>					
 		<script src="generated-res/scripts/menu.js" language="javascript"></script>	
+		
+		<link href="generated-res/lib/jquery/css/smoothness/jquery-ui-1.8.7.custom.css" rel="stylesheet" type="text/css">
+  		<script src="generated-res/lib/jquery/js/jquery-1.6.1.min.js" type="text/javascript"></script>
+  		<script src="generated-res/lib/jquery/js/jquery-ui-1.8.7.custom.min.js" type="text/javascript"></script>
+
+  		<link rel="stylesheet" style="text/css" type="text/css" href="generated-res/css/molgenis_jquery_icons.css">
+  		<script src="generated-res/lib/jquery-plugins/validate.js" type="text/javascript"></script>
+  		<script src="generated-res/lib/jquery-plugins/autogrow.js" type="text/javascript"></script>
+  		<script src="generated-res/lib/jquery-plugins/timepicker.js" type="text/javascript"></script>
+  		<link rel="stylesheet" href="generated-res/lib/jquery-plugins/chosen.css">
+  		<script src="generated-res/lib/jquery-plugins/chosen.js" type="text/javascript"></script>
+  		<script src="generated-res/lib/jquery-plugins/ajax-chosen.js" type="text/javascript"></script>
+  		<script src="generated-res/lib/jquery-plugins/autogrowinput.js" type="text/javascript"></script>
+  		<script src="generated-res/lib/jquery-plugins/jquery.tooltip.js" type="text/javascript"></script>
+  		<link rel="stylesheet" href="generated-res/lib/jquery-plugins/jquery.tooltip.css">
+  		<script src="generated-res/lib/jquery-plugins/jquery.bt.js" type="text/javascript"></script>
+  		<link rel="stylesheet" href="generated-res/lib/jquery-plugins/jquery.bt.css">
+  		<script src="generated-res/lib/jquery-plugins/jquery.hoverintent.js" type="text/javascript"></script>
+  		<script src="generated-res/lib/jquery-plugins/jquery.dataTables.js" type="text/javascript"></script>
+  		<link rel="stylesheet" href="generated-res/lib/jquery-plugins/jquery.dataTables.css">
+  		<link rel="stylesheet" href="generated-res/lib/jquery-plugins/jquery.dataTables_jui.css">
+  		<link rel="stylesheet" href="generated-res/lib/jquery-plugins/jquery.dataTables_demo_page.css">
+		
+		
 		${application.getCustomHtmlHeaders()}
 	</head>
 <#if show != "popup">	
@@ -114,7 +138,9 @@ pageTracker._trackPageview();
 
 </#if>
 
-	<div id="push">
-	</div>
+<div id="footer">
+	<i>This database was generated using the open source <a href="http://www.molgenis.org">MOLGENIS database generator</a> version ${screen.getVersion()}.
+	<br>Please cite <a href="http://www.ncbi.nlm.nih.gov/pubmed/21210979">Swertz et al (2010)</a> or <a href="http://www.ncbi.nlm.nih.gov/pubmed/17297480">Swertz & Jansen (2007)</a> on use.</i>
+</div>
 </div>
 <@molgenis_footer />	
