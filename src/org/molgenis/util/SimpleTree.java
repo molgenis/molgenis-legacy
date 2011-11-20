@@ -45,7 +45,7 @@ public class SimpleTree<T extends Tree> implements Tree<T>,Serializable
 	 */
 	public SimpleTree(String name, T parent)
 	{
-		System.out.println("SimpleTree name:" + name + "parent"+ parent);
+		//System.out.println("SimpleTree name:" + name + "parent"+ parent);
 
 		//checks
 		if (name == "" || name == null)
