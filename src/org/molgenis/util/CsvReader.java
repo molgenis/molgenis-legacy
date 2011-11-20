@@ -27,7 +27,7 @@ import java.util.List;
  * });
  * </pre>
  */
-public interface CsvReader
+public interface CsvReader extends TupleReader
 {
 	public static final String ROWNAME_COLUMN = "_row_name";
 
