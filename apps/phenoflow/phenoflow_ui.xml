@@ -4,7 +4,7 @@
 		<form name="Investigations" entity="Investigation">
 			<menu name="InvestigationMenu" position="top_left">
 				<form name="Measurements" entity="Measurement" label="Measurements" />
-				<form name="Codes" entity="Code" label="Codes" />		
+				<form name="Categories" entity="Category" label="Categories" />		
 				<form name="ObservableElements" entity="ObservationElement" label="Observation elements">
 					<form name="Definitions" entity="OntologyTerm" description="Definitions of terms used" />
 				</form>
