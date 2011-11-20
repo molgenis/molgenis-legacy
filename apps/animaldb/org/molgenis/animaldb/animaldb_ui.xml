@@ -29,7 +29,7 @@
 				<form name="investigation" entity="Investigation" view="list" label="Investigations" />
 				<form name="ontology" entity="Ontology" view="list" label="Ontologies" />
 				<form name="ontologyterm" entity="OntologyTerm" view="list" label="Ontology terms" />
-				<form name="code" entity="Code" view="list" label="Code table" />
+				<form name="category" entity="Category" view="list" label="Category table" />
 				<form name="individual" entity="Individual" view="list" label="Individuals" />
 				<form name="panel" entity="Panel" view="list" label="Panels" />
 				<form name="location" entity="Location" view="list" label="Locations" />
