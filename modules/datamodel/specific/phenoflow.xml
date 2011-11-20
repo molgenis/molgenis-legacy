@@ -70,7 +70,7 @@ Changed unique(name) on Observation element to unique(investigation,name)</li>
 				Changelog 2010-07-30, by Erik Roos
 				<ol>
 					<li>Commented
-						out uniqueness constraint for 'code' field of Code,
+						out uniqueness constraint for 'code' field of Category,
 						since the code
 						itself
 						doesn't need to be unique. The combination of
@@ -93,7 +93,7 @@ Changed unique(name) on Observation element to unique(investigation,name)</li>
 				</ol>
 				Changelog 2010-02-08
 				<ol>
-					<li>Code part of model</li>
+					<li>Category part of model</li>
 				</ol>
 				Changelog 2010-07-28, by Erik Roos
 				<ol>
@@ -127,9 +127,9 @@ Changed unique(name) on Observation element to unique(investigation,name)</li>
 					<li>Removed ontologytTerm.termLabel as it was ambiguous with the
 						term itself.
 						If people want to use their own coding they can use
-						'Code'</li>
+						'Category'</li>
 					<li>Removed
-						CodeList and Code. Instead linked ObservableFeature to
+						CategoryList and Category. Instead linked ObservableFeature to
 						one of more
 						OntologyTerms
 						having codes.</li>
@@ -231,22 +231,22 @@ Changed unique(name) on Observation element to unique(investigation,name)</li>
 						binding the range
 						and
 						interpretation of observedValues. RESOLUTION:
-						Made CodeList and instance
+						Made CategoryList and instance
 						of an OntologyTerm so that it can be
 						addressed as being a unit.</li>
 				</ol>
 				Open issues:
 				<ol>
-					<li> ISSUE: Codes are a special kind of OntologyTerm, i.e.
+					<li> ISSUE: Categorys are a special kind of OntologyTerm, i.e.
 						well
-						defined values. RESOLUTION: Is there a sensible way to make Code
+						defined values. RESOLUTION: Is there a sensible way to make Category
 						extend
 						OntologyTerm? Then ObservedValue.codeReference could be
 						dropped.</li>
 					<li>
-						ISSUE: In case an ObservedValue uses a CodeList then
+						ISSUE: In case an ObservedValue uses a CategoryList then
 						ObservedValue.value
-						actually becomes a foreign key to Code.code. Is
+						actually becomes a foreign key to Category.code. Is
 						is neither used
 						nor
 						constrained.
@@ -340,13 +340,13 @@ Changed unique(name) on Observation element to unique(investigation,name)</li>
 					<li />
 					There is no explicit relationship between
 					ObservedValue.value and
-					Code.term; such constraint checking is outside the
+					Category.term; such constraint checking is outside the
 					scope of this
 					model.
 					<li />
 					Added a 'value' to ParameterValue which was missing.
 					<li />
-					Changed that Code doesn't extend the OntologyTerm class but instead
+					Changed that Category doesn't extend the OntologyTerm class but instead
 					refers to an instance.
 					<li />
 					InferredValue seems not normalized in the sense
@@ -605,15 +605,15 @@ Changed unique(name) on Observation element to unique(investigation,name)</li>
 				xref_entity="Panel" xref_field="id" xref_label="name"
 				description="The panel(s) that were used to create this panel." />
 		</entity>
-		<entity name="Code" implements="Identifiable">
+		<entity name="Category" implements="Identifiable">
 			<description>Special kind of OntologyTerm to define codes such as are
 				often used in Questionaires. A list of codes can be attached to an
 				ObservableFeature using reference 'feature'. For example the
 				ObservableFeature 'sex' has {code = 1, name=male} and {code = 2,
-				name=female}. Codes can be linked to well-defined ontology terms via
-				the ontologyReference. Code extends OntologyTerm such that it can be
-				referenced by ObservedValue.value. The Code class maps to
-				METABASE::Code</description>
+				name=female}. Categorys can be linked to well-defined ontology terms via
+				the ontologyReference. Category extends OntologyTerm such that it can be
+				referenced by ObservedValue.value. The Category class maps to
+				METABASE::Category</description>
 			<field name="feature" type="mref" xref_entity="ObservationElement"
 				description="The feature for which these codes where defined." />
 			<field name="code_string" type="string"
@@ -625,7 +625,7 @@ Changed unique(name) on Observation element to unique(investigation,name)</li>
 			<field name="ontologyReference" type="xref" xref_entity="OntologyTerm"
 				nillable="true"
 				description="(Optional) Reference to the formal ontology definition for this code." />
-			<!-- <unique fields="code" description="Codes should be unique within 
+			<!-- <unique fields="code" description="Categorys should be unique within 
 				one feature" /> -->
 		</entity>
 		<entity name="Observation" abstract="true" implements="Identifiable">
@@ -643,7 +643,7 @@ Changed unique(name) on Observation element to unique(investigation,name)</li>
 						and individual2 (col:observationtarget) = brothers
 						(value:observabvlefeature). These can be stored in subclass
 						'ObservedValue'</li>
-					<li>Coded values, e.g. 'invidual 1 (row) and feature 'sex' (col) =
+					<li>Categoryd values, e.g. 'invidual 1 (row) and feature 'sex' (col) =
 						'male' (value; reference to code or ontology. These can be stored
 						in subclass 'ObservedValue'</li>
 					<li>Data file values, e.g., 'aligned.bam' or 'plink imputed'
