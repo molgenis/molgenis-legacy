@@ -214,7 +214,7 @@ public class ApplyProtocolService {
 	{
 		//int featureId = getMeasurementId(featureName);
 		Measurement m = db.query(Measurement.class).eq(Measurement.NAME,featureName).find().get(0);
-		return db.query(Category.class).eq(Category.ID, m.getCategories_Id()).find();
+		return db.query(Category.class).in(Category.ID, m.getCategories_Id()).find();
 	}
 	
 	public List<String> getAllCodesForFeatureAsStrings(String featurename)
