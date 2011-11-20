@@ -13,15 +13,21 @@
 &nbsp;<a href="#" style="text-decoration:none; color: #FFFFFF;" onClick="document.forms.main.__target.value='main';document.forms.main.select.value='ClusterDemo';document.forms.main.submit();">xQTL workbench</a></font>
 </div>
 
-<!-- url broken for DJTJWS-->
-<div align="right">
-	<font style="font-size:14px;">
-		<#-->| <a href="api/REST/">JSON api</a> | <a href="api/SOAP/">SOAP api</a> | <a href="api/REST/">REST api</a> | -->
-		<a target="_blank" href="http://www.molgenis.org/wiki/xQTL">Help</a> | <a href="api/R/">R api</a>
-		  
-	</font>
-</div>
-
+<table style="width: 100%;">
+	<tr>
+		<td align="left">
+			<font style="font-size:14px; font-weight:bold;">
+			${screen.userLogin}
+			</font>
+		</td>
+		<td align="right">
+			<font style="font-size:14px; font-weight:bold;">
+				<#-->| <a href="api/REST/">JSON api</a> | <a href="api/SOAP/">SOAP api</a> | <a href="api/REST/">REST api</a> | -->
+				<a target="_blank" href="http://www.molgenis.org/wiki/xQTL">Help</a> | <a href="api/R/">R api</a> | <a href="api/find/">Find api</a>
+			</font>
+		</td>
+	</tr>
+</table>
 
 
 <div style="height:10px;">&nbsp;</div>

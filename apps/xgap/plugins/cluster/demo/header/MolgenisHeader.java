@@ -7,6 +7,7 @@
 
 package plugins.cluster.demo.header;
 
+import org.molgenis.auth.DatabaseLogin;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -42,21 +43,41 @@ public class MolgenisHeader extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, Tuple request) throws Exception
 	{
-		//static
+		if ("doLogout".equals(request.getAction())) {
+
+			getLogin().logout(db);
+		}
 	}
 
 	@Override
 	public void reload(Database db)
 	{
-		//static
+		setUserLogin();
 	}
 
 	@Override
 	public boolean isVisible()
 	{
 		return true;
+	}
+	
+	private String userLogin;
+	
+	public String getUserLogin() {
+		
+		return userLogin;
+	}
+	
+	public void setUserLogin() {
+		if (this.getLogin().isAuthenticated()) {
+			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Logged in as: " + ((DatabaseLogin)this.getLogin()).getUserName() + "</a>";
+			this.userLogin += " | ";
+			this.userLogin += "<a href='molgenis.do?__target=MolgenisHeader&select=UserLogin&__action=doLogout'>" + "Logout " + "</a>";
+		} else {
+			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Login" + "</a>";
+		}	
 	}
 	
 	@Override
