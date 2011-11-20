@@ -44,7 +44,7 @@ public class Statistics
 		double[] selfDoubles;
 		if (decimals)
 		{
-			selfDoubles = getAsDoubles(elements[self]);
+			selfDoubles = getAsDoublesNullToZero(elements[self]);
 		}
 		else
 		{
@@ -60,7 +60,7 @@ public class Statistics
 				
 				if (decimals)
 				{
-					doubles = getAsDoubles(elements[index]);
+					doubles = getAsDoublesNullToZero(elements[index]);
 				}
 				else
 				{
@@ -96,8 +96,49 @@ public class Statistics
 		}
 		return t;
 	}
+	
+	public static int getIndexOfMax(Double[] doubles)
+	{
+		int maxIndex = -1;
+		Double max = null;
+		
+		for(int i=0; i<doubles.length; i++)
+		{
+			if(i != 0){
+				if(doubles[i] > max)
+				{
+					max = doubles[i];
+					maxIndex = i;
+				}
+			}
+			else
+			{
+				max = doubles[i];
+				maxIndex = i;
+			}
+		}
+		return maxIndex;
+	}
+	
+	public static Double[] getAsDoubles(Object[] e)
+	{
+		Double[] res = new Double[e.length];
+		for (int i = 0; i < e.length; i++)
+		{
+			if (e[i] == null)
+			{
+				res[i] = null;
+			}
+			else
+			{
+				res[i] = Double.parseDouble(e[i].toString());
+			}
 
-	public static double[] getAsDoubles(Object[] e)
+		}
+		return res;
+	}
+
+	public static double[] getAsDoublesNullToZero(Object[] e)
 	{
 		double[] res = new double[e.length];
 		for (int i = 0; i < e.length; i++)
