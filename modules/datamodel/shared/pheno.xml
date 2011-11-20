@@ -109,15 +109,15 @@
 				xref_entity="Panel" xref_field="id" xref_label="name"
 				description="The panel(s) that were used to create this panel." />
 		</entity>
-		<entity name="Code" implements="Identifiable">
+		<entity name="Category" implements="Identifiable">
 			<description>Special kind of OntologyTerm to define codes such as are
 				often used in Questionaires. A list of codes can be attached to an
 				ObservableFeature using reference 'feature'. For example the
 				ObservableFeature 'sex' has {code = 1, name=male} and {code = 2,
-				name=female}. Codes can be linked to well-defined ontology terms via
-				the ontologyReference. Code extends OntologyTerm such that it can be
-				referenced by ObservedValue.value. The Code class maps to
-				METABASE::Code</description>
+				name=female}. Categorys can be linked to well-defined ontology terms via
+				the ontologyReference. Category extends OntologyTerm such that it can be
+				referenced by ObservedValue.value. The Category class maps to
+				METABASE::Category</description>
 			<field name="feature" type="mref" xref_entity="ObservableFeature"
 				description="The feature for which these codes where defined." />
 			<field name="code_string" type="string"
@@ -131,7 +131,7 @@
 				description="(Optional) Reference to the formal ontology definition for this code." />
 			<field name="isMissing" type="bool" default="false" description="whether this code should be treated as missing value."/>
 			<!--
-				<unique fields="code" description="Codes should be unique within one
+				<unique fields="code" description="Categorys should be unique within one
 				feature" />
 			-->
 		</entity>
@@ -150,7 +150,7 @@
 						and individual2 (col:observationtarget) = brothers
 						(value:observabvlefeature). These can be stored in subclass
 						'ObservedValue'</li>
-					<li>Coded values, e.g. 'invidual 1 (row) and feature 'sex' (col) =
+					<li>Categoryd values, e.g. 'invidual 1 (row) and feature 'sex' (col) =
 						'male' (value; reference to code or ontology. These can be stored
 						in subclass 'ObservedValue'</li>
 					<li>Data file values, e.g., 'aligned.bam' or 'plink imputed'
@@ -293,9 +293,9 @@
 		otherwise multivalue features can be grouped by protocol. <li />
 		ObservedValue name is not made unique within investigation as defies
 		its purpose is to integrate between studies. <li /> There is no
-		explicit relationship between ObservedValue.value and Code.term; such
+		explicit relationship between ObservedValue.value and Category.term; such
 		constraint checking is outside the scope of this model. <li /> Added a
-		'value' to ParameterValue which was missing. <li /> Changed that Code
+		'value' to ParameterValue which was missing. <li /> Changed that Category
 		doesn't extend the OntologyTerm class but instead refers to an
 		instance. <li /> InferredValue seems not normalized in the sense that
 		one has to repeat ObservationTarget which is implied via the
@@ -359,14 +359,14 @@
 		all ObservedValues are consistent with their protocolapplication
 		regarding their Investigation.</li> <li> ISSUE: unit and codelist are
 		variants of the same thing, namely binding the range and
-		interpretation of observedValues. RESOLUTION: Made CodeList and
+		interpretation of observedValues. RESOLUTION: Made CategoryList and
 		instance of an OntologyTerm so that it can be addressed as being a
-		unit.</li> </ol> Open issues: <ol> <li> ISSUE: Codes are a special
+		unit.</li> </ol> Open issues: <ol> <li> ISSUE: Categorys are a special
 		kind of OntologyTerm, i.e. well defined values. RESOLUTION: Is there a
-		sensible way to make Code extend OntologyTerm? Then
+		sensible way to make Category extend OntologyTerm? Then
 		ObservedValue.codeReference could be dropped.</li> <li> ISSUE: In case
-		an ObservedValue uses a CodeList then ObservedValue.value actually
-		becomes a foreign key to Code.code. Is is neither used nor
+		an ObservedValue uses a CategoryList then ObservedValue.value actually
+		becomes a foreign key to Category.code. Is is neither used nor
 		constrained. RESOLUTION: create a trigger that automatically finds the
 		appropriate label for a value.</li> </ol> Following Luxembourg
 		2009-10-02 and 11-11 <ol> <li>Special treatment of 'nulls'</li>
@@ -376,14 +376,14 @@
 		optional</li> <li>Made ontologyTerm and OntologySource unique within
 		invstigation </li> <li>Removed ontologytTerm.termLabel as it was
 		ambiguous with the term itself. If people want to use their own coding
-		they can use 'Code'</li> <li>Removed CodeList and Code. Instead linked
+		they can use 'Category'</li> <li>Removed CategoryList and Category. Instead linked
 		ObservableFeature to one of more OntologyTerms having codes.</li>
 		</ol> Changelog 2010-01-20 <ol> <li>Further extended
 		documentation</li> <li>Discussion: do we need to remove father/mother
 		from individual -> can be done via ObservableFeature?</li>
 		<li>Extended investigation with a property to indicate source of the
 		data. Discussion: should we put in components from MAGE-TAB IDF? </li>
-		</ol> Changelog 2010-02-08 <ol> <li>Code part of model</li> </ol>
+		</ol> Changelog 2010-02-08 <ol> <li>Category part of model</li> </ol>
 		Changelog 2010-07-28, by Erik Roos <ol> <li>Made ObservedValue
 		implement Nameable, so values can have a name </li> <li>Added optional
 		Endtime field to ObservedValue</li> <li>Added fields to
@@ -397,7 +397,7 @@
 		don't have to fill in this field</li> <li>Integrated
 		ObservedRelationship into ObservedValue, so it becomes easier to mix
 		them in your code</li> </ol> Changelog 2010-07-30, by Erik Roos <ol>
-		<li>Commented out uniqueness constraint for 'code' field of Code,
+		<li>Commented out uniqueness constraint for 'code' field of Category,
 		since the code itself doesn't need to be unique. The combination of
 		code and feature should be unique instead.</li> </ol> Changelog
 		2010-08-04, by Erik Roos <ol> <li>Added xref_label="name" to MREF from
