@@ -361,7 +361,11 @@ public class JDBCQueryGernatorUtil {
 	 */
 	public static String escapeSql(Object value)
 	{
-		if (value != null) return StringEscapeUtils.escapeSql(value.toString().replace("'", "''"));
+		if(value != null && value.toString().contains("Specific diagnosis Mutation"))
+		{
+			System.out.println("trouble");
+		}
+		if (value != null) return StringEscapeUtils.escapeSql(value.toString());
 		return null;
 		// return sql.toString().replace("'", "''");
 	}    
