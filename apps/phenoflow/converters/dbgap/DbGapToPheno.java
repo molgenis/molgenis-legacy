@@ -45,7 +45,7 @@ public class DbGapToPheno {
 	Set<OntologyTerm> ontologyterms = new HashSet<OntologyTerm>();
 	Map<String, Code> terms = new TreeMap<String, Code>();
 	List<Panel> panels = new ArrayList<Panel>();
-	List<ObservedValue> inferredValues = new ArrayList<ObservedValue>();
+	List<ObservedValue> observedValues = new ArrayList<ObservedValue>();
 
 	public static void main(String[] args) throws Exception {
 		// This will need updating if run on a different machine
@@ -115,7 +115,7 @@ public class DbGapToPheno {
 	public void write(File dir) throws Exception {
 		new CsvExport().exportAll(dir, investigations,
 				new ArrayList<OntologyTerm>(ontologyterms), protocols,
-				features, new ArrayList<Code>(terms.values()), panels);
+				features, new ArrayList(terms.values()), panels, observedValues);
 	}
 
 	public static void downloadFile(URL url, File destination)
@@ -179,9 +179,11 @@ public class DbGapToPheno {
 				f.setName(var.name.toLowerCase());
 				f.setDescription(var.description);
 				// todo: add annotation feature NVT type?
-				if (var.type != null)
-					f.setDescription(f.getDescription() + " Type=" + var.type
-							+ ".");
+				if (var.type != null){
+					f.setDataType(var.type);
+					//f.set__Type(var.type);
+				}
+				
 				if (var.logical_min != null)
 					f.setDescription(f.getDescription() + " LogicalMin="
 							+ var.logical_min + ".");
@@ -197,14 +199,13 @@ public class DbGapToPheno {
 				}
 
 				features.add(f);
-				List<String> f_labels = p.getFeatures_Name();
-				f_labels.add(f.getName());
-				p.setFeatures_Name(f_labels);
+				p.getFeatures_Name().add(f.getName());
 
 				if (var.unit != null && terms.get(var.unit) == null) {
 					Code t = new Code();
 					t.setCode_String(var.unit);
 					t.setDescription("N/A.");
+					t.getFeature_Name().add(f.getName());
 					// t.setInvestigationLabel(i.getName());
 
 					if (terms.containsKey(var.unit))
@@ -217,7 +218,7 @@ public class DbGapToPheno {
 						Code code = new Code();
 						code.setCode_String(v.code);
 						code.setDescription(v.value);
-						code.getFeature().add(f.getId());
+						code.getFeature_Name().add(f.getName());
 						// f.getValueCodesLabels().add(code.getTerm());
 						// give error on duplicate term
 						if (v.code == null) {
@@ -273,46 +274,43 @@ public class DbGapToPheno {
 			VariableSummary vs, List<Stat> stats) {
 		for (Stat stat : stats) {
 			if (stat.n != null)
-				addInferredValue(panel, investigation, vs, stat.n, "n");
+				addObservedValue(panel, investigation, vs, stat.n, "n");
 			if (stat.nulls != null)
-				addInferredValue(panel, investigation, vs, stat.nulls, "nulls");
+				addObservedValue(panel, investigation, vs, stat.nulls, "nulls");
 			if (stat.invalid_values != null)
-				addInferredValue(panel, investigation, vs, stat.invalid_values,
+				addObservedValue(panel, investigation, vs, stat.invalid_values,
 						"invalid_values");
 			if (stat.special_values != null)
-				addInferredValue(panel, investigation, vs, stat.special_values,
+				addObservedValue(panel, investigation, vs, stat.special_values,
 						"special_values");
 			if (stat.mean != null)
-				addInferredValue(panel, investigation, vs, stat.mean, "mean");
+				addObservedValue(panel, investigation, vs, stat.mean, "mean");
 			if (stat.mean_count != null)
-				addInferredValue(panel, investigation, vs, stat.mean_count,
+				addObservedValue(panel, investigation, vs, stat.mean_count,
 						"mean_count");
 			if (stat.sd != null)
-				addInferredValue(panel, investigation, vs, stat.sd, "sd");
+				addObservedValue(panel, investigation, vs, stat.sd, "sd");
 			if (stat.median != null)
-				addInferredValue(panel, investigation, vs, stat.median,
+				addObservedValue(panel, investigation, vs, stat.median,
 						"median");
 			if (stat.median_count != null)
-				addInferredValue(panel, investigation, vs, stat.median_count,
+				addObservedValue(panel, investigation, vs, stat.median_count,
 						"median_count");
 			if (stat.min != null)
-				addInferredValue(panel, investigation, vs, stat.min, "min");
+				addObservedValue(panel, investigation, vs, stat.min, "min");
 			if (stat.min_count != null)
-				addInferredValue(panel, investigation, vs, stat.min_count,
+				addObservedValue(panel, investigation, vs, stat.min_count,
 						"min_count");
 			if (stat.max != null)
-				addInferredValue(panel, investigation, vs, stat.max, "max");
+				addObservedValue(panel, investigation, vs, stat.max, "max");
 			if (stat.max_count != null)
-				addInferredValue(panel, investigation, vs, stat.max_count,
+				addObservedValue(panel, investigation, vs, stat.max_count,
 						"max_count");
 		}
 	}
 
-	private void addInferredValue(Panel p, Investigation i, VariableSummary vs,
+	private void addObservedValue(Panel p, Investigation i, VariableSummary vs,
 			String value, String inferenceType) {
-		// NB (2011-11-04, ER): InferredValue (or DerivedValue) does not exist
-		// at the moment
-		// in the Pheno model. So I temporarily changed it to ObservedValue.
 
 		if (terms.get(inferenceType) == null) {
 			Code t = new Code();
@@ -329,7 +327,7 @@ public class DbGapToPheno {
 		// v.setInferenceTypeLabel(inferenceType);
 		v.setTarget_Name(p.getName());
 		// System.out.println("inferfed value " + v);
-		this.inferredValues.add(v);
+		this.observedValues.add(v);
 
 	}
 
@@ -345,7 +343,7 @@ public class DbGapToPheno {
 			result += t + "\n";
 		for (Panel p : panels)
 			result += p + "\n";
-		for (ObservedValue i : inferredValues)
+		for (ObservedValue i : observedValues)
 			result += i + "\n";
 
 		return result;
