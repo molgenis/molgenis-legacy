@@ -63,6 +63,6 @@ public class MolgenisHeader extends PluginModel<Entity>
 	public String getCustomHtmlHeaders()
 	{
 		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/colors.css\">" + "\n" +
-			   "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/main_override.css\">" ;
+			   "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/xgap_main_override.css\">" ;
 	}
 }

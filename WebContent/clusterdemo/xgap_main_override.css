@@ -1,8 +1,9 @@
 
 #container {
-	/* width: 900px; */
+	width: 900px;
 	/* text-align: center; */
 	align: center;
+	margin: auto;
 }
 
 .wizardfoldout {
