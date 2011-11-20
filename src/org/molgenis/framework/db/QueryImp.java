@@ -12,6 +12,11 @@ import org.molgenis.util.Entity;
  * Simple implementation of the Query interface.
  */
 public class QueryImp<E extends Entity> implements Query<E> {
+	public Class<E> getKlazz()
+	{
+		return klazz;
+	}
+
 	private Vector<QueryRule> rules = new Vector<QueryRule>();
 	private Class<E> klazz;
 	private Database database;
