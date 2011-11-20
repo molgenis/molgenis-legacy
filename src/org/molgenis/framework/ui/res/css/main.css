@@ -18,7 +18,7 @@ a img {
 	position:relative; /* needed for footer positioning*/
 	width: 95%;
 	border-spacing: 5px;
-	margin: 0 auto -50px; /* the bottom margin is the negative value of the footer's height */
+	margin: 0;
 }
 
 
