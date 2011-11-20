@@ -15,6 +15,7 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.pheno.Category;
+import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
@@ -49,7 +50,13 @@ public class TerminateAnimalsService extends app.servlet.MolgenisServlet {
 				if (valueList.size() == 1) {
 					// Generate selectbox for Actual Discomfort
 					Query<Category> codeQuery = db.query(Category.class);
-					codeQuery.addRules(new QueryRule(Category.FEATURE_NAME, Operator.EQUALS, "ActualDiscomfort"));
+					
+					
+					Measurement actualDiscomfort = db.query(Measurement.class).eq(Measurement.NAME,"ActualDiscomfort").find().get(0);
+					//codeQuery.in(Category.ID, )
+					//codeQuery.addRules(new QueryRule(Category.FEATURE_NAME, Operator.EQUALS, "ActualDiscomfort"));
+					codeQuery.in(Category.ID, actualDiscomfort.getCategories_Id());
+					
 					List<Category> codeList = codeQuery.find();
 					out.print("<div class='row'>");
 					out.print("<label for='discomfort'>Actual discomfort:</label>");
@@ -62,7 +69,9 @@ public class TerminateAnimalsService extends app.servlet.MolgenisServlet {
 						
 					// Generate selectbox for ActualAnimalEndStatus
 					codeQuery = db.query(Category.class);
-					codeQuery.addRules(new QueryRule(Category.FEATURE_NAME, Operator.EQUALS, "ActualAnimalEndStatus"));
+					Measurement actualAnimalEndStatus = db.query(Measurement.class).eq(Measurement.NAME,"ActualAnimalEndStatus").find().get(0);
+					//codeQuery.addRules(new QueryRule(Category.FEATURE_NAME, Operator.EQUALS, ""));
+					codeQuery.in(Category.ID, actualAnimalEndStatus.getCategories_Id());
 					codeList = codeQuery.find();
 					out.print("<div class='row'>");
 					out.print("<label for='endstatus'>Actual animal end status:</label>");

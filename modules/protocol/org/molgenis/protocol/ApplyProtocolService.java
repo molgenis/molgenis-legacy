@@ -212,16 +212,19 @@ public class ApplyProtocolService {
 	public List<Category> getAllCodesForFeature(String featureName)
 			throws DatabaseException, ParseException
 	{
-		int featureId = getMeasurementId(featureName);
-		return db.query(Category.class).eq(Category.FEATURE, featureId).find();
+		//int featureId = getMeasurementId(featureName);
+		Measurement m = db.query(Measurement.class).eq(Measurement.NAME,featureName).find().get(0);
+		return db.query(Category.class).eq(Category.ID, m.getCategories_Id()).find();
 	}
 	
 	public List<String> getAllCodesForFeatureAsStrings(String featurename)
 			throws DatabaseException, ParseException
 	{
-		int featureid = getMeasurementId(featurename);
+		//int featureid = getMeasurementId(featurename);
+		Measurement m= db.query(Measurement.class).eq(Measurement.NAME,featurename).find().get(0);
 		Query<Category> q = db.query(Category.class);
-		q.eq(Category.FEATURE, featureid);
+		q.in(Category.ID, m.getCategories_Id());
+		//q.eq(Category.FEATURE, featureid);
 		List<String> returnList = new ArrayList<String>();
 		List<Category> tmpList = q.find();
 		for (Category code : tmpList) {

@@ -1484,12 +1484,20 @@ public class CommonService
 			throws DatabaseException, ParseException, IOException
 	{
 		Category newCode = new Category();
+		newCode.setName(feat+"_"+code);
 		newCode.setCode_String(code);
+		newCode.setLabel(code);
 		newCode.setDescription(desc);
 		List<Integer> locFeatIdList = new ArrayList<Integer>();
 		locFeatIdList.add(getMeasurementId(feat));
-		newCode.setFeature_Id(locFeatIdList);
+		//TODO this is now done at Measurement newCode.setFeature_Id(locFeatIdList);
+		
 		db.add(newCode);
+		
+		//now add it to the Measurement
+		Measurement m = db.query(Measurement.class).eq(Measurement.NAME,feat).find().get(0);
+		m.getCategories_Id().add(newCode.getId());
+		db.update(m);
 	}
 
 	/**
@@ -1503,11 +1511,13 @@ public class CommonService
 	public List<String> getAllCodesForFeatureAsStrings(String featurename)
 			throws DatabaseException, ParseException
 	{
-		int featureid = getMeasurementId(featurename);
-		Query<Category> q = db.query(Category.class);
-		q.eq(Category.FEATURE, featureid);
+		Measurement m = db.query(Measurement.class).eq(Measurement.NAME,featurename).find().get(0);
+		List<Category> tmpList = db.query(Category.class).in(Category.ID, m.getCategories_Id()).find();
+//		int featureid = getMeasurementId(featurename);
+//		Query<Category> q = db.query(Category.class);
+//		q.eq(Category.FEATURE, featureid);
 		List<String> returnList = new ArrayList<String>();
-		List<Category> tmpList = q.find();
+//		List<Category> tmpList = q.find();
 		for (Category code : tmpList) {
 			returnList.add(code.getDescription());
 		}
@@ -1525,8 +1535,8 @@ public class CommonService
 	public List<Category> getAllCodesForFeature(String featureName)
 			throws DatabaseException, ParseException
 	{
-		int featureId = getMeasurementId(featureName);
-		return db.query(Category.class).eq(Category.FEATURE, featureId).find();
+		Measurement m = db.query(Measurement.class).eq(Measurement.NAME, featureName).find().get(0);
+		return db.query(Category.class).in(Category.ID, m.getCategories_Id()).find();
 	}
 
 	/**
