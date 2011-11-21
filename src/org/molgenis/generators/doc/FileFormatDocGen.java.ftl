@@ -33,16 +33,16 @@
 		<td width="50">${field.type}</td>
 		<td width="20"><#if field.isAuto()>&nbsp;<#elseif !field.isNillable() && ( !field.defaultValue?exists || field.defaultValue == "" )>YES<#else>&nbsp;</#if></td>
 		<td width="50"><#if field.isAuto()><#if field.type="int">n+1<#else>today</#if><#elseif field.defaultValue?exists && field.defaultValue != "">${field.defaultValue}<#else>&nbsp;</#if></td>
-		<td><#if field.description != "">${field.description}.<br></#if></td>
+		<td><#if field.description != "">${field.description}<#if !field.description?trim?ends_with('.')>.</#if><br></#if></td>
 	</tr>
 	</#if>
 </#macro>
 
 
 <#macro render_entity entity>
-<h3><a name="#${name(entity)}_entity">File: ${entity.name?lower_case}.txt</a></h3> 
-<#if entity.description != "" ><p>Contents:<br> ${entity.description}.</p></#if>
-<p/>Structure:<br>
+<h3 id="${name(entity)}_entity">File: ${entity.name?lower_case}.txt</h3> 
+<#if entity.description != "" ><p>Contents:<br> ${entity.description}<#if !entity.description?trim?ends_with('.')>.</#if></p></#if>
+<p>Structure:<br>
 <table width="100%" cellspacing="0" border="1" bordercolor="#000000">
 	<!-- table header -->
 	<tr>
@@ -129,7 +129,7 @@ ${example}
 <h1>${model.label} file format reference</h1>
 <p>
 This is documentation on the data exchange format for the '${model.label}' system. <#if model.getDBDescription()?exists>${model.getDBDescription()}</#if>
-<p>
+</p>
 <p>To ease data exchange this system comes with a simple 'tab separated values' file format. 
 In such text files the data is formatted in tables with the columns separated using tabs, colons, or semi-colons.
 Advantage is that these files can be easily created and parsed using common spreadsheet tools like Excel. 
