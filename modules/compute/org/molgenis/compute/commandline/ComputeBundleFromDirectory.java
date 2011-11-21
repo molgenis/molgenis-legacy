@@ -38,7 +38,7 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 	 * </ul>
 	 * 
 	 * @param workflowDir
-	 * @param worksheet
+	 * @param worksheetFile
 	 * @throws Exception
 	 */
 	public ComputeBundleFromDirectory(File workflowDir, File worksheetFile)
@@ -132,7 +132,7 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 						}
 						// set the params
 						p.setMem(params.getInt("mem"));
-						p.setIterateOver_Name(params.getStringList("iterateOver"));
+						//p.setIterateOver_Name(params.getStringList("iterateOver"));
 						p.setWalltime(params.getString("walltime"));
 						p.setNodes(params.getInt("nodes"));
 						p.setCores(params.getInt("cores"));

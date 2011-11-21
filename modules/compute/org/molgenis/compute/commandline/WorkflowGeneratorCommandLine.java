@@ -280,18 +280,10 @@ public class WorkflowGeneratorCommandLine
             throw new RuntimeException("remote directory on the cluster is not specified in parameter.txt");
         }
 
-        String targetId = null;
-        if (this.weavingValues.containsKey("scriptName"))
-        {
-            targetId = this.weavingValues.get("scriptName");
-        }
-        else
-        {
-            throw new RuntimeException("ERROR you have to set scriptName in your parameters.txt");
-        }
+        String runId = this.weavingValues.get("runID");
 
         //create compute pipeline
-        String scriptID = app.getName() + targetId;
+        String scriptID = app.getName() + "_" + runId;
         weaver.setScriptID(scriptID);
 
         weaver.setDefaults();
