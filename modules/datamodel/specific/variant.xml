@@ -9,7 +9,7 @@
 			Panel(gonl) {- observation(relation=Feature(name=AlleleCount)), value=6) -} SequenceFeature
 			.
 		</description>
-		<entity name="GenomeBuild" extends="ObservationElement">
+		<entity name="GenomeBuild" extends="ObservableFeature">
 			<description>Reference to the genome build used. TODO: expand with
 				link to genome build file/version/database ids etc. E.g. 'hg19'.
 			</description>
@@ -87,6 +87,8 @@
 		<entity name="Transcript" implements="SequenceFeature" extends="ObservableFeature">
 			<field name="mrnaSequence" type="text"
 				description="Nucleotide sequence (bases) of the transcript" label="Nucleotide sequence" />
+		</entity>
+		<entity name="Allele" extends="ObservationElement">
 		</entity>
 	</module>
 </molgenis>
