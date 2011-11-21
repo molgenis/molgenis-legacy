@@ -45,6 +45,10 @@ public class SampleMatrixModel extends EasyPluginModel
 	String medicalNavClass;
 	int selectedScreenI = 1;
 	int selectedScreenS = 1;
+	private Boolean checkIfInvestchanges = false;
+	private Boolean checkForPaging = false;
+	private String lastInvest = "";
+	
 	
 	//another example, you can also use getInvestigations() and setInvestigations(...)
 	//public List<Investigation> investigations = new ArrayList<Investigation>();
@@ -217,6 +221,30 @@ public class SampleMatrixModel extends EasyPluginModel
 
 	public void setSelectedScreenS(int selectedScreenS) {
 		this.selectedScreenS = selectedScreenS;
+	}
+
+	public Boolean getCheckIfInvestchanges() {
+		return checkIfInvestchanges;
+	}
+
+	public void setCheckIfInvestchanges(Boolean checkIfInvestchanges) {
+		this.checkIfInvestchanges = checkIfInvestchanges;
+	}
+
+	public Boolean getCheckForPaging() {
+		return checkForPaging;
+	}
+
+	public void setCheckForPaging(Boolean checkForPaging) {
+		this.checkForPaging = checkForPaging;
+	}
+
+	public String getLastInvest() {
+		return lastInvest;
+	}
+
+	public void setLastInvest(String lastInvest) {
+		this.lastInvest = lastInvest;
 	}
 	
 }

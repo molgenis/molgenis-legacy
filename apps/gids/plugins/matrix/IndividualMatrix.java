@@ -35,10 +35,6 @@ import org.molgenis.util.Tuple;
  */
 public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel>
 {
-	
-	private String status;
-	private int str2;
-	
 	public IndividualMatrix(String name, ScreenController<?> parent)
 	{
 		super(name, null, parent);
@@ -55,87 +51,110 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 	public void reload(Database db) throws Exception
 	{	
 		List<Protocol> listProtocols = db.query(Protocol.class).find();
-		
 		if(listProtocols.size()==0){	
 			getModel().error=true;
 		}
-		else{		
-			if(getModel().selectedScreenI==1){
-				getModel().matrixViewerIndv = null;
-				getModel().setChosenProtocolNameI("Individual_info");
-				getModel().individualNavClass="nav1";
-			}else{getModel().individualNavClass="nav";}
-					
-			if(getModel().selectedScreenI==2){
-				getModel().setChosenProtocolNameI("Personal_info");
-				getModel().matrixViewerIndv = null;
-				getModel().personalNavClass="nav1";
-			}else{getModel().personalNavClass="nav";}
-
-			if(getModel().selectedScreenI==3){
-				getModel().setChosenProtocolNameI("Medical_info");
-				getModel().matrixViewerIndv = null;
-				getModel().medicalNavClass="nav1";
-			}else{getModel().medicalNavClass="nav";}
-
+		else{
+			if (!getModel().action.startsWith(getModel().INDVMATRIX)) {
+				getModel().setCheckForPaging(false);
+			}		
+			if (getModel().getCheckForPaging()==false){
+				if(getModel().selectedScreenI==1){
+					getModel().matrixViewerIndv = null;
+					getModel().setChosenProtocolNameI("Individual_info");
+					getModel().individualNavClass="nav1";
+				}else{getModel().individualNavClass="nav";}
+						
+				if(getModel().selectedScreenI==2){
+					getModel().setChosenProtocolNameI("Personal_info");
+					getModel().matrixViewerIndv = null;
+					getModel().personalNavClass="nav1";
+				}else{getModel().personalNavClass="nav";}
 	
-			if (getModel().selectedScreenS==1) {
-				getModel().setChosenProtocolNameS("Sample_info");	
-				getModel().matrixViewerSample = null;
-				getModel().sampleNavClass="nav1";	
-			}else{getModel().sampleNavClass="nav";}
+				if(getModel().selectedScreenI==3){
+					getModel().setChosenProtocolNameI("Medical_info");
+					getModel().matrixViewerIndv = null;
+					getModel().medicalNavClass="nav1";
+				}else{getModel().medicalNavClass="nav";}
+	
 		
-			if (getModel().selectedScreenS==2) {
-				getModel().setChosenProtocolNameS("DNA");
-				getModel().matrixViewerSample = null;
-				getModel().dnaNavClass="nav1";
-			}else{getModel().dnaNavClass="nav";}
+				if (getModel().selectedScreenS==1) {
+					getModel().setChosenProtocolNameS("Sample_info");	
+					getModel().matrixViewerSample = null;
+					getModel().sampleNavClass="nav1";	
+				}else{getModel().sampleNavClass="nav";}
 			
-			if (getModel().selectedScreenS==3) {
-				getModel().setChosenProtocolNameS("RNA");
-				getModel().matrixViewerSample = null;
-				getModel().rnaNavClass="nav1";	
-			}else{getModel().rnaNavClass="nav";}
+				if (getModel().selectedScreenS==2) {
+					getModel().setChosenProtocolNameS("DNA");
+					getModel().matrixViewerSample = null;
+					getModel().dnaNavClass="nav1";
+				}else{getModel().dnaNavClass="nav";}
+				
+				if (getModel().selectedScreenS==3) {
+					getModel().setChosenProtocolNameS("RNA");
+					getModel().matrixViewerSample = null;
+					getModel().rnaNavClass="nav1";	
+				}else{getModel().rnaNavClass="nav";}
+				
+				if (getModel().selectedScreenS==4) {
+					getModel().setChosenProtocolNameS("Serum");
+					getModel().matrixViewerSample = null;
+					getModel().serumNavClass="nav1";
+				}else{getModel().serumNavClass="nav";}
+				
+				if (getModel().selectedScreenS==5) {
+					getModel().setChosenProtocolNameS("Plasma");
+					getModel().matrixViewerSample = null;
+					getModel().plasmaNavClass="nav1";	
+				}else{getModel().plasmaNavClass="nav";}
+				
+				if (getModel().selectedScreenS==6) {
+					getModel().setChosenProtocolNameS("Biopsies");
+					getModel().matrixViewerSample = null;
+					getModel().biopsiesNavClass="nav1";
+					}else{getModel().biopsiesNavClass="nav";}
+				
+				if (getModel().selectedScreenS==7) {
+					getModel().setChosenProtocolNameS("HLA_Typing");
+					getModel().matrixViewerSample = null;
+					getModel().hlaNavClass="nav1";
+				}else{getModel().hlaNavClass="nav";}
+			}
 			
-			if (getModel().selectedScreenS==4) {
-				getModel().setChosenProtocolNameS("Serum");
-				getModel().matrixViewerSample = null;
-				getModel().serumNavClass="nav1";
-			}else{getModel().serumNavClass="nav";}
-			
-			if (getModel().selectedScreenS==5) {
-				getModel().setChosenProtocolNameS("Plasma");
-				getModel().matrixViewerSample = null;
-				getModel().plasmaNavClass="nav1";	
-			}else{getModel().plasmaNavClass="nav";}
-			
-			if (getModel().selectedScreenS==6) {
-				getModel().setChosenProtocolNameS("Biopsies");
-				getModel().matrixViewerSample = null;
-				getModel().biopsiesNavClass="nav1";
-				}else{getModel().biopsiesNavClass="nav";}
-			
-			if (getModel().selectedScreenS==7) {
-				getModel().setChosenProtocolNameS("HLA_Typing");
-				getModel().matrixViewerSample = null;
-				getModel().hlaNavClass="nav1";
-			}else{getModel().hlaNavClass="nav";}
 			
 			
-			getModel().error=false;
 			try {
+				getModel().error=false;
 				FormModel<Investigation> form = this.getParentForm(Investigation.class);
 				List<Investigation> investigationsList = form.getRecords();
 				String invest = investigationsList.get(0).getName();
+				
+				if(!getModel().getLastInvest().equals(invest)){
+					getModel().setCheckIfInvestchanges(true);
+					System.out.println("Investchanges(true) ");
+				}
+				else{
+					if (!getModel().action.startsWith(getModel().INDVMATRIX)) {
+						getModel().setCheckIfInvestchanges(false);
+						System.out.println("Investchanges(false) ");
+					} else {
+						System.out.println("Investchanges remains true because you did a Matrix action");
+					}
+				}
+				
 				//List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				if (getModel().matrixViewerIndv == null && !invest.equals("System")) {
 					System.out.println("invest: " + invest);
 					Protocol indvInfoProt = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, getModel().chosenProtocolNameI)).get(0);
 					List<String> measurementsToShow = indvInfoProt.getFeatures_Name();
+					List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
+					filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
+							Operator.EQUALS, invest));
+					
 					
 					getModel().matrixViewerIndv = new MatrixViewer(this, getModel().INDVMATRIX, 
 							new SliceablePhenoMatrix(Individual.class, Measurement.class), 
-							true, true, null, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
+							true, true, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 									Operator.IN, measurementsToShow));
 				}
 
@@ -151,51 +170,54 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 					for( Integer i : getModel().getListIndividuals())
 					{
 						System.out.println("id " + i);
-					}
-					
+					}					
 					getModel().matrixViewerSample = new MatrixViewer(this, getModel().SAMPLEMATRIX, 
 							new SliceablePhenoMatrix(Individual.class, Measurement.class), 
 							true, true, showTheseIndividuals, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 									Operator.IN, measurementsToShowSamples));
-				}			
+				}	
+				getModel().setLastInvest(invest);
 			}catch (Exception e) {
 				logger.error(e.getMessage());
 			}
+			
 		}
-
 
 		if(getModel().matrixViewerIndv != null){
 			getModel().matrixViewerIndv.setToHtmlDb(db);
 			System.out.println("set for: matrixViewerIndv");
+			if (getModel().action.startsWith(getModel().matrixViewerIndv.getName())) {
+				getModel().setCheckForPaging(false);
+			}
 		}
 		if(getModel().matrixViewerSample != null){
 			getModel().matrixViewerSample.setToHtmlDb(db);
 			System.out.println("set for: matrixViewerSample");
+			
 		}
 	}
 	
 	@Override
 	public Show handleRequest(Database db, Tuple request, OutputStream out)
 			throws HandleRequestDelegationException
-	{
+		{	
 		 if(request.getInt("selectedScreenI")!=null){
 			getModel().setSelectedScreenI(request.getInt("selectedScreenI"));
-
 		 }
 		 if(request.getInt("selectedScreenS")!=null){
-
 				getModel().setSelectedScreenS(request.getInt("selectedScreenS"));
 			 }
 		getModel().action = request.getString("__action");
-		if(request.getInt("str")!=null){
-			str2 = request.getInt("str");
-		}
-		System.out.println(getModel().action);
+
+
 		try {
+			
 			if (getModel().action.startsWith(getModel().matrixViewerIndv.getName())) {
+				getModel().setCheckForPaging(true);	
 				getModel().matrixViewerIndv.handleRequest(db, request);
-				//getModel().setAction("init");
-				getModel().individualNavClass="nav1";
+			}
+			else{
+				getModel().setCheckForPaging(false);
 			}
 
 			if (getModel().action.equals("setSelection")) {
@@ -214,8 +236,7 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 				}
 				
 				getModel().setListIndividuals(listIndividualIds);
-				getModel().matrixViewerSample = null;
-				getModel().sampleNavClass="nav1";							
+				getModel().matrixViewerSample = null;						
 			}
 			
 		} catch (Exception e) {
@@ -226,5 +247,4 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 		return Show.SHOW_MAIN;
 	}
 
-	
 }

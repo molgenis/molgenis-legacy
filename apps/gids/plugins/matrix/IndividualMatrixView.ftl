@@ -35,22 +35,24 @@
 	<input type="submit" name="setSelection" value='Get selected from matrix' onclick='__action.value="setSelection"' />
 	
 	<#if model.getSelection()??>
-	<div id="block">
-		<div id="headerSample">
-			<a>Sample matrix</a>
-		</div>
-		<div id="protocols2">
-			<span><a></a>&nbsp;</span>
-			<span class="${model.getSampleNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Sample_info&selectedScreenS=1">Sample_info</a></span>
-			<span class="${model.getDnaNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=DNA&selectedScreenS=2">DNA</a></span>
-			<span class="${model.getRnaNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=RNA&selectedScreenS=3">RNA</a></span>
-			<span class="${model.getSerumNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Serum&selectedScreenS=4">Serum</a></span>
-			<span class="${model.getPlasmaNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Plasma&selectedScreenS=5">Plasma</a></span>
-			<span class="${model.getBiopsiesNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Biopsies&selectedScreenS=6">Biopsies</a></span>
-			<span class="${model.getHlaNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=HLA_Typing&selectedScreenS=7">HLA_Typing</a></span>
-		</div>
-	</div>
-		${model.getMatrixViewerSample()}
+		<#if model.getCheckIfInvestchanges()==false>
+			<div id="block">
+				<div id="headerSample">
+					<a>Sample matrix</a>
+				</div>
+				<div id="protocols2">
+					<span><a></a>&nbsp;</span>
+					<span class="${model.getSampleNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Sample_info&selectedScreenS=1">Sample_info</a></span>
+					<span class="${model.getDnaNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=DNA&selectedScreenS=2">DNA</a></span>
+					<span class="${model.getRnaNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=RNA&selectedScreenS=3">RNA</a></span>
+					<span class="${model.getSerumNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Serum&selectedScreenS=4">Serum</a></span>
+					<span class="${model.getPlasmaNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Plasma&selectedScreenS=5">Plasma</a></span>
+					<span class="${model.getBiopsiesNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Biopsies&selectedScreenS=6">Biopsies</a></span>
+					<span class="${model.getHlaNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=HLA_Typing&selectedScreenS=7">HLA_Typing</a></span>
+				</div>
+			</div>
+			${model.getMatrixViewerSample()}
+		</#if>
 	</#if>
 <#else>
 	<p>There is a problem. probably there is no protocol given.</p>

@@ -38,18 +38,20 @@
 	<input type="submit" name="setSelection" value='Get selected from matrix' onclick='__action.value="setSelection"' />
 	
 	<#if model.getSelection()??>
-	<div id="block">
-		<div id="headerSample">
-			<a>Individual matrix</a>
+	<#if model.getCheckIfInvestchanges()==false>
+		<div id="block">
+			<div id="headerSample">
+				<a>Individual matrix</a>
+			</div>
+			<div id="protocols2">
+				<span><a></a>&nbsp;</span>
+				<span class="${model.getIndividualNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Individual_info&selectedScreenI=1">Individual_info</a></span>
+				<span class="${model.getPersonalNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Personal_info&selectedScreenI=2">Personal_info</a></span>
+				<span class="${model.getMedicalNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Medical_info&selectedScreenI=3">Medical_info</a></span>
+			</div>
 		</div>
-		<div id="protocols2">
-			<span><a></a>&nbsp;</span>
-			<span class="${model.getIndividualNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Individual_info&selectedScreenI=1">Individual_info</a></span>
-			<span class="${model.getPersonalNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Personal_info&selectedScreenI=2">Personal_info</a></span>
-			<span class="${model.getMedicalNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Medical_info&selectedScreenI=3">Medical_info</a></span>
-		</div>
-	</div>
 		${model.getMatrixViewerIndv()}
+		</#if>
 	</#if>
 <#else>
 	<p>There is a problem, probably there is no protocol given.</p>

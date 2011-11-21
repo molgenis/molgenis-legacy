@@ -34,8 +34,8 @@ public class IndividualMatrixModel extends EasyPluginModel
 	String action = "Individual_info";
 	boolean error = false;
 	String selection = null;
-	String chosenProtocolNameI;
-	String chosenProtocolNameS;
+	String chosenProtocolNameI = "Individual_info";
+	String chosenProtocolNameS = "Sample_info";
 	List<Integer> listIndividuals = null;
 	String individualNavClass;
 	String personalNavClass;
@@ -49,6 +49,10 @@ public class IndividualMatrixModel extends EasyPluginModel
 	String hlaNavClass;
 	int selectedScreenI = 1;
 	int selectedScreenS = 1;
+	private Boolean checkIfInvestchanges = false;
+	private Boolean checkForPaging = false;
+	private String lastInvest = "";
+	
 	
 	//hack to pass database to toHtml() via toHtml(db)
 //	Database toHtmlDb;
@@ -92,7 +96,13 @@ public class IndividualMatrixModel extends EasyPluginModel
 	public void setChosenProtocolNameI(String chosenProtocolName) {
 		this.chosenProtocolNameI = chosenProtocolName;
 	}
-
+	
+	public String getChosenProtocolNameS() {
+		return chosenProtocolNameS;
+	}
+	public void setChosenProtocolNameS(String chosenProtocolNameS) {
+		this.chosenProtocolNameS = chosenProtocolNameS;
+	}
 	
 	public List<Integer> getListIndividuals() {
 		return listIndividuals;
@@ -211,14 +221,6 @@ public class IndividualMatrixModel extends EasyPluginModel
 		this.hlaNavClass = hlaNavClass;
 	}
 
-	public String getChosenProtocolNameS() {
-		return chosenProtocolNameS;
-	}
-
-	public void setChosenProtocolNameS(String chosenProtocolNameS) {
-		this.chosenProtocolNameS = chosenProtocolNameS;
-	}
-
 	public int getSelectedScreenI() {
 		return selectedScreenI;
 	}
@@ -235,5 +237,28 @@ public class IndividualMatrixModel extends EasyPluginModel
 		this.selectedScreenS = selectedScreenS;
 	}
 
+	public Boolean getCheckIfInvestchanges() {
+		return checkIfInvestchanges;
+	}
+
+	public void setCheckIfInvestchanges(Boolean checkIfInvestchanges) {
+		this.checkIfInvestchanges = checkIfInvestchanges;
+	}
+
+	public Boolean getCheckForPaging() {
+		return checkForPaging;
+	}
+
+	public void setCheckForPaging(Boolean checkForPaging) {
+		this.checkForPaging = checkForPaging;
+	}
+
+	public String getLastInvest() {
+		return lastInvest;
+	}
+
+	public void setLastInvest(String lastInvest) {
+		this.lastInvest = lastInvest;
+	}
 
 }

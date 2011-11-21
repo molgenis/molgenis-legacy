@@ -36,21 +36,12 @@ import org.molgenis.util.Tuple;
  */
 public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 {
-
-	
 	public SampleMatrix(String name, ScreenController<?> parent)
 	{
 		super(name, null, parent);
 		this.setModel(new SampleMatrixModel(this)); //the default model
 		this.setView(new FreemarkerView("SampleMatrixView.ftl", getModel())); //<plugin flavor="freemarker"
 	}
-
-	/**
-	 * At each page view: reload data from database into model and/or change.
-	 *
-	 * Exceptions will be caught, logged and shown to the user automatically via setMessages().
-	 * All db actions are within one transaction.
-	 */ 
 	
 	public String getCustomHtmlHeaders() {
 		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/gids.css\">";
@@ -59,97 +50,123 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 	@Override
 	public void reload(Database db) throws Exception
 	{	
-		
-		List<Protocol> listt = db.query(Protocol.class).find();
-		if(listt.size()==0){
+
+		List<Protocol> listProtocols = db.query(Protocol.class).find();
+		if(listProtocols.size()==0){
 			getModel().error =true;
 		}
 		else{
-			if(getModel().selectedScreenI==1){
-				getModel().matrixViewerIndv = null;
-				getModel().setChosenProtocolNameI("Individual_info");
-				getModel().individualNavClass="nav1";
-			}else{getModel().individualNavClass="nav";}
-					
-			if(getModel().selectedScreenI==2){
-				getModel().setChosenProtocolNameI("Personal_info");
-				getModel().matrixViewerIndv = null;
-				getModel().personalNavClass="nav1";
-			}else{getModel().personalNavClass="nav";}
-
-			if(getModel().selectedScreenI==3){
-				getModel().setChosenProtocolNameI("Medical_info");
-				getModel().matrixViewerIndv = null;
-				getModel().medicalNavClass="nav1";
-			}else{getModel().medicalNavClass="nav";}
-
+			if (!getModel().action.startsWith(getModel().SAMPLEMATRIXS)) {
+				getModel().setCheckForPaging(false);
+			}
+			if (getModel().getCheckForPaging()==false){
+				if(getModel().selectedScreenI==1){
+					getModel().matrixViewerIndv = null;
+					getModel().setChosenProtocolNameI("Individual_info");
+					getModel().individualNavClass="nav1";
+				}else{getModel().individualNavClass="nav";}
+						
+				if(getModel().selectedScreenI==2){
+					getModel().setChosenProtocolNameI("Personal_info");
+					getModel().matrixViewerIndv = null;
+					getModel().personalNavClass="nav1";
+				}else{getModel().personalNavClass="nav";}
 	
-			if (getModel().selectedScreenS==1) {
-				getModel().setChosenProtocolNameS("Sample_info");	
-				getModel().matrixViewerSample = null;
-				getModel().sampleNavClass="nav1";	
-			}else{getModel().sampleNavClass="nav";}
+				if(getModel().selectedScreenI==3){
+					getModel().setChosenProtocolNameI("Medical_info");
+					getModel().matrixViewerIndv = null;
+					getModel().medicalNavClass="nav1";
+				}else{getModel().medicalNavClass="nav";}
+	
 		
-			if (getModel().selectedScreenS==2) {
-				getModel().setChosenProtocolNameS("DNA");
-				getModel().matrixViewerSample = null;
-				getModel().dnaNavClass="nav1";
-			}else{getModel().dnaNavClass="nav";}
+				if (getModel().selectedScreenS==1) {
+					getModel().setChosenProtocolNameS("Sample_info");	
+					getModel().matrixViewerSample = null;
+					getModel().sampleNavClass="nav1";	
+				}else{getModel().sampleNavClass="nav";}
 			
-			if (getModel().selectedScreenS==3) {
-				getModel().setChosenProtocolNameS("RNA");
-				getModel().matrixViewerSample = null;
-				getModel().rnaNavClass="nav1";	
-			}else{getModel().rnaNavClass="nav";}
-			
-			if (getModel().selectedScreenS==4) {
-				getModel().setChosenProtocolNameS("Serum");
-				getModel().matrixViewerSample = null;
-				getModel().serumNavClass="nav1";
-			}else{getModel().serumNavClass="nav";}
-			
-			if (getModel().selectedScreenS==5) {
-				getModel().setChosenProtocolNameS("Plasma");
-				getModel().matrixViewerSample = null;
-				getModel().plasmaNavClass="nav1";	
-			}else{getModel().plasmaNavClass="nav";}
-			
-			if (getModel().selectedScreenS==6) {
-				getModel().setChosenProtocolNameS("Biopsies");
-				getModel().matrixViewerSample = null;
-				getModel().biopsiesNavClass="nav1";
-				}else{getModel().biopsiesNavClass="nav";}
-			
-			if (getModel().selectedScreenS==7) {
-				getModel().setChosenProtocolNameS("HLA_Typing");
-				getModel().matrixViewerSample = null;
-				getModel().hlaNavClass="nav1";
-			}else{getModel().hlaNavClass="nav";}
+				if (getModel().selectedScreenS==2) {
+					getModel().setChosenProtocolNameS("DNA");
+					getModel().matrixViewerSample = null;
+					getModel().dnaNavClass="nav1";
+				}else{getModel().dnaNavClass="nav";}
+				
+				if (getModel().selectedScreenS==3) {
+					getModel().setChosenProtocolNameS("RNA");
+					getModel().matrixViewerSample = null;
+					getModel().rnaNavClass="nav1";	
+				}else{getModel().rnaNavClass="nav";}
+				
+				if (getModel().selectedScreenS==4) {
+					getModel().setChosenProtocolNameS("Serum");
+					getModel().matrixViewerSample = null;
+					getModel().serumNavClass="nav1";
+				}else{getModel().serumNavClass="nav";}
+				
+				if (getModel().selectedScreenS==5) {
+					getModel().setChosenProtocolNameS("Plasma");
+					getModel().matrixViewerSample = null;
+					getModel().plasmaNavClass="nav1";	
+				}else{getModel().plasmaNavClass="nav";}
+				
+				if (getModel().selectedScreenS==6) {
+					getModel().setChosenProtocolNameS("Biopsies");
+					getModel().matrixViewerSample = null;
+					getModel().biopsiesNavClass="nav1";
+					}else{getModel().biopsiesNavClass="nav";}
+				
+				if (getModel().selectedScreenS==7) {
+					getModel().setChosenProtocolNameS("HLA_Typing");
+					getModel().matrixViewerSample = null;
+					getModel().hlaNavClass="nav1";
+				}else{getModel().hlaNavClass="nav";}
+			}
 			
 			
 			
 			try{
-			getModel().error=false;
-			FormModel<Investigation> form = this.getParentForm(Investigation.class);
-			List<Investigation> investigationsList = form.getRecords();
-			String invest = investigationsList.get(0).getName();
-			//Show sampleMatrix, with chosenProtocol name to be shown
+				getModel().error=false;
+				FormModel<Investigation> form = this.getParentForm(Investigation.class);
+				List<Investigation> investigationsList = form.getRecords();
+				String invest = investigationsList.get(0).getName();
+			
+			
+				if(!getModel().getLastInvest().equals(invest)){
+					getModel().setCheckIfInvestchanges(true);
+					System.out.println("Investchanges(true) ");
+				}
+				else{
+					if (!getModel().action.startsWith(getModel().SAMPLEMATRIXS)) {
+						getModel().setCheckIfInvestchanges(false);
+						System.out.println("Investchanges(false) ");
+					} else {
+						System.out.println("Investchanges remains true because you did a Matrix action");
+					}
+				}
+			
+				System.out.println(getModel().getLastInvest()+"\t"  + invest);
+				//Show sampleMatrix, with chosenProtocol name to be shown
 				if (getModel().matrixViewerSample == null  && !invest.equals("System"))  {
 					Protocol sampleInfoProt = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, getModel().chosenProtocolNameS)).get(0);
 					List<String> measurementsToShow = sampleInfoProt.getFeatures_Name();
-	
+					
+					List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
+					filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, GidsSample.INVESTIGATION_NAME, 
+							Operator.EQUALS, invest));
+					
 					getModel().matrixViewerSample = new MatrixViewer(this, getModel().SAMPLEMATRIXS, 
 							new SliceablePhenoMatrix(GidsSample.class, Measurement.class), 
-							true, true, null, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
+							true, true, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 									Operator.IN, measurementsToShow));
 				}
 				// if samples are chosen, individualmatrix will be filled with chosenProtocol
+				
+				
 				if(getModel().getListSamples()!=null && getModel().matrixViewerIndv == null){
+					
 					Protocol indvInfoProt = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, getModel().chosenProtocolNameI)).get(0);
 					List<String> measurementsToShowIndividuals = indvInfoProt.getFeatures_Name();
-				
-					
-					
+
 					List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 					List<Integer> individIdList = new ArrayList<Integer>();
 					//filling list with the selected individuals
@@ -166,6 +183,9 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 							true, true, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 									Operator.IN, measurementsToShowIndividuals));
 				}
+				
+				getModel().setLastInvest(invest);
+			
 			}
 			catch (Exception e) {
 				logger.error(e.getMessage());
@@ -180,10 +200,10 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 		if(getModel().matrixViewerSample != null){
 			getModel().matrixViewerSample.setToHtmlDb(db);
 			System.out.println("set for: matrixViewerSample");
+			if (getModel().action.startsWith(getModel().matrixViewerSample.getName())) {
+				getModel().setCheckForPaging(false);
+			}
 		}
-		
-		
-		
 	}
 	
 	@Override
@@ -199,17 +219,18 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 		
 		
 		getModel().action = request.getString("__action");
-			
-			try {
+			try {		
 				if (getModel().action.startsWith(getModel().matrixViewerSample.getName())) {
+					getModel().setCheckForPaging(true);
 					getModel().matrixViewerSample.handleRequest(db, request);
-					getModel().setAction("init");
+					
 				}
-				//FormModel<Investigation> form = this.getParentForm(Investigation.class);			
-				//List<Investigation> investigations = form.getRecords();
-				//investigations.get(0).getName();
+				else{
+					getModel().setCheckForPaging(false);
+				}
+
 	
-				if (getModel().action.equals("setSelection")) {
+				if (getModel().action.equals("setSelection")) {		
 					getModel().selection = "";
 					List<ObservationElement> rows = (List<ObservationElement>) getModel().matrixViewerSample.getSelection(db);
 					int rowCnt = 0;
@@ -221,10 +242,9 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 						rowCnt++;
 					}
 					getModel().setListSamples(listSampleIds);
-					getModel().matrixViewerIndv = null;				
+					getModel().matrixViewerIndv = null;			
 				}
-				
-				
+	
 			} catch (Exception e) {
 				this.setError(e.getMessage());
 				e.printStackTrace();
