@@ -261,9 +261,23 @@ public class MatrixManager extends PluginModel
 
 			if (newOrOtherData)
 			{
-				logger.info("*** newOrOtherData");
-				this.model.setHasBackend(dmh.isDataStoredIn(data, data.getStorage(), db));
-				logger.info("hasBackend: " + this.model.isHasBackend());
+				//find out if the 'Data' has a proper backend
+				boolean hasLinkedStorage = dmh.isDataStoredIn(data, data.getStorage(), db);
+				
+				//if not, it doesn't mean the source file is not there! e.g. after updating your database
+				if(!hasLinkedStorage)
+				{
+					//attempt to relink
+					dmh.attemptStorageRelink(data, data.getStorage(), db);
+					//and requery
+					this.model.setHasBackend(dmh.isDataStoredIn(data, data.getStorage(), db));
+				}
+				else
+				{
+					//already has properly linked storage
+					this.model.setHasBackend(true);
+				}
+				
 				if (this.model.isHasBackend())
 				{
 					logger.info("*** creating browser instance");

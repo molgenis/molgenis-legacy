@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import matrix.DataMatrixInstance;
@@ -378,6 +379,74 @@ public class DataMatrixHandler extends MolgenisFileHandler
 		DataMatrixHandler mh = new DataMatrixHandler(db);
 		Data dm = db.find(Data.class).get(0);
 		mh.isDataStoredIn(dm, "Binary", db);
+	}
+
+	/**
+	 * Attempt to link this 'Data' object to a backend file that might be there,
+	 * but is not properly attached via MolgenisFile.
+	 * @param data
+	 * @param storage
+	 * @param db
+	 * @throws Exception 
+	 */
+	public boolean attemptStorageRelink(Data data, String storage, Database db) throws Exception
+	{
+		boolean relinked = false;
+		boolean mfPresent = false;
+		
+		String type = data.getStorage() + "DataMatrix";
+		Class<? extends Entity> mfClass = db.getClassForName(type);
+
+		List<? extends Entity> mfList = db.find(mfClass,
+				new QueryRule("Data_" + Data.NAME, Operator.EQUALS, data.getName()));
+		if (mfList.size() == 1)
+		{
+			mfPresent = true;
+		}
+		else if (mfList.size() > 1)
+		{
+			throw new Exception("SEVERE ERROR: Multiple files for " + data.getName() + " found!");
+		}
+		
+		if(!mfPresent)
+		{
+			MolgenisFile mfAdd = (MolgenisFile) db.getClassForName(type).newInstance();
+			
+			mfAdd.setName(data.getName());
+			mfAdd.setExtension(getExtension(data.getStorage()));
+            if (db instanceof JDBCDatabase)
+            {
+                mfAdd.set("Data_" + Data.NAME, data.getName());
+            }
+            else if (db instanceof JpaDatabase) {
+            	mfAdd.set("Data_" + Data.ID, data.getId().toString());
+            	mfAdd.set("Data_" + Data.NAME, data.getName());
+            }
+            else
+            {
+                throw new DatabaseException("Unsupported database mapper");
+            }
+            
+			db.add(mfAdd);
+			relinked = true;			
+		}
+		return relinked;
+	}
+	
+	private String getExtension(String storage) throws Exception
+	{
+		if(storage.equals("Binary"))
+		{
+			return "bin";
+		}
+		else if(storage.equals("CSV"))
+		{
+			return "txt";
+		}
+		else
+		{
+			throw new Exception("No extension for '" + storage + "'");
+		}
 	}
 
 }
