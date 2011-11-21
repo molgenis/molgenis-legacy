@@ -70,16 +70,11 @@ public class ScrumHeader extends PluginModel<Entity>
 	public void setUserLogin() {
 		//System.out.println(this.getLogin().isAuthenticated());
 		if (this.getLogin().isAuthenticated()) {
-
-			//this.userLogin = "<a href='http://vm7.target.rug.nl/bbmri_gcc/molgenis.do?__target=main&select=UserLogin'>" + "Welcome " +  ((DatabaseLogin)this.getLogin()).getFullUserName() + "</a>";
-			//this.userLogin += "<a href='http://vm7.target.rug.nl/bbmri_gcc/molgenis.do?__target=MolgenisHeader&select=UserLogin&__action=doLogout'>" + " | Exit " + "</a>";		
-
-			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Welcome " + ((DatabaseLogin)this.getLogin()).getFullUserName() + "</a>";
-			this.userLogin += "<a href='molgenis.do?__target=MolgenisHeader&select=UserLogin&__action=doLogout'>" + " | Exit " + "</a>";		
+			this.userLogin = "<a href='molgenis.do?__target=main&select=ScrumLogin'>" + "Welcome " + ((DatabaseLogin)this.getLogin()).getFullUserName() + "</a>";
+			this.userLogin += "<a href='molgenis.do?__target=ScrumHeader&__action=doLogout'>" + " | Exit " + "</a>";		
 
 		} else {
-			//this.userLogin = "<a href='http://vm7.target.rug.nl/bbmri_gcc/molgenis.do?__target=main&select=UserLogin'>" + "Login" + "</a>";
-			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Login" + "</a>";
+			this.userLogin = "<a href='molgenis.do?__target=main&select=ScrumLogin'>" + "Login" + "</a>";
 		}
 		
 	}
