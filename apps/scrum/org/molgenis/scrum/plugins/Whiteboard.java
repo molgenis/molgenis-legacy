@@ -52,6 +52,13 @@ public class Whiteboard extends PluginModel<Entity>
 	{
 		return "org/molgenis/scrum/plugins/Whiteboard.ftl";
 	}
+	
+	private Sprint getSelectedSprint() {
+		ScreenController parent = this.getParent().getParent();
+		FormModel<Sprint> form = (FormModel<Sprint>) parent.getModel();
+		List<Sprint> sprintList = form.getRecords();
+		return sprintList.get(0);
+	}
 
 	@Override
 	public void handleRequest(Database db, Tuple request)
@@ -141,7 +148,7 @@ public class Whiteboard extends PluginModel<Entity>
 				Story story = new Story();
 				story.setName("please edit");
 				story.setHowToDemo("how to demo?");
-				
+				story.setSprint(getSelectedSprint().getId());
 				db.add(story);
 				this.storyEdit = story;
 			}
@@ -160,12 +167,8 @@ public class Whiteboard extends PluginModel<Entity>
 	{
 		try
 		{
-			// get sprint
-			Sprint sprint = ((FormModel<Sprint>) this.getParent().getParent())
-					.getCurrent();
-
 			// load all stories for this sprint
-			stories = db.query(Story.class).eq("sprint", sprint.getId()).find();
+			stories = db.query(Story.class).eq("sprint", getSelectedSprint().getId()).find();
 
 			// load all tasks for all stories in this sprint
 			List<Integer> storyIds = new ArrayList<Integer>();
@@ -179,15 +182,6 @@ public class Whiteboard extends PluginModel<Entity>
 			e.printStackTrace();
 			this.setMessages(new ScreenMessage("" + e.getMessage(), false));
 		}
-	}
-
-	@Override
-	public boolean isVisible()
-	{
-		// you can use this to hide this plugin, e.g. based on user rights.
-		// e.g.
-		// if(!this.getLogin().hasEditPermission(myEntity)) return false;
-		return true;
 	}
 	
 	// summing methods

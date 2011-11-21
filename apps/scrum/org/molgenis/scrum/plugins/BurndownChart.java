@@ -57,6 +57,13 @@ public class BurndownChart extends PluginModel<Entity>
 	{
 		// no edits
 	}
+	
+	private Sprint getSelectedSprint() {
+		ScreenController parent = this.getParent().getParent();
+		FormModel<Sprint> form = (FormModel<Sprint>) parent.getModel();
+		List<Sprint> sprintList = form.getRecords();
+		return sprintList.get(0);
+	}
 
 	@Override
 	public void reload(Database db)
@@ -68,20 +75,15 @@ public class BurndownChart extends PluginModel<Entity>
 			this.dates.clear();
 			this.taskHistory.clear();
 			
-			
-			// get sprint
-			Sprint sprint = ((FormModel<Sprint>) this.getParent().getParent())
-					.getCurrent();
-
 			// load all stories for this sprint
-			List<Story> stories;
-
-			stories = db.query(Story.class).eq(Story.SPRINT, sprint.getId()).find();
+			Sprint sprint = getSelectedSprint();
+			List<Story> stories = db.query(Story.class).eq(Story.SPRINT, sprint.getId()).find();
 
 			// load the task ids
 			List<Integer> storyIds = new ArrayList<Integer>();
-			for (Story story : stories)
+			for (Story story : stories) {
 				storyIds.add(story.getId());
+			}
 
 			// get the current history
 			taskHistory = db.query(TaskHistory.class).in(TaskHistory.STORY, storyIds)
@@ -198,15 +200,6 @@ public class BurndownChart extends PluginModel<Entity>
 			}
 		}
 		return count;
-	}
-
-	@Override
-	public boolean isVisible()
-	{
-		// you can use this to hide this plugin, e.g. based on user rights.
-		// e.g.
-		// if(!this.getLogin().hasEditPermission(myEntity)) return false;
-		return true;
 	}
 	
 	//getter to freemarker
