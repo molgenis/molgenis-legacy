@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<molgenis name="molgenis_apps" label="MOLGENIS Scrum App">
+<molgenis name="scrum" label="MOLGENIS Scrum App">
 	<plugin name="ScrumHeader" type="org.molgenis.scrum.plugins.ScrumHeader" />
 	<menu name="ScrumApp">
 		<form name="Sprints" entity="Sprint" compact_view="name">

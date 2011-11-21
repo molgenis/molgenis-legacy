@@ -9,17 +9,29 @@
 	<path id="app.class.path">
 		<pathelement location="apps/scrum" />
 		<pathelement location="modules/auth" />
-		<pathelement location="modules/pheno" />
-		<pathelement location="modules/file" />
-		<pathelement location="modules/datamodel" />
-		<pathelement location="modules/import"/>
-		<pathelement location="modules/webserver"/>
+		<pathelement location="modules/file" /> <!-- decorators/core needs this -->
+		<pathelement location="modules/import"/> <!-- /molgenis_apps/generated/java/app/ui/ScrumExcelImportPlugin.java needs this -->
+		<pathelement location="modules/webserver"/><!-- needed to deploy -->
+		<pathelement location="modules/datamodel"/> <!-- needed to generate -->
 		<pathelement location="modules/decorators/core" />
 		<pathelement location="modules/decorators/auth" />
-		<pathelement location="modules/decorators/pheno" />
 	</path>
 	
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
 	<import file="build_common.xml"/>
+	
+	<!--
+	Deploy help: run on a specific port, and on that port only
+	Usage: ant -f xqtl_dev.xml runOn -Dport=9000
+	-->
+	<target name="runOn" description="Start the application">
+		<java maxmemory="128m" classname="boot.RunStandalone" fork="yes" failonerror="true">
+			<arg value="${port}"/>
+			<classpath>
+				<path refid="molgenis.classpath" />
+				<path location="${build.dir}" />
+			</classpath>
+		</java>
+	</target>
 	
 </project>
