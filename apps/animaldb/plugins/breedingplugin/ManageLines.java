@@ -7,7 +7,6 @@
 
 package plugins.breedingplugin;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -23,7 +22,6 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.pheno.Panel;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 

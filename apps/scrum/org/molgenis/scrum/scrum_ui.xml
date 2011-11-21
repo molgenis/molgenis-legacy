@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="molgenis_apps" label="MOLGENIS Scrum App">
+	<plugin name="ScrumHeader" type="org.molgenis.scrum.plugins.ScrumHeader" />
+	<menu name="ScrumApp">
+		<form name="Sprints" entity="Sprint" compact_view="name">
+			<menu name="SprintMenu">
+				<plugin name="SprintWhiteboard" label="Scrum Board"
+					type="org.molgenis.scrum.plugins.Whiteboard" />
+				<plugin name="SprintBurndown" label="Burndown Chart"
+					type="org.molgenis.scrum.plugins.BurndownChart" />
+				<form name="SprintChangelog" label="Changelog" entity="TaskHistory" />
+				<form name="SprintStories" label="Stories &amp; Tasks" entity="Story"
+					viewtype="list">
+					<form name="Tasks" entity="Task">
+						<form name="ScrumTaskkHistory" label="Task Changes" entity="TaskHistory"
+							readonly="true" hide_fields="tracId" />
+					</form>
+				</form>
+			</menu>
+		</form>
+		<plugin name="ScrumExcelImport" type="plugins.genericwizard.GenericWizard"
+			label="Upload Excel" />
+		<plugin name="ScrumLogin" type="org.molgenis.auth.ui.UserLogin"
+			label="Login" />
+	</menu>
+</molgenis>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="org.molgenis" label="MOLGENIS Scrum App">
+	<module name="scrum">
+	<description>
+		This is a small MOLGENIS app for the software development process
+		called SCRUM. Also it includes several technical tricks worth
+		mentioning:
+		<ul>
+			<li>A design pattern for versioning (of Tasks)</li>
+			<li>Use of HTML5 drop-and-drop (of yellow sticky notes on the
+				whiteboard)</li>
+			<li>Use of HTML5 graphics canvas (to render the burndown chart)</li>
+			<li>Use of the java.util.Calendar API (to produce example data)</li>
+		</ul>
+		Next to that also steps where made to enable modularity:
+		<ul>
+			<li>this project contains now a gcc.jar which it reuses.</li>
+			<li>the plugin generators now check if the plugin already exists on
+				classpath. Result is that MOLGENIS will not generate empty plugin
+				boilerplate in handwritten/java and you than have to copy your
+				plugin code into that. Instead you can include the plugin from your
+				other project as *.jar.</li>
+			<li>
+				the *.properties, *_db.xml and *_ui.xml can now be loaded from class
+				path (instead of local file system). This means MOLGENIS now can
+				load auth.xml from 'shared' inside the gcc.jar instead of needing to
+				copying the file (with all problems to keep that synchronous). Also
+				it makes it easier to move code between projects when refactoring.
+				<em>WE NEED TO MAKE THIS PATH BETTER THAN 'shared'</em>
+			</li>
+		</ul>
+	</description>
+	<entity name="Sprint">
+		<description>Sprints are the planning periods of a scrum with clear
+			start and end. Within a Sprint you have a series of stories that a
+			team wants to complete. Typically you</description>
+		<field name="id" type="autoid" hidden="true" />
+		<field name="name" unique="true"
+			description="Unique name for this sprint. E.g. 'sprint 1' or 'sprint 2011.1'" />
+		<field name="teamMembers" type="mref" xref_entity="MolgenisUser"
+			description="Members of this sprint. Every member must be registered this application." />
+		<field name="description" type="text" nillable="true"
+			description="Most sprints have a mission statement or a slogan. You can put that here :-)" />
+		<field name="startOfSprint" type="date"
+			description="First working day of this sprint. Is used for burndown chart." />
+		<field name="endOfSprint" type="date"
+			description="Last working day of this sprint, also known as 'demo day'. Is used for the burndown chart." />
+	</entity>
+	<entity name="Story">
+		<description>Stories describe things that the product owner wants to
+			implement in such a way that we know what to demo end-of-sprint. Each
+			story is addressed in one sprint.</description>
+		<field name="id" type="autoid" hidden="true" />
+		<field name="tracId" type="int" label="Trac ID" nillable="true"
+			description="reference to a ticket ID, typically in TRAC or another ticket tracker." />
+		<field name="name" unique="true" description="unique name for this story" />
+		<field name="howToDemo" label="How to demo?" type="text"
+			description="description of what will be demo-ed when this is story is completed. This is typically a software demo, and in rare occasions a piece of code (for an API) or a report (for a design or evaluation)." />
+		<field name="importance" type="int" nillable="true" description="weight of importance for this story that is used to sort the scrum board."/>
+		<field name="linkToDemo" label="Link to demo" type="hyperlink"
+			nillable="true"
+			description="Link where one can view the demo that was produced as result of story." />
+		<field name="sprint" type="xref" xref_entity="Sprint"
+			description="Sprint that this story is part of." />
+	</entity>
+	<entity name="TaskInterface" abstract="true">
+		<description>In order to allow recording of Task history we have two
+			tables: Task and TaskHistory. Both tables are identical EXCEPT that
+			the TaskHistory does have each unique contraint with an added
+			version. Making both inherit from the same interface allows easy
+			programming against both the main class (Task) and its history
+			(TaskHistory).</description>
+		<field name="id" type="autoid" hidden="true" />
+		<field name="tracId" type="int" label="Trac ID" nillable="true"
+			description="reference to a ticket ID, typically in TRAC or another ticket tracker." />
+		<field name="description"
+			description="A short sentence that explains what involved. Maximum 255 characters." />
+		<field name="changedOn" type="datetime" auto="true" readonly="true"
+			description="Date on which this task was last change. (list TaskHistory for the full list of changes)" />
+		<field name="story" type="xref" xref_entity="Story"
+			description="Reference to the story this task is part of." />
+		<field name="storyPoints" type="int" default="0"
+			description="An estimate for the amount of work. In most teams a story point equals 1 day of work" />
+		<field name="owner" type="xref" xref_entity="MolgenisUser"
+			nillable="true"
+			description="The team member currently responsible for the task. Note that typically multiple people work on a task but the product owner can call this person to see what is happening." />
+		<field name="status" type="enum" enum_options="scheduled,checked,done,removed"
+			default="scheduled"
+			description="Status of the task. Usual workflow is: schedules (new), checked (in progress), and done (ready). Sometimes it turns out a taks was not necessary and then it can be removed." />
+	</entity>
+	<entity name="Task" implements="TaskInterface"
+		decorator="org.molgenis.scrum.decorators.TaskDecorator">
+		<description>Main Task table that has all constraints like always. The
+			TaskDecorator takes care of versioning. TODO: generalize this.
+		</description>
+		<unique fields="description,story" unique="true"
+			description="A tasks must have a unique description within one story (to prevent duplicate tasks)." />
+	</entity>
+	<entity name="TaskHistory" implements="TaskInterface">
+		<description>Shadow table for Task. All unique constraints are
+			extended with 'version'. This data is automatically maintained via
+			the TaskDecorator of the Task class.</description>
+		<field name="HistoryForTask" type="xref" xref_entity="Task"
+			hidden="true" default="-1" />
+	</entity>
+	</module>
+</molgenis>

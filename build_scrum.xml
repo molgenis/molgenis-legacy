@@ -1,0 +1,25 @@
+<project>
+	<!-- this name is used to name the war file -->
+	<property name="app_name" value="scrum"/>
+	
+	<!-- this holds all the settings for the generator -->
+	<property name="app_properties" value="apps/scrum/org/molgenis/scrum/scrum.properties" />
+	
+	<!-- this determines what handwritten modules should be loaded -->
+	<path id="app.class.path">
+		<pathelement location="apps/scrum" />
+		<pathelement location="modules/auth" />
+		<pathelement location="modules/pheno" />
+		<pathelement location="modules/file" />
+		<pathelement location="modules/datamodel" />
+		<pathelement location="modules/import"/>
+		<pathelement location="modules/webserver"/>
+		<pathelement location="modules/decorators/core" />
+		<pathelement location="modules/decorators/auth" />
+		<pathelement location="modules/decorators/pheno" />
+	</path>
+	
+	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
+	<import file="build_common.xml"/>
+	
+</project>
