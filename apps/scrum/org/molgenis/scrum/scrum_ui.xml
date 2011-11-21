@@ -2,6 +2,8 @@
 <molgenis name="scrum" label="MOLGENIS Scrum App">
 	<plugin name="ScrumHeader" type="org.molgenis.scrum.plugins.ScrumHeader" />
 	<menu name="ScrumApp">
+		<plugin name="ScrumLogin" type="org.molgenis.auth.ui.UserLogin"
+			label="Login" />
 		<form name="Sprints" entity="Sprint" compact_view="name">
 			<menu name="SprintMenu">
 				<plugin name="SprintWhiteboard" label="Scrum Board"
@@ -20,7 +22,7 @@
 		</form>
 		<plugin name="ScrumExcelImport" type="plugins.genericwizard.GenericWizard"
 			label="Upload Excel" />
-		<plugin name="ScrumLogin" type="org.molgenis.auth.ui.UserLogin"
-			label="Login" />
+		<plugin name="UpdateDatabase" type="org.molgenis.scrum.plugins.UpdateDatabase"
+			label="Update Database" />
 	</menu>
 </molgenis>
