@@ -19,7 +19,7 @@ import org.molgenis.framework.security.Login;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ApplicationController;
 import org.molgenis.framework.server.AbstractMolgenisServlet;
-
+import org.apache.commons.dbcp.BasicDataSource;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.SimpleEmailService;
 <#if generate_BOT>
@@ -41,6 +41,7 @@ import javax.servlet.ServletContext;
 import org.molgenis.framework.db.jdbc.JndiDataSourceWrapper;
 </#if>
 
+@Deprecated
 public class MolgenisServlet extends AbstractMolgenisServlet
 {
 	private static final long serialVersionUID = 3141439968743510237L;
@@ -57,8 +58,19 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 		<#else>
 			//The datasource is created by the servletcontext	
 			<#if db_mode != 'standalone'>
-			ServletContext sc = MolgenisContextListener.getInstance().getContext();
-			DataSource dataSource = (DataSource)sc.getAttribute("DataSource");
+			//DEPRECATED: NOW HANDLED BY FRONTCONTROLLER
+			//ServletContext sc = MolgenisContextListener.getInstance().getContext();
+			//DataSource dataSource = (DataSource)sc.getAttribute("DataSource");
+			
+			//DEPRECATED: BUT HOTFIX TO GET IT WORKING FOR MYSQL
+			BasicDataSource data_src = new BasicDataSource();
+			data_src.setDriverClassName("${db_driver}");
+			data_src.setUsername("${db_user}");
+			data_src.setPassword("${db_password}");
+			data_src.setUrl("${db_uri}");
+			data_src.setMaxActive(8);
+			data_src.setMaxIdle(4);
+			DataSource dataSource = (DataSource)data_src;
 			return DatabaseFactory.create(dataSource, new File("${db_filepath}"));
 			<#else>
 			BasicDataSource data_src = new BasicDataSource();
