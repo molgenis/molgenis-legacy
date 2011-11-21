@@ -54,33 +54,25 @@ public class ScrumHeader extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
-		this.setUserLogin();
-
+		//
 	}
 	
 	@Override
 	public boolean isVisible()
 	{
-		//you can use this to hide this plugin, e.g. based on user rights.
-		//e.g.
-		//if(!this.getLogin().hasEditPermission(myEntity)) return false;
+		// always visible
 		return true;
 	}
 	
-	public void setUserLogin() {
-		//System.out.println(this.getLogin().isAuthenticated());
+	public String getUserLogin() {
 		if (this.getLogin().isAuthenticated()) {
 			this.userLogin = "<a href='molgenis.do?__target=main&select=ScrumLogin'>" + "Welcome " + ((DatabaseLogin)this.getLogin()).getFullUserName() + "</a>";
-			this.userLogin += "<a href='molgenis.do?__target=ScrumHeader&__action=doLogout'>" + " | Exit " + "</a>";		
-
+			this.userLogin += " | ";
+			this.userLogin += "<a href='molgenis.do?__target=ScrumHeader&__action=doLogout'>" + "Exit " + "</a>";		
 		} else {
 			this.userLogin = "<a href='molgenis.do?__target=main&select=ScrumLogin'>" + "Login" + "</a>";
 		}
-		
-	}
-
-	public String getUserLogin() {
-		
 		return userLogin;
+		
 	}
 }
