@@ -17,6 +17,7 @@ import org.expressme.openid.OpenIdException;
 import org.expressme.openid.OpenIdManager;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.TokenManager;
 
 /**
  * OpenIdLogin is a DatabaseLogin that authenticates via OpenId
@@ -35,19 +36,20 @@ public class OpenIdLogin extends DatabaseLogin
 
     protected final transient Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
-    public OpenIdLogin() {
-	logger.debug("OpenIdLogin()");
+    public OpenIdLogin(TokenManager tm) {
+    	super(tm);
+    	logger.debug("OpenIdLogin()");
     }
 
-    public OpenIdLogin(Database db) throws Exception
+    public OpenIdLogin(Database db, TokenManager tm) throws Exception
     {
-    	this.login(db, "anonymous", "anonymous");
+    	super(db, tm);
     }
 
-    public OpenIdLogin(Database db, String redirect) throws Exception
+    public OpenIdLogin(Database db, String redirect, TokenManager tm) throws Exception
 	{
-		this(db);
-		this.redirect = redirect;
+		super(db, tm);
+		super.redirect = redirect;
 	}
 
     /**

@@ -30,10 +30,13 @@ import org.molgenis.auth.MolgenisRole;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.auth.service.MolgenisUserService;
 import org.molgenis.auth.util.PasswordHasher;
+import org.molgenis.framework.server.TokenManager;
 
 public class DatabaseLogin implements Login, Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	
+	private TokenManager tm;
 
 	/**
 	 * Specifies an enumeration for valid Permissions
@@ -58,8 +61,9 @@ public class DatabaseLogin implements Login, Serializable {
 
 	Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
-	public DatabaseLogin() {
+	public DatabaseLogin(TokenManager tm) {
 		logger.debug("DatabaseLogin()");
+		this.tm = tm;
 	}
 	
 	/** Constructor used to login anonymous
@@ -67,14 +71,15 @@ public class DatabaseLogin implements Login, Serializable {
 	 * @param db database to log in to.
 	 * @throws Exception 
 	 */
-	public DatabaseLogin(Database db) throws Exception
+	public DatabaseLogin(Database db, TokenManager tm) throws Exception
 	{
+		this.tm = tm;
 		this.login(db, "anonymous", "anonymous");
 	}
 	
-	public DatabaseLogin(Database db, String redirect) throws Exception
+	public DatabaseLogin(Database db, String redirect, TokenManager tm) throws Exception
 	{
-		this(db);
+		this(db, tm);
 		this.redirect = redirect;
 	}
 	
@@ -152,6 +157,7 @@ public class DatabaseLogin implements Login, Serializable {
 			{
 				user = users.get(0);
 				this.reload(db);
+				tm.createToken(user.getName(), true);
 				return true;
 			}
 		}
