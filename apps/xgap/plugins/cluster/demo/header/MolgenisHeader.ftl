@@ -23,7 +23,7 @@
 		<td align="right">
 			<font style="font-size:14px; font-weight:bold;">
 				<#-->| <a href="api/REST/">JSON api</a> | <a href="api/SOAP/">SOAP api</a> | <a href="api/REST/">REST api</a> | -->
-				<a target="_blank" href="http://www.molgenis.org/wiki/xQTL">Help</a> | <a href="api/R/">R api</a> | <a href="api/find/">Find api</a>
+				<a target="_blank" href="http://www.molgenis.org/wiki/xQTL">Help</a> | <a href="generated-doc/fileformat.html">Exchange format</a> | <a href="api/R/">R api</a> | <a href="api/find/">Find api</a>
 			</font>
 		</td>
 	</tr>
