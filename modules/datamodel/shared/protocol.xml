@@ -48,7 +48,8 @@
 				description="The features that can be observed using this protocol. For example 'length' or 'rs123534' or 'probe123'. Also protocol parameters are considered observable features as they are important to the interpretation of the observed values." />
 			<!-- TODO/discussion: does the field below work? -->
 			<field name="TargetFilter" type="string" nillable="true"
-				description="Expression that filters the InvestigationElements that can be targetted using this protocol. This helps the user to only select from targets that matter when setting observedvalues. For example: type='individual' AND species = 'human'" />
+				description="Expression that filters the InvestigationElements that can be targetted using this protocol.
+				This helps the user to only select from targets that matter when setting observedvalues. For example: type='individual' AND species = 'human'" />
 			<field name="Contact" type="xref" nillable="true" xref_entity="Person"
 				description="TODO Check if there can be multiple contacts." />
 			<field name="subprotocols" type="mref" xref_entity="Protocol" description="Subprotocols of this protocol"/>
