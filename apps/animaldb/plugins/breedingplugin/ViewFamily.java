@@ -100,6 +100,7 @@ public class ViewFamily extends PluginModel<Entity>
 
 	@Override
 	public void handleRequest(Database db, Tuple request) {
+		cs.setDatabase(db);
 		try
 		{
 			action = request.getString("__action");
