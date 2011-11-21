@@ -8,6 +8,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.lifelines.listeners.ImportTupleListener;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Tuple;
 
@@ -18,19 +19,19 @@ import org.molgenis.util.Tuple;
 public class LifeLinesStandardListener extends ImportTupleListener {
 	int BATCH_SIZE = 1000;
 
-	final List<String> measurements = new ArrayList<String>();
-	//final<String,Individual> individual
+	final List<Measurement> measurements;
 	final List<ProtocolApplication> protocolApps = new ArrayList<ProtocolApplication>();
 	final List<ObservedValue> values = new ArrayList<ObservedValue>();
 
-	public LifeLinesStandardListener(String name, Database db)
+	final Protocol protocol;
+	
+	public LifeLinesStandardListener(int protocolId, String name, Database db)
 			throws DatabaseException {
 		super(name, db);
+		
+		protocol = db.findById(Protocol.class, protocolId);
+		measurements = (List<Measurement>)(List)protocol.getFeatures();
 
-		List<Measurement> result = db.find(Measurement.class);
-		for (Measurement m : result) {
-			measurements.add(m.getName());
-		}
 
 	}
 

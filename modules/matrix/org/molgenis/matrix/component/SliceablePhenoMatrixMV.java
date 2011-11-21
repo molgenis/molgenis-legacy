@@ -270,8 +270,18 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     }
 
     @Override
-    public ObservedValue[][] getValues() throws MatrixException {
-        throw new UnsupportedOperationException("use getValueLists");
+    public ObservedValue[][] getValues(Database db) throws MatrixException {
+        List<ObservedValue>[][] values = getValueLists(db);
+        
+        int rowCnt = values.length;
+        int colCnt = values[0].length;
+        ObservedValue[][] result = new ObservedValue[rowCnt][colCnt];
+        for(int i = 0; i < rowCnt; ++i) {
+            for(int j = 0; j < colCnt; ++j) {
+                result[i][j] = values[i][j].get(0);
+            }
+        }
+        return result;
     }
 
     public String getJOIN_COLUMN() {

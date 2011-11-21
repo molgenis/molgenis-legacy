@@ -54,7 +54,7 @@ public interface BasicMatrix<R, C, V>
 	 * The currently selected matrix values that are going to be rendered in the
 	 * view.
 	 */
-	public V[][] getValues() throws MatrixException;
+	public V[][] getValues(Database db) throws MatrixException;
 
 	/**
 	 * Efficiently return the column count of this matrix.

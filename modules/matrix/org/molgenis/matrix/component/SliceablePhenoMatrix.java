@@ -317,7 +317,7 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 	}
 
 	@Override
-	public ObservedValue[][] getValues() throws MatrixException
+	public ObservedValue[][] getValues(Database db) throws MatrixException
 	{
 		throw new UnsupportedOperationException("use getValueLists");
 	}

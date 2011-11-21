@@ -248,7 +248,7 @@ public class MatrixViewer extends HtmlWidget
 		}
 		catch(UnsupportedOperationException ue)
 		{
-			values = matrix.getValues();
+			values = matrix.getValues(db);
 		}
 		
 		List<?> rows = matrix.getRowHeaders(db);

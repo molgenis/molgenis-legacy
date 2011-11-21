@@ -7,8 +7,10 @@ import java.util.Map;
 import org.molgenis.framework.db.Database;
 import org.molgenis.lifelines.listeners.ImportTupleListener;
 import org.molgenis.lifelines.listeners.VwDictListener;
+import org.molgenis.protocol.Protocol;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
+import org.molgenis.util.CsvReaderListener;
 
 import app.DatabaseFactory;
 
@@ -32,15 +34,23 @@ public class ImportMapper {
 		//target for output, either CsvWriter or Database
 		Database db = DatabaseFactory.create();
 		
+		Protocol protocol = null;
+		
 		//create a mapping in right order of import
 		mappings.put("VW_DICT", new VwDictListener("VW_DICT", db)); //will import measurements
-		mappings.put("BEZOEK", new LifeLinesStandardListener("BEZOEK",db)); //will import values
+		//load meta data
+		CsvReader reader = new CsvFileReader(new File(path + "VW_DICT" +".csv"));
+		reader.parse(mappings.get("VW_DICT"));
+		mappings.get("VW_DICT").commit();
+		
+		
+		mappings.put("BEZOEK", new LifeLinesStandardListener(protocol.getId(), "BEZOEK",db)); //will import values
 		
 		//iterate through the map assuming CSV files
 		for(String csvFileName: mappings.keySet())
 		{
 			//create CsvReader
-			CsvReader reader = new CsvFileReader(new File(path + csvFileName +".csv"));
+			reader = new CsvFileReader(new File(path + csvFileName +".csv"));
 			
 			reader.parse(mappings.get(csvFileName));
 			

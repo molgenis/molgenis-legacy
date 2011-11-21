@@ -17,7 +17,7 @@
 <script type="text/javascript" src="http://static.jstree.com/v.1.0pre/jquery.jstree.js"></script>
 
 <script type="text/javascript"><!--
-var url = "http://localhost:8080/molgenis_apps/dataProvider"
+var url = "jqGrid"
 var colNames;
 var colModel;
 
@@ -123,7 +123,7 @@ $(document).ready(function(){
     var tree = $("#demo1").jstree({
             "json_data" : {
                     "ajax" : {
-                            "url" : "http://localhost:8080/molgenis_apps/dataProvider?op=jsTreeJson&schema=molgenis"
+                            "url" : url + "?op=jsTreeJson&schema=molgenis"
                             }
                     }
             ,		 
@@ -169,7 +169,8 @@ $( "#dialog-form" ).dialog({
     modal: true,
     buttons: {
             "Export": function() {
-                alert('export');
+                e.preventDefault();  //stop the browser from following
+                window.location.href = url + "?exportType=excel";
             },
             Cancel: function() {
                 $( this ).dialog( "close" );

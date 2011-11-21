@@ -321,7 +321,7 @@ public abstract class AbstractSliceableMatrix<R, C, V> implements
 	}
 
 	@Override
-	public V[][] getValues() throws MatrixException
+	public V[][] getValues(Database db) throws MatrixException
 	{
 		// TODO Auto-generated method stub
 		return null;

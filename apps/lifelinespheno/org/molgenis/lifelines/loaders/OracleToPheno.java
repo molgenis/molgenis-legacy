@@ -15,6 +15,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import org.apache.log4j.Logger;
+import org.molgenis.LLTarget;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
@@ -84,7 +85,7 @@ public class OracleToPheno implements Runnable {
 	public void run() {
 		log.trace(String.format("[%d-%s] Thread started", studyId, tableName));
         int targetCount = 0;
-        Map<Integer, ObservationTarget> paidTargets = null;
+        Map<Integer, LLTarget> paidTargets = null;
 		try {
 		       	final Connection con = LoaderUtils.getConnection();
 		        final Statement stm = con.createStatement();
@@ -123,7 +124,7 @@ public class OracleToPheno implements Runnable {
 		        									.setParameter("endPA_ID", this.endPA_ID)
 		        									.setParameter("invId", this.investigationId)
 		        									.getResultList();
-		        paidTargets = new HashMap<Integer, ObservationTarget>();
+		        paidTargets = new HashMap<Integer, LLTarget>();
 		        for(ObservationTarget t : targets) {
                             //paidTargets.put(t.getPaid(), t);
 		        }        	
@@ -132,7 +133,7 @@ public class OracleToPheno implements Runnable {
 		        em.getTransaction().begin();
 		        while(rs.next()) {
 		        	++w;
-		            ObservationTarget target = null;
+		        	LLTarget target = null;
 		            
 		            int recId = 0;
 		            synchronized(OracleToPheno.class) {
@@ -152,7 +153,7 @@ public class OracleToPheno implements Runnable {
                 	if(paidTargets.containsKey(paId)) {
                 		target = paidTargets.get(paId);
                 	} else {                	
-	                    target = new ObservationTarget();
+	                    target = new LLTarget();
 	                    target.setInvestigation(investigation);
 	                    target.setName(paId.toString());
 	                    target.setPaid(paId);

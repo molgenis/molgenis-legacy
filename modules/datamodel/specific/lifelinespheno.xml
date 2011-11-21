@@ -1,0 +1,14 @@
+<molgenis name="org.molgenis">
+		<entity name="LLTarget" extends="ObservationElement">
+			<description> 
+				This is a lifelines specific version. It contains a Paid (patient id).
+				An ObservationTarget class defines the subjects of
+				observation. For instance: individual 1 from Investigation x. The
+				ObservationTarget class maps to XGAP:Subject, METABASE:Patient and
+				maps to Page:Abstract_Observation_Target. The name of
+				observationTargets is unique.
+			</description>
+			<field name="paid" type="int" nillable="false"/> 
+			<unique fields="name" />
+		</entity>
+</molgenis>
