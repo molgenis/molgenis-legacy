@@ -20,7 +20,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.protocol.ProtocolApplication_Performer;
+import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 public class PersonToUser extends PluginModel
@@ -101,10 +101,12 @@ public class PersonToUser extends PluginModel
 						db.add(mu);
 						
 						//re-ref the ProtocolApplication_Performer
-						List<ProtocolApplication_Performer> paLinks = db.find(ProtocolApplication_Performer.class, new QueryRule(ProtocolApplication_Performer.PERFORMER, Operator.EQUALS, p.getId()));
-						for(ProtocolApplication_Performer paLink : paLinks)
+						//FIXME: dangerous to use hardcoded strings here, must move this code elsewhere in its original form
+						Class<? extends Entity> ProtocolApplication_Performer = db.getClassForName("ProtocolApplication_Performer");
+						List<? extends Entity> paLinks = db.find(ProtocolApplication_Performer, new QueryRule("Performer", Operator.EQUALS, p.getId()));
+						for(Entity paLink : paLinks)
 						{
-							paLink.setPerformer_Id(mu.getId());
+							paLink.set("Performer_id", mu.getId());
 						}
 						db.update(paLinks);
 						
