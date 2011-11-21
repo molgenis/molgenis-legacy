@@ -20,6 +20,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ApplicationController;
 import org.molgenis.framework.server.AbstractMolgenisServlet;
 import org.apache.commons.dbcp.BasicDataSource;
+import org.molgenis.framework.server.TokenManager;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.SimpleEmailService;
 <#if generate_BOT>
@@ -133,9 +134,9 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 		Login login = (Login)request.getSession().getAttribute("login");
 		if(login == null) {
 			<#if auth_redirect != ''>
-			login = new ${loginclass}(db, "${auth_redirect}");
+			login = new ${loginclass}(db, "${auth_redirect}", new TokenManager()); //has use in FrontController, added here for backwards compatibility
 			<#else>
-			login = new ${loginclass}(db);
+			login = new ${loginclass}(db, new TokenManager());
 			</#if>			
 			request.getSession().setAttribute("login", login);
 		}

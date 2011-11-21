@@ -93,8 +93,11 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 					request.setServicePath(p);
 					services.get(p).handleRequest(request, response);
 					manageConnection(connId);
+					context.getTokenManager().invalidateTokens();
+					
 					
 					printSessionInfo(req.getSession());
+					context.getTokenManager().printTokens();
 				}
 				
 				return;
