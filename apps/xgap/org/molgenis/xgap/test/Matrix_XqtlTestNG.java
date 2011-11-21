@@ -9,7 +9,6 @@ import matrix.test.implementations.general.Params;
 import matrix.test.implementations.memory.TestMemoryMatrix;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.organization.Investigation;
 import org.molgenis.util.DetectOS;
 import org.molgenis.xgap.xqtlworkbench.ResetXgapDb;
@@ -20,6 +19,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import app.DatabaseFactory;
+import app.servlet.UsedMolgenisOptions;
 import filehandling.storage.StorageHandler;
 
 /**
@@ -91,7 +91,7 @@ public class Matrix_XqtlTestNG
 	public void cleanupAfterClass() throws InterruptedException, Exception
 	{
 		db.close();
-		XqtlSeleniumTest.deleteStorage();
+		XqtlSeleniumTest.deleteStorage(new UsedMolgenisOptions().appName);
 	}
 
 	@Test(dataProvider = "params")

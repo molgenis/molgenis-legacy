@@ -13,7 +13,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import app.DatabaseFactory;
-import app.servlet.MolgenisServlet;
+import app.servlet.UsedMolgenisOptions;
 import boot.RunStandalone;
 
 import com.thoughtworks.selenium.DefaultSelenium;
@@ -42,7 +42,8 @@ public class XqtlSeleniumTest
 	Selenium selenium;
 	String pageLoadTimeout = "30000";
 	boolean tomcat = false;
-	String appName;
+
+	UsedMolgenisOptions usedOptions;
 	
 	public static void deleteDatabase() throws Exception
 	{
@@ -63,12 +64,12 @@ public class XqtlSeleniumTest
 		}
 	}
 
-	public static void deleteStorage() throws Exception
+	public static void deleteStorage(String appName) throws Exception
 	{
 		// get storage folder and delete it completely
 		// throws exceptions if anything goes wrong
 		Database db = DatabaseFactory.create();
-		int appNameLength = MolgenisServlet.getMolgenisVariantID().length();
+		int appNameLength = appName.length();
 		String storagePath = new StorageHandler(db).getFileStorage(true, db).getAbsolutePath();
 		File storageRoot = new File(storagePath.substring(0, storagePath.length() - appNameLength));
 		System.out.println("Removing content of " + storageRoot);
@@ -83,7 +84,8 @@ public class XqtlSeleniumTest
 	@BeforeClass
 	public void start() throws Exception
 	{
-		appName = MolgenisServlet.getMolgenisVariantID();
+		usedOptions = new UsedMolgenisOptions();
+		
 		int webserverPort = 8080;
 		if (!tomcat) webserverPort = Helper.getAvailablePort(11040, 10);
 
@@ -122,7 +124,7 @@ public class XqtlSeleniumTest
 	public void stop() throws Exception
 	{
 		selenium.stop();
-		deleteStorage();
+		deleteStorage(usedOptions.appName);
 	}
 
 	/**
@@ -131,7 +133,7 @@ public class XqtlSeleniumTest
 	@Test
 	public void startup() throws InterruptedException
 	{
-		selenium.open("/" + appName + "/molgenis.do");
+		selenium.open("/" + usedOptions.appName + "/molgenis.do");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.getTitle().toLowerCase().contains("xQTL workbench".toLowerCase()));
 		Assert.assertTrue(selenium.isTextPresent("Welcome"));

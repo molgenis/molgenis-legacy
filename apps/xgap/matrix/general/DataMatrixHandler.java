@@ -28,6 +28,7 @@ import org.molgenis.util.ValueLabel;
 
 import app.DatabaseFactory;
 import decorators.MolgenisFileHandler;
+import decorators.NameConvention;
 
 /**
  * Class to handle the coupling of 'Data' objects and storage of the actual data
@@ -397,8 +398,10 @@ public class DataMatrixHandler extends MolgenisFileHandler
 		String type = data.getStorage() + "DataMatrix";
 		Class<? extends Entity> mfClass = db.getClassForName(type);
 
+		//found out if there already is a MolgenisFile with this escaped name
 		List<? extends Entity> mfList = db.find(mfClass,
-				new QueryRule("Data_" + Data.NAME, Operator.EQUALS, data.getName()));
+				new QueryRule("Data_" + Data.NAME, Operator.EQUALS, NameConvention.escapeFileName(data.getName())));
+		
 		if (mfList.size() == 1)
 		{
 			mfPresent = true;
@@ -408,6 +411,7 @@ public class DataMatrixHandler extends MolgenisFileHandler
 			throw new Exception("SEVERE ERROR: Multiple files for " + data.getName() + " found!");
 		}
 		
+		//if not, try to add it
 		if(!mfPresent)
 		{
 			MolgenisFile mfAdd = (MolgenisFile) db.getClassForName(type).newInstance();
