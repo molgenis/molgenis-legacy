@@ -18,6 +18,8 @@ import org.molgenis.MolgenisOptions;
 public class UsedMolgenisOptions extends MolgenisOptions
 {
 	private static final long serialVersionUID = 345675892563442346L;
+	
+	public String appName;
 
 	/**
 	 * Generated constructor for MolgenisOptions, setting the options used
@@ -30,20 +32,21 @@ public class UsedMolgenisOptions extends MolgenisOptions
 	 * System.out.println(o.generate_doc);
 	 */
 	public UsedMolgenisOptions(){
+		this.appName = "${model.name}";
 	<#list options.optionsAsMap?keys as key>
-		<#if options.optionsAsMap[key]?is_enumerable>
-			this.${key} = new ArrayList<String>(Arrays.asList(new String[]{<#list options.optionsAsMap[key] as val>"${val}"<#if val_has_next> ,</#if></#list>}));
-		<#elseif options.optionsAsMap[key]?is_boolean>
-			this.${key} = <#if options.optionsAsMap[key] == true>true<#else>false</#if>;
-		<#elseif options.optionsAsMap[key]?is_number>
-			this.${key} = ${options.optionsAsMap[key]};
-		<#elseif key == 'mapper_implementation'>
-			this.${key} = MapperImplementation.valueOf("${options.optionsAsMap[key]}");
-		<#elseif options.optionsAsMap[key]?is_string>
-			this.${key} = "${options.optionsAsMap[key]}";
-		<#else>
-			this.${key} = ${options.optionsAsMap[key]}; //UNKNOWN TYPE, PLEASE EDIT UsedMolgenisOptionsGen.ftl !
-		</#if>
+	<#if options.optionsAsMap[key]?is_enumerable>
+		this.${key} = new ArrayList<String>(Arrays.asList(new String[]{<#list options.optionsAsMap[key] as val>"${val}"<#if val_has_next> ,</#if></#list>}));
+	<#elseif options.optionsAsMap[key]?is_boolean>
+		this.${key} = <#if options.optionsAsMap[key] == true>true<#else>false</#if>;
+	<#elseif options.optionsAsMap[key]?is_number>
+		this.${key} = ${options.optionsAsMap[key]};
+	<#elseif key == 'mapper_implementation'>
+		this.${key} = MapperImplementation.valueOf("${options.optionsAsMap[key]}");
+	<#elseif options.optionsAsMap[key]?is_string>
+		this.${key} = "${options.optionsAsMap[key]}";
+	<#else>
+		this.${key} = ${options.optionsAsMap[key]}; //UNKNOWN TYPE, PLEASE EDIT UsedMolgenisOptionsGen.ftl !
+	</#if>
 	</#list>
 	}
 }
