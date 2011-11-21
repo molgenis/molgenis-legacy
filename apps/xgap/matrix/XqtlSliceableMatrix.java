@@ -127,7 +127,7 @@ public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Obje
 	}
 
 	@Override
-	public Object[][] getValues() throws MatrixException
+	public Object[][] getValues(Database db) throws MatrixException
 	{
 		try
 		{
