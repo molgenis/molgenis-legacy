@@ -37,8 +37,7 @@ import converters.dbgap.jaxb.var_report.Stat;
 import converters.dbgap.jaxb.var_report.Var_Report;
 import converters.dbgap.jaxb.var_report.VariableSummary;
 
-public class DbGapToPheno
-{
+public class DbGapToPheno {
 	static Logger logger = Logger.getLogger(DbGapToPheno.class);
 
 	List<Investigation> investigations = new ArrayList<Investigation>();
@@ -49,8 +48,7 @@ public class DbGapToPheno
 	List<Panel> panels = new ArrayList<Panel>();
 	List<ObservedValue> observedValues = new ArrayList<ObservedValue>();
 
-	public static void main(String[] args) throws Exception
-	{
+	public static void main(String[] args) throws Exception {
 		// This will need updating if run on a different machine
 		// String outputFolder = "d:/Data/dbgap/";
 		String outputFolder = "../pheno_data/dbgap/";
@@ -65,15 +63,13 @@ public class DbGapToPheno
 
 		// filter out last versions only
 		Map<String, Study> lastversions = new TreeMap<String, Study>();
-		for (Study s : studies)
-		{
+		for (Study s : studies) {
 			// System.out.println("filtering "+ s.id + " "+s.version+ " "
 			// +s.description);
 			// pht000182 no v
 			if (s.version.startsWith("v")
 					&& (lastversions.get(s.id) == null || extractVersion(lastversions
-							.get(s.id).version) < extractVersion(s.version)))
-			{
+							.get(s.id).version) < extractVersion(s.version))) {
 				lastversions.put(s.id, s);
 			}
 		}
@@ -93,8 +89,7 @@ public class DbGapToPheno
 
 		// download the last versions
 		System.out.println("lastversions = " + lastversions.size());
-		for (Study s : lastversions.values())
-		{
+		for (Study s : lastversions.values()) {
 			DbGapToPheno converter = new DbGapToPheno();
 
 			// writing the data_dicts
@@ -112,8 +107,7 @@ public class DbGapToPheno
 
 			// debug purposes only
 			count++;
-			if (count > 5)
-			{
+			if (count > 6) {
 				System.out.println("skipped other studies!");
 				break;
 			}
@@ -121,8 +115,7 @@ public class DbGapToPheno
 
 	}
 
-	public void write(File dir) throws Exception
-	{
+	public void write(File dir) throws Exception {
 		new CsvExport().exportAll(dir, investigations,
 				new ArrayList<OntologyTerm>(ontologyterms), protocols,
 				new ArrayList(measurements.values()),
@@ -130,13 +123,11 @@ public class DbGapToPheno
 	}
 
 	public static void downloadFile(URL url, File destination)
-			throws IOException
-	{
+			throws IOException {
 		logger.debug("downloading " + url + " to " + destination);
 		BufferedInputStream in = null;
 		BufferedOutputStream out = null;
-		try
-		{
+		try {
 			URLConnection urlc = url.openConnection();
 
 			in = new BufferedInputStream(urlc.getInputStream());
@@ -144,30 +135,23 @@ public class DbGapToPheno
 
 			byte[] buf = new byte[1024];
 			int len;
-			while ((len = in.read(buf)) > 0)
-			{
+			while ((len = in.read(buf)) > 0) {
 				out.write(buf, 0, len);
 			}
 
-		}
-		finally
-		{
-			if (in != null) try
-			{
-				in.close();
-			}
-			catch (IOException ioe)
-			{
-				ioe.printStackTrace();
-			}
-			if (out != null) try
-			{
-				out.close();
-			}
-			catch (IOException ioe)
-			{
-				ioe.printStackTrace();
-			}
+		} finally {
+			if (in != null)
+				try {
+					in.close();
+				} catch (IOException ioe) {
+					ioe.printStackTrace();
+				}
+			if (out != null)
+				try {
+					out.close();
+				} catch (IOException ioe) {
+					ioe.printStackTrace();
+				}
 		}
 
 	}
@@ -179,74 +163,54 @@ public class DbGapToPheno
 	 * @throws JAXBException
 	 * @throws IOException
 	 */
-	public void read(Study s) throws JAXBException, IOException
-	{
+	public void read(Study s) throws JAXBException, IOException {
 		Investigation i = new Investigation();
 		i.setDescription(s.description);
 		i.setName(s.id + "." + s.version);
 		investigations.add(i);
 
 		// data dictionaries = protocols + variables + features (+ ontologies)
-		for (Data_Dict dd : s.dictionaries)
-		{
+		for (Data_Dict dd : s.dictionaries) {
 			Protocol p = new Protocol();
 			p.setName(dd.description);
 			p.setInvestigation_Name(i.getName());
 			p.setName(dd.id);
 			protocols.add(p);
 
-			for (Variable var : dd.variables)
-			{
+			for (Variable var : dd.variables) {
 				Measurement measurement = new Measurement();
 				measurement.setInvestigation_Name(i.getName());
 				measurement.setName(var.name.toLowerCase());
 				measurement.setDescription(var.description);
 
 				// todo: add annotation feature NVT type?
-				if (var.type != null)
-				{
+				if (var.type != null && !var.type.equals("")) {
 					String dataType;
 
 					// available types:
 					// xref,string,categorical,datetime,int,code,image,decimal,bool,file,log,data
-					if ("decimal".equals(var.type))
-					{
+					if (var.type.contains("decimal")) { // that handles 'decimal, encoded'
 						dataType = "decimal";
-					}
-					else if ("integer".equals(var.type))
-					{
+					} else if (var.type.contains("integer")) { // same for encoded and enumerated
 						dataType = "int";
-					}
-					else if ("enumerated integer".equals(var.type))
-					{
-						// will have categories I suppose?
-						dataType = "int";
-					}
-					else if ("string".equals(var.type))
-					{
+					} else {
 						dataType = "string";
-					}
-					else
-					{
-						throw new RuntimeException(
-								"encountered Measurement.dataType==" + var.type);
 					}
 
 					measurement.setDataType(dataType);
 					// f.set__Type(var.type);
 				}
 
-				if (var.logical_min != null) measurement
-						.setDescription(measurement.getDescription()
-								+ " LogicalMin=" + var.logical_min + ".");
-				if (var.logical_min != null) measurement
-						.setDescription(measurement.getDescription()
-								+ " LogicalMax=" + var.logical_max + ".");
+				if (var.logical_min != null)
+					measurement.setDescription(measurement.getDescription()
+							+ " LogicalMin=" + var.logical_min + ".");
+				if (var.logical_min != null)
+					measurement.setDescription(measurement.getDescription()
+							+ " LogicalMax=" + var.logical_max + ".");
 
 				measurement.setUnit_Name(var.unit);
 
-				if (var.unit != null && !var.unit.equals(""))
-				{
+				if (var.unit != null && !var.unit.equals("")) {
 					OntologyTerm ot = new OntologyTerm();
 					ot.setName(var.unit);
 					ontologyterms.add(ot);
@@ -274,10 +238,8 @@ public class DbGapToPheno
 				// terms.put(var.unit, t);
 				// }
 
-				if (var.values.size() > 0)
-				{
-					for (Value v : var.values)
-					{
+				if (var.values.size() > 0) {
+					for (Value v : var.values) {
 						Category category = new Category();
 						category.setCode_String(v.code);
 						category.setLabel(v.value);
@@ -292,15 +254,12 @@ public class DbGapToPheno
 								.add(category.getName());
 
 						// give error on duplicate term
-						if (v.code == null)
-						{
+						if (v.code == null) {
 							logger.warn("empty code on " + v.value);
 						}
-						if (v.code != null && categories.containsKey(v.code))
-						{
+						if (v.code != null && categories.containsKey(v.code)) {
 							logger.warn("duplicate term " + v.code);
-							if (v.code != null)
-							{
+							if (v.code != null) {
 								categories.put(v.code, category);
 							}
 
@@ -329,64 +288,65 @@ public class DbGapToPheno
 		this.panels.add(cases_panel);
 		this.panels.add(controls_panel);
 
-		for (Var_Report vr : s.reports)
-		{
+		for (Var_Report vr : s.reports) {
 			logger.debug("var_report " + vr.dataset_id);
 
-			for (VariableSummary vs : vr.variables)
-			{	
-				if (vs.total != null) addStatsToPanel(total_panel, i, vs,
-						vs.total.stats);
-				if (vs.cases != null) addStatsToPanel(cases_panel, i, vs,
-						vs.cases.stats);
-				if (vs.controls != null) addStatsToPanel(controls_panel, i, vs,
-						vs.controls.stats);
+			for (VariableSummary vs : vr.variables) {
+				if (vs.total != null)
+					addStatsToPanel(total_panel, i, vs, vs.total.stats);
+				if (vs.cases != null)
+					addStatsToPanel(cases_panel, i, vs, vs.cases.stats);
+				if (vs.controls != null)
+					addStatsToPanel(controls_panel, i, vs, vs.controls.stats);
 			}
 		}
 	}
 
 	/** Is there an ontology for these stat terms? */
 	private void addStatsToPanel(Panel panel, Investigation investigation,
-			VariableSummary vs, List<Stat> stats)
-	{
-		for (Stat stat : stats)
-		{
-			if (stat.n != null) addObservedValue(panel, investigation, vs,
-					stat.n, "n");
-			if (stat.nulls != null) addObservedValue(panel, investigation, vs,
-					stat.nulls, "nulls");
-			if (stat.invalid_values != null) addObservedValue(panel,
-					investigation, vs, stat.invalid_values, "invalid_values");
-			if (stat.special_values != null) addObservedValue(panel,
-					investigation, vs, stat.special_values, "special_values");
-			if (stat.mean != null) addObservedValue(panel, investigation, vs,
-					stat.mean, "mean");
-			if (stat.mean_count != null) addObservedValue(panel, investigation,
-					vs, stat.mean_count, "mean_count");
-			if (stat.sd != null) addObservedValue(panel, investigation, vs,
-					stat.sd, "sd");
-			if (stat.median != null) addObservedValue(panel, investigation, vs,
-					stat.median, "median");
-			if (stat.median_count != null) addObservedValue(panel,
-					investigation, vs, stat.median_count, "median_count");
-			if (stat.min != null) addObservedValue(panel, investigation, vs,
-					stat.min, "min");
-			if (stat.min_count != null) addObservedValue(panel, investigation,
-					vs, stat.min_count, "min_count");
-			if (stat.max != null) addObservedValue(panel, investigation, vs,
-					stat.max, "max");
-			if (stat.max_count != null) addObservedValue(panel, investigation,
-					vs, stat.max_count, "max_count");
+			VariableSummary vs, List<Stat> stats) {
+		for (Stat stat : stats) {
+			if (stat.n != null)
+				addObservedValue(panel, investigation, vs, stat.n, "n");
+			if (stat.nulls != null)
+				addObservedValue(panel, investigation, vs, stat.nulls, "nulls");
+			if (stat.invalid_values != null)
+				addObservedValue(panel, investigation, vs, stat.invalid_values,
+						"invalid_values");
+			if (stat.special_values != null)
+				addObservedValue(panel, investigation, vs, stat.special_values,
+						"special_values");
+			if (stat.mean != null)
+				addObservedValue(panel, investigation, vs, stat.mean, "mean");
+			if (stat.mean_count != null)
+				addObservedValue(panel, investigation, vs, stat.mean_count,
+						"mean_count");
+			if (stat.sd != null)
+				addObservedValue(panel, investigation, vs, stat.sd, "sd");
+			if (stat.median != null)
+				addObservedValue(panel, investigation, vs, stat.median,
+						"median");
+			if (stat.median_count != null)
+				addObservedValue(panel, investigation, vs, stat.median_count,
+						"median_count");
+			if (stat.min != null)
+				addObservedValue(panel, investigation, vs, stat.min, "min");
+			if (stat.min_count != null)
+				addObservedValue(panel, investigation, vs, stat.min_count,
+						"min_count");
+			if (stat.max != null)
+				addObservedValue(panel, investigation, vs, stat.max, "max");
+			if (stat.max_count != null)
+				addObservedValue(panel, investigation, vs, stat.max_count,
+						"max_count");
 		}
 	}
 
 	private void addObservedValue(Panel p, Investigation i, VariableSummary vs,
-			String value, String inferenceType)
-	{
+			String value, String inferenceType) {
 
 		Measurement inference = measurements.get(inferenceType);
-		if (inference == null)
-		{
+		if (inference == null) {
 			inference = new Measurement();
 			inference.setName(inferenceType);
 			inference.setDescription("N/A.");
@@ -396,8 +356,7 @@ public class DbGapToPheno
 		}
 
 		Measurement feature = measurements.get(vs.var_name);
-		if (feature == null)
-		{
+		if (feature == null) {
 			logger.warn("var_name '"
 					+ vs.var_name
 					+ "' not found. Is it missing in dictionary? We add it now...");
@@ -406,27 +365,19 @@ public class DbGapToPheno
 			feature.setName(vs.var_name);
 			feature.setDataType(vs.description);
 			if ("integer".equals(vs.calculated_type)
-					|| "enum_integer".equals(vs.calculated_type))
-			{
+					|| "enum_integer".equals(vs.calculated_type)) {
 				feature.setDataType("int");
-			}
-			else if ("decimal".equals(vs.calculated_type))
-			{
+			} else if ("decimal".equals(vs.calculated_type)) {
 				feature.setDataType("decimal");
-			}
-			else if ("string".equals(vs.calculated_type))
-			{
+			} else if ("string".equals(vs.calculated_type)) {
 				feature.setDataType("string");
-			}
-			else
-			{
+			} else {
 				logger.error("cannot get data type " + vs.calculated_type);
 			}
 
 			measurements.put(feature.getName(), feature);
 		}
-		if (feature.getName().contains("Specific diagnosis Mutation"))
-		{
+		if (feature.getName().contains("Specific diagnosis Mutation")) {
 			logger.debug("found");
 		}
 
@@ -442,8 +393,7 @@ public class DbGapToPheno
 
 	}
 
-	public String toString()
-	{
+	public String toString() {
 		String result = "";
 		for (Investigation i : investigations)
 			result += i + "\n";
@@ -461,8 +411,7 @@ public class DbGapToPheno
 		return result;
 	}
 
-	public static Integer extractVersion(String s)
-	{
+	public static Integer extractVersion(String s) {
 		Pattern p = Pattern.compile("\\d+$");
 		Matcher m = p.matcher(s);
 		m.find();
