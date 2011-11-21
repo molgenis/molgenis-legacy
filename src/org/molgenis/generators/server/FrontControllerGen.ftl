@@ -127,9 +127,21 @@ public class FrontController extends MolgenisFrontController
 		return null;
 	<#else>
 		<#if db_mode != 'standalone'>
+		//PREVIOUS
 		//The datasource is created by the servletcontext	
-		ServletContext sc = MolgenisContextListener.getInstance().getContext();
-		DataSource dataSource = (DataSource)sc.getAttribute("DataSource");
+		//ServletContext sc = MolgenisContextListener.getInstance().getContext();
+		//DataSource dataSource = (DataSource)sc.getAttribute("DataSource");
+		//return dataSource;
+		
+		//NEW
+		BasicDataSource data_src = new BasicDataSource();
+		data_src.setDriverClassName("${db_driver}");
+		data_src.setUsername("${db_user}");
+		data_src.setPassword("${db_password}");
+		data_src.setUrl("${db_uri}");
+		data_src.setMaxActive(8);
+		data_src.setMaxIdle(4);
+		DataSource dataSource = (DataSource)data_src;
 		return dataSource;
 		<#else>
 		BasicDataSource data_src = new BasicDataSource();
