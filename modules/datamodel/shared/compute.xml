@@ -56,6 +56,7 @@
 			<field name="mem" default="1" type="int" description="# required RAM in Gigabytes" />
 			<field name="cores" default="1" type="int" description="# required cores" />
 			<field name="nodes" default="1" type="int" description="# required nodes" />
+            <field name="clusterQueue" default="nodes" type="string" description="# queue for the cluster implementation "/>
 			<!-- field name="Inputs" type="mref" xref_entity="ComputeFeature" label="Inputs" 
 				nillable="true" description="Shadows Protocol.Features (copy):The features 
 				that can be observed using this protocol. For example 'length' or 'rs123534' 
