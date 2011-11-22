@@ -9,20 +9,23 @@ import org.molgenis.util.Tree;
 public class JQueryTreeView<E> extends HtmlWidget
 {
 	private SimpleTree<JQueryTreeViewElement> treeData;
+	
 
 	public JQueryTreeView(String name, SimpleTree treeData)
 	{
 		super(name);
+		System.out.println(">>>>The splkas been created"); 
+
 		this.treeData = treeData;
 	}
 	
-	private String renderTree(Tree node) {
+	private String renderTree(JQueryTreeViewElement node) {
 		String returnString;
 		if (node.hasChildren()) {
 			returnString = "<li><span class=\"folder\">" + node.getLabel() + "</span>";
 			returnString += "<ul>";
-			Vector<Tree> children = node.getChildren();
-			for (Tree child : children) {
+			Vector<JQueryTreeViewElement> children = node.getChildren();
+			for (JQueryTreeViewElement child : children) {
 				returnString += renderTree(child);
 			}
 			returnString += "</ul></li>";
@@ -54,5 +57,6 @@ public class JQueryTreeView<E> extends HtmlWidget
 		
 	    return html;
 	}
+	
 }
 

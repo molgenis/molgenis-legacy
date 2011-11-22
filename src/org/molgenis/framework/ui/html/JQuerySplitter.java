@@ -12,6 +12,7 @@ public class JQuerySplitter<E> extends HtmlWidget
 	public JQuerySplitter(String name, JQuerySplitterContents contents)
 	{
 		super(name);
+		
 		this.setSplitterContents(new JQuerySplitterContents());
 		this.setSplitterContents(contents);
 		this.setSplitterName(name);

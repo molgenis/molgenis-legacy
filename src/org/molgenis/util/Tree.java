@@ -131,5 +131,4 @@ public interface Tree<T> extends Serializable
 	 */
 	public String getPath( String separator );
 
-	public String getLabel();
 }

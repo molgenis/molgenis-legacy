@@ -26,9 +26,6 @@ public class SimpleTree<T extends Tree> implements Tree<T>,Serializable
 {
 	/** Unique name of this element */
 	protected String name;
-	
-	/** Label of the tree that can be made also linkable  **/ 
-	private String label;
 	/** Optional, the value of this element*/
 	private Object value;
 	/** parent.name (or null if root element) */
@@ -63,7 +60,6 @@ public class SimpleTree<T extends Tree> implements Tree<T>,Serializable
 
 		// body
 		this.name = name;
-		this.setLabel(name);
 		if (parent == null)
 		{
 			// this is the root element of the tree, the map is ordered
@@ -92,14 +88,12 @@ public class SimpleTree<T extends Tree> implements Tree<T>,Serializable
 		}		
 		treeElements.remove(getName());
 		this.name = name;
-		this.setLabel(name); 
 		treeElements.put(name,(T)this);
 	}
 	
 	public void setName(String name, String url)
 	{
 		setName(name);
-		this.setLabel("<a href=\"" + url + "\">"+ name +"</a>");
 		
 	}
 
@@ -287,16 +281,5 @@ public class SimpleTree<T extends Tree> implements Tree<T>,Serializable
 		}
 		this.treeElements.remove(this.getName());
 	}
-
-	public void setLabel(String label)
-	{
-		this.label = label;
-	}
-
-	public String getLabel()
-	{
-		return label;
-	}
-
 	
 }
