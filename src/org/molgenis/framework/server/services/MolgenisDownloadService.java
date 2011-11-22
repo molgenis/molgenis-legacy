@@ -216,18 +216,17 @@ public class MolgenisDownloadService implements MolgenisService
 					// use post
 					else
 					{
-						Tuple requestTuple = new HttpServletRequestTuple(request);
 						System.out.println("handle find query via http-post with parameters: "
-								+ requestTuple.getFields());
-						for (String name : requestTuple.getFields())
+								+ req.getFields());
+						for (String name : req.getFields())
 						{
-							if (requestTuple.getString(name).startsWith("["))
+							if (req.getString(name).startsWith("["))
 							{
-								String[] values = requestTuple
+								String[] values = req
 										.getString(name)
 										.substring(
 												1,
-												requestTuple.getString(name)
+												req.getString(name)
 														.indexOf("]")).split(",");
 								rulesList.add(new QueryRule(name,
 										QueryRule.Operator.IN, values));
@@ -235,7 +234,7 @@ public class MolgenisDownloadService implements MolgenisService
 							else
 							{
 								rulesList.add(new QueryRule(name,
-										QueryRule.Operator.EQUALS, requestTuple
+										QueryRule.Operator.EQUALS, req
 												.getString(name)));
 							}
 						}
