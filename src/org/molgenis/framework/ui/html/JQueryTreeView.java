@@ -19,7 +19,6 @@ public class JQueryTreeView<E> extends HtmlWidget
 		this.treeData = treeData;
 	}
 	
-	
 	private String renderTree(JQueryTreeViewElement node) {
 		String returnString;
 		if (node.hasChildren()) {
@@ -53,12 +52,9 @@ public class JQueryTreeView<E> extends HtmlWidget
 		+"</style>\n"
 		+"<script>\n"
 		+"$(document).ready(function(){\n"
-		+"$(\"#browser\").treeview({collapsed: true});});\n"
-		//+"$(\"#browser\").treeview();});\n"
+		+"$(\"#browser\").treeview();});\n"
 		+"</script>\n";
 		
-	    System.out.println(html);
-	    
 	    return html;
 	}
 	
