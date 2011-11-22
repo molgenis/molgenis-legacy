@@ -5,11 +5,21 @@ import org.molgenis.util.SimpleTree;
 public class JQueryTreeViewElement extends SimpleTree<JQueryTreeViewElement>
 {
 	private static final long serialVersionUID = 1L;
+	
+	/** Label of the tree that can be made also linkable  **/ 
+	String label;
 
 	public JQueryTreeViewElement(String name, JQueryTreeViewElement parent)
 	{
 		super(name, parent);
-		// TODO Auto-generated constructor stub
+		this.setLabel(name);
+	}
+	
+	public JQueryTreeViewElement(String name, JQueryTreeViewElement parent, String url)
+	{
+		super(name, parent);
+		this.setLabel("<a href=\"" + url + "\">"+ name +"</a>");
+
 	}
 
 	//whether the element is ticked/selected
@@ -36,6 +46,17 @@ public class JQueryTreeViewElement extends SimpleTree<JQueryTreeViewElement>
 	public void setCollapsed(boolean isCollapsed)
 	{
 		this.isCollapsed = isCollapsed;
+	}
+	
+
+	public void setLabel(String label)
+	{
+		this.label = label;
+	}
+
+	public String getLabel()
+	{
+		return label;
 	}
 	
 }
