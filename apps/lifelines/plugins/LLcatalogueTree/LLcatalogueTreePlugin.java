@@ -4,23 +4,17 @@ package plugins.LLcatalogueTree;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.JQueryTreeView;
 import org.molgenis.framework.ui.html.JQueryTreeViewElement;
-import org.molgenis.organization.Investigation;
-import org.molgenis.pheno.Category;
-import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
-import org.molgenis.util.LinkableTree;
-import org.molgenis.util.SimpleTree;
 import org.molgenis.util.Tuple;
 
 public class LLcatalogueTreePlugin extends PluginModel<Entity>
@@ -30,67 +24,170 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity>
 	
 	private JQueryTreeView<JQueryTreeViewElement> treeView;
 	
+	private HashMap<String, Protocol> nameToProtocol;
+
+	private HashMap<String, JQueryTreeViewElement> labelToTree;
+	
 	public LLcatalogueTreePlugin(String name, ScreenController<?> parent)
 	{	
 		super(name, parent);
 //		JQueryTreeViewElement protocolTree = null;
 		Database db = this.getController().getDatabase();
 
-		List<ObservableFeature> obsFeatures = new ArrayList<ObservableFeature>();
 		
-		//obsFeatures.get(0);
-		Protocol protocol = new Protocol();
-		List<Protocol> protocols = new ArrayList<Protocol>();
-		List<Protocol> subprotocols = new ArrayList<Protocol>();
 		
-		protocol.getValues();
-		protocol.getName();
+//		List<ObservableFeature> obsFeatures = new ArrayList<ObservableFeature>();
+//		
+//		//obsFeatures.get(0);
+//		Protocol protocol = new Protocol();
+//		List<Protocol> protocols = new ArrayList<Protocol>();
+//		List<Protocol> subprotocols = new ArrayList<Protocol>();
+//		
+//		protocol.getValues();
+//		protocol.getName();
+//
+//		   
+//		
+//		//iterate through all the protocols and set the name of each protocol to tree name
+//		//make a link for each of them so that the contents show on the splitter!
+//		
+//		
+//		try {
+//			 for(Protocol p: db.find(Protocol.class))
+//			    {
+//			       System.out.println("Protocols name: >>" + p.getName());
+//			       protocols.add(p);
+//			       JQueryTreeViewElement protocolTree= new JQueryTreeViewElement(p.getName(), null);
+//			       
+//				   if (p.getSubprotocols_Id() != null) {
+//				       	System.out.println("SubProtocols name: >>" + p.getName());
+//					   //if protocols.contains(p)
+//					   //subprotocols.add(p);
+//				   }
+//			    }
+//			
+//			
+//		} catch (DatabaseException e) {
+//			e.printStackTrace();
+//		}
 
-		   
+		List<String> topProtocols = new ArrayList<String>();
 		
-		//iterate through all the protocols and set the name of each protocol to tree name
-		//make a link for each of them so that the contents show on the splitter!
+		List<String> bottomProtocols = new ArrayList<String>();
 		
+		List<String> middleProtocols = new ArrayList<String>();
+		
+		labelToTree = new HashMap<String, JQueryTreeViewElement>();
+		
+		nameToProtocol = new HashMap<String, Protocol>();
 		
 		try {
-			 for(Protocol p: db.find(Protocol.class))
-			    {
-			       System.out.println("Protocols name: >>" + p.getName());
-			       protocols.add(p);
-			       JQueryTreeViewElement protocolTree= new JQueryTreeViewElement(p.getName(), null);
-			       
-				   if (p.getSubprotocols_Id() != null) {
-				       	System.out.println("SubProtocols name: >>" + p.getName());
-					   //if protocols.contains(p)
-					   //subprotocols.add(p);
-				   }
-			    }
-			
+			for(Protocol p : db.find(Protocol.class)){
+				
+				//System.out.println(p.getName());
+				
+				List<String> subNames = p.getSubprotocols_Name();
+				
+				if(!nameToProtocol.containsKey(p.getName())){
+					nameToProtocol.put(p.getName(), p);
+				}
+				
+				if(!subNames.isEmpty()){
+					
+					if(!topProtocols.contains(p.getName()))
+						topProtocols.add(p.getName());
+					
+					for(String subProtocol : subNames){
+						
+						if(!middleProtocols.contains(subProtocol))
+							middleProtocols.add(subProtocol);
+					}
+					
+				}else{
+					
+					if(!bottomProtocols.contains(p.getName())){
+						bottomProtocols.add(p.getName());
+						
+					}
+				}
+			}
 			
 		} catch (DatabaseException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-
 		
-
+		middleProtocols.removeAll(bottomProtocols);
+		
+		topProtocols.removeAll(middleProtocols);
+		
 		JQueryTreeViewElement myTree = new JQueryTreeViewElement("myTree", null);
-		JQueryTreeViewElement mySubTree1 = new JQueryTreeViewElement("mySubTree1", myTree);
-		JQueryTreeViewElement mySubSubTree = new JQueryTreeViewElement("mySubSubTree", mySubTree1);
-		JQueryTreeViewElement mySubSubSubtree = new JQueryTreeViewElement("mySubSubSubtree",mySubSubTree );
 		
-		JQueryTreeViewElement linkableTree = new JQueryTreeViewElement("linkabletree", mySubSubSubtree, "http://www.google.com");
+		recursiveAddingTree(topProtocols, myTree);
 		
-		JQueryTreeViewElement anotherTree = new JQueryTreeViewElement("anothertree",linkableTree, "http://www.google.com" );
+//		JQueryTreeViewElement mySubTree1 = new JQueryTreeViewElement("mySubTree1", myTree);
+//		JQueryTreeViewElement mySubSubTree = new JQueryTreeViewElement("mySubSubTree", mySubTree1);
+//		JQueryTreeViewElement mySubSubSubtree = new JQueryTreeViewElement("mySubSubSubtree",mySubSubTree );
+//		
+//		JQueryTreeViewElement linkableTree = new JQueryTreeViewElement("linkabletree", mySubSubSubtree, "http://www.google.com");
+//		
+//		JQueryTreeViewElement anotherTree = new JQueryTreeViewElement("anothertree",linkableTree, "http://www.google.com" );
 
 		//JQueryTreeViewElement mySubTree2 = new JQueryTreeViewElement("mySubTree2", protocolTree);
 		
 		treeView = new JQueryTreeView("Example tree viewer", myTree);
 		
-		
-		
 	}
+	
+	public void recursiveAddingTree(List<String> parentNode, JQueryTreeViewElement parentTree){
+		
+		for(String protocolName : parentNode){
+			
+			Protocol protocol = nameToProtocol.get(protocolName);
+			
+			if(protocol != null){
+				
+				JQueryTreeViewElement childTree;
+				
+				if(labelToTree.containsKey(protocolName)){
+					
+					childTree = labelToTree.get(protocolName);
+				
+				}else{
+					
+					childTree = new JQueryTreeViewElement(protocolName, parentTree);
+					childTree.setCollapsed(true);
+					labelToTree.put(protocolName, childTree);
+				}
 
+				if(protocol.getSubprotocols_Name() != null){
+					recursiveAddingTree(protocol.getSubprotocols_Name(), childTree);
+				}
+				if(protocol.getFeatures_Name() != null){
+					
+					addingMeasurementTotree(protocol.getFeatures_Name(), childTree);
+				}
+			}
+		}
+	}
+	
+	public void addingMeasurementTotree(List<String> parentNode, JQueryTreeViewElement parentTree){
+		
+		for(String measurementName : parentNode){
+			
+			JQueryTreeViewElement childTree;
+
+			if(labelToTree.containsKey(measurementName)){
+
+				childTree = labelToTree.get(measurementName);
+
+			}else{
+
+				childTree = new JQueryTreeViewElement(measurementName, parentTree);
+				labelToTree.put(measurementName, childTree);
+			}
+		}
+	}
 	@Override
 	public String getViewName()
 	{
