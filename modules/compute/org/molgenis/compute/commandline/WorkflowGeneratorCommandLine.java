@@ -4,11 +4,6 @@ import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.compute.pipelinemodel.*;
-import org.molgenis.compute.scriptserver.MCF;
-import org.molgenis.compute.monitor.DatabaseUpdater;
-import org.molgenis.compute.workflowgenerator.ParameterWeaver;
-import org.molgenis.framework.db.Database;
-import org.molgenis.protocol.Workflow;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.protocol.WorkflowElementParameter;
 
@@ -30,8 +25,8 @@ public class WorkflowGeneratorCommandLine
     private static final String INTERPRETER_R = "R";
     private static final String INTERPRETER_JDL = "jdl";
 
-
-    private boolean flagJustGenerate = false;
+    public static final String GRID = "grid";
+    public static final String CLUSTER = "cluster";
 
     private static final String LOG = "log";// reserved word for logging feature type used in ComputeFeature
 
@@ -42,30 +37,20 @@ public class WorkflowGeneratorCommandLine
     private Pipeline pipeline = null;
     private Step currentStep = null;
     private String strCurrentPipelineStep = "INITIAL";
-    private int pipelineElementNumber = 0;
 
     private int stepNumber = 0;
 
     private List<ComputeParameter> allComputeParameters = null;
 
-    //compute
-    private MCF mcf = null;
-    private DatabaseUpdater updater = null;
-
     //map of all compute features/values
     private Hashtable<String, String> weavingValues = null;
     Hashtable<String, String> userValues = null;
 
-    //whole workflow application
-    private ComputeJob wholeWorkflowApp = null;
-
     //some necessary values
-    private Workflow target = null;
     private String applicationName = null;
 
-    private ParameterWeaver weaver = new ParameterWeaver();
+    private ParameterWeaverCommandLine weaver = new ParameterWeaverCommandLine();
 
-    private String remoteLocation = null;
     private boolean isToWriteLocally = false;
     private String localLocation = "/";
 
@@ -82,9 +67,11 @@ public class WorkflowGeneratorCommandLine
     private Hashtable<String, String> submitIDs = null;
     int intSubmitID = -1;
 
+    private String backend = null;
+
     public void processSingleWorksheet(ComputeBundle bundle,
                                        Hashtable<String, String> userValues,
-                                       String applicationName /* should be unique somehow */) throws IOException, ParseException
+                                       String applicationName /* should be unique somehow? */, String backend) throws IOException, ParseException
     {
         applications = new Vector<ComputeJob>();
 
@@ -94,6 +81,7 @@ public class WorkflowGeneratorCommandLine
         this.wfeParameters = bundle.getWorkflowElementParameters();
         this.userValues = userValues;
         this.applicationName = applicationName;
+        this.backend = backend;
 
 
         System.out.println(">>> generate apps");
@@ -103,17 +91,6 @@ public class WorkflowGeneratorCommandLine
         currentStep = null;
         stepNumber = 0;
 
-        pipelineElementNumber = 0;
-
-
-        //!!!!commented application for the whole workflow
-//        wholeWorkflowApp = new ComputeApplication();
-
-        //get the chosen workflow
-//        Workflow workflow = db.query(Workflow.class).find().get(0);
-//        wholeWorkflowApp.setProtocol(workflow);
-//        wholeWorkflowApp.setInterpreter("WorkflowInterpreter");
-
         //it would be nice to select compute features of only selected workflow
         allComputeParameters = bundle.getComputeParameters();
         System.out.println("we have so many features: " + allComputeParameters.size());
@@ -121,12 +98,8 @@ public class WorkflowGeneratorCommandLine
         //add few parameters
         //wholeWorkflowApp.setTime(now());
 
-        //set app name everywhere and add to database
-        //wholeWorkflowApp.setName(applicationName);
         pipeline.setId(applicationName);
         weaver.setJobID(applicationName);
-//        db.beginTx();
-//        db.add(wholeWorkflowApp);
 
         //process workflow elements
         List<WorkflowElement> workflowElements = bundle.getWorkflowElements();
@@ -147,17 +120,6 @@ public class WorkflowGeneratorCommandLine
     {
         Calendar cal = Calendar.getInstance();
         return cal.getTime();
-    }
-
-    public void executePipeline(Database db, Pipeline pipeline)
-    {
-        if (mcf != null && !flagJustGenerate)
-        {
-            mcf.setClusterPipeline(pipeline);
-        }
-        else
-            System.out.println(pipeline.toString());
-
     }
 
     private void processWorkflowElement(WorkflowElement workflowElement)
@@ -246,7 +208,11 @@ public class WorkflowGeneratorCommandLine
         app.setWorkflowElement(workflowElement);
         app.setTime(now());
 
-        String appName = applicationName + "_" + workflowElement.getName();// + "_" + pipelineElementNumber;
+        String runId = this.weavingValues.get("runID");
+
+        //String appName = applicationName + "_" + workflowElement.getName();// + "_" + pipelineElementNumber;
+        String appName = runId + applicationName +"_" + workflowElement.getName();// + "_" + pipelineElementNumber;
+
         app.setName(appName);
         System.out.println("---application---> " + appName);
 
@@ -261,49 +227,28 @@ public class WorkflowGeneratorCommandLine
 
             String featureValue = weaver.weaveFreemarker(featureTemplate, weavingValues);
             weavingValues.put(featureName, featureValue);
+
+            System.out.println("featureName: " + featureName);
+            System.out.println("featurevalue: " + featureValue);
+
         }
 
-        String result = weaver.weaveFreemarker(protocolTemplate, weavingValues);
-        app.setComputeScript(result);
+
         app.setInterpreter(protocol.getInterpreter());
         applications.add(app);
 
-        pipelineElementNumber++;
-
-        if (this.weavingValues.containsKey("outputdir"))
-        {
-            remoteLocation = this.weavingValues.get("outputdir");
-            remoteLocation += System.getProperty("file.separator") + applicationName;
-        }
-        else
-        {
-            throw new RuntimeException("remote directory on the cluster is not specified in parameter.txt");
-        }
-
-        String runId = this.weavingValues.get("runID");
+        String remoteLocation = this.weavingValues.get("outputdir");
 
         //create compute pipeline
-        String scriptID = app.getName() + "_" + runId;
+        String scriptID = app.getName();
         weaver.setScriptID(scriptID);
 
         weaver.setDefaults();
 
-        if (protocol.getWalltime() != null)
-        {
-            weaver.setWalltime(protocol.getWalltime());
-
-            //quick fix for the cluster queue
-//            if (protocol.getWalltime().equalsIgnoreCase("00:30:00"))
-//            {
-                weaver.setClusterQueue("test");
-//            }
-//            else
-//                weaver.setClusterQueue("nodes");
-        }
-        if (protocol.getCores() != null)
-            weaver.setCores(protocol.getCores() + "");
-        if (protocol.getMem() != null)
-            weaver.setMemoryReq(protocol.getMem() + "");
+        weaver.setWalltime(protocol.getWalltime());
+        weaver.setCores(protocol.getCores() + "");
+        weaver.setMemoryReq(protocol.getMem() + "");
+        weaver.setClusterQueue(protocol.getClusterQueue());
 
         //at some point of time can be added for the verification
         weaver.setVerificationCommand("\n");
@@ -315,22 +260,29 @@ public class WorkflowGeneratorCommandLine
 
         Script pipelineScript = null;
 
-        if (protocol.getInterpreter().equalsIgnoreCase(INTERPRETER_BASH))
+        if (backend.equalsIgnoreCase(WorkflowGeneratorCommandLine.CLUSTER))
         {
-            pipelineScript = makeShScript(scriptID, scriptRemoteLocation, result);
+            String result = weaver.weaveFreemarker(protocolTemplate, weavingValues);
+            app.setComputeScript(result);
+
+            if (protocol.getInterpreter().equalsIgnoreCase(INTERPRETER_BASH))
+            {
+                pipelineScript = makeShScript(scriptID, scriptRemoteLocation, result);
+            }
+            else if (protocol.getInterpreter().equalsIgnoreCase(INTERPRETER_R))
+            {
+                pipelineScript = makeRScript(scriptID, scriptRemoteLocation, result);
+                //TODO here also set script result to app like in cluster version
+            }
         }
-        else if (protocol.getInterpreter().equalsIgnoreCase(INTERPRETER_R))
+       else if (backend.equalsIgnoreCase(WorkflowGeneratorCommandLine.GRID))
         {
-            pipelineScript = makeRScript(scriptID, scriptRemoteLocation, result);
-        }
-        else if (protocol.getInterpreter().equalsIgnoreCase(INTERPRETER_JDL))
-        {
-            pipelineScript = makeJDLScript(scriptID, scriptRemoteLocation, result);
+            pipelineScript = makeJDLScript(scriptID, scriptRemoteLocation, protocolTemplate, weavingValues);
         }
 
         pipeline.setPipelinelogpath(logfile);
 
-        submitIDs.put(workflowElement.getName(), ""+intSubmitID);
+        submitIDs.put(workflowElement.getName(), "" + intSubmitID);
 
         if (isToWriteLocally)
         {
@@ -340,25 +292,25 @@ public class WorkflowGeneratorCommandLine
         List<String> strPreviousWorkflowElements = workflowElement.getPreviousSteps_Name();
 
         String strDependancy = "";
-        for(String previousWorkflowElement : strPreviousWorkflowElements)
+        for (String previousWorkflowElement : strPreviousWorkflowElements)
         {
             String jobSubmitID = submitIDs.get(previousWorkflowElement);
 
-            if(strDependancy.equalsIgnoreCase(""))
+            if (strDependancy.equalsIgnoreCase(""))
                 strDependancy += "$job_" + jobSubmitID;
             else
                 strDependancy += ":$job_" + jobSubmitID;
         }
 
-        if(!strDependancy.equalsIgnoreCase(""))
+        if (!strDependancy.equalsIgnoreCase(""))
             strDependancy = "-W depend=afterok:" + strDependancy;
 
-        weaver.setSubmitID(""+intSubmitID);
+        weaver.setSubmitID("" + intSubmitID);
         weaver.setDependancy(strDependancy);
 
         String depend = weaver.makeSumbit();
 
-        submit +=depend;
+        submit += depend;
 
 
         if (strPreviousWorkflowElements.size() == 0)//script does not depend on other scripts
@@ -380,7 +332,6 @@ public class WorkflowGeneratorCommandLine
 
             if (!strPrevious.equalsIgnoreCase(strCurrentPipelineStep))
             {
-                //Step step = new Step("step_" + app.getName());
                 Step step = new Step(workflowElement.getName());
                 step.setNumber(stepNumber);
                 stepNumber++;
@@ -396,22 +347,27 @@ public class WorkflowGeneratorCommandLine
 
     //here the first trial of generation for the grid
     //will be refactored later
-    private Script makeJDLScript(String scriptID, String scriptRemoteLocation, String result)
+    private Script makeJDLScript(String scriptID, String scriptRemoteLocation, String template, Hashtable<String, String> weavingValues)
     {
         String gridHeader = weaver.makeGridHeader();
 
-        String downloadTop = weaver.makeGridDownload(weavingValues);
-        String uploadBottom = weaver.makeGridUpload(weavingValues);
+        String downloadTop = weaver.processGridHeader(ParameterWeaverCommandLine.DO_DOWNLOAD, template, weavingValues);
+        String executablesTop = weaver.processGridHeader(ParameterWeaverCommandLine.DO_EXECUTABLE, template, weavingValues);
+        String uploadBottom = weaver.processGridHeader(ParameterWeaverCommandLine.DO_UPLOAD, template, weavingValues);
+
+        String result = weaver.weaveFreemarker(template, weavingValues);
 
         //some special fields should be specified for the jdl file
         //error and output logs
-        weavingValues.put("error_log", "err_" + scriptID + ".log");
-        weavingValues.put("output_log", "out_" + scriptID + ".log");
+        this.weavingValues.put("error_log", "err_" + scriptID + ".log");
+        this.weavingValues.put("output_log", "out_" + scriptID + ".log");
         //extra files to be download and upload - now empty
-        weavingValues.put("extra_input", "");
-        weavingValues.put("extra_output", "");
+        this.weavingValues.put("extra_inputs", "");
+        this.weavingValues.put("extra_outputs", "");
+        this.weavingValues.put("script_name", scriptID);
+        this.weavingValues.put("script_location", scriptRemoteLocation);
 
-        String jdlfile = weaver.makeJDL(weavingValues);
+        String jdlfile = weaver.makeJDL(this.weavingValues);
 
         System.out.println("name: " + scriptID);
         System.out.println("remote location: " + scriptRemoteLocation);
@@ -419,6 +375,7 @@ public class WorkflowGeneratorCommandLine
 
         String script = gridHeader + "\n"
                 + downloadTop + "\n"
+                + executablesTop + "\n"
                 + result + "\n"
                 + uploadBottom;
 
@@ -428,6 +385,8 @@ public class WorkflowGeneratorCommandLine
         Script scriptFile = new GridScript(scriptID, scriptRemoteLocation, script.getBytes());
         FileToSaveRemotely jdlFile = new FileToSaveRemotely(scriptID + ".jdl", jdlfile.getBytes());
         scriptFile.addFileToTransfer(jdlFile);
+
+        weaver.writeToFile(localLocation + scriptID + ".jdl", new String(jdlfile.getBytes()));
 
         return scriptFile;
     }
@@ -441,10 +400,6 @@ public class WorkflowGeneratorCommandLine
         script.addFileToTransfer(rScript);
         System.out.println("Rscript" + result);
         return script;
-
-        //todo test it!!!!
-
-
     }
 
     private Script makeShScript(String scriptID, String scriptRemoteLocation, String result)
@@ -452,12 +407,6 @@ public class WorkflowGeneratorCommandLine
         weaver.setActualCommand(result);
         String scriptFile = weaver.makeScript();
         return new ClusterScript(scriptID, scriptRemoteLocation, scriptFile.getBytes());
-    }
-
-    //root remote location should be set
-    public void setRemoteLocation(String remoteLocation)
-    {
-        this.remoteLocation = remoteLocation;
     }
 
     public void setToWriteLocally(boolean toWriteLocally)
@@ -468,16 +417,6 @@ public class WorkflowGeneratorCommandLine
     public void setLocalLocation(String localLocation)
     {
         this.localLocation = localLocation;
-    }
-
-    public Pipeline getCurrectPipeline()
-    {
-        return pipeline;
-    }
-
-    public void setFlagJustGenerate(boolean b)
-    {
-        flagJustGenerate = b;
     }
 
     public String getFormattedTime()
@@ -491,10 +430,6 @@ public class WorkflowGeneratorCommandLine
         return applications;
     }
 
-    public Pipeline getPipeline()
-    {
-        return pipeline;
-    }
 
     public void setNewRun()
     {

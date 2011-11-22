@@ -1,24 +1,18 @@
 package org.molgenis.compute.commandline;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.protocol.WorkflowElementParameter;
-import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvReaderListener;
-import org.molgenis.util.Entity;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.util.*;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ComputeBundleFromDirectory extends ComputeBundle
 {
@@ -136,6 +130,7 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 						p.setWalltime(params.getString("walltime"));
 						p.setNodes(params.getInt("nodes"));
 						p.setCores(params.getInt("cores"));
+                        p.setClusterQueue(params.getString("clusterQueue"));
 					}
 					else if (line.trim().startsWith("#PBS"))
 					{
@@ -236,7 +231,6 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 		reader.parse(new CsvReaderListener()
 		{
 
-			@Override
 			public void handleLine(int line_number, Tuple tuple)
 					throws Exception
 			{
