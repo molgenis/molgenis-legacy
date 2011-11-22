@@ -24,5 +24,24 @@
 			label="Upload Excel" />
 		<plugin name="UpdateDatabase" type="org.molgenis.scrum.plugins.UpdateDatabase"
 			label="Update Database" />
+		<menu name="securitymenu" position="left" label="Security">
+			<plugin label="Upgrade persons to users" name="UserToPersonPlugin"
+				type="org.molgenis.auth.service.persontouser.PersonToUser" />
+			<form name="MolgenisUser" entity="MolgenisUser" view="list"
+				label="Users" />
+			<form name="Persons" entity="Person" />
+			<form name="Institutes" entity="Institute" />
+			<form name="MolgenisGroup" entity="MolgenisGroup" view="list"
+				label="Groups" />
+			<form name="MolgenisRoleGroupLink" entity="MolgenisRoleGroupLink"
+				view="list" label="Users in groups" />
+			<form name="MolgenisEntity" entity="MolgenisEntity" view="list"
+				label="Entities" />
+			<form name="MolgenisPermission" entity="MolgenisPermission"
+				view="list" label="Permissions" />
+			<plugin name="PermissionManagementPlugin"
+				type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin"
+				label="Permission management" />
+		</menu>
 	</menu>
 </molgenis>
