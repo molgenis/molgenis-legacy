@@ -14,7 +14,7 @@ public class LLcatalogueSplitterPlugin  extends PluginModel<Entity>
 
 	private static final long serialVersionUID = -6143910771849972946L;
 	
-	JQuerySplitter<Object> splitter;
+	JQuerySplitter<JQuerySplitterContents> splitter;
 	
 	public LLcatalogueSplitterPlugin(String name, ScreenController<?> parent)
 	{	
@@ -29,7 +29,8 @@ public class LLcatalogueSplitterPlugin  extends PluginModel<Entity>
 		splitterContents.setRightTopPane("<p> Right Top Pane </p>");
 		splitterContents.setRightBottomPane("<p>right bottom Pane</p>");
 		
-		splitter = new JQuerySplitter<Object>("splitter", splitterContents);
+		splitter = new JQuerySplitter<JQuerySplitterContents>("splitter", splitterContents);
+		
 		System.out.println(">>>>Spliter contents has been set  "); 
 
 	}
