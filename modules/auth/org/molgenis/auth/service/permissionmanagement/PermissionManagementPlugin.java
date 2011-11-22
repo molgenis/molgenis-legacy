@@ -49,6 +49,8 @@ public class PermissionManagementPlugin extends PluginModel<Entity> {
 
     @Override
     public void handleRequest(Database db, Tuple request) {
+    	
+    	service.setDb(db);
     	try {
     		varmodel.setAction(request.getAction());
     		
@@ -110,9 +112,11 @@ public class PermissionManagementPlugin extends PluginModel<Entity> {
 
     @Override
     public void reload(Database db) {
-    	service = PermissionManagementService.getInstance(db);
+    	
+    	service = PermissionManagementService.getInstance();
+    	service.setDb(db);
 		try {
-			varmodel.setRole(service.findRole((db.getSecurity().getUserId())));
+			varmodel.setRole(service.findRole(db.getSecurity().getUserId()));
 		} catch (Exception e) {
 			e.printStackTrace();
 		    //TODO: add logger + screen message

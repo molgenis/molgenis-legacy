@@ -28,10 +28,13 @@ public class PermissionManagementService {
     private Database db                                                    = null;
 	private static PermissionManagementService permissionManagementService = null;
 	
-	// private constructor, use singleton instance
-	private PermissionManagementService(Database db)
-	{
+	public void setDb(Database db) {
 		this.db = db;
+	}
+	
+	// private constructor, use singleton instance
+	private PermissionManagementService()
+	{
 	}
 	
 	/**
@@ -39,10 +42,10 @@ public class PermissionManagementService {
 	 * @param Database object
 	 * @return PermissionManagementService object
 	 */
-	public static PermissionManagementService getInstance(Database db)
+	public static PermissionManagementService getInstance()
 	{
 		if (permissionManagementService == null) {
-		    permissionManagementService = new PermissionManagementService(db);
+		    permissionManagementService = new PermissionManagementService();
 		}
 		
 		return permissionManagementService;
