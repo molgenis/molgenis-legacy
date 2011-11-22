@@ -17,25 +17,29 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity>
 
 	private static final long serialVersionUID = -6143910771849972946L;
 	
-	private JQueryTreeView<?> treeView;
-
+	private JQueryTreeView<JQueryTreeViewElement> treeView;
+	
 	public LLcatalogueTreePlugin(String name, ScreenController<?> parent)
-	{
+	{	
+		
 		super(name, parent);
 		
-		SimpleTree<JQueryTreeViewElement> myTree = new SimpleTree<JQueryTreeViewElement>("myTree", null);
-		SimpleTree<JQueryTreeViewElement> mySubTree1 = new SimpleTree("mySubTree1", myTree);
-		SimpleTree<JQueryTreeViewElement> mySubSubTree = new SimpleTree("mySubSubTree", mySubTree1);
-		SimpleTree<JQueryTreeViewElement> mySubSubSubtree = new SimpleTree("mySubSubSubtree",mySubSubTree );
+		JQueryTreeViewElement myTree = new JQueryTreeViewElement("myTree", null);
+		JQueryTreeViewElement mySubTree1 = new JQueryTreeViewElement("mySubTree1", myTree);
+		JQueryTreeViewElement mySubSubTree = new JQueryTreeViewElement("mySubSubTree", mySubTree1);
+		JQueryTreeViewElement mySubSubSubtree = new JQueryTreeViewElement("mySubSubSubtree",mySubSubTree );
 		
-		LinkableTree<?> linkableTree = new LinkableTree("linkabletree", mySubSubSubtree, "http://www.google.com");
+		JQueryTreeViewElement linkableTree = new JQueryTreeViewElement("linkabletree", mySubSubSubtree, "http://www.google.com");
 		
-		LinkableTree<JQueryTreeViewElement> anotherTree = new LinkableTree("anothertree",linkableTree, "dsfgsdfgdsfg" );
+		JQueryTreeViewElement anotherTree = new JQueryTreeViewElement("anothertree",linkableTree, "http://www.google.com" );
 
-		SimpleTree mySubTree2 = new SimpleTree("mySubTree2", myTree);
+		JQueryTreeViewElement mySubTree2 = new JQueryTreeViewElement("mySubTree2", myTree);
 
 		
 		treeView = new JQueryTreeView("Example tree viewer", myTree);
+		
+		
+		
 	}
 
 	@Override
@@ -110,4 +114,6 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity>
 	public String getTreeView() {
 		return treeView.toHtml();
 	}
+	
+
 }
