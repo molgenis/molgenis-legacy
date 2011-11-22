@@ -56,7 +56,7 @@
 		<field name="name" unique="true" description="unique name for this story" />
 		<field name="howToDemo" label="How to demo?" type="text"
 			description="description of what will be demo-ed when this is story is completed. This is typically a software demo, and in rare occasions a piece of code (for an API) or a report (for a design or evaluation)." />
-		<field name="importance" type="int" nillable="true" description="weight of importance for this story that is used to sort the scrum board."/>
+		<field name="importance" type="string" nillable="true" description="weight of importance for this story that is used to sort the scrum board."/>
 		<field name="linkToDemo" label="Link to demo" type="hyperlink"
 			nillable="true"
 			description="Link where one can view the demo that was produced as result of story." />
@@ -79,7 +79,7 @@
 			description="Date on which this task was last change. (list TaskHistory for the full list of changes)" />
 		<field name="story" type="xref" xref_entity="Story"
 			description="Reference to the story this task is part of." />
-		<field name="storyPoints" type="int" default="0"
+		<field name="storyPoints" type="decimal" default="0"
 			description="An estimate for the amount of work. In most teams a story point equals 1 day of work" />
 		<field name="owner" type="xref" xref_entity="MolgenisUser"
 			nillable="true"

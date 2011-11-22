@@ -93,7 +93,7 @@ public class Whiteboard extends PluginModel<Entity>
 			else if ("taskSave".equals(action))
 			{
 				t.setDescription(request.getString("description"));
-				t.setStoryPoints(request.getInt("storyPoints"));
+				t.setStoryPoints(request.getDouble("storyPoints"));
 				t.setChangedOn(new Date());				
 				db.update(t);
 				this.taskEdit = null;
@@ -127,7 +127,7 @@ public class Whiteboard extends PluginModel<Entity>
 			{
 				Story story = db.findById(Story.class, request.getInt("__story"));
 				story.setName(request.getString(Story.NAME));
-				story.setImportance(request.getInt(Story.IMPORTANCE));
+				story.setImportance(request.getString(Story.IMPORTANCE));
 				story.setHowToDemo(request.getString(Story.HOWTODEMO));
 				story.setLinkToDemo(request.getString(Story.LINKTODEMO));			
 				db.update(story);
@@ -185,9 +185,9 @@ public class Whiteboard extends PluginModel<Entity>
 	}
 	
 	// summing methods
-	public int countSp(String status)
+	public double countSp(String status)
 	{
-		int result = 0;
+		double result = 0;
 		for(Task t: this.tasks)
 		{
 			if(t.getStatus().equals(status))
@@ -198,9 +198,9 @@ public class Whiteboard extends PluginModel<Entity>
 		return result;
 	}
 	
-	public int countSp(Story story)
+	public double countSp(Story story)
 	{
-		int result = 0;
+		double result = 0;
 		for(Task t: this.tasks)
 		{
 			if(t.getStory_Id().equals(story.getId()))

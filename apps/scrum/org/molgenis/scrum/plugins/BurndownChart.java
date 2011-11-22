@@ -31,8 +31,8 @@ import org.molgenis.util.Tuple;
 public class BurndownChart extends PluginModel<Entity>
 {
 	List<TaskHistory> taskHistory = new ArrayList<TaskHistory>();
-	List<Integer> burndown = new ArrayList<Integer>();
-	List<Integer> unplanned = new ArrayList<Integer>();
+	List<Double> burndown = new ArrayList<Double>();
+	List<Double> unplanned = new ArrayList<Double>();
 	List<String> dates = new ArrayList<String>();
 
 	public BurndownChart(String name, ScreenController<?> parent)
@@ -135,7 +135,7 @@ public class BurndownChart extends PluginModel<Entity>
 			DateFormat df = new SimpleDateFormat("dd/MMM");
 
 			this.burndown.add(storyPointCount(currentBoard,false));
-			this.unplanned.add(0);
+			this.unplanned.add(0.0);
 			this.dates.add(df.format(calendar.getTime()));
 			
 			//then iterate through the days until end of sprint OR today, update board and check for unplanned
@@ -189,9 +189,9 @@ public class BurndownChart extends PluginModel<Entity>
 
 	}
 
-	private Integer storyPointCount(Map<Integer, TaskHistory> currentBoard, boolean all)
+	private Double storyPointCount(Map<Integer, TaskHistory> currentBoard, boolean all)
 	{
-		int count = 0;
+		Double count = 0.0;
 		for(TaskHistory t: currentBoard.values())
 		{
 			if( all || ! (t.getStatus().equals("done") || t.getStatus().equals("removed") ) )
