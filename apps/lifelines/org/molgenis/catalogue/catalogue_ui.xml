@@ -11,11 +11,12 @@
 			<form name="investigation" entity="Investigation" label="Investigation" />
 			<form name="measurement" entity="Measurement" label="Measurement" />
 			<form name="protocol" entity="Protocol" label="Protocol" />
-			<form name="code" entity="Code" label="Code" />
+			<form name="category" entity="Category" label="Category" />
 			<form name="ObservedValues" entity="ObservedValue" label="ObservedValue" />
 			<!-- <form name="themeProtocol" entity="themeProtocol" label="Theme" />
 			<form name="groupTheme" entity="groupTheme" label="Group" /> -->
-			<form name="OntologyTerm" entity="OntologyTerm" label="Ontology Term" />
+			<form name="Panel" entity="Panel" label="Panel" />
+			<form name="ProtocolApplication" entity="ProtocolApplication" label="Protocol Application" />
 		</menu>
 		
 		<plugin name="LLcatalogueTreePlugin" type="plugins.LLcatalogueTree.LLcatalogueTreePlugin" label="OntologyTerms" />  

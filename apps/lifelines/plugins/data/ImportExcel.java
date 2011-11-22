@@ -261,11 +261,11 @@ public class ImportExcel extends PluginModel<Entity>
 
 					}else if(j == 3){
 
-						measurementName = sheet.getCell(j, i).getContents();
+						measurementName = sheet.getCell(j, i).getContents().replaceAll("'", "");
 
 						ontology_Term.setName(measurementName);
 
-						mea.setName(sheet.getCell(j, i).getContents());
+						mea.setName(measurementName);
 
 						mea.setOntologyReference_Name(measurementName);
 
@@ -326,24 +326,45 @@ public class ImportExcel extends PluginModel<Entity>
 							//System.out.println(sheet.getCell(j, i).getContents());
 							for(int k = 0; k < codeString.length; k++){
 
+								code.setName(codeString[k].replaceAll("'", ""));
+								
 								code.setCode_String(codeString[k]);
+								
+								code.setLabel(codeString[k]);
+								
 								code.setDescription(sheet.getCell(j, i).getContents());
-
-								if(linkCodeMeasurement.containsKey(codeString[k])){
-									List<String> featuresCode = linkCodeMeasurement.get(codeString[k]);
-									if(!featuresCode.contains(measurementName)){
-										featuresCode.add(measurementName);
-										linkCodeMeasurement.put(codeString[k], featuresCode);
+								
+								System.out.println(codeString[k]);
+								
+//								if(linkCodeMeasurement.containsKey(codeString[k])){
+//									List<String> featuresCode = linkCodeMeasurement.get(codeString[k]);
+//									if(!featuresCode.contains(measurementName)){
+//										featuresCode.add(measurementName);
+//										linkCodeMeasurement.put(codeString[k], featuresCode);
+//									}
+//								}else{
+//									List<String> featuresCode = new ArrayList<String>();
+//									featuresCode.add(measurementName);
+//									linkCodeMeasurement.put(codeString[k], featuresCode);
+//								}
+								
+								if(linkCodeMeasurement.containsKey(measurementName)){
+									List<String> categories = linkCodeMeasurement.get(measurementName);
+									if(!categories.contains(codeString[k])){
+										categories.add(codeString[k]);
+										linkCodeMeasurement.put(measurementName, categories);
 									}
 								}else{
-									List<String> featuresCode = new ArrayList<String>();
-									featuresCode.add(measurementName);
-									linkCodeMeasurement.put(codeString[k], featuresCode);
+									List<String> categories = new ArrayList<String>();
+									categories.add(codeString[k]);
+									linkCodeMeasurement.put(measurementName, categories);
 								}
+								if(!codes.contains(code))
+									codes.add(code);
 							}
 							if(j == 9)
 								code.setIsMissing(true);
-							codes.add(code);
+							
 						}
 
 					}else if(j == 18){
@@ -464,6 +485,26 @@ public class ImportExcel extends PluginModel<Entity>
 				//db.add(addedObservedValues);
 
 				//link Unit(ontologyTerm) to measurements 
+				
+				db.add(addedCodes);
+				
+				for (Measurement m: addedMeasurements) {
+
+					List<String> categoryNames = linkCodeMeasurement.get(m.getName());
+					
+					if(categoryNames != null){
+						
+						List<Category> measList = db.find(Category.class, new QueryRule(Category.LABEL, Operator.IN, categoryNames));
+						
+						List<Integer> CategoryIdList = new ArrayList<Integer>();
+						
+						for(Category c : measList){
+							CategoryIdList.add(c.getId());
+						}
+						m.setCategories_Id(CategoryIdList);
+					}
+				}
+				
 				for (Measurement m: addedMeasurements) {
 
 					String tmp = linkUnitMeasurement.get(m.getName());
@@ -480,7 +521,9 @@ public class ImportExcel extends PluginModel<Entity>
 				}
 				
 				db.add(addedMeasurements);
-
+				
+				
+				
 				// TEMPORARY FIX FOR MREF RESOLVE FOREIGN KEYS BUG
 				for (Protocol p : addedProtocols) {
 
@@ -529,18 +572,20 @@ public class ImportExcel extends PluginModel<Entity>
 				}
 
 				db.add(groups);
-
-				for (Category c : addedCodes){
-					List<String> featureNames = linkCodeMeasurement.get(c.getCode_String());
-					List<Measurement> measList = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, featureNames));
-					List<Integer> meaIdList = new ArrayList<Integer>();
-					for(Measurement m : measList){
-						meaIdList.add(m.getId());
-					}
-					c.setFeature_Id(meaIdList);
-				}
-
-				db.add(addedCodes);
+				
+				//the method is missing so have to rewrite
+//				for (Category c : addedCodes){
+//					List<String> featureNames = linkCodeMeasurement.get(c.getCode_String());
+//					List<Measurement> measList = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, featureNames));
+//					List<Integer> meaIdList = new ArrayList<Integer>();
+//					for(Measurement m : measList){
+//						meaIdList.add(m.getId());
+//					}
+//					c.setFeature_Id(meaIdList);
+//				}
+//
+//				db.add(addedCodes);
+				
 				
 //				for(ObservedValue ob : observedValues){
 //					
