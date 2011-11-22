@@ -89,13 +89,13 @@ public class MolgenisUserService
 		
 		try
 		{
-			this.db.beginTx();
+			//this.db.beginTx();
 			this.db.add(user);
-			this.db.commitTx();
+		//	this.db.commitTx();
 		}
 		catch (DatabaseException e)
 		{
-			this.db.rollbackTx();
+		//	this.db.rollbackTx();
 			throw e;
 		}
 	}

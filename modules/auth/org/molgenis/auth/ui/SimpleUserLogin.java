@@ -322,9 +322,9 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		this.getModel().setAction("Forgot");
 	}
 	
-	private Institute getInstitute(String instName, Database db) throws DatabaseException
+	private Integer getInstitute(String instName, Database db) throws DatabaseException
 	{
-		if(!instName.isEmpty())
+		if(instName != null && !instName.isEmpty())
 		{
 			List<Institute> institutes = db.find(Institute.class, new QueryRule(Institute.NAME, Operator.EQUALS, instName));
 			if(institutes.size() == 0)
@@ -332,23 +332,24 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 				Institute newInst = new Institute();
 				newInst.setName(instName);
 				db.add(newInst);
-				return newInst;
+				return newInst.getId();
 			}
 			else if(institutes.size() == 1)
 			{
-				return institutes.get(0);
+				return institutes.get(0).getId();
 			}
 			else
 			{
 				throw new DatabaseException("Multiple institutes named '"+instName+"' found");
 			}
 		}
-		throw new DatabaseException("Error when finding/creating Institute");
+		return null;
+		//throw new DatabaseException("Error when finding/creating Institute");
 	}
 	
-	private OntologyTerm getRole(String roleName, Database db) throws DatabaseException
+	private Integer getRole(String roleName, Database db) throws DatabaseException
 	{
-		if(!roleName.isEmpty())
+		if(roleName != null && !roleName.isEmpty())
 		{
 			List<OntologyTerm> roles = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.EQUALS, roleName));
 			if(roles.size() == 0)
@@ -356,18 +357,19 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 				OntologyTerm newRole = new OntologyTerm();
 				newRole.setName(roleName);
 				db.add(newRole);
-				return newRole;
+				return newRole.getId();
 			}
 			else if(roles.size() == 1)
 			{
-				return roles.get(0);
+				return roles.get(0).getId();
 			}
 			else
 			{
 				throw new DatabaseException("Multiple ontologyTerms for role '"+roleName+"' found");
 			}
 		}
-		throw new DatabaseException("Error when finding/creating Role");
+		return null;
+		//throw new DatabaseException("Error when finding/creating Role");
 	}
 	
 	private MolgenisUser toMolgenisUser(Database db, Tuple request) throws MolgenisUserException, DatabaseException
@@ -383,9 +385,9 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		user.setTitle(request.getString("title"));
 		user.setLastName(request.getString("lastname"));
 		user.setFirstName(request.getString("firstname"));
-		user.setAffiliation(getInstitute(request.getString("institute"), db));
+		user.setAffiliation_Id(getInstitute(request.getString("institute"), db));
 		user.setDepartment(request.getString("department"));
-		user.setRoles(getRole(request.getString("position"), db));
+		user.setRoles_Id(getRole(request.getString("position"), db));
 		user.setCity(request.getString("city"));
 		user.setCountry(request.getString("country"));
 		Calendar cal   = Calendar.getInstance();
