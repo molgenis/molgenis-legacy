@@ -11,7 +11,7 @@ and http://www.html5laboratory.com/drag-and-drop.php -->
 <textarea name="description" cols="15" rows="5">${task.description}</textarea>
 <input type="text" name="storyPoints" value="${task.storyPoints}" size="4" />SP
 <br/>
-<img class="edit_button" style="float: right;" src="generated-res/img/delete.png" onclick="forms.${screen.name}.__action.value='taskDelete';forms.${screen.name}.__task.value='${task.id}';forms.${screen.name}.submit();"/>
+<!--img class="edit_button" style="float: right;" src="generated-res/img/delete.png" onclick="forms.${screen.name}.__action.value='taskDelete';forms.${screen.name}.__task.value='${task.id}';forms.${screen.name}.submit();"/-->
 <img class="edit_button" style="float: right;" src="generated-res/img/cancel.png" onclick="forms.${screen.name}.__action.value='taskCancel';forms.${screen.name}.__task.value='${task.id}';forms.${screen.name}.submit();"/>
 <img class="edit_button" style="float: right;" src="generated-res/img/save.png" onclick="forms.${screen.name}.__action.value='taskSave';forms.${screen.name}.__task.value='${task.id}';forms.${screen.name}.submit();"/>
 
