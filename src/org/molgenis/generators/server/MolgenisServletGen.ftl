@@ -136,7 +136,7 @@ public class MolgenisServlet extends AbstractMolgenisServlet
 			<#if auth_redirect != ''>
 			login = new ${loginclass}(db, "${auth_redirect}", new TokenFactory()); //has use in FrontController, added here for backwards compatibility
 			<#else>
-			login = new ${loginclass}(db, new TokenManager());
+			login = new ${loginclass}(db, new TokenFactory());
 			</#if>			
 			request.getSession().setAttribute("login", login);
 		}
