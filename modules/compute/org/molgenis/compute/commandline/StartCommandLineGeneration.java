@@ -73,7 +73,7 @@ public class StartCommandLineGeneration
                     "-inputworkflow=<WorkflowDescriptionDir> " +
                     "-outputscriptsdir=<OutputDir> " +
                     "-grid|cluster=<LocationOnBackend(Grid or Cluster)> " +
-                    "-templatesdir=<TemplatesDir>" +
+                    "-templatesdir=<TemplatesDir> " +
                     "<GererationID>");
             System.exit(1);
         }
@@ -100,7 +100,7 @@ public class StartCommandLineGeneration
                     "-inputworkflow=<WorkflowDescriptionDir> " +
                     "-outputscriptsdir=<OutputDir> " +
                     "-grid|cluster=<LocationOnBackend(Grid or Cluster)> " +
-                    "-templatesdir=<TemplatesDir>" +
+                    "-templatesdir=<TemplatesDir> " +
                     "<GererationID>");
             System.exit(1);
         }
