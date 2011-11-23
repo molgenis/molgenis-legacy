@@ -9,8 +9,12 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 
+
 public class LLcatalogueSplitterPlugin  extends PluginModel<Entity>
 {
+	
+	JQuerySplitterContents splitterContents = new JQuerySplitterContents();
+
 
 	private static final long serialVersionUID = -6143910771849972946L;
 	
@@ -21,7 +25,8 @@ public class LLcatalogueSplitterPlugin  extends PluginModel<Entity>
 		
 		super(name, parent);
 		
-		JQuerySplitterContents splitterContents = new JQuerySplitterContents();
+		
+		
 		System.out.println(">>>>The splitter has been created"); 
 		splitterContents.setLeftPane("<p>This is the left side of the splitter </p> <p>&nbsp;</p>");
 		System.out.println(">>>>Left pane of the spliter has been set "); 
@@ -30,6 +35,7 @@ public class LLcatalogueSplitterPlugin  extends PluginModel<Entity>
 		splitterContents.setRightBottomPane("<p>right bottom Pane</p>");
 		
 		splitter = new JQuerySplitter<JQuerySplitterContents>("splitter", splitterContents);
+		
 		
 		System.out.println(">>>>Spliter contents has been set  "); 
 
@@ -104,7 +110,9 @@ public class LLcatalogueSplitterPlugin  extends PluginModel<Entity>
 		return true;
 	}
 
-	
+	public JQuerySplitterContents getSplitterContents(){
+		return splitterContents;
+	}
 	
 	public String getSplitter() {
 		return splitter.toHtml();

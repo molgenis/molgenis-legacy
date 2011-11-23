@@ -20,13 +20,31 @@
 		<p class="errormessage">${message.text}</p>
 			</#if>
 		</#list>
-		<div class="screenbody">
-			<div class="screenpadding">	
-				${screen.getSplitter()}
-				
-			</div>
-		</div>
-	</div>
+						${screen.getSplitter()}
+				<div id="splitterContainer">
+					 	<div id="leftPane">
+					 	 	${screen.getSplitterContents().getLeftPane()}
+					 	 	coming from ftl: left pane
+					 	</div>
+					 	<div id="rightPane">
+						 	<div style="height:5%;background:#bac8dc">Toolbar?</div>
+						 		<div id="rightSplitterContainer" style="height:95%">
+					     			<div id="rightTopPane">
+						 				 ${screen.getSplitterContents().getRightTopPane()}
+						 				 coming from ftl: right pane	 				 
+						 			</div>
+						 			<div id="rightBottomPane">
+						 				<div>
+						 				 ${screen.getSplitterContents().getRightBottomPane()}
+						 				  	coming from ftl: rightbottom pane
+						 				 </div>
+						 			</div>
+						 		</div> <!--rightSplitterContainer-->
+						</div> <!--<div id="rightPane">-->
+				</div> <!--splitterContainer-->
+	</div> <!--	<div class="formscreen"-->
+	
+	
 </form>
 
 </#macro>
