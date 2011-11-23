@@ -85,7 +85,7 @@ public class FrontController extends MolgenisFrontController
 		Login login = (Login)request.getRequest().getSession().getAttribute("login");
 		if(login == null) {
 			<#if auth_redirect != ''>
-			login = new ${loginclass}(request.getDatabase(), "${auth_redirect}", context.getTokenManager());
+			login = new ${loginclass}(request.getDatabase(), "${auth_redirect}", context.getTokenFactory());
 			<#else>
 			login = new ${loginclass}(request.getDatabase(), context.getTokenManager());
 			</#if>			

@@ -44,6 +44,7 @@ ch <- curlSetOpt(
 
 MOLGENIS.login = function(username, password)
 {
+	if(missing(password)) password <- username
 	servlet <- paste( .MOLGENIS$servletURL, "/api/R", sep="" )
 	curlParams = list(usr = username, pw = password)
 	response <- postForm( servlet, .params = curlParams, curl = ch )
